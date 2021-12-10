@@ -107,6 +107,7 @@ function Column({
   }, [data, expanded, width]);
 
   const isInViewPort =
+    columnRef.current?.classList?.[1] === 'Table__column--groups' ||
     !listWindow ||
     !columnRef.current ||
     (columnRef.current &&
@@ -119,6 +120,7 @@ function Column({
       className={classNames({
         Table__column: true,
         'Table__column--actions': col.key === 'actions',
+        'Table__column--groups': col.key === 'groups',
       })}
       style={{
         minWidth: maxWidth,

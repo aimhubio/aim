@@ -445,6 +445,22 @@ function createAppModel({
       }
     }
 
+    function abortRequest(): void {
+      if (metricsRequestRef) {
+        metricsRequestRef.abort();
+      }
+
+      model.setState({
+        requestIsPending: false,
+      });
+
+      onModelNotificationAdd({
+        id: Date.now(),
+        severity: 'info',
+        message: 'Request has been cancelled',
+      });
+    }
+
     function getMetricsData(shouldUrlUpdate?: boolean): {
       call: () => Promise<void>;
       abort: () => void;
@@ -501,7 +517,7 @@ function createAppModel({
               );
               const runData = await getRunData(stream);
               updateData(runData);
-            } catch (ex) {
+            } catch (ex: Error | any) {
               if (ex.name === 'AbortError') {
                 // Abort Error
               } else {
@@ -608,6 +624,7 @@ function createAppModel({
               epoch: '',
               time: '',
               children: [],
+              groups: groupConfigData,
             };
 
             rows[groupKey!] = {
@@ -770,7 +787,7 @@ function createAppModel({
               rows[groupKey!].data,
               {},
               true,
-              ['value'].concat(Object.keys(columnsValues)),
+              ['value', 'groups'].concat(Object.keys(columnsValues)),
             );
           }
         },
@@ -913,15 +930,16 @@ function createAppModel({
       const { data, params, highLevelParams, contexts } = processData(
         model.getState()?.rawData as ISequence<IMetricTrace>[],
       );
+      const sortedParams = params.concat(highLevelParams).sort();
       const groupingSelectOptions = [
         ...getGroupingSelectOptions({
-          params: params.concat(highLevelParams).sort(),
+          params: sortedParams,
           contexts,
         }),
       ];
       tooltipData = getTooltipData({
         processedData: data,
-        paramKeys: params,
+        paramKeys: sortedParams,
         groupingSelectOptions,
         groupingItems: ['color', 'stroke', 'chart'],
         model,
@@ -989,15 +1007,16 @@ function createAppModel({
       if (configData) {
         setAggregationEnabled({ model, appName });
       }
+      const sortedParams = params.concat(highLevelParams).sort();
       const groupingSelectOptions = [
         ...getGroupingSelectOptions({
-          params: params.concat(highLevelParams).sort(),
+          params: sortedParams,
           contexts,
         }),
       ];
       tooltipData = getTooltipData({
         processedData: data,
-        paramKeys: params,
+        paramKeys: sortedParams,
         groupingSelectOptions,
         groupingItems: ['color', 'stroke', 'chart'],
         model,
@@ -1679,6 +1698,7 @@ function createAppModel({
       initialize,
       getAppConfigData,
       getMetricsData,
+      abortRequest,
       getDataAsTableRows,
       setDefaultAppConfigData,
       setComponentRefs: setModelComponentRefs,
@@ -1948,6 +1968,22 @@ function createAppModel({
         return getRunsData();
       }
 
+      function abortRequest(): void {
+        if (runsRequestRef) {
+          runsRequestRef.abort();
+        }
+
+        model.setState({
+          requestIsPending: false,
+        });
+
+        onModelNotificationAdd({
+          id: Date.now(),
+          severity: 'info',
+          message: 'Request has been cancelled',
+        });
+      }
+
       function getRunsData(
         shouldUrlUpdate?: boolean,
         isInitial = true,
@@ -1955,9 +1991,9 @@ function createAppModel({
         call: () => Promise<void>;
         abort: () => void;
       } {
-        // if (runsRequestRef) {
-        //   runsRequestRef.abort();
-        // }
+        if (runsRequestRef) {
+          runsRequestRef.abort();
+        }
         // isInitial: true --> when search button clicked or data is loading at the first time
         const modelState = prepareModelStateToCall(isInitial);
         const configData = modelState?.config;
@@ -1967,7 +2003,7 @@ function createAppModel({
 
         liveUpdateInstance?.stop().then();
 
-        const { call, abort } = runsService.getRunsData(
+        runsRequestRef = runsService.getRunsData(
           query,
           pagination?.limit,
           pagination?.offset,
@@ -1980,7 +2016,7 @@ function createAppModel({
         return {
           call: async () => {
             try {
-              const stream = await call((detail) =>
+              const stream = await runsRequestRef.call((detail) =>
                 exceptionHandler({ detail, model }),
               );
               let gen = adjustable_reader(stream as ReadableStream<any>);
@@ -2036,14 +2072,15 @@ function createAppModel({
                   },
                 },
               });
-
-              const tableRef: any = model.getState()?.refs?.tableRef;
-              tableRef.current?.updateData({
-                newData: tableData.rows,
-                newColumns: tableColumns,
-                hiddenColumns: configData.table.hiddenColumns!,
-              });
-            } catch (ex) {
+              setTimeout(() => {
+                const tableRef: any = model.getState()?.refs?.tableRef;
+                tableRef.current?.updateData({
+                  newData: tableData.rows,
+                  newColumns: tableColumns,
+                  hiddenColumns: configData.table.hiddenColumns!,
+                });
+              }, 0);
+            } catch (ex: Error | any) {
               if (ex.name === 'AbortError') {
                 // Abort Error
               } else {
@@ -2051,7 +2088,7 @@ function createAppModel({
               }
             }
           },
-          abort,
+          abort: runsRequestRef.abort,
         };
       }
 
@@ -2475,6 +2512,12 @@ function createAppModel({
         return { rows, sameValueColumns };
       }
 
+      function onModelNotificationAdd<N>(
+        notification: N & INotification,
+      ): void {
+        onNotificationAdd({ notification, model });
+      }
+
       function getLastRunsData(
         lastRow: any,
       ): { call: () => Promise<void>; abort: () => void } | undefined {
@@ -2658,6 +2701,7 @@ function createAppModel({
         destroy,
         initialize,
         getRunsData,
+        abortRequest,
         getLastRunsData,
         onExportTableData,
         onNotificationDelete: onModelNotificationDelete,
@@ -2835,6 +2879,22 @@ function createAppModel({
         }
       }
 
+      function abortRequest(): void {
+        if (runsRequestRef) {
+          runsRequestRef.abort();
+        }
+
+        model.setState({
+          requestIsPending: false,
+        });
+
+        onModelNotificationAdd({
+          id: Date.now(),
+          severity: 'info',
+          message: 'Request has been cancelled',
+        });
+      }
+
       function getParamsData(shouldUrlUpdate?: boolean): {
         call: () => Promise<void>;
         abort: () => void;
@@ -2842,7 +2902,7 @@ function createAppModel({
         if (runsRequestRef) {
           runsRequestRef.abort();
         }
-        const configData = model.getState()?.config;
+        const configData = { ...model.getState()?.config };
         if (shouldUrlUpdate) {
           updateURL({ configData, appName });
         }
@@ -2886,7 +2946,7 @@ function createAppModel({
                 liveUpdateInstance?.start({
                   q: configData?.select?.query,
                 });
-              } catch (ex) {
+              } catch (ex: Error | any) {
                 if (ex.name === 'AbortError') {
                   // Abort Error
                 } else {
@@ -2968,6 +3028,7 @@ function createAppModel({
                 metric: '',
                 context: [],
                 children: [],
+                groups: groupConfigData,
               };
 
               rows[groupKey!] = {
@@ -3095,7 +3156,7 @@ function createAppModel({
                 rows[groupKey!].data,
                 {},
                 true,
-                Object.keys(columnsValues),
+                ['groups'].concat(Object.keys(columnsValues)),
               );
             }
           },
@@ -3178,6 +3239,7 @@ function createAppModel({
                     }
                   },
                 );
+
                 return {
                   values,
                   color: color ?? run.color,
@@ -3243,16 +3305,16 @@ function createAppModel({
       ): void {
         const { data, params, highLevelParams, metricsColumns } =
           processData(rawData);
-
+        const sortedParams = params.concat(highLevelParams).sort();
         const groupingSelectOptions = [
           ...getGroupingSelectOptions({
-            params: params.concat(highLevelParams).sort(),
+            params: sortedParams,
           }),
         ];
 
         tooltipData = getTooltipData({
           processedData: data,
-          paramKeys: params,
+          paramKeys: sortedParams,
           groupingSelectOptions,
           groupingItems: ['color', 'stroke', 'chart'],
           model,
@@ -3625,14 +3687,15 @@ function createAppModel({
         const { data, params, highLevelParams, metricsColumns } = processData(
           model.getState()?.rawData as IRun<IParamTrace>[],
         );
+        const sortedParams = params.concat(highLevelParams).sort();
         const groupingSelectOptions = [
           ...getGroupingSelectOptions({
-            params: params.concat(highLevelParams).sort(),
+            params: sortedParams,
           }),
         ];
         tooltipData = getTooltipData({
           processedData: data,
-          paramKeys: params,
+          paramKeys: sortedParams,
           groupingSelectOptions,
           groupingItems: ['color', 'stroke', 'chart'],
           model,
@@ -3782,6 +3845,7 @@ function createAppModel({
         initialize,
         getAppConfigData,
         getParamsData,
+        abortRequest,
         setDefaultAppConfigData,
         updateModelData,
         onActivePointChange,

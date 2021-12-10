@@ -1,0 +1,106 @@
+@use 'src/styles/abstracts' as *;
+
+$border_radius: toRem(6px);
+
+$title_top_padding: toRem(10px);
+$title_left_padding: toRem(15px);
+$padding_8: toRem(8px);
+
+.Aim_Menu_Wr {
+  display: flex;
+  flex-direction: column;
+  border: toRem(1px) solid $grayish;
+  box-sizing: border-box;
+  border-radius: $border_radius 0 0 $border_radius;
+  height: 100%;
+  .Title {
+    background-color: $primary-color-5;
+    padding: $title_top_padding $title_left_padding;
+    border-bottom: toRem(1px) solid $grayish;
+    border-top-left-radius: $border_radius
+  }
+  .Menu {
+    display: flex;
+    flex-direction: column;
+    padding: toRem(8px);
+    overflow-y: scroll;
+    height: 100%;
+    .MenuItem {
+      display: flex;
+      flex-direction: column;
+      margin-bottom: toRem(2px);
+      border-radius: $border-radius;
+      &:focus-visible {
+        outline:unset;
+      }
+      // layers1 layer2 is created due to design inconsistencies
+      // @TODO improve this while working on creating tree view from this component
+      .MenuItemHead {
+        cursor: pointer;
+        border-radius: toRem(6px);
+        display: flex;
+        word-break: break-word;
+
+        div {
+          width: 100%;
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+          padding: toRem(9px) toRem(14px);
+        }
+        &.layer1 {
+          &.active {
+            background-color: $primary-color-10;
+            &:before {
+              content: '';
+              width: 4px;
+              border-radius: $border_radius 0 0 $border-radius;
+              background: $primary-color;
+            }
+          }
+        }
+        &.layer2 {
+          // additional styles here
+        }
+        &.open {
+          background-color: $primary-color-10;
+
+          &:before {
+            content: '';
+            width: 4px;
+            border-radius: $border_radius 0 0 0; // difference width active is top-left border radius
+            background: $primary-color;
+          }
+        }
+        &.no_child {
+          margin-right: toRem(8px);
+        }
+        &:hover {
+          background: $cuddle-30;
+        }
+      }
+      .MenuItemBody {
+        width: 100%;
+        background-color: $primary-color-5;
+        border-radius: 0 toRem(4px) toRem(4px) 0;
+        display: none;
+        &.open {
+          display: flex;
+        }
+
+        > div {
+          padding: $padding_8 0 $padding_8 $padding_8;
+          width: 100%;
+        }
+
+        // left blue layer
+        &:before {
+          content: '';
+          width: toRem(4px);
+          border-bottom-left-radius: $border_radius;
+          background: $primary-color;
+        }
+      }
+    }
+  }
+}

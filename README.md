@@ -12,7 +12,7 @@
 <h3 align="center">
   <a href="https://aimstack.readthedocs.io/en/latest/"><b>Documentation</b></a> &bull;
   <a href="https://aimstack.readthedocs.io/en/latest/quick_start/getting_started.html"><b>Aim in 3 steps</b></a> &bull;
-  <a href="http://play.aimstack.io:10001/metrics?grouping=2KhRameHik98oBj8Bsw6VRdcA7KuW5Y2kZtNEFLDLRtdSb1RVR7k9p9QkRk9Tvai2qWdRFPzisMBiA5RNazdhRaE56LwugevHBFTsESJULie39yCghtVnq5CuWSA2B8MuPn3Dg6XRqVrsC7BpJE16jRKnZ7dZ7xonbkXiAM2TPL3YRByWYrre6J3hUPB7BdfUJz57sdPjnF3G72SbQUGEWXKZQKHNyQCjEkPbKNxQUKxh7wXeMB3PF1gqjGtGSEihL5LsT7jmnPBr5Mfr4dHp2mbUGSt8cQNydQhC1iPW53jXnZ77TdSnoHjGT1xLuSTyUzhLBpaPPMokZPV7cmi2FybEGWmVd53athLrBmuVx8PffZCpUoXUDbwZS4fzrgp9HBZhsfUunmJzqADxg3SxYny4k2dLoVer3ULiBzXExPkXaNsRaiJbM8ZTXsPVfVZbgCR1zyBHSogayxSZBdqdVD8rY5K&chart=Cm6b4V1xjN1vWwfnKhWBAJ491MNYk6oJHwWJtyKVe6zu6D7ShYbPyEyVuVgyn73j7KNbhSnhLnU6evCrpnHa338r8cXeEYtgUoNhxxBbYuVdUXqAox1334Uzc59hFxtbDfeL2MtZVh2JoLqiyEjnSqeqX6FWbWKAF61ivoFdkutMnDyhKCT9SoZYgLr9y1wR8CssfX2rwN4JUWT8k2Jr84WJ1vpAhrcB3xERKF3rAddQsczC1wE7824Qk3WVKAttLTLG5FVidFh9XkTD4Sdzf7DZ1DYoqiHs9zBFM2LASd7rz42fkmmrrz7koHoFQG6787QLuGBRDZTvYvCT8JeLbXpTdLtKXbvU3dboKqdbv7u9FvsCc7ir1SQeignKE7EKihcFSXf97QKLNXxNPdeyiwdGuj8Cj4kHfYwqRGUcjxMSihV45Y7F3x2W8zUvKB6uJLEnpDAufhcN7mLbzrjNRQ5mfW2GfgoJ5a6nrhzcUMbkztokkKpgokm2tZ23XWfyEq6WMxRxdXCrBMeuE5EgbfeResip87GcxW5o784gfG8xRaGdS596sQhLfgT4FPzytUqyHXU4upwfb65jGrUzG1dsiaiB1rZyXKpw6riKLCNNvRXVTnzRenQpyHzJBqDccyMSehy8T4ThFSjniSvsk1jKbsVgq2rA3RMyLJf9Z85cpx3hx7RmrJTCNv2aZtb3xXH3bEBms9u2XVCrykVsrSSRP4Tv3vjsbuMDdpAy5RscUCqPgFhJdHzTEaZGTzVL214rRWNum5RBgpcdK3QGtVWwAPXV2jirEpoUhqFEv4gTKX3KXL6LUPsi7jYPGNbMWAcovt3fTgVCrWZeaHRcSG3WKJX5La2vkjnDmhHNs4SbDjS6ze31iaz2fCwzSZ9v3ca4pVtWezPbHpBZVpZd4FG4Lt3oKDG2xvKP9w1Q1jP77hM4eozJxTFiTgQxH4S8mpnfYbxrnmVwxhAu4PKRmevEZkJPVX1hMN6yykqFz7RrhvG4yQ8muYEYWv5DkzycptNy9bDEmDxVAk2CRnvbdo6jYnWbh77t1JEZdhJoCaVSHk6MovrdLoc5X8jxEbcDU7xBL3wj5ecULt3tYq5aoFeNHHCTBxWnk2gA5iLZNA7rBNtQuEzBpN1kjh&select=7zY8Ghyd8kPXab3LdBmLqMwxSSWcZypz9sHYtcG8bSoniZPTnXp2oTf9TrxEu55XfP546wpJrzzEXCGpczGdS9z8coMktqf7j2EbUveJeLRBSPBPw83ru5MxhMSA3FysZ5nTiroEqNktj2ux67ExzjkheiJhWkf5oJNrKYEPuM8adYhjBH2Ez5Ma1uiNZfQxu1mt18iqX3DcFAc3BjjH3WXE3guqpk4bFzk16JB8Nz4pvhsuBDH6XUuGQsZEzoKRbbELYVMozcABWWn47w35XcT9YE4Bmyk8vuJuCY7wmN5wHxt8BiNAGoh9UQGcRqrWV55swMGy3v3Yfkfo9YSDZCEbs47gJ7kAbfLEGe4EPr2yv9h3mu5NuScU5fajDiGrt4oREeBK1SH3EqnPS8qznn4cumJccEBsPGzc88vQY3rHvyzD5LTrnmPxDUARm9HYeLq61nUJPjpUErEPwV37wiYzZrE8o3j8oVm4cwo1fczfffXjG7NkmqSVheZ"><b>Demo</b></a> &bull;
+  <a href="http://play.aimstack.io:10001/metrics?grouping=7pRrVvgN1DJa32JqNDmWLwYyX4KK3GAiJ4CqBcfURxEa4DSnDuLQSiJjdYhxVSpZUxBKvKjoh3h4Ub31zdP6ZoFqPgmjhEJMJ2sEGF9ULoVrBrp7SJm8HpuapSfWTTdpZAbb7fTbhNSrSPqKPd1gp7rEesFqXxyAsQkZ2pS4zqkcATRDJeMYwApi3rmYMdErE3UBQcY7siy8gWoaMEmszcVjqCK1uPmwZ1gf1i1G6E7CWDCF1b4Rffc9eTWjxfMdLX58hKVuH8UQRPQBeBRWDtXd2nU6hAGNuZTzajUoirF5wKtWhEpCB5t3x8Wzy7BLTDktAkNdfuApHaj4W9qrJE4RP1mEBcyDeFBP1USV8iSLpaAarFWETUrTMQ2B&chart=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&select=A6s6QXPYV4KMKzeyHf85R14vNQn3urHMP8cf7wEzn1iUv8vVCx9DawAVay8U843DVDoTK5D4gLrydSBGAVQCZY1AHhNRLmqE3VSmQDHweKkr4v7j9yhnBJA9SPApP5fReRBea9EJGDHnj4p3qL3iBsciuQghCC4PfysuRkRMDvBZgMDbvmM17eybKx1GEbpR6uKrME45B83SJcuSg2dwobYffWsKes7dH2TjYjCGXpr6QEi1FxN4qMJjN8zu7PjMzCi3UHL5tskM7wi3iHcf37D8mFHZLT6KS8wZ7NEEJaz4f8RGXwbEs1sDUH8bL5ERDvdXP85GquCAaMvvGfrDLz7mhTZhwTYfiXEfQb9ndmiUmNDie4fhkUijjk4hJ3HABxvQtKViGGhZzuiczAw5pMLomojbT8E3NFo4zyh3tVwHyJ3FyTD1A5UktZMom8WMBuq8TH4xgwpXL2J6ZMDHQs8AJdogAKWMPC9U5JBoW98Etc85YcUp9wu7BW4pVfi1JprFnuPYJGspBCbJXZtWKKW4GvLTbpTXCJ2CPs6ViqWHB4E4dg4SBGbE6XqknBNYU2oCrkMTWov95UgSFX5EvgHPw5p9BW8T91CZGseuhBfauA2LgqrDHXLkkSgp5e6Ai33BbfEamG6opTsHTTzj3xno74QEWKApvCVmwsW44XVVh7LbVfakvxeBp7eWytCCn1EP6CnP3skgBQygSYgzLAgHWo6XaAw"><b>Demo</b></a> &bull;
   <a href="https://github.com/aimhubio/aim/tree/main/examples"><b>Examples</b></a> &bull;
   <a href="https://github.com/aimhubio/aim#roadmap"><b>Roadmap</b></a> &bull;
     <a href="https://github.com/aimhubio/aim#comparisons-to-familiar-tools"><b>Alternatives</b></a> &bull;
@@ -73,7 +73,7 @@ pip3 install aim
 </summary>
 
 ```python
-from aim import Run, Image
+from aim import Run, Image, Distribution
   
 # Initialize a new run
 run = Run()
@@ -92,9 +92,12 @@ for step in range(1000):
   
     # Log images
     run.track(Image(tensor_or_pil, caption), name='gen', step=step, context={ "subset": "train" })
+
+    # Log distributions
+    run.track(Distribution(tensor), name='gradients', step=step, context={ "type": "weights" })
 ```
 
-_See documentation [here](#sdk-specifications)._
+_See documentation [here](https://aimstack.readthedocs.io/en/latest/quick_start/SDK_basics.html)._
 
 </details>
 
@@ -111,7 +114,7 @@ trainer = pl.Trainer(logger=AimLogger(experiment='experiment_name'))
 # ...
 ```
 
-_See documentation [here](#pytorch-lightning)._
+_See documentation [here](https://aimstack.readthedocs.io/en/latest/guides/integrations/basic_aim_pytorch_lightning.html)._
 
 </details>
 
@@ -136,7 +139,7 @@ trainer = Trainer(
 # ...
 ```
 
-_See documentation [here](#hugging-face)._
+_See documentation [here](https://aimstack.readthedocs.io/en/latest/guides/integrations/basic_aim_huggingface.html)._
 
 </details>
 
@@ -158,7 +161,7 @@ model.fit(x_train, y_train, epochs=epochs, callbacks=[
 # ...
 ```
 
-_See documentation [here](#tensorflow-and-keras)._
+_See documentation [here](https://aimstack.readthedocs.io/en/latest/guides/integrations/basic_aim_keras.html)._
 
 </details>
 
@@ -176,7 +179,7 @@ bst = xgb.train(param, xg_train, num_round, watchlist, callbacks=[aim_callback])
 # ...
 ```
 
-_See documentation [here](#xgboost)._
+_See documentation [here](https://aimstack.readthedocs.io/en/latest/guides/integrations/basic_aim_xgboost.html)._
 </details>
 
 **3. Run the training as usual and start Aim UI**
@@ -190,7 +193,7 @@ aim up
 An overview of the major screens/ features of Aim UI
 
 ## Runs explorer
-Runs explorer will help you to hollistically view all your [runs](https://aimstack.readthedocs.io/en/latest/quick_start/SDK_basics.html#create-a-run), each metric last tracked values and tracked hyperparameters.
+Runs explorer will help you to holistically view all your [runs](https://aimstack.readthedocs.io/en/latest/quick_start/SDK_basics.html#create-a-run), each metric last tracked values and tracked hyperparameters.
 
 **Features:**
 - Full Research context at hand
@@ -324,6 +327,15 @@ Hosted vs self-hosted
 - Aim is self-hosted free and open-source.
   - Remote self-hosted Aim is coming soon...
 
+# Platform Support
+
+Aim package is available for Python 3.6+ on the following platforms
+
+
+| Linux | MacOS | Windows |
+| ------|-------|---------|
+|:heavy_check_mark:|:heavy_check_mark:|:heavy_minus_sign:|
+
 
 # Roadmap
 
@@ -339,20 +351,23 @@ Hosted vs self-hosted
 The high-level features we are going to work on the next few months
 
 **Done**
-- [x] Live updates (Shipped: _Oct 18 2021_)
-- [x] Images tracking and visualization (Start: _Oct 18 2021_, Shipped: _Nov 19 2021_)
+  - [x] Live updates (Shipped: _Oct 18 2021_)
+  - [x] Images tracking and visualization (Start: _Oct 18 2021_, Shipped: _Nov 19 2021_)
+  - [x] Distributions tracking and visualization (Start: _Nov 10 2021_, Shipped: _Dec 3 2021_)
+  - [x] Jupyter integration (Start: _Nov 18 2021_, Shipped: _Dec 3 2021_)
 
 **In progress:**
-- [ ] Centralized tracking server (Start: _Oct 18 2021_)
-- [ ] Colab integration (Start: _Nov 18 2021_)
-- [ ] Jupyter integration (Start: _Nov 18 2021_)
-- [ ] Scikit-learn integration (Start: _Nov 18 2021_)
-- [ ] Distributions tracking and visualization (Start: _Nov 10 2021_)
+  - [ ] Centralized tracking server (Start: _Oct 18 2021_)
+  - [ ] Audio tracking and visualization (Start: _Dec 6 2021_)
+  - [ ] Transcripts tracking and visualization (Start: _Dec 6 2021_)
+  - [ ] Plotly integration (Start: _Dec 1 2021_)
+  - [ ] Colab integration (Start: _Nov 18 2021_)
+  - [ ] Scikit-learn integration (Start: _Nov 18 2021_)
 
-### TODO: Nov 1 - Feb 1
+### TODO
 
 **Track and Explore:**
-  - [ ] Transcripts tracking and visualization
+  - [ ] Models tracking/versioning, model registry
   - [ ] Runs side-by-side comparison
 
 **Data Backup:**
@@ -363,11 +378,12 @@ The high-level features we are going to work on the next few months
   - [ ] Collect stdout, stderr logs
 
 **Integrations:**
-  - [ ] plotly integration
   - [ ] Kubeflow integration
   - [ ] Streamlit integration
   - [ ] Raytune integration
   - [ ] Google MLMD
+  - [ ] MLFlow adaptor (visualize MLflow logs with Aim)
+  - [ ] Tensorboard adaptor (visualize TensorBoard logs with Aim) 
 
 ## Community
 

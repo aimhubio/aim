@@ -1,13 +1,13 @@
 import * as d3 from 'd3';
 
-import { IDrawAreaProps } from 'types/utils/d3/drawArea';
+import { IDrawAreaArgs } from 'types/utils/d3/drawArea';
 
 import { formatSystemMetricName } from 'utils/formatSystemMetricName';
 import { isSystemMetric } from 'utils/isSystemMetric';
 
 import { CircleEnum } from './index';
 
-function drawArea(props: IDrawAreaProps): void {
+function drawArea(args: IDrawAreaArgs): void {
   const {
     index = 0,
     parentRef,
@@ -21,7 +21,7 @@ function drawArea(props: IDrawAreaProps): void {
     linesNodeRef,
     attributesNodeRef,
     chartTitle = {},
-  } = props;
+  } = args;
 
   if (!parentRef?.current || !visAreaRef?.current) {
     return;

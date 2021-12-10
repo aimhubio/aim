@@ -97,15 +97,13 @@ const PopoverContent = React.forwardRef(function PopoverContent(
         );
       case ChartTypeEnum.ImageSet:
         return (
-          <div className='PopoverContent__box'>
+          <div className='PopoverContent__box PopoverContent__imageSetBox'>
+            <strong>{tooltipContent.caption}</strong>
             <div className='PopoverContent__value'>
               <strong>{tooltipContent.images_name}</strong>
               <Text className='PopoverContent__contextValue'>
                 {contextToString(tooltipContent.context)}
               </Text>
-            </div>
-            <div className='PopoverContent__value'>
-              Caption: <strong>{tooltipContent.caption}</strong>
             </div>
             <div className='PopoverContent__value'>
               Step: <strong>{tooltipContent.step}</strong>
@@ -150,7 +148,8 @@ const PopoverContent = React.forwardRef(function PopoverContent(
                         : groupConfig[groupConfigKey][item];
                       return (
                         <div key={item} className='PopoverContent__value'>
-                          {item}: {formatValue(val)}
+                          <Text size={12} tint={50}>{`${item}: `}</Text>
+                          <Text size={12}>{formatValue(val)}</Text>
                         </div>
                       );
                     })}
@@ -167,13 +166,14 @@ const PopoverContent = React.forwardRef(function PopoverContent(
               <div className='PopoverContent__subtitle1'>Params</div>
               {Object.keys(params).map((paramKey) => (
                 <div key={paramKey} className='PopoverContent__value'>
-                  {`run.${paramKey}`}: {formatValue(params[paramKey])}
+                  <Text size={12} tint={50}>{`run.${paramKey}: `}</Text>
+                  <Text size={12}>{formatValue(params[paramKey])}</Text>
                 </div>
               ))}
             </div>
           </div>
         )}
-        {focusedState?.active && run.hash ? (
+        {focusedState?.active && run?.hash ? (
           <>
             <div>
               <Divider />

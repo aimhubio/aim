@@ -1,25 +1,19 @@
 import React from 'react';
 
-import {
-  Box,
-  Checkbox,
-  Divider,
-  InputBase,
-  Popper,
-  TextField,
-} from '@material-ui/core';
+import { Box, Checkbox, Divider, InputBase, Popper } from '@material-ui/core';
 import Autocomplete from '@material-ui/lab/Autocomplete';
 import {
   CheckBox as CheckBoxIcon,
   CheckBoxOutlineBlank,
-  SearchOutlined,
 } from '@material-ui/icons';
 
 import { Badge, Button, Icon, Text } from 'components/kit';
+import ExpressionAutoComplete from 'components/kit/ExpressionAutoComplete';
 
 import COLORS from 'config/colors/colors';
 
 import useModel from 'hooks/model/useModel';
+import useParamsSuggestions from 'hooks/projectData/useParamsSuggestions';
 
 import projectsModel from 'services/models/projects/projectsModel';
 import paramsAppModel from 'services/models/params/paramsAppModel';
@@ -38,6 +32,7 @@ import contextToString from 'utils/contextToString';
 import './SelectForm.scss';
 
 function SelectForm({
+  requestIsPending,
   onParamsSelectChange,
   selectedParamsData,
   onSelectRunQueryChange,
@@ -45,6 +40,7 @@ function SelectForm({
   const projectsData = useModel<IProjectsModelState>(projectsModel);
   const [anchorEl, setAnchorEl] = React.useState<any>(null);
   const searchRef = React.useRef<any>(null);
+  const paramsSuggestions = useParamsSuggestions();
 
   React.useEffect(() => {
     const paramsMetricsRequestRef = projectsModel.getProjectParams(['metric']);
@@ -57,8 +53,20 @@ function SelectForm({
 
   function handleParamsSearch(e: React.ChangeEvent<any>) {
     e.preventDefault();
+    if (requestIsPending) {
+      return;
+    }
     searchRef.current = paramsAppModel.getParamsData(true);
     searchRef.current.call();
+  }
+
+  function handleRequestAbort(e: React.SyntheticEvent): void {
+    e.preventDefault();
+    if (!requestIsPending) {
+      return;
+    }
+    searchRef.current?.abort();
+    paramsAppModel.abortRequest();
   }
 
   function onSelect(event: object, value: ISelectParamsOption[]): void {
@@ -141,6 +149,7 @@ function SelectForm({
 
   const open: boolean = !!anchorEl;
   const id = open ? 'select-metric' : undefined;
+
   return (
     <div className='SelectForm__container'>
       <div className='SelectForm__params__container'>
@@ -257,28 +266,28 @@ function SelectForm({
           </Box>
           <Button
             color='primary'
-            variant='contained'
-            startIcon={<SearchOutlined />}
+            variant={requestIsPending ? 'outlined' : 'contained'}
+            startIcon={
+              <Icon
+                name={requestIsPending ? 'close' : 'search'}
+                fontSize={requestIsPending ? 12 : 14}
+              />
+            }
             className='Params__SelectForm__search__button'
-            onClick={handleParamsSearch}
+            onClick={requestIsPending ? handleRequestAbort : handleParamsSearch}
           >
-            Search
+            {requestIsPending ? 'Cancel' : 'Search'}
           </Button>
         </Box>
 
-        <div className='Params__SelectForm__TextField'>
-          <form onSubmit={handleParamsSearch}>
-            <TextField
-              fullWidth
-              size='small'
-              variant='outlined'
-              spellCheck={false}
-              inputProps={{ style: { height: '0.687rem' } }}
-              placeholder='Filter runs, e.g. run.learning_rate > 0.0001 and run.batch_size == 32'
-              value={selectedParamsData?.query}
-              onChange={({ target }) => onSelectRunQueryChange(target.value)}
-            />
-          </form>
+        <div className='SelectForm__TextField'>
+          <ExpressionAutoComplete
+            onExpressionChange={onSelectRunQueryChange}
+            onSubmit={handleParamsSearch}
+            value={selectedParamsData?.query}
+            options={paramsSuggestions}
+            placeholder='Filter runs, e.g. run.learning_rate > 0.0001 and run.batch_size == 32'
+          />
         </div>
       </div>
     </div>

@@ -1,0 +1,63 @@
+@use 'src/styles/abstracts' as *;
+
+.ImageFullViewPopover {
+  display: flex;
+  justify-content: start;
+  align-items: start;
+  height: 100%;
+  width: 100%;
+  &__imageContainer {
+    max-width: calc(100% - 230px);
+    flex: 1;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: $cuddle-10;
+    &--pixelated {
+      image-rendering: pixelated;
+    }
+    &--smooth {
+      image-rendering: auto;
+    }
+    img {
+      max-width: 100%;
+      object-fit: fill;
+    }
+  }
+  &__detailContainer {
+    height: 100%;
+    min-width: 20rem;
+    max-height: inherit;
+    position: relative;
+    width: 20rem;
+    box-shadow: 0 toRem(4px) toRem(6px) rgba(144, 175, 218, 0.2);
+    height: 100%;
+    &__content {
+      height: calc(100% - 2rem);
+      max-height: calc(100% - 2rem);
+      .PopoverContent {
+        box-shadow: unset;
+
+        &__container {
+          box-shadow: unset;
+          max-height: 100%;
+          overflow-y: scroll;
+        }
+        &__imageSetBox {
+          padding-top: 0;
+        }
+      }
+    }
+    &__closeButtonContainer {
+      color: #414b6d;
+      padding: 0.25rem 0.3125rem 0.25rem 1.125rem;
+      display: flex;
+      justify-content: flex-end;
+      align-items: center;
+      .Icon__container {
+        font-size: 0.625rem;
+      }
+    }
+  }
+}

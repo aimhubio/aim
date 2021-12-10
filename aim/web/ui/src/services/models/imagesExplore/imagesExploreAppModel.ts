@@ -6,7 +6,11 @@ import { saveAs } from 'file-saver';
 import { RowHeightSize } from 'config/table/tableConfigs';
 import { BookmarkNotificationsEnum } from 'config/notification-messages/notificationMessages';
 import { ResizeModeEnum, RowHeightEnum } from 'config/enums/tableEnums';
-import { blobsUpdateThrottleDelay } from 'config/imagesConfigs/imagesConfig';
+import { IMAGE_SIZE_CHANGE_DELAY } from 'config/imagesConfigs/imagesConfig';
+import {
+  MediaItemAlignmentEnum,
+  ImageRenderingEnum,
+} from 'config/enums/imageEnums';
 
 import {
   getImagesExploreTableColumns,
@@ -17,6 +21,7 @@ import * as analytics from 'services/analytics';
 import imagesExploreService from 'services/api/imagesExplore/imagesExploreService';
 import appsService from 'services/api/apps/appsService';
 import dashboardService from 'services/api/dashboard/dashboardService';
+import blobsURIModel from 'services/models/media/blobsURIModel';
 
 import {
   GroupNameType,
@@ -94,6 +99,11 @@ function getConfig(): IImagesExploreAppConfig {
         content: {},
         display: true,
         selectedParams: [],
+      },
+      additionalProperties: {
+        alignmentType: MediaItemAlignmentEnum.Height,
+        mediaItemSize: 25,
+        imageRendering: ImageRenderingEnum.Pixelated,
       },
       focusedState: {
         active: false,
@@ -220,6 +230,22 @@ function exceptionHandler(detail: any) {
   resetModelOnError(detail);
 }
 
+function abortRequest(): void {
+  if (imagesRequestRef) {
+    imagesRequestRef.abort();
+  }
+
+  model.setState({
+    requestIsPending: false,
+  });
+
+  onNotificationAdd({
+    id: Date.now(),
+    severity: 'info',
+    message: 'Request has been cancelled',
+  });
+}
+
 function getImagesData(shouldUrlUpdate?: boolean) {
   if (imagesRequestRef) {
     imagesRequestRef.abort();
@@ -266,10 +292,20 @@ function getImagesData(shouldUrlUpdate?: boolean) {
           applyButtonDisabled: true,
         });
 
-        const stream = await imagesRequestRef.call(exceptionHandler);
-        const runData = await getImagesMetricsData(stream);
-        if (configData) {
-          setModelData(runData, configData);
+        blobsURIModel.init();
+
+        try {
+          const stream = await imagesRequestRef.call(exceptionHandler);
+          const runData = await getImagesMetricsData(stream);
+          if (configData) {
+            setModelData(runData, configData);
+          }
+        } catch (ex: Error | any) {
+          if (ex.name === 'AbortError') {
+            // Abort Error
+          } else {
+            console.log('Unhandled error: ', ex);
+          }
         }
       } else {
         model.setState({
@@ -376,9 +412,11 @@ function processData(data: any[]): {
 function setModelData(rawData: any[], configData: IImagesExploreAppConfig) {
   const sortFields = model.getState()?.config?.table.sortFields;
   const { data, params, contexts, highLevelParams } = processData(rawData);
+  const sortedParams = params.concat(highLevelParams).sort();
+
   const groupingSelectOptions = [
     ...getGroupingSelectOptions({
-      params: params.concat(highLevelParams).sort(),
+      params: sortedParams,
       contexts,
     }),
   ];
@@ -389,7 +427,7 @@ function setModelData(rawData: any[], configData: IImagesExploreAppConfig) {
 
   tooltipData = getTooltipData({
     processedData: data,
-    paramKeys: params,
+    paramKeys: sortedParams,
     groupingSelectOptions,
     groupingItems: ['group'],
     model,
@@ -418,6 +456,7 @@ function setModelData(rawData: any[], configData: IImagesExploreAppConfig) {
   );
   const config = configData;
   config.images = {
+    ...config.images,
     stepRange: !config.images.calcRanges
       ? config.images.stepRange
       : !isEmpty(rawData)
@@ -448,6 +487,7 @@ function setModelData(rawData: any[], configData: IImagesExploreAppConfig) {
       active: false,
       key: null,
     },
+    additionalProperties: config.images.additionalProperties,
   };
   model.setState({
     requestIsPending: false,
@@ -478,9 +518,10 @@ function updateModelData(
   const { data, params, contexts, highLevelParams } = processData(
     model.getState()?.rawData as any[],
   );
+  const sortedParams = params.concat(highLevelParams).sort();
   const groupingSelectOptions = [
     ...getGroupingSelectOptions({
-      params: params.concat(highLevelParams).sort(),
+      params: sortedParams,
       contexts,
     }),
   ];
@@ -490,7 +531,7 @@ function updateModelData(
   );
   tooltipData = getTooltipData({
     processedData: data,
-    paramKeys: params,
+    paramKeys: sortedParams,
     groupingSelectOptions,
     groupingItems: ['group'],
     model,
@@ -786,91 +827,35 @@ async function getImagesMetricsData(
   return runData;
 }
 
-async function getImagesBlobsData(uris: string[]) {
-  const stream = await imagesExploreService.getImagesByURIs(uris).call();
-  let gen = adjustable_reader(stream);
-  let buffer_pairs = decode_buffer_pairs(gen);
-  let decodedPairs = decodePathsVals(buffer_pairs);
-  let objects = iterFoldTree(decodedPairs, 1);
+function getImagesBlobsData(uris: string[]) {
+  const request = imagesExploreService.getImagesByURIs(uris);
+  return {
+    abort: request.abort,
+    call: () => {
+      return request
+        .call()
+        .then(async (stream) => {
+          let gen = adjustable_reader(stream);
+          let buffer_pairs = decode_buffer_pairs(gen);
+          let decodedPairs = decodePathsVals(buffer_pairs);
+          let objects = iterFoldTree(decodedPairs, 1);
 
-  const throttledBlobsUpdate = _.throttle(function () {
-    model.setState({
-      imagesBlobs: { ...(model.getState()?.imagesBlobs || {}) },
-    });
-  }, blobsUpdateThrottleDelay);
-
-  let firsItem = true;
-  for await (let [keys, val] of objects) {
-    const imagesBlobs: { [key: string]: string } =
-      model.getState()?.imagesBlobs || {};
-    imagesBlobs[keys[0]] = arrayBufferToBase64(val as ArrayBuffer) as string;
-
-    if (firsItem) {
-      model.setState({
-        imagesBlobs: { ...imagesBlobs },
-      });
-      firsItem = false;
-    } else {
-      throttledBlobsUpdate();
-    }
-  }
-
-  throttledBlobsUpdate.cancel();
-  model.setState({ imagesBlobs: { ...(model.getState()?.imagesBlobs || {}) } });
-}
-
-function sortWithAllGroupFields(
-  a: IImageData,
-  b: IImageData,
-  groupFields: string[],
-  groupingSelectOptions: IGroupingSelectOption[],
-) {
-  const appropriationChecker = (list: any[]) => {
-    let isEqualValue = true;
-    const foundedItem = list.find((field) => {
-      const firstObjectValue = _.get(a, field);
-      const secondObjectValue = _.get(b, field);
-      isEqualValue = firstObjectValue === secondObjectValue;
-      //TODO  with Karen to avoid string type captions
-      if (
-        field === 'caption' &&
-        secondObjectValue[0] === '#' &&
-        firstObjectValue[0] === '#'
-      ) {
-        return (
-          +secondObjectValue.substring(1) - +firstObjectValue.substring(1) < 0
-        );
-      } else if (
-        typeof firstObjectValue === 'string' ||
-        (typeof secondObjectValue === 'string' &&
-          _.isNaN(+firstObjectValue) &&
-          _.isNaN(+secondObjectValue))
-      ) {
-        return firstObjectValue.localeCompare(secondObjectValue);
-      } else {
-        return +secondObjectValue - +firstObjectValue < 0;
-      }
-    });
-    return { isEqualValue, foundedItem };
+          for await (let [keys, val] of objects) {
+            const URI = keys[0];
+            blobsURIModel.emit(URI as string, {
+              [URI]: arrayBufferToBase64(val as ArrayBuffer) as string,
+            });
+          }
+        })
+        .catch((ex) => {
+          if (ex.name === 'AbortError') {
+            // Abort Error
+          } else {
+            console.log('Unhandled error: ');
+          }
+        });
+    },
   };
-  const hasToSwitchPlace = appropriationChecker(groupFields.concat('caption'));
-  const sortWithTheOtherGroupFields = () =>
-    appropriationChecker(
-      groupingSelectOptions
-        .map((option: IGroupingSelectOption) => option.value)
-        .filter((field) => !groupFields.includes(field)),
-    );
-  if (hasToSwitchPlace.foundedItem) {
-    return 1;
-  } else if (!hasToSwitchPlace.foundedItem && !hasToSwitchPlace.isEqualValue) {
-    return -1;
-  } else {
-    if (sortWithTheOtherGroupFields().foundedItem) {
-      return 1;
-    } else {
-      return -1;
-    }
-  }
 }
 
 function getDataAsImageSet(
@@ -919,9 +904,13 @@ function getDataAsImageSet(
       _.set(
         imageSetData,
         path,
-        group.data.sort((a: IImageData, b: IImageData) =>
-          sortWithAllGroupFields(a, b, groupFields, groupingSelectOptions),
-        ),
+        _.sortBy(group.data, [
+          ...groupFields,
+          ...groupingSelectOptions
+            .map((option: IGroupingSelectOption) => option.value)
+            .filter((field) => !groupFields.includes(field)),
+          'caption',
+        ]),
       );
     });
 
@@ -941,7 +930,7 @@ function onActivePointChange(
   const { refs, config } = model.getState() as any;
   if (config.table.resizeMode !== ResizeModeEnum.Hide) {
     const tableRef: any = refs?.tableRef;
-    if (tableRef) {
+    if (tableRef && activePoint.seqKey) {
       tableRef.current?.setHoveredRow?.(activePoint.seqKey);
       tableRef.current?.setActiveRow?.(
         focusedStateActive ? activePoint.seqKey : null,
@@ -961,13 +950,15 @@ function onActivePointChange(
           active: focusedStateActive,
           key: activePoint.key,
         },
-        tooltip: {
-          ...configData.images.tooltip,
-          content: filterTooltipContent(
-            tooltipData[activePoint.key],
-            configData?.images.tooltip.selectedParams,
-          ),
-        },
+        tooltip: activePoint.key
+          ? {
+              ...configData.images.tooltip,
+              content: filterTooltipContent(
+                tooltipData[activePoint.key],
+                configData?.images.tooltip.selectedParams,
+              ),
+            }
+          : configData.images.tooltip,
       },
     };
 
@@ -1065,6 +1056,7 @@ function getDataAsTableRows(
         metric: '',
         context: [],
         children: [],
+        groups: groupConfigData,
       };
 
       rows[groupKey!] = {
@@ -1180,7 +1172,7 @@ function getDataAsTableRows(
         rows[groupKey!].data,
         {},
         true,
-        ['value', 'name'].concat(Object.keys(columnsValues)),
+        ['value', 'name', 'groups'].concat(Object.keys(columnsValues)),
       );
     }
   });
@@ -1777,9 +1769,8 @@ function onSliceRangeChange(key: string, newValue: number[] | number) {
   }
 }
 
-function onDensityChange(e: React.ChangeEvent<HTMLInputElement>) {
+function onDensityChange(e: React.ChangeEvent<HTMLInputElement>, key: string) {
   let { value } = e.target;
-  let key: string = e.target.getAttribute('data-key') || '';
   const configData: IImagesExploreAppConfig | undefined =
     model.getState()?.config;
   if (configData?.images) {
@@ -1823,10 +1814,89 @@ function onRecordDensityChange(event: ChangeEvent<{ value: number }>) {
   }
 }
 
+const onImageSizeChange = _.throttle((value: number) => {
+  const configData: IImagesExploreAppConfig | undefined =
+    model.getState()?.config;
+  if (configData?.images) {
+    const images = {
+      ...configData.images,
+      additionalProperties: {
+        ...configData.images.additionalProperties,
+        mediaItemSize: value,
+      },
+    };
+    const config = {
+      ...configData,
+      images,
+    };
+    updateURL(config as IImagesExploreAppConfig);
+    model.setState({
+      config,
+    });
+  }
+}, IMAGE_SIZE_CHANGE_DELAY);
+
+function onImageRenderingChange(type: ImageRenderingEnum) {
+  const configData: IImagesExploreAppConfig | undefined =
+    model.getState()?.config;
+  if (configData?.images) {
+    const images = {
+      ...configData.images,
+      additionalProperties: {
+        ...configData.images.additionalProperties,
+
+        imageRendering: type,
+      },
+    };
+    const config = {
+      ...configData,
+      images,
+    };
+    updateURL(config as IImagesExploreAppConfig);
+    model.setState({
+      config,
+    });
+  }
+}
+
+function onImageAlignmentChange(
+  option: { value: string; label: string } | null,
+) {
+  const configData: IImagesExploreAppConfig | undefined =
+    model.getState()?.config;
+  if (configData?.images) {
+    const images = {
+      ...configData.images,
+      additionalProperties: {
+        ...configData.images.additionalProperties,
+        alignmentType: option?.value,
+      },
+    };
+    const config = {
+      ...configData,
+      images,
+    };
+    updateURL(config as IImagesExploreAppConfig);
+    model.setState({
+      config,
+    });
+  }
+}
+
+function isRangePanelShow() {
+  return (
+    !!getStateFromUrl('select')?.query ||
+    !isEmpty(getStateFromUrl('select')?.images) ||
+    (!!getStateFromUrl('select')?.advancedQuery &&
+      !!getStateFromUrl('select')?.advancedMode)
+  );
+}
+
 const imagesExploreAppModel = {
   ...model,
   initialize,
   getImagesData,
+  abortRequest,
   setComponentRefs,
   onGroupingSelectChange,
   onGroupingModeChange,
@@ -1865,6 +1935,10 @@ const imagesExploreAppModel = {
   getImagesBlobsData,
   onChangeTooltip,
   onActivePointChange,
+  onImageSizeChange,
+  onImageRenderingChange,
+  onImageAlignmentChange,
+  isRangePanelShow,
 };
 
 export default imagesExploreAppModel;

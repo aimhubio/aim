@@ -8,7 +8,7 @@ import {
 
 import { IGetAxesScaleProps } from './getAxisScale';
 
-export interface IDrawBrushProps extends IGetAxesScaleProps {
+export interface IDrawBrushArgs extends IGetAxesScaleProps {
   index: number;
   plotBoxRef: React.MutableRefObject<>;
   plotNodeRef: React.MutableRefObject<>;

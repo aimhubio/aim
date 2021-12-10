@@ -1,0 +1,49 @@
+@use 'src/styles/abstracts' as *;
+
+.ImagePropertiesPopover {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  width: 25rem;
+  padding: $space-xs;
+  max-height: 20rem;
+  &__section {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    padding: 0 $space-xs;
+    &__mediaItemSize {
+      display: flex;
+      align-items: center;
+      margin-top: $space-xs;
+      margin-bottom: $space-xxxs;
+    }
+  }
+  &__sizeSlider {
+    margin-top: $space-unit;
+  }
+  &__subtitle {
+    text-transform: uppercase;
+    &__imageRendering {
+      margin: $space-xs 0;
+    }
+  }
+  &__Radio {
+    padding-left: 0;
+  }
+  &__Slider {
+    margin: $space-xs 0;
+    display: flex;
+    .Slider {
+      margin: 0 $space-md;
+    }
+  }
+  &__Divider {
+    width: 100%;
+    margin: $space-xs 0;
+  }
+  &__sizePercent {
+    margin-left: $space-xs;
+  }
+}

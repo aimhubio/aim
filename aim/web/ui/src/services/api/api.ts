@@ -1,4 +1,4 @@
-import { API_HOST } from 'config/config';
+import { getAPIHost } from 'config/config';
 
 function createAPIRequestWrapper<ResponseDataType>(
   url: string,
@@ -11,7 +11,7 @@ function createAPIRequestWrapper<ResponseDataType>(
   return {
     call: (exceptionHandler?: (error: ResponseDataType) => any) =>
       new Promise((resolve: (data: ResponseDataType) => void, reject) => {
-        fetch(`${API_HOST}/${url}`, { ...options, signal })
+        fetch(`${getAPIHost()}/${url}`, { ...options, signal })
           .then(async (response) => {
             try {
               if (response.status >= 400) {
@@ -27,14 +27,14 @@ function createAPIRequestWrapper<ResponseDataType>(
               const data = stream ? response.body : await response.json();
 
               resolve(data);
-            } catch (err) {
+            } catch (err: Error | any) {
               if (typeof exceptionHandler === 'function') {
                 exceptionHandler(err);
               }
               reject(err);
             }
           })
-          .catch((err) => {
+          .catch((err: Error | any) => {
             if (err.name === 'AbortError') {
               // Fetch aborted
             } else {
@@ -67,6 +67,29 @@ function getStream<ResponseDataType>(
       ...options,
       ...(options?.method === 'POST' && {
         body: JSON.stringify(params),
+        headers: { 'Content-Type': 'application/json' },
+      }),
+    },
+    true,
+  );
+}
+
+function getStream1<ResponseDataType>(
+  url: string,
+  params?: {},
+  options?: RequestInit,
+) {
+  return createAPIRequestWrapper<ResponseDataType>(
+    `${url}${
+      options?.method === 'POST' && params
+        ? '?' + new URLSearchParams(params).toString()
+        : ''
+    }`,
+    {
+      method: 'GET',
+      ...options,
+      ...(options?.method === 'POST' && {
+        body: JSON.stringify(options.body),
         headers: { 'Content-Type': 'application/json' },
       }),
     },
@@ -128,6 +151,7 @@ function remove<ResponseDataType>(url: string, options?: RequestInit) {
 const API = {
   get,
   getStream,
+  getStream1,
   post,
   put,
   delete: remove,
