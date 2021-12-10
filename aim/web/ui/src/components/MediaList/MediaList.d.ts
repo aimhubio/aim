@@ -10,12 +10,12 @@ import { MediaTypeEnum } from '../MediaPanel/config';
 export interface IMediaListProps {
   data: IImageData[];
   addUriToList: (blobUrl: string) => void;
-  wrapperOffsetWidth?: number;
+  wrapperOffsetWidth: number;
   mediaItemHeight: number;
   focusedState: IFocusedState;
   syncHoverState?: (args: any) => void;
   additionalProperties: IMediaPanelProps['additionalProperties'];
-  tooltip: ITooltipContent;
+  tooltip?: ITooltipContent;
   mediaType: MediaTypeEnum;
 }
 
@@ -25,7 +25,7 @@ export interface IImageBoxProps {
   index: number;
   mediaItemHeight: number;
   focusedState: IFocusedState;
-  tooltip: ITooltipContent;
+  tooltip?: ITooltipContent;
   syncHoverState?: (args: any) => void;
   additionalProperties: IMediaPanelProps['additionalProperties'];
   style: { [key: string]: any };

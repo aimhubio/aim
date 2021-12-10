@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { memo, useEffect } from 'react';
 
 import Menu from 'components/kit/Menu/Menu';
 import BusyLoaderWrapper from 'components/BusyLoaderWrapper/BusyLoaderWrapper';
@@ -29,10 +29,16 @@ function TraceVisualizationContainer({
   traceInfo,
   traceType,
   runHash,
+  runParams,
 }: ITraceVisualizationContainerProps) {
   const runTracesModelData = useModel(runTracesModel);
   useEffect(() => {
-    runTracesModel.initialize(runHash, traceType, traceInfo[traceType]);
+    runTracesModel.initialize(
+      runHash,
+      traceType,
+      traceInfo[traceType],
+      runParams,
+    );
 
     return () => {
       runTracesModel.destroy();
@@ -98,4 +104,4 @@ function TraceVisualizationContainer({
 
 TraceVisualizationContainer.displayName = 'TraceVisualizationContainer';
 
-export default widthEmptyTraceCheck(TraceVisualizationContainer);
+export default memo(widthEmptyTraceCheck(TraceVisualizationContainer));

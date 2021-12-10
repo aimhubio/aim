@@ -134,7 +134,10 @@ function MediaPanel({
   }, [setActivePointRect]);
 
   const syncHoverState = React.useCallback(
-    (args: any): void => {
+    (args: {
+      activePoint: object | null;
+      focusedStateActive?: boolean;
+    }): void => {
       const { activePoint, focusedStateActive = false } = args;
       activePointRef.current = activePoint;
       // on MouseEnter
@@ -217,7 +220,6 @@ function MediaPanel({
                 >
                   <MediaSet
                     data={data}
-                    onScroll={() => null}
                     onListScroll={onListScroll}
                     addUriToList={addUriToList}
                     setKey={setKey}
@@ -245,19 +247,23 @@ function MediaPanel({
                     mediaType={mediaType}
                   />
                 </div>
-                <ChartPopover
-                  containerNode={containerRef.current}
-                  activePointRect={activePointRect}
-                  open={
-                    resizeMode !== ResizeModeEnum.MaxHeight &&
-                    !panelResizing &&
-                    (tooltip?.display || focusedState?.active)
-                  }
-                  chartType={tooltipType}
-                  tooltipContent={tooltip?.content}
-                  focusedState={focusedState}
-                />
-                <div className='MediaPanel__controls'>{controls}</div>
+                {tooltipType && (
+                  <ChartPopover
+                    containerNode={containerRef.current}
+                    activePointRect={activePointRect}
+                    open={
+                      resizeMode !== ResizeModeEnum.MaxHeight &&
+                      !panelResizing &&
+                      (tooltip?.display || focusedState?.active)
+                    }
+                    chartType={tooltipType}
+                    tooltipContent={tooltip?.content}
+                    focusedState={focusedState}
+                  />
+                )}
+                {controls && (
+                  <div className='MediaPanel__controls'>{controls}</div>
+                )}
               </div>
             ) : (
               <EmptyComponent
