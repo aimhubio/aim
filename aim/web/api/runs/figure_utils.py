@@ -1,3 +1,4 @@
+import json
 from typing import List
 from typing import TYPE_CHECKING
 
@@ -21,9 +22,11 @@ if TYPE_CHECKING:
     from aim.sdk import Repo
 
 
-def preparer(obj: Figure, trace, step):
+def preparer(obj: Figure, trace, step, decode=False):
     assert isinstance(obj, Figure)
 
+    if decode:
+        return json.loads(obj.json())
     resource_path = generate_resource_path(trace.values.tree.container, (step, 'data'))
     return {
         'blob_uri': URIService.generate_uri(
@@ -159,7 +162,7 @@ def requested_figure_object_traces_streamer(
         )
         for step, val in steps_vals:
             steps.append(step)
-            values.append(preparer(val, trace, step))
+            values.append(preparer(val, trace, step, decode=True))
 
         trace_dict = {
             'name': trace.name,
