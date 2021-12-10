@@ -34,6 +34,9 @@ export function getMenuItemFromRawInfo(
   function sortOrder(a: IMenuItem, b: IMenuItem) {
     const name1 = a.name.toUpperCase();
     const name2 = b.name.toUpperCase();
+    if (name2 === 'EMPTY CONTEXT') {
+      return 0;
+    }
     if (name1 < name2) {
       return -1;
     }
@@ -79,7 +82,7 @@ export function getMenuItemFromRawInfo(
       } else {
         menuItem.children = [
           {
-            name: 'no context',
+            name: 'empty context',
             id: bs58check.encode(Buffer.from(JSON.stringify({}))),
           },
         ];
@@ -95,7 +98,9 @@ export function getMenuItemFromRawInfo(
         if (it.id === id) {
           const itemChildren = data[index].children || [];
           const currentChildren = menuItem.children || [];
-          data[index].children = [...itemChildren, ...currentChildren].sort(
+          // spreading order will let to order "empty context" to the first of all
+          // cause if there empty context it will be in currentChildren
+          data[index].children = [...currentChildren, ...itemChildren].sort(
             sortOrder,
           );
 
@@ -190,7 +195,6 @@ export function getMenuData(traceType: TraceType, traces: TraceRawDataItem[]) {
     defaultActiveName = data[0].name;
   }
 
-  console.log('data ---> ', data);
   return { data, defaultActiveKey, availableIds, title, defaultActiveName };
 }
 
