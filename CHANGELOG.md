@@ -5,6 +5,10 @@
 - Add ability to query distributions by step range and density (VkoHov, rubenaprikyan)
 - Implement images visualization tab in run detail page (VkoHov, KaroMourad)
 
+## 3.2.2 Dec 10 2021
+
+- Fix Run finalization index timeout issue (alberttorosyan)
+
 ## 3.2.1 Dec 8 2021
 
 - Add ability to provide custom base path for API (mihran113, roubkar)
