@@ -27,16 +27,15 @@ from aim.ext.cleanup import AutoClean
 from typing import Any, Dict, Iterator, Optional, Tuple, Union
 from typing import TYPE_CHECKING
 
-
 if TYPE_CHECKING:
     from pandas import DataFrame
 
     from aim.sdk.metric import Metric
     from aim.sdk.image_sequence import Images
+    from aim.sdk.figure_sequence import Figures
     from aim.sdk.distribution_sequence import Distributions
     from aim.sdk.sequence_collection import SequenceCollection
     from aim.sdk.repo import Repo
-
 
 logger = logging.getLogger(__name__)
 
@@ -570,6 +569,22 @@ class Run(StructuredRunMixin):
             :obj:`Images` object if exists, `None` otherwise.
         """
         return self._get_sequence('images', name, context)
+
+    def get_figure_sequence(
+            self,
+            name: str,
+            context: Context
+    ) -> Optional['Figures']:
+        """Retrieve figure sequence by its name and context.
+
+        Args:
+             name (str): Tracked figure sequence name.
+             context (:obj:`Context`): Tracking context.
+
+        Returns:
+            :obj:`Figures` object if exists, `None` otherwise.
+        """
+        return self._get_sequence('figures', name, context)
 
     def get_distribution_sequence(
             self,

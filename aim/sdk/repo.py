@@ -224,7 +224,7 @@ class Repo:
         return '0.0'  # old Aim repos
 
     def _get_container(
-        self, name: str, read_only: bool, from_union: bool = False
+            self, name: str, read_only: bool, from_union: bool = False
     ) -> Container:
         if self.read_only and not read_only:
             raise ValueError('Repo is read-only')
@@ -257,12 +257,12 @@ class Repo:
         return container
 
     def request(
-        self,
-        name: str,
-        sub: str = None,
-        *,
-        read_only: bool,
-        from_union: bool = False  # TODO maybe = True by default
+            self,
+            name: str,
+            sub: str = None,
+            *,
+            read_only: bool,
+            from_union: bool = False  # TODO maybe = True by default
     ):
 
         container_config = ContainerConfig(name, sub, read_only)
@@ -360,6 +360,18 @@ class Repo:
         self._prepare_runs_cache()
         from aim.sdk.image_sequence import Images
         return QuerySequenceCollection(repo=self, seq_cls=Images, query=query)
+
+    def query_figure_objects(self, query: str = '') -> QuerySequenceCollection:
+        """Get Figures collections satisfying query expression.
+
+        Args:
+             query (str): query expression.
+        Returns:
+            :obj:`SequenceCollection`: Iterable for Figure sequences matching query expression.
+        """
+        self._prepare_runs_cache()
+        from aim.sdk.figure_sequence import Figures
+        return QuerySequenceCollection(repo=self, seq_cls=Figures, query=query)
 
     def query_distributions(self, query: str = '') -> QuerySequenceCollection:
         """Get distribution collections satisfying query expression.
