@@ -1,4 +1,4 @@
-from typing import Optional
+from typing import Any, Dict, Optional
 
 from aim.ext.resource.configs import DEFAULT_SYSTEM_TRACKING_INT
 from aim.sdk.run import Run
@@ -25,6 +25,7 @@ class AimCallback(object):
                          experiment: Optional[str] = None,
                          system_tracking_interval: Optional[int]
                          = DEFAULT_SYSTEM_TRACKING_INT,
+                         run_params: Optional[Dict[str, Any]] = None,
                          ):
                 self._repo_path = repo
                 self._experiment_name = experiment
@@ -32,6 +33,7 @@ class AimCallback(object):
                 self._initialized = False
                 self._current_shift = None
                 self._run = None
+                self._run_params = run_params
 
             def setup(self, args, state, model):
                 self._initialized = True
@@ -44,6 +46,8 @@ class AimCallback(object):
 
                 combined_dict = {**args.to_sanitized_dict()}
                 self._run['hparams'] = combined_dict
+                if self._run_params:
+                    self._run['params'] = self._run_params
 
                 # Store model configs as well
                 # if hasattr(model, 'config') and model.config is not None:
