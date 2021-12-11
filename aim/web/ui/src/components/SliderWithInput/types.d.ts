@@ -1,4 +1,4 @@
-export interface IRangeSliderWithInputProps {
+export interface ISliderWithInputProps {
   sliderTitle: string;
   countInputTitle: string;
   sliderTitleTooltip?: string;
@@ -7,6 +7,7 @@ export interface IRangeSliderWithInputProps {
   max: number;
   selectedRangeValue: number[];
   selectedCountValue: number;
+  sliderType?: 'range' | 'single';
   onSearch: () => void;
   onCountChange: (event: React.ChangeEvent<HTMLInputElement>) => void;
   onRangeChange: (newValue: number[] | number) => void;

@@ -1,0 +1,7 @@
+@use 'src/styles/abstracts' as *;
+
+.PlotlyVisualizer {
+  height: 100%;
+  padding: toRem(10px);
+  overflow-y: auto;
+}

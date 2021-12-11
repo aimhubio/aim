@@ -18,7 +18,7 @@
     border-left: none;
     border-top-right-radius: toRem(6px);
     border-bottom-right-radius: toRem(6px);
-    min-height: toRem(500px);
+    height: toRem(500px);
     display: flex;
     flex-direction: column;
     justify-content: space-between;
@@ -26,7 +26,7 @@
     .RangePanel {
       display: flex;
       align-items: center;
-      padding-bottom: toRem(4px);
+      padding: toRem(4px) 0;
       width: 100%;
       margin-top: toRem(10px);
       justify-content: center;

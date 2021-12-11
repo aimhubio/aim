@@ -8,7 +8,8 @@ import useModel from 'hooks/model/useModel';
 import runTracesModel from 'services/models/runs/runTracesModel';
 
 import DistributionsVisualizer from '../DistributionsVisualizer';
-import ImagesVisualizer from '../ImagesVisualizer/ImagesVisualizer';
+import ImagesVisualizer from '../ImagesVisualizer';
+import PlotlyVisualizer from '../PlotlyVisualizer';
 import { ITraceVisualizationContainerProps } from '../types';
 
 import RangePanel from './RangePanel';
@@ -22,7 +23,7 @@ const traceTypeVisualization = {
   audios: () => null,
   videos: () => null,
   texts: () => null,
-  plotly: () => null,
+  figures: PlotlyVisualizer,
 };
 
 function TraceVisualizationContainer({
@@ -87,9 +88,10 @@ function TraceVisualizationContainer({
                 rangeEndpoints: runTracesModelData?.data[item.sliderName],
                 selectedRangeValue: runTracesModelData?.queryData?.sliders[
                   item.sliderName
-                ] || [0, 50],
+                ] || [0, 0],
                 inputValue:
-                  runTracesModelData?.queryData?.inputs[item.inputName] || 50,
+                  runTracesModelData?.queryData?.inputs[item.inputName] || 0,
+                sliderType: item.sliderType,
               }))}
               onApply={runTracesModel.onApply}
               onInputChange={runTracesModel.onInputChange}

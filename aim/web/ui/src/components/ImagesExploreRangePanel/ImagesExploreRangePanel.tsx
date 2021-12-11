@@ -1,7 +1,7 @@
 import React from 'react';
 
 import { Button } from 'components/kit';
-import RangeSliderWithInput from 'components/RangeSliderWithInput';
+import SliderWithInput from 'components/SliderWithInput';
 
 import imagesExploreAppModel from 'services/models/imagesExplore/imagesExploreAppModel';
 
@@ -29,7 +29,7 @@ function ImagesExploreRangePanel({
   return (
     <form className='ImagesExploreRangePanel' onSubmit={handleSearch}>
       <div className='ImagesExploreRangePanel__container'>
-        <RangeSliderWithInput
+        <SliderWithInput
           sliderTitle='Steps'
           countInputTitle='Steps count'
           countTitleTooltip='Number of steps to display'
@@ -47,7 +47,7 @@ function ImagesExploreRangePanel({
           }
         />
         <div className='ImagesExploreRangePanel__container__sliderContainerSeparator'></div>
-        <RangeSliderWithInput
+        <SliderWithInput
           sliderTitle='Indices'
           countInputTitle='Indices count'
           countTitleTooltip='Number of images per step'
