@@ -40,11 +40,11 @@ class Audio(File):
                 logger.warning(f'Parameter "rate" is not provided! Using default: {rate}')
             bs = wavfile.write(rate, data)
             data = bs
-        # else: act as a regular file with enforced audio format definition by user side
-
-        audio_format = self.__audio_format_map.get(audio_format)
-        if not audio_format:
-            raise ValueError('Invalid audio format is provided.')
+        else:
+            # act as a regular file with enforced audio format definition by user side
+            audio_format = self.__audio_format_map.get(audio_format)
+            if not audio_format:
+                raise ValueError('Invalid audio format is provided.')
 
         if not isinstance(data, io.IOBase):
             raise TypeError('Content is not a byte-stream object')
