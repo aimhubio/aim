@@ -9,7 +9,6 @@ import { MediaTypeEnum } from './config';
 export interface IMediaSetProps {
   data: { [key: string]: any };
   orderedMap: { [key: string]: any };
-  onScroll: () => void;
   onListScroll: ({ scrollOffset: number }) => void;
   addUriToList: (blobUrl: string) => void;
   index?: number;
@@ -21,6 +20,6 @@ export interface IMediaSetProps {
   focusedState: IFocusedState;
   additionalProperties: IMediaPanelProps['additionalProperties'];
   tableHeight: IMediaPanelProps['tableHeight'];
-  tooltip: ITooltipContent;
+  tooltip?: ITooltipContent;
   mediaType: MediaTypeEnum;
 }

@@ -6,10 +6,7 @@ import {
   IFocusedState,
   ITooltipContent,
 } from 'types/services/models/metrics/metricsAppModel';
-import {
-  IImageData,
-  IImagesExploreAppConfig,
-} from 'types/services/models/imagesExplore/imagesExploreAppModel';
+import { IImagesExploreAppConfig } from 'types/services/models/imagesExplore/imagesExploreAppModel';
 
 import { ChartTypeEnum } from 'utils/d3';
 
@@ -23,15 +20,15 @@ export interface IMediaPanelProps {
   wrapperOffsetHeight: number;
   wrapperOffsetWidth: number;
   controls?: React.ReactNode;
-  resizeMode: ResizeModeEnum;
-  tooltip: ITooltipContent;
+  resizeMode?: ResizeModeEnum;
+  tooltip?: ITooltipContent;
   focusedState: IFocusedState;
   additionalProperties: IImagesExploreAppConfig['images']['additionalProperties'];
   tableHeight: string;
   mediaType: MediaTypeEnum;
   actionPanel?: React.ReactNode;
   actionPanelSize?: number;
-  tooltipType: ChartTypeEnum;
+  tooltipType?: ChartTypeEnum;
   onActivePointChange?: (activePoint: any, focusedStateActive: boolean) => void;
   getBlobsData: (uris: string[]) => Promise;
 }

@@ -67,6 +67,7 @@ function initialize(
   run_id: string,
   traceType: TraceType,
   traces: TraceRawDataItem[],
+  runParams?: object,
 ) {
   model.init();
 
@@ -82,6 +83,7 @@ function initialize(
     traceType,
     runHash: run_id,
     isTraceBatchLoading: true,
+    runParams,
     menu: {
       title,
       items: data,
@@ -157,7 +159,6 @@ async function getRunTraceBatch(isInitial = false) {
     },
     [requestOptions?.trace],
   );
-
   try {
     model.setState({
       ...state,
@@ -184,8 +185,10 @@ async function getRunTraceBatch(isInitial = false) {
         [keys[0]]: val,
       };
     }
-    const parsed =
-      settings[state.traceType || 'distributions'].dataProcessor(data);
+    const parsed = settings[state.traceType || 'distributions'].dataProcessor(
+      data,
+      state?.runParams,
+    );
     if (isInitial) {
       const sliders = getInitialSliderValues(
         parsed,

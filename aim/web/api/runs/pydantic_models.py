@@ -164,6 +164,7 @@ class QuerySyntaxErrorOut(BaseModel):
         statement: str
         line: int
         offset: int
+
     detail: SE
 
 
@@ -208,5 +209,32 @@ class ImagesSearchRunView(BaseModel):
 
 RunImagesSearchApiOut = Dict[str, ImagesSearchRunView]
 
-
 URIBatchIn = List[str]
+
+
+class FigureInfo(BaseModel):
+    blob_uri: str
+
+
+class FigureBaseView(TraceBaseView):
+    values: List[FigureInfo]
+
+
+RunFiguresBatchApiOut = List[FigureBaseView]
+
+
+class FigureSequenceFullView(TraceBase):
+    values: List[FigureInfo]
+    iters: List[int]
+    epochs: List[int]
+    timestamps: List[float]
+
+
+class FigureSearchRunView(BaseModel):
+    params: dict
+    traces: List[FigureSequenceFullView]
+    ranges: RangeInfo
+    props: PropsView
+
+
+RunFiguresSearchApiOut = Dict[str, FigureSearchRunView]

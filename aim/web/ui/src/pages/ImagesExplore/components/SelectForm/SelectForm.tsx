@@ -141,6 +141,7 @@ function SelectForm({
         }
       }
     }
+
     return data;
   }, [projectsData]);
 
