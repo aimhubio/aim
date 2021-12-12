@@ -12,7 +12,8 @@ export interface ITableProps {
   data: any[] | null;
   columns: any[];
   height?: string;
-  rowHeight: RowHeight;
+  rowHeight?: RowHeight;
+  estimatedRowHeight?: number;
   onManageColumns?: (order: any) => void;
   onColumnsVisibilityChange?: (hiddenColumns: string[]) => void;
   onTableDiffShow?: () => void;
