@@ -36,13 +36,6 @@
       min-height: 11.25rem;
       flex: 0.5 1 0;
       overflow: auto;
-      .ImagesExplore__loader {
-        .ChartLoader {
-          span {
-            margin-left: 0;
-          }
-        }
-      }
       &__hide {
         display: none;
       }

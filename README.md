@@ -73,7 +73,7 @@ pip3 install aim
 </summary>
 
 ```python
-from aim import Run, Image
+from aim import Run, Image, Distribution
   
 # Initialize a new run
 run = Run()
@@ -92,9 +92,12 @@ for step in range(1000):
   
     # Log images
     run.track(Image(tensor_or_pil, caption), name='gen', step=step, context={ "subset": "train" })
+
+    # Log distributions
+    run.track(Distribution(tensor), name='gradients', step=step, context={ "type": "weights" })
 ```
 
-_See documentation [here](#sdk-specifications)._
+_See documentation [here](https://aimstack.readthedocs.io/en/latest/quick_start/SDK_basics.html)._
 
 </details>
 
@@ -111,7 +114,7 @@ trainer = pl.Trainer(logger=AimLogger(experiment='experiment_name'))
 # ...
 ```
 
-_See documentation [here](#pytorch-lightning)._
+_See documentation [here](https://aimstack.readthedocs.io/en/latest/guides/integrations/basic_aim_pytorch_lightning.html)._
 
 </details>
 
@@ -136,7 +139,7 @@ trainer = Trainer(
 # ...
 ```
 
-_See documentation [here](#hugging-face)._
+_See documentation [here](https://aimstack.readthedocs.io/en/latest/guides/integrations/basic_aim_huggingface.html)._
 
 </details>
 
@@ -158,7 +161,7 @@ model.fit(x_train, y_train, epochs=epochs, callbacks=[
 # ...
 ```
 
-_See documentation [here](#tensorflow-and-keras)._
+_See documentation [here](https://aimstack.readthedocs.io/en/latest/guides/integrations/basic_aim_keras.html)._
 
 </details>
 
@@ -176,7 +179,7 @@ bst = xgb.train(param, xg_train, num_round, watchlist, callbacks=[aim_callback])
 # ...
 ```
 
-_See documentation [here](#xgboost)._
+_See documentation [here](https://aimstack.readthedocs.io/en/latest/guides/integrations/basic_aim_xgboost.html)._
 </details>
 
 **3. Run the training as usual and start Aim UI**
@@ -190,7 +193,7 @@ aim up
 An overview of the major screens/ features of Aim UI
 
 ## Runs explorer
-Runs explorer will help you to hollistically view all your [runs](https://aimstack.readthedocs.io/en/latest/quick_start/SDK_basics.html#create-a-run), each metric last tracked values and tracked hyperparameters.
+Runs explorer will help you to holistically view all your [runs](https://aimstack.readthedocs.io/en/latest/quick_start/SDK_basics.html#create-a-run), each metric last tracked values and tracked hyperparameters.
 
 **Features:**
 - Full Research context at hand
@@ -355,14 +358,16 @@ The high-level features we are going to work on the next few months
 
 **In progress:**
   - [ ] Centralized tracking server (Start: _Oct 18 2021_)
+  - [ ] Audio tracking and visualization (Start: _Dec 6 2021_)
+  - [ ] Transcripts tracking and visualization (Start: _Dec 6 2021_)
+  - [ ] Plotly integration (Start: _Dec 1 2021_)
   - [ ] Colab integration (Start: _Nov 18 2021_)
   - [ ] Scikit-learn integration (Start: _Nov 18 2021_)
 
 ### TODO
 
 **Track and Explore:**
-  - [ ] Audio tracking and visualization
-  - [ ] Transcripts tracking and visualization
+  - [ ] Models tracking/versioning, model registry
   - [ ] Runs side-by-side comparison
 
 **Data Backup:**
@@ -373,7 +378,6 @@ The high-level features we are going to work on the next few months
   - [ ] Collect stdout, stderr logs
 
 **Integrations:**
-  - [ ] plotly integration
   - [ ] Kubeflow integration
   - [ ] Streamlit integration
   - [ ] Raytune integration

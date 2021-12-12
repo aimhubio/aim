@@ -36,6 +36,7 @@ class UpdateService {
     this.responseListener = responseListener;
 
     this.instance = new LUWorker();
+    this.instance.replaceBasePath(window.API_BASE_PATH);
     this.instance.setConfig(
       appName,
       embeddedAppNames[this.appName].endpoint,

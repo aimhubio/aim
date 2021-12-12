@@ -1,8 +1,19 @@
 import bs58check from 'bs58check';
+import _ from 'lodash';
 
 import { IMenuItem } from 'components/kit/Menu';
 
+import {
+  IImageData,
+  IProcessedImageData,
+} from 'types/services/models/imagesExplore/imagesExploreAppModel';
+
 import contextToString from 'utils/contextToString';
+import alphabeticalSortComparator from 'utils/alphabeticalSortComparator';
+import { encode } from 'utils/encoder/encoder';
+import getObjectPaths from 'utils/getObjectPaths';
+
+import imagesExploreAppModel from '../imagesExplore/imagesExploreAppModel';
 
 import {
   DistributionsData,
@@ -10,6 +21,7 @@ import {
   TraceProcessedData,
   TraceRawDataItem,
   TraceType,
+  ImagesData,
 } from './types';
 
 /**
@@ -36,6 +48,16 @@ export function getMenuItemFromRawInfo(
 
   const data: IMenuItem[] = [];
 
+  const sortOrder = alphabeticalSortComparator({
+    orderBy: 'name',
+    additionalCompare: (name1: string, name2: string) => {
+      if (name2 === 'EMPTY CONTEXT') {
+        return 0;
+      }
+
+      return null;
+    },
+  });
   // doesn't destructuring item, because we are not sure it has context
   info.forEach((item: TraceRawDataItem) => {
     const id: string = bs58check.encode(Buffer.from(`${item.name}`));
@@ -67,7 +89,7 @@ export function getMenuItemFromRawInfo(
       } else {
         menuItem.children = [
           {
-            name: 'no context',
+            name: 'empty context',
             id: bs58check.encode(Buffer.from(JSON.stringify({}))),
           },
         ];
@@ -83,7 +105,11 @@ export function getMenuItemFromRawInfo(
         if (it.id === id) {
           const itemChildren = data[index].children || [];
           const currentChildren = menuItem.children || [];
-          data[index].children = [...itemChildren, ...currentChildren];
+          // spreading order will let to order "empty context" to the first of all
+          // cause if there empty context it will be in currentChildren
+          data[index].children = [...currentChildren, ...itemChildren].sort(
+            sortOrder,
+          );
 
           // clear empty array
           // @ts-ignore because we already set it minimum empty array
@@ -97,6 +123,8 @@ export function getMenuItemFromRawInfo(
       checkedItemIds.push(id);
     }
   });
+
+  data.sort(sortOrder);
 
   return {
     availableIds: checkedItemIds,
@@ -153,6 +181,10 @@ export function getMenuData(traceType: TraceType, traces: TraceRawDataItem[]) {
   const VisualizationMenuTitles = {
     images: 'Images',
     distributions: 'Distributions',
+    audios: 'Audios',
+    videos: 'Videos',
+    texts: 'Texts',
+    plotly: 'Plotlies',
   };
 
   let title = VisualizationMenuTitles[traceType];
@@ -203,12 +235,99 @@ export function processDistributionsData(data: Partial<DistributionsData>) {
     });
   }
 
-  return { iters, record_range, processedValues, originalValues };
+  return {
+    iters,
+    record_range,
+    processedValues,
+    originalValues,
+  };
 }
 
 /**
  * process distributions data
  */
-export function processImagesData() {
-  return {};
+export function processImagesData(
+  data: Partial<ImagesData>,
+  params?: { [key: string]: unknown },
+) {
+  const { record_range, iters, values, index_range, context, name } = data;
+  const groupingSelectOptions = params
+    ? imagesExploreAppModel.getGroupingSelectOptions({
+        params: getObjectPaths(params, params),
+      })
+    : [];
+  let images: IProcessedImageData[] = [];
+  values?.forEach((stepData: IImageData[], stepIndex: number) => {
+    stepData.forEach((image: IImageData) => {
+      const imageKey = encode({
+        name,
+        traceContext: context,
+        index: image.index,
+        step: iters?.[stepIndex],
+        caption: image.caption,
+      });
+      const seqKey = encode({
+        name,
+        traceContext: context,
+      });
+      images.push({
+        ...image,
+        images_name: name,
+        step: iters?.[stepIndex],
+        context: context,
+        key: imageKey,
+        seqKey: seqKey,
+      });
+    });
+  });
+  const { imageSetData, orderedMap } = imagesExploreAppModel.getDataAsImageSet(
+    groupData(_.orderBy(images)),
+    groupingSelectOptions,
+    ['step'],
+  );
+  return { imageSetData, orderedMap, record_range, index_range };
+}
+
+function groupData(data: IProcessedImageData[]): {
+  key: string;
+  config: { [key: string]: string };
+  data: IProcessedImageData[];
+}[] {
+  const groupValues: {
+    [key: string]: {
+      key: string;
+      config: { [key: string]: string };
+      data: IProcessedImageData[];
+    };
+  } = {};
+
+  for (let i = 0; i < data.length; i++) {
+    const groupValue: { [key: string]: string } = {};
+    ['step'].forEach((field) => {
+      groupValue[field] = _.get(data[i], field);
+    });
+    const groupKey = encode(groupValue);
+    if (groupValues.hasOwnProperty(groupKey)) {
+      groupValues[groupKey].data.push(data[i]);
+    } else {
+      groupValues[groupKey] = {
+        key: groupKey,
+        config: groupValue,
+        data: [data[i]],
+      };
+    }
+  }
+  return Object.values(groupValues);
+}
+
+export function reformatArrayQueries(
+  queryObj: Record<string, [number, number]> = {},
+) {
+  const formattedQueryObject: Record<string, string> = {};
+  Object.keys(queryObj).forEach((key) => {
+    const item = queryObj[key];
+    formattedQueryObject[key] = `${item[0]}:${item[1]}`;
+  });
+
+  return formattedQueryObject;
 }

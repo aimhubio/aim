@@ -4,27 +4,60 @@
   display: flex;
   width: 100%;
   max-height: toRem(510px);
+  .VisualizationLoader {
+    height: 100% !important;
+  }
   .MenuArea {
     max-width: toRem(380px);
-    min-width: toRem(200px);
+    min-width: toRem(320px);
   }
   .VisualizerArea {
-    height: 100%;
+    max-height: toRem(900px);
     width: 100%;
-    padding: toRem(4px);
     border: toRem(1px) solid $grayish;
     border-left: none;
     border-top-right-radius: toRem(6px);
     border-bottom-right-radius: toRem(6px);
     min-height: toRem(500px);
-    .VisualizationName {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+
+    .RangePanel {
       display: flex;
-      justify-content: center;
       align-items: center;
+      padding-bottom: toRem(4px);
+      width: 100%;
       margin-top: toRem(10px);
-      margin-bottom: toRem(26px); // change once using getBoundingClientRect for thi vis area wrapper
-      > span {
-        max-width: 60%;
+      justify-content: center;
+      background: $white;
+      border-top: $border-main;
+      border-bottom-right-radius: toRem(6px);
+      .RangePanelContainer {
+        display: flex;
+        align-items: center;
+        height: 100%;
+        width: 100%;
+        max-width: 85rem;
+        padding: 0 2.125rem;
+        justify-content: center;
+        .ApplyButtonContainer {
+          height: 100%;
+          display: flex;
+          align-items: center;
+          .ApplyButton {
+            height: 1.5rem !important;
+            width: 5.125rem;
+          }
+        }
+
+        .VerticalDivider {
+          width: 0.0625rem;
+          height: 1.5rem;
+          background: $primary-color-10;
+          margin-right: 2.75rem;
+          margin-left: 2.75rem;
+        }
       }
     }
   }

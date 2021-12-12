@@ -12,14 +12,23 @@ export type IRunTraceModel = {
     defaultActiveItemKey: string;
     availableKeys: string[];
   };
+  runParams?: object;
+  queryData: QueryData;
   batchRequestOptions: {
     trace: TraceRawDataItem;
-    query?: {};
+    params: {};
   };
+  config: IConfig;
   data: any;
 };
 
-export type TraceType = 'distributions' | 'images';
+export type TraceType =
+  | 'distributions'
+  | 'images'
+  | 'audios'
+  | 'texts'
+  | 'videos'
+  | 'plotly';
 
 /**
  * The context of info Raw data
@@ -49,7 +58,11 @@ export interface DistributionsData extends TraceRawDataItem {
  * Distributions api response
  * @TODO make compatible to images data
  */
-export interface ImagesData extends DistributionsData {}
+export interface ImagesData extends DistributionsData {
+  context: object;
+  index_range: [number, number];
+  values: any;
+}
 
 /**
  * Distributions api response value type
@@ -71,3 +84,20 @@ export interface TraceProcessedData extends DistributionValue {
 export type TraceProcessedValue = number[] | ArrayBuffer;
 
 export type TraceResponseData = DistributionsData | ImagesData;
+
+export type QueryData = {
+  sliders: Record<string, [number, number]>;
+  inputs: Record<string, number>;
+};
+
+type RangePanelItem = {
+  sliderName: string;
+  inputName: string;
+  sliderTitle: string;
+  inputTitle: string;
+  sliderTitleTooltip: string;
+  inputTitleTooltip: string;
+};
+export type IConfig = {
+  rangePanel: RangePanelItem[];
+};

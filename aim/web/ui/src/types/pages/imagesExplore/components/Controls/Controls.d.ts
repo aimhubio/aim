@@ -1,9 +1,6 @@
 import React from 'react';
 
-import {
-  ImageAlignmentEnum,
-  ImageRenderingEnum,
-} from 'config/enums/imageEnums';
+import { ImageRenderingEnum } from 'config/enums/imageEnums';
 
 import { IPanelTooltip } from 'services/models/metrics/metricsAppModel';
 import { IGroupingSelectOption } from 'services/models/imagesExplore/imagesExploreAppModel';
@@ -14,7 +11,7 @@ export interface IControlProps {
   selectOptions: IGroupingSelectOption[];
   tooltip: IPanelTooltip;
   onChangeTooltip: (tooltip: Partial<IPanelTooltip>) => void;
-  imageProperties: IImagesExploreAppConfig['images']['imageProperties'];
+  additionalProperties: IImagesExploreAppConfig['images']['additionalProperties'];
   onImageSizeChange: (newValue: number) => void;
   onImageRenderingChange: (type: ImageRenderingEnum) => void;
   onImageAlignmentChange: (

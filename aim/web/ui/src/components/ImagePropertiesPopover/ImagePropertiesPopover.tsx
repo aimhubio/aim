@@ -5,7 +5,7 @@ import { Divider } from '@material-ui/core';
 import { Slider, Text, ToggleButton } from 'components/kit';
 
 import {
-  // ImageAlignmentEnum,
+  // MediaItemAlignmentEnum,
   ImageRenderingEnum,
 } from 'config/enums/imageEnums';
 
@@ -22,20 +22,20 @@ const sizeProps = {
 //TODO Implement images alignment options
 
 // const alignmentOptions = [
-//   { label: 'Original', value: ImageAlignmentEnum.Original },
-//   { label: 'Align By Width', value: ImageAlignmentEnum.Width },
-//   { label: 'Align By Height', value: ImageAlignmentEnum.Height },
+//   { label: 'Original', value: MediaItemAlignmentEnum.Original },
+//   { label: 'Align By Width', value: MediaItemAlignmentEnum.Width },
+//   { label: 'Align By Height', value: MediaItemAlignmentEnum.Height },
 // ];
 
 function ImagePropertiesPopover({
-  imageProperties,
+  additionalProperties,
   onImageSizeChange,
   onImageRenderingChange,
 }: // onImageAlignmentChange,
 IImagePropertiesPopoverProps): React.FunctionComponentElement<React.ReactNode> {
   // const [open, setOpen] = React.useState<boolean>(false);
   const [sizeValue, setSizeValue] = React.useState<number>(
-    imageProperties.imageSize,
+    additionalProperties.mediaItemSize,
   );
 
   function onSizeValueChange(
@@ -48,7 +48,7 @@ IImagePropertiesPopoverProps): React.FunctionComponentElement<React.ReactNode> {
   return (
     <div className={'ImagePropertiesPopover'}>
       <div className='ImagePropertiesPopover__section'>
-        <div className='ImagePropertiesPopover__section__imageSize'>
+        <div className='ImagePropertiesPopover__section__mediaItemSize'>
           <Text
             tint={50}
             component='h4'
@@ -57,7 +57,7 @@ IImagePropertiesPopoverProps): React.FunctionComponentElement<React.ReactNode> {
             Image Size:
           </Text>
           <Text className='ImagePropertiesPopover__sizePercent'>
-            {imageProperties.imageSize}%
+            {additionalProperties.mediaItemSize}%
           </Text>
         </div>
         {/* <div>
@@ -82,7 +82,7 @@ IImagePropertiesPopoverProps): React.FunctionComponentElement<React.ReactNode> {
             Relative to window size:
           </Text>
           <Text className='ImageManipulationsPopover__sizePercent'>
-            {manipulations.imageSize}%
+            {manipulations.mediaItemSize}%
           </Text>
         </div> */}
         <div className='ImagePropertiesPopover__Slider'>
@@ -116,7 +116,7 @@ IImagePropertiesPopoverProps): React.FunctionComponentElement<React.ReactNode> {
           leftLabel='Pixelated'
           leftValue={ImageRenderingEnum.Pixelated}
           rightValue={ImageRenderingEnum.Smooth}
-          value={imageProperties.imageRendering}
+          value={additionalProperties.imageRendering}
         />
       </div>
     </div>

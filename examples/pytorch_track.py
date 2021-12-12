@@ -1,9 +1,11 @@
 from aim import Run
+from aim.pytorch import track_gradients_dists, track_params_dists
 
 import torch
 import torch.nn as nn
 import torchvision
 import torchvision.transforms as transforms
+
 
 # Initialize a new Run
 aim_run = Run()
@@ -14,7 +16,7 @@ device = torch.device('cpu')
 # Hyper parameters
 num_epochs = 5
 num_classes = 10
-batch_size = 50
+batch_size = 16
 learning_rate = 0.01
 
 # aim - Track hyper parameters
@@ -109,6 +111,10 @@ for epoch in range(num_epochs):
 
             # aim - Track metrics
             aim_run.track(acc, name='accuracy', epoch=epoch, context={'subset': 'train'})
+
+            # aim - Track weights and gradients distributions
+            track_params_dists(model, aim_run)
+            track_gradients_dists(model, aim_run)
 
             # TODO: Do actual validation
             if i % 300 == 0:

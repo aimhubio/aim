@@ -28,7 +28,6 @@ Aim package logs your training runs, enables a beautiful UI to compare them and 
 Use the [Aim SDK](./quick_start/SDK_basics.html) to [log as many metrics and params](./quick_start/SDK_basics.html#track-params-and-metrics-with-run) as you need for your training and evaluation runs.
 Aim users track 1000s of training runs and sometimes more than 100s of metrics per run with lots of steps.
 
-
 ### Query metadata on Web UI
 Aim enables a powerful pythonic query language to filter through metadata.
 It's like a python if statement over everything you have tracked. You can use this on all explorer screens.
@@ -67,8 +66,8 @@ Use the same pythonic if statement to query the data through the Aim SDK program
   - A simple python interface that allows to track AI metadata
     - metrics
     - hyperparameters
-    - images (coming soon...)
-    - distributions (coming soon...)
+    - images
+    - distributions
 - Aim UI:
   - A self-hosted web interface to deeply explore the tracked metadata
 
@@ -80,7 +79,6 @@ Use the same pythonic if statement to query the data through the Aim SDK program
 <img src="https://user-images.githubusercontent.com/13848158/97086626-8b3c6180-1635-11eb-9e90-f215b898e298.png" width="70" />
 <img src="https://user-images.githubusercontent.com/13848158/112145238-8cc58200-8bf3-11eb-8d22-bbdb8809f2aa.png" width="70" />
 <img src="https://user-images.githubusercontent.com/13848158/118172152-17c93880-b43d-11eb-9169-785e4b52d89c.png" width="70" />
-
 
 ## Comparisons to familiar tools
 
@@ -123,9 +121,7 @@ Hosted vs self-hosted
 - Weights and Biases is a hosted closed-source experiment tracker.
 - Aim is self-hosted free and open-source.
   - Remote self-hosted Aim is coming soon...
-
-
-
+  
 ## Community
 
 If you have questions please:

@@ -71,4 +71,20 @@ bst = xgb.train(param, xg_train, num_round, watchlist, callbacks=[aim_callback])
 # ...
 ```
 
+### Jupyter Notebook
 
+Run the following commands in the notebook to run the Aim UI:
+
+1. Load Aim extension for notebooks:
+
+```jupyter
+%load_ext aim
+```
+
+2. Run `%aim up` to open Aim UI in the notebook:
+
+```jupyter
+%aim up
+```
+
+See [integration guide with Jupyter Notebook](../guides/integrations/basic_aim_jupyter_notebook.html) for more details.
