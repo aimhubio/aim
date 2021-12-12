@@ -4099,8 +4099,8 @@ function createAppModel(appConfig: IAppInitialConfig) {
                   groupKey: run.key,
                   color: color ?? run.color,
                   data: {
-                    yValues: [values[0] || '-'],
-                    xValues: [values[1] || '-'],
+                    yValues: [values[0] ?? '-'],
+                    xValues: [values[1] ?? '-'],
                   },
                 });
               });

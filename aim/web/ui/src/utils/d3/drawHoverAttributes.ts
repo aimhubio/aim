@@ -604,16 +604,22 @@ function drawHoverAttributes(args: IDrawHoverAttributesArgs): void {
 
       const nearestCircles = getNearestCircles(mouseX);
       const closestCircle = getClosestCircle(mouseX, mouseY, nearestCircles);
-      const activePoint = drawAttributes(closestCircle, nearestCircles, force);
-      if (focusedStateActive) {
-        drawFocusedCircle(activePoint.key);
-      }
+      if (closestCircle) {
+        const activePoint = drawAttributes(
+          closestCircle,
+          nearestCircles,
+          force,
+        );
+        if (focusedStateActive) {
+          drawFocusedCircle(activePoint.key);
+        }
 
-      safeSyncHoverState({
-        activePoint,
-        focusedStateActive,
-        dataSelector: attributesRef.current.dataSelector,
-      });
+        safeSyncHoverState({
+          activePoint,
+          focusedStateActive,
+          dataSelector: attributesRef.current.dataSelector,
+        });
+      }
     } else {
       const xValue = attributesRef.current.xStep ?? xScale.domain()[1];
       const mouseX = attributesRef.current.xScale(xValue);
