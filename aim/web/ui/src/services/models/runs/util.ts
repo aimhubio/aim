@@ -9,6 +9,7 @@ import {
 } from 'types/services/models/imagesExplore/imagesExploreAppModel';
 
 import contextToString from 'utils/contextToString';
+import alphabeticalSortComparator from 'utils/alphabeticalSortComparator';
 import { encode } from 'utils/encoder/encoder';
 import getObjectPaths from 'utils/getObjectPaths';
 
@@ -17,10 +18,10 @@ import imagesExploreAppModel from '../imagesExplore/imagesExploreAppModel';
 import {
   DistributionsData,
   DistributionValue,
-  ImagesData,
   TraceProcessedData,
   TraceRawDataItem,
   TraceType,
+  ImagesData,
 } from './types';
 
 /**
@@ -47,6 +48,16 @@ export function getMenuItemFromRawInfo(
 
   const data: IMenuItem[] = [];
 
+  const sortOrder = alphabeticalSortComparator({
+    orderBy: 'name',
+    additionalCompare: (name1: string, name2: string) => {
+      if (name2 === 'EMPTY CONTEXT') {
+        return 0;
+      }
+
+      return null;
+    },
+  });
   // doesn't destructuring item, because we are not sure it has context
   info.forEach((item: TraceRawDataItem) => {
     const id: string = bs58check.encode(Buffer.from(`${item.name}`));
@@ -78,7 +89,7 @@ export function getMenuItemFromRawInfo(
       } else {
         menuItem.children = [
           {
-            name: 'no context',
+            name: 'empty context',
             id: bs58check.encode(Buffer.from(JSON.stringify({}))),
           },
         ];
@@ -94,7 +105,11 @@ export function getMenuItemFromRawInfo(
         if (it.id === id) {
           const itemChildren = data[index].children || [];
           const currentChildren = menuItem.children || [];
-          data[index].children = [...itemChildren, ...currentChildren];
+          // spreading order will let to order "empty context" to the first of all
+          // cause if there empty context it will be in currentChildren
+          data[index].children = [...currentChildren, ...itemChildren].sort(
+            sortOrder,
+          );
 
           // clear empty array
           // @ts-ignore because we already set it minimum empty array
@@ -108,6 +123,8 @@ export function getMenuItemFromRawInfo(
       checkedItemIds.push(id);
     }
   });
+
+  data.sort(sortOrder);
 
   return {
     availableIds: checkedItemIds,
