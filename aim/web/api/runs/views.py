@@ -1,5 +1,7 @@
 from fastapi import Depends, HTTPException, Query
 from fastapi.responses import JSONResponse, StreamingResponse
+
+from aim.web.api.runs.audio_utils import requested_audio_traces_streamer
 from aim.web.api.utils import APIRouter  # wrapper for fastapi.APIRouter
 from typing import Optional, Tuple
 
@@ -269,6 +271,32 @@ async def run_images_batch_api(run_id: str,
         raise HTTPException(status_code=400, detail='Invalid range format')
 
     traces_streamer = requested_image_traces_streamer(run, requested_traces,
+                                                      record_range, index_range,
+                                                      record_density, index_density)
+
+    return StreamingResponse(traces_streamer)
+
+
+@runs_router.post('/{run_id}/audio/get-batch/', response_model=RunImagesBatchApiOut)
+async def run_images_batch_api(run_id: str,
+                               requested_traces: RunTracesBatchApiIn,
+                               record_range: Optional[str] = '', record_density: Optional[int] = 50,
+                               index_range: Optional[str] = '', index_density: Optional[int] = 5):
+    # Get project
+    project = Project()
+    if not project.exists():
+        raise HTTPException(status_code=404)
+    run = project.repo.get_run(run_id)
+    if not run:
+        raise HTTPException(status_code=404)
+
+    try:
+        record_range = str_to_range(record_range)
+        index_range = str_to_range(index_range)
+    except ValueError:
+        raise HTTPException(status_code=400, detail='Invalid range format')
+
+    traces_streamer = requested_audio_traces_streamer(run, requested_traces,
                                                       record_range, index_range,
                                                       record_density, index_density)
 

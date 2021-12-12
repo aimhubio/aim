@@ -586,6 +586,22 @@ class Run(StructuredRunMixin):
         """
         return self._get_sequence('figures', name, context)
 
+    def get_audio_sequence(
+            self,
+            name: str,
+            context: Context
+    ) -> Optional['Audios']:
+        """Retrieve audios sequence by it's name and context.
+
+        Args:
+             name (str): Tracked audios sequence name.
+             context (:obj:`Context`): Tracking context.
+
+        Returns:
+            :obj:`Audios` object if exists, `None` otherwise.
+        """
+        return self._get_sequence('audios', name, context)
+
     def get_distribution_sequence(
             self,
             name: str,

@@ -16,4 +16,5 @@ from aim.sdk.objects import Distribution
 from aim.sdk.metric import Metric
 from aim.sdk.image_sequence import Images
 from aim.sdk.figure_sequence import Figures
+from aim.sdk.audio_sequence import Audios
 from aim.sdk.distribution_sequence import Distributions
