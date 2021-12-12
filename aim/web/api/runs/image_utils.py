@@ -175,7 +175,9 @@ def requested_image_traces_streamer(run: Run,
         for step, val in steps_vals:
             steps.append(step)
             if isinstance(val, list):
-                values.append(img_collection_record_to_encodable(sliced_custom_object_record(val, idx_slice), trace, step))
+                values.append(
+                    img_collection_record_to_encodable(sliced_custom_object_record(val, idx_slice), trace, step)
+                )
             elif idx_slice.start == 0:
                 values.append(img_record_to_encodable(val, trace, step))
             else:

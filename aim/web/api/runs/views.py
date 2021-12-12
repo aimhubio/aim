@@ -350,6 +350,7 @@ async def run_texts_batch_api(run_id: str,
 
     return StreamingResponse(traces_streamer)
 
+
 @runs_router.put('/{run_id}/', response_model=StructuredRunUpdateOut)
 async def update_run_properties_api(run_id: str, run_in: StructuredRunUpdateIn, factory=Depends(object_factory)):
     with factory:
