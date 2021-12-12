@@ -2,6 +2,7 @@
 
 ## Unreleased
 
+- Add Scatter Explorer app to visualize correlations between metric last value data with hyperparameter (KaroMourad)
 - Add ability to query distributions by step range and density (VkoHov, rubenaprikyan)
 - Implement images visualization tab in run detail page (VkoHov, KaroMourad)
 
