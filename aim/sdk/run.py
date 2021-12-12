@@ -31,9 +31,10 @@ from typing import TYPE_CHECKING
 if TYPE_CHECKING:
     from pandas import DataFrame
 
-    from aim.sdk.metric import Metric
-    from aim.sdk.image_sequence import Images
-    from aim.sdk.distribution_sequence import Distributions
+    from aim.sdk.sequences.metric import Metric
+    from aim.sdk.sequences.image_sequence import Images
+    from aim.sdk.sequences.distribution_sequence import Distributions
+    from aim.sdk.sequences.text_sequence import Texts
     from aim.sdk.sequence_collection import SequenceCollection
     from aim.sdk.repo import Repo
 
@@ -584,6 +585,22 @@ class Run(StructuredRunMixin):
             :obj:`Distributions` object if exists, `None` otherwise.
         """
         return self._get_sequence('distributions', name, context)
+
+    def get_text_sequence(
+            self,
+            name: str,
+            context: Context
+    ) -> Optional['Texts']:
+        """Retrieve texts sequence by it's name and context.
+
+        Args:
+             name (str): Tracked text sequence name.
+             context (:obj:`Context`): Tracking context.
+
+        Returns:
+            :obj:`Texts` object if exists, `None` otherwise.
+        """
+        return self._get_sequence('texts', name, context)
 
     def _get_sequence_dtype(
             self,

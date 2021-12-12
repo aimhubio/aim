@@ -371,15 +371,15 @@ class TestRunInfoApi(ApiTestBase):
         self.assertEqual('single_images', response_data['traces']['images'][0]['name'])
 
     @parameterized.expand([
-        ({'sequence': ('metric', 'images', 'distributions')},),  # explicit specification
-        (None,)                                                  # default
+        ({'sequence': ('metric', 'images', 'distributions', 'texts')},),  # explicit specification
+        (None,)                                                           # default
     ])
     def test_run_info_get_all_sequences_api(self, qparams):
         client = self.client
         response = client.get(f'api/runs/{self.run1_hash}/info', params=qparams)
         self.assertEqual(200, response.status_code)
         response_data = response.json()
-        self.assertEqual(3, len(response_data['traces']))
+        self.assertEqual(4, len(response_data['traces']))
         self.assertIn('images', response_data['traces'])
         self.assertIn('metric', response_data['traces'])
         self.assertIn('distributions', response_data['traces'])

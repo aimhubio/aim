@@ -33,12 +33,22 @@ class DistributionsBaseView(TraceBaseView):
         data: EncodedNumpyArray
         bin_count: int
         range: Tuple[Union[int, float], Union[int, float]]
-    trace_range: Tuple[int, int]
+    record_range: Tuple[int, int]
     values: List[Distribution]
+
+
+class TextsBaseView(TraceBaseView):
+    class Text(BaseModel):
+        data: str
+        idx: int
+    record_range: Tuple[int, int]
+    index_range: Tuple[int, int]
+    values: List[Text]
 
 
 RunMetricsBatchApiOut = List[MetricsBaseView]
 RunDistributionsBatchApiOut = List[DistributionsBaseView]
+RunTextsBatchApiOut = List[TextsBaseView]
 
 
 class TraceAlignedView(TraceBase):
@@ -174,6 +184,8 @@ class ImageInfo(BaseModel):
 
 
 class ImagesBaseView(TraceBaseView):
+    record_range: Tuple[int, int]
+    index_range: Tuple[int, int]
     values: List[List[ImageInfo]]
 
 
