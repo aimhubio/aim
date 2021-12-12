@@ -33,9 +33,9 @@ function SelectForm({
     x: false,
     y: false,
   });
-  const paramsSuggestions = useParamsSuggestions();
   const projectsData = useModel<IProjectsModelState>(projectsModel);
   const searchRef = React.useRef<any>(null);
+  const paramsSuggestions = useParamsSuggestions();
 
   React.useEffect(() => {
     const paramsMetricsRequestRef = projectsModel.getProjectParams(['metric']);

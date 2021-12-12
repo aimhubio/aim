@@ -112,25 +112,25 @@ function drawHoverAttributes(args: IDrawHoverAttributesArgs): void {
 
     const nearestCircles: INearestCircle[] = [];
     for (const line of data) {
-      let index;
-      if (axesScaleType.xAxis === ScaleEnum.Point) {
-        index = 0;
-      } else {
+      let index = 0;
+      if (axesScaleType.xAxis !== ScaleEnum.Point) {
         index = d3.bisectCenter(line.data.xValues, xValue as number);
       }
-      const closestXPos = attributesRef.current.xScale(
-        line.data.xValues[index],
-      );
-      const closestYPos = attributesRef.current.yScale(
-        line.data.yValues[index],
-      );
-      const circle = {
-        key: line.key,
-        color: line.color,
-        x: closestXPos,
-        y: closestYPos,
-      };
-      nearestCircles.push(circle);
+      const xValueByIndex = line.data.xValues[index];
+      const yValueByIndex = line.data.yValues[index];
+      if (xValueByIndex !== '-' && yValueByIndex !== '-') {
+        const closestXPos = attributesRef.current.xScale(xValueByIndex);
+        const closestYPos = attributesRef.current.yScale(yValueByIndex);
+        const circle = {
+          key: line.key,
+          color: line.color,
+          x: closestXPos,
+          y: closestYPos,
+        };
+        nearestCircles.push(circle);
+      } else {
+        safeSyncHoverState({ activePoint: null });
+      }
     }
 
     return nearestCircles;

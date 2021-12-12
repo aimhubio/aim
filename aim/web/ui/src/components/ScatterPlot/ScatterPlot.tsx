@@ -13,6 +13,8 @@ import {
   drawHoverAttributes,
 } from 'utils/d3';
 
+import { Text } from '../kit';
+
 import { IScatterPlotProps } from './types.d';
 
 import './styles.scss';
@@ -63,10 +65,9 @@ const ScatterPlot = React.forwardRef(function ScatterPlot(
   const attributesRef = React.useRef<IAttributesRef>({});
   const humanizerConfigRef = React.useRef({});
   const rafIDRef = React.useRef<number>();
+  const [yDimension, xDimension] = Object.values(dimensions);
 
   function draw() {
-    const [yDimension, xDimension] = Object.values(dimensions);
-
     drawArea({
       index,
       visBoxRef,
@@ -83,6 +84,7 @@ const ScatterPlot = React.forwardRef(function ScatterPlot(
     });
 
     const { width, height, margin } = visBoxRef.current;
+
     const axesScaleType = {
       xAxis: xDimension.scaleType,
       yAxis: yDimension.scaleType,
@@ -93,7 +95,6 @@ const ScatterPlot = React.forwardRef(function ScatterPlot(
       rangeData: [0, width - margin.left - margin.right],
       scaleType: axesScaleType.xAxis,
     });
-
     const yScale = getAxisScale({
       domainData: yDimension.domainData,
       rangeData: [height - margin.top - margin.bottom, 0],
@@ -130,7 +131,7 @@ const ScatterPlot = React.forwardRef(function ScatterPlot(
 
     drawHoverAttributes({
       index,
-      data: data as any,
+      data,
       axesScaleType,
       syncHoverState,
       visAreaRef,
@@ -150,7 +151,24 @@ const ScatterPlot = React.forwardRef(function ScatterPlot(
 
   function renderChart() {
     clearArea({ visAreaRef });
-    draw();
+    if (yDimension.domainData[0] === '-' || xDimension.domainData[0] === '-') {
+      drawArea({
+        index,
+        visBoxRef,
+        plotBoxRef,
+        parentRef,
+        visAreaRef,
+        svgNodeRef,
+        bgRectNodeRef,
+        plotNodeRef,
+        axesNodeRef,
+        linesNodeRef,
+        attributesNodeRef,
+        chartTitle,
+      });
+    } else {
+      draw();
+    }
   }
 
   const resizeObserverCallback: ResizeObserverCallback = React.useCallback(
@@ -207,6 +225,9 @@ const ScatterPlot = React.forwardRef(function ScatterPlot(
   return (
     <div ref={parentRef} className='ScatterPlot'>
       <div ref={visAreaRef} />
+      {yDimension.domainData[0] === '-' || xDimension.domainData[0] === '-' ? (
+        <Text className='ScatterPlot__emptyData'> No Data</Text>
+      ) : null}
     </div>
   );
 });

@@ -25,9 +25,9 @@ export interface ILine {
     yValues: number[];
   };
   color: string;
-  selectors: string[];
-  groupKey?: string;
   dasharray?: string;
+  selectors?: string[];
+  groupKey?: string;
 }
 
 export interface ILineChartProps {

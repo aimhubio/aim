@@ -2,6 +2,8 @@ import React from 'react';
 
 import { IAttributesRef } from 'components/LineChart/LineChart';
 import { HighlightEnum } from 'components/HighlightModesPopover/HighlightModesPopover';
+import { IPoint } from 'components/ScatterPlot';
+import { ILine } from 'components/LineChart/LineChart';
 
 import {
   IAggregationConfig,
@@ -11,11 +13,10 @@ import {
 import { ScaleEnum } from 'utils/d3';
 
 import { IAxisScale } from './getAxisScale';
-import { IProcessedData } from './processData';
 
 export interface IDrawHoverAttributesArgs {
   index: number;
-  data: IProcessedData[];
+  data: ILine[] | IPoint[];
   axesScaleType: { xAxis: ScaleEnum; yAxis: ScaleEnum };
   visAreaRef: React.MutableRefObject<>;
   attributesNodeRef: React.MutableRefObject<>;

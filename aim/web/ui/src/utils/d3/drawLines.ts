@@ -52,7 +52,7 @@ function drawLines(args: IDrawLinesArgs): void {
       .attr(
         'data-selector',
         (line: ILine) =>
-          `Line-Sel-${highlightMode}-${line.selectors[highlightMode]}`,
+          `Line-Sel-${highlightMode}-${line.selectors?.[highlightMode]}`,
       )
       .style('fill', 'none')
       .style('stroke', (line: ILine) => line.color)

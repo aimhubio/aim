@@ -1440,10 +1440,6 @@ function createAppModel(appConfig: IAppInitialConfig) {
         )
         .flat();
 
-      console.log(
-        'getDataAsLines',
-        Object.values(_.groupBy(lines, 'chartIndex')),
-      );
       return Object.values(_.groupBy(lines, 'chartIndex'));
     }
 
@@ -4051,7 +4047,7 @@ function createAppModel(appConfig: IAppInitialConfig) {
                 const values: any = [];
                 configData.select.options.forEach(
                   ({ type, label, value }: ISelectOption, i: number) => {
-                    if (!dimension[i] && type === 'params') {
+                    if (!dimension[i]) {
                       dimension[i] = {
                         values: [],
                         scaleType: ScaleEnum.Linear,
@@ -4063,14 +4059,14 @@ function createAppModel(appConfig: IAppInitialConfig) {
                       run.run.traces.metric.forEach((trace: IParamTrace) => {
                         if (
                           trace.name === value?.option_name &&
-                          _.isEqual(trace.context, value?.context) &&
-                          (trace.last_value.last || trace.last_value.last === 0)
+                          _.isEqual(trace.context, value?.context)
                         ) {
                           values[i] = trace.last_value.last;
                           if (dimension[i]) {
                             dimension[i].values.push(trace.last_value.last);
                             if (typeof trace.last_value.last === 'string') {
                               dimension[i].scaleType = ScaleEnum.Point;
+                              dimension[i].dimensionType = 'metric';
                             }
                           } else {
                             dimension[i] = {
@@ -4084,14 +4080,6 @@ function createAppModel(appConfig: IAppInitialConfig) {
                           }
                         }
                       });
-                      if (!dimension[i]) {
-                        dimension[i] = {
-                          values: [undefined],
-                          scaleType: ScaleEnum.Linear,
-                          displayName: label,
-                          dimensionType: 'metric',
-                        };
-                      }
                     } else {
                       const paramValue = _.get(run.run.params, label);
                       values[i] = formatValue(paramValue, null);
@@ -4111,19 +4099,17 @@ function createAppModel(appConfig: IAppInitialConfig) {
                   groupKey: run.key,
                   color: color ?? run.color,
                   data: {
-                    yValues: [values[0]],
-                    xValues: [values[1]],
+                    yValues: [values[0] || '-'],
+                    xValues: [values[1] || '-'],
                   },
                 });
               });
           },
         );
         const flattedData = chartData.flat();
-
         const groupedByChartIndex = Object.values(
           _.groupBy(flattedData, 'chartIndex'),
         );
-        console.log(groupedByChartIndex);
 
         return dimensionsByChartIndex
           .map((chartDimensions, i: number) => {
@@ -4133,7 +4119,7 @@ function createAppModel(appConfig: IAppInitialConfig) {
                 dimensions.push({
                   scaleType: dimension.scaleType,
                   domainData: _.isEmpty(dimension.values)
-                    ? []
+                    ? ['-', '-']
                     : [
                         Math.min(...(dimension.values as number[])),
                         Math.max(...(dimension.values as number[])),
