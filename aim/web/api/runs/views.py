@@ -326,10 +326,10 @@ async def run_distributions_batch_api(run_id: str,
 
 
 @runs_router.post('/{run_id}/texts/get-batch/', response_model=RunTextsBatchApiOut)
-async def run_images_batch_api(run_id: str,
-                               requested_traces: RunTracesBatchApiIn,
-                               record_range: Optional[str] = '', record_density: Optional[int] = 50,
-                               index_range: Optional[str] = '', index_density: Optional[int] = 5):
+async def run_texts_batch_api(run_id: str,
+                              requested_traces: RunTracesBatchApiIn,
+                              record_range: Optional[str] = '', record_density: Optional[int] = 50,
+                              index_range: Optional[str] = '', index_density: Optional[int] = 5):
     # Get project
     project = Project()
     if not project.exists():
