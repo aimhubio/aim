@@ -185,7 +185,7 @@ async def run_audios_search_api(q: Optional[str] = '',
             'offset': se.offset
         })
 
-    traces = project.repo.query_images(query=query)
+    traces = project.repo.query_audios(query=query)
 
     try:
         record_range = str_to_range(record_range)
