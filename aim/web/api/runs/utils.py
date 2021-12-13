@@ -301,7 +301,7 @@ def requested_text_traces_streamer(run: Run,
     for requested_trace in requested_traces:
         trace_name = requested_trace.name
         context = Context(requested_trace.context)
-        trace = run.get_image_sequence(name=trace_name, context=context)
+        trace = run.get_text_sequence(name=trace_name, context=context)
         if not trace:
             continue
 
