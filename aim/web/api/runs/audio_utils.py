@@ -23,16 +23,16 @@ def sliced_audio_record(values: Iterable[Audio], _slice: slice) -> Iterable[Audi
 
 def audio_record_to_encodable(obj, trace, step, index=0):
     resource_path = generate_resource_path(trace.values.tree.container, (step, 'data'))
-    return {
+    return [{
         'index': index,
         'format': obj.storage.get('format'),
         'size': obj.storage.get('size'),
         'blob_uri': URIService.generate_uri(trace.run.repo, trace.run.hash, 'seqs', resource_path)
-    }
+    }]
 
 
 def audio_collection_record_to_encodable(records: Iterable[Audio], trace, step):
-    return [audio_record_to_encodable(obj, trace, step, idx) for idx, obj in records]
+    return [audio_record_to_encodable(obj, trace, step, idx)[0] for idx, obj in records]
 
 
 def get_record_and_index_range(traces: SequenceCollection, trace_cache: dict) -> Tuple[IndexRange, IndexRange]:
@@ -65,7 +65,7 @@ def get_trace_info(trace: Sequence, rec_slice: slice, rec_density: int, idx_slic
         if isinstance(val, list):
             values.append(audio_collection_record_to_encodable(sliced_audio_record(val, idx_slice), trace, step))
         elif idx_slice.start == 0:
-            values.append([audio_record_to_encodable(val, trace, step)])
+            values.append(audio_record_to_encodable(val, trace, step))
         else:
             values.append([])
 
