@@ -25,8 +25,8 @@ def audio_record_to_encodable(obj, trace, step, index=0):
     resource_path = generate_resource_path(trace.values.tree.container, (step, 'data'))
     return {
         'index': index,
-        'format': obj['format'],
-        'size': obj['size'],
+        'format': obj.storage.get('format'),
+        'size': obj.storage.get('size'),
         'blob_uri': URIService.generate_uri(trace.run.repo, trace.run.hash, 'seqs', resource_path)
     }
 
