@@ -346,7 +346,7 @@ class Repo:
             :obj:`MetricCollection`: Iterable for metrics matching query expression.
         """
         self._prepare_runs_cache()
-        from aim.sdk.metric import Metric
+        from aim.sdk.sequences.metric import Metric
         return QuerySequenceCollection(repo=self, seq_cls=Metric, query=query)
 
     def query_images(self, query: str = '') -> QuerySequenceCollection:
@@ -358,7 +358,7 @@ class Repo:
             :obj:`SequenceCollection`: Iterable for image sequences matching query expression.
         """
         self._prepare_runs_cache()
-        from aim.sdk.image_sequence import Images
+        from aim.sdk.sequences.image_sequence import Images
         return QuerySequenceCollection(repo=self, seq_cls=Images, query=query)
 
     def query_figure_objects(self, query: str = '') -> QuerySequenceCollection:
@@ -370,7 +370,7 @@ class Repo:
             :obj:`SequenceCollection`: Iterable for Figure sequences matching query expression.
         """
         self._prepare_runs_cache()
-        from aim.sdk.figure_sequence import Figures
+        from aim.sdk.sequences.figure_sequence import Figures
         return QuerySequenceCollection(repo=self, seq_cls=Figures, query=query)
 
     def query_distributions(self, query: str = '') -> QuerySequenceCollection:
@@ -382,8 +382,20 @@ class Repo:
             :obj:`SequenceCollection`: Iterable for distribution sequences matching query expression.
         """
         self._prepare_runs_cache()
-        from aim.sdk.distribution_sequence import Distributions
+        from aim.sdk.sequences.distribution_sequence import Distributions
         return QuerySequenceCollection(repo=self, seq_cls=Distributions, query=query)
+
+    def query_texts(self, query: str = '') -> QuerySequenceCollection:
+        """Get text collections satisfying query expression.
+
+        Args:
+             query (str): query expression.
+        Returns:
+            :obj:`SequenceCollection`: Iterable for text sequences matching query expression.
+        """
+        self._prepare_runs_cache()
+        from aim.sdk.sequences.text_sequence import Texts
+        return QuerySequenceCollection(repo=self, seq_cls=Texts, query=query)
 
     @property
     def run_props_cache_hint(self):
