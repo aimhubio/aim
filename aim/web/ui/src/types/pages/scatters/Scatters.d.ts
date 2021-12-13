@@ -82,7 +82,7 @@ export interface IScattersProps extends Partial<RouteChildrenProps> {
   onRowHeightChange: (height: RowHeightSize) => void;
   onSortReset: () => void;
   onSortChange?: (field: string, value?: 'asc' | 'desc' | 'none') => void;
-  onMetricVisibilityChange: (metricKeys: string[]) => void;
+  onParamVisibilityChange: (metricKeys: string[]) => void;
   onColumnsOrderChange: (order: any) => void;
   onColumnsVisibilityChange: (hiddenColumns: string[]) => void;
   onTableDiffShow: () => void;

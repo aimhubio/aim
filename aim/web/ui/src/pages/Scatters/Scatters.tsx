@@ -166,7 +166,7 @@ function Scatters(
                   onColumnsVisibilityChange={props.onColumnsVisibilityChange}
                   onTableDiffShow={props.onTableDiffShow}
                   onRowHeightChange={props.onRowHeightChange}
-                  onRowsChange={props.onMetricVisibilityChange}
+                  onRowsChange={props.onParamVisibilityChange}
                   onRowHover={props.onTableRowHover}
                   onRowClick={props.onTableRowClick}
                   onTableResizeModeChange={props.onTableResizeModeChange}

@@ -5035,6 +5035,14 @@ function createAppModel(appConfig: IAppInitialConfig) {
               updateModelData,
             });
           },
+          onParamVisibilityChange(metricsKeys: string[]): void {
+            onParamVisibilityChange({
+              metricsKeys,
+              model,
+              appName,
+              updateModelData,
+            });
+          },
         });
       }
 

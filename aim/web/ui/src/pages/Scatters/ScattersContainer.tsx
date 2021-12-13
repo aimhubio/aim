@@ -171,7 +171,7 @@ function ScattersContainer(): React.FunctionComponentElement<React.ReactNode> {
       onRowHeightChange={scattersAppModel.onRowHeightChange}
       onSortChange={scattersAppModel.onSortChange}
       onSortReset={scattersAppModel.onSortReset}
-      onMetricVisibilityChange={scattersAppModel.onMetricVisibilityChange}
+      onParamVisibilityChange={scattersAppModel.onParamVisibilityChange}
       onColumnsOrderChange={scattersAppModel.onColumnsOrderChange}
       onColumnsVisibilityChange={scattersAppModel.onColumnsVisibilityChange}
       onTableDiffShow={scattersAppModel.onTableDiffShow}
