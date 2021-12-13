@@ -165,7 +165,7 @@ async def run_images_search_api(q: Optional[str] = '',
 
 @runs_router.get('/search/audios/', response_model=RunAudiosSearchApiOut,
                  responses={400: {'model': QuerySyntaxErrorOut}})
-async def run_images_search_api(q: Optional[str] = '',
+async def run_audios_search_api(q: Optional[str] = '',
                                 record_range: Optional[str] = '', record_density: Optional[int] = 50,
                                 index_range: Optional[str] = '', index_density: Optional[int] = 5,
                                 calc_ranges: Optional[bool] = False):
@@ -242,7 +242,7 @@ def image_blobs_batch_api(uri_batch: URIBatchIn):
 
 
 @runs_router.post('/audios/get-batch/')
-def image_blobs_batch_api(uri_batch: URIBatchIn):
+def audio_blobs_batch_api(uri_batch: URIBatchIn):
     # Get project
     project = Project()
     if not project.exists():
