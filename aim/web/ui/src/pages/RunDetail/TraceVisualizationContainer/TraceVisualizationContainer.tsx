@@ -10,6 +10,7 @@ import runTracesModel from 'services/models/runs/runTracesModel';
 import DistributionsVisualizer from '../DistributionsVisualizer';
 import ImagesVisualizer from '../ImagesVisualizer/ImagesVisualizer';
 import { ITraceVisualizationContainerProps } from '../types';
+import AudiosVisualizer from '../AudiosVisualizer';
 
 import RangePanel from './RangePanel';
 import widthEmptyTraceCheck from './widthEmptyTraceCheck';
@@ -19,7 +20,7 @@ import './TraceVisualizationContainer.scss';
 const traceTypeVisualization = {
   images: ImagesVisualizer,
   distributions: DistributionsVisualizer,
-  audios: () => null,
+  audios: AudiosVisualizer,
   videos: () => null,
   texts: () => null,
   plotly: () => null,

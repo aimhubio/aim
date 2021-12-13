@@ -1,4 +1,8 @@
-import { processDistributionsData, processImagesData } from './util';
+import {
+  processAudiosData,
+  processDistributionsData,
+  processImagesData,
+} from './util';
 
 type InputItem = {
   title: string;
@@ -38,6 +42,33 @@ const settings: Record<string, SettingItem> = {
   },
   images: {
     dataProcessor: processImagesData,
+    sliders: {
+      record_range: {
+        defaultValue: [0, 50],
+        tooltip: 'Training step. Increments every time track() is called',
+        title: 'Steps',
+      },
+      index_range: {
+        defaultValue: [0, 50],
+        tooltip: 'Index in the list of images passed to track() call',
+        title: 'Indices',
+      },
+    },
+    inputs: {
+      record_density: {
+        defaultValue: 50,
+        title: 'Steps count',
+        tooltip: 'Number of steps to display',
+      },
+      index_density: {
+        defaultValue: 5,
+        title: 'Indices count',
+        tooltip: 'Number of images per step',
+      },
+    },
+  },
+  audios: {
+    dataProcessor: processAudiosData,
     sliders: {
       record_range: {
         defaultValue: [0, 50],

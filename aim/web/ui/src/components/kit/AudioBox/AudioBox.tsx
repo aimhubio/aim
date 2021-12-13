@@ -134,7 +134,9 @@ function AudioBoxVolume({ audioRef }: any) {
   );
 }
 
-function AudioBox({}: IAudioBoxProps): React.FunctionComponentElement<React.ReactNode> {
+function AudioBox({
+  src,
+}: IAudioBoxProps): React.FunctionComponentElement<React.ReactNode> {
   const [isPlaying, setIsPlaying] = React.useState<boolean>(false);
   const [canPlay, setCanPlay] = React.useState(false);
   const audioRef = React.useRef(

@@ -38,7 +38,7 @@ function getDefaultQueryAndConfigData(traceType: TraceType) {
     rangePanel: [],
   };
 
-  const inputKeys = Object.keys(traceSettings.inputs);
+  const inputKeys = Object.keys(traceSettings?.inputs);
 
   Object.keys(traceSettings.sliders).forEach((key, index) => {
     const item = traceSettings.sliders[key];

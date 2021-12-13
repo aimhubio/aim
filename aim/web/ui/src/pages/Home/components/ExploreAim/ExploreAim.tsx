@@ -4,7 +4,6 @@ import githubIcon from 'assets/icons/github.svg';
 import slackIcon from 'assets/icons/slack.svg';
 
 import { Icon, Text } from 'components/kit';
-import AudioBox from 'components/kit/AudioBox';
 
 import { trackEvent } from 'services/analytics';
 

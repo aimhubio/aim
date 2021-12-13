@@ -264,7 +264,11 @@ function RunDetail(): React.FunctionComponentElement<React.ReactNode> {
           index={5}
           className='RunDetail__runDetailContainer__tabPanel'
         >
-          <AudiosVisualizer />
+          <TraceVisualizationContainer
+            runHash={runHash}
+            traceType='audios'
+            traceInfo={runData?.runTraces}
+          />
         </TabPanel>
         <TabPanel
           value={value}

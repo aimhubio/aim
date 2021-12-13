@@ -12,7 +12,7 @@ import {
 import useResizeObserver from 'hooks/window/useResizeObserver';
 
 import blobsURIModel from 'services/models/media/blobsURIModel';
-import imagesExploreService from 'services/api/imagesExplore/imagesExploreService';
+import audiosExploreService from 'services/api/audiosExplore/audiosExplore';
 
 import {
   adjustable_reader,
@@ -52,36 +52,36 @@ function AudiosVisualizer(
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [imagesWrapperRef?.current?.offsetHeight]);
 
-  //   function getAudiosBlobsData(uris: string[]) {
-  //     const request = imagesExploreService.getAudiosByURIs(uris);
-  //     return {
-  //       abort: request.abort,
-  //       call: () => {
-  //         return request
-  //           .call()
-  //           .then(async (stream) => {
-  //             let gen = adjustable_reader(stream);
-  //             let buffer_pairs = decode_buffer_pairs(gen);
-  //             let decodedPairs = decodePathsVals(buffer_pairs);
-  //             let objects = iterFoldTree(decodedPairs, 1);
+  function getAudiosBlobsData(uris: string[]) {
+    const request = audiosExploreService.getAudiosByURIs(uris);
+    return {
+      abort: request.abort,
+      call: () => {
+        return request
+          .call()
+          .then(async (stream) => {
+            let gen = adjustable_reader(stream);
+            let buffer_pairs = decode_buffer_pairs(gen);
+            let decodedPairs = decodePathsVals(buffer_pairs);
+            let objects = iterFoldTree(decodedPairs, 1);
 
-  //             for await (let [keys, val] of objects) {
-  //               const URI = keys[0];
-  //               blobsURIModel.emit(URI as string, {
-  //                 [URI]: arrayBufferToBase64(val as ArrayBuffer) as string,
-  //               });
-  //             }
-  //           })
-  //           .catch((ex) => {
-  //             if (ex.name === 'AbortError') {
-  //               // Abort Error
-  //             } else {
-  //               console.log('Unhandled error: ');
-  //             }
-  //           });
-  //       },
-  //     };
-  //   }
+            for await (let [keys, val] of objects) {
+              const URI = keys[0];
+              blobsURIModel.emit(URI as string, {
+                [URI]: arrayBufferToBase64(val as ArrayBuffer) as string,
+              });
+            }
+          })
+          .catch((ex) => {
+            if (ex.name === 'AbortError') {
+              // Abort Error
+            } else {
+              console.log('Unhandled error: ');
+            }
+          });
+      },
+    };
+  }
 
   const onActivePointChange = React.useCallback(
     (activePoint: any, focusedStateActive: boolean = false) => {
@@ -100,12 +100,11 @@ function AudiosVisualizer(
 
   return (
     <div className='AudiosVisualizer'>
-      <AudioBox />
       <MediaPanel
         mediaType={MediaTypeEnum.AUDIO}
-        getBlobsData={() => null}
-        data={[]}
-        orderedMap={[]}
+        getBlobsData={getAudiosBlobsData}
+        data={data?.audiosSetData}
+        orderedMap={data?.orderedMap}
         isLoading={!data || isLoading}
         panelResizing={false}
         tableHeight={'0'}
@@ -119,4 +118,6 @@ function AudiosVisualizer(
   );
 }
 
-export default AudiosVisualizer;
+AudiosVisualizer.displayName = 'AudiosVisualizer';
+
+export default React.memo(AudiosVisualizer);

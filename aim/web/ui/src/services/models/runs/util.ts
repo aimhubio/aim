@@ -288,6 +288,44 @@ export function processImagesData(
   return { imageSetData, orderedMap, record_range, index_range };
 }
 
+export function processAudiosData(
+  data: Partial<ImagesData>,
+  params?: { [key: string]: unknown },
+) {
+  const { record_range, iters, values, index_range, context, name } = data;
+  const groupingSelectOptions = params
+    ? imagesExploreAppModel.getGroupingSelectOptions({
+        params: getObjectPaths(params, params),
+      })
+    : [];
+  let audiosSetData: any[] = [];
+  console.log(data);
+
+  values.forEach((audio: any, index: number) => {
+    const audioKey = encode({
+      name,
+      traceContext: context,
+      step: iters?.[index],
+    });
+    audiosSetData.push({
+      ...audio,
+      step: iters?.[index],
+      context: context,
+      key: audioKey,
+    });
+  });
+
+  const { imageSetData, orderedMap } = imagesExploreAppModel.getDataAsImageSet(
+    groupData(_.orderBy(audiosSetData)),
+    groupingSelectOptions,
+    ['step'],
+  );
+
+  console.log(imageSetData, orderedMap);
+
+  return { audiosSetData: imageSetData, orderedMap, record_range, index_range };
+}
+
 function groupData(data: IProcessedImageData[]): {
   key: string;
   config: { [key: string]: string };
