@@ -299,22 +299,32 @@ export function processAudiosData(
       })
     : [];
   let audiosSetData: any[] = [];
-  console.log(data);
+  console.log(params);
 
-  values.forEach((audio: any, index: number) => {
-    const audioKey = encode({
-      name,
-      traceContext: context,
-      step: iters?.[index],
-    });
-    audiosSetData.push({
-      ...audio,
-      step: iters?.[index],
-      context: context,
-      key: audioKey,
+  values?.forEach((stepData: IImageData[], stepIndex: number) => {
+    stepData.forEach((audio: IImageData) => {
+      const audioKey = encode({
+        name,
+        traceContext: context,
+        index: audio.index,
+        step: iters?.[stepIndex],
+        caption: audio.caption,
+      });
+      const seqKey = encode({
+        name,
+        traceContext: context,
+      });
+      audiosSetData.push({
+        ...audio,
+        images_name: name,
+        step: iters?.[stepIndex],
+        context: context,
+        key: audioKey,
+        seqKey: seqKey,
+      });
     });
   });
-
+  console.log(groupingSelectOptions);
   const { imageSetData, orderedMap } = imagesExploreAppModel.getDataAsImageSet(
     groupData(_.orderBy(audiosSetData)),
     groupingSelectOptions,

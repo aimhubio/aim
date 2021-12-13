@@ -268,6 +268,7 @@ function RunDetail(): React.FunctionComponentElement<React.ReactNode> {
             runHash={runHash}
             traceType='audios'
             traceInfo={runData?.runTraces}
+            runParams={runData?.runParams}
           />
         </TabPanel>
         <TabPanel

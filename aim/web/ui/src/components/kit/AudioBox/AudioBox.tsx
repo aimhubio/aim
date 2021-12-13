@@ -3,6 +3,10 @@ import moment from 'moment';
 
 import { Button, Icon, Slider, Text } from 'components/kit';
 
+import { batchCollectDelay } from 'config/imagesConfigs/imagesConfig';
+
+import blobsURIModel from 'services/models/media/blobsURIModel';
+
 import { IAudioBoxProps } from './AudioBox.d';
 
 import './AudioBox.scss';
@@ -47,8 +51,8 @@ function AudiBoxProgress({ audioRef, isPlaying }: any) {
 
   function formatDuration(): string {
     return moment
-      .utc(Math.round(audioRef.current.duration || 0) * 1000)
-      .format(defineTimeFormat(audioRef.current.duration || 0));
+      .utc(Math.round(audioRef.current?.duration || 0) * 1000)
+      .format(defineTimeFormat(audioRef?.current?.duration || 0));
   }
 
   function defineTimeFormat(duration: number): string {
@@ -58,7 +62,7 @@ function AudiBoxProgress({ audioRef, isPlaying }: any) {
   function formatProgress(): string {
     return moment
       .utc(Math.round(trackProgress) * 1000)
-      .format(defineTimeFormat(audioRef.current.duration || 0));
+      .format(defineTimeFormat(audioRef.current?.duration || 0));
   }
 
   return (
@@ -69,19 +73,19 @@ function AudiBoxProgress({ audioRef, isPlaying }: any) {
         onChange={onProgressChange}
         value={trackProgress}
         step={1}
-        max={Math.round(audioRef.current.duration)}
+        max={Math.round(audioRef.current?.duration)}
         min={0}
       />
       <div
         className={`AudioBox__timer ${
-          audioRef.current.duration > 3600 ? 'AudioBox__timer-long' : ''
+          audioRef.current?.duration > 3600 ? 'AudioBox__timer-long' : ''
         }`}
       >
         <Text weight={400} size={10}>
-          {formatProgress()}
+          {audioRef.current && formatProgress()}
         </Text>
         <Text weight={400} size={10}>
-          / {formatDuration()}
+          / {audioRef.current && formatDuration()}
         </Text>
       </div>
     </>
@@ -97,7 +101,7 @@ function AudioBoxVolume({ audioRef }: any) {
   }
 
   React.useEffect(() => {
-    audioRef.current.volume = volume;
+    if (audioRef.current) audioRef.current.volume = volume;
   }, [volume]);
 
   function onVolumeToggle(): void {
@@ -135,30 +139,68 @@ function AudioBoxVolume({ audioRef }: any) {
 }
 
 function AudioBox({
-  src,
-}: IAudioBoxProps): React.FunctionComponentElement<React.ReactNode> {
+  data,
+  addUriToList,
+}: any): React.FunctionComponentElement<React.ReactNode> {
+  const { format, blob_uri } = data;
   const [isPlaying, setIsPlaying] = React.useState<boolean>(false);
   const [canPlay, setCanPlay] = React.useState(false);
-  const audioRef = React.useRef(
-    new Audio(
-      'https://mp3minusovki.com/music/fhvndfjwserjgt/9f51406596884933e4a839b32e7e528e/2a8e57d1d2e0a7556a4f6e94a311f4d5.mp3',
-    ),
+  const audioRef = React.useRef<any>(
+    // new Audio(URL.createObjectURL(props?.data.blob_uri)),
+    null,
+  );
+
+  let [blobData, setBlobData] = React.useState<string>(
+    blobsURIModel.getState()[blob_uri] ?? null,
   );
 
   React.useEffect(() => {
+    let timeoutID: number;
+    let subscription: any;
+
+    if (blobData === null) {
+      if (blobsURIModel.getState()[blob_uri]) {
+        setBlobData(blobsURIModel.getState()[blob_uri]);
+      } else {
+        subscription = blobsURIModel.subscribe(blob_uri, (data) => {
+          setBlobData(data[blob_uri]);
+          subscription.unsubscribe();
+        });
+        timeoutID = window.setTimeout(() => {
+          if (blobsURIModel.getState()[blob_uri]) {
+            setBlobData(blobsURIModel.getState()[blob_uri]);
+            subscription.unsubscribe();
+          } else {
+            addUriToList(blob_uri);
+          }
+        }, batchCollectDelay);
+      }
+    }
+
+    return () => {
+      if (timeoutID) {
+        clearTimeout(timeoutID);
+      }
+      if (subscription) {
+        subscription.unsubscribe();
+      }
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  });
+  React.useEffect(() => {
     if (isPlaying) {
-      audioRef.current.play();
+      audioRef.current?.play();
     } else {
-      audioRef.current.pause();
+      audioRef.current?.pause();
     }
   }, [isPlaying]);
 
   React.useEffect(() => {
     // Pause and clean up on unmount
-    audioRef.current.addEventListener('ended', onAudioEnded);
-    audioRef.current.addEventListener('canplay', handleReadyToPlay);
+    audioRef.current?.addEventListener('ended', onAudioEnded);
+    audioRef.current?.addEventListener('canplay', handleReadyToPlay);
     return () => {
-      audioRef.current.pause();
+      audioRef.current?.pause();
     };
   }, []);
 

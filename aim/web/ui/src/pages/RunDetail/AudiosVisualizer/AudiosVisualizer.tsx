@@ -2,12 +2,6 @@ import React from 'react';
 
 import MediaPanel from 'components/MediaPanel';
 import { MediaTypeEnum } from 'components/MediaPanel/config';
-import AudioBox from 'components/kit/AudioBox';
-
-import {
-  ImageRenderingEnum,
-  MediaItemAlignmentEnum,
-} from 'config/enums/imageEnums';
 
 import useResizeObserver from 'hooks/window/useResizeObserver';
 
@@ -90,14 +84,6 @@ function AudiosVisualizer(
     [],
   );
 
-  const additionalProperties = React.useMemo(() => {
-    return {
-      alignmentType: MediaItemAlignmentEnum.Height,
-      mediaItemSize: 25,
-      imageRendering: ImageRenderingEnum.Pixelated,
-    };
-  }, []);
-
   return (
     <div className='AudiosVisualizer'>
       <MediaPanel
@@ -111,7 +97,7 @@ function AudiosVisualizer(
         wrapperOffsetHeight={(offsetHeight || 0) + 44}
         wrapperOffsetWidth={offsetWidth || 0}
         focusedState={focusedState}
-        additionalProperties={additionalProperties}
+        // additionalProperties={additionalProperties}
         onActivePointChange={onActivePointChange}
       />
     </div>
