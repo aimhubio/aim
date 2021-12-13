@@ -1,7 +1,11 @@
 from fastapi import Depends, HTTPException, Query
 from fastapi.responses import JSONResponse, StreamingResponse
 
-from aim.web.api.runs.audio_utils import requested_audio_traces_streamer
+from aim.web.api.runs.audio_utils import (
+    requested_audio_traces_streamer,
+    audio_search_result_streamer,
+    audios_batch_result_streamer
+)
 from aim.web.api.utils import APIRouter  # wrapper for fastapi.APIRouter
 from typing import Optional, Tuple
 
@@ -24,6 +28,7 @@ from aim.web.api.runs.pydantic_models import (
     MetricAlignApiIn,
     QuerySyntaxErrorOut,
     RunAudiosBatchApiOut,
+    RunAudiosSearchApiOut,
     RunDistributionsBatchApiOut,
     RunFiguresBatchApiOut,
     RunFiguresSearchApiOut,
@@ -158,6 +163,41 @@ async def run_images_search_api(q: Optional[str] = '',
     return StreamingResponse(streamer)
 
 
+@runs_router.get('/search/audios/', response_model=RunAudiosSearchApiOut,
+                 responses={400: {'model': QuerySyntaxErrorOut}})
+async def run_images_search_api(q: Optional[str] = '',
+                                record_range: Optional[str] = '', record_density: Optional[int] = 50,
+                                index_range: Optional[str] = '', index_density: Optional[int] = 5,
+                                calc_ranges: Optional[bool] = False):
+    # Get project
+    project = Project()
+    if not project.exists():
+        raise HTTPException(status_code=404)
+
+    query = q.strip()
+    try:
+        syntax_error_check(query)
+    except SyntaxError as se:
+        raise HTTPException(status_code=400, detail={
+            'name': 'SyntaxError',
+            'statement': se.text,
+            'line': se.lineno,
+            'offset': se.offset
+        })
+
+    traces = project.repo.query_images(query=query)
+
+    try:
+        record_range = str_to_range(record_range)
+        index_range = str_to_range(index_range)
+    except ValueError:
+        raise HTTPException(status_code=400, detail='Invalid range format')
+
+    streamer = audio_search_result_streamer(traces, record_range, record_density,
+                                            index_range, index_density, calc_ranges)
+    return StreamingResponse(streamer)
+
+
 @runs_router.get('/search/figures/', response_model=RunFiguresSearchApiOut,
                  responses={400: {'model': QuerySyntaxErrorOut}})
 async def run_figures_search_api(q: Optional[str] = '',
@@ -199,6 +239,16 @@ def image_blobs_batch_api(uri_batch: URIBatchIn):
         raise HTTPException(status_code=404)
 
     return StreamingResponse(images_batch_result_streamer(uri_batch, project.repo))
+
+
+@runs_router.post('/audios/get-batch/')
+def image_blobs_batch_api(uri_batch: URIBatchIn):
+    # Get project
+    project = Project()
+    if not project.exists():
+        raise HTTPException(status_code=404)
+
+    return StreamingResponse(audios_batch_result_streamer(uri_batch, project.repo))
 
 
 @runs_router.post('/figures/get-batch/')
@@ -278,7 +328,7 @@ async def run_images_batch_api(run_id: str,
     return StreamingResponse(traces_streamer)
 
 
-@runs_router.post('/{run_id}/audio/get-batch/', response_model=RunAudiosBatchApiOut)
+@runs_router.post('/{run_id}/audios/get-batch/', response_model=RunAudiosBatchApiOut)
 async def run_audios_batch_api(run_id: str,
                                requested_traces: RunTracesBatchApiIn,
                                record_range: Optional[str] = '', record_density: Optional[int] = 50,

@@ -139,7 +139,7 @@ async def audio_search_result_streamer(traces: SequenceCollection,
                 yield _pack_run_data(run_trace_collection.run, traces_list)
 
 
-def audio_batch_result_streamer(uri_batch: List[str], repo: 'Repo'):
+def audios_batch_result_streamer(uri_batch: List[str], repo: 'Repo'):
     uri_service = URIService(repo=repo)
     batch_iterator = uri_service.request_batch(uri_batch=uri_batch)
     for it in batch_iterator:
