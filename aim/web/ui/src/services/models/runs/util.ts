@@ -254,13 +254,11 @@ export function processTextsData(data: Partial<TextsData>) {
   if (values) {
     let count = 0;
     values.forEach((stepValues, stepIndex) => {
-      stepValues.forEach((text, index) => {
+      stepValues.forEach((text) => {
         processedValues.push({
           step: iters?.[stepIndex],
-          index,
-          text: `${Array(count * 2)
-            .fill('Very ')
-            .join(' ')} ${index > 1 ? 'Long ' : ' '}Text`, // generated mock data, replace with `text` once API is ready,
+          index: text.index,
+          text: text.data,
           key: count, // Table row ID
         });
         count++;

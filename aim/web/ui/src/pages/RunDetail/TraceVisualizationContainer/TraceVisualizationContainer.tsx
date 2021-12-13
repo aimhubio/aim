@@ -37,7 +37,7 @@ function TraceVisualizationContainer({
     runTracesModel.initialize(
       runHash,
       traceType,
-      traceInfo[traceType === 'texts' ? 'images' : traceType],
+      traceInfo[traceType],
       runParams,
     );
 

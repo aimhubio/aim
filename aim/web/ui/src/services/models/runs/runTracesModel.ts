@@ -152,8 +152,7 @@ async function getRunTraceBatch(isInitial = false) {
 
   getTraceBatchRequestRef = runsService.getBatch(
     state.runHash || '',
-    (state.traceType === 'texts' ? 'images' : state.traceType) ||
-      'distributions',
+    state.traceType || 'distributions',
     {
       ...(!isInitial ? reformatArrayQueries(queryData?.sliders) : {}),
       ...queryData?.inputs,

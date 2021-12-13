@@ -69,7 +69,7 @@ export interface ImagesData extends DistributionsData {
  * @TODO make compatible to texts data
  */
 export interface TextsData extends ImagesData {
-  values: { data: string }[][];
+  values: { data: string; index: number }[][];
 }
 
 /**
