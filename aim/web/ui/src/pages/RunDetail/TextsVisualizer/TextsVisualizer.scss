@@ -2,7 +2,7 @@
 
 .TextsVisualizer {
   height: 100%;
-  padding: toRem(20px);
+  padding: toRem(10px) toRem(20px) 0;
   width: 100%;
   position: relative;
   > div {
@@ -35,6 +35,11 @@
       border-bottom: none;
       &--hovered {
         background: #e8f1fc;
+      }
+      &:last-child {
+        .BaseTable__row-cell {
+          border-bottom: none;
+        }
       }
       &-cell {
         position: relative;

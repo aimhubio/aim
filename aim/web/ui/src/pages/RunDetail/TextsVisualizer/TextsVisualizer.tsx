@@ -30,6 +30,7 @@ function TextsVisualizer(
       title: 'Text',
       width: 0,
       flexGrow: 1,
+      // TODO: replace with a wrapper component for all types of texts visualization
       cellRenderer: function cellRenderer({ cellData }: any) {
         return <p>{cellData}</p>;
       },
@@ -38,19 +39,19 @@ function TextsVisualizer(
 
   return (
     <div className='TextsVisualizer'>
-      <Table
-        fixed={false}
-        columns={tableColumns}
-        data={data?.processedValues}
-        isLoading={isLoading}
-        hideHeaderActions
-        estimatedRowHeight={32}
-        headerHeight={32}
-        emptyText='No Text'
-        height='100%'
-        onRowHover={(rowIndex) => null}
-        onRowClick={(rowIndex) => null}
-      />
+      {data?.processedValues.length > 0 && (
+        <Table
+          fixed={false}
+          columns={tableColumns}
+          data={data?.processedValues}
+          isLoading={isLoading}
+          hideHeaderActions
+          estimatedRowHeight={32}
+          headerHeight={32}
+          emptyText='No Text'
+          height='100%'
+        />
+      )}
     </div>
   );
 }
