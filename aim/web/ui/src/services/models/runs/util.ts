@@ -1,5 +1,5 @@
 import bs58check from 'bs58check';
-import { head, orderBy, get } from 'lodash';
+import { head, orderBy, get } from 'lodash-es';
 
 import { IMenuItem } from 'components/kit/Menu';
 

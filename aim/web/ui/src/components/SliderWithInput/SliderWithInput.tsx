@@ -65,7 +65,7 @@ function SliderWithInput({
               ((e: any, value: any) =>
                 onCountChange({
                   target: { value },
-                } as React.ChangeEvent<HTMLInputElement>)) as any
+                } as any)) as any
             }
             getAriaValueText={(value) => `${value}`}
             aria-labelledby='track-false-slider'
@@ -111,10 +111,21 @@ function SliderWithInput({
         </div>
         <input
           type='number'
-          value={selectedCountValue}
-          onChange={onCountChange}
+          value={`${selectedCountValue}`}
+          step={1}
+          onChange={(e) => {
+            e.preventDefault();
+            if (
+              sliderType === 'single' &&
+              (+e.target.value < min || +e.target.value > max)
+            )
+              return;
+            onCountChange({
+              target: { value: e.target.value as any },
+            } as any);
+          }}
           className={`SliderWithInput__densityWrapper__densityField ${
-            selectedCountValue === 0
+            selectedCountValue === 0 && sliderType !== 'single'
               ? 'SliderWithInput__densityWrapper__densityField-invalid'
               : ''
           }`}

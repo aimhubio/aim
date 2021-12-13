@@ -1,6 +1,6 @@
 import React, { memo } from 'react';
 import Plot from 'react-plotly.js';
-import { isEmpty } from 'lodash';
+import _ from 'lodash-es';
 
 import { IPlotlyVisualizerProps } from '../types';
 
@@ -10,12 +10,12 @@ function PlotlyVisualizer(
 ): React.FunctionComponentElement<React.ReactNode> {
   return (
     <div className='PlotlyVisualizer'>
-      {!isEmpty(props.data?.processedValue) && (
+      {!_.isEmpty(props.data?.processedValue) && (
         <div className='PlotlyVisualizer__recordCnt'>
           <Plot
             data={props.data?.processedValue?.data}
             layout={props.data?.processedValue?.layout}
-            style={{ width: '100%', height: '100%' }}
+            className='PlotlyVisualizer__recordCnt__plotWrapper'
             useResizeHandler={true}
           />
         </div>

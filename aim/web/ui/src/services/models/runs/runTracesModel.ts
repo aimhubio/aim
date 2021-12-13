@@ -236,7 +236,7 @@ function onInputChange(name: string, value: number) {
       ...state.queryData,
       inputs: {
         ...state.queryData?.inputs,
-        [name]: value,
+        [name]: +value,
       },
     },
   });
