@@ -21,16 +21,18 @@ def sliced_audio_record(values: Iterable[Audio], _slice: slice) -> Iterable[Audi
     yield from zip(range(_slice.start, _slice.stop, _slice.step), values[_slice])
 
 
-def audio_record_to_encodable(trace, step, index=0):
+def audio_record_to_encodable(obj, trace, step, index=0):
     resource_path = generate_resource_path(trace.values.tree.container, (step, 'data'))
     return {
         'index': index,
+        'format': obj['format'],
+        'size': obj['size'],
         'blob_uri': URIService.generate_uri(trace.run.repo, trace.run.hash, 'seqs', resource_path)
     }
 
 
 def audio_collection_record_to_encodable(records: Iterable[Audio], trace, step):
-    return [audio_record_to_encodable(trace, step, idx) for idx, obj in records]
+    return [audio_record_to_encodable(obj, trace, step, idx) for idx, obj in records]
 
 
 def get_record_and_index_range(traces: SequenceCollection, trace_cache: dict) -> Tuple[IndexRange, IndexRange]:
