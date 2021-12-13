@@ -60,7 +60,7 @@ function Controls(
           )}
           component={
             <ImagePropertiesPopover
-              imageProperties={props.imageProperties}
+              additionalProperties={props.additionalProperties}
               onImageSizeChange={props.onImageSizeChange}
               onImageRenderingChange={props.onImageRenderingChange}
               onImageAlignmentChange={props.onImageAlignmentChange}
