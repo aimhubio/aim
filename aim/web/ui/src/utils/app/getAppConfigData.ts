@@ -6,8 +6,6 @@ import { IAppModelConfig } from 'types/services/models/explorer/createAppModel';
 import { IModel, State } from 'types/services/models/model';
 import { IAppData } from 'types/services/models/metrics/metricsAppModel';
 
-import getStateFromUrl from '../getStateFromUrl';
-
 import { getCompatibleSelectConfig } from './getCompatibleSelectConfig';
 
 export default function getAppConfigData<M extends State>({
@@ -34,6 +32,19 @@ export default function getAppConfigData<M extends State>({
   return {
     call: async () => {
       const appData = await appRequest.call();
+      let select = appData?.state?.select;
+      if (select) {
+        const compatibleSelectConfig = getCompatibleSelectConfig(
+          ['metrics', 'params', 'images'],
+          select,
+        );
+        appData.state = {
+          ...appData.state,
+          select: {
+            ...compatibleSelectConfig,
+          },
+        };
+      }
       const configData = _.merge(config, appData.state);
       model.setState({ config: configData });
     },

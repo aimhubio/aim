@@ -189,10 +189,21 @@ function getAppConfigData(appId: string) {
   return {
     call: async () => {
       const appData = await appRequestRef.call();
+      let select = appData?.state?.select;
+      if (select) {
+        const compatibleSelectConfig = getCompatibleSelectConfig(
+          ['images'],
+          select,
+        );
+        appData.state = {
+          ...appData.state,
+          select: {
+            ...compatibleSelectConfig,
+          },
+        };
+      }
       const configData: any = _.merge(getConfig(), appData.state);
-      model.setState({
-        config: configData,
-      });
+      model.setState({ config: configData });
     },
     abort: appRequestRef.abort,
   };
