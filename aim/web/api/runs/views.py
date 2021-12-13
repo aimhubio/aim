@@ -23,22 +23,23 @@ from aim.web.api.runs.image_utils import (
 from aim.web.api.runs.pydantic_models import (
     MetricAlignApiIn,
     QuerySyntaxErrorOut,
-    RunTracesBatchApiIn,
-    RunMetricCustomAlignApiOut,
-    RunMetricSearchApiOut,
-    RunImagesSearchApiOut,
-    RunInfoOut,
-    RunSearchApiOut,
-    RunMetricsBatchApiOut,
-    RunImagesBatchApiOut,
+    RunAudiosBatchApiOut,
+    RunDistributionsBatchApiOut,
     RunFiguresBatchApiOut,
     RunFiguresSearchApiOut,
-    RunDistributionsBatchApiOut,
-    StructuredRunUpdateIn,
-    StructuredRunUpdateOut,
+    RunImagesBatchApiOut,
+    RunImagesSearchApiOut,
+    RunInfoOut,
+    RunMetricCustomAlignApiOut,
+    RunMetricSearchApiOut,
+    RunMetricsBatchApiOut,
+    RunSearchApiOut,
+    RunTracesBatchApiIn,
     StructuredRunAddTagIn,
     StructuredRunAddTagOut,
     StructuredRunRemoveTagOut,
+    StructuredRunUpdateIn,
+    StructuredRunUpdateOut,
     URIBatchIn,
 )
 from aim.web.api.utils import object_factory
@@ -277,8 +278,8 @@ async def run_images_batch_api(run_id: str,
     return StreamingResponse(traces_streamer)
 
 
-@runs_router.post('/{run_id}/audio/get-batch/', response_model=RunImagesBatchApiOut)
-async def run_images_batch_api(run_id: str,
+@runs_router.post('/{run_id}/audio/get-batch/', response_model=RunAudiosBatchApiOut)
+async def run_audios_batch_api(run_id: str,
                                requested_traces: RunTracesBatchApiIn,
                                record_range: Optional[str] = '', record_density: Optional[int] = 50,
                                index_range: Optional[str] = '', index_density: Optional[int] = 5):

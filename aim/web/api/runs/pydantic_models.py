@@ -227,3 +227,33 @@ class FigureSearchRunView(BaseModel):
 
 
 RunFiguresSearchApiOut = Dict[str, FigureSearchRunView]
+
+
+class AudioInfo(BaseModel):
+    caption: str
+    blob_uri: str
+    index: int
+
+
+class AudiosBaseView(TraceBaseView):
+    values: List[List[AudioInfo]]
+
+
+RunAudiosBatchApiOut = List[AudiosBaseView]
+
+
+class AudioSequenceFullView(TraceBase):
+    values: List[List[AudioInfo]]
+    iters: List[int]
+    epochs: List[int]
+    timestamps: List[float]
+
+
+class AudiosSearchRunView(BaseModel):
+    params: dict
+    traces: List[AudioSequenceFullView]
+    ranges: RangeInfo
+    props: PropsView
+
+
+RunAudiosSearchApiOut = Dict[str, AudiosSearchRunView]
