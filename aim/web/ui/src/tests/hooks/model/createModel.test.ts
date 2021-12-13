@@ -1,6 +1,6 @@
-import createModel from 'services/models/model';
+import { shouldMatchObject } from 'tests/utils';
 
-import { shouldMatchObject } from '../../utils';
+import createModel from 'services/models/model';
 
 const initialState = {
   test: {

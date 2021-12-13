@@ -45,6 +45,10 @@ import {
   IImagesExploreAppConfig,
   IImagesExploreAppModelState,
 } from 'types/services/models/imagesExplore/imagesExploreAppModel';
+import {
+  ISelectConfig,
+  ISelectOption,
+} from 'types/services/models/explorer/createAppModel';
 
 import { decode, encode } from 'utils/encoder/encoder';
 import getObjectPaths from 'utils/getObjectPaths';
@@ -65,6 +69,7 @@ import { formatToPositiveNumber } from 'utils/formatToPositiveNumber';
 import getMinAndMaxBetweenArrays from 'utils/getMinAndMaxBetweenArrays';
 import getTooltipData from 'utils/app/getTooltipData';
 import filterTooltipContent from 'utils/filterTooltipContent';
+import { getCompatibleSelectConfig } from 'utils/app/getCompatibleSelectConfig';
 
 import createModel from '../model';
 
@@ -88,7 +93,7 @@ function getConfig(): IImagesExploreAppConfig {
       },
     },
     select: {
-      images: [],
+      options: [],
       query: '',
       advancedMode: false,
       advancedQuery: '',
@@ -148,8 +153,11 @@ function initialize(appId: string): void {
 function setDefaultAppConfigData() {
   const grouping: IImagesExploreAppConfig['grouping'] =
     getStateFromUrl('grouping') || getConfig().grouping;
-  const select: IImagesExploreAppConfig['select'] =
-    getStateFromUrl('select') || getConfig().select;
+  const compatibleSelectConfig = getCompatibleSelectConfig(
+    ['images'],
+    getStateFromUrl('select'),
+  );
+  const select: ISelectConfig = compatibleSelectConfig || getConfig().select;
   const images: IImagesExploreAppConfig['images'] =
     getStateFromUrl('images') || getConfig().images;
   const tableConfigHash = getItem('imagesExploreTable');
@@ -163,9 +171,7 @@ function setDefaultAppConfigData() {
     images,
   });
 
-  model.setState({
-    config: configData,
-  });
+  model.setState({ config: configData });
 }
 
 let imagesRequestRef: {
@@ -782,7 +788,7 @@ function updateURL(
   const { grouping, select, images } = configData;
   const url: string = getUrlWithParam({
     grouping: encode(grouping),
-    select: encode(select),
+    select: encode(select as {}),
     images: encode(images),
   });
 
@@ -1521,36 +1527,38 @@ function onTableResizeModeChange(mode: ResizeModeEnum): void {
 function onSearchQueryCopy(): void {
   const selectedMetricsData = model.getState()?.config?.select;
   let query = getQueryStringFromSelect(selectedMetricsData as any);
-  navigator.clipboard.writeText(query);
-  onNotificationAdd({
-    id: Date.now(),
-    severity: 'success',
-    message: 'Run Expression Copied',
-  });
+  if (query) {
+    navigator.clipboard.writeText(query);
+    onNotificationAdd({
+      id: Date.now(),
+      severity: 'success',
+      message: 'Run Expression Copied',
+    });
+  }
 }
 
 function getQueryStringFromSelect(
   selectData: IImagesExploreAppConfig['select'],
 ) {
-  let query = '';
+  let query: string | undefined = '';
   if (selectData !== undefined) {
     if (selectData.advancedMode) {
       query = selectData.advancedQuery;
     } else {
       query = `${
         selectData.query ? `${selectData.query} and ` : ''
-      }(${selectData.images
+      }(${selectData.options
         .map(
-          (image) =>
-            `(images.name == "${image.value.metric_name}"${
-              image.value.context === null
+          (option: ISelectOption) =>
+            `(images.name == "${option.value?.option_name}"${
+              option.value?.context === null
                 ? ''
                 : ' and ' +
-                  Object.keys(image.value.context)
+                  Object.keys(option.value?.context)
                     .map(
                       (item) =>
                         `images.context.${item} == ${formatValue(
-                          (image.value.context as any)[item],
+                          (option.value?.context as any)[item],
                         )}`,
                     )
                     .join(' and ')
@@ -1579,13 +1587,13 @@ function onSelectAdvancedQueryChange(query: string) {
   }
 }
 
-function onImagesExploreSelectChange(data: any[]) {
+function onImagesExploreSelectChange(options: ISelectOption[]) {
   const configData: IImagesExploreAppConfig | undefined =
     model.getState()?.config;
   if (configData?.select) {
     const newConfig = {
       ...configData,
-      select: { ...configData.select, images: data },
+      select: { ...configData.select, options },
       images: { ...configData.images, calcRanges: true },
     };
 

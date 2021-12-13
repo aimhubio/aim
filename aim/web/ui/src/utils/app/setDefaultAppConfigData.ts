@@ -6,9 +6,10 @@ import {
   IAppModelConfig,
 } from 'types/services/models/explorer/createAppModel';
 
-import { getItem } from '../storage';
-import { decode } from '../encoder/encoder';
-import getStateFromUrl from '../getStateFromUrl';
+import { getItem } from 'utils/storage';
+import { decode } from 'utils/encoder/encoder';
+import getStateFromUrl from 'utils/getStateFromUrl';
+import { getCompatibleSelectConfig } from 'utils/app/getCompatibleSelectConfig';
 
 export default function setDefaultAppConfigData<M extends State>({
   config,
@@ -32,7 +33,11 @@ export default function setDefaultAppConfigData<M extends State>({
     defaultConfig.grouping = getStateFromUrl('grouping') || config?.grouping;
   }
   if (selectForm) {
-    defaultConfig.select = getStateFromUrl('select') || config?.select;
+    const compatibleSelectConfig = getCompatibleSelectConfig(
+      ['metrics', 'params', 'images'],
+      getStateFromUrl('select'),
+    );
+    defaultConfig.select = compatibleSelectConfig || config?.select;
   }
   if (components.charts) {
     defaultConfig.chart = getStateFromUrl('chart') || config?.chart;

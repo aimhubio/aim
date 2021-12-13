@@ -36,16 +36,15 @@ import {
   IProjectParamsMetrics,
   IProjectsModelState,
 } from 'types/services/models/projects/projectsModel';
+import {
+  IGroupingConfig,
+  ISelectConfig,
+} from 'types/services/models/explorer/createAppModel';
 
 import { SmoothingAlgorithmEnum } from 'utils/smoothingData';
 import { CurveEnum } from 'utils/d3';
 import setComponentRefs from 'utils/app/setComponentRefs';
 import getStateFromUrl from 'utils/getStateFromUrl';
-
-import {
-  IGroupingConfig,
-  ISelectConfig,
-} from '../../types/services/models/explorer/createAppModel';
 
 import Metrics from './Metrics';
 

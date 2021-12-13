@@ -1,7 +1,12 @@
+import { HighlightEnum } from 'components/HighlightModesPopover/HighlightModesPopover';
+
+import { ResizeModeEnum } from 'config/enums/tableEnums';
+import { RowHeightSize } from 'config/table/tableConfigs';
+import { DensityOptions } from 'config/enums/densityEnum';
+
 import { AppDataTypeEnum, AppNameEnum } from 'services/models/explorer';
 
-import { ChartTypeEnum, CurveEnum } from 'utils/d3';
-
+import { IAxesScaleState } from 'types/components/AxesScalePopover/AxesScalePopover';
 import {
   IAggregationConfig,
   IAlignmentConfig,
@@ -10,15 +15,12 @@ import {
   IFocusedState,
   IMetricAppModelState,
   SortField,
-} from '../metrics/metricsAppModel';
-import { IParamsAppModelState } from '../params/paramsAppModel';
-import { IRunsAppModelState } from '../runs/runsAppModel';
-import { ResizeModeEnum } from '../../../../config/enums/tableEnums';
-import { RowHeightSize } from '../../../../config/table/tableConfigs';
-import { HighlightEnum } from '../../../../components/HighlightModesPopover/HighlightModesPopover';
-import { IAxesScaleState } from '../../../components/AxesScalePopover/AxesScalePopover';
-import { SmoothingAlgorithmEnum } from '../../../../utils/smoothingData';
-import { DensityOptions } from '../../../../config/enums/densityEnum';
+} from 'types/services/models/metrics/metricsAppModel';
+import { IParamsAppModelState } from 'types/services/models/params/paramsAppModel';
+import { IRunsAppModelState } from 'types/services/models/runs/runsAppModel';
+
+import { ChartTypeEnum, CurveEnum } from 'utils/d3';
+import { SmoothingAlgorithmEnum } from 'utils/smoothingData';
 
 export interface IAppInitialConfig {
   dataType: AppDataTypeEnum;

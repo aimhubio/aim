@@ -18,14 +18,13 @@ import { IActivePoint } from 'types/utils/d3/drawHoverAttributes';
 import { IChartPanelRef } from 'types/components/ChartPanel/ChartPanel';
 import { INotification } from 'types/components/NotificationContainer/NotificationContainer';
 import { IBookmarkFormState } from 'types/components/BookmarkForm/BookmarkForm';
-
-import { CurveEnum } from 'utils/d3';
-
 import {
   IGroupingConfig,
   ISelectConfig,
   ISelectOption,
-} from '../../services/models/explorer/createAppModel';
+} from 'types/services/models/explorer/createAppModel';
+
+import { CurveEnum } from 'utils/d3';
 
 export interface IParamsProps extends Partial<RouteChildrenProps> {
   chartElemRef: React.RefObject<HTMLDivElement>;

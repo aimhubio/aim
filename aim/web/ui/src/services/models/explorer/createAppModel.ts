@@ -170,6 +170,7 @@ import getValueByField from 'utils/getValueByField';
 import sortDependingArrays from 'utils/app/sortDependingArrays';
 import { isSystemMetric } from 'utils/isSystemMetric';
 import setDefaultAppConfigData from 'utils/app/setDefaultAppConfigData';
+import getAppConfigData from 'utils/app/getAppConfigData';
 
 import { AppDataTypeEnum, AppNameEnum } from './index';
 
@@ -188,7 +189,7 @@ function createAppModel(appConfig: IAppInitialConfig) {
     config: getConfig(),
   });
 
-  let appRequestRef: {
+  let appRequest: {
     call: () => Promise<IAppData>;
     abort: () => void;
   };
@@ -414,22 +415,11 @@ function createAppModel(appConfig: IAppInitialConfig) {
     });
   }
 
-  function getAppConfigData(appId: string): {
+  function getModelAppConfigData(appId: string): {
     call: () => Promise<void>;
     abort: () => void;
   } {
-    if (appRequestRef) {
-      appRequestRef.abort();
-    }
-    appRequestRef = appsService.fetchApp(appId);
-    return {
-      call: async () => {
-        const appData = await appRequestRef.call();
-        const configData = _.merge(getConfig(), appData.state);
-        model.setState({ config: configData });
-      },
-      abort: appRequestRef.abort,
-    };
+    return getAppConfigData({ appId, appRequest, config: getConfig(), model });
   }
 
   function getMetricsAppModelMethods() {
@@ -1681,7 +1671,7 @@ function createAppModel(appConfig: IAppInitialConfig) {
 
     const methods = {
       initialize,
-      getAppConfigData,
+      getAppConfigData: getModelAppConfigData,
       getMetricsData,
       abortRequest,
       getDataAsTableRows,
@@ -3739,7 +3729,7 @@ function createAppModel(appConfig: IAppInitialConfig) {
 
       const methods = {
         initialize,
-        getAppConfigData,
+        getAppConfigData: getModelAppConfigData,
         getParamsData,
         setDefaultAppConfigData: setModelDefaultAppConfigData,
         abortRequest,
@@ -4909,7 +4899,7 @@ function createAppModel(appConfig: IAppInitialConfig) {
 
       const methods = {
         initialize,
-        getAppConfigData,
+        getAppConfigData: getModelAppConfigData,
         getScattersData,
         abortRequest,
         setDefaultAppConfigData: setModelDefaultAppConfigData,
