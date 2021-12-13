@@ -242,6 +242,20 @@ class Repo:
 
         return container
 
+    def _get_index_container(self, name: str, timeout: int) -> Container:
+        if self.read_only:
+            raise ValueError('Repo is read-only')
+
+        name = name + '/index'
+        container_config = ContainerConfig(name, None, read_only=True)
+        container = self.container_pool.get(container_config)
+        if container is None:
+            path = os.path.join(self.path, name)
+            container = RocksContainer(path, read_only=False, timeout=timeout)
+            self.container_pool[container_config] = container
+
+        return container
+
     def request(
             self,
             name: str,

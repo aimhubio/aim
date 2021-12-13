@@ -14,7 +14,7 @@ from aim.sdk.sequence_collection import SingleRunSequenceCollection
 from aim.sdk.utils import generate_run_hash, get_object_typename, check_types_compatibility
 from aim.sdk.num_utils import convert_to_py_number
 from aim.sdk.types import AimObject
-from aim.sdk.configs import AIM_ENABLE_TRACKING_THREAD
+from aim.sdk.configs import AIM_ENABLE_TRACKING_THREAD, AIM_RUN_INDEXING_TIMEOUT
 
 from aim.storage.hashing import hash_auto
 from aim.storage.context import Context, SequenceDescriptor
@@ -63,11 +63,13 @@ class RunAutoClean(AutoClean['Run']):
         Finalize the run by indexing all the data.
         """
         self.meta_run_tree['end_time'] = datetime.datetime.utcnow().timestamp()
-        index = self.repo._get_container('meta/index',
-                                         read_only=False,
-                                         from_union=False).view(b'')
-        logger.debug(f'Indexing Run {self.name}...')
-        self.meta_run_tree.finalize(index=index)
+        try:
+            timeout = os.getenv(AIM_RUN_INDEXING_TIMEOUT, 2 * 60)
+            index = self.repo._get_index_container('meta', timeout=timeout).view(b'')
+            logger.debug(f'Indexing Run {self.name}...')
+            self.meta_run_tree.finalize(index=index)
+        except TimeoutError:
+            logger.warning(f'Cannot index Run {self.name}. Index is locked.')
 
     def finalize_system_tracker(self):
         """
