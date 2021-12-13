@@ -7,6 +7,7 @@ from aim.web.api.projects.project import Project
 from aim.web.api.runs.utils import (
     collect_requested_metric_traces,
     requested_distribution_traces_streamer,
+    requested_text_traces_streamer,
     custom_aligned_metrics_streamer,
     get_run_props,
     metric_search_result_streamer,
@@ -32,6 +33,7 @@ from aim.web.api.runs.pydantic_models import (
     RunFiguresBatchApiOut,
     RunFiguresSearchApiOut,
     RunDistributionsBatchApiOut,
+    RunTextsBatchApiOut,
     StructuredRunUpdateIn,
     StructuredRunUpdateOut,
     StructuredRunAddTagIn,
@@ -319,6 +321,32 @@ async def run_distributions_batch_api(run_id: str,
         raise HTTPException(status_code=400, detail='Invalid range format')
 
     traces_streamer = requested_distribution_traces_streamer(run, requested_traces, record_range, record_density)
+
+    return StreamingResponse(traces_streamer)
+
+
+@runs_router.post('/{run_id}/texts/get-batch/', response_model=RunTextsBatchApiOut)
+async def run_texts_batch_api(run_id: str,
+                              requested_traces: RunTracesBatchApiIn,
+                              record_range: Optional[str] = '', record_density: Optional[int] = 50,
+                              index_range: Optional[str] = '', index_density: Optional[int] = 5):
+    # Get project
+    project = Project()
+    if not project.exists():
+        raise HTTPException(status_code=404)
+    run = project.repo.get_run(run_id)
+    if not run:
+        raise HTTPException(status_code=404)
+
+    try:
+        record_range = str_to_range(record_range)
+        index_range = str_to_range(index_range)
+    except ValueError:
+        raise HTTPException(status_code=400, detail='Invalid range format')
+
+    traces_streamer = requested_text_traces_streamer(run, requested_traces,
+                                                     record_range, index_range,
+                                                     record_density, index_density)
 
     return StreamingResponse(traces_streamer)
 
