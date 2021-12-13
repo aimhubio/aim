@@ -2,6 +2,7 @@ import React from 'react';
 
 import MediaPanel from 'components/MediaPanel';
 import { MediaTypeEnum } from 'components/MediaPanel/config';
+import AudioBox from 'components/kit/AudioBox';
 
 import {
   ImageRenderingEnum,
@@ -99,6 +100,7 @@ function AudiosVisualizer(
 
   return (
     <div className='AudiosVisualizer'>
+      <AudioBox />
       <MediaPanel
         mediaType={MediaTypeEnum.AUDIO}
         getBlobsData={() => null}

@@ -1,7 +1,5 @@
 import React from 'react';
 
-import { Slider } from '@material-ui/core';
-
 import githubIcon from 'assets/icons/github.svg';
 import slackIcon from 'assets/icons/slack.svg';
 
@@ -53,7 +51,6 @@ function ExploreAim(): React.FunctionComponentElement<React.ReactNode> {
   return (
     <div className='ExploreAim'>
       <div>
-        <AudioBox />
         <Text component='h2' tint={100} weight={600} size={24}>
           Get Involved
         </Text>
