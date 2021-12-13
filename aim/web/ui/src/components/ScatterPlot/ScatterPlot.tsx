@@ -35,7 +35,7 @@ const ScatterPlot = React.forwardRef(function ScatterPlot(
     margin: {
       top: 30,
       right: 20,
-      bottom: 50,
+      bottom: 30,
       left: 60,
     },
     height: 0,
