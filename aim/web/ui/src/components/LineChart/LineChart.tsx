@@ -14,7 +14,7 @@ import {
   clearArea,
   drawAxes,
   drawLines,
-  processData,
+  processLineChartData,
   getAxisScale,
   drawBrush,
   drawHoverAttributes,
@@ -80,7 +80,10 @@ const LineChart = React.forwardRef(function LineChart(
   const rafIDRef = React.useRef<number>();
 
   function draw() {
-    const { processedData, min, max } = processData(data, ignoreOutliers);
+    const { processedData, min, max } = processLineChartData(
+      data,
+      ignoreOutliers,
+    );
 
     drawArea({
       index,

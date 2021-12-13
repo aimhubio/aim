@@ -1,7 +1,7 @@
 import { HighlightEnum } from 'components/HighlightModesPopover/HighlightModesPopover';
 
 import { IDrawLinesArgs } from 'types/utils/d3/drawLines';
-import { IProcessedData } from 'types/utils/d3/processData';
+import { IProcessedData } from 'types/utils/d3/processLineChartData';
 import { IAxisScale } from 'types/utils/d3/getAxisScale';
 import { IAggregatedData } from 'types/services/models/metrics/metricsAppModel';
 import { ILine } from 'types/components/LineChart/LineChart';

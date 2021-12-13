@@ -1,15 +1,15 @@
 import _ from 'lodash-es';
 
-import { IProcessData } from 'types/utils/d3/processData';
+import { IProcessLineChartData } from 'types/utils/d3/processLineChartData';
 import { ILine } from 'types/components/LineChart/LineChart';
 
 import { minMaxOfArray } from 'utils/minMaxOfArray';
 import { removeOutliers } from 'utils/removeOutliers';
 
-function processData(
+function processLineChartData(
   data: ILine[],
   ignoreOutliers: boolean = false,
-): IProcessData {
+): IProcessLineChartData {
   let xValues: number[] = [];
   let yValues: number[] = [];
   let yMinData: number[][] = [];
@@ -96,4 +96,4 @@ function processData(
   };
 }
 
-export default processData;
+export default processLineChartData;

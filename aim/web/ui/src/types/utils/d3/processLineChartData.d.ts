@@ -7,7 +7,7 @@ export interface IProcessedData extends ILine, IPoint {
   dasharray: string;
 }
 
-export interface IProcessData {
+export interface IProcessLineChartData {
   min: { x: number; y: number };
   max: { x: number; y: number };
   processedData: IProcessedData[];
