@@ -26,7 +26,6 @@ def audio_record_to_encodable(obj, trace, step, index=0):
     return [{
         'index': index,
         'format': obj.storage.get('format'),
-        'size': obj.storage.get('size'),
         'caption': obj.storage.get('caption'),
         'blob_uri': URIService.generate_uri(trace.run.repo, trace.run.hash, 'seqs', resource_path)
     }]

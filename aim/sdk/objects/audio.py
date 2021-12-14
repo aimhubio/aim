@@ -57,8 +57,7 @@ class Audio(CustomObject):
         for k, v in extra.items():
             self.storage[k] = v
         self.storage['source'] = 'audio'
-        self.storage['bytes'] = BLOB(data=buffer.read())
-        self.storage['size'] = self.bytes_to_readable(buffer.getbuffer().nbytes)
+        self.storage['data'] = BLOB(data=buffer.read())
 
     def to_numpy(self):
         """
@@ -69,28 +68,8 @@ class Audio(CustomObject):
 
         return wavfile.read(self.get())
 
-    @staticmethod
-    def bytes_to_readable(num, suffix='B'):
-        """
-        Helper method to convert bytes to human-readable format
-        """
-        for unit in ('', 'K', 'M', 'G', 'T', 'P', 'E', 'Z'):
-            if abs(num) < 1024.0:
-                return f'{num:3.1f}{unit}{suffix}'
-            num /= 1024.0
-        return f'{num:.1f}Y{suffix}'
-
     def get(self) -> io.BytesIO:
         bs = self.storage.get('bytes')
         if not bs:
             return io.BytesIO()
         return io.BytesIO(bytes(bs))
-
-    def dump(self, path):
-        """
-        Method to write inner storage content to the provided file path
-        """
-        assert isinstance(path, str)
-
-        with open(path, 'wb') as FS:
-            FS.write(self.get().read())
