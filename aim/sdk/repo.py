@@ -370,7 +370,7 @@ class Repo:
             :obj:`SequenceCollection`: Iterable for audio sequences matching query expression.
         """
         self._prepare_runs_cache()
-        from aim.sdk.audio_sequence import Audios
+        from aim.sdk.sequences.audio_sequence import Audios
         return QuerySequenceCollection(repo=self, seq_cls=Audios, query=query)
 
     def query_figure_objects(self, query: str = '') -> QuerySequenceCollection:
