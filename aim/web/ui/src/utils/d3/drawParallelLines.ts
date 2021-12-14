@@ -8,7 +8,7 @@ import {
   IGetColorIndicatorScaleValueArgs,
   IDrawParallelLineArgs,
 } from 'types/utils/d3/drawParallelLines';
-import { IGetAxisScale } from 'types/utils/d3/getAxisScale';
+import { IAxisScale } from 'types/utils/d3/getAxisScale';
 
 import lineGenerator from './lineGenerator';
 
@@ -181,7 +181,7 @@ function getColorIndicatorScaleValue({
 }: IGetColorIndicatorScaleValueArgs) {
   const lastKeyOfDimension: string =
     keysOfDimensions[keysOfDimensions.length - 1];
-  const lastYScale: IGetAxisScale = yScale[lastKeyOfDimension];
+  const lastYScale: IAxisScale = yScale[lastKeyOfDimension];
 
   return yColorIndicatorScale(lastYScale(line[lastKeyOfDimension]) || 0);
 }

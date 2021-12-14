@@ -1,26 +1,19 @@
 import React from 'react';
 
-import { HighlightEnum } from 'components/HighlightModesPopover/HighlightModesPopover';
-
 import useResizeObserver from 'hooks/window/useResizeObserver';
 
-import {
-  IAttributesRef,
-  IBrushRef,
-} from 'types/components/LineChart/LineChart';
+import { IAttributesRef } from 'types/components/LineChart/LineChart';
 import { IFocusedState } from 'types/services/models/metrics/metricsAppModel';
 
 import {
   clearArea,
   drawArea,
   drawAxes,
-  drawBrush,
-  drawHoverAttributes,
   getAxisScale,
-  processData,
-  ScaleEnum,
-  drawPoints,
+  drawHoverAttributes,
 } from 'utils/d3';
+
+import { Text } from '../kit';
 
 import { IScatterPlotProps } from './types.d';
 
@@ -31,18 +24,10 @@ const ScatterPlot = React.forwardRef(function ScatterPlot(
   ref,
 ): React.FunctionComponentElement<React.ReactNode> {
   const {
-    data,
-    zoom,
-    onZoomChange,
+    data: { dimensions, data },
     syncHoverState,
     index = 0,
-    axesScaleType = {
-      xAxis: ScaleEnum.Linear,
-      yAxis: ScaleEnum.Linear,
-    },
     chartTitle,
-    displayOutliers = false,
-    highlightMode = HighlightEnum.Off,
   } = props;
 
   // boxes
@@ -76,18 +61,13 @@ const ScatterPlot = React.forwardRef(function ScatterPlot(
 
   // methods and values refs
   const axesRef = React.useRef({});
-  const brushRef = React.useRef<IBrushRef>({});
-  const linesRef = React.useRef({});
+  // const linesRef = React.useRef({});
   const attributesRef = React.useRef<IAttributesRef>({});
   const humanizerConfigRef = React.useRef({});
   const rafIDRef = React.useRef<number>();
+  const [yDimension, xDimension] = Object.values(dimensions);
 
   function draw() {
-    const { processedData, min, max, xValues } = processData(
-      data,
-      displayOutliers,
-    );
-
     drawArea({
       index,
       visBoxRef,
@@ -105,13 +85,18 @@ const ScatterPlot = React.forwardRef(function ScatterPlot(
 
     const { width, height, margin } = visBoxRef.current;
 
+    const axesScaleType = {
+      xAxis: xDimension.scaleType,
+      yAxis: yDimension.scaleType,
+    };
+
     const xScale = getAxisScale({
-      domainData: [min.x, max.x],
+      domainData: xDimension.domainData,
       rangeData: [0, width - margin.left - margin.right],
       scaleType: axesScaleType.xAxis,
     });
     const yScale = getAxisScale({
-      domainData: [min.y, max.y],
+      domainData: yDimension.domainData,
       rangeData: [height - margin.top - margin.bottom, 0],
       scaleType: axesScaleType.yAxis,
     });
@@ -129,26 +114,25 @@ const ScatterPlot = React.forwardRef(function ScatterPlot(
       width,
       height,
       margin,
-      xValues,
-      attributesRef,
       humanizerConfigRef,
-      drawBgTickLines: { x: true, y: true },
+      drawBgTickLines: { y: true, x: true },
     });
 
-    drawPoints({
-      index,
-      data: processedData,
-      xScale,
-      yScale,
-      highlightMode,
-      pointsRef: linesRef,
-      pointsNodeRef: linesNodeRef,
-    });
+    // TODO check necessity of drawPoints function
+    // drawPoints({
+    //   index,
+    //   data,
+    //   xScale,
+    //   yScale,
+    //   highlightMode,
+    //   pointsRef: linesRef,
+    //   pointsNodeRef: linesNodeRef,
+    // });
 
     drawHoverAttributes({
       index,
-      data: processedData,
-      highlightMode,
+      data,
+      axesScaleType,
       syncHoverState,
       visAreaRef,
       attributesRef,
@@ -163,28 +147,28 @@ const ScatterPlot = React.forwardRef(function ScatterPlot(
       drawAxisLines: { x: false, y: false },
       drawAxisLabels: { x: false, y: false },
     });
-
-    drawBrush({
-      index,
-      brushRef,
-      plotBoxRef,
-      plotNodeRef,
-      visBoxRef,
-      axesRef,
-      attributesRef,
-      linesRef,
-      svgNodeRef,
-      axesScaleType,
-      min,
-      max,
-      zoom,
-      onZoomChange,
-    });
   }
 
   function renderChart() {
     clearArea({ visAreaRef });
-    draw();
+    if (yDimension.domainData[0] === '-' || xDimension.domainData[0] === '-') {
+      drawArea({
+        index,
+        visBoxRef,
+        plotBoxRef,
+        parentRef,
+        visAreaRef,
+        svgNodeRef,
+        bgRectNodeRef,
+        plotNodeRef,
+        axesNodeRef,
+        linesNodeRef,
+        attributesNodeRef,
+        chartTitle,
+      });
+    } else {
+      draw();
+    }
   }
 
   const resizeObserverCallback: ResizeObserverCallback = React.useCallback(
@@ -193,7 +177,8 @@ const ScatterPlot = React.forwardRef(function ScatterPlot(
         rafIDRef.current = window.requestAnimationFrame(renderChart);
       }
     },
-    [data, zoom, displayOutliers, highlightMode, axesScaleType],
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [data, dimensions],
   );
 
   const observerReturnCallback = React.useCallback(() => {
@@ -211,7 +196,8 @@ const ScatterPlot = React.forwardRef(function ScatterPlot(
         window.cancelAnimationFrame(rafIDRef.current);
       }
     };
-  }, [data, zoom, displayOutliers, highlightMode, axesScaleType]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [data, dimensions]);
 
   React.useImperativeHandle(ref, () => ({
     setActiveLineAndCircle: (
@@ -237,11 +223,11 @@ const ScatterPlot = React.forwardRef(function ScatterPlot(
   }));
 
   return (
-    <div
-      ref={parentRef}
-      className={`ScatterPlot ${zoom?.active ? 'zoomMode' : ''}`}
-    >
+    <div ref={parentRef} className='ScatterPlot'>
       <div ref={visAreaRef} />
+      {yDimension.domainData[0] === '-' || xDimension.domainData[0] === '-' ? (
+        <Text className='ScatterPlot__emptyData'> No Data</Text>
+      ) : null}
     </div>
   );
 });

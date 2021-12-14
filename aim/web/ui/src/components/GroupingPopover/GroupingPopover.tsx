@@ -58,7 +58,7 @@ function GroupingPopover({
             groupingData[groupName].indexOf(b.value),
         )
       : data;
-  }, [groupName, groupingData]);
+  }, [groupName, groupingData, groupingSelectOptions]);
 
   function handleGroupingMode(val: string | number, id: any) {
     onGroupingModeChange({

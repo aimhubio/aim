@@ -7,10 +7,15 @@ import { RowHeightSize } from 'config/table/tableConfigs';
 import { ResizeModeEnum } from 'config/enums/tableEnums';
 import { DensityOptions } from 'config/enums/densityEnum';
 
+import {
+  IGroupingConfig,
+  ISelectConfig,
+} from 'services/models/explorer/createAppModel';
+import { ISelectOption } from 'services/models/explorer/createAppModel';
+
 import { ITableRef } from 'types/components/Table/Table';
 import {
   GroupNameType,
-  IMetricAppConfig,
   IMetricTableRowData,
   IOnGroupingModeChangeParams,
   IOnGroupingSelectChangeParams,
@@ -58,12 +63,12 @@ export interface IMetricProps extends Partial<RouteChildrenProps> {
   smoothingFactor: number;
   focusedState: IFocusedState;
   highlightMode: HighlightEnum;
-  groupingData: IMetricAppConfig['grouping'];
+  groupingData: IGroupingConfig;
   notifyData: IMetricAppModelState['notifyData'];
   tooltip: IPanelTooltip;
   aggregationConfig: IAggregationConfig;
   alignmentConfig: IAlignmentConfig;
-  selectedMetricsData: IMetricAppConfig['select'];
+  selectedMetricsData: ISelectConfig;
   tableRowHeight: RowHeightSize;
   sortFields: [string, 'asc' | 'desc' | boolean][];
   hiddenMetrics: string[];
@@ -101,7 +106,7 @@ export interface IMetricProps extends Partial<RouteChildrenProps> {
   onAlignmentMetricChange: (metric: string) => void;
   onAlignmentTypeChange: (type: XAlignmentEnum) => void;
   onDensityTypeChange: (type: DensityOptions) => void;
-  onMetricsSelectChange: IMetricAppConfig['onMetricsSelectChange'];
+  onMetricsSelectChange: (options: ISelectOption[]) => void;
   onSelectRunQueryChange: (query: string) => void;
   onSelectAdvancedQueryChange: (query: string) => void;
   toggleSelectAdvancedMode: () => void;

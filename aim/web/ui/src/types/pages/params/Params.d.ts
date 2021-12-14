@@ -11,15 +11,18 @@ import {
   IPanelTooltip,
   IFocusedState,
   IGroupingSelectOption,
-  IMetricAppConfig,
   IOnGroupingModeChangeParams,
   IOnGroupingSelectChangeParams,
 } from 'types/services/models/metrics/metricsAppModel';
 import { IActivePoint } from 'types/utils/d3/drawHoverAttributes';
 import { IChartPanelRef } from 'types/components/ChartPanel/ChartPanel';
-import { IParamsAppConfig } from 'types/services/models/params/paramsAppModel';
 import { INotification } from 'types/components/NotificationContainer/NotificationContainer';
 import { IBookmarkFormState } from 'types/components/BookmarkForm/BookmarkForm';
+import {
+  IGroupingConfig,
+  ISelectConfig,
+  ISelectOption,
+} from 'types/services/models/explorer/createAppModel';
 
 import { CurveEnum } from 'utils/d3';
 
@@ -34,7 +37,7 @@ export interface IParamsProps extends Partial<RouteChildrenProps> {
   panelResizing: boolean;
   requestIsPending: boolean;
   highPlotData: any;
-  groupingData: IMetricAppConfig['grouping'];
+  groupingData: IGroupingConfig;
   groupingSelectOptions: IGroupingSelectOption[];
   hiddenMetrics: string[];
   sortFields: [string, 'asc' | 'desc' | boolean][];
@@ -42,7 +45,7 @@ export interface IParamsProps extends Partial<RouteChildrenProps> {
   isVisibleColorIndicator: boolean;
   tooltip: IPanelTooltip;
   chartTitleData: IChartTitleData;
-  selectedParamsData: IParamsAppConfig['select'];
+  selectedParamsData: ISelectConfig;
   onRowHeightChange: any;
   onSortFieldsChange: any;
   onParamVisibilityChange: any;
@@ -62,7 +65,7 @@ export interface IParamsProps extends Partial<RouteChildrenProps> {
     focusedStateActive: boolean = false,
   ) => void;
   onColorIndicatorChange: () => void;
-  onParamsSelectChange: IParamsAppConfig['onParamsSelectChange'];
+  onParamsSelectChange: (options: ISelectOption[]) => void;
   onSelectRunQueryChange: (query: string) => void;
   onGroupingSelectChange: (params: IOnGroupingSelectChangeParams) => void;
   onGroupingModeChange: (params: IOnGroupingModeChangeParams) => void;

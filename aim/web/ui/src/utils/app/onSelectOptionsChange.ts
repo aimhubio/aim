@@ -1,15 +1,15 @@
-import { ISelectMetricsOption } from 'types/pages/metrics/components/SelectForm/SelectForm';
 import { IModel, State } from 'types/services/models/model';
+import { ISelectOption } from 'types/services/models/explorer/createAppModel';
 
-export default function onMetricsSelectChange<
+export default function onSelectOptionsChange<
   M extends State,
-  D extends Partial<ISelectMetricsOption[]>,
+  D extends Partial<ISelectOption[]>,
 >({ data, model }: { data: D; model: IModel<M> }) {
   const configData = model.getState()?.config;
   if (configData?.select) {
     const newConfig = {
       ...configData,
-      select: { ...configData.select, metrics: data },
+      select: { ...configData.select, options: data },
     };
 
     model.setState({ config: newConfig });
