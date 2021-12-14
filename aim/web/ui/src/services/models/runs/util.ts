@@ -1,6 +1,5 @@
 import bs58check from 'bs58check';
-import { head, orderBy, get } from 'lodash-es';
-import _ from 'lodash';
+import _ from 'lodash-es';
 
 import { IMenuItem } from 'components/kit/Menu';
 
@@ -13,6 +12,7 @@ import contextToString from 'utils/contextToString';
 import alphabeticalSortComparator from 'utils/alphabeticalSortComparator';
 import { encode } from 'utils/encoder/encoder';
 import getObjectPaths from 'utils/getObjectPaths';
+import { getDataAsMediaSetNestedObject } from 'utils/app/getDataAsMediaSetNestedObject';
 
 import imagesExploreAppModel from '../imagesExplore/imagesExploreAppModel';
 
@@ -282,12 +282,12 @@ export function processImagesData(
       });
     });
   });
-  const { imageSetData, orderedMap } = imagesExploreAppModel.getDataAsImageSet(
-    groupData(orderBy(images)),
+  const { setData, orderedMap } = getDataAsMediaSetNestedObject({
+    data: groupData(_.orderBy(images)),
     groupingSelectOptions,
-    ['step'],
-  );
-  return { imageSetData, orderedMap, record_range, index_range };
+    defaultGroupFields: ['step'],
+  });
+  return { imageSetData: setData, orderedMap, record_range, index_range };
 }
 
 export function processAudiosData(
@@ -325,13 +325,13 @@ export function processAudiosData(
       });
     });
   });
-  const { imageSetData, orderedMap } = imagesExploreAppModel.getDataAsImageSet(
-    groupData(_.orderBy(audiosSetData)),
+  const { setData, orderedMap } = getDataAsMediaSetNestedObject({
+    data: groupData(_.orderBy(audiosSetData)),
     groupingSelectOptions,
-    ['step'],
-  );
+    defaultGroupFields: ['step'],
+  });
 
-  return { audiosSetData: imageSetData, orderedMap, record_range, index_range };
+  return { audiosSetData: setData, orderedMap, record_range, index_range };
 }
 
 function groupData(data: IProcessedImageData[]): {
@@ -350,7 +350,7 @@ function groupData(data: IProcessedImageData[]): {
   for (let i = 0; i < data.length; i++) {
     const groupValue: { [key: string]: string } = {};
     ['step'].forEach((field) => {
-      groupValue[field] = get(data[i], field);
+      groupValue[field] = _.get(data[i], field);
     });
     const groupKey = encode(groupValue);
     if (groupValues.hasOwnProperty(groupKey)) {
@@ -383,7 +383,7 @@ export function reformatArrayQueries(
  */
 export function processPlotlyData(data: Partial<IPlotlyData>) {
   const { record_range, iters, values } = data;
-  const processedValue = head(values);
+  const processedValue = _.head(values);
   const originalValues = values;
 
   processedValue.layout.autosize = true;

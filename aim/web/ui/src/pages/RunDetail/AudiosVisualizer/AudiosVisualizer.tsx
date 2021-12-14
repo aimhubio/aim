@@ -3,8 +3,6 @@ import React from 'react';
 import MediaPanel from 'components/MediaPanel';
 import { MediaTypeEnum } from 'components/MediaPanel/config';
 
-import { MediaItemAlignmentEnum } from 'config/enums/imageEnums';
-
 import useResizeObserver from 'hooks/window/useResizeObserver';
 
 import blobsURIModel from 'services/models/media/blobsURIModel';
@@ -90,7 +88,6 @@ function AudiosVisualizer(
 
   const additionalProperties = React.useMemo(() => {
     return {
-      alignmentType: MediaItemAlignmentEnum.Height,
       mediaItemSize: 25,
       getAudiosBlobsData,
     };

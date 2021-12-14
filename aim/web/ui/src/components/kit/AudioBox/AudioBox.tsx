@@ -221,7 +221,7 @@ function AudioBox({
 
   function onDownload(): void {
     var element = document.createElement('a');
-    element.setAttribute('href', 'https://dl2.mp3party.net/online/8881505.mp3');
+    element.setAttribute('href', `data:audio/${format};base64,${blobData}`);
     element.setAttribute('download', 'name');
     document.body.appendChild(element);
     element.click();

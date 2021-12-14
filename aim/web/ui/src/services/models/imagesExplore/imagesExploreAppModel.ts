@@ -65,6 +65,7 @@ import { formatToPositiveNumber } from 'utils/formatToPositiveNumber';
 import getMinAndMaxBetweenArrays from 'utils/getMinAndMaxBetweenArrays';
 import getTooltipData from 'utils/app/getTooltipData';
 import filterTooltipContent from 'utils/filterTooltipContent';
+import { getDataAsMediaSetNestedObject } from 'utils/app/getDataAsMediaSetNestedObject';
 
 import createModel from '../model';
 
@@ -420,10 +421,11 @@ function setModelData(rawData: any[], configData: IImagesExploreAppConfig) {
       contexts,
     }),
   ];
-  const { imageSetData, orderedMap } = getDataAsImageSet(
+  const { setData, orderedMap } = getDataAsMediaSetNestedObject({
     data,
     groupingSelectOptions,
-  );
+    model,
+  });
 
   tooltipData = getTooltipData({
     processedData: data,
@@ -495,7 +497,7 @@ function setModelData(rawData: any[], configData: IImagesExploreAppConfig) {
     config,
     params,
     data,
-    imagesData: imageSetData,
+    imagesData: setData,
     orderedMap,
     tableData: tableData.rows,
     tableColumns: getImagesExploreTableColumns(
@@ -525,10 +527,11 @@ function updateModelData(
       contexts,
     }),
   ];
-  const { imageSetData, orderedMap } = getDataAsImageSet(
+  const { setData, orderedMap } = getDataAsMediaSetNestedObject({
     data,
     groupingSelectOptions,
-  );
+    model,
+  });
   tooltipData = getTooltipData({
     processedData: data,
     paramKeys: sortedParams,
@@ -582,7 +585,7 @@ function updateModelData(
   model.setState({
     config: configData,
     data: model.getState()?.data,
-    imagesData: imageSetData,
+    imagesData: setData,
     orderedMap,
     // chartTitleData: getChartTitleData(data),
     tableData: tableData.rows,
