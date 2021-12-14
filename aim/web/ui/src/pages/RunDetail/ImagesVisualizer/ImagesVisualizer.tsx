@@ -67,7 +67,6 @@ function ImagesVisualizer(
             let buffer_pairs = decode_buffer_pairs(gen);
             let decodedPairs = decodePathsVals(buffer_pairs);
             let objects = iterFoldTree(decodedPairs, 1);
-
             for await (let [keys, val] of objects) {
               const URI = keys[0];
               blobsURIModel.emit(URI as string, {

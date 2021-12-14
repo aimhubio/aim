@@ -139,6 +139,7 @@ function AudioBox({
   let [blobData, setBlobData] = React.useState<string>(
     blobsURIModel.getState()[blob_uri] ?? null,
   );
+
   React.useEffect(() => {
     let timeoutID: number;
     let subscription: any;
@@ -174,14 +175,8 @@ function AudioBox({
   });
 
   React.useEffect(() => {
-    console.log(
-      '🚀 ~ file: AudioBox.tsx ~ line 182 ~ React.useEffect ~ blobData',
-      blobData,
-      blobsURIModel.getState(),
-    );
-
     if (blobData) {
-      audioRef.current = new Audio(URL.createObjectURL(blobData));
+      audioRef.current = new Audio(`data:audio/${format};base64,${blobData}`);
     }
   }, [blobData]);
 
@@ -211,17 +206,12 @@ function AudioBox({
 
   function onPLayChange(): void {
     setIsPlaying(!isPlaying);
-    console.log('123');
 
     if (!blobData) {
-      console.log('asdasdsa');
       additionalProperties
         .getAudiosBlobsData([blob_uri])
         .call()
         .then((a: any) => {
-          console.log(a);
-          console.log(blobData);
-          // audioRef.current = new Audio(URL.createObjectURL(blobData));
           setIsPlaying(!isPlaying);
         });
     } else {
@@ -237,7 +227,7 @@ function AudioBox({
     element.click();
     document.body.removeChild(element);
   }
-  // console.log('blobData', blobData);
+
   return (
     <div className='AudioBox'>
       <Button

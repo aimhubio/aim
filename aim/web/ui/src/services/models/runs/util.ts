@@ -1,4 +1,5 @@
 import bs58check from 'bs58check';
+import { head, orderBy, get } from 'lodash-es';
 import _ from 'lodash';
 
 import { IMenuItem } from 'components/kit/Menu';
@@ -18,6 +19,7 @@ import imagesExploreAppModel from '../imagesExplore/imagesExploreAppModel';
 import {
   DistributionsData,
   DistributionValue,
+  IPlotlyData,
   TraceProcessedData,
   TraceRawDataItem,
   TraceType,
@@ -184,7 +186,7 @@ export function getMenuData(traceType: TraceType, traces: TraceRawDataItem[]) {
     audios: 'Audios',
     videos: 'Videos',
     texts: 'Texts',
-    plotly: 'Plotlies',
+    figures: 'Plotlies',
   };
 
   let title = VisualizationMenuTitles[traceType];
@@ -281,7 +283,7 @@ export function processImagesData(
     });
   });
   const { imageSetData, orderedMap } = imagesExploreAppModel.getDataAsImageSet(
-    groupData(_.orderBy(images)),
+    groupData(orderBy(images)),
     groupingSelectOptions,
     ['step'],
   );
@@ -299,7 +301,6 @@ export function processAudiosData(
       })
     : [];
   let audiosSetData: any[] = [];
-  console.log(params);
 
   values?.forEach((stepData: IImageData[], stepIndex: number) => {
     stepData.forEach((audio: IImageData) => {
@@ -324,14 +325,11 @@ export function processAudiosData(
       });
     });
   });
-  console.log(groupingSelectOptions);
   const { imageSetData, orderedMap } = imagesExploreAppModel.getDataAsImageSet(
     groupData(_.orderBy(audiosSetData)),
     groupingSelectOptions,
     ['step'],
   );
-
-  console.log(imageSetData, orderedMap);
 
   return { audiosSetData: imageSetData, orderedMap, record_range, index_range };
 }
@@ -352,7 +350,7 @@ function groupData(data: IProcessedImageData[]): {
   for (let i = 0; i < data.length; i++) {
     const groupValue: { [key: string]: string } = {};
     ['step'].forEach((field) => {
-      groupValue[field] = _.get(data[i], field);
+      groupValue[field] = get(data[i], field);
     });
     const groupKey = encode(groupValue);
     if (groupValues.hasOwnProperty(groupKey)) {
@@ -378,4 +376,22 @@ export function reformatArrayQueries(
   });
 
   return formattedQueryObject;
+}
+
+/**
+ * process plotly data
+ */
+export function processPlotlyData(data: Partial<IPlotlyData>) {
+  const { record_range, iters, values } = data;
+  const processedValue = head(values);
+  const originalValues = values;
+
+  processedValue.layout.autosize = true;
+
+  return {
+    iters,
+    record_range,
+    processedValue,
+    originalValues,
+  };
 }

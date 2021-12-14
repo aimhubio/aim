@@ -1,4 +1,4 @@
-import _ from 'lodash';
+import _ from 'lodash-es';
 import moment from 'moment';
 import { saveAs } from 'file-saver';
 

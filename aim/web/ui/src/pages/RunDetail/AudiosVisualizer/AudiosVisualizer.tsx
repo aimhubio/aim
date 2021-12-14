@@ -65,7 +65,6 @@ function AudiosVisualizer(
 
             for await (let [keys, val] of objects) {
               const URI = keys[0];
-              console.log(val, keys);
               blobsURIModel.emit(URI as string, {
                 [URI]: arrayBufferToBase64(val as ArrayBuffer) as string,
               });

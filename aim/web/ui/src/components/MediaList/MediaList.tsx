@@ -25,7 +25,6 @@ function MediaList({
   tooltip,
   mediaType,
 }: IMediaListProps): React.FunctionComponentElement<React.ReactNode> {
-  console.log(wrapperOffsetWidth);
   return (
     <List
       height={mediaItemHeight}
