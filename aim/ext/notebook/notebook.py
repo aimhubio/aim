@@ -69,12 +69,14 @@ def get_argument_options(line):
 
     options = {
         '--host': '127.0.0.1',
-        '--port': '43800'
+        '--port': '43800',
     }
     for arg in args[1:]:
         key, value = arg.split('=', 1)
         if key in supported_args:
             options[key] = value
+
+    options['--base-path'] = 'notebook'
 
     return command, options
 
@@ -87,8 +89,7 @@ def display_colab(port, display):
 
     shell = """
         (async () => {{
-            const url = new URL(await google.colab.kernel.proxyPort({port}, {{'cache': true}}));
-            url.searchParams.set('aim', 'true');
+            let url = new URL('/notebook/', await google.colab.kernel.proxyPort({port}));
             const iframe = document.createElement('iframe');
             iframe.src = url;
             iframe.setAttribute('width', '100%');
@@ -111,9 +112,9 @@ def display_notebook(host, port, display):
     """
     import IPython.display
     shell = """
-          <iframe id="aim" width="100%" height="800" frameborder="0" src={}:{}>
+          <iframe id="aim" width="100%" height="800" frameborder="0" src={}:{}{}>
           </iframe>
-        """.format(host, port)
+        """.format(host, port, '/notebook/')
 
     # @TODO write passing proxy logic
 
