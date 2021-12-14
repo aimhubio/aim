@@ -3,6 +3,8 @@ import React from 'react';
 import MediaPanel from 'components/MediaPanel';
 import { MediaTypeEnum } from 'components/MediaPanel/config';
 
+import { MediaItemAlignmentEnum } from 'config/enums/imageEnums';
+
 import useResizeObserver from 'hooks/window/useResizeObserver';
 
 import blobsURIModel from 'services/models/media/blobsURIModel';
@@ -16,25 +18,27 @@ import {
 } from 'utils/encoder/streamEncoding';
 import arrayBufferToBase64 from 'utils/arrayBufferToBase64';
 
+import './AudiosVisualizer.scss';
+
 function AudiosVisualizer(
   props: any,
 ): React.FunctionComponentElement<React.FunctionComponent> {
   const { data, isLoading } = props;
-  const imagesWrapperRef = React.useRef<any>(null);
+  const audioWrapperRef = React.useRef<any>(null);
   const [focusedState, setFocusedState] = React.useState({
     active: false,
     key: null,
   });
   const [offsetHeight, setOffsetHeight] = React.useState(
-    imagesWrapperRef?.current?.offsetHeight,
+    audioWrapperRef?.current?.offsetHeight,
   );
   const [offsetWidth, setOffsetWidth] = React.useState(
-    imagesWrapperRef?.current?.offsetWidth,
+    audioWrapperRef?.current?.offsetWidth,
   );
 
   useResizeObserver(
-    () => setOffsetWidth(imagesWrapperRef?.current?.offsetWidth),
-    imagesWrapperRef,
+    () => setOffsetWidth(audioWrapperRef?.current?.offsetWidth),
+    audioWrapperRef,
   );
 
   React.useEffect(() => {
@@ -42,9 +46,9 @@ function AudiosVisualizer(
   }, []);
 
   React.useEffect(() => {
-    setOffsetHeight(imagesWrapperRef?.current?.offsetHeight);
+    setOffsetHeight(audioWrapperRef?.current?.offsetHeight);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [imagesWrapperRef?.current?.offsetHeight]);
+  }, [audioWrapperRef?.current?.offsetHeight]);
 
   function getAudiosBlobsData(uris: string[]) {
     const request = audiosExploreService.getAudiosByURIs(uris);
@@ -61,6 +65,7 @@ function AudiosVisualizer(
 
             for await (let [keys, val] of objects) {
               const URI = keys[0];
+              console.log(val, keys);
               blobsURIModel.emit(URI as string, {
                 [URI]: arrayBufferToBase64(val as ArrayBuffer) as string,
               });
@@ -84,8 +89,16 @@ function AudiosVisualizer(
     [],
   );
 
+  const additionalProperties = React.useMemo(() => {
+    return {
+      alignmentType: MediaItemAlignmentEnum.Height,
+      mediaItemSize: 25,
+      getAudiosBlobsData,
+    };
+  }, []);
+
   return (
-    <div className='AudiosVisualizer'>
+    <div className='AudiosVisualizer' ref={audioWrapperRef}>
       <MediaPanel
         mediaType={MediaTypeEnum.AUDIO}
         getBlobsData={getAudiosBlobsData}
@@ -97,7 +110,7 @@ function AudiosVisualizer(
         wrapperOffsetHeight={(offsetHeight || 0) + 44}
         wrapperOffsetWidth={offsetWidth || 0}
         focusedState={focusedState}
-        // additionalProperties={additionalProperties}
+        additionalProperties={additionalProperties}
         onActivePointChange={onActivePointChange}
       />
     </div>

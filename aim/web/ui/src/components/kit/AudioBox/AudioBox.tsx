@@ -130,52 +130,61 @@ function AudioBoxVolume({ audioRef }: any) {
 
 function AudioBox({
   data,
-  addUriToList,
+  additionalProperties,
 }: any): React.FunctionComponentElement<React.ReactNode> {
-  // const { format, blob_uri } = data;
+  const { format, blob_uri } = data;
   const [isPlaying, setIsPlaying] = React.useState<boolean>(false);
-  const [canPlay, setCanPlay] = React.useState(false);
-  const audioRef = React.useRef<any>(
-    new Audio('https://dl2.mp3party.net/online/8881505.mp3'),
+  const [canPlay, setCanPlay] = React.useState(true);
+  const audioRef = React.useRef<any>(null);
+  let [blobData, setBlobData] = React.useState<string>(
+    blobsURIModel.getState()[blob_uri] ?? null,
   );
+  React.useEffect(() => {
+    let timeoutID: number;
+    let subscription: any;
 
-  // let [blobData, setBlobData] = React.useState<string>(
-  //   blobsURIModel.getState()[blob_uri] ?? null,
-  // );
+    if (blobData === null) {
+      if (blobsURIModel.getState()[blob_uri]) {
+        setBlobData(blobsURIModel.getState()[blob_uri]);
+      } else {
+        subscription = blobsURIModel.subscribe(blob_uri, (data) => {
+          setBlobData(data[blob_uri]);
+          subscription.unsubscribe();
+        });
+        timeoutID = window.setTimeout(() => {
+          if (blobsURIModel.getState()[blob_uri]) {
+            setBlobData(blobsURIModel.getState()[blob_uri]);
+            subscription.unsubscribe();
+          } else {
+            // addUriToList(blob_uri);
+          }
+        }, batchCollectDelay);
+      }
+    }
 
-  // React.useEffect(() => {
-  //   let timeoutID: number;
-  //   let subscription: any;
+    return () => {
+      if (timeoutID) {
+        clearTimeout(timeoutID);
+      }
+      if (subscription) {
+        subscription.unsubscribe();
+      }
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  });
 
-  //   if (blobData === null) {
-  //     if (blobsURIModel.getState()[blob_uri]) {
-  //       setBlobData(blobsURIModel.getState()[blob_uri]);
-  //     } else {
-  //       subscription = blobsURIModel.subscribe(blob_uri, (data) => {
-  //         setBlobData(data[blob_uri]);
-  //         subscription.unsubscribe();
-  //       });
-  //       timeoutID = window.setTimeout(() => {
-  //         if (blobsURIModel.getState()[blob_uri]) {
-  //           setBlobData(blobsURIModel.getState()[blob_uri]);
-  //           subscription.unsubscribe();
-  //         } else {
-  //           addUriToList(blob_uri);
-  //         }
-  //       }, batchCollectDelay);
-  //     }
-  //   }
+  React.useEffect(() => {
+    console.log(
+      '🚀 ~ file: AudioBox.tsx ~ line 182 ~ React.useEffect ~ blobData',
+      blobData,
+      blobsURIModel.getState(),
+    );
 
-  //   return () => {
-  //     if (timeoutID) {
-  //       clearTimeout(timeoutID);
-  //     }
-  //     if (subscription) {
-  //       subscription.unsubscribe();
-  //     }
-  //   };
-  //   // eslint-disable-next-line react-hooks/exhaustive-deps
-  // });
+    if (blobData) {
+      audioRef.current = new Audio(URL.createObjectURL(blobData));
+    }
+  }, [blobData]);
+
   React.useEffect(() => {
     if (isPlaying) {
       audioRef.current?.play();
@@ -187,7 +196,7 @@ function AudioBox({
   React.useEffect(() => {
     // Pause and clean up on unmount
     audioRef.current?.addEventListener('ended', onAudioEnded);
-    audioRef.current?.addEventListener('canplay', handleReadyToPlay);
+    // audioRef.current?.addEventListener('canplay', handleReadyToPlay);
     return () => {
       audioRef.current?.pause();
     };
@@ -201,7 +210,21 @@ function AudioBox({
   }
 
   function onPLayChange(): void {
-    if (canPlay) {
+    setIsPlaying(!isPlaying);
+    console.log('123');
+
+    if (!blobData) {
+      console.log('asdasdsa');
+      additionalProperties
+        .getAudiosBlobsData([blob_uri])
+        .call()
+        .then((a: any) => {
+          console.log(a);
+          console.log(blobData);
+          // audioRef.current = new Audio(URL.createObjectURL(blobData));
+          setIsPlaying(!isPlaying);
+        });
+    } else {
       setIsPlaying(!isPlaying);
     }
   }
@@ -214,7 +237,7 @@ function AudioBox({
     element.click();
     document.body.removeChild(element);
   }
-
+  // console.log('blobData', blobData);
   return (
     <div className='AudioBox'>
       <Button
@@ -229,7 +252,10 @@ function AudioBox({
           <CircularProgress size={12} thickness={4} />
         )}
       </Button>
-      <AudiBoxProgress audioRef={audioRef} isPlaying={isPlaying} />
+      <AudiBoxProgress
+        audioRef={audioRef}
+        isPlaying={!!blobData && isPlaying}
+      />
       <AudioBoxVolume audioRef={audioRef} />
       <Button withOnlyIcon size='small' onClick={onDownload}>
         <Text size={14}>

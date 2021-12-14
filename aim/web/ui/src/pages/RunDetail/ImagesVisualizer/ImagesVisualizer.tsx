@@ -96,7 +96,7 @@ function ImagesVisualizer(
   const additionalProperties = React.useMemo(() => {
     return {
       alignmentType: MediaItemAlignmentEnum.Height,
-      mediaItemSize: 25,
+      mediaItemSize: 0,
       imageRendering: ImageRenderingEnum.Pixelated,
     };
   }, []);
