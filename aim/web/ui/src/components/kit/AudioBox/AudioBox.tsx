@@ -13,7 +13,7 @@ import { IAudioBoxProps } from './AudioBox.d';
 
 import './AudioBox.scss';
 
-function AudiBoxProgress({ audioRef, isPlaying }: any) {
+function AudiBoxProgress({ audio, isPlaying }: any) {
   const [trackProgress, setTrackProgress] = React.useState(0);
   const intervalRef = React.useRef<any>({});
 
@@ -24,7 +24,7 @@ function AudiBoxProgress({ audioRef, isPlaying }: any) {
   }, []);
 
   React.useEffect(() => {
-    if (isPlaying) {
+    if (isPlaying && audio) {
       startTimer();
     } else {
       clearInterval(intervalRef.current);
@@ -34,31 +34,35 @@ function AudiBoxProgress({ audioRef, isPlaying }: any) {
   function startTimer(): void {
     clearInterval(intervalRef.current);
     intervalRef.current = setInterval(() => {
-      setTrackProgress(Math.round(audioRef.current.currentTime));
+      setTrackProgress(Math.round(audio.currentTime));
     }, 300);
   }
 
   function onProgressChange(event: any, value: number | number[]): void {
-    clearInterval(intervalRef.current);
+    if (audio) {
+      clearInterval(intervalRef.current);
+    }
     setTrackProgress(value as number);
   }
 
   function onTimerChange(): void {
-    clearInterval(intervalRef.current);
-    audioRef.current.currentTime = trackProgress;
-    if (isPlaying) {
-      startTimer();
+    if (audio) {
+      clearInterval(intervalRef.current);
+      audio.currentTime = trackProgress;
+      if (isPlaying) {
+        startTimer();
+      }
     }
   }
 
   function formatDuration(): string {
     return moment
-      .utc(Math.round(audioRef.current?.duration || 0) * 1000)
+      .utc(Math.round(audio?.duration || 0) * 1000)
       .format('HH:mm:ss');
   }
 
   function formatProgress(): string {
-    return moment.utc(Math.round(trackProgress) * 1000).format('HH:mm:ss');
+    return moment.utc(Math.round(trackProgress || 0) * 1000).format('HH:mm:ss');
   }
 
   return (
@@ -69,38 +73,42 @@ function AudiBoxProgress({ audioRef, isPlaying }: any) {
         onChange={onProgressChange}
         value={trackProgress}
         step={1}
-        max={Math.round(audioRef.current?.duration)}
+        max={Math.round(audio?.duration)}
         min={0}
       />
       <div className='AudioBox__timer'>
         <Text weight={400} size={8}>
-          {audioRef.current && formatProgress()}
+          {(audio && formatProgress()) || '00:00:00'}
         </Text>
         <Text weight={400} size={8}>
-          / {audioRef.current && formatDuration()}
+          / {(audio && formatDuration()) || '00:00:00'}
         </Text>
       </div>
     </>
   );
 }
 
-function AudioBoxVolume({ audioRef }: any) {
+function AudioBoxVolume({ audio }: any) {
   const [volume, setVolume] = React.useState(0.99);
 
   function onVolumeChange(event: any, value: number | number[]): void {
-    audioRef.current.volume = value as number;
+    if (audio) {
+      audio.volume = value as number;
+    }
     setVolume(value as number);
   }
 
   React.useEffect(() => {
-    if (audioRef.current) audioRef.current.volume = volume;
+    if (audio) audio.volume = volume;
   }, [volume]);
 
   function onVolumeToggle(): void {
-    if (audioRef.current.volume === 0) {
-      setVolume(0.99);
-    } else {
-      setVolume(0);
+    if (audio) {
+      if (audio.volume === 0) {
+        setVolume(0.99);
+      } else {
+        setVolume(0);
+      }
     }
   }
 
@@ -134,8 +142,8 @@ function AudioBox({
 }: any): React.FunctionComponentElement<React.ReactNode> {
   const { format, blob_uri } = data;
   const [isPlaying, setIsPlaying] = React.useState<boolean>(false);
-  const [canPlay, setCanPlay] = React.useState(true);
-  const audioRef = React.useRef<any>(null);
+  const [audio, setAudio] = React.useState<any>(null);
+  const [processing, setProcessing] = React.useState(false);
   let [blobData, setBlobData] = React.useState<string>(
     blobsURIModel.getState()[blob_uri] ?? null,
   );
@@ -143,26 +151,26 @@ function AudioBox({
   React.useEffect(() => {
     let timeoutID: number;
     let subscription: any;
-
-    if (blobData === null) {
-      if (blobsURIModel.getState()[blob_uri]) {
-        setBlobData(blobsURIModel.getState()[blob_uri]);
-      } else {
-        subscription = blobsURIModel.subscribe(blob_uri, (data) => {
-          setBlobData(data[blob_uri]);
-          subscription.unsubscribe();
-        });
-        timeoutID = window.setTimeout(() => {
-          if (blobsURIModel.getState()[blob_uri]) {
-            setBlobData(blobsURIModel.getState()[blob_uri]);
+    if (processing) {
+      if (blobData === null) {
+        if (blobsURIModel.getState()[blob_uri]) {
+          setBlobData(blobsURIModel.getState()[blob_uri]);
+        } else {
+          subscription = blobsURIModel.subscribe(blob_uri, (data) => {
+            setBlobData(data[blob_uri]);
             subscription.unsubscribe();
-          } else {
-            // addUriToList(blob_uri);
-          }
-        }, batchCollectDelay);
+          });
+          timeoutID = window.setTimeout(() => {
+            if (blobsURIModel.getState()[blob_uri]) {
+              setBlobData(blobsURIModel.getState()[blob_uri]);
+              subscription.unsubscribe();
+            } else {
+              // addUriToList(blob_uri);
+            }
+          }, batchCollectDelay);
+        }
       }
     }
-
     return () => {
       if (timeoutID) {
         clearTimeout(timeoutID);
@@ -171,51 +179,52 @@ function AudioBox({
         subscription.unsubscribe();
       }
     };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  });
+  }, [processing]);
 
   React.useEffect(() => {
     if (blobData) {
-      audioRef.current = new Audio(`data:audio/${format};base64,${blobData}`);
+      setAudio(new Audio(`data:audio/${format};base64,${blobData}`));
     }
   }, [blobData]);
 
   React.useEffect(() => {
     if (isPlaying) {
-      audioRef.current?.play();
+      audio?.play();
     } else {
-      audioRef.current?.pause();
+      audio?.pause();
     }
   }, [isPlaying]);
 
   React.useEffect(() => {
     // Pause and clean up on unmount
-    audioRef.current?.addEventListener('ended', onAudioEnded);
-    // audioRef.current?.addEventListener('canplay', handleReadyToPlay);
+    if (audio) {
+      audio?.addEventListener('ended', onAudioEnded);
+      audio?.addEventListener('canplay', handleReadyToPlay);
+    }
     return () => {
-      audioRef.current?.pause();
+      audio?.pause();
     };
-  }, []);
+  }, [audio]);
 
   function handleReadyToPlay() {
-    setCanPlay(true);
+    setProcessing(false);
   }
+
   function onAudioEnded(): void {
     setIsPlaying(false);
   }
 
   function onPLayChange(): void {
-    setIsPlaying(!isPlaying);
-
-    if (!blobData) {
+    if (audio) {
+      setIsPlaying(!isPlaying);
+    } else {
+      setProcessing(true);
       additionalProperties
         .getAudiosBlobsData([blob_uri])
         .call()
         .then((a: any) => {
           setIsPlaying(!isPlaying);
         });
-    } else {
-      setIsPlaying(!isPlaying);
     }
   }
 
@@ -236,21 +245,22 @@ function AudioBox({
         withOnlyIcon
         size='small'
       >
-        {canPlay ? (
-          <Icon name={isPlaying ? 'pause' : 'play'} />
-        ) : (
+        {processing ? (
           <CircularProgress size={12} thickness={4} />
+        ) : (
+          <Icon name={isPlaying ? 'pause' : 'play'} />
         )}
       </Button>
-      <AudiBoxProgress
-        audioRef={audioRef}
-        isPlaying={!!blobData && isPlaying}
-      />
-      <AudioBoxVolume audioRef={audioRef} />
-      <Button withOnlyIcon size='small' onClick={onDownload}>
-        <Text size={14}>
-          <Icon name='download' />
-        </Text>
+      <AudiBoxProgress audio={audio} isPlaying={!!blobData && isPlaying} />
+      <AudioBoxVolume audio={audio} />
+      <Button
+        withOnlyIcon
+        size='small'
+        onClick={() => {
+          onDownload();
+        }}
+      >
+        <Icon name='download' />
       </Button>
     </div>
   );
