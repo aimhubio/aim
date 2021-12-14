@@ -14,36 +14,32 @@ class Audio(CustomObject):
     AIM_NAME = 'aim.audio'
 
     # supported audio formats
-    UNKNOWN = 0
-    MP3 = 1
-    WAV = 2
-    FLAC = 3
+    UNKNOWN = ''
+    MP3 = 'mp3'
+    WAV = 'wav'
+    FLAC = 'flac'
 
-    __audio_format_map = {
-        UNKNOWN: 'unknown',
-        MP3: 'mp3',
-        WAV: 'wav',
-        FLAC: 'flac'
-    }
+    audio_formats = (MP3, WAV, FLAC)
 
     def __init__(self, data, **kwargs):
         super().__init__()
 
         caption = kwargs.get('caption', '')
         rate = kwargs.get('rate', 22050)
-        audio_format = kwargs.get('format', self.UNKNOWN)
+        audio_format = kwargs.get('format', self.UNKNOWN).lower()
 
         if inst_has_typename(data, ['ndarray.numpy']):
             # Currently, only WAV audio formats are supported for numpy
-            audio_format = self.__audio_format_map[self.WAV]
+            audio_format = self.WAV
             if 'rate' not in kwargs:
                 logger.warning(f'Parameter "rate" is not provided! Using default: {rate}')
             bs = wavfile.write(rate, data)
             data = bs
         else:
             # act as a regular file with enforced audio format definition by user side
-            audio_format = self.__audio_format_map.get(audio_format)
             if not audio_format:
+                raise ValueError('Audio format must be provided.')
+            if audio_format not in self.audio_formats:
                 raise ValueError('Invalid audio format is provided.')
 
         if not isinstance(data, io.BytesIO):
