@@ -1,22 +1,6 @@
 name: sanity checks on opened pull requests
 
 on:
-  pull_request_target:
-    branches:
-      - main
-    paths:
-      - 'aim/sdk/**'
-      - 'aim/web/api/**'
-      - 'aim/storage/**'
-      - '.github/workflows/pull-request.yml'
-      - 'tests/**'
-      - 'performance_tests/**'
-      - 'setup.py'
-    types:
-      - opened
-      - synchronize
-      - ready_for_review
-      - reopened
   pull_request:
     branches:
       - main

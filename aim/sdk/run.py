@@ -27,18 +27,19 @@ from aim.ext.cleanup import AutoClean
 from typing import Any, Dict, Iterator, Optional, Tuple, Union
 from typing import TYPE_CHECKING
 
+
 if TYPE_CHECKING:
     from pandas import DataFrame
 
-    from aim.sdk import (
-        Audios,
-        Distributions,
-        Figures,
-        Images,
-        Metric,
-    )
+    from aim.sdk.sequences.metric import Metric
+    from aim.sdk.sequences.image_sequence import Images
+    from aim.sdk.sequences.audio_sequence import Audios
+    from aim.sdk.sequences.distribution_sequence import Distributions
+    from aim.sdk.sequences.figure_sequence import Figures
+    from aim.sdk.sequences.text_sequence import Texts
     from aim.sdk.sequence_collection import SequenceCollection
     from aim.sdk.repo import Repo
+
 
 logger = logging.getLogger(__name__)
 
@@ -621,6 +622,22 @@ class Run(StructuredRunMixin):
             :obj:`Distributions` object if exists, `None` otherwise.
         """
         return self._get_sequence('distributions', name, context)
+
+    def get_text_sequence(
+            self,
+            name: str,
+            context: Context
+    ) -> Optional['Texts']:
+        """Retrieve texts sequence by it's name and context.
+
+        Args:
+             name (str): Tracked text sequence name.
+             context (:obj:`Context`): Tracking context.
+
+        Returns:
+            :obj:`Texts` object if exists, `None` otherwise.
+        """
+        return self._get_sequence('texts', name, context)
 
     def _get_sequence_dtype(
             self,
