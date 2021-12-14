@@ -64,7 +64,7 @@
 
   span {
     display: inline-block;
-    width: 120px;
+    width: toRem(120px);
     min-width: 120px;
     justify-content: center;
     overflow: hidden;

@@ -49,8 +49,8 @@
   &__textarea {
     flex: 1;
     .MuiOutlinedInput-multiline.MuiOutlinedInput-marginDense {
-      padding-top: 7.5px;
-      padding-bottom: 7.5px;
+      padding-top: toRem(7.5px);
+      padding-bottom: toRem(7.5px);
     }
   }
   &__search__button {
