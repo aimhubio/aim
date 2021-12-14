@@ -1,5 +1,6 @@
 import io
 import logging
+import os.path
 
 from aim.sdk.num_utils import inst_has_typename
 from aim.sdk.objects.io import wavfile
@@ -35,25 +36,33 @@ class Audio(CustomObject):
                 logger.warning(f'Parameter "rate" is not provided! Using default: {rate}')
             bs = wavfile.write(rate, data)
             data = bs
-        else:
-            # act as a regular file with enforced audio format definition by user side
-            if not audio_format:
-                raise ValueError('Audio format must be provided.')
-            if audio_format not in self.audio_formats:
-                raise ValueError('Invalid audio format is provided.')
 
-        if not isinstance(data, io.BytesIO):
+        # act as a regular file with enforced audio format definition by user side
+        if not audio_format:
+            raise ValueError('Audio format must be provided.')
+        elif audio_format not in self.audio_formats:
+            raise ValueError('Invalid audio format is provided.')
+
+        if isinstance(data, str):
+            if not os.path.exists(data) or not os.path.isfile(data):
+                raise ValueError('Invalid audio file path')
+            with open(data, 'rb') as FS:
+                data = FS.read()
+        elif isinstance(data, io.BytesIO):
+            data = data.read()
+
+        if not isinstance(data, bytes):
             raise TypeError('Content is not a byte-stream object')
 
         self._prepare(data, caption=caption, format=audio_format)
 
-    def _prepare(self, buffer, **extra):
-        assert isinstance(buffer, io.BytesIO)
+    def _prepare(self, data, **extra):
+        assert isinstance(data, bytes)
 
         for k, v in extra.items():
             self.storage[k] = v
         self.storage['source'] = 'audio'
-        self.storage['data'] = BLOB(data=buffer.read())
+        self.storage['data'] = BLOB(data=data)
 
     def to_numpy(self):
         """
@@ -65,7 +74,7 @@ class Audio(CustomObject):
         return wavfile.read(self.get())
 
     def get(self) -> io.BytesIO:
-        bs = self.storage.get('bytes')
+        bs = self.storage.get('data')
         if not bs:
             return io.BytesIO()
         return io.BytesIO(bytes(bs))
