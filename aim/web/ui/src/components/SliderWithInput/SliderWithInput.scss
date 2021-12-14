@@ -70,7 +70,7 @@
     margin-right: 2rem;
     padding-bottom: toRem(8px);
     .Slider {
-      padding-bottom: 3px;
+      padding-bottom: toRem(3px);
     }
     &__sliderTitleBox {
       line-height: toRem(18px);
