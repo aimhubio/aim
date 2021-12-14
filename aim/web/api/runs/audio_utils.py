@@ -4,36 +4,35 @@ from typing import TYPE_CHECKING
 from aim.storage.treeutils import encode_tree
 
 from aim.storage.context import Context
-from aim.sdk.objects import Image
+from aim.sdk.objects import Audio
 from aim.sdk.run import Run
 from aim.sdk.sequence_collection import SequenceCollection
 from aim.sdk.sequence import Sequence
 from aim.sdk.uri_service import URIService, generate_resource_path
 
-from aim.web.api.runs.utils import get_run_props, collect_run_streamable_data, IndexRange, sliced_custom_object_record
+from aim.web.api.runs.utils import get_run_props, collect_run_streamable_data, IndexRange
 from aim.web.api.runs.pydantic_models import TraceBase
 
 if TYPE_CHECKING:
     from aim.sdk import Repo
 
 
-def img_record_to_encodable(image_record: Image, trace, step):
-    img_dump = image_record.json()
-    image_resource_path = generate_resource_path(trace.values.tree.container, (step, 'data'))
-    img_dump['blob_uri'] = URIService.generate_uri(trace.run.repo, trace.run.hash, 'seqs', image_resource_path)
-    img_dump['index'] = 0
-    return [img_dump]
+def sliced_audio_record(values: Iterable[Audio], _slice: slice) -> Iterable[Audio]:
+    yield from zip(range(_slice.start, _slice.stop, _slice.step), values[_slice])
 
 
-def img_collection_record_to_encodable(image_record: Iterable[Image], trace, step):
-    img_list = []
-    for idx, img in image_record:
-        img_dump = img.json()
-        image_resource_path = generate_resource_path(trace.values.tree.container, (step, idx, 'data'))
-        img_dump['blob_uri'] = URIService.generate_uri(trace.run.repo, trace.run.hash, 'seqs', image_resource_path)
-        img_dump['index'] = idx
-        img_list.append(img_dump)
-    return img_list
+def audio_record_to_encodable(obj, trace, step, index=0):
+    resource_path = generate_resource_path(trace.values.tree.container, (step, 'data'))
+    return [{
+        'index': index,
+        'format': obj.storage.get('format'),
+        'caption': obj.storage.get('caption'),
+        'blob_uri': URIService.generate_uri(trace.run.repo, trace.run.hash, 'seqs', resource_path)
+    }]
+
+
+def audio_collection_record_to_encodable(records: Iterable[Audio], trace, step):
+    return [audio_record_to_encodable(obj, trace, step, idx)[0] for idx, obj in records]
 
 
 def get_record_and_index_range(traces: SequenceCollection, trace_cache: dict) -> Tuple[IndexRange, IndexRange]:
@@ -64,9 +63,9 @@ def get_trace_info(trace: Sequence, rec_slice: slice, rec_density: int, idx_slic
     for step, val in steps_vals:
         steps.append(step)
         if isinstance(val, list):
-            values.append(img_collection_record_to_encodable(sliced_custom_object_record(val, idx_slice), trace, step))
+            values.append(audio_collection_record_to_encodable(sliced_audio_record(val, idx_slice), trace, step))
         elif idx_slice.start == 0:
-            values.append(img_record_to_encodable(val, trace, step))
+            values.append(audio_record_to_encodable(val, trace, step))
         else:
             values.append([])
 
@@ -80,7 +79,7 @@ def get_trace_info(trace: Sequence, rec_slice: slice, rec_density: int, idx_slic
     }
 
 
-async def image_search_result_streamer(traces: SequenceCollection,
+async def audio_search_result_streamer(traces: SequenceCollection,
                                        rec_range: IndexRange, rec_density: int,
                                        idx_range: IndexRange, idx_density: int,
                                        calc_total_ranges: bool):
@@ -140,21 +139,21 @@ async def image_search_result_streamer(traces: SequenceCollection,
                 yield _pack_run_data(run_trace_collection.run, traces_list)
 
 
-def images_batch_result_streamer(uri_batch: List[str], repo: 'Repo'):
+def audios_batch_result_streamer(uri_batch: List[str], repo: 'Repo'):
     uri_service = URIService(repo=repo)
     batch_iterator = uri_service.request_batch(uri_batch=uri_batch)
     for it in batch_iterator:
         yield collect_run_streamable_data(encode_tree(it))
 
 
-def requested_image_traces_streamer(run: Run,
+def requested_audio_traces_streamer(run: Run,
                                     requested_traces: List[TraceBase],
                                     rec_range, idx_range,
                                     rec_num: int = 50, idx_num: int = 5) -> List[dict]:
     for requested_trace in requested_traces:
         trace_name = requested_trace.name
         context = Context(requested_trace.context)
-        trace = run.get_image_sequence(name=trace_name, context=context)
+        trace = run.get_audio_sequence(name=trace_name, context=context)
         if not trace:
             continue
 
@@ -175,11 +174,9 @@ def requested_image_traces_streamer(run: Run,
         for step, val in steps_vals:
             steps.append(step)
             if isinstance(val, list):
-                values.append(
-                    img_collection_record_to_encodable(sliced_custom_object_record(val, idx_slice), trace, step)
-                )
+                values.append(audio_collection_record_to_encodable(sliced_audio_record(val, idx_slice), trace, step))
             elif idx_slice.start == 0:
-                values.append(img_record_to_encodable(val, trace, step))
+                values.append(audio_record_to_encodable(val, trace, step))
             else:
                 values.append([])
 

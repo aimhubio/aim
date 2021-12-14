@@ -27,15 +27,19 @@ from aim.ext.cleanup import AutoClean
 from typing import Any, Dict, Iterator, Optional, Tuple, Union
 from typing import TYPE_CHECKING
 
+
 if TYPE_CHECKING:
     from pandas import DataFrame
 
-    from aim.sdk.metric import Metric
-    from aim.sdk.image_sequence import Images
-    from aim.sdk.figure_sequence import Figures
-    from aim.sdk.distribution_sequence import Distributions
+    from aim.sdk.sequences.metric import Metric
+    from aim.sdk.sequences.image_sequence import Images
+    from aim.sdk.sequences.audio_sequence import Audios
+    from aim.sdk.sequences.distribution_sequence import Distributions
+    from aim.sdk.sequences.figure_sequence import Figures
+    from aim.sdk.sequences.text_sequence import Texts
     from aim.sdk.sequence_collection import SequenceCollection
     from aim.sdk.repo import Repo
+
 
 logger = logging.getLogger(__name__)
 
@@ -445,6 +449,7 @@ class Run(StructuredRunMixin):
             def update_trace_dtype(new_dtype):
                 self.meta_tree['traces_types', new_dtype, ctx.idx, name] = 1
                 seq_info.sequence_dtype = self.meta_run_tree['traces', ctx.idx, name, 'dtype'] = new_dtype
+
             compatible = check_types_compatibility(dtype, seq_info.sequence_dtype, update_trace_dtype)
             if not compatible:
                 raise ValueError(f'Cannot log value \'{value}\' on sequence \'{name}\'. Incompatible data types.')
@@ -586,6 +591,22 @@ class Run(StructuredRunMixin):
         """
         return self._get_sequence('figures', name, context)
 
+    def get_audio_sequence(
+            self,
+            name: str,
+            context: Context
+    ) -> Optional['Audios']:
+        """Retrieve audios sequence by its name and context.
+
+        Args:
+             name (str): Tracked audios sequence name.
+             context (:obj:`Context`): Tracking context.
+
+        Returns:
+            :obj:`Audios` object if exists, `None` otherwise.
+        """
+        return self._get_sequence('audios', name, context)
+
     def get_distribution_sequence(
             self,
             name: str,
@@ -601,6 +622,22 @@ class Run(StructuredRunMixin):
             :obj:`Distributions` object if exists, `None` otherwise.
         """
         return self._get_sequence('distributions', name, context)
+
+    def get_text_sequence(
+            self,
+            name: str,
+            context: Context
+    ) -> Optional['Texts']:
+        """Retrieve texts sequence by it's name and context.
+
+        Args:
+             name (str): Tracked text sequence name.
+             context (:obj:`Context`): Tracking context.
+
+        Returns:
+            :obj:`Texts` object if exists, `None` otherwise.
+        """
+        return self._get_sequence('texts', name, context)
 
     def _get_sequence_dtype(
             self,
