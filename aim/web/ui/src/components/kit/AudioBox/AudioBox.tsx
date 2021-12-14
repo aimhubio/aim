@@ -1,6 +1,8 @@
 import React from 'react';
 import moment from 'moment';
 
+import { CircularProgress } from '@material-ui/core';
+
 import { Button, Icon, Slider, Text } from 'components/kit';
 
 import { batchCollectDelay } from 'config/imagesConfigs/imagesConfig';
@@ -52,17 +54,11 @@ function AudiBoxProgress({ audioRef, isPlaying }: any) {
   function formatDuration(): string {
     return moment
       .utc(Math.round(audioRef.current?.duration || 0) * 1000)
-      .format(defineTimeFormat(audioRef?.current?.duration || 0));
-  }
-
-  function defineTimeFormat(duration: number): string {
-    return duration > 3600 ? 'HH:mm:ss' : 'mm:ss';
+      .format('HH:mm:ss');
   }
 
   function formatProgress(): string {
-    return moment
-      .utc(Math.round(trackProgress) * 1000)
-      .format(defineTimeFormat(audioRef.current?.duration || 0));
+    return moment.utc(Math.round(trackProgress) * 1000).format('HH:mm:ss');
   }
 
   return (
@@ -76,15 +72,11 @@ function AudiBoxProgress({ audioRef, isPlaying }: any) {
         max={Math.round(audioRef.current?.duration)}
         min={0}
       />
-      <div
-        className={`AudioBox__timer ${
-          audioRef.current?.duration > 3600 ? 'AudioBox__timer-long' : ''
-        }`}
-      >
-        <Text weight={400} size={10}>
+      <div className='AudioBox__timer'>
+        <Text weight={400} size={8}>
           {audioRef.current && formatProgress()}
         </Text>
-        <Text weight={400} size={10}>
+        <Text weight={400} size={8}>
           / {audioRef.current && formatDuration()}
         </Text>
       </div>
@@ -120,9 +112,7 @@ function AudioBoxVolume({ audioRef }: any) {
         size='small'
         className='AudioBox__volume--button'
       >
-        <Text size={16}>
-          <Icon name={volume === 0 ? 'voice-off' : 'voice-on'} />
-        </Text>
+        <Icon name={volume === 0 ? 'voice-off' : 'voice-on'} />
       </Button>
       <div className='AudioBox__volume__Slider'>
         <Slider
@@ -142,51 +132,50 @@ function AudioBox({
   data,
   addUriToList,
 }: any): React.FunctionComponentElement<React.ReactNode> {
-  const { format, blob_uri } = data;
+  // const { format, blob_uri } = data;
   const [isPlaying, setIsPlaying] = React.useState<boolean>(false);
   const [canPlay, setCanPlay] = React.useState(false);
   const audioRef = React.useRef<any>(
-    // new Audio(URL.createObjectURL(props?.data.blob_uri)),
-    null,
+    new Audio('https://dl2.mp3party.net/online/8881505.mp3'),
   );
 
-  let [blobData, setBlobData] = React.useState<string>(
-    blobsURIModel.getState()[blob_uri] ?? null,
-  );
+  // let [blobData, setBlobData] = React.useState<string>(
+  //   blobsURIModel.getState()[blob_uri] ?? null,
+  // );
 
-  React.useEffect(() => {
-    let timeoutID: number;
-    let subscription: any;
+  // React.useEffect(() => {
+  //   let timeoutID: number;
+  //   let subscription: any;
 
-    if (blobData === null) {
-      if (blobsURIModel.getState()[blob_uri]) {
-        setBlobData(blobsURIModel.getState()[blob_uri]);
-      } else {
-        subscription = blobsURIModel.subscribe(blob_uri, (data) => {
-          setBlobData(data[blob_uri]);
-          subscription.unsubscribe();
-        });
-        timeoutID = window.setTimeout(() => {
-          if (blobsURIModel.getState()[blob_uri]) {
-            setBlobData(blobsURIModel.getState()[blob_uri]);
-            subscription.unsubscribe();
-          } else {
-            addUriToList(blob_uri);
-          }
-        }, batchCollectDelay);
-      }
-    }
+  //   if (blobData === null) {
+  //     if (blobsURIModel.getState()[blob_uri]) {
+  //       setBlobData(blobsURIModel.getState()[blob_uri]);
+  //     } else {
+  //       subscription = blobsURIModel.subscribe(blob_uri, (data) => {
+  //         setBlobData(data[blob_uri]);
+  //         subscription.unsubscribe();
+  //       });
+  //       timeoutID = window.setTimeout(() => {
+  //         if (blobsURIModel.getState()[blob_uri]) {
+  //           setBlobData(blobsURIModel.getState()[blob_uri]);
+  //           subscription.unsubscribe();
+  //         } else {
+  //           addUriToList(blob_uri);
+  //         }
+  //       }, batchCollectDelay);
+  //     }
+  //   }
 
-    return () => {
-      if (timeoutID) {
-        clearTimeout(timeoutID);
-      }
-      if (subscription) {
-        subscription.unsubscribe();
-      }
-    };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  });
+  //   return () => {
+  //     if (timeoutID) {
+  //       clearTimeout(timeoutID);
+  //     }
+  //     if (subscription) {
+  //       subscription.unsubscribe();
+  //     }
+  //   };
+  //   // eslint-disable-next-line react-hooks/exhaustive-deps
+  // });
   React.useEffect(() => {
     if (isPlaying) {
       audioRef.current?.play();
@@ -212,15 +201,14 @@ function AudioBox({
   }
 
   function onPLayChange(): void {
-    setIsPlaying(!isPlaying);
+    if (canPlay) {
+      setIsPlaying(!isPlaying);
+    }
   }
 
   function onDownload(): void {
     var element = document.createElement('a');
-    element.setAttribute(
-      'href',
-      'https://mp3minusovki.com/music/fhvndfjwserjgt/9f51406596884933e4a839b32e7e528e/2a8e57d1d2e0a7556a4f6e94a311f4d5.mp3',
-    );
+    element.setAttribute('href', 'https://dl2.mp3party.net/online/8881505.mp3');
     element.setAttribute('download', 'name');
     document.body.appendChild(element);
     element.click();
@@ -228,21 +216,23 @@ function AudioBox({
   }
 
   return (
-    <div className={'AudioBox'}>
+    <div className='AudioBox'>
       <Button
         onClick={onPLayChange}
         color='secondary'
         withOnlyIcon
         size='small'
       >
-        <Text>
+        {canPlay ? (
           <Icon name={isPlaying ? 'pause' : 'play'} />
-        </Text>
+        ) : (
+          <CircularProgress size={12} thickness={4} />
+        )}
       </Button>
       <AudiBoxProgress audioRef={audioRef} isPlaying={isPlaying} />
       <AudioBoxVolume audioRef={audioRef} />
       <Button withOnlyIcon size='small' onClick={onDownload}>
-        <Text size={16}>
+        <Text size={14}>
           <Icon name='download' />
         </Text>
       </Button>
