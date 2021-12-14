@@ -18,6 +18,7 @@ const BookmarkIconType: { [key: string]: IconName } = {
   images: 'images',
   params: 'params',
   metrics: 'metrics',
+  scatters: 'scatterplot',
 };
 
 function BookmarkCard({

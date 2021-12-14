@@ -23,8 +23,6 @@ function drawAxes(args: IDrawAxesArgs): void {
     height,
     margin,
     alignmentConfig,
-    xValues,
-    attributesRef,
     humanizerConfigRef,
     drawBgTickLines = {
       x: false,
@@ -39,27 +37,51 @@ function drawAxes(args: IDrawAxesArgs): void {
   function getFormattedXAxis(xScale: d3.AxisScale<d3.AxisDomain>) {
     let xAxis = d3.axisBottom(xScale);
     let xAlignmentText = '';
-    const [first, last] = attributesRef.current.xScale.domain();
+    const domainData = xScale.domain();
+    const first: any = domainData[0];
+    const last: any = domainData[domainData.length - 1];
+
+    let ticksCount = Math.floor(plotBoxRef.current.width / 90);
+    ticksCount = ticksCount > 3 ? (ticksCount < 10 ? ticksCount : 10) : 3;
+    xAxis.ticks(ticksCount);
+    if (domainData.length - 1 > ticksCount) {
+      const tickValues = domainData.filter(
+        (v, i, arr) => i % Math.ceil((arr.length - 1) / ticksCount) === 0,
+      );
+      xAxis.tickValues(tickValues);
+    }
 
     const alignmentKey = _.capitalize(getKeyByAlignment(alignmentConfig));
-
     switch (alignmentConfig?.type) {
+      case AlignmentOptionsEnum.STEP:
+        xAlignmentText = alignmentKey ? alignmentKey + 's' : 'Steps';
+
+        ticksCount = Math.floor(plotBoxRef.current.width / 90);
+        ticksCount = ticksCount > 1 ? ticksCount - 1 : 1;
+        xAxis.ticks(ticksCount);
+        break;
       case AlignmentOptionsEnum.EPOCH:
         {
           xAlignmentText = alignmentKey ? alignmentKey + 's' : '';
 
-          let ticksCount = Math.floor(plotBoxRef.current.width / 50);
+          ticksCount = Math.floor(plotBoxRef.current.width / 50);
           ticksCount = ticksCount > 1 ? ticksCount - 1 : 1;
-          const ticks = xValues.filter((x) => Math.round(x) - x === 0);
 
-          xAxis.ticks(ticksCount).tickValues(ticks);
+          const tickValues = xScale.domain().filter((x) => {
+            if (typeof x === 'number') {
+              return Math.round(x) - x === 0;
+            }
+            return true;
+          });
+
+          xAxis.ticks(ticksCount).tickValues(tickValues);
         }
         break;
       case AlignmentOptionsEnum.RELATIVE_TIME:
         {
           xAlignmentText = alignmentKey || '';
 
-          let ticksCount = Math.floor(plotBoxRef.current.width / 85);
+          ticksCount = Math.floor(plotBoxRef.current.width / 85);
           ticksCount = ticksCount > 1 ? ticksCount - 1 : 1;
           const minute = 60;
           const hour = 60 * minute;
@@ -104,7 +126,6 @@ function drawAxes(args: IDrawAxesArgs): void {
               if (i === 0 || i === tickValues!.length - 1) {
                 return true;
               }
-
               const interval = Math.floor(
                 (tickValues!.length - 2) / (ticksCount - 2),
               );
@@ -129,7 +150,7 @@ function drawAxes(args: IDrawAxesArgs): void {
         {
           xAlignmentText = alignmentKey || '';
 
-          let ticksCount = Math.floor(plotBoxRef.current.width / 120);
+          ticksCount = Math.floor(plotBoxRef.current.width / 120);
           ticksCount = ticksCount > 1 ? ticksCount - 1 : 1;
           let tickValues: number[] = [];
           const d = (last - first) / (ticksCount - 1);
@@ -156,24 +177,13 @@ function drawAxes(args: IDrawAxesArgs): void {
             )
             .tickFormat((d) => moment(+d).format('HH:mm:ss D MMM, YY'));
         }
-
         break;
       case AlignmentOptionsEnum.CUSTOM_METRIC:
-        {
-          xAlignmentText = alignmentConfig?.metric || '';
-
-          let ticksCount = Math.floor(plotBoxRef.current.width / 120);
-          ticksCount = ticksCount > 1 ? ticksCount - 1 : 1;
-          xAxis.ticks(ticksCount);
-        }
-        break;
-      default: {
-        xAlignmentText = alignmentKey ? alignmentKey + 's' : 'Steps';
-
-        let ticksCount = Math.floor(plotBoxRef.current.width / 90);
+        xAlignmentText = alignmentConfig?.metric || '';
+        ticksCount = Math.floor(plotBoxRef.current.width / 120);
         ticksCount = ticksCount > 1 ? ticksCount - 1 : 1;
         xAxis.ticks(ticksCount);
-      }
+        break;
     }
 
     if (drawBgTickLines.x) {
@@ -184,9 +194,15 @@ function drawAxes(args: IDrawAxesArgs): void {
 
   function getFormattedYAxis(yScale: d3.AxisScale<d3.AxisDomain>) {
     const yAxis = d3.axisLeft(yScale);
-    let ticksCount = Math.floor(plotBoxRef.current.height / 20);
-    ticksCount = ticksCount > 3 ? (ticksCount < 10 ? ticksCount : 10) : 3;
+    let ticksCount = Math.floor(plotBoxRef.current.height / 50);
+    ticksCount = ticksCount > 3 ? (ticksCount < 20 ? ticksCount : 20) : 3;
     yAxis.ticks(ticksCount);
+    if (yScale.domain().length > ticksCount) {
+      const ticks = yScale
+        .domain()
+        .filter((v, i, arr) => i % Math.ceil(arr.length / ticksCount) === 0);
+      yAxis.tickValues(ticks);
+    }
 
     if (drawBgTickLines.y) {
       yAxis.tickSize(-width + (margin.left + margin.right)).tickSizeOuter(0);
@@ -207,6 +223,26 @@ function drawAxes(args: IDrawAxesArgs): void {
     .attr('transform', `translate(0, ${plotBoxRef.current.height})`)
     .call(xAxis);
 
+  let xTickWidth = Math.floor(
+    plotBoxRef.current.width /
+      axesRef.current.xAxis.selectAll('.tick').nodes().length -
+      1,
+  );
+  xTickWidth = xTickWidth > 120 ? 120 : xTickWidth < 0 ? 0 : xTickWidth;
+
+  axesRef.current.xAxis
+    .selectAll('.tick')
+    .append('foreignObject')
+    .attr('x', -xTickWidth / 2)
+    .attr('y', 8)
+    .attr('height', 12)
+    .attr('width', xTickWidth)
+    .html((d: string, i: number, nodes: NodeList) => {
+      const text = nodes[i]?.parentNode as SVGElement;
+      const textContent = text?.textContent || d;
+      return `<div style='width: ${xTickWidth}px' class='xAxisTick' title='${textContent}'>${textContent}</div>`;
+    });
+
   axesRef.current.yAxis = axesNodeRef.current
     ?.append('g')
     .attr('class', 'yAxis')
@@ -214,6 +250,21 @@ function drawAxes(args: IDrawAxesArgs): void {
     .attr('color', '#8E9BAE')
     .attr('fill', 'none')
     .call(yAxis);
+
+  const yTickWidth = margin.left - 10;
+
+  axesRef.current.yAxis
+    .selectAll('.tick')
+    .append('foreignObject')
+    .attr('x', -yTickWidth - 10)
+    .attr('y', -8)
+    .attr('height', 12)
+    .attr('width', yTickWidth)
+    .html((d: string, i: number, nodes: NodeList) => {
+      const text = nodes[i]?.parentNode as SVGElement;
+      const textContent = text?.textContent || d;
+      return `<div style='width: ${50}px' class='yAxisTick' title='${textContent}'>${textContent}</div>`;
+    });
 
   svgNodeRef.current
     .append('text')

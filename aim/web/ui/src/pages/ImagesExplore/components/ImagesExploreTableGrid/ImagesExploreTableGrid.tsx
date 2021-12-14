@@ -6,7 +6,7 @@ import { merge } from 'lodash-es';
 import { Link, Tooltip } from '@material-ui/core';
 
 import TableSortIcons from 'components/Table/TableSortIcons';
-import { Icon, Button, Badge, JsonViewPopover } from 'components/kit';
+import { Badge, JsonViewPopover } from 'components/kit';
 import ControlPopover from 'components/ControlPopover/ControlPopover';
 
 import COLORS from 'config/colors/colors';

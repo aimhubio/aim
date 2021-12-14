@@ -20,10 +20,8 @@ import projectsModel from 'services/models/projects/projectsModel';
 import imagesExploreAppModel from 'services/models/imagesExplore/imagesExploreAppModel';
 
 import { IProjectsModelState } from 'types/services/models/projects/projectsModel';
-import {
-  ISelectMetricsOption,
-  ISelectFormProps,
-} from 'types/pages/imagesExplore/components/SelectForm/SelectForm';
+import { ISelectFormProps } from 'types/pages/imagesExplore/components/SelectForm/SelectForm';
+import { ISelectOption } from 'types/services/models/explorer/createAppModel';
 
 import contextToString from 'utils/contextToString';
 
@@ -70,22 +68,22 @@ function SelectForm({
     imagesExploreAppModel.abortRequest();
   }
 
-  function onSelect(event: object, value: ISelectMetricsOption[]): void {
+  function onSelect(event: object, value: ISelectOption[]): void {
     const lookup = value.reduce(
-      (acc: { [key: string]: number }, curr: ISelectMetricsOption) => {
+      (acc: { [key: string]: number }, curr: ISelectOption) => {
         acc[curr.label] = ++acc[curr.label] || 0;
         return acc;
       },
       {},
     );
     onImagesExploreSelectChange(
-      value.filter((option) => lookup[option.label] === 0),
+      value.filter((option: ISelectOption) => lookup[option.label] === 0),
     );
   }
 
   function handleDelete(field: string): void {
-    let fieldData = [...selectedImagesData?.images].filter(
-      (opt: ISelectMetricsOption) => opt.label !== field,
+    let fieldData = [...selectedImagesData?.options].filter(
+      (opt: ISelectOption) => opt.label !== field,
     );
     onImagesExploreSelectChange(fieldData);
   }
@@ -108,8 +106,8 @@ function SelectForm({
     setAnchorEl(null);
   }
 
-  const metricsOptions: ISelectMetricsOption[] = React.useMemo(() => {
-    let data: ISelectMetricsOption[] = [];
+  const metricsOptions: ISelectOption[] = React.useMemo(() => {
+    let data: ISelectOption[] = [];
     let index: number = 0;
     if (projectsData?.images) {
       for (let key in projectsData.images) {
@@ -118,7 +116,7 @@ function SelectForm({
           group: key,
           color: COLORS[0][index % COLORS[0].length],
           value: {
-            metric_name: key,
+            option_name: key,
             context: null,
           },
         });
@@ -132,7 +130,7 @@ function SelectForm({
               group: key,
               color: COLORS[0][index % COLORS[0].length],
               value: {
-                metric_name: key,
+                option_name: key,
                 context: val,
               },
             });
@@ -208,7 +206,7 @@ function SelectForm({
                       disablePortal={true}
                       disableCloseOnSelect
                       options={metricsOptions}
-                      value={selectedImagesData?.images ?? ''}
+                      value={selectedImagesData?.options ?? ''}
                       onChange={onSelect}
                       groupBy={(option) => option.group}
                       getOptionLabel={(option) => option.label}
@@ -231,8 +229,8 @@ function SelectForm({
                       )}
                       renderOption={(option) => {
                         let selected: boolean =
-                          !!selectedImagesData?.images.find(
-                            (item: ISelectMetricsOption) =>
+                          !!selectedImagesData?.options.find(
+                            (item: ISelectOption) =>
                               item.label === option.label,
                           )?.label;
                         return (
@@ -257,28 +255,26 @@ function SelectForm({
                     orientation='vertical'
                     flexItem
                   />
-                  {selectedImagesData?.images.length === 0 && (
+                  {selectedImagesData?.options.length === 0 && (
                     <span className='SelectForm__tags__empty'>
                       No images are selected
                     </span>
                   )}
                   <Box className='SelectForm__tags ScrollBar__hidden'>
-                    {selectedImagesData?.images?.map(
-                      (tag: ISelectMetricsOption) => {
-                        return (
-                          <Badge
-                            size='large'
-                            key={tag.label}
-                            color={tag.color}
-                            label={tag.label}
-                            onDelete={handleDelete}
-                          />
-                        );
-                      },
-                    )}
+                    {selectedImagesData?.options?.map((tag: ISelectOption) => {
+                      return (
+                        <Badge
+                          size='large'
+                          key={tag.label}
+                          color={tag.color}
+                          label={tag.label}
+                          onDelete={handleDelete}
+                        />
+                      );
+                    })}
                   </Box>
                 </Box>
-                {selectedImagesData?.images.length > 1 && (
+                {selectedImagesData?.options.length > 1 && (
                   <span
                     onClick={() => onImagesExploreSelectChange([])}
                     className='SelectForm__clearAll'

@@ -1,6 +1,6 @@
 import COLORS from 'config/colors/colors';
 
-function getCorrelationsMockData(count: number = 100) {
+function getScattersMockData(count: number = 100) {
   return new Array(count).fill('').map((v, i) => ({
     key: `${i}`,
     data: {
@@ -14,4 +14,4 @@ function getCorrelationsMockData(count: number = 100) {
   }));
 }
 
-export default getCorrelationsMockData;
+export default getScattersMockData;

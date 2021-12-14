@@ -42,7 +42,7 @@ export interface IMetricTrace {
   x_axis_iters?: ITraceData;
 }
 
-export interface IRunParam {
+export interface IRunParams {
   [key: string]: any;
 }
 

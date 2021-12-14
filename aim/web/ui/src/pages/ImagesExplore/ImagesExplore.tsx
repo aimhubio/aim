@@ -13,13 +13,14 @@ import ImagesExploreRangePanel from 'components/ImagesExploreRangePanel';
 
 import { ResizeModeEnum } from 'config/enums/tableEnums';
 import { RowHeightSize } from 'config/table/tableConfigs';
+import GroupingPopovers from 'config/grouping/GroupingPopovers';
 
 import usePanelResize from 'hooks/resize/usePanelResize';
 import useModel from 'hooks/model/useModel';
 import useResizeObserver from 'hooks/window/useResizeObserver';
 
 import SelectForm from 'pages/ImagesExplore/components/SelectForm/SelectForm';
-import Grouping from 'pages/Metrics/components/Grouping/Grouping';
+import Grouping from 'pages/components/Grouping/Grouping';
 import Controls from 'pages/ImagesExplore/components/Controls/Controls';
 
 import imagesExploreAppModel from 'services/models/imagesExplore/imagesExploreAppModel';
@@ -157,6 +158,9 @@ function ImagesExplore(): React.FunctionComponentElement<React.ReactNode> {
               searchButtonDisabled={imagesExploreData?.searchButtonDisabled}
             />
             <Grouping
+              groupingPopovers={GroupingPopovers.filter(
+                (g) => g.groupName === 'group',
+              )}
               groupingData={imagesExploreData?.config?.grouping}
               groupingSelectOptions={imagesExploreData?.groupingSelectOptions}
               onGroupingSelectChange={
@@ -170,7 +174,6 @@ function ImagesExplore(): React.FunctionComponentElement<React.ReactNode> {
               }
               onGroupingPersistenceChange={() => {}}
               onShuffleChange={() => {}}
-              singleGrouping
             />
           </div>
           <div
