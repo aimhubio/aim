@@ -33,7 +33,7 @@ class Audio(CustomObject):
             # Currently, only WAV audio formats are supported for numpy
             audio_format = self.WAV
             if 'rate' not in kwargs:
-                logger.warning(f'Parameter "rate" is not provided! Using default: {rate}')
+                logger.info(f'Parameter "rate" is not provided! Using default: {rate}')
             bs = wavfile.write(rate, data)
             data = bs
 
@@ -41,7 +41,7 @@ class Audio(CustomObject):
         if not audio_format:
             raise ValueError('Audio format must be provided.')
         elif audio_format not in self.audio_formats:
-            raise ValueError('Invalid audio format is provided.')
+            raise ValueError(f'Invalid audio format is provided. Must be one of {self.audio_formats}')
 
         if isinstance(data, str):
             if not os.path.exists(data) or not os.path.isfile(data):
@@ -61,7 +61,6 @@ class Audio(CustomObject):
 
         for k, v in extra.items():
             self.storage[k] = v
-        self.storage['source'] = 'audio'
         self.storage['data'] = BLOB(data=data)
 
     def to_numpy(self):
