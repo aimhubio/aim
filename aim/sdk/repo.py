@@ -361,6 +361,18 @@ class Repo:
         from aim.sdk.sequences.image_sequence import Images
         return QuerySequenceCollection(repo=self, seq_cls=Images, query=query)
 
+    def query_audios(self, query: str = '') -> QuerySequenceCollection:
+        """Get audio collections satisfying query expression.
+
+        Args:
+             query (str): query expression.
+        Returns:
+            :obj:`SequenceCollection`: Iterable for audio sequences matching query expression.
+        """
+        self._prepare_runs_cache()
+        from aim.sdk.sequences.audio_sequence import Audios
+        return QuerySequenceCollection(repo=self, seq_cls=Audios, query=query)
+
     def query_figure_objects(self, query: str = '') -> QuerySequenceCollection:
         """Get Figures collections satisfying query expression.
 
