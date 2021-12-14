@@ -2,6 +2,7 @@
 
 ## Unreleased
 
+- Add ability to track and visualize texts (mihran113, roubkar)
 - Add Scatter Explorer to visualize correlations between metric last value and hyperparameter (KaroMourad)
 - Add ability to track and visualize plotly objects (devfox-se, Hamik25, rubenaprikyan)
 - Add ability to query distributions by step range and density (VkoHov, rubenaprikyan)
