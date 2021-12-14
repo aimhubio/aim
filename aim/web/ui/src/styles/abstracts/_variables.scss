@@ -4,7 +4,7 @@ $primary-color: #1473e6;
 $error-color: #e64e48;
 $success-color: #2bc784;
 $warning-color: #e8bb1b;
-//colors
+// colors
 $blue: #4b9bff;
 $orange: #ffb46e;
 $red: #ff5f5f;
@@ -34,7 +34,7 @@ $primary-lighter: #dfe6f7;
 $primary-light: #7a94cc;
 
 // tinted colors
-$primary-color-110: #1266CC;
+$primary-color-110: #1266cc;
 $primary-color-90: #2c81e9;
 $primary-color-80: #438feb;
 $primary-color-70: #5b9dee;
@@ -81,7 +81,7 @@ $error-color-50: #f3a7a4;
 $error-color-10: #fdeded;
 $error-color-5: #f7f1f5;
 
-//border
+// border
 $border-color-main: $primary-color-10;
 $border-main: 0.0625rem solid $border-color-main;
 $border-separator: 0.0625rem solid $primary-color-20;
@@ -98,7 +98,7 @@ $border-radius-sm: 0.25rem;
 $border-radius-md: 0.375rem;
 $border-radius-lg: 0.5rem;
 $border-radius-circle: 1.125rem;
-//text
+// text
 $text-color: $pico-80;
 $text-color-50: $pico-50;
 $text-xxs: 0.625rem;
@@ -116,14 +116,14 @@ $lg: 62em; // (min-width: 992px)
 $gl: 64em; //! gap `lg - xl` (min-width: 1024px)
 $xl: 75em; // (min-width: 1200px)
 $xxl: 80em; // (min-width: 1280px)
-//space
+// space
 $space-unit: 1rem;
 $space-xxxs: $space-unit * 0.25;
 $space-xxs: $space-unit * 0.375;
 $space-xs: $space-unit * 0.5;
 $space-sm: $space-unit * 0.75;
 $space-md: $space-unit * 1.25;
-//- to container
+// - to container
 $col-sm: 540px; // (max-width: 540px)
 $col-md: 720px; // (max-width: 720px)
 $col-lg: 960px; // (max-width: 960px)

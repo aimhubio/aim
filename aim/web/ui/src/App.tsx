@@ -12,7 +12,7 @@ import './App.scss';
 function App(): React.FunctionComponentElement<React.ReactNode> {
   return (
     <>
-      <BrowserRouter>
+      <BrowserRouter basename={(window as any).API_BASE_PATH}>
         <ProjectWrapper />
         <Theme>
           <div className='pageContainer'>
