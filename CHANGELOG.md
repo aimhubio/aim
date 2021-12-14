@@ -2,6 +2,7 @@
 
 ## Unreleased
 
+- Add ability to track and visualize plotly objects (devfox-se, Hamik25, rubenaprikyan)
 - Add ability to query distributions by step range and density (VkoHov, rubenaprikyan)
 - Implement images visualization tab in run detail page (VkoHov, KaroMourad)
 
