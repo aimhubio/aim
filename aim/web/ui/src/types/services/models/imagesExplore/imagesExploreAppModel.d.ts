@@ -1,7 +1,13 @@
+import { ResizeModeEnum } from 'config/enums/tableEnums';
+import { RowHeightSize } from 'config/table/tableConfigs';
+
 import { ITableRef } from 'types/components/Table/Table';
 import { INotification } from 'types/components/NotificationContainer/NotificationContainer';
-
-import { IPanelTooltip } from '../metrics/metricsAppModel';
+import { ISelectConfig } from 'types/services/models/explorer/createAppModel';
+import {
+  IPanelTooltip,
+  SortField,
+} from 'types/services/models/metrics/metricsAppModel';
 
 export interface IImagesExploreAppConfig {
   grouping: {
@@ -32,12 +38,7 @@ export interface IImagesExploreAppConfig {
       imageRendering: string;
     };
   };
-  select: {
-    images: ISelectMetricsOption[];
-    query: string;
-    advancedMode: boolean;
-    advancedQuery: string;
-  };
+  select: ISelectConfig;
   table: {
     resizeMode: ResizeModeEnum;
     rowHeight: RowHeightSize;

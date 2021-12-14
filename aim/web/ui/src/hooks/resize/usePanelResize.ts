@@ -2,14 +2,14 @@ import React from 'react';
 
 import { ResizeModeEnum } from 'config/enums/tableEnums';
 
-import { IMetricAppConfig } from 'types/services/models/metrics/metricsAppModel';
+import { ITableConfig } from 'types/services/models/explorer/createAppModel';
 
 function usePanelResize(
   wrapperRef: React.MutableRefObject<HTMLElement | any>,
   topPanelRef: React.MutableRefObject<HTMLElement | any>,
   bottomPanelRef: React.MutableRefObject<HTMLElement | any>,
   resizeElemRef: React.MutableRefObject<HTMLElement | any>,
-  tableConfig: IMetricAppConfig['table'],
+  tableConfig: ITableConfig | undefined,
   onResizeEnd: (height: string) => void,
 ) {
   const [panelResizing, setPanelResizing] = React.useState<boolean>(false);
@@ -104,7 +104,7 @@ function usePanelResize(
     endResize,
     handleResize,
     handleResizeModeChange,
-    resizeElemRef,
+    resizeElemRef.current,
     tableConfig?.resizeMode,
   ]);
 

@@ -33,6 +33,7 @@ if TYPE_CHECKING:
 
     from aim.sdk.sequences.metric import Metric
     from aim.sdk.sequences.image_sequence import Images
+    from aim.sdk.sequences.audio_sequence import Audios
     from aim.sdk.sequences.distribution_sequence import Distributions
     from aim.sdk.sequences.figure_sequence import Figures
     from aim.sdk.sequences.text_sequence import Texts
@@ -448,6 +449,7 @@ class Run(StructuredRunMixin):
             def update_trace_dtype(new_dtype):
                 self.meta_tree['traces_types', new_dtype, ctx.idx, name] = 1
                 seq_info.sequence_dtype = self.meta_run_tree['traces', ctx.idx, name, 'dtype'] = new_dtype
+
             compatible = check_types_compatibility(dtype, seq_info.sequence_dtype, update_trace_dtype)
             if not compatible:
                 raise ValueError(f'Cannot log value \'{value}\' on sequence \'{name}\'. Incompatible data types.')
@@ -588,6 +590,22 @@ class Run(StructuredRunMixin):
             :obj:`Figures` object if exists, `None` otherwise.
         """
         return self._get_sequence('figures', name, context)
+
+    def get_audio_sequence(
+            self,
+            name: str,
+            context: Context
+    ) -> Optional['Audios']:
+        """Retrieve audios sequence by its name and context.
+
+        Args:
+             name (str): Tracked audios sequence name.
+             context (:obj:`Context`): Tracking context.
+
+        Returns:
+            :obj:`Audios` object if exists, `None` otherwise.
+        """
+        return self._get_sequence('audios', name, context)
 
     def get_distribution_sequence(
             self,

@@ -4,7 +4,7 @@ import { ResizeModeEnum } from 'config/enums/tableEnums';
 
 import { ILine, ILineChartProps } from 'types/components/LineChart/LineChart';
 import { IActivePoint } from 'types/utils/d3/drawHoverAttributes';
-import { IProcessedData } from 'types/utils/d3/processData';
+import { IProcessedData } from 'types/utils/d3/processLineChartData';
 import {
   IAggregationConfig,
   IPanelTooltip,

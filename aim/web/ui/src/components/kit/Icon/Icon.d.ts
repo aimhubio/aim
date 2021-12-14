@@ -98,5 +98,7 @@ export type IconName =
   | 'live-demo'
   | 'co'
   | 'full-docs'
+  | 'scatterplot'
+  | 'y-axis'
   | 'image-explorer'
   | 'image-properties';

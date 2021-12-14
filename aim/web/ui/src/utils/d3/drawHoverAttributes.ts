@@ -5,20 +5,22 @@ import { isEqual } from 'lodash-es';
 import { HighlightEnum } from 'components/HighlightModesPopover/HighlightModesPopover';
 
 import {
-  IDrawHoverAttributesArgs,
-  IAxisLineData,
-  INearestCircle,
   IActivePoint,
+  IAxisLineData,
+  IDrawHoverAttributesArgs,
+  INearestCircle,
   ISyncHoverStateArgs,
 } from 'types/utils/d3/drawHoverAttributes';
-import { IGetAxisScale } from 'types/utils/d3/getAxisScale';
+import { IAxisScale } from 'types/utils/d3/getAxisScale';
 import { IUpdateFocusedChartArgs } from 'types/components/LineChart/LineChart';
 
 import { AggregationAreaMethods } from 'utils/aggregateGroupData';
 import getFormattedValue from 'utils/formattedValue';
 import shortEnglishHumanizer from 'utils/shortEnglishHumanizer';
 
-import { AlignmentOptionsEnum, CircleEnum } from './index';
+import { getDimensionValue } from './getDimensionValue';
+
+import { AlignmentOptionsEnum, CircleEnum, ScaleEnum } from './index';
 
 import 'components/LineChart/LineChart.scss';
 
@@ -26,6 +28,7 @@ function drawHoverAttributes(args: IDrawHoverAttributesArgs): void {
   const {
     data,
     index,
+    axesScaleType,
     alignmentConfig,
     plotBoxRef,
     visAreaRef,
@@ -38,7 +41,7 @@ function drawHoverAttributes(args: IDrawHoverAttributesArgs): void {
     highlightedNodeRef,
     attributesNodeRef,
     attributesRef,
-    highlightMode,
+    highlightMode = HighlightEnum.Off,
     syncHoverState,
     aggregationConfig,
     humanizerConfigRef,
@@ -94,27 +97,40 @@ function drawHoverAttributes(args: IDrawHoverAttributesArgs): void {
         }
       }
     }
+
     closestCircles.sort((a, b) => (a.key > b.key ? 1 : -1));
     return closestCircles[0];
   }
 
   function getNearestCircles(mouseX: number): INearestCircle[] {
-    const { xScale, yScale } = attributesRef.current;
     // Closest xValue for mouseX
-    const xValue = xScale.invert(mouseX);
+    const xValue = getInvertedValue(
+      axesScaleType.xAxis,
+      mouseX,
+      attributesRef.current.xScale,
+    );
 
     const nearestCircles: INearestCircle[] = [];
     for (const line of data) {
-      const index = d3.bisectCenter(line.data.xValues, xValue);
-      const closestXPos = xScale(line.data.xValues[index]);
-      const closestYPos = yScale(line.data.yValues[index]);
-      const circle = {
-        key: line.key,
-        color: line.color,
-        x: closestXPos,
-        y: closestYPos,
-      };
-      nearestCircles.push(circle);
+      let index = 0;
+      if (axesScaleType.xAxis !== ScaleEnum.Point) {
+        index = d3.bisectCenter(line.data.xValues, xValue as number);
+      }
+      const xValueByIndex = line.data.xValues[index];
+      const yValueByIndex = line.data.yValues[index];
+      if (xValueByIndex !== '-' && yValueByIndex !== '-') {
+        const closestXPos = attributesRef.current.xScale(xValueByIndex);
+        const closestYPos = attributesRef.current.yScale(yValueByIndex);
+        const circle = {
+          key: line.key,
+          color: line.color,
+          x: closestXPos,
+          y: closestYPos,
+        };
+        nearestCircles.push(circle);
+      } else {
+        safeSyncHoverState({ activePoint: null });
+      }
     }
 
     return nearestCircles;
@@ -130,27 +146,33 @@ function drawHoverAttributes(args: IDrawHoverAttributesArgs): void {
   function drawXAxisLabel(x: number): void {
     if (xAxisLabelNodeRef && drawAxisLabels.x) {
       const visArea = d3.select(visAreaRef.current);
-      const xAxisTickValue = getFormattedValue(
-        attributesRef.current.xScale.invert(x),
+
+      const xAxisTickValue = getInvertedValue(
+        axesScaleType.xAxis,
+        x,
+        attributesRef.current.xScale,
       );
 
-      let xAxisValueText;
+      let xAxisValueText = xAxisTickValue;
 
-      switch (alignmentConfig?.type) {
-        case AlignmentOptionsEnum.EPOCH:
-          xAxisValueText = Math.floor(xAxisTickValue);
-          break;
-        case AlignmentOptionsEnum.RELATIVE_TIME:
-          xAxisValueText = shortEnglishHumanizer(Math.round(xAxisTickValue), {
-            ...humanizerConfigRef.current,
-            maxDecimalPoints: 2,
-          });
-          break;
-        case AlignmentOptionsEnum.ABSOLUTE_TIME:
-          xAxisValueText = moment(xAxisTickValue).format('HH:mm:ss D MMM, YY');
-          break;
-        default:
-          xAxisValueText = xAxisTickValue;
+      if (typeof xAxisTickValue === 'number') {
+        switch (alignmentConfig?.type) {
+          case AlignmentOptionsEnum.EPOCH:
+            xAxisValueText = Math.floor(xAxisTickValue);
+            break;
+          case AlignmentOptionsEnum.RELATIVE_TIME:
+            xAxisValueText = shortEnglishHumanizer(Math.round(xAxisTickValue), {
+              ...humanizerConfigRef.current,
+              maxDecimalPoints: 2,
+            });
+            break;
+          case AlignmentOptionsEnum.ABSOLUTE_TIME:
+            xAxisValueText =
+              moment(xAxisTickValue).format('HH:mm:ss D MMM, YY');
+            break;
+          default:
+            xAxisValueText = xAxisTickValue;
+        }
       }
 
       if (xAxisTickValue || xAxisTickValue === 0) {
@@ -195,8 +217,11 @@ function drawHoverAttributes(args: IDrawHoverAttributesArgs): void {
   function drawYAxisLabel(y: number): void {
     if (yAxisLabelNodeRef && drawAxisLabels.y) {
       const visArea = d3.select(visAreaRef.current);
-      const yAxisTickValue = getFormattedValue(
-        attributesRef.current.yScale.invert(y),
+      const yAxisTickValue = getInvertedValue(
+        axesScaleType.yAxis,
+        y,
+        attributesRef.current.yScale,
+        true,
       );
 
       if (yAxisTickValue || yAxisTickValue === 0) {
@@ -421,15 +446,44 @@ function drawHoverAttributes(args: IDrawHoverAttributesArgs): void {
     };
   }
 
+  function getInvertedValue(
+    scaleType: ScaleEnum,
+    pos: number,
+    axisScale: IAxisScale,
+    reverse: boolean = false, // need to reverse domain for inverting Y axis value
+  ): number | string {
+    if (scaleType === ScaleEnum.Point) {
+      return getDimensionValue({
+        pos,
+        domainData: reverse ? axisScale.domain().reverse() : axisScale.domain(),
+        axisScale,
+      });
+    } else {
+      return getFormattedValue(axisScale.invert(pos));
+    }
+  }
+
   function getActivePoint(circle: INearestCircle): IActivePoint {
     const xPos = circle.x;
     const yPos = circle.y;
     const { boundedX, boundedY } = getBoundedPosition(xPos, yPos);
 
+    const xValue: number | string = getInvertedValue(
+      axesScaleType.xAxis,
+      xPos,
+      attributesRef.current.xScale,
+    );
+    const yValue: number | string = getInvertedValue(
+      axesScaleType.yAxis,
+      yPos,
+      attributesRef.current.yScale,
+      true,
+    );
+
     return {
       key: circle.key,
-      xValue: getFormattedValue(attributesRef.current.xScale.invert(xPos)),
-      yValue: getFormattedValue(attributesRef.current.yScale.invert(yPos)),
+      xValue,
+      yValue,
       xPos,
       yPos,
       chartIndex: index,
@@ -459,7 +513,11 @@ function drawHoverAttributes(args: IDrawHoverAttributesArgs): void {
     drawVerticalAxisLine(mouseX);
     drawXAxisLabel(mouseX);
 
-    attributesRef.current.xStep = attributesRef.current.xScale.invert(mouseX);
+    attributesRef.current.xStep = getInvertedValue(
+      axesScaleType.xAxis,
+      mouseX,
+      attributesRef.current.xScale,
+    );
     attributesRef.current.dataSelector = dataSelector;
     attributesRef.current.nearestCircles = nearestCircles;
   }
@@ -529,7 +587,6 @@ function drawHoverAttributes(args: IDrawHoverAttributesArgs): void {
       force = false,
     } = args;
     const { xScale, yScale, focusedState, activePoint } = attributesRef.current;
-
     let mousePosition: [number, number] | [] = [];
     if (mousePos) {
       mousePosition = mousePos;
@@ -547,16 +604,22 @@ function drawHoverAttributes(args: IDrawHoverAttributesArgs): void {
 
       const nearestCircles = getNearestCircles(mouseX);
       const closestCircle = getClosestCircle(mouseX, mouseY, nearestCircles);
-      const activePoint = drawAttributes(closestCircle, nearestCircles, force);
-      if (focusedStateActive) {
-        drawFocusedCircle(activePoint.key);
-      }
+      if (closestCircle) {
+        const activePoint = drawAttributes(
+          closestCircle,
+          nearestCircles,
+          force,
+        );
+        if (focusedStateActive) {
+          drawFocusedCircle(activePoint.key);
+        }
 
-      safeSyncHoverState({
-        activePoint,
-        focusedStateActive,
-        dataSelector: attributesRef.current.dataSelector,
-      });
+        safeSyncHoverState({
+          activePoint,
+          focusedStateActive,
+          dataSelector: attributesRef.current.dataSelector,
+        });
+      }
     } else {
       const xValue = attributesRef.current.xStep ?? xScale.domain()[1];
       const mouseX = attributesRef.current.xScale(xValue);
@@ -574,7 +637,11 @@ function drawHoverAttributes(args: IDrawHoverAttributesArgs): void {
       drawVerticalAxisLine(mouseX);
       drawXAxisLabel(mouseX);
 
-      attributesRef.current.xStep = attributesRef.current.xScale.invert(mouseX);
+      attributesRef.current.xStep = getInvertedValue(
+        axesScaleType.xAxis,
+        mouseX,
+        attributesRef.current.xScale,
+      );
     }
   }
 
@@ -684,7 +751,7 @@ function drawHoverAttributes(args: IDrawHoverAttributesArgs): void {
     }
   }
 
-  function updateScales(xScale: IGetAxisScale, yScale: IGetAxisScale) {
+  function updateScales(xScale: IAxisScale, yScale: IAxisScale) {
     attributesRef.current.xScale = xScale;
     attributesRef.current.yScale = yScale;
   }
