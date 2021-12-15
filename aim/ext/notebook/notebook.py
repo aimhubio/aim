@@ -76,7 +76,7 @@ def get_argument_options(line):
         if key in supported_args:
             options[key] = value
 
-    options['--base-path'] = 'notebook'
+    options['--base-path'] = '/notebook'
 
     return command, options
 

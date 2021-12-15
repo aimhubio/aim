@@ -111,7 +111,7 @@ def up(dev, host, port, workers, repo, tf_logs, ssl_keyfile, ssl_certfile, base_
 
     scheme = 'https' if ssl_keyfile or ssl_certfile else 'http'
 
-    click.echo('Open {}://{}:{}'.format(scheme, host, port), err=True)
+    click.echo('Open {}://{}:{}{}'.format(scheme, host, port, base_path), err=True)
     click.echo('Press Ctrl+C to exit')
 
     try:
