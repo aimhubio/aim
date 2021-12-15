@@ -4024,8 +4024,8 @@ function createAppModel(appConfig: IAppInitialConfig) {
           displayName: string;
           dimensionType: string;
         }[][] = [];
-        const chartData: IPoint[] = [];
-        processedData.forEach(
+
+        const chartData = processedData.map(
           ({ chartIndex, color, data }: IMetricsCollection<IParam>) => {
             if (!dimensionsByChartIndex[chartIndex]) {
               dimensionsByChartIndex[chartIndex] = [];
@@ -4083,7 +4083,7 @@ function createAppModel(appConfig: IAppInitialConfig) {
                   },
                 );
 
-                chartData.push({
+                return {
                   chartIndex,
                   key: run.key,
                   groupKey: run.key,
@@ -4092,7 +4092,7 @@ function createAppModel(appConfig: IAppInitialConfig) {
                     yValues: [values[0] ?? '-'],
                     xValues: [values[1] ?? '-'],
                   },
-                });
+                };
               });
           },
         );
@@ -4102,6 +4102,7 @@ function createAppModel(appConfig: IAppInitialConfig) {
         );
 
         return dimensionsByChartIndex
+          .filter((dimension) => !_.isEmpty(dimension))
           .map((chartDimensions, i: number) => {
             const dimensions: IDimensionType[] = [];
             chartDimensions.forEach((dimension) => {
@@ -4130,10 +4131,7 @@ function createAppModel(appConfig: IAppInitialConfig) {
               dimensions,
               data: groupedByChartIndex[i],
             };
-          })
-          .filter(
-            (data) => !_.isEmpty(data.data) && !_.isEmpty(data.dimensions),
-          );
+          });
       }
 
       function getDataAsTableRows(
