@@ -105,17 +105,24 @@ function SelectForm({
   }
 
   const paramsOptions: ISelectParamsOption[] = React.useMemo(() => {
-    let data: ISelectParamsOption[] = [];
+    const comparator = alphabeticalSortComparator<ISelectParamsOption>({
+      orderBy: 'label',
+    });
+
+    let optionsCount = 0; // to calculate color
     const systemOptions: ISelectParamsOption[] = [];
+    let params: ISelectParamsOption[] = [];
+    let metrics: ISelectParamsOption[] = [];
+
     if (projectsData?.metrics) {
       for (let key in projectsData.metrics) {
         let system: boolean = isSystemMetric(key);
         for (let val of projectsData.metrics[key]) {
           let label = contextToString(val);
-          let index: number = data.length;
+          let index: number = optionsCount;
           let option: ISelectParamsOption = {
             label: `${system ? formatSystemMetricName(key) : key} ${label}`,
-            group: system ? formatSystemMetricName(key) : key,
+            group: system ? 'System' : key,
             type: 'metrics',
             color: COLORS[0][index % COLORS[0].length],
             value: {
@@ -123,10 +130,11 @@ function SelectForm({
               context: val,
             },
           };
+          optionsCount++;
           if (system) {
             systemOptions.push(option);
           } else {
-            data.push(option);
+            metrics.push(option);
           }
         }
       }
@@ -137,7 +145,7 @@ function SelectForm({
         projectsData.params,
       );
       paramPaths.forEach((paramPath, index) => {
-        data.push({
+        params.push({
           label: paramPath,
           group: 'Params',
           type: 'params',
@@ -145,13 +153,20 @@ function SelectForm({
         });
       });
     }
-    return data
-      .sort(
-        alphabeticalSortComparator<ISelectParamsOption>({
-          orderBy: 'label',
-        }),
-      )
-      .concat(systemOptions);
+
+    params = params.sort(comparator);
+    metrics = metrics.sort(comparator);
+    systemOptions.sort(comparator);
+
+    // sort by group
+    const data: ISelectParamsOption[] = [...metrics, ...params];
+
+    data.sort(
+      alphabeticalSortComparator({
+        orderBy: 'type',
+      }),
+    );
+    return data.concat(systemOptions);
   }, [projectsData]);
 
   const open: boolean = !!anchorEl;
