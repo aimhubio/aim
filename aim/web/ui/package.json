@@ -51,7 +51,7 @@
     "crc-kit": "func() { node tasks/cli/index.js  create-component --name=\"$1\" --path=./src/components/kit/ --lint; }; func",
     "crc": "func() { node tasks/cli/index.js  create-component --name=\"$1\" --path=./src/components/ --lint; }; func"
   },
-  "homepage": "",
+  "homepage": "./static-files/",
   "browserslist": {
     "production": [
       ">0.2%",
