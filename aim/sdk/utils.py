@@ -10,6 +10,7 @@ from aim.storage.object import CustomObject
 
 def search_aim_repo(path):
     found = False
+
     path = os.path.abspath(path)
     while path:
         repo_path = os.path.join(path, get_aim_repo_name())
