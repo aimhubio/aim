@@ -64,7 +64,7 @@ def encode(value: Any) -> ContainerValue:
         # No need to encode a content for None-values
         type_id = _NONE
         encoding = b''
-    elif value is bool:
+    elif isinstance(value, bool):
         # Booleans are encoded in a single byte
         # 0 and 1 for False and True respectively
         type_id = _BOOL
