@@ -125,12 +125,28 @@
   .yAxis, .xAxis {
     .tick {
       text {
+        display: none;
+      }
+      .yAxisTick, .xAxisTick {
         color: $text-color;
       }
     }
     .domain {
       stroke: $text-color;
       stroke-width: 0.4;
+    }
+    .xAxisTick {
+      text-align: center;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .yAxisTick {
+      text-align: right;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
     }
   }
 

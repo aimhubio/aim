@@ -46,6 +46,7 @@ const Table = React.forwardRef(function Table(
     columns,
     navBarItems,
     rowHeight = RowHeightSize.md,
+    estimatedRowHeight,
     headerHeight = RowHeightSize.md,
     sortOptions,
     hideHeaderActions = false,
@@ -711,6 +712,7 @@ const Table = React.forwardRef(function Table(
                     isScrolling
                     headerHeight={headerHeight}
                     rowHeight={rowHeight}
+                    estimatedRowHeight={estimatedRowHeight}
                     footerHeight={0}
                     defaultExpandedRowKeys={[]}
                     expandColumnKey='#'

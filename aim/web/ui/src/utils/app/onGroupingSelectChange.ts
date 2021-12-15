@@ -33,5 +33,5 @@ export default function onGroupingSelectChange<M extends State>({
     }
     updateModelData(configData, true);
   }
-  analytics.trackEvent(`[MetricsExplorer] Group by ${groupName}`);
+  analytics.trackEvent(`[${appName}Explorer] Group by ${groupName}`);
 }

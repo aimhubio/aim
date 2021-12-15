@@ -1,6 +1,6 @@
 import React from 'react';
 
-import { Dialog, DialogContentText, DialogTitle } from '@material-ui/core';
+import { Dialog } from '@material-ui/core';
 
 import { Button, Text } from 'components/kit';
 

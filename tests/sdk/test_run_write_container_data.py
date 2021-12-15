@@ -159,17 +159,75 @@ class TestRunContainerData(TestBase):
         run['p2'] = {'foo': 'bar'}
         run['p3'] = 0.0
         run['p4'] = True
+        run['p5'] = ['x', 1, 2]
+        run['p6'] = None
+        run['p7'] = 'bazե\x00a-a'
+        run['p8'] = b'blob'
 
         meta_container_path = os.path.join(self.repo.path, 'meta', 'chunks', run.hash)
         rc = RocksContainer(meta_container_path, read_only=True)
         tree = ContainerTreeView(rc)
         meta_attrs_tree = tree.view(('meta', 'attrs'))
         meta_run_attrs_tree = tree.view(('meta', 'chunks', run.hash, 'attrs'))
-        self.assertEqual(1, meta_attrs_tree['p1'])
-        self.assertEqual(1, meta_run_attrs_tree['p1'])
-        self.assertEqual(0.0, meta_attrs_tree['p3'])
-        self.assertEqual(0.0, meta_run_attrs_tree['p3'])
-        self.assertTrue(meta_attrs_tree['p4'])
-        self.assertTrue(meta_run_attrs_tree['p4'])
-        self.assertDictEqual({'foo': 'bar'}, meta_attrs_tree['p2'])
-        self.assertDictEqual({'foo': 'bar'}, meta_run_attrs_tree['p2'])
+
+        val = meta_attrs_tree['p1']
+        self.assertEqual(int, type(val))
+        self.assertEqual(1, val)
+
+        val = meta_run_attrs_tree['p1']
+        self.assertEqual(int, type(val))
+        self.assertEqual(1, val)
+
+        val = meta_attrs_tree['p3']
+        self.assertEqual(float, type(val))
+        self.assertEqual(0.0, val)
+
+        val = meta_run_attrs_tree['p3']
+        self.assertEqual(float, type(val))
+        self.assertEqual(0.0, val)
+
+        val = meta_attrs_tree['p4']
+        self.assertEqual(bool, type(val))
+        self.assertEqual(True, val)
+
+        val = meta_run_attrs_tree['p4']
+        self.assertEqual(bool, type(val))
+        self.assertEqual(True, val)
+
+        val = meta_attrs_tree['p2']
+        self.assertEqual(dict, type(val))
+        self.assertEqual({'foo': 'bar'}, val)
+
+        val = meta_run_attrs_tree['p2']
+        self.assertEqual(dict, type(val))
+        self.assertEqual({'foo': 'bar'}, val)
+
+        val = meta_attrs_tree['p5']
+        self.assertEqual(list, type(val))
+        self.assertEqual(['x', 1, 2], val)
+
+        val = meta_run_attrs_tree['p5']
+        self.assertEqual(list, type(val))
+        self.assertEqual(['x', 1, 2], val)
+
+        val = meta_attrs_tree['p6']
+        self.assertEqual(None, val)
+
+        val = meta_run_attrs_tree['p6']
+        self.assertEqual(None, val)
+
+        val = meta_attrs_tree['p7']
+        self.assertEqual(str, type(val))
+        self.assertEqual('bazե\x00a-a', val)
+
+        val = meta_run_attrs_tree['p7']
+        self.assertEqual(str, type(val))
+        self.assertEqual('bazե\x00a-a', val)
+
+        val = meta_attrs_tree['p8']
+        self.assertEqual(bytes, type(val))
+        self.assertEqual(b'blob', val)
+
+        val = meta_run_attrs_tree['p8']
+        self.assertEqual(bytes, type(val))
+        self.assertEqual(b'blob', val)

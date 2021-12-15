@@ -1,6 +1,10 @@
 import React, { useEffect, useState } from 'react';
 import classNames from 'classnames';
-import Select, { ClearIndicatorProps } from 'react-select';
+import Select, {
+  ClearIndicatorProps,
+  components,
+  ControlProps,
+} from 'react-select';
 
 import { Icon, Text } from 'components/kit';
 
@@ -27,7 +31,8 @@ import './Dropdown.scss';
  * @property {function} onChange - callBack on dropdown value change
  * @property {boolean} isColored - color dropdown if it is used
  * @property {string} label - swap label to top if dropdown has value and replace placeholder
- * @property {React.HTMLAttributes}  rest - rest properties that can be set
+ * @property {IIconProps} icon - icon for dropdown input
+ * @property {React.HTMLAttributes} rest - rest properties that can be set
  */
 function Dropdown({
   size = 'medium',
@@ -44,10 +49,23 @@ function Dropdown({
   isColored = false,
   maxMenuListHeight = '12.5rem',
   label,
+  icon,
   ...rest
 }: IDropdownProps): React.FunctionComponentElement<React.ReactNode> {
   const [labelSwapped, setLabelSwapped] = useState(!!value);
   const customStyles = {
+    iconStyles: () =>
+      ({
+        display: 'inline-flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        margin: '0 0.5rem',
+        color: icon?.color || '#1473E6',
+        width: '1.5rem',
+        height: '1.5rem',
+        fontSize: icon?.fontSize,
+        pointerEvents: 'none',
+      } as React.CSSProperties),
     control: (base: any) => ({
       ...base,
       height: baseSizes[size],
@@ -82,7 +100,7 @@ function Dropdown({
     valueContainer: (provided: any) => ({
       ...provided,
       height: indicatorsContainerSizes[size],
-      padding: '0 0.375rem 0 1rem',
+      padding: icon ? '0 0.375rem 0 0rem' : '0 0.375rem 0 1rem',
       fontSize: '0.875rem',
       color: isColored && value ? '#1473E6' : '#414B6D',
     }),
@@ -166,6 +184,19 @@ function Dropdown({
     );
   }
 
+  function Control({ children, ...props }: ControlProps<any, false>) {
+    return (
+      <components.Control {...props}>
+        {icon ? (
+          <span style={customStyles.iconStyles()}>
+            <Icon {...icon} />
+          </span>
+        ) : null}
+        {children}
+      </components.Control>
+    );
+  }
+
   function handleMenuOpen() {
     onMenuOpen();
     !labelSwapped && setLabelSwapped(true);
@@ -187,7 +218,10 @@ function Dropdown({
           component='span'
           size={labelSwapped ? 11 : 14}
           weight={500}
-          style={{ top: labelTopPosition[size] }}
+          style={{
+            top: labelTopPosition[size],
+            left: icon ? (labelSwapped ? '1rem' : '2.5rem') : '1rem',
+          }}
           color={isColored && value ? 'info' : 'primary'}
           tint={isColored && value ? 100 : 70}
           className={classNames('Dropdown__label', { swapped: labelSwapped })}
@@ -216,6 +250,7 @@ function Dropdown({
           Option: DropdownCustomOption,
           ClearIndicator: ClearIndicator,
           DropdownIndicator: DropdownIndicator,
+          Control,
         }}
         styles={customStyles}
         menuPlacement='auto'

@@ -1,5 +1,4 @@
 import React from 'react';
-import _ from 'lodash-es';
 
 import { Skeleton } from '@material-ui/lab';
 

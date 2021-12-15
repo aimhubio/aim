@@ -2,18 +2,22 @@ import React from 'react';
 
 import { IAttributesRef } from 'components/LineChart/LineChart';
 import { HighlightEnum } from 'components/HighlightModesPopover/HighlightModesPopover';
+import { IPoint } from 'components/ScatterPlot';
+import { ILine } from 'components/LineChart/LineChart';
 
 import {
   IAggregationConfig,
   IAlignmentConfig,
 } from 'types/services/models/metrics/metricsAppModel';
 
-import { IGetAxisScale } from './getAxisScale';
-import { IProcessedData } from './processData';
+import { ScaleEnum } from 'utils/d3';
+
+import { IAxisScale } from './getAxisScale';
 
 export interface IDrawHoverAttributesArgs {
   index: number;
-  data: IProcessedData[];
+  data: ILine[] | IPoint[];
+  axesScaleType: { xAxis: ScaleEnum; yAxis: ScaleEnum };
   visAreaRef: React.MutableRefObject<>;
   attributesNodeRef: React.MutableRefObject<>;
   attributesRef: React.MutableRefObject<IAttributesRef>;
@@ -26,7 +30,7 @@ export interface IDrawHoverAttributesArgs {
   linesNodeRef: React.MutableRefObject<>;
   syncHoverState: (params: ISyncHoverStateParams) => void;
   highlightedNodeRef: React.MutableRefObject<>;
-  highlightMode: HighlightEnum;
+  highlightMode?: HighlightEnum;
   aggregationConfig?: IAggregationConfig;
   alignmentConfig?: IAlignmentConfig;
   humanizerConfigRef: React.MutableRefObject<{}>;
@@ -50,8 +54,8 @@ export interface IGetCoordinates {
 export interface IGetCoordinatesArgs {
   mouse: [number, number];
   margin: { left: number; top: number };
-  xScale: IGetAxisScale;
-  yScale: IGetAxisScale;
+  xScale: IAxisScale;
+  yScale: IAxisScale;
 }
 
 export interface INearestCircle {
@@ -64,7 +68,7 @@ export interface INearestCircle {
 export interface IActivePoint {
   key: string;
   xValue: number | string;
-  yValue: number;
+  yValue: number | string;
   xPos: number;
   yPos: number;
   chartIndex: number;
