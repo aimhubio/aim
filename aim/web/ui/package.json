@@ -40,7 +40,7 @@
   },
   "scripts": {
     "start": "react-app-rewired start",
-    "build": "react-app-rewired build && gzipper c -i js,css,html ./build",
+    "build": "react-app-rewired build && gzipper c -i js,css,html ./build && node tasks/index-html-template-generator.js",
     "test": "react-app-rewired test ",
     "test:coverage": "react-app-rewired test --collectCoverage",
     "test:watch": "react-app-rewired test --watchAll",
@@ -51,7 +51,7 @@
     "crc-kit": "func() { node tasks/cli/index.js  create-component --name=\"$1\" --path=./src/components/kit/ --lint; }; func",
     "crc": "func() { node tasks/cli/index.js  create-component --name=\"$1\" --path=./src/components/ --lint; }; func"
   },
-  "homepage": "./static-files/",
+  "homepage": "/static-files/",
   "browserslist": {
     "production": [
       ">0.2%",

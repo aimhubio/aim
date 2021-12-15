@@ -21,9 +21,18 @@ export default function updateUrlParam({
     return;
   }
 
-  const appId: string = window.location.pathname.split('/')[2];
+  const isExistBasePath = (window as any).API_BASE_PATH !== '{{ base_path }}';
+
+  const appId: string =
+    window.location.pathname.split('/')[isExistBasePath ? 3 : 2];
   if (!appId) {
-    setItem(`${appName}Url`, url);
+    let fullURL = url;
+
+    if (isExistBasePath) {
+      fullURL = fullURL.replace((window as any).API_BASE_PATH, '');
+    }
+
+    setItem(`${appName}Url`, fullURL);
   }
 
   window.history.pushState(null, '', url);
