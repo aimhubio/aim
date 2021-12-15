@@ -11,7 +11,7 @@ export interface IControlProps {
   selectOptions: IGroupingSelectOption[];
   tooltip: IPanelTooltip;
   onChangeTooltip: (tooltip: Partial<IPanelTooltip>) => void;
-  imageProperties: IImagesExploreAppConfig['images']['imageProperties'];
+  additionalProperties: IImagesExploreAppConfig['images']['additionalProperties'];
   onImageSizeChange: (newValue: number) => void;
   onImageRenderingChange: (type: ImageRenderingEnum) => void;
   onImageAlignmentChange: (

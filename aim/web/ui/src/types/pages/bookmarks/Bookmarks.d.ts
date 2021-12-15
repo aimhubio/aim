@@ -1,7 +1,6 @@
-import {
-  IDashboardData,
-  IMetricAppConfig,
-} from 'types/services/models/metrics/metricsAppModel';
+import { ISelectConfig } from 'services/models/explorer/createAppModel';
+
+import { IDashboardData } from 'types/services/models/metrics/metricsAppModel';
 
 export interface IBookmarksProps {
   data: IBookmarksData[];
@@ -10,6 +9,6 @@ export interface IBookmarksProps {
 }
 
 interface IBookmarksData extends IDashboardData {
-  select: IMetricAppConfig['select'] | any;
+  select: ISelectConfig;
   type: string;
 }

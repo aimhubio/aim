@@ -72,6 +72,7 @@ export interface ITraceVisualizationContainerProps {
   runHash: string;
   traceInfo: Record<TraceType, TraceRawDataItem[]>;
   traceType: TraceType;
+  runParams?: object;
 }
 
 export interface ITraceVisualizerProps {
@@ -83,3 +84,7 @@ export interface ITraceVisualizerProps {
 export interface IImagesVisualizerProps extends ITraceVisualizerProps {}
 
 export interface IDistributionVisualizerProps extends ITraceVisualizerProps {}
+
+export interface ITextsVisualizerProps extends ITraceVisualizerProps {}
+
+export interface IPlotlyVisualizerProps extends ITraceVisualizerProps {}

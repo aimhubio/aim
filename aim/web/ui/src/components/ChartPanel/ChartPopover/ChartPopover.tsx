@@ -22,22 +22,23 @@ function ChartPopover(props: IChartPopover): JSX.Element | null {
   );
   const [popoverNode, setPopoverNode] = React.useState<HTMLElement>();
 
-  function onPopoverPositionChange(
-    activePointRect: IChartPopover['activePointRect'],
-  ): void {
-    if (activePointRect === null) {
-      setPopoverPos(null);
-    } else if (popoverNode && containerNode) {
-      // Popover viewport need to be overflowed by chart container
-      const pos = getPositionBasedOnOverflow(
-        activePointRect,
-        popoverNode.getBoundingClientRect(),
-        containerNode.getBoundingClientRect(),
-      );
+  const onPopoverPositionChange = React.useCallback(
+    (activePointRect: IChartPopover['activePointRect']) => {
+      if (activePointRect === null) {
+        setPopoverPos(null);
+      } else if (popoverNode && containerNode) {
+        // Popover viewport need to be overflowed by chart container
+        const pos = getPositionBasedOnOverflow(
+          activePointRect,
+          popoverNode.getBoundingClientRect(),
+          containerNode.getBoundingClientRect(),
+        );
 
-      setPopoverPos(pos);
-    }
-  }
+        setPopoverPos(pos);
+      }
+    },
+    [containerNode, popoverNode],
+  );
 
   React.useEffect(() => {
     if (open && props.activePointRect) {
@@ -51,6 +52,7 @@ function ChartPopover(props: IChartPopover): JSX.Element | null {
     props.tooltipContent,
     props.focusedState.key,
     props.focusedState.active,
+    onPopoverPositionChange,
   ]);
 
   return (

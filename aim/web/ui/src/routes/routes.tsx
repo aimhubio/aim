@@ -11,6 +11,7 @@ const Bookmarks = React.lazy(
 );
 const Home = React.lazy(() => import('pages/Home/HomeContainer'));
 const TagsContainer = React.lazy(() => import('pages/Tags/TagsContainer'));
+const Scatters = React.lazy(() => import('pages/Scatters/ScattersContainer'));
 const ImagesExplore = React.lazy(
   () => import('pages/ImagesExplore/ImagesExplore'),
 );
@@ -79,6 +80,19 @@ const routes = {
     component: ImagesExplore,
     showInSidebar: false,
     displayName: 'ImagesId',
+  },
+  SCATTERS: {
+    path: PathEnum.Scatters,
+    component: Scatters,
+    showInSidebar: true,
+    displayName: 'Scatters',
+    icon: 'scatterplot',
+  },
+  SCATTERS_EXPLORE_ID: {
+    path: PathEnum.Scatters_Id,
+    component: Scatters,
+    showInSidebar: false,
+    displayName: 'ScatterId',
   },
   BOOKMARKS: {
     path: PathEnum.Bookmarks,

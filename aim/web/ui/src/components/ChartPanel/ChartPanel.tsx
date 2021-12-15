@@ -49,7 +49,7 @@ const ChartPanel = React.forwardRef(function ChartPanel(
     } else {
       setActivePointRect(null);
     }
-  }, [setActivePointRect, activePointRef.current, containerRef.current]);
+  }, [setActivePointRect]);
 
   const syncHoverState = React.useCallback(
     (args: ISyncHoverStateArgs): void => {

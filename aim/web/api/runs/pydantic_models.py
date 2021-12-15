@@ -33,12 +33,22 @@ class DistributionsBaseView(TraceBaseView):
         data: EncodedNumpyArray
         bin_count: int
         range: Tuple[Union[int, float], Union[int, float]]
-    trace_range: Tuple[int, int]
+    record_range: Tuple[int, int]
     values: List[Distribution]
+
+
+class TextsBaseView(TraceBaseView):
+    class Text(BaseModel):
+        data: str
+        idx: int
+    record_range: Tuple[int, int]
+    index_range: Tuple[int, int]
+    values: List[Text]
 
 
 RunMetricsBatchApiOut = List[MetricsBaseView]
 RunDistributionsBatchApiOut = List[DistributionsBaseView]
+RunTextsBatchApiOut = List[TextsBaseView]
 
 
 class TraceAlignedView(TraceBase):
@@ -154,6 +164,7 @@ class QuerySyntaxErrorOut(BaseModel):
         statement: str
         line: int
         offset: int
+
     detail: SE
 
 
@@ -174,6 +185,8 @@ class ImageInfo(BaseModel):
 
 
 class ImagesBaseView(TraceBaseView):
+    record_range: Tuple[int, int]
+    index_range: Tuple[int, int]
     values: List[List[ImageInfo]]
 
 
@@ -196,5 +209,62 @@ class ImagesSearchRunView(BaseModel):
 
 RunImagesSearchApiOut = Dict[str, ImagesSearchRunView]
 
-
 URIBatchIn = List[str]
+
+
+class FigureInfo(BaseModel):
+    blob_uri: str
+
+
+class FigureBaseView(TraceBaseView):
+    values: List[FigureInfo]
+
+
+RunFiguresBatchApiOut = List[FigureBaseView]
+
+
+class FigureSequenceFullView(TraceBase):
+    values: List[FigureInfo]
+    iters: List[int]
+    epochs: List[int]
+    timestamps: List[float]
+
+
+class FigureSearchRunView(BaseModel):
+    params: dict
+    traces: List[FigureSequenceFullView]
+    ranges: RangeInfo
+    props: PropsView
+
+
+RunFiguresSearchApiOut = Dict[str, FigureSearchRunView]
+
+
+class AudioInfo(BaseModel):
+    caption: str
+    blob_uri: str
+    index: int
+
+
+class AudiosBaseView(TraceBaseView):
+    values: List[List[AudioInfo]]
+
+
+RunAudiosBatchApiOut = List[AudiosBaseView]
+
+
+class AudioSequenceFullView(TraceBase):
+    values: List[List[AudioInfo]]
+    iters: List[int]
+    epochs: List[int]
+    timestamps: List[float]
+
+
+class AudiosSearchRunView(BaseModel):
+    params: dict
+    traces: List[AudioSequenceFullView]
+    ranges: RangeInfo
+    props: PropsView
+
+
+RunAudiosSearchApiOut = Dict[str, AudiosSearchRunView]

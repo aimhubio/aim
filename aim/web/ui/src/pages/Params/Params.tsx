@@ -14,9 +14,10 @@ import ResizePanel from 'components/ResizePanel/ResizePanel';
 
 import { RowHeightSize } from 'config/table/tableConfigs';
 import { ResizeModeEnum } from 'config/enums/tableEnums';
+import GroupingPopovers from 'config/grouping/GroupingPopovers';
 
 import AppBar from 'pages/Metrics/components/MetricsBar/MetricsBar';
-import Grouping from 'pages/Metrics/components/Grouping/Grouping';
+import Grouping from 'pages/components/Grouping/Grouping';
 
 import { IParamsProps } from 'types/pages/params/Params';
 
@@ -121,6 +122,12 @@ const Params = ({
               onSelectRunQueryChange={onSelectRunQueryChange}
             />
             <Grouping
+              groupingPopovers={GroupingPopovers.filter(
+                (p) =>
+                  p.groupName === 'color' ||
+                  p.groupName === 'stroke' ||
+                  p.groupName === 'chart',
+              )}
               groupingData={groupingData}
               groupingSelectOptions={groupingSelectOptions}
               onGroupingSelectChange={onGroupingSelectChange}

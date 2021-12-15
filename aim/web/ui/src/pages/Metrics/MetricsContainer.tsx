@@ -27,7 +27,6 @@ import {
   IChartZoom,
   IFocusedState,
   IGroupingSelectOption,
-  IMetricAppConfig,
   IMetricAppModelState,
   IMetricTableRowData,
 } from 'types/services/models/metrics/metricsAppModel';
@@ -37,6 +36,10 @@ import {
   IProjectParamsMetrics,
   IProjectsModelState,
 } from 'types/services/models/projects/projectsModel';
+import {
+  IGroupingConfig,
+  ISelectConfig,
+} from 'types/services/models/explorer/createAppModel';
 
 import { SmoothingAlgorithmEnum } from 'utils/smoothingData';
 import { CurveEnum } from 'utils/d3';
@@ -54,9 +57,7 @@ function MetricsContainer(): React.FunctionComponentElement<React.ReactNode> {
   const resizeElemRef = React.useRef<HTMLDivElement>(null);
   const route = useRouteMatch<any>();
   const history = useHistory();
-  const metricsData = useModel<Partial<IMetricAppModelState> | any>(
-    metricAppModel,
-  );
+  const metricsData = useModel<Partial<IMetricAppModelState>>(metricAppModel);
 
   const projectsData = useModel<Partial<IProjectsModelState>>(projectsModel);
   const panelResizing = usePanelResize(
@@ -104,7 +105,7 @@ function MetricsContainer(): React.FunctionComponentElement<React.ReactNode> {
     analytics.pageView('[MetricsExplorer]');
 
     const unListenHistory = history.listen(() => {
-      if (!!metricsData.config) {
+      if (!!metricsData?.config) {
         if (
           metricsData.config.grouping !== getStateFromUrl('grouping') ||
           metricsData.config.chart !== getStateFromUrl('chart') ||
@@ -135,9 +136,7 @@ function MetricsContainer(): React.FunctionComponentElement<React.ReactNode> {
       wrapperElemRef={wrapperElemRef}
       resizeElemRef={resizeElemRef}
       // grouping options
-      groupingData={
-        metricsData?.config?.grouping as IMetricAppConfig['grouping']
-      }
+      groupingData={metricsData?.config?.grouping as IGroupingConfig}
       // chart options
       panelResizing={panelResizing}
       lineChartData={metricsData?.lineChartData as ILine[][]}
@@ -168,9 +167,7 @@ function MetricsContainer(): React.FunctionComponentElement<React.ReactNode> {
         metricsData?.config?.chart?.alignmentConfig as IAlignmentConfig
       }
       densityType={metricsData?.config?.chart.densityType as DensityOptions}
-      selectedMetricsData={
-        metricsData?.config?.select as IMetricAppConfig['select']
-      }
+      selectedMetricsData={metricsData?.config?.select as ISelectConfig}
       tableRowHeight={metricsData?.config?.table?.rowHeight as RowHeightSize}
       sortFields={metricsData?.config?.table?.sortFields!}
       hiddenMetrics={metricsData?.config?.table?.hiddenMetrics!}
@@ -181,7 +178,7 @@ function MetricsContainer(): React.FunctionComponentElement<React.ReactNode> {
       projectsDataMetrics={
         projectsData?.metrics as IProjectParamsMetrics['metric']
       }
-      requestIsPending={metricsData?.requestIsPending}
+      requestIsPending={metricsData?.requestIsPending as boolean}
       resizeMode={metricsData?.config?.table?.resizeMode as ResizeModeEnum}
       columnsWidths={metricsData?.config?.table?.columnsWidths}
       // methods
@@ -224,7 +221,7 @@ function MetricsContainer(): React.FunctionComponentElement<React.ReactNode> {
       onTableDiffShow={metricAppModel.onTableDiffShow}
       onTableResizeModeChange={metricAppModel.onTableResizeModeChange}
       // live update
-      liveUpdateConfig={metricsData.config?.liveUpdate}
+      liveUpdateConfig={metricsData?.config?.liveUpdate}
       onLiveUpdateConfigChange={metricAppModel.changeLiveUpdateConfig}
       onShuffleChange={metricAppModel.onShuffleChange}
       onSearchQueryCopy={metricAppModel.onSearchQueryCopy}

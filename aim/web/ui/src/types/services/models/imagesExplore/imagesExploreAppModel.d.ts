@@ -1,7 +1,13 @@
+import { ResizeModeEnum } from 'config/enums/tableEnums';
+import { RowHeightSize } from 'config/table/tableConfigs';
+
 import { ITableRef } from 'types/components/Table/Table';
 import { INotification } from 'types/components/NotificationContainer/NotificationContainer';
-
-import { IPanelTooltip } from '../metrics/metricsAppModel';
+import { ISelectConfig } from 'types/services/models/explorer/createAppModel';
+import {
+  IPanelTooltip,
+  SortField,
+} from 'types/services/models/metrics/metricsAppModel';
 
 export interface IImagesExploreAppConfig {
   grouping: {
@@ -32,12 +38,7 @@ export interface IImagesExploreAppConfig {
       imageRendering: string;
     };
   };
-  select: {
-    images: ISelectMetricsOption[];
-    query: string;
-    advancedMode: boolean;
-    advancedQuery: string;
-  };
+  select: ISelectConfig;
   table: {
     resizeMode: ResizeModeEnum;
     rowHeight: RowHeightSize;
@@ -98,6 +99,14 @@ export interface IImageData {
   step: number;
   width: number;
 }
+
+export interface IProcessedImageData extends IImageData {
+  seqKey?: string;
+  images_name?: string;
+  step?: number;
+  context?: object;
+}
+
 export interface IImageRunData {
   hash: string;
   params: { [key: string]: unknown };

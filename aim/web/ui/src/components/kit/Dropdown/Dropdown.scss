@@ -4,9 +4,9 @@
   position: relative;
   &__label {
     position: absolute;
-    left: 1rem;
     z-index: 1;
     transition: 0.3s all;
+    pointer-events: none;
     &.swapped {
       background: #ffffff;
       transition: 0.3s all;

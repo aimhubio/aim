@@ -14,7 +14,7 @@ from aim.sdk.sequence_collection import SingleRunSequenceCollection
 from aim.sdk.utils import generate_run_hash, get_object_typename, check_types_compatibility
 from aim.sdk.num_utils import convert_to_py_number
 from aim.sdk.types import AimObject
-from aim.sdk.configs import AIM_ENABLE_TRACKING_THREAD
+from aim.sdk.configs import AIM_ENABLE_TRACKING_THREAD, AIM_RUN_INDEXING_TIMEOUT
 
 from aim.storage.hashing import hash_auto
 from aim.storage.context import Context, SequenceDescriptor
@@ -31,9 +31,12 @@ from typing import TYPE_CHECKING
 if TYPE_CHECKING:
     from pandas import DataFrame
 
-    from aim.sdk.metric import Metric
-    from aim.sdk.image_sequence import Images
-    from aim.sdk.distribution_sequence import Distributions
+    from aim.sdk.sequences.metric import Metric
+    from aim.sdk.sequences.image_sequence import Images
+    from aim.sdk.sequences.audio_sequence import Audios
+    from aim.sdk.sequences.distribution_sequence import Distributions
+    from aim.sdk.sequences.figure_sequence import Figures
+    from aim.sdk.sequences.text_sequence import Texts
     from aim.sdk.sequence_collection import SequenceCollection
     from aim.sdk.repo import Repo
 
@@ -64,11 +67,13 @@ class RunAutoClean(AutoClean['Run']):
         Finalize the run by indexing all the data.
         """
         self.meta_run_tree['end_time'] = datetime.datetime.utcnow().timestamp()
-        index = self.repo._get_container('meta/index',
-                                         read_only=False,
-                                         from_union=False).view(b'')
-        logger.debug(f'Indexing Run {self.name}...')
-        self.meta_run_tree.finalize(index=index)
+        try:
+            timeout = os.getenv(AIM_RUN_INDEXING_TIMEOUT, 2 * 60)
+            index = self.repo._get_index_container('meta', timeout=timeout).view(b'')
+            logger.debug(f'Indexing Run {self.name}...')
+            self.meta_run_tree.finalize(index=index)
+        except TimeoutError:
+            logger.warning(f'Cannot index Run {self.name}. Index is locked.')
 
     def finalize_system_tracker(self):
         """
@@ -444,6 +449,7 @@ class Run(StructuredRunMixin):
             def update_trace_dtype(new_dtype):
                 self.meta_tree['traces_types', new_dtype, ctx.idx, name] = 1
                 seq_info.sequence_dtype = self.meta_run_tree['traces', ctx.idx, name, 'dtype'] = new_dtype
+
             compatible = check_types_compatibility(dtype, seq_info.sequence_dtype, update_trace_dtype)
             if not compatible:
                 raise ValueError(f'Cannot log value \'{value}\' on sequence \'{name}\'. Incompatible data types.')
@@ -569,6 +575,38 @@ class Run(StructuredRunMixin):
         """
         return self._get_sequence('images', name, context)
 
+    def get_figure_sequence(
+            self,
+            name: str,
+            context: Context
+    ) -> Optional['Figures']:
+        """Retrieve figure sequence by its name and context.
+
+        Args:
+             name (str): Tracked figure sequence name.
+             context (:obj:`Context`): Tracking context.
+
+        Returns:
+            :obj:`Figures` object if exists, `None` otherwise.
+        """
+        return self._get_sequence('figures', name, context)
+
+    def get_audio_sequence(
+            self,
+            name: str,
+            context: Context
+    ) -> Optional['Audios']:
+        """Retrieve audios sequence by its name and context.
+
+        Args:
+             name (str): Tracked audios sequence name.
+             context (:obj:`Context`): Tracking context.
+
+        Returns:
+            :obj:`Audios` object if exists, `None` otherwise.
+        """
+        return self._get_sequence('audios', name, context)
+
     def get_distribution_sequence(
             self,
             name: str,
@@ -584,6 +622,22 @@ class Run(StructuredRunMixin):
             :obj:`Distributions` object if exists, `None` otherwise.
         """
         return self._get_sequence('distributions', name, context)
+
+    def get_text_sequence(
+            self,
+            name: str,
+            context: Context
+    ) -> Optional['Texts']:
+        """Retrieve texts sequence by it's name and context.
+
+        Args:
+             name (str): Tracked text sequence name.
+             context (:obj:`Context`): Tracking context.
+
+        Returns:
+            :obj:`Texts` object if exists, `None` otherwise.
+        """
+        return self._get_sequence('texts', name, context)
 
     def _get_sequence_dtype(
             self,
