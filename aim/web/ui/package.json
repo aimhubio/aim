@@ -41,9 +41,9 @@
     "yup": "^0.32.9"
   },
   "scripts": {
-    "start": "react-scripts start",
-    "build": "react-scripts build && gzipper c -i js,css,html ./build",
-    "test": "react-scripts test ",
+    "start": "react-scripts --max_old_space_size=4096 start",
+    "build": "react-scripts --max_old_space_size=4096 build && gzipper c -i js,css,html ./build",
+    "test": "react-scripts test",
     "test:coverage": "react-scripts test --collectCoverage",
     "test:watch": "react-scripts test --watchAll",
     "eject": "react-scripts eject",

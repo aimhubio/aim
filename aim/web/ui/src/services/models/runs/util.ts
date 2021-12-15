@@ -23,6 +23,7 @@ import {
   TraceRawDataItem,
   TraceType,
   ImagesData,
+  TextsData,
 } from './types';
 
 /**
@@ -245,7 +246,37 @@ export function processDistributionsData(data: Partial<DistributionsData>) {
 }
 
 /**
- * process distributions data
+ * process texts data
+ */
+export function processTextsData(data: Partial<TextsData>) {
+  const { record_range, index_range, iters, values } = data;
+  const processedValues: any[] = [];
+
+  if (values) {
+    let count = 0;
+    values.forEach((stepValues, stepIndex) => {
+      stepValues.forEach((text) => {
+        processedValues.push({
+          step: iters?.[stepIndex],
+          index: text.index,
+          text: text.data,
+          key: count, // Table row ID
+        });
+        count++;
+      });
+    });
+  }
+
+  return {
+    iters,
+    record_range,
+    index_range,
+    processedValues,
+  };
+}
+
+/**
+ * process images data
  */
 export function processImagesData(
   data: Partial<ImagesData>,

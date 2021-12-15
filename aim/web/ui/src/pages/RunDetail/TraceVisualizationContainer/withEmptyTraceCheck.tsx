@@ -8,7 +8,7 @@ import { ITraceVisualizationContainerProps } from '../types';
  * Higher order component for trace visualization component
  * @param TraceComponent
  */
-function widthEmptyTraceCheck(
+function withEmptyTraceCheck(
   TraceComponent: (
     p: ITraceVisualizationContainerProps,
   ) => React.FunctionComponentElement<React.ReactNode>,
@@ -33,4 +33,4 @@ function widthEmptyTraceCheck(
   };
 }
 
-export default widthEmptyTraceCheck;
+export default withEmptyTraceCheck;

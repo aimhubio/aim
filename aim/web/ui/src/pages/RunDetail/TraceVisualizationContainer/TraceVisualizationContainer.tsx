@@ -1,4 +1,4 @@
-import React, { memo, useEffect } from 'react';
+import React from 'react';
 
 import Menu from 'components/kit/Menu/Menu';
 import BusyLoaderWrapper from 'components/BusyLoaderWrapper/BusyLoaderWrapper';
@@ -8,12 +8,13 @@ import useModel from 'hooks/model/useModel';
 import runTracesModel from 'services/models/runs/runTracesModel';
 
 import DistributionsVisualizer from '../DistributionsVisualizer';
+import TextsVisualizer from '../TextsVisualizer';
 import ImagesVisualizer from '../ImagesVisualizer';
 import PlotlyVisualizer from '../PlotlyVisualizer';
 import { ITraceVisualizationContainerProps } from '../types';
 
 import RangePanel from './RangePanel';
-import widthEmptyTraceCheck from './widthEmptyTraceCheck';
+import withEmptyTraceCheck from './withEmptyTraceCheck';
 
 import './TraceVisualizationContainer.scss';
 
@@ -22,7 +23,7 @@ const traceTypeVisualization = {
   distributions: DistributionsVisualizer,
   audios: () => null,
   videos: () => null,
-  texts: () => null,
+  texts: TextsVisualizer,
   figures: PlotlyVisualizer,
 };
 
@@ -33,7 +34,7 @@ function TraceVisualizationContainer({
   runParams,
 }: ITraceVisualizationContainerProps) {
   const runTracesModelData = useModel(runTracesModel);
-  useEffect(() => {
+  React.useEffect(() => {
     runTracesModel.initialize(
       runHash,
       traceType,
@@ -106,4 +107,4 @@ function TraceVisualizationContainer({
 
 TraceVisualizationContainer.displayName = 'TraceVisualizationContainer';
 
-export default memo(widthEmptyTraceCheck(TraceVisualizationContainer));
+export default React.memo(withEmptyTraceCheck(TraceVisualizationContainer));
