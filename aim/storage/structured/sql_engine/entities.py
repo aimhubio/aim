@@ -79,7 +79,7 @@ class ModelMappedRun(IRun, metaclass=ModelMappedClassMeta):
         q = session.query(RunModel).options([
             joinedload(RunModel.experiment),
             joinedload(RunModel.tags),
-        ]).order_by(RunModel.created_at)
+        ]).order_by(RunModel.created_at.desc())
         return ModelMappedRunCollection(session, query=q)
 
     @classmethod
