@@ -2,7 +2,7 @@
 
 ## Unreleased
 
-- Add ability to query distributions by step range and density (VkoHov, rubenaprikyan)
+- Add colab notebook support (mihran113, rubenaprikyan)
 
 ## 3.2.1 Dec 8 2021
 
