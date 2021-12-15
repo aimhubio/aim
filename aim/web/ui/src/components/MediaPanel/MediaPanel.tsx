@@ -238,7 +238,7 @@ function MediaPanel({
                             additionalProperties?.mediaItemSize) /
                           100
                         : mediaType === MediaTypeEnum.AUDIO
-                        ? 40
+                        ? 56
                         : imageFixedHeight
                     }
                     focusedState={focusedState}

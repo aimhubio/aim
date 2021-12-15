@@ -88,7 +88,6 @@ function AudiosVisualizer(
 
   const additionalProperties = React.useMemo(() => {
     return {
-      mediaItemSize: 25,
       getAudiosBlobsData,
     };
   }, []);

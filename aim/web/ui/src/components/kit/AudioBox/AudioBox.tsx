@@ -32,11 +32,14 @@ function AudiBoxProgress({ audio, isPlaying }: any) {
   }, [isPlaying]);
 
   function startTimer(): void {
+    console.log('mtav');
+
     clearInterval(intervalRef.current);
     intervalRef.current = setInterval(() => {
       setTrackProgress(Math.round(audio.currentTime));
     }, 300);
   }
+  console.log(intervalRef.current);
 
   function onProgressChange(event: any, value: number | number[]): void {
     if (audio) {
@@ -57,12 +60,18 @@ function AudiBoxProgress({ audio, isPlaying }: any) {
 
   function formatDuration(): string {
     return moment
-      .utc(Math.round(audio?.duration || 0) * 1000)
-      .format('HH:mm:ss');
+      .utc(Math.round(audio.duration || 0) * 1000)
+      .format(defineTimeFormat(audio.duration || 0));
+  }
+
+  function defineTimeFormat(duration: number): string {
+    return duration > 3600 ? 'HH:mm:ss' : 'mm:ss';
   }
 
   function formatProgress(): string {
-    return moment.utc(Math.round(trackProgress || 0) * 1000).format('HH:mm:ss');
+    return moment
+      .utc(Math.round(trackProgress) * 1000)
+      .format(defineTimeFormat(audio.duration || 0));
   }
 
   return (
@@ -76,12 +85,16 @@ function AudiBoxProgress({ audio, isPlaying }: any) {
         max={Math.round(audio?.duration)}
         min={0}
       />
-      <div className='AudioBox__timer'>
+      <div
+        className={`AudioBox__timer ${
+          audio?.duration > 3600 ? 'AudioBox__timer-long' : ''
+        }`}
+      >
         <Text weight={400} size={8}>
-          {(audio && formatProgress()) || '00:00:00'}
+          {(audio && formatProgress()) || '00:00'}
         </Text>
         <Text weight={400} size={8}>
-          / {(audio && formatDuration()) || '00:00:00'}
+          / {(audio && formatDuration()) || '00:00'}
         </Text>
       </div>
     </>
@@ -147,6 +160,7 @@ function AudioBox({
   let [blobData, setBlobData] = React.useState<string>(
     blobsURIModel.getState()[blob_uri] ?? null,
   );
+  let [muted, setMuted] = React.useState<boolean>(true);
 
   React.useEffect(() => {
     let timeoutID: number;
@@ -178,22 +192,32 @@ function AudioBox({
       if (subscription) {
         subscription.unsubscribe();
       }
+      if (audio) {
+        audio.pause();
+      }
     };
   }, [processing]);
 
   React.useEffect(() => {
     if (blobData) {
-      setAudio(new Audio(`data:audio/${format};base64,${blobData}`));
+      const audioRef = new Audio();
+      audioRef.autoplay = true;
+      audioRef.muted = true;
+      audioRef.src = `data:audio/${format};base64,${blobData}`;
+      setAudio(audioRef);
+      setMuted(false);
     }
   }, [blobData]);
 
   React.useEffect(() => {
     if (isPlaying) {
-      audio?.play();
+      audio?.play().then(() => {
+        setMuted(false);
+      });
     } else {
       audio?.pause();
     }
-  }, [isPlaying]);
+  }, [isPlaying, audio]);
 
   React.useEffect(() => {
     // Pause and clean up on unmount
@@ -201,10 +225,13 @@ function AudioBox({
       audio?.addEventListener('ended', onAudioEnded);
       audio?.addEventListener('canplay', handleReadyToPlay);
     }
-    return () => {
-      audio?.pause();
-    };
   }, [audio]);
+
+  React.useEffect(() => {
+    if (!muted) {
+      audio.muted = false;
+    }
+  }, [muted]);
 
   function handleReadyToPlay() {
     setProcessing(false);
@@ -229,40 +256,49 @@ function AudioBox({
   }
 
   function onDownload(): void {
-    var element = document.createElement('a');
-    element.setAttribute('href', `data:audio/${format};base64,${blobData}`);
-    element.setAttribute('download', 'name');
-    document.body.appendChild(element);
-    element.click();
-    document.body.removeChild(element);
+    if (audio) {
+      var element = document.createElement('a');
+      element.setAttribute('href', `data:audio/${format};base64,${blobData}`);
+      element.setAttribute('download', 'name');
+      document.body.appendChild(element);
+      element.click();
+      document.body.removeChild(element);
+    }
   }
 
   return (
-    <div className='AudioBox'>
-      <Button
-        onClick={onPLayChange}
-        color='secondary'
-        withOnlyIcon
-        size='small'
-      >
-        {processing ? (
-          <CircularProgress size={12} thickness={4} />
-        ) : (
-          <Icon name={isPlaying ? 'pause' : 'play'} />
-        )}
-      </Button>
-      <AudiBoxProgress audio={audio} isPlaying={!!blobData && isPlaying} />
-      <AudioBoxVolume audio={audio} />
-      <Button
-        withOnlyIcon
-        size='small'
-        onClick={() => {
-          onDownload();
-        }}
-      >
-        <Icon name='download' />
-      </Button>
-    </div>
+    <>
+      <div className='AudioBox'>
+        <Button
+          onClick={onPLayChange}
+          color='secondary'
+          withOnlyIcon
+          size='small'
+        >
+          {processing ? (
+            <CircularProgress size={12} thickness={4} />
+          ) : (
+            <Icon name={isPlaying ? 'pause' : 'play'} />
+          )}
+        </Button>
+        <AudiBoxProgress audio={audio} isPlaying={isPlaying} />
+        <AudioBoxVolume audio={audio} />
+        <Button
+          withOnlyIcon
+          size='small'
+          onClick={() => {
+            onDownload();
+          }}
+        >
+          <Icon name='download' />
+        </Button>
+      </div>
+      <div>
+        <Text size={8} weight={400}>
+          {data.caption}
+        </Text>
+      </div>
+    </>
   );
 }
 
