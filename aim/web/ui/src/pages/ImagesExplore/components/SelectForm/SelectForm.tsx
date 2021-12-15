@@ -142,7 +142,7 @@ function SelectForm({
     }
 
     return data.sort(
-      alphabeticalSortComparator<ISelectMetricsOption>({ orderBy: 'label' }),
+      alphabeticalSortComparator<ISelectOption>({ orderBy: 'label' }),
     );
   }, [projectsData]);
 

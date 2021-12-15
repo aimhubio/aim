@@ -3073,6 +3073,7 @@ function createAppModel(appConfig: IAppInitialConfig) {
               .filter((run) => !run.isHidden)
               .map((run: IParam) => {
                 const values: { [key: string]: string | number | null } = {};
+                console.log(configData.select.options);
                 configData.select.options.forEach(
                   ({ type, label, value }: ISelectOption) => {
                     const dimension = dimensionsObject[chartIndex];
@@ -3119,6 +3120,7 @@ function createAppModel(appConfig: IAppInitialConfig) {
                       values[label] = formatValue(paramValue, null);
                       if (values[label] !== null) {
                         if (typeof values[label] === 'string') {
+                          debugger;
                           dimension[label].scaleType = ScaleEnum.Point;
                         }
                         dimension[label].values.add(values[label]);
