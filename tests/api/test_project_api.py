@@ -11,6 +11,7 @@ from aim.sdk.run import Run
 
 class TestProjectApi(PrefilledDataApiTestBase):
     def test_project_activity_api(self):
+        self.assertTrue(False)
         with self.repo.structured_db as db:
             db.create_experiment('My experiment')
 
