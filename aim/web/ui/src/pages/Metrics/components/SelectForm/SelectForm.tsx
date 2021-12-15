@@ -145,13 +145,11 @@ function SelectForm({
         }
       }
     }
-    return data
-      .sort(
-        alphabeticalSortComparator<ISelectMetricsOption>({
-          orderBy: 'label',
-        }),
-      )
-      .concat(systemOptions);
+    const comparator = alphabeticalSortComparator<ISelectMetricsOption>({
+      orderBy: 'label',
+    });
+    systemOptions.sort(comparator);
+    return data.sort(comparator).concat(systemOptions);
   }, [projectsData]);
 
   function getOption(
@@ -162,7 +160,7 @@ function SelectForm({
   ): ISelectMetricsOption {
     return {
       label: `${system ? formatSystemMetricName(key) : key}`,
-      group: system ? formatSystemMetricName(key) : key,
+      group: system ? 'System' : key,
       color: COLORS[0][index % COLORS[0].length],
       value: {
         metric_name: key,
