@@ -1,0 +1,125 @@
+@use "src/styles/abstracts" as *;
+
+.Scatters__SelectForm {
+  flex: 1;
+  padding: 0.725rem 1.5em;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+
+  &__container__options {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    /* TODO [GA]: Override MUI default styles in a nice way */
+    .MuiBox-root {
+      justify-content: flex-start;
+    }
+  }
+
+  &__container__search {
+    width: 103px;
+    display: flex;
+    justify-content: space-between;
+    flex-direction: column;
+  }
+
+  &__Popper {
+    border: $border-main;
+    width: 40%;
+    border-radius: $radius-main;
+    z-index: 1;
+    color: #586069;
+    background-color: #ffffff;
+    .MuiAutocomplete-paper {
+      box-shadow: unset;
+      margin: unset;
+    }
+  }
+
+  &__option__select {
+    width: 100%;
+
+    input {
+      font-family: monospace;
+      padding: 0.5rem;
+      font-size: $text-md;
+      border-bottom: $border-main;
+    }
+  }
+
+  &__TextField {
+    position: relative;
+  }
+
+  &__textarea {
+    flex: 1;
+    .MuiOutlinedInput-multiline.MuiOutlinedInput-marginDense {
+      padding-top: toRem(7.5px);
+      padding-bottom: toRem(7.5px);
+    }
+    textarea {
+      font-family: monospace;
+    }
+  }
+
+  &__search__button {
+    width: 100%;
+  }
+
+  &__search__actions {
+    display: flex;
+    justify-content: space-between;
+
+    button {
+      border: $border-main;
+      &:nth-child(2) {
+        margin: 0 0.25rem;
+      }
+      &.active {
+        border: $border-main-active;
+        background-color: $primary-color-5;
+      }
+    }
+  }
+
+  &__clearAll {
+    height: 24px;
+    width: 24px;
+    background: #e8f1fc;
+    border-radius: 6px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    position: relative;
+
+    &:after {
+      content: '';
+      position: absolute;
+      width: 20px;
+      height: 34px;
+      background: rgba(255, 255, 255, 0.5);
+      background: linear-gradient(
+                      90deg,
+                      rgba(255, 255, 255, 0) 0%,
+                      rgba(255, 255, 255, 1) 92%
+      );
+      left: -20px;
+      top: -5px;
+      border-radius: 0;
+      color: white;
+      pointer-events: none;
+    }
+
+    i {
+      color: #1473e6;
+      font-size: 10px;
+    }
+  }
+
+  .Dropdown {
+    flex: 1
+  }
+}

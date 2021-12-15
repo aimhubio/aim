@@ -1,0 +1,9 @@
+@use 'src/styles/abstracts' as *;
+
+.Grouping {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-left: $border-separator;
+  padding: 0 1.5em;
+}

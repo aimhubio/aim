@@ -1,0 +1,89 @@
+@use 'src/styles/abstracts' as *;
+
+.Scatters__section {
+  height: 100vh;
+  overflow: hidden;
+
+  .Scatters__loader {
+    flex-direction: column;
+    justify-content: space-between;
+  }
+}
+
+.Scatters__container {
+  background-color: #ffffff;
+  min-width: 50rem;
+  .Scatters__paper {
+    padding: 1em;
+    height: 100%;
+    user-select: none;
+  }
+
+  .Scatters__fullHeight {
+    height: 100%;
+  }
+
+  .Scatters__section__div {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .Scatters__chart__container {
+    min-height: 11.25rem;
+    flex: 0.5 1 0;
+    &__hide {
+      display: none;
+    }
+  }
+
+  .Scatters__ResizePanel {
+    &__hide {
+      display: none;
+    }
+  }
+
+  .Scatters__table__container {
+    flex: 0.5 1 0;
+    min-height: 11rem;
+    &__hide {
+      display: none;
+    }
+  }
+}
+
+.Scatters__SelectForm__Grouping__container {
+  display: flex;
+  border-bottom: $border-separator;
+  min-height: 6rem;
+  max-height: 6rem;
+}
+
+.Scatters__table__aggregationColumn__cell {
+  display: flex;
+  flex: 1;
+
+  span {
+    display: inline-block;
+    width: toRem(120px);
+    min-width: 120px;
+    justify-content: center;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+
+    &:nth-of-type(2) {
+      padding: 0 0.5rem;
+      margin: 0 0.5rem;
+      border-left: 1px solid #ccc;
+      border-right: 1px solid #ccc;
+    }
+  }
+}
+
+.Table__cell--header {
+  .Scatters__table__aggregationColumn__cell {
+    span:last-of-type {
+      width: calc(120px - 1rem);
+    }
+  }
+}

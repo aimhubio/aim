@@ -1,0 +1,53 @@
+@use 'src/styles/abstracts' as *;
+
+.GroupingItem {
+  display: flex;
+  flex-direction: column;
+  margin-right: 0.5em;
+  cursor: pointer;
+  &:last-child {
+    margin-right: 0;
+  }
+  span {
+    margin-top: 0.4em;
+    text-align: center;
+    text-transform: capitalize;
+  }
+  &__icon__box {
+    width: 3.25em;
+    height: 3.25em;
+    border: $border-main;
+    border-radius: 0.375em;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.18s ease-out;
+
+    &:last-child {
+      margin-right: 0;
+    }
+
+    i {
+      color: #1473e6;
+      font-size: 24px;
+    }
+
+    &:hover {
+      background-color: $pico-5;
+    }
+
+    &.active {
+      background-color: $primary-color-10;
+    }
+    &.outlined {
+      background-color: $primary-color-10;
+      border: $border-main-active;
+    }
+  }
+  &__button_small {
+    border: 1px solid;
+    padding: 0px 4px;
+    border-radius: 4px;
+    cursor: pointer;
+  }
+}
