@@ -1,4 +1,4 @@
-from aim import Run
+from aim import Run, Repo
 from aim.pytorch import track_gradients_dists, track_params_dists
 
 import torch
@@ -8,7 +8,8 @@ import torchvision.transforms as transforms
 
 
 # Initialize a new Run
-aim_run = Run()
+aim_repo = Repo.from_path('remote://localhost:53800')
+aim_run = Run(repo=aim_repo)
 
 # Device configuration
 device = torch.device('cpu')

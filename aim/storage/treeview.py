@@ -63,7 +63,7 @@ class TreeView:
     ) -> AimObject:
         try:
             return self[path]
-        except KeyError:
+        except (KeyError, RuntimeError):  # TODO [AT]: revisit once proper error handling is added
             return default
 
     @abstractmethod

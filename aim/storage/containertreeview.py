@@ -67,7 +67,7 @@ class ContainerTreeView(TreeView):
         if isinstance(path, (int, str)):
             path = (path,)
         prefix = E.encode_path(path)
-        it = self.container.items(prefix)
+        it = self.container.view(prefix).items()
         try:
             return treeutils.decode_tree(it, strict=strict)
         except KeyError:
@@ -137,7 +137,7 @@ class ContainerTreeView(TreeView):
         AimObject
     ]]:
         prefix = E.encode_path(path)
-        it = self.container.items(prefix)
+        it = self.container.view(prefix).items()
         for path, value in treeutils.iter_decode_tree(it, level=1):
             key, = path
             yield key, value
@@ -168,7 +168,7 @@ class ContainerTreeView(TreeView):
         if isinstance(path, (int, str)):
             path = (path,)
         prefix = E.encode_path(path)
-        p = E.decode_path(self.container.next_key(prefix))
+        p = E.decode_path(self.container.view(prefix).next_key())
         return p[0]
 
     def last(
@@ -180,7 +180,7 @@ class ContainerTreeView(TreeView):
         prefix = E.encode_path(path)
         # assert prefix.endswith(b'\xfe')
         # prefix = prefix[:-1] + b'\xff'
-        p = E.decode_path(self.container.prev_key(prefix))
+        p = E.decode_path(self.container.view(prefix).prev_key())
         if not p:
             raise KeyError
         return p[0]

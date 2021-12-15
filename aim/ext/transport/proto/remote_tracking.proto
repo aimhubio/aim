@@ -1,0 +1,64 @@
+syntax = "proto3";
+
+
+message ResourceRequest {
+    string resource_type = 1;
+    string client_uri = 2;
+    repeated bytes args = 3;
+}
+
+message ResourceResponse {
+    string handler = 1;
+    enum Status {
+        OK = 0;
+        ERROR = 1;
+    }
+    Status status = 2;
+}
+
+message RequestHeader {
+    string version = 1;
+    string handler = 2;
+    string client_uri = 3;
+    string method_name = 4;
+}
+
+message InstructionRequest {
+    oneof instruction {
+        RequestHeader header = 1;
+        bytes message = 2;
+    }
+}
+
+message InstructionRequestNoStream {
+    RequestHeader header = 1;
+    repeated bytes message = 2;
+}
+
+message ResponseHeader {
+    float version = 1;
+    enum Status {
+        OK = 0;
+        ERROR = 1;
+    }
+    Status status = 2;
+}
+
+message InstructionResponse {
+    oneof instruction {
+        ResponseHeader header = 1;
+        bytes message = 2;
+    }
+}
+
+message InstructionResponseNoStream {
+    ResponseHeader header = 1;
+    repeated bytes message = 2;
+}
+
+
+service RemoteTrackingService {
+    rpc get_resource(ResourceRequest) returns (ResourceResponse) {}
+    rpc run_instruction_no_stream(InstructionRequestNoStream) returns (InstructionResponseNoStream) {}
+    rpc run_instruction(stream InstructionRequest) returns (stream InstructionResponse) {}
+}

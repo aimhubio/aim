@@ -222,6 +222,9 @@ class SequenceInfo:
         self.initialized = False
         self.count = None
         self.sequence_dtype = None
+        self.val_view = None
+        self.epoch_view = None
+        self.time_view = None
 
 
 class Run(StructuredRunMixin):
@@ -272,17 +275,17 @@ class Run(StructuredRunMixin):
         self.contexts: Dict[Context, int] = dict()
         self.sequence_info: Dict[SequenceDescriptor.Selector, SequenceInfo] = defaultdict(SequenceInfo)
 
-        self.meta_tree: TreeView = self.repo.request(
+        self.meta_tree: TreeView = self.repo.request_tree(
             'meta', self.hash, read_only=read_only, from_union=True
-        ).tree().subtree('meta')
+        ).subtree('meta')
         self.meta_run_tree: TreeView = self.meta_tree.subtree('chunks').subtree(self.hash)
 
         self.meta_attrs_tree: TreeView = self.meta_tree.subtree('attrs')
         self.meta_run_attrs_tree: TreeView = self.meta_run_tree.subtree('attrs')
 
-        self.series_run_tree: TreeView = self.repo.request(
+        self.series_run_tree: TreeView = self.repo.request_tree(
             'seqs', self.hash, read_only=read_only
-        ).tree().subtree('seqs').subtree('chunks').subtree(self.hash)
+        ).subtree('seqs').subtree('chunks').subtree(self.hash)
 
         self._system_resource_tracker: ResourceTracker = None
         self._prepare_resource_tracker(system_tracking_interval)
@@ -290,7 +293,7 @@ class Run(StructuredRunMixin):
         if not read_only:
             try:
                 self.meta_run_attrs_tree.first()
-            except (KeyError, StopIteration):
+            except (KeyError, StopIteration, RuntimeError):  # TODO [AT]: revisit once proper error handling is added
                 # no run params are set. use empty dict
                 self[...] = {}
             self.meta_run_tree['end_time'] = None
@@ -432,13 +435,13 @@ class Run(StructuredRunMixin):
             self.contexts[ctx] = ctx.idx
             self._idx_to_ctx[ctx.idx] = ctx
 
-        val_view = self.series_run_tree.subtree(sequence.selector).array('val').allocate()
-        epoch_view = self.series_run_tree.subtree(sequence.selector).array('epoch').allocate()
-        time_view = self.series_run_tree.subtree(sequence.selector).array('time').allocate()
-
         seq_info = self.sequence_info[sequence.selector]
         if not seq_info.initialized:
-            seq_info.count = len(val_view)
+            seq_info.val_view = self.series_run_tree.subtree(sequence.selector).array('val').allocate()
+            seq_info.epoch_view = self.series_run_tree.subtree(sequence.selector).array('epoch').allocate()
+            seq_info.time_view = self.series_run_tree.subtree(sequence.selector).array('time').allocate()
+
+            seq_info.count = len(seq_info.val_view)
             seq_info.sequence_dtype = self.meta_run_tree.get(('traces', ctx.idx, name, 'dtype'), None)
             if seq_info.count != 0 and seq_info.sequence_dtype is None:  # continue tracking on old sequence
                 seq_info.sequence_dtype = 'float'
@@ -466,9 +469,9 @@ class Run(StructuredRunMixin):
             self.meta_run_tree['traces', ctx.idx, name, 'record_max_length'] = max(record_max_length, len(val))
 
         # TODO perform assignments in an atomic way
-        val_view[step] = val
-        epoch_view[step] = epoch
-        time_view[step] = track_time
+        seq_info.val_view[step] = val
+        seq_info.epoch_view[step] = epoch
+        seq_info.time_view[step] = track_time
         seq_info.count = seq_info.count + 1
 
     @property

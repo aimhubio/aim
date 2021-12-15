@@ -11,6 +11,7 @@ from weakref import WeakValueDictionary
 from aim.ext.sshfs.utils import mount_remote_repo, unmount_remote_repo
 from aim.ext.task_queue.queue import TaskQueue
 from aim.ext.cleanup import AutoClean
+from aim.ext.transport.client import Client
 
 from aim.sdk.configs import get_aim_repo_name, AIM_ENABLE_TRACKING_THREAD
 from aim.sdk.run import Run
@@ -22,6 +23,7 @@ from aim.sdk.data_version import DATA_VERSION
 from aim.storage.container import Container
 from aim.storage.rockscontainer import RocksContainer
 from aim.storage.union import RocksUnionContainer
+from aim.storage.treeviewproxy import ProxyTree
 
 from aim.storage.structured.db import DB
 
@@ -92,9 +94,16 @@ class Repo:
 
         self._resources = None
         self.read_only = read_only
+        self.is_remote_repo = False
         self._mount_root = None
+        self._client: Client = None
         if path.startswith('ssh://'):
             self._mount_root, self.root_path = mount_remote_repo(path)
+        elif path.startswith('remote://'):
+            remote_path = path.replace('remote://', '')
+            self._client = Client(remote_path)
+            self.root_path = remote_path
+            self.is_remote_repo = True
         else:
             self.root_path = path
         self.path = os.path.join(self.root_path, get_aim_repo_name())
@@ -103,7 +112,7 @@ class Repo:
             os.makedirs(self.path, exist_ok=True)
             with open(os.path.join(self.path, 'VERSION'), 'w') as version_fh:
                 version_fh.write(DATA_VERSION + '\n')
-        if not os.path.exists(self.path):
+        if not self.is_remote_repo and not os.path.exists(self.path):
             if self._mount_root:
                 unmount_remote_repo(self.root_path, self._mount_root)
             raise RuntimeError(f'Cannot find repository \'{self.path}\'. Please init first.')
@@ -122,7 +131,7 @@ class Repo:
 
     @property
     def meta_tree(self):
-        return self.request('meta', read_only=True, from_union=True).tree().subtree('meta')
+        return self.request_tree('meta', read_only=True, from_union=True).subtree('meta')
 
     def __repr__(self) -> str:
         return f'<Repo#{hash(self)} path={self.path} read_only={self.read_only}>'
@@ -167,7 +176,7 @@ class Repo:
         Returns:
             :obj:`Repo` object.
         """
-        if not path.startswith('ssh://'):
+        if not path.startswith('ssh://') and not path.startswith('remote://'):
             path = clean_repo_path(path)
         repo = cls._pool.get(path)
         if repo is None:
@@ -255,6 +264,20 @@ class Repo:
             self.container_pool[container_config] = container
 
         return container
+
+    def request_tree(
+        self,
+        name: str,
+        sub: str = None,
+        *,
+        read_only: bool,
+        from_union: bool = False  # TODO maybe = True by default
+    ):
+        if not self.is_remote_repo:
+            return self.request(name, sub, read_only=read_only, from_union=from_union).tree()
+        else:
+            assert self._client is not None
+            return ProxyTree(self._client, name, sub, read_only, from_union)
 
     def request(
             self,
@@ -426,9 +449,9 @@ class Repo:
         return encryption_key
 
     def _get_meta_tree(self):
-        return self.request(
+        return self.request_tree(
             'meta', read_only=True, from_union=True
-        ).tree().subtree('meta')
+        ).subtree('meta')
 
     @staticmethod
     def available_sequence_types():
