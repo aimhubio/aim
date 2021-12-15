@@ -1,21 +1,21 @@
-import { HighlightEnum } from 'components/HighlightModesPopover/HighlightModesPopover';
-
-import {
-  IChartTitle,
-  IChartZoom,
-} from 'types/services/models/metrics/metricsAppModel';
-import { IAxesScaleState } from 'types/components/AxesScalePopover/AxesScalePopover';
+import { IChartTitle } from 'types/services/models/metrics/metricsAppModel';
 import { ISyncHoverStateArgs } from 'types/utils/d3/drawHoverAttributes';
-import { ILine } from 'types/components/LineChart/LineChart';
+import { IDimensionType } from 'types/utils/d3/drawParallelAxes';
+
+export interface IPoint {
+  key: string;
+  data: {
+    xValues: number[] | string[];
+    yValues: number[] | string[];
+  };
+  color: string;
+  groupKey: string;
+  chartIndex?: number;
+}
 
 export interface IScatterPlotProps {
   index: number;
-  data: ILine[];
-  axesScaleType?: IAxesScaleState;
+  data: { dimensions: IDimensionType[]; data: IPoint[] };
   chartTitle?: IChartTitle;
-  displayOutliers?: boolean;
-  highlightMode?: HighlightEnum;
-  zoom?: IChartZoom;
-  onZoomChange?: (zoom: Partial<IChartZoom>) => void;
   syncHoverState: (args: ISyncHoverStateArgs) => void;
 }

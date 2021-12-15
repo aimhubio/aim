@@ -12,6 +12,7 @@ export type IRunTraceModel = {
     defaultActiveItemKey: string;
     availableKeys: string[];
   };
+  runParams?: object;
   queryData: QueryData;
   batchRequestOptions: {
     trace: TraceRawDataItem;
@@ -27,7 +28,7 @@ export type TraceType =
   | 'audios'
   | 'texts'
   | 'videos'
-  | 'plotly';
+  | 'figures';
 
 /**
  * The context of info Raw data
@@ -57,7 +58,11 @@ export interface DistributionsData extends TraceRawDataItem {
  * Distributions api response
  * @TODO make compatible to images data
  */
-export interface ImagesData extends DistributionsData {}
+export interface ImagesData extends DistributionsData {
+  context: object;
+  index_range: [number, number];
+  values: any;
+}
 
 /**
  * Distributions api response value type
@@ -70,6 +75,22 @@ export type DistributionValue = {
   };
 };
 
+/**
+ * Plotly api response
+ */
+export interface IPlotlyData extends TraceRawDataItem {
+  record_range: [number, number];
+  values: PlotlyValue[];
+  iters: number[];
+}
+
+/**
+ * Plotly api response value type
+ */
+export type IPlotlyValue = {
+  data: any[];
+  layout: any;
+};
 export interface TraceProcessedData extends DistributionValue {
   data: {
     blob: TraceProcessedValue;
@@ -85,14 +106,16 @@ export type QueryData = {
   inputs: Record<string, number>;
 };
 
-type RangePanelItem = {
+export type RangePanelItem = {
   sliderName: string;
   inputName: string;
   sliderTitle: string;
   inputTitle: string;
   sliderTitleTooltip: string;
   inputTitleTooltip: string;
+  sliderType: 'single' | 'range'; // This type is same as SliderWithInput component sliderType prop type.
 };
+
 export type IConfig = {
   rangePanel: RangePanelItem[];
 };

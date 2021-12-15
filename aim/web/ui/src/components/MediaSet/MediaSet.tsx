@@ -1,5 +1,5 @@
 import React from 'react';
-import _ from 'lodash';
+import _ from 'lodash-es';
 import { VariableSizeList as List, areEqual } from 'react-window';
 import classNames from 'classnames';
 

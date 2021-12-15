@@ -16,7 +16,7 @@ export default function onParamVisibilityChange<M extends State>({
   model: IModel<M>;
   appName: string;
   updateModelData: (
-    configData: IAppModelConfig | any,
+    configData: IAppModelConfig,
     shouldURLUpdate?: boolean,
   ) => void;
 }) {
@@ -43,7 +43,7 @@ export default function onParamVisibilityChange<M extends State>({
     updateModelData(configUpdate);
   }
   analytics.trackEvent(
-    `[ParamsExplorer][Table] ${
+    `[${appName}Explorer][Table] ${
       metricsKeys[0] === 'all'
         ? 'Visualize all hidden metrics from table'
         : 'Hide all metrics from table'

@@ -134,7 +134,7 @@ class RocksContainer(Container):
         if not self.read_only:
             lock_path = self.prepare_lock_path()
             self._lock_path = lock_path
-            self._lock = FileLock(str(self._lock_path), timeout=10)
+            self._lock = FileLock(str(self._lock_path), timeout=self._extra_opts.get('timeout', 10))
             self._lock.acquire()
 
         self._db = aimrocks.DB(str(self.path),

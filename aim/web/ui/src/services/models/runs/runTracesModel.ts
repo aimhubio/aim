@@ -13,6 +13,7 @@ import {
   TraceResponseData,
   TraceRawDataItem,
   IRunTraceModel,
+  RangePanelItem,
   TraceType,
   QueryData,
   IConfig,
@@ -43,17 +44,20 @@ function getDefaultQueryAndConfigData(traceType: TraceType) {
   Object.keys(traceSettings.sliders).forEach((key, index) => {
     const item = traceSettings.sliders[key];
     queryData.sliders[key] = item.defaultValue;
-
     const correspondedInput = traceSettings.inputs[inputKeys[index]];
+
     // inject range panel data
-    config.rangePanel.push({
+    const processedItem: RangePanelItem = {
       sliderName: key,
       inputName: inputKeys[index],
       sliderTitle: item.title,
       inputTitle: correspondedInput.title,
       sliderTitleTooltip: item.tooltip,
       inputTitleTooltip: correspondedInput.tooltip,
-    });
+      sliderType: item.sliderType,
+    };
+
+    config.rangePanel.push(processedItem);
   });
 
   Object.keys(traceSettings.inputs).forEach((key) => {
@@ -67,6 +71,7 @@ function initialize(
   run_id: string,
   traceType: TraceType,
   traces: TraceRawDataItem[],
+  runParams?: object,
 ) {
   model.init();
 
@@ -82,6 +87,7 @@ function initialize(
     traceType,
     runHash: run_id,
     isTraceBatchLoading: true,
+    runParams,
     menu: {
       title,
       items: data,
@@ -145,19 +151,27 @@ async function getRunTraceBatch(isInitial = false) {
   abortGetTraceBatchBatchRequest();
 
   const state = model.getState();
+  const traceType = state.traceType || 'distributions';
   const requestOptions = state.batchRequestOptions;
   const queryData = state.queryData;
 
+  let paramsToApi = settings[traceType].paramsToApi;
+
+  if (!paramsToApi) {
+    paramsToApi = (queryData?: QueryData) => {
+      return {
+        ...(!isInitial ? reformatArrayQueries(queryData?.sliders) : {}),
+        ...queryData?.inputs,
+      };
+    };
+  }
+
   getTraceBatchRequestRef = runsService.getBatch(
     state.runHash || '',
-    state.traceType || 'distributions',
-    {
-      ...(!isInitial ? reformatArrayQueries(queryData?.sliders) : {}),
-      ...queryData?.inputs,
-    },
+    traceType,
+    paramsToApi(queryData),
     [requestOptions?.trace],
   );
-
   try {
     model.setState({
       ...state,
@@ -184,8 +198,10 @@ async function getRunTraceBatch(isInitial = false) {
         [keys[0]]: val,
       };
     }
-    const parsed =
-      settings[state.traceType || 'distributions'].dataProcessor(data);
+    const parsed = settings[state.traceType || 'distributions'].dataProcessor(
+      data,
+      state?.runParams,
+    );
     if (isInitial) {
       const sliders = getInitialSliderValues(
         parsed,
@@ -220,7 +236,7 @@ function onInputChange(name: string, value: number) {
       ...state.queryData,
       inputs: {
         ...state.queryData?.inputs,
-        [name]: value,
+        [name]: +value,
       },
     },
   });

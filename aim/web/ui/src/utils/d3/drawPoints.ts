@@ -1,50 +1,44 @@
+import { IPoint } from 'components/ScatterPlot';
+
 import { IDrawPointsArgs } from 'types/utils/d3/drawPoints';
-import { IGetAxisScale } from 'types/utils/d3/getAxisScale';
-import { IProcessedData } from 'types/utils/d3/processData';
-import { ILine } from 'types/components/LineChart/LineChart';
+import { IAxisScale } from 'types/utils/d3/getAxisScale';
 
 import { CircleEnum } from './index';
 
 function drawPoints(args: IDrawPointsArgs): void {
-  const { index, xScale, yScale, pointsRef, pointsNodeRef, highlightMode } =
-    args;
+  const { index, data, xScale, yScale, pointsRef, pointsNodeRef } = args;
 
   if (!pointsNodeRef?.current) {
     return;
   }
 
   pointsRef.current.updateScales = function (
-    xScale: IGetAxisScale,
-    yScale: IGetAxisScale,
+    xScale: IAxisScale,
+    yScale: IAxisScale,
   ): void {
     pointsNodeRef.current
       .selectAll('.Circle')
-      .attr('cx', (p: ILine) => xScale(p.data.xValues[0]))
-      .attr('cy', (p: ILine) => yScale(p.data.yValues[0]))
+      .attr('cx', (p: IPoint) => xScale(p.data.xValues[0]))
+      .attr('cy', (p: IPoint) => yScale(p.data.yValues[0]))
       .attr('r', CircleEnum.Radius);
   };
 
-  pointsRef.current.updatePoints = function (data: IProcessedData[]): void {
+  pointsRef.current.updatePoints = function (pointData: IPoint[]): void {
     pointsNodeRef.current
       ?.selectAll('.Circle')
-      .data(data)
+      .data(pointData)
       .join('circle')
       .attr('class', 'Circle')
-      .attr('id', (p: ILine) => `Circle-${p.key}`)
+      .attr('id', (p: IPoint) => `Circle-${p.key}`)
       .attr('clip-path', `url(#lines-rect-clip-${index})`)
-      .attr('groupKey', (p: ILine) => p.groupKey)
-      .attr(
-        'data-selector',
-        (p: ILine) =>
-          `Circle-Sel-${highlightMode}-${p.selectors?.[highlightMode]}`,
-      )
-      .attr('cx', (p: ILine) => xScale(p.data.xValues[0]))
-      .attr('cy', (p: ILine) => yScale(p.data.yValues[0]))
+      .attr('groupKey', (p: IPoint) => p.groupKey)
+      .attr('cx', (p: IPoint) => xScale(p.data.xValues[0]))
+      .attr('cy', (p: IPoint) => yScale(p.data.yValues[0]))
       .attr('r', CircleEnum.Radius)
-      .style('fill', (p: ILine) => p.color);
+      .style('fill', (p: IPoint) => p.color);
   };
 
-  pointsRef.current.updatePoints(args.data);
+  pointsRef.current.updatePoints(data);
 }
 
 export default drawPoints;

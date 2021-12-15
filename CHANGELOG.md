@@ -3,7 +3,14 @@
 ## Unreleased
 
 - Fix boolean values encoding (mahnerak)
+- Add Scatter Explorer to visualize correlations between metric last value and hyperparameter (KaroMourad)
+- Add ability to track and visualize plotly objects (devfox-se, Hamik25, rubenaprikyan)
 - Add ability to query distributions by step range and density (VkoHov, rubenaprikyan)
+- Implement images visualization tab in run detail page (VkoHov, KaroMourad)
+
+## 3.2.2 Dec 10 2021
+
+- Fix Run finalization index timeout issue (alberttorosyan)
 
 ## 3.2.1 Dec 8 2021
 

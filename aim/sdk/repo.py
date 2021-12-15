@@ -224,7 +224,7 @@ class Repo:
         return '0.0'  # old Aim repos
 
     def _get_container(
-        self, name: str, read_only: bool, from_union: bool = False
+            self, name: str, read_only: bool, from_union: bool = False
     ) -> Container:
         if self.read_only and not read_only:
             raise ValueError('Repo is read-only')
@@ -242,13 +242,27 @@ class Repo:
 
         return container
 
+    def _get_index_container(self, name: str, timeout: int) -> Container:
+        if self.read_only:
+            raise ValueError('Repo is read-only')
+
+        name = name + '/index'
+        container_config = ContainerConfig(name, None, read_only=True)
+        container = self.container_pool.get(container_config)
+        if container is None:
+            path = os.path.join(self.path, name)
+            container = RocksContainer(path, read_only=False, timeout=timeout)
+            self.container_pool[container_config] = container
+
+        return container
+
     def request(
-        self,
-        name: str,
-        sub: str = None,
-        *,
-        read_only: bool,
-        from_union: bool = False  # TODO maybe = True by default
+            self,
+            name: str,
+            sub: str = None,
+            *,
+            read_only: bool,
+            from_union: bool = False  # TODO maybe = True by default
     ):
 
         container_config = ContainerConfig(name, sub, read_only)
@@ -332,7 +346,7 @@ class Repo:
             :obj:`MetricCollection`: Iterable for metrics matching query expression.
         """
         self._prepare_runs_cache()
-        from aim.sdk.metric import Metric
+        from aim.sdk.sequences.metric import Metric
         return QuerySequenceCollection(repo=self, seq_cls=Metric, query=query)
 
     def query_images(self, query: str = '') -> QuerySequenceCollection:
@@ -344,8 +358,32 @@ class Repo:
             :obj:`SequenceCollection`: Iterable for image sequences matching query expression.
         """
         self._prepare_runs_cache()
-        from aim.sdk.image_sequence import Images
+        from aim.sdk.sequences.image_sequence import Images
         return QuerySequenceCollection(repo=self, seq_cls=Images, query=query)
+
+    def query_audios(self, query: str = '') -> QuerySequenceCollection:
+        """Get audio collections satisfying query expression.
+
+        Args:
+             query (str): query expression.
+        Returns:
+            :obj:`SequenceCollection`: Iterable for audio sequences matching query expression.
+        """
+        self._prepare_runs_cache()
+        from aim.sdk.sequences.audio_sequence import Audios
+        return QuerySequenceCollection(repo=self, seq_cls=Audios, query=query)
+
+    def query_figure_objects(self, query: str = '') -> QuerySequenceCollection:
+        """Get Figures collections satisfying query expression.
+
+        Args:
+             query (str): query expression.
+        Returns:
+            :obj:`SequenceCollection`: Iterable for Figure sequences matching query expression.
+        """
+        self._prepare_runs_cache()
+        from aim.sdk.sequences.figure_sequence import Figures
+        return QuerySequenceCollection(repo=self, seq_cls=Figures, query=query)
 
     def query_distributions(self, query: str = '') -> QuerySequenceCollection:
         """Get distribution collections satisfying query expression.
@@ -356,8 +394,20 @@ class Repo:
             :obj:`SequenceCollection`: Iterable for distribution sequences matching query expression.
         """
         self._prepare_runs_cache()
-        from aim.sdk.distribution_sequence import Distributions
+        from aim.sdk.sequences.distribution_sequence import Distributions
         return QuerySequenceCollection(repo=self, seq_cls=Distributions, query=query)
+
+    def query_texts(self, query: str = '') -> QuerySequenceCollection:
+        """Get text collections satisfying query expression.
+
+        Args:
+             query (str): query expression.
+        Returns:
+            :obj:`SequenceCollection`: Iterable for text sequences matching query expression.
+        """
+        self._prepare_runs_cache()
+        from aim.sdk.sequences.text_sequence import Texts
+        return QuerySequenceCollection(repo=self, seq_cls=Texts, query=query)
 
     @property
     def run_props_cache_hint(self):
