@@ -33,7 +33,6 @@ class CustomObject(CustomObjectBase):
 
         if _storage is None:
             obj.storage = InMemoryTreeView(container={})
-            obj.__init__(*args, **kwargs)
         else:
             obj.storage = _storage
         return obj
