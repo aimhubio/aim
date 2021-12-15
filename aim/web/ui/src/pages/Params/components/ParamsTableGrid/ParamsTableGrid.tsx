@@ -20,6 +20,7 @@ import {
 import { isSystemMetric } from 'utils/isSystemMetric';
 import { formatSystemMetricName } from 'utils/formatSystemMetricName';
 import contextToString from 'utils/contextToString';
+import { formatValue } from 'utils/formatValue';
 
 const icons: { [key: string]: string } = {
   color: 'coloring',
@@ -283,7 +284,7 @@ function paramsTableRowRenderer(
                   />
                 ) : (
                   <Tooltip key={item} title={value}>
-                    <span>{value}</span>
+                    <span>{formatValue(value)}</span>
                   </Tooltip>
                 );
               })}
