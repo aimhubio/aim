@@ -78,6 +78,7 @@ any_list_regex = re.compile(r'list\([A-Za-z]{1}[A-Za-z0-9.]*\)')
 def check_types_compatibility(dtype: str, base_dtype: str, update_base_dtype_fn=None) -> bool:
     if dtype == base_dtype:
         return True
+    
     if base_dtype == 'list' and any_list_regex.match(dtype):
         if update_base_dtype_fn is not None:
             update_base_dtype_fn(dtype)
