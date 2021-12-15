@@ -1908,7 +1908,7 @@ function onImageAlignmentChange(
 function isRangePanelShow() {
   return (
     !!getStateFromUrl('select')?.query ||
-    !isEmpty(getStateFromUrl('select')?.images) ||
+    !isEmpty(getStateFromUrl('select')?.options) ||
     (!!getStateFromUrl('select')?.advancedQuery &&
       !!getStateFromUrl('select')?.advancedMode)
   );

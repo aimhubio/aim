@@ -81,6 +81,7 @@ function ImagesExplore(): React.FunctionComponentElement<React.ReactNode> {
     imagesWrapperRef?.current?.offsetHeight,
     imagesExploreData?.config?.table.resizeMode,
   ]);
+
   React.useEffect(() => {
     imagesExploreAppModel.initialize(route.params.appId);
     let appRequestRef: {
