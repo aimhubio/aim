@@ -10,6 +10,8 @@ import { batchCollectDelay } from 'config/imagesConfigs/imagesConfig';
 
 import blobsURIModel from 'services/models/media/blobsURIModel';
 
+import contextToString from 'utils/contextToString';
+
 import {
   IAudioBoxProps,
   IAudiBoxProgressProps,
@@ -157,7 +159,7 @@ function AudioBox({
   data,
   additionalProperties,
 }: IAudioBoxProps): React.FunctionComponentElement<React.ReactNode> {
-  const { format, blob_uri } = data;
+  const { blob_uri } = data;
   const [isPlaying, setIsPlaying] = React.useState<boolean>(false);
   const [audio, setAudio] = React.useState<any>(null);
   const [processing, setProcessing] = React.useState<boolean>(false);
@@ -208,8 +210,8 @@ function AudioBox({
       const audioRef = new Audio();
       audioRef.autoplay = true;
       audioRef.muted = true;
-      audioRef.src = `data:audio/${format};base64,${blobData}`;
-      setSrc(`data:audio/${format};base64,${blobData}`);
+      audioRef.src = `data:audio/${data.format};base64,${blobData}`;
+      setSrc(`data:audio/${data.format};base64,${blobData}`);
       setAudio(audioRef);
       setMuted(false);
     }
@@ -263,9 +265,15 @@ function AudioBox({
 
   function onDownload(): void {
     if (audio) {
-      var element = document.createElement('a');
+      const element: HTMLAnchorElement = document.createElement('a');
+      const { index, format, context, step, caption, audio_name } = data;
+      const contextName =
+        contextToString(context) === '' ? '' : `_${contextToString(context)}`;
+      const name: string =
+        `${audio_name}${contextName}_${caption}_${step}_${index}`.trim();
+
       element.setAttribute('href', `data:audio/${format};base64,${blobData}`);
-      element.setAttribute('download', 'name');
+      element.setAttribute('download', name);
       document.body.appendChild(element);
       element.click();
       document.body.removeChild(element);

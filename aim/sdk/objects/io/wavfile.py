@@ -11,6 +11,7 @@ Functions
 `write`: Write a NumPy array as a WAV file.
 
 """
+
 import io
 import sys
 import numpy
@@ -32,6 +33,7 @@ class WAVE_FORMAT(IntEnum):
     Complete list is in mmreg.h in Windows 10 SDK.  ALAC and OPUS are the
     newest additions, in v10.0.14393 2016-07
     """
+
     UNKNOWN = 0x0000
     PCM = 0x0001
     ADPCM = 0x0002

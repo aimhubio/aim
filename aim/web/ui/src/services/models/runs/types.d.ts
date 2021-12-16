@@ -55,13 +55,21 @@ export interface DistributionsData extends TraceRawDataItem {
 }
 
 /**
- * Distributions api response
+ * Images api response
  * @TODO make compatible to images data
  */
 export interface ImagesData extends DistributionsData {
   context: object;
   index_range: [number, number];
   values: any;
+}
+
+/**
+ * Texts api response
+ * @TODO make compatible to texts data
+ */
+export interface TextsData extends ImagesData {
+  values: { data: string; index: number }[][];
 }
 
 /**

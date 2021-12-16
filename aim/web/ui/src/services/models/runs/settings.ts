@@ -2,6 +2,7 @@ import { QueryData } from './types';
 import {
   processDistributionsData,
   processImagesData,
+  processTextsData,
   processPlotlyData,
   reformatArrayQueries,
   processAudiosData,
@@ -86,7 +87,7 @@ const settings: Record<string, SettingItem> = {
       },
       index_range: {
         defaultValue: [0, 50],
-        tooltip: 'Index in the list of images passed to track() call',
+        tooltip: 'Index in the list of audios passed to track() call',
         title: 'Indices',
         sliderType: 'range',
       },
@@ -100,7 +101,36 @@ const settings: Record<string, SettingItem> = {
       index_density: {
         defaultValue: 5,
         title: 'Indices count',
-        tooltip: 'Number of images per step',
+        tooltip: 'Number of audios per step',
+      },
+    },
+  },
+  texts: {
+    dataProcessor: processTextsData,
+    sliders: {
+      record_range: {
+        defaultValue: [0, 50],
+        tooltip: 'Training step. Increments every time track() is called',
+        title: 'Steps',
+        sliderType: 'range',
+      },
+      index_range: {
+        defaultValue: [0, 50],
+        tooltip: 'Index in the list of texts passed to track() call',
+        title: 'Indices',
+        sliderType: 'range',
+      },
+    },
+    inputs: {
+      record_density: {
+        defaultValue: 50,
+        title: 'Steps count',
+        tooltip: 'Number of steps to display',
+      },
+      index_density: {
+        defaultValue: 5,
+        title: 'Indices count',
+        tooltip: 'Number of texts per step',
       },
     },
   },
@@ -127,7 +157,7 @@ const settings: Record<string, SettingItem> = {
     inputs: {
       record_range: {
         defaultValue: 1,
-        tooltip: 'Training step. To see Plotly tracked in the step.',
+        tooltip: 'Training step. To see figures tracked in the step.',
         title: 'Step',
       },
     },
