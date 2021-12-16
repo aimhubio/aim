@@ -1,11 +1,11 @@
-import _ from 'lodash-es';
-
 import {
   GroupNameType,
   IGroupingSelectOption,
   IMetricsCollection,
 } from 'types/services/models/metrics/metricsAppModel';
 import { IModel, State } from 'types/services/models/model';
+
+import { getValue } from 'utils/helper';
 
 import getValueByField from '../getValueByField';
 
@@ -28,7 +28,7 @@ export default function getGroupConfig<D, M extends State>({
     if (groupItem.length) {
       groupConfig[groupItemKey] = groupItem.reduce((acc, paramKey) => {
         Object.assign(acc, {
-          [getValueByField(groupingSelectOptions || [], paramKey)]: _.get(
+          [getValueByField(groupingSelectOptions || [], paramKey)]: getValue(
             collection.config,
             paramKey,
           ),

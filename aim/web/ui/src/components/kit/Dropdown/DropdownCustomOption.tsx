@@ -18,6 +18,7 @@ function DropdownCustomOption(
       {...innerProps}
     >
       <Text
+        title={data.label}
         component='span'
         size={14}
         weight={400}

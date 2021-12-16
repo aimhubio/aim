@@ -22,10 +22,11 @@ import { IProjectsModelState } from 'types/services/models/projects/projectsMode
 import { ISelectFormProps } from 'types/pages/params/components/SelectForm/SelectForm';
 import { ISelectOption } from 'types/services/models/explorer/createAppModel';
 
-import getObjectPaths from 'utils/getObjectPaths';
+import alphabeticalSortComparator from 'utils/alphabeticalSortComparator';
 import { formatSystemMetricName } from 'utils/formatSystemMetricName';
 import { isSystemMetric } from 'utils/isSystemMetric';
 import contextToString from 'utils/contextToString';
+import getObjectPaths from 'utils/getObjectPaths';
 
 import './SelectForm.scss';
 
@@ -102,17 +103,24 @@ function SelectForm({
   }
 
   const paramsOptions: ISelectOption[] = React.useMemo(() => {
-    let data: ISelectOption[] = [];
+    const comparator = alphabeticalSortComparator<ISelectOption>({
+      orderBy: 'label',
+    });
+
+    let optionsCount = 0; // to calculate color
     const systemOptions: ISelectOption[] = [];
+    let params: ISelectOption[] = [];
+    let metrics: ISelectOption[] = [];
+
     if (projectsData?.metrics) {
       for (let key in projectsData.metrics) {
         let system: boolean = isSystemMetric(key);
         for (let val of projectsData.metrics[key]) {
           let label = contextToString(val);
-          let index: number = data.length;
+          let index: number = optionsCount;
           let option: ISelectOption = {
             label: `${system ? formatSystemMetricName(key) : key} ${label}`,
-            group: system ? formatSystemMetricName(key) : key,
+            group: system ? 'System' : key,
             type: 'metrics',
             color: COLORS[0][index % COLORS[0].length],
             value: {
@@ -120,10 +128,11 @@ function SelectForm({
               context: val,
             },
           };
+          optionsCount++;
           if (system) {
             systemOptions.push(option);
           } else {
-            data.push(option);
+            metrics.push(option);
           }
         }
       }
@@ -134,7 +143,7 @@ function SelectForm({
         projectsData.params,
       );
       paramPaths.forEach((paramPath, index) => {
-        data.push({
+        params.push({
           label: paramPath,
           group: 'Params',
           type: 'params',
@@ -142,6 +151,19 @@ function SelectForm({
         });
       });
     }
+
+    params = params.sort(comparator);
+    metrics = metrics.sort(comparator);
+    systemOptions.sort(comparator);
+
+    // sort by group
+    const data: ISelectOption[] = [...metrics, ...params];
+
+    data.sort(
+      alphabeticalSortComparator({
+        orderBy: 'type',
+      }),
+    );
     return data.concat(systemOptions);
   }, [projectsData]);
 

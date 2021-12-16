@@ -6,6 +6,8 @@ import BusyLoaderWrapper from 'components/BusyLoaderWrapper/BusyLoaderWrapper';
 import useModel from 'hooks/model/useModel';
 
 import runTracesModel from 'services/models/runs/runTracesModel';
+import * as analytics from 'services/analytics';
+import { VisualizationMenuTitles } from 'services/models/runs/util';
 
 import DistributionsVisualizer from '../DistributionsVisualizer';
 import TextsVisualizer from '../TextsVisualizer';
@@ -49,6 +51,10 @@ function TraceVisualizationContainer({
   }, [runHash, traceInfo, traceType]);
 
   const Visualizer = traceTypeVisualization[traceType];
+
+  React.useEffect(() => {
+    analytics.pageView(`[RunDetail] [${VisualizationMenuTitles[traceType]}]`);
+  }, [traceType]);
 
   return (
     <div className='TraceVisualizationWrapper'>

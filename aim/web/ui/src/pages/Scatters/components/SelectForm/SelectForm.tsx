@@ -20,6 +20,7 @@ import { ISelectFormProps } from 'types/pages/scatters/components/SelectForm/Sel
 import { formatSystemMetricName } from 'utils/formatSystemMetricName';
 import { isSystemMetric } from 'utils/isSystemMetric';
 import getObjectPaths from 'utils/getObjectPaths';
+import alphabeticalSortComparator from 'utils/alphabeticalSortComparator';
 
 import './SelectForm.scss';
 
@@ -107,7 +108,12 @@ function SelectForm({
         });
       });
     }
-    return data.concat(systemOptions);
+    const comparator = alphabeticalSortComparator({
+      orderBy: 'label',
+    });
+
+    systemOptions.sort(comparator);
+    return data.sort(comparator).concat(systemOptions);
   }, [projectsData]);
 
   const dropDownOptions: { value: string; label: string }[] =

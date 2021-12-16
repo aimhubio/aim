@@ -70,6 +70,9 @@
     &::placeholder {
       color: $text-color-50;
     }
+    &:focus, &:hover {
+      border-color: $cuddle-110;
+    }
   }
 
   &__textarea {

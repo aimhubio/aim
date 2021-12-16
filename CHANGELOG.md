@@ -9,6 +9,7 @@
 - Add ability to track and visualize plotly objects (devfox-se, Hamik25, rubenaprikyan)
 - Add ability to query distributions by step range and density (VkoHov, rubenaprikyan)
 - Implement images visualization tab in run detail page (VkoHov, KaroMourad)
+- Enhance metric selection dropdowns to see lists in alphabetical order (rubenaprikyan)
 
 ## 3.2.2 Dec 10 2021
 

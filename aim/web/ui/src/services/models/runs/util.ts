@@ -13,6 +13,7 @@ import alphabeticalSortComparator from 'utils/alphabeticalSortComparator';
 import { encode } from 'utils/encoder/encoder';
 import getObjectPaths from 'utils/getObjectPaths';
 import { getDataAsMediaSetNestedObject } from 'utils/app/getDataAsMediaSetNestedObject';
+import { getValue } from 'utils/helper';
 
 import imagesExploreAppModel from '../imagesExplore/imagesExploreAppModel';
 
@@ -181,15 +182,6 @@ export function getContextObjFromMenuActiveKey(
 }
 
 export function getMenuData(traceType: TraceType, traces: TraceRawDataItem[]) {
-  const VisualizationMenuTitles = {
-    images: 'Images',
-    distributions: 'Distributions',
-    audios: 'Audios',
-    videos: 'Videos',
-    texts: 'Texts',
-    figures: 'Plotlies',
-  };
-
   let title = VisualizationMenuTitles[traceType];
 
   let defaultActiveKey = '';
@@ -381,7 +373,7 @@ function groupData(data: IProcessedImageData[]): {
   for (let i = 0; i < data.length; i++) {
     const groupValue: { [key: string]: string } = {};
     ['step'].forEach((field) => {
-      groupValue[field] = _.get(data[i], field);
+      groupValue[field] = getValue(data[i], field);
     });
     const groupKey = encode(groupValue);
     if (groupValues.hasOwnProperty(groupKey)) {
@@ -426,3 +418,12 @@ export function processPlotlyData(data: Partial<IPlotlyData>) {
     originalValues,
   };
 }
+
+export const VisualizationMenuTitles = {
+  images: 'Images',
+  distributions: 'Distributions',
+  audios: 'Audios',
+  videos: 'Videos',
+  texts: 'Texts',
+  figures: 'Figures',
+};

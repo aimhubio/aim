@@ -5,6 +5,8 @@ import React from 'react';
 import memoize from 'memoize-one';
 import cn from 'classnames';
 
+import { getValue } from 'utils/helper';
+
 import GridTable from './GridTable';
 import TableHeaderRow from './TableHeaderRow';
 import TableRow from './TableRow';
@@ -26,7 +28,6 @@ import {
   hasChildren,
   flattenOnKeys,
   cloneArray,
-  getValue,
   throttle,
   debounce,
   noop,

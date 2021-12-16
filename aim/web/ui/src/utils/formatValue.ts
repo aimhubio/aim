@@ -1,6 +1,14 @@
 export function formatValue(value: any, undefinedValue: any = '-') {
-  // TODO: remove replacer by implementing custom stringify method
-  return JSON.stringify(value, (key, node) => replacer(node, undefinedValue))
+  let formattedValue;
+  if (value === null || value === undefined) {
+    formattedValue = replacer(value);
+  } else {
+    formattedValue = JSON.stringify(value, (key, node) =>
+      // TODO: remove replacer by implementing custom stringify method
+      replacer(node, undefinedValue),
+    );
+  }
+  return formattedValue
     .replaceAll('"__None__"', 'None')
     .replaceAll('"__True__"', 'True')
     .replaceAll('"__False__"', 'False');
