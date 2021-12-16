@@ -2,7 +2,7 @@ import clearArea from './clearArea';
 import drawArea from './drawArea';
 import drawAxes from './drawAxes';
 import drawLines from './drawLines';
-import processData from './processData';
+import processLineChartData from './processLineChartData';
 import getAxisScale from './getAxisScale';
 import drawBrush from './drawBrush';
 import drawHoverAttributes from './drawHoverAttributes';
@@ -90,7 +90,7 @@ export {
   drawLines,
   getCoordinates,
   drawParallelColorIndicator,
-  processData,
+  processLineChartData,
   getAxisScale,
   drawBrush,
   drawHoverAttributes,

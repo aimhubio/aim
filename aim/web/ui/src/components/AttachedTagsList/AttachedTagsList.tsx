@@ -17,45 +17,42 @@ import './AttachedTagsList.scss';
 function AttachedTagsList({ runHash }: IAttachedTagsListProps) {
   const [tags, setTags] = React.useState<ITagInfo[]>([]);
   const [attachedTags, setAttachedTags] = React.useState<ITagInfo[]>([]);
+  const getRunInfoRef = React.useRef<any>(null);
+  const getTagsRef = React.useRef<any>(null);
+  const createRunsTagRef = React.useRef<any>(null);
+  const deleteRunsTagRef = React.useRef<any>(null);
 
   function getRunInfo(runHash: string): void {
-    runsService
-      ?.getRunInfo(runHash)
-      .call()
-      // TODO need to write type for responsed runInfo
-      .then((runInfo: any) => {
-        setAttachedTags(runInfo?.props?.tags || []);
-      });
+    getRunInfoRef.current = runsService?.getRunInfo(runHash);
+    getRunInfoRef.current.call().then((runInfo: any) => {
+      setAttachedTags(runInfo?.props?.tags || []);
+    });
   }
 
   function getAllTags(): void {
-    tagsService
-      ?.getTags()
-      .call()
-      // TODO need to write type for responsed tags
-      .then((tags: any) => {
-        setTags(tags || []);
-      });
+    getTagsRef.current = tagsService?.getTags();
+    getTagsRef.current.call().then((tags: any) => {
+      setTags(tags || []);
+    });
   }
 
   function createRunsTag(tag: ITagInfo, run_id: string) {
-    runsService
-      ?.createRunsTag({ tag_name: tag.name }, run_id)
-      .call()
-      .then(() => {
-        setAttachedTags((prevState) => [...prevState, tag]);
-      });
+    createRunsTagRef.current = runsService?.createRunsTag(
+      { tag_name: tag.name },
+      run_id,
+    );
+    createRunsTagRef.current.call().then(() => {
+      setAttachedTags((prevState) => [...prevState, tag]);
+    });
   }
 
   function deleteRunsTag(run_id: string, tag_id: string) {
-    runsService
-      ?.deleteRunsTag(run_id, tag_id)
-      .call()
-      .then(() => {
-        setAttachedTags((prevState) => [
-          ...prevState.filter((tag) => tag.id !== tag_id),
-        ]);
-      });
+    deleteRunsTagRef.current = runsService?.deleteRunsTag(run_id, tag_id);
+    deleteRunsTagRef.current.call().then(() => {
+      setAttachedTags((prevState) => [
+        ...prevState.filter((tag) => tag.id !== tag_id),
+      ]);
+    });
   }
 
   function onAttachedTagAdd(tag_id: string): void {
@@ -79,6 +76,10 @@ function AttachedTagsList({ runHash }: IAttachedTagsListProps) {
       getAllTags();
       getRunInfo(runHash);
     }
+    return () => {
+      getRunInfoRef.current?.abort();
+      getTagsRef.current?.abort();
+    };
   }, [runHash]);
 
   return (

@@ -10,15 +10,11 @@ from aim.sdk.sequence_collection import SequenceCollection
 from aim.sdk.sequence import Sequence
 from aim.sdk.uri_service import URIService, generate_resource_path
 
-from aim.web.api.runs.utils import get_run_props, collect_run_streamable_data, IndexRange
+from aim.web.api.runs.utils import get_run_props, collect_run_streamable_data, IndexRange, sliced_custom_object_record
 from aim.web.api.runs.pydantic_models import TraceBase
 
 if TYPE_CHECKING:
     from aim.sdk import Repo
-
-
-def sliced_img_record(values: Iterable[Image], _slice: slice) -> Iterable[Image]:
-    yield from zip(range(_slice.start, _slice.stop, _slice.step), values[_slice])
 
 
 def img_record_to_encodable(image_record: Image, trace, step):
@@ -68,7 +64,7 @@ def get_trace_info(trace: Sequence, rec_slice: slice, rec_density: int, idx_slic
     for step, val in steps_vals:
         steps.append(step)
         if isinstance(val, list):
-            values.append(img_collection_record_to_encodable(sliced_img_record(val, idx_slice), trace, step))
+            values.append(img_collection_record_to_encodable(sliced_custom_object_record(val, idx_slice), trace, step))
         elif idx_slice.start == 0:
             values.append(img_record_to_encodable(val, trace, step))
         else:
@@ -179,7 +175,9 @@ def requested_image_traces_streamer(run: Run,
         for step, val in steps_vals:
             steps.append(step)
             if isinstance(val, list):
-                values.append(img_collection_record_to_encodable(sliced_img_record(val, idx_slice), trace, step))
+                values.append(
+                    img_collection_record_to_encodable(sliced_custom_object_record(val, idx_slice), trace, step)
+                )
             elif idx_slice.start == 0:
                 values.append(img_record_to_encodable(val, trace, step))
             else:

@@ -140,7 +140,15 @@ const ImageBox = ({
       >
         <ImageFullViewPopover
           imageRendering={additionalProperties?.imageRendering}
-          tooltipContent={tooltip?.content}
+          tooltipContent={
+            tooltip?.content || {
+              caption: data.caption,
+              images_name: data.images_name,
+              context: data.context,
+              step: data.step,
+              index: data.index,
+            }
+          }
           imageData={data}
           handleClose={() => setIsImageFullViewPopupOpened(false)}
         />

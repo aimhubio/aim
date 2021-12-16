@@ -35,4 +35,4 @@ async def serve_index_html(request: Request):
     templates = Jinja2Templates(directory=template_files_dir)
     base_path = os.environ.get(AIM_UI_BASE_PATH, '')
 
-    return templates.TemplateResponse('index.html', {'request': request, 'base_path': base_path})
+    return templates.TemplateResponse('index-template.html', {'request': request, 'base_path': base_path})

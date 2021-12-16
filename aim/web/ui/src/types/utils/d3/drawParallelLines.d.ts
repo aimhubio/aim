@@ -1,6 +1,6 @@
 import React from 'react';
 
-import { IGetAxisScale } from 'types/utils/d3/getAxisScale';
+import { IAxisScale } from 'types/utils/d3/getAxisScale';
 
 import { CurveEnum } from 'utils/d3';
 
@@ -60,5 +60,5 @@ export interface IGetColorIndicatorScaleValueArgs {
   line: ILineValuesDataType;
   keysOfDimensions: string[];
   yColorIndicatorScale: d3.ScaleSequential;
-  yScale: IGetAxisScale;
+  yScale: IAxisScale;
 }

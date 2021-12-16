@@ -1,8 +1,8 @@
 import React from 'react';
 import { useRouteMatch, useHistory } from 'react-router-dom';
-import { isEmpty } from 'lodash-es';
 
 import { RowHeightSize } from 'config/table/tableConfigs';
+import { ResizeModeEnum } from 'config/enums/tableEnums';
 
 import useModel from 'hooks/model/useModel';
 import usePanelResize from 'hooks/resize/usePanelResize';
@@ -14,24 +14,32 @@ import {
   IChartTitleData,
   IPanelTooltip,
   IGroupingSelectOption,
+  IFocusedState,
 } from 'types/services/models/metrics/metricsAppModel';
+import { IParamsAppModelState } from 'types/services/models/params/paramsAppModel';
 import {
-  IParamsAppConfig,
-  IParamsAppModelState,
-} from 'types/services/models/params/paramsAppModel';
+  IGroupingConfig,
+  ILiveUpdateConfig,
+  ISelectConfig,
+} from 'types/services/models/explorer/createAppModel';
+import { ITableRef } from 'types/components/Table/Table';
+import { IChartPanelRef } from 'types/components/ChartPanel/ChartPanel';
+import { IParamsProps } from 'types/pages/params/Params';
 
 import getStateFromUrl from 'utils/getStateFromUrl';
+import setComponentRefs from 'utils/app/setComponentRefs';
+import { CurveEnum } from 'utils/d3';
 
 import Params from './Params';
 
 function ParamsContainer(): React.FunctionComponentElement<React.ReactNode> {
+  const tableRef = React.useRef<ITableRef>(null);
+  const chartPanelRef = React.useRef<IChartPanelRef>(null);
   const chartElemRef = React.useRef<HTMLDivElement>(null);
   const tableElemRef = React.useRef<HTMLDivElement>(null);
   const wrapperElemRef = React.useRef<HTMLDivElement>(null);
   const resizeElemRef = React.useRef<HTMLDivElement>(null);
-  const paramsData = useModel<Partial<IParamsAppModelState> | any>(
-    paramsAppModel,
-  );
+  const paramsData = useModel<Partial<IParamsAppModelState>>(paramsAppModel);
   const route = useRouteMatch<any>();
   const history = useHistory();
 
@@ -40,9 +48,21 @@ function ParamsContainer(): React.FunctionComponentElement<React.ReactNode> {
     chartElemRef,
     tableElemRef,
     resizeElemRef,
-    paramsData?.config?.table || {},
+    paramsData?.config?.table,
     paramsAppModel.onTableResizeEnd,
   );
+
+  React.useEffect(() => {
+    if (tableRef.current && chartPanelRef.current) {
+      setComponentRefs<IParamsAppModelState>({
+        model: paramsAppModel,
+        refElement: {
+          tableRef,
+          chartPanelRef,
+        },
+      });
+    }
+  }, [paramsData?.rawData]);
 
   React.useEffect(() => {
     paramsAppModel.initialize(route.params.appId);
@@ -69,7 +89,7 @@ function ParamsContainer(): React.FunctionComponentElement<React.ReactNode> {
     analytics.pageView('[ParamsExplorer]');
 
     const unListenHistory = history.listen(() => {
-      if (!!paramsData.config) {
+      if (!!paramsData?.config) {
         if (
           paramsData.config.grouping !== getStateFromUrl('grouping') ||
           paramsData.config.chart !== getStateFromUrl('chart') ||
@@ -92,8 +112,8 @@ function ParamsContainer(): React.FunctionComponentElement<React.ReactNode> {
 
   return (
     <Params
-      tableRef={paramsData?.refs?.tableRef}
-      chartPanelRef={paramsData?.refs?.chartPanelRef}
+      tableRef={tableRef}
+      chartPanelRef={chartPanelRef}
       tableElemRef={tableElemRef}
       chartElemRef={chartElemRef}
       wrapperElemRef={wrapperElemRef}
@@ -102,30 +122,31 @@ function ParamsContainer(): React.FunctionComponentElement<React.ReactNode> {
       highPlotData={paramsData?.highPlotData}
       tableData={paramsData?.tableData}
       tableColumns={paramsData?.tableColumns}
-      focusedState={paramsData?.config?.chart?.focusedState}
-      requestIsPending={paramsData?.requestIsPending}
+      focusedState={paramsData?.config?.chart?.focusedState as IFocusedState}
+      requestIsPending={paramsData?.requestIsPending as boolean}
       isVisibleColorIndicator={
-        paramsData?.config?.chart?.isVisibleColorIndicator
+        paramsData?.config?.chart?.isVisibleColorIndicator as boolean
       }
-      groupingData={
-        paramsData?.config?.grouping as IParamsAppConfig['grouping']
-      }
-      selectedParamsData={
-        paramsData?.config?.select as IParamsAppConfig['select']
-      }
+      groupingData={paramsData?.config?.grouping as IGroupingConfig}
+      selectedParamsData={paramsData?.config?.select as ISelectConfig}
       sortFields={paramsData?.config?.table?.sortFields!}
-      curveInterpolation={paramsData?.config?.chart?.curveInterpolation}
+      curveInterpolation={
+        paramsData?.config?.chart?.curveInterpolation as CurveEnum
+      }
       tooltip={paramsData?.config?.chart?.tooltip as IPanelTooltip}
       chartTitleData={paramsData?.chartTitleData as IChartTitleData}
       groupingSelectOptions={
         paramsData?.groupingSelectOptions as IGroupingSelectOption[]
       }
       hiddenColumns={paramsData?.config?.table?.hiddenColumns!}
-      resizeMode={paramsData?.config?.table?.resizeMode}
+      resizeMode={paramsData?.config?.table?.resizeMode as ResizeModeEnum}
       hiddenMetrics={paramsData?.config?.table?.hiddenMetrics!}
-      notifyData={paramsData?.notifyData}
+      notifyData={paramsData?.notifyData as IParamsAppModelState['notifyData']}
       tableRowHeight={paramsData?.config?.table?.rowHeight as RowHeightSize}
-      columnsWidths={paramsData?.config?.table?.columnsWidths}
+      columnsWidths={
+        paramsData?.config?.table
+          ?.columnsWidths as IParamsProps['columnsWidths']
+      }
       onColorIndicatorChange={paramsAppModel.onColorIndicatorChange}
       onCurveInterpolationChange={paramsAppModel.onCurveInterpolationChange}
       onParamsSelectChange={paramsAppModel.onParamsSelectChange}
@@ -156,7 +177,7 @@ function ParamsContainer(): React.FunctionComponentElement<React.ReactNode> {
       onSortReset={paramsAppModel.onSortReset}
       onSortFieldsChange={paramsAppModel.onSortChange}
       onShuffleChange={paramsAppModel.onShuffleChange}
-      liveUpdateConfig={paramsData.config?.liveUpdate}
+      liveUpdateConfig={paramsData?.config?.liveUpdate as ILiveUpdateConfig}
       onLiveUpdateConfigChange={paramsAppModel.changeLiveUpdateConfig}
     />
   );

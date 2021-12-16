@@ -1,17 +1,19 @@
-const WebpackDynamicPublicPathPlugin = require("webpack-dynamic-public-path");
+const WebpackDynamicPublicPathPlugin = require('webpack-dynamic-public-path');
 
 module.exports = {
-  webpack: function(config, env) {
-    config.output.publicPath = '/static-files';
+  webpack: function (config, env) {
     config.optimization.splitChunks = {
       cacheGroups: {
         default: false,
       },
     };
-    config.optimization.runtimeChunk = false;
-    config.plugins.push(new WebpackDynamicPublicPathPlugin({
-      externalPublicPath: 'window.externalPublicPath',
-    }));
+    config.optimization.runtimeChunk = true;
+    config.plugins.push(
+      new WebpackDynamicPublicPathPlugin({
+        externalPublicPath: 'window.externalPublicPath',
+      }),
+    );
+
     return config;
   },
 };
