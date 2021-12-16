@@ -21,10 +21,13 @@ def sliced_audio_record(values: Iterable[Audio], _slice: slice) -> Iterable[Audi
     yield from zip(range(_slice.start, _slice.stop, _slice.step), values[_slice])
 
 
-def audio_record_to_encodable(obj, trace, step, index=0):
-    resource_path = generate_resource_path(trace.values.tree.container, (step, 'data'))
+def audio_record_to_encodable(obj, trace, step, index=None):
+    if index is None:
+        resource_path = generate_resource_path(trace.values.tree.container, (step, 'data'))
+    else:
+        resource_path = generate_resource_path(trace.values.tree.container, (step, index, 'data'))
     return [{
-        'index': index,
+        'index': index or 0,
         'format': obj.storage.get('format'),
         'caption': obj.storage.get('caption'),
         'blob_uri': URIService.generate_uri(trace.run.repo, trace.run.hash, 'seqs', resource_path)

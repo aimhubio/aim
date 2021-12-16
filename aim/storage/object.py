@@ -17,6 +17,7 @@ class CustomObject(CustomObjectBase):
                 raise ValueError(f'CustomObject `{name}` is already registered')
             CustomObject.registry[name] = cls
             return cls
+
         return decorator
 
     @staticmethod
@@ -28,16 +29,15 @@ class CustomObject(CustomObjectBase):
         # TODO [AT, MV] check AIM_NAME to have python type name format (f.e. "aim.sdk.Image" but not "abc//}?")
         return cls.AIM_NAME
 
-    def __new__(cls, *args, _storage=None, **kwargs):
+    def __new__(cls, *args, **kwargs):
         obj = super().__new__(cls)
-
-        if _storage is None:
-            obj.storage = InMemoryTreeView(container={})
-        else:
-            obj.storage = _storage
+        obj.storage = kwargs.get('_storage', InMemoryTreeView(container={}))
         return obj
 
-    def __deepcopy__(self, memodict={}):
+    def __deepcopy__(self, memodict=None):
+        if memodict is None:
+            memodict = {}
+
         cls = self.__class__
         # TODO Implement `__deepcopy__` in `TreeView`
         storage = InMemoryTreeView(container=self.storage[...])
