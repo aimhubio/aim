@@ -5,4 +5,5 @@ export interface ISortPopoverProps {
   onReset: () => void;
   sortOptions: IGroupingSelectOption[];
   sortFields: [string, 'asc' | 'desc' | boolean][];
+  readableOptions?: string[];
 }

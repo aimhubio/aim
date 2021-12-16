@@ -31,4 +31,5 @@ export interface IMediaPanelProps {
   tooltipType?: ChartTypeEnum;
   onActivePointChange?: (activePoint: any, focusedStateActive: boolean) => void;
   getBlobsData: (uris: string[]) => Promise;
+  sortFieldsDict?: any;
 }

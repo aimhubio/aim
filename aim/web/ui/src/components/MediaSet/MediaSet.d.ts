@@ -22,4 +22,5 @@ export interface IMediaSetProps {
   tableHeight: IMediaPanelProps['tableHeight'];
   tooltip?: ITooltipContent;
   mediaType: MediaTypeEnum;
+  sortFieldsDict?: any;
 }

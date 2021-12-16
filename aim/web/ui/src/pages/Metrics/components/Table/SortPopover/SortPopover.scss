@@ -3,15 +3,27 @@
 .SortPopover__container {
   width: 21rem;
   max-height: 20rem;
-  //height: 20rem;
-  padding: 0.5em;
-}
-
-.SortPopover__chip__container {
-  margin: 0.5rem 0;
-  overflow: auto;
-  max-height: 11.375rem;
-  border-bottom: $border-main;
+  padding: 0.5rem 1rem;
+  width: toRem(392px);
+  &__label {
+    margin-bottom: 4px;
+    display: block;
+  }
+  &__selectBox {
+    margin-bottom: 1rem;
+    &__selectInput {
+      .MuiInputBase-root .MuiInputBase-input {
+        color: $pico-70;
+      }
+    }
+  }
+  &__chipContainer {
+    margin: 0.5rem 0;
+    padding-left: toRem(7px);
+    overflow: auto;
+    max-height: 8.475rem;
+    border-bottom: $border-main;
+  }
 }
 
 .SortPopover__chip {
@@ -64,6 +76,7 @@
   margin-top: 0.5em;
   display: flex;
   justify-content: center;
+  color: $error-color;
   button {
     background-color: $error-color;
     color: #fff;

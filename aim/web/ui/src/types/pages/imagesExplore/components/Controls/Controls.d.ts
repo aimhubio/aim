@@ -1,10 +1,9 @@
-import React from 'react';
-
 import { ImageRenderingEnum } from 'config/enums/imageEnums';
 
 import { IPanelTooltip } from 'services/models/metrics/metricsAppModel';
 import { IGroupingSelectOption } from 'services/models/imagesExplore/imagesExploreAppModel';
 
+import { SortField } from 'types/services/models/metrics/metricsAppModel';
 import { IImagesExploreAppConfig } from 'types/services/models/imagesExplore/imagesExploreAppModel';
 
 export interface IControlProps {
@@ -17,4 +16,6 @@ export interface IControlProps {
   onImageAlignmentChange: (
     value: { value: string; label: string } | null,
   ) => void;
+  onImagesSortChange: any;
+  sortFields: SortField[];
 }

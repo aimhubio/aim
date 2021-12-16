@@ -1,13 +1,15 @@
 import React from 'react';
+import classNames from 'classnames';
+import _ from 'lodash';
 
-import { Button, Checkbox, TextField } from '@material-ui/core';
+import { Checkbox, TextField } from '@material-ui/core';
 import { Autocomplete, AutocompleteChangeDetails } from '@material-ui/lab';
 import {
   CheckBox as CheckBoxIcon,
   CheckBoxOutlineBlank,
 } from '@material-ui/icons';
 
-import { ToggleButton, Icon } from 'components/kit';
+import { ToggleButton, Icon, Button, Text } from 'components/kit';
 
 import { ISortPopoverProps } from 'types/pages/metrics/components/SortPopover/SortPopover';
 import { IGroupingSelectOption } from 'types/services/models/metrics/metricsAppModel';
@@ -19,6 +21,7 @@ import './SortPopover.scss';
 function SortPopover({
   sortOptions,
   sortFields,
+  readableOptions,
   onSort,
   onReset,
 }: ISortPopoverProps): React.FunctionComponentElement<React.ReactNode> {
@@ -44,7 +47,7 @@ function SortPopover({
 
   const selectOptions: IGroupingSelectOption[] = React.useMemo(() => {
     const filtered: IGroupingSelectOption[] = [...sortOptions].filter(
-      (options) => options.group === 'run',
+      (options) => options.group === 'run' || options.group === 'record',
     );
     return inputValue.trim() !== ''
       ? filtered
@@ -57,7 +60,10 @@ function SortPopover({
 
   return (
     <div className='SortPopover__container'>
-      <div className='SortPopover__select__container'>
+      <Text size={12} tint={50} className={'SortPopover__container__label'}>
+        SELECT FIELDS
+      </Text>
+      <div className='SortPopover__container__selectBox'>
         <Autocomplete
           id='select-sort'
           size='small'
@@ -74,8 +80,11 @@ function SortPopover({
             <TextField
               {...params}
               variant='outlined'
-              label='Select Options'
-              placeholder='Select'
+              className={
+                'TextField__OutLined__Small SortPopover__container__selectBox__selectInput'
+              }
+              // label='Select Options'
+              placeholder='Select...'
             />
           )}
           ListboxProps={{
@@ -97,7 +106,12 @@ function SortPopover({
           )}
         />
       </div>
-      <div className='SortPopover__chip__container'>
+      {!_.isEmpty(sortFields) && (
+        <Text size={12} tint={50} className={'SortPopover__container__label'}>
+          SORTED BY
+        </Text>
+      )}
+      <div className='SortPopover__container__chipContainer'>
         {sortFields.map((field) => (
           <div className='SortPopover__chip' key={field[0]}>
             <div className='SortPopover__chip__left'>
@@ -123,8 +137,12 @@ function SortPopover({
           </div>
         ))}
       </div>
-      <div className='SortPopover__reset__sorting'>
-        <Button onClick={onReset} size='small'>
+      <div
+        className={classNames('SortPopover__reset__sorting', {
+          isEmpty: _.isEmpty(sortFields),
+        })}
+      >
+        <Button size='medium' color='inherit' onClick={onReset}>
           Reset Sorting
         </Button>
       </div>

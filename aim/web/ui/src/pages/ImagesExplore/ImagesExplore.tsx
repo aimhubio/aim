@@ -186,6 +186,7 @@ function ImagesExplore(): React.FunctionComponentElement<React.ReactNode> {
                 : ''
             }`}
           >
+            {console.log('1', imagesExploreData?.config?.images?.sortFields)}
             <MediaPanel
               mediaType={MediaTypeEnum.IMAGE}
               getBlobsData={imagesExploreAppModel.getImagesBlobsData}
@@ -203,6 +204,7 @@ function ImagesExplore(): React.FunctionComponentElement<React.ReactNode> {
               tooltip={
                 imagesExploreData?.config?.images?.tooltip as IPanelTooltip
               }
+              sortFieldsDict={imagesExploreData?.config?.images?.sortFieldsDict}
               additionalProperties={
                 imagesExploreData?.config?.images?.additionalProperties
               }
@@ -218,6 +220,7 @@ function ImagesExplore(): React.FunctionComponentElement<React.ReactNode> {
                   additionalProperties={
                     imagesExploreData?.config?.images?.additionalProperties
                   }
+                  sortFields={imagesExploreData?.config?.images?.sortFields}
                   onChangeTooltip={imagesExploreAppModel?.onChangeTooltip}
                   onImageSizeChange={imagesExploreAppModel.onImageSizeChange}
                   onImageRenderingChange={
@@ -226,6 +229,7 @@ function ImagesExplore(): React.FunctionComponentElement<React.ReactNode> {
                   onImageAlignmentChange={
                     imagesExploreAppModel.onImageAlignmentChange
                   }
+                  onImagesSortChange={imagesExploreAppModel.onImagesSortChange}
                 />
               }
               tooltipType={ChartTypeEnum.ImageSet}
@@ -311,7 +315,7 @@ function ImagesExplore(): React.FunctionComponentElement<React.ReactNode> {
                   resizeMode={imagesExploreData?.config?.table.resizeMode}
                   columnsWidths={imagesExploreData?.config?.table.columnsWidths}
                   // Table actions
-                  onSort={imagesExploreAppModel.onSortChange}
+                  onSort={imagesExploreAppModel.onTableSortChange}
                   onSortReset={imagesExploreAppModel.onSortReset}
                   onExport={imagesExploreAppModel.onExportTableData}
                   onManageColumns={imagesExploreAppModel.onColumnsOrderChange}

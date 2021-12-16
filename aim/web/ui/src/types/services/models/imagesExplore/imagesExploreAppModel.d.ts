@@ -37,6 +37,8 @@ export interface IImagesExploreAppConfig {
       mediaItemSize: number;
       imageRendering: string;
     };
+    sortFields?: SortField[];
+    sortFieldsDict: any;
   };
   select: ISelectConfig;
   table: {

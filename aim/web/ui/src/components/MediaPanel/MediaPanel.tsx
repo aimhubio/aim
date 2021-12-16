@@ -41,6 +41,7 @@ function MediaPanel({
   actionPanel,
   actionPanelSize,
   tooltipType,
+  sortFieldsDict,
 }: IMediaPanelProps): React.FunctionComponentElement<React.ReactNode> {
   const [activePointRect, setActivePointRect] = React.useState<{
     top: number;
@@ -162,7 +163,13 @@ function MediaPanel({
   const setKey = React.useMemo(
     () => Date.now(),
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    [data, wrapperOffsetHeight, wrapperOffsetWidth, additionalProperties],
+    [
+      data,
+      wrapperOffsetHeight,
+      wrapperOffsetWidth,
+      additionalProperties,
+      sortFieldsDict,
+    ],
   );
 
   React.useEffect(() => {
@@ -189,7 +196,7 @@ function MediaPanel({
       isLoading={isLoading}
       className='MediaPanel__loader'
       height='100%'
-      loaderComponent={<ChartLoader controlsCount={2} />}
+      loaderComponent={<ChartLoader controlsCount={3} />}
     >
       {panelResizing ? (
         <div className='MediaPanel__Container__resizing'>
@@ -223,6 +230,7 @@ function MediaPanel({
                     onListScroll={onListScroll}
                     addUriToList={addUriToList}
                     setKey={setKey}
+                    sortFieldsDict={sortFieldsDict}
                     wrapperOffsetHeight={wrapperOffsetHeight - 48}
                     wrapperOffsetWidth={wrapperOffsetWidth}
                     mediaItemHeight={
