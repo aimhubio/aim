@@ -6,7 +6,7 @@ import { saveAs } from 'file-saver';
 import { RowHeightSize } from 'config/table/tableConfigs';
 import { BookmarkNotificationsEnum } from 'config/notification-messages/notificationMessages';
 import { ResizeModeEnum, RowHeightEnum } from 'config/enums/tableEnums';
-import { IMAGE_SIZE_CHANGE_DELAY } from 'config/imagesConfigs/imagesConfig';
+import { IMAGE_SIZE_CHANGE_DELAY } from 'config/mediaConfigs/mediaConfigs';
 import {
   MediaItemAlignmentEnum,
   ImageRenderingEnum,
@@ -439,7 +439,7 @@ function setModelData(rawData: any[], configData: IImagesExploreAppConfig) {
       contexts,
     }),
   ];
-  const { setData, orderedMap } = getDataAsMediaSetNestedObject({
+  const { mediaSetData, orderedMap } = getDataAsMediaSetNestedObject({
     data,
     groupingSelectOptions,
     model,
@@ -515,7 +515,7 @@ function setModelData(rawData: any[], configData: IImagesExploreAppConfig) {
     config,
     params,
     data,
-    imagesData: setData,
+    imagesData: mediaSetData,
     orderedMap,
     tableData: tableData.rows,
     tableColumns: getImagesExploreTableColumns(
@@ -545,7 +545,7 @@ function updateModelData(
       contexts,
     }),
   ];
-  const { setData, orderedMap } = getDataAsMediaSetNestedObject({
+  const { mediaSetData, orderedMap } = getDataAsMediaSetNestedObject({
     data,
     groupingSelectOptions,
     model,
@@ -603,7 +603,7 @@ function updateModelData(
   model.setState({
     config: configData,
     data: model.getState()?.data,
-    imagesData: setData,
+    imagesData: mediaSetData,
     orderedMap,
     // chartTitleData: getChartTitleData(data),
     tableData: tableData.rows,

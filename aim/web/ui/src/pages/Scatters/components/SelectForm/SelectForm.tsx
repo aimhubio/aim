@@ -159,25 +159,6 @@ function SelectForm({
           >
             <Box display='flex' alignItems='center' flex={1}>
               <Dropdown
-                key='y-axis'
-                size='medium'
-                isColored
-                onChange={(option) => onChange('y', option)}
-                value={selectedOptionsData?.options[0]?.label || null}
-                options={dropDownOptions}
-                onMenuOpen={() => setOpen({ y: true, x: false })}
-                onMenuClose={() => setOpen({ y: false, x: false })}
-                open={open.y}
-                withPortal
-                label='Y axis'
-                icon={{ name: 'y-axis' }}
-              />
-              <Divider
-                style={{ margin: '0 1rem' }}
-                orientation='vertical'
-                flexItem
-              />
-              <Dropdown
                 key='x-axis'
                 size='medium'
                 isColored
@@ -190,6 +171,25 @@ function SelectForm({
                 withPortal
                 label='X axis'
                 icon={{ name: 'x-axis' }}
+              />
+              <Divider
+                style={{ margin: '0 1rem' }}
+                orientation='vertical'
+                flexItem
+              />
+              <Dropdown
+                key='y-axis'
+                size='medium'
+                isColored
+                onChange={(option) => onChange('y', option)}
+                value={selectedOptionsData?.options[0]?.label || null}
+                options={dropDownOptions}
+                onMenuOpen={() => setOpen({ y: true, x: false })}
+                onMenuClose={() => setOpen({ y: false, x: false })}
+                open={open.y}
+                withPortal
+                label='Y axis'
+                icon={{ name: 'y-axis' }}
               />
             </Box>
           </Box>

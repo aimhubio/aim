@@ -262,7 +262,6 @@ function onApply() {
 
 function destroy() {
   model.destroy();
-  console.log('state ------ ', model.getState());
   abortGetTraceBatchBatchRequest();
 }
 
