@@ -3073,7 +3073,6 @@ function createAppModel(appConfig: IAppInitialConfig) {
               .filter((run) => !run.isHidden)
               .map((run: IParam) => {
                 const values: { [key: string]: string | number | null } = {};
-                console.log(configData.select.options);
                 configData.select.options.forEach(
                   ({ type, label, value }: ISelectOption) => {
                     const dimension = dimensionsObject[chartIndex];
