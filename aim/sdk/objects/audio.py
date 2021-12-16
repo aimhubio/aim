@@ -12,6 +12,17 @@ logger = logging.getLogger(__name__)
 
 @CustomObject.alias('aim.audio')
 class Audio(CustomObject):
+    """Audio object used to store audio objects in Aim repository..
+
+    Currently, audio formats are limited to mp3, wav, flac
+
+    Args:
+         data: file path, bytes, io.BaseIO or numpy.array (only for WAV)
+         format (:obj:`str`): Format of the audio source
+         rate (:obj:`rate`): Rate of the audio file
+         caption (:obj:`str`, optional): Optional audio caption. '' by default.
+    """
+
     AIM_NAME = 'aim.audio'
 
     # supported audio formats
