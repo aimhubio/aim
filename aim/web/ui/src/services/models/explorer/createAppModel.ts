@@ -243,7 +243,7 @@ function createAppModel(appConfig: IAppInitialConfig) {
               middle: [],
               right: [],
             },
-            height: '',
+            height: '0.5',
           };
         }
         if (components?.charts?.[0]) {
@@ -347,7 +347,7 @@ function createAppModel(appConfig: IAppInitialConfig) {
               middle: [],
               right: [],
             },
-            height: '',
+            height: '0.5',
           };
           if (appName === AppNameEnum.RUNS) {
             config.pagination = {
