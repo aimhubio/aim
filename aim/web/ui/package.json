@@ -41,11 +41,11 @@
     "yup": "^0.32.9"
   },
   "scripts": {
-    "start": "react-scripts --max_old_space_size=4096 start",
-    "build": "react-scripts --max_old_space_size=4096 build && gzipper c -i js,css,html ./build",
-    "test": "react-scripts test",
-    "test:coverage": "react-scripts test --collectCoverage",
-    "test:watch": "react-scripts test --watchAll",
+    "start": "react-app-rewired --max_old_space_size=4096 start",
+    "build": "react-app-rewired --max_old_space_size=4096 build && gzipper c -i js,css,html ./build && node tasks/index-html-template-generator.js",
+    "test": "react-app-rewired test ",
+    "test:coverage": "react-app-rewired test --collectCoverage",
+    "test:watch": "react-app-rewired test --watchAll",
     "eject": "react-scripts eject",
     "lint": "eslint src/. --ext .js,.jsx,.ts,.tsx",
     "format:fix": "eslint src/. --ext .js,.jsx,.ts,.tsx --quiet --fix",
@@ -53,7 +53,7 @@
     "crc-kit": "func() { node tasks/cli/index.js  create-component --name=\"$1\" --path=./src/components/kit/ --lint; }; func",
     "crc": "func() { node tasks/cli/index.js  create-component --name=\"$1\" --path=./src/components/ --lint; }; func"
   },
-  "homepage": "/static-files",
+  "homepage": "/static-files/",
   "browserslist": {
     "production": [
       ">0.2%",
@@ -114,10 +114,12 @@
     "prettier": "2.3.1",
     "prettier-eslint": "^12.0.0",
     "progress-bar-webpack-plugin": "^2.1.0",
+    "react-app-rewired": "^2.1.8",
     "sass": "^1.38.1",
     "sass-loader": "^12.1.0",
     "typescript": "^4.3.4",
     "webpack-bundle-analyzer": "^4.4.2",
+    "webpack-dynamic-public-path": "^1.0.8",
     "yargs": "^17.2.1"
   }
 }

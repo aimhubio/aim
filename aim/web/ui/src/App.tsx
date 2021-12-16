@@ -9,10 +9,16 @@ import routes from 'routes/routes';
 
 import './App.scss';
 
+let basePath = '/';
+
+if ((window as any).API_BASE_PATH !== '{{ base_path }}') {
+  basePath = (window as any).API_BASE_PATH;
+}
+
 function App(): React.FunctionComponentElement<React.ReactNode> {
   return (
     <>
-      <BrowserRouter>
+      <BrowserRouter basename={basePath}>
         <ProjectWrapper />
         <Theme>
           <div className='pageContainer'>
