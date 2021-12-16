@@ -1,3 +1,14 @@
 export interface IAudioBoxProps {
-  title?: string;
+  data: any;
+  additionalProperties: any;
+}
+
+export interface IAudiBoxProgressProps {
+  audio: HTMLAudioElement;
+  isPlaying: boolean;
+  src: string;
+}
+
+export interface IAudioBoxVolumeProps {
+  audio: HTMLAudioElement;
 }

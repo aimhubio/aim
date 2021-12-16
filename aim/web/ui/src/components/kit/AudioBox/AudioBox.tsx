@@ -1,5 +1,6 @@
 import React from 'react';
 import moment from 'moment';
+import AudioPlayer from 'material-ui-audio-player';
 
 import { CircularProgress } from '@material-ui/core';
 
@@ -9,11 +10,15 @@ import { batchCollectDelay } from 'config/imagesConfigs/imagesConfig';
 
 import blobsURIModel from 'services/models/media/blobsURIModel';
 
-import { IAudioBoxProps } from './AudioBox.d';
+import {
+  IAudioBoxProps,
+  IAudiBoxProgressProps,
+  IAudioBoxVolumeProps,
+} from './AudioBox.d';
 
 import './AudioBox.scss';
 
-function AudiBoxProgress({ audio, isPlaying }: any) {
+function AudiBoxProgress({ audio, isPlaying, src }: IAudiBoxProgressProps) {
   const [trackProgress, setTrackProgress] = React.useState(0);
   const intervalRef = React.useRef<any>({});
 
@@ -29,23 +34,20 @@ function AudiBoxProgress({ audio, isPlaying }: any) {
     } else {
       clearInterval(intervalRef.current);
     }
-  }, [isPlaying]);
+  }, [isPlaying, src]);
 
   function startTimer(): void {
-    console.log('mtav');
-
     clearInterval(intervalRef.current);
     intervalRef.current = setInterval(() => {
       setTrackProgress(Math.round(audio.currentTime));
     }, 300);
   }
-  console.log(intervalRef.current);
 
-  function onProgressChange(event: any, value: number | number[]): void {
+  function onProgressChange(e: any, value: number | number[]): void {
     if (audio) {
       clearInterval(intervalRef.current);
+      setTrackProgress(value as number);
     }
-    setTrackProgress(value as number);
   }
 
   function onTimerChange(): void {
@@ -77,7 +79,7 @@ function AudiBoxProgress({ audio, isPlaying }: any) {
   return (
     <>
       <Slider
-        containerClassName='AudioBox__progressSlider'
+        containerClassName='AudioBox__controllers__progressSlider'
         onChangeCommitted={onTimerChange}
         onChange={onProgressChange}
         value={trackProgress}
@@ -86,8 +88,8 @@ function AudiBoxProgress({ audio, isPlaying }: any) {
         min={0}
       />
       <div
-        className={`AudioBox__timer ${
-          audio?.duration > 3600 ? 'AudioBox__timer-long' : ''
+        className={`AudioBox__controllers__timer ${
+          audio?.duration > 3600 ? 'AudioBox__controllers__timer-long' : ''
         }`}
       >
         <Text weight={400} size={8}>
@@ -101,18 +103,20 @@ function AudiBoxProgress({ audio, isPlaying }: any) {
   );
 }
 
-function AudioBoxVolume({ audio }: any) {
-  const [volume, setVolume] = React.useState(0.99);
+function AudioBoxVolume({ audio }: IAudioBoxVolumeProps) {
+  const [volume, setVolume] = React.useState<number>(0.99);
 
-  function onVolumeChange(event: any, value: number | number[]): void {
+  function onVolumeChange(e: any, value: number | number[]): void {
     if (audio) {
       audio.volume = value as number;
+      setVolume(value as number);
     }
-    setVolume(value as number);
   }
 
   React.useEffect(() => {
-    if (audio) audio.volume = volume;
+    if (audio) {
+      audio.volume = volume;
+    }
   }, [volume]);
 
   function onVolumeToggle(): void {
@@ -126,16 +130,16 @@ function AudioBoxVolume({ audio }: any) {
   }
 
   return (
-    <div className='AudioBox__volume'>
+    <div className='AudioBox__controllers__volume'>
       <Button
         onClick={onVolumeToggle}
         withOnlyIcon
         size='small'
-        className='AudioBox__volume--button'
+        className='AudioBox__controllers__volume--button'
       >
         <Icon name={volume === 0 ? 'voice-off' : 'voice-on'} />
       </Button>
-      <div className='AudioBox__volume__Slider'>
+      <div className='AudioBox__controllers__volume__Slider'>
         <Slider
           onChange={onVolumeChange}
           value={volume}
@@ -152,11 +156,12 @@ function AudioBoxVolume({ audio }: any) {
 function AudioBox({
   data,
   additionalProperties,
-}: any): React.FunctionComponentElement<React.ReactNode> {
+}: IAudioBoxProps): React.FunctionComponentElement<React.ReactNode> {
   const { format, blob_uri } = data;
   const [isPlaying, setIsPlaying] = React.useState<boolean>(false);
   const [audio, setAudio] = React.useState<any>(null);
-  const [processing, setProcessing] = React.useState(false);
+  const [processing, setProcessing] = React.useState<boolean>(false);
+  let [src, setSrc] = React.useState<string>('');
   let [blobData, setBlobData] = React.useState<string>(
     blobsURIModel.getState()[blob_uri] ?? null,
   );
@@ -204,6 +209,7 @@ function AudioBox({
       audioRef.autoplay = true;
       audioRef.muted = true;
       audioRef.src = `data:audio/${format};base64,${blobData}`;
+      setSrc(`data:audio/${format};base64,${blobData}`);
       setAudio(audioRef);
       setMuted(false);
     }
@@ -233,7 +239,7 @@ function AudioBox({
     }
   }, [muted]);
 
-  function handleReadyToPlay() {
+  function handleReadyToPlay(): void {
     setProcessing(false);
   }
 
@@ -267,21 +273,35 @@ function AudioBox({
   }
 
   return (
-    <>
-      <div className='AudioBox'>
-        <Button
-          onClick={onPLayChange}
-          color='secondary'
-          withOnlyIcon
-          size='small'
-        >
-          {processing ? (
-            <CircularProgress size={12} thickness={4} />
-          ) : (
+    <div className='AudioBox'>
+      <div className='AudioBox__controllers'>
+        {audio ? (
+          <Button
+            onClick={onPLayChange}
+            color='secondary'
+            withOnlyIcon
+            size='small'
+          >
+            {processing ? (
+              <CircularProgress size={12} thickness={4} />
+            ) : (
+              <Icon name={isPlaying ? 'pause' : 'play'} />
+            )}
+          </Button>
+        ) : (
+          <div className='AudioBox__controllers__Player'>
+            <AudioPlayer
+              displaySlider={false}
+              volume={false}
+              displayCloseButton={false}
+              onPlayed={onPLayChange}
+              width='24px'
+              src={src}
+            />
             <Icon name={isPlaying ? 'pause' : 'play'} />
-          )}
-        </Button>
-        <AudiBoxProgress audio={audio} isPlaying={isPlaying} />
+          </div>
+        )}
+        <AudiBoxProgress audio={audio} isPlaying={isPlaying} src={src} />
         <AudioBoxVolume audio={audio} />
         <Button
           withOnlyIcon
@@ -293,12 +313,15 @@ function AudioBox({
           <Icon name='download' />
         </Button>
       </div>
-      <div>
-        <Text size={8} weight={400}>
-          {data.caption}
-        </Text>
-      </div>
-    </>
+      <Text
+        title={data?.caption || ''}
+        className='AudioBox__caption'
+        size={8}
+        weight={400}
+      >
+        {data?.caption || ''}
+      </Text>
+    </div>
   );
 }
 
