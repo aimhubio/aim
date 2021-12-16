@@ -64,8 +64,8 @@ class Audio(CustomObject):
             raise TypeError('Content is not a byte-stream object')
 
         extra = {
-            "caption": caption,
-            "format": audio_format
+            'caption': caption,
+            'format': audio_format
         }
         self._prepare(data, **extra)
 

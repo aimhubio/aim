@@ -31,7 +31,7 @@ class CustomObject(CustomObjectBase):
 
     def __new__(cls, *args, **kwargs):
         obj = super().__new__(cls)
-        obj.storage = kwargs.get("_storage", InMemoryTreeView(container={}))
+        obj.storage = kwargs.get('_storage', InMemoryTreeView(container={}))
         return obj
 
     def __deepcopy__(self, memodict=None):
