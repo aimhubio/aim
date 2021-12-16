@@ -70,13 +70,12 @@ def get_argument_options(line):
     options = {
         '--host': '127.0.0.1',
         '--port': '43800',
+        '--base-path': '/notebook'
     }
     for arg in args[1:]:
         key, value = arg.split('=', 1)
         if key in supported_args:
             options[key] = value
-
-    options['--base-path'] = '/notebook'
 
     return command, options
 
