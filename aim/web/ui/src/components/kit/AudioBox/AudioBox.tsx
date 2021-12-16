@@ -230,9 +230,17 @@ function AudioBox({
   React.useEffect(() => {
     // Pause and clean up on unmount
     if (audio) {
-      audio?.addEventListener('ended', onAudioEnded);
-      audio?.addEventListener('canplay', handleReadyToPlay);
+      audio.addEventListener('ended', onAudioEnded);
+      audio.addEventListener('canplay', handleReadyToPlay);
     }
+
+    return () => {
+      if (audio) {
+        audio.pause();
+        audio.removeEventListener('ended', onAudioEnded);
+        audio.removeEventListener('canplay', handleReadyToPlay);
+      }
+    };
   }, [audio]);
 
   React.useEffect(() => {
