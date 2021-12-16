@@ -3120,7 +3120,6 @@ function createAppModel(appConfig: IAppInitialConfig) {
                       values[label] = formatValue(paramValue, null);
                       if (values[label] !== null) {
                         if (typeof values[label] === 'string') {
-                          debugger;
                           dimension[label].scaleType = ScaleEnum.Point;
                         }
                         dimension[label].values.add(values[label]);
