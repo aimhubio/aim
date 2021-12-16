@@ -90,18 +90,10 @@ function AudiosVisualizer(
     },
     [],
   );
-  /*
-  const additionalProperties = React.useMemo(() => {
-    return {
-      getAudiosBlobsData,
-    };
-  }, []);*/
 
   const additionalProperties = React.useMemo(() => {
     return {
-      // alignmentType: MediaItemAlignmentEnum.Width,
-      mediaItemSize: 25,
-      // imageRendering: ImageRenderingEnum.Pixelated,
+      getAudiosBlobsData,
     };
   }, []);
 
@@ -115,8 +107,8 @@ function AudiosVisualizer(
         isLoading={!data || isLoading}
         panelResizing={false}
         tableHeight={'0'}
-        wrapperOffsetHeight={(444 || 0) + 44}
-        wrapperOffsetWidth={800 || 0}
+        wrapperOffsetHeight={(offsetHeight || 0) + 44}
+        wrapperOffsetWidth={offsetWidth || 0}
         focusedState={focusedState}
         additionalProperties={additionalProperties}
         onActivePointChange={onActivePointChange}

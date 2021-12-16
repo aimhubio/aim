@@ -289,7 +289,7 @@ function AudioBox({
   }
 
   return (
-    <div className='AudioBox' style={style}>
+    <div className='AudioBox' style={style || {}}>
       <div className='AudioBox__controllers'>
         {audio ? (
           <Button
