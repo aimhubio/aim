@@ -1,5 +1,5 @@
 import bs58check from 'bs58check';
-import { head, orderBy, get } from 'lodash-es';
+import { head, orderBy } from 'lodash-es';
 
 import { IMenuItem } from 'components/kit/Menu';
 
@@ -12,6 +12,7 @@ import contextToString from 'utils/contextToString';
 import alphabeticalSortComparator from 'utils/alphabeticalSortComparator';
 import { encode } from 'utils/encoder/encoder';
 import getObjectPaths from 'utils/getObjectPaths';
+import { getValue } from 'utils/helper';
 
 import imagesExploreAppModel from '../imagesExplore/imagesExploreAppModel';
 
@@ -336,7 +337,7 @@ function groupData(data: IProcessedImageData[]): {
   for (let i = 0; i < data.length; i++) {
     const groupValue: { [key: string]: string } = {};
     ['step'].forEach((field) => {
-      groupValue[field] = get(data[i], field);
+      groupValue[field] = getValue(data[i], field);
     });
     const groupKey = encode(groupValue);
     if (groupValues.hasOwnProperty(groupKey)) {
