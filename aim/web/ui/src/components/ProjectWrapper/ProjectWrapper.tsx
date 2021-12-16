@@ -13,10 +13,6 @@ function ProjectWrapper() {
   const projectsData = useModel<IProjectsModelState>(projectsModel);
 
   React.useEffect(() => {
-    if (projectsData?.project?.path) {
-      document.title = `Aim: ${projectsData.project.path}`;
-    }
-
     return () => {
       projectDataRequestRef.abort();
     };

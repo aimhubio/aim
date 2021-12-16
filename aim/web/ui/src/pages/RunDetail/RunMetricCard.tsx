@@ -67,7 +67,7 @@ function RunMetricCard({
               key={index}
               size='large'
               color={COLORS[0][(i + index) % COLORS[0].length]}
-              label={label || 'No context'}
+              label={label || 'Empty context'}
             />
           ))}
       </div>
