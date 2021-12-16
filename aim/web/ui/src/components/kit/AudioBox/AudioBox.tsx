@@ -233,7 +233,6 @@ function AudioBox({
       audio.addEventListener('ended', onAudioEnded);
       audio.addEventListener('canplay', handleReadyToPlay);
     }
-
     return () => {
       if (audio) {
         audio.pause();
@@ -298,11 +297,7 @@ function AudioBox({
             withOnlyIcon
             size='small'
           >
-            {processing ? (
-              <CircularProgress size={12} thickness={4} />
-            ) : (
-              <Icon name={isPlaying ? 'pause' : 'play'} />
-            )}
+            <Icon name={isPlaying ? 'pause' : 'play'} />
           </Button>
         ) : (
           <div className='AudioBox__controllers__Player'>
@@ -314,7 +309,15 @@ function AudioBox({
               width='24px'
               src={src}
             />
-            <Icon name={isPlaying ? 'pause' : 'play'} />
+            {processing ? (
+              <CircularProgress
+                className='Icon__container'
+                size={12}
+                thickness={4}
+              />
+            ) : (
+              <Icon name={isPlaying ? 'pause' : 'play'} />
+            )}
           </div>
         )}
         <AudiBoxProgress audio={audio} isPlaying={isPlaying} src={src} />
