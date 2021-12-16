@@ -24,6 +24,7 @@ import { ISelectFormProps } from 'types/pages/imagesExplore/components/SelectFor
 import { ISelectOption } from 'types/services/models/explorer/createAppModel';
 
 import contextToString from 'utils/contextToString';
+import alphabeticalSortComparator from 'utils/alphabeticalSortComparator';
 
 import './SelectForm.scss';
 
@@ -140,7 +141,9 @@ function SelectForm({
       }
     }
 
-    return data;
+    return data.sort(
+      alphabeticalSortComparator<ISelectOption>({ orderBy: 'label' }),
+    );
   }, [projectsData]);
 
   function handleResetSelectForm(): void {

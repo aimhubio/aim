@@ -36,7 +36,7 @@ class TestRunApi(PrefilledDataApiTestBase):
         offset = ''
         for run_hash, run in decoded_response.items():
             offset = run_hash
-            self.assertEqual('Run # 2', run['props']['name'])
+            self.assertEqual('Run # 3', run['props']['name'])
 
         response = client.get('/api/runs/search/run/', params={'q': 'run["name"] in ["Run # 2","Run # 3"]',
                                                                'limit': 5,
@@ -46,7 +46,7 @@ class TestRunApi(PrefilledDataApiTestBase):
         decoded_response = decode_tree(decode_encoded_tree_stream(response.iter_content(chunk_size=1024 * 1024)))
         self.assertEqual(1, len(decoded_response))
         for run_hash, run in decoded_response.items():
-            self.assertEqual('Run # 3', run['props']['name'])
+            self.assertEqual('Run # 2', run['props']['name'])
 
     def test_search_metrics_api_default_step(self):
         client = self.client
