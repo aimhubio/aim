@@ -180,15 +180,6 @@ export function getContextObjFromMenuActiveKey(
 }
 
 export function getMenuData(traceType: TraceType, traces: TraceRawDataItem[]) {
-  const VisualizationMenuTitles = {
-    images: 'Images',
-    distributions: 'Distributions',
-    audios: 'Audios',
-    videos: 'Videos',
-    texts: 'Texts',
-    figures: 'Plotlies',
-  };
-
   let title = VisualizationMenuTitles[traceType];
 
   let defaultActiveKey = '';
@@ -381,3 +372,12 @@ export function processPlotlyData(data: Partial<IPlotlyData>) {
     originalValues,
   };
 }
+
+export const VisualizationMenuTitles = {
+  images: 'Images',
+  distributions: 'Distributions',
+  audios: 'Audios',
+  videos: 'Videos',
+  texts: 'Texts',
+  figures: 'Figures',
+};
