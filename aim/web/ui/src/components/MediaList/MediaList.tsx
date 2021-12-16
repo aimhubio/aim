@@ -25,16 +25,20 @@ function MediaList({
   tooltip,
   mediaType,
 }: IMediaListProps): React.FunctionComponentElement<React.ReactNode> {
+  console.log(data);
   return (
     <List
       height={mediaItemHeight}
       itemCount={data.length}
-      itemSize={(index: number) => {
-        return additionalProperties?.alignmentType ===
-          MediaItemAlignmentEnum.Width
-          ? (wrapperOffsetWidth * additionalProperties?.mediaItemSize) / 100
-          : (mediaItemHeight / data[index].height) * data[index].width;
-      }}
+      // itemSize={(index: number) => {
+      //   return additionalProperties?.alignmentType ===
+      //     MediaItemAlignmentEnum.Width
+      //     ? (wrapperOffsetWidth * additionalProperties?.mediaItemSize) / 100
+      //     : MediaItemAlignmentEnum.Height
+      //     ? (mediaItemHeight / data[index].height) * data[index].width
+      //     : 268;
+      // }}
+      itemSize={(index: number) => 268}
       layout='horizontal'
       width={wrapperOffsetWidth}
       style={{ overflowY: 'hidden' }}

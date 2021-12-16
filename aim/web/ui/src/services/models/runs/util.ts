@@ -244,7 +244,6 @@ export function processDistributionsData(data: Partial<DistributionsData>) {
 export function processTextsData(data: Partial<TextsData>) {
   const { record_range, index_range, iters, values } = data;
   const processedValues: any[] = [];
-
   if (values) {
     let count = 0;
     values.forEach((stepValues, stepIndex) => {
@@ -310,6 +309,10 @@ export function processImagesData(
     groupingSelectOptions,
     defaultGroupFields: ['step'],
   });
+
+  console.log(setData);
+  console.log(orderedMap);
+
   return { imageSetData: setData, orderedMap, record_range, index_range };
 }
 
@@ -353,7 +356,8 @@ export function processAudiosData(
     groupingSelectOptions,
     defaultGroupFields: ['step'],
   });
-
+  console.log(setData);
+  console.log(orderedMap);
   return { audiosSetData: setData, orderedMap, record_range, index_range };
 }
 

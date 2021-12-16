@@ -163,7 +163,7 @@ function MediaPanel({
   const setKey = React.useMemo(
     () => Date.now(),
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    [data, wrapperOffsetHeight, wrapperOffsetWidth, additionalProperties],
+    [data, wrapperOffsetHeight, wrapperOffsetWidth],
   );
 
   React.useEffect(() => {

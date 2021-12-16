@@ -3,6 +3,11 @@ import React from 'react';
 import MediaPanel from 'components/MediaPanel';
 import { MediaTypeEnum } from 'components/MediaPanel/config';
 
+import {
+  ImageRenderingEnum,
+  MediaItemAlignmentEnum,
+} from 'config/enums/imageEnums';
+
 import useResizeObserver from 'hooks/window/useResizeObserver';
 
 import blobsURIModel from 'services/models/media/blobsURIModel';
@@ -85,10 +90,18 @@ function AudiosVisualizer(
     },
     [],
   );
-
+  /*
   const additionalProperties = React.useMemo(() => {
     return {
       getAudiosBlobsData,
+    };
+  }, []);*/
+
+  const additionalProperties = React.useMemo(() => {
+    return {
+      // alignmentType: MediaItemAlignmentEnum.Width,
+      mediaItemSize: 25,
+      // imageRendering: ImageRenderingEnum.Pixelated,
     };
   }, []);
 
@@ -102,8 +115,8 @@ function AudiosVisualizer(
         isLoading={!data || isLoading}
         panelResizing={false}
         tableHeight={'0'}
-        wrapperOffsetHeight={(offsetHeight || 0) + 44}
-        wrapperOffsetWidth={offsetWidth || 0}
+        wrapperOffsetHeight={(444 || 0) + 44}
+        wrapperOffsetWidth={800 || 0}
         focusedState={focusedState}
         additionalProperties={additionalProperties}
         onActivePointChange={onActivePointChange}

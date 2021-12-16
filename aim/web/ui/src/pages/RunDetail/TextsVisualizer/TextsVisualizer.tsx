@@ -9,8 +9,6 @@ import './TextsVisualizer.scss';
 function TextsVisualizer(
   props: ITextsVisualizerProps | any,
 ): React.FunctionComponentElement<React.ReactNode> {
-  const { data, isLoading } = props;
-
   const tableColumns = [
     {
       dataKey: 'step',
@@ -36,15 +34,14 @@ function TextsVisualizer(
       },
     },
   ];
-
   return (
     <div className='TextsVisualizer'>
-      {data?.processedValues.length > 0 && (
+      {props.data?.processedValues && (
         <Table
           fixed={false}
           columns={tableColumns}
-          data={data?.processedValues}
-          isLoading={isLoading}
+          data={props?.data?.processedValues}
+          isLoading={props?.isLoading}
           hideHeaderActions
           estimatedRowHeight={32}
           headerHeight={32}
