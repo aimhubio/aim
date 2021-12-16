@@ -196,6 +196,7 @@ function RunDetail(): React.FunctionComponentElement<React.ReactNode> {
             <Tab label='System' />
             <Tab label='Distributions' />
             <Tab label='Images' />
+            <Tab label='Audios' />
             <Tab label='Texts' />
             <Tab label='Figures' />
             <Tab label='Settings' />
@@ -266,13 +267,26 @@ function RunDetail(): React.FunctionComponentElement<React.ReactNode> {
         >
           <TraceVisualizationContainer
             runHash={runHash}
-            traceType='texts'
+            traceType='audios'
             traceInfo={runData?.runTraces}
+            runParams={runData?.runParams}
           />
         </TabPanel>
         <TabPanel
           value={value}
           index={6}
+          className='RunDetail__runDetailContainer__tabPanel'
+        >
+          <TraceVisualizationContainer
+            runHash={runHash}
+            traceType='texts'
+            traceInfo={runData?.runTraces}
+            runParams={runData?.runParams}
+          />
+        </TabPanel>
+        <TabPanel
+          value={value}
+          index={7}
           className='RunDetail__runDetailContainer__tabPanel'
         >
           <TraceVisualizationContainer
@@ -283,7 +297,7 @@ function RunDetail(): React.FunctionComponentElement<React.ReactNode> {
         </TabPanel>
         <TabPanel
           value={value}
-          index={7}
+          index={8}
           className='RunDetail__runDetailContainer__tabPanel'
         >
           <RunDetailSettingsTab

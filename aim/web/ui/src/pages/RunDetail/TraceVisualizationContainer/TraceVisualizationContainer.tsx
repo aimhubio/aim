@@ -14,6 +14,7 @@ import TextsVisualizer from '../TextsVisualizer';
 import ImagesVisualizer from '../ImagesVisualizer';
 import PlotlyVisualizer from '../PlotlyVisualizer';
 import { ITraceVisualizationContainerProps } from '../types';
+import AudiosVisualizer from '../AudiosVisualizer';
 
 import RangePanel from './RangePanel';
 import withEmptyTraceCheck from './withEmptyTraceCheck';
@@ -23,7 +24,7 @@ import './TraceVisualizationContainer.scss';
 const traceTypeVisualization = {
   images: ImagesVisualizer,
   distributions: DistributionsVisualizer,
-  audios: () => null,
+  audios: AudiosVisualizer,
   videos: () => null,
   texts: TextsVisualizer,
   figures: PlotlyVisualizer,

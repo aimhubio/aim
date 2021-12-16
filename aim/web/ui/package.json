@@ -18,6 +18,7 @@
     "highcharts-react-official": "^3.1.0",
     "humanize-duration": "^3.27.0",
     "lodash-es": "^4.17.21",
+    "material-ui-audio-player": "^1.7.1",
     "md5": "^2.3.0",
     "memoize-one": "^5.2.1",
     "moment": "^2.29.1",

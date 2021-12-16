@@ -19,6 +19,7 @@ import { MediaItemAlignmentEnum } from 'config/enums/imageEnums';
 import blobsURIModel from 'services/models/media/blobsURIModel';
 
 import { IMediaPanelProps } from './MediaPanel.d';
+import { MediaTypeEnum } from './config';
 
 import './MediaPanel.scss';
 
@@ -236,6 +237,8 @@ function MediaPanel({
                         ? (wrapperOffsetWidth *
                             additionalProperties?.mediaItemSize) /
                           100
+                        : mediaType === MediaTypeEnum.AUDIO
+                        ? 56
                         : imageFixedHeight
                     }
                     focusedState={focusedState}

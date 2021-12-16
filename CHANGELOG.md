@@ -2,6 +2,7 @@
 
 ## Unreleased
 
+- Add ability to track and explore audios in run detail page (arsengit, VkoHov, devfox-se)
 - Add ability to track and visualize texts (mihran113, roubkar)
 - Fix boolean values encoding (mahnerak)
 - Add Scatter Explorer to visualize correlations between metric last value and hyperparameter (KaroMourad)

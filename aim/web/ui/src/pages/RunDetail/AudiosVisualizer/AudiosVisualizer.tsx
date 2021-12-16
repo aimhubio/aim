@@ -1,17 +1,12 @@
-import React, { memo } from 'react';
+import React from 'react';
 
-import { MediaTypeEnum } from 'components/MediaPanel/config';
 import MediaPanel from 'components/MediaPanel';
-
-import {
-  ImageRenderingEnum,
-  MediaItemAlignmentEnum,
-} from 'config/enums/imageEnums';
+import { MediaTypeEnum } from 'components/MediaPanel/config';
 
 import useResizeObserver from 'hooks/window/useResizeObserver';
 
 import blobsURIModel from 'services/models/media/blobsURIModel';
-import imagesExploreService from 'services/api/imagesExplore/imagesExploreService';
+import audiosExploreService from 'services/api/audiosExplore/audiosExplore';
 
 import {
   adjustable_reader,
@@ -21,29 +16,27 @@ import {
 } from 'utils/encoder/streamEncoding';
 import arrayBufferToBase64 from 'utils/arrayBufferToBase64';
 
-import { IImagesVisualizerProps } from '../types';
+import './AudiosVisualizer.scss';
 
-import './ImagesVisualizer.scss';
-
-function ImagesVisualizer(
-  props: IImagesVisualizerProps | any,
-): React.FunctionComponentElement<React.ReactNode> {
+function AudiosVisualizer(
+  props: any,
+): React.FunctionComponentElement<React.FunctionComponent> {
   const { data, isLoading } = props;
-  const imagesWrapperRef = React.useRef<any>(null);
+  const audioWrapperRef = React.useRef<any>(null);
   const [focusedState, setFocusedState] = React.useState({
     active: false,
     key: null,
   });
   const [offsetHeight, setOffsetHeight] = React.useState(
-    imagesWrapperRef?.current?.offsetHeight,
+    audioWrapperRef?.current?.offsetHeight,
   );
   const [offsetWidth, setOffsetWidth] = React.useState(
-    imagesWrapperRef?.current?.offsetWidth,
+    audioWrapperRef?.current?.offsetWidth,
   );
 
   useResizeObserver(
-    () => setOffsetWidth(imagesWrapperRef?.current?.offsetWidth),
-    imagesWrapperRef,
+    () => setOffsetWidth(audioWrapperRef?.current?.offsetWidth),
+    audioWrapperRef,
   );
 
   React.useEffect(() => {
@@ -51,12 +44,12 @@ function ImagesVisualizer(
   }, []);
 
   React.useEffect(() => {
-    setOffsetHeight(imagesWrapperRef?.current?.offsetHeight);
+    setOffsetHeight(audioWrapperRef?.current?.offsetHeight);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [imagesWrapperRef?.current?.offsetHeight]);
+  }, [audioWrapperRef?.current?.offsetHeight]);
 
-  function getImagesBlobsData(uris: string[]) {
-    const request = imagesExploreService.getImagesByURIs(uris);
+  function getAudiosBlobsData(uris: string[]) {
+    const request = audiosExploreService.getAudiosByURIs(uris);
     return {
       abort: request.abort,
       call: () => {
@@ -67,6 +60,7 @@ function ImagesVisualizer(
             let buffer_pairs = decode_buffer_pairs(gen);
             let decodedPairs = decodePathsVals(buffer_pairs);
             let objects = iterFoldTree(decodedPairs, 1);
+
             for await (let [keys, val] of objects) {
               const URI = keys[0];
               blobsURIModel.emit(URI as string, {
@@ -94,23 +88,21 @@ function ImagesVisualizer(
 
   const additionalProperties = React.useMemo(() => {
     return {
-      alignmentType: MediaItemAlignmentEnum.Height,
-      mediaItemSize: 25,
-      imageRendering: ImageRenderingEnum.Pixelated,
+      getAudiosBlobsData,
     };
   }, []);
 
   return (
-    <div className='ImagesVisualizer' ref={imagesWrapperRef}>
+    <div className='AudiosVisualizer' ref={audioWrapperRef}>
       <MediaPanel
-        mediaType={MediaTypeEnum.IMAGE}
-        getBlobsData={getImagesBlobsData}
-        data={data?.imageSetData}
+        mediaType={MediaTypeEnum.AUDIO}
+        getBlobsData={getAudiosBlobsData}
+        data={data?.audiosSetData}
         orderedMap={data?.orderedMap}
         isLoading={!data || isLoading}
         panelResizing={false}
         tableHeight={'0'}
-        wrapperOffsetHeight={offsetHeight || 0}
+        wrapperOffsetHeight={(offsetHeight || 0) + 44}
         wrapperOffsetWidth={offsetWidth || 0}
         focusedState={focusedState}
         additionalProperties={additionalProperties}
@@ -120,6 +112,6 @@ function ImagesVisualizer(
   );
 }
 
-ImagesVisualizer.displayName = 'ImagesVisualizer';
+AudiosVisualizer.displayName = 'AudiosVisualizer';
 
-export default memo<IImagesVisualizerProps>(ImagesVisualizer);
+export default React.memo(AudiosVisualizer);

@@ -5,6 +5,7 @@ import {
   processTextsData,
   processPlotlyData,
   reformatArrayQueries,
+  processAudiosData,
 } from './util';
 
 type InputItem = {
@@ -72,6 +73,35 @@ const settings: Record<string, SettingItem> = {
         defaultValue: 5,
         title: 'Indices count',
         tooltip: 'Number of images per step',
+      },
+    },
+  },
+  audios: {
+    dataProcessor: processAudiosData,
+    sliders: {
+      record_range: {
+        defaultValue: [0, 50],
+        tooltip: 'Training step. Increments every time track() is called',
+        title: 'Steps',
+        sliderType: 'range',
+      },
+      index_range: {
+        defaultValue: [0, 50],
+        tooltip: 'Index in the list of audios passed to track() call',
+        title: 'Indices',
+        sliderType: 'range',
+      },
+    },
+    inputs: {
+      record_density: {
+        defaultValue: 50,
+        title: 'Steps count',
+        tooltip: 'Number of steps to display',
+      },
+      index_density: {
+        defaultValue: 5,
+        title: 'Indices count',
+        tooltip: 'Number of audios per step',
       },
     },
   },

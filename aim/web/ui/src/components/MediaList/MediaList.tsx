@@ -2,6 +2,7 @@ import React from 'react';
 import { areEqual, VariableSizeList as List } from 'react-window';
 
 import { MediaTypeEnum } from 'components/MediaPanel/config';
+import AudioBox from 'components/kit/AudioBox';
 
 import { MediaItemAlignmentEnum } from 'config/enums/imageEnums';
 
@@ -10,6 +11,7 @@ import { IMediaListProps } from './MediaList.d';
 
 const mediaBoxType: any = {
   [MediaTypeEnum.IMAGE]: ImageBox,
+  [MediaTypeEnum.AUDIO]: AudioBox,
 };
 
 function MediaList({

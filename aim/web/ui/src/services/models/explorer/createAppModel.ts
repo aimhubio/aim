@@ -3120,9 +3120,13 @@ function createAppModel(appConfig: IAppInitialConfig) {
                       values[label] = formatValue(paramValue, null);
                       if (values[label] !== null) {
                         if (typeof values[label] === 'string') {
-                          dimension[label].scaleType = ScaleEnum.Point;
+                          if (dimension[label]) {
+                            dimension[label].scaleType = ScaleEnum.Point;
+                          }
                         }
-                        dimension[label].values.add(values[label]);
+                        if (dimension[label]) {
+                          dimension[label].values.add(values[label]);
+                        }
                       }
                     }
                   },
