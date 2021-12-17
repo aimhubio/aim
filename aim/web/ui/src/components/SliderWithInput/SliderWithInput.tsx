@@ -115,20 +115,12 @@ function SliderWithInput({
           step={1}
           onChange={(e) => {
             e.preventDefault();
-            if (
-              sliderType === 'single' &&
-              (+e.target.value < min || +e.target.value > max)
-            )
-              return;
+            if (+e.target.value < min || +e.target.value > max) return;
             onCountChange({
               target: { value: e.target.value as any },
             } as any);
           }}
-          className={`SliderWithInput__densityWrapper__densityField ${
-            selectedCountValue === 0 && sliderType !== 'single'
-              ? 'SliderWithInput__densityWrapper__densityField-invalid'
-              : ''
-          }`}
+          className='SliderWithInput__densityWrapper__densityField'
         />
       </div>
     </div>

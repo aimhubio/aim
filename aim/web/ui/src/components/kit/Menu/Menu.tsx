@@ -31,6 +31,12 @@ function Menu({
     [onChangeActiveItem, setActiveItemKey],
   );
 
+  React.useEffect(() => {
+    if (defaultActiveItemKey !== activeItemKey) {
+      setActiveItemKey(defaultActiveItemKey);
+    }
+  }, [defaultActiveItemKey]);
+
   return (
     <div className='Aim_Menu_Wr'>
       {title && (

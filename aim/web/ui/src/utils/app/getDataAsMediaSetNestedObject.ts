@@ -20,7 +20,7 @@ export function getDataAsMediaSetNestedObject<M extends State>({
   if (!_.isEmpty(data)) {
     const modelState = model?.getState();
     const grouping = modelState?.config?.grouping;
-    const setData: object = {};
+    const mediaSetData: object = {};
     const group: string[] = [...(grouping?.group || [])];
     const groupFields =
       defaultGroupFields ||
@@ -59,7 +59,7 @@ export function getDataAsMediaSetNestedObject<M extends State>({
         [],
       );
       _.set(
-        setData,
+        mediaSetData,
         path,
         _.sortBy(group.data, [
           ...groupFields,
@@ -71,7 +71,7 @@ export function getDataAsMediaSetNestedObject<M extends State>({
       );
     });
     return {
-      setData: _.isEmpty(setData) ? data[0].data : setData,
+      mediaSetData: _.isEmpty(mediaSetData) ? data[0].data : mediaSetData,
       orderedMap,
     };
   } else {

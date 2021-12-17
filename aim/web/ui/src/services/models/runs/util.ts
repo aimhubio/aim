@@ -244,7 +244,6 @@ export function processDistributionsData(data: Partial<DistributionsData>) {
 export function processTextsData(data: Partial<TextsData>) {
   const { record_range, index_range, iters, values } = data;
   const processedValues: any[] = [];
-
   if (values) {
     let count = 0;
     values.forEach((stepValues, stepIndex) => {
@@ -305,12 +304,13 @@ export function processImagesData(
       });
     });
   });
-  const { setData, orderedMap } = getDataAsMediaSetNestedObject({
+  const { mediaSetData, orderedMap } = getDataAsMediaSetNestedObject({
     data: groupData(_.orderBy(images)),
     groupingSelectOptions,
     defaultGroupFields: ['step'],
   });
-  return { imageSetData: setData, orderedMap, record_range, index_range };
+
+  return { imageSetData: mediaSetData, orderedMap, record_range, index_range };
 }
 
 export function processAudiosData(
@@ -348,13 +348,12 @@ export function processAudiosData(
       });
     });
   });
-  const { setData, orderedMap } = getDataAsMediaSetNestedObject({
+  const { mediaSetData, orderedMap } = getDataAsMediaSetNestedObject({
     data: groupData(_.orderBy(audiosSetData)),
     groupingSelectOptions,
     defaultGroupFields: ['step'],
   });
-
-  return { audiosSetData: setData, orderedMap, record_range, index_range };
+  return { audiosSetData: mediaSetData, orderedMap, record_range, index_range };
 }
 
 function groupData(data: IProcessedImageData[]): {
@@ -425,5 +424,5 @@ export const VisualizationMenuTitles = {
   audios: 'Audios',
   videos: 'Videos',
   texts: 'Texts',
-  figures: 'Figures',
+  figures: 'Plotly',
 };

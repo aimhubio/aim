@@ -198,7 +198,7 @@ function RunDetail(): React.FunctionComponentElement<React.ReactNode> {
             <Tab label='Images' />
             <Tab label='Audios' />
             <Tab label='Texts' />
-            <Tab label='Figures' />
+            <Tab label='Plotly' />
             <Tab label='Settings' />
           </Tabs>
         </Paper>

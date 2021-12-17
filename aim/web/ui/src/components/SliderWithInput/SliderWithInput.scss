@@ -34,9 +34,6 @@
       &:focus-visible {
         outline: unset;
       }
-      &-invalid {
-        border: 0.0625rem solid $error-color;
-      }
     }
     &__densityTitleBox {
       display: flex;

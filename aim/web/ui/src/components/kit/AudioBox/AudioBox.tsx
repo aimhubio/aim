@@ -6,7 +6,7 @@ import { CircularProgress } from '@material-ui/core';
 
 import { Button, Icon, Slider, Text } from 'components/kit';
 
-import { batchCollectDelay } from 'config/imagesConfigs/imagesConfig';
+import { BATCH_COLLECT_DELAY } from 'config/mediaConfigs/mediaConfigs';
 
 import blobsURIModel from 'services/models/media/blobsURIModel';
 
@@ -158,6 +158,7 @@ function AudioBoxVolume({ audio }: IAudioBoxVolumeProps) {
 function AudioBox({
   data,
   additionalProperties,
+  style = {},
 }: IAudioBoxProps): React.FunctionComponentElement<React.ReactNode> {
   const { blob_uri } = data;
   const [isPlaying, setIsPlaying] = React.useState<boolean>(false);
@@ -188,7 +189,7 @@ function AudioBox({
             } else {
               // addUriToList(blob_uri);
             }
-          }, batchCollectDelay);
+          }, BATCH_COLLECT_DELAY);
         }
       }
     }
@@ -274,11 +275,9 @@ function AudioBox({
     if (audio) {
       const element: HTMLAnchorElement = document.createElement('a');
       const { index, format, context, step, caption, audio_name } = data;
-      const contextName =
+      const contextName: string =
         contextToString(context) === '' ? '' : `_${contextToString(context)}`;
-      const name: string =
-        `${audio_name}${contextName}_${caption}_${step}_${index}`.trim();
-
+      const name: string = `${audio_name}${contextName}_${caption}_${step}_${index}`;
       element.setAttribute('href', `data:audio/${format};base64,${blobData}`);
       element.setAttribute('download', name);
       document.body.appendChild(element);
@@ -288,7 +287,7 @@ function AudioBox({
   }
 
   return (
-    <div className='AudioBox'>
+    <div className='AudioBox' style={style}>
       <div className='AudioBox__controllers'>
         {audio ? (
           <Button
