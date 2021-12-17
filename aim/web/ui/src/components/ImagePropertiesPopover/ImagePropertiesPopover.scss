@@ -22,6 +22,7 @@
   }
   &__sizeSlider {
     margin-top: $space-unit;
+    display: flex;
   }
   &__subtitle {
     text-transform: uppercase;

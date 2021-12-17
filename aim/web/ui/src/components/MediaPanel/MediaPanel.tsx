@@ -161,10 +161,10 @@ function MediaPanel({
     [onActivePointChange, setActivePointRect, setActiveElemPos],
   );
 
-  const setKey = React.useMemo(
+  const mediaSetKey = React.useMemo(
     () => Date.now(),
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    [data, wrapperOffsetHeight, wrapperOffsetWidth],
+    [data, wrapperOffsetHeight, wrapperOffsetWidth, additionalProperties],
   );
 
   React.useEffect(() => {
@@ -243,7 +243,7 @@ function MediaPanel({
                     data={data}
                     onListScroll={onListScroll}
                     addUriToList={addUriToList}
-                    setKey={setKey}
+                    mediaSetKey={mediaSetKey}
                     wrapperOffsetHeight={wrapperOffsetHeight - 48}
                     wrapperOffsetWidth={wrapperOffsetWidth}
                     mediaItemHeight={mediaItemHeight}

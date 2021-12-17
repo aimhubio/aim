@@ -9,6 +9,12 @@ import MediaList from 'components/MediaList';
 import { JsonViewPopover } from 'components/kit';
 import ControlPopover from 'components/ControlPopover/ControlPopover';
 
+import {
+  ITEM_WRAPPER_HEIGHT,
+  MEDIA_SET_TITLE_HEIGHT,
+  MEDIA_SET_WRAPPER_PADDING_HEIGHT,
+} from 'config/mediaConfigs/mediaConfigs';
+
 import { formatValue } from 'utils/formatValue';
 import { jsonParse } from 'utils/jsonParse';
 
@@ -16,16 +22,12 @@ import { IMediaSetProps } from './MediaSet.d';
 
 import './MediaSet.scss';
 
-const itemWrapperHeight = 33;
-const setTitleHeight = 17;
-const setWrapperPaddingHeight = 6;
-
 const MediaSet = ({
   data,
   onListScroll,
   addUriToList,
   index = 0,
-  setKey,
+  mediaSetKey,
   wrapperOffsetHeight,
   wrapperOffsetWidth,
   orderedMap,
@@ -73,15 +75,15 @@ const MediaSet = ({
     }
 
     if (items.length > 0) {
-      return mediaItemHeight + itemWrapperHeight;
+      return mediaItemHeight + ITEM_WRAPPER_HEIGHT;
     }
 
-    return setTitleHeight + setWrapperPaddingHeight;
+    return MEDIA_SET_TITLE_HEIGHT + MEDIA_SET_WRAPPER_PADDING_HEIGHT;
   }
 
   return (
     <List
-      key={content.length + tableHeight + setKey}
+      key={content.length + tableHeight + mediaSetKey}
       height={wrapperOffsetHeight || 0}
       itemCount={content.length}
       itemSize={getItemSize}
@@ -92,7 +94,7 @@ const MediaSet = ({
         addUriToList,
         wrapperOffsetWidth,
         index,
-        setKey,
+        mediaSetKey,
         mediaItemHeight,
         focusedState,
         syncHoverState,
@@ -111,7 +113,7 @@ function propsComparator(
   nextProps: IMediaSetProps,
 ): boolean {
   if (
-    prevProps.setKey !== nextProps.setKey ||
+    prevProps.mediaSetKey !== nextProps.mediaSetKey ||
     prevProps.focusedState !== nextProps.focusedState
   ) {
     return false;

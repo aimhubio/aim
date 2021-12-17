@@ -46,7 +46,13 @@ function MediaList({
         // TODO: Need to be refactored in Image size alignment by width and original size
       }
     },
-    [additionalProperties, mediaType],
+    [
+      additionalProperties,
+      data,
+      mediaItemHeight,
+      mediaType,
+      wrapperOffsetWidth,
+    ],
   );
 
   return (

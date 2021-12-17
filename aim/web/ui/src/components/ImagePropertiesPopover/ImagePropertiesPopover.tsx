@@ -2,10 +2,10 @@ import React from 'react';
 
 import { Divider } from '@material-ui/core';
 
-import { Slider, Text, ToggleButton } from 'components/kit';
+import { Dropdown, Slider, Text, ToggleButton } from 'components/kit';
 
 import {
-  // MediaItemAlignmentEnum,
+  MediaItemAlignmentEnum,
   ImageRenderingEnum,
 } from 'config/enums/imageEnums';
 
@@ -21,19 +21,19 @@ const sizeProps = {
 
 //TODO Implement images alignment options
 
-// const alignmentOptions = [
-//   { label: 'Original', value: MediaItemAlignmentEnum.Original },
-//   { label: 'Align By Width', value: MediaItemAlignmentEnum.Width },
-//   { label: 'Align By Height', value: MediaItemAlignmentEnum.Height },
-// ];
+const alignmentOptions = [
+  { label: 'Original', value: MediaItemAlignmentEnum.Original },
+  { label: 'Align By Width', value: MediaItemAlignmentEnum.Width },
+  { label: 'Align By Height', value: MediaItemAlignmentEnum.Height },
+];
 
 function ImagePropertiesPopover({
   additionalProperties,
   onImageSizeChange,
   onImageRenderingChange,
-}: // onImageAlignmentChange,
-IImagePropertiesPopoverProps): React.FunctionComponentElement<React.ReactNode> {
-  // const [open, setOpen] = React.useState<boolean>(false);
+  onImageAlignmentChange,
+}: IImagePropertiesPopoverProps): React.FunctionComponentElement<React.ReactNode> {
+  const [open, setOpen] = React.useState<boolean>(false);
   const [sizeValue, setSizeValue] = React.useState<number>(
     additionalProperties.mediaItemSize,
   );
@@ -57,34 +57,34 @@ IImagePropertiesPopoverProps): React.FunctionComponentElement<React.ReactNode> {
             Image Size:
           </Text>
           <Text className='ImagePropertiesPopover__sizePercent'>
-            {additionalProperties.mediaItemSize}%
+            {sizeValue}%
           </Text>
         </div>
-        {/* <div>
+        <div>
           <Dropdown
             size='large'
             isColored
             onChange={onImageAlignmentChange}
-            value={manipulations.alignmentType}
+            value={additionalProperties.alignmentType}
             options={alignmentOptions}
             onMenuOpen={() => setOpen(true)}
             onMenuClose={() => setOpen(false)}
             open={open}
             withPortal
           />
-        </div> */}
-        {/* <div className='flex fac ImageManipulationsPopover__sizeSlider'>
+        </div>
+        <div className='ImagePropertiesPopover__sizeSlider'>
           <Text
             tint={50}
             component='h4'
-            className='ImageManipulationsPopover__subtitle ImageManipulationsPopover__subtitle__windowSize'
+            className='ImagePropertiesPopover__subtitle ImagePropertiesPopover__subtitle__windowSize'
           >
             Relative to window size:
           </Text>
-          <Text className='ImageManipulationsPopover__sizePercent'>
-            {manipulations.mediaItemSize}%
+          <Text className='ImagePropertiesPopover__sizePercent'>
+            {additionalProperties.mediaItemSize}%
           </Text>
-        </div> */}
+        </div>
         <div className='ImagePropertiesPopover__Slider'>
           <Text>15%</Text>
           <Slider

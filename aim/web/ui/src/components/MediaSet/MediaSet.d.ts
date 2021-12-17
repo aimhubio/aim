@@ -12,7 +12,7 @@ export interface IMediaSetProps {
   onListScroll: ({ scrollOffset: number }) => void;
   addUriToList: (blobUrl: string) => void;
   index?: number;
-  setKey: number;
+  mediaSetKey: number;
   wrapperOffsetHeight?: number;
   wrapperOffsetWidth?: number;
   mediaItemHeight: number;
