@@ -9,7 +9,7 @@ import grpc
 import aim.ext.transport.remote_tracking_pb2 as rpc_messages
 import aim.ext.transport.remote_tracking_pb2_grpc as remote_tracking_pb2_grpc
 
-from aim.ext.transport.message_utils import pack, unpack, unpack_request_data
+from aim.ext.transport.message_utils import pack, unpack, unpack_request_data, ResourceObject
 from aim.storage.treeutils import encode_tree, decode_tree
 
 
@@ -56,32 +56,14 @@ class RemoteTrackingServicer(remote_tracking_pb2_grpc.RemoteTrackingServiceServi
 
         return rpc_messages.ResourceResponse(handler=handler)
 
-    def run_instruction_no_stream(self, request, context) -> rpc_messages.InstructionResponseNoStream:
-        resource_handler = request.header.handler
-        client_uri = request.header.client_uri
+    def release_resource(self, request: rpc_messages.ReleaseResourceRequest, context):
+        resource_handler = request.handler
+        client_uri = request.client_uri
         if not self._verify_resource_handler(resource_handler, client_uri):
             raise UnauthorizedRequestError()
 
-        args = decode_tree(unpack(request.message))
-        resource = self.resource_pool[resource_handler][1]
-        method = getattr(resource, request.header.method_name)
-
-        if not callable(method):
-            raise ValueError(f'{request.header.method_name} is not callable')
-
-        try:
-            result = method(*args)
-        except Exception as e:
-            return rpc_messages.InstructionResponseNoStream(header=rpc_messages.ResponseHeader(
-                version=0.1,
-                status=1
-            ))
-        return rpc_messages.InstructionResponseNoStream(
-            header=rpc_messages.ResponseHeader(
-                version=0.1, status=0,
-            ),
-            message=pack(encode_tree(result))
-        )
+        del self.resource_pool[resource_handler]
+        return rpc_messages.ReleaseResourceResponse(status=0)
 
     def run_instruction(self, request_iterator, context) -> rpc_messages.InstructionResponse:
         header = next(request_iterator)
@@ -93,6 +75,16 @@ class RemoteTrackingServicer(remote_tracking_pb2_grpc.RemoteTrackingServiceServi
             raise UnauthorizedRequestError()
 
         args = decode_tree(unpack_request_data(request_iterator))
+        checked_args = []
+        for arg in args:
+            if isinstance(arg, ResourceObject):
+                handler = arg.storage['handler']
+                if not self._verify_resource_handler(handler, client_uri):
+                    raise UnauthorizedRequestError()
+                checked_args.append(self.resource_pool[handler][1])
+            else:
+                checked_args.append(arg)
+
         resource = self.resource_pool[resource_handler][1]
         method = getattr(resource, header.header.method_name)
 
@@ -100,7 +92,7 @@ class RemoteTrackingServicer(remote_tracking_pb2_grpc.RemoteTrackingServiceServi
             raise ValueError(f'{header.header.method_name} is not callable')
 
         try:
-            result = method(*args)
+            result = method(*checked_args)
         except Exception as e:
             yield rpc_messages.InstructionResponse(header=rpc_messages.ResponseHeader(
                 version=0.1,

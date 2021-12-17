@@ -19,6 +19,11 @@ class RemoteTrackingServiceStub(object):
                 request_serializer=remote__tracking__pb2.ResourceRequest.SerializeToString,
                 response_deserializer=remote__tracking__pb2.ResourceResponse.FromString,
                 )
+        self.release_resource = channel.unary_unary(
+                '/RemoteTrackingService/release_resource',
+                request_serializer=remote__tracking__pb2.ReleaseResourceRequest.SerializeToString,
+                response_deserializer=remote__tracking__pb2.ReleaseResourceResponse.FromString,
+                )
         self.run_instruction_no_stream = channel.unary_unary(
                 '/RemoteTrackingService/run_instruction_no_stream',
                 request_serializer=remote__tracking__pb2.InstructionRequestNoStream.SerializeToString,
@@ -35,6 +40,12 @@ class RemoteTrackingServiceServicer(object):
     """Missing associated documentation comment in .proto file."""
 
     def get_resource(self, request, context):
+        """Missing associated documentation comment in .proto file."""
+        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
+        context.set_details('Method not implemented!')
+        raise NotImplementedError('Method not implemented!')
+
+    def release_resource(self, request, context):
         """Missing associated documentation comment in .proto file."""
         context.set_code(grpc.StatusCode.UNIMPLEMENTED)
         context.set_details('Method not implemented!')
@@ -59,6 +70,11 @@ def add_RemoteTrackingServiceServicer_to_server(servicer, server):
                     servicer.get_resource,
                     request_deserializer=remote__tracking__pb2.ResourceRequest.FromString,
                     response_serializer=remote__tracking__pb2.ResourceResponse.SerializeToString,
+            ),
+            'release_resource': grpc.unary_unary_rpc_method_handler(
+                    servicer.release_resource,
+                    request_deserializer=remote__tracking__pb2.ReleaseResourceRequest.FromString,
+                    response_serializer=remote__tracking__pb2.ReleaseResourceResponse.SerializeToString,
             ),
             'run_instruction_no_stream': grpc.unary_unary_rpc_method_handler(
                     servicer.run_instruction_no_stream,
@@ -94,6 +110,23 @@ class RemoteTrackingService(object):
         return grpc.experimental.unary_unary(request, target, '/RemoteTrackingService/get_resource',
             remote__tracking__pb2.ResourceRequest.SerializeToString,
             remote__tracking__pb2.ResourceResponse.FromString,
+            options, channel_credentials,
+            insecure, call_credentials, compression, wait_for_ready, timeout, metadata)
+
+    @staticmethod
+    def release_resource(request,
+            target,
+            options=(),
+            channel_credentials=None,
+            call_credentials=None,
+            insecure=False,
+            compression=None,
+            wait_for_ready=None,
+            timeout=None,
+            metadata=None):
+        return grpc.experimental.unary_unary(request, target, '/RemoteTrackingService/release_resource',
+            remote__tracking__pb2.ReleaseResourceRequest.SerializeToString,
+            remote__tracking__pb2.ReleaseResourceResponse.FromString,
             options, channel_credentials,
             insecure, call_credentials, compression, wait_for_ready, timeout, metadata)
 

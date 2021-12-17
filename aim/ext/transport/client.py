@@ -25,20 +25,16 @@ class Client:
             return response.handler
         return None
 
-    def run_instruction_no_stream(self, resource, method, args):
-        message = pack(encode_tree(args))
-        resp = self._remote_stub.run_instruction_no_stream(rpc_messages.InstructionRequestNoStream(
-            header=rpc_messages.RequestHeader(
-                version='0.1',
-                handler=resource,
-                client_uri=self.uri,
-                method_name=method
-            ),
-            message=message
-        ))
-        return InstructionResponseViewNoFetch(resp)
+    def release_resource(self, resource_handler):
+        request = rpc_messages.ReleaseResourceRequest(
+            handler=resource_handler,
+            client_uri=self.uri
+        )
+        response = self._remote_stub.release_resource(request)
+        if response.status != rpc_messages.ResourceResponse.Status.OK:
+            raise RuntimeError(f'Error releasing resource')
 
-    def run_instruction(self, resource, method, args):
+    def run_instruction(self, resource, method, args=()):
         args = deepcopy(args)
 
         def message_stream_generator():

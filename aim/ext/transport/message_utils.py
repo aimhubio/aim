@@ -2,6 +2,7 @@ import struct
 from typing import Iterator, Tuple
 
 import aim.ext.transport.remote_tracking_pb2 as rpc_messages
+from aim.storage.object import CustomObject
 from aim.storage.types import BLOB
 
 
@@ -58,3 +59,8 @@ def unpack_response_data(stream: rpc_messages.ResourceResponse) -> Tuple[bytes, 
             yield key, BLOB(value)
         else:
             yield key, value
+
+
+class ResourceObject(CustomObject):
+    def __init__(self, handler):
+        self.storage['handler'] = handler

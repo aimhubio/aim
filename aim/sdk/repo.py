@@ -251,6 +251,13 @@ class Repo:
 
         return container
 
+    def _get_index_tree(self, name: str, timeout: int):
+        if not self.is_remote_repo:
+            return self._get_index_container(name, timeout).tree()
+        else:
+            assert self._client is not None
+            return ProxyTree(self._client, name, '', read_only=False, index=True, timeout=timeout)
+
     def _get_index_container(self, name: str, timeout: int) -> Container:
         if self.read_only:
             raise ValueError('Repo is read-only')

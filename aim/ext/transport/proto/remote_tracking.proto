@@ -16,6 +16,19 @@ message ResourceResponse {
     Status status = 2;
 }
 
+message ReleaseResourceRequest {
+    string handler = 1;
+    string client_uri = 2;
+}
+
+message ReleaseResourceResponse {
+    enum Status {
+        OK = 0;
+        ERROR = 1;
+    }
+    Status status = 2;
+}
+
 message RequestHeader {
     string version = 1;
     string handler = 2;
@@ -28,11 +41,6 @@ message InstructionRequest {
         RequestHeader header = 1;
         bytes message = 2;
     }
-}
-
-message InstructionRequestNoStream {
-    RequestHeader header = 1;
-    repeated bytes message = 2;
 }
 
 message ResponseHeader {
@@ -51,14 +59,8 @@ message InstructionResponse {
     }
 }
 
-message InstructionResponseNoStream {
-    ResponseHeader header = 1;
-    repeated bytes message = 2;
-}
-
-
 service RemoteTrackingService {
     rpc get_resource(ResourceRequest) returns (ResourceResponse) {}
-    rpc run_instruction_no_stream(InstructionRequestNoStream) returns (InstructionResponseNoStream) {}
+    rpc release_resource(ReleaseResourceRequest) returns (ReleaseResourceResponse) {}
     rpc run_instruction(stream InstructionRequest) returns (stream InstructionResponse) {}
 }

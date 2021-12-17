@@ -19,7 +19,7 @@ class TreeView:
     def finalize(
         self,
         *,
-        index: 'Container'
+        index: 'TreeView'
     ):
         ...
 

@@ -1,25 +1,39 @@
 import struct
 
+from aim.ext.transport.message_utils import ResourceObject
+from aim.ext.transport.remote_resource import RemoteResourceAutoClean
 from aim.storage.treeview import TreeView
 from aim.storage.arrayview import TreeArrayView
 from aim.storage.types import AimObject, AimObjectKey, AimObjectPath
 
-from typing import TYPE_CHECKING, Any, Iterator, Tuple, Union
+from typing import TYPE_CHECKING, Iterator, Tuple, Union
 
 if TYPE_CHECKING:
     from aim.ext.transport.client import Client
 
 
+class ProxyTreeAutoClean(RemoteResourceAutoClean):
+    PRIORITY = 60
+
+
 class ProxyTree(TreeView):
-    def __init__(self, client: 'Client', name: str, sub: str, read_only: bool, from_union: bool = False):
+    def __init__(self, client: 'Client', name: str, sub: str, read_only: bool, from_union: bool = False, index=False, timeout=None):
+        self._resources: ProxyTreeAutoClean = None
+
         self._rpc_client = client
         read_only = struct.pack('?', read_only)
         from_union = struct.pack('?', from_union)
+        index = struct.pack('?', index)
+        timeout = struct.pack('I', timeout or 0)
 
-        args = (name.encode(), sub.encode(), read_only, from_union)
+        args = (name.encode(), sub.encode(), read_only, from_union, index, timeout)
         handler = self._rpc_client.get_resource_handler('TreeView', args=args)
         if handler is None:
             raise ValueError
+
+        self._resources = ProxyTreeAutoClean(self)
+        self._resources.rpc_client = client
+        self._resources.handler = handler
         self._handler = handler
 
     def preload(self):
@@ -121,6 +135,14 @@ class ProxyTree(TreeView):
         remote = self._rpc_client
         res = remote.run_instruction(self._handler, 'last', (path,))
         return res
+
+    def finalize(
+        self,
+        *,
+        index: 'ProxyTree'
+    ):
+        remote = self._rpc_client
+        remote.run_instruction(self._handler, 'finalize', (ResourceObject(index._handler),))
 
 
 class SubtreeView(TreeView):
