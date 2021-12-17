@@ -88,7 +88,7 @@ def display_colab(port, display):
 
     shell = """
         (async () => {{
-            const url = new URL('/notebook/', (await google.colab.kernel.proxyPort({port}, {{'cache': true}}));
+            const url = new URL('/notebook/', await google.colab.kernel.proxyPort({port}, {{'cache': true}}));
             const iframe = document.createElement('iframe');
             iframe.src = url;
             iframe.setAttribute('width', '100%');
