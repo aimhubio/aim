@@ -158,7 +158,7 @@ function AudioBoxVolume({ audio }: IAudioBoxVolumeProps) {
 function AudioBox({
   data,
   additionalProperties,
-  style,
+  style = {},
 }: IAudioBoxProps): React.FunctionComponentElement<React.ReactNode> {
   const { blob_uri } = data;
   const [isPlaying, setIsPlaying] = React.useState<boolean>(false);
@@ -287,7 +287,7 @@ function AudioBox({
   }
 
   return (
-    <div className='AudioBox' style={style || {}}>
+    <div className='AudioBox' style={style}>
       <div className='AudioBox__controllers'>
         {audio ? (
           <Button
