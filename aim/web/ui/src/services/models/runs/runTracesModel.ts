@@ -13,6 +13,7 @@ import {
   TraceResponseData,
   TraceRawDataItem,
   IRunTraceModel,
+  RangePanelItem,
   TraceType,
   QueryData,
   IConfig,
@@ -38,22 +39,25 @@ function getDefaultQueryAndConfigData(traceType: TraceType) {
     rangePanel: [],
   };
 
-  const inputKeys = Object.keys(traceSettings.inputs);
+  const inputKeys = Object.keys(traceSettings?.inputs);
 
   Object.keys(traceSettings.sliders).forEach((key, index) => {
     const item = traceSettings.sliders[key];
     queryData.sliders[key] = item.defaultValue;
-
     const correspondedInput = traceSettings.inputs[inputKeys[index]];
+
     // inject range panel data
-    config.rangePanel.push({
+    const processedItem: RangePanelItem = {
       sliderName: key,
       inputName: inputKeys[index],
       sliderTitle: item.title,
       inputTitle: correspondedInput.title,
       sliderTitleTooltip: item.tooltip,
       inputTitleTooltip: correspondedInput.tooltip,
-    });
+      sliderType: item.sliderType,
+    };
+
+    config.rangePanel.push(processedItem);
   });
 
   Object.keys(traceSettings.inputs).forEach((key) => {
@@ -147,16 +151,25 @@ async function getRunTraceBatch(isInitial = false) {
   abortGetTraceBatchBatchRequest();
 
   const state = model.getState();
+  const traceType = state.traceType || 'distributions';
   const requestOptions = state.batchRequestOptions;
   const queryData = state.queryData;
 
+  let paramsToApi = settings[traceType].paramsToApi;
+
+  if (!paramsToApi) {
+    paramsToApi = (queryData?: QueryData) => {
+      return {
+        ...(!isInitial ? reformatArrayQueries(queryData?.sliders) : {}),
+        ...queryData?.inputs,
+      };
+    };
+  }
+
   getTraceBatchRequestRef = runsService.getBatch(
     state.runHash || '',
-    state.traceType || 'distributions',
-    {
-      ...(!isInitial ? reformatArrayQueries(queryData?.sliders) : {}),
-      ...queryData?.inputs,
-    },
+    traceType,
+    paramsToApi(queryData),
     [requestOptions?.trace],
   );
   try {
@@ -223,7 +236,7 @@ function onInputChange(name: string, value: number) {
       ...state.queryData,
       inputs: {
         ...state.queryData?.inputs,
-        [name]: value,
+        [name]: +value,
       },
     },
   });

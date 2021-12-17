@@ -1,0 +1,60 @@
+@use 'src/styles/abstracts' as *;
+
+.TextsVisualizer {
+  height: 100%;
+  padding: toRem(10px) toRem(20px) 0;
+  width: 100%;
+  position: relative;
+  > div {
+    border-left: $border-grey;
+    border-top: $border-grey;
+    border-bottom: $border-grey;
+    border-top-left-radius: $border-radius-main;
+    border-top-right-radius: $border-radius-main;
+    overflow: hidden;
+  }
+  .BaseTable {
+    &__table-main {
+      outline: none;
+    }
+    &__header {
+      &-row {
+        background: #ebf0f8;
+        border-bottom: none;
+      }
+      &-cell {
+        border-right: $border-grey;
+        border-bottom: $border-grey;
+        padding: 0 toRem(16px);
+        &:last-child {
+          border-right: none;
+        }
+      }
+    }
+    &__row {
+      border-bottom: none;
+      &--hovered {
+        background: #e8f1fc;
+      }
+      &:last-child {
+        .BaseTable__row-cell {
+          border-bottom: none;
+        }
+      }
+      &-cell {
+        position: relative;
+        min-height: 32px;
+        max-height: 300px;
+        padding: toRem(7px) toRem(16px);
+        border-right: $border-grey;
+        border-bottom: $border-grey;
+
+        &:last-of-type {
+          display: inline-block;
+          white-space: normal;
+          overflow: auto !important;
+        }
+      }
+    }
+  }
+}

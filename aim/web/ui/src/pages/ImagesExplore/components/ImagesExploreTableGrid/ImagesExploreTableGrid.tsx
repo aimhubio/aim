@@ -6,7 +6,7 @@ import { merge } from 'lodash-es';
 import { Link, Tooltip } from '@material-ui/core';
 
 import TableSortIcons from 'components/Table/TableSortIcons';
-import { Icon, Button, Badge, JsonViewPopover } from 'components/kit';
+import { Badge, JsonViewPopover } from 'components/kit';
 import ControlPopover from 'components/ControlPopover/ControlPopover';
 
 import COLORS from 'config/colors/colors';
@@ -16,6 +16,7 @@ import { ITableColumn } from 'types/pages/metrics/components/TableColumns/TableC
 import { SortField } from 'types/services/models/metrics/metricsAppModel';
 
 import contextToString from 'utils/contextToString';
+import { formatValue } from 'utils/formatValue';
 
 function getImagesExploreTableColumns(
   paramColumns: string[] = [],
@@ -243,7 +244,7 @@ function imagesExploreTableRowRenderer(
                   />
                 ) : (
                   <Tooltip key={item} title={value}>
-                    <span>{value}</span>
+                    <span>{formatValue(value)}</span>
                   </Tooltip>
                 );
               })}

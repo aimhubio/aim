@@ -8,7 +8,6 @@
   .MuiSlider-root {
     padding: 0;
     height: 0.25rem;
-    margin-top: 0.125rem;
     .MuiSlider-rail {
       height: 0.25rem;
       border-radius: $border-radius-sm;
@@ -24,7 +23,7 @@
       background: $white;
       border: 0.09375rem solid $primary-color;
       margin-top: -0.25rem;
-      margin-left: 0;
+      margin-left: -$space-xxs;
       .MuiSlider-valueLabel {
         left: calc(-50% - 0.625rem);
         top: -1.0625rem;

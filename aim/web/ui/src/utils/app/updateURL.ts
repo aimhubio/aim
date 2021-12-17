@@ -15,13 +15,13 @@ export default function updateURL({
   const encodedParams: { [key: string]: string } = {};
 
   if (grouping) {
-    encodedParams.grouping = encode(grouping);
+    encodedParams.grouping = encode(grouping as {});
   }
   if (chart) {
-    encodedParams.chart = encode(chart);
+    encodedParams.chart = encode(chart as {});
   }
   if (select) {
-    encodedParams.select = encode(select);
+    encodedParams.select = encode(select as {});
   }
 
   updateUrlParam({ data: encodedParams, appName });

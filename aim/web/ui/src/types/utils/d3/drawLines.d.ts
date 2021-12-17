@@ -10,7 +10,7 @@ import {
 import { CurveEnum } from 'utils/d3';
 
 import { IDrawAxesArgs } from './drawAxes';
-import { IProcessedData } from './processData';
+import { IProcessedData } from './processLineChartData';
 
 export interface IDrawLinesArgs {
   index: number;

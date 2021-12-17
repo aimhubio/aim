@@ -103,9 +103,9 @@ function drawArea(args: IDrawAreaArgs): void {
     .attr('id', 'circles-rect-clip-' + index)
     .append('rect')
     .attr('x', -10)
-    .attr('y', 0)
+    .attr('y', -10)
     .attr('width', offsetWidth + 2 * CircleEnum.ActiveRadius + 10)
-    .attr('height', offsetHeight + 2 * CircleEnum.ActiveRadius);
+    .attr('height', offsetHeight + 2 * CircleEnum.ActiveRadius + 10);
 
   const titleMarginTop = 4;
   const titleMarginBottom = 6;

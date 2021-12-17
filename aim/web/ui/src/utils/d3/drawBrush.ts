@@ -3,7 +3,7 @@ import * as d3 from 'd3';
 import { ZoomEnum } from 'components/ZoomInPopover/ZoomInPopover';
 
 import { IDrawBrushArgs } from 'types/utils/d3/drawBrush';
-import { IGetAxisScale } from 'types/utils/d3/getAxisScale';
+import { IAxisScale } from 'types/utils/d3/getAxisScale';
 
 import getAxisScale from './getAxisScale';
 
@@ -45,8 +45,8 @@ function drawBrush(args: IDrawBrushArgs): void {
   }
 
   brushRef.current.updateScales = function (
-    xScale: IGetAxisScale,
-    yScale: IGetAxisScale,
+    xScale: IAxisScale,
+    yScale: IAxisScale,
   ) {
     brushRef.current.xScale = xScale;
     brushRef.current.yScale = yScale;

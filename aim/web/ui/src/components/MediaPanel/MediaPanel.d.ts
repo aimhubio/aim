@@ -23,7 +23,9 @@ export interface IMediaPanelProps {
   resizeMode?: ResizeModeEnum;
   tooltip?: ITooltipContent;
   focusedState: IFocusedState;
-  additionalProperties: IImagesExploreAppConfig['images']['additionalProperties'];
+  additionalProperties?:
+    | IImagesExploreAppConfig['images']['additionalProperties']
+    | any;
   tableHeight: string;
   mediaType: MediaTypeEnum;
   actionPanel?: React.ReactNode;

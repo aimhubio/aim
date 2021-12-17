@@ -37,6 +37,11 @@ function SideBar(): React.FunctionComponentElement<React.ReactNode> {
           return localStorage.getItem('imagesExploreUrl') || '';
         }
         return route;
+      case PathEnum.Scatters:
+        if (localStorage.getItem('scattersUrl')) {
+          return localStorage.getItem('scattersUrl') || '';
+        }
+        return route;
       default:
         return route;
     }

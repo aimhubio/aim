@@ -1,5 +1,3 @@
-import _ from 'lodash-es';
-
 import {
   GroupNameType,
   IGroupingSelectOption,
@@ -7,6 +5,8 @@ import {
   ITooltipData,
 } from 'types/services/models/metrics/metricsAppModel';
 import { IModel, State } from 'types/services/models/model';
+
+import { getValue } from 'utils/helper';
 
 import getGroupConfig from './getGroupConfig';
 
@@ -39,7 +39,7 @@ export default function getTooltipData<D, M extends State>({
         groupConfig,
         params: paramKeys.reduce((acc, paramKey) => {
           Object.assign(acc, {
-            [paramKey]: _.get(itemData, `run.params.${paramKey}`),
+            [paramKey]: getValue(itemData, `run.params.${paramKey}`),
           });
           return acc;
         }, {}),

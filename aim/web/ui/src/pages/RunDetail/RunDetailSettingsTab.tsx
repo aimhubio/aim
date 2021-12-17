@@ -1,4 +1,7 @@
 import React, { memo } from 'react';
+import classNames from 'classnames';
+
+import Tooltip from '@material-ui/core/Tooltip';
 
 import { Button, Text } from 'components/kit';
 
@@ -31,13 +34,21 @@ function RunDetailSettingsTab({
             : 'Archived runs will not appear in search both on Dashboard and Explore.'}
         </Text>
       </div>
-      <Button
-        onClick={onRunArchive}
-        style={{ backgroundColor: isArchived ? '#83899E' : '#E64E48' }}
-        variant='contained'
+
+      <Tooltip
+        title={isArchived ? 'Unarchive' : 'Archive this run'}
+        placement='top'
       >
-        {isArchived ? 'Unarchive' : 'Archive this run'}
-      </Button>
+        <Button
+          onClick={onRunArchive}
+          variant='contained'
+          className={classNames('RunDetailSettingsTab__btn', {
+            RunDetailSettingsTab__btn__archive: isArchived,
+          })}
+        >
+          {isArchived ? 'Unarchive' : 'Archive this run'}
+        </Button>
+      </Tooltip>
     </div>
   );
 }

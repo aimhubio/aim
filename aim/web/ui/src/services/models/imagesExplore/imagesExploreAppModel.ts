@@ -1,12 +1,12 @@
 import React, { ChangeEvent } from 'react';
-import _, { isEmpty } from 'lodash-es';
+import _ from 'lodash-es';
 import moment from 'moment';
 import { saveAs } from 'file-saver';
 
 import { RowHeightSize } from 'config/table/tableConfigs';
 import { BookmarkNotificationsEnum } from 'config/notification-messages/notificationMessages';
 import { ResizeModeEnum, RowHeightEnum } from 'config/enums/tableEnums';
-import { IMAGE_SIZE_CHANGE_DELAY } from 'config/imagesConfigs/imagesConfig';
+import { IMAGE_SIZE_CHANGE_DELAY } from 'config/mediaConfigs/mediaConfigs';
 import {
   MediaItemAlignmentEnum,
   ImageRenderingEnum,
@@ -45,6 +45,10 @@ import {
   IImagesExploreAppConfig,
   IImagesExploreAppModelState,
 } from 'types/services/models/imagesExplore/imagesExploreAppModel';
+import {
+  ISelectConfig,
+  ISelectOption,
+} from 'types/services/models/explorer/createAppModel';
 
 import { decode, encode } from 'utils/encoder/encoder';
 import getObjectPaths from 'utils/getObjectPaths';
@@ -65,6 +69,9 @@ import { formatToPositiveNumber } from 'utils/formatToPositiveNumber';
 import getMinAndMaxBetweenArrays from 'utils/getMinAndMaxBetweenArrays';
 import getTooltipData from 'utils/app/getTooltipData';
 import filterTooltipContent from 'utils/filterTooltipContent';
+import { getDataAsMediaSetNestedObject } from 'utils/app/getDataAsMediaSetNestedObject';
+import { getCompatibleSelectConfig } from 'utils/app/getCompatibleSelectConfig';
+import { getValue } from 'utils/helper';
 
 import createModel from '../model';
 
@@ -88,7 +95,7 @@ function getConfig(): IImagesExploreAppConfig {
       },
     },
     select: {
-      images: [],
+      options: [],
       query: '',
       advancedMode: false,
       advancedQuery: '',
@@ -148,8 +155,11 @@ function initialize(appId: string): void {
 function setDefaultAppConfigData() {
   const grouping: IImagesExploreAppConfig['grouping'] =
     getStateFromUrl('grouping') || getConfig().grouping;
-  const select: IImagesExploreAppConfig['select'] =
-    getStateFromUrl('select') || getConfig().select;
+  const compatibleSelectConfig = getCompatibleSelectConfig(
+    ['images'],
+    getStateFromUrl('select'),
+  );
+  const select: ISelectConfig = compatibleSelectConfig || getConfig().select;
   const images: IImagesExploreAppConfig['images'] =
     getStateFromUrl('images') || getConfig().images;
   const tableConfigHash = getItem('imagesExploreTable');
@@ -163,9 +173,7 @@ function setDefaultAppConfigData() {
     images,
   });
 
-  model.setState({
-    config: configData,
-  });
+  model.setState({ config: configData });
 }
 
 let imagesRequestRef: {
@@ -183,10 +191,21 @@ function getAppConfigData(appId: string) {
   return {
     call: async () => {
       const appData = await appRequestRef.call();
+      let select = appData?.state?.select;
+      if (select) {
+        const compatibleSelectConfig = getCompatibleSelectConfig(
+          ['images'],
+          select,
+        );
+        appData.state = {
+          ...appData.state,
+          select: {
+            ...compatibleSelectConfig,
+          },
+        };
+      }
       const configData: any = _.merge(getConfig(), appData.state);
-      model.setState({
-        config: configData,
-      });
+      model.setState({ config: configData });
     },
     abort: appRequestRef.abort,
   };
@@ -391,7 +410,7 @@ function processData(data: any[]): {
       configData?.table?.sortFields?.map(
         (f: any) =>
           function (metric: any) {
-            return _.get(metric, f[0], '');
+            return getValue(metric, f[0], '');
           },
       ) ?? [],
       configData?.table?.sortFields?.map((f: any) => f[1]) ?? [],
@@ -420,10 +439,11 @@ function setModelData(rawData: any[], configData: IImagesExploreAppConfig) {
       contexts,
     }),
   ];
-  const { imageSetData, orderedMap } = getDataAsImageSet(
+  const { mediaSetData, orderedMap } = getDataAsMediaSetNestedObject({
     data,
     groupingSelectOptions,
-  );
+    model,
+  });
 
   tooltipData = getTooltipData({
     processedData: data,
@@ -459,12 +479,12 @@ function setModelData(rawData: any[], configData: IImagesExploreAppConfig) {
     ...config.images,
     stepRange: !config.images.calcRanges
       ? config.images.stepRange
-      : !isEmpty(rawData)
+      : !_.isEmpty(rawData)
       ? (rawData[0].ranges.record_range as number[])
       : [],
     indexRange: !config.images.calcRanges
       ? config.images.indexRange
-      : !isEmpty(rawData)
+      : !_.isEmpty(rawData)
       ? (rawData[0].ranges.index_range as number[])
       : [],
     recordSlice: getMinAndMaxBetweenArrays(
@@ -495,7 +515,7 @@ function setModelData(rawData: any[], configData: IImagesExploreAppConfig) {
     config,
     params,
     data,
-    imagesData: imageSetData,
+    imagesData: mediaSetData,
     orderedMap,
     tableData: tableData.rows,
     tableColumns: getImagesExploreTableColumns(
@@ -525,10 +545,11 @@ function updateModelData(
       contexts,
     }),
   ];
-  const { imageSetData, orderedMap } = getDataAsImageSet(
+  const { mediaSetData, orderedMap } = getDataAsMediaSetNestedObject({
     data,
     groupingSelectOptions,
-  );
+    model,
+  });
   tooltipData = getTooltipData({
     processedData: data,
     paramKeys: sortedParams,
@@ -582,7 +603,7 @@ function updateModelData(
   model.setState({
     config: configData,
     data: model.getState()?.data,
-    imagesData: imageSetData,
+    imagesData: mediaSetData,
     orderedMap,
     // chartTitleData: getChartTitleData(data),
     tableData: tableData.rows,
@@ -684,7 +705,7 @@ function groupData(data: any[]): any {
   for (let i = 0; i < data.length; i++) {
     const groupValue: { [key: string]: string } = {};
     groupingFields.forEach((field) => {
-      groupValue[field] = _.get(data[i], field);
+      groupValue[field] = getValue(data[i], field);
     });
     const groupKey = encode(groupValue);
     if (groupValues.hasOwnProperty(groupKey)) {
@@ -782,7 +803,7 @@ function updateURL(
   const { grouping, select, images } = configData;
   const url: string = getUrlWithParam({
     grouping: encode(grouping),
-    select: encode(select),
+    select: encode(select as {}),
     images: encode(images),
   });
 
@@ -863,7 +884,7 @@ function getDataAsImageSet(
   groupingSelectOptions: IGroupingSelectOption[],
   defaultGroupFields?: string[],
 ) {
-  if (!isEmpty(data)) {
+  if (!_.isEmpty(data)) {
     const configData: IImagesExploreAppConfig | undefined =
       model.getState()?.config;
     const imageSetData: object = {};
@@ -881,12 +902,13 @@ function getDataAsImageSet(
     data.forEach((group: any) => {
       const path = groupFields?.reduce(
         (acc: string[], field: string, index: number) => {
-          const value = _.get(group.data[0], field);
+          const value = getValue(group.data[0], field);
           _.set(
             imagesDataForOrdering,
             acc.concat(['ordering']),
             new Set([
-              ...(_.get(imagesDataForOrdering, acc.concat(['ordering'])) || []),
+              ...(getValue(imagesDataForOrdering, acc.concat(['ordering'])) ||
+                []),
               value,
             ]),
           );
@@ -918,7 +940,7 @@ function getDataAsImageSet(
     });
 
     return {
-      imageSetData: isEmpty(imageSetData) ? data[0].data : imageSetData,
+      imageSetData: _.isEmpty(imageSetData) ? data[0].data : imageSetData,
       orderedMap: imagesDataForOrdering,
     };
   } else {
@@ -1118,7 +1140,7 @@ function getDataAsTableRows(
 
         if (!dynamicUpdate) {
           paramKeys.forEach((paramKey) => {
-            const value = _.get(metric.run.params, paramKey, '-');
+            const value = getValue(metric.run.params, paramKey, '-');
             rowValues[paramKey] = formatValue(value);
             if (columnsValues.hasOwnProperty(paramKey)) {
               if (
@@ -1294,7 +1316,7 @@ function updateSortFields(sortFields: SortField[]) {
   }
   analytics.trackEvent(
     `[ImagesExplorer][Table] ${
-      isEmpty(sortFields) ? 'Reset' : 'Apply'
+      _.isEmpty(sortFields) ? 'Reset' : 'Apply'
     } table sorting by a key`,
   );
 }
@@ -1521,36 +1543,38 @@ function onTableResizeModeChange(mode: ResizeModeEnum): void {
 function onSearchQueryCopy(): void {
   const selectedMetricsData = model.getState()?.config?.select;
   let query = getQueryStringFromSelect(selectedMetricsData as any);
-  navigator.clipboard.writeText(query);
-  onNotificationAdd({
-    id: Date.now(),
-    severity: 'success',
-    message: 'Run Expression Copied',
-  });
+  if (query) {
+    navigator.clipboard.writeText(query);
+    onNotificationAdd({
+      id: Date.now(),
+      severity: 'success',
+      message: 'Run Expression Copied',
+    });
+  }
 }
 
 function getQueryStringFromSelect(
   selectData: IImagesExploreAppConfig['select'],
 ) {
-  let query = '';
+  let query: string | undefined = '';
   if (selectData !== undefined) {
     if (selectData.advancedMode) {
       query = selectData.advancedQuery;
     } else {
       query = `${
         selectData.query ? `${selectData.query} and ` : ''
-      }(${selectData.images
+      }(${selectData.options
         .map(
-          (image) =>
-            `(images.name == "${image.value.metric_name}"${
-              image.value.context === null
+          (option: ISelectOption) =>
+            `(images.name == "${option.value?.option_name}"${
+              option.value?.context === null
                 ? ''
                 : ' and ' +
-                  Object.keys(image.value.context)
+                  Object.keys(option.value?.context)
                     .map(
                       (item) =>
                         `images.context.${item} == ${formatValue(
-                          (image.value.context as any)[item],
+                          (option.value?.context as any)[item],
                         )}`,
                     )
                     .join(' and ')
@@ -1579,13 +1603,13 @@ function onSelectAdvancedQueryChange(query: string) {
   }
 }
 
-function onImagesExploreSelectChange(data: any[]) {
+function onImagesExploreSelectChange(options: ISelectOption[]) {
   const configData: IImagesExploreAppConfig | undefined =
     model.getState()?.config;
   if (configData?.select) {
     const newConfig = {
       ...configData,
-      select: { ...configData.select, images: data },
+      select: { ...configData.select, options },
       images: { ...configData.images, calcRanges: true },
     };
 
@@ -1645,9 +1669,9 @@ function onColumnsOrderChange(columnsOrder: any) {
     updateModelData(config);
   }
   if (
-    isEmpty(columnsOrder?.left) &&
-    isEmpty(columnsOrder?.middle) &&
-    isEmpty(columnsOrder?.right)
+    _.isEmpty(columnsOrder?.left) &&
+    _.isEmpty(columnsOrder?.middle) &&
+    _.isEmpty(columnsOrder?.right)
   ) {
     analytics.trackEvent('[ImagesExplorer][Table] Reset table columns order');
   }
@@ -1677,7 +1701,7 @@ function onColumnsVisibilityChange(hiddenColumns: string[]) {
   }
   if (hiddenColumns[0] === 'all') {
     analytics.trackEvent('[ImagesExplorer][Table] Hide all table columns');
-  } else if (isEmpty(hiddenColumns)) {
+  } else if (_.isEmpty(hiddenColumns)) {
     analytics.trackEvent('[ImagesExplorer][Table] Show all table columns');
   }
 }
@@ -1889,7 +1913,7 @@ function onImageAlignmentChange(
 function isRangePanelShow() {
   return (
     !!getStateFromUrl('select')?.query ||
-    !isEmpty(getStateFromUrl('select')?.images) ||
+    !_.isEmpty(getStateFromUrl('select')?.images) ||
     (!!getStateFromUrl('select')?.advancedQuery &&
       !!getStateFromUrl('select')?.advancedMode)
   );

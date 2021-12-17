@@ -11,7 +11,7 @@ import {
   IParallelNearestCircle,
   IUpdateParallelFocusedChartProps,
 } from 'types/utils/d3/drawParallelHoverAttributes';
-import { IGetAxisScale } from 'types/utils/d3/getAxisScale';
+import { IAxisScale } from 'types/utils/d3/getAxisScale';
 import { ILineDataType } from 'types/utils/d3/drawParallelLines';
 
 import getFormattedValue from 'utils/formattedValue';
@@ -123,7 +123,7 @@ const drawParallelHoverAttributes = ({
     if (isVisibleColorIndicator) {
       const lastKeyOfDimension: string =
         keysOfDimensions[keysOfDimensions.length - 1];
-      const lastYScale: IGetAxisScale = yScale[lastKeyOfDimension];
+      const lastYScale: IAxisScale = yScale[lastKeyOfDimension];
       colorIndicatorYPixel = lastYScale(line.values[lastKeyOfDimension]) || 0;
     }
 
@@ -519,7 +519,7 @@ const drawParallelHoverAttributes = ({
 };
 
 function scalePointValue(
-  xScale: IGetAxisScale,
+  xScale: IAxisScale,
   xPos: number,
   rangeReversed: boolean = false,
 ) {

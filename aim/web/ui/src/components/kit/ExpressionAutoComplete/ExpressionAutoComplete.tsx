@@ -137,7 +137,7 @@ function ExpressionAutoComplete({
         }
       });
     }
-    return suggestions;
+    return suggestions.sort();
   }
 
   function onFieldBlur(

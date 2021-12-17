@@ -1,6 +1,6 @@
 import React from 'react';
 
-import RangeSliderWithInput from 'components/RangeSliderWithInput';
+import SliderWithInput from 'components/SliderWithInput';
 import { Button } from 'components/kit';
 
 interface IRangeSliderWithInputItem {
@@ -16,6 +16,7 @@ interface IRangeSliderWithInputItem {
   rangeEndpoints: [number, number];
   selectedRangeValue: [number, number];
   inputValue: number;
+  sliderType: 'single' | 'range'; // This type is same as SliderWithInput component sliderType prop type.
 }
 
 type RangeSliderData = IRangeSliderWithInputItem[];
@@ -46,7 +47,8 @@ function RangePanel({
       <div className='RangePanelContainer'>
         {items?.map((item) => (
           <React.Fragment key={item.sliderName}>
-            <RangeSliderWithInput
+            <SliderWithInput
+              sliderType={item?.sliderType}
               sliderTitle={item.sliderTitle}
               countInputTitle={item.inputTitle}
               countTitleTooltip={item.inputTitleTooltip}

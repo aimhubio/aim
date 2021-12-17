@@ -11,14 +11,16 @@ import { throttle } from 'components/Table/utils';
 
 import { ResizeModeEnum } from 'config/enums/tableEnums';
 import {
-  batchSendDelay,
-  imageFixedHeight,
-} from 'config/imagesConfigs/imagesConfig';
+  AUDIO_FIXED_HEIGHT,
+  BATCH_SEND_DELAY,
+  IMAGE_FIXED_HEIGHT,
+} from 'config/mediaConfigs/mediaConfigs';
 import { MediaItemAlignmentEnum } from 'config/enums/imageEnums';
 
 import blobsURIModel from 'services/models/media/blobsURIModel';
 
 import { IMediaPanelProps } from './MediaPanel.d';
+import { MediaTypeEnum } from './config';
 
 import './MediaPanel.scss';
 
@@ -74,8 +76,8 @@ function MediaPanel({
           blobUriArray.current = [];
         });
       }
-    }, batchSendDelay);
-  }, batchSendDelay);
+    }, BATCH_SEND_DELAY);
+  }, BATCH_SEND_DELAY);
 
   function onListScroll({ scrollOffset }: { scrollOffset: number }): void {
     if (Math.abs(scrollOffset - scrollTopOffset.current) > window.innerHeight) {
@@ -162,7 +164,7 @@ function MediaPanel({
   const setKey = React.useMemo(
     () => Date.now(),
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    [data, wrapperOffsetHeight, wrapperOffsetWidth, additionalProperties],
+    [data, wrapperOffsetHeight, wrapperOffsetWidth],
   );
 
   React.useEffect(() => {
@@ -183,6 +185,25 @@ function MediaPanel({
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
+  const mediaItemHeight = React.useMemo(() => {
+    if (additionalProperties?.alignmentType === MediaItemAlignmentEnum.Height) {
+      return (wrapperOffsetHeight * additionalProperties?.mediaItemSize) / 100;
+    } else if (
+      additionalProperties?.alignmentType === MediaItemAlignmentEnum.Width
+    ) {
+      return (wrapperOffsetWidth * additionalProperties?.mediaItemSize) / 100;
+    } else {
+      return mediaType === MediaTypeEnum.AUDIO
+        ? AUDIO_FIXED_HEIGHT
+        : IMAGE_FIXED_HEIGHT;
+    }
+  }, [
+    additionalProperties,
+    mediaType,
+    wrapperOffsetHeight,
+    wrapperOffsetWidth,
+  ]);
 
   return (
     <BusyLoaderWrapper
@@ -225,19 +246,7 @@ function MediaPanel({
                     setKey={setKey}
                     wrapperOffsetHeight={wrapperOffsetHeight - 48}
                     wrapperOffsetWidth={wrapperOffsetWidth}
-                    mediaItemHeight={
-                      additionalProperties?.alignmentType ===
-                      MediaItemAlignmentEnum.Height
-                        ? (wrapperOffsetHeight *
-                            additionalProperties?.mediaItemSize) /
-                          100
-                        : additionalProperties?.alignmentType ===
-                          MediaItemAlignmentEnum.Width
-                        ? (wrapperOffsetWidth *
-                            additionalProperties?.mediaItemSize) /
-                          100
-                        : imageFixedHeight
-                    }
+                    mediaItemHeight={mediaItemHeight}
                     focusedState={focusedState}
                     syncHoverState={syncHoverState}
                     orderedMap={orderedMap}

@@ -14,7 +14,7 @@ import {
   clearArea,
   drawAxes,
   drawLines,
-  processData,
+  processLineChartData,
   getAxisScale,
   drawBrush,
   drawHoverAttributes,
@@ -80,7 +80,7 @@ const LineChart = React.forwardRef(function LineChart(
   const rafIDRef = React.useRef<number>();
 
   function draw() {
-    const { processedData, min, max, xValues } = processData(
+    const { processedData, min, max } = processLineChartData(
       data,
       ignoreOutliers,
     );
@@ -127,8 +127,6 @@ const LineChart = React.forwardRef(function LineChart(
       height,
       margin,
       alignmentConfig,
-      xValues,
-      attributesRef,
       humanizerConfigRef,
       drawBgTickLines: { y: true },
     });
@@ -149,6 +147,7 @@ const LineChart = React.forwardRef(function LineChart(
     drawHoverAttributes({
       index,
       data: processedData,
+      axesScaleType,
       highlightMode,
       syncHoverState,
       visAreaRef,
