@@ -1,6 +1,6 @@
 # Changelog
 
-## Unreleased
+## 3.3.0 Dec 17 2021
 
 - Add ability to track and explore audios in run detail page (arsengit, VkoHov, devfox-se)
 - Add ability to track and visualize texts (mihran113, roubkar)
