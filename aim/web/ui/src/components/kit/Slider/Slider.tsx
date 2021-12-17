@@ -6,12 +6,13 @@ import { ISliderProps } from './Slider.d';
 
 import './Slider.scss';
 
-function Slider(
-  props: ISliderProps,
-): React.FunctionComponentElement<React.ReactNode> {
+function Slider({
+  containerClassName,
+  ...rest
+}: ISliderProps): React.FunctionComponentElement<React.ReactNode> {
   return (
-    <div className='Slider'>
-      <MaterialSlider {...props} />
+    <div className={`Slider ${containerClassName || ''}`}>
+      <MaterialSlider {...rest} />
     </div>
   );
 }

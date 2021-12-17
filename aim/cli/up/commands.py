@@ -38,6 +38,11 @@ def up(dev, host, port, workers, repo, tf_logs, ssl_keyfile, ssl_certfile, base_
         os.environ[AIM_ENV_MODE_KEY] = 'prod'
 
     if base_path:
+        # process `base_path` as ui requires leading slash
+        if base_path.endswith('/'):
+            base_path = base_path[:-1]
+        if base_path and not base_path.startswith('/'):
+            base_path = f'/{base_path}'
         os.environ[AIM_UI_BASE_PATH] = base_path
 
     repo_path = clean_repo_path(repo) or Repo.default_repo_path()
@@ -106,7 +111,7 @@ def up(dev, host, port, workers, repo, tf_logs, ssl_keyfile, ssl_certfile, base_
 
     scheme = 'https' if ssl_keyfile or ssl_certfile else 'http'
 
-    click.echo('Open {}://{}:{}'.format(scheme, host, port), err=True)
+    click.echo('Open {}://{}:{}{}'.format(scheme, host, port, base_path), err=True)
     click.echo('Press Ctrl+C to exit')
 
     try:

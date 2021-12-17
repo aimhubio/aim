@@ -4,6 +4,7 @@ on: workflow_dispatch
 
 jobs:
   linux-dist:
+    if: github.actor == 'gorarakelyan'
     runs-on: ubuntu-latest
     name: Linux wheels build (using Docker)
     steps:
@@ -16,6 +17,11 @@ jobs:
 
       - name: Checkout sources
         uses: actions/checkout@v2
+
+      - name: Use node v16
+        uses: actions/setup-node@v2
+        with:
+          node-version: '16'
 
       - name: Build UI
         working-directory: ./aim/web/ui
@@ -45,6 +51,7 @@ jobs:
           python -m twine upload -u __token__ -p "${PYPI_PASSWORD}" multilinux_dist/*
 
   macos-dist:
+    if: github.actor == 'gorarakelyan'
     runs-on: ${{matrix.os}}
     strategy:
       fail-fast: false
@@ -55,6 +62,11 @@ jobs:
     steps:
       - name: Checkout sources
         uses: actions/checkout@v2
+
+      - name: Use node v16
+        uses: actions/setup-node@v2
+        with:
+          node-version: '16'
 
       - name: Build UI
         working-directory: ./aim/web/ui

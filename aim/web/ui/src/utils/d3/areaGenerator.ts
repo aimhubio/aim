@@ -1,13 +1,10 @@
 import * as d3 from 'd3';
 
-import { IGetAxisScale } from 'types/utils/d3/getAxisScale';
+import { IAxisScale } from 'types/utils/d3/getAxisScale';
 
 import { CurveEnum } from './';
 
-export default function areaGenerator(
-  xScale: IGetAxisScale,
-  yScale: IGetAxisScale,
-) {
+export default function areaGenerator(xScale: IAxisScale, yScale: IAxisScale) {
   return d3
     .area()
     .x0((d: any) => xScale(d[0]))

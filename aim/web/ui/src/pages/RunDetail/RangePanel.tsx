@@ -1,6 +1,6 @@
 import React from 'react';
 
-import RangeSliderWithInput from 'components/RangeSliderWithInput';
+import SliderWithInput from 'components/SliderWithInput';
 import { Button } from 'components/kit';
 
 interface IRangeSliderWithInputItem {
@@ -43,8 +43,8 @@ function RangePanel({
     >
       <div className='RangePanelContainer'>
         {items?.map((item) => (
-          <>
-            <RangeSliderWithInput
+          <React.Fragment key={item.sliderName}>
+            <SliderWithInput
               key={item.sliderName}
               sliderTitle={item.sliderTitle}
               countInputTitle={item.inputTitle}
@@ -63,7 +63,7 @@ function RangePanel({
               }
             />
             <div className='VerticalDivider' />
-          </>
+          </React.Fragment>
         ))}
         <div className='ApplyButtonContainer'>
           <Button

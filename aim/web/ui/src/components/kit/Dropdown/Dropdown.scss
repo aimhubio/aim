@@ -4,9 +4,9 @@
   position: relative;
   &__label {
     position: absolute;
-    left: 1rem;
     z-index: 1;
     transition: 0.3s all;
+    pointer-events: none;
     &.swapped {
       background: #ffffff;
       transition: 0.3s all;
@@ -41,5 +41,10 @@
   border-radius: $border-radius-sm;
   &:hover {
     background: #f2f5fa;
+  }
+  & > span {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
   }
 }

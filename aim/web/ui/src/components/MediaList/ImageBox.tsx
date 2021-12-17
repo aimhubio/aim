@@ -7,7 +7,7 @@ import { Dialog } from '@material-ui/core';
 import { Button, Icon } from 'components/kit';
 import ImageFullViewPopover from 'components/ImageFullViewPopover';
 
-import { batchCollectDelay } from 'config/imagesConfigs/imagesConfig';
+import { BATCH_COLLECT_DELAY } from 'config/mediaConfigs/mediaConfigs';
 
 import blobsURIModel from 'services/models/media/blobsURIModel';
 
@@ -50,7 +50,7 @@ const ImageBox = ({
           } else {
             addUriToList(blob_uri);
           }
-        }, batchCollectDelay);
+        }, BATCH_COLLECT_DELAY);
       }
     }
 

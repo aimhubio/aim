@@ -1,5 +1,7 @@
 import _ from 'lodash-es';
 
+import { getValue } from 'utils/helper';
+
 function getObjectPaths(
   obj: { [key: string]: unknown },
   rootObject: { [key: string]: unknown },
@@ -15,7 +17,7 @@ function getObjectPaths(
   });
   let paths: string[] = includeRoot
     ? rootKeys.reduce((acc: string[], { prefixedKey, key }) => {
-        const val: any = _.get(rootObject, prefixedKey);
+        const val: any = getValue(rootObject, prefixedKey);
         if (typeof val !== 'object' || _.isNil(val) || _.isArray(val)) {
           if (withoutLeaves) {
             acc.push(prefixedKey.slice(0, prefixedKey.indexOf(`.${key}`)));
@@ -34,7 +36,7 @@ function getObjectPaths(
           return key;
         });
   rootKeys.forEach(({ prefixedKey }) => {
-    const val: any = _.get(rootObject, prefixedKey);
+    const val: any = getValue(rootObject, prefixedKey);
     if (typeof val === 'object' && !_.isNil(val) && !Array.isArray(val)) {
       paths = paths.concat(
         getObjectPaths(val, rootObject, prefixedKey, true, withoutLeaves),

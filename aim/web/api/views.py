@@ -17,7 +17,7 @@ async def serve_static_files(path):
     static_file_name = '/'.join((static_files_root, path))
 
     # check if path is leading inside ui/build directory
-    if not Path(static_files_root) in Path(static_file_name).resolve().parents:
+    if not Path(static_files_root).resolve() in Path(static_file_name).resolve().parents:
         raise HTTPException(404)
 
     compressed_file_name = '{}.gz'.format(static_file_name)
@@ -34,10 +34,5 @@ async def serve_index_html(request: Request):
     template_files_dir = os.path.join(os.path.dirname(web.__file__), 'ui', 'build')
     templates = Jinja2Templates(directory=template_files_dir)
     base_path = os.environ.get(AIM_UI_BASE_PATH, '')
-    # process `base_path` as ui requires leading slash
-    if base_path.endswith('/'):
-        base_path = base_path[:-1]
-    if base_path and not base_path.startswith('/'):
-        base_path = f'/{base_path}'
 
-    return templates.TemplateResponse('index.html', {'request': request, 'base_path': base_path})
+    return templates.TemplateResponse('index-template.html', {'request': request, 'base_path': base_path})

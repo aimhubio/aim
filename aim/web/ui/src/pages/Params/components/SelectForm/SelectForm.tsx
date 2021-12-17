@@ -19,15 +19,14 @@ import projectsModel from 'services/models/projects/projectsModel';
 import paramsAppModel from 'services/models/params/paramsAppModel';
 
 import { IProjectsModelState } from 'types/services/models/projects/projectsModel';
-import {
-  ISelectFormProps,
-  ISelectParamsOption,
-} from 'types/pages/params/components/SelectForm/SelectForm';
+import { ISelectFormProps } from 'types/pages/params/components/SelectForm/SelectForm';
+import { ISelectOption } from 'types/services/models/explorer/createAppModel';
 
-import getObjectPaths from 'utils/getObjectPaths';
+import alphabeticalSortComparator from 'utils/alphabeticalSortComparator';
 import { formatSystemMetricName } from 'utils/formatSystemMetricName';
 import { isSystemMetric } from 'utils/isSystemMetric';
 import contextToString from 'utils/contextToString';
+import getObjectPaths from 'utils/getObjectPaths';
 
 import './SelectForm.scss';
 
@@ -69,22 +68,22 @@ function SelectForm({
     paramsAppModel.abortRequest();
   }
 
-  function onSelect(event: object, value: ISelectParamsOption[]): void {
+  function onSelect(event: object, value: ISelectOption[]): void {
     const lookup = value.reduce(
-      (acc: { [key: string]: number }, curr: ISelectParamsOption) => {
+      (acc: { [key: string]: number }, curr: ISelectOption) => {
         acc[curr.label] = ++acc[curr.label] || 0;
         return acc;
       },
       {},
     );
     onParamsSelectChange(
-      value.filter((option: ISelectParamsOption) => lookup[option.label] === 0),
+      value.filter((option: ISelectOption) => lookup[option.label] === 0),
     );
   }
 
   function handleDelete(field: string): void {
-    let fieldData = [...selectedParamsData?.params].filter(
-      (opt: ISelectParamsOption) => opt.label !== field,
+    let fieldData = [...(selectedParamsData?.options || [])].filter(
+      (opt: ISelectOption) => opt.label !== field,
     );
     onParamsSelectChange(fieldData);
   }
@@ -103,29 +102,37 @@ function SelectForm({
     setAnchorEl(null);
   }
 
-  const paramsOptions: ISelectParamsOption[] = React.useMemo(() => {
-    let data: ISelectParamsOption[] = [];
-    const systemOptions: ISelectParamsOption[] = [];
+  const paramsOptions: ISelectOption[] = React.useMemo(() => {
+    const comparator = alphabeticalSortComparator<ISelectOption>({
+      orderBy: 'label',
+    });
+
+    let optionsCount = 0; // to calculate color
+    const systemOptions: ISelectOption[] = [];
+    let params: ISelectOption[] = [];
+    let metrics: ISelectOption[] = [];
+
     if (projectsData?.metrics) {
       for (let key in projectsData.metrics) {
         let system: boolean = isSystemMetric(key);
         for (let val of projectsData.metrics[key]) {
           let label = contextToString(val);
-          let index: number = data.length;
-          let option: ISelectParamsOption = {
+          let index: number = optionsCount;
+          let option: ISelectOption = {
             label: `${system ? formatSystemMetricName(key) : key} ${label}`,
-            group: system ? formatSystemMetricName(key) : key,
+            group: system ? 'System' : key,
             type: 'metrics',
             color: COLORS[0][index % COLORS[0].length],
             value: {
-              param_name: key,
+              option_name: key,
               context: val,
             },
           };
+          optionsCount++;
           if (system) {
             systemOptions.push(option);
           } else {
-            data.push(option);
+            metrics.push(option);
           }
         }
       }
@@ -136,7 +143,7 @@ function SelectForm({
         projectsData.params,
       );
       paramPaths.forEach((paramPath, index) => {
-        data.push({
+        params.push({
           label: paramPath,
           group: 'Params',
           type: 'params',
@@ -144,6 +151,19 @@ function SelectForm({
         });
       });
     }
+
+    params = params.sort(comparator);
+    metrics = metrics.sort(comparator);
+    systemOptions.sort(comparator);
+
+    // sort by group
+    const data: ISelectOption[] = [...metrics, ...params];
+
+    data.sort(
+      alphabeticalSortComparator({
+        orderBy: 'type',
+      }),
+    );
     return data.concat(systemOptions);
   }, [projectsData]);
 
@@ -185,7 +205,7 @@ function SelectForm({
                     disablePortal
                     disableCloseOnSelect
                     options={paramsOptions}
-                    value={selectedParamsData?.params}
+                    value={selectedParamsData?.options}
                     onChange={onSelect}
                     groupBy={(option) => option.group}
                     getOptionLabel={(option) => option.label}
@@ -206,10 +226,10 @@ function SelectForm({
                       />
                     )}
                     renderOption={(option) => {
-                      let selected: boolean = !!selectedParamsData?.params.find(
-                        (item: ISelectParamsOption) =>
-                          item.label === option.label,
-                      )?.label;
+                      let selected: boolean =
+                        !!selectedParamsData?.options.find(
+                          (item: ISelectOption) => item.label === option.label,
+                        )?.label;
                       return (
                         <React.Fragment>
                           <Checkbox
@@ -231,37 +251,39 @@ function SelectForm({
                   orientation='vertical'
                   flexItem
                 />
-                {selectedParamsData?.params.length === 0 && (
+                {selectedParamsData?.options.length === 0 && (
                   <Text tint={50} size={14} weight={400}>
                     No params are selected
                   </Text>
                 )}
-                {selectedParamsData?.params.length > 0 && (
-                  <Box className='SelectForm__tags ScrollBar__hidden'>
-                    {selectedParamsData?.params?.map(
-                      (tag: ISelectParamsOption) => {
-                        return (
-                          <Badge
-                            size='large'
-                            key={tag.label}
-                            color={tag.color}
-                            label={tag.label}
-                            onDelete={handleDelete}
-                          />
-                        );
-                      },
-                    )}
-                  </Box>
-                )}
+                {selectedParamsData?.options &&
+                  selectedParamsData.options.length > 0 && (
+                    <Box className='SelectForm__tags ScrollBar__hidden'>
+                      {selectedParamsData?.options?.map(
+                        (tag: ISelectOption) => {
+                          return (
+                            <Badge
+                              size='large'
+                              key={tag.label}
+                              color={tag.color}
+                              label={tag.label}
+                              onDelete={handleDelete}
+                            />
+                          );
+                        },
+                      )}
+                    </Box>
+                  )}
               </Box>
-              {selectedParamsData?.params.length > 1 && (
-                <span
-                  onClick={() => onParamsSelectChange([])}
-                  className='SelectForm__clearAll'
-                >
-                  <Icon name='close' />
-                </span>
-              )}
+              {selectedParamsData?.options &&
+                selectedParamsData.options.length > 1 && (
+                  <span
+                    onClick={() => onParamsSelectChange([])}
+                    className='SelectForm__clearAll'
+                  >
+                    <Icon name='close' />
+                  </span>
+                )}
             </>
           </Box>
           <Button
@@ -279,7 +301,6 @@ function SelectForm({
             {requestIsPending ? 'Cancel' : 'Search'}
           </Button>
         </Box>
-
         <div className='SelectForm__TextField'>
           <ExpressionAutoComplete
             onExpressionChange={onSelectRunQueryChange}

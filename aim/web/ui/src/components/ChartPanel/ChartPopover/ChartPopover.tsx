@@ -22,22 +22,23 @@ function ChartPopover(props: IChartPopover): JSX.Element | null {
   );
   const [popoverNode, setPopoverNode] = React.useState<HTMLElement>();
 
-  function onPopoverPositionChange(
-    activePointRect: IChartPopover['activePointRect'],
-  ): void {
-    if (activePointRect === null) {
-      setPopoverPos(null);
-    } else if (popoverNode && containerNode) {
-      // Popover viewport need to be overflowed by chart container
-      const pos = getPositionBasedOnOverflow(
-        activePointRect,
-        popoverNode.getBoundingClientRect(),
-        containerNode.getBoundingClientRect(),
-      );
+  const onPopoverPositionChange = React.useCallback(
+    (activePointRect: IChartPopover['activePointRect']) => {
+      if (activePointRect === null) {
+        setPopoverPos(null);
+      } else if (popoverNode && containerNode) {
+        // Popover viewport need to be overflowed by chart container
+        const pos = getPositionBasedOnOverflow(
+          activePointRect,
+          popoverNode.getBoundingClientRect(),
+          containerNode.getBoundingClientRect(),
+        );
 
-      setPopoverPos(pos);
-    }
-  }
+        setPopoverPos(pos);
+      }
+    },
+    [containerNode, popoverNode],
+  );
 
   React.useEffect(() => {
     if (open && props.activePointRect) {
@@ -51,6 +52,7 @@ function ChartPopover(props: IChartPopover): JSX.Element | null {
     props.tooltipContent,
     props.focusedState.key,
     props.focusedState.active,
+    onPopoverPositionChange,
   ]);
 
   return (
@@ -58,7 +60,9 @@ function ChartPopover(props: IChartPopover): JSX.Element | null {
       key={`popover-${props.reCreatePopover}`}
       id={id}
       open={!!props.activePointRect && open}
-      disableEnforceFocus={true}
+      disableEnforceFocus={true} // the trap focus will not prevent focus from leaving the trap focus while open
+      disableAutoFocus={true} // the trap focus will not automatically shift focus to itself when it opens
+      disableRestoreFocus={true} // the trap focus will not restore focus to previously focused element once trap focus is hidden
       anchorReference='anchorPosition'
       anchorPosition={popoverPos || props.activePointRect || undefined}
       className={`ChartPopover ${className}`}

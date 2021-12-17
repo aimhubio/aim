@@ -114,6 +114,27 @@ const PopoverContent = React.forwardRef(function PopoverContent(
           </div>
         );
         break;
+      case ChartTypeEnum.ScatterPlot:
+        return (
+          <div className='PopoverContent__box'>
+            <div className='PopoverContent__valueContainer'>
+              <Text>Y: </Text>
+              <span className='PopoverContent__headerValue'>
+                <Text component='p' className='PopoverContent__axisValue'>
+                  {focusedState?.yValue ?? '--'}
+                </Text>
+              </span>
+            </div>
+            <div className='PopoverContent__valueContainer'>
+              <Text>X: </Text>
+              <span className='PopoverContent__headerValue'>
+                <Text component='p' className='PopoverContent__axisValue'>
+                  {focusedState?.xValue ?? '--'}
+                </Text>
+              </span>
+            </div>
+          </div>
+        );
       default:
         return null;
     }
