@@ -1,6 +1,6 @@
 # Changelog
 
-## unreleased
+## 3.3.1 Dec 18 2021
 
 - Fix getValue function to show correct chart title data (KaroMourad)
 
