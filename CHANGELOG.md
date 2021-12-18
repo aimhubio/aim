@@ -1,5 +1,9 @@
 # Changelog
 
+## unreleased
+
+- Fix getValue function to show correct chart title data (KaroMourad)
+
 ## 3.3.0 Dec 17 2021
 
 - Add ability to track and explore audios in run detail page (arsengit, VkoHov, devfox-se)
