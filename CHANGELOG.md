@@ -1,5 +1,9 @@
 # Changelog
 
+## Unreleased
+
+- Fix issue with not providing point density value to live-update query (rubenaprikyan)
+
 ## 3.3.1 Dec 18 2021
 
 - Fix getValue function to show correct chart title data (KaroMourad)
