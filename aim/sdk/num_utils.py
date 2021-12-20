@@ -74,14 +74,19 @@ def is_numpy_number(inst):
     """
     Check whether `inst` is numpy number
     """
+
     return inst_has_typename(inst, ['numpy'])
+
+
+def is_py_number(value):
+    return isinstance(value, (int, float))
 
 
 def is_number(value):
     """
     Checks if the given value is a number
     """
-    if isinstance(value, (int, float)):
+    if is_py_number(value):
         return True
 
     if is_numpy_number(value):
@@ -100,11 +105,14 @@ def convert_to_py_number(value) -> object:
     """
     Converts numpy objects or tensors to python number types
     """
+    if isinstance(value, int):
+        return int(value)
+
     if isinstance(value, float):
         return float(value)
 
-    if isinstance(value, int):
-        return int(value)
+    if is_numpy_array(value):
+        return value.item()
 
     if is_numpy_number(value):
         return value.item()

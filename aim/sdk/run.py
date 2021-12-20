@@ -10,9 +10,10 @@ from copy import deepcopy
 
 from aim.sdk.errors import RepoIntegrityError
 from aim.sdk.sequence import Sequence
+from aim.storage.object import CustomObject
 from aim.sdk.sequence_collection import SingleRunSequenceCollection
 from aim.sdk.utils import generate_run_hash, get_object_typename, check_types_compatibility
-from aim.sdk.num_utils import convert_to_py_number
+from aim.sdk.num_utils import convert_to_py_number, is_number
 from aim.sdk.types import AimObject
 from aim.sdk.configs import AIM_ENABLE_TRACKING_THREAD, AIM_RUN_INDEXING_TIMEOUT
 
@@ -417,11 +418,14 @@ class Run(StructuredRunMixin):
     ):
         if context is None:
             context = {}
-        try:
+
+        if is_number(value):
             val = convert_to_py_number(value)
-        except ValueError:
-            # value is not a number
+        elif isinstance(value, (CustomObject, list, tuple)):
             val = value
+        else:
+            raise ValueError(f"Input metric of type {type(value)} is neither python number nor AimObject")
+
         dtype = get_object_typename(value)
 
         ctx = Context(context)
