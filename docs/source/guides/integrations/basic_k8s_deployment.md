@@ -51,9 +51,7 @@ store their runs on it! This way, the core Aim K8S deployment can read the new r
 to visualize their results. For example, one can have a deployment that performs model training and records Aim runs on
 the same volume that is mounted to the Aim deployment! This model is illustrated by the following diagram:
 
-<p align="center">
-  <img src="./basic_k8s_deployment_vol.pdf" width=400/>
-</p>
+![](./basic_k8s_deployment_vol.png)
 
 Generally, volumes that support have the `ReadWriteMany` property are manually provisioned, such as Filestore instances
 on Google Cloud or, generally, GlusterFS volumes. Once a disk is provisioned, it can be bound to a persistent volume via
@@ -196,9 +194,7 @@ The service definition can be applied via:
 
 That's it! Now you have the following structure serving your users' Aim runs:
 
-<p align="center">
-  <img src="./basic_k8s_deployment_final.pdf" width=400/>
-</p>
+![](./basic_k8s_deployment_final.png)
 
 Assuming your users can submit a model training run to _some_ pod/deployment that runs model training and has the
 right `aim` code to record a run at path `/aim`, your Aim deployment will be able to display the run the next time it
