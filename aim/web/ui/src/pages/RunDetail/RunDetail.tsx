@@ -14,11 +14,11 @@ import classNames from 'classnames';
 import { Paper, Tab, Tabs } from '@material-ui/core';
 import { Skeleton } from '@material-ui/lab';
 
-import TabPanel from 'components/TabPanel/TabPanel';
 import { Badge, Button, Icon, Text } from 'components/kit';
 import NotificationContainer from 'components/NotificationContainer/NotificationContainer';
 import StatusLabel from 'components/StatusLabel';
 import ControlPopover from 'components/ControlPopover/ControlPopover';
+import BusyLoaderWrapper from 'components/BusyLoaderWrapper/BusyLoaderWrapper';
 
 import useModel from 'hooks/model/useModel';
 
@@ -44,7 +44,7 @@ function RunDetail(): React.FunctionComponentElement<React.ReactNode> {
   const { runHash } = useParams<{ runHash: string }>();
   const { url } = useRouteMatch();
   const { pathname } = useLocation();
-  const [value, setValue] = useState(pathname);
+  const [activeTab, setActiveTab] = useState(pathname);
 
   const tabs = [
     'parameters',
@@ -58,8 +58,21 @@ function RunDetail(): React.FunctionComponentElement<React.ReactNode> {
     'settings',
   ];
 
-  const handleChange = (event: React.ChangeEvent<{}>, newValue: string) => {
-    setValue(newValue);
+  function getRunsOfExperiment(
+    id: string,
+    params?: { limit: number; offset?: string },
+    isLoadMore?: boolean,
+  ) {
+    runsOfExperimentRequestRef = runDetailAppModel.getRunsOfExperiment(
+      id,
+      params,
+      isLoadMore,
+    );
+    runsOfExperimentRequestRef.call();
+  }
+
+  const handleTabChange = (event: React.ChangeEvent<{}>, newValue: string) => {
+    setActiveTab(newValue);
   };
 
   function onRunsSelectToggle() {
@@ -87,18 +100,11 @@ function RunDetail(): React.FunctionComponentElement<React.ReactNode> {
     }
   }, [runData?.experimentId]);
 
-  function getRunsOfExperiment(
-    id: string,
-    params?: { limit: number; offset?: string },
-    isLoadMore?: boolean,
-  ) {
-    runsOfExperimentRequestRef = runDetailAppModel.getRunsOfExperiment(
-      id,
-      params,
-      isLoadMore,
-    );
-    runsOfExperimentRequestRef.call();
-  }
+  React.useEffect(() => {
+    if (pathname !== activeTab) {
+      setActiveTab(pathname);
+    }
+  }, [pathname]);
 
   React.useEffect(() => {
     analytics.pageView('[RunDetail]');
@@ -207,8 +213,8 @@ function RunDetail(): React.FunctionComponentElement<React.ReactNode> {
         </div>
         <Paper className='RunDetail__runDetailContainer__tabsContainer'>
           <Tabs
-            value={value}
-            onChange={handleChange}
+            value={activeTab}
+            onChange={handleTabChange}
             aria-label='simple tabs example'
             indicatorColor='primary'
             textColor='primary'
@@ -224,103 +230,105 @@ function RunDetail(): React.FunctionComponentElement<React.ReactNode> {
             ))}
           </Tabs>
         </Paper>
-        <Switch>
-          <Route path={`${url}/parameters`}>
-            <div className='RunDetail__runDetailContainer__tabPanel'>
-              <RunDetailParamsTab
-                runParams={runData?.runParams}
-                isRunInfoLoading={runData?.isRunInfoLoading}
-              />
-            </div>
-          </Route>
+        <BusyLoaderWrapper isLoading={runData?.isRunInfoLoading} height='100%'>
+          <Switch>
+            <Route path={`${url}/parameters`}>
+              <div className='RunDetail__runDetailContainer__tabPanel'>
+                <RunDetailParamsTab
+                  runParams={runData?.runParams}
+                  isRunInfoLoading={runData?.isRunInfoLoading}
+                />
+              </div>
+            </Route>
 
-          <Route path={`${url}/metrics`}>
-            <div className='RunDetail__runDetailContainer__tabPanel'>
-              <RunDetailMetricsAndSystemTab
-                runHash={runHash}
-                runTraces={runData?.runTraces}
-                runBatch={runData?.runMetricsBatch}
-                isRunBatchLoading={runData?.isRunBatchLoading}
-              />
-            </div>
-          </Route>
+            <Route path={`${url}/metrics`}>
+              <div className='RunDetail__runDetailContainer__tabPanel'>
+                <RunDetailMetricsAndSystemTab
+                  runHash={runHash}
+                  runTraces={runData?.runTraces}
+                  runBatch={runData?.runMetricsBatch}
+                  isRunBatchLoading={runData?.isRunBatchLoading}
+                />
+              </div>
+            </Route>
 
-          <Route path={`${url}/system`}>
-            <div className='RunDetail__runDetailContainer__tabPanel'>
-              <RunDetailMetricsAndSystemTab
-                runHash={runHash}
-                runTraces={runData?.runTraces}
-                runBatch={runData?.runSystemBatch}
-                isSystem
-                isRunBatchLoading={runData?.isRunBatchLoading}
-              />
-            </div>
-          </Route>
+            <Route path={`${url}/system`}>
+              <div className='RunDetail__runDetailContainer__tabPanel'>
+                <RunDetailMetricsAndSystemTab
+                  runHash={runHash}
+                  runTraces={runData?.runTraces}
+                  runBatch={runData?.runSystemBatch}
+                  isSystem
+                  isRunBatchLoading={runData?.isRunBatchLoading}
+                />
+              </div>
+            </Route>
 
-          <Route path={`${url}/distributions`}>
-            <div className='RunDetail__runDetailContainer__tabPanel'>
-              <TraceVisualizationContainer
-                runHash={runHash}
-                traceType='distributions'
-                traceInfo={runData?.runTraces}
-              />
-            </div>
-          </Route>
+            <Route path={`${url}/distributions`}>
+              <div className='RunDetail__runDetailContainer__tabPanel'>
+                <TraceVisualizationContainer
+                  runHash={runHash}
+                  traceType='distributions'
+                  traceInfo={runData?.runTraces}
+                />
+              </div>
+            </Route>
 
-          <Route path={`${url}/images`}>
-            <div className='RunDetail__runDetailContainer__tabPanel'>
-              <TraceVisualizationContainer
-                runHash={runHash}
-                traceType='images'
-                traceInfo={runData?.runTraces}
-                runParams={runData?.runParams}
-              />
-            </div>
-          </Route>
+            <Route path={`${url}/images`}>
+              <div className='RunDetail__runDetailContainer__tabPanel'>
+                <TraceVisualizationContainer
+                  runHash={runHash}
+                  traceType='images'
+                  traceInfo={runData?.runTraces}
+                  runParams={runData?.runParams}
+                />
+              </div>
+            </Route>
 
-          <Route path={`${url}/audios`}>
-            <div className='RunDetail__runDetailContainer__tabPanel'>
-              <TraceVisualizationContainer
-                runHash={runHash}
-                traceType='audios'
-                traceInfo={runData?.runTraces}
-                runParams={runData?.runParams}
-              />
-            </div>
-          </Route>
+            <Route path={`${url}/audios`}>
+              <div className='RunDetail__runDetailContainer__tabPanel'>
+                <TraceVisualizationContainer
+                  runHash={runHash}
+                  traceType='audios'
+                  traceInfo={runData?.runTraces}
+                  runParams={runData?.runParams}
+                />
+              </div>
+            </Route>
 
-          <Route path={`${url}/texts`}>
-            <div className='RunDetail__runDetailContainer__tabPanel'>
-              <TraceVisualizationContainer
-                runHash={runHash}
-                traceType='texts'
-                traceInfo={runData?.runTraces}
-                runParams={runData?.runParams}
-              />
-            </div>
-          </Route>
+            <Route path={`${url}/texts`}>
+              <div className='RunDetail__runDetailContainer__tabPanel'>
+                <TraceVisualizationContainer
+                  runHash={runHash}
+                  traceType='texts'
+                  traceInfo={runData?.runTraces}
+                  runParams={runData?.runParams}
+                />
+              </div>
+            </Route>
 
-          <Route path={`${url}/figures`}>
-            <div className='RunDetail__runDetailContainer__tabPanel'>
-              <TraceVisualizationContainer
-                runHash={runHash}
-                traceType='figures'
-                traceInfo={runData?.runTraces}
-              />
-            </div>
-          </Route>
+            <Route path={`${url}/figures`}>
+              <div className='RunDetail__runDetailContainer__tabPanel'>
+                <TraceVisualizationContainer
+                  runHash={runHash}
+                  traceType='figures'
+                  traceInfo={runData?.runTraces}
+                />
+              </div>
+            </Route>
 
-          <Route path={`${url}/settings`}>
-            <div className='RunDetail__runDetailContainer__tabPanel'>
-              <RunDetailSettingsTab
-                isArchived={runData?.runInfo?.archived}
-                runHash={runHash}
-              />
-            </div>
-          </Route>
+            <Route path={`${url}/settings`}>
+              <div className='RunDetail__runDetailContainer__tabPanel'>
+                <RunDetailSettingsTab
+                  isArchived={runData?.runInfo?.archived}
+                  runHash={runHash}
+                />
+              </div>
+            </Route>
 
-          <Redirect to={`${url}/parameters`} />
-        </Switch>
+            <Redirect to={`${url}/parameters`} />
+          </Switch>
+        </BusyLoaderWrapper>
       </div>
       {runData?.notifyData?.length > 0 && (
         <NotificationContainer
