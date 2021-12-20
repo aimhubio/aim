@@ -5,6 +5,7 @@ import { MediaTypeEnum } from 'components/MediaPanel/config';
 import AudioBox from 'components/kit/AudioBox';
 
 import { MEDIA_ITEMS_SIZES } from 'config/mediaConfigs/mediaConfigs';
+import { MediaItemAlignmentEnum } from 'config/enums/imageEnums';
 
 import ImageBox from './ImageBox';
 import { IMediaListProps } from './MediaList.d';
@@ -52,18 +53,42 @@ function MediaList({
   );
 
   const listHeight = React.useMemo(() => {
-    let biggest = 0;
-    data.forEach((item) => {
-      if (biggest < item.height) {
-        biggest = item.height;
+    if (mediaType === MediaTypeEnum.IMAGE) {
+      let maxHeight = 0;
+      let maxWidth = 0;
+      data.forEach((item) => {
+        if (maxHeight < item.height) {
+          maxHeight = item.height;
+          maxWidth = item.width;
+        }
+      });
+      if (
+        additionalProperties.alignmentType === MediaItemAlignmentEnum.Original
+      ) {
+        if (maxHeight > wrapperOffsetHeight) {
+          maxHeight = wrapperOffsetHeight;
+        }
+        return maxHeight;
       }
-    });
-    if (biggest > wrapperOffsetHeight) {
-      biggest = wrapperOffsetHeight;
-    }
+      if (additionalProperties.alignmentType === MediaItemAlignmentEnum.Width) {
+        let width =
+          (wrapperOffsetWidth * additionalProperties?.mediaItemSize) / 100;
+        return (maxHeight / maxWidth) * width;
+      }
 
-    return biggest;
-  }, [data]);
+      return mediaItemHeight;
+    } else {
+      return mediaItemHeight;
+    }
+  }, [
+    additionalProperties.alignmentType,
+    additionalProperties?.mediaItemSize,
+    data,
+    mediaItemHeight,
+    mediaType,
+    wrapperOffsetHeight,
+    wrapperOffsetWidth,
+  ]);
 
   return (
     <List

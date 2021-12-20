@@ -95,10 +95,12 @@ const MediaSet = ({
     if (path.length === 1) {
       return 0;
     }
-    let biggest = 0;
+    let maxHeight = 0;
+    let maxWidth = 0;
     items.forEach((item: any) => {
-      if (biggest < item.height) {
-        biggest = item.height;
+      if (maxHeight < item.height) {
+        maxHeight = item.height;
+        maxWidth = item.width;
       }
     });
 
@@ -107,12 +109,18 @@ const MediaSet = ({
         if (
           additionalProperties.alignmentType === MediaItemAlignmentEnum.Original
         ) {
-          if (biggest > wrapperOffsetHeight) {
-            biggest = wrapperOffsetHeight;
+          if (maxHeight > wrapperOffsetHeight) {
+            maxHeight = wrapperOffsetHeight;
           }
-          return biggest + ITEM_WRAPPER_HEIGHT;
+          return maxHeight + ITEM_WRAPPER_HEIGHT;
         }
       }
+      if (additionalProperties.alignmentType === MediaItemAlignmentEnum.Width) {
+        let width =
+          (wrapperOffsetWidth * additionalProperties?.mediaItemSize) / 100;
+        return (maxHeight / maxWidth) * width;
+      }
+
       return mediaItemHeight + ITEM_WRAPPER_HEIGHT;
     }
 
