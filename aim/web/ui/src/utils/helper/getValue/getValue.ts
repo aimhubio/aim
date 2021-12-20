@@ -24,7 +24,17 @@ export function getValue(
     return defaultValue;
   }
 
-  const pathArray = Array.isArray(path) ? path : getPathSegments(path);
+  let pathArray;
+  if (
+    typeof path === 'string' &&
+    Object.prototype.propertyIsEnumerable.call(object, path)
+  ) {
+    pathArray = [path];
+  } else if (Array.isArray(path)) {
+    pathArray = path;
+  } else {
+    pathArray = getPathSegments(path);
+  }
 
   for (let i = 0; i < pathArray.length; i++) {
     if (!Object.prototype.propertyIsEnumerable.call(object, pathArray[i])) {

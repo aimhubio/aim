@@ -557,6 +557,7 @@ function createAppModel(appConfig: IAppInitialConfig) {
 
             liveUpdateInstance?.start({
               q: query,
+              p: configData?.chart?.densityType,
               ...(metric && { x_axis: metric }),
             });
           }
