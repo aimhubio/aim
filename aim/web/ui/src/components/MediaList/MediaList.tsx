@@ -24,6 +24,7 @@ function MediaList({
   additionalProperties,
   tooltip,
   mediaType,
+  wrapperOffsetHeight,
 }: IMediaListProps): React.FunctionComponentElement<React.ReactNode> {
   const itemSize = React.useCallback(
     (index: number) => {
@@ -36,6 +37,7 @@ function MediaList({
           additionalProperties,
           wrapperOffsetWidth,
           mediaItemHeight,
+          wrapperOffsetHeight,
         });
       }
     },
@@ -45,12 +47,27 @@ function MediaList({
       mediaItemHeight,
       mediaType,
       wrapperOffsetWidth,
+      wrapperOffsetHeight,
     ],
   );
 
+  const listHeight = React.useMemo(() => {
+    let biggest = 0;
+    data.forEach((item) => {
+      if (biggest < item.height) {
+        biggest = item.height;
+      }
+    });
+    if (biggest > wrapperOffsetHeight) {
+      biggest = wrapperOffsetHeight;
+    }
+
+    return biggest;
+  }, [data]);
+
   return (
     <List
-      height={mediaItemHeight}
+      height={listHeight}
       itemCount={data.length}
       itemSize={itemSize}
       layout='horizontal'

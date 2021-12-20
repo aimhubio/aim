@@ -8,12 +8,16 @@ import { Tooltip } from '@material-ui/core';
 import MediaList from 'components/MediaList';
 import { JsonViewPopover } from 'components/kit';
 import ControlPopover from 'components/ControlPopover/ControlPopover';
+import { MediaTypeEnum } from 'components/MediaPanel/config';
 
 import {
+  AUDIO_FIXED_HEIGHT,
+  IMAGE_FIXED_HEIGHT,
   ITEM_WRAPPER_HEIGHT,
   MEDIA_SET_TITLE_HEIGHT,
   MEDIA_SET_WRAPPER_PADDING_HEIGHT,
 } from 'config/mediaConfigs/mediaConfigs';
+import { MediaItemAlignmentEnum } from 'config/enums/imageEnums';
 
 import { formatValue } from 'utils/formatValue';
 import { jsonParse } from 'utils/jsonParse';
@@ -31,7 +35,6 @@ const MediaSet = ({
   wrapperOffsetHeight,
   wrapperOffsetWidth,
   orderedMap,
-  mediaItemHeight,
   focusedState,
   syncHoverState,
   additionalProperties,
@@ -41,6 +44,25 @@ const MediaSet = ({
 }: IMediaSetProps): React.FunctionComponentElement<React.ReactNode> => {
   let content: [string[], []][] = []; // the actual items list to be passed to virtualized list component
   let keysMap: { [key: string]: number } = {}; // cache for checking whether the group title is already added to list
+
+  const mediaItemHeight = React.useMemo(() => {
+    if (additionalProperties?.alignmentType === MediaItemAlignmentEnum.Height) {
+      return (wrapperOffsetHeight * additionalProperties?.mediaItemSize) / 100;
+    } else if (
+      additionalProperties?.alignmentType === MediaItemAlignmentEnum.Width
+    ) {
+      return (wrapperOffsetWidth * additionalProperties?.mediaItemSize) / 100;
+    } else {
+      return mediaType === MediaTypeEnum.AUDIO
+        ? AUDIO_FIXED_HEIGHT
+        : IMAGE_FIXED_HEIGHT;
+    }
+  }, [
+    additionalProperties,
+    mediaType,
+    wrapperOffsetHeight,
+    wrapperOffsetWidth,
+  ]);
 
   function fillContent(
     list: [] | { [key: string]: [] | {} },
@@ -73,8 +95,24 @@ const MediaSet = ({
     if (path.length === 1) {
       return 0;
     }
+    let biggest = 0;
+    items.forEach((item: any) => {
+      if (biggest < item.height) {
+        biggest = item.height;
+      }
+    });
 
     if (items.length > 0) {
+      if (mediaType === MediaTypeEnum.IMAGE) {
+        if (
+          additionalProperties.alignmentType === MediaItemAlignmentEnum.Original
+        ) {
+          if (biggest > wrapperOffsetHeight) {
+            biggest = wrapperOffsetHeight;
+          }
+          return biggest + ITEM_WRAPPER_HEIGHT;
+        }
+      }
       return mediaItemHeight + ITEM_WRAPPER_HEIGHT;
     }
 
@@ -93,6 +131,7 @@ const MediaSet = ({
         data: content,
         addUriToList,
         wrapperOffsetWidth,
+        wrapperOffsetHeight,
         index,
         mediaSetKey,
         mediaItemHeight,
@@ -187,6 +226,7 @@ const MediaGroupedList = React.memo(function MediaGroupedList(props: any) {
               data={items}
               addUriToList={data.addUriToList}
               wrapperOffsetWidth={data.wrapperOffsetWidth}
+              wrapperOffsetHeight={data.wrapperOffsetHeight}
               mediaItemHeight={data.mediaItemHeight}
               focusedState={data.focusedState}
               syncHoverState={data.syncHoverState}

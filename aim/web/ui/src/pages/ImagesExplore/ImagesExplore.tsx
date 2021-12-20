@@ -128,8 +128,6 @@ function ImagesExplore(): React.FunctionComponentElement<React.ReactNode> {
     }
   }, [location.search]);
 
-  console.log(imagesExploreData?.config?.images?.additionalProperties);
-
   return (
     <div className='ImagesExplore__container' ref={wrapperElemRef}>
       <section className='ImagesExplore__section'>

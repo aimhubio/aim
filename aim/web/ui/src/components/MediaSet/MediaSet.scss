@@ -58,6 +58,8 @@
           height: 100%;
           width: 100%;
           position: relative;
+          display: flex;
+          align-items: center;
           &__zoomIconWrapper {
             position: absolute;
             top: toRem(9px);
@@ -76,7 +78,7 @@
           }
         }
         img {
-          height: calc(100% - 0.375rem);
+          // height: calc(100% - 0.375rem);
           width: calc(100% - 0.375rem);
           margin-top: toRem(5px);
           margin-right: toRem(5px);

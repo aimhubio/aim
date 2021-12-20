@@ -91,6 +91,10 @@ function ImagePropertiesPopover({
             valueLabelDisplay='auto'
             getAriaValueText={(val) => `${val}`}
             value={sizeValue}
+            disabled={
+              additionalProperties.alignmentType ===
+              MediaItemAlignmentEnum.Original
+            }
             onChange={onSizeValueChange as any}
             step={sizeProps.step}
             max={sizeProps.max}

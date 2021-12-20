@@ -13,9 +13,9 @@ export interface IMediaSetProps {
   addUriToList: (blobUrl: string) => void;
   index?: number;
   mediaSetKey: number;
-  wrapperOffsetHeight?: number;
-  wrapperOffsetWidth?: number;
-  mediaItemHeight: number;
+  wrapperOffsetHeight: number;
+  wrapperOffsetWidth: number;
+  // mediaItemHeight: number;
   syncHoverState?: (args: any) => void;
   focusedState: IFocusedState;
   additionalProperties?: IMediaPanelProps['additionalProperties'];
