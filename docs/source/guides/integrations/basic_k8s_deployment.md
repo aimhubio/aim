@@ -52,7 +52,7 @@ to visualize their results. For example, one can have a deployment that performs
 the same volume that is mounted to the Aim deployment! This model is illustrated by the following diagram:
 
 <p align="center">
-  <img src="./basic_k8s_deployment_images/aim_vol.pdf" width=400/>
+  <img src="basic_k8s_deployment_vol.pdf" width=400/>
 </p>
 
 Generally, volumes that support have the `ReadWriteMany` property are manually provisioned, such as Filestore instances
@@ -197,7 +197,7 @@ The service definition can be applied via:
 That's it! Now you have the following structure serving your users' Aim runs:
 
 <p align="center">
-  <img src="./basic_k8s_deployment_images/final.pdf" width=400/>
+  <img src="basic_k8s_deployment_final.pdf" width=400/>
 </p>
 
 Assuming your users can submit a model training run to _some_ pod/deployment that runs model training and has the
