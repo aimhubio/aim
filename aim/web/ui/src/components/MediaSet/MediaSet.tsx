@@ -13,6 +13,7 @@ import { MediaTypeEnum } from 'components/MediaPanel/config';
 import {
   AUDIO_FIXED_HEIGHT,
   IMAGE_FIXED_HEIGHT,
+  ITEM_CAPTION_HEIGHT,
   ITEM_WRAPPER_HEIGHT,
   MEDIA_SET_TITLE_HEIGHT,
   MEDIA_SET_WRAPPER_PADDING_HEIGHT,
@@ -112,7 +113,7 @@ const MediaSet = ({
           if (maxHeight > wrapperOffsetHeight) {
             maxHeight = wrapperOffsetHeight;
           }
-          return maxHeight + ITEM_WRAPPER_HEIGHT;
+          return maxHeight + ITEM_WRAPPER_HEIGHT + ITEM_CAPTION_HEIGHT;
         }
       }
       if (additionalProperties.alignmentType === MediaItemAlignmentEnum.Width) {
@@ -121,7 +122,7 @@ const MediaSet = ({
         return (maxHeight / maxWidth) * width;
       }
 
-      return mediaItemHeight + ITEM_WRAPPER_HEIGHT;
+      return mediaItemHeight + ITEM_CAPTION_HEIGHT + ITEM_WRAPPER_HEIGHT;
     }
 
     return MEDIA_SET_TITLE_HEIGHT + MEDIA_SET_WRAPPER_PADDING_HEIGHT;

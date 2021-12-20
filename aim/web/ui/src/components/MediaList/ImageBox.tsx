@@ -4,7 +4,7 @@ import classNames from 'classnames';
 import { Skeleton } from '@material-ui/lab';
 import { Dialog } from '@material-ui/core';
 
-import { Button, Icon } from 'components/kit';
+import { Button, Icon, Text } from 'components/kit';
 import ImageFullViewPopover from 'components/ImageFullViewPopover';
 
 import { BATCH_COLLECT_DELAY } from 'config/mediaConfigs/mediaConfigs';
@@ -30,6 +30,7 @@ const ImageBox = ({
   let [blobData, setBlobData] = React.useState<string>(
     blobsURIModel.getState()[blob_uri] ?? null,
   );
+  console.log(data, style);
 
   React.useEffect(() => {
     let timeoutID: number;
@@ -108,7 +109,12 @@ const ImageBox = ({
       >
         {blobData ? (
           <div className='MediaSet__container__mediaItemsList__imageBox__imageWrapper'>
-            <img src={`data:image/${format};base64, ${blobData}`} alt='' />
+            <div className='MediaSet__container__mediaItemsList__imageBox__imageWrapper-item'>
+              <img src={`data:image/${format};base64, ${blobData}`} alt='' />
+              <Text style={{ maxWidth: style.width }} size={8} weight={400}>
+                {data.caption}
+              </Text>
+            </div>
             <Button
               withOnlyIcon
               size='small'

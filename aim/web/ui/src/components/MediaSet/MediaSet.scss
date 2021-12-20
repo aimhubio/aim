@@ -58,8 +58,22 @@
           height: 100%;
           width: 100%;
           position: relative;
-          display: flex;
-          align-items: center;
+          &-item {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            width: 100%;
+            height: 100%;
+            span {
+              height: 1rem;
+              margin-top: 0.125rem;
+              white-space: nowrap;
+              overflow: hidden;
+              text-overflow: ellipsis;
+              width: 100%;
+            }
+          }
           &__zoomIconWrapper {
             position: absolute;
             top: toRem(9px);

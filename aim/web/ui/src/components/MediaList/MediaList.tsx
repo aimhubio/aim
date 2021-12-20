@@ -4,7 +4,10 @@ import { areEqual, VariableSizeList as List } from 'react-window';
 import { MediaTypeEnum } from 'components/MediaPanel/config';
 import AudioBox from 'components/kit/AudioBox';
 
-import { MEDIA_ITEMS_SIZES } from 'config/mediaConfigs/mediaConfigs';
+import {
+  ITEM_CAPTION_HEIGHT,
+  MEDIA_ITEMS_SIZES,
+} from 'config/mediaConfigs/mediaConfigs';
 import { MediaItemAlignmentEnum } from 'config/enums/imageEnums';
 
 import ImageBox from './ImageBox';
@@ -68,17 +71,17 @@ function MediaList({
         if (maxHeight > wrapperOffsetHeight) {
           maxHeight = wrapperOffsetHeight;
         }
-        return maxHeight;
+        return maxHeight + ITEM_CAPTION_HEIGHT;
       }
       if (additionalProperties.alignmentType === MediaItemAlignmentEnum.Width) {
         let width =
           (wrapperOffsetWidth * additionalProperties?.mediaItemSize) / 100;
-        return (maxHeight / maxWidth) * width;
+        return (maxHeight / maxWidth) * width + ITEM_CAPTION_HEIGHT;
       }
 
-      return mediaItemHeight;
+      return mediaItemHeight + ITEM_CAPTION_HEIGHT;
     } else {
-      return mediaItemHeight;
+      return mediaItemHeight + ITEM_CAPTION_HEIGHT;
     }
   }, [
     additionalProperties.alignmentType,
