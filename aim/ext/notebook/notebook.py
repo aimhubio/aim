@@ -62,7 +62,7 @@ def get_argument_options(line):
         @TODO add process args all styles to dict
     """
     # @TODO improve this logic
-    supported_args = ['--port', '--repo']
+    supported_args = ['--port', '--host', '--repo']
 
     args = shlex.split(line)
     command = args[0]
