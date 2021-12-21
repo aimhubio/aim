@@ -58,6 +58,69 @@ function RunDetail(): React.FunctionComponentElement<React.ReactNode> {
     'settings',
   ];
 
+  // TODO: add code splitting(lazy loading)
+  const tabContent: { [key: string]: JSX.Element } = {
+    parameters: (
+      <RunDetailParamsTab
+        runParams={runData?.runParams}
+        isRunInfoLoading={runData?.isRunInfoLoading}
+      />
+    ),
+    metrics: (
+      <RunDetailMetricsAndSystemTab
+        runHash={runHash}
+        runTraces={runData?.runTraces}
+        runBatch={runData?.runMetricsBatch}
+        isRunBatchLoading={runData?.isRunBatchLoading}
+      />
+    ),
+    system: (
+      <RunDetailMetricsAndSystemTab
+        runHash={runHash}
+        runTraces={runData?.runTraces}
+        runBatch={runData?.runSystemBatch}
+        isSystem
+        isRunBatchLoading={runData?.isRunBatchLoading}
+      />
+    ),
+    distributions: (
+      <TraceVisualizationContainer
+        runHash={runHash}
+        traceType='distributions'
+        traceInfo={runData?.runTraces}
+      />
+    ),
+    images: (
+      <TraceVisualizationContainer
+        runHash={runHash}
+        traceType='images'
+        traceInfo={runData?.runTraces}
+        runParams={runData?.runParams}
+      />
+    ),
+    audios: (
+      <TraceVisualizationContainer
+        runHash={runHash}
+        traceType='audios'
+        traceInfo={runData?.runTraces}
+        runParams={runData?.runParams}
+      />
+    ),
+    figures: (
+      <TraceVisualizationContainer
+        runHash={runHash}
+        traceType='figures'
+        traceInfo={runData?.runTraces}
+      />
+    ),
+    settings: (
+      <RunDetailSettingsTab
+        isArchived={runData?.runInfo?.archived}
+        runHash={runHash}
+      />
+    ),
+  };
+
   function getRunsOfExperiment(
     id: string,
     params?: { limit: number; offset?: string },
@@ -232,100 +295,13 @@ function RunDetail(): React.FunctionComponentElement<React.ReactNode> {
         </Paper>
         <BusyLoaderWrapper isLoading={runData?.isRunInfoLoading} height='100%'>
           <Switch>
-            <Route path={`${url}/parameters`}>
-              <div className='RunDetail__runDetailContainer__tabPanel'>
-                <RunDetailParamsTab
-                  runParams={runData?.runParams}
-                  isRunInfoLoading={runData?.isRunInfoLoading}
-                />
-              </div>
-            </Route>
-
-            <Route path={`${url}/metrics`}>
-              <div className='RunDetail__runDetailContainer__tabPanel'>
-                <RunDetailMetricsAndSystemTab
-                  runHash={runHash}
-                  runTraces={runData?.runTraces}
-                  runBatch={runData?.runMetricsBatch}
-                  isRunBatchLoading={runData?.isRunBatchLoading}
-                />
-              </div>
-            </Route>
-
-            <Route path={`${url}/system`}>
-              <div className='RunDetail__runDetailContainer__tabPanel'>
-                <RunDetailMetricsAndSystemTab
-                  runHash={runHash}
-                  runTraces={runData?.runTraces}
-                  runBatch={runData?.runSystemBatch}
-                  isSystem
-                  isRunBatchLoading={runData?.isRunBatchLoading}
-                />
-              </div>
-            </Route>
-
-            <Route path={`${url}/distributions`}>
-              <div className='RunDetail__runDetailContainer__tabPanel'>
-                <TraceVisualizationContainer
-                  runHash={runHash}
-                  traceType='distributions'
-                  traceInfo={runData?.runTraces}
-                />
-              </div>
-            </Route>
-
-            <Route path={`${url}/images`}>
-              <div className='RunDetail__runDetailContainer__tabPanel'>
-                <TraceVisualizationContainer
-                  runHash={runHash}
-                  traceType='images'
-                  traceInfo={runData?.runTraces}
-                  runParams={runData?.runParams}
-                />
-              </div>
-            </Route>
-
-            <Route path={`${url}/audios`}>
-              <div className='RunDetail__runDetailContainer__tabPanel'>
-                <TraceVisualizationContainer
-                  runHash={runHash}
-                  traceType='audios'
-                  traceInfo={runData?.runTraces}
-                  runParams={runData?.runParams}
-                />
-              </div>
-            </Route>
-
-            <Route path={`${url}/texts`}>
-              <div className='RunDetail__runDetailContainer__tabPanel'>
-                <TraceVisualizationContainer
-                  runHash={runHash}
-                  traceType='texts'
-                  traceInfo={runData?.runTraces}
-                  runParams={runData?.runParams}
-                />
-              </div>
-            </Route>
-
-            <Route path={`${url}/figures`}>
-              <div className='RunDetail__runDetailContainer__tabPanel'>
-                <TraceVisualizationContainer
-                  runHash={runHash}
-                  traceType='figures'
-                  traceInfo={runData?.runTraces}
-                />
-              </div>
-            </Route>
-
-            <Route path={`${url}/settings`}>
-              <div className='RunDetail__runDetailContainer__tabPanel'>
-                <RunDetailSettingsTab
-                  isArchived={runData?.runInfo?.archived}
-                  runHash={runHash}
-                />
-              </div>
-            </Route>
-
+            {tabs.map((tab: string) => (
+              <Route path={`${url}/${tab}`} key={tab}>
+                <div className='RunDetail__runDetailContainer__tabPanel'>
+                  {tabContent[tab]}
+                </div>
+              </Route>
+            ))}
             <Redirect to={`${url}/parameters`} />
           </Switch>
         </BusyLoaderWrapper>
