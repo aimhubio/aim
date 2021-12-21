@@ -2,14 +2,20 @@ import React from 'react';
 import { areEqual, VariableSizeList as List } from 'react-window';
 
 import { MediaTypeEnum } from 'components/MediaPanel/config';
+import AudioBox from 'components/kit/AudioBox';
 
 import { MediaItemAlignmentEnum } from 'config/enums/imageEnums';
+import {
+  AUDIO_FIXED_WIDTH,
+  IMAGE_FIXED_HEIGHT,
+} from 'config/mediaConfigs/mediaConfigs';
 
 import ImageBox from './ImageBox';
 import { IMediaListProps } from './MediaList.d';
 
 const mediaBoxType: any = {
   [MediaTypeEnum.IMAGE]: ImageBox,
+  [MediaTypeEnum.AUDIO]: AudioBox,
 };
 
 function MediaList({
@@ -23,16 +29,31 @@ function MediaList({
   tooltip,
   mediaType,
 }: IMediaListProps): React.FunctionComponentElement<React.ReactNode> {
+  const itemSize = React.useCallback(
+    (index: number) => {
+      if (
+        additionalProperties?.alignmentType === MediaItemAlignmentEnum.Width
+      ) {
+        return (wrapperOffsetWidth * additionalProperties?.mediaItemSize) / 100;
+      } else if (
+        additionalProperties?.alignmentType === MediaItemAlignmentEnum.Height
+      ) {
+        return (mediaItemHeight / data[index].height) * data[index].width;
+      } else {
+        return mediaType === MediaTypeEnum.AUDIO
+          ? AUDIO_FIXED_WIDTH
+          : IMAGE_FIXED_HEIGHT;
+        // TODO: Need to be refactored in Image size alignment by width and original size
+      }
+    },
+    [additionalProperties, mediaType],
+  );
+
   return (
     <List
       height={mediaItemHeight}
       itemCount={data.length}
-      itemSize={(index: number) => {
-        return additionalProperties?.alignmentType ===
-          MediaItemAlignmentEnum.Width
-          ? (wrapperOffsetWidth * additionalProperties?.mediaItemSize) / 100
-          : (mediaItemHeight / data[index].height) * data[index].width;
-      }}
+      itemSize={itemSize}
       layout='horizontal'
       width={wrapperOffsetWidth}
       style={{ overflowY: 'hidden' }}

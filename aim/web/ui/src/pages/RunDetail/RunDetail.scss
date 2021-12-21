@@ -214,6 +214,29 @@
       margin-top: $space-xxxs;
     }
   }
+
+  &__btn {
+    .MuiButton-label {
+      display: initial;
+      text-overflow: ellipsis;
+      overflow: hidden;
+      white-space: nowrap;
+    }
+
+    background-color: #e64e48;
+
+    &:hover {
+      background-color: #e64e48;
+    }
+  }
+
+  &__btn__archive {
+    background-color: #83899e;
+
+    &:hover {
+      background-color: #83899e;
+    }
+  }
 }
 
 .RunSelectPopoverWrapper {

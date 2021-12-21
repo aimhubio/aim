@@ -1,11 +1,25 @@
 # Changelog
 
-## Unreleased
+## 3.3.2 Dec 20 2021
 
+- Fix issue with not providing point density value to live-update query (rubenaprikyan)
+
+## 3.3.1 Dec 18 2021
+
+- Fix getValue function to show correct chart title data (KaroMourad)
+
+## 3.3.0 Dec 17 2021
+
+- Add ability to track and explore audios in run detail page (arsengit, VkoHov, devfox-se)
+- Add ability to track and visualize texts (mihran113, roubkar)
+- Fix boolean values encoding (mahnerak)
 - Add Scatter Explorer to visualize correlations between metric last value and hyperparameter (KaroMourad)
 - Add ability to track and visualize plotly objects (devfox-se, Hamik25, rubenaprikyan)
 - Add ability to query distributions by step range and density (VkoHov, rubenaprikyan)
+- Add colab notebook support (mihran113, rubenaprikyan)
 - Implement images visualization tab in run detail page (VkoHov, KaroMourad)
+- Add custom URL prefix support (mihran113, Hamik25, roubkar)
+- Enhance metric selection dropdowns to see lists in alphabetical order (rubenaprikyan)
 
 ## 3.2.2 Dec 10 2021
 

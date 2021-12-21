@@ -101,4 +101,8 @@ export type IconName =
   | 'scatterplot'
   | 'y-axis'
   | 'image-explorer'
-  | 'image-properties';
+  | 'image-properties'
+  | 'play'
+  | 'pause'
+  | 'voice-on'
+  | 'voice-off';

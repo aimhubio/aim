@@ -16,6 +16,7 @@ import { ITableColumn } from 'types/pages/metrics/components/TableColumns/TableC
 import { SortField } from 'types/services/models/metrics/metricsAppModel';
 
 import contextToString from 'utils/contextToString';
+import { formatValue } from 'utils/formatValue';
 
 function getImagesExploreTableColumns(
   paramColumns: string[] = [],
@@ -243,7 +244,7 @@ function imagesExploreTableRowRenderer(
                   />
                 ) : (
                   <Tooltip key={item} title={value}>
-                    <span>{value}</span>
+                    <span>{formatValue(value)}</span>
                   </Tooltip>
                 );
               })}

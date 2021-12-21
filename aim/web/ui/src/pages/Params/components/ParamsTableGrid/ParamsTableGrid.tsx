@@ -20,6 +20,7 @@ import {
 import { isSystemMetric } from 'utils/isSystemMetric';
 import { formatSystemMetricName } from 'utils/formatSystemMetricName';
 import contextToString from 'utils/contextToString';
+import { formatValue } from 'utils/formatValue';
 
 const icons: { [key: string]: string } = {
   color: 'coloring',
@@ -114,7 +115,7 @@ function getParamsTableColumns(
             <Badge
               size='small'
               color={COLORS[0][0]}
-              label={metricContext === '' ? 'No context' : metricContext}
+              label={metricContext === '' ? 'Empty context' : metricContext}
             />
           ),
           topHeader: isSystemMetric(key) ? 'System Metrics' : key,
@@ -283,7 +284,7 @@ function paramsTableRowRenderer(
                   />
                 ) : (
                   <Tooltip key={item} title={value}>
-                    <span>{value}</span>
+                    <span>{formatValue(value)}</span>
                   </Tooltip>
                 );
               })}

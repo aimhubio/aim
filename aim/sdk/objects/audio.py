@@ -12,6 +12,17 @@ logger = logging.getLogger(__name__)
 
 @CustomObject.alias('aim.audio')
 class Audio(CustomObject):
+    """Audio object used to store audio objects in Aim repository..
+
+    Currently, audio formats are limited to mp3, wav, flac
+
+    Args:
+         data: file path, bytes, io.BaseIO or numpy.array (only for WAV)
+         format (:obj:`str`): Format of the audio source
+         rate (:obj:`int`): Rate of the audio file, for WAV defaults to 22500
+         caption (:obj:`str`, optional): Optional audio caption. '' by default.
+    """
+
     AIM_NAME = 'aim.audio'
 
     # supported audio formats
@@ -22,17 +33,15 @@ class Audio(CustomObject):
 
     audio_formats = (MP3, WAV, FLAC)
 
-    def __init__(self, data, **kwargs):
+    def __init__(self, data, format: str = '', caption: str = '', rate: int = None):
         super().__init__()
 
-        caption = kwargs.get('caption', '')
-        rate = kwargs.get('rate', 22050)
-        audio_format = kwargs.get('format', self.UNKNOWN).lower()
-
+        audio_format = format.lower()
         if inst_has_typename(data, ['ndarray.numpy']):
             # Currently, only WAV audio formats are supported for numpy
             audio_format = self.WAV
-            if 'rate' not in kwargs:
+            if not rate:
+                rate = 22500
                 logger.info(f'Parameter "rate" is not provided! Using default: {rate}')
             bs = wavfile.write(rate, data)
             data = bs
@@ -54,9 +63,13 @@ class Audio(CustomObject):
         if not isinstance(data, bytes):
             raise TypeError('Content is not a byte-stream object')
 
-        self._prepare(data, caption=caption, format=audio_format)
+        extra = {
+            'caption': caption,
+            'format': audio_format
+        }
+        self._prepare(data, **extra)
 
-    def _prepare(self, data, **extra):
+    def _prepare(self, data, **extra) -> None:
         assert isinstance(data, bytes)
 
         for k, v in extra.items():
@@ -67,12 +80,19 @@ class Audio(CustomObject):
         """
         This method converts WAV to Numpy array.
         Other audio formats are not supported at this moment.
+
+        Returns: numpy array
         """
         assert self.storage['format'] == self.__audio_format_map[self.WAV]
 
         return wavfile.read(self.get())
 
     def get(self) -> io.BytesIO:
+        """
+        Reads data from the inner container and writes it to a buffer
+
+        Returns: io.BytesIO
+        """
         bs = self.storage.get('data')
         if not bs:
             return io.BytesIO()

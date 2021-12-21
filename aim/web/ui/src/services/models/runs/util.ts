@@ -1,5 +1,5 @@
 import bs58check from 'bs58check';
-import { head, orderBy, get } from 'lodash-es';
+import _ from 'lodash-es';
 
 import { IMenuItem } from 'components/kit/Menu';
 
@@ -12,6 +12,8 @@ import contextToString from 'utils/contextToString';
 import alphabeticalSortComparator from 'utils/alphabeticalSortComparator';
 import { encode } from 'utils/encoder/encoder';
 import getObjectPaths from 'utils/getObjectPaths';
+import { getDataAsMediaSetNestedObject } from 'utils/app/getDataAsMediaSetNestedObject';
+import { getValue } from 'utils/helper';
 
 import imagesExploreAppModel from '../imagesExplore/imagesExploreAppModel';
 
@@ -23,6 +25,7 @@ import {
   TraceRawDataItem,
   TraceType,
   ImagesData,
+  TextsData,
 } from './types';
 
 /**
@@ -179,15 +182,6 @@ export function getContextObjFromMenuActiveKey(
 }
 
 export function getMenuData(traceType: TraceType, traces: TraceRawDataItem[]) {
-  const VisualizationMenuTitles = {
-    images: 'Images',
-    distributions: 'Distributions',
-    audios: 'Audios',
-    videos: 'Videos',
-    texts: 'Texts',
-    figures: 'Plotlies',
-  };
-
   let title = VisualizationMenuTitles[traceType];
 
   let defaultActiveKey = '';
@@ -245,7 +239,36 @@ export function processDistributionsData(data: Partial<DistributionsData>) {
 }
 
 /**
- * process distributions data
+ * process texts data
+ */
+export function processTextsData(data: Partial<TextsData>) {
+  const { record_range, index_range, iters, values } = data;
+  const processedValues: any[] = [];
+  if (values) {
+    let count = 0;
+    values.forEach((stepValues, stepIndex) => {
+      stepValues.forEach((text) => {
+        processedValues.push({
+          step: iters?.[stepIndex],
+          index: text.index,
+          text: text.data,
+          key: count, // Table row ID
+        });
+        count++;
+      });
+    });
+  }
+
+  return {
+    iters,
+    record_range,
+    index_range,
+    processedValues,
+  };
+}
+
+/**
+ * process images data
  */
 export function processImagesData(
   data: Partial<ImagesData>,
@@ -281,12 +304,56 @@ export function processImagesData(
       });
     });
   });
-  const { imageSetData, orderedMap } = imagesExploreAppModel.getDataAsImageSet(
-    groupData(orderBy(images)),
+  const { mediaSetData, orderedMap } = getDataAsMediaSetNestedObject({
+    data: groupData(_.orderBy(images)),
     groupingSelectOptions,
-    ['step'],
-  );
-  return { imageSetData, orderedMap, record_range, index_range };
+    defaultGroupFields: ['step'],
+  });
+
+  return { imageSetData: mediaSetData, orderedMap, record_range, index_range };
+}
+
+export function processAudiosData(
+  data: Partial<ImagesData>,
+  params?: { [key: string]: unknown },
+) {
+  const { record_range, iters, values, index_range, context, name } = data;
+  const groupingSelectOptions = params
+    ? imagesExploreAppModel.getGroupingSelectOptions({
+        params: getObjectPaths(params, params),
+      })
+    : [];
+  let audiosSetData: any[] = [];
+
+  values?.forEach((stepData: IImageData[], stepIndex: number) => {
+    stepData.forEach((audio: IImageData) => {
+      const audioKey = encode({
+        name,
+        traceContext: context,
+        index: audio.index,
+        step: iters?.[stepIndex],
+        caption: audio.caption,
+      });
+      const seqKey = encode({
+        name,
+        traceContext: context,
+      });
+      audiosSetData.push({
+        ...audio,
+        audio_name: name,
+        step: iters?.[stepIndex],
+        context: context,
+        key: audioKey,
+        seqKey: seqKey,
+      });
+    });
+  });
+  const { mediaSetData, orderedMap } = getDataAsMediaSetNestedObject({
+    data: groupData(_.orderBy(audiosSetData)),
+    groupingSelectOptions,
+    defaultGroupFields: ['step'],
+  });
+  return { audiosSetData: mediaSetData, orderedMap, record_range, index_range };
 }
 
 function groupData(data: IProcessedImageData[]): {
@@ -305,7 +372,7 @@ function groupData(data: IProcessedImageData[]): {
   for (let i = 0; i < data.length; i++) {
     const groupValue: { [key: string]: string } = {};
     ['step'].forEach((field) => {
-      groupValue[field] = get(data[i], field);
+      groupValue[field] = getValue(data[i], field);
     });
     const groupKey = encode(groupValue);
     if (groupValues.hasOwnProperty(groupKey)) {
@@ -338,7 +405,7 @@ export function reformatArrayQueries(
  */
 export function processPlotlyData(data: Partial<IPlotlyData>) {
   const { record_range, iters, values } = data;
-  const processedValue = head(values);
+  const processedValue = _.head(values);
   const originalValues = values;
 
   processedValue.layout.autosize = true;
@@ -350,3 +417,12 @@ export function processPlotlyData(data: Partial<IPlotlyData>) {
     originalValues,
   };
 }
+
+export const VisualizationMenuTitles = {
+  images: 'Images',
+  distributions: 'Distributions',
+  audios: 'Audios',
+  videos: 'Videos',
+  texts: 'Texts',
+  figures: 'Plotly',
+};

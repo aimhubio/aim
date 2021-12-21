@@ -20,6 +20,7 @@ import { ISelectFormProps } from 'types/pages/scatters/components/SelectForm/Sel
 import { formatSystemMetricName } from 'utils/formatSystemMetricName';
 import { isSystemMetric } from 'utils/isSystemMetric';
 import getObjectPaths from 'utils/getObjectPaths';
+import alphabeticalSortComparator from 'utils/alphabeticalSortComparator';
 
 import './SelectForm.scss';
 
@@ -107,7 +108,12 @@ function SelectForm({
         });
       });
     }
-    return data.concat(systemOptions);
+    const comparator = alphabeticalSortComparator({
+      orderBy: 'label',
+    });
+
+    systemOptions.sort(comparator);
+    return data.sort(comparator).concat(systemOptions);
   }, [projectsData]);
 
   const dropDownOptions: { value: string; label: string }[] =
@@ -153,25 +159,6 @@ function SelectForm({
           >
             <Box display='flex' alignItems='center' flex={1}>
               <Dropdown
-                key='y-axis'
-                size='medium'
-                isColored
-                onChange={(option) => onChange('y', option)}
-                value={selectedOptionsData?.options[0]?.label || null}
-                options={dropDownOptions}
-                onMenuOpen={() => setOpen({ y: true, x: false })}
-                onMenuClose={() => setOpen({ y: false, x: false })}
-                open={open.y}
-                withPortal
-                label='Y axis'
-                icon={{ name: 'y-axis' }}
-              />
-              <Divider
-                style={{ margin: '0 1rem' }}
-                orientation='vertical'
-                flexItem
-              />
-              <Dropdown
                 key='x-axis'
                 size='medium'
                 isColored
@@ -184,6 +171,25 @@ function SelectForm({
                 withPortal
                 label='X axis'
                 icon={{ name: 'x-axis' }}
+              />
+              <Divider
+                style={{ margin: '0 1rem' }}
+                orientation='vertical'
+                flexItem
+              />
+              <Dropdown
+                key='y-axis'
+                size='medium'
+                isColored
+                onChange={(option) => onChange('y', option)}
+                value={selectedOptionsData?.options[0]?.label || null}
+                options={dropDownOptions}
+                onMenuOpen={() => setOpen({ y: true, x: false })}
+                onMenuClose={() => setOpen({ y: false, x: false })}
+                open={open.y}
+                withPortal
+                label='Y axis'
+                icon={{ name: 'y-axis' }}
               />
             </Box>
           </Box>

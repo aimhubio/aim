@@ -26,6 +26,7 @@ import {
 import { isSystemMetric } from 'utils/isSystemMetric';
 import { formatSystemMetricName } from 'utils/formatSystemMetricName';
 import contextToString from 'utils/contextToString';
+import { formatValue } from 'utils/formatValue';
 
 const icons: { [key: string]: string } = {
   color: 'coloring',
@@ -359,7 +360,7 @@ function metricsTableRowRenderer(
               <Badge
                 size='small'
                 color={COLORS[0][0]}
-                label={rowData.context[0] || 'No Context'}
+                label={rowData.context[0] || 'Empty Context'}
               />
             ),
         };
@@ -403,7 +404,7 @@ function metricsTableRowRenderer(
                   />
                 ) : (
                   <Tooltip key={item} title={value}>
-                    <span>{value}</span>
+                    <span>{formatValue(value)}</span>
                   </Tooltip>
                 );
               })}
@@ -460,7 +461,7 @@ function metricsTableRowRenderer(
             key={item}
             size='small'
             color={COLORS[0][0]}
-            label={item || 'No Context'}
+            label={item || 'Empty Context'}
           />
         )),
       },

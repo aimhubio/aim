@@ -18,7 +18,7 @@ export interface IMediaSetProps {
   mediaItemHeight: number;
   syncHoverState?: (args: any) => void;
   focusedState: IFocusedState;
-  additionalProperties: IMediaPanelProps['additionalProperties'];
+  additionalProperties?: IMediaPanelProps['additionalProperties'];
   tableHeight: IMediaPanelProps['tableHeight'];
   tooltip?: ITooltipContent;
   mediaType: MediaTypeEnum;

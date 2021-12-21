@@ -1,12 +1,12 @@
 import React, { ChangeEvent } from 'react';
-import _, { isEmpty } from 'lodash-es';
+import _ from 'lodash-es';
 import moment from 'moment';
 import { saveAs } from 'file-saver';
 
 import { RowHeightSize } from 'config/table/tableConfigs';
 import { BookmarkNotificationsEnum } from 'config/notification-messages/notificationMessages';
 import { ResizeModeEnum, RowHeightEnum } from 'config/enums/tableEnums';
-import { IMAGE_SIZE_CHANGE_DELAY } from 'config/imagesConfigs/imagesConfig';
+import { IMAGE_SIZE_CHANGE_DELAY } from 'config/mediaConfigs/mediaConfigs';
 import {
   MediaItemAlignmentEnum,
   ImageRenderingEnum,
@@ -69,8 +69,10 @@ import { formatToPositiveNumber } from 'utils/formatToPositiveNumber';
 import getMinAndMaxBetweenArrays from 'utils/getMinAndMaxBetweenArrays';
 import getTooltipData from 'utils/app/getTooltipData';
 import filterTooltipContent from 'utils/filterTooltipContent';
+import { getDataAsMediaSetNestedObject } from 'utils/app/getDataAsMediaSetNestedObject';
 import { getCompatibleSelectConfig } from 'utils/app/getCompatibleSelectConfig';
-import { getSortedFields } from 'utils/getSortedFileds';
+import { getSortedFields } from 'utils/getSortedFields';
+import { getValue } from 'utils/helper';
 
 import createModel from '../model';
 
@@ -411,7 +413,7 @@ function processData(data: any[]): {
       configData?.table?.sortFields?.map(
         (f: any) =>
           function (metric: any) {
-            return _.get(metric, f[0], '');
+            return getValue(metric, f[0], '');
           },
       ) ?? [],
       configData?.table?.sortFields?.map((f: any) => f[1]) ?? [],
@@ -440,10 +442,11 @@ function setModelData(rawData: any[], configData: IImagesExploreAppConfig) {
       contexts,
     }),
   ];
-  const { imageSetData, orderedMap } = getDataAsImageSet(
+  const { mediaSetData, orderedMap } = getDataAsMediaSetNestedObject({
     data,
     groupingSelectOptions,
-  );
+    model,
+  });
 
   tooltipData = getTooltipData({
     processedData: data,
@@ -479,12 +482,12 @@ function setModelData(rawData: any[], configData: IImagesExploreAppConfig) {
     ...config.images,
     stepRange: !config.images.calcRanges
       ? config.images.stepRange
-      : !isEmpty(rawData)
+      : !_.isEmpty(rawData)
       ? (rawData[0].ranges.record_range as number[])
       : [],
     indexRange: !config.images.calcRanges
       ? config.images.indexRange
-      : !isEmpty(rawData)
+      : !_.isEmpty(rawData)
       ? (rawData[0].ranges.index_range as number[])
       : [],
     recordSlice: getMinAndMaxBetweenArrays(
@@ -515,7 +518,7 @@ function setModelData(rawData: any[], configData: IImagesExploreAppConfig) {
     config,
     params,
     data,
-    imagesData: imageSetData,
+    imagesData: mediaSetData,
     orderedMap,
     tableData: tableData.rows,
     tableColumns: getImagesExploreTableColumns(
@@ -545,10 +548,11 @@ function updateModelData(
       contexts,
     }),
   ];
-  const { imageSetData, orderedMap } = getDataAsImageSet(
+  const { mediaSetData, orderedMap } = getDataAsMediaSetNestedObject({
     data,
     groupingSelectOptions,
-  );
+    model,
+  });
   tooltipData = getTooltipData({
     processedData: data,
     paramKeys: sortedParams,
@@ -602,7 +606,7 @@ function updateModelData(
   model.setState({
     config: configData,
     data: model.getState()?.data,
-    imagesData: imageSetData,
+    imagesData: mediaSetData,
     orderedMap,
     // chartTitleData: getChartTitleData(data),
     tableData: tableData.rows,
@@ -704,7 +708,7 @@ function groupData(data: any[]): any {
   for (let i = 0; i < data.length; i++) {
     const groupValue: { [key: string]: string } = {};
     groupingFields.forEach((field) => {
-      groupValue[field] = _.get(data[i], field);
+      groupValue[field] = getValue(data[i], field);
     });
     const groupKey = encode(groupValue);
     if (groupValues.hasOwnProperty(groupKey)) {
@@ -883,7 +887,7 @@ function getDataAsImageSet(
   groupingSelectOptions: IGroupingSelectOption[],
   defaultGroupFields?: string[],
 ) {
-  if (!isEmpty(data)) {
+  if (!_.isEmpty(data)) {
     const configData: IImagesExploreAppConfig | undefined =
       model.getState()?.config;
     const imageSetData: object = {};
@@ -901,12 +905,13 @@ function getDataAsImageSet(
     data.forEach((group: any) => {
       const path = groupFields?.reduce(
         (acc: string[], field: string, index: number) => {
-          const value = _.get(group.data[0], field);
+          const value = getValue(group.data[0], field);
           _.set(
             imagesDataForOrdering,
             acc.concat(['ordering']),
             new Set([
-              ...(_.get(imagesDataForOrdering, acc.concat(['ordering'])) || []),
+              ...(getValue(imagesDataForOrdering, acc.concat(['ordering'])) ||
+                []),
               value,
             ]),
           );
@@ -938,7 +943,7 @@ function getDataAsImageSet(
     });
 
     return {
-      imageSetData: isEmpty(imageSetData) ? data[0].data : imageSetData,
+      imageSetData: _.isEmpty(imageSetData) ? data[0].data : imageSetData,
       orderedMap: imagesDataForOrdering,
     };
   } else {
@@ -1138,7 +1143,7 @@ function getDataAsTableRows(
 
         if (!dynamicUpdate) {
           paramKeys.forEach((paramKey) => {
-            const value = _.get(metric.run.params, paramKey, '-');
+            const value = getValue(metric.run.params, paramKey, '-');
             rowValues[paramKey] = formatValue(value);
             if (columnsValues.hasOwnProperty(paramKey)) {
               if (
@@ -1314,7 +1319,7 @@ function updateTableSortFields(sortFields: SortField[]) {
   }
   analytics.trackEvent(
     `[ImagesExplorer][Table] ${
-      isEmpty(sortFields) ? 'Reset' : 'Apply'
+      _.isEmpty(sortFields) ? 'Reset' : 'Apply'
     } table sorting by a key`,
   );
 }
@@ -1341,7 +1346,7 @@ function updateImagesSortFields(sortFields: SortField[], sortFieldsDict: any) {
   }
   analytics.trackEvent(
     `[ImagesExplorer] ${
-      isEmpty(sortFields) ? 'Reset' : 'Apply'
+      _.isEmpty(sortFields) ? 'Reset' : 'Apply'
     } images sorting by a key`,
   );
 }
@@ -1678,9 +1683,9 @@ function onColumnsOrderChange(columnsOrder: any) {
     updateModelData(config);
   }
   if (
-    isEmpty(columnsOrder?.left) &&
-    isEmpty(columnsOrder?.middle) &&
-    isEmpty(columnsOrder?.right)
+    _.isEmpty(columnsOrder?.left) &&
+    _.isEmpty(columnsOrder?.middle) &&
+    _.isEmpty(columnsOrder?.right)
   ) {
     analytics.trackEvent('[ImagesExplorer][Table] Reset table columns order');
   }
@@ -1710,7 +1715,7 @@ function onColumnsVisibilityChange(hiddenColumns: string[]) {
   }
   if (hiddenColumns[0] === 'all') {
     analytics.trackEvent('[ImagesExplorer][Table] Hide all table columns');
-  } else if (isEmpty(hiddenColumns)) {
+  } else if (_.isEmpty(hiddenColumns)) {
     analytics.trackEvent('[ImagesExplorer][Table] Show all table columns');
   }
 }
@@ -1922,7 +1927,7 @@ function onImageAlignmentChange(
 function isRangePanelShow() {
   return (
     !!getStateFromUrl('select')?.query ||
-    !isEmpty(getStateFromUrl('select')?.options) ||
+    !_.isEmpty(getStateFromUrl('select')?.options) ||
     (!!getStateFromUrl('select')?.advancedQuery &&
       !!getStateFromUrl('select')?.advancedMode)
   );

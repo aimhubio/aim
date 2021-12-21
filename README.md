@@ -355,14 +355,15 @@ The high-level features we are going to work on the next few months
   - [x] Images tracking and visualization (Start: _Oct 18 2021_, Shipped: _Nov 19 2021_)
   - [x] Distributions tracking and visualization (Start: _Nov 10 2021_, Shipped: _Dec 3 2021_)
   - [x] Jupyter integration (Start: _Nov 18 2021_, Shipped: _Dec 3 2021_)
+  - [x] Audio tracking and visualization (Start: _Dec 6 2021_, Shipped: _Dec 17 2021_)
+  - [x] Transcripts tracking and visualization (Start: _Dec 6 2021_, Shipped: _Dec 17 2021_)
+  - [x] Plotly integration (Start: _Dec 1 2021_, Shipped: _Dec 17 2021_)
+  - [x] Colab integration (Start: _Nov 18 2021_, Shipped: _Dec 17 2021_)
 
 **In progress:**
   - [ ] Centralized tracking server (Start: _Oct 18 2021_)
-  - [ ] Audio tracking and visualization (Start: _Dec 6 2021_)
-  - [ ] Transcripts tracking and visualization (Start: _Dec 6 2021_)
-  - [ ] Plotly integration (Start: _Dec 1 2021_)
-  - [ ] Colab integration (Start: _Nov 18 2021_)
   - [ ] Scikit-learn integration (Start: _Nov 18 2021_)
+  - [ ] Tensorboard adaptor - visualize TensorBoard logs with Aim (Start: _Dec 17 2021_)
 
 ### TODO
 
@@ -383,7 +384,6 @@ The high-level features we are going to work on the next few months
   - [ ] Raytune integration
   - [ ] Google MLMD
   - [ ] MLFlow adaptor (visualize MLflow logs with Aim)
-  - [ ] Tensorboard adaptor (visualize TensorBoard logs with Aim) 
 
 ## Community
 

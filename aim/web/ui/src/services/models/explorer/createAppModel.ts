@@ -171,6 +171,7 @@ import sortDependingArrays from 'utils/app/sortDependingArrays';
 import { isSystemMetric } from 'utils/isSystemMetric';
 import setDefaultAppConfigData from 'utils/app/setDefaultAppConfigData';
 import getAppConfigData from 'utils/app/getAppConfigData';
+import { getValue } from 'utils/helper';
 
 import { AppDataTypeEnum, AppNameEnum } from './index';
 
@@ -242,7 +243,7 @@ function createAppModel(appConfig: IAppInitialConfig) {
               middle: [],
               right: [],
             },
-            height: '',
+            height: '0.5',
           };
         }
         if (components?.charts?.[0]) {
@@ -346,7 +347,7 @@ function createAppModel(appConfig: IAppInitialConfig) {
               middle: [],
               right: [],
             },
-            height: '',
+            height: '0.5',
           };
           if (appName === AppNameEnum.RUNS) {
             config.pagination = {
@@ -556,6 +557,7 @@ function createAppModel(appConfig: IAppInitialConfig) {
 
             liveUpdateInstance?.start({
               q: query,
+              p: configData?.chart?.densityType,
               ...(metric && { x_axis: metric }),
             });
           }
@@ -725,7 +727,7 @@ function createAppModel(appConfig: IAppInitialConfig) {
 
             if (!dynamicUpdate) {
               paramKeys.forEach((paramKey) => {
-                const value = _.get(metric.run.params, paramKey, '-');
+                const value = getValue(metric.run.params, paramKey, '-');
                 rowValues[paramKey] = formatValue(value);
                 if (columnsValues.hasOwnProperty(paramKey)) {
                   if (
@@ -881,7 +883,7 @@ function createAppModel(appConfig: IAppInitialConfig) {
           configData?.table?.sortFields?.map(
             (f: SortField) =>
               function (metric: IMetric) {
-                return _.get(metric, f[0], '');
+                return getValue(metric, f[0], '');
               },
           ) ?? [],
           configData?.table?.sortFields?.map((f: SortField) => f[1]) ?? [],
@@ -1287,7 +1289,7 @@ function createAppModel(appConfig: IAppInitialConfig) {
       for (let i = 0; i < data.length; i++) {
         const groupValue: { [key: string]: string } = {};
         groupingFields.forEach((field) => {
-          groupValue[field] = _.get(data[i], field);
+          groupValue[field] = getValue(data[i], field);
         });
         const groupKey = encode(groupValue);
         if (groupValues.hasOwnProperty(groupKey)) {
@@ -2204,7 +2206,7 @@ function createAppModel(appConfig: IAppInitialConfig) {
         for (let i = 0; i < data.length; i++) {
           const groupValue: { [key: string]: string } = {};
           groupingFields.forEach((field) => {
-            groupValue[field] = _.get(data[i], field);
+            groupValue[field] = getValue(data[i], field);
           });
           const groupKey = encode(groupValue);
           if (groupValues.hasOwnProperty(groupKey)) {
@@ -2406,7 +2408,7 @@ function createAppModel(appConfig: IAppInitialConfig) {
               }
             });
             paramKeys.forEach((paramKey) => {
-              const value = _.get(metric.run.params, paramKey, '-');
+              const value = getValue(metric.run.params, paramKey, '-');
               rowValues[paramKey] = formatValue(value);
               if (columnsValues.hasOwnProperty(paramKey)) {
                 if (!columnsValues[paramKey].includes(value)) {
@@ -2976,7 +2978,7 @@ function createAppModel(appConfig: IAppInitialConfig) {
               });
 
               paramKeys.forEach((paramKey) => {
-                const value = _.get(metric.run.params, paramKey, '-');
+                const value = getValue(metric.run.params, paramKey, '-');
                 rowValues[paramKey] = formatValue(value);
                 if (columnsValues.hasOwnProperty(paramKey)) {
                   if (!columnsValues[paramKey].includes(value)) {
@@ -3115,13 +3117,17 @@ function createAppModel(appConfig: IAppInitialConfig) {
                         }
                       });
                     } else {
-                      const paramValue = _.get(run.run.params, label);
+                      const paramValue = getValue(run.run.params, label);
                       values[label] = formatValue(paramValue, null);
                       if (values[label] !== null) {
                         if (typeof values[label] === 'string') {
-                          dimension[label].scaleType = ScaleEnum.Point;
+                          if (dimension[label]) {
+                            dimension[label].scaleType = ScaleEnum.Point;
+                          }
                         }
-                        dimension[label].values.add(values[label]);
+                        if (dimension[label]) {
+                          dimension[label].values.add(values[label]);
+                        }
                       }
                     }
                   },
@@ -3298,7 +3304,7 @@ function createAppModel(appConfig: IAppInitialConfig) {
         for (let i = 0; i < data.length; i++) {
           const groupValue: { [key: string]: unknown } = {};
           groupingFields.forEach((field) => {
-            groupValue[field] = _.get(data[i], field);
+            groupValue[field] = getValue(data[i], field);
           });
           const groupKey = encode(groupValue);
           if (groupValues.hasOwnProperty(groupKey)) {
@@ -3432,7 +3438,7 @@ function createAppModel(appConfig: IAppInitialConfig) {
             configData?.table?.sortFields?.map(
               (f: SortField) =>
                 function (run: IParam) {
-                  return _.get(run, f[0], '');
+                  return getValue(run, f[0], '');
                 },
             ) ?? [],
             configData?.table?.sortFields?.map((f: SortField) => f[1]) ?? [],
@@ -4024,8 +4030,8 @@ function createAppModel(appConfig: IAppInitialConfig) {
           displayName: string;
           dimensionType: string;
         }[][] = [];
-        const chartData: IPoint[] = [];
-        processedData.forEach(
+
+        const chartData = processedData.map(
           ({ chartIndex, color, data }: IMetricsCollection<IParam>) => {
             if (!dimensionsByChartIndex[chartIndex]) {
               dimensionsByChartIndex[chartIndex] = [];
@@ -4071,7 +4077,7 @@ function createAppModel(appConfig: IAppInitialConfig) {
                         }
                       });
                     } else {
-                      const paramValue = _.get(run.run.params, label);
+                      const paramValue = getValue(run.run.params, label);
                       values[i] = formatValue(paramValue, null);
                       if (values[i] !== null) {
                         if (typeof values[i] === 'string') {
@@ -4083,7 +4089,7 @@ function createAppModel(appConfig: IAppInitialConfig) {
                   },
                 );
 
-                chartData.push({
+                return {
                   chartIndex,
                   key: run.key,
                   groupKey: run.key,
@@ -4092,7 +4098,7 @@ function createAppModel(appConfig: IAppInitialConfig) {
                     yValues: [values[0] ?? '-'],
                     xValues: [values[1] ?? '-'],
                   },
-                });
+                };
               });
           },
         );
@@ -4102,6 +4108,7 @@ function createAppModel(appConfig: IAppInitialConfig) {
         );
 
         return dimensionsByChartIndex
+          .filter((dimension) => !_.isEmpty(dimension))
           .map((chartDimensions, i: number) => {
             const dimensions: IDimensionType[] = [];
             chartDimensions.forEach((dimension) => {
@@ -4130,10 +4137,7 @@ function createAppModel(appConfig: IAppInitialConfig) {
               dimensions,
               data: groupedByChartIndex[i],
             };
-          })
-          .filter(
-            (data) => !_.isEmpty(data.data) && !_.isEmpty(data.dimensions),
-          );
+          });
       }
 
       function getDataAsTableRows(
@@ -4267,7 +4271,7 @@ function createAppModel(appConfig: IAppInitialConfig) {
               });
 
               paramKeys.forEach((paramKey) => {
-                const value = _.get(metric.run.params, paramKey, '-');
+                const value = getValue(metric.run.params, paramKey, '-');
                 rowValues[paramKey] = formatValue(value);
                 if (columnsValues.hasOwnProperty(paramKey)) {
                   if (!columnsValues[paramKey].includes(value)) {
@@ -4382,7 +4386,7 @@ function createAppModel(appConfig: IAppInitialConfig) {
             configData?.table?.sortFields?.map(
               (f: SortField) =>
                 function (run: IParam) {
-                  return _.get(run, f[0], '');
+                  return getValue(run, f[0], '');
                 },
             ) ?? [],
             configData?.table?.sortFields?.map((f: SortField) => f[1]) ?? [],
@@ -4441,7 +4445,7 @@ function createAppModel(appConfig: IAppInitialConfig) {
         for (let i = 0; i < data.length; i++) {
           const groupValue: { [key: string]: unknown } = {};
           groupingFields.forEach((field) => {
-            groupValue[field] = _.get(data[i], field);
+            groupValue[field] = getValue(data[i], field);
           });
           const groupKey = encode(groupValue);
           if (groupValues.hasOwnProperty(groupKey)) {

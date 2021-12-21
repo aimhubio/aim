@@ -33,6 +33,7 @@ import { ISelectOption } from 'types/services/models/explorer/createAppModel';
 import contextToString from 'utils/contextToString';
 import { formatSystemMetricName } from 'utils/formatSystemMetricName';
 import { isSystemMetric } from 'utils/isSystemMetric';
+import alphabeticalSortComparator from 'utils/alphabeticalSortComparator';
 
 import './SelectForm.scss';
 
@@ -142,7 +143,11 @@ function SelectForm({
         }
       }
     }
-    return data.concat(systemOptions);
+    const comparator = alphabeticalSortComparator<ISelectOption>({
+      orderBy: 'label',
+    });
+    systemOptions.sort(comparator);
+    return data.sort(comparator).concat(systemOptions);
   }, [projectsData]);
 
   function getOption(
@@ -153,7 +158,7 @@ function SelectForm({
   ): ISelectOption {
     return {
       label: `${system ? formatSystemMetricName(key) : key}`,
-      group: system ? formatSystemMetricName(key) : key,
+      group: system ? 'System' : key,
       color: COLORS[0][index % COLORS[0].length],
       value: {
         option_name: key,
