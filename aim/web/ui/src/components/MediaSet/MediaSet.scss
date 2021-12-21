@@ -48,12 +48,6 @@
         margin-right: toRem(10px);
         height: 100%;
         position: absolute;
-        &:hover {
-          img {
-            border: toRem(2px) solid #b9d5f8;
-            padding: toRem(1px);
-          }
-        }
         &__imageWrapper {
           height: 100%;
           width: 100%;
@@ -99,20 +93,15 @@
           border: toRem(2px) solid transparent;
           padding: toRem(1px);
         }
-
         .MuiSkeleton-root {
           margin-top: toRem(5px);
           margin-left: toRem(5px);
         }
-
-        .focus > img {
+        .focus img {
           border: toRem(2px) solid $primary-color;
-          padding: toRem(1px);
         }
-
-        .active > img {
+        .active img {
           border: toRem(2px) solid #b9d5f8;
-          padding: toRem(1px);
         }
         &__image {
           &--pixelated {

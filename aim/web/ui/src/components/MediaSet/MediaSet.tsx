@@ -119,7 +119,11 @@ const MediaSet = ({
       if (additionalProperties.alignmentType === MediaItemAlignmentEnum.Width) {
         let width =
           (wrapperOffsetWidth * additionalProperties?.mediaItemSize) / 100;
-        return (maxHeight / maxWidth) * width;
+        return (
+          (maxHeight / maxWidth) * width +
+          ITEM_CAPTION_HEIGHT +
+          ITEM_WRAPPER_HEIGHT
+        );
       }
 
       return mediaItemHeight + ITEM_CAPTION_HEIGHT + ITEM_WRAPPER_HEIGHT;

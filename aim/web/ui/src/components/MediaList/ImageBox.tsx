@@ -30,7 +30,6 @@ const ImageBox = ({
   let [blobData, setBlobData] = React.useState<string>(
     blobsURIModel.getState()[blob_uri] ?? null,
   );
-  console.log(data, style);
 
   React.useEffect(() => {
     let timeoutID: number;
@@ -102,7 +101,6 @@ const ImageBox = ({
             : ''
         }`}
         data-key={`${data.key}`}
-        //@ts-ignore
         data-seqkey={`${data.seqKey}`}
         data-mediasetitem={'mediaSetItem'}
         // onClick={onClick}
