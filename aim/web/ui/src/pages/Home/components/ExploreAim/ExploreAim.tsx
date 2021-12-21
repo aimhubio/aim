@@ -15,37 +15,46 @@ export interface IExploreCard {
   title: string;
   description: string;
   path: string;
+  icon: string;
 }
 const cardsData: IExploreCard[] = [
   {
     title: 'Runs Explorer',
-    description: 'We constantly seek to improve Aim for the community.',
+    description:
+      'Runs explorer will help you to holistically view all your runs, each metric last tracked values and tracked hyperparameters.',
     path: 'runs',
+    icon: 'runs',
   },
   {
     title: 'Metrics Explorer',
     description:
-      "Aim UI uses segment's analytics toolkit to collect basic info about...",
+      'Metrics explorer helps you to compare 100s of metrics within a few clicks. It helps to save lots of time compared to other open-source experiment tracking tools.',
     path: 'metrics',
+    icon: 'metrics',
+  },
+  {
+    title: 'Images Explorer',
+    description:
+      'Track intermediate images and search, compare them on the Images Explorer.',
+    path: 'images',
+    icon: 'images',
   },
   {
     title: 'Params Explorer',
     description:
-      "Aim UI uses segment's analytics toolkit to collect basic info about...",
+      'Params explorer enables a parallel coordinates view for metrics and params. Very helpful when doing hyperparameter search.',
     path: 'params',
+    icon: 'params',
   },
   {
-    title: 'Tags',
-    description: 'We constantly seek to improve Aim for the community.',
-    path: 'tags',
-  },
-  {
-    title: 'Bookmarks',
+    title: 'Scatters Explorer',
     description:
-      "Aim UI uses segment's analytics toolkit to collect basic info about...",
-    path: 'bookmarks',
+      'Scatter explorer helps to explore and learn relationship, correlations, and clustering effects between metrics and parameters.',
+    path: 'scatters',
+    icon: 'scatterplot',
   },
 ];
+
 function ExploreAim(): React.FunctionComponentElement<React.ReactNode> {
   return (
     <div className='ExploreAim'>
