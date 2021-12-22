@@ -1910,13 +1910,8 @@ function onImageAlignmentChange(
   }
 }
 
-function isRangePanelShow() {
-  return (
-    !!getStateFromUrl('select')?.query ||
-    !_.isEmpty(getStateFromUrl('select')?.images) ||
-    (!!getStateFromUrl('select')?.advancedQuery &&
-      !!getStateFromUrl('select')?.advancedMode)
-  );
+function showRangePanel() {
+  return !model.getState().requestIsPending && !model.getState().queryIsEmpty;
 }
 
 const imagesExploreAppModel = {
@@ -1965,7 +1960,7 @@ const imagesExploreAppModel = {
   onImageSizeChange,
   onImageRenderingChange,
   onImageAlignmentChange,
-  isRangePanelShow,
+  showRangePanel,
   getGroupingSelectOptions,
   getDataAsImageSet,
 };
