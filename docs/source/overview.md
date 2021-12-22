@@ -53,6 +53,11 @@ Params explorer enables a parallel coordinates view for metrics and params. Very
 
 <img style="border: 1px solid #1d2253" src="./_static/images/overview/params.png" />
 
+### Scatter explorer
+Scatter explorer helps to explore and learn relationship, correlations, and clustering effects between metrics and parameters.
+
+<img style="border: 1px solid #1d2253" src="./_static/images/overview/scatter.png" />
+
 ### Query metadata programmatically
 Use the same pythonic if statement to query the data through the Aim SDK programmatically.
 
@@ -96,7 +101,6 @@ Order of magnitude faster training run comparison with Aim
 
 **Beloved TB visualizations to be added on Aim**
 
-- Distributions / gradients visualizations.
 - Embedding projector.
 - Neural network visualization.
 
