@@ -12,6 +12,7 @@ import {
   getAxisScale,
   drawHoverAttributes,
 } from 'utils/d3';
+import drawScatterTrendline from 'utils/d3/drawScatterTrendline';
 
 import { Text } from '../kit';
 
@@ -147,6 +148,15 @@ const ScatterPlot = React.forwardRef(function ScatterPlot(
       drawAxisLines: { x: false, y: false },
       drawAxisLabels: { x: false, y: false },
     });
+
+    if (true) {
+      drawScatterTrendline({
+        data,
+        xScale,
+        yScale,
+        targetRef: linesNodeRef,
+      });
+    }
   }
 
   function renderChart() {

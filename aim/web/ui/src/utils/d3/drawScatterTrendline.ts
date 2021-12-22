@@ -1,0 +1,45 @@
+import * as d3 from 'd3';
+
+import { IPoint } from 'components/ScatterPlot';
+
+import {
+  linearRegression,
+  linearRegressionLine,
+} from 'utils/regression/linearRegrression';
+
+/**
+ * Given the params with the type for trendline
+ * respectively, draws a line on the ScatterPlot
+ */
+function drawScatterTrendline({ data, xScale, yScale, targetRef }: any): void {
+  if (!targetRef?.current) {
+    return;
+  }
+
+  const points = data
+    .map((d: IPoint) => [xScale(d.data.xValues[0]), yScale(d.data.yValues[0])])
+    .filter((d: [number, number]) => d[0] !== undefined && d[1] !== undefined)
+    .sort((a: [number, number], b: [number, number]) => a[0] - b[0]);
+
+  const slr = linearRegression(points);
+  const slrLine = linearRegressionLine(slr);
+
+  const firstX = points[0][0];
+  const lastX = points[points.length - 1][0];
+  const xCoordinates = [firstX, lastX];
+
+  const regressionPoints = xCoordinates.map((d) => [d, slrLine(d as number)]);
+
+  const line = d3
+    .line()
+    .x((d) => d[0])
+    .y((d) => d[1]);
+
+  targetRef.current
+    .append('path')
+    .datum(regressionPoints)
+    .classed('RegressionLine', true)
+    .attr('d', line);
+}
+
+export default drawScatterTrendline;
