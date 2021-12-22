@@ -148,7 +148,7 @@ from aim import Audio
 
 for step in range(1000):
     my_run.track(
-        Audio(tensor), # Pass audio file or tensor
+        Audio(arr), # Pass audio file or numpy array
         name='outputs', # The name of distributions
         step=step,   # Step index (optional)
         epoch=0,     # Epoch (optional)
