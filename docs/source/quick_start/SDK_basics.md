@@ -78,7 +78,7 @@ for step in range(1000):
 
 ### Track images with Run
 
-Track images to explore model inputs, outputs, confusion matrices, weights, etc:
+Track images to explore model inputs, outputs, confusion matrices, weights, etc.
 
 ```python
 from aim import Image
@@ -137,6 +137,72 @@ for step in range(1000):
 
 ```
 `Distribution` class full [spec](../refs/sdk.html#module-aim.sdk.objects.distribution).
+
+### Track audios with Run
+
+Track any audio objects.
+To store audios pass a single Audio object or list of objects to the `track` method.
+
+```python
+from aim import Audio
+
+for step in range(1000):
+    my_run.track(
+        Audio(tensor), # Pass audio file or tensor
+        name='outputs', # The name of distributions
+        step=step,   # Step index (optional)
+        epoch=0,     # Epoch (optional)
+        context={    # Context (optional)
+            'subset': 'train',
+        },
+    )
+
+```
+`Audio` class full [spec](../refs/sdk.html#module-aim.sdk.objects.audio).
+
+### Track texts with Run
+
+Track inputs, outputs, generated texts to explore model performance.
+To store texts pass a single Text object or list of objects to the `track` method.
+
+```python
+from aim import Text
+
+for step in range(1000):
+    my_run.track(
+        Text(string), # Pass a string you want to track
+        name='outputs', # The name of distributions
+        step=step,   # Step index (optional)
+        epoch=0,     # Epoch (optional)
+        context={    # Context (optional)
+            'subset': 'train',
+        },
+    )
+
+```
+`Text` class full [spec](../refs/sdk.html#module-aim.sdk.objects.text).
+
+### Track plotly figures with Run
+
+Track any plotly figure and visualize it in UI.
+To store a plotly figures pass a plotly figure to the `Figure` object.
+
+```python
+from aim import Figure
+
+for step in range(1000):
+    my_run.track(
+        Figure(fig_obj), # Pass any plotly figure
+        name='plotly_bars', # The name of distributions
+        step=step,   # Step index (optional)
+        epoch=0,     # Epoch (optional)
+        context={    # Context (optional)
+            'subset': 'train',
+        },
+    )
+
+```
+`Figure` class full [spec](../refs/sdk.html#module-aim.sdk.objects.figure).
 
 ### Query Runs and saved metadata
 
