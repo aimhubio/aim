@@ -105,4 +105,5 @@ export type IconName =
   | 'play'
   | 'pause'
   | 'voice-on'
-  | 'voice-off';
+  | 'voice-off'
+  | 'trendline';
