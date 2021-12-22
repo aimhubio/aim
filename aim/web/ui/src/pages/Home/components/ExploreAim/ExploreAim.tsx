@@ -21,35 +21,35 @@ const cardsData: IExploreCard[] = [
   {
     title: 'Runs Explorer',
     description:
-      'Runs explorer will help you to holistically view all your runs, each metric last tracked values and tracked hyperparameters.',
+      'View all your runs holistically on Runs Explorer: all hyperparameters, all metric last values',
     path: 'runs',
     icon: 'runs',
   },
   {
     title: 'Metrics Explorer',
     description:
-      'Metrics explorer helps you to compare 100s of metrics within a few clicks. It helps to save lots of time compared to other open-source experiment tracking tools.',
+      'Compare 100s of metrics in a few clicks with Metrics Explorer',
     path: 'metrics',
     icon: 'metrics',
   },
   {
     title: 'Images Explorer',
     description:
-      'Track intermediate images and search, compare them on the Images Explorer.',
+      'Track intermediate images and search, compare them on the Images Explorer',
     path: 'images',
     icon: 'images',
   },
   {
     title: 'Params Explorer',
     description:
-      'Params explorer enables a parallel coordinates view for metrics and params. Very helpful when doing hyperparameter search.',
+      'Params explorer enables a parallel coordinates view for metrics and params',
     path: 'params',
     icon: 'params',
   },
   {
     title: 'Scatters Explorer',
     description:
-      'Scatter explorer helps to explore and learn relationship, correlations, and clustering effects between metrics and parameters.',
+      'Explore and learn relationship, correlations, and clustering effects between metrics and parameters with Scatters Explorer',
     path: 'scatters',
     icon: 'scatterplot',
   },
