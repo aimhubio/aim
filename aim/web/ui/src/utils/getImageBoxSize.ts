@@ -8,7 +8,6 @@ export default function getImageBoxSize({
   additionalProperties,
   wrapperOffsetWidth,
   mediaItemHeight,
-  wrapperOffsetHeight,
 }: IGetImageBoxSizeProps): number {
   if (additionalProperties?.alignmentType === MediaItemAlignmentEnum.Width) {
     return (wrapperOffsetWidth * additionalProperties?.mediaItemSize) / 100;
@@ -17,9 +16,6 @@ export default function getImageBoxSize({
   ) {
     return (mediaItemHeight / data[index].height) * data[index].width;
   } else {
-    if (data[index].height > wrapperOffsetHeight) {
-      return (data[index].width * wrapperOffsetHeight) / data[index].height;
-    }
     return data[index].width;
   }
 }

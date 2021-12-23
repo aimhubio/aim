@@ -22,6 +22,7 @@ import { MediaItemAlignmentEnum } from 'config/enums/imageEnums';
 
 import { formatValue } from 'utils/formatValue';
 import { jsonParse } from 'utils/jsonParse';
+import getBiggestImageFromList from 'utils/getBiggestImageFromList';
 
 import { IMediaSetProps } from './MediaSet.d';
 
@@ -96,39 +97,28 @@ const MediaSet = ({
     if (path.length === 1) {
       return 0;
     }
-    let maxHeight = 0;
-    let maxWidth = 0;
-    items.forEach((item: any) => {
-      if (maxHeight < item.height) {
-        maxHeight = item.height;
-        maxWidth = item.width;
-      }
-    });
-
+    const { maxHeight, maxWidth } = getBiggestImageFromList(items);
     if (items.length > 0) {
       if (mediaType === MediaTypeEnum.IMAGE) {
         if (
           additionalProperties.alignmentType === MediaItemAlignmentEnum.Original
         ) {
-          if (maxHeight > wrapperOffsetHeight) {
-            maxHeight = wrapperOffsetHeight;
-          }
           return maxHeight + ITEM_WRAPPER_HEIGHT + ITEM_CAPTION_HEIGHT;
         }
+        if (
+          additionalProperties.alignmentType === MediaItemAlignmentEnum.Width
+        ) {
+          let width =
+            (wrapperOffsetWidth * additionalProperties?.mediaItemSize) / 100;
+          return (
+            (maxHeight / maxWidth) * width +
+            ITEM_CAPTION_HEIGHT +
+            ITEM_WRAPPER_HEIGHT
+          );
+        }
+        return mediaItemHeight + ITEM_CAPTION_HEIGHT + ITEM_WRAPPER_HEIGHT;
       }
-      if (additionalProperties.alignmentType === MediaItemAlignmentEnum.Width) {
-        let width =
-          (wrapperOffsetWidth * additionalProperties?.mediaItemSize) / 100;
-        return (
-          (maxHeight / maxWidth) * width +
-          ITEM_CAPTION_HEIGHT +
-          ITEM_WRAPPER_HEIGHT
-        );
-      }
-
-      return mediaItemHeight + ITEM_CAPTION_HEIGHT + ITEM_WRAPPER_HEIGHT;
     }
-
     return MEDIA_SET_TITLE_HEIGHT + MEDIA_SET_WRAPPER_PADDING_HEIGHT;
   }
 

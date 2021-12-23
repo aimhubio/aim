@@ -109,8 +109,8 @@ const ImageBox = ({
           <div className='MediaSet__container__mediaItemsList__imageBox__imageWrapper'>
             <div className='MediaSet__container__mediaItemsList__imageBox__imageWrapper-item'>
               <img src={`data:image/${format};base64, ${blobData}`} alt='' />
-              <Text style={{ maxWidth: style.width }} size={8} weight={400}>
-                {data.caption}
+              <Text style={{ maxWidth: style.width }} size={10} weight={400}>
+                {data.caption}Caption new
               </Text>
             </div>
             <Button

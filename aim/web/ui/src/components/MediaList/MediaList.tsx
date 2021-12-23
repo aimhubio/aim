@@ -10,6 +10,8 @@ import {
 } from 'config/mediaConfigs/mediaConfigs';
 import { MediaItemAlignmentEnum } from 'config/enums/imageEnums';
 
+import getBiggestImageFromList from 'utils/getBiggestImageFromList';
+
 import ImageBox from './ImageBox';
 import { IMediaListProps } from './MediaList.d';
 
@@ -41,7 +43,6 @@ function MediaList({
           additionalProperties,
           wrapperOffsetWidth,
           mediaItemHeight,
-          wrapperOffsetHeight,
         });
       }
     },
@@ -51,45 +52,31 @@ function MediaList({
       mediaItemHeight,
       mediaType,
       wrapperOffsetWidth,
-      wrapperOffsetHeight,
     ],
   );
 
   const listHeight = React.useMemo(() => {
     if (mediaType === MediaTypeEnum.IMAGE) {
-      let maxHeight = 0;
-      let maxWidth = 0;
-      data.forEach((item) => {
-        if (maxHeight < item.height) {
-          maxHeight = item.height;
-          maxWidth = item.width;
-        }
-      });
+      const { maxWidth, maxHeight } = getBiggestImageFromList(data);
       if (
         additionalProperties.alignmentType === MediaItemAlignmentEnum.Original
       ) {
-        if (maxHeight > wrapperOffsetHeight) {
-          maxHeight = wrapperOffsetHeight;
-        }
-        return maxHeight + ITEM_CAPTION_HEIGHT;
+        return maxHeight + ITEM_CAPTION_HEIGHT + ITEM_CAPTION_HEIGHT;
       }
       if (additionalProperties.alignmentType === MediaItemAlignmentEnum.Width) {
         let width =
           (wrapperOffsetWidth * additionalProperties?.mediaItemSize) / 100;
         return (maxHeight / maxWidth) * width + ITEM_CAPTION_HEIGHT;
       }
-
       return mediaItemHeight + ITEM_CAPTION_HEIGHT;
     } else {
       return mediaItemHeight + ITEM_CAPTION_HEIGHT;
     }
   }, [
-    additionalProperties.alignmentType,
-    additionalProperties?.mediaItemSize,
+    additionalProperties,
     data,
     mediaItemHeight,
     mediaType,
-    wrapperOffsetHeight,
     wrapperOffsetWidth,
   ]);
 
@@ -104,7 +91,7 @@ function MediaList({
       itemData={{
         data,
         addUriToList,
-        mediaItemHeight,
+        mediaItemHeight: listHeight,
         focusedState,
         syncHoverState,
         additionalProperties,

@@ -23,6 +23,11 @@
   &__sizeSlider {
     margin-top: $space-unit;
     display: flex;
+    flex-direction: column;
+    &-disabled {
+      opacity: 0.2;
+      pointer-events: none;
+    }
   }
   &__subtitle {
     text-transform: uppercase;

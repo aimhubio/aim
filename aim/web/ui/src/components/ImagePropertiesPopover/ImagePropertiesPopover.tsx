@@ -8,24 +8,14 @@ import {
   MediaItemAlignmentEnum,
   ImageRenderingEnum,
 } from 'config/enums/imageEnums';
+import {
+  IMAGES_SLIDER_PROPS,
+  IMAGE_ALIGNMENT_OPTIONS,
+} from 'config/mediaConfigs/mediaConfigs';
 
 import { IImagePropertiesPopoverProps } from './ImagePropertiesPopover.d';
 
 import './ImagePropertiesPopover.scss';
-
-const sizeProps = {
-  step: 1,
-  min: 15,
-  max: 70,
-};
-
-//TODO Implement images alignment options
-
-const alignmentOptions = [
-  { label: 'Original', value: MediaItemAlignmentEnum.Original },
-  { label: 'Align By Width', value: MediaItemAlignmentEnum.Width },
-  { label: 'Align By Height', value: MediaItemAlignmentEnum.Height },
-];
 
 function ImagePropertiesPopover({
   additionalProperties,
@@ -45,6 +35,13 @@ function ImagePropertiesPopover({
     onImageSizeChange(newValue as number);
     setSizeValue(newValue as number);
   }
+
+  const isOriginalAlignment: boolean = React.useMemo((): boolean => {
+    return (
+      additionalProperties.alignmentType === MediaItemAlignmentEnum.Original
+    );
+  }, [additionalProperties.alignmentType]);
+
   return (
     <div className={'ImagePropertiesPopover'}>
       <div className='ImagePropertiesPopover__section'>
@@ -54,10 +51,7 @@ function ImagePropertiesPopover({
             component='h4'
             className='ImagePropertiesPopover__subtitle'
           >
-            Image Size:
-          </Text>
-          <Text className='ImagePropertiesPopover__sizePercent'>
-            {sizeValue}%
+            Align Images by:
           </Text>
         </div>
         <div>
@@ -66,41 +60,46 @@ function ImagePropertiesPopover({
             isColored
             onChange={onImageAlignmentChange}
             value={additionalProperties.alignmentType}
-            options={alignmentOptions}
+            options={IMAGE_ALIGNMENT_OPTIONS}
             onMenuOpen={() => setOpen(true)}
             onMenuClose={() => setOpen(false)}
             open={open}
             withPortal
           />
         </div>
-        <div className='ImagePropertiesPopover__sizeSlider'>
-          <Text
-            tint={50}
-            component='h4'
-            className='ImagePropertiesPopover__subtitle ImagePropertiesPopover__subtitle__windowSize'
-          >
-            Relative to window size:
-          </Text>
-          <Text className='ImagePropertiesPopover__sizePercent'>
-            {additionalProperties.mediaItemSize}%
-          </Text>
-        </div>
-        <div className='ImagePropertiesPopover__Slider'>
-          <Text>15%</Text>
-          <Slider
-            valueLabelDisplay='auto'
-            getAriaValueText={(val) => `${val}`}
-            value={sizeValue}
-            disabled={
-              additionalProperties.alignmentType ===
-              MediaItemAlignmentEnum.Original
-            }
-            onChange={onSizeValueChange as any}
-            step={sizeProps.step}
-            max={sizeProps.max}
-            min={sizeProps.min}
-          />
-          <Text>70%</Text>
+        <div
+          className={`ImagePropertiesPopover__sizeSlider ${
+            isOriginalAlignment
+              ? 'ImagePropertiesPopover__sizeSlider-disabled'
+              : ''
+          } `}
+        >
+          <div className='flex'>
+            <Text
+              tint={50}
+              component='h4'
+              className='ImagePropertiesPopover__subtitle ImagePropertiesPopover__subtitle__windowSize'
+            >
+              Scale (Relative to window size):
+            </Text>
+            <Text className='ImagePropertiesPopover__sizePercent'>
+              {`${sizeValue}%`}
+            </Text>
+          </div>
+          <div className='ImagePropertiesPopover__Slider'>
+            <Text>{IMAGES_SLIDER_PROPS.min}%</Text>
+            <Slider
+              valueLabelDisplay='auto'
+              getAriaValueText={(val) => `${val}`}
+              value={sizeValue}
+              disabled={isOriginalAlignment}
+              onChange={onSizeValueChange as any}
+              step={IMAGES_SLIDER_PROPS.step}
+              max={IMAGES_SLIDER_PROPS.max}
+              min={IMAGES_SLIDER_PROPS.min}
+            />
+            <Text>{IMAGES_SLIDER_PROPS.max}%</Text>
+          </div>
         </div>
       </div>
       <Divider className='ImagePropertiesPopover__Divider' />
