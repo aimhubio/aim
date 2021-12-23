@@ -6,12 +6,21 @@ import {
   linearRegression,
   linearRegressionLine,
 } from 'utils/regression/linearRegrression';
+import loess from 'utils/regression/localRegression';
 
 /**
  * Given the params with the type for trendline
  * respectively, draws a line on the ScatterPlot
  */
-function drawScatterTrendline({ data, xScale, yScale, targetRef }: any): void {
+function drawScatterTrendline({
+  index,
+  data,
+  regressionType,
+  xScale,
+  yScale,
+  bandwidth,
+  targetRef,
+}: any): void {
   if (!targetRef?.current) {
     return;
   }
@@ -21,14 +30,31 @@ function drawScatterTrendline({ data, xScale, yScale, targetRef }: any): void {
     .filter((d: [number, number]) => d[0] !== undefined && d[1] !== undefined)
     .sort((a: [number, number], b: [number, number]) => a[0] - b[0]);
 
-  const slr = linearRegression(points);
-  const slrLine = linearRegressionLine(slr);
+  let regressionPoints;
 
-  const firstX = points[0][0];
-  const lastX = points[points.length - 1][0];
-  const xCoordinates = [firstX, lastX];
+  if (regressionType === 'slr') {
+    const slr = linearRegression(points);
+    const slrLine = linearRegressionLine(slr);
 
-  const regressionPoints = xCoordinates.map((d) => [d, slrLine(d as number)]);
+    const firstX = points[0][0];
+    const lastX = points[points.length - 1][0];
+    const xCoordinates = [firstX, lastX];
+
+    regressionPoints = xCoordinates.map((d) => [d, slrLine(d as number)]);
+  } else {
+    let loessGenerator = loess();
+    loessGenerator.bandwidth(bandwidth ?? 0.6);
+
+    let loessValues = loessGenerator(
+      points.map((p: [number, number]) => p[0]),
+      points.map((p: [number, number]) => p[1]),
+    );
+
+    regressionPoints = points.map((p: [number, number], i: number) => [
+      p[0],
+      loessValues[i],
+    ]);
+  }
 
   const line = d3
     .line()
@@ -39,6 +65,7 @@ function drawScatterTrendline({ data, xScale, yScale, targetRef }: any): void {
     .append('path')
     .datum(regressionPoints)
     .classed('RegressionLine', true)
+    .attr('clip-path', 'url(#lines-rect-clip-' + index + ')')
     .attr('d', line);
 }
 

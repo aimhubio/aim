@@ -151,6 +151,7 @@ const ScatterPlot = React.forwardRef(function ScatterPlot(
 
     if (true) {
       drawScatterTrendline({
+        index,
         data,
         xScale,
         yScale,

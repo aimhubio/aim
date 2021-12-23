@@ -7,7 +7,7 @@ function loess() {
   let robustnessIters = 2;
   let accuracy = 1e-12;
 
-  function smooth(xval: number[], yval: number[], weights: number[]) {
+  function smooth(xval: number[], yval: number[], weights?: number[]) {
     let n = xval.length;
     let i;
 
@@ -19,7 +19,7 @@ function loess() {
       throw { error: 'At least one point required.' };
     }
 
-    if (arguments.length < 3) {
+    if (weights === undefined) {
       weights = [];
       i = -1;
       while (++i < n) {
