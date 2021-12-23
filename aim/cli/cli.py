@@ -29,6 +29,6 @@ def cli_entry_point(verbose):
 cli_entry_point.add_command(init_commands.init, INIT_NAME)
 cli_entry_point.add_command(version_commands.version, VERSION_NAME)
 cli_entry_point.add_command(up_commands.up, UP_NAME)
-cli_entry_point.add_command(server_commands, SERVER_NAME)
+cli_entry_point.add_command(server_commands.server, SERVER_NAME)
 cli_entry_point.add_command(upgrade_commands.upgrade, UPGRADE_NAME)
 cli_entry_point.add_command(reindex_commands.reindex, REINDEX_NAME)
