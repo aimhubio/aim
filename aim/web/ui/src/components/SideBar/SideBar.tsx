@@ -73,10 +73,7 @@ function SideBar(): React.FunctionComponentElement<React.ReactNode> {
                   key={index}
                   to={() => getPathFromStorage(path)}
                   exact={true}
-                  isActive={(m, location) => {
-                    let split = location.pathname.split('/');
-                    return split.includes(path.split('/')[1]);
-                  }}
+                  isActive={(m, location) => location.pathname.startsWith(path)}
                   activeClassName={'Sidebar__NavLink--active'}
                   className='Sidebar__NavLink'
                 >

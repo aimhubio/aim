@@ -27,9 +27,9 @@ function App(): React.FunctionComponentElement<React.ReactNode> {
               <React.Suspense fallback={null}>
                 <Switch>
                   {Object.values(routes).map((route, index) => {
-                    const { component: Component, path } = route;
+                    const { component: Component, path, isExact } = route;
                     return (
-                      <Route path={path} key={index} exact>
+                      <Route path={path} key={index} exact={isExact}>
                         <Component />
                       </Route>
                     );
