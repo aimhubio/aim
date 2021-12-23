@@ -6,9 +6,7 @@
   width: 100%;
   position: relative;
   > div {
-    border-left: $border-grey;
-    border-top: $border-grey;
-    border-bottom: $border-grey;
+    border: $border-grey;
     border-top-left-radius: $border-radius-main;
     border-top-right-radius: $border-radius-main;
     overflow: hidden;
@@ -23,7 +21,6 @@
         border-bottom: none;
       }
       &-cell {
-        border-right: $border-grey;
         border-bottom: $border-grey;
         padding: 0 toRem(16px);
         &:last-child {
@@ -36,11 +33,6 @@
       &--hovered {
         background: #e8f1fc;
       }
-      &:last-child {
-        .BaseTable__row-cell {
-          border-bottom: none;
-        }
-      }
       &-cell {
         position: relative;
         min-height: 32px;
@@ -49,8 +41,9 @@
         border-right: $border-grey;
         border-bottom: $border-grey;
 
-        &:last-of-type {
+        &:last-child {
           display: inline-block;
+          border-right: none;
           white-space: normal;
           overflow: auto !important;
         }
