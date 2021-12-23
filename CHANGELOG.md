@@ -1,5 +1,17 @@
 # Changelog
 
+## Unreleased
+
+- Recover active tab in run details page after reload (roubkar)
+
+## 3.3.2 Dec 20 2021
+
+- Fix issue with not providing point density value to live-update query (rubenaprikyan)
+
+## 3.3.1 Dec 18 2021
+
+- Fix getValue function to show correct chart title data (KaroMourad)
+
 ## 3.3.0 Dec 17 2021
 
 - Add ability to track and explore audios in run detail page (arsengit, VkoHov, devfox-se)
