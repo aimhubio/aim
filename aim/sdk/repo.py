@@ -14,6 +14,7 @@ from aim.ext.cleanup import AutoClean
 from aim.ext.transport.client import Client
 
 from aim.sdk.configs import get_aim_repo_name, AIM_ENABLE_TRACKING_THREAD
+from aim.sdk.errors import RepoIntegrityError
 from aim.sdk.run import Run
 from aim.sdk.utils import search_aim_repo, clean_repo_path
 from aim.sdk.sequence_collection import QuerySequenceCollection, QueryRunSequenceCollection
@@ -26,6 +27,7 @@ from aim.storage.union import RocksUnionContainer
 from aim.storage.treeviewproxy import ProxyTree
 
 from aim.storage.structured.db import DB
+from aim.storage.structured.proxy import StructuredRunProxy
 
 logger = logging.getLogger(__name__)
 
@@ -121,11 +123,13 @@ class Repo:
         self.persistent_pool: Dict[ContainerConfig, Container] = dict()
         self.container_view_pool: Dict[ContainerConfig, Container] = WeakValueDictionary()
 
-        self.structured_db = DB.from_path(self.path)
         self._run_props_cache_hint = None
         self._encryption_key = None
-        if init:
-            self.structured_db.run_upgrades()
+        self.structured_db = None
+        if not self.is_remote_repo:
+            self.structured_db = DB.from_path(self.path)
+            if init:
+                self.structured_db.run_upgrades()
 
         self._resources = RepoAutoClean(self)
 
@@ -314,6 +318,27 @@ class Repo:
             self.container_view_pool[container_config] = container_view
 
         return container_view
+
+    def request_props(self, hash_: str, read_only: bool):
+        if self.is_remote_repo:
+            assert self._client is not None
+            return StructuredRunProxy(self._client, hash_, read_only)
+
+        assert self.structured_db
+        _props = None
+        if self.run_props_cache_hint:
+            _props = self.structured_db.caches[self.run_props_cache_hint][hash_]
+        if not _props:
+            _props = self.structured_db.find_run(hash_)
+            if not _props:
+                if read_only:
+                    raise RepoIntegrityError(f'Missing props for Run {hash_}')
+                else:
+                    _props = self.structured_db.create_run(hash_)
+            if self.run_props_cache_hint:
+                self.structured_db.caches[self.run_props_cache_hint][hash_] = _props
+
+        return _props
 
     def iter_runs(self) -> Iterator['Run']:
         """Iterate over Repo runs.

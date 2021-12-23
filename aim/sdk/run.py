@@ -8,7 +8,6 @@ from collections import defaultdict
 from time import time
 from copy import deepcopy
 
-from aim.sdk.errors import RepoIntegrityError
 from aim.sdk.sequence import Sequence
 from aim.sdk.sequence_collection import SingleRunSequenceCollection
 from aim.sdk.utils import generate_run_hash, get_object_typename, check_types_compatibility
@@ -57,7 +56,7 @@ class RunAutoClean(AutoClean['Run']):
         super().__init__(instance)
 
         self.read_only = instance.read_only
-        self.name = instance.name
+        self.hash = instance.hash
         self.meta_run_tree = instance.meta_run_tree
         self.repo = instance.repo
         self._system_resource_tracker = instance._system_resource_tracker
@@ -70,10 +69,10 @@ class RunAutoClean(AutoClean['Run']):
         try:
             timeout = os.getenv(AIM_RUN_INDEXING_TIMEOUT, 2 * 60)
             index = self.repo._get_index_tree('meta', timeout=timeout).view(b'')
-            logger.debug(f'Indexing Run {self.name}...')
+            logger.debug(f'Indexing Run {self.hash}...')
             self.meta_run_tree.finalize(index=index)
         except TimeoutError:
-            logger.warning(f'Cannot index Run {self.name}. Index is locked.')
+            logger.warning(f'Cannot index Run {self.hash}. Index is locked.')
 
     def finalize_system_tracker(self):
         """
@@ -88,7 +87,7 @@ class RunAutoClean(AutoClean['Run']):
         Close the `Run` instance resources and trigger indexing.
         """
         if self.read_only:
-            logger.debug(f'Run {self.name} is read-only, skipping cleanup')
+            logger.debug(f'Run {self.hash} is read-only, skipping cleanup')
             return
         self.finalize_system_tracker()
         self.finalize_run()
@@ -139,29 +138,12 @@ class StructuredRunMixin:
         self.props.archived = value
 
     @property
-    def created_at(self):
-        """Run object creation time [UTC] as datetime.
-
-            :getter: Returns run creation time.
-        """
-        return self.props.created_at
-
-    @property
     def creation_time(self):
         """Run object creation time [UTC] as timestamp.
 
             :getter: Returns run creation time.
         """
         return self.props.creation_time
-
-    @property
-    def finalized_at(self):
-        """Run finalization time [UTC] as datetime.
-
-            :getter: Returns run finalization time.
-        """
-        end_time = self.end_time
-        return datetime.datetime.fromtimestamp(end_time) if end_time else None
 
     @property
     def end_time(self):
@@ -174,10 +156,6 @@ class StructuredRunMixin:
         except KeyError:
             # run saved with old version. fallback to sqlite data
             return self.props.end_time
-
-    @property
-    def updated_at(self):
-        return self.props.updated_at
 
     @property
     def experiment(self):
@@ -209,13 +187,13 @@ class StructuredRunMixin:
         """
         return self.props.add_tag(value)
 
-    def remove_tag(self, tag_id):
+    def remove_tag(self, tag_name):
         """Remove run tag.
 
         Args:
-            tag_id (str): :obj:`uuid` of tag to be removed.
+            tag_name (str): :obj:`name` of tag to be removed.
         """
-        return self.props.remove_tag(tag_id)
+        return self.props.remove_tag(tag_name)
 
 
 class SequenceInfo:
@@ -479,23 +457,8 @@ class Run(StructuredRunMixin):
     @property
     def props(self):
         if self._props is None:
-            self._init_props()
+            self._props = self.repo.request_props(self.hash, self.read_only)
         return self._props
-
-    def _init_props(self):
-        sdb = self.repo.structured_db
-        if self.repo.run_props_cache_hint:
-            self._props = sdb.caches[self.repo.run_props_cache_hint][self.hash]
-        if not self._props:
-            self._props = sdb.find_run(self.hash)
-            if not self._props:
-                if self.read_only:
-                    raise RepoIntegrityError(f'Missing props for Run {self.hash}')
-                else:
-                    self._props = sdb.create_run(self.hash)
-                    self._props.experiment = 'default'
-            if self.repo.run_props_cache_hint:
-                sdb.caches[self.repo.run_props_cache_hint][self.hash] = self._props
 
     def iter_metrics_info(self) -> Iterator[Tuple[str, Context, 'Run']]:
         """Iterator for all run metrics info.

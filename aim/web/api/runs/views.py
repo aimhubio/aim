@@ -458,8 +458,8 @@ async def add_run_tag_api(run_id: str, tag_in: StructuredRunAddTagIn, factory=De
         if not run:
             raise HTTPException(status_code=404)
 
-        tag = run.add_tag(tag_in.tag_name)
-
+        run.add_tag(tag_in.tag_name)
+        tag = next(iter(factory.search_tags(tag_in.tag_name)))
     return {
         'id': run.hash,
         'tag_id': tag.uuid,
@@ -471,10 +471,11 @@ async def add_run_tag_api(run_id: str, tag_in: StructuredRunAddTagIn, factory=De
 async def remove_run_tag_api(run_id: str, tag_id: str, factory=Depends(object_factory)):
     with factory:
         run = factory.find_run(run_id)
-        if not run:
+        tag = factory.find_tag(tag_id)
+        if not (run or tag):
             raise HTTPException(status_code=404)
 
-        removed = run.remove_tag(tag_id)
+        removed = run.remove_tag(tag.name)
 
     return {
         'id': run.hash,

@@ -1,15 +1,14 @@
 import time
 import uuid
-import struct
-from typing import Dict, Iterator, Tuple
-import threading
+from typing import Dict
 
 from concurrent import futures
 import grpc
 import aim.ext.transport.remote_tracking_pb2 as rpc_messages
 import aim.ext.transport.remote_tracking_pb2_grpc as remote_tracking_pb2_grpc
 
-from aim.ext.transport.message_utils import pack, unpack, unpack_request_data, ResourceObject
+from aim.ext.transport.message_utils import pack, unpack_request_data, ResourceObject
+from aim.ext.transport.handlers import get_tree, get_structured_run
 from aim.storage.treeutils import encode_tree, decode_tree
 
 
@@ -85,14 +84,19 @@ class RemoteTrackingServicer(remote_tracking_pb2_grpc.RemoteTrackingServiceServi
             else:
                 checked_args.append(arg)
 
-        resource = self.resource_pool[resource_handler][1]
-        method = getattr(resource, header.header.method_name)
-
-        if not callable(method):
-            raise ValueError(f'{header.header.method_name} is not callable')
-
         try:
-            result = method(*checked_args)
+            method_name = header.header.method_name
+            resource = self.resource_pool[resource_handler][1]
+            if method_name.endswith('.setter'):
+                attr_name = method_name.split('.')[0]
+                setattr(resource, attr_name, checked_args[0])
+                result = None
+            else:
+                attr = getattr(resource, method_name)
+                if callable(attr):
+                    result = attr(*checked_args)
+                else:
+                    result = attr
         except Exception as e:
             yield rpc_messages.InstructionResponse(header=rpc_messages.ResponseHeader(
                 version=0.1,
@@ -114,10 +118,11 @@ class RemoteTrackingServicer(remote_tracking_pb2_grpc.RemoteTrackingServiceServi
         return False
 
 
-def run_server():
-    server = grpc.server(futures.ThreadPoolExecutor(max_workers=1))
+def run_server(host, port, workers=1):
+    RemoteTrackingServicer.registry.register('TreeView', get_tree)
+    RemoteTrackingServicer.registry.register('StructuredRun', get_structured_run)
+    server = grpc.server(futures.ThreadPoolExecutor(max_workers=workers))
     remote_tracking_pb2_grpc.add_RemoteTrackingServiceServicer_to_server(RemoteTrackingServicer(), server)
-    server.add_insecure_port('localhost:53800')
+    server.add_insecure_port(f'{host}:{port}')
     server.start()
     _wait_forever(server)
-

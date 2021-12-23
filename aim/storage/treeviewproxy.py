@@ -17,7 +17,13 @@ class ProxyTreeAutoClean(RemoteResourceAutoClean):
 
 
 class ProxyTree(TreeView):
-    def __init__(self, client: 'Client', name: str, sub: str, read_only: bool, from_union: bool = False, index=False, timeout=None):
+    def __init__(self, client: 'Client',
+                 name: str,
+                 sub: str,
+                 read_only: bool,
+                 from_union: bool = False,
+                 index=False,
+                 timeout=None):
         self._resources: ProxyTreeAutoClean = None
 
         self._rpc_client = client
@@ -240,4 +246,3 @@ class SubtreeView(TreeView):
         path: Union[AimObjectKey, AimObjectPath] = ()
     ) -> Tuple[AimObjectKey, AimObject]:
         return self.tree.last(self.absolute_path(path))
-

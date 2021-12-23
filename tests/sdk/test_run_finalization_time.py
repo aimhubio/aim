@@ -10,7 +10,7 @@ from aim.sdk.configs import AIM_ENABLE_TRACKING_THREAD
 class TestRunFinalizedAt(TestBase):
     def _query_run_finalized_at(self, run_hash):
         run = self.repo.get_run(run_hash)
-        return run.finalized_at
+        return run.end_time
 
     def test_implicit_run_delete(self):
         run_hash = []
@@ -18,10 +18,10 @@ class TestRunFinalizedAt(TestBase):
         def _func():
             run = Run(system_tracking_interval=None)
             run_hash.append(run.hash)
-            self.assertIsNone(run.finalized_at)
+            self.assertIsNone(run.end_time)
             for i in range(10):
                 run.track(i, name='seq')
-            self.assertIsNone(run.finalized_at)
+            self.assertIsNone(run.end_time)
 
         _func()
 
@@ -41,9 +41,9 @@ class TestRunFinalizedAt(TestBase):
         run = Run(system_tracking_interval=None)
         for i in range(10):
             run.track(i, name='seq')
-        self.assertIsNone(run.finalized_at)
+        self.assertIsNone(run.end_time)
         run.finalize()
-        self.assertIsNotNone(run.finalized_at)
+        self.assertIsNotNone(run.end_time)
 
 
 class TestRunFinalizedAtWithTrackingQueue(TestRunFinalizedAt):
