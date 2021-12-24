@@ -111,10 +111,10 @@ class Image(CustomObject):
         img_container = BytesIO()
 
         if compress:
-            if pil_image.mode == 'RGBA' or isinstance(pil_image.info.get("transparency"), bytes):
+            if pil_image.mode == 'RGBA' or isinstance(pil_image.info.get('transparency'), bytes):
                 # Remove transparency
                 alpha = pil_image.convert('RGBA').split()[-1]  # Get only alpha
-                background = PILImage.new("RGBA", pil_image.size, (255, 255, 255, 255))
+                background = PILImage.new('RGBA', pil_image.size, (255, 255, 255, 255))
                 background.paste(pil_image, mask=alpha)
                 pil_image = background.convert('RGB')
 
@@ -137,7 +137,7 @@ class Image(CustomObject):
 
     def _from_file_path(self, file_path, compress=False):
         if not os.path.isfile(file_path):
-            raise ValueError("Invalid image file path.")
+            raise ValueError('Invalid image file path.')
 
         return self._from_pil_image(PILImage.open(file_path), compress)
 
