@@ -1,6 +1,6 @@
 # Changelog
 
-## Unreleased
+## 3.3.3 Dec 24 2021
 
 - Fix issue with showing range panel in Images Explorer (roubkar)
 
