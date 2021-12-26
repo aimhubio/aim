@@ -101,7 +101,6 @@ const ImageBox = ({
             : ''
         }`}
         data-key={`${data.key}`}
-        //@ts-ignore
         data-seqkey={`${data.seqKey}`}
         data-mediasetitem={'mediaSetItem'}
         // onClick={onClick}

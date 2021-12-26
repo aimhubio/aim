@@ -8,7 +8,7 @@ import { IMediaPanelProps } from '../MediaPanel';
 import { MediaTypeEnum } from '../MediaPanel/config';
 
 export interface IMediaListProps {
-  data: IImageData[];
+  data: IImageData[] | IImageData[][];
   addUriToList: (blobUrl: string) => void;
   wrapperOffsetWidth: number;
   mediaItemHeight: number;

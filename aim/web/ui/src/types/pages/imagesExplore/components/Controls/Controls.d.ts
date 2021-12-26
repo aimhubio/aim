@@ -1,5 +1,3 @@
-import React from 'react';
-
 import { ImageRenderingEnum } from 'config/enums/imageEnums';
 
 import { IPanelTooltip } from 'services/models/metrics/metricsAppModel';
@@ -17,4 +15,5 @@ export interface IControlProps {
   onImageAlignmentChange: (
     value: { value: string; label: string } | null,
   ) => void;
+  onChangeZIndex: (zIndex: boolean) => void;
 }

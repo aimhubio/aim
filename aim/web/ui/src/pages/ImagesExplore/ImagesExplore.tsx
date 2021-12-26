@@ -225,6 +225,7 @@ function ImagesExplore(): React.FunctionComponentElement<React.ReactNode> {
                   onImageAlignmentChange={
                     imagesExploreAppModel.onImageAlignmentChange
                   }
+                  onChangeZIndex={imagesExploreAppModel.onChangeZIndex}
                 />
               }
               tooltipType={ChartTypeEnum.ImageSet}

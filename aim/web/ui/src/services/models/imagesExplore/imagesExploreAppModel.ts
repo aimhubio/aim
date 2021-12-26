@@ -111,6 +111,7 @@ function getConfig(): IImagesExploreAppConfig {
         alignmentType: MediaItemAlignmentEnum.Height,
         mediaItemSize: 25,
         imageRendering: ImageRenderingEnum.Pixelated,
+        zIndex: false,
       },
       focusedState: {
         active: false,
@@ -129,7 +130,7 @@ function getConfig(): IImagesExploreAppConfig {
         middle: [],
         right: [],
       },
-      height: '',
+      height: '0.5',
     },
   };
 }
@@ -1871,7 +1872,6 @@ function onImageRenderingChange(type: ImageRenderingEnum) {
       ...configData.images,
       additionalProperties: {
         ...configData.images.additionalProperties,
-
         imageRendering: type,
       },
     };
@@ -1904,9 +1904,7 @@ function onImageAlignmentChange(
       images,
     };
     updateURL(config as IImagesExploreAppConfig);
-    model.setState({
-      config,
-    });
+    model.setState({ config });
   }
 }
 
@@ -1917,6 +1915,23 @@ function isRangePanelShow() {
     (!!getStateFromUrl('select')?.advancedQuery &&
       !!getStateFromUrl('select')?.advancedMode)
   );
+}
+
+function onChangeZIndex(zIndex: boolean): void {
+  const configData: IImagesExploreAppConfig | undefined =
+    model.getState()?.config;
+  if (configData?.images) {
+    const images = {
+      ...configData.images,
+      additionalProperties: {
+        ...configData.images.additionalProperties,
+        zIndex,
+      },
+    };
+    const config = { ...configData, images };
+    updateURL(config as IImagesExploreAppConfig);
+    model.setState({ config });
+  }
 }
 
 const imagesExploreAppModel = {
@@ -1968,6 +1983,7 @@ const imagesExploreAppModel = {
   isRangePanelShow,
   getGroupingSelectOptions,
   getDataAsImageSet,
+  onChangeZIndex,
 };
 
 export default imagesExploreAppModel;

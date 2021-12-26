@@ -4,7 +4,7 @@ import { Tooltip } from '@material-ui/core';
 
 import ControlPopover from 'components/ControlPopover/ControlPopover';
 import TooltipContentPopover from 'components/TooltipContentPopover/TooltipContentPopover';
-import { Icon } from 'components/kit';
+import { Icon, Switcher } from 'components/kit';
 import ImagePropertiesPopover from 'components/ImagePropertiesPopover';
 
 import { IControlProps } from 'types/pages/imagesExplore/components/Controls/Controls';
@@ -66,6 +66,14 @@ function Controls(
               onImageAlignmentChange={props.onImageAlignmentChange}
             />
           }
+        />
+      </div>
+      <div>
+        <Switcher
+          color='primary'
+          checked={props.additionalProperties.zIndex}
+          onChange={(e, checked) => props.onChangeZIndex(checked)}
+          size='small'
         />
       </div>
     </div>

@@ -205,6 +205,7 @@ function MediaPanel({
     wrapperOffsetWidth,
   ]);
 
+  console.log('----', data, data && Object.values(data));
   return (
     <BusyLoaderWrapper
       isLoading={isLoading}

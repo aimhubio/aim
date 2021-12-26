@@ -37,7 +37,7 @@ const MediaSet = ({
   tooltip,
   mediaType,
 }: IMediaSetProps): React.FunctionComponentElement<React.ReactNode> => {
-  let content: [string[], []][] = []; // the actual items list to be passed to virtualized list component
+  let content: [string[], [] | [][]][] = []; // the actual items list to be passed to virtualized list component
   let keysMap: { [key: string]: number } = {}; // cache for checking whether the group title is already added to list
 
   function fillContent(
@@ -46,7 +46,17 @@ const MediaSet = ({
     orderedMap: { [key: string]: any },
   ) {
     if (Array.isArray(list)) {
-      content.push([path, list]);
+      if (additionalProperties.zIndex) {
+        let [, lastContent] = content[content.length - 1];
+        for (let j = 0; j < list.length; j++) {
+          if (!lastContent[j]) {
+            lastContent[j] = [];
+          }
+          lastContent[j].push(list[j]);
+        }
+      } else {
+        content.push([path, list]);
+      }
     } else {
       const fieldSortedValues = _.sortBy([...orderedMap.ordering]);
       fieldSortedValues.forEach((val: any) => {
@@ -66,16 +76,22 @@ const MediaSet = ({
 
   fillContent(data, [''], orderedMap);
 
+  console.log(
+    'content',
+    content,
+    'keysMap',
+    keysMap,
+    'additionalProperties',
+    additionalProperties,
+  );
   function getItemSize(index: number) {
     let [path, items] = content[index];
     if (path.length === 1) {
       return 0;
     }
-
     if (items.length > 0) {
       return mediaItemHeight + itemWrapperHeight;
     }
-
     return setTitleHeight + setWrapperPaddingHeight;
   }
 

@@ -6,6 +6,8 @@ import { IModel, State } from 'types/services/models/model';
 import { formatValue } from 'utils/formatValue';
 import getValueByField from 'utils/getValueByField';
 
+import { getValue } from '../helper';
+
 export function getDataAsMediaSetNestedObject<M extends State>({
   data,
   groupingSelectOptions,
@@ -19,7 +21,8 @@ export function getDataAsMediaSetNestedObject<M extends State>({
 }) {
   if (!_.isEmpty(data)) {
     const modelState = model?.getState();
-    const grouping = modelState?.config?.grouping;
+    const configData = modelState?.config;
+    const grouping = configData?.grouping;
     const mediaSetData: object = {};
     const group: string[] = [...(grouping?.group || [])];
     const groupFields =
@@ -32,32 +35,32 @@ export function getDataAsMediaSetNestedObject<M extends State>({
             .map((option) => option.value)
         : group);
     const orderedMap = {};
+
+    console.log('groupFields', groupFields);
     data.forEach((group: any) => {
-      const path = groupFields?.reduce(
-        (acc: string[], field: string, index: number) => {
-          const value = _.get(group.data[0], field);
-          _.set(
-            orderedMap,
-            acc.concat(['ordering']),
-            new Set([
-              ...(_.get(orderedMap, acc.concat(['ordering'])) || []),
-              value,
-            ]),
-          );
-          _.set(
-            orderedMap,
-            acc.concat(['key']),
-            getValueByField(groupingSelectOptions, field),
-          );
-          acc.push(
-            `${getValueByField(groupingSelectOptions, field)} = ${formatValue(
-              value,
-            )}`,
-          );
-          return acc;
-        },
-        [],
-      );
+      const path = groupFields?.reduce((acc: string[], field: string) => {
+        const value = getValue(group.data[0], field);
+        _.set(
+          orderedMap,
+          acc.concat(['ordering']),
+          new Set([
+            ...(getValue(orderedMap, acc.concat(['ordering'])) || []),
+            value,
+          ]),
+        );
+        _.set(
+          orderedMap,
+          acc.concat(['key']),
+          getValueByField(groupingSelectOptions, field),
+        );
+        acc.push(
+          `${getValueByField(groupingSelectOptions, field)} = ${formatValue(
+            value,
+          )}`,
+        );
+        return acc;
+      }, []);
+
       _.set(
         mediaSetData,
         path,
@@ -74,7 +77,6 @@ export function getDataAsMediaSetNestedObject<M extends State>({
       mediaSetData: _.isEmpty(mediaSetData) ? data[0].data : mediaSetData,
       orderedMap,
     };
-  } else {
-    return {};
   }
+  return {};
 }
