@@ -3,7 +3,11 @@ import { MediaTypeEnum } from 'components/MediaPanel/config';
 import { MediaItemAlignmentEnum } from 'config/enums/imageEnums';
 
 import getAudioBoxSize from 'utils/getAudioBoxSize';
+import getAudioMediaListHeight from 'utils/getAudioMediaListHeight';
+import getAudioMediaSetSize from 'utils/getAudioMediaSetSize';
 import getImageBoxSize from 'utils/getImageBoxSize';
+import getImageMediaListHeight from 'utils/getImageMediaListHeight';
+import getImageMediaSetSize from 'utils/getImageMediaSetSize';
 
 export const IMAGE_FIXED_HEIGHT = 110;
 export const ITEM_WRAPPER_HEIGHT = 33;
@@ -31,4 +35,14 @@ export const IMAGE_ALIGNMENT_OPTIONS = [
 export const MEDIA_ITEMS_SIZES = {
   [MediaTypeEnum.AUDIO]: getAudioBoxSize,
   [MediaTypeEnum.IMAGE]: getImageBoxSize,
+};
+
+export const MEDIA_SET_SIZE = {
+  [MediaTypeEnum.AUDIO]: getAudioMediaSetSize,
+  [MediaTypeEnum.IMAGE]: getImageMediaSetSize,
+};
+
+export const MEDIA_LIST_HEIGHT = {
+  [MediaTypeEnum.AUDIO]: getAudioMediaListHeight,
+  [MediaTypeEnum.IMAGE]: getImageMediaListHeight,
 };

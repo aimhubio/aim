@@ -1,11 +1,11 @@
 import { IMediaPanelProps } from 'components/MediaPanel';
+import { MediaTypeEnum } from 'components/MediaPanel/config';
 
 import {
   IFocusedState,
   ITooltipContent,
 } from 'types/services/models/metrics/metricsAppModel';
 
-import { MediaTypeEnum } from './config';
 export interface IMediaSetProps {
   data: { [key: string]: any };
   orderedMap: { [key: string]: any };

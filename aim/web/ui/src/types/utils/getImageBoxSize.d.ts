@@ -1,7 +1,7 @@
 export interface IGetImageBoxSizeProps {
-  data: any;
-  index: number;
-  additionalProperties: Record<{}>;
+  data: { [key: string]: any };
+  index?: number;
+  additionalProperties: { [key: string]: any };
   wrapperOffsetWidth: number;
-  mediaItemHeight: number;
+  wrapperOffsetHeight?: number;
 }

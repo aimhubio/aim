@@ -4,18 +4,25 @@ import { IGetImageBoxSizeProps } from 'types/utils/getImageBoxSize';
 
 export default function getImageBoxSize({
   data,
-  index,
+  index = 0,
   additionalProperties,
   wrapperOffsetWidth,
-  mediaItemHeight,
-}: IGetImageBoxSizeProps): number {
+  wrapperOffsetHeight = 0,
+}: IGetImageBoxSizeProps): { width: number; height: number } {
+  let width;
+  let height;
   if (additionalProperties?.alignmentType === MediaItemAlignmentEnum.Width) {
-    return (wrapperOffsetWidth * additionalProperties?.mediaItemSize) / 100;
+    width = (wrapperOffsetWidth * additionalProperties?.mediaItemSize) / 100;
+    height = (wrapperOffsetWidth * additionalProperties?.mediaItemSize) / 100;
   } else if (
-    additionalProperties?.alignmentType === MediaItemAlignmentEnum.Height
+    additionalProperties?.alignmentType === MediaItemAlignmentEnum.Height &&
+    data
   ) {
-    return (mediaItemHeight / data[index].height) * data[index].width;
+    height = (wrapperOffsetHeight * additionalProperties?.mediaItemSize) / 100;
+    width = (height / data?.[index]?.height) * data?.[index]?.width || 100;
   } else {
-    return data[index].width;
+    width = data?.[index]?.width;
+    height = data?.[index]?.height || 100;
   }
+  return { width, height };
 }

@@ -11,14 +11,11 @@ import ControlPopover from 'components/ControlPopover/ControlPopover';
 import { MediaTypeEnum } from 'components/MediaPanel/config';
 
 import {
-  AUDIO_FIXED_HEIGHT,
-  IMAGE_FIXED_HEIGHT,
-  ITEM_CAPTION_HEIGHT,
-  ITEM_WRAPPER_HEIGHT,
+  MEDIA_ITEMS_SIZES,
+  MEDIA_SET_SIZE,
   MEDIA_SET_TITLE_HEIGHT,
   MEDIA_SET_WRAPPER_PADDING_HEIGHT,
 } from 'config/mediaConfigs/mediaConfigs';
-import { MediaItemAlignmentEnum } from 'config/enums/imageEnums';
 
 import { formatValue } from 'utils/formatValue';
 import { jsonParse } from 'utils/jsonParse';
@@ -48,19 +45,19 @@ const MediaSet = ({
   let keysMap: { [key: string]: number } = {}; // cache for checking whether the group title is already added to list
 
   const mediaItemHeight = React.useMemo(() => {
-    if (additionalProperties?.alignmentType === MediaItemAlignmentEnum.Height) {
-      return (wrapperOffsetHeight * additionalProperties?.mediaItemSize) / 100;
-    } else if (
-      additionalProperties?.alignmentType === MediaItemAlignmentEnum.Width
-    ) {
-      return (wrapperOffsetWidth * additionalProperties?.mediaItemSize) / 100;
+    if (mediaType === MediaTypeEnum.AUDIO) {
+      return MEDIA_ITEMS_SIZES[mediaType]()?.height;
     } else {
-      return mediaType === MediaTypeEnum.AUDIO
-        ? AUDIO_FIXED_HEIGHT
-        : IMAGE_FIXED_HEIGHT;
+      return MEDIA_ITEMS_SIZES[mediaType]({
+        data,
+        additionalProperties,
+        wrapperOffsetWidth,
+        wrapperOffsetHeight,
+      })?.height;
     }
   }, [
     additionalProperties,
+    data,
     mediaType,
     wrapperOffsetHeight,
     wrapperOffsetWidth,
@@ -92,31 +89,26 @@ const MediaSet = ({
 
   fillContent(data, [''], orderedMap);
 
-  function getItemSize(index: number) {
+  function getItemSize(index: number): number {
     let [path, items] = content[index];
+    const { maxHeight, maxWidth } = getBiggestImageFromList(items);
+    const { mediaItemSize, alignmentType } = additionalProperties;
     if (path.length === 1) {
       return 0;
     }
-    const { maxHeight, maxWidth } = getBiggestImageFromList(items);
     if (items.length > 0) {
       if (mediaType === MediaTypeEnum.IMAGE) {
-        if (
-          additionalProperties.alignmentType === MediaItemAlignmentEnum.Original
-        ) {
-          return maxHeight + ITEM_WRAPPER_HEIGHT + ITEM_CAPTION_HEIGHT;
-        }
-        if (
-          additionalProperties.alignmentType === MediaItemAlignmentEnum.Width
-        ) {
-          let width =
-            (wrapperOffsetWidth * additionalProperties?.mediaItemSize) / 100;
-          return (
-            (maxHeight / maxWidth) * width +
-            ITEM_CAPTION_HEIGHT +
-            ITEM_WRAPPER_HEIGHT
-          );
-        }
-        return mediaItemHeight + ITEM_CAPTION_HEIGHT + ITEM_WRAPPER_HEIGHT;
+        return MEDIA_SET_SIZE[mediaType]({
+          maxHeight,
+          maxWidth,
+          mediaItemHeight,
+          alignmentType,
+          wrapperOffsetWidth,
+          mediaItemSize,
+        });
+      }
+      if (mediaType === MediaTypeEnum.AUDIO) {
+        return MEDIA_SET_SIZE[mediaType]();
       }
     }
     return MEDIA_SET_TITLE_HEIGHT + MEDIA_SET_WRAPPER_PADDING_HEIGHT;

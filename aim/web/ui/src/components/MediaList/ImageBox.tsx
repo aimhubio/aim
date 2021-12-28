@@ -8,6 +8,7 @@ import { Button, Icon, Text } from 'components/kit';
 import ImageFullViewPopover from 'components/ImageFullViewPopover';
 
 import { BATCH_COLLECT_DELAY } from 'config/mediaConfigs/mediaConfigs';
+import { MediaItemAlignmentEnum } from 'config/enums/imageEnums';
 
 import blobsURIModel from 'services/models/media/blobsURIModel';
 
@@ -107,7 +108,14 @@ const ImageBox = ({
       >
         {blobData ? (
           <div className='MediaSet__container__mediaItemsList__imageBox__imageWrapper'>
-            <div className='MediaSet__container__mediaItemsList__imageBox__imageWrapper-item'>
+            <div
+              className={`MediaSet__container__mediaItemsList__imageBox__imageWrapper-item ${
+                additionalProperties.alignmentType ===
+                MediaItemAlignmentEnum.Height
+                  ? 'MediaSet__container__mediaItemsList__imageBox__imageWrapper-item-heightAlign'
+                  : ''
+              }`}
+            >
               <img src={`data:image/${format};base64, ${blobData}`} alt='' />
               <Text style={{ maxWidth: style.width }} size={10} weight={400}>
                 {data.caption}Caption new

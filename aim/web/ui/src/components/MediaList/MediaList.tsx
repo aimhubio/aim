@@ -5,10 +5,9 @@ import { MediaTypeEnum } from 'components/MediaPanel/config';
 import AudioBox from 'components/kit/AudioBox';
 
 import {
-  ITEM_CAPTION_HEIGHT,
   MEDIA_ITEMS_SIZES,
+  MEDIA_LIST_HEIGHT,
 } from 'config/mediaConfigs/mediaConfigs';
-import { MediaItemAlignmentEnum } from 'config/enums/imageEnums';
 
 import getBiggestImageFromList from 'utils/getBiggestImageFromList';
 
@@ -35,42 +34,40 @@ function MediaList({
   const itemSize = React.useCallback(
     (index: number) => {
       if (mediaType === MediaTypeEnum.AUDIO) {
-        return MEDIA_ITEMS_SIZES[mediaType]();
+        return MEDIA_ITEMS_SIZES[mediaType]().width;
       } else {
         return MEDIA_ITEMS_SIZES[mediaType]({
           data,
           index,
           additionalProperties,
           wrapperOffsetWidth,
-          mediaItemHeight,
-        });
+          wrapperOffsetHeight,
+        }).width;
       }
     },
     [
       additionalProperties,
       data,
-      mediaItemHeight,
       mediaType,
+      wrapperOffsetHeight,
       wrapperOffsetWidth,
     ],
   );
 
   const listHeight = React.useMemo(() => {
+    const { maxWidth, maxHeight } = getBiggestImageFromList(data);
+    const { alignmentType, mediaItemSize } = additionalProperties;
     if (mediaType === MediaTypeEnum.IMAGE) {
-      const { maxWidth, maxHeight } = getBiggestImageFromList(data);
-      if (
-        additionalProperties.alignmentType === MediaItemAlignmentEnum.Original
-      ) {
-        return maxHeight + ITEM_CAPTION_HEIGHT + ITEM_CAPTION_HEIGHT;
-      }
-      if (additionalProperties.alignmentType === MediaItemAlignmentEnum.Width) {
-        let width =
-          (wrapperOffsetWidth * additionalProperties?.mediaItemSize) / 100;
-        return (maxHeight / maxWidth) * width + ITEM_CAPTION_HEIGHT;
-      }
-      return mediaItemHeight + ITEM_CAPTION_HEIGHT;
+      return MEDIA_LIST_HEIGHT[mediaType]({
+        alignmentType,
+        maxHeight,
+        maxWidth,
+        wrapperOffsetWidth,
+        mediaItemSize,
+        mediaItemHeight,
+      });
     } else {
-      return mediaItemHeight + ITEM_CAPTION_HEIGHT;
+      return MEDIA_LIST_HEIGHT[mediaType](mediaItemHeight);
     }
   }, [
     additionalProperties,
