@@ -118,7 +118,7 @@ const ImageBox = ({
             >
               <img src={`data:image/${format};base64, ${blobData}`} alt='' />
               <Text style={{ maxWidth: style.width }} size={10} weight={400}>
-                {data.caption}Caption new
+                {data.caption}
               </Text>
             </div>
             <Button
