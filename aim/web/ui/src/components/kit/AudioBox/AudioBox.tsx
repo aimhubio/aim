@@ -132,7 +132,11 @@ function AudioBoxVolume({ audio }: IAudioBoxVolumeProps) {
   }
 
   return (
-    <div className='AudioBox__controllers__volume'>
+    <div
+      className={`AudioBox__controllers__volume ${
+        audio ? '' : 'AudioBox__controllers__volume-disabled'
+      }`}
+    >
       <Button
         onClick={onVolumeToggle}
         withOnlyIcon
@@ -273,17 +277,29 @@ function AudioBox({
 
   function onDownload(): void {
     if (audio) {
-      const element: HTMLAnchorElement = document.createElement('a');
-      const { index, format, context, step, caption, audio_name } = data;
-      const contextName: string =
-        contextToString(context) === '' ? '' : `_${contextToString(context)}`;
-      const name: string = `${audio_name}${contextName}_${caption}_${step}_${index}`;
-      element.setAttribute('href', `data:audio/${format};base64,${blobData}`);
-      element.setAttribute('download', name);
-      document.body.appendChild(element);
-      element.click();
-      document.body.removeChild(element);
+      handleDownload();
+    } else {
+      setProcessing(true);
+      additionalProperties
+        .getAudiosBlobsData([blob_uri])
+        .call()
+        .then((a: any) => {
+          handleDownload();
+        });
     }
+  }
+
+  function handleDownload(): void {
+    const element: HTMLAnchorElement = document.createElement('a');
+    const { index, format, context, step, caption, audio_name } = data;
+    const contextName: string =
+      contextToString(context) === '' ? '' : `_${contextToString(context)}`;
+    const name: string = `${audio_name}${contextName}_${caption}_${step}_${index}`;
+    element.setAttribute('href', `data:audio/${format};base64,${blobData}`);
+    element.setAttribute('download', name);
+    document.body.appendChild(element);
+    element.click();
+    document.body.removeChild(element);
   }
 
   return (
@@ -321,14 +337,16 @@ function AudioBox({
         )}
         <AudiBoxProgress audio={audio} isPlaying={isPlaying} src={src} />
         <AudioBoxVolume audio={audio} />
-        <Button
-          withOnlyIcon
-          size='small'
-          onClick={() => {
-            onDownload();
-          }}
-        >
-          <Icon name='download' />
+        <Button withOnlyIcon size='small' onClick={onDownload}>
+          {processing ? (
+            <CircularProgress
+              className='Icon__container'
+              size={12}
+              thickness={4}
+            />
+          ) : (
+            <Icon name='download' />
+          )}
         </Button>
       </div>
       <Text
