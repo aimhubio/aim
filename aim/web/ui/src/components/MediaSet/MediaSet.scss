@@ -108,6 +108,8 @@
           border: toRem(2px) solid #b9d5f8;
         }
         &__image {
+          display: flex;
+          align-items: center;
           &--pixelated {
             image-rendering: pixelated;
           }

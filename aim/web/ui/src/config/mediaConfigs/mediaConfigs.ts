@@ -2,12 +2,9 @@ import { MediaTypeEnum } from 'components/MediaPanel/config';
 
 import { MediaItemAlignmentEnum } from 'config/enums/imageEnums';
 
-import getAudioBoxSize from 'utils/getAudioBoxSize';
-import getAudioMediaListHeight from 'utils/getAudioMediaListHeight';
-import getAudioMediaSetSize from 'utils/getAudioMediaSetSize';
-import getImageBoxSize from 'utils/getImageBoxSize';
-import getImageMediaListHeight from 'utils/getImageMediaListHeight';
-import getImageMediaSetSize from 'utils/getImageMediaSetSize';
+import { IGetImageBoxSizeProps } from 'types/utils/getImageBoxSize';
+import { IGetImageMediaListHeightProps } from 'types/utils/getImageMediaListHeight';
+import { IGetImageMediaSetSizeProps } from 'types/utils/getImageMediaSetSize';
 
 export const IMAGE_FIXED_HEIGHT = 110;
 export const ITEM_WRAPPER_HEIGHT = 33;
@@ -25,6 +22,81 @@ export const IMAGES_SLIDER_PROPS = {
   min: 15,
   max: 70,
 };
+
+function getAudioBoxSize(): { width: number; height: number } {
+  return { width: AUDIO_FIXED_WIDTH, height: AUDIO_FIXED_HEIGHT };
+}
+
+function getImageBoxSize({
+  data,
+  index = 0,
+  additionalProperties,
+  wrapperOffsetWidth,
+  wrapperOffsetHeight = 0,
+}: IGetImageBoxSizeProps): { width: number; height: number } {
+  let width;
+  let height;
+  if (additionalProperties?.alignmentType === MediaItemAlignmentEnum.Width) {
+    width = (wrapperOffsetWidth * additionalProperties?.mediaItemSize) / 100;
+    height = (wrapperOffsetWidth * additionalProperties?.mediaItemSize) / 100;
+  } else if (
+    additionalProperties?.alignmentType === MediaItemAlignmentEnum.Height &&
+    data
+  ) {
+    height = (wrapperOffsetHeight * additionalProperties?.mediaItemSize) / 100;
+    width = (height / data?.[index]?.height) * data?.[index]?.width || 100;
+  } else {
+    width = data?.[index]?.width;
+    height = data?.[index]?.height || 100;
+  }
+  return { width, height };
+}
+
+function getAudioMediaListHeight(mediaItemHeight: number): number {
+  return mediaItemHeight + ITEM_CAPTION_HEIGHT;
+}
+
+function getAudioMediaSetSize() {
+  return AUDIO_FIXED_HEIGHT + ITEM_CAPTION_HEIGHT + ITEM_WRAPPER_HEIGHT;
+}
+
+function getImageMediaListHeight({
+  alignmentType,
+  maxHeight,
+  maxWidth,
+  wrapperOffsetWidth,
+  mediaItemSize,
+  mediaItemHeight,
+}: IGetImageMediaListHeightProps): number {
+  if (alignmentType === MediaItemAlignmentEnum.Original) {
+    return maxHeight + ITEM_CAPTION_HEIGHT;
+  }
+  if (alignmentType === MediaItemAlignmentEnum.Width) {
+    let width = (wrapperOffsetWidth * mediaItemSize) / 100;
+    return (maxHeight / maxWidth) * width + ITEM_CAPTION_HEIGHT;
+  }
+  return mediaItemHeight + ITEM_CAPTION_HEIGHT;
+}
+
+function getImageMediaSetSize({
+  maxHeight,
+  maxWidth,
+  mediaItemHeight,
+  alignmentType,
+  wrapperOffsetWidth,
+  mediaItemSize,
+}: IGetImageMediaSetSizeProps) {
+  if (alignmentType === MediaItemAlignmentEnum.Original) {
+    return maxHeight + ITEM_WRAPPER_HEIGHT + ITEM_CAPTION_HEIGHT;
+  }
+  if (alignmentType === MediaItemAlignmentEnum.Width) {
+    let width = (wrapperOffsetWidth * mediaItemSize) / 100;
+    return (
+      (maxHeight / maxWidth) * width + ITEM_CAPTION_HEIGHT + ITEM_WRAPPER_HEIGHT
+    );
+  }
+  return mediaItemHeight + ITEM_CAPTION_HEIGHT + ITEM_WRAPPER_HEIGHT;
+}
 
 export const IMAGE_ALIGNMENT_OPTIONS = [
   { label: 'Original Size', value: MediaItemAlignmentEnum.Original },

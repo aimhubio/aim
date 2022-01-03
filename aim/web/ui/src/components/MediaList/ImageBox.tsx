@@ -139,7 +139,12 @@ const ImageBox = ({
         ) : (
           <Skeleton
             variant='rect'
-            height={mediaItemHeight - 10}
+            height={
+              additionalProperties.alignmentType !==
+              MediaItemAlignmentEnum.Height
+                ? style.width / (data.width / data.height)
+                : mediaItemHeight - 10
+            }
             width={style?.width - 10}
           />
         )}
