@@ -34,6 +34,7 @@ const routes = {
     component: Home,
     showInSidebar: false,
     displayName: null,
+    isExact: true,
   },
   RUNS: {
     path: PathEnum.Runs,
@@ -41,6 +42,7 @@ const routes = {
     showInSidebar: true,
     displayName: 'Runs',
     icon: 'runs',
+    isExact: true,
   },
   METRICS: {
     path: PathEnum.Metrics,
@@ -48,12 +50,14 @@ const routes = {
     showInSidebar: true,
     displayName: 'Metrics',
     icon: 'metrics',
+    isExact: true,
   },
   METRICS_ID: {
     path: PathEnum.Metrics_Id,
     component: Metrics,
     showInSidebar: false,
     displayName: 'MetricsId',
+    isExact: true,
   },
   PARAMS: {
     path: PathEnum.Params,
@@ -61,12 +65,14 @@ const routes = {
     showInSidebar: true,
     displayName: 'Params',
     icon: 'params',
+    isExact: true,
   },
   PARAMS_ID: {
     path: PathEnum.Params_Id,
     component: Params,
     showInSidebar: false,
     displayName: 'ParamsId',
+    isExact: true,
   },
   IMAGE_EXPLORE: {
     path: PathEnum.Images_Explore,
@@ -74,12 +80,14 @@ const routes = {
     showInSidebar: true,
     displayName: 'Images',
     icon: 'images',
+    isExact: true,
   },
   IMAGE_EXPLORE_ID: {
     path: PathEnum.Images_Explore_Id,
     component: ImagesExplore,
     showInSidebar: false,
     displayName: 'ImagesId',
+    isExact: true,
   },
   SCATTERS: {
     path: PathEnum.Scatters,
@@ -87,12 +95,14 @@ const routes = {
     showInSidebar: true,
     displayName: 'Scatters',
     icon: 'scatterplot',
+    isExact: true,
   },
   SCATTERS_EXPLORE_ID: {
     path: PathEnum.Scatters_Id,
     component: Scatters,
     showInSidebar: false,
     displayName: 'ScatterId',
+    isExact: true,
   },
   BOOKMARKS: {
     path: PathEnum.Bookmarks,
@@ -100,6 +110,7 @@ const routes = {
     showInSidebar: true,
     displayName: 'Bookmarks',
     icon: 'bookmarks',
+    isExact: true,
   },
   TAGS: {
     path: PathEnum.Tags,
@@ -107,12 +118,14 @@ const routes = {
     showInSidebar: true,
     displayName: 'Tags',
     icon: 'tags',
+    isExact: true,
   },
   RUN_DETAIL: {
     path: PathEnum.Run_Detail,
     component: RunDetail,
     showInSidebar: false,
     displayName: 'Run Detail',
+    isExact: false,
   },
 };
 

@@ -1640,6 +1640,7 @@ function createAppModel(appConfig: IAppInitialConfig) {
           config.delay || liveUpdateConfig?.delay,
         );
         liveUpdateInstance?.start({
+          p: configData?.chart?.densityType,
           q: query,
           ...(metric && { x_axis: metric }),
         });

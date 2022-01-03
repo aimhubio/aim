@@ -1,5 +1,13 @@
 # Changelog
 
+## Unreleased
+
+- Recover active tab in run details page after reload (roubkar)
+
+## 3.3.3 Dec 24 2021
+
+- Fix issue with showing range panel in Images Explorer (roubkar)
+
 ## 3.3.2 Dec 20 2021
 
 - Fix issue with not providing point density value to live-update query (rubenaprikyan)
