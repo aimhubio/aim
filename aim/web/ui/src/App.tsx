@@ -1,6 +1,8 @@
 import React from 'react';
 import { BrowserRouter, Switch, Route } from 'react-router-dom';
 
+import Alert from '@material-ui/lab/Alert';
+
 import SideBar from 'components/SideBar/SideBar';
 import ProjectWrapper from 'components/ProjectWrapper/ProjectWrapper';
 import Theme from 'components/Theme/Theme';
@@ -15,6 +17,11 @@ if ((window as any).API_BASE_PATH !== '{{ base_path }}') {
   basePath = (window as any).API_BASE_PATH;
 }
 
+const cachePlaceholderPaths = ['/notebook']; // @TODO move cachePlaceholderPaths list to constants
+const isVisibleCachePlaceholder = cachePlaceholderPaths.includes(
+  (window as any).API_BASE_PATH,
+);
+
 function App(): React.FunctionComponentElement<React.ReactNode> {
   return (
     <>
@@ -24,6 +31,12 @@ function App(): React.FunctionComponentElement<React.ReactNode> {
           <div className='pageContainer'>
             <SideBar />
             <div className='mainContainer'>
+              {isVisibleCachePlaceholder && (
+                <Alert variant='outlined' severity='warning'>
+                  You are using UI from notebook env, please make sure to keep
+                  server running for a better experience
+                </Alert>
+              )}
               <React.Suspense fallback={null}>
                 <Switch>
                   {Object.values(routes).map((route, index) => {
