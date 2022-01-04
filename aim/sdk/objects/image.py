@@ -129,13 +129,12 @@ class Image(CustomObject):
         try:
             pil_image.save(img_container, **params)
         except OSError:
-            """
-            The best way to approach this problem is to prepare PIL Image object before hitting this method.
-            
-            This block only handles case where RGBA mode is mandated to save in RGB
-            PIL wont do that automatically so we have to convert image to RGB before saving it.
-            In addition - make transparency "white" before conversion otherwise it will be black.
-            """
+            # The best way to approach this problem is to prepare PIL Image object before hitting this method.
+            #
+            # This block only handles case where RGBA mode is mandated to save in RGB
+            # PIL won't do that automatically, so we have to convert image to RGB before saving it.
+            # In addition - make transparency "white" before conversion otherwise it will be black.
+
             alpha = pil_image.convert('RGBA').split()[-1]  # Get only alpha
             background = PILImage.new('RGBA', pil_image.size, (255, 255, 255, 255))
             background.paste(pil_image, mask=alpha)
