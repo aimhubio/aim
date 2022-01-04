@@ -70,7 +70,7 @@ function ImagePropertiesPopover({
         <div
           className={`ImagePropertiesPopover__sizeSlider ${
             isOriginalAlignment
-              ? 'ImagePropertiesPopover__sizeSlider-disabled'
+              ? 'ImagePropertiesPopover__sizeSlider--disabled'
               : ''
           } `}
         >
