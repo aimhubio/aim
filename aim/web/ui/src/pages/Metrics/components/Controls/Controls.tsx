@@ -6,20 +6,62 @@ import AggregationPopup from 'components/AggregationPopover/AggregationPopover';
 import SmootheningPopup from 'components/SmoothingPopover/SmoothingPopover';
 import ZoomInPopup from 'components/ZoomInPopover/ZoomInPopover';
 import ZoomOutPopup from 'components/ZoomOutPopover/ZoomOutPopover';
-import HighlightModePopup from 'components/HighlightModesPopover/HighlightModesPopover';
+import HighlightModePopup, {
+  HighlightEnum,
+} from 'components/HighlightModesPopover/HighlightModesPopover';
 import ControlPopover from 'components/ControlPopover/ControlPopover';
 import AxesScalePopover from 'components/AxesScalePopover/AxesScalePopover';
 import AlignmentPopover from 'components/AlignmentPopover/AlignmentPopover';
 import TooltipContentPopover from 'components/TooltipContentPopover/TooltipContentPopover';
 import { Icon } from 'components/kit';
 
+import { DensityOptions } from 'config/enums/densityEnum';
+
 import { IControlProps } from 'types/pages/metrics/components/Controls/Controls';
+
+import { AlignmentOptionsEnum, CurveEnum, ScaleEnum } from 'utils/d3';
+import { SmoothingAlgorithmEnum } from 'utils/smoothingData';
 
 import './Controls.scss';
 
 function Controls(
   props: IControlProps,
 ): React.FunctionComponentElement<React.ReactNode> {
+  const highlightModeChanged: boolean = React.useMemo(() => {
+    return props.highlightMode !== HighlightEnum.Off;
+  }, [props.highlightMode]);
+
+  const axesScaleChanged: boolean = React.useMemo(() => {
+    return (
+      props.axesScaleType.xAxis !== ScaleEnum.Linear ||
+      props.axesScaleType.yAxis !== ScaleEnum.Linear
+    );
+  }, [props.axesScaleType]);
+
+  const alignmentChanged: boolean = React.useMemo(() => {
+    return (
+      !!props.alignmentConfig.metric ||
+      props.alignmentConfig.type !== AlignmentOptionsEnum.STEP ||
+      props.densityType !== DensityOptions.Minimum
+    );
+  }, [props.alignmentConfig, props.densityType]);
+
+  const smootheningChanged: boolean = React.useMemo(() => {
+    return (
+      props.smoothingFactor > 0 ||
+      props.curveInterpolation !== CurveEnum.Linear ||
+      props.smoothingAlgorithm !== SmoothingAlgorithmEnum.EMA
+    );
+  }, [
+    props.smoothingAlgorithm,
+    props.smoothingFactor,
+    props.curveInterpolation,
+  ]);
+
+  const tooltipChanged: boolean = React.useMemo(() => {
+    return !props.tooltip.display || props.tooltip.selectedParams?.length > 0;
+  }, [props.tooltip]);
+
   return (
     <div className='Controls__container ScrollBar__hidden'>
       <div>
@@ -80,10 +122,14 @@ function Controls(
             <Tooltip title='X-Axis properties'>
               <div
                 onClick={onAnchorClick}
-                className={`Controls__anchor ${opened ? 'active' : ''}`}
+                className={`Controls__anchor ${
+                  opened ? 'active' : alignmentChanged ? 'active outlined' : ''
+                }`}
               >
                 <Icon
-                  className={`Controls__icon ${opened ? 'active' : ''}`}
+                  className={`Controls__icon ${
+                    opened || alignmentChanged ? 'active' : ''
+                  }`}
                   name='x-axis'
                 />
               </div>
@@ -108,10 +154,14 @@ function Controls(
             <Tooltip title='Axes Scale'>
               <div
                 onClick={onAnchorClick}
-                className={`Controls__anchor ${opened ? 'active' : ''}`}
+                className={`Controls__anchor ${
+                  opened ? 'active' : axesScaleChanged ? 'active outlined' : ''
+                }`}
               >
                 <Icon
-                  className={`Controls__icon ${opened ? 'active' : ''}`}
+                  className={`Controls__icon ${
+                    opened || axesScaleChanged ? 'active' : ''
+                  }`}
                   name='axes-scale'
                 />
               </div>
@@ -132,10 +182,18 @@ function Controls(
             <Tooltip title='Chart Smoothing Options'>
               <div
                 onClick={onAnchorClick}
-                className={`Controls__anchor ${opened ? 'active' : ''}`}
+                className={`Controls__anchor ${
+                  opened
+                    ? 'active'
+                    : smootheningChanged
+                    ? 'active outlined'
+                    : ''
+                }`}
               >
                 <Icon
-                  className={`Controls__icon ${opened ? 'active' : ''}`}
+                  className={`Controls__icon ${
+                    opened || smootheningChanged ? 'active' : ''
+                  }`}
                   name='smoothing'
                 />
               </div>
@@ -180,11 +238,19 @@ function Controls(
           anchor={({ onAnchorClick, opened }) => (
             <Tooltip title='Highlight Modes'>
               <div
-                className={`Controls__anchor ${opened ? 'active' : ''}`}
+                className={`Controls__anchor ${
+                  opened
+                    ? 'active'
+                    : highlightModeChanged
+                    ? 'active outlined'
+                    : ''
+                }`}
                 onClick={onAnchorClick}
               >
                 <Icon
-                  className={`Controls__icon ${opened ? 'active' : ''}`}
+                  className={`Controls__icon ${
+                    opened || highlightModeChanged ? 'active' : ''
+                  }`}
                   name='highlight-mode'
                 />
               </div>
@@ -205,10 +271,14 @@ function Controls(
             <Tooltip title='Tooltip Params'>
               <div
                 onClick={onAnchorClick}
-                className={`Controls__anchor ${opened ? 'active' : ''}`}
+                className={`Controls__anchor ${
+                  opened ? 'active' : tooltipChanged ? 'active outlined' : ''
+                }`}
               >
                 <Icon
-                  className={`Controls__icon ${opened ? 'active' : ''}`}
+                  className={`Controls__icon ${
+                    opened || tooltipChanged ? 'active' : ''
+                  }`}
                   name='cursor'
                 />
               </div>

@@ -15,6 +15,9 @@ import './Controls.scss';
 function Controls(
   props: IControlProps,
 ): React.FunctionComponentElement<React.ReactNode> {
+  const tooltipChanged: boolean = React.useMemo(() => {
+    return !props.tooltip.display || props.tooltip.selectedParams?.length > 0;
+  }, [props.tooltip]);
   return (
     <div className='Params__Controls__container ScrollBar__hidden'>
       <Tooltip title='Curve Interpolation'>
@@ -57,13 +60,13 @@ function Controls(
               <div
                 onClick={onAnchorClick}
                 className={`Params__Controls__anchor ${
-                  opened ? 'active' : ''
+                  opened ? 'active' : tooltipChanged ? 'active outlined' : ''
                 } `}
               >
                 {/*TODO need to change icon */}
                 <Icon
                   className={`Params__Controls__icon ${
-                    opened ? 'active' : ''
+                    opened || tooltipChanged ? 'active' : ''
                   } `}
                   name='cursor'
                 />

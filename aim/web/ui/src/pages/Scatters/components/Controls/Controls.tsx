@@ -13,6 +13,9 @@ import './Controls.scss';
 function Controls(
   props: IControlProps,
 ): React.FunctionComponentElement<React.ReactNode> {
+  const tooltipChanged: boolean = React.useMemo(() => {
+    return !props.tooltip.display || props.tooltip.selectedParams?.length > 0;
+  }, [props.tooltip]);
   return (
     <div className='Controls__container ScrollBar__hidden'>
       <div>
@@ -22,10 +25,14 @@ function Controls(
             <Tooltip title='Tooltip Params'>
               <div
                 onClick={onAnchorClick}
-                className={`Controls__anchor ${opened ? 'active' : ''}`}
+                className={`Controls__anchor ${
+                  opened ? 'active' : tooltipChanged ? 'active outlined' : ''
+                }`}
               >
                 <Icon
-                  className={`Controls__icon ${opened ? 'active' : ''}`}
+                  className={`Controls__icon ${
+                    opened || tooltipChanged ? 'active' : ''
+                  }`}
                   name='cursor'
                 />
               </div>
