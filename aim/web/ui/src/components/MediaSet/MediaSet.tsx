@@ -8,28 +8,32 @@ import { Tooltip } from '@material-ui/core';
 import MediaList from 'components/MediaList';
 import { JsonViewPopover } from 'components/kit';
 import ControlPopover from 'components/ControlPopover/ControlPopover';
+import { MediaTypeEnum } from 'components/MediaPanel/config';
+
+import {
+  MEDIA_ITEMS_SIZES,
+  MEDIA_SET_SIZE,
+  MEDIA_SET_TITLE_HEIGHT,
+  MEDIA_SET_WRAPPER_PADDING_HEIGHT,
+} from 'config/mediaConfigs/mediaConfigs';
 
 import { formatValue } from 'utils/formatValue';
 import { jsonParse } from 'utils/jsonParse';
+import getBiggestImageFromList from 'utils/getBiggestImageFromList';
 
 import { IMediaSetProps } from './MediaSet.d';
 
 import './MediaSet.scss';
-
-const itemWrapperHeight = 33;
-const setTitleHeight = 17;
-const setWrapperPaddingHeight = 6;
 
 const MediaSet = ({
   data,
   onListScroll,
   addUriToList,
   index = 0,
-  setKey,
+  mediaSetKey,
   wrapperOffsetHeight,
   wrapperOffsetWidth,
   orderedMap,
-  mediaItemHeight,
   focusedState,
   syncHoverState,
   additionalProperties,
@@ -39,6 +43,25 @@ const MediaSet = ({
 }: IMediaSetProps): React.FunctionComponentElement<React.ReactNode> => {
   let content: [string[], []][] = []; // the actual items list to be passed to virtualized list component
   let keysMap: { [key: string]: number } = {}; // cache for checking whether the group title is already added to list
+
+  const mediaItemHeight = React.useMemo(() => {
+    if (mediaType === MediaTypeEnum.AUDIO) {
+      return MEDIA_ITEMS_SIZES[mediaType]()?.height;
+    } else {
+      return MEDIA_ITEMS_SIZES[mediaType]({
+        data,
+        additionalProperties,
+        wrapperOffsetWidth,
+        wrapperOffsetHeight,
+      })?.height;
+    }
+  }, [
+    additionalProperties,
+    data,
+    mediaType,
+    wrapperOffsetHeight,
+    wrapperOffsetWidth,
+  ]);
 
   function fillContent(
     list: [] | { [key: string]: [] | {} },
@@ -66,22 +89,34 @@ const MediaSet = ({
 
   fillContent(data, [''], orderedMap);
 
-  function getItemSize(index: number) {
+  function getItemSize(index: number): number {
     let [path, items] = content[index];
+    const { maxHeight, maxWidth } = getBiggestImageFromList(items);
+    const { mediaItemSize, alignmentType } = additionalProperties;
     if (path.length === 1) {
       return 0;
     }
-
     if (items.length > 0) {
-      return mediaItemHeight + itemWrapperHeight;
+      if (mediaType === MediaTypeEnum.IMAGE) {
+        return MEDIA_SET_SIZE[mediaType]({
+          maxHeight,
+          maxWidth,
+          mediaItemHeight,
+          alignmentType,
+          wrapperOffsetWidth,
+          mediaItemSize,
+        });
+      }
+      if (mediaType === MediaTypeEnum.AUDIO) {
+        return MEDIA_SET_SIZE[mediaType]();
+      }
     }
-
-    return setTitleHeight + setWrapperPaddingHeight;
+    return MEDIA_SET_TITLE_HEIGHT + MEDIA_SET_WRAPPER_PADDING_HEIGHT;
   }
 
   return (
     <List
-      key={content.length + tableHeight + setKey}
+      key={content.length + tableHeight + mediaSetKey}
       height={wrapperOffsetHeight || 0}
       itemCount={content.length}
       itemSize={getItemSize}
@@ -91,8 +126,9 @@ const MediaSet = ({
         data: content,
         addUriToList,
         wrapperOffsetWidth,
+        wrapperOffsetHeight,
         index,
-        setKey,
+        mediaSetKey,
         mediaItemHeight,
         focusedState,
         syncHoverState,
@@ -111,7 +147,7 @@ function propsComparator(
   nextProps: IMediaSetProps,
 ): boolean {
   if (
-    prevProps.setKey !== nextProps.setKey ||
+    prevProps.mediaSetKey !== nextProps.mediaSetKey ||
     prevProps.focusedState !== nextProps.focusedState
   ) {
     return false;
@@ -185,6 +221,7 @@ const MediaGroupedList = React.memo(function MediaGroupedList(props: any) {
               data={items}
               addUriToList={data.addUriToList}
               wrapperOffsetWidth={data.wrapperOffsetWidth}
+              wrapperOffsetHeight={data.wrapperOffsetHeight}
               mediaItemHeight={data.mediaItemHeight}
               focusedState={data.focusedState}
               syncHoverState={data.syncHoverState}
