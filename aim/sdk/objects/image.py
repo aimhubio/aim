@@ -4,7 +4,7 @@ from PIL import Image as PILImage
 
 from io import BytesIO
 from itertools import chain, repeat
-from typing import List
+from typing import List, Dict
 import numpy as np
 
 from aim.sdk.num_utils import inst_has_typename
@@ -19,24 +19,34 @@ class Image(CustomObject):
     Args:
          image (:obj:): pillow `Image` object or `torch.Tensor` or `numpy.array` used to construct `aim.Image`.
          caption (:obj:`str`, optional): Optional image caption. '' by default.
-         compress (:obj:`bool`, optional): If True, will convert to JPG and reduce image quality
+         save_params (:obj:`dict`, optional): Dictionary that will be applied upon saving PIL image.
+
+    Example of "save_params" to reduce quality of the image (Refer to PIL documentation for the list of parameters):
+    save_params = {
+        'format': 'jpeg',
+        'optimize': True,
+        'quality': 80
+    }
     """
 
     AIM_NAME = 'aim.image'
 
-    def __init__(self, image, caption: str = '', compress=False):
+    def __init__(self, image, caption: str = '', save_params: Dict = None):
         super().__init__()
 
+        if save_params is None:
+            save_params = {}
+
         if isinstance(image, str):
-            self._from_file_path(image, compress)
+            self._from_file_path(image, save_params)
         elif inst_has_typename(image, ['PIL', 'Image']):
-            self._from_pil_image(image, compress)
+            self._from_pil_image(image, save_params)
         elif inst_has_typename(image, ['torch', 'Tensor']):
-            self._from_torch_tensor(image, compress)
+            self._from_torch_tensor(image, save_params)
         elif inst_has_typename(image, ['tensorflow', 'Tensor']):
-            self._from_tf_tensor(image, compress)
+            self._from_tf_tensor(image, save_params)
         elif inst_has_typename(image, ['numpy', 'array']):
-            self._from_numpy_array(image, compress)
+            self._from_numpy_array(image, save_params)
         else:
             raise TypeError(f'Cannot convert to aim.Image. Unsupported type {type(image)}.')
         self.caption = caption
@@ -106,42 +116,47 @@ class Image(CustomObject):
             'height': self.height,
         }
 
-    def _from_pil_image(self, pil_image: PILImage.Image, compress=False):
+    def _from_pil_image(self, pil_image: PILImage.Image, save_params):
         assert isinstance(pil_image, PILImage.Image)
         img_container = BytesIO()
 
-        if compress:
-            if pil_image.mode == 'RGBA' or isinstance(pil_image.info.get('transparency'), bytes):
-                # Remove transparency
-                alpha = pil_image.convert('RGBA').split()[-1]  # Get only alpha
-                background = PILImage.new('RGBA', pil_image.size, (255, 255, 255, 255))
-                background.paste(pil_image, mask=alpha)
-                pil_image = background.convert('RGB')
+        # By default, format is PNG but can be replaced trough save_params
+        params = {
+            'format': 'png',
+            **save_params
+        }
 
-            params = {
-                'format': 'jpeg',
-                'optimize': True,
-                'quality': 80
-            }
-        else:
-            params = {
-                'format': 'png'
-            }
+        try:
+            pil_image.save(img_container, **params)
+        except OSError:
+            """
+            The best way to approach this problem is to prepare PIL Image object before hitting this method.
+            
+            This block only handles case where RGBA mode is mandated to save in RGB
+            PIL wont do that automatically so we have to convert image to RGB before saving it.
+            In addition - make transparency "white" before conversion otherwise it will be black.
+            """
+            alpha = pil_image.convert('RGBA').split()[-1]  # Get only alpha
+            background = PILImage.new('RGBA', pil_image.size, (255, 255, 255, 255))
+            background.paste(pil_image, mask=alpha)
+            pil_image = background.convert('RGB')
 
-        pil_image.save(img_container, **params)
+            # Retry
+            pil_image.save(img_container, **params)
+
         self.storage['data'] = BLOB(data=img_container.getvalue())
         self.storage['source'] = 'PIL.Image'
         self.storage['mode'] = pil_image.mode
         self.storage['format'] = params['format']
         self.storage['width'], self.storage['height'] = pil_image.size
 
-    def _from_file_path(self, file_path, compress=False):
+    def _from_file_path(self, file_path, save_params):
         if not os.path.isfile(file_path):
             raise ValueError('Invalid image file path.')
 
-        return self._from_pil_image(PILImage.open(file_path), compress)
+        return self._from_pil_image(PILImage.open(file_path), save_params)
 
-    def _from_numpy_array(self, array: np.ndarray, compress=False):
+    def _from_numpy_array(self, array: np.ndarray, save_params):
         if array.ndim not in {2, 3}:
             raise ValueError('Cannot convert to aim.Image. array must have 2/3-D shape.')
 
@@ -149,9 +164,9 @@ class Image(CustomObject):
             pil_image = PILImage.fromarray(array[:, :, 0])
         else:
             pil_image = PILImage.fromarray(array)
-        self._from_pil_image(pil_image, compress)
+        self._from_pil_image(pil_image, save_params)
 
-    def _from_torch_tensor(self, tensor, compress=False):
+    def _from_torch_tensor(self, tensor, save_params):
         try:
             import torch
             assert isinstance(tensor, torch.Tensor)
@@ -168,9 +183,9 @@ class Image(CustomObject):
             pil_image = PILImage.fromarray(array[:, :, 0])
         else:
             pil_image = PILImage.fromarray(array)
-        self._from_pil_image(pil_image, compress)
+        self._from_pil_image(pil_image, save_params)
 
-    def _from_tf_tensor(self, tensor, compress=False):
+    def _from_tf_tensor(self, tensor, save_params):
         try:
             import tensorflow as tf
             assert isinstance(tensor, tf.Tensor)
@@ -189,7 +204,7 @@ class Image(CustomObject):
             pil_image = PILImage.fromarray(array[:, :, 0])
         else:
             pil_image = PILImage.fromarray(array)
-        self._from_pil_image(pil_image, compress)
+        self._from_pil_image(pil_image, save_params)
 
 
 def convert_to_aim_image_list(images, labels=None) -> List[Image]:
