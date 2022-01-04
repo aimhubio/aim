@@ -11,75 +11,73 @@ import { getValuesMedian } from 'utils/getValuesMedian';
 
 const maxiters = 2;
 const epsilon = 1e-12;
+let x = (d: [number, number]) => d[0];
+let y = (d: [number, number]) => d[1];
 
-export default function loess(bandwidth: number = 0.66) {
-  let x = (d: [number, number]) => d[0];
-  let y = (d: [number, number]) => d[1];
+export default function loess(
+  data: [number, number][],
+  bandwidth: number = 0.66,
+) {
+  const [xv, yv, ux, uy] = points(data, x, y, true);
+  const n = xv.length;
+  const bw = Math.max(2, ~~(bandwidth * n)); // # nearest neighbors
+  const yhat = new Float64Array(n);
+  const residuals = new Float64Array(n);
+  const robustWeights = new Float64Array(n).fill(1);
 
-  function loessGenerator(data: [number, number][]) {
-    const [xv, yv, ux, uy] = points(data, x, y, true);
-    const n = xv.length;
-    const bw = Math.max(2, ~~(bandwidth * n)); // # nearest neighbors
-    const yhat = new Float64Array(n);
-    const residuals = new Float64Array(n);
-    const robustWeights = new Float64Array(n).fill(1);
+  for (let iter = -1; ++iter <= maxiters; ) {
+    const interval: [number, number] = [0, bw - 1];
 
-    for (let iter = -1; ++iter <= maxiters; ) {
-      const interval: [number, number] = [0, bw - 1];
+    for (let i = 0; i < n; ++i) {
+      const dx = xv[i];
+      const i0 = interval[0];
+      const i1 = interval[1];
+      const edge = dx - xv[i0] > xv[i1] - dx ? i0 : i1;
 
-      for (let i = 0; i < n; ++i) {
-        const dx = xv[i];
-        const i0 = interval[0];
-        const i1 = interval[1];
-        const edge = dx - xv[i0] > xv[i1] - dx ? i0 : i1;
+      let W = 0;
+      let X = 0;
+      let Y = 0;
+      let XY = 0;
+      let X2 = 0;
+      let denom = 1 / Math.abs(xv[edge] - dx || 1); // Avoid singularity
 
-        let W = 0;
-        let X = 0;
-        let Y = 0;
-        let XY = 0;
-        let X2 = 0;
-        let denom = 1 / Math.abs(xv[edge] - dx || 1); // Avoid singularity
+      for (let k = i0; k <= i1; ++k) {
+        const xk = xv[k];
+        const yk = yv[k];
+        const w = tricube(Math.abs(dx - xk) * denom) * robustWeights[k];
+        const xkw = xk * w;
 
-        for (let k = i0; k <= i1; ++k) {
-          const xk = xv[k];
-          const yk = yv[k];
-          const w = tricube(Math.abs(dx - xk) * denom) * robustWeights[k];
-          const xkw = xk * w;
-
-          W += w;
-          X += xkw;
-          Y += yk * w;
-          XY += yk * xkw;
-          X2 += xk * xkw;
-        }
-
-        // Linear regression fit
-        const [a, b] = ols(X / W, Y / W, XY / W, X2 / W);
-        yhat[i] = a + b * dx;
-        residuals[i] = Math.abs(yv[i] - yhat[i]);
-
-        updateInterval(xv, i + 1, interval);
+        W += w;
+        X += xkw;
+        Y += yk * w;
+        XY += yk * xkw;
+        X2 += xk * xkw;
       }
 
-      if (iter === maxiters) {
-        break;
-      }
+      // Linear regression fit
+      const [a, b] = ols(X / W, Y / W, XY / W, X2 / W);
+      yhat[i] = a + b * dx;
+      residuals[i] = Math.abs(yv[i] - yhat[i]);
 
-      const medianResidual = getValuesMedian(residuals);
-      if (Math.abs(medianResidual) < epsilon) break;
-
-      for (let i = 0, arg, w; i < n; ++i) {
-        arg = residuals[i] / (6 * medianResidual);
-        // Default to epsilon (rather than zero) for large deviations
-        // Keeping weights tiny but non-zero prevents singularites
-        robustWeights[i] = arg >= 1 ? epsilon : (w = 1 - arg * arg) * w;
-      }
+      updateInterval(xv, i + 1, interval);
     }
 
-    return output(xv, yhat, ux, uy);
+    if (iter === maxiters) {
+      break;
+    }
+
+    const medianResidual = getValuesMedian(residuals);
+    if (Math.abs(medianResidual) < epsilon) break;
+
+    for (let i = 0, arg, w; i < n; ++i) {
+      arg = residuals[i] / (6 * medianResidual);
+      // Default to epsilon (rather than zero) for large deviations
+      // Keeping weights tiny but non-zero prevents singularites
+      robustWeights[i] = arg >= 1 ? epsilon : (w = 1 - arg * arg) * w;
+    }
   }
 
-  return loessGenerator;
+  return output(xv, yhat, ux, uy);
 }
 
 // Weighting kernel for local regression
