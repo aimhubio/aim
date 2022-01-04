@@ -9,6 +9,7 @@ import {
 import { IImagesExploreAppConfig } from 'types/services/models/imagesExplore/imagesExploreAppModel';
 
 import { ChartTypeEnum } from 'utils/d3';
+import { SortFields } from 'utils/getSortedFields';
 
 import { MediaTypeEnum } from './config';
 
@@ -33,5 +34,6 @@ export interface IMediaPanelProps {
   tooltipType?: ChartTypeEnum;
   onActivePointChange?: (activePoint: any, focusedStateActive: boolean) => void;
   getBlobsData: (uris: string[]) => Promise;
-  sortFieldsDict?: any;
+  sortFieldsDict?: { [key: string]: SortFields };
+  sortFields?: SortFields;
 }

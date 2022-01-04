@@ -49,6 +49,7 @@ export function getDataAsMediaSetNestedObject<M extends State>({
             acc.concat(['key']),
             getValueByField(groupingSelectOptions, field),
           );
+          _.set(orderedMap, acc.concat(['orderKey']), field);
           acc.push(
             `${getValueByField(groupingSelectOptions, field)} = ${formatValue(
               value,

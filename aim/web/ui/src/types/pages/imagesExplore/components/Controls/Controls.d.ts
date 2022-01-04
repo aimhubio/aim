@@ -16,6 +16,7 @@ export interface IControlProps {
   onImageAlignmentChange: (
     value: { value: string; label: string } | null,
   ) => void;
+  onImagesSortReset: () => void;
   onImagesSortChange: any;
   sortFields: SortField[];
 }

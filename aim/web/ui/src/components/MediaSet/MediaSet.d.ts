@@ -5,6 +5,8 @@ import {
   ITooltipContent,
 } from 'types/services/models/metrics/metricsAppModel';
 
+import { SortFields } from 'utils/getSortedFields';
+
 import { MediaTypeEnum } from './config';
 export interface IMediaSetProps {
   data: { [key: string]: any };
@@ -22,5 +24,6 @@ export interface IMediaSetProps {
   tableHeight: IMediaPanelProps['tableHeight'];
   tooltip?: ITooltipContent;
   mediaType: MediaTypeEnum;
-  sortFieldsDict?: any;
+  sortFieldsDict?: { [key: string]: SortField };
+  sortFields?: SortFields;
 }

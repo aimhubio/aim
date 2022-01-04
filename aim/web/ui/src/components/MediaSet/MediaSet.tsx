@@ -11,6 +11,7 @@ import ControlPopover from 'components/ControlPopover/ControlPopover';
 
 import { formatValue } from 'utils/formatValue';
 import { jsonParse } from 'utils/jsonParse';
+import { SortField } from 'utils/getSortedFields';
 
 import { IMediaSetProps } from './MediaSet.d';
 
@@ -37,6 +38,7 @@ const MediaSet = ({
   tooltip,
   mediaType,
   sortFieldsDict,
+  sortFields,
 }: IMediaSetProps): React.FunctionComponentElement<React.ReactNode> => {
   let content: [string[], []][] = []; // the actual items list to be passed to virtualized list component
   let keysMap: { [key: string]: number } = {}; // cache for checking whether the group title is already added to list
@@ -47,7 +49,14 @@ const MediaSet = ({
     orderedMap: { [key: string]: any },
   ) {
     if (Array.isArray(list)) {
-      content.push([path, list]);
+      const listKeys: string[] = [];
+      const listOrderTypes: any[] = [];
+      sortFields?.forEach((sortField: SortField) => {
+        listKeys.push(sortField.value);
+        listOrderTypes.push(sortField.order);
+      });
+      const orderedContentList: any = _.orderBy(list, listKeys, listOrderTypes);
+      content.push([path, orderedContentList]);
     } else {
       const fieldSortedValues = _.orderBy(
         [...(orderedMap?.ordering || [])].reduce((acc: any, value: any) => {
@@ -55,7 +64,7 @@ const MediaSet = ({
           return acc;
         }, []),
         [orderedMap?.key || ''],
-        [sortFieldsDict?.[orderedMap?.key]?.[1] || 'asc'],
+        [sortFieldsDict?.[orderedMap?.orderKey]?.order || 'asc'],
       ).map((value: any) => value[orderedMap?.key]);
       fieldSortedValues.forEach((val: any) => {
         const fieldName = `${orderedMap.key} = ${formatValue(val)}`;

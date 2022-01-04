@@ -44,6 +44,7 @@ function MediaPanel({
   actionPanelSize,
   tooltipType,
   sortFieldsDict,
+  sortFields,
 }: IMediaPanelProps): React.FunctionComponentElement<React.ReactNode> {
   const [activePointRect, setActivePointRect] = React.useState<{
     top: number;
@@ -262,6 +263,7 @@ function MediaPanel({
                     tableHeight={tableHeight}
                     tooltip={tooltip}
                     mediaType={mediaType}
+                    sortFields={sortFields}
                   />
                 </div>
                 {tooltipType && (

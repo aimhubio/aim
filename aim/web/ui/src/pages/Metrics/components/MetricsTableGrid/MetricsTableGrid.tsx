@@ -1,5 +1,5 @@
-import React from 'react';
 import moment from 'moment';
+import _ from 'lodash';
 import { Link as RouteLink } from 'react-router-dom';
 import { merge } from 'lodash-es';
 
@@ -14,10 +14,8 @@ import COLORS from 'config/colors/colors';
 import { PathEnum } from 'config/enums/routesEnum';
 
 import { ITableColumn } from 'types/pages/metrics/components/TableColumns/TableColumns';
-import {
-  IOnGroupingSelectChangeParams,
-  SortField,
-} from 'types/services/models/metrics/metricsAppModel';
+import { IOnGroupingSelectChangeParams } from 'types/services/models/metrics/metricsAppModel';
+import { IGroupingSelectOption } from 'types/services/models/imagesExplore/imagesExploreAppModel';
 
 import {
   AggregationAreaMethods,
@@ -27,6 +25,7 @@ import { isSystemMetric } from 'utils/isSystemMetric';
 import { formatSystemMetricName } from 'utils/formatSystemMetricName';
 import contextToString from 'utils/contextToString';
 import { formatValue } from 'utils/formatValue';
+import { SortActionTypes, SortField, SortFields } from 'utils/getSortedFields';
 
 const icons: { [key: string]: string } = {
   color: 'coloring',
@@ -36,6 +35,7 @@ const icons: { [key: string]: string } = {
 
 function getMetricsTableColumns(
   paramColumns: string[] = [],
+  groupingSelectOptions: IGroupingSelectOption[],
   groupFields: { [key: string]: string } | null,
   order: { left: string[]; middle: string[]; right: string[] },
   hiddenColumns: string[],
@@ -43,8 +43,8 @@ function getMetricsTableColumns(
     area: AggregationAreaMethods;
     line: AggregationLineMethods;
   },
-  sortFields?: any[],
-  onSort?: (field: string, value?: 'asc' | 'desc' | 'none') => void,
+  sortFields?: SortFields,
+  onSort?: ({ sortFields, order, index, actionType }: any) => void,
   grouping?: { [key: string]: string[] },
   onGroupingToggle?: (params: IOnGroupingSelectChangeParams) => void,
 ): ITableColumn[] {
@@ -206,10 +206,13 @@ function getMetricsTableColumns(
   ].concat(
     paramColumns.map((param) => {
       const paramKey = `run.params.${param}`;
-      const sortItem: SortField = sortFields?.find(
-        (value) => value[0] === paramKey,
-      );
-
+      let index = -1;
+      const sortItem: SortField | undefined = sortFields?.find((value, i) => {
+        if (value.value === paramKey) {
+          index = i;
+        }
+        return value.value === paramKey;
+      });
       return {
         key: param,
         content: (
@@ -217,9 +220,20 @@ function getMetricsTableColumns(
             {param}
             {onSort && (
               <TableSortIcons
-                onSort={() => onSort(paramKey)}
-                sortFields={sortFields}
-                sort={Array.isArray(sortItem) ? sortItem[1] : null}
+                onSort={() =>
+                  onSort({
+                    sortFields,
+                    index,
+                    field:
+                      index === -1
+                        ? groupingSelectOptions.find(
+                            (value) => value.value === paramKey,
+                          )
+                        : null,
+                    actionType: SortActionTypes.ORDER_TABLE_TRIGGER,
+                  })
+                }
+                sort={!_.isNil(sortItem) ? sortItem.order : null}
               />
             )}
           </span>

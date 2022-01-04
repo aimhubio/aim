@@ -1,41 +1,63 @@
-import { SortField } from 'types/services/models/metrics/metricsAppModel';
+import _ from 'lodash';
 
-export function getSortedFields(
-  field: string,
-  sortFields: any,
-  value?: 'asc' | 'desc' | 'none',
-) {
-  const existField = sortFields?.find((d: SortField) => d[0] === field);
-  let newFields: SortField[] = [];
+import { IGroupingSelectOption } from 'types/services/models/imagesExplore/imagesExploreAppModel';
 
-  if (value && existField) {
-    if (value === 'none') {
-      // delete
-      newFields = sortFields?.filter(
-        ([name]: SortField) => name !== existField[0],
-      );
-    } else {
-      newFields = sortFields.map(([name, v]: SortField) =>
-        name === existField[0] ? [name, value] : [name, v],
-      );
-    }
-  } else {
-    if (existField) {
-      if (existField[1] === 'asc') {
-        // replace to desc
-        newFields = sortFields?.map(([name, value]: SortField) => {
-          return name === existField[0] ? [name, 'desc'] : [name, value];
-        });
-      } else {
-        // delete field
-        newFields = sortFields?.filter(
-          ([name]: SortField) => name !== existField[0],
+export interface SortField extends IGroupingSelectOption {
+  readonly?: boolean;
+  order: 'asc' | 'desc';
+}
+export type SortFields = SortField[];
+
+export const SortActionTypes = {
+  DELETE: 'DELETE',
+  CHANGE: 'CHANGE',
+  ORDER_CHANGE: 'ORDER_CHANGE',
+  ORDER_TABLE_TRIGGER: 'ORDER_TABLE_TRIGGER',
+};
+
+export interface IGetSortedFieldsProps {
+  sortFields: SortFields;
+  index?: number;
+  order?: 'asc' | 'desc';
+  actionType: string;
+  field?: SortField;
+}
+
+export function getSortedFields({
+  sortFields,
+  index,
+  order,
+  actionType,
+  field,
+}: IGetSortedFieldsProps) {
+  switch (actionType) {
+    case SortActionTypes.DELETE: {
+      if (!_.isNil(field)) {
+        return sortFields.filter(
+          (sortField: SortField) => sortField.value !== field.value,
         );
       }
-    } else {
-      // add field
-      newFields = [...sortFields, [field, 'asc']];
+      return [...sortFields];
     }
+    case SortActionTypes.CHANGE: {
+      return [...sortFields];
+    }
+    case SortActionTypes.ORDER_CHANGE: {
+      if (!_.isNil(index)) {
+        sortFields[index].order = order || 'asc';
+      }
+      return [...sortFields];
+    }
+    case SortActionTypes.ORDER_TABLE_TRIGGER: {
+      if (index === -1) {
+        sortFields.push({ ...field, order: 'asc', readonly: false } as any);
+      } else {
+        sortFields[index || 0].order =
+          sortFields[index || 0].order === 'asc' ? 'desc' : 'asc';
+      }
+      return [...sortFields];
+    }
+    default:
+      return sortFields;
   }
-  return newFields;
 }

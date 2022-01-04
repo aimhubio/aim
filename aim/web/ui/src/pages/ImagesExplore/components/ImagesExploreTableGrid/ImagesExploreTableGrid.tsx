@@ -1,5 +1,5 @@
-import React from 'react';
 import moment from 'moment';
+import _ from 'lodash';
 import { Link as RouteLink } from 'react-router-dom';
 import { merge } from 'lodash-es';
 
@@ -13,18 +13,20 @@ import COLORS from 'config/colors/colors';
 import { PathEnum } from 'config/enums/routesEnum';
 
 import { ITableColumn } from 'types/pages/metrics/components/TableColumns/TableColumns';
-import { SortField } from 'types/services/models/metrics/metricsAppModel';
+import { IGroupingSelectOption } from 'types/services/models/imagesExplore/imagesExploreAppModel';
 
 import contextToString from 'utils/contextToString';
 import { formatValue } from 'utils/formatValue';
+import { SortActionTypes, SortField } from 'utils/getSortedFields';
 
 function getImagesExploreTableColumns(
   paramColumns: string[] = [],
+  groupingSelectOptions: IGroupingSelectOption[],
   groupFields: { [key: string]: string } | null,
   order: { left: string[]; middle: string[]; right: string[] },
   hiddenColumns: string[],
   sortFields?: any[],
-  onSort?: (field: string, value?: 'asc' | 'desc' | 'none') => void,
+  onSort?: ({ sortFields, order, index, actionType }: any) => void,
 ): ITableColumn[] {
   let columns: ITableColumn[] = [
     {
@@ -77,10 +79,14 @@ function getImagesExploreTableColumns(
     },
   ].concat(
     paramColumns.map((param) => {
-      const sortItem: SortField = sortFields?.find(
-        (value) => value[0] === `run.params.${param}`,
-      );
-
+      const paramKey = `run.params.${param}`;
+      let index = -1;
+      const sortItem: SortField | undefined = sortFields?.find((value, i) => {
+        if (value.value === paramKey) {
+          index = i;
+        }
+        return value.value === paramKey;
+      });
       return {
         key: param,
         content: (
@@ -88,9 +94,20 @@ function getImagesExploreTableColumns(
             {param}
             {onSort && (
               <TableSortIcons
-                onSort={() => onSort(`run.params.${param}`)}
-                sortFields={sortFields}
-                sort={Array.isArray(sortItem) ? sortItem[1] : null}
+                onSort={() =>
+                  onSort({
+                    sortFields,
+                    index,
+                    field:
+                      index === -1
+                        ? groupingSelectOptions.find(
+                            (value) => value.value === paramKey,
+                          )
+                        : null,
+                    actionType: SortActionTypes.ORDER_TABLE_TRIGGER,
+                  })
+                }
+                sort={!_.isNil(sortItem) ? sortItem.order : null}
               />
             )}
           </span>

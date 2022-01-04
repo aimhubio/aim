@@ -1,9 +1,12 @@
-import { IGroupingSelectOption } from 'types/services/models/metrics/metricsAppModel';
-
 export interface ISortPopoverProps {
-  onSort: (field: string, value?: 'asc' | 'desc' | 'none') => void;
+  onSort: any;
   onReset: () => void;
-  sortOptions: IGroupingSelectOption[];
-  sortFields: [string, 'asc' | 'desc' | boolean][];
-  readableOptions?: string[];
+  sortOptions: SortFields;
+  sortFields: SortFields;
+  readOnlyFieldsLabel?: string;
+}
+export interface ISortPopoverListProps {
+  onSort: any;
+  sortFields: SortFields;
+  title?: string;
 }

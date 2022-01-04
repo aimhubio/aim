@@ -9,46 +9,45 @@ import {
   CheckBoxOutlineBlank,
 } from '@material-ui/icons';
 
-import { ToggleButton, Icon, Button, Text } from 'components/kit';
+import { Button, Text } from 'components/kit';
 
 import { ISortPopoverProps } from 'types/pages/metrics/components/SortPopover/SortPopover';
-import { IGroupingSelectOption } from 'types/services/models/metrics/metricsAppModel';
 
-import getValueByField from 'utils/getValueByField';
+import { SortActionTypes, SortField, SortFields } from 'utils/getSortedFields';
+
+import SortPopoverList from './SortPopoverList';
 
 import './SortPopover.scss';
 
 function SortPopover({
   sortOptions,
   sortFields,
-  readableOptions,
   onSort,
   onReset,
+  readOnlyFieldsLabel,
 }: ISortPopoverProps): React.FunctionComponentElement<React.ReactNode> {
   let [inputValue, setInputValue] = React.useState('');
-
   function onChange(
     e: object,
-    values: IGroupingSelectOption[],
+    values: SortFields,
     d: unknown,
-    option?: AutocompleteChangeDetails<IGroupingSelectOption>,
+    option?: AutocompleteChangeDetails<SortField>,
   ) {
     if (option) {
-      onSort(option?.option.value, 'none');
+      //@ts-ignore
+      onSort({ sortFields: values, actionType: SortActionTypes.CHANGE });
     } else {
       // if there is a 1 selected option, the option param is null  [material]
-      onSort(sortFields[0][0], 'none');
+      onSort({ sortFields, actionType: SortActionTypes.CHANGE });
     }
   }
 
-  function handleDelete(field: string): void {
-    onSort(field, 'none');
-  }
-
-  const selectOptions: IGroupingSelectOption[] = React.useMemo(() => {
-    const filtered: IGroupingSelectOption[] = [...sortOptions].filter(
-      (options) => options.group === 'run' || options.group === 'record',
-    );
+  const selectOptions: SortFields = React.useMemo(() => {
+    const filtered: SortFields = [...sortOptions]
+      .filter(
+        (options) => options.group === 'run' || options.group === 'record',
+      )
+      .map((option) => ({ ...option, readonly: false, order: 'asc' }));
     return inputValue.trim() !== ''
       ? filtered
           .slice()
@@ -57,6 +56,22 @@ function SortPopover({
           )
       : filtered;
   }, [sortOptions, inputValue]);
+
+  const { filteredSortFields, readOnlyFields, readOnlyFieldsKeys } =
+    React.useMemo(() => {
+      const readOnlyFields = sortFields.filter(
+        (field: SortField) => field.readonly,
+      );
+      return {
+        filteredSortFields: sortFields.filter(
+          (field: SortField) => !field.readonly,
+        ),
+        readOnlyFields,
+        readOnlyFieldsKeys: readOnlyFields.map(
+          (field: SortField) => field.value,
+        ),
+      };
+    }, [sortFields]);
 
   return (
     <div className='SortPopover__container'>
@@ -70,11 +85,15 @@ function SortPopover({
           multiple
           disableCloseOnSelect
           options={selectOptions}
+          value={sortFields}
+          disableClearable
           onChange={onChange}
           onInputChange={(e, value, reason) => setInputValue(value)}
           groupBy={(option) => option.group}
           getOptionLabel={(option) => option.label}
-          getOptionSelected={(option, value) => option.value === value.value}
+          getOptionSelected={(option, value) => {
+            return option.value === value.value;
+          }}
           renderTags={() => null}
           renderInput={(params) => (
             <TextField
@@ -83,60 +102,56 @@ function SortPopover({
               className={
                 'TextField__OutLined__Small SortPopover__container__selectBox__selectInput'
               }
-              // label='Select Options'
-              placeholder='Select...'
+              placeholder={
+                sortFields.length > 0
+                  ? `${sortFields.length} Selected Items`
+                  : 'Select...'
+              }
             />
           )}
           ListboxProps={{
             style: {
               height: 250,
             },
+            className:
+              'MuiAutocomplete-listbox SortPopover__container__selectBox__listBox',
           }}
           renderOption={(option, { selected }) => (
-            <div className='SortPopover__select__item'>
+            <div
+              className={classNames('SortPopover__select__item', {
+                isDisabled: readOnlyFieldsKeys.includes(option.value),
+              })}
+            >
               <Checkbox
                 color='primary'
                 icon={<CheckBoxOutlineBlank />}
                 checkedIcon={<CheckBoxIcon />}
                 style={{ marginRight: 4 }}
                 checked={selected}
+                disabled={readOnlyFieldsKeys.includes(option.value)}
               />
               <span>{option.label}</span>
             </div>
           )}
         />
       </div>
-      {!_.isEmpty(sortFields) && (
-        <Text size={12} tint={50} className={'SortPopover__container__label'}>
-          SORTED BY
-        </Text>
-      )}
-      <div className='SortPopover__container__chipContainer'>
-        {sortFields.map((field) => (
-          <div className='SortPopover__chip' key={field[0]}>
-            <div className='SortPopover__chip__left'>
-              <span
-                className='SortPopover__chip__delete'
-                onClick={() => handleDelete(field[0])}
-              >
-                <Icon name='close' />
-              </span>
-            </div>
-            <ToggleButton
-              className='TooltipContentPopover__toggle__button'
-              onChange={(value) => {
-                onSort && onSort(field[0], value);
-              }}
-              leftLabel={'Asc'}
-              rightLabel={'Desc'}
-              leftValue={'asc'}
-              rightValue={'desc'}
-              value={field[1] as string}
-              title={getValueByField(selectOptions, field[0])}
-            />
-          </div>
-        ))}
+      <div className='SortPopover__container__optionList'>
+        {!_.isEmpty(readOnlyFields) && (
+          <SortPopoverList
+            title={readOnlyFieldsLabel}
+            onSort={onSort}
+            sortFields={readOnlyFields}
+          />
+        )}
+        {!_.isEmpty(filteredSortFields) && (
+          <SortPopoverList
+            title={'SORTED BY'}
+            onSort={onSort}
+            sortFields={filteredSortFields}
+          />
+        )}
       </div>
+
       <div
         className={classNames('SortPopover__reset__sorting', {
           isEmpty: _.isEmpty(sortFields),

@@ -91,7 +91,8 @@ function Controls(
               sortOptions={props.selectOptions}
               sortFields={props.sortFields}
               onSort={props.onImagesSortChange}
-              onReset={() => {}}
+              readOnlyFieldsLabel={'GROUP BY'}
+              onReset={props.onImagesSortReset}
             />
           }
         />
