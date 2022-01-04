@@ -42,18 +42,8 @@ function drawScatterTrendline({
 
     regressionPoints = xCoordinates.map((d) => [d, slrLine(d as number)]);
   } else {
-    let loessGenerator = loess();
-    loessGenerator.bandwidth(bandwidth ?? 0.6);
-
-    let loessValues = loessGenerator(
-      points.map((p: [number, number]) => p[0]),
-      points.map((p: [number, number]) => p[1]),
-    );
-
-    regressionPoints = points.map((p: [number, number], i: number) => [
-      p[0],
-      loessValues[i],
-    ]);
+    let loessGenerator = loess(bandwidth ?? 0.66);
+    regressionPoints = loessGenerator(points);
   }
 
   const line = d3

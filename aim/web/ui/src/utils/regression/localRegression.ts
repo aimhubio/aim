@@ -1,255 +1,189 @@
+// Adapted from d3-regression by Harry Stevens
+// License: https://github.com/HarryStevens/d3-regression/blob/master/LICENSE
+// Adapted from science.js by Jason Davies
+// License: https://github.com/jasondavies/science.js/blob/master/LICENSE
+// Source: https://github.com/jasondavies/science.js/blob/master/src/stats/loess.js
+// Adapted from vega-statistics by Jeffrey Heer
+// License: https://github.com/vega/vega/blob/f058b099decad9db78301405dd0d2e9d8ba3d51a/LICENSE
+// Source: https://github.com/vega/vega/blob/f21cb8792b4e0cbe2b1a3fd44b0f5db370dbaadb/packages/vega-statistics/src/regression/loess.js
+
 import { getValuesMedian } from 'utils/getValuesMedian';
 
-// Based on org.apache.commons.math.analysis.interpolation.LoessInterpolator
-// from http://commons.apache.org/math/
-function loess() {
-  let bandwidth = 0.66;
-  let robustnessIters = 2;
-  let accuracy = 1e-12;
+const maxiters = 2;
+const epsilon = 1e-12;
 
-  function smooth(xval: number[], yval: number[], weights?: number[]) {
-    let n = xval.length;
-    let i;
+export default function loess(bandwidth: number = 0.66) {
+  let x = (d: [number, number]) => d[0];
+  let y = (d: [number, number]) => d[1];
 
-    if (n !== yval.length) {
-      throw { error: 'Mismatched array lengths' };
-    }
+  function loessGenerator(data: [number, number][]) {
+    const [xv, yv, ux, uy] = points(data, x, y, true);
+    const n = xv.length;
+    const bw = Math.max(2, ~~(bandwidth * n)); // # nearest neighbors
+    const yhat = new Float64Array(n);
+    const residuals = new Float64Array(n);
+    const robustWeights = new Float64Array(n).fill(1);
 
-    if (n == 0) {
-      throw { error: 'At least one point required.' };
-    }
+    for (let iter = -1; ++iter <= maxiters; ) {
+      const interval: [number, number] = [0, bw - 1];
 
-    if (weights === undefined) {
-      weights = [];
-      i = -1;
-      while (++i < n) {
-        weights[i] = 1;
-      }
-    }
+      for (let i = 0; i < n; ++i) {
+        const dx = xv[i];
+        const i0 = interval[0];
+        const i1 = interval[1];
+        const edge = dx - xv[i0] > xv[i1] - dx ? i0 : i1;
 
-    science_stats_loessFiniteReal(xval);
-    science_stats_loessFiniteReal(yval);
-    science_stats_loessFiniteReal(weights);
-    science_stats_loessStrictlyIncreasing(xval);
+        let W = 0;
+        let X = 0;
+        let Y = 0;
+        let XY = 0;
+        let X2 = 0;
+        let denom = 1 / Math.abs(xv[edge] - dx || 1); // Avoid singularity
 
-    if (n == 1) {
-      return [yval[0]];
-    }
-    if (n == 2) {
-      return [yval[0], yval[1]];
-    }
+        for (let k = i0; k <= i1; ++k) {
+          const xk = xv[k];
+          const yk = yv[k];
+          const w = tricube(Math.abs(dx - xk) * denom) * robustWeights[k];
+          const xkw = xk * w;
 
-    let bandwidthInPoints = Math.floor(bandwidth * n);
-
-    if (bandwidthInPoints < 2) {
-      throw { error: 'Bandwidth too small.' };
-    }
-
-    let res = [];
-    let residuals = [];
-    let robustnessWeights = [];
-
-    // Do an initial fit and 'robustnessIters' robustness iterations.
-    // This is equivalent to doing 'robustnessIters+1' robustness iterations
-    // starting with all robustness weights set to 1.
-    i = -1;
-    while (++i < n) {
-      res[i] = 0;
-      residuals[i] = 0;
-      robustnessWeights[i] = 1;
-    }
-
-    let iter = -1;
-    while (++iter <= robustnessIters) {
-      let bandwidthInterval = [0, bandwidthInPoints - 1];
-      // At each x, compute a local weighted linear regression
-      let x;
-      i = -1;
-      while (++i < n) {
-        x = xval[i];
-
-        // Find out the interval of source points on which
-        // a regression is to be made.
-        if (i > 0) {
-          science_stats_loessUpdateBandwidthInterval(
-            xval,
-            weights,
-            i,
-            bandwidthInterval,
-          );
+          W += w;
+          X += xkw;
+          Y += yk * w;
+          XY += yk * xkw;
+          X2 += xk * xkw;
         }
 
-        let ileft = bandwidthInterval[0];
-        let iright = bandwidthInterval[1];
+        // Linear regression fit
+        const [a, b] = ols(X / W, Y / W, XY / W, X2 / W);
+        yhat[i] = a + b * dx;
+        residuals[i] = Math.abs(yv[i] - yhat[i]);
 
-        // Compute the point of the bandwidth interval that is
-        // farthest from x
-        let edge =
-          xval[i] - xval[ileft] > xval[iright] - xval[i] ? ileft : iright;
-
-        // Compute a least-squares linear fit weighted by
-        // the product of robustness weights and the tricube
-        // weight function.
-        // See http://en.wikipedia.org/wiki/Linear_regression
-        // (section "Univariate linear case")
-        // and http://en.wikipedia.org/wiki/Weighted_least_squares
-        // (section "Weighted least squares")
-        let sumWeights = 0;
-        let sumX = 0;
-        let sumXSquared = 0;
-        let sumY = 0;
-        let sumXY = 0;
-        let denom = Math.abs(1 / (xval[edge] - x));
-
-        for (let k = ileft; k <= iright; ++k) {
-          let xk = xval[k];
-          let yk = yval[k];
-          let dist = k < i ? x - xk : xk - x;
-          let w =
-            science_stats_loessTricube(dist * denom) *
-            robustnessWeights[k] *
-            weights[k];
-          let xkw = xk * w;
-          sumWeights += w;
-          sumX += xkw;
-          sumXSquared += xk * xkw;
-          sumY += yk * w;
-          sumXY += yk * xkw;
-        }
-
-        let meanX = sumX / sumWeights;
-        let meanY = sumY / sumWeights;
-        let meanXY = sumXY / sumWeights;
-        let meanXSquared = sumXSquared / sumWeights;
-
-        let beta =
-          Math.sqrt(Math.abs(meanXSquared - meanX * meanX)) < accuracy
-            ? 0
-            : (meanXY - meanX * meanY) / (meanXSquared - meanX * meanX);
-
-        let alpha = meanY - beta * meanX;
-
-        res[i] = beta * x + alpha;
-        residuals[i] = Math.abs(yval[i] - res[i]);
+        updateInterval(xv, i + 1, interval);
       }
 
-      // No need to recompute the robustness weights at the last
-      // iteration, they won't be needed anymore
-      if (iter === robustnessIters) {
+      if (iter === maxiters) {
         break;
       }
 
-      // Recompute the robustness weights.
+      const medianResidual = getValuesMedian(residuals);
+      if (Math.abs(medianResidual) < epsilon) break;
 
-      // Find the median residual.
-      let medianResidual = getValuesMedian(residuals);
-
-      if (Math.abs(medianResidual) < accuracy) {
-        break;
-      }
-
-      let arg;
-      let w;
-      i = -1;
-      while (++i < n) {
+      for (let i = 0, arg, w; i < n; ++i) {
         arg = residuals[i] / (6 * medianResidual);
-        robustnessWeights[i] = arg >= 1 ? 0 : (w = 1 - arg * arg) * w;
+        // Default to epsilon (rather than zero) for large deviations
+        // Keeping weights tiny but non-zero prevents singularites
+        robustWeights[i] = arg >= 1 ? epsilon : (w = 1 - arg * arg) * w;
       }
     }
 
-    return res;
+    return output(xv, yhat, ux, uy);
   }
 
-  smooth.bandwidth = function (x: number) {
-    if (!arguments.length) {
-      return x;
-    }
-    bandwidth = x;
-    return smooth;
-  };
-
-  smooth.robustnessIterations = function (x: number) {
-    if (!arguments.length) {
-      return x;
-    }
-    robustnessIters = x;
-    return smooth;
-  };
-
-  smooth.accuracy = function (x: number) {
-    if (!arguments.length) {
-      return x;
-    }
-    accuracy = x;
-    return smooth;
-  };
-
-  return smooth;
+  return loessGenerator;
 }
 
-function science_stats_loessFiniteReal(values: number[]) {
-  let n = values.length;
-  let i = -1;
-
-  while (++i < n) {
-    if (!isFinite(values[i])) {
-      return false;
-    }
-  }
-
-  return true;
-}
-
-function science_stats_loessStrictlyIncreasing(xval: number[]) {
-  let n = xval.length;
-  let i = 0;
-
-  while (++i < n) {
-    if (xval[i - 1] >= xval[i]) {
-      return false;
-    }
-  }
-
-  return true;
-}
-
-// Compute the tricube weight function.
-// http://en.wikipedia.org/wiki/Local_regression#Weight_function
-function science_stats_loessTricube(x: number) {
+// Weighting kernel for local regression
+function tricube(x: number) {
   return (x = 1 - x * x * x) * x * x;
 }
 
-// Given an index interval into xval that embraces a certain number of
-// points closest to xval[i-1], update the interval so that it embraces
-// the same number of points closest to xval[i], ignoring zero weights.
-function science_stats_loessUpdateBandwidthInterval(
-  xval: number[],
-  weights: number[],
+// Advance sliding window interval of nearest neighbors
+function updateInterval(
+  xv: Float64Array,
   i: number,
-  bandwidthInterval: number[],
+  interval: [number, number],
 ) {
-  let left = bandwidthInterval[0];
-  let right = bandwidthInterval[1];
+  let val = xv[i];
+  let left = interval[0];
+  let right = interval[1] + 1;
 
-  // The right edge should be adjusted if the next point to the right
-  // is closer to xval[i] than the leftmost point of the current interval
-  let nextRight = science_stats_loessNextNonzero(weights, right);
-  if (
-    nextRight < xval.length &&
-    xval[nextRight] - xval[i] < xval[i] - xval[left]
-  ) {
-    let nextLeft = science_stats_loessNextNonzero(weights, left);
-    bandwidthInterval[0] = nextLeft;
-    bandwidthInterval[1] = nextRight;
+  if (right >= xv.length) return;
+
+  // Step right if distance to new right edge is <= distance to old left edge
+  // Step when distance is equal to ensure movement over duplicate x values
+  while (i > left && xv[right] - val <= val - xv[left]) {
+    interval[0] = ++left;
+    interval[1] = right;
+    ++right;
   }
 }
 
-function science_stats_loessNextNonzero(weights: number[], i: number) {
-  let j = i + 1;
-  while (j < weights.length && weights[j] === 0) {
-    j++;
+// Generate smoothed output points
+// Average points with repeated x values
+function output(xv: Float64Array, yhat: Float64Array, ux: number, uy: number) {
+  const n = xv.length;
+  const out = [];
+  let i = 0;
+  let cnt = 0;
+  let prev: number[] = [];
+  let v: number;
+
+  for (; i < n; ++i) {
+    v = xv[i] + ux;
+    if (prev[0] === v) {
+      // Average output values
+      prev[1] += (yhat[i] - prev[1]) / ++cnt;
+    } else {
+      // Add new output point
+      cnt = 0;
+      prev[1] += uy;
+      prev = [v, yhat[i]];
+      out.push(prev);
+    }
   }
-  return j;
+  prev[1] += uy;
+
+  return out;
 }
 
-export default loess;
+function points(
+  data: [number, number][],
+  x: (d: [number, number]) => number,
+  y: (d: [number, number]) => number,
+  sort: boolean,
+): [Float64Array, Float64Array, number, number] {
+  data = data.filter((d: [number, number]) => {
+    let u = x(d);
+    let v = y(d);
+    return u != null && isFinite(u) && v != null && isFinite(v);
+  });
+
+  if (sort) {
+    data.sort((a: [number, number], b: [number, number]) => x(a) - x(b));
+  }
+
+  const n = data.length;
+  const X = new Float64Array(n);
+  const Y = new Float64Array(n);
+
+  // extract values, calculate means
+  let ux = 0;
+  let uy = 0;
+  let xv;
+  let yv;
+  let d;
+  for (let i = 0; i < n; ) {
+    d = data[i];
+    X[i] = xv = +x(d);
+    Y[i] = yv = +y(d);
+    ++i;
+    ux += (xv - ux) / i;
+    uy += (yv - uy) / i;
+  }
+
+  // mean center the data
+  for (let i = 0; i < n; ++i) {
+    X[i] -= ux;
+    Y[i] -= uy;
+  }
+
+  return [X, Y, ux, uy];
+}
+
+function ols(uX: number, uY: number, uXY: number, uX2: number) {
+  const delta = uX2 - uX * uX;
+  const slope = Math.abs(delta) < 1e-24 ? 0 : (uXY - uX * uY) / delta;
+  const intercept = uY - slope * uX;
+
+  return [intercept, slope];
+}

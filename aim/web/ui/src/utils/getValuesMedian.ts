@@ -1,4 +1,4 @@
-export function getValuesMedian(values: number[]): number {
+export function getValuesMedian(values: number[] | Float64Array): number {
   values.sort((a, b) => a - b);
   const length = values.length;
   if (length % 2 === 0) {
