@@ -22,7 +22,11 @@ class Image(CustomObject):
     Args:
          image (:obj:): pillow `Image` object or `torch.Tensor` or `numpy.array` used to construct `aim.Image`.
          caption (:obj:`str`, optional): Optional image caption. '' by default.
-         format, quality, optimize: PIL image save params. For more information refer to PIL documentation.
+         format (:obj: `str`, optional): Parameter for PIL's .save() method. 'png' by default.
+         quality (:obj: `int`, optional): Parameter for PIL's .save() method. 85 by default.
+         optimize (:obj: `bool`, optional): Parameter for PIL's .save() method. False by default.
+
+         For more information on the format, quality and optimize parameters, refer to PIL documentation.
 
     Example of params to reduce quality of the image:
         format='jpeg',
@@ -37,9 +41,9 @@ class Image(CustomObject):
         super().__init__()
 
         params = {
-            "format": format.lower(),
-            "quality": quality,
-            "optimize": optimize
+            'format': format.lower(),
+            'quality': quality,
+            'optimize': optimize
         }
 
         if isinstance(image, str):
@@ -129,13 +133,14 @@ class Image(CustomObject):
             pil_image.save(img_container, **params)
         except OSError as exc:
             # The best way to approach this problem is to prepare PIL Image object before hitting this method.
-            #
-            # This block only handles case where RGBA mode is mandated to save in RGB
+            # This block only handles case where RGBA/P/LA/PA mode is mandated to save in RGB
             # PIL won't do that automatically, so we have to convert image to RGB before saving it.
             # In addition - make transparency "white" before conversion otherwise it will be black.
-            if not Image.FLAG_WARN_RGBA_RGB:
-                logger.warning(f"Failed to save the image due to the following error: {exc}")
-                logger.warning("Attempting to convert RGBA -> RGB")
+            if pil_image.mode not in ('RGBA', 'LA', 'PA', 'P'):
+                raise
+            elif not Image.FLAG_WARN_RGBA_RGB:
+                logger.warning(f'Failed to save the image due to the following error: {exc}')
+                logger.warning('Attempting to convert RGBA -> RGB')
                 Image.FLAG_WARN_RGBA_RGB = True
 
             alpha = pil_image.convert('RGBA').split()[-1]  # Get only alpha
