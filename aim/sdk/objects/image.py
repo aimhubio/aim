@@ -140,7 +140,7 @@ class Image(CustomObject):
                 raise
             elif not Image.FLAG_WARN_RGBA_RGB:
                 logger.warning(f'Failed to save the image due to the following error: {exc}')
-                logger.warning('Attempting to convert RGBA -> RGB')
+                logger.warning(f'Attempting to convert mode "{pil_image.mode}" to "RGB"')
                 Image.FLAG_WARN_RGBA_RGB = True
 
             alpha = pil_image.convert('RGBA').split()[-1]  # Get only alpha
