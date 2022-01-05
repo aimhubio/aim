@@ -1,7 +1,7 @@
 import click
 from click import core
 
-from aim.cli.configs import *
+from aim.cli.configs import *  # noqa F403
 from aim.cli.init import commands as init_commands
 from aim.cli.version import commands as version_commands
 from aim.cli.up import commands as up_commands
