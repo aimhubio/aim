@@ -5,8 +5,8 @@ import { IPoint } from 'components/ScatterPlot';
 import {
   linearRegression,
   linearRegressionLine,
-} from 'utils/regression/linearRegrression';
-import loess from 'utils/regression/localRegression';
+} from 'utils/regression/linearRegression';
+import loess from 'utils/regression/loess';
 
 /**
  * Given the params with the type for trendline
