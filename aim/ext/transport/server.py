@@ -118,11 +118,21 @@ class RemoteTrackingServicer(remote_tracking_pb2_grpc.RemoteTrackingServiceServi
         return False
 
 
-def run_server(host, port, workers=1):
+def run_server(host, port, workers=1, ssl_keyfile=None, ssl_certfile=None):
     RemoteTrackingServicer.registry.register('TreeView', get_tree)
     RemoteTrackingServicer.registry.register('StructuredRun', get_structured_run)
     server = grpc.server(futures.ThreadPoolExecutor(max_workers=workers))
     remote_tracking_pb2_grpc.add_RemoteTrackingServiceServicer_to_server(RemoteTrackingServicer(), server)
-    server.add_insecure_port(f'{host}:{port}')
+
+    if ssl_keyfile and ssl_certfile:
+        with open(ssl_keyfile, 'rb') as f:
+            private_key = f.read()
+        with open(ssl_certfile, 'rb') as f:
+            certificate_chain = f.read()
+        server_credentials = grpc.ssl_server_credentials([(private_key, certificate_chain,)])
+        server.add_secure_port(f'{host}:{port}', server_credentials)
+    else:
+        server.add_insecure_port(f'{host}:{port}')
+
     server.start()
     _wait_forever(server)

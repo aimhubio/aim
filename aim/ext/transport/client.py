@@ -1,3 +1,4 @@
+import os
 import uuid
 from copy import deepcopy
 import grpc
@@ -5,13 +6,22 @@ import aim.ext.transport.remote_tracking_pb2 as rpc_messages
 import aim.ext.transport.remote_tracking_pb2_grpc as remote_tracking_pb2_grpc
 
 from aim.ext.transport.message_utils import pack, unpack, unpack_response_data
+from aim.ext.transport.config import AIM_CLIENT_SSL_CERTIFICATES_FILE
 from aim.storage.treeutils import encode_tree, decode_tree
 
 
 class Client:
     def __init__(self, remote_path: str):
         self._id = str(uuid.uuid4())
-        self._remote_channel = grpc.insecure_channel(remote_path)
+
+        ssl_certfile = os.getenv(AIM_CLIENT_SSL_CERTIFICATES_FILE)
+        if ssl_certfile:
+            with open(ssl_certfile, 'rb') as f:
+                root_certificates = grpc.ssl_channel_credentials(f.read())
+            self._remote_channel = grpc.secure_channel(remote_path, root_certificates)
+        else:
+            self._remote_channel = grpc.insecure_channel(remote_path)
+
         self._remote_stub = remote_tracking_pb2_grpc.RemoteTrackingServiceStub(self._remote_channel)
 
     def get_resource_handler(self, resource_type, args=()):
@@ -20,7 +30,7 @@ class Client:
             client_uri=self.uri,
             args=args
         )
-        response = self._remote_stub.get_resource(request)
+        response = self.remote.get_resource(request)
         if response.status == rpc_messages.ResourceResponse.Status.OK:
             return response.handler
         return None
@@ -30,7 +40,7 @@ class Client:
             handler=resource_handler,
             client_uri=self.uri
         )
-        response = self._remote_stub.release_resource(request)
+        response = self.remote.release_resource(request)
         if response.status != rpc_messages.ResourceResponse.Status.OK:
             raise RuntimeError(f'Error releasing resource')
 
@@ -52,7 +62,7 @@ class Client:
             for chunk in stream:
                 yield rpc_messages.InstructionRequest(message=chunk)
 
-        resp = self._remote_stub.run_instruction(message_stream_generator())
+        resp = self.remote.run_instruction(message_stream_generator())
         status_msg = next(resp)
         assert status_msg.WhichOneof('instruction') == 'header'
         if status_msg.header.status != rpc_messages.ResponseHeader.Status.OK:

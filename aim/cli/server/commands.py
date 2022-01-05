@@ -15,8 +15,15 @@ from aim.ext.transport.server import run_server
                                                         file_okay=False,
                                                         dir_okay=True,
                                                         writable=True))
-def server(host, port, workers, repo):
-
+@click.option('--ssl-keyfile', required=False, type=click.Path(exists=True,
+                                                               file_okay=True,
+                                                               dir_okay=False,
+                                                               readable=True))
+@click.option('--ssl-certfile', required=False, type=click.Path(exists=True,
+                                                                file_okay=True,
+                                                                dir_okay=False,
+                                                                readable=True))
+def server(host, port, workers, repo, ssl_keyfile, ssl_certfile):
     repo_path = clean_repo_path(repo) or Repo.default_repo_path()
     repo_status = Repo.check_repo_status(repo_path)
     if repo_status == RepoStatus.MISSING:
@@ -50,8 +57,8 @@ def server(host, port, workers, repo):
     click.echo('Press Ctrl+C to exit')
 
     try:
-        run_server(host, port, workers)
+        run_server(host, port, workers, ssl_keyfile, ssl_certfile)
     except Exception:
-        click.echo('Failed to run Aim UI. '
-                   'Please see the logs above for details.')
+        click.echo('Failed to run Aim Tracking Server. '
+                   'Please see the logs for details.')
         return
