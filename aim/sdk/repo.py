@@ -5,7 +5,7 @@ from enum import Enum
 
 from packaging import version
 from collections import defaultdict
-from typing import Dict, Tuple, Iterator, NamedTuple, Optional
+from typing import Dict, Tuple, Iterator, NamedTuple, Optional, List
 from weakref import WeakValueDictionary
 
 from aim.ext.sshfs.utils import mount_remote_repo, unmount_remote_repo
@@ -337,6 +337,46 @@ class Repo:
         self._prepare_runs_cache()
         return QueryRunSequenceCollection(self, Sequence, query, paginated, offset)
 
+    def delete_run(self, run_hash: str) -> bool:
+        """Delete Run data from aim repository
+
+        This action removes run data permanently and cannot be reverted.
+        If you want to archive run but keep it's data use `repo.get_run(run_hash).archived = True`.
+
+        Args:
+            run_hash (:obj:`str`): Run to be deleted.
+
+        Returns:
+            True if run deleted successfully, False otherwise.
+        """
+        try:
+            self._delete_run(run_hash)
+            return True
+        except Exception:
+            return False
+
+    def delete_runs(self, run_hashes: List[str]) -> Tuple[bool, List[str]]:
+        """Delete multiple Runs data from aim repository
+
+        This action removes runs data permanently and cannot be reverted.
+        If you want to archive run but keep it's data use `repo.get_run(run_hash).archived = True`.
+
+        Args:
+            run_hashes (:obj:`str`): list of Runs to be deleted.
+
+        Returns:
+            (True, []) if all runs deleted successfully, (False, :obj:`list`) with list of remaining runs otherwise.
+        """
+        run_count = 0
+        try:
+            with self.structured_db:
+                for run_hash in run_hashes:
+                    self._delete_run(run_hash)
+                    run_count += 1
+            return True, []
+        except Exception:
+            return False, run_hashes[run_count:]
+
     def query_metrics(self, query: str = '') -> QuerySequenceCollection:
         """Get metrics satisfying query expression.
 
@@ -514,6 +554,24 @@ class Repo:
         db.invalidate_cache(cache_name)
         db.init_cache(cache_name, db.runs, lambda run: run.hash)
         self.run_props_cache_hint = cache_name
+
+    def _delete_run(self, run_hash):
+        with self.structured_db:  # rollback db entity delete if subsequent actions fail.
+            # remove database entry
+            self.structured_db.delete_run(run_hash)
+
+            # remove data from index container
+            index_tree = self._get_index_container('meta', timeout=0).tree()
+            del index_tree.subtree(('meta', 'chunks'))[run_hash]
+            del index_tree.subtree(('BLOBS', 'meta', 'chunks'))[run_hash]
+
+            # delete rocksdb containers data
+            sub_dirs = ('chunks', 'progress', 'locks')
+            for sub_dir in sub_dirs:
+                meta_path = os.path.join(self.path, 'meta', sub_dir, run_hash)
+                shutil.rmtree(meta_path, ignore_errors=True)
+                seqs_path = os.path.join(self.path, 'seqs', sub_dir, run_hash)
+                shutil.rmtree(seqs_path, ignore_errors=True)
 
     def close(self):
         if self._resources is None:
