@@ -1,3 +1,5 @@
+import { SortFields } from 'utils/getSortedFields';
+
 export interface ISortPopoverProps {
   onSort: any;
   onReset: () => void;
@@ -8,5 +10,6 @@ export interface ISortPopoverProps {
 export interface ISortPopoverListProps {
   onSort: any;
   sortFields: SortFields;
+  filteredSortFields: SortFields;
   title?: string;
 }

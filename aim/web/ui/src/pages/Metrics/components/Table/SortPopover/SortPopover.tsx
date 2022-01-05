@@ -140,14 +140,16 @@ function SortPopover({
           <SortPopoverList
             title={readOnlyFieldsLabel}
             onSort={onSort}
-            sortFields={readOnlyFields}
+            filteredSortFields={readOnlyFields}
+            sortFields={sortFields}
           />
         )}
         {!_.isEmpty(filteredSortFields) && (
           <SortPopoverList
             title={'SORTED BY'}
             onSort={onSort}
-            sortFields={filteredSortFields}
+            sortFields={sortFields}
+            filteredSortFields={filteredSortFields}
           />
         )}
       </div>

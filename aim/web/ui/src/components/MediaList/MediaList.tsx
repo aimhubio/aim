@@ -4,11 +4,12 @@ import { areEqual, VariableSizeList as List } from 'react-window';
 import { MediaTypeEnum } from 'components/MediaPanel/config';
 import AudioBox from 'components/kit/AudioBox';
 
-import { MediaItemAlignmentEnum } from 'config/enums/imageEnums';
 import {
-  AUDIO_FIXED_WIDTH,
-  IMAGE_FIXED_HEIGHT,
+  MEDIA_ITEMS_SIZES,
+  MEDIA_LIST_HEIGHT,
 } from 'config/mediaConfigs/mediaConfigs';
+
+import getBiggestImageFromList from 'utils/getBiggestImageFromList';
 
 import ImageBox from './ImageBox';
 import { IMediaListProps } from './MediaList.d';
@@ -28,30 +29,57 @@ function MediaList({
   additionalProperties,
   tooltip,
   mediaType,
+  wrapperOffsetHeight,
 }: IMediaListProps): React.FunctionComponentElement<React.ReactNode> {
   const itemSize = React.useCallback(
     (index: number) => {
-      if (
-        additionalProperties?.alignmentType === MediaItemAlignmentEnum.Width
-      ) {
-        return (wrapperOffsetWidth * additionalProperties?.mediaItemSize) / 100;
-      } else if (
-        additionalProperties?.alignmentType === MediaItemAlignmentEnum.Height
-      ) {
-        return (mediaItemHeight / data[index].height) * data[index].width;
+      if (mediaType === MediaTypeEnum.AUDIO) {
+        return MEDIA_ITEMS_SIZES[mediaType]().width;
       } else {
-        return mediaType === MediaTypeEnum.AUDIO
-          ? AUDIO_FIXED_WIDTH
-          : IMAGE_FIXED_HEIGHT;
-        // TODO: Need to be refactored in Image size alignment by width and original size
+        return MEDIA_ITEMS_SIZES[mediaType]({
+          data,
+          index,
+          additionalProperties,
+          wrapperOffsetWidth,
+          wrapperOffsetHeight,
+        }).width;
       }
     },
-    [additionalProperties, mediaType],
+    [
+      additionalProperties,
+      data,
+      mediaType,
+      wrapperOffsetHeight,
+      wrapperOffsetWidth,
+    ],
   );
+
+  const listHeight = React.useMemo(() => {
+    const { maxWidth, maxHeight } = getBiggestImageFromList(data);
+    const { alignmentType, mediaItemSize } = additionalProperties;
+    if (mediaType === MediaTypeEnum.IMAGE) {
+      return MEDIA_LIST_HEIGHT[mediaType]({
+        alignmentType,
+        maxHeight,
+        maxWidth,
+        wrapperOffsetWidth,
+        mediaItemSize,
+        mediaItemHeight,
+      });
+    } else {
+      return MEDIA_LIST_HEIGHT[mediaType](mediaItemHeight);
+    }
+  }, [
+    additionalProperties,
+    data,
+    mediaItemHeight,
+    mediaType,
+    wrapperOffsetWidth,
+  ]);
 
   return (
     <List
-      height={mediaItemHeight}
+      height={listHeight}
       itemCount={data.length}
       itemSize={itemSize}
       layout='horizontal'
@@ -60,7 +88,7 @@ function MediaList({
       itemData={{
         data,
         addUriToList,
-        mediaItemHeight,
+        mediaItemHeight: listHeight,
         focusedState,
         syncHoverState,
         additionalProperties,

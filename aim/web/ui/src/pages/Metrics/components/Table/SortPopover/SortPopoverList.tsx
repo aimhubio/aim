@@ -11,6 +11,7 @@ import { SortActionTypes, SortField } from 'utils/getSortedFields';
 import './SortPopover.scss';
 
 function SortPopoverList({
+  filteredSortFields,
   sortFields,
   onSort,
   title,
@@ -21,13 +22,13 @@ function SortPopoverList({
 
   return (
     <>
-      {!_.isEmpty(sortFields) && (
+      {!_.isEmpty(filteredSortFields) && (
         <Text size={12} tint={50} className={'SortPopover__container__label'}>
           {title}
         </Text>
       )}
       <div className='SortPopover__container__chipContainer'>
-        {sortFields.map((field: any, index: number) => (
+        {filteredSortFields.map((field: any, index: number) => (
           <div className='SortPopover__chip' key={field.value}>
             <div className='SortPopover__chip__left'>
               <Button
