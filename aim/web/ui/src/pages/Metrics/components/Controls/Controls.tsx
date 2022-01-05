@@ -6,21 +6,16 @@ import AggregationPopup from 'components/AggregationPopover/AggregationPopover';
 import SmootheningPopup from 'components/SmoothingPopover/SmoothingPopover';
 import ZoomInPopup from 'components/ZoomInPopover/ZoomInPopover';
 import ZoomOutPopup from 'components/ZoomOutPopover/ZoomOutPopover';
-import HighlightModePopup, {
-  HighlightEnum,
-} from 'components/HighlightModesPopover/HighlightModesPopover';
+import HighlightModePopup from 'components/HighlightModesPopover/HighlightModesPopover';
 import ControlPopover from 'components/ControlPopover/ControlPopover';
 import AxesScalePopover from 'components/AxesScalePopover/AxesScalePopover';
 import AlignmentPopover from 'components/AlignmentPopover/AlignmentPopover';
 import TooltipContentPopover from 'components/TooltipContentPopover/TooltipContentPopover';
 import { Icon } from 'components/kit';
 
-import { DensityOptions } from 'config/enums/densityEnum';
+import { CONTROLS_DEFAULT_CONFIG } from 'config/controls/controlsDefaultConfig';
 
 import { IControlProps } from 'types/pages/metrics/components/Controls/Controls';
-
-import { AlignmentOptionsEnum, CurveEnum, ScaleEnum } from 'utils/d3';
-import { SmoothingAlgorithmEnum } from 'utils/smoothingData';
 
 import './Controls.scss';
 
@@ -28,29 +23,38 @@ function Controls(
   props: IControlProps,
 ): React.FunctionComponentElement<React.ReactNode> {
   const highlightModeChanged: boolean = React.useMemo(() => {
-    return props.highlightMode !== HighlightEnum.Off;
+    return (
+      props.highlightMode !== CONTROLS_DEFAULT_CONFIG.metrics.highlightMode
+    );
   }, [props.highlightMode]);
 
   const axesScaleChanged: boolean = React.useMemo(() => {
     return (
-      props.axesScaleType.xAxis !== ScaleEnum.Linear ||
-      props.axesScaleType.yAxis !== ScaleEnum.Linear
+      props.axesScaleType.xAxis !==
+        CONTROLS_DEFAULT_CONFIG.metrics.axesScaleType.xAxis ||
+      props.axesScaleType.yAxis !==
+        CONTROLS_DEFAULT_CONFIG.metrics.axesScaleType.yAxis
     );
   }, [props.axesScaleType]);
 
   const alignmentChanged: boolean = React.useMemo(() => {
     return (
-      !!props.alignmentConfig.metric ||
-      props.alignmentConfig.type !== AlignmentOptionsEnum.STEP ||
-      props.densityType !== DensityOptions.Minimum
+      props.alignmentConfig.metric !==
+        CONTROLS_DEFAULT_CONFIG.metrics.alignmentConfig.metric ||
+      props.alignmentConfig.type !==
+        CONTROLS_DEFAULT_CONFIG.metrics.alignmentConfig.type ||
+      props.densityType !== CONTROLS_DEFAULT_CONFIG.metrics.densityType
     );
   }, [props.alignmentConfig, props.densityType]);
 
   const smootheningChanged: boolean = React.useMemo(() => {
     return (
-      props.smoothingFactor > 0 ||
-      props.curveInterpolation !== CurveEnum.Linear ||
-      props.smoothingAlgorithm !== SmoothingAlgorithmEnum.EMA
+      props.smoothingFactor !==
+        CONTROLS_DEFAULT_CONFIG.metrics.smoothingFactor ||
+      props.curveInterpolation !==
+        CONTROLS_DEFAULT_CONFIG.metrics.curveInterpolation ||
+      props.smoothingAlgorithm !==
+        CONTROLS_DEFAULT_CONFIG.metrics.smoothingAlgorithm
     );
   }, [
     props.smoothingAlgorithm,
@@ -59,7 +63,12 @@ function Controls(
   ]);
 
   const tooltipChanged: boolean = React.useMemo(() => {
-    return !props.tooltip.display || props.tooltip.selectedParams?.length > 0;
+    return (
+      props.tooltip.display !==
+        CONTROLS_DEFAULT_CONFIG.metrics.tooltip.display ||
+      props.tooltip.selectedParams.length !==
+        CONTROLS_DEFAULT_CONFIG.metrics.tooltip.selectedParams.length
+    );
   }, [props.tooltip]);
 
   return (

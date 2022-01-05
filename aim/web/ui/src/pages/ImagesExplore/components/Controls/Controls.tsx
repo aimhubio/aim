@@ -7,10 +7,7 @@ import TooltipContentPopover from 'components/TooltipContentPopover/TooltipConte
 import { Icon } from 'components/kit';
 import ImagePropertiesPopover from 'components/ImagePropertiesPopover';
 
-import {
-  ImageRenderingEnum,
-  MediaItemAlignmentEnum,
-} from 'config/enums/imageEnums';
+import { CONTROLS_DEFAULT_CONFIG } from 'config/controls/controlsDefaultConfig';
 
 import { IControlProps } from 'types/pages/imagesExplore/components/Controls/Controls';
 
@@ -23,14 +20,19 @@ function Controls(
     const { alignmentType, mediaItemSize, imageRendering } =
       props.additionalProperties;
     return (
-      alignmentType !== MediaItemAlignmentEnum.Height ||
-      mediaItemSize !== 25 ||
-      imageRendering !== ImageRenderingEnum.Pixelated
+      alignmentType !== CONTROLS_DEFAULT_CONFIG.images.alignmentType ||
+      mediaItemSize !== CONTROLS_DEFAULT_CONFIG.images.mediaItemSize ||
+      imageRendering !== CONTROLS_DEFAULT_CONFIG.images.imageRendering
     );
   }, [props.additionalProperties]);
 
   const tooltipChanged: boolean = React.useMemo(() => {
-    return !props.tooltip.display || props.tooltip.selectedParams?.length > 0;
+    return (
+      props.tooltip.display !==
+        CONTROLS_DEFAULT_CONFIG.images.tooltip.display ||
+      props.tooltip.selectedParams.length !==
+        CONTROLS_DEFAULT_CONFIG.images.tooltip.selectedParams.length
+    );
   }, [props.tooltip]);
 
   return (

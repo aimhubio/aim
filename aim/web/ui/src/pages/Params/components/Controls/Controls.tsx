@@ -6,6 +6,8 @@ import ControlPopover from 'components/ControlPopover/ControlPopover';
 import TooltipContentPopover from 'components/TooltipContentPopover/TooltipContentPopover';
 import { Icon } from 'components/kit';
 
+import { CONTROLS_DEFAULT_CONFIG } from 'config/controls/controlsDefaultConfig';
+
 import { IControlProps } from 'types/pages/params/components/Controls/Controls';
 
 import { CurveEnum } from 'utils/d3';
@@ -16,7 +18,12 @@ function Controls(
   props: IControlProps,
 ): React.FunctionComponentElement<React.ReactNode> {
   const tooltipChanged: boolean = React.useMemo(() => {
-    return !props.tooltip.display || props.tooltip.selectedParams?.length > 0;
+    return (
+      props.tooltip.display !==
+        CONTROLS_DEFAULT_CONFIG.params.tooltip.display ||
+      props.tooltip.selectedParams.length !==
+        CONTROLS_DEFAULT_CONFIG.params.tooltip.selectedParams.length
+    );
   }, [props.tooltip]);
   return (
     <div className='Params__Controls__container ScrollBar__hidden'>
