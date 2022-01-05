@@ -7,6 +7,9 @@
   .MuiDrawer-paperAnchorDockedLeft {
     border-right: unset;
   }
+  .MuiDrawer-paper {
+    top: unset;
+  }
   &__Paper {
     background-color: #1d2253;
     width: 75.6px;

@@ -1,26 +1,21 @@
 import React from 'react';
 import { BrowserRouter, Switch, Route } from 'react-router-dom';
 
-import Alert from '@material-ui/lab/Alert';
-
+import AlertBanner from 'components/kit/AlertBanner';
 import SideBar from 'components/SideBar/SideBar';
 import ProjectWrapper from 'components/ProjectWrapper/ProjectWrapper';
 import Theme from 'components/Theme/Theme';
+
+import { getBasePath } from 'config/config';
 
 import routes from 'routes/routes';
 
 import './App.scss';
 
-let basePath = '/';
+const basePath = getBasePath(false);
 
-if ((window as any).API_BASE_PATH !== '{{ base_path }}') {
-  basePath = (window as any).API_BASE_PATH;
-}
-
-const cachePlaceholderPaths = ['/notebook']; // @TODO move cachePlaceholderPaths list to constants
-const isVisibleCachePlaceholder = cachePlaceholderPaths.includes(
-  (window as any).API_BASE_PATH,
-);
+const cacheBannerPaths = ['/notebook']; // @TODO move cacheBannerPaths list to constants
+const isVisibleCacheBanner = cacheBannerPaths.includes(basePath);
 
 function App(): React.FunctionComponentElement<React.ReactNode> {
   return (
@@ -28,15 +23,15 @@ function App(): React.FunctionComponentElement<React.ReactNode> {
       <BrowserRouter basename={basePath}>
         <ProjectWrapper />
         <Theme>
+          {isVisibleCacheBanner && (
+            <AlertBanner type='warning' isVisiblePermanently={true}>
+              You are using UI from notebook env, please make sure to{' '}
+              <b>keep server running</b> for a better experience
+            </AlertBanner>
+          )}
           <div className='pageContainer'>
             <SideBar />
             <div className='mainContainer'>
-              {isVisibleCachePlaceholder && (
-                <Alert variant='outlined' severity='warning'>
-                  You are using UI from notebook env, please make sure to keep
-                  server running for a better experience
-                </Alert>
-              )}
               <React.Suspense fallback={null}>
                 <Switch>
                   {Object.values(routes).map((route, index) => {
