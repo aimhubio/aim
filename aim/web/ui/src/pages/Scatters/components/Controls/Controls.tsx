@@ -17,6 +17,48 @@ function Controls(
     <div className='Controls__container ScrollBar__hidden'>
       <div>
         <ControlPopover
+          title='Select Trendline Options'
+          open={false}
+          anchor={({ onAnchorClick, opened }) => (
+            <Tooltip
+              title={
+                props.trendlineOptions.isApplied
+                  ? 'Hide trendline'
+                  : 'Show trendline'
+              }
+            >
+              <div
+                className={`Controls__anchor ${
+                  props.trendlineOptions.isApplied ? 'active outlined' : ''
+                }`}
+                onClick={() => {
+                  props.onChangeTrendlineOptions({
+                    isApplied: !props.trendlineOptions?.isApplied,
+                  });
+                }}
+              >
+                <span
+                  className={`Controls__anchor__arrow ${
+                    opened ? 'Controls__anchor__arrow__opened' : ''
+                  }`}
+                  onClick={onAnchorClick}
+                >
+                  <Icon name='arrow-left' onClick={onAnchorClick} />
+                </span>
+                <Icon
+                  className={`Controls__icon ${
+                    props.trendlineOptions.isApplied ? 'active' : ''
+                  }`}
+                  name='trendline'
+                />
+              </div>
+            </Tooltip>
+          )}
+          component={() => null}
+        />
+      </div>
+      <div>
+        <ControlPopover
           title='Display In Tooltip'
           anchor={({ onAnchorClick, opened }) => (
             <Tooltip title='Tooltip Params'>

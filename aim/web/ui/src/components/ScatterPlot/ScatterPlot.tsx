@@ -29,6 +29,7 @@ const ScatterPlot = React.forwardRef(function ScatterPlot(
     syncHoverState,
     index = 0,
     chartTitle,
+    trendlineOptions,
   } = props;
 
   // boxes
@@ -149,10 +150,11 @@ const ScatterPlot = React.forwardRef(function ScatterPlot(
       drawAxisLabels: { x: false, y: false },
     });
 
-    if (true) {
+    if (trendlineOptions.isApplied) {
       drawScatterTrendline({
         index,
         data,
+        type: trendlineOptions.type,
         xScale,
         yScale,
         targetRef: linesNodeRef,
@@ -208,7 +210,7 @@ const ScatterPlot = React.forwardRef(function ScatterPlot(
       }
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [data, dimensions]);
+  }, [data, dimensions, trendlineOptions]);
 
   React.useImperativeHandle(ref, () => ({
     setActiveLineAndCircle: (

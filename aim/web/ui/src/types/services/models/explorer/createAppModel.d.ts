@@ -21,6 +21,7 @@ import { IRunsAppModelState } from 'types/services/models/runs/runsAppModel';
 
 import { ChartTypeEnum, CurveEnum } from 'utils/d3';
 import { SmoothingAlgorithmEnum } from 'utils/smoothingData';
+import { ITrendlineOptions } from '../scatter/scatterAppModel';
 
 export interface IAppInitialConfig {
   dataType: AppDataTypeEnum;
@@ -50,7 +51,9 @@ export interface IAppModelConfig {
 export interface IChart
   extends ILineChartConfig,
     IHighPlotConfig,
-    IScatterPlotConfig {}
+    IScatterPlotConfig {
+  trendlineOptions: ITrendlineOptions;
+}
 
 export interface IGroupingConfig {
   color?: string[];

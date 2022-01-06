@@ -76,6 +76,11 @@ enum PointSymbolEnum {
   WYE = 'symbolWye',
 }
 
+enum TrendlineTypeEnum {
+  SLR = 'slr',
+  LOESS = 'loess',
+}
+
 export {
   CircleEnum,
   CurveEnum,
@@ -84,6 +89,7 @@ export {
   AlignmentKeysEnum,
   AlignmentOptionsEnum,
   PointSymbolEnum,
+  TrendlineTypeEnum,
   clearArea,
   drawArea,
   drawAxes,

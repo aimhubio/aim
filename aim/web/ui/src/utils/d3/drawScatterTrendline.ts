@@ -8,6 +8,8 @@ import {
 } from 'utils/regression/linearRegression';
 import loess from 'utils/regression/loess';
 
+import { TrendlineTypeEnum } from '.';
+
 /**
  * Given the params with the type for trendline
  * respectively, draws a line on the ScatterPlot
@@ -15,7 +17,7 @@ import loess from 'utils/regression/loess';
 function drawScatterTrendline({
   index,
   data,
-  regressionType,
+  type,
   xScale,
   yScale,
   bandwidth,
@@ -32,7 +34,7 @@ function drawScatterTrendline({
 
   let regressionPoints;
 
-  if (regressionType === 'slr') {
+  if (type === TrendlineTypeEnum.SLR) {
     const slr = linearRegression(points);
     const slrLine = linearRegressionLine(slr);
 
