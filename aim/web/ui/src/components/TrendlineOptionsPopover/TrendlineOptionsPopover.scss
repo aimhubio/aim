@@ -1,0 +1,47 @@
+@use 'src/styles/abstracts' as *;
+
+.TrendlineOptionsPopover {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  width: 400px;
+  padding: $space-xs 0;
+  &__section {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    padding: 0 $space-xs;
+  }
+  &__bandwidth {
+    margin-top: $space-xs;
+    margin-bottom: $space-xxxs;
+    padding: 0 $space-xs;
+    &--disabled {
+      opacity: 0.2;
+      pointer-events: none;
+    }
+
+    &__value {
+      display: flex;
+      align-items: center;
+
+      &__subtitle {
+        text-transform: uppercase;
+      }
+
+      &__number {
+        margin-left: $space-xs;
+      }
+    }
+
+    &__Slider {
+      display: flex;
+      align-items: center;
+      margin: $space-xs 0;
+      .Slider {
+        margin: 0 $space-md;
+      }
+    }
+  }
+}

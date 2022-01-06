@@ -155,6 +155,7 @@ const ScatterPlot = React.forwardRef(function ScatterPlot(
         index,
         data,
         type: trendlineOptions.type,
+        bandwidth: trendlineOptions.bandwidth,
         xScale,
         yScale,
         targetRef: linesNodeRef,

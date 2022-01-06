@@ -49,7 +49,7 @@ function Controls(
                 {props.aggregationConfig.isEnabled ? (
                   <span
                     className={`Controls__anchor__arrow ${
-                      opened ? 'Controls__anchor__arrow__opened' : ''
+                      opened ? 'Controls__anchor__arrow--opened' : ''
                     }`}
                     onClick={onAnchorClick}
                   >
@@ -241,7 +241,7 @@ function Controls(
               >
                 <span
                   className={`Controls__anchor__arrow ${
-                    opened ? 'Controls__anchor__arrow__opened' : ''
+                    opened ? 'Controls__anchor__arrow--opened' : ''
                   }`}
                   onClick={onAnchorClick}
                 >
@@ -285,7 +285,7 @@ function Controls(
                 {props.zoom?.history.length ? (
                   <span
                     className={`Controls__anchor__arrow ${
-                      opened ? 'Controls__anchor__arrow__opened' : ''
+                      opened ? 'Controls__anchor__arrow--opened' : ''
                     }`}
                     onClick={onAnchorClick}
                   >

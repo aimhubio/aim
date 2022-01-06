@@ -5,6 +5,7 @@ import { Tooltip } from '@material-ui/core';
 import ControlPopover from 'components/ControlPopover/ControlPopover';
 import TooltipContentPopover from 'components/TooltipContentPopover/TooltipContentPopover';
 import { Icon } from 'components/kit';
+import TrendlineOptionsPopover from 'components/TrendlineOptionsPopover';
 
 import { IControlProps } from 'types/pages/scatters/components/Controls/Controls';
 
@@ -18,7 +19,6 @@ function Controls(
       <div>
         <ControlPopover
           title='Select Trendline Options'
-          open={false}
           anchor={({ onAnchorClick, opened }) => (
             <Tooltip
               title={
@@ -39,7 +39,7 @@ function Controls(
               >
                 <span
                   className={`Controls__anchor__arrow ${
-                    opened ? 'Controls__anchor__arrow__opened' : ''
+                    opened ? 'Controls__anchor__arrow--opened' : ''
                   }`}
                   onClick={onAnchorClick}
                 >
@@ -54,7 +54,12 @@ function Controls(
               </div>
             </Tooltip>
           )}
-          component={() => null}
+          component={
+            <TrendlineOptionsPopover
+              trendlineOptions={props.trendlineOptions}
+              onChangeTrendlineOptions={props.onChangeTrendlineOptions}
+            />
+          }
         />
       </div>
       <div>
