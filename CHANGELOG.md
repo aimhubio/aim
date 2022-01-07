@@ -2,7 +2,7 @@
 
 ## Unreleased
 
-- Upgrade sidebar(version, GH, slack) (arsengit)
+- Add version, docs and slack links to sidebar (arsengit)
 - Ability to display images in original size and align by width (arsengit)
 - Enhance AudioPlayer component (arsengit)
 - Recover active tab in run details page after reload (roubkar)
