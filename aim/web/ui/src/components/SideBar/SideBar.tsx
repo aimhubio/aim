@@ -50,8 +50,6 @@ function SideBar(): React.FunctionComponentElement<React.ReactNode> {
     }
   }
 
-  console.log(AIM_VERSION);
-
   return (
     <div className='Sidebar'>
       <Drawer
@@ -109,7 +107,7 @@ function SideBar(): React.FunctionComponentElement<React.ReactNode> {
               <Icon name='slack' />
             </a>
           </Tooltip>
-          <Tooltip title='docs' placement='right'>
+          <Tooltip title='Docs' placement='right'>
             <a
               target='_blank'
               href='https://aimstack.readthedocs.io/en/stable/'
