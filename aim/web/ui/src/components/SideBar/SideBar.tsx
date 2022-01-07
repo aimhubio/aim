@@ -1,16 +1,19 @@
 import React from 'react';
 import { NavLink } from 'react-router-dom';
 
-import { Drawer } from '@material-ui/core';
+import { Drawer, Tooltip } from '@material-ui/core';
 
 import logoImg from 'assets/logo.svg';
 
-import { Icon } from 'components/kit';
+import { Icon, Text } from 'components/kit';
 import { IconName } from 'components/kit/Icon';
 
 import { PathEnum } from 'config/enums/routesEnum';
+import { AIM_VERSION } from 'config/config';
 
 import routes, { IRoute } from 'routes/routes';
+
+import { trackEvent } from 'services/analytics';
 
 import './Sidebar.scss';
 
@@ -92,6 +95,31 @@ function SideBar(): React.FunctionComponentElement<React.ReactNode> {
             );
           })}
         </ul>
+        <div className='Sidebar__bottom'>
+          <Tooltip title='Slack' placement='right'>
+            <a
+              target='_blank'
+              href='https://aimstack.slack.com'
+              rel='noreferrer'
+              className='Sidebar__bottom__anchor'
+              onClick={() => trackEvent('[Sidebar] go to slack')}
+            >
+              <Icon name='slack' />
+            </a>
+          </Tooltip>
+          <Tooltip title='Docs' placement='right'>
+            <a
+              target='_blank'
+              href='https://aimstack.readthedocs.io/en/stable/'
+              rel='noreferrer'
+              className='Sidebar__bottom__anchor'
+              onClick={() => trackEvent('[Sidebar] go to documentation')}
+            >
+              <Icon name='full-docs' />
+            </a>
+          </Tooltip>
+          <Text tint={30}>v {AIM_VERSION}</Text>
+        </div>
       </Drawer>
     </div>
   );
