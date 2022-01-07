@@ -5,12 +5,13 @@
   max-height: 21rem;
   padding: 0.5rem 1rem;
   width: toRem(392px);
+
   &__optionList {
     max-height: 12rem;
     overflow: auto;
   }
   &__label {
-    margin-bottom: 4px;
+    margin-bottom: $space-xxxs;
     display: block;
   }
   &__selectBox {

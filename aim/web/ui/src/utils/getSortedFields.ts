@@ -50,7 +50,11 @@ export function getSortedFields({
     }
     case SortActionTypes.ORDER_TABLE_TRIGGER: {
       if (index === -1) {
-        sortFields.push({ ...field, order: 'asc', readonly: false } as any);
+        sortFields.push({
+          ...field,
+          order: 'asc',
+          readonly: false,
+        } as SortField);
       } else {
         sortFields[index || 0].order =
           sortFields[index || 0].order === 'asc' ? 'desc' : 'asc';

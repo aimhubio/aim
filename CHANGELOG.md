@@ -5,7 +5,7 @@
 - Ability to display images in original size and align by width (arsengit)
 - Enhance AudioPlayer component (arsengit)
 - Recover active tab in run details page after reload (roubkar)
-- Ability to sort(ascending/descending) data by the selected properties on media pages (VkoHov)
+- Add ability to change media elements order (VkoHov)
 
 ## 3.3.3 Dec 24 2021
 

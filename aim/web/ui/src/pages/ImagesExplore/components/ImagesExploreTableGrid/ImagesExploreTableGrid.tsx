@@ -1,7 +1,6 @@
 import moment from 'moment';
-import _ from 'lodash';
+import _ from 'lodash-es';
 import { Link as RouteLink } from 'react-router-dom';
-import { merge } from 'lodash-es';
 
 import { Link, Tooltip } from '@material-ui/core';
 
@@ -281,7 +280,7 @@ function imagesExploreTableRowRenderer(
       }
     }
 
-    return merge({}, rowData, row);
+    return _.merge({}, rowData, row);
   } else {
     const row = {
       experiment: rowData.experiment.name,
@@ -328,7 +327,7 @@ function imagesExploreTableRowRenderer(
       },
     };
 
-    return merge({}, rowData, row);
+    return _.merge({}, rowData, row);
   }
 }
 
