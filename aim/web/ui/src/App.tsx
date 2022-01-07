@@ -10,12 +10,14 @@ import { getBasePath } from 'config/config';
 
 import routes from 'routes/routes';
 
+import { inIframe } from 'utils/helper';
+
 import './App.scss';
 
 const basePath = getBasePath(false);
 
 const cacheBannerPaths = ['/notebook']; // @TODO move cacheBannerPaths list to constants
-const isVisibleCacheBanner = cacheBannerPaths.includes(basePath);
+const isVisibleCacheBanner = cacheBannerPaths.includes(basePath) && inIframe();
 
 function App(): React.FunctionComponentElement<React.ReactNode> {
   return (

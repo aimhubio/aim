@@ -9,7 +9,7 @@
   }
 
   &_warning {
-    background-color: $warning-color-10;
+    @include backgroundColorOpacity($warning-color-25, 0.5);
 
     &_iconCnt {
       color: $warning-color;
@@ -17,7 +17,7 @@
   }
 
   &_info {
-    background-color: $primary-color-10;
+    @include backgroundColorOpacity($primary-color-25, 0.5);
 
     &_iconCnt {
       color: $primary-color;
@@ -25,7 +25,7 @@
   }
 
   &_error {
-    background-color: $error-color-10;
+    @include backgroundColorOpacity($error-color-25, 0.5);
 
     &_iconCnt {
       color: $error-color;
@@ -37,7 +37,7 @@
   }
 
   &_success {
-    background-color: $success-color-10;
+    @include backgroundColorOpacity($success-color-25, 0.5);
 
     &_iconCnt {
       color: $success-color;
@@ -52,7 +52,7 @@
   align-items: center;
   justify-content: center;
   color: #414b6d;
-  z-index: 11111;
+  z-index: 1;
 
   & > div {
     display: flex;
@@ -62,8 +62,7 @@
   }
 
   .MuiButton-root {
-    margin-right: 20px;
-    margin-left: auto;
+    margin-left: 32px;
 
     .icon-close {
       font-size: 10px;

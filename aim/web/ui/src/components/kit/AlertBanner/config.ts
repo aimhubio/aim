@@ -7,7 +7,7 @@ const warning: ITypeMetadata = {
 
 const info: ITypeMetadata = {
   cssClassName: 'info',
-  iconName: 'Info_ic',
+  iconName: 'circle-info',
 };
 
 const error: ITypeMetadata = {

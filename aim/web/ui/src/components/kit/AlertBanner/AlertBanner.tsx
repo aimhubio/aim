@@ -44,13 +44,11 @@ function AlertBanner({
         <div
           className={`AlertBanner AlertBanner_${memoizedTypeMetadata.cssClassName}`}
         >
-          <div>
-            <Icon
-              name={memoizedTypeMetadata.iconName}
-              className={`AlertBanner_iconCnt AlertBanner_${memoizedTypeMetadata.cssClassName}_iconCnt`}
-            />
-            <p>{children}</p>
-          </div>
+          <Icon
+            name={memoizedTypeMetadata.iconName}
+            className={`AlertBanner_iconCnt AlertBanner_${memoizedTypeMetadata.cssClassName}_iconCnt`}
+          />
+          <p>{children}</p>
           <Button color='secondary' withOnlyIcon onClick={onClose}>
             <Icon name='close' />
           </Button>
