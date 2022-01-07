@@ -107,4 +107,5 @@ export type IconName =
   | 'voice-on'
   | 'voice-off'
   | 'TypeTriangle-Outline'
-  | 'TypeTriangle';
+  | 'TypeTriangle'
+  | 'slack';

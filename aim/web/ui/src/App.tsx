@@ -5,6 +5,7 @@ import AlertBanner from 'components/kit/AlertBanner';
 import SideBar from 'components/SideBar/SideBar';
 import ProjectWrapper from 'components/ProjectWrapper/ProjectWrapper';
 import Theme from 'components/Theme/Theme';
+import BusyLoaderWrapper from 'components/BusyLoaderWrapper/BusyLoaderWrapper';
 
 import { getBasePath } from 'config/config';
 
@@ -34,7 +35,9 @@ function App(): React.FunctionComponentElement<React.ReactNode> {
           <div className='pageContainer'>
             <SideBar />
             <div className='mainContainer'>
-              <React.Suspense fallback={null}>
+              <React.Suspense
+                fallback={<BusyLoaderWrapper height='100%' isLoading />}
+              >
                 <Switch>
                   {Object.values(routes).map((route, index) => {
                     const { component: Component, path, isExact } = route;

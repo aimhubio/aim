@@ -39,6 +39,7 @@
    guides/integrations/basic_aim_keras.md
    guides/integrations/basic_aim_pytorch_lightning.md
    guides/integrations/basic_aim_xgboost.md
+   guides/integrations/basic_k8s_deployment.md
 
 .. toctree::
    :maxdepth: 1

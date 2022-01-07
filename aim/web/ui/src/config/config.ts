@@ -1,3 +1,5 @@
+import { version } from '../../package.json';
+
 interface GlobalScope extends Window {
   API_BASE_PATH?: string;
 }
@@ -34,5 +36,7 @@ function setAPIBasePath(basePath: string) {
     ? `http://127.0.0.1:43800${getBasePath()}/api`
     : `${getBasePath()}/api`;
 }
+
+export const AIM_VERSION = version;
 
 export { isDEVModeOn, getBasePath, getAPIHost, setAPIBasePath };

@@ -1,10 +1,10 @@
 @font-face {
   font-family: 'icomoon';
-  src: url('fonts/icomoon.eot?hk51sw');
-  src: url('fonts/icomoon.eot?hk51sw#iefix') format('embedded-opentype'),
-    url('fonts/icomoon.ttf?hk51sw') format('truetype'),
-    url('fonts/icomoon.woff?hk51sw') format('woff'),
-    url('fonts/icomoon.svg?hk51sw#icomoon') format('svg');
+  src: url('./fonts/icomoon.eot?pqe832');
+  src: url('./fonts/icomoon.eot?pqe832#iefix') format('embedded-opentype'),
+    url('./fonts/icomoon.ttf?pqe832') format('truetype'),
+    url('./fonts/icomoon.woff?pqe832') format('woff'),
+    url('./fonts/icomoon.svg?pqe832#icomoon') format('svg');
   font-weight: normal;
   font-style: normal;
   font-display: block;
@@ -26,22 +26,7 @@
   -moz-osx-font-smoothing: grayscale;
 }
 
-.icon-successIcon:before {
-  content: '\e961';
-}
-.icon-circle-info:before {
-  content: '\e94e';
-}
-.icon-TypeTriangle-Outline:before {
-  content: '\e95f';
-}
-.icon-StateDefault1:before {
-  content: '\e95f';
-}
-.icon-TypeTriangle:before {
-  content: '\e95e';
-}
-.icon-StateDefault:before {
+.icon-slack:before {
   content: '\e95e';
 }
 .icon-voice-on:before {
@@ -316,6 +301,9 @@
 }
 .icon-check-rectangle:before {
   content: '\e94d';
+}
+.icon-check-circle:before {
+  content: '\e94e';
 }
 .icon-check:before {
   content: '\e94f';
