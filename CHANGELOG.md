@@ -2,7 +2,8 @@
 
 ## Unreleased
 
-- Ability to display images in original size and align by width (arsengit)
+- Add trendline options to ScatterPlot (roubkar)
+- Add ability to display images in original size and align by width (arsengit)
 - Enhance AudioPlayer component (arsengit)
 - Recover active tab in run details page after reload (roubkar)
 
