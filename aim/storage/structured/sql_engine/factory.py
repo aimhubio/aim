@@ -30,6 +30,9 @@ class ModelMappedFactory(ObjectFactory):
     def find_run(self, _id: str) -> Run:
         return ModelMappedRun.find(_id, session=self._session or self.get_session())
 
+    def find_runs(self, ids: list[str]) -> list[Run]:
+        return ModelMappedRun.find_some(ids, session=self._session or self.get_session())
+
     def create_run(self, runhash: str) -> Run:
         return ModelMappedRun.from_hash(runhash, session=self._session or self.get_session())
 

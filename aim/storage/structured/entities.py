@@ -190,6 +190,10 @@ class ObjectFactory:
         ...
 
     @abstractmethod
+    def find_runs(self, ids: list[str]) -> list[Run]:
+        ...
+
+    @abstractmethod
     def create_run(self, runhash: str) -> Run:
         ...
 
