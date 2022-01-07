@@ -1,8 +1,22 @@
 import React, { memo } from 'react';
 
-import noData from 'assets/icons/noData.svg';
+import emptyBookmarks from 'assets/emptyBookmarks.svg';
+import emptySearch from 'assets/emptySearch.svg';
+import exploreData from 'assets/exploreData.svg';
+import wrongSearch from 'assets/wrongSearch.svg';
+
+import { Text } from 'components/kit';
+
+import { IEmptyComponentProps } from 'types/components/EmptyComponent/EmptyComponent';
 
 import './EmptyComponent.scss';
+
+const imageList = {
+  emptyBookmarks,
+  emptySearch,
+  exploreData,
+  wrongSearch,
+};
 
 function EmptyComponent({
   title,
@@ -10,14 +24,19 @@ function EmptyComponent({
   img,
   className = '',
   size = 'small',
-}: any): React.FunctionComponentElement<React.ReactNode> {
+  imageName = 'exploreData',
+}: IEmptyComponentProps): React.FunctionComponentElement<React.ReactNode> {
   return (
     <div className={`EmptyComponent ${className}`}>
       <div className={`EmptyComponent__${size}__img`}>
-        {img || <img src={noData} alt='' />}
+        {img || <img src={imageList[imageName]} alt='' />}
       </div>
-      <p className={`EmptyComponent__${size}__title`}>{title}</p>
-      <p className={`EmptyComponent__${size}__content`}>{content}</p>
+      <Text component='p' className={`EmptyComponent__${size}__title`}>
+        {title}
+      </Text>
+      <Text component='p' className={`EmptyComponent__${size}__content`}>
+        {content}
+      </Text>
     </div>
   );
 }

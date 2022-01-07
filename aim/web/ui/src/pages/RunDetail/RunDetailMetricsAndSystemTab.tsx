@@ -42,7 +42,7 @@ function RunDetailMetricsAndSystemTab({
               })
             ) : (
               <EmptyComponent
-                size='big'
+                size='large'
                 className='runDetailParamsTabLoader'
                 content={`No tracked ${isSystem ? 'system' : ''} metrics`}
               />

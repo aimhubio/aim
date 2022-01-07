@@ -40,7 +40,7 @@
       }
     }
   }
-  &__big {
+  &__large {
     &__title {
       font-weight: 500;
       font-size: $text-lg;
@@ -54,6 +54,23 @@
       img {
         width: 90px;
         height: 110px;
+      }
+    }
+  }
+  &__xLarge {
+    &__title {
+      font-weight: 500;
+      font-size: $text-xl;
+    }
+    &__content {
+      font-weight: 500;
+      font-size: $text-xl;
+    }
+    &__img {
+      padding: 10px;
+      img {
+        width: 19.5rem;
+        // height: 110px;
       }
     }
   }

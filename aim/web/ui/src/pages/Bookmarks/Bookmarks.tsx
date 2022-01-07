@@ -30,7 +30,11 @@ function Bookmarks({
             ))}
         </BusyLoaderWrapper>
         {!isLoading && data?.length === 0 ? (
-          <EmptyComponent size='big' content={'No Bookmarks'} />
+          <EmptyComponent
+            size='xLarge'
+            imageName='emptyBookmarks'
+            content={'No Bookmarks Yet'}
+          />
         ) : null}
       </div>
     </section>

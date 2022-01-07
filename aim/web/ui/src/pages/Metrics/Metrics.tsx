@@ -160,7 +160,8 @@ function Metrics(
               ) : (
                 !props.requestIsPending && (
                   <EmptyComponent
-                    size='big'
+                    size='xLarge'
+                    imageName='exploreData'
                     content="It's super easy to search Aim experiments. Lookup search docs to learn more."
                   />
                 )

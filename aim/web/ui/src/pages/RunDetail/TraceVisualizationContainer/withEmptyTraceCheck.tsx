@@ -22,7 +22,7 @@ function withEmptyTraceCheck(
     if (!traces || !traces.length) {
       return (
         <EmptyComponent
-          size='big'
+          size='large'
           className='TraceEmptyVisualizer'
           content={emptyText}
         />

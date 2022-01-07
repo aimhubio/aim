@@ -74,7 +74,7 @@ function TagDetail({
         {!isEmpty(tagRuns) ? (
           <TagRunsTable runsList={tagRuns} />
         ) : (
-          <EmptyComponent size='big' content='No Runs' />
+          <EmptyComponent size='large' content='No Runs' />
         )}
       </BusyLoaderWrapper>
     </div>

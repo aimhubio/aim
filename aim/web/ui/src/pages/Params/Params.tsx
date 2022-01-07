@@ -178,7 +178,7 @@ const Params = ({
               ) : (
                 !requestIsPending && (
                   <EmptyComponent
-                    size='big'
+                    size='large'
                     content="It's super easy to search Aim experiments. Lookup search docs to learn more."
                   />
                 )

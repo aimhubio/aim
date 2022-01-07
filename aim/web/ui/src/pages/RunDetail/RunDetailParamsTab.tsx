@@ -22,7 +22,7 @@ function RunDetailParamsTab({
           <ReactJson name={false} theme='bright:inverted' src={runParams} />
         ) : (
           <EmptyComponent
-            size='big'
+            size='large'
             className='runDetailParamsTabLoader'
             content='No Params'
           />
