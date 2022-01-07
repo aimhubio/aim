@@ -1,3 +1,5 @@
+import { version } from '../../package.json';
+
 interface GlobalScope extends Window {
   API_BASE_PATH?: string;
 }
@@ -12,7 +14,7 @@ try {
 }
 
 export const isDEVModeOn: boolean = process.env.NODE_ENV === 'development';
-
+export const AIM_VERSION = version;
 function getAPIBasePath() {
   if (globalScope.API_BASE_PATH === '{{ base_path }}') {
     return '';
