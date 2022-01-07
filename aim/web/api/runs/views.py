@@ -518,8 +518,8 @@ async def delete_runs_batch_api(runs_batch: RunsBatchIn):
 
 
 @runs_router.post('/archive-batch/', response_model=StructuredRunsArchivedOut)
-async def archive_runs_batch_api(runs_batch: RunsBatchIn, run_in: StructuredRunsArchivedIn, factory=Depends(object_factory)):
-
+async def archive_runs_batch_api(runs_batch: RunsBatchIn, run_in: StructuredRunsArchivedIn,
+                                 factory=Depends(object_factory)):
     with factory:
         runs = factory.find_runs(runs_batch)
         if not runs:
@@ -529,5 +529,5 @@ async def archive_runs_batch_api(runs_batch: RunsBatchIn, run_in: StructuredRuns
             run.archived = run_in.archived
 
     return {
-    'status': 'OK'
+        'status': 'OK'
     }
