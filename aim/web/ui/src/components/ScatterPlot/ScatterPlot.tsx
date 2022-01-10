@@ -11,8 +11,8 @@ import {
   drawAxes,
   getAxisScale,
   drawHoverAttributes,
+  drawScatterTrendline,
 } from 'utils/d3';
-import drawScatterTrendline from 'utils/d3/drawScatterTrendline';
 
 import { Text } from '../kit';
 
