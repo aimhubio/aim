@@ -34,8 +34,6 @@ class ProxyTree(TreeView):
 
         args = (name.encode(), sub.encode(), read_only, from_union, index, timeout)
         handler = self._rpc_client.get_resource_handler('TreeView', args=args)
-        if handler is None:
-            raise ValueError
 
         self._resources = ProxyTreeAutoClean(self)
         self._resources.rpc_client = client

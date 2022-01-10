@@ -15,9 +15,6 @@ class StructuredRunProxy:
         args = (hash_.encode(), read_only)
         handler = self._rpc_client.get_resource_handler('StructuredRun', args=args)
 
-        if handler is None:
-            raise ValueError
-
         self._handler = handler
 
     @property

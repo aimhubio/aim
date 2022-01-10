@@ -1,4 +1,6 @@
+import importlib
 import struct
+import json
 from typing import Iterator, Tuple
 
 import aim.ext.transport.remote_tracking_pb2 as rpc_messages
@@ -59,6 +61,22 @@ def unpack_response_data(stream: rpc_messages.ResourceResponse) -> Tuple[bytes, 
             yield key, BLOB(value)
         else:
             yield key, value
+
+
+def raise_exception(grpc_exception):
+    assert grpc_exception is not None
+    module = importlib.import_module(grpc_exception.module_name)
+    exception = getattr(module, grpc_exception.class_name)
+    args = json.loads(grpc_exception.args or [])
+    raise exception(*args) if args else exception()
+
+
+def build_exception(exception: Exception):
+    return rpc_messages.ExceptionResponse(
+        module_name=exception.__class__.__module__,
+        class_name=exception.__class__.__name__,
+        args=json.dumps(exception.args),
+    )
 
 
 class ResourceObject(CustomObject):
