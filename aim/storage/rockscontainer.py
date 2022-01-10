@@ -127,15 +127,14 @@ class RocksContainer(Container):
         if self._db is not None:
             return self._db
 
-        if self.read_only:
-            self.optimize_db_for_read()
-
         logger.debug(f'opening {self.path} as aimrocks db')
         if not self.read_only:
-            lock_path = self.prepare_lock_path()
+            lock_path = prepare_lock_path(self.path)
             self._lock_path = lock_path
             self._lock = FileLock(str(self._lock_path), timeout=self._extra_opts.get('timeout', 10))
             self._lock.acquire()
+        else:
+            self.optimize_for_read()
 
         self._db = aimrocks.DB(str(self.path),
                                aimrocks.Options(**self._db_opts),
@@ -640,34 +639,53 @@ class RocksContainer(Container):
 
         return key, value
 
-    @exception_resistant(silent=True)
-    def optimize_db_for_read(self):
-        """
-        This function will try to open rocksdb db in write mode and force WAL files recovery. Once done the underlying
-        db will contain .sst files only which will significantly reduce further open and read operations. Further
-        optimizations can be done by running compactions but this is a costly operation to be performed online.
-        """
-        assert self.read_only
+    def optimize_for_read(self):
+        optimize_db_for_read(self.path, self._db_opts, run_compactions=self._extra_opts.get('compaction', False))
 
-        def non_empty_wal():
-            for wal_path in self.path.glob('*.log'):
-                if os.path.getsize(wal_path) > 0:
-                    return True
-            return False
 
-        if non_empty_wal():
-            lock_path = self.prepare_lock_path()
+@exception_resistant(silent=True)
+def optimize_db_for_read(path: Path, options: dict, run_compactions: bool = False):
+    """
+    This function will try to open rocksdb db in write mode and force WAL files recovery. Once done the underlying
+    db will contain .sst files only which will significantly reduce further open and read operations. Further
+    optimizations can be done by running compactions but this is a costly operation to be performed online.
 
-            with FileLock(str(lock_path), timeout=0):
-                wdb = aimrocks.DB(str(self.path), aimrocks.Options(**self._db_opts), read_only=False)
-                wdb.flush()
-                wdb.flush_wal()
-                if self._extra_opts.get('compaction'):
-                    wdb.compact_range()
-                del wdb
 
-    def prepare_lock_path(self):
-        self.path.parent.mkdir(parents=True, exist_ok=True)
-        locks_dir = self.path.parent.parent / 'locks'
-        locks_dir.mkdir(parents=True, exist_ok=True)
-        return locks_dir / self.path.name
+    Args:
+        path (:obj:`Path`): Path to rocksdb.
+        options (:obj:`dict`): options to be passed to aimrocks.DB object __init__.
+        run_compactions (:obj:`bool`, optional): Flag used to run rocksdb range compactions. False by default.
+    """
+
+    def non_empty_wal():
+        for wal_path in path.glob('*.log'):
+            if os.path.getsize(wal_path) > 0:
+                return True
+        return False
+
+    if non_empty_wal():
+        lock_path = prepare_lock_path(path)
+
+        with FileLock(str(lock_path), timeout=0):
+            wdb = aimrocks.DB(str(path), aimrocks.Options(**options), read_only=False)
+            wdb.flush()
+            wdb.flush_wal()
+            if run_compactions:
+                wdb.compact_range()
+            del wdb
+
+
+def prepare_lock_path(path: Path):
+    """
+    This function creates the locks directory (if needed) and returns a LOCK file path for given rocksdb `path`.
+
+    Args:
+        path (:obj:`Path`): Path to rocksdb.
+
+    Returns:
+        path (:obj:`Path`) to lock file for given rocksdb.
+    """
+    path.parent.mkdir(parents=True, exist_ok=True)
+    locks_dir = path.parent.parent / 'locks'
+    locks_dir.mkdir(parents=True, exist_ok=True)
+    return locks_dir / path.name
