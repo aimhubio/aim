@@ -1,10 +1,12 @@
 import React from 'react';
+import _ from 'lodash-es';
+import classNames from 'classnames';
 
 import { Tooltip } from '@material-ui/core';
 
 import ControlPopover from 'components/ControlPopover/ControlPopover';
 import TooltipContentPopover from 'components/TooltipContentPopover/TooltipContentPopover';
-import { Icon, Switcher } from 'components/kit';
+import { Icon } from 'components/kit';
 import ImagePropertiesPopover from 'components/ImagePropertiesPopover';
 
 import { IControlProps } from 'types/pages/imagesExplore/components/Controls/Controls';
@@ -68,14 +70,27 @@ function Controls(
           }
         />
       </div>
-      <div>
-        <Switcher
-          color='primary'
-          checked={props.additionalProperties.zIndex}
-          onChange={(e, checked) => props.onChangeZIndex(checked)}
-          size='small'
-        />
-      </div>
+      <Tooltip
+        title={props.additionalProperties.stacking ? 'Group stacked' : 'Stack'}
+      >
+        <div
+          className={classNames('Controls__anchor', {
+            active: props.additionalProperties.stacking,
+            outlined: props.additionalProperties.stacking,
+            disabled: _.isEmpty(props.orderedMap),
+          })}
+          onClick={
+            !_.isEmpty(props.orderedMap) ? props.onStackingToggle : undefined
+          }
+        >
+          <Icon
+            className={classNames('Controls__icon', {
+              active: props.additionalProperties.stacking,
+            })}
+            name='z-axis'
+          />
+        </div>
+      </Tooltip>
     </div>
   );
 }

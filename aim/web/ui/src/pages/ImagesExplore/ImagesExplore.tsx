@@ -214,6 +214,7 @@ function ImagesExplore(): React.FunctionComponentElement<React.ReactNode> {
                   tooltip={
                     imagesExploreData?.config?.images?.tooltip as IPanelTooltip
                   }
+                  orderedMap={imagesExploreData?.orderedMap}
                   additionalProperties={
                     imagesExploreData?.config?.images?.additionalProperties
                   }
@@ -225,7 +226,7 @@ function ImagesExplore(): React.FunctionComponentElement<React.ReactNode> {
                   onImageAlignmentChange={
                     imagesExploreAppModel.onImageAlignmentChange
                   }
-                  onChangeZIndex={imagesExploreAppModel.onChangeZIndex}
+                  onStackingToggle={imagesExploreAppModel.onStackingToggle}
                 />
               }
               tooltipType={ChartTypeEnum.ImageSet}

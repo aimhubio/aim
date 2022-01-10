@@ -36,7 +36,6 @@ export function getDataAsMediaSetNestedObject<M extends State>({
         : group);
     const orderedMap = {};
 
-    console.log('groupFields', groupFields);
     data.forEach((group: any) => {
       const path = groupFields?.reduce((acc: string[], field: string) => {
         const value = getValue(group.data[0], field);

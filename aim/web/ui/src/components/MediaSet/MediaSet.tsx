@@ -6,7 +6,7 @@ import classNames from 'classnames';
 import { Tooltip } from '@material-ui/core';
 
 import MediaList from 'components/MediaList';
-import { JsonViewPopover } from 'components/kit';
+import { JsonViewPopover, Slider, Text } from 'components/kit';
 import ControlPopover from 'components/ControlPopover/ControlPopover';
 import { MediaTypeEnum } from 'components/MediaPanel/config';
 
@@ -41,7 +41,7 @@ const MediaSet = ({
   tooltip,
   mediaType,
 }: IMediaSetProps): React.FunctionComponentElement<React.ReactNode> => {
-  let content: [string[], [] | [][]][] = []; // the actual items list to be passed to virtualized list component
+  let content: [(string | {})[], [] | [][]][] = []; // the actual items list to be passed to virtualized list component
   let keysMap: { [key: string]: number } = {}; // cache for checking whether the group title is already added to list
 
   const mediaItemHeight = React.useMemo(() => {
@@ -65,17 +65,35 @@ const MediaSet = ({
 
   function fillContent(
     list: [] | { [key: string]: [] | {} },
-    path = [''],
+    path: (string | {})[] = [''],
     orderedMap: { [key: string]: any },
   ) {
     if (Array.isArray(list)) {
-      if (additionalProperties.zIndex) {
-        let [, lastContent] = content[content.length - 1];
-        for (let j = 0; j < list.length; j++) {
-          if (!lastContent[j]) {
-            lastContent[j] = [];
+      if (additionalProperties.stacking && content.length) {
+        const [lastContentPath, lastContentList] = content[content.length - 1];
+        const nextPath = path[path.length - 1] as string;
+        const [orderedMapKey, value] = nextPath.split('=');
+
+        if (path.length !== lastContentPath.length) {
+          let stackedList: [][] = [];
+          for (let j = 0; j < list.length; j++) {
+            if (!stackedList[j]) {
+              stackedList[j] = [];
+            }
+            stackedList[j].push(list[j]);
           }
-          lastContent[j].push(list[j]);
+          path[path.length - 1] = { [orderedMapKey]: [value] };
+          content.push([path, stackedList]);
+        } else {
+          (lastContentPath[lastContentPath.length - 1] as any)[
+            orderedMapKey
+          ].push(value);
+          for (let j = 0; j < list.length; j++) {
+            if (!lastContentList[j]) {
+              lastContentList[j] = [];
+            }
+            lastContentList[j].push(list[j]);
+          }
         }
       } else {
         content.push([path, list]);
@@ -101,8 +119,9 @@ const MediaSet = ({
 
   function getItemSize(index: number): number {
     let [path, items] = content[index];
-    const { maxHeight, maxWidth } = getBiggestImageFromList(items);
+    const { maxHeight, maxWidth } = getBiggestImageFromList(items.flat());
     const { mediaItemSize, alignmentType } = additionalProperties;
+
     if (path.length === 1) {
       return 0;
     }
@@ -170,11 +189,50 @@ export default React.memo(MediaSet, propsComparator);
 const MediaGroupedList = React.memo(function MediaGroupedList(props: any) {
   const { index, style, data } = props;
   const [path, items] = data.data[index];
-  const json: string | object = jsonParse(
-    path[path.length - 1]?.split('=')[1]?.trim(),
-  );
+  const lastPath = path[path.length - 1];
+  const isStackedPath = typeof lastPath === 'object';
+  const [depth, setDepth] = React.useState(0);
+
+  let pathKey = '';
+  let pathValue: string | string[] = '';
+  let currentValue: string;
+  let currentItems;
+
+  if (isStackedPath) {
+    pathKey = Object.keys(lastPath)[0];
+    pathValue = lastPath[pathKey];
+    currentValue = pathValue[depth] as string;
+    currentItems = items.map((item: []) => item[depth]);
+  } else {
+    [pathKey = '', pathValue = ''] = lastPath?.split('=');
+    currentValue = pathValue as string;
+    currentItems = items;
+  }
+
+  const json: string | object = jsonParse(currentValue?.trim());
   const isJson: boolean = typeof json === 'object';
 
+  function onSliderChange(
+    event: React.ChangeEvent<{}>,
+    value: number | number[],
+  ): void & React.FormEventHandler<HTMLSpanElement> {
+    // if (!focusedState?.active) {
+    //   syncHoverState?.({ activePoint: null });
+    // }
+    debugger;
+    if (value !== depth) {
+      setDepth(value as number);
+    }
+  }
+
+  const marks = React.useMemo(() => {
+    return isStackedPath
+      ? (pathValue as string[]).map((label, i) => ({
+          value: i,
+          label,
+        }))
+      : false;
+  }, [pathValue]);
   return (
     <div
       className='MediaSet'
@@ -187,15 +245,13 @@ const MediaGroupedList = React.memo(function MediaGroupedList(props: any) {
         <div
           key={key}
           className='MediaSet__connectorLine'
-          style={{
-            left: `calc(0.625rem * ${i})`,
-          }}
+          style={{ left: `calc(0.625rem * ${i})` }}
         />
       ))}
       <div
         className={`MediaSet__container ${path.length > 2 ? 'withDash' : ''}`}
       >
-        {path.length > 1 && (
+        {path.length > 1 && !isStackedPath && (
           <ControlPopover
             anchorOrigin={{
               vertical: 'bottom',
@@ -206,29 +262,44 @@ const MediaGroupedList = React.memo(function MediaGroupedList(props: any) {
               horizontal: 'left',
             }}
             anchor={({ onAnchorClick }) => (
-              <Tooltip
-                placement='top-start'
-                title={isJson ? path[path.length - 1] : ''}
-              >
+              <Tooltip placement='top-start' title={isJson ? lastPath : ''}>
                 <span
-                  onClick={isJson ? onAnchorClick : () => null}
-                  className={classNames(
-                    `MediaSet__container__title ${
-                      isJson ? 'MediaSet__container__title__pointer' : ''
-                    }`,
-                  )}
+                  onClick={isJson ? onAnchorClick : undefined}
+                  className={classNames('MediaSet__container__title', {
+                    MediaSet__container__title__pointer: isJson,
+                  })}
                 >
-                  {path[path.length - 1]}
+                  {lastPath}
                 </span>
               </Tooltip>
             )}
             component={<JsonViewPopover json={json as object} />}
           />
         )}
-        {items.length > 0 && (
+        {currentItems.length > 0 && isStackedPath && (
+          <div className='MediaSet__container__sliderContainer'>
+            {pathValue.length > 1 && (
+              <Slider
+                valueLabelDisplay='auto'
+                getAriaValueText={(value) => `${pathValue[value]}`}
+                value={depth}
+                onChange={onSliderChange}
+                step={1}
+                // marks={marks}
+                min={0}
+                max={pathValue.length - 1}
+              />
+            )}
+            <Text className={'MediaSet__container__title'}>
+              {pathKey} = {pathValue[depth]}
+            </Text>
+          </div>
+        )}
+        {currentItems.length > 0 && (
           <div className='MediaSet__container__mediaItemsList'>
             <MediaList
-              data={items}
+              key={`${index}-${depth}`}
+              data={currentItems}
               addUriToList={data.addUriToList}
               wrapperOffsetWidth={data.wrapperOffsetWidth}
               wrapperOffsetHeight={data.wrapperOffsetHeight}

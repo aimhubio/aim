@@ -106,4 +106,5 @@ export type IconName =
   | 'pause'
   | 'voice-on'
   | 'voice-off'
-  | 'slack';
+  | 'slack'
+  | 'z-axis';

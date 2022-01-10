@@ -111,7 +111,7 @@ function getConfig(): IImagesExploreAppConfig {
         alignmentType: MediaItemAlignmentEnum.Height,
         mediaItemSize: 25,
         imageRendering: ImageRenderingEnum.Pixelated,
-        zIndex: false,
+        stacking: false,
       },
       focusedState: {
         active: false,
@@ -606,7 +606,6 @@ function updateModelData(
     data: model.getState()?.data,
     imagesData: mediaSetData,
     orderedMap,
-    // chartTitleData: getChartTitleData(data),
     tableData: tableData.rows,
     tableColumns,
     sameValueColumns: tableData.sameValueColumns,
@@ -741,6 +740,13 @@ function onGroupingSelectChange({
   if (configData?.grouping) {
     configData.grouping = { ...configData.grouping, [groupName]: list };
     updateModelData(configData, true);
+    if (
+      configData.images?.additionalProperties?.stacking &&
+      (_.isEmpty(configData.grouping.group) ||
+        configData.grouping.reverseMode.group)
+    ) {
+      onStackingToggle();
+    }
   }
   analytics.trackEvent(`[ImagesExplorer] Group by ${groupName}`);
 }
@@ -753,6 +759,13 @@ function onGroupingModeChange({ value }: IOnGroupingModeChangeParams): void {
       group: value,
     };
     updateModelData(configData, true);
+    if (
+      configData.images?.additionalProperties?.stacking &&
+      (_.isEmpty(configData.grouping.group) ||
+        configData.grouping.reverseMode.group)
+    ) {
+      onStackingToggle();
+    }
   }
   analytics.trackEvent(
     `[ImagesExplorer] ${
@@ -773,6 +786,13 @@ function onGroupingReset(groupName: GroupNameType) {
       isApplied: { ...isApplied, [groupName]: true },
     };
     updateModelData(configData, true);
+    if (
+      configData.images?.additionalProperties?.stacking &&
+      (_.isEmpty(configData.grouping.group) ||
+        configData.grouping.reverseMode.group)
+    ) {
+      onStackingToggle();
+    }
   }
   analytics.trackEvent('[ImagesExplorer] Reset grouping');
 }
@@ -954,7 +974,7 @@ function onActivePointChange(
   focusedStateActive: boolean = false,
 ): void {
   const { refs, config } = model.getState() as any;
-  if (config.table.resizeMode !== ResizeModeEnum.Hide) {
+  if (config?.table.resizeMode !== ResizeModeEnum.Hide) {
     const tableRef: any = refs?.tableRef;
     if (tableRef && activePoint.seqKey) {
       tableRef.current?.setHoveredRow?.(activePoint.seqKey);
@@ -1912,7 +1932,7 @@ function showRangePanel() {
   return !model.getState().requestIsPending && !model.getState().queryIsEmpty;
 }
 
-function onChangeZIndex(zIndex: boolean): void {
+function onStackingToggle(): void {
   const configData: IImagesExploreAppConfig | undefined =
     model.getState()?.config;
   if (configData?.images) {
@@ -1920,7 +1940,7 @@ function onChangeZIndex(zIndex: boolean): void {
       ...configData.images,
       additionalProperties: {
         ...configData.images.additionalProperties,
-        zIndex,
+        stacking: !configData.images.additionalProperties.stacking,
       },
     };
     const config = { ...configData, images };
@@ -1978,7 +1998,7 @@ const imagesExploreAppModel = {
   showRangePanel,
   getGroupingSelectOptions,
   getDataAsImageSet,
-  onChangeZIndex,
+  onStackingToggle,
 };
 
 export default imagesExploreAppModel;

@@ -70,6 +70,7 @@ const ImageBox = ({
     e.stopPropagation();
     setIsImageFullViewPopupOpened(true);
   }
+
   // TODO need to add focused image logic
   // function safeSyncHoverState(args: any): void {
   //   if (typeof syncHoverState === 'function') {
@@ -89,7 +90,7 @@ const ImageBox = ({
   // }
 
   return (
-    <div key={index} className='MediaSet__container__mediaItemsList__imageBox'>
+    <div className='MediaSet__container__mediaItemsList__imageBox'>
       <div
         style={style}
         className={`MediaSet__container__mediaItemsList__imageBox__image MediaSet__container__mediaItemsList__imageBox__image--${
@@ -103,51 +104,55 @@ const ImageBox = ({
         }`}
         data-key={`${data.key}`}
         data-seqkey={`${data.seqKey}`}
-        data-mediasetitem={'mediaSetItem'}
-        // onClick={onClick}
+        data-mediasetitem='mediaSetItem'
       >
-        {blobData ? (
-          <div className='MediaSet__container__mediaItemsList__imageBox__imageWrapper'>
-            <div
-              className={`MediaSet__container__mediaItemsList__imageBox__imageWrapper-item ${
-                additionalProperties.alignmentType ===
-                MediaItemAlignmentEnum.Height
-                  ? 'MediaSet__container__mediaItemsList__imageBox__imageWrapper-item-heightAlign'
-                  : ''
-              }`}
-            >
-              <img src={`data:image/${format};base64, ${blobData}`} alt='' />
-              <Text style={{ maxWidth: style.width }} size={10} weight={400}>
-                {data.caption}
-              </Text>
-            </div>
-            <Button
-              withOnlyIcon
-              size='small'
-              className={classNames(
-                'MediaSet__container__mediaItemsList__imageBox__imageWrapper__zoomIconWrapper',
-                {
-                  isHidden: !(focusedState.key === data.key),
-                },
-              )}
-              onClick={onImageFullSizeModeButtonClick}
-              color='inherit'
-            >
-              <Icon name='zoom-in' fontSize={14} />
-            </Button>
-          </div>
-        ) : (
-          <Skeleton
-            variant='rect'
-            height={
-              additionalProperties.alignmentType !==
+        <div className='MediaSet__container__mediaItemsList__imageBox__imageWrapper'>
+          <div
+            className={`MediaSet__container__mediaItemsList__imageBox__imageWrapper-item ${
+              additionalProperties.alignmentType ===
               MediaItemAlignmentEnum.Height
-                ? style.width / (data.width / data.height)
-                : mediaItemHeight - 10
-            }
-            width={style?.width - 10}
-          />
-        )}
+                ? 'MediaSet__container__mediaItemsList__imageBox__imageWrapper-item-heightAlign'
+                : ''
+            }`}
+          >
+            {blobData ? (
+              <>
+                <img
+                  src={`data:image/${format};base64, ${blobData}`}
+                  alt={data.caption}
+                />
+                <Text style={{ maxWidth: style.width }} size={10} weight={400}>
+                  {data.caption}
+                </Text>
+              </>
+            ) : (
+              <Skeleton
+                variant='rect'
+                height={
+                  additionalProperties.alignmentType !==
+                  MediaItemAlignmentEnum.Height
+                    ? style.width / (data.width / data.height)
+                    : mediaItemHeight - 10
+                }
+                width={style?.width - 10}
+              />
+            )}
+          </div>
+          <Button
+            withOnlyIcon
+            size='small'
+            className={classNames(
+              'MediaSet__container__mediaItemsList__imageBox__imageWrapper__zoomIconWrapper',
+              {
+                isHidden: !(focusedState.key === data.key),
+              },
+            )}
+            onClick={onImageFullSizeModeButtonClick}
+            color='inherit'
+          >
+            <Icon name='zoom-in' fontSize={14} />
+          </Button>
+        </div>
       </div>
       <Dialog
         onClose={() => setIsImageFullViewPopupOpened(false)}

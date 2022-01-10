@@ -7,11 +7,12 @@ import { ISliderProps } from './Slider.d';
 import './Slider.scss';
 
 function Slider({
-  containerClassName,
+  containerClassName = '',
+  style = {},
   ...rest
 }: ISliderProps): React.FunctionComponentElement<React.ReactNode> {
   return (
-    <div className={`Slider ${containerClassName || ''}`}>
+    <div className={`Slider ${containerClassName}`} style={style}>
       <MaterialSlider {...rest} />
     </div>
   );

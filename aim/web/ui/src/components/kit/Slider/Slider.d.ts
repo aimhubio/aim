@@ -4,5 +4,6 @@ import { SliderProps } from '@material-ui/core';
 
 export interface ISliderProps extends SliderProps {
   containerClassName?: string;
+  style?: React.CSSProperties;
   onChange?: (event: React.ChangeEvent<{}>, value: number | number[]) => void;
 }

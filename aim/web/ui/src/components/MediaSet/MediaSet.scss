@@ -39,7 +39,15 @@
         cursor: pointer;
       }
     }
-
+    &__sliderContainer {
+      display: flex;
+      align-items: center;
+      & > .Slider {
+        margin: 0 toRem(20px);
+        width: 20vw;
+        height: 100%;
+      }
+    }
     &__mediaItemsList {
       padding-bottom: 0.25rem;
       padding-top: 0.375rem;
@@ -52,6 +60,7 @@
           height: 100%;
           width: 100%;
           position: relative;
+          padding: 1px;
           &-item {
             display: flex;
             flex-direction: column;
@@ -59,19 +68,19 @@
             align-items: center;
             width: 100%;
             height: 100%;
-            span {
+            & > span {
               height: 1rem;
               margin-top: 0.125rem;
               white-space: nowrap;
               overflow: hidden;
               text-overflow: ellipsis;
               width: 100%;
+              &:first-child {
+                margin-top: 0;
+              }
             }
-            img {
+            & > img {
               width: calc(100% - 0.375rem);
-              margin-top: toRem(5px);
-              margin-right: toRem(5px);
-              border: toRem(2px) solid transparent;
               padding: toRem(1px);
             }
             &-heightAlign {
@@ -97,19 +106,14 @@
             }
           }
         }
-        .MuiSkeleton-root {
-          margin-top: toRem(5px);
-          margin-left: toRem(5px);
-        }
         .focus img {
-          border: toRem(2px) solid $primary-color;
+          box-shadow: 0 0 0 toRem(2px) $primary-color;
         }
-        .active img {
-          border: toRem(2px) solid #b9d5f8;
+        .active img{
+          box-shadow: 0 0 0 toRem(2px) #b9d5f8;
         }
         &__image {
-          display: flex;
-          align-items: center;
+          padding: 0.25rem;
           &--pixelated {
             image-rendering: pixelated;
           }

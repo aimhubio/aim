@@ -163,18 +163,14 @@ function MediaPanel({
 
   React.useEffect(() => {
     document.addEventListener('mouseover', closePopover);
-
     return () => {
       document.removeEventListener('mouseover', closePopover);
-
       if (timeoutID.current) {
         window.clearTimeout(timeoutID.current);
       }
-
       if (requestRef.current) {
         requestRef.current.abort();
       }
-
       blobsURIModel.init();
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -185,7 +181,7 @@ function MediaPanel({
       isLoading={isLoading}
       className='MediaPanel__loader'
       height='100%'
-      loaderComponent={<ChartLoader controlsCount={2} />}
+      loaderComponent={<ChartLoader controlsCount={3} />}
     >
       {panelResizing ? (
         <div className='MediaPanel__Container__resizing'>

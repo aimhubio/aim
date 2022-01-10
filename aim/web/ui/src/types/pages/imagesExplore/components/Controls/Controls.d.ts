@@ -5,9 +5,12 @@ import { IGroupingSelectOption } from 'services/models/imagesExplore/imagesExplo
 
 import { IImagesExploreAppConfig } from 'types/services/models/imagesExplore/imagesExploreAppModel';
 
+import { IMediaPanelProps } from '../../../../../components/MediaPanel';
+
 export interface IControlProps {
   selectOptions: IGroupingSelectOption[];
   tooltip: IPanelTooltip;
+  orderedMap: { [key: string]: any };
   onChangeTooltip: (tooltip: Partial<IPanelTooltip>) => void;
   additionalProperties: IImagesExploreAppConfig['images']['additionalProperties'];
   onImageSizeChange: (newValue: number) => void;
@@ -15,5 +18,5 @@ export interface IControlProps {
   onImageAlignmentChange: (
     value: { value: string; label: string } | null,
   ) => void;
-  onChangeZIndex: (zIndex: boolean) => void;
+  onStackingToggle: () => void;
 }
