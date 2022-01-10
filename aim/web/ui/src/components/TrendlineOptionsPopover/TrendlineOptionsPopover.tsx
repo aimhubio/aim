@@ -80,6 +80,8 @@ function TrendlineOptionsPopover({
               getAriaValueText={(val) => `${val}`}
               value={trendlineOptions.bandwidth}
               onChange={onBandwidthChange}
+              aria-labelledby='track-false-slider'
+              track={false}
               step={0.01}
               max={1}
               min={0}
