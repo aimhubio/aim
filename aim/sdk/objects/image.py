@@ -184,10 +184,15 @@ class Image(CustomObject):
             raise ValueError('Cannot convert to aim.Image. Tensor must have 2/3-D shape.')
         if tensor.is_floating_point():
             tensor = tensor.mul(255).byte()
-        array: np.ndarray = np.transpose(tensor.cpu().numpy(), (1, 2, 0))
+        array: np.ndarray = tensor.cpu().numpy()
 
-        if array.ndim == 3 and array.shape[2] == 1:  # greyscale
-            pil_image = PILImage.fromarray(array[:, :, 0])
+        if array.ndim == 3:
+            channels = array.shape[0]
+            if channels == 1:
+                pil_image = PILImage.fromarray(array[0, :, :])
+            else:
+                # reverse order of channels: c,h,w => h,w,c
+                pil_image = PILImage.fromarray(np.transpose(array,(1,2,0)))
         else:
             pil_image = PILImage.fromarray(array)
         self._from_pil_image(pil_image, params)
@@ -212,6 +217,18 @@ class Image(CustomObject):
         else:
             pil_image = PILImage.fromarray(array)
         self._from_pil_image(pil_image, params)
+
+    def __eq__(self, other):
+        if not isinstance(other, Image):
+            return False
+
+        return (
+            self.storage['data'].data == other.storage['data'].data
+            and self.storage['mode'] == other.storage['mode']
+            and self.storage['format'] == other.storage['format']
+            and self.storage['width'] == other.storage['width']
+            and self.storage['height'] == other.storage['height']
+        )
 
 
 def convert_to_aim_image_list(images, labels=None) -> List[Image]:
