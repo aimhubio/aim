@@ -105,7 +105,7 @@ def iter_fold_tree(
         stack.append(node)
     except StopIteration:
         if level > 0:
-            return # BUG? TypeError: 'NoneType' object is not iterable?
+            return
         else:
             raise KeyError
 
