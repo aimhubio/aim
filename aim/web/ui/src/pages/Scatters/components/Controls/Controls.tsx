@@ -49,7 +49,7 @@ function Controls(
                   className={`Controls__icon ${
                     props.trendlineOptions.isApplied ? 'active' : ''
                   }`}
-                  name='slack'
+                  name='trendline'
                 />
               </div>
             </Tooltip>
