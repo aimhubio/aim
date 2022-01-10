@@ -233,7 +233,7 @@ function ImagesExplore(): React.FunctionComponentElement<React.ReactNode> {
               actionPanel={
                 imagesExploreData?.config?.images?.stepRange &&
                 imagesExploreData?.config?.images?.indexRange &&
-                imagesExploreAppModel.isRangePanelShow() && (
+                imagesExploreAppModel.showRangePanel() && (
                   <ImagesExploreRangePanel
                     recordSlice={imagesExploreData?.config?.images?.recordSlice}
                     indexSlice={imagesExploreData?.config?.images?.indexSlice}

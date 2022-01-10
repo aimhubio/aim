@@ -36,6 +36,33 @@ aim.sdk.objects.distribution
 .. autoclass:: Distribution
    :members:
 
+aim.sdk.objects.audio
+---------------------
+
+.. automodule:: aim.sdk.objects.audio
+.. currentmodule:: aim.sdk.objects.audio
+
+.. autoclass:: Audio
+   :members:
+
+aim.sdk.objects.text
+---------------------
+
+.. automodule:: aim.sdk.objects.text
+.. currentmodule:: aim.sdk.objects.text
+
+.. autoclass:: Text
+   :members:
+
+aim.sdk.objects.figure
+---------------------
+
+.. automodule:: aim.sdk.objects.figure
+.. currentmodule:: aim.sdk.objects.figure
+
+.. autoclass:: Figure
+   :members:
+
 aim.sdk.sequence module
 -----------------------
 
@@ -45,7 +72,7 @@ aim.sdk.sequence module
 .. autoclass:: Sequence
    :members:
 
-aim.sdk.metric module
+aim.sdk.sequences.metric module
 ---------------------
 
 .. automodule:: aim.sdk.metric
@@ -55,23 +82,53 @@ aim.sdk.metric module
    :exclude-members: allowed_dtypes
    :members:
 
-aim.sdk.image_sequence module
+aim.sdk.sequences.image_sequence module
 -----------------------------
 
-.. automodule:: aim.sdk.image_sequence
-.. currentmodule:: aim.sdk.image_sequence
+.. automodule:: aim.sdk.sequences.image_sequence
+.. currentmodule:: aim.sdk.sequences.image_sequence
 
 .. autoclass:: Images
    :exclude-members: allowed_dtypes
    :members:
 
-aim.sdk.distribution_sequence module
+aim.sdk.sequences.distribution_sequence module
 -----------------------------
 
-.. automodule:: aim.sdk.distribution_sequence
-.. currentmodule:: aim.sdk.distribution_sequence
+.. automodule:: aim.sdk.sequences.distribution_sequence
+.. currentmodule:: aim.sdk.sequences.distribution_sequence
 
 .. autoclass:: Distributions
+   :exclude-members: allowed_dtypes
+   :members:
+
+aim.sdk.sequences.audio_sequence module
+-----------------------------
+
+.. automodule:: aim.sdk.sequences.audio_sequence
+.. currentmodule:: aim.sdk.sequences.audio_sequence
+
+.. autoclass:: Audios
+   :exclude-members: allowed_dtypes
+   :members:
+
+aim.sdk.sequences.text_sequence module
+-----------------------------
+
+.. automodule:: aim.sdk.sequences.text_sequence
+.. currentmodule:: aim.sdk.sequences.text_sequence
+
+.. autoclass:: Texts
+   :exclude-members: allowed_dtypes
+   :members:
+
+aim.sdk.sequences.figure_sequence module
+-----------------------------
+
+.. automodule:: aim.sdk.sequences.figure_sequence
+.. currentmodule:: aim.sdk.sequences.figure_sequence
+
+.. autoclass:: Figures
    :exclude-members: allowed_dtypes
    :members:
 

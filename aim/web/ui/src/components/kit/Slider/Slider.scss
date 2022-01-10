@@ -53,4 +53,13 @@
       }
     }
   }
+  .Mui-disabled {
+    .MuiSlider-track {
+      background: #a7b7cd;
+    }
+    .MuiSlider-thumb {
+      margin-top: toRem(-2px);
+      margin-left: toRem(-4px);
+    }
+  }
 }

@@ -98,6 +98,7 @@
             padding: 11px 16px;
             min-width: auto !important;
             border-right: 1px solid transparent;
+            text-transform: capitalize;
           }
           &.Mui-selected {
             color: $pico;

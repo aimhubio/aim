@@ -1908,13 +1908,8 @@ function onImageAlignmentChange(
   }
 }
 
-function isRangePanelShow() {
-  return (
-    !!getStateFromUrl('select')?.query ||
-    !_.isEmpty(getStateFromUrl('select')?.images) ||
-    (!!getStateFromUrl('select')?.advancedQuery &&
-      !!getStateFromUrl('select')?.advancedMode)
-  );
+function showRangePanel() {
+  return !model.getState().requestIsPending && !model.getState().queryIsEmpty;
 }
 
 function onChangeZIndex(zIndex: boolean): void {
@@ -1980,7 +1975,7 @@ const imagesExploreAppModel = {
   onImageSizeChange,
   onImageRenderingChange,
   onImageAlignmentChange,
-  isRangePanelShow,
+  showRangePanel,
   getGroupingSelectOptions,
   getDataAsImageSet,
   onChangeZIndex,

@@ -7,11 +7,12 @@ import { SlideshowRounded } from '@material-ui/icons';
 import { MediaTypeEnum } from 'components/MediaPanel/config';
 import AudioBox from 'components/kit/AudioBox';
 
-import { MediaItemAlignmentEnum } from 'config/enums/imageEnums';
 import {
-  AUDIO_FIXED_WIDTH,
-  IMAGE_FIXED_HEIGHT,
+  MEDIA_ITEMS_SIZES,
+  MEDIA_LIST_HEIGHT,
 } from 'config/mediaConfigs/mediaConfigs';
+
+import getBiggestImageFromList from 'utils/getBiggestImageFromList';
 
 import { Slider } from '../kit';
 import { IImageData } from '../../types/services/models/imagesExplore/imagesExploreAppModel';
@@ -34,6 +35,7 @@ function MediaList({
   additionalProperties,
   tooltip,
   mediaType,
+  wrapperOffsetHeight,
 }: IMediaListProps): React.FunctionComponentElement<React.ReactNode> {
   const [depth, setDepth] = React.useState<number[][] | null>(initDepth);
 
@@ -61,44 +63,53 @@ function MediaList({
 
   const itemSize = React.useCallback(
     (index: number) => {
-      if (
-        additionalProperties?.alignmentType === MediaItemAlignmentEnum.Width
-      ) {
-        return (wrapperOffsetWidth * additionalProperties?.mediaItemSize) / 100;
-      } else if (
-        additionalProperties?.alignmentType === MediaItemAlignmentEnum.Height
-      ) {
-        return (mediaItemHeight / content[index].height) * content[index].width;
+      if (mediaType === MediaTypeEnum.AUDIO) {
+        return MEDIA_ITEMS_SIZES[mediaType]().width;
       } else {
-        return mediaType === MediaTypeEnum.AUDIO
-          ? AUDIO_FIXED_WIDTH
-          : IMAGE_FIXED_HEIGHT;
-        // TODO: Need to be refactored in Image size alignment by width and original size
+        return MEDIA_ITEMS_SIZES[mediaType]({
+          data,
+          index,
+          additionalProperties,
+          wrapperOffsetWidth,
+          wrapperOffsetHeight,
+        }).width;
       }
     },
-    [additionalProperties, mediaType],
+    [
+      additionalProperties,
+      data,
+      mediaType,
+      wrapperOffsetHeight,
+      wrapperOffsetWidth,
+    ],
   );
 
-  function onDepthValueChange(
-    event: React.ChangeEvent<{}>,
-    newValue: number | number[],
-  ): void & React.FormEventHandler<HTMLSpanElement> {
-    console.log('onDepthValueChange', event, newValue);
-    // setDepth(newValue as number);
-  }
-
-  React.useEffect(() => {
-    debugger;
-    let currentDepth = initDepth();
-    if (_.isEqual(currentDepth, depth)) {
-      setDepth(currentDepth);
+  const listHeight = React.useMemo(() => {
+    const { maxWidth, maxHeight } = getBiggestImageFromList(data);
+    const { alignmentType, mediaItemSize } = additionalProperties;
+    if (mediaType === MediaTypeEnum.IMAGE) {
+      return MEDIA_LIST_HEIGHT[mediaType]({
+        alignmentType,
+        maxHeight,
+        maxWidth,
+        wrapperOffsetWidth,
+        mediaItemSize,
+        mediaItemHeight,
+      });
+    } else {
+      return MEDIA_LIST_HEIGHT[mediaType](mediaItemHeight);
     }
-  }, [data, additionalProperties.zIndex]);
+  }, [
+    additionalProperties,
+    data,
+    mediaItemHeight,
+    mediaType,
+    wrapperOffsetWidth,
+  ]);
 
-  console.log(data, depth);
   return (
     <List
-      height={mediaItemHeight}
+      height={listHeight}
       itemCount={data.length}
       itemSize={itemSize}
       layout='horizontal'
@@ -107,14 +118,13 @@ function MediaList({
       itemData={{
         data: content,
         addUriToList,
-        mediaItemHeight,
+        mediaItemHeight: listHeight,
         focusedState,
         syncHoverState,
         additionalProperties,
         tooltip,
         mediaType,
         depth,
-        onDepthValueChange,
       }}
     >
       {MediaBoxMemoized}
@@ -138,7 +148,7 @@ const MediaBoxMemoized = React.memo(function MediaBoxMemoized(props: any) {
           onChange={(e, value) => {
             debugger;
             console.log(e, e.target, value);
-            data.onDepthValueChange(e, value);
+            data.onDepthValueChange?.(e, value);
           }}
           step={1}
           max={data.depth[index][1]}

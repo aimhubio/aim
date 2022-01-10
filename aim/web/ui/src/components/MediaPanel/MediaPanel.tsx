@@ -10,17 +10,11 @@ import ChartPopover from 'components/ChartPanel/ChartPopover/ChartPopover';
 import { throttle } from 'components/Table/utils';
 
 import { ResizeModeEnum } from 'config/enums/tableEnums';
-import {
-  AUDIO_FIXED_HEIGHT,
-  BATCH_SEND_DELAY,
-  IMAGE_FIXED_HEIGHT,
-} from 'config/mediaConfigs/mediaConfigs';
-import { MediaItemAlignmentEnum } from 'config/enums/imageEnums';
+import { BATCH_SEND_DELAY } from 'config/mediaConfigs/mediaConfigs';
 
 import blobsURIModel from 'services/models/media/blobsURIModel';
 
 import { IMediaPanelProps } from './MediaPanel.d';
-import { MediaTypeEnum } from './config';
 
 import './MediaPanel.scss';
 
@@ -161,10 +155,10 @@ function MediaPanel({
     [onActivePointChange, setActivePointRect, setActiveElemPos],
   );
 
-  const setKey = React.useMemo(
+  const mediaSetKey = React.useMemo(
     () => Date.now(),
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    [data, wrapperOffsetHeight, wrapperOffsetWidth],
+    [data, wrapperOffsetHeight, wrapperOffsetWidth, additionalProperties],
   );
 
   React.useEffect(() => {
@@ -186,26 +180,6 @@ function MediaPanel({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  const mediaItemHeight = React.useMemo(() => {
-    if (additionalProperties?.alignmentType === MediaItemAlignmentEnum.Height) {
-      return (wrapperOffsetHeight * additionalProperties?.mediaItemSize) / 100;
-    } else if (
-      additionalProperties?.alignmentType === MediaItemAlignmentEnum.Width
-    ) {
-      return (wrapperOffsetWidth * additionalProperties?.mediaItemSize) / 100;
-    } else {
-      return mediaType === MediaTypeEnum.AUDIO
-        ? AUDIO_FIXED_HEIGHT
-        : IMAGE_FIXED_HEIGHT;
-    }
-  }, [
-    additionalProperties,
-    mediaType,
-    wrapperOffsetHeight,
-    wrapperOffsetWidth,
-  ]);
-
-  console.log('----', data, data && Object.values(data));
   return (
     <BusyLoaderWrapper
       isLoading={isLoading}
@@ -244,10 +218,9 @@ function MediaPanel({
                     data={data}
                     onListScroll={onListScroll}
                     addUriToList={addUriToList}
-                    setKey={setKey}
+                    mediaSetKey={mediaSetKey}
                     wrapperOffsetHeight={wrapperOffsetHeight - 48}
                     wrapperOffsetWidth={wrapperOffsetWidth}
-                    mediaItemHeight={mediaItemHeight}
                     focusedState={focusedState}
                     syncHoverState={syncHoverState}
                     orderedMap={orderedMap}
