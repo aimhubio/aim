@@ -1,4 +1,4 @@
-from typing import Collection, Union
+from typing import Collection, Union, List
 from sqlalchemy.orm import joinedload
 
 from aim.storage.types import SafeNone
@@ -81,7 +81,7 @@ class ModelMappedRun(IRun, metaclass=ModelMappedClassMeta):
         return SafeNone()
 
     @classmethod
-    def find_some(cls, ids: list[str], **kwargs) -> list[IRun]:
+    def find_some(cls, ids: List[str], **kwargs) -> List[IRun]:
         session = kwargs.get('session')
         if not session:
             return SafeNone()

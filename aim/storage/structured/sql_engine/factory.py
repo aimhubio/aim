@@ -2,6 +2,7 @@ from aim.storage.structured.entities import \
     ObjectFactory, Run, Tag, Experiment,\
     RunCollection, ExperimentCollection, TagCollection
 from aim.storage.structured.sql_engine.entities import ModelMappedRun, ModelMappedExperiment, ModelMappedTag
+from typing import List
 
 
 class ModelMappedFactory(ObjectFactory):
@@ -30,7 +31,7 @@ class ModelMappedFactory(ObjectFactory):
     def find_run(self, _id: str) -> Run:
         return ModelMappedRun.find(_id, session=self._session or self.get_session())
 
-    def find_runs(self, ids: list[str]) -> list[Run]:
+    def find_runs(self, ids: List[str]) -> List[Run]:
         return ModelMappedRun.find_some(ids, session=self._session or self.get_session())
 
     def create_run(self, runhash: str) -> Run:
