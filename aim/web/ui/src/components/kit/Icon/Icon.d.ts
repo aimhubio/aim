@@ -106,4 +106,4 @@ export type IconName =
   | 'pause'
   | 'voice-on'
   | 'voice-off'
-  | 'trendline';
+  | 'slack';
