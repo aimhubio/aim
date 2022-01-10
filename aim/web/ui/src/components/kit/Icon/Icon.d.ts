@@ -105,4 +105,7 @@ export type IconName =
   | 'play'
   | 'pause'
   | 'voice-on'
-  | 'voice-off';
+  | 'voice-off'
+  | 'case-sensitive'
+  | 'word-match'
+  | 'regex';

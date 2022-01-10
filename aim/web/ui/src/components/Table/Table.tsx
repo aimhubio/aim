@@ -68,6 +68,7 @@ const Table = React.forwardRef(function Table(
     resizeMode,
     onSortReset,
     height = 'calc(100% - 40px)',
+    className = '',
     ...props
   }: ITableProps,
   ref,
@@ -505,7 +506,7 @@ const Table = React.forwardRef(function Table(
       className='Tags__TagList__tagListBusyLoader'
     >
       {!isEmpty(rowData) ? (
-        <div style={{ height: '100%' }}>
+        <div style={{ height: '100%' }} className={className}>
           {!hideHeaderActions && (
             <div className='Table__header'>
               {showResizeContainerActionBar && (

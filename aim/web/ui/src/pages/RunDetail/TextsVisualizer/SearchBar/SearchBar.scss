@@ -1,0 +1,10 @@
+.SearchBar {
+  display: flex;
+  width: 55%;
+  margin-bottom: 25px;
+  align-items: center;
+  .MatchIcons {
+    display: flex;
+    align-items: baseline;
+  }
+}

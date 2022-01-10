@@ -4,6 +4,8 @@ import Table from 'components/Table/Table';
 
 import { ITextsVisualizerProps } from '../types';
 
+import SearchBar from './SearchBar';
+
 import './TextsVisualizer.scss';
 
 function TextsVisualizer(
@@ -36,9 +38,11 @@ function TextsVisualizer(
   ];
   return (
     <div className='TextsVisualizer'>
+      <SearchBar />
       {props.data?.processedValues && (
         <Table
           fixed={false}
+          className='TextsTable'
           columns={tableColumns}
           data={props?.data?.processedValues}
           isLoading={props?.isLoading}
