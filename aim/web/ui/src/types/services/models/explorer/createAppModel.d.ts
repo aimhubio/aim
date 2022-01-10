@@ -18,10 +18,10 @@ import {
 } from 'types/services/models/metrics/metricsAppModel';
 import { IParamsAppModelState } from 'types/services/models/params/paramsAppModel';
 import { IRunsAppModelState } from 'types/services/models/runs/runsAppModel';
+import { ITrendlineOptions } from 'types/services/models/scatter/scatterAppModel';
 
 import { ChartTypeEnum, CurveEnum } from 'utils/d3';
 import { SmoothingAlgorithmEnum } from 'utils/smoothingData';
-import { ITrendlineOptions } from '../scatter/scatterAppModel';
 
 export interface IAppInitialConfig {
   dataType: AppDataTypeEnum;

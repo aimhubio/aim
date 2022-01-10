@@ -14,6 +14,7 @@ import drawParallelAxesBrush from './drawParallelAxesBrush';
 import drawParallelColorIndicator from './drawParallelColorIndicator';
 import getCoordinates from './getCoordinates';
 import drawPoints from './drawPoints';
+import drawScatterTrendline from './drawScatterTrendline';
 
 const gradientStartColor = '#2980B9';
 const gradientEndColor = '#E74C3C';
@@ -106,6 +107,7 @@ export {
   drawParallelHoverAttributes,
   drawParallelAxesBrush,
   drawPoints,
+  drawScatterTrendline,
   gradientStartColor,
   gradientEndColor,
 };
