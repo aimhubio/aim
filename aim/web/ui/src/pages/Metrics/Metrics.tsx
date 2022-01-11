@@ -108,7 +108,11 @@ function Metrics(
           <div
             ref={props.chartElemRef}
             className={`Metrics__chart__container${
-              props.resizeMode === ResizeModeEnum.MaxHeight ? '__hide' : ''
+              props.resizeMode === ResizeModeEnum.MaxHeight
+                ? '__hide'
+                : isEmpty(props.tableData)
+                ? '__fullHeight'
+                : ''
             }`}
           >
             <BusyLoaderWrapper
@@ -165,13 +169,12 @@ function Metrics(
                 <EmptyComponent
                   size='xLarge'
                   imageName={
-                    props.selectFormOptions
-                      ? props.requestStatus === RequestStatusEnum.NotRequested
-                        ? 'exploreData'
-                        : props.requestStatus === RequestStatusEnum.BadRequest
-                        ? 'wrongSearch'
-                        : 'emptySearch'
-                      : 'exploreData'
+                    props.selectFormOptions ||
+                    props.requestStatus === RequestStatusEnum.NotRequested
+                      ? 'exploreData'
+                      : props.requestStatus === RequestStatusEnum.BadRequest
+                      ? 'wrongSearch'
+                      : 'emptySearch'
                   }
                   content="It's super easy to search Aim experiments. Lookup search docs to learn more."
                 />
@@ -193,7 +196,10 @@ function Metrics(
           <div
             ref={props.tableElemRef}
             className={`Metrics__table__container${
-              props.resizeMode === ResizeModeEnum.Hide ? '__hide' : ''
+              props.resizeMode === ResizeModeEnum.Hide ||
+              isEmpty(props.tableData)
+                ? '__hide'
+                : ''
             }`}
           >
             <BusyLoaderWrapper

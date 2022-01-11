@@ -118,6 +118,7 @@ const Params = ({
           </div>
           <div className='Params__SelectForm__Grouping__container'>
             <SelectForm
+              selectFormOptions={selectFormOptions}
               requestIsPending={requestStatus === RequestStatusEnum.Pending}
               selectedParamsData={selectedParamsData}
               onParamsSelectChange={onParamsSelectChange}
@@ -145,7 +146,11 @@ const Params = ({
           <div
             ref={chartElemRef}
             className={`Params__chart__container${
-              resizeMode === ResizeModeEnum.MaxHeight ? '__hide' : ''
+              resizeMode === ResizeModeEnum.MaxHeight
+                ? '__hide'
+                : isEmpty(tableData)
+                ? '__fullHeight'
+                : ''
             }`}
           >
             <BusyLoaderWrapper
@@ -179,15 +184,14 @@ const Params = ({
                 />
               ) : (
                 <EmptyComponent
-                  size='large'
+                  size='xLarge'
                   imageName={
-                    selectFormOptions
-                      ? requestStatus === RequestStatusEnum.NotRequested
-                        ? 'exploreData'
-                        : requestStatus === RequestStatusEnum.BadRequest
-                        ? 'wrongSearch'
-                        : 'emptySearch'
-                      : 'exploreData'
+                    selectFormOptions?.length > 0 ||
+                    requestStatus === RequestStatusEnum.NotRequested
+                      ? 'exploreData'
+                      : requestStatus === RequestStatusEnum.BadRequest
+                      ? 'wrongSearch'
+                      : 'emptySearch'
                   }
                   content="It's super easy to search Aim experiments. Lookup search docs to learn more."
                 />
@@ -206,11 +210,12 @@ const Params = ({
             resizeMode={resizeMode}
             onTableResizeModeChange={onTableResizeModeChange}
           />
-
           <div
             ref={tableElemRef}
             className={`Params__table__container${
-              resizeMode === ResizeModeEnum.Hide ? '__hide' : ''
+              resizeMode === ResizeModeEnum.Hide || isEmpty(tableData)
+                ? '__hide'
+                : ''
             }`}
           >
             <BusyLoaderWrapper

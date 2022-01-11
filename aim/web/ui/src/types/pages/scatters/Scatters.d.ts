@@ -5,6 +5,7 @@ import { HighlightEnum } from 'components/HighlightModesPopover/HighlightModesPo
 
 import { RowHeightSize } from 'config/table/tableConfigs';
 import { ResizeModeEnum } from 'config/enums/tableEnums';
+import { RequestStatusEnum } from 'config/enums/requestStatusEnum';
 
 import { IScatterAppModelState } from 'services/models/scatter/scatterAppModel';
 import {
@@ -56,8 +57,9 @@ export interface IScattersProps extends Partial<RouteChildrenProps> {
   hiddenColumns: string[];
   groupingSelectOptions: IGroupingSelectOption[];
   projectsDataMetrics: IProjectParamsMetrics['metrics'];
-  requestIsPending: boolean;
   resizeMode: ResizeModeEnum;
+  selectFormOptions: ISelectOption[];
+  requestStatus: RequestStatusEnum;
   onChangeTooltip: (tooltip: Partial<IChartTooltip>) => void;
   onActivePointChange?: (
     activePoint: IActivePoint,

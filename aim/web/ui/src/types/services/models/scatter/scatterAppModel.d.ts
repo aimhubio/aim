@@ -1,10 +1,15 @@
 import { IPoint } from 'components/ScatterPlot';
 
+import { RequestStatusEnum } from 'config/enums/requestStatusEnum';
+
 import { IChartPanelRef } from 'types/components/ChartPanel/ChartPanel';
 import { ITableRef } from 'types/components/Table/Table';
 import { ITableColumn } from 'types/pages/metrics/components/TableColumns/TableColumns';
 import { INotification } from 'types/components/NotificationContainer/NotificationContainer';
-import { IAppModelConfig } from 'types/services/models/explorer/createAppModel';
+import {
+  IAppModelConfig,
+  ISelectOption,
+} from 'types/services/models/explorer/createAppModel';
 import { IDimensionType } from 'types/utils/d3/drawParallelAxes';
 import { IParam } from 'types/services/models/params/paramsAppModel';
 import {
@@ -20,7 +25,7 @@ export interface IScatterAppModelState {
     tableRef?: { current: ITableRef | null };
     chartPanelRef?: { current: IChartPanelRef | null };
   };
-  requestIsPending: boolean | null;
+  requestStatus: RequestStatusEnum;
   queryIsEmpty: boolean;
   rawData: IRun<IMetricTrace>[];
   config: IAppModelConfig;
@@ -33,6 +38,7 @@ export interface IScatterAppModelState {
   params: string[];
   notifyData: INotification[];
   groupingSelectOptions: IGroupingSelectOption[];
+  selectFormOptions: ISelectOption[];
   liveUpdateConfig: {
     delay: number;
     enabled: boolean;

@@ -128,8 +128,6 @@ function MetricsContainer(): React.FunctionComponentElement<React.ReactNode> {
     };
   }, []);
 
-  console.log(metricsData?.requestStatus);
-
   return (
     <Metrics
       // refs

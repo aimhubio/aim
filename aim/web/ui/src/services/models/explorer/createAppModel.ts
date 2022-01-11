@@ -2849,6 +2849,70 @@ function createAppModel(appConfig: IAppInitialConfig) {
           message: 'Request has been cancelled',
         });
       }
+      function getParamsOptions(projectsData: IProjectParamsMetrics) {
+        const comparator = alphabeticalSortComparator<ISelectOption>({
+          orderBy: 'label',
+        });
+
+        let optionsCount = 0; // to calculate color
+        const systemOptions: ISelectOption[] = [];
+        let params: ISelectOption[] = [];
+        let metrics: ISelectOption[] = [];
+
+        if (projectsData?.metric) {
+          for (let key in projectsData.metric) {
+            let system: boolean = isSystemMetric(key);
+            for (let val of projectsData.metric[key]) {
+              let label = contextToString(val);
+              let index: number = optionsCount;
+              let option: ISelectOption = {
+                label: `${system ? formatSystemMetricName(key) : key} ${label}`,
+                group: system ? 'System' : key,
+                type: 'metrics',
+                color: COLORS[0][index % COLORS[0].length],
+                value: {
+                  option_name: key,
+                  context: val,
+                },
+              };
+              optionsCount++;
+              if (system) {
+                systemOptions.push(option);
+              } else {
+                metrics.push(option);
+              }
+            }
+          }
+        }
+        if (projectsData?.params) {
+          const paramPaths = getObjectPaths(
+            projectsData.params,
+            projectsData.params,
+          );
+          paramPaths.forEach((paramPath, index) => {
+            params.push({
+              label: paramPath,
+              group: 'Params',
+              type: 'params',
+              color: COLORS[0][index % COLORS[0].length],
+            });
+          });
+        }
+
+        params = params.sort(comparator);
+        metrics = metrics.sort(comparator);
+        systemOptions.sort(comparator);
+
+        // sort by group
+        const data: ISelectOption[] = [...metrics, ...params];
+
+        data.sort(
+          alphabeticalSortComparator({
+            orderBy: 'type',
+          }),
+        );
+        return data.concat(systemOptions);
+      }
 
       function getParamsData(shouldUrlUpdate?: boolean): {
         call: () => Promise<void>;
@@ -2879,9 +2943,17 @@ function createAppModel(appConfig: IAppInitialConfig) {
                   },
                 };
               }
+              projectsService
+                .getProjectParams(['metric'])
+                .call()
+                .then((data: IProjectParamsMetrics) => {
+                  model.setState({
+                    selectFormOptions: getParamsOptions(data),
+                  });
+                });
 
               model.setState({
-                requestStatus: RequestStatusEnum.Ok,
+                // requestStatus: RequestStatusEnum.Ok,
                 queryIsEmpty: true,
                 ...state,
               });
@@ -4720,7 +4792,6 @@ function createAppModel(appConfig: IAppInitialConfig) {
               }
 
               model.setState({
-                requestStatus: RequestStatusEnum.Ok,
                 queryIsEmpty: true,
                 ...state,
               });

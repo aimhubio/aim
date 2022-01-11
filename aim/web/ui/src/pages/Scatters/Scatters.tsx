@@ -13,6 +13,7 @@ import ResizePanel from 'components/ResizePanel/ResizePanel';
 import { ResizeModeEnum } from 'config/enums/tableEnums';
 import { RowHeightSize } from 'config/table/tableConfigs';
 import GroupingPopovers from 'config/grouping/GroupingPopovers';
+import { RequestStatusEnum } from 'config/enums/requestStatusEnum';
 
 import Grouping from 'pages/components/Grouping/Grouping';
 import AppBar from 'pages/Metrics/components/MetricsBar/MetricsBar';
@@ -48,7 +49,9 @@ function Scatters(
           />
           <div className='Scatters__SelectForm__Grouping__container'>
             <SelectForm
-              requestIsPending={props.requestIsPending}
+              requestIsPending={
+                props.requestStatus === RequestStatusEnum.Pending
+              }
               selectedOptionsData={props.selectedOptionsData}
               onSelectOptionsChange={props.onSelectOptionsChange}
               onSelectRunQueryChange={props.onSelectRunQueryChange}
@@ -75,7 +78,7 @@ function Scatters(
             }`}
           >
             <BusyLoaderWrapper
-              isLoading={props.requestIsPending}
+              isLoading={props.requestStatus === RequestStatusEnum.Pending}
               className='Scatters__loader'
               height='100%'
               loaderComponent={<ChartLoader controlsCount={9} />}
@@ -102,18 +105,17 @@ function Scatters(
                   }
                 />
               ) : (
-                !props.requestIsPending && (
-                  <EmptyComponent
-                    size='large'
-                    content="It's super easy to search Aim experiments. Lookup search docs to learn more."
-                  />
-                )
+                <EmptyComponent
+                  size='xLarge'
+                  content="It's super easy to search Aim experiments. Lookup search docs to learn more."
+                />
               )}
             </BusyLoaderWrapper>
           </div>
           <ResizePanel
             className={`Scatters__ResizePanel${
-              props.requestIsPending || props.scatterPlotData?.[0]?.data?.length
+              props.requestStatus === RequestStatusEnum.Pending ||
+              props.scatterPlotData?.[0]?.data?.length
                 ? ''
                 : '__hide'
             }`}
@@ -129,7 +131,7 @@ function Scatters(
             }`}
           >
             <BusyLoaderWrapper
-              isLoading={props.requestIsPending}
+              isLoading={props.requestStatus === RequestStatusEnum.Pending}
               className='Scatters__loader'
               height='100%'
               loaderComponent={<TableLoader />}

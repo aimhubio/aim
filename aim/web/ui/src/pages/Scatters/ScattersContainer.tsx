@@ -3,6 +3,7 @@ import { useRouteMatch, useHistory } from 'react-router-dom';
 
 import { RowHeightSize } from 'config/table/tableConfigs';
 import { ResizeModeEnum } from 'config/enums/tableEnums';
+import { RequestStatusEnum } from 'config/enums/requestStatusEnum';
 
 import usePanelResize from 'hooks/resize/usePanelResize';
 import useModel from 'hooks/model/useModel';
@@ -31,6 +32,7 @@ import {
   IGroupingConfig,
   ILiveUpdateConfig,
   ISelectConfig,
+  ISelectOption,
 } from 'types/services/models/explorer/createAppModel';
 
 import setComponentRefs from 'utils/app/setComponentRefs';
@@ -145,9 +147,10 @@ function ScattersContainer(): React.FunctionComponentElement<React.ReactNode> {
       projectsDataMetrics={
         projectsData?.metrics as IProjectParamsMetrics['metric']
       }
-      requestIsPending={scattersData?.requestIsPending as boolean}
+      requestStatus={scattersData?.requestStatus as RequestStatusEnum}
       resizeMode={scattersData?.config?.table?.resizeMode as ResizeModeEnum}
       columnsWidths={scattersData?.config?.table?.columnsWidths!}
+      selectFormOptions={scattersData?.selectFormOptions as ISelectOption[]}
       // methods
       onChangeTooltip={scattersAppModel.onChangeTooltip}
       onTableRowHover={scattersAppModel.onTableRowHover}
