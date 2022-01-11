@@ -2,18 +2,43 @@ import React from 'react';
 
 import { PathEnum } from '../config/enums/routesEnum';
 
-const Runs = React.lazy(() => import('pages/Runs/RunsContainer'));
-const RunDetail = React.lazy(() => import('pages/RunDetail/RunDetail'));
-const Metrics = React.lazy(() => import('pages/Metrics/MetricsContainer'));
-const Params = React.lazy(() => import('pages/Params/ParamsContainer'));
-const Bookmarks = React.lazy(
-  () => import('pages/Bookmarks/BookmarksContainer'),
+const Runs = React.lazy(
+  () => import(/* webpackChunkName: "runs" */ 'pages/Runs/RunsContainer'),
 );
-const Home = React.lazy(() => import('pages/Home/HomeContainer'));
-const TagsContainer = React.lazy(() => import('pages/Tags/TagsContainer'));
-const Scatters = React.lazy(() => import('pages/Scatters/ScattersContainer'));
+const RunDetail = React.lazy(
+  () =>
+    import(/* webpackChunkName: "run-detail" */ 'pages/RunDetail/RunDetail'),
+);
+const Metrics = React.lazy(
+  () =>
+    import(/* webpackChunkName: "metrics" */ 'pages/Metrics/MetricsContainer'),
+);
+const Params = React.lazy(
+  () => import(/* webpackChunkName: "params" */ 'pages/Params/ParamsContainer'),
+);
+const Bookmarks = React.lazy(
+  () =>
+    import(
+      /* webpackChunkName: "bookmarks" */ 'pages/Bookmarks/BookmarksContainer'
+    ),
+);
+const Home = React.lazy(
+  () => import(/* webpackChunkName: "home" */ 'pages/Home/HomeContainer'),
+);
+const TagsContainer = React.lazy(
+  () => import(/* webpackChunkName: "tags" */ 'pages/Tags/TagsContainer'),
+);
+const Scatters = React.lazy(
+  () =>
+    import(
+      /* webpackChunkName: "scatters" */ 'pages/Scatters/ScattersContainer'
+    ),
+);
 const ImagesExplore = React.lazy(
-  () => import('pages/ImagesExplore/ImagesExplore'),
+  () =>
+    import(
+      /* webpackChunkName: "images" */ 'pages/ImagesExplore/ImagesExplore'
+    ),
 );
 
 export interface IRoute {
