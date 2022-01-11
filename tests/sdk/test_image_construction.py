@@ -1,13 +1,17 @@
-import time
-
 from tests.base import TestBase
-from tests.utils import remove_test_data
 
 from aim.sdk import Image
 import numpy as np
-import torch
+
 
 class TestImageConstruction(TestBase):
+        # greyscale, dims = (1,2,2)
+    img1 = np.array([[[0, 1], [1, 0]]], np.uint8)
+    # greyscale, dims = (2,2)
+    img2 = np.array([[0, 1], [1, 0]], np.uint8)
+    # RGB, dims = (3,2,2)
+    img3 = np.array([[[0, 1], [1, 0]], [[0, 1], [1, 0]], [[0, 1], [1, 0]]], np.uint8)
+
     def test_image_from_torch_tensor(self):
         try:
             import torch
@@ -15,21 +19,33 @@ class TestImageConstruction(TestBase):
             raise ValueError('Cannot convert from torch.Tensor')
 
         # order of channels in torch.tensor => channels, height, width
-        
-        # greyscale, dims = (1,2,2)
-        img1 = np.array([[[0,1],[1,0]]], np.uint8)   
-        # greyscale, dims = (2,2)              
-        img2 = np.array([[0,1],[1,0]], np.uint8)
-        # RGB, dims = (3,2,2)                         
-        img3 = np.array([[[0,1],[1,0]],[[0,1],[1,0]],[[0,1],[1,0]]], np.uint8) 
 
-        self.assertEqual(Image(torch.tensor(img1)), Image(img1[0]))
-        self.assertEqual(Image(torch.tensor(img2)), Image(img2))
-        self.assertEqual(Image(torch.tensor(img3)), Image(np.transpose(img3,(1,2,0))))
+        self.assertEqual(Image(torch.tensor(self.img1)), Image(np.transpose(self.img1, (1, 2, 0))))
+        self.assertEqual(Image(torch.tensor(self.img2)), Image(self.img2))
+        self.assertEqual(Image(torch.tensor(self.img3)), Image(np.transpose(self.img3, (1, 2, 0))))
 
-        self.assertEqual(Image(torch.tensor(img1.astype(np.float32))), Image(255 * img1[0]))
-        self.assertEqual(Image(torch.tensor(img2.astype(np.float32))), Image(255 * img2))
-        self.assertEqual(Image(torch.tensor(img3.astype(np.float32))), Image(255 * np.transpose(img3,(1,2,0))))
+        self.assertEqual(Image(torch.tensor(self.img1.astype(np.float32))), Image(255 * np.transpose(self.img1, (1, 2, 0))))
+        self.assertEqual(Image(torch.tensor(self.img2.astype(np.float32))), Image(255 * self.img2))
+        self.assertEqual(Image(torch.tensor(self.img3.astype(np.float32))), Image(255 * np.transpose(self.img3, (1, 2, 0))))
+
+    def test_image_from_tf_tensor(self):
+        try:
+            import tensorflow as tf
+        except (ImportError, AssertionError):
+            raise ValueError('Cannot convert from torch.Tensor')
+
+        # order of channels in tf.tensor => height, width, channels
+
+        self.assertEqual(Image(tf.convert_to_tensor(self.img1, tf.uint8)), Image(self.img1))
+        self.assertEqual(Image(tf.convert_to_tensor(self.img2, tf.uint8)), Image(self.img2))
+        self.assertEqual(Image(tf.convert_to_tensor(self.img3, tf.uint8)), Image(self.img3))
+
+        self.assertEqual(Image(tf.convert_to_tensor(self.img1, tf.float32)), Image(255 * self.img1))
+        self.assertEqual(Image(tf.convert_to_tensor(self.img2, tf.float32)), Image(255 * self.img2))
+        self.assertEqual(Image(tf.convert_to_tensor(self.img3, tf.float32)), Image(255 * self.img3))
+
 
 if __name__ == "__main__":
     TestImageConstruction().test_image_from_torch_tensor()
+    TestImageConstruction().test_image_from_tf_tensor()
+
