@@ -250,7 +250,7 @@ function MediaPanel({
               </div>
             ) : (
               <EmptyComponent
-                size='large'
+                size='xLarge'
                 content="It's super easy to search Aim experiments. Lookup search docs to learn more."
               />
             )}

@@ -15,12 +15,13 @@ function Bookmarks({
   onBookmarkDelete,
   isLoading,
 }: IBookmarksProps): React.FunctionComponentElement<React.ReactNode> {
+  let d = [];
   return (
     <section className='Bookmarks'>
       <AppBar title='Bookmarks' />
       <div className='Bookmarks__list container'>
         <BusyLoaderWrapper isLoading={isLoading}>
-          {data?.length > 0 &&
+          {d?.length > 0 &&
             data.map((bookmark) => (
               <BookmarkCard
                 key={bookmark.id}
@@ -29,7 +30,7 @@ function Bookmarks({
               />
             ))}
         </BusyLoaderWrapper>
-        {!isLoading && data?.length === 0 ? (
+        {!isLoading && d?.length === 0 ? (
           <EmptyComponent
             size='xLarge'
             imageName='emptyBookmarks'

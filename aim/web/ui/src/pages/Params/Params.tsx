@@ -15,6 +15,7 @@ import ResizePanel from 'components/ResizePanel/ResizePanel';
 import { RowHeightSize } from 'config/table/tableConfigs';
 import { ResizeModeEnum } from 'config/enums/tableEnums';
 import GroupingPopovers from 'config/grouping/GroupingPopovers';
+import { RequestStatusEnum } from 'config/enums/requestStatusEnum';
 
 import AppBar from 'pages/Metrics/components/MetricsBar/MetricsBar';
 import Grouping from 'pages/components/Grouping/Grouping';
@@ -41,7 +42,7 @@ const Params = ({
   tableElemRef,
   groupingData,
   groupingSelectOptions,
-  requestIsPending,
+  requestStatus,
   tooltip,
   hiddenMetrics,
   chartTitleData,
@@ -51,8 +52,6 @@ const Params = ({
   tableData,
   columnsWidths,
   tableRowHeight,
-  onTableRowHover,
-  onTableRowClick,
   onColumnsOrderChange,
   onRowHeightChange,
   onParamVisibilityChange,
@@ -61,6 +60,10 @@ const Params = ({
   resizeMode,
   notifyData,
   hiddenColumns,
+  liveUpdateConfig,
+  selectFormOptions,
+  onTableRowHover,
+  onTableRowClick,
   onExportTableData,
   onCurveInterpolationChange,
   onActivePointChange,
@@ -83,7 +86,6 @@ const Params = ({
   onTableDiffShow,
   onSortReset,
   updateColumnsWidths,
-  liveUpdateConfig,
   onLiveUpdateConfigChange,
   onShuffleChange,
 }: IParamsProps): React.FunctionComponentElement<React.ReactNode> => {
@@ -116,7 +118,7 @@ const Params = ({
           </div>
           <div className='Params__SelectForm__Grouping__container'>
             <SelectForm
-              requestIsPending={requestIsPending}
+              requestIsPending={requestStatus === RequestStatusEnum.Pending}
               selectedParamsData={selectedParamsData}
               onParamsSelectChange={onParamsSelectChange}
               onSelectRunQueryChange={onSelectRunQueryChange}
@@ -148,7 +150,7 @@ const Params = ({
           >
             <BusyLoaderWrapper
               height='100%'
-              isLoading={requestIsPending}
+              isLoading={requestStatus === RequestStatusEnum.Pending}
               loaderComponent={<ChartLoader />}
             >
               {!!highPlotData?.[0]?.data?.length ? (
@@ -176,18 +178,26 @@ const Params = ({
                   }
                 />
               ) : (
-                !requestIsPending && (
-                  <EmptyComponent
-                    size='large'
-                    content="It's super easy to search Aim experiments. Lookup search docs to learn more."
-                  />
-                )
+                <EmptyComponent
+                  size='large'
+                  imageName={
+                    selectFormOptions
+                      ? requestStatus === RequestStatusEnum.NotRequested
+                        ? 'exploreData'
+                        : requestStatus === RequestStatusEnum.BadRequest
+                        ? 'wrongSearch'
+                        : 'emptySearch'
+                      : 'exploreData'
+                  }
+                  content="It's super easy to search Aim experiments. Lookup search docs to learn more."
+                />
               )}
             </BusyLoaderWrapper>
           </div>
           <ResizePanel
             className={`Params__ResizePanel${
-              requestIsPending || highPlotData?.[0]?.data?.length
+              requestStatus === RequestStatusEnum.Pending ||
+              highPlotData?.[0]?.data?.length
                 ? ''
                 : '__hide'
             }`}
@@ -204,7 +214,7 @@ const Params = ({
             }`}
           >
             <BusyLoaderWrapper
-              isLoading={requestIsPending}
+              isLoading={requestStatus === RequestStatusEnum.Pending}
               className='Params__loader'
               height='100%'
               loaderComponent={<TableLoader />}

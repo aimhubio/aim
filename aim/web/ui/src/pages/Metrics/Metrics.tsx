@@ -13,6 +13,7 @@ import ResizePanel from 'components/ResizePanel/ResizePanel';
 import { ResizeModeEnum } from 'config/enums/tableEnums';
 import { RowHeightSize } from 'config/table/tableConfigs';
 import GroupingPopovers from 'config/grouping/GroupingPopovers';
+import { RequestStatusEnum } from 'config/enums/requestStatusEnum';
 
 import { ILine } from 'types/components/LineChart/LineChart';
 import { IMetricProps } from 'types/pages/metrics/Metrics';
@@ -75,8 +76,11 @@ function Metrics(
           />
           <div className='Metrics__SelectForm__Grouping__container'>
             <SelectForm
-              requestIsPending={props.requestIsPending}
+              requestIsPending={
+                props.requestStatus === RequestStatusEnum.Pending
+              }
               selectedMetricsData={props.selectedMetricsData}
+              selectFormOptions={props.selectFormOptions}
               onMetricsSelectChange={props.onMetricsSelectChange}
               onSelectRunQueryChange={props.onSelectRunQueryChange}
               onSelectAdvancedQueryChange={props.onSelectAdvancedQueryChange}
@@ -108,7 +112,7 @@ function Metrics(
             }`}
           >
             <BusyLoaderWrapper
-              isLoading={props.requestIsPending}
+              isLoading={props.requestStatus === RequestStatusEnum.Pending}
               className='Metrics__loader'
               height='100%'
               loaderComponent={<ChartLoader controlsCount={9} />}
@@ -158,19 +162,26 @@ function Metrics(
                   }
                 />
               ) : (
-                !props.requestIsPending && (
-                  <EmptyComponent
-                    size='xLarge'
-                    imageName='exploreData'
-                    content="It's super easy to search Aim experiments. Lookup search docs to learn more."
-                  />
-                )
+                <EmptyComponent
+                  size='xLarge'
+                  imageName={
+                    props.selectFormOptions
+                      ? props.requestStatus === RequestStatusEnum.NotRequested
+                        ? 'exploreData'
+                        : props.requestStatus === RequestStatusEnum.BadRequest
+                        ? 'wrongSearch'
+                        : 'emptySearch'
+                      : 'exploreData'
+                  }
+                  content="It's super easy to search Aim experiments. Lookup search docs to learn more."
+                />
               )}
             </BusyLoaderWrapper>
           </div>
           <ResizePanel
             className={`Metrics__ResizePanel${
-              props.requestIsPending || props.lineChartData?.[0]?.length
+              props.requestStatus === RequestStatusEnum.Pending ||
+              props.lineChartData?.[0]?.length
                 ? ''
                 : '__hide'
             }`}
@@ -186,7 +197,7 @@ function Metrics(
             }`}
           >
             <BusyLoaderWrapper
-              isLoading={props.requestIsPending}
+              isLoading={props.requestStatus === RequestStatusEnum.Pending}
               className='Metrics__loader'
               height='100%'
               loaderComponent={<TableLoader />}

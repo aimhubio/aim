@@ -1,5 +1,4 @@
 import React from 'react';
-import { isEmpty } from 'lodash-es';
 
 import {
   Box,
@@ -18,44 +17,32 @@ import {
 import { Button, Icon, Badge, Text } from 'components/kit';
 import ExpressionAutoComplete from 'components/kit/ExpressionAutoComplete/ExpressionAutoComplete';
 
-import COLORS from 'config/colors/colors';
-
-import useModel from 'hooks/model/useModel';
 import useParamsSuggestions from 'hooks/projectData/useParamsSuggestions';
 
 import projectsModel from 'services/models/projects/projectsModel';
 import metricAppModel from 'services/models/metrics/metricsAppModel';
 
-import { IProjectsModelState } from 'types/services/models/projects/projectsModel';
 import { ISelectFormProps } from 'types/pages/metrics/components/SelectForm/SelectForm';
 import { ISelectOption } from 'types/services/models/explorer/createAppModel';
-
-import contextToString from 'utils/contextToString';
-import { formatSystemMetricName } from 'utils/formatSystemMetricName';
-import { isSystemMetric } from 'utils/isSystemMetric';
-import alphabeticalSortComparator from 'utils/alphabeticalSortComparator';
 
 import './SelectForm.scss';
 
 function SelectForm({
   requestIsPending,
   selectedMetricsData,
+  selectFormOptions,
   onMetricsSelectChange,
   onSelectRunQueryChange,
   onSelectAdvancedQueryChange,
   toggleSelectAdvancedMode,
   onSearchQueryCopy,
 }: ISelectFormProps): React.FunctionComponentElement<React.ReactNode> {
-  const projectsData = useModel<IProjectsModelState>(projectsModel);
   const [anchorEl, setAnchorEl] = React.useState<any>(null);
   const searchRef = React.useRef<any>(null);
   const paramsSuggestions = useParamsSuggestions();
 
   React.useEffect(() => {
-    const paramsMetricsRequestRef = projectsModel.getProjectParams(['metric']);
-    paramsMetricsRequestRef.call();
     return () => {
-      paramsMetricsRequestRef?.abort();
       searchRef.current?.abort();
     };
   }, []);
@@ -112,59 +99,6 @@ function SelectForm({
       anchorEl.focus();
     }
     setAnchorEl(null);
-  }
-
-  const metricsOptions: ISelectOption[] = React.useMemo(() => {
-    let data: ISelectOption[] = [];
-    const systemOptions: ISelectOption[] = [];
-    let index: number = 0;
-    if (projectsData?.metrics) {
-      for (let key in projectsData?.metrics) {
-        let system: boolean = isSystemMetric(key);
-        let option = getOption(system, key, index);
-        if (system) {
-          systemOptions.push(option);
-        } else {
-          data.push(option);
-        }
-        index++;
-        for (let val of projectsData?.metrics[key]) {
-          if (!isEmpty(val)) {
-            let label = contextToString(val);
-            let option = getOption(system, key, index, val);
-            option.label = `${option.label} ${label}`;
-            if (system) {
-              systemOptions.push(option);
-            } else {
-              data.push(option);
-            }
-            index++;
-          }
-        }
-      }
-    }
-    const comparator = alphabeticalSortComparator<ISelectOption>({
-      orderBy: 'label',
-    });
-    systemOptions.sort(comparator);
-    return data.sort(comparator).concat(systemOptions);
-  }, [projectsData]);
-
-  function getOption(
-    system: boolean,
-    key: string,
-    index: number,
-    val: object | null = null,
-  ): ISelectOption {
-    return {
-      label: `${system ? formatSystemMetricName(key) : key}`,
-      group: system ? 'System' : key,
-      color: COLORS[0][index % COLORS[0].length],
-      value: {
-        option_name: key,
-        context: val,
-      },
-    };
   }
 
   function handleResetSelectForm(): void {
@@ -226,7 +160,7 @@ function SelectForm({
                     size='small'
                     disablePortal={true}
                     disableCloseOnSelect
-                    options={metricsOptions}
+                    options={selectFormOptions as ISelectOption[]}
                     value={selectedMetricsData?.options}
                     onChange={onSelect}
                     groupBy={(option) => option.group}

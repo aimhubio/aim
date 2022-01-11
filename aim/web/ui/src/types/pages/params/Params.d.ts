@@ -4,6 +4,7 @@ import { RouteChildrenProps } from 'react-router-dom';
 import { ITableRef } from 'components/Table/Table';
 
 import { ResizeModeEnum } from 'config/enums/tableEnums';
+import { RequestStatusEnum } from 'config/enums/requestStatusEnum';
 
 import {
   GroupNameType,
@@ -35,7 +36,7 @@ export interface IParamsProps extends Partial<RouteChildrenProps> {
   resizeElemRef: React.RefObject<HTMLDivElement>;
   curveInterpolation: CurveEnum;
   panelResizing: boolean;
-  requestIsPending: boolean;
+  requestStatus: RequestStatusEnum;
   highPlotData: any;
   groupingData: IGroupingConfig;
   groupingSelectOptions: IGroupingSelectOption[];
@@ -58,6 +59,7 @@ export interface IParamsProps extends Partial<RouteChildrenProps> {
   notifyData: INotification[];
   tableRowHeight?: any;
   hiddenColumns: any;
+  selectFormOptions: ISelectOption[];
   onNotificationDelete: (id: number) => void;
   onCurveInterpolationChange: () => void;
   onActivePointChange: (

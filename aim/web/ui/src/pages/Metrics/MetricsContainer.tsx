@@ -6,6 +6,7 @@ import { HighlightEnum } from 'components/HighlightModesPopover/HighlightModesPo
 import { RowHeightSize } from 'config/table/tableConfigs';
 import { ResizeModeEnum } from 'config/enums/tableEnums';
 import { DensityOptions } from 'config/enums/densityEnum';
+import { RequestStatusEnum } from 'config/enums/requestStatusEnum';
 
 import usePanelResize from 'hooks/resize/usePanelResize';
 import useModel from 'hooks/model/useModel';
@@ -39,6 +40,7 @@ import {
 import {
   IGroupingConfig,
   ISelectConfig,
+  ISelectOption,
 } from 'types/services/models/explorer/createAppModel';
 
 import { SmoothingAlgorithmEnum } from 'utils/smoothingData';
@@ -65,7 +67,7 @@ function MetricsContainer(): React.FunctionComponentElement<React.ReactNode> {
     chartElemRef,
     tableElemRef,
     resizeElemRef,
-    metricsData?.config?.table || {},
+    metricsData?.config?.table || undefined,
     metricAppModel.onTableResizeEnd,
   );
 
@@ -126,6 +128,8 @@ function MetricsContainer(): React.FunctionComponentElement<React.ReactNode> {
     };
   }, []);
 
+  console.log(metricsData?.requestStatus);
+
   return (
     <Metrics
       // refs
@@ -147,14 +151,14 @@ function MetricsContainer(): React.FunctionComponentElement<React.ReactNode> {
       aggregatedData={metricsData?.aggregatedData as IAggregatedData[]}
       zoom={metricsData?.config?.chart?.zoom as IChartZoom}
       curveInterpolation={
-        metricsData?.config?.chart.curveInterpolation as CurveEnum
+        metricsData?.config?.chart?.curveInterpolation as CurveEnum
       }
-      highlightMode={metricsData?.config?.chart.highlightMode as HighlightEnum}
+      highlightMode={metricsData?.config?.chart?.highlightMode as HighlightEnum}
       axesScaleType={
-        metricsData?.config?.chart.axesScaleType as IAxesScaleState
+        metricsData?.config?.chart?.axesScaleType as IAxesScaleState
       }
       smoothingAlgorithm={
-        metricsData?.config?.chart.smoothingAlgorithm as SmoothingAlgorithmEnum
+        metricsData?.config?.chart?.smoothingAlgorithm as SmoothingAlgorithmEnum
       }
       smoothingFactor={metricsData?.config?.chart?.smoothingFactor as number}
       focusedState={metricsData?.config?.chart?.focusedState as IFocusedState}
@@ -166,7 +170,7 @@ function MetricsContainer(): React.FunctionComponentElement<React.ReactNode> {
       alignmentConfig={
         metricsData?.config?.chart?.alignmentConfig as IAlignmentConfig
       }
-      densityType={metricsData?.config?.chart.densityType as DensityOptions}
+      densityType={metricsData?.config?.chart?.densityType as DensityOptions}
       selectedMetricsData={metricsData?.config?.select as ISelectConfig}
       tableRowHeight={metricsData?.config?.table?.rowHeight as RowHeightSize}
       sortFields={metricsData?.config?.table?.sortFields!}
@@ -178,9 +182,12 @@ function MetricsContainer(): React.FunctionComponentElement<React.ReactNode> {
       projectsDataMetrics={
         projectsData?.metrics as IProjectParamsMetrics['metric']
       }
-      requestIsPending={metricsData?.requestIsPending as boolean}
+      requestStatus={metricsData?.requestStatus as RequestStatusEnum}
       resizeMode={metricsData?.config?.table?.resizeMode as ResizeModeEnum}
-      columnsWidths={metricsData?.config?.table?.columnsWidths}
+      columnsWidths={
+        metricsData?.config?.table?.columnsWidths as { [key: string]: number }
+      }
+      selectFormOptions={metricsData?.selectFormOptions as ISelectOption[]}
       // methods
       onChangeTooltip={metricAppModel.onChangeTooltip}
       onIgnoreOutliersChange={metricAppModel.onIgnoreOutliersChange}
@@ -221,7 +228,7 @@ function MetricsContainer(): React.FunctionComponentElement<React.ReactNode> {
       onTableDiffShow={metricAppModel.onTableDiffShow}
       onTableResizeModeChange={metricAppModel.onTableResizeModeChange}
       // live update
-      liveUpdateConfig={metricsData?.config?.liveUpdate}
+      liveUpdateConfig={metricsData?.config?.liveUpdate as any}
       onLiveUpdateConfigChange={metricAppModel.changeLiveUpdateConfig}
       onShuffleChange={metricAppModel.onShuffleChange}
       onSearchQueryCopy={metricAppModel.onSearchQueryCopy}

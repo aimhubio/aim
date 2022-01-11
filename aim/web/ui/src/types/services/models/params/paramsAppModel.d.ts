@@ -4,10 +4,15 @@ import { ITableRef } from 'components/Table/Table';
 import { IChartPanelRef } from 'components/ChartPanel/ChartPanel';
 import { INotification } from 'components/NotificationContainer/NotificationContainer';
 
+import { RequestStatusEnum } from 'config/enums/requestStatusEnum';
+
 import { ITableColumn } from 'pages/metrics/components/TableColumns/TableColumns';
 
 import { IParamTrace, IRun } from 'types/services/models/metrics/runModel';
-import { IAppModelConfig } from 'types/services/models/explorer/createAppModel';
+import {
+  IAppModelConfig,
+  ISelectOption,
+} from 'types/services/models/explorer/createAppModel';
 
 import { IDimensionsType } from 'utils/d3/drawParallelAxes';
 
@@ -21,7 +26,7 @@ export interface IParamsAppModelState {
     tableRef?: { current: ITableRef | null };
     chartPanelRef?: { current: IChartPanelRef | null };
   };
-  requestIsPending: boolean;
+  requestStatus: RequestStatusEnum;
   queryIsEmpty: boolean;
   rawData: IRun<IParamTrace>[];
   config: IAppModelConfig;
@@ -35,6 +40,7 @@ export interface IParamsAppModelState {
   notifyData: INotification[];
   groupingSelectOptions: IGroupingSelectOption[];
   metricsColumns: any;
+  selectFormOptions: ISelectOption[];
 }
 
 export interface IParam {

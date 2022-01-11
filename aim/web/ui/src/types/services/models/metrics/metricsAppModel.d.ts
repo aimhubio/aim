@@ -1,9 +1,6 @@
 import { ZoomEnum } from 'components/ZoomInPopover/ZoomInPopover';
 
-import {
-  IAppModelConfig,
-  IGroupingConfig,
-} from 'services/models/explorer/createAppModel';
+import { RequestStatusEnum } from 'config/enums/requestStatusEnum';
 
 import { IChartPanelRef } from 'types/components/ChartPanel/ChartPanel';
 import { ILine } from 'types/components/LineChart/LineChart';
@@ -17,6 +14,9 @@ import {
 } from 'utils/aggregateGroupData';
 import { AlignmentOptionsEnum } from 'utils/d3';
 
+import { IAppModelConfig, IGroupingConfig } from '../explorer/createAppModel';
+import { IImagesExploreAppConfig } from '../imagesExplore/imagesExploreAppModel';
+
 import { IMetric } from './metricModel';
 import { IMetricTrace, IRun } from './runModel';
 
@@ -25,7 +25,7 @@ export interface IMetricAppModelState {
     tableRef?: { current: ITableRef | null };
     chartPanelRef?: { current: IChartPanelRef | null };
   };
-  requestIsPending: boolean;
+  requestStatus: RequestStatusEnum;
   queryIsEmpty: boolean;
   rawData: IRun<IMetricTrace>[];
   config: IAppModelConfig;
@@ -39,6 +39,7 @@ export interface IMetricAppModelState {
   params: string[];
   notifyData: INotification[];
   groupingSelectOptions: IGroupingSelectOption[];
+  selectFormOptions?: ISelectOption[];
   liveUpdateConfig: {
     delay: number;
     enabled: boolean;
@@ -192,7 +193,7 @@ export interface IAppData {
   id?: string;
   updated_at?: string;
   type?: string;
-  state?: Partial<IAppModelConfig>;
+  state?: Partial<IAppModelConfig | IImagesExploreAppConfig>;
 }
 
 export interface IDashboardRequestBody {

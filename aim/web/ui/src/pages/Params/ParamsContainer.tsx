@@ -3,6 +3,7 @@ import { useRouteMatch, useHistory } from 'react-router-dom';
 
 import { RowHeightSize } from 'config/table/tableConfigs';
 import { ResizeModeEnum } from 'config/enums/tableEnums';
+import { RequestStatusEnum } from 'config/enums/requestStatusEnum';
 
 import useModel from 'hooks/model/useModel';
 import usePanelResize from 'hooks/resize/usePanelResize';
@@ -21,6 +22,7 @@ import {
   IGroupingConfig,
   ILiveUpdateConfig,
   ISelectConfig,
+  ISelectOption,
 } from 'types/services/models/explorer/createAppModel';
 import { ITableRef } from 'types/components/Table/Table';
 import { IChartPanelRef } from 'types/components/ChartPanel/ChartPanel';
@@ -110,6 +112,8 @@ function ParamsContainer(): React.FunctionComponentElement<React.ReactNode> {
     };
   }, []);
 
+  console.log(paramsData);
+
   return (
     <Params
       tableRef={tableRef}
@@ -123,7 +127,7 @@ function ParamsContainer(): React.FunctionComponentElement<React.ReactNode> {
       tableData={paramsData?.tableData}
       tableColumns={paramsData?.tableColumns}
       focusedState={paramsData?.config?.chart?.focusedState as IFocusedState}
-      requestIsPending={paramsData?.requestIsPending as boolean}
+      requestStatus={paramsData?.requestStatus as RequestStatusEnum}
       isVisibleColorIndicator={
         paramsData?.config?.chart?.isVisibleColorIndicator as boolean
       }
@@ -147,6 +151,7 @@ function ParamsContainer(): React.FunctionComponentElement<React.ReactNode> {
         paramsData?.config?.table
           ?.columnsWidths as IParamsProps['columnsWidths']
       }
+      selectFormOptions={paramsData?.selectFormOptions as ISelectOption[]}
       onColorIndicatorChange={paramsAppModel.onColorIndicatorChange}
       onCurveInterpolationChange={paramsAppModel.onCurveInterpolationChange}
       onParamsSelectChange={paramsAppModel.onParamsSelectChange}
