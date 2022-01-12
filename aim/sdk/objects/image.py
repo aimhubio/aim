@@ -1,3 +1,6 @@
+import logging
+import os.path
+
 from PIL import Image as PILImage
 
 from io import BytesIO
@@ -9,29 +12,50 @@ from aim.sdk.num_utils import inst_has_typename
 from aim.storage.object import CustomObject
 from aim.storage.types import BLOB
 
+logger = logging.getLogger(__name__)
+
 
 @CustomObject.alias('aim.image')
 class Image(CustomObject):
-    """Image object used to store image objects in Aim repository..
+    """Image object used to store image objects in Aim repository...
 
     Args:
          image (:obj:): pillow `Image` object or `torch.Tensor` or `numpy.array` used to construct `aim.Image`.
          caption (:obj:`str`, optional): Optional image caption. '' by default.
+         format (:obj: `str`, optional): Parameter for PIL's .save() method. 'png' by default.
+         quality (:obj: `int`, optional): Parameter for PIL's .save() method. 85 by default.
+         optimize (:obj: `bool`, optional): Parameter for PIL's .save() method. False by default.
+
+         For more information on the format, quality and optimize parameters, refer to PIL documentation.
+
+    Example of params to reduce quality of the image:
+        format='jpeg',
+        optimize=True,
+        quality=85
     """
 
+    FLAG_WARN_RGBA_RGB = False
     AIM_NAME = 'aim.image'
 
-    def __init__(self, image, caption: str = ''):
+    def __init__(self, image, caption: str = '', format='png', quality=85, optimize=False):
         super().__init__()
 
-        if inst_has_typename(image, ['PIL', 'Image']):
-            self._from_pil_image(image)
+        params = {
+            'format': format.lower(),
+            'quality': quality,
+            'optimize': optimize
+        }
+
+        if isinstance(image, str):
+            self._from_file_path(image, params)
+        elif inst_has_typename(image, ['PIL', 'Image']):
+            self._from_pil_image(image, params)
         elif inst_has_typename(image, ['torch', 'Tensor']):
-            self._from_torch_tensor(image)
+            self._from_torch_tensor(image, params)
         elif inst_has_typename(image, ['tensorflow', 'Tensor']):
-            self._from_tf_tensor(image)
+            self._from_tf_tensor(image, params)
         elif inst_has_typename(image, ['numpy', 'array']):
-            self._from_numpy_array(image)
+            self._from_numpy_array(image, params)
         else:
             raise TypeError(f'Cannot convert to aim.Image. Unsupported type {type(image)}.')
         self.caption = caption
@@ -101,18 +125,45 @@ class Image(CustomObject):
             'height': self.height,
         }
 
-    def _from_pil_image(self, pil_image: PILImage.Image):
+    def _from_pil_image(self, pil_image: PILImage.Image, params):
         assert isinstance(pil_image, PILImage.Image)
-        image_bytes_p = BytesIO()
-        pil_image.save(image_bytes_p, format='png')
+        img_container = BytesIO()
 
-        self.storage['data'] = BLOB(data=image_bytes_p.getvalue())
+        try:
+            pil_image.save(img_container, **params)
+        except OSError as exc:
+            # The best way to approach this problem is to prepare PIL Image object before hitting this method.
+            # This block only handles case where RGBA/P/LA/PA mode is mandated to save in RGB
+            # PIL won't do that automatically, so we have to convert image to RGB before saving it.
+            # In addition - make transparency "white" before conversion otherwise it will be black.
+            if pil_image.mode not in ('RGBA', 'LA', 'PA', 'P'):
+                raise
+            elif not Image.FLAG_WARN_RGBA_RGB:
+                logger.warning(f'Failed to save the image due to the following error: {exc}')
+                logger.warning(f'Attempting to convert mode "{pil_image.mode}" to "RGB"')
+                Image.FLAG_WARN_RGBA_RGB = True
+
+            alpha = pil_image.convert('RGBA').split()[-1]  # Get only alpha
+            background = PILImage.new('RGBA', pil_image.size, (255, 255, 255, 255))
+            background.paste(pil_image, mask=alpha)
+            pil_image = background.convert('RGB')
+
+            # Retry
+            pil_image.save(img_container, **params)
+
+        self.storage['data'] = BLOB(data=img_container.getvalue())
         self.storage['source'] = 'PIL.Image'
         self.storage['mode'] = pil_image.mode
-        self.storage['format'] = 'png'
+        self.storage['format'] = params['format']
         self.storage['width'], self.storage['height'] = pil_image.size
 
-    def _from_numpy_array(self, array: np.ndarray):
+    def _from_file_path(self, file_path, params):
+        if not os.path.isfile(file_path):
+            raise ValueError('Invalid image file path.')
+
+        return self._from_pil_image(PILImage.open(file_path), params)
+
+    def _from_numpy_array(self, array: np.ndarray, params):
         if array.ndim not in {2, 3}:
             raise ValueError('Cannot convert to aim.Image. array must have 2/3-D shape.')
 
@@ -120,10 +171,9 @@ class Image(CustomObject):
             pil_image = PILImage.fromarray(array[:, :, 0])
         else:
             pil_image = PILImage.fromarray(array)
+        self._from_pil_image(pil_image, params)
 
-        self._from_pil_image(pil_image)
-
-    def _from_torch_tensor(self, tensor):
+    def _from_torch_tensor(self, tensor, params):
         try:
             import torch
             assert isinstance(tensor, torch.Tensor)
@@ -140,9 +190,9 @@ class Image(CustomObject):
             pil_image = PILImage.fromarray(array[:, :, 0])
         else:
             pil_image = PILImage.fromarray(array)
-        self._from_pil_image(pil_image)
+        self._from_pil_image(pil_image, params)
 
-    def _from_tf_tensor(self, tensor):
+    def _from_tf_tensor(self, tensor, params):
         try:
             import tensorflow as tf
             assert isinstance(tensor, tf.Tensor)
@@ -161,7 +211,7 @@ class Image(CustomObject):
             pil_image = PILImage.fromarray(array[:, :, 0])
         else:
             pil_image = PILImage.fromarray(array)
-        self._from_pil_image(pil_image)
+        self._from_pil_image(pil_image, params)
 
 
 def convert_to_aim_image_list(images, labels=None) -> List[Image]:

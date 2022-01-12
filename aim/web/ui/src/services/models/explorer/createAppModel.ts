@@ -79,7 +79,10 @@ import {
   IAppModelState,
   ISelectOption,
 } from 'types/services/models/explorer/createAppModel';
-import { IScatterAppModelState } from 'types/services/models/scatter/scatterAppModel';
+import {
+  IScatterAppModelState,
+  ITrendlineOptions,
+} from 'types/services/models/scatter/scatterAppModel';
 
 import {
   aggregateGroupData,
@@ -139,6 +142,7 @@ import {
   ChartTypeEnum,
   CurveEnum,
   ScaleEnum,
+  TrendlineTypeEnum,
 } from 'utils/d3';
 import {
   adjustable_reader,
@@ -172,6 +176,7 @@ import { isSystemMetric } from 'utils/isSystemMetric';
 import setDefaultAppConfigData from 'utils/app/setDefaultAppConfigData';
 import getAppConfigData from 'utils/app/getAppConfigData';
 import { getValue } from 'utils/helper';
+import onChangeTrendlineOptions from 'utils/app/onChangeTrendlineOptions';
 
 import { AppDataTypeEnum, AppNameEnum } from './index';
 
@@ -389,6 +394,11 @@ function createAppModel(appConfig: IAppInitialConfig) {
                 content: {},
                 display: true,
                 selectedParams: [],
+              },
+              trendlineOptions: {
+                type: TrendlineTypeEnum.SLR,
+                bandwidth: 0.66,
+                isApplied: false,
               },
             };
           }
@@ -1640,6 +1650,7 @@ function createAppModel(appConfig: IAppInitialConfig) {
           config.delay || liveUpdateConfig?.delay,
         );
         liveUpdateInstance?.start({
+          p: configData?.chart?.densityType,
           q: query,
           ...(metric && { x_axis: metric }),
         });
@@ -4975,6 +4986,11 @@ function createAppModel(appConfig: IAppInitialConfig) {
         Object.assign(methods, {
           onChangeTooltip(tooltip: Partial<IPanelTooltip>): void {
             onChangeTooltip({ tooltip, tooltipData, model, appName });
+          },
+          onChangeTrendlineOptions(
+            trendlineOptions: Partial<ITrendlineOptions>,
+          ): void {
+            onChangeTrendlineOptions({ trendlineOptions, model, appName });
           },
         });
       }

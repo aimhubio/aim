@@ -89,7 +89,7 @@ export type IconName =
   | 'plus'
   | 'Runs'
   | 'check-rectangle'
-  | 'check-circle'
+  | 'circle-check'
   | 'check'
   | 'link'
   | 'images'
@@ -105,4 +105,8 @@ export type IconName =
   | 'play'
   | 'pause'
   | 'voice-on'
-  | 'voice-off';
+  | 'voice-off'
+  | 'TypeTriangle-Outline'
+  | 'TypeTriangle'
+  | 'slack'
+  | 'trendline';
