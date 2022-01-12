@@ -11,7 +11,12 @@ import {
   AggregationAreaMethods,
   AggregationLineMethods,
 } from 'utils/aggregateGroupData';
-import { AlignmentOptionsEnum, CurveEnum, ScaleEnum } from 'utils/d3';
+import {
+  AlignmentOptionsEnum,
+  CurveEnum,
+  ScaleEnum,
+  TrendlineTypeEnum,
+} from 'utils/d3';
 import { SmoothingAlgorithmEnum } from 'utils/smoothingData';
 
 export const CONTROLS_DEFAULT_CONFIG = {
@@ -28,7 +33,7 @@ export const CONTROLS_DEFAULT_CONFIG = {
     },
     densityType: DensityOptions.Minimum,
     smoothingFactor: 0,
-    curveInterpolation: CurveEnum.Linear,
+    curveInterpolation: CurveEnum.MonotoneX,
     smoothingAlgorithm: SmoothingAlgorithmEnum.EMA,
     aggregationConfig: {
       methods: {
@@ -65,6 +70,11 @@ export const CONTROLS_DEFAULT_CONFIG = {
     },
   },
   scatters: {
+    trendlineOptions: {
+      type: TrendlineTypeEnum.SLR,
+      bandwidth: 0.66,
+      isApplied: false,
+    },
     tooltip: {
       display: true,
       selectedParams: [],
