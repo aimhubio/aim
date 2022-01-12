@@ -89,6 +89,13 @@ const ImageBox = ({
   //   }
   // }
 
+  const skeletonSize = {
+    width: style.width - 6, // 6px -> 0.375rem gap
+    height:
+      (additionalProperties.alignmentType !== MediaItemAlignmentEnum.Height
+        ? style.width / (data.width / data.height)
+        : mediaItemHeight - 10) - 6, // 6px -> 0.375rem gap,
+  };
   return (
     <div className='MediaSet__container__mediaItemsList__imageBox'>
       <div
@@ -116,27 +123,20 @@ const ImageBox = ({
             }`}
           >
             {blobData ? (
-              <>
-                <img
-                  src={`data:image/${format};base64, ${blobData}`}
-                  alt={data.caption}
-                />
-                <Text style={{ maxWidth: style.width }} size={10} weight={400}>
-                  {data.caption}
-                </Text>
-              </>
+              <img
+                src={`data:image/${format};base64, ${blobData}`}
+                alt={data.caption}
+              />
             ) : (
               <Skeleton
                 variant='rect'
-                height={
-                  additionalProperties.alignmentType !==
-                  MediaItemAlignmentEnum.Height
-                    ? style.width / (data.width / data.height)
-                    : mediaItemHeight - 10
-                }
-                width={style?.width - 10}
+                height={skeletonSize.height}
+                width={skeletonSize.width}
               />
             )}
+            <Text style={{ maxWidth: style.width }} size={10} weight={400}>
+              {data.caption}
+            </Text>
           </div>
           <Button
             withOnlyIcon

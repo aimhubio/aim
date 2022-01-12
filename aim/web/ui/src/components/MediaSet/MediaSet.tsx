@@ -6,13 +6,14 @@ import classNames from 'classnames';
 import { Tooltip } from '@material-ui/core';
 
 import MediaList from 'components/MediaList';
-import { JsonViewPopover, Slider, Text } from 'components/kit';
+import { JsonViewPopover, Slider } from 'components/kit';
 import ControlPopover from 'components/ControlPopover/ControlPopover';
 import { MediaTypeEnum } from 'components/MediaPanel/config';
 
 import {
   MEDIA_ITEMS_SIZES,
   MEDIA_SET_SIZE,
+  MEDIA_SET_SLIDER_HEIGHT,
   MEDIA_SET_TITLE_HEIGHT,
   MEDIA_SET_WRAPPER_PADDING_HEIGHT,
 } from 'config/mediaConfigs/mediaConfigs';
@@ -63,6 +64,15 @@ const MediaSet = ({
     wrapperOffsetWidth,
   ]);
 
+  function setStackedList(list: [], stackedList: [][]): void {
+    for (let j = 0; j < list.length; j++) {
+      if (!stackedList[j]) {
+        stackedList[j] = [];
+      }
+      stackedList[j].push(list[j]);
+    }
+  }
+
   function fillContent(
     list: [] | { [key: string]: [] | {} },
     path: (string | {})[] = [''],
@@ -71,29 +81,19 @@ const MediaSet = ({
     if (Array.isArray(list)) {
       if (additionalProperties.stacking && content.length) {
         const [lastContentPath, lastContentList] = content[content.length - 1];
-        const nextPath = path[path.length - 1] as string;
-        const [orderedMapKey, value] = nextPath.split('=');
-
-        if (path.length !== lastContentPath.length) {
-          let stackedList: [][] = [];
-          for (let j = 0; j < list.length; j++) {
-            if (!stackedList[j]) {
-              stackedList[j] = [];
-            }
-            stackedList[j].push(list[j]);
-          }
-          path[path.length - 1] = { [orderedMapKey]: [value] };
-          content.push([path, stackedList]);
-        } else {
+        const [orderedMapKey, value] = (path[path.length - 1] as string).split(
+          '=',
+        );
+        if (path.length === lastContentPath.length) {
           (lastContentPath[lastContentPath.length - 1] as any)[
             orderedMapKey
           ].push(value);
-          for (let j = 0; j < list.length; j++) {
-            if (!lastContentList[j]) {
-              lastContentList[j] = [];
-            }
-            lastContentList[j].push(list[j]);
-          }
+          setStackedList(list, lastContentList);
+        } else {
+          let stackedList: [][] = [];
+          setStackedList(list, stackedList);
+          path[path.length - 1] = { [orderedMapKey]: [value] };
+          content.push([path, stackedList]);
         }
       } else {
         content.push([path, list]);
@@ -120,8 +120,13 @@ const MediaSet = ({
   function getItemSize(index: number): number {
     let [path, items] = content[index];
     const { maxHeight, maxWidth } = getBiggestImageFromList(items.flat());
-    const { mediaItemSize, alignmentType } = additionalProperties;
-
+    const { mediaItemSize, alignmentType, stacking } = additionalProperties;
+    const lastPath = path[path.length - 1];
+    const isStackedPath = stacking && typeof lastPath === 'object';
+    const { pathValue } = getPathDetails({
+      isStackedPath,
+      lastPath,
+    });
     if (path.length === 1) {
       return 0;
     }
@@ -134,6 +139,7 @@ const MediaSet = ({
           alignmentType,
           wrapperOffsetWidth,
           mediaItemSize,
+          stacking: isStackedPath && pathValue.length > 1,
         });
       }
       if (mediaType === MediaTypeEnum.AUDIO) {
@@ -186,53 +192,41 @@ function propsComparator(
 
 export default React.memo(MediaSet, propsComparator);
 
-const MediaGroupedList = React.memo(function MediaGroupedList(props: any) {
-  const { index, style, data } = props;
+const MediaGroupedList = React.memo(function MediaGroupedList({
+  index,
+  style,
+  data,
+}: {
+  index: number;
+  style: React.CSSProperties;
+  data: { [key: string]: any };
+}) {
+  const [depth, setDepth] = React.useState(0);
   const [path, items] = data.data[index];
   const lastPath = path[path.length - 1];
-  const isStackedPath = typeof lastPath === 'object';
-  const [depth, setDepth] = React.useState(0);
-
-  let pathKey = '';
-  let pathValue: string | string[] = '';
-  let currentValue: string;
-  let currentItems;
-
-  if (isStackedPath) {
-    pathKey = Object.keys(lastPath)[0];
-    pathValue = lastPath[pathKey];
-    currentValue = pathValue[depth] as string;
-    currentItems = items.map((item: []) => item[depth]);
-  } else {
-    [pathKey = '', pathValue = ''] = lastPath?.split('=');
-    currentValue = pathValue as string;
-    currentItems = items;
-  }
-
-  const json: string | object = jsonParse(currentValue?.trim());
+  const isStackedPath =
+    data.additionalProperties.stacking && typeof lastPath === 'object';
+  const { pathKey, pathValue } = getPathDetails({
+    isStackedPath,
+    lastPath,
+  });
+  const { currentValue, currentItems } = getCurrentContent({
+    isStackedPath,
+    pathValue,
+    depth,
+    items,
+  });
+  const json: string | object = jsonParse(currentValue);
   const isJson: boolean = typeof json === 'object';
 
   function onSliderChange(
     event: React.ChangeEvent<{}>,
     value: number | number[],
   ): void & React.FormEventHandler<HTMLSpanElement> {
-    // if (!focusedState?.active) {
-    //   syncHoverState?.({ activePoint: null });
-    // }
-    debugger;
     if (value !== depth) {
       setDepth(value as number);
     }
   }
-
-  const marks = React.useMemo(() => {
-    return isStackedPath
-      ? (pathValue as string[]).map((label, i) => ({
-          value: i,
-          label,
-        }))
-      : false;
-  }, [pathValue]);
   return (
     <div
       className='MediaSet'
@@ -251,7 +245,7 @@ const MediaGroupedList = React.memo(function MediaGroupedList(props: any) {
       <div
         className={`MediaSet__container ${path.length > 2 ? 'withDash' : ''}`}
       >
-        {path.length > 1 && !isStackedPath && (
+        {path.length > 1 && (
           <ControlPopover
             anchorOrigin={{
               vertical: 'bottom',
@@ -262,37 +256,40 @@ const MediaGroupedList = React.memo(function MediaGroupedList(props: any) {
               horizontal: 'left',
             }}
             anchor={({ onAnchorClick }) => (
-              <Tooltip placement='top-start' title={isJson ? lastPath : ''}>
+              <Tooltip
+                placement='top-start'
+                title={isJson ? `${pathKey} = ${currentValue}` : ''}
+              >
                 <span
                   onClick={isJson ? onAnchorClick : undefined}
                   className={classNames('MediaSet__container__title', {
                     MediaSet__container__title__pointer: isJson,
                   })}
                 >
-                  {lastPath}
+                  {`${pathKey} = ${currentValue}`}
                 </span>
               </Tooltip>
             )}
             component={<JsonViewPopover json={json as object} />}
           />
         )}
-        {currentItems.length > 0 && isStackedPath && (
-          <div className='MediaSet__container__sliderContainer'>
-            {pathValue.length > 1 && (
-              <Slider
-                valueLabelDisplay='auto'
-                getAriaValueText={(value) => `${pathValue[value]}`}
-                value={depth}
-                onChange={onSliderChange}
-                step={1}
-                // marks={marks}
-                min={0}
-                max={pathValue.length - 1}
-              />
-            )}
-            <Text className={'MediaSet__container__title'}>
-              {pathKey} = {pathValue[depth]}
-            </Text>
+        {currentItems.length > 0 && isStackedPath && pathValue.length > 1 && (
+          <div
+            className='MediaSet__container__sliderContainer'
+            style={{ height: MEDIA_SET_SLIDER_HEIGHT }}
+          >
+            <Slider
+              aria-labelledby='track-false-slider'
+              track={false}
+              valueLabelDisplay='off'
+              getAriaValueText={(value) => `${pathValue[value]}`}
+              value={depth}
+              onChange={onSliderChange}
+              step={null}
+              marks={(pathValue as string[]).map((l, i) => ({ value: i }))}
+              min={0}
+              max={pathValue.length - 1}
+            />
           </div>
         )}
         {currentItems.length > 0 && (
@@ -315,4 +312,51 @@ const MediaGroupedList = React.memo(function MediaGroupedList(props: any) {
       </div>
     </div>
   );
-}, areEqual);
+},
+areEqual);
+
+function getPathDetails({
+  isStackedPath,
+  lastPath,
+}: {
+  isStackedPath: boolean;
+  lastPath: any;
+}) {
+  let pathKey = '';
+  let pathValue: string | string[] = '';
+  if (isStackedPath) {
+    pathKey = Object.keys(lastPath)[0];
+    pathValue = lastPath[pathKey];
+  } else {
+    [pathKey = '', pathValue = ''] = lastPath?.split('=');
+  }
+  return { pathKey, pathValue };
+}
+
+function getCurrentContent({
+  isStackedPath,
+  pathValue,
+  depth,
+  items,
+}: {
+  isStackedPath: boolean;
+  pathValue: string | string[];
+  depth: number;
+  items: [] | [][];
+}) {
+  let currentValue = '';
+  let currentItems: [] = [];
+
+  if (isStackedPath) {
+    currentValue = (pathValue[depth] as string)?.trim();
+    for (let item of items) {
+      if (item[depth]) {
+        currentItems.push(item[depth]);
+      }
+    }
+  } else {
+    currentValue = (pathValue as string)?.trim();
+    currentItems = items as [];
+  }
+  return { currentValue, currentItems };
+}
