@@ -2,10 +2,16 @@
 
 ## Unreleased
 
+- Add trendline options to ScatterPlot (roubkar)
+- Add ability to display images in original size and align by width (arsengit)
 - Add version, docs and slack links to sidebar (arsengit)
-- Ability to display images in original size and align by width (arsengit)
 - Enhance AudioPlayer component (arsengit)
 - Recover active tab in run details page after reload (roubkar)
+
+## 3.3.4 Jan 10 2022
+
+- Fix issue with WAL files flushing (alberttorosyan)
+- Support for omegaconf configs in pytorch_lightning adapter (devfox-se)
 
 ## 3.3.3 Dec 24 2021
 

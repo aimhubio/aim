@@ -1,10 +1,10 @@
 @font-face {
   font-family: 'icomoon';
-  src: url('fonts/icomoon.eot?49fwx');
-  src: url('fonts/icomoon.eot?49fwx#iefix') format('embedded-opentype'),
-    url('fonts/icomoon.ttf?49fwx') format('truetype'),
-    url('fonts/icomoon.woff?49fwx') format('woff'),
-    url('fonts/icomoon.svg?49fwx#icomoon') format('svg');
+  src: url('fonts/icomoon.eot?y51phi');
+  src: url('fonts/icomoon.eot?y51phi#iefix') format('embedded-opentype'),
+    url('fonts/icomoon.ttf?y51phi') format('truetype'),
+    url('fonts/icomoon.woff?y51phi') format('woff'),
+    url('fonts/icomoon.svg?y51phi#icomoon') format('svg');
   font-weight: normal;
   font-style: normal;
   font-display: block;
@@ -26,6 +26,9 @@
   -moz-osx-font-smoothing: grayscale;
 }
 
+.icon-trendline:before {
+  content: '\e95f';
+}
 .icon-Slack:before {
   content: '\e960';
 }
@@ -36,10 +39,10 @@
   content: '\e94e';
 }
 .icon-TypeTriangle-Outline:before {
-  content: '\e95f';
+  content: '\e962';
 }
 .icon-StateDefault1:before {
-  content: '\e95f';
+  content: '\e962';
 }
 .icon-TypeTriangle:before {
   content: '\e95e';
@@ -320,8 +323,11 @@
 .icon-check-rectangle:before {
   content: '\e94d';
 }
-.icon-check:before {
+.icon-check-circle:before {
   content: '\e94f';
+}
+.icon-check:before {
+  content: '\e963';
 }
 .icon-params:before {
   content: '\e940';

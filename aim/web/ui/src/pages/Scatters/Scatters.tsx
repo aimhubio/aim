@@ -31,8 +31,9 @@ function Scatters(
   const chartProps: any[] = React.useMemo(() => {
     return (props.scatterPlotData || []).map((data: any, index: number) => ({
       chartTitle: props.chartTitleData[index],
+      trendlineOptions: props.trendlineOptions,
     }));
-  }, [props.scatterPlotData, props.chartTitleData]);
+  }, [props.scatterPlotData, props.chartTitleData, props.trendlineOptions]);
 
   return (
     <div ref={props.wrapperElemRef} className='Scatters__container'>
@@ -98,6 +99,8 @@ function Scatters(
                       tooltip={props.tooltip}
                       onChangeTooltip={props.onChangeTooltip}
                       projectsDataMetrics={props.projectsDataMetrics}
+                      trendlineOptions={props.trendlineOptions}
+                      onChangeTrendlineOptions={props.onChangeTrendlineOptions}
                     />
                   }
                 />
