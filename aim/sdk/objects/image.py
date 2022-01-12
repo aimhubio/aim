@@ -202,7 +202,7 @@ class Image(CustomObject):
             import tensorflow as tf
             assert isinstance(tensor, tf.Tensor)
         except (ImportError, AssertionError):
-            raise ValueError('Cannot convert from torch.Tensor')
+            raise ValueError('Cannot convert from tf.Tensor')
 
         if tensor.ndim not in {2, 3}:
             raise ValueError('Cannot convert to aim.Image. Tensor must have 2/3-D shape.')

@@ -32,7 +32,7 @@ class TestImageConstruction(TestBase):
         try:
             import tensorflow as tf
         except (ImportError, AssertionError):
-            raise ValueError('Cannot convert from torch.Tensor')
+            raise ValueError('Cannot convert from tf.Tensor')
 
         # order of channels in tf.tensor => height, width, channels
 
