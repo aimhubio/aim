@@ -56,8 +56,8 @@ export function getSortedFields({
           readonly: false,
         } as SortField);
       } else {
-        sortFields[index || 0].order =
-          sortFields[index || 0].order === 'asc' ? 'desc' : 'asc';
+        sortFields[index as number].order =
+          sortFields[index as number].order === 'asc' ? 'desc' : 'asc';
       }
       return [...sortFields];
     }
