@@ -14,6 +14,7 @@ import drawParallelAxesBrush from './drawParallelAxesBrush';
 import drawParallelColorIndicator from './drawParallelColorIndicator';
 import getCoordinates from './getCoordinates';
 import drawPoints from './drawPoints';
+import drawScatterTrendline from './drawScatterTrendline';
 
 const gradientStartColor = '#2980B9';
 const gradientEndColor = '#E74C3C';
@@ -76,6 +77,11 @@ enum PointSymbolEnum {
   WYE = 'symbolWye',
 }
 
+enum TrendlineTypeEnum {
+  SLR = 'slr',
+  LOESS = 'loess',
+}
+
 export {
   CircleEnum,
   CurveEnum,
@@ -84,6 +90,7 @@ export {
   AlignmentKeysEnum,
   AlignmentOptionsEnum,
   PointSymbolEnum,
+  TrendlineTypeEnum,
   clearArea,
   drawArea,
   drawAxes,
@@ -100,6 +107,7 @@ export {
   drawParallelHoverAttributes,
   drawParallelAxesBrush,
   drawPoints,
+  drawScatterTrendline,
   gradientStartColor,
   gradientEndColor,
 };

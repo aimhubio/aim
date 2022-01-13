@@ -6,6 +6,8 @@ import ControlPopover from 'components/ControlPopover/ControlPopover';
 import TooltipContentPopover from 'components/TooltipContentPopover/TooltipContentPopover';
 import { Icon } from 'components/kit';
 
+import { CONTROLS_DEFAULT_CONFIG } from 'config/controls/controlsDefaultConfig';
+
 import { IControlProps } from 'types/pages/params/components/Controls/Controls';
 
 import { CurveEnum } from 'utils/d3';
@@ -15,6 +17,14 @@ import './Controls.scss';
 function Controls(
   props: IControlProps,
 ): React.FunctionComponentElement<React.ReactNode> {
+  const tooltipChanged: boolean = React.useMemo(() => {
+    return (
+      props.tooltip.display !==
+        CONTROLS_DEFAULT_CONFIG.params.tooltip.display ||
+      props.tooltip.selectedParams.length !==
+        CONTROLS_DEFAULT_CONFIG.params.tooltip.selectedParams.length
+    );
+  }, [props.tooltip]);
   return (
     <div className='Params__Controls__container ScrollBar__hidden'>
       <Tooltip title='Curve Interpolation'>
@@ -57,13 +67,13 @@ function Controls(
               <div
                 onClick={onAnchorClick}
                 className={`Params__Controls__anchor ${
-                  opened ? 'active' : ''
+                  opened ? 'active' : tooltipChanged ? 'active outlined' : ''
                 } `}
               >
                 {/*TODO need to change icon */}
                 <Icon
                   className={`Params__Controls__icon ${
-                    opened ? 'active' : ''
+                    opened || tooltipChanged ? 'active' : ''
                   } `}
                   name='cursor'
                 />
