@@ -5,7 +5,7 @@ import ChartPanel from 'components/ChartPanel/ChartPanel';
 // TODO [GA]: MetricsBar is imported as AppBar.
 // Implement ParamsBar or use unified NavBar for explorers.
 import BusyLoaderWrapper from 'components/BusyLoaderWrapper/BusyLoaderWrapper';
-import EmptyComponent from 'components/EmptyComponent/EmptyComponent';
+import IllustrationBlock from 'components/IllustrationBlock/IllustrationBlock';
 import ChartLoader from 'components/ChartLoader/ChartLoader';
 import TableLoader from 'components/TableLoader/TableLoader';
 import Table from 'components/Table/Table';
@@ -183,9 +183,9 @@ const Params = ({
                   }
                 />
               ) : (
-                <EmptyComponent
+                <IllustrationBlock
                   size='xLarge'
-                  imageName={
+                  image={
                     selectFormOptions?.length > 0 ||
                     requestStatus === RequestStatusEnum.NotRequested
                       ? 'exploreData'

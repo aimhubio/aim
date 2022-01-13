@@ -5,7 +5,7 @@ import Table from 'components/Table/Table';
 import ChartPanel from 'components/ChartPanel/ChartPanel';
 import NotificationContainer from 'components/NotificationContainer/NotificationContainer';
 import BusyLoaderWrapper from 'components/BusyLoaderWrapper/BusyLoaderWrapper';
-import EmptyComponent from 'components/EmptyComponent/EmptyComponent';
+import IllustrationBlock from 'components/IllustrationBlock/IllustrationBlock';
 import TableLoader from 'components/TableLoader/TableLoader';
 import ChartLoader from 'components/ChartLoader/ChartLoader';
 import ResizePanel from 'components/ResizePanel/ResizePanel';
@@ -52,6 +52,7 @@ function Scatters(
               requestIsPending={
                 props.requestStatus === RequestStatusEnum.Pending
               }
+              selectFormOptions={props.selectFormOptions}
               selectedOptionsData={props.selectedOptionsData}
               onSelectOptionsChange={props.onSelectOptionsChange}
               onSelectRunQueryChange={props.onSelectRunQueryChange}
@@ -105,8 +106,16 @@ function Scatters(
                   }
                 />
               ) : (
-                <EmptyComponent
+                <IllustrationBlock
                   size='xLarge'
+                  image={
+                    props.selectFormOptions ||
+                    props.requestStatus === RequestStatusEnum.NotRequested
+                      ? 'exploreData'
+                      : props.requestStatus === RequestStatusEnum.BadRequest
+                      ? 'wrongSearch'
+                      : 'emptySearch'
+                  }
                   content="It's super easy to search Aim experiments. Lookup search docs to learn more."
                 />
               )}

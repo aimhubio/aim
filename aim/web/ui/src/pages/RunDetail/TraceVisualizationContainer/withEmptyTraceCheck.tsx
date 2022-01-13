@@ -1,6 +1,6 @@
 import React from 'react';
 
-import EmptyComponent from 'components/EmptyComponent/EmptyComponent';
+import IllustrationBlock from 'components/IllustrationBlock/IllustrationBlock';
 
 import { ITraceVisualizationContainerProps } from '../types';
 
@@ -21,7 +21,7 @@ function withEmptyTraceCheck(
     const emptyText = `No tracked ${props.traceType}`;
     if (!traces || !traces.length) {
       return (
-        <EmptyComponent
+        <IllustrationBlock
           size='large'
           className='TraceEmptyVisualizer'
           content={emptyText}

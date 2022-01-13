@@ -6,7 +6,7 @@ import { debounce, isEmpty, isNil } from 'lodash-es';
 
 import { Button, Icon, Text } from 'components/kit';
 import ControlPopover from 'components/ControlPopover/ControlPopover';
-import EmptyComponent from 'components/EmptyComponent/EmptyComponent';
+import IllustrationBlock from 'components/IllustrationBlock/IllustrationBlock';
 import BusyLoaderWrapper from 'components/BusyLoaderWrapper/BusyLoaderWrapper';
 import ResizeModeActions from 'components/ResizeModeActions/ResizeModeActions';
 
@@ -740,7 +740,7 @@ const Table = React.forwardRef(function Table(
           </div>
         </div>
       ) : (
-        <EmptyComponent size='big' content={emptyText} />
+        <IllustrationBlock size='big' content={emptyText} />
       )}
     </BusyLoaderWrapper>
   );

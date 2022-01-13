@@ -2,7 +2,7 @@ import React from 'react';
 
 import AppBar from 'components/AppBar/AppBar';
 import BusyLoaderWrapper from 'components/BusyLoaderWrapper/BusyLoaderWrapper';
-import EmptyComponent from 'components/EmptyComponent/EmptyComponent';
+import IllustrationBlock from 'components/IllustrationBlock/IllustrationBlock';
 
 import { IBookmarksProps } from 'types/pages/bookmarks/Bookmarks';
 
@@ -15,13 +15,12 @@ function Bookmarks({
   onBookmarkDelete,
   isLoading,
 }: IBookmarksProps): React.FunctionComponentElement<React.ReactNode> {
-  let d = [];
   return (
     <section className='Bookmarks'>
       <AppBar title='Bookmarks' />
       <div className='Bookmarks__list container'>
         <BusyLoaderWrapper isLoading={isLoading}>
-          {d?.length > 0 &&
+          {data?.length > 0 &&
             data.map((bookmark) => (
               <BookmarkCard
                 key={bookmark.id}
@@ -30,10 +29,10 @@ function Bookmarks({
               />
             ))}
         </BusyLoaderWrapper>
-        {!isLoading && d?.length === 0 ? (
-          <EmptyComponent
+        {!isLoading && data?.length === 0 ? (
+          <IllustrationBlock
             size='xLarge'
-            imageName='emptyBookmarks'
+            image='emptyBookmarks'
             content={'No Bookmarks Yet'}
           />
         ) : null}

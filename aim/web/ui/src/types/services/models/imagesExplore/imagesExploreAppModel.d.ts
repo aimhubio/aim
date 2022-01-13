@@ -1,9 +1,13 @@
 import { ResizeModeEnum } from 'config/enums/tableEnums';
 import { RowHeightSize } from 'config/table/tableConfigs';
+import { RequestStatusEnum } from 'config/enums/requestStatusEnum';
 
 import { ITableRef } from 'types/components/Table/Table';
 import { INotification } from 'types/components/NotificationContainer/NotificationContainer';
-import { ISelectConfig } from 'types/services/models/explorer/createAppModel';
+import {
+  ISelectConfig,
+  ISelectOption,
+} from 'types/services/models/explorer/createAppModel';
 import {
   IPanelTooltip,
   SortField,
@@ -59,7 +63,7 @@ export interface IImagesExploreAppModelState {
   refs: {
     tableRef: { current: ITableRef | null };
   };
-  requestIsPending: boolean | null;
+  requestStatus: RequestStatusEnum;
   queryIsEmpty: boolean;
   rawData: any[];
   config: IImagesExploreAppConfig;
@@ -73,6 +77,7 @@ export interface IImagesExploreAppModelState {
   groupingSelectOptions: IGroupingSelectOption[];
   searchButtonDisabled: boolean;
   applyButtonDisabled: boolean;
+  selectFormOptions: ISelectOption[];
   // liveUpdateConfig: {
   //   delay: number;
   //   enabled: boolean;

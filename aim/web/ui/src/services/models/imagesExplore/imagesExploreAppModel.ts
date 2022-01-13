@@ -11,6 +11,8 @@ import {
   MediaItemAlignmentEnum,
   ImageRenderingEnum,
 } from 'config/enums/imageEnums';
+import { RequestStatusEnum } from 'config/enums/requestStatusEnum';
+import COLORS from 'config/colors/colors';
 
 import {
   getImagesExploreTableColumns,
@@ -22,6 +24,7 @@ import imagesExploreService from 'services/api/imagesExplore/imagesExploreServic
 import appsService from 'services/api/apps/appsService';
 import dashboardService from 'services/api/dashboard/dashboardService';
 import blobsURIModel from 'services/models/media/blobsURIModel';
+import projectsService from 'services/api/projects/projectsService';
 
 import {
   GroupNameType,
@@ -49,6 +52,7 @@ import {
   ISelectConfig,
   ISelectOption,
 } from 'types/services/models/explorer/createAppModel';
+import { IProjectParamsMetrics } from 'types/services/models/projects/projectsModel';
 
 import { decode, encode } from 'utils/encoder/encoder';
 import getObjectPaths from 'utils/getObjectPaths';
@@ -72,11 +76,13 @@ import filterTooltipContent from 'utils/filterTooltipContent';
 import { getDataAsMediaSetNestedObject } from 'utils/app/getDataAsMediaSetNestedObject';
 import { getCompatibleSelectConfig } from 'utils/app/getCompatibleSelectConfig';
 import { getValue } from 'utils/helper';
+import contextToString from 'utils/contextToString';
+import alphabeticalSortComparator from 'utils/alphabeticalSortComparator';
 
 import createModel from '../model';
 
 const model = createModel<Partial<IImagesExploreAppModelState>>({
-  requestIsPending: false,
+  requestStatus: RequestStatusEnum.NotRequested,
   searchButtonDisabled: false,
   applyButtonDisabled: true,
 });
@@ -301,18 +307,23 @@ function getImagesData(shouldUrlUpdate?: boolean) {
     };
   }
   imagesRequestRef = imagesExploreService.getImagesExploreData(imageDataBody);
-
+  projectsService
+    .getProjectParams(['metric'])
+    .call()
+    .then((data: IProjectParamsMetrics) => {
+      model.setState({
+        selectFormOptions: getSelectFormOptions(data),
+      });
+    });
   return {
     call: async () => {
       if (query !== '()') {
         model.setState({
-          requestIsPending: true,
+          requestStatus: RequestStatusEnum.Pending,
           queryIsEmpty: false,
           applyButtonDisabled: true,
         });
-
         blobsURIModel.init();
-
         try {
           const stream = await imagesRequestRef.call(exceptionHandler);
           const runData = await getImagesMetricsData(stream);
@@ -357,7 +368,44 @@ function getImagesData(shouldUrlUpdate?: boolean) {
     abort: imagesRequestRef.abort,
   };
 }
+function getSelectFormOptions(projectsData: IProjectParamsMetrics) {
+  let data: ISelectOption[] = [];
+  let index: number = 0;
+  if (projectsData?.images) {
+    for (let key in projectsData.images) {
+      data.push({
+        label: key,
+        group: key,
+        color: COLORS[0][index % COLORS[0].length],
+        value: {
+          option_name: key,
+          context: null,
+        },
+      });
+      index++;
 
+      for (let val of projectsData.images[key]) {
+        if (!_.isEmpty(val)) {
+          let label = contextToString(val);
+          data.push({
+            label: `${key} ${label}`,
+            group: key,
+            color: COLORS[0][index % COLORS[0].length],
+            value: {
+              option_name: key,
+              context: val,
+            },
+          });
+          index++;
+        }
+      }
+    }
+  }
+
+  return data.sort(
+    alphabeticalSortComparator<ISelectOption>({ orderBy: 'label' }),
+  );
+}
 function processData(data: any[]): {
   data: IMetricsCollection<IImageData>[];
   params: string[];
@@ -1911,7 +1959,10 @@ function onImageAlignmentChange(
 }
 
 function showRangePanel() {
-  return !model.getState().requestIsPending && !model.getState().queryIsEmpty;
+  return (
+    model.getState().requestStatus !== RequestStatusEnum.Pending &&
+    !model.getState().queryIsEmpty
+  );
 }
 
 const imagesExploreAppModel = {

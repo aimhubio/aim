@@ -27,6 +27,7 @@ import './SelectForm.scss';
 function SelectForm({
   requestIsPending,
   selectedOptionsData,
+  selectFormOptions,
   onSelectOptionsChange,
   onSelectRunQueryChange,
 }: ISelectFormProps): React.FunctionComponentElement<React.ReactNode> {
@@ -34,7 +35,6 @@ function SelectForm({
     x: false,
     y: false,
   });
-  const projectsData = useModel<IProjectsModelState>(projectsModel);
   const searchRef = React.useRef<any>(null);
   const paramsSuggestions = useParamsSuggestions();
 
@@ -62,67 +62,16 @@ function SelectForm({
     scattersAppModel.abortRequest();
   }
 
-  const options: ISelectOption[] = React.useMemo(() => {
-    let data: ISelectOption[] = [];
-    const systemOptions: ISelectOption[] = [];
-    if (projectsData?.metrics) {
-      for (let key in projectsData.metrics) {
-        let system: boolean = isSystemMetric(key);
-        for (let val of projectsData.metrics[key]) {
-          let label: string = Object.keys(val)
-            .map((item) => `${item}="${val[item]}"`)
-            .join(', ');
-          let index: number = data.length;
-          let option: ISelectOption = {
-            label: `${system ? formatSystemMetricName(key) : key} ${label}`,
-            group: system ? formatSystemMetricName(key) : key,
-            type: 'metrics',
-            color: COLORS[0][index % COLORS[0].length],
-            value: {
-              option_name: key,
-              context: val,
-            },
-          };
-          if (system) {
-            systemOptions.push(option);
-          } else {
-            data.push(option);
-          }
-        }
-      }
-    }
-    if (projectsData?.params) {
-      const paramPaths = getObjectPaths(
-        projectsData.params,
-        projectsData.params,
-      );
-      paramPaths.forEach((paramPath, index) => {
-        data.push({
-          label: paramPath,
-          group: 'Params',
-          type: 'params',
-          color: COLORS[0][index % COLORS[0].length],
-        });
-      });
-    }
-    const comparator = alphabeticalSortComparator({
-      orderBy: 'label',
-    });
-
-    systemOptions.sort(comparator);
-    return data.sort(comparator).concat(systemOptions);
-  }, [projectsData]);
-
   const dropDownOptions: { value: string; label: string }[] =
     React.useMemo(() => {
       let data: { value: string; label: string }[] = [];
-      if (options) {
-        for (let option of options) {
+      if (selectFormOptions) {
+        for (let option of selectFormOptions) {
           data.push({ value: option.label, label: option.label });
         }
       }
       return data;
-    }, [options]);
+    }, [selectFormOptions]);
 
   function onChange(
     type: 'x' | 'y',
@@ -132,13 +81,13 @@ function SelectForm({
       const selectedOptions = selectedOptionsData?.options;
       if (type === 'y') {
         onSelectOptionsChange([
-          options.find((o) => o.label === option.value),
+          selectFormOptions.find((o) => o.label === option.value),
           selectedOptions.length === 2 ? selectedOptions[1] : null,
         ]);
       } else if (type === 'x') {
         onSelectOptionsChange([
           selectedOptions[0] || null,
-          options.find((o) => o.label === option.value),
+          selectFormOptions.find((o) => o.label === option.value),
         ]);
       }
     }

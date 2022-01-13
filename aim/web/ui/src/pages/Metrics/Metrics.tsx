@@ -5,7 +5,7 @@ import Table from 'components/Table/Table';
 import ChartPanel from 'components/ChartPanel/ChartPanel';
 import NotificationContainer from 'components/NotificationContainer/NotificationContainer';
 import BusyLoaderWrapper from 'components/BusyLoaderWrapper/BusyLoaderWrapper';
-import EmptyComponent from 'components/EmptyComponent/EmptyComponent';
+import IllustrationBlock from 'components/IllustrationBlock/IllustrationBlock';
 import TableLoader from 'components/TableLoader/TableLoader';
 import ChartLoader from 'components/ChartLoader/ChartLoader';
 import ResizePanel from 'components/ResizePanel/ResizePanel';
@@ -14,6 +14,10 @@ import { ResizeModeEnum } from 'config/enums/tableEnums';
 import { RowHeightSize } from 'config/table/tableConfigs';
 import GroupingPopovers from 'config/grouping/GroupingPopovers';
 import { RequestStatusEnum } from 'config/enums/requestStatusEnum';
+import {
+  IllustrationsEnum,
+  Request_Illustrations,
+} from 'config/illustrationConfig/illustrationConfig';
 
 import { ILine } from 'types/components/LineChart/LineChart';
 import { IMetricProps } from 'types/pages/metrics/Metrics';
@@ -166,17 +170,14 @@ function Metrics(
                   }
                 />
               ) : (
-                <EmptyComponent
+                <IllustrationBlock
                   size='xLarge'
-                  imageName={
-                    props.selectFormOptions ||
-                    props.requestStatus === RequestStatusEnum.NotRequested
-                      ? 'exploreData'
-                      : props.requestStatus === RequestStatusEnum.BadRequest
-                      ? 'wrongSearch'
-                      : 'emptySearch'
+                  page='metrics'
+                  type={
+                    props.selectFormOptions
+                      ? Request_Illustrations[props.requestStatus]
+                      : IllustrationsEnum.EmptyData
                   }
-                  content="It's super easy to search Aim experiments. Lookup search docs to learn more."
                 />
               )}
             </BusyLoaderWrapper>

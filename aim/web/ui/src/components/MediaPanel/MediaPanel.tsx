@@ -4,7 +4,7 @@ import { isEmpty } from 'lodash-es';
 import MediaSet from 'components/MediaSet/MediaSet';
 import BusyLoaderWrapper from 'components/BusyLoaderWrapper/BusyLoaderWrapper';
 import ChartLoader from 'components/ChartLoader/ChartLoader';
-import EmptyComponent from 'components/EmptyComponent/EmptyComponent';
+import IllustrationBlock from 'components/IllustrationBlock/IllustrationBlock';
 import { Text } from 'components/kit';
 import ChartPopover from 'components/ChartPanel/ChartPopover/ChartPopover';
 import { throttle } from 'components/Table/utils';
@@ -20,7 +20,6 @@ import './MediaPanel.scss';
 
 function MediaPanel({
   data,
-  getBlobsData,
   isLoading,
   panelResizing,
   wrapperOffsetHeight,
@@ -30,13 +29,15 @@ function MediaPanel({
   tooltip,
   focusedState,
   additionalProperties,
-  onActivePointChange,
   tableHeight,
   mediaType,
   controls,
   actionPanel,
   actionPanelSize,
   tooltipType,
+  requestStatus,
+  onActivePointChange,
+  getBlobsData,
 }: IMediaPanelProps): React.FunctionComponentElement<React.ReactNode> {
   const [activePointRect, setActivePointRect] = React.useState<{
     top: number;
@@ -249,7 +250,7 @@ function MediaPanel({
                 )}
               </div>
             ) : (
-              <EmptyComponent
+              <IllustrationBlock
                 size='xLarge'
                 content="It's super easy to search Aim experiments. Lookup search docs to learn more."
               />

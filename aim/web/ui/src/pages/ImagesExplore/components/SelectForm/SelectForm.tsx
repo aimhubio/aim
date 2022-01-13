@@ -1,5 +1,4 @@
 import React from 'react';
-import { isEmpty } from 'lodash-es';
 
 import { Box, Checkbox, Divider, InputBase, Popper } from '@material-ui/core';
 import Autocomplete from '@material-ui/lab/Autocomplete';
@@ -11,42 +10,31 @@ import {
 import { Icon, Badge, Button } from 'components/kit';
 import ExpressionAutoComplete from 'components/kit/ExpressionAutoComplete';
 
-import COLORS from 'config/colors/colors';
-
-import useModel from 'hooks/model/useModel';
 import useParamsSuggestions from 'hooks/projectData/useParamsSuggestions';
 
-import projectsModel from 'services/models/projects/projectsModel';
 import imagesExploreAppModel from 'services/models/imagesExplore/imagesExploreAppModel';
 
-import { IProjectsModelState } from 'types/services/models/projects/projectsModel';
 import { ISelectFormProps } from 'types/pages/imagesExplore/components/SelectForm/SelectForm';
 import { ISelectOption } from 'types/services/models/explorer/createAppModel';
-
-import contextToString from 'utils/contextToString';
-import alphabeticalSortComparator from 'utils/alphabeticalSortComparator';
 
 import './SelectForm.scss';
 
 function SelectForm({
   requestIsPending,
   selectedImagesData,
+  searchButtonDisabled,
+  selectFormOptions,
   onImagesExploreSelectChange,
   onSelectRunQueryChange,
   onSelectAdvancedQueryChange,
   toggleSelectAdvancedMode,
   onSearchQueryCopy,
-  searchButtonDisabled,
 }: ISelectFormProps): React.FunctionComponentElement<React.ReactNode> {
-  const projectsData = useModel<IProjectsModelState>(projectsModel);
   const [anchorEl, setAnchorEl] = React.useState<any>(null);
   const searchMetricsRef = React.useRef<any>(null);
 
   React.useEffect(() => {
-    const paramsMetricsRequestRef = projectsModel.getProjectParams(['images']);
-    paramsMetricsRequestRef.call();
     return () => {
-      paramsMetricsRequestRef?.abort();
       searchMetricsRef.current?.abort();
     };
   }, []);
@@ -106,45 +94,6 @@ function SelectForm({
     }
     setAnchorEl(null);
   }
-
-  const metricsOptions: ISelectOption[] = React.useMemo(() => {
-    let data: ISelectOption[] = [];
-    let index: number = 0;
-    if (projectsData?.images) {
-      for (let key in projectsData.images) {
-        data.push({
-          label: key,
-          group: key,
-          color: COLORS[0][index % COLORS[0].length],
-          value: {
-            option_name: key,
-            context: null,
-          },
-        });
-        index++;
-
-        for (let val of projectsData.images[key]) {
-          if (!isEmpty(val)) {
-            let label = contextToString(val);
-            data.push({
-              label: `${key} ${label}`,
-              group: key,
-              color: COLORS[0][index % COLORS[0].length],
-              value: {
-                option_name: key,
-                context: val,
-              },
-            });
-            index++;
-          }
-        }
-      }
-    }
-
-    return data.sort(
-      alphabeticalSortComparator<ISelectOption>({ orderBy: 'label' }),
-    );
-  }, [projectsData]);
 
   function handleResetSelectForm(): void {
     onImagesExploreSelectChange([]);
@@ -208,7 +157,7 @@ function SelectForm({
                       size='small'
                       disablePortal={true}
                       disableCloseOnSelect
-                      options={metricsOptions}
+                      options={selectFormOptions}
                       value={selectedImagesData?.options ?? ''}
                       onChange={onSelect}
                       groupBy={(option) => option.group}

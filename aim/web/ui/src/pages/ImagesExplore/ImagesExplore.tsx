@@ -14,6 +14,7 @@ import ImagesExploreRangePanel from 'components/ImagesExploreRangePanel';
 import { ResizeModeEnum } from 'config/enums/tableEnums';
 import { RowHeightSize } from 'config/table/tableConfigs';
 import GroupingPopovers from 'config/grouping/GroupingPopovers';
+import { RequestStatusEnum } from 'config/enums/requestStatusEnum';
 
 import usePanelResize from 'hooks/resize/usePanelResize';
 import useModel from 'hooks/model/useModel';
@@ -140,8 +141,11 @@ function ImagesExplore(): React.FunctionComponentElement<React.ReactNode> {
           />
           <div className='ImagesExplore__SelectForm__Grouping__container'>
             <SelectForm
-              requestIsPending={imagesExploreData?.requestIsPending}
+              requestIsPending={
+                imagesExploreData?.requestStatus === RequestStatusEnum.Pending
+              }
               selectedImagesData={imagesExploreData?.config?.select}
+              selectFormOptions={imagesExploreData?.selectFormOptions}
               onImagesExploreSelectChange={
                 imagesExploreAppModel.onImagesExploreSelectChange
               }
@@ -191,6 +195,9 @@ function ImagesExplore(): React.FunctionComponentElement<React.ReactNode> {
               data={imagesExploreData?.imagesData}
               orderedMap={imagesExploreData?.orderedMap}
               isLoading={imagesExploreData?.requestIsPending}
+              requestStatus={
+                imagesExploreData?.requestStatus as RequestStatusEnum
+              }
               panelResizing={panelResizing}
               resizeMode={imagesExploreData?.config?.table.resizeMode}
               tableHeight={imagesExploreData?.config?.table?.height}

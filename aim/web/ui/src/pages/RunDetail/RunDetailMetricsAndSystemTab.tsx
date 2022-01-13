@@ -1,7 +1,7 @@
 import React, { memo } from 'react';
 import { isEmpty, isNil } from 'lodash-es';
 
-import EmptyComponent from 'components/EmptyComponent/EmptyComponent';
+import IllustrationBlock from 'components/IllustrationBlock/IllustrationBlock';
 import BusyLoaderWrapper from 'components/BusyLoaderWrapper/BusyLoaderWrapper';
 
 import runDetailAppModel from 'services/models/runs/runDetailAppModel';
@@ -41,7 +41,7 @@ function RunDetailMetricsAndSystemTab({
                 return <RunMetricCard batch={batch} index={i} key={i} />;
               })
             ) : (
-              <EmptyComponent
+              <IllustrationBlock
                 size='large'
                 className='runDetailParamsTabLoader'
                 content={`No tracked ${isSystem ? 'system' : ''} metrics`}

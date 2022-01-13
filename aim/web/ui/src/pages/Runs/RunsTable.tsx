@@ -50,9 +50,9 @@ function RunsTable({
           infiniteLoadHandler={handleInfiniteLoad}
           showResizeContainerActionBar={false}
           emptyText={'No runs found'}
-          ref={tableRef}
-          data={data}
-          columns={columns}
+          ref={null}
+          data={[]}
+          columns={[]}
           isLoading={isRunsDataLoading}
           // Table options
           topHeader
