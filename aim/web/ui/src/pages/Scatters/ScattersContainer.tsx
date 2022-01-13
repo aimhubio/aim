@@ -26,7 +26,10 @@ import {
   IProjectParamsMetrics,
   IProjectsModelState,
 } from 'types/services/models/projects/projectsModel';
-import { IScatterAppModelState } from 'types/services/models/scatter/scatterAppModel';
+import {
+  IScatterAppModelState,
+  ITrendlineOptions,
+} from 'types/services/models/scatter/scatterAppModel';
 import {
   IGroupingConfig,
   ILiveUpdateConfig,
@@ -129,6 +132,9 @@ function ScattersContainer(): React.FunctionComponentElement<React.ReactNode> {
       chartTitleData={scattersData?.chartTitleData as IChartTitleData}
       focusedState={scattersData?.config?.chart?.focusedState as IFocusedState}
       tooltip={scattersData?.config?.chart?.tooltip as IPanelTooltip}
+      trendlineOptions={
+        scattersData?.config?.chart?.trendlineOptions as ITrendlineOptions
+      }
       selectedOptionsData={scattersData?.config?.select as ISelectConfig}
       notifyData={
         scattersData?.notifyData as IScatterAppModelState['notifyData']
@@ -150,6 +156,7 @@ function ScattersContainer(): React.FunctionComponentElement<React.ReactNode> {
       columnsWidths={scattersData?.config?.table?.columnsWidths!}
       // methods
       onChangeTooltip={scattersAppModel.onChangeTooltip}
+      onChangeTrendlineOptions={scattersAppModel.onChangeTrendlineOptions}
       onTableRowHover={scattersAppModel.onTableRowHover}
       onTableRowClick={scattersAppModel.onTableRowClick}
       updateColumnsWidths={scattersAppModel.updateColumnsWidths}

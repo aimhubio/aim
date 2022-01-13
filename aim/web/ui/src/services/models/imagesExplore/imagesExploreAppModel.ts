@@ -11,6 +11,7 @@ import {
   MediaItemAlignmentEnum,
   ImageRenderingEnum,
 } from 'config/enums/imageEnums';
+import { CONTROLS_DEFAULT_CONFIG } from 'config/controls/controlsDefaultConfig';
 
 import {
   getImagesExploreTableColumns,
@@ -104,13 +105,13 @@ function getConfig(): IImagesExploreAppConfig {
       calcRanges: true,
       tooltip: {
         content: {},
-        display: true,
-        selectedParams: [],
+        display: CONTROLS_DEFAULT_CONFIG.images.tooltip.display,
+        selectedParams: CONTROLS_DEFAULT_CONFIG.images.tooltip.selectedParams,
       },
       additionalProperties: {
-        alignmentType: MediaItemAlignmentEnum.Height,
-        mediaItemSize: 25,
-        imageRendering: ImageRenderingEnum.Pixelated,
+        alignmentType: CONTROLS_DEFAULT_CONFIG.images.alignmentType,
+        mediaItemSize: CONTROLS_DEFAULT_CONFIG.images.mediaItemSize,
+        imageRendering: CONTROLS_DEFAULT_CONFIG.images.imageRendering,
       },
       focusedState: {
         active: false,
@@ -1910,13 +1911,8 @@ function onImageAlignmentChange(
   }
 }
 
-function isRangePanelShow() {
-  return (
-    !!getStateFromUrl('select')?.query ||
-    !_.isEmpty(getStateFromUrl('select')?.images) ||
-    (!!getStateFromUrl('select')?.advancedQuery &&
-      !!getStateFromUrl('select')?.advancedMode)
-  );
+function showRangePanel() {
+  return !model.getState().requestIsPending && !model.getState().queryIsEmpty;
 }
 
 const imagesExploreAppModel = {
@@ -1965,7 +1961,7 @@ const imagesExploreAppModel = {
   onImageSizeChange,
   onImageRenderingChange,
   onImageAlignmentChange,
-  isRangePanelShow,
+  showRangePanel,
   getGroupingSelectOptions,
   getDataAsImageSet,
 };

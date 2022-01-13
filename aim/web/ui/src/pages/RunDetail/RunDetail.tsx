@@ -106,6 +106,13 @@ function RunDetail(): React.FunctionComponentElement<React.ReactNode> {
         runParams={runData?.runParams}
       />
     ),
+    texts: (
+      <TraceVisualizationContainer
+        runHash={runHash}
+        traceType='texts'
+        traceInfo={runData?.runTraces}
+      />
+    ),
     figures: (
       <TraceVisualizationContainer
         runHash={runHash}
