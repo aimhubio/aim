@@ -24,6 +24,7 @@ from aim.ext.transport.server import run_server
                                                                 dir_okay=False,
                                                                 readable=True))
 def server(host, port, workers, repo, ssl_keyfile, ssl_certfile):
+    # TODO [MV, AT] remove code duplication with aim up cmd implementation
     repo_path = clean_repo_path(repo) or Repo.default_repo_path()
     repo_status = Repo.check_repo_status(repo_path)
     if repo_status == RepoStatus.MISSING:
