@@ -13,6 +13,7 @@ import {
 } from 'config/enums/imageEnums';
 import { RequestStatusEnum } from 'config/enums/requestStatusEnum';
 import COLORS from 'config/colors/colors';
+import { CONTROLS_DEFAULT_CONFIG } from 'config/controls/controlsDefaultConfig';
 
 import {
   getImagesExploreTableColumns,
@@ -110,13 +111,13 @@ function getConfig(): IImagesExploreAppConfig {
       calcRanges: true,
       tooltip: {
         content: {},
-        display: true,
-        selectedParams: [],
+        display: CONTROLS_DEFAULT_CONFIG.images.tooltip.display,
+        selectedParams: CONTROLS_DEFAULT_CONFIG.images.tooltip.selectedParams,
       },
       additionalProperties: {
-        alignmentType: MediaItemAlignmentEnum.Height,
-        mediaItemSize: 25,
-        imageRendering: ImageRenderingEnum.Pixelated,
+        alignmentType: CONTROLS_DEFAULT_CONFIG.images.alignmentType,
+        mediaItemSize: CONTROLS_DEFAULT_CONFIG.images.mediaItemSize,
+        imageRendering: CONTROLS_DEFAULT_CONFIG.images.imageRendering,
       },
       focusedState: {
         active: false,

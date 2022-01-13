@@ -20,6 +20,8 @@ import {
 
 import { IMetricTrace, IRun } from './runModel';
 
+import { TrendlineTypeEnum } from 'utils/d3';
+
 export interface IScatterAppModelState {
   refs: {
     tableRef?: { current: ITableRef | null };
@@ -48,4 +50,10 @@ export interface IScatterAppModelState {
 export interface IScatterData {
   dimensions: IDimensionType;
   data: IPoint[];
+}
+
+export interface ITrendlineOptions {
+  type: TrendlineTypeEnum;
+  bandwidth: number;
+  isApplied: boolean;
 }

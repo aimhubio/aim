@@ -32,8 +32,9 @@ function Scatters(
   const chartProps: any[] = React.useMemo(() => {
     return (props.scatterPlotData || []).map((data: any, index: number) => ({
       chartTitle: props.chartTitleData[index],
+      trendlineOptions: props.trendlineOptions,
     }));
-  }, [props.scatterPlotData, props.chartTitleData]);
+  }, [props.scatterPlotData, props.chartTitleData, props.trendlineOptions]);
 
   return (
     <div ref={props.wrapperElemRef} className='Scatters__container'>
@@ -82,7 +83,7 @@ function Scatters(
               isLoading={props.requestStatus === RequestStatusEnum.Pending}
               className='Scatters__loader'
               height='100%'
-              loaderComponent={<ChartLoader controlsCount={9} />}
+              loaderComponent={<ChartLoader controlsCount={2} />}
             >
               {!!props.scatterPlotData?.[0]?.data?.length ? (
                 <ChartPanel
@@ -102,6 +103,8 @@ function Scatters(
                       tooltip={props.tooltip}
                       onChangeTooltip={props.onChangeTooltip}
                       projectsDataMetrics={props.projectsDataMetrics}
+                      trendlineOptions={props.trendlineOptions}
+                      onChangeTrendlineOptions={props.onChangeTrendlineOptions}
                     />
                   }
                 />
