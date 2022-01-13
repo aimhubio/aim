@@ -42,7 +42,7 @@ class Client:
         )
         response = self.remote.release_resource(request)
         if response.status != rpc_messages.ResourceResponse.Status.OK:
-            raise RuntimeError(f'Error releasing resource')
+            raise RuntimeError('Error releasing resource')
 
     def run_instruction(self, resource, method, args=()):
         args = deepcopy(args)

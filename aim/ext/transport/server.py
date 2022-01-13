@@ -15,7 +15,7 @@ from aim.storage.treeutils import encode_tree, decode_tree
 def _wait_forever(server):
     try:
         while True:
-            time.sleep(24*60*60)  # sleep for a day
+            time.sleep(24 * 60 * 60)  # sleep for a day
     except KeyboardInterrupt:
         server.stop(None)
 
