@@ -79,7 +79,7 @@ function Scatters(
               isLoading={props.requestIsPending}
               className='Scatters__loader'
               height='100%'
-              loaderComponent={<ChartLoader controlsCount={9} />}
+              loaderComponent={<ChartLoader controlsCount={2} />}
             >
               {!!props.scatterPlotData?.[0]?.data?.length ? (
                 <ChartPanel

@@ -2,6 +2,7 @@
 
 ## Unreleased
 
+- Enhance controls states of explorer pages (arsengit)
 - Add trendline options to ScatterPlot (roubkar)
 - Add ability to display images in original size and align by width (arsengit)
 - Add version, docs and slack links to sidebar (arsengit)
