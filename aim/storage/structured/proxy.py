@@ -15,6 +15,7 @@ class StructuredRunProxy:
     def __init__(self, client: 'Client',
                  hash_: str,
                  read_only: bool):
+        self._resources: RunProxyAutoClean = None
         self._rpc_client = client
         read_only = struct.pack('?', read_only)
         args = (hash_.encode(), read_only)
@@ -23,8 +24,10 @@ class StructuredRunProxy:
         if handler is None:
             raise ValueError
 
-        self._handler = handler
         self._resources = RunProxyAutoClean(self)
+        self._resources.rpc_client = client
+        self._resources.handler = handler
+        self._handler = handler
 
     @property
     def name(self):
