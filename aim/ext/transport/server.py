@@ -1,13 +1,13 @@
 import time
 import uuid
-from typing import Dict
+from typing import Dict, Union
 
 from concurrent import futures
 import grpc
 import aim.ext.transport.remote_tracking_pb2 as rpc_messages
 import aim.ext.transport.remote_tracking_pb2_grpc as remote_tracking_pb2_grpc
 
-from aim.ext.transport.message_utils import pack, unpack_request_data, ResourceObject
+from aim.ext.transport.message_utils import pack_stream, unpack_stream, ResourceObject
 from aim.ext.transport.handlers import get_tree, get_structured_run
 from aim.storage.treeutils import encode_tree, decode_tree
 
@@ -28,11 +28,8 @@ class ResourceTypeRegistry:
     def __init__(self):
         self._registry: Dict[str, type] = {}
 
-    def register(self, type_name: str, type_cls: type):
-        self._registry[type_name] = type_cls
-
-    def register_factory_method(self, type_name: str, factory_method: callable):
-        self._registry[type_name] = factory_method
+    def register(self, type_name: str, resource_getter: Union[type, callable]):
+        self._registry[type_name] = resource_getter
 
 
 class UnauthorizedRequestError(RuntimeError):
@@ -73,7 +70,7 @@ class RemoteTrackingServicer(remote_tracking_pb2_grpc.RemoteTrackingServiceServi
         if not self._verify_resource_handler(resource_handler, client_uri):
             raise UnauthorizedRequestError()
 
-        args = decode_tree(unpack_request_data(request_iterator))
+        args = decode_tree(unpack_stream(request_iterator))
         checked_args = []
         for arg in args:
             if isinstance(arg, ResourceObject):
@@ -97,7 +94,7 @@ class RemoteTrackingServicer(remote_tracking_pb2_grpc.RemoteTrackingServiceServi
                     result = attr(*checked_args)
                 else:
                     result = attr
-        except Exception as e:
+        except Exception:
             yield rpc_messages.InstructionResponse(header=rpc_messages.ResponseHeader(
                 version=0.1,
                 status=1
@@ -108,7 +105,7 @@ class RemoteTrackingServicer(remote_tracking_pb2_grpc.RemoteTrackingServiceServi
             version=0.1,
             status=0
         ))
-        for chunk in pack(encode_tree(result)):
+        for chunk in pack_stream(encode_tree(result)):
             yield rpc_messages.InstructionResponse(message=chunk)
 
     def _verify_resource_handler(self, resource_handler, client_uri):

@@ -1,9 +1,14 @@
 import struct
 
 from typing import TYPE_CHECKING, List
+from aim.ext.transport.remote_resource import RemoteResourceAutoClean
 
 if TYPE_CHECKING:
     from aim.ext.transport.client import Client
+
+
+class RunProxyAutoClean(RemoteResourceAutoClean):
+    PRIORITY = 60
 
 
 class StructuredRunProxy:
@@ -19,6 +24,7 @@ class StructuredRunProxy:
             raise ValueError
 
         self._handler = handler
+        self._resources = RunProxyAutoClean(self)
 
     @property
     def name(self):

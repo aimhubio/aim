@@ -5,7 +5,7 @@ import grpc
 import aim.ext.transport.remote_tracking_pb2 as rpc_messages
 import aim.ext.transport.remote_tracking_pb2_grpc as remote_tracking_pb2_grpc
 
-from aim.ext.transport.message_utils import pack, unpack, unpack_response_data
+from aim.ext.transport.message_utils import pack_stream, unpack_stream
 from aim.ext.transport.config import AIM_CLIENT_SSL_CERTIFICATES_FILE
 from aim.storage.treeutils import encode_tree, decode_tree
 
@@ -58,7 +58,7 @@ class Client:
             )
             yield header
 
-            stream = pack(encode_tree(args))
+            stream = pack_stream(encode_tree(args))
             for chunk in stream:
                 yield rpc_messages.InstructionRequest(message=chunk)
 
@@ -67,7 +67,7 @@ class Client:
         assert status_msg.WhichOneof('instruction') == 'header'
         if status_msg.header.status != rpc_messages.ResponseHeader.Status.OK:
             raise RuntimeError('something went wrong')
-        return decode_tree(unpack_response_data(resp))
+        return decode_tree(unpack_stream(resp))
 
     @property
     def remote(self):  # access to low-level interface
