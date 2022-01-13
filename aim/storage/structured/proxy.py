@@ -22,63 +22,50 @@ class StructuredRunProxy:
 
     @property
     def name(self):
-        remote = self._rpc_client
-        return remote.run_instruction(self._handler, 'name', [])
+        return self._rpc_client.run_instruction(self._handler, 'name', [])
 
     @name.setter
     def name(self, value):
-        remote = self._rpc_client
-        remote.run_instruction(self._handler, 'name.setter', (value,))
+        self._rpc_client.run_instruction(self._handler, 'name.setter', (value,))
 
     @property
     def description(self):
-        remote = self._rpc_client
-        return remote.run_instruction(self._handler, 'description', [])
+        return self._rpc_client.run_instruction(self._handler, 'description', [])
 
     @description.setter
     def description(self, value):
-        remote = self._rpc_client
-        remote.run_instruction(self._handler, 'description.setter', (value,))
+        self._rpc_client.run_instruction(self._handler, 'description.setter', (value,))
 
     @property
     def archived(self):
-        remote = self._rpc_client
-        return remote.run_instruction(self._handler, 'archived', [])
+        return self._rpc_client.run_instruction(self._handler, 'archived', [])
 
     @archived.setter
     def archived(self, value):
-        remote = self._rpc_client
-        remote.run_instruction(self._handler, 'archived.setter', (value,))
+        self._rpc_client.run_instruction(self._handler, 'archived.setter', (value,))
 
     @property
     def creation_time(self):
-        remote = self._rpc_client
-        return remote.run_instruction(self._handler, 'creation_time', [])
+        return self._rpc_client.run_instruction(self._handler, 'creation_time', [])
 
     @property
     def end_time(self):
-        remote = self._rpc_client
-        return remote.run_instruction(self._handler, 'end_time', [])
+        return self._rpc_client.run_instruction(self._handler, 'end_time', [])
 
     @property
     def experiment(self):
-        remote = self._rpc_client
-        return remote.run_instruction(self._handler, 'experiment', [])
+        return self._rpc_client.run_instruction(self._handler, 'experiment', [])
 
     @experiment.setter
     def experiment(self, value: str):
-        remote = self._rpc_client
-        remote.run_instruction(self._handler, 'experiment.setter', (value,))
+        self._rpc_client.run_instruction(self._handler, 'experiment.setter', (value,))
 
     @property
     def tags(self) -> List[str]:
-        remote = self._rpc_client
-        return remote.run_instruction(self._handler, 'tags', [])
+        return self._rpc_client.run_instruction(self._handler, 'tags', [])
 
     def add_tag(self, value: str) -> str:
-        remote = self._rpc_client
-        return remote.run_instruction(self._handler, 'add_tag', (value,))
+        return self._rpc_client.run_instruction(self._handler, 'add_tag', (value,))
 
     def remove_tag(self, value: str) -> bool:
-        remote = self._rpc_client
-        return remote.run_instruction(self._handler, 'remove_tag', (value,))
+        return self._rpc_client.run_instruction(self._handler, 'remove_tag', (value,))

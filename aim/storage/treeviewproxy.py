@@ -43,8 +43,7 @@ class ProxyTree(TreeView):
         self._handler = handler
 
     def preload(self):
-        remote = self._rpc_client
-        remote.run_instruction(self._handler, 'preload')
+        self._rpc_client.run_instruction(self._handler, 'preload')
 
     def view(
         self,
@@ -54,47 +53,43 @@ class ProxyTree(TreeView):
         subtree = SubtreeView(self, path)
         if not resolve:
             return subtree
+        # TODO [AT, MV] handle resolve=True
+        # make an rpc call to get underlying object type
+        # and construct CustomObject if needed
         return None
 
     def make_array(
         self,
         path: Union[AimObjectKey, AimObjectPath] = ()
     ):
-        remote = self._rpc_client
-        remote.run_instruction(self._handler, 'make_array', (path,))
+        self._rpc_client.run_instruction(self._handler, 'make_array', (path,))
 
     def collect(
         self,
         path: Union[AimObjectKey, AimObjectPath] = (),
         strict: bool = True
     ) -> AimObject:
-        remote = self._rpc_client
-        return remote.run_instruction(self._handler, 'collect', (path, strict))
+        return self._rpc_client.run_instruction(self._handler, 'collect', (path, strict))
 
     def __delitem__(
         self,
         path: Union[AimObjectKey, AimObjectPath]
     ):
-        remote = self._rpc_client
-        remote.run_instruction(self._handler, '__delitem__', (path,))
+        self._rpc_client.run_instruction(self._handler, '__delitem__', (path,))
 
     def __setitem__(
             self,
             path: Union[AimObjectKey, AimObjectPath],
             value: AimObject
     ):
-        remote = self._rpc_client
-        remote.run_instruction(self._handler, '__setitem__', (path, value))
+        self._rpc_client.run_instruction(self._handler, '__setitem__', (path, value))
 
     def keys(
         self,
         path: Union[AimObjectKey, AimObjectPath] = (),
         level: int = None
     ) -> Iterator[Union[AimObjectPath, AimObjectKey]]:
-        remote = self._rpc_client
-        resp_stream = remote.run_instruction(self._handler, 'keys', (path, level))
-        result = resp_stream
-        return result
+        return self._rpc_client.run_instruction(self._handler, 'keys', (path, level))
 
     def items(
         self,
@@ -103,10 +98,7 @@ class ProxyTree(TreeView):
         AimObjectKey,
         AimObject
     ]]:
-        remote = self._rpc_client
-        resp_stream = remote.run_instruction(self._handler, 'items', (path,))
-        result = resp_stream
-        return result
+        return self._rpc_client.run_instruction(self._handler, 'items', (path,))
 
     def iterlevel(
         self,
@@ -116,10 +108,7 @@ class ProxyTree(TreeView):
         AimObjectPath,
         AimObject
     ]]:
-        remote = self._rpc_client
-        resp_stream = remote.run_instruction(self._handler, 'iterlevel', (path, level))
-        result = resp_stream
-        return result
+        return self._rpc_client.run_instruction(self._handler, 'iterlevel', (path, level))
 
     def array(
         self,
@@ -131,24 +120,20 @@ class ProxyTree(TreeView):
         self,
         path: Union[AimObjectKey, AimObjectPath] = ()
     ) -> Tuple[AimObjectKey, AimObject]:
-        remote = self._rpc_client
-        return remote.run_instruction(self._handler, 'first', (path,))
+        return self._rpc_client.run_instruction(self._handler, 'first', (path,))
 
     def last(
         self,
         path: Union[AimObjectKey, AimObjectPath] = ()
     ) -> Tuple[AimObjectKey, AimObject]:
-        remote = self._rpc_client
-        res = remote.run_instruction(self._handler, 'last', (path,))
-        return res
+        return self._rpc_client.run_instruction(self._handler, 'last', (path,))
 
     def finalize(
         self,
         *,
         index: 'ProxyTree'
     ):
-        remote = self._rpc_client
-        remote.run_instruction(self._handler, 'finalize', (ResourceObject(index._handler),))
+        self._rpc_client.run_instruction(self._handler, 'finalize', (ResourceObject(index._handler),))
 
 
 class SubtreeView(TreeView):
