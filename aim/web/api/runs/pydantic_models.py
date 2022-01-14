@@ -168,6 +168,9 @@ class QuerySyntaxErrorOut(BaseModel):
     detail: SE
 
 
+RunsBatchIn = List[str]
+
+
 # image search API response models
 class RangeInfo(BaseModel):
     records_range: Tuple[int, int]
