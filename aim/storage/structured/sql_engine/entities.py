@@ -59,6 +59,15 @@ class ModelMappedRun(IRun, metaclass=ModelMappedClassMeta):
         return ModelMappedRun(run, session)
 
     @classmethod
+    def delete_run(cls, runhash: str, session) -> bool:
+        try:
+            rows_affected = session.query(RunModel).filter(RunModel.hash == runhash).delete()
+            session.flush()
+        except Exception:
+            return False
+        return rows_affected > 0
+
+    @classmethod
     def find(cls, _id: str, **kwargs) -> Union[IRun, SafeNone]:
         session = kwargs.get('session')
         if not session:

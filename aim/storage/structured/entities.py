@@ -194,6 +194,10 @@ class ObjectFactory:
         ...
 
     @abstractmethod
+    def delete_run(self, runhash: str) -> bool:
+        ...
+
+    @abstractmethod
     def experiments(self) -> ExperimentCollection:
         ...
 
