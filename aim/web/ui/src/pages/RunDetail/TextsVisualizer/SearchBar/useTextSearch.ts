@@ -26,6 +26,11 @@ function useTextSearch({ rawData, updateData }: UseTextSearchProps) {
     const filteredData = data?.filter((item: { text: string }) => {
       switch (matchType) {
         case MatchTypes.Word:
+          search = `\\b${search}\\b`;
+          const regex = new RegExp(search);
+          if (item.text.search(regex) > -1) {
+            return item;
+          }
           break;
         case MatchTypes.Case:
           if (item.text.indexOf(search) > -1) {
@@ -41,6 +46,7 @@ function useTextSearch({ rawData, updateData }: UseTextSearchProps) {
             } else {
               regex = new RegExp(search, 'g');
             }
+
             if (regex.test(item.text)) {
               return item;
             }
