@@ -8,6 +8,7 @@
 - Add version, docs and slack links to sidebar (arsengit)
 - Enhance AudioPlayer component (arsengit)
 - Recover active tab in run details page after reload (roubkar)
+- Remote tracking server alpha version (alberttorosyan, mihran113, aramaim)
 
 ## 3.3.4 Jan 10 2022
 
