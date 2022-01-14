@@ -5,6 +5,7 @@ import _ from 'lodash-es';
 import { IPlotlyVisualizerProps } from '../types';
 
 import './PlotlyVisualizer.scss';
+
 function PlotlyVisualizer(
   props: IPlotlyVisualizerProps,
 ): React.FunctionComponentElement<React.ReactNode> {

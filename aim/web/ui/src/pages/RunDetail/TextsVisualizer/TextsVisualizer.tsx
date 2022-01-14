@@ -2,8 +2,11 @@ import React from 'react';
 
 import Table from 'components/Table/Table';
 
+import { ITableRef } from 'types/components/Table/Table';
+
 import { ITextsVisualizerProps } from '../types';
 
+import useTextSearch from './SearchBar/useTextSearch';
 import SearchBar from './SearchBar';
 
 import './TextsVisualizer.scss';
@@ -11,6 +14,7 @@ import './TextsVisualizer.scss';
 function TextsVisualizer(
   props: ITextsVisualizerProps | any,
 ): React.FunctionComponentElement<React.ReactNode> {
+  const tableRef = React.useRef<ITableRef>(null);
   const tableColumns = [
     {
       dataKey: 'step',
@@ -36,15 +40,32 @@ function TextsVisualizer(
       },
     },
   ];
+  const textSearch = useTextSearch({
+    rawData: props?.data?.processedValues,
+    updateData,
+  });
+
+  function updateData(data: { text: string }[]) {
+    tableRef.current?.updateData({ newData: data });
+  }
+
   return (
     <div className='TextsVisualizer'>
-      <SearchBar />
-      {props.data?.processedValues && (
+      <SearchBar
+        isValidInput={textSearch.filterOptions.isValidSearch}
+        searchValue={textSearch.filterOptions.searchValue}
+        matchType={textSearch.filterOptions.matchType}
+        onMatchTypeChange={textSearch.changeMatchType}
+        onInputClear={textSearch.clearSearchInputData}
+        onInputChange={textSearch.changeSearchInput}
+      />
+      {textSearch.data && (
         <Table
+          ref={tableRef}
           fixed={false}
           className='TextsTable'
           columns={tableColumns}
-          data={props?.data?.processedValues}
+          data={textSearch.data}
           isLoading={props?.isLoading}
           hideHeaderActions
           estimatedRowHeight={32}

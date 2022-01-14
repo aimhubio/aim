@@ -1,40 +1,48 @@
-import React from 'react';
+import React, { ChangeEvent } from 'react';
 
 import { FormControl, InputLabel, OutlinedInput } from '@material-ui/core';
+
+import { ISearchInputProps } from '../types';
 
 import EndAdornment from './EndAdornment';
 
 import './SearchInput.scss';
 
-interface ISearchInputProps {
-  value: string;
-}
-function SearchInput(props: ISearchInputProps) {
+function SearchInput({
+  value,
+  onInputClear,
+  onInputChange,
+  isValidInput,
+}: ISearchInputProps) {
   return (
     <FormControl className='SearchInput'>
       <InputLabel htmlFor='search' variant='outlined' color='primary'>
         Search for text
       </InputLabel>
       <OutlinedInput
-        autoFocus
+        fullWidth
+        type='text'
         id='search'
         name='search'
-        type='text'
         label='Search for text'
-        fullWidth
-        value={props.value}
-        endAdornment={<EndAdornment showSearchIcon={!props.value} />}
+        value={value}
+        error={!isValidInput}
+        autoComplete='off'
+        onChange={(event: ChangeEvent<HTMLInputElement>) =>
+          onInputChange(event.target.value)
+        }
+        endAdornment={
+          <EndAdornment
+            showSearchIcon={!value}
+            onClickClearButton={onInputClear}
+          />
+        }
         style={{
           height: 28,
-        }}
-        inputProps={{
-          style: {
-            height: 28,
-          },
         }}
       />
     </FormControl>
   );
 }
 
-export default SearchInput;
+export default React.memo<ISearchInputProps>(SearchInput);

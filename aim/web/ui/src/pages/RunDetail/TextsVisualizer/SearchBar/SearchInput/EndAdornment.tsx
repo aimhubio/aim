@@ -3,11 +3,12 @@ import React from 'react';
 import Icon from 'components/kit/Icon';
 import Button from 'components/kit/Button';
 
-interface IEndAdornment {
-  showSearchIcon?: boolean;
-}
+import { ISearchInputEndAdornment } from '../types';
 
-function EndAdornment({ showSearchIcon = true }: IEndAdornment) {
+function EndAdornment({
+  showSearchIcon = true,
+  onClickClearButton,
+}: ISearchInputEndAdornment) {
   return (
     <span className='EndAdornment'>
       {showSearchIcon ? (
@@ -18,9 +19,7 @@ function EndAdornment({ showSearchIcon = true }: IEndAdornment) {
           <Button
             withOnlyIcon
             size='small'
-            onClick={() => {
-              console.log('clear');
-            }}
+            onClick={onClickClearButton}
             color='secondary'
           >
             <Icon name='close' />
@@ -31,4 +30,4 @@ function EndAdornment({ showSearchIcon = true }: IEndAdornment) {
   );
 }
 
-export default EndAdornment;
+export default React.memo<ISearchInputEndAdornment>(EndAdornment);

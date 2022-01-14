@@ -5,29 +5,42 @@ import { Tooltip } from '@material-ui/core';
 import Icon from 'components/kit/Icon';
 import Button from 'components/kit/Button';
 
+import {
+  ISearchBarProps,
+  MatchTypes,
+} from 'pages/RunDetail/TextsVisualizer/SearchBar/types.d';
+
 import SearchInput from './SearchInput';
 
 import './SearchBar.scss';
 
-interface ISearchBarProps {
-  isCaseMatchActive?: boolean;
-  isWordMatchActive?: boolean;
-  isRegexpMatchActive?: boolean;
-}
-
-function SearchBar(props: ISearchBarProps) {
+function SearchBar({
+  matchType,
+  searchValue,
+  isValidInput,
+  onInputClear,
+  onInputChange,
+  onMatchTypeChange,
+}: ISearchBarProps) {
   return (
     <div className='SearchBar'>
-      <SearchInput value={'test'} />
+      <SearchInput
+        value={searchValue}
+        onInputClear={onInputClear}
+        onInputChange={onInputChange}
+        isValidInput={isValidInput}
+      />
       <div className='MatchIcons'>
         <Tooltip title='Match Case'>
           <div>
             <Button
               withOnlyIcon
-              color={props.isCaseMatchActive ? 'primary' : 'secondary'}
+              color={matchType === MatchTypes.Case ? 'primary' : 'secondary'}
               size='small'
               onClick={() => {
-                console.log('clear');
+                onMatchTypeChange(
+                  matchType === MatchTypes.Case ? null : MatchTypes.Case,
+                );
               }}
             >
               <Icon name='case-sensitive' />
@@ -38,10 +51,12 @@ function SearchBar(props: ISearchBarProps) {
           <div>
             <Button
               withOnlyIcon
-              color={props.isWordMatchActive ? 'primary' : 'secondary'}
+              color={matchType === MatchTypes.Word ? 'primary' : 'secondary'}
               size='small'
               onClick={() => {
-                console.log('clear');
+                onMatchTypeChange(
+                  matchType === MatchTypes.Word ? null : MatchTypes.Word,
+                );
               }}
             >
               <Icon name='word-match' />
@@ -52,10 +67,12 @@ function SearchBar(props: ISearchBarProps) {
           <div>
             <Button
               withOnlyIcon
-              color={props.isRegexpMatchActive ? 'primary' : 'secondary'}
+              color={matchType === MatchTypes.RegExp ? 'primary' : 'secondary'}
               size='small'
               onClick={() => {
-                console.log('clear');
+                onMatchTypeChange(
+                  matchType === MatchTypes.RegExp ? null : MatchTypes.RegExp,
+                );
               }}
             >
               <Icon name='regex' />
@@ -67,4 +84,6 @@ function SearchBar(props: ISearchBarProps) {
   );
 }
 
-export default SearchBar;
+SearchBar.displayName = 'SearchBar';
+
+export default React.memo<ISearchBarProps>(SearchBar);
