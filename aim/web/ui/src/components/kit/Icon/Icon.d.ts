@@ -107,8 +107,8 @@ export type IconName =
   | 'voice-on'
   | 'voice-off'
   | 'slack'
-  | 'z-axis'
-  | 'TypeTriangle-Outline'
-  | 'TypeTriangle'
+  | 'images-stacking'
+  | 'typeTriangle-Outline'
+  | 'typeTriangle'
   | 'slack'
   | 'trendline';

@@ -2,7 +2,7 @@ import { ITypeMetadata } from './AlertBanner.d';
 
 const warning: ITypeMetadata = {
   cssClassName: 'warning',
-  iconName: 'TypeTriangle',
+  iconName: 'typeTriangle',
 };
 
 const info: ITypeMetadata = {

@@ -120,7 +120,7 @@ function Controls(
             className={classNames('Controls__icon', {
               active: props.additionalProperties.stacking,
             })}
-            name='z-axis'
+            name='images-stacking'
           />
         </div>
       </Tooltip>
