@@ -1,5 +1,11 @@
 # Changelog
 
+## 3.3.5 Jan 14 2022
+
+- Add non-strict write mode to replace not-yet-supported types with their
+  string representations.
+- Log pytorch_lightning hyperparameters in non-strict mode.
+
 ## 3.3.4 Jan 10 2022
 
 - Fix issue with WAL files flushing (alberttorosyan)
