@@ -36,7 +36,7 @@ export interface IImagesExploreAppConfig {
       alignmentType: string;
       mediaItemSize: number;
       imageRendering: string;
-      stacking: false;
+      stacking: boolean;
     };
   };
   select: ISelectConfig;

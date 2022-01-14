@@ -1,9 +1,13 @@
 @use './variables' as *;
 
 @mixin mq($breakpoint) {
-    @if map-has-key($breakpoints, $breakpoint) {
-      @media (min-width: #{map-get($breakpoints, $breakpoint)}) {
-        @content;
-      }
+  @if map-has-key($breakpoints, $breakpoint) {
+    @media (min-width: #{map-get($breakpoints, $breakpoint)}) {
+      @content;
     }
+  }
+}
+
+@mixin backgroundColorOpacity($color, $opacity: 0.1) {
+  background-color: rgba($color, $opacity);
 }

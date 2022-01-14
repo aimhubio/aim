@@ -278,7 +278,7 @@ function getMetricsTableColumns(
               let name: string = field.replace('run.params.', '');
               name = name.replace('run.props', 'run');
               return (
-                <Tooltip key={field} title={name}>
+                <Tooltip key={field} title={name || ''}>
                   <span>{name}</span>
                 </Tooltip>
               );
@@ -394,7 +394,7 @@ function metricsTableRowRenderer(
                       horizontal: 'left',
                     }}
                     anchor={({ onAnchorClick }) => (
-                      <Tooltip title={contextToString(value) as string}>
+                      <Tooltip title={(contextToString(value) as string) || ''}>
                         <span onClick={onAnchorClick}>
                           {contextToString(value)}
                         </span>
@@ -403,7 +403,7 @@ function metricsTableRowRenderer(
                     component={<JsonViewPopover json={value} />}
                   />
                 ) : (
-                  <Tooltip key={item} title={value}>
+                  <Tooltip key={item} title={value || ''}>
                     <span>{formatValue(value)}</span>
                   </Tooltip>
                 );
