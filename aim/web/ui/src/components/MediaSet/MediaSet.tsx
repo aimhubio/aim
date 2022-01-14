@@ -3,10 +3,11 @@ import _ from 'lodash-es';
 import { VariableSizeList as List, areEqual } from 'react-window';
 import classNames from 'classnames';
 
-import { Tooltip } from '@material-ui/core';
+import { InputBase, Tooltip } from '@material-ui/core';
+import Autocomplete from '@material-ui/lab/Autocomplete';
 
 import MediaList from 'components/MediaList';
-import { JsonViewPopover, Slider } from 'components/kit';
+import { Button, Icon, JsonViewPopover, Slider, Text } from 'components/kit';
 import ControlPopover from 'components/ControlPopover/ControlPopover';
 import { MediaTypeEnum } from 'components/MediaPanel/config';
 
@@ -73,6 +74,24 @@ const MediaSet = ({
     }
   }
 
+  function setStackedContent(list: [], path: (string | {})[]): void {
+    const [lastContentPath, lastContentList] = content[content.length - 1];
+    const [orderedMapKey, value] = (path[path.length - 1] as string).split(
+      ' = ',
+    );
+    if (path.length === lastContentPath.length) {
+      (lastContentPath[lastContentPath.length - 1] as any)[orderedMapKey].push(
+        value,
+      );
+      setStackedList(list, lastContentList);
+    } else {
+      let stackedList: [][] = [];
+      setStackedList(list, stackedList);
+      path[path.length - 1] = { [orderedMapKey]: [value] };
+      content.push([path, stackedList]);
+    }
+  }
+
   function fillContent(
     list: [] | { [key: string]: [] | {} },
     path: (string | {})[] = [''],
@@ -80,21 +99,7 @@ const MediaSet = ({
   ) {
     if (Array.isArray(list)) {
       if (additionalProperties.stacking && content.length) {
-        const [lastContentPath, lastContentList] = content[content.length - 1];
-        const [orderedMapKey, value] = (path[path.length - 1] as string).split(
-          '=',
-        );
-        if (path.length === lastContentPath.length) {
-          (lastContentPath[lastContentPath.length - 1] as any)[
-            orderedMapKey
-          ].push(value);
-          setStackedList(list, lastContentList);
-        } else {
-          let stackedList: [][] = [];
-          setStackedList(list, stackedList);
-          path[path.length - 1] = { [orderedMapKey]: [value] };
-          content.push([path, stackedList]);
-        }
+        setStackedContent(list, path);
       } else {
         content.push([path, list]);
       }
@@ -218,13 +223,12 @@ const MediaGroupedList = React.memo(function MediaGroupedList({
   });
   const json: string | object = jsonParse(currentValue);
   const isJson: boolean = typeof json === 'object';
+  const renderStacking =
+    currentItems.length > 0 && isStackedPath && pathValue.length > 1;
 
-  function onSliderChange(
-    event: React.ChangeEvent<{}>,
-    value: number | number[],
-  ): void & React.FormEventHandler<HTMLSpanElement> {
+  function onSliderChange(value: number): void {
     if (value !== depth) {
-      setDepth(value as number);
+      setDepth(value);
     }
   }
   return (
@@ -256,24 +260,140 @@ const MediaGroupedList = React.memo(function MediaGroupedList({
               horizontal: 'left',
             }}
             anchor={({ onAnchorClick }) => (
-              <Tooltip
-                placement='top-start'
-                title={isJson ? `${pathKey} = ${currentValue}` : ''}
-              >
-                <span
-                  onClick={isJson ? onAnchorClick : undefined}
-                  className={classNames('MediaSet__container__title', {
-                    MediaSet__container__title__pointer: isJson,
-                  })}
+              <span className='MediaSet__container__path'>
+                <Tooltip
+                  placement='top-start'
+                  title={`${pathKey} = ${currentValue}`}
                 >
-                  {`${pathKey} = ${currentValue}`}
-                </span>
-              </Tooltip>
+                  <span
+                    className='MediaSet__container__path__title'
+                    style={{
+                      height: MEDIA_SET_TITLE_HEIGHT,
+                      width: renderStacking ? '' : '100%',
+                    }}
+                  >
+                    <span
+                      className={classNames(
+                        'MediaSet__container__path__title__key',
+                        {
+                          slider: renderStacking,
+                        },
+                      )}
+                    >
+                      {pathKey}
+                    </span>
+                    =
+                    <span
+                      onClick={isJson ? onAnchorClick : undefined}
+                      className={classNames(
+                        'MediaSet__container__path__title__value',
+                        {
+                          slider: renderStacking,
+                          MediaSet__container__path__title__pointer: isJson,
+                        },
+                      )}
+                    >
+                      {currentValue}
+                    </span>
+                  </span>
+                </Tooltip>
+                {renderStacking && (
+                  <ControlPopover
+                    anchorOrigin={{
+                      vertical: 'bottom',
+                      horizontal: 'right',
+                    }}
+                    transformOrigin={{
+                      vertical: 'top',
+                      horizontal: 'right',
+                    }}
+                    className='MediaSet__container__path__depthDropdown'
+                    anchor={({ onAnchorClick, opened }) => (
+                      <span
+                        onClick={onAnchorClick}
+                        className='MediaSet__container__path__depthDropdown__button'
+                        style={{ height: MEDIA_SET_TITLE_HEIGHT }}
+                      >
+                        <Button
+                          color={opened ? 'primary' : 'default'}
+                          size='small'
+                          withOnlyIcon
+                          style={{ height: MEDIA_SET_TITLE_HEIGHT }}
+                        >
+                          <Icon name={opened ? 'arrow-up' : 'arrow-down'} />
+                        </Button>
+                      </span>
+                    )}
+                    component={
+                      <Autocomplete
+                        open
+                        size='small'
+                        disablePortal={true}
+                        disableCloseOnSelect
+                        className='MediaSet__container__path__depthDropdown__autocomplete'
+                        options={(pathValue as string[]).map((v, i) => ({
+                          depth: i,
+                          label: v,
+                        }))}
+                        getOptionLabel={(option) => option.label}
+                        getOptionSelected={(option) => option.depth === depth}
+                        onChange={(e, value) => {
+                          onSliderChange(value.depth);
+                        }}
+                        disableClearable={true}
+                        ListboxProps={{
+                          style: {
+                            height: 200,
+                          },
+                        }}
+                        classes={{
+                          popper:
+                            'MediaSet__container__path__depthDropdown__autocomplete__popper',
+                        }}
+                        renderInput={(params) => (
+                          <InputBase
+                            ref={params.InputProps.ref}
+                            inputProps={params.inputProps}
+                            spellCheck={false}
+                            placeholder='Search'
+                            autoFocus={true}
+                            className='MediaSet__container__path__depthDropdown__autocomplete__select'
+                          />
+                        )}
+                        renderOption={(option) => (
+                          <>
+                            <Text
+                              className={classNames(
+                                'MediaSet__container__path__depthDropdown__autocomplete__select__option__label',
+                                {
+                                  selected: depth === option.depth,
+                                },
+                              )}
+                              weight={500}
+                              size={12}
+                            >
+                              {option.label}
+                            </Text>
+                            {depth === option.depth && (
+                              <Icon
+                                fontSize={14}
+                                color='primary'
+                                name='check'
+                                className='MediaSet__container__path__depthDropdown__autocomplete__select__icon'
+                              />
+                            )}
+                          </>
+                        )}
+                      />
+                    }
+                  />
+                )}
+              </span>
             )}
             component={<JsonViewPopover json={json as object} />}
           />
         )}
-        {currentItems.length > 0 && isStackedPath && pathValue.length > 1 && (
+        {renderStacking && (
           <div
             className='MediaSet__container__sliderContainer'
             style={{ height: MEDIA_SET_SLIDER_HEIGHT }}
@@ -284,7 +404,7 @@ const MediaGroupedList = React.memo(function MediaGroupedList({
               valueLabelDisplay='off'
               getAriaValueText={(value) => `${pathValue[value]}`}
               value={depth}
-              onChange={onSliderChange}
+              onChange={(e, value) => onSliderChange(value as number)}
               step={null}
               marks={(pathValue as string[]).map((l, i) => ({ value: i }))}
               min={0}
@@ -328,7 +448,7 @@ function getPathDetails({
     pathKey = Object.keys(lastPath)[0];
     pathValue = lastPath[pathKey];
   } else {
-    [pathKey = '', pathValue = ''] = lastPath?.split('=');
+    [pathKey = '', pathValue = ''] = lastPath?.split(' = ');
   }
   return { pathKey, pathValue };
 }

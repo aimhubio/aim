@@ -1,11 +1,11 @@
+import { IMediaPanelProps } from 'components/MediaPanel';
+import { MediaTypeEnum } from 'components/MediaPanel/config';
+
 import { IImageData } from 'types/services/models/imagesExplore/imagesExploreAppModel';
 import {
   IFocusedState,
   ITooltipContent,
 } from 'types/services/models/metrics/metricsAppModel';
-
-import { IMediaPanelProps } from '../MediaPanel';
-import { MediaTypeEnum } from '../MediaPanel/config';
 
 export interface IMediaListProps {
   data: IImageData[];

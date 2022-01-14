@@ -5,8 +5,6 @@ import { IGroupingSelectOption } from 'services/models/imagesExplore/imagesExplo
 
 import { IImagesExploreAppConfig } from 'types/services/models/imagesExplore/imagesExploreAppModel';
 
-import { IMediaPanelProps } from '../../../../../components/MediaPanel';
-
 export interface IControlProps {
   selectOptions: IGroupingSelectOption[];
   tooltip: IPanelTooltip;
