@@ -12,6 +12,7 @@ import { ResizeModeEnum } from 'config/enums/tableEnums';
 import { AlignmentNotificationsEnum } from 'config/notification-messages/notificationMessages';
 import { RowHeightSize } from 'config/table/tableConfigs';
 import { DensityOptions } from 'config/enums/densityEnum';
+import { CONTROLS_DEFAULT_CONFIG } from 'config/controls/controlsDefaultConfig';
 
 import {
   getMetricsTableColumns,
@@ -79,7 +80,10 @@ import {
   IAppModelState,
   ISelectOption,
 } from 'types/services/models/explorer/createAppModel';
-import { IScatterAppModelState } from 'types/services/models/scatter/scatterAppModel';
+import {
+  IScatterAppModelState,
+  ITrendlineOptions,
+} from 'types/services/models/scatter/scatterAppModel';
 
 import {
   aggregateGroupData,
@@ -139,6 +143,7 @@ import {
   ChartTypeEnum,
   CurveEnum,
   ScaleEnum,
+  TrendlineTypeEnum,
 } from 'utils/d3';
 import {
   adjustable_reader,
@@ -172,6 +177,7 @@ import { isSystemMetric } from 'utils/isSystemMetric';
 import setDefaultAppConfigData from 'utils/app/setDefaultAppConfigData';
 import getAppConfigData from 'utils/app/getAppConfigData';
 import { getValue } from 'utils/helper';
+import onChangeTrendlineOptions from 'utils/app/onChangeTrendlineOptions';
 
 import { AppDataTypeEnum, AppNameEnum } from './index';
 
@@ -249,37 +255,44 @@ function createAppModel(appConfig: IAppInitialConfig) {
         if (components?.charts?.[0]) {
           if (components.charts.indexOf(ChartTypeEnum.LineChart) !== -1) {
             config.chart = {
-              highlightMode: HighlightEnum.Off,
-              ignoreOutliers: true,
+              highlightMode: CONTROLS_DEFAULT_CONFIG.metrics.highlightMode,
+              ignoreOutliers: CONTROLS_DEFAULT_CONFIG.metrics.ignoreOutliers,
               zoom: {
-                active: false,
-                mode: ZoomEnum.SINGLE,
+                active: CONTROLS_DEFAULT_CONFIG.metrics.zoom.active,
+                mode: CONTROLS_DEFAULT_CONFIG.metrics.zoom.mode,
                 history: [],
               },
               axesScaleType: {
-                xAxis: ScaleEnum.Linear,
-                yAxis: ScaleEnum.Linear,
+                xAxis: CONTROLS_DEFAULT_CONFIG.metrics.axesScaleType.xAxis,
+                yAxis: CONTROLS_DEFAULT_CONFIG.metrics.axesScaleType.yAxis,
               },
-              curveInterpolation: CurveEnum.Linear,
-              smoothingAlgorithm: SmoothingAlgorithmEnum.EMA,
-              smoothingFactor: 0,
+              curveInterpolation:
+                CONTROLS_DEFAULT_CONFIG.metrics.curveInterpolation,
+              smoothingAlgorithm:
+                CONTROLS_DEFAULT_CONFIG.metrics.smoothingAlgorithm,
+              smoothingFactor: CONTROLS_DEFAULT_CONFIG.metrics.smoothingFactor,
               alignmentConfig: {
-                metric: '',
-                type: AlignmentOptionsEnum.STEP,
+                metric: CONTROLS_DEFAULT_CONFIG.metrics.alignmentConfig.metric,
+                type: CONTROLS_DEFAULT_CONFIG.metrics.alignmentConfig.type,
               },
-              densityType: DensityOptions.Minimum,
+              densityType: CONTROLS_DEFAULT_CONFIG.metrics.densityType,
               aggregationConfig: {
                 methods: {
-                  area: AggregationAreaMethods.MIN_MAX,
-                  line: AggregationLineMethods.MEAN,
+                  area: CONTROLS_DEFAULT_CONFIG.metrics.aggregationConfig
+                    .methods.area,
+                  line: CONTROLS_DEFAULT_CONFIG.metrics.aggregationConfig
+                    .methods.line,
                 },
-                isApplied: false,
-                isEnabled: false,
+                isApplied:
+                  CONTROLS_DEFAULT_CONFIG.metrics.aggregationConfig.isApplied,
+                isEnabled:
+                  CONTROLS_DEFAULT_CONFIG.metrics.aggregationConfig.isEnabled,
               },
               tooltip: {
                 content: {},
-                display: true,
-                selectedParams: [],
+                display: CONTROLS_DEFAULT_CONFIG.metrics.tooltip.display,
+                selectedParams:
+                  CONTROLS_DEFAULT_CONFIG.metrics.tooltip.selectedParams,
               },
               focusedState: {
                 active: false,
@@ -291,6 +304,7 @@ function createAppModel(appConfig: IAppInitialConfig) {
             };
           }
         }
+
         if (selectForm) {
           config.select = {
             options: [],
@@ -360,8 +374,10 @@ function createAppModel(appConfig: IAppInitialConfig) {
         if (components?.charts?.[0]) {
           if (components.charts.indexOf(ChartTypeEnum.HighPlot) !== -1) {
             config.chart = {
-              curveInterpolation: CurveEnum.Linear,
-              isVisibleColorIndicator: false,
+              curveInterpolation:
+                CONTROLS_DEFAULT_CONFIG.params.curveInterpolation,
+              isVisibleColorIndicator:
+                CONTROLS_DEFAULT_CONFIG.params.isVisibleColorIndicator,
               focusedState: {
                 key: null,
                 xValue: null,
@@ -371,8 +387,9 @@ function createAppModel(appConfig: IAppInitialConfig) {
               },
               tooltip: {
                 content: {},
-                display: true,
-                selectedParams: [],
+                display: CONTROLS_DEFAULT_CONFIG.params.tooltip.display,
+                selectedParams:
+                  CONTROLS_DEFAULT_CONFIG.params.tooltip.selectedParams,
               },
             };
           }
@@ -387,8 +404,16 @@ function createAppModel(appConfig: IAppInitialConfig) {
               },
               tooltip: {
                 content: {},
-                display: true,
-                selectedParams: [],
+                display: CONTROLS_DEFAULT_CONFIG.scatters.tooltip.display,
+                selectedParams:
+                  CONTROLS_DEFAULT_CONFIG.scatters.tooltip.selectedParams,
+              },
+              trendlineOptions: {
+                type: CONTROLS_DEFAULT_CONFIG.scatters.trendlineOptions.type,
+                bandwidth:
+                  CONTROLS_DEFAULT_CONFIG.scatters.trendlineOptions.bandwidth,
+                isApplied:
+                  CONTROLS_DEFAULT_CONFIG.scatters.trendlineOptions.isApplied,
               },
             };
           }
@@ -4976,6 +5001,11 @@ function createAppModel(appConfig: IAppInitialConfig) {
         Object.assign(methods, {
           onChangeTooltip(tooltip: Partial<IPanelTooltip>): void {
             onChangeTooltip({ tooltip, tooltipData, model, appName });
+          },
+          onChangeTrendlineOptions(
+            trendlineOptions: Partial<ITrendlineOptions>,
+          ): void {
+            onChangeTrendlineOptions({ trendlineOptions, model, appName });
           },
         });
       }
