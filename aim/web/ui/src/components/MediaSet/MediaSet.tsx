@@ -43,27 +43,11 @@ const MediaSet = ({
   tooltip,
   mediaType,
 }: IMediaSetProps): React.FunctionComponentElement<React.ReactNode> => {
+  const [depthMap, setDepthMap] = React.useState<number[]>([]);
   let content: [(string | {})[], [] | [][]][] = []; // the actual items list to be passed to virtualized list component
   let keysMap: { [key: string]: number } = {}; // cache for checking whether the group title is already added to list
 
-  const mediaItemHeight = React.useMemo(() => {
-    if (mediaType === MediaTypeEnum.AUDIO) {
-      return MEDIA_ITEMS_SIZES[mediaType]()?.height;
-    } else {
-      return MEDIA_ITEMS_SIZES[mediaType]({
-        data,
-        additionalProperties,
-        wrapperOffsetWidth,
-        wrapperOffsetHeight,
-      })?.height;
-    }
-  }, [
-    additionalProperties,
-    data,
-    mediaType,
-    wrapperOffsetHeight,
-    wrapperOffsetWidth,
-  ]);
+  fillContent(data, [''], orderedMap);
 
   function setStackedList(list: [], stackedList: [][]): void {
     for (let j = 0; j < list.length; j++) {
@@ -120,8 +104,6 @@ const MediaSet = ({
     }
   }
 
-  fillContent(data, [''], orderedMap);
-
   function getItemSize(index: number): number {
     let [path, items] = content[index];
     const { maxHeight, maxWidth } = getBiggestImageFromList(items.flat());
@@ -154,6 +136,42 @@ const MediaSet = ({
     return MEDIA_SET_TITLE_HEIGHT + MEDIA_SET_WRAPPER_PADDING_HEIGHT;
   }
 
+  const onSliderChange = React.useCallback(
+    (value: number, index: number): void => {
+      if (value !== depthMap[index]) {
+        let tmpDepthMap = [...depthMap];
+        tmpDepthMap[index] = value;
+        setDepthMap(tmpDepthMap);
+      }
+    },
+    [depthMap, setDepthMap],
+  );
+
+  const mediaItemHeight = React.useMemo(() => {
+    if (mediaType === MediaTypeEnum.AUDIO) {
+      return MEDIA_ITEMS_SIZES[mediaType]()?.height;
+    } else {
+      return MEDIA_ITEMS_SIZES[mediaType]({
+        data,
+        additionalProperties,
+        wrapperOffsetWidth,
+        wrapperOffsetHeight,
+      })?.height;
+    }
+  }, [
+    additionalProperties,
+    data,
+    mediaType,
+    wrapperOffsetHeight,
+    wrapperOffsetWidth,
+  ]);
+
+  React.useEffect(() => {
+    if (additionalProperties.stacking && content.length) {
+      setDepthMap(Array(content.length).fill(0));
+    }
+  }, [additionalProperties.stacking, data, content.length]);
+
   return (
     <List
       key={content.length + tableHeight + mediaSetKey}
@@ -175,6 +193,8 @@ const MediaSet = ({
         additionalProperties,
         tooltip,
         mediaType,
+        depthMap,
+        onSliderChange,
       }}
     >
       {MediaGroupedList}
@@ -206,9 +226,9 @@ const MediaGroupedList = React.memo(function MediaGroupedList({
   style: React.CSSProperties;
   data: { [key: string]: any };
 }) {
-  const [depth, setDepth] = React.useState(0);
   const [path, items] = data.data[index];
   const lastPath = path[path.length - 1];
+  const depth = data.depthMap[index] || 0;
   const isStackedPath =
     data.additionalProperties.stacking && typeof lastPath === 'object';
   const { pathKey, pathValue } = getPathDetails({
@@ -225,12 +245,6 @@ const MediaGroupedList = React.memo(function MediaGroupedList({
   const isJson: boolean = typeof json === 'object';
   const renderStacking =
     currentItems.length > 0 && isStackedPath && pathValue.length > 1;
-
-  function onSliderChange(value: number): void {
-    if (value !== depth) {
-      setDepth(value);
-    }
-  }
   return (
     <div
       className='MediaSet'
@@ -303,26 +317,18 @@ const MediaGroupedList = React.memo(function MediaGroupedList({
                       vertical: 'bottom',
                       horizontal: 'right',
                     }}
-                    transformOrigin={{
-                      vertical: 'top',
-                      horizontal: 'right',
-                    }}
                     className='MediaSet__container__path__depthDropdown'
                     anchor={({ onAnchorClick, opened }) => (
-                      <span
+                      <Button
                         onClick={onAnchorClick}
                         className='MediaSet__container__path__depthDropdown__button'
+                        color={opened ? 'primary' : 'default'}
+                        size='small'
+                        withOnlyIcon
                         style={{ height: MEDIA_SET_TITLE_HEIGHT }}
                       >
-                        <Button
-                          color={opened ? 'primary' : 'default'}
-                          size='small'
-                          withOnlyIcon
-                          style={{ height: MEDIA_SET_TITLE_HEIGHT }}
-                        >
-                          <Icon name={opened ? 'arrow-up' : 'arrow-down'} />
-                        </Button>
-                      </span>
+                        <Icon name={opened ? 'arrow-up' : 'arrow-down'} />
+                      </Button>
                     )}
                     component={
                       <Autocomplete
@@ -338,7 +344,7 @@ const MediaGroupedList = React.memo(function MediaGroupedList({
                         getOptionLabel={(option) => option.label}
                         getOptionSelected={(option) => option.depth === depth}
                         onChange={(e, value) => {
-                          onSliderChange(value.depth);
+                          data.onSliderChange(value.depth, index);
                         }}
                         disableClearable={true}
                         ListboxProps={{
@@ -404,7 +410,9 @@ const MediaGroupedList = React.memo(function MediaGroupedList({
               valueLabelDisplay='off'
               getAriaValueText={(value) => `${pathValue[value]}`}
               value={depth}
-              onChange={(e, value) => onSliderChange(value as number)}
+              onChange={(e, value) =>
+                data.onSliderChange(value as number, index)
+              }
               step={null}
               marks={(pathValue as string[]).map((l, i) => ({ value: i }))}
               min={0}
