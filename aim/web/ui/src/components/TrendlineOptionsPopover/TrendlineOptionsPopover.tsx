@@ -1,7 +1,7 @@
 import React from 'react';
 import classNames from 'classnames';
 
-import { Divider, MenuItem } from '@material-ui/core';
+import { MenuItem } from '@material-ui/core';
 
 import { Text, Slider } from 'components/kit';
 

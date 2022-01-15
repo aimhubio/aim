@@ -1,11 +1,11 @@
-import React, { Component } from 'react';
+import React from 'react';
 import PropTypes from 'prop-types';
 
 import Histogram from './Histogram/Histogram';
 import Heatmap from './Heatmap/Heatmap';
 
 //@ TODO change this component to current style
-class ExperimentDistributionCharts extends Component {
+class ExperimentDistributionCharts extends React.Component {
   constructor(props) {
     super(props);
 

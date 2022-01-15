@@ -27,7 +27,6 @@ import {
 } from 'pages/Runs/components/RunsTableGrid/RunsTableGrid';
 
 import * as analytics from 'services/analytics';
-import appsService from 'services/api/apps/appsService';
 import metricsService from 'services/api/metrics/metricsService';
 import runsService from 'services/api/runs/runsService';
 import createMetricModel from 'services/models/metrics/metricModel';

@@ -15,8 +15,14 @@ function ControlPopover({
   title,
   titleClassName = '',
   anchor,
-  anchorOrigin,
-  transformOrigin,
+  anchorOrigin = {
+    vertical: 'top',
+    horizontal: 'left',
+  },
+  transformOrigin = {
+    vertical: 'top',
+    horizontal: 'right',
+  },
   open = true,
 }: IControlPopoverProps): React.FunctionComponentElement<React.ReactNode> {
   const [anchorEl, setAnchorEl] = React.useState<HTMLElement | null>(null);
@@ -48,18 +54,8 @@ function ControlPopover({
         onClick={stopPropagation}
         onClose={handleClose}
         anchorPosition={{ left: 20, top: 0 }}
-        anchorOrigin={
-          anchorOrigin || {
-            vertical: 'top',
-            horizontal: 'left',
-          }
-        }
-        transformOrigin={
-          transformOrigin || {
-            vertical: 'top',
-            horizontal: 'right',
-          }
-        }
+        anchorOrigin={anchorOrigin}
+        transformOrigin={transformOrigin}
         PaperProps={{ className: 'ControlPopover' }}
       >
         <div onClick={stopPropagation} className='ControlPopover__container'>
