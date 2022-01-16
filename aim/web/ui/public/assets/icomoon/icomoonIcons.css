@@ -1,10 +1,10 @@
 @font-face {
   font-family: 'icomoon';
-  src:  url('./fonts/icomoon.eot?pqe832');
-  src:  url('./fonts/icomoon.eot?pqe832#iefix') format('embedded-opentype'),
-    url('./fonts/icomoon.ttf?pqe832') format('truetype'),
-    url('./fonts/icomoon.woff?pqe832') format('woff'),
-    url('./fonts/icomoon.svg?pqe832#icomoon') format('svg');
+  src:  url('./fonts/icomoon.eot?w20ibk');
+  src:  url('./fonts/icomoon.eot?w20ibk#iefix') format('embedded-opentype'),
+    url('./fonts/icomoon.ttf?w20ibk') format('truetype'),
+    url('./fonts/icomoon.woff?w20ibk') format('woff'),
+    url('./fonts/icomoon.svg?w20ibk#icomoon') format('svg');
   font-weight: normal;
   font-style: normal;
   font-display: block;
@@ -25,6 +25,9 @@
   -moz-osx-font-smoothing: grayscale;
 }
 
+.icon-partially-selected:before {
+  content: "\e95f";
+}
 .icon-slack:before {
   content: "\e95e";
 }

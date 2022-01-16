@@ -68,6 +68,9 @@ const Table = React.forwardRef(function Table(
     resizeMode,
     onSortReset,
     height = 'calc(100% - 40px)',
+    multiSelect = false,
+    selectedRows = [],
+    onRowSelect,
     ...props
   }: ITableProps,
   ref,
@@ -695,6 +698,9 @@ const Table = React.forwardRef(function Table(
                       onRowHover={rowHoverHandler}
                       onRowClick={rowClickHandler}
                       listWindow={listWindow}
+                      multiSelect={multiSelect}
+                      selectedRows={selectedRows}
+                      onRowSelect={onRowSelect}
                       {...props}
                     />
                   </div>
@@ -769,6 +775,10 @@ function propsComparator(
   }
 
   if (prevProps.columnsWidths !== nextProps.columnsWidths) {
+    return false;
+  }
+
+  if (prevProps.selectedRows !== nextProps.selectedRows) {
     return false;
   }
 

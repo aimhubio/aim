@@ -1,7 +1,6 @@
 // @ts-nocheck
 /* eslint-disable react/prop-types */
 
-import React from 'react';
 import classNames from 'classnames';
 
 function Cell({
@@ -14,11 +13,11 @@ function Cell({
   col,
   onRowHover,
   onRowClick,
+  multiSelect = false,
 }) {
   return (
     <div
-      className={classNames({
-        Table__cell: true,
+      className={classNames('Table__cell', {
         [`${typeof item === 'object' && item?.className}`]: true,
         [className]: !!className,
         [`index-${index}`]: true,
@@ -47,7 +46,7 @@ function Cell({
       onClick={item?.props?.onClick ? item.props.onClick : onRowClick}
     >
       {isConfigColumn || placeholder ? (
-        ''
+        <>{multiSelect && item}</>
       ) : (
         <div className='Table__cell__value'>
           {typeof item === 'object' && item?.hasOwnProperty('content')

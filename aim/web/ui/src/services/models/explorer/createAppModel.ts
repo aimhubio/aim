@@ -27,7 +27,6 @@ import {
 } from 'pages/Runs/components/RunsTableGrid/RunsTableGrid';
 
 import * as analytics from 'services/analytics';
-import appsService from 'services/api/apps/appsService';
 import metricsService from 'services/api/metrics/metricsService';
 import runsService from 'services/api/runs/runsService';
 import createMetricModel from 'services/models/metrics/metricModel';
@@ -156,7 +155,7 @@ import getSmoothenedData from 'utils/getSmoothenedData';
 import JsonToCSV from 'utils/JsonToCSV';
 import { SmoothingAlgorithmEnum } from 'utils/smoothingData';
 import { setItem } from 'utils/storage';
-import { encode } from 'utils/encoder/encoder';
+import { encode, decode } from 'utils/encoder/encoder';
 import onBookmarkCreate from 'utils/app/onBookmarkCreate';
 import onBookmarkUpdate from 'utils/app/onBookmarkUpdate';
 import onNotificationDelete from 'utils/app/onNotificationDelete';
@@ -172,6 +171,7 @@ import { isSystemMetric } from 'utils/isSystemMetric';
 import setDefaultAppConfigData from 'utils/app/setDefaultAppConfigData';
 import getAppConfigData from 'utils/app/getAppConfigData';
 import { getValue } from 'utils/helper';
+import onRowSelect from 'utils/app/onRowSelect';
 
 import { AppDataTypeEnum, AppNameEnum } from './index';
 
@@ -244,6 +244,7 @@ function createAppModel(appConfig: IAppInitialConfig) {
               right: [],
             },
             height: '0.5',
+            selectedRows: [],
           };
         }
         if (components?.charts?.[0]) {
@@ -348,6 +349,7 @@ function createAppModel(appConfig: IAppInitialConfig) {
               right: [],
             },
             height: '0.5',
+            selectedRows: [],
           };
           if (appName === AppNameEnum.RUNS) {
             config.pagination = {
@@ -656,6 +658,7 @@ function createAppModel(appConfig: IAppInitialConfig) {
                 color: metricsCollection.color ?? metric.color,
               },
               key: metric.key,
+              selectKey: metric.key,
               runHash: metric.run.hash,
               isHidden: metric.isHidden,
               index: rowIndex,
@@ -1879,6 +1882,17 @@ function createAppModel(appConfig: IAppInitialConfig) {
             updateModelData,
           });
         },
+        onRowSelect({
+          actionType,
+          key,
+          data,
+        }: {
+          actionType: 'single' | 'selectAll' | 'removeAll';
+          key?: string;
+          data?: any;
+        }): void {
+          onRowSelect({ actionType, key, data, model });
+        },
       });
     }
 
@@ -2379,6 +2393,9 @@ function createAppModel(appConfig: IAppInitialConfig) {
             });
             const rowValues: any = {
               key: metric.key,
+              selectKey: encode({
+                runHash: metric.key,
+              }),
               runHash: metric.run.hash,
               index: rowIndex,
               color: metricsCollection.color ?? metric.color,
@@ -2711,6 +2728,17 @@ function createAppModel(appConfig: IAppInitialConfig) {
               updateModelData,
             });
           },
+          onRowSelect({
+            actionType,
+            key,
+            data,
+          }: {
+            actionType: 'single' | 'selectAll' | 'removeAll';
+            key?: string;
+            data?: any;
+          }): void {
+            onRowSelect({ actionType, key, data, model });
+          },
         });
       }
 
@@ -2942,6 +2970,7 @@ function createAppModel(appConfig: IAppInitialConfig) {
                   color: metricsCollection.color ?? metric.color,
                 },
                 key: metric.key,
+                selectKey: metric.key,
                 runHash: metric.run.hash,
                 isHidden: metric.isHidden,
                 index: rowIndex,
@@ -3887,6 +3916,17 @@ function createAppModel(appConfig: IAppInitialConfig) {
               updateModelData,
             });
           },
+          onRowSelect({
+            actionType,
+            key,
+            data,
+          }: {
+            actionType: 'single' | 'selectAll' | 'removeAll';
+            key?: string;
+            data?: any;
+          }): void {
+            onRowSelect({ actionType, key, data, model });
+          },
         });
       }
 
@@ -4235,6 +4275,7 @@ function createAppModel(appConfig: IAppInitialConfig) {
                   color: metricsCollection.color ?? metric.color,
                 },
                 key: metric.key,
+                selectKey: metric.key,
                 runHash: metric.run.hash,
                 isHidden: metric.isHidden,
                 index: rowIndex,
@@ -5047,6 +5088,17 @@ function createAppModel(appConfig: IAppInitialConfig) {
               appName,
               updateModelData,
             });
+          },
+          onRowSelect({
+            actionType,
+            key,
+            data,
+          }: {
+            actionType: 'single' | 'selectAll' | 'removeAll';
+            key?: string;
+            data?: any;
+          }): void {
+            onRowSelect({ actionType, key, data, model });
           },
         });
       }

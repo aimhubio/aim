@@ -70,6 +70,7 @@ export interface IMetricProps extends Partial<RouteChildrenProps> {
   alignmentConfig: IAlignmentConfig;
   selectedMetricsData: ISelectConfig;
   tableRowHeight: RowHeightSize;
+  selectedRows: string[];
   sortFields: [string, 'asc' | 'desc' | boolean][];
   hiddenMetrics: string[];
   hiddenColumns: string[];
@@ -128,6 +129,7 @@ export interface IMetricProps extends Partial<RouteChildrenProps> {
     delay?: number;
     enabled?: boolean;
   }) => void;
+  onRowSelect: any;
 }
 
 export interface IOnSmoothingChange {

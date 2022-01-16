@@ -5,7 +5,11 @@ import * as React from 'react';
 import classNames from 'classnames';
 import { isNil } from 'lodash-es';
 
-import { MenuItem, Tooltip, Divider } from '@material-ui/core';
+import {
+  CheckBox as CheckBoxIcon,
+  CheckBoxOutlineBlank,
+} from '@material-ui/icons';
+import { MenuItem, Tooltip, Divider, Checkbox } from '@material-ui/core';
 
 import { Button, Icon, Text } from 'components/kit';
 import GroupConfigPopover from 'components/GroupConfigPopover/GroupConfigPopover';
@@ -39,6 +43,9 @@ function Column({
   onRowClick,
   columnOptions,
   listWindow,
+  multiSelect,
+  selectedRows,
+  onRowSelect,
 }) {
   const [maxWidth, setMaxWidth] = React.useState(width);
   const [isResizing, setIsResizing] = React.useState(false);
@@ -47,6 +54,16 @@ function Column({
   const startingPoint = React.useRef(null);
 
   const groups = !Array.isArray(data);
+  const dataLength = React.useMemo(() => {
+    if (Array.isArray(data)) {
+      return data.length;
+    } else {
+      return Object.values(data).reduce((acc: number, value: any) => {
+        acc += value.items.length;
+        return acc;
+      }, 0);
+    }
+  }, [data]);
 
   function resizeStart({ target }) {
     setIsResizing(true);
@@ -101,11 +118,10 @@ function Column({
   }, []);
 
   React.useEffect(() => {
-    if (columnRef.current) {
+    if (columnRef.current && col.key !== 'selection') {
       columnRef.current.style.width = 'initial';
     }
   }, [data, expanded, width]);
-
   const isInViewPort =
     columnRef.current?.classList?.[1] === 'Table__column--groups' ||
     !listWindow ||
@@ -114,20 +130,23 @@ function Column({
       columnRef.current.offsetLeft > listWindow.left - viewPortOffset &&
       columnRef.current.offsetLeft <
         listWindow.left + listWindow.width + viewPortOffset);
-
   return (
     <div
       className={classNames({
         Table__column: true,
         'Table__column--actions': col.key === 'actions',
         'Table__column--groups': col.key === 'groups',
+        'Table__column--selection': col.key === 'selection',
       })}
       style={{
         minWidth: maxWidth,
         maxWidth: '100vh',
-        width: isInViewPort
-          ? 'initial'
-          : columnRef.current?.offsetWidth ?? 'initial',
+        width:
+          col.key === 'selection'
+            ? '32px'
+            : isInViewPort
+            ? 'initial'
+            : columnRef.current?.offsetWidth ?? 'initial',
         boxShadow: isInViewPort ? null : '1px 30px 0 0 #dee6f3',
         filter: isInViewPort ? null : 'blur(2px)',
       }}
@@ -154,11 +173,37 @@ function Column({
           minWidth: col.minWidth,
         }}
       >
+        {multiSelect && col.key === '#' && (
+          <Checkbox
+            color='primary'
+            size='small'
+            icon={<span className='Table__column__defaultSelectIcon'></span>}
+            className='Table__column__selectCheckbox'
+            checkedIcon={
+              dataLength === selectedRows?.length ? (
+                <span className='Table__column__selectedSelectIcon'>
+                  <Icon name='check' fontSize={9} />
+                </span>
+              ) : (
+                <span className='Table__column__partiallySelectedSelectIcon'>
+                  <Icon name='partially-selected' fontSize={16} />
+                </span>
+              )
+            }
+            onClick={() =>
+              onRowSelect({
+                actionType: _.isEmpty(selectedRows) ? 'selectAll' : 'removeAll',
+                data: data,
+              })
+            }
+            checked={!_.isEmpty(selectedRows)}
+          />
+        )}
         <Text tint={100} size={14} weigh={600}>
           {firstColumn ? headerMeta : null}
           {col.content}
         </Text>
-        {col.key !== 'actions' && col.key !== '#' && (
+        {col.key !== 'actions' && col.key !== '#' && col.key !== 'selection' && (
           <>
             <ControlPopover
               anchorOrigin={{
@@ -357,6 +402,10 @@ function Column({
                       expand={expand}
                       expanded={expanded}
                       groupKey={groupKey}
+                      multiSelect={multiSelect}
+                      onRowSelect={onRowSelect}
+                      selectedRows={selectedRows}
+                      data={data[groupKey].items}
                     />
                   </div>
                 ) : col.key === 'actions' ? (
@@ -380,6 +429,7 @@ function Column({
                   <Cell
                     index={groupKey}
                     col={col}
+                    multiSelect={multiSelect}
                     item={
                       typeof data[groupKey].data[col.key] === 'object' &&
                       data[groupKey].data[col.key]?.hasOwnProperty('content')
@@ -407,50 +457,150 @@ function Column({
                 {expanded[groupKey] && (
                   <>
                     {data[groupKey]?.items?.map((item, i) => (
-                      <Cell
-                        key={col.key + i}
-                        index={item.index}
-                        col={col}
-                        item={item[col.key]}
-                        className={`rowKey-${item.key}${
-                          item.isHidden ? ' hidden' : ''
-                        }`}
-                        isConfigColumn={col.key === '#'}
-                        metadata={firstColumn ? item.rowMeta : null}
-                        onRowHover={() => onRowHover(item)}
-                        onRowClick={() => onRowClick(item)}
-                      />
+                      <>
+                        <Cell
+                          key={col.key + i}
+                          index={item.index}
+                          col={col}
+                          multiSelect={multiSelect}
+                          item={
+                            col.key === '#' ? (
+                              <>
+                                <Checkbox
+                                  color='primary'
+                                  size='small'
+                                  icon={
+                                    <span className='Table__column__defaultSelectIcon'></span>
+                                  }
+                                  checkedIcon={
+                                    <span className='Table__column__selectedSelectIcon'>
+                                      <Icon name='check' fontSize={9} />
+                                    </span>
+                                  }
+                                  className='Table__column__selectCheckbox'
+                                  checked={selectedRows.includes(
+                                    item.selectKey,
+                                  )}
+                                  onClick={(e) => {
+                                    e.stopPropagation();
+                                    onRowSelect({
+                                      key: item.selectKey,
+                                      actionType: 'single',
+                                    });
+                                  }}
+                                />
+                              </>
+                            ) : (
+                              item[col.key]
+                            )
+                          }
+                          className={`rowKey-${item.key}${
+                            item.isHidden ? ' hidden' : ''
+                          }`}
+                          isConfigColumn={col.key === '#'}
+                          metadata={firstColumn ? item.rowMeta : null}
+                          onRowHover={() => onRowHover(item)}
+                          onRowClick={() => onRowClick(item)}
+                        />
+                      </>
                     ))}
                   </>
                 )}
               </div>
             ))
           : data.map((item, i) => (
-              <Cell
-                key={col.key + i}
-                index={item.index}
-                col={col}
-                item={item[col.key]}
-                className={`rowKey-${item.key}${
-                  item.isHidden ? ' hidden' : ''
-                }`}
-                metadata={firstColumn ? item.rowMeta : null}
-                onRowHover={() => onRowHover(item)}
-                onRowClick={() => onRowClick(item)}
-              />
+              <>
+                {col.key === 'selection' ? (
+                  <Cell
+                    key={col.key + i}
+                    index={item.index}
+                    col={col}
+                    item={
+                      <>
+                        <Checkbox
+                          color='primary'
+                          size='small'
+                          icon={
+                            <span className='Table__column__defaultSelectIcon'></span>
+                          }
+                          checkedIcon={
+                            <span className='Table__column__selectedSelectIcon'>
+                              <Icon name='check' fontSize={9} />
+                            </span>
+                          }
+                          className='Table__column__selectCheckbox'
+                          checked={selectedRows.includes(item.selectKey)}
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            onRowSelect({
+                              key: item.selectKey,
+                              actionType: 'single',
+                            });
+                          }}
+                        />
+                      </>
+                    }
+                    className={`rowKey-${item.key}${
+                      item.isHidden ? ' hidden' : ''
+                    }`}
+                    metadata={
+                      (multiSelect && col.key === 'selection' && firstColumn) ||
+                      (!multiSelect && firstColumn)
+                        ? item.rowMeta
+                        : null
+                    }
+                    onRowHover={() => onRowHover(item)}
+                    onRowClick={() => onRowClick(item)}
+                  />
+                ) : (
+                  <Cell
+                    key={col.key + i}
+                    index={item.index}
+                    col={col}
+                    item={item[col.key]}
+                    className={`rowKey-${item.key}${
+                      item.isHidden ? ' hidden' : ''
+                    }`}
+                    metadata={
+                      (multiSelect && col.key === 'selection' && firstColumn) ||
+                      (!multiSelect && firstColumn)
+                        ? item.rowMeta
+                        : null
+                    }
+                    onRowHover={() => onRowHover(item)}
+                    onRowClick={() => onRowClick(item)}
+                  />
+                )}
+              </>
             )))}
     </div>
   );
 }
 
-function GroupConfig({ config, expand, expanded, groupKey }) {
+function GroupConfig({
+  config,
+  expand,
+  expanded,
+  groupKey,
+  multiSelect,
+  onRowSelect,
+  selectedRows,
+  data,
+}) {
   const configData = React.useMemo(() => {
-    return Object.keys(config.config).map((key, index) => {
+    return Object.keys(config.config).map((key) => {
       return { name: key, value: config.config[key] };
     });
   }, [config.config]);
+
+  const groupSelectedRows = React.useMemo(() => {
+    return data
+      .map((item) => item.selectKey)
+      .filter((selectKey: string) => selectedRows.includes(selectKey));
+  }, [data, selectedRows]);
+
   return (
-    <div className='Table__group__config' onClick={(evt) => expand(groupKey)}>
+    <div className='Table__group__config' onClick={() => expand(groupKey)}>
       <Button
         size='small'
         withOnlyIcon={true}
@@ -460,6 +610,35 @@ function GroupConfig({ config, expand, expanded, groupKey }) {
           <Icon name={expanded[groupKey] ? 'arrow-up' : 'arrow-down'} />
         </Text>
       </Button>
+      {multiSelect && (
+        <Checkbox
+          color='primary'
+          size='small'
+          icon={<span className='Table__column__defaultSelectIcon'></span>}
+          className='Table__column__selectCheckbox configCheckbox'
+          checkedIcon={
+            data.length === groupSelectedRows?.length ? (
+              <span className='Table__column__selectedSelectIcon'>
+                <Icon name='check' fontSize={9} />
+              </span>
+            ) : (
+              <span className='Table__column__partiallySelectedSelectIcon'>
+                <Icon name='partially-selected' fontSize={16} />
+              </span>
+            )
+          }
+          onClick={(e) => {
+            e.stopPropagation();
+            onRowSelect({
+              actionType: _.isEmpty(groupSelectedRows)
+                ? 'selectAll'
+                : 'removeAll',
+              data: data,
+            });
+          }}
+          checked={!_.isEmpty(groupSelectedRows)}
+        />
+      )}
       {configData?.length > 0 && (
         <ControlPopover
           title='Group Config'
@@ -501,7 +680,6 @@ function GroupConfig({ config, expand, expanded, groupKey }) {
           </span>
         </Tooltip>
       )}
-
       {config.dasharray !== null && (
         <Tooltip title='Group stroke style'>
           <svg

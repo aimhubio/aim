@@ -1,8 +1,13 @@
 // @ts-nocheck
 /* eslint-disable react/prop-types */
 
-import React, { useRef, useState, useEffect } from 'react';
+import { useRef, useState, useEffect } from 'react';
 import classNames from 'classnames';
+import { isEmpty } from 'lodash-es';
+
+import { Checkbox } from '@material-ui/core';
+
+import { Icon } from 'components/kit';
 
 import { rowCeilSizeConfig } from 'config/table/tableConfigs';
 
@@ -207,6 +212,60 @@ function Table(props) {
               onlyGroupColumn: leftPane.length === 0,
             })}
           >
+            {props.multiSelect && Array.isArray(props.data) && (
+              <Column
+                key={'selection'}
+                topHeader={true}
+                showTopHeaderContent={true}
+                showTopHeaderBorder={true}
+                col={{
+                  isHidden: false,
+                  key: 'selection',
+                  pin: 'left',
+                  topHeader: '',
+                  content: (
+                    <Checkbox
+                      color='primary'
+                      size='small'
+                      className='Table__column__selectCheckbox'
+                      icon={
+                        <span className='Table__column__defaultSelectIcon'></span>
+                      }
+                      checkedIcon={
+                        props.data.length === props.selectedRows.length ? (
+                          <span className='Table__column__selectedSelectIcon'>
+                            <Icon name='check' fontSize={9} />
+                          </span>
+                        ) : (
+                          <span className='Table__column__partiallySelectedSelectIcon'>
+                            <Icon name='partially-selected' fontSize={16} />
+                          </span>
+                        )
+                      }
+                      onClick={() =>
+                        props.onRowSelect({
+                          actionType: isEmpty(props.selectedRows)
+                            ? 'selectAll'
+                            : 'removeAll',
+                          data: props.data,
+                        })
+                      }
+                      checked={!isEmpty(props.selectedRows)}
+                    />
+                  ),
+                }}
+                data={props.data}
+                expanded={expanded}
+                expand={expand}
+                onRowSelect={props.onRowSelect}
+                selectedRows={props.selectedRows}
+                firstColumn={true}
+                width={32}
+                isAlwaysVisible={true}
+                onRowHover={props.onRowHover}
+                onRowClick={() => {}}
+              />
+            )}
             {leftPane.map((col, index) => (
               <Column
                 key={col.key}
@@ -236,6 +295,7 @@ function Table(props) {
                     col.key,
                   ])
                 }
+                multiSelect={props.multiSelect}
                 paneFirstColumn={index === 0}
                 paneLastColumn={index === leftPane.length - 1}
                 moveColumn={(dir) => moveColumn(col.key, 'left', index, dir)}
@@ -249,6 +309,8 @@ function Table(props) {
                 onRowHover={props.onRowHover}
                 onRowClick={props.onRowClick}
                 columnOptions={col.columnOptions}
+                selectedRows={props.selectedRows}
+                onRowSelect={props.onRowSelect}
               />
             ))}
           </div>

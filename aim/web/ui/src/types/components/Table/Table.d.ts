@@ -53,6 +53,9 @@ export interface ITableProps {
   showRowClickBehaviour?: boolean;
   showResizeContainerActionBar?: boolean;
   resizeMode?: ResizeModeEnum;
+  multiSelect?: boolean;
+  selectedRows?: string[];
+  onRowSelect?: (key: string) => void;
 }
 
 export interface ITableRef {
