@@ -80,9 +80,10 @@
   }
 }
 
-.Controls__anchor__arrow__opened {
+.Controls__anchor__arrow--opened {
   .icon-arrow-left {
-    //opacity: 1;
+    opacity: 1;
     transform: rotate(180deg);
+    color: $primary-color;
   }
 }

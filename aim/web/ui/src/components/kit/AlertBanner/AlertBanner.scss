@@ -1,0 +1,71 @@
+@use 'src/styles/abstracts' as *;
+
+.AlertBanner {
+  &_iconCnt {
+    width: 24px;
+    height: 24px;
+    margin: 8px;
+    font-size: 24px;
+  }
+
+  &_warning {
+    @include backgroundColorOpacity($warning-color-25, 0.5);
+
+    &_iconCnt {
+      color: $warning-color;
+    }
+  }
+
+  &_info {
+    @include backgroundColorOpacity($primary-color-25, 0.5);
+
+    &_iconCnt {
+      color: $primary-color;
+    }
+  }
+
+  &_error {
+    @include backgroundColorOpacity($error-color-25, 0.5);
+
+    &_iconCnt {
+      color: $error-color;
+      width: 20px;
+      height: 20px;
+      margin: 10px;
+      font-size: 20px;
+    }
+  }
+
+  &_success {
+    @include backgroundColorOpacity($success-color-25, 0.5);
+
+    &_iconCnt {
+      color: $success-color;
+    }
+  }
+
+  position: fixed;
+  width: 100%;
+  display: flex;
+  font-size: 11px;
+  line-height: 40px;
+  align-items: center;
+  justify-content: center;
+  color: #414b6d;
+  z-index: 1;
+
+  & > div {
+    display: flex;
+    width: 100%;
+    justify-content: center;
+    text-align: center;
+  }
+
+  .MuiButton-root {
+    margin-left: 32px;
+
+    .icon-close {
+      font-size: 10px;
+    }
+  }
+}

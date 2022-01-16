@@ -4,7 +4,7 @@ on: workflow_dispatch
 
 jobs:
   linux-dist:
-    if: github.actor == 'gorarakelyan'
+    if: ${{ github.actor == 'gorarakelyan' || github.actor == 'alberttorosyan' }}
     runs-on: ubuntu-latest
     name: Linux wheels build (using Docker)
     steps:
@@ -51,7 +51,7 @@ jobs:
           python -m twine upload -u __token__ -p "${PYPI_PASSWORD}" multilinux_dist/*
 
   macos-dist:
-    if: github.actor == 'gorarakelyan'
+    if: ${{ github.actor == 'gorarakelyan' || github.actor == 'alberttorosyan' }}
     runs-on: ${{matrix.os}}
     strategy:
       fail-fast: false

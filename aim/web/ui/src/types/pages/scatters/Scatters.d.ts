@@ -32,6 +32,7 @@ import { IActivePoint } from 'types/utils/d3/drawHoverAttributes';
 import { IBookmarkFormState } from 'types/components/BookmarkForm/BookmarkForm';
 import { INotification } from 'types/components/NotificationContainer/NotificationContainer';
 import { IProjectParamsMetrics } from 'types/services/models/projects/projectsModel';
+import { ITrendlineOptions } from 'types/services/models/scatter/scatterAppModel';
 
 export interface IScattersProps extends Partial<RouteChildrenProps> {
   tableRef: React.RefObject<ITableRef>;
@@ -58,7 +59,9 @@ export interface IScattersProps extends Partial<RouteChildrenProps> {
   projectsDataMetrics: IProjectParamsMetrics['metrics'];
   requestIsPending: boolean;
   resizeMode: ResizeModeEnum;
+  trendlineOptions: ITrendlineOptions;
   onChangeTooltip: (tooltip: Partial<IChartTooltip>) => void;
+  onChangeTrendlineOptions: (options: Partial<ITrendlineOptions>) => void;
   onActivePointChange?: (
     activePoint: IActivePoint,
     focusedStateActive?: boolean,

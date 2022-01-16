@@ -99,7 +99,7 @@ def encode(value: Any) -> ContainerValue:
         type_id = _CUSTOM_OBJECT
         encoding = encode_utf_8_str(value.aim_name)
     else:
-        raise NotImplementedError
+        raise NotImplementedError(f'{value} of type {type(value)} not supported')
 
     # Finally, we prepend the content `encoding` with a single byte which
     # encodes the type of the value
