@@ -19,6 +19,7 @@ import {
 
 import { formatValue } from 'utils/formatValue';
 import { jsonParse } from 'utils/jsonParse';
+import { SortField } from 'utils/getSortedFields';
 import getBiggestImageFromList from 'utils/getBiggestImageFromList';
 
 import { IMediaSetProps } from './MediaSet.d';
@@ -40,6 +41,8 @@ const MediaSet = ({
   tableHeight,
   tooltip,
   mediaType,
+  sortFieldsDict,
+  sortFields,
 }: IMediaSetProps): React.FunctionComponentElement<React.ReactNode> => {
   let content: [string[], []][] = []; // the actual items list to be passed to virtualized list component
   let keysMap: { [key: string]: number } = {}; // cache for checking whether the group title is already added to list
@@ -69,9 +72,23 @@ const MediaSet = ({
     orderedMap: { [key: string]: any },
   ) {
     if (Array.isArray(list)) {
-      content.push([path, list]);
+      const listKeys: string[] = [];
+      const listOrderTypes: any[] = [];
+      sortFields?.forEach((sortField: SortField) => {
+        listKeys.push(sortField.value);
+        listOrderTypes.push(sortField.order);
+      });
+      const orderedContentList: any = _.orderBy(list, listKeys, listOrderTypes);
+      content.push([path, orderedContentList]);
     } else {
-      const fieldSortedValues = _.sortBy([...orderedMap.ordering]);
+      const fieldSortedValues = _.orderBy(
+        [...(orderedMap?.ordering || [])].reduce((acc: any, value: any) => {
+          acc.push({ [orderedMap.key]: value });
+          return acc;
+        }, []),
+        [orderedMap?.key || ''],
+        [sortFieldsDict?.[orderedMap?.orderKey]?.order || 'asc'],
+      ).map((value: any) => value[orderedMap?.key]);
       fieldSortedValues.forEach((val: any) => {
         const fieldName = `${orderedMap.key} = ${formatValue(val)}`;
         if (!keysMap.hasOwnProperty(path.join(''))) {
@@ -148,7 +165,8 @@ function propsComparator(
 ): boolean {
   if (
     prevProps.mediaSetKey !== nextProps.mediaSetKey ||
-    prevProps.focusedState !== nextProps.focusedState
+    prevProps.focusedState !== nextProps.focusedState ||
+    prevProps.sortFieldsDict !== nextProps.sortFieldsDict
   ) {
     return false;
   }
