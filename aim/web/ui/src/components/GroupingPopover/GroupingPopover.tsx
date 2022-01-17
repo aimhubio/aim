@@ -14,6 +14,7 @@ import {
 import Autocomplete from '@material-ui/lab/Autocomplete';
 
 import { ToggleButton, Icon, Badge, Text } from 'components/kit';
+import ErrorBoundary from 'components/ErrorBoundary/ErrorBoundary';
 
 import { IGroupingPopoverProps } from 'types/components/GroupingPopover/GroupingPopover';
 import {
@@ -71,123 +72,132 @@ function GroupingPopover({
   }
 
   return (
-    <div className='GroupingPopover'>
-      <div className='GroupingPopover__container'>
-        <div className='GroupingPopover__container__select'>
-          <Text
-            size={12}
-            tint={50}
-            component='h3'
-            className='GroupingPopover__subtitle'
-          >
-            Select Fields for grouping by {groupName}
-          </Text>
-          <Autocomplete
-            size='small'
-            multiple
-            disableCloseOnSelect
-            options={
-              inputValue.trim() !== ''
-                ? groupingSelectOptions
-                    .slice()
-                    .sort(
-                      (a, b) =>
-                        a.label.indexOf(inputValue) -
-                        b.label.indexOf(inputValue),
-                    )
-                : groupingSelectOptions
-            }
-            value={values}
-            onChange={onChange}
-            onInputChange={(e, value) => setInputValue(value)}
-            groupBy={(option) => option.group}
-            getOptionLabel={(option) => option.label}
-            getOptionSelected={(option, value) => option.value === value.value}
-            renderInput={(params) => (
-              <TextField
-                {...params}
-                variant='outlined'
-                placeholder='Select Params'
-              />
-            )}
-            renderTags={(value, getTagProps) => (
-              <div style={{ maxHeight: 110, overflow: 'auto' }}>
-                {value.map((selected, i) => (
-                  <Badge
-                    key={i}
-                    {...getTagProps({ index: i })}
-                    label={selected.label}
-                    selectBadge={true}
+    <ErrorBoundary>
+      <div className='GroupingPopover'>
+        <div className='GroupingPopover__container'>
+          <div className='GroupingPopover__container__select'>
+            <Text
+              size={12}
+              tint={50}
+              component='h3'
+              className='GroupingPopover__subtitle'
+            >
+              Select Fields for grouping by {groupName}
+            </Text>
+            <Autocomplete
+              size='small'
+              multiple
+              disableCloseOnSelect
+              options={
+                inputValue.trim() !== ''
+                  ? groupingSelectOptions
+                      .slice()
+                      .sort(
+                        (a, b) =>
+                          a.label.indexOf(inputValue) -
+                          b.label.indexOf(inputValue),
+                      )
+                  : groupingSelectOptions
+              }
+              value={values}
+              onChange={onChange}
+              onInputChange={(e, value) => setInputValue(value)}
+              groupBy={(option) => option.group}
+              getOptionLabel={(option) => option.label}
+              getOptionSelected={(option, value) =>
+                option.value === value.value
+              }
+              renderInput={(params) => (
+                <TextField
+                  {...params}
+                  variant='outlined'
+                  placeholder='Select Params'
+                />
+              )}
+              renderTags={(value, getTagProps) => (
+                <div style={{ maxHeight: 110, overflow: 'auto' }}>
+                  {value.map((selected, i) => (
+                    <Badge
+                      key={i}
+                      {...getTagProps({ index: i })}
+                      label={selected.label}
+                      selectBadge={true}
+                    />
+                  ))}
+                </div>
+              )}
+              renderOption={(option, { selected }) => (
+                <React.Fragment>
+                  <Checkbox
+                    color='primary'
+                    size='small'
+                    icon={<CheckBoxOutlineBlank />}
+                    checkedIcon={<CheckBoxIcon />}
+                    style={{ marginRight: 4 }}
+                    checked={selected}
                   />
-                ))}
+                  {option.label}
+                </React.Fragment>
+              )}
+            />
+          </div>
+          <div className='GroupingPopover__toggleMode__div'>
+            <Text
+              size={12}
+              tint={50}
+              component='h3'
+              className='GroupingPopover__subtitle'
+            >
+              select grouping mode
+            </Text>
+            <ToggleButton
+              title='Select Mode'
+              id='yAxis'
+              value={
+                groupingData?.reverseMode[groupName as GroupNameType]
+                  ? 'Reverse'
+                  : 'Group'
+              }
+              leftValue='Group'
+              rightValue='Reverse'
+              leftLabel='Group'
+              rightLabel='Reverse'
+              onChange={handleGroupingMode}
+            />
+          </div>
+          <ErrorBoundary>
+            {advancedComponent && (
+              <div className='GroupingPopover__advanced__component'>
+                <Accordion className='GroupingPopover__accordion__container'>
+                  <AccordionSummary
+                    expandIcon={
+                      <Icon
+                        fontSize='0.875rem'
+                        name='arrow-bidirectional-close'
+                      />
+                    }
+                    id='panel1c-header'
+                  >
+                    <Text
+                      size={12}
+                      tint={50}
+                      component='h3'
+                      weight={400}
+                      className='GroupingPopover__subtitle'
+                    >
+                      Advanced options
+                    </Text>
+                  </AccordionSummary>
+                  <AccordionDetails style={{ padding: 0 }}>
+                    {advancedComponent}
+                  </AccordionDetails>
+                </Accordion>
               </div>
             )}
-            renderOption={(option, { selected }) => (
-              <React.Fragment>
-                <Checkbox
-                  color='primary'
-                  size='small'
-                  icon={<CheckBoxOutlineBlank />}
-                  checkedIcon={<CheckBoxIcon />}
-                  style={{ marginRight: 4 }}
-                  checked={selected}
-                />
-                {option.label}
-              </React.Fragment>
-            )}
-          />
+          </ErrorBoundary>
         </div>
-        <div className='GroupingPopover__toggleMode__div'>
-          <Text
-            size={12}
-            tint={50}
-            component='h3'
-            className='GroupingPopover__subtitle'
-          >
-            select grouping mode
-          </Text>
-          <ToggleButton
-            title='Select Mode'
-            id='yAxis'
-            value={
-              groupingData?.reverseMode[groupName as GroupNameType]
-                ? 'Reverse'
-                : 'Group'
-            }
-            leftValue='Group'
-            rightValue='Reverse'
-            leftLabel='Group'
-            rightLabel='Reverse'
-            onChange={handleGroupingMode}
-          />
-        </div>
-        {advancedComponent && (
-          <div className='GroupingPopover__advanced__component'>
-            <Accordion className='GroupingPopover__accordion__container'>
-              <AccordionSummary
-                expandIcon={
-                  <Icon fontSize='0.875rem' name='arrow-bidirectional-close' />
-                }
-                id='panel1c-header'
-              >
-                <Text
-                  size={12}
-                  tint={50}
-                  component='h3'
-                  weight={400}
-                  className='GroupingPopover__subtitle'
-                >
-                  Advanced options
-                </Text>
-              </AccordionSummary>
-              <AccordionDetails style={{ padding: 0 }}>
-                {advancedComponent}
-              </AccordionDetails>
-            </Accordion>
-          </div>
-        )}
       </div>
-    </div>
+    </ErrorBoundary>
   );
 }
 

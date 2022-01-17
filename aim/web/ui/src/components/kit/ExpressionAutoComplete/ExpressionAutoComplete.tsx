@@ -3,6 +3,7 @@ import React from 'react';
 import CodeEditor from '@uiw/react-textarea-code-editor';
 
 import { AutoSuggestions } from 'components/kit';
+import ErrorBoundary from 'components/ErrorBoundary/ErrorBoundary';
 
 import getCaretCoordinates from 'utils/getCaretPosition';
 
@@ -149,58 +150,60 @@ function ExpressionAutoComplete({
   }
 
   return (
-    <div className='ExpressionAutoComplete'>
-      {isTextArea ? (
-        <textarea
-          ref={inputRef}
+    <ErrorBoundary>
+      <div className='ExpressionAutoComplete'>
+        {isTextArea ? (
+          <textarea
+            ref={inputRef}
+            value={value}
+            placeholder={placeholder}
+            spellCheck={false}
+            onClick={onCaretPositionChange}
+            className={`ExpressionAutoComplete__textarea ${
+              value ? 'ExpressionAutoComplete__textarea__filled' : ''
+            }`}
+            onKeyDown={onInputKeyDown}
+            onChange={onValueChange}
+            onBlur={onFieldBlur}
+          />
+        ) : (
+          <input
+            value={value}
+            ref={inputRef}
+            spellCheck={false}
+            onClick={onCaretPositionChange}
+            className={`ExpressionAutoComplete__input ${
+              value ? 'ExpressionAutoComplete__input__filled' : ''
+            }`}
+            placeholder={placeholder}
+            onKeyDown={onInputKeyDown}
+            onChange={onValueChange}
+            onBlur={onFieldBlur}
+          />
+        )}
+        <CodeEditor
+          ref={textRef}
           value={value}
-          placeholder={placeholder}
-          spellCheck={false}
-          onClick={onCaretPositionChange}
-          className={`ExpressionAutoComplete__textarea ${
-            value ? 'ExpressionAutoComplete__textarea__filled' : ''
+          language='python'
+          className={`ExpressionAutoComplete__CodeEditor ${
+            isTextArea
+              ? 'ExpressionAutoComplete__CodeEditor__textarea'
+              : 'ExpressionAutoComplete__CodeEditor__input'
           }`}
-          onKeyDown={onInputKeyDown}
-          onChange={onValueChange}
-          onBlur={onFieldBlur}
+          padding={8}
         />
-      ) : (
-        <input
-          value={value}
-          ref={inputRef}
-          spellCheck={false}
-          onClick={onCaretPositionChange}
-          className={`ExpressionAutoComplete__input ${
-            value ? 'ExpressionAutoComplete__input__filled' : ''
-          }`}
-          placeholder={placeholder}
-          onKeyDown={onInputKeyDown}
-          onChange={onValueChange}
-          onBlur={onFieldBlur}
-        />
-      )}
-      <CodeEditor
-        ref={textRef}
-        value={value}
-        language='python'
-        className={`ExpressionAutoComplete__CodeEditor ${
-          isTextArea
-            ? 'ExpressionAutoComplete__CodeEditor__textarea'
-            : 'ExpressionAutoComplete__CodeEditor__input'
-        }`}
-        padding={8}
-      />
-      {suggestionsList.length > 0 ? (
-        <AutoSuggestions
-          inputRef={inputRef}
-          suggestionsRef={suggestionsRef}
-          suggestionsList={suggestionsList}
-          suggestionsPosition={suggestionsPosition}
-          setSuggestionsList={setSuggestionsList}
-          onSuggestionClick={onSuggestionClick}
-        />
-      ) : null}
-    </div>
+        {suggestionsList.length > 0 ? (
+          <AutoSuggestions
+            inputRef={inputRef}
+            suggestionsRef={suggestionsRef}
+            suggestionsList={suggestionsList}
+            suggestionsPosition={suggestionsPosition}
+            setSuggestionsList={setSuggestionsList}
+            onSuggestionClick={onSuggestionClick}
+          />
+        ) : null}
+      </div>
+    </ErrorBoundary>
   );
 }
 

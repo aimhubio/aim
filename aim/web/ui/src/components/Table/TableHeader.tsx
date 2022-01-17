@@ -3,6 +3,8 @@
 
 import React from 'react';
 
+import ErrorBoundary from 'components/ErrorBoundary/ErrorBoundary';
+
 class TableHeader extends React.PureComponent {
   constructor(props) {
     super(props);
@@ -53,12 +55,14 @@ class TableHeader extends React.PureComponent {
       ? headerHeight
       : [headerHeight];
     return (
-      <div role='grid' ref={this._setRef} className={className} style={style}>
-        <div role='rowgroup' style={innerStyle}>
-          {rowHeights.map(this.renderHeaderRow)}
-          {frozenData.map(this.renderFrozenRow)}
+      <ErrorBoundary>
+        <div role='grid' ref={this._setRef} className={className} style={style}>
+          <div role='rowgroup' style={innerStyle}>
+            {rowHeights.map(this.renderHeaderRow)}
+            {frozenData.map(this.renderFrozenRow)}
+          </div>
         </div>
-      </div>
+      </ErrorBoundary>
     );
   }
 
