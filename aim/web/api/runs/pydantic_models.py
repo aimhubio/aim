@@ -140,7 +140,7 @@ class StructuredRunUpdateIn(BaseModel):
 
 
 class StructuredRunsArchivedIn(BaseModel):
-    archived: Optional[bool] = True
+    archive: Optional[bool] = True
 
 
 class StructuredRunUpdateOut(BaseModel):
