@@ -34,7 +34,6 @@ import {
   IOnGroupingSelectChangeParams,
   IPanelTooltip,
   ITooltipData,
-  SortField,
 } from 'types/services/models/metrics/metricsAppModel';
 import { IMetricTrace, IRun } from 'types/services/models/metrics/runModel';
 import { IBookmarkFormState } from 'types/components/BookmarkForm/BookmarkForm';
@@ -72,6 +71,7 @@ import getTooltipData from 'utils/app/getTooltipData';
 import filterTooltipContent from 'utils/filterTooltipContent';
 import { getDataAsMediaSetNestedObject } from 'utils/app/getDataAsMediaSetNestedObject';
 import { getCompatibleSelectConfig } from 'utils/app/getCompatibleSelectConfig';
+import { getSortedFields, SortFields } from 'utils/getSortedFields';
 import { getValue } from 'utils/helper';
 
 import createModel from '../model';
@@ -117,6 +117,8 @@ function getConfig(): IImagesExploreAppConfig {
         active: false,
         key: null,
       },
+      sortFields: [],
+      sortFieldsDict: {},
     },
     table: {
       resizeMode: ResizeModeEnum.Resizable,
@@ -411,10 +413,10 @@ function processData(data: any[]): {
       configData?.table?.sortFields?.map(
         (f: any) =>
           function (metric: any) {
-            return getValue(metric, f[0], '');
+            return getValue(metric, f.value, '');
           },
       ) ?? [],
-      configData?.table?.sortFields?.map((f: any) => f[1]) ?? [],
+      configData?.table?.sortFields?.map((f: any) => f.order) ?? [],
     ),
   );
   const uniqParams = _.uniq(params);
@@ -521,11 +523,12 @@ function setModelData(rawData: any[], configData: IImagesExploreAppConfig) {
     tableData: tableData.rows,
     tableColumns: getImagesExploreTableColumns(
       params,
+      groupingSelectOptions,
       data[0]?.config,
       configData.table.columnsOrder!,
       configData.table.hiddenColumns!,
       sortFields,
-      onSortChange,
+      onTableSortChange,
     ),
     sameValueColumns: tableData.sameValueColumns,
     groupingSelectOptions,
@@ -584,11 +587,12 @@ function updateModelData(
   );
   const tableColumns = getImagesExploreTableColumns(
     params,
+    groupingSelectOptions,
     data[0]?.config,
     configData.table.columnsOrder!,
     configData.table.hiddenColumns!,
     configData.table.sortFields,
-    onSortChange,
+    onTableSortChange,
   );
   const tableRef: any = model.getState()?.refs?.tableRef;
   tableRef.current?.updateData({
@@ -606,7 +610,6 @@ function updateModelData(
     data: model.getState()?.data,
     imagesData: mediaSetData,
     orderedMap,
-    // chartTitleData: getChartTitleData(data),
     tableData: tableData.rows,
     tableColumns,
     sameValueColumns: tableData.sameValueColumns,
@@ -748,9 +751,12 @@ function onGroupingSelectChange({
 function onGroupingModeChange({ value }: IOnGroupingModeChangeParams): void {
   const configData = model.getState()?.config;
   if (configData?.grouping) {
-    configData.grouping.reverseMode = {
-      ...configData.grouping.reverseMode,
-      group: value,
+    configData.grouping = {
+      ...configData.grouping,
+      reverseMode: {
+        ...configData.grouping.reverseMode,
+        group: value,
+      },
     };
     updateModelData(configData, true);
   }
@@ -1296,7 +1302,7 @@ function updateColumnsWidths(key: string, width: number, isReset: boolean) {
 }
 
 // internal function to update config.table.sortFields and cache data
-function updateSortFields(sortFields: SortField[]) {
+function updateTableSortFields(sortFields: SortFields) {
   const configData: IImagesExploreAppConfig | undefined =
     model.getState()?.config;
   if (configData?.table) {
@@ -1313,7 +1319,7 @@ function updateSortFields(sortFields: SortField[]) {
     });
 
     setItem('imagesExploreTable', encode(table));
-    updateModelData(configUpdate);
+    updateModelData(configUpdate, true);
   }
   analytics.trackEvent(
     `[ImagesExplorer][Table] ${
@@ -1321,58 +1327,94 @@ function updateSortFields(sortFields: SortField[]) {
     } table sorting by a key`,
   );
 }
+// internal function to update config.table.sortFields and cache data
+function updateImagesSortFields(sortFields: SortFields, sortFieldsDict: any) {
+  const configData: IImagesExploreAppConfig | undefined =
+    model.getState()?.config;
+  if (configData?.table) {
+    const images = {
+      ...configData.images,
+      sortFields,
+      sortFieldsDict,
+    };
+    const configUpdate = {
+      ...configData,
+      images,
+    };
+    model.setState({
+      config: configUpdate,
+    });
+
+    updateModelData(configUpdate, true);
+  }
+  analytics.trackEvent(
+    `[ImagesExplorer] ${
+      _.isEmpty(sortFields) ? 'Reset' : 'Apply'
+    } images sorting by a key`,
+  );
+}
 
 // set empty array to config.table.sortFields
 function onSortReset() {
-  updateSortFields([]);
+  updateTableSortFields([]);
+}
+
+function onImagesSortReset() {
+  updateImagesSortFields([], {});
 }
 
 /**
- * function onSortChange has 3 major functionalities
+ * function onTableSortChange has 3 major functionalities
  *    1. if only field param passed, the function will change sort option with the following cycle ('asc' -> 'desc' -> none -> 'asc)
  *    2. if value param passed 'asc' or 'desc', the function will replace the sort option of the field in sortFields
  *    3. if value param passed 'none', the function will delete the field from sortFields
  * @param {String} field  - the name of the field (i.e params.dataset.preproc)
  * @param {'asc' | 'desc' | 'none'} value - 'asc' | 'desc' | 'none'
  */
-function onSortChange(field: string, value?: 'asc' | 'desc' | 'none') {
+function onTableSortChange({
+  sortFields,
+  order,
+  index,
+  actionType,
+  field,
+}: any) {
   const configData: IImagesExploreAppConfig | undefined =
     model.getState()?.config;
-  const sortFields = configData?.table.sortFields || [];
 
-  const existField = sortFields?.find((d: SortField) => d[0] === field);
-  let newFields: SortField[] = [];
+  updateTableSortFields(
+    getSortedFields({
+      sortFields: sortFields || configData?.table.sortFields || [],
+      order,
+      index,
+      actionType,
+      field,
+    }),
+  );
+}
 
-  if (value && existField) {
-    if (value === 'none') {
-      // delete
-      newFields = sortFields?.filter(
-        ([name]: SortField) => name !== existField[0],
-      );
-    } else {
-      newFields = sortFields.map(([name, v]: SortField) =>
-        name === existField[0] ? [name, value] : [name, v],
-      );
-    }
-  } else {
-    if (existField) {
-      if (existField[1] === 'asc') {
-        // replace to desc
-        newFields = sortFields?.map(([name, value]: SortField) => {
-          return name === existField[0] ? [name, 'desc'] : [name, value];
-        });
-      } else {
-        // delete field
-        newFields = sortFields?.filter(
-          ([name]: SortField) => name !== existField[0],
-        );
-      }
-    } else {
-      // add field
-      newFields = [...sortFields, [field, 'asc']];
-    }
-  }
-  updateSortFields(newFields);
+function onImagesSortChange({
+  sortFields,
+  order,
+  index,
+  actionType,
+  field,
+}: any) {
+  const configData: IImagesExploreAppConfig | undefined =
+    model.getState()?.config;
+  const resultSortFields = getSortedFields({
+    sortFields: sortFields || configData?.images.sortFields || [],
+    order,
+    index,
+    actionType,
+    field,
+  });
+  updateImagesSortFields(
+    resultSortFields,
+    resultSortFields.reduce((acc: any, field: any) => {
+      acc[field.value] = field;
+      return acc;
+    }, {}),
+  );
 }
 
 function onExportTableData(e: React.ChangeEvent<any>): void {
@@ -1387,11 +1429,12 @@ function onExportTableData(e: React.ChangeEvent<any>): void {
   );
   const tableColumns: ITableColumn[] = getImagesExploreTableColumns(
     params,
+    groupingSelectOptions,
     data[0]?.config,
     config?.table.columnsOrder!,
     config?.table.hiddenColumns!,
     config?.table.sortFields,
-    onSortChange,
+    onTableSortChange,
   );
 
   const excludedFields: string[] = ['#', 'actions'];
@@ -1935,7 +1978,7 @@ const imagesExploreAppModel = {
   getAppConfigData,
   setDefaultAppConfigData,
   updateColumnsWidths,
-  onSortChange,
+  onTableSortChange,
   onSortReset,
   onExportTableData,
   onRowVisibilityChange,
@@ -1964,6 +2007,8 @@ const imagesExploreAppModel = {
   showRangePanel,
   getGroupingSelectOptions,
   getDataAsImageSet,
+  onImagesSortChange,
+  onImagesSortReset,
 };
 
 export default imagesExploreAppModel;
