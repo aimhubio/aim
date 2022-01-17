@@ -424,9 +424,9 @@ class Run(StructuredRunMixin):
         elif isinstance(value, (CustomObject, list, tuple)):
             val = value
         else:
-            raise ValueError(f"Input metric of type {type(value)} is neither python number nor AimObject")
+            raise ValueError(f'Input metric of type {type(value)} is neither python number nor AimObject')
 
-        dtype = get_object_typename(value)
+        dtype = get_object_typename(val)
 
         ctx = Context(context)
         sequence = SequenceDescriptor(name, ctx)
