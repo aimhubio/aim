@@ -11,7 +11,8 @@ export interface IIllustrationBlockProps {
     | 'runs'
     | 'metrics'
     | 'params'
-    | 'images'
+    | 'image'
+    | 'audio'
     | 'scatters'
     | 'bookmarks'
     | 'tags';

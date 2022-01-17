@@ -170,15 +170,13 @@ function Metrics(
                   }
                 />
               ) : (
-                <IllustrationBlock
-                  size='xLarge'
-                  page='metrics'
-                  type={
-                    props.selectFormOptions
-                      ? Request_Illustrations[props.requestStatus]
-                      : IllustrationsEnum.EmptyData
-                  }
-                />
+                props.requestStatus !== RequestStatusEnum.Pending && (
+                  <IllustrationBlock
+                    size='xLarge'
+                    page='metrics'
+                    type={IllustrationsEnum.EmptyData}
+                  />
+                )
               )}
             </BusyLoaderWrapper>
           </div>

@@ -6,6 +6,7 @@ import {
   Illustrations_List,
   IllustrationsEnum,
   Illustration_Content_Config,
+  Illustration_Title_Config,
 } from 'config/illustrationConfig/illustrationConfig';
 
 import { IIllustrationBlockProps } from 'types/components/IllustrationBlock/IllustrationBlock';
@@ -21,17 +22,29 @@ function IllustrationBlock({
   className = '',
   size = 'small',
 }: IIllustrationBlockProps): React.FunctionComponentElement<React.ReactNode> {
+  console.log(type, page);
+
   return (
     <div className={`IllustrationBlock ${className}`}>
       <div className={`IllustrationBlock__${size}__img`}>
         {image || <img src={Illustrations_List[type]} alt='' />}
       </div>
-      <Text component='p' className={`IllustrationBlock__${size}__title`}>
-        {title}
+      <Text
+        component='p'
+        className={`IllustrationBlock__title IllustrationBlock__${size}__title`}
+      >
+        {title || Illustration_Title_Config[page][type]}
       </Text>
-      <Text component='p' className={`IllustrationBlock__${size}__content`}>
-        {content || Illustration_Content_Config[page || 'runs'][type]}
-      </Text>
+      {content ? (
+        <Text
+          component='p'
+          className={`IllustrationBlock__content IllustrationBlock__${size}__content`}
+        >
+          {content}
+        </Text>
+      ) : (
+        Illustration_Content_Config[page][type]
+      )}
     </div>
   );
 }

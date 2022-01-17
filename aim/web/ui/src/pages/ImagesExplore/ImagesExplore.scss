@@ -39,6 +39,9 @@
       &__hide {
         display: none;
       }
+      &__fullHeight {
+        flex: 1 !important;
+      }
     }
   }
   &__SelectForm__Grouping__container {

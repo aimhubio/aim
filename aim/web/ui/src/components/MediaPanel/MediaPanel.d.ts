@@ -2,6 +2,7 @@ import React from 'react';
 
 import { ResizeModeEnum } from 'config/enums/tableEnums';
 import { RequestStatusEnum } from 'config/enums/requestStatusEnum';
+import { IllustrationsEnum } from 'config/illustrationConfig/illustrationConfig';
 
 import {
   IFocusedState,
@@ -32,7 +33,7 @@ export interface IMediaPanelProps {
   actionPanel?: React.ReactNode;
   actionPanelSize?: number;
   tooltipType?: ChartTypeEnum;
-  requestStatus?: RequestStatusEnum;
+  illustrationType?: IllustrationsEnum | any;
   onActivePointChange?: (activePoint: any, focusedStateActive: boolean) => void;
   getBlobsData: (uris: string[]) => Promise;
 }

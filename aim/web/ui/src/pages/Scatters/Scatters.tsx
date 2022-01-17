@@ -14,6 +14,10 @@ import { ResizeModeEnum } from 'config/enums/tableEnums';
 import { RowHeightSize } from 'config/table/tableConfigs';
 import GroupingPopovers from 'config/grouping/GroupingPopovers';
 import { RequestStatusEnum } from 'config/enums/requestStatusEnum';
+import {
+  IllustrationsEnum,
+  Request_Illustrations,
+} from 'config/illustrationConfig/illustrationConfig';
 
 import Grouping from 'pages/components/Grouping/Grouping';
 import AppBar from 'pages/Metrics/components/MetricsBar/MetricsBar';
@@ -111,13 +115,11 @@ function Scatters(
               ) : (
                 <IllustrationBlock
                   size='xLarge'
-                  image={
-                    props.selectFormOptions ||
-                    props.requestStatus === RequestStatusEnum.NotRequested
-                      ? 'exploreData'
-                      : props.requestStatus === RequestStatusEnum.BadRequest
-                      ? 'wrongSearch'
-                      : 'emptySearch'
+                  page='scatters'
+                  type={
+                    props.selectFormOptions?.length
+                      ? IllustrationsEnum.EmptyData
+                      : Request_Illustrations[props.requestStatus]
                   }
                   content="It's super easy to search Aim experiments. Lookup search docs to learn more."
                 />

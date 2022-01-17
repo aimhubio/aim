@@ -462,14 +462,7 @@ function createAppModel(appConfig: IAppInitialConfig) {
     };
     let tooltipData: ITooltipData = {};
     let liveUpdateInstance: LiveUpdateService | null;
-    projectsService
-      .getProjectParams(['metric'])
-      .call()
-      .then((data: IProjectParamsMetrics) => {
-        model.setState({
-          selectFormOptions: getMetricOptions(data),
-        });
-      });
+
     function getOption(
       system: boolean,
       key: string,
@@ -542,11 +535,20 @@ function createAppModel(appConfig: IAppInitialConfig) {
           chartPanelRef: { current: null },
         };
       }
+      state.requestStatus = RequestStatusEnum.Pending;
       model.setState({ ...state });
       if (!appId) {
         setModelDefaultAppConfigData();
       }
-
+      projectsService
+        .getProjectParams(['metric'])
+        .call()
+        .then((data) => {
+          model.setState({
+            requestStatus: RequestStatusEnum.NotRequested,
+            selectFormOptions: getMetricOptions(data),
+          });
+        });
       const liveUpdateState = model.getState()?.config?.liveUpdate;
 
       if (liveUpdateState?.enabled) {
@@ -2818,62 +2820,6 @@ function createAppModel(appConfig: IAppInitialConfig) {
       let tooltipData: ITooltipData = {};
       let liveUpdateInstance: LiveUpdateService | null;
 
-      function initialize(appId: string): void {
-        model.init();
-        const state: Partial<IParamsAppModelState> = {};
-        if (grouping) {
-          state.groupingSelectOptions = [];
-        }
-        if (components?.table) {
-          state.refs = {
-            ...state.refs,
-            tableRef: { current: null },
-          };
-        }
-        if (components?.charts?.[0]) {
-          tooltipData = {};
-          state.refs = {
-            ...state.refs,
-            chartPanelRef: { current: null },
-          };
-        }
-        model.setState({ ...state });
-        if (!appId) {
-          setModelDefaultAppConfigData();
-        }
-        const liveUpdateState = model.getState()?.config?.liveUpdate;
-
-        if (liveUpdateState?.enabled) {
-          liveUpdateInstance = new LiveUpdateService(
-            appName,
-            updateData,
-            liveUpdateState.delay,
-          );
-        }
-      }
-
-      function updateData(newData: IRun<IParamTrace>[]): void {
-        const configData = model.getState()?.config;
-        if (configData) {
-          setModelData(newData, configData);
-        }
-      }
-
-      function abortRequest(): void {
-        if (runsRequestRef) {
-          runsRequestRef.abort();
-        }
-
-        model.setState({
-          requestStatus: RequestStatusEnum.Ok,
-        });
-
-        onModelNotificationAdd({
-          id: Date.now(),
-          severity: 'info',
-          message: 'Request has been cancelled',
-        });
-      }
       function getParamsOptions(projectsData: IProjectParamsMetrics) {
         const comparator = alphabeticalSortComparator<ISelectOption>({
           orderBy: 'label',
@@ -2937,6 +2883,73 @@ function createAppModel(appConfig: IAppInitialConfig) {
           }),
         );
         return data.concat(systemOptions);
+      }
+
+      function initialize(appId: string): void {
+        model.init();
+        const state: Partial<IParamsAppModelState> = {};
+        if (grouping) {
+          state.groupingSelectOptions = [];
+        }
+        if (components?.table) {
+          state.refs = {
+            ...state.refs,
+            tableRef: { current: null },
+          };
+        }
+        if (components?.charts?.[0]) {
+          tooltipData = {};
+          state.refs = {
+            ...state.refs,
+            chartPanelRef: { current: null },
+          };
+        }
+        // state.requestStatus = RequestStatusEnum.Pending;
+        projectsService
+          .getProjectParams(['metric'])
+          .call()
+          .then((data) => {
+            model.setState({
+              requestStatus: RequestStatusEnum.NotRequested,
+              selectFormOptions: getParamsOptions(data),
+            });
+          });
+        model.setState({ ...state });
+        if (!appId) {
+          setModelDefaultAppConfigData();
+        }
+        const liveUpdateState = model.getState()?.config?.liveUpdate;
+
+        if (liveUpdateState?.enabled) {
+          liveUpdateInstance = new LiveUpdateService(
+            appName,
+            updateData,
+            liveUpdateState.delay,
+          );
+        }
+      }
+
+      function updateData(newData: IRun<IParamTrace>[]): void {
+        const configData = model.getState()?.config;
+        if (configData) {
+          setModelData(newData, configData);
+        }
+      }
+
+      function abortRequest(): void {
+        if (runsRequestRef) {
+          runsRequestRef.abort();
+        }
+
+        model.setState({
+          requestStatus: RequestStatusEnum.Ok,
+        });
+
+        onModelNotificationAdd({
+          id: Date.now(),
+          severity: 'info',
+          message: 'Request has been cancelled',
+        });
       }
 
       function getParamsData(shouldUrlUpdate?: boolean): {

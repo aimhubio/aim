@@ -16,6 +16,10 @@ import { RowHeightSize } from 'config/table/tableConfigs';
 import { ResizeModeEnum } from 'config/enums/tableEnums';
 import GroupingPopovers from 'config/grouping/GroupingPopovers';
 import { RequestStatusEnum } from 'config/enums/requestStatusEnum';
+import {
+  IllustrationsEnum,
+  Request_Illustrations,
+} from 'config/illustrationConfig/illustrationConfig';
 
 import AppBar from 'pages/Metrics/components/MetricsBar/MetricsBar';
 import Grouping from 'pages/components/Grouping/Grouping';
@@ -185,15 +189,12 @@ const Params = ({
               ) : (
                 <IllustrationBlock
                   size='xLarge'
-                  image={
-                    selectFormOptions?.length > 0 ||
-                    requestStatus === RequestStatusEnum.NotRequested
-                      ? 'exploreData'
-                      : requestStatus === RequestStatusEnum.BadRequest
-                      ? 'wrongSearch'
-                      : 'emptySearch'
+                  page='params'
+                  type={
+                    selectFormOptions?.length
+                      ? IllustrationsEnum.EmptyData
+                      : Request_Illustrations[requestStatus]
                   }
-                  content="It's super easy to search Aim experiments. Lookup search docs to learn more."
                 />
               )}
             </BusyLoaderWrapper>

@@ -15,6 +15,10 @@ import { ResizeModeEnum } from 'config/enums/tableEnums';
 import { RowHeightSize } from 'config/table/tableConfigs';
 import GroupingPopovers from 'config/grouping/GroupingPopovers';
 import { RequestStatusEnum } from 'config/enums/requestStatusEnum';
+import {
+  IllustrationsEnum,
+  Request_Illustrations,
+} from 'config/illustrationConfig/illustrationConfig';
 
 import usePanelResize from 'hooks/resize/usePanelResize';
 import useModel from 'hooks/model/useModel';
@@ -186,6 +190,8 @@ function ImagesExplore(): React.FunctionComponentElement<React.ReactNode> {
               imagesExploreData?.config?.table.resizeMode ===
               ResizeModeEnum.MaxHeight
                 ? '__hide'
+                : isEmpty(imagesExploreData?.imagesData)
+                ? '__fullHeight'
                 : ''
             }`}
           >
@@ -194,9 +200,8 @@ function ImagesExplore(): React.FunctionComponentElement<React.ReactNode> {
               getBlobsData={imagesExploreAppModel.getImagesBlobsData}
               data={imagesExploreData?.imagesData}
               orderedMap={imagesExploreData?.orderedMap}
-              isLoading={imagesExploreData?.requestIsPending}
-              requestStatus={
-                imagesExploreData?.requestStatus as RequestStatusEnum
+              isLoading={
+                imagesExploreData?.requestStatus === RequestStatusEnum.Pending
               }
               panelResizing={panelResizing}
               resizeMode={imagesExploreData?.config?.table.resizeMode}
@@ -205,6 +210,13 @@ function ImagesExplore(): React.FunctionComponentElement<React.ReactNode> {
               wrapperOffsetWidth={offsetWidth || 0}
               focusedState={
                 imagesExploreData?.config?.images?.focusedState as IFocusedState
+              }
+              illustrationType={
+                imagesExploreData?.selectFormOptions.length
+                  ? Request_Illustrations[
+                      imagesExploreData.requestStatus as RequestStatusEnum
+                    ]
+                  : IllustrationsEnum.EmptyData
               }
               tooltip={
                 imagesExploreData?.config?.images?.tooltip as IPanelTooltip
@@ -263,7 +275,7 @@ function ImagesExplore(): React.FunctionComponentElement<React.ReactNode> {
           </div>
           <ResizePanel
             className={`ImagesExplore__ResizePanel${
-              imagesExploreData?.requestIsPending ||
+              imagesExploreData?.requestStatus === RequestStatusEnum.Pending ||
               !isEmpty(imagesExploreData?.imagesData)
                 ? ''
                 : '__hide'
@@ -279,13 +291,16 @@ function ImagesExplore(): React.FunctionComponentElement<React.ReactNode> {
             ref={tableElemRef}
             className={`ImagesExplore__table__container${
               imagesExploreData?.config?.table.resizeMode ===
-              ResizeModeEnum.Hide
+                ResizeModeEnum.Hide ||
+              isEmpty(imagesExploreData?.tableData || {})
                 ? '__hide'
                 : ''
             }`}
           >
             <BusyLoaderWrapper
-              isLoading={imagesExploreData?.requestIsPending}
+              isLoading={
+                imagesExploreData?.requestStatus === RequestStatusEnum.Pending
+              }
               className='ImagesExplore__loader'
               height='100%'
               loaderComponent={<TableLoader />}

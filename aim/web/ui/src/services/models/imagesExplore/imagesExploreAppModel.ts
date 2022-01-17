@@ -86,6 +86,7 @@ const model = createModel<Partial<IImagesExploreAppModelState>>({
   requestStatus: RequestStatusEnum.NotRequested,
   searchButtonDisabled: false,
   applyButtonDisabled: true,
+  selectFormOptions: [],
 });
 
 let tooltipData: ITooltipData = {};

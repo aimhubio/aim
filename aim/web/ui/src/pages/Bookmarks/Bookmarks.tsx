@@ -4,6 +4,8 @@ import AppBar from 'components/AppBar/AppBar';
 import BusyLoaderWrapper from 'components/BusyLoaderWrapper/BusyLoaderWrapper';
 import IllustrationBlock from 'components/IllustrationBlock/IllustrationBlock';
 
+import { IllustrationsEnum } from 'config/illustrationConfig/illustrationConfig';
+
 import { IBookmarksProps } from 'types/pages/bookmarks/Bookmarks';
 
 import BookmarkCard from './components/BookmarkCard/BookmarkCard';
@@ -32,7 +34,8 @@ function Bookmarks({
         {!isLoading && data?.length === 0 ? (
           <IllustrationBlock
             size='xLarge'
-            image='emptyBookmarks'
+            page='bookmarks'
+            type={IllustrationsEnum.EmptyBookmarks}
             content={'No Bookmarks Yet'}
           />
         ) : null}

@@ -11,6 +11,7 @@ import { throttle } from 'components/Table/utils';
 
 import { ResizeModeEnum } from 'config/enums/tableEnums';
 import { BATCH_SEND_DELAY } from 'config/mediaConfigs/mediaConfigs';
+import { RequestStatusEnum } from 'config/enums/requestStatusEnum';
 
 import blobsURIModel from 'services/models/media/blobsURIModel';
 
@@ -35,7 +36,7 @@ function MediaPanel({
   actionPanel,
   actionPanelSize,
   tooltipType,
-  requestStatus,
+  illustrationType,
   onActivePointChange,
   getBlobsData,
 }: IMediaPanelProps): React.FunctionComponentElement<React.ReactNode> {
@@ -181,6 +182,8 @@ function MediaPanel({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
+  console.log(mediaType, illustrationType);
+
   return (
     <BusyLoaderWrapper
       isLoading={isLoading}
@@ -252,7 +255,8 @@ function MediaPanel({
             ) : (
               <IllustrationBlock
                 size='xLarge'
-                content="It's super easy to search Aim experiments. Lookup search docs to learn more."
+                type={illustrationType}
+                page={mediaType}
               />
             )}
             {actionPanel}
