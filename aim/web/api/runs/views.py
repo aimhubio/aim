@@ -48,7 +48,6 @@ from aim.web.api.runs.pydantic_models import (
     StructuredRunAddTagIn,
     StructuredRunAddTagOut,
     StructuredRunRemoveTagOut,
-    StructuredRunsArchivedIn,
     StructuredRunsArchivedOut,
     URIBatchIn,
 )
