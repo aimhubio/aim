@@ -1,20 +1,24 @@
 import React from 'react';
 import { BrowserRouter, Switch, Route } from 'react-router-dom';
 
+import AlertBanner from 'components/kit/AlertBanner';
 import SideBar from 'components/SideBar/SideBar';
 import ProjectWrapper from 'components/ProjectWrapper/ProjectWrapper';
 import Theme from 'components/Theme/Theme';
 import BusyLoaderWrapper from 'components/BusyLoaderWrapper/BusyLoaderWrapper';
 
+import { getBasePath } from 'config/config';
+
 import routes from 'routes/routes';
+
+import { inIframe } from 'utils/helper';
 
 import './App.scss';
 
-let basePath = '/';
+const basePath = getBasePath(false);
 
-if ((window as any).API_BASE_PATH !== '{{ base_path }}') {
-  basePath = (window as any).API_BASE_PATH;
-}
+const cacheBannerPaths = ['/notebook']; // @TODO move cacheBannerPaths list to constants
+const isVisibleCacheBanner = cacheBannerPaths.includes(basePath) && inIframe();
 
 function App(): React.FunctionComponentElement<React.ReactNode> {
   return (
@@ -22,6 +26,12 @@ function App(): React.FunctionComponentElement<React.ReactNode> {
       <BrowserRouter basename={basePath}>
         <ProjectWrapper />
         <Theme>
+          {isVisibleCacheBanner && (
+            <AlertBanner type='warning' isVisiblePermanently={true}>
+              You are using UI from notebook env, please make sure to{' '}
+              <b>keep server running</b> for a better experience
+            </AlertBanner>
+          )}
           <div className='pageContainer'>
             <SideBar />
             <div className='mainContainer'>

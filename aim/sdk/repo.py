@@ -352,7 +352,8 @@ class Repo:
         try:
             self._delete_run(run_hash)
             return True
-        except Exception:
+        except Exception as e:
+            logger.warning(f'Error while trying to delete run \'{run_hash}\'. {str(e)}.')
             return False
 
     def delete_runs(self, run_hashes: List[str]) -> Tuple[bool, List[str]]:
@@ -374,7 +375,8 @@ class Repo:
                     self._delete_run(run_hash)
                     run_count += 1
             return True, []
-        except Exception:
+        except Exception as e:
+            logger.warning(f'Error while trying to delete run \'{run_hash}\'. {str(e)}.')
             return False, run_hashes[run_count:]
 
     def query_metrics(self, query: str = '') -> QuerySequenceCollection:
@@ -563,7 +565,6 @@ class Repo:
             # remove data from index container
             index_tree = self._get_index_container('meta', timeout=0).tree()
             del index_tree.subtree(('meta', 'chunks'))[run_hash]
-            del index_tree.subtree(('BLOBS', 'meta', 'chunks'))[run_hash]
 
             # delete rocksdb containers data
             sub_dirs = ('chunks', 'progress', 'locks')
