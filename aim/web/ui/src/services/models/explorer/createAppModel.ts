@@ -55,7 +55,6 @@ import {
   IOnGroupingSelectChangeParams,
   IPanelTooltip,
   ITooltipData,
-  SortField,
 } from 'types/services/models/metrics/metricsAppModel';
 import {
   IMetricTrace,
@@ -166,6 +165,7 @@ import { isSystemMetric } from 'utils/isSystemMetric';
 import setDefaultAppConfigData from 'utils/app/setDefaultAppConfigData';
 import getAppConfigData from 'utils/app/getAppConfigData';
 import { getValue } from 'utils/helper';
+import { SortField } from 'utils/getSortedFields';
 import onChangeTrendlineOptions from 'utils/app/onChangeTrendlineOptions';
 
 import { AppDataTypeEnum, AppNameEnum } from './index';
@@ -897,10 +897,10 @@ function createAppModel(appConfig: IAppInitialConfig) {
           configData?.table?.sortFields?.map(
             (f: SortField) =>
               function (metric: IMetric) {
-                return getValue(metric, f[0], '');
+                return getValue(metric, f.value, '');
               },
           ) ?? [],
-          configData?.table?.sortFields?.map((f: SortField) => f[1]) ?? [],
+          configData?.table?.sortFields?.map((f: SortField) => f.order) ?? [],
         ),
       );
       const uniqParams = _.uniq(params);
@@ -947,6 +947,7 @@ function createAppModel(appConfig: IAppInitialConfig) {
 
       const tableColumns = getMetricsTableColumns(
         params,
+        groupingSelectOptions,
         data[0]?.config,
         configData.table?.columnsOrder!,
         configData.table?.hiddenColumns!,
@@ -1024,6 +1025,7 @@ function createAppModel(appConfig: IAppInitialConfig) {
 
       const tableColumns = getMetricsTableColumns(
         params,
+        groupingSelectOptions,
         data[0]?.config,
         configData.table?.columnsOrder!,
         configData.table?.hiddenColumns!,
@@ -1462,6 +1464,7 @@ function createAppModel(appConfig: IAppInitialConfig) {
       );
       const tableColumns: ITableColumn[] = getMetricsTableColumns(
         params,
+        groupingSelectOptions,
         data[0]?.config,
         config?.table?.columnsOrder!,
         config?.table?.hiddenColumns!,
@@ -1626,11 +1629,23 @@ function createAppModel(appConfig: IAppInitialConfig) {
       onResetConfigData({ model, getConfig, updateModelData });
     }
 
-    function onSortChange(
-      field: string,
-      value?: 'asc' | 'desc' | 'none',
-    ): void {
-      onTableSortChange({ field, model, appName, updateModelData, value });
+    function onSortChange({
+      sortFields,
+      order,
+      index,
+      actionType,
+      field,
+    }: any): void {
+      onTableSortChange({
+        field,
+        sortFields,
+        order,
+        index,
+        actionType,
+        model,
+        appName,
+        updateModelData,
+      });
     }
 
     function setModelComponentRefs(refElement: object): void {
@@ -3453,10 +3468,10 @@ function createAppModel(appConfig: IAppInitialConfig) {
             configData?.table?.sortFields?.map(
               (f: SortField) =>
                 function (run: IParam) {
-                  return getValue(run, f[0], '');
+                  return getValue(run, f.value, '');
                 },
             ) ?? [],
-            configData?.table?.sortFields?.map((f: SortField) => f[1]) ?? [],
+            configData?.table?.sortFields?.map((f: SortField) => f.order) ?? [],
           ),
         );
         const uniqParams = _.uniq(params);
@@ -3695,11 +3710,23 @@ function createAppModel(appConfig: IAppInitialConfig) {
         onResetConfigData({ model, getConfig, updateModelData });
       }
 
-      function onSortChange(
-        field: string,
-        value?: 'asc' | 'desc' | 'none',
-      ): void {
-        onTableSortChange({ field, model, appName, updateModelData, value });
+      function onSortChange({
+        sortFields,
+        order,
+        index,
+        actionType,
+        field,
+      }: any): void {
+        onTableSortChange({
+          sortFields,
+          order,
+          index,
+          field,
+          actionType,
+          model,
+          appName,
+          updateModelData,
+        });
       }
 
       function changeLiveUpdateConfig(config: {
@@ -4401,10 +4428,10 @@ function createAppModel(appConfig: IAppInitialConfig) {
             configData?.table?.sortFields?.map(
               (f: SortField) =>
                 function (run: IParam) {
-                  return getValue(run, f[0], '');
+                  return getValue(run, f.value, '');
                 },
             ) ?? [],
-            configData?.table?.sortFields?.map((f: SortField) => f[1]) ?? [],
+            configData?.table?.sortFields?.map((f: SortField) => f.order) ?? [],
           ),
         );
         const uniqParams = _.uniq(params);
@@ -4835,11 +4862,23 @@ function createAppModel(appConfig: IAppInitialConfig) {
         });
       }
 
-      function onSortChange(
-        field: string,
-        value?: 'asc' | 'desc' | 'none',
-      ): void {
-        onTableSortChange({ field, model, appName, updateModelData, value });
+      function onSortChange({
+        sortFields,
+        order,
+        index,
+        actionType,
+        field,
+      }: any): void {
+        onTableSortChange({
+          sortFields,
+          order,
+          index,
+          field,
+          actionType,
+          model,
+          appName,
+          updateModelData,
+        });
       }
 
       function onModelBookmarkCreate({

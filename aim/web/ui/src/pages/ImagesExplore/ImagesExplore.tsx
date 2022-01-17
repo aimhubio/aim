@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useLocation, useRouteMatch } from 'react-router-dom';
-import { isEmpty } from 'lodash-es';
+import _ from 'lodash-es';
 
 import NotificationContainer from 'components/NotificationContainer/NotificationContainer';
 import BusyLoaderWrapper from 'components/BusyLoaderWrapper/BusyLoaderWrapper';
@@ -34,6 +34,7 @@ import {
 
 import getStateFromUrl from 'utils/getStateFromUrl';
 import { ChartTypeEnum } from 'utils/d3';
+import { SortField, SortFields } from 'utils/getSortedFields';
 
 import ImagesExploreAppBar from './components/ImagesExploreAppBar/ImagesExploreAppBar';
 
@@ -68,19 +69,11 @@ function ImagesExplore(): React.FunctionComponentElement<React.ReactNode> {
     imagesExploreData?.config?.table || {},
     imagesExploreAppModel.onTableResizeEnd,
   );
-
   React.useEffect(() => {
     setOffsetWidth(imagesWrapperRef?.current?.offsetWidth);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [imagesWrapperRef?.current?.offsetWidth]);
 
-  React.useEffect(() => {
-    setOffsetHeight(imagesWrapperRef?.current?.offsetHeight);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [
-    imagesWrapperRef?.current?.offsetHeight,
-    imagesExploreData?.config?.table.resizeMode,
-  ]);
   React.useEffect(() => {
     imagesExploreAppModel.initialize(route.params.appId);
     let appRequestRef: {
@@ -127,6 +120,66 @@ function ImagesExplore(): React.FunctionComponentElement<React.ReactNode> {
       }
     }
   }, [location.search]);
+
+  React.useEffect(() => {
+    setOffsetHeight(imagesWrapperRef?.current?.offsetHeight);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [
+    imagesWrapperRef?.current?.offsetHeight,
+    imagesExploreData?.config?.table.resizeMode,
+  ]);
+
+  // eslint-disable-next-line react-hooks/rules-of-hooks
+  const memoizedImagesSortFields = React.useMemo(() => {
+    if (_.isEmpty(imagesExploreData?.groupingSelectOptions)) {
+      return { sortFieldsDict: {}, sortFields: [] };
+    }
+    const grouping = imagesExploreData?.config?.grouping;
+    const group: string[] = [...(grouping?.group || [])];
+    const groupFields = grouping?.reverseMode?.group
+      ? imagesExploreData?.groupingSelectOptions.filter(
+          (option: IGroupingSelectOption) => !group.includes(option.value),
+        )
+      : imagesExploreData?.groupingSelectOptions.filter(
+          (option: IGroupingSelectOption) => group.includes(option.value),
+        );
+    let sortGroupFields = groupFields.reduce(
+      (acc: SortFields, field: SortField) => {
+        const resultField = imagesExploreData?.config?.images?.sortFieldsDict[
+          field.value
+        ] || { ...field, order: 'asc' };
+        acc.push({ ...resultField, readonly: true });
+        return acc;
+      },
+      [],
+    );
+    sortGroupFields = sortGroupFields.concat(
+      imagesExploreData?.config?.images?.sortFields
+        .filter((field: SortField) => {
+          if (grouping?.reverseMode?.group) {
+            return group.includes(field.value);
+          } else {
+            return !group.includes(field.value);
+          }
+        })
+        .map((field: SortField) => ({ ...field, readonly: false })),
+    );
+
+    return {
+      sortFieldsDict: sortGroupFields.reduce(
+        (acc: { [key: string]: SortField }, field: SortField) => {
+          acc[field.value] = field;
+          return acc;
+        },
+        {},
+      ),
+      sortFields: sortGroupFields,
+    };
+  }, [
+    imagesExploreData?.config?.grouping,
+    imagesExploreData?.config?.images?.sortFields,
+    imagesExploreData?.groupingSelectOptions,
+  ]);
 
   return (
     <div className='ImagesExplore__container' ref={wrapperElemRef}>
@@ -202,6 +255,8 @@ function ImagesExplore(): React.FunctionComponentElement<React.ReactNode> {
               tooltip={
                 imagesExploreData?.config?.images?.tooltip as IPanelTooltip
               }
+              sortFieldsDict={memoizedImagesSortFields.sortFieldsDict}
+              sortFields={memoizedImagesSortFields.sortFields}
               additionalProperties={
                 imagesExploreData?.config?.images?.additionalProperties
               }
@@ -217,14 +272,17 @@ function ImagesExplore(): React.FunctionComponentElement<React.ReactNode> {
                   additionalProperties={
                     imagesExploreData?.config?.images?.additionalProperties
                   }
+                  sortFields={memoizedImagesSortFields.sortFields}
                   onChangeTooltip={imagesExploreAppModel?.onChangeTooltip}
                   onImageSizeChange={imagesExploreAppModel.onImageSizeChange}
+                  onImagesSortReset={imagesExploreAppModel.onImagesSortReset}
                   onImageRenderingChange={
                     imagesExploreAppModel.onImageRenderingChange
                   }
                   onImageAlignmentChange={
                     imagesExploreAppModel.onImageAlignmentChange
                   }
+                  onImagesSortChange={imagesExploreAppModel.onImagesSortChange}
                 />
               }
               tooltipType={ChartTypeEnum.ImageSet}
@@ -257,7 +315,7 @@ function ImagesExplore(): React.FunctionComponentElement<React.ReactNode> {
           <ResizePanel
             className={`ImagesExplore__ResizePanel${
               imagesExploreData?.requestIsPending ||
-              !isEmpty(imagesExploreData?.imagesData)
+              !_.isEmpty(imagesExploreData?.imagesData)
                 ? ''
                 : '__hide'
             }`}
@@ -283,7 +341,7 @@ function ImagesExplore(): React.FunctionComponentElement<React.ReactNode> {
               height='100%'
               loaderComponent={<TableLoader />}
             >
-              {!isEmpty(imagesExploreData?.tableData) ? (
+              {!_.isEmpty(imagesExploreData?.tableData) ? (
                 <Table
                   // deletable
                   custom
@@ -310,7 +368,7 @@ function ImagesExplore(): React.FunctionComponentElement<React.ReactNode> {
                   resizeMode={imagesExploreData?.config?.table.resizeMode}
                   columnsWidths={imagesExploreData?.config?.table.columnsWidths}
                   // Table actions
-                  onSort={imagesExploreAppModel.onSortChange}
+                  onSort={imagesExploreAppModel.onTableSortChange}
                   onSortReset={imagesExploreAppModel.onSortReset}
                   onExport={imagesExploreAppModel.onExportTableData}
                   onManageColumns={imagesExploreAppModel.onColumnsOrderChange}

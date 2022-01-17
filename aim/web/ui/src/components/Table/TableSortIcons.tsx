@@ -5,7 +5,6 @@ import ErrorBoundary from 'components/ErrorBoundary/ErrorBoundary';
 
 type Props = {
   sort: string | null;
-  sortFields?: any[];
   onSort: () => void;
 };
 

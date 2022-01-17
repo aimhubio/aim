@@ -8,6 +8,7 @@
 - Add version, docs and slack links to sidebar (arsengit)
 - Enhance AudioPlayer component (arsengit)
 - Recover active tab in run details page after reload (roubkar)
+- Add ability to change media elements order (VkoHov)
 
 ## 3.3.5 Jan 14 2022
 
