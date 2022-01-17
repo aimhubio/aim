@@ -84,10 +84,11 @@ class ContainerTreeView(TreeView):
         encoded_path = E.encode_path(path)
         return self.container.delete_range(encoded_path, encoded_path + b'\xff')
 
-    def __setitem__(
+    def set(
         self,
         path: Union[AimObjectKey, AimObjectPath],
-        value: AimObject
+        value: AimObject,
+        strict: bool = True
     ):
         if path == Ellipsis:
             path = ()
@@ -98,7 +99,7 @@ class ContainerTreeView(TreeView):
         encoded_path = E.encode_path(path)
         self.container.delete_range(encoded_path, encoded_path + b'\xff',
                                     store_batch=batch)
-        for key, val in treeutils.encode_tree(value):
+        for key, val in treeutils.encode_tree(value, strict=strict):
             self.container.set(encoded_path + key, val,
                                store_batch=batch)
         self.container.commit(batch)

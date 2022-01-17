@@ -33,6 +33,9 @@ class ModelMappedFactory(ObjectFactory):
     def create_run(self, runhash: str) -> Run:
         return ModelMappedRun.from_hash(runhash, session=self._session or self.get_session())
 
+    def delete_run(self, runhash: str) -> bool:
+        return ModelMappedRun.delete_run(runhash, session=self._session or self.get_session())
+
     def experiments(self) -> ExperimentCollection:
         return ModelMappedExperiment.all(session=self._session or self.get_session())
 
