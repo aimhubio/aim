@@ -518,7 +518,7 @@ async def delete_runs_batch_api(runs_batch: RunsBatchIn):
 
 
 @runs_router.post('/archive-batch/', response_model=StructuredRunsArchivedOut)
-async def archive_runs_batch_api(runs_batch: RunsBatchIn, run_in: StructuredRunsArchivedIn,
+async def archive_runs_batch_api(runs_batch: RunsBatchIn, archive: Optional[bool] = True,
                                  factory=Depends(object_factory)):
     with factory:
         runs = factory.find_runs(runs_batch)
@@ -526,7 +526,7 @@ async def archive_runs_batch_api(runs_batch: RunsBatchIn, run_in: StructuredRuns
             raise HTTPException(status_code=404)
 
         for run in runs:
-            run.archived = run_in.archived
+            run.archived = archive
 
     return {
         'status': 'OK'
