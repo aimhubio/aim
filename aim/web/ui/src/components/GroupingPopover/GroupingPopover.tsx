@@ -165,8 +165,8 @@ function GroupingPopover({
               onChange={handleGroupingMode}
             />
           </div>
-          <ErrorBoundary>
-            {advancedComponent && (
+          {advancedComponent && (
+            <ErrorBoundary>
               <div className='GroupingPopover__advanced__component'>
                 <Accordion className='GroupingPopover__accordion__container'>
                   <AccordionSummary
@@ -193,8 +193,8 @@ function GroupingPopover({
                   </AccordionDetails>
                 </Accordion>
               </div>
-            )}
-          </ErrorBoundary>
+            </ErrorBoundary>
+          )}
         </div>
       </div>
     </ErrorBoundary>
