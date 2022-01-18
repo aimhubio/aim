@@ -1,5 +1,5 @@
 import React from 'react';
-import { BrowserRouter, Switch, Route } from 'react-router-dom';
+import { BrowserRouter, Switch, Route, Redirect } from 'react-router-dom';
 
 import AlertBanner from 'components/kit/AlertBanner';
 import SideBar from 'components/SideBar/SideBar';
@@ -28,7 +28,7 @@ function App(): React.FunctionComponentElement<React.ReactNode> {
         <Theme>
           {isVisibleCacheBanner && (
             <AlertBanner type='warning' isVisiblePermanently={true}>
-              You are using UI from notebook env, please make sure to{' '}
+              You are using UI from notebook env, please make sure to
               <b>keep server running</b> for a better experience
             </AlertBanner>
           )}
@@ -47,6 +47,7 @@ function App(): React.FunctionComponentElement<React.ReactNode> {
                       </Route>
                     );
                   })}
+                  <Redirect to='/' />
                 </Switch>
               </React.Suspense>
             </div>
