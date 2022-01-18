@@ -1,4 +1,6 @@
 -r ./requirements.txt
+torch
+tensorflow
 boto3
 cython
 requests
