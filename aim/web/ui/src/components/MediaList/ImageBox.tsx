@@ -90,11 +90,8 @@ const ImageBox = ({
   // }
 
   return (
-    <ErrorBoundary>
-      <div
-        key={index}
-        className='MediaSet__container__mediaItemsList__imageBox'
-      >
+    <ErrorBoundary key={index}>
+      <div className='MediaSet__container__mediaItemsList__imageBox'>
         <div
           style={style}
           className={`MediaSet__container__mediaItemsList__imageBox__image MediaSet__container__mediaItemsList__imageBox__image--${

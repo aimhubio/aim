@@ -476,13 +476,16 @@ class BaseTable extends React.PureComponent {
   }) {
     if (column[ColumnManager.PlaceholderKey]) {
       return (
-        <div
+        <ErrorBoundary
           key={`row-${rowData[this.props.rowKey]}-cell-${
             column.key
           }-placeholder`}
-          className={this._prefixClass('row-cell-placeholder')}
-          style={this.columnManager.getColumnStyle(column.key)}
-        />
+        >
+          <div
+            className={this._prefixClass('row-cell-placeholder')}
+            style={this.columnManager.getColumnStyle(column.key)}
+          />
+        </ErrorBoundary>
       );
     }
 
@@ -644,10 +647,9 @@ class BaseTable extends React.PureComponent {
     const { tagName, ...rest } = extraProps || {};
     const Tag = tagName || 'div';
     return (
-      <ErrorBoundary>
+      <ErrorBoundary key={`header-${headerIndex}-cell-${column.key}`}>
         <Tag
           role='gridcell'
-          key={`header-${headerIndex}-cell-${column.key}`}
           onClick={column.sortable ? this._handleColumnSort : null}
           {...rest}
           className={cls}

@@ -1,5 +1,7 @@
 import React from 'react';
 
+import ErrorBoundary from 'components/ErrorBoundary/ErrorBoundary';
+
 import useModel from 'hooks/model/useModel';
 
 import homeAppModel from 'services/models/home/homeAppModel';
@@ -19,13 +21,15 @@ function HomeContainer(): React.FunctionComponentElement<React.ReactNode> {
   }, []);
 
   return (
-    <Home
-      onSendEmail={homeAppModel.onSendEmail}
-      activityData={homeData.activityData}
-      notifyData={homeData.notifyData}
-      askEmailSent={homeData.askEmailSent}
-      onNotificationDelete={homeAppModel.onNotificationDelete}
-    />
+    <ErrorBoundary>
+      <Home
+        onSendEmail={homeAppModel.onSendEmail}
+        activityData={homeData.activityData}
+        notifyData={homeData.notifyData}
+        askEmailSent={homeData.askEmailSent}
+        onNotificationDelete={homeAppModel.onNotificationDelete}
+      />
+    </ErrorBoundary>
   );
 }
 export default HomeContainer;

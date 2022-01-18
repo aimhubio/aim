@@ -266,8 +266,8 @@ function imagesExploreTableRowRenderer(
                     />
                   </ErrorBoundary>
                 ) : (
-                  <ErrorBoundary>
-                    <Tooltip key={item} title={value}>
+                  <ErrorBoundary key={item}>
+                    <Tooltip title={value}>
                       <span>{formatValue(value)}</span>
                     </Tooltip>
                   </ErrorBoundary>
