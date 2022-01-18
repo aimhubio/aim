@@ -8,20 +8,16 @@ import bookmarkAppModel from 'services/models/bookmarks/bookmarksAppModel';
 import * as analytics from 'services/analytics';
 
 import { IBookmarksAppModelState } from 'types/services/models/bookmarks/bookmarksAppModel';
+import { INotification } from 'types/components/NotificationContainer/NotificationContainer';
 
 import Bookmarks from './Bookmarks';
 
 function BookmarksContainer(): React.FunctionComponentElement<React.ReactNode> {
-  const bookmarksRequestRef = React.useRef(bookmarkAppModel.getBookmarksData());
   const bookmarksData = useModel(bookmarkAppModel);
 
   React.useEffect(() => {
     bookmarkAppModel.initialize();
-    bookmarksRequestRef.current.call();
     analytics.pageView('[Bookmarks]');
-    return () => {
-      bookmarksRequestRef.current.abort();
-    };
   }, []);
 
   return (
@@ -30,6 +26,8 @@ function BookmarksContainer(): React.FunctionComponentElement<React.ReactNode> {
         data={bookmarksData?.listData as IBookmarksAppModelState['listData']}
         isLoading={bookmarksData?.isLoading as boolean}
         onBookmarkDelete={bookmarkAppModel.onBookmarkDelete}
+        notifyData={bookmarksData?.notifyData as INotification[]}
+        onNotificationDelete={bookmarkAppModel.onBookmarksNotificationDelete}
       />
     </ErrorBoundary>
   );

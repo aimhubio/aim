@@ -5,11 +5,20 @@ import * as analytics from 'services/analytics';
 import { IBookmarksAppModelState } from 'types/services/models/bookmarks/bookmarksAppModel';
 import { IBookmarksData } from 'types/pages/bookmarks/Bookmarks';
 
+import onNotificationAdd from 'utils/app/onNotificationAdd';
+import exceptionHandler from 'utils/app/exceptionHandler';
+import onNotificationDelete from 'utils/app/onNotificationDelete';
+
 import createModel from '../model';
 
+let bookmarksRequestRef: {
+  call: (exceptionHandler: (detail: any) => void) => Promise<any>;
+  abort: () => void;
+};
 const model = createModel<Partial<IBookmarksAppModelState>>({
   isLoading: true,
   listData: [],
+  notifyData: [],
 });
 
 function getBookmarksData() {
@@ -17,20 +26,28 @@ function getBookmarksData() {
   return {
     call: () =>
       call().then(async (data: any) => {
-        const appsList = await appsService.fetchAppsList().call();
-        const listData = data.map((item: any) => {
-          const app = appsList.find(
-            (appData: any) => appData.id === item.app_id,
-          );
-          return { ...item, select: app.state.select, type: app.type };
-        });
-        model.setState({
-          isLoading: false,
-          listData,
-        });
+        try {
+          const appsList = await appsService.fetchAppsList().call();
+          const listData = data.map((item: any) => {
+            const app = appsList.find(
+              (appData: any) => appData.id === item.app_id,
+            );
+            return { ...item, select: app.state.select, type: app.type };
+          });
+          model.setState({
+            isLoading: false,
+            listData,
+          });
+        } catch (err) {
+          console.log(err);
+        }
       }),
     abort,
   };
+}
+
+function onBookmarksNotificationDelete(id: number) {
+  onNotificationDelete({ id, model });
 }
 
 async function onBookmarkDelete(id: string) {
@@ -44,18 +61,47 @@ async function onBookmarkDelete(id: string) {
       isLoading: false,
     });
     analytics.trackEvent('[Bookmarks] Delete a bookmark');
-  } catch (err) {
-    console.log(err);
+  } catch (err: any) {
+    model.setState({
+      isLoading: false,
+    });
+    onNotificationAdd({
+      notification: {
+        id: Date.now(),
+        message: err.message,
+        severity: 'error',
+      },
+      model: model as any,
+    });
   }
 }
+
 function initialize() {
   model.init();
+  try {
+    bookmarksRequestRef.call((detail) => {
+      exceptionHandler({ detail, model: model as any });
+    });
+  } catch (err: any) {
+    onNotificationAdd({
+      notification: {
+        id: Date.now(),
+        message: err.message,
+        severity: 'error',
+      },
+      model: model as any,
+    });
+    model.setState({
+      isLoading: false,
+    });
+  }
 }
 const bookmarkAppModel = {
   ...model,
   initialize,
   getBookmarksData,
   onBookmarkDelete,
+  onBookmarksNotificationDelete,
 };
 
 export default bookmarkAppModel;
