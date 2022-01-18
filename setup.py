@@ -70,6 +70,7 @@ REQUIRED = [
     'SQLAlchemy>=1.4.1',
     'uvicorn>=0.12.0',
     'Pillow>=8.1.0',
+    'grpcio==1.42.0',
 ]
 
 

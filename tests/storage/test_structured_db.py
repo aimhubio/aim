@@ -17,8 +17,8 @@ class TestStructuredDatabase(PrefilledDataTestBase):
                 run.experiment = 'my experiment'
 
             for run in db.runs():
-                self.assertEqual('my experiment', run.experiment.name)
-                self.assertEqual(10, len(run.experiment.runs))
+                self.assertEqual('my experiment', run.experiment_obj.name)
+                self.assertEqual(10, len(run.experiment_obj.runs))
 
     def test_context_manager_nesting(self):
         with self.repo.structured_db as db1:

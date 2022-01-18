@@ -1,7 +1,7 @@
 import React, { memo, useRef } from 'react';
 import moment from 'moment';
 import classNames from 'classnames';
-import { NavLink } from 'react-router-dom';
+import { NavLink, useLocation, useParams } from 'react-router-dom';
 import { isEmpty } from 'lodash-es';
 
 import { CircularProgress } from '@material-ui/core';
@@ -32,6 +32,9 @@ function RunSelectPopoverContent({
   dateNow,
 }: IRunSelectPopoverContentProps): React.FunctionComponentElement<React.ReactNode> {
   const popoverContentWrapperRef = useRef<HTMLDivElement | any>();
+  const { runHash } = useParams<{ runHash: string }>();
+  const { pathname } = useLocation();
+
   function onLoadMore() {
     if (!isRunsOfExperimentLoading) {
       getRunsOfExperiment(
@@ -119,7 +122,7 @@ function RunSelectPopoverContent({
                       },
                     )}
                     key={run.run_id}
-                    to={`${run.run_id}`}
+                    to={pathname.replace(runHash, run.run_id)}
                     onClick={onRunsSelectToggle}
                   >
                     <Text
