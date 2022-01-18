@@ -139,10 +139,6 @@ class StructuredRunUpdateIn(BaseModel):
     experiment: Optional[str] = ''
 
 
-class StructuredRunsArchivedIn(BaseModel):
-    archive: Optional[bool] = True
-
-
 class StructuredRunUpdateOut(BaseModel):
     id: str
     status: str = 'OK'
