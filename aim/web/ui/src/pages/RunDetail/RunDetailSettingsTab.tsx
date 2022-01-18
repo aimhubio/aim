@@ -1,9 +1,8 @@
 import React, { memo } from 'react';
 import classNames from 'classnames';
+import { useHistory } from 'react-router-dom';
 
-import Tooltip from '@material-ui/core/Tooltip';
-
-import { Button, Text } from 'components/kit';
+import { ActionCard } from 'components/kit';
 
 import runDetailAppModel from 'services/models/runs/runDetailAppModel';
 
@@ -13,42 +12,52 @@ function RunDetailSettingsTab({
   runHash,
   isArchived,
 }: IRunDetailSettingsTabProps): React.FunctionComponentElement<React.ReactNode> {
+  const history = useHistory();
+
   function onRunArchive() {
     runDetailAppModel.archiveRun(runHash, !isArchived);
   }
 
+  function onRunDelete() {
+    runDetailAppModel.deleteRun(runHash, () => {
+      history.push('/runs');
+    });
+  }
+
   return (
     <div className='RunDetailSettingsTab'>
-      <div className='RunDetailSettingsTab__infoBox'>
-        <Text component='h4' weight={600} size={14} tint={100}>
-          {isArchived ? 'Unarchive Run' : 'Archive Run'}
-        </Text>
-        <Text
-          component='p'
-          tint={100}
-          weight={400}
-          className='RunDetailSettingsTab__infoBox__message'
-        >
-          {isArchived
-            ? 'Unarchive runs will appear in search both on Dashboard and Explore.'
-            : 'Archived runs will not appear in search both on Dashboard and Explore.'}
-        </Text>
-      </div>
+      <div className='RunDetailSettingsTab__actionCardsCnt'>
+        <ActionCard
+          title={isArchived ? 'Unarchive Run' : 'Archive Run'}
+          description={
+            isArchived
+              ? 'Unarchive runs will appear in search both on Dashboard and Explore.'
+              : 'Archived runs will not appear in search both on Dashboard and Explore.'
+          }
+          btnTooltip={isArchived ? 'Unarchive' : 'Archive'}
+          btnText={isArchived ? 'Unarchive' : 'Archive'}
+          onAction={onRunArchive}
+          btnProps={{
+            variant: 'outlined',
+            className: classNames({
+              RunDetailSettingsTab__actionCardsCnt__btn__archive: !isArchived,
+              RunDetailSettingsTab__actionCardsCnt__btn__unarchive: isArchived,
+            }),
+          }}
+        />
 
-      <Tooltip
-        title={isArchived ? 'Unarchive' : 'Archive this run'}
-        placement='top'
-      >
-        <Button
-          onClick={onRunArchive}
-          variant='contained'
-          className={classNames('RunDetailSettingsTab__btn', {
-            RunDetailSettingsTab__btn__archive: isArchived,
-          })}
-        >
-          {isArchived ? 'Unarchive' : 'Archive this run'}
-        </Button>
-      </Tooltip>
+        <ActionCard
+          title='Delete Run'
+          description='Once you delete a run, there is no going back. Please be certain.'
+          btnTooltip='Delete Run'
+          btnText='Delete'
+          onAction={onRunDelete}
+          btnProps={{
+            variant: 'contained',
+            className: 'RunDetailSettingsTab__actionCardsCnt__btn__delete',
+          }}
+        />
+      </div>
     </div>
   );
 }

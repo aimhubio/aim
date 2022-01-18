@@ -1,0 +1,20 @@
+@use 'src/styles/abstracts' as *;
+
+.ActionCard {
+  width: 100%;
+  padding: 24px;
+  border: $border-grey;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  &__infoBox {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    &__message {
+      margin-top: $space-xxxs;
+    }
+  }
+}
