@@ -6,6 +6,7 @@ const defaultFilterOption: FilterOptions = {
   matchType: null,
   searchValue: '',
   isValidSearch: true,
+  appliedRegExp: null,
 };
 
 function useTextSearch({ rawData, updateData }: UseTextSearchProps) {
@@ -20,15 +21,41 @@ function useTextSearch({ rawData, updateData }: UseTextSearchProps) {
   function filter(search: string, matchType: MatchTypes | null) {
     if (!search) {
       setData(rawData);
-      updateData(rawData);
+      updateData(rawData, null);
+      setFilterOptions((fO) => ({
+        ...fO,
+        appliedRegExp: null,
+      }));
       return;
+    }
+    let appliedRegExp: RegExp | null;
+    switch (matchType) {
+      case MatchTypes.Word:
+        search = `\\b${search}\\b`;
+        appliedRegExp = new RegExp(`(${search})`, 'gi');
+        break;
+      case MatchTypes.Case:
+        appliedRegExp = new RegExp(`(${search})`, 'g');
+        break;
+      case MatchTypes.RegExp:
+        try {
+          let match = search.match(new RegExp('^/(.*?)/([gimy]*)$'));
+          if (match) {
+            appliedRegExp = new RegExp(`(${match[1]})`, match[2]);
+          } else {
+            appliedRegExp = new RegExp(`(${search})`, 'g');
+          }
+        } catch (e) {
+          appliedRegExp = null;
+        }
+        break;
+      default:
+        appliedRegExp = new RegExp(`(${search})`.toLowerCase(), 'gi');
     }
     const filteredData = data?.filter((item: { text: string }) => {
       switch (matchType) {
         case MatchTypes.Word:
-          search = `\\b${search}\\b`;
-          const regex = new RegExp(search);
-          if (item.text.search(regex) > -1) {
+          if (item.text.search(appliedRegExp!) > -1) {
             return item;
           }
           break;
@@ -39,22 +66,15 @@ function useTextSearch({ rawData, updateData }: UseTextSearchProps) {
           break;
         case MatchTypes.RegExp:
           try {
-            let match = search.match(new RegExp('^/(.*?)/([gimy]*)$'));
-            let regex;
-            if (match) {
-              regex = new RegExp(match[1], match[2]);
-            } else {
-              regex = new RegExp(search, 'g');
-            }
-
-            if (regex.test(item.text)) {
+            if (appliedRegExp!.test(item.text)) {
               return item;
             }
           } catch (e) {
-            setFilterOptions({
-              ...filterOptions,
+            setFilterOptions((fO) => ({
+              ...fO,
               isValidSearch: false,
-            });
+              appliedRegExp: null,
+            }));
           }
 
           break;
@@ -65,8 +85,12 @@ function useTextSearch({ rawData, updateData }: UseTextSearchProps) {
       }
     });
 
+    setFilterOptions((fO) => ({
+      ...fO,
+      appliedRegExp,
+    }));
     setData(filteredData);
-    updateData(filteredData);
+    updateData(filteredData, appliedRegExp);
   }
 
   function clearSearchInputData() {
@@ -75,18 +99,18 @@ function useTextSearch({ rawData, updateData }: UseTextSearchProps) {
 
   function changeSearchInput(value: string) {
     filter(value, filterOptions.matchType);
-    setFilterOptions({
-      ...filterOptions,
+    setFilterOptions((fO) => ({
+      ...fO,
       searchValue: value,
-    });
+    }));
   }
 
   function changeMatchType(matchType: MatchTypes | null) {
     filter(filterOptions.searchValue, matchType);
-    setFilterOptions({
-      ...filterOptions,
+    setFilterOptions((fO) => ({
+      ...fO,
       matchType,
-    });
+    }));
   }
 
   return {

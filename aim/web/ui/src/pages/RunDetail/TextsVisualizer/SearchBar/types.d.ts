@@ -21,7 +21,7 @@ export interface ISearchInputEndAdornment {
 
 export interface UseTextSearchProps {
   rawData: { text: string }[];
-  updateData: (data: { text: string }[]) => void;
+  updateData: (data: { text: string }[], regex: RegExp | null) => void;
 }
 
 export enum MatchTypes {
@@ -34,4 +34,5 @@ export type FilterOptions = {
   matchType: MatchTypes | null;
   searchValue: string;
   isValidSearch: boolean;
+  appliedRegExp: RegExp | null;
 };

@@ -16,6 +16,7 @@ function TextsVisualizer(
   props: ITextsVisualizerProps | any,
 ): React.FunctionComponentElement<React.ReactNode> {
   const tableRef = React.useRef<ITableRef>(null);
+
   const tableColumns = [
     {
       dataKey: 'step',
@@ -41,13 +42,35 @@ function TextsVisualizer(
       },
     },
   ];
+
   const textSearch = useTextSearch({
     rawData: props?.data?.processedValues,
     updateData,
   });
 
-  function updateData(data: { text: string }[]) {
-    tableRef.current?.updateData({ newData: data });
+  function getHighlightedData(data: { text: string }[], regex: RegExp | null) {
+    return data.map((d) => ({
+      ...d,
+      text:
+        regex === null
+          ? d.text
+          : d.text
+              .split(regex)
+              .filter((part: string) => part !== '')
+              .map((part: string, i: number) =>
+                regex.test(part) ? (
+                  <span key={part + i} className='TextsVisualizer__mark'>
+                    {part}
+                  </span>
+                ) : (
+                  part
+                ),
+              ),
+    }));
+  }
+
+  function updateData(data: { text: string }[], regex: RegExp | null) {
+    tableRef.current?.updateData({ newData: getHighlightedData(data, regex) });
   }
 
   return (
@@ -70,7 +93,10 @@ function TextsVisualizer(
             fixed={false}
             className='TextsTable'
             columns={tableColumns}
-            data={textSearch.data}
+            data={getHighlightedData(
+              textSearch.data,
+              textSearch.filterOptions.appliedRegExp,
+            )}
             isLoading={props?.isLoading}
             hideHeaderActions
             estimatedRowHeight={32}
