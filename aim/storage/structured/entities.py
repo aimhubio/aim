@@ -88,7 +88,7 @@ class Run(StructuredObject, Searchable['Run']):
         ...
 
     @abstractmethod
-    def remove_tag(self, tag_id: str) -> bool:
+    def remove_tag(self, tag_name: str) -> bool:
         ...
 
 

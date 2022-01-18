@@ -9,6 +9,7 @@
 - Enhance AudioPlayer component (arsengit)
 - Recover active tab in run details page after reload (roubkar)
 - Add ability to archive runs by batch (VkoHov)
+- Remote tracking server alpha version (alberttorosyan, mihran113, aramaim)
 - Add ability to change media elements order (VkoHov)
 
 ## 3.3.5 Jan 14 2022
