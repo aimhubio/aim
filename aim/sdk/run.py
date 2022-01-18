@@ -749,8 +749,8 @@ class Run(StructuredRunMixin):
             data['archived'] = self.props.archived
             data['creation_time'] = self.props.creation_time
             data['end_time'] = self.props.end_time
-            data['experiment'] = self.props.experiment.name
-            data['tags'] = json.dumps([t.name for t in self.props.tags])
+            data['experiment'] = self.props.experiment
+            data['tags'] = json.dumps(self.props.tags)
 
         if include_params:
             # TODO [GA]:
