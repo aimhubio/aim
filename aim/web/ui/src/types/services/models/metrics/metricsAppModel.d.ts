@@ -103,8 +103,6 @@ export interface IAggregationData {
   } | null;
 }
 
-export type SortField = [string, 'asc' | 'desc'];
-
 export interface IChartZoom {
   active: boolean;
   mode: ZoomEnum;
@@ -186,6 +184,7 @@ export interface IGroupingSelectOption {
   label: string;
   group: string;
   value: string;
+  readonly?: boolean;
 }
 
 export interface IAppData {
