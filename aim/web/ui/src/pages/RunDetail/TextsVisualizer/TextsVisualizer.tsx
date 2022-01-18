@@ -1,6 +1,7 @@
 import React from 'react';
 
 import Table from 'components/Table/Table';
+import BusyLoaderWrapper from 'components/BusyLoaderWrapper/BusyLoaderWrapper';
 
 import { ITableRef } from 'types/components/Table/Table';
 
@@ -59,21 +60,26 @@ function TextsVisualizer(
         onInputClear={textSearch.clearSearchInputData}
         onInputChange={textSearch.changeSearchInput}
       />
-      {textSearch.data && (
-        <Table
-          ref={tableRef}
-          fixed={false}
-          className='TextsTable'
-          columns={tableColumns}
-          data={textSearch.data}
-          isLoading={props?.isLoading}
-          hideHeaderActions
-          estimatedRowHeight={32}
-          headerHeight={32}
-          emptyText='No Text'
-          height='100%'
-        />
-      )}
+      <BusyLoaderWrapper
+        className='VisualizationLoader'
+        isLoading={!!props.isLoading}
+      >
+        {textSearch.data && (
+          <Table
+            ref={tableRef}
+            fixed={false}
+            className='TextsTable'
+            columns={tableColumns}
+            data={textSearch.data}
+            isLoading={props?.isLoading}
+            hideHeaderActions
+            estimatedRowHeight={32}
+            headerHeight={32}
+            emptyText='No Result'
+            height='100%'
+          />
+        )}
+      </BusyLoaderWrapper>
     </div>
   );
 }

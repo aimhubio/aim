@@ -1,5 +1,7 @@
 import React, { memo } from 'react';
 
+import BusyLoaderWrapper from 'components/BusyLoaderWrapper/BusyLoaderWrapper';
+
 import { IDistributionVisualizerProps } from '../types';
 
 import Wrapper from './temp/Wrapper';
@@ -10,15 +12,20 @@ function DistributionsVisualizer(
   props: IDistributionVisualizerProps,
 ): React.FunctionComponentElement<React.ReactNode> {
   return (
-    <div className='DistributionsVisualizer'>
-      {props.data?.processedValues && (
-        <Wrapper
-          data={props.data?.processedValues}
-          className='Visualizer'
-          iters={props.data.iters}
-        />
-      )}
-    </div>
+    <BusyLoaderWrapper
+      className='VisualizationLoader'
+      isLoading={!!props.isLoading}
+    >
+      <div className='DistributionsVisualizer'>
+        {props.data?.processedValues && (
+          <Wrapper
+            data={props.data?.processedValues}
+            className='Visualizer'
+            iters={props.data.iters}
+          />
+        )}
+      </div>
+    </BusyLoaderWrapper>
   );
 }
 
