@@ -232,7 +232,8 @@ function Table(props) {
                         <span className='Table__column__defaultSelectIcon'></span>
                       }
                       checkedIcon={
-                        props.data.length === props.selectedRows.length ? (
+                        props.data.length ===
+                        Object.keys(props.selectedRows).length ? (
                           <span className='Table__column__selectedSelectIcon'>
                             <Icon name='check' fontSize={9} />
                           </span>

@@ -43,6 +43,7 @@ export interface IMetricAppModelState {
     delay: number;
     enabled: boolean;
   };
+  selectedRows?: any;
 }
 
 export interface IChartTitleData {

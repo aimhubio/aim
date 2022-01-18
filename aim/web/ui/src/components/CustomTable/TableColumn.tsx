@@ -180,7 +180,7 @@ function Column({
             icon={<span className='Table__column__defaultSelectIcon'></span>}
             className='Table__column__selectCheckbox'
             checkedIcon={
-              dataLength === selectedRows?.length ? (
+              dataLength === Object.keys(selectedRows)?.length ? (
                 <span className='Table__column__selectedSelectIcon'>
                   <Icon name='check' fontSize={9} />
                 </span>
@@ -478,14 +478,12 @@ function Column({
                                     </span>
                                   }
                                   className='Table__column__selectCheckbox'
-                                  checked={selectedRows.includes(
-                                    item.selectKey,
-                                  )}
+                                  checked={!!selectedRows[item.selectKey]}
                                   onClick={(e) => {
                                     e.stopPropagation();
                                     onRowSelect({
-                                      key: item.selectKey,
                                       actionType: 'single',
+                                      data: item,
                                     });
                                   }}
                                 />
@@ -529,11 +527,11 @@ function Column({
                             </span>
                           }
                           className='Table__column__selectCheckbox'
-                          checked={selectedRows.includes(item.selectKey)}
+                          checked={!!selectedRows[item.selectKey]}
                           onClick={(e) => {
                             e.stopPropagation();
                             onRowSelect({
-                              key: item.selectKey,
+                              data: item,
                               actionType: 'single',
                             });
                           }}
@@ -596,7 +594,7 @@ function GroupConfig({
   const groupSelectedRows = React.useMemo(() => {
     return data
       .map((item) => item.selectKey)
-      .filter((selectKey: string) => selectedRows.includes(selectKey));
+      .filter((selectKey: string) => selectedRows[selectKey]);
   }, [data, selectedRows]);
 
   return (

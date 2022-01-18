@@ -1,0 +1,72 @@
+@use 'src/styles/abstracts' as *;
+
+.Modal {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  padding: 1rem 0.5rem 0 0.5rem;
+  position: relative;
+  &__header {
+    padding: 0.5rem 1rem;
+    display: flex;
+    align-items: center;
+    width: 100%;
+    &__titleIcon {
+      width: 2rem;
+      height: 2rem;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      border-radius: $border-radius-circle;
+      margin-right: 1rem;
+      &.warning {
+        color: $warning-color;
+        background: $warning-color-10;
+      }
+      &.error {
+        color: $error-color;
+        background: $error-color-10;
+      }
+      &.success {
+        color: $success-color;
+        background: $success-color-10;
+      }
+      &.info {
+        color: $primary-color;
+        background: $primary-color-10;
+      }
+    }
+  }
+  &__content {
+    padding: 0 1rem 1.5rem 1rem;
+  }
+  &__footer {
+    border-top: $border-main;
+    padding: 1rem;
+    display: flex;
+    justify-content: flex-end;
+    width: 100%;
+    &__okButton {
+      margin-left: 0.5rem;
+      &.warning {
+        background: $warning-color;
+      }
+      &.error {
+        background: $error-color;
+      }
+      &.success {
+        background: $success-color;
+      }
+      &.info {
+        background: $primary-color;
+      }
+    }
+  }
+  &__closeButton {
+    position: absolute;
+    top: $space-xxxs;
+    right: $space-xxxs;
+    color: $pico-80;
+  }
+}

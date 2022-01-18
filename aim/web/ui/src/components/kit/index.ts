@@ -9,6 +9,7 @@ import JsonViewPopover from './JsonViewPopover';
 import AutoSuggestions from './AutoSuggestions';
 import Slider from './Slider';
 import Menu, { MenuItem } from './Menu';
+import Modal from './Modal';
 
 export {
   Text,
@@ -23,4 +24,5 @@ export {
   Slider,
   Menu,
   MenuItem,
+  Modal,
 };

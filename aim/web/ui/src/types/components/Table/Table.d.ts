@@ -54,7 +54,8 @@ export interface ITableProps {
   showResizeContainerActionBar?: boolean;
   resizeMode?: ResizeModeEnum;
   multiSelect?: boolean;
-  selectedRows?: string[];
+  selectedRows?: any;
+  minHeight?: string;
   onRowSelect?: (key: string) => void;
 }
 

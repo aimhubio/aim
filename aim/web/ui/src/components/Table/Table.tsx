@@ -4,7 +4,7 @@
 import React from 'react';
 import { debounce, isEmpty, isNil } from 'lodash-es';
 
-import { Button, Icon, Text } from 'components/kit';
+import { Button, Icon, Text, Modal } from 'components/kit';
 import ControlPopover from 'components/ControlPopover/ControlPopover';
 import EmptyComponent from 'components/EmptyComponent/EmptyComponent';
 import BusyLoaderWrapper from 'components/BusyLoaderWrapper/BusyLoaderWrapper';
@@ -24,6 +24,7 @@ import { ITableProps } from 'types/components/Table/Table';
 import TableLoader from '../TableLoader/TableLoader';
 import CustomTable from '../CustomTable/Table';
 
+import ArchiveModal from './ArchiveModal';
 import AutoResizer from './AutoResizer';
 import BaseTable from './BaseTable';
 
@@ -69,8 +70,9 @@ const Table = React.forwardRef(function Table(
     onSortReset,
     height = 'calc(100% - 40px)',
     multiSelect = false,
-    selectedRows = [],
+    selectedRows,
     onRowSelect,
+    minHeight,
     ...props
   }: ITableProps,
   ref,
@@ -90,6 +92,12 @@ const Table = React.forwardRef(function Table(
   const [rowData, setRowData] = React.useState(data);
   const [columnsData, setColumnsData] = React.useState(columns ?? []);
   const [expanded, setExpanded] = React.useState({});
+  const [isOpenDeleteSelectedPopup, setIsOpenDeleteSelectedPopup] =
+    React.useState(false);
+  const [isOpenArchiveSelectedPopup, setIsOpenArchiveSelectedPopup] =
+    React.useState(false);
+  const [tableBulkActionsVisibility, setTableBulkActionsVisibility] =
+    React.useState({ delete: false, archive: false, unarchive: false });
   const [listWindow, setListWindow] = React.useState({
     left: 0,
     width: 0,
@@ -419,6 +427,13 @@ const Table = React.forwardRef(function Table(
     });
   }
 
+  function onToggleDeletePopup() {
+    setIsOpenDeleteSelectedPopup(!isOpenDeleteSelectedPopup);
+  }
+  function onToggleArchivePopup() {
+    setIsOpenArchiveSelectedPopup(!isOpenArchiveSelectedPopup);
+  }
+
   React.useEffect(() => {
     if (custom && !!tableContainerRef.current) {
       const windowEdges = calculateWindow({
@@ -496,6 +511,34 @@ const Table = React.forwardRef(function Table(
     setListWindowMeasurements();
   }, []);
 
+  React.useEffect(() => {
+    const tableBulkActionsVisibility = {
+      delete: false,
+      archive: false,
+      unarchive: false,
+    };
+    const values = Object.values(selectedRows || {});
+    for (let i = 0; i < values.length; i++) {
+      const value: any = values[i];
+      if (
+        tableBulkActionsVisibility.delete &&
+        tableBulkActionsVisibility.archive &&
+        tableBulkActionsVisibility.unarchive
+      ) {
+        break;
+      }
+      if (value.archived) {
+        tableBulkActionsVisibility.archive = true;
+      } else {
+        tableBulkActionsVisibility.unarchive = true;
+      }
+      if (value.end_time) {
+        tableBulkActionsVisibility.delete = true;
+      }
+    }
+    setTableBulkActionsVisibility(tableBulkActionsVisibility);
+  }, [selectedRows]);
+
   useResizeObserver(observerReturnCallback, tableContainerRef);
 
   // The right check is !props.isInfiniteLoading && (isLoading || isNil(rowData))
@@ -509,7 +552,7 @@ const Table = React.forwardRef(function Table(
     >
       {!isEmpty(rowData) ? (
         <div style={{ height: '100%' }}>
-          {!hideHeaderActions && (
+          {!hideHeaderActions && isEmpty(selectedRows) ? (
             <div className='Table__header'>
               {showResizeContainerActionBar && (
                 <ResizeModeActions
@@ -674,8 +717,59 @@ const Table = React.forwardRef(function Table(
                 </div>
               )}
             </div>
+          ) : !isEmpty(selectedRows) && multiSelect ? (
+            <div className='Table__header selectedRowActionsContainer'>
+              <div className='selectedRowActionsContainer__selectedRowsCount'>
+                <Text size={14} tint={50}>
+                  {Object.keys(selectedRows).length} Selected
+                </Text>
+              </div>
+              {tableBulkActionsVisibility.unarchive && (
+                <div className='selectedRowActionsContainer__selectedItemsArchive'>
+                  <Button
+                    color='secondary'
+                    type='text'
+                    onClick={onToggleArchivePopup}
+                    className={`Table__header__item ${
+                      isOpenArchiveSelectedPopup ? 'opened' : ''
+                    }`}
+                  >
+                    <Icon name='delete' />
+                    <Text size={14} tint={100}>
+                      Archive
+                    </Text>
+                  </Button>
+                </div>
+              )}
+              {tableBulkActionsVisibility.delete && (
+                <div className='selectedRowActionsContainer__selectedItemsDelete'>
+                  <Button
+                    color='secondary'
+                    type='text'
+                    onClick={onToggleDeletePopup}
+                    className={`Table__header__item ${
+                      isOpenDeleteSelectedPopup ? 'opened' : ''
+                    }`}
+                  >
+                    <Icon name='delete' />
+                    <Text size={14} tint={100}>
+                      Delete
+                    </Text>
+                  </Button>
+                </div>
+              )}
+            </div>
+          ) : (
+            ''
           )}
-          <div style={{ height, overflow: 'auto' }} ref={tableContainerRef}>
+          <div
+            style={{
+              height,
+              overflow: 'auto',
+              minHeight: minHeight || 'unset',
+            }}
+            ref={tableContainerRef}
+          >
             <AutoResizer>
               {({ width, height }) =>
                 custom ? (
@@ -699,7 +793,7 @@ const Table = React.forwardRef(function Table(
                       onRowClick={rowClickHandler}
                       listWindow={listWindow}
                       multiSelect={multiSelect}
-                      selectedRows={selectedRows}
+                      selectedRows={selectedRows || {}}
                       onRowSelect={onRowSelect}
                       {...props}
                     />
@@ -744,6 +838,37 @@ const Table = React.forwardRef(function Table(
               }
             </AutoResizer>
           </div>
+          <Modal
+            opened={isOpenArchiveSelectedPopup}
+            onClose={onToggleArchivePopup}
+            cancelButtonText='Cancel'
+            okButtonText='Archive'
+            title='Do you really want to archive?'
+            modalType='warning'
+          >
+            <div>
+              <Text size={14} weight={400}>
+                Archived runs will not appear in search both on Dashboard and
+                Explore. But you will still be able to unarchive the run at any
+                time.
+              </Text>
+            </div>
+          </Modal>
+          <ArchiveModal
+            opened={isOpenArchiveSelectedPopup}
+            onClose={onToggleArchivePopup}
+          />
+          <Modal
+            opened={isOpenDeleteSelectedPopup}
+            onClose={onToggleDeletePopup}
+            cancelButtonText='Cancel'
+            okButtonText='Delete'
+            okButtonColor='#E64E48'
+            title='Do you really want to delete?'
+            modalType='warning'
+          >
+            asfafasjfagfiuashfiuh
+          </Modal>
         </div>
       ) : (
         <EmptyComponent size='big' content={emptyText} />

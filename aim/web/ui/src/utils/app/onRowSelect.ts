@@ -12,78 +12,73 @@ import { IModel, State } from 'types/services/models/model';
 
 export default function onRowSelect<M extends State>({
   actionType,
-  key,
   data,
   model,
 }: {
   actionType: 'single' | 'selectAll' | 'removeAll';
-  key?: string;
   data?: any;
   model: IModel<M>;
 }): void {
-  const configData = model.getState()?.config;
-  if (configData?.table && configData?.table?.selectedRows) {
-    let selectedRows = configData.table.selectedRows;
-    switch (actionType) {
-      case 'single':
-        selectedRows = selectedRows.includes(key)
-          ? selectedRows.filter((hash: string) => hash !== key)
-          : [...selectedRows, key];
-        break;
-      case 'selectAll':
-        if (Array.isArray(data)) {
-          const hashArray: string[] = [];
-          data.forEach((item: any) => {
-            if (!selectedRows.includes(item.selectKey)) {
-              hashArray.push(item.selectKey);
+  let selectedRows = model.getState()?.selectedRows || {};
+  let rawData =
+    model.getState()?.rawData?.reduce((acc: any, item: any) => {
+      acc[item.hash] = { runHash: item.hash, ...item.props };
+      return acc;
+    }, {}) || {};
+  switch (actionType) {
+    case 'single':
+      if (selectedRows[data.selectKey]) {
+        selectedRows = _.omit(selectedRows, [data.selectKey]);
+      } else {
+        selectedRows[data.selectKey] = rawData[sliceRunHash(data.selectKey)];
+      }
+      break;
+    case 'selectAll':
+      if (Array.isArray(data)) {
+        data.forEach((item: any) => {
+          if (!selectedRows[item.selectKey]) {
+            selectedRows[item.selectKey] =
+              rawData[sliceRunHash(item.selectKey)];
+          }
+        });
+      } else {
+        Object.values(data)
+          .reduce((acc: any[], value: any) => {
+            return acc.concat(value.items);
+          }, [])
+          .forEach((item: any) => {
+            if (!selectedRows[item.selectKey]) {
+              selectedRows[item.selectKey] =
+                rawData[sliceRunHash(item.selectKey)];
             }
           });
-          selectedRows = [...selectedRows, ...hashArray];
-        } else {
-          const hashArray: string[] = [];
-          Object.values(data)
-            .reduce((acc: any[], value: any) => {
-              return acc.concat(value.items);
-            }, [])
-            .forEach((item: any) => {
-              if (!selectedRows.includes(item.selectKey)) {
-                hashArray.push(item.selectKey);
-              }
-            });
-          selectedRows = [...selectedRows, ...hashArray];
-        }
+      }
 
-        break;
-      case 'removeAll':
-        if (Array.isArray(data)) {
-          const hashArray: string[] = data.map((item: any) => item.selectKey);
-          selectedRows = selectedRows.filter(
-            (hash: string) => !hashArray.includes(hash),
-          );
-        } else {
-          const hashArray: string[] = Object.values(data)
-            .reduce((acc: any[], value: any) => {
-              return acc.concat(value.items);
-            }, [])
-            .map((item: any) => item.selectKey);
-          selectedRows = selectedRows.filter(
-            (hash: string) => !hashArray.includes(hash),
-          );
-        }
+      break;
+    case 'removeAll':
+      if (Array.isArray(data)) {
+        const hashArray: string[] = data.map((item: any) => item.selectKey);
+        selectedRows = _.omit(selectedRows, hashArray);
+      } else {
+        const hashArray: string[] = Object.values(data)
+          .reduce((acc: any[], value: any) => {
+            return acc.concat(value.items);
+          }, [])
+          .map((item: any) => item.selectKey);
+        selectedRows = _.omit(selectedRows, hashArray);
+      }
 
-        break;
-      default:
-        console.log('');
-    }
-
-    const table = {
-      ...configData.table,
-      selectedRows,
-    };
-    const config = {
-      ...configData,
-      table,
-    };
-    model.setState({ config });
+      break;
+    default:
+      console.log('');
+      break;
   }
+
+  model.setState({
+    selectedRows: { ...selectedRows },
+  });
+}
+
+function sliceRunHash(key: string): string {
+  return key.slice(0, key.indexOf('/'));
 }

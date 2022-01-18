@@ -172,7 +172,7 @@ function MetricsContainer(): React.FunctionComponentElement<React.ReactNode> {
       sortFields={metricsData?.config?.table?.sortFields!}
       hiddenMetrics={metricsData?.config?.table?.hiddenMetrics!}
       hiddenColumns={metricsData?.config?.table?.hiddenColumns!}
-      selectedRows={metricsData?.config?.table?.selectedRows!}
+      selectedRows={metricsData?.selectedRows!}
       groupingSelectOptions={
         metricsData?.groupingSelectOptions as IGroupingSelectOption[]
       }

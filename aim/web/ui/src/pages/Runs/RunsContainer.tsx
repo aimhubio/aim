@@ -58,7 +58,7 @@ function RunsContainer(): React.FunctionComponentElement<React.ReactNode> {
       tableRef={tableRef}
       columnsOrder={runsData?.config?.table.columnsOrder}
       hiddenColumns={runsData?.config?.table.hiddenColumns ?? []}
-      selectedRows={runsData?.config?.table.selectedRows}
+      selectedRows={runsData?.selectedRows}
       query={runsData?.config?.select?.query}
       columnsWidths={runsData?.config?.table.columnsWidths}
       onExportTableData={runsAppModel.onExportTableData}

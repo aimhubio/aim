@@ -3,7 +3,6 @@ import { saveAs } from 'file-saver';
 import _ from 'lodash-es';
 
 import { HighlightEnum } from 'components/HighlightModesPopover/HighlightModesPopover';
-import { ZoomEnum } from 'components/ZoomInPopover/ZoomInPopover';
 import { IPoint } from 'components/ScatterPlot';
 
 import COLORS from 'config/colors/colors';
@@ -84,11 +83,7 @@ import {
   ITrendlineOptions,
 } from 'types/services/models/scatter/scatterAppModel';
 
-import {
-  aggregateGroupData,
-  AggregationAreaMethods,
-  AggregationLineMethods,
-} from 'utils/aggregateGroupData';
+import { aggregateGroupData } from 'utils/aggregateGroupData';
 import exceptionHandler from 'utils/app/exceptionHandler';
 import getAggregatedData from 'utils/app/getAggregatedData';
 import getChartTitleData from 'utils/app/getChartTitleData';
@@ -137,13 +132,7 @@ import toggleSelectAdvancedMode from 'utils/app/toggleSelectAdvancedMode';
 import updateColumnsWidths from 'utils/app/updateColumnsWidths';
 import updateSortFields from 'utils/app/updateTableSortFields';
 import contextToString from 'utils/contextToString';
-import {
-  AlignmentOptionsEnum,
-  ChartTypeEnum,
-  CurveEnum,
-  ScaleEnum,
-  TrendlineTypeEnum,
-} from 'utils/d3';
+import { AlignmentOptionsEnum, ChartTypeEnum, ScaleEnum } from 'utils/d3';
 import {
   adjustable_reader,
   decode_buffer_pairs,
@@ -158,9 +147,8 @@ import getClosestValue from 'utils/getClosestValue';
 import getObjectPaths from 'utils/getObjectPaths';
 import getSmoothenedData from 'utils/getSmoothenedData';
 import JsonToCSV from 'utils/JsonToCSV';
-import { SmoothingAlgorithmEnum } from 'utils/smoothingData';
 import { setItem } from 'utils/storage';
-import { encode, decode } from 'utils/encoder/encoder';
+import { encode } from 'utils/encoder/encoder';
 import onBookmarkCreate from 'utils/app/onBookmarkCreate';
 import onBookmarkUpdate from 'utils/app/onBookmarkUpdate';
 import onNotificationDelete from 'utils/app/onNotificationDelete';
@@ -250,7 +238,6 @@ function createAppModel(appConfig: IAppInitialConfig) {
               right: [],
             },
             height: '0.5',
-            selectedRows: [],
           };
         }
         if (components?.charts?.[0]) {
@@ -363,7 +350,6 @@ function createAppModel(appConfig: IAppInitialConfig) {
               right: [],
             },
             height: '0.5',
-            selectedRows: [],
           };
           if (appName === AppNameEnum.RUNS) {
             config.pagination = {
@@ -683,7 +669,7 @@ function createAppModel(appConfig: IAppInitialConfig) {
                 color: metricsCollection.color ?? metric.color,
               },
               key: metric.key,
-              selectKey: metric.key,
+              selectKey: `${metric.run.hash}/${metric.key}`,
               runHash: metric.run.hash,
               isHidden: metric.isHidden,
               index: rowIndex,
@@ -1909,14 +1895,12 @@ function createAppModel(appConfig: IAppInitialConfig) {
         },
         onRowSelect({
           actionType,
-          key,
           data,
         }: {
           actionType: 'single' | 'selectAll' | 'removeAll';
-          key?: string;
           data?: any;
         }): void {
-          onRowSelect({ actionType, key, data, model });
+          onRowSelect({ actionType, data, model });
         },
       });
     }
@@ -2418,9 +2402,7 @@ function createAppModel(appConfig: IAppInitialConfig) {
             });
             const rowValues: any = {
               key: metric.key,
-              selectKey: encode({
-                runHash: metric.key,
-              }),
+              selectKey: `${metric.run.hash}/${metric.key}`,
               runHash: metric.run.hash,
               index: rowIndex,
               color: metricsCollection.color ?? metric.color,
@@ -2755,14 +2737,12 @@ function createAppModel(appConfig: IAppInitialConfig) {
           },
           onRowSelect({
             actionType,
-            key,
             data,
           }: {
             actionType: 'single' | 'selectAll' | 'removeAll';
-            key?: string;
             data?: any;
           }): void {
-            onRowSelect({ actionType, key, data, model });
+            onRowSelect({ actionType, data, model });
           },
         });
       }
@@ -2995,7 +2975,7 @@ function createAppModel(appConfig: IAppInitialConfig) {
                   color: metricsCollection.color ?? metric.color,
                 },
                 key: metric.key,
-                selectKey: metric.key,
+                selectKey: `${metric.run.hash}/${metric.key}`,
                 runHash: metric.run.hash,
                 isHidden: metric.isHidden,
                 index: rowIndex,
@@ -3943,14 +3923,12 @@ function createAppModel(appConfig: IAppInitialConfig) {
           },
           onRowSelect({
             actionType,
-            key,
             data,
           }: {
             actionType: 'single' | 'selectAll' | 'removeAll';
-            key?: string;
             data?: any;
           }): void {
-            onRowSelect({ actionType, key, data, model });
+            onRowSelect({ actionType, data, model });
           },
         });
       }
@@ -4300,7 +4278,7 @@ function createAppModel(appConfig: IAppInitialConfig) {
                   color: metricsCollection.color ?? metric.color,
                 },
                 key: metric.key,
-                selectKey: metric.key,
+                selectKey: `${metric.run.hash}/${metric.key}`,
                 runHash: metric.run.hash,
                 isHidden: metric.isHidden,
                 index: rowIndex,
@@ -5121,14 +5099,12 @@ function createAppModel(appConfig: IAppInitialConfig) {
           },
           onRowSelect({
             actionType,
-            key,
             data,
           }: {
             actionType: 'single' | 'selectAll' | 'removeAll';
-            key?: string;
             data?: any;
           }): void {
-            onRowSelect({ actionType, key, data, model });
+            onRowSelect({ actionType, data, model });
           },
         });
       }

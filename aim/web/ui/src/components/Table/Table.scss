@@ -3,6 +3,7 @@
 .Table__header {
   display: flex;
   padding: 0.2rem 1rem;
+  height: toRem(38px);
   &__select__resize {
     padding-right: 1rem;
     display: flex;
@@ -39,4 +40,14 @@
 }
 .TableColumn__SortButton {
   margin: 0 $space-xs;
+}
+.selectedRowActionsContainer {
+  &__selectedRowsCount {
+    padding: 0 1.25rem 0 0.25rem;
+    margin: 0.25rem 0;
+    display: flex;
+    align-items: center;
+    border-right: $border-main;
+    margin-right: 1rem;
+  }
 }

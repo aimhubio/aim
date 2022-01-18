@@ -29,6 +29,6 @@ export interface IRunsTableProps {
   data: any;
   columnsWidths: { [key: string]: number };
   updateColumnsWidths: (key: string, width: number, isReset: boolean) => void;
-  selectedRows: string[];
+  selectedRows: any;
   onRowSelect: (key: string) => void;
 }

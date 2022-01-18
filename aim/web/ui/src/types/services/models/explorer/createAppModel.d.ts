@@ -112,7 +112,7 @@ export interface ITableConfig {
     right: string[];
   };
   height: string;
-  selectedRows?: string[];
+  selectedRows?: any;
 }
 
 export interface IPaginationConfig {
