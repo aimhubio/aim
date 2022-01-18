@@ -1,6 +1,7 @@
 import React from 'react';
 
 import { Text } from 'components/kit';
+import ErrorBoundary from 'components/ErrorBoundary/ErrorBoundary';
 
 import MenuItem from './MenuItem';
 import { IMenuProps, IMenuItem } from './types';
@@ -38,25 +39,27 @@ function Menu({
   }, [defaultActiveItemKey]);
 
   return (
-    <div className='Aim_Menu_Wr'>
-      {title && (
-        <div className='Title'>
-          <Text size={14} tint={100} weight={700} component='h3'>
-            {title}
-          </Text>
+    <ErrorBoundary>
+      <div className='Aim_Menu_Wr'>
+        {title && (
+          <div className='Title'>
+            <Text size={14} tint={100} weight={700} component='h3'>
+              {title}
+            </Text>
+          </div>
+        )}
+        <div className='Menu'>
+          {data.map((item: IMenuItem) => (
+            <MenuItem
+              {...item}
+              key={item.id}
+              onClickOpen={onClickItem}
+              activeItemKey={activeItemKey}
+            />
+          ))}
         </div>
-      )}
-      <div className='Menu'>
-        {data.map((item: IMenuItem) => (
-          <MenuItem
-            {...item}
-            key={item.id}
-            onClickOpen={onClickItem}
-            activeItemKey={activeItemKey}
-          />
-        ))}
       </div>
-    </div>
+    </ErrorBoundary>
   );
 }
 

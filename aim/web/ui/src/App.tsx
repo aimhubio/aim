@@ -6,6 +6,7 @@ import SideBar from 'components/SideBar/SideBar';
 import ProjectWrapper from 'components/ProjectWrapper/ProjectWrapper';
 import Theme from 'components/Theme/Theme';
 import BusyLoaderWrapper from 'components/BusyLoaderWrapper/BusyLoaderWrapper';
+import ErrorBoundary from 'components/ErrorBoundary/ErrorBoundary';
 
 import { getBasePath } from 'config/config';
 
@@ -33,7 +34,9 @@ function App(): React.FunctionComponentElement<React.ReactNode> {
             </AlertBanner>
           )}
           <div className='pageContainer'>
-            <SideBar />
+            <ErrorBoundary>
+              <SideBar />
+            </ErrorBoundary>
             <div className='mainContainer'>
               <React.Suspense
                 fallback={<BusyLoaderWrapper height='100%' isLoading />}
@@ -43,7 +46,9 @@ function App(): React.FunctionComponentElement<React.ReactNode> {
                     const { component: Component, path, isExact } = route;
                     return (
                       <Route path={path} key={index} exact={isExact}>
-                        <Component />
+                        <ErrorBoundary>
+                          <Component />
+                        </ErrorBoundary>
                       </Route>
                     );
                   })}

@@ -7,10 +7,7 @@ import { RowHeightSize } from 'config/table/tableConfigs';
 import { BookmarkNotificationsEnum } from 'config/notification-messages/notificationMessages';
 import { ResizeModeEnum, RowHeightEnum } from 'config/enums/tableEnums';
 import { IMAGE_SIZE_CHANGE_DELAY } from 'config/mediaConfigs/mediaConfigs';
-import {
-  MediaItemAlignmentEnum,
-  ImageRenderingEnum,
-} from 'config/enums/imageEnums';
+import { ImageRenderingEnum } from 'config/enums/imageEnums';
 import { CONTROLS_DEFAULT_CONFIG } from 'config/controls/controlsDefaultConfig';
 
 import {

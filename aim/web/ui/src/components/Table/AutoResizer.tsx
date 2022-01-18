@@ -4,6 +4,8 @@
 import React from 'react';
 import AutoSizer from 'react-virtualized-auto-sizer';
 
+import ErrorBoundary from 'components/ErrorBoundary/ErrorBoundary';
+
 /**
  * Decorator component that automatically adjusts the width and height of a single child
  */
@@ -23,19 +25,21 @@ const AutoResizer = ({ className, width, height, children, onResize }) => {
   }
 
   return (
-    <AutoSizer
-      className={className}
-      disableWidth={disableWidth}
-      disableHeight={disableHeight}
-      onResize={onResize}
-    >
-      {(size) =>
-        children({
-          width: disableWidth ? width : size.width,
-          height: disableHeight ? height : size.height,
-        })
-      }
-    </AutoSizer>
+    <ErrorBoundary>
+      <AutoSizer
+        className={className}
+        disableWidth={disableWidth}
+        disableHeight={disableHeight}
+        onResize={onResize}
+      >
+        {(size) =>
+          children({
+            width: disableWidth ? width : size.width,
+            height: disableHeight ? height : size.height,
+          })
+        }
+      </AutoSizer>
+    </ErrorBoundary>
   );
 };
 

@@ -4,6 +4,8 @@
 import React from 'react';
 import cn from 'classnames';
 
+import ErrorBoundary from 'components/ErrorBoundary/ErrorBoundary';
+
 import SortOrder from './SortOrder';
 
 /**
@@ -14,19 +16,21 @@ const SortIndicator = ({ sortOrder, className, style }) => {
     'BaseTable__sort-indicator--descending': sortOrder === SortOrder.DESC,
   });
   return (
-    <div
-      className={cls}
-      style={{
-        userSelect: 'none',
-        width: '1em',
-        height: '1em',
-        lineHeight: '1em',
-        textAlign: 'center',
-        ...style,
-      }}
-    >
-      {sortOrder === SortOrder.DESC ? '\u2193' : '\u2191'}
-    </div>
+    <ErrorBoundary>
+      <div
+        className={cls}
+        style={{
+          userSelect: 'none',
+          width: '1em',
+          height: '1em',
+          lineHeight: '1em',
+          textAlign: 'center',
+          ...style,
+        }}
+      >
+        {sortOrder === SortOrder.DESC ? '\u2193' : '\u2191'}
+      </div>
+    </ErrorBoundary>
   );
 };
 

@@ -4,6 +4,7 @@ import { Link as RouteLink } from 'react-router-dom';
 import { Divider, Link } from '@material-ui/core';
 
 import { Badge, Button } from 'components/kit';
+import ErrorBoundary from 'components/ErrorBoundary/ErrorBoundary';
 
 import { PathEnum } from 'config/enums/routesEnum';
 
@@ -25,46 +26,48 @@ function SelectTag({
   );
 
   return (
-    <div className='SelectTag'>
-      {tags?.length > 0 ? (
-        <div className='SelectTag__tags'>
-          {tags.map((tag: ITagInfo) => {
-            const tagAttached = attachedTags.find(
-              (attachedTag) => attachedTag.id === tag.id,
-            );
-            return (
-              <div
-                key={tag.id}
-                className={`SelectTag__tags__badge ${
-                  tagAttached ? 'outlined' : ''
-                }`}
-              >
-                <Badge
-                  color={tag.color}
-                  label={tag.name}
-                  id={tag.id}
-                  startIcon={tagAttached && 'check'}
-                  onClick={onSelectBadge}
-                />
-              </div>
-            );
-          })}
+    <ErrorBoundary>
+      <div className='SelectTag'>
+        {tags?.length > 0 ? (
+          <div className='SelectTag__tags'>
+            {tags.map((tag: ITagInfo) => {
+              const tagAttached = attachedTags.find(
+                (attachedTag) => attachedTag.id === tag.id,
+              );
+              return (
+                <div
+                  key={tag.id}
+                  className={`SelectTag__tags__badge ${
+                    tagAttached ? 'outlined' : ''
+                  }`}
+                >
+                  <Badge
+                    color={tag.color}
+                    label={tag.name}
+                    id={tag.id}
+                    startIcon={tagAttached && 'check'}
+                    onClick={onSelectBadge}
+                  />
+                </div>
+              );
+            })}
+          </div>
+        ) : null}
+        <Divider />
+        <div className='SelectTag__createTag__container'>
+          <Link to={PathEnum.Tags} component={RouteLink} underline='none'>
+            <Button
+              size='small'
+              variant='contained'
+              color='primary'
+              className='SelectTag__createTag'
+            >
+              Create Tag
+            </Button>
+          </Link>
         </div>
-      ) : null}
-      <Divider />
-      <div className='SelectTag__createTag__container'>
-        <Link to={PathEnum.Tags} component={RouteLink} underline='none'>
-          <Button
-            size='small'
-            variant='contained'
-            color='primary'
-            className='SelectTag__createTag'
-          >
-            Create Tag
-          </Button>
-        </Link>
       </div>
-    </div>
+    </ErrorBoundary>
   );
 }
 

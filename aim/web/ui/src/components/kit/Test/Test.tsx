@@ -1,6 +1,7 @@
 import React from 'react';
 
 import { Text } from 'components/kit';
+import ErrorBoundary from 'components/ErrorBoundary/ErrorBoundary';
 
 import { ITestProps } from './types.d';
 
@@ -10,9 +11,11 @@ function Test({
   title,
 }: ITestProps): React.FunctionComponentElement<React.ReactNode> {
   return (
-    <div className={'Test'}>
-      <Text>{title}</Text>
-    </div>
+    <ErrorBoundary>
+      <div className={'Test'}>
+        <Text>{title}</Text>
+      </div>
+    </ErrorBoundary>
   );
 }
 

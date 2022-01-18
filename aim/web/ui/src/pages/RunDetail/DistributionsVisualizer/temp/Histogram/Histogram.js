@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import { Component, createRef } from 'react';
 import PropTypes from 'prop-types';
 import Highcharts from 'highcharts';
 import HighchartsReact from 'highcharts-react-official';
@@ -91,7 +91,7 @@ class Histogram extends Component {
       },
     };
 
-    this.chartRef = React.createRef();
+    this.chartRef = createRef();
   }
 
   // eslint-disable-next-line react/no-deprecated
