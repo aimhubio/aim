@@ -3,6 +3,7 @@ import classNames from 'classnames';
 import _ from 'lodash';
 
 import { ToggleButton, Icon, Text, Button } from 'components/kit';
+import ErrorBoundary from 'components/ErrorBoundary/ErrorBoundary';
 
 import { ISortPopoverListProps } from 'types/pages/metrics/components/SortPopover/SortPopover';
 
@@ -21,7 +22,7 @@ function SortPopoverList({
   }
 
   return (
-    <>
+    <ErrorBoundary>
       {!_.isEmpty(filteredSortFields) && (
         <Text size={12} tint={50} className={'SortPopover__container__label'}>
           {title}
@@ -62,7 +63,7 @@ function SortPopoverList({
           </div>
         ))}
       </div>
-    </>
+    </ErrorBoundary>
   );
 }
 

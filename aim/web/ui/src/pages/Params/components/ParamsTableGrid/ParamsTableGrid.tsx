@@ -8,6 +8,7 @@ import { Link, Tooltip } from '@material-ui/core';
 import { Badge, Button, Icon, JsonViewPopover } from 'components/kit';
 import TableSortIcons from 'components/Table/TableSortIcons';
 import ControlPopover from 'components/ControlPopover/ControlPopover';
+import ErrorBoundary from 'components/ErrorBoundary/ErrorBoundary';
 
 import COLORS from 'config/colors/colors';
 import { PathEnum } from 'config/enums/routesEnum';
@@ -255,48 +256,52 @@ function paramsTableRowRenderer(
       if (col === 'groups') {
         row.groups = {
           content: (
-            <div className='Table__groupsColumn__cell'>
-              {Object.keys(rowData[col]).map((item) => {
-                const value: string | { [key: string]: unknown } =
-                  rowData[col][item];
-                return typeof value === 'object' ? (
-                  <ControlPopover
-                    key={contextToString(value)}
-                    title={item}
-                    anchorOrigin={{
-                      vertical: 'bottom',
-                      horizontal: 'left',
-                    }}
-                    transformOrigin={{
-                      vertical: 'top',
-                      horizontal: 'left',
-                    }}
-                    anchor={({ onAnchorClick }) => (
-                      <Tooltip title={contextToString(value) as string}>
-                        <span onClick={onAnchorClick}>
-                          {contextToString(value)}
-                        </span>
-                      </Tooltip>
-                    )}
-                    component={<JsonViewPopover json={value} />}
-                  />
-                ) : (
-                  <Tooltip key={item} title={value}>
-                    <span>{formatValue(value)}</span>
-                  </Tooltip>
-                );
-              })}
-            </div>
+            <ErrorBoundary>
+              <div className='Table__groupsColumn__cell'>
+                {Object.keys(rowData[col]).map((item) => {
+                  const value: string | { [key: string]: unknown } =
+                    rowData[col][item];
+                  return typeof value === 'object' ? (
+                    <ControlPopover
+                      key={contextToString(value)}
+                      title={item}
+                      anchorOrigin={{
+                        vertical: 'bottom',
+                        horizontal: 'left',
+                      }}
+                      transformOrigin={{
+                        vertical: 'top',
+                        horizontal: 'left',
+                      }}
+                      anchor={({ onAnchorClick }) => (
+                        <Tooltip title={contextToString(value) as string}>
+                          <span onClick={onAnchorClick}>
+                            {contextToString(value)}
+                          </span>
+                        </Tooltip>
+                      )}
+                      component={<JsonViewPopover json={value} />}
+                    />
+                  ) : (
+                    <Tooltip key={item} title={value}>
+                      <span>{formatValue(value)}</span>
+                    </Tooltip>
+                  );
+                })}
+              </div>
+            </ErrorBoundary>
           ),
         };
       } else if (Array.isArray(rowData[col])) {
         row[col] = {
           content: (
-            <Badge
-              size='small'
-              color={COLORS[0][0]}
-              label={`${rowData[col].length} values`}
-            />
+            <ErrorBoundary>
+              <Badge
+                size='small'
+                color={COLORS[0][0]}
+                label={`${rowData[col].length} values`}
+              />
+            </ErrorBoundary>
           ),
         };
       }

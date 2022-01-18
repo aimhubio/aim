@@ -11,6 +11,7 @@ import MediaPanel from 'components/MediaPanel';
 import { MediaTypeEnum } from 'components/MediaPanel/config';
 import ImagesExploreRangePanel from 'components/ImagesExploreRangePanel';
 import Grouping from 'components/Grouping/Grouping';
+import ErrorBoundary from 'components/ErrorBoundary/ErrorBoundary';
 
 import { ResizeModeEnum } from 'config/enums/tableEnums';
 import { RowHeightSize } from 'config/table/tableConfigs';
@@ -182,224 +183,268 @@ function ImagesExplore(): React.FunctionComponentElement<React.ReactNode> {
   ]);
 
   return (
-    <div className='ImagesExplore__container' ref={wrapperElemRef}>
-      <section className='ImagesExplore__section'>
-        <div className='ImagesExplore__section__div ImagesExplore__fullHeight'>
-          <ImagesExploreAppBar
-            onBookmarkCreate={imagesExploreAppModel.onBookmarkCreate}
-            onBookmarkUpdate={imagesExploreAppModel.onBookmarkUpdate}
-            onResetConfigData={imagesExploreAppModel.onResetConfigData}
-            title={'Images explorer'}
-          />
-          <div className='ImagesExplore__SelectForm__Grouping__container'>
-            <SelectForm
-              requestIsPending={imagesExploreData?.requestIsPending}
-              selectedImagesData={imagesExploreData?.config?.select}
-              onImagesExploreSelectChange={
-                imagesExploreAppModel.onImagesExploreSelectChange
-              }
-              onSelectRunQueryChange={
-                imagesExploreAppModel.onSelectRunQueryChange
-              }
-              onSelectAdvancedQueryChange={
-                imagesExploreAppModel.onSelectAdvancedQueryChange
-              }
-              toggleSelectAdvancedMode={
-                imagesExploreAppModel.toggleSelectAdvancedMode
-              }
-              onSearchQueryCopy={imagesExploreAppModel.onSearchQueryCopy}
-              searchButtonDisabled={imagesExploreData?.searchButtonDisabled}
-            />
-            <Grouping
-              groupingPopovers={GroupingPopovers.filter(
-                (g) => g.groupName === 'group',
-              )}
-              groupingData={imagesExploreData?.config?.grouping}
-              groupingSelectOptions={imagesExploreData?.groupingSelectOptions}
-              onGroupingSelectChange={
-                imagesExploreAppModel.onGroupingSelectChange
-              }
-              onGroupingModeChange={imagesExploreAppModel.onGroupingModeChange}
-              onGroupingPaletteChange={() => {}}
-              onGroupingReset={() => {}}
-              onGroupingApplyChange={
-                imagesExploreAppModel.onGroupingApplyChange
-              }
-              onGroupingPersistenceChange={() => {}}
-              onShuffleChange={() => {}}
-            />
-          </div>
-          <div
-            ref={imagesWrapperRef}
-            className={`ImagesExplore__imagesWrapper__container${
-              imagesExploreData?.config?.table.resizeMode ===
-              ResizeModeEnum.MaxHeight
-                ? '__hide'
-                : ''
-            }`}
-          >
-            <MediaPanel
-              mediaType={MediaTypeEnum.IMAGE}
-              getBlobsData={imagesExploreAppModel.getImagesBlobsData}
-              data={imagesExploreData?.imagesData}
-              orderedMap={imagesExploreData?.orderedMap}
-              isLoading={imagesExploreData?.requestIsPending}
-              panelResizing={panelResizing}
-              resizeMode={imagesExploreData?.config?.table.resizeMode}
-              tableHeight={imagesExploreData?.config?.table?.height}
-              wrapperOffsetHeight={offsetHeight || 0}
-              wrapperOffsetWidth={offsetWidth || 0}
-              focusedState={
-                imagesExploreData?.config?.images?.focusedState as IFocusedState
-              }
-              tooltip={
-                imagesExploreData?.config?.images?.tooltip as IPanelTooltip
-              }
-              sortFieldsDict={memoizedImagesSortFields.sortFieldsDict}
-              sortFields={memoizedImagesSortFields.sortFields}
-              additionalProperties={
-                imagesExploreData?.config?.images?.additionalProperties
-              }
-              onActivePointChange={imagesExploreAppModel.onActivePointChange}
-              controls={
-                <Controls
-                  selectOptions={
-                    imagesExploreData?.groupingSelectOptions as IGroupingSelectOption[]
+    <ErrorBoundary>
+      <div className='ImagesExplore__container' ref={wrapperElemRef}>
+        <section className='ImagesExplore__section'>
+          <div className='ImagesExplore__section__div ImagesExplore__fullHeight'>
+            <ErrorBoundary>
+              <ImagesExploreAppBar
+                onBookmarkCreate={imagesExploreAppModel.onBookmarkCreate}
+                onBookmarkUpdate={imagesExploreAppModel.onBookmarkUpdate}
+                onResetConfigData={imagesExploreAppModel.onResetConfigData}
+                title={'Images explorer'}
+              />
+            </ErrorBoundary>
+            <div className='ImagesExplore__SelectForm__Grouping__container'>
+              <ErrorBoundary>
+                <SelectForm
+                  requestIsPending={imagesExploreData?.requestIsPending}
+                  selectedImagesData={imagesExploreData?.config?.select}
+                  onImagesExploreSelectChange={
+                    imagesExploreAppModel.onImagesExploreSelectChange
+                  }
+                  onSelectRunQueryChange={
+                    imagesExploreAppModel.onSelectRunQueryChange
+                  }
+                  onSelectAdvancedQueryChange={
+                    imagesExploreAppModel.onSelectAdvancedQueryChange
+                  }
+                  toggleSelectAdvancedMode={
+                    imagesExploreAppModel.toggleSelectAdvancedMode
+                  }
+                  onSearchQueryCopy={imagesExploreAppModel.onSearchQueryCopy}
+                  searchButtonDisabled={imagesExploreData?.searchButtonDisabled}
+                />
+              </ErrorBoundary>
+              <ErrorBoundary>
+                <Grouping
+                  groupingPopovers={GroupingPopovers.filter(
+                    (g) => g.groupName === 'group',
+                  )}
+                  groupingData={imagesExploreData?.config?.grouping}
+                  groupingSelectOptions={
+                    imagesExploreData?.groupingSelectOptions
+                  }
+                  onGroupingSelectChange={
+                    imagesExploreAppModel.onGroupingSelectChange
+                  }
+                  onGroupingModeChange={
+                    imagesExploreAppModel.onGroupingModeChange
+                  }
+                  onGroupingPaletteChange={() => {}}
+                  onGroupingReset={() => {}}
+                  onGroupingApplyChange={
+                    imagesExploreAppModel.onGroupingApplyChange
+                  }
+                  onGroupingPersistenceChange={() => {}}
+                  onShuffleChange={() => {}}
+                />
+              </ErrorBoundary>
+            </div>
+            <div
+              ref={imagesWrapperRef}
+              className={`ImagesExplore__imagesWrapper__container${
+                imagesExploreData?.config?.table.resizeMode ===
+                ResizeModeEnum.MaxHeight
+                  ? '__hide'
+                  : ''
+              }`}
+            >
+              <ErrorBoundary>
+                <MediaPanel
+                  mediaType={MediaTypeEnum.IMAGE}
+                  getBlobsData={imagesExploreAppModel.getImagesBlobsData}
+                  data={imagesExploreData?.imagesData}
+                  orderedMap={imagesExploreData?.orderedMap}
+                  isLoading={imagesExploreData?.requestIsPending}
+                  panelResizing={panelResizing}
+                  resizeMode={imagesExploreData?.config?.table.resizeMode}
+                  tableHeight={imagesExploreData?.config?.table?.height}
+                  wrapperOffsetHeight={offsetHeight || 0}
+                  wrapperOffsetWidth={offsetWidth || 0}
+                  focusedState={
+                    imagesExploreData?.config?.images
+                      ?.focusedState as IFocusedState
                   }
                   tooltip={
                     imagesExploreData?.config?.images?.tooltip as IPanelTooltip
                   }
+                  sortFieldsDict={memoizedImagesSortFields.sortFieldsDict}
+                  sortFields={memoizedImagesSortFields.sortFields}
                   additionalProperties={
                     imagesExploreData?.config?.images?.additionalProperties
                   }
-                  sortFields={memoizedImagesSortFields.sortFields}
-                  onChangeTooltip={imagesExploreAppModel?.onChangeTooltip}
-                  onImageSizeChange={imagesExploreAppModel.onImageSizeChange}
-                  onImagesSortReset={imagesExploreAppModel.onImagesSortReset}
-                  onImageRenderingChange={
-                    imagesExploreAppModel.onImageRenderingChange
+                  onActivePointChange={
+                    imagesExploreAppModel.onActivePointChange
                   }
-                  onImageAlignmentChange={
-                    imagesExploreAppModel.onImageAlignmentChange
+                  controls={
+                    <Controls
+                      selectOptions={
+                        imagesExploreData?.groupingSelectOptions as IGroupingSelectOption[]
+                      }
+                      tooltip={
+                        imagesExploreData?.config?.images
+                          ?.tooltip as IPanelTooltip
+                      }
+                      additionalProperties={
+                        imagesExploreData?.config?.images?.additionalProperties
+                      }
+                      sortFields={memoizedImagesSortFields.sortFields}
+                      onChangeTooltip={imagesExploreAppModel?.onChangeTooltip}
+                      onImageSizeChange={
+                        imagesExploreAppModel.onImageSizeChange
+                      }
+                      onImagesSortReset={
+                        imagesExploreAppModel.onImagesSortReset
+                      }
+                      onImageRenderingChange={
+                        imagesExploreAppModel.onImageRenderingChange
+                      }
+                      onImageAlignmentChange={
+                        imagesExploreAppModel.onImageAlignmentChange
+                      }
+                      onImagesSortChange={
+                        imagesExploreAppModel.onImagesSortChange
+                      }
+                    />
                   }
-                  onImagesSortChange={imagesExploreAppModel.onImagesSortChange}
+                  tooltipType={ChartTypeEnum.ImageSet}
+                  actionPanelSize={44}
+                  actionPanel={
+                    imagesExploreData?.config?.images?.stepRange &&
+                    imagesExploreData?.config?.images?.indexRange &&
+                    imagesExploreAppModel.showRangePanel() && (
+                      <ImagesExploreRangePanel
+                        recordSlice={
+                          imagesExploreData?.config?.images?.recordSlice
+                        }
+                        indexSlice={
+                          imagesExploreData?.config?.images?.indexSlice
+                        }
+                        indexRange={
+                          imagesExploreData?.config?.images?.indexRange
+                        }
+                        stepRange={imagesExploreData?.config?.images?.stepRange}
+                        applyButtonDisabled={
+                          imagesExploreData?.applyButtonDisabled
+                        }
+                        indexDensity={
+                          imagesExploreData?.config?.images?.indexDensity
+                        }
+                        recordDensity={
+                          imagesExploreData?.config?.images?.recordDensity
+                        }
+                        onSliceRangeChange={
+                          imagesExploreAppModel.onSliceRangeChange
+                        }
+                        onDensityChange={imagesExploreAppModel.onDensityChange}
+                      />
+                    )
+                  }
                 />
-              }
-              tooltipType={ChartTypeEnum.ImageSet}
-              actionPanelSize={44}
-              actionPanel={
-                imagesExploreData?.config?.images?.stepRange &&
-                imagesExploreData?.config?.images?.indexRange &&
-                imagesExploreAppModel.showRangePanel() && (
-                  <ImagesExploreRangePanel
-                    recordSlice={imagesExploreData?.config?.images?.recordSlice}
-                    indexSlice={imagesExploreData?.config?.images?.indexSlice}
-                    indexRange={imagesExploreData?.config?.images?.indexRange}
-                    stepRange={imagesExploreData?.config?.images?.stepRange}
-                    applyButtonDisabled={imagesExploreData?.applyButtonDisabled}
-                    indexDensity={
-                      imagesExploreData?.config?.images?.indexDensity
-                    }
-                    recordDensity={
-                      imagesExploreData?.config?.images?.recordDensity
-                    }
-                    onSliceRangeChange={
-                      imagesExploreAppModel.onSliceRangeChange
-                    }
-                    onDensityChange={imagesExploreAppModel.onDensityChange}
-                  />
-                )
+              </ErrorBoundary>
+            </div>
+            <ResizePanel
+              className={`ImagesExplore__ResizePanel${
+                imagesExploreData?.requestIsPending ||
+                !_.isEmpty(imagesExploreData?.imagesData)
+                  ? ''
+                  : '__hide'
+              }`}
+              panelResizing={panelResizing}
+              resizeElemRef={resizeElemRef}
+              resizeMode={imagesExploreData?.config?.table.resizeMode}
+              onTableResizeModeChange={
+                imagesExploreAppModel.onTableResizeModeChange
               }
             />
-          </div>
-          <ResizePanel
-            className={`ImagesExplore__ResizePanel${
-              imagesExploreData?.requestIsPending ||
-              !_.isEmpty(imagesExploreData?.imagesData)
-                ? ''
-                : '__hide'
-            }`}
-            panelResizing={panelResizing}
-            resizeElemRef={resizeElemRef}
-            resizeMode={imagesExploreData?.config?.table.resizeMode}
-            onTableResizeModeChange={
-              imagesExploreAppModel.onTableResizeModeChange
-            }
-          />
-          <div
-            ref={tableElemRef}
-            className={`ImagesExplore__table__container${
-              imagesExploreData?.config?.table.resizeMode ===
-              ResizeModeEnum.Hide
-                ? '__hide'
-                : ''
-            }`}
-          >
-            <BusyLoaderWrapper
-              isLoading={imagesExploreData?.requestIsPending}
-              className='ImagesExplore__loader'
-              height='100%'
-              loaderComponent={<TableLoader />}
+            <div
+              ref={tableElemRef}
+              className={`ImagesExplore__table__container${
+                imagesExploreData?.config?.table.resizeMode ===
+                ResizeModeEnum.Hide
+                  ? '__hide'
+                  : ''
+              }`}
             >
-              {!_.isEmpty(imagesExploreData?.tableData) ? (
-                <Table
-                  // deletable
-                  custom
-                  ref={imagesExploreData?.refs.tableRef}
-                  data={imagesExploreData?.tableData}
-                  columns={imagesExploreData?.tableColumns}
-                  // Table options
-                  topHeader
-                  groups={!Array.isArray(imagesExploreData?.tableData)}
-                  rowHeight={imagesExploreData?.config?.table.rowHeight}
-                  rowHeightMode={
-                    imagesExploreData?.config?.table.rowHeight ===
-                    RowHeightSize.sm
-                      ? 'small'
-                      : imagesExploreData?.config?.table.rowHeight ===
-                        RowHeightSize.md
-                      ? 'medium'
-                      : 'large'
-                  }
-                  sortOptions={imagesExploreData?.groupingSelectOptions}
-                  sortFields={imagesExploreData?.config?.table.sortFields}
-                  hiddenRows={imagesExploreData?.config?.table.hiddenMetrics}
-                  hiddenColumns={imagesExploreData?.config?.table.hiddenColumns}
-                  resizeMode={imagesExploreData?.config?.table.resizeMode}
-                  columnsWidths={imagesExploreData?.config?.table.columnsWidths}
-                  // Table actions
-                  onSort={imagesExploreAppModel.onTableSortChange}
-                  onSortReset={imagesExploreAppModel.onSortReset}
-                  onExport={imagesExploreAppModel.onExportTableData}
-                  onManageColumns={imagesExploreAppModel.onColumnsOrderChange}
-                  onColumnsVisibilityChange={
-                    imagesExploreAppModel.onColumnsVisibilityChange
-                  }
-                  onTableDiffShow={imagesExploreAppModel.onTableDiffShow}
-                  onRowHeightChange={imagesExploreAppModel.onRowHeightChange}
-                  //@TODO add hide sequence functionality
-                  // onRowsChange={imagesExploreAppModel.onImageVisibilityChange}
-                  // onRowHover={imagesExploreAppModel.onTableRowHover}
-                  // onRowClick={imagesExploreAppModel.onTableRowClick}
-                  onTableResizeModeChange={
-                    imagesExploreAppModel.onTableResizeModeChange
-                  }
-                  updateColumnsWidths={
-                    imagesExploreAppModel.updateColumnsWidths
-                  }
-                />
-              ) : null}
-            </BusyLoaderWrapper>
+              <BusyLoaderWrapper
+                isLoading={imagesExploreData?.requestIsPending}
+                className='ImagesExplore__loader'
+                height='100%'
+                loaderComponent={<TableLoader />}
+              >
+                {!_.isEmpty(imagesExploreData?.tableData) ? (
+                  <ErrorBoundary>
+                    <Table
+                      // deletable
+                      custom
+                      ref={imagesExploreData?.refs.tableRef}
+                      data={imagesExploreData?.tableData}
+                      columns={imagesExploreData?.tableColumns}
+                      // Table options
+                      topHeader
+                      groups={!Array.isArray(imagesExploreData?.tableData)}
+                      rowHeight={imagesExploreData?.config?.table.rowHeight}
+                      rowHeightMode={
+                        imagesExploreData?.config?.table.rowHeight ===
+                        RowHeightSize.sm
+                          ? 'small'
+                          : imagesExploreData?.config?.table.rowHeight ===
+                            RowHeightSize.md
+                          ? 'medium'
+                          : 'large'
+                      }
+                      sortOptions={imagesExploreData?.groupingSelectOptions}
+                      sortFields={imagesExploreData?.config?.table.sortFields}
+                      hiddenRows={
+                        imagesExploreData?.config?.table.hiddenMetrics
+                      }
+                      hiddenColumns={
+                        imagesExploreData?.config?.table.hiddenColumns
+                      }
+                      resizeMode={imagesExploreData?.config?.table.resizeMode}
+                      columnsWidths={
+                        imagesExploreData?.config?.table.columnsWidths
+                      }
+                      // Table actions
+                      onSort={imagesExploreAppModel.onTableSortChange}
+                      onSortReset={imagesExploreAppModel.onSortReset}
+                      onExport={imagesExploreAppModel.onExportTableData}
+                      onManageColumns={
+                        imagesExploreAppModel.onColumnsOrderChange
+                      }
+                      onColumnsVisibilityChange={
+                        imagesExploreAppModel.onColumnsVisibilityChange
+                      }
+                      onTableDiffShow={imagesExploreAppModel.onTableDiffShow}
+                      onRowHeightChange={
+                        imagesExploreAppModel.onRowHeightChange
+                      }
+                      //@TODO add hide sequence functionality
+                      // onRowsChange={imagesExploreAppModel.onImageVisibilityChange}
+                      // onRowHover={imagesExploreAppModel.onTableRowHover}
+                      // onRowClick={imagesExploreAppModel.onTableRowClick}
+                      onTableResizeModeChange={
+                        imagesExploreAppModel.onTableResizeModeChange
+                      }
+                      updateColumnsWidths={
+                        imagesExploreAppModel.updateColumnsWidths
+                      }
+                    />
+                  </ErrorBoundary>
+                ) : null}
+              </BusyLoaderWrapper>
+            </div>
           </div>
-        </div>
-      </section>
-      {imagesExploreData?.notifyData?.length > 0 && (
-        <NotificationContainer
-          handleClose={imagesExploreAppModel.onNotificationDelete}
-          data={imagesExploreData?.notifyData}
-        />
-      )}
-    </div>
+        </section>
+        {imagesExploreData?.notifyData?.length > 0 && (
+          <NotificationContainer
+            handleClose={imagesExploreAppModel.onNotificationDelete}
+            data={imagesExploreData?.notifyData}
+          />
+        )}
+      </div>
+    </ErrorBoundary>
   );
 }
 

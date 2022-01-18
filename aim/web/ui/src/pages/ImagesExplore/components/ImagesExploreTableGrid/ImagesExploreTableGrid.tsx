@@ -7,6 +7,7 @@ import { Link, Tooltip } from '@material-ui/core';
 import TableSortIcons from 'components/Table/TableSortIcons';
 import { Badge, JsonViewPopover } from 'components/kit';
 import ControlPopover from 'components/ControlPopover/ControlPopover';
+import ErrorBoundary from 'components/ErrorBoundary/ErrorBoundary';
 
 import COLORS from 'config/colors/colors';
 import { PathEnum } from 'config/enums/routesEnum';
@@ -89,27 +90,29 @@ function getImagesExploreTableColumns(
       return {
         key: param,
         content: (
-          <span>
-            {param}
-            {onSort && (
-              <TableSortIcons
-                onSort={() =>
-                  onSort({
-                    sortFields,
-                    index,
-                    field:
-                      index === -1
-                        ? groupingSelectOptions.find(
-                            (value) => value.value === paramKey,
-                          )
-                        : null,
-                    actionType: SortActionTypes.ORDER_TABLE_TRIGGER,
-                  })
-                }
-                sort={!_.isNil(sortItem) ? sortItem.order : null}
-              />
-            )}
-          </span>
+          <ErrorBoundary>
+            <span>
+              {param}
+              {onSort && (
+                <TableSortIcons
+                  onSort={() =>
+                    onSort({
+                      sortFields,
+                      index,
+                      field:
+                        index === -1
+                          ? groupingSelectOptions.find(
+                              (value) => value.value === paramKey,
+                            )
+                          : null,
+                      actionType: SortActionTypes.ORDER_TABLE_TRIGGER,
+                    })
+                  }
+                  sort={!_.isNil(sortItem) ? sortItem.order : null}
+                />
+              )}
+            </span>
+          </ErrorBoundary>
         ),
         topHeader: 'Params',
         pin: order?.left?.includes(param)
@@ -141,17 +144,19 @@ function getImagesExploreTableColumns(
       {
         key: 'groups',
         content: (
-          <div className='Table__groupsColumn__cell'>
-            {Object.keys(groupFields).map((field) => {
-              let name: string = field.replace('run.params.', '');
-              name = name.replace('run.props', 'run');
-              return (
-                <Tooltip key={field} title={name}>
-                  <span>{name}</span>
-                </Tooltip>
-              );
-            })}
-          </div>
+          <ErrorBoundary>
+            <div className='Table__groupsColumn__cell'>
+              {Object.keys(groupFields).map((field) => {
+                let name: string = field.replace('run.params.', '');
+                name = name.replace('run.props', 'run');
+                return (
+                  <Tooltip key={field} title={name}>
+                    <span>{name}</span>
+                  </Tooltip>
+                );
+              })}
+            </div>
+          </ErrorBoundary>
         ),
         pin: order?.left?.includes('groups')
           ? 'left'
@@ -238,30 +243,34 @@ function imagesExploreTableRowRenderer(
                 const value: string | { [key: string]: unknown } =
                   rowData[col][item];
                 return typeof value === 'object' ? (
-                  <ControlPopover
-                    key={contextToString(value)}
-                    title={item}
-                    anchorOrigin={{
-                      vertical: 'bottom',
-                      horizontal: 'left',
-                    }}
-                    transformOrigin={{
-                      vertical: 'top',
-                      horizontal: 'left',
-                    }}
-                    anchor={({ onAnchorClick }) => (
-                      <Tooltip title={contextToString(value) as string}>
-                        <span onClick={onAnchorClick}>
-                          {contextToString(value)}
-                        </span>
-                      </Tooltip>
-                    )}
-                    component={<JsonViewPopover json={value} />}
-                  />
+                  <ErrorBoundary>
+                    <ControlPopover
+                      key={contextToString(value)}
+                      title={item}
+                      anchorOrigin={{
+                        vertical: 'bottom',
+                        horizontal: 'left',
+                      }}
+                      transformOrigin={{
+                        vertical: 'top',
+                        horizontal: 'left',
+                      }}
+                      anchor={({ onAnchorClick }) => (
+                        <Tooltip title={contextToString(value) as string}>
+                          <span onClick={onAnchorClick}>
+                            {contextToString(value)}
+                          </span>
+                        </Tooltip>
+                      )}
+                      component={<JsonViewPopover json={value} />}
+                    />
+                  </ErrorBoundary>
                 ) : (
-                  <Tooltip key={item} title={value}>
-                    <span>{formatValue(value)}</span>
-                  </Tooltip>
+                  <ErrorBoundary>
+                    <Tooltip key={item} title={value}>
+                      <span>{formatValue(value)}</span>
+                    </Tooltip>
+                  </ErrorBoundary>
                 );
               })}
             </div>

@@ -2,6 +2,7 @@ import React from 'react';
 import { useRouteMatch, useHistory } from 'react-router-dom';
 
 import { HighlightEnum } from 'components/HighlightModesPopover/HighlightModesPopover';
+import ErrorBoundary from 'components/ErrorBoundary/ErrorBoundary';
 
 import { RowHeightSize } from 'config/table/tableConfigs';
 import { ResizeModeEnum } from 'config/enums/tableEnums';
@@ -127,105 +128,112 @@ function MetricsContainer(): React.FunctionComponentElement<React.ReactNode> {
   }, []);
 
   return (
-    <Metrics
-      // refs
-      tableRef={tableRef}
-      chartPanelRef={chartPanelRef}
-      tableElemRef={tableElemRef}
-      chartElemRef={chartElemRef}
-      wrapperElemRef={wrapperElemRef}
-      resizeElemRef={resizeElemRef}
-      // grouping options
-      groupingData={metricsData?.config?.grouping as IGroupingConfig}
-      // chart options
-      panelResizing={panelResizing}
-      lineChartData={metricsData?.lineChartData as ILine[][]}
-      chartTitleData={metricsData?.chartTitleData as IChartTitleData}
-      ignoreOutliers={metricsData?.config?.chart?.ignoreOutliers as boolean}
-      tableData={metricsData?.tableData as IMetricTableRowData[]}
-      tableColumns={metricsData?.tableColumns as ITableColumn[]}
-      aggregatedData={metricsData?.aggregatedData as IAggregatedData[]}
-      zoom={metricsData?.config?.chart?.zoom as IChartZoom}
-      curveInterpolation={
-        metricsData?.config?.chart.curveInterpolation as CurveEnum
-      }
-      highlightMode={metricsData?.config?.chart.highlightMode as HighlightEnum}
-      axesScaleType={
-        metricsData?.config?.chart.axesScaleType as IAxesScaleState
-      }
-      smoothingAlgorithm={
-        metricsData?.config?.chart.smoothingAlgorithm as SmoothingAlgorithmEnum
-      }
-      smoothingFactor={metricsData?.config?.chart?.smoothingFactor as number}
-      focusedState={metricsData?.config?.chart?.focusedState as IFocusedState}
-      notifyData={metricsData?.notifyData as IMetricAppModelState['notifyData']}
-      tooltip={metricsData?.config?.chart?.tooltip as IPanelTooltip}
-      aggregationConfig={
-        metricsData?.config?.chart?.aggregationConfig as IAggregationConfig
-      }
-      alignmentConfig={
-        metricsData?.config?.chart?.alignmentConfig as IAlignmentConfig
-      }
-      densityType={metricsData?.config?.chart.densityType as DensityOptions}
-      selectedMetricsData={metricsData?.config?.select as ISelectConfig}
-      tableRowHeight={metricsData?.config?.table?.rowHeight as RowHeightSize}
-      sortFields={metricsData?.config?.table?.sortFields!}
-      hiddenMetrics={metricsData?.config?.table?.hiddenMetrics!}
-      hiddenColumns={metricsData?.config?.table?.hiddenColumns!}
-      groupingSelectOptions={
-        metricsData?.groupingSelectOptions as IGroupingSelectOption[]
-      }
-      projectsDataMetrics={
-        projectsData?.metrics as IProjectParamsMetrics['metric']
-      }
-      requestIsPending={metricsData?.requestIsPending as boolean}
-      resizeMode={metricsData?.config?.table?.resizeMode as ResizeModeEnum}
-      columnsWidths={metricsData?.config?.table?.columnsWidths}
-      // methods
-      onChangeTooltip={metricAppModel.onChangeTooltip}
-      onIgnoreOutliersChange={metricAppModel.onIgnoreOutliersChange}
-      onZoomChange={metricAppModel.onZoomChange}
-      onHighlightModeChange={metricAppModel.onHighlightModeChange}
-      onSmoothingChange={metricAppModel.onSmoothingChange}
-      onTableRowHover={metricAppModel.onTableRowHover}
-      onTableRowClick={metricAppModel.onTableRowClick}
-      updateColumnsWidths={metricAppModel.updateColumnsWidths}
-      onAxesScaleTypeChange={metricAppModel.onAxesScaleTypeChange}
-      onAggregationConfigChange={metricAppModel.onAggregationConfigChange}
-      onGroupingSelectChange={metricAppModel.onGroupingSelectChange}
-      onGroupingModeChange={metricAppModel.onGroupingModeChange}
-      onGroupingPaletteChange={metricAppModel.onGroupingPaletteChange}
-      onGroupingReset={metricAppModel.onGroupingReset}
-      onActivePointChange={metricAppModel.onActivePointChange}
-      onGroupingApplyChange={metricAppModel.onGroupingApplyChange}
-      onGroupingPersistenceChange={metricAppModel.onGroupingPersistenceChange}
-      onBookmarkCreate={metricAppModel.onBookmarkCreate}
-      onBookmarkUpdate={metricAppModel.onBookmarkUpdate}
-      onNotificationAdd={metricAppModel.onNotificationAdd}
-      onNotificationDelete={metricAppModel.onNotificationDelete}
-      onResetConfigData={metricAppModel.onResetConfigData}
-      onAlignmentMetricChange={metricAppModel.onAlignmentMetricChange}
-      onAlignmentTypeChange={metricAppModel.onAlignmentTypeChange}
-      onDensityTypeChange={metricAppModel.onDensityTypeChange}
-      onMetricsSelectChange={metricAppModel.onMetricsSelectChange}
-      onSelectRunQueryChange={metricAppModel.onSelectRunQueryChange}
-      onSelectAdvancedQueryChange={metricAppModel.onSelectAdvancedQueryChange}
-      toggleSelectAdvancedMode={metricAppModel.toggleSelectAdvancedMode}
-      onExportTableData={metricAppModel.onExportTableData}
-      onRowHeightChange={metricAppModel.onRowHeightChange}
-      onSortChange={metricAppModel.onSortChange}
-      onSortReset={metricAppModel.onSortReset}
-      onMetricVisibilityChange={metricAppModel.onMetricVisibilityChange}
-      onColumnsOrderChange={metricAppModel.onColumnsOrderChange}
-      onColumnsVisibilityChange={metricAppModel.onColumnsVisibilityChange}
-      onTableDiffShow={metricAppModel.onTableDiffShow}
-      onTableResizeModeChange={metricAppModel.onTableResizeModeChange}
-      // live update
-      liveUpdateConfig={metricsData?.config?.liveUpdate}
-      onLiveUpdateConfigChange={metricAppModel.changeLiveUpdateConfig}
-      onShuffleChange={metricAppModel.onShuffleChange}
-      onSearchQueryCopy={metricAppModel.onSearchQueryCopy}
-    />
+    <ErrorBoundary>
+      <Metrics
+        // refs
+        tableRef={tableRef}
+        chartPanelRef={chartPanelRef}
+        tableElemRef={tableElemRef}
+        chartElemRef={chartElemRef}
+        wrapperElemRef={wrapperElemRef}
+        resizeElemRef={resizeElemRef}
+        // grouping options
+        groupingData={metricsData?.config?.grouping as IGroupingConfig}
+        // chart options
+        panelResizing={panelResizing}
+        lineChartData={metricsData?.lineChartData as ILine[][]}
+        chartTitleData={metricsData?.chartTitleData as IChartTitleData}
+        ignoreOutliers={metricsData?.config?.chart?.ignoreOutliers as boolean}
+        tableData={metricsData?.tableData as IMetricTableRowData[]}
+        tableColumns={metricsData?.tableColumns as ITableColumn[]}
+        aggregatedData={metricsData?.aggregatedData as IAggregatedData[]}
+        zoom={metricsData?.config?.chart?.zoom as IChartZoom}
+        curveInterpolation={
+          metricsData?.config?.chart.curveInterpolation as CurveEnum
+        }
+        highlightMode={
+          metricsData?.config?.chart.highlightMode as HighlightEnum
+        }
+        axesScaleType={
+          metricsData?.config?.chart.axesScaleType as IAxesScaleState
+        }
+        smoothingAlgorithm={
+          metricsData?.config?.chart
+            .smoothingAlgorithm as SmoothingAlgorithmEnum
+        }
+        smoothingFactor={metricsData?.config?.chart?.smoothingFactor as number}
+        focusedState={metricsData?.config?.chart?.focusedState as IFocusedState}
+        notifyData={
+          metricsData?.notifyData as IMetricAppModelState['notifyData']
+        }
+        tooltip={metricsData?.config?.chart?.tooltip as IPanelTooltip}
+        aggregationConfig={
+          metricsData?.config?.chart?.aggregationConfig as IAggregationConfig
+        }
+        alignmentConfig={
+          metricsData?.config?.chart?.alignmentConfig as IAlignmentConfig
+        }
+        densityType={metricsData?.config?.chart.densityType as DensityOptions}
+        selectedMetricsData={metricsData?.config?.select as ISelectConfig}
+        tableRowHeight={metricsData?.config?.table?.rowHeight as RowHeightSize}
+        sortFields={metricsData?.config?.table?.sortFields!}
+        hiddenMetrics={metricsData?.config?.table?.hiddenMetrics!}
+        hiddenColumns={metricsData?.config?.table?.hiddenColumns!}
+        groupingSelectOptions={
+          metricsData?.groupingSelectOptions as IGroupingSelectOption[]
+        }
+        projectsDataMetrics={
+          projectsData?.metrics as IProjectParamsMetrics['metric']
+        }
+        requestIsPending={metricsData?.requestIsPending as boolean}
+        resizeMode={metricsData?.config?.table?.resizeMode as ResizeModeEnum}
+        columnsWidths={metricsData?.config?.table?.columnsWidths}
+        // methods
+        onChangeTooltip={metricAppModel.onChangeTooltip}
+        onIgnoreOutliersChange={metricAppModel.onIgnoreOutliersChange}
+        onZoomChange={metricAppModel.onZoomChange}
+        onHighlightModeChange={metricAppModel.onHighlightModeChange}
+        onSmoothingChange={metricAppModel.onSmoothingChange}
+        onTableRowHover={metricAppModel.onTableRowHover}
+        onTableRowClick={metricAppModel.onTableRowClick}
+        updateColumnsWidths={metricAppModel.updateColumnsWidths}
+        onAxesScaleTypeChange={metricAppModel.onAxesScaleTypeChange}
+        onAggregationConfigChange={metricAppModel.onAggregationConfigChange}
+        onGroupingSelectChange={metricAppModel.onGroupingSelectChange}
+        onGroupingModeChange={metricAppModel.onGroupingModeChange}
+        onGroupingPaletteChange={metricAppModel.onGroupingPaletteChange}
+        onGroupingReset={metricAppModel.onGroupingReset}
+        onActivePointChange={metricAppModel.onActivePointChange}
+        onGroupingApplyChange={metricAppModel.onGroupingApplyChange}
+        onGroupingPersistenceChange={metricAppModel.onGroupingPersistenceChange}
+        onBookmarkCreate={metricAppModel.onBookmarkCreate}
+        onBookmarkUpdate={metricAppModel.onBookmarkUpdate}
+        onNotificationAdd={metricAppModel.onNotificationAdd}
+        onNotificationDelete={metricAppModel.onNotificationDelete}
+        onResetConfigData={metricAppModel.onResetConfigData}
+        onAlignmentMetricChange={metricAppModel.onAlignmentMetricChange}
+        onAlignmentTypeChange={metricAppModel.onAlignmentTypeChange}
+        onDensityTypeChange={metricAppModel.onDensityTypeChange}
+        onMetricsSelectChange={metricAppModel.onMetricsSelectChange}
+        onSelectRunQueryChange={metricAppModel.onSelectRunQueryChange}
+        onSelectAdvancedQueryChange={metricAppModel.onSelectAdvancedQueryChange}
+        toggleSelectAdvancedMode={metricAppModel.toggleSelectAdvancedMode}
+        onExportTableData={metricAppModel.onExportTableData}
+        onRowHeightChange={metricAppModel.onRowHeightChange}
+        onSortChange={metricAppModel.onSortChange}
+        onSortReset={metricAppModel.onSortReset}
+        onMetricVisibilityChange={metricAppModel.onMetricVisibilityChange}
+        onColumnsOrderChange={metricAppModel.onColumnsOrderChange}
+        onColumnsVisibilityChange={metricAppModel.onColumnsVisibilityChange}
+        onTableDiffShow={metricAppModel.onTableDiffShow}
+        onTableResizeModeChange={metricAppModel.onTableResizeModeChange}
+        // live update
+        liveUpdateConfig={metricsData?.config?.liveUpdate}
+        onLiveUpdateConfigChange={metricAppModel.changeLiveUpdateConfig}
+        onShuffleChange={metricAppModel.onShuffleChange}
+        onSearchQueryCopy={metricAppModel.onSearchQueryCopy}
+      />
+    </ErrorBoundary>
   );
 }
 

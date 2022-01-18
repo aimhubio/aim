@@ -8,6 +8,7 @@ import TableSortIcons from 'components/Table/TableSortIcons';
 import { Badge, Button, Icon } from 'components/kit';
 import ControlPopover from 'components/ControlPopover/ControlPopover';
 import JsonViewPopover from 'components/kit/JsonViewPopover';
+import ErrorBoundary from 'components/ErrorBoundary/ErrorBoundary';
 
 import COLORS from 'config/colors/colors';
 import { PathEnum } from 'config/enums/routesEnum';
@@ -390,38 +391,42 @@ function metricsTableRowRenderer(
       } else if (col === 'groups') {
         row.groups = {
           content: (
-            <div className='Table__groupsColumn__cell'>
-              {Object.keys(rowData[col]).map((item) => {
-                const value: string | { [key: string]: unknown } =
-                  rowData[col][item];
-                return typeof value === 'object' ? (
-                  <ControlPopover
-                    key={contextToString(value)}
-                    title={item}
-                    anchorOrigin={{
-                      vertical: 'bottom',
-                      horizontal: 'left',
-                    }}
-                    transformOrigin={{
-                      vertical: 'top',
-                      horizontal: 'left',
-                    }}
-                    anchor={({ onAnchorClick }) => (
-                      <Tooltip title={(contextToString(value) as string) || ''}>
-                        <span onClick={onAnchorClick}>
-                          {contextToString(value)}
-                        </span>
-                      </Tooltip>
-                    )}
-                    component={<JsonViewPopover json={value} />}
-                  />
-                ) : (
-                  <Tooltip key={item} title={value || ''}>
-                    <span>{formatValue(value)}</span>
-                  </Tooltip>
-                );
-              })}
-            </div>
+            <ErrorBoundary>
+              <div className='Table__groupsColumn__cell'>
+                {Object.keys(rowData[col]).map((item) => {
+                  const value: string | { [key: string]: unknown } =
+                    rowData[col][item];
+                  return typeof value === 'object' ? (
+                    <ControlPopover
+                      key={contextToString(value)}
+                      title={item}
+                      anchorOrigin={{
+                        vertical: 'bottom',
+                        horizontal: 'left',
+                      }}
+                      transformOrigin={{
+                        vertical: 'top',
+                        horizontal: 'left',
+                      }}
+                      anchor={({ onAnchorClick }) => (
+                        <Tooltip
+                          title={(contextToString(value) as string) || ''}
+                        >
+                          <span onClick={onAnchorClick}>
+                            {contextToString(value)}
+                          </span>
+                        </Tooltip>
+                      )}
+                      component={<JsonViewPopover json={value} />}
+                    />
+                  ) : (
+                    <Tooltip key={item} title={value || ''}>
+                      <span>{formatValue(value)}</span>
+                    </Tooltip>
+                  );
+                })}
+              </div>
+            </ErrorBoundary>
           ),
         };
       } else if (['step', 'epoch'].includes(col)) {

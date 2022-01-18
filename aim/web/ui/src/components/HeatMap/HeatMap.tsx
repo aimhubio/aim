@@ -153,8 +153,8 @@ function HeatMap({
     }
 
     return (
-      <ErrorBoundary>
-        <div className='CalendarHeatmap__cell__wrapper' key={index}>
+      <ErrorBoundary key={index}>
+        <div className='CalendarHeatmap__cell__wrapper'>
           {+endDate < +indexToDate(index) ? (
             <div className='CalendarHeatmap__cell CalendarHeatmap__cell--dummy' />
           ) : (
