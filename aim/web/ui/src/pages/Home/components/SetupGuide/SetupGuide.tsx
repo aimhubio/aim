@@ -64,7 +64,7 @@ for step in range(10):
         <div className='SetupGuide__resources__item'>
           <a
             target='_blank'
-            href='https://colab.research.google.com/drive/1Kq3-6x0dd7gAVCsiaClJf1TfKnW-d64f?usp=sharing'
+            href='https://colab.research.google.com/drive/14rIAjpEyklf5fSMiRbyZs6iYG7IVibcI?usp=sharing'
             rel='noreferrer'
             className='SetupGuide__resources__item'
             onClick={() => trackEvent('[Homepage] go to colab notebook')}
