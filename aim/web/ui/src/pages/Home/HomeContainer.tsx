@@ -9,14 +9,12 @@ import homeAppModel from 'services/models/home/homeAppModel';
 import Home from './Home';
 
 function HomeContainer(): React.FunctionComponentElement<React.ReactNode> {
-  const activityRequestRef = React.useRef(homeAppModel.getActivityData());
   const homeData = useModel(homeAppModel);
 
   React.useEffect(() => {
     homeAppModel.initialize();
-    activityRequestRef.current.call();
     return () => {
-      activityRequestRef.current.abort();
+      homeAppModel.destroy();
     };
   }, []);
 
@@ -27,7 +25,7 @@ function HomeContainer(): React.FunctionComponentElement<React.ReactNode> {
         activityData={homeData.activityData}
         notifyData={homeData.notifyData}
         askEmailSent={homeData.askEmailSent}
-        onNotificationDelete={homeAppModel.onNotificationDelete}
+        onNotificationDelete={homeAppModel.onHomeNotificationDelete}
       />
     </ErrorBoundary>
   );

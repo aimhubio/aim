@@ -1,12 +1,18 @@
 import projectsService from 'services/api/projects/projectsService';
 
-import { INotification } from 'types/components/NotificationContainer/NotificationContainer';
-
+import exceptionHandler from 'utils/app/exceptionHandler';
+import onNotificationAdd from 'utils/app/onNotificationAdd';
+import onNotificationDelete from 'utils/app/onNotificationDelete';
 import { getItem, setItem } from 'utils/storage';
 
 import createModel from '../model';
 
 const model = createModel<any>({});
+
+let activityRequestRef: {
+  call: (exceptionHandler: (detail: any) => void) => Promise<unknown>;
+  abort: () => void;
+};
 
 function getActivityData() {
   const { call, abort } = projectsService.fetchActivityData();
@@ -33,17 +39,23 @@ function onSendEmail(data: object): Promise<any> {
     .then((data) => {
       if (data.ok) {
         onNotificationAdd({
-          severity: 'success',
-          message: 'Email Successfully sent',
-          id: Date.now(),
+          notification: {
+            severity: 'success',
+            message: 'Email Successfully sent',
+            id: Date.now(),
+          },
+          model,
         });
         model.setState({ askEmailSent: true });
         setItem('askEmailSent', true);
       } else {
         onNotificationAdd({
-          severity: 'error',
-          message: 'Please enter valid email',
-          id: Date.now(),
+          notification: {
+            severity: 'error',
+            message: 'Please enter valid email',
+            id: Date.now(),
+          },
+          model,
         });
       }
       return data;
@@ -51,31 +63,44 @@ function onSendEmail(data: object): Promise<any> {
 }
 function initialize() {
   model.init();
+  activityRequestRef = getActivityData();
+  try {
+    activityRequestRef.call((detail) => {
+      exceptionHandler({ detail, model });
+    });
+  } catch (err: any) {
+    onNotificationAdd({
+      notification: {
+        message: err.message,
+        severity: 'error',
+        id: Date.now(),
+      },
+      model,
+    });
+  }
   const isAskEmailSent: boolean = getItem('askEmailSent') === 'true';
   model.setState({ askEmailSent: isAskEmailSent });
 }
 
-function onNotificationDelete(id: number) {
-  let notifyData: INotification[] | [] = model.getState()?.notifyData || [];
-  notifyData = [...notifyData].filter((i) => i.id !== id);
-  model.setState({ notifyData });
+function onHomeNotificationDelete(id: number) {
+  onNotificationDelete({
+    model,
+    id,
+  });
 }
 
-function onNotificationAdd(notification: INotification) {
-  let notifyData: INotification[] | [] = model.getState()?.notifyData || [];
-  notifyData = [...notifyData, notification];
-  model.setState({ notifyData });
-  setTimeout(() => {
-    onNotificationDelete(notification.id);
-  }, 3000);
+function destroy() {
+  model.destroy();
+  activityRequestRef.abort();
 }
 
 const homeAppModel = {
   ...model,
+  destroy,
   initialize,
   getActivityData,
   onSendEmail,
-  onNotificationDelete,
+  onHomeNotificationDelete,
 };
 
 export default homeAppModel;
