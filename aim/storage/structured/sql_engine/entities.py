@@ -1,4 +1,4 @@
-from typing import Collection, Union
+from typing import Collection, Union, List, Optional
 from sqlalchemy.orm import joinedload
 
 from aim.storage.types import SafeNone
@@ -59,6 +59,15 @@ class ModelMappedRun(IRun, metaclass=ModelMappedClassMeta):
         return ModelMappedRun(run, session)
 
     @classmethod
+    def delete_run(cls, runhash: str, session) -> bool:
+        try:
+            rows_affected = session.query(RunModel).filter(RunModel.hash == runhash).delete()
+            session.flush()
+        except Exception:
+            return False
+        return rows_affected > 0
+
+    @classmethod
     def find(cls, _id: str, **kwargs) -> Union[IRun, SafeNone]:
         session = kwargs.get('session')
         if not session:
@@ -70,6 +79,15 @@ class ModelMappedRun(IRun, metaclass=ModelMappedClassMeta):
         if model_obj:
             return ModelMappedRun.from_model(model_obj, session)
         return SafeNone()
+
+    @classmethod
+    def find_many(cls, ids: List[str], **kwargs) -> List[IRun]:
+        session = kwargs.get('session')
+        if not session:
+            return []
+        q = session.query(RunModel).filter(RunModel.hash.in_(ids))
+
+        return ModelMappedRunCollection(session, query=q)
 
     @classmethod
     def all(cls, **kwargs) -> Collection[IRun]:
@@ -95,11 +113,15 @@ class ModelMappedRun(IRun, metaclass=ModelMappedClassMeta):
         return ModelMappedRunCollection(session, query=q)
 
     @property
-    def experiment(self) -> Union[IExperiment, SafeNone]:
+    def experiment_obj(self) -> Optional[IExperiment]:
         if self._model and self._model.experiment:
             return ModelMappedExperiment(self._model.experiment, self._session)
         else:
-            return SafeNone()
+            return None
+
+    @property
+    def experiment(self) -> Union[str, SafeNone]:
+        return self.experiment_obj.name if self.experiment_obj else SafeNone()
 
     @experiment.setter
     def experiment(self, value: str):
@@ -116,14 +138,18 @@ class ModelMappedRun(IRun, metaclass=ModelMappedClassMeta):
         session.flush()
 
     @property
-    def tags(self) -> TagCollection:
+    def tags_obj(self) -> TagCollection:
         if self._model:
             return ModelMappedTagCollection(self._session,
                                             collection=[t for t in self._model.tags if t.is_archived is not True])
         else:
             return []
 
-    def add_tag(self, value: str) -> ITag:
+    @property
+    def tags(self) -> List[str]:
+        return [tag.name for tag in self.tags_obj]
+
+    def add_tag(self, value: str) -> None:
         session = self._session
         tag = session.query(TagModel).filter(TagModel.name == value).first()
         if not tag:
@@ -132,13 +158,12 @@ class ModelMappedRun(IRun, metaclass=ModelMappedClassMeta):
         self._model.tags.append(tag)
         session.add(self._model)
         session.flush()
-        return ModelMappedTag.from_model(tag, session)
 
-    def remove_tag(self, tag_id: str) -> bool:
+    def remove_tag(self, tag_name: str) -> bool:
         session = self._session
         tag_removed = False
         for tag in self._model.tags:
-            if tag.uuid == tag_id:
+            if tag.name == tag_name:
                 self._model.tags.remove(tag)
                 tag_removed = True
                 break

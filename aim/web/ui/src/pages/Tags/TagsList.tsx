@@ -161,7 +161,6 @@ function TagsList({
           isTagDetailOverLayOpened={isTagDetailOverLayOpened}
         />
       )}
-
       {tagInfo && (
         <TagDelete
           modalIsOpen={isDeleteModalOpened}

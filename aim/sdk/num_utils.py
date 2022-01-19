@@ -89,6 +89,9 @@ def is_number(value):
     if is_py_number(value):
         return True
 
+    if is_numpy_array(value):
+        return True
+
     if is_numpy_number(value):
         return True
 

@@ -2,9 +2,26 @@
 
 ## Unreleased
 
-- Ability to display images in original size and align by width (arsengit)
+- Enhance controls states of explorer pages (arsengit)
+- Add trendline options to ScatterPlot (roubkar)
+- Add ability to display images in original size and align by width (arsengit)
+- Add version, docs and slack links to sidebar (arsengit)
 - Enhance AudioPlayer component (arsengit)
 - Recover active tab in run details page after reload (roubkar)
+- Add ability to archive runs by batch (VkoHov)
+- Remote tracking server alpha version (alberttorosyan, mihran113, aramaim)
+- Add ability to change media elements order (VkoHov)
+
+## 3.3.5 Jan 14 2022
+
+- Add non-strict write mode to replace not-yet-supported types with their
+  string representations. (mahnerak)
+- Log pytorch_lightning hyperparameters in non-strict mode. (mahnerak)
+
+## 3.3.4 Jan 10 2022
+
+- Fix issue with WAL files flushing (alberttorosyan)
+- Support for omegaconf configs in pytorch_lightning adapter (devfox-se)
 
 ## 3.3.3 Dec 24 2021
 

@@ -6,6 +6,7 @@ import {
   ITooltipContent,
 } from 'types/services/models/metrics/metricsAppModel';
 
+import { SortFields } from 'utils/getSortedFields';
 export interface IMediaSetProps {
   data: { [key: string]: any };
   orderedMap: { [key: string]: any };
@@ -15,11 +16,12 @@ export interface IMediaSetProps {
   mediaSetKey: number;
   wrapperOffsetHeight: number;
   wrapperOffsetWidth: number;
-  // mediaItemHeight: number;
   syncHoverState?: (args: any) => void;
   focusedState: IFocusedState;
   additionalProperties?: IMediaPanelProps['additionalProperties'];
   tableHeight: IMediaPanelProps['tableHeight'];
   tooltip?: ITooltipContent;
   mediaType: MediaTypeEnum;
+  sortFieldsDict?: { [key: string]: SortField };
+  sortFields?: SortFields;
 }
