@@ -8,8 +8,12 @@
 - Add version, docs and slack links to sidebar (arsengit)
 - Enhance AudioPlayer component (arsengit)
 - Recover active tab in run details page after reload (roubkar)
+- Add ability to archive runs by batch (VkoHov)
 - Remote tracking server alpha version (alberttorosyan, mihran113, aramaim)
 - Add ability to change media elements order (VkoHov)
+- Add ability to hard delete runs (alberttorosyan)
+- Lossy format support for aim.Image (devfox-se)
+- Timezone issues fix for creation and end times (mihran113)
 
 ## 3.3.5 Jan 14 2022
 
