@@ -2,6 +2,9 @@
 
 .SearchInput {
   margin-right: toRem(10px);
+  input {
+    font-size: $text-md;
+  }
   width: 100%;
   .MuiInputLabel-outlined {
     z-index: 1;

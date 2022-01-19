@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 
 import { FilterOptions, MatchTypes, UseTextSearchProps } from './types.d';
 
@@ -15,10 +15,22 @@ function useTextSearch({ rawData, updateData }: UseTextSearchProps) {
     React.useState<FilterOptions>(defaultFilterOption);
 
   React.useEffect(() => {
-    setData(rawData);
-  }, [rawData, filterOptions, setData]);
+    if (filterOptions.appliedRegExp) {
+      const filteredData = filterByCase(
+        filterOptions.searchValue,
+        filterOptions.appliedRegExp,
+        filterOptions.matchType,
+      );
 
-  function filter(search: string, matchType: MatchTypes | null) {
+      setData(filteredData);
+      updateData(filteredData, filterOptions.appliedRegExp);
+    } else {
+      setData(rawData);
+      updateData(rawData, null);
+    }
+  }, [rawData]);
+
+  function search(search: string, matchType: MatchTypes | null) {
     if (!search) {
       setData(rawData);
       updateData(rawData, null);
@@ -52,7 +64,23 @@ function useTextSearch({ rawData, updateData }: UseTextSearchProps) {
       default:
         appliedRegExp = new RegExp(`(${search})`.toLowerCase(), 'gi');
     }
-    const filteredData = data?.filter((item: { text: string }) => {
+
+    const filteredData = filterByCase(search, appliedRegExp, matchType);
+
+    setFilterOptions((fO) => ({
+      ...fO,
+      appliedRegExp,
+    }));
+    setData(filteredData);
+    updateData(filteredData, appliedRegExp);
+  }
+
+  function filterByCase(
+    search: string,
+    appliedRegExp: RegExp | null,
+    matchType: MatchTypes | null,
+  ) {
+    return rawData?.filter((item: { text: string }) => {
       switch (matchType) {
         case MatchTypes.Word:
           if (item.text.search(appliedRegExp!) > -1) {
@@ -84,13 +112,6 @@ function useTextSearch({ rawData, updateData }: UseTextSearchProps) {
           }
       }
     });
-
-    setFilterOptions((fO) => ({
-      ...fO,
-      appliedRegExp,
-    }));
-    setData(filteredData);
-    updateData(filteredData, appliedRegExp);
   }
 
   function clearSearchInputData() {
@@ -98,7 +119,7 @@ function useTextSearch({ rawData, updateData }: UseTextSearchProps) {
   }
 
   function changeSearchInput(value: string) {
-    filter(value, filterOptions.matchType);
+    search(value, filterOptions.matchType);
     setFilterOptions((fO) => ({
       ...fO,
       searchValue: value,
@@ -106,7 +127,7 @@ function useTextSearch({ rawData, updateData }: UseTextSearchProps) {
   }
 
   function changeMatchType(matchType: MatchTypes | null) {
-    filter(filterOptions.searchValue, matchType);
+    search(filterOptions.searchValue, matchType);
     setFilterOptions((fO) => ({
       ...fO,
       matchType,

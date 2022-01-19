@@ -32,7 +32,7 @@ function SearchBar({
       />
       <div className='MatchIcons'>
         <Tooltip title='Match Case'>
-          <div>
+          <div className='MatchButton'>
             <Button
               withOnlyIcon
               color={matchType === MatchTypes.Case ? 'primary' : 'secondary'}
@@ -43,12 +43,12 @@ function SearchBar({
                 );
               }}
             >
-              <Icon name='case-sensitive' />
+              <Icon className='IconButton' name='case-sensitive' />
             </Button>
           </div>
         </Tooltip>
         <Tooltip title='Match Word'>
-          <div>
+          <div className='MatchButton'>
             <Button
               withOnlyIcon
               color={matchType === MatchTypes.Word ? 'primary' : 'secondary'}
@@ -59,12 +59,12 @@ function SearchBar({
                 );
               }}
             >
-              <Icon name='word-match' />
+              <Icon className='IconButton' name='word-match' />
             </Button>
           </div>
         </Tooltip>
         <Tooltip title='Match Regexp'>
-          <div>
+          <div className='MatchButton'>
             <Button
               withOnlyIcon
               color={matchType === MatchTypes.RegExp ? 'primary' : 'secondary'}
@@ -75,7 +75,7 @@ function SearchBar({
                 );
               }}
             >
-              <Icon name='regex' />
+              <Icon className='IconButton' name='regex' />
             </Button>
           </div>
         </Tooltip>

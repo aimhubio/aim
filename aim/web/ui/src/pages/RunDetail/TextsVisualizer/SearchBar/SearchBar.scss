@@ -1,10 +1,22 @@
+@use 'src/styles/abstracts' as *;
+
 .SearchBar {
   display: flex;
   width: 55%;
-  margin-bottom: 25px;
+  margin-bottom: toRem(25px);
   align-items: center;
   .MatchIcons {
     display: flex;
     align-items: baseline;
+
+  }
+  .MatchButton {
+    margin-right: $space-xxs;
+    &:last-child {
+      margin-right: unset;
+    }
+    .Icon__container {
+      font-size: $text-lg;
+    }
   }
 }
