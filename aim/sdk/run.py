@@ -4,6 +4,8 @@ import os
 import datetime
 import json
 import pytz
+import subprocess
+import sys
 
 from collections import defaultdict
 from copy import deepcopy
@@ -27,7 +29,6 @@ from aim.ext.cleanup import AutoClean
 from typing import Any, Dict, Iterator, Optional, Tuple, Union
 from typing import TYPE_CHECKING
 
-
 if TYPE_CHECKING:
     from pandas import DataFrame
 
@@ -39,7 +40,6 @@ if TYPE_CHECKING:
     from aim.sdk.sequences.text_sequence import Texts
     from aim.sdk.sequence_collection import SequenceCollection
     from aim.sdk.repo import Repo
-
 
 logger = logging.getLogger(__name__)
 
@@ -269,6 +269,55 @@ class Run(StructuredRunMixin):
         ).subtree('seqs').subtree('chunks').subtree(self.hash)
 
         if not read_only:
+            # Collect installed packages
+            import pkg_resources
+            packages = {i.key: i.version for i in pkg_resources.working_set}
+
+            # env_mask patterns are filtered from env_vars
+            env_mask = ('sec', 'key', 'tok', 'pwd', 'pass')
+            env_vars = {
+                k: v for k, v in os.environ.items() if next(
+                    (m for m in env_mask if m in k.lower()), None
+                ) is None
+            }
+
+            # Get git info (if applicable)
+            git_info = {}
+            r = subprocess.run(['git', 'rev-parse', '--is-inside-work-tree'], capture_output=True, check=False)
+            output = r.stdout.decode('utf-8').strip()
+            if output == 'true':
+                cmds = [
+                    'git rev-parse --abbrev-ref HEAD',
+                    'git log --pretty=format:%h/%ad/%an --date=iso-strict -1',
+                    'git config --get remote.origin.url'
+                ]
+                results = []
+                for cmd in cmds:
+                    r = subprocess.run(cmd.split(), capture_output=True, check=False)
+                    output = r.stdout.decode('utf-8').strip()
+                    results.append(output)
+
+                branch_name = results[0]
+                commit_hash, commit_timestamp, commit_author = results[1].split('/')
+                git_remote_url = results[2]
+
+                git_info.update({
+                    'branch': branch_name,
+                    'remote_origin_url': git_remote_url,
+                    'commit': {
+                        'hash': commit_hash,
+                        'timestamp': commit_timestamp,
+                        'author': commit_author
+                    }
+                })
+
+            self.__setitem__("__system_packages", packages)
+            self.__setitem__("__system_env_variables", env_vars)
+            self.__setitem__("__system_executable", sys.executable)
+            self.__setitem__("__system_arguments", sys.argv)
+            if git_info:
+                self.__setitem__("__system_git", git_info)
+
             try:
                 self.meta_run_attrs_tree.first()
             except (KeyError, StopIteration):
