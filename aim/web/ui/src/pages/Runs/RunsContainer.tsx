@@ -32,8 +32,7 @@ function RunsContainer(): React.FunctionComponentElement<React.ReactNode> {
   }, [runsData?.data]);
 
   React.useEffect(() => {
-    const runsRequestRef = runsAppModel.initialize();
-    runsRequestRef.call();
+    runsAppModel.initialize();
     analytics.pageView('[RunsExplorer]');
     const unListenHistory = history.listen((location) => {
       if (!!runsData?.config!) {
@@ -44,7 +43,6 @@ function RunsContainer(): React.FunctionComponentElement<React.ReactNode> {
     });
     return () => {
       unListenHistory();
-      runsRequestRef.abort();
       runsAppModel.destroy();
     };
   }, []);

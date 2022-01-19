@@ -1935,10 +1935,7 @@ function createAppModel(appConfig: IAppInitialConfig) {
       };
       let liveUpdateInstance: LiveUpdateService | null;
 
-      function initialize(appId: string = ''): {
-        call: () => Promise<void>;
-        abort: () => void;
-      } {
+      function initialize(appId: string = '') {
         model.init();
         const state: Partial<IAppModelState> = {};
         if (grouping) {
@@ -1971,8 +1968,20 @@ function createAppModel(appConfig: IAppInitialConfig) {
             liveUpdateState.delay,
           );
         }
-
-        return getRunsData();
+        try {
+          getRunsData().call((detail) => {
+            exceptionHandler({ detail, model });
+          });
+        } catch (err: any) {
+          onNotificationAdd({
+            model,
+            notification: {
+              id: Date.now(),
+              message: err.message,
+              severity: 'error',
+            },
+          });
+        }
       }
 
       function abortRequest(): void {
@@ -1995,7 +2004,7 @@ function createAppModel(appConfig: IAppInitialConfig) {
         shouldUrlUpdate?: boolean,
         isInitial = true,
       ): {
-        call: () => Promise<void>;
+        call: (exceptionHandler: (detail: any) => void) => Promise<any>;
         abort: () => void;
       } {
         if (runsRequestRef) {
@@ -2089,9 +2098,14 @@ function createAppModel(appConfig: IAppInitialConfig) {
               }, 0);
             } catch (ex: Error | any) {
               if (ex.name === 'AbortError') {
-                // Abort Error
-              } else {
-                console.log('Unhandled error: ', ex);
+                onNotificationAdd({
+                  notification: {
+                    id: Date.now(),
+                    severity: 'error',
+                    message: `${ex.name}, ${ex.message}`,
+                  },
+                  model,
+                });
               }
             }
           },
@@ -2492,7 +2506,9 @@ function createAppModel(appConfig: IAppInitialConfig) {
 
       function getLastRunsData(
         lastRow: any,
-      ): { call: () => Promise<void>; abort: () => void } | undefined {
+      ):
+        | { call: (exception: any) => Promise<void>; abort: () => void }
+        | undefined {
         const modelData: Partial<IRunsAppModelState> = model.getState();
         const infiniteIsPending = modelData?.infiniteIsPending;
         const isLatest = modelData?.config.pagination.isLatest;
@@ -2621,6 +2637,7 @@ function createAppModel(appConfig: IAppInitialConfig) {
       }
 
       function destroy(): void {
+        runsRequestRef.abort();
         liveUpdateInstance?.clear();
         liveUpdateInstance = null; //@TODO check is this need or not
       }
