@@ -71,7 +71,9 @@ class AimLogger(object):
                     if isinstance(params, Container):
                         params = OmegaConf.to_container(params, resolve=True)
 
-                self.experiment['hparams'] = params
+                hparams = self.experiment.meta_run_attrs_tree.subtree('hparams')
+                for key, value in params.items():
+                    hparams.set(key, value, strict=False)
 
             @rank_zero_only
             def log_metrics(self, metrics: Dict[str, float],

@@ -37,29 +37,32 @@ export function getDataAsMediaSetNestedObject<M extends State>({
     const orderedMap = {};
 
     data.forEach((group: any) => {
-      const path = groupFields?.reduce((acc: string[], field: string) => {
-        const value = getValue(group.data[0], field);
-        _.set(
-          orderedMap,
-          acc.concat(['ordering']),
-          new Set([
-            ...(getValue(orderedMap, acc.concat(['ordering'])) || []),
-            value,
-          ]),
-        );
-        _.set(
-          orderedMap,
-          acc.concat(['key']),
-          getValueByField(groupingSelectOptions, field),
-        );
-        acc.push(
-          `${getValueByField(groupingSelectOptions, field)} = ${formatValue(
-            value,
-          )}`,
-        );
-        return acc;
-      }, []);
-
+      const path = groupFields?.reduce(
+        (acc: string[], field: string, index: number) => {
+          const value = _.get(group.data[0], field);
+          _.set(
+            orderedMap,
+            acc.concat(['ordering']),
+            new Set([
+              ...(_.get(orderedMap, acc.concat(['ordering'])) || []),
+              value,
+            ]),
+          );
+          _.set(
+            orderedMap,
+            acc.concat(['key']),
+            getValueByField(groupingSelectOptions, field),
+          );
+          _.set(orderedMap, acc.concat(['orderKey']), field);
+          acc.push(
+            `${getValueByField(groupingSelectOptions, field)} = ${formatValue(
+              value,
+            )}`,
+          );
+          return acc;
+        },
+        [],
+      );
       _.set(
         mediaSetData,
         path,

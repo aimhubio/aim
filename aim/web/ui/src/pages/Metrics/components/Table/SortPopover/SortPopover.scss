@@ -2,16 +2,51 @@
 
 .SortPopover__container {
   width: 21rem;
-  max-height: 20rem;
-  //height: 20rem;
-  padding: 0.5em;
-}
+  max-height: 21rem;
+  padding: 0.5rem 1rem;
+  width: toRem(392px);
 
-.SortPopover__chip__container {
-  margin: 0.5rem 0;
-  overflow: auto;
-  max-height: 11.375rem;
-  border-bottom: $border-main;
+  &__optionList {
+    max-height: 12rem;
+    overflow: auto;
+  }
+  &__label {
+    margin-bottom: $space-xxxs;
+    display: block;
+  }
+  &__selectBox {
+    margin-bottom: 1rem;
+    &__listBox {
+      .MuiAutocomplete-option {
+        &[aria-selected='true'] {
+          background-color: transparent;
+          .SortPopover__select__item {
+            color: $primary-color;
+          }
+        }
+        &[data-select='true'] {
+          background-color: transparent;
+        }
+      }
+      .SortPopover__select__item {
+        &.isDisabled {
+          color: $primary-color-50 !important;
+          .MuiCheckbox-colorPrimary.Mui-disabled {
+            color: $primary-color-50;
+          }
+        }
+      }
+    }
+
+    &__selectInput {
+      .MuiInputBase-root .MuiInputBase-input {
+        color: $pico-70;
+      }
+    }
+  }
+  &__chipContainer {
+    margin: 0.5rem 0 1rem 0;
+  }
 }
 
 .SortPopover__chip {
@@ -42,6 +77,9 @@
   cursor: pointer;
   font-size: $text-sm;
   margin-right: 0.875rem;
+  &.disabled {
+    display: none;
+  }
 }
 
 .TooltipContentPopover__toggle__button {
@@ -64,6 +102,10 @@
   margin-top: 0.5em;
   display: flex;
   justify-content: center;
+  color: $error-color;
+  border-top: $border-main;
+  padding-top: 0.5rem;
+
   button {
     background-color: $error-color;
     color: #fff;

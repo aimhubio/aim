@@ -48,6 +48,7 @@ from aim.web.api.runs.pydantic_models import (
     StructuredRunAddTagIn,
     StructuredRunAddTagOut,
     StructuredRunRemoveTagOut,
+    StructuredRunsArchivedOut,
     URIBatchIn,
 )
 from aim.web.api.utils import object_factory
@@ -459,8 +460,8 @@ async def add_run_tag_api(run_id: str, tag_in: StructuredRunAddTagIn, factory=De
         if not run:
             raise HTTPException(status_code=404)
 
-        tag = run.add_tag(tag_in.tag_name)
-
+        run.add_tag(tag_in.tag_name)
+        tag = next(iter(factory.search_tags(tag_in.tag_name)))
     return {
         'id': run.hash,
         'tag_id': tag.uuid,
@@ -472,10 +473,11 @@ async def add_run_tag_api(run_id: str, tag_in: StructuredRunAddTagIn, factory=De
 async def remove_run_tag_api(run_id: str, tag_id: str, factory=Depends(object_factory)):
     with factory:
         run = factory.find_run(run_id)
-        if not run:
+        tag = factory.find_tag(tag_id)
+        if not (run or tag):
             raise HTTPException(status_code=404)
 
-        removed = run.remove_tag(tag_id)
+        removed = run.remove_tag(tag.name)
 
     return {
         'id': run.hash,
@@ -509,6 +511,22 @@ async def delete_runs_batch_api(runs_batch: RunsBatchIn):
     if not success:
         raise HTTPException(400, detail={'message': 'Error while deleting runs.',
                                          'remaining_runs': remaining_runs})
+
+    return {
+        'status': 'OK'
+    }
+
+
+@runs_router.post('/archive-batch/', response_model=StructuredRunsArchivedOut)
+async def archive_runs_batch_api(runs_batch: RunsBatchIn, archive: Optional[bool] = True,
+                                 factory=Depends(object_factory)):
+    with factory:
+        runs = factory.find_runs(runs_batch)
+        if not runs:
+            raise HTTPException(status_code=404)
+
+        for run in runs:
+            run.archived = archive
 
     return {
         'status': 'OK'

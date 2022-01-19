@@ -3,6 +3,7 @@ import { ImageRenderingEnum } from 'config/enums/imageEnums';
 import { IPanelTooltip } from 'services/models/metrics/metricsAppModel';
 import { IGroupingSelectOption } from 'services/models/imagesExplore/imagesExploreAppModel';
 
+import { SortField } from 'types/services/models/metrics/metricsAppModel';
 import { IImagesExploreAppConfig } from 'types/services/models/imagesExplore/imagesExploreAppModel';
 
 export interface IControlProps {
@@ -17,4 +18,7 @@ export interface IControlProps {
     value: { value: string; label: string } | null,
   ) => void;
   onStackingToggle: () => void;
+  onImagesSortReset: () => void;
+  onImagesSortChange: any;
+  sortFields: SortField[];
 }
