@@ -24,7 +24,6 @@ class RemoteTrackingServiceStub(object):
                 request_serializer=remote__tracking__pb2.ReleaseResourceRequest.SerializeToString,
                 response_deserializer=remote__tracking__pb2.ReleaseResourceResponse.FromString,
                 )
-<<<<<<< HEAD
 =======
         self.run_instruction_no_stream = channel.unary_unary(
                 '/RemoteTrackingService/run_instruction_no_stream',
