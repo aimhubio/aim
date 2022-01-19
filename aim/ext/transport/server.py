@@ -7,7 +7,7 @@ import grpc
 import aim.ext.transport.remote_tracking_pb2 as rpc_messages
 import aim.ext.transport.remote_tracking_pb2_grpc as remote_tracking_pb2_grpc
 
-from aim.ext.transport.message_utils import pack, pack_stream, unpack_stream, build_exception, ResourceObject
+from aim.ext.transport.message_utils import pack_stream, unpack_stream, build_exception, ResourceObject
 from aim.ext.transport.handlers import get_tree, get_structured_run
 from aim.storage.treeutils import encode_tree, decode_tree
 

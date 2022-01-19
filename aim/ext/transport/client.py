@@ -5,7 +5,7 @@ import grpc
 import aim.ext.transport.remote_tracking_pb2 as rpc_messages
 import aim.ext.transport.remote_tracking_pb2_grpc as remote_tracking_pb2_grpc
 
-from aim.ext.transport.message_utils import pack_stream, unpack_stream, unpack_response_data, raise_exception
+from aim.ext.transport.message_utils import pack_stream, unpack_stream, raise_exception
 from aim.ext.transport.config import AIM_CLIENT_SSL_CERTIFICATES_FILE
 from aim.storage.treeutils import encode_tree, decode_tree
 

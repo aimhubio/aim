@@ -1,4 +1,4 @@
-from aim import Run, Repo
+from aim import Run
 from aim.sdk.objects.image import convert_to_aim_image_list
 
 import torch
@@ -7,8 +7,7 @@ import torchvision
 import torchvision.transforms as transforms
 
 # Initialize a new Run
-aim_repo = Repo.from_path('remote://localhost:53800')
-aim_run = Run(repo=aim_repo)
+aim_run = Run()
 
 # Device configuration
 device = torch.device('cpu')
