@@ -6,11 +6,10 @@ import classNames from 'classnames';
 import Table from 'components/Table/Table';
 import { Button, Icon, Modal, Text } from 'components/kit';
 
-function ArchiveModal({
+function DeleteModal({
   opened,
   onClose,
   selectedRows,
-  archiveMode,
   onRowSelect,
 }: any): React.FunctionComponentElement<React.ReactNode> {
   const [data, setData] = React.useState<any[]>([]);
@@ -72,10 +71,11 @@ function ArchiveModal({
   ];
 
   React.useEffect(() => {
-    const archivedList: any[] = [];
-    const unarchivedList: any[] = [];
+    const finishedList: any[] = [];
+    const inProgressList: any[] = [];
     const runHashList: string[] = [];
     Object.values(selectedRows || {}).forEach((selectedRow: any) => {
+      console.log(selectedRow);
       if (!runHashList.includes(selectedRow.runHash)) {
         runHashList.push(selectedRow.runHash);
         const rowData = {
@@ -87,25 +87,23 @@ function ArchiveModal({
           runHash: selectedRow.runHash,
           selectKey: selectedRow.selectKey,
           isInProgress: !selectedRow?.end_time,
-          isDisabled:
-            (archiveMode && selectedRow.archived) ||
-            (!archiveMode && !selectedRow.archived),
+          isDisabled: !selectedRow?.end_time,
         };
         if (selectedRow.archived) {
-          unarchivedList.push(rowData);
+          inProgressList.push(rowData);
         } else {
-          archivedList.push(rowData);
+          finishedList.push(rowData);
         }
       }
     });
 
-    setData(archiveMode ? archivedList : unarchivedList);
-    setDisabledData(!archiveMode ? archivedList : unarchivedList);
+    setData(finishedList);
+    setDisabledData(inProgressList);
     tableRef.current?.updateData?.({
-      newData: archiveMode ? archivedList : unarchivedList,
+      newData: finishedList,
     });
     disabledTableRef.current?.updateData?.({
-      newData: !archiveMode ? archivedList : unarchivedList,
+      newData: inProgressList,
     });
   }, [selectedRows]);
 
@@ -116,22 +114,16 @@ function ArchiveModal({
         onClose={onClose}
         onOk={() => {}}
         cancelButtonText='Cancel'
-        okButtonText={archiveMode ? 'Archive' : 'Unarchive'}
-        title={`Do you really want to ${
-          archiveMode ? 'archive' : 'unarchive'
-        }?`}
-        modalType='warning'
+        okButtonText='Delete'
+        title='Do you really want to delete?'
+        modalType='error'
       >
         <div className='ActionModal'>
           <Text size={14} weight={400} className='ActionModal__infoText'>
-            Archived runs will not appear in search both on Dashboard and
-            Explore. But you will still be able to unarchive the run at any
-            time.
+            Ones you delete a run, there is no going back. Please be certain.
           </Text>
           <Text size={12} weight={500} className='ActionModal__tableTitle'>
-            {`${Object.values(data).length} Selected runs you can ${
-              archiveMode ? 'archive' : 'unarchive'
-            }`}
+            {`${Object.values(data).length} Selected runs you can delete`}
           </Text>
           {!_.isEmpty(data) && (
             <Table
@@ -150,9 +142,9 @@ function ArchiveModal({
           )}
           {!_.isEmpty(disabledData) && (
             <Text size={12} weight={500} className='ActionModal__tableTitle'>
-              {`${Object.values(disabledData).length} Selected runs you can ${
-                !archiveMode ? 'archive' : 'unarchive'
-              }`}
+              {`${
+                Object.values(disabledData).length
+              } Selected Runs are In progress. You can’t delete them`}
             </Text>
           )}
           {!_.isEmpty(disabledData) && (
@@ -178,4 +170,4 @@ function ArchiveModal({
   );
 }
 
-export default React.memo(ArchiveModal);
+export default React.memo(DeleteModal);

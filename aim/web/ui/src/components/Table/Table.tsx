@@ -25,6 +25,7 @@ import TableLoader from '../TableLoader/TableLoader';
 import CustomTable from '../CustomTable/Table';
 
 import ArchiveModal from './ArchiveModal';
+import DeleteModal from './DeleteModal';
 import AutoResizer from './AutoResizer';
 import BaseTable from './BaseTable';
 
@@ -93,6 +94,8 @@ const Table = React.forwardRef(function Table(
   const [columnsData, setColumnsData] = React.useState(columns ?? []);
   const [expanded, setExpanded] = React.useState({});
   const [isOpenDeleteSelectedPopup, setIsOpenDeleteSelectedPopup] =
+    React.useState(false);
+  const [isOpenUnarchiveSelectedPopup, setIsOpenUnarchiveSelectedPopup] =
     React.useState(false);
   const [isOpenArchiveSelectedPopup, setIsOpenArchiveSelectedPopup] =
     React.useState(false);
@@ -430,8 +433,13 @@ const Table = React.forwardRef(function Table(
   function onToggleDeletePopup() {
     setIsOpenDeleteSelectedPopup(!isOpenDeleteSelectedPopup);
   }
+
   function onToggleArchivePopup() {
     setIsOpenArchiveSelectedPopup(!isOpenArchiveSelectedPopup);
+  }
+
+  function onToggleUnarchivePopup() {
+    setIsOpenUnarchiveSelectedPopup(!isOpenUnarchiveSelectedPopup);
   }
 
   React.useEffect(() => {
@@ -724,6 +732,23 @@ const Table = React.forwardRef(function Table(
                   {Object.keys(selectedRows).length} Selected
                 </Text>
               </div>
+              {tableBulkActionsVisibility.delete && (
+                <div className='selectedRowActionsContainer__selectedItemsDelete'>
+                  <Button
+                    color='secondary'
+                    type='text'
+                    onClick={onToggleDeletePopup}
+                    className={`Table__header__item ${
+                      isOpenDeleteSelectedPopup ? 'opened' : ''
+                    }`}
+                  >
+                    <Icon name='delete' />
+                    <Text size={14} tint={100}>
+                      Delete
+                    </Text>
+                  </Button>
+                </div>
+              )}
               {tableBulkActionsVisibility.unarchive && (
                 <div className='selectedRowActionsContainer__selectedItemsArchive'>
                   <Button
@@ -741,19 +766,19 @@ const Table = React.forwardRef(function Table(
                   </Button>
                 </div>
               )}
-              {tableBulkActionsVisibility.delete && (
-                <div className='selectedRowActionsContainer__selectedItemsDelete'>
+              {tableBulkActionsVisibility.archive && (
+                <div className='selectedRowActionsContainer__selectedItemsArchive'>
                   <Button
                     color='secondary'
                     type='text'
-                    onClick={onToggleDeletePopup}
+                    onClick={onToggleUnarchivePopup}
                     className={`Table__header__item ${
-                      isOpenDeleteSelectedPopup ? 'opened' : ''
+                      isOpenUnarchiveSelectedPopup ? 'opened' : ''
                     }`}
                   >
                     <Icon name='delete' />
                     <Text size={14} tint={100}>
-                      Delete
+                      Unarchive
                     </Text>
                   </Button>
                 </div>
@@ -838,37 +863,25 @@ const Table = React.forwardRef(function Table(
               }
             </AutoResizer>
           </div>
-          <Modal
-            opened={isOpenArchiveSelectedPopup}
-            onClose={onToggleArchivePopup}
-            cancelButtonText='Cancel'
-            okButtonText='Archive'
-            title='Do you really want to archive?'
-            modalType='warning'
-          >
-            <div>
-              <Text size={14} weight={400}>
-                Archived runs will not appear in search both on Dashboard and
-                Explore. But you will still be able to unarchive the run at any
-                time.
-              </Text>
-            </div>
-          </Modal>
           <ArchiveModal
             opened={isOpenArchiveSelectedPopup}
             onClose={onToggleArchivePopup}
+            selectedRows={selectedRows}
+            archiveMode
+            onRowSelect={onRowSelect}
           />
-          <Modal
+          <ArchiveModal
+            opened={isOpenUnarchiveSelectedPopup}
+            onClose={onToggleUnarchivePopup}
+            selectedRows={selectedRows}
+            onRowSelect={onRowSelect}
+          />
+          <DeleteModal
             opened={isOpenDeleteSelectedPopup}
             onClose={onToggleDeletePopup}
-            cancelButtonText='Cancel'
-            okButtonText='Delete'
-            okButtonColor='#E64E48'
-            title='Do you really want to delete?'
-            modalType='warning'
-          >
-            asfafasjfagfiuashfiuh
-          </Modal>
+            selectedRows={selectedRows}
+            onRowSelect={onRowSelect}
+          />
         </div>
       ) : (
         <EmptyComponent size='big' content={emptyText} />

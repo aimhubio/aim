@@ -1915,7 +1915,7 @@ function createAppModel(appConfig: IAppInitialConfig) {
           actionType: 'single' | 'selectAll' | 'removeAll';
           data?: any;
         }): void {
-          onRowSelect({ actionType, data, model });
+          return onRowSelect({ actionType, data, model });
         },
       });
     }
@@ -2757,7 +2757,7 @@ function createAppModel(appConfig: IAppInitialConfig) {
             actionType: 'single' | 'selectAll' | 'removeAll';
             data?: any;
           }): void {
-            onRowSelect({ actionType, data, model });
+            return onRowSelect({ actionType, data, model });
           },
         });
       }
@@ -3955,7 +3955,7 @@ function createAppModel(appConfig: IAppInitialConfig) {
             actionType: 'single' | 'selectAll' | 'removeAll';
             data?: any;
           }): void {
-            onRowSelect({ actionType, data, model });
+            return onRowSelect({ actionType, data, model });
           },
         });
       }
@@ -5143,7 +5143,7 @@ function createAppModel(appConfig: IAppInitialConfig) {
             actionType: 'single' | 'selectAll' | 'removeAll';
             data?: any;
           }): void {
-            onRowSelect({ actionType, data, model });
+            return onRowSelect({ actionType, data, model });
           },
         });
       }

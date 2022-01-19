@@ -18,7 +18,7 @@ export default function onRowSelect<M extends State>({
   actionType: 'single' | 'selectAll' | 'removeAll';
   data?: any;
   model: IModel<M>;
-}): void {
+}): any {
   let selectedRows = model.getState()?.selectedRows || {};
   let rawData =
     model.getState()?.rawData?.reduce((acc: any, item: any) => {
@@ -30,15 +30,20 @@ export default function onRowSelect<M extends State>({
       if (selectedRows[data.selectKey]) {
         selectedRows = _.omit(selectedRows, [data.selectKey]);
       } else {
-        selectedRows[data.selectKey] = rawData[sliceRunHash(data.selectKey)];
+        selectedRows[data.selectKey] = {
+          selectKey: data.selectKey,
+          ...rawData[sliceRunHash(data.selectKey)],
+        };
       }
       break;
     case 'selectAll':
       if (Array.isArray(data)) {
         data.forEach((item: any) => {
           if (!selectedRows[item.selectKey]) {
-            selectedRows[item.selectKey] =
-              rawData[sliceRunHash(item.selectKey)];
+            selectedRows[item.selectKey] = {
+              selectKey: item.selectKey,
+              ...rawData[sliceRunHash(item.selectKey)],
+            };
           }
         });
       } else {
@@ -48,8 +53,10 @@ export default function onRowSelect<M extends State>({
           }, [])
           .forEach((item: any) => {
             if (!selectedRows[item.selectKey]) {
-              selectedRows[item.selectKey] =
-                rawData[sliceRunHash(item.selectKey)];
+              selectedRows[item.selectKey] = {
+                selectKey: item.selectKey,
+                ...rawData[sliceRunHash(item.selectKey)],
+              };
             }
           });
       }
@@ -77,6 +84,7 @@ export default function onRowSelect<M extends State>({
   model.setState({
     selectedRows: { ...selectedRows },
   });
+  return selectedRows;
 }
 
 function sliceRunHash(key: string): string {
