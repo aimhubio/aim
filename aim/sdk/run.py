@@ -3,9 +3,9 @@ import logging
 import os
 import datetime
 import json
+import pytz
 
 from collections import defaultdict
-from time import time
 from copy import deepcopy
 
 from aim.sdk.sequence import Sequence
@@ -66,7 +66,7 @@ class RunAutoClean(AutoClean['Run']):
         """
         Finalize the run by indexing all the data.
         """
-        self.meta_run_tree['end_time'] = datetime.datetime.utcnow().timestamp()
+        self.meta_run_tree['end_time'] = datetime.datetime.now(pytz.utc).timestamp()
         try:
             timeout = os.getenv(AIM_RUN_INDEXING_TIMEOUT, 2 * 60)
             index = self.repo._get_index_tree('meta', timeout=timeout).view(b'')
@@ -377,7 +377,7 @@ class Run(StructuredRunMixin):
 
         # since worker might be lagging behind, we want to log the timestamp of run.track() call,
         # not the actual implementation execution time.
-        track_time = time()
+        track_time = datetime.datetime.now(pytz.utc).timestamp()
         if self.track_in_thread:
             val = deepcopy(value)
             track_rate_warning = self.repo.tracking_queue.register_task(

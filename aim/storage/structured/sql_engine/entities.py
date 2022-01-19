@@ -1,3 +1,5 @@
+import pytz
+
 from typing import Collection, Union, List, Optional
 from sqlalchemy.orm import joinedload
 
@@ -18,6 +20,8 @@ from aim.storage.structured.sql_engine.utils import ModelMappedProperty as Prope
 def timestamp_or_none(dt):
     if dt is None:
         return None
+    if not dt.tzinfo:
+        dt = dt.replace(tzinfo=pytz.utc)
     return dt.timestamp()
 
 

@@ -497,6 +497,7 @@ async def delete_run_api(run_id: str):
         raise HTTPException(400, detail=f'Error while deleting run {run_id}.')
 
     return {
+        'id': run_id,
         'status': 'OK'
     }
 

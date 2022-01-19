@@ -3,6 +3,7 @@
 ## Unreleased
 
 - Add ability to filter texts table with keyword matching (roubkar, rubenaprikyan)
+- Add ability to delete run from settings tab (Hamik25)
 - Enhance controls states of explorer pages (arsengit)
 - Add trendline options to ScatterPlot (roubkar)
 - Add ability to display images in original size and align by width (arsengit)
@@ -12,6 +13,9 @@
 - Add ability to archive runs by batch (VkoHov)
 - Remote tracking server alpha version (alberttorosyan, mihran113, aramaim)
 - Add ability to change media elements order (VkoHov)
+- Add ability to hard delete runs (alberttorosyan)
+- Lossy format support for aim.Image (devfox-se)
+- Timezone issues fix for creation and end times (mihran113)
 
 ## 3.3.5 Jan 14 2022
 
