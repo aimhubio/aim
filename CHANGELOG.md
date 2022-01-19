@@ -2,6 +2,7 @@
 
 ## Unreleased
 
+- Add --repo, --host arguments support for notebook extension (VkoHov rubenaprikyan)
 - Add trendline options to ScatterPlot (roubkar)
 - Add ability to display images in original size and align by width (arsengit)
 - Add version, docs and slack links to sidebar (arsengit)
