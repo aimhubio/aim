@@ -2,7 +2,8 @@ import React, { memo } from 'react';
 import classNames from 'classnames';
 import { useHistory } from 'react-router-dom';
 
-import { ActionCard } from 'components/kit';
+import ConfirmModal from 'components/ConfirmModal/ConfirmModal';
+import { ActionCard, Icon } from 'components/kit';
 
 import runDetailAppModel from 'services/models/runs/runDetailAppModel';
 
@@ -13,6 +14,7 @@ function RunDetailSettingsTab({
   isArchived,
 }: IRunDetailSettingsTabProps): React.FunctionComponentElement<React.ReactNode> {
   const history = useHistory();
+  const [openDeleteModal, setOpenDeleteModal] = React.useState<boolean>(false);
 
   function onRunArchive() {
     runDetailAppModel.archiveRun(runHash, !isArchived);
@@ -22,6 +24,14 @@ function RunDetailSettingsTab({
     runDetailAppModel.deleteRun(runHash, () => {
       history.push('/runs');
     });
+  }
+
+  function handleDeleteModalOpen() {
+    setOpenDeleteModal(true);
+  }
+
+  function handleDeleteModalClose() {
+    setOpenDeleteModal(false);
   }
 
   return (
@@ -51,13 +61,24 @@ function RunDetailSettingsTab({
           description='Once you delete a run, there is no going back. Please be certain.'
           btnTooltip='Delete Run'
           btnText='Delete'
-          onAction={onRunDelete}
+          onAction={handleDeleteModalOpen}
           btnProps={{
             variant: 'contained',
             className: 'RunDetailSettingsTab__actionCardsCnt__btn__delete',
           }}
         />
       </div>
+
+      <ConfirmModal
+        open={openDeleteModal}
+        onCancel={handleDeleteModalClose}
+        onSubmit={onRunDelete}
+        text='Are you sure you want to delete this run?'
+        icon={<Icon name='delete' />}
+        title='Are you sure?'
+        statusType='error'
+        confirmBtnText='Delete'
+      />
     </div>
   );
 }

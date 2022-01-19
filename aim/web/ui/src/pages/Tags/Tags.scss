@@ -293,11 +293,11 @@
       align-items: center;
       flex-direction: column;
       justify-content: center;
-      .TagForm__tagFormContainer__labelField {
-        margin-bottom: 0;
-      }
       &__warningText {
-        margin-bottom: 15px;
+        margin: 16px 0 4px 0;
+      }
+      .MuiInputBase-root {
+        margin-bottom: 0;
       }
     }
   }
