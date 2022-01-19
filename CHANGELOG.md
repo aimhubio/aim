@@ -2,6 +2,7 @@
 
 ## Unreleased
 
+- Add ability to delete run from settings tab (Hamik25)
 - Enhance controls states of explorer pages (arsengit)
 - Add trendline options to ScatterPlot (roubkar)
 - Add ability to display images in original size and align by width (arsengit)

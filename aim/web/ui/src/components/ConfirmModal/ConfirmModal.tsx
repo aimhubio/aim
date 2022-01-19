@@ -2,7 +2,7 @@ import React from 'react';
 
 import { Dialog } from '@material-ui/core';
 
-import { Button, Text } from 'components/kit';
+import { Button, Text, Icon } from 'components/kit';
 
 import { IConfirmModalProps } from 'types/components/ConfirmModal/ConfirmModal';
 
@@ -20,37 +20,40 @@ function ConfirmModal(
       PaperProps={{
         elevation: 10,
       }}
+      className={`ConfirmModal ConfirmModal__${props.statusType}`}
     >
       <div className='ConfirmModal__Body'>
-        <div className='ConfirmModal__Icon flex fjc fac'>{props.icon}</div>
-        <div className='flex fdc'>
+        <Icon
+          name='close'
+          onClick={props.onCancel}
+          className='ConfirmModal__Close__Icon'
+        />
+
+        <div className='ConfirmModal__Title__Container'>
+          <div className='ConfirmModal__Icon'>{props.icon}</div>
           {props.title && (
-            <Text
-              size={14}
-              className='ConfirmModal__Title'
-              tint={100}
-              component='h4'
-              weight={600}
-            >
+            <Text size={16} tint={100} component='h4' weight={600}>
               {props.title}
             </Text>
           )}
+        </div>
 
-          <div>
-            {props.text && (
-              <Text
-                className='ConfirmModal__description'
-                weight={400}
-                component='p'
-                id='dialog-description'
-              >
-                {props.text || ''}
-              </Text>
-            )}
-            {props.children && props.children}
-          </div>
+        <div>
+          {props.text && (
+            <Text
+              size={14}
+              className='ConfirmModal__description'
+              weight={400}
+              component='p'
+              id='dialog-description'
+            >
+              {props.text || ''}
+            </Text>
+          )}
+          {props.children && props.children}
         </div>
       </div>
+
       <div className='ConfirmModal__Footer'>
         <Button onClick={props.onCancel} className='ConfirmModal__CancelButton'>
           {props.cancelBtnText}
@@ -60,6 +63,7 @@ function ConfirmModal(
           onClick={props.onSubmit}
           color='primary'
           variant='contained'
+          className='ConfirmModal__ConfirmButton'
           autoFocus
         >
           {props.confirmBtnText}
@@ -72,6 +76,7 @@ function ConfirmModal(
 ConfirmModal.defaultProps = {
   confirmBtnText: 'Confirm',
   cancelBtnText: 'Cancel',
+  statusType: 'info',
 };
 
 ConfirmModal.displayName = 'ConfirmModal';
