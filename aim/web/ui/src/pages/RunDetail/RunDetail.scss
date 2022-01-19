@@ -199,43 +199,48 @@
 }
 
 .RunDetailSettingsTab {
-  padding: 1.5rem;
-  border: $border-grey;
-  border-radius: 0.5rem;
-  height: 5.25rem;
-  margin: 0 10.25rem;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  &__infoBox {
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
-    &__message {
-      margin-top: $space-xxxs;
-    }
-  }
+  &__actionCardsCnt {
+    margin: 0 164px;
 
-  &__btn {
-    .MuiButton-label {
-      display: initial;
-      text-overflow: ellipsis;
-      overflow: hidden;
-      white-space: nowrap;
+    .ActionCard {
+      margin-bottom: 16px;
     }
 
-    background-color: #e64e48;
+    &__btn__delete {
+      .MuiButton-label {
+        display: initial;
+        text-overflow: ellipsis;
+        overflow: hidden;
+        white-space: nowrap;
+      }
 
-    &:hover {
-      background-color: #e64e48;
+      background-color: $error-color;
+
+      &:hover {
+        background-color: $error-color;
+      }
     }
-  }
 
-  &__btn__archive {
-    background-color: #83899e;
+    &__btn__archive,
+    &__btn__unarchive {
+      border-color: $pico-50;
 
-    &:hover {
-      background-color: #83899e;
+      &:hover {
+        border-color: $pico-50;
+      }
+    }
+
+    &__btn__archive {
+      color: $pico-50;
+    }
+
+    &__btn__unarchive {
+      background-color: $pico-50;
+      color: $white;
+
+      &:hover {
+        background-color: $pico-50;
+      }
     }
   }
 }
