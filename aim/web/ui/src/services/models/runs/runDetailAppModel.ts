@@ -159,7 +159,7 @@ function archiveRun(id: string, archived: boolean = false) {
           severity: 'success',
           message: archived
             ? 'Run successfully archived'
-            : 'Run successfully unarchive',
+            : 'Run successfully unarchived',
         });
       } else {
         onNotificationAdd({
