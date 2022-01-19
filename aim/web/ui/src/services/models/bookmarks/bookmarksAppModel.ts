@@ -15,6 +15,7 @@ let bookmarksRequestRef: {
   call: (exceptionHandler: (detail: any) => void) => Promise<any>;
   abort: () => void;
 };
+
 const model = createModel<Partial<IBookmarksAppModelState>>({
   isLoading: true,
   listData: [],
@@ -38,8 +39,18 @@ function getBookmarksData() {
             isLoading: false,
             listData,
           });
-        } catch (err) {
-          console.log(err);
+        } catch (err: any) {
+          onNotificationAdd({
+            notification: {
+              id: Date.now(),
+              message: err.message,
+              severity: 'error',
+            },
+            model: model as any,
+          });
+          model.setState({
+            isLoading: false,
+          });
         }
       }),
     abort,
@@ -79,6 +90,7 @@ async function onBookmarkDelete(id: string) {
 function initialize() {
   model.init();
   try {
+    bookmarksRequestRef = getBookmarksData();
     bookmarksRequestRef.call((detail) => {
       exceptionHandler({ detail, model: model as any });
     });
@@ -94,11 +106,18 @@ function initialize() {
     model.setState({
       isLoading: false,
     });
+    bookmarksRequestRef.abort();
   }
+}
+
+function destroy() {
+  bookmarksRequestRef.abort();
+  model.destroy();
 }
 const bookmarkAppModel = {
   ...model,
   initialize,
+  destroy,
   getBookmarksData,
   onBookmarkDelete,
   onBookmarksNotificationDelete,

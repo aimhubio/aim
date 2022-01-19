@@ -18,6 +18,9 @@ function BookmarksContainer(): React.FunctionComponentElement<React.ReactNode> {
   React.useEffect(() => {
     bookmarkAppModel.initialize();
     analytics.pageView('[Bookmarks]');
+    return () => {
+      bookmarkAppModel.destroy();
+    };
   }, []);
 
   return (
