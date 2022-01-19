@@ -33,6 +33,7 @@ class DistributionsBaseView(TraceBaseView):
         data: EncodedNumpyArray
         bin_count: int
         range: Tuple[Union[int, float], Union[int, float]]
+
     record_range: Tuple[int, int]
     values: List[Distribution]
 
@@ -41,6 +42,7 @@ class TextsBaseView(TraceBaseView):
     class Text(BaseModel):
         data: str
         idx: int
+
     record_range: Tuple[int, int]
     index_range: Tuple[int, int]
     values: List[Text]
@@ -142,6 +144,10 @@ class StructuredRunUpdateOut(BaseModel):
     status: str = 'OK'
 
 
+class StructuredRunsArchivedOut(BaseModel):
+    status: str = 'OK'
+
+
 class StructuredRunAddTagIn(BaseModel):
     tag_name: str
 
@@ -166,6 +172,9 @@ class QuerySyntaxErrorOut(BaseModel):
         offset: int
 
     detail: SE
+
+
+RunsBatchIn = List[str]
 
 
 # image search API response models

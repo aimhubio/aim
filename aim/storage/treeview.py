@@ -62,7 +62,7 @@ class TreeView:
     ) -> AimObject:
         try:
             return self[path]
-        except KeyError:
+        except (KeyError, RuntimeError):  # TODO [AT]: revisit once proper error handling is added
             return default
 
     @abstractmethod
@@ -73,12 +73,21 @@ class TreeView:
         ...
 
     @abstractmethod
+    def set(
+        self,
+        path: Union[AimObjectKey, AimObjectPath],
+        value: AimObject,
+        strict: bool = True
+    ):
+        self.__setitem__(path, value)
+
+    @abstractmethod
     def __setitem__(
         self,
         path: Union[AimObjectKey, AimObjectPath],
         value: AimObject
     ):
-        ...
+        self.set(path, value, strict=True)
 
     @abstractmethod
     def keys(

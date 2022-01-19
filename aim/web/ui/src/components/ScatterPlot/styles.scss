@@ -10,7 +10,7 @@
   min-width: 100px;
   min-height: 100px;
 
-  &__emptyData{
+  &__emptyData {
     position: absolute;
     top: 50%;
     left: 50%;
@@ -98,12 +98,14 @@
     opacity: 0.2;
   }
 
-  .yAxis, .xAxis {
+  .yAxis,
+  .xAxis {
     .tick {
       text {
         display: none;
       }
-      .yAxisTick, .xAxisTick {
+      .yAxisTick,
+      .xAxisTick {
         color: $text-color;
       }
     }
@@ -124,5 +126,11 @@
       overflow: hidden;
       text-overflow: ellipsis;
     }
+  }
+  .RegressionLine {
+    stroke-width: 2.2;
+    opacity: 1;
+    fill: none;
+    stroke: $error-color;
   }
 }

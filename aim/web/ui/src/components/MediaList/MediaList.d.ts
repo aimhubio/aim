@@ -11,6 +11,7 @@ export interface IMediaListProps {
   data: IImageData[];
   addUriToList: (blobUrl: string) => void;
   wrapperOffsetWidth: number;
+  wrapperOffsetHeight: number;
   mediaItemHeight: number;
   focusedState: IFocusedState;
   syncHoverState?: (args: any) => void;

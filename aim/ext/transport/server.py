@@ -1,13 +1,13 @@
 import time
 import uuid
-from typing import Dict
+from typing import Dict, Union
 
 from concurrent import futures
 import grpc
 import aim.ext.transport.remote_tracking_pb2 as rpc_messages
 import aim.ext.transport.remote_tracking_pb2_grpc as remote_tracking_pb2_grpc
 
-from aim.ext.transport.message_utils import pack, unpack_request_data, build_exception, ResourceObject
+from aim.ext.transport.message_utils import pack, pack_stream, unpack_stream, build_exception, ResourceObject
 from aim.ext.transport.handlers import get_tree, get_structured_run
 from aim.storage.treeutils import encode_tree, decode_tree
 
@@ -28,11 +28,8 @@ class ResourceTypeRegistry:
     def __init__(self):
         self._registry: Dict[str, type] = {}
 
-    def register(self, type_name: str, type_cls: type):
-        self._registry[type_name] = type_cls
-
-    def register_factory_method(self, type_name: str, factory_method: callable):
-        self._registry[type_name] = factory_method
+    def register(self, type_name: str, resource_getter: Union[type, callable]):
+        self._registry[type_name] = resource_getter
 
     def __getitem__(self, type_name: str):
         return self._registry[type_name]
@@ -100,7 +97,7 @@ class RemoteTrackingServicer(remote_tracking_pb2_grpc.RemoteTrackingServiceServi
             if not self._verify_resource_handler(resource_handler, client_uri):
                 raise UnauthorizedRequestError()
 
-            args = decode_tree(unpack_request_data(request_iterator))
+            args = decode_tree(unpack_stream(request_iterator))
             checked_args = []
             for arg in args:
                 if isinstance(arg, ResourceObject):
@@ -110,7 +107,6 @@ class RemoteTrackingServicer(remote_tracking_pb2_grpc.RemoteTrackingServiceServi
                     checked_args.append(self.resource_pool[handler][1])
                 else:
                     checked_args.append(arg)
-
             method_name = header.header.method_name
             resource = self.resource_pool[resource_handler][1]
             if method_name.endswith('.setter'):
@@ -128,7 +124,7 @@ class RemoteTrackingServicer(remote_tracking_pb2_grpc.RemoteTrackingServiceServi
                 version=0.1,
                 status=rpc_messages.ResponseHeader.Status.OK
             ))
-            for chunk in pack(encode_tree(result)):
+            for chunk in pack_stream(encode_tree(result)):
                 yield rpc_messages.InstructionResponse(message=chunk)
 
         except Exception as e:

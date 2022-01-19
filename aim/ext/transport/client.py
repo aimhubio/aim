@@ -5,7 +5,7 @@ import grpc
 import aim.ext.transport.remote_tracking_pb2 as rpc_messages
 import aim.ext.transport.remote_tracking_pb2_grpc as remote_tracking_pb2_grpc
 
-from aim.ext.transport.message_utils import pack, unpack_response_data, raise_exception
+from aim.ext.transport.message_utils import pack_stream, unpack_stream, unpack_response_data, raise_exception
 from aim.ext.transport.config import AIM_CLIENT_SSL_CERTIFICATES_FILE
 from aim.storage.treeutils import encode_tree, decode_tree
 
@@ -33,7 +33,6 @@ class Client:
         response = self.remote.get_resource(request)
         if response.status == rpc_messages.ResourceResponse.Status.ERROR:
             raise_exception(response.exception)
-
         return response.handler
 
     def release_resource(self, resource_handler):
@@ -59,7 +58,7 @@ class Client:
             )
             yield header
 
-            stream = pack(encode_tree(args))
+            stream = pack_stream(encode_tree(args))
             for chunk in stream:
                 yield rpc_messages.InstructionRequest(message=chunk)
 
@@ -68,7 +67,7 @@ class Client:
         assert status_msg.WhichOneof('instruction') == 'header'
         if status_msg.header.status == rpc_messages.ResponseHeader.Status.ERROR:
             raise_exception(status_msg.header.exception)
-        return decode_tree(unpack_response_data(resp))
+        return decode_tree(unpack_stream(resp))
 
     @property
     def remote(self):  # access to low-level interface

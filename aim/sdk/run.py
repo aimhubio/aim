@@ -273,7 +273,7 @@ class Run(StructuredRunMixin):
         if not read_only:
             try:
                 self.meta_run_attrs_tree.first()
-            except (KeyError, StopIteration):
+            except (KeyError, StopIteration, RuntimeError):  # TODO [AT]: revisit once proper error handling is added
                 # no run params are set. use empty dict
                 self[...] = {}
             self.meta_run_tree['end_time'] = None
@@ -405,9 +405,9 @@ class Run(StructuredRunMixin):
         elif isinstance(value, (CustomObject, list, tuple)):
             val = value
         else:
-            raise ValueError(f"Input metric of type {type(value)} is neither python number nor AimObject")
+            raise ValueError(f'Input metric of type {type(value)} is neither python number nor AimObject')
 
-        dtype = get_object_typename(value)
+        dtype = get_object_typename(val)
 
         ctx = Context(context)
         sequence = SequenceDescriptor(name, ctx)
@@ -749,8 +749,8 @@ class Run(StructuredRunMixin):
             data['archived'] = self.props.archived
             data['creation_time'] = self.props.creation_time
             data['end_time'] = self.props.end_time
-            data['experiment'] = self.props.experiment.name
-            data['tags'] = json.dumps([t.name for t in self.props.tags])
+            data['experiment'] = self.props.experiment
+            data['tags'] = json.dumps(self.props.tags)
 
         if include_params:
             # TODO [GA]:

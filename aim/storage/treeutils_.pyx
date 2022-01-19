@@ -18,7 +18,8 @@ def unfold_tree(
     *,
     path: AimObjectPath = (),
     unfold_array: bool = True,
-    depth: int = None
+    depth: int = None,
+    strict: bool = True,
 ) -> Iterator[Tuple[AimObjectPath, Any]]:
     if depth == 0:
         yield path, obj
@@ -39,21 +40,23 @@ def unfold_tree(
             yield path, ArrayFlag
             # Ellipsis (...) is set when array elements are expected
             for idx, val in enumerate(obj):
-                yield from unfold_tree(val, path=path + (idx,), unfold_array=unfold_array, depth=depth)
+                yield from unfold_tree(val, path=path + (idx,), unfold_array=unfold_array, depth=depth, strict=strict)
     elif isinstance(obj, dict):
         # TODO: set ObjectFlag for all dicts?
         if obj == {}:
             yield path, ObjectFlag
         for key, val in obj.items():
-            yield from unfold_tree(val, path=path + (key,), unfold_array=unfold_array, depth=depth)
+            yield from unfold_tree(val, path=path + (key,), unfold_array=unfold_array, depth=depth, strict=strict)
     elif isinstance(obj, CustomObjectBase):
         aim_name, aim_obj = obj._aim_encode()
         yield path, CustomObjectFlagType(aim_name)
         for key, val in obj.storage.items():
-            yield from unfold_tree(val, path=path + (key,), unfold_array=unfold_array, depth=depth)
+            yield from unfold_tree(val, path=path + (key,), unfold_array=unfold_array, depth=depth, strict=strict)
     elif isinstance(obj, TreeView):
         # TODO we need to implement TreeView.traverse()
         raise NotImplementedError
+    elif not strict:
+        yield path, repr(obj)
     else:
         raise TypeError(f'Not supported value `{obj}` of type `{type(obj)}`.')
 
@@ -240,10 +243,11 @@ cdef class DecodePathsVals(object):
 
 
 def encode_tree(
-    obj: AimObject
+    obj: AimObject,
+    strict: bool = True
 ) -> Iterator[Tuple[bytes, bytes]]:
     return encode_paths_vals(
-        unfold_tree(obj)
+        unfold_tree(obj, strict=strict)
     )
 
 
