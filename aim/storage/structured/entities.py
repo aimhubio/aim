@@ -1,5 +1,5 @@
 from abc import abstractmethod, ABC
-from typing import Generic, TypeVar, Collection, Optional
+from typing import Generic, TypeVar, Collection, Optional, List
 
 T = TypeVar('T')
 
@@ -187,6 +187,10 @@ class ObjectFactory:
 
     @abstractmethod
     def find_run(self, _id: str) -> Run:
+        ...
+
+    @abstractmethod
+    def find_runs(self, ids: List[str]) -> List[Run]:
         ...
 
     @abstractmethod

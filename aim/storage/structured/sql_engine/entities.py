@@ -81,6 +81,15 @@ class ModelMappedRun(IRun, metaclass=ModelMappedClassMeta):
         return SafeNone()
 
     @classmethod
+    def find_many(cls, ids: List[str], **kwargs) -> List[IRun]:
+        session = kwargs.get('session')
+        if not session:
+            return []
+        q = session.query(RunModel).filter(RunModel.hash.in_(ids))
+
+        return ModelMappedRunCollection(session, query=q)
+
+    @classmethod
     def all(cls, **kwargs) -> Collection[IRun]:
         session = kwargs.get('session')
         if not session:
