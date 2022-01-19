@@ -4,7 +4,6 @@ import { Icon, Button } from 'components/kit';
 
 type Props = {
   sort: string | null;
-  sortFields?: any[];
   onSort: () => void;
 };
 

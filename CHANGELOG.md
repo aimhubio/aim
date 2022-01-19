@@ -2,12 +2,25 @@
 
 ## Unreleased
 
+- Enhance controls states of explorer pages (arsengit)
 - Add --repo, --host arguments support for notebook extension (VkoHov rubenaprikyan)
 - Add trendline options to ScatterPlot (roubkar)
 - Add ability to display images in original size and align by width (arsengit)
 - Add version, docs and slack links to sidebar (arsengit)
 - Enhance AudioPlayer component (arsengit)
 - Recover active tab in run details page after reload (roubkar)
+- Add ability to archive runs by batch (VkoHov)
+- Remote tracking server alpha version (alberttorosyan, mihran113, aramaim)
+- Add ability to change media elements order (VkoHov)
+- Add ability to hard delete runs (alberttorosyan)
+- Lossy format support for aim.Image (devfox-se)
+- Timezone issues fix for creation and end times (mihran113)
+
+## 3.3.5 Jan 14 2022
+
+- Add non-strict write mode to replace not-yet-supported types with their
+  string representations. (mahnerak)
+- Log pytorch_lightning hyperparameters in non-strict mode. (mahnerak)
 
 ## 3.3.4 Jan 10 2022
 
