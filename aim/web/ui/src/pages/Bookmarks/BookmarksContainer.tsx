@@ -1,5 +1,7 @@
 import React from 'react';
 
+import ErrorBoundary from 'components/ErrorBoundary/ErrorBoundary';
+
 import useModel from 'hooks/model/useModel';
 
 import bookmarkAppModel from 'services/models/bookmarks/bookmarksAppModel';
@@ -23,11 +25,13 @@ function BookmarksContainer(): React.FunctionComponentElement<React.ReactNode> {
   }, []);
 
   return (
-    <Bookmarks
-      data={bookmarksData?.listData as IBookmarksAppModelState['listData']}
-      isLoading={bookmarksData?.isLoading as boolean}
-      onBookmarkDelete={bookmarkAppModel.onBookmarkDelete}
-    />
+    <ErrorBoundary>
+      <Bookmarks
+        data={bookmarksData?.listData as IBookmarksAppModelState['listData']}
+        isLoading={bookmarksData?.isLoading as boolean}
+        onBookmarkDelete={bookmarkAppModel.onBookmarkDelete}
+      />
+    </ErrorBoundary>
   );
 }
 

@@ -6,6 +6,7 @@ import { Dialog } from '@material-ui/core';
 
 import { Button, Icon, Text } from 'components/kit';
 import ImageFullViewPopover from 'components/ImageFullViewPopover';
+import ErrorBoundary from 'components/ErrorBoundary/ErrorBoundary';
 
 import { BATCH_COLLECT_DELAY } from 'config/mediaConfigs/mediaConfigs';
 import { MediaItemAlignmentEnum } from 'config/enums/imageEnums';
@@ -89,88 +90,95 @@ const ImageBox = ({
   // }
 
   return (
-    <div key={index} className='MediaSet__container__mediaItemsList__imageBox'>
+    <ErrorBoundary>
       <div
-        style={style}
-        className={`MediaSet__container__mediaItemsList__imageBox__image MediaSet__container__mediaItemsList__imageBox__image--${
-          additionalProperties.imageRendering
-        } ${
-          focusedState.key === data.key
-            ? focusedState?.active
-              ? ' focus'
-              : ' active'
-            : ''
-        }`}
-        data-key={`${data.key}`}
-        data-seqkey={`${data.seqKey}`}
-        data-mediasetitem={'mediaSetItem'}
-        // onClick={onClick}
+        key={index}
+        className='MediaSet__container__mediaItemsList__imageBox'
       >
-        {blobData ? (
-          <div className='MediaSet__container__mediaItemsList__imageBox__imageWrapper'>
-            <div
-              className={`MediaSet__container__mediaItemsList__imageBox__imageWrapper-item ${
-                additionalProperties.alignmentType ===
-                MediaItemAlignmentEnum.Height
-                  ? 'MediaSet__container__mediaItemsList__imageBox__imageWrapper-item-heightAlign'
-                  : ''
-              }`}
-            >
-              <img src={`data:image/${format};base64, ${blobData}`} alt='' />
-              <Text style={{ maxWidth: style.width }} size={10} weight={400}>
-                {data.caption}
-              </Text>
+        <div
+          style={style}
+          className={`MediaSet__container__mediaItemsList__imageBox__image MediaSet__container__mediaItemsList__imageBox__image--${
+            additionalProperties.imageRendering
+          } ${
+            focusedState.key === data.key
+              ? focusedState?.active
+                ? ' focus'
+                : ' active'
+              : ''
+          }`}
+          data-key={`${data.key}`}
+          data-seqkey={`${data.seqKey}`}
+          data-mediasetitem={'mediaSetItem'}
+          // onClick={onClick}
+        >
+          {blobData ? (
+            <div className='MediaSet__container__mediaItemsList__imageBox__imageWrapper'>
+              <div
+                className={`MediaSet__container__mediaItemsList__imageBox__imageWrapper-item ${
+                  additionalProperties.alignmentType ===
+                  MediaItemAlignmentEnum.Height
+                    ? 'MediaSet__container__mediaItemsList__imageBox__imageWrapper-item-heightAlign'
+                    : ''
+                }`}
+              >
+                <img src={`data:image/${format};base64, ${blobData}`} alt='' />
+                <Text style={{ maxWidth: style.width }} size={10} weight={400}>
+                  {data.caption}
+                </Text>
+              </div>
+              <Button
+                withOnlyIcon
+                size='small'
+                className={classNames(
+                  'MediaSet__container__mediaItemsList__imageBox__imageWrapper__zoomIconWrapper',
+                  {
+                    isHidden: !(focusedState.key === data.key),
+                  },
+                )}
+                onClick={onImageFullSizeModeButtonClick}
+                color='inherit'
+              >
+                <Icon name='zoom-in' fontSize={14} />
+              </Button>
             </div>
-            <Button
-              withOnlyIcon
-              size='small'
-              className={classNames(
-                'MediaSet__container__mediaItemsList__imageBox__imageWrapper__zoomIconWrapper',
-                {
-                  isHidden: !(focusedState.key === data.key),
-                },
-              )}
-              onClick={onImageFullSizeModeButtonClick}
-              color='inherit'
-            >
-              <Icon name='zoom-in' fontSize={14} />
-            </Button>
-          </div>
-        ) : (
-          <Skeleton
-            variant='rect'
-            height={
-              additionalProperties.alignmentType !==
-              MediaItemAlignmentEnum.Height
-                ? style.width / (data.width / data.height)
-                : mediaItemHeight - 10
-            }
-            width={style?.width - 10}
-          />
-        )}
+          ) : (
+            <Skeleton
+              variant='rect'
+              height={
+                additionalProperties.alignmentType !==
+                MediaItemAlignmentEnum.Height
+                  ? style.width / (data.width / data.height)
+                  : mediaItemHeight - 10
+              }
+              width={style?.width - 10}
+            />
+          )}
+        </div>
+        <ErrorBoundary>
+          <Dialog
+            onClose={() => setIsImageFullViewPopupOpened(false)}
+            aria-labelledby='customized-dialog-title'
+            className='MediaPanel__Container__imageFullViewPopup'
+            open={isImageFullViewPopupOpened}
+          >
+            <ImageFullViewPopover
+              imageRendering={additionalProperties?.imageRendering}
+              tooltipContent={
+                tooltip?.content || {
+                  caption: data.caption,
+                  images_name: data.images_name,
+                  context: data.context,
+                  step: data.step,
+                  index: data.index,
+                }
+              }
+              imageData={data}
+              handleClose={() => setIsImageFullViewPopupOpened(false)}
+            />
+          </Dialog>
+        </ErrorBoundary>
       </div>
-      <Dialog
-        onClose={() => setIsImageFullViewPopupOpened(false)}
-        aria-labelledby='customized-dialog-title'
-        className='MediaPanel__Container__imageFullViewPopup'
-        open={isImageFullViewPopupOpened}
-      >
-        <ImageFullViewPopover
-          imageRendering={additionalProperties?.imageRendering}
-          tooltipContent={
-            tooltip?.content || {
-              caption: data.caption,
-              images_name: data.images_name,
-              context: data.context,
-              step: data.step,
-              index: data.index,
-            }
-          }
-          imageData={data}
-          handleClose={() => setIsImageFullViewPopupOpened(false)}
-        />
-      </Dialog>
-    </div>
+    </ErrorBoundary>
   );
 };
 

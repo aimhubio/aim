@@ -1,5 +1,7 @@
 import React, { memo } from 'react';
 
+import ErrorBoundary from 'components/ErrorBoundary/ErrorBoundary';
+
 import { DEFAULT_CIRCLE_COLOR, DEFAULT_CIRCLE_RADIUS } from '../config';
 import { ICircleProps } from '../types';
 
@@ -20,18 +22,20 @@ const Circle = ({
   // can easily handle hover and click, show tooltip, etc..
   // some UI tricks can be possible to move here instead of rendering it inside a single component
   return (
-    <g>
-      {data.map((coords: number[], i: number) => (
-        <circle
-          className='Aim_ScatterPlotCircle'
-          cx={scale.x_scale(coords[0])}
-          cy={scale.y_scale(coords[1])}
-          style={{ fill: color }}
-          r={radius}
-          key={i}
-        />
-      ))}
-    </g>
+    <ErrorBoundary>
+      <g>
+        {data.map((coords: number[], i: number) => (
+          <circle
+            className='Aim_ScatterPlotCircle'
+            cx={scale.x_scale(coords[0])}
+            cy={scale.y_scale(coords[1])}
+            style={{ fill: color }}
+            r={radius}
+            key={i}
+          />
+        ))}
+      </g>
+    </ErrorBoundary>
   );
 };
 

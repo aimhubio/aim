@@ -9,6 +9,8 @@ import {
   TextField,
 } from '@material-ui/core';
 
+import ErrorBoundary from 'components/ErrorBoundary/ErrorBoundary';
+
 import {
   IBookmarkFormState,
   IBookmarkFormProps,
@@ -55,46 +57,48 @@ function BookmarkForm({
   }
 
   return (
-    <Dialog
-      open={open}
-      onClose={handleClose}
-      aria-labelledby='form-dialog-title'
-    >
-      <DialogTitle id='form-dialog-title'>Add Bookmark</DialogTitle>
-      <DialogContent>
-        <TextField
-          autoFocus
-          id='name'
-          value={state.name}
-          label='Bookmark Name'
-          onChange={handleInputChange}
-          type='text'
-          variant='outlined'
-          margin='dense'
-          fullWidth
-          error={isTouched && hasError}
-          helperText={isTouched && hasError ? 'Name is required' : ''}
-        />
-        <TextField
-          id='description'
-          value={state.description}
-          onChange={handleInputChange}
-          label='Bookmark Description'
-          type='text'
-          variant='outlined'
-          margin='dense'
-          fullWidth
-        />
-      </DialogContent>
-      <DialogActions>
-        <Button onClick={onClose} color='primary'>
-          Cancel
-        </Button>
-        <Button onClick={onSubmit} color='primary'>
-          Save
-        </Button>
-      </DialogActions>
-    </Dialog>
+    <ErrorBoundary>
+      <Dialog
+        open={open}
+        onClose={handleClose}
+        aria-labelledby='form-dialog-title'
+      >
+        <DialogTitle id='form-dialog-title'>Add Bookmark</DialogTitle>
+        <DialogContent>
+          <TextField
+            autoFocus
+            id='name'
+            value={state.name}
+            label='Bookmark Name'
+            onChange={handleInputChange}
+            type='text'
+            variant='outlined'
+            margin='dense'
+            fullWidth
+            error={isTouched && hasError}
+            helperText={isTouched && hasError ? 'Name is required' : ''}
+          />
+          <TextField
+            id='description'
+            value={state.description}
+            onChange={handleInputChange}
+            label='Bookmark Description'
+            type='text'
+            variant='outlined'
+            margin='dense'
+            fullWidth
+          />
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={onClose} color='primary'>
+            Cancel
+          </Button>
+          <Button onClick={onSubmit} color='primary'>
+            Save
+          </Button>
+        </DialogActions>
+      </Dialog>
+    </ErrorBoundary>
   );
 }
 
