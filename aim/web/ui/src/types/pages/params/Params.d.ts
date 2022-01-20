@@ -51,7 +51,7 @@ export interface IParamsProps extends Partial<RouteChildrenProps> {
   onParamVisibilityChange: any;
   onColumnsOrderChange: any;
   tableData: any;
-  selectedRows: any;
+  selectedRows: { [key: string]: any };
   onTableRowHover?: (rowKey?: string) => void;
   onTableRowClick?: (rowKey?: string) => void;
   tableColumns: any;

@@ -32,7 +32,7 @@ export interface IScatterAppModelState {
   tableData: any[];
   tableColumns: ITableColumn[];
   sameValueColumns: string[];
-  selectedRows: any;
+  selectedRows: { [key: string]: any };
   params: string[];
   notifyData: INotification[];
   groupingSelectOptions: IGroupingSelectOption[];

@@ -58,7 +58,10 @@ function DeleteModal({
                     ),
                     actionType: 'removeAll',
                   });
-                  if (_.isEmpty(tmpSelectedRows)) {
+                  const hasData = Object.values(tmpSelectedRows).find(
+                    (item: any) => item.end_time,
+                  );
+                  if (!hasData) {
                     onClose();
                   }
                 }}

@@ -60,7 +60,12 @@ function ArchiveModal({
                     ),
                     actionType: 'removeAll',
                   });
-                  if (_.isEmpty(tmpSelectedRows)) {
+                  console.log(tmpSelectedRows);
+                  const hasData = Object.values(tmpSelectedRows).find(
+                    (item: any) =>
+                      archiveMode ? !item.archived : item.archived,
+                  );
+                  if (!hasData) {
                     onClose();
                   }
                 }}

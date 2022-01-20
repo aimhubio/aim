@@ -70,7 +70,7 @@ export interface IMetricProps extends Partial<RouteChildrenProps> {
   alignmentConfig: IAlignmentConfig;
   selectedMetricsData: ISelectConfig;
   tableRowHeight: RowHeightSize;
-  selectedRows: any;
+  selectedRows: { [key: string]: any };
   sortFields: [string, 'asc' | 'desc' | boolean][];
   hiddenMetrics: string[];
   hiddenColumns: string[];
