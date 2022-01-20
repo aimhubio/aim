@@ -80,26 +80,26 @@ const MediaSet = ({
     }
   }
 
+  function getOrderedContentList(list: []): [] {
+    const listKeys: string[] = [];
+    const listOrderTypes: any[] = [];
+    sortFields?.forEach((sortField: SortField) => {
+      listKeys.push(sortField.value);
+      listOrderTypes.push(sortField.order);
+    });
+    return _.orderBy(list, listKeys, listOrderTypes) as [];
+  }
+
   function fillContent(
     list: [] | { [key: string]: [] | {} },
     path: (string | {})[] = [''],
     orderedMap: { [key: string]: any },
   ) {
     if (Array.isArray(list)) {
+      const orderedContentList = getOrderedContentList(list);
       if (additionalProperties.stacking && content.length) {
-        setStackedContent(list, path);
+        setStackedContent(orderedContentList, path);
       } else {
-        const listKeys: string[] = [];
-        const listOrderTypes: any[] = [];
-        sortFields?.forEach((sortField: SortField) => {
-          listKeys.push(sortField.value);
-          listOrderTypes.push(sortField.order);
-        });
-        const orderedContentList: any = _.orderBy(
-          list,
-          listKeys,
-          listOrderTypes,
-        );
         content.push([path, orderedContentList]);
       }
     } else {
