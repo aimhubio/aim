@@ -37,8 +37,8 @@
 .icon-trendline:before {
   content: "\e95f";
 }
-.icon-Slack:before {
-  content: "\e960";
+.icon-slack:before {
+  content: '\e960';
 }
 .icon-successIcon:before {
   content: "\e961";

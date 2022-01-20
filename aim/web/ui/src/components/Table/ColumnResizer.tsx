@@ -3,6 +3,8 @@
 
 import React from 'react';
 
+import ErrorBoundary from 'components/ErrorBoundary/ErrorBoundary';
+
 import { addClassName, removeClassName } from './utils';
 
 const INVALID_VALUE = null;
@@ -110,25 +112,27 @@ class ColumnResizer extends React.PureComponent {
     } = this.props;
 
     return (
-      <div
-        {...rest}
-        ref={this._setHandleRef}
-        onClick={this._handleClick}
-        onMouseDown={this._handleMouseDown}
-        onMouseUp={this._handleMouseUp}
-        onTouchStart={this._handleTouchStart}
-        onTouchEnd={this._handleTouchEnd}
-        style={{
-          userSelect: 'none',
-          touchAction: 'none',
-          position: 'absolute',
-          top: 0,
-          bottom: 0,
-          right: 0,
-          cursor: 'col-resize',
-          ...style,
-        }}
-      />
+      <ErrorBoundary>
+        <div
+          {...rest}
+          ref={this._setHandleRef}
+          onClick={this._handleClick}
+          onMouseDown={this._handleMouseDown}
+          onMouseUp={this._handleMouseUp}
+          onTouchStart={this._handleTouchStart}
+          onTouchEnd={this._handleTouchEnd}
+          style={{
+            userSelect: 'none',
+            touchAction: 'none',
+            position: 'absolute',
+            top: 0,
+            bottom: 0,
+            right: 0,
+            cursor: 'col-resize',
+            ...style,
+          }}
+        />
+      </ErrorBoundary>
     );
   }
 

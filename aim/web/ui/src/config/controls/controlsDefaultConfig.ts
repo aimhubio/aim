@@ -33,7 +33,7 @@ export const CONTROLS_DEFAULT_CONFIG = {
     },
     densityType: DensityOptions.Minimum,
     smoothingFactor: 0,
-    curveInterpolation: CurveEnum.MonotoneX,
+    curveInterpolation: CurveEnum.Linear,
     smoothingAlgorithm: SmoothingAlgorithmEnum.EMA,
     aggregationConfig: {
       methods: {
@@ -53,7 +53,7 @@ export const CONTROLS_DEFAULT_CONFIG = {
     },
   },
   params: {
-    curveInterpolation: CurveEnum.Linear,
+    curveInterpolation: CurveEnum.MonotoneX,
     isVisibleColorIndicator: false,
     tooltip: {
       display: true,

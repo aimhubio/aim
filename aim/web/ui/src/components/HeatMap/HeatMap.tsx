@@ -4,6 +4,7 @@ import { useHistory } from 'react-router-dom';
 import { Tooltip } from '@material-ui/core';
 
 import { Text } from 'components/kit';
+import ErrorBoundary from 'components/ErrorBoundary/ErrorBoundary';
 
 import * as analytics from 'services/analytics';
 
@@ -152,27 +153,29 @@ function HeatMap({
     }
 
     return (
-      <div className='CalendarHeatmap__cell__wrapper' key={index}>
-        {+endDate < +indexToDate(index) ? (
-          <div className='CalendarHeatmap__cell CalendarHeatmap__cell--dummy' />
-        ) : (
-          <Tooltip title={tooltip}>
-            <div
-              className={`CalendarHeatmap__cell CalendarHeatmap__cell--scale-${scale}`}
-              onClick={onClickeCell}
-              role='navigation'
-              // className={classNames({
-              //   CalendarHeatmap__cell: true,
-              //   [`CalendarHeatmap__cell--scale-${scale}`]:
-              //     Number.isInteger(scale),
-              // })}
-              // onClick={
-              //   !!onCellClick ? () => onCellClick(dataItem, date, index) : null
-              // }
-            />
-          </Tooltip>
-        )}
-      </div>
+      <ErrorBoundary key={index}>
+        <div className='CalendarHeatmap__cell__wrapper'>
+          {+endDate < +indexToDate(index) ? (
+            <div className='CalendarHeatmap__cell CalendarHeatmap__cell--dummy' />
+          ) : (
+            <Tooltip title={tooltip}>
+              <div
+                className={`CalendarHeatmap__cell CalendarHeatmap__cell--scale-${scale}`}
+                onClick={onClickeCell}
+                role='navigation'
+                // className={classNames({
+                //   CalendarHeatmap__cell: true,
+                //   [`CalendarHeatmap__cell--scale-${scale}`]:
+                //     Number.isInteger(scale),
+                // })}
+                // onClick={
+                //   !!onCellClick ? () => onCellClick(dataItem, date, index) : null
+                // }
+              />
+            </Tooltip>
+          )}
+        </div>
+      </ErrorBoundary>
     );
   }
 

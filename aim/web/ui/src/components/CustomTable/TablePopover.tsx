@@ -5,6 +5,8 @@ import React, { useState, useRef, useEffect } from 'react';
 import ReactDOM from 'react-dom';
 import classNames from 'classnames';
 
+import ErrorBoundary from 'components/ErrorBoundary/ErrorBoundary';
+
 const margin = 5;
 const offset = 30;
 
@@ -103,7 +105,7 @@ function Popover(props) {
   }
 
   return (
-    <>
+    <ErrorBoundary>
       <div
         ref={containerRef}
         className={classNames({
@@ -149,7 +151,7 @@ function Popover(props) {
           </div>,
           portalRef.current,
         )}
-    </>
+    </ErrorBoundary>
   );
 }
 

@@ -2,6 +2,7 @@ import React, { useEffect, useMemo, useState } from 'react';
 import { isNil } from 'lodash';
 
 import { Icon, Button } from 'components/kit';
+import ErrorBoundary from 'components/ErrorBoundary/ErrorBoundary';
 
 import { IAlertBannerProps } from './AlertBanner.d';
 import { typesMetadata } from './config';
@@ -39,7 +40,7 @@ function AlertBanner({
   }, []);
 
   return (
-    <>
+    <ErrorBoundary>
       {isVisible && (
         <div
           className={`AlertBanner AlertBanner_${memoizedTypeMetadata.cssClassName}`}
@@ -54,7 +55,7 @@ function AlertBanner({
           </Button>
         </div>
       )}
-    </>
+    </ErrorBoundary>
   );
 }
 
