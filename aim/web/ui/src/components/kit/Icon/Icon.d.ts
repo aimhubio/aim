@@ -110,7 +110,6 @@ export type IconName =
   | 'images-stacking'
   | 'typeTriangle-Outline'
   | 'typeTriangle'
-  | 'slack'
   | 'trendline'
   | 'voice-off'
   | 'case-sensitive'
