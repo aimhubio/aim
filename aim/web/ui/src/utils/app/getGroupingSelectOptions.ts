@@ -30,6 +30,11 @@ export default function getGroupingSelectOptions({
       label: 'run.hash',
       value: 'run.hash',
     },
+    {
+      group: 'run',
+      label: 'run.creation_time',
+      value: 'run.props.creation_time',
+    },
     ...paramsOptions,
     {
       group: 'metric',
