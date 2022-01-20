@@ -75,6 +75,33 @@ function Controls(
       </div>
       <div>
         <ControlPopover
+          title='Images Sorting'
+          anchor={({ onAnchorClick, opened }) => (
+            <Tooltip title='Images Sorting'>
+              <div
+                onClick={onAnchorClick}
+                className={`Controls__anchor ${opened ? 'active' : ''}`}
+              >
+                <Icon
+                  className={`Controls__icon ${opened ? 'active' : ''}`}
+                  name='sort-outside'
+                />
+              </div>
+            </Tooltip>
+          )}
+          component={
+            <SortPopover
+              sortOptions={props.selectOptions}
+              sortFields={props.sortFields}
+              onSort={props.onImagesSortChange}
+              readOnlyFieldsLabel={'GROUP BY'}
+              onReset={props.onImagesSortReset}
+            />
+          }
+        />
+      </div>
+      <div>
+        <ControlPopover
           title='Display In Tooltip'
           anchor={({ onAnchorClick, opened }) => (
             <Tooltip title='Tooltip Params'>
@@ -99,33 +126,6 @@ function Controls(
               selectedParams={props.tooltip.selectedParams}
               displayTooltip={props.tooltip.display}
               onChangeTooltip={props.onChangeTooltip}
-            />
-          }
-        />
-      </div>
-      <div>
-        <ControlPopover
-          title='Images Sorting'
-          anchor={({ onAnchorClick, opened }) => (
-            <Tooltip title='Images Sorting'>
-              <div
-                onClick={onAnchorClick}
-                className={`Controls__anchor ${opened ? 'active' : ''}`}
-              >
-                <Icon
-                  className={`Controls__icon ${opened ? 'active' : ''}`}
-                  name='sort-outside'
-                />
-              </div>
-            </Tooltip>
-          )}
-          component={
-            <SortPopover
-              sortOptions={props.selectOptions}
-              sortFields={props.sortFields}
-              onSort={props.onImagesSortChange}
-              readOnlyFieldsLabel={'GROUP BY'}
-              onReset={props.onImagesSortReset}
             />
           }
         />
