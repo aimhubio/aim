@@ -3813,6 +3813,7 @@ function createAppModel(appConfig: IAppInitialConfig) {
         onNotificationAdd: onModelNotificationAdd,
         onNotificationDelete: onModelNotificationDelete,
         onResetConfigData: onModelResetConfigData,
+        onSortChange,
         destroy,
         changeLiveUpdateConfig,
         onShuffleChange,
@@ -5006,6 +5007,7 @@ function createAppModel(appConfig: IAppInitialConfig) {
         onNotificationAdd: onModelNotificationAdd,
         onNotificationDelete: onModelNotificationDelete,
         onResetConfigData: onModelResetConfigData,
+        onSortChange,
         destroy,
         changeLiveUpdateConfig,
       };
