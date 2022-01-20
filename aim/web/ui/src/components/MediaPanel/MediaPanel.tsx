@@ -189,7 +189,7 @@ function MediaPanel({
       isLoading={isLoading}
       className='MediaPanel__loader'
       height='100%'
-      loaderComponent={<ChartLoader controlsCount={3} />}
+      loaderComponent={<ChartLoader controlsCount={4} />}
     >
       {panelResizing ? (
         <div className='MediaPanel__Container__resizing'>

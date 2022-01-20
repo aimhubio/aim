@@ -9,11 +9,15 @@ import './Slider.scss';
 function Slider({
   containerClassName = '',
   style = {},
+  prevIconNode = null,
+  nextIconNode = null,
   ...rest
 }: ISliderProps): React.FunctionComponentElement<React.ReactNode> {
   return (
     <div className={`Slider ${containerClassName}`} style={style}>
+      {prevIconNode && prevIconNode}
       <MaterialSlider {...rest} />
+      {nextIconNode && nextIconNode}
     </div>
   );
 }

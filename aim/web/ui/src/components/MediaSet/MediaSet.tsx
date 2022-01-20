@@ -3,7 +3,7 @@ import _ from 'lodash-es';
 import { VariableSizeList as List, areEqual } from 'react-window';
 import classNames from 'classnames';
 
-import { InputBase, Tooltip } from '@material-ui/core';
+import { Input, InputBase, Tooltip } from '@material-ui/core';
 import Autocomplete from '@material-ui/lab/Autocomplete';
 
 import MediaList from 'components/MediaList';
@@ -371,7 +371,8 @@ const MediaGroupedList = React.memo(function MediaGroupedList({
                         disableClearable={true}
                         ListboxProps={{
                           style: {
-                            height: 200,
+                            maxHeight: 200,
+                            maxWidth: 241,
                           },
                         }}
                         classes={{
@@ -392,7 +393,7 @@ const MediaGroupedList = React.memo(function MediaGroupedList({
                           <>
                             <Text
                               className={classNames(
-                                'MediaSet__container__path__depthDropdown__autocomplete__select__option__label',
+                                'MediaSet__container__path__depthDropdown__autocomplete__select__optionLabel',
                                 {
                                   selected: depth === option.depth,
                                 },
@@ -407,7 +408,7 @@ const MediaGroupedList = React.memo(function MediaGroupedList({
                                 fontSize={14}
                                 color='primary'
                                 name='check'
-                                className='MediaSet__container__path__depthDropdown__autocomplete__select__icon'
+                                className='MediaSet__container__path__depthDropdown__autocomplete__select__optionIcon'
                               />
                             )}
                           </>
@@ -439,6 +440,33 @@ const MediaGroupedList = React.memo(function MediaGroupedList({
               marks={(pathValue as string[]).map((l, i) => ({ value: i }))}
               min={0}
               max={pathValue.length - 1}
+              prevIconNode={
+                <Button
+                  onClick={() => {
+                    if (depth > 0) data.onSliderChange(depth - 1, index);
+                  }}
+                  className='prevIconBtn'
+                  disabled={depth <= 0}
+                  size='small'
+                  withOnlyIcon
+                >
+                  <Icon name='arrow-left' fontSize={10} />
+                </Button>
+              }
+              nextIconNode={
+                <Button
+                  onClick={() => {
+                    if (depth < pathValue.length - 1)
+                      data.onSliderChange(depth + 1, index);
+                  }}
+                  className='nextIconBtn'
+                  disabled={depth >= pathValue.length - 1}
+                  size='small'
+                  withOnlyIcon
+                >
+                  <Icon name='arrow-right' fontSize={10} />
+                </Button>
+              }
             />
           </div>
         )}
