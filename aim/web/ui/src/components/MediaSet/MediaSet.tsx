@@ -210,34 +210,36 @@ const MediaGroupedList = React.memo(function MediaGroupedList(props: any) {
             }`}
           >
             {path.length > 1 && (
-              <ControlPopover
-                anchorOrigin={{
-                  vertical: 'bottom',
-                  horizontal: 'left',
-                }}
-                transformOrigin={{
-                  vertical: 'top',
-                  horizontal: 'left',
-                }}
-                anchor={({ onAnchorClick }) => (
-                  <Tooltip
-                    placement='top-start'
-                    title={isJson ? path[path.length - 1] : ''}
-                  >
-                    <span
-                      onClick={isJson ? onAnchorClick : () => null}
-                      className={classNames(
-                        `MediaSet__container__title ${
-                          isJson ? 'MediaSet__container__title__pointer' : ''
-                        }`,
-                      )}
+              <ErrorBoundary>
+                <ControlPopover
+                  anchorOrigin={{
+                    vertical: 'bottom',
+                    horizontal: 'left',
+                  }}
+                  transformOrigin={{
+                    vertical: 'top',
+                    horizontal: 'left',
+                  }}
+                  anchor={({ onAnchorClick }) => (
+                    <Tooltip
+                      placement='top-start'
+                      title={isJson ? path[path.length - 1] : ''}
                     >
-                      {path[path.length - 1]}
-                    </span>
-                  </Tooltip>
-                )}
-                component={<JsonViewPopover json={json as object} />}
-              />
+                      <span
+                        onClick={isJson ? onAnchorClick : () => null}
+                        className={classNames(
+                          `MediaSet__container__title ${
+                            isJson ? 'MediaSet__container__title__pointer' : ''
+                          }`,
+                        )}
+                      >
+                        {path[path.length - 1]}
+                      </span>
+                    </Tooltip>
+                  )}
+                  component={<JsonViewPopover json={json as object} />}
+                />
+              </ErrorBoundary>
             )}
             {items.length > 0 && (
               <ErrorBoundary>

@@ -44,18 +44,18 @@ function SortPopover({
   }
 
   const selectOptions: SortFields = React.useMemo(() => {
-    const filtered: SortFields = [...sortOptions]
-      .filter(
-        (options) => options.group === 'run' || options.group === 'record',
-      )
-      .map((option) => ({ ...option, readonly: false, order: 'asc' }));
+    const mappedSortOptions: SortFields = [...sortOptions].map((option) => ({
+      ...option,
+      readonly: false,
+      order: 'asc',
+    }));
     return inputValue.trim() !== ''
-      ? filtered
+      ? mappedSortOptions
           .slice()
           .sort(
             (a, b) => a.label.indexOf(inputValue) - b.label.indexOf(inputValue),
           )
-      : filtered;
+      : mappedSortOptions;
   }, [sortOptions, inputValue]);
 
   const { filteredSortFields, readOnlyFields, readOnlyFieldsKeys } =

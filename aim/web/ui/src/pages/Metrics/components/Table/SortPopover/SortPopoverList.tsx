@@ -49,7 +49,10 @@ function SortPopoverList({
                   onSort({
                     sortFields,
                     order: value,
-                    index,
+                    index: sortFields.findIndex(
+                      (sortField: SortField) => sortField.value === field.value,
+                    ),
+                    field: field.value,
                     actionType: SortActionTypes.ORDER_CHANGE,
                   });
               }}
