@@ -4,6 +4,8 @@
 import React, { useRef, useState, useEffect } from 'react';
 import classNames from 'classnames';
 
+import ErrorBoundary from 'components/ErrorBoundary/ErrorBoundary';
+
 import { rowCeilSizeConfig } from 'config/table/tableConfigs';
 
 import Column from './TableColumn';
@@ -186,185 +188,213 @@ function Table(props) {
   }
 
   return (
-    <div
-      className={classNames({
-        Table__container: true,
-        [`Table__container--${rowCeilSizeConfig[props.rowHeightMode].name}`]:
-          true,
-      })}
-    >
+    <ErrorBoundary>
       <div
         className={classNames({
-          Table: true,
-          'Table--grouped': groups,
+          Table__container: true,
+          [`Table__container--${rowCeilSizeConfig[props.rowHeightMode].name}`]:
+            true,
         })}
       >
-        {(groups || leftPane.length > 0) && (
-          <div
-            className={classNames({
-              Table__pane: true,
-              'Table__pane--left': true,
-              onlyGroupColumn: leftPane.length === 0,
-            })}
-          >
-            {leftPane.map((col, index) => (
-              <Column
-                key={col.key}
-                topHeader={props.topHeader}
-                showTopHeaderContent={
-                  props.topHeader &&
-                  sortedColumns[index - 1]?.topHeader !== col.topHeader
-                }
-                showTopHeaderBorder={
-                  props.topHeader &&
-                  sortedColumns[index + 1]?.topHeader !== col.topHeader
-                }
-                col={col}
-                data={props.data}
-                expanded={expanded}
-                expand={expand}
-                togglePin={togglePin}
-                pinnedTo='left'
-                firstColumn={index === 0}
-                width={props.columnsWidths?.[col.key]}
-                updateColumnWidth={props.updateColumnsWidths}
-                headerMeta={props.headerMeta}
-                isAlwaysVisible={props.alwaysVisibleColumns?.includes(col.key)}
-                hideColumn={() =>
-                  props.setExcludedFields?.([
-                    ...(props.excludedFields || []),
-                    col.key,
-                  ])
-                }
-                paneFirstColumn={index === 0}
-                paneLastColumn={index === leftPane.length - 1}
-                moveColumn={(dir) => moveColumn(col.key, 'left', index, dir)}
-                sortable={
-                  col.sortableKey &&
-                  props.sortFields.findIndex(
-                    (f) => f[0] === col.sortableKey,
-                  ) === -1
-                }
-                sortByColumn={(order) => props.onSort(col.sortableKey, order)}
-                onRowHover={props.onRowHover}
-                onRowClick={props.onRowClick}
-                columnOptions={col.columnOptions}
-              />
-            ))}
-          </div>
-        )}
-        <div className='Table__pane Table__pane--middle'>
-          {middlePane.map((col, index) => (
-            <Column
-              key={col.key + index}
-              topHeader={props.topHeader}
-              showTopHeaderContent={
-                props.topHeader &&
-                sortedColumns[(leftPane ? leftPane.length : 0) + index - 1]
-                  ?.topHeader !== col.topHeader
-              }
-              showTopHeaderBorder={
-                props.topHeader &&
-                sortedColumns[(leftPane ? leftPane.length : 0) + index + 1]
-                  ?.topHeader !== col.topHeader
-              }
-              col={col}
-              data={props.data}
-              expanded={expanded}
-              expand={expand}
-              togglePin={togglePin}
-              pinnedTo={null}
-              firstColumn={index === 0 && leftPane.length === 0}
-              width={props.columnsWidths?.[col.key]}
-              updateColumnWidth={props.updateColumnsWidths}
-              headerMeta={props.headerMeta}
-              isAlwaysVisible={props.alwaysVisibleColumns?.includes(col.key)}
-              hideColumn={() =>
-                props.setExcludedFields?.([
-                  ...(props.excludedFields || []),
-                  col.key,
-                ])
-              }
-              paneFirstColumn={index === 0}
-              paneLastColumn={index === middlePane.length - 1}
-              moveColumn={(dir) => moveColumn(col.key, 'middle', index, dir)}
-              sortable={
-                col.sortableKey &&
-                props.sortFields.findIndex((f) => f[0] === col.sortableKey) ===
-                  -1
-              }
-              sortByColumn={(order) => props.onSort(col.sortableKey, order)}
-              onRowHover={props.onRowHover}
-              onRowClick={props.onRowClick}
-              columnOptions={col.columnOptions}
-              listWindow={props.listWindow}
-            />
-          ))}
+        <div
+          className={classNames({
+            Table: true,
+            'Table--grouped': groups,
+          })}
+        >
+          {(groups || leftPane.length > 0) && (
+            <div
+              className={classNames({
+                Table__pane: true,
+                'Table__pane--left': true,
+                onlyGroupColumn: leftPane.length === 0,
+              })}
+            >
+              {leftPane.map((col, index) => (
+                <ErrorBoundary key={col.key}>
+                  <Column
+                    topHeader={props.topHeader}
+                    showTopHeaderContent={
+                      props.topHeader &&
+                      sortedColumns[index - 1]?.topHeader !== col.topHeader
+                    }
+                    showTopHeaderBorder={
+                      props.topHeader &&
+                      sortedColumns[index + 1]?.topHeader !== col.topHeader
+                    }
+                    col={col}
+                    data={props.data}
+                    expanded={expanded}
+                    expand={expand}
+                    togglePin={togglePin}
+                    pinnedTo='left'
+                    firstColumn={index === 0}
+                    width={props.columnsWidths?.[col.key]}
+                    updateColumnWidth={props.updateColumnsWidths}
+                    headerMeta={props.headerMeta}
+                    isAlwaysVisible={props.alwaysVisibleColumns?.includes(
+                      col.key,
+                    )}
+                    hideColumn={() =>
+                      props.setExcludedFields?.([
+                        ...(props.excludedFields || []),
+                        col.key,
+                      ])
+                    }
+                    paneFirstColumn={index === 0}
+                    paneLastColumn={index === leftPane.length - 1}
+                    moveColumn={(dir) =>
+                      moveColumn(col.key, 'left', index, dir)
+                    }
+                    sortable={
+                      col.sortableKey &&
+                      props.sortFields.findIndex(
+                        (f) => f[0] === col.sortableKey,
+                      ) === -1
+                    }
+                    sortByColumn={(order) =>
+                      props.onSort(col.sortableKey, order)
+                    }
+                    onRowHover={props.onRowHover}
+                    onRowClick={props.onRowClick}
+                    columnOptions={col.columnOptions}
+                  />
+                </ErrorBoundary>
+              ))}
+            </div>
+          )}
+          <ErrorBoundary>
+            <div className='Table__pane Table__pane--middle'>
+              {middlePane.map((col, index) => (
+                <ErrorBoundary key={col.key + index}>
+                  <Column
+                    topHeader={props.topHeader}
+                    showTopHeaderContent={
+                      props.topHeader &&
+                      sortedColumns[
+                        (leftPane ? leftPane.length : 0) + index - 1
+                      ]?.topHeader !== col.topHeader
+                    }
+                    showTopHeaderBorder={
+                      props.topHeader &&
+                      sortedColumns[
+                        (leftPane ? leftPane.length : 0) + index + 1
+                      ]?.topHeader !== col.topHeader
+                    }
+                    col={col}
+                    data={props.data}
+                    expanded={expanded}
+                    expand={expand}
+                    togglePin={togglePin}
+                    pinnedTo={null}
+                    firstColumn={index === 0 && leftPane.length === 0}
+                    width={props.columnsWidths?.[col.key]}
+                    updateColumnWidth={props.updateColumnsWidths}
+                    headerMeta={props.headerMeta}
+                    isAlwaysVisible={props.alwaysVisibleColumns?.includes(
+                      col.key,
+                    )}
+                    hideColumn={() =>
+                      props.setExcludedFields?.([
+                        ...(props.excludedFields || []),
+                        col.key,
+                      ])
+                    }
+                    paneFirstColumn={index === 0}
+                    paneLastColumn={index === middlePane.length - 1}
+                    moveColumn={(dir) =>
+                      moveColumn(col.key, 'middle', index, dir)
+                    }
+                    sortable={
+                      col.sortableKey &&
+                      props.sortFields.findIndex(
+                        (f) => f[0] === col.sortableKey,
+                      ) === -1
+                    }
+                    sortByColumn={(order) =>
+                      props.onSort(col.sortableKey, order)
+                    }
+                    onRowHover={props.onRowHover}
+                    onRowClick={props.onRowClick}
+                    columnOptions={col.columnOptions}
+                    listWindow={props.listWindow}
+                  />
+                </ErrorBoundary>
+              ))}
+            </div>
+          </ErrorBoundary>
+          {rightPane.length > 0 && (
+            <div className='Table__pane Table__pane--right'>
+              {rightPane.map((col, index) => (
+                <ErrorBoundary key={col.key}>
+                  <Column
+                    topHeader={props.topHeader}
+                    showTopHeaderContent={
+                      props.topHeader &&
+                      sortedColumns[
+                        (leftPane ? leftPane.length : 0) +
+                          middlePane.length +
+                          index -
+                          1
+                      ]?.topHeader !== col.topHeader
+                    }
+                    showTopHeaderBorder={
+                      props.topHeader &&
+                      sortedColumns[
+                        (leftPane ? leftPane.length : 0) +
+                          middlePane.length +
+                          index +
+                          1
+                      ]?.topHeader !== col.topHeader
+                    }
+                    col={col}
+                    data={props.data}
+                    expanded={expanded}
+                    expand={expand}
+                    togglePin={togglePin}
+                    pinnedTo='right'
+                    firstColumn={
+                      index === 0 &&
+                      leftPane.length === 0 &&
+                      middlePane.length === 0
+                    }
+                    width={props.columnsWidths?.[col.key]}
+                    updateColumnWidth={props.updateColumnsWidths}
+                    headerMeta={props.headerMeta}
+                    isAlwaysVisible={props.alwaysVisibleColumns?.includes(
+                      col.key,
+                    )}
+                    hideColumn={() =>
+                      props.setExcludedFields?.([
+                        ...(props.excludedFields || []),
+                        col.key,
+                      ])
+                    }
+                    paneFirstColumn={index === 0}
+                    paneLastColumn={index === rightPane.length - 1}
+                    moveColumn={(dir) =>
+                      moveColumn(col.key, 'right', index, dir)
+                    }
+                    sortable={
+                      col.sortableKey &&
+                      props.sortFields.findIndex(
+                        (f) => f[0] === col.sortableKey,
+                      ) === -1
+                    }
+                    sortByColumn={(order) =>
+                      props.onSort(col.sortableKey, order)
+                    }
+                    onRowHover={props.onRowHover}
+                    onRowClick={props.onRowClick}
+                    columnOptions={col.columnOptions}
+                  />
+                </ErrorBoundary>
+              ))}
+            </div>
+          )}
         </div>
-        {rightPane.length > 0 && (
-          <div className='Table__pane Table__pane--right'>
-            {rightPane.map((col, index) => (
-              <Column
-                key={col.key}
-                topHeader={props.topHeader}
-                showTopHeaderContent={
-                  props.topHeader &&
-                  sortedColumns[
-                    (leftPane ? leftPane.length : 0) +
-                      middlePane.length +
-                      index -
-                      1
-                  ]?.topHeader !== col.topHeader
-                }
-                showTopHeaderBorder={
-                  props.topHeader &&
-                  sortedColumns[
-                    (leftPane ? leftPane.length : 0) +
-                      middlePane.length +
-                      index +
-                      1
-                  ]?.topHeader !== col.topHeader
-                }
-                col={col}
-                data={props.data}
-                expanded={expanded}
-                expand={expand}
-                togglePin={togglePin}
-                pinnedTo='right'
-                firstColumn={
-                  index === 0 &&
-                  leftPane.length === 0 &&
-                  middlePane.length === 0
-                }
-                width={props.columnsWidths?.[col.key]}
-                updateColumnWidth={props.updateColumnsWidths}
-                headerMeta={props.headerMeta}
-                isAlwaysVisible={props.alwaysVisibleColumns?.includes(col.key)}
-                hideColumn={() =>
-                  props.setExcludedFields?.([
-                    ...(props.excludedFields || []),
-                    col.key,
-                  ])
-                }
-                paneFirstColumn={index === 0}
-                paneLastColumn={index === rightPane.length - 1}
-                moveColumn={(dir) => moveColumn(col.key, 'right', index, dir)}
-                sortable={
-                  col.sortableKey &&
-                  props.sortFields.findIndex(
-                    (f) => f[0] === col.sortableKey,
-                  ) === -1
-                }
-                sortByColumn={(order) => props.onSort(col.sortableKey, order)}
-                onRowHover={props.onRowHover}
-                onRowClick={props.onRowClick}
-                columnOptions={col.columnOptions}
-              />
-            ))}
-          </div>
-        )}
       </div>
-    </div>
+    </ErrorBoundary>
   );
 }
 

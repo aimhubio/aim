@@ -11,13 +11,13 @@ import TableLoader from 'components/TableLoader/TableLoader';
 import Table from 'components/Table/Table';
 import NotificationContainer from 'components/NotificationContainer/NotificationContainer';
 import ResizePanel from 'components/ResizePanel/ResizePanel';
+import Grouping from 'components/Grouping/Grouping';
 
 import { RowHeightSize } from 'config/table/tableConfigs';
 import { ResizeModeEnum } from 'config/enums/tableEnums';
 import GroupingPopovers from 'config/grouping/GroupingPopovers';
 
 import AppBar from 'pages/Metrics/components/MetricsBar/MetricsBar';
-import Grouping from 'pages/components/Grouping/Grouping';
 
 import { IParamsProps } from 'types/pages/params/Params';
 

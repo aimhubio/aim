@@ -111,4 +111,8 @@ export type IconName =
   | 'typeTriangle-Outline'
   | 'typeTriangle'
   | 'slack'
-  | 'trendline';
+  | 'trendline'
+  | 'voice-off'
+  | 'case-sensitive'
+  | 'word-match'
+  | 'regex';

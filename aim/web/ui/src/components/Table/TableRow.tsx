@@ -3,6 +3,8 @@
 
 import React from 'react';
 
+import ErrorBoundary from 'components/ErrorBoundary/ErrorBoundary';
+
 import { renderElement } from './utils';
 
 /**
@@ -113,9 +115,11 @@ class TableRow extends React.PureComponent {
     }
 
     return (
-      <div {...rest} className={className} style={style} {...eventHandlers}>
-        {cells}
-      </div>
+      <ErrorBoundary>
+        <div {...rest} className={className} style={style} {...eventHandlers}>
+          {cells}
+        </div>
+      </ErrorBoundary>
     );
   }
 

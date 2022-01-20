@@ -3,6 +3,7 @@ import React from 'react';
 import { Divider, MenuItem, Slider } from '@material-ui/core';
 
 import { Text, ToggleButton } from 'components/kit';
+import ErrorBoundary from 'components/ErrorBoundary/ErrorBoundary';
 
 import { ISmoothingPopoverProps } from 'types/components/SmoothingPopover/SmoothingPopover';
 
@@ -88,60 +89,62 @@ function SmoothingPopover(
   }, [props.smoothingAlgorithm]);
 
   return (
-    <div className='SmoothingPopover'>
-      <div className='SmoothingPopover__section'>
-        <Text tint={50} component='h4' className='SmoothingPopover__subtitle'>
-          Chart Smoothing
-        </Text>
-        <div className='SmoothingPopover__Slider'>
-          <Slider
-            defaultValue={0}
-            valueLabelDisplay='auto'
-            getAriaValueText={(val) => `${val}s`}
-            value={factor}
-            onChange={handleFactorChange}
-            onChangeCommitted={handleSmoothingData}
-            marks={sliderProps.marks}
-            step={sliderProps.step}
-            max={sliderProps.max}
-            min={sliderProps.min}
+    <ErrorBoundary>
+      <div className='SmoothingPopover'>
+        <div className='SmoothingPopover__section'>
+          <Text tint={50} component='h4' className='SmoothingPopover__subtitle'>
+            Chart Smoothing
+          </Text>
+          <div className='SmoothingPopover__Slider'>
+            <Slider
+              defaultValue={0}
+              valueLabelDisplay='auto'
+              getAriaValueText={(val) => `${val}s`}
+              value={factor}
+              onChange={handleFactorChange}
+              onChangeCommitted={handleSmoothingData}
+              marks={sliderProps.marks}
+              step={sliderProps.step}
+              max={sliderProps.max}
+              min={sliderProps.min}
+            />
+          </div>
+          <div>
+            <MenuItem
+              id={SmoothingAlgorithmEnum.EMA}
+              selected={props.smoothingAlgorithm === SmoothingAlgorithmEnum.EMA}
+              onClick={handleAlgorithmChange}
+            >
+              Exponential Moving Average
+            </MenuItem>
+            <MenuItem
+              id={SmoothingAlgorithmEnum.CMA}
+              selected={props.smoothingAlgorithm === SmoothingAlgorithmEnum.CMA}
+              onClick={handleAlgorithmChange}
+            >
+              Centred Moving Average
+            </MenuItem>
+          </div>
+        </div>
+        <Divider className='SmoothingPopover__Divider' />
+        <div className='SmoothingPopover__section'>
+          <Text component='h4' tint={50} className='SmoothingPopover__subtitle'>
+            Curve Interpolation method
+          </Text>
+          <ToggleButton
+            className='SmoothingPopover__ToggleButton'
+            title='Select Method'
+            onChange={handleInterpolation}
+            id='smoothing'
+            rightLabel='Cubic'
+            leftLabel='Linear'
+            leftValue={CurveEnum.Linear}
+            rightValue={CurveEnum.MonotoneX}
+            value={props.curveInterpolation}
           />
         </div>
-        <div>
-          <MenuItem
-            id={SmoothingAlgorithmEnum.EMA}
-            selected={props.smoothingAlgorithm === SmoothingAlgorithmEnum.EMA}
-            onClick={handleAlgorithmChange}
-          >
-            Exponential Moving Average
-          </MenuItem>
-          <MenuItem
-            id={SmoothingAlgorithmEnum.CMA}
-            selected={props.smoothingAlgorithm === SmoothingAlgorithmEnum.CMA}
-            onClick={handleAlgorithmChange}
-          >
-            Centred Moving Average
-          </MenuItem>
-        </div>
       </div>
-      <Divider className='SmoothingPopover__Divider' />
-      <div className='SmoothingPopover__section'>
-        <Text component='h4' tint={50} className='SmoothingPopover__subtitle'>
-          Curve Interpolation method
-        </Text>
-        <ToggleButton
-          className='SmoothingPopover__ToggleButton'
-          title='Select Method'
-          onChange={handleInterpolation}
-          id='smoothing'
-          rightLabel='Cubic'
-          leftLabel='Linear'
-          leftValue={CurveEnum.Linear}
-          rightValue={CurveEnum.MonotoneX}
-          value={props.curveInterpolation}
-        />
-      </div>
-    </div>
+    </ErrorBoundary>
   );
 }
 

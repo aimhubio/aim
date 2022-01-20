@@ -6,8 +6,6 @@ import { IModel, State } from 'types/services/models/model';
 import { formatValue } from 'utils/formatValue';
 import getValueByField from 'utils/getValueByField';
 
-import { getValue } from '../helper';
-
 export function getDataAsMediaSetNestedObject<M extends State>({
   data,
   groupingSelectOptions,

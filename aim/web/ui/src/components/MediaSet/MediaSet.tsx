@@ -3,13 +3,14 @@ import _ from 'lodash-es';
 import { VariableSizeList as List, areEqual } from 'react-window';
 import classNames from 'classnames';
 
-import { Input, InputBase, Tooltip } from '@material-ui/core';
+import { InputBase, Tooltip } from '@material-ui/core';
 import Autocomplete from '@material-ui/lab/Autocomplete';
 
 import MediaList from 'components/MediaList';
 import { Button, Icon, JsonViewPopover, Slider, Text } from 'components/kit';
 import ControlPopover from 'components/ControlPopover/ControlPopover';
 import { MediaTypeEnum } from 'components/MediaPanel/config';
+import ErrorBoundary from 'components/ErrorBoundary/ErrorBoundary';
 
 import {
   MEDIA_ITEMS_SIZES,
@@ -194,32 +195,34 @@ const MediaSet = ({
   }, [additionalProperties.stacking, data, content.length]);
 
   return (
-    <List
-      key={content.length + tableHeight + mediaSetKey}
-      height={wrapperOffsetHeight || 0}
-      itemCount={content.length}
-      itemSize={getItemSize}
-      width={'100%'}
-      onScroll={onListScroll}
-      itemData={{
-        data: content,
-        addUriToList,
-        wrapperOffsetWidth,
-        wrapperOffsetHeight,
-        index,
-        mediaSetKey,
-        mediaItemHeight,
-        focusedState,
-        syncHoverState,
-        additionalProperties,
-        tooltip,
-        mediaType,
-        depthMap,
-        onSliderChange,
-      }}
-    >
-      {MediaGroupedList}
-    </List>
+    <ErrorBoundary>
+      <List
+        key={content.length + tableHeight + mediaSetKey}
+        height={wrapperOffsetHeight || 0}
+        itemCount={content.length}
+        itemSize={getItemSize}
+        width={'100%'}
+        onScroll={onListScroll}
+        itemData={{
+          data: content,
+          addUriToList,
+          wrapperOffsetWidth,
+          wrapperOffsetHeight,
+          index,
+          mediaSetKey,
+          mediaItemHeight,
+          focusedState,
+          syncHoverState,
+          additionalProperties,
+          tooltip,
+          mediaType,
+          depthMap,
+          onSliderChange,
+        }}
+      >
+        {MediaGroupedList}
+      </List>
+    </ErrorBoundary>
   );
 };
 
@@ -268,227 +271,239 @@ const MediaGroupedList = React.memo(function MediaGroupedList({
   const renderStacking =
     currentItems.length > 0 && isStackedPath && pathValue.length > 1;
   return (
-    <div
-      className='MediaSet'
-      style={{
-        paddingLeft: `calc(0.625rem * ${path.length - 2})`,
-        ...style,
-      }}
-    >
-      {path.slice(2).map((key: string, i: number) => (
-        <div
-          key={key}
-          className='MediaSet__connectorLine'
-          style={{ left: `calc(0.625rem * ${i})` }}
-        />
-      ))}
+    <ErrorBoundary>
       <div
-        className={`MediaSet__container ${path.length > 2 ? 'withDash' : ''}`}
+        className='MediaSet'
+        style={{
+          paddingLeft: `calc(0.625rem * ${path.length - 2})`,
+          ...style,
+        }}
       >
-        {path.length > 1 && (
-          <ControlPopover
-            anchorOrigin={{
-              vertical: 'bottom',
-              horizontal: 'left',
-            }}
-            transformOrigin={{
-              vertical: 'top',
-              horizontal: 'left',
-            }}
-            anchor={({ onAnchorClick }) => (
-              <span className='MediaSet__container__path'>
-                <Tooltip
-                  placement='top-start'
-                  title={`${pathKey} = ${currentValue}`}
-                >
-                  <span
-                    className='MediaSet__container__path__title'
-                    style={{
-                      height: MEDIA_SET_TITLE_HEIGHT,
-                      width: renderStacking ? '' : '100%',
-                    }}
-                  >
-                    <span
-                      className={classNames(
-                        'MediaSet__container__path__title__key',
-                        {
-                          slider: renderStacking,
-                        },
-                      )}
-                    >
-                      {pathKey}
-                    </span>
-                    =
-                    <span
-                      onClick={isJson ? onAnchorClick : undefined}
-                      className={classNames(
-                        'MediaSet__container__path__title__value',
-                        {
-                          slider: renderStacking,
-                          MediaSet__container__path__title__pointer: isJson,
-                        },
-                      )}
-                    >
-                      {currentValue}
-                    </span>
-                  </span>
-                </Tooltip>
-                {renderStacking && (
-                  <ControlPopover
-                    anchorOrigin={{
-                      vertical: 'bottom',
-                      horizontal: 'right',
-                    }}
-                    className='MediaSet__container__path__depthDropdown'
-                    anchor={({ onAnchorClick, opened }) => (
-                      <Button
-                        onClick={onAnchorClick}
-                        className='MediaSet__container__path__depthDropdown__button'
-                        color={opened ? 'primary' : 'default'}
-                        size='small'
-                        withOnlyIcon
-                        style={{ height: MEDIA_SET_TITLE_HEIGHT }}
-                      >
-                        <Icon name={opened ? 'arrow-up' : 'arrow-down'} />
-                      </Button>
-                    )}
-                    component={
-                      <Autocomplete
-                        open
-                        size='small'
-                        disablePortal={true}
-                        disableCloseOnSelect
-                        className='MediaSet__container__path__depthDropdown__autocomplete'
-                        options={(pathValue as string[]).map((v, i) => ({
-                          depth: i,
-                          label: v,
-                        }))}
-                        getOptionLabel={(option) => option.label}
-                        getOptionSelected={(option) => option.depth === depth}
-                        onChange={(e, value) => {
-                          data.onSliderChange(value.depth, index);
-                        }}
-                        disableClearable={true}
-                        ListboxProps={{
-                          style: {
-                            maxHeight: 200,
-                            maxWidth: 241,
-                          },
-                        }}
-                        classes={{
-                          popper:
-                            'MediaSet__container__path__depthDropdown__autocomplete__popper',
-                        }}
-                        renderInput={(params) => (
-                          <InputBase
-                            ref={params.InputProps.ref}
-                            inputProps={params.inputProps}
-                            spellCheck={false}
-                            placeholder='Search'
-                            autoFocus={true}
-                            className='MediaSet__container__path__depthDropdown__autocomplete__select'
-                          />
-                        )}
-                        renderOption={(option) => (
-                          <>
-                            <Text
-                              className={classNames(
-                                'MediaSet__container__path__depthDropdown__autocomplete__select__optionLabel',
-                                {
-                                  selected: depth === option.depth,
-                                },
-                              )}
-                              weight={500}
-                              size={12}
-                            >
-                              {option.label}
-                            </Text>
-                            {depth === option.depth && (
-                              <Icon
-                                fontSize={14}
-                                color='primary'
-                                name='check'
-                                className='MediaSet__container__path__depthDropdown__autocomplete__select__optionIcon'
-                              />
-                            )}
-                          </>
-                        )}
-                      />
-                    }
-                  />
-                )}
-              </span>
-            )}
-            component={<JsonViewPopover json={json as object} />}
-          />
-        )}
-        {renderStacking && (
+        {path.slice(2).map((key: string, i: number) => (
           <div
-            className='MediaSet__container__sliderContainer'
-            style={{ height: MEDIA_SET_SLIDER_HEIGHT }}
-          >
-            <Slider
-              aria-labelledby='track-false-slider'
-              track={false}
-              valueLabelDisplay='off'
-              getAriaValueText={(value) => `${pathValue[value]}`}
-              value={depth}
-              onChange={(e, value) =>
-                data.onSliderChange(value as number, index)
-              }
-              step={null}
-              marks={(pathValue as string[]).map((l, i) => ({ value: i }))}
-              min={0}
-              max={pathValue.length - 1}
-              prevIconNode={
-                <Button
-                  onClick={() => {
-                    if (depth > 0) data.onSliderChange(depth - 1, index);
-                  }}
-                  className='prevIconBtn'
-                  disabled={depth <= 0}
-                  size='small'
-                  withOnlyIcon
-                >
-                  <Icon name='arrow-left' fontSize={10} />
-                </Button>
-              }
-              nextIconNode={
-                <Button
-                  onClick={() => {
-                    if (depth < pathValue.length - 1)
-                      data.onSliderChange(depth + 1, index);
-                  }}
-                  className='nextIconBtn'
-                  disabled={depth >= pathValue.length - 1}
-                  size='small'
-                  withOnlyIcon
-                >
-                  <Icon name='arrow-right' fontSize={10} />
-                </Button>
-              }
-            />
-          </div>
-        )}
-        {currentItems.length > 0 && (
-          <div className='MediaSet__container__mediaItemsList'>
-            <MediaList
-              key={`${index}-${depth}`}
-              data={currentItems}
-              addUriToList={data.addUriToList}
-              wrapperOffsetWidth={data.wrapperOffsetWidth}
-              wrapperOffsetHeight={data.wrapperOffsetHeight}
-              mediaItemHeight={data.mediaItemHeight}
-              focusedState={data.focusedState}
-              syncHoverState={data.syncHoverState}
-              additionalProperties={data.additionalProperties}
-              tooltip={data.tooltip}
-              mediaType={data.mediaType}
-            />
-          </div>
-        )}
+            key={key}
+            className='MediaSet__connectorLine'
+            style={{ left: `calc(0.625rem * ${i})` }}
+          />
+        ))}
+        <div
+          className={`MediaSet__container ${path.length > 2 ? 'withDash' : ''}`}
+        >
+          {path.length > 1 && (
+            <ErrorBoundary>
+              <ControlPopover
+                anchorOrigin={{
+                  vertical: 'bottom',
+                  horizontal: 'left',
+                }}
+                transformOrigin={{
+                  vertical: 'top',
+                  horizontal: 'left',
+                }}
+                anchor={({ onAnchorClick }) => (
+                  <span className='MediaSet__container__path'>
+                    <Tooltip
+                      placement='top-start'
+                      title={`${pathKey} = ${currentValue}`}
+                    >
+                      <span
+                        className='MediaSet__container__path__title'
+                        style={{
+                          height: MEDIA_SET_TITLE_HEIGHT,
+                          width: renderStacking ? '' : '100%',
+                        }}
+                      >
+                        <span
+                          className={classNames(
+                            'MediaSet__container__path__title__key',
+                            {
+                              slider: renderStacking,
+                            },
+                          )}
+                        >
+                          {pathKey}
+                        </span>
+                        =
+                        <span
+                          onClick={isJson ? onAnchorClick : undefined}
+                          className={classNames(
+                            'MediaSet__container__path__title__value',
+                            {
+                              slider: renderStacking,
+                              MediaSet__container__path__title__pointer: isJson,
+                            },
+                          )}
+                        >
+                          {currentValue}
+                        </span>
+                      </span>
+                    </Tooltip>
+                    {renderStacking && (
+                      <ErrorBoundary>
+                        <ControlPopover
+                          anchorOrigin={{
+                            vertical: 'bottom',
+                            horizontal: 'right',
+                          }}
+                          className='MediaSet__container__path__depthDropdown'
+                          anchor={({ onAnchorClick, opened }) => (
+                            <Button
+                              onClick={onAnchorClick}
+                              className='MediaSet__container__path__depthDropdown__button'
+                              color={opened ? 'primary' : 'default'}
+                              size='small'
+                              withOnlyIcon
+                              style={{ height: MEDIA_SET_TITLE_HEIGHT }}
+                            >
+                              <Icon name={opened ? 'arrow-up' : 'arrow-down'} />
+                            </Button>
+                          )}
+                          component={
+                            <Autocomplete
+                              open
+                              size='small'
+                              disablePortal={true}
+                              disableCloseOnSelect
+                              className='MediaSet__container__path__depthDropdown__autocomplete'
+                              options={(pathValue as string[]).map((v, i) => ({
+                                depth: i,
+                                label: v,
+                              }))}
+                              getOptionLabel={(option) => option.label}
+                              getOptionSelected={(option) =>
+                                option.depth === depth
+                              }
+                              onChange={(e, value) => {
+                                data.onSliderChange(value.depth, index);
+                              }}
+                              disableClearable={true}
+                              ListboxProps={{
+                                style: {
+                                  maxHeight: 200,
+                                  maxWidth: 241,
+                                },
+                              }}
+                              classes={{
+                                popper:
+                                  'MediaSet__container__path__depthDropdown__autocomplete__popper',
+                              }}
+                              renderInput={(params) => (
+                                <InputBase
+                                  ref={params.InputProps.ref}
+                                  inputProps={params.inputProps}
+                                  spellCheck={false}
+                                  placeholder='Search'
+                                  autoFocus={true}
+                                  className='MediaSet__container__path__depthDropdown__autocomplete__select'
+                                />
+                              )}
+                              renderOption={(option) => (
+                                <>
+                                  <Text
+                                    className={classNames(
+                                      'MediaSet__container__path__depthDropdown__autocomplete__select__optionLabel',
+                                      {
+                                        selected: depth === option.depth,
+                                      },
+                                    )}
+                                    weight={500}
+                                    size={12}
+                                  >
+                                    {option.label}
+                                  </Text>
+                                  {depth === option.depth && (
+                                    <Icon
+                                      fontSize={14}
+                                      color='primary'
+                                      name='check'
+                                      className='MediaSet__container__path__depthDropdown__autocomplete__select__optionIcon'
+                                    />
+                                  )}
+                                </>
+                              )}
+                            />
+                          }
+                        />
+                      </ErrorBoundary>
+                    )}
+                  </span>
+                )}
+                component={<JsonViewPopover json={json as object} />}
+              />
+            </ErrorBoundary>
+          )}
+          {renderStacking && (
+            <ErrorBoundary>
+              <div
+                className='MediaSet__container__sliderContainer'
+                style={{ height: MEDIA_SET_SLIDER_HEIGHT }}
+              >
+                <Slider
+                  aria-labelledby='track-false-slider'
+                  track={false}
+                  valueLabelDisplay='off'
+                  getAriaValueText={(value) => `${pathValue[value]}`}
+                  value={depth}
+                  onChange={(e, value) =>
+                    data.onSliderChange(value as number, index)
+                  }
+                  step={null}
+                  marks={(pathValue as string[]).map((l, i) => ({ value: i }))}
+                  min={0}
+                  max={pathValue.length - 1}
+                  prevIconNode={
+                    <Button
+                      onClick={() => {
+                        if (depth > 0) data.onSliderChange(depth - 1, index);
+                      }}
+                      className='prevIconBtn'
+                      disabled={depth <= 0}
+                      size='small'
+                      withOnlyIcon
+                    >
+                      <Icon name='arrow-left' fontSize={10} />
+                    </Button>
+                  }
+                  nextIconNode={
+                    <Button
+                      onClick={() => {
+                        if (depth < pathValue.length - 1)
+                          data.onSliderChange(depth + 1, index);
+                      }}
+                      className='nextIconBtn'
+                      disabled={depth >= pathValue.length - 1}
+                      size='small'
+                      withOnlyIcon
+                    >
+                      <Icon name='arrow-right' fontSize={10} />
+                    </Button>
+                  }
+                />
+              </div>
+            </ErrorBoundary>
+          )}
+          {currentItems.length > 0 && (
+            <ErrorBoundary>
+              <div className='MediaSet__container__mediaItemsList'>
+                <MediaList
+                  key={`${index}-${depth}`}
+                  data={currentItems}
+                  addUriToList={data.addUriToList}
+                  wrapperOffsetWidth={data.wrapperOffsetWidth}
+                  wrapperOffsetHeight={data.wrapperOffsetHeight}
+                  mediaItemHeight={data.mediaItemHeight}
+                  focusedState={data.focusedState}
+                  syncHoverState={data.syncHoverState}
+                  additionalProperties={data.additionalProperties}
+                  tooltip={data.tooltip}
+                  mediaType={data.mediaType}
+                />
+              </div>
+            </ErrorBoundary>
+          )}
+        </div>
       </div>
-    </div>
+    </ErrorBoundary>
   );
 },
 areEqual);

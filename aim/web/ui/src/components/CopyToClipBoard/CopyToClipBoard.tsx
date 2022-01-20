@@ -1,6 +1,7 @@
 import React from 'react';
 
 import { Icon } from 'components/kit';
+import ErrorBoundary from 'components/ErrorBoundary/ErrorBoundary';
 
 import { ICopyToClipBoardProps } from 'types/components/CopyToClipBoard/CopyToClipBoard';
 
@@ -31,13 +32,15 @@ function CopyToClipboard({
   }, [contentRef, showCopiedIcon]);
 
   return (
-    <span className={className} onClick={onCopy}>
-      {showCopiedIcon ? (
-        <span style={{ color: 'green', fontSize: 12 }}>Copied!</span>
-      ) : (
-        <Icon name='copy' />
-      )}
-    </span>
+    <ErrorBoundary>
+      <span className={className} onClick={onCopy}>
+        {showCopiedIcon ? (
+          <span style={{ color: 'green', fontSize: 12 }}>Copied!</span>
+        ) : (
+          <Icon name='copy' />
+        )}
+      </span>
+    </ErrorBoundary>
   );
 }
 

@@ -1,5 +1,7 @@
 import React from 'react';
 
+import ErrorBoundary from 'components/ErrorBoundary/ErrorBoundary';
+
 import { Button } from '../index';
 
 import IToggleButtonProps from './ToggleButton.d';
@@ -26,31 +28,33 @@ function ToggleButton({
   }
 
   return (
-    <div className={`ToggleButton ${className || ''}`}>
-      <span className='ToggleButton__title'>{title}</span>
-      <div className='ToggleButton__container'>
-        <Button
-          id={id}
-          value={leftValue}
-          variant={state === leftValue ? 'contained' : 'text'}
-          size='small'
-          color={state === leftValue ? 'primary' : 'inherit'}
-          onClick={handleToggle}
-        >
-          {leftLabel}
-        </Button>
-        <Button
-          id={id}
-          value={rightValue}
-          variant={state === rightValue ? 'contained' : 'text'}
-          size='small'
-          color={state === rightValue ? 'primary' : 'inherit'}
-          onClick={handleToggle}
-        >
-          {rightLabel}
-        </Button>
+    <ErrorBoundary>
+      <div className={`ToggleButton ${className || ''}`}>
+        <span className='ToggleButton__title'>{title}</span>
+        <div className='ToggleButton__container'>
+          <Button
+            id={id}
+            value={leftValue}
+            variant={state === leftValue ? 'contained' : 'text'}
+            size='small'
+            color={state === leftValue ? 'primary' : 'inherit'}
+            onClick={handleToggle}
+          >
+            {leftLabel}
+          </Button>
+          <Button
+            id={id}
+            value={rightValue}
+            variant={state === rightValue ? 'contained' : 'text'}
+            size='small'
+            color={state === rightValue ? 'primary' : 'inherit'}
+            onClick={handleToggle}
+          >
+            {rightLabel}
+          </Button>
+        </div>
       </div>
-    </div>
+    </ErrorBoundary>
   );
 }
 
