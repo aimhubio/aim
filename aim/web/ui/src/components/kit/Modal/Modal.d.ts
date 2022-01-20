@@ -13,5 +13,6 @@ export interface IModalProps {
   okButtonText?: string | React.ReactNode;
   modalType?: 'warning' | 'error' | 'info' | 'success';
   okButtonColor?: string;
+  withoutTitleIcon?: boolean;
   children: React.ReactNode;
 }

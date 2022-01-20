@@ -28,13 +28,14 @@ function Modal({
   modalType,
   okButtonText,
   okButtonColor,
+  withoutTitleIcon,
   children,
 }: IModalProps): React.FunctionComponentElement<React.ReactNode> {
   return (
     <Dialog open={opened} onClose={onClose} aria-labelledby='form-dialog-title'>
       <div className={`Modal ${modalType}`}>
         <div className='Modal__header'>
-          {modalType && (
+          {modalType && !withoutTitleIcon && (
             <div
               className={classNames('Modal__header__titleIcon', {
                 [modalType as string]: modalType,

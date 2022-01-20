@@ -113,4 +113,5 @@ export type IconName =
   | 'voice-off'
   | 'case-sensitive'
   | 'word-match'
-  | 'regex';
+  | 'regex'
+  | 'circle-with-dot';
