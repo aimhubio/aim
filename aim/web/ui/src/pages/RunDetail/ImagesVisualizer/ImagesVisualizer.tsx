@@ -3,6 +3,7 @@ import React, { memo } from 'react';
 import { MediaTypeEnum } from 'components/MediaPanel/config';
 import MediaPanel from 'components/MediaPanel';
 import BusyLoaderWrapper from 'components/BusyLoaderWrapper/BusyLoaderWrapper';
+import ErrorBoundary from 'components/ErrorBoundary/ErrorBoundary';
 
 import {
   ImageRenderingEnum,
@@ -102,27 +103,29 @@ function ImagesVisualizer(
   }, []);
 
   return (
-    <BusyLoaderWrapper
-      className='VisualizationLoader'
-      isLoading={!!props.isLoading}
-    >
-      <div className='ImagesVisualizer' ref={imagesWrapperRef}>
-        <MediaPanel
-          mediaType={MediaTypeEnum.IMAGE}
-          getBlobsData={getImagesBlobsData}
-          data={data?.imageSetData}
-          orderedMap={data?.orderedMap}
-          isLoading={!data || isLoading}
-          panelResizing={false}
-          tableHeight={'0'}
-          wrapperOffsetHeight={offsetHeight || 0}
-          wrapperOffsetWidth={offsetWidth || 0}
-          focusedState={focusedState}
-          additionalProperties={additionalProperties}
-          onActivePointChange={onActivePointChange}
-        />
-      </div>
-    </BusyLoaderWrapper>
+    <ErrorBoundary>
+      <BusyLoaderWrapper
+        className='VisualizationLoader'
+        isLoading={!!props.isLoading}
+      >
+        <div className='ImagesVisualizer' ref={imagesWrapperRef}>
+          <MediaPanel
+            mediaType={MediaTypeEnum.IMAGE}
+            getBlobsData={getImagesBlobsData}
+            data={data?.imageSetData}
+            orderedMap={data?.orderedMap}
+            isLoading={!data || isLoading}
+            panelResizing={false}
+            tableHeight={'0'}
+            wrapperOffsetHeight={offsetHeight || 0}
+            wrapperOffsetWidth={offsetWidth || 0}
+            focusedState={focusedState}
+            additionalProperties={additionalProperties}
+            onActivePointChange={onActivePointChange}
+          />
+        </div>
+      </BusyLoaderWrapper>
+    </ErrorBoundary>
   );
 }
 

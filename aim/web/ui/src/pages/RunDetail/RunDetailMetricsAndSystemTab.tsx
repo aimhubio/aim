@@ -3,6 +3,7 @@ import { isEmpty, isNil } from 'lodash-es';
 
 import EmptyComponent from 'components/EmptyComponent/EmptyComponent';
 import BusyLoaderWrapper from 'components/BusyLoaderWrapper/BusyLoaderWrapper';
+import ErrorBoundary from 'components/ErrorBoundary/ErrorBoundary';
 
 import runDetailAppModel from 'services/models/runs/runDetailAppModel';
 
@@ -28,29 +29,31 @@ function RunDetailMetricsAndSystemTab({
   }, [runTraces, runHash]);
 
   return (
-    <div className='RunDetailMetricsTab'>
-      <BusyLoaderWrapper
-        isLoading={isRunBatchLoading}
-        className='runDetailParamsTabLoader'
-        height='100%'
-      >
-        {runBatch && (
-          <div className='RunDetailMetricsTab__container'>
-            {!isEmpty(runBatch) ? (
-              runBatch.map((batch: IRunBatch, i: number) => {
-                return <RunMetricCard batch={batch} index={i} key={i} />;
-              })
-            ) : (
-              <EmptyComponent
-                size='big'
-                className='runDetailParamsTabLoader'
-                content={`No tracked ${isSystem ? 'system' : ''} metrics`}
-              />
-            )}
-          </div>
-        )}
-      </BusyLoaderWrapper>
-    </div>
+    <ErrorBoundary>
+      <div className='RunDetailMetricsTab'>
+        <BusyLoaderWrapper
+          isLoading={isRunBatchLoading}
+          className='runDetailParamsTabLoader'
+          height='100%'
+        >
+          {runBatch && (
+            <div className='RunDetailMetricsTab__container'>
+              {!isEmpty(runBatch) ? (
+                runBatch.map((batch: IRunBatch, i: number) => {
+                  return <RunMetricCard key={i} batch={batch} index={i} />;
+                })
+              ) : (
+                <EmptyComponent
+                  size='big'
+                  className='runDetailParamsTabLoader'
+                  content={`No tracked ${isSystem ? 'system' : ''} metrics`}
+                />
+              )}
+            </div>
+          )}
+        </BusyLoaderWrapper>
+      </div>
+    </ErrorBoundary>
   );
 }
 

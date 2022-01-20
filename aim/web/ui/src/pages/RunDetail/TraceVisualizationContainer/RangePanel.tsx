@@ -2,6 +2,7 @@ import React from 'react';
 
 import SliderWithInput from 'components/SliderWithInput';
 import { Button } from 'components/kit';
+import ErrorBoundary from 'components/ErrorBoundary/ErrorBoundary';
 
 interface IRangeSliderWithInputItem {
   sliderName: string;
@@ -37,51 +38,53 @@ function RangePanel({
   items,
 }: IRangeSliderPanelProps) {
   return (
-    <form
-      className='RangePanel'
-      onSubmit={(e) => {
-        e.preventDefault();
-        onApply();
-      }}
-    >
-      <div className='RangePanelContainer'>
-        {items?.map((item) => (
-          <React.Fragment key={item.sliderName}>
-            <SliderWithInput
-              sliderType={item?.sliderType}
-              sliderTitle={item.sliderTitle}
-              countInputTitle={item.inputTitle}
-              countTitleTooltip={item.inputTitleTooltip}
-              sliderTitleTooltip={item.sliderTitleTooltip}
-              min={item.rangeEndpoints[0]}
-              max={item.rangeEndpoints[1]}
-              selectedRangeValue={item.selectedRangeValue}
-              selectedCountValue={item.inputValue}
-              onSearch={onApply}
-              onRangeChange={(value) =>
-                onRangeSliderChange(item.sliderName, value)
-              }
-              onCountChange={({ target: { value } }) =>
-                onInputChange(item.inputName, +value)
-              }
-            />
-            <div className='VerticalDivider' />
-          </React.Fragment>
-        ))}
-        <div className='ApplyButtonContainer'>
-          <Button
-            size='small'
-            color='primary'
-            variant='contained'
-            type='submit'
-            className='ApplyButton'
-            disabled={applyButtonDisabled}
-          >
-            Apply
-          </Button>
+    <ErrorBoundary>
+      <form
+        className='RangePanel'
+        onSubmit={(e) => {
+          e.preventDefault();
+          onApply();
+        }}
+      >
+        <div className='RangePanelContainer'>
+          {items?.map((item) => (
+            <React.Fragment key={item.sliderName}>
+              <SliderWithInput
+                sliderType={item?.sliderType}
+                sliderTitle={item.sliderTitle}
+                countInputTitle={item.inputTitle}
+                countTitleTooltip={item.inputTitleTooltip}
+                sliderTitleTooltip={item.sliderTitleTooltip}
+                min={item.rangeEndpoints[0]}
+                max={item.rangeEndpoints[1]}
+                selectedRangeValue={item.selectedRangeValue}
+                selectedCountValue={item.inputValue}
+                onSearch={onApply}
+                onRangeChange={(value) =>
+                  onRangeSliderChange(item.sliderName, value)
+                }
+                onCountChange={({ target: { value } }) =>
+                  onInputChange(item.inputName, +value)
+                }
+              />
+              <div className='VerticalDivider' />
+            </React.Fragment>
+          ))}
+          <div className='ApplyButtonContainer'>
+            <Button
+              size='small'
+              color='primary'
+              variant='contained'
+              type='submit'
+              className='ApplyButton'
+              disabled={applyButtonDisabled}
+            >
+              Apply
+            </Button>
+          </div>
         </div>
-      </div>
-    </form>
+      </form>
+    </ErrorBoundary>
   );
 }
 

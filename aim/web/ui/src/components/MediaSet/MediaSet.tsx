@@ -193,17 +193,16 @@ const MediaGroupedList = React.memo(function MediaGroupedList(props: any) {
           ...style,
         }}
       >
-        <ErrorBoundary>
-          {path.slice(2).map((key: string, i: number) => (
+        {path.slice(2).map((key: string, i: number) => (
+          <ErrorBoundary key={key}>
             <div
-              key={key}
               className='MediaSet__connectorLine'
               style={{
                 left: `calc(0.625rem * ${i})`,
               }}
             />
-          ))}
-        </ErrorBoundary>
+          </ErrorBoundary>
+        ))}
         <ErrorBoundary>
           <div
             className={`MediaSet__container ${
@@ -240,8 +239,8 @@ const MediaGroupedList = React.memo(function MediaGroupedList(props: any) {
                 component={<JsonViewPopover json={json as object} />}
               />
             )}
-            <ErrorBoundary>
-              {items.length > 0 && (
+            {items.length > 0 && (
+              <ErrorBoundary>
                 <div className='MediaSet__container__mediaItemsList'>
                   <MediaList
                     data={items}
@@ -256,8 +255,8 @@ const MediaGroupedList = React.memo(function MediaGroupedList(props: any) {
                     mediaType={data.mediaType}
                   />
                 </div>
-              )}
-            </ErrorBoundary>
+              </ErrorBoundary>
+            )}
           </div>
         </ErrorBoundary>
       </div>

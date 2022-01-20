@@ -1467,7 +1467,7 @@ function onExportTableData(e: React.ChangeEvent<any>): void {
   const dataToExport: { [key: string]: string }[] = [];
 
   groupedRows.forEach((groupedRow: any[], groupedRowIndex: number) => {
-    groupedRow.forEach((row: any) => {
+    groupedRow?.forEach((row: any) => {
       const filteredRow: any = getFilteredRow(filteredHeader, row);
       dataToExport.push(filteredRow);
     });

@@ -244,8 +244,8 @@ function MediaPanel({
                       />
                     </div>
                   </ErrorBoundary>
-                  <ErrorBoundary>
-                    {tooltipType && (
+                  {tooltipType && (
+                    <ErrorBoundary>
                       <ChartPopover
                         containerNode={containerRef.current}
                         activePointRect={activePointRect}
@@ -258,13 +258,13 @@ function MediaPanel({
                         tooltipContent={tooltip?.content}
                         focusedState={focusedState}
                       />
-                    )}
-                  </ErrorBoundary>
-                  <ErrorBoundary>
-                    {controls && (
+                    </ErrorBoundary>
+                  )}
+                  {controls && (
+                    <ErrorBoundary>
                       <div className='MediaPanel__controls'>{controls}</div>
-                    )}
-                  </ErrorBoundary>
+                    </ErrorBoundary>
+                  )}
                 </div>
               ) : (
                 <EmptyComponent

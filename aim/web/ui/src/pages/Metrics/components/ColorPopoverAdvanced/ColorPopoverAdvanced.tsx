@@ -76,9 +76,9 @@ function ColorPopoverAdvanced({
             Preferred color palette
           </Text>
           <div>
-            <ErrorBoundary>
-              {COLORS.map((options, index) => (
-                <Box key={index} display='flex' alignItems='center'>
+            {COLORS.map((options, index) => (
+              <ErrorBoundary key={index}>
+                <Box display='flex' alignItems='center'>
                   <Radio
                     color='primary'
                     checked={paletteIndex === index}
@@ -104,8 +104,8 @@ function ColorPopoverAdvanced({
                     ))}
                   </div>
                 </Box>
-              ))}
-            </ErrorBoundary>
+              </ErrorBoundary>
+            ))}
           </div>
         </div>
       </div>

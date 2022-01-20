@@ -2,6 +2,7 @@ import React from 'react';
 
 import Table from 'components/Table/Table';
 import BusyLoaderWrapper from 'components/BusyLoaderWrapper/BusyLoaderWrapper';
+import ErrorBoundary from 'components/ErrorBoundary/ErrorBoundary';
 
 import { ITableRef } from 'types/components/Table/Table';
 
@@ -74,39 +75,45 @@ function TextsVisualizer(
   }
 
   return (
-    <div className='TextsVisualizer'>
-      <SearchBar
-        isValidInput={textSearch.filterOptions.isValidSearch}
-        searchValue={textSearch.filterOptions.searchValue}
-        matchType={textSearch.filterOptions.matchType}
-        onMatchTypeChange={textSearch.changeMatchType}
-        onInputClear={textSearch.clearSearchInputData}
-        onInputChange={textSearch.changeSearchInput}
-      />
-      <BusyLoaderWrapper
-        className='VisualizationLoader'
-        isLoading={!!props.isLoading}
-      >
-        {textSearch.data && (
-          <Table
-            ref={tableRef}
-            fixed={false}
-            className='TextsTable'
-            columns={tableColumns}
-            data={getHighlightedData(
-              textSearch.data,
-              textSearch.filterOptions.appliedRegExp,
-            )}
-            isLoading={props?.isLoading}
-            hideHeaderActions
-            estimatedRowHeight={32}
-            headerHeight={32}
-            emptyText='No Result'
-            height='100%'
+    <ErrorBoundary>
+      <div className='TextsVisualizer'>
+        <ErrorBoundary>
+          <SearchBar
+            isValidInput={textSearch.filterOptions.isValidSearch}
+            searchValue={textSearch.filterOptions.searchValue}
+            matchType={textSearch.filterOptions.matchType}
+            onMatchTypeChange={textSearch.changeMatchType}
+            onInputClear={textSearch.clearSearchInputData}
+            onInputChange={textSearch.changeSearchInput}
           />
-        )}
-      </BusyLoaderWrapper>
-    </div>
+        </ErrorBoundary>
+        <BusyLoaderWrapper
+          className='VisualizationLoader'
+          isLoading={!!props.isLoading}
+        >
+          {textSearch.data && (
+            <ErrorBoundary>
+              <Table
+                ref={tableRef}
+                fixed={false}
+                className='TextsTable'
+                columns={tableColumns}
+                data={getHighlightedData(
+                  textSearch.data,
+                  textSearch.filterOptions.appliedRegExp,
+                )}
+                isLoading={props?.isLoading}
+                hideHeaderActions
+                estimatedRowHeight={32}
+                headerHeight={32}
+                emptyText='No Result'
+                height='100%'
+              />
+            </ErrorBoundary>
+          )}
+        </BusyLoaderWrapper>
+      </div>
+    </ErrorBoundary>
   );
 }
 

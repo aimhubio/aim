@@ -30,18 +30,20 @@ function BusyLoaderWrapper({
     }
   }
   return (
-    <ErrorBoundary>
+    <>
       {isLoading ? (
-        <div
-          className={`BusyLoaderWrapper ${className}`}
-          style={{ width, height }}
-        >
-          {loaderComponent || loaderRender()}
-        </div>
+        <ErrorBoundary>
+          <div
+            className={`BusyLoaderWrapper ${className}`}
+            style={{ width, height }}
+          >
+            {loaderComponent || loaderRender()}
+          </div>
+        </ErrorBoundary>
       ) : children ? (
         children
       ) : null}
-    </ErrorBoundary>
+    </>
   );
 }
 

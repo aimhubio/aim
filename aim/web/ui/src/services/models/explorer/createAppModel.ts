@@ -1498,7 +1498,7 @@ function createAppModel(appConfig: IAppInitialConfig) {
 
       groupedRows.forEach(
         (groupedRow: IMetricTableRowData[], groupedRowIndex: number) => {
-          groupedRow.forEach((row: IMetricTableRowData) => {
+          groupedRow?.forEach((row: IMetricTableRowData) => {
             const filteredRow = getFilteredRow<IMetricTableRowData>({
               columnKeys: filteredHeader,
               row,
@@ -2575,7 +2575,7 @@ function createAppModel(appConfig: IAppInitialConfig) {
 
         groupedRows.forEach(
           (groupedRow: IMetricTableRowData[], groupedRowIndex: number) => {
-            groupedRow.forEach((row: IMetricTableRowData) => {
+            groupedRow?.forEach((row: IMetricTableRowData) => {
               const filteredRow = getFilteredRow({
                 columnKeys: filteredHeader,
                 row,
@@ -3600,7 +3600,7 @@ function createAppModel(appConfig: IAppInitialConfig) {
 
         groupedRows.forEach(
           (groupedRow: IMetricTableRowData[], groupedRowIndex: number) => {
-            groupedRow.forEach((row: IMetricTableRowData) => {
+            groupedRow?.forEach((row: IMetricTableRowData) => {
               const filteredRow = getFilteredRow<IMetricTableRowData>({
                 columnKeys: filteredHeader,
                 row,
@@ -4795,7 +4795,7 @@ function createAppModel(appConfig: IAppInitialConfig) {
 
         groupedRows.forEach(
           (groupedRow: IMetricTableRowData[], groupedRowIndex: number) => {
-            groupedRow.forEach((row: IMetricTableRowData) => {
+            groupedRow?.forEach((row: IMetricTableRowData) => {
               const filteredRow = getFilteredRow<IMetricTableRowData>({
                 columnKeys: filteredHeader,
                 row,

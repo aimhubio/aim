@@ -281,22 +281,22 @@ function SelectForm({
                       )}
                     </Box>
                   </Box>
-                  <ErrorBoundary>
-                    {selectedImagesData?.options.length > 1 && (
+                  {selectedImagesData?.options.length > 1 && (
+                    <ErrorBoundary>
                       <span
                         onClick={() => onImagesExploreSelectChange([])}
                         className='SelectForm__clearAll'
                       >
                         <Icon name='close' />
                       </span>
-                    )}
-                  </ErrorBoundary>
+                    </ErrorBoundary>
+                  )}
                 </ErrorBoundary>
               )}
             </Box>
           </Box>
-          <ErrorBoundary>
-            {selectedImagesData?.advancedMode ? null : (
+          {selectedImagesData?.advancedMode ? null : (
+            <ErrorBoundary>
               <div className='SelectForm__TextField'>
                 <ExpressionAutoComplete
                   onExpressionChange={onSelectRunQueryChange}
@@ -306,8 +306,8 @@ function SelectForm({
                   placeholder='Filter runs, e.g. run.learning_rate > 0.0001 and run.batch_size == 32'
                 />
               </div>
-            )}
-          </ErrorBoundary>
+            </ErrorBoundary>
+          )}
         </div>
 
         <div className='SelectForm__search__container'>

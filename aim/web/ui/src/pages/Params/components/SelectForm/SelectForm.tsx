@@ -263,9 +263,9 @@ function SelectForm({
                       No params are selected
                     </Text>
                   )}
-                  <ErrorBoundary>
-                    {selectedParamsData?.options &&
-                      selectedParamsData.options.length > 0 && (
+                  {selectedParamsData?.options &&
+                    selectedParamsData.options.length > 0 && (
+                      <ErrorBoundary>
                         <Box className='SelectForm__tags ScrollBar__hidden'>
                           {selectedParamsData?.options?.map(
                             (tag: ISelectOption) => {
@@ -281,20 +281,20 @@ function SelectForm({
                             },
                           )}
                         </Box>
-                      )}
-                  </ErrorBoundary>
+                      </ErrorBoundary>
+                    )}
                 </Box>
-                <ErrorBoundary>
-                  {selectedParamsData?.options &&
-                    selectedParamsData.options.length > 1 && (
+                {selectedParamsData?.options &&
+                  selectedParamsData.options.length > 1 && (
+                    <ErrorBoundary>
                       <span
                         onClick={() => onParamsSelectChange([])}
                         className='SelectForm__clearAll'
                       >
                         <Icon name='close' />
                       </span>
-                    )}
-                </ErrorBoundary>
+                    </ErrorBoundary>
+                  )}
               </ErrorBoundary>
             </Box>
             <Button
