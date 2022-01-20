@@ -24,9 +24,9 @@ function Modal({
   onOk,
   title,
   titleIconName,
-  cancelButtonText,
-  modalType,
-  okButtonText,
+  cancelButtonText = 'Cancel',
+  modalType = 'info',
+  okButtonText = 'Ok',
   okButtonColor,
   withoutTitleIcon,
   children,
@@ -35,7 +35,7 @@ function Modal({
     <Dialog open={opened} onClose={onClose} aria-labelledby='form-dialog-title'>
       <div className={`Modal ${modalType}`}>
         <div className='Modal__header'>
-          {modalType && !withoutTitleIcon && (
+          {!withoutTitleIcon && (
             <div
               className={classNames('Modal__header__titleIcon', {
                 [modalType as string]: modalType,
@@ -62,7 +62,7 @@ function Modal({
         <div className='Modal__content'>{children}</div>
         <div className='Modal__footer'>
           <Button className='Modal__footer__okCancel' onClick={onClose}>
-            {cancelButtonText ?? ''}
+            {cancelButtonText}
           </Button>
           <Button
             onClick={onOk}
@@ -70,7 +70,7 @@ function Modal({
             className={'Modal__footer__okButton'}
             style={{ background: okButtonColor }}
           >
-            {okButtonText ?? ''}
+            {okButtonText}
           </Button>
         </div>
         <Button

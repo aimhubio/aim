@@ -40,12 +40,51 @@
 }
 .ActionModal {
   width: toRem(540px);
+  &__Table {
+    .BaseTable__header {
+      border-radius: toRem(4px) toRem(4px) 0 0;
+      border-bottom: unset;
+      .BaseTable__header-row {
+        border-bottom: unset;
+      }
+    }
+    .BaseTable__header-cell {
+      background: $cuddle-20;
+      border-right: unset;
+    }
+    .BaseTable__row {
+      border-bottom: unset;
 
+      .BaseTable__row-cell {
+        border-right: unset;
+      }
+      &:nth-child(odd) {
+        .BaseTable__row-cell {
+          background: $white;
+        }
+      }
+      &:nth-child(even) {
+        .BaseTable__row-cell {
+          background: $cuddle-10;
+        }
+      }
+      &:hover {
+        .BaseTable__row-cell {
+          background: $primary-color-10;
+        }
+      }
+    }
+  }
   &__disabledTableWrapper {
     opacity: 0.5;
     .BaseTable__body > div {
       pointer-events: none;
     }
+  }
+  &__experimentRow {
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
   }
   .BaseTable__row:hover {
     .ActionModal__tableRowWithAction {

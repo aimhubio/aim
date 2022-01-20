@@ -2,10 +2,13 @@ import React from 'react';
 import _ from 'lodash';
 import moment from 'moment';
 import classNames from 'classnames';
-import { react } from 'plotly.js';
+
+import { Tooltip } from '@material-ui/core';
 
 import Table from 'components/Table/Table';
 import { Button, Icon, Modal, Text } from 'components/kit';
+
+import { DateWithSeconds } from 'config/dates/dates';
 
 function ArchiveModal({
   opened,
@@ -15,6 +18,7 @@ function ArchiveModal({
   onRowSelect,
   archiveRuns,
 }: any): React.FunctionComponentElement<React.ReactNode> {
+  const archivedText = archiveMode ? 'archive' : 'unarchive';
   let runsArchiveRequest: any = null;
   const [data, setData] = React.useState<any[]>([]);
   const [disabledData, setDisabledData] = React.useState<any[]>([]);
@@ -26,6 +30,21 @@ function ArchiveModal({
       key: 'experiment',
       title: 'Experiment',
       width: 200,
+      cellRenderer: function cellRenderer({ cellData, rowIndex }: any) {
+        return (
+          <Tooltip title={cellData}>
+            <div>
+              <Text
+                size={12}
+                weight={500}
+                className='ActionModal__experimentRow'
+              >
+                {cellData}
+              </Text>
+            </div>
+          </Tooltip>
+        );
+      },
     },
     {
       dataKey: 'run',
@@ -60,7 +79,6 @@ function ArchiveModal({
                     ),
                     actionType: 'removeAll',
                   });
-                  console.log(tmpSelectedRows);
                   const hasData = Object.values(tmpSelectedRows).find(
                     (item: any) =>
                       archiveMode ? !item.archived : item.archived,
@@ -95,7 +113,7 @@ function ArchiveModal({
         const rowData = {
           key: selectedRow.runHash,
           run: `${moment(selectedRow.creation_time * 1000).format(
-            'DD MMM YYYY, HH:mm:ss A',
+            DateWithSeconds,
           )}`,
           experiment: selectedRow.experiment.name,
           runHash: selectedRow.runHash,
@@ -139,21 +157,19 @@ function ArchiveModal({
         onOk={onArchive}
         cancelButtonText='Cancel'
         okButtonText={archiveMode ? 'Archive' : 'Unarchive'}
-        title={`Do you really want to ${
-          archiveMode ? 'archive' : 'unarchive'
-        }?`}
-        modalType='warning'
+        title={`Do you really want to ${archivedText}?`}
+        titleIconName={archivedText}
       >
         <div className='ActionModal'>
           <Text size={14} weight={400} className='ActionModal__infoText'>
-            Archived runs will not appear in search both on Dashboard and
-            Explore. But you will still be able to unarchive the run at any
-            time.
+            {archiveMode
+              ? 'Archived runs will not appear in search both on Dashboard andExplore. But you will still be able to unarchive the run at anytime.'
+              : 'Unarchived runs will appear in search both on Dashboard and Explore.'}
           </Text>
           <Text size={12} weight={500} className='ActionModal__tableTitle'>
-            {`${Object.values(data).length} Selected runs you can ${
-              archiveMode ? 'archive' : 'unarchive'
-            }`}
+            {`${
+              Object.values(data).length
+            } Selected runs you can ${archivedText}`}
           </Text>
           {!_.isEmpty(data) && (
             <Table
@@ -166,8 +182,8 @@ function ArchiveModal({
               headerHeight={28}
               emptyText='No Text'
               rowHeight={24}
-              onRowHover={() => {}}
               height='100%'
+              className='ActionModal__Table'
             />
           )}
           {!_.isEmpty(disabledData) && (
@@ -191,8 +207,8 @@ function ArchiveModal({
                 headerHeight={28}
                 emptyText='No Text'
                 rowHeight={24}
-                onRowHover={() => {}}
                 height='100%'
+                className='ActionModal__Table'
               />
             </div>
           )}

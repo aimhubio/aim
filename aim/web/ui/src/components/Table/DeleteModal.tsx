@@ -3,8 +3,12 @@ import _ from 'lodash';
 import moment from 'moment';
 import classNames from 'classnames';
 
+import { Tooltip } from '@material-ui/core';
+
 import Table from 'components/Table/Table';
 import { Button, Icon, Modal, Text } from 'components/kit';
+
+import { DateWithSeconds } from 'config/dates/dates';
 
 function DeleteModal({
   opened,
@@ -24,6 +28,21 @@ function DeleteModal({
       key: 'experiment',
       title: 'Experiment',
       width: 200,
+      cellRenderer: function cellRenderer({ cellData, rowIndex }: any) {
+        return (
+          <Tooltip title={cellData}>
+            <div>
+              <Text
+                size={12}
+                weight={500}
+                className='ActionModal__experimentRow'
+              >
+                {cellData}
+              </Text>
+            </div>
+          </Tooltip>
+        );
+      },
     },
     {
       dataKey: 'run',
@@ -91,7 +110,7 @@ function DeleteModal({
         const rowData = {
           key: selectedRow.runHash,
           run: `${moment(selectedRow.creation_time * 1000).format(
-            'DD MMM YYYY, HH:mm A',
+            DateWithSeconds,
           )}`,
           experiment: selectedRow.experiment.name,
           runHash: selectedRow.runHash,
@@ -157,8 +176,8 @@ function DeleteModal({
               headerHeight={28}
               emptyText='No Text'
               rowHeight={24}
-              onRowHover={() => {}}
               height='100%'
+              className='ActionModal__Table'
             />
           )}
           {!_.isEmpty(disabledData) && (
@@ -180,8 +199,8 @@ function DeleteModal({
                 headerHeight={28}
                 emptyText='No Text'
                 rowHeight={24}
-                onRowHover={() => {}}
                 height='100%'
+                className='ActionModal__Table'
               />
             </div>
           )}

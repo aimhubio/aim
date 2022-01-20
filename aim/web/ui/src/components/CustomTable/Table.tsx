@@ -191,6 +191,15 @@ function Table(props) {
     props.updateColumns(columnsOrderClone);
   }
 
+  function showTopHeaderContent(index, col, add) {
+    return (
+      props.topHeader &&
+      sortedColumns[
+        (leftPane ? leftPane.length : 0) + (add ? index + 1 : index - 1)
+      ]?.topHeader !== col.topHeader
+    );
+  }
+
   return (
     <ErrorBoundary>
       <div
@@ -266,7 +275,6 @@ function Table(props) {
                     width={32}
                     isAlwaysVisible={true}
                     onRowHover={props.onRowHover}
-                    onRowClick={() => {}}
                   />
                 </ErrorBoundary>
               )}
@@ -274,14 +282,8 @@ function Table(props) {
                 <ErrorBoundary key={col.key}>
                   <Column
                     topHeader={props.topHeader}
-                    showTopHeaderContent={
-                      props.topHeader &&
-                      sortedColumns[index - 1]?.topHeader !== col.topHeader
-                    }
-                    showTopHeaderBorder={
-                      props.topHeader &&
-                      sortedColumns[index + 1]?.topHeader !== col.topHeader
-                    }
+                    showTopHeaderContent={showTopHeaderContent(index, col)}
+                    showTopHeaderBorder={showTopHeaderContent(index, col, true)}
                     col={col}
                     data={props.data}
                     expanded={expanded}
@@ -332,16 +334,8 @@ function Table(props) {
                 <Column
                   key={col.key + index}
                   topHeader={props.topHeader}
-                  showTopHeaderContent={
-                    props.topHeader &&
-                    sortedColumns[(leftPane ? leftPane.length : 0) + index - 1]
-                      ?.topHeader !== col.topHeader
-                  }
-                  showTopHeaderBorder={
-                    props.topHeader &&
-                    sortedColumns[(leftPane ? leftPane.length : 0) + index + 1]
-                      ?.topHeader !== col.topHeader
-                  }
+                  showTopHeaderContent={showTopHeaderContent(index, col)}
+                  showTopHeaderBorder={showTopHeaderContent(index, col, true)}
                   col={col}
                   data={props.data}
                   expanded={expanded}
@@ -388,24 +382,8 @@ function Table(props) {
                   <Column
                     key={col.key}
                     topHeader={props.topHeader}
-                    showTopHeaderContent={
-                      props.topHeader &&
-                      sortedColumns[
-                        (leftPane ? leftPane.length : 0) +
-                          middlePane.length +
-                          index -
-                          1
-                      ]?.topHeader !== col.topHeader
-                    }
-                    showTopHeaderBorder={
-                      props.topHeader &&
-                      sortedColumns[
-                        (leftPane ? leftPane.length : 0) +
-                          middlePane.length +
-                          index +
-                          1
-                      ]?.topHeader !== col.topHeader
-                    }
+                    showTopHeaderContent={showTopHeaderContent(index, col)}
+                    showTopHeaderBorder={showTopHeaderContent(index, col, true)}
                     col={col}
                     data={props.data}
                     expanded={expanded}

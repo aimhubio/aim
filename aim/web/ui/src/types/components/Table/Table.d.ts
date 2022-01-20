@@ -60,6 +60,7 @@ export interface ITableProps {
   onRowSelect?: any;
   archiveRuns?: (ids: string[], archived: boolean) => void;
   deleteRuns?: (ids: string[]) => void;
+  className?: string;
 }
 
 export interface ITableRef {
