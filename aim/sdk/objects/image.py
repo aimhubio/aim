@@ -37,8 +37,13 @@ class Image(CustomObject):
     FLAG_WARN_RGBA_RGB = False
     AIM_NAME = 'aim.image'
 
-    def __init__(self, image, caption: str = '', format='png', quality=85, optimize=False):
+    def __init__(self, image, caption: str = '', format='png', quality=90, optimize=False):
         super().__init__()
+
+        # normalize jpg
+        if format.lower() == 'jpg':
+            # PIL doesn't support 'jpg' key
+            format = 'jpeg'
 
         params = {
             'format': format.lower(),
