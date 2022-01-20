@@ -74,6 +74,7 @@ export interface IImagesExploreAppModelState {
   groupingSelectOptions: IGroupingSelectOption[];
   searchButtonDisabled: boolean;
   applyButtonDisabled: boolean;
+  selectedRows: any;
   // liveUpdateConfig: {
   //   delay: number;
   //   enabled: boolean;

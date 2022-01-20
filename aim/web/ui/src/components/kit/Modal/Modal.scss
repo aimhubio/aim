@@ -1,5 +1,19 @@
 @use 'src/styles/abstracts' as *;
 
+@mixin getTypeColors($color, $cover-color) {
+  .Modal__header__titleIcon {
+    background-color: $cover-color;
+
+    .Icon__container {
+      color: $color;
+    }
+  }
+
+  .Modal__footer__okButton {
+    background-color: $color;
+  }
+}
+
 .Modal {
   display: flex;
   justify-content: center;
@@ -49,20 +63,28 @@
     width: 100%;
     &__okButton {
       margin-left: 0.5rem;
-      &.warning {
-        background: $warning-color;
-      }
-      &.error {
-        background: $error-color;
-      }
-      &.success {
-        background: $success-color;
-      }
-      &.info {
-        background: $primary-color;
-      }
+    }
+    &__okCancel {
+      color: $pico;
     }
   }
+
+  &.warning {
+    @include getTypeColors($warning-color, $warning-color-10);
+  }
+
+  &.error {
+    @include getTypeColors($error-color, $error-color-10);
+  }
+
+  &.info {
+    @include getTypeColors($primary-color, $primary-color-10);
+  }
+
+  &.success {
+    @include getTypeColors($success-color, $success-color-10);
+  }
+
   &__closeButton {
     position: absolute;
     top: $space-xxxs;

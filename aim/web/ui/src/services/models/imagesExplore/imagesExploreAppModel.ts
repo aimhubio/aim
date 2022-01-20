@@ -23,6 +23,7 @@ import imagesExploreService from 'services/api/imagesExplore/imagesExploreServic
 import appsService from 'services/api/apps/appsService';
 import dashboardService from 'services/api/dashboard/dashboardService';
 import blobsURIModel from 'services/models/media/blobsURIModel';
+import runsService from 'services/api/runs/runsService';
 
 import {
   GroupNameType,
@@ -37,7 +38,6 @@ import {
 } from 'types/services/models/metrics/metricsAppModel';
 import { IMetricTrace, IRun } from 'types/services/models/metrics/runModel';
 import { IBookmarkFormState } from 'types/components/BookmarkForm/BookmarkForm';
-import { INotification } from 'types/components/NotificationContainer/NotificationContainer';
 import { ITableColumn } from 'types/pages/metrics/components/TableColumns/TableColumns';
 import {
   IImageData,
@@ -50,6 +50,7 @@ import {
   ISelectOption,
 } from 'types/services/models/explorer/createAppModel';
 
+import onRowSelectAction from 'utils/app/onRowSelect';
 import { decode, encode } from 'utils/encoder/encoder';
 import getObjectPaths from 'utils/getObjectPaths';
 import getUrlWithParam from 'utils/getUrlWithParam';
@@ -73,6 +74,8 @@ import { getDataAsMediaSetNestedObject } from 'utils/app/getDataAsMediaSetNested
 import { getCompatibleSelectConfig } from 'utils/app/getCompatibleSelectConfig';
 import { getSortedFields, SortFields } from 'utils/getSortedFields';
 import { getValue } from 'utils/helper';
+import onNotificationDelete from 'utils/app/onNotificationDelete';
+import onNotificationAdd from 'utils/app/onNotificationAdd';
 
 import createModel from '../model';
 
@@ -139,6 +142,15 @@ function getConfig(): IImagesExploreAppConfig {
 
 let appRequestRef: {
   call: () => Promise<IAppData>;
+  abort: () => void;
+};
+
+let runsArchiveRef: {
+  call: (exceptionHandler: (detail: any) => void) => Promise<any>;
+  abort: () => void;
+};
+let runsDeleteRef: {
+  call: (exceptionHandler: (detail: any) => void) => Promise<any>;
   abort: () => void;
 };
 
@@ -241,11 +253,13 @@ function exceptionHandler(detail: any) {
   } else {
     message = detail.message || 'Something went wrong';
   }
-
   onNotificationAdd({
-    id: Date.now(),
-    severity: 'error',
-    message,
+    notification: {
+      id: Date.now(),
+      severity: 'error',
+      message,
+    },
+    model,
   });
 
   // reset model
@@ -260,15 +274,20 @@ function abortRequest(): void {
   model.setState({
     requestIsPending: false,
   });
-
   onNotificationAdd({
-    id: Date.now(),
-    severity: 'info',
-    message: 'Request has been cancelled',
+    notification: {
+      id: Date.now(),
+      severity: 'info',
+      message: 'Request has been cancelled',
+    },
+    model,
   });
 }
 
-function getImagesData(shouldUrlUpdate?: boolean) {
+function getImagesData(
+  shouldUrlUpdate?: boolean,
+  shouldResetSelectedRows?: boolean,
+) {
   if (imagesRequestRef) {
     imagesRequestRef.abort();
   }
@@ -312,6 +331,9 @@ function getImagesData(shouldUrlUpdate?: boolean) {
           requestIsPending: true,
           queryIsEmpty: false,
           applyButtonDisabled: true,
+          selectedRows: shouldResetSelectedRows
+            ? {}
+            : model.getState()?.selectedRows,
         });
 
         blobsURIModel.init();
@@ -331,6 +353,9 @@ function getImagesData(shouldUrlUpdate?: boolean) {
         }
       } else {
         model.setState({
+          selectedRows: shouldResetSelectedRows
+            ? {}
+            : model.getState()?.selectedRows,
           requestIsPending: false,
           queryIsEmpty: true,
           imagesData: {},
@@ -1105,6 +1130,7 @@ function getDataAsTableRows(
             color: metricsCollection.color ?? metric.color,
           },
           key: metric.seqKey,
+          selectKey: `${metric.run.hash}/${metric.seqKey}`,
           runHash: metric.run.hash,
           isHidden: config?.table?.hiddenMetrics?.includes(metric.key),
           index: rowIndex,
@@ -1211,21 +1237,6 @@ function getDataAsTableRows(
   return { rows, sameValueColumns };
 }
 
-function onNotificationDelete(id: number) {
-  let notifyData: INotification[] | [] = model.getState()?.notifyData || [];
-  notifyData = [...notifyData].filter((i) => i.id !== id);
-  model.setState({ notifyData });
-}
-
-function onNotificationAdd(notification: INotification) {
-  let notifyData: INotification[] | [] = model.getState()?.notifyData || [];
-  notifyData = [...notifyData, notification];
-  model.setState({ notifyData });
-  setTimeout(() => {
-    onNotificationDelete(notification.id);
-  }, 3000);
-}
-
 async function onBookmarkCreate({ name, description }: IBookmarkFormState) {
   const configData: IImagesExploreAppConfig | undefined =
     model.getState()?.config;
@@ -1239,15 +1250,21 @@ async function onBookmarkCreate({ name, description }: IBookmarkFormState) {
         .call();
       if (bookmark.name) {
         onNotificationAdd({
-          id: Date.now(),
-          severity: 'success',
-          message: BookmarkNotificationsEnum.CREATE,
+          notification: {
+            id: Date.now(),
+            severity: 'success',
+            message: BookmarkNotificationsEnum.CREATE,
+          },
+          model,
         });
       } else {
         onNotificationAdd({
-          id: Date.now(),
-          severity: 'error',
-          message: BookmarkNotificationsEnum.ERROR,
+          notification: {
+            id: Date.now(),
+            severity: 'error',
+            message: BookmarkNotificationsEnum.ERROR,
+          },
+          model,
         });
       }
     }
@@ -1265,9 +1282,12 @@ function onBookmarkUpdate(id: string) {
       .then((res: IDashboardData | any) => {
         if (res.id) {
           onNotificationAdd({
-            id: Date.now(),
-            severity: 'success',
-            message: BookmarkNotificationsEnum.UPDATE,
+            notification: {
+              id: Date.now(),
+              severity: 'success',
+              message: BookmarkNotificationsEnum.UPDATE,
+            },
+            model,
           });
         }
       });
@@ -1590,9 +1610,12 @@ function onSearchQueryCopy(): void {
   if (query) {
     navigator.clipboard.writeText(query);
     onNotificationAdd({
-      id: Date.now(),
-      severity: 'success',
-      message: 'Run Expression Copied',
+      notification: {
+        id: Date.now(),
+        severity: 'success',
+        message: 'Run Expression Copied',
+      },
+      model,
     });
   }
 }
@@ -1958,6 +1981,101 @@ function showRangePanel() {
   return !model.getState().requestIsPending && !model.getState().queryIsEmpty;
 }
 
+function archiveRuns(
+  ids: string[],
+  archived: boolean,
+): {
+  call: () => Promise<void>;
+  abort: () => void;
+} {
+  runsArchiveRef = runsService.archiveRuns(ids, archived);
+  return {
+    call: async () => {
+      try {
+        await runsArchiveRef
+          .call((detail) => exceptionHandler({ detail, model }))
+          .then(() => {
+            getImagesData(false, true).call();
+            onNotificationAdd({
+              notification: {
+                id: Date.now(),
+                severity: 'success',
+                message: `Runs are successfully ${
+                  archived ? 'archived' : 'unarchived'
+                } `,
+              },
+              model,
+            });
+          });
+      } catch (ex: Error | any) {
+        if (ex.name === 'AbortError') {
+          onNotificationAdd({
+            notification: {
+              id: Date.now(),
+              severity: 'error',
+              message: ex.message,
+            },
+            model,
+          });
+        }
+      }
+    },
+    abort: runsArchiveRef.abort,
+  };
+}
+
+function deleteRuns(ids: string[]): {
+  call: () => Promise<void>;
+  abort: () => void;
+} {
+  runsDeleteRef = runsService.deleteRuns(ids);
+  return {
+    call: async () => {
+      try {
+        await runsDeleteRef
+          .call((detail) => exceptionHandler({ detail, model }))
+          .then(() => {
+            getImagesData(false, true).call();
+            onNotificationAdd({
+              notification: {
+                id: Date.now(),
+                severity: 'success',
+                message: 'Runs are successfully deleted',
+              },
+              model,
+            });
+          });
+      } catch (ex: Error | any) {
+        if (ex.name === 'AbortError') {
+          onNotificationAdd({
+            notification: {
+              id: Date.now(),
+              severity: 'error',
+              message: ex.message,
+            },
+            model,
+          });
+        }
+      }
+    },
+    abort: runsDeleteRef.abort,
+  };
+}
+
+function onRowSelect({
+  actionType,
+  data,
+}: {
+  actionType: 'single' | 'selectAll' | 'removeAll';
+  data?: any;
+}): void {
+  return onRowSelectAction({ actionType, data, model });
+}
+
+function onModelNotificationDelete(id: number): void {
+  onNotificationDelete({ id, model });
+}
+
 const imagesExploreAppModel = {
   ...model,
   initialize,
@@ -1968,7 +2086,7 @@ const imagesExploreAppModel = {
   onGroupingModeChange,
   onGroupingReset,
   onGroupingApplyChange,
-  onNotificationDelete,
+  onNotificationDelete: onModelNotificationDelete,
   onNotificationAdd,
   onResetConfigData,
   updateURL,
@@ -2009,6 +2127,9 @@ const imagesExploreAppModel = {
   getDataAsImageSet,
   onImagesSortChange,
   onImagesSortReset,
+  deleteRuns,
+  archiveRuns,
+  onRowSelect,
 };
 
 export default imagesExploreAppModel;

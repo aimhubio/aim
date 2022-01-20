@@ -11,7 +11,9 @@ function DeleteModal({
   onClose,
   selectedRows,
   onRowSelect,
+  deleteRuns,
 }: any): React.FunctionComponentElement<React.ReactNode> {
+  let runsDeleteRequest: any = null;
   const [data, setData] = React.useState<any[]>([]);
   const [disabledData, setDisabledData] = React.useState<any[]>([]);
   const tableRef = React.useRef<any>({});
@@ -71,11 +73,16 @@ function DeleteModal({
   ];
 
   React.useEffect(() => {
-    const finishedList: any[] = [];
-    const inProgressList: any[] = [];
+    return () => {
+      runsDeleteRequest?.abort();
+    };
+  }, []);
+
+  React.useEffect(() => {
+    let finishedList: any[] = [];
+    let inProgressList: any[] = [];
     const runHashList: string[] = [];
     Object.values(selectedRows || {}).forEach((selectedRow: any) => {
-      console.log(selectedRow);
       if (!runHashList.includes(selectedRow.runHash)) {
         runHashList.push(selectedRow.runHash);
         const rowData = {
@@ -88,14 +95,18 @@ function DeleteModal({
           selectKey: selectedRow.selectKey,
           isInProgress: !selectedRow?.end_time,
           isDisabled: !selectedRow?.end_time,
+          creationTime: selectedRow.creation_time * 1000000,
         };
-        if (selectedRow.archived) {
+        if (!selectedRow.end_time) {
           inProgressList.push(rowData);
         } else {
           finishedList.push(rowData);
         }
       }
     });
+
+    finishedList = _.orderBy(finishedList, ['creationTime'], ['asc']);
+    inProgressList = _.orderBy(inProgressList, ['creationTime'], ['asc']);
 
     setData(finishedList);
     setDisabledData(inProgressList);
@@ -107,16 +118,23 @@ function DeleteModal({
     });
   }, [selectedRows]);
 
+  function onDelete() {
+    const ids = data.map((item: any) => item.runHash);
+    runsDeleteRequest = deleteRuns(ids);
+    runsDeleteRequest.call().then(() => onClose());
+  }
+
   return (
     opened && (
       <Modal
         opened={opened}
         onClose={onClose}
-        onOk={() => {}}
+        onOk={onDelete}
         cancelButtonText='Cancel'
         okButtonText='Delete'
         title='Do you really want to delete?'
         modalType='error'
+        titleIconName='delete'
       >
         <div className='ActionModal'>
           <Text size={14} weight={400} className='ActionModal__infoText'>

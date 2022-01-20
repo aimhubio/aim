@@ -56,7 +56,9 @@ export interface ITableProps {
   multiSelect?: boolean;
   selectedRows?: any;
   minHeight?: string;
-  onRowSelect?: (key: string) => void;
+  onRowSelect?: any;
+  archiveRuns?: (ids: string[], archived: boolean) => void;
+  deleteRuns?: (ids: string[]) => void;
 }
 
 export interface ITableRef {

@@ -227,6 +227,8 @@ function MetricsContainer(): React.FunctionComponentElement<React.ReactNode> {
       onShuffleChange={metricAppModel.onShuffleChange}
       onSearchQueryCopy={metricAppModel.onSearchQueryCopy}
       onRowSelect={metricAppModel.onRowSelect}
+      archiveRuns={metricAppModel.archiveRuns}
+      deleteRuns={metricAppModel.deleteRuns}
     />
   );
 }

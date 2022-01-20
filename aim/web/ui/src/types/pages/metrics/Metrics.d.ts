@@ -130,6 +130,8 @@ export interface IMetricProps extends Partial<RouteChildrenProps> {
     enabled?: boolean;
   }) => void;
   onRowSelect: any;
+  archiveRuns: (ids: string[], archived: boolean) => void;
+  deleteRuns: (ids: string[]) => void;
 }
 
 export interface IOnSmoothingChange {

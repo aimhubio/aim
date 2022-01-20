@@ -74,6 +74,8 @@ const Table = React.forwardRef(function Table(
     selectedRows,
     onRowSelect,
     minHeight,
+    archiveRuns,
+    deleteRuns,
     ...props
   }: ITableProps,
   ref,
@@ -759,7 +761,7 @@ const Table = React.forwardRef(function Table(
                       isOpenArchiveSelectedPopup ? 'opened' : ''
                     }`}
                   >
-                    <Icon name='delete' />
+                    <Icon name='archive' />
                     <Text size={14} tint={100}>
                       Archive
                     </Text>
@@ -776,7 +778,7 @@ const Table = React.forwardRef(function Table(
                       isOpenUnarchiveSelectedPopup ? 'opened' : ''
                     }`}
                   >
-                    <Icon name='delete' />
+                    <Icon name='unarchive' fontSize={18} />
                     <Text size={14} tint={100}>
                       Unarchive
                     </Text>
@@ -869,18 +871,21 @@ const Table = React.forwardRef(function Table(
             selectedRows={selectedRows}
             archiveMode
             onRowSelect={onRowSelect}
+            archiveRuns={archiveRuns}
           />
           <ArchiveModal
             opened={isOpenUnarchiveSelectedPopup}
             onClose={onToggleUnarchivePopup}
             selectedRows={selectedRows}
             onRowSelect={onRowSelect}
+            archiveRuns={archiveRuns}
           />
           <DeleteModal
             opened={isOpenDeleteSelectedPopup}
             onClose={onToggleDeletePopup}
             selectedRows={selectedRows}
             onRowSelect={onRowSelect}
+            deleteRuns={deleteRuns}
           />
         </div>
       ) : (

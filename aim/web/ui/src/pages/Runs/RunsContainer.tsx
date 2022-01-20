@@ -74,6 +74,8 @@ function RunsContainer(): React.FunctionComponentElement<React.ReactNode> {
       liveUpdateConfig={runsData?.config?.liveUpdate}
       onLiveUpdateConfigChange={runsAppModel.changeLiveUpdateConfig}
       onRowSelect={runsAppModel.onRowSelect}
+      archiveRuns={runsAppModel.archiveRuns}
+      deleteRuns={runsAppModel.deleteRuns}
     />
   );
 }

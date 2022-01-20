@@ -161,6 +161,7 @@ function Scatters(
                   hiddenColumns={props.hiddenColumns}
                   resizeMode={props.resizeMode}
                   columnsWidths={props.columnsWidths}
+                  selectedRows={props.selectedRows}
                   // Table actions
                   onSort={props.onSortChange}
                   onSortReset={props.onSortReset}
@@ -174,6 +175,10 @@ function Scatters(
                   onRowClick={props.onTableRowClick}
                   onTableResizeModeChange={props.onTableResizeModeChange}
                   updateColumnsWidths={props.updateColumnsWidths}
+                  onRowSelect={props.onRowSelect}
+                  archiveRuns={props.archiveRuns}
+                  deleteRuns={props.deleteRuns}
+                  multiSelect
                 />
               ) : null}
             </BusyLoaderWrapper>

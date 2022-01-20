@@ -46,6 +46,8 @@ function Runs(props: any): React.FunctionComponentElement<React.ReactNode> {
               updateColumnsWidths={props.updateColumnsWidths}
               selectedRows={props.selectedRows}
               onRowSelect={props.onRowSelect}
+              archiveRuns={props.archiveRuns}
+              deleteRuns={props.deleteRuns}
             />
           </div>
         </div>

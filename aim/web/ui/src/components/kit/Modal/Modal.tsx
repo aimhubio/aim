@@ -32,21 +32,20 @@ function Modal({
 }: IModalProps): React.FunctionComponentElement<React.ReactNode> {
   return (
     <Dialog open={opened} onClose={onClose} aria-labelledby='form-dialog-title'>
-      <div className='Modal'>
+      <div className={`Modal ${modalType}`}>
         <div className='Modal__header'>
-          {titleIconName ||
-            (modalType && (
-              <div
-                className={classNames('Modal__header__titleIcon', {
-                  [modalType as string]: modalType,
-                })}
-              >
-                <Icon
-                  name={titleIconName || ModalType[modalType ?? ''].iconName}
-                  fontSize={16}
-                />
-              </div>
-            ))}
+          {modalType && (
+            <div
+              className={classNames('Modal__header__titleIcon', {
+                [modalType as string]: modalType,
+              })}
+            >
+              <Icon
+                name={titleIconName || ModalType[modalType ?? ''].iconName}
+                fontSize={16}
+              />
+            </div>
+          )}
           {title && (
             <div className={classNames('Modal__header__title', {})}>
               {typeof title === 'string' ? (
@@ -61,7 +60,9 @@ function Modal({
         </div>
         <div className='Modal__content'>{children}</div>
         <div className='Modal__footer'>
-          <Button onClick={onClose}>{cancelButtonText ?? ''}</Button>
+          <Button className='Modal__footer__okCancel' onClick={onClose}>
+            {cancelButtonText ?? ''}
+          </Button>
           <Button
             onClick={onOk}
             variant='contained'

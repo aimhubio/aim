@@ -230,6 +230,8 @@ function Metrics(
                   onTableResizeModeChange={props.onTableResizeModeChange}
                   updateColumnsWidths={props.updateColumnsWidths}
                   onRowSelect={props.onRowSelect}
+                  archiveRuns={props.archiveRuns}
+                  deleteRuns={props.deleteRuns}
                 />
               ) : null}
             </BusyLoaderWrapper>

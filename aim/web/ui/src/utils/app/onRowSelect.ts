@@ -76,9 +76,6 @@ export default function onRowSelect<M extends State>({
       }
 
       break;
-    default:
-      console.log('');
-      break;
   }
 
   model.setState({

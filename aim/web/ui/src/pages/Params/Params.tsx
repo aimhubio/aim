@@ -86,6 +86,10 @@ const Params = ({
   liveUpdateConfig,
   onLiveUpdateConfigChange,
   onShuffleChange,
+  onRowSelect,
+  archiveRuns,
+  deleteRuns,
+  selectedRows,
 }: IParamsProps): React.FunctionComponentElement<React.ReactNode> => {
   const chartProps: any[] = React.useMemo(() => {
     return (highPlotData || []).map((chartData: any, index: number) => ({
@@ -232,6 +236,7 @@ const Params = ({
                   hiddenColumns={hiddenColumns}
                   resizeMode={resizeMode}
                   columnsWidths={columnsWidths}
+                  selectedRows={selectedRows}
                   // Table actions
                   onSortReset={onSortReset}
                   onSort={onSortFieldsChange}
@@ -245,6 +250,10 @@ const Params = ({
                   onTableResizeModeChange={onTableResizeModeChange}
                   onTableDiffShow={onTableDiffShow}
                   updateColumnsWidths={updateColumnsWidths}
+                  onRowSelect={onRowSelect}
+                  archiveRuns={archiveRuns}
+                  deleteRuns={deleteRuns}
+                  multiSelect
                 />
               ) : null}
             </BusyLoaderWrapper>

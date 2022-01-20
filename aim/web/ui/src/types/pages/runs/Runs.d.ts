@@ -31,4 +31,6 @@ export interface IRunsTableProps {
   updateColumnsWidths: (key: string, width: number, isReset: boolean) => void;
   selectedRows: any;
   onRowSelect: (key: string) => any;
+  archiveRuns: (ids: string[], archived: boolean) => void;
+  deleteRuns: (ids: string[]) => void;
 }

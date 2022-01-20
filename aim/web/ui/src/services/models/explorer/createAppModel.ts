@@ -443,6 +443,14 @@ function createAppModel(appConfig: IAppInitialConfig) {
       ) => Promise<ReadableStream<IRun<IMetricTrace>[]>>;
       abort: () => void;
     };
+    let runsArchiveRef: {
+      call: (exceptionHandler: (detail: any) => void) => Promise<any>;
+      abort: () => void;
+    };
+    let runsDeleteRef: {
+      call: (exceptionHandler: (detail: any) => void) => Promise<any>;
+      abort: () => void;
+    };
     let tooltipData: ITooltipData = {};
     let liveUpdateInstance: LiveUpdateService | null;
 
@@ -504,7 +512,10 @@ function createAppModel(appConfig: IAppInitialConfig) {
       });
     }
 
-    function getMetricsData(shouldUrlUpdate?: boolean): {
+    function getMetricsData(
+      shouldUrlUpdate?: boolean,
+      shouldResetSelectedRows?: boolean,
+    ): {
       call: () => Promise<void>;
       abort: () => void;
     } {
@@ -542,16 +553,21 @@ function createAppModel(appConfig: IAppInitialConfig) {
                 },
               };
             }
-
             model.setState({
               requestIsPending: false,
               queryIsEmpty: true,
+              selectedRows: shouldResetSelectedRows
+                ? {}
+                : model.getState()?.selectedRows,
               ...state,
             });
           } else {
             model.setState({
               requestIsPending: true,
               queryIsEmpty: false,
+              selectedRows: shouldResetSelectedRows
+                ? {}
+                : model.getState()?.selectedRows,
             });
             liveUpdateInstance?.stop().then();
             try {
@@ -1701,6 +1717,87 @@ function createAppModel(appConfig: IAppInitialConfig) {
       liveUpdateInstance = null; //@TODO check is this need or not
     }
 
+    function archiveRuns(
+      ids: string[],
+      archived: boolean,
+    ): {
+      call: () => Promise<void>;
+      abort: () => void;
+    } {
+      runsArchiveRef = runsService.archiveRuns(ids, archived);
+      return {
+        call: async () => {
+          try {
+            await runsArchiveRef
+              .call((detail) => exceptionHandler({ detail, model }))
+              .then(() => {
+                getMetricsData(false, true).call();
+                onNotificationAdd({
+                  notification: {
+                    id: Date.now(),
+                    severity: 'success',
+                    message: `Runs are successfully ${
+                      archived ? 'archived' : 'unarchived'
+                    } `,
+                  },
+                  model,
+                });
+              });
+          } catch (ex: Error | any) {
+            if (ex.name === 'AbortError') {
+              onNotificationAdd({
+                notification: {
+                  id: Date.now(),
+                  severity: 'error',
+                  message: ex.message,
+                },
+                model,
+              });
+            }
+          }
+        },
+        abort: runsArchiveRef.abort,
+      };
+    }
+
+    function deleteRuns(ids: string[]): {
+      call: () => Promise<void>;
+      abort: () => void;
+    } {
+      runsDeleteRef = runsService.deleteRuns(ids);
+      return {
+        call: async () => {
+          try {
+            await runsDeleteRef
+              .call((detail) => exceptionHandler({ detail, model }))
+              .then(() => {
+                getMetricsData(false, true).call();
+                onNotificationAdd({
+                  notification: {
+                    id: Date.now(),
+                    severity: 'success',
+                    message: 'Runs are successfully deleted',
+                  },
+                  model,
+                });
+              });
+          } catch (ex: Error | any) {
+            if (ex.name === 'AbortError') {
+              onNotificationAdd({
+                notification: {
+                  id: Date.now(),
+                  severity: 'error',
+                  message: ex.message,
+                },
+                model,
+              });
+            }
+          }
+        },
+        abort: runsDeleteRef.abort,
+      };
+    }
+
     const methods = {
       initialize,
       getAppConfigData: getModelAppConfigData,
@@ -1721,6 +1818,8 @@ function createAppModel(appConfig: IAppInitialConfig) {
       onSearchQueryCopy,
       changeLiveUpdateConfig,
       destroy,
+      deleteRuns,
+      archiveRuns,
     };
 
     if (grouping) {
@@ -1942,6 +2041,14 @@ function createAppModel(appConfig: IAppInitialConfig) {
         ) => Promise<ReadableStream<IRun<IParamTrace>[]>>;
         abort: () => void;
       };
+      let runsArchiveRef: {
+        call: (exceptionHandler: (detail: any) => void) => Promise<any>;
+        abort: () => void;
+      };
+      let runsDeleteRef: {
+        call: (exceptionHandler: (detail: any) => void) => Promise<any>;
+        abort: () => void;
+      };
       let liveUpdateInstance: LiveUpdateService | null;
 
       function initialize(appId: string = ''): {
@@ -2002,6 +2109,7 @@ function createAppModel(appConfig: IAppInitialConfig) {
 
       function getRunsData(
         shouldUrlUpdate?: boolean,
+        shouldResetSelectedRows?: boolean,
         isInitial = true,
       ): {
         call: () => Promise<void>;
@@ -2073,6 +2181,9 @@ function createAppModel(appConfig: IAppInitialConfig) {
 
               model.setState({
                 data,
+                selectedRows: shouldResetSelectedRows
+                  ? {}
+                  : model.getState()?.selectedRows,
                 rawData: runsData,
                 requestIsPending: false,
                 infiniteIsPending: false,
@@ -2519,7 +2630,7 @@ function createAppModel(appConfig: IAppInitialConfig) {
               },
             },
           });
-          return getRunsData(false, false);
+          return getRunsData(false, false, false);
         }
       }
 
@@ -2679,6 +2790,87 @@ function createAppModel(appConfig: IAppInitialConfig) {
         );
       }
 
+      function archiveRuns(
+        ids: string[],
+        archived: boolean,
+      ): {
+        call: () => Promise<void>;
+        abort: () => void;
+      } {
+        runsArchiveRef = runsService.archiveRuns(ids, archived);
+        return {
+          call: async () => {
+            try {
+              await runsArchiveRef
+                .call((detail) => exceptionHandler({ detail, model }))
+                .then(() => {
+                  getRunsData(false, true).call();
+                  onNotificationAdd({
+                    notification: {
+                      id: Date.now(),
+                      severity: 'success',
+                      message: `Runs are successfully ${
+                        archived ? 'archived' : 'unarchived'
+                      } `,
+                    },
+                    model,
+                  });
+                });
+            } catch (ex: Error | any) {
+              if (ex.name === 'AbortError') {
+                onNotificationAdd({
+                  notification: {
+                    id: Date.now(),
+                    severity: 'error',
+                    message: ex.message,
+                  },
+                  model,
+                });
+              }
+            }
+          },
+          abort: runsArchiveRef.abort,
+        };
+      }
+
+      function deleteRuns(ids: string[]): {
+        call: () => Promise<void>;
+        abort: () => void;
+      } {
+        runsDeleteRef = runsService.deleteRuns(ids);
+        return {
+          call: async () => {
+            try {
+              await runsDeleteRef
+                .call((detail) => exceptionHandler({ detail, model }))
+                .then(() => {
+                  getRunsData(false, true).call();
+                  onNotificationAdd({
+                    notification: {
+                      id: Date.now(),
+                      severity: 'success',
+                      message: 'Runs are successfully deleted',
+                    },
+                    model,
+                  });
+                });
+            } catch (ex: Error | any) {
+              if (ex.name === 'AbortError') {
+                onNotificationAdd({
+                  notification: {
+                    id: Date.now(),
+                    severity: 'error',
+                    message: ex.message,
+                  },
+                  model,
+                });
+              }
+            }
+          },
+          abort: runsDeleteRef.abort,
+        };
+      }
+
       const methods = {
         destroy,
         initialize,
@@ -2689,6 +2881,8 @@ function createAppModel(appConfig: IAppInitialConfig) {
         onNotificationDelete: onModelNotificationDelete,
         setDefaultAppConfigData: setModelDefaultAppConfigData,
         changeLiveUpdateConfig,
+        archiveRuns,
+        deleteRuns,
       };
 
       if (grouping) {
@@ -2772,6 +2966,14 @@ function createAppModel(appConfig: IAppInitialConfig) {
         ) => Promise<ReadableStream<IRun<IParamTrace>[]>>;
         abort: () => void;
       };
+      let runsArchiveRef: {
+        call: (exceptionHandler: (detail: any) => void) => Promise<any>;
+        abort: () => void;
+      };
+      let runsDeleteRef: {
+        call: (exceptionHandler: (detail: any) => void) => Promise<any>;
+        abort: () => void;
+      };
       let tooltipData: ITooltipData = {};
       let liveUpdateInstance: LiveUpdateService | null;
 
@@ -2832,7 +3034,10 @@ function createAppModel(appConfig: IAppInitialConfig) {
         });
       }
 
-      function getParamsData(shouldUrlUpdate?: boolean): {
+      function getParamsData(
+        shouldUrlUpdate?: boolean,
+        shouldResetSelectedRows?: boolean,
+      ): {
         call: () => Promise<void>;
         abort: () => void;
       } {
@@ -2865,12 +3070,18 @@ function createAppModel(appConfig: IAppInitialConfig) {
               model.setState({
                 requestIsPending: false,
                 queryIsEmpty: true,
+                selectedRows: shouldResetSelectedRows
+                  ? {}
+                  : model.getState()?.selectedRows,
                 ...state,
               });
             } else {
               model.setState({
                 requestIsPending: true,
                 queryIsEmpty: false,
+                selectedRows: shouldResetSelectedRows
+                  ? {}
+                  : model.getState()?.selectedRows,
               });
               liveUpdateInstance?.stop().then();
               try {
@@ -3795,6 +4006,87 @@ function createAppModel(appConfig: IAppInitialConfig) {
         liveUpdateInstance = null; //@TODO check is this need or not
       }
 
+      function archiveRuns(
+        ids: string[],
+        archived: boolean,
+      ): {
+        call: () => Promise<void>;
+        abort: () => void;
+      } {
+        runsArchiveRef = runsService.archiveRuns(ids, archived);
+        return {
+          call: async () => {
+            try {
+              await runsArchiveRef
+                .call((detail) => exceptionHandler({ detail, model }))
+                .then(() => {
+                  getParamsData(false, true).call();
+                  onNotificationAdd({
+                    notification: {
+                      id: Date.now(),
+                      severity: 'success',
+                      message: `Runs are successfully ${
+                        archived ? 'archived' : 'unarchived'
+                      } `,
+                    },
+                    model,
+                  });
+                });
+            } catch (ex: Error | any) {
+              if (ex.name === 'AbortError') {
+                onNotificationAdd({
+                  notification: {
+                    id: Date.now(),
+                    severity: 'error',
+                    message: ex.message,
+                  },
+                  model,
+                });
+              }
+            }
+          },
+          abort: runsArchiveRef.abort,
+        };
+      }
+
+      function deleteRuns(ids: string[]): {
+        call: () => Promise<void>;
+        abort: () => void;
+      } {
+        runsDeleteRef = runsService.deleteRuns(ids);
+        return {
+          call: async () => {
+            try {
+              await runsDeleteRef
+                .call((detail) => exceptionHandler({ detail, model }))
+                .then(() => {
+                  getParamsData(false, true).call();
+                  onNotificationAdd({
+                    notification: {
+                      id: Date.now(),
+                      severity: 'success',
+                      message: 'Runs are successfully deleted',
+                    },
+                    model,
+                  });
+                });
+            } catch (ex: Error | any) {
+              if (ex.name === 'AbortError') {
+                onNotificationAdd({
+                  notification: {
+                    id: Date.now(),
+                    severity: 'error',
+                    message: ex.message,
+                  },
+                  model,
+                });
+              }
+            }
+          },
+          abort: runsDeleteRef.abort,
+        };
+      }
+
       const methods = {
         initialize,
         getAppConfigData: getModelAppConfigData,
@@ -3812,6 +4104,8 @@ function createAppModel(appConfig: IAppInitialConfig) {
         destroy,
         changeLiveUpdateConfig,
         onShuffleChange,
+        deleteRuns,
+        archiveRuns,
       };
 
       if (grouping) {
@@ -3968,6 +4262,14 @@ function createAppModel(appConfig: IAppInitialConfig) {
         call: (
           exceptionHandler: (detail: any) => void,
         ) => Promise<ReadableStream<IRun<IParamTrace>[]>>;
+        abort: () => void;
+      };
+      let runsArchiveRef: {
+        call: (exceptionHandler: (detail: any) => void) => Promise<any>;
+        abort: () => void;
+      };
+      let runsDeleteRef: {
+        call: (exceptionHandler: (detail: any) => void) => Promise<any>;
         abort: () => void;
       };
       let tooltipData: ITooltipData = {};
@@ -4692,7 +4994,10 @@ function createAppModel(appConfig: IAppInitialConfig) {
         });
       }
 
-      function getScattersData(shouldUrlUpdate?: boolean): {
+      function getScattersData(
+        shouldUrlUpdate?: boolean,
+        shouldResetSelectedRows?: boolean,
+      ): {
         call: () => Promise<void>;
         abort: () => void;
       } {
@@ -4727,12 +5032,18 @@ function createAppModel(appConfig: IAppInitialConfig) {
               model.setState({
                 requestIsPending: false,
                 queryIsEmpty: true,
+                selectedRows: shouldResetSelectedRows
+                  ? {}
+                  : model.getState()?.selectedRows,
                 ...state,
               });
             } else {
               model.setState({
                 requestIsPending: true,
                 queryIsEmpty: false,
+                selectedRows: shouldResetSelectedRows
+                  ? {}
+                  : model.getState()?.selectedRows,
               });
               liveUpdateInstance?.stop().then();
               try {
@@ -4985,6 +5296,87 @@ function createAppModel(appConfig: IAppInitialConfig) {
         liveUpdateInstance = null; //@TODO check is this need or not
       }
 
+      function archiveRuns(
+        ids: string[],
+        archived: boolean,
+      ): {
+        call: () => Promise<void>;
+        abort: () => void;
+      } {
+        runsArchiveRef = runsService.archiveRuns(ids, archived);
+        return {
+          call: async () => {
+            try {
+              await runsArchiveRef
+                .call((detail) => exceptionHandler({ detail, model }))
+                .then(() => {
+                  getScattersData(false, true).call();
+                  onNotificationAdd({
+                    notification: {
+                      id: Date.now(),
+                      severity: 'success',
+                      message: `Runs are successfully ${
+                        archived ? 'archived' : 'unarchived'
+                      } `,
+                    },
+                    model,
+                  });
+                });
+            } catch (ex: Error | any) {
+              if (ex.name === 'AbortError') {
+                onNotificationAdd({
+                  notification: {
+                    id: Date.now(),
+                    severity: 'error',
+                    message: ex.message,
+                  },
+                  model,
+                });
+              }
+            }
+          },
+          abort: runsArchiveRef.abort,
+        };
+      }
+
+      function deleteRuns(ids: string[]): {
+        call: () => Promise<void>;
+        abort: () => void;
+      } {
+        runsDeleteRef = runsService.deleteRuns(ids);
+        return {
+          call: async () => {
+            try {
+              await runsDeleteRef
+                .call((detail) => exceptionHandler({ detail, model }))
+                .then(() => {
+                  getScattersData(false, true).call();
+                  onNotificationAdd({
+                    notification: {
+                      id: Date.now(),
+                      severity: 'success',
+                      message: 'Runs are successfully deleted',
+                    },
+                    model,
+                  });
+                });
+            } catch (ex: Error | any) {
+              if (ex.name === 'AbortError') {
+                onNotificationAdd({
+                  notification: {
+                    id: Date.now(),
+                    severity: 'error',
+                    message: ex.message,
+                  },
+                  model,
+                });
+              }
+            }
+          },
+          abort: runsDeleteRef.abort,
+        };
+      }
+
       const methods = {
         initialize,
         getAppConfigData: getModelAppConfigData,
@@ -5001,6 +5393,8 @@ function createAppModel(appConfig: IAppInitialConfig) {
         onResetConfigData: onModelResetConfigData,
         destroy,
         changeLiveUpdateConfig,
+        archiveRuns,
+        deleteRuns,
       };
 
       if (grouping) {

@@ -26,6 +26,8 @@ function RunsTable({
   updateColumnsWidths,
   selectedRows,
   onRowSelect,
+  archiveRuns,
+  deleteRuns,
 }: IRunsTableProps): React.FunctionComponentElement<React.ReactNode> {
   const getLatestRunsDataRequestRef = React.useRef<any>(null);
   React.useEffect(() => {
@@ -72,6 +74,8 @@ function RunsTable({
           updateColumnsWidths={updateColumnsWidths}
           onExport={onExportTableData}
           onRowSelect={onRowSelect}
+          archiveRuns={archiveRuns}
+          deleteRuns={deleteRuns}
         />
       </div>
       {isInfiniteLoading && (
