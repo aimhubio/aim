@@ -69,7 +69,7 @@ import getTooltipData from 'utils/app/getTooltipData';
 import filterTooltipContent from 'utils/filterTooltipContent';
 import { getDataAsMediaSetNestedObject } from 'utils/app/getDataAsMediaSetNestedObject';
 import { getCompatibleSelectConfig } from 'utils/app/getCompatibleSelectConfig';
-import { getSortedFields, SortFields } from 'utils/getSortedFields';
+import { getSortedFields, SortField, SortFields } from 'utils/getSortedFields';
 import { getValue } from 'utils/helper';
 import onNotificationDelete from 'utils/app/onNotificationDelete';
 import onNotificationAdd from 'utils/app/onNotificationAdd';
@@ -429,16 +429,30 @@ function processData(data: any[]): {
       });
     });
   });
+
+  let sortFields = configData?.table?.sortFields ?? [];
+
+  if (sortFields?.length === 0) {
+    sortFields = [
+      {
+        value: 'run.props.creation_time',
+        order: 'desc',
+        label: '',
+        group: '',
+      },
+    ];
+  }
+
   const processedData = groupData(
     _.orderBy(
       metrics,
-      configData?.table?.sortFields?.map(
-        (f: any) =>
-          function (metric: any) {
+      sortFields?.map(
+        (f: SortField) =>
+          function (metric: SortField) {
             return getValue(metric, f.value, '');
           },
-      ) ?? [],
-      configData?.table?.sortFields?.map((f: any) => f.order) ?? [],
+      ),
+      sortFields?.map((f: any) => f.order),
     ),
   );
   const uniqParams = _.uniq(params);
@@ -689,6 +703,11 @@ function getGroupingSelectOptions({
       group: 'run',
       label: 'run.hash',
       value: 'run.hash',
+    },
+    {
+      group: 'run',
+      label: 'run.creation_time',
+      value: 'run.props.creation_time',
     },
     ...paramsOptions,
 

@@ -907,16 +907,29 @@ function createAppModel(appConfig: IAppInitialConfig) {
         );
       });
 
+      let sortFields = configData?.table?.sortFields ?? [];
+
+      if (sortFields?.length === 0) {
+        sortFields = [
+          {
+            value: 'run.props.creation_time',
+            order: 'desc',
+            label: '',
+            group: '',
+          },
+        ];
+      }
+
       const processedData = groupData(
         _.orderBy(
           metrics,
-          configData?.table?.sortFields?.map(
+          sortFields?.map(
             (f: SortField) =>
               function (metric: IMetric) {
                 return getValue(metric, f.value, '');
               },
-          ) ?? [],
-          configData?.table?.sortFields?.map((f: SortField) => f.order) ?? [],
+          ),
+          sortFields?.map((f: SortField) => f.order),
         ),
       );
       const uniqParams = _.uniq(params);
@@ -3693,16 +3706,29 @@ function createAppModel(appConfig: IAppInitialConfig) {
           });
         });
 
+        let sortFields = configData?.table?.sortFields ?? [];
+
+        if (sortFields?.length === 0) {
+          sortFields = [
+            {
+              value: 'run.props.creation_time',
+              order: 'desc',
+              label: '',
+              group: '',
+            },
+          ];
+        }
+
         const processedData = groupData(
           _.orderBy(
             runs,
-            configData?.table?.sortFields?.map(
+            sortFields?.map(
               (f: SortField) =>
                 function (run: IParam) {
                   return getValue(run, f.value, '');
                 },
-            ) ?? [],
-            configData?.table?.sortFields?.map((f: SortField) => f.order) ?? [],
+            ),
+            sortFields?.map((f: SortField) => f.order),
           ),
         );
         const uniqParams = _.uniq(params);
@@ -4754,16 +4780,29 @@ function createAppModel(appConfig: IAppInitialConfig) {
           });
         });
 
+        let sortFields = configData?.table?.sortFields ?? [];
+
+        if (sortFields?.length === 0) {
+          sortFields = [
+            {
+              value: 'run.props.creation_time',
+              order: 'desc',
+              label: '',
+              group: '',
+            },
+          ];
+        }
+
         const processedData = groupData(
           _.orderBy(
             runs,
-            configData?.table?.sortFields?.map(
+            sortFields?.map(
               (f: SortField) =>
                 function (run: IParam) {
                   return getValue(run, f.value, '');
                 },
-            ) ?? [],
-            configData?.table?.sortFields?.map((f: SortField) => f.order) ?? [],
+            ),
+            sortFields?.map((f: SortField) => f.order),
           ),
         );
         const uniqParams = _.uniq(params);
