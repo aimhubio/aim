@@ -77,6 +77,7 @@ const Table = React.forwardRef(function Table(
     minHeight,
     archiveRuns,
     deleteRuns,
+    className = '',
     ...props
   }: ITableProps,
   ref,
@@ -563,7 +564,7 @@ const Table = React.forwardRef(function Table(
         className='Tags__TagList__tagListBusyLoader'
       >
         {!isEmpty(rowData) ? (
-          <div style={{ height: '100%' }}>
+          <div style={{ height: '100%' }} className={className}>
             {!hideHeaderActions && isEmpty(selectedRows) ? (
               <div className='Table__header'>
                 {showResizeContainerActionBar && (

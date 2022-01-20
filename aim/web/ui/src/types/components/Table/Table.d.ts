@@ -27,6 +27,7 @@ export interface ITableProps {
     name: string;
     callBack: () => void;
   }[];
+  className?: string;
   headerHeight?: number;
   sortOptions?: GroupingSelectOptionType[];
   fixed?: boolean;
