@@ -10,6 +10,7 @@ const endpoints = {
   GET_RUN_METRICS_BATCH_BY_TRACES: (id: string) =>
     `runs/${id}/metric/get-batch`,
   ARCHIVE_RUN: (id: string) => `runs/${id}`,
+  DELETE_RUN: (id: string) => `runs/${id}`,
   CREATE_RUNS_TAG: (id: string) => `runs/${id}/tags/new`,
   DELETE_RUNS_TAG: (id: string, tag_id: string) => `runs/${id}/tags/${tag_id}`,
   GET_BATCH: (id: string, trace: string) => `runs/${id}/${trace}/get-batch`,
@@ -58,6 +59,14 @@ function archiveRun(id: string, archived: boolean = false) {
   );
 }
 
+function deleteRun(id: string) {
+  return API.delete(endpoints.DELETE_RUN(id), {
+    headers: {
+      'Content-Type': 'application/json',
+    },
+  });
+}
+
 function createRunsTag(body: object, run_id: string) {
   return API.post(endpoints.CREATE_RUNS_TAG(run_id), body, {
     headers: {
@@ -97,6 +106,7 @@ const runsService = {
   getExperimentsData,
   getRunsOfExperiment,
   archiveRun,
+  deleteRun,
   createRunsTag,
   deleteRunsTag,
 };

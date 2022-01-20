@@ -33,14 +33,14 @@ def get_run_props(run: Run):
     return {
         'name': run.name if run.name else None,
         'experiment': {
-            'id': run.experiment.uuid,
-            'name': run.experiment.name,
-        } if run.experiment else None,
+            'id': run.props.experiment_obj.uuid,
+            'name': run.props.experiment_obj.name,
+        } if run.props.experiment_obj else None,
         'tags': [{'id': tag.uuid,
                   'name': tag.name,
                   'color': tag.color,
                   'description': tag.description}
-                 for tag in run.tags],
+                 for tag in run.props.tags_obj],
         'archived': run.archived if run.archived else False,
         'creation_time': run.creation_time,
         'end_time': run.end_time

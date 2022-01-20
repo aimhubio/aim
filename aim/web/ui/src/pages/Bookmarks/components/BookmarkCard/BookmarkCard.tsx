@@ -121,8 +121,10 @@ function BookmarkCard({
           onCancel={handleCloseModal}
           onSubmit={handleBookmarkDelete}
           text='Are you sure you want to delete this bookmark?'
-          icon={<Icon fontSize={28} color='#1c2852' name='delete' />}
+          icon={<Icon name='delete' />}
           title='Are you sure?'
+          statusType='error'
+          confirmBtnText='Delete'
         />
       </div>
     </ErrorBoundary>
