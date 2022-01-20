@@ -1,4 +1,5 @@
 import { toEqual } from 'tests/utils';
+
 import loess from './loess';
 
 const data: [number, number][] = [

@@ -8,6 +8,7 @@ import { isEmpty } from 'lodash-es';
 import { Checkbox } from '@material-ui/core';
 
 import { Icon } from 'components/kit';
+import ErrorBoundary from 'components/ErrorBoundary/ErrorBoundary';
 
 import { rowCeilSizeConfig } from 'config/table/tableConfigs';
 
@@ -191,243 +192,268 @@ function Table(props) {
   }
 
   return (
-    <div
-      className={classNames({
-        Table__container: true,
-        [`Table__container--${rowCeilSizeConfig[props.rowHeightMode].name}`]:
-          true,
-      })}
-    >
+    <ErrorBoundary>
       <div
         className={classNames({
-          Table: true,
-          'Table--grouped': groups,
+          Table__container: true,
+          [`Table__container--${rowCeilSizeConfig[props.rowHeightMode].name}`]:
+            true,
         })}
       >
-        {(groups || leftPane.length > 0) && (
-          <div
-            className={classNames({
-              Table__pane: true,
-              'Table__pane--left': true,
-              onlyGroupColumn: leftPane.length === 0,
-            })}
-          >
-            {props.multiSelect && Array.isArray(props.data) && (
-              <Column
-                key={'selection'}
-                topHeader={true}
-                showTopHeaderContent={true}
-                showTopHeaderBorder={true}
-                col={{
-                  isHidden: false,
-                  key: 'selection',
-                  pin: 'left',
-                  topHeader: '',
-                  content: (
-                    <Checkbox
-                      color='primary'
-                      size='small'
-                      className='Table__column__selectCheckbox'
-                      icon={
-                        <span className='Table__column__defaultSelectIcon'></span>
-                      }
-                      checkedIcon={
-                        props.data.length ===
-                        Object.keys(props.selectedRows).length ? (
-                          <span className='Table__column__selectedSelectIcon'>
-                            <Icon name='check' fontSize={9} />
-                          </span>
-                        ) : (
-                          <span className='Table__column__partiallySelectedSelectIcon'>
-                            <Icon name='partially-selected' fontSize={16} />
-                          </span>
-                        )
-                      }
-                      onClick={() =>
-                        props.onRowSelect({
-                          actionType: isEmpty(props.selectedRows)
-                            ? 'selectAll'
-                            : 'removeAll',
-                          data: props.data,
-                        })
-                      }
-                      checked={!isEmpty(props.selectedRows)}
-                    />
-                  ),
-                }}
-                data={props.data}
-                expanded={expanded}
-                expand={expand}
-                onRowSelect={props.onRowSelect}
-                selectedRows={props.selectedRows}
-                firstColumn={true}
-                width={32}
-                isAlwaysVisible={true}
-                onRowHover={props.onRowHover}
-                onRowClick={() => {}}
-              />
-            )}
-            {leftPane.map((col, index) => (
-              <Column
-                key={col.key}
-                topHeader={props.topHeader}
-                showTopHeaderContent={
-                  props.topHeader &&
-                  sortedColumns[index - 1]?.topHeader !== col.topHeader
-                }
-                showTopHeaderBorder={
-                  props.topHeader &&
-                  sortedColumns[index + 1]?.topHeader !== col.topHeader
-                }
-                col={col}
-                data={props.data}
-                expanded={expanded}
-                expand={expand}
-                togglePin={togglePin}
-                pinnedTo='left'
-                firstColumn={index === 0}
-                width={props.columnsWidths?.[col.key]}
-                updateColumnWidth={props.updateColumnsWidths}
-                headerMeta={props.headerMeta}
-                isAlwaysVisible={props.alwaysVisibleColumns?.includes(col.key)}
-                hideColumn={() =>
-                  props.setExcludedFields?.([
-                    ...(props.excludedFields || []),
+        <div
+          className={classNames({
+            Table: true,
+            'Table--grouped': groups,
+          })}
+        >
+          {(groups || leftPane.length > 0) && (
+            <div
+              className={classNames({
+                Table__pane: true,
+                'Table__pane--left': true,
+                onlyGroupColumn: leftPane.length === 0,
+              })}
+            >
+              {props.multiSelect && Array.isArray(props.data) && (
+                <ErrorBoundary key={'selection'}>
+                  <Column
+                    topHeader={true}
+                    showTopHeaderContent={true}
+                    showTopHeaderBorder={true}
+                    col={{
+                      isHidden: false,
+                      key: 'selection',
+                      pin: 'left',
+                      topHeader: '',
+                      content: (
+                        <Checkbox
+                          color='primary'
+                          size='small'
+                          className='Table__column__selectCheckbox'
+                          icon={
+                            <span className='Table__column__defaultSelectIcon'></span>
+                          }
+                          checkedIcon={
+                            props.data.length ===
+                            Object.keys(props.selectedRows).length ? (
+                              <span className='Table__column__selectedSelectIcon'>
+                                <Icon name='check' fontSize={9} />
+                              </span>
+                            ) : (
+                              <span className='Table__column__partiallySelectedSelectIcon'>
+                                <Icon name='partially-selected' fontSize={16} />
+                              </span>
+                            )
+                          }
+                          onClick={() =>
+                            props.onRowSelect({
+                              actionType: isEmpty(props.selectedRows)
+                                ? 'selectAll'
+                                : 'removeAll',
+                              data: props.data,
+                            })
+                          }
+                          checked={!isEmpty(props.selectedRows)}
+                        />
+                      ),
+                    }}
+                    data={props.data}
+                    expanded={expanded}
+                    expand={expand}
+                    onRowSelect={props.onRowSelect}
+                    selectedRows={props.selectedRows}
+                    firstColumn={true}
+                    width={32}
+                    isAlwaysVisible={true}
+                    onRowHover={props.onRowHover}
+                    onRowClick={() => {}}
+                  />
+                </ErrorBoundary>
+              )}
+              {leftPane.map((col, index) => (
+                <ErrorBoundary key={col.key}>
+                  <Column
+                    topHeader={props.topHeader}
+                    showTopHeaderContent={
+                      props.topHeader &&
+                      sortedColumns[index - 1]?.topHeader !== col.topHeader
+                    }
+                    showTopHeaderBorder={
+                      props.topHeader &&
+                      sortedColumns[index + 1]?.topHeader !== col.topHeader
+                    }
+                    col={col}
+                    data={props.data}
+                    expanded={expanded}
+                    expand={expand}
+                    togglePin={togglePin}
+                    pinnedTo='left'
+                    firstColumn={index === 0}
+                    width={props.columnsWidths?.[col.key]}
+                    updateColumnWidth={props.updateColumnsWidths}
+                    headerMeta={props.headerMeta}
+                    isAlwaysVisible={props.alwaysVisibleColumns?.includes(
+                      col.key,
+                    )}
+                    hideColumn={() =>
+                      props.setExcludedFields?.([
+                        ...(props.excludedFields || []),
+                        col.key,
+                      ])
+                    }
+                    multiSelect={props.multiSelect}
+                    paneFirstColumn={index === 0}
+                    paneLastColumn={index === leftPane.length - 1}
+                    moveColumn={(dir) =>
+                      moveColumn(col.key, 'left', index, dir)
+                    }
+                    sortable={
+                      col.sortableKey &&
+                      props.sortFields.findIndex(
+                        (f) => f[0] === col.sortableKey,
+                      ) === -1
+                    }
+                    sortByColumn={(order) =>
+                      props.onSort(col.sortableKey, order)
+                    }
+                    onRowHover={props.onRowHover}
+                    onRowClick={props.onRowClick}
+                    columnOptions={col.columnOptions}
+                    selectedRows={props.selectedRows}
+                    onRowSelect={props.onRowSelect}
+                  />
+                </ErrorBoundary>
+              ))}
+            </div>
+          )}
+          <div className='Table__pane Table__pane--middle'>
+            {middlePane.map((col, index) => (
+              <ErrorBoundary key={col.key + index}>
+                <Column
+                  key={col.key + index}
+                  topHeader={props.topHeader}
+                  showTopHeaderContent={
+                    props.topHeader &&
+                    sortedColumns[(leftPane ? leftPane.length : 0) + index - 1]
+                      ?.topHeader !== col.topHeader
+                  }
+                  showTopHeaderBorder={
+                    props.topHeader &&
+                    sortedColumns[(leftPane ? leftPane.length : 0) + index + 1]
+                      ?.topHeader !== col.topHeader
+                  }
+                  col={col}
+                  data={props.data}
+                  expanded={expanded}
+                  expand={expand}
+                  togglePin={togglePin}
+                  pinnedTo={null}
+                  firstColumn={index === 0 && leftPane.length === 0}
+                  width={props.columnsWidths?.[col.key]}
+                  updateColumnWidth={props.updateColumnsWidths}
+                  headerMeta={props.headerMeta}
+                  isAlwaysVisible={props.alwaysVisibleColumns?.includes(
                     col.key,
-                  ])
-                }
-                multiSelect={props.multiSelect}
-                paneFirstColumn={index === 0}
-                paneLastColumn={index === leftPane.length - 1}
-                moveColumn={(dir) => moveColumn(col.key, 'left', index, dir)}
-                sortable={
-                  col.sortableKey &&
-                  props.sortFields.findIndex(
-                    (f) => f[0] === col.sortableKey,
-                  ) === -1
-                }
-                sortByColumn={(order) => props.onSort(col.sortableKey, order)}
-                onRowHover={props.onRowHover}
-                onRowClick={props.onRowClick}
-                columnOptions={col.columnOptions}
-                selectedRows={props.selectedRows}
-                onRowSelect={props.onRowSelect}
-              />
+                  )}
+                  hideColumn={() =>
+                    props.setExcludedFields?.([
+                      ...(props.excludedFields || []),
+                      col.key,
+                    ])
+                  }
+                  paneFirstColumn={index === 0}
+                  paneLastColumn={index === middlePane.length - 1}
+                  moveColumn={(dir) =>
+                    moveColumn(col.key, 'middle', index, dir)
+                  }
+                  sortable={
+                    col.sortableKey &&
+                    props.sortFields.findIndex(
+                      (f) => f[0] === col.sortableKey,
+                    ) === -1
+                  }
+                  sortByColumn={(order) => props.onSort(col.sortableKey, order)}
+                  onRowHover={props.onRowHover}
+                  onRowClick={props.onRowClick}
+                  columnOptions={col.columnOptions}
+                  listWindow={props.listWindow}
+                />
+              </ErrorBoundary>
             ))}
           </div>
-        )}
-        <div className='Table__pane Table__pane--middle'>
-          {middlePane.map((col, index) => (
-            <Column
-              key={col.key + index}
-              topHeader={props.topHeader}
-              showTopHeaderContent={
-                props.topHeader &&
-                sortedColumns[(leftPane ? leftPane.length : 0) + index - 1]
-                  ?.topHeader !== col.topHeader
-              }
-              showTopHeaderBorder={
-                props.topHeader &&
-                sortedColumns[(leftPane ? leftPane.length : 0) + index + 1]
-                  ?.topHeader !== col.topHeader
-              }
-              col={col}
-              data={props.data}
-              expanded={expanded}
-              expand={expand}
-              togglePin={togglePin}
-              pinnedTo={null}
-              firstColumn={index === 0 && leftPane.length === 0}
-              width={props.columnsWidths?.[col.key]}
-              updateColumnWidth={props.updateColumnsWidths}
-              headerMeta={props.headerMeta}
-              isAlwaysVisible={props.alwaysVisibleColumns?.includes(col.key)}
-              hideColumn={() =>
-                props.setExcludedFields?.([
-                  ...(props.excludedFields || []),
-                  col.key,
-                ])
-              }
-              paneFirstColumn={index === 0}
-              paneLastColumn={index === middlePane.length - 1}
-              moveColumn={(dir) => moveColumn(col.key, 'middle', index, dir)}
-              sortable={
-                col.sortableKey &&
-                props.sortFields.findIndex((f) => f[0] === col.sortableKey) ===
-                  -1
-              }
-              sortByColumn={(order) => props.onSort(col.sortableKey, order)}
-              onRowHover={props.onRowHover}
-              onRowClick={props.onRowClick}
-              columnOptions={col.columnOptions}
-              listWindow={props.listWindow}
-            />
-          ))}
+          {rightPane.length > 0 && (
+            <div className='Table__pane Table__pane--right'>
+              {rightPane.map((col, index) => (
+                <ErrorBoundary key={col.key}>
+                  <Column
+                    key={col.key}
+                    topHeader={props.topHeader}
+                    showTopHeaderContent={
+                      props.topHeader &&
+                      sortedColumns[
+                        (leftPane ? leftPane.length : 0) +
+                          middlePane.length +
+                          index -
+                          1
+                      ]?.topHeader !== col.topHeader
+                    }
+                    showTopHeaderBorder={
+                      props.topHeader &&
+                      sortedColumns[
+                        (leftPane ? leftPane.length : 0) +
+                          middlePane.length +
+                          index +
+                          1
+                      ]?.topHeader !== col.topHeader
+                    }
+                    col={col}
+                    data={props.data}
+                    expanded={expanded}
+                    expand={expand}
+                    togglePin={togglePin}
+                    pinnedTo='right'
+                    firstColumn={
+                      index === 0 &&
+                      leftPane.length === 0 &&
+                      middlePane.length === 0
+                    }
+                    width={props.columnsWidths?.[col.key]}
+                    updateColumnWidth={props.updateColumnsWidths}
+                    headerMeta={props.headerMeta}
+                    isAlwaysVisible={props.alwaysVisibleColumns?.includes(
+                      col.key,
+                    )}
+                    hideColumn={() =>
+                      props.setExcludedFields?.([
+                        ...(props.excludedFields || []),
+                        col.key,
+                      ])
+                    }
+                    paneFirstColumn={index === 0}
+                    paneLastColumn={index === rightPane.length - 1}
+                    moveColumn={(dir) =>
+                      moveColumn(col.key, 'right', index, dir)
+                    }
+                    sortable={
+                      col.sortableKey &&
+                      props.sortFields.findIndex(
+                        (f) => f[0] === col.sortableKey,
+                      ) === -1
+                    }
+                    sortByColumn={(order) =>
+                      props.onSort(col.sortableKey, order)
+                    }
+                    onRowHover={props.onRowHover}
+                    onRowClick={props.onRowClick}
+                    columnOptions={col.columnOptions}
+                  />
+                </ErrorBoundary>
+              ))}
+            </div>
+          )}
         </div>
-        {rightPane.length > 0 && (
-          <div className='Table__pane Table__pane--right'>
-            {rightPane.map((col, index) => (
-              <Column
-                key={col.key}
-                topHeader={props.topHeader}
-                showTopHeaderContent={
-                  props.topHeader &&
-                  sortedColumns[
-                    (leftPane ? leftPane.length : 0) +
-                      middlePane.length +
-                      index -
-                      1
-                  ]?.topHeader !== col.topHeader
-                }
-                showTopHeaderBorder={
-                  props.topHeader &&
-                  sortedColumns[
-                    (leftPane ? leftPane.length : 0) +
-                      middlePane.length +
-                      index +
-                      1
-                  ]?.topHeader !== col.topHeader
-                }
-                col={col}
-                data={props.data}
-                expanded={expanded}
-                expand={expand}
-                togglePin={togglePin}
-                pinnedTo='right'
-                firstColumn={
-                  index === 0 &&
-                  leftPane.length === 0 &&
-                  middlePane.length === 0
-                }
-                width={props.columnsWidths?.[col.key]}
-                updateColumnWidth={props.updateColumnsWidths}
-                headerMeta={props.headerMeta}
-                isAlwaysVisible={props.alwaysVisibleColumns?.includes(col.key)}
-                hideColumn={() =>
-                  props.setExcludedFields?.([
-                    ...(props.excludedFields || []),
-                    col.key,
-                  ])
-                }
-                paneFirstColumn={index === 0}
-                paneLastColumn={index === rightPane.length - 1}
-                moveColumn={(dir) => moveColumn(col.key, 'right', index, dir)}
-                sortable={
-                  col.sortableKey &&
-                  props.sortFields.findIndex(
-                    (f) => f[0] === col.sortableKey,
-                  ) === -1
-                }
-                sortByColumn={(order) => props.onSort(col.sortableKey, order)}
-                onRowHover={props.onRowHover}
-                onRowClick={props.onRowClick}
-                columnOptions={col.columnOptions}
-              />
-            ))}
-          </div>
-        )}
       </div>
-    </div>
+    </ErrorBoundary>
   );
 }
 

@@ -19,7 +19,7 @@ import { IMetricProps } from 'types/pages/metrics/Metrics';
 
 import { ChartTypeEnum } from 'utils/d3';
 
-import Grouping from '../components/Grouping/Grouping';
+import Grouping from '../../components/Grouping/Grouping';
 
 import MetricsBar from './components/MetricsBar/MetricsBar';
 import Controls from './components/Controls/Controls';

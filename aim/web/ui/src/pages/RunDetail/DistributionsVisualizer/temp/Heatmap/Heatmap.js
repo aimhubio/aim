@@ -1,11 +1,11 @@
-import React from 'react';
+import { Component, createRef } from 'react';
 import PropTypes from 'prop-types';
 import Highcharts from 'highcharts';
 import HighchartsReact from 'highcharts-react-official';
 
 import addHeatmap from 'highcharts/modules/heatmap';
 
-class Heatmap extends React.Component {
+class Heatmap extends Component {
   constructor(props) {
     super(props);
 
@@ -93,7 +93,7 @@ class Heatmap extends React.Component {
       },
     };
 
-    this.chartRef = React.createRef();
+    this.chartRef = createRef();
   }
 
   // eslint-disable-next-line react/no-deprecated

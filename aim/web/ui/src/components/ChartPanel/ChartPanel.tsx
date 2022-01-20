@@ -4,6 +4,7 @@ import _ from 'lodash-es';
 import { Grid, GridSize } from '@material-ui/core';
 
 import { Text } from 'components/kit';
+import ErrorBoundary from 'components/ErrorBoundary/ErrorBoundary';
 
 import chartGridPattern from 'config/chart-grid-pattern/chartGridPattern';
 import { ResizeModeEnum } from 'config/enums/tableEnums';
@@ -131,70 +132,79 @@ const ChartPanel = React.forwardRef(function ChartPanel(
   }, [onScroll]);
 
   return (
-    <Grid container className='ChartPanel__container'>
-      {props.panelResizing ? (
-        <div className='ChartPanel__resizing'>
-          <Text size={14} color='info'>
-            Release to resize
-          </Text>
-        </div>
-      ) : (
-        <>
-          <Grid item xs className='ChartPanel'>
-            <Grid
-              ref={containerRef}
-              container
-              className='ChartPanel__paper__grid'
-            >
-              {props.data.map((chartData: any, index: number) => {
-                const Component = chartTypesConfig[props.chartType];
-                return (
-                  <Grid
-                    key={index}
-                    item
-                    className='ChartPanel__paper__grid__chartBox'
-                    xs={
-                      props.data.length > 9
-                        ? 4
-                        : (chartGridPattern[props.data.length][
-                            index
-                          ] as GridSize)
+    <ErrorBoundary>
+      <Grid container className='ChartPanel__container'>
+        {props.panelResizing ? (
+          <div className='ChartPanel__resizing'>
+            <Text size={14} color='info'>
+              Release to resize
+            </Text>
+          </div>
+        ) : (
+          <>
+            <ErrorBoundary>
+              <Grid item xs className='ChartPanel'>
+                <Grid
+                  ref={containerRef}
+                  container
+                  className='ChartPanel__paper__grid'
+                >
+                  {props.data.map((chartData: any, index: number) => {
+                    const Component = chartTypesConfig[props.chartType];
+                    return (
+                      <Grid
+                        key={index}
+                        item
+                        className='ChartPanel__paper__grid__chartBox'
+                        xs={
+                          props.data.length > 9
+                            ? 4
+                            : (chartGridPattern[props.data.length][
+                                index
+                              ] as GridSize)
+                        }
+                      >
+                        <Component
+                          ref={chartRefs[index]}
+                          {...props.chartProps[index]}
+                          index={index}
+                          data={chartData}
+                          syncHoverState={syncHoverState}
+                        />
+                      </Grid>
+                    );
+                  })}
+                </Grid>
+                <ErrorBoundary>
+                  <ChartPopover
+                    containerNode={containerRef.current}
+                    activePointRect={activePointRect}
+                    open={
+                      props.resizeMode !== ResizeModeEnum.MaxHeight &&
+                      props.data.length > 0 &&
+                      !props.panelResizing &&
+                      !props.zoom?.active &&
+                      (props.tooltip.display || props.focusedState.active)
                     }
-                  >
-                    <Component
-                      ref={chartRefs[index]}
-                      {...props.chartProps[index]}
-                      index={index}
-                      data={chartData}
-                      syncHoverState={syncHoverState}
-                    />
-                  </Grid>
-                );
-              })}
-            </Grid>
-            <ChartPopover
-              containerNode={containerRef.current}
-              activePointRect={activePointRect}
-              open={
-                props.resizeMode !== ResizeModeEnum.MaxHeight &&
-                props.data.length > 0 &&
-                !props.panelResizing &&
-                !props.zoom?.active &&
-                (props.tooltip.display || props.focusedState.active)
-              }
-              chartType={props.chartType}
-              tooltipContent={props?.tooltip?.content}
-              focusedState={props.focusedState}
-              alignmentConfig={props.alignmentConfig}
-              reCreatePopover={props.focusedState.active}
-            />
-          </Grid>
-          <Grid className='ChartPanel__controls' item>
-            {props.controls}
-          </Grid>
-        </>
-      )}
-    </Grid>
+                    chartType={props.chartType}
+                    tooltipContent={props?.tooltip?.content}
+                    focusedState={props.focusedState}
+                    alignmentConfig={props.alignmentConfig}
+                    reCreatePopover={props.focusedState.active}
+                  />
+                </ErrorBoundary>
+              </Grid>
+            </ErrorBoundary>
+
+            <ErrorBoundary>
+              <Grid className='ChartPanel__controls' item>
+                {props.controls}
+              </Grid>
+            </ErrorBoundary>
+          </>
+        )}
+      </Grid>
+    </ErrorBoundary>
   );
 });
 

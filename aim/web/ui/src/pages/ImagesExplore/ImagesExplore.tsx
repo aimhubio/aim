@@ -11,6 +11,7 @@ import ResizePanel from 'components/ResizePanel/ResizePanel';
 import MediaPanel from 'components/MediaPanel';
 import { MediaTypeEnum } from 'components/MediaPanel/config';
 import ImagesExploreRangePanel from 'components/ImagesExploreRangePanel';
+import Grouping from 'components/Grouping/Grouping';
 
 import { ResizeModeEnum } from 'config/enums/tableEnums';
 import { RowHeightSize } from 'config/table/tableConfigs';
@@ -21,7 +22,6 @@ import useModel from 'hooks/model/useModel';
 import useResizeObserver from 'hooks/window/useResizeObserver';
 
 import SelectForm from 'pages/ImagesExplore/components/SelectForm/SelectForm';
-import Grouping from 'pages/components/Grouping/Grouping';
 import Controls from 'pages/ImagesExplore/components/Controls/Controls';
 
 import imagesExploreAppModel from 'services/models/imagesExplore/imagesExploreAppModel';

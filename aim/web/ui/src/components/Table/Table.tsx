@@ -4,11 +4,12 @@
 import React from 'react';
 import { debounce, isEmpty, isNil } from 'lodash-es';
 
-import { Button, Icon, Text, Modal } from 'components/kit';
+import { Button, Icon, Text } from 'components/kit';
 import ControlPopover from 'components/ControlPopover/ControlPopover';
 import EmptyComponent from 'components/EmptyComponent/EmptyComponent';
 import BusyLoaderWrapper from 'components/BusyLoaderWrapper/BusyLoaderWrapper';
 import ResizeModeActions from 'components/ResizeModeActions/ResizeModeActions';
+import ErrorBoundary from 'components/ErrorBoundary/ErrorBoundary';
 
 import { rowCeilSizeConfig, RowHeightSize } from 'config/table/tableConfigs';
 
@@ -555,343 +556,347 @@ const Table = React.forwardRef(function Table(
   // but after setting isInfiniteLoading to true, the rowData becomes null, unnecessary renders happening
   // @TODO sanitize this point
   return (
-    <BusyLoaderWrapper
-      isLoading={!props.isInfiniteLoading && (isLoading || isNil(rowData))}
-      loaderComponent={<TableLoader />}
-      className='Tags__TagList__tagListBusyLoader'
-    >
-      {!isEmpty(rowData) ? (
-        <div style={{ height: '100%' }}>
-          {!hideHeaderActions && isEmpty(selectedRows) ? (
-            <div className='Table__header'>
-              {showResizeContainerActionBar && (
-                <ResizeModeActions
-                  resizeMode={resizeMode}
-                  onTableResizeModeChange={onTableResizeModeChange}
-                />
-              )}
-              <div className='flex fac Table__header__buttons'>
-                {onManageColumns && (
-                  <ControlPopover
-                    title='Manage Table Columns'
-                    anchorOrigin={{
-                      vertical: 'bottom',
-                      horizontal: 'left',
-                    }}
-                    transformOrigin={{
-                      vertical: 'top',
-                      horizontal: 'left',
-                    }}
-                    anchor={({ onAnchorClick, opened }) => (
-                      <Button
-                        color='secondary'
-                        type='text'
-                        onClick={onAnchorClick}
-                        className={`Table__header__item ${
-                          opened ? 'opened' : ''
-                        }`}
-                      >
-                        <Icon name='manage-column' />
-                        <Text size={14} tint={100}>
-                          Manage Columns
-                        </Text>
-                      </Button>
-                    )}
-                    component={
-                      <ManageColumns
-                        columnsData={columnsData.filter(
-                          (item: any) =>
-                            item.key !== '#' && item.key !== 'actions',
-                        )}
-                        hiddenColumns={hiddenColumnsRef.current}
-                        onManageColumns={onManageColumns}
-                        onColumnsVisibilityChange={onColumnsVisibilityChange}
-                        onTableDiffShow={onTableDiffShow}
-                      />
-                    }
+    <ErrorBoundary>
+      <BusyLoaderWrapper
+        isLoading={!props.isInfiniteLoading && (isLoading || isNil(rowData))}
+        loaderComponent={<TableLoader />}
+        className='Tags__TagList__tagListBusyLoader'
+      >
+        {!isEmpty(rowData) ? (
+          <div style={{ height: '100%' }}>
+            {!hideHeaderActions && isEmpty(selectedRows) ? (
+              <div className='Table__header'>
+                {showResizeContainerActionBar && (
+                  <ResizeModeActions
+                    resizeMode={resizeMode}
+                    onTableResizeModeChange={onTableResizeModeChange}
                   />
                 )}
-                {onRowsChange && (
-                  <ControlPopover
-                    anchorOrigin={{
-                      vertical: 'bottom',
-                      horizontal: 'left',
-                    }}
-                    transformOrigin={{
-                      vertical: 'top',
-                      horizontal: 'left',
-                    }}
-                    anchor={({ onAnchorClick, opened }) => (
-                      <Button
-                        type='text'
-                        color='secondary'
-                        onClick={onAnchorClick}
-                        className={`Table__header__item ${
-                          opened ? 'opened' : ''
-                        }`}
-                      >
-                        <Icon name='eye-outline-hide' />
-                        <Text size={14} tint={100}>
-                          Hide Rows
-                        </Text>
-                      </Button>
-                    )}
-                    component={<HideRows toggleRowsVisibility={onRowsChange} />}
-                  />
-                )}
-                {onSort && (
-                  <ControlPopover
-                    anchorOrigin={{
-                      vertical: 'bottom',
-                      horizontal: 'left',
-                    }}
-                    transformOrigin={{
-                      vertical: 'top',
-                      horizontal: 'left',
-                    }}
-                    title='Sort table by:'
-                    anchor={({ onAnchorClick, opened }) => (
-                      <Button
-                        type='text'
-                        color='secondary'
-                        onClick={onAnchorClick}
-                        className={`Table__header__item ${
-                          opened ? 'opened' : ''
-                        }`}
-                      >
-                        <Icon name='sort-outside' />
-                        <Text size={14} tint={100}>
-                          Sort
-                        </Text>
-                      </Button>
-                    )}
-                    component={
-                      <SortPopover
-                        sortOptions={sortOptions}
-                        sortFields={sortFields}
-                        onSort={onSort}
-                        onReset={onSortReset}
-                      />
-                    }
-                  />
-                )}
-                {onRowHeightChange && (
-                  <ControlPopover
-                    title='Select Table Row Height'
-                    anchorOrigin={{
-                      vertical: 'bottom',
-                      horizontal: 'left',
-                    }}
-                    transformOrigin={{
-                      vertical: 'top',
-                      horizontal: 'left',
-                    }}
-                    anchor={({ onAnchorClick, opened }) => (
-                      <Button
-                        type='text'
-                        color='secondary'
-                        onClick={onAnchorClick}
-                        className={`Table__header__item ${
-                          opened ? 'opened' : ''
-                        }`}
-                      >
-                        <Icon name='row-height' />
-                        <Text size={14} tint={100}>
-                          Row Height
-                        </Text>
-                      </Button>
-                    )}
-                    component={
-                      <RowHeight
-                        rowHeight={rowHeight}
-                        onRowHeightChange={onRowHeightChange}
-                      />
-                    }
-                  />
-                )}
-              </div>
-              {onExport && (
-                <div className='fac'>
-                  <Button
-                    fullWidth
-                    variant='outlined'
-                    color='primary'
-                    size='small'
-                    onClick={onExport}
-                    startIcon={<Icon fontSize={14} name='download' />}
-                  >
-                    <Text size={14} color='inherit'>
-                      Export
-                    </Text>
-                  </Button>
-                </div>
-              )}
-            </div>
-          ) : !isEmpty(selectedRows) && multiSelect ? (
-            <div className='Table__header selectedRowActionsContainer'>
-              <div className='selectedRowActionsContainer__selectedRowsCount'>
-                <Text size={14} tint={50}>
-                  {Object.keys(selectedRows).length} Selected
-                </Text>
-              </div>
-              {tableBulkActionsVisibility.delete && (
-                <div className='selectedRowActionsContainer__selectedItemsDelete'>
-                  <Button
-                    color='secondary'
-                    type='text'
-                    onClick={onToggleDeletePopup}
-                    className={`Table__header__item ${
-                      isOpenDeleteSelectedPopup ? 'opened' : ''
-                    }`}
-                  >
-                    <Icon name='delete' />
-                    <Text size={14} tint={100}>
-                      Delete
-                    </Text>
-                  </Button>
-                </div>
-              )}
-              {tableBulkActionsVisibility.unarchive && (
-                <div className='selectedRowActionsContainer__selectedItemsArchive'>
-                  <Button
-                    color='secondary'
-                    type='text'
-                    onClick={onToggleArchivePopup}
-                    className={`Table__header__item ${
-                      isOpenArchiveSelectedPopup ? 'opened' : ''
-                    }`}
-                  >
-                    <Icon name='archive' />
-                    <Text size={14} tint={100}>
-                      Archive
-                    </Text>
-                  </Button>
-                </div>
-              )}
-              {tableBulkActionsVisibility.archive && (
-                <div className='selectedRowActionsContainer__selectedItemsArchive'>
-                  <Button
-                    color='secondary'
-                    type='text'
-                    onClick={onToggleUnarchivePopup}
-                    className={`Table__header__item ${
-                      isOpenUnarchiveSelectedPopup ? 'opened' : ''
-                    }`}
-                  >
-                    <Icon name='unarchive' fontSize={18} />
-                    <Text size={14} tint={100}>
-                      Unarchive
-                    </Text>
-                  </Button>
-                </div>
-              )}
-            </div>
-          ) : (
-            ''
-          )}
-          <div
-            style={{
-              height,
-              overflow: 'auto',
-              minHeight: minHeight || 'unset',
-            }}
-            ref={tableContainerRef}
-          >
-            <AutoResizer>
-              {({ width, height }) =>
-                custom ? (
-                  <div style={{ width, height }}>
-                    <CustomTable
-                      expanded={expanded}
-                      alwaysVisibleColumns={alwaysVisibleColumns}
-                      rowHeightMode={rowHeight}
-                      updateColumns={onManageColumns}
-                      columnsWidths={columnsWidths}
-                      updateColumnsWidths={updateColumnsWidths}
-                      sortFields={sortFields}
-                      setSortFields={onSort}
-                      excludedFields={hiddenColumns}
-                      setExcludedFields={onColumnsVisibilityChange}
-                      hiddenRows={hiddenRows}
-                      data={rowData}
-                      columns={columnsData.filter((col) => !col.isHidden)}
-                      onGroupExpandToggle={onGroupExpandToggle}
-                      onRowHover={rowHoverHandler}
-                      onRowClick={rowClickHandler}
-                      listWindow={listWindow}
-                      multiSelect={multiSelect}
-                      selectedRows={selectedRows || {}}
-                      onRowSelect={onRowSelect}
-                      {...props}
+                <div className='flex fac Table__header__buttons'>
+                  {onManageColumns && (
+                    <ControlPopover
+                      title='Manage Table Columns'
+                      anchorOrigin={{
+                        vertical: 'bottom',
+                        horizontal: 'left',
+                      }}
+                      transformOrigin={{
+                        vertical: 'top',
+                        horizontal: 'left',
+                      }}
+                      anchor={({ onAnchorClick, opened }) => (
+                        <Button
+                          color='secondary'
+                          type='text'
+                          onClick={onAnchorClick}
+                          className={`Table__header__item ${
+                            opened ? 'opened' : ''
+                          }`}
+                        >
+                          <Icon name='manage-column' />
+                          <Text size={14} tint={100}>
+                            Manage Columns
+                          </Text>
+                        </Button>
+                      )}
+                      component={
+                        <ManageColumns
+                          columnsData={columnsData.filter(
+                            (item: any) =>
+                              item.key !== '#' && item.key !== 'actions',
+                          )}
+                          hiddenColumns={hiddenColumnsRef.current}
+                          onManageColumns={onManageColumns}
+                          onColumnsVisibilityChange={onColumnsVisibilityChange}
+                          onTableDiffShow={onTableDiffShow}
+                        />
+                      }
                     />
+                  )}
+                  {onRowsChange && (
+                    <ControlPopover
+                      anchorOrigin={{
+                        vertical: 'bottom',
+                        horizontal: 'left',
+                      }}
+                      transformOrigin={{
+                        vertical: 'top',
+                        horizontal: 'left',
+                      }}
+                      anchor={({ onAnchorClick, opened }) => (
+                        <Button
+                          type='text'
+                          color='secondary'
+                          onClick={onAnchorClick}
+                          className={`Table__header__item ${
+                            opened ? 'opened' : ''
+                          }`}
+                        >
+                          <Icon name='eye-outline-hide' />
+                          <Text size={14} tint={100}>
+                            Hide Rows
+                          </Text>
+                        </Button>
+                      )}
+                      component={
+                        <HideRows toggleRowsVisibility={onRowsChange} />
+                      }
+                    />
+                  )}
+                  {onSort && (
+                    <ControlPopover
+                      anchorOrigin={{
+                        vertical: 'bottom',
+                        horizontal: 'left',
+                      }}
+                      transformOrigin={{
+                        vertical: 'top',
+                        horizontal: 'left',
+                      }}
+                      title='Sort table by:'
+                      anchor={({ onAnchorClick, opened }) => (
+                        <Button
+                          type='text'
+                          color='secondary'
+                          onClick={onAnchorClick}
+                          className={`Table__header__item ${
+                            opened ? 'opened' : ''
+                          }`}
+                        >
+                          <Icon name='sort-outside' />
+                          <Text size={14} tint={100}>
+                            Sort
+                          </Text>
+                        </Button>
+                      )}
+                      component={
+                        <SortPopover
+                          sortOptions={sortOptions}
+                          sortFields={sortFields}
+                          onSort={onSort}
+                          onReset={onSortReset}
+                        />
+                      }
+                    />
+                  )}
+                  {onRowHeightChange && (
+                    <ControlPopover
+                      title='Select Table Row Height'
+                      anchorOrigin={{
+                        vertical: 'bottom',
+                        horizontal: 'left',
+                      }}
+                      transformOrigin={{
+                        vertical: 'top',
+                        horizontal: 'left',
+                      }}
+                      anchor={({ onAnchorClick, opened }) => (
+                        <Button
+                          type='text'
+                          color='secondary'
+                          onClick={onAnchorClick}
+                          className={`Table__header__item ${
+                            opened ? 'opened' : ''
+                          }`}
+                        >
+                          <Icon name='row-height' />
+                          <Text size={14} tint={100}>
+                            Row Height
+                          </Text>
+                        </Button>
+                      )}
+                      component={
+                        <RowHeight
+                          rowHeight={rowHeight}
+                          onRowHeightChange={onRowHeightChange}
+                        />
+                      }
+                    />
+                  )}
+                </div>
+                {onExport && (
+                  <div className='fac'>
+                    <Button
+                      fullWidth
+                      variant='outlined'
+                      color='primary'
+                      size='small'
+                      onClick={onExport}
+                      startIcon={<Icon fontSize={14} name='download' />}
+                    >
+                      <Text size={14} color='inherit'>
+                        Export
+                      </Text>
+                    </Button>
                   </div>
-                ) : (
-                  <BaseTable
-                    ref={tableRef}
-                    classPrefix='BaseTable'
-                    columns={columnsData}
-                    data={rowData}
-                    frozenData={[]}
-                    width={width}
-                    height={height}
-                    fixed={fixed}
-                    rowKey='key'
-                    isScrolling
-                    headerHeight={headerHeight}
-                    rowHeight={rowHeight}
-                    estimatedRowHeight={estimatedRowHeight}
-                    footerHeight={0}
-                    defaultExpandedRowKeys={[]}
-                    expandColumnKey='#'
-                    rowProps={({ rowIndex }) => rowData[rowIndex]?.rowProps}
-                    sortBy={{}}
-                    useIsScrolling={false}
-                    overscanRowCount={1}
-                    onEndReachedThreshold={500}
-                    getScrollbarSize={() => null}
-                    ignoreFunctionInColumnCompare={false}
-                    onScroll={() => null}
-                    onRowsRendered={() => null}
-                    onScrollbarPresenceChange={() => null}
-                    onRowExpand={() => null}
-                    onExpandedRowsChange={() => null}
-                    onColumnSort={() => null}
-                    onColumnResize={() => null}
-                    onColumnResizeEnd={() => null}
-                    onRowHover={onRowHover}
-                    onRowClick={onRowClick}
-                  />
-                )
-              }
-            </AutoResizer>
+                )}
+              </div>
+            ) : !isEmpty(selectedRows) && multiSelect ? (
+              <div className='Table__header selectedRowActionsContainer'>
+                <div className='selectedRowActionsContainer__selectedRowsCount'>
+                  <Text size={14} tint={50}>
+                    {Object.keys(selectedRows).length} Selected
+                  </Text>
+                </div>
+                {tableBulkActionsVisibility.delete && (
+                  <div className='selectedRowActionsContainer__selectedItemsDelete'>
+                    <Button
+                      color='secondary'
+                      type='text'
+                      onClick={onToggleDeletePopup}
+                      className={`Table__header__item ${
+                        isOpenDeleteSelectedPopup ? 'opened' : ''
+                      }`}
+                    >
+                      <Icon name='delete' />
+                      <Text size={14} tint={100}>
+                        Delete
+                      </Text>
+                    </Button>
+                  </div>
+                )}
+                {tableBulkActionsVisibility.unarchive && (
+                  <div className='selectedRowActionsContainer__selectedItemsArchive'>
+                    <Button
+                      color='secondary'
+                      type='text'
+                      onClick={onToggleArchivePopup}
+                      className={`Table__header__item ${
+                        isOpenArchiveSelectedPopup ? 'opened' : ''
+                      }`}
+                    >
+                      <Icon name='archive' />
+                      <Text size={14} tint={100}>
+                        Archive
+                      </Text>
+                    </Button>
+                  </div>
+                )}
+                {tableBulkActionsVisibility.archive && (
+                  <div className='selectedRowActionsContainer__selectedItemsArchive'>
+                    <Button
+                      color='secondary'
+                      type='text'
+                      onClick={onToggleUnarchivePopup}
+                      className={`Table__header__item ${
+                        isOpenUnarchiveSelectedPopup ? 'opened' : ''
+                      }`}
+                    >
+                      <Icon name='unarchive' fontSize={18} />
+                      <Text size={14} tint={100}>
+                        Unarchive
+                      </Text>
+                    </Button>
+                  </div>
+                )}
+              </div>
+            ) : (
+              ''
+            )}
+            <div
+              style={{
+                height,
+                overflow: 'auto',
+                minHeight: minHeight || 'unset',
+              }}
+              ref={tableContainerRef}
+            >
+              <AutoResizer>
+                {({ width, height }) =>
+                  custom ? (
+                    <div style={{ width, height }}>
+                      <CustomTable
+                        expanded={expanded}
+                        alwaysVisibleColumns={alwaysVisibleColumns}
+                        rowHeightMode={rowHeight}
+                        updateColumns={onManageColumns}
+                        columnsWidths={columnsWidths}
+                        updateColumnsWidths={updateColumnsWidths}
+                        sortFields={sortFields}
+                        setSortFields={onSort}
+                        excludedFields={hiddenColumns}
+                        setExcludedFields={onColumnsVisibilityChange}
+                        hiddenRows={hiddenRows}
+                        data={rowData}
+                        columns={columnsData.filter((col) => !col.isHidden)}
+                        onGroupExpandToggle={onGroupExpandToggle}
+                        onRowHover={rowHoverHandler}
+                        onRowClick={rowClickHandler}
+                        listWindow={listWindow}
+                        multiSelect={multiSelect}
+                        selectedRows={selectedRows || {}}
+                        onRowSelect={onRowSelect}
+                        {...props}
+                      />
+                    </div>
+                  ) : (
+                    <BaseTable
+                      ref={tableRef}
+                      classPrefix='BaseTable'
+                      columns={columnsData}
+                      data={rowData}
+                      frozenData={[]}
+                      width={width}
+                      height={height}
+                      fixed={fixed}
+                      rowKey='key'
+                      isScrolling
+                      headerHeight={headerHeight}
+                      rowHeight={rowHeight}
+                      estimatedRowHeight={estimatedRowHeight}
+                      footerHeight={0}
+                      defaultExpandedRowKeys={[]}
+                      expandColumnKey='#'
+                      rowProps={({ rowIndex }) => rowData[rowIndex]?.rowProps}
+                      sortBy={{}}
+                      useIsScrolling={false}
+                      overscanRowCount={1}
+                      onEndReachedThreshold={500}
+                      getScrollbarSize={() => null}
+                      ignoreFunctionInColumnCompare={false}
+                      onScroll={() => null}
+                      onRowsRendered={() => null}
+                      onScrollbarPresenceChange={() => null}
+                      onRowExpand={() => null}
+                      onExpandedRowsChange={() => null}
+                      onColumnSort={() => null}
+                      onColumnResize={() => null}
+                      onColumnResizeEnd={() => null}
+                      onRowHover={onRowHover}
+                      onRowClick={onRowClick}
+                    />
+                  )
+                }
+              </AutoResizer>
+            </div>
+            <ArchiveModal
+              opened={isOpenArchiveSelectedPopup}
+              onClose={onToggleArchivePopup}
+              selectedRows={selectedRows}
+              archiveMode
+              onRowSelect={onRowSelect}
+              archiveRuns={archiveRuns}
+            />
+            <ArchiveModal
+              opened={isOpenUnarchiveSelectedPopup}
+              onClose={onToggleUnarchivePopup}
+              selectedRows={selectedRows}
+              onRowSelect={onRowSelect}
+              archiveRuns={archiveRuns}
+            />
+            <DeleteModal
+              opened={isOpenDeleteSelectedPopup}
+              onClose={onToggleDeletePopup}
+              selectedRows={selectedRows}
+              onRowSelect={onRowSelect}
+              deleteRuns={deleteRuns}
+            />
           </div>
-          <ArchiveModal
-            opened={isOpenArchiveSelectedPopup}
-            onClose={onToggleArchivePopup}
-            selectedRows={selectedRows}
-            archiveMode
-            onRowSelect={onRowSelect}
-            archiveRuns={archiveRuns}
-          />
-          <ArchiveModal
-            opened={isOpenUnarchiveSelectedPopup}
-            onClose={onToggleUnarchivePopup}
-            selectedRows={selectedRows}
-            onRowSelect={onRowSelect}
-            archiveRuns={archiveRuns}
-          />
-          <DeleteModal
-            opened={isOpenDeleteSelectedPopup}
-            onClose={onToggleDeletePopup}
-            selectedRows={selectedRows}
-            onRowSelect={onRowSelect}
-            deleteRuns={deleteRuns}
-          />
-        </div>
-      ) : (
-        <EmptyComponent size='big' content={emptyText} />
-      )}
-    </BusyLoaderWrapper>
+        ) : (
+          <EmptyComponent size='big' content={emptyText} />
+        )}
+      </BusyLoaderWrapper>
+    </ErrorBoundary>
   );
 });
 
