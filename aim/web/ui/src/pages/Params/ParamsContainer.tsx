@@ -25,10 +25,12 @@ import {
 import { ITableRef } from 'types/components/Table/Table';
 import { IChartPanelRef } from 'types/components/ChartPanel/ChartPanel';
 import { IParamsProps } from 'types/pages/params/Params';
+import { IApiRequest } from 'types/services/services';
 
 import getStateFromUrl from 'utils/getStateFromUrl';
 import setComponentRefs from 'utils/app/setComponentRefs';
 import { CurveEnum } from 'utils/d3';
+import exceptionHandler from 'utils/app/exceptionHandler';
 
 import Params from './Params';
 
@@ -66,24 +68,26 @@ function ParamsContainer(): React.FunctionComponentElement<React.ReactNode> {
 
   React.useEffect(() => {
     paramsAppModel.initialize(route.params.appId);
-    let appRequestRef: {
-      call: () => Promise<any>;
-      abort: () => void;
-    };
-    let paramsRequestRef: {
-      call: () => Promise<any>;
-      abort: () => void;
-    };
+    let appRequestRef: IApiRequest<void>;
+    let paramsRequestRef: IApiRequest<void>;
     if (route.params.appId) {
       appRequestRef = paramsAppModel.getAppConfigData(route.params.appId);
-      appRequestRef.call().then(() => {
-        paramsRequestRef = paramsAppModel.getParamsData();
-        paramsRequestRef.call();
-      });
+      appRequestRef
+        .call((detail: any) => {
+          exceptionHandler({ detail, model: paramsAppModel });
+        })
+        .then(() => {
+          paramsRequestRef = paramsAppModel.getParamsData();
+          paramsRequestRef.call((detail: any) => {
+            exceptionHandler({ detail, model: paramsAppModel });
+          });
+        });
     } else {
       paramsAppModel.setDefaultAppConfigData();
       paramsRequestRef = paramsAppModel.getParamsData();
-      paramsRequestRef.call();
+      paramsRequestRef.call((detail: any) => {
+        exceptionHandler({ detail, model: paramsAppModel });
+      });
     }
 
     analytics.pageView('[ParamsExplorer]');

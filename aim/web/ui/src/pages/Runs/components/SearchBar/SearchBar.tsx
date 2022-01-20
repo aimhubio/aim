@@ -11,6 +11,8 @@ import useParamsSuggestions from 'hooks/projectData/useParamsSuggestions';
 import projectsModel from 'services/models/projects/projectsModel';
 import runAppModel from 'services/models/runs/runsAppModel';
 
+import exceptionHandler from 'utils/app/exceptionHandler';
+
 import './SearchBar.scss';
 
 function SearchBar({
@@ -36,7 +38,11 @@ function SearchBar({
       return;
     }
     searchRunsRef.current = runAppModel.getRunsData(true);
-    searchRunsRef.current.call().catch();
+    searchRunsRef.current
+      .call((detail: any) => {
+        exceptionHandler({ detail, model: runAppModel });
+      })
+      .catch();
   }
 
   function handleRequestAbort(e: React.SyntheticEvent): void {

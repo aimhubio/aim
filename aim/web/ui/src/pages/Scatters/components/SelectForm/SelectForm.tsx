@@ -22,6 +22,7 @@ import { formatSystemMetricName } from 'utils/formatSystemMetricName';
 import { isSystemMetric } from 'utils/isSystemMetric';
 import getObjectPaths from 'utils/getObjectPaths';
 import alphabeticalSortComparator from 'utils/alphabeticalSortComparator';
+import exceptionHandler from 'utils/app/exceptionHandler';
 
 import './SelectForm.scss';
 
@@ -54,7 +55,9 @@ function SelectForm({
       return;
     }
     searchRef.current = scattersAppModel.getScattersData(true);
-    searchRef.current.call();
+    searchRef.current.call((detail: any) => {
+      exceptionHandler({ detail, model: scattersAppModel });
+    });
   }
 
   function handleRequestAbort(e: React.SyntheticEvent): void {

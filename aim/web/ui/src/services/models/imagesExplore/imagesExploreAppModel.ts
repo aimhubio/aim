@@ -46,6 +46,7 @@ import {
   ISelectConfig,
   ISelectOption,
 } from 'types/services/models/explorer/createAppModel';
+import { IApiRequest } from 'types/services/services';
 
 import { decode, encode } from 'utils/encoder/encoder';
 import getObjectPaths from 'utils/getObjectPaths';
@@ -134,11 +135,7 @@ function getConfig(): IImagesExploreAppConfig {
   };
 }
 
-let appRequestRef: {
-  call: () => Promise<IAppData>;
-  abort: () => void;
-};
-
+let appRequestRef: IApiRequest<void>;
 function initialize(appId: string): void {
   model.init();
   model.setState({
@@ -190,7 +187,9 @@ function getAppConfigData(appId: string) {
   appRequestRef = appsService.fetchApp(appId);
   return {
     call: async () => {
-      const appData = await appRequestRef.call();
+      const appData = await appRequestRef.call((detail: any) => {
+        exceptionHandler({ detail, model });
+      });
       let select = appData?.state?.select;
       if (select) {
         const compatibleSelectConfig = getCompatibleSelectConfig(
@@ -858,7 +857,9 @@ function getImagesBlobsData(uris: string[]) {
     abort: request.abort,
     call: () => {
       return request
-        .call()
+        .call((detail: any) => {
+          exceptionHandler({ detail, model });
+        })
         .then(async (stream) => {
           let gen = adjustable_reader(stream);
           let buffer_pairs = decode_buffer_pairs(gen);
@@ -1229,11 +1230,15 @@ async function onBookmarkCreate({ name, description }: IBookmarkFormState) {
   if (configData) {
     const app: IAppData | any = await appsService
       .createApp({ state: configData, type: 'images' })
-      .call();
+      .call((detail: any) => {
+        exceptionHandler({ detail, model });
+      });
     if (app.id) {
       const bookmark: IDashboardData = await dashboardService
         .createDashboard({ app_id: app.id, name, description })
-        .call();
+        .call((detail: any) => {
+          exceptionHandler({ detail, model });
+        });
       if (bookmark.name) {
         onNotificationAdd({
           id: Date.now(),
@@ -1258,7 +1263,9 @@ function onBookmarkUpdate(id: string) {
   if (configData) {
     appsService
       .updateApp(id, { state: configData, type: 'images' })
-      .call()
+      .call((detail: any) => {
+        exceptionHandler({ detail, model });
+      })
       .then((res: IDashboardData | any) => {
         if (res.id) {
           onNotificationAdd({

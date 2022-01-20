@@ -4,6 +4,8 @@ import * as analytics from 'services/analytics';
 
 import { IModel, State } from 'types/services/models/model';
 
+import exceptionHandler from './exceptionHandler';
+
 export default async function onDensityTypeChange<M extends State>({
   type,
   model,
@@ -14,7 +16,7 @@ export default async function onDensityTypeChange<M extends State>({
   model: IModel<M>;
   appName: string;
   getMetricsData: (shouldUrlUpdate?: boolean) => {
-    call: () => Promise<void>;
+    call: (detail: any) => Promise<void>;
     abort: () => void;
   };
 }): Promise<void> {
@@ -30,7 +32,9 @@ export default async function onDensityTypeChange<M extends State>({
     };
     model.setState({ config: configData });
   }
-  getMetricsData(true).call();
+  getMetricsData(true).call((detail: any) => {
+    exceptionHandler({ model, detail });
+  });
   analytics.trackEvent(
     `[${appName}Explorer][Chart] Set point density to "${DensityOptions[
       type

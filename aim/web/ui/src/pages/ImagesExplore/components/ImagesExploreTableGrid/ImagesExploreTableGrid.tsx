@@ -150,7 +150,7 @@ function getImagesExploreTableColumns(
                 let name: string = field.replace('run.params.', '');
                 name = name.replace('run.props', 'run');
                 return (
-                  <Tooltip key={field} title={name}>
+                  <Tooltip key={field} title={name || ''}>
                     <span>{name}</span>
                   </Tooltip>
                 );
@@ -256,7 +256,9 @@ function imagesExploreTableRowRenderer(
                         horizontal: 'left',
                       }}
                       anchor={({ onAnchorClick }) => (
-                        <Tooltip title={contextToString(value) as string}>
+                        <Tooltip
+                          title={(contextToString(value) as string) || ''}
+                        >
                           <span onClick={onAnchorClick}>
                             {contextToString(value)}
                           </span>
@@ -267,7 +269,7 @@ function imagesExploreTableRowRenderer(
                   </ErrorBoundary>
                 ) : (
                   <ErrorBoundary key={item}>
-                    <Tooltip title={value}>
+                    <Tooltip title={value || ''}>
                       <span>{formatValue(value)}</span>
                     </Tooltip>
                   </ErrorBoundary>

@@ -28,7 +28,11 @@ function getBookmarksData() {
     call: () =>
       call().then(async (data: any) => {
         try {
-          const appsList = await appsService.fetchAppsList().call();
+          const appsList = await appsService
+            .fetchAppsList()
+            .call((detail: any) => {
+              exceptionHandler({ detail, model: model as any });
+            });
           const listData = data.map((item: any) => {
             const app = appsList.find(
               (appData: any) => appData.id === item.app_id,
@@ -48,11 +52,10 @@ function getBookmarksData() {
             },
             model: model as any,
           });
-          model.setState({
-            isLoading: false,
-          });
         }
+        model.setState({ isLoading: false });
       }),
+
     abort,
   };
 }
@@ -64,7 +67,9 @@ function onBookmarksNotificationDelete(id: number) {
 async function onBookmarkDelete(id: string) {
   try {
     model.setState({ isLoading: true });
-    await dashboardService.deleteDashboard(id).call();
+    await dashboardService.deleteDashboard(id).call((detail: any) => {
+      exceptionHandler({ detail, model });
+    });
     const listData: IBookmarksData[] | any = model.getState()?.listData;
     const newListData = [...listData].filter((bookmark) => bookmark.id !== id);
     model.setState({
@@ -93,6 +98,9 @@ function initialize() {
     bookmarksRequestRef = getBookmarksData();
     bookmarksRequestRef.call((detail) => {
       exceptionHandler({ detail, model: model as any });
+      model.setState({
+        isLoading: false,
+      });
     });
   } catch (err: any) {
     onNotificationAdd({

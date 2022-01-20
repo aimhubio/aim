@@ -2032,9 +2032,9 @@ function createAppModel(appConfig: IAppInitialConfig) {
         return {
           call: async () => {
             try {
-              const stream = await runsRequestRef.call((detail) =>
-                exceptionHandler({ detail, model }),
-              );
+              const stream = await runsRequestRef.call((detail) => {
+                exceptionHandler({ detail, model });
+              });
               let gen = adjustable_reader(stream as ReadableStream<any>);
               let buffer_pairs = decode_buffer_pairs(gen);
               let decodedPairs = decodePathsVals(buffer_pairs);
@@ -4734,9 +4734,14 @@ function createAppModel(appConfig: IAppInitialConfig) {
                 });
               } catch (ex: Error | any) {
                 if (ex.name === 'AbortError') {
-                  // Abort Error
-                } else {
-                  console.log('Unhandled error: ', ex);
+                  onNotificationAdd({
+                    notification: {
+                      message: ex.message,
+                      id: Date.now(),
+                      severity: 'error',
+                    },
+                    model,
+                  });
                 }
               }
             }

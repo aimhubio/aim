@@ -32,10 +32,12 @@ import {
   IGroupingSelectOption,
   IPanelTooltip,
 } from 'types/services/models/metrics/metricsAppModel';
+import { IApiRequest } from 'types/services/services';
 
 import getStateFromUrl from 'utils/getStateFromUrl';
 import { ChartTypeEnum } from 'utils/d3';
 import { SortField, SortFields } from 'utils/getSortedFields';
+import exceptionHandler from 'utils/app/exceptionHandler';
 
 import ImagesExploreAppBar from './components/ImagesExploreAppBar/ImagesExploreAppBar';
 
@@ -77,26 +79,28 @@ function ImagesExplore(): React.FunctionComponentElement<React.ReactNode> {
 
   React.useEffect(() => {
     imagesExploreAppModel.initialize(route.params.appId);
-    let appRequestRef: {
-      call: () => Promise<void>;
-      abort: () => void;
-    };
-    let imagesRequestRef: {
-      call: () => Promise<void>;
-      abort: () => void;
-    };
+    let appRequestRef: IApiRequest<void>;
+    let imagesRequestRef: IApiRequest<void>;
     if (route.params.appId) {
       appRequestRef = imagesExploreAppModel.getAppConfigData(
         route.params.appId,
       );
-      appRequestRef.call().then(() => {
-        imagesRequestRef = imagesExploreAppModel.getImagesData();
-        imagesRequestRef.call();
-      });
+      appRequestRef
+        .call((detail: any) => {
+          exceptionHandler({ detail, model: imagesExploreAppModel });
+        })
+        .then(() => {
+          imagesRequestRef = imagesExploreAppModel.getImagesData();
+          imagesRequestRef.call((detail: any) => {
+            exceptionHandler({ detail, model: imagesExploreAppModel });
+          });
+        });
     } else {
       imagesExploreAppModel.setDefaultAppConfigData();
       imagesRequestRef = imagesExploreAppModel.getImagesData();
-      imagesRequestRef.call();
+      imagesRequestRef.call((detail: any) => {
+        exceptionHandler({ detail, model: imagesExploreAppModel });
+      });
     }
 
     analytics.pageView('[ImagesExplorer]');

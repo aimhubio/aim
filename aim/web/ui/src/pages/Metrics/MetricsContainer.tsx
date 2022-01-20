@@ -41,11 +41,13 @@ import {
   IGroupingConfig,
   ISelectConfig,
 } from 'types/services/models/explorer/createAppModel';
+import { IApiRequest } from 'types/services/services';
 
 import { SmoothingAlgorithmEnum } from 'utils/smoothingData';
 import { CurveEnum } from 'utils/d3';
 import setComponentRefs from 'utils/app/setComponentRefs';
 import getStateFromUrl from 'utils/getStateFromUrl';
+import exceptionHandler from 'utils/app/exceptionHandler';
 
 import Metrics from './Metrics';
 
@@ -84,24 +86,26 @@ function MetricsContainer(): React.FunctionComponentElement<React.ReactNode> {
 
   React.useEffect(() => {
     metricAppModel.initialize(route.params.appId);
-    let appRequestRef: {
-      call: () => Promise<IAppData | void>;
-      abort: () => void;
-    };
-    let metricsRequestRef: {
-      call: () => Promise<IAppData | void>;
-      abort: () => void;
-    };
+    let appRequestRef: IApiRequest<void>;
+    let metricsRequestRef: IApiRequest<void>;
     if (route.params.appId) {
       appRequestRef = metricAppModel.getAppConfigData(route.params.appId);
-      appRequestRef.call().then(() => {
-        metricsRequestRef = metricAppModel.getMetricsData();
-        metricsRequestRef.call();
-      });
+      appRequestRef
+        .call((detail: any) => {
+          exceptionHandler({ detail, model: metricAppModel });
+        })
+        .then(() => {
+          metricsRequestRef = metricAppModel.getMetricsData();
+          metricsRequestRef.call((detail: any) => {
+            exceptionHandler({ detail, model: metricAppModel });
+          });
+        });
     } else {
       metricAppModel.setDefaultAppConfigData();
       metricsRequestRef = metricAppModel.getMetricsData();
-      metricsRequestRef.call();
+      metricsRequestRef.call((detail: any) => {
+        exceptionHandler({ detail, model: metricAppModel });
+      });
     }
     analytics.pageView('[MetricsExplorer]');
 

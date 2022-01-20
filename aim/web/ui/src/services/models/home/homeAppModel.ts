@@ -18,7 +18,9 @@ function getActivityData() {
   const { call, abort } = projectsService.fetchActivityData();
   return {
     call: () =>
-      call().then((data: any) => {
+      call((detail: any) => {
+        exceptionHandler({ detail, model });
+      }).then((data: any) => {
         model.setState({
           activityData: data,
         });

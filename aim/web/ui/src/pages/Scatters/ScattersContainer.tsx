@@ -37,9 +37,11 @@ import {
   ILiveUpdateConfig,
   ISelectConfig,
 } from 'types/services/models/explorer/createAppModel';
+import { IApiRequest } from 'types/services/services';
 
 import setComponentRefs from 'utils/app/setComponentRefs';
 import getStateFromUrl from 'utils/getStateFromUrl';
+import exceptionHandler from 'utils/app/exceptionHandler';
 
 import Scatters from './Scatters';
 
@@ -79,20 +81,25 @@ function ScattersContainer(): React.FunctionComponentElement<React.ReactNode> {
 
   React.useEffect(() => {
     scattersAppModel.initialize(route.params.appId);
-    let appRequestRef: {
-      call: () => Promise<IAppData | void>;
-      abort: () => void;
-    };
+    let appRequestRef: IApiRequest<void>;
     if (route.params.appId) {
       appRequestRef = scattersAppModel.getAppConfigData(route.params.appId);
-      appRequestRef.call().then(() => {
-        scattersAppModel.getScattersData().call();
-      });
+      appRequestRef
+        .call((detail: any) => {
+          exceptionHandler({ detail, model: scattersAppModel });
+        })
+        .then(() => {
+          scattersAppModel.getScattersData().call((detail: any) => {
+            exceptionHandler({ detail, model: scattersAppModel });
+          });
+        });
     } else {
       scattersAppModel.setDefaultAppConfigData();
     }
     const scattersRequestRef = scattersAppModel.getScattersData();
-    scattersRequestRef.call();
+    scattersRequestRef.call((detail: any) => {
+      exceptionHandler({ detail, model: scattersAppModel });
+    });
     analytics.pageView('[ScattersExplorer]');
 
     const unListenHistory = history.listen(() => {
