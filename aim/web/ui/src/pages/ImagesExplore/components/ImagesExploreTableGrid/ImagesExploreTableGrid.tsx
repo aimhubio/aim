@@ -212,7 +212,7 @@ function imagesExploreTableRowRenderer(
               <Badge
                 size='small'
                 color={COLORS[0][0]}
-                label={rowData.context}
+                label={rowData.context[0] || 'Empty Context'}
               />
             ),
         };
@@ -297,7 +297,12 @@ function imagesExploreTableRowRenderer(
       metric: rowData.metric,
       context: {
         content: rowData.context.map((item: string) => (
-          <Badge key={item} size='small' color={COLORS[0][0]} label={item} />
+          <Badge
+            key={item}
+            size='small'
+            color={COLORS[0][0]}
+            label={item || 'Empty Context'}
+          />
         )),
       },
       value: rowData.value,
