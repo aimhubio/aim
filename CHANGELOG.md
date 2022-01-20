@@ -2,7 +2,7 @@
 
 ## Unreleased
 
-- Add ability to apply group stacking on medial elements list (KaroMourad)
+- Add ability to apply group stacking on media elements list (KaroMourad)
 - Add ability to apply sorting by run creation_time on table rows (roubkar)
 - Add ability to filter texts table with keyword matching (roubkar, rubenaprikyan)
 - Add ability to delete run from settings tab (Hamik25)
