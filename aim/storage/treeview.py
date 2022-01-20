@@ -6,7 +6,6 @@ from typing import TYPE_CHECKING, Any, Iterator, Tuple, Union
 
 if TYPE_CHECKING:
     from aim.storage.arrayview import ArrayView
-    from aim.storage.container import Container
 
 
 class TreeView:
@@ -19,7 +18,7 @@ class TreeView:
     def finalize(
         self,
         *,
-        index: 'Container'
+        index: 'TreeView'
     ):
         ...
 
@@ -63,7 +62,7 @@ class TreeView:
     ) -> AimObject:
         try:
             return self[path]
-        except KeyError:
+        except (KeyError, RuntimeError):  # TODO [AT]: revisit once proper error handling is added
             return default
 
     @abstractmethod

@@ -11,8 +11,10 @@ from weakref import WeakValueDictionary
 from aim.ext.sshfs.utils import mount_remote_repo, unmount_remote_repo
 from aim.ext.task_queue.queue import TaskQueue
 from aim.ext.cleanup import AutoClean
+from aim.ext.transport.client import Client
 
 from aim.sdk.configs import get_aim_repo_name, AIM_ENABLE_TRACKING_THREAD
+from aim.sdk.errors import RepoIntegrityError
 from aim.sdk.run import Run
 from aim.sdk.utils import search_aim_repo, clean_repo_path
 from aim.sdk.sequence_collection import QuerySequenceCollection, QueryRunSequenceCollection
@@ -22,8 +24,10 @@ from aim.sdk.data_version import DATA_VERSION
 from aim.storage.container import Container
 from aim.storage.rockscontainer import RocksContainer
 from aim.storage.union import RocksUnionContainer
+from aim.storage.treeviewproxy import ProxyTree
 
 from aim.storage.structured.db import DB
+from aim.storage.structured.proxy import StructuredRunProxy
 
 logger = logging.getLogger(__name__)
 
@@ -92,9 +96,16 @@ class Repo:
 
         self._resources = None
         self.read_only = read_only
+        self.is_remote_repo = False
         self._mount_root = None
+        self._client: Client = None
         if path.startswith('ssh://'):
             self._mount_root, self.root_path = mount_remote_repo(path)
+        elif path.startswith('remote://'):
+            remote_path = path.replace('remote://', '')
+            self._client = Client(remote_path)
+            self.root_path = remote_path
+            self.is_remote_repo = True
         else:
             self.root_path = path
         self.path = os.path.join(self.root_path, get_aim_repo_name())
@@ -103,7 +114,7 @@ class Repo:
             os.makedirs(self.path, exist_ok=True)
             with open(os.path.join(self.path, 'VERSION'), 'w') as version_fh:
                 version_fh.write(DATA_VERSION + '\n')
-        if not os.path.exists(self.path):
+        if not self.is_remote_repo and not os.path.exists(self.path):
             if self._mount_root:
                 unmount_remote_repo(self.root_path, self._mount_root)
             raise RuntimeError(f'Cannot find repository \'{self.path}\'. Please init first.')
@@ -112,17 +123,19 @@ class Repo:
         self.persistent_pool: Dict[ContainerConfig, Container] = dict()
         self.container_view_pool: Dict[ContainerConfig, Container] = WeakValueDictionary()
 
-        self.structured_db = DB.from_path(self.path)
         self._run_props_cache_hint = None
         self._encryption_key = None
-        if init:
-            self.structured_db.run_upgrades()
+        self.structured_db = None
+        if not self.is_remote_repo:
+            self.structured_db = DB.from_path(self.path)
+            if init:
+                self.structured_db.run_upgrades()
 
         self._resources = RepoAutoClean(self)
 
     @property
     def meta_tree(self):
-        return self.request('meta', read_only=True, from_union=True).tree().subtree('meta')
+        return self.request_tree('meta', read_only=True, from_union=True).subtree('meta')
 
     def __repr__(self) -> str:
         return f'<Repo#{hash(self)} path={self.path} read_only={self.read_only}>'
@@ -167,7 +180,7 @@ class Repo:
         Returns:
             :obj:`Repo` object.
         """
-        if not path.startswith('ssh://'):
+        if not path.startswith('ssh://') and not path.startswith('remote://'):
             path = clean_repo_path(path)
         repo = cls._pool.get(path)
         if repo is None:
@@ -242,6 +255,13 @@ class Repo:
 
         return container
 
+    def _get_index_tree(self, name: str, timeout: int):
+        if not self.is_remote_repo:
+            return self._get_index_container(name, timeout).tree()
+        else:
+            assert self._client is not None
+            return ProxyTree(self._client, name, '', read_only=False, index=True, timeout=timeout)
+
     def _get_index_container(self, name: str, timeout: int) -> Container:
         if self.read_only:
             raise ValueError('Repo is read-only')
@@ -255,6 +275,20 @@ class Repo:
             self.container_pool[container_config] = container
 
         return container
+
+    def request_tree(
+        self,
+        name: str,
+        sub: str = None,
+        *,
+        read_only: bool,
+        from_union: bool = False  # TODO maybe = True by default
+    ):
+        if not self.is_remote_repo:
+            return self.request(name, sub, read_only=read_only, from_union=from_union).tree()
+        else:
+            assert self._client is not None
+            return ProxyTree(self._client, name, sub, read_only, from_union)
 
     def request(
             self,
@@ -284,6 +318,27 @@ class Repo:
             self.container_view_pool[container_config] = container_view
 
         return container_view
+
+    def request_props(self, hash_: str, read_only: bool):
+        if self.is_remote_repo:
+            assert self._client is not None
+            return StructuredRunProxy(self._client, hash_, read_only)
+
+        assert self.structured_db
+        _props = None
+        if self.run_props_cache_hint:
+            _props = self.structured_db.caches[self.run_props_cache_hint][hash_]
+        if not _props:
+            _props = self.structured_db.find_run(hash_)
+            if not _props:
+                if read_only:
+                    raise RepoIntegrityError(f'Missing props for Run {hash_}')
+                else:
+                    _props = self.structured_db.create_run(hash_)
+            if self.run_props_cache_hint:
+                self.structured_db.caches[self.run_props_cache_hint][hash_] = _props
+
+        return _props
 
     def iter_runs(self) -> Iterator['Run']:
         """Iterate over Repo runs.
@@ -480,9 +535,9 @@ class Repo:
         return encryption_key
 
     def _get_meta_tree(self):
-        return self.request(
+        return self.request_tree(
             'meta', read_only=True, from_union=True
-        ).tree().subtree('meta')
+        ).subtree('meta')
 
     @staticmethod
     def available_sequence_types():
