@@ -103,7 +103,7 @@ function SideBar(): React.FunctionComponentElement<React.ReactNode> {
             <Tooltip title='Slack' placement='right'>
               <a
                 target='_blank'
-                href='https://aimstack.slack.com'
+                href='https://slack.aimstack.io'
                 rel='noreferrer'
                 className='Sidebar__bottom__anchor'
                 onClick={() => trackEvent('[Sidebar] go to slack')}
@@ -114,7 +114,7 @@ function SideBar(): React.FunctionComponentElement<React.ReactNode> {
             <Tooltip title='Docs' placement='right'>
               <a
                 target='_blank'
-                href='https://aimstack.readthedocs.io/en/stable/'
+                href='https://aimstack.readthedocs.io'
                 rel='noreferrer'
                 className='Sidebar__bottom__anchor'
                 onClick={() => trackEvent('[Sidebar] go to documentation')}
@@ -122,7 +122,7 @@ function SideBar(): React.FunctionComponentElement<React.ReactNode> {
                 <Icon name='full-docs' />
               </a>
             </Tooltip>
-            <Text tint={30}>v {AIM_VERSION}</Text>
+            <Text tint={30}>v{AIM_VERSION}</Text>
           </div>
         </Drawer>
       </div>
