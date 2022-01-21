@@ -7,7 +7,7 @@
 - Add ability to filter texts table with keyword matching (roubkar, rubenaprikyan)
 - Add ability to delete run from settings tab (Hamik25)
 - Enhance controls states of explorer pages (arsengit)
-- Add --repo, --host arguments support for notebook extension (VkoHov rubenaprikyan)
+- Add --repo, --host arguments support for notebook extension (VkoHov, rubenaprikyan)
 - Add trendline options to ScatterPlot (roubkar)
 - Add ability to display images in original size and align by width (arsengit)
 - Add version, docs and slack links to sidebar (arsengit)

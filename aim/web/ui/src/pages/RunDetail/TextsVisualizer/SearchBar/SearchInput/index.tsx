@@ -13,6 +13,7 @@ function SearchInput({
   onInputClear,
   onInputChange,
   isValidInput,
+  isDisabled,
 }: ISearchInputProps) {
   return (
     <FormControl className='SearchInput'>
@@ -26,6 +27,7 @@ function SearchInput({
         name='search'
         label='Search for text'
         value={value}
+        disabled={isDisabled}
         error={!isValidInput}
         autoComplete='off'
         onChange={(event: ChangeEvent<HTMLInputElement>) =>
@@ -33,6 +35,7 @@ function SearchInput({
         }
         endAdornment={
           <EndAdornment
+            isDisabled={isDisabled}
             showSearchIcon={!value}
             onClickClearButton={onInputClear}
           />
