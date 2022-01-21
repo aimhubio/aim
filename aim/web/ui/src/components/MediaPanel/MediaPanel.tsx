@@ -211,14 +211,6 @@ function MediaPanel({
                     ref={containerRef}
                     className='MediaPanel__mediaSetContainer'
                     onMouseOver={onMouseOver}
-                    // TODO
-                    // onClick={(e) => {
-                    //   e.stopPropagation();
-                    //   syncHoverState({
-                    //     activePoint: activePointRef.current,
-                    //     focusedStateActive: false,
-                    //   });
-                    // }}
                   >
                     <ErrorBoundary>
                       <MediaSet
@@ -230,7 +222,6 @@ function MediaPanel({
                         wrapperOffsetHeight={wrapperOffsetHeight - 48}
                         wrapperOffsetWidth={wrapperOffsetWidth}
                         focusedState={focusedState}
-                        syncHoverState={syncHoverState}
                         orderedMap={orderedMap}
                         additionalProperties={additionalProperties}
                         tableHeight={tableHeight}

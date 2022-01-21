@@ -23,7 +23,6 @@ const ImageBox = ({
   mediaItemHeight,
   focusedState,
   tooltip,
-  syncHoverState,
   additionalProperties,
 }: IImageBoxProps): React.FunctionComponentElement<React.ReactNode> => {
   const { format, blob_uri } = data;
@@ -71,24 +70,6 @@ const ImageBox = ({
     e.stopPropagation();
     setIsImageFullViewPopupOpened(true);
   }
-
-  // TODO need to add focused image logic
-  // function safeSyncHoverState(args: any): void {
-  //   if (typeof syncHoverState === 'function') {
-  //     syncHoverState(args);
-  //   }
-  // }
-  //
-  // function onClick(e: MouseEvent<HTMLDivElement>): void {
-  //   if (e?.currentTarget) {
-  //     e.stopPropagation();
-  //     const clientRect = e.currentTarget.getBoundingClientRect();
-  //     safeSyncHoverState({
-  //       activePoint: { clientRect, key: data.key, seqKey: data.seqKey },
-  //       focusedStateActive: true,
-  //     });
-  //   }
-  // }
 
   const skeletonSize = {
     width: style.width - 6, // 6px -> 0.375rem gap

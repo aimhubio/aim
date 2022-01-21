@@ -39,7 +39,6 @@ const MediaSet = ({
   wrapperOffsetWidth,
   orderedMap,
   focusedState,
-  syncHoverState,
   additionalProperties,
   tableHeight,
   tooltip,
@@ -212,7 +211,6 @@ const MediaSet = ({
           mediaSetKey,
           mediaItemHeight,
           focusedState,
-          syncHoverState,
           additionalProperties,
           tooltip,
           mediaType,
@@ -495,7 +493,6 @@ const MediaGroupedList = React.memo(function MediaGroupedList({
                   wrapperOffsetHeight={data.wrapperOffsetHeight}
                   mediaItemHeight={data.mediaItemHeight}
                   focusedState={data.focusedState}
-                  syncHoverState={data.syncHoverState}
                   additionalProperties={data.additionalProperties}
                   tooltip={data.tooltip}
                   mediaType={data.mediaType}

@@ -115,7 +115,7 @@ function Controls(
             disabled: _.isEmpty(props.orderedMap),
           })}
           onClick={
-            !_.isEmpty(props.orderedMap) ? props.onStackingToggle : undefined
+            !_.isEmpty(props.orderedMap) ? props.onStackingToggle : _.noop
           }
         >
           <Icon

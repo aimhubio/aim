@@ -14,7 +14,6 @@ export interface IMediaListProps {
   wrapperOffsetHeight: number;
   mediaItemHeight: number;
   focusedState: IFocusedState;
-  syncHoverState?: (args: any) => void;
   additionalProperties?: IMediaPanelProps['additionalProperties'];
   tooltip?: ITooltipContent;
   mediaType: MediaTypeEnum;
@@ -27,7 +26,6 @@ export interface IImageBoxProps {
   mediaItemHeight: number;
   focusedState: IFocusedState;
   tooltip?: ITooltipContent;
-  syncHoverState?: (args: any) => void;
   additionalProperties?: IMediaPanelProps['additionalProperties'];
   style: { [key: string]: any };
 }

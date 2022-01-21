@@ -26,7 +26,6 @@ function MediaList({
   addUriToList,
   mediaItemHeight,
   focusedState,
-  syncHoverState,
   additionalProperties,
   tooltip,
   mediaType,
@@ -92,7 +91,6 @@ function MediaList({
           addUriToList,
           mediaItemHeight: listHeight,
           focusedState,
-          syncHoverState,
           additionalProperties,
           tooltip,
           mediaType,
@@ -120,7 +118,6 @@ const MediaBoxMemoized = React.memo(function MediaBoxMemoized(props: any) {
         addUriToList={data.addUriToList}
         mediaItemHeight={data.mediaItemHeight}
         focusedState={data.focusedState}
-        syncHoverState={data.syncHoverState}
         additionalProperties={data.additionalProperties}
         tooltip={data.tooltip}
       />
