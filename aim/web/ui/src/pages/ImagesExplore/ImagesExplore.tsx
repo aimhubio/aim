@@ -249,7 +249,7 @@ function ImagesExplore(): React.FunctionComponentElement<React.ReactNode> {
               panelResizing={panelResizing}
               resizeMode={imagesExploreData?.config?.table.resizeMode}
               tableHeight={imagesExploreData?.config?.table?.height}
-              wrapperOffsetHeight={offsetHeight || 0}
+              wrapperOffsetHeight={offsetHeight - 48 || 0}
               wrapperOffsetWidth={offsetWidth || 0}
               focusedState={
                 imagesExploreData?.config?.images?.focusedState as IFocusedState

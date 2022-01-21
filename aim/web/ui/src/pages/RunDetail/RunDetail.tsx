@@ -285,6 +285,7 @@ function RunDetail(): React.FunctionComponentElement<React.ReactNode> {
         </div>
         <Paper className='RunDetail__runDetailContainer__tabsContainer'>
           <Tabs
+            className='RunDetail__runDetailContainer__Tabs'
             value={activeTab}
             onChange={handleTabChange}
             aria-label='simple tabs example'

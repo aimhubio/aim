@@ -8,6 +8,7 @@ import { ISearchInputEndAdornment } from '../types';
 function EndAdornment({
   showSearchIcon = true,
   onClickClearButton,
+  isDisabled,
 }: ISearchInputEndAdornment) {
   return (
     <span className='EndAdornment'>
@@ -21,6 +22,7 @@ function EndAdornment({
             size='small'
             onClick={onClickClearButton}
             color='secondary'
+            disabled={isDisabled}
           >
             <Icon name='close' />
           </Button>

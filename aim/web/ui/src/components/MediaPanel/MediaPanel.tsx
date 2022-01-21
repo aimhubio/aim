@@ -219,7 +219,7 @@ function MediaPanel({
                         addUriToList={addUriToList}
                         mediaSetKey={mediaSetKey}
                         sortFieldsDict={sortFieldsDict}
-                        wrapperOffsetHeight={wrapperOffsetHeight - 48}
+                        wrapperOffsetHeight={wrapperOffsetHeight}
                         wrapperOffsetWidth={wrapperOffsetWidth}
                         focusedState={focusedState}
                         orderedMap={orderedMap}
