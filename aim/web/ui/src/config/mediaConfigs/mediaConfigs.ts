@@ -11,6 +11,7 @@ export const ITEM_WRAPPER_HEIGHT = 33;
 export const ITEM_CAPTION_HEIGHT = 20;
 export const MEDIA_SET_TITLE_HEIGHT = 17;
 export const MEDIA_SET_WRAPPER_PADDING_HEIGHT = 6;
+export const MEDIA_SET_SLIDER_HEIGHT = 20;
 export const BATCH_COLLECT_DELAY = 200;
 export const BATCH_SEND_DELAY = 300;
 export const IMAGE_SIZE_CHANGE_DELAY = 200;
@@ -85,17 +86,23 @@ function getImageMediaSetSize({
   alignmentType,
   wrapperOffsetWidth,
   mediaItemSize,
+  stacking,
 }: IGetImageMediaSetSizeProps) {
+  let height;
   if (alignmentType === MediaItemAlignmentEnum.Original) {
-    return maxHeight + ITEM_WRAPPER_HEIGHT + ITEM_CAPTION_HEIGHT;
-  }
-  if (alignmentType === MediaItemAlignmentEnum.Width) {
+    height = maxHeight;
+  } else if (alignmentType === MediaItemAlignmentEnum.Width) {
     let width = (wrapperOffsetWidth * mediaItemSize) / 100;
-    return (
-      (maxHeight / maxWidth) * width + ITEM_CAPTION_HEIGHT + ITEM_WRAPPER_HEIGHT
-    );
+    height = (maxHeight / maxWidth) * width;
+  } else {
+    height = mediaItemHeight;
   }
-  return mediaItemHeight + ITEM_CAPTION_HEIGHT + ITEM_WRAPPER_HEIGHT;
+  return (
+    height +
+    ITEM_WRAPPER_HEIGHT +
+    ITEM_CAPTION_HEIGHT +
+    (stacking ? MEDIA_SET_SLIDER_HEIGHT : 0)
+  );
 }
 
 export const IMAGE_ALIGNMENT_OPTIONS = [

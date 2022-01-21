@@ -977,6 +977,7 @@ function createAppModel(appConfig: IAppInitialConfig) {
         ...getGroupingSelectOptions({
           params: sortedParams,
           contexts,
+          sequenceName: 'metric',
         }),
       ];
       tooltipData = getTooltipData({
@@ -1057,6 +1058,7 @@ function createAppModel(appConfig: IAppInitialConfig) {
         ...getGroupingSelectOptions({
           params: sortedParams,
           contexts,
+          sequenceName: 'metric',
         }),
       ];
       tooltipData = getTooltipData({
@@ -3526,7 +3528,6 @@ function createAppModel(appConfig: IAppInitialConfig) {
             params: sortedParams,
           }),
         ];
-
         tooltipData = getTooltipData({
           processedData: data,
           paramKeys: sortedParams,
@@ -3534,7 +3535,6 @@ function createAppModel(appConfig: IAppInitialConfig) {
           groupingItems: ['color', 'stroke', 'chart'],
           model,
         });
-
         const tableData = getDataAsTableRows(
           data,
           metricsColumns,
@@ -4196,6 +4196,7 @@ function createAppModel(appConfig: IAppInitialConfig) {
         onNotificationAdd: onModelNotificationAdd,
         onNotificationDelete: onModelNotificationDelete,
         onResetConfigData: onModelResetConfigData,
+        onSortChange,
         destroy,
         changeLiveUpdateConfig,
         onShuffleChange,
@@ -4421,7 +4422,7 @@ function createAppModel(appConfig: IAppInitialConfig) {
         const sortedParams = params.concat(highLevelParams).sort();
         const groupingSelectOptions = [
           ...getGroupingSelectOptions({
-            params: params.concat(highLevelParams).sort(),
+            params: sortedParams,
           }),
         ];
 
@@ -5049,14 +5050,15 @@ function createAppModel(appConfig: IAppInitialConfig) {
       ): void {
         const { data, params, highLevelParams, metricsColumns, selectedRows } =
           processData(model.getState()?.rawData as IRun<IParamTrace>[]);
+        const sortedParams = params.concat(highLevelParams).sort();
         const groupingSelectOptions = [
           ...getGroupingSelectOptions({
-            params: params.concat(highLevelParams).sort(),
+            params: sortedParams,
           }),
         ];
         tooltipData = getTooltipData({
           processedData: data,
-          paramKeys: params,
+          paramKeys: sortedParams,
           groupingSelectOptions,
           groupingItems: ['color', 'chart'],
           model,
@@ -5521,6 +5523,7 @@ function createAppModel(appConfig: IAppInitialConfig) {
         onNotificationAdd: onModelNotificationAdd,
         onNotificationDelete: onModelNotificationDelete,
         onResetConfigData: onModelResetConfigData,
+        onSortChange,
         destroy,
         changeLiveUpdateConfig,
         archiveRuns,
