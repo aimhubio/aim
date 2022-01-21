@@ -31,7 +31,7 @@ export const CONTROLS_DEFAULT_CONFIG = {
       type: AlignmentOptionsEnum.STEP,
       metric: '',
     },
-    densityType: DensityOptions.Minimum,
+    densityType: DensityOptions.Maximum,
     smoothingFactor: 0,
     curveInterpolation: CurveEnum.Linear,
     smoothingAlgorithm: SmoothingAlgorithmEnum.EMA,
