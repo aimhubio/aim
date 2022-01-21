@@ -12,7 +12,7 @@ Here are the set of commands supported:
 | `up`          | Runs Aim web UI for the given repo.                                  |
 | `upgrade`     | Upgrades legacy Aim repository from `2.x` to `3.0`.                  |
 | `reindex`     | Process runs left in 'in progress' state and optimized finished runs.|
-| `server`      | Run `aim` remote tracking server accepting incoming RPC requests.    |
+| `server`      | Run `aim` remote tracking server accepting incoming RPC requests. _Experimental feature._|
 | `runs`        | Manage run data for the given repo.                                  |
 
 ### init
