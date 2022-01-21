@@ -27,29 +27,28 @@ const cardsData: IExploreCard[] = [
   },
   {
     title: 'Metrics Explorer',
-    description:
-      'Compare 100s of metrics in a few clicks with Metrics Explorer',
+    description: 'Compare 100s of metrics in a few clicks on Metrics Explorer',
     path: 'metrics',
     icon: 'metrics',
   },
   {
     title: 'Images Explorer',
     description:
-      'Track intermediate images and search, compare them on the Images Explorer',
+      'Track intermediate images and search, compare them on Images Explorer',
     path: 'images',
     icon: 'images',
   },
   {
     title: 'Params Explorer',
     description:
-      'Params explorer enables a parallel coordinates view for metrics and params',
+      'The Params explorer enables a parallel coordinates view for metrics and params',
     path: 'params',
     icon: 'params',
   },
   {
     title: 'Scatters Explorer',
     description:
-      'Explore and learn relationship, correlations, and clustering effects between metrics and parameters with Scatters Explorer',
+      'Explore and learn relationship, correlations, and clustering effects between metrics and parameters on Scatters Explorer',
     path: 'scatters',
     icon: 'scatterplot',
   },
