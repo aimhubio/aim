@@ -11,6 +11,11 @@
     align-items: baseline;
 
   }
+
+  label {
+    font-size: $text-md;
+  }
+
   .MatchButton {
     margin-right: $space-xxs;
     &:last-child {
