@@ -1,3 +1,5 @@
+import pytz
+
 from typing import Collection, Union, List, Optional
 from sqlalchemy.orm import joinedload
 
@@ -18,6 +20,8 @@ from aim.storage.structured.sql_engine.utils import ModelMappedProperty as Prope
 def timestamp_or_none(dt):
     if dt is None:
         return None
+    if not dt.tzinfo:
+        dt = dt.replace(tzinfo=pytz.utc)
     return dt.timestamp()
 
 
@@ -79,6 +83,15 @@ class ModelMappedRun(IRun, metaclass=ModelMappedClassMeta):
         if model_obj:
             return ModelMappedRun.from_model(model_obj, session)
         return SafeNone()
+
+    @classmethod
+    def find_many(cls, ids: List[str], **kwargs) -> List[IRun]:
+        session = kwargs.get('session')
+        if not session:
+            return []
+        q = session.query(RunModel).filter(RunModel.hash.in_(ids))
+
+        return ModelMappedRunCollection(session, query=q)
 
     @classmethod
     def all(cls, **kwargs) -> Collection[IRun]:

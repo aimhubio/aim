@@ -84,11 +84,7 @@ import {
   ITrendlineOptions,
 } from 'types/services/models/scatter/scatterAppModel';
 
-import {
-  aggregateGroupData,
-  AggregationAreaMethods,
-  AggregationLineMethods,
-} from 'utils/aggregateGroupData';
+import { aggregateGroupData } from 'utils/aggregateGroupData';
 import exceptionHandler from 'utils/app/exceptionHandler';
 import getAggregatedData from 'utils/app/getAggregatedData';
 import getChartTitleData from 'utils/app/getChartTitleData';
@@ -137,13 +133,7 @@ import toggleSelectAdvancedMode from 'utils/app/toggleSelectAdvancedMode';
 import updateColumnsWidths from 'utils/app/updateColumnsWidths';
 import updateSortFields from 'utils/app/updateTableSortFields';
 import contextToString from 'utils/contextToString';
-import {
-  AlignmentOptionsEnum,
-  ChartTypeEnum,
-  CurveEnum,
-  ScaleEnum,
-  TrendlineTypeEnum,
-} from 'utils/d3';
+import { AlignmentOptionsEnum, ChartTypeEnum, ScaleEnum } from 'utils/d3';
 import {
   adjustable_reader,
   decode_buffer_pairs,
@@ -158,7 +148,6 @@ import getClosestValue from 'utils/getClosestValue';
 import getObjectPaths from 'utils/getObjectPaths';
 import getSmoothenedData from 'utils/getSmoothenedData';
 import JsonToCSV from 'utils/JsonToCSV';
-import { SmoothingAlgorithmEnum } from 'utils/smoothingData';
 import { setItem } from 'utils/storage';
 import { encode } from 'utils/encoder/encoder';
 import onBookmarkCreate from 'utils/app/onBookmarkCreate';
@@ -902,16 +891,29 @@ function createAppModel(appConfig: IAppInitialConfig) {
         );
       });
 
+      let sortFields = configData?.table?.sortFields ?? [];
+
+      if (sortFields?.length === 0) {
+        sortFields = [
+          {
+            value: 'run.props.creation_time',
+            order: 'desc',
+            label: '',
+            group: '',
+          },
+        ];
+      }
+
       const processedData = groupData(
         _.orderBy(
           metrics,
-          configData?.table?.sortFields?.map(
+          sortFields?.map(
             (f: SortField) =>
               function (metric: IMetric) {
                 return getValue(metric, f.value, '');
               },
-          ) ?? [],
-          configData?.table?.sortFields?.map((f: SortField) => f.order) ?? [],
+          ),
+          sortFields?.map((f: SortField) => f.order),
         ),
       );
       const uniqParams = _.uniq(params);
@@ -3473,16 +3475,29 @@ function createAppModel(appConfig: IAppInitialConfig) {
           });
         });
 
+        let sortFields = configData?.table?.sortFields ?? [];
+
+        if (sortFields?.length === 0) {
+          sortFields = [
+            {
+              value: 'run.props.creation_time',
+              order: 'desc',
+              label: '',
+              group: '',
+            },
+          ];
+        }
+
         const processedData = groupData(
           _.orderBy(
             runs,
-            configData?.table?.sortFields?.map(
+            sortFields?.map(
               (f: SortField) =>
                 function (run: IParam) {
                   return getValue(run, f.value, '');
                 },
-            ) ?? [],
-            configData?.table?.sortFields?.map((f: SortField) => f.order) ?? [],
+            ),
+            sortFields?.map((f: SortField) => f.order),
           ),
         );
         const uniqParams = _.uniq(params);
@@ -4433,16 +4448,29 @@ function createAppModel(appConfig: IAppInitialConfig) {
           });
         });
 
+        let sortFields = configData?.table?.sortFields ?? [];
+
+        if (sortFields?.length === 0) {
+          sortFields = [
+            {
+              value: 'run.props.creation_time',
+              order: 'desc',
+              label: '',
+              group: '',
+            },
+          ];
+        }
+
         const processedData = groupData(
           _.orderBy(
             runs,
-            configData?.table?.sortFields?.map(
+            sortFields?.map(
               (f: SortField) =>
                 function (run: IParam) {
                   return getValue(run, f.value, '');
                 },
-            ) ?? [],
-            configData?.table?.sortFields?.map((f: SortField) => f.order) ?? [],
+            ),
+            sortFields?.map((f: SortField) => f.order),
           ),
         );
         const uniqParams = _.uniq(params);

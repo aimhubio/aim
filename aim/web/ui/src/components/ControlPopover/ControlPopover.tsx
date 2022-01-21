@@ -3,6 +3,7 @@ import React from 'react';
 import { Popover } from '@material-ui/core';
 
 import { Text } from 'components/kit';
+import ErrorBoundary from 'components/ErrorBoundary/ErrorBoundary';
 
 import IControlPopoverProps from 'types/components/ControlPopover/ControlPopover';
 
@@ -40,7 +41,7 @@ function ControlPopover({
   }, [open]);
 
   return (
-    <>
+    <ErrorBoundary>
       {anchor({ onAnchorClick, opened: open && !!anchorEl })}
       <Popover
         open={open && !!anchorEl}
@@ -73,14 +74,16 @@ function ControlPopover({
               </Text>
             </div>
           )}
-          <div className='ControlPopover__component'>
-            {typeof component === 'function'
-              ? component({ handleClose, opened: open && !!anchorEl })
-              : component}
-          </div>
+          <ErrorBoundary>
+            <div className='ControlPopover__component'>
+              {typeof component === 'function'
+                ? component({ handleClose, opened: open && !!anchorEl })
+                : component}
+            </div>
+          </ErrorBoundary>
         </div>
       </Popover>
-    </>
+    </ErrorBoundary>
   );
 }
 

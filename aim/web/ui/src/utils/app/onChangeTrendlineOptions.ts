@@ -1,4 +1,4 @@
-import * as analytics from 'services/analytics';
+// import * as analytics from 'services/analytics';
 
 import { IModel, State } from 'types/services/models/model';
 import { ITrendlineOptions } from 'types/services/models/scatter/scatterAppModel';

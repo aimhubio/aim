@@ -1,7 +1,6 @@
 import React from 'react';
 
 import Menu from 'components/kit/Menu/Menu';
-import BusyLoaderWrapper from 'components/BusyLoaderWrapper/BusyLoaderWrapper';
 
 import useModel from 'hooks/model/useModel';
 
@@ -71,16 +70,11 @@ function TraceVisualizationContainer({
         )}
       </div>
       <div className='VisualizerArea'>
-        <BusyLoaderWrapper
-          className='VisualizationLoader'
-          isLoading={!!runTracesModelData?.isTraceBatchLoading}
-        >
-          <Visualizer
-            data={runTracesModelData?.data}
-            isLoading={runTracesModelData?.isTraceBatchLoading}
-            activeTraceContext={runTracesModelData?.menu?.activeItemName}
-          />
-        </BusyLoaderWrapper>
+        <Visualizer
+          data={runTracesModelData?.data}
+          isLoading={runTracesModelData?.isTraceBatchLoading}
+          activeTraceContext={runTracesModelData?.menu?.activeItemName}
+        />
         {runTracesModelData?.data &&
           runTracesModelData?.config &&
           runTracesModelData?.queryData && (

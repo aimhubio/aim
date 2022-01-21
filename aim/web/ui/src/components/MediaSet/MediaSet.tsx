@@ -9,6 +9,7 @@ import MediaList from 'components/MediaList';
 import { JsonViewPopover } from 'components/kit';
 import ControlPopover from 'components/ControlPopover/ControlPopover';
 import { MediaTypeEnum } from 'components/MediaPanel/config';
+import ErrorBoundary from 'components/ErrorBoundary/ErrorBoundary';
 
 import {
   MEDIA_ITEMS_SIZES,
@@ -184,72 +185,84 @@ const MediaGroupedList = React.memo(function MediaGroupedList(props: any) {
   const isJson: boolean = typeof json === 'object';
 
   return (
-    <div
-      className='MediaSet'
-      style={{
-        paddingLeft: `calc(0.625rem * ${path.length - 2})`,
-        ...style,
-      }}
-    >
-      {path.slice(2).map((key: string, i: number) => (
-        <div
-          key={key}
-          className='MediaSet__connectorLine'
-          style={{
-            left: `calc(0.625rem * ${i})`,
-          }}
-        />
-      ))}
+    <ErrorBoundary>
       <div
-        className={`MediaSet__container ${path.length > 2 ? 'withDash' : ''}`}
+        className='MediaSet'
+        style={{
+          paddingLeft: `calc(0.625rem * ${path.length - 2})`,
+          ...style,
+        }}
       >
-        {path.length > 1 && (
-          <ControlPopover
-            anchorOrigin={{
-              vertical: 'bottom',
-              horizontal: 'left',
-            }}
-            transformOrigin={{
-              vertical: 'top',
-              horizontal: 'left',
-            }}
-            anchor={({ onAnchorClick }) => (
-              <Tooltip
-                placement='top-start'
-                title={isJson ? path[path.length - 1] : ''}
-              >
-                <span
-                  onClick={isJson ? onAnchorClick : () => null}
-                  className={classNames(
-                    `MediaSet__container__title ${
-                      isJson ? 'MediaSet__container__title__pointer' : ''
-                    }`,
-                  )}
-                >
-                  {path[path.length - 1]}
-                </span>
-              </Tooltip>
-            )}
-            component={<JsonViewPopover json={json as object} />}
-          />
-        )}
-        {items.length > 0 && (
-          <div className='MediaSet__container__mediaItemsList'>
-            <MediaList
-              data={items}
-              addUriToList={data.addUriToList}
-              wrapperOffsetWidth={data.wrapperOffsetWidth}
-              wrapperOffsetHeight={data.wrapperOffsetHeight}
-              mediaItemHeight={data.mediaItemHeight}
-              focusedState={data.focusedState}
-              syncHoverState={data.syncHoverState}
-              additionalProperties={data.additionalProperties}
-              tooltip={data.tooltip}
-              mediaType={data.mediaType}
+        {path.slice(2).map((key: string, i: number) => (
+          <ErrorBoundary key={key}>
+            <div
+              className='MediaSet__connectorLine'
+              style={{
+                left: `calc(0.625rem * ${i})`,
+              }}
             />
+          </ErrorBoundary>
+        ))}
+        <ErrorBoundary>
+          <div
+            className={`MediaSet__container ${
+              path.length > 2 ? 'withDash' : ''
+            }`}
+          >
+            {path.length > 1 && (
+              <ErrorBoundary>
+                <ControlPopover
+                  anchorOrigin={{
+                    vertical: 'bottom',
+                    horizontal: 'left',
+                  }}
+                  transformOrigin={{
+                    vertical: 'top',
+                    horizontal: 'left',
+                  }}
+                  anchor={({ onAnchorClick }) => (
+                    <Tooltip
+                      placement='top-start'
+                      title={isJson ? path[path.length - 1] : ''}
+                    >
+                      <span
+                        onClick={isJson ? onAnchorClick : () => null}
+                        className={classNames(
+                          `MediaSet__container__title ${
+                            isJson ? 'MediaSet__container__title__pointer' : ''
+                          }`,
+                        )}
+                      >
+                        {path[path.length - 1]}
+                      </span>
+                    </Tooltip>
+                  )}
+                  component={<JsonViewPopover json={json as object} />}
+                />
+              </ErrorBoundary>
+            )}
+
+            {items.length > 0 && (
+              <ErrorBoundary>
+                <div className='MediaSet__container__mediaItemsList'>
+                  <MediaList
+                    data={items}
+                    addUriToList={data.addUriToList}
+                    wrapperOffsetWidth={data.wrapperOffsetWidth}
+                    wrapperOffsetHeight={data.wrapperOffsetHeight}
+                    mediaItemHeight={data.mediaItemHeight}
+                    focusedState={data.focusedState}
+                    syncHoverState={data.syncHoverState}
+                    additionalProperties={data.additionalProperties}
+                    tooltip={data.tooltip}
+                    mediaType={data.mediaType}
+                  />
+                </div>
+              </ErrorBoundary>
+            )}
           </div>
-        )}
+        </ErrorBoundary>
       </div>
-    </div>
+    </ErrorBoundary>
   );
 }, areEqual);

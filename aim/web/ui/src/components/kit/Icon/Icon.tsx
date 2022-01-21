@@ -1,5 +1,7 @@
 import React from 'react';
 
+import ErrorBoundary from 'components/ErrorBoundary/ErrorBoundary';
+
 import { IIconProps } from './Icon.d';
 
 function Icon({
@@ -11,15 +13,17 @@ function Icon({
   ...rest
 }: IIconProps): React.FunctionComponentElement<React.ReactNode> {
   return (
-    <i
-      className={`Icon__container icon-${name} ${className}`}
-      style={{
-        ...(fontSize && { fontSize: fontSize }),
-        ...(color && { color }),
-        ...style,
-      }}
-      {...rest}
-    />
+    <ErrorBoundary>
+      <i
+        className={`Icon__container icon-${name} ${className}`}
+        style={{
+          ...(fontSize && { fontSize: fontSize }),
+          ...(color && { color }),
+          ...style,
+        }}
+        {...rest}
+      />
+    </ErrorBoundary>
   );
 }
 

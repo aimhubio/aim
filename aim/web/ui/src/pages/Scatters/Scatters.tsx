@@ -9,12 +9,12 @@ import EmptyComponent from 'components/EmptyComponent/EmptyComponent';
 import TableLoader from 'components/TableLoader/TableLoader';
 import ChartLoader from 'components/ChartLoader/ChartLoader';
 import ResizePanel from 'components/ResizePanel/ResizePanel';
+import Grouping from 'components/Grouping/Grouping';
 
 import { ResizeModeEnum } from 'config/enums/tableEnums';
 import { RowHeightSize } from 'config/table/tableConfigs';
 import GroupingPopovers from 'config/grouping/GroupingPopovers';
 
-import Grouping from 'pages/components/Grouping/Grouping';
 import AppBar from 'pages/Metrics/components/MetricsBar/MetricsBar';
 import Controls from 'pages/Scatters/components/Controls/Controls';
 import SelectForm from 'pages/Scatters/components/SelectForm/SelectForm';

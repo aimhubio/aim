@@ -1,6 +1,7 @@
 import React from 'react';
 
 import ResizeModeActions from 'components/ResizeModeActions/ResizeModeActions';
+import ErrorBoundary from 'components/ErrorBoundary/ErrorBoundary';
 
 import { ResizeModeEnum } from 'config/enums/tableEnums';
 
@@ -16,30 +17,32 @@ function ResizePanel({
   className,
 }: IResizePanelProps): React.FunctionComponentElement<React.ReactNode> | null {
   return (
-    <div
-      ref={resizeElemRef}
-      className={`${className || ''} ResizePanel${
-        resizeMode === ResizeModeEnum.Hide && !panelResizing
-          ? '__fullHeight'
-          : resizeMode !== ResizeModeEnum.Resizable
-          ? '__hidden'
-          : ''
-      } ${panelResizing ? 'resizing' : ''}`}
-    >
-      {resizeMode === ResizeModeEnum.Hide ? (
-        <ResizeModeActions
-          resizeMode={resizeMode}
-          onTableResizeModeChange={onTableResizeModeChange}
-        />
-      ) : (
-        <div className='ResizePanel__dots'>
-          <span></span>
-          <span></span>
-          <span></span>
-          <span></span>
-        </div>
-      )}
-    </div>
+    <ErrorBoundary>
+      <div
+        ref={resizeElemRef}
+        className={`${className || ''} ResizePanel${
+          resizeMode === ResizeModeEnum.Hide && !panelResizing
+            ? '__fullHeight'
+            : resizeMode !== ResizeModeEnum.Resizable
+            ? '__hidden'
+            : ''
+        } ${panelResizing ? 'resizing' : ''}`}
+      >
+        {resizeMode === ResizeModeEnum.Hide ? (
+          <ResizeModeActions
+            resizeMode={resizeMode}
+            onTableResizeModeChange={onTableResizeModeChange}
+          />
+        ) : (
+          <div className='ResizePanel__dots'>
+            <span></span>
+            <span></span>
+            <span></span>
+            <span></span>
+          </div>
+        )}
+      </div>
+    </ErrorBoundary>
   );
 }
 

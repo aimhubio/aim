@@ -48,6 +48,7 @@ from aim.web.api.runs.pydantic_models import (
     StructuredRunAddTagIn,
     StructuredRunAddTagOut,
     StructuredRunRemoveTagOut,
+    StructuredRunsArchivedOut,
     URIBatchIn,
 )
 from aim.web.api.utils import object_factory
@@ -496,6 +497,7 @@ async def delete_run_api(run_id: str):
         raise HTTPException(400, detail=f'Error while deleting run {run_id}.')
 
     return {
+        'id': run_id,
         'status': 'OK'
     }
 
@@ -510,6 +512,22 @@ async def delete_runs_batch_api(runs_batch: RunsBatchIn):
     if not success:
         raise HTTPException(400, detail={'message': 'Error while deleting runs.',
                                          'remaining_runs': remaining_runs})
+
+    return {
+        'status': 'OK'
+    }
+
+
+@runs_router.post('/archive-batch/', response_model=StructuredRunsArchivedOut)
+async def archive_runs_batch_api(runs_batch: RunsBatchIn, archive: Optional[bool] = True,
+                                 factory=Depends(object_factory)):
+    with factory:
+        runs = factory.find_runs(runs_batch)
+        if not runs:
+            raise HTTPException(status_code=404)
+
+        for run in runs:
+            run.archived = archive
 
     return {
         'status': 'OK'
