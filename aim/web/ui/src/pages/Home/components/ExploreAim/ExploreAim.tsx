@@ -16,37 +16,45 @@ export interface IExploreCard {
   title: string;
   description: string;
   path: string;
+  icon: string;
 }
 const cardsData: IExploreCard[] = [
   {
     title: 'Runs Explorer',
-    description: 'We constantly seek to improve Aim for the community.',
+    description:
+      'View all your runs holistically on Runs Explorer: all hyperparameters, all metric last values',
     path: 'runs',
+    icon: 'runs',
   },
   {
     title: 'Metrics Explorer',
-    description:
-      "Aim UI uses segment's analytics toolkit to collect basic info about...",
+    description: 'Compare 100s of metrics in a few clicks on Metrics Explorer',
     path: 'metrics',
+    icon: 'metrics',
+  },
+  {
+    title: 'Images Explorer',
+    description:
+      'Track intermediate images and search, compare them on Images Explorer',
+    path: 'images',
+    icon: 'images',
   },
   {
     title: 'Params Explorer',
     description:
-      "Aim UI uses segment's analytics toolkit to collect basic info about...",
+      'The Params explorer enables a parallel coordinates view for metrics and params',
     path: 'params',
+    icon: 'params',
   },
   {
-    title: 'Tags',
-    description: 'We constantly seek to improve Aim for the community.',
-    path: 'tags',
-  },
-  {
-    title: 'Bookmarks',
+    title: 'Scatters Explorer',
     description:
-      "Aim UI uses segment's analytics toolkit to collect basic info about...",
-    path: 'bookmarks',
+      'Explore and learn relationship, correlations, and clustering effects between metrics and parameters on Scatters Explorer',
+    path: 'scatters',
+    icon: 'scatterplot',
   },
 ];
+
 function ExploreAim(): React.FunctionComponentElement<React.ReactNode> {
   return (
     <ErrorBoundary>
