@@ -938,6 +938,7 @@ function createAppModel(appConfig: IAppInitialConfig) {
         ...getGroupingSelectOptions({
           params: sortedParams,
           contexts,
+          sequenceName: 'metric',
         }),
       ];
       tooltipData = getTooltipData({
@@ -1016,6 +1017,7 @@ function createAppModel(appConfig: IAppInitialConfig) {
         ...getGroupingSelectOptions({
           params: sortedParams,
           contexts,
+          sequenceName: 'metric',
         }),
       ];
       tooltipData = getTooltipData({
@@ -3245,7 +3247,6 @@ function createAppModel(appConfig: IAppInitialConfig) {
             params: sortedParams,
           }),
         ];
-
         tooltipData = getTooltipData({
           processedData: data,
           paramKeys: sortedParams,
@@ -3253,7 +3254,6 @@ function createAppModel(appConfig: IAppInitialConfig) {
           groupingItems: ['color', 'stroke', 'chart'],
           model,
         });
-
         const tableData = getDataAsTableRows(
           data,
           metricsColumns,
@@ -4020,7 +4020,7 @@ function createAppModel(appConfig: IAppInitialConfig) {
         const sortedParams = params.concat(highLevelParams).sort();
         const groupingSelectOptions = [
           ...getGroupingSelectOptions({
-            params: params.concat(highLevelParams).sort(),
+            params: sortedParams,
           }),
         ];
 
@@ -4626,14 +4626,15 @@ function createAppModel(appConfig: IAppInitialConfig) {
         const { data, params, highLevelParams, metricsColumns } = processData(
           model.getState()?.rawData as IRun<IParamTrace>[],
         );
+        const sortedParams = params.concat(highLevelParams).sort();
         const groupingSelectOptions = [
           ...getGroupingSelectOptions({
-            params: params.concat(highLevelParams).sort(),
+            params: sortedParams,
           }),
         ];
         tooltipData = getTooltipData({
           processedData: data,
-          paramKeys: params,
+          paramKeys: sortedParams,
           groupingSelectOptions,
           groupingItems: ['color', 'chart'],
           model,

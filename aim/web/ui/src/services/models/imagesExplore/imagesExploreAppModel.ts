@@ -447,7 +447,6 @@ function setModelData(rawData: any[], configData: IImagesExploreAppConfig) {
   const sortFields = model.getState()?.config?.table.sortFields;
   const { data, params, contexts, highLevelParams } = processData(rawData);
   const sortedParams = params.concat(highLevelParams).sort();
-
   const groupingSelectOptions = [
     ...getGroupingSelectOptions({
       params: sortedParams,
@@ -686,7 +685,6 @@ function getGroupingSelectOptions({
       value: 'run.props.creation_time',
     },
     ...paramsOptions,
-
     {
       group: 'images',
       label: 'images.name',
