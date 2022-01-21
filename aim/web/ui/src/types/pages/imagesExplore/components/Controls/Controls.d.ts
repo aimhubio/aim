@@ -9,6 +9,7 @@ import { IImagesExploreAppConfig } from 'types/services/models/imagesExplore/ima
 export interface IControlProps {
   selectOptions: IGroupingSelectOption[];
   tooltip: IPanelTooltip;
+  orderedMap: { [key: string]: any };
   onChangeTooltip: (tooltip: Partial<IPanelTooltip>) => void;
   additionalProperties: IImagesExploreAppConfig['images']['additionalProperties'];
   onImageSizeChange: (newValue: number) => void;
@@ -16,6 +17,7 @@ export interface IControlProps {
   onImageAlignmentChange: (
     value: { value: string; label: string } | null,
   ) => void;
+  onStackingToggle: () => void;
   onImagesSortReset: () => void;
   onImagesSortChange: any;
   sortFields: SortField[];

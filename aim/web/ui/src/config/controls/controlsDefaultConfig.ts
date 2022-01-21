@@ -64,6 +64,7 @@ export const CONTROLS_DEFAULT_CONFIG = {
     alignmentType: MediaItemAlignmentEnum.Height,
     mediaItemSize: 25,
     imageRendering: ImageRenderingEnum.Pixelated,
+    stacking: false,
     tooltip: {
       display: true,
       selectedParams: [],

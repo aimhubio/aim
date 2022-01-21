@@ -1,4 +1,6 @@
 import React from 'react';
+import _ from 'lodash-es';
+import classNames from 'classnames';
 
 import { Tooltip } from '@material-ui/core';
 
@@ -103,6 +105,27 @@ function Controls(
           }
         />
       </div>
+      <Tooltip
+        title={props.additionalProperties.stacking ? 'Group stacked' : 'Stack'}
+      >
+        <div
+          className={classNames('Controls__anchor', {
+            active: props.additionalProperties.stacking,
+            outlined: props.additionalProperties.stacking,
+            disabled: _.isEmpty(props.orderedMap),
+          })}
+          onClick={
+            !_.isEmpty(props.orderedMap) ? props.onStackingToggle : _.noop
+          }
+        >
+          <Icon
+            className={classNames('Controls__icon', {
+              active: props.additionalProperties.stacking,
+            })}
+            name='images-stacking'
+          />
+        </div>
+      </Tooltip>
       <div>
         <ControlPopover
           title='Images Sorting'
