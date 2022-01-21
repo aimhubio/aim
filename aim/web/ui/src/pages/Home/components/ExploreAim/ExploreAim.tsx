@@ -64,7 +64,7 @@ function ExploreAim(): React.FunctionComponentElement<React.ReactNode> {
         <div className='ExploreAim__social'>
           <a
             target='_blank'
-            href='https://aimstack.slack.com'
+            href='https://slack.aimstack.io'
             rel='noreferrer'
             className='ExploreAim__social__item'
             onClick={() => trackEvent('[Homepage] go to slack')}
