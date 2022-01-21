@@ -12,6 +12,8 @@ Here are the set of commands supported:
 | `up`          | Runs Aim web UI for the given repo.                                  |
 | `upgrade`     | Upgrades legacy Aim repository from `2.x` to `3.0`.                  |
 | `reindex`     | Process runs left in 'in progress' state and optimized finished runs.|
+| `server`      | Run `aim` remote tracking server accepting incoming RPC requests.    |
+| `runs`        | Manage run data for the given repo.                                  |
 
 ### init
 __**This step is optional.**__
@@ -82,3 +84,44 @@ $ aim reindex [ARGS]
 | --------------------------------- | --------------------------------------------------------- |
 | `--repo <repo_path>`              | Path to parent directory of `.aim` repo. _Current working directory by default_ |
 | `--finalize-only`                 | Only finalize runs left in 'in progress' state. Do not attempt runs optimization. |
+
+### server
+Run a gRPC server to collect tracked data from remote clients.
+```shell
+$ aim server [ARGS]
+```
+
+| Args                              | Description                                               |
+| --------------------------------- | --------------------------------------------------------- |
+| `--repo <repo_path>`              | Path to parent directory of `.aim` repo. _Current working directory by default_ |
+| `-h` &#124; `--host <host>`       | Specify host address.                                     |
+| `-p` &#124; `--port <port>`       | Specify port to listen to. _Default is 53800_             |
+| `-w` &#124; `--workers <N>`       | Specify number of gPRC workers. _Default is 1 worker.     |
+| `--ssl-keyfile`                   | Specify path to keyfile for secure connection.            |
+| `--ssl-certfile`                  | Specify path to cert. file for secure connection.         |
+
+### runs
+Upgrade Aim repository runs data.
+```shell
+$ aim runs [ARGS] SUBCOMMAND
+```
+
+| Args                              | Description                                               |
+| --------------------------------- | --------------------------------------------------------- |
+| `--repo <repo_path>`              | Path to parent directory of `.aim` repo. _Current working directory by default_ |
+
+**runs subcommands**
+
+| Sub-command   | Description                                                          |
+| --------------| -------------------------------------------------------------------- |
+| `ls`        | List runs in `aim` repository.                                         |
+| `rm`        | Remove run data for given runs hashes. At lease one run should be specified|
+
+
+```shell
+$ aim runs ls
+```
+
+```shell
+$ aim runs rm [HASH] ...
+```
