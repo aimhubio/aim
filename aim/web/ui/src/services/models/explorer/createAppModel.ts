@@ -840,8 +840,10 @@ function createAppModel(appConfig: IAppInitialConfig) {
       params: string[];
       highLevelParams: string[];
       contexts: string[];
+      selectedRows: any;
     } {
       const configData = model.getState()?.config;
+      let selectedRows = model.getState()?.selectedRows;
       let metrics: IMetric[] = [];
       let index: number = -1;
       let params: string[] = [];
@@ -936,11 +938,31 @@ function createAppModel(appConfig: IAppInitialConfig) {
       const uniqHighLevelParams = _.uniq(highLevelParams);
       const uniqContexts = _.uniq(contexts);
 
+      const mappedData =
+        data.reduce((acc: any, item: any) => {
+          acc[item.hash] = { runHash: item.hash, ...item.props };
+          return acc;
+        }, {}) || {};
+      if (selectedRows && !_.isEmpty(selectedRows)) {
+        selectedRows = Object.keys(selectedRows).reduce(
+          (acc: any, key: string) => {
+            const slicedKey = key.slice(0, key.indexOf('/'));
+            acc[key] = {
+              selectKey: key,
+              ...mappedData[slicedKey],
+            };
+            return acc;
+          },
+          {},
+        );
+      }
+
       return {
         data: processedData,
         params: uniqParams,
         highLevelParams: uniqHighLevelParams,
         contexts: uniqContexts,
+        selectedRows,
       };
     }
 
@@ -948,9 +970,8 @@ function createAppModel(appConfig: IAppInitialConfig) {
       configData = model.getState()!.config!,
       shouldURLUpdate?: boolean,
     ): void {
-      const { data, params, highLevelParams, contexts } = processData(
-        model.getState()?.rawData as ISequence<IMetricTrace>[],
-      );
+      const { data, params, highLevelParams, contexts, selectedRows } =
+        processData(model.getState()?.rawData as ISequence<IMetricTrace>[]);
       const sortedParams = params.concat(highLevelParams).sort();
       const groupingSelectOptions = [
         ...getGroupingSelectOptions({
@@ -1017,6 +1038,7 @@ function createAppModel(appConfig: IAppInitialConfig) {
         tableColumns,
         sameValueColumns: tableData.sameValueColumns,
         groupingSelectOptions,
+        selectedRows,
       });
     }
 
@@ -1025,7 +1047,8 @@ function createAppModel(appConfig: IAppInitialConfig) {
       configData: IAppModelConfig,
     ): void {
       const sortFields = model.getState()?.config?.table?.sortFields;
-      const { data, params, highLevelParams, contexts } = processData(rawData);
+      const { data, params, highLevelParams, contexts, selectedRows } =
+        processData(rawData);
       if (configData) {
         setAggregationEnabled({ model, appName });
       }
@@ -1093,6 +1116,7 @@ function createAppModel(appConfig: IAppInitialConfig) {
         tableColumns: tableColumns,
         sameValueColumns: tableData.sameValueColumns,
         groupingSelectOptions,
+        selectedRows,
       });
     }
 
@@ -2177,7 +2201,8 @@ function createAppModel(appConfig: IAppInitialConfig) {
                 }
                 count++;
               }
-              const { data, params, metricsColumns } = processData(runsData);
+              const { data, params, metricsColumns, selectedRows } =
+                processData(runsData);
 
               const tableData = getDataAsTableRows(
                 data,
@@ -2196,7 +2221,7 @@ function createAppModel(appConfig: IAppInitialConfig) {
                 data,
                 selectedRows: shouldResetSelectedRows
                   ? {}
-                  : model.getState()?.selectedRows,
+                  : selectedRows ?? model.getState()?.selectedRows,
                 rawData: runsData,
                 requestIsPending: false,
                 infiniteIsPending: false,
@@ -2236,7 +2261,7 @@ function createAppModel(appConfig: IAppInitialConfig) {
         configData = model.getState()!.config!,
         shouldURLUpdate?: boolean,
       ): void {
-        const { data, params, metricsColumns } = processData(
+        const { data, params, metricsColumns, selectedRows } = processData(
           model.getState()?.rawData as IRun<IMetricTrace>[],
         );
         const tableData = getDataAsTableRows(data, metricsColumns, params);
@@ -2259,6 +2284,7 @@ function createAppModel(appConfig: IAppInitialConfig) {
           tableData: tableData.rows,
           tableColumns,
           sameValueColumns: tableData.sameValueColumns,
+          selectedRows,
         });
       }
 
@@ -2294,8 +2320,10 @@ function createAppModel(appConfig: IAppInitialConfig) {
         data: any[];
         params: string[];
         metricsColumns: any;
+        selectedRows: any;
       } {
         const grouping = model.getState()?.config?.grouping;
+        let selectedRows = model.getState()?.selectedRows;
         let runs: IParam[] = [];
         let params: string[] = [];
         const paletteIndex: number = grouping?.paletteIndex || 0;
@@ -2319,11 +2347,29 @@ function createAppModel(appConfig: IAppInitialConfig) {
         });
         const processedData = groupData(runs);
         const uniqParams = _.uniq(params);
-
+        const mappedData =
+          data.reduce((acc: any, item: any) => {
+            acc[item.hash] = { runHash: item.hash, ...item.props };
+            return acc;
+          }, {}) || {};
+        if (selectedRows && !_.isEmpty(selectedRows)) {
+          selectedRows = Object.keys(selectedRows).reduce(
+            (acc: any, key: string) => {
+              const slicedKey = key.slice(0, key.indexOf('/'));
+              acc[key] = {
+                selectKey: key,
+                ...mappedData[slicedKey],
+              };
+              return acc;
+            },
+            {},
+          );
+        }
         return {
           data: processedData,
           params: uniqParams,
           metricsColumns,
+          selectedRows,
         };
       }
 
@@ -2719,7 +2765,8 @@ function createAppModel(appConfig: IAppInitialConfig) {
       }
 
       function updateData(newData: any): void {
-        const { data, params, metricsColumns } = processData(newData);
+        const { data, params, metricsColumns, selectedRows } =
+          processData(newData);
         const modelState = model.getState() as IRunsAppModelState;
         const tableData = getDataAsTableRows(data, metricsColumns, params);
         const tableColumns = getRunsTableColumns(
@@ -2736,6 +2783,7 @@ function createAppModel(appConfig: IAppInitialConfig) {
           infiniteIsPending: false,
           tableColumns,
           tableData: tableData.rows,
+          selectedRows,
           sameValueColumns: tableData.sameValueColumns,
           config: {
             ...modelState?.config,
@@ -3470,7 +3518,7 @@ function createAppModel(appConfig: IAppInitialConfig) {
         rawData: IRun<IParamTrace>[],
         configData: IAppModelConfig,
       ): void {
-        const { data, params, highLevelParams, metricsColumns } =
+        const { data, params, highLevelParams, metricsColumns, selectedRows } =
           processData(rawData);
         const sortedParams = params.concat(highLevelParams).sort();
         const groupingSelectOptions = [
@@ -3526,6 +3574,7 @@ function createAppModel(appConfig: IAppInitialConfig) {
             model: model as IModel<IParamsAppModelState>,
           }),
           params,
+          selectedRows,
           metricsColumns,
           rawData,
           config: configData,
@@ -3677,8 +3726,10 @@ function createAppModel(appConfig: IAppInitialConfig) {
         params: string[];
         highLevelParams: string[];
         metricsColumns: any;
+        selectedRows: any;
       } {
         const configData = model.getState()?.config;
+        let selectedRows = model.getState()?.selectedRows;
         const grouping = model.getState()?.config?.grouping;
         let runs: IParam[] = [];
         let params: string[] = [];
@@ -3733,12 +3784,30 @@ function createAppModel(appConfig: IAppInitialConfig) {
         );
         const uniqParams = _.uniq(params);
         const uniqHighLevelParams = _.uniq(highLevelParams);
-
+        const mappedData =
+          data.reduce((acc: any, item: any) => {
+            acc[item.hash] = { runHash: item.hash, ...item.props };
+            return acc;
+          }, {}) || {};
+        if (selectedRows && !_.isEmpty(selectedRows)) {
+          selectedRows = Object.keys(selectedRows).reduce(
+            (acc: any, key: string) => {
+              const slicedKey = key.slice(0, key.indexOf('/'));
+              acc[key] = {
+                selectKey: key,
+                ...mappedData[slicedKey],
+              };
+              return acc;
+            },
+            {},
+          );
+        }
         return {
           data: processedData,
           params: uniqParams,
           highLevelParams: uniqHighLevelParams,
           metricsColumns,
+          selectedRows,
         };
       }
 
@@ -3864,9 +3933,8 @@ function createAppModel(appConfig: IAppInitialConfig) {
         configData = model.getState()!.config!,
         shouldURLUpdate?: boolean,
       ): void {
-        const { data, params, highLevelParams, metricsColumns } = processData(
-          model.getState()?.rawData as IRun<IParamTrace>[],
-        );
+        const { data, params, highLevelParams, metricsColumns, selectedRows } =
+          processData(model.getState()?.rawData as IRun<IParamTrace>[]);
         const sortedParams = params.concat(highLevelParams).sort();
         const groupingSelectOptions = [
           ...getGroupingSelectOptions({
@@ -3923,6 +3991,7 @@ function createAppModel(appConfig: IAppInitialConfig) {
           tableData: tableData.rows,
           tableColumns,
           sameValueColumns: tableData.sameValueColumns,
+          selectedRows,
         });
       }
 
@@ -4346,7 +4415,7 @@ function createAppModel(appConfig: IAppInitialConfig) {
         rawData: IRun<IParamTrace>[],
         configData: IAppModelConfig,
       ): void {
-        const { data, params, highLevelParams, metricsColumns } =
+        const { data, params, highLevelParams, metricsColumns, selectedRows } =
           processData(rawData);
 
         const sortedParams = params.concat(highLevelParams).sort();
@@ -4410,6 +4479,7 @@ function createAppModel(appConfig: IAppInitialConfig) {
           tableColumns,
           sameValueColumns: tableData.sameValueColumns,
           groupingSelectOptions,
+          selectedRows,
         });
       }
 
@@ -4750,8 +4820,10 @@ function createAppModel(appConfig: IAppInitialConfig) {
         params: string[];
         highLevelParams: string[];
         metricsColumns: any;
+        selectedRows: any;
       } {
         const configData = model.getState()?.config;
+        let selectedRows = model.getState()?.selectedRows;
         const grouping = configData?.grouping;
         let runs: IParam[] = [];
         let params: string[] = [];
@@ -4807,12 +4879,31 @@ function createAppModel(appConfig: IAppInitialConfig) {
         );
         const uniqParams = _.uniq(params);
         const uniqHighLevelParams = _.uniq(highLevelParams);
+        const mappedData =
+          data.reduce((acc: any, item: any) => {
+            acc[item.hash] = { runHash: item.hash, ...item.props };
+            return acc;
+          }, {}) || {};
+        if (selectedRows && !_.isEmpty(selectedRows)) {
+          selectedRows = Object.keys(selectedRows).reduce(
+            (acc: any, key: string) => {
+              const slicedKey = key.slice(0, key.indexOf('/'));
+              acc[key] = {
+                selectKey: key,
+                ...mappedData[slicedKey],
+              };
+              return acc;
+            },
+            {},
+          );
+        }
 
         return {
           data: processedData,
           params: uniqParams,
           highLevelParams: uniqHighLevelParams,
           metricsColumns,
+          selectedRows,
         };
       }
 
@@ -4956,9 +5047,8 @@ function createAppModel(appConfig: IAppInitialConfig) {
         configData = model.getState()!.config!,
         shouldURLUpdate?: boolean,
       ): void {
-        const { data, params, highLevelParams, metricsColumns } = processData(
-          model.getState()?.rawData as IRun<IParamTrace>[],
-        );
+        const { data, params, highLevelParams, metricsColumns, selectedRows } =
+          processData(model.getState()?.rawData as IRun<IParamTrace>[]);
         const groupingSelectOptions = [
           ...getGroupingSelectOptions({
             params: params.concat(highLevelParams).sort(),
@@ -5014,6 +5104,7 @@ function createAppModel(appConfig: IAppInitialConfig) {
           tableData: tableData.rows,
           tableColumns,
           sameValueColumns: tableData.sameValueColumns,
+          selectedRows,
         });
       }
 

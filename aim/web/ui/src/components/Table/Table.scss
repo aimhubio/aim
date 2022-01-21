@@ -39,7 +39,7 @@
   }
 }
 .ActionModal {
-  width: toRem(540px);
+  width: 40rem;
   &__Table {
     .BaseTable__header {
       border-radius: toRem(4px) toRem(4px) 0 0;
@@ -109,10 +109,10 @@
         &::after {
           content: '';
           position: absolute;
-          right: 0.3125rem;
+          right: 10rem;
           width: 0.375rem;
           height: 0.375rem;
-          top: 0.6875rem;
+          top: 0.5625rem;
           border-radius: $border-radius-circle;
           background: $success-color-100;
         }

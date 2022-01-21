@@ -388,8 +388,10 @@ function processData(data: any[]): {
   params: string[];
   highLevelParams: string[];
   contexts: string[];
+  selectedRows: any;
 } {
   const configData = model.getState()?.config;
+  let selectedRows = model.getState()?.selectedRows;
   let metrics: any[] = [];
   let params: string[] = [];
   let highLevelParams: string[] = [];
@@ -458,18 +460,34 @@ function processData(data: any[]): {
   const uniqParams = _.uniq(params);
   const uniqHighLevelParams = _.uniq(highLevelParams);
   const uniqContexts = _.uniq(contexts);
-
+  const mappedData =
+    data.reduce((acc: any, item: any) => {
+      acc[item.hash] = { runHash: item.hash, ...item.props };
+      return acc;
+    }, {}) || {};
+  if (selectedRows && !_.isEmpty(selectedRows)) {
+    selectedRows = Object.keys(selectedRows).reduce((acc: any, key: string) => {
+      const slicedKey = key.slice(0, key.indexOf('/'));
+      acc[key] = {
+        selectKey: key,
+        ...mappedData[slicedKey],
+      };
+      return acc;
+    }, {});
+  }
   return {
     data: processedData,
     params: uniqParams,
     highLevelParams: uniqHighLevelParams,
     contexts: uniqContexts,
+    selectedRows,
   };
 }
 
 function setModelData(rawData: any[], configData: IImagesExploreAppConfig) {
   const sortFields = model.getState()?.config?.table.sortFields;
-  const { data, params, contexts, highLevelParams } = processData(rawData);
+  const { data, params, contexts, highLevelParams, selectedRows } =
+    processData(rawData);
   const sortedParams = params.concat(highLevelParams).sort();
 
   const groupingSelectOptions = [
@@ -554,6 +572,7 @@ function setModelData(rawData: any[], configData: IImagesExploreAppConfig) {
     config,
     params,
     data,
+    selectedRows,
     imagesData: mediaSetData,
     orderedMap,
     tableData: tableData.rows,
@@ -575,7 +594,7 @@ function updateModelData(
   configData: IImagesExploreAppConfig = model.getState()!.config!,
   shouldURLUpdate?: boolean,
 ): void {
-  const { data, params, contexts, highLevelParams } = processData(
+  const { data, params, contexts, highLevelParams, selectedRows } = processData(
     model.getState()?.rawData as any[],
   );
   const sortedParams = params.concat(highLevelParams).sort();
@@ -650,6 +669,7 @@ function updateModelData(
     tableColumns,
     sameValueColumns: tableData.sameValueColumns,
     groupingSelectOptions,
+    selectedRows,
   });
 }
 

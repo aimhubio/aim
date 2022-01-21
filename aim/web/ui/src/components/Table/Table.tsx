@@ -931,6 +931,10 @@ function propsComparator(
     return false;
   }
 
+  if (prevProps.hiddenColumns !== nextProps.hiddenColumns) {
+    return false;
+  }
+
   return true;
 }
 

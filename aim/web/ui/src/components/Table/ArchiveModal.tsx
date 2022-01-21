@@ -115,7 +115,7 @@ function ArchiveModal({
           run: `${moment(selectedRow.creation_time * 1000).format(
             DateWithSeconds,
           )}`,
-          experiment: selectedRow.experiment.name,
+          experiment: selectedRow?.experiment?.name ?? '',
           runHash: selectedRow.runHash,
           selectKey: selectedRow.selectKey,
           isInProgress: !selectedRow?.end_time,
@@ -157,19 +157,18 @@ function ArchiveModal({
         onOk={onArchive}
         cancelButtonText='Cancel'
         okButtonText={archiveMode ? 'Archive' : 'Unarchive'}
-        title={`Do you really want to ${archivedText}?`}
+        title={`Are you sure you want to ${archivedText} the selected runs?`}
         titleIconName={archivedText}
+        maxWidth='md'
       >
         <div className='ActionModal'>
           <Text size={14} weight={400} className='ActionModal__infoText'>
             {archiveMode
-              ? 'Archived runs will not appear in search both on Dashboard andExplore. But you will still be able to unarchive the run at anytime.'
-              : 'Unarchived runs will appear in search both on Dashboard and Explore.'}
+              ? 'Archived runs are not visible in search by default. You can always go back and unarchive them.'
+              : 'The runs will become visible in search.'}
           </Text>
           <Text size={12} weight={500} className='ActionModal__tableTitle'>
-            {`${
-              Object.values(data).length
-            } Selected runs you can ${archivedText}`}
+            {`${Object.values(data).length} runs to ${archivedText}.`}
           </Text>
           {!_.isEmpty(data) && (
             <Table
@@ -180,7 +179,7 @@ function ArchiveModal({
               data={data}
               hideHeaderActions
               headerHeight={28}
-              emptyText='No Text'
+              emptyText='No Data'
               rowHeight={24}
               height='100%'
               className='ActionModal__Table'
@@ -190,9 +189,7 @@ function ArchiveModal({
             <Text size={12} weight={500} className='ActionModal__tableTitle'>
               {`${
                 Object.values(disabledData).length
-              } Selected runs you had already ${
-                archiveMode ? 'archived' : 'unarchived'
-              }`}
+              } runs are already ${archivedText}d.`}
             </Text>
           )}
           {!_.isEmpty(disabledData) && (
@@ -205,7 +202,7 @@ function ArchiveModal({
                 data={disabledData}
                 hideHeaderActions
                 headerHeight={28}
-                emptyText='No Text'
+                emptyText='No Data'
                 rowHeight={24}
                 height='100%'
                 className='ActionModal__Table'

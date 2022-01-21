@@ -112,7 +112,7 @@ function DeleteModal({
           run: `${moment(selectedRow.creation_time * 1000).format(
             DateWithSeconds,
           )}`,
-          experiment: selectedRow.experiment.name,
+          experiment: selectedRow?.experiment?.name ?? '',
           runHash: selectedRow.runHash,
           selectKey: selectedRow.selectKey,
           isInProgress: !selectedRow?.end_time,
@@ -154,16 +154,18 @@ function DeleteModal({
         onOk={onDelete}
         cancelButtonText='Cancel'
         okButtonText='Delete'
-        title='Do you really want to delete?'
+        title='Are you sure you want to permanently delete the selected runs?'
         modalType='error'
         titleIconName='delete'
+        maxWidth='md'
       >
         <div className='ActionModal'>
           <Text size={14} weight={400} className='ActionModal__infoText'>
-            Ones you delete a run, there is no going back. Please be certain.
+            You will lose all the logs and data related to them. This action
+            cannot be undone.
           </Text>
           <Text size={12} weight={500} className='ActionModal__tableTitle'>
-            {`${Object.values(data).length} Selected runs you can delete`}
+            {`${Object.values(data).length} runs to delete.`}
           </Text>
           {!_.isEmpty(data) && (
             <Table
@@ -184,7 +186,7 @@ function DeleteModal({
             <Text size={12} weight={500} className='ActionModal__tableTitle'>
               {`${
                 Object.values(disabledData).length
-              } Selected Runs are In progress. You can’t delete them`}
+              } runs are still in progress. Unfinished runs cannot be deleted.`}
             </Text>
           )}
           {!_.isEmpty(disabledData) && (

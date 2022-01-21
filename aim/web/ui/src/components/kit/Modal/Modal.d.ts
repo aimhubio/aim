@@ -15,4 +15,5 @@ export interface IModalProps {
   okButtonColor?: string;
   withoutTitleIcon?: boolean;
   children: React.ReactNode;
+  maxWidth?: 'xs' | 'sm' | 'md' | 'lg' | 'xl' | false;
 }

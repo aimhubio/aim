@@ -30,9 +30,17 @@ function Modal({
   okButtonColor,
   withoutTitleIcon,
   children,
+  maxWidth = 'sm',
+  ...rest
 }: IModalProps): React.FunctionComponentElement<React.ReactNode> {
   return (
-    <Dialog open={opened} onClose={onClose} aria-labelledby='form-dialog-title'>
+    <Dialog
+      open={opened}
+      onClose={onClose}
+      aria-labelledby='form-dialog-title'
+      maxWidth={maxWidth}
+      {...rest}
+    >
       <div className={`Modal ${modalType}`}>
         <div className='Modal__header'>
           {!withoutTitleIcon && (
