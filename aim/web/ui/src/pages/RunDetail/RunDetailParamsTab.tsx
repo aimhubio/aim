@@ -17,9 +17,11 @@ function RunDetailParamsTab({
       className='runDetailParamsTabLoader'
       height='100%'
     >
-      <div className='RunDetailParamsTab'>
+      <div className='RunDetailParamsTabWrapper'>
         {!isEmpty(runParams) ? (
-          <ReactJson name={false} theme='bright:inverted' src={runParams} />
+          <div className='RunDetailParamsTab'>
+            <ReactJson name={false} theme='bright:inverted' src={runParams} />
+          </div>
         ) : (
           <EmptyComponent
             size='big'

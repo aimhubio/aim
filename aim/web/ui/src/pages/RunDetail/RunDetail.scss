@@ -148,11 +148,15 @@
   }
 }
 
+.RunDetailParamsTabWrapper {
+  margin: 0.75rem;
+  height: 100%;
+}
 .RunDetailParamsTab {
   padding: 1.5rem;
-  margin: 0.75rem;
   border: $border-grey;
   border-radius: 0.5rem;
+  height: 100%;
 }
 
 .RunDistributionsTab {
@@ -162,11 +166,12 @@
 .RunDetailMetricsTab {
   height: 100%;
   &__container {
+    height: 100%;
     display: flex;
     flex-wrap: wrap;
     background: $white;
     align-items: stretch;
-    height: 100%;
+    padding-bottom: 0.75rem;
     &__chartContainer {
       border: $border-grey;
       border-radius: 0.5rem;
