@@ -2254,6 +2254,10 @@ function createAppModel(appConfig: IAppInitialConfig) {
                 console.log('Unhandled error: ', ex);
               }
             }
+            liveUpdateInstance?.start({
+              q: query,
+              limit: pagination.limit + model.getState()?.rawData?.length || 0,
+            });
           },
           abort: runsRequestRef.abort,
         };
@@ -3153,10 +3157,6 @@ function createAppModel(appConfig: IAppInitialConfig) {
                 );
                 const runData = await getRunData(stream);
                 updateData(runData);
-
-                liveUpdateInstance?.start({
-                  q: configData?.select?.query,
-                });
               } catch (ex: Error | any) {
                 if (ex.name === 'AbortError') {
                   // Abort Error
@@ -3164,6 +3164,9 @@ function createAppModel(appConfig: IAppInitialConfig) {
                   console.log('Unhandled error: ', ex);
                 }
               }
+              liveUpdateInstance?.start({
+                q: configData?.select?.query,
+              });
             }
           },
           abort: runsRequestRef.abort,
