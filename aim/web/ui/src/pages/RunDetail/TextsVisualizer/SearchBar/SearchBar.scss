@@ -2,8 +2,9 @@
 
 .SearchBar {
   display: flex;
-  width: 55%;
-  margin-bottom: toRem(25px);
+  width: 60%;
+  margin-top: toRem(5px);
+  margin-bottom: toRem(15px);
   align-items: center;
   .MatchIcons {
     display: flex;
@@ -15,6 +16,13 @@
     &:last-child {
       margin-right: unset;
     }
+
+    &:not(.active) {
+      .Mui-disabled {
+        color: $pico-30;
+      }
+    }
+
     .Icon__container {
       font-size: $text-lg;
     }
