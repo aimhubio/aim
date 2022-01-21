@@ -1,9 +1,13 @@
 // @ts-nocheck
 /* eslint-disable react/prop-types */
 
-import React, { useRef, useState, useEffect } from 'react';
+import { useRef, useState, useEffect } from 'react';
 import classNames from 'classnames';
+import { isEmpty } from 'lodash-es';
 
+import { Checkbox } from '@material-ui/core';
+
+import { Icon } from 'components/kit';
 import ErrorBoundary from 'components/ErrorBoundary/ErrorBoundary';
 
 import { rowCeilSizeConfig } from 'config/table/tableConfigs';
@@ -187,6 +191,15 @@ function Table(props) {
     props.updateColumns(columnsOrderClone);
   }
 
+  function showTopHeaderContent(index, col, add) {
+    return (
+      props.topHeader &&
+      sortedColumns[
+        (leftPane ? leftPane.length : 0) + (add ? index + 1 : index - 1)
+      ]?.topHeader !== col.topHeader
+    );
+  }
+
   return (
     <ErrorBoundary>
       <div
@@ -210,18 +223,67 @@ function Table(props) {
                 onlyGroupColumn: leftPane.length === 0,
               })}
             >
+              {props.multiSelect && Array.isArray(props.data) && (
+                <ErrorBoundary key={'selection'}>
+                  <Column
+                    topHeader={true}
+                    showTopHeaderContent={true}
+                    showTopHeaderBorder={true}
+                    col={{
+                      isHidden: false,
+                      key: 'selection',
+                      pin: 'left',
+                      topHeader: '',
+                      content: (
+                        <Checkbox
+                          color='primary'
+                          size='small'
+                          className='Table__column__selectCheckbox'
+                          icon={
+                            <span className='Table__column__defaultSelectIcon'></span>
+                          }
+                          checkedIcon={
+                            props.data.length ===
+                            Object.keys(props.selectedRows).length ? (
+                              <span className='Table__column__selectedSelectIcon'>
+                                <Icon name='check' fontSize={9} />
+                              </span>
+                            ) : (
+                              <span className='Table__column__partiallySelectedSelectIcon'>
+                                <Icon name='partially-selected' fontSize={16} />
+                              </span>
+                            )
+                          }
+                          onClick={() =>
+                            props.onRowSelect({
+                              actionType: isEmpty(props.selectedRows)
+                                ? 'selectAll'
+                                : 'removeAll',
+                              data: props.data,
+                            })
+                          }
+                          checked={!isEmpty(props.selectedRows)}
+                        />
+                      ),
+                    }}
+                    data={props.data}
+                    expanded={expanded}
+                    expand={expand}
+                    onRowSelect={props.onRowSelect}
+                    selectedRows={props.selectedRows}
+                    firstColumn={true}
+                    width={32}
+                    isAlwaysVisible={true}
+                    onRowHover={props.onRowHover}
+                  />
+                </ErrorBoundary>
+              )}
               {leftPane.map((col, index) => (
                 <ErrorBoundary key={col.key}>
                   <Column
                     topHeader={props.topHeader}
-                    showTopHeaderContent={
-                      props.topHeader &&
-                      sortedColumns[index - 1]?.topHeader !== col.topHeader
-                    }
-                    showTopHeaderBorder={
-                      props.topHeader &&
-                      sortedColumns[index + 1]?.topHeader !== col.topHeader
-                    }
+                    showTopHeaderContent={showTopHeaderContent(index, col)}
+                    showTopHeaderBorder={showTopHeaderContent(index, col, true)}
                     col={col}
                     data={props.data}
                     expanded={expanded}
@@ -241,6 +303,7 @@ function Table(props) {
                         col.key,
                       ])
                     }
+                    multiSelect={props.multiSelect}
                     paneFirstColumn={index === 0}
                     paneLastColumn={index === leftPane.length - 1}
                     moveColumn={(dir) =>
@@ -258,95 +321,69 @@ function Table(props) {
                     onRowHover={props.onRowHover}
                     onRowClick={props.onRowClick}
                     columnOptions={col.columnOptions}
+                    selectedRows={props.selectedRows}
+                    onRowSelect={props.onRowSelect}
                   />
                 </ErrorBoundary>
               ))}
             </div>
           )}
-          <ErrorBoundary>
-            <div className='Table__pane Table__pane--middle'>
-              {middlePane.map((col, index) => (
-                <ErrorBoundary key={col.key + index}>
-                  <Column
-                    topHeader={props.topHeader}
-                    showTopHeaderContent={
-                      props.topHeader &&
-                      sortedColumns[
-                        (leftPane ? leftPane.length : 0) + index - 1
-                      ]?.topHeader !== col.topHeader
-                    }
-                    showTopHeaderBorder={
-                      props.topHeader &&
-                      sortedColumns[
-                        (leftPane ? leftPane.length : 0) + index + 1
-                      ]?.topHeader !== col.topHeader
-                    }
-                    col={col}
-                    data={props.data}
-                    expanded={expanded}
-                    expand={expand}
-                    togglePin={togglePin}
-                    pinnedTo={null}
-                    firstColumn={index === 0 && leftPane.length === 0}
-                    width={props.columnsWidths?.[col.key]}
-                    updateColumnWidth={props.updateColumnsWidths}
-                    headerMeta={props.headerMeta}
-                    isAlwaysVisible={props.alwaysVisibleColumns?.includes(
+          <div className='Table__pane Table__pane--middle'>
+            {middlePane.map((col, index) => (
+              <ErrorBoundary key={col.key + index}>
+                <Column
+                  key={col.key + index}
+                  topHeader={props.topHeader}
+                  showTopHeaderContent={showTopHeaderContent(index, col)}
+                  showTopHeaderBorder={showTopHeaderContent(index, col, true)}
+                  col={col}
+                  data={props.data}
+                  expanded={expanded}
+                  expand={expand}
+                  togglePin={togglePin}
+                  pinnedTo={null}
+                  firstColumn={index === 0 && leftPane.length === 0}
+                  width={props.columnsWidths?.[col.key]}
+                  updateColumnWidth={props.updateColumnsWidths}
+                  headerMeta={props.headerMeta}
+                  isAlwaysVisible={props.alwaysVisibleColumns?.includes(
+                    col.key,
+                  )}
+                  hideColumn={() =>
+                    props.setExcludedFields?.([
+                      ...(props.excludedFields || []),
                       col.key,
-                    )}
-                    hideColumn={() =>
-                      props.setExcludedFields?.([
-                        ...(props.excludedFields || []),
-                        col.key,
-                      ])
-                    }
-                    paneFirstColumn={index === 0}
-                    paneLastColumn={index === middlePane.length - 1}
-                    moveColumn={(dir) =>
-                      moveColumn(col.key, 'middle', index, dir)
-                    }
-                    sortable={
-                      col.sortableKey &&
-                      props.sortFields.findIndex(
-                        (f) => f[0] === col.sortableKey,
-                      ) === -1
-                    }
-                    sortByColumn={(order) =>
-                      props.onSort(col.sortableKey, order)
-                    }
-                    onRowHover={props.onRowHover}
-                    onRowClick={props.onRowClick}
-                    columnOptions={col.columnOptions}
-                    listWindow={props.listWindow}
-                  />
-                </ErrorBoundary>
-              ))}
-            </div>
-          </ErrorBoundary>
+                    ])
+                  }
+                  paneFirstColumn={index === 0}
+                  paneLastColumn={index === middlePane.length - 1}
+                  moveColumn={(dir) =>
+                    moveColumn(col.key, 'middle', index, dir)
+                  }
+                  sortable={
+                    col.sortableKey &&
+                    props.sortFields.findIndex(
+                      (f) => f[0] === col.sortableKey,
+                    ) === -1
+                  }
+                  sortByColumn={(order) => props.onSort(col.sortableKey, order)}
+                  onRowHover={props.onRowHover}
+                  onRowClick={props.onRowClick}
+                  columnOptions={col.columnOptions}
+                  listWindow={props.listWindow}
+                />
+              </ErrorBoundary>
+            ))}
+          </div>
           {rightPane.length > 0 && (
             <div className='Table__pane Table__pane--right'>
               {rightPane.map((col, index) => (
                 <ErrorBoundary key={col.key}>
                   <Column
+                    key={col.key}
                     topHeader={props.topHeader}
-                    showTopHeaderContent={
-                      props.topHeader &&
-                      sortedColumns[
-                        (leftPane ? leftPane.length : 0) +
-                          middlePane.length +
-                          index -
-                          1
-                      ]?.topHeader !== col.topHeader
-                    }
-                    showTopHeaderBorder={
-                      props.topHeader &&
-                      sortedColumns[
-                        (leftPane ? leftPane.length : 0) +
-                          middlePane.length +
-                          index +
-                          1
-                      ]?.topHeader !== col.topHeader
-                    }
+                    showTopHeaderContent={showTopHeaderContent(index, col)}
+                    showTopHeaderBorder={showTopHeaderContent(index, col, true)}
                     col={col}
                     data={props.data}
                     expanded={expanded}

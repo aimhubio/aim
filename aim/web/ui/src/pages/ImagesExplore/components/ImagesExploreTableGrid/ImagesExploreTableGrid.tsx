@@ -283,7 +283,7 @@ function imagesExploreTableRowRenderer(
     return _.merge({}, rowData, row);
   } else {
     const row = {
-      experiment: rowData.experiment.name,
+      experiment: rowData?.experiment?.name ?? '',
       run: {
         content: (
           <Link

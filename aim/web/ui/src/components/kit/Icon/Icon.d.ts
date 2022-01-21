@@ -114,4 +114,7 @@ export type IconName =
   | 'voice-off'
   | 'case-sensitive'
   | 'word-match'
-  | 'regex';
+  | 'regex'
+  | 'unarchive'
+  | 'archive'
+  | 'circle-with-dot';

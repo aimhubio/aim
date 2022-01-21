@@ -2,7 +2,7 @@ import { ITypeMetadata } from './AlertBanner.d';
 
 const warning: ITypeMetadata = {
   cssClassName: 'warning',
-  iconName: 'typeTriangle',
+  iconName: 'warning-contained',
 };
 
 const info: ITypeMetadata = {
@@ -17,7 +17,7 @@ const error: ITypeMetadata = {
 
 const success: ITypeMetadata = {
   cssClassName: 'success',
-  iconName: 'successIcon',
+  iconName: 'success-icon',
 };
 
 const typesMetadata = {
