@@ -25,11 +25,15 @@ function ConfirmModal(
         className={`ConfirmModal ConfirmModal__${props.statusType}`}
       >
         <div className='ConfirmModal__Body'>
-          <Icon
-            name='close'
-            onClick={props.onCancel}
+          <Button
+            size='small'
             className='ConfirmModal__Close__Icon'
-          />
+            color='secondary'
+            withOnlyIcon
+            onClick={props.onCancel}
+          >
+            <Icon name='close' />
+          </Button>
 
           <div className='ConfirmModal__Title__Container'>
             <div className='ConfirmModal__Icon'>{props.icon}</div>

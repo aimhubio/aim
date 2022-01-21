@@ -243,7 +243,7 @@ class TreeArrayView(ArrayView[T]):
         # TODO lazier
         try:
             last_idx = self.last_idx()
-        except (KeyError, RuntimeError):   # TODO [AT]: revisit once proper error handling is added
+        except KeyError:
             return 0
         return last_idx + 1
 

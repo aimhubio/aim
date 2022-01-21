@@ -31,7 +31,7 @@ export const CONTROLS_DEFAULT_CONFIG = {
       type: AlignmentOptionsEnum.STEP,
       metric: '',
     },
-    densityType: DensityOptions.Minimum,
+    densityType: DensityOptions.Maximum,
     smoothingFactor: 0,
     curveInterpolation: CurveEnum.Linear,
     smoothingAlgorithm: SmoothingAlgorithmEnum.EMA,
@@ -64,6 +64,7 @@ export const CONTROLS_DEFAULT_CONFIG = {
     alignmentType: MediaItemAlignmentEnum.Height,
     mediaItemSize: 25,
     imageRendering: ImageRenderingEnum.Pixelated,
+    stacking: false,
     tooltip: {
       display: true,
       selectedParams: [],

@@ -273,7 +273,7 @@ class Run(StructuredRunMixin):
         if not read_only:
             try:
                 self.meta_run_attrs_tree.first()
-            except (KeyError, StopIteration, RuntimeError):  # TODO [AT]: revisit once proper error handling is added
+            except (KeyError, StopIteration):
                 # no run params are set. use empty dict
                 self[...] = {}
             self.meta_run_tree['end_time'] = None

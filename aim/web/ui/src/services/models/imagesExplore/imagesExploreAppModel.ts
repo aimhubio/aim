@@ -109,6 +109,7 @@ function getConfig(): IImagesExploreAppConfig {
         alignmentType: CONTROLS_DEFAULT_CONFIG.images.alignmentType,
         mediaItemSize: CONTROLS_DEFAULT_CONFIG.images.mediaItemSize,
         imageRendering: CONTROLS_DEFAULT_CONFIG.images.imageRendering,
+        stacking: CONTROLS_DEFAULT_CONFIG.images.stacking,
       },
       focusedState: {
         active: false,
@@ -129,7 +130,7 @@ function getConfig(): IImagesExploreAppConfig {
         middle: [],
         right: [],
       },
-      height: '',
+      height: '0.5',
     },
   };
 }
@@ -446,7 +447,6 @@ function setModelData(rawData: any[], configData: IImagesExploreAppConfig) {
   const sortFields = model.getState()?.config?.table.sortFields;
   const { data, params, contexts, highLevelParams } = processData(rawData);
   const sortedParams = params.concat(highLevelParams).sort();
-
   const groupingSelectOptions = [
     ...getGroupingSelectOptions({
       params: sortedParams,
@@ -685,7 +685,6 @@ function getGroupingSelectOptions({
       value: 'run.props.creation_time',
     },
     ...paramsOptions,
-
     {
       group: 'images',
       label: 'images.name',
@@ -760,6 +759,13 @@ function onGroupingSelectChange({
   if (configData?.grouping) {
     configData.grouping = { ...configData.grouping, [groupName]: list };
     updateModelData(configData, true);
+    if (
+      configData.images?.additionalProperties?.stacking &&
+      (_.isEmpty(configData.grouping.group) ||
+        configData.grouping.reverseMode.group)
+    ) {
+      onStackingToggle();
+    }
   }
   analytics.trackEvent(`[ImagesExplorer] Group by ${groupName}`);
 }
@@ -775,6 +781,13 @@ function onGroupingModeChange({ value }: IOnGroupingModeChangeParams): void {
       },
     };
     updateModelData(configData, true);
+    if (
+      configData.images?.additionalProperties?.stacking &&
+      (_.isEmpty(configData.grouping.group) ||
+        configData.grouping.reverseMode.group)
+    ) {
+      onStackingToggle();
+    }
   }
   analytics.trackEvent(
     `[ImagesExplorer] ${
@@ -795,6 +808,13 @@ function onGroupingReset(groupName: GroupNameType) {
       isApplied: { ...isApplied, [groupName]: true },
     };
     updateModelData(configData, true);
+    if (
+      configData.images?.additionalProperties?.stacking &&
+      (_.isEmpty(configData.grouping.group) ||
+        configData.grouping.reverseMode.group)
+    ) {
+      onStackingToggle();
+    }
   }
   analytics.trackEvent('[ImagesExplorer] Reset grouping');
 }
@@ -976,7 +996,7 @@ function onActivePointChange(
   focusedStateActive: boolean = false,
 ): void {
   const { refs, config } = model.getState() as any;
-  if (config.table.resizeMode !== ResizeModeEnum.Hide) {
+  if (config?.table.resizeMode !== ResizeModeEnum.Hide) {
     const tableRef: any = refs?.tableRef;
     if (tableRef && activePoint.seqKey) {
       tableRef.current?.setHoveredRow?.(activePoint.seqKey);
@@ -1931,7 +1951,6 @@ function onImageRenderingChange(type: ImageRenderingEnum) {
       ...configData.images,
       additionalProperties: {
         ...configData.images.additionalProperties,
-
         imageRendering: type,
       },
     };
@@ -1964,14 +1983,29 @@ function onImageAlignmentChange(
       images,
     };
     updateURL(config as IImagesExploreAppConfig);
-    model.setState({
-      config,
-    });
+    model.setState({ config });
   }
 }
 
 function showRangePanel() {
   return !model.getState().requestIsPending && !model.getState().queryIsEmpty;
+}
+
+function onStackingToggle(): void {
+  const configData: IImagesExploreAppConfig | undefined =
+    model.getState()?.config;
+  if (configData?.images) {
+    const images = {
+      ...configData.images,
+      additionalProperties: {
+        ...configData.images.additionalProperties,
+        stacking: !configData.images.additionalProperties.stacking,
+      },
+    };
+    const config = { ...configData, images };
+    updateURL(config as IImagesExploreAppConfig);
+    model.setState({ config });
+  }
 }
 
 const imagesExploreAppModel = {
@@ -2023,6 +2057,7 @@ const imagesExploreAppModel = {
   showRangePanel,
   getGroupingSelectOptions,
   getDataAsImageSet,
+  onStackingToggle,
   onImagesSortChange,
   onImagesSortReset,
 };

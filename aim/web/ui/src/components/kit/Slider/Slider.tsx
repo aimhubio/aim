@@ -9,13 +9,18 @@ import { ISliderProps } from './Slider.d';
 import './Slider.scss';
 
 function Slider({
-  containerClassName,
+  containerClassName = '',
+  style = {},
+  prevIconNode = null,
+  nextIconNode = null,
   ...rest
 }: ISliderProps): React.FunctionComponentElement<React.ReactNode> {
   return (
     <ErrorBoundary>
-      <div className={`Slider ${containerClassName || ''}`}>
+      <div className={`Slider ${containerClassName}`} style={style}>
+        {prevIconNode && prevIconNode}
         <MaterialSlider {...rest} />
+        {nextIconNode && nextIconNode}
       </div>
     </ErrorBoundary>
   );

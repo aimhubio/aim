@@ -23,7 +23,6 @@ const ImageBox = ({
   mediaItemHeight,
   focusedState,
   tooltip,
-  syncHoverState,
   additionalProperties,
 }: IImageBoxProps): React.FunctionComponentElement<React.ReactNode> => {
   const { format, blob_uri } = data;
@@ -71,30 +70,17 @@ const ImageBox = ({
     e.stopPropagation();
     setIsImageFullViewPopupOpened(true);
   }
-  // TODO need to add focused image logic
-  // function safeSyncHoverState(args: any): void {
-  //   if (typeof syncHoverState === 'function') {
-  //     syncHoverState(args);
-  //   }
-  // }
-  //
-  // function onClick(e: MouseEvent<HTMLDivElement>): void {
-  //   if (e?.currentTarget) {
-  //     e.stopPropagation();
-  //     const clientRect = e.currentTarget.getBoundingClientRect();
-  //     safeSyncHoverState({
-  //       activePoint: { clientRect, key: data.key, seqKey: data.seqKey },
-  //       focusedStateActive: true,
-  //     });
-  //   }
-  // }
 
+  const skeletonSize = {
+    width: style.width - 6, // 6px -> 0.375rem gap
+    height:
+      (additionalProperties.alignmentType !== MediaItemAlignmentEnum.Height
+        ? style.width / (data.width / data.height)
+        : mediaItemHeight - 10) - 6, // 6px -> 0.375rem gap,
+  };
   return (
     <ErrorBoundary>
-      <div
-        key={index}
-        className='MediaSet__container__mediaItemsList__imageBox'
-      >
+      <div className='MediaSet__container__mediaItemsList__imageBox'>
         <div
           style={style}
           className={`MediaSet__container__mediaItemsList__imageBox__image MediaSet__container__mediaItemsList__imageBox__image--${
@@ -108,51 +94,48 @@ const ImageBox = ({
           }`}
           data-key={`${data.key}`}
           data-seqkey={`${data.seqKey}`}
-          data-mediasetitem={'mediaSetItem'}
-          // onClick={onClick}
+          data-mediasetitem='mediaSetItem'
         >
-          {blobData ? (
-            <div className='MediaSet__container__mediaItemsList__imageBox__imageWrapper'>
-              <div
-                className={`MediaSet__container__mediaItemsList__imageBox__imageWrapper-item ${
-                  additionalProperties.alignmentType ===
-                  MediaItemAlignmentEnum.Height
-                    ? 'MediaSet__container__mediaItemsList__imageBox__imageWrapper-item-heightAlign'
-                    : ''
-                }`}
-              >
-                <img src={`data:image/${format};base64, ${blobData}`} alt='' />
-                <Text style={{ maxWidth: style.width }} size={10} weight={400}>
-                  {data.caption}
-                </Text>
-              </div>
-              <Button
-                withOnlyIcon
-                size='small'
-                className={classNames(
-                  'MediaSet__container__mediaItemsList__imageBox__imageWrapper__zoomIconWrapper',
-                  {
-                    isHidden: !(focusedState.key === data.key),
-                  },
-                )}
-                onClick={onImageFullSizeModeButtonClick}
-                color='inherit'
-              >
-                <Icon name='zoom-in' fontSize={14} />
-              </Button>
-            </div>
-          ) : (
-            <Skeleton
-              variant='rect'
-              height={
-                additionalProperties.alignmentType !==
+          <div className='MediaSet__container__mediaItemsList__imageBox__imageWrapper'>
+            <div
+              className={`MediaSet__container__mediaItemsList__imageBox__imageWrapper-item ${
+                additionalProperties.alignmentType ===
                 MediaItemAlignmentEnum.Height
-                  ? style.width / (data.width / data.height)
-                  : mediaItemHeight - 10
-              }
-              width={style?.width - 10}
-            />
-          )}
+                  ? 'MediaSet__container__mediaItemsList__imageBox__imageWrapper-item-heightAlign'
+                  : ''
+              }`}
+            >
+              {blobData ? (
+                <img
+                  src={`data:image/${format};base64, ${blobData}`}
+                  alt={data.caption}
+                />
+              ) : (
+                <Skeleton
+                  variant='rect'
+                  height={skeletonSize.height}
+                  width={skeletonSize.width}
+                />
+              )}
+              <Text style={{ maxWidth: style.width }} size={10} weight={400}>
+                {data.caption}
+              </Text>
+            </div>
+            <Button
+              withOnlyIcon
+              size='small'
+              className={classNames(
+                'MediaSet__container__mediaItemsList__imageBox__imageWrapper__zoomIconWrapper',
+                {
+                  isHidden: !(focusedState.key === data.key),
+                },
+              )}
+              onClick={onImageFullSizeModeButtonClick}
+              color='inherit'
+            >
+              <Icon name='zoom-in' fontSize={14} />
+            </Button>
+          </div>
         </div>
         <ErrorBoundary>
           <Dialog
