@@ -40,6 +40,7 @@
    guides/integrations/basic_aim_pytorch_lightning.md
    guides/integrations/basic_aim_xgboost.md
    guides/integrations/basic_k8s_deployment.md
+   guides/aim_remote_tracking.md
 
 .. toctree::
    :maxdepth: 1
