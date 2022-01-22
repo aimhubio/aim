@@ -1,6 +1,6 @@
 # Changelog
 
-## Unreleased
+## 3.4.0 Jan 22 2022
 
 - Add ability to apply group stacking on media elements list (KaroMourad)
 - Add ability to apply sorting by run creation_time on table rows (roubkar)
