@@ -268,9 +268,6 @@ class Run(StructuredRunMixin):
             'seqs', self.hash, read_only=read_only
         ).subtree('seqs').subtree('chunks').subtree(self.hash)
 
-        self._system_resource_tracker: ResourceTracker = None
-        self._prepare_resource_tracker(system_tracking_interval)
-
         if not read_only:
             try:
                 self.meta_run_attrs_tree.first()
@@ -282,9 +279,10 @@ class Run(StructuredRunMixin):
         if experiment:
             self.experiment = experiment
 
-        for ctx_id in self.meta_tree['contexts'].keys():
-            for name in self.meta_run_tree['traces', ctx_id].keys():
-                self._read_sequence_info(self.idx_to_ctx(ctx_id), name)
+        self._prepare_sequence_info(read_only)
+
+        self._system_resource_tracker: ResourceTracker = None
+        self._prepare_resource_tracker(system_tracking_interval)
 
         self._resources = RunAutoClean(self)
 
@@ -609,6 +607,18 @@ class Run(StructuredRunMixin):
             return None
         sequence = seq_cls(sequence_name, context, self)
         return sequence if bool(sequence) else None
+
+    def _prepare_sequence_info(self, read_only):
+        if read_only:
+            return
+
+        try:
+            for ctx_id in self.meta_tree['contexts'].keys():
+                for name in self.meta_run_tree['traces', ctx_id].keys():
+                    self._read_sequence_info(self.idx_to_ctx(ctx_id), name)
+        except KeyError:
+            # there is no contexts object right after aim up
+            pass
 
     def _read_sequence_info(self, ctx, name):
         sequence_selector = SequenceDescriptor(name, ctx).selector
