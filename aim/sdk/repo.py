@@ -88,6 +88,7 @@ class Repo:
     """
     _pool = WeakValueDictionary()  # TODO: take read only into account
 
+    # [AD] create but not used when rack_in_thread = False
     tracking_queue = _get_tracking_queue()
 
     def __init__(self, path: str, *, read_only: bool = None, init: bool = False):
@@ -96,7 +97,6 @@ class Repo:
 
         self._resources = None
         self.read_only = read_only
-        self.is_remote_repo = False
         self._mount_root = None
         self._client: Client = None
         if path.startswith('ssh://'):
@@ -105,7 +105,6 @@ class Repo:
             remote_path = path.replace('aim://', '')
             self._client = Client(remote_path)
             self.root_path = remote_path
-            self.is_remote_repo = True
         else:
             self.root_path = path
         self.path = os.path.join(self.root_path, get_aim_repo_name())
@@ -259,7 +258,6 @@ class Repo:
         if not self.is_remote_repo:
             return self._get_index_container(name, timeout).tree()
         else:
-            assert self._client is not None
             return ProxyTree(self._client, name, '', read_only=False, index=True, timeout=timeout)
 
     def _get_index_container(self, name: str, timeout: int) -> Container:
@@ -287,7 +285,6 @@ class Repo:
         if not self.is_remote_repo:
             return self.request(name, sub, read_only=read_only, from_union=from_union).tree()
         else:
-            assert self._client is not None
             return ProxyTree(self._client, name, sub, read_only, from_union)
 
     def request(
@@ -321,7 +318,6 @@ class Repo:
 
     def request_props(self, hash_: str, read_only: bool):
         if self.is_remote_repo:
-            assert self._client is not None
             return StructuredRunProxy(self._client, hash_, read_only)
 
         assert self.structured_db
@@ -633,3 +629,7 @@ class Repo:
         if self._resources is None:
             return
         self._resources.close()
+
+    @property
+    def is_remote_repo(self):
+        return self._client is not None

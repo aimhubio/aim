@@ -134,16 +134,13 @@ def hash_object(obj: AimObjectDict) -> int:
 def hash_auto(obj: AimObject) -> int:
     """Automatically detect and hash any AimObject-compatible object.
 
-    The hash is an signed 64-bit integer.
+    The hash is a signed 64-bit integer.
     """
     if obj is None:
         return hash_none()
     elif isinstance(obj, bool):
         return hash_bool(obj)
-    elif isinstance(obj, int):
-        # We use same hash function for all the numbers
-        return hash_number(obj)
-    elif isinstance(obj, float):
+    elif isinstance(obj, (int, float)):
         # We use same hash function for all the numbers
         return hash_number(obj)
     elif isinstance(obj, bytes):
