@@ -1,4 +1,4 @@
-## Track experiments with aim remote server
+## Track experiments with aim remote server (experimental feature)
 
 ### Overview
 
@@ -39,6 +39,7 @@ You will see the following output:
 The server is up and ready to accept tracked data.
 
 4. Run aim UI
+
 ```shell
 $ aim up --repo <REPO_PATH>
 ```
@@ -47,20 +48,26 @@ $ aim up --repo <REPO_PATH>
 
 With the current architecture there is almost no change in aim SDK usage. The only difference from tracking locally is
 that you have to provide the remote tracking URL instead of local aim repo path. The following code shows how to create
-`Repo` with remote tracking URL and how to use it.
+`Run` with remote tracking URL and how to use it.
 
 ```python
-from aim import Repo, Run
+from aim import Run
 
-repo = Repo('aim://172.3.66.145:53800')  # replace example IP with your tracking server IP/hostname
-aim_run = Run(repo=repo)
+aim_run = Run(repo='aim://172.3.66.145:53800')  # replace example IP with your tracking server IP/hostname
+
+# Log run parameters
+aim_run['params'] = {
+    'learning_rate': 0.001,
+    'batch_size': 32,
+}
 ...
 ```
- You are now ready to use `aim_run` object to track your experiment results. Below is the full example using pytorch 
-+ aim remote tracking on MNIST dataset.
+
+You are now ready to use `aim_run` object to track your experiment results. Below is the full example using 
+pytorch + aim remote tracking on MNIST dataset.
 
 ```python
-from aim import Repo, Run
+from aim import Run
 
 import torch
 import torch.nn as nn
@@ -69,8 +76,7 @@ import torchvision.transforms as transforms
 
 
 # Initialize a new Run with remote tracking URL
-repo = Repo('aim://172.3.66.145:53800')  # replace example IP with your tracking server IP/hostname
-aim_run = Run(repo=repo)
+aim_run = Run(repo='aim://172.3.66.145:53800')  # replace example IP with your tracking server IP/hostname
 
 # Device configuration
 device = torch.device('cpu')
