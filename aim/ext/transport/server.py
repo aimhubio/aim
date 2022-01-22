@@ -109,7 +109,6 @@ class RemoteTrackingServicer(remote_tracking_pb2_grpc.RemoteTrackingServiceServi
                     checked_args.append(arg)
             method_name = header.header.method_name
             resource = self.resource_pool[resource_handler][1]
-
             if method_name.endswith('.setter'):
                 attr_name = method_name.split('.')[0]
                 setattr(resource, attr_name, checked_args[0])

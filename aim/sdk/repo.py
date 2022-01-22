@@ -88,7 +88,6 @@ class Repo:
     """
     _pool = WeakValueDictionary()  # TODO: take read only into account
 
-    # [AD] create but not used when rack_in_thread = False
     tracking_queue = _get_tracking_queue()
 
     def __init__(self, path: str, *, read_only: bool = None, init: bool = False):
