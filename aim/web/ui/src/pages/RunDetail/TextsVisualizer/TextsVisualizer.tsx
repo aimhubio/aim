@@ -82,6 +82,7 @@ function TextsVisualizer(
         onMatchTypeChange={textSearch.changeMatchType}
         onInputClear={textSearch.clearSearchInputData}
         onInputChange={textSearch.changeSearchInput}
+        isDisabled={!!props.isLoading}
       />
       <BusyLoaderWrapper
         className='VisualizationLoader'

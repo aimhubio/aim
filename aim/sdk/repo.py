@@ -101,8 +101,8 @@ class Repo:
         self._client: Client = None
         if path.startswith('ssh://'):
             self._mount_root, self.root_path = mount_remote_repo(path)
-        elif path.startswith('remote://'):
-            remote_path = path.replace('remote://', '')
+        elif path.startswith('aim://'):
+            remote_path = path.replace('aim://', '')
             self._client = Client(remote_path)
             self.root_path = remote_path
             self.is_remote_repo = True
@@ -180,7 +180,7 @@ class Repo:
         Returns:
             :obj:`Repo` object.
         """
-        if not path.startswith('ssh://') and not path.startswith('remote://'):
+        if not path.startswith('ssh://') and not path.startswith('aim://'):
             path = clean_repo_path(path)
         repo = cls._pool.get(path)
         if repo is None:

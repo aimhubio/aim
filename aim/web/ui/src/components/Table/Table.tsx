@@ -25,6 +25,8 @@ import { ITableProps } from 'types/components/Table/Table';
 import TableLoader from '../TableLoader/TableLoader';
 import CustomTable from '../CustomTable/Table';
 
+import ArchiveModal from './ArchiveModal';
+import DeleteModal from './DeleteModal';
 import AutoResizer from './AutoResizer';
 import BaseTable from './BaseTable';
 
@@ -39,8 +41,8 @@ const Table = React.forwardRef(function Table(
     onRowsChange,
     onExport,
     onRowHeightChange,
-    onRowHover,
-    onRowClick,
+    onRowHover = () => {},
+    onRowClick = () => {},
     onTableResizeModeChange,
     custom,
     data,
@@ -69,6 +71,12 @@ const Table = React.forwardRef(function Table(
     resizeMode,
     onSortReset,
     height = 'calc(100% - 40px)',
+    multiSelect = false,
+    selectedRows,
+    onRowSelect,
+    minHeight,
+    archiveRuns,
+    deleteRuns,
     className = '',
     ...props
   }: ITableProps,
@@ -89,6 +97,14 @@ const Table = React.forwardRef(function Table(
   const [rowData, setRowData] = React.useState(data);
   const [columnsData, setColumnsData] = React.useState(columns ?? []);
   const [expanded, setExpanded] = React.useState({});
+  const [isOpenDeleteSelectedPopup, setIsOpenDeleteSelectedPopup] =
+    React.useState(false);
+  const [isOpenUnarchiveSelectedPopup, setIsOpenUnarchiveSelectedPopup] =
+    React.useState(false);
+  const [isOpenArchiveSelectedPopup, setIsOpenArchiveSelectedPopup] =
+    React.useState(false);
+  const [tableBulkActionsVisibility, setTableBulkActionsVisibility] =
+    React.useState({ delete: false, archive: false, unarchive: false });
   const [listWindow, setListWindow] = React.useState({
     left: 0,
     width: 0,
@@ -418,6 +434,18 @@ const Table = React.forwardRef(function Table(
     });
   }
 
+  function onToggleDeletePopup() {
+    setIsOpenDeleteSelectedPopup(!isOpenDeleteSelectedPopup);
+  }
+
+  function onToggleArchivePopup() {
+    setIsOpenArchiveSelectedPopup(!isOpenArchiveSelectedPopup);
+  }
+
+  function onToggleUnarchivePopup() {
+    setIsOpenUnarchiveSelectedPopup(!isOpenUnarchiveSelectedPopup);
+  }
+
   React.useEffect(() => {
     if (custom && !!tableContainerRef.current) {
       const windowEdges = calculateWindow({
@@ -495,6 +523,34 @@ const Table = React.forwardRef(function Table(
     setListWindowMeasurements();
   }, []);
 
+  React.useEffect(() => {
+    const tableBulkActionsVisibility = {
+      delete: false,
+      archive: false,
+      unarchive: false,
+    };
+    const values = Object.values(selectedRows || {});
+    for (let i = 0; i < values.length; i++) {
+      const value: any = values[i];
+      if (
+        tableBulkActionsVisibility.delete &&
+        tableBulkActionsVisibility.archive &&
+        tableBulkActionsVisibility.unarchive
+      ) {
+        break;
+      }
+      if (value.archived) {
+        tableBulkActionsVisibility.archive = true;
+      } else {
+        tableBulkActionsVisibility.unarchive = true;
+      }
+      if (value.end_time) {
+        tableBulkActionsVisibility.delete = true;
+      }
+    }
+    setTableBulkActionsVisibility(tableBulkActionsVisibility);
+  }, [selectedRows]);
+
   useResizeObserver(observerReturnCallback, tableContainerRef);
 
   // The right check is !props.isInfiniteLoading && (isLoading || isNil(rowData))
@@ -509,7 +565,7 @@ const Table = React.forwardRef(function Table(
       >
         {!isEmpty(rowData) ? (
           <div style={{ height: '100%' }} className={className}>
-            {!hideHeaderActions && (
+            {!hideHeaderActions && isEmpty(selectedRows) ? (
               <div className='Table__header'>
                 {showResizeContainerActionBar && (
                   <ResizeModeActions
@@ -676,8 +732,76 @@ const Table = React.forwardRef(function Table(
                   </div>
                 )}
               </div>
+            ) : !isEmpty(selectedRows) && multiSelect ? (
+              <div className='Table__header selectedRowActionsContainer'>
+                <div className='selectedRowActionsContainer__selectedRowsCount'>
+                  <Text size={14} tint={50}>
+                    {Object.keys(selectedRows).length} Selected
+                  </Text>
+                </div>
+                {tableBulkActionsVisibility.delete && (
+                  <div className='selectedRowActionsContainer__selectedItemsDelete'>
+                    <Button
+                      color='secondary'
+                      type='text'
+                      onClick={onToggleDeletePopup}
+                      className={`Table__header__item ${
+                        isOpenDeleteSelectedPopup ? 'opened' : ''
+                      }`}
+                    >
+                      <Icon name='delete' />
+                      <Text size={14} tint={100}>
+                        Delete
+                      </Text>
+                    </Button>
+                  </div>
+                )}
+                {tableBulkActionsVisibility.unarchive && (
+                  <div className='selectedRowActionsContainer__selectedItemsArchive'>
+                    <Button
+                      color='secondary'
+                      type='text'
+                      onClick={onToggleArchivePopup}
+                      className={`Table__header__item ${
+                        isOpenArchiveSelectedPopup ? 'opened' : ''
+                      }`}
+                    >
+                      <Icon name='archive' />
+                      <Text size={14} tint={100}>
+                        Archive
+                      </Text>
+                    </Button>
+                  </div>
+                )}
+                {tableBulkActionsVisibility.archive && (
+                  <div className='selectedRowActionsContainer__selectedItemsArchive'>
+                    <Button
+                      color='secondary'
+                      type='text'
+                      onClick={onToggleUnarchivePopup}
+                      className={`Table__header__item ${
+                        isOpenUnarchiveSelectedPopup ? 'opened' : ''
+                      }`}
+                    >
+                      <Icon name='unarchive' fontSize={18} />
+                      <Text size={14} tint={100}>
+                        Unarchive
+                      </Text>
+                    </Button>
+                  </div>
+                )}
+              </div>
+            ) : (
+              ''
             )}
-            <div style={{ height, overflow: 'auto' }} ref={tableContainerRef}>
+            <div
+              style={{
+                height,
+                overflow: 'auto',
+                minHeight: minHeight || 'unset',
+              }}
+              ref={tableContainerRef}
+            >
               <AutoResizer>
                 {({ width, height }) =>
                   custom ? (
@@ -700,6 +824,9 @@ const Table = React.forwardRef(function Table(
                         onRowHover={rowHoverHandler}
                         onRowClick={rowClickHandler}
                         listWindow={listWindow}
+                        multiSelect={multiSelect}
+                        selectedRows={selectedRows || {}}
+                        onRowSelect={onRowSelect}
                         {...props}
                       />
                     </div>
@@ -743,6 +870,28 @@ const Table = React.forwardRef(function Table(
                 }
               </AutoResizer>
             </div>
+            <ArchiveModal
+              opened={isOpenArchiveSelectedPopup}
+              onClose={onToggleArchivePopup}
+              selectedRows={selectedRows}
+              archiveMode
+              onRowSelect={onRowSelect}
+              archiveRuns={archiveRuns}
+            />
+            <ArchiveModal
+              opened={isOpenUnarchiveSelectedPopup}
+              onClose={onToggleUnarchivePopup}
+              selectedRows={selectedRows}
+              onRowSelect={onRowSelect}
+              archiveRuns={archiveRuns}
+            />
+            <DeleteModal
+              opened={isOpenDeleteSelectedPopup}
+              onClose={onToggleDeletePopup}
+              selectedRows={selectedRows}
+              onRowSelect={onRowSelect}
+              deleteRuns={deleteRuns}
+            />
           </div>
         ) : (
           <EmptyComponent size='big' content={emptyText} />
@@ -775,6 +924,14 @@ function propsComparator(
   }
 
   if (prevProps.columnsWidths !== nextProps.columnsWidths) {
+    return false;
+  }
+
+  if (prevProps.selectedRows !== nextProps.selectedRows) {
+    return false;
+  }
+
+  if (prevProps.hiddenColumns !== nextProps.hiddenColumns) {
     return false;
   }
 

@@ -34,7 +34,7 @@ function SearchBar({
     if (isRunsDataLoading) {
       return;
     }
-    searchRunsRef.current = runAppModel.getRunsData(true);
+    searchRunsRef.current = runAppModel.getRunsData(true, true);
     searchRunsRef.current.call().catch();
   }
 

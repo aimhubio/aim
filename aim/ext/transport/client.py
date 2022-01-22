@@ -5,7 +5,7 @@ import grpc
 import aim.ext.transport.remote_tracking_pb2 as rpc_messages
 import aim.ext.transport.remote_tracking_pb2_grpc as remote_tracking_pb2_grpc
 
-from aim.ext.transport.message_utils import pack_stream, unpack_stream
+from aim.ext.transport.message_utils import pack_stream, unpack_stream, raise_exception
 from aim.ext.transport.config import AIM_CLIENT_SSL_CERTIFICATES_FILE
 from aim.storage.treeutils import encode_tree, decode_tree
 
@@ -31,9 +31,9 @@ class Client:
             args=args
         )
         response = self.remote.get_resource(request)
-        if response.status == rpc_messages.ResourceResponse.Status.OK:
-            return response.handler
-        return None
+        if response.status == rpc_messages.ResourceResponse.Status.ERROR:
+            raise_exception(response.exception)
+        return response.handler
 
     def release_resource(self, resource_handler):
         request = rpc_messages.ReleaseResourceRequest(
@@ -41,8 +41,8 @@ class Client:
             client_uri=self.uri
         )
         response = self.remote.release_resource(request)
-        if response.status != rpc_messages.ResourceResponse.Status.OK:
-            raise RuntimeError('Error releasing resource')
+        if response.status == rpc_messages.ReleaseResourceResponse.Status.ERROR:
+            raise_exception(response.exception)
 
     def run_instruction(self, resource, method, args=()):
         args = deepcopy(args)
@@ -65,8 +65,8 @@ class Client:
         resp = self.remote.run_instruction(message_stream_generator())
         status_msg = next(resp)
         assert status_msg.WhichOneof('instruction') == 'header'
-        if status_msg.header.status != rpc_messages.ResponseHeader.Status.OK:
-            raise RuntimeError('something went wrong')
+        if status_msg.header.status == rpc_messages.ResponseHeader.Status.ERROR:
+            raise_exception(status_msg.header.exception)
         return decode_tree(unpack_stream(resp))
 
     @property

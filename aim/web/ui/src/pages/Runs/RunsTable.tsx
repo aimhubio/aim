@@ -24,6 +24,10 @@ function RunsTable({
   columnsOrder,
   columnsWidths,
   updateColumnsWidths,
+  selectedRows,
+  onRowSelect,
+  archiveRuns,
+  deleteRuns,
 }: IRunsTableProps): React.FunctionComponentElement<React.ReactNode> {
   const getLatestRunsDataRequestRef = React.useRef<any>(null);
   React.useEffect(() => {
@@ -54,6 +58,8 @@ function RunsTable({
           data={data}
           columns={columns}
           isLoading={isRunsDataLoading}
+          selectedRows={selectedRows}
+          multiSelect
           // Table options
           topHeader
           rowHeight={tableRowHeight}
@@ -67,6 +73,9 @@ function RunsTable({
           onRowHeightChange={onRowHeightChange}
           updateColumnsWidths={updateColumnsWidths}
           onExport={onExportTableData}
+          onRowSelect={onRowSelect}
+          archiveRuns={archiveRuns}
+          deleteRuns={deleteRuns}
         />
       </div>
       {isInfiniteLoading && (

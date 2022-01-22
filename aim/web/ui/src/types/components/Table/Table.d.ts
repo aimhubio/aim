@@ -54,6 +54,13 @@ export interface ITableProps {
   showRowClickBehaviour?: boolean;
   showResizeContainerActionBar?: boolean;
   resizeMode?: ResizeModeEnum;
+  multiSelect?: boolean;
+  selectedRows?: any;
+  minHeight?: string;
+  onRowSelect?: any;
+  archiveRuns?: (ids: string[], archived: boolean) => void;
+  deleteRuns?: (ids: string[]) => void;
+  className?: string;
 }
 
 export interface ITableRef {

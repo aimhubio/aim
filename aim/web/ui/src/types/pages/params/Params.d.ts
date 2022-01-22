@@ -51,6 +51,7 @@ export interface IParamsProps extends Partial<RouteChildrenProps> {
   onParamVisibilityChange: any;
   onColumnsOrderChange: any;
   tableData: any;
+  selectedRows: { [key: string]: any };
   onTableRowHover?: (rowKey?: string) => void;
   onTableRowClick?: (rowKey?: string) => void;
   tableColumns: any;
@@ -91,4 +92,7 @@ export interface IParamsProps extends Partial<RouteChildrenProps> {
     delay?: number;
     enabled?: boolean;
   }) => void;
+  onRowSelect: any;
+  archiveRuns: (ids: string[], archived: boolean) => void;
+  deleteRuns: (ids: string[]) => void;
 }

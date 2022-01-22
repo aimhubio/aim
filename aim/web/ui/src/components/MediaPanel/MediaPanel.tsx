@@ -172,18 +172,14 @@ function MediaPanel({
 
   React.useEffect(() => {
     document.addEventListener('mouseover', closePopover);
-
     return () => {
       document.removeEventListener('mouseover', closePopover);
-
       if (timeoutID.current) {
         window.clearTimeout(timeoutID.current);
       }
-
       if (requestRef.current) {
         requestRef.current.abort();
       }
-
       blobsURIModel.init();
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -195,7 +191,7 @@ function MediaPanel({
         isLoading={isLoading}
         className='MediaPanel__loader'
         height='100%'
-        loaderComponent={<ChartLoader controlsCount={3} />}
+        loaderComponent={<ChartLoader controlsCount={4} />}
       >
         {panelResizing ? (
           <div className='MediaPanel__Container__resizing'>
@@ -204,37 +200,28 @@ function MediaPanel({
             </Text>
           </div>
         ) : (
-          <ErrorBoundary>
+          <>
             <div className='MediaPanel__Container'>
               {!isEmpty(data) ? (
                 <div
                   className='MediaPanel'
                   style={{ height: `calc(100% - ${actionPanelSize || 0})` }}
                 >
-                  <ErrorBoundary>
-                    <div
-                      ref={containerRef}
-                      className='MediaPanel__mediaSetContainer'
-                      onMouseOver={onMouseOver}
-                      // TODO
-                      // onClick={(e) => {
-                      //   e.stopPropagation();
-                      //   syncHoverState({
-                      //     activePoint: activePointRef.current,
-                      //     focusedStateActive: false,
-                      //   });
-                      // }}
-                    >
+                  <div
+                    ref={containerRef}
+                    className='MediaPanel__mediaSetContainer'
+                    onMouseOver={onMouseOver}
+                  >
+                    <ErrorBoundary>
                       <MediaSet
                         data={data}
                         onListScroll={onListScroll}
                         addUriToList={addUriToList}
                         mediaSetKey={mediaSetKey}
                         sortFieldsDict={sortFieldsDict}
-                        wrapperOffsetHeight={wrapperOffsetHeight - 48}
+                        wrapperOffsetHeight={wrapperOffsetHeight}
                         wrapperOffsetWidth={wrapperOffsetWidth}
                         focusedState={focusedState}
-                        syncHoverState={syncHoverState}
                         orderedMap={orderedMap}
                         additionalProperties={additionalProperties}
                         tableHeight={tableHeight}
@@ -242,8 +229,8 @@ function MediaPanel({
                         mediaType={mediaType}
                         sortFields={sortFields}
                       />
-                    </div>
-                  </ErrorBoundary>
+                    </ErrorBoundary>
+                  </div>
                   {tooltipType && (
                     <ErrorBoundary>
                       <ChartPopover
@@ -274,7 +261,7 @@ function MediaPanel({
               )}
               {actionPanel}
             </div>
-          </ErrorBoundary>
+          </>
         )}
       </BusyLoaderWrapper>
     </ErrorBoundary>

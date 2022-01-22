@@ -56,6 +56,7 @@ export interface IScattersProps extends Partial<RouteChildrenProps> {
   requestIsPending: boolean;
   resizeMode: ResizeModeEnum;
   trendlineOptions: ITrendlineOptions;
+  selectedRows: { [key: string]: any };
   onChangeTooltip: (tooltip: Partial<IChartTooltip>) => void;
   onChangeTrendlineOptions: (options: Partial<ITrendlineOptions>) => void;
   onActivePointChange?: (
@@ -95,4 +96,7 @@ export interface IScattersProps extends Partial<RouteChildrenProps> {
     delay?: number;
     enabled?: boolean;
   }) => void;
+  onRowSelect: any;
+  archiveRuns: (ids: string[], archived: boolean) => void;
+  deleteRuns: (ids: string[]) => void;
 }
