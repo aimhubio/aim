@@ -204,9 +204,9 @@ function RunDetail(): React.FunctionComponentElement<React.ReactNode> {
                   <>
                     <div className='RunDetail__runDetailContainer__appBarContainer__appBarTitleBox__container'>
                       <Text tint={100} size={16} weight={600}>
-                        {`${runData?.runInfo?.experiment?.name || ''} / ${
-                          runHash || ''
-                        }`}
+                        {`${
+                          runData?.runInfo?.experiment?.name || 'default'
+                        } / ${runHash || ''}`}
                       </Text>
                     </div>
                   </>
