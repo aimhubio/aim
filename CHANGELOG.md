@@ -14,7 +14,7 @@
 - Enhance AudioPlayer component (arsengit)
 - Recover active tab in run details page after reload (roubkar)
 - Add ability to archive or delete runs with batches (VkoHov)
-- Remote tracking server alpha version (alberttorosyan, mihran113, aramaim)
+- Remote tracking server [experimental] (alberttorosyan, mihran113, aramaim)
 - Add ability to change media elements order (VkoHov)
 - Add ability to hard delete runs (alberttorosyan)
 - Lossy format support for aim.Image (devfox-se)
