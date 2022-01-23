@@ -2,6 +2,7 @@ import React from 'react';
 import classNames from 'classnames';
 
 import { Icon, Text } from 'components/kit';
+import ErrorBoundary from 'components/ErrorBoundary/ErrorBoundary';
 
 import { IMenuItemProps, IMenuItem } from './types';
 
@@ -71,64 +72,66 @@ function MenuItem({
   );
 
   return (
-    <div
-      className={classNames({
-        MenuItem: true,
-        active: isActive,
-      })}
-      tabIndex={0}
-    >
+    <ErrorBoundary>
       <div
         className={classNames({
-          MenuItemHead: true,
-          layer1: !parentId,
-          layer2: parentId,
-          no_child: !children?.length,
+          MenuItem: true,
           active: isActive,
-          open: isOpen,
         })}
-        onClick={onClickItem}
-        role='button'
+        tabIndex={0}
       >
-        <div>
-          <Text
-            size={14}
-            tint={isActive ? 100 : 80}
-            weight={600}
-            color={isActive ? 'info' : 'primary'}
-          >
-            {name}
-          </Text>
-          {children?.length && (
-            <Icon
-              name={isOpen || isActive ? 'arrow-up' : 'arrow-down'}
-              fontSize={'0.75rem'}
-              color={isOpen || isActive ? '#1C2852' : '#414B6D'}
-            />
-          )}
-        </div>
-      </div>
-      {children?.length && (
         <div
           className={classNames({
-            MenuItemBody: true,
+            MenuItemHead: true,
+            layer1: !parentId,
+            layer2: parentId,
+            no_child: !children?.length,
+            active: isActive,
             open: isOpen,
           })}
+          onClick={onClickItem}
+          role='button'
         >
           <div>
-            {children?.map((item: IMenuItem) => (
-              <MenuItem
-                key={item.id}
-                {...item}
-                onClickOpen={onClickOpen}
-                parentId={generateKeyWithParent(parentId, id)}
-                activeItemKey={activeItemKey}
+            <Text
+              size={14}
+              tint={isActive ? 100 : 80}
+              weight={600}
+              color={isActive ? 'info' : 'primary'}
+            >
+              {name}
+            </Text>
+            {children?.length && (
+              <Icon
+                name={isOpen || isActive ? 'arrow-up' : 'arrow-down'}
+                fontSize={'0.75rem'}
+                color={isOpen || isActive ? '#1C2852' : '#414B6D'}
               />
-            ))}
+            )}
           </div>
         </div>
-      )}
-    </div>
+        {children?.length && (
+          <div
+            className={classNames({
+              MenuItemBody: true,
+              open: isOpen,
+            })}
+          >
+            <div>
+              {children?.map((item: IMenuItem) => (
+                <MenuItem
+                  key={item.id}
+                  {...item}
+                  onClickOpen={onClickOpen}
+                  parentId={generateKeyWithParent(parentId, id)}
+                  activeItemKey={activeItemKey}
+                />
+              ))}
+            </div>
+          </div>
+        )}
+      </div>
+    </ErrorBoundary>
   );
 }
 

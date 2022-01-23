@@ -10,4 +10,5 @@ export interface IConfirmModalProps {
   children?: React.ReactNode;
   onSubmit: () => void;
   onCancel: () => void;
+  statusType?: error | success | warning | info;
 }

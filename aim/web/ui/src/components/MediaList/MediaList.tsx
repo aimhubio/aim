@@ -3,6 +3,7 @@ import { areEqual, VariableSizeList as List } from 'react-window';
 
 import { MediaTypeEnum } from 'components/MediaPanel/config';
 import AudioBox from 'components/kit/AudioBox';
+import ErrorBoundary from 'components/ErrorBoundary/ErrorBoundary';
 
 import {
   MEDIA_ITEMS_SIZES,
@@ -25,7 +26,6 @@ function MediaList({
   addUriToList,
   mediaItemHeight,
   focusedState,
-  syncHoverState,
   additionalProperties,
   tooltip,
   mediaType,
@@ -78,26 +78,27 @@ function MediaList({
   ]);
 
   return (
-    <List
-      height={listHeight}
-      itemCount={data.length}
-      itemSize={itemSize}
-      layout='horizontal'
-      width={wrapperOffsetWidth}
-      style={{ overflowY: 'hidden' }}
-      itemData={{
-        data,
-        addUriToList,
-        mediaItemHeight: listHeight,
-        focusedState,
-        syncHoverState,
-        additionalProperties,
-        tooltip,
-        mediaType,
-      }}
-    >
-      {MediaBoxMemoized}
-    </List>
+    <ErrorBoundary>
+      <List
+        height={listHeight}
+        itemCount={data.length}
+        itemSize={itemSize}
+        layout='horizontal'
+        width={wrapperOffsetWidth}
+        style={{ overflowY: 'hidden' }}
+        itemData={{
+          data,
+          addUriToList,
+          mediaItemHeight: listHeight,
+          focusedState,
+          additionalProperties,
+          tooltip,
+          mediaType,
+        }}
+      >
+        {MediaBoxMemoized}
+      </List>
+    </ErrorBoundary>
   );
 }
 
@@ -108,16 +109,18 @@ const MediaBoxMemoized = React.memo(function MediaBoxMemoized(props: any) {
   const Component = mediaBoxType[data.mediaType];
 
   return (
-    <Component
-      index={index}
-      style={style}
-      data={data.data[index]}
-      addUriToList={data.addUriToList}
-      mediaItemHeight={data.mediaItemHeight}
-      focusedState={data.focusedState}
-      syncHoverState={data.syncHoverState}
-      additionalProperties={data.additionalProperties}
-      tooltip={data.tooltip}
-    />
+    <ErrorBoundary>
+      <Component
+        key={index}
+        index={index}
+        style={style}
+        data={data.data[index]}
+        addUriToList={data.addUriToList}
+        mediaItemHeight={data.mediaItemHeight}
+        focusedState={data.focusedState}
+        additionalProperties={data.additionalProperties}
+        tooltip={data.tooltip}
+      />
+    </ErrorBoundary>
   );
 }, areEqual);

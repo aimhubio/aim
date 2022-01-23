@@ -65,7 +65,7 @@ function SelectForm({
     if (requestIsPending) {
       return;
     }
-    searchRef.current = metricAppModel.getMetricsData(true);
+    searchRef.current = metricAppModel.getMetricsData(true, true);
     searchRef.current.call();
   }
 

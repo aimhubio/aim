@@ -1,6 +1,6 @@
 import Text from './Text';
 import Switcher from './Switcher';
-import Button from './Button';
+import Button, { IButtonProps } from './Button';
 import ToggleButton from './ToggleButton';
 import Icon from './Icon';
 import Badge from './Badge';
@@ -9,6 +9,8 @@ import JsonViewPopover from './JsonViewPopover';
 import AutoSuggestions from './AutoSuggestions';
 import Slider from './Slider';
 import Menu, { MenuItem } from './Menu';
+import Modal from './Modal';
+import ActionCard from './ActionCard';
 
 export {
   Text,
@@ -23,4 +25,8 @@ export {
   Slider,
   Menu,
   MenuItem,
+  Modal,
+  ActionCard,
 };
+
+export type { IButtonProps };

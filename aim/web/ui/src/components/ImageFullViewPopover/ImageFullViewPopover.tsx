@@ -2,6 +2,7 @@ import React, { useCallback, useRef, useState } from 'react';
 
 import PopoverContent from 'components/ChartPanel/PopoverContent/PopoverContent';
 import { Button, Icon } from 'components/kit';
+import ErrorBoundary from 'components/ErrorBoundary/ErrorBoundary';
 
 import useResizeObserver from 'hooks/window/useResizeObserver';
 
@@ -33,40 +34,43 @@ function ImageFullViewPopover({
   useResizeObserver(setContainerHeightMemo, imageContainerRef);
 
   return (
-    <div className='ImageFullViewPopover'>
-      <div
-        ref={imageContainerRef}
-        className={`ImageFullViewPopover__imageContainer ImageFullViewPopover__imageContainer--${imageRendering}`}
-      >
-        <img
-          src={`data:image/${imageData.format};base64, ${blobData}`}
-          alt=''
-          style={{
-            maxHeight: containerHeight,
-          }}
-        />
-      </div>
-
-      <div className='ImageFullViewPopover__detailContainer'>
-        <div className='ImageFullViewPopover__detailContainer__closeButtonContainer'>
-          <Button
-            withOnlyIcon
-            size='small'
-            onClick={handleClose}
-            color='inherit'
-          >
-            <Icon name='close' />
-          </Button>
-        </div>
-        <div className='ImageFullViewPopover__detailContainer__content'>
-          <PopoverContent
-            chartType={ChartTypeEnum.ImageSet}
-            tooltipContent={tooltipContent}
-            focusedState={{ active: true, key: null }}
+    <ErrorBoundary>
+      <div className='ImageFullViewPopover'>
+        <div
+          ref={imageContainerRef}
+          className={`ImageFullViewPopover__imageContainer ImageFullViewPopover__imageContainer--${imageRendering}`}
+        >
+          <img
+            src={`data:image/${imageData.format};base64, ${blobData}`}
+            alt=''
+            style={{
+              maxHeight: containerHeight,
+            }}
           />
         </div>
+        <div className='ImageFullViewPopover__detailContainer'>
+          <div className='ImageFullViewPopover__detailContainer__closeButtonContainer'>
+            <Button
+              withOnlyIcon
+              size='small'
+              onClick={handleClose}
+              color='inherit'
+            >
+              <Icon name='close' />
+            </Button>
+          </div>
+          <div className='ImageFullViewPopover__detailContainer__content'>
+            <ErrorBoundary>
+              <PopoverContent
+                chartType={ChartTypeEnum.ImageSet}
+                tooltipContent={tooltipContent}
+                focusedState={{ active: true, key: null }}
+              />
+            </ErrorBoundary>
+          </div>
+        </div>
       </div>
-    </div>
+    </ErrorBoundary>
   );
 }
 

@@ -2,6 +2,8 @@ import React from 'react';
 
 import { MenuItem } from '@material-ui/core';
 
+import ErrorBoundary from 'components/ErrorBoundary/ErrorBoundary';
+
 import { IZoomInPopoverProps } from 'types/components/ZoomInPopover/ZoomInPopover';
 
 import './ZoomInPopover.scss';
@@ -22,22 +24,24 @@ function ZoomInPopover({
     }
   }
   return (
-    <div className='ZoomInPopover'>
-      <MenuItem
-        data-name={ZoomEnum.SINGLE}
-        selected={mode === ZoomEnum.SINGLE}
-        onClick={handleChange}
-      >
-        Single Zooming
-      </MenuItem>
-      <MenuItem
-        data-name={ZoomEnum.MULTIPLE}
-        selected={mode === ZoomEnum.MULTIPLE}
-        onClick={handleChange}
-      >
-        Multiple Zooming
-      </MenuItem>
-    </div>
+    <ErrorBoundary>
+      <div className='ZoomInPopover'>
+        <MenuItem
+          data-name={ZoomEnum.SINGLE}
+          selected={mode === ZoomEnum.SINGLE}
+          onClick={handleChange}
+        >
+          Single Zooming
+        </MenuItem>
+        <MenuItem
+          data-name={ZoomEnum.MULTIPLE}
+          selected={mode === ZoomEnum.MULTIPLE}
+          onClick={handleChange}
+        >
+          Multiple Zooming
+        </MenuItem>
+      </div>
+    </ErrorBoundary>
   );
 }
 

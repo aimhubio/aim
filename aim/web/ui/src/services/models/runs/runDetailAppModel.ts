@@ -1,3 +1,5 @@
+import { noop } from 'lodash';
+
 import { IRunBatch } from 'pages/RunDetail/types';
 
 import runsService from 'services/api/runs/runsService';
@@ -157,7 +159,7 @@ function archiveRun(id: string, archived: boolean = false) {
           severity: 'success',
           message: archived
             ? 'Run successfully archived'
-            : 'Run successfully unarchive',
+            : 'Run successfully unarchived',
         });
       } else {
         onNotificationAdd({
@@ -169,6 +171,24 @@ function archiveRun(id: string, archived: boolean = false) {
       analytics.trackEvent(
         archived ? '[RunDetail] Archive Run' : '[RunDetail] Unarchive Run',
       );
+    });
+}
+
+function deleteRun(id: string, successCallback: () => void = noop) {
+  runsService
+    .deleteRun(id)
+    .call()
+    .then((res: any) => {
+      if (res.id) {
+        successCallback();
+      } else {
+        onNotificationAdd({
+          id: Date.now(),
+          severity: 'error',
+          message: 'Something went wrong',
+        });
+      }
+      analytics.trackEvent('[RunDetail] Delete Run');
     });
 }
 
@@ -195,6 +215,7 @@ const runDetailAppModel = {
   getExperimentsData,
   getRunsOfExperiment,
   archiveRun,
+  deleteRun,
   onNotificationAdd,
   onNotificationDelete,
 };

@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/rules-of-hooks */
 import React, { useState } from 'react';
 import { useLocation, useRouteMatch } from 'react-router-dom';
 import _ from 'lodash-es';
@@ -10,6 +11,7 @@ import ResizePanel from 'components/ResizePanel/ResizePanel';
 import MediaPanel from 'components/MediaPanel';
 import { MediaTypeEnum } from 'components/MediaPanel/config';
 import ImagesExploreRangePanel from 'components/ImagesExploreRangePanel';
+import Grouping from 'components/Grouping/Grouping';
 
 import { ResizeModeEnum } from 'config/enums/tableEnums';
 import { RowHeightSize } from 'config/table/tableConfigs';
@@ -20,7 +22,6 @@ import useModel from 'hooks/model/useModel';
 import useResizeObserver from 'hooks/window/useResizeObserver';
 
 import SelectForm from 'pages/ImagesExplore/components/SelectForm/SelectForm';
-import Grouping from 'pages/components/Grouping/Grouping';
 import Controls from 'pages/ImagesExplore/components/Controls/Controls';
 
 import imagesExploreAppModel from 'services/models/imagesExplore/imagesExploreAppModel';
@@ -61,52 +62,6 @@ function ImagesExplore(): React.FunctionComponentElement<React.ReactNode> {
     imagesWrapperRef,
   );
 
-  const panelResizing = usePanelResize(
-    wrapperElemRef,
-    imagesWrapperRef,
-    tableElemRef,
-    resizeElemRef,
-    imagesExploreData?.config?.table || {},
-    imagesExploreAppModel.onTableResizeEnd,
-  );
-  React.useEffect(() => {
-    setOffsetWidth(imagesWrapperRef?.current?.offsetWidth);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [imagesWrapperRef?.current?.offsetWidth]);
-
-  React.useEffect(() => {
-    imagesExploreAppModel.initialize(route.params.appId);
-    let appRequestRef: {
-      call: () => Promise<void>;
-      abort: () => void;
-    };
-    let imagesRequestRef: {
-      call: () => Promise<void>;
-      abort: () => void;
-    };
-    if (route.params.appId) {
-      appRequestRef = imagesExploreAppModel.getAppConfigData(
-        route.params.appId,
-      );
-      appRequestRef.call().then(() => {
-        imagesRequestRef = imagesExploreAppModel.getImagesData();
-        imagesRequestRef.call();
-      });
-    } else {
-      imagesExploreAppModel.setDefaultAppConfigData();
-      imagesRequestRef = imagesExploreAppModel.getImagesData();
-      imagesRequestRef.call();
-    }
-
-    analytics.pageView('[ImagesExplorer]');
-    return () => {
-      imagesRequestRef?.abort();
-      if (appRequestRef) {
-        appRequestRef.abort();
-      }
-    };
-  }, []);
-
   // Add effect to recover state from URL when browser history navigation is used
   React.useEffect(() => {
     if (!!imagesExploreData?.config) {
@@ -128,6 +83,11 @@ function ImagesExplore(): React.FunctionComponentElement<React.ReactNode> {
     imagesWrapperRef?.current?.offsetHeight,
     imagesExploreData?.config?.table.resizeMode,
   ]);
+
+  React.useEffect(() => {
+    setOffsetWidth(imagesWrapperRef?.current?.offsetWidth);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [imagesWrapperRef?.current?.offsetWidth]);
 
   // eslint-disable-next-line react-hooks/rules-of-hooks
   const memoizedImagesSortFields = React.useMemo(() => {
@@ -180,6 +140,48 @@ function ImagesExplore(): React.FunctionComponentElement<React.ReactNode> {
     imagesExploreData?.config?.images?.sortFields,
     imagesExploreData?.groupingSelectOptions,
   ]);
+
+  const panelResizing = usePanelResize(
+    wrapperElemRef,
+    imagesWrapperRef,
+    tableElemRef,
+    resizeElemRef,
+    imagesExploreData?.config?.table || {},
+    imagesExploreAppModel.onTableResizeEnd,
+  );
+
+  React.useEffect(() => {
+    imagesExploreAppModel.initialize(route.params.appId);
+    let appRequestRef: {
+      call: () => Promise<void>;
+      abort: () => void;
+    };
+    let imagesRequestRef: {
+      call: () => Promise<void>;
+      abort: () => void;
+    };
+    if (route.params.appId) {
+      appRequestRef = imagesExploreAppModel.getAppConfigData(
+        route.params.appId,
+      );
+      appRequestRef.call().then(() => {
+        imagesRequestRef = imagesExploreAppModel.getImagesData();
+        imagesRequestRef.call();
+      });
+    } else {
+      imagesExploreAppModel.setDefaultAppConfigData();
+      imagesRequestRef = imagesExploreAppModel.getImagesData();
+      imagesRequestRef.call();
+    }
+
+    analytics.pageView('[ImagesExplorer]');
+    return () => {
+      imagesRequestRef?.abort();
+      if (appRequestRef) {
+        appRequestRef.abort();
+      }
+    };
+  }, []);
 
   return (
     <div className='ImagesExplore__container' ref={wrapperElemRef}>
@@ -247,7 +249,7 @@ function ImagesExplore(): React.FunctionComponentElement<React.ReactNode> {
               panelResizing={panelResizing}
               resizeMode={imagesExploreData?.config?.table.resizeMode}
               tableHeight={imagesExploreData?.config?.table?.height}
-              wrapperOffsetHeight={offsetHeight || 0}
+              wrapperOffsetHeight={offsetHeight - 48 || 0}
               wrapperOffsetWidth={offsetWidth || 0}
               focusedState={
                 imagesExploreData?.config?.images?.focusedState as IFocusedState
@@ -269,6 +271,7 @@ function ImagesExplore(): React.FunctionComponentElement<React.ReactNode> {
                   tooltip={
                     imagesExploreData?.config?.images?.tooltip as IPanelTooltip
                   }
+                  orderedMap={imagesExploreData?.orderedMap}
                   additionalProperties={
                     imagesExploreData?.config?.images?.additionalProperties
                   }
@@ -282,6 +285,7 @@ function ImagesExplore(): React.FunctionComponentElement<React.ReactNode> {
                   onImageAlignmentChange={
                     imagesExploreAppModel.onImageAlignmentChange
                   }
+                  onStackingToggle={imagesExploreAppModel.onStackingToggle}
                   onImagesSortChange={imagesExploreAppModel.onImagesSortChange}
                 />
               }
@@ -361,6 +365,7 @@ function ImagesExplore(): React.FunctionComponentElement<React.ReactNode> {
                       ? 'medium'
                       : 'large'
                   }
+                  selectedRows={imagesExploreData?.selectedRows}
                   sortOptions={imagesExploreData?.groupingSelectOptions}
                   sortFields={imagesExploreData?.config?.table.sortFields}
                   hiddenRows={imagesExploreData?.config?.table.hiddenMetrics}
@@ -387,6 +392,10 @@ function ImagesExplore(): React.FunctionComponentElement<React.ReactNode> {
                   updateColumnsWidths={
                     imagesExploreAppModel.updateColumnsWidths
                   }
+                  onRowSelect={imagesExploreAppModel.onRowSelect}
+                  archiveRuns={imagesExploreAppModel.archiveRuns}
+                  deleteRuns={imagesExploreAppModel.deleteRuns}
+                  multiSelect
                 />
               ) : null}
             </BusyLoaderWrapper>

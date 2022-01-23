@@ -1,0 +1,94 @@
+@use 'src/styles/abstracts' as *;
+
+@mixin getTypeColors($color, $cover-color) {
+  .Modal__header__titleIcon {
+    background-color: $cover-color;
+
+    .Icon__container {
+      color: $color;
+    }
+  }
+
+  .Modal__footer__okButton {
+    background-color: $color;
+  }
+}
+
+.Modal {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  padding: 1rem 0.5rem 0 0.5rem;
+  position: relative;
+  &__header {
+    padding: 0.5rem 1rem;
+    display: flex;
+    align-items: center;
+    width: 100%;
+    &__titleIcon {
+      width: 2rem;
+      height: 2rem;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      border-radius: $border-radius-circle;
+      margin-right: 1rem;
+      &.warning {
+        color: $warning-color;
+        background: $warning-color-10;
+      }
+      &.error {
+        color: $error-color;
+        background: $error-color-10;
+      }
+      &.success {
+        color: $success-color;
+        background: $success-color-10;
+      }
+      &.info {
+        color: $primary-color;
+        background: $primary-color-10;
+      }
+    }
+  }
+  &__content {
+    padding: 0 1rem 1.5rem 1rem;
+  }
+  &__footer {
+    border-top: $border-main;
+    padding: 1rem;
+    display: flex;
+    justify-content: flex-end;
+    width: 100%;
+    &__okButton {
+      margin-left: 0.5rem;
+    }
+    &__okCancel {
+      color: $pico;
+    }
+  }
+
+  &.warning {
+    @include getTypeColors($warning-color, $warning-color-10);
+  }
+
+  &.error {
+    @include getTypeColors($error-color, $error-color-10);
+  }
+
+  &.info {
+    @include getTypeColors($primary-color, $primary-color-10);
+  }
+
+  &.success {
+    @include getTypeColors($success-color, $success-color-10);
+  }
+
+  &__closeButton {
+    position: absolute;
+    top: $space-xxs;
+    right: $space-xxs;
+    color: $pico-80;
+  }
+}

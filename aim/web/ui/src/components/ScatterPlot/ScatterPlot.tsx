@@ -1,5 +1,7 @@
 import React from 'react';
 
+import ErrorBoundary from 'components/ErrorBoundary/ErrorBoundary';
+
 import useResizeObserver from 'hooks/window/useResizeObserver';
 
 import { IAttributesRef } from 'types/components/LineChart/LineChart';
@@ -237,12 +239,15 @@ const ScatterPlot = React.forwardRef(function ScatterPlot(
   }));
 
   return (
-    <div ref={parentRef} className='ScatterPlot'>
-      <div ref={visAreaRef} />
-      {yDimension.domainData[0] === '-' || xDimension.domainData[0] === '-' ? (
-        <Text className='ScatterPlot__emptyData'> No Data</Text>
-      ) : null}
-    </div>
+    <ErrorBoundary>
+      <div ref={parentRef} className='ScatterPlot'>
+        <div ref={visAreaRef} />
+        {yDimension.domainData[0] === '-' ||
+        xDimension.domainData[0] === '-' ? (
+          <Text className='ScatterPlot__emptyData'> No Data</Text>
+        ) : null}
+      </div>
+    </ErrorBoundary>
   );
 });
 

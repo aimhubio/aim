@@ -9,6 +9,8 @@ import { CircularProgress } from '@material-ui/core';
 import EmptyComponent from 'components/EmptyComponent/EmptyComponent';
 import { Button, Icon, Text } from 'components/kit';
 
+import { DateWithOutSeconds } from 'config/dates/dates';
+
 import { processDurationTime } from 'utils/processDurationTime';
 
 import {
@@ -88,7 +90,7 @@ function RunSelectPopoverContent({
                     weight={experimentId === experiment.id ? 600 : 500}
                     className='RunSelectPopoverWrapper__selectPopoverContent__contentContainer__experimentsListContainer__experimentList__experimentBox__experimentName'
                   >
-                    {experiment.name}
+                    {experiment?.name ?? 'default'}
                   </Text>
                 </div>
               ))
@@ -131,7 +133,7 @@ function RunSelectPopoverContent({
                       weight={runInfo?.name === run.name ? 600 : 500}
                     >
                       {`${moment(run.creation_time * 1000).format(
-                        'DD MMM YYYY, HH:mm A',
+                        DateWithOutSeconds,
                       )} | ${processDurationTime(
                         run?.creation_time * 1000,
                         run?.end_time ? run?.end_time * 1000 : dateNow,

@@ -3,6 +3,8 @@
 
 import React from 'react';
 
+import ErrorBoundary from 'components/ErrorBoundary/ErrorBoundary';
+
 import { renderElement } from './utils';
 
 /**
@@ -34,9 +36,11 @@ const TableHeaderRow = ({
   }
 
   return (
-    <div {...rest} className={className} style={style}>
-      {cells}
-    </div>
+    <ErrorBoundary>
+      <div {...rest} className={className} style={style}>
+        {cells}
+      </div>
+    </ErrorBoundary>
   );
 };
 

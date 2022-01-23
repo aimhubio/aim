@@ -2,6 +2,8 @@ import React from 'react';
 
 import { Box, Slider } from '@material-ui/core';
 
+import ErrorBoundary from 'components/ErrorBoundary/ErrorBoundary';
+
 const marks = [
   { value: 10, label: '10' },
   { value: 100, label: '100' },
@@ -12,19 +14,21 @@ const marks = [
 ];
 function StepsDensityPopover(): React.FunctionComponentElement<React.ReactNode> {
   return (
-    <Box width={300}>
-      <Box p={0.5}>Number Of Steps:</Box>
-      <Box m={1}>
-        <Slider
-          valueLabelDisplay='auto'
-          defaultValue={0}
-          min={0}
-          max={500}
-          step={1}
-          marks={marks}
-        />
+    <ErrorBoundary>
+      <Box width={300}>
+        <Box p={0.5}>Number Of Steps:</Box>
+        <Box m={1}>
+          <Slider
+            valueLabelDisplay='auto'
+            defaultValue={0}
+            min={0}
+            max={500}
+            step={1}
+            marks={marks}
+          />
+        </Box>
       </Box>
-    </Box>
+    </ErrorBoundary>
   );
 }
 

@@ -1,35 +1,90 @@
-@import 'src/styles/abstracts/_variables.scss';
+@use 'src/styles/abstracts' as *;
+
+@mixin getStatusTypeColors($color, $cover-color) {
+  .ConfirmModal__Icon {
+    background-color: $cover-color;
+
+    .Icon__container {
+      color: $color;
+    }
+  }
+
+  .ConfirmModal__ConfirmButton {
+    background-color: $color;
+  }
+}
 
 .ConfirmModal {
-  &__Footer {
-    border-top: 1px solid $grayish;
-    height: 64px;
-    display: flex;
-    justify-content: center;
-    align-items: center;
+  .MuiBackdrop-root {
+    @include backgroundColorOpacity($black, 0.4);
+  }
+
+  .MuiPaper-rounded {
+    border-radius: 6px;
+  }
+
+  .MuiPaper-elevation10 {
+    box-shadow: 0px 2px 4px #767a80;
   }
 
   &__Body {
-    padding: 25px 20px;
-    display: flex;
+    min-width: 384px;
+    padding: 24px;
+
+    .ConfirmModal__Title__Container {
+      display: flex;
+      align-items: center;
+      margin-bottom: 12px;
+    }
+  }
+
+  &__Close__Icon {
+    position: absolute;
+    right: 10px;
+    top: 10px;
   }
 
   &__Icon {
-    margin-right: 30px;
-    font-size: 4.5rem;
-  }
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 32px;
+    height: 32px;
+    margin-right: 16px;
+    border-radius: 50%;
 
-  &__Title {
-    padding-left: 0;
-    padding-bottom: 5px;
-    padding-top: 5px;
-  }
-
-  &__description {
-    max-width: 260px;
+    .Icon__container {
+      font-size: 14px;
+    }
   }
 
   &__CancelButton {
     margin-right: 10px;
+    color: $pico;
+  }
+
+  &__Footer {
+    padding: 16px;
+    margin: 0 8px;
+    border-top: 1px solid $grayish;
+    display: flex;
+    justify-content: end;
+    align-items: center;
+  }
+
+  &__error {
+    @include getStatusTypeColors($error-color, $error-color-10);
+  }
+
+  &__warning {
+    @include getStatusTypeColors($warning-color, $warning-color-10);
+  }
+
+  &__success {
+    @include getStatusTypeColors($success-color, $success-color-10);
+  }
+
+  &__info {
+    @include getStatusTypeColors($primary-color, $primary-color-10);
   }
 }
