@@ -157,7 +157,7 @@ const MediaSet = ({
     return MEDIA_SET_TITLE_HEIGHT + MEDIA_SET_WRAPPER_PADDING_HEIGHT;
   }
 
-  const onSliderChange = React.useCallback(
+  const onDepthChange = React.useCallback(
     (value: number, index: number): void => {
       if (value !== depthMap[index]) {
         let tmpDepthMap = [...depthMap];
@@ -215,7 +215,7 @@ const MediaSet = ({
           tooltip,
           mediaType,
           depthMap,
-          onSliderChange,
+          onDepthChange,
         }}
       >
         {MediaGroupedList}
@@ -339,92 +339,12 @@ const MediaGroupedList = React.memo(function MediaGroupedList({
                       </span>
                     </Tooltip>
                     {renderStacking && (
-                      <ErrorBoundary>
-                        <ControlPopover
-                          anchorOrigin={{
-                            vertical: 'bottom',
-                            horizontal: 'right',
-                          }}
-                          className='MediaSet__container__path__depthDropdown'
-                          anchor={({ onAnchorClick, opened }) => (
-                            <Button
-                              onClick={onAnchorClick}
-                              className='MediaSet__container__path__depthDropdown__button'
-                              color={opened ? 'primary' : 'default'}
-                              size='small'
-                              withOnlyIcon
-                              style={{ height: MEDIA_SET_TITLE_HEIGHT }}
-                            >
-                              <Icon name={opened ? 'arrow-up' : 'arrow-down'} />
-                            </Button>
-                          )}
-                          component={
-                            <Autocomplete
-                              open
-                              size='small'
-                              disablePortal={true}
-                              disableCloseOnSelect
-                              className='MediaSet__container__path__depthDropdown__autocomplete'
-                              options={(pathValue as string[]).map((v, i) => ({
-                                depth: i,
-                                label: v,
-                              }))}
-                              getOptionLabel={(option) => option.label}
-                              getOptionSelected={(option) =>
-                                option.depth === depth
-                              }
-                              onChange={(e, value) => {
-                                data.onSliderChange(value.depth, index);
-                              }}
-                              disableClearable={true}
-                              ListboxProps={{
-                                style: {
-                                  maxHeight: 200,
-                                  maxWidth: 241,
-                                },
-                              }}
-                              classes={{
-                                popper:
-                                  'MediaSet__container__path__depthDropdown__autocomplete__popper',
-                              }}
-                              renderInput={(params) => (
-                                <InputBase
-                                  ref={params.InputProps.ref}
-                                  inputProps={params.inputProps}
-                                  spellCheck={false}
-                                  placeholder='Search'
-                                  autoFocus={true}
-                                  className='MediaSet__container__path__depthDropdown__autocomplete__select'
-                                />
-                              )}
-                              renderOption={(option) => (
-                                <>
-                                  <Text
-                                    className={classNames(
-                                      'MediaSet__container__path__depthDropdown__autocomplete__select__optionLabel',
-                                      {
-                                        selected: depth === option.depth,
-                                      },
-                                    )}
-                                    weight={500}
-                                    size={12}
-                                  >
-                                    {option.label}
-                                  </Text>
-                                  {depth === option.depth && (
-                                    <Icon
-                                      fontSize={14}
-                                      color='primary'
-                                      name='check'
-                                      className='MediaSet__container__path__depthDropdown__autocomplete__select__optionIcon'
-                                    />
-                                  )}
-                                </>
-                              )}
-                            />
-                          }
-                        />
-                      </ErrorBoundary>
+                      <DepthDropdown
+                        index={index}
+                        pathValue={pathValue}
+                        depth={depth}
+                        onDepthChange={data.onDepthChange}
+                      />
                     )}
                   </span>
                 )}
@@ -433,72 +353,28 @@ const MediaGroupedList = React.memo(function MediaGroupedList({
             </ErrorBoundary>
           )}
           {renderStacking && (
-            <ErrorBoundary>
-              <div
-                className='MediaSet__container__sliderContainer'
-                style={{ height: MEDIA_SET_SLIDER_HEIGHT }}
-              >
-                <Slider
-                  aria-labelledby='track-false-slider'
-                  track={false}
-                  valueLabelDisplay='off'
-                  getAriaValueText={(value) => `${pathValue[value]}`}
-                  value={depth}
-                  onChange={(e, value) =>
-                    data.onSliderChange(value as number, index)
-                  }
-                  step={null}
-                  marks={(pathValue as string[]).map((l, i) => ({ value: i }))}
-                  min={0}
-                  max={pathValue.length - 1}
-                  prevIconNode={
-                    <Button
-                      onClick={() => {
-                        if (depth > 0) data.onSliderChange(depth - 1, index);
-                      }}
-                      className='prevIconBtn'
-                      disabled={depth <= 0}
-                      size='small'
-                      withOnlyIcon
-                    >
-                      <Icon name='arrow-left' fontSize={10} />
-                    </Button>
-                  }
-                  nextIconNode={
-                    <Button
-                      onClick={() => {
-                        if (depth < pathValue.length - 1)
-                          data.onSliderChange(depth + 1, index);
-                      }}
-                      className='nextIconBtn'
-                      disabled={depth >= pathValue.length - 1}
-                      size='small'
-                      withOnlyIcon
-                    >
-                      <Icon name='arrow-right' fontSize={10} />
-                    </Button>
-                  }
-                />
-              </div>
-            </ErrorBoundary>
+            <DepthSlider
+              index={index}
+              pathValue={pathValue}
+              depth={depth}
+              onDepthChange={data.onDepthChange}
+            />
           )}
           {currentItems.length > 0 && (
-            <ErrorBoundary>
-              <div className='MediaSet__container__mediaItemsList'>
-                <MediaList
-                  key={`${index}-${depth}`}
-                  data={currentItems}
-                  addUriToList={data.addUriToList}
-                  wrapperOffsetWidth={data.wrapperOffsetWidth}
-                  wrapperOffsetHeight={data.wrapperOffsetHeight}
-                  mediaItemHeight={data.mediaItemHeight}
-                  focusedState={data.focusedState}
-                  additionalProperties={data.additionalProperties}
-                  tooltip={data.tooltip}
-                  mediaType={data.mediaType}
-                />
-              </div>
-            </ErrorBoundary>
+            <div className='MediaSet__container__mediaItemsList'>
+              <MediaList
+                key={`${index}-${depth}`}
+                data={currentItems}
+                addUriToList={data.addUriToList}
+                wrapperOffsetWidth={data.wrapperOffsetWidth}
+                wrapperOffsetHeight={data.wrapperOffsetHeight}
+                mediaItemHeight={data.mediaItemHeight}
+                focusedState={data.focusedState}
+                additionalProperties={data.additionalProperties}
+                tooltip={data.tooltip}
+                mediaType={data.mediaType}
+              />
+            </div>
           )}
         </div>
       </div>
@@ -506,6 +382,166 @@ const MediaGroupedList = React.memo(function MediaGroupedList({
   );
 },
 areEqual);
+
+function DepthSlider({
+  index,
+  pathValue,
+  depth,
+  onDepthChange,
+}: {
+  index: number;
+  pathValue: string | string[];
+  depth: number;
+  onDepthChange: (value: number, index: number) => void;
+}) {
+  return (
+    <ErrorBoundary>
+      <div
+        className='MediaSet__container__sliderContainer'
+        style={{ height: MEDIA_SET_SLIDER_HEIGHT }}
+      >
+        <Slider
+          aria-labelledby='track-false-slider'
+          track={false}
+          valueLabelDisplay='off'
+          getAriaValueText={(value) => `${pathValue[value]}`}
+          value={depth}
+          onChange={(e, value) => onDepthChange?.(value as number, index)}
+          step={null}
+          marks={(pathValue as string[]).map((l, i) => ({ value: i }))}
+          min={0}
+          max={pathValue.length - 1}
+          prevIconNode={
+            <Button
+              onClick={() => {
+                if (depth > 0) onDepthChange?.(depth - 1, index);
+              }}
+              className='prevIconBtn'
+              disabled={depth <= 0}
+              size='small'
+              withOnlyIcon
+            >
+              <Icon name='arrow-left' fontSize={10} />
+            </Button>
+          }
+          nextIconNode={
+            <Button
+              onClick={() => {
+                if (depth < pathValue.length - 1)
+                  onDepthChange?.(depth + 1, index);
+              }}
+              className='nextIconBtn'
+              disabled={depth >= pathValue.length - 1}
+              size='small'
+              withOnlyIcon
+            >
+              <Icon name='arrow-right' fontSize={10} />
+            </Button>
+          }
+        />
+      </div>
+    </ErrorBoundary>
+  );
+}
+
+function DepthDropdown({
+  index,
+  pathValue,
+  depth,
+  onDepthChange,
+}: {
+  index: number;
+  pathValue: string | string[];
+  depth: number;
+  onDepthChange: (value: number, index: number) => void;
+}) {
+  return (
+    <ErrorBoundary>
+      <ControlPopover
+        anchorOrigin={{
+          vertical: 'bottom',
+          horizontal: 'right',
+        }}
+        className='MediaSet__container__path__depthDropdown'
+        anchor={({ onAnchorClick, opened }) => (
+          <Button
+            onClick={onAnchorClick}
+            className='MediaSet__container__path__depthDropdown__button'
+            color={opened ? 'primary' : 'default'}
+            size='small'
+            withOnlyIcon
+            style={{ height: MEDIA_SET_TITLE_HEIGHT }}
+          >
+            <Icon name={opened ? 'arrow-up' : 'arrow-down'} />
+          </Button>
+        )}
+        component={
+          <Autocomplete
+            open
+            size='small'
+            disablePortal={true}
+            disableCloseOnSelect
+            className='MediaSet__container__path__depthDropdown__autocomplete'
+            options={(pathValue as string[]).map((v, i) => ({
+              depth: i,
+              label: v,
+            }))}
+            getOptionLabel={(option) => option.label}
+            getOptionSelected={(option) => option.depth === depth}
+            onChange={(e, value) => {
+              onDepthChange?.(value.depth, index);
+            }}
+            disableClearable={true}
+            ListboxProps={{
+              style: {
+                maxHeight: 200,
+                maxWidth: 241,
+              },
+            }}
+            classes={{
+              popper:
+                'MediaSet__container__path__depthDropdown__autocomplete__popper',
+            }}
+            renderInput={(params) => (
+              <InputBase
+                ref={params.InputProps.ref}
+                inputProps={params.inputProps}
+                spellCheck={false}
+                placeholder='Search'
+                autoFocus={true}
+                className='MediaSet__container__path__depthDropdown__autocomplete__select'
+              />
+            )}
+            renderOption={(option) => (
+              <>
+                <Text
+                  className={classNames(
+                    'MediaSet__container__path__depthDropdown__autocomplete__select__optionLabel',
+                    {
+                      selected: depth === option.depth,
+                    },
+                  )}
+                  weight={500}
+                  size={12}
+                >
+                  {option.label}
+                </Text>
+                {depth === option.depth && (
+                  <Icon
+                    fontSize={14}
+                    color='primary'
+                    name='check'
+                    className='MediaSet__container__path__depthDropdown__autocomplete__select__optionIcon'
+                  />
+                )}
+              </>
+            )}
+          />
+        }
+      />
+    </ErrorBoundary>
+  );
+}
 
 function getPathDetails({
   isStackedPath,
