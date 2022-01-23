@@ -1,6 +1,6 @@
 # Changelog
 
-## Unreleased
+## 3.4.1 Jan 23 2022
 
 - Fix issue with displaying experiment name in Images Explorer table (VkoHov)
 
