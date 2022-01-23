@@ -3,6 +3,7 @@ import React from 'react';
 import { Popover } from '@material-ui/core';
 
 import { Text } from 'components/kit';
+import ErrorBoundary from 'components/ErrorBoundary/ErrorBoundary';
 
 import IControlPopoverProps from 'types/components/ControlPopover/ControlPopover';
 
@@ -15,8 +16,14 @@ function ControlPopover({
   title,
   titleClassName = '',
   anchor,
-  anchorOrigin,
-  transformOrigin,
+  anchorOrigin = {
+    vertical: 'top',
+    horizontal: 'left',
+  },
+  transformOrigin = {
+    vertical: 'top',
+    horizontal: 'right',
+  },
   open = true,
 }: IControlPopoverProps): React.FunctionComponentElement<React.ReactNode> {
   const [anchorEl, setAnchorEl] = React.useState<HTMLElement | null>(null);
@@ -40,7 +47,7 @@ function ControlPopover({
   }, [open]);
 
   return (
-    <>
+    <ErrorBoundary>
       {anchor({ onAnchorClick, opened: open && !!anchorEl })}
       <Popover
         open={open && !!anchorEl}
@@ -48,18 +55,8 @@ function ControlPopover({
         onClick={stopPropagation}
         onClose={handleClose}
         anchorPosition={{ left: 20, top: 0 }}
-        anchorOrigin={
-          anchorOrigin || {
-            vertical: 'top',
-            horizontal: 'left',
-          }
-        }
-        transformOrigin={
-          transformOrigin || {
-            vertical: 'top',
-            horizontal: 'right',
-          }
-        }
+        anchorOrigin={anchorOrigin}
+        transformOrigin={transformOrigin}
         PaperProps={{ className: 'ControlPopover' }}
       >
         <div onClick={stopPropagation} className='ControlPopover__container'>
@@ -73,14 +70,16 @@ function ControlPopover({
               </Text>
             </div>
           )}
-          <div className='ControlPopover__component'>
-            {typeof component === 'function'
-              ? component({ handleClose, opened: open && !!anchorEl })
-              : component}
-          </div>
+          <ErrorBoundary>
+            <div className='ControlPopover__component'>
+              {typeof component === 'function'
+                ? component({ handleClose, opened: open && !!anchorEl })
+                : component}
+            </div>
+          </ErrorBoundary>
         </div>
       </Popover>
-    </>
+    </ErrorBoundary>
   );
 }
 

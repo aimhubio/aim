@@ -17,17 +17,19 @@ function RunDetailParamsTab({
       className='runDetailParamsTabLoader'
       height='100%'
     >
-      <div className='RunDetailParamsTab'>
-        {!isEmpty(runParams) ? (
-          <ReactJson name={false} theme='bright:inverted' src={runParams} />
-        ) : (
-          <IllustrationBlock
-            size='large'
-            className='runDetailParamsTabLoader'
-            content='No Params'
-          />
-        )}
-      </div>
+      {!isEmpty(runParams) ? (
+        <div className='RunDetailParamsTabWrapper'>
+          <div className='RunDetailParamsTab'>
+            <ReactJson name={false} theme='bright:inverted' src={runParams} />
+          </div>
+        </div>
+      ) : (
+        <IllustrationBlock
+          size='large'
+          className='runDetailParamsTabLoader'
+          content='No Params'
+        />
+      )}
     </BusyLoaderWrapper>
   );
 }

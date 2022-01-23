@@ -44,7 +44,7 @@ function SelectForm({
     if (requestIsPending) {
       return;
     }
-    searchMetricsRef.current = imagesExploreAppModel.getImagesData(true);
+    searchMetricsRef.current = imagesExploreAppModel.getImagesData(true, true);
     searchMetricsRef.current.call();
   }
 

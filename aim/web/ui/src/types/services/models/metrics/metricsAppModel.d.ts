@@ -44,6 +44,7 @@ export interface IMetricAppModelState {
     delay: number;
     enabled: boolean;
   };
+  selectedRows?: any;
 }
 
 export interface IChartTitleData {
@@ -102,8 +103,6 @@ export interface IAggregationData {
     yValues: number[];
   } | null;
 }
-
-export type SortField = [string, 'asc' | 'desc'];
 
 export interface IChartZoom {
   active: boolean;
@@ -186,6 +185,7 @@ export interface IGroupingSelectOption {
   label: string;
   group: string;
   value: string;
+  readonly?: boolean;
 }
 
 export interface IAppData {

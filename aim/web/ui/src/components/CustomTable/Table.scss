@@ -100,7 +100,34 @@ $border-radius: 0.2rem;
   width: -moz-available;
   max-width: 500px;
   contain: content;
-
+  .Table__column__defaultSelectIcon {
+    border: 1.5px solid $pico-80;
+    border-radius: $border-radius-xs;
+    width: 1rem;
+    height: 1rem;
+  }
+  .Table__column__selectedSelectIcon {
+    border-radius: $border-radius-xs;
+    width: 1rem;
+    height: 1rem;
+    background: $primary-color;
+    color: $white;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding-top: toRem(2px);
+  }
+  .Table__column__partiallySelectedSelectIcon {
+    border-radius: $border-radius-xs;
+    width: 1rem;
+    height: 1rem;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+  .configCheckbox {
+    margin-left: $space-xxxs;
+  }
   &--groups {
     max-width: unset !important;
   }
@@ -117,6 +144,24 @@ $border-radius: 0.2rem;
     .Table__cell {
       padding: 0;
     }
+  }
+  &.Table__column--selection {
+    padding: 0;
+    .Table__cell--header {
+      padding: 0;
+    }
+    .Table__cell {
+      padding: 0;
+    }
+    .Table__cell--header > *:first-child {
+      margin-right: 0;
+    }
+  }
+  &__selectCheckbox {
+    width: toRem(32px);
+    height: toRem(32px);
+    border-radius: unset;
+    padding: 0.5rem;
   }
 }
 
@@ -231,7 +276,7 @@ $border-radius: 0.2rem;
 
   &.Table__group__config__column__cell {
     border-right: none;
-    padding: 0;
+    padding: 0 0 0 toRem(44px);
 
     .Table__cell__rowMeta {
       display: flex;
@@ -468,9 +513,5 @@ $border-radius: 0.2rem;
     flex: 1;
     text-align: right;
     margin-left: 0.5rem;
-  }
-
-  &__popover {
-    margin-left: $space-xxs;
   }
 }

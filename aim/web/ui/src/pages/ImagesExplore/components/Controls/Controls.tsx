@@ -1,4 +1,6 @@
 import React from 'react';
+import _ from 'lodash-es';
+import classNames from 'classnames';
 
 import { Tooltip } from '@material-ui/core';
 
@@ -8,6 +10,8 @@ import { Icon } from 'components/kit';
 import ImagePropertiesPopover from 'components/ImagePropertiesPopover';
 
 import { CONTROLS_DEFAULT_CONFIG } from 'config/controls/controlsDefaultConfig';
+
+import SortPopover from 'pages/Metrics/components/Table/SortPopover/SortPopover';
 
 import { IControlProps } from 'types/pages/imagesExplore/components/Controls/Controls';
 
@@ -71,6 +75,54 @@ function Controls(
           }
         />
       </div>
+      <div>
+        <ControlPopover
+          title='Images Sorting'
+          anchor={({ onAnchorClick, opened }) => (
+            <Tooltip title='Images Sorting'>
+              <div
+                onClick={onAnchorClick}
+                className={`Controls__anchor ${opened ? 'active' : ''}`}
+              >
+                <Icon
+                  className={`Controls__icon ${opened ? 'active' : ''}`}
+                  name='sort-outside'
+                />
+              </div>
+            </Tooltip>
+          )}
+          component={
+            <SortPopover
+              sortOptions={props.selectOptions}
+              sortFields={props.sortFields}
+              onSort={props.onImagesSortChange}
+              readOnlyFieldsLabel={'GROUP BY'}
+              onReset={props.onImagesSortReset}
+            />
+          }
+        />
+      </div>
+      <Tooltip
+        title={props.additionalProperties.stacking ? 'Group stacked' : 'Stack'}
+      >
+        <div
+          className={classNames('Controls__anchor', {
+            active: props.additionalProperties.stacking,
+            outlined: props.additionalProperties.stacking,
+            disabled: _.isEmpty(props.orderedMap),
+          })}
+          onClick={
+            !_.isEmpty(props.orderedMap) ? props.onStackingToggle : _.noop
+          }
+        >
+          <Icon
+            className={classNames('Controls__icon', {
+              active: props.additionalProperties.stacking,
+            })}
+            name='images-stacking'
+          />
+        </div>
+      </Tooltip>
       <div>
         <ControlPopover
           title='Display In Tooltip'

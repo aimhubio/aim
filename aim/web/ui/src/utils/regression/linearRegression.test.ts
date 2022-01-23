@@ -1,4 +1,5 @@
 import { toEqual } from 'tests/utils';
+
 import { linearRegression, linearRegressionLine } from './linearRegression';
 
 describe('[linearRegression calculation]', () => {

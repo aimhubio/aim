@@ -18,9 +18,9 @@ import {
   IMetricsCollection,
 } from 'types/services/models/metrics/metricsAppModel';
 
-import { IMetricTrace, IRun } from './runModel';
-
 import { TrendlineTypeEnum } from 'utils/d3';
+
+import { IMetricTrace, IRun } from './runModel';
 
 export interface IScatterAppModelState {
   refs: {
@@ -37,6 +37,7 @@ export interface IScatterAppModelState {
   tableData: any[];
   tableColumns: ITableColumn[];
   sameValueColumns: string[];
+  selectedRows: { [key: string]: any };
   params: string[];
   notifyData: INotification[];
   groupingSelectOptions: IGroupingSelectOption[];

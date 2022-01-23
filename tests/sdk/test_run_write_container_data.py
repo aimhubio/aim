@@ -30,7 +30,7 @@ class TestRunContainerData(TestBase):
         rc = RocksContainer(meta_container_path, read_only=True)
         tree = ContainerTreeView(rc)
 
-        contexts = tree[('meta', 'contexts')]['meta']['contexts']
+        contexts = tree[('meta', 'contexts')]
         for ctx in [train_context, val_context, empty_context]:
             self.assertIn(Context(ctx).idx, contexts)
             self.assertDictEqual(contexts[Context(ctx).idx], ctx)

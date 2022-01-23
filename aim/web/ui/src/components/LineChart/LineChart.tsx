@@ -1,5 +1,7 @@
 import React from 'react';
 
+import ErrorBoundary from 'components/ErrorBoundary/ErrorBoundary';
+
 import useResizeObserver from 'hooks/window/useResizeObserver';
 
 import {
@@ -255,12 +257,14 @@ const LineChart = React.forwardRef(function LineChart(
   }));
 
   return (
-    <div
-      ref={parentRef}
-      className={`LineChart ${zoom?.active ? 'zoomMode' : ''}`}
-    >
-      <div ref={visAreaRef} />
-    </div>
+    <ErrorBoundary>
+      <div
+        ref={parentRef}
+        className={`LineChart ${zoom?.active ? 'zoomMode' : ''}`}
+      >
+        <div ref={visAreaRef} />
+      </div>
+    </ErrorBoundary>
   );
 });
 

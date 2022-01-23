@@ -12,6 +12,10 @@ import {
   IPanelTooltip,
   SortField,
 } from 'types/services/models/metrics/metricsAppModel';
+import { ISelectConfig } from 'types/services/models/explorer/createAppModel';
+import { IPanelTooltip } from 'types/services/models/metrics/metricsAppModel';
+
+import { SortFields } from 'utils/getSortedFields';
 
 export interface IImagesExploreAppConfig {
   grouping: {
@@ -40,13 +44,16 @@ export interface IImagesExploreAppConfig {
       alignmentType: string;
       mediaItemSize: number;
       imageRendering: string;
+      stacking: boolean;
     };
+    sortFields?: SortFields;
+    sortFieldsDict: any;
   };
   select: ISelectConfig;
   table: {
     resizeMode: ResizeModeEnum;
     rowHeight: RowHeightSize;
-    sortFields?: SortField[];
+    sortFields?: SortFields;
     hiddenMetrics?: string[];
     hiddenColumns?: string[];
     columnsWidths?: { [key: string]: number };
@@ -78,6 +85,7 @@ export interface IImagesExploreAppModelState {
   searchButtonDisabled: boolean;
   applyButtonDisabled: boolean;
   selectFormOptions: ISelectOption[];
+  selectedRows: { [key: string]: any };
   // liveUpdateConfig: {
   //   delay: number;
   //   enabled: boolean;

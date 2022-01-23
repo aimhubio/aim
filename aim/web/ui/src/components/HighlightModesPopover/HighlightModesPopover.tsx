@@ -2,6 +2,8 @@ import React from 'react';
 
 import { MenuItem } from '@material-ui/core';
 
+import ErrorBoundary from 'components/ErrorBoundary/ErrorBoundary';
+
 import { IHighlightModesPopoverProps } from 'types/components/HighlightModesPopover/HighlightModesPopover';
 
 import './HighlightModePopover.scss';
@@ -25,29 +27,31 @@ function HighlightModesPopover({
   }
 
   return (
-    <div className='HighlightModePopover'>
-      <MenuItem
-        data-name={HighlightEnum.Off}
-        selected={mode === HighlightEnum.Off}
-        onClick={handleClick}
-      >
-        Highlight Off
-      </MenuItem>
-      <MenuItem
-        data-name={HighlightEnum.Run}
-        selected={mode === HighlightEnum.Run}
-        onClick={handleClick}
-      >
-        Highlight Metric on Hover
-      </MenuItem>
-      <MenuItem
-        data-name={HighlightEnum.Metric}
-        selected={mode === HighlightEnum.Metric}
-        onClick={handleClick}
-      >
-        Highlight Run On Hover
-      </MenuItem>
-    </div>
+    <ErrorBoundary>
+      <div className='HighlightModePopover'>
+        <MenuItem
+          data-name={HighlightEnum.Off}
+          selected={mode === HighlightEnum.Off}
+          onClick={handleClick}
+        >
+          Highlight Off
+        </MenuItem>
+        <MenuItem
+          data-name={HighlightEnum.Run}
+          selected={mode === HighlightEnum.Run}
+          onClick={handleClick}
+        >
+          Highlight Metric on Hover
+        </MenuItem>
+        <MenuItem
+          data-name={HighlightEnum.Metric}
+          selected={mode === HighlightEnum.Metric}
+          onClick={handleClick}
+        >
+          Highlight Run On Hover
+        </MenuItem>
+      </div>
+    </ErrorBoundary>
   );
 }
 

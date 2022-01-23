@@ -3,6 +3,7 @@ import styled from 'styled-components';
 import useDropdownMenu from 'react-accessible-dropdown-menu-hook';
 
 import { Text } from 'components/kit';
+import ErrorBoundary from 'components/ErrorBoundary/ErrorBoundary';
 
 import { IAutoSuggestionsProps } from './AutoSuggestions.d';
 
@@ -48,26 +49,28 @@ function AutoSuggestions({
   }
 
   return (
-    <SuggestionsContainer
-      {...buttonProps}
-      className='AutoSuggestions'
-      aria-expanded={true}
-      suggestionsPosition={suggestionsPosition}
-      isEmpty={!suggestionsList.length}
-      onKeyDown={onSuggestionsKeyDown}
-      onBlur={onSuggestionsBlur}
-    >
-      {suggestionsList?.map((suggestion: string, index: number) => (
-        <a
-          key={suggestion}
-          className='AutoSuggestions__item'
-          onClick={() => onSuggestionClick(suggestion)}
-          {...itemProps[index]}
-        >
-          <Text size={14}>{suggestion}</Text>
-        </a>
-      ))}
-    </SuggestionsContainer>
+    <ErrorBoundary>
+      <SuggestionsContainer
+        {...buttonProps}
+        className='AutoSuggestions'
+        aria-expanded={true}
+        suggestionsPosition={suggestionsPosition}
+        isEmpty={!suggestionsList.length}
+        onKeyDown={onSuggestionsKeyDown}
+        onBlur={onSuggestionsBlur}
+      >
+        {suggestionsList?.map((suggestion: string, index: number) => (
+          <a
+            key={suggestion}
+            className='AutoSuggestions__item'
+            onClick={() => onSuggestionClick(suggestion)}
+            {...itemProps[index]}
+          >
+            <Text size={14}>{suggestion}</Text>
+          </a>
+        ))}
+      </SuggestionsContainer>
+    </ErrorBoundary>
   );
 }
 

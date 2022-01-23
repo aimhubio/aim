@@ -24,7 +24,7 @@ import { IMetricProps } from 'types/pages/metrics/Metrics';
 
 import { ChartTypeEnum } from 'utils/d3';
 
-import Grouping from '../components/Grouping/Grouping';
+import Grouping from '../../components/Grouping/Grouping';
 
 import MetricsBar from './components/MetricsBar/MetricsBar';
 import Controls from './components/Controls/Controls';
@@ -215,6 +215,7 @@ function Metrics(
                   data={props.tableData}
                   columns={props.tableColumns}
                   // Table options
+                  multiSelect
                   topHeader
                   groups={!Array.isArray(props.tableData)}
                   rowHeight={props.tableRowHeight}
@@ -231,6 +232,7 @@ function Metrics(
                   hiddenColumns={props.hiddenColumns}
                   resizeMode={props.resizeMode}
                   columnsWidths={props.columnsWidths}
+                  selectedRows={props.selectedRows}
                   // Table actions
                   onSort={props.onSortChange}
                   onSortReset={props.onSortReset}
@@ -244,6 +246,9 @@ function Metrics(
                   onRowClick={props.onTableRowClick}
                   onTableResizeModeChange={props.onTableResizeModeChange}
                   updateColumnsWidths={props.updateColumnsWidths}
+                  onRowSelect={props.onRowSelect}
+                  archiveRuns={props.archiveRuns}
+                  deleteRuns={props.deleteRuns}
                 />
               ) : null}
             </BusyLoaderWrapper>

@@ -106,7 +106,15 @@ export type IconName =
   | 'pause'
   | 'voice-on'
   | 'voice-off'
-  | 'TypeTriangle-Outline'
-  | 'TypeTriangle'
   | 'slack'
-  | 'trendline';
+  | 'images-stacking'
+  | 'typeTriangle-Outline'
+  | 'typeTriangle'
+  | 'trendline'
+  | 'voice-off'
+  | 'case-sensitive'
+  | 'word-match'
+  | 'regex'
+  | 'unarchive'
+  | 'archive'
+  | 'circle-with-dot';

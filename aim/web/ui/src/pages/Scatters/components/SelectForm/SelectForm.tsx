@@ -49,7 +49,7 @@ function SelectForm({
     if (requestIsPending) {
       return;
     }
-    searchRef.current = scattersAppModel.getScattersData(true);
+    searchRef.current = scattersAppModel.getScattersData(true, true);
     searchRef.current.call();
   }
 

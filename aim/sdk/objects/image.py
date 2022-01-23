@@ -37,8 +37,13 @@ class Image(CustomObject):
     FLAG_WARN_RGBA_RGB = False
     AIM_NAME = 'aim.image'
 
-    def __init__(self, image, caption: str = '', format='png', quality=85, optimize=False):
+    def __init__(self, image, caption: str = '', format='png', quality=90, optimize=False):
         super().__init__()
+
+        # normalize jpg
+        if format.lower() == 'jpg':
+            # PIL doesn't support 'jpg' key
+            format = 'jpeg'
 
         params = {
             'format': format.lower(),
@@ -184,10 +189,15 @@ class Image(CustomObject):
             raise ValueError('Cannot convert to aim.Image. Tensor must have 2/3-D shape.')
         if tensor.is_floating_point():
             tensor = tensor.mul(255).byte()
-        array: np.ndarray = np.transpose(tensor.cpu().numpy(), (1, 2, 0))
+        array: np.ndarray = tensor.cpu().numpy()
 
-        if array.ndim == 3 and array.shape[2] == 1:  # greyscale
-            pil_image = PILImage.fromarray(array[:, :, 0])
+        if array.ndim == 3:
+            channels = array.shape[0]
+            if channels == 1:
+                pil_image = PILImage.fromarray(array[0, :, :])
+            else:
+                # reverse order of channels: c,h,w => h,w,c
+                pil_image = PILImage.fromarray(np.transpose(array, (1, 2, 0)))
         else:
             pil_image = PILImage.fromarray(array)
         self._from_pil_image(pil_image, params)
@@ -197,14 +207,13 @@ class Image(CustomObject):
             import tensorflow as tf
             assert isinstance(tensor, tf.Tensor)
         except (ImportError, AssertionError):
-            raise ValueError('Cannot convert from torch.Tensor')
+            raise ValueError('Cannot convert from tf.Tensor')
 
         if tensor.ndim not in {2, 3}:
             raise ValueError('Cannot convert to aim.Image. Tensor must have 2/3-D shape.')
-        # TODO check the logic below
 
         if tensor.dtype.is_floating:
-            tensor = tf.cast(tf.math.scalar_mul(255.0, tensor), tf.dtypes.int8)
+            tensor = tf.cast(tf.math.scalar_mul(255.0, tensor), tf.uint8)
         array: np.ndarray = tensor.numpy()
 
         if array.ndim == 3 and array.shape[2] == 1:  # greyscale
@@ -212,6 +221,17 @@ class Image(CustomObject):
         else:
             pil_image = PILImage.fromarray(array)
         self._from_pil_image(pil_image, params)
+
+    def __eq__(self, other):
+        if not isinstance(other, Image):
+            return False
+
+        props = ['mode', 'format', 'width', 'height']
+        for p in props:
+            if self.storage[p] != other.storage[p]:
+                return False
+
+        return (self.storage['data'].data == other.storage['data'].data)
 
 
 def convert_to_aim_image_list(images, labels=None) -> List[Image]:

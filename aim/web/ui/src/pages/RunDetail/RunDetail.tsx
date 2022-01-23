@@ -20,6 +20,8 @@ import StatusLabel from 'components/StatusLabel';
 import ControlPopover from 'components/ControlPopover/ControlPopover';
 import BusyLoaderWrapper from 'components/BusyLoaderWrapper/BusyLoaderWrapper';
 
+import { DateWithOutSeconds } from 'config/dates/dates';
+
 import useModel from 'hooks/model/useModel';
 
 import runDetailAppModel from 'services/models/runs/runDetailAppModel';
@@ -202,9 +204,9 @@ function RunDetail(): React.FunctionComponentElement<React.ReactNode> {
                   <>
                     <div className='RunDetail__runDetailContainer__appBarContainer__appBarTitleBox__container'>
                       <Text tint={100} size={16} weight={600}>
-                        {`${runData?.runInfo?.experiment?.name || ''} / ${
-                          runHash || ''
-                        }`}
+                        {`${
+                          runData?.runInfo?.experiment?.name || 'default'
+                        } / ${runHash || ''}`}
                       </Text>
                     </div>
                   </>
@@ -256,7 +258,7 @@ function RunDetail(): React.FunctionComponentElement<React.ReactNode> {
                   className='RunDetail__runDetailContainer__headerContainer__infoBox__dateTitle'
                 >
                   {`${moment(runData?.runInfo?.creation_time * 1000).format(
-                    'DD MMM YYYY, HH:mm A',
+                    DateWithOutSeconds,
                   )} | ${processDurationTime(
                     runData?.runInfo?.creation_time * 1000,
                     runData?.runInfo?.end_time
@@ -283,6 +285,7 @@ function RunDetail(): React.FunctionComponentElement<React.ReactNode> {
         </div>
         <Paper className='RunDetail__runDetailContainer__tabsContainer'>
           <Tabs
+            className='RunDetail__runDetailContainer__Tabs'
             value={activeTab}
             onChange={handleTabChange}
             aria-label='simple tabs example'

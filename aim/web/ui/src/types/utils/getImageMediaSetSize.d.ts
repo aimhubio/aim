@@ -7,4 +7,5 @@ export interface IGetImageMediaSetSizeProps {
   alignmentType: MediaItemAlignmentEnum;
   wrapperOffsetWidth: number;
   mediaItemSize: number;
+  stacking: boolean;
 }

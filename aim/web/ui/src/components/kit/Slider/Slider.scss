@@ -51,6 +51,21 @@
       &.MuiSlider-active {
         box-shadow: 0 0 0 0.125rem rgba(20, 115, 230, 0.2);
       }
+      &::after {
+        top: 0px;
+        bottom: 0px;
+        left: 0px;
+        right: 0px;
+      }
+    }
+  }
+  .Mui-disabled {
+    .MuiSlider-track {
+      background: #a7b7cd;
+    }
+    .MuiSlider-thumb {
+      margin-top: toRem(-2px);
+      margin-left: toRem(-4px);
     }
   }
   .Mui-disabled {

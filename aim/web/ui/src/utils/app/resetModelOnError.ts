@@ -1,3 +1,5 @@
+import { RequestStatusEnum } from 'config/enums/requestStatusEnum';
+
 import { IModel, State } from 'types/services/models/model';
 
 export default function resetModelOnError<M extends State>({
@@ -15,7 +17,7 @@ export default function resetModelOnError<M extends State>({
     aggregatedData: [],
     tableData: [],
     tableColumns: [],
-    requestIsPending: false,
+    requestStatus: RequestStatusEnum.BadRequest,
   });
 
   setTimeout(() => {

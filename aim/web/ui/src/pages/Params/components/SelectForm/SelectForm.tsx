@@ -41,7 +41,7 @@ function SelectForm({
     if (requestIsPending) {
       return;
     }
-    searchRef.current = paramsAppModel.getParamsData(true);
+    searchRef.current = paramsAppModel.getParamsData(true, true);
     searchRef.current.call();
   }
 

@@ -7,10 +7,7 @@ import { RowHeightSize } from 'config/table/tableConfigs';
 import { BookmarkNotificationsEnum } from 'config/notification-messages/notificationMessages';
 import { ResizeModeEnum, RowHeightEnum } from 'config/enums/tableEnums';
 import { IMAGE_SIZE_CHANGE_DELAY } from 'config/mediaConfigs/mediaConfigs';
-import {
-  MediaItemAlignmentEnum,
-  ImageRenderingEnum,
-} from 'config/enums/imageEnums';
+import { ImageRenderingEnum } from 'config/enums/imageEnums';
 import { RequestStatusEnum } from 'config/enums/requestStatusEnum';
 import COLORS from 'config/colors/colors';
 import { CONTROLS_DEFAULT_CONFIG } from 'config/controls/controlsDefaultConfig';
@@ -26,6 +23,7 @@ import appsService from 'services/api/apps/appsService';
 import dashboardService from 'services/api/dashboard/dashboardService';
 import blobsURIModel from 'services/models/media/blobsURIModel';
 import projectsService from 'services/api/projects/projectsService';
+import runsService from 'services/api/runs/runsService';
 
 import {
   GroupNameType,
@@ -37,11 +35,9 @@ import {
   IOnGroupingSelectChangeParams,
   IPanelTooltip,
   ITooltipData,
-  SortField,
 } from 'types/services/models/metrics/metricsAppModel';
 import { IMetricTrace, IRun } from 'types/services/models/metrics/runModel';
 import { IBookmarkFormState } from 'types/components/BookmarkForm/BookmarkForm';
-import { INotification } from 'types/components/NotificationContainer/NotificationContainer';
 import { ITableColumn } from 'types/pages/metrics/components/TableColumns/TableColumns';
 import {
   IImageData,
@@ -55,6 +51,7 @@ import {
 } from 'types/services/models/explorer/createAppModel';
 import { IProjectParamsMetrics } from 'types/services/models/projects/projectsModel';
 
+import onRowSelectAction from 'utils/app/onRowSelect';
 import { decode, encode } from 'utils/encoder/encoder';
 import getObjectPaths from 'utils/getObjectPaths';
 import getUrlWithParam from 'utils/getUrlWithParam';
@@ -76,9 +73,12 @@ import getTooltipData from 'utils/app/getTooltipData';
 import filterTooltipContent from 'utils/filterTooltipContent';
 import { getDataAsMediaSetNestedObject } from 'utils/app/getDataAsMediaSetNestedObject';
 import { getCompatibleSelectConfig } from 'utils/app/getCompatibleSelectConfig';
+import { getSortedFields, SortField, SortFields } from 'utils/getSortedFields';
 import { getValue } from 'utils/helper';
 import contextToString from 'utils/contextToString';
 import alphabeticalSortComparator from 'utils/alphabeticalSortComparator';
+import onNotificationDelete from 'utils/app/onNotificationDelete';
+import onNotificationAdd from 'utils/app/onNotificationAdd';
 
 import createModel from '../model';
 
@@ -119,11 +119,14 @@ function getConfig(): IImagesExploreAppConfig {
         alignmentType: CONTROLS_DEFAULT_CONFIG.images.alignmentType,
         mediaItemSize: CONTROLS_DEFAULT_CONFIG.images.mediaItemSize,
         imageRendering: CONTROLS_DEFAULT_CONFIG.images.imageRendering,
+        stacking: CONTROLS_DEFAULT_CONFIG.images.stacking,
       },
       focusedState: {
         active: false,
         key: null,
       },
+      sortFields: [],
+      sortFieldsDict: {},
     },
     table: {
       resizeMode: ResizeModeEnum.Resizable,
@@ -137,13 +140,22 @@ function getConfig(): IImagesExploreAppConfig {
         middle: [],
         right: [],
       },
-      height: '',
+      height: '0.5',
     },
   };
 }
 
 let appRequestRef: {
   call: () => Promise<IAppData>;
+  abort: () => void;
+};
+
+let runsArchiveRef: {
+  call: (exceptionHandler: (detail: any) => void) => Promise<any>;
+  abort: () => void;
+};
+let runsDeleteRef: {
+  call: (exceptionHandler: (detail: any) => void) => Promise<any>;
   abort: () => void;
 };
 
@@ -226,7 +238,7 @@ function resetModelOnError(detail?: any) {
     imagesData: {},
     tableData: [],
     tableColumns: [],
-    requestIsPending: false,
+    requestStatus: RequestStatusEnum.BadRequest,
   });
 
   setTimeout(() => {
@@ -246,11 +258,13 @@ function exceptionHandler(detail: any) {
   } else {
     message = detail.message || 'Something went wrong';
   }
-
   onNotificationAdd({
-    id: Date.now(),
-    severity: 'error',
-    message,
+    notification: {
+      id: Date.now(),
+      severity: 'error',
+      message,
+    },
+    model,
   });
 
   // reset model
@@ -263,17 +277,22 @@ function abortRequest(): void {
   }
 
   model.setState({
-    requestIsPending: false,
+    requestStatus: RequestStatusEnum.Ok,
   });
-
   onNotificationAdd({
-    id: Date.now(),
-    severity: 'info',
-    message: 'Request has been cancelled',
+    notification: {
+      id: Date.now(),
+      severity: 'info',
+      message: 'Request has been cancelled',
+    },
+    model,
   });
 }
 
-function getImagesData(shouldUrlUpdate?: boolean) {
+function getImagesData(
+  shouldUrlUpdate?: boolean,
+  shouldResetSelectedRows?: boolean,
+) {
   if (imagesRequestRef) {
     imagesRequestRef.abort();
   }
@@ -324,6 +343,9 @@ function getImagesData(shouldUrlUpdate?: boolean) {
           requestStatus: RequestStatusEnum.Pending,
           queryIsEmpty: false,
           applyButtonDisabled: true,
+          selectedRows: shouldResetSelectedRows
+            ? {}
+            : model.getState()?.selectedRows,
         });
         blobsURIModel.init();
         try {
@@ -341,7 +363,10 @@ function getImagesData(shouldUrlUpdate?: boolean) {
         }
       } else {
         model.setState({
-          requestIsPending: false,
+          selectedRows: shouldResetSelectedRows
+            ? {}
+            : model.getState()?.selectedRows,
+          requestStatus: RequestStatusEnum.Ok,
           queryIsEmpty: true,
           imagesData: {},
           tableData: [],
@@ -413,8 +438,10 @@ function processData(data: any[]): {
   params: string[];
   highLevelParams: string[];
   contexts: string[];
+  selectedRows: any;
 } {
   const configData = model.getState()?.config;
+  let selectedRows = model.getState()?.selectedRows;
   let metrics: any[] = [];
   let params: string[] = [];
   let highLevelParams: string[] = [];
@@ -454,35 +481,64 @@ function processData(data: any[]): {
       });
     });
   });
+
+  let sortFields = configData?.table?.sortFields ?? [];
+
+  if (sortFields?.length === 0) {
+    sortFields = [
+      {
+        value: 'run.props.creation_time',
+        order: 'desc',
+        label: '',
+        group: '',
+      },
+    ];
+  }
+
   const processedData = groupData(
     _.orderBy(
       metrics,
-      configData?.table?.sortFields?.map(
-        (f: any) =>
-          function (metric: any) {
-            return getValue(metric, f[0], '');
+      sortFields?.map(
+        (f: SortField) =>
+          function (metric: SortField) {
+            return getValue(metric, f.value, '');
           },
-      ) ?? [],
-      configData?.table?.sortFields?.map((f: any) => f[1]) ?? [],
+      ),
+      sortFields?.map((f: any) => f.order),
     ),
   );
   const uniqParams = _.uniq(params);
   const uniqHighLevelParams = _.uniq(highLevelParams);
   const uniqContexts = _.uniq(contexts);
-
+  const mappedData =
+    data.reduce((acc: any, item: any) => {
+      acc[item.hash] = { runHash: item.hash, ...item.props };
+      return acc;
+    }, {}) || {};
+  if (selectedRows && !_.isEmpty(selectedRows)) {
+    selectedRows = Object.keys(selectedRows).reduce((acc: any, key: string) => {
+      const slicedKey = key.slice(0, key.indexOf('/'));
+      acc[key] = {
+        selectKey: key,
+        ...mappedData[slicedKey],
+      };
+      return acc;
+    }, {});
+  }
   return {
     data: processedData,
     params: uniqParams,
     highLevelParams: uniqHighLevelParams,
     contexts: uniqContexts,
+    selectedRows,
   };
 }
 
 function setModelData(rawData: any[], configData: IImagesExploreAppConfig) {
   const sortFields = model.getState()?.config?.table.sortFields;
-  const { data, params, contexts, highLevelParams } = processData(rawData);
+  const { data, params, contexts, highLevelParams, selectedRows } =
+    processData(rawData);
   const sortedParams = params.concat(highLevelParams).sort();
-
   const groupingSelectOptions = [
     ...getGroupingSelectOptions({
       params: sortedParams,
@@ -560,21 +616,23 @@ function setModelData(rawData: any[], configData: IImagesExploreAppConfig) {
     additionalProperties: config.images.additionalProperties,
   };
   model.setState({
-    requestIsPending: false,
+    requestStatus: RequestStatusEnum.Ok,
     rawData,
     config,
     params,
     data,
+    selectedRows,
     imagesData: mediaSetData,
     orderedMap,
     tableData: tableData.rows,
     tableColumns: getImagesExploreTableColumns(
       params,
+      groupingSelectOptions,
       data[0]?.config,
       configData.table.columnsOrder!,
       configData.table.hiddenColumns!,
       sortFields,
-      onSortChange,
+      onTableSortChange,
     ),
     sameValueColumns: tableData.sameValueColumns,
     groupingSelectOptions,
@@ -585,7 +643,7 @@ function updateModelData(
   configData: IImagesExploreAppConfig = model.getState()!.config!,
   shouldURLUpdate?: boolean,
 ): void {
-  const { data, params, contexts, highLevelParams } = processData(
+  const { data, params, contexts, highLevelParams, selectedRows } = processData(
     model.getState()?.rawData as any[],
   );
   const sortedParams = params.concat(highLevelParams).sort();
@@ -633,11 +691,12 @@ function updateModelData(
   );
   const tableColumns = getImagesExploreTableColumns(
     params,
+    groupingSelectOptions,
     data[0]?.config,
     configData.table.columnsOrder!,
     configData.table.hiddenColumns!,
     configData.table.sortFields,
-    onSortChange,
+    onTableSortChange,
   );
   const tableRef: any = model.getState()?.refs?.tableRef;
   tableRef.current?.updateData({
@@ -655,11 +714,11 @@ function updateModelData(
     data: model.getState()?.data,
     imagesData: mediaSetData,
     orderedMap,
-    // chartTitleData: getChartTitleData(data),
     tableData: tableData.rows,
     tableColumns,
     sameValueColumns: tableData.sameValueColumns,
     groupingSelectOptions,
+    selectedRows,
   });
 }
 
@@ -714,8 +773,12 @@ function getGroupingSelectOptions({
       label: 'run.hash',
       value: 'run.hash',
     },
+    {
+      group: 'run',
+      label: 'run.creation_time',
+      value: 'run.props.creation_time',
+    },
     ...paramsOptions,
-
     {
       group: 'images',
       label: 'images.name',
@@ -790,6 +853,13 @@ function onGroupingSelectChange({
   if (configData?.grouping) {
     configData.grouping = { ...configData.grouping, [groupName]: list };
     updateModelData(configData, true);
+    if (
+      configData.images?.additionalProperties?.stacking &&
+      (_.isEmpty(configData.grouping.group) ||
+        configData.grouping.reverseMode.group)
+    ) {
+      onStackingToggle();
+    }
   }
   analytics.trackEvent(`[ImagesExplorer] Group by ${groupName}`);
 }
@@ -797,11 +867,21 @@ function onGroupingSelectChange({
 function onGroupingModeChange({ value }: IOnGroupingModeChangeParams): void {
   const configData = model.getState()?.config;
   if (configData?.grouping) {
-    configData.grouping.reverseMode = {
-      ...configData.grouping.reverseMode,
-      group: value,
+    configData.grouping = {
+      ...configData.grouping,
+      reverseMode: {
+        ...configData.grouping.reverseMode,
+        group: value,
+      },
     };
     updateModelData(configData, true);
+    if (
+      configData.images?.additionalProperties?.stacking &&
+      (_.isEmpty(configData.grouping.group) ||
+        configData.grouping.reverseMode.group)
+    ) {
+      onStackingToggle();
+    }
   }
   analytics.trackEvent(
     `[ImagesExplorer] ${
@@ -822,6 +902,13 @@ function onGroupingReset(groupName: GroupNameType) {
       isApplied: { ...isApplied, [groupName]: true },
     };
     updateModelData(configData, true);
+    if (
+      configData.images?.additionalProperties?.stacking &&
+      (_.isEmpty(configData.grouping.group) ||
+        configData.grouping.reverseMode.group)
+    ) {
+      onStackingToggle();
+    }
   }
   analytics.trackEvent('[ImagesExplorer] Reset grouping');
 }
@@ -1003,7 +1090,7 @@ function onActivePointChange(
   focusedStateActive: boolean = false,
 ): void {
   const { refs, config } = model.getState() as any;
-  if (config.table.resizeMode !== ResizeModeEnum.Hide) {
+  if (config?.table.resizeMode !== ResizeModeEnum.Hide) {
     const tableRef: any = refs?.tableRef;
     if (tableRef && activePoint.seqKey) {
       tableRef.current?.setHoveredRow?.(activePoint.seqKey);
@@ -1148,12 +1235,13 @@ function getDataAsTableRows(
             color: metricsCollection.color ?? metric.color,
           },
           key: metric.seqKey,
+          selectKey: `${metric.run.hash}/${metric.seqKey}`,
           runHash: metric.run.hash,
           isHidden: config?.table?.hiddenMetrics?.includes(metric.key),
           index: rowIndex,
           color: metricsCollection.color ?? metric.color,
           dasharray: metricsCollection.dasharray ?? metric.dasharray,
-          experiment: metric.run.experiment?.name ?? 'default',
+          experiment: metric.run.props.experiment?.name ?? 'default',
           run: moment(metric.run.props.creation_time * 1000).format(
             'HH:mm:ss · D MMM, YY',
           ),
@@ -1254,21 +1342,6 @@ function getDataAsTableRows(
   return { rows, sameValueColumns };
 }
 
-function onNotificationDelete(id: number) {
-  let notifyData: INotification[] | [] = model.getState()?.notifyData || [];
-  notifyData = [...notifyData].filter((i) => i.id !== id);
-  model.setState({ notifyData });
-}
-
-function onNotificationAdd(notification: INotification) {
-  let notifyData: INotification[] | [] = model.getState()?.notifyData || [];
-  notifyData = [...notifyData, notification];
-  model.setState({ notifyData });
-  setTimeout(() => {
-    onNotificationDelete(notification.id);
-  }, 3000);
-}
-
 async function onBookmarkCreate({ name, description }: IBookmarkFormState) {
   const configData: IImagesExploreAppConfig | undefined =
     model.getState()?.config;
@@ -1282,15 +1355,21 @@ async function onBookmarkCreate({ name, description }: IBookmarkFormState) {
         .call();
       if (bookmark.name) {
         onNotificationAdd({
-          id: Date.now(),
-          severity: 'success',
-          message: BookmarkNotificationsEnum.CREATE,
+          notification: {
+            id: Date.now(),
+            severity: 'success',
+            message: BookmarkNotificationsEnum.CREATE,
+          },
+          model,
         });
       } else {
         onNotificationAdd({
-          id: Date.now(),
-          severity: 'error',
-          message: BookmarkNotificationsEnum.ERROR,
+          notification: {
+            id: Date.now(),
+            severity: 'error',
+            message: BookmarkNotificationsEnum.ERROR,
+          },
+          model,
         });
       }
     }
@@ -1308,9 +1387,12 @@ function onBookmarkUpdate(id: string) {
       .then((res: IDashboardData | any) => {
         if (res.id) {
           onNotificationAdd({
-            id: Date.now(),
-            severity: 'success',
-            message: BookmarkNotificationsEnum.UPDATE,
+            notification: {
+              id: Date.now(),
+              severity: 'success',
+              message: BookmarkNotificationsEnum.UPDATE,
+            },
+            model,
           });
         }
       });
@@ -1345,7 +1427,7 @@ function updateColumnsWidths(key: string, width: number, isReset: boolean) {
 }
 
 // internal function to update config.table.sortFields and cache data
-function updateSortFields(sortFields: SortField[]) {
+function updateTableSortFields(sortFields: SortFields) {
   const configData: IImagesExploreAppConfig | undefined =
     model.getState()?.config;
   if (configData?.table) {
@@ -1362,7 +1444,7 @@ function updateSortFields(sortFields: SortField[]) {
     });
 
     setItem('imagesExploreTable', encode(table));
-    updateModelData(configUpdate);
+    updateModelData(configUpdate, true);
   }
   analytics.trackEvent(
     `[ImagesExplorer][Table] ${
@@ -1370,58 +1452,94 @@ function updateSortFields(sortFields: SortField[]) {
     } table sorting by a key`,
   );
 }
+// internal function to update config.table.sortFields and cache data
+function updateImagesSortFields(sortFields: SortFields, sortFieldsDict: any) {
+  const configData: IImagesExploreAppConfig | undefined =
+    model.getState()?.config;
+  if (configData?.table) {
+    const images = {
+      ...configData.images,
+      sortFields,
+      sortFieldsDict,
+    };
+    const configUpdate = {
+      ...configData,
+      images,
+    };
+    model.setState({
+      config: configUpdate,
+    });
+
+    updateModelData(configUpdate, true);
+  }
+  analytics.trackEvent(
+    `[ImagesExplorer] ${
+      _.isEmpty(sortFields) ? 'Reset' : 'Apply'
+    } images sorting by a key`,
+  );
+}
 
 // set empty array to config.table.sortFields
 function onSortReset() {
-  updateSortFields([]);
+  updateTableSortFields([]);
+}
+
+function onImagesSortReset() {
+  updateImagesSortFields([], {});
 }
 
 /**
- * function onSortChange has 3 major functionalities
+ * function onTableSortChange has 3 major functionalities
  *    1. if only field param passed, the function will change sort option with the following cycle ('asc' -> 'desc' -> none -> 'asc)
  *    2. if value param passed 'asc' or 'desc', the function will replace the sort option of the field in sortFields
  *    3. if value param passed 'none', the function will delete the field from sortFields
  * @param {String} field  - the name of the field (i.e params.dataset.preproc)
  * @param {'asc' | 'desc' | 'none'} value - 'asc' | 'desc' | 'none'
  */
-function onSortChange(field: string, value?: 'asc' | 'desc' | 'none') {
+function onTableSortChange({
+  sortFields,
+  order,
+  index,
+  actionType,
+  field,
+}: any) {
   const configData: IImagesExploreAppConfig | undefined =
     model.getState()?.config;
-  const sortFields = configData?.table.sortFields || [];
 
-  const existField = sortFields?.find((d: SortField) => d[0] === field);
-  let newFields: SortField[] = [];
+  updateTableSortFields(
+    getSortedFields({
+      sortFields: sortFields || configData?.table.sortFields || [],
+      order,
+      index,
+      actionType,
+      field,
+    }),
+  );
+}
 
-  if (value && existField) {
-    if (value === 'none') {
-      // delete
-      newFields = sortFields?.filter(
-        ([name]: SortField) => name !== existField[0],
-      );
-    } else {
-      newFields = sortFields.map(([name, v]: SortField) =>
-        name === existField[0] ? [name, value] : [name, v],
-      );
-    }
-  } else {
-    if (existField) {
-      if (existField[1] === 'asc') {
-        // replace to desc
-        newFields = sortFields?.map(([name, value]: SortField) => {
-          return name === existField[0] ? [name, 'desc'] : [name, value];
-        });
-      } else {
-        // delete field
-        newFields = sortFields?.filter(
-          ([name]: SortField) => name !== existField[0],
-        );
-      }
-    } else {
-      // add field
-      newFields = [...sortFields, [field, 'asc']];
-    }
-  }
-  updateSortFields(newFields);
+function onImagesSortChange({
+  sortFields,
+  order,
+  index,
+  actionType,
+  field,
+}: any) {
+  const configData: IImagesExploreAppConfig | undefined =
+    model.getState()?.config;
+  const resultSortFields = getSortedFields({
+    sortFields: sortFields || configData?.images.sortFields || [],
+    order,
+    index,
+    actionType,
+    field,
+  });
+  updateImagesSortFields(
+    resultSortFields,
+    resultSortFields.reduce((acc: any, field: any) => {
+      acc[field.value] = field;
+      return acc;
+    }, {}),
+  );
 }
 
 function onExportTableData(e: React.ChangeEvent<any>): void {
@@ -1436,11 +1554,12 @@ function onExportTableData(e: React.ChangeEvent<any>): void {
   );
   const tableColumns: ITableColumn[] = getImagesExploreTableColumns(
     params,
+    groupingSelectOptions,
     data[0]?.config,
     config?.table.columnsOrder!,
     config?.table.hiddenColumns!,
     config?.table.sortFields,
-    onSortChange,
+    onTableSortChange,
   );
 
   const excludedFields: string[] = ['#', 'actions'];
@@ -1596,9 +1715,12 @@ function onSearchQueryCopy(): void {
   if (query) {
     navigator.clipboard.writeText(query);
     onNotificationAdd({
-      id: Date.now(),
-      severity: 'success',
-      message: 'Run Expression Copied',
+      notification: {
+        id: Date.now(),
+        severity: 'success',
+        message: 'Run Expression Copied',
+      },
+      model,
     });
   }
 }
@@ -1921,7 +2043,6 @@ function onImageRenderingChange(type: ImageRenderingEnum) {
       ...configData.images,
       additionalProperties: {
         ...configData.images.additionalProperties,
-
         imageRendering: type,
       },
     };
@@ -1954,9 +2075,7 @@ function onImageAlignmentChange(
       images,
     };
     updateURL(config as IImagesExploreAppConfig);
-    model.setState({
-      config,
-    });
+    model.setState({ config });
   }
 }
 
@@ -1965,6 +2084,118 @@ function showRangePanel() {
     model.getState().requestStatus !== RequestStatusEnum.Pending &&
     !model.getState().queryIsEmpty
   );
+}
+
+function archiveRuns(
+  ids: string[],
+  archived: boolean,
+): {
+  call: () => Promise<void>;
+  abort: () => void;
+} {
+  runsArchiveRef = runsService.archiveRuns(ids, archived);
+  return {
+    call: async () => {
+      try {
+        await runsArchiveRef
+          .call((detail) => exceptionHandler({ detail, model }))
+          .then(() => {
+            getImagesData(false, true).call();
+            onNotificationAdd({
+              notification: {
+                id: Date.now(),
+                severity: 'success',
+                message: `Runs are successfully ${
+                  archived ? 'archived' : 'unarchived'
+                } `,
+              },
+              model,
+            });
+          });
+      } catch (ex: Error | any) {
+        if (ex.name === 'AbortError') {
+          onNotificationAdd({
+            notification: {
+              id: Date.now(),
+              severity: 'error',
+              message: ex.message,
+            },
+            model,
+          });
+        }
+      }
+    },
+    abort: runsArchiveRef.abort,
+  };
+}
+
+function deleteRuns(ids: string[]): {
+  call: () => Promise<void>;
+  abort: () => void;
+} {
+  runsDeleteRef = runsService.deleteRuns(ids);
+  return {
+    call: async () => {
+      try {
+        await runsDeleteRef
+          .call((detail) => exceptionHandler({ detail, model }))
+          .then(() => {
+            getImagesData(false, true).call();
+            onNotificationAdd({
+              notification: {
+                id: Date.now(),
+                severity: 'success',
+                message: 'Runs are successfully deleted',
+              },
+              model,
+            });
+          });
+      } catch (ex: Error | any) {
+        if (ex.name === 'AbortError') {
+          onNotificationAdd({
+            notification: {
+              id: Date.now(),
+              severity: 'error',
+              message: ex.message,
+            },
+            model,
+          });
+        }
+      }
+    },
+    abort: runsDeleteRef.abort,
+  };
+}
+
+function onRowSelect({
+  actionType,
+  data,
+}: {
+  actionType: 'single' | 'selectAll' | 'removeAll';
+  data?: any;
+}): void {
+  return onRowSelectAction({ actionType, data, model });
+}
+
+function onModelNotificationDelete(id: number): void {
+  onNotificationDelete({ id, model });
+}
+
+function onStackingToggle(): void {
+  const configData: IImagesExploreAppConfig | undefined =
+    model.getState()?.config;
+  if (configData?.images) {
+    const images = {
+      ...configData.images,
+      additionalProperties: {
+        ...configData.images.additionalProperties,
+        stacking: !configData.images.additionalProperties.stacking,
+      },
+    };
+    const config = { ...configData, images };
+    updateURL(config as IImagesExploreAppConfig);
+    model.setState({ config });
+  }
 }
 
 const imagesExploreAppModel = {
@@ -1977,7 +2208,7 @@ const imagesExploreAppModel = {
   onGroupingModeChange,
   onGroupingReset,
   onGroupingApplyChange,
-  onNotificationDelete,
+  onNotificationDelete: onModelNotificationDelete,
   onNotificationAdd,
   onResetConfigData,
   updateURL,
@@ -1987,7 +2218,7 @@ const imagesExploreAppModel = {
   getAppConfigData,
   setDefaultAppConfigData,
   updateColumnsWidths,
-  onSortChange,
+  onTableSortChange,
   onSortReset,
   onExportTableData,
   onRowVisibilityChange,
@@ -2016,6 +2247,12 @@ const imagesExploreAppModel = {
   showRangePanel,
   getGroupingSelectOptions,
   getDataAsImageSet,
+  onStackingToggle,
+  onImagesSortChange,
+  onImagesSortReset,
+  deleteRuns,
+  archiveRuns,
+  onRowSelect,
 };
 
 export default imagesExploreAppModel;

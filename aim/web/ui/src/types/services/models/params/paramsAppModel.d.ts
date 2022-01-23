@@ -41,6 +41,7 @@ export interface IParamsAppModelState {
   groupingSelectOptions: IGroupingSelectOption[];
   metricsColumns: any;
   selectFormOptions: ISelectOption[];
+  selectedRows?: any;
 }
 
 export interface IParam {

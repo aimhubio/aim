@@ -3,7 +3,6 @@ import { saveAs } from 'file-saver';
 import _ from 'lodash-es';
 
 import { HighlightEnum } from 'components/HighlightModesPopover/HighlightModesPopover';
-import { ZoomEnum } from 'components/ZoomInPopover/ZoomInPopover';
 import { IPoint } from 'components/ScatterPlot';
 
 import COLORS from 'config/colors/colors';
@@ -29,7 +28,6 @@ import {
 } from 'pages/Runs/components/RunsTableGrid/RunsTableGrid';
 
 import * as analytics from 'services/analytics';
-import appsService from 'services/api/apps/appsService';
 import metricsService from 'services/api/metrics/metricsService';
 import runsService from 'services/api/runs/runsService';
 import createMetricModel from 'services/models/metrics/metricModel';
@@ -57,7 +55,6 @@ import {
   IOnGroupingSelectChangeParams,
   IPanelTooltip,
   ITooltipData,
-  SortField,
 } from 'types/services/models/metrics/metricsAppModel';
 import {
   IMetricTrace,
@@ -88,11 +85,7 @@ import {
   ITrendlineOptions,
 } from 'types/services/models/scatter/scatterAppModel';
 
-import {
-  aggregateGroupData,
-  AggregationAreaMethods,
-  AggregationLineMethods,
-} from 'utils/aggregateGroupData';
+import { aggregateGroupData } from 'utils/aggregateGroupData';
 import exceptionHandler from 'utils/app/exceptionHandler';
 import getAggregatedData from 'utils/app/getAggregatedData';
 import getChartTitleData from 'utils/app/getChartTitleData';
@@ -141,13 +134,7 @@ import toggleSelectAdvancedMode from 'utils/app/toggleSelectAdvancedMode';
 import updateColumnsWidths from 'utils/app/updateColumnsWidths';
 import updateSortFields from 'utils/app/updateTableSortFields';
 import contextToString from 'utils/contextToString';
-import {
-  AlignmentOptionsEnum,
-  ChartTypeEnum,
-  CurveEnum,
-  ScaleEnum,
-  TrendlineTypeEnum,
-} from 'utils/d3';
+import { AlignmentOptionsEnum, ChartTypeEnum, ScaleEnum } from 'utils/d3';
 import {
   adjustable_reader,
   decode_buffer_pairs,
@@ -162,7 +149,6 @@ import getClosestValue from 'utils/getClosestValue';
 import getObjectPaths from 'utils/getObjectPaths';
 import getSmoothenedData from 'utils/getSmoothenedData';
 import JsonToCSV from 'utils/JsonToCSV';
-import { SmoothingAlgorithmEnum } from 'utils/smoothingData';
 import { setItem } from 'utils/storage';
 import { encode } from 'utils/encoder/encoder';
 import onBookmarkCreate from 'utils/app/onBookmarkCreate';
@@ -182,6 +168,8 @@ import getAppConfigData from 'utils/app/getAppConfigData';
 import { getValue } from 'utils/helper';
 import { formatSystemMetricName } from 'utils/formatSystemMetricName';
 import alphabeticalSortComparator from 'utils/alphabeticalSortComparator';
+import onRowSelect from 'utils/app/onRowSelect';
+import { SortField } from 'utils/getSortedFields';
 import onChangeTrendlineOptions from 'utils/app/onChangeTrendlineOptions';
 
 import { AppDataTypeEnum, AppNameEnum } from './index';
@@ -460,6 +448,14 @@ function createAppModel(appConfig: IAppInitialConfig) {
       ) => Promise<ReadableStream<IRun<IMetricTrace>[]>>;
       abort: () => void;
     };
+    let runsArchiveRef: {
+      call: (exceptionHandler: (detail: any) => void) => Promise<any>;
+      abort: () => void;
+    };
+    let runsDeleteRef: {
+      call: (exceptionHandler: (detail: any) => void) => Promise<any>;
+      abort: () => void;
+    };
     let tooltipData: ITooltipData = {};
     let liveUpdateInstance: LiveUpdateService | null;
 
@@ -583,7 +579,10 @@ function createAppModel(appConfig: IAppInitialConfig) {
       });
     }
 
-    function getMetricsData(shouldUrlUpdate?: boolean): {
+    function getMetricsData(
+      shouldUrlUpdate?: boolean,
+      shouldResetSelectedRows?: boolean,
+    ): {
       call: () => Promise<void>;
       abort: () => void;
     } {
@@ -621,15 +620,20 @@ function createAppModel(appConfig: IAppInitialConfig) {
                 },
               };
             }
-
             model.setState({
               queryIsEmpty: true,
+              selectedRows: shouldResetSelectedRows
+                ? {}
+                : model.getState()?.selectedRows,
               ...state,
             });
           } else {
             model.setState({
               requestStatus: RequestStatusEnum.Pending,
               queryIsEmpty: false,
+              selectedRows: shouldResetSelectedRows
+                ? {}
+                : model.getState()?.selectedRows,
             });
             liveUpdateInstance?.stop().then();
             try {
@@ -747,6 +751,7 @@ function createAppModel(appConfig: IAppInitialConfig) {
                 color: metricsCollection.color ?? metric.color,
               },
               key: metric.key,
+              selectKey: `${metric.run.hash}/${metric.key}`,
               runHash: metric.run.hash,
               isHidden: metric.isHidden,
               index: rowIndex,
@@ -901,8 +906,10 @@ function createAppModel(appConfig: IAppInitialConfig) {
       params: string[];
       highLevelParams: string[];
       contexts: string[];
+      selectedRows: any;
     } {
       const configData = model.getState()?.config;
+      let selectedRows = model.getState()?.selectedRows;
       let metrics: IMetric[] = [];
       let index: number = -1;
       let params: string[] = [];
@@ -968,27 +975,60 @@ function createAppModel(appConfig: IAppInitialConfig) {
         );
       });
 
+      let sortFields = configData?.table?.sortFields ?? [];
+
+      if (sortFields?.length === 0) {
+        sortFields = [
+          {
+            value: 'run.props.creation_time',
+            order: 'desc',
+            label: '',
+            group: '',
+          },
+        ];
+      }
+
       const processedData = groupData(
         _.orderBy(
           metrics,
-          configData?.table?.sortFields?.map(
+          sortFields?.map(
             (f: SortField) =>
               function (metric: IMetric) {
-                return getValue(metric, f[0], '');
+                return getValue(metric, f.value, '');
               },
-          ) ?? [],
-          configData?.table?.sortFields?.map((f: SortField) => f[1]) ?? [],
+          ),
+          sortFields?.map((f: SortField) => f.order),
         ),
       );
       const uniqParams = _.uniq(params);
       const uniqHighLevelParams = _.uniq(highLevelParams);
       const uniqContexts = _.uniq(contexts);
 
+      const mappedData =
+        data.reduce((acc: any, item: any) => {
+          acc[item.hash] = { runHash: item.hash, ...item.props };
+          return acc;
+        }, {}) || {};
+      if (selectedRows && !_.isEmpty(selectedRows)) {
+        selectedRows = Object.keys(selectedRows).reduce(
+          (acc: any, key: string) => {
+            const slicedKey = key.slice(0, key.indexOf('/'));
+            acc[key] = {
+              selectKey: key,
+              ...mappedData[slicedKey],
+            };
+            return acc;
+          },
+          {},
+        );
+      }
+
       return {
         data: processedData,
         params: uniqParams,
         highLevelParams: uniqHighLevelParams,
         contexts: uniqContexts,
+        selectedRows,
       };
     }
 
@@ -996,14 +1036,14 @@ function createAppModel(appConfig: IAppInitialConfig) {
       configData = model.getState()!.config!,
       shouldURLUpdate?: boolean,
     ): void {
-      const { data, params, highLevelParams, contexts } = processData(
-        model.getState()?.rawData as ISequence<IMetricTrace>[],
-      );
+      const { data, params, highLevelParams, contexts, selectedRows } =
+        processData(model.getState()?.rawData as ISequence<IMetricTrace>[]);
       const sortedParams = params.concat(highLevelParams).sort();
       const groupingSelectOptions = [
         ...getGroupingSelectOptions({
           params: sortedParams,
           contexts,
+          sequenceName: 'metric',
         }),
       ];
       tooltipData = getTooltipData({
@@ -1024,6 +1064,7 @@ function createAppModel(appConfig: IAppInitialConfig) {
 
       const tableColumns = getMetricsTableColumns(
         params,
+        groupingSelectOptions,
         data[0]?.config,
         configData.table?.columnsOrder!,
         configData.table?.hiddenColumns!,
@@ -1064,6 +1105,7 @@ function createAppModel(appConfig: IAppInitialConfig) {
         tableColumns,
         sameValueColumns: tableData.sameValueColumns,
         groupingSelectOptions,
+        selectedRows,
       });
     }
 
@@ -1072,7 +1114,8 @@ function createAppModel(appConfig: IAppInitialConfig) {
       configData: IAppModelConfig,
     ): void {
       const sortFields = model.getState()?.config?.table?.sortFields;
-      const { data, params, highLevelParams, contexts } = processData(rawData);
+      const { data, params, highLevelParams, contexts, selectedRows } =
+        processData(rawData);
       if (configData) {
         setAggregationEnabled({ model, appName });
       }
@@ -1081,6 +1124,7 @@ function createAppModel(appConfig: IAppInitialConfig) {
         ...getGroupingSelectOptions({
           params: sortedParams,
           contexts,
+          sequenceName: 'metric',
         }),
       ];
       tooltipData = getTooltipData({
@@ -1101,6 +1145,7 @@ function createAppModel(appConfig: IAppInitialConfig) {
 
       const tableColumns = getMetricsTableColumns(
         params,
+        groupingSelectOptions,
         data[0]?.config,
         configData.table?.columnsOrder!,
         configData.table?.hiddenColumns!,
@@ -1139,6 +1184,7 @@ function createAppModel(appConfig: IAppInitialConfig) {
         tableColumns: tableColumns,
         sameValueColumns: tableData.sameValueColumns,
         groupingSelectOptions,
+        selectedRows,
       });
     }
 
@@ -1539,6 +1585,7 @@ function createAppModel(appConfig: IAppInitialConfig) {
       );
       const tableColumns: ITableColumn[] = getMetricsTableColumns(
         params,
+        groupingSelectOptions,
         data[0]?.config,
         config?.table?.columnsOrder!,
         config?.table?.hiddenColumns!,
@@ -1703,11 +1750,23 @@ function createAppModel(appConfig: IAppInitialConfig) {
       onResetConfigData({ model, getConfig, updateModelData });
     }
 
-    function onSortChange(
-      field: string,
-      value?: 'asc' | 'desc' | 'none',
-    ): void {
-      onTableSortChange({ field, model, appName, updateModelData, value });
+    function onSortChange({
+      sortFields,
+      order,
+      index,
+      actionType,
+      field,
+    }: any): void {
+      onTableSortChange({
+        field,
+        sortFields,
+        order,
+        index,
+        actionType,
+        model,
+        appName,
+        updateModelData,
+      });
     }
 
     function setModelComponentRefs(refElement: object): void {
@@ -1763,6 +1822,87 @@ function createAppModel(appConfig: IAppInitialConfig) {
       liveUpdateInstance = null; //@TODO check is this need or not
     }
 
+    function archiveRuns(
+      ids: string[],
+      archived: boolean,
+    ): {
+      call: () => Promise<void>;
+      abort: () => void;
+    } {
+      runsArchiveRef = runsService.archiveRuns(ids, archived);
+      return {
+        call: async () => {
+          try {
+            await runsArchiveRef
+              .call((detail) => exceptionHandler({ detail, model }))
+              .then(() => {
+                getMetricsData(false, true).call();
+                onNotificationAdd({
+                  notification: {
+                    id: Date.now(),
+                    severity: 'success',
+                    message: `Runs are successfully ${
+                      archived ? 'archived' : 'unarchived'
+                    } `,
+                  },
+                  model,
+                });
+              });
+          } catch (ex: Error | any) {
+            if (ex.name === 'AbortError') {
+              onNotificationAdd({
+                notification: {
+                  id: Date.now(),
+                  severity: 'error',
+                  message: ex.message,
+                },
+                model,
+              });
+            }
+          }
+        },
+        abort: runsArchiveRef.abort,
+      };
+    }
+
+    function deleteRuns(ids: string[]): {
+      call: () => Promise<void>;
+      abort: () => void;
+    } {
+      runsDeleteRef = runsService.deleteRuns(ids);
+      return {
+        call: async () => {
+          try {
+            await runsDeleteRef
+              .call((detail) => exceptionHandler({ detail, model }))
+              .then(() => {
+                getMetricsData(false, true).call();
+                onNotificationAdd({
+                  notification: {
+                    id: Date.now(),
+                    severity: 'success',
+                    message: 'Runs are successfully deleted',
+                  },
+                  model,
+                });
+              });
+          } catch (ex: Error | any) {
+            if (ex.name === 'AbortError') {
+              onNotificationAdd({
+                notification: {
+                  id: Date.now(),
+                  severity: 'error',
+                  message: ex.message,
+                },
+                model,
+              });
+            }
+          }
+        },
+        abort: runsDeleteRef.abort,
+      };
+    }
+
     const methods = {
       initialize,
       getAppConfigData: getModelAppConfigData,
@@ -1783,6 +1923,8 @@ function createAppModel(appConfig: IAppInitialConfig) {
       onSearchQueryCopy,
       changeLiveUpdateConfig,
       destroy,
+      deleteRuns,
+      archiveRuns,
     };
 
     if (grouping) {
@@ -1970,6 +2112,15 @@ function createAppModel(appConfig: IAppInitialConfig) {
             updateModelData,
           });
         },
+        onRowSelect({
+          actionType,
+          data,
+        }: {
+          actionType: 'single' | 'selectAll' | 'removeAll';
+          data?: any;
+        }): void {
+          return onRowSelect({ actionType, data, model });
+        },
       });
     }
 
@@ -1993,6 +2144,14 @@ function createAppModel(appConfig: IAppInitialConfig) {
         call: (
           exceptionHandler: (detail: any) => void,
         ) => Promise<ReadableStream<IRun<IParamTrace>[]>>;
+        abort: () => void;
+      };
+      let runsArchiveRef: {
+        call: (exceptionHandler: (detail: any) => void) => Promise<any>;
+        abort: () => void;
+      };
+      let runsDeleteRef: {
+        call: (exceptionHandler: (detail: any) => void) => Promise<any>;
         abort: () => void;
       };
       let liveUpdateInstance: LiveUpdateService | null;
@@ -2055,6 +2214,7 @@ function createAppModel(appConfig: IAppInitialConfig) {
 
       function getRunsData(
         shouldUrlUpdate?: boolean,
+        shouldResetSelectedRows?: boolean,
         isInitial = true,
       ): {
         call: () => Promise<void>;
@@ -2109,7 +2269,8 @@ function createAppModel(appConfig: IAppInitialConfig) {
                 }
                 count++;
               }
-              const { data, params, metricsColumns } = processData(runsData);
+              const { data, params, metricsColumns, selectedRows } =
+                processData(runsData);
 
               const tableData = getDataAsTableRows(
                 data,
@@ -2126,6 +2287,9 @@ function createAppModel(appConfig: IAppInitialConfig) {
 
               model.setState({
                 data,
+                selectedRows: shouldResetSelectedRows
+                  ? {}
+                  : selectedRows ?? model.getState()?.selectedRows,
                 rawData: runsData,
                 requestStatus: RequestStatusEnum.Ok,
                 infiniteIsPending: false,
@@ -2156,6 +2320,10 @@ function createAppModel(appConfig: IAppInitialConfig) {
                 console.log('Unhandled error: ', ex);
               }
             }
+            liveUpdateInstance?.start({
+              q: query,
+              limit: pagination.limit + model.getState()?.rawData?.length || 0,
+            });
           },
           abort: runsRequestRef.abort,
         };
@@ -2165,7 +2333,7 @@ function createAppModel(appConfig: IAppInitialConfig) {
         configData = model.getState()!.config!,
         shouldURLUpdate?: boolean,
       ): void {
-        const { data, params, metricsColumns } = processData(
+        const { data, params, metricsColumns, selectedRows } = processData(
           model.getState()?.rawData as IRun<IMetricTrace>[],
         );
         const tableData = getDataAsTableRows(data, metricsColumns, params);
@@ -2188,6 +2356,7 @@ function createAppModel(appConfig: IAppInitialConfig) {
           tableData: tableData.rows,
           tableColumns,
           sameValueColumns: tableData.sameValueColumns,
+          selectedRows,
         });
       }
 
@@ -2225,8 +2394,10 @@ function createAppModel(appConfig: IAppInitialConfig) {
         data: any[];
         params: string[];
         metricsColumns: any;
+        selectedRows: any;
       } {
         const grouping = model.getState()?.config?.grouping;
+        let selectedRows = model.getState()?.selectedRows;
         let runs: IParam[] = [];
         let params: string[] = [];
         const paletteIndex: number = grouping?.paletteIndex || 0;
@@ -2250,11 +2421,29 @@ function createAppModel(appConfig: IAppInitialConfig) {
         });
         const processedData = groupData(runs);
         const uniqParams = _.uniq(params);
-
+        const mappedData =
+          data.reduce((acc: any, item: any) => {
+            acc[item.hash] = { runHash: item.hash, ...item.props };
+            return acc;
+          }, {}) || {};
+        if (selectedRows && !_.isEmpty(selectedRows)) {
+          selectedRows = Object.keys(selectedRows).reduce(
+            (acc: any, key: string) => {
+              const slicedKey = key.slice(0, key.indexOf('/'));
+              acc[key] = {
+                selectKey: key,
+                ...mappedData[slicedKey],
+              };
+              return acc;
+            },
+            {},
+          );
+        }
         return {
           data: processedData,
           params: uniqParams,
           metricsColumns,
+          selectedRows,
         };
       }
 
@@ -2472,11 +2661,12 @@ function createAppModel(appConfig: IAppInitialConfig) {
             });
             const rowValues: any = {
               key: metric.key,
+              selectKey: `${metric.run.hash}/${metric.key}`,
               runHash: metric.run.hash,
               index: rowIndex,
               color: metricsCollection.color ?? metric.color,
               dasharray: metricsCollection.dasharray ?? metric.dasharray,
-              experiment: metric.run.props.experiment.name ?? 'default',
+              experiment: metric.run.props.experiment?.name ?? 'default',
               run: moment(metric.run.props.creation_time * 1000).format(
                 'HH:mm:ss · D MMM, YY',
               ),
@@ -2573,7 +2763,7 @@ function createAppModel(appConfig: IAppInitialConfig) {
               },
             },
           });
-          return getRunsData(false, false);
+          return getRunsData(false, false, false);
         }
       }
 
@@ -2649,7 +2839,8 @@ function createAppModel(appConfig: IAppInitialConfig) {
       }
 
       function updateData(newData: any): void {
-        const { data, params, metricsColumns } = processData(newData);
+        const { data, params, metricsColumns, selectedRows } =
+          processData(newData);
         const modelState = model.getState() as IRunsAppModelState;
         const tableData = getDataAsTableRows(data, metricsColumns, params);
         const tableColumns = getRunsTableColumns(
@@ -2666,6 +2857,7 @@ function createAppModel(appConfig: IAppInitialConfig) {
           infiniteIsPending: false,
           tableColumns,
           tableData: tableData.rows,
+          selectedRows,
           sameValueColumns: tableData.sameValueColumns,
           config: {
             ...modelState?.config,
@@ -2733,6 +2925,87 @@ function createAppModel(appConfig: IAppInitialConfig) {
         );
       }
 
+      function archiveRuns(
+        ids: string[],
+        archived: boolean,
+      ): {
+        call: () => Promise<void>;
+        abort: () => void;
+      } {
+        runsArchiveRef = runsService.archiveRuns(ids, archived);
+        return {
+          call: async () => {
+            try {
+              await runsArchiveRef
+                .call((detail) => exceptionHandler({ detail, model }))
+                .then(() => {
+                  getRunsData(false, true).call();
+                  onNotificationAdd({
+                    notification: {
+                      id: Date.now(),
+                      severity: 'success',
+                      message: `Runs are successfully ${
+                        archived ? 'archived' : 'unarchived'
+                      } `,
+                    },
+                    model,
+                  });
+                });
+            } catch (ex: Error | any) {
+              if (ex.name === 'AbortError') {
+                onNotificationAdd({
+                  notification: {
+                    id: Date.now(),
+                    severity: 'error',
+                    message: ex.message,
+                  },
+                  model,
+                });
+              }
+            }
+          },
+          abort: runsArchiveRef.abort,
+        };
+      }
+
+      function deleteRuns(ids: string[]): {
+        call: () => Promise<void>;
+        abort: () => void;
+      } {
+        runsDeleteRef = runsService.deleteRuns(ids);
+        return {
+          call: async () => {
+            try {
+              await runsDeleteRef
+                .call((detail) => exceptionHandler({ detail, model }))
+                .then(() => {
+                  getRunsData(false, true).call();
+                  onNotificationAdd({
+                    notification: {
+                      id: Date.now(),
+                      severity: 'success',
+                      message: 'Runs are successfully deleted',
+                    },
+                    model,
+                  });
+                });
+            } catch (ex: Error | any) {
+              if (ex.name === 'AbortError') {
+                onNotificationAdd({
+                  notification: {
+                    id: Date.now(),
+                    severity: 'error',
+                    message: ex.message,
+                  },
+                  model,
+                });
+              }
+            }
+          },
+          abort: runsDeleteRef.abort,
+        };
+      }
+
       const methods = {
         destroy,
         initialize,
@@ -2743,6 +3016,8 @@ function createAppModel(appConfig: IAppInitialConfig) {
         onNotificationDelete: onModelNotificationDelete,
         setDefaultAppConfigData: setModelDefaultAppConfigData,
         changeLiveUpdateConfig,
+        archiveRuns,
+        deleteRuns,
       };
 
       if (grouping) {
@@ -2804,6 +3079,15 @@ function createAppModel(appConfig: IAppInitialConfig) {
               updateModelData,
             });
           },
+          onRowSelect({
+            actionType,
+            data,
+          }: {
+            actionType: 'single' | 'selectAll' | 'removeAll';
+            data?: any;
+          }): void {
+            return onRowSelect({ actionType, data, model });
+          },
         });
       }
 
@@ -2815,6 +3099,14 @@ function createAppModel(appConfig: IAppInitialConfig) {
         call: (
           exceptionHandler: (detail: any) => void,
         ) => Promise<ReadableStream<IRun<IParamTrace>[]>>;
+        abort: () => void;
+      };
+      let runsArchiveRef: {
+        call: (exceptionHandler: (detail: any) => void) => Promise<any>;
+        abort: () => void;
+      };
+      let runsDeleteRef: {
+        call: (exceptionHandler: (detail: any) => void) => Promise<any>;
         abort: () => void;
       };
       let tooltipData: ITooltipData = {};
@@ -2952,7 +3244,10 @@ function createAppModel(appConfig: IAppInitialConfig) {
         });
       }
 
-      function getParamsData(shouldUrlUpdate?: boolean): {
+      function getParamsData(
+        shouldUrlUpdate?: boolean,
+        shouldResetSelectedRows?: boolean,
+      ): {
         call: () => Promise<void>;
         abort: () => void;
       } {
@@ -2993,12 +3288,18 @@ function createAppModel(appConfig: IAppInitialConfig) {
               model.setState({
                 // requestStatus: RequestStatusEnum.Ok,
                 queryIsEmpty: true,
+                selectedRows: shouldResetSelectedRows
+                  ? {}
+                  : model.getState()?.selectedRows,
                 ...state,
               });
             } else {
               model.setState({
                 requestStatus: RequestStatusEnum.Pending,
                 queryIsEmpty: false,
+                selectedRows: shouldResetSelectedRows
+                  ? {}
+                  : model.getState()?.selectedRows,
               });
               liveUpdateInstance?.stop().then();
               try {
@@ -3007,10 +3308,6 @@ function createAppModel(appConfig: IAppInitialConfig) {
                 );
                 const runData = await getRunData(stream);
                 updateData(runData);
-
-                liveUpdateInstance?.start({
-                  q: configData?.select?.query,
-                });
               } catch (ex: Error | any) {
                 if (ex.name === 'AbortError') {
                   // Abort Error
@@ -3018,6 +3315,9 @@ function createAppModel(appConfig: IAppInitialConfig) {
                   console.log('Unhandled error: ', ex);
                 }
               }
+              liveUpdateInstance?.start({
+                q: configData?.select?.query,
+              });
             }
           },
           abort: runsRequestRef.abort,
@@ -3118,6 +3418,7 @@ function createAppModel(appConfig: IAppInitialConfig) {
                   color: metricsCollection.color ?? metric.color,
                 },
                 key: metric.key,
+                selectKey: `${metric.run.hash}/${metric.key}`,
                 runHash: metric.run.hash,
                 isHidden: metric.isHidden,
                 index: rowIndex,
@@ -3373,7 +3674,7 @@ function createAppModel(appConfig: IAppInitialConfig) {
         rawData: IRun<IParamTrace>[],
         configData: IAppModelConfig,
       ): void {
-        const { data, params, highLevelParams, metricsColumns } =
+        const { data, params, highLevelParams, metricsColumns, selectedRows } =
           processData(rawData);
         const sortedParams = params.concat(highLevelParams).sort();
         const groupingSelectOptions = [
@@ -3381,7 +3682,6 @@ function createAppModel(appConfig: IAppInitialConfig) {
             params: sortedParams,
           }),
         ];
-
         tooltipData = getTooltipData({
           processedData: data,
           paramKeys: sortedParams,
@@ -3389,7 +3689,6 @@ function createAppModel(appConfig: IAppInitialConfig) {
           groupingItems: ['color', 'stroke', 'chart'],
           model,
         });
-
         const tableData = getDataAsTableRows(
           data,
           metricsColumns,
@@ -3429,6 +3728,7 @@ function createAppModel(appConfig: IAppInitialConfig) {
             model: model as IModel<IParamsAppModelState>,
           }),
           params,
+          selectedRows,
           metricsColumns,
           rawData,
           config: configData,
@@ -3580,8 +3880,10 @@ function createAppModel(appConfig: IAppInitialConfig) {
         params: string[];
         highLevelParams: string[];
         metricsColumns: any;
+        selectedRows: any;
       } {
         const configData = model.getState()?.config;
+        let selectedRows = model.getState()?.selectedRows;
         const grouping = model.getState()?.config?.grouping;
         let runs: IParam[] = [];
         let params: string[] = [];
@@ -3609,26 +3911,57 @@ function createAppModel(appConfig: IAppInitialConfig) {
           });
         });
 
+        let sortFields = configData?.table?.sortFields ?? [];
+
+        if (sortFields?.length === 0) {
+          sortFields = [
+            {
+              value: 'run.props.creation_time',
+              order: 'desc',
+              label: '',
+              group: '',
+            },
+          ];
+        }
+
         const processedData = groupData(
           _.orderBy(
             runs,
-            configData?.table?.sortFields?.map(
+            sortFields?.map(
               (f: SortField) =>
                 function (run: IParam) {
-                  return getValue(run, f[0], '');
+                  return getValue(run, f.value, '');
                 },
-            ) ?? [],
-            configData?.table?.sortFields?.map((f: SortField) => f[1]) ?? [],
+            ),
+            sortFields?.map((f: SortField) => f.order),
           ),
         );
         const uniqParams = _.uniq(params);
         const uniqHighLevelParams = _.uniq(highLevelParams);
-
+        const mappedData =
+          data.reduce((acc: any, item: any) => {
+            acc[item.hash] = { runHash: item.hash, ...item.props };
+            return acc;
+          }, {}) || {};
+        if (selectedRows && !_.isEmpty(selectedRows)) {
+          selectedRows = Object.keys(selectedRows).reduce(
+            (acc: any, key: string) => {
+              const slicedKey = key.slice(0, key.indexOf('/'));
+              acc[key] = {
+                selectKey: key,
+                ...mappedData[slicedKey],
+              };
+              return acc;
+            },
+            {},
+          );
+        }
         return {
           data: processedData,
           params: uniqParams,
           highLevelParams: uniqHighLevelParams,
           metricsColumns,
+          selectedRows,
         };
       }
 
@@ -3754,9 +4087,8 @@ function createAppModel(appConfig: IAppInitialConfig) {
         configData = model.getState()!.config!,
         shouldURLUpdate?: boolean,
       ): void {
-        const { data, params, highLevelParams, metricsColumns } = processData(
-          model.getState()?.rawData as IRun<IParamTrace>[],
-        );
+        const { data, params, highLevelParams, metricsColumns, selectedRows } =
+          processData(model.getState()?.rawData as IRun<IParamTrace>[]);
         const sortedParams = params.concat(highLevelParams).sort();
         const groupingSelectOptions = [
           ...getGroupingSelectOptions({
@@ -3813,6 +4145,7 @@ function createAppModel(appConfig: IAppInitialConfig) {
           tableData: tableData.rows,
           tableColumns,
           sameValueColumns: tableData.sameValueColumns,
+          selectedRows,
         });
       }
 
@@ -3857,11 +4190,23 @@ function createAppModel(appConfig: IAppInitialConfig) {
         onResetConfigData({ model, getConfig, updateModelData });
       }
 
-      function onSortChange(
-        field: string,
-        value?: 'asc' | 'desc' | 'none',
-      ): void {
-        onTableSortChange({ field, model, appName, updateModelData, value });
+      function onSortChange({
+        sortFields,
+        order,
+        index,
+        actionType,
+        field,
+      }: any): void {
+        onTableSortChange({
+          sortFields,
+          order,
+          index,
+          field,
+          actionType,
+          model,
+          appName,
+          updateModelData,
+        });
       }
 
       function changeLiveUpdateConfig(config: {
@@ -3910,6 +4255,87 @@ function createAppModel(appConfig: IAppInitialConfig) {
         liveUpdateInstance = null; //@TODO check is this need or not
       }
 
+      function archiveRuns(
+        ids: string[],
+        archived: boolean,
+      ): {
+        call: () => Promise<void>;
+        abort: () => void;
+      } {
+        runsArchiveRef = runsService.archiveRuns(ids, archived);
+        return {
+          call: async () => {
+            try {
+              await runsArchiveRef
+                .call((detail) => exceptionHandler({ detail, model }))
+                .then(() => {
+                  getParamsData(false, true).call();
+                  onNotificationAdd({
+                    notification: {
+                      id: Date.now(),
+                      severity: 'success',
+                      message: `Runs are successfully ${
+                        archived ? 'archived' : 'unarchived'
+                      } `,
+                    },
+                    model,
+                  });
+                });
+            } catch (ex: Error | any) {
+              if (ex.name === 'AbortError') {
+                onNotificationAdd({
+                  notification: {
+                    id: Date.now(),
+                    severity: 'error',
+                    message: ex.message,
+                  },
+                  model,
+                });
+              }
+            }
+          },
+          abort: runsArchiveRef.abort,
+        };
+      }
+
+      function deleteRuns(ids: string[]): {
+        call: () => Promise<void>;
+        abort: () => void;
+      } {
+        runsDeleteRef = runsService.deleteRuns(ids);
+        return {
+          call: async () => {
+            try {
+              await runsDeleteRef
+                .call((detail) => exceptionHandler({ detail, model }))
+                .then(() => {
+                  getParamsData(false, true).call();
+                  onNotificationAdd({
+                    notification: {
+                      id: Date.now(),
+                      severity: 'success',
+                      message: 'Runs are successfully deleted',
+                    },
+                    model,
+                  });
+                });
+            } catch (ex: Error | any) {
+              if (ex.name === 'AbortError') {
+                onNotificationAdd({
+                  notification: {
+                    id: Date.now(),
+                    severity: 'error',
+                    message: ex.message,
+                  },
+                  model,
+                });
+              }
+            }
+          },
+          abort: runsDeleteRef.abort,
+        };
+      }
+
       const methods = {
         initialize,
         getAppConfigData: getModelAppConfigData,
@@ -3924,9 +4350,12 @@ function createAppModel(appConfig: IAppInitialConfig) {
         onNotificationAdd: onModelNotificationAdd,
         onNotificationDelete: onModelNotificationDelete,
         onResetConfigData: onModelResetConfigData,
+        onSortChange,
         destroy,
         changeLiveUpdateConfig,
         onShuffleChange,
+        deleteRuns,
+        archiveRuns,
       };
 
       if (grouping) {
@@ -4063,6 +4492,15 @@ function createAppModel(appConfig: IAppInitialConfig) {
               updateModelData,
             });
           },
+          onRowSelect({
+            actionType,
+            data,
+          }: {
+            actionType: 'single' | 'selectAll' | 'removeAll';
+            data?: any;
+          }): void {
+            return onRowSelect({ actionType, data, model });
+          },
         });
       }
 
@@ -4074,6 +4512,14 @@ function createAppModel(appConfig: IAppInitialConfig) {
         call: (
           exceptionHandler: (detail: any) => void,
         ) => Promise<ReadableStream<IRun<IParamTrace>[]>>;
+        abort: () => void;
+      };
+      let runsArchiveRef: {
+        call: (exceptionHandler: (detail: any) => void) => Promise<any>;
+        abort: () => void;
+      };
+      let runsDeleteRef: {
+        call: (exceptionHandler: (detail: any) => void) => Promise<any>;
         abort: () => void;
       };
       let tooltipData: ITooltipData = {};
@@ -4124,13 +4570,13 @@ function createAppModel(appConfig: IAppInitialConfig) {
         rawData: IRun<IParamTrace>[],
         configData: IAppModelConfig,
       ): void {
-        const { data, params, highLevelParams, metricsColumns } =
+        const { data, params, highLevelParams, metricsColumns, selectedRows } =
           processData(rawData);
 
         const sortedParams = params.concat(highLevelParams).sort();
         const groupingSelectOptions = [
           ...getGroupingSelectOptions({
-            params: params.concat(highLevelParams).sort(),
+            params: sortedParams,
           }),
         ];
 
@@ -4188,6 +4634,7 @@ function createAppModel(appConfig: IAppInitialConfig) {
           tableColumns,
           sameValueColumns: tableData.sameValueColumns,
           groupingSelectOptions,
+          selectedRows,
         });
       }
 
@@ -4411,12 +4858,13 @@ function createAppModel(appConfig: IAppInitialConfig) {
                   color: metricsCollection.color ?? metric.color,
                 },
                 key: metric.key,
+                selectKey: `${metric.run.hash}/${metric.key}`,
                 runHash: metric.run.hash,
                 isHidden: metric.isHidden,
                 index: rowIndex,
                 color: metricsCollection.color ?? metric.color,
                 dasharray: metricsCollection.dasharray ?? metric.dasharray,
-                experiment: metric.run.props.experiment.name ?? 'default',
+                experiment: metric.run.props.experiment?.name ?? 'default',
                 run: moment(metric.run.props.creation_time * 1000).format(
                   'HH:mm:ss · D MMM, YY',
                 ),
@@ -4527,8 +4975,10 @@ function createAppModel(appConfig: IAppInitialConfig) {
         params: string[];
         highLevelParams: string[];
         metricsColumns: any;
+        selectedRows: any;
       } {
         const configData = model.getState()?.config;
+        let selectedRows = model.getState()?.selectedRows;
         const grouping = configData?.grouping;
         let runs: IParam[] = [];
         let params: string[] = [];
@@ -4557,26 +5007,58 @@ function createAppModel(appConfig: IAppInitialConfig) {
           });
         });
 
+        let sortFields = configData?.table?.sortFields ?? [];
+
+        if (sortFields?.length === 0) {
+          sortFields = [
+            {
+              value: 'run.props.creation_time',
+              order: 'desc',
+              label: '',
+              group: '',
+            },
+          ];
+        }
+
         const processedData = groupData(
           _.orderBy(
             runs,
-            configData?.table?.sortFields?.map(
+            sortFields?.map(
               (f: SortField) =>
                 function (run: IParam) {
-                  return getValue(run, f[0], '');
+                  return getValue(run, f.value, '');
                 },
-            ) ?? [],
-            configData?.table?.sortFields?.map((f: SortField) => f[1]) ?? [],
+            ),
+            sortFields?.map((f: SortField) => f.order),
           ),
         );
         const uniqParams = _.uniq(params);
         const uniqHighLevelParams = _.uniq(highLevelParams);
+        const mappedData =
+          data.reduce((acc: any, item: any) => {
+            acc[item.hash] = { runHash: item.hash, ...item.props };
+            return acc;
+          }, {}) || {};
+        if (selectedRows && !_.isEmpty(selectedRows)) {
+          selectedRows = Object.keys(selectedRows).reduce(
+            (acc: any, key: string) => {
+              const slicedKey = key.slice(0, key.indexOf('/'));
+              acc[key] = {
+                selectKey: key,
+                ...mappedData[slicedKey],
+              };
+              return acc;
+            },
+            {},
+          );
+        }
 
         return {
           data: processedData,
           params: uniqParams,
           highLevelParams: uniqHighLevelParams,
           metricsColumns,
+          selectedRows,
         };
       }
 
@@ -4720,17 +5202,17 @@ function createAppModel(appConfig: IAppInitialConfig) {
         configData = model.getState()!.config!,
         shouldURLUpdate?: boolean,
       ): void {
-        const { data, params, highLevelParams, metricsColumns } = processData(
-          model.getState()?.rawData as IRun<IParamTrace>[],
-        );
+        const { data, params, highLevelParams, metricsColumns, selectedRows } =
+          processData(model.getState()?.rawData as IRun<IParamTrace>[]);
+        const sortedParams = params.concat(highLevelParams).sort();
         const groupingSelectOptions = [
           ...getGroupingSelectOptions({
-            params: params.concat(highLevelParams).sort(),
+            params: sortedParams,
           }),
         ];
         tooltipData = getTooltipData({
           processedData: data,
-          paramKeys: params,
+          paramKeys: sortedParams,
           groupingSelectOptions,
           groupingItems: ['color', 'chart'],
           model,
@@ -4778,6 +5260,7 @@ function createAppModel(appConfig: IAppInitialConfig) {
           tableData: tableData.rows,
           tableColumns,
           sameValueColumns: tableData.sameValueColumns,
+          selectedRows,
         });
       }
 
@@ -4797,7 +5280,10 @@ function createAppModel(appConfig: IAppInitialConfig) {
         });
       }
 
-      function getScattersData(shouldUrlUpdate?: boolean): {
+      function getScattersData(
+        shouldUrlUpdate?: boolean,
+        shouldResetSelectedRows?: boolean,
+      ): {
         call: () => Promise<void>;
         abort: () => void;
       } {
@@ -4891,12 +5377,18 @@ function createAppModel(appConfig: IAppInitialConfig) {
 
               model.setState({
                 queryIsEmpty: true,
+                selectedRows: shouldResetSelectedRows
+                  ? {}
+                  : model.getState()?.selectedRows,
                 ...state,
               });
             } else {
               model.setState({
                 requestStatus: RequestStatusEnum.Pending,
                 queryIsEmpty: false,
+                selectedRows: shouldResetSelectedRows
+                  ? {}
+                  : model.getState()?.selectedRows,
               });
               liveUpdateInstance?.stop().then();
               try {
@@ -5056,11 +5548,23 @@ function createAppModel(appConfig: IAppInitialConfig) {
         });
       }
 
-      function onSortChange(
-        field: string,
-        value?: 'asc' | 'desc' | 'none',
-      ): void {
-        onTableSortChange({ field, model, appName, updateModelData, value });
+      function onSortChange({
+        sortFields,
+        order,
+        index,
+        actionType,
+        field,
+      }: any): void {
+        onTableSortChange({
+          sortFields,
+          order,
+          index,
+          field,
+          actionType,
+          model,
+          appName,
+          updateModelData,
+        });
       }
 
       function onModelBookmarkCreate({
@@ -5137,6 +5641,87 @@ function createAppModel(appConfig: IAppInitialConfig) {
         liveUpdateInstance = null; //@TODO check is this need or not
       }
 
+      function archiveRuns(
+        ids: string[],
+        archived: boolean,
+      ): {
+        call: () => Promise<void>;
+        abort: () => void;
+      } {
+        runsArchiveRef = runsService.archiveRuns(ids, archived);
+        return {
+          call: async () => {
+            try {
+              await runsArchiveRef
+                .call((detail) => exceptionHandler({ detail, model }))
+                .then(() => {
+                  getScattersData(false, true).call();
+                  onNotificationAdd({
+                    notification: {
+                      id: Date.now(),
+                      severity: 'success',
+                      message: `Runs are successfully ${
+                        archived ? 'archived' : 'unarchived'
+                      } `,
+                    },
+                    model,
+                  });
+                });
+            } catch (ex: Error | any) {
+              if (ex.name === 'AbortError') {
+                onNotificationAdd({
+                  notification: {
+                    id: Date.now(),
+                    severity: 'error',
+                    message: ex.message,
+                  },
+                  model,
+                });
+              }
+            }
+          },
+          abort: runsArchiveRef.abort,
+        };
+      }
+
+      function deleteRuns(ids: string[]): {
+        call: () => Promise<void>;
+        abort: () => void;
+      } {
+        runsDeleteRef = runsService.deleteRuns(ids);
+        return {
+          call: async () => {
+            try {
+              await runsDeleteRef
+                .call((detail) => exceptionHandler({ detail, model }))
+                .then(() => {
+                  getScattersData(false, true).call();
+                  onNotificationAdd({
+                    notification: {
+                      id: Date.now(),
+                      severity: 'success',
+                      message: 'Runs are successfully deleted',
+                    },
+                    model,
+                  });
+                });
+            } catch (ex: Error | any) {
+              if (ex.name === 'AbortError') {
+                onNotificationAdd({
+                  notification: {
+                    id: Date.now(),
+                    severity: 'error',
+                    message: ex.message,
+                  },
+                  model,
+                });
+              }
+            }
+          },
+          abort: runsDeleteRef.abort,
+        };
+      }
+
       const methods = {
         initialize,
         getAppConfigData: getModelAppConfigData,
@@ -5151,8 +5736,11 @@ function createAppModel(appConfig: IAppInitialConfig) {
         onNotificationAdd: onModelNotificationAdd,
         onNotificationDelete: onModelNotificationDelete,
         onResetConfigData: onModelResetConfigData,
+        onSortChange,
         destroy,
         changeLiveUpdateConfig,
+        archiveRuns,
+        deleteRuns,
       };
 
       if (grouping) {
@@ -5287,6 +5875,15 @@ function createAppModel(appConfig: IAppInitialConfig) {
               appName,
               updateModelData,
             });
+          },
+          onRowSelect({
+            actionType,
+            data,
+          }: {
+            actionType: 'single' | 'selectAll' | 'removeAll';
+            data?: any;
+          }): void {
+            return onRowSelect({ actionType, data, model });
           },
         });
       }

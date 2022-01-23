@@ -2,6 +2,8 @@ import React from 'react';
 
 import MUButton from '@material-ui/core/Button';
 
+import ErrorBoundary from 'components/ErrorBoundary/ErrorBoundary';
+
 import { IButtonProps } from '.';
 
 import './Button.scss';
@@ -43,13 +45,15 @@ function Button({
   };
 
   return (
-    <MUButton
-      {...rest}
-      color={color || 'primary'}
-      style={{ ...styleOverrides, ...rest.style }}
-    >
-      {children}
-    </MUButton>
+    <ErrorBoundary>
+      <MUButton
+        {...rest}
+        color={color || 'primary'}
+        style={{ ...styleOverrides, ...rest.style }}
+      >
+        {children}
+      </MUButton>
+    </ErrorBoundary>
   );
 }
 
