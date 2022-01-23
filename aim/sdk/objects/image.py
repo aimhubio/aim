@@ -56,7 +56,7 @@ class Image(CustomObject):
             self._from_tf_tensor(image, params)
         elif inst_has_typename(image, ['numpy', 'array']):
             self._from_numpy_array(image, params)
-        elif inst_has_typename(image, ['Figure.matplotlib.figure']):
+        elif inst_has_typename(image, ['Figure', 'matplotlib', 'figure']):
             self._from_matplotlib_figure(image, params)
         else:
             raise TypeError(f'Cannot convert to aim.Image. Unsupported type {type(image)}.')
