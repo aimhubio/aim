@@ -346,7 +346,8 @@ class Run(StructuredRunMixin):
                       'please set `system_tracking_interval` greater than 0 '
                       'and less than 1 day')
             else:
-                self._system_resource_tracker.start()
+                # self._system_resource_tracker.start()
+                pass
 
     def __delitem__(self, key: str):
         """Remove key from run meta-params.
@@ -381,7 +382,9 @@ class Run(StructuredRunMixin):
         # since worker might be lagging behind, we want to log the timestamp of run.track() call,
         # not the actual implementation execution time.
         track_time = datetime.datetime.now(pytz.utc).timestamp()
-        if self.track_in_thread:
+
+        # remote tracking creates dedicated thread for tracking, so don't need to create another one here
+        if self.track_in_thread and not self.repo.is_remote_repo:
             val = deepcopy(value)
             track_rate_warning = self.repo.tracking_queue.register_task(
                 self._track_impl, val, track_time, name, step, epoch, context=context)
@@ -421,14 +424,23 @@ class Run(StructuredRunMixin):
         step = step or seq_info.count
         self._update_sequence_info(seq_info, ctx, val, name, step)
 
-        self.meta_run_tree['traces', ctx.idx, name, 'last'] = val
-        self.meta_run_tree['traces', ctx.idx, name, 'last_step'] = step
+        if seq_info.record_max_length is None:
+            record_max_length = self.meta_run_tree.get(('traces', ctx.idx, name, 'record_max_length'), 0)  # just 0?
+            seq_info.record_max_length = record_max_length
 
-        # TODO perform assignments in an atomic way
-        seq_info.val_view[step] = val
-        seq_info.epoch_view[step] = epoch
-        seq_info.time_view[step] = track_time
-        seq_info.count = seq_info.count + 1
+        if isinstance(val, (tuple, list)):
+            seq_info.record_max_length = max(seq_info.record_max_length, len(val))
+            self.meta_run_tree['traces', ctx.idx, name, 'record_max_length'] = seq_info.record_max_length
+
+        with self.repo.atomic_track():
+            self.meta_run_tree['traces', ctx.idx, name, 'last'] = val
+            self.meta_run_tree['traces', ctx.idx, name, 'last_step'] = step
+
+            # TODO perform assignments in an atomic way  # Ask AT, actually whole method should be atomic?
+            seq_info.val_view[step] = val
+            seq_info.epoch_view[step] = epoch
+            seq_info.time_view[step] = track_time
+            seq_info.count = seq_info.count + 1
 
     @property
     def props(self):

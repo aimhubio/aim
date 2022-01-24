@@ -48,19 +48,18 @@ class ProxyTree(TreeView):
         path: Union[AimObjectKey, AimObjectPath],
         resolve: bool = False
     ):
-        subtree = SubtreeView(self, path)
-        if not resolve:
-            return subtree
+        if resolve:
+            return None
         # TODO [AT, MV] handle resolve=True
         # make an rpc call to get underlying object type
         # and construct CustomObject if needed
-        return None
+        return SubtreeView(self, path)
 
     def make_array(
         self,
         path: Union[AimObjectKey, AimObjectPath] = ()
     ):
-        self._rpc_client.run_instruction(self._handler, 'make_array', (path,))
+        self._rpc_client.run_instruction(self._handler, 'make_array', (path,), is_write_only=True)
 
     def collect(
         self,
@@ -73,14 +72,14 @@ class ProxyTree(TreeView):
         self,
         path: Union[AimObjectKey, AimObjectPath]
     ):
-        self._rpc_client.run_instruction(self._handler, '__delitem__', (path,))
+        self._rpc_client.run_instruction(self._handler, '__delitem__', (path,), is_write_only=True)
 
     def __setitem__(
             self,
             path: Union[AimObjectKey, AimObjectPath],
             value: AimObject
     ):
-        self._rpc_client.run_instruction(self._handler, '__setitem__', (path, value))
+        self._rpc_client.run_instruction(self._handler, '__setitem__', (path, value), is_write_only=True)
 
     def keys(
         self,
@@ -131,7 +130,7 @@ class ProxyTree(TreeView):
         *,
         index: 'ProxyTree'
     ):
-        self._rpc_client.run_instruction(self._handler, 'finalize', (ResourceObject(index._handler),))
+        self._rpc_client.run_instruction(self._handler, 'finalize', (ResourceObject(index._handler),), is_write_only=True)
 
 
 class SubtreeView(TreeView):

@@ -7,7 +7,7 @@ import grpc
 import aim.ext.transport.remote_tracking_pb2 as rpc_messages
 import aim.ext.transport.remote_tracking_pb2_grpc as remote_tracking_pb2_grpc
 
-from aim.ext.transport.message_utils import pack_stream, unpack_stream, build_exception, ResourceObject
+from aim.ext.transport.message_utils import pack_stream, unpack_bytes, unpack_stream, build_exception, ResourceObject
 from aim.ext.transport.handlers import get_tree, get_structured_run
 from aim.storage.treeutils import encode_tree, decode_tree
 
@@ -44,7 +44,7 @@ class RemoteTrackingServicer(remote_tracking_pb2_grpc.RemoteTrackingServiceServi
     registry = ResourceTypeRegistry()
     count = 0
 
-    def get_resource(self, request: rpc_messages.ResourceRequest, context):
+    def get_resource(self, request: rpc_messages.ResourceRequest, _context):
         resource_handler = _get_handler()
         try:
             resource_cls = self.registry[request.resource_type]
@@ -70,13 +70,11 @@ class RemoteTrackingServicer(remote_tracking_pb2_grpc.RemoteTrackingServiceServi
                 exception=build_exception(e),
             )
 
-    def release_resource(self, request: rpc_messages.ReleaseResourceRequest, context):
+    def release_resource(self, request: rpc_messages.ReleaseResourceRequest, _context):
         try:
             resource_handler = request.handler
             client_uri = request.client_uri
-            if not self._verify_resource_handler(resource_handler, client_uri):
-                raise UnauthorizedRequestError()
-
+            self._verify_resource_handler(resource_handler, client_uri)
             del self.resource_pool[resource_handler]
             return rpc_messages.ReleaseResourceResponse(status=rpc_messages.ReleaseResourceResponse.Status.OK)
         except Exception as e:
@@ -87,27 +85,28 @@ class RemoteTrackingServicer(remote_tracking_pb2_grpc.RemoteTrackingServiceServi
                 exception=build_exception(e),
             )
 
-    def run_instruction(self, request_iterator, context) -> rpc_messages.InstructionResponse:
+    def run_instruction(self, request_iterator, _context) -> rpc_messages.InstructionResponse:
         try:
             header = next(request_iterator)
             assert header.WhichOneof('instruction') == 'header'
 
             resource_handler = header.header.handler
             client_uri = header.header.client_uri
-            if not self._verify_resource_handler(resource_handler, client_uri):
-                raise UnauthorizedRequestError()
+            self._verify_resource_handler(resource_handler, client_uri)
 
             args = decode_tree(unpack_stream(request_iterator))
             checked_args = []
             for arg in args:
                 if isinstance(arg, ResourceObject):
                     handler = arg.storage['handler']
-                    if not self._verify_resource_handler(handler, client_uri):
-                        raise UnauthorizedRequestError()
+                    self._verify_resource_handler(handler, client_uri)
                     checked_args.append(self.resource_pool[handler][1])
                 else:
                     checked_args.append(arg)
+
             method_name = header.header.method_name
+
+            print('run_instruction', method_name, checked_args)
             resource = self.resource_pool[resource_handler][1]
             if method_name.endswith('.setter'):
                 attr_name = method_name.split('.')[0]
@@ -116,6 +115,7 @@ class RemoteTrackingServicer(remote_tracking_pb2_grpc.RemoteTrackingServiceServi
             else:
                 attr = getattr(resource, method_name)
                 if callable(attr):
+                    print("attr", attr, checked_args)
                     result = attr(*checked_args)
                 else:
                     result = attr
@@ -133,12 +133,50 @@ class RemoteTrackingServicer(remote_tracking_pb2_grpc.RemoteTrackingServiceServi
                 status=rpc_messages.ResponseHeader.Status.ERROR,
                 exception=build_exception(e),
             ))
+            return
+
+    def run_write_instructions(self, request_iterator, _context) -> rpc_messages.WriteInstructionsResponse:
+        try:
+            raw_message = []
+            client_uri = None  # TODO [AD] move to header interface? and use raw_message = [request.message for request in request_iterator]
+            for request in request_iterator:
+                raw_message.append(request.message)
+                client_uri = request.client_uri
+
+            write_instructions = decode_tree(unpack_bytes(raw_message))
+            for instruction in write_instructions:
+                resource_handler, method_name, args = instruction
+                print(resource_handler, method_name, args)
+
+                self._verify_resource_handler(resource_handler, client_uri)
+
+                checked_args = []
+                for arg in args:
+                    if isinstance(arg, ResourceObject):
+                        handler = arg.storage['handler']
+                        self._verify_resource_handler(handler, client_uri)
+                        checked_args.append(self.resource_pool[handler][1])
+                    else:
+                        checked_args.append(arg)
+
+                resource = self.resource_pool[resource_handler][1]
+                if method_name.endswith('.setter'):
+                    attr_name = method_name.split('.')[0]
+                    setattr(resource, attr_name, checked_args[0])
+                else:
+                    assert '.getter method is detected'
+
+            return rpc_messages.WriteInstructionsResponse(status=rpc_messages.WriteInstructionsResponse.Status.OK)
+        except Exception as e:
+            print(e)
+            return rpc_messages.WriteInstructionsResponse(
+                status=rpc_messages.WriteInstructionsResponse.Status.ERROR
+            )
 
     def _verify_resource_handler(self, resource_handler, client_uri):
         res_info = self.resource_pool.get(resource_handler, None)
-        if res_info and res_info[0] == client_uri:
-            return True
-        return False
+        if not res_info or res_info[0] != client_uri:
+            raise UnauthorizedRequestError()
 
 
 def run_server(host, port, workers=1, ssl_keyfile=None, ssl_certfile=None):

@@ -1,4 +1,4 @@
-from typing import Any, Iterator, Tuple, Union
+from typing import Any, Iterator, Tuple, Union, Generator
 
 from aim.storage import encoding
 from aim.storage.encoding.encoding_native cimport decode_path

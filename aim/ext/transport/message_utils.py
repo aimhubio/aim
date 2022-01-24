@@ -19,6 +19,24 @@ def pack_stream(tree: Iterator[Tuple[bytes, bytes]]) -> bytes:
             yield struct.pack('I', len(key)) + key + struct.pack('?', True) + struct.pack('I', len(val)) + val
 
 
+def unpack_helper(msg: bytes) -> Tuple[bytes, bytes]:
+    (key_size,), tail = struct.unpack('I', msg[:4]), msg[4:]
+    key, tail = tail[:key_size], tail[key_size:]
+    (is_blob,), tail = struct.unpack('?', tail[:1]), tail[1:]
+    (value_size,), tail = struct.unpack('I', tail[:4]), tail[4:]
+    value, tail = tail[:value_size], tail[value_size:]
+    assert len(tail) == 0
+    if is_blob:
+       yield key, BLOB(data=value)
+    else:
+       yield key, value
+
+
+def unpack_bytes(stream: Iterator[bytes]) -> Tuple[bytes, bytes]:
+    for msg in stream:
+        yield from unpack_helper(msg)
+
+
 def unpack_stream(stream: Iterator[Message]) -> Tuple[bytes, bytes]:
     for msg in stream:
         if msg.WhichOneof('instruction') == 'header':
@@ -29,16 +47,8 @@ def unpack_stream(stream: Iterator[Message]) -> Tuple[bytes, bytes]:
 
         assert msg.WhichOneof('instruction') == 'message'
         msg = msg.message
-        (key_size,), tail = struct.unpack('I', msg[:4]), msg[4:]
-        key, tail = tail[:key_size], tail[key_size:]
-        (is_blob,), tail = struct.unpack('?', tail[:1]), tail[1:]
-        (value_size,), tail = struct.unpack('I', tail[:4]), tail[4:]
-        value, tail = tail[:value_size], tail[value_size:]
-        assert len(tail) == 0
-        if is_blob:
-            yield key, BLOB(value)
-        else:
-            yield key, value
+
+        yield from unpack_helper(msg)
 
 
 def raise_exception(grpc_exception):

@@ -67,8 +67,23 @@ message InstructionResponse {
     }
 }
 
+message WriteInstructionsRequest {
+    string version = 1;
+    string client_uri = 2;
+    bytes message = 3;
+}
+
+message WriteInstructionsResponse {
+    enum Status {
+        OK = 0;
+        ERROR = 1;
+    }
+    Status status = 1;
+}
+
 service RemoteTrackingService {
     rpc get_resource(ResourceRequest) returns (ResourceResponse) {}
     rpc release_resource(ReleaseResourceRequest) returns (ReleaseResourceResponse) {}
     rpc run_instruction(stream InstructionRequest) returns (stream InstructionResponse) {}
+    rpc run_write_instructions(stream WriteInstructionsRequest) returns (WriteInstructionsResponse) {}
 }

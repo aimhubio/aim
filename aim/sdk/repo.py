@@ -5,6 +5,7 @@ from enum import Enum
 
 from packaging import version
 from collections import defaultdict
+from contextlib import contextmanager
 from typing import Dict, Tuple, Iterator, NamedTuple, Optional, List
 from weakref import WeakValueDictionary
 
@@ -88,6 +89,7 @@ class Repo:
     """
     _pool = WeakValueDictionary()  # TODO: take read only into account
 
+    # [AD] create but not used when rack_in_thread = False
     tracking_queue = _get_tracking_queue()
 
     def __init__(self, path: str, *, read_only: bool = None, init: bool = False):
@@ -632,3 +634,10 @@ class Repo:
     @property
     def is_remote_repo(self):
         return self._client is not None
+
+    @contextmanager
+    def atomic_track(self):
+        self._client.init_tracking()
+        yield
+        self._client.flush_tracking()
+
