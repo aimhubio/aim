@@ -662,7 +662,6 @@ class Run(StructuredRunMixin):
 
             compatible = check_types_compatibility(dtype, seq_info.sequence_dtype, update_trace_dtype)
             if not compatible:
-                # TODO [AD] can we use `val` here instead of `value``
                 raise ValueError(f'Cannot log value \'{val}\' on sequence \'{name}\'. Incompatible data types.')
 
         if seq_info.count == 0:
