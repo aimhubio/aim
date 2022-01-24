@@ -90,7 +90,7 @@ function RunSelectPopoverContent({
                     weight={experimentId === experiment.id ? 600 : 500}
                     className='RunSelectPopoverWrapper__selectPopoverContent__contentContainer__experimentsListContainer__experimentList__experimentBox__experimentName'
                   >
-                    {experiment.name}
+                    {experiment?.name ?? 'default'}
                   </Text>
                 </div>
               ))

@@ -112,7 +112,7 @@ function DeleteModal({
           run: `${moment(selectedRow.creation_time * 1000).format(
             DateWithSeconds,
           )}`,
-          experiment: selectedRow?.experiment?.name ?? '',
+          experiment: selectedRow?.experiment?.name ?? 'default',
           runHash: selectedRow.runHash,
           selectKey: selectedRow.selectKey,
           isInProgress: !selectedRow?.end_time,
