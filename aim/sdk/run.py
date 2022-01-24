@@ -417,7 +417,7 @@ class Run(StructuredRunMixin):
             self.contexts[ctx] = ctx.idx
             self._idx_to_ctx[ctx.idx] = ctx
 
-        seq_info = self._get_sequence_info(ctx, name)
+        seq_info = self._get_or_create_sequence_info(ctx, name)
         step = step or seq_info.count
         self._update_sequence_info(seq_info, ctx, val, name, step)
 
@@ -612,13 +612,12 @@ class Run(StructuredRunMixin):
         if read_only:
             return
 
-        try:
-            for ctx_id in self.meta_tree['contexts'].keys():
-                for name in self.meta_run_tree['traces', ctx_id].keys():
+        for ctx_id, traces in self.meta_run_tree.get('traces', {}).items():
+            for name in traces:
+                try:
                     self._read_sequence_info(self.idx_to_ctx(ctx_id), name)
-        except KeyError:
-            # there is no contexts object right after aim up
-            pass
+                except KeyError:
+                    pass
 
     def _read_sequence_info(self, ctx, name):
         sequence_selector = SequenceDescriptor(name, ctx).selector
@@ -633,7 +632,7 @@ class Run(StructuredRunMixin):
         seq_info.record_max_length = self.meta_run_tree.get(('traces', ctx.idx, name, 'record_max_length'), 0)
         seq_info.initialized = True
 
-    def _get_sequence_info(self, ctx, name):
+    def _get_or_create_sequence_info(self, ctx, name):
         # this method is used in the `run.track()`, so please use only write-only instructions
         sequence_selector = SequenceDescriptor(name, ctx).selector
         seq_info = self.sequence_info[sequence_selector]
