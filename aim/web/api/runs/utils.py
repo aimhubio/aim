@@ -107,10 +107,8 @@ def collect_x_axis_data(x_trace: Metric, iters: np.ndarray) -> Tuple[Optional[di
 
 
 def collect_run_streamable_data(encoded_tree: Iterator[Tuple[bytes, bytes]]) -> bytes:
-    result = bytes()
-    for key, val in encoded_tree:
-        result += struct.pack('I', len(key)) + key + struct.pack('I', len(val)) + val
-    return result
+    result = [struct.pack('I', len(key)) + key + struct.pack('I', len(val)) + val for key, val in encoded_tree]
+    return b''.join(result)
 
 
 def custom_aligned_metrics_streamer(requested_runs: List[AlignedRunIn], x_axis: str, repo: 'Repo') -> bytes:
@@ -146,7 +144,7 @@ def custom_aligned_metrics_streamer(requested_runs: List[AlignedRunIn], x_axis: 
         yield collect_run_streamable_data(encoded_tree)
 
 
-async def metric_search_result_streamer(traces: SequenceCollection,
+def metric_search_result_streamer(traces: SequenceCollection,
                                         steps_num: int,
                                         x_axis: Optional[str]) -> bytes:
     for run_trace_collection in traces.iter_runs():
