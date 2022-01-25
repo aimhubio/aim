@@ -205,6 +205,7 @@ class SequenceInfo:
         self.val_view = None
         self.epoch_view = None
         self.time_view = None
+        self.record_max_length = None
 
 
 class Run(StructuredRunMixin):
@@ -267,9 +268,6 @@ class Run(StructuredRunMixin):
             'seqs', self.hash, read_only=read_only
         ).subtree('seqs').subtree('chunks').subtree(self.hash)
 
-        self._system_resource_tracker: ResourceTracker = None
-        self._prepare_resource_tracker(system_tracking_interval)
-
         if not read_only:
             try:
                 self.meta_run_attrs_tree.first()
@@ -280,6 +278,11 @@ class Run(StructuredRunMixin):
             self.props
         if experiment:
             self.experiment = experiment
+
+        self._prepare_sequence_info(read_only)
+
+        self._system_resource_tracker: ResourceTracker = None
+        self._prepare_resource_tracker(system_tracking_interval)
 
         self._resources = RunAutoClean(self)
 
@@ -407,50 +410,19 @@ class Run(StructuredRunMixin):
         else:
             raise ValueError(f'Input metric of type {type(value)} is neither python number nor AimObject')
 
-        dtype = get_object_typename(val)
-
         ctx = Context(context)
-        sequence = SequenceDescriptor(name, ctx)
-
         if ctx not in self.contexts:
             self.meta_tree['contexts', ctx.idx] = context
             self.meta_run_tree['contexts', ctx.idx] = context
             self.contexts[ctx] = ctx.idx
             self._idx_to_ctx[ctx.idx] = ctx
 
-        seq_info = self.sequence_info[sequence.selector]
-        if not seq_info.initialized:
-            seq_info.val_view = self.series_run_tree.subtree(sequence.selector).array('val').allocate()
-            seq_info.epoch_view = self.series_run_tree.subtree(sequence.selector).array('epoch').allocate()
-            seq_info.time_view = self.series_run_tree.subtree(sequence.selector).array('time').allocate()
-
-            seq_info.count = len(seq_info.val_view)
-            seq_info.sequence_dtype = self.meta_run_tree.get(('traces', ctx.idx, name, 'dtype'), None)
-            if seq_info.count != 0 and seq_info.sequence_dtype is None:  # continue tracking on old sequence
-                seq_info.sequence_dtype = 'float'
-            seq_info.initialized = True
-
-        if seq_info.sequence_dtype is not None:
-            def update_trace_dtype(new_dtype):
-                self.meta_tree['traces_types', new_dtype, ctx.idx, name] = 1
-                seq_info.sequence_dtype = self.meta_run_tree['traces', ctx.idx, name, 'dtype'] = new_dtype
-
-            compatible = check_types_compatibility(dtype, seq_info.sequence_dtype, update_trace_dtype)
-            if not compatible:
-                raise ValueError(f'Cannot log value \'{value}\' on sequence \'{name}\'. Incompatible data types.')
-
+        seq_info = self._get_or_create_sequence_info(ctx, name)
         step = step or seq_info.count
-
-        if seq_info.count == 0:
-            self.meta_tree['traces_types', dtype, ctx.idx, name] = 1
-            seq_info.sequence_dtype = self.meta_run_tree['traces', ctx.idx, name, 'dtype'] = dtype
-            self.meta_run_tree['traces', ctx.idx, name, 'first_step'] = step
+        self._update_sequence_info(seq_info, ctx, val, name, step)
 
         self.meta_run_tree['traces', ctx.idx, name, 'last'] = val
         self.meta_run_tree['traces', ctx.idx, name, 'last_step'] = step
-        if isinstance(val, (tuple, list)):
-            record_max_length = self.meta_run_tree.get(('traces', ctx.idx, name, 'record_max_length'), 0)
-            self.meta_run_tree['traces', ctx.idx, name, 'record_max_length'] = max(record_max_length, len(val))
 
         # TODO perform assignments in an atomic way
         seq_info.val_view[step] = val
@@ -635,6 +607,75 @@ class Run(StructuredRunMixin):
             return None
         sequence = seq_cls(sequence_name, context, self)
         return sequence if bool(sequence) else None
+
+    def _prepare_sequence_info(self, read_only):
+        if read_only:
+            return
+
+        for ctx_id, traces in self.meta_run_tree.get('traces', {}).items():
+            for name in traces:
+                try:
+                    self._read_sequence_info(self.idx_to_ctx(ctx_id), name)
+                except KeyError:
+                    pass
+
+    def _read_sequence_info(self, ctx, name):
+        sequence_selector = SequenceDescriptor(name, ctx).selector
+        seq_info = self.sequence_info[sequence_selector]
+
+        assert not seq_info.initialized
+        seq_info.val_view = self.series_run_tree.subtree(sequence_selector).array('val').allocate()
+        seq_info.epoch_view = self.series_run_tree.subtree(sequence_selector).array('epoch').allocate()
+        seq_info.time_view = self.series_run_tree.subtree(sequence_selector).array('time').allocate()
+        seq_info.count = len(seq_info.val_view)
+        seq_info.sequence_dtype = self.meta_run_tree.get(('traces', ctx.idx, name, 'dtype'), None)
+        seq_info.record_max_length = self.meta_run_tree.get(('traces', ctx.idx, name, 'record_max_length'), 0)
+        seq_info.initialized = True
+
+    def _get_or_create_sequence_info(self, ctx, name):
+        # this method is used in the `run.track()`, so please use only write-only instructions
+        sequence_selector = SequenceDescriptor(name, ctx).selector
+        seq_info = self.sequence_info[sequence_selector]
+
+        if seq_info.initialized:
+            return seq_info
+
+        # the subtree().array().allocate() method is write-only
+        seq_info.val_view = self.series_run_tree.subtree(sequence_selector).array('val').allocate()
+        seq_info.epoch_view = self.series_run_tree.subtree(sequence_selector).array('epoch').allocate()
+        seq_info.time_view = self.series_run_tree.subtree(sequence_selector).array('time').allocate()
+        seq_info.count = 0
+        seq_info.sequence_dtype = None
+        seq_info.record_max_length = 0
+        seq_info.initialized = True
+        return seq_info
+
+    def _update_sequence_info(self, seq_info, ctx, val, name, step):
+        # this method is used in the `run.track()`, so please use only write-only instructions
+        dtype = get_object_typename(val)
+
+        if seq_info.sequence_dtype is not None:
+            def update_trace_dtype(new_dtype):
+                self.meta_tree['traces_types', new_dtype, ctx.idx, name] = 1
+                self.meta_run_tree['traces', ctx.idx, name, 'dtype'] = new_dtype
+                seq_info.sequence_dtype = new_dtype
+
+            compatible = check_types_compatibility(dtype, seq_info.sequence_dtype, update_trace_dtype)
+            if not compatible:
+                raise ValueError(f'Cannot log value \'{val}\' on sequence \'{name}\'. Incompatible data types.')
+
+        if seq_info.count == 0:
+            self.meta_tree['traces_types', dtype, ctx.idx, name] = 1
+            self.meta_run_tree['traces', ctx.idx, name, 'dtype'] = dtype
+            self.meta_run_tree['traces', ctx.idx, name, 'first_step'] = step
+            seq_info.sequence_dtype = dtype
+
+        if isinstance(val, (tuple, list)):
+            record_max_length = max(seq_info.record_max_length, len(val))
+            self.meta_run_tree['traces', ctx.idx, name, 'record_max_length'] = record_max_length
+            seq_info.record_max_length = record_max_length
+
+        return seq_info
 
     def collect_sequence_info(self, sequence_types: Tuple[str, ...], skip_last_value=False) -> Dict[str, list]:
         """Retrieve Run's all sequences general overview.
