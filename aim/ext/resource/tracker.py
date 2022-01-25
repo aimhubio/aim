@@ -71,6 +71,7 @@ class ResourceTracker(object):
             return
 
         self._shutdown = True
+        self._th_collector.join()
 
     def _track(self, stat: Stat):
         # Store system stats
@@ -94,11 +95,11 @@ class ResourceTracker(object):
        Statistics collecting thread body
        """
         while True:
+            # Get system statistics
+            stat = Stat(self._process)
             if self._shutdown:
                 break
 
-            # Get system statistics
-            stat = Stat(self._process)
             self._track(stat)
 
             time_counter = 0

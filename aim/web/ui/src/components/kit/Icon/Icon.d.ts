@@ -117,4 +117,6 @@ export type IconName =
   | 'regex'
   | 'unarchive'
   | 'archive'
-  | 'circle-with-dot';
+  | 'circle-with-dot'
+  | 'show-system-metrics'
+  | 'hide-system-metrics';
