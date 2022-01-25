@@ -3,7 +3,7 @@
 .TraceVisualizationWrapper {
   display: flex;
   width: 100%;
-  height: calc(100vh - 220px);
+  height: 100%;
   .VisualizationLoader {
     height: 100% !important;
   }
@@ -20,13 +20,11 @@
     display: flex;
     flex-direction: column;
     justify-content: space-between;
-
     .RangePanel {
       display: flex;
       align-items: center;
       min-height: toRem(44px);
       width: 100%;
-      margin-top: toRem(10px);
       justify-content: center;
       background: $white;
       border-top: $border-main;

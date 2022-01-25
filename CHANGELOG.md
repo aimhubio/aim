@@ -1,19 +1,24 @@
 # Changelog
 
-## Unreleased
+## 3.4.1 Jan 23 2022
 
+- Fix issue with displaying experiment name in Images Explorer table (VkoHov)
+
+## 3.4.0 Jan 22 2022
+
+- Add ability to apply group stacking on media elements list (KaroMourad)
 - Add ability to apply sorting by run creation_time on table rows (roubkar)
 - Add ability to filter texts table with keyword matching (roubkar, rubenaprikyan)
 - Add ability to delete run from settings tab (Hamik25)
 - Enhance controls states of explorer pages (arsengit)
-- Add --repo, --host arguments support for notebook extension (VkoHov rubenaprikyan)
+- Add --repo, --host arguments support for notebook extension (VkoHov, rubenaprikyan)
 - Add trendline options to ScatterPlot (roubkar)
 - Add ability to display images in original size and align by width (arsengit)
 - Add version, docs and slack links to sidebar (arsengit)
 - Enhance AudioPlayer component (arsengit)
 - Recover active tab in run details page after reload (roubkar)
-- Add ability to archive runs by batch (VkoHov)
-- Remote tracking server alpha version (alberttorosyan, mihran113, aramaim)
+- Add ability to archive or delete runs with batches (VkoHov)
+- Remote tracking server [experimental] (alberttorosyan, mihran113, aramaim)
 - Add ability to change media elements order (VkoHov)
 - Add ability to hard delete runs (alberttorosyan)
 - Lossy format support for aim.Image (devfox-se)

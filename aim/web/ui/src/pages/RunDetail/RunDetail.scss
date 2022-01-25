@@ -3,6 +3,11 @@
 .RunDetail {
   &__runDetailContainer {
     height: 100%;
+    &__Tabs {
+      .MuiTabs-fixed {
+        overflow: auto !important;
+      }
+    }
     &__appBarContainer {
       height: 2.5rem;
       padding: 0 1.5rem;
@@ -132,9 +137,9 @@
     &__tabPanel {
       border-right: $border-main;
       border-left: $border-main;
-      border-bottom: $border-main;
-      padding: 0.75rem;
-      height: calc(100% - 149px);
+      padding: 1.5rem;
+      overflow-y: auto;
+      height: calc(100vh - 136px);
       .MuiBox-root {
         height: 100%;
         .runDetailParamsTabLoader {
@@ -148,12 +153,16 @@
   }
 }
 
+.RunDetailParamsTabWrapper {
+  height: 100%;
+}
+
 .RunDetailParamsTab {
   padding: 1.5rem;
-  margin: 0.75rem;
   border: $border-grey;
   border-radius: 0.5rem;
   height: 100%;
+  overflow: auto;
 }
 
 .RunDistributionsTab {
@@ -161,18 +170,16 @@
 }
 
 .RunDetailMetricsTab {
-  height: 100%;
   &__container {
-    display: flex;
-    flex-wrap: wrap;
-    background: $white;
-    align-items: stretch;
     height: 100%;
+    background: $white;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1.5rem;
+    align-items: stretch;
     &__chartContainer {
       border: $border-grey;
       border-radius: 0.5rem;
-      margin: 0.75rem;
-      width: calc(50% - 24px);
       &__chartBox {
         height: 24.5rem;
         padding: 0.625rem;

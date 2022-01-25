@@ -4,6 +4,9 @@
   margin-right: toRem(10px);
   input {
     font-size: $text-md;
+    &::placeholder {
+      font-size: $text-md;
+    }
   }
   width: 100%;
   .MuiInputLabel-outlined {
@@ -24,6 +27,10 @@
       margin: 0 toRem(6px) 0 toRem(8px);
       background: $cuddle-70;
       border-radius: toRem(1px);
+    }
+
+    .Mui-disabled  {
+      color: $pico-30;
     }
   }
 }
