@@ -1192,7 +1192,7 @@ function getDataAsTableRows(
           index: rowIndex,
           color: metricsCollection.color ?? metric.color,
           dasharray: metricsCollection.dasharray ?? metric.dasharray,
-          experiment: metric.run.experiment?.name ?? 'default',
+          experiment: metric.run.props.experiment?.name ?? 'default',
           run: moment(metric.run.props.creation_time * 1000).format(
             'HH:mm:ss · D MMM, YY',
           ),

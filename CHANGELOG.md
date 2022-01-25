@@ -1,6 +1,10 @@
 # Changelog
 
-## Unreleased
+## 3.4.1 Jan 23 2022
+
+- Fix issue with displaying experiment name in Images Explorer table (VkoHov)
+
+## 3.4.0 Jan 22 2022
 
 - Add ability to apply group stacking on media elements list (KaroMourad)
 - Add ability to apply sorting by run creation_time on table rows (roubkar)
@@ -14,7 +18,7 @@
 - Enhance AudioPlayer component (arsengit)
 - Recover active tab in run details page after reload (roubkar)
 - Add ability to archive or delete runs with batches (VkoHov)
-- Remote tracking server alpha version (alberttorosyan, mihran113, aramaim)
+- Remote tracking server [experimental] (alberttorosyan, mihran113, aramaim)
 - Add ability to change media elements order (VkoHov)
 - Add ability to hard delete runs (alberttorosyan)
 - Lossy format support for aim.Image (devfox-se)

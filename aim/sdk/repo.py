@@ -640,4 +640,3 @@ class Repo:
         self._client.init_tracking()
         yield
         self._client.flush_tracking()
-

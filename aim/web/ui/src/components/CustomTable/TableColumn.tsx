@@ -140,7 +140,7 @@ function Column({
         })}
         style={{
           minWidth: maxWidth,
-          maxWidth: '100vh',
+          maxWidth: '100vw',
           width:
             col.key === 'selection'
               ? '32px'
