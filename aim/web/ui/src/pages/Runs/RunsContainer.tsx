@@ -47,8 +47,6 @@ function RunsContainer(): React.FunctionComponentElement<React.ReactNode> {
     };
   }, []);
 
-  console.log(runsData);
-
   return (
     <Runs
       tableData={runsData?.tableData}

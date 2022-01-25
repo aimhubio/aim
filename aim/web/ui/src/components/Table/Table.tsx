@@ -552,8 +552,6 @@ const Table = React.forwardRef(function Table(
     setTableBulkActionsVisibility(tableBulkActionsVisibility);
   }, [selectedRows]);
 
-  console.log(props);
-
   useResizeObserver(observerReturnCallback, tableContainerRef);
 
   // The right check is !props.isInfiniteLoading && (isLoading || isNil(rowData))

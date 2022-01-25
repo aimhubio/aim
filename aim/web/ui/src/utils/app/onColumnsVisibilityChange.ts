@@ -27,35 +27,37 @@ export default function onColumnsVisibilityChange<M extends State>({
 }): void {
   const configData = model.getState()?.config;
   let columnsData = model.getState()!.tableColumns!;
-  let hiddenKeys = [...hiddenColumns];
+
+  let columnKeys: string[] = Array.isArray(hiddenColumns)
+    ? [...hiddenColumns]
+    : [];
   let hideSystemMetrics: boolean = configData?.table.hideSystemMetrics;
-  console.log(hiddenColumns);
 
   if (configData?.table) {
     if (hiddenColumns === HideColumnsEnum.HideSystemMetrics) {
       columnsData.forEach((item) => {
         if (isSystemMetric(item.key)) {
-          hiddenKeys.push(item.key);
+          columnKeys.push(item.key);
         }
       });
+      columnKeys.push(...configData?.table?.hiddenColumns);
       hideSystemMetrics = true;
-    } else if (hiddenColumns === HideColumnsEnum.ShowSystemMetrics) {
-      hiddenKeys = hiddenKeys.filter((key) => !isSystemMetric(key));
+    }
+    if (hiddenColumns === HideColumnsEnum.ShowSystemMetrics) {
+      columnKeys = [...columnKeys, ...configData?.table?.hiddenColumns].filter(
+        (key) => !isSystemMetric(key),
+      );
       hideSystemMetrics = false;
-    } else {
-      hideSystemMetrics = hiddenKeys.some((key) => isSystemMetric(key))
-        ? false
-        : true;
     }
 
-    hiddenKeys =
+    columnKeys =
       hiddenColumns === HideColumnsEnum.All
         ? columnsData.map((col) => col.key)
-        : hiddenKeys;
+        : columnKeys;
 
     const table = {
       ...configData.table,
-      hiddenColumns: hiddenKeys,
+      hiddenColumns: columnKeys,
       hideSystemMetrics,
     };
 

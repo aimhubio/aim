@@ -9,8 +9,6 @@ import SearchBar from './components/SearchBar/SearchBar';
 import './Runs.scss';
 
 function Runs(props: any): React.FunctionComponentElement<React.ReactNode> {
-  console.log(props.hideSystemMetrics);
-
   return (
     <div className='Runs__container'>
       <section className='Runs__section'>
