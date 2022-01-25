@@ -74,11 +74,13 @@ message WriteInstructionsRequest {
 }
 
 message WriteInstructionsResponse {
+    string version = 1;
     enum Status {
         OK = 0;
         ERROR = 1;
     }
-    Status status = 1;
+    Status status = 2;
+    ExceptionResponse exception = 3;
 }
 
 service RemoteTrackingService {
