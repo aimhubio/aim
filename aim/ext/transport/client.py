@@ -86,7 +86,7 @@ class Client:
 
         # TODO [AD] make this atomic in case of parallel write from different thread?
         # TODO [AD] make queue per run? do we need it?
-        self._queue.join()
+        self._queue.wait_for_finish()
         resp = self.remote.run_instruction(message_stream_generator())
         status_msg = next(resp)
 

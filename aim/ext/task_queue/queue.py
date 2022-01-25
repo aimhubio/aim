@@ -47,6 +47,13 @@ class TaskQueue(object):
             task_f, args, kwargs = None, None, None
             self._queue.task_done()
 
+    def wait_for_finish(self):
+        if self._stopped:
+            return
+
+        # TODO: [MV, AT] think about other solution instead of join()
+        self._queue.join()
+
     def stop_workers(self):
         if self._stopped:
             return
@@ -59,9 +66,6 @@ class TaskQueue(object):
             self._queue.join()
         self._shutdown = True
         logger.debug('No pending tasks left.')
-
-    def join(self):
-        self._queue.join()
 
     def __del__(self):
         self.stop_workers()
