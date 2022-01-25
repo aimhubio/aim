@@ -1,6 +1,7 @@
 import React from 'react';
 
 import { Text } from 'components/kit';
+import ErrorBoundary from 'components/ErrorBoundary/ErrorBoundary';
 
 import { IStatusLabelProps } from './types.d';
 
@@ -17,11 +18,13 @@ function StatusLabel({
   className = '',
 }: IStatusLabelProps): React.FunctionComponentElement<React.ReactNode> {
   return (
-    <div className={`StatusLabel ${status} ${className}`}>
-      <Text size={10} weight={600} className='StatusLabel__title title'>
-        {title}
-      </Text>
-    </div>
+    <ErrorBoundary>
+      <div className={`StatusLabel ${status} ${className}`}>
+        <Text size={10} weight={600} className='StatusLabel__title title'>
+          {title}
+        </Text>
+      </div>
+    </ErrorBoundary>
   );
 }
 

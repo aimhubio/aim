@@ -45,26 +45,23 @@ class TestStructuredRunApi(StructuredApiTestBase):
     def test_add_remove_tag_api(self):
         matching_runs = self.repo.structured_db.search_runs('Run number 5')
         run = next(iter(matching_runs))
-        tags = [tag for tag in run.tags]
-        self.assertEqual(2, len(run.tags))
+        tags = [tag for tag in run.tags_obj]
+        self.assertEqual(2, len(run.tags_obj))
 
-        tag_names = [t.name for t in run.tags]
-        self.assertListEqual(['first runs', 'last runs'], tag_names)
+        self.assertListEqual(['first runs', 'last runs'], run.tags)
 
         client = self.client
         # remove tag # 1
         resp = client.delete(f'/api/runs/{run.hash}/tags/{tags[0].uuid}')
         self.assertEqual(200, resp.status_code)
         self.assertEqual(1, len(run.tags))
-        tag_names = [t.name for t in run.tags]
-        self.assertListEqual(['last runs'], tag_names)
+        self.assertListEqual(['last runs'], run.tags)
 
         # add new tag
         resp = client.post(f'/api/runs/{run.hash}/tags/new', json={'tag_name': 'new tag'})
         self.assertEqual(200, resp.status_code)
         self.assertEqual(2, len(run.tags))
-        tag_names = [t.name for t in run.tags]
-        self.assertListEqual(['last runs', 'new tag'], tag_names)
+        self.assertListEqual(['last runs', 'new tag'], run.tags)
 
     def test_update_run_name_description(self):
         matching_runs = self.repo.structured_db.search_runs('Run number 3')

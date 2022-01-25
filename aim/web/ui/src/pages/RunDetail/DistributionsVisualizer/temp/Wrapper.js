@@ -1,11 +1,11 @@
-import React, { Component } from 'react';
+import React from 'react';
 import PropTypes from 'prop-types';
 
 import Histogram from './Histogram/Histogram';
 import Heatmap from './Heatmap/Heatmap';
 
 //@ TODO change this component to current style
-class ExperimentDistributionCharts extends Component {
+class ExperimentDistributionCharts extends React.Component {
   constructor(props) {
     super(props);
 
@@ -55,7 +55,7 @@ class ExperimentDistributionCharts extends Component {
         let xMax = null;
         let heatmapValMax = null;
 
-        data.map((el) => {
+        data.forEach((el) => {
           const y = el[1];
 
           if (xMin == null || y[0] < xMin) {
@@ -82,8 +82,8 @@ class ExperimentDistributionCharts extends Component {
           heatmapY.push(`${i}`);
         }
 
-        data.map((iter, iterIndex) => {
-          iter[0].map((el, elIndex) => {
+        data.forEach((iter, iterIndex) => {
+          iter[0].forEach((el, elIndex) => {
             let yIndex = 0;
             for (let i = 1; i < heatmapY.length; i++) {
               yIndex = i;

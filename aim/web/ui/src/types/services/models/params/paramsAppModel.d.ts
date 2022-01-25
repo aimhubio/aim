@@ -35,6 +35,7 @@ export interface IParamsAppModelState {
   notifyData: INotification[];
   groupingSelectOptions: IGroupingSelectOption[];
   metricsColumns: any;
+  selectedRows?: any;
 }
 
 export interface IParam {

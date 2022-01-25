@@ -35,21 +35,21 @@ def list_runs(ctx):
 
 
 @runs.command(name='rm')
-@click.argument('run_hash', nargs=-1, type=str)
+@click.argument('hashes', nargs=-1, type=str)
 @click.pass_context
-def remove_runs(ctx, run_hash):
-    if len(run_hash) == 0:
+def remove_runs(ctx, hashes):
+    if len(hashes) == 0:
         click.echo('Please specify at lest one Run to delete.')
         exit(1)
     repo_path = ctx.obj['repo']
-    confirmed = click.confirm(f'This command will permanently delete {len(run_hash)} runs from aim repo located at '
+    confirmed = click.confirm(f'This command will permanently delete {len(hashes)} runs from aim repo located at '
                               f'\'{repo_path}\'. Do you want to proceed?')
     if not confirmed:
         return
     repo = Repo.from_path(repo_path)
-    success, remaining_runs = repo.delete_runs(run_hash)
+    success, remaining_runs = repo.delete_runs(hashes)
     if success:
-        click.echo(f'Successfully deleted {len(run_hash)} runs.')
+        click.echo(f'Successfully deleted {len(hashes)} runs.')
     else:
         click.echo('Something went wrong while deleting runs. Remaining runs are:', err=True)
         click.secho('\t'.join(remaining_runs), fg='yellow')

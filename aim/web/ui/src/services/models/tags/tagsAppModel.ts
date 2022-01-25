@@ -104,7 +104,7 @@ function archiveTag(id: string, archived: boolean = false) {
         severity: 'success',
         message: archived
           ? 'Tag successfully archived'
-          : 'Tag successfully unarchive',
+          : 'Tag successfully unarchived',
       });
       analytics.trackEvent(
         archived ? '[Tags] Archive Tag' : '[Tags] Unarchive Tag',

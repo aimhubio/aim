@@ -3,6 +3,8 @@ import _ from 'lodash-es';
 
 import { MenuItem } from '@material-ui/core';
 
+import ErrorBoundary from 'components/ErrorBoundary/ErrorBoundary';
+
 import { IZoomOutPopoverProps } from 'types/components/ZoomOutPopover/ZoomOutPopover';
 
 import './ZoomOutPopover.scss';
@@ -34,14 +36,16 @@ function ZoomOutPopover({
     }
   }
   return (
-    <div className='ZoomOutPopover'>
-      {Object.keys(groupedHistory)?.map((index) => (
-        <MenuItem key={index} data-name={index} onClick={handleZoomOut}>
-          {`Zoom Out Chart ${parseInt(index) + 1}`}
-        </MenuItem>
-      ))}
-      <MenuItem onClick={handleResetZooming}>Reset Zooming</MenuItem>
-    </div>
+    <ErrorBoundary>
+      <div className='ZoomOutPopover'>
+        {Object.keys(groupedHistory)?.map((index) => (
+          <MenuItem key={index} data-name={index} onClick={handleZoomOut}>
+            {`Zoom Out Chart ${parseInt(index) + 1}`}
+          </MenuItem>
+        ))}
+        <MenuItem onClick={handleResetZooming}>Reset Zooming</MenuItem>
+      </div>
+    </ErrorBoundary>
   );
 }
 

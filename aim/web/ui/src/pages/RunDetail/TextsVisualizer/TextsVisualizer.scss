@@ -1,11 +1,11 @@
 @use 'src/styles/abstracts' as *;
 
 .TextsVisualizer {
-  height: 100%;
+  height: calc(100% - 100px);
   padding: toRem(10px) toRem(20px) 0;
   width: 100%;
   position: relative;
-  > div {
+  .TextsTable {
     border: $border-grey;
     border-top-left-radius: $border-radius-main;
     border-top-right-radius: $border-radius-main;
@@ -49,5 +49,8 @@
         }
       }
     }
+  }
+  &__mark {
+    background-color: $warning-color-50;
   }
 }

@@ -7,6 +7,7 @@ import Select, {
 } from 'react-select';
 
 import { Icon, Text } from 'components/kit';
+import ErrorBoundary from 'components/ErrorBoundary/ErrorBoundary';
 
 import DropdownCustomOption from './DropdownCustomOption';
 import {
@@ -212,50 +213,52 @@ function Dropdown({
   }, [value]);
 
   return (
-    <div className='Dropdown'>
-      {label && (
-        <Text
-          component='span'
-          size={labelSwapped ? 11 : 14}
-          weight={500}
-          style={{
-            top: labelTopPosition[size],
-            left: icon ? (labelSwapped ? '1rem' : '2.5rem') : '1rem',
+    <ErrorBoundary>
+      <div className='Dropdown'>
+        {label && (
+          <Text
+            component='span'
+            size={labelSwapped ? 11 : 14}
+            weight={500}
+            style={{
+              top: labelTopPosition[size],
+              left: icon ? (labelSwapped ? '1rem' : '2.5rem') : '1rem',
+            }}
+            color={isColored && value ? 'info' : 'primary'}
+            tint={isColored && value ? 100 : 70}
+            className={classNames('Dropdown__label', { swapped: labelSwapped })}
+          >
+            {label}
+          </Text>
+        )}
+        <Select
+          {...rest}
+          value={
+            options.find(
+              (option: { value: string; label: string }) =>
+                value === option.value,
+            ) || null
+          }
+          className={classNames({ [className]: className })}
+          options={options}
+          menuPortalTarget={withPortal && document.querySelector('body')}
+          menuIsOpen={open}
+          onMenuOpen={handleMenuOpen}
+          onMenuClose={handleMenuClose}
+          placeholder={!label && placeholder}
+          onChange={onChange as any}
+          isClearable={isClearable}
+          components={{
+            Option: DropdownCustomOption,
+            ClearIndicator: ClearIndicator,
+            DropdownIndicator: DropdownIndicator,
+            Control,
           }}
-          color={isColored && value ? 'info' : 'primary'}
-          tint={isColored && value ? 100 : 70}
-          className={classNames('Dropdown__label', { swapped: labelSwapped })}
-        >
-          {label}
-        </Text>
-      )}
-      <Select
-        {...rest}
-        value={
-          options.find(
-            (option: { value: string; label: string }) =>
-              value === option.value,
-          ) || null
-        }
-        className={classNames({ [className]: className })}
-        options={options}
-        menuPortalTarget={withPortal && document.querySelector('body')}
-        menuIsOpen={open}
-        onMenuOpen={handleMenuOpen}
-        onMenuClose={handleMenuClose}
-        placeholder={!label && placeholder}
-        onChange={onChange as any}
-        isClearable={isClearable}
-        components={{
-          Option: DropdownCustomOption,
-          ClearIndicator: ClearIndicator,
-          DropdownIndicator: DropdownIndicator,
-          Control,
-        }}
-        styles={customStyles}
-        menuPlacement='auto'
-      />
-    </div>
+          styles={customStyles}
+          menuPlacement='auto'
+        />
+      </div>
+    </ErrorBoundary>
   );
 }
 

@@ -39,7 +39,7 @@ function TagsTable({
         return (
           <div className='TagsTable__runsCell'>
             <span className='TagsTable__runsCell--iconBox'>
-              <Icon name='Runs' />
+              <Icon name='circle-with-dot' />
             </span>
             <Text size={14} color='info'>
               {cellData.count}

@@ -4,10 +4,9 @@ import { RowHeightSize } from 'config/table/tableConfigs';
 import { ITableRef } from 'types/components/Table/Table';
 import { INotification } from 'types/components/NotificationContainer/NotificationContainer';
 import { ISelectConfig } from 'types/services/models/explorer/createAppModel';
-import {
-  IPanelTooltip,
-  SortField,
-} from 'types/services/models/metrics/metricsAppModel';
+import { IPanelTooltip } from 'types/services/models/metrics/metricsAppModel';
+
+import { SortFields } from 'utils/getSortedFields';
 
 export interface IImagesExploreAppConfig {
   grouping: {
@@ -36,13 +35,16 @@ export interface IImagesExploreAppConfig {
       alignmentType: string;
       mediaItemSize: number;
       imageRendering: string;
+      stacking: boolean;
     };
+    sortFields?: SortFields;
+    sortFieldsDict: any;
   };
   select: ISelectConfig;
   table: {
     resizeMode: ResizeModeEnum;
     rowHeight: RowHeightSize;
-    sortFields?: SortField[];
+    sortFields?: SortFields;
     hiddenMetrics?: string[];
     hiddenColumns?: string[];
     columnsWidths?: { [key: string]: number };
@@ -73,6 +75,7 @@ export interface IImagesExploreAppModelState {
   groupingSelectOptions: IGroupingSelectOption[];
   searchButtonDisabled: boolean;
   applyButtonDisabled: boolean;
+  selectedRows: { [key: string]: any };
   // liveUpdateConfig: {
   //   delay: number;
   //   enabled: boolean;

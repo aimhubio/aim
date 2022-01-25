@@ -1,5 +1,7 @@
 import React from 'react';
 
+import ErrorBoundary from 'components/ErrorBoundary/ErrorBoundary';
+
 import { ISwitcherProps } from './Switcher.d';
 
 import './Switcher.scss';
@@ -30,22 +32,26 @@ function Switcher({
   }, [checked]);
 
   return (
-    <button
-      data-name={name}
-      data-testid='switcher'
-      className={`Switcher ${`Switcher__${variant}`} ${`Switcher__${color}`} ${`Switcher__${size} ${
-        checkedValue ? 'Switcher__checked' : ''
-      }`}`}
-      onClick={handleClick}
-    >
-      {leftLabel && <span className='Switcher__leftLabel'>{leftLabel}</span>}
-      <i
-        className={`Switcher__circle ${
-          checkedValue ? 'Switcher__circle__checked' : ''
-        }`}
-      />
-      {rightLabel && <span className='Switcher__rightLabel'>{rightLabel}</span>}
-    </button>
+    <ErrorBoundary>
+      <button
+        data-name={name}
+        data-testid='switcher'
+        className={`Switcher ${`Switcher__${variant}`} ${`Switcher__${color}`} ${`Switcher__${size} ${
+          checkedValue ? 'Switcher__checked' : ''
+        }`}`}
+        onClick={handleClick}
+      >
+        {leftLabel && <span className='Switcher__leftLabel'>{leftLabel}</span>}
+        <i
+          className={`Switcher__circle ${
+            checkedValue ? 'Switcher__circle__checked' : ''
+          }`}
+        />
+        {rightLabel && (
+          <span className='Switcher__rightLabel'>{rightLabel}</span>
+        )}
+      </button>
+    </ErrorBoundary>
   );
 }
 

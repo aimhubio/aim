@@ -1,6 +1,8 @@
 import React from 'react';
 import styled from 'styled-components';
 
+import ErrorBoundary from 'components/ErrorBoundary/ErrorBoundary';
+
 import { Icon } from '../index';
 
 import { IBadgeProps } from './Badge.d';
@@ -49,36 +51,38 @@ function Badge({
   onClick,
 }: IBadgeProps): React.FunctionComponentElement<React.ReactNode> {
   return (
-    <BadgeContainer
-      color={color}
-      id={id}
-      style={{
-        ...style,
-        maxWidth,
-      }}
-      role='button'
-      className={`Badge Badge${'__' + size} ${className} ${
-        color ? '' : 'Badge__default'
-      } ${selectBadge ? 'Badge__select' : ''}`}
-      data-name={label}
-      onClick={onClick}
-    >
-      {startIcon && (
-        <span className='Badge__startIcon'>
-          <Icon color={color} name={startIcon} />
-        </span>
-      )}
-      <span className='Badge__label'>{label}</span>
-      {onDelete && (
-        <BadgeIcon
-          color={color}
-          onClick={() => onDelete(label)}
-          className='Badge__deleteIcon'
-        >
-          <Icon color={color} name='close' />
-        </BadgeIcon>
-      )}
-    </BadgeContainer>
+    <ErrorBoundary>
+      <BadgeContainer
+        color={color}
+        id={id}
+        style={{
+          ...style,
+          maxWidth,
+        }}
+        role='button'
+        className={`Badge Badge${'__' + size} ${className} ${
+          color ? '' : 'Badge__default'
+        } ${selectBadge ? 'Badge__select' : ''}`}
+        data-name={label}
+        onClick={onClick}
+      >
+        {startIcon && (
+          <span className='Badge__startIcon'>
+            <Icon color={color} name={startIcon} />
+          </span>
+        )}
+        <span className='Badge__label'>{label}</span>
+        {onDelete && (
+          <BadgeIcon
+            color={color}
+            onClick={() => onDelete(label)}
+            className='Badge__deleteIcon'
+          >
+            <Icon color={color} name='close' />
+          </BadgeIcon>
+        )}
+      </BadgeContainer>
+    </ErrorBoundary>
   );
 }
 

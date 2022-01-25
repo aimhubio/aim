@@ -3,12 +3,11 @@ import logging
 import os
 import datetime
 import json
+import pytz
 
 from collections import defaultdict
-from time import time
 from copy import deepcopy
 
-from aim.sdk.errors import RepoIntegrityError
 from aim.sdk.sequence import Sequence
 from aim.storage.object import CustomObject
 from aim.sdk.sequence_collection import SingleRunSequenceCollection
@@ -58,7 +57,7 @@ class RunAutoClean(AutoClean['Run']):
         super().__init__(instance)
 
         self.read_only = instance.read_only
-        self.name = instance.name
+        self.hash = instance.hash
         self.meta_run_tree = instance.meta_run_tree
         self.repo = instance.repo
         self._system_resource_tracker = instance._system_resource_tracker
@@ -67,14 +66,14 @@ class RunAutoClean(AutoClean['Run']):
         """
         Finalize the run by indexing all the data.
         """
-        self.meta_run_tree['end_time'] = datetime.datetime.utcnow().timestamp()
+        self.meta_run_tree['end_time'] = datetime.datetime.now(pytz.utc).timestamp()
         try:
             timeout = os.getenv(AIM_RUN_INDEXING_TIMEOUT, 2 * 60)
-            index = self.repo._get_index_container('meta', timeout=timeout).view(b'')
-            logger.debug(f'Indexing Run {self.name}...')
+            index = self.repo._get_index_tree('meta', timeout=timeout).view(b'')
+            logger.debug(f'Indexing Run {self.hash}...')
             self.meta_run_tree.finalize(index=index)
         except TimeoutError:
-            logger.warning(f'Cannot index Run {self.name}. Index is locked.')
+            logger.warning(f'Cannot index Run {self.hash}. Index is locked.')
 
     def finalize_system_tracker(self):
         """
@@ -89,7 +88,7 @@ class RunAutoClean(AutoClean['Run']):
         Close the `Run` instance resources and trigger indexing.
         """
         if self.read_only:
-            logger.debug(f'Run {self.name} is read-only, skipping cleanup')
+            logger.debug(f'Run {self.hash} is read-only, skipping cleanup')
             return
         self.finalize_system_tracker()
         self.finalize_run()
@@ -140,29 +139,12 @@ class StructuredRunMixin:
         self.props.archived = value
 
     @property
-    def created_at(self):
-        """Run object creation time [UTC] as datetime.
-
-            :getter: Returns run creation time.
-        """
-        return self.props.created_at
-
-    @property
     def creation_time(self):
         """Run object creation time [UTC] as timestamp.
 
             :getter: Returns run creation time.
         """
         return self.props.creation_time
-
-    @property
-    def finalized_at(self):
-        """Run finalization time [UTC] as datetime.
-
-            :getter: Returns run finalization time.
-        """
-        end_time = self.end_time
-        return datetime.datetime.fromtimestamp(end_time) if end_time else None
 
     @property
     def end_time(self):
@@ -175,10 +157,6 @@ class StructuredRunMixin:
         except KeyError:
             # run saved with old version. fallback to sqlite data
             return self.props.end_time
-
-    @property
-    def updated_at(self):
-        return self.props.updated_at
 
     @property
     def experiment(self):
@@ -210,13 +188,13 @@ class StructuredRunMixin:
         """
         return self.props.add_tag(value)
 
-    def remove_tag(self, tag_id):
+    def remove_tag(self, tag_name):
         """Remove run tag.
 
         Args:
-            tag_id (str): :obj:`uuid` of tag to be removed.
+            tag_name (str): :obj:`name` of tag to be removed.
         """
-        return self.props.remove_tag(tag_id)
+        return self.props.remove_tag(tag_name)
 
 
 class SequenceInfo:
@@ -224,6 +202,10 @@ class SequenceInfo:
         self.initialized = False
         self.count = None
         self.sequence_dtype = None
+        self.val_view = None
+        self.epoch_view = None
+        self.time_view = None
+        self.record_max_length = None
 
 
 class Run(StructuredRunMixin):
@@ -274,20 +256,17 @@ class Run(StructuredRunMixin):
         self.contexts: Dict[Context, int] = dict()
         self.sequence_info: Dict[SequenceDescriptor.Selector, SequenceInfo] = defaultdict(SequenceInfo)
 
-        self.meta_tree: TreeView = self.repo.request(
+        self.meta_tree: TreeView = self.repo.request_tree(
             'meta', self.hash, read_only=read_only, from_union=True
-        ).tree().subtree('meta')
+        ).subtree('meta')
         self.meta_run_tree: TreeView = self.meta_tree.subtree('chunks').subtree(self.hash)
 
         self.meta_attrs_tree: TreeView = self.meta_tree.subtree('attrs')
         self.meta_run_attrs_tree: TreeView = self.meta_run_tree.subtree('attrs')
 
-        self.series_run_tree: TreeView = self.repo.request(
+        self.series_run_tree: TreeView = self.repo.request_tree(
             'seqs', self.hash, read_only=read_only
-        ).tree().subtree('seqs').subtree('chunks').subtree(self.hash)
-
-        self._system_resource_tracker: ResourceTracker = None
-        self._prepare_resource_tracker(system_tracking_interval)
+        ).subtree('seqs').subtree('chunks').subtree(self.hash)
 
         if not read_only:
             try:
@@ -299,6 +278,11 @@ class Run(StructuredRunMixin):
             self.props
         if experiment:
             self.experiment = experiment
+
+        self._prepare_sequence_info(read_only)
+
+        self._system_resource_tracker: ResourceTracker = None
+        self._prepare_resource_tracker(system_tracking_interval)
 
         self._resources = RunAutoClean(self)
 
@@ -396,7 +380,7 @@ class Run(StructuredRunMixin):
 
         # since worker might be lagging behind, we want to log the timestamp of run.track() call,
         # not the actual implementation execution time.
-        track_time = time()
+        track_time = datetime.datetime.now(pytz.utc).timestamp()
         if self.track_in_thread:
             val = deepcopy(value)
             track_rate_warning = self.repo.tracking_queue.register_task(
@@ -424,79 +408,33 @@ class Run(StructuredRunMixin):
         elif isinstance(value, (CustomObject, list, tuple)):
             val = value
         else:
-            raise ValueError(f"Input metric of type {type(value)} is neither python number nor AimObject")
-
-        dtype = get_object_typename(value)
+            raise ValueError(f'Input metric of type {type(value)} is neither python number nor AimObject')
 
         ctx = Context(context)
-        sequence = SequenceDescriptor(name, ctx)
-
         if ctx not in self.contexts:
             self.meta_tree['contexts', ctx.idx] = context
             self.meta_run_tree['contexts', ctx.idx] = context
             self.contexts[ctx] = ctx.idx
             self._idx_to_ctx[ctx.idx] = ctx
 
-        val_view = self.series_run_tree.subtree(sequence.selector).array('val').allocate()
-        epoch_view = self.series_run_tree.subtree(sequence.selector).array('epoch').allocate()
-        time_view = self.series_run_tree.subtree(sequence.selector).array('time').allocate()
-
-        seq_info = self.sequence_info[sequence.selector]
-        if not seq_info.initialized:
-            seq_info.count = len(val_view)
-            seq_info.sequence_dtype = self.meta_run_tree.get(('traces', ctx.idx, name, 'dtype'), None)
-            if seq_info.count != 0 and seq_info.sequence_dtype is None:  # continue tracking on old sequence
-                seq_info.sequence_dtype = 'float'
-            seq_info.initialized = True
-
-        if seq_info.sequence_dtype is not None:
-            def update_trace_dtype(new_dtype):
-                self.meta_tree['traces_types', new_dtype, ctx.idx, name] = 1
-                seq_info.sequence_dtype = self.meta_run_tree['traces', ctx.idx, name, 'dtype'] = new_dtype
-
-            compatible = check_types_compatibility(dtype, seq_info.sequence_dtype, update_trace_dtype)
-            if not compatible:
-                raise ValueError(f'Cannot log value \'{value}\' on sequence \'{name}\'. Incompatible data types.')
-
+        seq_info = self._get_or_create_sequence_info(ctx, name)
         step = step or seq_info.count
-
-        if seq_info.count == 0:
-            self.meta_tree['traces_types', dtype, ctx.idx, name] = 1
-            seq_info.sequence_dtype = self.meta_run_tree['traces', ctx.idx, name, 'dtype'] = dtype
-            self.meta_run_tree['traces', ctx.idx, name, 'first_step'] = step
+        self._update_sequence_info(seq_info, ctx, val, name, step)
 
         self.meta_run_tree['traces', ctx.idx, name, 'last'] = val
         self.meta_run_tree['traces', ctx.idx, name, 'last_step'] = step
-        if isinstance(val, (tuple, list)):
-            record_max_length = self.meta_run_tree.get(('traces', ctx.idx, name, 'record_max_length'), 0)
-            self.meta_run_tree['traces', ctx.idx, name, 'record_max_length'] = max(record_max_length, len(val))
 
         # TODO perform assignments in an atomic way
-        val_view[step] = val
-        epoch_view[step] = epoch
-        time_view[step] = track_time
+        seq_info.val_view[step] = val
+        seq_info.epoch_view[step] = epoch
+        seq_info.time_view[step] = track_time
         seq_info.count = seq_info.count + 1
 
     @property
     def props(self):
         if self._props is None:
-            self._init_props()
+            self._props = self.repo.request_props(self.hash, self.read_only)
         return self._props
-
-    def _init_props(self):
-        sdb = self.repo.structured_db
-        if self.repo.run_props_cache_hint:
-            self._props = sdb.caches[self.repo.run_props_cache_hint][self.hash]
-        if not self._props:
-            self._props = sdb.find_run(self.hash)
-            if not self._props:
-                if self.read_only:
-                    raise RepoIntegrityError(f'Missing props for Run {self.hash}')
-                else:
-                    self._props = sdb.create_run(self.hash)
-                    self._props.experiment = 'default'
-            if self.repo.run_props_cache_hint:
-                sdb.caches[self.repo.run_props_cache_hint][self.hash] = self._props
 
     def iter_metrics_info(self) -> Iterator[Tuple[str, Context, 'Run']]:
         """Iterator for all run metrics info.
@@ -670,6 +608,75 @@ class Run(StructuredRunMixin):
         sequence = seq_cls(sequence_name, context, self)
         return sequence if bool(sequence) else None
 
+    def _prepare_sequence_info(self, read_only):
+        if read_only:
+            return
+
+        for ctx_id, traces in self.meta_run_tree.get('traces', {}).items():
+            for name in traces:
+                try:
+                    self._read_sequence_info(self.idx_to_ctx(ctx_id), name)
+                except KeyError:
+                    pass
+
+    def _read_sequence_info(self, ctx, name):
+        sequence_selector = SequenceDescriptor(name, ctx).selector
+        seq_info = self.sequence_info[sequence_selector]
+
+        assert not seq_info.initialized
+        seq_info.val_view = self.series_run_tree.subtree(sequence_selector).array('val').allocate()
+        seq_info.epoch_view = self.series_run_tree.subtree(sequence_selector).array('epoch').allocate()
+        seq_info.time_view = self.series_run_tree.subtree(sequence_selector).array('time').allocate()
+        seq_info.count = len(seq_info.val_view)
+        seq_info.sequence_dtype = self.meta_run_tree.get(('traces', ctx.idx, name, 'dtype'), None)
+        seq_info.record_max_length = self.meta_run_tree.get(('traces', ctx.idx, name, 'record_max_length'), 0)
+        seq_info.initialized = True
+
+    def _get_or_create_sequence_info(self, ctx, name):
+        # this method is used in the `run.track()`, so please use only write-only instructions
+        sequence_selector = SequenceDescriptor(name, ctx).selector
+        seq_info = self.sequence_info[sequence_selector]
+
+        if seq_info.initialized:
+            return seq_info
+
+        # the subtree().array().allocate() method is write-only
+        seq_info.val_view = self.series_run_tree.subtree(sequence_selector).array('val').allocate()
+        seq_info.epoch_view = self.series_run_tree.subtree(sequence_selector).array('epoch').allocate()
+        seq_info.time_view = self.series_run_tree.subtree(sequence_selector).array('time').allocate()
+        seq_info.count = 0
+        seq_info.sequence_dtype = None
+        seq_info.record_max_length = 0
+        seq_info.initialized = True
+        return seq_info
+
+    def _update_sequence_info(self, seq_info, ctx, val, name, step):
+        # this method is used in the `run.track()`, so please use only write-only instructions
+        dtype = get_object_typename(val)
+
+        if seq_info.sequence_dtype is not None:
+            def update_trace_dtype(new_dtype):
+                self.meta_tree['traces_types', new_dtype, ctx.idx, name] = 1
+                self.meta_run_tree['traces', ctx.idx, name, 'dtype'] = new_dtype
+                seq_info.sequence_dtype = new_dtype
+
+            compatible = check_types_compatibility(dtype, seq_info.sequence_dtype, update_trace_dtype)
+            if not compatible:
+                raise ValueError(f'Cannot log value \'{val}\' on sequence \'{name}\'. Incompatible data types.')
+
+        if seq_info.count == 0:
+            self.meta_tree['traces_types', dtype, ctx.idx, name] = 1
+            self.meta_run_tree['traces', ctx.idx, name, 'dtype'] = dtype
+            self.meta_run_tree['traces', ctx.idx, name, 'first_step'] = step
+            seq_info.sequence_dtype = dtype
+
+        if isinstance(val, (tuple, list)):
+            record_max_length = max(seq_info.record_max_length, len(val))
+            self.meta_run_tree['traces', ctx.idx, name, 'record_max_length'] = record_max_length
+            seq_info.record_max_length = record_max_length
+
+        return seq_info
+
     def collect_sequence_info(self, sequence_types: Tuple[str, ...], skip_last_value=False) -> Dict[str, list]:
         """Retrieve Run's all sequences general overview.
 
@@ -783,8 +790,8 @@ class Run(StructuredRunMixin):
             data['archived'] = self.props.archived
             data['creation_time'] = self.props.creation_time
             data['end_time'] = self.props.end_time
-            data['experiment'] = self.props.experiment.name
-            data['tags'] = json.dumps([t.name for t in self.props.tags])
+            data['experiment'] = self.props.experiment
+            data['tags'] = json.dumps(self.props.tags)
 
         if include_params:
             # TODO [GA]:

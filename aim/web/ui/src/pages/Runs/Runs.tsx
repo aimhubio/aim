@@ -44,6 +44,10 @@ function Runs(props: any): React.FunctionComponentElement<React.ReactNode> {
               getLastRunsData={props.getLastRunsData}
               columnsWidths={props.columnsWidths}
               updateColumnsWidths={props.updateColumnsWidths}
+              selectedRows={props.selectedRows}
+              onRowSelect={props.onRowSelect}
+              archiveRuns={props.archiveRuns}
+              deleteRuns={props.deleteRuns}
             />
           </div>
         </div>

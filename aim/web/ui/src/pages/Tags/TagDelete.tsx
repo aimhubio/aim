@@ -73,6 +73,9 @@ function TagDelete({
       onSubmit={onTagHide}
       text='Are you sure you want to delete this tag?'
       icon={<Icon name='delete' />}
+      title='Are you sure?'
+      statusType='error'
+      confirmBtnText='Delete'
     >
       <Text
         component='p'

@@ -3,7 +3,7 @@
 .TraceVisualizationWrapper {
   display: flex;
   width: 100%;
-  max-height: toRem(510px);
+  height: 100%;
   .VisualizationLoader {
     height: 100% !important;
   }
@@ -12,23 +12,19 @@
     min-width: toRem(320px);
   }
   .VisualizerArea {
-    max-height: toRem(900px);
     width: 100%;
     border: toRem(1px) solid $grayish;
     border-left: none;
     border-top-right-radius: toRem(6px);
     border-bottom-right-radius: toRem(6px);
-    height: toRem(500px);
     display: flex;
     flex-direction: column;
     justify-content: space-between;
-
     .RangePanel {
       display: flex;
       align-items: center;
       min-height: toRem(44px);
       width: 100%;
-      margin-top: toRem(10px);
       justify-content: center;
       background: $white;
       border-top: $border-main;
