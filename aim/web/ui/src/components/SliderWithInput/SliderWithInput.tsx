@@ -1,8 +1,9 @@
 import React from 'react';
+import { isString, isEmpty } from 'lodash';
 
 import { Tooltip } from '@material-ui/core';
 
-import { Text, Slider } from 'components/kit';
+import { Text, Slider, InputWrapper } from 'components/kit';
 import ErrorBoundary from 'components/ErrorBoundary/ErrorBoundary';
 
 import { ISliderWithInputProps } from './types.d';
@@ -63,12 +64,7 @@ function SliderWithInput({
           {sliderType === 'single' ? (
             <Slider
               value={selectedCountValue}
-              onChange={
-                ((e: any, value: any) =>
-                  onCountChange({
-                    target: { value },
-                  } as any)) as any
-              }
+              onChange={(value: any) => onCountChange(value)}
               getAriaValueText={(value) => `${value}`}
               aria-labelledby='track-false-slider'
               track={false}
@@ -93,36 +89,86 @@ function SliderWithInput({
           )}
         </div>
         <div className='SliderWithInput__densityWrapper'>
-          <div className='SliderWithInput__densityWrapper__densityTitleBox'>
-            <Text
-              className='SliderWithInput__densityWrapper__densityTitleBox__densityFieldLabel'
-              size={10}
-              weight={400}
-              tint={70}
-              color='primary'
-            >
-              {countInputTitle}:
-            </Text>
-            {countTitleTooltip && (
-              <Tooltip title={countTitleTooltip} placement='right-end'>
-                <div className='SliderWithInput__densityWrapper__densityTitleBox__labelTooltip'>
-                  ?
-                </div>
-              </Tooltip>
-            )}
-          </div>
-          <input
-            type='number'
+          {/* <div className='SliderWithInput__densityWrapper__densityTitleBox'>
+          <Text
+            className='SliderWithInput__densityWrapper__densityTitleBox__densityFieldLabel'
+            size={10}
+            weight={400}
+            tint={70}
+            color='primary'
+          >
+            {countInputTitle}:
+          </Text>
+          {countTitleTooltip && (
+            <Tooltip title={countTitleTooltip} placement='right-end'>
+              <div className='SliderWithInput__densityWrapper__densityTitleBox__labelTooltip'>
+                ?
+              </div>
+            </Tooltip>
+          )}
+        </div> */}
+          {/* <input
+          type='number'
+          value={`${selectedCountValue}`}
+          step={1}
+          onChange={(e) => {
+            e.preventDefault();
+            if (+e.target.value < min || +e.target.value > max) return;
+            onCountChange({
+              target: { value: e.target.value as any },
+            } as any);
+          }}
+          className='SliderWithInput__densityWrapper__densityField'
+        /> */}
+          <InputWrapper
             value={`${selectedCountValue}`}
-            step={1}
-            onChange={(e) => {
-              e.preventDefault();
-              if (+e.target.value < min || +e.target.value > max) return;
-              onCountChange({
-                target: { value: e.target.value as any },
-              } as any);
+            type='number'
+            labelAppearance='top-labeled'
+            size='small'
+            label={countInputTitle}
+            labelIconName='circle-question'
+            labelHelperText={countTitleTooltip}
+            placeholder={countInputTitle}
+            showMessageByTooltip
+            // isValidateInitially={true}
+            onChange={(e, value, metadata) => {
+              console.clear();
+              console.log(
+                '🚀 ~ file: SliderWithInput.tsx ~ line 133 ~ metadata',
+                metadata,
+              );
+              console.log(
+                '🚀 ~ file: SliderWithInput.tsx ~ line 133 ~ value',
+                value,
+              );
+              console.log('🚀 ~ file: SliderWithInput.tsx ~ line 135 ~ e', e);
+
+              onCountChange(value, metadata);
             }}
-            className='SliderWithInput__densityWrapper__densityField'
+            validationPatterns={[
+              // TODO replace condition field to
+              // errorCondition maybe we need success or warningCondition field in a feature
+              {
+                errorCondition: (value) => +value < min,
+                errorText: `Value should be equal or greater then ${min}`,
+              },
+              {
+                errorCondition: (value) => +value > max,
+                errorText: `Value should be equal or smaller then ${max}`,
+              },
+              {
+                errorCondition: (value) => +value === 0,
+                errorText: "Value can't be equal to 0",
+              },
+              {
+                errorCondition: new RegExp(/[9]/g),
+                errorText: 'Value should be equal or smaller then 9',
+              },
+              {
+                errorCondition: (value) => isString(value) && isEmpty(value),
+                errorText: 'Field is required and cant be empty',
+              },
+            ]}
           />
         </div>
       </div>

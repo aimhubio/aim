@@ -9,6 +9,6 @@ export interface ISliderWithInputProps {
   selectedCountValue: number;
   sliderType?: 'range' | 'single';
   onSearch: () => void;
-  onCountChange: (event: React.ChangeEvent<HTMLInputElement>) => void;
+  onCountChange: (value: number, metadata?: object) => void;
   onRangeChange: (newValue: number[] | number) => void;
 }

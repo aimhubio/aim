@@ -20,6 +20,7 @@ export type IRunTraceModel = {
   };
   config: IConfig;
   data: any;
+  isApplyBtnDisabled: boolean;
 };
 
 export type TraceType =

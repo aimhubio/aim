@@ -44,9 +44,7 @@ function ImagesExploreRangePanel({
             onRangeChange={(value: number | number[]) =>
               onSliceRangeChange('recordSlice', value)
             }
-            onCountChange={(event: React.ChangeEvent<HTMLInputElement>) =>
-              onDensityChange(event, 'recordDensity')
-            }
+            onCountChange={(value) => onDensityChange(value, 'recordDensity')}
           />
           <div className='ImagesExploreRangePanel__container__sliderContainerSeparator'></div>
           <SliderWithInput
@@ -62,9 +60,7 @@ function ImagesExploreRangePanel({
             onRangeChange={(value: number | number[]) =>
               onSliceRangeChange('indexSlice', value)
             }
-            onCountChange={(event: React.ChangeEvent<HTMLInputElement>) =>
-              onDensityChange(event, 'indexDensity')
-            }
+            onCountChange={(value) => onDensityChange(value, 'indexDensity')}
           />
           <div className='ImagesExploreRangePanel__container__searchButtonContainer'>
             <Button

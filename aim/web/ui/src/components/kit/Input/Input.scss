@@ -1,0 +1,103 @@
+@use 'src/styles/abstracts' as *;
+
+.InputWrapper {
+  &_textFieldCnt {
+    color: $pico-80;
+
+    .MuiOutlinedInput-notchedOutline {
+      border-color: $cuddle;
+    }
+
+    .MuiInputBase-input:focus {
+      & + .MuiOutlinedInput-notchedOutline {
+        border-color: $cuddle-110;
+      }
+    }
+  }
+
+  &_default {
+  }
+
+  &_topLabeled {
+    .InputWrapper_topLabelCnt {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .MuiOutlinedInput-root {
+      border-radius: 2px;
+    }
+
+    .MuiFormLabel-root {
+      display: none;
+    }
+
+    legend {
+      width: 0;
+    }
+  }
+
+  &_small {
+    .InputWrapper_topLabelCnt {
+      .Icon__container {
+        font-size: 12px;
+      }
+    }
+
+    .MuiOutlinedInput-input {
+      padding: 4px 6px;
+    }
+
+    .MuiInputBase-input {
+      font-size: 10px;
+      // line-height: 16px;
+      // height: unset;
+    }
+
+    .InputWrapper_topLabelCnt {
+      line-height: 10px;
+      margin-bottom: 4px;
+    }
+
+    .MuiOutlinedInput-input {
+      padding: 4px 6px;
+    }
+  }
+
+  &_medium {
+    .MuiOutlinedInput-input {
+      padding: 8px 16px;
+    }
+
+    .MuiInputBase-input {
+      font-size: 14px;
+      line-height: 16px;
+      height: unset;
+    }
+  }
+
+  &_large {
+  }
+
+  &_error {
+    .MuiOutlinedInput-root.Mui-error,
+    .MuiOutlinedInput-root:hover,
+    .MuiOutlinedInput-root.Mui-focused {
+      .MuiOutlinedInput-notchedOutline {
+        border-color: $error-color !important; // TODO remove !important rule from the _Input.scss line:26
+      }
+    }
+  }
+}
+
+.InputWrapper_textFieldCnt_tooltip_error {
+  white-space: pre;
+  background-color: $error-color;
+  left: 6px;
+  top: -10px;
+
+  .arrow {
+    color: $error-color;
+  }
+}

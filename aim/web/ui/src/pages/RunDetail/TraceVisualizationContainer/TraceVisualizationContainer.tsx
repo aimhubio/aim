@@ -49,6 +49,17 @@ function TraceVisualizationContainer({
     };
   }, [runHash, traceInfo, traceType]);
 
+  const [isApplyBtnDisabled, setIsApplyBtnDisabled] =
+    React.useState<boolean>(false);
+
+  const onInputChangeHandler = (
+    name: string,
+    value: number,
+    metadata?: object,
+  ) => {
+    runTracesModel.onInputChange(name, value);
+  };
+
   const Visualizer = traceTypeVisualization[traceType];
 
   React.useEffect(() => {
@@ -96,9 +107,13 @@ function TraceVisualizationContainer({
                 sliderType: item.sliderType,
               }))}
               onApply={runTracesModel.onApply}
-              onInputChange={runTracesModel.onInputChange}
+              onInputChange={(name: string, value: number, metadata?: object) =>
+                onInputChangeHandler(name, value, metadata)
+              }
               onRangeSliderChange={runTracesModel.onRangeChange}
-              applyButtonDisabled={!!runTracesModelData?.isTraceBatchLoading}
+              applyButtonDisabled={
+                !!runTracesModelData?.isTraceBatchLoading || isApplyBtnDisabled
+              }
             />
           )}
       </div>
