@@ -106,7 +106,6 @@ class RemoteTrackingServicer(remote_tracking_pb2_grpc.RemoteTrackingServiceServi
 
             method_name = header.header.method_name
 
-            print('run_instruction', method_name, checked_args)
             resource = self.resource_pool[resource_handler][1]
             if method_name.endswith('.setter'):
                 attr_name = method_name.split('.')[0]
@@ -115,7 +114,6 @@ class RemoteTrackingServicer(remote_tracking_pb2_grpc.RemoteTrackingServiceServi
             else:
                 attr = getattr(resource, method_name)
                 if callable(attr):
-                    print("attr", attr, checked_args)
                     result = attr(*checked_args)
                 else:
                     result = attr
@@ -147,7 +145,6 @@ class RemoteTrackingServicer(remote_tracking_pb2_grpc.RemoteTrackingServiceServi
             write_instructions = decode_tree(unpack_bytes(raw_message))
             for instruction in write_instructions:
                 resource_handler, method_name, args = instruction
-                print(resource_handler, method_name, args)
 
                 self._verify_resource_handler(resource_handler, client_uri)
 
@@ -169,9 +166,10 @@ class RemoteTrackingServicer(remote_tracking_pb2_grpc.RemoteTrackingServiceServi
 
             return rpc_messages.WriteInstructionsResponse(status=rpc_messages.WriteInstructionsResponse.Status.OK)
         except Exception as e:
-            print(e)
             return rpc_messages.WriteInstructionsResponse(
-                status=rpc_messages.WriteInstructionsResponse.Status.ERROR
+                version=0.1,
+                status=rpc_messages.WriteInstructionsResponse.Status.ERROR,
+                exception=build_exception(e),
             )
 
     def _verify_resource_handler(self, resource_handler, client_uri):

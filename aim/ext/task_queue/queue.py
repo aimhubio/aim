@@ -42,14 +42,7 @@ class TaskQueue(object):
                 logger.debug(f'Shutting down worker thread {threading.get_ident()}.')
                 break
             task_f, args, kwargs = self._queue.get()
-            try:
-                task_f(*args, **kwargs)
-            except Exception as e:  # TODO [AD] catch only gRPC exceptions
-                logger.warning(f'Connection error, could not connect to remote server: {e}')
-                import time
-                time.sleep(0.1)  # TODO [AD] configurable ?
-                self._queue.put((task_f, args, kwargs))
-
+            task_f(*args, **kwargs)
             # clear the unnecessary references to Run objects
             task_f, args, kwargs = None, None, None
             self._queue.task_done()
@@ -66,6 +59,9 @@ class TaskQueue(object):
             self._queue.join()
         self._shutdown = True
         logger.debug('No pending tasks left.')
+
+    def join(self):
+        self._queue.join()
 
     def __del__(self):
         self.stop_workers()

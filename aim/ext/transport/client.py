@@ -55,7 +55,7 @@ class Client:
     def run_instruction(self, resource, method, args=(), is_write_only=False):
         args = deepcopy(args)
 
-        # self._thread_local can be empty in the 'clean up' phase, so using getattr to be safe
+        # self._thread_local can be empty in the 'clean up' phase.
         if getattr(self._thread_local, 'atomic_instructions', None) is not None:
             assert is_write_only
             self._thread_local.atomic_instructions.append((resource, method, args))
@@ -63,14 +63,12 @@ class Client:
 
         if is_write_only:
             self._queue.register_task(
-                self._run_write_instructions, deepcopy(self._thread_local.atomic_instructions))
+                self._run_write_instructions, [(resource, method, args)])
             return
 
         return self._run_read_instructions(resource, method, args)
 
     def _run_read_instructions(self, resource, method, args):
-        # TODO block read here
-
         def message_stream_generator():
             header = rpc_messages.InstructionRequest(
                 header=rpc_messages.RequestHeader(
@@ -86,8 +84,12 @@ class Client:
             for chunk in stream:
                 yield rpc_messages.InstructionRequest(message=chunk)
 
+        # TODO [AD] make this atomic in case of parallel write from different thread?
+        # TODO [AD] make queue per run? do we need it?
+        self._queue.join()
         resp = self.remote.run_instruction(message_stream_generator())
-        status_msg = next(resp)  # TODO double check if this is blocked
+        status_msg = next(resp)
+
         assert status_msg.WhichOneof('instruction') == 'header'
         if status_msg.header.status == rpc_messages.ResponseHeader.Status.ERROR:
             raise_exception(status_msg.header.exception)
@@ -98,7 +100,6 @@ class Client:
 
         def message_stream_generator():
             for chunk in stream:
-                print('chunk', chunk)
                 yield rpc_messages.WriteInstructionsRequest(
                     version='0.1',
                     client_uri=self.uri,
@@ -110,11 +111,9 @@ class Client:
             raise_exception(response.header.exception)
 
     def init_tracking(self):
-        print("--- start track method ---")
         self._thread_local.atomic_instructions = []
 
     def flush_tracking(self):
-        print("--- end track method ---")
         if self._thread_local.atomic_instructions is None:
             return
 

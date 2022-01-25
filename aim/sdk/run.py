@@ -346,8 +346,7 @@ class Run(StructuredRunMixin):
                       'please set `system_tracking_interval` greater than 0 '
                       'and less than 1 day')
             else:
-                # self._system_resource_tracker.start()
-                pass
+                self._system_resource_tracker.start()
 
     def __delitem__(self, key: str):
         """Remove key from run meta-params.
