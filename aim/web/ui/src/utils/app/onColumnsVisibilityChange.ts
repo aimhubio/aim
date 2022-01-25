@@ -1,4 +1,4 @@
-import { isEmpty } from 'lodash-es';
+import _ from 'lodash-es';
 
 import { HideColumnsEnum } from 'config/enums/tableEnums';
 
@@ -27,29 +27,38 @@ export default function onColumnsVisibilityChange<M extends State>({
 }): void {
   const configData = model.getState()?.config;
   let columnsData = model.getState()!.tableColumns!;
+  let systemMetrics: string[] = [];
+  columnsData.forEach((item) => {
+    if (isSystemMetric(item.key)) {
+      return systemMetrics.push(item.key);
+    }
+  });
 
   let columnKeys: string[] = Array.isArray(hiddenColumns)
     ? [...hiddenColumns]
     : [];
   let hideSystemMetrics: boolean = configData?.table.hideSystemMetrics;
-
   if (configData?.table) {
+    const filteredFromSystem = [...configData?.table?.hiddenColumns].filter(
+      (key) => !isSystemMetric(key),
+    );
     if (hiddenColumns === HideColumnsEnum.HideSystemMetrics) {
-      columnsData.forEach((item) => {
-        if (isSystemMetric(item.key)) {
-          columnKeys.push(item.key);
-        }
-      });
-      columnKeys.push(...configData?.table?.hiddenColumns);
-      hideSystemMetrics = true;
+      columnKeys = [...filteredFromSystem, ...systemMetrics];
     }
     if (hiddenColumns === HideColumnsEnum.ShowSystemMetrics) {
-      columnKeys = [...columnKeys, ...configData?.table?.hiddenColumns].filter(
+      columnKeys = [...configData?.table?.hiddenColumns].filter(
         (key) => !isSystemMetric(key),
       );
-      hideSystemMetrics = false;
     }
 
+    if (
+      [...columnKeys].filter((key) => isSystemMetric(key)).length ===
+      systemMetrics.length
+    ) {
+      hideSystemMetrics = true;
+    } else {
+      hideSystemMetrics = false;
+    }
     columnKeys =
       hiddenColumns === HideColumnsEnum.All
         ? columnsData.map((col) => col.key)
@@ -71,7 +80,7 @@ export default function onColumnsVisibilityChange<M extends State>({
   }
   if (hiddenColumns[0] === 'all') {
     analytics.trackEvent(`[${appName}Explorer][Table] Hide all table columns`);
-  } else if (isEmpty(hiddenColumns)) {
+  } else if (_.isEmpty(hiddenColumns)) {
     analytics.trackEvent(`[${appName}Explorer][Table] Show all table columns`);
   }
 }

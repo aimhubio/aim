@@ -313,9 +313,9 @@ function ManageColumnsPopover({
           >
             <Icon
               name={
-                (hideSystemMetrics
-                  ? 'eye-show-outline'
-                  : 'eye-outline-hide') as IconName
+                `${
+                  hideSystemMetrics ? 'show' : 'hide'
+                }-system-metrics` as IconName
               }
             />
             <Text size={12} tint={100}>
