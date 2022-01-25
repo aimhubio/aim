@@ -1,5 +1,7 @@
 import { isEmpty } from 'lodash-es';
 
+import { HideColumnsEnum } from 'config/enums/tableEnums';
+
 import * as analytics from 'services/analytics';
 
 import { IModel, State } from 'types/services/models/model';
@@ -7,6 +9,7 @@ import { IAppModelConfig } from 'types/services/models/explorer/createAppModel';
 
 import { encode } from 'utils/encoder/encoder';
 import { setItem } from 'utils/storage';
+import { isSystemMetric } from 'utils/isSystemMetric';
 
 export default function onColumnsVisibilityChange<M extends State>({
   hiddenColumns,
@@ -14,7 +17,7 @@ export default function onColumnsVisibilityChange<M extends State>({
   appName,
   updateModelData,
 }: {
-  hiddenColumns: string[];
+  hiddenColumns: string[] | string;
   model: IModel<M>;
   appName: string;
   updateModelData: (
@@ -23,15 +26,39 @@ export default function onColumnsVisibilityChange<M extends State>({
   ) => void;
 }): void {
   const configData = model.getState()?.config;
-  const columnsData = model.getState()!.tableColumns!;
+  let columnsData = model.getState()!.tableColumns!;
+  let hiddenKeys = [...hiddenColumns];
+  let hideSystemMetrics: boolean = configData?.table.hideSystemMetrics;
+  console.log(hiddenColumns);
+
   if (configData?.table) {
+    if (hiddenColumns === HideColumnsEnum.HideSystemMetrics) {
+      columnsData.forEach((item) => {
+        if (isSystemMetric(item.key)) {
+          hiddenKeys.push(item.key);
+        }
+      });
+      hideSystemMetrics = true;
+    } else if (hiddenColumns === HideColumnsEnum.ShowSystemMetrics) {
+      hiddenKeys = hiddenKeys.filter((key) => !isSystemMetric(key));
+      hideSystemMetrics = false;
+    } else {
+      hideSystemMetrics = hiddenKeys.some((key) => isSystemMetric(key))
+        ? false
+        : true;
+    }
+
+    hiddenKeys =
+      hiddenColumns === HideColumnsEnum.All
+        ? columnsData.map((col) => col.key)
+        : hiddenKeys;
+
     const table = {
       ...configData.table,
-      hiddenColumns:
-        hiddenColumns[0] === 'all'
-          ? columnsData.map((col) => col.key)
-          : hiddenColumns,
+      hiddenColumns: hiddenKeys,
+      hideSystemMetrics,
     };
+
     const config = {
       ...configData,
       table,

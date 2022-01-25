@@ -47,6 +47,8 @@ function RunsContainer(): React.FunctionComponentElement<React.ReactNode> {
     };
   }, []);
 
+  console.log(runsData);
+
   return (
     <Runs
       tableData={runsData?.tableData}
@@ -58,6 +60,7 @@ function RunsContainer(): React.FunctionComponentElement<React.ReactNode> {
       tableRef={tableRef}
       columnsOrder={runsData?.config?.table.columnsOrder}
       hiddenColumns={runsData?.config?.table.hiddenColumns ?? []}
+      hideSystemMetrics={runsData?.config?.table?.hideSystemMetrics}
       selectedRows={runsData?.selectedRows}
       query={runsData?.config?.select?.query}
       columnsWidths={runsData?.config?.table.columnsWidths}

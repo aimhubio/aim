@@ -77,6 +77,7 @@ const Table = React.forwardRef(function Table(
     minHeight,
     archiveRuns,
     deleteRuns,
+    hideSystemMetrics,
     className = '',
     ...props
   }: ITableProps,
@@ -551,6 +552,8 @@ const Table = React.forwardRef(function Table(
     setTableBulkActionsVisibility(tableBulkActionsVisibility);
   }, [selectedRows]);
 
+  console.log(props);
+
   useResizeObserver(observerReturnCallback, tableContainerRef);
 
   // The right check is !props.isInfiniteLoading && (isLoading || isNil(rowData))
@@ -607,6 +610,7 @@ const Table = React.forwardRef(function Table(
                               item.key !== '#' && item.key !== 'actions',
                           )}
                           hiddenColumns={hiddenColumnsRef.current}
+                          hideSystemMetrics={hideSystemMetrics}
                           onManageColumns={onManageColumns}
                           onColumnsVisibilityChange={onColumnsVisibilityChange}
                           onTableDiffShow={onTableDiffShow}

@@ -171,6 +171,7 @@ function MetricsContainer(): React.FunctionComponentElement<React.ReactNode> {
       tableRowHeight={metricsData?.config?.table?.rowHeight as RowHeightSize}
       sortFields={metricsData?.config?.table?.sortFields!}
       hiddenMetrics={metricsData?.config?.table?.hiddenMetrics!}
+      hideSystemMetrics={metricsData?.config?.table.hideSystemMetrics!}
       hiddenColumns={metricsData?.config?.table?.hiddenColumns!}
       selectedRows={metricsData?.selectedRows!}
       groupingSelectOptions={

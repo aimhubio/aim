@@ -7,7 +7,7 @@ import { IPoint } from 'components/ScatterPlot';
 
 import COLORS from 'config/colors/colors';
 import DASH_ARRAYS from 'config/dash-arrays/dashArrays';
-import { ResizeModeEnum } from 'config/enums/tableEnums';
+import { HideColumnsEnum, ResizeModeEnum } from 'config/enums/tableEnums';
 import { AlignmentNotificationsEnum } from 'config/notification-messages/notificationMessages';
 import { RowHeightSize } from 'config/table/tableConfigs';
 import { DensityOptions } from 'config/enums/densityEnum';
@@ -228,6 +228,7 @@ function createAppModel(appConfig: IAppInitialConfig) {
           config.table = {
             resizeMode: ResizeModeEnum.Resizable,
             rowHeight: RowHeightSize.md,
+            hideSystemMetrics: true,
             sortFields: [],
             hiddenMetrics: [],
             hiddenColumns: [],
@@ -340,6 +341,7 @@ function createAppModel(appConfig: IAppInitialConfig) {
           config.table = {
             resizeMode: ResizeModeEnum.Resizable,
             rowHeight: RowHeightSize.md,
+            hideSystemMetrics: true,
             sortFields: [],
             hiddenMetrics: [],
             hiddenColumns: [],
