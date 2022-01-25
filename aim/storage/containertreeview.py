@@ -109,7 +109,6 @@ class ContainerTreeView(TreeView):
         path: Union[AimObjectKey, AimObjectPath] = (),
         level: int = None
     ) -> Iterator[Union[AimObjectPath, AimObjectKey]]:
-        path = tuple(path)
         encoded_path = E.encode_path(path)
         walker = self.container.walk(encoded_path)
         path = None
