@@ -162,7 +162,9 @@ class RemoteTrackingServicer(remote_tracking_pb2_grpc.RemoteTrackingServiceServi
                     attr_name = method_name.split('.')[0]
                     setattr(resource, attr_name, checked_args[0])
                 else:
-                    assert '.getter method is detected'
+                    attr = getattr(resource, method_name)
+                    assert callable(attr)
+                    attr(*checked_args)
 
             return rpc_messages.WriteInstructionsResponse(status=rpc_messages.WriteInstructionsResponse.Status.OK)
         except Exception as e:
