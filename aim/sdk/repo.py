@@ -642,4 +642,3 @@ class Repo:
         yield
         if self.is_remote_repo:
             self._client.flush_tracking()
-
