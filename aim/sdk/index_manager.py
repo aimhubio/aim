@@ -119,7 +119,7 @@ class RepoIndexManager:
         logger.debug(f'Trying to acquire indexing lock for repo \'{self.repo.path}\'...')
         lock = FileLock(str(lock_path))
         lock.acquire(timeout=-1)  # block till lock can be acquired
-        logger.debug(f'Lock acquired! Running...')
+        logger.debug('Lock acquired! Running...')
         idle_cycles = 0
         while True:
             self._indexing_in_progress = False
