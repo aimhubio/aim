@@ -87,7 +87,7 @@ class Client:
                 yield rpc_messages.InstructionRequest(message=chunk)
 
         resp = self.remote.run_instruction(message_stream_generator())
-        status_msg = next(resp) # TODO double check if this is blocked
+        status_msg = next(resp)  # TODO double check if this is blocked
         assert status_msg.WhichOneof('instruction') == 'header'
         if status_msg.header.status == rpc_messages.ResponseHeader.Status.ERROR:
             raise_exception(status_msg.header.exception)
@@ -129,4 +129,3 @@ class Client:
     @property
     def uri(self):
         return self._id
-

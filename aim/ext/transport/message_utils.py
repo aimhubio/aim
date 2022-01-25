@@ -27,9 +27,9 @@ def unpack_helper(msg: bytes) -> Tuple[bytes, bytes]:
     value, tail = tail[:value_size], tail[value_size:]
     assert len(tail) == 0
     if is_blob:
-       yield key, BLOB(data=value)
+        yield key, BLOB(data=value)
     else:
-       yield key, value
+        yield key, value
 
 
 def unpack_bytes(stream: Iterator[bytes]) -> Tuple[bytes, bytes]:

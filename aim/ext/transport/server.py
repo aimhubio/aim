@@ -138,7 +138,8 @@ class RemoteTrackingServicer(remote_tracking_pb2_grpc.RemoteTrackingServiceServi
     def run_write_instructions(self, request_iterator, _context) -> rpc_messages.WriteInstructionsResponse:
         try:
             raw_message = []
-            client_uri = None  # TODO [AD] move to header interface? and use raw_message = [request.message for request in request_iterator]
+            client_uri = None  # TODO [AD] move to header interface?
+            # TODO [AD] raw_message = [request.message for request in request_iterator]
             for request in request_iterator:
                 raw_message.append(request.message)
                 client_uri = request.client_uri

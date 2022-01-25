@@ -45,7 +45,7 @@ class TaskQueue(object):
             try:
                 task_f(*args, **kwargs)
             except Exception as e:  # TODO [AD] catch only gRPC exceptions
-                logger.warning(f'Connection error, could not connect to remote server: ', e)
+                logger.warning(f'Connection error, could not connect to remote server: {e}')
                 import time
                 time.sleep(0.1)  # TODO [AD] configurable ?
                 self._queue.put((task_f, args, kwargs))

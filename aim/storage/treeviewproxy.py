@@ -130,7 +130,8 @@ class ProxyTree(TreeView):
         *,
         index: 'ProxyTree'
     ):
-        self._rpc_client.run_instruction(self._handler, 'finalize', (ResourceObject(index._handler),), is_write_only=True)
+        self._rpc_client.run_instruction(
+            self._handler, 'finalize', (ResourceObject(index._handler),), is_write_only=True)
 
 
 class SubtreeView(TreeView):
