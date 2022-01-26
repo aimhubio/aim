@@ -60,7 +60,20 @@ class AimLogger(object):
             @rank_zero_only
             def log_hyperparams(self, params: Union[Dict[str, Any], Namespace]):
                 params = self._convert_params(params)
-                self.experiment['hparams'] = params
+
+                # Handle OmegaConf object
+                try:
+                    from omegaconf import OmegaConf, Container
+                except ModuleNotFoundError:
+                    pass
+                else:
+                    # Convert to primitives
+                    if isinstance(params, Container):
+                        params = OmegaConf.to_container(params, resolve=True)
+
+                hparams = self.experiment.meta_run_attrs_tree.subtree('hparams')
+                for key, value in params.items():
+                    hparams.set(key, value, strict=False)
 
             @rank_zero_only
             def log_metrics(self, metrics: Dict[str, float],

@@ -1,6 +1,7 @@
 import React from 'react';
 import { Link as RouteLink } from 'react-router-dom';
 import { merge } from 'lodash-es';
+import _ from 'lodash';
 
 import { Link, Tooltip } from '@material-ui/core';
 
@@ -12,15 +13,13 @@ import COLORS from 'config/colors/colors';
 import { PathEnum } from 'config/enums/routesEnum';
 
 import { ITableColumn } from 'types/pages/metrics/components/TableColumns/TableColumns';
-import {
-  IOnGroupingSelectChangeParams,
-  SortField,
-} from 'types/services/models/metrics/metricsAppModel';
+import { IOnGroupingSelectChangeParams } from 'types/services/models/metrics/metricsAppModel';
 
 import { isSystemMetric } from 'utils/isSystemMetric';
 import { formatSystemMetricName } from 'utils/formatSystemMetricName';
 import contextToString from 'utils/contextToString';
 import { formatValue } from 'utils/formatValue';
+import { SortField } from 'utils/getSortedFields';
 
 const icons: { [key: string]: string } = {
   color: 'coloring',
@@ -131,7 +130,7 @@ function getParamsTableColumns(
     paramColumns.map((param) => {
       const paramKey = `run.params.${param}`;
       const sortItem: SortField = sortFields?.find(
-        (value) => value[0] === paramKey,
+        (value) => value.value === paramKey,
       );
 
       return {
@@ -142,8 +141,7 @@ function getParamsTableColumns(
             {onSort && (
               <TableSortIcons
                 onSort={() => onSort(paramKey)}
-                sortFields={sortFields}
-                sort={Array.isArray(sortItem) ? sortItem[1] : null}
+                sort={!_.isNil(sortItem) ? sortItem.order : null}
               />
             )}
           </span>

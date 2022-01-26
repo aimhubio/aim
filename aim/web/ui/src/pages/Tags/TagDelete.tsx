@@ -60,13 +60,22 @@ function TagDelete({
     );
   }
 
+  function onCancel(): void {
+    setFieldValue('name', '');
+    setFieldTouched('name', false);
+    onDeleteModalToggle();
+  }
+
   return (
     <ConfirmModal
       open={modalIsOpen}
-      onCancel={onDeleteModalToggle}
+      onCancel={onCancel}
       onSubmit={onTagHide}
       text='Are you sure you want to delete this tag?'
       icon={<Icon name='delete' />}
+      title='Are you sure?'
+      statusType='error'
+      confirmBtnText='Delete'
     >
       <Text
         component='p'

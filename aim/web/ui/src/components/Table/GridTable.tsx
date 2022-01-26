@@ -6,6 +6,8 @@ import cn from 'classnames';
 import { FixedSizeGrid, VariableSizeGrid } from 'react-window';
 import memoize from 'memoize-one';
 
+import ErrorBoundary from 'components/ErrorBoundary/ErrorBoundary';
+
 import Header from './TableHeader';
 import { getEstimatedTotalRowsHeight } from './utils';
 
@@ -110,55 +112,57 @@ class GridTable extends React.PureComponent {
 
     this._resetColumnWidthCache(bodyWidth);
     return (
-      <div role='table' className={cls} {...containerProps}>
-        <Grid
-          {...rest}
-          className={`${classPrefix}__body`}
-          ref={this._setBodyRef}
-          innerRef={this._setInnerRef}
-          itemKey={this._itemKey}
-          data={data}
-          frozenData={frozenData}
-          width={width}
-          height={Math.max(height - headerHeight - frozenRowsHeight, 0)}
-          rowHeight={estimatedRowHeight ? getRowHeight : rowHeight}
-          estimatedRowHeight={
-            typeof estimatedRowHeight === 'function'
-              ? undefined
-              : estimatedRowHeight
-          }
-          rowCount={data.length}
-          overscanRowCount={overscanRowCount}
-          columnWidth={estimatedRowHeight ? this._getBodyWidth : bodyWidth}
-          columnCount={1}
-          overscanColumnCount={0}
-          useIsScrolling={useIsScrolling}
-          hoveredRowKey={hoveredRowKey}
-          onScroll={onScroll}
-          onItemsRendered={this._handleItemsRendered}
-        >
-          {this.renderRow}
-        </Grid>
-        {headerHeight + frozenRowsHeight > 0 && (
-          // put header after body and reverse the display order via css
-          // to prevent header's shadow being covered by body
-          <Header
+      <ErrorBoundary>
+        <div role='table' className={cls} {...containerProps}>
+          <Grid
             {...rest}
-            className={`${classPrefix}__header`}
-            ref={this._setHeaderRef}
+            className={`${classPrefix}__body`}
+            ref={this._setBodyRef}
+            innerRef={this._setInnerRef}
+            itemKey={this._itemKey}
             data={data}
             frozenData={frozenData}
             width={width}
-            height={Math.min(headerHeight + frozenRowsHeight, height)}
-            rowWidth={headerWidth}
-            rowHeight={rowHeight}
-            headerHeight={this.props.headerHeight}
-            headerRenderer={this.props.headerRenderer}
-            rowRenderer={this.props.rowRenderer}
-            hoveredRowKey={frozenRowCount > 0 ? hoveredRowKey : null}
-          />
-        )}
-      </div>
+            height={Math.max(height - headerHeight - frozenRowsHeight, 0)}
+            rowHeight={estimatedRowHeight ? getRowHeight : rowHeight}
+            estimatedRowHeight={
+              typeof estimatedRowHeight === 'function'
+                ? undefined
+                : estimatedRowHeight
+            }
+            rowCount={data.length}
+            overscanRowCount={overscanRowCount}
+            columnWidth={estimatedRowHeight ? this._getBodyWidth : bodyWidth}
+            columnCount={1}
+            overscanColumnCount={0}
+            useIsScrolling={useIsScrolling}
+            hoveredRowKey={hoveredRowKey}
+            onScroll={onScroll}
+            onItemsRendered={this._handleItemsRendered}
+          >
+            {this.renderRow}
+          </Grid>
+          {headerHeight + frozenRowsHeight > 0 && (
+            // put header after body and reverse the display order via css
+            // to prevent header's shadow being covered by body
+            <Header
+              {...rest}
+              className={`${classPrefix}__header`}
+              ref={this._setHeaderRef}
+              data={data}
+              frozenData={frozenData}
+              width={width}
+              height={Math.min(headerHeight + frozenRowsHeight, height)}
+              rowWidth={headerWidth}
+              rowHeight={rowHeight}
+              headerHeight={this.props.headerHeight}
+              headerRenderer={this.props.headerRenderer}
+              rowRenderer={this.props.rowRenderer}
+              hoveredRowKey={frozenRowCount > 0 ? hoveredRowKey : null}
+            />
+          )}
+        </div>
+      </ErrorBoundary>
     );
   }
 

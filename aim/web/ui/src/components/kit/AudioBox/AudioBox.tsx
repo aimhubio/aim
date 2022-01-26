@@ -5,6 +5,7 @@ import AudioPlayer from 'material-ui-audio-player';
 import { CircularProgress } from '@material-ui/core';
 
 import { Button, Icon, Slider, Text } from 'components/kit';
+import ErrorBoundary from 'components/ErrorBoundary/ErrorBoundary';
 
 import { BATCH_COLLECT_DELAY } from 'config/mediaConfigs/mediaConfigs';
 
@@ -79,7 +80,7 @@ function AudiBoxProgress({ audio, isPlaying, src }: IAudiBoxProgressProps) {
   }
 
   return (
-    <>
+    <ErrorBoundary>
       <Slider
         containerClassName='AudioBox__controllers__progressSlider'
         onChangeCommitted={onTimerChange}
@@ -101,7 +102,7 @@ function AudiBoxProgress({ audio, isPlaying, src }: IAudiBoxProgressProps) {
           / {(audio && formatDuration()) || '00:00'}
         </Text>
       </div>
-    </>
+    </ErrorBoundary>
   );
 }
 
@@ -132,26 +133,32 @@ function AudioBoxVolume({ audio }: IAudioBoxVolumeProps) {
   }
 
   return (
-    <div className='AudioBox__controllers__volume'>
-      <Button
-        onClick={onVolumeToggle}
-        withOnlyIcon
-        size='small'
-        className='AudioBox__controllers__volume--button'
+    <ErrorBoundary>
+      <div
+        className={`AudioBox__controllers__volume ${
+          audio ? '' : 'AudioBox__controllers__volume-disabled'
+        }`}
       >
-        <Icon name={volume === 0 ? 'voice-off' : 'voice-on'} />
-      </Button>
-      <div className='AudioBox__controllers__volume__Slider'>
-        <Slider
-          onChange={onVolumeChange}
-          value={volume}
-          step={0.01}
-          defaultValue={1}
-          max={0.99}
-          min={0}
-        />
+        <Button
+          onClick={onVolumeToggle}
+          withOnlyIcon
+          size='small'
+          className='AudioBox__controllers__volume--button'
+        >
+          <Icon name={volume === 0 ? 'voice-off' : 'voice-on'} />
+        </Button>
+        <div className='AudioBox__controllers__volume__Slider'>
+          <Slider
+            onChange={onVolumeChange}
+            value={volume}
+            step={0.01}
+            defaultValue={1}
+            max={0.99}
+            min={0}
+          />
+        </div>
       </div>
-    </div>
+    </ErrorBoundary>
   );
 }
 
@@ -273,41 +280,68 @@ function AudioBox({
 
   function onDownload(): void {
     if (audio) {
-      const element: HTMLAnchorElement = document.createElement('a');
-      const { index, format, context, step, caption, audio_name } = data;
-      const contextName: string =
-        contextToString(context) === '' ? '' : `_${contextToString(context)}`;
-      const name: string = `${audio_name}${contextName}_${caption}_${step}_${index}`;
-      element.setAttribute('href', `data:audio/${format};base64,${blobData}`);
-      element.setAttribute('download', name);
-      document.body.appendChild(element);
-      element.click();
-      document.body.removeChild(element);
+      handleDownload();
+    } else {
+      setProcessing(true);
+      additionalProperties
+        .getAudiosBlobsData([blob_uri])
+        .call()
+        .then((a: any) => {
+          handleDownload();
+        });
     }
   }
 
+  function handleDownload(): void {
+    const element: HTMLAnchorElement = document.createElement('a');
+    const { index, format, context, step, caption, audio_name } = data;
+    const contextName: string =
+      contextToString(context) === '' ? '' : `_${contextToString(context)}`;
+    const name: string = `${audio_name}${contextName}_${caption}_${step}_${index}`;
+    element.setAttribute('href', `data:audio/${format};base64,${blobData}`);
+    element.setAttribute('download', name);
+    document.body.appendChild(element);
+    element.click();
+    document.body.removeChild(element);
+  }
+
   return (
-    <div className='AudioBox' style={style}>
-      <div className='AudioBox__controllers'>
-        {audio ? (
-          <Button
-            onClick={onPLayChange}
-            color='secondary'
-            withOnlyIcon
-            size='small'
-          >
-            <Icon name={isPlaying ? 'pause' : 'play'} />
-          </Button>
-        ) : (
-          <div className='AudioBox__controllers__Player'>
-            <AudioPlayer
-              displaySlider={false}
-              volume={false}
-              displayCloseButton={false}
-              onPlayed={onPLayChange}
-              width='24px'
-              src={src}
-            />
+    <ErrorBoundary>
+      <div className='AudioBox' style={style}>
+        <div className='AudioBox__controllers'>
+          {audio ? (
+            <Button
+              onClick={onPLayChange}
+              color='secondary'
+              withOnlyIcon
+              size='small'
+            >
+              <Icon name={isPlaying ? 'pause' : 'play'} />
+            </Button>
+          ) : (
+            <div className='AudioBox__controllers__Player'>
+              <AudioPlayer
+                displaySlider={false}
+                volume={false}
+                displayCloseButton={false}
+                onPlayed={onPLayChange}
+                width='24px'
+                src={src}
+              />
+              {processing ? (
+                <CircularProgress
+                  className='Icon__container'
+                  size={12}
+                  thickness={4}
+                />
+              ) : (
+                <Icon name={isPlaying ? 'pause' : 'play'} />
+              )}
+            </div>
+          )}
+          <AudiBoxProgress audio={audio} isPlaying={isPlaying} src={src} />
+          <AudioBoxVolume audio={audio} />
+          <Button withOnlyIcon size='small' onClick={onDownload}>
             {processing ? (
               <CircularProgress
                 className='Icon__container'
@@ -315,31 +349,20 @@ function AudioBox({
                 thickness={4}
               />
             ) : (
-              <Icon name={isPlaying ? 'pause' : 'play'} />
+              <Icon name='download' />
             )}
-          </div>
-        )}
-        <AudiBoxProgress audio={audio} isPlaying={isPlaying} src={src} />
-        <AudioBoxVolume audio={audio} />
-        <Button
-          withOnlyIcon
-          size='small'
-          onClick={() => {
-            onDownload();
-          }}
+          </Button>
+        </div>
+        <Text
+          title={data?.caption || ''}
+          className='AudioBox__caption'
+          size={8}
+          weight={400}
         >
-          <Icon name='download' />
-        </Button>
+          {data?.caption || ''}
+        </Text>
       </div>
-      <Text
-        title={data?.caption || ''}
-        className='AudioBox__caption'
-        size={8}
-        weight={400}
-      >
-        {data?.caption || ''}
-      </Text>
-    </div>
+    </ErrorBoundary>
   );
 }
 

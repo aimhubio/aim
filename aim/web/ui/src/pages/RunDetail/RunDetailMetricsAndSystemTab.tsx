@@ -28,29 +28,27 @@ function RunDetailMetricsAndSystemTab({
   }, [runTraces, runHash]);
 
   return (
-    <div className='RunDetailMetricsTab'>
-      <BusyLoaderWrapper
-        isLoading={isRunBatchLoading}
-        className='runDetailParamsTabLoader'
-        height='100%'
-      >
-        {runBatch && (
+    <BusyLoaderWrapper
+      isLoading={isRunBatchLoading}
+      className='runDetailParamsTabLoader'
+      height='100%'
+    >
+      {!isEmpty(runBatch) ? (
+        <div className='RunDetailMetricsTab'>
           <div className='RunDetailMetricsTab__container'>
-            {!isEmpty(runBatch) ? (
-              runBatch.map((batch: IRunBatch, i: number) => {
-                return <RunMetricCard batch={batch} index={i} key={i} />;
-              })
-            ) : (
-              <EmptyComponent
-                size='big'
-                className='runDetailParamsTabLoader'
-                content={`No tracked ${isSystem ? 'system' : ''} metrics`}
-              />
-            )}
+            {runBatch.map((batch: IRunBatch, i: number) => {
+              return <RunMetricCard batch={batch} index={i} key={i} />;
+            })}
           </div>
-        )}
-      </BusyLoaderWrapper>
-    </div>
+        </div>
+      ) : (
+        <EmptyComponent
+          size='big'
+          className='runDetailParamsTabLoader'
+          content={`No tracked ${isSystem ? 'system' : ''} metrics`}
+        />
+      )}
+    </BusyLoaderWrapper>
   );
 }
 

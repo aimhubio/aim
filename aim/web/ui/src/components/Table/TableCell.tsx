@@ -3,6 +3,8 @@
 
 import React from 'react';
 
+import ErrorBoundary from 'components/ErrorBoundary/ErrorBoundary';
+
 import { toString } from './utils';
 
 /**
@@ -16,9 +18,11 @@ const TableCell = ({
   rowData,
   rowIndex,
 }) => (
-  <div className={className}>
-    {React.isValidElement(cellData) ? cellData : toString(cellData)}
-  </div>
+  <ErrorBoundary>
+    <div className={className}>
+      {React.isValidElement(cellData) ? cellData : toString(cellData)}
+    </div>
+  </ErrorBoundary>
 );
 
 export default TableCell;

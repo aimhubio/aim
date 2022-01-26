@@ -1,8 +1,6 @@
 import React from 'react';
 import { RouteChildrenProps } from 'react-router-dom';
 
-import { HighlightEnum } from 'components/HighlightModesPopover/HighlightModesPopover';
-
 import { RowHeightSize } from 'config/table/tableConfigs';
 import { ResizeModeEnum } from 'config/enums/tableEnums';
 
@@ -23,15 +21,14 @@ import {
   IChartTooltip,
   IChartTitleData,
   IGroupingSelectOption,
-  IChartZoom,
 } from 'types/services/models/metrics/metricsAppModel';
 import { ITableColumn } from 'types/components/TableColumns/TableColumns';
 import { IChartPanelRef } from 'types/components/ChartPanel/ChartPanel';
-import { IAxesScaleState } from 'types/components/AxesScalePopover/AxesScalePopover';
 import { IActivePoint } from 'types/utils/d3/drawHoverAttributes';
 import { IBookmarkFormState } from 'types/components/BookmarkForm/BookmarkForm';
 import { INotification } from 'types/components/NotificationContainer/NotificationContainer';
 import { IProjectParamsMetrics } from 'types/services/models/projects/projectsModel';
+import { ITrendlineOptions } from 'types/services/models/scatter/scatterAppModel';
 
 export interface IScattersProps extends Partial<RouteChildrenProps> {
   tableRef: React.RefObject<ITableRef>;
@@ -58,7 +55,10 @@ export interface IScattersProps extends Partial<RouteChildrenProps> {
   projectsDataMetrics: IProjectParamsMetrics['metrics'];
   requestIsPending: boolean;
   resizeMode: ResizeModeEnum;
+  trendlineOptions: ITrendlineOptions;
+  selectedRows: { [key: string]: any };
   onChangeTooltip: (tooltip: Partial<IChartTooltip>) => void;
+  onChangeTrendlineOptions: (options: Partial<ITrendlineOptions>) => void;
   onActivePointChange?: (
     activePoint: IActivePoint,
     focusedStateActive?: boolean,
@@ -96,4 +96,7 @@ export interface IScattersProps extends Partial<RouteChildrenProps> {
     delay?: number;
     enabled?: boolean;
   }) => void;
+  onRowSelect: any;
+  archiveRuns: (ids: string[], archived: boolean) => void;
+  deleteRuns: (ids: string[]) => void;
 }

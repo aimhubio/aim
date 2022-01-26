@@ -123,6 +123,10 @@ class StructuredRunUpdateOut(BaseModel):
     status: str = 'OK'
 
 
+class StructuredRunsArchivedOut(BaseModel):
+    status: str = 'OK'
+
+
 class StructuredRunAddTagIn(BaseModel):
     tag_name: str
 
@@ -150,6 +154,7 @@ class QuerySyntaxErrorOut(BaseModel):
 
 
 URIBatchIn = List[str]
+RunsBatchIn = List[str]
 
 
 # Custom object Models (Generic)

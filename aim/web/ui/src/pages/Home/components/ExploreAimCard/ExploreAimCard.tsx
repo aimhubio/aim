@@ -12,11 +12,12 @@ function ExploreAimCard({
   title,
   path,
   description,
+  icon,
 }: IExploreCard): React.FunctionComponentElement<React.ReactNode> {
   return (
     <NavLink className='ExploreAimCard' to={`/${path}`}>
       <div className='ExploreAimCard__icon'>
-        <Icon name={`${path}` as IconName} />
+        <Icon name={`${icon}` as IconName} />
       </div>
       <Text
         component='h4'

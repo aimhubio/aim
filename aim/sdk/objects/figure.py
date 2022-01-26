@@ -5,6 +5,12 @@ from aim.storage.types import BLOB
 
 @CustomObject.alias('aim.figure')
 class Figure(CustomObject):
+    """Figure object used to store plotly figures in Aim repository.
+
+    Args:
+         obj (:obj:): plotly figure object.
+    """
+
     AIM_NAME = 'aim.figure'
 
     def __init__(self, obj):

@@ -11,13 +11,13 @@ import TableLoader from 'components/TableLoader/TableLoader';
 import Table from 'components/Table/Table';
 import NotificationContainer from 'components/NotificationContainer/NotificationContainer';
 import ResizePanel from 'components/ResizePanel/ResizePanel';
+import Grouping from 'components/Grouping/Grouping';
 
 import { RowHeightSize } from 'config/table/tableConfigs';
 import { ResizeModeEnum } from 'config/enums/tableEnums';
 import GroupingPopovers from 'config/grouping/GroupingPopovers';
 
 import AppBar from 'pages/Metrics/components/MetricsBar/MetricsBar';
-import Grouping from 'pages/components/Grouping/Grouping';
 
 import { IParamsProps } from 'types/pages/params/Params';
 
@@ -86,6 +86,10 @@ const Params = ({
   liveUpdateConfig,
   onLiveUpdateConfigChange,
   onShuffleChange,
+  onRowSelect,
+  archiveRuns,
+  deleteRuns,
+  selectedRows,
 }: IParamsProps): React.FunctionComponentElement<React.ReactNode> => {
   const chartProps: any[] = React.useMemo(() => {
     return (highPlotData || []).map((chartData: any, index: number) => ({
@@ -232,6 +236,7 @@ const Params = ({
                   hiddenColumns={hiddenColumns}
                   resizeMode={resizeMode}
                   columnsWidths={columnsWidths}
+                  selectedRows={selectedRows}
                   // Table actions
                   onSortReset={onSortReset}
                   onSort={onSortFieldsChange}
@@ -245,6 +250,10 @@ const Params = ({
                   onTableResizeModeChange={onTableResizeModeChange}
                   onTableDiffShow={onTableDiffShow}
                   updateColumnsWidths={updateColumnsWidths}
+                  onRowSelect={onRowSelect}
+                  archiveRuns={archiveRuns}
+                  deleteRuns={deleteRuns}
+                  multiSelect
                 />
               ) : null}
             </BusyLoaderWrapper>

@@ -6,7 +6,6 @@ from typing import TYPE_CHECKING, Any, Iterator, Tuple, Union
 
 if TYPE_CHECKING:
     from aim.storage.arrayview import ArrayView
-    from aim.storage.container import Container
 
 
 class TreeView:
@@ -19,7 +18,7 @@ class TreeView:
     def finalize(
         self,
         *,
-        index: 'Container'
+        index: 'TreeView'
     ):
         ...
 
@@ -74,12 +73,21 @@ class TreeView:
         ...
 
     @abstractmethod
+    def set(
+        self,
+        path: Union[AimObjectKey, AimObjectPath],
+        value: AimObject,
+        strict: bool = True
+    ):
+        self.__setitem__(path, value)
+
+    @abstractmethod
     def __setitem__(
         self,
         path: Union[AimObjectKey, AimObjectPath],
         value: AimObject
     ):
-        ...
+        self.set(path, value, strict=True)
 
     @abstractmethod
     def keys(

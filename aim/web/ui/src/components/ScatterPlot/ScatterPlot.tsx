@@ -1,5 +1,7 @@
 import React from 'react';
 
+import ErrorBoundary from 'components/ErrorBoundary/ErrorBoundary';
+
 import useResizeObserver from 'hooks/window/useResizeObserver';
 
 import { IAttributesRef } from 'types/components/LineChart/LineChart';
@@ -11,6 +13,7 @@ import {
   drawAxes,
   getAxisScale,
   drawHoverAttributes,
+  drawScatterTrendline,
 } from 'utils/d3';
 
 import { Text } from '../kit';
@@ -28,6 +31,7 @@ const ScatterPlot = React.forwardRef(function ScatterPlot(
     syncHoverState,
     index = 0,
     chartTitle,
+    trendlineOptions,
   } = props;
 
   // boxes
@@ -147,6 +151,18 @@ const ScatterPlot = React.forwardRef(function ScatterPlot(
       drawAxisLines: { x: false, y: false },
       drawAxisLabels: { x: false, y: false },
     });
+
+    if (trendlineOptions.isApplied) {
+      drawScatterTrendline({
+        index,
+        data,
+        type: trendlineOptions.type,
+        bandwidth: trendlineOptions.bandwidth,
+        xScale,
+        yScale,
+        targetRef: linesNodeRef,
+      });
+    }
   }
 
   function renderChart() {
@@ -197,7 +213,7 @@ const ScatterPlot = React.forwardRef(function ScatterPlot(
       }
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [data, dimensions]);
+  }, [data, dimensions, trendlineOptions]);
 
   React.useImperativeHandle(ref, () => ({
     setActiveLineAndCircle: (
@@ -223,12 +239,15 @@ const ScatterPlot = React.forwardRef(function ScatterPlot(
   }));
 
   return (
-    <div ref={parentRef} className='ScatterPlot'>
-      <div ref={visAreaRef} />
-      {yDimension.domainData[0] === '-' || xDimension.domainData[0] === '-' ? (
-        <Text className='ScatterPlot__emptyData'> No Data</Text>
-      ) : null}
-    </div>
+    <ErrorBoundary>
+      <div ref={parentRef} className='ScatterPlot'>
+        <div ref={visAreaRef} />
+        {yDimension.domainData[0] === '-' ||
+        xDimension.domainData[0] === '-' ? (
+          <Text className='ScatterPlot__emptyData'> No Data</Text>
+        ) : null}
+      </div>
+    </ErrorBoundary>
   );
 });
 

@@ -1,5 +1,7 @@
 import React from 'react';
 
+import ErrorBoundary from 'components/ErrorBoundary/ErrorBoundary';
+
 import { ITextProps } from './Text.d';
 
 import './Text.scss';
@@ -100,7 +102,11 @@ function Text({
     }
   };
 
-  return <Element />;
+  return (
+    <ErrorBoundary>
+      <Element />
+    </ErrorBoundary>
+  );
 }
 
 Text.displayName = 'Text';

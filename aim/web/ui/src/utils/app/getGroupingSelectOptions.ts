@@ -3,9 +3,11 @@ import { IGroupingSelectOption } from 'types/services/models/metrics/metricsAppM
 export default function getGroupingSelectOptions({
   params,
   contexts = [],
+  sequenceName = null,
 }: {
   params: string[];
   contexts?: string[];
+  sequenceName?: null | 'metric' | 'images';
 }): IGroupingSelectOption[] {
   const paramsOptions: IGroupingSelectOption[] = params.map((param) => ({
     group: 'run',
@@ -13,13 +15,7 @@ export default function getGroupingSelectOptions({
     value: `run.params.${param}`,
   }));
 
-  const contextOptions: IGroupingSelectOption[] = contexts.map((context) => ({
-    group: 'metric',
-    label: `metric.context.${context}`,
-    value: `context.${context}`,
-  }));
-
-  return [
+  let options = [
     {
       group: 'run',
       label: 'run.experiment',
@@ -30,12 +26,30 @@ export default function getGroupingSelectOptions({
       label: 'run.hash',
       value: 'run.hash',
     },
-    ...paramsOptions,
     {
-      group: 'metric',
-      label: 'metric.name',
-      value: 'name',
+      group: 'run',
+      label: 'run.creation_time',
+      value: 'run.props.creation_time',
     },
-    ...contextOptions,
+    ...paramsOptions,
   ];
+
+  let contextOptions: IGroupingSelectOption[];
+  let nameOption: IGroupingSelectOption;
+
+  if (sequenceName) {
+    contextOptions = contexts.map((context) => ({
+      group: sequenceName,
+      label: `${sequenceName}.context.${context}`,
+      value: `context.${context}`,
+    }));
+    nameOption = {
+      group: sequenceName,
+      label: `${sequenceName}.name`,
+      value: 'name',
+    };
+    options = options.concat(nameOption, contextOptions);
+  }
+
+  return options;
 }

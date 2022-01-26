@@ -1,13 +1,15 @@
 import React, { memo, useRef } from 'react';
 import moment from 'moment';
 import classNames from 'classnames';
-import { NavLink } from 'react-router-dom';
+import { NavLink, useLocation, useParams } from 'react-router-dom';
 import { isEmpty } from 'lodash-es';
 
 import { CircularProgress } from '@material-ui/core';
 
 import EmptyComponent from 'components/EmptyComponent/EmptyComponent';
 import { Button, Icon, Text } from 'components/kit';
+
+import { DateWithOutSeconds } from 'config/dates/dates';
 
 import { processDurationTime } from 'utils/processDurationTime';
 
@@ -32,6 +34,9 @@ function RunSelectPopoverContent({
   dateNow,
 }: IRunSelectPopoverContentProps): React.FunctionComponentElement<React.ReactNode> {
   const popoverContentWrapperRef = useRef<HTMLDivElement | any>();
+  const { runHash } = useParams<{ runHash: string }>();
+  const { pathname } = useLocation();
+
   function onLoadMore() {
     if (!isRunsOfExperimentLoading) {
       getRunsOfExperiment(
@@ -85,7 +90,7 @@ function RunSelectPopoverContent({
                     weight={experimentId === experiment.id ? 600 : 500}
                     className='RunSelectPopoverWrapper__selectPopoverContent__contentContainer__experimentsListContainer__experimentList__experimentBox__experimentName'
                   >
-                    {experiment.name}
+                    {experiment?.name ?? 'default'}
                   </Text>
                 </div>
               ))
@@ -119,7 +124,7 @@ function RunSelectPopoverContent({
                       },
                     )}
                     key={run.run_id}
-                    to={`${run.run_id}`}
+                    to={pathname.replace(runHash, run.run_id)}
                     onClick={onRunsSelectToggle}
                   >
                     <Text
@@ -128,7 +133,7 @@ function RunSelectPopoverContent({
                       weight={runInfo?.name === run.name ? 600 : 500}
                     >
                       {`${moment(run.creation_time * 1000).format(
-                        'DD MMM YYYY, HH:mm A',
+                        DateWithOutSeconds,
                       )} | ${processDurationTime(
                         run?.creation_time * 1000,
                         run?.end_time ? run?.end_time * 1000 : dateNow,

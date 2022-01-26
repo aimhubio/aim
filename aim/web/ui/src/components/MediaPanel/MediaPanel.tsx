@@ -8,19 +8,14 @@ import EmptyComponent from 'components/EmptyComponent/EmptyComponent';
 import { Text } from 'components/kit';
 import ChartPopover from 'components/ChartPanel/ChartPopover/ChartPopover';
 import { throttle } from 'components/Table/utils';
+import ErrorBoundary from 'components/ErrorBoundary/ErrorBoundary';
 
 import { ResizeModeEnum } from 'config/enums/tableEnums';
-import {
-  AUDIO_FIXED_HEIGHT,
-  BATCH_SEND_DELAY,
-  IMAGE_FIXED_HEIGHT,
-} from 'config/mediaConfigs/mediaConfigs';
-import { MediaItemAlignmentEnum } from 'config/enums/imageEnums';
+import { BATCH_SEND_DELAY } from 'config/mediaConfigs/mediaConfigs';
 
 import blobsURIModel from 'services/models/media/blobsURIModel';
 
 import { IMediaPanelProps } from './MediaPanel.d';
-import { MediaTypeEnum } from './config';
 
 import './MediaPanel.scss';
 
@@ -43,6 +38,8 @@ function MediaPanel({
   actionPanel,
   actionPanelSize,
   tooltipType,
+  sortFieldsDict,
+  sortFields,
 }: IMediaPanelProps): React.FunctionComponentElement<React.ReactNode> {
   const [activePointRect, setActivePointRect] = React.useState<{
     top: number;
@@ -161,130 +158,113 @@ function MediaPanel({
     [onActivePointChange, setActivePointRect, setActiveElemPos],
   );
 
-  const setKey = React.useMemo(
+  const mediaSetKey = React.useMemo(
     () => Date.now(),
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    [data, wrapperOffsetHeight, wrapperOffsetWidth],
+    [
+      data,
+      wrapperOffsetHeight,
+      wrapperOffsetWidth,
+      additionalProperties,
+      sortFieldsDict,
+    ],
   );
 
   React.useEffect(() => {
     document.addEventListener('mouseover', closePopover);
-
     return () => {
       document.removeEventListener('mouseover', closePopover);
-
       if (timeoutID.current) {
         window.clearTimeout(timeoutID.current);
       }
-
       if (requestRef.current) {
         requestRef.current.abort();
       }
-
       blobsURIModel.init();
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  const mediaItemHeight = React.useMemo(() => {
-    if (additionalProperties?.alignmentType === MediaItemAlignmentEnum.Height) {
-      return (wrapperOffsetHeight * additionalProperties?.mediaItemSize) / 100;
-    } else if (
-      additionalProperties?.alignmentType === MediaItemAlignmentEnum.Width
-    ) {
-      return (wrapperOffsetWidth * additionalProperties?.mediaItemSize) / 100;
-    } else {
-      return mediaType === MediaTypeEnum.AUDIO
-        ? AUDIO_FIXED_HEIGHT
-        : IMAGE_FIXED_HEIGHT;
-    }
-  }, [
-    additionalProperties,
-    mediaType,
-    wrapperOffsetHeight,
-    wrapperOffsetWidth,
-  ]);
-
   return (
-    <BusyLoaderWrapper
-      isLoading={isLoading}
-      className='MediaPanel__loader'
-      height='100%'
-      loaderComponent={<ChartLoader controlsCount={2} />}
-    >
-      {panelResizing ? (
-        <div className='MediaPanel__Container__resizing'>
-          <Text size={14} color='info'>
-            Release to resize
-          </Text>
-        </div>
-      ) : (
-        <>
-          <div className='MediaPanel__Container'>
-            {!isEmpty(data) ? (
-              <div
-                className='MediaPanel'
-                style={{ height: `calc(100% - ${actionPanelSize || 0})` }}
-              >
-                <div
-                  ref={containerRef}
-                  className='MediaPanel__mediaSetContainer'
-                  onMouseOver={onMouseOver}
-                  // TODO
-                  // onClick={(e) => {
-                  //   e.stopPropagation();
-                  //   syncHoverState({
-                  //     activePoint: activePointRef.current,
-                  //     focusedStateActive: false,
-                  //   });
-                  // }}
-                >
-                  <MediaSet
-                    data={data}
-                    onListScroll={onListScroll}
-                    addUriToList={addUriToList}
-                    setKey={setKey}
-                    wrapperOffsetHeight={wrapperOffsetHeight - 48}
-                    wrapperOffsetWidth={wrapperOffsetWidth}
-                    mediaItemHeight={mediaItemHeight}
-                    focusedState={focusedState}
-                    syncHoverState={syncHoverState}
-                    orderedMap={orderedMap}
-                    additionalProperties={additionalProperties}
-                    tableHeight={tableHeight}
-                    tooltip={tooltip}
-                    mediaType={mediaType}
-                  />
-                </div>
-                {tooltipType && (
-                  <ChartPopover
-                    containerNode={containerRef.current}
-                    activePointRect={activePointRect}
-                    open={
-                      resizeMode !== ResizeModeEnum.MaxHeight &&
-                      !panelResizing &&
-                      (tooltip?.display || focusedState?.active)
-                    }
-                    chartType={tooltipType}
-                    tooltipContent={tooltip?.content}
-                    focusedState={focusedState}
-                  />
-                )}
-                {controls && (
-                  <div className='MediaPanel__controls'>{controls}</div>
-                )}
-              </div>
-            ) : (
-              <EmptyComponent
-                size='big'
-                content="It's super easy to search Aim experiments. Lookup search docs to learn more."
-              />
-            )}
-            {actionPanel}
+    <ErrorBoundary>
+      <BusyLoaderWrapper
+        isLoading={isLoading}
+        className='MediaPanel__loader'
+        height='100%'
+        loaderComponent={<ChartLoader controlsCount={4} />}
+      >
+        {panelResizing ? (
+          <div className='MediaPanel__Container__resizing'>
+            <Text size={14} color='info'>
+              Release to resize
+            </Text>
           </div>
-        </>
-      )}
-    </BusyLoaderWrapper>
+        ) : (
+          <>
+            <div className='MediaPanel__Container'>
+              {!isEmpty(data) ? (
+                <div
+                  className='MediaPanel'
+                  style={{ height: `calc(100% - ${actionPanelSize || 0})` }}
+                >
+                  <div
+                    ref={containerRef}
+                    className='MediaPanel__mediaSetContainer'
+                    onMouseOver={onMouseOver}
+                  >
+                    <ErrorBoundary>
+                      <MediaSet
+                        data={data}
+                        onListScroll={onListScroll}
+                        addUriToList={addUriToList}
+                        mediaSetKey={mediaSetKey}
+                        sortFieldsDict={sortFieldsDict}
+                        wrapperOffsetHeight={wrapperOffsetHeight}
+                        wrapperOffsetWidth={wrapperOffsetWidth}
+                        focusedState={focusedState}
+                        orderedMap={orderedMap}
+                        additionalProperties={additionalProperties}
+                        tableHeight={tableHeight}
+                        tooltip={tooltip}
+                        mediaType={mediaType}
+                        sortFields={sortFields}
+                      />
+                    </ErrorBoundary>
+                  </div>
+                  {tooltipType && (
+                    <ErrorBoundary>
+                      <ChartPopover
+                        containerNode={containerRef.current}
+                        activePointRect={activePointRect}
+                        open={
+                          resizeMode !== ResizeModeEnum.MaxHeight &&
+                          !panelResizing &&
+                          (tooltip?.display || focusedState?.active)
+                        }
+                        chartType={tooltipType}
+                        tooltipContent={tooltip?.content}
+                        focusedState={focusedState}
+                      />
+                    </ErrorBoundary>
+                  )}
+                  {controls && (
+                    <ErrorBoundary>
+                      <div className='MediaPanel__controls'>{controls}</div>
+                    </ErrorBoundary>
+                  )}
+                </div>
+              ) : (
+                <EmptyComponent
+                  size='big'
+                  content="It's super easy to search Aim experiments. Lookup search docs to learn more."
+                />
+              )}
+              {actionPanel}
+            </div>
+          </>
+        )}
+      </BusyLoaderWrapper>
+    </ErrorBoundary>
   );
 }
 

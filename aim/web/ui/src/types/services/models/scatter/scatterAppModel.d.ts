@@ -13,6 +13,8 @@ import {
   IMetricsCollection,
 } from 'types/services/models/metrics/metricsAppModel';
 
+import { TrendlineTypeEnum } from 'utils/d3';
+
 import { IMetricTrace, IRun } from './runModel';
 
 export interface IScatterAppModelState {
@@ -30,6 +32,7 @@ export interface IScatterAppModelState {
   tableData: any[];
   tableColumns: ITableColumn[];
   sameValueColumns: string[];
+  selectedRows: { [key: string]: any };
   params: string[];
   notifyData: INotification[];
   groupingSelectOptions: IGroupingSelectOption[];
@@ -42,4 +45,10 @@ export interface IScatterAppModelState {
 export interface IScatterData {
   dimensions: IDimensionType;
   data: IPoint[];
+}
+
+export interface ITrendlineOptions {
+  type: TrendlineTypeEnum;
+  bandwidth: number;
+  isApplied: boolean;
 }

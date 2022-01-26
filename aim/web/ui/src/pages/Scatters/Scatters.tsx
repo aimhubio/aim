@@ -9,12 +9,12 @@ import EmptyComponent from 'components/EmptyComponent/EmptyComponent';
 import TableLoader from 'components/TableLoader/TableLoader';
 import ChartLoader from 'components/ChartLoader/ChartLoader';
 import ResizePanel from 'components/ResizePanel/ResizePanel';
+import Grouping from 'components/Grouping/Grouping';
 
 import { ResizeModeEnum } from 'config/enums/tableEnums';
 import { RowHeightSize } from 'config/table/tableConfigs';
 import GroupingPopovers from 'config/grouping/GroupingPopovers';
 
-import Grouping from 'pages/components/Grouping/Grouping';
 import AppBar from 'pages/Metrics/components/MetricsBar/MetricsBar';
 import Controls from 'pages/Scatters/components/Controls/Controls';
 import SelectForm from 'pages/Scatters/components/SelectForm/SelectForm';
@@ -31,8 +31,9 @@ function Scatters(
   const chartProps: any[] = React.useMemo(() => {
     return (props.scatterPlotData || []).map((data: any, index: number) => ({
       chartTitle: props.chartTitleData[index],
+      trendlineOptions: props.trendlineOptions,
     }));
-  }, [props.scatterPlotData, props.chartTitleData]);
+  }, [props.scatterPlotData, props.chartTitleData, props.trendlineOptions]);
 
   return (
     <div ref={props.wrapperElemRef} className='Scatters__container'>
@@ -78,7 +79,7 @@ function Scatters(
               isLoading={props.requestIsPending}
               className='Scatters__loader'
               height='100%'
-              loaderComponent={<ChartLoader controlsCount={9} />}
+              loaderComponent={<ChartLoader controlsCount={2} />}
             >
               {!!props.scatterPlotData?.[0]?.data?.length ? (
                 <ChartPanel
@@ -98,6 +99,8 @@ function Scatters(
                       tooltip={props.tooltip}
                       onChangeTooltip={props.onChangeTooltip}
                       projectsDataMetrics={props.projectsDataMetrics}
+                      trendlineOptions={props.trendlineOptions}
+                      onChangeTrendlineOptions={props.onChangeTrendlineOptions}
                     />
                   }
                 />
@@ -158,6 +161,7 @@ function Scatters(
                   hiddenColumns={props.hiddenColumns}
                   resizeMode={props.resizeMode}
                   columnsWidths={props.columnsWidths}
+                  selectedRows={props.selectedRows}
                   // Table actions
                   onSort={props.onSortChange}
                   onSortReset={props.onSortReset}
@@ -171,6 +175,10 @@ function Scatters(
                   onRowClick={props.onTableRowClick}
                   onTableResizeModeChange={props.onTableResizeModeChange}
                   updateColumnsWidths={props.updateColumnsWidths}
+                  onRowSelect={props.onRowSelect}
+                  archiveRuns={props.archiveRuns}
+                  deleteRuns={props.deleteRuns}
+                  multiSelect
                 />
               ) : null}
             </BusyLoaderWrapper>
