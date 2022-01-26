@@ -164,11 +164,8 @@ async def remove_run_tag_api(run_id: str, tag_id: str, factory=Depends(object_fa
 
 @runs_router.delete('/{run_id}/')
 async def delete_run_api(run_id: str):
-    # Get project
-    project = Project()
-    if not project.exists():
-        raise HTTPException(status_code=404)
-    success = project.repo.delete_run(run_id)
+    repo = get_project_repo()
+    success = repo.delete_run(run_id)
     if not success:
         raise HTTPException(400, detail=f'Error while deleting run {run_id}.')
 
@@ -180,11 +177,8 @@ async def delete_run_api(run_id: str):
 
 @runs_router.post('/delete-batch/')
 async def delete_runs_batch_api(runs_batch: RunsBatchIn):
-    # Get project
-    project = Project()
-    if not project.exists():
-        raise HTTPException(status_code=404)
-    success, remaining_runs = project.repo.delete_runs(runs_batch)
+    repo = get_project_repo()
+    success, remaining_runs = repo.delete_runs(runs_batch)
     if not success:
         raise HTTPException(400, detail={'message': 'Error while deleting runs.',
                                          'remaining_runs': remaining_runs})
