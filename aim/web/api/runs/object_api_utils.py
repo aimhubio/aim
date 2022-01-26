@@ -142,7 +142,7 @@ class CustomObjectApi:
             rec_json = record.json()
             rec_json['index'] = idx
             if self.resolve_blobs:
-                rec_json['data'] = record.data.load()
+                rec_json['data'] = self.dump_fn(record)
             else:
                 # TODO make path generation more abstract
                 data_path = generate_resource_path(trace.values.tree.container, (step, idx, 'data'))

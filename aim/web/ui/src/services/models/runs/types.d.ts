@@ -96,8 +96,10 @@ export interface IPlotlyData extends TraceRawDataItem {
  * Plotly api response value type
  */
 export type IPlotlyValue = {
-  data: any[];
-  layout: any;
+  data: {
+    data: any[];
+    layout: any;
+  };
 };
 export interface TraceProcessedData extends DistributionValue {
   data: {

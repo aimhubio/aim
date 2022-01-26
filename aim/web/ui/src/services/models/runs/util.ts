@@ -405,7 +405,7 @@ export function reformatArrayQueries(
  */
 export function processPlotlyData(data: Partial<IPlotlyData>) {
   const { record_range, iters, values } = data;
-  const processedValue = _.head(values);
+  const processedValue = _.head(values).data;
   const originalValues = values;
 
   processedValue.layout.autosize = true;
