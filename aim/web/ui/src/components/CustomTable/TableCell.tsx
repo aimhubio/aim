@@ -28,6 +28,7 @@ function Cell({
           Table__group__config__column__cell: isConfigColumn,
           clickable: typeof item === 'object' && !!item?.props?.onClick,
           placeholder: !!placeholder,
+          colorIndicator: !isConfigColumn && metadata?.color,
         })}
         style={{
           cursor:
@@ -36,7 +37,7 @@ function Cell({
               ? 'pointer'
               : 'inherit',
           ...(metadata?.color && {
-            boxShadow: `inset 3px 0 0 0 ${metadata.color}`,
+            '--color-indicator': metadata?.color,
           }),
           ...(typeof item === 'object' &&
             item?.hasOwnProperty('style') &&
@@ -51,7 +52,11 @@ function Cell({
         {isConfigColumn || placeholder ? (
           <>{multiSelect && item}</>
         ) : (
-          <div className='Table__cell__value'>
+          <div
+            className={classNames('Table__cell__value', {
+              hasColorIndicator: !isConfigColumn && metadata?.color,
+            })}
+          >
             {typeof item === 'object' && item?.hasOwnProperty('content')
               ? item?.content ?? ''
               : item ?? ''}

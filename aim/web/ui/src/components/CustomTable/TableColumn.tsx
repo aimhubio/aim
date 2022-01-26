@@ -373,11 +373,14 @@ function Column({
             ? Object.keys(data).map((groupKey) => (
                 <div
                   key={groupKey}
-                  className='Table__group'
+                  className={classNames('Table__group', {
+                    colorIndicator: data[groupKey].data.meta.color,
+                  })}
                   style={
                     col.key === '#' && data[groupKey].data.meta.color
                       ? {
                           borderLeft: 'none',
+                          '--color-indicator': data[groupKey].data.meta.color,
                         }
                       : null
                   }
@@ -391,13 +394,6 @@ function Column({
                         expanded: expanded[groupKey],
                         expandable: true,
                       })}
-                      style={
-                        data[groupKey].data.meta.color
-                          ? {
-                              boxShadow: `inset 3px 0 0 0 ${data[groupKey].data.meta.color}`,
-                            }
-                          : null
-                      }
                     >
                       <GroupConfig
                         config={data[groupKey].data.meta}
@@ -494,9 +490,10 @@ function Column({
                                 item[col.key]
                               )
                             }
-                            className={`rowKey-${item.key}${
-                              item.isHidden ? ' hidden' : ''
-                            }`}
+                            className={classNames(`rowKey-${item.key}`, {
+                              hidden: item.isHidden,
+                              selected: !!selectedRows?.[item.selectKey],
+                            })}
                             isConfigColumn={col.key === '#'}
                             metadata={firstColumn ? item.rowMeta : null}
                             onRowHover={() => onRowHover(item)}
@@ -540,9 +537,10 @@ function Column({
                           />
                         </>
                       }
-                      className={`rowKey-${item.key}${
-                        item.isHidden ? ' hidden' : ''
-                      }`}
+                      className={classNames(`rowKey-${item.key}`, {
+                        hidden: item.isHidden,
+                        selected: !!selectedRows?.[item.selectKey],
+                      })}
                       metadata={
                         (multiSelect &&
                           col.key === 'selection' &&
@@ -560,9 +558,10 @@ function Column({
                       index={item.index}
                       col={col}
                       item={item[col.key]}
-                      className={`rowKey-${item.key}${
-                        item.isHidden ? ' hidden' : ''
-                      }`}
+                      className={classNames(`rowKey-${item.key}`, {
+                        hidden: item.isHidden,
+                        selected: !!selectedRows?.[item.selectKey],
+                      })}
                       metadata={
                         (multiSelect &&
                           col.key === 'selection' &&

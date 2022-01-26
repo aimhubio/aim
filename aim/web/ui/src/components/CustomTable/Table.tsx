@@ -238,7 +238,13 @@ function Table(props) {
                         <Checkbox
                           color='primary'
                           size='small'
-                          className='Table__column__selectCheckbox'
+                          className={classNames(
+                            'Table__column__selectCheckbox',
+                            {
+                              Table__column__headerCheckbox:
+                                props.data[0]?.rowMeta?.color,
+                            },
+                          )}
                           icon={
                             <span className='Table__column__defaultSelectIcon'></span>
                           }
@@ -272,7 +278,7 @@ function Table(props) {
                     onRowSelect={props.onRowSelect}
                     selectedRows={props.selectedRows}
                     firstColumn={true}
-                    width={32}
+                    width={props.data[0]?.rowMeta?.color ? 50 : 32}
                     isAlwaysVisible={true}
                     onRowHover={props.onRowHover}
                   />
@@ -371,6 +377,7 @@ function Table(props) {
                   onRowClick={props.onRowClick}
                   columnOptions={col.columnOptions}
                   listWindow={props.listWindow}
+                  selectedRows={props.selectedRows}
                 />
               </ErrorBoundary>
             ))}
@@ -424,6 +431,7 @@ function Table(props) {
                     onRowHover={props.onRowHover}
                     onRowClick={props.onRowClick}
                     columnOptions={col.columnOptions}
+                    selectedRows={props.selectedRows}
                   />
                 </ErrorBoundary>
               ))}
