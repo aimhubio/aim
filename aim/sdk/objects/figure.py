@@ -28,9 +28,17 @@ class Figure(CustomObject):
         self.storage['format'] = 'raw_json'
         self.storage['data'] = BLOB(data=obj.to_json())
 
+    @property
+    def data(self):
+        return self.storage['data'].data
+
     def json(self):
-        blob_data = self.storage['data']
-        return blob_data.data
+        """Dump figure metadata to a dict"""
+        return {
+            'source': self.storage['source'],
+            'format': self.storage['format'],
+            'version': self.storage['version']
+        }
 
     def to_plotly_figure(self):
         try:
@@ -38,4 +46,4 @@ class Figure(CustomObject):
         except ModuleNotFoundError:
             raise ModuleNotFoundError('Could not find plotly in the installed modules.')
 
-        return from_json(self.json())
+        return from_json(self.data)

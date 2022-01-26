@@ -20,6 +20,9 @@ class Text(CustomObject):
 
         self.storage['data'] = BLOB(data=text)
 
+    def json(self):
+        return {}
+
     @property
     def data(self):
         return self.storage['data'].load()

@@ -23,7 +23,8 @@ class Sequence(Generic[T]):
     Values, epochs and timestamps are accessed via :obj:`aim.storage.arrayview.ArrayView` interface.
     """
 
-    registry: Dict[str, type] = dict()
+    registry: Dict[str, 'Sequence'] = dict()
+    collections_allowed = False
 
     def __init_subclass__(cls, **kwargs):
         super().__init_subclass__(**kwargs)
@@ -124,3 +125,30 @@ class Sequence(Generic[T]):
 
     def preload(self):
         self._series_tree.preload()
+
+
+class MediaSequenceBase(Sequence):
+    """Helper class for media sequence types."""
+
+    collections_allowed = True
+
+    def first_step(self):
+        """Get sequence tracked first step.
+
+        Required to implement ranged and sliced data fetching.
+        """
+        return self._meta_tree['first_step']
+
+    def last_step(self):
+        """Get sequence tracked last step.
+
+        Required to implement ranged and sliced data fetching.
+        """
+        return self._meta_tree['last_step']
+
+    def record_length(self):
+        """Get tracked records longest list length or `None` if Text objects are tracked.
+
+        Required to implement ranged and sliced data fetching.
+        """
+        return self._meta_tree.get('record_max_length', None)

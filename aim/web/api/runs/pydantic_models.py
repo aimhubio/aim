@@ -1,5 +1,6 @@
 from pydantic import BaseModel
-from typing import Dict, List, Tuple, Optional, Union
+from pydantic.generics import GenericModel
+from typing import Dict, List, Tuple, Optional, Union, Generic, TypeVar
 from uuid import UUID
 
 
@@ -28,27 +29,7 @@ class MetricsBaseView(TraceBaseView):
     values: List[float]
 
 
-class DistributionsBaseView(TraceBaseView):
-    class Distribution(BaseModel):
-        data: EncodedNumpyArray
-        bin_count: int
-        range: Tuple[Union[int, float], Union[int, float]]
-    record_range: Tuple[int, int]
-    values: List[Distribution]
-
-
-class TextsBaseView(TraceBaseView):
-    class Text(BaseModel):
-        data: str
-        idx: int
-    record_range: Tuple[int, int]
-    index_range: Tuple[int, int]
-    values: List[Text]
-
-
 RunMetricsBatchApiOut = List[MetricsBaseView]
-RunDistributionsBatchApiOut = List[DistributionsBaseView]
-RunTextsBatchApiOut = List[TextsBaseView]
 
 
 class TraceAlignedView(TraceBase):
@@ -168,14 +149,41 @@ class QuerySyntaxErrorOut(BaseModel):
     detail: SE
 
 
-# image search API response models
-class RangeInfo(BaseModel):
+URIBatchIn = List[str]
+
+
+# Custom object Models (Generic)
+DataT = TypeVar('DataT')
+
+
+class BaseRangeInfo(BaseModel):
     records_range: Tuple[int, int]
-    index_range: Tuple[int, int]
     record_slice: Tuple[int, int, int]
+    index_range: Tuple[int, int]
     index_slice: Tuple[int, int, int]
 
 
+class ObjectSequenceBaseView(GenericModel, Generic[DataT]):
+    record_range: Tuple[int, int]
+    index_range: Tuple[int, int]
+    values: List[DataT]
+
+
+class ObjectSequenceFullView(GenericModel, Generic[DataT]):
+    values: List[DataT]
+    iters: List[int]
+    epochs: List[int]
+    timestamps: List[float]
+
+
+class ObjectSearchRunView(GenericModel, Generic[DataT]):
+    params: dict
+    traces: List[ObjectSequenceFullView[DataT]]
+    ranges: BaseRangeInfo
+    props: PropsView
+
+
+# Custom objects
 class ImageInfo(BaseModel):
     caption: str
     width: int
@@ -184,60 +192,9 @@ class ImageInfo(BaseModel):
     index: int
 
 
-class ImagesBaseView(TraceBaseView):
-    record_range: Tuple[int, int]
-    index_range: Tuple[int, int]
-    values: List[List[ImageInfo]]
-
-
-RunImagesBatchApiOut = List[ImagesBaseView]
-
-
-class ImageSequenceFullView(TraceBase):
-    values: List[List[ImageInfo]]
-    iters: List[int]
-    epochs: List[int]
-    timestamps: List[float]
-
-
-class ImagesSearchRunView(BaseModel):
-    params: dict
-    traces: List[ImageSequenceFullView]
-    ranges: RangeInfo
-    props: PropsView
-
-
-RunImagesSearchApiOut = Dict[str, ImagesSearchRunView]
-
-URIBatchIn = List[str]
-
-
-class FigureInfo(BaseModel):
-    blob_uri: str
-
-
-class FigureBaseView(TraceBaseView):
-    values: List[FigureInfo]
-
-
-RunFiguresBatchApiOut = List[FigureBaseView]
-
-
-class FigureSequenceFullView(TraceBase):
-    values: List[FigureInfo]
-    iters: List[int]
-    epochs: List[int]
-    timestamps: List[float]
-
-
-class FigureSearchRunView(BaseModel):
-    params: dict
-    traces: List[FigureSequenceFullView]
-    ranges: RangeInfo
-    props: PropsView
-
-
-RunFiguresSearchApiOut = Dict[str, FigureSearchRunView]
+class TextInfo(BaseModel):
+    data: str
+    index: int
 
 
 class AudioInfo(BaseModel):
@@ -246,25 +203,16 @@ class AudioInfo(BaseModel):
     index: int
 
 
-class AudiosBaseView(TraceBaseView):
-    values: List[List[AudioInfo]]
+class DistributionInfo(BaseModel):
+    data: EncodedNumpyArray
+    bin_count: int
+    range: Tuple[Union[int, float], Union[int, float]]
 
 
-RunAudiosBatchApiOut = List[AudiosBaseView]
+class FigureInfo(BaseModel):
+    blob_uri: str
 
 
-class AudioSequenceFullView(TraceBase):
-    values: List[List[AudioInfo]]
-    iters: List[int]
-    epochs: List[int]
-    timestamps: List[float]
-
-
-class AudiosSearchRunView(BaseModel):
-    params: dict
-    traces: List[AudioSequenceFullView]
-    ranges: RangeInfo
-    props: PropsView
-
-
-RunAudiosSearchApiOut = Dict[str, AudiosSearchRunView]
+ImageList = List[ImageInfo]
+TextList = List[TextInfo]
+AudioList = List[AudioInfo]

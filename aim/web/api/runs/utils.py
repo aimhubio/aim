@@ -6,12 +6,14 @@ from itertools import chain
 from typing import Iterator, Tuple, Optional, List, Iterable
 from typing import TYPE_CHECKING
 
+from fastapi import HTTPException
+
 from aim.storage.context import Context
 from aim.sdk import Run
 from aim.sdk.sequences.metric import Metric
-from aim.sdk.objects.distribution import Distribution
-from aim.sdk.objects.text import Text
 from aim.sdk.sequence_collection import SequenceCollection
+from aim.storage.query import syntax_error_check
+from aim.web.api.projects.project import Project
 from aim.web.api.runs.pydantic_models import AlignedRunIn, TraceBase
 from aim.storage.treeutils import encode_tree
 
@@ -235,106 +237,35 @@ def collect_requested_metric_traces(run: Run, requested_traces: List[TraceBase],
     return processed_traces_list
 
 
-def dist_record_to_encodable(val):
-    assert isinstance(val, Distribution)
-    dist_dump = val.json()
-    dist_dump['data'] = numpy_to_encodable(val.weights)
-
-    return dist_dump
-
-
-def requested_distribution_traces_streamer(run: Run,
-                                           requested_traces: List[TraceBase],
-                                           rec_range,
-                                           rec_num: int = 50) -> List[dict]:
-    for requested_trace in requested_traces:
-        trace_name = requested_trace.name
-        context = Context(requested_trace.context)
-        trace = run.get_distribution_sequence(name=trace_name, context=context)
-        if not trace:
-            continue
-
-        record_range_missing = rec_range.start is None or rec_range.stop is None
-        if record_range_missing:
-            rec_range = IndexRange(trace.first_step(), trace.last_step() + 1)
-        steps_vals = trace.values.items_in_range(rec_range.start, rec_range.stop, rec_num)
-
-        steps = []
-        values = []
-        for step, val in steps_vals:
-            steps.append(step)
-            values.append(dist_record_to_encodable(val))
-        trace_dict = {
-            'record_range': (trace.first_step(), trace.last_step() + 1),
-            'name': trace.name,
-            'context': trace.context.to_dict(),
-            'values': values,
-            'iters': steps,
-        }
-        encoded_tree = encode_tree(trace_dict)
-        yield collect_run_streamable_data(encoded_tree)
+def get_project():
+    project = Project()
+    if not project.exists():
+        raise HTTPException(status_code=404)
+    return project
 
 
-def text_collection_to_encodable(text_record: Iterable[Text]):
-    text_list = []
-    for idx, text in text_record:
-        text_dump = {
-            'data': text.data,
-            'index': idx
-        }
-        text_list.append(text_dump)
-    return text_list
+def get_project_repo():
+    project = get_project()
+    return project.repo
 
 
-def text_record_to_encodable(text_record: Text):
-    text_dump = {
-        'data': text_record.data,
-        'index': 0
-    }
-    return [text_dump]
+def checked_query(q: str):
+    query = q.strip()
+    try:
+        syntax_error_check(query)
+    except SyntaxError as se:
+        raise HTTPException(status_code=400, detail={
+            'name': 'SyntaxError',
+            'statement': se.text,
+            'line': se.lineno,
+            'offset': se.offset
+        })
+    return query
 
 
-def requested_text_traces_streamer(run: Run,
-                                   requested_traces: List[TraceBase],
-                                   rec_range, idx_range,
-                                   rec_num: int = 50, idx_num: int = 5) -> List[dict]:
-    for requested_trace in requested_traces:
-        trace_name = requested_trace.name
-        context = Context(requested_trace.context)
-        trace = run.get_text_sequence(name=trace_name, context=context)
-        if not trace:
-            continue
-
-        record_range_missing = rec_range.start is None or rec_range.stop is None
-        if record_range_missing:
-            rec_range = IndexRange(trace.first_step(), trace.last_step() + 1)
-        index_range_missing = idx_range.start is None or idx_range.stop is None
-        if index_range_missing:
-            idx_range = IndexRange(0, trace.record_length() or 1)
-
-        rec_length = trace.record_length() or 1
-        idx_step = rec_length // idx_num or 1
-        idx_slice = slice(idx_range.start, idx_range.stop, idx_step)
-
-        steps_vals = trace.values.items_in_range(rec_range.start, rec_range.stop, rec_num)
-        steps = []
-        values = []
-        for step, val in steps_vals:
-            steps.append(step)
-            if isinstance(val, list):
-                values.append(text_collection_to_encodable(sliced_custom_object_record(val, idx_slice)))
-            elif idx_slice.start == 0:
-                values.append(text_record_to_encodable(val))
-            else:
-                values.append([])
-
-        trace_dict = {
-            'record_range': (trace.first_step(), trace.last_step() + 1),
-            'index_range': (0, rec_length),
-            'name': trace.name,
-            'context': trace.context.to_dict(),
-            'values': values,
-            'iters': steps,
-        }
-        encoded_tree = encode_tree(trace_dict)
-        yield collect_run_streamable_data(encoded_tree)
+def checked_range(range_: str = ''):
+    try:
+        range_ = str_to_range(range_)
+    except ValueError:
+        raise HTTPException(status_code=400, detail='Invalid range format')
+    return range_

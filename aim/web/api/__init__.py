@@ -18,6 +18,7 @@ def create_app():
     )
 
     from aim.web.api.runs.views import runs_router
+    from aim.web.api.runs.object_views import add_api_routes
     from aim.web.api.tags.views import tags_router
     from aim.web.api.experiments.views import experiment_router
     from aim.web.api.dashboard_apps.views import dashboard_apps_router
@@ -28,6 +29,8 @@ def create_app():
 
     api_app = FastAPI()
     api_app.add_middleware(GZipMiddleware)
+
+    add_api_routes()
 
     api_app.include_router(dashboard_apps_router, prefix='/apps')
     api_app.include_router(dashboards_router, prefix='/dashboards')
