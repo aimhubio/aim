@@ -940,7 +940,7 @@ function createAppModel(appConfig: IAppInitialConfig) {
       const uniqContexts = _.uniq(contexts);
 
       const mappedData =
-        data.reduce((acc: any, item: any) => {
+        data?.reduce((acc: any, item: any) => {
           acc[item.hash] = { runHash: item.hash, ...item.props };
           return acc;
         }, {}) || {};
@@ -2073,7 +2073,6 @@ function createAppModel(appConfig: IAppInitialConfig) {
       default:
         return {};
     }
-
     function getRunsModelMethods() {
       let runsRequestRef: {
         call: (
@@ -2090,6 +2089,7 @@ function createAppModel(appConfig: IAppInitialConfig) {
         abort: () => void;
       };
       let liveUpdateInstance: LiveUpdateService | null;
+      let updateTableTimeoutId: ReturnType<typeof setTimeout>;
 
       function initialize(appId: string = ''): {
         call: () => Promise<void>;
@@ -2219,7 +2219,7 @@ function createAppModel(appConfig: IAppInitialConfig) {
                 model.getState()?.config?.table.columnsOrder!,
                 model.getState()?.config?.table.hiddenColumns!,
               );
-
+              updateTableData(tableData, tableColumns, configData);
               model.setState({
                 data,
                 selectedRows: shouldResetSelectedRows
@@ -2240,14 +2240,6 @@ function createAppModel(appConfig: IAppInitialConfig) {
                   },
                 },
               });
-              setTimeout(() => {
-                const tableRef: any = model.getState()?.refs?.tableRef;
-                tableRef.current?.updateData({
-                  newData: tableData.rows,
-                  newColumns: tableColumns,
-                  hiddenColumns: configData.table.hiddenColumns!,
-                });
-              }, 0);
             } catch (ex: Error | any) {
               if (ex.name === 'AbortError') {
                 // Abort Error
@@ -2271,8 +2263,6 @@ function createAppModel(appConfig: IAppInitialConfig) {
         const { data, params, metricsColumns, selectedRows } = processData(
           model.getState()?.rawData as IRun<IMetricTrace>[],
         );
-        console.log('mtav', configData);
-
         const tableData = getDataAsTableRows(data, metricsColumns, params);
         const tableColumns: ITableColumn[] = getRunsTableColumns(
           metricsColumns,
@@ -2281,14 +2271,7 @@ function createAppModel(appConfig: IAppInitialConfig) {
           configData?.table?.columnsOrder!,
           configData?.table?.hiddenColumns!,
         );
-        console.log();
-
-        const tableRef: any = model.getState()?.refs?.tableRef;
-        tableRef.current?.updateData({
-          newData: tableData.rows,
-          newColumns: tableColumns,
-          hiddenColumns: configData?.table?.hiddenColumns!,
-        });
+        updateTableData(tableData, tableColumns, configData);
         model.setState({
           config: configData,
           data,
@@ -2297,6 +2280,28 @@ function createAppModel(appConfig: IAppInitialConfig) {
           sameValueColumns: tableData.sameValueColumns,
           selectedRows,
         });
+      }
+
+      function updateTableData(
+        tableData: {
+          rows: any;
+          sameValueColumns: string[];
+        },
+        tableColumns: ITableColumn[],
+        configData: IAppModelConfig | any,
+      ): void {
+        if (updateTableTimeoutId) {
+          clearTimeout(updateTableTimeoutId);
+        }
+
+        updateTableTimeoutId = setTimeout(() => {
+          const tableRef: any = model.getState()?.refs?.tableRef;
+          tableRef.current?.updateData({
+            newData: tableData.rows,
+            newColumns: tableColumns,
+            hiddenColumns: configData.table.hiddenColumns!,
+          });
+        }, 0);
       }
 
       function prepareModelStateToCall(isInitial: boolean): IRunsAppModelState {
@@ -2359,7 +2364,7 @@ function createAppModel(appConfig: IAppInitialConfig) {
         const processedData = groupData(runs);
         const uniqParams = _.uniq(params);
         const mappedData =
-          data.reduce((acc: any, item: any) => {
+          data?.reduce((acc: any, item: any) => {
             acc[item.hash] = { runHash: item.hash, ...item.props };
             return acc;
           }, {}) || {};

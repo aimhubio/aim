@@ -89,8 +89,6 @@ function getRunsTableColumns(
     isHidden: hiddenColumns.includes(col.key),
   }));
 
-  console.log(columns, hiddenColumns);
-
   const columnsOrder = order?.left.concat(order.middle).concat(order.right);
   columns.sort((a, b) => {
     if (a.key === 'actions') {

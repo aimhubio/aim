@@ -69,7 +69,7 @@ export default function getSystemMetricsFromColumns(
   tableColumns: ITableColumn[],
 ): string[] | [] {
   let arr: string[] = [];
-  tableColumns.forEach(({ key }) => {
+  tableColumns?.forEach(({ key }) => {
     if (isSystemMetric(key)) {
       arr.push(key);
     }

@@ -7,16 +7,15 @@ export default function manageSystemMetricColumns<M extends State>(
   model: IModel<M> | any,
 ) {
   const modelState = model.getState();
-  const systemMetrics = getSystemMetricsFromColumns(
+  const systemMetrics: string[] = getSystemMetricsFromColumns(
     modelState?.tableColumns! as ITableColumn[],
   );
-  let hiddenColumns = [...modelState!.config!.table.hiddenColumns!];
+  let hiddenColumns: string[] = [...modelState!.config!.table.hiddenColumns!];
   if (
     hiddenColumns.length === 0 &&
     modelState!.config!.table.hideSystemMetrics
   ) {
     hiddenColumns = systemMetrics;
-    console.log('mtav', hiddenColumns);
 
     model.updateModelData({
       ...modelState.config,
