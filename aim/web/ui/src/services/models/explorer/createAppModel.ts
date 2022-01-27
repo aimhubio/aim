@@ -228,7 +228,6 @@ function createAppModel(appConfig: IAppInitialConfig) {
           config.table = {
             resizeMode: ResizeModeEnum.Resizable,
             rowHeight: RowHeightSize.md,
-            hideSystemMetrics: true,
             sortFields: [],
             hiddenMetrics: [],
             hiddenColumns: [],
@@ -2272,6 +2271,8 @@ function createAppModel(appConfig: IAppInitialConfig) {
         const { data, params, metricsColumns, selectedRows } = processData(
           model.getState()?.rawData as IRun<IMetricTrace>[],
         );
+        console.log('mtav', configData);
+
         const tableData = getDataAsTableRows(data, metricsColumns, params);
         const tableColumns: ITableColumn[] = getRunsTableColumns(
           metricsColumns,
@@ -2280,6 +2281,8 @@ function createAppModel(appConfig: IAppInitialConfig) {
           configData?.table?.columnsOrder!,
           configData?.table?.hiddenColumns!,
         );
+        console.log();
+
         const tableRef: any = model.getState()?.refs?.tableRef;
         tableRef.current?.updateData({
           newData: tableData.rows,
@@ -2945,6 +2948,7 @@ function createAppModel(appConfig: IAppInitialConfig) {
         initialize,
         getRunsData,
         abortRequest,
+        updateModelData,
         getLastRunsData,
         onExportTableData,
         onNotificationDelete: onModelNotificationDelete,

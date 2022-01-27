@@ -45,7 +45,6 @@ function Controls(
       CONTROLS_DEFAULT_CONFIG.images.sortFields.length
     );
   }, [props.sortFields]);
-  console.log(props.sortFields);
 
   return (
     <div className='Controls__container ScrollBar__hidden'>

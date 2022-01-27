@@ -98,6 +98,7 @@ function MetricsContainer(): React.FunctionComponentElement<React.ReactNode> {
       }
     };
   }, []);
+  console.log(metricsData);
 
   return (
     <Metrics

@@ -6,10 +6,13 @@ import * as analytics from 'services/analytics';
 
 import { IModel, State } from 'types/services/models/model';
 import { IAppModelConfig } from 'types/services/models/explorer/createAppModel';
+import { ITableColumn } from 'types/pages/metrics/components/TableColumns/TableColumns';
 
 import { encode } from 'utils/encoder/encoder';
 import { setItem } from 'utils/storage';
-import { isSystemMetric } from 'utils/isSystemMetric';
+
+import getSystemMetricsFromColumns from './getSystemMetricsFromColumns';
+import getFilteredSystemMetrics from './getFilteredSystemMetrics';
 
 export default function onColumnsVisibilityChange<M extends State>({
   hiddenColumns,
@@ -26,34 +29,30 @@ export default function onColumnsVisibilityChange<M extends State>({
   ) => void;
 }): void {
   const configData = model.getState()?.config;
-  let columnsData = model.getState()!.tableColumns!;
-  let systemMetrics: string[] = [];
-  columnsData.forEach((item) => {
-    if (isSystemMetric(item.key)) {
-      return systemMetrics.push(item.key);
-    }
-  });
+  const columnsData = model.getState()!.tableColumns!;
+  const systemMetrics: string[] = getSystemMetricsFromColumns(
+    columnsData as ITableColumn[],
+  );
 
   let columnKeys: string[] = Array.isArray(hiddenColumns)
     ? [...hiddenColumns]
     : [];
-  let hideSystemMetrics: boolean = configData?.table.hideSystemMetrics;
+  let hideSystemMetrics: boolean | null = configData?.table.hideSystemMetrics;
+
   if (configData?.table) {
-    const filteredFromSystem = [...configData?.table?.hiddenColumns].filter(
-      (key) => !isSystemMetric(key),
+    const filteredFromSystem = getFilteredSystemMetrics(
+      configData?.table?.hiddenColumns,
+      true,
     );
     if (hiddenColumns === HideColumnsEnum.HideSystemMetrics) {
       columnKeys = [...filteredFromSystem, ...systemMetrics];
     }
     if (hiddenColumns === HideColumnsEnum.ShowSystemMetrics) {
-      columnKeys = [...configData?.table?.hiddenColumns].filter(
-        (key) => !isSystemMetric(key),
-      );
+      columnKeys = [...filteredFromSystem];
     }
-
     if (
-      [...columnKeys].filter((key) => isSystemMetric(key)).length ===
-      systemMetrics.length
+      getFilteredSystemMetrics(columnKeys).length === systemMetrics.length &&
+      hideSystemMetrics !== undefined
     ) {
       hideSystemMetrics = true;
     } else {

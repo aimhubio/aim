@@ -300,33 +300,38 @@ function ManageColumnsPopover({
           </Button>
         </div>
         <div className='flex'>
-          <Button
-            variant='text'
-            size='xSmall'
-            onClick={() =>
-              onColumnsVisibilityChange(
-                hideSystemMetrics
-                  ? HideColumnsEnum.ShowSystemMetrics
-                  : HideColumnsEnum.HideSystemMetrics,
-              )
-            }
-          >
-            <Icon
-              name={
-                `${
-                  hideSystemMetrics ? 'show' : 'hide'
-                }-system-metrics` as IconName
-              }
-            />
-            <Text size={12} tint={100}>
-              {hideSystemMetrics ? 'show' : 'hide'} system metrics
-            </Text>
-          </Button>
-          <Divider
-            style={{ margin: '0 0.875rem' }}
-            orientation='vertical'
-            flexItem
-          />
+          {hideSystemMetrics !== undefined && (
+            <>
+              <Button
+                variant='text'
+                size='xSmall'
+                onClick={() =>
+                  onColumnsVisibilityChange(
+                    hideSystemMetrics
+                      ? HideColumnsEnum.ShowSystemMetrics
+                      : HideColumnsEnum.HideSystemMetrics,
+                  )
+                }
+              >
+                <Icon
+                  name={
+                    `${
+                      hideSystemMetrics ? 'show' : 'hide'
+                    }-system-metrics` as IconName
+                  }
+                />
+                <Text size={12} tint={100}>
+                  {hideSystemMetrics ? 'show' : 'hide'} system metrics
+                </Text>
+              </Button>
+              <Divider
+                style={{ margin: '0 0.875rem' }}
+                orientation='vertical'
+                flexItem
+              />
+            </>
+          )}
+
           <Button
             variant='text'
             size='xSmall'

@@ -553,7 +553,6 @@ const Table = React.forwardRef(function Table(
   }, [selectedRows]);
 
   useResizeObserver(observerReturnCallback, tableContainerRef);
-
   // The right check is !props.isInfiniteLoading && (isLoading || isNil(rowData))
   // but after setting isInfiniteLoading to true, the rowData becomes null, unnecessary renders happening
   // @TODO sanitize this point
@@ -607,7 +606,7 @@ const Table = React.forwardRef(function Table(
                             (item: any) =>
                               item.key !== '#' && item.key !== 'actions',
                           )}
-                          hiddenColumns={hiddenColumnsRef.current}
+                          hiddenColumns={hiddenColumns}
                           hideSystemMetrics={hideSystemMetrics}
                           onManageColumns={onManageColumns}
                           onColumnsVisibilityChange={onColumnsVisibilityChange}

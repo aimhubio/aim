@@ -10,6 +10,7 @@ import { ITableRef } from 'types/components/Table/Table';
 
 import setComponentRefs from 'utils/app/setComponentRefs';
 import getStateFromUrl from 'utils/getStateFromUrl';
+import manageSystemMetricColumns from 'utils/app/manageSystemMetricColumns';
 
 import Runs from './Runs';
 
@@ -26,6 +27,9 @@ function RunsContainer(): React.FunctionComponentElement<React.ReactNode> {
         },
         model: runsAppModel,
       });
+    }
+    if (runsData?.data?.length > 0) {
+      manageSystemMetricColumns(runsAppModel);
     }
   }, [runsData?.data]);
 
@@ -57,7 +61,7 @@ function RunsContainer(): React.FunctionComponentElement<React.ReactNode> {
       tableRowHeight={runsData?.config?.table?.rowHeight}
       tableRef={tableRef}
       columnsOrder={runsData?.config?.table.columnsOrder}
-      hiddenColumns={runsData?.config?.table.hiddenColumns ?? []}
+      hiddenColumns={runsData?.config?.table.hiddenColumns!}
       hideSystemMetrics={runsData?.config?.table?.hideSystemMetrics}
       selectedRows={runsData?.selectedRows}
       query={runsData?.config?.select?.query}

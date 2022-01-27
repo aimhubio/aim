@@ -13,6 +13,7 @@ import { IChartPanelRef } from 'types/components/ChartPanel/ChartPanel';
 
 import getStateFromUrl from 'utils/getStateFromUrl';
 import setComponentRefs from 'utils/app/setComponentRefs';
+import manageSystemMetricColumns from 'utils/app/manageSystemMetricColumns';
 
 import Params from './Params';
 
@@ -23,7 +24,8 @@ function ParamsContainer(): React.FunctionComponentElement<React.ReactNode> {
   const tableElemRef = React.useRef<HTMLDivElement>(null);
   const wrapperElemRef = React.useRef<HTMLDivElement>(null);
   const resizeElemRef = React.useRef<HTMLDivElement>(null);
-  const paramsData = useModel<Partial<IParamsAppModelState>>(paramsAppModel);
+  const paramsData =
+    useModel<Partial<IParamsAppModelState | any>>(paramsAppModel);
   const route = useRouteMatch<any>();
   const history = useHistory();
 
@@ -45,6 +47,9 @@ function ParamsContainer(): React.FunctionComponentElement<React.ReactNode> {
           chartPanelRef,
         },
       });
+    }
+    if (paramsData?.rawData?.length > 0) {
+      manageSystemMetricColumns(paramsAppModel);
     }
   }, [paramsData?.rawData]);
 

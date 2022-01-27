@@ -16,6 +16,7 @@ import { IScatterAppModelState } from 'types/services/models/scatter/scatterAppM
 
 import setComponentRefs from 'utils/app/setComponentRefs';
 import getStateFromUrl from 'utils/getStateFromUrl';
+import manageSystemMetricColumns from 'utils/app/manageSystemMetricColumns';
 
 import Scatters from './Scatters';
 
@@ -29,7 +30,7 @@ function ScattersContainer(): React.FunctionComponentElement<React.ReactNode> {
   const route = useRouteMatch<any>();
   const history = useHistory();
   const scattersData =
-    useModel<Partial<IScatterAppModelState>>(scattersAppModel);
+    useModel<Partial<IScatterAppModelState | any>>(scattersAppModel);
 
   const projectsData = useModel<Partial<IProjectsModelState>>(projectsModel);
   const panelResizing = usePanelResize(
@@ -50,6 +51,9 @@ function ScattersContainer(): React.FunctionComponentElement<React.ReactNode> {
           chartPanelRef,
         },
       });
+    }
+    if (scattersData?.rawData?.length > 0) {
+      manageSystemMetricColumns(scattersAppModel);
     }
   }, [scattersData?.rawData]);
 
