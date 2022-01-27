@@ -2,7 +2,7 @@
 
 ## Unreleased
 
-- Fix table column's sort functionality issue in params and scatters explorers (rubenaprikyan)
+- Fix table column's sort functionality issue in Params and Scatters explorers (rubenaprikyan)
 
 ## 3.4.1 Jan 23 2022
 
