@@ -10,7 +10,7 @@ class Figure(CustomObject):
     Core functionality is based on Plotly.
 
     Args:
-         obj (:obj:): plotly figure object.
+         obj (:obj:): plotly or matplotlib figure object.
     """
 
     AIM_NAME = 'aim.figure'
@@ -18,9 +18,9 @@ class Figure(CustomObject):
     def __init__(self, obj):
         super().__init__()
 
-        if inst_has_typename(obj, ['Figure.matplotlib.figure']):
+        if inst_has_typename(obj, ['matplotlib', 'Figure']):
             self._from_matplotlib_figure(obj)
-        elif inst_has_typename(obj, ['Figure', 'BaseFigure']):
+        elif inst_has_typename(obj, ['plotly', 'Figure', 'BaseFigure']):
             self._prepare(obj)
         else:
             raise TypeError('Object is not a Plotly Figure instance')
