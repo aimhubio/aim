@@ -14,6 +14,7 @@ import { PathEnum } from 'config/enums/routesEnum';
 
 import { ITableColumn } from 'types/pages/metrics/components/TableColumns/TableColumns';
 import { IOnGroupingSelectChangeParams } from 'types/services/models/metrics/metricsAppModel';
+import { IGroupingSelectOption } from 'types/services/models/imagesExplore/imagesExploreAppModel';
 
 import { isSystemMetric } from 'utils/isSystemMetric';
 import { formatSystemMetricName } from 'utils/formatSystemMetricName';
@@ -28,6 +29,7 @@ const icons: { [key: string]: string } = {
 };
 
 function getParamsTableColumns(
+  groupingSelectOptions: IGroupingSelectOption[],
   metricsColumns: any,
   paramColumns: string[] = [],
   groupFields: { [key: string]: string } | null,
@@ -127,25 +129,36 @@ function getParamsTableColumns(
       ];
       return acc;
     }, []),
-    paramColumns.map((param, index) => {
+    paramColumns.map((param) => {
       const paramKey = `run.params.${param}`;
-      const sortItem: SortField = sortFields?.find(
-        (value) => value.value === paramKey,
-      );
-
+      let index = -1;
+      const sortItem: SortField | undefined = sortFields?.find((value, i) => {
+        if (value.value === paramKey) {
+          index = i;
+        }
+        return value.value === paramKey;
+      });
       return {
         key: param,
         content: (
           <span>
-            {paramKey}
+            {param}
             {onSort && (
               <TableSortIcons
                 onSort={() =>
                   onSort({
                     sortFields,
                     index,
-                    field: paramKey,
-                    actionType: SortActionTypes.ORDER_TABLE_TRIGGER,
+                    field:
+                      index === -1
+                        ? groupingSelectOptions.find(
+                            (value) => value.value === paramKey,
+                          )
+                        : sortItem,
+                    actionType:
+                      sortItem?.order === 'desc'
+                        ? SortActionTypes.DELETE
+                        : SortActionTypes.ORDER_TABLE_TRIGGER,
                   })
                 }
                 sort={!_.isNil(sortItem) ? sortItem.order : null}
