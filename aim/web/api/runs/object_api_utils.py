@@ -38,10 +38,13 @@ class CustomObjectApi:
         self.seq_type = seq_cls.sequence_name()
         self.resolve_blobs = resolve_blobs
         self.use_list = seq_cls.collections_allowed
-        self.traces: SequenceCollection = None
         self.dump_fn = None
-        self.trace_cache: dict = {}
+
+        self.traces: SequenceCollection = None
         self.requested_traces: list = []
+        self.run: Run = None
+        self.trace_cache: dict = {}
+
         self.record_range = None
         self.record_density = None
         self.total_record_range = None
@@ -51,9 +54,9 @@ class CustomObjectApi:
         self.total_index_range = None
 
         if self.use_list:
-            self._value_retriever = self.record_collection_retriever
+            self._value_retriever = self._record_collection_retriever
         else:
-            self._value_retriever = self.record_to_encodable
+            self._value_retriever = self._record_to_encodable
 
     def set_dump_data_fn(self, dump_fn: callable):
         self.dump_fn = dump_fn
@@ -62,6 +65,7 @@ class CustomObjectApi:
         self.traces = traces
 
     def set_requested_traces(self, run: 'Run', requested_traces):
+        self.run = run
         for requested_trace in requested_traces:
             trace_name = requested_trace.name
             context = Context(requested_trace.context)
@@ -70,43 +74,70 @@ class CustomObjectApi:
                 continue
             self.requested_traces.append(trace)
 
-    def set_ranges(self, calc_total_ranges: bool, record_range: IndexRange, record_density: int,
+    def set_ranges(self, record_range: IndexRange, record_density: int,
                    index_range: Optional[IndexRange] = None, index_density: Optional[int] = None):
         self.record_range = record_range
         self.record_density = record_density
-        record_range_missing = self.record_range.start is None or self.record_range.stop is None
 
         if self.use_list:
             assert index_range is not None
             assert index_density is not None
             self.index_range = index_range
             self.index_density = index_density
-            index_range_missing = self.index_range.start is None or self.index_range.stop is None
-            if calc_total_ranges or record_range_missing or index_range_missing:
-                self.total_record_range, self.total_index_range = self.calculate_trace_ranges()
+            self.total_record_range, self.total_index_range = self._calculate_ranges()
         else:
-            if calc_total_ranges or record_range_missing:
-                self.total_record_range = self.calculate_trace_ranges()
+            self.total_record_range = self._calculate_ranges()
 
-        start = self.record_range.start if self.record_range.start is not None else self.total_record_range.start
-        stop = self.record_range.stop if self.record_range.stop is not None else self.total_record_range.stop
-        self.record_range = IndexRange(start, stop)
+        self._adjust_ranges()
         if self.use_list:
-            start = self.index_range.start if self.index_range.start is not None else self.total_index_range.start
-            stop = self.index_range.stop if self.index_range.stop is not None else self.total_index_range.stop
-            step = (stop - stop) // index_density or 1
-            self.index_range = IndexRange(start, stop)
+            step = (self.index_range.stop - self.index_range.start) // index_density or 1
             self.index_slice = slice(self.index_range.start, self.index_range.stop, step)
 
-    def get_trace_info(self, trace: Sequence, value_retriever: callable,
-                       include_epochs: bool, include_timestamps: bool) -> dict:
+    async def search_result_streamer(self):
+
+        def _pack_run_data(run_: 'Run', traces_: list):
+            ranges = {
+                'record_range_used': self.record_range,
+                'record_range_total': self.total_record_range
+            }
+            if self.use_list:
+                ranges['index_range_used'] = self.index_range
+                ranges['index_range_total'] = self.total_index_range
+            run_dict = {
+                run_.hash: {
+                    'ranges': ranges,
+                    'params': run_.get(...),
+                    'traces': traces_,
+                    'props': get_run_props(run_)
+                }
+            }
+            return collect_streamable_data(encode_tree(run_dict))
+
+        for run_info in self.trace_cache.values():
+            traces_list = []
+            for trace in run_info['traces']:
+                traces_list.append(self._get_trace_info(trace, True, True))
+            yield _pack_run_data(run_info['run'], traces_list)
+
+    async def requested_traces_streamer(self) -> List[dict]:
+        for run_info in self.trace_cache.values():
+            for trace in run_info['traces']:
+                trace_dict = self._get_trace_info(trace, False, False)
+                trace_dict['record_range_used'] = self.record_range
+                trace_dict['record_range_total'] = self.total_record_range
+                if self.use_list:
+                    trace_dict['index_range'] = self.index_range
+                    trace_dict['index_range_total'] = self.total_index_range
+                yield collect_streamable_data(encode_tree(trace_dict))
+
+    def _get_trace_info(self, trace: Sequence, include_epochs: bool, include_timestamps: bool) -> dict:
         steps = []
         values = []
         steps_vals = trace.values.items_in_range(self.record_range.start, self.record_range.stop, self.record_density)
 
         for step, val in steps_vals:
             steps.append(step)
-            values.append(value_retriever(step, val, trace))
+            values.append(self._value_retriever(step, val, trace))
 
         result = {
             'name': trace.name,
@@ -124,7 +155,7 @@ class CustomObjectApi:
             ))
         return result
 
-    def record_to_encodable(self, step: int, record, trace: Sequence) -> Union[List[dict], dict]:
+    def _record_to_encodable(self, step: int, record, trace: Sequence) -> dict:
         rec_json = record.json()
         if self.resolve_blobs:
             rec_json['data'] = self.dump_fn(record)
@@ -134,9 +165,8 @@ class CustomObjectApi:
             rec_json['blob_uri'] = URIService.generate_uri(trace.run.repo, trace.run.hash, 'seqs', data_path)
         return rec_json
 
-    def record_collection_to_encodable(self, step: int, record_collection: Iterable, trace: Sequence) -> List[dict]:
-        if not self.use_list:
-            raise TypeError(f'Sequence \'{self.seq_type}\' does not support record collections.')
+    def _record_collection_to_encodable(self, step: int, record_collection: Iterable, trace: Sequence) -> List[dict]:
+        assert self.use_list, f'Sequence \'{self.seq_type}\' does not support record collections.'
         result = []
         for idx, record in record_collection:
             rec_json = record.json()
@@ -150,13 +180,13 @@ class CustomObjectApi:
             result.append(rec_json)
         return result
 
-    def record_collection_retriever(self, step, val, trace):
+    def _record_collection_retriever(self, step, val, trace):
         assert self.use_list
         if isinstance(val, list):
             sliced_val = self.record_collection_slice(val, self.index_slice)
-            return self.record_collection_to_encodable(step, sliced_val, trace)
+            return self._record_collection_to_encodable(step, sliced_val, trace)
         elif self.index_range.start == 0:
-            res = self.record_to_encodable(step, val, trace)
+            res = self._record_to_encodable(step, val, trace)
             res['index'] = 0
             return [res]
         else:
@@ -182,8 +212,13 @@ class CustomObjectApi:
         elif self.requested_traces:
             for trace in self.requested_traces:
                 callback(trace)
+            assert self.run is not None
+            self.trace_cache[self.run.hash] = {
+                'run': self.run,
+                'traces': self.requested_traces
+            }
 
-    def calculate_trace_ranges(self) -> Union[IndexRange, Tuple[IndexRange, IndexRange]]:
+    def _calculate_ranges(self) -> Union[IndexRange, Tuple[IndexRange, IndexRange]]:
         rec_start = None
         rec_stop = -1
         idx_start = 0  # record inner indexing is always sequential
@@ -208,47 +243,11 @@ class CustomObjectApi:
         else:
             return IndexRange(rec_start, rec_stop + 1)
 
-    async def search_result_streamer(self):
-
-        def _pack_run_data(run_: 'Run', traces_: list):
-            rec_range = self.total_record_range if self.total_record_range else self.record_range
-            idx_range = self.total_index_range if self.total_index_range else self.index_range
-            ranges = {
-                'record_range': [rec_range.start, rec_range.stop]
-            }
-            if self.use_list:
-                ranges['index_range'] = [idx_range.start, idx_range.stop]
-            run_dict = {
-                run_.hash: {
-                    'ranges': ranges,
-                    'params': run_.get(...),
-                    'traces': traces_,
-                    'props': get_run_props(run_)
-                }
-            }
-            return collect_streamable_data(encode_tree(run_dict))
-
-        if self.trace_cache:
-            for run_info in self.trace_cache.values():
-                traces_list = []
-                for trace in run_info['traces']:
-                    traces_list.append(self.get_trace_info(trace, self._value_retriever, True, True))
-                yield _pack_run_data(run_info['run'], traces_list)
-        else:
-            for run_trace_collection in self.traces.iter_runs():
-                traces_list = []
-                for trace in run_trace_collection.iter():
-                    traces_list.append(self.get_trace_info(trace, self._value_retriever, True, True))
-                if traces_list:
-                    yield _pack_run_data(run_trace_collection.run, traces_list)
-
-    async def requested_traces_streamer(self) -> List[dict]:
-        rec_range = self.total_record_range if self.total_record_range else self.record_range
+    def _adjust_ranges(self):
+        start = self.record_range.start if self.record_range.start is not None else self.total_record_range.start
+        stop = self.record_range.stop if self.record_range.stop is not None else self.total_record_range.stop
+        self.record_range = IndexRange(start, stop)
         if self.use_list:
-            idx_range = self.total_index_range if self.total_index_range else self.index_range
-        for trace in self.requested_traces:
-            trace_dict = self.get_trace_info(trace, self._value_retriever, False, False)
-            trace_dict['record_range'] = (rec_range.start, rec_range.stop)
-            if self.use_list:
-                trace_dict['index_range'] = (idx_range.start, idx_range.stop)
-            yield collect_streamable_data(encode_tree(trace_dict))
+            start = self.index_range.start if self.index_range.start is not None else self.total_index_range.start
+            stop = self.index_range.stop if self.index_range.stop is not None else self.total_index_range.stop
+            self.index_range = IndexRange(start, stop)

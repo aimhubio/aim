@@ -163,9 +163,7 @@ DataT = TypeVar('DataT')
 
 class BaseRangeInfo(BaseModel):
     records_range: Tuple[int, int]
-    record_slice: Tuple[int, int, int]
     index_range: Tuple[int, int]
-    index_slice: Tuple[int, int, int]
 
 
 class ObjectSequenceBaseView(GenericModel, Generic[DataT]):

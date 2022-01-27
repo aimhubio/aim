@@ -123,9 +123,7 @@ export interface IImageRunData {
   };
   ranges: {
     index_range: number[];
-    index_slice: number[];
     record_range: number[];
-    record_slice: number[];
   };
   traces: any[];
 }

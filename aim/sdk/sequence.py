@@ -29,7 +29,8 @@ class Sequence(Generic[T]):
     def __init_subclass__(cls, **kwargs):
         super().__init_subclass__(**kwargs)
         subclass_typename = cls.sequence_name()
-        cls.registry[subclass_typename] = cls
+        if subclass_typename is not None:  # check for intermediate helper classes
+            cls.registry[subclass_typename] = cls
 
     def __init__(
         self,
