@@ -1,4 +1,7 @@
 # Changelog
+## Unreleased
+
+- Improve highlighting of table focused/hovered/selected row (VkoHov)
 
 ## 3.4.1 Jan 23 2022
 
