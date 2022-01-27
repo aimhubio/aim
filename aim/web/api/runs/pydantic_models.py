@@ -162,17 +162,17 @@ DataT = TypeVar('DataT')
 
 
 class BaseRangeInfo(BaseModel):
-    records_range: Tuple[int, int]
-    index_range: Tuple[int, int]
+    record_range_used: Tuple[int, int]
+    record_range_total: Tuple[int, int]
+    index_range_used: Optional[Tuple[int, int]]
+    index_range_total: Optional[Tuple[int, int]]
 
 
-class ObjectSequenceBaseView(GenericModel, Generic[DataT]):
-    record_range: Tuple[int, int]
-    index_range: Tuple[int, int]
+class ObjectSequenceBaseView(BaseRangeInfo, TraceBaseView, GenericModel, Generic[DataT]):
     values: List[DataT]
 
 
-class ObjectSequenceFullView(GenericModel, Generic[DataT]):
+class ObjectSequenceFullView(TraceBaseView, GenericModel, Generic[DataT]):
     values: List[DataT]
     iters: List[int]
     epochs: List[int]
