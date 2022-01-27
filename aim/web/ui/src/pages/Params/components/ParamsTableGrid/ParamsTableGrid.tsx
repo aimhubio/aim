@@ -19,7 +19,7 @@ import { isSystemMetric } from 'utils/isSystemMetric';
 import { formatSystemMetricName } from 'utils/formatSystemMetricName';
 import contextToString from 'utils/contextToString';
 import { formatValue } from 'utils/formatValue';
-import { SortField } from 'utils/getSortedFields';
+import { SortActionTypes, SortField } from 'utils/getSortedFields';
 
 const icons: { [key: string]: string } = {
   color: 'coloring',
@@ -34,7 +34,7 @@ function getParamsTableColumns(
   order: { left: string[]; middle: string[]; right: string[] },
   hiddenColumns: string[],
   sortFields?: any[],
-  onSort?: (field: string, value?: 'asc' | 'desc' | 'none') => void,
+  onSort?: ({ sortFields, order, index, actionType }: any) => void,
   grouping?: { [key: string]: string[] },
   onGroupingToggle?: (params: IOnGroupingSelectChangeParams) => void,
 ): ITableColumn[] {
@@ -127,7 +127,7 @@ function getParamsTableColumns(
       ];
       return acc;
     }, []),
-    paramColumns.map((param) => {
+    paramColumns.map((param, index) => {
       const paramKey = `run.params.${param}`;
       const sortItem: SortField = sortFields?.find(
         (value) => value.value === paramKey,
@@ -137,10 +137,17 @@ function getParamsTableColumns(
         key: param,
         content: (
           <span>
-            {param}
+            {paramKey}
             {onSort && (
               <TableSortIcons
-                onSort={() => onSort(paramKey)}
+                onSort={() =>
+                  onSort({
+                    sortFields,
+                    index,
+                    field: paramKey,
+                    actionType: SortActionTypes.ORDER_TABLE_TRIGGER,
+                  })
+                }
                 sort={!_.isNil(sortItem) ? sortItem.order : null}
               />
             )}
