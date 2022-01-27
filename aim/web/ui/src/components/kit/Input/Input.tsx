@@ -13,22 +13,27 @@ import { TextField, Tooltip } from '@material-ui/core';
 import { Text, Icon } from 'components/kit';
 
 import {
-  IErrorMessage,
-  IErrorsMessages,
-  IValidationScenario,
+  IMetadataMessages,
+  IMetadataMessage,
+  IValidationPatterns,
   IInputProps,
-  IValidationResult,
+  IValidationMetadata,
 } from './Input.d';
 import { labelAppearances, inputSizes, inputTypeConversionFns } from './config';
 
 import './Input.scss';
 
-/** @TODO describe all props with right types
- * @property {boolean} isValidateInitially - flag for immediately validation of input
- * @property {string} label - label for input
- * @property {string} labelHelperText - helper text for input label
- * @property {boolean} showMessageByTooltip - flag for showing any message by using tooltip instead of helper text
- * @property {any} value - value prop for input component
+/**
+ * @property {boolean} isValidateInitially - flag for immediately validation of input. Default value is false.
+ * @property {string} label - label for input.
+ * @property {string} labelHelperText - helper text for input label.
+ * @property {boolean} showMessageByTooltip - flag for showing any message by using tooltip instead of helper text.
+ * @property {any} value - value prop for input component.
+ * @property {IValidationPatterns} validationPatterns - validation patterns for validating input value. Ordering is meaningful validations pattern executor follow to order of props array.
+ * @property {default | top-labeled | swap} labelAppearance - define of input component label type and position. Default value is default.
+ * @property {IconName} topLabeledIconName - icon name for top label
+ * @property {function} onChange - change handler function receives tree argument event, pure value, metadata for validation state and messages
+ * @property {small | medium | large} size - define size of input component. Default value is medium.
  */
 function InputWrapper({
   isValidateInitially = false, // TODO TBD default value true or false
@@ -36,7 +41,7 @@ function InputWrapper({
   validationPatterns = [],
   label,
   labelHelperText,
-  labelIconName,
+  topLabeledIconName,
   showMessageByTooltip = false,
   type = 'text',
   value,
@@ -45,7 +50,7 @@ function InputWrapper({
   ...restProps
 }: IInputProps): React.FunctionComponentElement<React.ReactNode> {
   const [isInputValid, setIsInputValid] = useState(true);
-  const [errorsMessages, setErrorsMessages] = useState<IErrorsMessages>(null);
+  const [errorsMessages, setErrorsMessages] = useState<IMetadataMessages>([]);
   const [helperText, setHelperText] = useState<string>('');
   const [isMessageTooltipVisible, setIsMessageTooltipVisible] =
     useState<boolean>(false);
@@ -55,24 +60,23 @@ function InputWrapper({
     [type],
   );
 
-  const validateScenarios = (
-    validationPatterns: Array<IValidationScenario>,
+  const validatePatterns = (
+    validationPatterns: IValidationPatterns,
     value: any,
-  ): IValidationResult => {
-    const facedErrorsMessages: IErrorsMessages = validationPatterns
-      // TODO use filter instead of map
-      .map(({ errorCondition, errorText }): IErrorMessage => {
-        let error: IErrorMessage = '';
+  ): IValidationMetadata => {
+    const facedErrorsMessages: IMetadataMessages = validationPatterns
+      .map(({ errorCondition, errorText }): IMetadataMessage => {
+        let error: IMetadataMessage = { type: 'error', text: '' };
 
         if (isFunction(errorCondition)) {
-          error = errorCondition(value) ? errorText : '';
+          error.text = errorCondition(value) ? errorText : '';
         } else if (isRegExp(errorCondition)) {
-          error = errorCondition.test(value) ? errorText : '';
+          error.text = errorCondition.test(value) ? errorText : '';
         }
 
         return error;
       })
-      .filter((error: IErrorMessage) => !isEmpty(error)); // TODO remove after replacing map to filter
+      .filter((error: IMetadataMessage) => !isEmpty(error.text));
 
     const isValid = isEmpty(facedErrorsMessages);
     setErrorsMessages(facedErrorsMessages);
@@ -80,7 +84,7 @@ function InputWrapper({
 
     return {
       isValid,
-      errors: facedErrorsMessages,
+      messages: [...facedErrorsMessages],
     };
   };
 
@@ -89,7 +93,7 @@ function InputWrapper({
     let metadata: any = {};
 
     if (!isEmpty(validationPatterns)) {
-      const validationResult: IValidationResult = validateScenarios(
+      const validationResult: IValidationMetadata = validatePatterns(
         validationPatterns,
         newValue,
       );
@@ -100,29 +104,27 @@ function InputWrapper({
     onChange && onChange(e, newValue, metadata);
   };
 
-  const errorsMessagesFormatter = (
-    errorsMessages: Array<string> | null,
-  ): void => {
-    const errorsMessagesLastIndex = collectionSize(errorsMessages) - 1;
-    const formattedErrorMessages: string =
-      errorsMessages?.reduce((acc, value, index) => {
-        return (acc += `${value}${
-          errorsMessagesLastIndex === index ? '.' : ',\n'
+  const messagesFormatter = (messages: IMetadataMessages): void => {
+    const messagesLastIndex = collectionSize(messages) - 1;
+    const formattedMessages: string =
+      messages?.reduce((acc, message: IMetadataMessage, index) => {
+        return (acc += `${message.text}${
+          messagesLastIndex === index ? '.' : ',\n'
         }`);
       }, '') || '';
 
-    setHelperText(formattedErrorMessages);
+    setHelperText(formattedMessages);
   };
 
   useEffect(() => {
-    errorsMessagesFormatter(errorsMessages);
+    messagesFormatter(errorsMessages);
   }, [errorsMessages]);
 
   const isRenderTopLabel = () => labelAppearance === 'top-labeled' && label;
 
   useEffect(() => {
     if (isValidateInitially) {
-      validateScenarios(validationPatterns, value);
+      validatePatterns(validationPatterns, value);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
@@ -152,10 +154,10 @@ function InputWrapper({
             {label}:
           </Text>
 
-          {!isUndefined(labelIconName) && !isUndefined(labelHelperText) && (
+          {!isUndefined(topLabeledIconName) && !isUndefined(labelHelperText) && (
             <Tooltip title={labelHelperText} placement='right-end'>
               <div>
-                <Icon name={labelIconName} />
+                <Icon name={topLabeledIconName} />
               </div>
             </Tooltip>
           )}
@@ -166,6 +168,7 @@ function InputWrapper({
         className={`InputWrapper_textFieldCnt InputWrapper_textFieldCnt_${inputSizes[size].cssClassName}`}
       >
         <TextField
+          inputProps={{ 'data-testid': 'inputWrapper' }}
           value={value}
           onChange={onChangeHandler}
           type={type}

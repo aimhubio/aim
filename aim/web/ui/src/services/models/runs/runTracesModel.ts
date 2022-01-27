@@ -84,6 +84,7 @@ function initialize(
   model.setState({
     config,
     queryData,
+    isApplyBtnDisabled: false,
     traceType,
     runHash: run_id,
     isTraceBatchLoading: true,

@@ -49,9 +49,6 @@ function TraceVisualizationContainer({
     };
   }, [runHash, traceInfo, traceType]);
 
-  const [isApplyBtnDisabled, setIsApplyBtnDisabled] =
-    React.useState<boolean>(false);
-
   const onInputChangeHandler = (
     name: string,
     value: number,
@@ -112,7 +109,8 @@ function TraceVisualizationContainer({
               }
               onRangeSliderChange={runTracesModel.onRangeChange}
               applyButtonDisabled={
-                !!runTracesModelData?.isTraceBatchLoading || isApplyBtnDisabled
+                !!runTracesModelData?.isTraceBatchLoading ||
+                !!runTracesModelData?.isApplyBtnDisabled
               }
             />
           )}

@@ -1,5 +1,3 @@
-import { isNumber } from 'lodash';
-
 const labelAppearances = {
   default: {
     cssClassName: 'default',

@@ -126,28 +126,15 @@ function SliderWithInput({
             labelAppearance='top-labeled'
             size='small'
             label={countInputTitle}
-            labelIconName='circle-question'
+            topLabeledIconName='circle-question'
             labelHelperText={countTitleTooltip}
             placeholder={countInputTitle}
             showMessageByTooltip
             // isValidateInitially={true}
             onChange={(e, value, metadata) => {
-              console.clear();
-              console.log(
-                '🚀 ~ file: SliderWithInput.tsx ~ line 133 ~ metadata',
-                metadata,
-              );
-              console.log(
-                '🚀 ~ file: SliderWithInput.tsx ~ line 133 ~ value',
-                value,
-              );
-              console.log('🚀 ~ file: SliderWithInput.tsx ~ line 135 ~ e', e);
-
               onCountChange(value, metadata);
             }}
             validationPatterns={[
-              // TODO replace condition field to
-              // errorCondition maybe we need success or warningCondition field in a feature
               {
                 errorCondition: (value) => +value < min,
                 errorText: `Value should be equal or greater then ${min}`,
@@ -159,14 +146,6 @@ function SliderWithInput({
               {
                 errorCondition: (value) => +value === 0,
                 errorText: "Value can't be equal to 0",
-              },
-              {
-                errorCondition: new RegExp(/[9]/g),
-                errorText: 'Value should be equal or smaller then 9',
-              },
-              {
-                errorCondition: (value) => isString(value) && isEmpty(value),
-                errorText: 'Field is required and cant be empty',
               },
             ]}
           />

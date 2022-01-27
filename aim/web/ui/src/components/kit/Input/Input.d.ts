@@ -2,22 +2,27 @@ import { TextFieldProps } from '@material-ui/core';
 
 import { IconName } from 'components/kit/Icon';
 
-type IValidationScenarioCondition = ((value: any) => boolean) | RegExp;
+type IValidationPatternCondition = ((value: any) => boolean) | RegExp;
 
-export type IErrorMessage = string;
-
-export type IErrorsMessages = Array<IErrorMessage> | null;
-
-export type IValidationScenario = {
-  errorCondition: IValidationScenarioCondition;
+export type IValidationPattern = {
+  errorCondition: IValidationPatternCondition;
   errorText: string;
 };
 
+export type IValidationPatterns = Array<IValidationPattern>;
+
 export type ILabelAppearance = 'default' | 'top-labeled' | 'swap';
 
-export type IValidationResult = {
+export type IMetadataMessage = {
+  type: 'error' | 'warning' | 'success';
+  text: string;
+};
+
+export type IMetadataMessages = Array<IMetadataMessage>;
+
+export type IValidationMetadata = {
   isValid: boolean;
-  errors: string[];
+  messages: IMetadataMessages;
 };
 
 type Override<T1, T2> = Omit<T1, keyof T2> & T2;
@@ -25,17 +30,17 @@ type Override<T1, T2> = Omit<T1, keyof T2> & T2;
 export type IInputProps = Override<
   TextFieldProps,
   {
-    validationPatterns?: Array<IValidationScenario>;
+    validationPatterns?: IValidationPatterns;
     labelAppearance?: ILabelAppearance;
     labelHelperText?: string;
-    labelIconName?: IconName;
+    topLabeledIconName?: IconName;
     showMessageByTooltip?: boolean;
     size?: 'small' | 'medium' | 'large';
     isValidateInitially?: boolean;
     onChange: (
       e: React.ChangeEvent<HTMLInputElement>,
       value: any,
-      metadata: object,
+      metadata: IValidationMetadata,
     ) => void;
   }
 >;
