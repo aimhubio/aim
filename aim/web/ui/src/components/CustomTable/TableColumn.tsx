@@ -11,6 +11,7 @@ import ErrorBoundary from 'components/ErrorBoundary/ErrorBoundary';
 import { Button, Icon, Text } from 'components/kit';
 import GroupConfigPopover from 'components/GroupConfigPopover/GroupConfigPopover';
 
+import { MainColors10 } from 'config/colors/colors';
 import { viewPortOffset } from 'config/table/tableConfigs';
 
 import ControlPopover from '../ControlPopover/ControlPopover';
@@ -49,7 +50,6 @@ function Column({
   const widthClone = React.useRef(width);
   const columnRef = React.useRef();
   const startingPoint = React.useRef(null);
-
   const groups = !Array.isArray(data);
   const dataLength = React.useMemo(() => {
     if (Array.isArray(data)) {
@@ -381,6 +381,13 @@ function Column({
                       ? {
                           borderLeft: 'none',
                           '--color-indicator': data[groupKey].data.meta.color,
+                          '--extended-group-background-color':
+                            MainColors10[data[groupKey].data.meta.color],
+                        }
+                      : data[groupKey].data.meta.color
+                      ? {
+                          '--extended-group-background-color':
+                            MainColors10[data[groupKey].data.meta.color],
                         }
                       : null
                   }
@@ -506,7 +513,7 @@ function Column({
                 </div>
               ))
             : data.map((item, i) => (
-                <>
+                <React.Fragment key={i}>
                   {col.key === 'selection' ? (
                     <Cell
                       key={col.key + i}
@@ -574,7 +581,7 @@ function Column({
                       onRowClick={() => onRowClick(item)}
                     />
                   )}
-                </>
+                </React.Fragment>
               )))}
       </div>
     </ErrorBoundary>

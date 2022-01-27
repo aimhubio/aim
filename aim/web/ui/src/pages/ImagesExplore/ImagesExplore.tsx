@@ -365,6 +365,10 @@ function ImagesExplore(): React.FunctionComponentElement<React.ReactNode> {
                       ? 'medium'
                       : 'large'
                   }
+                  focusedState={
+                    imagesExploreData?.config?.images
+                      ?.focusedState as IFocusedState
+                  }
                   selectedRows={imagesExploreData?.selectedRows}
                   sortOptions={imagesExploreData?.groupingSelectOptions}
                   sortFields={imagesExploreData?.config?.table.sortFields}

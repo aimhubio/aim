@@ -78,6 +78,7 @@ const Table = React.forwardRef(function Table(
     archiveRuns,
     deleteRuns,
     className = '',
+    focusedState,
     ...props
   }: ITableProps,
   ref,
@@ -111,6 +112,12 @@ const Table = React.forwardRef(function Table(
   });
 
   let groups = !Array.isArray(rowData);
+
+  React.useEffect(() => {
+    if (focusedState && !focusedState.active) {
+      activeRowKey.current = null;
+    }
+  }, [focusedState]);
 
   React.useImperativeHandle(ref, () => ({
     updateData: updateData,
@@ -233,7 +240,7 @@ const Table = React.forwardRef(function Table(
         } else {
           activeRowKey.current = rowKey;
         }
-        updateHoveredRow(`rowKey-${activeRowKey.current}`);
+        updateFocusedRow(`rowKey-${activeRowKey.current}`);
       } else {
         tableRef.current?.setActiveRow(rowKey);
       }
@@ -247,9 +254,18 @@ const Table = React.forwardRef(function Table(
           const rowCell = document.querySelector(
             `.Table__cell.rowKey-${rowKey}`,
           );
-
           if (!!rowCell) {
-            const top = rowCell.offsetTop - (groups ? 3 : 2) * rowHeight;
+            let top = 0;
+            if (groups) {
+              rowCell.parentElement?.childNodes?.forEach((item, index) => {
+                if ([...item.classList].includes(`rowKey-${rowKey}`)) {
+                  top =
+                    rowCell.parentElement?.offsetTop + rowHeight * (index - 3);
+                }
+              });
+            } else {
+              top = rowCell.offsetTop - 2 * rowHeight;
+            }
             if (
               tableContainerRef.current.scrollTop > top ||
               tableContainerRef.current.scrollTop +
@@ -280,7 +296,7 @@ const Table = React.forwardRef(function Table(
                 // TODO: probably need useEffect for this
                 setTimeout(() => {
                   window.requestAnimationFrame(() => {
-                    updateHoveredRow(`rowKey-${rowKey}`);
+                    updateFocusedRow(`rowKey-${rowKey}`);
                     scrollToElement();
                   });
                 }, 100);
@@ -398,7 +414,7 @@ const Table = React.forwardRef(function Table(
         activeRowKey.current = row.key;
       }
 
-      updateHoveredRow(`rowKey-${activeRowKey.current}`);
+      updateFocusedRow(`rowKey-${activeRowKey.current}`);
     }
 
     if (typeof onRowClick === 'function') {
@@ -409,11 +425,17 @@ const Table = React.forwardRef(function Table(
   }
 
   function updateHoveredRow(activeRowClass) {
+    const prevActiveRow = document.querySelectorAll('.Table__cell.focused');
+    if (!!prevActiveRow && prevActiveRow.length > 0) {
+      prevActiveRow.forEach((cell) => cell.classList.remove('focused'));
+    }
     if (activeRowClass !== 'rowKey-null') {
       window.requestAnimationFrame(() => {
-        const prevActiveRow = document.querySelectorAll('.Table__cell.active');
-        if (!!prevActiveRow && prevActiveRow.length > 0) {
-          prevActiveRow.forEach((cell) => cell.classList.remove('active'));
+        const prevHoveredRow = document.querySelectorAll(
+          '.Table__cell.hovered',
+        );
+        if (!!prevHoveredRow && prevHoveredRow.length > 0) {
+          prevHoveredRow.forEach((cell) => cell.classList.remove('hovered'));
         }
 
         const activeRow = document.querySelectorAll(
@@ -421,7 +443,30 @@ const Table = React.forwardRef(function Table(
         );
 
         if (!!activeRow && activeRow.length > 0) {
-          activeRow.forEach((cell) => cell.classList.add('active'));
+          activeRow.forEach((cell) => cell.classList.add('hovered'));
+        }
+      });
+    }
+  }
+
+  function updateFocusedRow(activeRowClass) {
+    const prevHoveredRow = document.querySelectorAll('.Table__cell.hovered');
+    if (!!prevHoveredRow && prevHoveredRow.length > 0) {
+      prevHoveredRow.forEach((cell) => cell.classList.remove('hovered'));
+    }
+    if (activeRowClass !== 'rowKey-null') {
+      window.requestAnimationFrame(() => {
+        const prevActiveRow = document.querySelectorAll('.Table__cell.focused');
+        if (!!prevActiveRow && prevActiveRow.length > 0) {
+          prevActiveRow.forEach((cell) => cell.classList.remove('focused'));
+        }
+
+        const activeRow = document.querySelectorAll(
+          `.Table__cell.${activeRowClass}`,
+        );
+
+        if (!!activeRow && activeRow.length > 0) {
+          activeRow.forEach((cell) => cell.classList.add('focused'));
         }
       });
     }
@@ -510,11 +555,15 @@ const Table = React.forwardRef(function Table(
   React.useEffect(() => {
     if (custom) {
       requestAnimationFrame(() => {
-        updateHoveredRow(
-          `rowKey-${
-            activeRowKey.current ? activeRowKey.current : hoveredRowKey.current
-          }`,
-        );
+        if (!activeRowKey.current) {
+          updateHoveredRow(
+            `rowKey-${
+              activeRowKey.current
+                ? activeRowKey.current
+                : hoveredRowKey.current
+            }`,
+          );
+        }
       });
     }
   }, [custom, listWindow]);
@@ -932,6 +981,10 @@ function propsComparator(
   }
 
   if (prevProps.hiddenColumns !== nextProps.hiddenColumns) {
+    return false;
+  }
+
+  if (prevProps.focusedState !== nextProps.focusedState) {
     return false;
   }
 

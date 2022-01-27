@@ -317,9 +317,8 @@ $border-radius: 0.2rem;
       border-radius: toRem(6px) 0 0 toRem(6px);
     }
   }
-
   &.hidden {
-    background-color: $pico-10;
+    background-color: $cuddle-10;
   }
 
   &.selected {
@@ -452,6 +451,12 @@ $border-radius: 0.2rem;
       top: -1px;
       left: -1px;
       z-index: 2;
+    }
+    .expanded {
+      background: var(--extended-group-background-color);
+      &:hover {
+        background: var(--extended-group-background-color);
+      }
     }
   }
   .Table__cell:last-of-type {

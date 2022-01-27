@@ -178,6 +178,7 @@ function Scatters(
                   onRowSelect={props.onRowSelect}
                   archiveRuns={props.archiveRuns}
                   deleteRuns={props.deleteRuns}
+                  focusedState={props.focusedState}
                   multiSelect
                 />
               ) : null}

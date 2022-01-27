@@ -61,6 +61,7 @@ export interface ITableProps {
   archiveRuns?: (ids: string[], archived: boolean) => void;
   deleteRuns?: (ids: string[]) => void;
   className?: string;
+  focusedState?: any;
 }
 
 export interface ITableRef {

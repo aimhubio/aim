@@ -232,6 +232,7 @@ function Metrics(
                   onRowSelect={props.onRowSelect}
                   archiveRuns={props.archiveRuns}
                   deleteRuns={props.deleteRuns}
+                  focusedState={props.focusedState}
                 />
               ) : null}
             </BusyLoaderWrapper>

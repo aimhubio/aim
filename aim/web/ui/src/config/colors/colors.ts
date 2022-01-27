@@ -37,4 +37,15 @@ const COLORS: Array<string[]> = [
   ],
 ];
 
+export const MainColors10 = {
+  '#3E72E7': '#ECF1FD',
+  '#18AB6D': '#E8F7F0',
+  '#7A4CE0': '#F2EDFC',
+  '#E149A0': '#FCEDF6',
+  '#E43D3D': '#FCECEC',
+  '#E8853D': '#FEF2E9',
+  '#0394B4': '#E6F4F7',
+  '#729B1B': '#F1F5E8',
+};
+
 export default COLORS;

@@ -276,6 +276,7 @@ function Table(props) {
                     expanded={expanded}
                     expand={expand}
                     onRowSelect={props.onRowSelect}
+                    onRowClick={props.onRowClick}
                     selectedRows={props.selectedRows}
                     firstColumn={true}
                     width={props.data[0]?.rowMeta?.color ? 50 : 32}
