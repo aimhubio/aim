@@ -3560,6 +3560,7 @@ function createAppModel(appConfig: IAppInitialConfig) {
         const sortFields = model.getState()?.config?.table.sortFields;
 
         const tableColumns = getParamsTableColumns(
+          groupingSelectOptions,
           metricsColumns,
           params,
           data[0]?.config,
@@ -3799,7 +3800,7 @@ function createAppModel(appConfig: IAppInitialConfig) {
         const uniqParams = _.uniq(params);
         const uniqHighLevelParams = _.uniq(highLevelParams);
         const mappedData =
-          data.reduce((acc: any, item: any) => {
+          data?.reduce((acc: any, item: any) => {
             acc[item.hash] = { runHash: item.hash, ...item.props };
             return acc;
           }, {}) || {};
@@ -3890,6 +3891,7 @@ function createAppModel(appConfig: IAppInitialConfig) {
           groupingSelectOptions,
         );
         const tableColumns: ITableColumn[] = getParamsTableColumns(
+          groupingSelectOptions,
           metricsColumns,
           params,
           data[0]?.config,
@@ -3971,6 +3973,7 @@ function createAppModel(appConfig: IAppInitialConfig) {
           groupingSelectOptions,
         );
         const tableColumns = getParamsTableColumns(
+          groupingSelectOptions,
           metricsColumns,
           params,
           data[0]?.config,
@@ -4459,6 +4462,7 @@ function createAppModel(appConfig: IAppInitialConfig) {
         const sortFields = model.getState()?.config?.table.sortFields;
 
         const tableColumns = getParamsTableColumns(
+          groupingSelectOptions,
           metricsColumns,
           params,
           data[0]?.config,
@@ -4895,7 +4899,7 @@ function createAppModel(appConfig: IAppInitialConfig) {
         const uniqParams = _.uniq(params);
         const uniqHighLevelParams = _.uniq(highLevelParams);
         const mappedData =
-          data.reduce((acc: any, item: any) => {
+          data?.reduce((acc: any, item: any) => {
             acc[item.hash] = { runHash: item.hash, ...item.props };
             return acc;
           }, {}) || {};
@@ -5086,6 +5090,7 @@ function createAppModel(appConfig: IAppInitialConfig) {
           groupingSelectOptions,
         );
         const tableColumns = getParamsTableColumns(
+          groupingSelectOptions,
           metricsColumns,
           params,
           data[0]?.config,
@@ -5227,6 +5232,7 @@ function createAppModel(appConfig: IAppInitialConfig) {
           groupingSelectOptions,
         );
         const tableColumns: ITableColumn[] = getParamsTableColumns(
+          groupingSelectOptions,
           metricsColumns,
           params,
           data[0]?.config,
