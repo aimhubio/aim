@@ -1,6 +1,7 @@
 import React from 'react';
 
 import Menu from 'components/kit/Menu/Menu';
+import { IValidationMetadata } from 'components/kit/Input';
 
 import useModel from 'hooks/model/useModel';
 
@@ -52,9 +53,9 @@ function TraceVisualizationContainer({
   const onInputChangeHandler = (
     name: string,
     value: number,
-    metadata?: object,
+    metadata?: IValidationMetadata,
   ) => {
-    runTracesModel.onInputChange(name, value);
+    runTracesModel.onInputChange(name, value, metadata?.isValid);
   };
 
   const Visualizer = traceTypeVisualization[traceType];
@@ -104,9 +105,11 @@ function TraceVisualizationContainer({
                 sliderType: item.sliderType,
               }))}
               onApply={runTracesModel.onApply}
-              onInputChange={(name: string, value: number, metadata?: object) =>
-                onInputChangeHandler(name, value, metadata)
-              }
+              onInputChange={(
+                name: string,
+                value: number,
+                metadata?: IValidationMetadata,
+              ) => onInputChangeHandler(name, value, metadata)}
               onRangeSliderChange={runTracesModel.onRangeChange}
               applyButtonDisabled={
                 !!runTracesModelData?.isTraceBatchLoading ||

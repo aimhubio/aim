@@ -1,11 +1,5 @@
 import React, { useEffect, useMemo, useState } from 'react';
-import {
-  isEmpty,
-  isFunction,
-  isRegExp,
-  isUndefined,
-  size as collectionSize,
-} from 'lodash';
+import _ from 'lodash-es';
 import classNames from 'classnames';
 
 import { TextField, Tooltip } from '@material-ui/core';
@@ -36,7 +30,7 @@ import './Input.scss';
  * @property {small | medium | large} size - define size of input component. Default value is medium.
  */
 function InputWrapper({
-  isValidateInitially = false, // TODO TBD default value true or false
+  isValidateInitially = false,
   labelAppearance = 'default',
   validationPatterns = [],
   label,
@@ -68,17 +62,17 @@ function InputWrapper({
       .map(({ errorCondition, errorText }): IMetadataMessage => {
         let error: IMetadataMessage = { type: 'error', text: '' };
 
-        if (isFunction(errorCondition)) {
+        if (_.isFunction(errorCondition)) {
           error.text = errorCondition(value) ? errorText : '';
-        } else if (isRegExp(errorCondition)) {
+        } else if (_.isRegExp(errorCondition)) {
           error.text = errorCondition.test(value) ? errorText : '';
         }
 
         return error;
       })
-      .filter((error: IMetadataMessage) => !isEmpty(error.text));
+      .filter((error: IMetadataMessage) => !_.isEmpty(error.text));
 
-    const isValid = isEmpty(facedErrorsMessages);
+    const isValid = _.isEmpty(facedErrorsMessages);
     setErrorsMessages(facedErrorsMessages);
     setIsInputValid(isValid);
 
@@ -92,7 +86,7 @@ function InputWrapper({
     const newValue = valueTypeConversionFn(e?.target?.value);
     let metadata: any = {};
 
-    if (!isEmpty(validationPatterns)) {
+    if (!_.isEmpty(validationPatterns)) {
       const validationResult: IValidationMetadata = validatePatterns(
         validationPatterns,
         newValue,
@@ -105,7 +99,7 @@ function InputWrapper({
   };
 
   const messagesFormatter = (messages: IMetadataMessages): void => {
-    const messagesLastIndex = collectionSize(messages) - 1;
+    const messagesLastIndex = _.size(messages) - 1;
     const formattedMessages: string =
       messages?.reduce((acc, message: IMetadataMessage, index) => {
         return (acc += `${message.text}${
@@ -154,13 +148,14 @@ function InputWrapper({
             {label}:
           </Text>
 
-          {!isUndefined(topLabeledIconName) && !isUndefined(labelHelperText) && (
-            <Tooltip title={labelHelperText} placement='right-end'>
-              <div>
-                <Icon name={topLabeledIconName} />
-              </div>
-            </Tooltip>
-          )}
+          {!_.isUndefined(topLabeledIconName) &&
+            !_.isUndefined(labelHelperText) && (
+              <Tooltip title={labelHelperText} placement='right-end'>
+                <div>
+                  <Icon name={topLabeledIconName} />
+                </div>
+              </Tooltip>
+            )}
         </div>
       )}
 

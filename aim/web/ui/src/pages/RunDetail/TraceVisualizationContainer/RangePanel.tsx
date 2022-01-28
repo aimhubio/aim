@@ -1,8 +1,8 @@
-import React, { useState } from 'react';
+import React from 'react';
 
 import SliderWithInput from 'components/SliderWithInput';
 import { Button } from 'components/kit';
-
+import { IValidationMetadata } from 'components/kit/Input';
 interface IRangeSliderWithInputItem {
   sliderName: string;
   inputName: string;
@@ -24,7 +24,11 @@ type RangeSliderData = IRangeSliderWithInputItem[];
 interface IRangeSliderPanelProps {
   items?: RangeSliderData;
   onApply: () => void;
-  onInputChange: (name: string, value: number, metadata?: object) => void;
+  onInputChange: (
+    name: string,
+    value: number,
+    metadata?: IValidationMetadata,
+  ) => void;
   onRangeSliderChange: (name: string, newValue: number[] | number) => void;
   applyButtonDisabled: boolean;
 }
@@ -61,8 +65,8 @@ function RangePanel({
               onRangeChange={(value) =>
                 onRangeSliderChange(item.sliderName, value)
               }
-              onCountChange={(value, metadata) => {
-                onInputChange(item.inputName, +value, metadata);
+              onCountChange={(value, metadata?: IValidationMetadata) => {
+                onInputChange(item.inputName, value, metadata);
               }}
             />
             <div className='VerticalDivider' />

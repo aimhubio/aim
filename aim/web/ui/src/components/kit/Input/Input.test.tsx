@@ -1,4 +1,4 @@
-import { noop, first } from 'lodash';
+import _ from 'lodash-es';
 
 import { render, fireEvent } from '@testing-library/react';
 
@@ -17,7 +17,7 @@ describe('<InputWrapper /> -', () => {
         topLabeledIconName='circle-question'
         labelHelperText='Helper text for tooltip'
         showMessageByTooltip
-        onChange={noop}
+        onChange={_.noop}
       />,
     );
 

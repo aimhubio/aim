@@ -1,5 +1,4 @@
 import React from 'react';
-import { isString, isEmpty } from 'lodash';
 
 import { Tooltip } from '@material-ui/core';
 
@@ -89,37 +88,6 @@ function SliderWithInput({
           )}
         </div>
         <div className='SliderWithInput__densityWrapper'>
-          {/* <div className='SliderWithInput__densityWrapper__densityTitleBox'>
-          <Text
-            className='SliderWithInput__densityWrapper__densityTitleBox__densityFieldLabel'
-            size={10}
-            weight={400}
-            tint={70}
-            color='primary'
-          >
-            {countInputTitle}:
-          </Text>
-          {countTitleTooltip && (
-            <Tooltip title={countTitleTooltip} placement='right-end'>
-              <div className='SliderWithInput__densityWrapper__densityTitleBox__labelTooltip'>
-                ?
-              </div>
-            </Tooltip>
-          )}
-        </div> */}
-          {/* <input
-          type='number'
-          value={`${selectedCountValue}`}
-          step={1}
-          onChange={(e) => {
-            e.preventDefault();
-            if (+e.target.value < min || +e.target.value > max) return;
-            onCountChange({
-              target: { value: e.target.value as any },
-            } as any);
-          }}
-          className='SliderWithInput__densityWrapper__densityField'
-        /> */}
           <InputWrapper
             value={`${selectedCountValue}`}
             type='number'
@@ -130,7 +98,6 @@ function SliderWithInput({
             labelHelperText={countTitleTooltip}
             placeholder={countInputTitle}
             showMessageByTooltip
-            // isValidateInitially={true}
             onChange={(e, value, metadata) => {
               onCountChange(value, metadata);
             }}
