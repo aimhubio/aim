@@ -40,6 +40,7 @@ export interface IParamsProps extends Partial<RouteChildrenProps> {
   groupingData: IGroupingConfig;
   groupingSelectOptions: IGroupingSelectOption[];
   hiddenMetrics: string[];
+  hideSystemMetrics: boolean;
   sortFields: [string, 'asc' | 'desc' | boolean][];
   focusedState: IFocusedState;
   isVisibleColorIndicator: boolean;

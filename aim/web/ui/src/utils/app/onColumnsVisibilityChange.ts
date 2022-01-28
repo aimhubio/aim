@@ -1,12 +1,18 @@
-import { isEmpty } from 'lodash-es';
+import _ from 'lodash-es';
+
+import { HideColumnsEnum } from 'config/enums/tableEnums';
 
 import * as analytics from 'services/analytics';
 
 import { IModel, State } from 'types/services/models/model';
 import { IAppModelConfig } from 'types/services/models/explorer/createAppModel';
+import { ITableColumn } from 'types/pages/metrics/components/TableColumns/TableColumns';
 
 import { encode } from 'utils/encoder/encoder';
 import { setItem } from 'utils/storage';
+
+import getSystemMetricsFromColumns from './getSystemMetricsFromColumns';
+import getFilteredSystemMetrics from './getFilteredSystemMetrics';
 
 export default function onColumnsVisibilityChange<M extends State>({
   hiddenColumns,
@@ -14,7 +20,7 @@ export default function onColumnsVisibilityChange<M extends State>({
   appName,
   updateModelData,
 }: {
-  hiddenColumns: string[];
+  hiddenColumns: string[] | string;
   model: IModel<M>;
   appName: string;
   updateModelData: (
@@ -24,14 +30,45 @@ export default function onColumnsVisibilityChange<M extends State>({
 }): void {
   const configData = model.getState()?.config;
   const columnsData = model.getState()!.tableColumns!;
+  const systemMetrics: string[] = getSystemMetricsFromColumns(
+    columnsData as ITableColumn[],
+  );
+
+  let columnKeys: string[] = Array.isArray(hiddenColumns)
+    ? [...hiddenColumns]
+    : [];
+  let hideSystemMetrics: boolean | null = configData?.table.hideSystemMetrics;
+
   if (configData?.table) {
+    const filteredFromSystem = getFilteredSystemMetrics(
+      configData?.table?.hiddenColumns,
+      true,
+    );
+    if (hiddenColumns === HideColumnsEnum.HideSystemMetrics) {
+      columnKeys = [...filteredFromSystem, ...systemMetrics];
+    }
+    if (hiddenColumns === HideColumnsEnum.ShowSystemMetrics) {
+      columnKeys = [...filteredFromSystem];
+    }
+    if (
+      getFilteredSystemMetrics(columnKeys).length === systemMetrics.length &&
+      hideSystemMetrics !== undefined
+    ) {
+      hideSystemMetrics = true;
+    } else {
+      hideSystemMetrics = false;
+    }
+    columnKeys =
+      hiddenColumns === HideColumnsEnum.All
+        ? columnsData.map((col) => col.key)
+        : columnKeys;
+
     const table = {
       ...configData.table,
-      hiddenColumns:
-        hiddenColumns[0] === 'all'
-          ? columnsData.map((col) => col.key)
-          : hiddenColumns,
+      hiddenColumns: columnKeys,
+      hideSystemMetrics,
     };
+
     const config = {
       ...configData,
       table,
@@ -42,7 +79,7 @@ export default function onColumnsVisibilityChange<M extends State>({
   }
   if (hiddenColumns[0] === 'all') {
     analytics.trackEvent(`[${appName}Explorer][Table] Hide all table columns`);
-  } else if (isEmpty(hiddenColumns)) {
+  } else if (_.isEmpty(hiddenColumns)) {
     analytics.trackEvent(`[${appName}Explorer][Table] Show all table columns`);
   }
 }

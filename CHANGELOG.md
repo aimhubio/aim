@@ -2,6 +2,7 @@
 
 ## Unreleased
 
+- Ability to hide system metrics from table (arsengit)
 - Fix Grouping and Tooltip popovers states' resetting issue when live-update is on (rubenaprikyan)
 - Fix table column's sort functionality issue in Params and Scatters Explorers (rubenaprikyan)
 
