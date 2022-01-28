@@ -30,8 +30,7 @@ def encode_non_native_object(
 ):
     if omegaconf_installed and isinstance(obj, Container):
         obj = OmegaConf.to_container(obj, resolve=True)
-        for key, val in obj.items():
-            yield from unfold_tree(val, path=path + (key,), unfold_array=unfold_array, depth=depth, strict=strict)
+        yield from unfold_tree(obj, path=path, unfold_array=unfold_array, depth=depth, strict=strict)
     else:
         raise TypeError(f'Unhandled non-native value `{obj}` of type `{type(obj)}`.')
 
