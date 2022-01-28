@@ -3789,7 +3789,7 @@ function createAppModel(appConfig: IAppInitialConfig) {
         const uniqParams = _.uniq(params);
         const uniqHighLevelParams = _.uniq(highLevelParams);
         const mappedData =
-          data.reduce((acc: any, item: any) => {
+          data?.reduce((acc: any, item: any) => {
             acc[item.hash] = { runHash: item.hash, ...item.props };
             return acc;
           }, {}) || {};
@@ -4888,7 +4888,7 @@ function createAppModel(appConfig: IAppInitialConfig) {
         const uniqParams = _.uniq(params);
         const uniqHighLevelParams = _.uniq(highLevelParams);
         const mappedData =
-          data.reduce((acc: any, item: any) => {
+          data?.reduce((acc: any, item: any) => {
             acc[item.hash] = { runHash: item.hash, ...item.props };
             return acc;
           }, {}) || {};
