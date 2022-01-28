@@ -3,19 +3,19 @@ import _ from 'lodash-es';
 import { VariableSizeList as List, areEqual } from 'react-window';
 import classNames from 'classnames';
 
-import { InputBase, Tooltip } from '@material-ui/core';
-import Autocomplete from '@material-ui/lab/Autocomplete';
+import { Tooltip } from '@material-ui/core';
 
 import MediaList from 'components/MediaList';
-import { Button, Icon, JsonViewPopover, Slider, Text } from 'components/kit';
+import { JsonViewPopover } from 'components/kit';
 import ControlPopover from 'components/ControlPopover/ControlPopover';
 import { MediaTypeEnum } from 'components/MediaPanel/config';
 import ErrorBoundary from 'components/ErrorBoundary/ErrorBoundary';
+import DepthDropdown from 'components/DepthDropdown/DepthDropdown';
+import DepthSlider from 'components/DepthSlider/DepthSlider';
 
 import {
   MEDIA_ITEMS_SIZES,
   MEDIA_SET_SIZE,
-  MEDIA_SET_SLIDER_HEIGHT,
   MEDIA_SET_TITLE_HEIGHT,
   MEDIA_SET_WRAPPER_PADDING_HEIGHT,
 } from 'config/mediaConfigs/mediaConfigs';
@@ -317,7 +317,7 @@ const MediaGroupedList = React.memo(function MediaGroupedList({
                           className={classNames(
                             'MediaSet__container__path__title__key',
                             {
-                              slider: renderStacking,
+                              stacked: renderStacking,
                             },
                           )}
                         >
@@ -329,7 +329,7 @@ const MediaGroupedList = React.memo(function MediaGroupedList({
                           className={classNames(
                             'MediaSet__container__path__title__value',
                             {
-                              slider: renderStacking,
+                              stacked: renderStacking,
                               MediaSet__container__path__title__pointer: isJson,
                             },
                           )}
@@ -382,166 +382,6 @@ const MediaGroupedList = React.memo(function MediaGroupedList({
   );
 },
 areEqual);
-
-function DepthSlider({
-  index,
-  pathValue,
-  depth,
-  onDepthChange,
-}: {
-  index: number;
-  pathValue: string | string[];
-  depth: number;
-  onDepthChange: (value: number, index: number) => void;
-}) {
-  return (
-    <ErrorBoundary>
-      <div
-        className='MediaSet__container__sliderContainer'
-        style={{ height: MEDIA_SET_SLIDER_HEIGHT }}
-      >
-        <Slider
-          aria-labelledby='track-false-slider'
-          track={false}
-          valueLabelDisplay='off'
-          getAriaValueText={(value) => `${pathValue[value]}`}
-          value={depth}
-          onChange={(e, value) => onDepthChange?.(value as number, index)}
-          step={null}
-          marks={(pathValue as string[]).map((l, i) => ({ value: i }))}
-          min={0}
-          max={pathValue.length - 1}
-          prevIconNode={
-            <Button
-              onClick={() => {
-                if (depth > 0) onDepthChange?.(depth - 1, index);
-              }}
-              className='prevIconBtn'
-              disabled={depth <= 0}
-              size='small'
-              withOnlyIcon
-            >
-              <Icon name='arrow-left' fontSize={10} />
-            </Button>
-          }
-          nextIconNode={
-            <Button
-              onClick={() => {
-                if (depth < pathValue.length - 1)
-                  onDepthChange?.(depth + 1, index);
-              }}
-              className='nextIconBtn'
-              disabled={depth >= pathValue.length - 1}
-              size='small'
-              withOnlyIcon
-            >
-              <Icon name='arrow-right' fontSize={10} />
-            </Button>
-          }
-        />
-      </div>
-    </ErrorBoundary>
-  );
-}
-
-function DepthDropdown({
-  index,
-  pathValue,
-  depth,
-  onDepthChange,
-}: {
-  index: number;
-  pathValue: string | string[];
-  depth: number;
-  onDepthChange: (value: number, index: number) => void;
-}) {
-  return (
-    <ErrorBoundary>
-      <ControlPopover
-        anchorOrigin={{
-          vertical: 'bottom',
-          horizontal: 'right',
-        }}
-        className='MediaSet__container__path__depthDropdown'
-        anchor={({ onAnchorClick, opened }) => (
-          <Button
-            onClick={onAnchorClick}
-            className='MediaSet__container__path__depthDropdown__button'
-            color={opened ? 'primary' : 'default'}
-            size='small'
-            withOnlyIcon
-            style={{ height: MEDIA_SET_TITLE_HEIGHT }}
-          >
-            <Icon name={opened ? 'arrow-up' : 'arrow-down'} />
-          </Button>
-        )}
-        component={
-          <Autocomplete
-            open
-            size='small'
-            disablePortal={true}
-            disableCloseOnSelect
-            className='MediaSet__container__path__depthDropdown__autocomplete'
-            options={(pathValue as string[]).map((v, i) => ({
-              depth: i,
-              label: v,
-            }))}
-            getOptionLabel={(option) => option.label}
-            getOptionSelected={(option) => option.depth === depth}
-            onChange={(e, value) => {
-              onDepthChange?.(value.depth, index);
-            }}
-            disableClearable={true}
-            ListboxProps={{
-              style: {
-                maxHeight: 200,
-                maxWidth: 241,
-              },
-            }}
-            classes={{
-              popper:
-                'MediaSet__container__path__depthDropdown__autocomplete__popper',
-            }}
-            renderInput={(params) => (
-              <InputBase
-                ref={params.InputProps.ref}
-                inputProps={params.inputProps}
-                spellCheck={false}
-                placeholder='Search'
-                autoFocus={true}
-                className='MediaSet__container__path__depthDropdown__autocomplete__select'
-              />
-            )}
-            renderOption={(option) => (
-              <>
-                <Text
-                  className={classNames(
-                    'MediaSet__container__path__depthDropdown__autocomplete__select__optionLabel',
-                    {
-                      selected: depth === option.depth,
-                    },
-                  )}
-                  weight={500}
-                  size={12}
-                >
-                  {option.label}
-                </Text>
-                {depth === option.depth && (
-                  <Icon
-                    fontSize={14}
-                    color='primary'
-                    name='check'
-                    className='MediaSet__container__path__depthDropdown__autocomplete__select__optionIcon'
-                  />
-                )}
-              </>
-            )}
-          />
-        }
-      />
-    </ErrorBoundary>
-  );
-}
 
 function getPathDetails({
   isStackedPath,
