@@ -12,6 +12,29 @@ from aim.storage.object import CustomObjectBase, CustomObject
 from aim.storage.treeview import TreeView
 from aim.storage.inmemorytreeview import InMemoryTreeView
 
+try:
+    from omegaconf import OmegaConf, Container
+except ModuleNotFoundError:
+    omegaconf_installed = False
+else:
+    omegaconf_installed = True
+
+
+def encode_non_native_object(
+    obj: AimObject,
+    *,
+    path: AimObjectPath = (),
+    unfold_array: bool = True,
+    depth: int = None,
+    strict: bool = True,
+):
+    if omegaconf_installed and isinstance(obj, Container):
+        obj = OmegaConf.to_container(obj, resolve=True)
+        for key, val in obj.items():
+            yield from unfold_tree(val, path=path + (key,), unfold_array=unfold_array, depth=depth, strict=strict)
+    else:
+        raise TypeError(f'Unhandled non-native value `{obj}` of type `{type(obj)}`.')
+
 
 def unfold_tree(
     obj: AimObject,
@@ -55,10 +78,14 @@ def unfold_tree(
     elif isinstance(obj, TreeView):
         # TODO we need to implement TreeView.traverse()
         raise NotImplementedError
-    elif not strict:
-        yield path, repr(obj)
     else:
-        raise TypeError(f'Not supported value `{obj}` of type `{type(obj)}`.')
+        try:
+            yield from encode_non_native_object(obj, path=path, unfold_array=unfold_array, depth=depth, strict=strict)
+        except TypeError:
+            if not strict:
+                yield path, repr(obj)
+            else:
+                raise TypeError(f'Not supported value `{obj}` of type `{type(obj)}`.')
 
 
 cpdef val_to_node(
