@@ -19,4 +19,7 @@ export const rowCeilSizeConfig = {
   },
 };
 
+export const tableColoredSelectionColumnWidth = 50;
+export const tableSelectionColumnWidth = 32;
+
 export const viewPortOffset = 500;

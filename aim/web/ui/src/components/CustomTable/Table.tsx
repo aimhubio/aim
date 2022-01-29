@@ -10,7 +10,11 @@ import { Checkbox } from '@material-ui/core';
 import { Icon } from 'components/kit';
 import ErrorBoundary from 'components/ErrorBoundary/ErrorBoundary';
 
-import { rowCeilSizeConfig } from 'config/table/tableConfigs';
+import {
+  rowCeilSizeConfig,
+  tableColoredSelectionColumnWidth,
+  tableSelectionColumnWidth,
+} from 'config/table/tableConfigs';
 
 import Column from './TableColumn';
 
@@ -279,7 +283,11 @@ function Table(props) {
                     onRowClick={props.onRowClick}
                     selectedRows={props.selectedRows}
                     firstColumn={true}
-                    width={props.data[0]?.rowMeta?.color ? 50 : 32}
+                    width={
+                      props.data[0]?.rowMeta?.color
+                        ? tableColoredSelectionColumnWidth
+                        : tableSelectionColumnWidth
+                    }
                     isAlwaysVisible={true}
                     onRowHover={props.onRowHover}
                   />

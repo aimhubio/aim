@@ -382,12 +382,14 @@ function Column({
                           borderLeft: 'none',
                           '--color-indicator': data[groupKey].data.meta.color,
                           '--extended-group-background-color':
-                            MainColors10[data[groupKey].data.meta.color],
+                            MainColors10[data[groupKey].data.meta.color] ??
+                            '#ffffff',
                         }
                       : data[groupKey].data.meta.color
                       ? {
                           '--extended-group-background-color':
-                            MainColors10[data[groupKey].data.meta.color],
+                            MainColors10[data[groupKey].data.meta.color] ??
+                            '#ffffff',
                         }
                       : null
                   }

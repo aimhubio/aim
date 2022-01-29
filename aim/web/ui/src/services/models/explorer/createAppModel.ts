@@ -939,7 +939,7 @@ function createAppModel(appConfig: IAppInitialConfig) {
       const uniqContexts = _.uniq(contexts);
 
       const mappedData =
-        data.reduce((acc: any, item: any) => {
+        data?.reduce((acc: any, item: any) => {
           acc[item.hash] = { runHash: item.hash, ...item.props };
           return acc;
         }, {}) || {};
