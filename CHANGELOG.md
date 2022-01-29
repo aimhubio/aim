@@ -3,6 +3,11 @@
 
 - Improve highlighting of table focused/hovered/selected row (VkoHov)
 
+## Unreleased
+
+- Fix Grouping and Tooltip popovers states' resetting issue when live-update is on (rubenaprikyan)
+- Fix table column's sort functionality issue in Params and Scatters Explorers (rubenaprikyan)
+
 ## 3.4.1 Jan 23 2022
 
 - Fix issue with displaying experiment name in Images Explorer table (VkoHov)
