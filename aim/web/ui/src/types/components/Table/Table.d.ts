@@ -3,6 +3,8 @@ import React from 'react';
 import { RowHeight, RowHeightSize } from 'config/table/tableConfigs';
 import { ResizeModeEnum } from 'config/enums/tableEnums';
 
+import { AppNameEnum } from 'services/models/explorer';
+
 import { IMetricProps } from 'types/pages/metrics/Metrics';
 
 export interface ITableProps {
@@ -62,6 +64,7 @@ export interface ITableProps {
   archiveRuns?: (ids: string[], archived: boolean) => void;
   deleteRuns?: (ids: string[]) => void;
   className?: string;
+  appName?: AppNameEnum;
 }
 
 export interface ITableRef {

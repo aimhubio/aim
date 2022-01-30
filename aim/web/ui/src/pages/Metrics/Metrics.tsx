@@ -14,6 +14,8 @@ import { ResizeModeEnum } from 'config/enums/tableEnums';
 import { RowHeightSize } from 'config/table/tableConfigs';
 import GroupingPopovers from 'config/grouping/GroupingPopovers';
 
+import { AppNameEnum } from 'services/models/explorer';
+
 import { ILine } from 'types/components/LineChart/LineChart';
 import { IMetricProps } from 'types/pages/metrics/Metrics';
 
@@ -200,6 +202,7 @@ function Metrics(
                   // Table options
                   multiSelect
                   topHeader
+                  appName={AppNameEnum.METRICS}
                   groups={!Array.isArray(props.tableData)}
                   rowHeight={props.tableRowHeight}
                   rowHeightMode={

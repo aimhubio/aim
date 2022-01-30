@@ -9,7 +9,7 @@ import COLORS from 'config/colors/colors';
 import DASH_ARRAYS from 'config/dash-arrays/dashArrays';
 import { HideColumnsEnum, ResizeModeEnum } from 'config/enums/tableEnums';
 import { AlignmentNotificationsEnum } from 'config/notification-messages/notificationMessages';
-import { RowHeightSize } from 'config/table/tableConfigs';
+import { RowHeightSize, TABLE_DEFAULT_CONFIG } from 'config/table/tableConfigs';
 import { DensityOptions } from 'config/enums/densityEnum';
 import { CONTROLS_DEFAULT_CONFIG } from 'config/controls/controlsDefaultConfig';
 
@@ -226,18 +226,18 @@ function createAppModel(appConfig: IAppInitialConfig) {
         }
         if (components?.table) {
           config.table = {
-            resizeMode: ResizeModeEnum.Resizable,
-            rowHeight: RowHeightSize.md,
-            sortFields: [],
-            hiddenMetrics: [],
-            hiddenColumns: [],
-            columnsWidths: {},
+            resizeMode: TABLE_DEFAULT_CONFIG.metrics.resizeMode,
+            rowHeight: TABLE_DEFAULT_CONFIG.metrics.rowHeight,
+            sortFields: TABLE_DEFAULT_CONFIG.metrics.sortFields,
+            hiddenMetrics: TABLE_DEFAULT_CONFIG.metrics.hiddenMetrics,
+            hiddenColumns: TABLE_DEFAULT_CONFIG.metrics.hiddenColumns,
+            columnsWidths: TABLE_DEFAULT_CONFIG.metrics.columnsWidths,
             columnsOrder: {
-              left: [],
-              middle: [],
-              right: [],
+              left: TABLE_DEFAULT_CONFIG.metrics.columnsOrder.left,
+              middle: TABLE_DEFAULT_CONFIG.metrics.columnsOrder.middle,
+              right: TABLE_DEFAULT_CONFIG.metrics.columnsOrder.right,
             },
-            height: '0.5',
+            height: TABLE_DEFAULT_CONFIG.metrics.height,
           };
         }
         if (components?.charts?.[0]) {

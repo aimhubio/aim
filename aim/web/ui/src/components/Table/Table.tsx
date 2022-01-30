@@ -17,8 +17,8 @@ import useResizeObserver from 'hooks/window/useResizeObserver';
 
 import HideRows from 'pages/Metrics/components/Table/HideRowsPopover/HideRowsPopover';
 import RowHeight from 'pages/Metrics/components/Table/RowHeightPopover/RowHeightPopover';
-import ManageColumns from 'pages/Metrics/components/Table/ManageColumnsPopover/ManageColumnsPopover';
 import SortPopover from 'pages/Metrics/components/Table/SortPopover/SortPopover';
+import ManageColumnsPopover from 'pages/Metrics/components/Table/ManageColumnsPopover/ManageColumnsPopover';
 
 import { ITableProps } from 'types/components/Table/Table';
 
@@ -79,6 +79,7 @@ const Table = React.forwardRef(function Table(
     deleteRuns,
     hideSystemMetrics,
     className = '',
+    appName,
     ...props
   }: ITableProps,
   ref,
@@ -575,44 +576,16 @@ const Table = React.forwardRef(function Table(
                 )}
                 <div className='flex fac Table__header__buttons'>
                   {onManageColumns && (
-                    <ControlPopover
-                      title='Manage Table Columns'
-                      anchorOrigin={{
-                        vertical: 'bottom',
-                        horizontal: 'left',
-                      }}
-                      transformOrigin={{
-                        vertical: 'top',
-                        horizontal: 'left',
-                      }}
-                      anchor={({ onAnchorClick, opened }) => (
-                        <Button
-                          color='secondary'
-                          type='text'
-                          onClick={onAnchorClick}
-                          className={`Table__header__item ${
-                            opened ? 'opened' : ''
-                          }`}
-                        >
-                          <Icon name='manage-column' />
-                          <Text size={14} tint={100}>
-                            Manage Columns
-                          </Text>
-                        </Button>
+                    <ManageColumnsPopover
+                      columnsData={columnsData.filter(
+                        (item: any) =>
+                          item.key !== '#' && item.key !== 'actions',
                       )}
-                      component={
-                        <ManageColumns
-                          columnsData={columnsData.filter(
-                            (item: any) =>
-                              item.key !== '#' && item.key !== 'actions',
-                          )}
-                          hiddenColumns={hiddenColumns}
-                          hideSystemMetrics={hideSystemMetrics}
-                          onManageColumns={onManageColumns}
-                          onColumnsVisibilityChange={onColumnsVisibilityChange}
-                          onTableDiffShow={onTableDiffShow}
-                        />
-                      }
+                      hiddenColumns={hiddenColumns}
+                      hideSystemMetrics={hideSystemMetrics}
+                      onManageColumns={onManageColumns}
+                      onColumnsVisibilityChange={onColumnsVisibilityChange}
+                      onTableDiffShow={onTableDiffShow}
                     />
                   )}
                   {onRowsChange && (

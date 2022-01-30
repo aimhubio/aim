@@ -1,12 +1,17 @@
 import React from 'react';
 import { DragDropContext, Droppable } from 'react-beautiful-dnd';
+import _ from 'lodash-es';
 
 import { Divider, InputBase } from '@material-ui/core';
 
 import { Button, Icon, Text } from 'components/kit';
 import { IconName } from 'components/kit/Icon';
+import ControlPopover from 'components/ControlPopover/ControlPopover';
 
 import { HideColumnsEnum } from 'config/enums/tableEnums';
+import { TABLE_DEFAULT_CONFIG } from 'config/table/tableConfigs';
+
+import { AppNameEnum } from 'services/models/explorer';
 
 import ColumnItem from './ColumnItem/ColumnItem';
 
@@ -31,11 +36,12 @@ const initialData = {
 };
 function ManageColumnsPopover({
   columnsData,
+  hiddenColumns,
+  onTableDiffShow,
   onManageColumns,
   onColumnsVisibilityChange,
   hideSystemMetrics,
-  onTableDiffShow,
-  hiddenColumns,
+  appName,
 }: any) {
   const [state, setState] = React.useState<any>(initialData);
   const [searchKey, setSearchKey] = React.useState<string>('');
@@ -128,7 +134,7 @@ function ManageColumnsPopover({
     newState.columns.middle.list = middleList;
     newState.columns.right.list = rightList;
     setState(newState);
-  }, [columnsData]);
+  }, [columnsData, hiddenColumns]);
 
   React.useEffect(() => {
     const midPane = document.querySelectorAll(
@@ -155,206 +161,247 @@ function ManageColumnsPopover({
     setSearchKey(e.target.value);
   }
 
+  const manageColumnsChanged: boolean = React.useMemo(() => {
+    return (
+      hiddenColumns.length !==
+      TABLE_DEFAULT_CONFIG[appName as AppNameEnum]?.hiddenColumns?.length
+    );
+  }, [hiddenColumns.length]);
+
   return (
-    <DragDropContext onDragEnd={onDragEnd}>
-      <div className='ManageColumns__container'>
-        <div className='ColumnList__container'>
-          <div className='ColumnList__title'>Pinned to the left</div>
-          <Droppable droppableId='left'>
-            {(provided, snapshot) => (
-              <div
-                className={`ColumnList__items__wrapper ${
-                  snapshot.isDraggingOver
-                    ? 'ColumnList__items__wrapper__dragging'
-                    : ''
-                }`}
-                ref={provided.innerRef}
-                {...provided.droppableProps}
-              >
-                {state.columns.left.list.map((data: string, index: number) => (
-                  <ColumnItem
-                    key={`${data}-${index}`}
-                    data={data}
-                    index={index}
-                    isHidden={!!hiddenColumns?.includes(data)}
-                    onClick={() =>
-                      onColumnsVisibilityChange(
-                        hiddenColumns.includes(data)
-                          ? hiddenColumns.filter((col: string) => col !== data)
-                          : hiddenColumns.concat([data]),
-                      )
-                    }
+    <ControlPopover
+      title='Manage Table Columns'
+      anchorOrigin={{
+        vertical: 'bottom',
+        horizontal: 'left',
+      }}
+      transformOrigin={{
+        vertical: 'top',
+        horizontal: 'left',
+      }}
+      anchor={({ onAnchorClick, opened }) => (
+        <Button
+          color='secondary'
+          // type='text'
+          onClick={onAnchorClick}
+          className={`ManageColumns_trigger ${opened ? 'opened' : ''}`}
+        >
+          <Icon name='manage-column' />
+          <Text size={14} tint={100}>
+            Manage Columns
+          </Text>
+        </Button>
+      )}
+      component={
+        <DragDropContext onDragEnd={onDragEnd}>
+          <div className='ManageColumns__container'>
+            <div className='ColumnList__container'>
+              <div className='ColumnList__title'>Pinned to the left</div>
+              <Droppable droppableId='left'>
+                {(provided, snapshot) => (
+                  <div
+                    className={`ColumnList__items__wrapper ${
+                      snapshot.isDraggingOver
+                        ? 'ColumnList__items__wrapper__dragging'
+                        : ''
+                    }`}
+                    ref={provided.innerRef}
+                    {...provided.droppableProps}
+                  >
+                    {state.columns.left.list.map(
+                      (data: string, index: number) => (
+                        <ColumnItem
+                          key={`${data}-${index}`}
+                          data={data}
+                          index={index}
+                          isHidden={!!hiddenColumns?.includes(data)}
+                          onClick={() =>
+                            onColumnsVisibilityChange(
+                              hiddenColumns.includes(data)
+                                ? hiddenColumns.filter(
+                                    (col: string) => col !== data,
+                                  )
+                                : hiddenColumns.concat([data]),
+                            )
+                          }
+                        />
+                      ),
+                    )}
+                    {provided.placeholder}
+                  </div>
+                )}
+              </Droppable>
+            </div>
+            <div className='ColumnList__container'>
+              <div className='ColumnList__title'>
+                <div className='ManageColumns__Search'>
+                  <div className='ManageColumns__Search__icon'>
+                    <Icon name='search' />
+                  </div>
+                  <InputBase
+                    placeholder='Search'
+                    value={searchKey}
+                    onChange={onSearchKeyChange}
+                    inputProps={{ 'aria-label': 'search' }}
                   />
-                ))}
-                {provided.placeholder}
+                </div>
               </div>
-            )}
-          </Droppable>
-        </div>
-        <div className='ColumnList__container'>
-          <div className='ColumnList__title'>
-            <div className='ManageColumns__Search'>
-              <div className='ManageColumns__Search__icon'>
-                <Icon name='search' />
-              </div>
-              <InputBase
-                placeholder='Search'
-                value={searchKey}
-                onChange={onSearchKeyChange}
-                inputProps={{ 'aria-label': 'search' }}
-              />
+              <Droppable droppableId='middle'>
+                {(provided, snapshot) => (
+                  <div
+                    className={`ColumnList__items__wrapper ${
+                      snapshot.isDraggingOver
+                        ? 'ColumnList__items__wrapper__dragging'
+                        : ''
+                    }`}
+                    ref={provided.innerRef}
+                    {...provided.droppableProps}
+                  >
+                    {state.columns.middle.list.map(
+                      (data: string, index: number) => (
+                        <ColumnItem
+                          key={`${data}-${index}`}
+                          data={data}
+                          index={index}
+                          hasSearchableItems
+                          searchKey={searchKey}
+                          isHidden={!!hiddenColumns?.includes(data)}
+                          onClick={() =>
+                            onColumnsVisibilityChange(
+                              hiddenColumns.includes(data)
+                                ? hiddenColumns.filter(
+                                    (col: string) => col !== data,
+                                  )
+                                : hiddenColumns.concat([data]),
+                            )
+                          }
+                        />
+                      ),
+                    )}
+                    {provided.placeholder}
+                  </div>
+                )}
+              </Droppable>
+            </div>
+            <div className='ColumnList__container'>
+              <div className='ColumnList__title'>Pinned to the right</div>
+              <Droppable droppableId='right'>
+                {(provided, snapshot) => (
+                  <div
+                    className={`ColumnList__items__wrapper ${
+                      snapshot.isDraggingOver
+                        ? 'ColumnList__items__wrapper__dragging'
+                        : ''
+                    }`}
+                    ref={provided.innerRef}
+                    {...provided.droppableProps}
+                  >
+                    {state.columns.right.list.map(
+                      (data: string, index: number) => (
+                        <ColumnItem
+                          key={`${data}-${index}`}
+                          data={data}
+                          index={index}
+                          isHidden={!!hiddenColumns?.includes(data)}
+                          onClick={() =>
+                            onColumnsVisibilityChange(
+                              hiddenColumns.includes(data)
+                                ? hiddenColumns.filter(
+                                    (col: string) => col !== data,
+                                  )
+                                : hiddenColumns.concat([data]),
+                            )
+                          }
+                        />
+                      ),
+                    )}
+                    {provided.placeholder}
+                  </div>
+                )}
+              </Droppable>
             </div>
           </div>
-          <Droppable droppableId='middle'>
-            {(provided, snapshot) => (
-              <div
-                className={`ColumnList__items__wrapper ${
-                  snapshot.isDraggingOver
-                    ? 'ColumnList__items__wrapper__dragging'
-                    : ''
-                }`}
-                ref={provided.innerRef}
-                {...provided.droppableProps}
-              >
-                {state.columns.middle.list.map(
-                  (data: string, index: number) => (
-                    <ColumnItem
-                      key={`${data}-${index}`}
-                      data={data}
-                      index={index}
-                      hasSearchableItems
-                      searchKey={searchKey}
-                      isHidden={!!hiddenColumns?.includes(data)}
-                      onClick={() =>
-                        onColumnsVisibilityChange(
-                          hiddenColumns.includes(data)
-                            ? hiddenColumns.filter(
-                                (col: string) => col !== data,
-                              )
-                            : hiddenColumns.concat([data]),
-                        )
-                      }
-                    />
-                  ),
-                )}
-                {provided.placeholder}
-              </div>
-            )}
-          </Droppable>
-        </div>
-        <div className='ColumnList__container'>
-          <div className='ColumnList__title'>Pinned to the right</div>
-          <Droppable droppableId='right'>
-            {(provided, snapshot) => (
-              <div
-                className={`ColumnList__items__wrapper ${
-                  snapshot.isDraggingOver
-                    ? 'ColumnList__items__wrapper__dragging'
-                    : ''
-                }`}
-                ref={provided.innerRef}
-                {...provided.droppableProps}
-              >
-                {state.columns.right.list.map((data: string, index: number) => (
-                  <ColumnItem
-                    key={`${data}-${index}`}
-                    data={data}
-                    index={index}
-                    isHidden={!!hiddenColumns?.includes(data)}
-                    onClick={() =>
-                      onColumnsVisibilityChange(
-                        hiddenColumns.includes(data)
-                          ? hiddenColumns.filter((col: string) => col !== data)
-                          : hiddenColumns.concat([data]),
-                      )
-                    }
-                  />
-                ))}
-                {provided.placeholder}
-              </div>
-            )}
-          </Droppable>
-        </div>
-      </div>
-      <div className='ManageColumns__actions__container'>
-        <div>
-          <Button
-            variant='text'
-            size='xSmall'
-            onClick={() =>
-              onManageColumns({
-                left: [],
-                middle: [],
-                right: [],
-              })
-            }
-          >
-            <Text size={12} tint={100}>
-              reset columns order
-            </Text>
-          </Button>
-          <Button variant='text' size='xSmall' onClick={onTableDiffShow}>
-            <Text size={12} tint={100}>
-              show table diff
-            </Text>
-          </Button>
-        </div>
-        <div className='flex'>
-          {hideSystemMetrics !== undefined && (
-            <>
+          <div className='ManageColumns__actions__container'>
+            <div>
               <Button
                 variant='text'
                 size='xSmall'
                 onClick={() =>
-                  onColumnsVisibilityChange(
-                    hideSystemMetrics
-                      ? HideColumnsEnum.ShowSystemMetrics
-                      : HideColumnsEnum.HideSystemMetrics,
-                  )
+                  onManageColumns({
+                    left: [],
+                    middle: [],
+                    right: [],
+                  })
                 }
               >
-                <Icon
-                  name={
-                    `${
-                      hideSystemMetrics ? 'show' : 'hide'
-                    }-system-metrics` as IconName
-                  }
-                />
                 <Text size={12} tint={100}>
-                  {hideSystemMetrics ? 'show' : 'hide'} system metrics
+                  reset columns order
                 </Text>
               </Button>
-              <Divider
-                style={{ margin: '0 0.875rem' }}
-                orientation='vertical'
-                flexItem
-              />
-            </>
-          )}
+              <Button variant='text' size='xSmall' onClick={onTableDiffShow}>
+                <Text size={12} tint={100}>
+                  show table diff
+                </Text>
+              </Button>
+            </div>
+            <div className='flex'>
+              {hideSystemMetrics !== undefined && (
+                <>
+                  <Button
+                    variant='text'
+                    size='xSmall'
+                    onClick={() =>
+                      onColumnsVisibilityChange(
+                        hideSystemMetrics
+                          ? HideColumnsEnum.ShowSystemMetrics
+                          : HideColumnsEnum.HideSystemMetrics,
+                      )
+                    }
+                  >
+                    <Icon
+                      name={
+                        `${
+                          hideSystemMetrics ? 'show' : 'hide'
+                        }-system-metrics` as IconName
+                      }
+                    />
+                    <Text size={12} tint={100}>
+                      {hideSystemMetrics ? 'show' : 'hide'} system metrics
+                    </Text>
+                  </Button>
+                  <Divider
+                    style={{ margin: '0 0.875rem' }}
+                    orientation='vertical'
+                    flexItem
+                  />
+                </>
+              )}
 
-          <Button
-            variant='text'
-            size='xSmall'
-            onClick={() => onColumnsVisibilityChange([])}
-          >
-            <Icon name='eye-show-outline' />
-            <Text size={12} tint={100}>
-              show all
-            </Text>
-          </Button>
-          <Button
-            variant='text'
-            size='xSmall'
-            onClick={() => onColumnsVisibilityChange(HideColumnsEnum.All)}
-          >
-            <Icon name='eye-outline-hide' />
-            <Text size={12} tint={100}>
-              hide all
-            </Text>
-          </Button>
-        </div>
-      </div>
-    </DragDropContext>
+              <Button
+                variant='text'
+                size='xSmall'
+                onClick={() => onColumnsVisibilityChange([])}
+              >
+                <Icon name='eye-show-outline' />
+                <Text size={12} tint={100}>
+                  show all
+                </Text>
+              </Button>
+              <Button
+                variant='text'
+                size='xSmall'
+                onClick={() => onColumnsVisibilityChange(HideColumnsEnum.All)}
+              >
+                <Icon name='eye-outline-hide' />
+                <Text size={12} tint={100}>
+                  hide all
+                </Text>
+              </Button>
+            </div>
+          </div>
+        </DragDropContext>
+      }
+    />
   );
 }
 
