@@ -231,6 +231,7 @@ function createAppModel(appConfig: IAppInitialConfig) {
             sortFields: [],
             hiddenMetrics: [],
             hiddenColumns: [],
+            hideSystemMetrics: undefined,
             columnsWidths: {},
             columnsOrder: {
               left: [],

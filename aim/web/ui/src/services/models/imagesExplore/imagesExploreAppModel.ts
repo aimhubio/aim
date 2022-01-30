@@ -127,6 +127,7 @@ function getConfig(): IImagesExploreAppConfig {
       sortFields: [],
       hiddenMetrics: [],
       hiddenColumns: [],
+      hideSystemMetrics: undefined,
       columnsWidths: {},
       columnsOrder: {
         left: [],
