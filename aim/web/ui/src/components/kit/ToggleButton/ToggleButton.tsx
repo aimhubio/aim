@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 
 import ErrorBoundary from 'components/ErrorBoundary/ErrorBoundary';
 
@@ -26,6 +26,10 @@ function ToggleButton({
     setState(value);
     onChange(value, id);
   }
+
+  useEffect(() => {
+    setState(value);
+  }, [value]);
 
   return (
     <ErrorBoundary>
