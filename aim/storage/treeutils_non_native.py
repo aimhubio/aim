@@ -3,7 +3,7 @@ from aim.storage.types import AimObject
 
 def from_omegaconf_config(obj):
     try:
-        from omegaconf import OmegaConf, Container
+        from omegaconf import OmegaConf
     except ModuleNotFoundError:
         return obj, False
 
