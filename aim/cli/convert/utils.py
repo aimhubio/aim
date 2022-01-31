@@ -138,9 +138,9 @@ def parse_tf_events(tf_logs, repo_inst, flat=False):
         run_dir_candidates_filtered.add(new_run_dir)
 
     if run_dir_ignored:
-        click.echo(f'WARN: Found directory entries with unorganized even files!\n'
-                   f'Please read the preparation instructions to properly process these files.\n'
-                   f'Event files in the following directories will be ignored:', err=True)
+        click.echo('WARN: Found directory entries with unorganized even files!\n'
+                   'Please read the preparation instructions to properly process these files.\n'
+                   'Event files in the following directories will be ignored:', err=True)
         for c, r in enumerate(run_dir_ignored, start=1):
             click.echo(f'{c}: {r}', err=True)
 
