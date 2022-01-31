@@ -98,6 +98,7 @@ function SliderWithInput({
             labelHelperText={countTitleTooltip}
             placeholder={countInputTitle}
             showMessageByTooltip
+            isValidateInitially={true}
             onChange={(e, value, metadata) => {
               onCountChange(value, metadata);
             }}
