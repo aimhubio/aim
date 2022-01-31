@@ -204,7 +204,7 @@ export function getMenuData(traceType: TraceType, traces: TraceRawDataItem[]) {
  * process distributions data
  */
 export function processDistributionsData(data: Partial<DistributionsData>) {
-  const { record_range, iters, values } = data;
+  const { record_range_total, iters, values } = data;
   const processedValues: any[] = [];
   const originalValues: TraceProcessedData[] = [];
 
@@ -232,7 +232,7 @@ export function processDistributionsData(data: Partial<DistributionsData>) {
 
   return {
     iters,
-    record_range,
+    record_range: record_range_total,
     processedValues,
     originalValues,
   };
@@ -242,7 +242,7 @@ export function processDistributionsData(data: Partial<DistributionsData>) {
  * process texts data
  */
 export function processTextsData(data: Partial<TextsData>) {
-  const { record_range, index_range, iters, values } = data;
+  const { record_range_total, index_range_total, iters, values } = data;
   const processedValues: any[] = [];
   if (values) {
     let count = 0;
@@ -261,8 +261,8 @@ export function processTextsData(data: Partial<TextsData>) {
 
   return {
     iters,
-    record_range,
-    index_range,
+    record_range: record_range_total,
+    index_range: index_range_total,
     processedValues,
   };
 }
@@ -274,7 +274,14 @@ export function processImagesData(
   data: Partial<ImagesData>,
   params?: { [key: string]: unknown },
 ) {
-  const { record_range, iters, values, index_range, context, name } = data;
+  const {
+    record_range_total,
+    iters,
+    values,
+    index_range_total,
+    context,
+    name,
+  } = data;
   const groupingSelectOptions = params
     ? imagesExploreAppModel.getGroupingSelectOptions({
         params: getObjectPaths(params, params),
@@ -310,14 +317,26 @@ export function processImagesData(
     defaultGroupFields: ['step'],
   });
 
-  return { imageSetData: mediaSetData, orderedMap, record_range, index_range };
+  return {
+    imageSetData: mediaSetData,
+    orderedMap,
+    record_range: record_range_total,
+    index_range: index_range_total,
+  };
 }
 
 export function processAudiosData(
   data: Partial<ImagesData>,
   params?: { [key: string]: unknown },
 ) {
-  const { record_range, iters, values, index_range, context, name } = data;
+  const {
+    record_range_total,
+    iters,
+    values,
+    index_range_total,
+    context,
+    name,
+  } = data;
   const groupingSelectOptions = params
     ? imagesExploreAppModel.getGroupingSelectOptions({
         params: getObjectPaths(params, params),
@@ -353,7 +372,12 @@ export function processAudiosData(
     groupingSelectOptions,
     defaultGroupFields: ['step'],
   });
-  return { audiosSetData: mediaSetData, orderedMap, record_range, index_range };
+  return {
+    audiosSetData: mediaSetData,
+    orderedMap,
+    record_range: record_range_total,
+    index_range: index_range_total,
+  };
 }
 
 function groupData(data: IProcessedImageData[]): {

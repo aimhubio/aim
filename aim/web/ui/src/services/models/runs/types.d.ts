@@ -49,7 +49,7 @@ export type TraceRawDataItem = {
  * Distributions api response
  */
 export interface DistributionsData extends TraceRawDataItem {
-  record_range: [number, number];
+  record_range_total: [number, number];
   values: DistributionValue[];
   iters: number[];
 }
@@ -60,7 +60,7 @@ export interface DistributionsData extends TraceRawDataItem {
  */
 export interface ImagesData extends DistributionsData {
   context: object;
-  index_range: [number, number];
+  index_range_total: [number, number];
   values: any;
 }
 

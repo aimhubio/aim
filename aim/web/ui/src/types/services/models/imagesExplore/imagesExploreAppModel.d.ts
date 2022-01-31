@@ -25,7 +25,6 @@ export interface IImagesExploreAppConfig {
     indexRange?: number[];
     recordDensity?: string;
     indexDensity?: string;
-    calcRanges: boolean;
     tooltip: IPanelTooltip;
     focusedState: {
       key: string | null;

@@ -53,8 +53,8 @@ function RangePanel({
               countInputTitle={item.inputTitle}
               countTitleTooltip={item.inputTitleTooltip}
               sliderTitleTooltip={item.sliderTitleTooltip}
-              min={item.rangeEndpoints[0]}
-              max={item.rangeEndpoints[1]}
+              min={item.rangeEndpoints?.[0]}
+              max={item.rangeEndpoints?.[1]}
               selectedRangeValue={item.selectedRangeValue}
               selectedCountValue={item.inputValue}
               onSearch={onApply}
