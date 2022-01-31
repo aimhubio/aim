@@ -13,7 +13,14 @@ from copy import deepcopy
 from aim.sdk.sequence import Sequence
 from aim.storage.object import CustomObject
 from aim.sdk.sequence_collection import SingleRunSequenceCollection
-from aim.sdk.utils import generate_run_hash, get_object_typename, check_types_compatibility
+from aim.sdk.utils import (
+    check_types_compatibility,
+    generate_run_hash,
+    get_environment_variables,
+    get_installed_packages,
+    get_object_typename,
+    get_git_info,
+)
 from aim.sdk.num_utils import convert_to_py_number, is_number
 from aim.sdk.types import AimObject
 from aim.sdk.configs import AIM_ENABLE_TRACKING_THREAD, AIM_RUN_INDEXING_TIMEOUT
@@ -225,6 +232,8 @@ class Run(StructuredRunMixin):
             Can be used later to query runs/sequences.
          system_tracking_interval (:obj:`int`, optional): Sets the tracking interval in seconds for system usage
             metrics (CPU, Memory, etc.). Set to `None` to disable system metrics tracking.
+         log_system_params (:obj:`bool`, optional): Enable/Disable logging of system params such as installed packages,
+            git info, environment variables, etc.
     """
 
     _idx_to_ctx: Dict[int, Context] = dict()
@@ -236,7 +245,8 @@ class Run(StructuredRunMixin):
                  repo: Optional[Union[str, 'Repo']] = None,
                  read_only: bool = False,
                  experiment: Optional[str] = None,
-                 system_tracking_interval: Optional[int] = DEFAULT_SYSTEM_TRACKING_INT):
+                 system_tracking_interval: Optional[int] = DEFAULT_SYSTEM_TRACKING_INT,
+                 log_system_params: Optional[bool] = True):
         self._resources: Optional[RunAutoClean] = None
         run_hash = run_hash or generate_run_hash()
         self.hash = run_hash
@@ -269,54 +279,19 @@ class Run(StructuredRunMixin):
         ).subtree('seqs').subtree('chunks').subtree(self.hash)
 
         if not read_only:
-            # Collect installed packages
-            import pkg_resources
-            packages = {i.key: i.version for i in pkg_resources.working_set}
+            if log_system_params:
+                system_params = {
+                    'packages': get_installed_packages(),
+                    'env_variables': get_environment_variables(),
+                    'git_info': get_git_info(),
+                    'executable': sys.executable,
+                    'arguments': sys.argv
+                }
 
-            # env_mask patterns are filtered from env_vars
-            env_mask = ('sec', 'key', 'tok', 'pwd', 'pass')
-            env_vars = {
-                k: v for k, v in os.environ.items() if next(
-                    (m for m in env_mask if m in k.lower()), None
-                ) is None
-            }
+                if not system_params['git_info']:
+                    system_params.pop('git_info')
 
-            # Get git info (if applicable)
-            git_info = {}
-            r = subprocess.run(['git', 'rev-parse', '--is-inside-work-tree'], capture_output=True, check=False)
-            output = r.stdout.decode('utf-8').strip()
-            if output == 'true':
-                cmds = [
-                    'git rev-parse --abbrev-ref HEAD',
-                    'git log --pretty=format:%h/%ad/%an --date=iso-strict -1',
-                    'git config --get remote.origin.url'
-                ]
-                results = []
-                for cmd in cmds:
-                    r = subprocess.run(cmd.split(), capture_output=True, check=False)
-                    output = r.stdout.decode('utf-8').strip()
-                    results.append(output)
-
-                branch_name = results[0]
-                commit_hash, commit_timestamp, commit_author = results[1].split('/')
-                git_remote_url = results[2]
-
-                git_info.update({
-                    'branch': branch_name,
-                    'remote_origin_url': git_remote_url,
-                    'commit': {
-                        'hash': commit_hash,
-                        'timestamp': commit_timestamp,
-                        'author': commit_author
-                    }
-                })
-
-            self.__setitem__("__system_packages", packages)
-            self.__setitem__("__system_env_variables", env_vars)
-            self.__setitem__("__system_executable", sys.executable)
-            self.__setitem__("__system_arguments", sys.argv)
-            if git_info:
-                self.__setitem__("__system_git", git_info)
+                self.__setitem__("__system_params", system_params)
 
             try:
                 self.meta_run_attrs_tree.first()
@@ -406,13 +381,13 @@ class Run(StructuredRunMixin):
         del self.meta_run_attrs_tree[key]
 
     def track(
-        self,
-        value,
-        name: str,
-        step: int = None,
-        epoch: int = None,
-        *,
-        context: AimObject = None,
+            self,
+            value,
+            name: str,
+            step: int = None,
+            epoch: int = None,
+            *,
+            context: AimObject = None,
     ):
         """Main method for tracking numeric value series and object series.
 
@@ -440,14 +415,14 @@ class Run(StructuredRunMixin):
             self._track_impl(value, track_time, name, step, epoch, context=context)
 
     def _track_impl(
-        self,
-        value,
-        track_time: float,
-        name: str,
-        step: int = None,
-        epoch: int = None,
-        *,
-        context: AimObject = None,
+            self,
+            value,
+            track_time: float,
+            name: str,
+            step: int = None,
+            epoch: int = None,
+            *,
+            context: AimObject = None,
     ):
         if context is None:
             context = {}

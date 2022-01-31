@@ -84,3 +84,56 @@ def check_types_compatibility(dtype: str, base_dtype: str, update_base_dtype_fn=
     if dtype == 'list' and any_list_regex.match(base_dtype):
         return True
     return False
+
+
+def get_installed_packages():
+    import pkg_resources
+    packages = {i.key: i.version for i in pkg_resources.working_set}
+
+    return packages
+
+
+def get_environment_variables():
+    env_mask = ('sec', 'key', 'tok', 'pwd', 'pass')
+    env_vars = {
+        k: v for k, v in os.environ.items() if next(
+            (m for m in env_mask if m in k.lower()), None
+        ) is None
+    }
+
+    return env_vars
+
+
+def get_git_info():
+    from subprocess import run
+
+    git_info = {}
+    r = run(['git', 'rev-parse', '--is-inside-work-tree'], capture_output=True, check=False)
+    output = r.stdout.decode('utf-8').strip()
+    if output == 'true':
+        cmds = [
+            'git rev-parse --abbrev-ref HEAD',
+            'git log --pretty=format:%h/%ad/%an --date=iso-strict -1',
+            'git config --get remote.origin.url'
+        ]
+        results = []
+        for cmd in cmds:
+            r = run(cmd.split(), capture_output=True, check=False)
+            output = r.stdout.decode('utf-8').strip()
+            results.append(output)
+
+        branch_name = results[0]
+        commit_hash, commit_timestamp, commit_author = results[1].split('/')
+        git_remote_url = results[2]
+
+        git_info.update({
+            'branch': branch_name,
+            'remote_origin_url': git_remote_url,
+            'commit': {
+                'hash': commit_hash,
+                'timestamp': commit_timestamp,
+                'author': commit_author
+            }
+        })
+
+    return git_info
