@@ -4,7 +4,6 @@ import os
 import datetime
 import json
 import pytz
-import subprocess
 import sys
 
 from collections import defaultdict
@@ -381,13 +380,13 @@ class Run(StructuredRunMixin):
         del self.meta_run_attrs_tree[key]
 
     def track(
-            self,
-            value,
-            name: str,
-            step: int = None,
-            epoch: int = None,
-            *,
-            context: AimObject = None,
+        self,
+        value,
+        name: str,
+        step: int = None,
+        epoch: int = None,
+        *,
+        context: AimObject = None,
     ):
         """Main method for tracking numeric value series and object series.
 
@@ -415,14 +414,14 @@ class Run(StructuredRunMixin):
             self._track_impl(value, track_time, name, step, epoch, context=context)
 
     def _track_impl(
-            self,
-            value,
-            track_time: float,
-            name: str,
-            step: int = None,
-            epoch: int = None,
-            *,
-            context: AimObject = None,
+        self,
+        value,
+        track_time: float,
+        name: str,
+        step: int = None,
+        epoch: int = None,
+        *,
+        context: AimObject = None,
     ):
         if context is None:
             context = {}
