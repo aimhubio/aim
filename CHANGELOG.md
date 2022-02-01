@@ -2,8 +2,11 @@
 
 ## Unreleased
 
+- Improve media panel rendering performance on hovering over images (KaroMourad)
 - Fix Grouping and Tooltip popovers states' resetting issue when live-update is on (rubenaprikyan)
 - Fix table column's sort functionality issue in Params and Scatters Explorers (rubenaprikyan)
+- Add system parameter logging: CLI, Env, Executable, Git, Installed packages (devfox-se)
+- Convert nested non-native objects (e.g. OmegaConf config instance) upon storing (devfox-se)
 
 ## 3.4.1 Jan 23 2022
 
