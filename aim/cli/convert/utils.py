@@ -94,7 +94,7 @@ def parse_tf_events(tf_logs, repo_inst, flat=False):
     run_dir_candidates = set()
     for root, dirs, files in os.walk(tf_logs):
         for file in files:
-            if file.startswith('events.out.tfevents'):
+            if not file.startswith('events.out.tfevents'):
                 continue
 
             file_path = os.path.abspath(os.path.join(root, file))
