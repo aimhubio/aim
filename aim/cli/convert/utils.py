@@ -24,7 +24,7 @@ def parse_tf_events(tf_logs, repo_inst, flat=False):
         │    ├> <tf_events_file_1>
         │    └> <tf_events_file_2>
         ├> group_1/
-        │    ├> <tf_events_file_3> (THIS EVNET WILL BE IGNORED)
+        │    ├> <tf_events_file_3> (THIS EVENT WILL BE IGNORED)
         │    ├> run_2/
         │    │    ├> train/
         │    │    │    ├> <tf_events_file_4>
@@ -37,19 +37,27 @@ def parse_tf_events(tf_logs, repo_inst, flat=False):
         │    └> run_3/
         │        ├> <tf_events_file_10>
         │        └> <tf_events_file_11>
-        ├> <tf_events_file_12> (THIS EVNET WILL BE IGNORED)
-        └> <tf_events_file_13> (THIS EVNET WILL BE IGNORED)
+        ├> <tf_events_file_12> (THIS EVENT WILL BE IGNORED)
+        └> <tf_events_file_13> (THIS EVENT WILL BE IGNORED)
 
-    From the hierarchy example above you can see that
-    "your_provided_log_dir/group1/tf_events_file_3",
-    "your_provided_log_dir/tf_events_file_12" and
-    "your_provided_log_dir/tf_events_file_13"
-    event files will be ignored since the converter threats them as unorganized event files.
+    From the hierarchy example above you can see that "your_provided_log_dir/group1/tf_events_file_3",
+    "your_provided_log_dir/tf_events_file_12" and "your_provided_log_dir/tf_events_file_13"
+    event files will be ignored since the converter treats them as unorganized event files.
+
+    All other events will either have "Context" or "No Context".
+    Context of the event is the name of the parent directory if
+    the parent directory hasn't been categorized as a "run" or "group of runs" directory
+
+    For example:
+        - Events right underneath run_1, run_2 and run_3 will have no context
+        - Events under run_2/train and run_2/validate will have "train" and "validate" as context accordingly.
 
     In case the converter finds unorganized event files in your hierarchy a warning message will be issued.
 
     To make the converter process these events, consider re-structuring your directories so that it matches
     the sample structure. (i.e. create a new directory and moving your unorganized events there)
+    * OR *
+    set the "flat" flag to treat each directory as a distinct run.
     """
 
     try:
@@ -86,7 +94,7 @@ def parse_tf_events(tf_logs, repo_inst, flat=False):
     run_dir_candidates = set()
     for root, dirs, files in os.walk(tf_logs):
         for file in files:
-            if 'events.out.tfevents' not in file:
+            if file.startswith('events.out.tfevents'):
                 continue
 
             file_path = os.path.abspath(os.path.join(root, file))
