@@ -5,12 +5,10 @@ def from_omegaconf_config(obj):
     try:
         from omegaconf import OmegaConf
     except ModuleNotFoundError:
-        return obj, False
+        return
 
     if OmegaConf.is_config(obj):
-        return OmegaConf.to_container(obj, resolve=True), True
-
-    return obj, False
+        return OmegaConf.to_container(obj, resolve=True)
 
 
 def convert_to_native_object(
@@ -21,14 +19,15 @@ def convert_to_native_object(
     converters = [
         from_omegaconf_config
     ]
-    for converter in converters:
-        converted_obj, _success = converter(obj)
-        if _success:
-            obj = converted_obj
+    for func in converters:
+        _obj = func(obj)
+        if _obj is not None:
+            obj = _obj
             break
     else:
         if not strict:
-            return repr(obj)
-        raise TypeError(f'Unhandled non-native value `{obj}` of type `{type(obj)}`.')
+            obj = repr(obj)
+        else:
+            raise TypeError(f'Unhandled non-native value `{obj}` of type `{type(obj)}`.')
 
     return obj
