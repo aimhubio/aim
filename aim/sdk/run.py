@@ -15,9 +15,11 @@ from aim.sdk.sequence_collection import SingleRunSequenceCollection
 from aim.sdk.utils import (
     check_types_compatibility,
     generate_run_hash,
+    get_object_typename,
+)
+from aim.ext.utils import (
     get_environment_variables,
     get_installed_packages,
-    get_object_typename,
     get_git_info,
 )
 from aim.sdk.num_utils import convert_to_py_number, is_number
@@ -245,7 +247,7 @@ class Run(StructuredRunMixin):
                  read_only: bool = False,
                  experiment: Optional[str] = None,
                  system_tracking_interval: Optional[int] = DEFAULT_SYSTEM_TRACKING_INT,
-                 log_system_params: Optional[bool] = True):
+                 log_system_params: Optional[bool] = False):
         self._resources: Optional[RunAutoClean] = None
         run_hash = run_hash or generate_run_hash()
         self.hash = run_hash
@@ -286,10 +288,6 @@ class Run(StructuredRunMixin):
                     'executable': sys.executable,
                     'arguments': sys.argv
                 }
-
-                if not system_params['git_info']:
-                    system_params.pop('git_info')
-
                 self.__setitem__("__system_params", system_params)
 
             try:
