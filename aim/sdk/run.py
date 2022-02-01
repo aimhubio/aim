@@ -439,7 +439,7 @@ class Run(StructuredRunMixin):
             self._idx_to_ctx[ctx.idx] = ctx
 
         seq_info = self._get_or_create_sequence_info(ctx, name)
-        step = step or seq_info.count
+        step = step if step is not None else seq_info.count
         self._update_sequence_info(seq_info, ctx, val, name, step)
 
         self.meta_run_tree['traces', ctx.idx, name, 'last'] = val

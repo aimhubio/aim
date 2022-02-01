@@ -1,4 +1,4 @@
-import React, { ChangeEvent } from 'react';
+import React from 'react';
 import _ from 'lodash-es';
 import moment from 'moment';
 import { saveAs } from 'file-saver';
@@ -63,7 +63,6 @@ import JsonToCSV from 'utils/JsonToCSV';
 import { formatValue } from 'utils/formatValue';
 import getValueByField from 'utils/getValueByField';
 import arrayBufferToBase64 from 'utils/arrayBufferToBase64';
-import { formatToPositiveNumber } from 'utils/formatToPositiveNumber';
 import getTooltipData from 'utils/app/getTooltipData';
 import filterTooltipContent from 'utils/filterTooltipContent';
 import { getDataAsMediaSetNestedObject } from 'utils/app/getDataAsMediaSetNestedObject';
@@ -118,6 +117,7 @@ function getConfig(): IImagesExploreAppConfig {
       },
       sortFields: [],
       sortFieldsDict: {},
+      inputsValidations: {},
     },
     table: {
       resizeMode: ResizeModeEnum.Resizable,
@@ -1941,49 +1941,44 @@ function onSliceRangeChange(key: string, newValue: number[] | number) {
   }
 }
 
-function onDensityChange(e: React.ChangeEvent<HTMLInputElement>, key: string) {
-  let { value } = e.target;
+function onDensityChange(value: number, metaData: any, key: string) {
   const configData: IImagesExploreAppConfig | undefined =
     model.getState()?.config;
   if (configData?.images) {
     const images = {
       ...configData.images,
-      [key]: formatToPositiveNumber(+value),
+      [key]: +value,
+      inputsValidations: {
+        ...configData.images?.inputsValidations,
+        [key]: metaData?.isValid,
+      },
     };
     const config = {
       ...configData,
       images,
     };
-    const searchButtonDisabled =
-      images.recordDensity === '0' || images.indexDensity === '0';
     model.setState({
       config,
-      searchButtonDisabled,
-      applyButtonDisabled: searchButtonDisabled,
     });
   }
+  applyBtnDisabledHandler();
 }
 
-function onRecordDensityChange(event: ChangeEvent<{ value: number }>) {
-  const configData: IImagesExploreAppConfig | undefined =
-    model.getState()?.config;
-  if (configData?.images) {
-    const images = {
-      ...configData.images,
-      recordDensity: formatToPositiveNumber(+event.target.value),
-    };
-    const config = {
-      ...configData,
-      images,
-    };
-    const searchButtonDisabled =
-      images.recordDensity === '0' || images.indexDensity === '0';
-    model.setState({
-      config,
-      searchButtonDisabled,
-      applyButtonDisabled: searchButtonDisabled,
-    });
-  }
+function applyBtnDisabledHandler() {
+  const state = model.getState();
+  const inputsValidations = state.config?.images?.inputsValidations || {};
+
+  const isInputsValid =
+    _.size(
+      Object.keys(inputsValidations).filter((key) => {
+        return inputsValidations[key] === false;
+      }),
+    ) <= 0;
+
+  model.setState({
+    ...state,
+    applyButtonDisabled: !isInputsValid,
+  });
 }
 
 const onImageSizeChange = _.throttle((value: number) => {
@@ -2023,6 +2018,7 @@ function onImageRenderingChange(type: ImageRenderingEnum) {
       ...configData,
       images,
     };
+
     updateURL(config as IImagesExploreAppConfig);
     model.setState({
       config,
@@ -2207,7 +2203,6 @@ const imagesExploreAppModel = {
   onImageVisibilityChange,
   onSliceRangeChange,
   onDensityChange,
-  onRecordDensityChange,
   getImagesBlobsData,
   onChangeTooltip,
   onActivePointChange,

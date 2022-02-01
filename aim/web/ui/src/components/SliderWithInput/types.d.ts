@@ -1,3 +1,5 @@
+import { IValidationMetadata } from 'components/kit/Input';
+
 export interface ISliderWithInputProps {
   sliderTitle: string;
   countInputTitle: string;
@@ -9,6 +11,6 @@ export interface ISliderWithInputProps {
   selectedCountValue: number;
   sliderType?: 'range' | 'single';
   onSearch: () => void;
-  onCountChange: (event: React.ChangeEvent<HTMLInputElement>) => void;
+  onCountChange: (value: number, metadata?: IValidationMetadata) => void;
   onRangeChange: (newValue: number[] | number) => void;
 }

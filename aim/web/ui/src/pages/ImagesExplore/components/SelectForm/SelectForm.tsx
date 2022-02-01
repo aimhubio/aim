@@ -53,7 +53,7 @@ function SelectForm({
 
   function handleSearch(e: React.ChangeEvent<any>): void {
     e.preventDefault();
-    if (requestIsPending) {
+    if (requestIsPending || searchButtonDisabled) {
       return;
     }
     searchMetricsRef.current = imagesExploreAppModel.getImagesData(true, true);

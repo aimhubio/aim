@@ -38,6 +38,7 @@ export interface IImagesExploreAppConfig {
     };
     sortFields?: SortFields;
     sortFieldsDict: any;
+    inputsValidations: any;
   };
   select: ISelectConfig;
   table: {
