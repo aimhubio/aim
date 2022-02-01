@@ -11,7 +11,7 @@ import getPositionBasedOnOverflow from 'utils/getPositionBasedOnOverflow';
 
 import './ChartPopover.scss';
 
-function ChartPopover(props: IChartPopover): JSX.Element | null {
+function ChartPopover(props: IChartPopover): JSX.Element {
   const {
     id = 'popover',
     open = false,
@@ -34,7 +34,6 @@ function ChartPopover(props: IChartPopover): JSX.Element | null {
           popoverNode.getBoundingClientRect(),
           containerNode.getBoundingClientRect(),
         );
-
         setPopoverPos(pos);
       }
     },
