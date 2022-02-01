@@ -1,0 +1,24 @@
+@use 'src/styles/abstracts' as *;
+
+.DepthSlider {
+  display: flex;
+  align-items: center;
+  padding-top: $space-xxs;
+  & > .Slider {
+    width: toRem(407px);
+    height: 100%;
+    & .MuiSlider-mark {
+      top: 50%;
+      transform: translate(-1px, -50%);
+      width: toRem(1px);
+      height: toRem(5px);
+    }
+    & .prevIconBtn {
+      margin-right: $space-xxs;
+    }
+    & .nextIconBtn {
+      margin-left: $space-xxs;
+    }
+  }
+}
+  
