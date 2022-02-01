@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from 'react';
+import React from 'react';
 import _ from 'lodash-es';
 import classNames from 'classnames';
 
@@ -43,13 +43,15 @@ function InputWrapper({
   size = 'medium',
   ...restProps
 }: IInputProps): React.FunctionComponentElement<React.ReactNode> {
-  const [isInputValid, setIsInputValid] = useState(true);
-  const [errorsMessages, setErrorsMessages] = useState<IMetadataMessages>([]);
-  const [helperText, setHelperText] = useState<string>('');
+  const [isInputValid, setIsInputValid] = React.useState(true);
+  const [errorsMessages, setErrorsMessages] = React.useState<IMetadataMessages>(
+    [],
+  );
+  const [helperText, setHelperText] = React.useState<string>('');
   const [isMessageTooltipVisible, setIsMessageTooltipVisible] =
-    useState<boolean>(false);
+    React.useState<boolean>(false);
 
-  const valueTypeConversionFn = useMemo(
+  const valueTypeConversionFn = React.useMemo(
     () => inputTypeConversionFns[type],
     [type],
   );
@@ -110,20 +112,20 @@ function InputWrapper({
     setHelperText(formattedMessages);
   };
 
-  useEffect(() => {
+  React.useEffect(() => {
     messagesFormatter(errorsMessages);
   }, [errorsMessages]);
 
   const isRenderTopLabel = () => labelAppearance === 'top-labeled' && label;
 
-  useEffect(() => {
+  React.useEffect(() => {
     if (isValidateInitially) {
       validatePatterns(validationPatterns, value);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  useEffect(() => {
+  React.useEffect(() => {
     setIsMessageTooltipVisible(!isInputValid);
   }, [isInputValid]);
 

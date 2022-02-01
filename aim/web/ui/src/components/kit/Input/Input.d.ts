@@ -2,6 +2,8 @@ import { TextFieldProps } from '@material-ui/core';
 
 import { IconName } from 'components/kit/Icon';
 
+import { Override } from 'types/utils/common';
+
 type IValidationPatternCondition = ((value: any) => boolean) | RegExp;
 
 export type IValidationPattern = {
@@ -24,8 +26,6 @@ export type IValidationMetadata = {
   isValid: boolean;
   messages: IMetadataMessages;
 };
-
-type Override<T1, T2> = Omit<T1, keyof T2> & T2;
 
 export type IInputProps = Override<
   TextFieldProps,
