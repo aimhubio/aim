@@ -2,6 +2,7 @@
 
 ## Unreleased
 
+- Add input validations to range selectors (Hamik25)
 - Improve media panel rendering performance on hovering over images (KaroMourad)
 - Fix Grouping and Tooltip popovers states' resetting issue when live-update is on (rubenaprikyan)
 - Fix table column's sort functionality issue in Params and Scatters Explorers (rubenaprikyan)
