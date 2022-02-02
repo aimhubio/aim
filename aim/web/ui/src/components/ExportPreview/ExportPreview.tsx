@@ -5,7 +5,7 @@ import { Grid, TextField } from '@material-ui/core';
 import { Modal, Slider, Text } from 'components/kit';
 import ErrorBoundary from 'components/ErrorBoundary/ErrorBoundary';
 
-import { previewBounds } from './config';
+import { previewBounds, defaultPreviewBounds } from './config';
 import { IExportPreviewProps } from './ExportPreview.d';
 
 import './ExportPreview.scss';
@@ -17,22 +17,53 @@ function ExportPreview({
   children,
 }: IExportPreviewProps): React.FunctionComponentElement<React.ReactNode> {
   const containerRef = React.useRef<HTMLDivElement>(null);
-  const [previewDimensions, setPreviewDimensions] = React.useState({
-    width: 1024,
-    height: 640,
-  });
+  const previewRef = React.useRef<HTMLDivElement>();
+  const previewPrevRef = React.useRef(defaultPreviewBounds);
+
+  const [previewDimensions, setPreviewDimensions] =
+    React.useState(defaultPreviewBounds);
   const [imageExport, setImageToExport] = React.useState<null | SVGSVGElement>(
     null,
   );
 
   function onDownload(): void {}
 
-  function onDimensionChange(key: string, newValue: number): void {
+  function updateChart(dimensions: { height?: number; width?: number }) {
+    if (previewPrevRef.current) {
+      const { width, height } = previewPrevRef.current;
+
+      let isWidthChanged = true;
+      if (dimensions.hasOwnProperty('height')) {
+        isWidthChanged = false;
+      }
+      if (dimensions.hasOwnProperty('width')) {
+        isWidthChanged = true;
+      }
+
+      previewPrevRef.current = {
+        height: !isWidthChanged ? height : height,
+        width: isWidthChanged ? width + 1 : width,
+      };
+
+      if (previewRef.current) {
+        previewRef.current.style.height = !isWidthChanged
+          ? `${dimensions['height']}px`
+          : previewRef.current.style.height;
+
+        previewRef.current.style.width = isWidthChanged
+          ? `${dimensions['width']}px`
+          : previewRef.current.style.width;
+      }
+    }
+  }
+
+  const onDimensionChange = (key: string, newValue: number) => {
+    updateChart({ [key]: +newValue });
     setPreviewDimensions((prev) => ({
       ...prev,
       [key]: +newValue,
     }));
-  }
+  };
 
   function clearImage(svgElement: SVGSVGElement) {
     const attributes = svgElement.querySelector('.Attributes');
@@ -238,10 +269,13 @@ function ExportPreview({
           </div>
         )}
         <div className='ExportPreview__container'>
-          <div style={{ ...previewDimensions }}>
+          <div
+            /* @ts-ignore */
+            ref={previewRef}
+            style={defaultPreviewBounds}
+          >
             <Grid
               ref={containerRef}
-              key={`${previewDimensions.width}-${previewDimensions.height}`}
               container
               className='ExportPreview__container__grid'
             >

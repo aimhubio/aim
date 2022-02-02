@@ -6,9 +6,14 @@ const previewBounds: IPreviewBounds = {
     height: 2000,
   },
   min: {
-    width: 100,
+    width: 340,
     height: 100,
   },
 };
 
-export { previewBounds };
+const defaultPreviewBounds = {
+  width: 1024,
+  height: 300,
+};
+
+export { previewBounds, defaultPreviewBounds };

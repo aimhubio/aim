@@ -1,6 +1,12 @@
 @use 'src/styles/abstracts' as *;
 
 .ExportPreview {
+  //@TODO improve Grid pattern
+  .ChartGrid {
+    height: 100%;
+    padding: 4px;
+    box-shadow: -1px -1px 0 0 #e8e8e8; // var(--grey-lighter);
+  }
   &__modal {
     & .Modal__header {
       justify-content: center;
@@ -51,4 +57,3 @@
     }
   }
 }
-  
