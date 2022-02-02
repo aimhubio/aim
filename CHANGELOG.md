@@ -2,6 +2,7 @@
 
 ## Unreleased
 
+- Ability to hide system metrics from table (arsengit)
 - Add input validations to range selectors (Hamik25)
 - Improve media panel rendering performance on hovering over images (KaroMourad)
 - Add ability to parse and import TensorFlow events into aim (devfox-se)
@@ -10,6 +11,9 @@
 - Add system parameter logging: CLI, Env, Executable, Git, Installed packages (devfox-se)
 - Convert nested non-native objects (e.g. OmegaConf config instance) upon storing (devfox-se)
 - Add cli subcommands cp and mv for aim runs command (mihran113)
+- Add handler for matplotlib figures in Image and Figure custom objects (devfox-se)
+- Fix background transparency in colab when using dark mode of system (rubenaprikyan)
+
 ## 3.4.1 Jan 23 2022
 
 - Fix issue with displaying experiment name in Images Explorer table (VkoHov)
