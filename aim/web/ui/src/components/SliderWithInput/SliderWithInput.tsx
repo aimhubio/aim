@@ -63,7 +63,9 @@ function SliderWithInput({
           {sliderType === 'single' ? (
             <Slider
               value={selectedCountValue}
-              onChange={(value: any) => onCountChange(value)}
+              onChange={(e: any, value: any) => {
+                onCountChange(value);
+              }}
               getAriaValueText={(value) => `${value}`}
               aria-labelledby='track-false-slider'
               track={false}
@@ -107,14 +109,10 @@ function SliderWithInput({
                 errorCondition: (value) => +value < min,
                 errorText: `Value should be equal or greater then ${min}`,
               },
-              {
-                errorCondition: (value) => +value > max,
-                errorText: `Value should be equal or smaller then ${max}`,
-              },
-              {
-                errorCondition: (value) => +value === 0,
-                errorText: "Value can't be equal to 0",
-              },
+              // {
+              //   errorCondition: (value) => +value > max,
+              //   errorText: `Value should be equal or smaller then ${max}`,
+              // },
             ]}
           />
         </div>

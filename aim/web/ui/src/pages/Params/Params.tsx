@@ -255,6 +255,7 @@ const Params = ({
                   onRowSelect={onRowSelect}
                   archiveRuns={archiveRuns}
                   deleteRuns={deleteRuns}
+                  focusedState={focusedState}
                   multiSelect
                 />
               ) : null}

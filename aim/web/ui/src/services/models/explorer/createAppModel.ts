@@ -1600,12 +1600,14 @@ function createAppModel(appConfig: IAppInitialConfig) {
                 newData: tableData.rows,
                 dynamicData: true,
               });
-              tableRef.current?.setHoveredRow?.(activePoint.key);
-              tableRef.current?.setActiveRow?.(
-                focusedStateActive ? activePoint.key : null,
-              );
+
               if (focusedStateActive) {
                 tableRef.current?.scrollToRow?.(activePoint.key);
+                tableRef.current?.setActiveRow?.(
+                  focusedStateActive ? activePoint.key : null,
+                );
+              } else {
+                tableRef.current?.setHoveredRow?.(activePoint.key);
               }
             }
           }
@@ -3835,12 +3837,13 @@ function createAppModel(appConfig: IAppInitialConfig) {
         if (config.table.resizeMode !== ResizeModeEnum.Hide) {
           const tableRef: any = refs?.tableRef;
           if (tableRef) {
-            tableRef.current?.setHoveredRow?.(activePoint.key);
-            tableRef.current?.setActiveRow?.(
-              focusedStateActive ? activePoint.key : null,
-            );
             if (focusedStateActive) {
               tableRef.current?.scrollToRow?.(activePoint.key);
+              tableRef.current?.setActiveRow?.(
+                focusedStateActive ? activePoint.key : null,
+              );
+            } else {
+              tableRef.current?.setHoveredRow?.(activePoint.key);
             }
           }
         }
@@ -5298,12 +5301,13 @@ function createAppModel(appConfig: IAppInitialConfig) {
         if (config.table.resizeMode !== ResizeModeEnum.Hide) {
           const tableRef: any = refs?.tableRef;
           if (tableRef) {
-            tableRef.current?.setHoveredRow?.(activePoint.key);
-            tableRef.current?.setActiveRow?.(
-              focusedStateActive ? activePoint.key : null,
-            );
             if (focusedStateActive) {
               tableRef.current?.scrollToRow?.(activePoint.key);
+              tableRef.current?.setActiveRow?.(
+                focusedStateActive ? activePoint.key : null,
+              );
+            } else {
+              tableRef.current?.setHoveredRow?.(activePoint.key);
             }
           }
         }

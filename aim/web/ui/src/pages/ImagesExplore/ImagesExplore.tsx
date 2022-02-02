@@ -27,11 +27,7 @@ import Controls from 'pages/ImagesExplore/components/Controls/Controls';
 import imagesExploreAppModel from 'services/models/imagesExplore/imagesExploreAppModel';
 import * as analytics from 'services/analytics';
 
-import {
-  IFocusedState,
-  IGroupingSelectOption,
-  IPanelTooltip,
-} from 'types/services/models/metrics/metricsAppModel';
+import { IGroupingSelectOption } from 'types/services/models/metrics/metricsAppModel';
 
 import getStateFromUrl from 'utils/getStateFromUrl';
 import { ChartTypeEnum } from 'utils/d3';
@@ -251,12 +247,8 @@ function ImagesExplore(): React.FunctionComponentElement<React.ReactNode> {
               tableHeight={imagesExploreData?.config?.table?.height}
               wrapperOffsetHeight={offsetHeight - 48 || 0}
               wrapperOffsetWidth={offsetWidth || 0}
-              focusedState={
-                imagesExploreData?.config?.images?.focusedState as IFocusedState
-              }
-              tooltip={
-                imagesExploreData?.config?.images?.tooltip as IPanelTooltip
-              }
+              focusedState={imagesExploreData?.config?.images?.focusedState!}
+              tooltip={imagesExploreData?.config?.images?.tooltip!}
               sortFieldsDict={memoizedImagesSortFields.sortFieldsDict}
               sortFields={memoizedImagesSortFields.sortFields}
               additionalProperties={
@@ -265,12 +257,8 @@ function ImagesExplore(): React.FunctionComponentElement<React.ReactNode> {
               onActivePointChange={imagesExploreAppModel.onActivePointChange}
               controls={
                 <Controls
-                  selectOptions={
-                    imagesExploreData?.groupingSelectOptions as IGroupingSelectOption[]
-                  }
-                  tooltip={
-                    imagesExploreData?.config?.images?.tooltip as IPanelTooltip
-                  }
+                  selectOptions={imagesExploreData?.groupingSelectOptions!}
+                  tooltip={imagesExploreData?.config?.images?.tooltip!}
                   orderedMap={imagesExploreData?.orderedMap}
                   additionalProperties={
                     imagesExploreData?.config?.images?.additionalProperties
@@ -364,6 +352,9 @@ function ImagesExplore(): React.FunctionComponentElement<React.ReactNode> {
                         RowHeightSize.md
                       ? 'medium'
                       : 'large'
+                  }
+                  focusedState={
+                    imagesExploreData?.config?.images?.focusedState!
                   }
                   selectedRows={imagesExploreData?.selectedRows}
                   sortOptions={imagesExploreData?.groupingSelectOptions}

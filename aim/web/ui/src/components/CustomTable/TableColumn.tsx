@@ -11,7 +11,8 @@ import ErrorBoundary from 'components/ErrorBoundary/ErrorBoundary';
 import { Button, Icon, Text } from 'components/kit';
 import GroupConfigPopover from 'components/GroupConfigPopover/GroupConfigPopover';
 
-import { viewPortOffset } from 'config/table/tableConfigs';
+import { BGColorLighten } from 'config/colors/colors';
+import { VIEW_PORT_OFFSET } from 'config/table/tableConfigs';
 
 import ControlPopover from '../ControlPopover/ControlPopover';
 
@@ -49,7 +50,6 @@ function Column({
   const widthClone = React.useRef(width);
   const columnRef = React.useRef();
   const startingPoint = React.useRef(null);
-
   const groups = !Array.isArray(data);
   const dataLength = React.useMemo(() => {
     if (Array.isArray(data)) {
@@ -125,9 +125,9 @@ function Column({
     !listWindow ||
     !columnRef.current ||
     (columnRef.current &&
-      columnRef.current.offsetLeft > listWindow.left - viewPortOffset &&
+      columnRef.current.offsetLeft > listWindow.left - VIEW_PORT_OFFSET &&
       columnRef.current.offsetLeft <
-        listWindow.left + listWindow.width + viewPortOffset);
+        listWindow.left + listWindow.width + VIEW_PORT_OFFSET);
 
   return (
     <ErrorBoundary>
@@ -373,11 +373,23 @@ function Column({
             ? Object.keys(data).map((groupKey) => (
                 <div
                   key={groupKey}
-                  className='Table__group'
+                  className={classNames('Table__group', {
+                    colorIndicator: data[groupKey].data.meta.color,
+                  })}
                   style={
                     col.key === '#' && data[groupKey].data.meta.color
                       ? {
                           borderLeft: 'none',
+                          '--color-indicator': data[groupKey].data.meta.color,
+                          '--extended-group-background-color':
+                            BGColorLighten[data[groupKey].data.meta.color] ??
+                            '#ffffff',
+                        }
+                      : data[groupKey].data.meta.color
+                      ? {
+                          '--extended-group-background-color':
+                            BGColorLighten[data[groupKey].data.meta.color] ??
+                            '#ffffff',
                         }
                       : null
                   }
@@ -391,13 +403,6 @@ function Column({
                         expanded: expanded[groupKey],
                         expandable: true,
                       })}
-                      style={
-                        data[groupKey].data.meta.color
-                          ? {
-                              boxShadow: `inset 3px 0 0 0 ${data[groupKey].data.meta.color}`,
-                            }
-                          : null
-                      }
                     >
                       <GroupConfig
                         config={data[groupKey].data.meta}
@@ -494,9 +499,10 @@ function Column({
                                 item[col.key]
                               )
                             }
-                            className={`rowKey-${item.key}${
-                              item.isHidden ? ' hidden' : ''
-                            }`}
+                            className={classNames(`rowKey-${item.key}`, {
+                              hidden: item.isHidden,
+                              selected: !!selectedRows?.[item.selectKey],
+                            })}
                             isConfigColumn={col.key === '#'}
                             metadata={firstColumn ? item.rowMeta : null}
                             onRowHover={() => onRowHover(item)}
@@ -509,7 +515,7 @@ function Column({
                 </div>
               ))
             : data.map((item, i) => (
-                <>
+                <React.Fragment key={i}>
                   {col.key === 'selection' ? (
                     <Cell
                       key={col.key + i}
@@ -540,9 +546,10 @@ function Column({
                           />
                         </>
                       }
-                      className={`rowKey-${item.key}${
-                        item.isHidden ? ' hidden' : ''
-                      }`}
+                      className={classNames(`rowKey-${item.key}`, {
+                        hidden: item.isHidden,
+                        selected: !!selectedRows?.[item.selectKey],
+                      })}
                       metadata={
                         (multiSelect &&
                           col.key === 'selection' &&
@@ -560,9 +567,10 @@ function Column({
                       index={item.index}
                       col={col}
                       item={item[col.key]}
-                      className={`rowKey-${item.key}${
-                        item.isHidden ? ' hidden' : ''
-                      }`}
+                      className={classNames(`rowKey-${item.key}`, {
+                        hidden: item.isHidden,
+                        selected: !!selectedRows?.[item.selectKey],
+                      })}
                       metadata={
                         (multiSelect &&
                           col.key === 'selection' &&
@@ -575,7 +583,7 @@ function Column({
                       onRowClick={() => onRowClick(item)}
                     />
                   )}
-                </>
+                </React.Fragment>
               )))}
       </div>
     </ErrorBoundary>
