@@ -210,7 +210,7 @@ function ImagesExplore(): React.FunctionComponentElement<React.ReactNode> {
                 imagesExploreAppModel.toggleSelectAdvancedMode
               }
               onSearchQueryCopy={imagesExploreAppModel.onSearchQueryCopy}
-              searchButtonDisabled={true}
+              searchButtonDisabled={imagesExploreData?.applyButtonDisabled}
             />
             <Grouping
               groupingPopovers={GroupingPopovers.filter(

@@ -326,7 +326,7 @@ function getImagesData(
         model.setState({
           requestIsPending: true,
           queryIsEmpty: false,
-          applyButtonDisabled: true,
+          applyButtonDisabled: false,
           selectedRows: shouldResetSelectedRows
             ? {}
             : model.getState()?.selectedRows,
@@ -337,7 +337,6 @@ function getImagesData(
         try {
           const stream = await imagesRequestRef.call(exceptionHandler);
           const runData = await getImagesMetricsData(stream);
-          console.log(runData);
 
           if (configData) {
             setModelData(runData, configData);
@@ -564,6 +563,22 @@ function setModelData(rawData: any[], configData: IImagesExploreAppConfig) {
       ? ranges?.index_range_used[1] - 1
       : ranges?.index_range_total[1] - 1,
   ];
+  const recordRangeTotalCount =
+    ranges?.record_range_total[1] - 1 - ranges?.record_range_total[0];
+  const indexRangeTotalCount =
+    ranges?.index_range_total[1] - 1 - ranges?.index_range_total[0];
+  const recordDensity =
+    !config.images.recordDensity ||
+    +config.images.recordDensity < ranges?.record_range_total[0] ||
+    +config.images.recordDensity > recordRangeTotalCount
+      ? `${recordRangeTotalCount}`
+      : config.images.recordDensity;
+  const indexDensity =
+    !config.images.indexDensity ||
+    +config.images.indexDensity < ranges?.index_range_total[0] ||
+    +config.images.indexDensity > indexRangeTotalCount
+      ? `${indexRangeTotalCount}`
+      : config.images.indexDensity;
 
   config.images = {
     ...config.images,
@@ -575,8 +590,8 @@ function setModelData(rawData: any[], configData: IImagesExploreAppConfig) {
       : config.images.indexRange,
     recordSlice,
     indexSlice,
-    recordDensity: config.images.recordDensity || '50',
-    indexDensity: config.images.indexDensity || '5',
+    recordDensity,
+    indexDensity,
     tooltip: config.images.tooltip || {
       content: {},
       display: true,
@@ -1931,12 +1946,8 @@ function onSliceRangeChange(key: string, newValue: number[] | number) {
       images,
     };
 
-    const searchButtonDisabled: boolean =
-      images.recordDensity === '0' || images.indexDensity === '0';
     model.setState({
       config,
-      searchButtonDisabled,
-      applyButtonDisabled: searchButtonDisabled,
     });
   }
 }
