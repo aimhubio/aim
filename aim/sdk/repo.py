@@ -420,10 +420,9 @@ class Repo:
         """
         run_count = 0
         try:
-            with self.structured_db:
-                for run_hash in run_hashes:
-                    self._delete_run(run_hash)
-                    run_count += 1
+            for run_hash in run_hashes:
+                self._delete_run(run_hash)
+                run_count += 1
             return True, []
         except Exception as e:
             logger.warning(f'Error while trying to delete run \'{run_hash}\'. {str(e)}.')
