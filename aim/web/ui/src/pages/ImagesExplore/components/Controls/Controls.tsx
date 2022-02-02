@@ -39,6 +39,13 @@ function Controls(
     );
   }, [props.tooltip]);
 
+  const sortFieldsChanged: boolean = React.useMemo(() => {
+    return (
+      props.sortFields.length !==
+      CONTROLS_DEFAULT_CONFIG.images.sortFields.length
+    );
+  }, [props.sortFields]);
+
   return (
     <div className='Controls__container ScrollBar__hidden'>
       <div>
@@ -82,10 +89,14 @@ function Controls(
             <Tooltip title='Images Sorting'>
               <div
                 onClick={onAnchorClick}
-                className={`Controls__anchor ${opened ? 'active' : ''}`}
+                className={`Controls__anchor ${
+                  opened ? 'active' : sortFieldsChanged ? 'active outlined' : ''
+                }`}
               >
                 <Icon
-                  className={`Controls__icon ${opened ? 'active' : ''}`}
+                  className={`Controls__icon ${
+                    opened || sortFieldsChanged ? 'active' : ''
+                  }`}
                   name='sort-outside'
                 />
               </div>

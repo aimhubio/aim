@@ -1,12 +1,6 @@
 import React from 'react';
 import { useRouteMatch, useHistory } from 'react-router-dom';
 
-import { HighlightEnum } from 'components/HighlightModesPopover/HighlightModesPopover';
-
-import { RowHeightSize } from 'config/table/tableConfigs';
-import { ResizeModeEnum } from 'config/enums/tableEnums';
-import { DensityOptions } from 'config/enums/densityEnum';
-
 import usePanelResize from 'hooks/resize/usePanelResize';
 import useModel from 'hooks/model/useModel';
 
@@ -16,33 +10,12 @@ import * as analytics from 'services/analytics';
 
 import { ITableRef } from 'types/components/Table/Table';
 import { IChartPanelRef } from 'types/components/ChartPanel/ChartPanel';
-import { IAxesScaleState } from 'types/components/AxesScalePopover/AxesScalePopover';
 import {
-  IAggregatedData,
-  IAggregationConfig,
-  IAlignmentConfig,
   IAppData,
-  IChartTitleData,
-  IPanelTooltip,
-  IChartZoom,
-  IFocusedState,
-  IGroupingSelectOption,
   IMetricAppModelState,
-  IMetricTableRowData,
 } from 'types/services/models/metrics/metricsAppModel';
-import { ILine } from 'types/components/LineChart/LineChart';
-import { ITableColumn } from 'types/pages/metrics/components/TableColumns/TableColumns';
-import {
-  IProjectParamsMetrics,
-  IProjectsModelState,
-} from 'types/services/models/projects/projectsModel';
-import {
-  IGroupingConfig,
-  ISelectConfig,
-} from 'types/services/models/explorer/createAppModel';
+import { IProjectsModelState } from 'types/services/models/projects/projectsModel';
 
-import { SmoothingAlgorithmEnum } from 'utils/smoothingData';
-import { CurveEnum } from 'utils/d3';
 import setComponentRefs from 'utils/app/setComponentRefs';
 import getStateFromUrl from 'utils/getStateFromUrl';
 
@@ -125,7 +98,6 @@ function MetricsContainer(): React.FunctionComponentElement<React.ReactNode> {
       }
     };
   }, []);
-
   return (
     <Metrics
       // refs
@@ -136,51 +108,38 @@ function MetricsContainer(): React.FunctionComponentElement<React.ReactNode> {
       wrapperElemRef={wrapperElemRef}
       resizeElemRef={resizeElemRef}
       // grouping options
-      groupingData={metricsData?.config?.grouping as IGroupingConfig}
+      groupingData={metricsData?.config?.grouping!}
       // chart options
       panelResizing={panelResizing}
-      lineChartData={metricsData?.lineChartData as ILine[][]}
-      chartTitleData={metricsData?.chartTitleData as IChartTitleData}
-      ignoreOutliers={metricsData?.config?.chart?.ignoreOutliers as boolean}
-      tableData={metricsData?.tableData as IMetricTableRowData[]}
-      tableColumns={metricsData?.tableColumns as ITableColumn[]}
-      aggregatedData={metricsData?.aggregatedData as IAggregatedData[]}
-      zoom={metricsData?.config?.chart?.zoom as IChartZoom}
-      curveInterpolation={
-        metricsData?.config?.chart.curveInterpolation as CurveEnum
-      }
-      highlightMode={metricsData?.config?.chart.highlightMode as HighlightEnum}
-      axesScaleType={
-        metricsData?.config?.chart.axesScaleType as IAxesScaleState
-      }
-      smoothingAlgorithm={
-        metricsData?.config?.chart.smoothingAlgorithm as SmoothingAlgorithmEnum
-      }
-      smoothingFactor={metricsData?.config?.chart?.smoothingFactor as number}
-      focusedState={metricsData?.config?.chart?.focusedState as IFocusedState}
-      notifyData={metricsData?.notifyData as IMetricAppModelState['notifyData']}
-      tooltip={metricsData?.config?.chart?.tooltip as IPanelTooltip}
-      aggregationConfig={
-        metricsData?.config?.chart?.aggregationConfig as IAggregationConfig
-      }
-      alignmentConfig={
-        metricsData?.config?.chart?.alignmentConfig as IAlignmentConfig
-      }
-      densityType={metricsData?.config?.chart.densityType as DensityOptions}
-      selectedMetricsData={metricsData?.config?.select as ISelectConfig}
-      tableRowHeight={metricsData?.config?.table?.rowHeight as RowHeightSize}
+      lineChartData={metricsData?.lineChartData!}
+      chartTitleData={metricsData?.chartTitleData!}
+      ignoreOutliers={metricsData?.config?.chart?.ignoreOutliers!}
+      tableData={metricsData?.tableData!}
+      tableColumns={metricsData?.tableColumns!}
+      aggregatedData={metricsData?.aggregatedData!}
+      zoom={metricsData?.config?.chart?.zoom!}
+      curveInterpolation={metricsData?.config?.chart.curveInterpolation!}
+      highlightMode={metricsData?.config?.chart.highlightMode!}
+      axesScaleType={metricsData?.config?.chart.axesScaleType!}
+      smoothingAlgorithm={metricsData?.config?.chart.smoothingAlgorithm!}
+      smoothingFactor={metricsData?.config?.chart?.smoothingFactor!}
+      focusedState={metricsData?.config?.chart?.focusedState!}
+      notifyData={metricsData?.notifyData!}
+      tooltip={metricsData?.config?.chart?.tooltip!}
+      aggregationConfig={metricsData?.config?.chart?.aggregationConfig!}
+      alignmentConfig={metricsData?.config?.chart?.alignmentConfig!}
+      densityType={metricsData?.config?.chart.densityType!}
+      selectedMetricsData={metricsData?.config?.select!}
+      tableRowHeight={metricsData?.config?.table?.rowHeight!}
       sortFields={metricsData?.config?.table?.sortFields!}
       hiddenMetrics={metricsData?.config?.table?.hiddenMetrics!}
+      hideSystemMetrics={metricsData?.config?.table.hideSystemMetrics!}
       hiddenColumns={metricsData?.config?.table?.hiddenColumns!}
       selectedRows={metricsData?.selectedRows!}
-      groupingSelectOptions={
-        metricsData?.groupingSelectOptions as IGroupingSelectOption[]
-      }
-      projectsDataMetrics={
-        projectsData?.metrics as IProjectParamsMetrics['metric']
-      }
-      requestIsPending={metricsData?.requestIsPending as boolean}
-      resizeMode={metricsData?.config?.table?.resizeMode as ResizeModeEnum}
+      groupingSelectOptions={metricsData?.groupingSelectOptions!}
+      projectsDataMetrics={projectsData?.metrics!}
+      requestIsPending={metricsData?.requestIsPending!}
+      resizeMode={metricsData?.config?.table?.resizeMode!}
       columnsWidths={metricsData?.config?.table?.columnsWidths}
       // methods
       onChangeTooltip={metricAppModel.onChangeTooltip}

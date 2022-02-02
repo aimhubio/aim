@@ -7,7 +7,7 @@ import { IPoint } from 'components/ScatterPlot';
 
 import COLORS from 'config/colors/colors';
 import DASH_ARRAYS from 'config/dash-arrays/dashArrays';
-import { ResizeModeEnum } from 'config/enums/tableEnums';
+import { HideColumnsEnum, ResizeModeEnum } from 'config/enums/tableEnums';
 import { AlignmentNotificationsEnum } from 'config/notification-messages/notificationMessages';
 import { RowHeightSize } from 'config/table/tableConfigs';
 import { DensityOptions } from 'config/enums/densityEnum';
@@ -231,6 +231,7 @@ function createAppModel(appConfig: IAppInitialConfig) {
             sortFields: [],
             hiddenMetrics: [],
             hiddenColumns: [],
+            hideSystemMetrics: undefined,
             columnsWidths: {},
             columnsOrder: {
               left: [],
@@ -340,6 +341,7 @@ function createAppModel(appConfig: IAppInitialConfig) {
           config.table = {
             resizeMode: ResizeModeEnum.Resizable,
             rowHeight: RowHeightSize.md,
+            hideSystemMetrics: true,
             sortFields: [],
             hiddenMetrics: [],
             hiddenColumns: [],
@@ -2074,7 +2076,6 @@ function createAppModel(appConfig: IAppInitialConfig) {
       default:
         return {};
     }
-
     function getRunsModelMethods() {
       let runsRequestRef: {
         call: (
@@ -2091,6 +2092,7 @@ function createAppModel(appConfig: IAppInitialConfig) {
         abort: () => void;
       };
       let liveUpdateInstance: LiveUpdateService | null;
+      let updateTableTimeoutId: number;
 
       function initialize(appId: string = ''): {
         call: () => Promise<void>;
@@ -2220,7 +2222,7 @@ function createAppModel(appConfig: IAppInitialConfig) {
                 model.getState()?.config?.table.columnsOrder!,
                 model.getState()?.config?.table.hiddenColumns!,
               );
-
+              updateTableData(tableData, tableColumns, configData);
               model.setState({
                 data,
                 selectedRows: shouldResetSelectedRows
@@ -2241,14 +2243,6 @@ function createAppModel(appConfig: IAppInitialConfig) {
                   },
                 },
               });
-              setTimeout(() => {
-                const tableRef: any = model.getState()?.refs?.tableRef;
-                tableRef.current?.updateData({
-                  newData: tableData.rows,
-                  newColumns: tableColumns,
-                  hiddenColumns: configData.table.hiddenColumns!,
-                });
-              }, 0);
             } catch (ex: Error | any) {
               if (ex.name === 'AbortError') {
                 // Abort Error
@@ -2280,12 +2274,7 @@ function createAppModel(appConfig: IAppInitialConfig) {
           configData?.table?.columnsOrder!,
           configData?.table?.hiddenColumns!,
         );
-        const tableRef: any = model.getState()?.refs?.tableRef;
-        tableRef.current?.updateData({
-          newData: tableData.rows,
-          newColumns: tableColumns,
-          hiddenColumns: configData?.table?.hiddenColumns!,
-        });
+        updateTableData(tableData, tableColumns, configData);
         model.setState({
           config: configData,
           data,
@@ -2294,6 +2283,28 @@ function createAppModel(appConfig: IAppInitialConfig) {
           sameValueColumns: tableData.sameValueColumns,
           selectedRows,
         });
+      }
+
+      function updateTableData(
+        tableData: {
+          rows: any;
+          sameValueColumns: string[];
+        },
+        tableColumns: ITableColumn[],
+        configData: IAppModelConfig | any,
+      ): void {
+        if (updateTableTimeoutId) {
+          clearTimeout(updateTableTimeoutId);
+        }
+
+        updateTableTimeoutId = window.setTimeout(() => {
+          const tableRef: any = model.getState()?.refs?.tableRef;
+          tableRef.current?.updateData({
+            newData: tableData.rows,
+            newColumns: tableColumns,
+            hiddenColumns: configData.table.hiddenColumns!,
+          });
+        }, 0);
       }
 
       function prepareModelStateToCall(isInitial: boolean): IRunsAppModelState {
@@ -2356,7 +2367,7 @@ function createAppModel(appConfig: IAppInitialConfig) {
         const processedData = groupData(runs);
         const uniqParams = _.uniq(params);
         const mappedData =
-          data.reduce((acc: any, item: any) => {
+          data?.reduce((acc: any, item: any) => {
             acc[item.hash] = { runHash: item.hash, ...item.props };
             return acc;
           }, {}) || {};
@@ -2945,6 +2956,7 @@ function createAppModel(appConfig: IAppInitialConfig) {
         initialize,
         getRunsData,
         abortRequest,
+        updateModelData,
         getLastRunsData,
         onExportTableData,
         onNotificationDelete: onModelNotificationDelete,

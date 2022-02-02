@@ -127,6 +127,7 @@ function getConfig(): IImagesExploreAppConfig {
       sortFields: [],
       hiddenMetrics: [],
       hiddenColumns: [],
+      hideSystemMetrics: undefined,
       columnsWidths: {},
       columnsOrder: {
         left: [],
@@ -462,7 +463,7 @@ function processData(data: any[]): {
   const uniqHighLevelParams = _.uniq(highLevelParams);
   const uniqContexts = _.uniq(contexts);
   const mappedData =
-    data.reduce((acc: any, item: any) => {
+    data?.reduce((acc: any, item: any) => {
       acc[item.hash] = { runHash: item.hash, ...item.props };
       return acc;
     }, {}) || {};

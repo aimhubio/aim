@@ -105,6 +105,7 @@ export interface ITableConfig {
   sortFields?: SortField[];
   hiddenMetrics?: string[];
   hiddenColumns?: string[];
+  hideSystemMetrics?: boolean;
   columnsWidths?: { [key: string]: number };
   columnsOrder?: {
     left: string[];

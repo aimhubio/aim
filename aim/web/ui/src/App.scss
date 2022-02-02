@@ -3,6 +3,9 @@
 @import 'src/styles/components/_inputs.scss';
 @import 'src/styles/_global.scss';
 
+#root {
+  background-color: #ffff;
+}
 .mainContainer {
   width: calc(100% - 75px);
   height: 100%;
