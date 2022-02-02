@@ -1,4 +1,9 @@
+@use 'src/styles/abstracts' as *;
+
 .HideRowsPopover {
   padding: 0.5rem;
   width: 16.5rem;
+  &__active {
+    background-color: $cuddle-20 !important;
+  }
 }

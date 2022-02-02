@@ -8,12 +8,11 @@ import { Button, Icon, Text } from 'components/kit';
 import { IconName } from 'components/kit/Icon';
 import ControlPopover from 'components/ControlPopover/ControlPopover';
 
-import { HideColumnsEnum } from 'config/enums/tableEnums';
 import { TABLE_DEFAULT_CONFIG } from 'config/table/tableConfigs';
-
-import { AppNameEnum } from 'services/models/explorer';
+import { HideColumnsEnum } from 'config/enums/tableEnums';
 
 import ColumnItem from './ColumnItem/ColumnItem';
+import { IManageColumnsPopoverProps } from './ManageColumns';
 
 import './ManageColumnsPopover.scss';
 
@@ -37,12 +36,12 @@ const initialData = {
 function ManageColumnsPopover({
   columnsData,
   hiddenColumns,
+  hideSystemMetrics,
+  appName,
   onTableDiffShow,
   onManageColumns,
   onColumnsVisibilityChange,
-  hideSystemMetrics,
-  appName,
-}: any) {
+}: IManageColumnsPopoverProps) {
   const [state, setState] = React.useState<any>(initialData);
   const [searchKey, setSearchKey] = React.useState<string>('');
 
@@ -163,10 +162,10 @@ function ManageColumnsPopover({
 
   const manageColumnsChanged: boolean = React.useMemo(() => {
     return (
-      hiddenColumns.length !==
-      TABLE_DEFAULT_CONFIG[appName as AppNameEnum]?.hiddenColumns?.length
+      hiddenColumns?.length !==
+      TABLE_DEFAULT_CONFIG[appName]?.hiddenColumns?.length
     );
-  }, [hiddenColumns.length]);
+  }, [hiddenColumns]);
 
   return (
     <ControlPopover
@@ -184,7 +183,9 @@ function ManageColumnsPopover({
           color='secondary'
           // type='text'
           onClick={onAnchorClick}
-          className={`ManageColumns_trigger ${opened ? 'opened' : ''}`}
+          className={`ManageColumns_trigger ${
+            opened || manageColumnsChanged ? 'opened' : ''
+          }`}
         >
           <Icon name='manage-column' />
           <Text size={14} tint={100}>
@@ -217,11 +218,11 @@ function ManageColumnsPopover({
                           isHidden={!!hiddenColumns?.includes(data)}
                           onClick={() =>
                             onColumnsVisibilityChange(
-                              hiddenColumns.includes(data)
-                                ? hiddenColumns.filter(
+                              hiddenColumns?.includes(data)
+                                ? hiddenColumns?.filter(
                                     (col: string) => col !== data,
                                   )
-                                : hiddenColumns.concat([data]),
+                                : hiddenColumns?.concat([data]),
                             )
                           }
                         />
@@ -268,11 +269,11 @@ function ManageColumnsPopover({
                           isHidden={!!hiddenColumns?.includes(data)}
                           onClick={() =>
                             onColumnsVisibilityChange(
-                              hiddenColumns.includes(data)
-                                ? hiddenColumns.filter(
+                              hiddenColumns?.includes(data)
+                                ? hiddenColumns?.filter(
                                     (col: string) => col !== data,
                                   )
-                                : hiddenColumns.concat([data]),
+                                : hiddenColumns?.concat([data]),
                             )
                           }
                         />

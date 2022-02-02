@@ -4,6 +4,8 @@ import { CircularProgress } from '@material-ui/core';
 
 import Table from 'components/Table/Table';
 
+import { AppNameEnum } from 'services/models/explorer';
+
 import { IRunsTableProps } from 'types/pages/runs/Runs';
 
 function RunsTable({
@@ -55,6 +57,7 @@ function RunsTable({
           infiniteLoadHandler={handleInfiniteLoad}
           showResizeContainerActionBar={false}
           emptyText={'No runs found'}
+          appName={AppNameEnum.RUNS}
           ref={tableRef}
           data={data}
           columns={columns}

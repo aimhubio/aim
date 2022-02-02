@@ -1800,7 +1800,7 @@ function onColumnsOrderChange(columnsOrder: any) {
   }
 }
 
-function onColumnsVisibilityChange(hiddenColumns: string[]) {
+function onColumnsVisibilityChange(hiddenColumns: string[] | any) {
   const configData: IImagesExploreAppConfig | undefined =
     model.getState()?.config;
   const columnsData = model.getState()!.tableColumns!;

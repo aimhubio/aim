@@ -22,7 +22,7 @@ export interface IRunsTableProps {
   tableRowHeight: number;
   onExportTableData: () => void;
   onManageColumns: () => void;
-  onColumnsVisibilityChange: (hiddenColumns: string[]) => void;
+  onColumnsVisibilityChange: (hiddenColumns: string[] | string) => void;
   onTableDiffShow: () => void;
   onRowHeightChange: () => void;
   getLastRunsData: (row: any) => void;

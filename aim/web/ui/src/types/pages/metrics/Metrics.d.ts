@@ -118,7 +118,7 @@ export interface IMetricProps extends Partial<RouteChildrenProps> {
   onSortChange?: (field: string, value?: 'asc' | 'desc' | 'none') => void;
   onMetricVisibilityChange: (metricKeys: string[]) => void;
   onColumnsOrderChange: (order: any) => void;
-  onColumnsVisibilityChange: (hiddenColumns: string[]) => void;
+  onColumnsVisibilityChange: (hiddenColumns: string[] | any) => void;
   onTableDiffShow: () => void;
   onTableResizeModeChange: (mode: ResizeModeEnum) => void;
   updateColumnsWidths: (key: string, width: number, isReset: boolean) => void;

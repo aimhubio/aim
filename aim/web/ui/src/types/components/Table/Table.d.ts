@@ -16,8 +16,9 @@ export interface ITableProps {
   height?: string;
   rowHeight?: RowHeight;
   estimatedRowHeight?: number;
-  onManageColumns?: (order: any) => void;
-  onColumnsVisibilityChange?: (hiddenColumns: string[]) => void;
+  onManageColumns?: (order: IColumnsOrderData) => void;
+  onColumnsVisibilityChange?: (hiddenColumns: string[] | string) => void;
+  hiddenChartRows?: boolean;
   onTableDiffShow?: () => void;
   onSort?: (field: string, value: 'asc' | 'desc' | 'none') => void;
   onSortReset?: () => void;
@@ -72,4 +73,10 @@ export interface ITableRef {
   setHoveredRow: (rowKey: string) => void;
   setActiveRow: (rowKey: string) => void;
   scrollToRow: (rowKey: string) => void;
+}
+
+export interface IColumnsOrderData {
+  left: string[];
+  middle: string[];
+  right: string[];
 }

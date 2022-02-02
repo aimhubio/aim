@@ -63,6 +63,8 @@ function Metrics(
     props.onZoomChange,
   ]);
 
+  console.log(props);
+
   return (
     <div ref={props.wrapperElemRef} className='Metrics__container'>
       <section className='Metrics__section'>
@@ -220,6 +222,7 @@ function Metrics(
                   columnsWidths={props.columnsWidths}
                   selectedRows={props.selectedRows}
                   hideSystemMetrics={props.hideSystemMetrics}
+                  hiddenChartRows={props.lineChartData?.length === 0}
                   // Table actions
                   onSort={props.onSortChange}
                   onSortReset={props.onSortReset}
