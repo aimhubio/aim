@@ -33,6 +33,7 @@ export interface ILine {
 export interface ILineChartProps {
   index: number;
   data: ILine[];
+  nameKey?: string;
   aggregatedData?: IAggregatedData[];
   alignmentConfig?: IAlignmentConfig;
   ignoreOutliers: boolean;
@@ -44,6 +45,7 @@ export interface ILineChartProps {
   chartTitle?: IChartTitle;
   zoom?: IChartZoom;
   onZoomChange?: (zoom: Partial<IChartZoom>) => void;
+  drawAttributes?: boolean;
 }
 
 export interface IUpdateFocusedChartArgs {

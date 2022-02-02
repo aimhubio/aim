@@ -230,6 +230,8 @@ function drawAxes(args: IDrawAxesArgs): void {
   );
   xTickWidth = xTickWidth > 120 ? 120 : xTickWidth < 0 ? 0 : xTickWidth;
 
+  axesRef.current.xAxis.selectAll('.tick text').attr('display', 'none');
+
   axesRef.current.xAxis
     .selectAll('.tick')
     .append('foreignObject')
@@ -240,7 +242,18 @@ function drawAxes(args: IDrawAxesArgs): void {
     .html((d: string, i: number, nodes: NodeList) => {
       const text = nodes[i]?.parentNode as SVGElement;
       const textContent = text?.textContent || d;
-      return `<div style='width: ${xTickWidth}px' class='xAxisTick' title='${textContent}'>${textContent}</div>`;
+      return `
+        <div title='${textContent}' 
+          style='
+            width: ${xTickWidth}px;
+            text-align: center;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            color: #414b6d;
+          '>${textContent}
+        </div>
+      `;
     });
 
   axesRef.current.yAxis = axesNodeRef.current
@@ -253,6 +266,8 @@ function drawAxes(args: IDrawAxesArgs): void {
 
   const yTickWidth = margin.left - 10;
 
+  axesRef.current.yAxis.selectAll('.tick text').attr('display', 'none');
+
   axesRef.current.yAxis
     .selectAll('.tick')
     .append('foreignObject')
@@ -263,7 +278,18 @@ function drawAxes(args: IDrawAxesArgs): void {
     .html((d: string, i: number, nodes: NodeList) => {
       const text = nodes[i]?.parentNode as SVGElement;
       const textContent = text?.textContent || d;
-      return `<div style='width: ${50}px' class='yAxisTick' title='${textContent}'>${textContent}</div>`;
+      return `
+        <div title='${textContent}' 
+          style='
+            width: 50px;
+            text-align: right;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            color: #414b6d;
+          '>${textContent}
+        </div>
+      `;
     });
 
   svgNodeRef.current

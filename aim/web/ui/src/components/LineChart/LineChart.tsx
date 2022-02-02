@@ -28,7 +28,8 @@ const LineChart = React.forwardRef(function LineChart(
 ): React.FunctionComponentElement<React.ReactNode> {
   const {
     data,
-    index,
+    index = 0,
+    nameKey = '',
     aggregatedData,
     aggregationConfig,
     syncHoverState,
@@ -40,6 +41,7 @@ const LineChart = React.forwardRef(function LineChart(
     chartTitle,
     zoom,
     onZoomChange,
+    drawAttributes = true,
   } = props;
 
   // boxes
@@ -89,6 +91,7 @@ const LineChart = React.forwardRef(function LineChart(
 
     drawArea({
       index,
+      nameKey,
       visBoxRef,
       plotBoxRef,
       parentRef,
@@ -136,6 +139,7 @@ const LineChart = React.forwardRef(function LineChart(
     drawLines({
       index,
       data: processedData,
+      nameKey,
       linesNodeRef,
       linesRef,
       curveInterpolation,
@@ -146,27 +150,30 @@ const LineChart = React.forwardRef(function LineChart(
       aggregatedData,
     });
 
-    drawHoverAttributes({
-      index,
-      data: processedData,
-      axesScaleType,
-      highlightMode,
-      syncHoverState,
-      visAreaRef,
-      attributesRef,
-      plotBoxRef,
-      visBoxRef,
-      svgNodeRef,
-      bgRectNodeRef,
-      attributesNodeRef,
-      xAxisLabelNodeRef,
-      yAxisLabelNodeRef,
-      linesNodeRef,
-      highlightedNodeRef,
-      aggregationConfig,
-      humanizerConfigRef,
-      alignmentConfig,
-    });
+    if (drawAttributes) {
+      drawHoverAttributes({
+        index,
+        nameKey,
+        data: processedData,
+        axesScaleType,
+        highlightMode,
+        syncHoverState,
+        visAreaRef,
+        attributesRef,
+        plotBoxRef,
+        visBoxRef,
+        svgNodeRef,
+        bgRectNodeRef,
+        attributesNodeRef,
+        xAxisLabelNodeRef,
+        yAxisLabelNodeRef,
+        linesNodeRef,
+        highlightedNodeRef,
+        aggregationConfig,
+        humanizerConfigRef,
+        alignmentConfig,
+      });
+    }
 
     drawBrush({
       index,

@@ -14,6 +14,10 @@
       margin-bottom: 0;
     }
   }
+  &__Divider {
+    margin: $space-xs 0;
+    width: 100%;
+  }
 }
 
 .Controls__icon {

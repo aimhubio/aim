@@ -21,6 +21,7 @@ import { getCoordinates, CircleEnum, ScaleEnum } from './';
 const drawParallelHoverAttributes = ({
   dimensions,
   index,
+  nameKey,
   attributesNodeRef,
   attributesRef,
   linesRef,
@@ -333,7 +334,7 @@ const drawParallelHoverAttributes = ({
       .attr('class', 'ParallelCircle')
       .attr('id', (circle: IParallelNearestCircle) => `Circle-${circle.key}`)
       .attr('data-key', (circle: IParallelNearestCircle) => circle.key)
-      .attr('clip-path', 'url(#circles-rect-clip-' + index + ')')
+      .attr('clip-path', `url(#${nameKey}-circles-rect-clip-${index})`)
       .attr('cx', (circle: IParallelNearestCircle) => circle.x)
       .attr('cy', (circle: IParallelNearestCircle) => circle.y)
       .attr('r', CircleEnum.Radius)

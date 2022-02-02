@@ -129,6 +129,9 @@ function Metrics(
                   resizeMode={props.resizeMode}
                   controls={
                     <Controls
+                      chartType={ChartTypeEnum.LineChart}
+                      chartProps={chartProps}
+                      data={props.lineChartData}
                       selectOptions={props.groupingSelectOptions}
                       tooltip={props.tooltip}
                       smoothingAlgorithm={props.smoothingAlgorithm}

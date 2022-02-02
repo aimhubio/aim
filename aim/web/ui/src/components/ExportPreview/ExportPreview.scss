@@ -1,0 +1,54 @@
+@use 'src/styles/abstracts' as *;
+
+.ExportPreview {
+  &__modal {
+    & .Modal__header {
+      justify-content: center;
+    }
+  }
+  &__dimension {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    &__width {
+      margin: 0 10px;
+      display: inline-flex;
+      align-items: center;
+      &__slider {
+        width: 150px;
+        height: 20px;
+        margin: 0 10px;
+      }
+      &__input {
+        & > .MuiInputBase-root {
+          font-size: 0.75rem;
+        }
+      }
+    }
+    &__height {
+      margin: 0 10px;
+      display: inline-flex;
+      align-items: center;
+      &__slider {
+        width: 150px;
+        height: 20px;
+        margin: 0 10px;
+      }
+      &__input {
+        & > .MuiInputBase-root {
+          font-size: 0.75rem;
+        }
+      }
+    }
+  }
+  &__container {
+    width: 1024px;
+    height: 640px;
+    overflow: auto;
+    &__grid {
+      height: 100%;
+      margin: 0;
+    }
+  }
+}
+  

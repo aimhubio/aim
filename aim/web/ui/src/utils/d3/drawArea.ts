@@ -9,7 +9,8 @@ import { CircleEnum } from './index';
 
 function drawArea(args: IDrawAreaArgs): void {
   const {
-    index = 0,
+    index,
+    nameKey,
     parentRef,
     visAreaRef,
     svgNodeRef,
@@ -62,7 +63,7 @@ function drawArea(args: IDrawAreaArgs): void {
 
   svgNodeRef.current = visArea
     .append('svg')
-    .attr('id', 'svg-area')
+    .attr('id', `${nameKey}-svg-area-${index}`)
     .attr('width', `${width}px`)
     .attr('height', `${height}px`)
     .attr('pointer-events', 'all')
@@ -87,7 +88,7 @@ function drawArea(args: IDrawAreaArgs): void {
 
   linesNodeRef.current
     .append('clipPath')
-    .attr('id', 'lines-rect-clip-' + index)
+    .attr('id', `${nameKey}-lines-rect-clip-${index}`)
     .append('rect')
     .attr('x', 0)
     .attr('y', 0)
@@ -100,7 +101,7 @@ function drawArea(args: IDrawAreaArgs): void {
 
   attributesNodeRef.current
     .append('clipPath')
-    .attr('id', 'circles-rect-clip-' + index)
+    .attr('id', `${nameKey}-circles-rect-clip-${index}`)
     .append('rect')
     .attr('x', -10)
     .attr('y', -10)
@@ -149,7 +150,7 @@ function drawArea(args: IDrawAreaArgs): void {
           <div 
             style='
               width: ${titleHeight}px; 
-              height: ${titleHeight}px;
+              height: ${titleHeight - 4}px;
               display: flex; 
               align-items: center;
               justify-content: center;

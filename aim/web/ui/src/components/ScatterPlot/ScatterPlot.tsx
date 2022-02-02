@@ -14,6 +14,7 @@ import {
   getAxisScale,
   drawHoverAttributes,
   drawScatterTrendline,
+  drawPoints,
 } from 'utils/d3';
 
 import { Text } from '../kit';
@@ -27,11 +28,13 @@ const ScatterPlot = React.forwardRef(function ScatterPlot(
   ref,
 ): React.FunctionComponentElement<React.ReactNode> {
   const {
+    index = 0,
+    nameKey = '',
     data: { dimensions, data },
     syncHoverState,
-    index = 0,
     chartTitle,
     trendlineOptions,
+    drawAttributes = true,
   } = props;
 
   // boxes
@@ -65,7 +68,7 @@ const ScatterPlot = React.forwardRef(function ScatterPlot(
 
   // methods and values refs
   const axesRef = React.useRef({});
-  // const linesRef = React.useRef({});
+  const linesRef = React.useRef({});
   const attributesRef = React.useRef<IAttributesRef>({});
   const humanizerConfigRef = React.useRef({});
   const rafIDRef = React.useRef<number>();
@@ -74,6 +77,7 @@ const ScatterPlot = React.forwardRef(function ScatterPlot(
   function draw() {
     drawArea({
       index,
+      nameKey,
       visBoxRef,
       plotBoxRef,
       parentRef,
@@ -122,39 +126,42 @@ const ScatterPlot = React.forwardRef(function ScatterPlot(
       drawBgTickLines: { y: true, x: true },
     });
 
-    // TODO check necessity of drawPoints function
-    // drawPoints({
-    //   index,
-    //   data,
-    //   xScale,
-    //   yScale,
-    //   highlightMode,
-    //   pointsRef: linesRef,
-    //   pointsNodeRef: linesNodeRef,
-    // });
-
-    drawHoverAttributes({
+    drawPoints({
       index,
       data,
-      axesScaleType,
-      syncHoverState,
-      visAreaRef,
-      attributesRef,
-      plotBoxRef,
-      visBoxRef,
-      svgNodeRef,
-      bgRectNodeRef,
-      attributesNodeRef,
-      linesNodeRef,
-      highlightedNodeRef,
-      humanizerConfigRef,
-      drawAxisLines: { x: false, y: false },
-      drawAxisLabels: { x: false, y: false },
+      nameKey,
+      xScale,
+      yScale,
+      pointsRef: linesRef,
+      pointsNodeRef: linesNodeRef,
     });
+
+    if (drawAttributes) {
+      drawHoverAttributes({
+        index,
+        nameKey,
+        data,
+        axesScaleType,
+        syncHoverState,
+        visAreaRef,
+        attributesRef,
+        plotBoxRef,
+        visBoxRef,
+        svgNodeRef,
+        bgRectNodeRef,
+        attributesNodeRef,
+        linesNodeRef,
+        highlightedNodeRef,
+        humanizerConfigRef,
+        drawAxisLines: { x: false, y: false },
+        drawAxisLabels: { x: false, y: false },
+      });
+    }
 
     if (trendlineOptions.isApplied) {
       drawScatterTrendline({
         index,
+        nameKey,
         data,
         type: trendlineOptions.type,
         bandwidth: trendlineOptions.bandwidth,
@@ -170,6 +177,7 @@ const ScatterPlot = React.forwardRef(function ScatterPlot(
     if (yDimension.domainData[0] === '-' || xDimension.domainData[0] === '-') {
       drawArea({
         index,
+        nameKey,
         visBoxRef,
         plotBoxRef,
         parentRef,

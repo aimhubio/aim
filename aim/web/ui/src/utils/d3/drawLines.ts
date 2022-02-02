@@ -17,6 +17,7 @@ import { CurveEnum } from './';
 function drawLines(args: IDrawLinesArgs): void {
   const {
     index,
+    nameKey,
     xScale,
     yScale,
     linesRef,
@@ -47,7 +48,7 @@ function drawLines(args: IDrawLinesArgs): void {
       .join('path')
       .attr('class', `Line ${aggregationConfig?.isApplied ? 'aggregated' : ''}`)
       .attr('id', (line: ILine) => `Line-${line.key}`)
-      .attr('clip-path', `url(#lines-rect-clip-${index})`)
+      .attr('clip-path', `url(#${nameKey}-lines-rect-clip-${index})`)
       .attr('groupKey', (line: ILine) => line.groupKey)
       .attr(
         'data-selector',
@@ -83,7 +84,7 @@ function drawLines(args: IDrawLinesArgs): void {
       .join('path')
       .attr('class', 'AggrArea')
       .attr('id', (aggrData: IAggregatedData) => `AggrArea-${aggrData.key}`)
-      .attr('clip-path', `url(#lines-rect-clip-${index})`)
+      .attr('clip-path', `url(#${nameKey}-lines-rect-clip-${index})`)
       .attr('fill', (aggrData: IAggregatedData) => aggrData.color)
       .attr('fill-opacity', '0.3')
       .data(
@@ -118,7 +119,7 @@ function drawLines(args: IDrawLinesArgs): void {
       .join('path')
       .attr('class', 'AggrLine')
       .attr('id', (aggrData: IAggregatedData) => `AggrLine-${aggrData.key}`)
-      .attr('clip-path', `url(#lines-rect-clip-${index})`)
+      .attr('clip-path', `url(#${nameKey}-lines-rect-clip-${index})`)
       .style('fill', 'none')
       .style('stroke', (aggrData: IAggregatedData) => aggrData.color)
       .style(

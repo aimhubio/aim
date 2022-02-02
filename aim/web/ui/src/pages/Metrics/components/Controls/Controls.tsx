@@ -1,6 +1,6 @@
 import React from 'react';
 
-import { Tooltip } from '@material-ui/core';
+import { Divider, Tooltip } from '@material-ui/core';
 
 import AggregationPopup from 'components/AggregationPopover/AggregationPopover';
 import SmootheningPopup from 'components/SmoothingPopover/SmoothingPopover';
@@ -12,6 +12,8 @@ import AxesScalePopover from 'components/AxesScalePopover/AxesScalePopover';
 import AlignmentPopover from 'components/AlignmentPopover/AlignmentPopover';
 import TooltipContentPopover from 'components/TooltipContentPopover/TooltipContentPopover';
 import { Icon } from 'components/kit';
+import ExportPreview from 'components/ExportPreview';
+import ChartGrid from 'components/ChartPanel/ChartGrid';
 
 import { CONTROLS_DEFAULT_CONFIG } from 'config/controls/controlsDefaultConfig';
 
@@ -22,6 +24,8 @@ import './Controls.scss';
 function Controls(
   props: IControlProps,
 ): React.FunctionComponentElement<React.ReactNode> {
+  const [openExportModal, setOpenExportModal] = React.useState<boolean>(false);
+
   const highlightModeChanged: boolean = React.useMemo(() => {
     return (
       props.highlightMode !== CONTROLS_DEFAULT_CONFIG.metrics.highlightMode
@@ -70,6 +74,10 @@ function Controls(
         CONTROLS_DEFAULT_CONFIG.metrics.tooltip.selectedParams.length
     );
   }, [props.tooltip]);
+
+  const onToggleExportPreview = React.useCallback((): void => {
+    setOpenExportModal((state) => !state);
+  }, [setOpenExportModal]);
 
   return (
     <div className='Controls__container ScrollBar__hidden'>
@@ -383,6 +391,25 @@ function Controls(
           }
         />
       </div>
+      <Divider className='Controls__container__Divider' />
+      <Tooltip title={'Export Chart'}>
+        <div className={'Controls__anchor'} onClick={onToggleExportPreview}>
+          <Icon className='Controls__icon' name='download' />
+        </div>
+      </Tooltip>
+      <ExportPreview
+        withDynamicDimensions
+        openModal={openExportModal}
+        onToggleExportPreview={onToggleExportPreview}
+      >
+        <ChartGrid
+          nameKey='exportPreview'
+          data={props.data}
+          chartProps={props.chartProps}
+          chartType={props.chartType}
+          componentProps={{ drawAttributes: false }}
+        />
+      </ExportPreview>
     </div>
   );
 }

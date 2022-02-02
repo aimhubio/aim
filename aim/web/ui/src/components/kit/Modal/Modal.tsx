@@ -19,7 +19,7 @@ const ModalType: any = {
 };
 
 function Modal({
-  opened,
+  open,
   onClose,
   onOk,
   title,
@@ -35,7 +35,7 @@ function Modal({
 }: IModalProps): React.FunctionComponentElement<React.ReactNode> {
   return (
     <Dialog
-      open={opened}
+      open={open}
       onClose={onClose}
       aria-labelledby='form-dialog-title'
       maxWidth={maxWidth}

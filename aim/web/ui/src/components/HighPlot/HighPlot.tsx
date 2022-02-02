@@ -21,12 +21,14 @@ import './HighPlot.scss';
 
 const HighPlot = React.forwardRef(function HighPlot(
   {
-    index,
+    index = 0,
+    nameKey = '',
     curveInterpolation,
     syncHoverState,
     data,
     isVisibleColorIndicator,
     chartTitle,
+    drawAttributes = true,
   }: IHighPlotProps,
   ref,
 ): React.FunctionComponentElement<React.ReactNode> {
@@ -66,6 +68,7 @@ const HighPlot = React.forwardRef(function HighPlot(
   const draw = React.useCallback((): void => {
     drawParallelArea({
       index,
+      nameKey,
       visBoxRef,
       plotBoxRef,
       parentRef,
@@ -94,6 +97,8 @@ const HighPlot = React.forwardRef(function HighPlot(
 
     if (attributesRef?.current.xScale && attributesRef.current.yScale) {
       drawParallelLines({
+        index,
+        nameKey,
         linesNodeRef,
         attributesRef,
         attributesNodeRef,
@@ -106,31 +111,34 @@ const HighPlot = React.forwardRef(function HighPlot(
 
       linesRef.current.data = data.data;
 
-      drawParallelHoverAttributes({
-        dimensions: data.dimensions,
-        index,
-        visAreaRef,
-        linesRef,
-        attributesRef,
-        visBoxRef,
-        bgRectNodeRef,
-        attributesNodeRef,
-        linesNodeRef,
-        highlightedNodeRef,
-        isVisibleColorIndicator,
-        axesNodeRef,
-        syncHoverState,
-      });
+      if (drawAttributes) {
+        drawParallelHoverAttributes({
+          dimensions: data.dimensions,
+          index,
+          nameKey,
+          visAreaRef,
+          linesRef,
+          attributesRef,
+          visBoxRef,
+          bgRectNodeRef,
+          attributesNodeRef,
+          linesNodeRef,
+          highlightedNodeRef,
+          isVisibleColorIndicator,
+          axesNodeRef,
+          syncHoverState,
+        });
 
-      drawParallelAxesBrush({
-        plotBoxRef,
-        plotNodeRef,
-        brushRef,
-        linesRef,
-        attributesRef,
-        dimensions: data.dimensions,
-        data: data.data,
-      });
+        drawParallelAxesBrush({
+          plotBoxRef,
+          plotNodeRef,
+          brushRef,
+          linesRef,
+          attributesRef,
+          dimensions: data.dimensions,
+          data: data.data,
+        });
+      }
     }
 
     // eslint-disable-next-line react-hooks/exhaustive-deps

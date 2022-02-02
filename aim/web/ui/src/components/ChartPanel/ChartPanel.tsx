@@ -1,12 +1,12 @@
 import React from 'react';
 import _ from 'lodash-es';
 
-import { Grid, GridSize } from '@material-ui/core';
+import { Grid } from '@material-ui/core';
 
 import { Text } from 'components/kit';
 import ErrorBoundary from 'components/ErrorBoundary/ErrorBoundary';
+import ExportPreview from 'components/ExportPreview/ExportPreview';
 
-import chartGridPattern from 'config/chart-grid-pattern/chartGridPattern';
 import { ResizeModeEnum } from 'config/enums/tableEnums';
 
 import { IChartPanelProps } from 'types/components/ChartPanel/ChartPanel';
@@ -17,8 +17,8 @@ import {
 
 import { ChartTypeEnum } from 'utils/d3';
 
-import { chartTypesConfig } from './config';
 import ChartPopover from './ChartPopover/ChartPopover';
+import ChartGrid from './ChartGrid/ChartGrid';
 
 import './ChartPanel.scss';
 
@@ -35,7 +35,6 @@ const ChartPanel = React.forwardRef(function ChartPanel(
     left: number;
     right: number;
   } | null>(null);
-
   const containerRef = React.useRef<HTMLDivElement>(null);
   const activePointRef = React.useRef<IActivePoint | null>(null);
 
@@ -144,36 +143,14 @@ const ChartPanel = React.forwardRef(function ChartPanel(
           <>
             <ErrorBoundary>
               <Grid item xs className='ChartPanel'>
-                <Grid
-                  ref={containerRef}
-                  container
-                  className='ChartPanel__paper__grid'
-                >
-                  {props.data.map((chartData: any, index: number) => {
-                    const Component = chartTypesConfig[props.chartType];
-                    return (
-                      <Grid
-                        key={index}
-                        item
-                        className='ChartPanel__paper__grid__chartBox'
-                        xs={
-                          props.data.length > 9
-                            ? 4
-                            : (chartGridPattern[props.data.length][
-                                index
-                              ] as GridSize)
-                        }
-                      >
-                        <Component
-                          ref={chartRefs[index]}
-                          {...props.chartProps[index]}
-                          index={index}
-                          data={chartData}
-                          syncHoverState={syncHoverState}
-                        />
-                      </Grid>
-                    );
-                  })}
+                <Grid ref={containerRef} container className='ChartPanel__grid'>
+                  <ChartGrid
+                    data={props.data}
+                    chartProps={props.chartProps}
+                    chartRefs={chartRefs}
+                    chartType={props.chartType}
+                    syncHoverState={syncHoverState}
+                  />
                 </Grid>
                 <ErrorBoundary>
                   <ChartPopover
@@ -195,7 +172,6 @@ const ChartPanel = React.forwardRef(function ChartPanel(
                 </ErrorBoundary>
               </Grid>
             </ErrorBoundary>
-
             <ErrorBoundary>
               <Grid className='ChartPanel__controls' item>
                 {props.controls}

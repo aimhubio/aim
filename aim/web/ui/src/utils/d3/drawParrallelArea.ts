@@ -6,7 +6,8 @@ import { CircleEnum } from './index';
 
 function drawParallelArea(args: IDrawAreaArgs): void {
   const {
-    index = 0,
+    index,
+    nameKey,
     parentRef,
     visAreaRef,
     svgNodeRef,
@@ -52,7 +53,7 @@ function drawParallelArea(args: IDrawAreaArgs): void {
 
   svgNodeRef.current = visArea
     .append('svg')
-    .attr('id', 'svg-area')
+    .attr('id', `${nameKey}-svg-area-${index}`)
     .attr('width', `${width}px`)
     .attr('height', `${height}px`)
     .attr('xmlns', 'http://www.w3.org/2000/svg');
@@ -75,7 +76,7 @@ function drawParallelArea(args: IDrawAreaArgs): void {
 
   linesNodeRef.current
     .append('clipPath')
-    .attr('id', 'lines-rect-clip-' + index)
+    .attr('id', `${nameKey}-lines-rect-clip-${index}`)
     .append('rect')
     .attr('x', 0)
     .attr('y', 0)
@@ -88,7 +89,7 @@ function drawParallelArea(args: IDrawAreaArgs): void {
 
   attributesNodeRef.current
     .append('clipPath')
-    .attr('id', 'circles-rect-clip-' + index)
+    .attr('id', `${nameKey}-circles-rect-clip-${index}`)
     .append('rect')
     .attr('x', -7)
     .attr('y', -7)

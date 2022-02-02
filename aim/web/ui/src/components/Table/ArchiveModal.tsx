@@ -152,7 +152,7 @@ function ArchiveModal({
   return (
     opened && (
       <Modal
-        opened={opened}
+        open={opened}
         onClose={onClose}
         onOk={onArchive}
         cancelButtonText='Cancel'

@@ -149,7 +149,7 @@ function DeleteModal({
   return (
     opened && (
       <Modal
-        opened={opened}
+        open={opened}
         onClose={onClose}
         onOk={onDelete}
         cancelButtonText='Cancel'

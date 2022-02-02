@@ -16,8 +16,10 @@ export interface IPoint {
 
 export interface IScatterPlotProps {
   index: number;
+  nameKey?: string;
   data: { dimensions: IDimensionType[]; data: IPoint[] };
   chartTitle?: IChartTitle;
   trendlineOptions: ITrendlineOptions;
   syncHoverState: (args: ISyncHoverStateArgs) => void;
+  drawAttributes?: boolean;
 }

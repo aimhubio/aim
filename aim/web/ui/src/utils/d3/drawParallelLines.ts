@@ -20,6 +20,8 @@ const initialPathData: InitialPathDataType = {
 };
 
 function drawParallelLines({
+  index,
+  nameKey,
   linesNodeRef,
   attributesRef,
   dimensions,
@@ -34,6 +36,8 @@ function drawParallelLines({
   }
   const keysOfDimensions: string[] = Object.keys(dimensions);
   linesRenderer({
+    index,
+    nameKey,
     data,
     keysOfDimensions,
     curveInterpolation,
@@ -45,6 +49,8 @@ function drawParallelLines({
     linesNodeRef.current?.selectAll('*')?.remove();
     attributesNodeRef.current?.selectAll('*')?.remove();
     linesRenderer({
+      index,
+      nameKey,
       data: updatedData,
       keysOfDimensions,
       curveInterpolation,
@@ -56,6 +62,8 @@ function drawParallelLines({
 }
 
 function linesRenderer({
+  index,
+  nameKey,
   data,
   keysOfDimensions,
   curveInterpolation,
@@ -110,6 +118,8 @@ function linesRenderer({
     arrayOfPathData.forEach((pathData) => {
       if (!pathData.isEmpty) {
         drawParallelLine({
+          index,
+          nameKey,
           linesNodeRef,
           attributesRef,
           curveInterpolation,
@@ -134,6 +144,8 @@ function linesRenderer({
 }
 
 function drawParallelLine({
+  index,
+  nameKey,
   linesNodeRef,
   attributesRef,
   dimensionList,
@@ -157,7 +169,7 @@ function drawParallelLine({
       ]),
     ])
     .attr('id', `Line-${key}`)
-    .attr('clip-path', `url(#lines-rect-clip-${0})`)
+    .attr('clip-path', `url(#${nameKey}-lines-rect-clip-${index})`)
     .attr(
       'd',
       lineGenerator(
