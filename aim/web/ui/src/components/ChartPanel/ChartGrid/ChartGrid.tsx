@@ -1,4 +1,5 @@
 import React from 'react';
+import classNames from 'classnames';
 
 import { Grid, GridSize } from '@material-ui/core';
 
@@ -29,8 +30,16 @@ function ChartGrid({
           data.length > 9
             ? 4
             : (chartGridPattern[data.length][index] as GridSize);
+        const isSingleChart = data.length === 1;
         return (
-          <Grid key={index} item className='ChartGrid' xs={gridSize}>
+          <Grid
+            key={index}
+            item
+            className={classNames('ChartGrid', {
+              ChartGrid__single__chart__view: isSingleChart,
+            })}
+            xs={gridSize}
+          >
             <Component
               ref={chartRefs[index]}
               nameKey={nameKey}

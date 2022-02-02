@@ -3,7 +3,10 @@
 .ExportPreview {
   //@TODO improve Grid pattern
   .ChartGrid {
-    height: 100%;
+    height: 50%;
+    &__single__chart__view {
+      height: 100%;
+    }
     padding: 4px;
     box-shadow: -1px -1px 0 0 #e8e8e8; // var(--grey-lighter);
   }
