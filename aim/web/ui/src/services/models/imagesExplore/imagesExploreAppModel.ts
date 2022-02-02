@@ -332,7 +332,7 @@ function getImagesData(
         model.setState({
           requestIsPending: true,
           queryIsEmpty: false,
-          applyButtonDisabled: true,
+          applyButtonDisabled: false,
           selectedRows: shouldResetSelectedRows
             ? {}
             : model.getState()?.selectedRows,
@@ -466,7 +466,7 @@ function processData(data: any[]): {
   const uniqHighLevelParams = _.uniq(highLevelParams);
   const uniqContexts = _.uniq(contexts);
   const mappedData =
-    data.reduce((acc: any, item: any) => {
+    data?.reduce((acc: any, item: any) => {
       acc[item.hash] = { runHash: item.hash, ...item.props };
       return acc;
     }, {}) || {};
@@ -1921,12 +1921,8 @@ function onSliceRangeChange(key: string, newValue: number[] | number) {
       images,
     };
 
-    const searchButtonDisabled: boolean =
-      images.recordDensity === '0' || images.indexDensity === '0';
     model.setState({
       config,
-      searchButtonDisabled,
-      applyButtonDisabled: searchButtonDisabled,
     });
   }
 }

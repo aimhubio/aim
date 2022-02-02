@@ -2,8 +2,8 @@
 
 .ImageFullViewPopover {
   display: flex;
-  justify-content: start;
-  align-items: start;
+  justify-content: flex-start;
+  align-items: flex-start;
   height: 100%;
   width: 100%;
   &__imageContainer {

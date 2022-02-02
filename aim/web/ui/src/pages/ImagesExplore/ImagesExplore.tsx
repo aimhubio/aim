@@ -28,11 +28,7 @@ import Controls from 'pages/ImagesExplore/components/Controls/Controls';
 import imagesExploreAppModel from 'services/models/imagesExplore/imagesExploreAppModel';
 import * as analytics from 'services/analytics';
 
-import {
-  IFocusedState,
-  IGroupingSelectOption,
-  IPanelTooltip,
-} from 'types/services/models/metrics/metricsAppModel';
+import { IGroupingSelectOption } from 'types/services/models/metrics/metricsAppModel';
 
 import getStateFromUrl from 'utils/getStateFromUrl';
 import { ChartTypeEnum } from 'utils/d3';
@@ -196,50 +192,44 @@ function ImagesExplore(): React.FunctionComponentElement<React.ReactNode> {
               title={'Images explorer'}
             />
             <div className='ImagesExplore__SelectForm__Grouping__container'>
-              <ErrorBoundary>
-                <SelectForm
-                  requestIsPending={imagesExploreData?.requestIsPending}
-                  selectedImagesData={imagesExploreData?.config?.select}
-                  onImagesExploreSelectChange={
-                    imagesExploreAppModel.onImagesExploreSelectChange
-                  }
-                  onSelectRunQueryChange={
-                    imagesExploreAppModel.onSelectRunQueryChange
-                  }
-                  onSelectAdvancedQueryChange={
-                    imagesExploreAppModel.onSelectAdvancedQueryChange
-                  }
-                  toggleSelectAdvancedMode={
-                    imagesExploreAppModel.toggleSelectAdvancedMode
-                  }
-                  onSearchQueryCopy={imagesExploreAppModel.onSearchQueryCopy}
-                  searchButtonDisabled={imagesExploreData?.applyButtonDisabled}
-                />
-              </ErrorBoundary>
-              <ErrorBoundary>
-                <Grouping
-                  groupingPopovers={GroupingPopovers.filter(
-                    (g) => g.groupName === 'group',
-                  )}
-                  groupingData={imagesExploreData?.config?.grouping}
-                  groupingSelectOptions={
-                    imagesExploreData?.groupingSelectOptions
-                  }
-                  onGroupingSelectChange={
-                    imagesExploreAppModel.onGroupingSelectChange
-                  }
-                  onGroupingModeChange={
-                    imagesExploreAppModel.onGroupingModeChange
-                  }
-                  onGroupingPaletteChange={() => {}}
-                  onGroupingReset={() => {}}
-                  onGroupingApplyChange={
-                    imagesExploreAppModel.onGroupingApplyChange
-                  }
-                  onGroupingPersistenceChange={() => {}}
-                  onShuffleChange={() => {}}
-                />
-              </ErrorBoundary>
+              <SelectForm
+                requestIsPending={imagesExploreData?.requestIsPending}
+                selectedImagesData={imagesExploreData?.config?.select}
+                onImagesExploreSelectChange={
+                  imagesExploreAppModel.onImagesExploreSelectChange
+                }
+                onSelectRunQueryChange={
+                  imagesExploreAppModel.onSelectRunQueryChange
+                }
+                onSelectAdvancedQueryChange={
+                  imagesExploreAppModel.onSelectAdvancedQueryChange
+                }
+                toggleSelectAdvancedMode={
+                  imagesExploreAppModel.toggleSelectAdvancedMode
+                }
+                onSearchQueryCopy={imagesExploreAppModel.onSearchQueryCopy}
+                searchButtonDisabled={imagesExploreData?.applyButtonDisabled}
+              />
+              <Grouping
+                groupingPopovers={GroupingPopovers.filter(
+                  (g) => g.groupName === 'group',
+                )}
+                groupingData={imagesExploreData?.config?.grouping}
+                groupingSelectOptions={imagesExploreData?.groupingSelectOptions}
+                onGroupingSelectChange={
+                  imagesExploreAppModel.onGroupingSelectChange
+                }
+                onGroupingModeChange={
+                  imagesExploreAppModel.onGroupingModeChange
+                }
+                onGroupingPaletteChange={() => {}}
+                onGroupingReset={() => {}}
+                onGroupingApplyChange={
+                  imagesExploreAppModel.onGroupingApplyChange
+                }
+                onGroupingPersistenceChange={() => {}}
+                onShuffleChange={() => {}}
+              />
             </div>
             <div
               ref={imagesWrapperRef}
@@ -250,101 +240,79 @@ function ImagesExplore(): React.FunctionComponentElement<React.ReactNode> {
                   : ''
               }`}
             >
-              <ErrorBoundary>
-                <MediaPanel
-                  mediaType={MediaTypeEnum.IMAGE}
-                  getBlobsData={imagesExploreAppModel.getImagesBlobsData}
-                  data={imagesExploreData?.imagesData}
-                  orderedMap={imagesExploreData?.orderedMap}
-                  isLoading={imagesExploreData?.requestIsPending}
-                  panelResizing={panelResizing}
-                  resizeMode={imagesExploreData?.config?.table.resizeMode}
-                  tableHeight={imagesExploreData?.config?.table?.height}
-                  wrapperOffsetHeight={offsetHeight - 48 || 0}
-                  wrapperOffsetWidth={offsetWidth || 0}
-                  focusedState={
-                    imagesExploreData?.config?.images
-                      ?.focusedState as IFocusedState
-                  }
-                  tooltip={
-                    imagesExploreData?.config?.images?.tooltip as IPanelTooltip
-                  }
-                  sortFieldsDict={memoizedImagesSortFields.sortFieldsDict}
-                  sortFields={memoizedImagesSortFields.sortFields}
-                  additionalProperties={
-                    imagesExploreData?.config?.images?.additionalProperties
-                  }
-                  onActivePointChange={
-                    imagesExploreAppModel.onActivePointChange
-                  }
-                  controls={
-                    <Controls
-                      selectOptions={
-                        imagesExploreData?.groupingSelectOptions as IGroupingSelectOption[]
+              <MediaPanel
+                mediaType={MediaTypeEnum.IMAGE}
+                getBlobsData={imagesExploreAppModel.getImagesBlobsData}
+                data={imagesExploreData?.imagesData}
+                orderedMap={imagesExploreData?.orderedMap}
+                isLoading={imagesExploreData?.requestIsPending}
+                panelResizing={panelResizing}
+                resizeMode={imagesExploreData?.config?.table.resizeMode}
+                tableHeight={imagesExploreData?.config?.table?.height}
+                wrapperOffsetHeight={offsetHeight - 48 || 0}
+                wrapperOffsetWidth={offsetWidth || 0}
+                focusedState={imagesExploreData?.config?.images?.focusedState!}
+                tooltip={imagesExploreData?.config?.images?.tooltip!}
+                sortFieldsDict={memoizedImagesSortFields.sortFieldsDict}
+                sortFields={memoizedImagesSortFields.sortFields}
+                additionalProperties={
+                  imagesExploreData?.config?.images?.additionalProperties
+                }
+                onActivePointChange={imagesExploreAppModel.onActivePointChange}
+                controls={
+                  <Controls
+                    selectOptions={imagesExploreData?.groupingSelectOptions!}
+                    tooltip={imagesExploreData?.config?.images?.tooltip!}
+                    orderedMap={imagesExploreData?.orderedMap}
+                    additionalProperties={
+                      imagesExploreData?.config?.images?.additionalProperties
+                    }
+                    sortFields={memoizedImagesSortFields.sortFields}
+                    onChangeTooltip={imagesExploreAppModel?.onChangeTooltip}
+                    onImageSizeChange={imagesExploreAppModel.onImageSizeChange}
+                    onImagesSortReset={imagesExploreAppModel.onImagesSortReset}
+                    onImageRenderingChange={
+                      imagesExploreAppModel.onImageRenderingChange
+                    }
+                    onImageAlignmentChange={
+                      imagesExploreAppModel.onImageAlignmentChange
+                    }
+                    onStackingToggle={imagesExploreAppModel.onStackingToggle}
+                    onImagesSortChange={
+                      imagesExploreAppModel.onImagesSortChange
+                    }
+                  />
+                }
+                tooltipType={ChartTypeEnum.ImageSet}
+                actionPanelSize={44}
+                actionPanel={
+                  imagesExploreData?.config?.images?.stepRange &&
+                  imagesExploreData?.config?.images?.indexRange &&
+                  imagesExploreAppModel.showRangePanel() && (
+                    <ImagesExploreRangePanel
+                      recordSlice={
+                        imagesExploreData?.config?.images?.recordSlice
                       }
-                      tooltip={
-                        imagesExploreData?.config?.images
-                          ?.tooltip as IPanelTooltip
+                      indexSlice={imagesExploreData?.config?.images?.indexSlice}
+                      indexRange={imagesExploreData?.config?.images?.indexRange}
+                      stepRange={imagesExploreData?.config?.images?.stepRange}
+                      applyButtonDisabled={
+                        imagesExploreData?.applyButtonDisabled
                       }
-                      orderedMap={imagesExploreData?.orderedMap}
-                      additionalProperties={
-                        imagesExploreData?.config?.images?.additionalProperties
+                      indexDensity={
+                        imagesExploreData?.config?.images?.indexDensity
                       }
-                      sortFields={memoizedImagesSortFields.sortFields}
-                      onChangeTooltip={imagesExploreAppModel?.onChangeTooltip}
-                      onImageSizeChange={
-                        imagesExploreAppModel.onImageSizeChange
+                      recordDensity={
+                        imagesExploreData?.config?.images?.recordDensity
                       }
-                      onImagesSortReset={
-                        imagesExploreAppModel.onImagesSortReset
+                      onSliceRangeChange={
+                        imagesExploreAppModel.onSliceRangeChange
                       }
-                      onImageRenderingChange={
-                        imagesExploreAppModel.onImageRenderingChange
-                      }
-                      onImageAlignmentChange={
-                        imagesExploreAppModel.onImageAlignmentChange
-                      }
-                      onStackingToggle={imagesExploreAppModel.onStackingToggle}
-                      onImagesSortChange={
-                        imagesExploreAppModel.onImagesSortChange
-                      }
+                      onDensityChange={imagesExploreAppModel.onDensityChange}
                     />
-                  }
-                  tooltipType={ChartTypeEnum.ImageSet}
-                  actionPanelSize={44}
-                  actionPanel={
-                    imagesExploreData?.config?.images?.stepRange &&
-                    imagesExploreData?.config?.images?.indexRange &&
-                    imagesExploreAppModel.showRangePanel() && (
-                      <ImagesExploreRangePanel
-                        recordSlice={
-                          imagesExploreData?.config?.images?.recordSlice
-                        }
-                        indexSlice={
-                          imagesExploreData?.config?.images?.indexSlice
-                        }
-                        indexRange={
-                          imagesExploreData?.config?.images?.indexRange
-                        }
-                        stepRange={imagesExploreData?.config?.images?.stepRange}
-                        applyButtonDisabled={
-                          imagesExploreData?.applyButtonDisabled
-                        }
-                        indexDensity={
-                          imagesExploreData?.config?.images?.indexDensity
-                        }
-                        recordDensity={
-                          imagesExploreData?.config?.images?.recordDensity
-                        }
-                        onSliceRangeChange={
-                          imagesExploreAppModel.onSliceRangeChange
-                        }
-                        onDensityChange={imagesExploreAppModel.onDensityChange}
-                      />
-                    )
-                  }
-                />
-              </ErrorBoundary>
+                  )
+                }
+              />
             </div>
             <ResizePanel
               className={`ImagesExplore__ResizePanel${
@@ -395,6 +363,9 @@ function ImagesExplore(): React.FunctionComponentElement<React.ReactNode> {
                             RowHeightSize.md
                           ? 'medium'
                           : 'large'
+                      }
+                      focusedState={
+                        imagesExploreData?.config?.images?.focusedState!
                       }
                       selectedRows={imagesExploreData?.selectedRows}
                       sortOptions={imagesExploreData?.groupingSelectOptions}

@@ -53,3 +53,55 @@ def remove_runs(ctx, hashes):
     else:
         click.echo('Something went wrong while deleting runs. Remaining runs are:', err=True)
         click.secho('\t'.join(remaining_runs), fg='yellow')
+
+
+@runs.command(name='cp')
+@click.option('--destination', required=True,
+              type=click.Path(
+                  exists=True,
+                  file_okay=False,
+                  dir_okay=True,
+                  writable=True
+              ))
+@click.argument('hashes', nargs=-1, type=str)
+@click.pass_context
+def copy_runs(ctx, destination, hashes):
+    if len(hashes) == 0:
+        click.echo('Please specify at lest one Run to delete.')
+        exit(1)
+    source = ctx.obj['repo']
+    source_repo = Repo.from_path(source)
+    destination_repo = Repo.from_path(destination)
+
+    success, remaining_runs = source_repo.copy_runs(hashes, destination_repo)
+    if success:
+        click.echo(f'Successfully copied {len(hashes)} runs.')
+    else:
+        click.echo('Something went wrong while copying runs. Remaining runs are:', err=True)
+        click.secho('\t'.join(remaining_runs), fg='yellow')
+
+
+@runs.command(name='mv')
+@click.option('--destination', required=True,
+              type=click.Path(
+                  exists=True,
+                  file_okay=False,
+                  dir_okay=True,
+                  writable=True
+              ))
+@click.argument('hashes', nargs=-1, type=str)
+@click.pass_context
+def move_runs(ctx, destination, hashes):
+    if len(hashes) == 0:
+        click.echo('Please specify at lest one Run to delete.')
+        exit(1)
+    source = ctx.obj['repo']
+    source_repo = Repo.from_path(source)
+    destination_repo = Repo.from_path(destination)
+
+    success, remaining_runs = source_repo.move_runs(hashes, destination_repo)
+    if success:
+        click.echo(f'Successfully moved {len(hashes)} runs.')
+    else:
+        click.echo('Something went wrong while moving runs. Remaining runs are:', err=True)
+        click.secho('\t'.join(remaining_runs), fg='yellow')
