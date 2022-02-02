@@ -4,7 +4,7 @@ export enum RowHeightSize {
   lg = 36,
 }
 
-export const ROW_CEIL_SIZE_CONFIG = {
+export const ROW_CELL_SIZE_CONFIG = {
   28: {
     groupMargin: 4,
     name: 'small',

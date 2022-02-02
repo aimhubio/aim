@@ -11,7 +11,7 @@ import { Icon } from 'components/kit';
 import ErrorBoundary from 'components/ErrorBoundary/ErrorBoundary';
 
 import {
-  ROW_CEIL_SIZE_CONFIG,
+  ROW_CELL_SIZE_CONFIG,
   COLORED_SELECTION_COLUMN_WIDTH,
   SELECTION_COLUMN_WIDTH,
 } from 'config/table/tableConfigs';
@@ -210,7 +210,7 @@ function Table(props) {
         className={classNames({
           Table__container: true,
           [`Table__container--${
-            ROW_CEIL_SIZE_CONFIG[props.rowHeightMode].name
+            ROW_CELL_SIZE_CONFIG[props.rowHeightMode].name
           }`]: true,
         })}
       >
