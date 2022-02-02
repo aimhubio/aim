@@ -11,6 +11,7 @@ import Slider from './Slider';
 import Menu, { MenuItem } from './Menu';
 import Modal from './Modal';
 import ActionCard from './ActionCard';
+import InputWrapper from './Input';
 
 export {
   Text,
@@ -27,6 +28,7 @@ export {
   MenuItem,
   Modal,
   ActionCard,
+  InputWrapper,
 };
 
 export type { IButtonProps };
