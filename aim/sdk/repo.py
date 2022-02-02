@@ -678,8 +678,8 @@ class Repo:
             for source_tag in source_structured_run.tags_obj:
                 try:
                     dest_tag = dest_repo.structured_db.create_tag(source_tag.name)
-                    dest_tag.color = dest_tag.color
-                    dest_tag.description = dest_tag.description
+                    dest_tag.color = source_tag.color
+                    dest_tag.description = source_tag.description
                 except ValueError:
                     pass  # if the tag already exists in destination db no need to do anything
                 dest_structured_run.add_tag(source_tag.name)
