@@ -35,6 +35,7 @@ function Runs(props: any): React.FunctionComponentElement<React.ReactNode> {
               data={props.tableData}
               isInfiniteLoading={props.isInfiniteLoading}
               isLatest={props.isLatest}
+              hideSystemMetrics={props.hideSystemMetrics}
               onExportTableData={props.onExportTableData}
               tableRowHeight={props.tableRowHeight}
               columns={props.tableColumns}
