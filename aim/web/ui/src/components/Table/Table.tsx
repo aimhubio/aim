@@ -183,7 +183,6 @@ const Table = React.forwardRef(function Table(
       endIndex,
     };
   }
-  console.log();
 
   function updateData({ newData, newColumns, hiddenColumns, dynamicData }) {
     if (custom && dynamicData) {
@@ -562,13 +561,13 @@ const Table = React.forwardRef(function Table(
         ?.length !== sortFields?.length
     );
   }, [sortFields]);
-  console.log('sortFields, TABLE_DEFAULT_CONFIG');
 
   useResizeObserver(
     observerReturnCallback,
     tableContainerRef,
     sortPopoverChanged,
   );
+
   // The right check is !props.isInfiniteLoading && (isLoading || isNil(rowData))
   // but after setting isInfiniteLoading to true, the rowData becomes null, unnecessary renders happening
   // @TODO sanitize this point
@@ -873,10 +872,10 @@ function propsComparator(
   if (prevProps.hiddenColumns !== nextProps.hiddenColumns) {
     return false;
   }
-
   if (prevProps.hiddenChartRows !== nextProps.hiddenChartRows) {
     return false;
   }
+
   return true;
 }
 

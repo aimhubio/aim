@@ -20,6 +20,7 @@ export type IRunTraceModel = {
   };
   config: IConfig;
   data: any;
+  isApplyBtnDisabled: boolean;
 };
 
 export type TraceType =
@@ -112,6 +113,7 @@ export type TraceResponseData = DistributionsData | ImagesData;
 export type QueryData = {
   sliders: Record<string, [number, number]>;
   inputs: Record<string, number>;
+  inputsValidations: Record<string, boolean>;
 };
 
 export type RangePanelItem = {

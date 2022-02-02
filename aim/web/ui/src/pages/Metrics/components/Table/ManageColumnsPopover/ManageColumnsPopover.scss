@@ -1,7 +1,7 @@
 @use 'src/styles/abstracts' as *;
 
 .ManageColumns {
-  &_trigger {
+  &__trigger {
     cursor: pointer;
     display: flex;
     align-items: center;

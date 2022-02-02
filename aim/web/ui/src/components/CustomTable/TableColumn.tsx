@@ -605,112 +605,112 @@ function GroupConfig({
   }, [data, selectedRows]);
 
   return (
-    <ErrorBoundary>
-      <div className='Table__group__config' onClick={() => expand(groupKey)}>
-        <Button
+    // <ErrorBoundary>
+    <div className='Table__group__config' onClick={() => expand(groupKey)}>
+      <Button
+        size='small'
+        withOnlyIcon={true}
+        className='Table__group__config_expandButton'
+      >
+        <Text className='flex'>
+          <Icon name={expanded[groupKey] ? 'arrow-up' : 'arrow-down'} />
+        </Text>
+      </Button>
+      {multiSelect && (
+        <Checkbox
+          color='primary'
           size='small'
-          withOnlyIcon={true}
-          className='Table__group__config_expandButton'
-        >
-          <Text className='flex'>
-            <Icon name={expanded[groupKey] ? 'arrow-up' : 'arrow-down'} />
-          </Text>
-        </Button>
-        {multiSelect && (
-          <Checkbox
-            color='primary'
-            size='small'
-            icon={<span className='Table__column__defaultSelectIcon'></span>}
-            className='Table__column__selectCheckbox configCheckbox'
-            checkedIcon={
-              data.length === groupSelectedRows?.length ? (
-                <span className='Table__column__selectedSelectIcon'>
-                  <Icon name='check' fontSize={9} />
-                </span>
-              ) : (
-                <span className='Table__column__partiallySelectedSelectIcon'>
-                  <Icon name='partially-selected' fontSize={16} />
-                </span>
-              )
-            }
-            onClick={(e) => {
-              e.stopPropagation();
-              onRowSelect({
-                actionType: _.isEmpty(groupSelectedRows)
-                  ? 'selectAll'
-                  : 'removeAll',
-                data: data,
-              });
-            }}
-            checked={!_.isEmpty(groupSelectedRows)}
-          />
-        )}
-        {configData?.length > 0 && (
-          <ControlPopover
-            title='Group Config'
-            anchorOrigin={{
-              vertical: 'bottom',
-              horizontal: 'left',
-            }}
-            transformOrigin={{
-              vertical: 'top',
-              horizontal: 'left',
-            }}
-            anchor={({ onAnchorClick, opened }) => (
-              <Tooltip
-                title={`${config.itemsCount} item${
-                  config.itemsCount > 1 ? 's' : ''
-                } in the group, grouped by ${configData.map(
-                  (item) => ` ${item.name}`,
-                )}`}
-              >
-                <div>
-                  <Button
-                    size='small'
-                    className='Table__group__config__popover'
-                    onClick={onAnchorClick}
-                    withOnlyIcon={true}
-                  >
-                    <Text>{config.itemsCount}</Text>
-                  </Button>
-                </div>
-              </Tooltip>
-            )}
-            component={<GroupConfigPopover configData={configData} />}
-          />
-        )}
-        {!isNil(config.chartIndex) && config.chartIndex !== 0 && (
-          <Tooltip title='Group chart index'>
-            <span className='Table__group__config__chart'>
-              {config.chartIndex}
-            </span>
-          </Tooltip>
-        )}
-        {config.dasharray !== null && (
-          <Tooltip title='Group stroke style'>
-            <svg
-              className='Table__group__config__stroke'
-              style={{
-                borderColor: config.color ? config.color : '#3b5896',
-              }}
+          icon={<span className='Table__column__defaultSelectIcon'></span>}
+          className='Table__column__selectCheckbox configCheckbox'
+          checkedIcon={
+            data.length === groupSelectedRows?.length ? (
+              <span className='Table__column__selectedSelectIcon'>
+                <Icon name='check' fontSize={9} />
+              </span>
+            ) : (
+              <span className='Table__column__partiallySelectedSelectIcon'>
+                <Icon name='partially-selected' fontSize={16} />
+              </span>
+            )
+          }
+          onClick={(e) => {
+            e.stopPropagation();
+            onRowSelect({
+              actionType: _.isEmpty(groupSelectedRows)
+                ? 'selectAll'
+                : 'removeAll',
+              data: data,
+            });
+          }}
+          checked={!_.isEmpty(groupSelectedRows)}
+        />
+      )}
+      {configData?.length > 0 && (
+        <ControlPopover
+          title='Group Config'
+          anchorOrigin={{
+            vertical: 'bottom',
+            horizontal: 'left',
+          }}
+          transformOrigin={{
+            vertical: 'top',
+            horizontal: 'left',
+          }}
+          anchor={({ onAnchorClick, opened }) => (
+            <Tooltip
+              title={`${config.itemsCount} item${
+                config.itemsCount > 1 ? 's' : ''
+              } in the group, grouped by ${configData.map(
+                (item) => ` ${item.name}`,
+              )}`}
             >
-              <line
-                x1='0'
-                y1='50%'
-                x2='100%'
-                y2='50%'
-                style={{
-                  strokeDasharray: config.dasharray
-                    .split(' ')
-                    .map((elem) => (elem / 5) * 3)
-                    .join(' '),
-                }}
-              />
-            </svg>
-          </Tooltip>
-        )}
-      </div>
-    </ErrorBoundary>
+              <div>
+                <Button
+                  size='small'
+                  className='Table__group__config__popover'
+                  onClick={onAnchorClick}
+                  withOnlyIcon={true}
+                >
+                  <Text>{config.itemsCount}</Text>
+                </Button>
+              </div>
+            </Tooltip>
+          )}
+          component={<GroupConfigPopover configData={configData} />}
+        />
+      )}
+      {!isNil(config.chartIndex) && config.chartIndex !== 0 && (
+        <Tooltip title='Group chart index'>
+          <span className='Table__group__config__chart'>
+            {config.chartIndex}
+          </span>
+        </Tooltip>
+      )}
+      {config.dasharray !== null && (
+        <Tooltip title='Group stroke style'>
+          <svg
+            className='Table__group__config__stroke'
+            style={{
+              borderColor: config.color ? config.color : '#3b5896',
+            }}
+          >
+            <line
+              x1='0'
+              y1='50%'
+              x2='100%'
+              y2='50%'
+              style={{
+                strokeDasharray: config.dasharray
+                  .split(' ')
+                  .map((elem) => (elem / 5) * 3)
+                  .join(' '),
+              }}
+            />
+          </svg>
+        </Tooltip>
+      )}
+    </div>
+    // </ErrorBoundary>
   );
 }
 

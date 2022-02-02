@@ -26,6 +26,7 @@ import Controls from 'pages/ImagesExplore/components/Controls/Controls';
 
 import imagesExploreAppModel from 'services/models/imagesExplore/imagesExploreAppModel';
 import * as analytics from 'services/analytics';
+import { AppNameEnum } from 'services/models/explorer';
 
 import {
   IFocusedState,
@@ -210,7 +211,7 @@ function ImagesExplore(): React.FunctionComponentElement<React.ReactNode> {
                 imagesExploreAppModel.toggleSelectAdvancedMode
               }
               onSearchQueryCopy={imagesExploreAppModel.onSearchQueryCopy}
-              searchButtonDisabled={imagesExploreData?.searchButtonDisabled}
+              searchButtonDisabled={imagesExploreData?.applyButtonDisabled}
             />
             <Grouping
               groupingPopovers={GroupingPopovers.filter(
@@ -352,6 +353,7 @@ function ImagesExplore(): React.FunctionComponentElement<React.ReactNode> {
                   ref={imagesExploreData?.refs.tableRef}
                   data={imagesExploreData?.tableData}
                   columns={imagesExploreData?.tableColumns}
+                  appName={AppNameEnum.IMAGES}
                   // Table options
                   topHeader
                   groups={!Array.isArray(imagesExploreData?.tableData)}
@@ -372,6 +374,7 @@ function ImagesExplore(): React.FunctionComponentElement<React.ReactNode> {
                   hiddenColumns={imagesExploreData?.config?.table.hiddenColumns}
                   resizeMode={imagesExploreData?.config?.table.resizeMode}
                   columnsWidths={imagesExploreData?.config?.table.columnsWidths}
+                  hiddenChartRows={imagesExploreData?.imagesData?.length === 0}
                   // Table actions
                   onSort={imagesExploreAppModel.onTableSortChange}
                   onSortReset={imagesExploreAppModel.onSortReset}

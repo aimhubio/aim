@@ -26,7 +26,7 @@ function HideRowsPopover({
           variant='text'
           color='secondary'
           onClick={onAnchorClick}
-          className={`Table__header__item ${
+          className={`HideRowsPopover__trigger ${
             opened || hiddenChartRows ? 'opened' : ''
           }`}
         >

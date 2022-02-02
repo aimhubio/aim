@@ -63,8 +63,6 @@ function Metrics(
     props.onZoomChange,
   ]);
 
-  console.log(props);
-
   return (
     <div ref={props.wrapperElemRef} className='Metrics__container'>
       <section className='Metrics__section'>

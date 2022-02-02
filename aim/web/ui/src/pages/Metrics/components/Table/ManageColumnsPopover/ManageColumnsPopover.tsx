@@ -8,8 +8,8 @@ import { Button, Icon, Text } from 'components/kit';
 import { IconName } from 'components/kit/Icon';
 import ControlPopover from 'components/ControlPopover/ControlPopover';
 
-import { TABLE_DEFAULT_CONFIG } from 'config/table/tableConfigs';
 import { HideColumnsEnum } from 'config/enums/tableEnums';
+import { TABLE_DEFAULT_CONFIG } from 'config/table/tableConfigs';
 
 import ColumnItem from './ColumnItem/ColumnItem';
 import { IManageColumnsPopoverProps } from './ManageColumns';
@@ -165,7 +165,7 @@ function ManageColumnsPopover({
       hiddenColumns?.length !==
       TABLE_DEFAULT_CONFIG[appName]?.hiddenColumns?.length
     );
-  }, [hiddenColumns]);
+  }, [appName, hiddenColumns?.length]);
 
   return (
     <ControlPopover
@@ -181,9 +181,9 @@ function ManageColumnsPopover({
       anchor={({ onAnchorClick, opened }) => (
         <Button
           color='secondary'
-          // type='text'
+          variant='text'
           onClick={onAnchorClick}
-          className={`ManageColumns_trigger ${
+          className={`ManageColumns__trigger ${
             opened || manageColumnsChanged ? 'opened' : ''
           }`}
         >

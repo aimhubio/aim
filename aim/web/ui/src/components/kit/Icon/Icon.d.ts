@@ -119,4 +119,5 @@ export type IconName =
   | 'archive'
   | 'circle-with-dot'
   | 'show-system-metrics'
-  | 'hide-system-metrics';
+  | 'hide-system-metrics'
+  | 'circle-question';

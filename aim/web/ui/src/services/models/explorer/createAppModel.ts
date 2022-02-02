@@ -2089,7 +2089,7 @@ function createAppModel(appConfig: IAppInitialConfig) {
         abort: () => void;
       };
       let liveUpdateInstance: LiveUpdateService | null;
-      let updateTableTimeoutId: ReturnType<typeof setTimeout>;
+      let updateTableTimeoutId: number;
 
       function initialize(appId: string = ''): {
         call: () => Promise<void>;
@@ -2294,7 +2294,7 @@ function createAppModel(appConfig: IAppInitialConfig) {
           clearTimeout(updateTableTimeoutId);
         }
 
-        updateTableTimeoutId = setTimeout(() => {
+        updateTableTimeoutId = window.setTimeout(() => {
           const tableRef: any = model.getState()?.refs?.tableRef;
           tableRef.current?.updateData({
             newData: tableData.rows,

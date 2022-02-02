@@ -34,7 +34,7 @@ function RowHeightPopover({ rowHeight, onRowHeightChange, appName }: any) {
           variant='text'
           color='secondary'
           onClick={onAnchorClick}
-          className={`Table__header__item ${
+          className={`RowHeightPopover__trigger ${
             opened || rowHeightChanged ? 'opened' : ''
           }`}
         >

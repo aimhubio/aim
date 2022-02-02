@@ -19,6 +19,8 @@ import GroupingPopovers from 'config/grouping/GroupingPopovers';
 
 import AppBar from 'pages/Metrics/components/MetricsBar/MetricsBar';
 
+import { AppNameEnum } from 'services/models/explorer';
+
 import { IParamsProps } from 'types/pages/params/Params';
 
 import { ChartTypeEnum } from 'utils/d3';
@@ -239,6 +241,8 @@ const Params = ({
                   resizeMode={resizeMode}
                   columnsWidths={columnsWidths}
                   selectedRows={selectedRows}
+                  appName={AppNameEnum.PARAMS}
+                  hiddenChartRows={highPlotData?.length === 0}
                   // Table actions
                   onSortReset={onSortReset}
                   onSort={onSortFieldsChange}
