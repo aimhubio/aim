@@ -9,7 +9,9 @@ import JsonViewPopover from './JsonViewPopover';
 import AutoSuggestions from './AutoSuggestions';
 import Slider from './Slider';
 import Menu, { MenuItem } from './Menu';
+import Modal from './Modal';
 import ActionCard from './ActionCard';
+import InputWrapper from './Input';
 
 export {
   Text,
@@ -24,7 +26,9 @@ export {
   Slider,
   Menu,
   MenuItem,
+  Modal,
   ActionCard,
+  InputWrapper,
 };
 
 export type { IButtonProps };

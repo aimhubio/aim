@@ -1,4 +1,5 @@
 import React from 'react';
+import classNames from 'classnames';
 
 import { Tooltip } from '@material-ui/core';
 
@@ -22,6 +23,7 @@ function SearchBar({
   onInputClear,
   onInputChange,
   onMatchTypeChange,
+  isDisabled,
 }: ISearchBarProps) {
   return (
     <ErrorBoundary>
@@ -31,14 +33,21 @@ function SearchBar({
           onInputClear={onInputClear}
           onInputChange={onInputChange}
           isValidInput={isValidInput}
+          isDisabled={isDisabled}
         />
         <div className='MatchIcons'>
           <Tooltip title='Match Case'>
-            <div className='MatchButton'>
+            <div
+              className={classNames({
+                MatchButton: true,
+                active: matchType === MatchTypes.Case,
+              })}
+            >
               <Button
                 withOnlyIcon
                 color={matchType === MatchTypes.Case ? 'primary' : 'secondary'}
                 size='small'
+                disabled={isDisabled}
                 onClick={() => {
                   onMatchTypeChange(
                     matchType === MatchTypes.Case ? null : MatchTypes.Case,
@@ -50,11 +59,17 @@ function SearchBar({
             </div>
           </Tooltip>
           <Tooltip title='Match Word'>
-            <div className='MatchButton'>
+            <div
+              className={classNames({
+                MatchButton: true,
+                active: matchType === MatchTypes.Word,
+              })}
+            >
               <Button
                 withOnlyIcon
                 color={matchType === MatchTypes.Word ? 'primary' : 'secondary'}
                 size='small'
+                disabled={isDisabled}
                 onClick={() => {
                   onMatchTypeChange(
                     matchType === MatchTypes.Word ? null : MatchTypes.Word,
@@ -73,6 +88,11 @@ function SearchBar({
                   matchType === MatchTypes.RegExp ? 'primary' : 'secondary'
                 }
                 size='small'
+                disabled={isDisabled}
+                className={classNames({
+                  MatchButton: true,
+                  active: matchType === MatchTypes.RegExp,
+                })}
                 onClick={() => {
                   onMatchTypeChange(
                     matchType === MatchTypes.RegExp ? null : MatchTypes.RegExp,

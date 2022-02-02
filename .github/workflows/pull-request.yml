@@ -32,7 +32,7 @@ jobs:
       - name: install deps
         run: |
           python -m pip install --upgrade pip
-          python -m pip install -r requirements.dev.txt
+          python -m pip install -r tests/requirements.txt
       - name: code style checks
         run: |
           flake8 aim
@@ -55,7 +55,7 @@ jobs:
           python3 -m venv venv
           . venv/bin/activate
           python -m pip install --upgrade pip
-          python -m pip install -r requirements.dev.txt
+          python -m pip install -r performance_tests/requirements.txt
       - name: perf tests
         run: |
          . venv/bin/activate

@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/rules-of-hooks */
 import React, { useState } from 'react';
 import { useLocation, useRouteMatch } from 'react-router-dom';
 import _ from 'lodash-es';
@@ -32,12 +33,10 @@ import {
   IGroupingSelectOption,
   IPanelTooltip,
 } from 'types/services/models/metrics/metricsAppModel';
-import { IApiRequest } from 'types/services/services';
 
 import getStateFromUrl from 'utils/getStateFromUrl';
 import { ChartTypeEnum } from 'utils/d3';
 import { SortField, SortFields } from 'utils/getSortedFields';
-import exceptionHandler from 'utils/app/exceptionHandler';
 
 import ImagesExploreAppBar from './components/ImagesExploreAppBar/ImagesExploreAppBar';
 
@@ -64,54 +63,6 @@ function ImagesExplore(): React.FunctionComponentElement<React.ReactNode> {
     imagesWrapperRef,
   );
 
-  const panelResizing = usePanelResize(
-    wrapperElemRef,
-    imagesWrapperRef,
-    tableElemRef,
-    resizeElemRef,
-    imagesExploreData?.config?.table || {},
-    imagesExploreAppModel.onTableResizeEnd,
-  );
-  React.useEffect(() => {
-    setOffsetWidth(imagesWrapperRef?.current?.offsetWidth);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [imagesWrapperRef?.current?.offsetWidth]);
-
-  React.useEffect(() => {
-    imagesExploreAppModel.initialize(route.params.appId);
-    let appRequestRef: IApiRequest<void>;
-    let imagesRequestRef: IApiRequest<void>;
-    if (route.params.appId) {
-      appRequestRef = imagesExploreAppModel.getAppConfigData(
-        route.params.appId,
-      );
-      appRequestRef
-        .call((detail: any) => {
-          exceptionHandler({ detail, model: imagesExploreAppModel });
-        })
-        .then(() => {
-          imagesRequestRef = imagesExploreAppModel.getImagesData();
-          imagesRequestRef.call((detail: any) => {
-            exceptionHandler({ detail, model: imagesExploreAppModel });
-          });
-        });
-    } else {
-      imagesExploreAppModel.setDefaultAppConfigData();
-      imagesRequestRef = imagesExploreAppModel.getImagesData();
-      imagesRequestRef.call((detail: any) => {
-        exceptionHandler({ detail, model: imagesExploreAppModel });
-      });
-    }
-
-    analytics.pageView('[ImagesExplorer]');
-    return () => {
-      imagesRequestRef?.abort();
-      if (appRequestRef) {
-        appRequestRef.abort();
-      }
-    };
-  }, []);
-
   // Add effect to recover state from URL when browser history navigation is used
   React.useEffect(() => {
     if (!!imagesExploreData?.config) {
@@ -133,6 +84,11 @@ function ImagesExplore(): React.FunctionComponentElement<React.ReactNode> {
     imagesWrapperRef?.current?.offsetHeight,
     imagesExploreData?.config?.table.resizeMode,
   ]);
+
+  React.useEffect(() => {
+    setOffsetWidth(imagesWrapperRef?.current?.offsetWidth);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [imagesWrapperRef?.current?.offsetWidth]);
 
   // eslint-disable-next-line react-hooks/rules-of-hooks
   const memoizedImagesSortFields = React.useMemo(() => {
@@ -186,19 +142,59 @@ function ImagesExplore(): React.FunctionComponentElement<React.ReactNode> {
     imagesExploreData?.groupingSelectOptions,
   ]);
 
+  const panelResizing = usePanelResize(
+    wrapperElemRef,
+    imagesWrapperRef,
+    tableElemRef,
+    resizeElemRef,
+    imagesExploreData?.config?.table || {},
+    imagesExploreAppModel.onTableResizeEnd,
+  );
+
+  React.useEffect(() => {
+    imagesExploreAppModel.initialize(route.params.appId);
+    let appRequestRef: {
+      call: () => Promise<void>;
+      abort: () => void;
+    };
+    let imagesRequestRef: {
+      call: () => Promise<void>;
+      abort: () => void;
+    };
+    if (route.params.appId) {
+      appRequestRef = imagesExploreAppModel.getAppConfigData(
+        route.params.appId,
+      );
+      appRequestRef.call().then(() => {
+        imagesRequestRef = imagesExploreAppModel.getImagesData();
+        imagesRequestRef.call();
+      });
+    } else {
+      imagesExploreAppModel.setDefaultAppConfigData();
+      imagesRequestRef = imagesExploreAppModel.getImagesData();
+      imagesRequestRef.call();
+    }
+
+    analytics.pageView('[ImagesExplorer]');
+    return () => {
+      imagesRequestRef?.abort();
+      if (appRequestRef) {
+        appRequestRef.abort();
+      }
+    };
+  }, []);
+
   return (
     <ErrorBoundary>
       <div className='ImagesExplore__container' ref={wrapperElemRef}>
         <section className='ImagesExplore__section'>
           <div className='ImagesExplore__section__div ImagesExplore__fullHeight'>
-            <ErrorBoundary>
-              <ImagesExploreAppBar
-                onBookmarkCreate={imagesExploreAppModel.onBookmarkCreate}
-                onBookmarkUpdate={imagesExploreAppModel.onBookmarkUpdate}
-                onResetConfigData={imagesExploreAppModel.onResetConfigData}
-                title={'Images explorer'}
-              />
-            </ErrorBoundary>
+            <ImagesExploreAppBar
+              onBookmarkCreate={imagesExploreAppModel.onBookmarkCreate}
+              onBookmarkUpdate={imagesExploreAppModel.onBookmarkUpdate}
+              onResetConfigData={imagesExploreAppModel.onResetConfigData}
+              title={'Images explorer'}
+            />
             <div className='ImagesExplore__SelectForm__Grouping__container'>
               <ErrorBoundary>
                 <SelectForm
@@ -217,7 +213,7 @@ function ImagesExplore(): React.FunctionComponentElement<React.ReactNode> {
                     imagesExploreAppModel.toggleSelectAdvancedMode
                   }
                   onSearchQueryCopy={imagesExploreAppModel.onSearchQueryCopy}
-                  searchButtonDisabled={imagesExploreData?.searchButtonDisabled}
+                  searchButtonDisabled={imagesExploreData?.applyButtonDisabled}
                 />
               </ErrorBoundary>
               <ErrorBoundary>
@@ -264,7 +260,7 @@ function ImagesExplore(): React.FunctionComponentElement<React.ReactNode> {
                   panelResizing={panelResizing}
                   resizeMode={imagesExploreData?.config?.table.resizeMode}
                   tableHeight={imagesExploreData?.config?.table?.height}
-                  wrapperOffsetHeight={offsetHeight || 0}
+                  wrapperOffsetHeight={offsetHeight - 48 || 0}
                   wrapperOffsetWidth={offsetWidth || 0}
                   focusedState={
                     imagesExploreData?.config?.images
@@ -290,6 +286,7 @@ function ImagesExplore(): React.FunctionComponentElement<React.ReactNode> {
                         imagesExploreData?.config?.images
                           ?.tooltip as IPanelTooltip
                       }
+                      orderedMap={imagesExploreData?.orderedMap}
                       additionalProperties={
                         imagesExploreData?.config?.images?.additionalProperties
                       }
@@ -307,6 +304,7 @@ function ImagesExplore(): React.FunctionComponentElement<React.ReactNode> {
                       onImageAlignmentChange={
                         imagesExploreAppModel.onImageAlignmentChange
                       }
+                      onStackingToggle={imagesExploreAppModel.onStackingToggle}
                       onImagesSortChange={
                         imagesExploreAppModel.onImagesSortChange
                       }
@@ -398,6 +396,7 @@ function ImagesExplore(): React.FunctionComponentElement<React.ReactNode> {
                           ? 'medium'
                           : 'large'
                       }
+                      selectedRows={imagesExploreData?.selectedRows}
                       sortOptions={imagesExploreData?.groupingSelectOptions}
                       sortFields={imagesExploreData?.config?.table.sortFields}
                       hiddenRows={
@@ -434,6 +433,10 @@ function ImagesExplore(): React.FunctionComponentElement<React.ReactNode> {
                       updateColumnsWidths={
                         imagesExploreAppModel.updateColumnsWidths
                       }
+                      onRowSelect={imagesExploreAppModel.onRowSelect}
+                      archiveRuns={imagesExploreAppModel.archiveRuns}
+                      deleteRuns={imagesExploreAppModel.deleteRuns}
+                      multiSelect
                     />
                   </ErrorBoundary>
                 ) : null}

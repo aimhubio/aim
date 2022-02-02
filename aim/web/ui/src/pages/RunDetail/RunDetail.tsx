@@ -21,6 +21,8 @@ import ControlPopover from 'components/ControlPopover/ControlPopover';
 import BusyLoaderWrapper from 'components/BusyLoaderWrapper/BusyLoaderWrapper';
 import ErrorBoundary from 'components/ErrorBoundary/ErrorBoundary';
 
+import { DateWithOutSeconds } from 'config/dates/dates';
+
 import useModel from 'hooks/model/useModel';
 
 import runDetailAppModel from 'services/models/runs/runDetailAppModel';
@@ -204,9 +206,9 @@ function RunDetail(): React.FunctionComponentElement<React.ReactNode> {
                     <>
                       <div className='RunDetail__runDetailContainer__appBarContainer__appBarTitleBox__container'>
                         <Text tint={100} size={16} weight={600}>
-                          {`${runData?.runInfo?.experiment?.name || ''} / ${
-                            runHash || ''
-                          }`}
+                          {`${
+                            runData?.runInfo?.experiment?.name || 'default'
+                          } / ${runHash || ''}`}
                         </Text>
                       </div>
                     </>
@@ -258,7 +260,7 @@ function RunDetail(): React.FunctionComponentElement<React.ReactNode> {
                     className='RunDetail__runDetailContainer__headerContainer__infoBox__dateTitle'
                   >
                     {`${moment(runData?.runInfo?.creation_time * 1000).format(
-                      'DD MMM YYYY, HH:mm A',
+                      DateWithOutSeconds,
                     )} | ${processDurationTime(
                       runData?.runInfo?.creation_time * 1000,
                       runData?.runInfo?.end_time
@@ -284,25 +286,24 @@ function RunDetail(): React.FunctionComponentElement<React.ReactNode> {
             </div>
           </div>
           <Paper className='RunDetail__runDetailContainer__tabsContainer'>
-            <ErrorBoundary>
-              <Tabs
-                value={activeTab}
-                onChange={handleTabChange}
-                aria-label='simple tabs example'
-                indicatorColor='primary'
-                textColor='primary'
-              >
-                {tabs.map((tab) => (
-                  <Tab
-                    key={tab}
-                    label={tab}
-                    value={`${url}/${tab}`}
-                    component={Link}
-                    to={`${url}/${tab}`}
-                  />
-                ))}
-              </Tabs>
-            </ErrorBoundary>
+            <Tabs
+              className='RunDetail__runDetailContainer__Tabs'
+              value={activeTab}
+              onChange={handleTabChange}
+              aria-label='simple tabs example'
+              indicatorColor='primary'
+              textColor='primary'
+            >
+              {tabs.map((tab) => (
+                <Tab
+                  key={tab}
+                  label={tab}
+                  value={`${url}/${tab}`}
+                  component={Link}
+                  to={`${url}/${tab}`}
+                />
+              ))}
+            </Tabs>
           </Paper>
           <BusyLoaderWrapper
             isLoading={runData?.isRunInfoLoading}
@@ -311,9 +312,11 @@ function RunDetail(): React.FunctionComponentElement<React.ReactNode> {
             <Switch>
               {tabs.map((tab: string) => (
                 <Route path={`${url}/${tab}`} key={tab}>
-                  <div className='RunDetail__runDetailContainer__tabPanel'>
-                    {tabContent[tab]}
-                  </div>
+                  <ErrorBoundary>
+                    <div className='RunDetail__runDetailContainer__tabPanel'>
+                      {tabContent[tab]}
+                    </div>
+                  </ErrorBoundary>
                 </Route>
               ))}
               <Redirect to={`${url}/parameters`} />

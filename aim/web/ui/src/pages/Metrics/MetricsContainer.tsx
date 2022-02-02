@@ -183,6 +183,7 @@ function MetricsContainer(): React.FunctionComponentElement<React.ReactNode> {
         sortFields={metricsData?.config?.table?.sortFields!}
         hiddenMetrics={metricsData?.config?.table?.hiddenMetrics!}
         hiddenColumns={metricsData?.config?.table?.hiddenColumns!}
+        selectedRows={metricsData?.selectedRows!}
         groupingSelectOptions={
           metricsData?.groupingSelectOptions as IGroupingSelectOption[]
         }
@@ -236,6 +237,9 @@ function MetricsContainer(): React.FunctionComponentElement<React.ReactNode> {
         onLiveUpdateConfigChange={metricAppModel.changeLiveUpdateConfig}
         onShuffleChange={metricAppModel.onShuffleChange}
         onSearchQueryCopy={metricAppModel.onSearchQueryCopy}
+        onRowSelect={metricAppModel.onRowSelect}
+        archiveRuns={metricAppModel.archiveRuns}
+        deleteRuns={metricAppModel.deleteRuns}
       />
     </ErrorBoundary>
   );

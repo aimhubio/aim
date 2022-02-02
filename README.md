@@ -301,7 +301,6 @@ Order of magnitude faster training run comparison with Aim
 
 **Beloved TB visualizations to be added on Aim**
 
-- Distributions / gradients visualizations.
 - Embedding projector.
 - Neural network visualization.
 
@@ -359,11 +358,12 @@ The high-level features we are going to work on the next few months
   - [x] Transcripts tracking and visualization (Start: _Dec 6 2021_, Shipped: _Dec 17 2021_)
   - [x] Plotly integration (Start: _Dec 1 2021_, Shipped: _Dec 17 2021_)
   - [x] Colab integration (Start: _Nov 18 2021_, Shipped: _Dec 17 2021_)
+  - [x] Centralized tracking server (Start: _Oct 18 2021_, Shipped: _Jan 22 2022_)
 
 **In progress:**
-  - [ ] Centralized tracking server (Start: _Oct 18 2021_)
   - [ ] Scikit-learn integration (Start: _Nov 18 2021_)
   - [ ] Tensorboard adaptor - visualize TensorBoard logs with Aim (Start: _Dec 17 2021_)
+  - [ ] Track git info, env vars, CLI arguments, dependencies (Start: _Jan 17 2022_)
 
 ### TODO
 
@@ -375,7 +375,6 @@ The high-level features we are going to work on the next few months
   - [ ] Cloud storage support: aws s3, gsc, azure storage
 
 **Reproducibility:**
-  - [ ] Track git info, env vars, CLI arguments, dependencies
   - [ ] Collect stdout, stderr logs
 
 **Integrations:**

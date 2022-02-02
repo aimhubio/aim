@@ -11,6 +11,7 @@ export type State = {
   refs?: Record<string, any>;
   params?: Record<string, any>;
   sameValueColumns?: string[];
+  selectedRows?: any;
 };
 
 export interface IModel<StateType extends Partial<State>> {

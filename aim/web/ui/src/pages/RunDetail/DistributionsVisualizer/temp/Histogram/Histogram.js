@@ -1,11 +1,11 @@
-import { Component, createRef } from 'react';
+import React from 'react';
 import PropTypes from 'prop-types';
 import Highcharts from 'highcharts';
 import HighchartsReact from 'highcharts-react-official';
 
 import histogram from 'highcharts/modules/histogram-bellcurve';
 
-class Histogram extends Component {
+class Histogram extends React.Component {
   constructor(props) {
     super(props);
 
@@ -91,7 +91,7 @@ class Histogram extends Component {
       },
     };
 
-    this.chartRef = createRef();
+    this.chartRef = React.createRef();
   }
 
   // eslint-disable-next-line react/no-deprecated

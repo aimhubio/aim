@@ -16,7 +16,6 @@ export interface IMediaSetProps {
   mediaSetKey: number;
   wrapperOffsetHeight: number;
   wrapperOffsetWidth: number;
-  syncHoverState?: (args: any) => void;
   focusedState: IFocusedState;
   additionalProperties?: IMediaPanelProps['additionalProperties'];
   tableHeight: IMediaPanelProps['tableHeight'];

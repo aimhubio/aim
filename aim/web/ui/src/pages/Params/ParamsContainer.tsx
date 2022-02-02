@@ -128,6 +128,7 @@ function ParamsContainer(): React.FunctionComponentElement<React.ReactNode> {
       tableColumns={paramsData?.tableColumns}
       focusedState={paramsData?.config?.chart?.focusedState as IFocusedState}
       requestIsPending={paramsData?.requestIsPending as boolean}
+      selectedRows={paramsData?.selectedRows!}
       isVisibleColorIndicator={
         paramsData?.config?.chart?.isVisibleColorIndicator as boolean
       }
@@ -183,6 +184,9 @@ function ParamsContainer(): React.FunctionComponentElement<React.ReactNode> {
       onShuffleChange={paramsAppModel.onShuffleChange}
       liveUpdateConfig={paramsData?.config?.liveUpdate as ILiveUpdateConfig}
       onLiveUpdateConfigChange={paramsAppModel.changeLiveUpdateConfig}
+      onRowSelect={paramsAppModel.onRowSelect}
+      archiveRuns={paramsAppModel.archiveRuns}
+      deleteRuns={paramsAppModel.deleteRuns}
     />
   );
 }

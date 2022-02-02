@@ -59,6 +59,7 @@ function RunsContainer(): React.FunctionComponentElement<React.ReactNode> {
         tableRef={tableRef}
         columnsOrder={runsData?.config?.table.columnsOrder}
         hiddenColumns={runsData?.config?.table.hiddenColumns ?? []}
+        selectedRows={runsData?.selectedRows}
         query={runsData?.config?.select?.query}
         columnsWidths={runsData?.config?.table.columnsWidths}
         onExportTableData={runsAppModel.onExportTableData}
@@ -73,6 +74,9 @@ function RunsContainer(): React.FunctionComponentElement<React.ReactNode> {
         onTableDiffShow={runsAppModel.onTableDiffShow}
         liveUpdateConfig={runsData?.config?.liveUpdate}
         onLiveUpdateConfigChange={runsAppModel.changeLiveUpdateConfig}
+        onRowSelect={runsAppModel.onRowSelect}
+        archiveRuns={runsAppModel.archiveRuns}
+        deleteRuns={runsAppModel.deleteRuns}
       />
     </ErrorBoundary>
   );

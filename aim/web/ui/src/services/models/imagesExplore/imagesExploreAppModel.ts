@@ -1,4 +1,4 @@
-import React, { ChangeEvent } from 'react';
+import React from 'react';
 import _ from 'lodash-es';
 import moment from 'moment';
 import { saveAs } from 'file-saver';
@@ -20,6 +20,7 @@ import imagesExploreService from 'services/api/imagesExplore/imagesExploreServic
 import appsService from 'services/api/apps/appsService';
 import dashboardService from 'services/api/dashboard/dashboardService';
 import blobsURIModel from 'services/models/media/blobsURIModel';
+import runsService from 'services/api/runs/runsService';
 
 import {
   GroupNameType,
@@ -34,7 +35,6 @@ import {
 } from 'types/services/models/metrics/metricsAppModel';
 import { IMetricTrace, IRun } from 'types/services/models/metrics/runModel';
 import { IBookmarkFormState } from 'types/components/BookmarkForm/BookmarkForm';
-import { INotification } from 'types/components/NotificationContainer/NotificationContainer';
 import { ITableColumn } from 'types/pages/metrics/components/TableColumns/TableColumns';
 import {
   IImageData,
@@ -48,6 +48,7 @@ import {
 } from 'types/services/models/explorer/createAppModel';
 import { IApiRequest } from 'types/services/services';
 
+import onRowSelectAction from 'utils/app/onRowSelect';
 import { decode, encode } from 'utils/encoder/encoder';
 import getObjectPaths from 'utils/getObjectPaths';
 import getUrlWithParam from 'utils/getUrlWithParam';
@@ -63,7 +64,6 @@ import JsonToCSV from 'utils/JsonToCSV';
 import { formatValue } from 'utils/formatValue';
 import getValueByField from 'utils/getValueByField';
 import arrayBufferToBase64 from 'utils/arrayBufferToBase64';
-import { formatToPositiveNumber } from 'utils/formatToPositiveNumber';
 import getMinAndMaxBetweenArrays from 'utils/getMinAndMaxBetweenArrays';
 import getTooltipData from 'utils/app/getTooltipData';
 import filterTooltipContent from 'utils/filterTooltipContent';
@@ -71,6 +71,8 @@ import { getDataAsMediaSetNestedObject } from 'utils/app/getDataAsMediaSetNested
 import { getCompatibleSelectConfig } from 'utils/app/getCompatibleSelectConfig';
 import { getSortedFields, SortField, SortFields } from 'utils/getSortedFields';
 import { getValue } from 'utils/helper';
+import onNotificationDelete from 'utils/app/onNotificationDelete';
+import onNotificationAdd from 'utils/app/onNotificationAdd';
 
 import createModel from '../model';
 
@@ -110,6 +112,7 @@ function getConfig(): IImagesExploreAppConfig {
         alignmentType: CONTROLS_DEFAULT_CONFIG.images.alignmentType,
         mediaItemSize: CONTROLS_DEFAULT_CONFIG.images.mediaItemSize,
         imageRendering: CONTROLS_DEFAULT_CONFIG.images.imageRendering,
+        stacking: CONTROLS_DEFAULT_CONFIG.images.stacking,
       },
       focusedState: {
         active: false,
@@ -117,6 +120,7 @@ function getConfig(): IImagesExploreAppConfig {
       },
       sortFields: [],
       sortFieldsDict: {},
+      inputsValidations: {},
     },
     table: {
       resizeMode: ResizeModeEnum.Resizable,
@@ -130,12 +134,25 @@ function getConfig(): IImagesExploreAppConfig {
         middle: [],
         right: [],
       },
-      height: '',
+      height: '0.5',
     },
   };
 }
 
-let appRequestRef: IApiRequest<void>;
+let appRequestRef: {
+  call: (exceptionHandler: (detail: any) => void) => Promise<IAppData>;
+  abort: () => void;
+};
+
+let runsArchiveRef: {
+  call: (exceptionHandler: (detail: any) => void) => Promise<any>;
+  abort: () => void;
+};
+let runsDeleteRef: {
+  call: (exceptionHandler: (detail: any) => void) => Promise<any>;
+  abort: () => void;
+};
+
 function initialize(appId: string): void {
   model.init();
   model.setState({
@@ -237,11 +254,13 @@ function exceptionHandler(detail: any) {
   } else {
     message = detail.message || 'Something went wrong';
   }
-
   onNotificationAdd({
-    id: Date.now(),
-    severity: 'error',
-    message,
+    notification: {
+      id: Date.now(),
+      severity: 'error',
+      message,
+    },
+    model,
   });
 
   // reset model
@@ -256,15 +275,20 @@ function abortRequest(): void {
   model.setState({
     requestIsPending: false,
   });
-
   onNotificationAdd({
-    id: Date.now(),
-    severity: 'info',
-    message: 'Request has been cancelled',
+    notification: {
+      id: Date.now(),
+      severity: 'info',
+      message: 'Request has been cancelled',
+    },
+    model,
   });
 }
 
-function getImagesData(shouldUrlUpdate?: boolean) {
+function getImagesData(
+  shouldUrlUpdate?: boolean,
+  shouldResetSelectedRows?: boolean,
+) {
   if (imagesRequestRef) {
     imagesRequestRef.abort();
   }
@@ -308,6 +332,9 @@ function getImagesData(shouldUrlUpdate?: boolean) {
           requestIsPending: true,
           queryIsEmpty: false,
           applyButtonDisabled: true,
+          selectedRows: shouldResetSelectedRows
+            ? {}
+            : model.getState()?.selectedRows,
         });
 
         blobsURIModel.init();
@@ -327,6 +354,9 @@ function getImagesData(shouldUrlUpdate?: boolean) {
         }
       } else {
         model.setState({
+          selectedRows: shouldResetSelectedRows
+            ? {}
+            : model.getState()?.selectedRows,
           requestIsPending: false,
           queryIsEmpty: true,
           imagesData: {},
@@ -362,8 +392,10 @@ function processData(data: any[]): {
   params: string[];
   highLevelParams: string[];
   contexts: string[];
+  selectedRows: any;
 } {
   const configData = model.getState()?.config;
+  let selectedRows = model.getState()?.selectedRows;
   let metrics: any[] = [];
   let params: string[] = [];
   let highLevelParams: string[] = [];
@@ -432,20 +464,35 @@ function processData(data: any[]): {
   const uniqParams = _.uniq(params);
   const uniqHighLevelParams = _.uniq(highLevelParams);
   const uniqContexts = _.uniq(contexts);
-
+  const mappedData =
+    data.reduce((acc: any, item: any) => {
+      acc[item.hash] = { runHash: item.hash, ...item.props };
+      return acc;
+    }, {}) || {};
+  if (selectedRows && !_.isEmpty(selectedRows)) {
+    selectedRows = Object.keys(selectedRows).reduce((acc: any, key: string) => {
+      const slicedKey = key.slice(0, key.indexOf('/'));
+      acc[key] = {
+        selectKey: key,
+        ...mappedData[slicedKey],
+      };
+      return acc;
+    }, {});
+  }
   return {
     data: processedData,
     params: uniqParams,
     highLevelParams: uniqHighLevelParams,
     contexts: uniqContexts,
+    selectedRows,
   };
 }
 
 function setModelData(rawData: any[], configData: IImagesExploreAppConfig) {
   const sortFields = model.getState()?.config?.table.sortFields;
-  const { data, params, contexts, highLevelParams } = processData(rawData);
+  const { data, params, contexts, highLevelParams, selectedRows } =
+    processData(rawData);
   const sortedParams = params.concat(highLevelParams).sort();
-
   const groupingSelectOptions = [
     ...getGroupingSelectOptions({
       params: sortedParams,
@@ -528,6 +575,7 @@ function setModelData(rawData: any[], configData: IImagesExploreAppConfig) {
     config,
     params,
     data,
+    selectedRows,
     imagesData: mediaSetData,
     orderedMap,
     tableData: tableData.rows,
@@ -549,7 +597,7 @@ function updateModelData(
   configData: IImagesExploreAppConfig = model.getState()!.config!,
   shouldURLUpdate?: boolean,
 ): void {
-  const { data, params, contexts, highLevelParams } = processData(
+  const { data, params, contexts, highLevelParams, selectedRows } = processData(
     model.getState()?.rawData as any[],
   );
   const sortedParams = params.concat(highLevelParams).sort();
@@ -624,6 +672,7 @@ function updateModelData(
     tableColumns,
     sameValueColumns: tableData.sameValueColumns,
     groupingSelectOptions,
+    selectedRows,
   });
 }
 
@@ -684,7 +733,6 @@ function getGroupingSelectOptions({
       value: 'run.props.creation_time',
     },
     ...paramsOptions,
-
     {
       group: 'images',
       label: 'images.name',
@@ -759,6 +807,13 @@ function onGroupingSelectChange({
   if (configData?.grouping) {
     configData.grouping = { ...configData.grouping, [groupName]: list };
     updateModelData(configData, true);
+    if (
+      configData.images?.additionalProperties?.stacking &&
+      (_.isEmpty(configData.grouping.group) ||
+        configData.grouping.reverseMode.group)
+    ) {
+      onStackingToggle();
+    }
   }
   analytics.trackEvent(`[ImagesExplorer] Group by ${groupName}`);
 }
@@ -774,6 +829,13 @@ function onGroupingModeChange({ value }: IOnGroupingModeChangeParams): void {
       },
     };
     updateModelData(configData, true);
+    if (
+      configData.images?.additionalProperties?.stacking &&
+      (_.isEmpty(configData.grouping.group) ||
+        configData.grouping.reverseMode.group)
+    ) {
+      onStackingToggle();
+    }
   }
   analytics.trackEvent(
     `[ImagesExplorer] ${
@@ -794,6 +856,13 @@ function onGroupingReset(groupName: GroupNameType) {
       isApplied: { ...isApplied, [groupName]: true },
     };
     updateModelData(configData, true);
+    if (
+      configData.images?.additionalProperties?.stacking &&
+      (_.isEmpty(configData.grouping.group) ||
+        configData.grouping.reverseMode.group)
+    ) {
+      onStackingToggle();
+    }
   }
   analytics.trackEvent('[ImagesExplorer] Reset grouping');
 }
@@ -977,7 +1046,7 @@ function onActivePointChange(
   focusedStateActive: boolean = false,
 ): void {
   const { refs, config } = model.getState() as any;
-  if (config.table.resizeMode !== ResizeModeEnum.Hide) {
+  if (config?.table.resizeMode !== ResizeModeEnum.Hide) {
     const tableRef: any = refs?.tableRef;
     if (tableRef && activePoint.seqKey) {
       tableRef.current?.setHoveredRow?.(activePoint.seqKey);
@@ -1122,12 +1191,13 @@ function getDataAsTableRows(
             color: metricsCollection.color ?? metric.color,
           },
           key: metric.seqKey,
+          selectKey: `${metric.run.hash}/${metric.seqKey}`,
           runHash: metric.run.hash,
           isHidden: config?.table?.hiddenMetrics?.includes(metric.key),
           index: rowIndex,
           color: metricsCollection.color ?? metric.color,
           dasharray: metricsCollection.dasharray ?? metric.dasharray,
-          experiment: metric.run.experiment?.name ?? 'default',
+          experiment: metric.run.props.experiment?.name ?? 'default',
           run: moment(metric.run.props.creation_time * 1000).format(
             'HH:mm:ss · D MMM, YY',
           ),
@@ -1228,21 +1298,6 @@ function getDataAsTableRows(
   return { rows, sameValueColumns };
 }
 
-function onNotificationDelete(id: number) {
-  let notifyData: INotification[] | [] = model.getState()?.notifyData || [];
-  notifyData = [...notifyData].filter((i) => i.id !== id);
-  model.setState({ notifyData });
-}
-
-function onNotificationAdd(notification: INotification) {
-  let notifyData: INotification[] | [] = model.getState()?.notifyData || [];
-  notifyData = [...notifyData, notification];
-  model.setState({ notifyData });
-  setTimeout(() => {
-    onNotificationDelete(notification.id);
-  }, 3000);
-}
-
 async function onBookmarkCreate({ name, description }: IBookmarkFormState) {
   const configData: IImagesExploreAppConfig | undefined =
     model.getState()?.config;
@@ -1260,15 +1315,21 @@ async function onBookmarkCreate({ name, description }: IBookmarkFormState) {
         });
       if (bookmark.name) {
         onNotificationAdd({
-          id: Date.now(),
-          severity: 'success',
-          message: BookmarkNotificationsEnum.CREATE,
+          notification: {
+            id: Date.now(),
+            severity: 'success',
+            message: BookmarkNotificationsEnum.CREATE,
+          },
+          model,
         });
       } else {
         onNotificationAdd({
-          id: Date.now(),
-          severity: 'error',
-          message: BookmarkNotificationsEnum.ERROR,
+          notification: {
+            id: Date.now(),
+            severity: 'error',
+            message: BookmarkNotificationsEnum.ERROR,
+          },
+          model,
         });
       }
     }
@@ -1288,9 +1349,12 @@ function onBookmarkUpdate(id: string) {
       .then((res: IDashboardData | any) => {
         if (res.id) {
           onNotificationAdd({
-            id: Date.now(),
-            severity: 'success',
-            message: BookmarkNotificationsEnum.UPDATE,
+            notification: {
+              id: Date.now(),
+              severity: 'success',
+              message: BookmarkNotificationsEnum.UPDATE,
+            },
+            model,
           });
         }
       });
@@ -1613,9 +1677,12 @@ function onSearchQueryCopy(): void {
   if (query) {
     navigator.clipboard.writeText(query);
     onNotificationAdd({
-      id: Date.now(),
-      severity: 'success',
-      message: 'Run Expression Copied',
+      notification: {
+        id: Date.now(),
+        severity: 'success',
+        message: 'Run Expression Copied',
+      },
+      model,
     });
   }
 }
@@ -1863,49 +1930,44 @@ function onSliceRangeChange(key: string, newValue: number[] | number) {
   }
 }
 
-function onDensityChange(e: React.ChangeEvent<HTMLInputElement>, key: string) {
-  let { value } = e.target;
+function onDensityChange(value: number, metaData: any, key: string) {
   const configData: IImagesExploreAppConfig | undefined =
     model.getState()?.config;
   if (configData?.images) {
     const images = {
       ...configData.images,
-      [key]: formatToPositiveNumber(+value),
+      [key]: +value,
+      inputsValidations: {
+        ...configData.images?.inputsValidations,
+        [key]: metaData?.isValid,
+      },
     };
     const config = {
       ...configData,
       images,
     };
-    const searchButtonDisabled =
-      images.recordDensity === '0' || images.indexDensity === '0';
     model.setState({
       config,
-      searchButtonDisabled,
-      applyButtonDisabled: searchButtonDisabled,
     });
   }
+  applyBtnDisabledHandler();
 }
 
-function onRecordDensityChange(event: ChangeEvent<{ value: number }>) {
-  const configData: IImagesExploreAppConfig | undefined =
-    model.getState()?.config;
-  if (configData?.images) {
-    const images = {
-      ...configData.images,
-      recordDensity: formatToPositiveNumber(+event.target.value),
-    };
-    const config = {
-      ...configData,
-      images,
-    };
-    const searchButtonDisabled =
-      images.recordDensity === '0' || images.indexDensity === '0';
-    model.setState({
-      config,
-      searchButtonDisabled,
-      applyButtonDisabled: searchButtonDisabled,
-    });
-  }
+function applyBtnDisabledHandler() {
+  const state = model.getState();
+  const inputsValidations = state.config?.images?.inputsValidations || {};
+
+  const isInputsValid =
+    _.size(
+      Object.keys(inputsValidations).filter((key) => {
+        return inputsValidations[key] === false;
+      }),
+    ) <= 0;
+
+  model.setState({
+    ...state,
+    applyButtonDisabled: !isInputsValid,
+  });
 }
 
 const onImageSizeChange = _.throttle((value: number) => {
@@ -1938,7 +2000,6 @@ function onImageRenderingChange(type: ImageRenderingEnum) {
       ...configData.images,
       additionalProperties: {
         ...configData.images.additionalProperties,
-
         imageRendering: type,
       },
     };
@@ -1946,6 +2007,7 @@ function onImageRenderingChange(type: ImageRenderingEnum) {
       ...configData,
       images,
     };
+
     updateURL(config as IImagesExploreAppConfig);
     model.setState({
       config,
@@ -1971,14 +2033,124 @@ function onImageAlignmentChange(
       images,
     };
     updateURL(config as IImagesExploreAppConfig);
-    model.setState({
-      config,
-    });
+    model.setState({ config });
   }
 }
 
 function showRangePanel() {
   return !model.getState().requestIsPending && !model.getState().queryIsEmpty;
+}
+
+function archiveRuns(
+  ids: string[],
+  archived: boolean,
+): {
+  call: () => Promise<void>;
+  abort: () => void;
+} {
+  runsArchiveRef = runsService.archiveRuns(ids, archived);
+  return {
+    call: async () => {
+      try {
+        await runsArchiveRef
+          .call((detail) => exceptionHandler({ detail, model }))
+          .then(() => {
+            getImagesData(false, true).call();
+            onNotificationAdd({
+              notification: {
+                id: Date.now(),
+                severity: 'success',
+                message: `Runs are successfully ${
+                  archived ? 'archived' : 'unarchived'
+                } `,
+              },
+              model,
+            });
+          });
+      } catch (ex: Error | any) {
+        if (ex.name === 'AbortError') {
+          onNotificationAdd({
+            notification: {
+              id: Date.now(),
+              severity: 'error',
+              message: ex.message,
+            },
+            model,
+          });
+        }
+      }
+    },
+    abort: runsArchiveRef.abort,
+  };
+}
+
+function deleteRuns(ids: string[]): {
+  call: () => Promise<void>;
+  abort: () => void;
+} {
+  runsDeleteRef = runsService.deleteRuns(ids);
+  return {
+    call: async () => {
+      try {
+        await runsDeleteRef
+          .call((detail) => exceptionHandler({ detail, model }))
+          .then(() => {
+            getImagesData(false, true).call();
+            onNotificationAdd({
+              notification: {
+                id: Date.now(),
+                severity: 'success',
+                message: 'Runs are successfully deleted',
+              },
+              model,
+            });
+          });
+      } catch (ex: Error | any) {
+        if (ex.name === 'AbortError') {
+          onNotificationAdd({
+            notification: {
+              id: Date.now(),
+              severity: 'error',
+              message: ex.message,
+            },
+            model,
+          });
+        }
+      }
+    },
+    abort: runsDeleteRef.abort,
+  };
+}
+
+function onRowSelect({
+  actionType,
+  data,
+}: {
+  actionType: 'single' | 'selectAll' | 'removeAll';
+  data?: any;
+}): void {
+  return onRowSelectAction({ actionType, data, model });
+}
+
+function onModelNotificationDelete(id: number): void {
+  onNotificationDelete({ id, model });
+}
+
+function onStackingToggle(): void {
+  const configData: IImagesExploreAppConfig | undefined =
+    model.getState()?.config;
+  if (configData?.images) {
+    const images = {
+      ...configData.images,
+      additionalProperties: {
+        ...configData.images.additionalProperties,
+        stacking: !configData.images.additionalProperties.stacking,
+      },
+    };
+    const config = { ...configData, images };
+    updateURL(config as IImagesExploreAppConfig);
+    model.setState({ config });
+  }
 }
 
 const imagesExploreAppModel = {
@@ -1991,7 +2163,7 @@ const imagesExploreAppModel = {
   onGroupingModeChange,
   onGroupingReset,
   onGroupingApplyChange,
-  onNotificationDelete,
+  onNotificationDelete: onModelNotificationDelete,
   onNotificationAdd,
   onResetConfigData,
   updateURL,
@@ -2020,7 +2192,6 @@ const imagesExploreAppModel = {
   onImageVisibilityChange,
   onSliceRangeChange,
   onDensityChange,
-  onRecordDensityChange,
   getImagesBlobsData,
   onChangeTooltip,
   onActivePointChange,
@@ -2030,8 +2201,12 @@ const imagesExploreAppModel = {
   showRangePanel,
   getGroupingSelectOptions,
   getDataAsImageSet,
+  onStackingToggle,
   onImagesSortChange,
   onImagesSortReset,
+  deleteRuns,
+  archiveRuns,
+  onRowSelect,
 };
 
 export default imagesExploreAppModel;

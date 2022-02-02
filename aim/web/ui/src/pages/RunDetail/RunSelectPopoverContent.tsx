@@ -10,6 +10,8 @@ import EmptyComponent from 'components/EmptyComponent/EmptyComponent';
 import { Button, Icon, Text } from 'components/kit';
 import ErrorBoundary from 'components/ErrorBoundary/ErrorBoundary';
 
+import { DateWithOutSeconds } from 'config/dates/dates';
+
 import { processDurationTime } from 'utils/processDurationTime';
 
 import {
@@ -76,24 +78,23 @@ function RunSelectPopoverContent({
             <div className='RunSelectPopoverWrapper__selectPopoverContent__contentContainer__experimentsListContainer__experimentList'>
               {!isRunInfoLoading ? (
                 experimentsData?.map((experiment: IRunSelectExperiment) => (
-                  <ErrorBoundary key={experiment.id}>
-                    <div
-                      className={classNames(
-                        'RunSelectPopoverWrapper__selectPopoverContent__contentContainer__experimentsListContainer__experimentList__experimentBox',
-                        { selected: experimentId === experiment.id },
-                      )}
-                      onClick={() => onExperimentClick(experiment.id)}
+                  <div
+                    className={classNames(
+                      'RunSelectPopoverWrapper__selectPopoverContent__contentContainer__experimentsListContainer__experimentList__experimentBox',
+                      { selected: experimentId === experiment.id },
+                    )}
+                    onClick={() => onExperimentClick(experiment.id)}
+                    key={experiment.id}
+                  >
+                    <Text
+                      size={14}
+                      tint={experimentId === experiment.id ? 100 : 80}
+                      weight={experimentId === experiment.id ? 600 : 500}
+                      className='RunSelectPopoverWrapper__selectPopoverContent__contentContainer__experimentsListContainer__experimentList__experimentBox__experimentName'
                     >
-                      <Text
-                        size={14}
-                        tint={experimentId === experiment.id ? 100 : 80}
-                        weight={experimentId === experiment.id ? 600 : 500}
-                        className='RunSelectPopoverWrapper__selectPopoverContent__contentContainer__experimentsListContainer__experimentList__experimentBox__experimentName'
-                      >
-                        {experiment.name}
-                      </Text>
-                    </div>
-                  </ErrorBoundary>
+                      {experiment?.name ?? 'default'}
+                    </Text>
+                  </div>
                 ))
               ) : (
                 <div className='RunSelectPopoverWrapper__loaderContainer'>
@@ -134,7 +135,7 @@ function RunSelectPopoverContent({
                         weight={runInfo?.name === run.name ? 600 : 500}
                       >
                         {`${moment(run.creation_time * 1000).format(
-                          'DD MMM YYYY, HH:mm A',
+                          DateWithOutSeconds,
                         )} | ${processDurationTime(
                           run?.creation_time * 1000,
                           run?.end_time ? run?.end_time * 1000 : dateNow,

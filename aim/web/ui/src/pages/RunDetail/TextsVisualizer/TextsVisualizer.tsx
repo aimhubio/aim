@@ -77,39 +77,36 @@ function TextsVisualizer(
   return (
     <ErrorBoundary>
       <div className='TextsVisualizer'>
-        <ErrorBoundary>
-          <SearchBar
-            isValidInput={textSearch.filterOptions.isValidSearch}
-            searchValue={textSearch.filterOptions.searchValue}
-            matchType={textSearch.filterOptions.matchType}
-            onMatchTypeChange={textSearch.changeMatchType}
-            onInputClear={textSearch.clearSearchInputData}
-            onInputChange={textSearch.changeSearchInput}
-          />
-        </ErrorBoundary>
+        <SearchBar
+          isValidInput={textSearch.filterOptions.isValidSearch}
+          searchValue={textSearch.filterOptions.searchValue}
+          matchType={textSearch.filterOptions.matchType}
+          onMatchTypeChange={textSearch.changeMatchType}
+          onInputClear={textSearch.clearSearchInputData}
+          onInputChange={textSearch.changeSearchInput}
+          isDisabled={!!props.isLoading}
+        />
         <BusyLoaderWrapper
           className='VisualizationLoader'
           isLoading={!!props.isLoading}
         >
           {textSearch.data && (
-            <ErrorBoundary>
-              <Table
-                ref={tableRef}
-                fixed={false}
-                className='TextsTable'
-                columns={tableColumns}
-                data={getHighlightedData(
-                  textSearch.data,
-                  textSearch.filterOptions.appliedRegExp,
-                )}
-                isLoading={props?.isLoading}
-                hideHeaderActions
-                estimatedRowHeight={32}
-                headerHeight={32}
-                emptyText='No Result'
-                height='100%'
-              />
-            </ErrorBoundary>
+            <Table
+              ref={tableRef}
+              fixed={false}
+              className='TextsTable'
+              columns={tableColumns}
+              data={getHighlightedData(
+                textSearch.data,
+                textSearch.filterOptions.appliedRegExp,
+              )}
+              isLoading={props?.isLoading}
+              hideHeaderActions
+              estimatedRowHeight={32}
+              headerHeight={32}
+              emptyText='No Result'
+              height='100%'
+            />
           )}
         </BusyLoaderWrapper>
       </div>

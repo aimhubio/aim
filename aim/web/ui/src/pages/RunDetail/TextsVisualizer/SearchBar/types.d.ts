@@ -5,17 +5,20 @@ export interface ISearchBarProps {
   onInputChange: (value: string) => void;
   onInputClear: () => void;
   onMatchTypeChange: (value: MatchTypes | null) => void;
+  isDisabled: boolean;
 }
 
 export interface ISearchInputProps {
   value: string;
   isValidInput: boolean;
+  isDisabled: boolean;
   onInputChange: (value: string) => void;
   onInputClear: () => void;
 }
 
 export interface ISearchInputEndAdornment {
   showSearchIcon?: boolean;
+  isDisabled: boolean;
   onClickClearButton: () => void;
 }
 

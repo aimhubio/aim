@@ -104,8 +104,11 @@ function getImagesExploreTableColumns(
                           ? groupingSelectOptions.find(
                               (value) => value.value === paramKey,
                             )
-                          : null,
-                      actionType: SortActionTypes.ORDER_TABLE_TRIGGER,
+                          : sortItem,
+                      actionType:
+                        sortItem?.order === 'desc'
+                          ? SortActionTypes.DELETE
+                          : SortActionTypes.ORDER_TABLE_TRIGGER,
                     })
                   }
                   sort={!_.isNil(sortItem) ? sortItem.order : null}
@@ -217,7 +220,7 @@ function imagesExploreTableRowRenderer(
               <Badge
                 size='small'
                 color={COLORS[0][0]}
-                label={rowData.context}
+                label={rowData.context[0] || 'Empty Context'}
               />
             ),
         };
@@ -294,7 +297,7 @@ function imagesExploreTableRowRenderer(
     return _.merge({}, rowData, row);
   } else {
     const row = {
-      experiment: rowData.experiment.name,
+      experiment: rowData?.experiment ?? 'default',
       run: {
         content: (
           <Link
@@ -308,7 +311,12 @@ function imagesExploreTableRowRenderer(
       metric: rowData.metric,
       context: {
         content: rowData.context.map((item: string) => (
-          <Badge key={item} size='small' color={COLORS[0][0]} label={item} />
+          <Badge
+            key={item}
+            size='small'
+            color={COLORS[0][0]}
+            label={item || 'Empty Context'}
+          />
         )),
       },
       value: rowData.value,

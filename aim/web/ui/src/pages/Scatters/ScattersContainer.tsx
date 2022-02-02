@@ -16,7 +16,6 @@ import * as analytics from 'services/analytics';
 import { ITableRef } from 'types/components/Table/Table';
 import { IChartPanelRef } from 'types/components/ChartPanel/ChartPanel';
 import {
-  IAppData,
   IChartTitleData,
   IFocusedState,
   IGroupingSelectOption,
@@ -151,6 +150,7 @@ function ScattersContainer(): React.FunctionComponentElement<React.ReactNode> {
         notifyData={
           scattersData?.notifyData as IScatterAppModelState['notifyData']
         }
+        selectedRows={scattersData?.selectedRows!}
         tableData={scattersData?.tableData as IMetricTableRowData[]}
         tableColumns={scattersData?.tableColumns as ITableColumn[]}
         tableRowHeight={scattersData?.config?.table?.rowHeight as RowHeightSize}
@@ -202,6 +202,9 @@ function ScattersContainer(): React.FunctionComponentElement<React.ReactNode> {
         onLiveUpdateConfigChange={scattersAppModel.changeLiveUpdateConfig}
         onShuffleChange={scattersAppModel.onShuffleChange}
         onSearchQueryCopy={scattersAppModel.onSearchQueryCopy}
+        onRowSelect={scattersAppModel.onRowSelect}
+        archiveRuns={scattersAppModel.archiveRuns}
+        deleteRuns={scattersAppModel.deleteRuns}
       />
     </ErrorBoundary>
   );

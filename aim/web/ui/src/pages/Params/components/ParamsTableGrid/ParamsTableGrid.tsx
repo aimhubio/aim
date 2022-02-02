@@ -15,12 +15,13 @@ import { PathEnum } from 'config/enums/routesEnum';
 
 import { ITableColumn } from 'types/pages/metrics/components/TableColumns/TableColumns';
 import { IOnGroupingSelectChangeParams } from 'types/services/models/metrics/metricsAppModel';
+import { IGroupingSelectOption } from 'types/services/models/imagesExplore/imagesExploreAppModel';
 
 import { isSystemMetric } from 'utils/isSystemMetric';
 import { formatSystemMetricName } from 'utils/formatSystemMetricName';
 import contextToString from 'utils/contextToString';
 import { formatValue } from 'utils/formatValue';
-import { SortField } from 'utils/getSortedFields';
+import { SortActionTypes, SortField } from 'utils/getSortedFields';
 
 const icons: { [key: string]: string } = {
   color: 'coloring',
@@ -29,13 +30,14 @@ const icons: { [key: string]: string } = {
 };
 
 function getParamsTableColumns(
+  groupingSelectOptions: IGroupingSelectOption[],
   metricsColumns: any,
   paramColumns: string[] = [],
   groupFields: { [key: string]: string } | null,
   order: { left: string[]; middle: string[]; right: string[] },
   hiddenColumns: string[],
   sortFields?: any[],
-  onSort?: (field: string, value?: 'asc' | 'desc' | 'none') => void,
+  onSort?: ({ sortFields, order, index, actionType }: any) => void,
   grouping?: { [key: string]: string[] },
   onGroupingToggle?: (params: IOnGroupingSelectChangeParams) => void,
 ): ITableColumn[] {
@@ -130,10 +132,13 @@ function getParamsTableColumns(
     }, []),
     paramColumns.map((param) => {
       const paramKey = `run.params.${param}`;
-      const sortItem: SortField = sortFields?.find(
-        (value) => value.value === paramKey,
-      );
-
+      let index = -1;
+      const sortItem: SortField | undefined = sortFields?.find((value, i) => {
+        if (value.value === paramKey) {
+          index = i;
+        }
+        return value.value === paramKey;
+      });
       return {
         key: param,
         content: (
@@ -141,7 +146,22 @@ function getParamsTableColumns(
             {param}
             {onSort && (
               <TableSortIcons
-                onSort={() => onSort(paramKey)}
+                onSort={() =>
+                  onSort({
+                    sortFields,
+                    index,
+                    field:
+                      index === -1
+                        ? groupingSelectOptions.find(
+                            (value) => value.value === paramKey,
+                          )
+                        : sortItem,
+                    actionType:
+                      sortItem?.order === 'desc'
+                        ? SortActionTypes.DELETE
+                        : SortActionTypes.ORDER_TABLE_TRIGGER,
+                  })
+                }
                 sort={!_.isNil(sortItem) ? sortItem.order : null}
               />
             )}

@@ -45,7 +45,7 @@ function RangePanel({
       >
         <div className='RangePanelContainer'>
           {items?.map((item) => (
-            <ErrorBoundary key={item.sliderName}>
+            <React.Fragment key={item.sliderName}>
               <SliderWithInput
                 key={item.sliderName}
                 sliderTitle={item.sliderTitle}
@@ -60,12 +60,10 @@ function RangePanel({
                 onRangeChange={(value) =>
                   onRangeSliderChange(item.sliderName, value)
                 }
-                onCountChange={({ target: { value } }) =>
-                  onInputChange(item.inputName, +value)
-                }
+                onCountChange={(value) => onInputChange(item.inputName, +value)}
               />
               <div className='VerticalDivider' />
-            </ErrorBoundary>
+            </React.Fragment>
           ))}
           <div className='ApplyButtonContainer'>
             <Button
