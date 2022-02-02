@@ -41,6 +41,7 @@ export interface ITableProps {
   rowHeightMode?: any;
   columnsOrder?: any;
   hiddenColumns?: string[];
+  hideSystemMetrics?: boolean;
   updateColumns?: any;
   columnsWidths?: any;
   updateColumnsWidths?: any;

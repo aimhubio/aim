@@ -218,6 +218,7 @@ function Metrics(
                     resizeMode={props.resizeMode}
                     columnsWidths={props.columnsWidths}
                     selectedRows={props.selectedRows}
+                    hideSystemMetrics={props.hideSystemMetrics}
                     // Table actions
                     onSort={props.onSortChange}
                     onSortReset={props.onSortReset}

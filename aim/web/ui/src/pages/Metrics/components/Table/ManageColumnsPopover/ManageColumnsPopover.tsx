@@ -1,10 +1,13 @@
 import React from 'react';
 import { DragDropContext, Droppable } from 'react-beautiful-dnd';
 
-import { Button, Divider, InputBase } from '@material-ui/core';
+import { Divider, InputBase } from '@material-ui/core';
 
-import { Icon, Text } from 'components/kit';
+import { Button, Icon, Text } from 'components/kit';
+import { IconName } from 'components/kit/Icon';
 import ErrorBoundary from 'components/ErrorBoundary/ErrorBoundary';
+
+import { HideColumnsEnum } from 'config/enums/tableEnums';
 
 import ColumnItem from './ColumnItem/ColumnItem';
 
@@ -31,6 +34,7 @@ function ManageColumnsPopover({
   columnsData,
   onManageColumns,
   onColumnsVisibilityChange,
+  hideSystemMetrics,
   onTableDiffShow,
   hiddenColumns,
 }: any) {
@@ -283,51 +287,82 @@ function ManageColumnsPopover({
           </div>
         </div>
         <div className='ManageColumns__actions__container'>
-          <Button
-            variant='text'
-            size='small'
-            onClick={() =>
-              onManageColumns({
-                left: [],
-                middle: [],
-                right: [],
-              })
-            }
-          >
-            <Text size={12} tint={100}>
-              reset columns order
-            </Text>
-          </Button>
-          <Button variant='text' size='small' onClick={onTableDiffShow}>
-            <Text size={12} tint={100}>
-              show table diff
-            </Text>
-          </Button>
-          <Divider
-            style={{ margin: '0 0.875rem' }}
-            orientation='vertical'
-            flexItem
-          />
-          <Button
-            variant='text'
-            size='small'
-            onClick={() => onColumnsVisibilityChange([])}
-          >
-            <Icon name='eye-show-outline' />
-            <Text size={12} tint={100}>
-              show all
-            </Text>
-          </Button>
-          <Button
-            variant='text'
-            size='small'
-            onClick={() => onColumnsVisibilityChange(['all'])}
-          >
-            <Icon name='eye-outline-hide' />
-            <Text size={12} tint={100}>
-              hide all
-            </Text>
-          </Button>
+          <div>
+            <Button
+              variant='text'
+              size='xSmall'
+              onClick={() =>
+                onManageColumns({
+                  left: [],
+                  middle: [],
+                  right: [],
+                })
+              }
+            >
+              <Text size={12} tint={100}>
+                reset columns order
+              </Text>
+            </Button>
+            <Button variant='text' size='xSmall' onClick={onTableDiffShow}>
+              <Text size={12} tint={100}>
+                show table diff
+              </Text>
+            </Button>
+          </div>
+          <div className='flex'>
+            {hideSystemMetrics !== undefined && (
+              <>
+                <Button
+                  variant='text'
+                  size='xSmall'
+                  onClick={() =>
+                    onColumnsVisibilityChange(
+                      hideSystemMetrics
+                        ? HideColumnsEnum.ShowSystemMetrics
+                        : HideColumnsEnum.HideSystemMetrics,
+                    )
+                  }
+                >
+                  <Icon
+                    name={
+                      `${
+                        hideSystemMetrics ? 'show' : 'hide'
+                      }-system-metrics` as IconName
+                    }
+                  />
+                  <Text size={12} tint={100}>
+                    {hideSystemMetrics ? 'show' : 'hide'} system metrics
+                  </Text>
+                </Button>
+                <Divider
+                  style={{ margin: '0 0.875rem' }}
+                  orientation='vertical'
+                  flexItem
+                />
+              </>
+            )}
+
+            <Button
+              variant='text'
+              size='xSmall'
+              onClick={() => onColumnsVisibilityChange([])}
+            >
+              <Icon name='eye-show-outline' />
+              <Text size={12} tint={100}>
+                show all
+              </Text>
+            </Button>
+            <Button
+              variant='text'
+              size='xSmall'
+              onClick={() => onColumnsVisibilityChange(HideColumnsEnum.All)}
+            >
+              <Icon name='eye-outline-hide' />
+              <Text size={12} tint={100}>
+                hide all
+              </Text>
+            </Button>
+          </div>
         </div>
       </DragDropContext>
     </ErrorBoundary>

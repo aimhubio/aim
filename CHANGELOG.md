@@ -2,6 +2,7 @@
 
 ## Unreleased
 
+- Ability to hide system metrics from table (arsengit)
 - Add input validations to range selectors (Hamik25)
 - Improve media panel rendering performance on hovering over images (KaroMourad)
 - Add ability to parse and import TensorFlow events into aim (devfox-se)

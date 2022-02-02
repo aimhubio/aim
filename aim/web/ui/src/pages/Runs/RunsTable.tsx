@@ -24,6 +24,7 @@ function RunsTable({
   hiddenColumns,
   columnsOrder,
   columnsWidths,
+  hideSystemMetrics,
   updateColumnsWidths,
   selectedRows,
   onRowSelect,
@@ -66,6 +67,7 @@ function RunsTable({
             topHeader
             rowHeight={tableRowHeight}
             hiddenColumns={hiddenColumns}
+            hideSystemMetrics={hideSystemMetrics}
             columnsOrder={columnsOrder}
             columnsWidths={columnsWidths}
             // Table actions

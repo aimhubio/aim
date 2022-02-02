@@ -62,6 +62,7 @@ const Params = ({
   resizeMode,
   notifyData,
   hiddenColumns,
+  hideSystemMetrics,
   onExportTableData,
   onCurveInterpolationChange,
   onActivePointChange,
@@ -236,6 +237,7 @@ const Params = ({
                     sortFields={sortFields}
                     hiddenRows={hiddenMetrics}
                     hiddenColumns={hiddenColumns}
+                    hideSystemMetrics={hideSystemMetrics}
                     resizeMode={resizeMode}
                     columnsWidths={columnsWidths}
                     selectedRows={selectedRows}
