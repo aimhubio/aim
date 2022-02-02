@@ -119,6 +119,10 @@ const Table = React.forwardRef(function Table(
     }
   }, [focusedState]);
 
+  React.useEffect(() => {
+    updateFocusedRow(`rowKey-${activeRowKey.current}`);
+  }, [selectedRows]);
+
   React.useImperativeHandle(ref, () => ({
     updateData: updateData,
     setHoveredRow: setHoveredRow,

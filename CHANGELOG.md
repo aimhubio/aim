@@ -1,7 +1,4 @@
 # Changelog
-## Unreleased
-
-- Improve highlighting of table focused/hovered/selected row (VkoHov)
 
 ## Unreleased
 
@@ -13,6 +10,7 @@
 - Add system parameter logging: CLI, Env, Executable, Git, Installed packages (devfox-se)
 - Convert nested non-native objects (e.g. OmegaConf config instance) upon storing (devfox-se)
 - Add handler for matplotlib figures in Image and Figure custom objects (devfox-se)
+- Improve highlighting of table focused/hovered/selected row (VkoHov)
 
 ## 3.4.1 Jan 23 2022
 

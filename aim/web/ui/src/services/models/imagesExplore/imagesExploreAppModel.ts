@@ -328,7 +328,7 @@ function getImagesData(
         model.setState({
           requestIsPending: true,
           queryIsEmpty: false,
-          applyButtonDisabled: true,
+          applyButtonDisabled: false,
           selectedRows: shouldResetSelectedRows
             ? {}
             : model.getState()?.selectedRows,
@@ -1909,12 +1909,8 @@ function onSliceRangeChange(key: string, newValue: number[] | number) {
       images,
     };
 
-    const searchButtonDisabled: boolean =
-      images.recordDensity === '0' || images.indexDensity === '0';
     model.setState({
       config,
-      searchButtonDisabled,
-      applyButtonDisabled: searchButtonDisabled,
     });
   }
 }
