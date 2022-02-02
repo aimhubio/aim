@@ -860,66 +860,70 @@ const Table = React.forwardRef(function Table(
                 {({ width, height }) =>
                   custom ? (
                     <div style={{ width, height }}>
-                      <CustomTable
-                        expanded={expanded}
-                        alwaysVisibleColumns={alwaysVisibleColumns}
-                        rowHeightMode={rowHeight}
-                        updateColumns={onManageColumns}
-                        columnsWidths={columnsWidths}
-                        updateColumnsWidths={updateColumnsWidths}
-                        sortFields={sortFields}
-                        setSortFields={onSort}
-                        excludedFields={hiddenColumns}
-                        setExcludedFields={onColumnsVisibilityChange}
-                        hiddenRows={hiddenRows}
-                        data={rowData}
-                        columns={columnsData.filter((col) => !col.isHidden)}
-                        onGroupExpandToggle={onGroupExpandToggle}
-                        onRowHover={rowHoverHandler}
-                        onRowClick={rowClickHandler}
-                        listWindow={listWindow}
-                        multiSelect={multiSelect}
-                        selectedRows={selectedRows || {}}
-                        onRowSelect={onRowSelect}
-                        {...props}
-                      />
+                      <ErrorBoundary>
+                        <CustomTable
+                          expanded={expanded}
+                          alwaysVisibleColumns={alwaysVisibleColumns}
+                          rowHeightMode={rowHeight}
+                          updateColumns={onManageColumns}
+                          columnsWidths={columnsWidths}
+                          updateColumnsWidths={updateColumnsWidths}
+                          sortFields={sortFields}
+                          setSortFields={onSort}
+                          excludedFields={hiddenColumns}
+                          setExcludedFields={onColumnsVisibilityChange}
+                          hiddenRows={hiddenRows}
+                          data={rowData}
+                          columns={columnsData.filter((col) => !col.isHidden)}
+                          onGroupExpandToggle={onGroupExpandToggle}
+                          onRowHover={rowHoverHandler}
+                          onRowClick={rowClickHandler}
+                          listWindow={listWindow}
+                          multiSelect={multiSelect}
+                          selectedRows={selectedRows || {}}
+                          onRowSelect={onRowSelect}
+                          {...props}
+                        />
+                      </ErrorBoundary>
                     </div>
                   ) : (
-                    <BaseTable
-                      ref={tableRef}
-                      classPrefix='BaseTable'
-                      columns={columnsData}
-                      data={rowData}
-                      frozenData={[]}
-                      width={width}
-                      height={height}
-                      fixed={fixed}
-                      rowKey='key'
-                      isScrolling
-                      headerHeight={headerHeight}
-                      rowHeight={rowHeight}
-                      estimatedRowHeight={estimatedRowHeight}
-                      footerHeight={0}
-                      defaultExpandedRowKeys={[]}
-                      expandColumnKey='#'
-                      rowProps={({ rowIndex }) => rowData[rowIndex]?.rowProps}
-                      sortBy={{}}
-                      useIsScrolling={false}
-                      overscanRowCount={1}
-                      onEndReachedThreshold={500}
-                      getScrollbarSize={() => null}
-                      ignoreFunctionInColumnCompare={false}
-                      onScroll={() => null}
-                      onRowsRendered={() => null}
-                      onScrollbarPresenceChange={() => null}
-                      onRowExpand={() => null}
-                      onExpandedRowsChange={() => null}
-                      onColumnSort={() => null}
-                      onColumnResize={() => null}
-                      onColumnResizeEnd={() => null}
-                      onRowHover={onRowHover}
-                      onRowClick={onRowClick}
-                    />
+                    <ErrorBoundary>
+                      <BaseTable
+                        ref={tableRef}
+                        classPrefix='BaseTable'
+                        columns={columnsData}
+                        data={rowData}
+                        frozenData={[]}
+                        width={width}
+                        height={height}
+                        fixed={fixed}
+                        rowKey='key'
+                        isScrolling
+                        headerHeight={headerHeight}
+                        rowHeight={rowHeight}
+                        estimatedRowHeight={estimatedRowHeight}
+                        footerHeight={0}
+                        defaultExpandedRowKeys={[]}
+                        expandColumnKey='#'
+                        rowProps={({ rowIndex }) => rowData[rowIndex]?.rowProps}
+                        sortBy={{}}
+                        useIsScrolling={false}
+                        overscanRowCount={1}
+                        onEndReachedThreshold={500}
+                        getScrollbarSize={() => null}
+                        ignoreFunctionInColumnCompare={false}
+                        onScroll={() => null}
+                        onRowsRendered={() => null}
+                        onScrollbarPresenceChange={() => null}
+                        onRowExpand={() => null}
+                        onExpandedRowsChange={() => null}
+                        onColumnSort={() => null}
+                        onColumnResize={() => null}
+                        onColumnResizeEnd={() => null}
+                        onRowHover={onRowHover}
+                        onRowClick={onRowClick}
+                      />
+                    </ErrorBoundary>
                   )
                 }
               </AutoResizer>

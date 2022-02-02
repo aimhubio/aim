@@ -20,9 +20,11 @@ export default function resetModelOnError<M extends State>({
 
   setTimeout(() => {
     const tableRef: any = model?.getState()?.refs?.tableRef;
-    tableRef.current?.updateData({
-      newData: [],
-      newColumns: [],
-    });
+    if (tableRef?.current) {
+      tableRef.current?.updateData({
+        newData: [],
+        newColumns: [],
+      });
+    }
   }, 0);
 }

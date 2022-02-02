@@ -1555,7 +1555,7 @@ function createAppModel(appConfig: IAppInitialConfig) {
 
       groupedRows.forEach(
         (groupedRow: IMetricTableRowData[], groupedRowIndex: number) => {
-          groupedRow.forEach((row: IMetricTableRowData) => {
+          groupedRow?.forEach((row: IMetricTableRowData) => {
             const filteredRow = getFilteredRow<IMetricTableRowData>({
               columnKeys: filteredHeader,
               row,
@@ -2094,10 +2094,7 @@ function createAppModel(appConfig: IAppInitialConfig) {
       let liveUpdateInstance: LiveUpdateService | null;
       let updateTableTimeoutId: number;
 
-      function initialize(appId: string = ''): {
-        call: () => Promise<void>;
-        abort: () => void;
-      } {
+      function initialize(appId: string = '') {
         model.init();
         const state: Partial<IAppModelState> = {};
         if (grouping) {
@@ -2130,8 +2127,20 @@ function createAppModel(appConfig: IAppInitialConfig) {
             liveUpdateState.delay,
           );
         }
-
-        return getRunsData();
+        try {
+          getRunsData().call((detail) => {
+            exceptionHandler({ detail, model });
+          });
+        } catch (err: any) {
+          onNotificationAdd({
+            model,
+            notification: {
+              id: Date.now(),
+              message: err.message,
+              severity: 'error',
+            },
+          });
+        }
       }
 
       function abortRequest(): void {
@@ -2155,7 +2164,7 @@ function createAppModel(appConfig: IAppInitialConfig) {
         shouldResetSelectedRows?: boolean,
         isInitial = true,
       ): {
-        call: () => Promise<void>;
+        call: (exceptionHandler: (detail: any) => void) => Promise<any>;
         abort: () => void;
       } {
         if (runsRequestRef) {
@@ -2183,9 +2192,9 @@ function createAppModel(appConfig: IAppInitialConfig) {
         return {
           call: async () => {
             try {
-              const stream = await runsRequestRef.call((detail) =>
-                exceptionHandler({ detail, model }),
-              );
+              const stream = await runsRequestRef.call((detail) => {
+                exceptionHandler({ detail, model });
+              });
               let gen = adjustable_reader(stream as ReadableStream<any>);
               let buffer_pairs = decode_buffer_pairs(gen);
               let decodedPairs = decodePathsVals(buffer_pairs);
@@ -2245,9 +2254,14 @@ function createAppModel(appConfig: IAppInitialConfig) {
               });
             } catch (ex: Error | any) {
               if (ex.name === 'AbortError') {
-                // Abort Error
-              } else {
-                console.log('Unhandled error: ', ex);
+                onNotificationAdd({
+                  notification: {
+                    id: Date.now(),
+                    severity: 'error',
+                    message: `${ex.name}, ${ex.message}`,
+                  },
+                  model,
+                });
               }
             }
             liveUpdateInstance?.start({
@@ -2691,7 +2705,9 @@ function createAppModel(appConfig: IAppInitialConfig) {
 
       function getLastRunsData(
         lastRow: any,
-      ): { call: () => Promise<void>; abort: () => void } | undefined {
+      ):
+        | { call: (exception: any) => Promise<void>; abort: () => void }
+        | undefined {
         const modelData: Partial<IRunsAppModelState> = model.getState();
         const infiniteIsPending = modelData?.infiniteIsPending;
         const isLatest = modelData?.config.pagination.isLatest;
@@ -2758,7 +2774,7 @@ function createAppModel(appConfig: IAppInitialConfig) {
 
         groupedRows.forEach(
           (groupedRow: IMetricTableRowData[], groupedRowIndex: number) => {
-            groupedRow.forEach((row: IMetricTableRowData) => {
+            groupedRow?.forEach((row: IMetricTableRowData) => {
               const filteredRow = getFilteredRow({
                 columnKeys: filteredHeader,
                 row,
@@ -2822,6 +2838,7 @@ function createAppModel(appConfig: IAppInitialConfig) {
       }
 
       function destroy(): void {
+        runsRequestRef.abort();
         liveUpdateInstance?.clear();
         liveUpdateInstance = null; //@TODO check is this need or not
       }
@@ -2884,7 +2901,9 @@ function createAppModel(appConfig: IAppInitialConfig) {
               await runsArchiveRef
                 .call((detail) => exceptionHandler({ detail, model }))
                 .then(() => {
-                  getRunsData(false, true).call();
+                  getRunsData(false, true).call((detail: any) => {
+                    exceptionHandler({ detail, model });
+                  });
                   onNotificationAdd({
                     notification: {
                       id: Date.now(),
@@ -2924,7 +2943,9 @@ function createAppModel(appConfig: IAppInitialConfig) {
               await runsDeleteRef
                 .call((detail) => exceptionHandler({ detail, model }))
                 .then(() => {
-                  getRunsData(false, true).call();
+                  getRunsData(false, true).call((detail: any) => {
+                    exceptionHandler({ detail, model });
+                  });
                   onNotificationAdd({
                     notification: {
                       id: Date.now(),
@@ -3929,7 +3950,7 @@ function createAppModel(appConfig: IAppInitialConfig) {
 
         groupedRows.forEach(
           (groupedRow: IMetricTableRowData[], groupedRowIndex: number) => {
-            groupedRow.forEach((row: IMetricTableRowData) => {
+            groupedRow?.forEach((row: IMetricTableRowData) => {
               const filteredRow = getFilteredRow<IMetricTableRowData>({
                 columnKeys: filteredHeader,
                 row,
@@ -5213,9 +5234,14 @@ function createAppModel(appConfig: IAppInitialConfig) {
                 });
               } catch (ex: Error | any) {
                 if (ex.name === 'AbortError') {
-                  // Abort Error
-                } else {
-                  console.log('Unhandled error: ', ex);
+                  onNotificationAdd({
+                    notification: {
+                      message: ex.message,
+                      id: Date.now(),
+                      severity: 'error',
+                    },
+                    model,
+                  });
                 }
               }
             }
@@ -5270,7 +5296,7 @@ function createAppModel(appConfig: IAppInitialConfig) {
 
         groupedRows.forEach(
           (groupedRow: IMetricTableRowData[], groupedRowIndex: number) => {
-            groupedRow.forEach((row: IMetricTableRowData) => {
+            groupedRow?.forEach((row: IMetricTableRowData) => {
               const filteredRow = getFilteredRow<IMetricTableRowData>({
                 columnKeys: filteredHeader,
                 row,

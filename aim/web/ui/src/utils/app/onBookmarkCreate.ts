@@ -10,6 +10,7 @@ import {
 } from 'types/services/models/metrics/metricsAppModel';
 import { IModel, State } from 'types/services/models/model';
 
+import exceptionHandler from './exceptionHandler';
 import onNotificationAdd from './onNotificationAdd';
 
 export default async function onBookmarkCreate<M extends State>({
@@ -24,34 +25,52 @@ export default async function onBookmarkCreate<M extends State>({
   appName: string;
 }): Promise<void> {
   const configData = model?.getState()?.config;
-  if (configData) {
-    const app: IAppData | any = await appsService
-      .createApp({ state: configData, type: appName.toLowerCase() })
-      .call();
-    if (app.id) {
-      const bookmark: IDashboardData = await dashboardService
-        .createDashboard({ app_id: app.id, name, description })
-        .call();
-      if (bookmark.name) {
-        onNotificationAdd({
-          notification: {
-            id: Date.now(),
-            severity: 'success',
-            message: BookmarkNotificationsEnum.CREATE,
-          },
-          model,
+  try {
+    if (configData) {
+      const app: IAppData | any = await appsService
+        .createApp({
+          state: configData,
+          type: appName.toLowerCase(),
+        })
+        .call((detail: any) => {
+          exceptionHandler({ detail, model });
         });
-      } else {
-        onNotificationAdd({
-          notification: {
-            id: Date.now(),
-            severity: 'error',
-            message: BookmarkNotificationsEnum.ERROR,
-          },
-          model,
-        });
+      if (app.id) {
+        const bookmark: IDashboardData = await dashboardService
+          .createDashboard({ app_id: app.id, name, description })
+          .call((detail: any) => {
+            exceptionHandler({ detail, model });
+          });
+        if (bookmark.name) {
+          onNotificationAdd({
+            notification: {
+              id: Date.now(),
+              severity: 'success',
+              message: BookmarkNotificationsEnum.CREATE,
+            },
+            model,
+          });
+        } else {
+          onNotificationAdd({
+            notification: {
+              id: Date.now(),
+              severity: 'error',
+              message: BookmarkNotificationsEnum.ERROR,
+            },
+            model,
+          });
+        }
       }
     }
+  } catch (err: any) {
+    onNotificationAdd({
+      notification: {
+        id: Date.now(),
+        message: err.message,
+        severity: 'error',
+      },
+      model,
+    });
   }
   analytics.trackEvent(`[${appName}Explorer] Create bookmark`);
 }

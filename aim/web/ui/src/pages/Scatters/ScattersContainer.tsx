@@ -1,6 +1,8 @@
 import React from 'react';
 import { useRouteMatch, useHistory } from 'react-router-dom';
 
+import ErrorBoundary from 'components/ErrorBoundary/ErrorBoundary';
+
 import usePanelResize from 'hooks/resize/usePanelResize';
 import useModel from 'hooks/model/useModel';
 
@@ -10,12 +12,13 @@ import * as analytics from 'services/analytics';
 
 import { ITableRef } from 'types/components/Table/Table';
 import { IChartPanelRef } from 'types/components/ChartPanel/ChartPanel';
-import { IAppData } from 'types/services/models/metrics/metricsAppModel';
 import { IProjectsModelState } from 'types/services/models/projects/projectsModel';
 import { IScatterAppModelState } from 'types/services/models/scatter/scatterAppModel';
+import { IApiRequest } from 'types/services/services';
 
 import setComponentRefs from 'utils/app/setComponentRefs';
 import getStateFromUrl from 'utils/getStateFromUrl';
+import exceptionHandler from 'utils/app/exceptionHandler';
 import manageSystemMetricColumns from 'utils/app/manageSystemMetricColumns';
 
 import Scatters from './Scatters';
@@ -59,20 +62,25 @@ function ScattersContainer(): React.FunctionComponentElement<React.ReactNode> {
 
   React.useEffect(() => {
     scattersAppModel.initialize(route.params.appId);
-    let appRequestRef: {
-      call: () => Promise<IAppData | void>;
-      abort: () => void;
-    };
+    let appRequestRef: IApiRequest<void>;
     if (route.params.appId) {
       appRequestRef = scattersAppModel.getAppConfigData(route.params.appId);
-      appRequestRef.call().then(() => {
-        scattersAppModel.getScattersData().call();
-      });
+      appRequestRef
+        .call((detail: any) => {
+          exceptionHandler({ detail, model: scattersAppModel });
+        })
+        .then(() => {
+          scattersAppModel.getScattersData().call((detail: any) => {
+            exceptionHandler({ detail, model: scattersAppModel });
+          });
+        });
     } else {
       scattersAppModel.setDefaultAppConfigData();
     }
     const scattersRequestRef = scattersAppModel.getScattersData();
-    scattersRequestRef.call();
+    scattersRequestRef.call((detail: any) => {
+      exceptionHandler({ detail, model: scattersAppModel });
+    });
     analytics.pageView('[ScattersExplorer]');
 
     const unListenHistory = history.listen(() => {
@@ -98,76 +106,80 @@ function ScattersContainer(): React.FunctionComponentElement<React.ReactNode> {
   }, []);
 
   return (
-    <Scatters
-      // refs
-      tableRef={tableRef}
-      chartPanelRef={chartPanelRef}
-      tableElemRef={tableElemRef}
-      chartElemRef={chartElemRef}
-      wrapperElemRef={wrapperElemRef}
-      resizeElemRef={resizeElemRef}
-      // grouping options
-      groupingData={scattersData?.config?.grouping!}
-      // chart options
-      panelResizing={panelResizing}
-      scatterPlotData={scattersData?.chartData!}
-      chartTitleData={scattersData?.chartTitleData!}
-      focusedState={scattersData?.config?.chart?.focusedState!}
-      tooltip={scattersData?.config?.chart?.tooltip!}
-      trendlineOptions={scattersData?.config?.chart?.trendlineOptions!}
-      selectedOptionsData={scattersData?.config?.select!}
-      notifyData={scattersData?.notifyData!}
-      selectedRows={scattersData?.selectedRows!}
-      tableData={scattersData?.tableData!}
-      tableColumns={scattersData?.tableColumns!}
-      tableRowHeight={scattersData?.config?.table?.rowHeight!}
-      sortFields={scattersData?.config?.table?.sortFields!}
-      hiddenMetrics={scattersData?.config?.table?.hiddenMetrics!}
-      hideSystemMetrics={scattersData?.config?.table?.hideSystemMetrics!}
-      hiddenColumns={scattersData?.config?.table?.hiddenColumns!}
-      groupingSelectOptions={scattersData?.groupingSelectOptions!}
-      projectsDataMetrics={projectsData?.metrics!}
-      requestIsPending={scattersData?.requestIsPending!}
-      resizeMode={scattersData?.config?.table?.resizeMode!}
-      columnsWidths={scattersData?.config?.table?.columnsWidths!}
-      // methods
-      onChangeTooltip={scattersAppModel.onChangeTooltip}
-      onChangeTrendlineOptions={scattersAppModel.onChangeTrendlineOptions}
-      onTableRowHover={scattersAppModel.onTableRowHover}
-      onTableRowClick={scattersAppModel.onTableRowClick}
-      updateColumnsWidths={scattersAppModel.updateColumnsWidths}
-      onGroupingSelectChange={scattersAppModel.onGroupingSelectChange}
-      onGroupingModeChange={scattersAppModel.onGroupingModeChange}
-      onGroupingPaletteChange={scattersAppModel.onGroupingPaletteChange}
-      onGroupingReset={scattersAppModel.onGroupingReset}
-      onActivePointChange={scattersAppModel.onActivePointChange}
-      onGroupingApplyChange={scattersAppModel.onGroupingApplyChange}
-      onGroupingPersistenceChange={scattersAppModel.onGroupingPersistenceChange}
-      onBookmarkCreate={scattersAppModel.onBookmarkCreate}
-      onBookmarkUpdate={scattersAppModel.onBookmarkUpdate}
-      onNotificationAdd={scattersAppModel.onNotificationAdd}
-      onNotificationDelete={scattersAppModel.onNotificationDelete}
-      onResetConfigData={scattersAppModel.onResetConfigData}
-      onSelectOptionsChange={scattersAppModel.onSelectOptionsChange}
-      onSelectRunQueryChange={scattersAppModel.onSelectRunQueryChange}
-      onExportTableData={scattersAppModel.onExportTableData}
-      onRowHeightChange={scattersAppModel.onRowHeightChange}
-      onSortChange={scattersAppModel.onSortChange}
-      onSortReset={scattersAppModel.onSortReset}
-      onParamVisibilityChange={scattersAppModel.onParamVisibilityChange}
-      onColumnsOrderChange={scattersAppModel.onColumnsOrderChange}
-      onColumnsVisibilityChange={scattersAppModel.onColumnsVisibilityChange}
-      onTableDiffShow={scattersAppModel.onTableDiffShow}
-      onTableResizeModeChange={scattersAppModel.onTableResizeModeChange}
-      // live update
-      liveUpdateConfig={scattersData?.config?.liveUpdate!}
-      onLiveUpdateConfigChange={scattersAppModel.changeLiveUpdateConfig}
-      onShuffleChange={scattersAppModel.onShuffleChange}
-      onSearchQueryCopy={scattersAppModel.onSearchQueryCopy}
-      onRowSelect={scattersAppModel.onRowSelect}
-      archiveRuns={scattersAppModel.archiveRuns}
-      deleteRuns={scattersAppModel.deleteRuns}
-    />
+    <ErrorBoundary>
+      <Scatters
+        // refs
+        tableRef={tableRef}
+        chartPanelRef={chartPanelRef}
+        tableElemRef={tableElemRef}
+        chartElemRef={chartElemRef}
+        wrapperElemRef={wrapperElemRef}
+        resizeElemRef={resizeElemRef}
+        // grouping options
+        groupingData={scattersData?.config?.grouping!}
+        // chart options
+        panelResizing={panelResizing}
+        scatterPlotData={scattersData?.chartData!}
+        chartTitleData={scattersData?.chartTitleData!}
+        focusedState={scattersData?.config?.chart?.focusedState!}
+        tooltip={scattersData?.config?.chart?.tooltip!}
+        trendlineOptions={scattersData?.config?.chart?.trendlineOptions!}
+        selectedOptionsData={scattersData?.config?.select!}
+        notifyData={scattersData?.notifyData!}
+        selectedRows={scattersData?.selectedRows!}
+        tableData={scattersData?.tableData!}
+        tableColumns={scattersData?.tableColumns!}
+        tableRowHeight={scattersData?.config?.table?.rowHeight!}
+        sortFields={scattersData?.config?.table?.sortFields!}
+        hiddenMetrics={scattersData?.config?.table?.hiddenMetrics!}
+        hideSystemMetrics={scattersData?.config?.table?.hideSystemMetrics!}
+        hiddenColumns={scattersData?.config?.table?.hiddenColumns!}
+        groupingSelectOptions={scattersData?.groupingSelectOptions!}
+        projectsDataMetrics={projectsData?.metrics!}
+        requestIsPending={scattersData?.requestIsPending!}
+        resizeMode={scattersData?.config?.table?.resizeMode!}
+        columnsWidths={scattersData?.config?.table?.columnsWidths!}
+        // methods
+        onChangeTooltip={scattersAppModel.onChangeTooltip}
+        onChangeTrendlineOptions={scattersAppModel.onChangeTrendlineOptions}
+        onTableRowHover={scattersAppModel.onTableRowHover}
+        onTableRowClick={scattersAppModel.onTableRowClick}
+        updateColumnsWidths={scattersAppModel.updateColumnsWidths}
+        onGroupingSelectChange={scattersAppModel.onGroupingSelectChange}
+        onGroupingModeChange={scattersAppModel.onGroupingModeChange}
+        onGroupingPaletteChange={scattersAppModel.onGroupingPaletteChange}
+        onGroupingReset={scattersAppModel.onGroupingReset}
+        onActivePointChange={scattersAppModel.onActivePointChange}
+        onGroupingApplyChange={scattersAppModel.onGroupingApplyChange}
+        onGroupingPersistenceChange={
+          scattersAppModel.onGroupingPersistenceChange
+        }
+        onBookmarkCreate={scattersAppModel.onBookmarkCreate}
+        onBookmarkUpdate={scattersAppModel.onBookmarkUpdate}
+        onNotificationAdd={scattersAppModel.onNotificationAdd}
+        onNotificationDelete={scattersAppModel.onNotificationDelete}
+        onResetConfigData={scattersAppModel.onResetConfigData}
+        onSelectOptionsChange={scattersAppModel.onSelectOptionsChange}
+        onSelectRunQueryChange={scattersAppModel.onSelectRunQueryChange}
+        onExportTableData={scattersAppModel.onExportTableData}
+        onRowHeightChange={scattersAppModel.onRowHeightChange}
+        onSortChange={scattersAppModel.onSortChange}
+        onSortReset={scattersAppModel.onSortReset}
+        onParamVisibilityChange={scattersAppModel.onParamVisibilityChange}
+        onColumnsOrderChange={scattersAppModel.onColumnsOrderChange}
+        onColumnsVisibilityChange={scattersAppModel.onColumnsVisibilityChange}
+        onTableDiffShow={scattersAppModel.onTableDiffShow}
+        onTableResizeModeChange={scattersAppModel.onTableResizeModeChange}
+        // live update
+        liveUpdateConfig={scattersData?.config?.liveUpdate!}
+        onLiveUpdateConfigChange={scattersAppModel.changeLiveUpdateConfig}
+        onShuffleChange={scattersAppModel.onShuffleChange}
+        onSearchQueryCopy={scattersAppModel.onSearchQueryCopy}
+        onRowSelect={scattersAppModel.onRowSelect}
+        archiveRuns={scattersAppModel.archiveRuns}
+        deleteRuns={scattersAppModel.deleteRuns}
+      />
+    </ErrorBoundary>
   );
 }
 

@@ -3,6 +3,7 @@ import { NavLink } from 'react-router-dom';
 import moment from 'moment';
 
 import Table from 'components/Table/Table';
+import ErrorBoundary from 'components/ErrorBoundary/ErrorBoundary';
 
 import { ITagRun, ITagRunsTableProps } from 'types/pages/tags/Tags';
 
@@ -56,17 +57,19 @@ function TagRunsTable({
   }, [runsList]);
 
   return (
-    <div className='TagsTable'>
-      <Table
-        ref={tableRef}
-        fixed={false}
-        columns={tableColumns}
-        data={[]}
-        hideHeaderActions
-        rowHeight={32}
-        headerHeight={32}
-      />
-    </div>
+    <ErrorBoundary>
+      <div className='TagsTable'>
+        <Table
+          ref={tableRef}
+          fixed={false}
+          columns={tableColumns}
+          data={[]}
+          hideHeaderActions
+          rowHeight={32}
+          headerHeight={32}
+        />
+      </div>
+    </ErrorBoundary>
   );
 }
 

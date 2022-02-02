@@ -1,4 +1,4 @@
 export interface IApiRequest<T> {
-  call: () => Promise<T | any>;
+  call: (detail?: any) => Promise<T | any>;
   abort: () => void;
 }

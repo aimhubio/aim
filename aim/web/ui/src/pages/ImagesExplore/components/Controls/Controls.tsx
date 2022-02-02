@@ -8,6 +8,7 @@ import ControlPopover from 'components/ControlPopover/ControlPopover';
 import TooltipContentPopover from 'components/TooltipContentPopover/TooltipContentPopover';
 import { Icon } from 'components/kit';
 import ImagePropertiesPopover from 'components/ImagePropertiesPopover';
+import ErrorBoundary from 'components/ErrorBoundary/ErrorBoundary';
 
 import { CONTROLS_DEFAULT_CONFIG } from 'config/controls/controlsDefaultConfig';
 
@@ -47,124 +48,132 @@ function Controls(
   }, [props.sortFields]);
 
   return (
-    <div className='Controls__container ScrollBar__hidden'>
-      <div>
-        <ControlPopover
-          title='Image Properties'
-          anchor={({ onAnchorClick, opened }) => (
-            <Tooltip title='Image Properties'>
-              <div
-                onClick={onAnchorClick}
-                className={`Controls__anchor ${
-                  opened
-                    ? 'active'
-                    : imagePropertiesChanged
-                    ? 'active outlined'
-                    : ''
-                }`}
-              >
-                <Icon
-                  className={`Controls__icon ${
-                    opened || imagePropertiesChanged ? 'active' : ''
+    <ErrorBoundary>
+      <div className='Controls__container ScrollBar__hidden'>
+        <div>
+          <ControlPopover
+            title='Image Properties'
+            anchor={({ onAnchorClick, opened }) => (
+              <Tooltip title='Image Properties'>
+                <div
+                  onClick={onAnchorClick}
+                  className={`Controls__anchor ${
+                    opened
+                      ? 'active'
+                      : imagePropertiesChanged
+                      ? 'active outlined'
+                      : ''
                   }`}
-                  name='image-properties'
-                />
-              </div>
-            </Tooltip>
-          )}
-          component={
-            <ImagePropertiesPopover
-              additionalProperties={props.additionalProperties}
-              onImageSizeChange={props.onImageSizeChange}
-              onImageRenderingChange={props.onImageRenderingChange}
-              onImageAlignmentChange={props.onImageAlignmentChange}
-            />
-          }
-        />
-      </div>
-      <div>
-        <ControlPopover
-          title='Images Sorting'
-          anchor={({ onAnchorClick, opened }) => (
-            <Tooltip title='Images Sorting'>
-              <div
-                onClick={onAnchorClick}
-                className={`Controls__anchor ${
-                  opened ? 'active' : sortFieldsChanged ? 'active outlined' : ''
-                }`}
-              >
-                <Icon
-                  className={`Controls__icon ${
-                    opened || sortFieldsChanged ? 'active' : ''
-                  }`}
-                  name='sort-outside'
-                />
-              </div>
-            </Tooltip>
-          )}
-          component={
-            <SortPopover
-              sortOptions={props.selectOptions}
-              sortFields={props.sortFields}
-              onSort={props.onImagesSortChange}
-              readOnlyFieldsLabel={'GROUP BY'}
-              onReset={props.onImagesSortReset}
-            />
-          }
-        />
-      </div>
-      <Tooltip
-        title={props.additionalProperties.stacking ? 'Group stacked' : 'Stack'}
-      >
-        <div
-          className={classNames('Controls__anchor', {
-            active: props.additionalProperties.stacking,
-            outlined: props.additionalProperties.stacking,
-            disabled: _.isEmpty(props.orderedMap),
-          })}
-          onClick={
-            !_.isEmpty(props.orderedMap) ? props.onStackingToggle : _.noop
-          }
-        >
-          <Icon
-            className={classNames('Controls__icon', {
-              active: props.additionalProperties.stacking,
-            })}
-            name='images-stacking'
+                >
+                  <Icon
+                    className={`Controls__icon ${
+                      opened || imagePropertiesChanged ? 'active' : ''
+                    }`}
+                    name='image-properties'
+                  />
+                </div>
+              </Tooltip>
+            )}
+            component={
+              <ImagePropertiesPopover
+                additionalProperties={props.additionalProperties}
+                onImageSizeChange={props.onImageSizeChange}
+                onImageRenderingChange={props.onImageRenderingChange}
+                onImageAlignmentChange={props.onImageAlignmentChange}
+              />
+            }
           />
         </div>
-      </Tooltip>
-      <div>
-        <ControlPopover
-          title='Display In Tooltip'
-          anchor={({ onAnchorClick, opened }) => (
-            <Tooltip title='Tooltip Params'>
-              <div
-                onClick={onAnchorClick}
-                className={`Controls__anchor ${
-                  opened ? 'active' : tooltipChanged ? 'active outlined' : ''
-                }`}
-              >
-                <Icon
-                  className={`Controls__icon ${
-                    opened || tooltipChanged ? 'active' : ''
+        <div>
+          <ControlPopover
+            title='Images Sorting'
+            anchor={({ onAnchorClick, opened }) => (
+              <Tooltip title='Images Sorting'>
+                <div
+                  onClick={onAnchorClick}
+                  className={`Controls__anchor ${
+                    opened
+                      ? 'active'
+                      : sortFieldsChanged
+                      ? 'active outlined'
+                      : ''
                   }`}
-                  name='cursor'
-                />
-              </div>
-            </Tooltip>
-          )}
-          component={
-            <TooltipContentPopover
-              selectOptions={props.selectOptions}
-              selectedParams={props.tooltip.selectedParams}
-              displayTooltip={props.tooltip.display}
-              onChangeTooltip={props.onChangeTooltip}
-            />
+                >
+                  <Icon
+                    className={`Controls__icon ${
+                      opened || sortFieldsChanged ? 'active' : ''
+                    }`}
+                    name='sort-outside'
+                  />
+                </div>
+              </Tooltip>
+            )}
+            component={
+              <SortPopover
+                sortOptions={props.selectOptions}
+                sortFields={props.sortFields}
+                onSort={props.onImagesSortChange}
+                readOnlyFieldsLabel={'GROUP BY'}
+                onReset={props.onImagesSortReset}
+              />
+            }
+          />
+        </div>
+        <Tooltip
+          title={
+            props.additionalProperties.stacking ? 'Group stacked' : 'Stack'
           }
-        />
+        >
+          <div
+            className={classNames('Controls__anchor', {
+              active: props.additionalProperties.stacking,
+              outlined: props.additionalProperties.stacking,
+              disabled: _.isEmpty(props.orderedMap),
+            })}
+            onClick={
+              !_.isEmpty(props.orderedMap) ? props.onStackingToggle : _.noop
+            }
+          >
+            <Icon
+              className={classNames('Controls__icon', {
+                active: props.additionalProperties.stacking,
+              })}
+              name='images-stacking'
+            />
+          </div>
+        </Tooltip>
+        <div>
+          <ControlPopover
+            title='Display In Tooltip'
+            anchor={({ onAnchorClick, opened }) => (
+              <Tooltip title='Tooltip Params'>
+                <div
+                  onClick={onAnchorClick}
+                  className={`Controls__anchor ${
+                    opened ? 'active' : tooltipChanged ? 'active outlined' : ''
+                  }`}
+                >
+                  <Icon
+                    className={`Controls__icon ${
+                      opened || tooltipChanged ? 'active' : ''
+                    }`}
+                    name='cursor'
+                  />
+                </div>
+              </Tooltip>
+            )}
+            component={
+              <TooltipContentPopover
+                selectOptions={props.selectOptions}
+                selectedParams={props.tooltip.selectedParams}
+                displayTooltip={props.tooltip.display}
+                onChangeTooltip={props.onChangeTooltip}
+              />
+            }
+          />
+        </div>
       </div>
-    </div>
+    </ErrorBoundary>
   );
 }
 
