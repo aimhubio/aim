@@ -686,12 +686,12 @@ class Repo:
             source_meta_run_tree = self.request_tree(
                 'meta', run_hash, read_only=True, from_union=True
             ).subtree('meta').subtree('chunks').subtree(run_hash)
-            dest_meta_run_tree = self.request_tree(
+            dest_meta_run_tree = dest_repo.request_tree(
                 'meta', run_hash, read_only=False, from_union=True
-            ).subtree('meta').subtree('chunks')
-            dest_meta_run_tree[run_hash] = source_meta_run_tree[...]
+            ).subtree('meta').subtree('chunks').subtree(run_hash)
+            dest_meta_run_tree[...] = source_meta_run_tree[...]
             dest_index = dest_repo._get_index_tree('meta', timeout=0).view(b'')
-            dest_meta_run_tree.subtree(run_hash).finalize(index=dest_index)
+            dest_meta_run_tree.finalize(index=dest_index)
 
             # copy run series tree
             source_series_run_tree = self.request_tree(
@@ -699,8 +699,8 @@ class Repo:
             ).subtree('seqs').subtree('chunks').subtree(run_hash)
             dest_series_run_tree = dest_repo.request_tree(
                 'seqs', run_hash, read_only=False
-            ).subtree('seqs').subtree('chunks')
-            dest_series_run_tree[run_hash] = source_series_run_tree[...]
+            ).subtree('seqs').subtree('chunks').subtree(run_hash)
+            dest_series_run_tree[...] = source_series_run_tree[...]
 
     def close(self):
         if self._resources is None:
