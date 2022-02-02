@@ -427,7 +427,7 @@ class Repo:
                 logger.warning(f'Error while trying to delete run \'{run_hash}\'. {str(e)}.')
                 remaining_runs.append(run_hash)
 
-        if len(remaining_runs):
+        if remaining_runs:
             return False, remaining_runs
         else:
             return True, []
@@ -451,7 +451,7 @@ class Repo:
                 logger.warning(f'Error while trying to copy run \'{run_hash}\'. {str(e)}.')
                 remaining_runs.append(run_hash)
 
-        if len(remaining_runs):
+        if remaining_runs:
             return False, remaining_runs
         else:
             return True, []
@@ -476,7 +476,7 @@ class Repo:
                 logger.warning(f'Error while trying to move run \'{run_hash}\'. {str(e)}.')
                 remaining_runs.append(run_hash)
 
-        if len(remaining_runs):
+        if remaining_runs:
             return False, remaining_runs
         else:
             return True, []
