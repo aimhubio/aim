@@ -232,7 +232,7 @@ export function processDistributionsData(data: Partial<DistributionsData>) {
 
   return {
     iters,
-    record_range: record_range_total,
+    record_range: [record_range_total?.[0], (record_range_total?.[1] || 0) - 1],
     processedValues,
     originalValues,
   };
@@ -261,8 +261,8 @@ export function processTextsData(data: Partial<TextsData>) {
 
   return {
     iters,
-    record_range: record_range_total,
-    index_range: index_range_total,
+    record_range: [record_range_total?.[0], (record_range_total?.[1] || 0) - 1],
+    index_range: [index_range_total?.[0], (index_range_total?.[1] || 0) - 1],
     processedValues,
   };
 }
@@ -320,8 +320,8 @@ export function processImagesData(
   return {
     imageSetData: mediaSetData,
     orderedMap,
-    record_range: record_range_total,
-    index_range: index_range_total,
+    record_range: [record_range_total?.[0], (record_range_total?.[1] || 0) - 1],
+    index_range: [index_range_total?.[0], (index_range_total?.[1] || 0) - 1],
   };
 }
 
@@ -375,8 +375,8 @@ export function processAudiosData(
   return {
     audiosSetData: mediaSetData,
     orderedMap,
-    record_range: record_range_total,
-    index_range: index_range_total,
+    record_range: [record_range_total?.[0], (record_range_total?.[1] || 0) - 1],
+    index_range: [index_range_total?.[0], (index_range_total?.[1] || 0) - 1],
   };
 }
 
@@ -428,7 +428,7 @@ export function reformatArrayQueries(
  * process plotly data
  */
 export function processPlotlyData(data: Partial<IPlotlyData>) {
-  const { record_range, iters, values } = data;
+  const { record_range_total, iters, values } = data;
   const processedValue = _.head(values).data;
   const originalValues = values;
 
@@ -436,7 +436,7 @@ export function processPlotlyData(data: Partial<IPlotlyData>) {
 
   return {
     iters,
-    record_range,
+    record_range: [record_range_total?.[0], (record_range_total?.[1] || 0) - 1],
     processedValue,
     originalValues,
   };

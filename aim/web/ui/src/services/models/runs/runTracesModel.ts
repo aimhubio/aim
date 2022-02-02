@@ -62,7 +62,6 @@ function getDefaultQueryAndConfigData(traceType: TraceType) {
 
     config.rangePanel.push(processedItem);
   });
-
   Object.keys(traceSettings.inputs).forEach((key) => {
     queryData.inputs[key] = traceSettings.inputs[key].defaultValue;
   });
@@ -206,6 +205,7 @@ async function getRunTraceBatch(isInitial = false) {
       data,
       state?.runParams,
     );
+    console.log(queryData);
     if (isInitial) {
       const sliders = getInitialSliderValues(
         parsed,

@@ -312,7 +312,7 @@ function getImagesData(
         ? `${recordSlice[0]}:${recordSlice[1] + 1}`
         : '',
       index_range: !_.isEmpty(indexSlice)
-        ? `${indexSlice?.[0]}:${indexSlice?.[1] || 0 + 1}`
+        ? `${indexSlice?.[0]}:${(indexSlice?.[1] || 0) + 1}`
         : '',
       record_density: recordDensity ?? '',
       index_density: indexDensity ?? '',

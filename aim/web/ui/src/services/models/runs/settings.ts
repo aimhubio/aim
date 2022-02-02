@@ -138,7 +138,6 @@ const settings: Record<string, SettingItem> = {
     dataProcessor: processPlotlyData,
     paramsToApi: (queryData?: QueryData) => {
       const record_range = queryData?.inputs?.record_range || 1;
-
       return {
         ...reformatArrayQueries({
           record_range: [record_range - 1, record_range],
@@ -156,7 +155,7 @@ const settings: Record<string, SettingItem> = {
     },
     inputs: {
       record_range: {
-        defaultValue: 1,
+        defaultValue: 0,
         tooltip: 'Training step. To see figures tracked in the step.',
         title: 'Step',
       },

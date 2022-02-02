@@ -88,7 +88,7 @@ export type DistributionValue = {
  * Plotly api response
  */
 export interface IPlotlyData extends TraceRawDataItem {
-  record_range: [number, number];
+  record_range_total: [number, number];
   values: PlotlyValue[];
   iters: number[];
 }
