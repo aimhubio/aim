@@ -9,7 +9,7 @@
 - Fix table column's sort functionality issue in Params and Scatters Explorers (rubenaprikyan)
 - Add system parameter logging: CLI, Env, Executable, Git, Installed packages (devfox-se)
 - Convert nested non-native objects (e.g. OmegaConf config instance) upon storing (devfox-se)
-
+- Add cli subcommands cp and mv for aim runs command (mihran113)
 ## 3.4.1 Jan 23 2022
 
 - Fix issue with displaying experiment name in Images Explorer table (VkoHov)
