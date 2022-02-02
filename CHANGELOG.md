@@ -1,5 +1,15 @@
 # Changelog
 
+## Unreleased
+
+- Add input validations to range selectors (Hamik25)
+- Improve media panel rendering performance on hovering over images (KaroMourad)
+- Add ability to parse and import TensorFlow events into aim (devfox-se)
+- Fix Grouping and Tooltip popovers states' resetting issue when live-update is on (rubenaprikyan)
+- Fix table column's sort functionality issue in Params and Scatters Explorers (rubenaprikyan)
+- Add system parameter logging: CLI, Env, Executable, Git, Installed packages (devfox-se)
+- Convert nested non-native objects (e.g. OmegaConf config instance) upon storing (devfox-se)
+
 ## 3.4.1 Jan 23 2022
 
 - Fix issue with displaying experiment name in Images Explorer table (VkoHov)

@@ -101,7 +101,6 @@ function GroupingPopover({
               }
               value={values}
               onChange={onChange}
-              onInputChange={(e, value) => setInputValue(value)}
               groupBy={(option) => option.group}
               getOptionLabel={(option) => option.label}
               getOptionSelected={(option, value) =>
@@ -110,6 +109,13 @@ function GroupingPopover({
               renderInput={(params) => (
                 <TextField
                   {...params}
+                  inputProps={{
+                    ...params.inputProps,
+                    value: inputValue,
+                    onChange: (e: any) => {
+                      setInputValue(e.target.value);
+                    },
+                  }}
                   variant='outlined'
                   placeholder='Select Params'
                 />

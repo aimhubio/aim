@@ -127,7 +127,7 @@ const ImageBox = ({
               className={classNames(
                 'MediaSet__container__mediaItemsList__imageBox__imageWrapper__zoomIconWrapper',
                 {
-                  isHidden: !(focusedState.key === data.key),
+                  isHidden: focusedState.key !== data.key,
                 },
               )}
               onClick={onImageFullSizeModeButtonClick}

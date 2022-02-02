@@ -102,8 +102,11 @@ function getImagesExploreTableColumns(
                         ? groupingSelectOptions.find(
                             (value) => value.value === paramKey,
                           )
-                        : null,
-                    actionType: SortActionTypes.ORDER_TABLE_TRIGGER,
+                        : sortItem,
+                    actionType:
+                      sortItem?.order === 'desc'
+                        ? SortActionTypes.DELETE
+                        : SortActionTypes.ORDER_TABLE_TRIGGER,
                   })
                 }
                 sort={!_.isNil(sortItem) ? sortItem.order : null}
