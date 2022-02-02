@@ -11,9 +11,9 @@ import { Icon } from 'components/kit';
 import ErrorBoundary from 'components/ErrorBoundary/ErrorBoundary';
 
 import {
-  rowCeilSizeConfig,
-  tableColoredSelectionColumnWidth,
-  tableSelectionColumnWidth,
+  ROW_CEIL_SIZE_CONFIG,
+  COLORED_SELECTION_COLUMN_WIDTH,
+  SELECTION_COLUMN_WIDTH,
 } from 'config/table/tableConfigs';
 
 import Column from './TableColumn';
@@ -209,8 +209,9 @@ function Table(props) {
       <div
         className={classNames({
           Table__container: true,
-          [`Table__container--${rowCeilSizeConfig[props.rowHeightMode].name}`]:
-            true,
+          [`Table__container--${
+            ROW_CEIL_SIZE_CONFIG[props.rowHeightMode].name
+          }`]: true,
         })}
       >
         <div
@@ -285,8 +286,8 @@ function Table(props) {
                     firstColumn={true}
                     width={
                       props.data[0]?.rowMeta?.color
-                        ? tableColoredSelectionColumnWidth
-                        : tableSelectionColumnWidth
+                        ? COLORED_SELECTION_COLUMN_WIDTH
+                        : SELECTION_COLUMN_WIDTH
                     }
                     isAlwaysVisible={true}
                     onRowHover={props.onRowHover}

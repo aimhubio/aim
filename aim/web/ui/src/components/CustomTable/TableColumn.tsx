@@ -11,8 +11,8 @@ import ErrorBoundary from 'components/ErrorBoundary/ErrorBoundary';
 import { Button, Icon, Text } from 'components/kit';
 import GroupConfigPopover from 'components/GroupConfigPopover/GroupConfigPopover';
 
-import { MainColors10 } from 'config/colors/colors';
-import { viewPortOffset } from 'config/table/tableConfigs';
+import { BGColorLighten } from 'config/colors/colors';
+import { VIEW_PORT_OFFSET } from 'config/table/tableConfigs';
 
 import ControlPopover from '../ControlPopover/ControlPopover';
 
@@ -125,9 +125,9 @@ function Column({
     !listWindow ||
     !columnRef.current ||
     (columnRef.current &&
-      columnRef.current.offsetLeft > listWindow.left - viewPortOffset &&
+      columnRef.current.offsetLeft > listWindow.left - VIEW_PORT_OFFSET &&
       columnRef.current.offsetLeft <
-        listWindow.left + listWindow.width + viewPortOffset);
+        listWindow.left + listWindow.width + VIEW_PORT_OFFSET);
 
   return (
     <ErrorBoundary>
@@ -382,13 +382,13 @@ function Column({
                           borderLeft: 'none',
                           '--color-indicator': data[groupKey].data.meta.color,
                           '--extended-group-background-color':
-                            MainColors10[data[groupKey].data.meta.color] ??
+                            BGColorLighten[data[groupKey].data.meta.color] ??
                             '#ffffff',
                         }
                       : data[groupKey].data.meta.color
                       ? {
                           '--extended-group-background-color':
-                            MainColors10[data[groupKey].data.meta.color] ??
+                            BGColorLighten[data[groupKey].data.meta.color] ??
                             '#ffffff',
                         }
                       : null

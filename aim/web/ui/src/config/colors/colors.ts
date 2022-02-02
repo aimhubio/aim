@@ -37,7 +37,7 @@ const COLORS: Array<string[]> = [
   ],
 ];
 
-export const MainColors10 = {
+export const BGColorLighten = {
   '#3E72E7': '#ECF1FD',
   '#18AB6D': '#E8F7F0',
   '#7A4CE0': '#F2EDFC',

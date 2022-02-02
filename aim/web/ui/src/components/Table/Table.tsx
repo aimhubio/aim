@@ -11,7 +11,7 @@ import BusyLoaderWrapper from 'components/BusyLoaderWrapper/BusyLoaderWrapper';
 import ResizeModeActions from 'components/ResizeModeActions/ResizeModeActions';
 import ErrorBoundary from 'components/ErrorBoundary/ErrorBoundary';
 
-import { rowCeilSizeConfig, RowHeightSize } from 'config/table/tableConfigs';
+import { ROW_CEIL_SIZE_CONFIG, RowHeightSize } from 'config/table/tableConfigs';
 
 import useResizeObserver from 'hooks/window/useResizeObserver';
 
@@ -388,7 +388,7 @@ const Table = React.forwardRef(function Table(
       offsetHeight: tableContainerRef.current.offsetHeight,
       scrollHeight: tableContainerRef.current.scrollHeight,
       itemHeight: rowHeight,
-      groupMargin: rowCeilSizeConfig[rowHeight].groupMargin,
+      groupMargin: ROW_CEIL_SIZE_CONFIG[rowHeight].groupMargin,
     });
 
     startIndex.current = windowEdges.startIndex;
@@ -498,7 +498,7 @@ const Table = React.forwardRef(function Table(
         offsetHeight: tableContainerRef.current.offsetHeight,
         scrollHeight: tableContainerRef.current.scrollHeight,
         itemHeight: rowHeight,
-        groupMargin: rowCeilSizeConfig[rowHeight].groupMargin,
+        groupMargin: ROW_CEIL_SIZE_CONFIG[rowHeight].groupMargin,
       });
 
       startIndex.current = windowEdges.startIndex;
@@ -512,7 +512,7 @@ const Table = React.forwardRef(function Table(
           offsetHeight: target.offsetHeight,
           scrollHeight: target.scrollHeight,
           itemHeight: rowHeight,
-          groupMargin: rowCeilSizeConfig[rowHeight].groupMargin,
+          groupMargin: ROW_CEIL_SIZE_CONFIG[rowHeight].groupMargin,
         });
 
         startIndex.current = windowEdges.startIndex;
