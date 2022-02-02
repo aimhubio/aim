@@ -37,7 +37,8 @@ export default function onColumnsVisibilityChange<M extends State>({
   let columnKeys: string[] = Array.isArray(hiddenColumns)
     ? [...hiddenColumns]
     : [];
-  let hideSystemMetrics: boolean | null = configData?.table.hideSystemMetrics;
+  let hideSystemMetrics: boolean | undefined =
+    configData?.table.hideSystemMetrics;
 
   if (configData?.table) {
     const filteredFromSystem = getFilteredSystemMetrics(
@@ -50,13 +51,15 @@ export default function onColumnsVisibilityChange<M extends State>({
     if (hiddenColumns === HideColumnsEnum.ShowSystemMetrics) {
       columnKeys = [...filteredFromSystem];
     }
-    if (
-      getFilteredSystemMetrics(columnKeys).length === systemMetrics.length &&
-      hideSystemMetrics !== undefined
-    ) {
-      hideSystemMetrics = true;
-    } else {
-      hideSystemMetrics = false;
+
+    if (hideSystemMetrics !== undefined) {
+      if (
+        getFilteredSystemMetrics(columnKeys).length === systemMetrics.length
+      ) {
+        hideSystemMetrics = true;
+      } else {
+        hideSystemMetrics = false;
+      }
     }
     columnKeys =
       hiddenColumns === HideColumnsEnum.All

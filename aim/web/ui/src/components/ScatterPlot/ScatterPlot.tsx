@@ -194,7 +194,7 @@ const ScatterPlot = React.forwardRef(function ScatterPlot(
       }
     },
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    [data, dimensions],
+    [data, dimensions, trendlineOptions],
   );
 
   const observerReturnCallback = React.useCallback(() => {

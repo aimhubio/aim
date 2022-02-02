@@ -58,9 +58,7 @@ function RangePanel({
               onRangeChange={(value) =>
                 onRangeSliderChange(item.sliderName, value)
               }
-              onCountChange={({ target: { value } }) =>
-                onInputChange(item.inputName, +value)
-              }
+              onCountChange={(value) => onInputChange(item.inputName, +value)}
             />
             <div className='VerticalDivider' />
           </React.Fragment>
