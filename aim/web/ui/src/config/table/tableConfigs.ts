@@ -6,7 +6,7 @@ export enum RowHeightSize {
   lg = 36,
 }
 
-export const rowCeilSizeConfig = {
+export const ROW_CELL_SIZE_CONFIG = {
   28: {
     groupMargin: 4,
     name: 'small',
@@ -21,7 +21,10 @@ export const rowCeilSizeConfig = {
   },
 };
 
-export const viewPortOffset = 500;
+export const COLORED_SELECTION_COLUMN_WIDTH = 50;
+export const SELECTION_COLUMN_WIDTH = 32;
+
+export const VIEW_PORT_OFFSET = 500;
 
 export const TABLE_DEFAULT_CONFIG = {
   runs: {

@@ -4,6 +4,7 @@ import { MenuItem } from '@material-ui/core';
 
 import ControlPopover from 'components/ControlPopover/ControlPopover';
 import { Button, Icon, Text } from 'components/kit';
+import ErrorBoundary from 'components/ErrorBoundary/ErrorBoundary';
 
 import { RowHeightSize, TABLE_DEFAULT_CONFIG } from 'config/table/tableConfigs';
 
@@ -19,54 +20,56 @@ function RowHeightPopover({ rowHeight, onRowHeightChange, appName }: any) {
   }, [appName, rowHeight]);
 
   return (
-    <ControlPopover
-      title='Select Table Row Height'
-      anchorOrigin={{
-        vertical: 'bottom',
-        horizontal: 'left',
-      }}
-      transformOrigin={{
-        vertical: 'top',
-        horizontal: 'left',
-      }}
-      anchor={({ onAnchorClick, opened }) => (
-        <Button
-          variant='text'
-          color='secondary'
-          onClick={onAnchorClick}
-          className={`RowHeightPopover__trigger ${
-            opened || rowHeightChanged ? 'opened' : ''
-          }`}
-        >
-          <Icon name='row-height' />
-          <Text size={14} tint={100}>
-            Row Height
-          </Text>
-        </Button>
-      )}
-      component={
-        <div className='RowHeight'>
-          <MenuItem
-            selected={rowHeight === RowHeightSize.sm}
-            onClick={() => onRowHeightChange(RowHeightSize.sm)}
+    <ErrorBoundary>
+      <ControlPopover
+        title='Select Table Row Height'
+        anchorOrigin={{
+          vertical: 'bottom',
+          horizontal: 'left',
+        }}
+        transformOrigin={{
+          vertical: 'top',
+          horizontal: 'left',
+        }}
+        anchor={({ onAnchorClick, opened }) => (
+          <Button
+            variant='text'
+            color='secondary'
+            onClick={onAnchorClick}
+            className={`RowHeightPopover__trigger ${
+              opened || rowHeightChanged ? 'opened' : ''
+            }`}
           >
-            Small
-          </MenuItem>
-          <MenuItem
-            selected={rowHeight === RowHeightSize.md}
-            onClick={() => onRowHeightChange(RowHeightSize.md)}
-          >
-            Medium
-          </MenuItem>
-          <MenuItem
-            selected={rowHeight === RowHeightSize.lg}
-            onClick={() => onRowHeightChange(RowHeightSize.lg)}
-          >
-            Large
-          </MenuItem>
-        </div>
-      }
-    />
+            <Icon name='row-height' />
+            <Text size={14} tint={100}>
+              Row Height
+            </Text>
+          </Button>
+        )}
+        component={
+          <div className='RowHeight'>
+            <MenuItem
+              selected={rowHeight === RowHeightSize.sm}
+              onClick={() => onRowHeightChange(RowHeightSize.sm)}
+            >
+              Small
+            </MenuItem>
+            <MenuItem
+              selected={rowHeight === RowHeightSize.md}
+              onClick={() => onRowHeightChange(RowHeightSize.md)}
+            >
+              Medium
+            </MenuItem>
+            <MenuItem
+              selected={rowHeight === RowHeightSize.lg}
+              onClick={() => onRowHeightChange(RowHeightSize.lg)}
+            >
+              Large
+            </MenuItem>
+          </div>
+        }
+      />
+    </ErrorBoundary>
   );
 }
 

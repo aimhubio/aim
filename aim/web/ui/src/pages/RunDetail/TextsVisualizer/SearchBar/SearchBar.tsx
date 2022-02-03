@@ -5,6 +5,7 @@ import { Tooltip } from '@material-ui/core';
 
 import Icon from 'components/kit/Icon';
 import Button from 'components/kit/Button';
+import ErrorBoundary from 'components/ErrorBoundary/ErrorBoundary';
 
 import {
   ISearchBarProps,
@@ -25,82 +26,86 @@ function SearchBar({
   isDisabled,
 }: ISearchBarProps) {
   return (
-    <div className='SearchBar'>
-      <SearchInput
-        value={searchValue}
-        onInputClear={onInputClear}
-        onInputChange={onInputChange}
-        isValidInput={isValidInput}
-        isDisabled={isDisabled}
-      />
-      <div className='MatchIcons'>
-        <Tooltip title='Match Case'>
-          <div
-            className={classNames({
-              MatchButton: true,
-              active: matchType === MatchTypes.Case,
-            })}
-          >
-            <Button
-              withOnlyIcon
-              color={matchType === MatchTypes.Case ? 'primary' : 'secondary'}
-              size='small'
-              disabled={isDisabled}
-              onClick={() => {
-                onMatchTypeChange(
-                  matchType === MatchTypes.Case ? null : MatchTypes.Case,
-                );
-              }}
-            >
-              <Icon className='IconButton' name='case-sensitive' />
-            </Button>
-          </div>
-        </Tooltip>
-        <Tooltip title='Match Word'>
-          <div
-            className={classNames({
-              MatchButton: true,
-              active: matchType === MatchTypes.Word,
-            })}
-          >
-            <Button
-              withOnlyIcon
-              color={matchType === MatchTypes.Word ? 'primary' : 'secondary'}
-              size='small'
-              disabled={isDisabled}
-              onClick={() => {
-                onMatchTypeChange(
-                  matchType === MatchTypes.Word ? null : MatchTypes.Word,
-                );
-              }}
-            >
-              <Icon className='IconButton' name='word-match' />
-            </Button>
-          </div>
-        </Tooltip>
-        <Tooltip title='Match Regexp'>
-          <div className='MatchButton'>
-            <Button
-              withOnlyIcon
-              color={matchType === MatchTypes.RegExp ? 'primary' : 'secondary'}
-              size='small'
-              disabled={isDisabled}
+    <ErrorBoundary>
+      <div className='SearchBar'>
+        <SearchInput
+          value={searchValue}
+          onInputClear={onInputClear}
+          onInputChange={onInputChange}
+          isValidInput={isValidInput}
+          isDisabled={isDisabled}
+        />
+        <div className='MatchIcons'>
+          <Tooltip title='Match Case'>
+            <div
               className={classNames({
                 MatchButton: true,
-                active: matchType === MatchTypes.RegExp,
+                active: matchType === MatchTypes.Case,
               })}
-              onClick={() => {
-                onMatchTypeChange(
-                  matchType === MatchTypes.RegExp ? null : MatchTypes.RegExp,
-                );
-              }}
             >
-              <Icon className='IconButton' name='regex' />
-            </Button>
-          </div>
-        </Tooltip>
+              <Button
+                withOnlyIcon
+                color={matchType === MatchTypes.Case ? 'primary' : 'secondary'}
+                size='small'
+                disabled={isDisabled}
+                onClick={() => {
+                  onMatchTypeChange(
+                    matchType === MatchTypes.Case ? null : MatchTypes.Case,
+                  );
+                }}
+              >
+                <Icon className='IconButton' name='case-sensitive' />
+              </Button>
+            </div>
+          </Tooltip>
+          <Tooltip title='Match Word'>
+            <div
+              className={classNames({
+                MatchButton: true,
+                active: matchType === MatchTypes.Word,
+              })}
+            >
+              <Button
+                withOnlyIcon
+                color={matchType === MatchTypes.Word ? 'primary' : 'secondary'}
+                size='small'
+                disabled={isDisabled}
+                onClick={() => {
+                  onMatchTypeChange(
+                    matchType === MatchTypes.Word ? null : MatchTypes.Word,
+                  );
+                }}
+              >
+                <Icon className='IconButton' name='word-match' />
+              </Button>
+            </div>
+          </Tooltip>
+          <Tooltip title='Match Regexp'>
+            <div className='MatchButton'>
+              <Button
+                withOnlyIcon
+                color={
+                  matchType === MatchTypes.RegExp ? 'primary' : 'secondary'
+                }
+                size='small'
+                disabled={isDisabled}
+                className={classNames({
+                  MatchButton: true,
+                  active: matchType === MatchTypes.RegExp,
+                })}
+                onClick={() => {
+                  onMatchTypeChange(
+                    matchType === MatchTypes.RegExp ? null : MatchTypes.RegExp,
+                  );
+                }}
+              >
+                <Icon className='IconButton' name='regex' />
+              </Button>
+            </div>
+          </Tooltip>
+        </div>
       </div>
-    </div>
+    </ErrorBoundary>
   );
 }
 

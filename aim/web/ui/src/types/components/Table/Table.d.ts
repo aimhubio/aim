@@ -66,6 +66,7 @@ export interface ITableProps {
   deleteRuns?: (ids: string[]) => void;
   className?: string;
   appName?: AppNameEnum;
+  focusedState?: any;
 }
 
 export interface ITableRef {

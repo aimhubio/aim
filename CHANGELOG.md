@@ -10,7 +10,10 @@
 - Fix table column's sort functionality issue in Params and Scatters Explorers (rubenaprikyan)
 - Add system parameter logging: CLI, Env, Executable, Git, Installed packages (devfox-se)
 - Convert nested non-native objects (e.g. OmegaConf config instance) upon storing (devfox-se)
+- Add cli subcommands cp and mv for aim runs command (mihran113)
 - Add handler for matplotlib figures in Image and Figure custom objects (devfox-se)
+- Improve highlighting of table focused/hovered/selected row (VkoHov)
+- Fix background transparency in colab when using dark mode of system (rubenaprikyan)
 
 ## 3.4.1 Jan 23 2022
 

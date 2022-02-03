@@ -5,11 +5,21 @@ import * as analytics from 'services/analytics';
 import { IBookmarksAppModelState } from 'types/services/models/bookmarks/bookmarksAppModel';
 import { IBookmarksData } from 'types/pages/bookmarks/Bookmarks';
 
+import onNotificationAdd from 'utils/app/onNotificationAdd';
+import exceptionHandler from 'utils/app/exceptionHandler';
+import onNotificationDelete from 'utils/app/onNotificationDelete';
+
 import createModel from '../model';
+
+let bookmarksRequestRef: {
+  call: (exceptionHandler: (detail: any) => void) => Promise<any>;
+  abort: () => void;
+};
 
 const model = createModel<Partial<IBookmarksAppModelState>>({
   isLoading: true,
   listData: [],
+  notifyData: [],
 });
 
 function getBookmarksData() {
@@ -17,26 +27,49 @@ function getBookmarksData() {
   return {
     call: () =>
       call().then(async (data: any) => {
-        const appsList = await appsService.fetchAppsList().call();
-        const listData = data.map((item: any) => {
-          const app = appsList.find(
-            (appData: any) => appData.id === item.app_id,
-          );
-          return { ...item, select: app.state.select, type: app.type };
-        });
-        model.setState({
-          isLoading: false,
-          listData,
-        });
+        try {
+          const appsList = await appsService
+            .fetchAppsList()
+            .call((detail: any) => {
+              exceptionHandler({ detail, model: model as any });
+            });
+          const listData = data.map((item: any) => {
+            const app = appsList.find(
+              (appData: any) => appData.id === item.app_id,
+            );
+            return { ...item, select: app.state.select, type: app.type };
+          });
+          model.setState({
+            isLoading: false,
+            listData,
+          });
+        } catch (err: any) {
+          onNotificationAdd({
+            notification: {
+              id: Date.now(),
+              message: err.message,
+              severity: 'error',
+            },
+            model: model as any,
+          });
+        }
+        model.setState({ isLoading: false });
       }),
+
     abort,
   };
+}
+
+function onBookmarksNotificationDelete(id: number) {
+  onNotificationDelete({ id, model });
 }
 
 async function onBookmarkDelete(id: string) {
   try {
     model.setState({ isLoading: true });
-    await dashboardService.deleteDashboard(id).call();
+    await dashboardService.deleteDashboard(id).call((detail: any) => {
+      exceptionHandler({ detail, model });
+    });
     const listData: IBookmarksData[] | any = model.getState()?.listData;
     const newListData = [...listData].filter((bookmark) => bookmark.id !== id);
     model.setState({
@@ -44,18 +77,58 @@ async function onBookmarkDelete(id: string) {
       isLoading: false,
     });
     analytics.trackEvent('[Bookmarks] Delete a bookmark');
-  } catch (err) {
-    console.log(err);
+  } catch (err: any) {
+    model.setState({
+      isLoading: false,
+    });
+    onNotificationAdd({
+      notification: {
+        id: Date.now(),
+        message: err.message,
+        severity: 'error',
+      },
+      model: model as any,
+    });
   }
 }
+
 function initialize() {
   model.init();
+  try {
+    bookmarksRequestRef = getBookmarksData();
+    bookmarksRequestRef.call((detail) => {
+      exceptionHandler({ detail, model: model as any });
+      model.setState({
+        isLoading: false,
+      });
+    });
+  } catch (err: any) {
+    onNotificationAdd({
+      notification: {
+        id: Date.now(),
+        message: err.message,
+        severity: 'error',
+      },
+      model: model as any,
+    });
+    model.setState({
+      isLoading: false,
+    });
+    bookmarksRequestRef.abort();
+  }
+}
+
+function destroy() {
+  bookmarksRequestRef.abort();
+  model.destroy();
 }
 const bookmarkAppModel = {
   ...model,
   initialize,
+  destroy,
   getBookmarksData,
   onBookmarkDelete,
+  onBookmarksNotificationDelete,
 };
 
 export default bookmarkAppModel;

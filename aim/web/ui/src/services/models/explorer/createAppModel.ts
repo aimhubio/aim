@@ -7,7 +7,7 @@ import { IPoint } from 'components/ScatterPlot';
 
 import COLORS from 'config/colors/colors';
 import DASH_ARRAYS from 'config/dash-arrays/dashArrays';
-import { HideColumnsEnum, ResizeModeEnum } from 'config/enums/tableEnums';
+import { ResizeModeEnum } from 'config/enums/tableEnums';
 import { AlignmentNotificationsEnum } from 'config/notification-messages/notificationMessages';
 import { RowHeightSize, TABLE_DEFAULT_CONFIG } from 'config/table/tableConfigs';
 import { DensityOptions } from 'config/enums/densityEnum';
@@ -1554,7 +1554,7 @@ function createAppModel(appConfig: IAppInitialConfig) {
 
       groupedRows.forEach(
         (groupedRow: IMetricTableRowData[], groupedRowIndex: number) => {
-          groupedRow.forEach((row: IMetricTableRowData) => {
+          groupedRow?.forEach((row: IMetricTableRowData) => {
             const filteredRow = getFilteredRow<IMetricTableRowData>({
               columnKeys: filteredHeader,
               row,
@@ -1599,12 +1599,14 @@ function createAppModel(appConfig: IAppInitialConfig) {
                 newData: tableData.rows,
                 dynamicData: true,
               });
-              tableRef.current?.setHoveredRow?.(activePoint.key);
-              tableRef.current?.setActiveRow?.(
-                focusedStateActive ? activePoint.key : null,
-              );
+
               if (focusedStateActive) {
                 tableRef.current?.scrollToRow?.(activePoint.key);
+                tableRef.current?.setActiveRow?.(
+                  focusedStateActive ? activePoint.key : null,
+                );
+              } else {
+                tableRef.current?.setHoveredRow?.(activePoint.key);
               }
             }
           }
@@ -2091,10 +2093,7 @@ function createAppModel(appConfig: IAppInitialConfig) {
       let liveUpdateInstance: LiveUpdateService | null;
       let updateTableTimeoutId: number;
 
-      function initialize(appId: string = ''): {
-        call: () => Promise<void>;
-        abort: () => void;
-      } {
+      function initialize(appId: string = '') {
         model.init();
         const state: Partial<IAppModelState> = {};
         if (grouping) {
@@ -2127,8 +2126,20 @@ function createAppModel(appConfig: IAppInitialConfig) {
             liveUpdateState.delay,
           );
         }
-
-        return getRunsData();
+        try {
+          getRunsData().call((detail) => {
+            exceptionHandler({ detail, model });
+          });
+        } catch (err: any) {
+          onNotificationAdd({
+            model,
+            notification: {
+              id: Date.now(),
+              message: err.message,
+              severity: 'error',
+            },
+          });
+        }
       }
 
       function abortRequest(): void {
@@ -2152,7 +2163,7 @@ function createAppModel(appConfig: IAppInitialConfig) {
         shouldResetSelectedRows?: boolean,
         isInitial = true,
       ): {
-        call: () => Promise<void>;
+        call: (exceptionHandler: (detail: any) => void) => Promise<any>;
         abort: () => void;
       } {
         if (runsRequestRef) {
@@ -2180,9 +2191,9 @@ function createAppModel(appConfig: IAppInitialConfig) {
         return {
           call: async () => {
             try {
-              const stream = await runsRequestRef.call((detail) =>
-                exceptionHandler({ detail, model }),
-              );
+              const stream = await runsRequestRef.call((detail) => {
+                exceptionHandler({ detail, model });
+              });
               let gen = adjustable_reader(stream as ReadableStream<any>);
               let buffer_pairs = decode_buffer_pairs(gen);
               let decodedPairs = decodePathsVals(buffer_pairs);
@@ -2242,9 +2253,14 @@ function createAppModel(appConfig: IAppInitialConfig) {
               });
             } catch (ex: Error | any) {
               if (ex.name === 'AbortError') {
-                // Abort Error
-              } else {
-                console.log('Unhandled error: ', ex);
+                onNotificationAdd({
+                  notification: {
+                    id: Date.now(),
+                    severity: 'error',
+                    message: `${ex.name}, ${ex.message}`,
+                  },
+                  model,
+                });
               }
             }
             liveUpdateInstance?.start({
@@ -2688,7 +2704,9 @@ function createAppModel(appConfig: IAppInitialConfig) {
 
       function getLastRunsData(
         lastRow: any,
-      ): { call: () => Promise<void>; abort: () => void } | undefined {
+      ):
+        | { call: (exception: any) => Promise<void>; abort: () => void }
+        | undefined {
         const modelData: Partial<IRunsAppModelState> = model.getState();
         const infiniteIsPending = modelData?.infiniteIsPending;
         const isLatest = modelData?.config.pagination.isLatest;
@@ -2755,7 +2773,7 @@ function createAppModel(appConfig: IAppInitialConfig) {
 
         groupedRows.forEach(
           (groupedRow: IMetricTableRowData[], groupedRowIndex: number) => {
-            groupedRow.forEach((row: IMetricTableRowData) => {
+            groupedRow?.forEach((row: IMetricTableRowData) => {
               const filteredRow = getFilteredRow({
                 columnKeys: filteredHeader,
                 row,
@@ -2819,6 +2837,7 @@ function createAppModel(appConfig: IAppInitialConfig) {
       }
 
       function destroy(): void {
+        runsRequestRef.abort();
         liveUpdateInstance?.clear();
         liveUpdateInstance = null; //@TODO check is this need or not
       }
@@ -2881,7 +2900,9 @@ function createAppModel(appConfig: IAppInitialConfig) {
               await runsArchiveRef
                 .call((detail) => exceptionHandler({ detail, model }))
                 .then(() => {
-                  getRunsData(false, true).call();
+                  getRunsData(false, true).call((detail: any) => {
+                    exceptionHandler({ detail, model });
+                  });
                   onNotificationAdd({
                     notification: {
                       id: Date.now(),
@@ -2921,7 +2942,9 @@ function createAppModel(appConfig: IAppInitialConfig) {
               await runsDeleteRef
                 .call((detail) => exceptionHandler({ detail, model }))
                 .then(() => {
-                  getRunsData(false, true).call();
+                  getRunsData(false, true).call((detail: any) => {
+                    exceptionHandler({ detail, model });
+                  });
                   onNotificationAdd({
                     notification: {
                       id: Date.now(),
@@ -3834,12 +3857,13 @@ function createAppModel(appConfig: IAppInitialConfig) {
         if (config.table.resizeMode !== ResizeModeEnum.Hide) {
           const tableRef: any = refs?.tableRef;
           if (tableRef) {
-            tableRef.current?.setHoveredRow?.(activePoint.key);
-            tableRef.current?.setActiveRow?.(
-              focusedStateActive ? activePoint.key : null,
-            );
             if (focusedStateActive) {
               tableRef.current?.scrollToRow?.(activePoint.key);
+              tableRef.current?.setActiveRow?.(
+                focusedStateActive ? activePoint.key : null,
+              );
+            } else {
+              tableRef.current?.setHoveredRow?.(activePoint.key);
             }
           }
         }
@@ -3925,7 +3949,7 @@ function createAppModel(appConfig: IAppInitialConfig) {
 
         groupedRows.forEach(
           (groupedRow: IMetricTableRowData[], groupedRowIndex: number) => {
-            groupedRow.forEach((row: IMetricTableRowData) => {
+            groupedRow?.forEach((row: IMetricTableRowData) => {
               const filteredRow = getFilteredRow<IMetricTableRowData>({
                 columnKeys: filteredHeader,
                 row,
@@ -5209,9 +5233,14 @@ function createAppModel(appConfig: IAppInitialConfig) {
                 });
               } catch (ex: Error | any) {
                 if (ex.name === 'AbortError') {
-                  // Abort Error
-                } else {
-                  console.log('Unhandled error: ', ex);
+                  onNotificationAdd({
+                    notification: {
+                      message: ex.message,
+                      id: Date.now(),
+                      severity: 'error',
+                    },
+                    model,
+                  });
                 }
               }
             }
@@ -5266,7 +5295,7 @@ function createAppModel(appConfig: IAppInitialConfig) {
 
         groupedRows.forEach(
           (groupedRow: IMetricTableRowData[], groupedRowIndex: number) => {
-            groupedRow.forEach((row: IMetricTableRowData) => {
+            groupedRow?.forEach((row: IMetricTableRowData) => {
               const filteredRow = getFilteredRow<IMetricTableRowData>({
                 columnKeys: filteredHeader,
                 row,
@@ -5297,12 +5326,13 @@ function createAppModel(appConfig: IAppInitialConfig) {
         if (config.table.resizeMode !== ResizeModeEnum.Hide) {
           const tableRef: any = refs?.tableRef;
           if (tableRef) {
-            tableRef.current?.setHoveredRow?.(activePoint.key);
-            tableRef.current?.setActiveRow?.(
-              focusedStateActive ? activePoint.key : null,
-            );
             if (focusedStateActive) {
               tableRef.current?.scrollToRow?.(activePoint.key);
+              tableRef.current?.setActiveRow?.(
+                focusedStateActive ? activePoint.key : null,
+              );
+            } else {
+              tableRef.current?.setHoveredRow?.(activePoint.key);
             }
           }
         }
