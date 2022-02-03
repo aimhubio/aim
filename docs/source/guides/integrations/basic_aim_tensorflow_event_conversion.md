@@ -1,6 +1,6 @@
 ### Show TensorFlow events in Aim 
 
-Aim give your possibility to convert TensorFlow event files into native format 
+Aim gives your possibility to convert TensorFlow event files into native format 
 and show them directly inside the Aim interface.
 
 Before showing the events in aim, the event files have to pass 
@@ -13,7 +13,7 @@ Please note that only the following TF plugins are currently supported
 To convert TensorFlow events, `aim convert` command must be run on your log directory.
 
 ```commandline
-aim convert --repo .aim tf --logdir ~/tensorflow/logdir
+aim convert tf --logdir ~/tensorflow/logdir
 ```
 
 To make conversion process smooth please ensure that logs directory structure follows conventions below.
@@ -46,9 +46,9 @@ Note that directory naming is not mandated and its up to you how to name them.
 
 The conversion logic categorizes your hierarchy into one of `group`, `run` and `context`
 categories where.
-- group: Is a directory which has one or more run directories inside it.
-- run: Is a directory which has either event files inside it or another directory which has event file inside it.
-- context: Is a directory inside of run directory which has an event file inside it
+- group: Is a directory which has one or more run directories inside it,
+- run: Is a directory which has either event files or context directory inside it,
+- context: Is a directory inside of run directory which has an event file inside it.
 
 Conversion process will scan and determine `run` directories for your hierarchy
 and will create a distinct run for each of them.
@@ -61,7 +61,7 @@ will be ignored since the converter treats them as unorganized event files.
 
 All other events will either have `Context` or `No Context`.
 Context of the event is the name of the parent directory if
-the parent directory hasn't been categorized neither as `run` nor `group` category.
+the parent directory hasn't been categorized into neither as `run` nor `group` category.
 
 For example:
 - Events right underneath `run_1`, `run_2` and `run_3` will have no context
