@@ -41,6 +41,7 @@
    guides/integrations/basic_aim_xgboost.md
    guides/integrations/basic_k8s_deployment.md
    guides/integrations/basic_aim_tensorflow_event_conversion.md
+   guides/training_reproducibility.md
    guides/aim_remote_tracking.md
 
 .. toctree::
