@@ -79,7 +79,7 @@ import createModel from '../model';
 const model = createModel<Partial<IImagesExploreAppModelState>>({
   requestIsPending: false,
   searchButtonDisabled: false,
-  applyButtonDisabled: true,
+  applyButtonDisabled: false,
 });
 
 let tooltipData: ITooltipData = {};
