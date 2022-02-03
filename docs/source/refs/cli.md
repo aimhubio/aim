@@ -1,45 +1,51 @@
 ## Aim CLI
 
-Aim CLI offers a simple interface to easily organize and record your experiments.
-Paired with the Python Library, Aim is a powerful utility to record, search and compare AI experiments.
-Here are the set of commands supported:
+Aim CLI offers a simple interface to easily organize and record your experiments. Paired with the Python Library, Aim is
+a powerful utility to record, search and compare AI experiments. Here are the set of commands supported:
 
-
-| Command       | Description                                                          |
-| --------------| -------------------------------------------------------------------- |
-| `init`        | Initialize the `aim` repository.                                     |
-| `version`     | Displays the version of aim cli currently installed.                 |
-| `up`          | Runs Aim web UI for the given repo.                                  |
-| `upgrade`     | Upgrades legacy Aim repository from `2.x` to `3.0`.                  |
-| `reindex`     | Process runs left in 'in progress' state and optimized finished runs.|
-| `server`      | Run `aim` remote tracking server accepting incoming RPC requests. _Experimental feature._|
-| `runs`        | Manage run data for the given repo.                                  |
+| Command   | Description                                                                               |
+|-----------|-------------------------------------------------------------------------------------------|
+| `init`    | Initialize the `aim` repository.                                                          |
+| `version` | Displays the version of aim cli currently installed.                                      |
+| `up`      | Runs Aim web UI for the given repo.                                                       |
+| `upgrade` | Upgrades legacy Aim repository from `2.x` to `3.0`.                                       |
+| `reindex` | Process runs left in 'in progress' state and optimized finished runs.                     |
+| `server`  | Run `aim` remote tracking server accepting incoming RPC requests. _Experimental feature._ |
+| `runs`    | Manage run data for the given repo.                                                       |
+| `convert` | Tool-set for converting 3rd party data into Aim readable format.                          |
 
 ### init
+
 __*This step is optional.*__
 Initialize the aim repo to record the experiments.
+
 ```shell
 $ aim init
 ```
-Creates `.aim` directory to save the recorded experiments to.
-Running `aim init` in an existing repository will prompt the user for re-initialization.
+
+Creates `.aim` directory to save the recorded experiments to. Running `aim init` in an existing repository will prompt
+the user for re-initialization.
 
 | Args                              | Description                                               |
 | --------------------------------- | --------------------------------------------------------- |
 | `--repo <repo_path>`              | Path to parent directory of `.aim` repo. _Current working directory by default_ |
 
-
-  __*Beware:*__ Re-initialization of the repo clears `.aim` folder from previously saved data and initializes new repo.
-  __*Note:*__ This command is not necessary to be able to get started with Aim as aim is automatically initializes with the first aim function call.
+__*Beware:*__ Re-initialization of the repo clears `.aim` folder from previously saved data and initializes new repo.
+__*Note:*__ This command is not necessary to be able to get started with Aim as aim is automatically initializes with
+the first aim function call.
 
 ### version
+
 Display the Aim version installed.
+
 ```shell
 $ aim version
 ```
 
 ### up
+
 Start the Aim web UI locally.
+
 ```shell
 $ aim up [ARGS]
 ```
@@ -52,7 +58,9 @@ $ aim up [ARGS]
 | `--dev`                           | Run UI in development mode.                                   |
 
 ### upgrade
+
 Upgrade Aim repository containing data logged with older version of Aim.
+
 ```shell
 $ aim upgrade [ARGS] SUBCOMMAND
 ```
@@ -64,6 +72,7 @@ $ aim upgrade [ARGS] SUBCOMMAND
 __upgrade subcommands__
 
 Upgrade `aim` repository from `2.x` to `3.0`.
+
 ```shell
 $ aim ugrade 2to3 [ARGS]
 ```
@@ -75,7 +84,9 @@ $ aim ugrade 2to3 [ARGS]
 | `--drop-existing`     | Use this flag to clear old `.aim` directory. By default old data is kept in `.aim_legacy`.|
 
 ### reindex
+
 Update index to include all runs in Aim repo which are left in progress.
+
 ```shell
 $ aim reindex [ARGS]
 ```
@@ -86,7 +97,9 @@ $ aim reindex [ARGS]
 | `--finalize-only`                 | Only finalize runs left in 'in progress' state. Do not attempt runs optimization. |
 
 ### server
+
 Run a gRPC server to collect tracked data from remote clients.
+
 ```shell
 $ aim server [ARGS]
 ```
@@ -101,7 +114,9 @@ $ aim server [ARGS]
 | `--ssl-certfile`                  | Specify path to cert. file for secure connection.         |
 
 ### runs
+
 Upgrade Aim repository runs data.
+
 ```shell
 $ aim runs [ARGS] SUBCOMMAND
 ```
@@ -142,3 +157,27 @@ $ aim runs cp [ARGS] [HASH] ...
 | Args                              | Description                                               |
 | --------------------------------- | --------------------------------------------------------- |
 | `--destination <dest_repo_path>`  | Path to destination repo. __Required.__|
+
+### convert
+
+Tool-set for converting 3rd party data into Aim readable format.
+
+```shell
+$ aim convert [ARGS] SUBCOMMAND
+```
+
+| Args                              | Description                                               |
+| --------------------------------- | --------------------------------------------------------- |
+| `--repo <repo_path>`              | Path to parent directory of `.aim` repo. _Current working directory by default_ |
+
+**convert subcommands**
+
+| Sub-command | Description                    |
+|-------------|--------------------------------|
+| `tf`        | Convert from TensorFlow events |
+
+**Sub-command: tf**
+
+| Options       | Description                                                                                  |
+|---------------|----------------------------------------------------------------------------------------------|
+| `--flat` | Disregard context directory and treat them as distinct run directories. Inactive by default. |

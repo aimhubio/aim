@@ -13,51 +13,7 @@ def parse_tf_events(tf_logs, repo_inst, flat=False):
     Creates and uses cache file "tf_logs_cache" in the repo dir
     to track previously processed files and values
 
-    Currently, supports the following TF plugins
-        - scalar
-        - image
-
-    To make conversion process smooth ensure that your directory has the following structure
-
-    your_provided_log_dir/
-        ├> run_1/
-        │    ├> <tf_events_file_1>
-        │    └> <tf_events_file_2>
-        ├> group_1/
-        │    ├> <tf_events_file_3> (THIS EVENT WILL BE IGNORED)
-        │    ├> run_2/
-        │    │    ├> train/
-        │    │    │    ├> <tf_events_file_4>
-        │    │    │    └> <tf_events_file_5>
-        │    │    ├> validate/
-        │    │    │    ├> <tf_events_file_6>
-        │    │    │    └> <tf_events_file_7>
-        │    │    ├> <tf_events_file_8>
-        │    │    └> <tf_events_file_9>
-        │    └> run_3/
-        │        ├> <tf_events_file_10>
-        │        └> <tf_events_file_11>
-        ├> <tf_events_file_12> (THIS EVENT WILL BE IGNORED)
-        └> <tf_events_file_13> (THIS EVENT WILL BE IGNORED)
-
-    From the hierarchy example above you can see that "your_provided_log_dir/group1/tf_events_file_3",
-    "your_provided_log_dir/tf_events_file_12" and "your_provided_log_dir/tf_events_file_13"
-    event files will be ignored since the converter treats them as unorganized event files.
-
-    All other events will either have "Context" or "No Context".
-    Context of the event is the name of the parent directory if
-    the parent directory hasn't been categorized as a "run" or "group of runs" directory
-
-    For example:
-        - Events right underneath run_1, run_2 and run_3 will have no context
-        - Events under run_2/train and run_2/validate will have "train" and "validate" as context accordingly.
-
-    In case the converter finds unorganized event files in your hierarchy a warning message will be issued.
-
-    To make the converter process these events, consider re-structuring your directories so that it matches
-    the sample structure. (i.e. create a new directory and moving your unorganized events there)
-    * OR *
-    set the "flat" flag to treat each directory as a distinct run.
+    For more info please refer to this guide: docs/source/guides/integrations/basic_aim_tensorflow_event_conversion.md
     """
 
     try:
