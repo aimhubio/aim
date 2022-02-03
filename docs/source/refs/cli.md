@@ -16,7 +16,7 @@ Here are the set of commands supported:
 | `runs`        | Manage run data for the given repo.                                  |
 
 ### init
-__**This step is optional.**__
+__*This step is optional.*__
 Initialize the aim repo to record the experiments.
 ```shell
 $ aim init
@@ -29,8 +29,8 @@ Running `aim init` in an existing repository will prompt the user for re-initial
 | `--repo <repo_path>`              | Path to parent directory of `.aim` repo. _Current working directory by default_ |
 
 
-  **_Beware:_** Re-initialization of the repo clears `.aim` folder from previously saved data and initializes new repo.
-  **_Note:_** This command is not necessary to be able to get started with Aim as aim is automatically initializes with the first aim function call.
+  __*Beware:*__ Re-initialization of the repo clears `.aim` folder from previously saved data and initializes new repo.
+  __*Note:*__ This command is not necessary to be able to get started with Aim as aim is automatically initializes with the first aim function call.
 
 ### version
 Display the Aim version installed.
@@ -61,7 +61,7 @@ $ aim upgrade [ARGS] SUBCOMMAND
 | --------------------------------- | --------------------------------------------------------- |
 | `--repo <repo_path>`              | Path to parent directory of `.aim` repo. _Current working directory by default_ |
 
-**upgrade subcommands**
+__upgrade subcommands__
 
 Upgrade `aim` repository from `2.x` to `3.0`.
 ```shell
@@ -96,7 +96,7 @@ $ aim server [ARGS]
 | `--repo <repo_path>`              | Path to parent directory of `.aim` repo. _Current working directory by default_ |
 | `-h` &#124; `--host <host>`       | Specify host address.                                     |
 | `-p` &#124; `--port <port>`       | Specify port to listen to. _Default is 53800_             |
-| `-w` &#124; `--workers <N>`       | Specify number of gPRC workers. _Default is 1 worker.     |
+| `-w` &#124; `--workers <N>`       | Specify number of gPRC workers. _Default is 1 worker_.     |
 | `--ssl-keyfile`                   | Specify path to keyfile for secure connection.            |
 | `--ssl-certfile`                  | Specify path to cert. file for secure connection.         |
 
@@ -110,13 +110,14 @@ $ aim runs [ARGS] SUBCOMMAND
 | --------------------------------- | --------------------------------------------------------- |
 | `--repo <repo_path>`              | Path to parent directory of `.aim` repo. _Current working directory by default_ |
 
-**runs subcommands**
+__runs subcommands__
 
 | Sub-command   | Description                                                          |
 | --------------| -------------------------------------------------------------------- |
 | `ls`        | List runs in `aim` repository.                                         |
 | `rm`        | Remove run data for given runs hashes. At lease one run should be specified|
-
+| `cp`        | Copy run data for given runs hashes. At lease one run should be specified|
+| `mv`        | Move run data for given runs hashes. At lease one run should be specified|
 
 ```shell
 $ aim runs ls
@@ -125,3 +126,19 @@ $ aim runs ls
 ```shell
 $ aim runs rm [HASH] ...
 ```
+
+```shell
+$ aim runs cp [ARGS] [HASH] ...
+```
+
+| Args                              | Description                                               |
+| --------------------------------- | --------------------------------------------------------- |
+| `--destination <dest_repo_path>`  | Path to destination repo. __Required.__|
+
+```shell
+$ aim runs cp [ARGS] [HASH] ...
+```
+
+| Args                              | Description                                               |
+| --------------------------------- | --------------------------------------------------------- |
+| `--destination <dest_repo_path>`  | Path to destination repo. __Required.__|
