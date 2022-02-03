@@ -19,6 +19,7 @@ import NotificationContainer from 'components/NotificationContainer/Notification
 import StatusLabel from 'components/StatusLabel';
 import ControlPopover from 'components/ControlPopover/ControlPopover';
 import BusyLoaderWrapper from 'components/BusyLoaderWrapper/BusyLoaderWrapper';
+import ErrorBoundary from 'components/ErrorBoundary/ErrorBoundary';
 
 import { DateWithOutSeconds } from 'config/dates/dates';
 
@@ -183,146 +184,153 @@ function RunDetail(): React.FunctionComponentElement<React.ReactNode> {
   }, []);
 
   return (
-    <section className='RunDetail container' ref={containerRef}>
-      <div className='RunDetail__runDetailContainer'>
-        <div className='RunDetail__runDetailContainer__appBarContainer'>
-          <ControlPopover
-            anchorOrigin={{
-              vertical: 'bottom',
-              horizontal: 'left',
-            }}
-            transformOrigin={{
-              vertical: 'top',
-              horizontal: 'left',
-            }}
-            anchor={({ onAnchorClick, opened }) => (
-              <div
-                className='RunDetail__runDetailContainer__appBarContainer__appBarTitleBox'
-                onClick={onAnchorClick}
-              >
-                {!runData?.isRunInfoLoading ? (
-                  <>
-                    <div className='RunDetail__runDetailContainer__appBarContainer__appBarTitleBox__container'>
-                      <Text tint={100} size={16} weight={600}>
-                        {`${
-                          runData?.runInfo?.experiment?.name || 'default'
-                        } / ${runHash || ''}`}
-                      </Text>
-                    </div>
-                  </>
-                ) : (
-                  <Skeleton variant='rect' height={24} width={340} />
-                )}
-                <Button
-                  disabled={
-                    runData?.isExperimentsLoading || runData?.isRunInfoLoading
-                  }
-                  color={opened ? 'primary' : 'default'}
-                  size='small'
-                  className={classNames(
-                    'RunDetail__runDetailContainer__appBarContainer__appBarTitleBox__buttonSelectToggler',
-                    { opened: opened },
+    <ErrorBoundary>
+      <section className='RunDetail container' ref={containerRef}>
+        <div className='RunDetail__runDetailContainer'>
+          <div className='RunDetail__runDetailContainer__appBarContainer'>
+            <ControlPopover
+              anchorOrigin={{
+                vertical: 'bottom',
+                horizontal: 'left',
+              }}
+              transformOrigin={{
+                vertical: 'top',
+                horizontal: 'left',
+              }}
+              anchor={({ onAnchorClick, opened }) => (
+                <div
+                  className='RunDetail__runDetailContainer__appBarContainer__appBarTitleBox'
+                  onClick={onAnchorClick}
+                >
+                  {!runData?.isRunInfoLoading ? (
+                    <>
+                      <div className='RunDetail__runDetailContainer__appBarContainer__appBarTitleBox__container'>
+                        <Text tint={100} size={16} weight={600}>
+                          {`${
+                            runData?.runInfo?.experiment?.name || 'default'
+                          } / ${runHash || ''}`}
+                        </Text>
+                      </div>
+                    </>
+                  ) : (
+                    <Skeleton variant='rect' height={24} width={340} />
                   )}
-                  withOnlyIcon
-                >
-                  <Icon name={opened ? 'arrow-up' : 'arrow-down'} />
-                </Button>
-              </div>
-            )}
-            component={
-              <RunSelectPopoverContent
-                getRunsOfExperiment={getRunsOfExperiment}
-                experimentsData={runData?.experimentsData}
-                experimentId={runData?.experimentId}
-                runsOfExperiment={runData?.runsOfExperiment}
-                runInfo={runData?.runInfo}
-                isRunsOfExperimentLoading={runData?.isRunsOfExperimentLoading}
-                isRunInfoLoading={runData?.isRunInfoLoading}
-                isLoadMoreButtonShown={runData?.isLoadMoreButtonShown}
-                onRunsSelectToggle={onRunsSelectToggle}
-                dateNow={dateNow}
-              />
-            }
-          />
-        </div>
-
-        <div className='RunDetail__runDetailContainer__headerContainer'>
-          <div className='RunDetail__runDetailContainer__headerContainer__infoBox'>
-            {!runData?.isRunInfoLoading ? (
-              <>
-                <Text
-                  component='p'
-                  tint={100}
-                  size={14}
-                  weight={600}
-                  className='RunDetail__runDetailContainer__headerContainer__infoBox__dateTitle'
-                >
-                  {`${moment(runData?.runInfo?.creation_time * 1000).format(
-                    DateWithOutSeconds,
-                  )} | ${processDurationTime(
-                    runData?.runInfo?.creation_time * 1000,
-                    runData?.runInfo?.end_time
-                      ? runData?.runInfo?.end_time * 1000
-                      : dateNow,
-                  )}`}
-                </Text>
-                <StatusLabel
-                  status={runData?.runInfo?.end_time ? 'alert' : 'success'}
-                  title={
-                    runData?.runInfo?.end_time ? 'Finished' : 'In Progress'
-                  }
-                />
-              </>
-            ) : (
-              <Skeleton variant='rect' height={24} width={300} />
-            )}
-          </div>
-          <div className='RunDetail__runDetailContainer__headerContainer__tagsBox ScrollBar__hidden'>
-            {runData?.runInfo?.tags.map((tag: any, i: number) => (
-              <Badge color={tag.color} label={tag.name} key={i} />
-            ))}
-          </div>
-        </div>
-        <Paper className='RunDetail__runDetailContainer__tabsContainer'>
-          <Tabs
-            className='RunDetail__runDetailContainer__Tabs'
-            value={activeTab}
-            onChange={handleTabChange}
-            aria-label='simple tabs example'
-            indicatorColor='primary'
-            textColor='primary'
-          >
-            {tabs.map((tab) => (
-              <Tab
-                key={tab}
-                label={tab}
-                value={`${url}/${tab}`}
-                component={Link}
-                to={`${url}/${tab}`}
-              />
-            ))}
-          </Tabs>
-        </Paper>
-        <BusyLoaderWrapper isLoading={runData?.isRunInfoLoading} height='100%'>
-          <Switch>
-            {tabs.map((tab: string) => (
-              <Route path={`${url}/${tab}`} key={tab}>
-                <div className='RunDetail__runDetailContainer__tabPanel'>
-                  {tabContent[tab]}
+                  <Button
+                    disabled={
+                      runData?.isExperimentsLoading || runData?.isRunInfoLoading
+                    }
+                    color={opened ? 'primary' : 'default'}
+                    size='small'
+                    className={classNames(
+                      'RunDetail__runDetailContainer__appBarContainer__appBarTitleBox__buttonSelectToggler',
+                      { opened: opened },
+                    )}
+                    withOnlyIcon
+                  >
+                    <Icon name={opened ? 'arrow-up' : 'arrow-down'} />
+                  </Button>
                 </div>
-              </Route>
-            ))}
-            <Redirect to={`${url}/parameters`} />
-          </Switch>
-        </BusyLoaderWrapper>
-      </div>
-      {runData?.notifyData?.length > 0 && (
-        <NotificationContainer
-          handleClose={runDetailAppModel?.onNotificationDelete}
-          data={runData?.notifyData}
-        />
-      )}
-    </section>
+              )}
+              component={
+                <RunSelectPopoverContent
+                  getRunsOfExperiment={getRunsOfExperiment}
+                  experimentsData={runData?.experimentsData}
+                  experimentId={runData?.experimentId}
+                  runsOfExperiment={runData?.runsOfExperiment}
+                  runInfo={runData?.runInfo}
+                  isRunsOfExperimentLoading={runData?.isRunsOfExperimentLoading}
+                  isRunInfoLoading={runData?.isRunInfoLoading}
+                  isLoadMoreButtonShown={runData?.isLoadMoreButtonShown}
+                  onRunsSelectToggle={onRunsSelectToggle}
+                  dateNow={dateNow}
+                />
+              }
+            />
+          </div>
+
+          <div className='RunDetail__runDetailContainer__headerContainer'>
+            <div className='RunDetail__runDetailContainer__headerContainer__infoBox'>
+              {!runData?.isRunInfoLoading ? (
+                <>
+                  <Text
+                    component='p'
+                    tint={100}
+                    size={14}
+                    weight={600}
+                    className='RunDetail__runDetailContainer__headerContainer__infoBox__dateTitle'
+                  >
+                    {`${moment(runData?.runInfo?.creation_time * 1000).format(
+                      DateWithOutSeconds,
+                    )} | ${processDurationTime(
+                      runData?.runInfo?.creation_time * 1000,
+                      runData?.runInfo?.end_time
+                        ? runData?.runInfo?.end_time * 1000
+                        : dateNow,
+                    )}`}
+                  </Text>
+                  <StatusLabel
+                    status={runData?.runInfo?.end_time ? 'alert' : 'success'}
+                    title={
+                      runData?.runInfo?.end_time ? 'Finished' : 'In Progress'
+                    }
+                  />
+                </>
+              ) : (
+                <Skeleton variant='rect' height={24} width={300} />
+              )}
+            </div>
+            <div className='RunDetail__runDetailContainer__headerContainer__tagsBox ScrollBar__hidden'>
+              {runData?.runInfo?.tags.map((tag: any, i: number) => (
+                <Badge color={tag.color} label={tag.name} key={i} />
+              ))}
+            </div>
+          </div>
+          <Paper className='RunDetail__runDetailContainer__tabsContainer'>
+            <Tabs
+              className='RunDetail__runDetailContainer__Tabs'
+              value={activeTab}
+              onChange={handleTabChange}
+              aria-label='simple tabs example'
+              indicatorColor='primary'
+              textColor='primary'
+            >
+              {tabs.map((tab) => (
+                <Tab
+                  key={tab}
+                  label={tab}
+                  value={`${url}/${tab}`}
+                  component={Link}
+                  to={`${url}/${tab}`}
+                />
+              ))}
+            </Tabs>
+          </Paper>
+          <BusyLoaderWrapper
+            isLoading={runData?.isRunInfoLoading}
+            height='100%'
+          >
+            <Switch>
+              {tabs.map((tab: string) => (
+                <Route path={`${url}/${tab}`} key={tab}>
+                  <ErrorBoundary>
+                    <div className='RunDetail__runDetailContainer__tabPanel'>
+                      {tabContent[tab]}
+                    </div>
+                  </ErrorBoundary>
+                </Route>
+              ))}
+              <Redirect to={`${url}/parameters`} />
+            </Switch>
+          </BusyLoaderWrapper>
+        </div>
+        {runData?.notifyData?.length > 0 && (
+          <NotificationContainer
+            handleClose={runDetailAppModel?.onNotificationDelete}
+            data={runData?.notifyData}
+          />
+        )}
+      </section>
+    </ErrorBoundary>
   );
 }
 

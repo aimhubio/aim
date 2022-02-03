@@ -277,15 +277,14 @@ const MediaGroupedList = React.memo(function MediaGroupedList({
           ...style,
         }}
       >
-        <ErrorBoundary>
-          {path.slice(2).map((key: string, i: number) => (
+        {path.slice(2).map((key: string, i: number) => (
+          <ErrorBoundary key={key}>
             <div
-              key={key}
               className='MediaSet__connectorLine'
               style={{ left: `calc(0.625rem * ${i})` }}
             />
-          ))}
-        </ErrorBoundary>
+          </ErrorBoundary>
+        ))}
         <div
           className={`MediaSet__container ${path.length > 2 ? 'withDash' : ''}`}
         >

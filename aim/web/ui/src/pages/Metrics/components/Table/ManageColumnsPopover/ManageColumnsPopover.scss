@@ -6,7 +6,7 @@
 }
 
 .ColumnList__container {
-  width: 13.125rem;
+  width: toRem(240px);
   overflow: hidden;
   display: flex;
   flex-direction: column;
@@ -53,17 +53,16 @@
 }
 
 .ManageColumns__actions__container {
-  padding: 0.5rem;
+  padding: 0.25rem 1rem;
   display: flex;
-  justify-content: flex-end;
+  justify-content: space-between;
 
   button {
-    margin-left: 0.5rem;
-    &:nth-child(4) {
-      margin-left: 0;
+    &:nth-child(2n) {
+      margin-left: 0.5rem;
     }
-
     i {
+      color: $text-color;
       margin-right: 0.75rem;
     }
   }

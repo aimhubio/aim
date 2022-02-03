@@ -6,6 +6,9 @@ import runsService from 'services/api/runs/runsService';
 import * as analytics from 'services/analytics';
 
 import { INotification } from 'types/components/NotificationContainer/NotificationContainer';
+import { IApiRequest } from 'types/services/services';
+
+import exceptionHandler from 'utils/app/exceptionHandler';
 
 import createModel from '../model';
 
@@ -17,23 +20,10 @@ const model = createModel<Partial<any>>({
   isLoadMoreButtonShown: true,
 });
 
-let getRunsInfoRequestRef: {
-  call: () => Promise<any>;
-  abort: () => void;
-};
-let getRunsBatchRequestRef: {
-  call: () => Promise<any>;
-  abort: () => void;
-};
-let getExperimentsDataRequestRef: {
-  call: () => Promise<any>;
-  abort: () => void;
-};
-
-let getRunsOfExperimentRequestRef: {
-  call: () => Promise<any>;
-  abort: () => void;
-};
+let getRunsInfoRequestRef: IApiRequest<void>;
+let getRunsBatchRequestRef: IApiRequest<void>;
+let getExperimentsDataRequestRef: IApiRequest<void>;
+let getRunsOfExperimentRequestRef: IApiRequest<void>;
 
 function initialize() {
   model.init();
@@ -47,7 +37,9 @@ function getExperimentsData() {
   return {
     call: async () => {
       model.setState({ isExperimentsLoading: true });
-      const data = await getExperimentsDataRequestRef.call();
+      const data = await getExperimentsDataRequestRef.call((detail: any) => {
+        exceptionHandler({ detail, model });
+      });
       model.setState({
         isExperimentsLoading: false,
         experimentsData: data,
@@ -66,7 +58,9 @@ function getRunInfo(runHash: string) {
   return {
     call: async () => {
       model.setState({ isRunInfoLoading: true });
-      const data = await getRunsInfoRequestRef.call();
+      const data = await getRunsInfoRequestRef.call((detail: any) => {
+        exceptionHandler({ detail, model });
+      });
       model.setState({
         runParams: data.params,
         runTraces: data.traces,
@@ -95,7 +89,9 @@ function getRunsOfExperiment(
   return {
     call: async () => {
       model.setState({ isRunsOfExperimentLoading: true });
-      const data = await getRunsOfExperimentRequestRef.call();
+      const data = await getRunsOfExperimentRequestRef.call((detail: any) => {
+        exceptionHandler({ detail, model });
+      });
       const runsOfExperiment = isLoadingMore
         ? [...(model.getState().runsOfExperiment || []), ...data.runs]
         : [...data.runs];
@@ -119,7 +115,9 @@ function getRunMetricsBatch(body: any, runHash: string) {
     call: async () => {
       model.setState({ isRunBatchLoading: true });
 
-      const data = await getRunsBatchRequestRef.call();
+      const data = await getRunsBatchRequestRef.call((detail: any) => {
+        exceptionHandler({ detail, model });
+      });
       const runMetricsBatch: IRunBatch[] = [];
       const runSystemBatch: IRunBatch[] = [];
       data.forEach((run: IRunBatch) => {
@@ -144,7 +142,9 @@ function archiveRun(id: string, archived: boolean = false) {
   const state = model.getState();
   runsService
     .archiveRun(id, archived)
-    .call()
+    .call((detail) => {
+      exceptionHandler({ detail, model });
+    })
     .then((res: any) => {
       model.setState({
         ...state,
@@ -175,21 +175,31 @@ function archiveRun(id: string, archived: boolean = false) {
 }
 
 function deleteRun(id: string, successCallback: () => void = noop) {
-  runsService
-    .deleteRun(id)
-    .call()
-    .then((res: any) => {
-      if (res.id) {
-        successCallback();
-      } else {
-        onNotificationAdd({
-          id: Date.now(),
-          severity: 'error',
-          message: 'Something went wrong',
-        });
-      }
-      analytics.trackEvent('[RunDetail] Delete Run');
+  try {
+    runsService
+      .deleteRun(id)
+      .call((detail) => {
+        exceptionHandler({ model, detail });
+      })
+      .then((res: any) => {
+        if (res.id) {
+          successCallback();
+        } else {
+          onNotificationAdd({
+            id: Date.now(),
+            severity: 'error',
+            message: 'Something went wrong',
+          });
+        }
+        analytics.trackEvent('[RunDetail] Delete Run');
+      });
+  } catch (err: any) {
+    onNotificationAdd({
+      id: Date.now(),
+      severity: 'error',
+      message: err.message,
     });
+  }
 }
 
 function onNotificationDelete(id: number) {

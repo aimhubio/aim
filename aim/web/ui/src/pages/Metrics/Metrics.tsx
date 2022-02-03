@@ -9,6 +9,7 @@ import EmptyComponent from 'components/EmptyComponent/EmptyComponent';
 import TableLoader from 'components/TableLoader/TableLoader';
 import ChartLoader from 'components/ChartLoader/ChartLoader';
 import ResizePanel from 'components/ResizePanel/ResizePanel';
+import ErrorBoundary from 'components/ErrorBoundary/ErrorBoundary';
 
 import { ResizeModeEnum } from 'config/enums/tableEnums';
 import { RowHeightSize } from 'config/table/tableConfigs';
@@ -62,189 +63,197 @@ function Metrics(
   ]);
 
   return (
-    <div ref={props.wrapperElemRef} className='Metrics__container'>
-      <section className='Metrics__section'>
-        <div className='Metrics__section__div Metrics__fullHeight'>
-          <MetricsBar
-            onBookmarkCreate={props.onBookmarkCreate}
-            onBookmarkUpdate={props.onBookmarkUpdate}
-            onResetConfigData={props.onResetConfigData}
-            liveUpdateConfig={props.liveUpdateConfig}
-            onLiveUpdateConfigChange={props.onLiveUpdateConfigChange}
-            title={'Metrics explorer'}
-          />
-          <div className='Metrics__SelectForm__Grouping__container'>
-            <SelectForm
-              requestIsPending={props.requestIsPending}
-              selectedMetricsData={props.selectedMetricsData}
-              onMetricsSelectChange={props.onMetricsSelectChange}
-              onSelectRunQueryChange={props.onSelectRunQueryChange}
-              onSelectAdvancedQueryChange={props.onSelectAdvancedQueryChange}
-              toggleSelectAdvancedMode={props.toggleSelectAdvancedMode}
-              onSearchQueryCopy={props.onSearchQueryCopy}
+    <ErrorBoundary>
+      <div ref={props.wrapperElemRef} className='Metrics__container'>
+        <section className='Metrics__section'>
+          <div className='Metrics__section__div Metrics__fullHeight'>
+            <MetricsBar
+              onBookmarkCreate={props.onBookmarkCreate}
+              onBookmarkUpdate={props.onBookmarkUpdate}
+              onResetConfigData={props.onResetConfigData}
+              liveUpdateConfig={props.liveUpdateConfig}
+              onLiveUpdateConfigChange={props.onLiveUpdateConfigChange}
+              title={'Metrics explorer'}
             />
-            <Grouping
-              groupingPopovers={GroupingPopovers.filter(
-                (p) =>
-                  p.groupName === 'color' ||
-                  p.groupName === 'stroke' ||
-                  p.groupName === 'chart',
-              )}
-              groupingData={props.groupingData}
-              groupingSelectOptions={props.groupingSelectOptions}
-              onGroupingSelectChange={props.onGroupingSelectChange}
-              onGroupingModeChange={props.onGroupingModeChange}
-              onGroupingPaletteChange={props.onGroupingPaletteChange}
-              onGroupingReset={props.onGroupingReset}
-              onGroupingApplyChange={props.onGroupingApplyChange}
-              onGroupingPersistenceChange={props.onGroupingPersistenceChange}
-              onShuffleChange={props.onShuffleChange}
-            />
-          </div>
-          <div
-            ref={props.chartElemRef}
-            className={`Metrics__chart__container${
-              props.resizeMode === ResizeModeEnum.MaxHeight ? '__hide' : ''
-            }`}
-          >
-            <BusyLoaderWrapper
-              isLoading={props.requestIsPending}
-              className='Metrics__loader'
-              height='100%'
-              loaderComponent={<ChartLoader controlsCount={9} />}
+            <div className='Metrics__SelectForm__Grouping__container'>
+              <SelectForm
+                requestIsPending={props.requestIsPending}
+                selectedMetricsData={props.selectedMetricsData}
+                onMetricsSelectChange={props.onMetricsSelectChange}
+                onSelectRunQueryChange={props.onSelectRunQueryChange}
+                onSelectAdvancedQueryChange={props.onSelectAdvancedQueryChange}
+                toggleSelectAdvancedMode={props.toggleSelectAdvancedMode}
+                onSearchQueryCopy={props.onSearchQueryCopy}
+              />
+              <Grouping
+                groupingPopovers={GroupingPopovers.filter(
+                  (p) =>
+                    p.groupName === 'color' ||
+                    p.groupName === 'stroke' ||
+                    p.groupName === 'chart',
+                )}
+                groupingData={props.groupingData}
+                groupingSelectOptions={props.groupingSelectOptions}
+                onGroupingSelectChange={props.onGroupingSelectChange}
+                onGroupingModeChange={props.onGroupingModeChange}
+                onGroupingPaletteChange={props.onGroupingPaletteChange}
+                onGroupingReset={props.onGroupingReset}
+                onGroupingApplyChange={props.onGroupingApplyChange}
+                onGroupingPersistenceChange={props.onGroupingPersistenceChange}
+                onShuffleChange={props.onShuffleChange}
+              />
+            </div>
+            <div
+              ref={props.chartElemRef}
+              className={`Metrics__chart__container${
+                props.resizeMode === ResizeModeEnum.MaxHeight ? '__hide' : ''
+              }`}
             >
-              {!!props.lineChartData?.[0]?.length ? (
-                <ChartPanel
-                  key={props.lineChartData?.length}
-                  ref={props.chartPanelRef}
-                  panelResizing={props.panelResizing}
-                  chartType={ChartTypeEnum.LineChart}
-                  data={props.lineChartData}
-                  focusedState={props.focusedState}
-                  tooltip={props.tooltip}
-                  alignmentConfig={props.alignmentConfig}
-                  zoom={props.zoom}
-                  onActivePointChange={props.onActivePointChange}
-                  chartProps={chartProps}
-                  resizeMode={props.resizeMode}
-                  controls={
-                    <Controls
-                      selectOptions={props.groupingSelectOptions}
-                      tooltip={props.tooltip}
-                      smoothingAlgorithm={props.smoothingAlgorithm}
-                      smoothingFactor={props.smoothingFactor}
-                      curveInterpolation={props.curveInterpolation}
-                      densityType={props.densityType}
-                      ignoreOutliers={props.ignoreOutliers}
-                      zoom={props.zoom}
-                      highlightMode={props.highlightMode}
-                      aggregationConfig={props.aggregationConfig}
-                      axesScaleType={props.axesScaleType}
-                      alignmentConfig={props.alignmentConfig}
-                      onChangeTooltip={props.onChangeTooltip}
-                      onIgnoreOutliersChange={props.onIgnoreOutliersChange}
-                      onZoomChange={props.onZoomChange}
-                      onHighlightModeChange={props.onHighlightModeChange}
-                      onAxesScaleTypeChange={props.onAxesScaleTypeChange}
-                      onSmoothingChange={props.onSmoothingChange}
-                      onAggregationConfigChange={
-                        props.onAggregationConfigChange
-                      }
-                      onDensityTypeChange={props.onDensityTypeChange}
-                      onAlignmentTypeChange={props.onAlignmentTypeChange}
-                      onAlignmentMetricChange={props.onAlignmentMetricChange}
-                      projectsDataMetrics={props.projectsDataMetrics}
-                    />
-                  }
-                />
-              ) : (
-                !props.requestIsPending && (
-                  <EmptyComponent
-                    size='big'
-                    content="It's super easy to search Aim experiments. Lookup search docs to learn more."
+              <BusyLoaderWrapper
+                isLoading={props.requestIsPending}
+                className='Metrics__loader'
+                height='100%'
+                loaderComponent={<ChartLoader controlsCount={9} />}
+              >
+                {!!props.lineChartData?.[0]?.length ? (
+                  <ChartPanel
+                    key={props.lineChartData?.length}
+                    ref={props.chartPanelRef}
+                    panelResizing={props.panelResizing}
+                    chartType={ChartTypeEnum.LineChart}
+                    data={props.lineChartData}
+                    focusedState={props.focusedState}
+                    tooltip={props.tooltip}
+                    alignmentConfig={props.alignmentConfig}
+                    zoom={props.zoom}
+                    onActivePointChange={props.onActivePointChange}
+                    chartProps={chartProps}
+                    resizeMode={props.resizeMode}
+                    controls={
+                      <Controls
+                        selectOptions={props.groupingSelectOptions}
+                        tooltip={props.tooltip}
+                        smoothingAlgorithm={props.smoothingAlgorithm}
+                        smoothingFactor={props.smoothingFactor}
+                        curveInterpolation={props.curveInterpolation}
+                        densityType={props.densityType}
+                        ignoreOutliers={props.ignoreOutliers}
+                        zoom={props.zoom}
+                        highlightMode={props.highlightMode}
+                        aggregationConfig={props.aggregationConfig}
+                        axesScaleType={props.axesScaleType}
+                        alignmentConfig={props.alignmentConfig}
+                        onChangeTooltip={props.onChangeTooltip}
+                        onIgnoreOutliersChange={props.onIgnoreOutliersChange}
+                        onZoomChange={props.onZoomChange}
+                        onHighlightModeChange={props.onHighlightModeChange}
+                        onAxesScaleTypeChange={props.onAxesScaleTypeChange}
+                        onSmoothingChange={props.onSmoothingChange}
+                        onAggregationConfigChange={
+                          props.onAggregationConfigChange
+                        }
+                        onDensityTypeChange={props.onDensityTypeChange}
+                        onAlignmentTypeChange={props.onAlignmentTypeChange}
+                        onAlignmentMetricChange={props.onAlignmentMetricChange}
+                        projectsDataMetrics={props.projectsDataMetrics}
+                      />
+                    }
                   />
-                )
-              )}
-            </BusyLoaderWrapper>
-          </div>
-          <ResizePanel
-            className={`Metrics__ResizePanel${
-              props.requestIsPending || props.lineChartData?.[0]?.length
-                ? ''
-                : '__hide'
-            }`}
-            panelResizing={props.panelResizing}
-            resizeElemRef={props.resizeElemRef}
-            resizeMode={props.resizeMode}
-            onTableResizeModeChange={props.onTableResizeModeChange}
-          />
-          <div
-            ref={props.tableElemRef}
-            className={`Metrics__table__container${
-              props.resizeMode === ResizeModeEnum.Hide ? '__hide' : ''
-            }`}
-          >
-            <BusyLoaderWrapper
-              isLoading={props.requestIsPending}
-              className='Metrics__loader'
-              height='100%'
-              loaderComponent={<TableLoader />}
+                ) : (
+                  !props.requestIsPending && (
+                    <EmptyComponent
+                      size='big'
+                      content="It's super easy to search Aim experiments. Lookup search docs to learn more."
+                    />
+                  )
+                )}
+              </BusyLoaderWrapper>
+            </div>
+            <ResizePanel
+              className={`Metrics__ResizePanel${
+                props.requestIsPending || props.lineChartData?.[0]?.length
+                  ? ''
+                  : '__hide'
+              }`}
+              panelResizing={props.panelResizing}
+              resizeElemRef={props.resizeElemRef}
+              resizeMode={props.resizeMode}
+              onTableResizeModeChange={props.onTableResizeModeChange}
+            />
+            <div
+              ref={props.tableElemRef}
+              className={`Metrics__table__container${
+                props.resizeMode === ResizeModeEnum.Hide ? '__hide' : ''
+              }`}
             >
-              {!isEmpty(props.tableData) ? (
-                <Table
-                  // deletable
-                  custom
-                  ref={props.tableRef}
-                  data={props.tableData}
-                  columns={props.tableColumns}
-                  // Table options
-                  multiSelect
-                  topHeader
-                  groups={!Array.isArray(props.tableData)}
-                  rowHeight={props.tableRowHeight}
-                  rowHeightMode={
-                    props.tableRowHeight === RowHeightSize.sm
-                      ? 'small'
-                      : props.tableRowHeight === RowHeightSize.md
-                      ? 'medium'
-                      : 'large'
-                  }
-                  sortOptions={props.groupingSelectOptions}
-                  sortFields={props.sortFields}
-                  hiddenRows={props.hiddenMetrics}
-                  hiddenColumns={props.hiddenColumns}
-                  resizeMode={props.resizeMode}
-                  columnsWidths={props.columnsWidths}
-                  selectedRows={props.selectedRows}
-                  // Table actions
-                  onSort={props.onSortChange}
-                  onSortReset={props.onSortReset}
-                  onExport={props.onExportTableData}
-                  onManageColumns={props.onColumnsOrderChange}
-                  onColumnsVisibilityChange={props.onColumnsVisibilityChange}
-                  onTableDiffShow={props.onTableDiffShow}
-                  onRowHeightChange={props.onRowHeightChange}
-                  onRowsChange={props.onMetricVisibilityChange}
-                  onRowHover={props.onTableRowHover}
-                  onRowClick={props.onTableRowClick}
-                  onTableResizeModeChange={props.onTableResizeModeChange}
-                  updateColumnsWidths={props.updateColumnsWidths}
-                  onRowSelect={props.onRowSelect}
-                  archiveRuns={props.archiveRuns}
-                  deleteRuns={props.deleteRuns}
-                />
-              ) : null}
-            </BusyLoaderWrapper>
+              <BusyLoaderWrapper
+                isLoading={props.requestIsPending}
+                className='Metrics__loader'
+                height='100%'
+                loaderComponent={<TableLoader />}
+              >
+                {!isEmpty(props.tableData) ? (
+                  <ErrorBoundary>
+                    <Table
+                      // deletable
+                      custom
+                      ref={props.tableRef}
+                      data={props.tableData}
+                      columns={props.tableColumns}
+                      // Table options
+                      multiSelect
+                      topHeader
+                      groups={!Array.isArray(props.tableData)}
+                      rowHeight={props.tableRowHeight}
+                      rowHeightMode={
+                        props.tableRowHeight === RowHeightSize.sm
+                          ? 'small'
+                          : props.tableRowHeight === RowHeightSize.md
+                          ? 'medium'
+                          : 'large'
+                      }
+                      sortOptions={props.groupingSelectOptions}
+                      sortFields={props.sortFields}
+                      hiddenRows={props.hiddenMetrics}
+                      hiddenColumns={props.hiddenColumns}
+                      resizeMode={props.resizeMode}
+                      columnsWidths={props.columnsWidths}
+                      selectedRows={props.selectedRows}
+                      hideSystemMetrics={props.hideSystemMetrics}
+                      // Table actions
+                      onSort={props.onSortChange}
+                      onSortReset={props.onSortReset}
+                      onExport={props.onExportTableData}
+                      onManageColumns={props.onColumnsOrderChange}
+                      onColumnsVisibilityChange={
+                        props.onColumnsVisibilityChange
+                      }
+                      onTableDiffShow={props.onTableDiffShow}
+                      onRowHeightChange={props.onRowHeightChange}
+                      onRowsChange={props.onMetricVisibilityChange}
+                      onRowHover={props.onTableRowHover}
+                      onRowClick={props.onTableRowClick}
+                      onTableResizeModeChange={props.onTableResizeModeChange}
+                      updateColumnsWidths={props.updateColumnsWidths}
+                      onRowSelect={props.onRowSelect}
+                      archiveRuns={props.archiveRuns}
+                      deleteRuns={props.deleteRuns}
+                      focusedState={props.focusedState}
+                    />
+                  </ErrorBoundary>
+                ) : null}
+              </BusyLoaderWrapper>
+            </div>
           </div>
-        </div>
-      </section>
-      {props.notifyData?.length > 0 && (
-        <NotificationContainer
-          handleClose={props.onNotificationDelete}
-          data={props.notifyData}
-        />
-      )}
-    </div>
+        </section>
+        {props.notifyData?.length > 0 && (
+          <NotificationContainer
+            handleClose={props.onNotificationDelete}
+            data={props.notifyData}
+          />
+        )}
+      </div>
+    </ErrorBoundary>
   );
 }
 

@@ -17,6 +17,7 @@ export interface IRunsTableProps {
   isRunsDataLoading: boolean;
   isInfiniteLoading: boolean;
   hiddenColumns: string[];
+  hideSystemMetrics: boolean;
   columns: any;
   tableRowHeight: number;
   onExportTableData: () => void;

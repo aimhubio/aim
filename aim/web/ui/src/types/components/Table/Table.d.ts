@@ -41,6 +41,7 @@ export interface ITableProps {
   rowHeightMode?: any;
   columnsOrder?: any;
   hiddenColumns?: string[];
+  hideSystemMetrics?: boolean;
   updateColumns?: any;
   columnsWidths?: any;
   updateColumnsWidths?: any;
@@ -61,6 +62,7 @@ export interface ITableProps {
   archiveRuns?: (ids: string[], archived: boolean) => void;
   deleteRuns?: (ids: string[]) => void;
   className?: string;
+  focusedState?: any;
 }
 
 export interface ITableRef {
