@@ -109,10 +109,10 @@ function SliderWithInput({
                 errorCondition: (value) => +value < min,
                 errorText: `Value should be equal or greater then ${min}`,
               },
-              // {
-              //   errorCondition: (value) => +value > max,
-              //   errorText: `Value should be equal or smaller then ${max}`,
-              // },
+              {
+                errorCondition: (value) => +value > max,
+                errorText: `Value should be equal or smaller then ${max}`,
+              },
             ]}
           />
         </div>

@@ -16,6 +16,7 @@ function Cell({
   onRowHover,
   onRowClick,
   multiSelect = false,
+  groupColumnColored,
 }) {
   return (
     <ErrorBoundary>
@@ -28,7 +29,10 @@ function Cell({
           Table__group__config__column__cell: isConfigColumn,
           clickable: typeof item === 'object' && !!item?.props?.onClick,
           placeholder: !!placeholder,
-          colorIndicator: !isConfigColumn && metadata?.color,
+          colorIndicator:
+            (!isConfigColumn && metadata?.color) ||
+            (!groupColumnColored && metadata?.color),
+          groupColumnWithoutColor: !groupColumnColored,
         })}
         style={{
           cursor:

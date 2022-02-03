@@ -315,6 +315,12 @@ $border-radius: 0.2rem;
       content: '';
       border-radius: toRem(6px) 0 0 toRem(6px);
     }
+    &.groupColumnWithoutColor {
+      &::before {
+        content: '';
+        border-radius: toRem(6px);
+      }
+    }
   }
   &.hidden {
     background-color: $cuddle-10;
