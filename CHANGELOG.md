@@ -14,6 +14,7 @@
 - Add handler for matplotlib figures in Image and Figure custom objects (devfox-se)
 - Improve highlighting of table focused/hovered/selected row (VkoHov)
 - Fix background transparency in colab when using dark mode of system (rubenaprikyan)
+- Fix stalled runs deletion (mihran113)
 
 ## 3.4.1 Jan 23 2022
 
