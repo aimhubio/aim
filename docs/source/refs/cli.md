@@ -5,15 +5,16 @@ Paired with the Python Library, Aim is a powerful utility to record, search and 
 Here are the set of commands supported:
 
 
-| Command       | Description                                                          |
-| --------------| -------------------------------------------------------------------- |
-| `init`        | Initialize the `aim` repository.                                     |
-| `version`     | Displays the version of aim cli currently installed.                 |
-| `up`          | Runs Aim web UI for the given repo.                                  |
-| `upgrade`     | Upgrades legacy Aim repository from `2.x` to `3.0`.                  |
-| `reindex`     | Process runs left in 'in progress' state and optimized finished runs.|
-| `server`      | Run `aim` remote tracking server accepting incoming RPC requests. _Experimental feature._|
-| `runs`        | Manage run data for the given repo.                                  |
+| Command   | Description                                                                               |
+|-----------|-------------------------------------------------------------------------------------------|
+| `init`    | Initialize the `aim` repository.                                                          |
+| `version` | Displays the version of aim cli currently installed.                                      |
+| `up`      | Runs Aim web UI for the given repo.                                                       |
+| `upgrade` | Upgrades legacy Aim repository from `2.x` to `3.0`.                                       |
+| `reindex` | Process runs left in 'in progress' state and optimized finished runs.                     |
+| `server`  | Run `aim` remote tracking server accepting incoming RPC requests. _Experimental feature._ |
+| `runs`    | Manage run data for the given repo.                                                       |
+| `convert` | Tool-set for converting 3rd party data into Aim readable format.                          |
 
 ### init
 __**This step is optional.**__
@@ -125,3 +126,26 @@ $ aim runs ls
 ```shell
 $ aim runs rm [HASH] ...
 ```
+
+### convert
+Tool-set for converting 3rd party data into Aim readable format.
+
+```shell
+$ aim convert [ARGS] SUBCOMMAND
+```
+
+| Args                              | Description                                               |
+| --------------------------------- | --------------------------------------------------------- |
+| `--repo <repo_path>`              | Path to parent directory of `.aim` repo. _Current working directory by default_ |
+
+**convert subcommands**
+
+| Sub-command | Description                    |
+|-------------|--------------------------------|
+| `tf`        | Convert from TensorFlow events |
+
+**Sub-command: tf**
+
+| Options       | Description                                                                                  |
+|---------------|----------------------------------------------------------------------------------------------|
+| `--flat` | Disregard context directory and treat them as distinct run directories. Inactive by default. |
