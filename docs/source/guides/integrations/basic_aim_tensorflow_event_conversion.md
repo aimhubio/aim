@@ -10,7 +10,7 @@ Please note that only the following TF plugins are currently supported
 - scalar
 - image
 
-To convert TensorFlow events, `aim convert` commant must be run on your log directory.
+To convert TensorFlow events, `aim convert` command must be run on your log directory.
 
 ```commandline
 aim convert --repo .aim tf --logdir ~/tensorflow/logdir
@@ -46,11 +46,11 @@ Note that directory naming is not mandated and its up to you how to name them.
 
 The conversion logic categorizes your hierarchy into one of `group`, `run` and `context`
 categories where.
-- group: Is a directory which has one or more run directories inside of it.
-- run: Is a directory which has either event files inside of it or another directory which has event file inside of it.
-- context: Is a directory inside of run directory which has an event file inside of it
+- group: Is a directory which has one or more run directories inside it.
+- run: Is a directory which has either event files inside it or another directory which has event file inside it.
+- context: Is a directory inside of run directory which has an event file inside it
 
-Conversion process will scan and derermine `run` directories for your hierarchy
+Conversion process will scan and determine `run` directories for your hierarchy
 and will create a distinct run for each of them.
 
 From the hierarchy example above you can see that the following event files
@@ -72,7 +72,7 @@ In case the converter finds unorganized event files in your hierarchy a warning 
 To make the converter process these events, consider re-structuring your directories so that it matches
 the sample structure. (i.e. create a new directory and moving your unorganized events there)
 
-You can make converter treat ever directory as a distinct run by supplying `--flat` option.
+You can make converter treat every directory as a distinct run by supplying `--flat` option.
 In this case the following directories will be categorized as a `run` directory.
 
 - `~/tensorflow/logdir/run_1/`
