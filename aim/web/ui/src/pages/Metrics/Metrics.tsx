@@ -224,6 +224,7 @@ function Metrics(
                       hideSystemMetrics={props.hideSystemMetrics}
                       appName={AppNameEnum.METRICS}
                       hiddenChartRows={props.lineChartData?.length === 0}
+                      columnsOrder={props.columnsOrder}
                       // Table actions
                       onSort={props.onSortChange}
                       onSortReset={props.onSortReset}

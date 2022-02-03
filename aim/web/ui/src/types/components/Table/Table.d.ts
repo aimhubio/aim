@@ -6,6 +6,7 @@ import { ResizeModeEnum } from 'config/enums/tableEnums';
 import { AppNameEnum } from 'services/models/explorer';
 
 import { IMetricProps } from 'types/pages/metrics/Metrics';
+import { IColumnsOrder } from 'types/services/models/explorer/createAppModel';
 
 export interface ITableProps {
   custom?: boolean;
@@ -42,7 +43,7 @@ export interface ITableProps {
   setExcludedFields?: (fields: string[]) => null;
   alwaysVisibleColumns?: string[];
   rowHeightMode?: any;
-  columnsOrder?: any;
+  columnsOrder?: IColumnsOrder;
   hiddenColumns?: string[];
   hideSystemMetrics?: boolean;
   updateColumns?: any;

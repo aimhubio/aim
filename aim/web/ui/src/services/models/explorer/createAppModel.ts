@@ -228,14 +228,14 @@ function createAppModel(appConfig: IAppInitialConfig) {
           config.table = {
             resizeMode: TABLE_DEFAULT_CONFIG.metrics.resizeMode,
             rowHeight: TABLE_DEFAULT_CONFIG.metrics.rowHeight,
-            sortFields: TABLE_DEFAULT_CONFIG.metrics.sortFields,
-            hiddenMetrics: TABLE_DEFAULT_CONFIG.metrics.hiddenMetrics,
-            hiddenColumns: TABLE_DEFAULT_CONFIG.metrics.hiddenColumns,
-            columnsWidths: TABLE_DEFAULT_CONFIG.metrics.columnsWidths,
+            sortFields: [...TABLE_DEFAULT_CONFIG.metrics.sortFields],
+            hiddenMetrics: [...TABLE_DEFAULT_CONFIG.metrics.hiddenMetrics],
+            hiddenColumns: [...TABLE_DEFAULT_CONFIG.metrics.hiddenColumns],
+            columnsWidths: {},
             columnsOrder: {
-              left: TABLE_DEFAULT_CONFIG.metrics.columnsOrder.left,
-              middle: TABLE_DEFAULT_CONFIG.metrics.columnsOrder.middle,
-              right: TABLE_DEFAULT_CONFIG.metrics.columnsOrder.right,
+              left: [...TABLE_DEFAULT_CONFIG.metrics.columnsOrder.left],
+              middle: [...TABLE_DEFAULT_CONFIG.metrics.columnsOrder.middle],
+              right: [...TABLE_DEFAULT_CONFIG.metrics.columnsOrder.right],
             },
             height: TABLE_DEFAULT_CONFIG.metrics.height,
           };
@@ -338,19 +338,16 @@ function createAppModel(appConfig: IAppInitialConfig) {
         }
         if (components?.table) {
           config.table = {
-            resizeMode: ResizeModeEnum.Resizable,
-            rowHeight: RowHeightSize.md,
-            hideSystemMetrics: true,
-            sortFields: [],
-            hiddenMetrics: [],
-            hiddenColumns: [],
+            rowHeight: TABLE_DEFAULT_CONFIG.runs.rowHeight,
+            hideSystemMetrics: TABLE_DEFAULT_CONFIG.runs.hideSystemMetrics,
+            hiddenMetrics: TABLE_DEFAULT_CONFIG.runs.hiddenMetrics,
+            hiddenColumns: TABLE_DEFAULT_CONFIG.runs.hiddenColumns,
             columnsWidths: {},
             columnsOrder: {
-              left: [],
-              middle: [],
-              right: [],
+              left: [...TABLE_DEFAULT_CONFIG.runs.columnsOrder.left],
+              middle: [...TABLE_DEFAULT_CONFIG.runs.columnsOrder.middle],
+              right: [...TABLE_DEFAULT_CONFIG.runs.columnsOrder.right],
             },
-            height: '0.5',
           };
           if (appName === AppNameEnum.RUNS) {
             config.pagination = {

@@ -36,7 +36,6 @@ function Scatters(
       trendlineOptions: props.trendlineOptions,
     }));
   }, [props.scatterPlotData, props.chartTitleData, props.trendlineOptions]);
-  console.log(props.scatterPlotData);
 
   return (
     <div ref={props.wrapperElemRef} className='Scatters__container'>
@@ -168,6 +167,7 @@ function Scatters(
                   columnsWidths={props.columnsWidths}
                   selectedRows={props.selectedRows}
                   hiddenChartRows={props.scatterPlotData?.length === 0}
+                  columnsOrder={props.columnsOrder}
                   // Table actions
                   onSort={props.onSortChange}
                   onSortReset={props.onSortReset}

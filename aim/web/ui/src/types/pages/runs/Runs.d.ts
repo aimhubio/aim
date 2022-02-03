@@ -1,5 +1,6 @@
 import React from 'react';
 
+import { IColumnsOrder } from 'types/services/models/explorer/createAppModel';
 import {
   IMetricTrace,
   IParamTrace,
@@ -11,7 +12,7 @@ export interface IRunsProps {
 }
 
 export interface IRunsTableProps {
-  columnsOrder: any;
+  columnsOrder: IColumnsOrder;
   tableRef: React.RefObject<any>;
   runsList: ITagProps[];
   isRunsDataLoading: boolean;

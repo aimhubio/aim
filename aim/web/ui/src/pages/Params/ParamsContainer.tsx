@@ -130,6 +130,7 @@ function ParamsContainer(): React.FunctionComponentElement<React.ReactNode> {
       groupingSelectOptions={paramsData?.groupingSelectOptions!}
       hiddenColumns={paramsData?.config?.table?.hiddenColumns!}
       hideSystemMetrics={paramsData?.config?.table?.hideSystemMetrics!}
+      columnsOrder={paramsData?.config?.table?.columnsOrder!}
       resizeMode={paramsData?.config?.table?.resizeMode!}
       hiddenMetrics={paramsData?.config?.table?.hiddenMetrics!}
       notifyData={paramsData?.notifyData!}

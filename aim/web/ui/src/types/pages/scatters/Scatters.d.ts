@@ -29,6 +29,7 @@ import { IBookmarkFormState } from 'types/components/BookmarkForm/BookmarkForm';
 import { INotification } from 'types/components/NotificationContainer/NotificationContainer';
 import { IProjectParamsMetrics } from 'types/services/models/projects/projectsModel';
 import { ITrendlineOptions } from 'types/services/models/scatter/scatterAppModel';
+import { IColumnsOrder } from 'types/services/models/explorer/createAppModel';
 
 export interface IScattersProps extends Partial<RouteChildrenProps> {
   tableRef: React.RefObject<ITableRef>;
@@ -58,6 +59,7 @@ export interface IScattersProps extends Partial<RouteChildrenProps> {
   resizeMode: ResizeModeEnum;
   trendlineOptions: ITrendlineOptions;
   selectedRows: { [key: string]: any };
+  columnsOrder: IColumnsOrder;
   onChangeTooltip: (tooltip: Partial<IChartTooltip>) => void;
   onChangeTrendlineOptions: (options: Partial<ITrendlineOptions>) => void;
   onActivePointChange?: (

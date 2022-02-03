@@ -385,6 +385,9 @@ function ImagesExplore(): React.FunctionComponentElement<React.ReactNode> {
                       hiddenChartRows={
                         imagesExploreData?.imagesData?.length === 0
                       }
+                      columnsOrder={
+                        imagesExploreData?.config?.table.columnsOrder
+                      }
                       // Table actions
                       onSort={imagesExploreAppModel.onTableSortChange}
                       onSortReset={imagesExploreAppModel.onSortReset}

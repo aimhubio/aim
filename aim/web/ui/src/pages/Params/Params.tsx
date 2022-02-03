@@ -94,6 +94,7 @@ const Params = ({
   archiveRuns,
   deleteRuns,
   selectedRows,
+  columnsOrder,
 }: IParamsProps): React.FunctionComponentElement<React.ReactNode> => {
   const chartProps: any[] = React.useMemo(() => {
     return (highPlotData || []).map((chartData: any, index: number) => ({
@@ -245,6 +246,7 @@ const Params = ({
                     selectedRows={selectedRows}
                     appName={AppNameEnum.PARAMS}
                     hiddenChartRows={highPlotData?.length === 0}
+                    columnsOrder={columnsOrder}
                     // Table actions
                     onSortReset={onSortReset}
                     onSort={onSortFieldsChange}

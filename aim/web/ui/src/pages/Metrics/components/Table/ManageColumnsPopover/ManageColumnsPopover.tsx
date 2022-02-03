@@ -38,6 +38,7 @@ function ManageColumnsPopover({
   columnsData,
   hiddenColumns,
   hideSystemMetrics,
+  columnsOrder,
   appName,
   onTableDiffShow,
   onManageColumns,
@@ -119,6 +120,14 @@ function ManageColumnsPopover({
     });
   }
 
+  // React.useEffect(() => {
+  //   const newState = { ...state };
+  //   newState.columns.left.list = [...columnsOrder.left];
+  //   newState.columns.middle.list = [...columnsOrder.middle];
+  //   newState.columns.right.list = [...columnsOrder.right];
+  //   setState(newState);
+  // }, [columnsOrder]);
+
   React.useEffect(() => {
     const newState = { ...state };
     const leftList = columnsData
@@ -134,7 +143,7 @@ function ManageColumnsPopover({
     newState.columns.middle.list = middleList;
     newState.columns.right.list = rightList;
     setState(newState);
-  }, [columnsData, hiddenColumns]);
+  }, [columnsData]);
 
   React.useEffect(() => {
     const midPane = document.querySelectorAll(
@@ -163,10 +172,14 @@ function ManageColumnsPopover({
 
   const manageColumnsChanged: boolean = React.useMemo(() => {
     return (
-      hiddenColumns?.length !==
-      TABLE_DEFAULT_CONFIG[appName]?.hiddenColumns?.length
+      state.columns.left.list.length !==
+        TABLE_DEFAULT_CONFIG[appName].columnsOrder.left.length ||
+      state.columns.right.list.length !==
+        TABLE_DEFAULT_CONFIG[appName].columnsOrder.right.length ||
+      hiddenColumns.length !==
+        TABLE_DEFAULT_CONFIG[appName].hiddenColumns.length
     );
-  }, [appName, hiddenColumns?.length]);
+  }, [appName, hiddenColumns, state]);
 
   return (
     <ErrorBoundary>

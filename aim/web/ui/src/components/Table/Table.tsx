@@ -86,6 +86,7 @@ const Table = React.forwardRef(function Table(
     appName,
     hiddenChartRows,
     focusedState,
+    columnsOrder,
     ...props
   }: ITableProps,
   ref,
@@ -651,6 +652,7 @@ const Table = React.forwardRef(function Table(
                         (item: any) =>
                           item.key !== '#' && item.key !== 'actions',
                       )}
+                      columnsOrder={columnsOrder}
                       hiddenColumns={hiddenColumns}
                       hideSystemMetrics={hideSystemMetrics}
                       onManageColumns={onManageColumns}
@@ -935,7 +937,9 @@ function propsComparator(
   if (prevProps.hiddenChartRows !== nextProps.hiddenChartRows) {
     return false;
   }
-
+  if (prevProps.columnsOrder !== nextProps.columnsOrder) {
+    return false;
+  }
   if (prevProps.focusedState !== nextProps.focusedState) {
     return false;
   }

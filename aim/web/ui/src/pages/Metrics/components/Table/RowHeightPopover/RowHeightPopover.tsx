@@ -47,7 +47,7 @@ function RowHeightPopover({ rowHeight, onRowHeightChange, appName }: any) {
           </Button>
         )}
         component={
-          <div className='RowHeight'>
+          <div className='RowHeightPopover'>
             <MenuItem
               selected={rowHeight === RowHeightSize.sm}
               onClick={() => onRowHeightChange(RowHeightSize.sm)}
