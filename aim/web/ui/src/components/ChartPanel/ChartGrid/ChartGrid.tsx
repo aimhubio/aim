@@ -1,5 +1,6 @@
 import React from 'react';
 import classNames from 'classnames';
+import _ from 'lodash-es';
 
 import { Grid, GridSize } from '@material-ui/core';
 
@@ -22,21 +23,27 @@ function ChartGrid({
   componentProps = {},
   syncHoverState,
 }: IChartGridProps): React.FunctionComponentElement<React.ReactNode> {
+  // Calculation trust know that for one row we are using max 12 column from system
+  const isOnlyOneRow: boolean = React.useMemo(
+    () => _.sum(chartGridPattern[data.length]) === 12,
+    [data],
+  );
+
   return (
     <ErrorBoundary>
       {data.map((chartData: any, index: number) => {
         const Component = chartTypesConfig[chartType];
+
         const gridSize =
           data.length > 9
             ? 4
             : (chartGridPattern[data.length][index] as GridSize);
-        const isSingleChart = data.length === 1;
         return (
           <Grid
             key={index}
             item
             className={classNames('ChartGrid', {
-              ChartGrid__single__chart__view: isSingleChart,
+              ChartGrid__single__row__chart__view: isOnlyOneRow,
             })}
             xs={gridSize}
           >

@@ -31,6 +31,7 @@ function Modal({
   withoutTitleIcon,
   children,
   maxWidth = 'sm',
+  isOkButtonDisabled = false,
   ...rest
 }: IModalProps): React.FunctionComponentElement<React.ReactNode> {
   return (
@@ -73,6 +74,7 @@ function Modal({
             {cancelButtonText}
           </Button>
           <Button
+            disabled={isOkButtonDisabled}
             onClick={onOk}
             variant='contained'
             className={'Modal__footer__okButton'}

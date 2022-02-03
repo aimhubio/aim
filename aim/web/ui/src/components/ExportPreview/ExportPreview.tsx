@@ -1,8 +1,8 @@
 import React from 'react';
 
-import { Grid, TextField } from '@material-ui/core';
+import { Grid } from '@material-ui/core';
 
-import { Modal, Slider, Text } from 'components/kit';
+import { InputWrapper, Modal, Slider, Text } from 'components/kit';
 import ErrorBoundary from 'components/ErrorBoundary/ErrorBoundary';
 
 import { previewBounds, defaultPreviewBounds } from './config';
@@ -20,11 +20,26 @@ function ExportPreview({
   const previewRef = React.useRef<HTMLDivElement>();
   const previewPrevRef = React.useRef(defaultPreviewBounds);
 
-  const [previewDimensions, setPreviewDimensions] =
-    React.useState(defaultPreviewBounds);
+  const [previewDimensions, setPreviewDimensions] = React.useState({
+    ...defaultPreviewBounds,
+  });
+
   const [imageExport, setImageToExport] = React.useState<null | SVGSVGElement>(
     null,
   );
+
+  const [isImageSizeValid, setIsImageSizeValid] =
+    React.useState<boolean>(false);
+
+  const [isImageWidthValid, setIsImageWidthValid] =
+    React.useState<boolean>(false);
+
+  const [isImageHeightValid, setIsImageHeightValid] =
+    React.useState<boolean>(false);
+
+  React.useEffect(() => {
+    setIsImageSizeValid(isImageWidthValid && isImageHeightValid);
+  }, [isImageWidthValid, isImageHeightValid]);
 
   function onDownload(): void {}
 
@@ -57,11 +72,17 @@ function ExportPreview({
     }
   }
 
-  const onDimensionChange = (key: string, newValue: number) => {
-    updateChart({ [key]: +newValue });
+  const onDimensionChange = (
+    key: string,
+    newValue: number,
+    metadata: any = { isValid: true },
+  ) => {
+    if (metadata.isValid) {
+      updateChart({ [key]: newValue });
+    }
     setPreviewDimensions((prev) => ({
       ...prev,
-      [key]: +newValue,
+      [key]: newValue,
     }));
   };
 
@@ -188,6 +209,7 @@ function ExportPreview({
         withoutTitleIcon
         maxWidth={false}
         okButtonText='Download'
+        isOkButtonDisabled={!isImageSizeValid}
         onClose={onToggleExportPreview}
         onOk={onDownload}
         classes={{ paper: 'ExportPreview__modal' }}
@@ -208,25 +230,30 @@ function ExportPreview({
                   onDimensionChange('width', v as number);
                 }}
               />
-              <TextField
-                id='Width'
-                aria-label='Width'
+              <InputWrapper
+                value={`${previewDimensions.width}`}
                 type='number'
                 size='small'
-                className='ExportPreview__dimension__width__input'
-                inputProps={{
-                  min: previewBounds.min.width,
-                  max: previewBounds.max.width,
-                  step: 2,
+                inputProps={{ step: 2 }}
+                isValidateInitially
+                showMessageByTooltip
+                tooltipPlacement='bottom'
+                onChange={(e, value, metadata) => {
+                  onDimensionChange('width', value, metadata);
+                  setIsImageWidthValid(metadata.isValid);
                 }}
-                value={previewDimensions.width}
-                onChange={(
-                  event: React.ChangeEvent<
-                    HTMLTextAreaElement | HTMLInputElement
-                  >,
-                ) => {
-                  onDimensionChange('width', +event.target.value);
-                }}
+                validationPatterns={[
+                  {
+                    errorCondition: (value: number) =>
+                      value < previewBounds.min.width,
+                    errorText: `Value should be equal or greater then ${previewBounds.min.width}`,
+                  },
+                  {
+                    errorCondition: (value: number) =>
+                      value > previewBounds.max.width,
+                    errorText: `Value should be equal or smaller then ${previewBounds.max.width}`,
+                  },
+                ]}
               />
             </div>
             <div className='ExportPreview__dimension__height'>
@@ -245,25 +272,31 @@ function ExportPreview({
                   onDimensionChange('height', v as number);
                 }}
               />
-              <TextField
-                id='Height'
-                aria-label='Height'
+              <InputWrapper
+                value={`${previewDimensions.height}`}
                 type='number'
+                labelAppearance='top-labeled'
                 size='small'
-                className='ExportPreview__dimension__height__input'
-                inputProps={{
-                  min: previewBounds.min.height,
-                  max: previewBounds.max.height,
-                  step: 2,
+                inputProps={{ step: 2 }}
+                isValidateInitially
+                showMessageByTooltip
+                tooltipPlacement='bottom'
+                onChange={(e, value, metadata) => {
+                  onDimensionChange('height', value, metadata);
+                  setIsImageHeightValid(metadata.isValid);
                 }}
-                value={previewDimensions.height}
-                onChange={(
-                  event: React.ChangeEvent<
-                    HTMLTextAreaElement | HTMLInputElement
-                  >,
-                ) => {
-                  onDimensionChange('height', +event.target.value);
-                }}
+                validationPatterns={[
+                  {
+                    errorCondition: (value: number) =>
+                      value < previewBounds.min.height,
+                    errorText: `Value should be equal or greater then ${previewBounds.min.height}`,
+                  },
+                  {
+                    errorCondition: (value: number) =>
+                      value > previewBounds.max.height,
+                    errorText: `Value should be equal or smaller then ${previewBounds.max.height}`,
+                  },
+                ]}
               />
             </div>
           </div>

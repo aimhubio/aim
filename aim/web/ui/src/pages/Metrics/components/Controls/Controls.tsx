@@ -397,19 +397,21 @@ function Controls(
           <Icon className='Controls__icon' name='download' />
         </div>
       </Tooltip>
-      <ExportPreview
-        withDynamicDimensions
-        openModal={openExportModal}
-        onToggleExportPreview={onToggleExportPreview}
-      >
-        <ChartGrid
-          nameKey='exportPreview'
-          data={props.data}
-          chartProps={props.chartProps}
-          chartType={props.chartType}
-          componentProps={{ drawAttributes: false }}
-        />
-      </ExportPreview>
+      {openExportModal && (
+        <ExportPreview
+          withDynamicDimensions
+          openModal={openExportModal}
+          onToggleExportPreview={onToggleExportPreview}
+        >
+          <ChartGrid
+            nameKey='exportPreview'
+            data={props.data}
+            chartProps={props.chartProps}
+            chartType={props.chartType}
+            componentProps={{ drawAttributes: false }}
+          />
+        </ExportPreview>
+      )}
     </div>
   );
 }
