@@ -101,7 +101,7 @@ class Repo:
         self._client: Client = None
         if path.startswith('ssh://'):
             self._mount_root, self.root_path = mount_remote_repo(path)
-        elif path.startswith('aim://'):
+        elif self.is_remote_path(path):
             remote_path = path.replace('aim://', '')
             self._client = Client(remote_path)
             self.root_path = remote_path
@@ -179,7 +179,7 @@ class Repo:
         Returns:
             :obj:`Repo` object.
         """
-        if not path.startswith('ssh://') and not path.startswith('aim://'):
+        if not path.startswith('ssh://') and not cls.is_remote_path(path):
             path = clean_repo_path(path)
         repo = cls._pool.get(path)
         if repo is None:
@@ -216,6 +216,8 @@ class Repo:
 
     @classmethod
     def check_repo_status(cls, path: str) -> RepoStatus:
+        if cls.is_remote_path(path):
+            return RepoStatus.UPDATED
         if not cls.exists(path):
             return RepoStatus.MISSING
         repo_version = version.parse(cls.get_version(path))
@@ -234,6 +236,10 @@ class Repo:
             with open(version_file_path, 'r') as version_fh:
                 return version_fh.read()
         return '0.0'  # old Aim repos
+
+    @classmethod
+    def is_remote_path(cls, path: str):
+        return path.startswith('aim://')
 
     def _get_container(
             self, name: str, read_only: bool, from_union: bool = False
