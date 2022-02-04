@@ -17,6 +17,7 @@ import ErrorBoundary from 'components/ErrorBoundary/ErrorBoundary';
 import { ResizeModeEnum } from 'config/enums/tableEnums';
 import { RowHeightSize } from 'config/table/tableConfigs';
 import GroupingPopovers from 'config/grouping/GroupingPopovers';
+import analyticsKeysMap from 'config/analytics/analyticsKeysMap';
 
 import usePanelResize from 'hooks/resize/usePanelResize';
 import useModel from 'hooks/model/useModel';
@@ -171,7 +172,7 @@ function ImagesExplore(): React.FunctionComponentElement<React.ReactNode> {
       imagesRequestRef.call();
     }
 
-    analytics.pageView('[ImagesExplorer]');
+    analytics.pageView(analyticsKeysMap.images.pageView);
     return () => {
       imagesRequestRef?.abort();
       if (appRequestRef) {

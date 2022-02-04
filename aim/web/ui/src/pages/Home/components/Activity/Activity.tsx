@@ -6,9 +6,15 @@ import HeatMap from 'components/HeatMap/HeatMap';
 import { Text } from 'components/kit';
 import ErrorBoundary from 'components/ErrorBoundary/ErrorBoundary';
 
+import analyticsKeysMap from 'config/analytics/analyticsKeysMap';
+
+import { trackEvent } from 'services/analytics';
+
 import { IActivityProps } from 'types/pages/home/components/Activity/Activity';
 
 import './Activity.scss';
+
+const eventNames = analyticsKeysMap.home;
 
 function Activity({
   activityData,
@@ -55,7 +61,9 @@ function Activity({
             <HeatMap
               startDate={shiftDate(today, -10 * 30)}
               endDate={today}
-              // onCellClick={searchRuns}
+              onCellClick={() => {
+                trackEvent(eventNames.activityCellClick);
+              }}
               data={Object.keys(activityData?.activity_map ?? {}).map((k) => [
                 new Date(k),
                 activityData.activity_map[k],

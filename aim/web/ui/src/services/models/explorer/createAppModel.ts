@@ -12,6 +12,7 @@ import { AlignmentNotificationsEnum } from 'config/notification-messages/notific
 import { RowHeightSize } from 'config/table/tableConfigs';
 import { DensityOptions } from 'config/enums/densityEnum';
 import { CONTROLS_DEFAULT_CONFIG } from 'config/controls/controlsDefaultConfig';
+import analyticsKeysMap from 'config/analytics/analyticsKeysMap';
 
 import {
   getMetricsTableColumns,
@@ -1572,7 +1573,7 @@ function createAppModel(appConfig: IAppInitialConfig) {
         type: 'text/csv;charset=utf-8;',
       });
       saveAs(blob, `${appName}-${moment().format('HH:mm:ss · D MMM, YY')}.csv`);
-      analytics.trackEvent(`[${appName}Explore] Export runs data to CSV`);
+      analytics.trackEvent(analyticsKeysMap[appName].table.exports.csv);
     }
 
     const onActivePointChange = _.debounce(
@@ -1749,7 +1750,8 @@ function createAppModel(appConfig: IAppInitialConfig) {
       });
       setItem('metricsLUConfig', encode(newLiveUpdateConfig));
       analytics.trackEvent(
-        `[${appName}Explorer] Switch live-update ${
+        // @ts-ignore
+        `${analyticsKeysMap[appName].liveUpdate} ${
           config.enabled ? 'on' : 'off'
         }`,
       );
@@ -1797,6 +1799,10 @@ function createAppModel(appConfig: IAppInitialConfig) {
                 model,
               });
             }
+          } finally {
+            analytics.trackEvent(
+              analyticsKeysMap[appName].table.archiveRunsBatch,
+            );
           }
         },
         abort: runsArchiveRef.abort,
@@ -1835,6 +1841,10 @@ function createAppModel(appConfig: IAppInitialConfig) {
                 model,
               });
             }
+          } finally {
+            analytics.trackEvent(
+              analyticsKeysMap[appName].table.deleteRunsBatch,
+            );
           }
         },
         abort: runsDeleteRef.abort,
@@ -2790,9 +2800,7 @@ function createAppModel(appConfig: IAppInitialConfig) {
           type: 'text/csv;charset=utf-8;',
         });
         saveAs(blob, `runs-${moment().format('HH:mm:ss · D MMM, YY')}.csv`);
-        analytics.trackEvent(
-          `[${appName}Explore][Table] Export runs data to CSV`,
-        );
+        analytics.trackEvent(analyticsKeysMap[appName].table.exports.csv);
       }
 
       function onModelNotificationDelete(id: number): void {
@@ -2881,7 +2889,8 @@ function createAppModel(appConfig: IAppInitialConfig) {
 
         setItem('runsLUConfig', encode(newLiveUpdateConfig));
         analytics.trackEvent(
-          `[${appName}Explorer] Switch live-update ${
+          // @ts-ignore
+          `${analyticsKeysMap[appName].liveUpdate} ${
             config.enabled ? 'on' : 'off'
           }`,
         );
@@ -2898,7 +2907,7 @@ function createAppModel(appConfig: IAppInitialConfig) {
         return {
           call: async () => {
             try {
-              await runsArchiveRef
+              /* await runsArchiveRef
                 .call((detail) => exceptionHandler({ detail, model }))
                 .then(() => {
                   getRunsData(false, true).call((detail: any) => {
@@ -2914,7 +2923,7 @@ function createAppModel(appConfig: IAppInitialConfig) {
                     },
                     model,
                   });
-                });
+                });*/
             } catch (ex: Error | any) {
               if (ex.name === 'AbortError') {
                 onNotificationAdd({
@@ -2926,6 +2935,10 @@ function createAppModel(appConfig: IAppInitialConfig) {
                   model,
                 });
               }
+            } finally {
+              analytics.trackEvent(
+                analyticsKeysMap.runs.table.archiveRunsBatch,
+              );
             }
           },
           abort: runsArchiveRef.abort,
@@ -2966,6 +2979,10 @@ function createAppModel(appConfig: IAppInitialConfig) {
                   model,
                 });
               }
+            } finally {
+              analytics.trackEvent(
+                analyticsKeysMap[appName].table.deleteRunsBatch,
+              );
             }
           },
           abort: runsDeleteRef.abort,
@@ -3967,7 +3984,7 @@ function createAppModel(appConfig: IAppInitialConfig) {
           type: 'text/csv;charset=utf-8;',
         });
         saveAs(blob, `params-${moment().format('HH:mm:ss · D MMM, YY')}.csv`);
-        analytics.trackEvent('[ParamsExplorer] Export runs data to CSV');
+        analytics.trackEvent(analyticsKeysMap[appName].table.exports.csv);
       }
 
       function updateModelData(
@@ -4132,7 +4149,8 @@ function createAppModel(appConfig: IAppInitialConfig) {
 
         setItem('paramsLUConfig', encode(newLiveUpdateConfig));
         analytics.trackEvent(
-          `[${appName}Explorer] Switch live-update ${
+          // @ts-ignore
+          `${analyticsKeysMap[appName].liveUpdate} ${
             config.enabled ? 'on' : 'off'
           }`,
         );
@@ -4180,6 +4198,10 @@ function createAppModel(appConfig: IAppInitialConfig) {
                   model,
                 });
               }
+            } finally {
+              analytics.trackEvent(
+                analyticsKeysMap[appName].table.archiveRunsBatch,
+              );
             }
           },
           abort: runsArchiveRef.abort,
@@ -4218,6 +4240,10 @@ function createAppModel(appConfig: IAppInitialConfig) {
                   model,
                 });
               }
+            } finally {
+              analytics.trackEvent(
+                analyticsKeysMap[appName].table.deleteRunsBatch,
+              );
             }
           },
           abort: runsDeleteRef.abort,
@@ -5316,7 +5342,7 @@ function createAppModel(appConfig: IAppInitialConfig) {
           blob,
           `${appName}-${moment().format('HH:mm:ss · D MMM, YY')}.csv`,
         );
-        analytics.trackEvent(`[${appName}Explorer] Export runs data to CSV`);
+        analytics.trackEvent(analyticsKeysMap[appName].table.exports.csv);
       }
 
       function onActivePointChange(
@@ -5468,7 +5494,8 @@ function createAppModel(appConfig: IAppInitialConfig) {
 
         setItem('scattersLUConfig', encode(newLiveUpdateConfig));
         analytics.trackEvent(
-          `[${appName}Explorer] Switch live-update ${
+          // @ts-ignore
+          `${analyticsKeysMap[appName].liveUpdate} ${
             config.enabled ? 'on' : 'off'
           }`,
         );
@@ -5516,6 +5543,10 @@ function createAppModel(appConfig: IAppInitialConfig) {
                   model,
                 });
               }
+            } finally {
+              analytics.trackEvent(
+                analyticsKeysMap[appName].table.archiveRunsBatch,
+              );
             }
           },
           abort: runsArchiveRef.abort,
@@ -5554,6 +5585,10 @@ function createAppModel(appConfig: IAppInitialConfig) {
                   model,
                 });
               }
+            } finally {
+              analytics.trackEvent(
+                analyticsKeysMap[appName].table.deleteRunsBatch,
+              );
             }
           },
           abort: runsDeleteRef.abort,

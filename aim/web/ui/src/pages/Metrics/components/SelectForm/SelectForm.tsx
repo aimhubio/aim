@@ -20,12 +20,14 @@ import ExpressionAutoComplete from 'components/kit/ExpressionAutoComplete/Expres
 import ErrorBoundary from 'components/ErrorBoundary/ErrorBoundary';
 
 import COLORS from 'config/colors/colors';
+import analyticsKeysMap from 'config/analytics/analyticsKeysMap';
 
 import useModel from 'hooks/model/useModel';
 import useParamsSuggestions from 'hooks/projectData/useParamsSuggestions';
 
 import projectsModel from 'services/models/projects/projectsModel';
 import metricAppModel from 'services/models/metrics/metricsAppModel';
+import { trackEvent } from 'services/analytics';
 
 import { IProjectsModelState } from 'types/services/models/projects/projectsModel';
 import { ISelectFormProps } from 'types/pages/metrics/components/SelectForm/SelectForm';
@@ -68,6 +70,7 @@ function SelectForm({
     }
     searchRef.current = metricAppModel.getMetricsData(true, true);
     searchRef.current.call();
+    trackEvent(analyticsKeysMap.metrics.searchClick);
   }
 
   function handleRequestAbort(e: React.SyntheticEvent): void {

@@ -1,4 +1,5 @@
 import { AlignmentNotificationsEnum } from 'config/notification-messages/notificationMessages';
+import analyticsKeysMap from 'config/analytics/analyticsKeysMap';
 
 import * as analytics from 'services/analytics';
 import metricsService from 'services/api/metrics/metricsService';
@@ -114,6 +115,7 @@ export default async function onAlignmentMetricChange<M extends State>({
     }
   }
   analytics.trackEvent(
-    `[${appName}Explorer][Chart] Align X axis by another metric`,
+    // @ts-ignore
+    `${analyticsKeysMap[appName].chart.controls.changeXAxisProperties}, Align X axis by another metric`,
   );
 }

@@ -8,6 +8,7 @@ import { IconName } from 'components/kit/Icon';
 import ErrorBoundary from 'components/ErrorBoundary/ErrorBoundary';
 
 import COLORS from 'config/colors/colors';
+import analyticsKeysMap from 'config/analytics/analyticsKeysMap';
 
 import * as analytics from 'services/analytics';
 
@@ -64,7 +65,7 @@ function BookmarkCard({
                 <Button
                   variant='outlined'
                   onClick={() =>
-                    analytics.trackEvent('[Bookmarks] View bookmark')
+                    analytics.trackEvent(analyticsKeysMap.bookmarks.view)
                   }
                 >
                   View Bookmark

@@ -12,12 +12,14 @@ import ExpressionAutoComplete from 'components/kit/ExpressionAutoComplete';
 import ErrorBoundary from 'components/ErrorBoundary/ErrorBoundary';
 
 import COLORS from 'config/colors/colors';
+import analyticsKeysMap from 'config/analytics/analyticsKeysMap';
 
 import useModel from 'hooks/model/useModel';
 import useParamsSuggestions from 'hooks/projectData/useParamsSuggestions';
 
 import projectsModel from 'services/models/projects/projectsModel';
 import paramsAppModel from 'services/models/params/paramsAppModel';
+import { trackEvent } from 'services/analytics';
 
 import { IProjectsModelState } from 'types/services/models/projects/projectsModel';
 import { ISelectFormProps } from 'types/pages/params/components/SelectForm/SelectForm';
@@ -58,6 +60,7 @@ function SelectForm({
     }
     searchRef.current = paramsAppModel.getParamsData(true, true);
     searchRef.current.call();
+    trackEvent(analyticsKeysMap.params.searchClick);
   }
 
   function handleRequestAbort(e: React.SyntheticEvent): void {

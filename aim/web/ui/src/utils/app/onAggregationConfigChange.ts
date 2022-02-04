@@ -1,5 +1,7 @@
 import _ from 'lodash-es';
 
+import analyticsKeysMap from 'config/analytics/analyticsKeysMap';
+
 import * as analytics from 'services/analytics';
 
 import { IAggregationConfig } from 'types/services/models/metrics/metricsAppModel';
@@ -35,21 +37,26 @@ export default function onAggregationConfigChange<M extends State>({
   }
   if (aggregationConfig.methods) {
     analytics.trackEvent(
-      `[${appName}Explorer][Chart] Set aggregation area to "${AggregationAreaMethods[
+      `${
+        // @ts-ignore
+        analyticsKeysMap[appName].chart.controls.changeAggregationMethod
+      } area to "${AggregationAreaMethods[
         aggregationConfig.methods.area
       ].toLowerCase()}"`,
     );
     analytics.trackEvent(
-      `[${appName}Explorer][Chart] Set aggregation line to "${AggregationAreaMethods[
+      `${
+        // @ts-ignore
+        analyticsKeysMap[appName].chart.controls.changeAggregationMethod
+      } line to "${AggregationAreaMethods[
         aggregationConfig.methods.line
       ].toLowerCase()}"`,
     );
   } else {
     analytics.trackEvent(
-      `[${appName}Explorer][Chart] ${
-        aggregationConfig.isApplied
-          ? 'Aggregate metrics'
-          : 'Deaggregate metrics'
+      // @ts-ignore
+      `${analyticsKeysMap[appName].chart.controls.changeAggregationMode} to ${
+        aggregationConfig.isApplied ? 'Enable' : 'Disable'
       }`,
     );
   }

@@ -6,6 +6,8 @@ import TagForm from 'components/TagForm/TagForm';
 import { Icon, Text } from 'components/kit';
 import ErrorBoundary from 'components/ErrorBoundary/ErrorBoundary';
 
+import analyticsKeysMap from 'config/analytics/analyticsKeysMap';
+
 import * as analytics from 'services/analytics';
 
 import { ITagProps, ITagsListProps } from 'types/pages/tags/Tags';
@@ -72,7 +74,7 @@ function TagsList({
       openTagDetailOverLay();
     }
     setTagDetailId(id);
-    analytics.trackEvent('[Tags] Open tag detail page');
+    analytics.trackEvent(analyticsKeysMap.tags.tagDetail);
   }
 
   return (

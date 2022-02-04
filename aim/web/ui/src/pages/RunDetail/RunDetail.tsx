@@ -22,6 +22,7 @@ import BusyLoaderWrapper from 'components/BusyLoaderWrapper/BusyLoaderWrapper';
 import ErrorBoundary from 'components/ErrorBoundary/ErrorBoundary';
 
 import { DateWithOutSeconds } from 'config/dates/dates';
+import analyticsKeysMap from 'config/analytics/analyticsKeysMap';
 
 import useModel from 'hooks/model/useModel';
 
@@ -180,7 +181,7 @@ function RunDetail(): React.FunctionComponentElement<React.ReactNode> {
   }, [pathname]);
 
   React.useEffect(() => {
-    analytics.pageView('[RunDetail]');
+    analytics.pageView(analyticsKeysMap.runDetails.pageView);
   }, []);
 
   return (

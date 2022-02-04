@@ -1,5 +1,7 @@
 import { isEmpty } from 'lodash-es';
 
+import analyticsKeysMap from 'config/analytics/analyticsKeysMap';
+
 import * as analytics from 'services/analytics';
 
 import { IModel, State } from 'types/services/models/model';
@@ -39,8 +41,9 @@ export default function updateSortFields<M extends State>({
     updateModelData(config);
   }
   analytics.trackEvent(
-    `[${appName}Explorer][Table] ${
+    // @ts-ignore
+    `${analyticsKeysMap[appName].table.changeSorting} ${
       isEmpty(sortFields) ? 'Reset' : 'Apply'
-    } table sorting by a key`,
+    }`,
   );
 }

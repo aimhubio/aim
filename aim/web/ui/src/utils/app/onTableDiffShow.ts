@@ -1,3 +1,5 @@
+import analyticsKeysMap from 'config/analytics/analyticsKeysMap';
+
 import * as analytics from 'services/analytics';
 
 import { IModel, State } from 'types/services/models/model';
@@ -26,5 +28,6 @@ export function onTableDiffShow<M extends State>({
       updateModelData,
     });
   }
-  analytics.trackEvent(`[${appName}Explorer][Table] Show table columns diff`);
+  // @ts-ignore
+  analytics.trackEvent(analyticsKeysMap[appName].table.showDiff);
 }

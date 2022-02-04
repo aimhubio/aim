@@ -10,8 +10,10 @@ import { Badge, Text } from 'components/kit';
 import ErrorBoundary from 'components/ErrorBoundary/ErrorBoundary';
 
 import COLORS from 'config/colors/colors';
+import analyticsKeysMap from 'config/analytics/analyticsKeysMap';
 
 import tagsAppModel from 'services/models/tags/tagsAppModel';
+import { trackEvent } from 'services/analytics';
 
 import { ITagFormProps } from 'types/components/TagForm/TagForm';
 
@@ -116,6 +118,8 @@ function TagForm({
   );
 
   function onCreateButtonClick() {
+    trackEvent(analyticsKeysMap.tags.create);
+
     submitForm().then(() =>
       validateForm(values).then((errors) => {
         if (isEmpty(errors)) {

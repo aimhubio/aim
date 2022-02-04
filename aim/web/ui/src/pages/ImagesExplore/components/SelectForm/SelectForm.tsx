@@ -13,12 +13,14 @@ import ExpressionAutoComplete from 'components/kit/ExpressionAutoComplete';
 import ErrorBoundary from 'components/ErrorBoundary/ErrorBoundary';
 
 import COLORS from 'config/colors/colors';
+import analyticsKeysMap from 'config/analytics/analyticsKeysMap';
 
 import useModel from 'hooks/model/useModel';
 import useParamsSuggestions from 'hooks/projectData/useParamsSuggestions';
 
 import projectsModel from 'services/models/projects/projectsModel';
 import imagesExploreAppModel from 'services/models/imagesExplore/imagesExploreAppModel';
+import { trackEvent } from 'services/analytics';
 
 import { IProjectsModelState } from 'types/services/models/projects/projectsModel';
 import { ISelectFormProps } from 'types/pages/imagesExplore/components/SelectForm/SelectForm';
@@ -59,6 +61,8 @@ function SelectForm({
     }
     searchMetricsRef.current = imagesExploreAppModel.getImagesData(true, true);
     searchMetricsRef.current.call();
+
+    trackEvent(analyticsKeysMap.images.searchClick);
   }
 
   function handleRequestAbort(e: React.SyntheticEvent): void {

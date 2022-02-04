@@ -1,3 +1,5 @@
+import analyticsKeysMap from 'config/analytics/analyticsKeysMap';
+
 import * as analytics from 'services/analytics';
 
 import { IModel, State } from 'types/services/models/model';
@@ -38,9 +40,10 @@ export default function onGroupingModeChange<M extends State>({
     }
     updateModelData(configData, true);
   }
-  analytics.trackEvent(
-    `[MetricsExplorer] ${
-      value ? 'Disable' : 'Enable'
-    } grouping by ${groupName} reverse mode`,
-  );
+  if (value) {
+    analytics.trackEvent(
+      // @ts-ignore
+      analyticsKeysMap[appName].groupings[groupName].modeChange,
+    );
+  }
 }

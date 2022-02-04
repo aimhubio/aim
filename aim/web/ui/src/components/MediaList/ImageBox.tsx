@@ -10,8 +10,10 @@ import ErrorBoundary from 'components/ErrorBoundary/ErrorBoundary';
 
 import { BATCH_COLLECT_DELAY } from 'config/mediaConfigs/mediaConfigs';
 import { MediaItemAlignmentEnum } from 'config/enums/imageEnums';
+import analyticsKeysMap from 'config/analytics/analyticsKeysMap';
 
 import blobsURIModel from 'services/models/media/blobsURIModel';
+import * as analytics from 'services/analytics';
 
 import { IImageBoxProps } from './MediaList.d';
 
@@ -69,6 +71,7 @@ const ImageBox = ({
   function onImageFullSizeModeButtonClick(e: React.ChangeEvent<any>): void {
     e.stopPropagation();
     setIsImageFullViewPopupOpened(true);
+    analytics.trackEvent(analyticsKeysMap.images.imagesPanel.openFullSizeMode);
   }
 
   const skeletonSize = {

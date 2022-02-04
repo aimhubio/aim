@@ -1,7 +1,10 @@
 import _ from 'lodash-es';
 
+import analyticsKeysMap from 'config/analytics/analyticsKeysMap';
+
 import createModel from 'services/models/model';
 import runsService from 'services/api/runs/runsService';
+import { trackEvent } from 'services/analytics';
 
 import {
   adjustable_reader,
@@ -133,6 +136,11 @@ function changeActiveItemKey(key: string, name: string) {
   });
 
   getRunTraceBatch(true).then().catch();
+
+  trackEvent(
+    // @ts-ignore
+    analyticsKeysMap.runDetails.tabs[state.traceType].changeActiveItemKey,
+  );
 }
 
 function abortGetTraceBatchBatchRequest() {
@@ -284,7 +292,10 @@ function onRangeChange(name: string, value: number | number[]) {
 }
 
 function onApply() {
+  const { traceType } = model.getState();
   getRunTraceBatch().then().catch();
+  // @ts-ignore
+  trackEvent(analyticsKeysMap.runDetails.tabs[traceType].clickApplyButton);
 }
 
 function destroy() {

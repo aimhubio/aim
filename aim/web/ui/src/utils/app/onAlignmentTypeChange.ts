@@ -4,6 +4,7 @@ import { IModel, State } from 'types/services/models/model';
 import { IAppModelConfig } from 'types/services/models/explorer/createAppModel';
 
 import { AlignmentOptionsEnum } from '../d3';
+import analyticsKeysMap from '../../config/analytics/analyticsKeysMap';
 
 export default function onAlignmentTypeChange<M extends State>({
   type,
@@ -33,8 +34,9 @@ export default function onAlignmentTypeChange<M extends State>({
     updateModelData(configData, true);
   }
   analytics.trackEvent(
-    `[${appName}Explorer][Chart] Align X axis by "${AlignmentOptionsEnum[
-      type
-    ].toLowerCase()}"`,
+    `${
+      // @ts-ignore
+      analyticsKeysMap[appName].chart.controls.changeXAxisProperties
+    }, Align X axis by "${AlignmentOptionsEnum[type].toLowerCase()}"`,
   );
 }

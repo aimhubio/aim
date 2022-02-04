@@ -1,4 +1,5 @@
 import { BookmarkNotificationsEnum } from 'config/notification-messages/notificationMessages';
+import analyticsKeysMap from 'config/analytics/analyticsKeysMap';
 
 import * as analytics from 'services/analytics';
 import appsService from 'services/api/apps/appsService';
@@ -72,5 +73,6 @@ export default async function onBookmarkCreate<M extends State>({
       model,
     });
   }
-  analytics.trackEvent(`[${appName}Explorer] Create bookmark`);
+  // @ts-ignore
+  analytics.trackEvent(analyticsKeysMap[appName].createBookmark);
 }

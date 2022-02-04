@@ -1,3 +1,5 @@
+import analyticsKeysMap from 'config/analytics/analyticsKeysMap';
+
 import * as analytics from 'services/analytics';
 
 import { IModel, State } from 'types/services/models/model';
@@ -31,7 +33,8 @@ export default function onGroupingPaletteChange<M extends State>({
     updateModelData(configData, true);
   }
   analytics.trackEvent(
-    `[${appName}Explorer] Set color palette to "${
+    // @ts-ignore
+    `${analyticsKeysMap[appName].groupings.color.paletteChange} to "${
       index === 0 ? '8 distinct colors' : '24 colors'
     }"`,
   );

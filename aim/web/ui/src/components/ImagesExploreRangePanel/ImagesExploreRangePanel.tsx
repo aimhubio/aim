@@ -4,6 +4,9 @@ import { Button } from 'components/kit';
 import SliderWithInput from 'components/SliderWithInput';
 import ErrorBoundary from 'components/ErrorBoundary/ErrorBoundary';
 
+import analyticsKeysMap from 'config/analytics/analyticsKeysMap';
+
+import * as analytics from 'services/analytics';
 import imagesExploreAppModel from 'services/models/imagesExplore/imagesExploreAppModel';
 
 import { IImagesExploreRangePanelProps } from './types.d';
@@ -23,6 +26,7 @@ function ImagesExploreRangePanel({
 }: IImagesExploreRangePanelProps): React.FunctionComponentElement<React.ReactNode> {
   const searchMetricsRef = React.useRef<any>(null);
   function handleSearch() {
+    analytics.trackEvent(analyticsKeysMap.images.imagesPanel.clickApplyButton);
     searchMetricsRef.current = imagesExploreAppModel.getImagesData(true);
     searchMetricsRef.current.call();
   }

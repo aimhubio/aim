@@ -1,4 +1,4 @@
-import _ from 'lodash-es';
+import analyticsKeysMap from 'config/analytics/analyticsKeysMap';
 
 import * as analytics from 'services/analytics';
 
@@ -39,11 +39,7 @@ export default function onColumnsOrderChange<M extends State>({
     setItem(`${appName}Table`, encode(table));
     updateModelData(config);
   }
-  if (
-    _.isEmpty(columnsOrder?.left) &&
-    _.isEmpty(columnsOrder?.middle) &&
-    _.isEmpty(columnsOrder?.right)
-  ) {
-    analytics.trackEvent('[MetricsExplorer][Table] Reset table columns order');
-  }
+
+  // @ts-ignore
+  analytics.trackEvent(analyticsKeysMap[appName].table.changeColumnOrder);
 }

@@ -9,6 +9,7 @@ import { ResizeModeEnum, RowHeightEnum } from 'config/enums/tableEnums';
 import { IMAGE_SIZE_CHANGE_DELAY } from 'config/mediaConfigs/mediaConfigs';
 import { ImageRenderingEnum } from 'config/enums/imageEnums';
 import { CONTROLS_DEFAULT_CONFIG } from 'config/controls/controlsDefaultConfig';
+import analyticsKeysMap from 'config/analytics/analyticsKeysMap';
 
 import {
   getImagesExploreTableColumns,
@@ -816,7 +817,10 @@ function onGroupingSelectChange({
       onStackingToggle();
     }
   }
-  analytics.trackEvent(`[ImagesExplorer] Group by ${groupName}`);
+  analytics.trackEvent(
+    // @ts-ignore
+    `${analyticsKeysMap.images.groupings[groupName].select}`,
+  );
 }
 
 function onGroupingModeChange({ value }: IOnGroupingModeChangeParams): void {
@@ -838,11 +842,13 @@ function onGroupingModeChange({ value }: IOnGroupingModeChangeParams): void {
       onStackingToggle();
     }
   }
-  analytics.trackEvent(
-    `[ImagesExplorer] ${
-      value ? 'Disable' : 'Enable'
-    } grouping by groupBy reverse mode`,
-  );
+  if (value) {
+    analytics.trackEvent(
+      // @ts-ignore
+      analyticsKeysMap.images.groupings.group.modeChange,
+      //@TODO change group to dynamic groupName when adding grouping type
+    );
+  }
 }
 
 function onGroupingReset(groupName: GroupNameType) {
@@ -865,7 +871,6 @@ function onGroupingReset(groupName: GroupNameType) {
       onStackingToggle();
     }
   }
-  analytics.trackEvent('[ImagesExplorer] Reset grouping');
 }
 
 function onGroupingApplyChange(): void {
@@ -1118,7 +1123,9 @@ function onChangeTooltip(tooltip: Partial<IPanelTooltip>): void {
     model.setState({ config: configData });
     updateURL(configData);
   }
-  analytics.trackEvent('[ImagesExplorer] Change tooltip content');
+  analytics.trackEvent(
+    analyticsKeysMap.images.imagesPanel.controls.tooltip.changeTooltipContent,
+  );
 }
 
 function getDataAsTableRows(
@@ -1335,7 +1342,7 @@ async function onBookmarkCreate({ name, description }: IBookmarkFormState) {
       }
     }
   }
-  analytics.trackEvent('[ImagesExplorer] Create bookmark');
+  analytics.trackEvent(analyticsKeysMap.images.createBookmark);
 }
 
 function onBookmarkUpdate(id: string) {
@@ -1360,7 +1367,6 @@ function onBookmarkUpdate(id: string) {
         }
       });
   }
-  analytics.trackEvent('[ImagesExplorer] Update bookmark');
 }
 
 function updateColumnsWidths(key: string, width: number, isReset: boolean) {
@@ -1410,9 +1416,9 @@ function updateTableSortFields(sortFields: SortFields) {
     updateModelData(configUpdate, true);
   }
   analytics.trackEvent(
-    `[ImagesExplorer][Table] ${
+    `${analyticsKeysMap.images.table.changeSorting} ${
       _.isEmpty(sortFields) ? 'Reset' : 'Apply'
-    } table sorting by a key`,
+    }`,
   );
 }
 // internal function to update config.table.sortFields and cache data
@@ -1436,7 +1442,7 @@ function updateImagesSortFields(sortFields: SortFields, sortFieldsDict: any) {
     updateModelData(configUpdate, true);
   }
   analytics.trackEvent(
-    `[ImagesExplorer] ${
+    `${analyticsKeysMap.images.imagesPanel.controls.changeSorting} ${
       _.isEmpty(sortFields) ? 'Reset' : 'Apply'
     } images sorting by a key`,
   );
@@ -1564,7 +1570,7 @@ function onExportTableData(e: React.ChangeEvent<any>): void {
     type: 'text/csv;charset=utf-8;',
   });
   saveAs(blob, `images-${moment().format('HH:mm:ss · D MMM, YY')}.csv`);
-  analytics.trackEvent('[ImagesExplorer] Export runs data to CSV');
+  analytics.trackEvent(analyticsKeysMap.images.table.exports.csv);
 }
 
 function onRowVisibilityChange(metricKey: string) {
@@ -1667,9 +1673,7 @@ function onTableResizeModeChange(mode: ResizeModeEnum): void {
     });
     setItem('imagesExploreTable', encode(table));
   }
-  analytics.trackEvent(
-    `[ImagesExplorer][Table] Set table view mode to "${mode}"`,
-  );
+  analytics.trackEvent(analyticsKeysMap.images.table.changeResizeMode);
 }
 
 function onSearchQueryCopy(): void {
@@ -1777,10 +1781,11 @@ function toggleSelectAdvancedMode() {
 
     model.setState({ config: newConfig });
   }
+
   analytics.trackEvent(
-    `[ImagesExplorer] Turn ${
+    `${analyticsKeysMap.images.useAdvancedSearch} ${
       !configData?.select.advancedMode ? 'on' : 'off'
-    } the advanced mode of select form`,
+    }`,
   );
 }
 
@@ -1803,13 +1808,7 @@ function onColumnsOrderChange(columnsOrder: any) {
     setItem('imagesExploreTable', encode(table));
     updateModelData(config);
   }
-  if (
-    _.isEmpty(columnsOrder?.left) &&
-    _.isEmpty(columnsOrder?.middle) &&
-    _.isEmpty(columnsOrder?.right)
-  ) {
-    analytics.trackEvent('[ImagesExplorer][Table] Reset table columns order');
-  }
+  analytics.trackEvent(analyticsKeysMap.images.table.changeColumnsOrder);
 }
 
 function onColumnsVisibilityChange(hiddenColumns: string[]) {
@@ -1835,9 +1834,9 @@ function onColumnsVisibilityChange(hiddenColumns: string[]) {
     updateModelData(configUpdate);
   }
   if (hiddenColumns[0] === 'all') {
-    analytics.trackEvent('[ImagesExplorer][Table] Hide all table columns');
+    analytics.trackEvent(analyticsKeysMap.images.table.showAllColumns);
   } else if (_.isEmpty(hiddenColumns)) {
-    analytics.trackEvent('[ImagesExplorer][Table] Show all table columns');
+    analytics.trackEvent(analyticsKeysMap.images.table.hideAllColumns);
   }
 }
 
@@ -1846,7 +1845,7 @@ function onTableDiffShow() {
   if (sameValueColumns) {
     onColumnsVisibilityChange(sameValueColumns);
   }
-  analytics.trackEvent('[ImagesExplorer][Table] Show table columns diff');
+  analytics.trackEvent(analyticsKeysMap.images.table.showDiff);
 }
 
 function onRowHeightChange(height: RowHeightSize) {
@@ -1867,7 +1866,7 @@ function onRowHeightChange(height: RowHeightSize) {
     setItem('metricsTable', encode(table));
   }
   analytics.trackEvent(
-    `[ImagesExplorer][Table] Set table row height to "${RowHeightEnum[
+    `${analyticsKeysMap.images.table.changeTableRowHeight} to "${RowHeightEnum[
       height
     ].toLowerCase()}"`,
   );
@@ -1900,7 +1899,7 @@ function onImageVisibilityChange(metricsKeys: string[]) {
     updateModelData(config);
   }
   analytics.trackEvent(
-    `[ImagesExplorer][Table] ${
+    `${analyticsKeysMap.images.table.metricVisibilityChange} ${
       metricsKeys[0] === 'all'
         ? 'Visualize all hidden metrics from table'
         : 'Hide all metrics from table'
@@ -1987,6 +1986,10 @@ const onImageSizeChange = _.throttle((value: number) => {
       config,
     });
   }
+
+  analytics.trackEvent(
+    `${analyticsKeysMap.images.imagesPanel.controls.changeImageProperties} / size`,
+  );
 }, IMAGE_SIZE_CHANGE_DELAY);
 
 function onImageRenderingChange(type: ImageRenderingEnum) {
@@ -2010,6 +2013,9 @@ function onImageRenderingChange(type: ImageRenderingEnum) {
       config,
     });
   }
+  console.log(
+    `${analyticsKeysMap.images.imagesPanel.controls.changeImageProperties} / image rendering to ${type}`,
+  );
 }
 
 function onImageAlignmentChange(
@@ -2032,6 +2038,10 @@ function onImageAlignmentChange(
     updateURL(config as IImagesExploreAppConfig);
     model.setState({ config });
   }
+
+  analytics.trackEvent(
+    `${analyticsKeysMap.images.imagesPanel.controls.changeImageProperties} / Alignment to ${option?.label}`,
+  );
 }
 
 function showRangePanel() {
@@ -2075,6 +2085,8 @@ function archiveRuns(
             model,
           });
         }
+      } finally {
+        analytics.trackEvent(analyticsKeysMap.images.table.archiveRunsBatch);
       }
     },
     abort: runsArchiveRef.abort,
@@ -2113,6 +2125,8 @@ function deleteRuns(ids: string[]): {
             model,
           });
         }
+      } finally {
+        analytics.trackEvent(analyticsKeysMap.images.table.deleteRunsBatch);
       }
     },
     abort: runsDeleteRef.abort,
@@ -2147,6 +2161,13 @@ function onStackingToggle(): void {
     const config = { ...configData, images };
     updateURL(config as IImagesExploreAppConfig);
     model.setState({ config });
+    analytics.trackEvent(
+      `${analyticsKeysMap.images.imagesPanel.controls.groupStacking} to ${
+        !configData.images.additionalProperties.stacking
+          ? 'Enabled'
+          : 'Disabled'
+      }`,
+    );
   }
 }
 

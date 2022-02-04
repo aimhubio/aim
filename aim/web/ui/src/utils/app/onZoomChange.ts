@@ -1,5 +1,7 @@
 import _ from 'lodash-es';
 
+import analyticsKeysMap from 'config/analytics/analyticsKeysMap';
+
 import * as analytics from 'services/analytics';
 
 import { IChartZoom } from 'types/services/models/metrics/metricsAppModel';
@@ -34,7 +36,8 @@ export default function onZoomChange<M extends State>({
   }
   if (!_.isNil(zoom.mode)) {
     analytics.trackEvent(
-      `[${appName}][Chart] Set zoom mode to "${
+      // @ts-ignore
+      `${analyticsKeysMap[appName].chart.controls.changeZoomMode} to "${
         zoom.mode === 0 ? 'single' : 'multiple'
       }"`,
     );

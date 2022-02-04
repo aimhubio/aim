@@ -6,12 +6,19 @@ import BusyLoaderWrapper from 'components/BusyLoaderWrapper/BusyLoaderWrapper';
 import EmptyComponent from 'components/EmptyComponent/EmptyComponent';
 import ErrorBoundary from 'components/ErrorBoundary/ErrorBoundary';
 
+import analyticsKeysMap from 'config/analytics/analyticsKeysMap';
+
+import * as analytics from 'services/analytics';
+
 import { IRunDetailParamsTabProps } from './types';
 
 function RunDetailParamsTab({
   runParams,
   isRunInfoLoading,
 }: IRunDetailParamsTabProps): React.FunctionComponentElement<React.ReactNode> {
+  React.useEffect(() => {
+    analytics.pageView(analyticsKeysMap.runDetails.tabs.params.tabView);
+  }, []);
   return (
     <ErrorBoundary>
       <BusyLoaderWrapper

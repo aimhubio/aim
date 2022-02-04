@@ -1,6 +1,8 @@
 import React from 'react';
 import { useRouteMatch, useHistory } from 'react-router-dom';
 
+import analyticsKeysMap from 'config/analytics/analyticsKeysMap';
+
 import useModel from 'hooks/model/useModel';
 import usePanelResize from 'hooks/resize/usePanelResize';
 
@@ -79,7 +81,7 @@ function ParamsContainer(): React.FunctionComponentElement<React.ReactNode> {
       });
     }
 
-    analytics.pageView('[ParamsExplorer]');
+    analytics.pageView(analyticsKeysMap.params.pageView);
 
     const unListenHistory = history.listen(() => {
       if (!!paramsData?.config) {

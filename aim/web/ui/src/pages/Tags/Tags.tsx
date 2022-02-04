@@ -6,6 +6,8 @@ import TabPanel from 'components/TabPanel/TabPanel';
 import NotificationContainer from 'components/NotificationContainer/NotificationContainer';
 import ErrorBoundary from 'components/ErrorBoundary/ErrorBoundary';
 
+import analyticsKeysMap from 'config/analytics/analyticsKeysMap';
+
 import * as analytics from 'services/analytics';
 
 import { ITagsProps } from 'types/pages/tags/Tags';
@@ -34,7 +36,7 @@ function Tags({
 
   const handleChange = (event: React.ChangeEvent<{}>, newValue: number) => {
     setValue(newValue);
-    analytics.trackEvent('[Tags] Tab change');
+    analytics.trackEvent(analyticsKeysMap.tags.tabChange);
   };
 
   useEffect(() => {

@@ -1,3 +1,5 @@
+import analyticsKeysMap from 'config/analytics/analyticsKeysMap';
+
 import * as analytics from 'services/analytics';
 
 import {
@@ -45,5 +47,8 @@ export default function onChangeTooltip<M extends State>({
     model.setState({ config: configData });
     updateURL({ configData, appName });
   }
-  analytics.trackEvent(`[${appName}Explorer] Change tooltip content`);
+  analytics.trackEvent(
+    // @ts-ignore
+    analyticsKeysMap[appName].chart.controls.tooltip.changeTooltipContent,
+  );
 }
