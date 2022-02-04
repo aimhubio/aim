@@ -1,5 +1,9 @@
 # Changelog
 
+## 3.5.1
+
+- Fix folder creation when tracking with remote tracker (aramaim)
+
 ## 3.5.0 Feb 3 2022
 
 ### Enhancements:
