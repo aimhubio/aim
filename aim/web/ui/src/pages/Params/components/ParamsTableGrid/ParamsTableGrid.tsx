@@ -121,9 +121,9 @@ function getParamsTableColumns(
             />
           ),
           topHeader: isSystemMetric(key) ? 'System Metrics' : key,
-          pin: order?.left?.includes(`${key}_${metricContext}`)
+          pin: order?.left?.includes(`${key}`)
             ? 'left'
-            : order?.right?.includes(`${key}_${metricContext}`)
+            : order?.right?.includes(`${key}`)
             ? 'right'
             : null,
         })),
