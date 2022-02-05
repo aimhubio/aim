@@ -2227,7 +2227,6 @@ function createAppModel(appConfig: IAppInitialConfig) {
               const tableColumns = getRunsTableColumns(
                 metricsColumns,
                 params,
-                data[0]?.config,
                 model.getState()?.config?.table.columnsOrder!,
                 model.getState()?.config?.table.hiddenColumns!,
               );
@@ -2284,7 +2283,6 @@ function createAppModel(appConfig: IAppInitialConfig) {
         const tableColumns: ITableColumn[] = getRunsTableColumns(
           metricsColumns,
           params,
-          data[0]?.config,
           configData?.table?.columnsOrder!,
           configData?.table?.hiddenColumns!,
         );
@@ -2743,7 +2741,6 @@ function createAppModel(appConfig: IAppInitialConfig) {
         const tableColumns: ITableColumn[] = getRunsTableColumns(
           metricsColumns,
           params,
-          data[0]?.config,
           configData?.table.columnsOrder!,
           configData?.table.hiddenColumns!,
         );
@@ -2807,7 +2804,6 @@ function createAppModel(appConfig: IAppInitialConfig) {
         const tableColumns = getRunsTableColumns(
           metricsColumns,
           params,
-          data[0]?.config,
           model.getState()?.config?.table.columnsOrder!,
           model.getState()?.config?.table.hiddenColumns!,
         );

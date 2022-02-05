@@ -17,7 +17,6 @@ import { formatSystemMetricName } from 'utils/formatSystemMetricName';
 function getRunsTableColumns(
   metricsColumns: any,
   runColumns: string[] = [],
-  groupFields: { [key: string]: string } | null,
   order: { left: string[]; middle: string[]; right: string[] },
   hiddenColumns: string[],
 ): ITableColumn[] {
