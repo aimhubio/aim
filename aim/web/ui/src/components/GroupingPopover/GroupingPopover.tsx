@@ -70,6 +70,21 @@ function GroupingPopover({
     });
   }
 
+  const options = React.useMemo(() => {
+    if (inputValue.trim() !== '') {
+      const filtered = groupingSelectOptions.filter((item) => {
+        return item.label.indexOf(inputValue) !== -1;
+      });
+
+      return filtered
+        .slice()
+        .sort(
+          (a, b) => a.label.indexOf(inputValue) - b.label.indexOf(inputValue),
+        );
+    }
+    return groupingSelectOptions;
+  }, [groupingSelectOptions, inputValue]);
+
   return (
     <ErrorBoundary>
       <div className='GroupingPopover'>
@@ -87,17 +102,7 @@ function GroupingPopover({
               size='small'
               multiple
               disableCloseOnSelect
-              options={
-                inputValue.trim() !== ''
-                  ? groupingSelectOptions
-                      .slice()
-                      .sort(
-                        (a, b) =>
-                          a.label.indexOf(inputValue) -
-                          b.label.indexOf(inputValue),
-                      )
-                  : groupingSelectOptions
-              }
+              options={options}
               value={values}
               onChange={onChange}
               groupBy={(option) => option.group}
@@ -105,7 +110,7 @@ function GroupingPopover({
               getOptionSelected={(option, value) =>
                 option.value === value.value
               }
-              renderInput={(params) => (
+              renderInput={(params: any) => (
                 <TextField
                   {...params}
                   inputProps={{
