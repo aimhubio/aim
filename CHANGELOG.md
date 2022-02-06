@@ -1,5 +1,9 @@
 # Changelog
 
+## Unreleased
+
+- Fix issue with filtering options while typing in input of autocomplete in Tooltip and Grouping popovers (rubenaprikyan)
+
 ## 3.5.1 Feb 4 2022
 
 - Fix folder creation when tracking with remote tracker (aramaim)
