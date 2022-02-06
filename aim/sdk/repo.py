@@ -1,10 +1,11 @@
 import os
 import shutil
 import logging
-from enum import Enum
 
-from packaging import version
 from collections import defaultdict
+from enum import Enum
+from filelock import FileLock
+from packaging import version
 from typing import Dict, Tuple, Iterator, NamedTuple, Optional, List
 from weakref import WeakValueDictionary
 
@@ -100,7 +101,7 @@ class Repo:
         self._client: Client = None
         if path.startswith('ssh://'):
             self._mount_root, self.root_path = mount_remote_repo(path)
-        elif path.startswith('aim://'):
+        elif self.is_remote_path(path):
             remote_path = path.replace('aim://', '')
             self._client = Client(remote_path)
             self.root_path = remote_path
@@ -178,7 +179,7 @@ class Repo:
         Returns:
             :obj:`Repo` object.
         """
-        if not path.startswith('ssh://') and not path.startswith('aim://'):
+        if not path.startswith('ssh://') and not cls.is_remote_path(path):
             path = clean_repo_path(path)
         repo = cls._pool.get(path)
         if repo is None:
@@ -215,6 +216,8 @@ class Repo:
 
     @classmethod
     def check_repo_status(cls, path: str) -> RepoStatus:
+        if cls.is_remote_path(path):
+            return RepoStatus.UPDATED
         if not cls.exists(path):
             return RepoStatus.MISSING
         repo_version = version.parse(cls.get_version(path))
@@ -233,6 +236,10 @@ class Repo:
             with open(version_file_path, 'r') as version_fh:
                 return version_fh.read()
         return '0.0'  # old Aim repos
+
+    @classmethod
+    def is_remote_path(cls, path: str):
+        return path.startswith('aim://')
 
     def _get_container(
             self, name: str, read_only: bool, from_union: bool = False
@@ -418,15 +425,18 @@ class Repo:
         Returns:
             (True, []) if all runs deleted successfully, (False, :obj:`list`) with list of remaining runs otherwise.
         """
-        run_count = 0
-        try:
-            for run_hash in run_hashes:
+        remaining_runs = []
+        for run_hash in run_hashes:
+            try:
                 self._delete_run(run_hash)
-                run_count += 1
+            except Exception as e:
+                logger.warning(f'Error while trying to delete run \'{run_hash}\'. {str(e)}.')
+                remaining_runs.append(run_hash)
+
+        if remaining_runs:
+            return False, remaining_runs
+        else:
             return True, []
-        except Exception as e:
-            logger.warning(f'Error while trying to delete run \'{run_hash}\'. {str(e)}.')
-            return False, run_hashes[run_count:]
 
     def copy_runs(self, run_hashes: List[str], dest_repo: 'Repo') -> Tuple[bool, List[str]]:
         """Copy multiple Runs data from current aim repository to destination aim repository
@@ -439,15 +449,18 @@ class Repo:
             (True, []) if all runs were copied successfully,
             (False, :obj:`list`) with list of remaining runs otherwise.
         """
-        run_count = 0
-        try:
-            for run_hash in run_hashes:
+        remaining_runs = []
+        for run_hash in run_hashes:
+            try:
                 self._copy_run(run_hash, dest_repo)
-                run_count += 1
+            except Exception as e:
+                logger.warning(f'Error while trying to copy run \'{run_hash}\'. {str(e)}.')
+                remaining_runs.append(run_hash)
+
+        if remaining_runs:
+            return False, remaining_runs
+        else:
             return True, []
-        except Exception as e:
-            logger.warning(f'Error while trying to copy run \'{run_hash}\'. {str(e)}.')
-            return False, run_hashes[run_count:]
 
     def move_runs(self, run_hashes: List[str], dest_repo: 'Repo') -> Tuple[bool, List[str]]:
         """Move multiple Runs data from current aim repository to destination aim repository
@@ -460,16 +473,19 @@ class Repo:
             (True, []) if all runs were moved successfully,
             (False, :obj:`list`) with list of remaining runs otherwise.
         """
-        run_count = 0
-        try:
-            for run_hash in run_hashes:
+        remaining_runs = []
+        for run_hash in run_hashes:
+            try:
                 self._copy_run(run_hash, dest_repo)
                 self._delete_run(run_hash)
-                run_count += 1
+            except Exception as e:
+                logger.warning(f'Error while trying to move run \'{run_hash}\'. {str(e)}.')
+                remaining_runs.append(run_hash)
+
+        if remaining_runs:
+            return False, remaining_runs
+        else:
             return True, []
-        except Exception as e:
-            logger.warning(f'Error while trying to move run \'{run_hash}\'. {str(e)}.')
-            return False, run_hashes[run_count:]
 
     def query_metrics(self, query: str = '') -> QuerySequenceCollection:
         """Get metrics satisfying query expression.
@@ -650,6 +666,12 @@ class Repo:
         self.run_props_cache_hint = cache_name
 
     def _delete_run(self, run_hash):
+        # try to acquire a lock on a run container to check if it is still in progress or not
+        # in progress runs can't be deleted
+        lock_path = os.path.join(self.path, 'meta', 'locks', run_hash)
+        lock = FileLock(str(lock_path), timeout=0)
+        lock.acquire()
+
         with self.structured_db:  # rollback db entity delete if subsequent actions fail.
             # remove database entry
             self.structured_db.delete_run(run_hash)
@@ -662,11 +684,22 @@ class Repo:
             sub_dirs = ('chunks', 'progress', 'locks')
             for sub_dir in sub_dirs:
                 meta_path = os.path.join(self.path, 'meta', sub_dir, run_hash)
-                shutil.rmtree(meta_path, ignore_errors=True)
+                if os.path.isfile(meta_path):
+                    os.remove(meta_path)
+                else:
+                    shutil.rmtree(meta_path, ignore_errors=True)
                 seqs_path = os.path.join(self.path, 'seqs', sub_dir, run_hash)
-                shutil.rmtree(seqs_path, ignore_errors=True)
+                if os.path.isfile(seqs_path):
+                    os.remove(seqs_path)
+                else:
+                    shutil.rmtree(seqs_path, ignore_errors=True)
 
     def _copy_run(self, run_hash, dest_repo):
+        # try to acquire a lock on a run container to check if it is still in progress or not
+        # in progress runs can't be copied
+        lock_path = os.path.join(self.path, 'meta', 'locks', run_hash)
+        lock = FileLock(str(lock_path), timeout=0)
+        lock.acquire()
         with dest_repo.structured_db:  # rollback destination db entity if subsequent actions fail.
             # copy run structured data
             source_structured_run = self.structured_db.find_run(run_hash)
