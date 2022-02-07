@@ -1,10 +1,131 @@
 # Changelog
 
-## Unreleased
+## 3.5.1 Feb 4 2022
 
+- Fix folder creation when tracking with remote tracker (aramaim)
+
+## 3.5.0 Feb 3 2022
+
+### Enhancements:
+
+- Ability to hide system metrics from table (arsengit)
+- Add input validations to range selectors (Hamik25)
+- Improve media panel rendering performance on hovering over images (KaroMourad)
+- Add ability to parse and import TensorFlow events into aim (devfox-se)
+- Add system parameter logging: CLI, Env, Executable, Git, Installed packages (devfox-se)
+- Convert nested non-native objects (e.g. OmegaConf config instance) upon storing (devfox-se)
+- Add cli subcommands cp and mv for aim runs command (mihran113)
+- Add handler for matplotlib figures in Image and Figure custom objects (devfox-se)
+- Improve highlighting of table focused/hovered/selected row (VkoHov)
+
+### Fixes:
+
+- Fix stalled runs deletion (mihran113)
+- Fix background transparency in colab when using dark mode of system (rubenaprikyan)
+- Fix Grouping and Tooltip popovers states' resetting issue when live-update is on (rubenaprikyan)
+- Fix table column's sort functionality issue in Params and Scatters Explorers (rubenaprikyan)
+
+## 3.4.1 Jan 23 2022
+
+- Fix issue with displaying experiment name in Images Explorer table (VkoHov)
+
+## 3.4.0 Jan 22 2022
+
+- Add ability to apply group stacking on media elements list (KaroMourad)
+- Add ability to apply sorting by run creation_time on table rows (roubkar)
+- Add ability to filter texts table with keyword matching (roubkar, rubenaprikyan)
+- Add ability to delete run from settings tab (Hamik25)
+- Enhance controls states of explorer pages (arsengit)
+- Add --repo, --host arguments support for notebook extension (VkoHov, rubenaprikyan)
+- Add trendline options to ScatterPlot (roubkar)
+- Add ability to display images in original size and align by width (arsengit)
+- Add version, docs and slack links to sidebar (arsengit)
+- Enhance AudioPlayer component (arsengit)
+- Recover active tab in run details page after reload (roubkar)
+- Add ability to archive or delete runs with batches (VkoHov)
+- Remote tracking server [experimental] (alberttorosyan, mihran113, aramaim)
+- Add ability to change media elements order (VkoHov)
+- Add ability to hard delete runs (alberttorosyan)
+- Lossy format support for aim.Image (devfox-se)
+- Timezone issues fix for creation and end times (mihran113)
+
+## 3.3.5 Jan 14 2022
+
+- Add non-strict write mode to replace not-yet-supported types with their
+  string representations. (mahnerak)
+- Log pytorch_lightning hyperparameters in non-strict mode. (mahnerak)
+
+## 3.3.4 Jan 10 2022
+
+- Fix issue with WAL files flushing (alberttorosyan)
+- Support for omegaconf configs in pytorch_lightning adapter (devfox-se)
+
+## 3.3.3 Dec 24 2021
+
+- Fix issue with showing range panel in Images Explorer (roubkar)
+
+## 3.3.2 Dec 20 2021
+
+- Fix issue with not providing point density value to live-update query (rubenaprikyan)
+
+## 3.3.1 Dec 18 2021
+
+- Fix getValue function to show correct chart title data (KaroMourad)
+
+## 3.3.0 Dec 17 2021
+
+- Add ability to track and explore audios in run detail page (arsengit, VkoHov, devfox-se)
+- Add ability to track and visualize texts (mihran113, roubkar)
+- Fix boolean values encoding (mahnerak)
+- Add Scatter Explorer to visualize correlations between metric last value and hyperparameter (KaroMourad)
+- Add ability to track and visualize plotly objects (devfox-se, Hamik25, rubenaprikyan)
+- Add ability to query distributions by step range and density (VkoHov, rubenaprikyan)
+- Add colab notebook support (mihran113, rubenaprikyan)
+- Implement images visualization tab in run detail page (VkoHov, KaroMourad)
+- Add custom URL prefix support (mihran113, Hamik25, roubkar)
+- Enhance metric selection dropdowns to see lists in alphabetical order (rubenaprikyan)
+
+## 3.2.2 Dec 10 2021
+
+- Fix Run finalization index timeout issue (alberttorosyan)
+
+## 3.2.1 Dec 8 2021
+
+- Add ability to provide custom base path for API (mihran113, roubkar)
+- Fix table groups column default order (arsengit)
+- Fix table panel height issue in runs explorer page (arsengit)
+
+## 3.2.0 Dec 3 2021
+
+- Add ability to cancel pending request (roubkar, arsengit)
+- Add support for secure protocol for API calls (mihran113, roubkar)
+- Implement image full size view (VkoHov)
+- Add ability to manipulate with image size and rendering type (arsengit)
+- Enhance Table column for selected grouping config options (arsengit)
+- Implement suggestions list for AimQL search (arsengit, rubenaprikyan)
+- Add ability to track and visualize distributions (mihran113, rubenaprikyan)
+- Add notebook extension, magic functions (rubenaprikyan)
+
+## 3.1.1 Nov 25 2021
+
+- Apply default ordering on images set (VkoHov)
+- Ability to show image data in a tooltip on hover (KaroMourad)
+- Support of Image input additional data sources (alberttorosyan)
+- Ability to export run props as pandas dataframe (gorarakelyan)
+- Slice image sequence by index for the given steps range (alberttorosyan)
+- Improve Images Explorer rendering performance through better images list virtualization (roubkar)
+
+## 3.1.0 Nov 20 2021
+
+- Add ability to explore tracked images (VkoHov)
 - Improve rendering performance by virtualizing table columns (roubkar)
 - Add ability to apply grouping by higher level param key (roubkar)
 - Add ability to specify repository path during `aim init` via `--repo` argument (rubenaprikyan)
+
+## 3.0.7 Nov 17 2021
+
+- Fix for missing metrics when numpy.float64 values tracked (alberttorosyan)
+
 ## 3.0.6 Nov 9 2021
 
 - Fix for blocking container optimization for in progress runs (alberttorosyan)

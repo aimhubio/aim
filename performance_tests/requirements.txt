@@ -1,0 +1,4 @@
+-r ../requirements.txt
+boto3
+pytest
+parameterized==0.8.1

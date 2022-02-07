@@ -1,36 +1,29 @@
+import { noop } from 'lodash';
+
 import { IRunBatch } from 'pages/RunDetail/types';
 
 import runsService from 'services/api/runs/runsService';
 import * as analytics from 'services/analytics';
 
 import { INotification } from 'types/components/NotificationContainer/NotificationContainer';
+import { IApiRequest } from 'types/services/services';
+
+import exceptionHandler from 'utils/app/exceptionHandler';
 
 import createModel from '../model';
 
 const model = createModel<Partial<any>>({
-  isRunInfoLoading: false,
+  isRunInfoLoading: true,
   isExperimentsLoading: false,
   isRunBatchLoading: false,
   isRunsOfExperimentLoading: false,
+  isLoadMoreButtonShown: true,
 });
 
-let getRunsInfoRequestRef: {
-  call: () => Promise<any>;
-  abort: () => void;
-};
-let getRunsBatchRequestRef: {
-  call: () => Promise<any>;
-  abort: () => void;
-};
-let getExperimentsDataRequestRef: {
-  call: () => Promise<any>;
-  abort: () => void;
-};
-
-let getRunsOfExperimentRequestRef: {
-  call: () => Promise<any>;
-  abort: () => void;
-};
+let getRunsInfoRequestRef: IApiRequest<void>;
+let getRunsBatchRequestRef: IApiRequest<void>;
+let getExperimentsDataRequestRef: IApiRequest<void>;
+let getRunsOfExperimentRequestRef: IApiRequest<void>;
 
 function initialize() {
   model.init();
@@ -44,7 +37,9 @@ function getExperimentsData() {
   return {
     call: async () => {
       model.setState({ isExperimentsLoading: true });
-      const data = await getExperimentsDataRequestRef.call();
+      const data = await getExperimentsDataRequestRef.call((detail: any) => {
+        exceptionHandler({ detail, model });
+      });
       model.setState({
         isExperimentsLoading: false,
         experimentsData: data,
@@ -63,7 +58,9 @@ function getRunInfo(runHash: string) {
   return {
     call: async () => {
       model.setState({ isRunInfoLoading: true });
-      const data = await getRunsInfoRequestRef.call();
+      const data = await getRunsInfoRequestRef.call((detail: any) => {
+        exceptionHandler({ detail, model });
+      });
       model.setState({
         runParams: data.params,
         runTraces: data.traces,
@@ -92,34 +89,39 @@ function getRunsOfExperiment(
   return {
     call: async () => {
       model.setState({ isRunsOfExperimentLoading: true });
-      const data = await getRunsOfExperimentRequestRef.call();
+      const data = await getRunsOfExperimentRequestRef.call((detail: any) => {
+        exceptionHandler({ detail, model });
+      });
+      const runsOfExperiment = isLoadingMore
+        ? [...(model.getState().runsOfExperiment || []), ...data.runs]
+        : [...data.runs];
       model.setState({
-        runsOfExperiment: isLoadingMore
-          ? [...(model.getState().runsOfExperiment || []), ...data.runs]
-          : [...data.runs],
+        runsOfExperiment,
         isRunsOfExperimentLoading: false,
         experimentId: data.id,
+        isLoadMoreButtonShown: data.runs.length === 10,
       });
-      // return data;
     },
     abort: getRunsOfExperimentRequestRef.abort,
   };
 }
 
-function getRunBatch(body: any, runHash: string) {
+function getRunMetricsBatch(body: any, runHash: string) {
   if (getRunsBatchRequestRef) {
     getRunsBatchRequestRef.abort();
   }
-  getRunsBatchRequestRef = runsService.getRunBatch(body, runHash);
+  getRunsBatchRequestRef = runsService.getRunMetricsBatch(body, runHash);
   return {
     call: async () => {
       model.setState({ isRunBatchLoading: true });
 
-      const data = await getRunsBatchRequestRef.call();
+      const data = await getRunsBatchRequestRef.call((detail: any) => {
+        exceptionHandler({ detail, model });
+      });
       const runMetricsBatch: IRunBatch[] = [];
       const runSystemBatch: IRunBatch[] = [];
       data.forEach((run: IRunBatch) => {
-        if (run.metric_name.startsWith('__system__')) {
+        if (run.name.startsWith('__system__')) {
           runSystemBatch.push(run);
         } else {
           runMetricsBatch.push(run);
@@ -140,7 +142,9 @@ function archiveRun(id: string, archived: boolean = false) {
   const state = model.getState();
   runsService
     .archiveRun(id, archived)
-    .call()
+    .call((detail) => {
+      exceptionHandler({ detail, model });
+    })
     .then((res: any) => {
       model.setState({
         ...state,
@@ -155,7 +159,7 @@ function archiveRun(id: string, archived: boolean = false) {
           severity: 'success',
           message: archived
             ? 'Run successfully archived'
-            : 'Run successfully unarchive',
+            : 'Run successfully unarchived',
         });
       } else {
         onNotificationAdd({
@@ -168,6 +172,34 @@ function archiveRun(id: string, archived: boolean = false) {
         archived ? '[RunDetail] Archive Run' : '[RunDetail] Unarchive Run',
       );
     });
+}
+
+function deleteRun(id: string, successCallback: () => void = noop) {
+  try {
+    runsService
+      .deleteRun(id)
+      .call((detail) => {
+        exceptionHandler({ model, detail });
+      })
+      .then((res: any) => {
+        if (res.id) {
+          successCallback();
+        } else {
+          onNotificationAdd({
+            id: Date.now(),
+            severity: 'error',
+            message: 'Something went wrong',
+          });
+        }
+        analytics.trackEvent('[RunDetail] Delete Run');
+      });
+  } catch (err: any) {
+    onNotificationAdd({
+      id: Date.now(),
+      severity: 'error',
+      message: err.message,
+    });
+  }
 }
 
 function onNotificationDelete(id: number) {
@@ -189,10 +221,11 @@ const runDetailAppModel = {
   ...model,
   initialize,
   getRunInfo,
-  getRunBatch,
+  getRunMetricsBatch,
   getExperimentsData,
   getRunsOfExperiment,
   archiveRun,
+  deleteRun,
   onNotificationAdd,
   onNotificationDelete,
 };

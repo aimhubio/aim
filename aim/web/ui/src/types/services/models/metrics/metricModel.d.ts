@@ -3,7 +3,7 @@ import { IMetricTrace, IRun, ITraceData } from './runModel';
 export interface IMetric {
   run: IRun<IMetricTrace>;
   key: string;
-  metric_name: string;
+  name: string;
   context: { [key: string]: unknown };
   data: {
     values: Float64Array;

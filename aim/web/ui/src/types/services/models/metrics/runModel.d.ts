@@ -7,18 +7,31 @@ export interface IRun<T> {
     end_time: number;
   };
   created_at: number;
+  traces: { metric: T[] };
+  hash: string;
+}
+
+export interface ISequence<T> {
+  params: IRunParams;
+  props: {
+    experiment: { name: string; id: string } | null;
+    name: string;
+    creation_time: number;
+    end_time: number;
+  };
+  created_at: number;
   traces: T[];
   hash: string;
 }
 
 export interface IParamTrace {
-  metric_name: string;
+  name: string;
   context: { [key: string]: unknown };
   last_value: { last: number | string };
 }
 
 export interface IMetricTrace {
-  metric_name: string;
+  name: string;
   context: { [key: string]: unknown };
   slice: number[];
   values: ITraceData;
@@ -29,7 +42,7 @@ export interface IMetricTrace {
   x_axis_iters?: ITraceData;
 }
 
-export interface IRunParam {
+export interface IRunParams {
   [key: string]: any;
 }
 

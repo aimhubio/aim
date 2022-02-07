@@ -1,4 +1,3 @@
-import { IGetFilteredValuesParams } from 'types/utils/d3/processData';
 import { IFilterMetricDataParams } from 'types/utils/filterMetricData';
 
 import { ScaleEnum } from './d3';
@@ -15,8 +14,12 @@ const isInvalidValue = (
   );
 };
 
-const getFilteredValues = (params: IGetFilteredValuesParams): number[] => {
-  const { data, invalidXIndices, invalidYIndices } = params;
+const getFilteredValues = (args: {
+  data: number[];
+  invalidXIndices: number[];
+  invalidYIndices: number[];
+}): number[] => {
+  const { data, invalidXIndices, invalidYIndices } = args;
 
   return data.filter(
     (v: number, i: number) =>

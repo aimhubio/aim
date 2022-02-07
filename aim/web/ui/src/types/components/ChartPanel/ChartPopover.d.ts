@@ -1,24 +1,28 @@
 import React from 'react';
 
-import { PopoverPosition } from '@material-ui/core';
-
 import {
   IAlignmentConfig,
   IFocusedState,
   ITooltipContent,
-} from 'services/models/metrics/metricsAppModel';
+} from 'types/services/models/metrics/metricsAppModel';
 
 import { ChartTypeEnum } from 'utils/d3';
 
 export interface IChartPopover {
+  id?: string;
   children?: React.ReactNode;
-  popoverPosition: PopoverPosition | null;
+  activePointRect: {
+    top: number;
+    bottom: number;
+    left: number;
+    right: number;
+  } | null;
   open: boolean;
   className?: string;
-  id?: string;
-  containerRef?: React.RefObject<HTMLDivElement>;
+  containerNode?: HTMLDivElement | null;
   tooltipContent: ITooltipContent;
   focusedState: IFocusedState;
   chartType: ChartTypeEnum;
   alignmentConfig?: IAlignmentConfig;
+  reCreatePopover?: unknown;
 }

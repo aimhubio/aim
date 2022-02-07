@@ -12,7 +12,8 @@ export interface ITableProps {
   data: any[] | null;
   columns: any[];
   height?: string;
-  rowHeight: RowHeight;
+  rowHeight?: RowHeight;
+  estimatedRowHeight?: number;
   onManageColumns?: (order: any) => void;
   onColumnsVisibilityChange?: (hiddenColumns: string[]) => void;
   onTableDiffShow?: () => void;
@@ -26,6 +27,7 @@ export interface ITableProps {
     name: string;
     callBack: () => void;
   }[];
+  className?: string;
   headerHeight?: number;
   sortOptions?: GroupingSelectOptionType[];
   fixed?: boolean;
@@ -39,6 +41,7 @@ export interface ITableProps {
   rowHeightMode?: any;
   columnsOrder?: any;
   hiddenColumns?: string[];
+  hideSystemMetrics?: boolean;
   updateColumns?: any;
   columnsWidths?: any;
   updateColumnsWidths?: any;
@@ -52,6 +55,14 @@ export interface ITableProps {
   showRowClickBehaviour?: boolean;
   showResizeContainerActionBar?: boolean;
   resizeMode?: ResizeModeEnum;
+  multiSelect?: boolean;
+  selectedRows?: any;
+  minHeight?: string;
+  onRowSelect?: any;
+  archiveRuns?: (ids: string[], archived: boolean) => void;
+  deleteRuns?: (ids: string[]) => void;
+  className?: string;
+  focusedState?: any;
 }
 
 export interface ITableRef {

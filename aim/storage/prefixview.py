@@ -1,5 +1,5 @@
 from aim.storage.container import Container
-from aim.storage.treeview import TreeView
+from aim.storage.containertreeview import ContainerTreeView
 
 from typing import Iterator, Tuple
 
@@ -53,10 +53,7 @@ class PrefixView(Container):
         Sometimes there is need to preload the storage without performing an
         operation that will cause an actual read / write access.
         """
-        try:
-            self.container.preload()
-        except Exception:
-            pass
+        self.container.preload()
 
     def finalize(self, *, index: Container):
         """Finalize the Container.
@@ -391,8 +388,8 @@ class PrefixView(Container):
 
     def tree(
         self
-    ) -> TreeView:
-        """Return a :obj:`TreeView` which enables hierarchical view and access
+    ) -> ContainerTreeView:
+        """Return a :obj:`ContainerTreeView` which enables hierarchical view and access
         to the container records.
 
         This is achieved by prefixing groups and using `PATH_SENTINEL` as a
@@ -408,7 +405,7 @@ class PrefixView(Container):
             will behave as a (possibly deep) dict-like object:
             `tree[b'meta'][b'x'] == b'123'`
         """
-        return TreeView(self)
+        return ContainerTreeView(self)
 
     def batch(self):
         """Creates a new batch object to store operations in before executing

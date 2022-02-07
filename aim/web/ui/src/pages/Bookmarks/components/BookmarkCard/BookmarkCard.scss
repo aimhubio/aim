@@ -1,6 +1,6 @@
 @use 'src/styles/abstracts' as *;
 
-.BookmarkCard__container {
+.BookmarkCard {
   position: relative;
   display: flex;
   flex-direction: column;
@@ -8,51 +8,55 @@
   border-radius: 0.5rem;
   padding: 1.5rem;
   margin-bottom: 1rem;
-}
 
-.BookmarkCard__delete {
-  margin-left: 0.25rem;
-}
-
-.BookmarkCard__top {
-  flex: 1 1;
-
-  p {
-    margin-top: 0.25rem;
-    font-weight: normal;
-    font-size: $text-sm;
+  &__delete {
+    margin-left: 0.25rem;
   }
-}
 
-.BookmarkCard__title__section {
-  display: flex;
-  justify-content: space-between;
-
-  a {
-    text-decoration: none;
+  &__top {
+    flex: 1 1;
+    p {
+      margin-top: 0.25rem;
+      font-weight: normal;
+      font-size: $text-sm;
+    }
   }
-}
 
-.BookmarkCard__bottom {
-  margin-top: 0.75rem;
-
-  strong {
-    color: #243969;
-    margin-right: 0.5rem;
+  &__title__section {
+    display: flex;
+    justify-content: space-between;
+    &__container {
+      display: flex;
+      i {
+        margin-right: 0.5rem;
+        margin-top: 0.125rem;
+      }
+    }
+    a {
+      text-decoration: none;
+    }
   }
-}
 
-.BookmarkCard__selected__metrics {
-  margin-top: 0.875rem;
-  width: 100%;
-  white-space: nowrap;
-  overflow: auto;
-  padding: 0.125rem 0;
-  .Badge {
-    margin-right: 0.5rem;
+  &__bottom {
+    margin-top: 0.75rem;
+    strong {
+      color: #243969;
+      margin-right: 0.5rem;
+    }
   }
-}
 
-.BookmarkCard__run__expression {
-  margin-right: 2.8125rem;
+  &__selected__metrics {
+    margin-top: 0.875rem;
+    width: 100%;
+    white-space: nowrap;
+    overflow: auto;
+    padding: 0.125rem 0;
+    .Badge {
+      margin-right: 0.5rem;
+    }
+  }
+
+  &__run__expression {
+    margin-right: 2.8125rem;
+  }
 }

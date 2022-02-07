@@ -7,10 +7,15 @@ import { RowHeightSize } from 'config/table/tableConfigs';
 import { ResizeModeEnum } from 'config/enums/tableEnums';
 import { DensityOptions } from 'config/enums/densityEnum';
 
+import {
+  IGroupingConfig,
+  ISelectConfig,
+} from 'services/models/explorer/createAppModel';
+import { ISelectOption } from 'services/models/explorer/createAppModel';
+
 import { ITableRef } from 'types/components/Table/Table';
 import {
   GroupNameType,
-  IMetricAppConfig,
   IMetricTableRowData,
   IOnGroupingModeChangeParams,
   IOnGroupingSelectChangeParams,
@@ -19,7 +24,7 @@ import {
   IAggregationConfig,
   IAggregatedData,
   IAlignmentConfig,
-  IChartTooltip,
+  IPanelTooltip,
   IChartTitleData,
   IGroupingSelectOption,
   IChartZoom,
@@ -58,21 +63,23 @@ export interface IMetricProps extends Partial<RouteChildrenProps> {
   smoothingFactor: number;
   focusedState: IFocusedState;
   highlightMode: HighlightEnum;
-  groupingData: IMetricAppConfig['grouping'];
+  groupingData: IGroupingConfig;
   notifyData: IMetricAppModelState['notifyData'];
-  tooltip: IChartTooltip;
+  tooltip: IPanelTooltip;
   aggregationConfig: IAggregationConfig;
   alignmentConfig: IAlignmentConfig;
-  selectedMetricsData: IMetricAppConfig['select'];
+  selectedMetricsData: ISelectConfig;
   tableRowHeight: RowHeightSize;
+  selectedRows: { [key: string]: any };
   sortFields: [string, 'asc' | 'desc' | boolean][];
   hiddenMetrics: string[];
   hiddenColumns: string[];
+  hideSystemMetrics: boolean;
   groupingSelectOptions: IGroupingSelectOption[];
-  projectsDataMetrics: IProjectParamsMetrics['metrics'];
+  projectsDataMetrics: IProjectParamsMetrics['metric'];
   requestIsPending: boolean;
   resizeMode: ResizeModeEnum;
-  onChangeTooltip: (tooltip: Partial<IChartTooltip>) => void;
+  onChangeTooltip: (tooltip: Partial<IPanelTooltip>) => void;
   onIgnoreOutliersChange: () => void;
   onZoomChange: (zoom: Partial<IChartZoom>) => void;
   onActivePointChange?: (
@@ -101,7 +108,7 @@ export interface IMetricProps extends Partial<RouteChildrenProps> {
   onAlignmentMetricChange: (metric: string) => void;
   onAlignmentTypeChange: (type: XAlignmentEnum) => void;
   onDensityTypeChange: (type: DensityOptions) => void;
-  onMetricsSelectChange: IMetricAppConfig['onMetricsSelectChange'];
+  onMetricsSelectChange: (options: ISelectOption[]) => void;
   onSelectRunQueryChange: (query: string) => void;
   onSelectAdvancedQueryChange: (query: string) => void;
   toggleSelectAdvancedMode: () => void;
@@ -123,6 +130,9 @@ export interface IMetricProps extends Partial<RouteChildrenProps> {
     delay?: number;
     enabled?: boolean;
   }) => void;
+  onRowSelect: any;
+  archiveRuns: (ids: string[], archived: boolean) => void;
+  deleteRuns: (ids: string[]) => void;
 }
 
 export interface IOnSmoothingChange {

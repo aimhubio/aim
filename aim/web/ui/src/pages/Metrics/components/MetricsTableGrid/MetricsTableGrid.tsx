@@ -1,21 +1,21 @@
-import React from 'react';
 import moment from 'moment';
+import _ from 'lodash-es';
 import { Link as RouteLink } from 'react-router-dom';
-import { merge } from 'lodash-es';
 
-import { Link } from '@material-ui/core';
+import { Link, Tooltip } from '@material-ui/core';
 
 import TableSortIcons from 'components/Table/TableSortIcons';
-import { Button, Icon, Badge } from 'components/kit';
+import { Badge, Button, Icon } from 'components/kit';
+import ControlPopover from 'components/ControlPopover/ControlPopover';
+import JsonViewPopover from 'components/kit/JsonViewPopover';
+import ErrorBoundary from 'components/ErrorBoundary/ErrorBoundary';
 
 import COLORS from 'config/colors/colors';
 import { PathEnum } from 'config/enums/routesEnum';
 
 import { ITableColumn } from 'types/pages/metrics/components/TableColumns/TableColumns';
-import {
-  IOnGroupingSelectChangeParams,
-  SortField,
-} from 'types/services/models/metrics/metricsAppModel';
+import { IOnGroupingSelectChangeParams } from 'types/services/models/metrics/metricsAppModel';
+import { IGroupingSelectOption } from 'types/services/models/imagesExplore/imagesExploreAppModel';
 
 import {
   AggregationAreaMethods,
@@ -23,6 +23,9 @@ import {
 } from 'utils/aggregateGroupData';
 import { isSystemMetric } from 'utils/isSystemMetric';
 import { formatSystemMetricName } from 'utils/formatSystemMetricName';
+import contextToString from 'utils/contextToString';
+import { formatValue } from 'utils/formatValue';
+import { SortActionTypes, SortField, SortFields } from 'utils/getSortedFields';
 
 const icons: { [key: string]: string } = {
   color: 'coloring',
@@ -32,6 +35,7 @@ const icons: { [key: string]: string } = {
 
 function getMetricsTableColumns(
   paramColumns: string[] = [],
+  groupingSelectOptions: IGroupingSelectOption[],
   groupFields: { [key: string]: string } | null,
   order: { left: string[]; middle: string[]; right: string[] },
   hiddenColumns: string[],
@@ -39,8 +43,8 @@ function getMetricsTableColumns(
     area: AggregationAreaMethods;
     line: AggregationLineMethods;
   },
-  sortFields?: any[],
-  onSort?: (field: string, value?: 'asc' | 'desc' | 'none') => void,
+  sortFields?: SortFields,
+  onSort?: ({ sortFields, order, index, actionType }: any) => void,
   grouping?: { [key: string]: string[] },
   onGroupingToggle?: (params: IOnGroupingSelectChangeParams) => void,
 ): ITableColumn[] {
@@ -112,15 +116,15 @@ function getMetricsTableColumns(
         : null,
       columnOptions: ['color', 'stroke', 'chart'].map((groupName: string) => ({
         value: `${
-          grouping?.[groupName]?.includes('metric_name') ? 'un' : ''
+          grouping?.[groupName]?.includes('name') ? 'un' : ''
         }group by ${groupName}`,
         onClick: () => {
           if (onGroupingToggle) {
             onGroupingToggle({
               groupName,
-              list: grouping?.[groupName]?.includes('metric_name')
-                ? grouping?.[groupName].filter((item) => item !== 'metric_name')
-                : grouping?.[groupName].concat(['metric_name']),
+              list: grouping?.[groupName]?.includes('name')
+                ? grouping?.[groupName].filter((item) => item !== 'name')
+                : grouping?.[groupName].concat(['name']),
             } as IOnGroupingSelectChangeParams);
           }
         },
@@ -202,10 +206,13 @@ function getMetricsTableColumns(
   ].concat(
     paramColumns.map((param) => {
       const paramKey = `run.params.${param}`;
-      const sortItem: SortField = sortFields?.find(
-        (value) => value[0] === paramKey,
-      );
-
+      let index = -1;
+      const sortItem: SortField | undefined = sortFields?.find((value, i) => {
+        if (value.value === paramKey) {
+          index = i;
+        }
+        return value.value === paramKey;
+      });
       return {
         key: param,
         content: (
@@ -213,9 +220,23 @@ function getMetricsTableColumns(
             {param}
             {onSort && (
               <TableSortIcons
-                onSort={() => onSort(paramKey)}
-                sortFields={sortFields}
-                sort={Array.isArray(sortItem) ? sortItem[1] : null}
+                onSort={() =>
+                  onSort({
+                    sortFields,
+                    index,
+                    field:
+                      index === -1
+                        ? groupingSelectOptions.find(
+                            (value) => value.value === paramKey,
+                          )
+                        : sortItem,
+                    actionType:
+                      sortItem?.order === 'desc'
+                        ? SortActionTypes.DELETE
+                        : SortActionTypes.ORDER_TABLE_TRIGGER,
+                  })
+                }
+                sort={!_.isNil(sortItem) ? sortItem.order : null}
               />
             )}
           </span>
@@ -249,26 +270,47 @@ function getMetricsTableColumns(
   );
 
   if (groupFields) {
-    columns.push({
-      key: '#',
-      content: (
-        <span
-          style={{ textAlign: 'right', display: 'inline-block', width: '100%' }}
-        >
-          #
-        </span>
-      ),
-      topHeader: 'Grouping',
-      pin: 'left',
-    });
-    Object.keys(groupFields).forEach((field) => {
-      const key = field.replace('run.params.', '');
-      const column = columns.find((col) => col.key === key);
-      if (!!column) {
-        column.pin = 'left';
-        column.topHeader = 'Grouping';
-      }
-    });
+    columns = [
+      {
+        key: '#',
+        content: (
+          <span
+            style={{
+              textAlign: 'right',
+              display: 'inline-block',
+              width: '100%',
+            }}
+          >
+            #
+          </span>
+        ),
+        topHeader: 'Grouping',
+        pin: 'left',
+      },
+      {
+        key: 'groups',
+        content: (
+          <div className='Table__groupsColumn__cell'>
+            {Object.keys(groupFields).map((field) => {
+              let name: string = field.replace('run.params.', '');
+              name = name.replace('run.props', 'run');
+              return (
+                <Tooltip key={field} title={name || ''}>
+                  <span>{name}</span>
+                </Tooltip>
+              );
+            })}
+          </div>
+        ),
+        pin: order?.left?.includes('groups')
+          ? 'left'
+          : order?.right?.includes('groups')
+          ? 'right'
+          : null,
+        topHeader: 'Groups',
+      },
+      ...columns,
+    ];
   }
 
   columns = columns.map((col) => ({
@@ -279,11 +321,6 @@ function getMetricsTableColumns(
   const columnsOrder = order?.left.concat(order.middle).concat(order.right);
   columns.sort((a, b) => {
     if (a.key === '#') {
-      return -1;
-    } else if (
-      groupFields?.hasOwnProperty(a.key) ||
-      groupFields?.hasOwnProperty(`run.params.${a.key}`)
-    ) {
       return -1;
     } else if (a.key === 'actions') {
       return 1;
@@ -340,7 +377,7 @@ function metricsTableRowRenderer(
               <Badge
                 size='small'
                 color={COLORS[0][0]}
-                label={rowData.context[0] || 'No Context'}
+                label={rowData.context[0] || 'Empty Context'}
               />
             ),
         };
@@ -352,6 +389,47 @@ function metricsTableRowRenderer(
               <span key='line'>{rowData.aggregation.line}</span>
               <span key='max'>{rowData.aggregation.area.max}</span>
             </div>
+          ),
+        };
+      } else if (col === 'groups') {
+        row.groups = {
+          content: (
+            <ErrorBoundary>
+              <div className='Table__groupsColumn__cell'>
+                {Object.keys(rowData[col]).map((item) => {
+                  const value: string | { [key: string]: unknown } =
+                    rowData[col][item];
+                  return typeof value === 'object' ? (
+                    <ControlPopover
+                      key={contextToString(value)}
+                      title={item}
+                      anchorOrigin={{
+                        vertical: 'bottom',
+                        horizontal: 'left',
+                      }}
+                      transformOrigin={{
+                        vertical: 'top',
+                        horizontal: 'left',
+                      }}
+                      anchor={({ onAnchorClick }) => (
+                        <Tooltip
+                          title={(contextToString(value) as string) || ''}
+                        >
+                          <span onClick={onAnchorClick}>
+                            {contextToString(value)}
+                          </span>
+                        </Tooltip>
+                      )}
+                      component={<JsonViewPopover json={value} />}
+                    />
+                  ) : (
+                    <Tooltip key={item} title={value || ''}>
+                      <span>{formatValue(value)}</span>
+                    </Tooltip>
+                  );
+                })}
+              </div>
+            </ErrorBoundary>
           ),
         };
       } else if (['step', 'epoch'].includes(col)) {
@@ -381,7 +459,7 @@ function metricsTableRowRenderer(
       }
     }
 
-    return merge({}, rowData, row);
+    return _.merge({}, rowData, row);
   } else {
     const row = {
       experiment: rowData.experiment,
@@ -404,7 +482,7 @@ function metricsTableRowRenderer(
             key={item}
             size='small'
             color={COLORS[0][0]}
-            label={item || 'No Context'}
+            label={item || 'Empty Context'}
           />
         )),
       },
@@ -433,7 +511,7 @@ function metricsTableRowRenderer(
       },
     };
 
-    return merge({}, rowData, row);
+    return _.merge({}, rowData, row);
   }
 }
 

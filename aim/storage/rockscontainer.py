@@ -7,13 +7,48 @@ import aimrocks
 
 from typing import Iterator, Optional, Tuple
 
-from aim.storage.container import Container
-from aim.storage.prefixview import PrefixView
-from aim.storage.treeview import TreeView
+from aim.ext.cleanup import AutoClean
 from aim.ext.exception_resistant import exception_resistant
+from aim.storage.types import BLOB, BLOBLoader
+from aim.storage.container import Container, ContainerKey, ContainerValue
+from aim.storage.prefixview import PrefixView
+from aim.storage.containertreeview import ContainerTreeView
+from aim.storage.treeview import TreeView
 
 
 logger = logging.getLogger(__name__)
+
+BLOB_SENTINEL = b''
+BLOB_DOMAIN = b'BLOBS\xfe'
+
+
+class RocksAutoClean(AutoClean):
+    PRIORITY = 60
+
+    def __init__(self, instance: 'RocksContainer') -> None:
+        """
+        Prepare the `RocksContainer` for automatic cleanup.
+
+        Args:
+            instance: The `RocksContainer` instance to be cleaned up.
+        """
+        super().__init__(instance)
+        self._lock = None
+        self._db = None
+
+    def _close(self):
+        """
+        Close the RocksDB instances, flush memtables and WAL.
+        Finally, release the lock.
+        """
+        if self._lock is not None:
+            if self._db is not None:
+                self._db.flush()
+                self._db.flush_wal()
+            self._lock.release()
+            self._lock = None
+        if self._db is not None:
+            self._db = None
 
 
 class RocksContainer(Container):
@@ -27,6 +62,8 @@ class RocksContainer(Container):
         wait_if_busy: bool = False,
         **extra_options
     ) -> None:
+        self._resources: RocksAutoClean = None
+
         self.path = Path(path)
         self.read_only = read_only
         self._db_opts = dict(
@@ -56,29 +93,48 @@ class RocksContainer(Container):
         # opts.write_buffer_size = 67108864
         # opts.arena_block_size = 67108864
 
-        self._db = None
-        self._lock = None
         self._wait_if_busy = wait_if_busy  # TODO implement
         self._lock_path: Optional[Path] = None
         self._progress_path: Optional[Path] = None
+
+        self._resources = RocksAutoClean(self)
+
         if not self.read_only:
             self.writable_db
         # TODO check if Containers are reopenable
+
+    # The following properties are linked to self._resources to
+    # ensure that the resources are closed when the container gone.
+
+    @property
+    def _db(self):
+        return self._resources._db
+
+    @_db.setter
+    def _db(self, value):
+        self._resources._db = value
+
+    @property
+    def _lock(self):
+        return self._resources._lock
+
+    @_lock.setter
+    def _lock(self, value):
+        self._resources._lock = value
 
     @property
     def db(self) -> aimrocks.DB:
         if self._db is not None:
             return self._db
 
-        if self.read_only:
-            self.optimize_db_for_read()
-
         logger.debug(f'opening {self.path} as aimrocks db')
         if not self.read_only:
-            lock_path = self.prepare_lock_path()
+            lock_path = prepare_lock_path(self.path)
             self._lock_path = lock_path
-            self._lock = FileLock(str(self._lock_path), timeout=10)
+            self._lock = FileLock(str(self._lock_path), timeout=self._extra_opts.get('timeout', 10))
             self._lock.acquire()
+        else:
+            self.optimize_for_read()
 
         self._db = aimrocks.DB(str(self.path),
                                aimrocks.Options(**self._db_opts),
@@ -116,25 +172,16 @@ class RocksContainer(Container):
 
     def close(self):
         """Close all the resources."""
-        if self._lock is not None:
-            self._db.flush()
-            self._db.flush_wal()
-            self._lock.release()
-            self._lock = None
-        if self._db is not None:
-            # self._db.close()
-            self._db = None
-
-    def __del__(self):
-        """Automatically close all the resources after being garbage-collected"""
-        self.close()
+        if self._resources is None:
+            return
+        self._resources.close()
 
     def preload(self):
         """Preload the Container in the read mode."""
         self.db
 
     def tree(self) -> 'TreeView':
-        """Return a :obj:`TreeView` which enables hierarchical view and access
+        """Return a :obj:`ContainerTreeView` which enables hierarchical view and access
         to the container records.
 
         This is achieved by prefixing groups and using `PATH_SENTINEL` as a
@@ -150,30 +197,114 @@ class RocksContainer(Container):
             will behave as a (possibly deep) dict-like object:
             `tree[b'meta'][b'x'] == b'123'`
         """
-        return TreeView(self)
+        return ContainerTreeView(self)
 
     def get(
         self,
-        key: bytes,
+        key: ContainerKey,
         default=None
-    ) -> bytes:
+    ) -> ContainerValue:
         """Returns the value by the given `key` if it exists else `default`.
 
         The `default` is :obj:`None` by default.
         """
-        raise NotImplementedError
+        try:
+            return self[key]
+        except KeyError:
+            return default
 
     def __getitem__(
         self,
-        key: bytes
-    ) -> bytes:
-        """Returns the value by the given `key`."""
-        return self.db.get(key=key)
+        key: ContainerKey
+    ) -> ContainerValue:
+        """Returns the value by the given `key`.
+
+        Raises :obj:`KeyError` if the `key` is not found.
+        """
+        value = self.db.get(key=key)
+        if value is None:
+            raise KeyError(key)
+        if value == BLOB_SENTINEL:
+            return self._get_blob(key)
+        return value
+
+    def _get_blob_loader(
+        self,
+        key: ContainerKey
+    ) -> BLOBLoader:
+        def loader() -> bytes:
+            data = self[BLOB_DOMAIN + key]
+            assert isinstance(data, bytes)
+            return data
+        return loader
+
+    def _get_blob(
+        self,
+        key: ContainerKey
+    ) -> BLOB[bytes]:
+        return BLOB[bytes](loader_fn=self._get_blob_loader(key))
+
+    def _put(
+        self,
+        key: ContainerKey,
+        value: ContainerValue,
+        *,
+        target: aimrocks.WriteBatch
+    ):
+        target.put(key, value)
+
+    def _put_blob(
+        self,
+        key: ContainerKey,
+        value: BLOB,
+        *,
+        target: aimrocks.WriteBatch
+    ):
+        self._put(key=BLOB_DOMAIN + key,
+                  value=bytes(value),
+                  target=target)
+
+    def _delete(
+        self,
+        key: ContainerKey,
+        *,
+        target: aimrocks.WriteBatch
+    ):
+        target.delete(key)
+
+    def _delete_blob(
+        self,
+        key: ContainerKey,
+        *,
+        target: aimrocks.WriteBatch
+    ):
+        self._delete(key=BLOB_DOMAIN + key,
+                     target=target)
+
+    def _delete_range(
+        self,
+        begin: ContainerKey,
+        end: ContainerKey,
+        *,
+        target: aimrocks.WriteBatch
+    ):
+        target.delete_range((begin, end))
+
+    def _delete_blob_range(
+        self,
+        begin: ContainerKey,
+        end: ContainerKey,
+        *,
+        target: aimrocks.WriteBatch
+    ):
+        self._delete_range(BLOB_DOMAIN + begin,
+                           BLOB_DOMAIN + end,
+                           target=target)
 
     def set(
         self,
-        key: bytes,
-        value: bytes,
+        key: ContainerKey,
+        value: ContainerValue,
         *,
         store_batch: aimrocks.WriteBatch = None
     ):
@@ -186,24 +317,29 @@ class RocksContainer(Container):
         See :obj:`RocksContainer.batch` and :obj:`RocksContainer.commit` for
         more details.
         """
-        if store_batch is not None:
-            target = store_batch
-        else:
-            target = self.writable_db
+        target = self.batch() if store_batch is None else store_batch
 
-        target.put(key=key, value=value)
+        if isinstance(value, BLOB):
+            self._put(key=key, value=BLOB_SENTINEL, target=target)
+            self._put_blob(key=key, value=value, target=target)
+        else:
+            self._put(key=key, value=value, target=target)
+            self._delete_blob(key=key, target=target)
+
+        if store_batch is None:
+            self.commit(target)
 
     def __setitem__(
         self,
-        key: bytes,
-        value: bytes
+        key: ContainerKey,
+        value: ContainerValue
     ):
         """Set a value for given key."""
-        self.writable_db.put(key=key, value=value)
+        self.set(key=key, value=value)
 
     def delete(
         self,
-        key: bytes,
+        key: ContainerKey,
         *,
         store_batch: aimrocks.WriteBatch = None
     ):
@@ -217,24 +353,25 @@ class RocksContainer(Container):
         See :obj:`RocksContainer.batch` and :obj:`RocksContainer.commit` for
         more details.
         """
-        if store_batch is not None:
-            target = store_batch
-        else:
-            target = self.writable_db
+        target = self.batch() if store_batch is None else store_batch
 
-        target.delete(key)
+        self._delete(key, target=target)
+        self._delete_blob(key, target=target)
+
+        if store_batch is None:
+            self.commit(target)
 
     def __delitem__(
         self,
-        key: bytes
+        key: ContainerKey
     ) -> None:
         """Delete a key-value record by the given key."""
-        return self.writable_db.delete(key)
+        self.delete(key)
 
     def delete_range(
         self,
-        begin: bytes,
-        end: bytes,
+        begin: ContainerKey,
+        end: ContainerKey,
         *,
         store_batch: aimrocks.WriteBatch = None
     ):
@@ -248,17 +385,18 @@ class RocksContainer(Container):
         See :obj:`RocksContainer.batch` and :obj:`RocksContainer.commit` for
         more details.
         """
-        if store_batch is not None:
-            target = store_batch
-        else:
-            target = self.writable_db
+        target = self.batch() if store_batch is None else store_batch
 
-        target.delete_range((begin, end))
+        self._delete_range(begin, end, target=target)
+        self._delete_blob_range(begin, end, target=target)
+
+        if store_batch is None:
+            self.commit(target)
 
     def items(
         self,
-        prefix: bytes = b''
-    ) -> Iterator[Tuple[bytes, bytes]]:
+        prefix: ContainerKey = b''
+    ) -> Iterator[Tuple[ContainerKey, ContainerValue]]:
         """Iterate over all the key-value records in the prefix key range.
 
         The iteration is always performed in lexiographic order w.r.t keys.
@@ -277,16 +415,18 @@ class RocksContainer(Container):
             prefix (:obj:`bytes`): the prefix that defines the key range
         """
         # TODO return ValuesView, not iterator
-        it: Iterator[Tuple[bytes, bytes]] = self.db.iteritems()
+        it = self.db.iteritems()
         it.seek(prefix)
         for key, val in it:
             if not key.startswith(prefix):
                 break
+            if val == BLOB_SENTINEL:
+                val = self._get_blob(key)
             yield key, val
 
     def walk(
         self,
-        prefix: bytes = b''
+        prefix: ContainerKey = b''
     ):
         """A bi-directional generator to walk over the collection of records on
         any arbitrary order. The `prefix` sent to the generator (lets call it
@@ -301,7 +441,7 @@ class RocksContainer(Container):
         }` and `walker = container.walk()` then:
         `walker.send(b'meta') == b'meta.x'`, `walker.send(b'e.y') == b'e.y'`
         """
-        it: Iterator[Tuple[bytes, bytes]] = self.db.iteritems()
+        it = self.db.iteritems()
         it.seek(prefix)
 
         while True:
@@ -315,8 +455,8 @@ class RocksContainer(Container):
 
     def keys(
         self,
-        prefix: bytes = b''
-    ):
+        prefix: ContainerKey = b''
+    ) -> Iterator[ContainerKey]:
         """Iterate over all the keys in the prefix range.
 
         The iteration is always performed in lexiographic order.
@@ -335,7 +475,7 @@ class RocksContainer(Container):
             prefix (:obj:`bytes`): the prefix that defines the key range
         """
         # TODO return KeyView, not iterator
-        it: Iterator[Tuple[bytes, bytes]] = self.db.iterkeys()
+        it = self.db.iterkeys()
         it.seek(prefix)
         for key in it:
             if not key.startswith(prefix):
@@ -344,7 +484,7 @@ class RocksContainer(Container):
 
     def values(
         self,
-        prefix: bytes = b''
+        prefix: ContainerKey = b''
     ):
         """Iterate over all the values in the given prefix key range.
 
@@ -365,14 +505,9 @@ class RocksContainer(Container):
         """
         raise NotImplementedError
 
-    def update(
-        self
-    ) -> None:
-        raise NotImplementedError
-
     def view(
         self,
-        prefix: bytes = b''
+        prefix: ContainerKey = b''
     ) -> 'Container':
         """Return a view (even mutable ones) that enable access to the container
         but with modifications.
@@ -423,12 +558,12 @@ class RocksContainer(Container):
 
     def next_key(
         self,
-        prefix: bytes = b''
-    ) -> bytes:
+        prefix: ContainerKey = b''
+    ) -> ContainerKey:
         """Returns the key that comes (lexicographically) right after the
         provided `key`.
         """
-        it: Iterator[bytes] = self.db.iterkeys()
+        it = self.db.iterkeys()
         it.seek(prefix + b'\x00')
         key = next(it)
 
@@ -439,8 +574,8 @@ class RocksContainer(Container):
 
     def next_value(
         self,
-        prefix: bytes = b''
-    ) -> bytes:
+        prefix: ContainerKey = b''
+    ) -> ContainerValue:
         """Returns the value for the key that comes (lexicographically) right
         after the provided `key`.
         """
@@ -449,12 +584,12 @@ class RocksContainer(Container):
 
     def next_key_value(
         self,
-        prefix: bytes = b''
-    ) -> Tuple[bytes, bytes]:
+        prefix: ContainerKey = b''
+    ) -> Tuple[ContainerKey, ContainerValue]:
         """Returns `(key, value)` for the key that comes (lexicographically)
         right after the provided `key`.
         """
-        it: Iterator[Tuple[bytes, bytes]] = self.db.iteritems()
+        it = self.db.iteritems()
         it.seek(prefix + b'\x00')
 
         key, value = next(it)
@@ -462,12 +597,15 @@ class RocksContainer(Container):
         if not key.startswith(prefix):
             raise KeyError
 
+        if value == BLOB_SENTINEL:
+            value = self._get_blob(key)
+
         return key, value
 
     def prev_key(
         self,
-        prefix: bytes = b''
-    ) -> bytes:
+        prefix: ContainerKey = b''
+    ) -> ContainerKey:
         """Returns the key that comes (lexicographically) right before the
         provided `key`.
         """
@@ -476,8 +614,8 @@ class RocksContainer(Container):
 
     def prev_value(
         self,
-        prefix: bytes = b''
-    ) -> bytes:
+        prefix: ContainerKey = b''
+    ) -> ContainerValue:
         """Returns the value for the key that comes (lexicographically) right
         before the provided `key`.
         """
@@ -486,46 +624,68 @@ class RocksContainer(Container):
 
     def prev_key_value(
         self,
-        prefix: bytes = b''
-    ) -> Tuple[bytes, bytes]:
+        prefix: ContainerKey = b''
+    ) -> Tuple[ContainerKey, ContainerValue]:
         """Returns `(key, value)` for the key that comes (lexicographically)
         right before the provided `key`.
         """
-        it: Iterator[Tuple[bytes, bytes]] = self.db.iteritems()
+        it = self.db.iteritems()
         it.seek_for_prev(prefix + b'\xff')
 
         key, value = it.get()
 
+        if value == BLOB_SENTINEL:
+            value = self._get_blob(key)
+
         return key, value
 
-    @exception_resistant
-    def optimize_db_for_read(self):
-        """
-        This function will try to open rocksdb db in write mode and force WAL files recovery. Once done the underlying
-        db will contain .sst files only which will significantly reduce further open and read operations. Further
-        optimizations can be done by running compactions but this is a costly operation to be performed online.
-        """
-        assert self.read_only
+    def optimize_for_read(self):
+        optimize_db_for_read(self.path, self._db_opts, run_compactions=self._extra_opts.get('compaction', False))
 
-        def non_empty_wal():
-            for wal_path in self.path.glob('*.log'):
-                if os.path.getsize(wal_path) > 0:
-                    return True
-            return False
 
-        if non_empty_wal():
-            lock_path = self.prepare_lock_path()
+@exception_resistant(silent=True)
+def optimize_db_for_read(path: Path, options: dict, run_compactions: bool = False):
+    """
+    This function will try to open rocksdb db in write mode and force WAL files recovery. Once done the underlying
+    db will contain .sst files only which will significantly reduce further open and read operations. Further
+    optimizations can be done by running compactions but this is a costly operation to be performed online.
 
-            with FileLock(str(lock_path), timeout=0):
-                wdb = aimrocks.DB(str(self.path), aimrocks.Options(**self._db_opts), read_only=False)
-                wdb.flush()
-                wdb.flush_wal()
-                if self._extra_opts.get('compaction'):
-                    wdb.compact_range()
-                del wdb
 
-    def prepare_lock_path(self):
-        self.path.parent.mkdir(parents=True, exist_ok=True)
-        locks_dir = self.path.parent.parent / 'locks'
-        locks_dir.mkdir(parents=True, exist_ok=True)
-        return locks_dir / self.path.name
+    Args:
+        path (:obj:`Path`): Path to rocksdb.
+        options (:obj:`dict`): options to be passed to aimrocks.DB object __init__.
+        run_compactions (:obj:`bool`, optional): Flag used to run rocksdb range compactions. False by default.
+    """
+
+    def non_empty_wal():
+        for wal_path in path.glob('*.log'):
+            if os.path.getsize(wal_path) > 0:
+                return True
+        return False
+
+    if non_empty_wal():
+        lock_path = prepare_lock_path(path)
+
+        with FileLock(str(lock_path), timeout=0):
+            wdb = aimrocks.DB(str(path), aimrocks.Options(**options), read_only=False)
+            wdb.flush()
+            wdb.flush_wal()
+            if run_compactions:
+                wdb.compact_range()
+            del wdb
+
+
+def prepare_lock_path(path: Path):
+    """
+    This function creates the locks directory (if needed) and returns a LOCK file path for given rocksdb `path`.
+
+    Args:
+        path (:obj:`Path`): Path to rocksdb.
+
+    Returns:
+        path (:obj:`Path`) to lock file for given rocksdb.
+    """
+    path.parent.mkdir(parents=True, exist_ok=True)
+    locks_dir = path.parent.parent / 'locks'
+    locks_dir.mkdir(parents=True, exist_ok=True)
+    return locks_dir / path.name

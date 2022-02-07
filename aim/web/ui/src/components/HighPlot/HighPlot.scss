@@ -13,7 +13,6 @@
       display: none;
     }
     .yAxisLabel {
-      text-shadow: 0 1px 0 #fff, 1px 0 0 #fff, 0 -1px 0 #fff, -1px 0 0 #fff;
       text-align: right;
       white-space: nowrap;
       overflow: hidden;
@@ -40,13 +39,13 @@
       }
 
       &::before {
-        content: "";
+        content: '';
         display: inline-block;
         flex-shrink: 0;
         width: 6px;
         height: 6px;
         background-color: #2bc784;
-        border-radius: 50%;
+        border-radius: $border-radius-circle;
         margin: 4px 5px 4px 0;
       }
 

@@ -1,6 +1,6 @@
 {
   "name": "ui_v2",
-  "version": "3.0.6",
+  "version": "3.5.0",
   "private": true,
   "dependencies": {
     "@aksel/structjs": "^1.0.0",
@@ -9,22 +9,30 @@
     "@material-ui/lab": "^4.0.0-alpha.60",
     "@sentry/react": "^6.14.3",
     "@sentry/tracing": "^6.14.3",
+    "@uiw/react-textarea-code-editor": "^1.4.14",
     "bs58check": "^2.1.2",
     "classnames": "^2.3.1",
     "comlink": "^4.3.1",
     "d3": "^7.0.0",
     "file-saver": "^2.0.5",
     "formik": "^2.2.9",
+    "highcharts": "^9.3.1",
+    "highcharts-react-official": "^3.1.0",
     "humanize-duration": "^3.27.0",
     "lodash-es": "^4.17.21",
+    "material-ui-audio-player": "^1.7.1",
     "md5": "^2.3.0",
     "memoize-one": "^5.2.1",
     "moment": "^2.29.1",
+    "plotly.js": "^2.7.0",
     "prism-react-renderer": "^1.2.1",
+    "prop-types": "^15.7.2",
     "react": "^17.0.2",
+    "react-accessible-dropdown-menu-hook": "^3.1.0",
     "react-beautiful-dnd": "^13.1.0",
     "react-dom": "^17.0.2",
     "react-json-view": "^1.21.3",
+    "react-plotly.js": "^2.5.1",
     "react-router-dom": "^5.2.0",
     "react-scripts": "4.0.3",
     "react-select": "^5.1.0",
@@ -36,11 +44,11 @@
     "yup": "^0.32.9"
   },
   "scripts": {
-    "start": "react-app-rewired start",
-    "build": "npx react-app-rewired build && gzipper c -i js,css,html ./build",
-    "test": "react-scripts test ",
-    "test:coverage": "react-scripts test --collectCoverage",
-    "test:watch": "react-scripts test --watchAll",
+    "start": "react-app-rewired --max_old_space_size=4096 start",
+    "build": "react-app-rewired --max_old_space_size=4096 build && gzipper c -i js,css,html ./build && node tasks/index-html-template-generator.js",
+    "test": "react-app-rewired test ",
+    "test:coverage": "react-app-rewired test --collectCoverage",
+    "test:watch": "react-app-rewired test --watchAll",
     "eject": "react-scripts eject",
     "lint": "eslint src/. --ext .js,.jsx,.ts,.tsx",
     "format:fix": "eslint src/. --ext .js,.jsx,.ts,.tsx --quiet --fix",
@@ -48,7 +56,7 @@
     "crc-kit": "func() { node tasks/cli/index.js  create-component --name=\"$1\" --path=./src/components/kit/ --lint; }; func",
     "crc": "func() { node tasks/cli/index.js  create-component --name=\"$1\" --path=./src/components/ --lint; }; func"
   },
-  "homepage": "/static-files",
+  "homepage": "/static-files/",
   "browserslist": {
     "production": [
       ">0.2%",
@@ -72,7 +80,6 @@
     ]
   },
   "devDependencies": {
-    "@sentry/webpack-plugin": "^1.18.3",
     "@testing-library/jest-dom": "^5.11.4",
     "@testing-library/react": "^11.1.0",
     "@testing-library/react-hooks": "^7.0.2",
@@ -89,6 +96,7 @@
     "@types/react": "^17.0.0",
     "@types/react-beautiful-dnd": "^13.1.1",
     "@types/react-dom": "^17.0.0",
+    "@types/react-plotly.js": "^2.5.0",
     "@types/react-router-dom": "^5.1.7",
     "@types/react-window": "^1.8.4",
     "@types/styled-components": "^5.1.15",
@@ -114,6 +122,7 @@
     "sass-loader": "^12.1.0",
     "typescript": "^4.3.4",
     "webpack-bundle-analyzer": "^4.4.2",
+    "webpack-dynamic-public-path": "^1.0.8",
     "yargs": "^17.2.1"
   }
 }

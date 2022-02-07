@@ -19,6 +19,7 @@ enum AppNameEnum {
   PARAMS = 'params',
   RUNS = 'runs',
   IMAGES = 'images',
+  SCATTERS = 'scatters',
 }
 
 /**
@@ -38,7 +39,7 @@ const appInitialConfig: {
   },
   PARAMS: {
     dataType: AppDataTypeEnum.RUNS,
-    selectForm: AppNameEnum.PARAMS,
+    selectForm: AppNameEnum.RUNS,
     grouping: true,
     appName: AppNameEnum.PARAMS,
     components: { table: true, charts: [ChartTypeEnum.HighPlot] },
@@ -49,6 +50,13 @@ const appInitialConfig: {
     grouping: false,
     appName: AppNameEnum.RUNS,
     components: { table: true },
+  },
+  SCATTERS: {
+    dataType: AppDataTypeEnum.RUNS,
+    selectForm: AppNameEnum.RUNS,
+    grouping: true,
+    appName: AppNameEnum.SCATTERS,
+    components: { table: true, charts: [ChartTypeEnum.ScatterPlot] },
   },
 };
 

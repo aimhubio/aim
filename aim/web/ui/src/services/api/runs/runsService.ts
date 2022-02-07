@@ -1,3 +1,5 @@
+import { TraceType } from 'services/models/runs/types';
+
 import API from '../api';
 
 const endpoints = {
@@ -5,10 +7,15 @@ const endpoints = {
   GET_EXPERIMENTS: 'experiments',
   GET_RUN_INFO: (id: string) => `runs/${id}/info`,
   GET_RUNS_BY_EXPERIMENT_ID: (id: string) => `experiments/${id}/runs`,
-  GET_RUN_BATCH_BY_TRACES: (id: string) => `runs/${id}/traces/get-batch`,
+  GET_RUN_METRICS_BATCH_BY_TRACES: (id: string) =>
+    `runs/${id}/metric/get-batch`,
   ARCHIVE_RUN: (id: string) => `runs/${id}`,
+  ARCHIVE_RUNS: (archived: boolean) => `runs/archive-batch?archive=${archived}`,
+  DELETE_RUN: (id: string) => `runs/${id}`,
+  DELETE_RUNS: 'runs/delete-batch',
   CREATE_RUNS_TAG: (id: string) => `runs/${id}/tags/new`,
   DELETE_RUNS_TAG: (id: string, tag_id: string) => `runs/${id}/tags/${tag_id}`,
+  GET_BATCH: (id: string, trace: string) => `runs/${id}/${trace}/get-batch`,
 };
 
 function getRunsData(query?: string, limit?: number, offset?: string) {
@@ -34,8 +41,8 @@ function getExperimentsData() {
   return API.get(endpoints.GET_EXPERIMENTS);
 }
 
-function getRunBatch(body: any, id: string) {
-  return API.post(endpoints.GET_RUN_BATCH_BY_TRACES(id), body, {
+function getRunMetricsBatch(body: any, id: string) {
+  return API.post(endpoints.GET_RUN_METRICS_BATCH_BY_TRACES(id), body, {
     headers: {
       'Content-Type': 'application/json',
     },
@@ -54,6 +61,30 @@ function archiveRun(id: string, archived: boolean = false) {
   );
 }
 
+function archiveRuns(ids: string[], archived: boolean = false) {
+  return API.post(endpoints.ARCHIVE_RUNS(archived), ids, {
+    headers: {
+      'Content-Type': 'application/json',
+    },
+  });
+}
+
+function deleteRun(id: string) {
+  return API.delete(endpoints.DELETE_RUN(id), {
+    headers: {
+      'Content-Type': 'application/json',
+    },
+  });
+}
+
+function deleteRuns(ids: string[]) {
+  return API.post(endpoints.DELETE_RUNS, ids, {
+    headers: {
+      'Content-Type': 'application/json',
+    },
+  });
+}
+
 function createRunsTag(body: object, run_id: string) {
   return API.post(endpoints.CREATE_RUNS_TAG(run_id), body, {
     headers: {
@@ -70,16 +101,34 @@ function deleteRunsTag(run_id: string, tag_id: string) {
   });
 }
 
+function getBatch(run_id: string, trace: TraceType, params: any, body: any) {
+  return API.getStream1<ReadableStream>(
+    endpoints.GET_BATCH(run_id, trace),
+    params,
+    {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body,
+    },
+  );
+}
+
 const runsService = {
   endpoints,
+  getBatch,
   getRunsData,
   getRunInfo,
-  getRunBatch,
+  getRunMetricsBatch,
   getExperimentsData,
   getRunsOfExperiment,
   archiveRun,
+  deleteRun,
   createRunsTag,
   deleteRunsTag,
+  archiveRuns,
+  deleteRuns,
 };
 
 export default runsService;

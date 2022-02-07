@@ -1,0 +1,56 @@
+@use 'src/styles/abstracts' as *;
+
+.TextsVisualizer {
+  height: calc(100% - 100px);
+  padding: toRem(10px) toRem(20px) 0;
+  width: 100%;
+  position: relative;
+  .TextsTable {
+    border: $border-grey;
+    border-top-left-radius: $border-radius-main;
+    border-top-right-radius: $border-radius-main;
+    overflow: hidden;
+  }
+  .BaseTable {
+    &__table-main {
+      outline: none;
+    }
+    &__header {
+      &-row {
+        background: #ebf0f8;
+        border-bottom: none;
+      }
+      &-cell {
+        border-bottom: $border-grey;
+        padding: 0 toRem(16px);
+        &:last-child {
+          border-right: none;
+        }
+      }
+    }
+    &__row {
+      border-bottom: none;
+      &--hovered {
+        background: #e8f1fc;
+      }
+      &-cell {
+        position: relative;
+        min-height: 32px;
+        max-height: 300px;
+        padding: toRem(7px) toRem(16px);
+        border-right: $border-grey;
+        border-bottom: $border-grey;
+
+        &:last-child {
+          display: inline-block;
+          border-right: none;
+          white-space: normal;
+          overflow: auto !important;
+        }
+      }
+    }
+  }
+  &__mark {
+    background-color: $warning-color-50;
+  }
+}

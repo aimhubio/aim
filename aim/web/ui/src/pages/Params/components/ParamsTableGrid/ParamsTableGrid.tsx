@@ -1,23 +1,27 @@
 import React from 'react';
 import { Link as RouteLink } from 'react-router-dom';
 import { merge } from 'lodash-es';
+import _ from 'lodash';
 
-import { Link } from '@material-ui/core';
+import { Link, Tooltip } from '@material-ui/core';
 
-import { Badge, Button, Icon } from 'components/kit';
+import { Badge, Button, Icon, JsonViewPopover } from 'components/kit';
 import TableSortIcons from 'components/Table/TableSortIcons';
+import ControlPopover from 'components/ControlPopover/ControlPopover';
+import ErrorBoundary from 'components/ErrorBoundary/ErrorBoundary';
 
 import COLORS from 'config/colors/colors';
 import { PathEnum } from 'config/enums/routesEnum';
 
 import { ITableColumn } from 'types/pages/metrics/components/TableColumns/TableColumns';
-import {
-  IOnGroupingSelectChangeParams,
-  SortField,
-} from 'types/services/models/metrics/metricsAppModel';
+import { IOnGroupingSelectChangeParams } from 'types/services/models/metrics/metricsAppModel';
+import { IGroupingSelectOption } from 'types/services/models/imagesExplore/imagesExploreAppModel';
 
 import { isSystemMetric } from 'utils/isSystemMetric';
 import { formatSystemMetricName } from 'utils/formatSystemMetricName';
+import contextToString from 'utils/contextToString';
+import { formatValue } from 'utils/formatValue';
+import { SortActionTypes, SortField } from 'utils/getSortedFields';
 
 const icons: { [key: string]: string } = {
   color: 'coloring',
@@ -26,13 +30,14 @@ const icons: { [key: string]: string } = {
 };
 
 function getParamsTableColumns(
+  groupingSelectOptions: IGroupingSelectOption[],
   metricsColumns: any,
   paramColumns: string[] = [],
   groupFields: { [key: string]: string } | null,
   order: { left: string[]; middle: string[]; right: string[] },
   hiddenColumns: string[],
   sortFields?: any[],
-  onSort?: (field: string, value?: 'asc' | 'desc' | 'none') => void,
+  onSort?: ({ sortFields, order, index, actionType }: any) => void,
   grouping?: { [key: string]: string[] },
   onGroupingToggle?: (params: IOnGroupingSelectChangeParams) => void,
 ): ITableColumn[] {
@@ -112,7 +117,7 @@ function getParamsTableColumns(
             <Badge
               size='small'
               color={COLORS[0][0]}
-              label={metricContext === '' ? 'No context' : metricContext}
+              label={metricContext === '' ? 'Empty context' : metricContext}
             />
           ),
           topHeader: isSystemMetric(key) ? 'System Metrics' : key,
@@ -127,10 +132,13 @@ function getParamsTableColumns(
     }, []),
     paramColumns.map((param) => {
       const paramKey = `run.params.${param}`;
-      const sortItem: SortField = sortFields?.find(
-        (value) => value[0] === paramKey,
-      );
-
+      let index = -1;
+      const sortItem: SortField | undefined = sortFields?.find((value, i) => {
+        if (value.value === paramKey) {
+          index = i;
+        }
+        return value.value === paramKey;
+      });
       return {
         key: param,
         content: (
@@ -138,9 +146,23 @@ function getParamsTableColumns(
             {param}
             {onSort && (
               <TableSortIcons
-                onSort={() => onSort(paramKey)}
-                sortFields={sortFields}
-                sort={Array.isArray(sortItem) ? sortItem[1] : null}
+                onSort={() =>
+                  onSort({
+                    sortFields,
+                    index,
+                    field:
+                      index === -1
+                        ? groupingSelectOptions.find(
+                            (value) => value.value === paramKey,
+                          )
+                        : sortItem,
+                    actionType:
+                      sortItem?.order === 'desc'
+                        ? SortActionTypes.DELETE
+                        : SortActionTypes.ORDER_TABLE_TRIGGER,
+                  })
+                }
+                sort={!_.isNil(sortItem) ? sortItem.order : null}
               />
             )}
           </span>
@@ -174,26 +196,47 @@ function getParamsTableColumns(
   );
 
   if (groupFields) {
-    columns.push({
-      key: '#',
-      content: (
-        <span
-          style={{ textAlign: 'right', display: 'inline-block', width: '100%' }}
-        >
-          #
-        </span>
-      ),
-      topHeader: 'Grouping',
-      pin: 'left',
-    });
-    Object.keys(groupFields).forEach((field) => {
-      const key = field.replace('run.params.', '');
-      const column = columns.find((col) => col.key === key);
-      if (!!column) {
-        column.pin = 'left';
-        column.topHeader = 'Grouping';
-      }
-    });
+    columns = [
+      {
+        key: '#',
+        content: (
+          <span
+            style={{
+              textAlign: 'right',
+              display: 'inline-block',
+              width: '100%',
+            }}
+          >
+            #
+          </span>
+        ),
+        topHeader: 'Grouping',
+        pin: 'left',
+      },
+      {
+        key: 'groups',
+        content: (
+          <div className='Table__groupsColumn__cell'>
+            {Object.keys(groupFields).map((field) => {
+              let name: string = field.replace('run.params.', '');
+              name = name.replace('run.props', 'run');
+              return (
+                <Tooltip key={field} title={name || ''}>
+                  <span>{name}</span>
+                </Tooltip>
+              );
+            })}
+          </div>
+        ),
+        pin: order?.left?.includes('groups')
+          ? 'left'
+          : order?.right?.includes('groups')
+          ? 'right'
+          : null,
+        topHeader: 'Groups',
+      },
+      ...columns,
+    ];
   }
 
   columns = columns.map((col) => ({
@@ -204,11 +247,6 @@ function getParamsTableColumns(
   const columnsOrder = order?.left.concat(order.middle).concat(order.right);
   columns.sort((a, b) => {
     if (a.key === '#') {
-      return -1;
-    } else if (
-      groupFields?.hasOwnProperty(a.key) ||
-      groupFields?.hasOwnProperty(`run.params.${a.key}`)
-    ) {
       return -1;
     } else if (a.key === 'actions') {
       return 1;
@@ -235,14 +273,57 @@ function paramsTableRowRenderer(
     const row: { [key: string]: any } = {};
     for (let i = 0; i < columns.length; i++) {
       const col = columns[i];
-      if (Array.isArray(rowData[col])) {
+      if (col === 'groups') {
+        row.groups = {
+          content: (
+            <ErrorBoundary>
+              <div className='Table__groupsColumn__cell'>
+                {Object.keys(rowData[col]).map((item) => {
+                  const value: string | { [key: string]: unknown } =
+                    rowData[col][item];
+                  return typeof value === 'object' ? (
+                    <ControlPopover
+                      key={contextToString(value)}
+                      title={item}
+                      anchorOrigin={{
+                        vertical: 'bottom',
+                        horizontal: 'left',
+                      }}
+                      transformOrigin={{
+                        vertical: 'top',
+                        horizontal: 'left',
+                      }}
+                      anchor={({ onAnchorClick }) => (
+                        <Tooltip
+                          title={(contextToString(value) as string) || ''}
+                        >
+                          <span onClick={onAnchorClick}>
+                            {contextToString(value)}
+                          </span>
+                        </Tooltip>
+                      )}
+                      component={<JsonViewPopover json={value} />}
+                    />
+                  ) : (
+                    <Tooltip key={item} title={formatValue(value) || ''}>
+                      <span>{formatValue(value)}</span>
+                    </Tooltip>
+                  );
+                })}
+              </div>
+            </ErrorBoundary>
+          ),
+        };
+      } else if (Array.isArray(rowData[col])) {
         row[col] = {
           content: (
-            <Badge
-              size='small'
-              color={COLORS[0][0]}
-              label={`${rowData[col].length} values`}
-            />
+            <ErrorBoundary>
+              <Badge
+                size='small'
+                color={COLORS[0][0]}
+                label={`${rowData[col].length} values`}
+              />
+            </ErrorBoundary>
           ),
         };
       }

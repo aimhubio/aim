@@ -5,6 +5,10 @@ import React from 'react';
 import memoize from 'memoize-one';
 import cn from 'classnames';
 
+import ErrorBoundary from 'components/ErrorBoundary/ErrorBoundary';
+
+import { getValue } from 'utils/helper';
+
 import GridTable from './GridTable';
 import TableHeaderRow from './TableHeaderRow';
 import TableRow from './TableRow';
@@ -19,14 +23,12 @@ import ColumnManager from './ColumnManager';
 import {
   renderElement,
   normalizeColumns,
-  getScrollbarSize as defaultGetScrollbarSize,
   getEstimatedTotalRowsHeight,
   isObjectEqual,
   callOrReturn,
   hasChildren,
   flattenOnKeys,
   cloneArray,
-  getValue,
   throttle,
   debounce,
   noop,
@@ -474,13 +476,16 @@ class BaseTable extends React.PureComponent {
   }) {
     if (column[ColumnManager.PlaceholderKey]) {
       return (
-        <div
+        <ErrorBoundary
           key={`row-${rowData[this.props.rowKey]}-cell-${
             column.key
           }-placeholder`}
-          className={this._prefixClass('row-cell-placeholder')}
-          style={this.columnManager.getColumnStyle(column.key)}
-        />
+        >
+          <div
+            className={this._prefixClass('row-cell-placeholder')}
+            style={this.columnManager.getColumnStyle(column.key)}
+          />
+        </ErrorBoundary>
       );
     }
 
@@ -642,36 +647,37 @@ class BaseTable extends React.PureComponent {
     const { tagName, ...rest } = extraProps || {};
     const Tag = tagName || 'div';
     return (
-      <Tag
-        role='gridcell'
-        key={`header-${headerIndex}-cell-${column.key}`}
-        onClick={column.sortable ? this._handleColumnSort : null}
-        {...rest}
-        className={cls}
-        style={this.columnManager.getColumnStyle(column.key)}
-        data-key={column.key}
-      >
-        {expandIcon}
-        {cell}
-        {column.sortable && (
-          <SortIndicator
-            sortOrder={sortOrder}
-            className={cn(this._prefixClass('sort-indicator'), {
-              [this._prefixClass('sort-indicator--descending')]:
-                sortOrder === SortOrder.DESC,
-            })}
-          />
-        )}
-        {column.resizable && (
-          <ColumnResizer
-            className={this._prefixClass('column-resizer')}
-            column={column}
-            onResizeStart={this._handleColumnResizeStart}
-            onResizeStop={this._handleColumnResizeStop}
-            onResize={this._handleColumnResize}
-          />
-        )}
-      </Tag>
+      <ErrorBoundary key={`header-${headerIndex}-cell-${column.key}`}>
+        <Tag
+          role='gridcell'
+          onClick={column.sortable ? this._handleColumnSort : null}
+          {...rest}
+          className={cls}
+          style={this.columnManager.getColumnStyle(column.key)}
+          data-key={column.key}
+        >
+          {expandIcon}
+          {cell}
+          {column.sortable && (
+            <SortIndicator
+              sortOrder={sortOrder}
+              className={cn(this._prefixClass('sort-indicator'), {
+                [this._prefixClass('sort-indicator--descending')]:
+                  sortOrder === SortOrder.DESC,
+              })}
+            />
+          )}
+          {column.resizable && (
+            <ColumnResizer
+              className={this._prefixClass('column-resizer')}
+              column={column}
+              onResizeStart={this._handleColumnResizeStart}
+              onResizeStop={this._handleColumnResizeStop}
+              onResize={this._handleColumnResize}
+            />
+          )}
+        </Tag>
+      </ErrorBoundary>
     );
   }
 
@@ -693,26 +699,28 @@ class BaseTable extends React.PureComponent {
       tableWidth = Math.max(Math.round(columnsWidth), tableWidth);
     }
     return (
-      <GridTable
-        {...rest}
-        {...this.state}
-        className={this._prefixClass('table-main')}
-        ref={this._setMainTableRef}
-        data={this._data}
-        columns={this.columnManager.getMainColumns()}
-        width={width}
-        height={height}
-        headerHeight={headerHeight}
-        rowHeight={rowHeight}
-        estimatedRowHeight={estimatedRowHeight}
-        getRowHeight={estimatedRowHeight ? this._getRowHeight : undefined}
-        headerWidth={tableWidth + (fixed ? this._verticalScrollbarSize : 0)}
-        bodyWidth={tableWidth}
-        headerRenderer={this.renderHeader}
-        rowRenderer={this.renderRow}
-        onScroll={this._handleScroll}
-        onRowsRendered={this._handleRowsRendered}
-      />
+      <ErrorBoundary>
+        <GridTable
+          {...rest}
+          {...this.state}
+          className={this._prefixClass('table-main')}
+          ref={this._setMainTableRef}
+          data={this._data}
+          columns={this.columnManager.getMainColumns()}
+          width={width}
+          height={height}
+          headerHeight={headerHeight}
+          rowHeight={rowHeight}
+          estimatedRowHeight={estimatedRowHeight}
+          getRowHeight={estimatedRowHeight ? this._getRowHeight : undefined}
+          headerWidth={tableWidth + (fixed ? this._verticalScrollbarSize : 0)}
+          bodyWidth={tableWidth}
+          headerRenderer={this.renderHeader}
+          rowRenderer={this.renderRow}
+          onScroll={this._handleScroll}
+          onRowsRendered={this._handleRowsRendered}
+        />
+      </ErrorBoundary>
     );
   }
 
@@ -726,32 +734,34 @@ class BaseTable extends React.PureComponent {
     const offset = this._verticalScrollbarSize || 20;
     const columnsWidth = this.columnManager.getLeftFrozenColumnsWidth();
     return (
-      <GridTable
-        {...rest}
-        {...this.state}
-        containerStyle={this._getLeftTableContainerStyle(
-          columnsWidth,
-          width,
-          containerHeight,
-        )}
-        className={this._prefixClass('table-frozen-left')}
-        ref={this._setLeftTableRef}
-        data={this._data}
-        columns={this.columnManager.getLeftFrozenColumns()}
-        initialScrollTop={this._scroll.scrollTop}
-        width={columnsWidth + offset}
-        height={containerHeight}
-        headerHeight={headerHeight}
-        rowHeight={rowHeight}
-        estimatedRowHeight={estimatedRowHeight}
-        getRowHeight={estimatedRowHeight ? this._getRowHeight : undefined}
-        headerWidth={columnsWidth + offset}
-        bodyWidth={columnsWidth + offset}
-        headerRenderer={this.renderHeader}
-        rowRenderer={this.renderRow}
-        onScroll={this._handleVerticalScroll}
-        onRowsRendered={noop}
-      />
+      <ErrorBoundary>
+        <GridTable
+          {...rest}
+          {...this.state}
+          containerStyle={this._getLeftTableContainerStyle(
+            columnsWidth,
+            width,
+            containerHeight,
+          )}
+          className={this._prefixClass('table-frozen-left')}
+          ref={this._setLeftTableRef}
+          data={this._data}
+          columns={this.columnManager.getLeftFrozenColumns()}
+          initialScrollTop={this._scroll.scrollTop}
+          width={columnsWidth + offset}
+          height={containerHeight}
+          headerHeight={headerHeight}
+          rowHeight={rowHeight}
+          estimatedRowHeight={estimatedRowHeight}
+          getRowHeight={estimatedRowHeight ? this._getRowHeight : undefined}
+          headerWidth={columnsWidth + offset}
+          bodyWidth={columnsWidth + offset}
+          headerRenderer={this.renderHeader}
+          rowRenderer={this.renderRow}
+          onScroll={this._handleVerticalScroll}
+          onRowsRendered={noop}
+        />
+      </ErrorBoundary>
     );
   }
 
@@ -765,32 +775,34 @@ class BaseTable extends React.PureComponent {
     const columnsWidth = this.columnManager.getRightFrozenColumnsWidth();
     const scrollbarWidth = this._verticalScrollbarSize;
     return (
-      <GridTable
-        {...rest}
-        {...this.state}
-        containerStyle={this._getLeftTableContainerStyle(
-          columnsWidth + scrollbarWidth,
-          width,
-          containerHeight,
-        )}
-        className={this._prefixClass('table-frozen-right')}
-        ref={this._setRightTableRef}
-        data={this._data}
-        columns={this.columnManager.getRightFrozenColumns()}
-        initialScrollTop={this._scroll.scrollTop}
-        width={columnsWidth + scrollbarWidth}
-        height={containerHeight}
-        headerHeight={headerHeight}
-        rowHeight={rowHeight}
-        estimatedRowHeight={estimatedRowHeight}
-        getRowHeight={estimatedRowHeight ? this._getRowHeight : undefined}
-        headerWidth={columnsWidth + scrollbarWidth}
-        bodyWidth={columnsWidth}
-        headerRenderer={this.renderHeader}
-        rowRenderer={this.renderRow}
-        onScroll={this._handleVerticalScroll}
-        onRowsRendered={noop}
-      />
+      <ErrorBoundary>
+        <GridTable
+          {...rest}
+          {...this.state}
+          containerStyle={this._getLeftTableContainerStyle(
+            columnsWidth + scrollbarWidth,
+            width,
+            containerHeight,
+          )}
+          className={this._prefixClass('table-frozen-right')}
+          ref={this._setRightTableRef}
+          data={this._data}
+          columns={this.columnManager.getRightFrozenColumns()}
+          initialScrollTop={this._scroll.scrollTop}
+          width={columnsWidth + scrollbarWidth}
+          height={containerHeight}
+          headerHeight={headerHeight}
+          rowHeight={rowHeight}
+          estimatedRowHeight={estimatedRowHeight}
+          getRowHeight={estimatedRowHeight ? this._getRowHeight : undefined}
+          headerWidth={columnsWidth + scrollbarWidth}
+          bodyWidth={columnsWidth}
+          headerRenderer={this.renderHeader}
+          rowRenderer={this.renderRow}
+          onScroll={this._handleVerticalScroll}
+          onRowsRendered={noop}
+        />
+      </ErrorBoundary>
     );
   }
 

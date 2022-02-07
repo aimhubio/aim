@@ -4,6 +4,7 @@ import { Button, Dialog, Drawer, TextField } from '@material-ui/core';
 
 import TagForm from 'components/TagForm/TagForm';
 import { Icon, Text } from 'components/kit';
+import ErrorBoundary from 'components/ErrorBoundary/ErrorBoundary';
 
 import * as analytics from 'services/analytics';
 
@@ -100,78 +101,79 @@ function TagsList({
           </Button>
         )}
       </div>
-      <TagsTable
-        tableRef={tableRef}
-        tagsList={tagsList.filter((tag: ITagProps) =>
-          tag.name.includes(searchValue),
-        )}
-        isTagsDataLoading={isTagsDataLoading}
-        hasSearchValue={!!searchValue}
-        onTableRunClick={onTableRunClick}
-        onSoftDeleteModalToggle={onSoftDeleteModalToggle}
-        onDeleteModalToggle={onDeleteModalToggle}
-        onUpdateModalToggle={onUpdateModalToggle}
-      />
-      <Dialog
-        key={tagInfo?.id + '1'}
-        onClose={onCreateModalToggle}
-        aria-labelledby='customized-dialog-title'
-        open={isCreateModalOpened}
-      >
-        <div className='Tags__TagList__modalContainer'>
-          <div className='Tags__TagList__modalContainer__titleBox'>
-            <Text component='h4' weight={600} tint={100} size={14}>
-              Create Tag
-            </Text>
-          </div>
-          <div className='Tags__TagList__modalContainer__contentBox'>
-            <TagForm onCloseModal={onCreateModalToggle} />
-          </div>
-        </div>
-      </Dialog>
-      <Dialog
-        key={tagInfo?.id + '2'}
-        onClose={onUpdateModalToggle}
-        aria-labelledby='customized-dialog-title'
-        open={isUpdateModalOpened}
-      >
-        <div className='Tags__TagList__modalContainer'>
-          <div className='Tags__TagList__modalContainer__titleBox'>
-            <Text component='h4' size={14} tint={100} weight={600}>
-              Update Tag
-            </Text>
-          </div>
-          <div className='Tags__TagList__modalContainer__contentBox'>
-            <TagForm
-              onCloseModal={onUpdateModalToggle}
-              tagData={tagInfo}
-              tagId={tagInfo?.id}
-              editMode
-            />
-          </div>
-        </div>
-      </Dialog>
-      {tagInfo && (
-        <TagSoftDelete
-          modalIsOpen={isSoftDeleteModalOpened}
-          tagInfo={tagInfo}
-          tagHash={tagInfo?.id}
+      <ErrorBoundary>
+        <TagsTable
+          tableRef={tableRef}
+          tagsList={tagsList.filter((tag: ITagProps) =>
+            tag.name.includes(searchValue),
+          )}
+          isTagsDataLoading={isTagsDataLoading}
+          hasSearchValue={!!searchValue}
+          onTableRunClick={onTableRunClick}
           onSoftDeleteModalToggle={onSoftDeleteModalToggle}
-          onTagDetailOverlayToggle={onTagDetailOverlayToggle}
-          isTagDetailOverLayOpened={isTagDetailOverLayOpened}
-        />
-      )}
-
-      {tagInfo && (
-        <TagDelete
-          modalIsOpen={isDeleteModalOpened}
-          tagInfo={tagInfo}
-          tagHash={tagInfo?.id}
           onDeleteModalToggle={onDeleteModalToggle}
-          onTagDetailOverlayToggle={onTagDetailOverlayToggle}
-          isTagDetailOverLayOpened={isTagDetailOverLayOpened}
+          onUpdateModalToggle={onUpdateModalToggle}
         />
-      )}
+        <Dialog
+          key={tagInfo?.id + '1'}
+          onClose={onCreateModalToggle}
+          aria-labelledby='customized-dialog-title'
+          open={isCreateModalOpened}
+        >
+          <div className='Tags__TagList__modalContainer'>
+            <div className='Tags__TagList__modalContainer__titleBox'>
+              <Text component='h4' weight={600} tint={100} size={14}>
+                Create Tag
+              </Text>
+            </div>
+            <div className='Tags__TagList__modalContainer__contentBox'>
+              <TagForm onCloseModal={onCreateModalToggle} />
+            </div>
+          </div>
+        </Dialog>
+        <Dialog
+          key={tagInfo?.id + '2'}
+          onClose={onUpdateModalToggle}
+          aria-labelledby='customized-dialog-title'
+          open={isUpdateModalOpened}
+        >
+          <div className='Tags__TagList__modalContainer'>
+            <div className='Tags__TagList__modalContainer__titleBox'>
+              <Text component='h4' size={14} tint={100} weight={600}>
+                Update Tag
+              </Text>
+            </div>
+            <div className='Tags__TagList__modalContainer__contentBox'>
+              <TagForm
+                onCloseModal={onUpdateModalToggle}
+                tagData={tagInfo}
+                tagId={tagInfo?.id}
+                editMode
+              />
+            </div>
+          </div>
+        </Dialog>
+        {tagInfo && (
+          <TagSoftDelete
+            modalIsOpen={isSoftDeleteModalOpened}
+            tagInfo={tagInfo}
+            tagHash={tagInfo?.id}
+            onSoftDeleteModalToggle={onSoftDeleteModalToggle}
+            onTagDetailOverlayToggle={onTagDetailOverlayToggle}
+            isTagDetailOverLayOpened={isTagDetailOverLayOpened}
+          />
+        )}
+        {tagInfo && (
+          <TagDelete
+            modalIsOpen={isDeleteModalOpened}
+            tagInfo={tagInfo}
+            tagHash={tagInfo?.id}
+            onDeleteModalToggle={onDeleteModalToggle}
+            onTagDetailOverlayToggle={onTagDetailOverlayToggle}
+            isTagDetailOverLayOpened={isTagDetailOverLayOpened}
+          />
+        )}
+      </ErrorBoundary>
       <Drawer
         className='Tags__TagList__overLayContainer'
         anchor='right'

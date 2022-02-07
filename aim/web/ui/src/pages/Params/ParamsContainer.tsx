@@ -1,36 +1,33 @@
 import React from 'react';
 import { useRouteMatch, useHistory } from 'react-router-dom';
 
-import { RowHeightSize } from 'config/table/tableConfigs';
-
 import useModel from 'hooks/model/useModel';
 import usePanelResize from 'hooks/resize/usePanelResize';
 
 import paramsAppModel from 'services/models/params/paramsAppModel';
 import * as analytics from 'services/analytics';
 
-import {
-  IChartTitleData,
-  IChartTooltip,
-  IGroupingSelectOption,
-} from 'types/services/models/metrics/metricsAppModel';
-import {
-  IParamsAppConfig,
-  IParamsAppModelState,
-} from 'types/services/models/params/paramsAppModel';
+import { IParamsAppModelState } from 'types/services/models/params/paramsAppModel';
+import { ITableRef } from 'types/components/Table/Table';
+import { IChartPanelRef } from 'types/components/ChartPanel/ChartPanel';
+import { IApiRequest } from 'types/services/services';
 
 import getStateFromUrl from 'utils/getStateFromUrl';
+import exceptionHandler from 'utils/app/exceptionHandler';
+import setComponentRefs from 'utils/app/setComponentRefs';
+import manageSystemMetricColumns from 'utils/app/manageSystemMetricColumns';
 
 import Params from './Params';
 
 function ParamsContainer(): React.FunctionComponentElement<React.ReactNode> {
+  const tableRef = React.useRef<ITableRef>(null);
+  const chartPanelRef = React.useRef<IChartPanelRef>(null);
   const chartElemRef = React.useRef<HTMLDivElement>(null);
   const tableElemRef = React.useRef<HTMLDivElement>(null);
   const wrapperElemRef = React.useRef<HTMLDivElement>(null);
   const resizeElemRef = React.useRef<HTMLDivElement>(null);
-  const paramsData = useModel<Partial<IParamsAppModelState> | any>(
-    paramsAppModel,
-  );
+  const paramsData =
+    useModel<Partial<IParamsAppModelState | any>>(paramsAppModel);
   const route = useRouteMatch<any>();
   const history = useHistory();
 
@@ -39,30 +36,53 @@ function ParamsContainer(): React.FunctionComponentElement<React.ReactNode> {
     chartElemRef,
     tableElemRef,
     resizeElemRef,
-    paramsData?.config?.table || {},
+    paramsData?.config?.table,
     paramsAppModel.onTableResizeEnd,
   );
 
   React.useEffect(() => {
+    if (tableRef.current && chartPanelRef.current) {
+      setComponentRefs<IParamsAppModelState>({
+        model: paramsAppModel,
+        refElement: {
+          tableRef,
+          chartPanelRef,
+        },
+      });
+    }
+    if (paramsData?.rawData?.length > 0) {
+      manageSystemMetricColumns(paramsAppModel);
+    }
+  }, [paramsData?.rawData]);
+
+  React.useEffect(() => {
     paramsAppModel.initialize(route.params.appId);
-    let appRequestRef: {
-      call: () => Promise<any>;
-      abort: () => void;
-    };
+    let appRequestRef: IApiRequest<void>;
+    let paramsRequestRef: IApiRequest<void>;
     if (route.params.appId) {
       appRequestRef = paramsAppModel.getAppConfigData(route.params.appId);
-      appRequestRef.call().then(() => {
-        paramsAppModel.getParamsData().call();
-      });
+      appRequestRef
+        .call((detail: any) => {
+          exceptionHandler({ detail, model: paramsAppModel });
+        })
+        .then(() => {
+          paramsRequestRef = paramsAppModel.getParamsData();
+          paramsRequestRef.call((detail: any) => {
+            exceptionHandler({ detail, model: paramsAppModel });
+          });
+        });
     } else {
       paramsAppModel.setDefaultAppConfigData();
+      paramsRequestRef = paramsAppModel.getParamsData();
+      paramsRequestRef.call((detail: any) => {
+        exceptionHandler({ detail, model: paramsAppModel });
+      });
     }
-    const paramsRequestRef = paramsAppModel.getParamsData();
-    paramsRequestRef.call();
+
     analytics.pageView('[ParamsExplorer]');
 
     const unListenHistory = history.listen(() => {
-      if (!!paramsData.config) {
+      if (!!paramsData?.config) {
         if (
           paramsData.config.grouping !== getStateFromUrl('grouping') ||
           paramsData.config.chart !== getStateFromUrl('chart') ||
@@ -75,7 +95,7 @@ function ParamsContainer(): React.FunctionComponentElement<React.ReactNode> {
     });
     return () => {
       paramsAppModel.destroy();
-      paramsRequestRef.abort();
+      paramsRequestRef?.abort();
       unListenHistory();
       if (appRequestRef) {
         appRequestRef.abort();
@@ -85,8 +105,8 @@ function ParamsContainer(): React.FunctionComponentElement<React.ReactNode> {
 
   return (
     <Params
-      tableRef={paramsData?.refs?.tableRef}
-      chartPanelRef={paramsData?.refs?.chartPanelRef}
+      tableRef={tableRef}
+      chartPanelRef={chartPanelRef}
       tableElemRef={tableElemRef}
       chartElemRef={chartElemRef}
       wrapperElemRef={wrapperElemRef}
@@ -95,30 +115,26 @@ function ParamsContainer(): React.FunctionComponentElement<React.ReactNode> {
       highPlotData={paramsData?.highPlotData}
       tableData={paramsData?.tableData}
       tableColumns={paramsData?.tableColumns}
-      focusedState={paramsData?.config?.chart?.focusedState}
-      requestIsPending={paramsData?.requestIsPending}
+      focusedState={paramsData?.config?.chart?.focusedState!}
+      requestIsPending={paramsData?.requestIsPending!}
+      selectedRows={paramsData?.selectedRows!}
       isVisibleColorIndicator={
-        paramsData?.config?.chart?.isVisibleColorIndicator
+        paramsData?.config?.chart?.isVisibleColorIndicator!
       }
-      groupingData={
-        paramsData?.config?.grouping as IParamsAppConfig['grouping']
-      }
-      selectedParamsData={
-        paramsData?.config?.select as IParamsAppConfig['select']
-      }
+      groupingData={paramsData?.config?.grouping!}
+      selectedParamsData={paramsData?.config?.select!}
       sortFields={paramsData?.config?.table?.sortFields!}
-      curveInterpolation={paramsData?.config?.chart?.curveInterpolation}
-      tooltip={paramsData?.config?.chart?.tooltip as IChartTooltip}
-      chartTitleData={paramsData?.chartTitleData as IChartTitleData}
-      groupingSelectOptions={
-        paramsData?.groupingSelectOptions as IGroupingSelectOption[]
-      }
+      curveInterpolation={paramsData?.config?.chart?.curveInterpolation!}
+      tooltip={paramsData?.config?.chart?.tooltip!}
+      chartTitleData={paramsData?.chartTitleData!}
+      groupingSelectOptions={paramsData?.groupingSelectOptions!}
       hiddenColumns={paramsData?.config?.table?.hiddenColumns!}
-      resizeMode={paramsData?.config?.table?.resizeMode}
+      hideSystemMetrics={paramsData?.config?.table?.hideSystemMetrics!}
+      resizeMode={paramsData?.config?.table?.resizeMode!}
       hiddenMetrics={paramsData?.config?.table?.hiddenMetrics!}
-      notifyData={paramsData?.notifyData}
-      tableRowHeight={paramsData?.config?.table?.rowHeight as RowHeightSize}
-      columnsWidths={paramsData?.config?.table?.columnsWidths}
+      notifyData={paramsData?.notifyData!}
+      tableRowHeight={paramsData?.config?.table?.rowHeight!}
+      columnsWidths={paramsData?.config?.table?.columnsWidths!}
       onColorIndicatorChange={paramsAppModel.onColorIndicatorChange}
       onCurveInterpolationChange={paramsAppModel.onCurveInterpolationChange}
       onParamsSelectChange={paramsAppModel.onParamsSelectChange}
@@ -149,8 +165,11 @@ function ParamsContainer(): React.FunctionComponentElement<React.ReactNode> {
       onSortReset={paramsAppModel.onSortReset}
       onSortFieldsChange={paramsAppModel.onSortChange}
       onShuffleChange={paramsAppModel.onShuffleChange}
-      liveUpdateConfig={paramsData.config?.liveUpdate}
+      liveUpdateConfig={paramsData?.config?.liveUpdate!}
       onLiveUpdateConfigChange={paramsAppModel.changeLiveUpdateConfig}
+      onRowSelect={paramsAppModel.onRowSelect}
+      archiveRuns={paramsAppModel.archiveRuns}
+      deleteRuns={paramsAppModel.deleteRuns}
     />
   );
 }

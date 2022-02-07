@@ -1,8 +1,8 @@
 import { HighlightEnum } from 'components/HighlightModesPopover/HighlightModesPopover';
 
-import { IDrawLinesProps } from 'types/utils/d3/drawLines';
-import { IProcessedData } from 'types/utils/d3/processData';
-import { IGetAxisScale } from 'types/utils/d3/getAxisScale';
+import { IDrawLinesArgs } from 'types/utils/d3/drawLines';
+import { IProcessedData } from 'types/utils/d3/processLineChartData';
+import { IAxisScale } from 'types/utils/d3/getAxisScale';
 import { IAggregatedData } from 'types/services/models/metrics/metricsAppModel';
 import { ILine } from 'types/components/LineChart/LineChart';
 
@@ -14,7 +14,7 @@ import areaGenerator from './areaGenerator';
 
 import { CurveEnum } from './';
 
-function drawLines(props: IDrawLinesProps): void {
+function drawLines(args: IDrawLinesArgs): void {
   const {
     index,
     xScale,
@@ -24,15 +24,15 @@ function drawLines(props: IDrawLinesProps): void {
     curveInterpolation,
     highlightMode,
     aggregationConfig,
-  } = props;
+  } = args;
 
   if (!linesNodeRef?.current) {
     return;
   }
 
-  linesRef.current.updateLinesScales = function (
-    xScale: IGetAxisScale,
-    yScale: IGetAxisScale,
+  linesRef.current.updateScales = function (
+    xScale: IAxisScale,
+    yScale: IAxisScale,
     curve?: CurveEnum,
   ): void {
     linesNodeRef.current
@@ -52,7 +52,7 @@ function drawLines(props: IDrawLinesProps): void {
       .attr(
         'data-selector',
         (line: ILine) =>
-          `Line-Sel-${highlightMode}-${line.selectors[highlightMode]}`,
+          `Line-Sel-${highlightMode}-${line.selectors?.[highlightMode]}`,
       )
       .style('fill', 'none')
       .style('stroke', (line: ILine) => line.color)
@@ -66,8 +66,8 @@ function drawLines(props: IDrawLinesProps): void {
   };
 
   linesRef.current.updateAggregatedAreasScales = function (
-    xScale: IGetAxisScale,
-    yScale: IGetAxisScale,
+    xScale: IAxisScale,
+    yScale: IAxisScale,
   ): void {
     linesNodeRef.current
       .selectAll('.AggrArea')
@@ -100,8 +100,8 @@ function drawLines(props: IDrawLinesProps): void {
   };
 
   linesRef.current.updateAggregatedLinesScales = function (
-    xScale: IGetAxisScale,
-    yScale: IGetAxisScale,
+    xScale: IAxisScale,
+    yScale: IAxisScale,
     curve?: CurveEnum,
   ): void {
     linesNodeRef.current
@@ -138,14 +138,14 @@ function drawLines(props: IDrawLinesProps): void {
 
   if (aggregationConfig?.isApplied) {
     if (aggregationConfig.methods.area !== AggregationAreaMethods.NONE) {
-      linesRef.current.updateAggregatedAreas(props.aggregatedData);
+      linesRef.current.updateAggregatedAreas(args.aggregatedData);
     }
-    linesRef.current.updateAggregatedLines(props.aggregatedData);
+    linesRef.current.updateAggregatedLines(args.aggregatedData);
     if (highlightMode !== HighlightEnum.Off) {
-      linesRef.current.updateLines(props.data);
+      linesRef.current.updateLines(args.data);
     }
   } else {
-    linesRef.current.updateLines(props.data);
+    linesRef.current.updateLines(args.data);
   }
 }
 

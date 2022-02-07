@@ -1,9 +1,9 @@
 import os
 import pytz
+from typing import Optional, Tuple
 
 from collections import Counter
-from datetime import datetime
-from fastapi import Depends, HTTPException, Request
+from fastapi import Depends, HTTPException, Request, Query
 from aim.web.api.utils import APIRouter  # wrapper for fastapi.APIRouter
 from urllib import parse
 
@@ -52,9 +52,8 @@ async def project_activity_api(request: Request, factory=Depends(object_factory)
     num_runs = 0
     activity_counter = Counter()
     for run in factory.runs():
-        creation_timestamp = run.creation_time if run.creation_time > 0 else 0
-        # TODO: [AT] fix timezone
-        activity_counter[datetime.fromtimestamp(creation_timestamp, timezone).strftime('%Y-%m-%d')] += 1
+        creation_time = run.created_at.replace(tzinfo=pytz.utc).astimezone(timezone)
+        activity_counter[creation_time.strftime('%Y-%m-%d')] += 1
         num_runs += 1
 
     return {
@@ -64,14 +63,23 @@ async def project_activity_api(request: Request, factory=Depends(object_factory)
     }
 
 
-@projects_router.get('/params/', response_model=ProjectParamsOut)
-async def project_params_api():
+@projects_router.get('/params/', response_model=ProjectParamsOut, response_model_exclude_defaults=True)
+async def project_params_api(sequence: Optional[Tuple[str, ...]] = Query(())):
     project = Project()
 
     if not project.exists():
         raise HTTPException(status_code=404)
 
-    return {
+    if sequence != ():
+        try:
+            project.repo.validate_sequence_types(sequence)
+        except ValueError as e:
+            raise HTTPException(status_code=400, detail=str(e))
+    else:
+        sequence = project.repo.available_sequence_types()
+
+    response = {
         'params': project.repo.collect_params_info(),
-        'metrics': project.repo.collect_metrics_info(),
     }
+    response.update(**project.repo.collect_sequence_info(sequence))
+    return response

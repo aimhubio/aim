@@ -1,6 +1,6 @@
 @use "src/styles/abstracts" as *;
 
-.SelectForm {
+.Metrics__SelectForm {
   flex: 1;
   padding: 0.725rem 1.5em;
   display: flex;
@@ -22,7 +22,6 @@
     justify-content: space-between;
     flex-direction: column;
   }
-
   &__Popper {
     border: $border-main;
     width: 40%;
@@ -35,34 +34,25 @@
       margin: unset;
     }
   }
-
   &__metric__select {
     width: 100%;
 
     input {
-      font-family: monospace;
       padding: 0.5rem;
       font-size: $text-md;
       border-bottom: $border-main;
     }
   }
-
   &__TextField {
-    input {
-      font-family: monospace;
-    }
+    position: relative;
   }
   &__textarea {
     flex: 1;
     .MuiOutlinedInput-multiline.MuiOutlinedInput-marginDense {
-      padding-top: 7.5px;
-      padding-bottom: 7.5px;
-    }
-    textarea {
-      font-family: monospace;
+      padding-top: toRem(7.5px);
+      padding-bottom: toRem(7.5px);
     }
   }
-
   &__search__button {
     width: 100%;
   }
@@ -81,7 +71,6 @@
       }
     }
   }
-
   &__clearAll {
     height: 24px;
     width: 24px;
@@ -116,19 +105,18 @@
       font-size: 10px;
     }
   }
-}
+  &__tags {
+    display: flex;
+    align-items: center;
+    overflow: auto;
+    max-width: calc(100vw - 40rem);
+    min-width: 12rem;
 
-.Metrics__SelectForm__tags {
-  display: flex;
-  align-items: center;
-  overflow: auto;
-  max-width: calc(100vw - 40rem);
-  min-width: 12rem;
-
-  .Badge {
-    margin-right: 0.5rem;
-    &:last-child {
-      margin-right: 20px;
+    .Badge {
+      margin-right: 0.5rem;
+      &:last-child {
+        margin-right: 20px;
+      }
     }
   }
 }

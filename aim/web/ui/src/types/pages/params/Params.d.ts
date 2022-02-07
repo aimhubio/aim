@@ -8,18 +8,21 @@ import { ResizeModeEnum } from 'config/enums/tableEnums';
 import {
   GroupNameType,
   IChartTitleData,
-  IChartTooltip,
+  IPanelTooltip,
   IFocusedState,
   IGroupingSelectOption,
-  IMetricAppConfig,
   IOnGroupingModeChangeParams,
   IOnGroupingSelectChangeParams,
 } from 'types/services/models/metrics/metricsAppModel';
 import { IActivePoint } from 'types/utils/d3/drawHoverAttributes';
 import { IChartPanelRef } from 'types/components/ChartPanel/ChartPanel';
-import { IParamsAppConfig } from 'types/services/models/params/paramsAppModel';
 import { INotification } from 'types/components/NotificationContainer/NotificationContainer';
-import { IBookmarkFormState } from 'types/pages/metrics/components/BookmarkForm/BookmarkForm';
+import { IBookmarkFormState } from 'types/components/BookmarkForm/BookmarkForm';
+import {
+  IGroupingConfig,
+  ISelectConfig,
+  ISelectOption,
+} from 'types/services/models/explorer/createAppModel';
 
 import { CurveEnum } from 'utils/d3';
 
@@ -34,20 +37,22 @@ export interface IParamsProps extends Partial<RouteChildrenProps> {
   panelResizing: boolean;
   requestIsPending: boolean;
   highPlotData: any;
-  groupingData: IMetricAppConfig['grouping'];
+  groupingData: IGroupingConfig;
   groupingSelectOptions: IGroupingSelectOption[];
   hiddenMetrics: string[];
+  hideSystemMetrics: boolean;
   sortFields: [string, 'asc' | 'desc' | boolean][];
   focusedState: IFocusedState;
   isVisibleColorIndicator: boolean;
-  tooltip: IChartTooltip;
+  tooltip: IPanelTooltip;
   chartTitleData: IChartTitleData;
-  selectedParamsData: IParamsAppConfig['select'];
+  selectedParamsData: ISelectConfig;
   onRowHeightChange: any;
   onSortFieldsChange: any;
   onParamVisibilityChange: any;
   onColumnsOrderChange: any;
   tableData: any;
+  selectedRows: { [key: string]: any };
   onTableRowHover?: (rowKey?: string) => void;
   onTableRowClick?: (rowKey?: string) => void;
   tableColumns: any;
@@ -62,7 +67,7 @@ export interface IParamsProps extends Partial<RouteChildrenProps> {
     focusedStateActive: boolean = false,
   ) => void;
   onColorIndicatorChange: () => void;
-  onParamsSelectChange: IParamsAppConfig['onParamsSelectChange'];
+  onParamsSelectChange: (options: ISelectOption[]) => void;
   onSelectRunQueryChange: (query: string) => void;
   onGroupingSelectChange: (params: IOnGroupingSelectChangeParams) => void;
   onGroupingModeChange: (params: IOnGroupingModeChangeParams) => void;
@@ -74,7 +79,7 @@ export interface IParamsProps extends Partial<RouteChildrenProps> {
   onBookmarkUpdate: (id: string) => void;
   onNotificationAdd: (notification: INotification) => void;
   onResetConfigData: () => void;
-  onChangeTooltip: (tooltip: Partial<IChartTooltip>) => void;
+  onChangeTooltip: (tooltip: Partial<IPanelTooltip>) => void;
   onExportTableData: (e: React.ChangeEvent<any>) => void;
   onColumnsVisibilityChange: (order: any) => void;
   onTableDiffShow: () => void;
@@ -88,4 +93,7 @@ export interface IParamsProps extends Partial<RouteChildrenProps> {
     delay?: number;
     enabled?: boolean;
   }) => void;
+  onRowSelect: any;
+  archiveRuns: (ids: string[], archived: boolean) => void;
+  deleteRuns: (ids: string[]) => void;
 }

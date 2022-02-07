@@ -1,5 +1,7 @@
 import React from 'react';
 
+import ErrorBoundary from 'components/ErrorBoundary/ErrorBoundary';
+
 import useResizeObserver from 'hooks/window/useResizeObserver';
 
 import {
@@ -14,7 +16,7 @@ import {
   clearArea,
   drawAxes,
   drawLines,
-  processData,
+  processLineChartData,
   getAxisScale,
   drawBrush,
   drawHoverAttributes,
@@ -31,7 +33,7 @@ const LineChart = React.forwardRef(function LineChart(
     aggregationConfig,
     syncHoverState,
     axesScaleType,
-    displayOutliers,
+    ignoreOutliers,
     alignmentConfig,
     highlightMode,
     curveInterpolation,
@@ -80,9 +82,9 @@ const LineChart = React.forwardRef(function LineChart(
   const rafIDRef = React.useRef<number>();
 
   function draw() {
-    const { processedData, min, max, xValues } = processData(
+    const { processedData, min, max } = processLineChartData(
       data,
-      displayOutliers,
+      ignoreOutliers,
     );
 
     drawArea({
@@ -127,9 +129,8 @@ const LineChart = React.forwardRef(function LineChart(
       height,
       margin,
       alignmentConfig,
-      xValues,
-      attributesRef,
       humanizerConfigRef,
+      drawBgTickLines: { y: true },
     });
 
     drawLines({
@@ -148,6 +149,7 @@ const LineChart = React.forwardRef(function LineChart(
     drawHoverAttributes({
       index,
       data: processedData,
+      axesScaleType,
       highlightMode,
       syncHoverState,
       visAreaRef,
@@ -198,7 +200,7 @@ const LineChart = React.forwardRef(function LineChart(
     [
       data,
       zoom,
-      displayOutliers,
+      ignoreOutliers,
       highlightMode,
       axesScaleType,
       curveInterpolation,
@@ -224,7 +226,7 @@ const LineChart = React.forwardRef(function LineChart(
   }, [
     data,
     zoom,
-    displayOutliers,
+    ignoreOutliers,
     highlightMode,
     axesScaleType,
     curveInterpolation,
@@ -255,12 +257,14 @@ const LineChart = React.forwardRef(function LineChart(
   }));
 
   return (
-    <div
-      ref={parentRef}
-      className={`LineChart__container ${zoom?.active ? 'zoomMode' : ''}`}
-    >
-      <div ref={visAreaRef} />
-    </div>
+    <ErrorBoundary>
+      <div
+        ref={parentRef}
+        className={`LineChart ${zoom?.active ? 'zoomMode' : ''}`}
+      >
+        <div ref={visAreaRef} />
+      </div>
+    </ErrorBoundary>
   );
 });
 

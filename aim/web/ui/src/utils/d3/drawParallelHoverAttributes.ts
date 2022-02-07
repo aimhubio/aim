@@ -4,14 +4,14 @@ import { isNil, isEmpty } from 'lodash-es';
 import {
   IActivePoint,
   INearestCircle,
-  ISyncHoverStateParams,
+  ISyncHoverStateArgs,
 } from 'types/utils/d3/drawHoverAttributes';
 import {
-  IDrawParallelHoverAttributesProps,
+  IDrawParallelHoverAttributesArgs,
   IParallelNearestCircle,
   IUpdateParallelFocusedChartProps,
 } from 'types/utils/d3/drawParallelHoverAttributes';
-import { IGetAxisScale } from 'types/utils/d3/getAxisScale';
+import { IAxisScale } from 'types/utils/d3/getAxisScale';
 import { ILineDataType } from 'types/utils/d3/drawParallelLines';
 
 import getFormattedValue from 'utils/formattedValue';
@@ -32,7 +32,7 @@ const drawParallelHoverAttributes = ({
   linesNodeRef,
   highlightedNodeRef,
   axesNodeRef,
-}: IDrawParallelHoverAttributesProps) => {
+}: IDrawParallelHoverAttributesArgs) => {
   const chartRect: DOMRect = visAreaRef.current?.getBoundingClientRect() || {};
   let rafID = 0;
 
@@ -123,7 +123,7 @@ const drawParallelHoverAttributes = ({
     if (isVisibleColorIndicator) {
       const lastKeyOfDimension: string =
         keysOfDimensions[keysOfDimensions.length - 1];
-      const lastYScale: IGetAxisScale = yScale[lastKeyOfDimension];
+      const lastYScale: IAxisScale = yScale[lastKeyOfDimension];
       colorIndicatorYPixel = lastYScale(line.values[lastKeyOfDimension]) || 0;
     }
 
@@ -149,8 +149,6 @@ const drawParallelHoverAttributes = ({
       );
     }
 
-    // TODO changed pageX and pageY to
-    //  topPos(bounded circle.y) and leftPos(bounded circle.x)
     return {
       key: circle.key,
       xValue: dimensionLabel,
@@ -158,8 +156,13 @@ const drawParallelHoverAttributes = ({
       xPos: circle.x,
       yPos: circle.y,
       chartIndex: index,
-      topPos: chartRect.top + circle.y + margin.top,
-      leftPos: chartRect.left + circle.x + margin.left,
+      pointRect: {
+        top: chartRect.top + margin.top + circle.y - CircleEnum.ActiveRadius,
+        bottom: chartRect.top + margin.top + circle.y + CircleEnum.ActiveRadius,
+        left: chartRect.left + margin.left + circle.x - CircleEnum.ActiveRadius,
+        right:
+          chartRect.left + margin.left + circle.x + CircleEnum.ActiveRadius,
+      },
     };
   }
 
@@ -187,7 +190,7 @@ const drawParallelHoverAttributes = ({
 
       mousePosition = [
         xScale(activePoint.xValue),
-        yScale[dimensionLabel](activePoint.yValue) + margin.top,
+        yScale[dimensionLabel]?.(activePoint.yValue) + margin.top,
       ];
     }
 
@@ -480,9 +483,9 @@ const drawParallelHoverAttributes = ({
   }
 
   // Interactions
-  function safeSyncHoverState(params: ISyncHoverStateParams): void {
+  function safeSyncHoverState(args: ISyncHoverStateArgs): void {
     if (typeof syncHoverState === 'function') {
-      syncHoverState(params);
+      syncHoverState(args);
     }
   }
 
@@ -516,7 +519,7 @@ const drawParallelHoverAttributes = ({
 };
 
 function scalePointValue(
-  xScale: IGetAxisScale,
+  xScale: IAxisScale,
   xPos: number,
   rangeReversed: boolean = false,
 ) {

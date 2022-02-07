@@ -1,6 +1,6 @@
 @use 'src/styles/abstracts' as *;
 
-.LineChart__container {
+.LineChart {
   background-color: white;
   height: 100%;
   width: 100%;
@@ -80,19 +80,24 @@
   .Line {
     stroke-width: 1.45;
     opacity: 1;
+
     &.active {
       opacity: 1;
       stroke-width: 3px;
     }
+
     &.aggregated {
       opacity: 0;
+
       &.highlighted {
         opacity: 0.5;
       }
+
       &.active {
         opacity: 0.8;
       }
     }
+
     &.highlighted {
       opacity: 1;
       stroke-width: 2.2px;
@@ -117,11 +122,32 @@
     opacity: 1;
   }
 
-  .yAxis {
+  .yAxis, .xAxis {
     .tick {
       text {
+        display: none;
+      }
+      .yAxisTick, .xAxisTick {
         color: $text-color;
       }
     }
+    .domain {
+      stroke: $text-color;
+      stroke-width: 0.4;
+    }
+    .xAxisTick {
+      text-align: center;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .yAxisTick {
+      text-align: right;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
   }
+
 }

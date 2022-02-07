@@ -1,6 +1,6 @@
 import * as d3 from 'd3';
 
-import { IGetAxisScale, IGetAxisScaleProps } from 'types/utils/d3/getAxisScale';
+import { IAxisScale, IGetAxisScaleProps } from 'types/utils/d3/getAxisScale';
 
 import { ScaleEnum } from './index';
 
@@ -17,9 +17,11 @@ function getScaleBaseFor(scaleType?: ScaleEnum) {
   }
 }
 
-function getAxisScale(params: IGetAxisScaleProps): IGetAxisScale {
-  const { scaleType, domainData, rangeData } = params;
-
+function getAxisScale({
+  scaleType,
+  domainData,
+  rangeData,
+}: IGetAxisScaleProps): IAxisScale {
   const scaleBase = getScaleBaseFor(scaleType);
   //@ts-ignore
   return scaleBase.domain(domainData).range(rangeData);

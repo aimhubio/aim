@@ -1,0 +1,51 @@
+@use 'src/styles/abstracts' as *;
+
+.MediaPanel__Container {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+
+  &__imageFullViewPopup {
+    .MuiDialog-paperWidthSm {
+      max-width: unset;
+      width: 100%;
+      height: 100%;
+    }
+  }
+  &__resizing {
+    display: flex;
+    width: 100%;
+    height: 100%;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    background-color: $primary-color-5;
+    user-select: none;
+  }
+
+  .MediaPanel {
+    display: flex;
+    flex: 1;
+    &__loader {
+      .ChartLoader {
+        span {
+          margin-left: 0;
+        }
+      }
+    }
+    &__mediaSetContainer {
+      overflow-x: auto;
+      padding-left: 1.25rem;
+      padding-top: 0.25rem;
+      flex: 1;
+    }
+    &__controls {
+      border-left: 0.0625rem solid #dceafb;
+      width: 3.75rem;
+      max-height: 100%;
+      overflow-y: auto;
+    }
+  }
+}

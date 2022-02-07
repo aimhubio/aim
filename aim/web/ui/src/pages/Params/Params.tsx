@@ -11,12 +11,14 @@ import TableLoader from 'components/TableLoader/TableLoader';
 import Table from 'components/Table/Table';
 import NotificationContainer from 'components/NotificationContainer/NotificationContainer';
 import ResizePanel from 'components/ResizePanel/ResizePanel';
+import Grouping from 'components/Grouping/Grouping';
+import ErrorBoundary from 'components/ErrorBoundary/ErrorBoundary';
 
 import { RowHeightSize } from 'config/table/tableConfigs';
 import { ResizeModeEnum } from 'config/enums/tableEnums';
+import GroupingPopovers from 'config/grouping/GroupingPopovers';
 
 import AppBar from 'pages/Metrics/components/MetricsBar/MetricsBar';
-import Grouping from 'pages/Metrics/components/Grouping/Grouping';
 
 import { IParamsProps } from 'types/pages/params/Params';
 
@@ -60,6 +62,7 @@ const Params = ({
   resizeMode,
   notifyData,
   hiddenColumns,
+  hideSystemMetrics,
   onExportTableData,
   onCurveInterpolationChange,
   onActivePointChange,
@@ -85,6 +88,10 @@ const Params = ({
   liveUpdateConfig,
   onLiveUpdateConfigChange,
   onShuffleChange,
+  onRowSelect,
+  archiveRuns,
+  deleteRuns,
+  selectedRows,
 }: IParamsProps): React.FunctionComponentElement<React.ReactNode> => {
   const chartProps: any[] = React.useMemo(() => {
     return (highPlotData || []).map((chartData: any, index: number) => ({
@@ -115,11 +122,18 @@ const Params = ({
           </div>
           <div className='Params__SelectForm__Grouping__container'>
             <SelectForm
+              requestIsPending={requestIsPending}
               selectedParamsData={selectedParamsData}
               onParamsSelectChange={onParamsSelectChange}
               onSelectRunQueryChange={onSelectRunQueryChange}
             />
             <Grouping
+              groupingPopovers={GroupingPopovers.filter(
+                (p) =>
+                  p.groupName === 'color' ||
+                  p.groupName === 'stroke' ||
+                  p.groupName === 'chart',
+              )}
               groupingData={groupingData}
               groupingSelectOptions={groupingSelectOptions}
               onGroupingSelectChange={onGroupingSelectChange}
@@ -202,42 +216,51 @@ const Params = ({
               loaderComponent={<TableLoader />}
             >
               {!isEmpty(tableData) ? (
-                <Table
-                  custom
-                  ref={tableRef}
-                  data={tableData}
-                  columns={tableColumns}
-                  // Table options
-                  topHeader
-                  groups={!Array.isArray(tableData)}
-                  rowHeight={tableRowHeight}
-                  rowHeightMode={
-                    tableRowHeight === RowHeightSize.sm
-                      ? 'small'
-                      : tableRowHeight === RowHeightSize.md
-                      ? 'medium'
-                      : 'large'
-                  }
-                  sortOptions={groupingSelectOptions}
-                  sortFields={sortFields}
-                  hiddenRows={hiddenMetrics}
-                  hiddenColumns={hiddenColumns}
-                  resizeMode={resizeMode}
-                  columnsWidths={columnsWidths}
-                  // Table actions
-                  onSortReset={onSortReset}
-                  onSort={onSortFieldsChange}
-                  onExport={onExportTableData}
-                  onColumnsVisibilityChange={onColumnsVisibilityChange}
-                  onManageColumns={onColumnsOrderChange}
-                  onRowHeightChange={onRowHeightChange}
-                  onRowsChange={onParamVisibilityChange}
-                  onRowHover={onTableRowHover}
-                  onRowClick={onTableRowClick}
-                  onTableResizeModeChange={onTableResizeModeChange}
-                  onTableDiffShow={onTableDiffShow}
-                  updateColumnsWidths={updateColumnsWidths}
-                />
+                <ErrorBoundary>
+                  <Table
+                    custom
+                    ref={tableRef}
+                    data={tableData}
+                    columns={tableColumns}
+                    // Table options
+                    topHeader
+                    groups={!Array.isArray(tableData)}
+                    rowHeight={tableRowHeight}
+                    rowHeightMode={
+                      tableRowHeight === RowHeightSize.sm
+                        ? 'small'
+                        : tableRowHeight === RowHeightSize.md
+                        ? 'medium'
+                        : 'large'
+                    }
+                    sortOptions={groupingSelectOptions}
+                    sortFields={sortFields}
+                    hiddenRows={hiddenMetrics}
+                    hiddenColumns={hiddenColumns}
+                    hideSystemMetrics={hideSystemMetrics}
+                    resizeMode={resizeMode}
+                    columnsWidths={columnsWidths}
+                    selectedRows={selectedRows}
+                    // Table actions
+                    onSortReset={onSortReset}
+                    onSort={onSortFieldsChange}
+                    onExport={onExportTableData}
+                    onColumnsVisibilityChange={onColumnsVisibilityChange}
+                    onManageColumns={onColumnsOrderChange}
+                    onRowHeightChange={onRowHeightChange}
+                    onRowsChange={onParamVisibilityChange}
+                    onRowHover={onTableRowHover}
+                    onRowClick={onTableRowClick}
+                    onTableResizeModeChange={onTableResizeModeChange}
+                    onTableDiffShow={onTableDiffShow}
+                    updateColumnsWidths={updateColumnsWidths}
+                    onRowSelect={onRowSelect}
+                    archiveRuns={archiveRuns}
+                    deleteRuns={deleteRuns}
+                    focusedState={focusedState}
+                    multiSelect
+                  />
+                </ErrorBoundary>
               ) : null}
             </BusyLoaderWrapper>
           </div>

@@ -9,16 +9,16 @@ import {
 
 import { CurveEnum } from 'utils/d3';
 
-import { IDrawAxesProps } from './drawAxes';
-import { IProcessedData } from './processData';
+import { IDrawAxesArgs } from './drawAxes';
+import { IProcessedData } from './processLineChartData';
 
-export interface IDrawLinesProps {
+export interface IDrawLinesArgs {
   index: number;
   linesRef: React.MutableRefObject<>;
   linesNodeRef: React.MutableRefObject<>;
   data: IProcessedData[];
-  xScale: IDrawAxesProps['xScale'];
-  yScale: IDrawAxesProps['yScale'];
+  xScale: IDrawAxesArgs['xScale'];
+  yScale: IDrawAxesArgs['yScale'];
   highlightMode: HighlightEnum;
   curveInterpolation: CurveEnum;
   aggregationConfig?: IAggregationConfig;

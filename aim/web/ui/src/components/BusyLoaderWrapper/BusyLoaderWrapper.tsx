@@ -3,6 +3,8 @@ import React from 'react';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import { Skeleton } from '@material-ui/lab';
 
+import ErrorBoundary from 'components/ErrorBoundary/ErrorBoundary';
+
 import { IBusyLoaderWrapperProps } from 'types/components/BusyLoaderWrapper/BusyLoaderWrapper';
 
 import './BusyLoaderWrapper.scss';
@@ -27,13 +29,22 @@ function BusyLoaderWrapper({
       }
     }
   }
-  return isLoading ? (
-    <div className={`BusyLoaderWrapper ${className}`} style={{ width, height }}>
-      {loaderComponent || loaderRender()}
-    </div>
-  ) : children ? (
-    children
-  ) : null;
+  return (
+    <>
+      {isLoading ? (
+        <ErrorBoundary>
+          <div
+            className={`BusyLoaderWrapper ${className}`}
+            style={{ width, height }}
+          >
+            {loaderComponent || loaderRender()}
+          </div>
+        </ErrorBoundary>
+      ) : children ? (
+        children
+      ) : null}
+    </>
+  );
 }
 
 export default React.memo(BusyLoaderWrapper);

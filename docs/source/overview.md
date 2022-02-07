@@ -28,7 +28,6 @@ Aim package logs your training runs, enables a beautiful UI to compare them and 
 Use the [Aim SDK](./quick_start/SDK_basics.html) to [log as many metrics and params](./quick_start/SDK_basics.html#track-params-and-metrics-with-run) as you need for your training and evaluation runs.
 Aim users track 1000s of training runs and sometimes more than 100s of metrics per run with lots of steps.
 
-
 ### Query metadata on Web UI
 Aim enables a powerful pythonic query language to filter through metadata.
 It's like a python if statement over everything you have tracked. You can use this on all explorer screens.
@@ -44,17 +43,23 @@ It helps to save lots of time compared to other open-source experiment tracking 
 
 <img style="border: 1px solid #1d2253" src="./_static/images/overview/metrics.png" />
 
+### Images explorer
+Track intermediate images and search, compare them on the Images Explorer.
+
+<img style="border: 1px solid #1d2253" src="./_static/images/overview/images.png" />
+
 ### Params explorer
 Params explorer enables a parallel coordinates view for metrics and params. Very helpful when doing hyperparameter search.
 
 <img style="border: 1px solid #1d2253" src="./_static/images/overview/params.png" />
 
-### Images explorer (coming soon...)
-Track intermediate images and search, compare them on the Images Explorer.
+### Scatter explorer
+Scatter explorer helps to explore and learn relationship, correlations, and clustering effects between metrics and parameters.
+
+<img style="border: 1px solid #1d2253" src="./_static/images/overview/scatter.png" />
 
 ### Query metadata programmatically
 Use the same pythonic if statement to query the data through the Aim SDK programmatically.
-
 
 ## How Aim works?
 
@@ -66,8 +71,8 @@ Use the same pythonic if statement to query the data through the Aim SDK program
   - A simple python interface that allows to track AI metadata
     - metrics
     - hyperparameters
-    - images (coming soon...)
-    - distributions (coming soon...)
+    - images
+    - distributions
 - Aim UI:
   - A self-hosted web interface to deeply explore the tracked metadata
 
@@ -80,7 +85,47 @@ Use the same pythonic if statement to query the data through the Aim SDK program
 <img src="https://user-images.githubusercontent.com/13848158/112145238-8cc58200-8bf3-11eb-8d22-bbdb8809f2aa.png" width="70" />
 <img src="https://user-images.githubusercontent.com/13848158/118172152-17c93880-b43d-11eb-9169-785e4b52d89c.png" width="70" />
 
+## Comparisons to familiar tools
 
+### Tensorboard
+**Training run comparison**
+
+Order of magnitude faster training run comparison with Aim
+- The tracked params are first class citizens at Aim. You can search, group, aggregate via params - deeply explore all the tracked data (metrics, params, images) on the UI.
+- With tensorboard the users are forced to record those parameters in the training run name to be able to search and compare. This causes a super-tedius comparison experience and usability issues on the UI when there are many experiments and params. TensorBoard doesn't have features to group, aggregate the metrics.
+
+**Scalability**
+
+- Aim is built to handle 1000s of training runs with dozens of experiments each - both on the backend and on the UI.
+- TensorBoard becomes really slow and hard to use when a few hundred training runs are queried / compared.
+
+**Beloved TB visualizations to be added on Aim**
+
+- Embedding projector.
+- Neural network visualization.
+
+### MLFlow
+MLFlow is an end-to-end ML Lifecycle tool.
+Aim is focused on training tracking.
+The main differences of Aim and MLflow are around the UI scalability and run comparison features.
+
+**Run comparison**
+
+- Aim treats tracked parameters as first-class citizens. Users can query runs, metrics, images and filter using the params.
+- MLFlow does have a search by tracked config, but there are no grouping, aggregation, subplotting by hyparparams and other comparison features available.
+
+**UI Scalability**
+
+- Aim UI can handle several thousands of metrics at the same time smoothly with 1000s of steps. It may get shaky when you explore 1000s of metrics with 10000s of steps each. But we are constantly optimizing!
+- MLflow UI becomes slow to use when there are a few hundreds of runs.
+
+### Weights and Biases
+
+Hosted vs self-hosted
+- Weights and Biases is a hosted closed-source experiment tracker.
+- Aim is self-hosted free and open-source.
+  - Remote self-hosted Aim is coming soon...
+  
 ## Community
 
 If you have questions please:

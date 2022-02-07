@@ -2,12 +2,12 @@ import * as d3 from 'd3';
 
 import { ZoomEnum } from 'components/ZoomInPopover/ZoomInPopover';
 
-import { IDrawBrushProps } from 'types/utils/d3/drawBrush';
-import { IGetAxisScale } from 'types/utils/d3/getAxisScale';
+import { IDrawBrushArgs } from 'types/utils/d3/drawBrush';
+import { IAxisScale } from 'types/utils/d3/getAxisScale';
 
 import getAxisScale from './getAxisScale';
 
-function drawBrush(props: IDrawBrushProps): void {
+function drawBrush(args: IDrawBrushArgs): void {
   const {
     index,
     brushRef,
@@ -23,7 +23,7 @@ function drawBrush(props: IDrawBrushProps): void {
     max,
     zoom,
     onZoomChange,
-  } = props;
+  } = args;
 
   if (!plotNodeRef.current) {
     return;
@@ -45,8 +45,8 @@ function drawBrush(props: IDrawBrushProps): void {
   }
 
   brushRef.current.updateScales = function (
-    xScale: IGetAxisScale,
-    yScale: IGetAxisScale,
+    xScale: IAxisScale,
+    yScale: IAxisScale,
   ) {
     brushRef.current.xScale = xScale;
     brushRef.current.yScale = yScale;
@@ -71,17 +71,17 @@ function drawBrush(props: IDrawBrushProps): void {
     axesRef.current.updateXAxis(brushRef.current.xScale);
     axesRef.current.updateYAxis(brushRef.current.yScale);
 
-    linesRef.current.updateLinesScales(
+    linesRef.current.updateScales?.(
       brushRef.current.xScale,
       brushRef.current.yScale,
     );
 
-    linesRef.current.updateAggregatedAreasScales(
+    linesRef.current.updateAggregatedAreasScales?.(
       brushRef.current.xScale,
       brushRef.current.yScale,
     );
 
-    linesRef.current.updateAggregatedLinesScales(
+    linesRef.current.updateAggregatedLinesScales?.(
       brushRef.current.xScale,
       brushRef.current.yScale,
     );
@@ -165,9 +165,9 @@ function drawBrush(props: IDrawBrushProps): void {
 
     // setting scales and lines to initial state
     brushRef.current.updateScales?.(xScale, yScale);
-    linesRef.current.updateLinesScales(xScale, yScale);
-    linesRef.current.updateAggregatedAreasScales(xScale, yScale);
-    linesRef.current.updateAggregatedLinesScales(xScale, yScale);
+    linesRef.current.updateScales?.(xScale, yScale);
+    linesRef.current.updateAggregatedAreasScales?.(xScale, yScale);
+    linesRef.current.updateAggregatedLinesScales?.(xScale, yScale);
 
     attributesRef.current.updateScales?.(xScale, yScale);
     attributesRef.current.updateFocusedChart?.();

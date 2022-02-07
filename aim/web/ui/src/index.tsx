@@ -1,8 +1,9 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 
+import ErrorBoundary from 'components/ErrorBoundary/ErrorBoundary';
+
 import App from './App';
-import ErrorBoundary from './components/ErrorBoundary/ErrorBoundary';
 import reportWebVitals from './reportWebVitals';
 import './services/sentry';
 

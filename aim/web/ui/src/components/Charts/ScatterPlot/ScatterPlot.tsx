@@ -1,6 +1,8 @@
 /* eslint-disable react/prop-types */
-import React, { forwardRef, memo, useEffect } from 'react';
+import React, { forwardRef, memo } from 'react';
 import { scaleLinear, axisLeft, axisBottom } from 'd3';
+
+import ErrorBoundary from 'components/ErrorBoundary/ErrorBoundary';
 
 import { getMaxValue } from './util';
 import Circles from './Circles/Circles';
@@ -77,38 +79,40 @@ const ScatterPlot = forwardRef<any, IScatterPlotProps>(
     // eslint-disable-next-line @typescript-eslint/ban-ts-comment
     // @ts-ignore
     return (
-      <div className='Aim_ScatterPlotWrapper' ref={ref}>
-        <svg className='Aim_ScatterPlot' width={width} height={height}>
-          <g
-            transform={`translate(${margin.left}, ${margin.top})`}
-            className='Aim_ScatterPlot'
-          >
-            {dataSets?.map((group, i) => {
-              return (
-                group.data && (
-                  <Circles
-                    data={group.data}
-                    scale={{ x_scale, y_scale }}
-                    color={group.circleColor}
-                    radius={group.circleRadius}
-                    key={i}
-                  />
-                )
-              );
-            })}
-            <Axis
-              transform={`translate(0, ${graphHeight})`}
-              scale={axisBottom(x_scale)}
-              label={xAxisLabel}
-            />
-            <Axis
-              transform='translate(0,0)'
-              scale={axisLeft(y_scale)}
-              label={yAxisLabel}
-            />
-          </g>
-        </svg>
-      </div>
+      <ErrorBoundary>
+        <div className='Aim_ScatterPlotWrapper' ref={ref}>
+          <svg className='Aim_ScatterPlot' width={width} height={height}>
+            <g
+              transform={`translate(${margin.left}, ${margin.top})`}
+              className='Aim_ScatterPlot'
+            >
+              {dataSets?.map((group, i) => {
+                return (
+                  group.data && (
+                    <Circles
+                      data={group.data}
+                      scale={{ x_scale, y_scale }}
+                      color={group.circleColor}
+                      radius={group.circleRadius}
+                      key={i}
+                    />
+                  )
+                );
+              })}
+              <Axis
+                transform={`translate(0, ${graphHeight})`}
+                scale={axisBottom(x_scale)}
+                label={xAxisLabel}
+              />
+              <Axis
+                transform='translate(0,0)'
+                scale={axisLeft(y_scale)}
+                label={yAxisLabel}
+              />
+            </g>
+          </svg>
+        </div>
+      </ErrorBoundary>
     );
   },
 );

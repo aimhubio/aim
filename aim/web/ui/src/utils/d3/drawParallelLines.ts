@@ -1,14 +1,14 @@
 import { cloneDeep, isNil } from 'lodash-es';
 
 import {
-  IDrawParallelLinesProps,
+  IDrawParallelLinesArgs,
   InitialPathDataType,
   ILineDataType,
-  IDrawParallelLineProps,
-  ILineRendererProps,
-  IGetColorIndicatorScaleValueProps,
+  ILineRendererArgs,
+  IGetColorIndicatorScaleValueArgs,
+  IDrawParallelLineArgs,
 } from 'types/utils/d3/drawParallelLines';
-import { IGetAxisScale } from 'types/utils/d3/getAxisScale';
+import { IAxisScale } from 'types/utils/d3/getAxisScale';
 
 import lineGenerator from './lineGenerator';
 
@@ -28,7 +28,7 @@ function drawParallelLines({
   data,
   attributesNodeRef,
   isVisibleColorIndicator,
-}: IDrawParallelLinesProps) {
+}: IDrawParallelLinesArgs) {
   if (!linesNodeRef?.current || !linesRef?.current || !attributesRef?.current) {
     return;
   }
@@ -62,7 +62,7 @@ function linesRenderer({
   linesNodeRef,
   attributesRef,
   isVisibleColorIndicator,
-}: ILineRendererProps) {
+}: ILineRendererArgs) {
   data.forEach(({ values: line, key, color, dasharray }: ILineDataType) => {
     const arrayOfPathData: InitialPathDataType[] = [cloneDeep(initialPathData)];
     let pathDataArrayIndex: number = 0;
@@ -143,7 +143,7 @@ function drawParallelLine({
   isDotted,
   color,
   key,
-}: IDrawParallelLineProps) {
+}: IDrawParallelLineArgs) {
   if (!linesNodeRef.current) {
     return;
   }
@@ -178,10 +178,10 @@ function getColorIndicatorScaleValue({
   keysOfDimensions,
   yColorIndicatorScale,
   yScale,
-}: IGetColorIndicatorScaleValueProps) {
+}: IGetColorIndicatorScaleValueArgs) {
   const lastKeyOfDimension: string =
     keysOfDimensions[keysOfDimensions.length - 1];
-  const lastYScale: IGetAxisScale = yScale[lastKeyOfDimension];
+  const lastYScale: IAxisScale = yScale[lastKeyOfDimension];
 
   return yColorIndicatorScale(lastYScale(line[lastKeyOfDimension]) || 0);
 }

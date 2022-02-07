@@ -1,0 +1,35 @@
+@use 'src/styles/abstracts' as *;
+
+.AutoSuggestions {
+  position: absolute;
+  width: 21.875rem;
+  max-width: calc(100vw - 29rem);
+  border: 0.0625rem solid #dceafb;
+  border-radius: 0.0625rem;
+  background-color: #fff;
+  z-index: 9999;
+  overflow: hidden;
+  &__item {
+    padding: 0 $space-xxs;
+    display: block;
+    color: $pico-60;
+    min-height: 1.5rem;
+    cursor: pointer;
+    outline: unset !important;
+    &:hover,
+    &:focus-visible,
+    &:focus {
+      background-color: #dceafb;
+      outline: unset;
+    }
+    &:last-child {
+      border-bottom: unset;
+    }
+  }
+}
+
+//for safari browsers
+.AutoSuggestions__item:focus {
+  background-color: #dceafb;
+  outline: unset;
+}

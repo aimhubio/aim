@@ -1,24 +1,21 @@
-import { HighlightEnum } from 'components/HighlightModesPopover/HighlightModesPopover';
 import { ZoomEnum } from 'components/ZoomInPopover/ZoomInPopover';
 
-import { RowHeightSize } from 'config/table/tableConfigs';
-import { ResizeModeEnum } from 'config/enums/tableEnums';
-import { DensityOptions } from 'config/enums/densityEnum';
+import {
+  IAppModelConfig,
+  IGroupingConfig,
+} from 'services/models/explorer/createAppModel';
 
-import { IAxesScaleState } from 'types/components/AxesScalePopover/AxesScalePopover';
 import { IChartPanelRef } from 'types/components/ChartPanel/ChartPanel';
 import { ILine } from 'types/components/LineChart/LineChart';
 import { ITableRef } from 'types/components/Table/Table';
 import { ITableColumn } from 'types/pages/metrics/components/TableColumns/TableColumns';
 import { INotification } from 'types/components/NotificationContainer/NotificationContainer';
-import { ISelectMetricsOption } from 'types/pages/metrics/components/SelectForm/SelectForm';
 
 import {
   AggregationAreaMethods,
   AggregationLineMethods,
 } from 'utils/aggregateGroupData';
-import { AlignmentOptionsEnum, CurveEnum } from 'utils/d3';
-import { SmoothingAlgorithmEnum } from 'utils/smoothingData';
+import { AlignmentOptionsEnum } from 'utils/d3';
 
 import { IMetric } from './metricModel';
 import { IMetricTrace, IRun } from './runModel';
@@ -28,10 +25,10 @@ export interface IMetricAppModelState {
     tableRef?: { current: ITableRef | null };
     chartPanelRef?: { current: IChartPanelRef | null };
   };
-  requestIsPending: boolean | null;
+  requestIsPending: boolean;
   queryIsEmpty: boolean;
   rawData: IRun<IMetricTrace>[];
-  config: IMetricAppConfig;
+  config: IAppModelConfig;
   data: IMetricsCollection<IMetric>[];
   lineChartData: ILine[][];
   chartTitleData: IChartTitleData;
@@ -46,6 +43,7 @@ export interface IMetricAppModelState {
     delay: number;
     enabled: boolean;
   };
+  selectedRows?: any;
 }
 
 export interface IChartTitleData {
@@ -105,73 +103,6 @@ export interface IAggregationData {
   } | null;
 }
 
-export type SortField = [string, 'asc' | 'desc'];
-
-export interface IMetricAppConfig {
-  grouping?: {
-    color: string[];
-    stroke: string[];
-    chart: string[];
-    reverseMode: {
-      color: boolean;
-      stroke: boolean;
-      chart: boolean;
-    };
-    isApplied: {
-      color: boolean;
-      stroke: boolean;
-      chart: boolean;
-    };
-    persistence: {
-      color: boolean;
-      stroke: boolean;
-    };
-    seed: {
-      color: number;
-      stroke: number;
-    };
-    paletteIndex: number;
-  };
-  chart?: {
-    highlightMode: HighlightEnum;
-    ignoreOutliers: boolean;
-    zoom: IChartZoom;
-    axesScaleType: IAxesScaleState;
-    curveInterpolation: CurveEnum;
-    smoothingAlgorithm: SmoothingAlgorithmEnum;
-    smoothingFactor: number;
-    focusedState: IFocusedState;
-    aggregationConfig: IAggregationConfig;
-    densityType: DensityOptions;
-    alignmentConfig: IAlignmentConfig;
-    tooltip: IChartTooltip;
-  };
-  select?: {
-    metrics: ISelectMetricsOption[];
-    query: string;
-    advancedMode: boolean;
-    advancedQuery: string;
-  };
-  table?: {
-    resizeMode: ResizeModeEnum;
-    rowHeight: RowHeightSize;
-    sortFields?: SortField[];
-    hiddenMetrics?: string[];
-    hiddenColumns?: string[];
-    columnsWidths?: { [key: string]: number };
-    columnsOrder?: {
-      left: string[];
-      middle: string[];
-      right: string[];
-    };
-    height: string;
-  };
-  liveUpdate?: {
-    delay: number;
-    enabled: boolean;
-  };
-}
-
 export interface IChartZoom {
   active: boolean;
   mode: ZoomEnum;
@@ -182,7 +113,7 @@ export interface IChartZoom {
   }[];
 }
 
-export interface IChartTooltip {
+export interface IPanelTooltip {
   content: ITooltipContent;
   display: boolean;
   selectedParams: string[];
@@ -205,9 +136,9 @@ export interface IAggregationConfig {
 export interface IFocusedState {
   active: boolean;
   key: string | null;
-  xValue: number | string | null;
-  yValue: number | null;
-  chartIndex: number | null;
+  xValue?: number | string | null;
+  yValue?: number | string | null;
+  chartIndex?: number | null;
 }
 
 export interface IMetricTableRowData {
@@ -244,21 +175,24 @@ export interface IOnGroupingModeChangeParams {
 
 export interface IGetGroupingPersistIndex {
   groupConfig: {};
-  grouping: IMetricAppConfig['grouping'];
+  grouping: IGroupingConfig;
   groupName: 'color' | 'stroke';
 }
 
-export type GroupNameType = 'color' | 'stroke' | 'chart';
+export type GroupNameType = 'color' | 'stroke' | 'chart' | 'group';
 export interface IGroupingSelectOption {
   label: string;
   group: string;
   value: string;
+  readonly?: boolean;
 }
 
-export interface IAppData extends Partial<IMetricAppConfig | IParamsAppConfig> {
+export interface IAppData {
   created_at?: string;
   id?: string;
   updated_at?: string;
+  type?: string;
+  state?: Partial<IAppModelConfig>;
 }
 
 export interface IDashboardRequestBody {

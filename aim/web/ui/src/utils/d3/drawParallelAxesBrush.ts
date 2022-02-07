@@ -3,11 +3,11 @@ import { isNil } from 'lodash-es';
 
 import { ILineDataType } from 'types/utils/d3/drawParallelLines';
 import {
-  IDrawParallelAxesBrushBrushProps,
+  IDrawParallelAxesBrushBrushArgs,
   IFilterDataByBrushedScaleProps,
   DomainsDataType,
 } from 'types/utils/d3/drawParallelAxesBrush';
-import { IGetAxisScale } from 'types/utils/d3/getAxisScale';
+import { IAxisScale } from 'types/utils/d3/getAxisScale';
 
 function drawParallelAxesBrush({
   brushRef,
@@ -17,7 +17,7 @@ function drawParallelAxesBrush({
   data,
   linesRef,
   attributesRef,
-}: IDrawParallelAxesBrushBrushProps): void {
+}: IDrawParallelAxesBrushBrushArgs): void {
   brushRef.current.xScale = attributesRef.current.xScale;
   brushRef.current.yScale = { ...attributesRef.current.yScale };
   brushRef.current.domainsData = Object.keys(dimensions).reduce(
@@ -102,10 +102,7 @@ function drawParallelAxesBrush({
     .attr('width', 20);
 }
 
-function scalePointDomainData(
-  yScale: IGetAxisScale,
-  extent: number[],
-): string[] {
+function scalePointDomainData(yScale: IAxisScale, extent: number[]): string[] {
   const domain: string[] = yScale.domain();
   const resultDomainData: string[] = [];
   domain.forEach((item: string) => {

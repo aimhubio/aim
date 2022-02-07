@@ -33,16 +33,23 @@
    :name: api
    :caption: Guides
 
+   guides/images_explorer_gan.md
+   guides/integrations/basic_aim_jupyter_notebook.md
    guides/integrations/basic_aim_huggingface.md
    guides/integrations/basic_aim_keras.md
    guides/integrations/basic_aim_pytorch_lightning.md
    guides/integrations/basic_aim_xgboost.md
+   guides/integrations/basic_k8s_deployment.md
+   guides/integrations/basic_aim_tensorflow_event_conversion.md
+   guides/training_reproducibility.md
+   guides/aim_remote_tracking.md
 
 .. toctree::
    :maxdepth: 1
    :name: Community
    :caption: Community
 
+   community/telemetry.md
    generated/CHANGELOG.md
 
 .. raw:: html

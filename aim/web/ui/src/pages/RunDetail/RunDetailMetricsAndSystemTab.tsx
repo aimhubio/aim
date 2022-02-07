@@ -1,8 +1,9 @@
 import React, { memo } from 'react';
-import { isEmpty } from 'lodash-es';
+import { isEmpty, isNil } from 'lodash-es';
 
 import EmptyComponent from 'components/EmptyComponent/EmptyComponent';
 import BusyLoaderWrapper from 'components/BusyLoaderWrapper/BusyLoaderWrapper';
+import ErrorBoundary from 'components/ErrorBoundary/ErrorBoundary';
 
 import runDetailAppModel from 'services/models/runs/runDetailAppModel';
 
@@ -17,9 +18,9 @@ function RunDetailMetricsAndSystemTab({
   isRunBatchLoading,
 }: IRunDetailMetricsAndSystemTabProps): React.FunctionComponentElement<React.ReactNode> {
   React.useEffect(() => {
-    if (!runBatch) {
-      const runsBatchRequestRef = runDetailAppModel.getRunBatch(
-        runTraces,
+    if (!runBatch && !isNil(runTraces)) {
+      const runsBatchRequestRef = runDetailAppModel.getRunMetricsBatch(
+        runTraces.metric,
         runHash,
       );
       runsBatchRequestRef.call();
@@ -28,29 +29,29 @@ function RunDetailMetricsAndSystemTab({
   }, [runTraces, runHash]);
 
   return (
-    <div className='RunDetailMetricsTab'>
+    <ErrorBoundary>
       <BusyLoaderWrapper
         isLoading={isRunBatchLoading}
         className='runDetailParamsTabLoader'
         height='100%'
       >
-        {runBatch && (
-          <div className='RunDetailMetricsTab__container'>
-            {!isEmpty(runBatch) ? (
-              runBatch.map((batch: IRunBatch, i: number) => {
+        {!isEmpty(runBatch) ? (
+          <div className='RunDetailMetricsTab'>
+            <div className='RunDetailMetricsTab__container'>
+              {runBatch.map((batch: IRunBatch, i: number) => {
                 return <RunMetricCard batch={batch} index={i} key={i} />;
-              })
-            ) : (
-              <EmptyComponent
-                size='big'
-                className='runDetailParamsTabLoader'
-                content={`No tracked ${isSystem ? 'system' : ''} metrics`}
-              />
-            )}
+              })}
+            </div>
           </div>
+        ) : (
+          <EmptyComponent
+            size='big'
+            className='runDetailParamsTabLoader'
+            content={`No tracked ${isSystem ? 'system' : ''} metrics`}
+          />
         )}
       </BusyLoaderWrapper>
-    </div>
+    </ErrorBoundary>
   );
 }
 

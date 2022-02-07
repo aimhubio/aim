@@ -9,26 +9,6 @@ $border-radius: 0.2rem;
   --group-margin: 6px;
 }
 
-.Table__container {
-  height: 100%;
-  width: 100%;
-  box-sizing: border-box;
-  background: #fff;
-  &--small {
-    --cell-height: 28px;
-    --group-margin: 4px;
-  }
-  &--medium {
-    --cell-height: 32px;
-    --group-margin: 6px;
-  }
-
-  &--large {
-    --cell-height: 36px;
-    --group-margin: 8px;
-  }
-}
-
 .Table {
   position: relative;
   display: flex;
@@ -38,6 +18,44 @@ $border-radius: 0.2rem;
   box-sizing: border-box;
   content-visibility: auto;
   contain: content;
+  &__container {
+    height: 100%;
+    width: 100%;
+    box-sizing: border-box;
+    background: #fff;
+    &--small {
+      --cell-height: 28px;
+      --group-margin: 4px;
+    }
+    &--medium {
+      --cell-height: 32px;
+      --group-margin: 6px;
+    }
+
+    &--large {
+      --cell-height: 36px;
+      --group-margin: 8px;
+    }
+  }
+  &__groupsColumn__cell {
+    span {
+      display: inline-block;
+      width: 120px;
+      min-width: 120px;
+      justify-content: center;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      margin-right: 0.5rem;
+      padding-right: 0.5rem;
+      border-right: 0.0625rem solid #ccc;
+      &:last-child {
+        margin-right: 0;
+        padding-right: 0;
+        border-right: unset;
+      }
+    }
+  }
 }
 
 .Table__pane {
@@ -82,8 +100,40 @@ $border-radius: 0.2rem;
   width: -moz-available;
   max-width: 500px;
   contain: content;
+  .Table__column__defaultSelectIcon {
+    border: 1.5px solid $pico-80;
+    border-radius: $border-radius-xs;
+    width: 1rem;
+    height: 1rem;
+  }
+  .Table__column__selectedSelectIcon {
+    border-radius: $border-radius-xs;
+    width: 1rem;
+    height: 1rem;
+    background: $primary-color;
+    color: $white;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding-top: toRem(2px);
+  }
+  .Table__column__partiallySelectedSelectIcon {
+    border-radius: $border-radius-xs;
+    width: 1rem;
+    height: 1rem;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+  .configCheckbox {
+    margin: 0 $space-xxs;
+  }
+  &--groups {
+    max-width: unset !important;
+  }
 
   &:last-of-type {
+    flex: 1;
     .Table__cell,
     .Table__group__config__cell {
       border-right: none;
@@ -95,6 +145,27 @@ $border-radius: 0.2rem;
       padding: 0;
     }
   }
+  &.Table__column--selection {
+    padding: 0;
+    .Table__cell--header {
+      padding: 0;
+    }
+    .Table__cell {
+      padding: 0;
+    }
+    .Table__cell--header > *:first-child {
+      margin-right: 0;
+    }
+  }
+  &__selectCheckbox {
+    width: toRem(32px);
+    height: toRem(32px);
+    border-radius: unset;
+    padding: 0.5rem;
+  }
+  &__headerCheckbox {
+    margin-left: 1rem;
+  }
 }
 
 .Table__action {
@@ -105,7 +176,7 @@ $border-radius: 0.2rem;
   width: 23px;
   height: 23px;
   margin: 5px 0 5px 5px;
-  border-radius: 50%;
+  border-radius: $border-radius-circle;
   transition: background-color ease 110ms;
   user-select: none;
 
@@ -180,12 +251,25 @@ $border-radius: 0.2rem;
   box-sizing: border-box;
   background-color: #fff;
   white-space: nowrap;
-  overflow: hidden;
   text-overflow: ellipsis;
   height: var(--cell-height);
+  position: relative;
 
   &.placeholder {
     border-right: unset;
+  }
+
+  &.colorIndicator {
+    &::before {
+      content: '';
+      position: absolute;
+      height: calc(var(--cell-height) - 4px);
+      width: 0.375rem;
+      border-radius: 0.375rem;
+      background: var(--color-indicator);
+      top: 2px;
+      left: 8px;
+    }
   }
 
   &.Table__group__header__cell {
@@ -208,7 +292,7 @@ $border-radius: 0.2rem;
 
   &.Table__group__config__column__cell {
     border-right: none;
-    padding: 0;
+    padding: 0 0 0 toRem(40px);
 
     .Table__cell__rowMeta {
       display: flex;
@@ -227,14 +311,25 @@ $border-radius: 0.2rem;
         }
       }
     }
+    &::before {
+      content: '';
+      border-radius: toRem(6px) 0 0 toRem(6px);
+    }
   }
-
-  &.active {
-    background-color: $primary-color-5;
-  }
-
   &.hidden {
-    background-color: $pico-10 !important;
+    background-color: $cuddle-10;
+  }
+
+  &.selected {
+    background-color: $primary-color-10;
+  }
+
+  &.hovered {
+    background-color: $cuddle-20;
+  }
+
+  &.focused {
+    background-color: $cuddle-50;
   }
 
   & > * {
@@ -266,6 +361,11 @@ $border-radius: 0.2rem;
   & > *:first-child {
     flex: 1;
     margin-right: 0.25rem;
+    &.Table__column__selectCheckbox {
+      flex: unset;
+      margin-left: toRem(30px);
+      margin-right: toRem(14px);
+    }
   }
 }
 
@@ -338,7 +438,26 @@ $border-radius: 0.2rem;
 .Table__group {
   margin-top: var(--group-margin);
   border-top: 1px solid $border-color;
-
+  position: relative;
+  &.colorIndicator {
+    &::before {
+      content: '';
+      position: absolute;
+      height: calc(100% + 1px);
+      width: toRem(6px);
+      border-radius: toRem(6px) 0 0 toRem(6px);
+      background: var(--color-indicator);
+      top: -1px;
+      left: -1px;
+      z-index: 2;
+    }
+    .expanded {
+      background: var(--extended-group-background-color);
+      &:hover {
+        background: var(--extended-group-background-color);
+      }
+    }
+  }
   .Table__cell:last-of-type {
     border-bottom: 1px solid $border-color;
   }
@@ -358,6 +477,7 @@ $border-radius: 0.2rem;
 
             .Table__group__config__cell {
               border-top-left-radius: $border-radius;
+              padding: 0 0.6rem;
             }
 
             .Table__cell:last-of-type {
@@ -399,6 +519,12 @@ $border-radius: 0.2rem;
   color: $pico;
   .Badge {
     margin-right: $space-xxxs;
+  }
+  &.hasColorIndicator {
+    padding-left: 0.5rem;
+    .Table__column__selectCheckbox {
+      margin-left: 0.5rem;
+    }
   }
 }
 
@@ -445,9 +571,5 @@ $border-radius: 0.2rem;
     flex: 1;
     text-align: right;
     margin-left: 0.5rem;
-  }
-
-  &__popover {
-    margin-left: $space-xxs;
   }
 }

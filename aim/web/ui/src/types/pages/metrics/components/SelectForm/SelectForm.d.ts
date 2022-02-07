@@ -1,19 +1,13 @@
-import { IMetricAppConfig } from 'types/services/models/metrics/metricsAppModel';
+import { ISelectOption } from 'services/models/explorer/createAppModel';
+
+import { IAppModelConfig } from 'types/services/models/explorer/createAppModel';
 
 export interface ISelectFormProps {
-  selectedMetricsData: IMetricAppConfig['select'];
-  onMetricsSelectChange: (metrics: ISelectMetricsOption[]) => void;
+  requestIsPending: boolean;
+  selectedMetricsData: IAppModelConfig['select'];
+  onMetricsSelectChange: (options: ISelectOption[]) => void;
   onSelectRunQueryChange: (query: string) => void;
   onSelectAdvancedQueryChange: (query: string) => void;
   toggleSelectAdvancedMode: () => void;
   onSearchQueryCopy: () => void;
-}
-export interface ISelectMetricsOption {
-  label: string;
-  group: string;
-  color: string;
-  value: {
-    metric_name: string;
-    context: { [key: string]: unknown } | null | any;
-  };
 }

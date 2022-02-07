@@ -3,9 +3,15 @@
 .RunDetail {
   &__runDetailContainer {
     height: 100%;
+    &__Tabs {
+      .MuiTabs-fixed {
+        overflow: auto !important;
+      }
+    }
     &__appBarContainer {
       height: 2.5rem;
       padding: 0 1.5rem;
+      padding: 0 1.5rem 0 0.9rem;
       background: #ffffff;
       border-right: $border-main;
       border-left: $border-main;
@@ -17,6 +23,8 @@
         font-size: $text-md;
         font-weight: 600;
         color: $text-color;
+        padding-left: 0.6rem;
+
         &__buttonSelectToggler {
           width: 1.5rem;
           height: 1.5rem;
@@ -95,6 +103,7 @@
             padding: 11px 16px;
             min-width: auto !important;
             border-right: 1px solid transparent;
+            text-transform: capitalize;
           }
           &.Mui-selected {
             color: $pico;
@@ -128,9 +137,9 @@
     &__tabPanel {
       border-right: $border-main;
       border-left: $border-main;
-      border-bottom: $border-main;
-      padding: 0.75rem;
-      height: calc(100% - 149px);
+      padding: 1.5rem;
+      overflow-y: auto;
+      height: calc(100vh - 136px);
       .MuiBox-root {
         height: 100%;
         .runDetailParamsTabLoader {
@@ -144,27 +153,33 @@
   }
 }
 
-.RunDetailParamsTab {
-  padding: 1.5rem;
-  margin: 0.75rem;
-  border: $border-grey;
-  border-radius: 0.5rem;
+.RunDetailParamsTabWrapper {
   height: 100%;
 }
 
-.RunDetailMetricsTab {
+.RunDetailParamsTab {
+  padding: 1.5rem;
+  border: $border-grey;
+  border-radius: 0.5rem;
   height: 100%;
+  overflow: auto;
+}
+
+.RunDistributionsTab {
+  padding: 0.75rem;
+}
+
+.RunDetailMetricsTab {
   &__container {
-    display: flex;
-    flex-wrap: wrap;
-    background: $white;
-    align-items: stretch;
     height: 100%;
+    background: $white;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1.5rem;
+    align-items: stretch;
     &__chartContainer {
       border: $border-grey;
       border-radius: 0.5rem;
-      margin: 0.75rem;
-      width: calc(50% - 24px);
       &__chartBox {
         height: 24.5rem;
         padding: 0.625rem;
@@ -191,20 +206,48 @@
 }
 
 .RunDetailSettingsTab {
-  padding: 1.5rem;
-  border: $border-grey;
-  border-radius: 0.5rem;
-  height: 5.25rem;
-  margin: 0 10.25rem;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  &__infoBox {
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
-    &__message {
-      margin-top: $space-xxxs;
+  &__actionCardsCnt {
+    margin: 0 164px;
+
+    .ActionCard {
+      margin-bottom: 16px;
+    }
+
+    &__btn__delete {
+      .MuiButton-label {
+        display: initial;
+        text-overflow: ellipsis;
+        overflow: hidden;
+        white-space: nowrap;
+      }
+
+      background-color: $error-color;
+
+      &:hover {
+        background-color: $error-color;
+      }
+    }
+
+    &__btn__archive,
+    &__btn__unarchive {
+      border-color: $pico-50;
+
+      &:hover {
+        border-color: $pico-50;
+      }
+    }
+
+    &__btn__archive {
+      color: $pico-50;
+    }
+
+    &__btn__unarchive {
+      background-color: $pico-50;
+      color: $white;
+
+      &:hover {
+        background-color: $pico-50;
+      }
     }
   }
 }
@@ -224,7 +267,7 @@
         &__experimentList {
           overflow-y: auto;
           height: 100%;
-          border-right: $border-main;
+          box-shadow: inset -0.0625rem 0 0 $border-color-main;
           padding: 0.375rem 0 0.5rem 0.5rem;
 
           &__experimentBox {
@@ -257,7 +300,7 @@
                 margin-right: 0;
                 border-radius: 0.3125rem 0 0 0.3125rem;
               }
-            
+
               &::before {
                 content: '';
                 height: 100%;
@@ -314,7 +357,7 @@
                 width: 0.375rem;
                 height: 0.375rem;
                 top: 0.6875rem;
-                border-radius: 50%;
+                border-radius: $border-radius-circle;
                 background: $success-color-100;
               }
             }
@@ -350,7 +393,13 @@
       }
     }
   }
-
+  &__loaderContainer {
+    height: 100%;
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
   .MuiPaper-root {
     width: 37.5rem;
     background: $white;

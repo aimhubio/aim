@@ -23,7 +23,6 @@ function Runs(props: any): React.FunctionComponentElement<React.ReactNode> {
             onSearchInputChange={props.onSelectRunQueryChange}
             searchValue={props.query}
             isRunsDataLoading={props.isRunsDataLoading}
-            updateSelectStateUrl={props.updateSelectStateUrl}
           />
           <div className='Runs__table__container'>
             <RunsTable
@@ -36,6 +35,7 @@ function Runs(props: any): React.FunctionComponentElement<React.ReactNode> {
               data={props.tableData}
               isInfiniteLoading={props.isInfiniteLoading}
               isLatest={props.isLatest}
+              hideSystemMetrics={props.hideSystemMetrics}
               onExportTableData={props.onExportTableData}
               tableRowHeight={props.tableRowHeight}
               columns={props.tableColumns}
@@ -45,6 +45,10 @@ function Runs(props: any): React.FunctionComponentElement<React.ReactNode> {
               getLastRunsData={props.getLastRunsData}
               columnsWidths={props.columnsWidths}
               updateColumnsWidths={props.updateColumnsWidths}
+              selectedRows={props.selectedRows}
+              onRowSelect={props.onRowSelect}
+              archiveRuns={props.archiveRuns}
+              deleteRuns={props.deleteRuns}
             />
           </div>
         </div>

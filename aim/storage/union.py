@@ -3,7 +3,6 @@ import logging
 import os
 import aimrocks
 
-import cachetools
 import cachetools.func
 
 from pathlib import Path
@@ -11,9 +10,9 @@ from pathlib import Path
 from aim.storage.encoding import encode_path
 from aim.storage.container import Container
 from aim.storage.prefixview import PrefixView
-from aim.storage.rockscontainer import RocksContainer
+from aim.storage.rockscontainer import RocksContainer, optimize_db_for_read
 
-from typing import Dict, List, NamedTuple, Optional, Tuple
+from typing import Dict, List, NamedTuple, Tuple
 
 
 logger = logging.getLogger(__name__)
@@ -159,6 +158,7 @@ class DB(object):
     ):
         db = cache.get(prefix)
         if db is None:
+            optimize_db_for_read(Path(path), self.opts)
             db = aimrocks.DB(path, opts=aimrocks.Options(**self.opts), read_only=True)
         if store is not None:
             store[prefix] = db
@@ -265,11 +265,6 @@ class RocksUnionSubContainer(RocksContainer):
     def __init__(self, container: 'RocksUnionContainer', domain: bytes):
         self._parent = container
         self.domain = domain
-
-        self._db = None
-        self._lock = None
-        self._lock_path: Optional[Path] = None
-        self._progress_path: Optional[Path] = None
 
     @property
     def writable_db(self) -> aimrocks.DB:

@@ -9,7 +9,7 @@ from aim.cli.upgrade._legacy_repo import (
     deserialize_pb,
     AIM_MAP_METRICS_KEYWORD
 )
-
+from aim.sdk.configs import AIM_REPO_NAME
 from aim.sdk.utils import clean_repo_path
 from aim.sdk.run import Run
 from aim.sdk.repo import Repo
@@ -22,12 +22,15 @@ class RepoIntegrityError(Exception):
 def setup_directories(input_path: str):
     path = clean_repo_path(input_path)
     repo_path = path + '/.aim'
+    new_repo_path = path + '/.aim_progress'
+    l_repo_path = path + '/.aim_legacy'
     if not (os.path.exists(repo_path) and os.path.isdir(repo_path)):
         click.echo(f'\'{input_path}\' does not seem to be an Aim repository. Exiting.')
         exit(1)
-    lrepo_path = path + '/.aim_legacy'
-    shutil.move(repo_path, lrepo_path)
-    return lrepo_path, repo_path
+    if os.path.exists(new_repo_path):
+        shutil.rmtree(new_repo_path, ignore_errors=True)
+    os.environ[AIM_REPO_NAME] = '.aim_progress'
+    return repo_path, new_repo_path, l_repo_path
 
 
 def collect_runs(lrepo: LegacyRepo):
@@ -111,11 +114,12 @@ def check_repo_integrity(repo: Repo, legacy_run_map: dict):
 
 
 def convert_2to3(path: str, drop_existing: bool = False, skip_failed_runs: bool = False, skip_checks: bool = False):
-    lrepo_path, repo_path = setup_directories(path)
+    lrepo_path, repo_path, lrepo_dump_path = setup_directories(path)
 
     def _rollback():
         shutil.rmtree(repo_path, ignore_errors=True)
-        shutil.move(lrepo_path, repo_path)
+        if os.environ.get(AIM_REPO_NAME):
+            del os.environ[AIM_REPO_NAME]
 
     try:
         click.echo('Preparing new repository...')
@@ -158,6 +162,10 @@ def convert_2to3(path: str, drop_existing: bool = False, skip_failed_runs: bool 
         click.echo('Removing legacy repository...')
         shutil.rmtree(lrepo_path)
     else:
-        click.echo(f'Legacy repository can be found at \'{lrepo_path}\'.')
+        shutil.move(lrepo_path, lrepo_dump_path)
+        click.echo(f'Legacy repository can be found at \'{lrepo_dump_path}\'.')
+    shutil.move(repo_path, lrepo_path)
+    if os.environ.get(AIM_REPO_NAME):
+        del os.environ[AIM_REPO_NAME]
     click.echo('DONE')
     return repo

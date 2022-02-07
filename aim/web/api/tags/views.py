@@ -118,13 +118,13 @@ async def get_tagged_runs_api(tag_id: str, factory=Depends(object_factory)):
 
     tag_runs = []
     for tagged_run in tag.runs:
-        run = Run(tagged_run.hash, read_only=True)
+        run = Run(tagged_run.hash, repo=project.repo, read_only=True)
         tag_runs.append({
             'run_id': tagged_run.hash,
             'name': tagged_run.name,
             'creation_time': run.creation_time,
             'end_time': run.end_time,
-            'experiment': tagged_run.experiment.name if tagged_run.experiment else None
+            'experiment': tagged_run.experiment if tagged_run.experiment else None
         })
 
     project.repo.structured_db.invalidate_cache(cache_name)

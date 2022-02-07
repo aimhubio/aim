@@ -77,20 +77,17 @@ class Query:
         self.expr = expr
 
     @abstractmethod
-    def match(
+    def check(
         self,
-        run,
-        metric=None
+        **params
     ) -> bool:
         ...
 
     def __call__(
         self,
-        run,
-        metric=None
+        **params
     ):
-        return self.match(run=run,
-                          metric=metric)
+        return self.check(**params)
 
 
 @lru_cache(maxsize=100)
@@ -148,6 +145,8 @@ def query_add_default_expr(query: str) -> str:
 
 
 class RestrictedPythonQuery(Query):
+    allowed_params = {'run', 'metric', 'images', 'audios', 'distributions', 'figures', 'texts'}
+
     def __init__(
         self,
         query: str
@@ -158,28 +157,22 @@ class RestrictedPythonQuery(Query):
         self._checker = compile_checker(expr)
         self.run_metadata_cache = None
 
-    def eval(
-        self,
-        run,
-        metric
-    ):
-        namespace = dict(run=run, metric=metric, **restricted_globals)
-        return eval(self._checker, restricted_globals, namespace)
-
     def __bool__(
         self
     ) -> bool:
         return bool(self.expr)
 
-    def match(
+    def check(
         self,
-        run,
-        metric=None
+        **params
     ) -> bool:
+        # prevent possible messing with globals
+        assert set(params.keys()).issubset(self.allowed_params)
 
         # TODO enforce immutable
         try:
-            return self.eval(run=run, metric=metric)
+            namespace = dict(**params, **restricted_globals)
+            return eval(self._checker, restricted_globals, namespace)
         except BaseException as e:
             logger.warning('query failed, %s', e)
             return False

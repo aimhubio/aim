@@ -3,13 +3,16 @@
 
 import * as React from 'react';
 import classNames from 'classnames';
+import { isNil } from 'lodash-es';
 
-import { MenuItem, Tooltip, Divider } from '@material-ui/core';
+import { MenuItem, Tooltip, Divider, Checkbox } from '@material-ui/core';
 
+import ErrorBoundary from 'components/ErrorBoundary/ErrorBoundary';
 import { Button, Icon, Text } from 'components/kit';
 import GroupConfigPopover from 'components/GroupConfigPopover/GroupConfigPopover';
 
-import { viewPortOffset } from 'config/table/tableConfigs';
+import { BGColorLighten } from 'config/colors/colors';
+import { VIEW_PORT_OFFSET } from 'config/table/tableConfigs';
 
 import ControlPopover from '../ControlPopover/ControlPopover';
 
@@ -38,14 +41,26 @@ function Column({
   onRowClick,
   columnOptions,
   listWindow,
+  multiSelect,
+  selectedRows,
+  onRowSelect,
 }) {
   const [maxWidth, setMaxWidth] = React.useState(width);
   const [isResizing, setIsResizing] = React.useState(false);
   const widthClone = React.useRef(width);
   const columnRef = React.useRef();
   const startingPoint = React.useRef(null);
-
   const groups = !Array.isArray(data);
+  const dataLength = React.useMemo(() => {
+    if (Array.isArray(data)) {
+      return data.length;
+    } else {
+      return Object.values(data).reduce((acc: number, value: any) => {
+        acc += value.items.length;
+        return acc;
+      }, 0);
+    }
+  }, [data]);
 
   function resizeStart({ target }) {
     setIsResizing(true);
@@ -65,7 +80,7 @@ function Column({
     } else {
       newWidth = evt.pageX - startingPoint.current;
     }
-    if (newWidth > 85 && newWidth < 500) {
+    if (newWidth > 85) {
       widthClone.current = newWidth;
       setMaxWidth(newWidth);
     }
@@ -100,495 +115,683 @@ function Column({
   }, []);
 
   React.useEffect(() => {
-    if (columnRef.current) {
+    if (columnRef.current && col.key !== 'selection') {
       columnRef.current.style.width = 'initial';
     }
   }, [data, expanded, width]);
 
   const isInViewPort =
+    columnRef.current?.classList?.[1] === 'Table__column--groups' ||
     !listWindow ||
     !columnRef.current ||
     (columnRef.current &&
-      columnRef.current.offsetLeft > listWindow.left - viewPortOffset &&
+      columnRef.current.offsetLeft > listWindow.left - VIEW_PORT_OFFSET &&
       columnRef.current.offsetLeft <
-        listWindow.left + listWindow.width + viewPortOffset);
+        listWindow.left + listWindow.width + VIEW_PORT_OFFSET);
 
   return (
-    <div
-      className={classNames({
-        Table__column: true,
-        'Table__column--actions': col.key === 'actions',
-      })}
-      style={{
-        minWidth: maxWidth,
-        maxWidth,
-        width: isInViewPort
-          ? 'initial'
-          : columnRef.current?.offsetWidth ?? 'initial',
-        boxShadow: isInViewPort ? null : '1px 30px 0 0 #dee6f3',
-        filter: isInViewPort ? null : 'blur(2px)',
-      }}
-      ref={columnRef}
-    >
-      {topHeader && (
+    <ErrorBoundary>
+      <div
+        className={classNames({
+          Table__column: true,
+          'Table__column--actions': col.key === 'actions',
+          'Table__column--groups': col.key === 'groups',
+          'Table__column--selection': col.key === 'selection',
+        })}
+        style={{
+          minWidth: maxWidth,
+          maxWidth: '100vw',
+          width:
+            col.key === 'selection'
+              ? '32px'
+              : isInViewPort
+              ? 'initial'
+              : columnRef.current?.offsetWidth ?? 'initial',
+          boxShadow: isInViewPort ? null : '1px 30px 0 0 #dee6f3',
+          filter: isInViewPort ? null : 'blur(2px)',
+        }}
+        ref={columnRef}
+      >
+        {topHeader && (
+          <div
+            className='Table__cell Table__cell--header Table__cell--topHeader'
+            style={{
+              minWidth: col.minWidth,
+              borderRight: showTopHeaderBorder ? '' : 'none',
+            }}
+          >
+            {showTopHeaderContent && col.topHeader && (
+              <Text component='p' tint={100} size={14} weight={600}>
+                {col.topHeader}
+              </Text>
+            )}
+          </div>
+        )}
         <div
-          className='Table__cell Table__cell--header Table__cell--topHeader'
+          className='Table__cell Table__cell--header'
           style={{
             minWidth: col.minWidth,
-            borderRight: showTopHeaderBorder ? '' : 'none',
           }}
         >
-          {showTopHeaderContent && col.topHeader && (
-            <Text component='p' tint={100} size={14} weight={600}>
-              {col.topHeader}
-            </Text>
+          {multiSelect && col.key === '#' && (
+            <Checkbox
+              color='primary'
+              size='small'
+              icon={<span className='Table__column__defaultSelectIcon'></span>}
+              className='Table__column__selectCheckbox'
+              checkedIcon={
+                dataLength === Object.keys(selectedRows)?.length ? (
+                  <span className='Table__column__selectedSelectIcon'>
+                    <Icon name='check' fontSize={9} />
+                  </span>
+                ) : (
+                  <span className='Table__column__partiallySelectedSelectIcon'>
+                    <Icon name='partially-selected' fontSize={16} />
+                  </span>
+                )
+              }
+              onClick={() =>
+                onRowSelect({
+                  actionType: _.isEmpty(selectedRows)
+                    ? 'selectAll'
+                    : 'removeAll',
+                  data: data,
+                })
+              }
+              checked={!_.isEmpty(selectedRows)}
+            />
+          )}
+          <Text tint={100} size={14} weigh={600}>
+            {firstColumn ? headerMeta : null}
+            {col.content}
+          </Text>
+          {col.key !== 'actions' && col.key !== '#' && col.key !== 'selection' && (
+            <>
+              <ControlPopover
+                anchorOrigin={{
+                  vertical: 'bottom',
+                  horizontal: 'left',
+                }}
+                transformOrigin={{
+                  vertical: 'top',
+                  horizontal: 'right',
+                }}
+                anchor={({ onAnchorClick }) => (
+                  <Tooltip title='Column actions'>
+                    <div>
+                      <Button
+                        withOnlyIcon
+                        size='small'
+                        onClick={onAnchorClick}
+                        color='secondary'
+                      >
+                        <Icon
+                          className='Table__action__anchor'
+                          name='more-vertical'
+                        />
+                      </Button>
+                    </div>
+                  </Tooltip>
+                )}
+                component={
+                  <div className='Table__action__popup__body'>
+                    {columnOptions && (
+                      <>
+                        {columnOptions?.map((option) => (
+                          <MenuItem
+                            key={option.value}
+                            className='Table__action__popup__item'
+                            onClick={option.onClick}
+                          >
+                            <span className='Table__action__popup__item_icon'>
+                              <Icon fontSize={14} name={option.icon} />
+                            </span>
+                            <span>{option.value}</span>
+                          </MenuItem>
+                        ))}
+                        <Divider
+                          orientation='horizontal'
+                          style={{ margin: '0.5rem 0' }}
+                        />
+                      </>
+                    )}
+                    {!isAlwaysVisible && (
+                      <MenuItem
+                        className='Table__action__popup__item'
+                        onClick={hideColumn}
+                      >
+                        <span className='Table__action__popup__item_icon'>
+                          <Icon fontSize={12} name='eye-outline-hide' />
+                        </span>
+                        <span>Hide column</span>
+                      </MenuItem>
+                    )}
+                    {(pinnedTo === 'left' || pinnedTo === 'right') && (
+                      <MenuItem
+                        className='Table__action__popup__item'
+                        onClick={() => togglePin(col.key, null)}
+                      >
+                        <span className='Table__action__popup__item_icon'>
+                          <Icon fontSize={12} name='pin' />
+                        </span>
+                        <span>Unpin</span>
+                      </MenuItem>
+                    )}
+                    {pinnedTo !== 'left' && (
+                      <MenuItem
+                        className='Table__action__popup__item'
+                        onClick={() => togglePin(col.key, 'left')}
+                      >
+                        <span className='Table__action__popup__item_icon'>
+                          <Icon fontSize={12} name='pin-left' />
+                        </span>
+                        <span>Pin to left</span>
+                      </MenuItem>
+                    )}
+                    {pinnedTo !== 'right' && (
+                      <MenuItem
+                        className='Table__action__popup__item'
+                        onClick={() => togglePin(col.key, 'right')}
+                      >
+                        <span className='Table__action__popup__item_icon'>
+                          <Icon fontSize={12} name='pin-right' />
+                        </span>
+                        <span>Pin to right</span>
+                      </MenuItem>
+                    )}
+                    {!paneFirstColumn && (
+                      <MenuItem
+                        className='Table__action__popup__item'
+                        onClick={() => moveColumn('left')}
+                      >
+                        <span className='Table__action__popup__item_icon'>
+                          <Icon fontSize={10} name='arrow-left' />
+                        </span>
+                        <span>Move left</span>
+                      </MenuItem>
+                    )}
+                    {!paneLastColumn && (
+                      <MenuItem
+                        className='Table__action__popup__item'
+                        onClick={() => moveColumn('right')}
+                      >
+                        <span className='Table__action__popup__item_icon'>
+                          <Icon fontSize={10} name='arrow-right' />
+                        </span>
+                        <span>Move right</span>
+                      </MenuItem>
+                    )}
+                    {pinnedTo === null && !paneFirstColumn && (
+                      <MenuItem
+                        className='Table__action__popup__item'
+                        onClick={() => moveColumn('start')}
+                      >
+                        <span className='Table__action__popup__item_icon'>
+                          <Icon fontSize={10} name='move-to-left' />
+                        </span>
+                        <span>Move to start</span>
+                      </MenuItem>
+                    )}
+                    {pinnedTo === null && !paneLastColumn && (
+                      <MenuItem
+                        className='Table__action__popup__item'
+                        onClick={() => moveColumn('end')}
+                      >
+                        <span className='Table__action__popup__item_icon'>
+                          <Icon fontSize={10} name='move-to-right' />
+                        </span>
+                        <span>Move to end</span>
+                      </MenuItem>
+                    )}
+                    {width !== undefined && (
+                      <MenuItem
+                        className='Table__action__popup__item'
+                        onClick={resetWidth}
+                      >
+                        <span className='Table__action__popup__item_icon'>
+                          <Icon name='reset-width-outside' />
+                        </span>
+                        <span>Reset width</span>
+                      </MenuItem>
+                    )}
+                  </div>
+                }
+              />
+              <div
+                className={classNames({
+                  Table__column__resizeHandler: true,
+                  leftResize: pinnedTo === 'right',
+                  isResizing: isResizing,
+                })}
+                onMouseDown={resizeStart}
+              />
+            </>
           )}
         </div>
-      )}
-      <div
-        className='Table__cell Table__cell--header'
-        style={{
-          minWidth: col.minWidth,
-        }}
-      >
-        <Text tint={100} size={14} weigh={600}>
-          {firstColumn ? headerMeta : null}
-          {col.content}
-        </Text>
-        {col.key !== 'actions' && col.key !== '#' && (
-          <>
-            <ControlPopover
-              anchorOrigin={{
-                vertical: 'bottom',
-                horizontal: 'left',
-              }}
-              transformOrigin={{
-                vertical: 'top',
-                horizontal: 'right',
-              }}
-              anchor={({ onAnchorClick }) => (
-                <Tooltip title='Column actions'>
-                  <div>
-                    <Button
-                      withOnlyIcon
-                      size='small'
-                      onClick={onAnchorClick}
-                      color='secondary'
+        {isInViewPort &&
+          (groups
+            ? Object.keys(data).map((groupKey) => (
+                <div
+                  key={groupKey}
+                  className={classNames('Table__group', {
+                    colorIndicator: data[groupKey].data.meta.color,
+                  })}
+                  style={
+                    col.key === '#' && data[groupKey].data.meta.color
+                      ? {
+                          borderLeft: 'none',
+                          '--color-indicator': data[groupKey].data.meta.color,
+                          '--extended-group-background-color':
+                            BGColorLighten[data[groupKey].data.meta.color] ??
+                            '#ffffff',
+                        }
+                      : data[groupKey].data.meta.color
+                      ? {
+                          '--extended-group-background-color':
+                            BGColorLighten[data[groupKey].data.meta.color] ??
+                            '#ffffff',
+                        }
+                      : null
+                  }
+                >
+                  {col.key === '#' ? (
+                    <div
+                      className={classNames({
+                        Table__cell: true,
+                        Table__group__config__cell: true,
+                        Table__group__header__cell: true,
+                        expanded: expanded[groupKey],
+                        expandable: true,
+                      })}
                     >
-                      <Icon
-                        className='Table__action__anchor'
-                        name='more-vertical'
+                      <GroupConfig
+                        config={data[groupKey].data.meta}
+                        expand={expand}
+                        expanded={expanded}
+                        groupKey={groupKey}
+                        multiSelect={multiSelect}
+                        onRowSelect={onRowSelect}
+                        selectedRows={selectedRows}
+                        data={data[groupKey].items}
                       />
-                    </Button>
-                  </div>
-                </Tooltip>
-              )}
-              component={
-                <div className='Table__action__popup__body'>
-                  {columnOptions && (
+                    </div>
+                  ) : col.key === 'actions' ? (
+                    <div
+                      className={classNames({
+                        Table__cell: true,
+                        Table__group__config__cell: true,
+                        Table__group__header__cell: true,
+                        expanded: expanded[groupKey],
+                        expandable: true,
+                      })}
+                    >
+                      <GroupActions
+                        expand={expand}
+                        expanded={expanded}
+                        groupKeys={Object.keys(data)}
+                        groupKey={groupKey}
+                      />
+                    </div>
+                  ) : (
+                    <Cell
+                      index={groupKey}
+                      col={col}
+                      multiSelect={multiSelect}
+                      item={
+                        typeof data[groupKey].data[col.key] === 'object' &&
+                        data[groupKey].data[col.key]?.hasOwnProperty('content')
+                          ? {
+                              ...data[groupKey].data[col.key],
+                              props: {
+                                ...data[groupKey].data[col.key]?.props,
+                                onClick: (e) => expand(groupKey),
+                              },
+                            }
+                          : {
+                              content: data[groupKey].data[col.key],
+                              props: {
+                                onClick: (e) => expand(groupKey),
+                              },
+                            }
+                      }
+                      className={classNames({
+                        Table__group__header__cell: true,
+                        expanded: expanded[groupKey],
+                        expandable: true,
+                      })}
+                    />
+                  )}
+                  {expanded[groupKey] && (
                     <>
-                      {columnOptions?.map((option) => (
-                        <MenuItem
-                          key={option.value}
-                          className='Table__action__popup__item'
-                          onClick={option.onClick}
-                        >
-                          <span className='Table__action__popup__item_icon'>
-                            <Icon fontSize={14} name={option.icon} />
-                          </span>
-                          <span>{option.value}</span>
-                        </MenuItem>
+                      {data[groupKey]?.items?.map((item, i) => (
+                        <>
+                          <Cell
+                            key={col.key + i}
+                            index={item.index}
+                            col={col}
+                            multiSelect={multiSelect}
+                            item={
+                              col.key === '#' ? (
+                                <>
+                                  <Checkbox
+                                    color='primary'
+                                    size='small'
+                                    icon={
+                                      <span className='Table__column__defaultSelectIcon'></span>
+                                    }
+                                    checkedIcon={
+                                      <span className='Table__column__selectedSelectIcon'>
+                                        <Icon name='check' fontSize={9} />
+                                      </span>
+                                    }
+                                    className='Table__column__selectCheckbox'
+                                    checked={!!selectedRows[item.selectKey]}
+                                    onClick={(e) => {
+                                      e.stopPropagation();
+                                      onRowSelect({
+                                        actionType: 'single',
+                                        data: item,
+                                      });
+                                    }}
+                                  />
+                                </>
+                              ) : (
+                                item[col.key]
+                              )
+                            }
+                            className={classNames(`rowKey-${item.key}`, {
+                              hidden: item.isHidden,
+                              selected: !!selectedRows?.[item.selectKey],
+                            })}
+                            isConfigColumn={col.key === '#'}
+                            metadata={firstColumn ? item.rowMeta : null}
+                            onRowHover={() => onRowHover(item)}
+                            onRowClick={() => onRowClick(item)}
+                          />
+                        </>
                       ))}
-                      <Divider
-                        orientation='horizontal'
-                        style={{ margin: '0.5rem 0' }}
-                      />
                     </>
                   )}
-                  {!isAlwaysVisible && (
-                    <MenuItem
-                      className='Table__action__popup__item'
-                      onClick={hideColumn}
-                    >
-                      <span className='Table__action__popup__item_icon'>
-                        <Icon fontSize={12} name='eye-outline-hide' />
-                      </span>
-                      <span>Hide column</span>
-                    </MenuItem>
-                  )}
-                  {(pinnedTo === 'left' || pinnedTo === 'right') && (
-                    <MenuItem
-                      className='Table__action__popup__item'
-                      onClick={() => togglePin(col.key, null)}
-                    >
-                      <span className='Table__action__popup__item_icon'>
-                        <Icon fontSize={12} name='pin' />
-                      </span>
-                      <span>Unpin</span>
-                    </MenuItem>
-                  )}
-                  {pinnedTo !== 'left' && (
-                    <MenuItem
-                      className='Table__action__popup__item'
-                      onClick={() => togglePin(col.key, 'left')}
-                    >
-                      <span className='Table__action__popup__item_icon'>
-                        <Icon fontSize={12} name='pin-left' />
-                      </span>
-                      <span>Pin to left</span>
-                    </MenuItem>
-                  )}
-                  {pinnedTo !== 'right' && (
-                    <MenuItem
-                      className='Table__action__popup__item'
-                      onClick={() => togglePin(col.key, 'right')}
-                    >
-                      <span className='Table__action__popup__item_icon'>
-                        <Icon fontSize={12} name='pin-right' />
-                      </span>
-                      <span>Pin to right</span>
-                    </MenuItem>
-                  )}
-                  {!paneFirstColumn && (
-                    <MenuItem
-                      className='Table__action__popup__item'
-                      onClick={() => moveColumn('left')}
-                    >
-                      <span className='Table__action__popup__item_icon'>
-                        <Icon fontSize={10} name='arrow-left' />
-                      </span>
-                      <span>Move left</span>
-                    </MenuItem>
-                  )}
-                  {!paneLastColumn && (
-                    <MenuItem
-                      className='Table__action__popup__item'
-                      onClick={() => moveColumn('right')}
-                    >
-                      <span className='Table__action__popup__item_icon'>
-                        <Icon fontSize={10} name='arrow-right' />
-                      </span>
-                      <span>Move right</span>
-                    </MenuItem>
-                  )}
-                  {pinnedTo === null && !paneFirstColumn && (
-                    <MenuItem
-                      className='Table__action__popup__item'
-                      onClick={() => moveColumn('start')}
-                    >
-                      <span className='Table__action__popup__item_icon'>
-                        <Icon fontSize={10} name='move-to-left' />
-                      </span>
-                      <span>Move to start</span>
-                    </MenuItem>
-                  )}
-                  {pinnedTo === null && !paneLastColumn && (
-                    <MenuItem
-                      className='Table__action__popup__item'
-                      onClick={() => moveColumn('end')}
-                    >
-                      <span className='Table__action__popup__item_icon'>
-                        <Icon fontSize={10} name='move-to-right' />
-                      </span>
-                      <span>Move to end</span>
-                    </MenuItem>
-                  )}
-                  {width !== undefined && (
-                    <MenuItem
-                      className='Table__action__popup__item'
-                      onClick={resetWidth}
-                    >
-                      <span className='Table__action__popup__item_icon'>
-                        <Icon name='reset-width-outside' />
-                      </span>
-                      <span>Reset width</span>
-                    </MenuItem>
-                  )}
                 </div>
-              }
-            />
-            <div
-              className={classNames({
-                Table__column__resizeHandler: true,
-                leftResize: pinnedTo === 'right',
-                isResizing: isResizing,
-              })}
-              onMouseDown={resizeStart}
-            />
-          </>
-        )}
-      </div>
-      {isInViewPort &&
-        (groups
-          ? Object.keys(data).map((groupKey) => (
-              <div
-                key={groupKey}
-                className='Table__group'
-                style={
-                  col.key === '#' && data[groupKey].data.meta.color
-                    ? {
-                        borderLeft: 'none',
+              ))
+            : data.map((item, i) => (
+                <React.Fragment key={i}>
+                  {col.key === 'selection' ? (
+                    <Cell
+                      key={col.key + i}
+                      index={item.index}
+                      col={col}
+                      item={
+                        <>
+                          <Checkbox
+                            color='primary'
+                            size='small'
+                            icon={
+                              <span className='Table__column__defaultSelectIcon'></span>
+                            }
+                            checkedIcon={
+                              <span className='Table__column__selectedSelectIcon'>
+                                <Icon name='check' fontSize={9} />
+                              </span>
+                            }
+                            className='Table__column__selectCheckbox'
+                            checked={!!selectedRows[item.selectKey]}
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              onRowSelect({
+                                data: item,
+                                actionType: 'single',
+                              });
+                            }}
+                          />
+                        </>
                       }
-                    : null
-                }
-              >
-                {col.key === '#' ? (
-                  <div
-                    className={classNames({
-                      Table__cell: true,
-                      Table__group__config__cell: true,
-                      Table__group__header__cell: true,
-                      expanded: expanded[groupKey],
-                      expandable: true,
-                    })}
-                    style={
-                      data[groupKey].data.meta.color
-                        ? {
-                            boxShadow: `inset 3px 0 0 0 ${data[groupKey].data.meta.color}`,
-                          }
-                        : null
-                    }
-                  >
-                    <GroupConfig
-                      config={data[groupKey].data.meta}
-                      expand={expand}
-                      expanded={expanded}
-                      groupKey={groupKey}
+                      className={classNames(`rowKey-${item.key}`, {
+                        hidden: item.isHidden,
+                        selected: !!selectedRows?.[item.selectKey],
+                      })}
+                      metadata={
+                        (multiSelect &&
+                          col.key === 'selection' &&
+                          firstColumn) ||
+                        (!multiSelect && firstColumn)
+                          ? item.rowMeta
+                          : null
+                      }
+                      onRowHover={() => onRowHover(item)}
+                      onRowClick={() => onRowClick(item)}
                     />
-                  </div>
-                ) : col.key === 'actions' ? (
-                  <div
-                    className={classNames({
-                      Table__cell: true,
-                      Table__group__config__cell: true,
-                      Table__group__header__cell: true,
-                      expanded: expanded[groupKey],
-                      expandable: true,
-                    })}
-                  >
-                    <GroupActions
-                      expand={expand}
-                      expanded={expanded}
-                      groupKeys={Object.keys(data)}
-                      groupKey={groupKey}
+                  ) : (
+                    <Cell
+                      key={col.key + i}
+                      index={item.index}
+                      col={col}
+                      item={item[col.key]}
+                      className={classNames(`rowKey-${item.key}`, {
+                        hidden: item.isHidden,
+                        selected: !!selectedRows?.[item.selectKey],
+                      })}
+                      metadata={
+                        (multiSelect &&
+                          col.key === 'selection' &&
+                          firstColumn) ||
+                        (!multiSelect && firstColumn)
+                          ? item.rowMeta
+                          : null
+                      }
+                      onRowHover={() => onRowHover(item)}
+                      onRowClick={() => onRowClick(item)}
                     />
-                  </div>
-                ) : (
-                  <Cell
-                    index={groupKey}
-                    col={col}
-                    item={
-                      typeof data[groupKey].data[col.key] === 'object' &&
-                      data[groupKey].data[col.key]?.hasOwnProperty('content')
-                        ? {
-                            ...data[groupKey].data[col.key],
-                            props: {
-                              ...data[groupKey].data[col.key]?.props,
-                              onClick: (e) => expand(groupKey),
-                            },
-                          }
-                        : {
-                            content: data[groupKey].data[col.key],
-                            props: {
-                              onClick: (e) => expand(groupKey),
-                            },
-                          }
-                    }
-                    className={classNames({
-                      Table__group__header__cell: true,
-                      expanded: expanded[groupKey],
-                      expandable: true,
-                    })}
-                  />
-                )}
-                {expanded[groupKey] && (
-                  <>
-                    {data[groupKey]?.items?.map((item, i) => (
-                      <Cell
-                        key={col.key + i}
-                        index={item.index}
-                        col={col}
-                        item={item[col.key]}
-                        className={`rowKey-${item.key}${
-                          item.isHidden ? ' hidden' : ''
-                        }`}
-                        isConfigColumn={col.key === '#'}
-                        metadata={firstColumn ? item.rowMeta : null}
-                        onRowHover={() => onRowHover(item)}
-                        onRowClick={() => onRowClick(item)}
-                      />
-                    ))}
-                  </>
-                )}
-              </div>
-            ))
-          : data.map((item, i) => (
-              <Cell
-                key={col.key + i}
-                index={item.index}
-                col={col}
-                item={item[col.key]}
-                className={`rowKey-${item.key}${
-                  item.isHidden ? ' hidden' : ''
-                }`}
-                metadata={firstColumn ? item.rowMeta : null}
-                onRowHover={() => onRowHover(item)}
-                onRowClick={() => onRowClick(item)}
-              />
-            )))}
-    </div>
+                  )}
+                </React.Fragment>
+              )))}
+      </div>
+    </ErrorBoundary>
   );
 }
 
-function GroupConfig({ config, expand, expanded, groupKey }) {
+function GroupConfig({
+  config,
+  expand,
+  expanded,
+  groupKey,
+  multiSelect,
+  onRowSelect,
+  selectedRows,
+  data,
+}) {
   const configData = React.useMemo(() => {
-    return Object.keys(config.config).map((key, index) => {
+    return Object.keys(config.config).map((key) => {
       return { name: key, value: config.config[key] };
     });
   }, [config.config]);
-  return (
-    <div className='Table__group__config' onClick={(evt) => expand(groupKey)}>
-      <Button
-        size='small'
-        withOnlyIcon={true}
-        className='Table__group__config_expandButton'
-      >
-        <Text className='flex'>
-          <Icon name={expanded[groupKey] ? 'arrow-up' : 'arrow-down'} />
-        </Text>
-      </Button>
-      {configData?.length > 0 && (
-        <ControlPopover
-          title='Group Config'
-          anchorOrigin={{
-            vertical: 'bottom',
-            horizontal: 'left',
-          }}
-          transformOrigin={{
-            vertical: 'top',
-            horizontal: 'left',
-          }}
-          anchor={({ onAnchorClick, opened }) => (
-            <Tooltip
-              title={`${config.itemsCount} item${
-                config.itemsCount > 1 ? 's' : ''
-              } in the group, grouped by ${configData.map(
-                (item) => ` ${item.name}`,
-              )}`}
-            >
-              <div>
-                <Button
-                  size='small'
-                  className='Table__group__config__popover'
-                  onClick={onAnchorClick}
-                  withOnlyIcon={true}
-                >
-                  <Text>{config.itemsCount}</Text>
-                </Button>
-              </div>
-            </Tooltip>
-          )}
-          component={<GroupConfigPopover configData={configData} />}
-        />
-      )}
-      {config.chartIndex !== null && config.chartIndex !== 0 && (
-        <Tooltip title='Group chart index'>
-          <span className='Table__group__config__chart'>
-            {config.chartIndex}
-          </span>
-        </Tooltip>
-      )}
 
-      {config.dasharray !== null && (
-        <Tooltip title='Group stroke style'>
-          <svg
-            className='Table__group__config__stroke'
-            style={{
-              borderColor: config.color ? config.color : '#3b5896',
+  const groupSelectedRows = React.useMemo(() => {
+    return data
+      .map((item) => item.selectKey)
+      .filter((selectKey: string) => selectedRows[selectKey]);
+  }, [data, selectedRows]);
+
+  return (
+    <ErrorBoundary>
+      <div className='Table__group__config' onClick={() => expand(groupKey)}>
+        <Button
+          size='small'
+          withOnlyIcon={true}
+          className='Table__group__config_expandButton'
+        >
+          <Text className='flex'>
+            <Icon name={expanded[groupKey] ? 'arrow-up' : 'arrow-down'} />
+          </Text>
+        </Button>
+        {multiSelect && (
+          <Checkbox
+            color='primary'
+            size='small'
+            icon={<span className='Table__column__defaultSelectIcon'></span>}
+            className='Table__column__selectCheckbox configCheckbox'
+            checkedIcon={
+              data.length === groupSelectedRows?.length ? (
+                <span className='Table__column__selectedSelectIcon'>
+                  <Icon name='check' fontSize={9} />
+                </span>
+              ) : (
+                <span className='Table__column__partiallySelectedSelectIcon'>
+                  <Icon name='partially-selected' fontSize={16} />
+                </span>
+              )
+            }
+            onClick={(e) => {
+              e.stopPropagation();
+              onRowSelect({
+                actionType: _.isEmpty(groupSelectedRows)
+                  ? 'selectAll'
+                  : 'removeAll',
+                data: data,
+              });
             }}
-          >
-            <line
-              x1='0'
-              y1='50%'
-              x2='100%'
-              y2='50%'
+            checked={!_.isEmpty(groupSelectedRows)}
+          />
+        )}
+        {configData?.length > 0 && (
+          <ControlPopover
+            title='Group Config'
+            anchorOrigin={{
+              vertical: 'bottom',
+              horizontal: 'left',
+            }}
+            transformOrigin={{
+              vertical: 'top',
+              horizontal: 'left',
+            }}
+            anchor={({ onAnchorClick, opened }) => (
+              <Tooltip
+                title={`${config.itemsCount} item${
+                  config.itemsCount > 1 ? 's' : ''
+                } in the group, grouped by ${configData.map(
+                  (item) => ` ${item.name}`,
+                )}`}
+              >
+                <div>
+                  <Button
+                    size='small'
+                    className='Table__group__config__popover'
+                    onClick={onAnchorClick}
+                    withOnlyIcon={true}
+                  >
+                    <Text>{config.itemsCount}</Text>
+                  </Button>
+                </div>
+              </Tooltip>
+            )}
+            component={<GroupConfigPopover configData={configData} />}
+          />
+        )}
+        {!isNil(config.chartIndex) && config.chartIndex !== 0 && (
+          <Tooltip title='Group chart index'>
+            <span className='Table__group__config__chart'>
+              {config.chartIndex}
+            </span>
+          </Tooltip>
+        )}
+        {config.dasharray !== null && (
+          <Tooltip title='Group stroke style'>
+            <svg
+              className='Table__group__config__stroke'
               style={{
-                strokeDasharray: config.dasharray
-                  .split(' ')
-                  .map((elem) => (elem / 5) * 3)
-                  .join(' '),
+                borderColor: config.color ? config.color : '#3b5896',
               }}
-            />
-          </svg>
-        </Tooltip>
-      )}
-    </div>
+            >
+              <line
+                x1='0'
+                y1='50%'
+                x2='100%'
+                y2='50%'
+                style={{
+                  strokeDasharray: config.dasharray
+                    .split(' ')
+                    .map((elem) => (elem / 5) * 3)
+                    .join(' '),
+                }}
+              />
+            </svg>
+          </Tooltip>
+        )}
+      </div>
+    </ErrorBoundary>
   );
 }
 
 function GroupActions({ expand, expanded, groupKeys, groupKey }) {
   return (
-    <ControlPopover
-      anchor={({ onAnchorClick }) => (
-        <Tooltip title='Expand options'>
-          <div>
-            <Button color='secondary' withOnlyIcon onClick={onAnchorClick}>
-              <Icon className='Table__action__anchor' name='more-horizontal' />
-            </Button>
+    <ErrorBoundary>
+      <ControlPopover
+        anchor={({ onAnchorClick }) => (
+          <Tooltip title='Expand options'>
+            <div>
+              <Button color='secondary' withOnlyIcon onClick={onAnchorClick}>
+                <Icon
+                  className='Table__action__anchor'
+                  name='more-horizontal'
+                />
+              </Button>
+            </div>
+          </Tooltip>
+        )}
+        component={({ handleClose }) => (
+          <div className='Table__action__popup__body'>
+            <MenuItem
+              className='Table__action__popup__item'
+              onClick={() => {
+                handleClose();
+                expand(groupKey);
+              }}
+            >
+              <span className='Table__action__popup__item_icon'>
+                <Icon
+                  name={
+                    expanded[groupKey] ? 'collapse-inside' : 'collapse-outside'
+                  }
+                />
+              </span>
+              <span>
+                {expanded[groupKey] ? 'Collapse group' : 'Expand group'}
+              </span>
+            </MenuItem>
+            {(expanded[groupKey] ||
+              groupKeys.some((key) => !!expanded[key])) && (
+              <MenuItem
+                className='Table__action__popup__item'
+                onClick={() => {
+                  handleClose();
+                  expand('collapse_all');
+                }}
+              >
+                <span className='Table__action__popup__item_icon'>
+                  <Icon name='collapse-inside' />
+                </span>
+                <span>Collapse all</span>
+              </MenuItem>
+            )}
+            {(!expanded[groupKey] ||
+              groupKeys.some((key) => !expanded[key])) && (
+              <MenuItem
+                className='Table__action__popup__item'
+                onClick={() => {
+                  handleClose();
+                  expand('expand_all');
+                }}
+              >
+                <span className='Table__action__popup__item_icon'>
+                  <Icon name='collapse-outside' />
+                </span>
+                <span>Expand all</span>
+              </MenuItem>
+            )}
           </div>
-        </Tooltip>
-      )}
-      component={({ handleClose }) => (
-        <div className='Table__action__popup__body'>
-          <MenuItem
-            className='Table__action__popup__item'
-            onClick={() => {
-              handleClose();
-              expand(groupKey);
-            }}
-          >
-            <span className='Table__action__popup__item_icon'>
-              <Icon
-                name={
-                  expanded[groupKey] ? 'collapse-inside' : 'collapse-outside'
-                }
-              />
-            </span>
-            <span>
-              {expanded[groupKey] ? 'Collapse group' : 'Expand group'}
-            </span>
-          </MenuItem>
-          {(expanded[groupKey] || groupKeys.some((key) => !!expanded[key])) && (
-            <MenuItem
-              className='Table__action__popup__item'
-              onClick={() => {
-                handleClose();
-                expand('collapse_all');
-              }}
-            >
-              <span className='Table__action__popup__item_icon'>
-                <Icon name='collapse-inside' />
-              </span>
-              <span>Collapse all</span>
-            </MenuItem>
-          )}
-          {(!expanded[groupKey] || groupKeys.some((key) => !expanded[key])) && (
-            <MenuItem
-              className='Table__action__popup__item'
-              onClick={() => {
-                handleClose();
-                expand('expand_all');
-              }}
-            >
-              <span className='Table__action__popup__item_icon'>
-                <Icon name='collapse-outside' />
-              </span>
-              <span>Expand all</span>
-            </MenuItem>
-          )}
-        </div>
-      )}
-    />
+        )}
+      />
+    </ErrorBoundary>
   );
 }
 

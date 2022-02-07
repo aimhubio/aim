@@ -10,15 +10,17 @@ on:
       - 'aim/web/api/**'
       - 'aim/storage/**'
       - '.github/workflows/pull-request.yml'
+      - 'tests/**'
+      - 'performance_tests/**'
       - 'setup.py'
     types:
       - opened
       - synchronize
-      - unlabeled
+      - ready_for_review
       - reopened
 jobs:
   run-checks:
-    if: ${{ ! contains(github.event.pull_request.labels.*.name, 'in progress') }}
+    if: github.event.pull_request.draft == false
     runs-on: ubuntu-latest
     name: Run Unit-tests & Code-style checks
     steps:
@@ -26,10 +28,11 @@ jobs:
         uses: actions/checkout@v2
         with:
           ref: ${{ github.head_ref }}
+          repository: ${{ github.event.pull_request.head.repo.full_name }}
       - name: install deps
         run: |
           python -m pip install --upgrade pip
-          python -m pip install -r requirements.dev.txt
+          python -m pip install -r tests/requirements.txt
       - name: code style checks
         run: |
           flake8 aim
@@ -46,12 +49,13 @@ jobs:
         uses: actions/checkout@v2
         with:
           ref: ${{ github.head_ref }}
+          repository: ${{ github.event.pull_request.head.repo.full_name }}
       - name: install deps
         run: |
           python3 -m venv venv
           . venv/bin/activate
           python -m pip install --upgrade pip
-          python -m pip install -r requirements.dev.txt
+          python -m pip install -r performance_tests/requirements.txt
       - name: perf tests
         run: |
          . venv/bin/activate

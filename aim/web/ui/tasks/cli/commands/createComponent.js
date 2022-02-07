@@ -3,8 +3,9 @@
 // @TODO enhance cli options, to have full support of two styles i.e. --lint, -l, and use yargs config
 
 const fs = require('fs');
-const yargs = require('yargs/yargs');
 const { execSync } = require('child_process');
+
+const yargs = require('yargs/yargs');
 
 const {
   getTypesBaseCode,
@@ -56,13 +57,13 @@ const createFiles = (path, name) => {
   console.warn('Creating files ...');
   const fullPath = path + '/' + name;
   try {
-    fs.writeFileSync(fullPath + '/types.d.ts', getTypesBaseCode(name));
-    fs.writeFileSync(fullPath + '/styles.scss', getStylesBaseCode(name));
+    fs.writeFileSync(fullPath + `/${name}.d.ts`, getTypesBaseCode(name));
+    fs.writeFileSync(fullPath + `/${name}.scss`, getStylesBaseCode(name));
     fs.writeFileSync(
       fullPath + '/' + name + '.tsx',
       getComponentBaseCode(name),
     );
-    fs.writeFileSync(fullPath + '/index.ts', getExportsBaseCode(name));
+    fs.writeFileSync(fullPath + '/index.tsx', getExportsBaseCode(name));
   } catch (err) {
     exitWithMessage(err);
   }
