@@ -159,6 +159,7 @@ function Scatters(
                   sortFields={props.sortFields}
                   hiddenRows={props.hiddenMetrics}
                   hiddenColumns={props.hiddenColumns}
+                  hideSystemMetrics={props.hideSystemMetrics}
                   resizeMode={props.resizeMode}
                   columnsWidths={props.columnsWidths}
                   selectedRows={props.selectedRows}
@@ -178,6 +179,7 @@ function Scatters(
                   onRowSelect={props.onRowSelect}
                   archiveRuns={props.archiveRuns}
                   deleteRuns={props.deleteRuns}
+                  focusedState={props.focusedState}
                   multiSelect
                 />
               ) : null}

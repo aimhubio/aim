@@ -4,6 +4,7 @@ import os
 import datetime
 import json
 import pytz
+import sys
 
 from collections import defaultdict
 from copy import deepcopy
@@ -11,7 +12,16 @@ from copy import deepcopy
 from aim.sdk.sequence import Sequence
 from aim.storage.object import CustomObject
 from aim.sdk.sequence_collection import SingleRunSequenceCollection
-from aim.sdk.utils import generate_run_hash, get_object_typename, check_types_compatibility
+from aim.sdk.utils import (
+    check_types_compatibility,
+    generate_run_hash,
+    get_object_typename,
+)
+from aim.ext.utils import (
+    get_environment_variables,
+    get_installed_packages,
+    get_git_info,
+)
 from aim.sdk.num_utils import convert_to_py_number, is_number
 from aim.sdk.types import AimObject
 from aim.sdk.configs import AIM_ENABLE_TRACKING_THREAD, AIM_RUN_INDEXING_TIMEOUT
@@ -27,7 +37,6 @@ from aim.ext.cleanup import AutoClean
 from typing import Any, Dict, Iterator, Optional, Tuple, Union
 from typing import TYPE_CHECKING
 
-
 if TYPE_CHECKING:
     from pandas import DataFrame
 
@@ -39,7 +48,6 @@ if TYPE_CHECKING:
     from aim.sdk.sequences.text_sequence import Texts
     from aim.sdk.sequence_collection import SequenceCollection
     from aim.sdk.repo import Repo
-
 
 logger = logging.getLogger(__name__)
 
@@ -225,6 +233,8 @@ class Run(StructuredRunMixin):
             Can be used later to query runs/sequences.
          system_tracking_interval (:obj:`int`, optional): Sets the tracking interval in seconds for system usage
             metrics (CPU, Memory, etc.). Set to `None` to disable system metrics tracking.
+         log_system_params (:obj:`bool`, optional): Enable/Disable logging of system params such as installed packages,
+            git info, environment variables, etc.
     """
 
     _idx_to_ctx: Dict[int, Context] = dict()
@@ -236,7 +246,8 @@ class Run(StructuredRunMixin):
                  repo: Optional[Union[str, 'Repo']] = None,
                  read_only: bool = False,
                  experiment: Optional[str] = None,
-                 system_tracking_interval: Optional[int] = DEFAULT_SYSTEM_TRACKING_INT):
+                 system_tracking_interval: Optional[int] = DEFAULT_SYSTEM_TRACKING_INT,
+                 log_system_params: Optional[bool] = False):
         self._resources: Optional[RunAutoClean] = None
         run_hash = run_hash or generate_run_hash()
         self.hash = run_hash
@@ -269,6 +280,16 @@ class Run(StructuredRunMixin):
         ).subtree('seqs').subtree('chunks').subtree(self.hash)
 
         if not read_only:
+            if log_system_params:
+                system_params = {
+                    'packages': get_installed_packages(),
+                    'env_variables': get_environment_variables(),
+                    'git_info': get_git_info(),
+                    'executable': sys.executable,
+                    'arguments': sys.argv
+                }
+                self.__setitem__("__system_params", system_params)
+
             try:
                 self.meta_run_attrs_tree.first()
             except (KeyError, StopIteration):
@@ -420,7 +441,7 @@ class Run(StructuredRunMixin):
             self._idx_to_ctx[ctx.idx] = ctx
 
         seq_info = self._get_or_create_sequence_info(ctx, name)
-        step = step or seq_info.count
+        step = step if step is not None else seq_info.count
         self._update_sequence_info(seq_info, ctx, val, name, step)
 
         with self.repo.atomic_track():

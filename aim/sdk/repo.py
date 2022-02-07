@@ -1,11 +1,12 @@
 import os
 import shutil
 import logging
-from enum import Enum
 
-from packaging import version
 from collections import defaultdict
 from contextlib import contextmanager
+from enum import Enum
+from filelock import FileLock
+from packaging import version
 from typing import Dict, Tuple, Iterator, NamedTuple, Optional, List
 from weakref import WeakValueDictionary
 
@@ -420,16 +421,67 @@ class Repo:
         Returns:
             (True, []) if all runs deleted successfully, (False, :obj:`list`) with list of remaining runs otherwise.
         """
-        run_count = 0
-        try:
-            with self.structured_db:
-                for run_hash in run_hashes:
-                    self._delete_run(run_hash)
-                    run_count += 1
+        remaining_runs = []
+        for run_hash in run_hashes:
+            try:
+                self._delete_run(run_hash)
+            except Exception as e:
+                logger.warning(f'Error while trying to delete run \'{run_hash}\'. {str(e)}.')
+                remaining_runs.append(run_hash)
+
+        if remaining_runs:
+            return False, remaining_runs
+        else:
             return True, []
-        except Exception as e:
-            logger.warning(f'Error while trying to delete run \'{run_hash}\'. {str(e)}.')
-            return False, run_hashes[run_count:]
+
+    def copy_runs(self, run_hashes: List[str], dest_repo: 'Repo') -> Tuple[bool, List[str]]:
+        """Copy multiple Runs data from current aim repository to destination aim repository
+
+        Args:
+            run_hashes (:obj:`str`): list of Runs to be copied.
+            dest_repo (:obj:`Repo`): destination Repo instance to copy Runs
+
+        Returns:
+            (True, []) if all runs were copied successfully,
+            (False, :obj:`list`) with list of remaining runs otherwise.
+        """
+        remaining_runs = []
+        for run_hash in run_hashes:
+            try:
+                self._copy_run(run_hash, dest_repo)
+            except Exception as e:
+                logger.warning(f'Error while trying to copy run \'{run_hash}\'. {str(e)}.')
+                remaining_runs.append(run_hash)
+
+        if remaining_runs:
+            return False, remaining_runs
+        else:
+            return True, []
+
+    def move_runs(self, run_hashes: List[str], dest_repo: 'Repo') -> Tuple[bool, List[str]]:
+        """Move multiple Runs data from current aim repository to destination aim repository
+
+        Args:
+            run_hashes (:obj:`str`): list of Runs to be moved.
+            dest_repo (:obj:`Repo`): destination Repo instance to move Runs
+
+        Returns:
+            (True, []) if all runs were moved successfully,
+            (False, :obj:`list`) with list of remaining runs otherwise.
+        """
+        remaining_runs = []
+        for run_hash in run_hashes:
+            try:
+                self._copy_run(run_hash, dest_repo)
+                self._delete_run(run_hash)
+            except Exception as e:
+                logger.warning(f'Error while trying to move run \'{run_hash}\'. {str(e)}.')
+                remaining_runs.append(run_hash)
+
+        if remaining_runs:
+            return False, remaining_runs
+        else:
+            return True, []
 
     def query_metrics(self, query: str = '') -> QuerySequenceCollection:
         """Get metrics satisfying query expression.
@@ -610,6 +662,12 @@ class Repo:
         self.run_props_cache_hint = cache_name
 
     def _delete_run(self, run_hash):
+        # try to acquire a lock on a run container to check if it is still in progress or not
+        # in progress runs can't be deleted
+        lock_path = os.path.join(self.path, 'meta', 'locks', run_hash)
+        lock = FileLock(str(lock_path), timeout=0)
+        lock.acquire()
+
         with self.structured_db:  # rollback db entity delete if subsequent actions fail.
             # remove database entry
             self.structured_db.delete_run(run_hash)
@@ -622,9 +680,58 @@ class Repo:
             sub_dirs = ('chunks', 'progress', 'locks')
             for sub_dir in sub_dirs:
                 meta_path = os.path.join(self.path, 'meta', sub_dir, run_hash)
-                shutil.rmtree(meta_path, ignore_errors=True)
+                if os.path.isfile(meta_path):
+                    os.remove(meta_path)
+                else:
+                    shutil.rmtree(meta_path, ignore_errors=True)
                 seqs_path = os.path.join(self.path, 'seqs', sub_dir, run_hash)
-                shutil.rmtree(seqs_path, ignore_errors=True)
+                if os.path.isfile(seqs_path):
+                    os.remove(seqs_path)
+                else:
+                    shutil.rmtree(seqs_path, ignore_errors=True)
+
+    def _copy_run(self, run_hash, dest_repo):
+        # try to acquire a lock on a run container to check if it is still in progress or not
+        # in progress runs can't be copied
+        lock_path = os.path.join(self.path, 'meta', 'locks', run_hash)
+        lock = FileLock(str(lock_path), timeout=0)
+        lock.acquire()
+        with dest_repo.structured_db:  # rollback destination db entity if subsequent actions fail.
+            # copy run structured data
+            source_structured_run = self.structured_db.find_run(run_hash)
+            # create destination structured run db instance, set experiment and archived state
+            dest_structured_run = dest_repo.structured_db.create_run(run_hash, source_structured_run.created_at)
+            dest_structured_run.experiment = source_structured_run.experiment
+            dest_structured_run.archived = source_structured_run.archived
+            # create and add to the destination run source tags
+            for source_tag in source_structured_run.tags_obj:
+                try:
+                    dest_tag = dest_repo.structured_db.create_tag(source_tag.name)
+                    dest_tag.color = source_tag.color
+                    dest_tag.description = source_tag.description
+                except ValueError:
+                    pass  # if the tag already exists in destination db no need to do anything
+                dest_structured_run.add_tag(source_tag.name)
+
+            # copy run meta tree
+            source_meta_run_tree = self.request_tree(
+                'meta', run_hash, read_only=True, from_union=True
+            ).subtree('meta').subtree('chunks').subtree(run_hash)
+            dest_meta_run_tree = dest_repo.request_tree(
+                'meta', run_hash, read_only=False, from_union=True
+            ).subtree('meta').subtree('chunks').subtree(run_hash)
+            dest_meta_run_tree[...] = source_meta_run_tree[...]
+            dest_index = dest_repo._get_index_tree('meta', timeout=0).view(b'')
+            dest_meta_run_tree.finalize(index=dest_index)
+
+            # copy run series tree
+            source_series_run_tree = self.request_tree(
+                'seqs', run_hash, read_only=True
+            ).subtree('seqs').subtree('chunks').subtree(run_hash)
+            dest_series_run_tree = dest_repo.request_tree(
+                'seqs', run_hash, read_only=False
+            ).subtree('seqs').subtree('chunks').subtree(run_hash)
+            dest_series_run_tree[...] = source_series_run_tree[...]
 
     def close(self):
         if self._resources is None:

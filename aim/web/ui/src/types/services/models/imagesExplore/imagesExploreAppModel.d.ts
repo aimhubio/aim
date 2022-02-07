@@ -39,6 +39,7 @@ export interface IImagesExploreAppConfig {
     };
     sortFields?: SortFields;
     sortFieldsDict: any;
+    inputsValidations: any;
   };
   select: ISelectConfig;
   table: {
@@ -47,6 +48,7 @@ export interface IImagesExploreAppConfig {
     sortFields?: SortFields;
     hiddenMetrics?: string[];
     hiddenColumns?: string[];
+    hideSystemMetrics?: undefined;
     columnsWidths?: { [key: string]: number };
     columnsOrder?: {
       left: string[];

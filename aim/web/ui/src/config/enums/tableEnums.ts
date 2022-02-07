@@ -15,4 +15,9 @@ enum ResizeModeEnum {
   MaxHeight = 'maxHeight',
 }
 
-export { RowHeightEnum, HideRowsEnum, ResizeModeEnum };
+enum HideColumnsEnum {
+  HideSystemMetrics = 'Hide System Metrics',
+  ShowSystemMetrics = 'Show System Metrics',
+  All = 'All',
+}
+export { RowHeightEnum, HideRowsEnum, ResizeModeEnum, HideColumnsEnum };

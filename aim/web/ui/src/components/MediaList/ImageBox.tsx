@@ -79,7 +79,7 @@ const ImageBox = ({
         : mediaItemHeight - 10) - 6, // 6px -> 0.375rem gap,
   };
   return (
-    <ErrorBoundary>
+    <ErrorBoundary key={index}>
       <div className='MediaSet__container__mediaItemsList__imageBox'>
         <div
           style={style}
@@ -127,7 +127,7 @@ const ImageBox = ({
               className={classNames(
                 'MediaSet__container__mediaItemsList__imageBox__imageWrapper__zoomIconWrapper',
                 {
-                  isHidden: !(focusedState.key === data.key),
+                  isHidden: focusedState.key !== data.key,
                 },
               )}
               onClick={onImageFullSizeModeButtonClick}

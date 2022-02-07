@@ -7,6 +7,7 @@ import { TextField } from '@material-ui/core';
 
 import ConfirmModal from 'components/ConfirmModal/ConfirmModal';
 import { Icon, Text } from 'components/kit';
+import ErrorBoundary from 'components/ErrorBoundary/ErrorBoundary';
 
 import tagsAppModel from 'services/models/tags/tagsAppModel';
 
@@ -67,36 +68,38 @@ function TagDelete({
   }
 
   return (
-    <ConfirmModal
-      open={modalIsOpen}
-      onCancel={onCancel}
-      onSubmit={onTagHide}
-      text='Are you sure you want to delete this tag?'
-      icon={<Icon name='delete' />}
-      title='Are you sure?'
-      statusType='error'
-      confirmBtnText='Delete'
-    >
-      <Text
-        component='p'
-        weight={400}
-        tint={100}
-        className='TagDelete__contentContainer__contentBox__warningText'
+    <ErrorBoundary>
+      <ConfirmModal
+        open={modalIsOpen}
+        onCancel={onCancel}
+        onSubmit={onTagHide}
+        text='Are you sure you want to delete this tag?'
+        icon={<Icon name='delete' />}
+        title='Are you sure?'
+        statusType='error'
+        confirmBtnText='Delete'
       >
-        {`Please type "${tagInfo?.name}" to confirm:`}
-      </Text>
-      <TextField
-        label='Name'
-        value={name}
-        id='name'
-        variant='outlined'
-        className='TagForm__tagFormContainer__labelField TextField__OutLined__Small'
-        size='small'
-        onChange={onChange}
-        error={!!(touched.name && errors.name)}
-        helperText={touched.name && errors.name}
-      />
-    </ConfirmModal>
+        <Text
+          component='p'
+          weight={400}
+          tint={100}
+          className='TagDelete__contentContainer__contentBox__warningText'
+        >
+          {`Please type "${tagInfo?.name}" to confirm:`}
+        </Text>
+        <TextField
+          label='Name'
+          value={name}
+          id='name'
+          variant='outlined'
+          className='TagForm__tagFormContainer__labelField TextField__OutLined__Small'
+          size='small'
+          onChange={onChange}
+          error={!!(touched.name && errors.name)}
+          helperText={touched.name && errors.name}
+        />
+      </ConfirmModal>
+    </ErrorBoundary>
   );
 }
 
