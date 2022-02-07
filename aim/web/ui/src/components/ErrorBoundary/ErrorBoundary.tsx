@@ -29,7 +29,7 @@ class ErrorBoundary extends React.Component<
   componentDidCatch(error: Error, errorInfo: React.ErrorInfo): void {
     Sentry.withScope(function (scope) {
       // group errors together based on their request and response
-      scope.setFingerprint(['FRONTEND', 'Global Boundary']);
+      scope.setFingerprint(['UI', 'Global Boundary']);
       Sentry.captureException(error, {
         tags: {
           section: 'Boundary Global',
