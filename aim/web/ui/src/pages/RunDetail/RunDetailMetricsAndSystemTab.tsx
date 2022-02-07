@@ -3,6 +3,7 @@ import { isEmpty, isNil } from 'lodash-es';
 
 import EmptyComponent from 'components/EmptyComponent/EmptyComponent';
 import BusyLoaderWrapper from 'components/BusyLoaderWrapper/BusyLoaderWrapper';
+import ErrorBoundary from 'components/ErrorBoundary/ErrorBoundary';
 
 import runDetailAppModel from 'services/models/runs/runDetailAppModel';
 
@@ -28,27 +29,29 @@ function RunDetailMetricsAndSystemTab({
   }, [runTraces, runHash]);
 
   return (
-    <BusyLoaderWrapper
-      isLoading={isRunBatchLoading}
-      className='runDetailParamsTabLoader'
-      height='100%'
-    >
-      {!isEmpty(runBatch) ? (
-        <div className='RunDetailMetricsTab'>
-          <div className='RunDetailMetricsTab__container'>
-            {runBatch.map((batch: IRunBatch, i: number) => {
-              return <RunMetricCard batch={batch} index={i} key={i} />;
-            })}
+    <ErrorBoundary>
+      <BusyLoaderWrapper
+        isLoading={isRunBatchLoading}
+        className='runDetailParamsTabLoader'
+        height='100%'
+      >
+        {!isEmpty(runBatch) ? (
+          <div className='RunDetailMetricsTab'>
+            <div className='RunDetailMetricsTab__container'>
+              {runBatch.map((batch: IRunBatch, i: number) => {
+                return <RunMetricCard batch={batch} index={i} key={i} />;
+              })}
+            </div>
           </div>
-        </div>
-      ) : (
-        <EmptyComponent
-          size='big'
-          className='runDetailParamsTabLoader'
-          content={`No tracked ${isSystem ? 'system' : ''} metrics`}
-        />
-      )}
-    </BusyLoaderWrapper>
+        ) : (
+          <EmptyComponent
+            size='big'
+            className='runDetailParamsTabLoader'
+            content={`No tracked ${isSystem ? 'system' : ''} metrics`}
+          />
+        )}
+      </BusyLoaderWrapper>
+    </ErrorBoundary>
   );
 }
 

@@ -69,6 +69,7 @@ export const CONTROLS_DEFAULT_CONFIG = {
       display: true,
       selectedParams: [],
     },
+    sortFields: [],
   },
   scatters: {
     trendlineOptions: {

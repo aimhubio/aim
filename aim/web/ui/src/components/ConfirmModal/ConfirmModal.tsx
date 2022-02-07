@@ -53,10 +53,23 @@ function ConfirmModal(
                 component='p'
                 id='dialog-description'
               >
-                {props.text || ''}
+                {props.title}
               </Text>
             )}
-            {props.children && props.children}
+
+            <div>
+              {props.text && (
+                <Text
+                  className='ConfirmModal__description'
+                  weight={400}
+                  component='p'
+                  id='dialog-description'
+                >
+                  {props.text || ''}
+                </Text>
+              )}
+              {props.children && props.children}
+            </div>
           </div>
         </div>
 
@@ -67,7 +80,6 @@ function ConfirmModal(
           >
             {props.cancelBtnText}
           </Button>
-
           <Button
             onClick={props.onSubmit}
             color='primary'

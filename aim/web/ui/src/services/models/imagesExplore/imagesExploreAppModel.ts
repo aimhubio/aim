@@ -46,6 +46,7 @@ import {
   ISelectConfig,
   ISelectOption,
 } from 'types/services/models/explorer/createAppModel';
+import { IApiRequest } from 'types/services/services';
 
 import onRowSelectAction from 'utils/app/onRowSelect';
 import { decode, encode } from 'utils/encoder/encoder';
@@ -78,7 +79,7 @@ import createModel from '../model';
 const model = createModel<Partial<IImagesExploreAppModelState>>({
   requestIsPending: false,
   searchButtonDisabled: false,
-  applyButtonDisabled: true,
+  applyButtonDisabled: false,
 });
 
 let tooltipData: ITooltipData = {};
@@ -127,6 +128,7 @@ function getConfig(): IImagesExploreAppConfig {
       sortFields: [],
       hiddenMetrics: [],
       hiddenColumns: [],
+      hideSystemMetrics: undefined,
       columnsWidths: {},
       columnsOrder: {
         left: [],
@@ -139,7 +141,7 @@ function getConfig(): IImagesExploreAppConfig {
 }
 
 let appRequestRef: {
-  call: () => Promise<IAppData>;
+  call: (exceptionHandler: (detail: any) => void) => Promise<IAppData>;
   abort: () => void;
 };
 
@@ -203,7 +205,9 @@ function getAppConfigData(appId: string) {
   appRequestRef = appsService.fetchApp(appId);
   return {
     call: async () => {
-      const appData = await appRequestRef.call();
+      const appData = await appRequestRef.call((detail: any) => {
+        exceptionHandler({ detail, model });
+      });
       let select = appData?.state?.select;
       if (select) {
         const compatibleSelectConfig = getCompatibleSelectConfig(
@@ -328,7 +332,7 @@ function getImagesData(
         model.setState({
           requestIsPending: true,
           queryIsEmpty: false,
-          applyButtonDisabled: true,
+          applyButtonDisabled: false,
           selectedRows: shouldResetSelectedRows
             ? {}
             : model.getState()?.selectedRows,
@@ -462,7 +466,7 @@ function processData(data: any[]): {
   const uniqHighLevelParams = _.uniq(highLevelParams);
   const uniqContexts = _.uniq(contexts);
   const mappedData =
-    data.reduce((acc: any, item: any) => {
+    data?.reduce((acc: any, item: any) => {
       acc[item.hash] = { runHash: item.hash, ...item.props };
       return acc;
     }, {}) || {};
@@ -942,7 +946,9 @@ function getImagesBlobsData(uris: string[]) {
     abort: request.abort,
     call: () => {
       return request
-        .call()
+        .call((detail: any) => {
+          exceptionHandler({ detail, model });
+        })
         .then(async (stream) => {
           let gen = adjustable_reader(stream);
           let buffer_pairs = decode_buffer_pairs(gen);
@@ -1299,11 +1305,15 @@ async function onBookmarkCreate({ name, description }: IBookmarkFormState) {
   if (configData) {
     const app: IAppData | any = await appsService
       .createApp({ state: configData, type: 'images' })
-      .call();
+      .call((detail: any) => {
+        exceptionHandler({ detail, model });
+      });
     if (app.id) {
       const bookmark: IDashboardData = await dashboardService
         .createDashboard({ app_id: app.id, name, description })
-        .call();
+        .call((detail: any) => {
+          exceptionHandler({ detail, model });
+        });
       if (bookmark.name) {
         onNotificationAdd({
           notification: {
@@ -1334,7 +1344,9 @@ function onBookmarkUpdate(id: string) {
   if (configData) {
     appsService
       .updateApp(id, { state: configData, type: 'images' })
-      .call()
+      .call((detail: any) => {
+        exceptionHandler({ detail, model });
+      })
       .then((res: IDashboardData | any) => {
         if (res.id) {
           onNotificationAdd({
@@ -1539,7 +1551,7 @@ function onExportTableData(e: React.ChangeEvent<any>): void {
   const dataToExport: { [key: string]: string }[] = [];
 
   groupedRows.forEach((groupedRow: any[], groupedRowIndex: number) => {
-    groupedRow.forEach((row: any) => {
+    groupedRow?.forEach((row: any) => {
       const filteredRow: any = getFilteredRow(filteredHeader, row);
       dataToExport.push(filteredRow);
     });
@@ -1909,12 +1921,8 @@ function onSliceRangeChange(key: string, newValue: number[] | number) {
       images,
     };
 
-    const searchButtonDisabled: boolean =
-      images.recordDensity === '0' || images.indexDensity === '0';
     model.setState({
       config,
-      searchButtonDisabled,
-      applyButtonDisabled: searchButtonDisabled,
     });
   }
 }

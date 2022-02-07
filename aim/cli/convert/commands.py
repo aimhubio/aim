@@ -6,10 +6,10 @@ from aim.cli.convert.utils import parse_tf_events
 
 
 @click.group()
-@click.option('--repo', required=True, type=click.Path(exists=True,
-                                                       file_okay=False,
-                                                       dir_okay=True,
-                                                       writable=True))
+@click.option('--repo', required=False, type=click.Path(exists=True,
+                                                        file_okay=False,
+                                                        dir_okay=True,
+                                                        writable=True))
 @click.pass_context
 def convert(ctx, repo):
     ctx.ensure_object(dict)

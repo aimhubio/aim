@@ -2,6 +2,7 @@ import React from 'react';
 
 import Menu from 'components/kit/Menu/Menu';
 import { IValidationMetadata } from 'components/kit/Input';
+import ErrorBoundary from 'components/ErrorBoundary/ErrorBoundary';
 
 import useModel from 'hooks/model/useModel';
 
@@ -65,60 +66,62 @@ function TraceVisualizationContainer({
   }, [traceType]);
 
   return (
-    <div className='TraceVisualizationWrapper'>
-      <div className='MenuArea'>
-        {runTracesModelData?.menu?.defaultActiveItemKey && (
-          <Menu
-            defaultActiveItemKey={
-              runTracesModelData?.menu?.defaultActiveItemKey
-            }
-            onChangeActiveItem={runTracesModel.changeActiveItemKey}
-            title={runTracesModelData?.menu?.title}
-            data={runTracesModelData?.menu?.items || []}
-          />
-        )}
-      </div>
-      <div className='VisualizerArea'>
-        <Visualizer
-          data={runTracesModelData?.data}
-          isLoading={runTracesModelData?.isTraceBatchLoading}
-          activeTraceContext={runTracesModelData?.menu?.activeItemName}
-        />
-        {runTracesModelData?.data &&
-          runTracesModelData?.config &&
-          runTracesModelData?.queryData && (
-            <RangePanel
-              items={runTracesModelData?.config?.rangePanel.map((item) => ({
-                key: item.sliderName,
-                sliderName: item.sliderName,
-                inputName: item.inputName,
-                sliderTitle: item.sliderTitle,
-                inputTitle: item.inputTitle,
-                sliderTitleTooltip: item.sliderTitleTooltip,
-                inputTitleTooltip: item.inputTitleTooltip,
-                rangeEndpoints: runTracesModelData?.data[item.sliderName],
-                selectedRangeValue: runTracesModelData?.queryData?.sliders[
-                  item.sliderName
-                ] || [0, 0],
-                inputValue:
-                  runTracesModelData?.queryData?.inputs[item.inputName] || 0,
-                sliderType: item.sliderType,
-              }))}
-              onApply={runTracesModel.onApply}
-              onInputChange={(
-                name: string,
-                value: number,
-                metadata?: IValidationMetadata,
-              ) => onInputChangeHandler(name, value, metadata)}
-              onRangeSliderChange={runTracesModel.onRangeChange}
-              applyButtonDisabled={
-                !!runTracesModelData?.isTraceBatchLoading ||
-                !!runTracesModelData?.isApplyBtnDisabled
+    <ErrorBoundary>
+      <div className='TraceVisualizationWrapper'>
+        <div className='MenuArea'>
+          {runTracesModelData?.menu?.defaultActiveItemKey && (
+            <Menu
+              defaultActiveItemKey={
+                runTracesModelData?.menu?.defaultActiveItemKey
               }
+              onChangeActiveItem={runTracesModel.changeActiveItemKey}
+              title={runTracesModelData?.menu?.title}
+              data={runTracesModelData?.menu?.items || []}
             />
           )}
+        </div>
+        <div className='VisualizerArea'>
+          <Visualizer
+            data={runTracesModelData?.data}
+            isLoading={runTracesModelData?.isTraceBatchLoading}
+            activeTraceContext={runTracesModelData?.menu?.activeItemName}
+          />
+          {runTracesModelData?.data &&
+            runTracesModelData?.config &&
+            runTracesModelData?.queryData && (
+              <RangePanel
+                items={runTracesModelData?.config?.rangePanel.map((item) => ({
+                  key: item.sliderName,
+                  sliderName: item.sliderName,
+                  inputName: item.inputName,
+                  sliderTitle: item.sliderTitle,
+                  inputTitle: item.inputTitle,
+                  sliderTitleTooltip: item.sliderTitleTooltip,
+                  inputTitleTooltip: item.inputTitleTooltip,
+                  rangeEndpoints: runTracesModelData?.data[item.sliderName],
+                  selectedRangeValue: runTracesModelData?.queryData?.sliders[
+                    item.sliderName
+                  ] || [0, 0],
+                  inputValue:
+                    runTracesModelData?.queryData?.inputs[item.inputName] || 0,
+                  sliderType: item.sliderType,
+                }))}
+                onApply={runTracesModel.onApply}
+                onInputChange={(
+                  name: string,
+                  value: number,
+                  metadata?: IValidationMetadata,
+                ) => onInputChangeHandler(name, value, metadata)}
+                onRangeSliderChange={runTracesModel.onRangeChange}
+                applyButtonDisabled={
+                  !!runTracesModelData?.isTraceBatchLoading ||
+                  !!runTracesModelData?.isApplyBtnDisabled
+                }
+              />
+            )}
+        </div>
       </div>
-    </div>
+    </ErrorBoundary>
   );
 }
 
