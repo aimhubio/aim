@@ -105,6 +105,10 @@ function TraceVisualizationContainer({
                   inputValue:
                     runTracesModelData?.queryData?.inputs[item.inputName] || 0,
                   sliderType: item.sliderType,
+                  inputValidationPatterns: item.inputValidationPatterns?.(
+                    runTracesModelData?.data[item.sliderName][0],
+                    runTracesModelData?.data[item.sliderName][1],
+                  ),
                 }))}
                 onApply={runTracesModel.onApply}
                 onInputChange={(

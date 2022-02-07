@@ -101,6 +101,8 @@ function getConfig(): IImagesExploreAppConfig {
       advancedQuery: '',
     },
     images: {
+      indexDensity: '5',
+      recordDensity: '50',
       tooltip: {
         content: {},
         display: CONTROLS_DEFAULT_CONFIG.images.tooltip.display,

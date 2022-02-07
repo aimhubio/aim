@@ -235,6 +235,7 @@ export function processDistributionsData(data: Partial<DistributionsData>) {
     record_range: [record_range_total?.[0], (record_range_total?.[1] || 0) - 1],
     processedValues,
     originalValues,
+    processedDataType: VisualizationMenuTitles.distributions,
   };
 }
 
@@ -264,6 +265,7 @@ export function processTextsData(data: Partial<TextsData>) {
     record_range: [record_range_total?.[0], (record_range_total?.[1] || 0) - 1],
     index_range: [index_range_total?.[0], (index_range_total?.[1] || 0) - 1],
     processedValues,
+    processedDataType: VisualizationMenuTitles.texts,
   };
 }
 
@@ -322,6 +324,7 @@ export function processImagesData(
     orderedMap,
     record_range: [record_range_total?.[0], (record_range_total?.[1] || 0) - 1],
     index_range: [index_range_total?.[0], (index_range_total?.[1] || 0) - 1],
+    processedDataType: VisualizationMenuTitles.images,
   };
 }
 
@@ -377,6 +380,7 @@ export function processAudiosData(
     orderedMap,
     record_range: [record_range_total?.[0], (record_range_total?.[1] || 0) - 1],
     index_range: [index_range_total?.[0], (index_range_total?.[1] || 0) - 1],
+    processedDataType: VisualizationMenuTitles.audios,
   };
 }
 
@@ -439,6 +443,7 @@ export function processPlotlyData(data: Partial<IPlotlyData>) {
     record_range: [record_range_total?.[0], (record_range_total?.[1] || 0) - 1],
     processedValue,
     originalValues,
+    processedDataType: VisualizationMenuTitles.figures,
   };
 }
 

@@ -24,6 +24,7 @@ import {
   getContextObjFromMenuActiveKey,
   getMenuData,
   reformatArrayQueries,
+  VisualizationMenuTitles,
 } from './util';
 
 // @TODO implement type
@@ -48,7 +49,6 @@ function getDefaultQueryAndConfigData(traceType: TraceType) {
     const item = traceSettings.sliders[key];
     queryData.sliders[key] = item.defaultValue;
     const correspondedInput = traceSettings.inputs[inputKeys[index]];
-
     // inject range panel data
     const processedItem: RangePanelItem = {
       sliderName: key,
@@ -58,6 +58,7 @@ function getDefaultQueryAndConfigData(traceType: TraceType) {
       sliderTitleTooltip: item.tooltip,
       inputTitleTooltip: correspondedInput.tooltip,
       sliderType: item.sliderType,
+      inputValidationPatterns: traceSettings.inputValidation,
     };
 
     config.rangePanel.push(processedItem);
@@ -205,7 +206,6 @@ async function getRunTraceBatch(isInitial = false) {
       data,
       state?.runParams,
     );
-    console.log(queryData);
     if (isInitial) {
       const sliders = getInitialSliderValues(
         parsed,
@@ -213,9 +213,20 @@ async function getRunTraceBatch(isInitial = false) {
       );
       if (queryData) {
         queryData.sliders = sliders;
+        Object.keys(queryData.inputs).forEach((key: string) => {
+          const subKey = key.slice(0, key.indexOf('_'));
+          const range = parsed[`${subKey}_range`];
+          queryData.inputs[key] =
+            queryData.inputs[key] < range[0] || queryData.inputs[key] > range[1]
+              ? range[
+                  parsed.processedDataType === VisualizationMenuTitles.figures
+                    ? 0
+                    : 1
+                ]
+              : queryData.inputs[key];
+        });
       }
     }
-
     model.setState({
       ...state,
       data: parsed,

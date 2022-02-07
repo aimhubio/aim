@@ -36,6 +36,7 @@ function SliderWithInput({
   sliderTitleTooltip,
   countTitleTooltip,
   sliderType = 'range',
+  inputValidationPatterns,
 }: ISliderWithInputProps): React.FunctionComponentElement<React.ReactNode> {
   return (
     <ErrorBoundary>
@@ -104,16 +105,7 @@ function SliderWithInput({
             onChange={(e, value, metadata) => {
               onCountChange(value, metadata);
             }}
-            validationPatterns={[
-              {
-                errorCondition: (value) => +value < min,
-                errorText: `Value should be equal or greater then ${min}`,
-              },
-              {
-                errorCondition: (value) => +value > max,
-                errorText: `Value should be equal or smaller then ${max}`,
-              },
-            ]}
+            validationPatterns={inputValidationPatterns ?? []}
           />
         </div>
       </div>

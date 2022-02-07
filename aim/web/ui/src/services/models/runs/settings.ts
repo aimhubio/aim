@@ -1,3 +1,5 @@
+import { IValidationPatterns } from 'components/kit/Input';
+
 import { QueryData } from './types';
 import {
   processDistributionsData,
@@ -26,6 +28,7 @@ type SettingItem = {
   sliders: Record<string, SliderItem>;
   inputs: Record<string, InputItem>;
   paramsToApi?: (queryData?: QueryData) => Record<string, unknown>;
+  inputValidation?: (...args: any) => IValidationPatterns;
 };
 
 const settings: Record<string, SettingItem> = {
@@ -137,14 +140,26 @@ const settings: Record<string, SettingItem> = {
   figures: {
     dataProcessor: processPlotlyData,
     paramsToApi: (queryData?: QueryData) => {
-      const record_range = queryData?.inputs?.record_range || 1;
-      return {
-        ...reformatArrayQueries({
-          record_range: [record_range - 1, record_range],
-        }),
-        record_density: 1,
-      };
+      const record_range = queryData?.inputs?.record_range || -1;
+      return record_range !== -1
+        ? {
+            ...reformatArrayQueries({
+              record_range: [record_range - 1, record_range],
+            }),
+            record_density: 1,
+          }
+        : {};
     },
+    inputValidation: (min: number | string, max: number | string) => [
+      {
+        errorCondition: (value: string | number) => +value < min,
+        errorText: `Value should be equal or greater then ${min}`,
+      },
+      {
+        errorCondition: (value: string | number) => +value > max,
+        errorText: `Value should be equal or smaller then ${max}`,
+      },
+    ],
     sliders: {
       record_range: {
         defaultValue: [0, 0],
@@ -155,7 +170,7 @@ const settings: Record<string, SettingItem> = {
     },
     inputs: {
       record_range: {
-        defaultValue: 0,
+        defaultValue: -1,
         tooltip: 'Training step. To see figures tracked in the step.',
         title: 'Step',
       },

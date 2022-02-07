@@ -1,3 +1,4 @@
+import { IValidationPatterns } from 'components/kit/Input';
 import { IMenuItem } from 'components/kit/Menu';
 
 export type IRunTraceModel = {
@@ -126,6 +127,7 @@ export type RangePanelItem = {
   sliderTitleTooltip: string;
   inputTitleTooltip: string;
   sliderType: 'single' | 'range'; // This type is same as SliderWithInput component sliderType prop type.
+  inputValidationPatterns?: (...args: any) => IValidationPatterns;
 };
 
 export type IConfig = {

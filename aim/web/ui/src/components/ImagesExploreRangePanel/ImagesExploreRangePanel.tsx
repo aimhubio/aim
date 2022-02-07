@@ -47,6 +47,22 @@ function ImagesExploreRangePanel({
             onCountChange={(value, metaData) =>
               onDensityChange(value, metaData, 'recordDensity')
             }
+            inputValidationPatterns={[
+              {
+                errorCondition: (value: string | number) =>
+                  +value < stepRange[0],
+                errorText: `Value should be equal or greater then ${stepRange[0]}`,
+              },
+              {
+                errorCondition: (value: string | number) =>
+                  +value > stepRange[1],
+                errorText: `Value should be equal or smaller then ${stepRange[1]}`,
+              },
+              {
+                errorCondition: (value: string | number) => +value === 0,
+                errorText: "Value can't be 0",
+              },
+            ]}
           />
           <div className='ImagesExploreRangePanel__container__sliderContainerSeparator'></div>
           <SliderWithInput
@@ -65,6 +81,22 @@ function ImagesExploreRangePanel({
             onCountChange={(value, metaData) =>
               onDensityChange(value, metaData, 'indexDensity')
             }
+            inputValidationPatterns={[
+              {
+                errorCondition: (value: string | number) =>
+                  +value < indexRange[0],
+                errorText: `Value should be equal or greater then ${indexRange[0]}`,
+              },
+              {
+                errorCondition: (value: string | number) =>
+                  +value > indexRange[1],
+                errorText: `Value should be equal or smaller then ${indexRange[1]}`,
+              },
+              {
+                errorCondition: (value: string | number) => +value === 0,
+                errorText: "Value can't be 0",
+              },
+            ]}
           />
           <div className='ImagesExploreRangePanel__container__searchButtonContainer'>
             <Button
