@@ -1,5 +1,11 @@
 # Changelog
 
+## Unreleased
+
+###Enhancements
+
+- Add ability to apply active style on table actions popover buttons with applied changes (arsengit)
+
 ## 3.5.1 Feb 4 2022
 
 - Fix folder creation when tracking with remote tracker (aramaim)
