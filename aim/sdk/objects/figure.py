@@ -41,7 +41,7 @@ class Figure(CustomObject):
     @property
     def data(self):
         return self.storage['data'].data
-        
+
     def _from_matplotlib_figure(self, obj):
         try:
             from plotly.tools import mpl_to_plotly
