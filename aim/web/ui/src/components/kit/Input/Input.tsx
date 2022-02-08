@@ -58,6 +58,8 @@ function InputWrapper({
     [type],
   );
 
+  const isControlled = React.useMemo(() => !_.isUndefined(value), [value]);
+
   const validatePatterns = (
     validationPatterns: IValidationPatterns,
     value: any,
@@ -117,6 +119,14 @@ function InputWrapper({
   React.useEffect(() => {
     messagesFormatter(errorsMessages);
   }, [errorsMessages]);
+
+  React.useEffect(() => {
+    isControlled &&
+      onChangeHandler({
+        target: { value },
+      } as React.ChangeEvent<HTMLInputElement>);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [value]);
 
   const isRenderTopLabel = () => labelAppearance === 'top-labeled' && label;
 
