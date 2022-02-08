@@ -307,6 +307,7 @@ function ExportPreview({
           />
           <InputWrapper
             label='Image Name'
+            labelAppearance='swap'
             wrapperClassName='ExportPreview__controls__nameInput'
             placeholder='name'
             value={imgName}
