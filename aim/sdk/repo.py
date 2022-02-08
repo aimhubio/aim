@@ -659,6 +659,9 @@ class Repo:
             return {}
 
     def _prepare_runs_cache(self):
+        if self.is_remote_repo:
+            return
+
         db = self.structured_db
         cache_name = 'runs_cache'
         db.invalidate_cache(cache_name)

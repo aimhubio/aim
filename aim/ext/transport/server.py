@@ -49,7 +49,7 @@ class RemoteTrackingServicer(remote_tracking_pb2_grpc.RemoteTrackingServiceServi
         try:
             resource_cls = self.registry[request.resource_type]
             if len(request.args) > 0:
-                res = resource_cls(*request.args)
+                res = resource_cls(request.args)
             else:
                 res = resource_cls()
 

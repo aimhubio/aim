@@ -10,6 +10,22 @@ from aim.storage.types import BLOB
 Message = Union[rpc_messages.ResourceRequest, rpc_messages.ResourceResponse]
 
 
+def pack_args(tree: Iterator[Tuple[bytes, bytes]]) -> bytes:
+    result = [struct.pack('I', len(key)) + key + struct.pack('I', len(val)) + val for key, val in tree]
+    return b''.join(result)
+
+
+def unpack_args(args: bytes) -> Tuple[bytes, bytes]:
+    while args:
+        (key_size,), args_tail = struct.unpack('I', args[:4]), args[4:]
+        key, args_tail = args_tail[:key_size], args_tail[key_size:]
+
+        (value_size,), args_tail = struct.unpack('I', args_tail[:4]), args_tail[4:]
+        value, args_tail = args_tail[:value_size], args_tail[value_size:]
+        args = args_tail
+        yield key, value
+
+
 def pack_stream(tree: Iterator[Tuple[bytes, bytes]]) -> bytes:
     # TODO: [MV] check the performance diff of current version vs collecting the whole tree as a chunk
     for key, val in tree:

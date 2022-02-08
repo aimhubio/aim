@@ -1,32 +1,39 @@
 import os
-import struct
 
 from aim.sdk import Repo
 from aim.ext.transport.config import AIM_SERVER_MOUNTED_REPO_PATH
+from aim.ext.transport.message_utils import unpack_args
+from aim.storage.treeutils import decode_tree
 
 
-def get_tree(name: bytes, sub: bytes, read_only: bytes, from_union: bytes, index: bytes, timeout: bytes):
+def get_tree(args: bytes):
     repo_path = os.environ.get(AIM_SERVER_MOUNTED_REPO_PATH)
     if repo_path:
         repo = Repo.from_path(repo_path)
     else:
         repo = Repo.default_repo()
-
-    read_only = struct.unpack('?', read_only)[0]
-    from_union = struct.unpack('?', from_union)[0]
-    index = struct.unpack('?', index)[0]
-    timeout = struct.unpack('I', timeout)[0]
+    kwargs = decode_tree(unpack_args(args))
+    name = kwargs['name']
+    sub = kwargs['sub']
+    read_only = kwargs['read_only']
+    from_union = kwargs['from_union']
+    index = kwargs['index']
+    timeout = kwargs['timeout']
     if index:
-        return repo._get_index_tree(name.decode(), timeout)
+        return repo._get_index_tree(name, timeout)
     else:
-        return repo.request_tree(name.decode(), sub.decode(), read_only=read_only, from_union=from_union)
+        return repo.request_tree(name, sub, read_only=read_only, from_union=from_union)
 
 
-def get_structured_run(hash_: bytes, read_only: bytes):
+def get_structured_run(args: bytes):
     repo_path = os.environ.get(AIM_SERVER_MOUNTED_REPO_PATH)
     if repo_path:
         repo = Repo.from_path(repo_path)
     else:
         repo = Repo.default_repo()
-    read_only = struct.unpack('?', read_only)[0]
-    return repo.request_props(hash_.decode(), read_only)
+        
+    kwargs = decode_tree(unpack_args(args))
+    hash_ = kwargs['hash_']
+    read_only = kwargs['read_only']
+    
+    return repo.request_props(hash_, read_only)

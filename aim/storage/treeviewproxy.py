@@ -1,9 +1,8 @@
-import struct
-
-from aim.ext.transport.message_utils import ResourceObject
+from aim.ext.transport.message_utils import ResourceObject, pack_args
 from aim.ext.transport.remote_resource import RemoteResourceAutoClean
-from aim.storage.treeview import TreeView
 from aim.storage.arrayview import TreeArrayView
+from aim.storage.treeutils import encode_tree
+from aim.storage.treeview import TreeView
 from aim.storage.types import AimObject, AimObjectKey, AimObjectPath
 
 from typing import TYPE_CHECKING, Iterator, Tuple, Union
@@ -27,12 +26,16 @@ class ProxyTree(TreeView):
         self._resources: ProxyTreeAutoClean = None
 
         self._rpc_client = client
-        read_only = struct.pack('?', read_only)
-        from_union = struct.pack('?', from_union)
-        index = struct.pack('?', index)
-        timeout = struct.pack('I', timeout or 0)
 
-        args = (name.encode(), sub.encode(), read_only, from_union, index, timeout)
+        kwargs = {
+            'name': name,
+            'sub': sub,
+            'read_only': read_only,
+            'from_union': from_union,
+            'index': index,
+            'timeout': timeout,
+        }
+        args = pack_args(encode_tree(kwargs))
         handler = self._rpc_client.get_resource_handler('TreeView', args=args)
 
         self._resources = ProxyTreeAutoClean(self)
