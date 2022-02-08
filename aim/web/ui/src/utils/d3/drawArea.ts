@@ -67,7 +67,8 @@ function drawArea(args: IDrawAreaArgs): void {
     .attr('width', `${width}px`)
     .attr('height', `${height}px`)
     .attr('pointer-events', 'all')
-    .attr('xmlns', 'http://www.w3.org/2000/svg');
+    .attr('xmlns', 'http://www.w3.org/2000/svg')
+    .style('fill', 'transparent');
 
   bgRectNodeRef.current = svgNodeRef.current
     .append('rect')
@@ -75,8 +76,7 @@ function drawArea(args: IDrawAreaArgs): void {
     .attr('y', margin.top)
     .attr('class', 'backgroundRect')
     .attr('width', offsetWidth)
-    .attr('height', offsetHeight)
-    .style('fill', 'transparent');
+    .attr('height', offsetHeight);
 
   plotNodeRef.current = svgNodeRef.current
     .append('g')

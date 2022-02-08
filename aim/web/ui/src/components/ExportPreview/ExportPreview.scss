@@ -3,60 +3,103 @@
 .ExportPreview {
   //@TODO improve Grid pattern
   .ChartGrid {
-    height: 50%;
-    &__single__row__chart__view {
-      height: 100%;
-    }
+    //height: 50%;
+    //&__single__row__chart__view {
+    //  height: 100%;
+    //}
+    min-height: unset;
     padding: 4px;
-    box-shadow: -1px -1px 0 0 #e8e8e8; // var(--grey-lighter);
+    box-shadow: -1px -1px 0 0 $grey-lighter;
   }
   &__modal {
+    & > .Modal {
+      overflow: hidden;
+      & > .Modal__content {
+        overflow: hidden;
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+      }
+    }
     & .Modal__header {
       justify-content: center;
     }
-  }
-  &__dimension {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    &__width {
-      margin: 0 10px;
-      display: inline-flex;
-      align-items: center;
-      &__slider {
-        width: 150px;
-        height: 20px;
-        margin: 0 10px;
-      }
-      &__input {
-        & > .MuiInputBase-root {
-          font-size: 0.75rem;
-        }
-      }
-    }
-    &__height {
-      margin: 0 10px;
-      display: inline-flex;
-      align-items: center;
-      &__slider {
-        width: 150px;
-        height: 20px;
-        margin: 0 10px;
-      }
-      &__input {
-        & > .MuiInputBase-root {
-          font-size: 0.75rem;
-        }
-      }
+    & .Modal__footer {
+
     }
   }
   &__container {
-    width: 1024px;
-    height: 640px;
     overflow: auto;
+    border-radius: 0.5rem;
+    border: 1px solid #bdcee8;
+    width: toRem(976px);
+    height: toRem(506px);
     &__grid {
       height: 100%;
       margin: 0;
+    }
+  }
+  &__controls {
+    display: flex;
+    align-items: center;
+    margin-top: 1.5rem;
+    flex-wrap: wrap;
+    & .MuiDivider-vertical {
+      width: 1px;
+      height: toRem(32px);
+      margin: 0 24px;
+    }
+    &__dimension {
+      display: inline-flex;
+      justify-content: center;
+      align-items: center;
+      &__width {
+        margin-right: 28px;
+        display: inline-flex;
+        align-items: center;
+        &__slider {
+          width: toRem(136px);
+          margin: 0 $space-xs;
+        }
+        &__input {
+          & > .MuiInputBase-root {
+            font-size: 0.75rem;
+          }
+        }
+        .InputWrapper {
+          width: toRem(85px);
+        }
+      }
+      &__height {
+        display: inline-flex;
+        align-items: center;
+        &__slider {
+          width: toRem(136px);
+          height: 20px;
+          margin: 0 $space-xs;
+        }
+        &__input {
+          & > .MuiInputBase-root {
+            font-size: 0.75rem;
+          }
+        }
+        .InputWrapper {
+          width: toRem(85px);
+        }
+      }
+    }
+
+    &__formatDropdown {
+      width: toRem(100px);
+      display: inline-block;
+    }
+
+    &__nameInput{
+      display: inline-block;
+      margin-right: 10px;
+      & .MuiTextField-root {
+        width: toRem(242px);
+      }
     }
   }
 }

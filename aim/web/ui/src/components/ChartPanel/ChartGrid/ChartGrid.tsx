@@ -20,7 +20,7 @@ function ChartGrid({
   chartRefs = [],
   nameKey,
   chartProps,
-  componentProps = {},
+  overrideProps = {},
   syncHoverState,
 }: IChartGridProps): React.FunctionComponentElement<React.ReactNode> {
   // Calculation trust know that for one row we are using max 12 column from system
@@ -52,7 +52,7 @@ function ChartGrid({
               nameKey={nameKey}
               index={index}
               {...chartProps[index]}
-              {...componentProps}
+              {...overrideProps}
               data={chartData}
               syncHoverState={syncHoverState}
             />

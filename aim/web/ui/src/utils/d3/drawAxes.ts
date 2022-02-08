@@ -201,6 +201,7 @@ function drawAxes(args: IDrawAxesArgs): void {
       const ticks = yScale
         .domain()
         .filter((v, i, arr) => i % Math.ceil(arr.length / ticksCount) === 0);
+
       yAxis.tickValues(ticks);
     }
 
@@ -223,38 +224,19 @@ function drawAxes(args: IDrawAxesArgs): void {
     .attr('transform', `translate(0, ${plotBoxRef.current.height})`)
     .call(xAxis);
 
-  let xTickWidth = Math.floor(
-    plotBoxRef.current.width /
-      axesRef.current.xAxis.selectAll('.tick').nodes().length -
-      1,
-  );
-  xTickWidth = xTickWidth > 120 ? 120 : xTickWidth < 0 ? 0 : xTickWidth;
-
-  axesRef.current.xAxis.selectAll('.tick text').attr('display', 'none');
-
   axesRef.current.xAxis
     .selectAll('.tick')
-    .append('foreignObject')
-    .attr('x', -xTickWidth / 2)
-    .attr('y', 8)
-    .attr('height', 12)
-    .attr('width', xTickWidth)
-    .html((d: string, i: number, nodes: NodeList) => {
-      const text = nodes[i]?.parentNode as SVGElement;
-      const textContent = text?.textContent || d;
-      return `
-        <div title='${textContent}' 
-          style='
-            width: ${xTickWidth}px;
-            text-align: center;
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-            color: #414b6d;
-          '>${textContent}
-        </div>
-      `;
+    .attr('color', '#414b6d')
+    .append('svg:title')
+    .text((d: string | number, i: number, nodes: NodeList) => {
+      const gTick = nodes[i]?.parentNode as SVGElement;
+      return gTick?.textContent || d;
     });
+
+  axesRef.current.xAxis
+    .select('.domain')
+    .attr('stroke', '#414b6d')
+    .attr('stroke-width', 0.4);
 
   axesRef.current.yAxis = axesNodeRef.current
     ?.append('g')
@@ -262,45 +244,51 @@ function drawAxes(args: IDrawAxesArgs): void {
     .attr('stroke-width', 0.2)
     .attr('color', '#8E9BAE')
     .attr('fill', 'none')
+    .attr('width', '30px')
     .call(yAxis);
 
-  const yTickWidth = margin.left - 10;
-
-  axesRef.current.yAxis.selectAll('.tick text').attr('display', 'none');
+  axesRef.current.yAxis
+    .select('.domain')
+    .attr('stroke', '#414b6d')
+    .attr('stroke-width', 0.4);
 
   axesRef.current.yAxis
     .selectAll('.tick')
-    .append('foreignObject')
-    .attr('x', -yTickWidth - 10)
-    .attr('y', -8)
+    .append('svg:clipPath')
+    .attr('id', (d: string | number, i: number) => `yAxis-${i}-textclip`)
+    .append('svg:rect')
+    .attr('width', margin.left - 4)
     .attr('height', 12)
-    .attr('width', yTickWidth)
-    .html((d: string, i: number, nodes: NodeList) => {
-      const text = nodes[i]?.parentNode as SVGElement;
-      const textContent = text?.textContent || d;
-      return `
-        <div title='${textContent}' 
-          style='
-            width: 50px;
-            text-align: right;
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-            color: #414b6d;
-          '>${textContent}
-        </div>
-      `;
+    .attr('x', -margin.left)
+    .attr('y', -6)
+    .attr('clipPathUnits', 'objectBoundingBox');
+
+  axesRef.current.yAxis
+    .selectAll('.tick')
+    .attr('color', '#414b6d')
+    .append('svg:title')
+    .text((d: string | number, i: number, nodes: NodeList) => {
+      const gTick = nodes[i]?.parentNode as SVGElement;
+      return gTick?.textContent || d;
     });
 
-  svgNodeRef.current
+  axesRef.current.yAxis
+    .selectAll('.tick text')
+    .attr('text-anchor', 'start')
+    .attr('x', '-4em')
+    .attr('clip-path', (d: any, i: number) => `url(#yAxis-${i}-textclip)`);
+
+  axesRef.current.xAxis
     .append('text')
-    .attr('transform', `translate(${width - 20},${height - margin.bottom - 5})`)
+    .attr(
+      'transform',
+      `translate(${width - margin.left - margin.right - 20},-5)`,
+    )
     .attr('text-anchor', 'end')
     .attr('alignment-baseline', 'ideographic')
-    .style('font-size', '0.7em')
+    .style('font-size', '1.1em')
     .style('fill', '#586069')
-    .text(xAlignmentText)
-    .lower();
+    .text(xAlignmentText);
 
   axesRef.current.updateXAxis = function (
     xScaleUpdate: d3.AxisScale<d3.AxisDomain>,

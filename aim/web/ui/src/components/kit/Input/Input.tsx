@@ -43,6 +43,7 @@ function InputWrapper({
   size = 'medium',
   restInputProps = {},
   tooltipPlacement = 'left',
+  wrapperClassName = '',
   ...restProps
 }: IInputProps): React.FunctionComponentElement<React.ReactNode> {
   const [isInputValid, setIsInputValid] = React.useState(true);
@@ -155,6 +156,7 @@ function InputWrapper({
         `InputWrapper InputWrapper_${labelAppearances[labelAppearance].cssClassName} InputWrapper_${inputSizes[size].cssClassName}`,
         {
           InputWrapper_error: !isInputValid,
+          [wrapperClassName]: !!wrapperClassName,
         },
       )}
     >
@@ -201,7 +203,7 @@ function InputWrapper({
               arrow: 'arrow',
             }}
           >
-            <div></div>
+            <div />
           </Tooltip>
         )}
       </div>

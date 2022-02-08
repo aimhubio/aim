@@ -1563,7 +1563,7 @@ function onExportTableData(e: React.ChangeEvent<any>): void {
   const blob = new Blob([JsonToCSV(dataToExport)], {
     type: 'text/csv;charset=utf-8;',
   });
-  saveAs(blob, `images-${moment().format('HH:mm:ss · D MMM, YY')}.csv`);
+  saveAs(blob, `images-${moment().format('HH_mm_ss · D MMM, YY')}.csv`);
   analytics.trackEvent('[ImagesExplorer] Export runs data to CSV');
 }
 

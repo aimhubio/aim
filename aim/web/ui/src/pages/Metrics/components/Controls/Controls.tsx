@@ -1,6 +1,6 @@
 import React from 'react';
 
-import { Divider, Tooltip } from '@material-ui/core';
+import { Tooltip } from '@material-ui/core';
 
 import AggregationPopup from 'components/AggregationPopover/AggregationPopover';
 import SmootheningPopup from 'components/SmoothingPopover/SmoothingPopover';
@@ -421,27 +421,33 @@ function Controls(
             />
           </ErrorBoundary>
         </div>
-        <Divider className='Controls__container__Divider' />
-        <Tooltip title={'Export Chart'}>
-          <div className={'Controls__anchor'} onClick={onToggleExportPreview}>
-            <Icon className='Controls__icon' name='download' />
-          </div>
-        </Tooltip>
-        {openExportModal && (
-          <ExportPreview
-            withDynamicDimensions
-            openModal={openExportModal}
-            onToggleExportPreview={onToggleExportPreview}
-          >
-            <ChartGrid
-              nameKey='exportPreview'
-              data={props.data}
-              chartProps={props.chartProps}
-              chartType={props.chartType}
-              componentProps={{ drawAttributes: false }}
-            />
-          </ExportPreview>
-        )}
+        <ErrorBoundary>
+          {/* TODO add ability to open modals in ControlPopover component and change the name of the ControlPopover to more general*/}
+          <Tooltip title='Export Chart'>
+            <div className='Controls__anchor' onClick={onToggleExportPreview}>
+              <Icon className='Controls__icon' name='download' />
+            </div>
+          </Tooltip>
+          {openExportModal && (
+            <ExportPreview
+              withDynamicDimensions
+              openModal={openExportModal}
+              onToggleExportPreview={onToggleExportPreview}
+            >
+              <ChartGrid
+                nameKey='exportPreview'
+                data={props.data}
+                chartProps={props.chartProps}
+                chartType={props.chartType}
+                overrideProps={{
+                  drawAttributes: false,
+                  chartTitle: {},
+                  onZoomChange: null,
+                }}
+              />
+            </ExportPreview>
+          )}
+        </ErrorBoundary>
       </div>
     </ErrorBoundary>
   );

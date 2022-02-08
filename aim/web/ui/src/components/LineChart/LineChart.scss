@@ -121,12 +121,4 @@
   .AggrArea.highlighted {
     opacity: 1;
   }
-
-  .yAxis,
-  .xAxis {
-    .domain {
-      stroke: $text-color;
-      stroke-width: 0.4;
-    }
-  }
 }

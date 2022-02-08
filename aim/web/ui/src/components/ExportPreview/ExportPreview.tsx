@@ -1,11 +1,14 @@
 import React from 'react';
+import moment from 'moment';
 
-import { Grid } from '@material-ui/core';
+import { Grid, Divider } from '@material-ui/core';
 
-import { InputWrapper, Modal, Slider, Text } from 'components/kit';
+import { Dropdown, InputWrapper, Modal, Slider, Text } from 'components/kit';
 import ErrorBoundary from 'components/ErrorBoundary/ErrorBoundary';
 
-import { previewBounds, defaultPreviewBounds } from './config';
+import { downloadLink, getSVGString, imgSource2Image } from 'utils/helper';
+
+import { previewBounds, defaultPreviewBounds, FormatEnum } from './config';
 import { IExportPreviewProps } from './ExportPreview.d';
 
 import './ExportPreview.scss';
@@ -17,23 +20,22 @@ function ExportPreview({
   children,
 }: IExportPreviewProps): React.FunctionComponentElement<React.ReactNode> {
   const containerRef = React.useRef<HTMLDivElement>(null);
-  const previewRef = React.useRef<HTMLDivElement>();
+  const previewRef = React.useRef<HTMLDivElement>(null);
   const previewPrevRef = React.useRef(defaultPreviewBounds);
-
+  const [format, setFormat] = React.useState<FormatEnum>(FormatEnum.SVG);
+  const [imgName, setImgName] = React.useState<string>(
+    `export-${moment().format('HH_mm_ss · D MMM, YY')}`,
+  );
+  const [openFormatDropdown, setOpenFormatDropdown] =
+    React.useState<boolean>(false);
+  const [processing, setProcessing] = React.useState<boolean>(false);
   const [previewDimensions, setPreviewDimensions] = React.useState({
     ...defaultPreviewBounds,
   });
-
-  const [imageExport, setImageToExport] = React.useState<null | SVGSVGElement>(
-    null,
-  );
-
   const [isImageSizeValid, setIsImageSizeValid] =
     React.useState<boolean>(false);
-
   const [isImageWidthValid, setIsImageWidthValid] =
     React.useState<boolean>(false);
-
   const [isImageHeightValid, setIsImageHeightValid] =
     React.useState<boolean>(false);
 
@@ -41,164 +43,161 @@ function ExportPreview({
     setIsImageSizeValid(isImageWidthValid && isImageHeightValid);
   }, [isImageWidthValid, isImageHeightValid]);
 
-  function onDownload(): void {}
+  const updateChart = React.useCallback(
+    (dimensions: { height?: number; width?: number }) => {
+      if (previewPrevRef.current) {
+        const { width, height } = previewPrevRef.current;
 
-  function updateChart(dimensions: { height?: number; width?: number }) {
-    if (previewPrevRef.current) {
-      const { width, height } = previewPrevRef.current;
+        let isWidthChanged = true;
+        if (dimensions.hasOwnProperty('height')) {
+          isWidthChanged = false;
+        }
+        if (dimensions.hasOwnProperty('width')) {
+          isWidthChanged = true;
+        }
 
-      let isWidthChanged = true;
-      if (dimensions.hasOwnProperty('height')) {
-        isWidthChanged = false;
+        previewPrevRef.current = {
+          height: !isWidthChanged ? height : height,
+          width: isWidthChanged ? width + 1 : width,
+        };
+
+        if (previewRef.current) {
+          previewRef.current.style.height = !isWidthChanged
+            ? `${dimensions['height']}px`
+            : previewRef.current.style.height;
+
+          previewRef.current.style.width = isWidthChanged
+            ? `${dimensions['width']}px`
+            : previewRef.current.style.width;
+        }
       }
-      if (dimensions.hasOwnProperty('width')) {
-        isWidthChanged = true;
+    },
+    [],
+  );
+
+  const onDimensionChange = React.useCallback(
+    (key: string, newValue: number, metadata: any = { isValid: true }) => {
+      if (metadata.isValid) {
+        updateChart({ [key]: newValue });
       }
+      setPreviewDimensions((prev) => ({
+        ...prev,
+        [key]: newValue,
+      }));
+    },
+    [],
+  );
 
-      previewPrevRef.current = {
-        height: !isWidthChanged ? height : height,
-        width: isWidthChanged ? width + 1 : width,
-      };
-
-      if (previewRef.current) {
-        previewRef.current.style.height = !isWidthChanged
-          ? `${dimensions['height']}px`
-          : previewRef.current.style.height;
-
-        previewRef.current.style.width = isWidthChanged
-          ? `${dimensions['width']}px`
-          : previewRef.current.style.width;
+  const clearChart = React.useCallback(
+    (svgElement: SVGSVGElement): SVGSVGElement => {
+      // remove hover attributes from chart
+      const attributes = svgElement.querySelector('.Attributes');
+      if (attributes) {
+        attributes.remove?.();
       }
-    }
-  }
+      return svgElement;
+    },
+    [],
+  );
 
-  const onDimensionChange = (
-    key: string,
-    newValue: number,
-    metadata: any = { isValid: true },
-  ) => {
-    if (metadata.isValid) {
-      updateChart({ [key]: newValue });
-    }
-    setPreviewDimensions((prev) => ({
-      ...prev,
-      [key]: newValue,
-    }));
-  };
-
-  function clearImage(svgElement: SVGSVGElement) {
-    const attributes = svgElement.querySelector('.Attributes');
-    // remove hover attributes from chart
-    if (attributes) {
-      attributes.remove?.();
-    }
-    return svgElement;
-  }
-
-  function loadImg() {
-    const panel = containerRef.current;
-    debugger;
-    if (panel) {
-      // setProcessing(true);
-      const svgElements = panel.querySelectorAll('svg');
-      const wrapper = document.createElementNS(
+  const getSVGWrapper = React.useCallback(
+    (chartPanel: HTMLElement): SVGSVGElement => {
+      const { scrollWidth: panelWidth, scrollHeight: panelHeight } = chartPanel;
+      let wrapper: SVGSVGElement = document.createElementNS(
         'http://www.w3.org/2000/svg',
         'svg',
       );
-
-      const firstSvg = svgElements[0];
-      debugger;
-      const bbox = firstSvg.getBBox();
-      const svgWidth = Math.round(bbox.width);
-      const svgHeight = Math.round(bbox.height);
-      const gridSize = Math.round(panel.scrollWidth / svgWidth);
-      let row = 0;
-
-      console.log(gridSize);
+      wrapper.setAttribute('viewBox', `0 0 ${panelWidth} ${panelHeight}`);
+      wrapper.setAttribute('preserveAspectRatio', 'xMidYMid meet');
+      if (format !== FormatEnum.PNG) {
+        wrapper.style.background = '#fff';
+      }
+      const svgElements = chartPanel.querySelectorAll('svg');
+      const gridSize = Math.round(
+        panelWidth / Math.round(svgElements[0].getBBox().width),
+      );
+      let rowIndex = 0;
       svgElements?.forEach((svgElement, index) => {
         if (index !== 0 && index % gridSize === 0) {
-          row++;
+          rowIndex++;
         }
-        const clearedSvgElement = clearImage(
+        const clearedSvgElement = clearChart(
           svgElement.cloneNode(true) as SVGSVGElement,
         );
-        debugger;
-        clearedSvgElement.style.border = '1px solid #e8e8e8';
-        clearedSvgElement.style.background = 'transparent';
+        const columnIndex = index % gridSize;
         clearedSvgElement.setAttribute(
           'x',
-          (index % gridSize) * svgWidth + 10 + 'px',
+          columnIndex * svgElement.clientWidth + 10 + 'px',
         );
-        if (row) {
-          clearedSvgElement.setAttribute('y', row * svgHeight + 10 + 'px');
+        if (rowIndex) {
+          clearedSvgElement.setAttribute(
+            'y',
+            rowIndex * svgElement.clientHeight + 10 + 'px',
+          );
         }
         wrapper.appendChild(clearedSvgElement);
       });
-      const root = document.getElementById('root');
-      wrapper.style.position = 'fixed';
-      wrapper.style.zIndex = '10';
-      wrapper.style.background = 'transparent';
-      wrapper.style.width = `${panel.scrollWidth}px`;
-      wrapper.style.height = `${panel.scrollHeight}px`;
-      wrapper.style.top = '10px';
-      wrapper.style.left = '10px';
-      root?.appendChild(wrapper);
-      setImageToExport(wrapper);
 
-      // window.clearTimeout(timeOutId.current);
-      // timeOutId.current = window.setTimeout(setImg);
-      window.setTimeout(() => setImg(wrapper));
+      return wrapper;
+    },
+    [clearChart, format],
+  );
+
+  const onExportImage = React.useCallback((): void => {
+    const chartPanel = containerRef.current;
+    if (chartPanel) {
+      setProcessing(true);
+      const svgWrapper = getSVGWrapper(chartPanel);
+      try {
+        const svgString = getSVGString(svgWrapper);
+        const imgSrc =
+          'data:image/svg+xml;base64,' +
+          btoa(unescape(encodeURIComponent(svgString))); // Convert SVG string to data URL
+        switch (format) {
+          case FormatEnum.SVG:
+            downloadLink(imgSrc, imgName || 'name');
+            break;
+          default:
+            imgSource2Image({
+              imgSrc,
+              width: chartPanel.scrollWidth,
+              height: chartPanel.scrollHeight,
+              format,
+              callback: (src) => {
+                downloadLink(src, imgName || 'name');
+              },
+            });
+        }
+      } catch (err) {
+        console.error(err);
+      } finally {
+        setProcessing(false);
+      }
     }
-  }
+  }, [format, getSVGWrapper, imgName]);
 
-  function downloadLink(href: string, name: string) {
-    let link = document.createElement('a');
-    link.download = name;
-    link.style.opacity = '0';
-    document.body.append(link);
-    link.href = href;
-    link.click();
-    link.remove();
-  }
+  const validationPatterns = React.useCallback(
+    (min: number, max: number) => [
+      {
+        errorCondition: (value: number) => value < min,
+        errorText: `Value should be equal or greater then ${min}`,
+      },
+      {
+        errorCondition: (value: number) => value > max,
+        errorText: `Value should be equal or smaller then ${max}`,
+      },
+    ],
+    [],
+  );
 
-  async function setImg(captureNode: SVGSVGElement) {
-    try {
-      debugger;
-      // const canvas = await html2canvas(captureNode, {
-      //   removeContainer: true,
-      //   width: captureNode.offsetWidth,
-      //   height: captureNode.offsetHeight,
-      //   backgroundColor: null,
-      // });
-      // console.log(captureNode.childNodes);
-      const serializer = new XMLSerializer();
-      const serializedString = serializer.serializeToString(captureNode);
-      const imgSrc =
-        'data:image/svg+xml;base64,' +
-        btoa(unescape(encodeURIComponent(serializedString)));
-      // svgString2Image(
-      //   serializedString,
-      //   captureNode.scrollWidth,
-      //   captureNode.scrollHeight,
-      //   'image/jpeg',
-      //   (dataURL: string) => {
-      //     downloadLink(dataURL, 'svg');
-      //   },
-      // );
-
-      debugger;
-
-      // const imgBase64Src = canvas.toDataURL('image/png', 1.0);
-      console.log(imgSrc);
-
-      // downloadLink(imgSrc, '123123123');
-      // setExportImgCanvas(canvas);
-    } catch (err) {
-      console.error(err);
-    } finally {
-      // setProcessing(false);
-    }
-  }
+  const formatOptions = React.useMemo(
+    () =>
+      Object.entries(FormatEnum).map(([label, value]) => ({
+        value,
+        label,
+      })),
+    [],
+  );
 
   return (
     <ErrorBoundary>
@@ -211,101 +210,14 @@ function ExportPreview({
         okButtonText='Download'
         isOkButtonDisabled={!isImageSizeValid}
         onClose={onToggleExportPreview}
-        onOk={onDownload}
+        onOk={onExportImage}
         classes={{ paper: 'ExportPreview__modal' }}
       >
-        {withDynamicDimensions && (
-          <div className='ExportPreview__dimension'>
-            <div className='ExportPreview__dimension__width'>
-              <Text>Width</Text>
-              <Slider
-                aria-label='Width'
-                valueLabelDisplay='auto'
-                containerClassName='ExportPreview__dimension__width__slider'
-                min={previewBounds.min.width}
-                max={previewBounds.max.width}
-                step={2}
-                value={previewDimensions.width}
-                onChange={(e: React.ChangeEvent<{}>, v: number | number[]) => {
-                  onDimensionChange('width', v as number);
-                }}
-              />
-              <InputWrapper
-                value={`${previewDimensions.width}`}
-                type='number'
-                size='small'
-                inputProps={{ step: 2 }}
-                isValidateInitially
-                showMessageByTooltip
-                tooltipPlacement='bottom'
-                onChange={(e, value, metadata) => {
-                  onDimensionChange('width', value, metadata);
-                  setIsImageWidthValid(metadata.isValid);
-                }}
-                validationPatterns={[
-                  {
-                    errorCondition: (value: number) =>
-                      value < previewBounds.min.width,
-                    errorText: `Value should be equal or greater then ${previewBounds.min.width}`,
-                  },
-                  {
-                    errorCondition: (value: number) =>
-                      value > previewBounds.max.width,
-                    errorText: `Value should be equal or smaller then ${previewBounds.max.width}`,
-                  },
-                ]}
-              />
-            </div>
-            <div className='ExportPreview__dimension__height'>
-              <Text className='ExportPreview__dimension__height__label'>
-                Height
-              </Text>
-              <Slider
-                aria-label='Height'
-                valueLabelDisplay='auto'
-                containerClassName='ExportPreview__dimension__height__slider'
-                min={previewBounds.min.height}
-                max={previewBounds.max.height}
-                step={2}
-                value={previewDimensions.height}
-                onChange={(e: React.ChangeEvent<{}>, v: number | number[]) => {
-                  onDimensionChange('height', v as number);
-                }}
-              />
-              <InputWrapper
-                value={`${previewDimensions.height}`}
-                type='number'
-                labelAppearance='top-labeled'
-                size='small'
-                inputProps={{ step: 2 }}
-                isValidateInitially
-                showMessageByTooltip
-                tooltipPlacement='bottom'
-                onChange={(e, value, metadata) => {
-                  onDimensionChange('height', value, metadata);
-                  setIsImageHeightValid(metadata.isValid);
-                }}
-                validationPatterns={[
-                  {
-                    errorCondition: (value: number) =>
-                      value < previewBounds.min.height,
-                    errorText: `Value should be equal or greater then ${previewBounds.min.height}`,
-                  },
-                  {
-                    errorCondition: (value: number) =>
-                      value > previewBounds.max.height,
-                    errorText: `Value should be equal or smaller then ${previewBounds.max.height}`,
-                  },
-                ]}
-              />
-            </div>
-          </div>
-        )}
         <div className='ExportPreview__container'>
           <div
-            /* @ts-ignore */
-            ref={previewRef}
-            style={defaultPreviewBounds}
+            //  ref={previewRef}
+            key={`${previewDimensions.width}-${previewDimensions.height}`}
+            style={previewDimensions}
           >
             <Grid
               ref={containerRef}
@@ -315,6 +227,105 @@ function ExportPreview({
               {children}
             </Grid>
           </div>
+        </div>
+        <div className='ExportPreview__controls'>
+          {withDynamicDimensions && (
+            <div className='ExportPreview__controls__dimension'>
+              <div className='ExportPreview__controls__dimension__width'>
+                <Text>Width</Text>
+                <Slider
+                  aria-label='Width'
+                  valueLabelDisplay='auto'
+                  containerClassName='ExportPreview__controls__dimension__width__slider'
+                  min={previewBounds.min.width}
+                  max={previewBounds.max.width}
+                  step={2}
+                  value={previewDimensions.width}
+                  onChange={(
+                    e: React.ChangeEvent<{}>,
+                    v: number | number[],
+                  ) => {
+                    onDimensionChange('width', v as number);
+                  }}
+                />
+                <InputWrapper
+                  value={`${previewDimensions.width}`}
+                  type='number'
+                  inputProps={{ step: 2 }}
+                  isValidateInitially
+                  showMessageByTooltip
+                  tooltipPlacement='bottom'
+                  onChange={(e, value, metadata) => {
+                    onDimensionChange('width', value, metadata);
+                    setIsImageWidthValid(metadata.isValid);
+                  }}
+                  validationPatterns={validationPatterns(
+                    previewBounds.min.width,
+                    previewBounds.max.width,
+                  )}
+                />
+              </div>
+              <div className='ExportPreview__controls__dimension__height'>
+                <Text>Height</Text>
+                <Slider
+                  aria-label='Height'
+                  valueLabelDisplay='auto'
+                  containerClassName='ExportPreview__controls__dimension__height__slider'
+                  min={previewBounds.min.height}
+                  max={previewBounds.max.height}
+                  step={2}
+                  value={previewDimensions.height}
+                  onChange={(
+                    e: React.ChangeEvent<{}>,
+                    v: number | number[],
+                  ) => {
+                    onDimensionChange('height', v as number);
+                  }}
+                />
+                <InputWrapper
+                  value={`${previewDimensions.height}`}
+                  type='number'
+                  inputProps={{ step: 2 }}
+                  isValidateInitially
+                  showMessageByTooltip
+                  tooltipPlacement='bottom'
+                  onChange={(e, value, metadata) => {
+                    onDimensionChange('height', value, metadata);
+                    setIsImageHeightValid(metadata.isValid);
+                  }}
+                  validationPatterns={validationPatterns(
+                    previewBounds.min.height,
+                    previewBounds.max.height,
+                  )}
+                />
+              </div>
+            </div>
+          )}
+          <Divider
+            orientation='vertical'
+            className='ExportPreview__controls__Divider'
+          />
+          <InputWrapper
+            label='Image Name'
+            wrapperClassName='ExportPreview__controls__nameInput'
+            placeholder='name'
+            value={imgName}
+            onChange={(e, value) => {
+              setImgName(value);
+            }}
+          />
+          <Dropdown
+            className='ExportPreview__controls__formatDropdown'
+            isColored
+            label='Format'
+            withPortal
+            onChange={(val) => val && setFormat(val.value as FormatEnum)}
+            value={format}
+            options={formatOptions}
+            onMenuOpen={() => setOpenFormatDropdown(true)}
+            onMenuClose={() => setOpenFormatDropdown(false)}
+            open={openFormatDropdown}
+          />
         </div>
       </Modal>
     </ErrorBoundary>

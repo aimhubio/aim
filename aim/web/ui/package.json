@@ -16,6 +16,7 @@
     "formik": "^2.2.9",
     "highcharts": "^9.3.1",
     "highcharts-react-official": "^3.1.0",
+    "html2canvas": "^1.4.1",
     "humanize-duration": "^3.27.0",
     "lodash-es": "^4.17.21",
     "material-ui-audio-player": "^1.7.1",

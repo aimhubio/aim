@@ -12,8 +12,14 @@ const previewBounds: IPreviewBounds = {
 };
 
 const defaultPreviewBounds = {
-  width: 1024,
-  height: 640,
+  width: 976,
+  height: 506,
 };
 
-export { previewBounds, defaultPreviewBounds };
+enum FormatEnum {
+  SVG = 'svg',
+  JPEG = 'jpeg',
+  PNG = 'png',
+}
+
+export { previewBounds, defaultPreviewBounds, FormatEnum };
