@@ -1,5 +1,11 @@
 # Changelog
 
+##Unreleased
+
+###Fixes 
+
+- Fix system metric columns pinning functionality and grouping column order (arsengit)
+
 ## 3.5.1 Feb 4 2022
 
 - Fix folder creation when tracking with remote tracker (aramaim)
