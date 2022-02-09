@@ -1,7 +1,5 @@
 ### Tracking matplotlib figures in Aim
 
-
-
 In this guide, we will show you how to track `matplotlib` figures in Aim.
 
 This can be accomplished by either passing matplotlib figure to Aim's `Image` or `Figure` object.
@@ -26,7 +24,7 @@ run.track(aim_img, step=0, name="matplotlib Image")
 
 ### Converting matplotlib to Aim Figure
 
-Please note that the conversion process is done by `Plotly` under the hood.
+Please note that the conversion process is done by [Plotly](https://plotly.com/python/) under the hood.
 
 ```python
 from aim import Run, Figure
@@ -42,9 +40,3 @@ plt.close(fig)
 aim_figure = Figure(fig)
 run.track(aim_figure, step=0, name="matplotlib Figure")
 ```
-
-
-
-
-
-
