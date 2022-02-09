@@ -110,10 +110,10 @@ class Client:
         if response.status == rpc_messages.WriteInstructionsResponse.Status.ERROR:
             raise_exception(response.header.exception)
 
-    def init_tracking(self):
+    def start_instructions_batch(self):
         self._thread_local.atomic_instructions = []
 
-    def flush_tracking(self):
+    def flush_instructions_batch(self):
         if self._thread_local.atomic_instructions is None:
             return
 

@@ -751,7 +751,7 @@ class Repo:
     @contextmanager
     def atomic_track(self):
         if self.is_remote_repo:
-            self._client.init_tracking()
+            self._client.start_instructions_batch()
         yield
         if self.is_remote_repo:
-            self._client.flush_tracking()
+            self._client.flush_instructions_batch()

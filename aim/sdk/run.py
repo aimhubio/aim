@@ -433,22 +433,21 @@ class Run(StructuredRunMixin):
         else:
             raise ValueError(f'Input metric of type {type(value)} is neither python number nor AimObject')
 
-        ctx = Context(context)
-        if ctx not in self.contexts:
-            self.meta_tree['contexts', ctx.idx] = context
-            self.meta_run_tree['contexts', ctx.idx] = context
-            self.contexts[ctx] = ctx.idx
-            self._idx_to_ctx[ctx.idx] = ctx
-
-        seq_info = self._get_or_create_sequence_info(ctx, name)
-        step = step if step is not None else seq_info.count
-        self._update_sequence_info(seq_info, ctx, val, name, step)
-
         with self.repo.atomic_track():
+            ctx = Context(context)
+            if ctx not in self.contexts:
+                self.meta_tree['contexts', ctx.idx] = context
+                self.meta_run_tree['contexts', ctx.idx] = context
+                self.contexts[ctx] = ctx.idx
+                self._idx_to_ctx[ctx.idx] = ctx
+
+            seq_info = self._get_or_create_sequence_info(ctx, name)
+            step = step if step is not None else seq_info.count
+            self._update_sequence_info(seq_info, ctx, val, name, step)
+
             self.meta_run_tree['traces', ctx.idx, name, 'last'] = val
             self.meta_run_tree['traces', ctx.idx, name, 'last_step'] = step
 
-            # TODO perform assignments in an atomic way  # Ask AT, actually whole method should be atomic?
             seq_info.val_view[step] = val
             seq_info.epoch_view[step] = epoch
             seq_info.time_view[step] = track_time
