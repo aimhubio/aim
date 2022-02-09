@@ -45,7 +45,7 @@ export interface ILineChartProps {
   chartTitle?: IChartTitle;
   zoom?: IChartZoom;
   onZoomChange?: (zoom: Partial<IChartZoom>) => void;
-  drawAttributes?: boolean;
+  readOnly?: boolean;
 }
 
 export interface IUpdateFocusedChartArgs {

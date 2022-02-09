@@ -22,6 +22,7 @@ function drawArea(args: IDrawAreaArgs): void {
     linesNodeRef,
     attributesNodeRef,
     chartTitle = {},
+    readOnly,
   } = args;
 
   if (!parentRef?.current || !visAreaRef?.current) {
@@ -108,35 +109,36 @@ function drawArea(args: IDrawAreaArgs): void {
     .attr('width', offsetWidth + 2 * CircleEnum.ActiveRadius + 10)
     .attr('height', offsetHeight + 2 * CircleEnum.ActiveRadius + 10);
 
-  const titleMarginTop = 4;
-  const titleMarginBottom = 6;
-  const titleHeight = margin.top - titleMarginTop - titleMarginBottom;
-  const keys = Object.keys(chartTitle);
-  const titleText = keys
-    ? `${keys
-        .map(
-          (key) =>
-            `${key}=${
-              isSystemMetric(chartTitle[key])
-                ? formatSystemMetricName(chartTitle[key])
-                : chartTitle[key]
-            }`,
-        )
-        .join(', ')}`
-    : '';
+  if (!readOnly) {
+    const titleMarginTop = 4;
+    const titleMarginBottom = 6;
+    const titleHeight = margin.top - titleMarginTop - titleMarginBottom;
+    const keys = Object.keys(chartTitle);
+    const titleText = keys
+      ? `${keys
+          .map(
+            (key) =>
+              `${key}=${
+                isSystemMetric(chartTitle[key])
+                  ? formatSystemMetricName(chartTitle[key])
+                  : chartTitle[key]
+              }`,
+          )
+          .join(', ')}`
+      : '';
 
-  if (titleText) {
-    svgNodeRef.current
-      .append('foreignObject')
-      .attr('x', 0)
-      .attr('y', titleMarginTop)
-      .attr('height', titleHeight)
-      .attr('width', width)
-      .html((d: any) => {
-        if (!keys.length) {
-          return '';
-        }
-        return `
+    if (titleText) {
+      svgNodeRef.current
+        .append('foreignObject')
+        .attr('x', 0)
+        .attr('y', titleMarginTop)
+        .attr('height', titleHeight)
+        .attr('width', width)
+        .html((d: any) => {
+          if (!keys.length) {
+            return '';
+          }
+          return `
         <div 
             title='#${index + 1} ${titleText}' 
             style='
@@ -176,7 +178,8 @@ function drawArea(args: IDrawAreaArgs): void {
           </div>
         </div>
       `;
-      });
+        });
+    }
   }
 }
 

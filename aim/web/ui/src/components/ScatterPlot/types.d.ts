@@ -21,5 +21,5 @@ export interface IScatterPlotProps {
   chartTitle?: IChartTitle;
   trendlineOptions: ITrendlineOptions;
   syncHoverState: (args: ISyncHoverStateArgs) => void;
-  drawAttributes?: boolean;
+  readOnly?: boolean;
 }

@@ -16,4 +16,5 @@ export interface IDrawAreaArgs {
   linesNodeRef: React.MutableRefObject<>;
   attributesNodeRef: React.MutableRefObject<>;
   chartTitle?: IChartTitle;
+  readOnly: boolean;
 }

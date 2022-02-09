@@ -41,7 +41,7 @@ const LineChart = React.forwardRef(function LineChart(
     chartTitle,
     zoom,
     onZoomChange,
-    drawAttributes = true,
+    readOnly = false,
   } = props;
 
   // boxes
@@ -103,6 +103,7 @@ const LineChart = React.forwardRef(function LineChart(
       linesNodeRef,
       attributesNodeRef,
       chartTitle,
+      readOnly,
     });
 
     const { width, height, margin } = visBoxRef.current;
@@ -150,7 +151,7 @@ const LineChart = React.forwardRef(function LineChart(
       aggregatedData,
     });
 
-    if (drawAttributes) {
+    if (!readOnly) {
       drawHoverAttributes({
         index,
         nameKey,
@@ -190,6 +191,7 @@ const LineChart = React.forwardRef(function LineChart(
       max,
       zoom,
       onZoomChange,
+      readOnly,
     });
   }
 
@@ -212,6 +214,7 @@ const LineChart = React.forwardRef(function LineChart(
       axesScaleType,
       curveInterpolation,
       aggregationConfig,
+      readOnly,
     ],
   );
 
@@ -238,6 +241,7 @@ const LineChart = React.forwardRef(function LineChart(
     axesScaleType,
     curveInterpolation,
     aggregationConfig,
+    readOnly,
   ]);
 
   React.useImperativeHandle(ref, () => ({
@@ -267,7 +271,7 @@ const LineChart = React.forwardRef(function LineChart(
     <ErrorBoundary>
       <div
         ref={parentRef}
-        className={`LineChart ${zoom?.active ? 'zoomMode' : ''}`}
+        className={`LineChart ${!readOnly && zoom?.active ? 'zoomMode' : ''}`}
       >
         <div ref={visAreaRef} />
       </div>

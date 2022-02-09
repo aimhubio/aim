@@ -28,7 +28,7 @@ const HighPlot = React.forwardRef(function HighPlot(
     data,
     isVisibleColorIndicator,
     chartTitle,
-    drawAttributes = true,
+    readOnly = false,
   }: IHighPlotProps,
   ref,
 ): React.FunctionComponentElement<React.ReactNode> {
@@ -80,6 +80,7 @@ const HighPlot = React.forwardRef(function HighPlot(
       linesNodeRef,
       attributesNodeRef,
       chartTitle,
+      readOnly,
     });
 
     if (isVisibleColorIndicator) {
@@ -111,7 +112,7 @@ const HighPlot = React.forwardRef(function HighPlot(
 
       linesRef.current.data = data.data;
 
-      if (drawAttributes) {
+      if (!readOnly) {
         drawParallelHoverAttributes({
           dimensions: data.dimensions,
           index,
@@ -142,7 +143,7 @@ const HighPlot = React.forwardRef(function HighPlot(
     }
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [curveInterpolation, index, isVisibleColorIndicator, data]);
+  }, [curveInterpolation, index, isVisibleColorIndicator, data, readOnly]);
 
   React.useImperativeHandle(ref, () => ({
     setActiveLine: (lineKey: string) => {

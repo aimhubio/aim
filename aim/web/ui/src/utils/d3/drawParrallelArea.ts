@@ -19,6 +19,7 @@ function drawParallelArea(args: IDrawAreaArgs): void {
     linesNodeRef,
     attributesNodeRef,
     chartTitle = {},
+    readOnly,
   } = args;
   if (!parentRef?.current || !visAreaRef?.current) {
     return;
@@ -96,23 +97,24 @@ function drawParallelArea(args: IDrawAreaArgs): void {
     .attr('width', offsetWidth + 2 * CircleEnum.ActiveRadius + 4)
     .attr('height', offsetHeight + 2 * CircleEnum.ActiveRadius + 4);
 
-  const titleMarginTop = 2;
-  const titleHeight = 15;
-  const keys = Object.keys(chartTitle);
-  const titleText = keys
-    ? `${keys.map((key) => `${key}=${chartTitle[key]}`).join(', ')}`
-    : '';
+  if (!readOnly) {
+    const titleMarginTop = 2;
+    const titleHeight = 15;
+    const keys = Object.keys(chartTitle);
+    const titleText = keys
+      ? `${keys.map((key) => `${key}=${chartTitle[key]}`).join(', ')}`
+      : '';
 
-  if (titleText) {
-    svgNodeRef.current
-      .append('foreignObject')
-      .attr('x', 0)
-      .attr('y', titleMarginTop)
-      .attr('height', titleHeight)
-      .attr('width', width)
-      .html((d: any) => {
-        return keys.length
-          ? `
+    if (titleText) {
+      svgNodeRef.current
+        .append('foreignObject')
+        .attr('x', 0)
+        .attr('y', titleMarginTop)
+        .attr('height', titleHeight)
+        .attr('width', width)
+        .html((d: any) => {
+          return keys.length
+            ? `
         <div 
             title='#${index + 1} ${titleText}' 
             style='
@@ -152,8 +154,9 @@ function drawParallelArea(args: IDrawAreaArgs): void {
           </div>
         </div>
       `
-          : '';
-      });
+            : '';
+        });
+    }
   }
 }
 export default drawParallelArea;

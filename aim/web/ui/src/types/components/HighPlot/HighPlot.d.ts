@@ -11,5 +11,5 @@ export interface IHighPlotProps {
   syncHoverState: (args: ISyncHoverStateArgs) => void;
   data: any;
   chartTitle?: IChartTitle;
-  drawAttributes?: boolean;
+  readOnly?: boolean;
 }

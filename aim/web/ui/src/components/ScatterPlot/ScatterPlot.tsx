@@ -34,7 +34,7 @@ const ScatterPlot = React.forwardRef(function ScatterPlot(
     syncHoverState,
     chartTitle,
     trendlineOptions,
-    drawAttributes = true,
+    readOnly = false,
   } = props;
 
   // boxes
@@ -89,6 +89,7 @@ const ScatterPlot = React.forwardRef(function ScatterPlot(
       linesNodeRef,
       attributesNodeRef,
       chartTitle,
+      readOnly,
     });
 
     const { width, height, margin } = visBoxRef.current;
@@ -136,7 +137,7 @@ const ScatterPlot = React.forwardRef(function ScatterPlot(
       pointsNodeRef: linesNodeRef,
     });
 
-    if (drawAttributes) {
+    if (!readOnly) {
       drawHoverAttributes({
         index,
         nameKey,
@@ -189,6 +190,7 @@ const ScatterPlot = React.forwardRef(function ScatterPlot(
         linesNodeRef,
         attributesNodeRef,
         chartTitle,
+        readOnly,
       });
     } else {
       draw();
@@ -202,7 +204,7 @@ const ScatterPlot = React.forwardRef(function ScatterPlot(
       }
     },
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    [data, dimensions, trendlineOptions],
+    [data, dimensions, trendlineOptions, readOnly],
   );
 
   const observerReturnCallback = React.useCallback(() => {
@@ -221,7 +223,7 @@ const ScatterPlot = React.forwardRef(function ScatterPlot(
       }
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [data, dimensions, trendlineOptions]);
+  }, [data, dimensions, trendlineOptions, readOnly]);
 
   React.useImperativeHandle(ref, () => ({
     setActiveLineAndCircle: (

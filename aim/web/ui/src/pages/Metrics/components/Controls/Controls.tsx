@@ -439,11 +439,7 @@ function Controls(
                 data={props.data}
                 chartProps={props.chartProps}
                 chartType={props.chartType}
-                overrideProps={{
-                  drawAttributes: false,
-                  chartTitle: {},
-                  onZoomChange: null,
-                }}
+                readOnly
               />
             </ExportPreview>
           )}

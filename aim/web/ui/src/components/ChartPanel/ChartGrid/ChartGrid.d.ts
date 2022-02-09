@@ -9,6 +9,6 @@ export interface IChartGridProps {
   chartProps: IChartPanelProps['chartProps'];
   chartRefs?: React.RefObject<any>[];
   nameKey?: string;
-  overrideProps?: {};
+  readOnly?: boolean;
   syncHoverState?: (args: ISyncHoverStateArgs) => void;
 }

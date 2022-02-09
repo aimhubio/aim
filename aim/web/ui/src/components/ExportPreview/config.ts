@@ -11,7 +11,7 @@ const previewBounds: IPreviewBounds = {
   },
 };
 
-const defaultPreviewBounds = {
+const previewModalDimension = {
   width: 976,
   height: 506,
 };
@@ -22,4 +22,4 @@ enum FormatEnum {
   PNG = 'png',
 }
 
-export { previewBounds, defaultPreviewBounds, FormatEnum };
+export { previewBounds, previewModalDimension, FormatEnum };

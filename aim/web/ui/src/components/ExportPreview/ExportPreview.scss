@@ -1,16 +1,6 @@
 @use 'src/styles/abstracts' as *;
 
 .ExportPreview {
-  //@TODO improve Grid pattern
-  .ChartGrid {
-    //height: 50%;
-    //&__single__row__chart__view {
-    //  height: 100%;
-    //}
-    min-height: unset;
-    padding: 4px;
-    box-shadow: -1px -1px 0 0 $grey-lighter;
-  }
   &__modal {
     & > .Modal {
       overflow: hidden;
@@ -24,16 +14,11 @@
     & .Modal__header {
       justify-content: center;
     }
-    & .Modal__footer {
-
-    }
   }
   &__container {
     overflow: auto;
     border-radius: 0.5rem;
     border: 1px solid #bdcee8;
-    width: toRem(976px);
-    height: toRem(506px);
     &__grid {
       height: 100%;
       margin: 0;

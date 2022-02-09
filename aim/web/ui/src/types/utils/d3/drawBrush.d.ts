@@ -20,4 +20,5 @@ export interface IDrawBrushArgs extends IGetAxesScaleProps {
   svgNodeRef: React.MutableRefObject<>;
   zoom?: IChartZoom;
   onZoomChange?: (zoom: Partial<IChartZoom>) => void;
+  readOnly: boolean;
 }
