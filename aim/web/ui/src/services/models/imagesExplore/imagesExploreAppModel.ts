@@ -462,9 +462,10 @@ function processData(data: any[]): {
       sortFields?.map((f: any) => f.order),
     ),
   );
-  const uniqParams = _.uniq(params);
-  const uniqHighLevelParams = _.uniq(highLevelParams);
-  const uniqContexts = _.uniq(contexts);
+  const uniqParams = _.uniq(params).sort();
+  const uniqHighLevelParams = _.uniq(highLevelParams).sort();
+  const uniqContexts = _.uniq(contexts).sort();
+
   const mappedData =
     data?.reduce((acc: any, item: any) => {
       acc[item.hash] = { runHash: item.hash, ...item.props };
