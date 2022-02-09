@@ -5,6 +5,11 @@
 ###Enhancements
 
 - Add ability to apply active style on table actions popover buttons with applied changes (arsengit)
+##Unreleased
+
+###Fixes 
+
+- Fix system metric columns pinning functionality and grouping column order (arsengit)
 
 ## 3.5.1 Feb 4 2022
 

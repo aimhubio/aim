@@ -109,24 +109,27 @@ function getParamsTableColumns(
       const systemMetric: boolean = isSystemMetric(key);
       acc = [
         ...acc,
-        ...Object.keys(metricsColumns[key]).map((metricContext) => ({
-          key: `${systemMetric ? key : `${key}_${metricContext}`}`,
-          content: isSystemMetric(key) ? (
-            <span>{formatSystemMetricName(key)}</span>
-          ) : (
-            <Badge
-              size='small'
-              color={COLORS[0][0]}
-              label={metricContext === '' ? 'Empty context' : metricContext}
-            />
-          ),
-          topHeader: isSystemMetric(key) ? 'System Metrics' : key,
-          pin: order?.left?.includes(`${key}_${metricContext}`)
-            ? 'left'
-            : order?.right?.includes(`${key}_${metricContext}`)
-            ? 'right'
-            : null,
-        })),
+        ...Object.keys(metricsColumns[key]).map((metricContext) => {
+          const columnKey = `${systemMetric ? key : `${key}_${metricContext}`}`;
+          return {
+            key: columnKey,
+            content: systemMetric ? (
+              <span>{formatSystemMetricName(key)}</span>
+            ) : (
+              <Badge
+                size='small'
+                color={COLORS[0][0]}
+                label={metricContext === '' ? 'Empty context' : metricContext}
+              />
+            ),
+            topHeader: systemMetric ? 'System Metrics' : key,
+            pin: order?.left?.includes(columnKey)
+              ? 'left'
+              : order?.right?.includes(columnKey)
+              ? 'right'
+              : null,
+          };
+        }),
       ];
       return acc;
     }, []),
@@ -195,6 +198,28 @@ function getParamsTableColumns(
     }),
   );
 
+  columns = columns.map((col) => ({
+    ...col,
+    isHidden: hiddenColumns.includes(col.key),
+  }));
+
+  const columnsOrder = order?.left.concat(order.middle).concat(order.right);
+  columns.sort((a, b) => {
+    if (a.key === '#') {
+      return -1;
+    } else if (a.key === 'actions') {
+      return 1;
+    }
+    if (!columnsOrder.includes(a.key) && !columnsOrder.includes(b.key)) {
+      return 0;
+    } else if (!columnsOrder.includes(a.key)) {
+      return 1;
+    } else if (!columnsOrder.includes(b.key)) {
+      return -1;
+    }
+    return columnsOrder.indexOf(a.key) - columnsOrder.indexOf(b.key);
+  });
+
   if (groupFields) {
     columns = [
       {
@@ -239,27 +264,6 @@ function getParamsTableColumns(
     ];
   }
 
-  columns = columns.map((col) => ({
-    ...col,
-    isHidden: hiddenColumns.includes(col.key),
-  }));
-
-  const columnsOrder = order?.left.concat(order.middle).concat(order.right);
-  columns.sort((a, b) => {
-    if (a.key === '#') {
-      return -1;
-    } else if (a.key === 'actions') {
-      return 1;
-    }
-    if (!columnsOrder.includes(a.key) && !columnsOrder.includes(b.key)) {
-      return 0;
-    } else if (!columnsOrder.includes(a.key)) {
-      return 1;
-    } else if (!columnsOrder.includes(b.key)) {
-      return -1;
-    }
-    return columnsOrder.indexOf(a.key) - columnsOrder.indexOf(b.key);
-  });
   return columns;
 }
 
