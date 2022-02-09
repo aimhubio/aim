@@ -2222,7 +2222,6 @@ function createAppModel(appConfig: IAppInitialConfig) {
               const tableColumns = getRunsTableColumns(
                 metricsColumns,
                 params,
-                data[0]?.config,
                 model.getState()?.config?.table.columnsOrder!,
                 model.getState()?.config?.table.hiddenColumns!,
               );
@@ -2285,7 +2284,6 @@ function createAppModel(appConfig: IAppInitialConfig) {
         const tableColumns: ITableColumn[] = getRunsTableColumns(
           metricsColumns,
           params,
-          data[0]?.config,
           configData?.table?.columnsOrder!,
           configData?.table?.hiddenColumns!,
         );
@@ -2754,7 +2752,6 @@ function createAppModel(appConfig: IAppInitialConfig) {
         const tableColumns: ITableColumn[] = getRunsTableColumns(
           metricsColumns,
           params,
-          data[0]?.config,
           configData?.table.columnsOrder!,
           configData?.table.hiddenColumns!,
         );
@@ -2823,7 +2820,7 @@ function createAppModel(appConfig: IAppInitialConfig) {
             notification: {
               id: Date.now(),
               severity: 'info',
-              message: `${unselectedRowsCount} rows was unselected`,
+              message: `Live update: runs have been updated. ${unselectedRowsCount} of selected runs have been left out of the table.`,
             },
             model,
           });
@@ -2834,7 +2831,6 @@ function createAppModel(appConfig: IAppInitialConfig) {
         const tableColumns = getRunsTableColumns(
           metricsColumns,
           params,
-          data[0]?.config,
           model.getState()?.config?.table.columnsOrder!,
           model.getState()?.config?.table.hiddenColumns!,
         );

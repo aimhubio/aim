@@ -5,6 +5,7 @@
 ### Fixes:
 
 - Fix live updated data loss after triggering endless scroll (VkoHov)
+- Fix system metric columns pinning functionality and grouping column order (arsengit)
 
 ## 3.5.1 Feb 4 2022
 
