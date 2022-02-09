@@ -2179,16 +2179,11 @@ function createAppModel(appConfig: IAppInitialConfig) {
 
         liveUpdateInstance?.stop().then();
 
-        runsRequestRef = runsService.getRunsData(
-          query,
-          pagination?.limit,
-          pagination?.offset,
-        );
-
+        runsRequestRef = runsService.getRunsData(query, 45, pagination?.offset);
+        let limit = pagination.limit;
         if (shouldUrlUpdate) {
           updateURL({ configData, appName });
         }
-
         return {
           call: async () => {
             try {
@@ -2209,7 +2204,7 @@ function createAppModel(appConfig: IAppInitialConfig) {
                   const runData: any = val;
                   runsData.push({ ...runData, hash: keys[0] } as any);
                 } else {
-                  if (count > 0) {
+                  if (count >= 0) {
                     const runData: any = val;
                     runsData.push({ ...runData, hash: keys[0] } as any);
                   }
@@ -2232,6 +2227,9 @@ function createAppModel(appConfig: IAppInitialConfig) {
                 model.getState()?.config?.table.hiddenColumns!,
               );
               updateTableData(tableData, tableColumns, configData);
+              limit = isInitial
+                ? modelState?.config.pagination.limit
+                : modelState?.config.pagination.limit + 45;
               model.setState({
                 data,
                 selectedRows: shouldResetSelectedRows
@@ -2249,6 +2247,9 @@ function createAppModel(appConfig: IAppInitialConfig) {
                     ...modelState?.config.pagination,
                     isLatest:
                       !isInitial && count < modelState?.config.pagination.limit,
+                    limit: isInitial
+                      ? modelState?.config.pagination.limit
+                      : modelState?.config.pagination.limit + 45,
                   },
                 },
               });
@@ -2266,7 +2267,7 @@ function createAppModel(appConfig: IAppInitialConfig) {
             }
             liveUpdateInstance?.start({
               q: query,
-              limit: pagination.limit + model.getState()?.rawData?.length || 0,
+              limit: limit || 0,
             });
           },
           abort: runsRequestRef.abort,
@@ -2354,14 +2355,17 @@ function createAppModel(appConfig: IAppInitialConfig) {
         params: string[];
         metricsColumns: any;
         selectedRows: any;
+        runHashArray: string[];
+        unselectedRowsCount: number;
       } {
         const grouping = model.getState()?.config?.grouping;
+        const paletteIndex: number = grouping?.paletteIndex || 0;
+        const metricsColumns: any = {};
+        const runHashArray: string[] = [];
         let selectedRows = model.getState()?.selectedRows;
         let runs: IParam[] = [];
         let params: string[] = [];
-        const paletteIndex: number = grouping?.paletteIndex || 0;
-        const metricsColumns: any = {};
-
+        let unselectedRowsCount = 0;
         data?.forEach((run: IRun<IParamTrace>, index) => {
           params = params.concat(getObjectPaths(run.params, run.params));
           run.traces.metric.forEach((trace) => {
@@ -2370,6 +2374,7 @@ function createAppModel(appConfig: IAppInitialConfig) {
               [contextToString(trace.context) as string]: '-',
             };
           });
+          runHashArray.push(run.hash);
           runs.push({
             run,
             isHidden: false,
@@ -2389,10 +2394,14 @@ function createAppModel(appConfig: IAppInitialConfig) {
           selectedRows = Object.keys(selectedRows).reduce(
             (acc: any, key: string) => {
               const slicedKey = key.slice(0, key.indexOf('/'));
-              acc[key] = {
-                selectKey: key,
-                ...mappedData[slicedKey],
-              };
+              if (runHashArray.includes(slicedKey)) {
+                acc[key] = {
+                  selectKey: key,
+                  ...mappedData[slicedKey],
+                };
+              } else {
+                unselectedRowsCount++;
+              }
               return acc;
             },
             {},
@@ -2403,6 +2412,8 @@ function createAppModel(appConfig: IAppInitialConfig) {
           params: uniqParams,
           metricsColumns,
           selectedRows,
+          runHashArray,
+          unselectedRowsCount,
         };
       }
 
@@ -2800,8 +2811,24 @@ function createAppModel(appConfig: IAppInitialConfig) {
       }
 
       function updateData(newData: any): void {
-        const { data, params, metricsColumns, selectedRows } =
-          processData(newData);
+        const {
+          data,
+          params,
+          metricsColumns,
+          selectedRows,
+          unselectedRowsCount,
+        } = processData(newData);
+        if (unselectedRowsCount) {
+          onNotificationAdd({
+            notification: {
+              id: Date.now(),
+              severity: 'info',
+              message: `${unselectedRowsCount} rows was unselected`,
+            },
+            model,
+          });
+        }
+
         const modelState = model.getState() as IRunsAppModelState;
         const tableData = getDataAsTableRows(data, metricsColumns, params);
         const tableColumns = getRunsTableColumns(
@@ -2811,9 +2838,10 @@ function createAppModel(appConfig: IAppInitialConfig) {
           model.getState()?.config?.table.columnsOrder!,
           model.getState()?.config?.table.hiddenColumns!,
         );
+        const lastRowKey = newData[newData.length - 1].hash;
         model.setState({
           data,
-          rowData: newData,
+          rawData: newData,
           requestIsPending: false,
           infiniteIsPending: false,
           tableColumns,
@@ -2824,6 +2852,7 @@ function createAppModel(appConfig: IAppInitialConfig) {
             ...modelState?.config,
             pagination: {
               ...modelState?.config.pagination,
+              offset: lastRowKey,
               isLatest: false,
             },
           },
@@ -2862,7 +2891,7 @@ function createAppModel(appConfig: IAppInitialConfig) {
           );
           liveUpdateInstance.start({
             q: query,
-            limit: pagination.limit + state?.rawData?.length || 0,
+            limit: pagination.limit || 0,
           });
         } else {
           liveUpdateInstance?.clear();
