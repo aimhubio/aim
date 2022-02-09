@@ -31,59 +31,6 @@ function ExportPreview({
     `export-${moment().format('HH_mm_ss · D MMM, YY')}`,
   );
 
-  // TODO[enhancement] dynamic changing image dimension
-  // const [isImageSizeValid, setIsImageSizeValid] =
-  //   React.useState<boolean>(false);
-  // const [isImageWidthValid, setIsImageWidthValid] =
-  //   React.useState<boolean>(false);
-  // const [isImageHeightValid, setIsImageHeightValid] =
-  //   React.useState<boolean>(false);
-  //
-  // const updateChart = React.useCallback(
-  //   (dimensions: { height?: number; width?: number }) => {
-  //     if (previewPrevRef.current) {
-  //       const { width, height } = previewPrevRef.current;
-  //
-  //       let isWidthChanged = true;
-  //       if (dimensions.hasOwnProperty('height')) {
-  //         isWidthChanged = false;
-  //       }
-  //       if (dimensions.hasOwnProperty('width')) {
-  //         isWidthChanged = true;
-  //       }
-  //
-  //       previewPrevRef.current = {
-  //         height: !isWidthChanged ? height : height,
-  //         width: isWidthChanged ? width + 1 : width,
-  //       };
-  //
-  //       if (previewRef.current) {
-  //         previewRef.current.style.height = !isWidthChanged
-  //           ? `${dimensions['height']}px`
-  //           : previewRef.current.style.height;
-  //
-  //         previewRef.current.style.width = isWidthChanged
-  //           ? `${dimensions['width']}px`
-  //           : previewRef.current.style.width;
-  //       }
-  //     }
-  //   },
-  //   [],
-  // );
-  //
-  // const onDimensionChange = React.useCallback(
-  //   (key: string, newValue: number, metadata: any = { isValid: true }) => {
-  //     if (metadata.isValid) {
-  //       updateChart({ [key]: newValue });
-  //     }
-  //     setPreviewDimensions((prev) => ({
-  //       ...prev,
-  //       [key]: newValue,
-  //     }));
-  //   },
-  //   [updateChart],
-  // );
-
   const clearChart = React.useCallback(
     (svgElement: SVGSVGElement): SVGSVGElement => {
       // remove hover attributes from chart
@@ -180,7 +127,59 @@ function ExportPreview({
     [],
   );
 
-  // TODO[enhancement] dynamic changing image dimension
+  // TODO[improve chart grid pattern] dynamic changing image dimension
+  // const [isImageSizeValid, setIsImageSizeValid] =
+  //   React.useState<boolean>(false);
+  // const [isImageWidthValid, setIsImageWidthValid] =
+  //   React.useState<boolean>(false);
+  // const [isImageHeightValid, setIsImageHeightValid] =
+  //   React.useState<boolean>(false);
+  //
+  // const updateChart = React.useCallback(
+  //   (dimensions: { height?: number; width?: number }) => {
+  //     if (previewPrevRef.current) {
+  //       const { width, height } = previewPrevRef.current;
+  //
+  //       let isWidthChanged = true;
+  //       if (dimensions.hasOwnProperty('height')) {
+  //         isWidthChanged = false;
+  //       }
+  //       if (dimensions.hasOwnProperty('width')) {
+  //         isWidthChanged = true;
+  //       }
+  //
+  //       previewPrevRef.current = {
+  //         height: !isWidthChanged ? height : height,
+  //         width: isWidthChanged ? width + 1 : width,
+  //       };
+  //
+  //       if (previewRef.current) {
+  //         previewRef.current.style.height = !isWidthChanged
+  //           ? `${dimensions['height']}px`
+  //           : previewRef.current.style.height;
+  //
+  //         previewRef.current.style.width = isWidthChanged
+  //           ? `${dimensions['width']}px`
+  //           : previewRef.current.style.width;
+  //       }
+  //     }
+  //   },
+  //   [],
+  // );
+  //
+  // const onDimensionChange = React.useCallback(
+  //   (key: string, newValue: number, metadata: any = { isValid: true }) => {
+  //     if (metadata.isValid) {
+  //       updateChart({ [key]: newValue });
+  //     }
+  //     setPreviewDimensions((prev) => ({
+  //       ...prev,
+  //       [key]: newValue,
+  //     }));
+  //   },
+  //   [updateChart],
+  // );
+  //
   // const validationPatterns = React.useCallback(
   //   (min: number, max: number) => [
   //     {
@@ -234,7 +233,7 @@ function ExportPreview({
           </div>
         </div>
         <div className='ExportPreview__controls'>
-          {/*TODO[enhancement] dynamic changing image dimension*/}
+          {/*TODO[improve chart grid pattern] dynamic changing image dimension*/}
           {/*{withDynamicDimensions && (*/}
           {/*  <div className='ExportPreview__controls__dimension'>*/}
           {/*    <div className='ExportPreview__controls__dimension__width'>*/}

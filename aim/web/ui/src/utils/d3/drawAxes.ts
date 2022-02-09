@@ -4,10 +4,13 @@ import { Unit } from 'humanize-duration';
 import moment from 'moment';
 
 import { IDrawAxesArgs } from 'types/utils/d3/drawAxes';
+import { IAxisScale } from 'types/utils/d3/getAxisScale';
 
 import shortEnglishHumanizer from 'utils/shortEnglishHumanizer';
-
-import { getKeyByAlignment } from '../formatByAlignment';
+import {
+  formatValueByAlignment,
+  getKeyByAlignment,
+} from 'utils/formatByAlignment';
 
 import { AlignmentOptionsEnum } from './index';
 
@@ -141,9 +144,13 @@ function drawAxes(args: IDrawAxesArgs): void {
           xAxis
             .ticks(ticksCount)
             .tickValues(tickValues!)
-            .tickFormat((d, i) =>
-              shortEnglishHumanizer(Math.round(+d), humanizerConfigRef.current),
-            );
+            .tickFormat((d, i) => {
+              const humanized = shortEnglishHumanizer(
+                Math.round(+d),
+                humanizerConfigRef.current,
+              );
+              return tickEllipsis(humanized, 10);
+            });
         }
         break;
       case AlignmentOptionsEnum.ABSOLUTE_TIME:
@@ -175,7 +182,10 @@ function drawAxes(args: IDrawAxesArgs): void {
                 return i % interval === 0 && tickValues.length - interval > i;
               }),
             )
-            .tickFormat((d) => moment(+d).format('HH:mm:ss D MMM, YY'));
+            .tickFormat((d) => {
+              const formattedTime = moment(+d).format('HH:mm:ss D MMM, YY');
+              return tickEllipsis(formattedTime, 20);
+            });
         }
         break;
       case AlignmentOptionsEnum.CUSTOM_METRIC:
@@ -208,100 +218,100 @@ function drawAxes(args: IDrawAxesArgs): void {
     if (drawBgTickLines.y) {
       yAxis.tickSize(-width + (margin.left + margin.right)).tickSizeOuter(0);
     }
+
+    yAxis.tickFormat((d: any) => tickEllipsis(`${d}`, 8));
+    yAxis.tickPadding(8);
+
     return yAxis;
   }
 
-  const yAxis = getFormattedYAxis(yScale);
+  function drawYAxis(yScale: IAxisScale) {
+    axesNodeRef.current?.select('.yAxis')?.remove();
 
-  const { xAlignmentText, xAxis } = getFormattedXAxis(xScale);
+    const yAxis = getFormattedYAxis(yScale);
 
-  axesRef.current.xAxis = axesNodeRef.current
-    ?.append('g')
-    .attr('class', 'xAxis')
-    .attr('stroke-width', 0.2)
-    .attr('color', '#8E9BAE')
-    .attr('fill', 'none')
-    .attr('transform', `translate(0, ${plotBoxRef.current.height})`)
-    .call(xAxis);
+    axesRef.current.yAxis = axesNodeRef.current
+      ?.append('g')
+      .attr('class', 'yAxis')
+      .attr('stroke-width', 0.2)
+      .attr('color', '#414b6d')
+      .attr('fill', 'none')
+      .call(yAxis);
 
-  axesRef.current.xAxis
-    .selectAll('.tick')
-    .attr('color', '#414b6d')
-    .append('svg:title')
-    .text((d: string | number, i: number, nodes: NodeList) => {
-      const gTick = nodes[i]?.parentNode as SVGElement;
-      return gTick?.textContent || d;
-    });
+    axesRef.current.yAxis
+      .select('.domain')
+      .attr('stroke', '#414b6d')
+      .attr('stroke-width', 0.4);
 
-  axesRef.current.xAxis
-    .select('.domain')
-    .attr('stroke', '#414b6d')
-    .attr('stroke-width', 0.4);
+    axesRef.current.yAxis
+      .selectAll('.tick')
+      .append('svg:title')
+      .text((d: string | number) => d);
 
-  axesRef.current.yAxis = axesNodeRef.current
-    ?.append('g')
-    .attr('class', 'yAxis')
-    .attr('stroke-width', 0.2)
-    .attr('color', '#8E9BAE')
-    .attr('fill', 'none')
-    .attr('width', '30px')
-    .call(yAxis);
+    axesRef.current.yAxis.selectAll('.tick line').attr('stroke', '#8E9BAE');
+  }
 
-  axesRef.current.yAxis
-    .select('.domain')
-    .attr('stroke', '#414b6d')
-    .attr('stroke-width', 0.4);
+  function drawXAxis(xScale: IAxisScale) {
+    axesNodeRef.current?.select('.xAxis')?.remove();
 
-  axesRef.current.yAxis
-    .selectAll('.tick')
-    .append('svg:clipPath')
-    .attr('id', (d: string | number, i: number) => `yAxis-${i}-textclip`)
-    .append('svg:rect')
-    .attr('width', margin.left - 4)
-    .attr('height', 12)
-    .attr('x', -margin.left)
-    .attr('y', -6)
-    .attr('clipPathUnits', 'objectBoundingBox');
+    const { xAlignmentText, xAxis } = getFormattedXAxis(xScale);
 
-  axesRef.current.yAxis
-    .selectAll('.tick')
-    .attr('color', '#414b6d')
-    .append('svg:title')
-    .text((d: string | number, i: number, nodes: NodeList) => {
-      const gTick = nodes[i]?.parentNode as SVGElement;
-      return gTick?.textContent || d;
-    });
+    axesRef.current.xAxis = axesNodeRef.current
+      ?.append('g')
+      .attr('class', 'xAxis')
+      .attr('stroke-width', 0.2)
+      .attr('color', '#414b6d')
+      .attr('fill', 'none')
+      .attr('transform', `translate(0, ${plotBoxRef.current.height})`)
+      .call(xAxis);
 
-  axesRef.current.yAxis
-    .selectAll('.tick text')
-    .attr('text-anchor', 'start')
-    .attr('x', '-4em')
-    .attr('clip-path', (d: any, i: number) => `url(#yAxis-${i}-textclip)`);
+    axesRef.current.xAxis
+      .select('.domain')
+      .attr('stroke', '#414b6d')
+      .attr('stroke-width', 0.4);
 
-  axesRef.current.xAxis
-    .append('text')
-    .attr(
-      'transform',
-      `translate(${width - margin.left - margin.right - 20},-5)`,
-    )
-    .attr('text-anchor', 'end')
-    .attr('alignment-baseline', 'ideographic')
-    .style('font-size', '1.1em')
-    .style('fill', '#586069')
-    .text(xAlignmentText);
+    axesRef.current.xAxis
+      .selectAll('.tick')
+      .append('svg:title')
+      .text((d: number) => {
+        return formatValueByAlignment({
+          xAxisTickValue: d ?? null,
+          type: alignmentConfig?.type,
+        });
+      });
+
+    axesRef.current.xAxis.selectAll('.tick line').attr('stroke', '#8E9BAE');
+
+    axesRef.current.xAxis
+      .append('text')
+      .attr(
+        'transform',
+        `translate(${width - margin.left - margin.right - 20},-5)`,
+      )
+      .attr('text-anchor', 'end')
+      .attr('alignment-baseline', 'ideographic')
+      .style('font-size', '1.1em')
+      .style('fill', '#586069')
+      .text(xAlignmentText);
+  }
+
+  function tickEllipsis(text: string, length: number): string {
+    return text.length > length ? text.substring(0, length - 1) + '..' : text;
+  }
+
+  drawYAxis(yScale);
+  drawXAxis(xScale);
 
   axesRef.current.updateXAxis = function (
     xScaleUpdate: d3.AxisScale<d3.AxisDomain>,
   ) {
-    const { xAxis } = getFormattedXAxis(xScaleUpdate);
-    axesRef.current.xAxis.call(xAxis);
+    drawXAxis(xScaleUpdate);
   };
 
   axesRef.current.updateYAxis = function (
     yScaleUpdate: d3.AxisScale<d3.AxisDomain>,
   ) {
-    const yAxis = getFormattedYAxis(yScaleUpdate);
-    axesRef.current.yAxis.call(yAxis);
+    drawYAxis(yScaleUpdate);
   };
 }
 
