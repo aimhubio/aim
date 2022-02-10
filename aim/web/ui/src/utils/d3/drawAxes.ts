@@ -54,7 +54,9 @@ function drawAxes(args: IDrawAxesArgs): void {
       xAxis.tickValues(tickValues);
     }
 
-    xAxis.tickFormat((d: any) => tickEllipsis(`${d}`, 20));
+    xAxis.tickFormat((d: any) =>
+      _.truncate(`${d}`, { length: 20 + 3 /* dots */ }),
+    );
 
     const alignmentKey = _.capitalize(getKeyByAlignment(alignmentConfig));
     switch (alignmentConfig?.type) {
@@ -151,7 +153,7 @@ function drawAxes(args: IDrawAxesArgs): void {
                 Math.round(+d),
                 humanizerConfigRef.current,
               );
-              return tickEllipsis(humanized, 10);
+              return _.truncate(humanized, { length: 10 + 3 /* dots */ });
             });
         }
         break;
@@ -186,7 +188,7 @@ function drawAxes(args: IDrawAxesArgs): void {
             )
             .tickFormat((d) => {
               const formattedTime = moment(+d).format('HH:mm:ss D MMM, YY');
-              return tickEllipsis(formattedTime, 20);
+              return _.truncate(formattedTime, { length: 20 + 3 /* dots */ });
             });
         }
         break;
@@ -223,7 +225,9 @@ function drawAxes(args: IDrawAxesArgs): void {
     if (drawBgTickLines.y) {
       yAxis.tickSize(-width + (margin.left + margin.right)).tickSizeOuter(0);
     }
-    yAxis.tickFormat((d: any) => tickEllipsis(`${d}`, 8));
+    yAxis.tickFormat((d: any) =>
+      _.truncate(`${d}`, { length: 8 + 3 /* dots */ }),
+    );
     yAxis.tickPadding(8);
     return yAxis;
   }
@@ -302,10 +306,6 @@ function drawAxes(args: IDrawAxesArgs): void {
       .style('font-size', '1.1em')
       .style('fill', '#586069')
       .text(xAlignmentText);
-  }
-
-  function tickEllipsis(text: string, length: number): string {
-    return text.length > length ? text.substring(0, length - 1) + '..' : text;
   }
 
   drawYAxis(yScale);

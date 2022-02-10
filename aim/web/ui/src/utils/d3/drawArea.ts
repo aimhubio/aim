@@ -5,6 +5,8 @@ import { IDrawAreaArgs } from 'types/utils/d3/drawArea';
 import { formatSystemMetricName } from 'utils/formatSystemMetricName';
 import { isSystemMetric } from 'utils/isSystemMetric';
 
+import { cutTextByWidth } from '../helper';
+
 import { CircleEnum } from './index';
 
 function drawArea(args: IDrawAreaArgs): void {
@@ -109,77 +111,47 @@ function drawArea(args: IDrawAreaArgs): void {
     .attr('width', offsetWidth + 2 * CircleEnum.ActiveRadius + 10)
     .attr('height', offsetHeight + 2 * CircleEnum.ActiveRadius + 10);
 
-  if (!readOnly) {
-    const titleMarginTop = 4;
-    const titleMarginBottom = 6;
-    const titleHeight = margin.top - titleMarginTop - titleMarginBottom;
-    const keys = Object.keys(chartTitle);
-    const titleText = keys
-      ? `${keys
-          .map(
-            (key) =>
-              `${key}=${
-                isSystemMetric(chartTitle[key])
-                  ? formatSystemMetricName(chartTitle[key])
-                  : chartTitle[key]
-              }`,
-          )
-          .join(', ')}`
-      : '';
+  const keys = Object.keys(chartTitle);
+  const titleText = keys
+    ? `${keys
+        .map(
+          (key) =>
+            `${key}=${
+              isSystemMetric(chartTitle[key])
+                ? formatSystemMetricName(chartTitle[key])
+                : chartTitle[key]
+            }`,
+        )
+        .join(', ')}`
+    : '';
+  const titleXAttr = margin.left - 45;
+  const croppedText = cutTextByWidth(titleText, width - margin.left, 12);
 
-    if (titleText) {
-      svgNodeRef.current
-        .append('foreignObject')
-        .attr('x', 0)
-        .attr('y', titleMarginTop)
-        .attr('height', titleHeight)
-        .attr('width', width)
-        .html((d: any) => {
-          if (!keys.length) {
-            return '';
-          }
-          return `
-        <div 
-            title='#${index + 1} ${titleText}' 
-            style='
-              display: flex; 
-              align-items: center;
-              justify-content: center;
-              color: #484f56;
-              padding: 0 1em;
-            '
-        >
-          <div 
-            style='
-              width: ${titleHeight}px; 
-              height: ${titleHeight - 4}px;
-              display: flex; 
-              align-items: center;
-              justify-content: center;
-              margin-right: 0.5em;
-              padding: 2px;
-              box-shadow: inset 0 0 0 1px #e8e8e8;
-              border-radius: 0.2em;
-              font-size: 0.6em;
-              flex-shrink: 0;
-            '
-          >
-           ${index + 1}
-          </div>
-          <div 
-            style='
-              white-space: nowrap; 
-              text-overflow: ellipsis;
-              overflow: hidden;
-              font-size: 0.75em;
-            '
-          >
-            ${titleText}
-          </div>
-        </div>
-      `;
-        });
-    }
+  if (titleText) {
+    const titleGroup = svgNodeRef.current
+      .append('g')
+      .attr('transform', `translate(${titleXAttr}, 3)`);
+
+    titleGroup
+      .append('text')
+      .attr('x', 0)
+      .attr('y', 12)
+      .attr('width', 20)
+      .attr('height', 20)
+      .attr('font-size', '10px')
+      .attr('fill', '#484f56')
+      .style('outline', '1px solid #e8e8e8')
+      .text(`[   ${index + 1}   ]`);
+
+    titleGroup
+      .append('text')
+      .attr('x', titleXAttr + 29)
+      .attr('y', 12)
+      .attr('font-size', '12px')
+      .attr('fill', '#484f56')
+      .text(croppedText)
+      .append('svg:title')
+      .text(titleText);
   }
 }
 
