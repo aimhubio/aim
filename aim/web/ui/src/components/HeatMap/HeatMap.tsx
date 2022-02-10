@@ -56,11 +56,16 @@ function HeatMap({
   }
 
   let lastDay = endDate;
+
   while (lastDay.getDay() !== 0) {
     lastDay = shiftDate(lastDay, 1);
   }
 
-  const diffDays = Math.round(Math.abs((firstDay - lastDay) / oneDay));
+  if (lastDay.getDay() === 0) {
+    lastDay = shiftDate(lastDay, 7);
+  }
+
+  const diffDays = Math.floor(Math.abs((firstDay - lastDay) / oneDay));
 
   const maxVal = Math.max(
     ...data?.map((i: any) => i?.[1]).filter((i: any) => Number.isInteger(i)),
@@ -119,7 +124,6 @@ function HeatMap({
   function getScale(value: number) {
     return Math.ceil((value / maxVal) * scaleRange);
   }
-
   function renderCell(index: number) {
     const dataItem = getItem(index);
     const date = indexToDate(index);
