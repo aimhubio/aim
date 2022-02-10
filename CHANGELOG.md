@@ -2,12 +2,9 @@
 
 ##Unreleased
 
-### Enhancements
-
-- Add repo lock/release feature (devfox-se)
-
 ### Fixes 
 
+- Add repo lock/release feature (devfox-se)
 - Fix system metric columns pinning functionality and grouping column order (arsengit)
 
 ## 3.5.1 Feb 4 2022
