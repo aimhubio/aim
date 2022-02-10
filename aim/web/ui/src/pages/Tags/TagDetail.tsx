@@ -4,6 +4,7 @@ import { isEmpty } from 'lodash-es';
 import BusyLoaderWrapper from 'components/BusyLoaderWrapper/BusyLoaderWrapper';
 import IllustrationBlock from 'components/IllustrationBlock/IllustrationBlock';
 import { Badge, Button, Icon } from 'components/kit';
+import ErrorBoundary from 'components/ErrorBoundary/ErrorBoundary';
 
 import tagsAppModel from 'services/models/tags/tagsAppModel';
 
@@ -35,49 +36,56 @@ function TagDetail({
   }, [id]);
 
   return (
-    <div className='TagDetail'>
-      <div className='TagDetail__headerContainer'>
+    <ErrorBoundary>
+      <div className='TagDetail'>
+        <div className='TagDetail__headerContainer'>
+          <BusyLoaderWrapper
+            isLoading={isTagInfoDataLoading}
+            loaderType='skeleton'
+            loaderConfig={{ variant: 'rect', width: 100, height: 24 }}
+            width='auto'
+          >
+            {tagInfo && (
+              <Badge
+                size='medium'
+                color={tagInfo?.color}
+                label={tagInfo?.name}
+              />
+            )}
+          </BusyLoaderWrapper>
+          <div className='TagDetail__headerContainer__headerActionsBox'>
+            {!tagInfo?.archived && (
+              <Button withOnlyIcon={true} onClick={onUpdateModalToggle}>
+                <Icon name='edit' />
+              </Button>
+            )}
+            {tagInfo?.archived ? (
+              <Button onClick={onSoftDeleteModalToggle} withOnlyIcon={true}>
+                <Icon name='eye-show-outline' color='primary' />
+              </Button>
+            ) : (
+              <Button withOnlyIcon={true} onClick={onSoftDeleteModalToggle}>
+                <Icon name='eye-outline-hide' color='primary' />
+              </Button>
+            )}
+            <Button withOnlyIcon={true} onClick={onDeleteModalToggle}>
+              <Icon name='delete' fontSize='small' color='primary' />
+            </Button>
+          </div>
+        </div>
+
         <BusyLoaderWrapper
-          isLoading={isTagInfoDataLoading}
-          loaderType='skeleton'
-          loaderConfig={{ variant: 'rect', width: 100, height: 24 }}
-          width='auto'
+          isLoading={isRunsDataLoading}
+          className='Tags__TagList__tagListBusyLoader'
         >
-          {tagInfo && (
-            <Badge size='medium' color={tagInfo?.color} label={tagInfo?.name} />
+          {!isEmpty(tagRuns) ? (
+            <TagRunsTable runsList={tagRuns} />
+          ) : (
+            <IllustrationBlock size='large' content='No Runs' />
           )}
         </BusyLoaderWrapper>
-        <div className='TagDetail__headerContainer__headerActionsBox'>
-          {!tagInfo?.archived && (
-            <Button withOnlyIcon={true} onClick={onUpdateModalToggle}>
-              <Icon name='edit' />
-            </Button>
-          )}
-          {tagInfo?.archived ? (
-            <Button onClick={onSoftDeleteModalToggle} withOnlyIcon={true}>
-              <Icon name='eye-show-outline' color='primary' />
-            </Button>
-          ) : (
-            <Button withOnlyIcon={true} onClick={onSoftDeleteModalToggle}>
-              <Icon name='eye-outline-hide' color='primary' />
-            </Button>
-          )}
-          <Button withOnlyIcon={true} onClick={onDeleteModalToggle}>
-            <Icon name='delete' fontSize='small' color='primary' />
-          </Button>
-        </div>
       </div>
-      <BusyLoaderWrapper
-        isLoading={isRunsDataLoading}
-        className='Tags__TagList__tagListBusyLoader'
-      >
-        {!isEmpty(tagRuns) ? (
-          <TagRunsTable runsList={tagRuns} />
-        ) : (
-          <IllustrationBlock size='large' content='No Runs' />
-        )}
-      </BusyLoaderWrapper>
-    </div>
+    </ErrorBoundary>
   );
 }
 

@@ -7,7 +7,7 @@ import { IPoint } from 'components/ScatterPlot';
 
 import COLORS from 'config/colors/colors';
 import DASH_ARRAYS from 'config/dash-arrays/dashArrays';
-import { ResizeModeEnum } from 'config/enums/tableEnums';
+import { HideColumnsEnum, ResizeModeEnum } from 'config/enums/tableEnums';
 import { AlignmentNotificationsEnum } from 'config/notification-messages/notificationMessages';
 import { RowHeightSize } from 'config/table/tableConfigs';
 import { DensityOptions } from 'config/enums/densityEnum';
@@ -236,6 +236,7 @@ function createAppModel(appConfig: IAppInitialConfig) {
             sortFields: [],
             hiddenMetrics: [],
             hiddenColumns: [],
+            hideSystemMetrics: undefined,
             columnsWidths: {},
             columnsOrder: {
               left: [],
@@ -345,6 +346,7 @@ function createAppModel(appConfig: IAppInitialConfig) {
           config.table = {
             resizeMode: ResizeModeEnum.Resizable,
             rowHeight: RowHeightSize.md,
+            hideSystemMetrics: true,
             sortFields: [],
             hiddenMetrics: [],
             hiddenColumns: [],
@@ -1005,7 +1007,7 @@ function createAppModel(appConfig: IAppInitialConfig) {
       const uniqContexts = _.uniq(contexts);
 
       const mappedData =
-        data.reduce((acc: any, item: any) => {
+        data?.reduce((acc: any, item: any) => {
           acc[item.hash] = { runHash: item.hash, ...item.props };
           return acc;
         }, {}) || {};
@@ -1619,7 +1621,7 @@ function createAppModel(appConfig: IAppInitialConfig) {
 
       groupedRows.forEach(
         (groupedRow: IMetricTableRowData[], groupedRowIndex: number) => {
-          groupedRow.forEach((row: IMetricTableRowData) => {
+          groupedRow?.forEach((row: IMetricTableRowData) => {
             const filteredRow = getFilteredRow<IMetricTableRowData>({
               columnKeys: filteredHeader,
               row,
@@ -1664,12 +1666,14 @@ function createAppModel(appConfig: IAppInitialConfig) {
                 newData: tableData.rows,
                 dynamicData: true,
               });
-              tableRef.current?.setHoveredRow?.(activePoint.key);
-              tableRef.current?.setActiveRow?.(
-                focusedStateActive ? activePoint.key : null,
-              );
+
               if (focusedStateActive) {
                 tableRef.current?.scrollToRow?.(activePoint.key);
+                tableRef.current?.setActiveRow?.(
+                  focusedStateActive ? activePoint.key : null,
+                );
+              } else {
+                tableRef.current?.setHoveredRow?.(activePoint.key);
               }
             }
           }
@@ -2138,7 +2142,6 @@ function createAppModel(appConfig: IAppInitialConfig) {
       default:
         return {};
     }
-
     function getRunsModelMethods() {
       let runsRequestRef: {
         call: (
@@ -2155,11 +2158,9 @@ function createAppModel(appConfig: IAppInitialConfig) {
         abort: () => void;
       };
       let liveUpdateInstance: LiveUpdateService | null;
+      let updateTableTimeoutId: number;
 
-      function initialize(appId: string = ''): {
-        call: () => Promise<void>;
-        abort: () => void;
-      } {
+      function initialize(appId: string = '') {
         model.init();
         const state: Partial<IAppModelState> = {};
         if (grouping) {
@@ -2192,8 +2193,20 @@ function createAppModel(appConfig: IAppInitialConfig) {
             liveUpdateState.delay,
           );
         }
-
-        return getRunsData();
+        try {
+          getRunsData().call((detail) => {
+            exceptionHandler({ detail, model });
+          });
+        } catch (err: any) {
+          onNotificationAdd({
+            model,
+            notification: {
+              id: Date.now(),
+              message: err.message,
+              severity: 'error',
+            },
+          });
+        }
       }
 
       function abortRequest(): void {
@@ -2217,7 +2230,7 @@ function createAppModel(appConfig: IAppInitialConfig) {
         shouldResetSelectedRows?: boolean,
         isInitial = true,
       ): {
-        call: () => Promise<void>;
+        call: (exceptionHandler: (detail: any) => void) => Promise<any>;
         abort: () => void;
       } {
         if (runsRequestRef) {
@@ -2245,9 +2258,9 @@ function createAppModel(appConfig: IAppInitialConfig) {
         return {
           call: async () => {
             try {
-              const stream = await runsRequestRef.call((detail) =>
-                exceptionHandler({ detail, model }),
-              );
+              const stream = await runsRequestRef.call((detail) => {
+                exceptionHandler({ detail, model });
+              });
               let gen = adjustable_reader(stream as ReadableStream<any>);
               let buffer_pairs = decode_buffer_pairs(gen);
               let decodedPairs = decodePathsVals(buffer_pairs);
@@ -2280,11 +2293,10 @@ function createAppModel(appConfig: IAppInitialConfig) {
               const tableColumns = getRunsTableColumns(
                 metricsColumns,
                 params,
-                data[0]?.config,
                 model.getState()?.config?.table.columnsOrder!,
                 model.getState()?.config?.table.hiddenColumns!,
               );
-
+              updateTableData(tableData, tableColumns, configData);
               model.setState({
                 data,
                 selectedRows: shouldResetSelectedRows
@@ -2305,19 +2317,16 @@ function createAppModel(appConfig: IAppInitialConfig) {
                   },
                 },
               });
-              setTimeout(() => {
-                const tableRef: any = model.getState()?.refs?.tableRef;
-                tableRef.current?.updateData({
-                  newData: tableData.rows,
-                  newColumns: tableColumns,
-                  hiddenColumns: configData.table.hiddenColumns!,
-                });
-              }, 0);
             } catch (ex: Error | any) {
               if (ex.name === 'AbortError') {
-                // Abort Error
-              } else {
-                console.log('Unhandled error: ', ex);
+                onNotificationAdd({
+                  notification: {
+                    id: Date.now(),
+                    severity: 'error',
+                    message: `${ex.name}, ${ex.message}`,
+                  },
+                  model,
+                });
               }
             }
             liveUpdateInstance?.start({
@@ -2340,16 +2349,10 @@ function createAppModel(appConfig: IAppInitialConfig) {
         const tableColumns: ITableColumn[] = getRunsTableColumns(
           metricsColumns,
           params,
-          data[0]?.config,
           configData?.table?.columnsOrder!,
           configData?.table?.hiddenColumns!,
         );
-        const tableRef: any = model.getState()?.refs?.tableRef;
-        tableRef.current?.updateData({
-          newData: tableData.rows,
-          newColumns: tableColumns,
-          hiddenColumns: configData?.table?.hiddenColumns!,
-        });
+        updateTableData(tableData, tableColumns, configData);
         model.setState({
           config: configData,
           data,
@@ -2358,6 +2361,28 @@ function createAppModel(appConfig: IAppInitialConfig) {
           sameValueColumns: tableData.sameValueColumns,
           selectedRows,
         });
+      }
+
+      function updateTableData(
+        tableData: {
+          rows: any;
+          sameValueColumns: string[];
+        },
+        tableColumns: ITableColumn[],
+        configData: IAppModelConfig | any,
+      ): void {
+        if (updateTableTimeoutId) {
+          clearTimeout(updateTableTimeoutId);
+        }
+
+        updateTableTimeoutId = window.setTimeout(() => {
+          const tableRef: any = model.getState()?.refs?.tableRef;
+          tableRef.current?.updateData({
+            newData: tableData.rows,
+            newColumns: tableColumns,
+            hiddenColumns: configData.table.hiddenColumns!,
+          });
+        }, 0);
       }
 
       function prepareModelStateToCall(isInitial: boolean): IRunsAppModelState {
@@ -2422,7 +2447,7 @@ function createAppModel(appConfig: IAppInitialConfig) {
         const processedData = groupData(runs);
         const uniqParams = _.uniq(params);
         const mappedData =
-          data.reduce((acc: any, item: any) => {
+          data?.reduce((acc: any, item: any) => {
             acc[item.hash] = { runHash: item.hash, ...item.props };
             return acc;
           }, {}) || {};
@@ -2746,7 +2771,9 @@ function createAppModel(appConfig: IAppInitialConfig) {
 
       function getLastRunsData(
         lastRow: any,
-      ): { call: () => Promise<void>; abort: () => void } | undefined {
+      ):
+        | { call: (exception: any) => Promise<void>; abort: () => void }
+        | undefined {
         const modelData: Partial<IRunsAppModelState> = model.getState();
         const infiniteIsPending = modelData?.infiniteIsPending;
         const isLatest = modelData?.config.pagination.isLatest;
@@ -2782,7 +2809,6 @@ function createAppModel(appConfig: IAppInitialConfig) {
         const tableColumns: ITableColumn[] = getRunsTableColumns(
           metricsColumns,
           params,
-          data[0]?.config,
           configData?.table.columnsOrder!,
           configData?.table.hiddenColumns!,
         );
@@ -2813,7 +2839,7 @@ function createAppModel(appConfig: IAppInitialConfig) {
 
         groupedRows.forEach(
           (groupedRow: IMetricTableRowData[], groupedRowIndex: number) => {
-            groupedRow.forEach((row: IMetricTableRowData) => {
+            groupedRow?.forEach((row: IMetricTableRowData) => {
               const filteredRow = getFilteredRow({
                 columnKeys: filteredHeader,
                 row,
@@ -2846,7 +2872,6 @@ function createAppModel(appConfig: IAppInitialConfig) {
         const tableColumns = getRunsTableColumns(
           metricsColumns,
           params,
-          data[0]?.config,
           model.getState()?.config?.table.columnsOrder!,
           model.getState()?.config?.table.hiddenColumns!,
         );
@@ -2877,6 +2902,7 @@ function createAppModel(appConfig: IAppInitialConfig) {
       }
 
       function destroy(): void {
+        runsRequestRef.abort();
         liveUpdateInstance?.clear();
         liveUpdateInstance = null; //@TODO check is this need or not
       }
@@ -2939,7 +2965,9 @@ function createAppModel(appConfig: IAppInitialConfig) {
               await runsArchiveRef
                 .call((detail) => exceptionHandler({ detail, model }))
                 .then(() => {
-                  getRunsData(false, true).call();
+                  getRunsData(false, true).call((detail: any) => {
+                    exceptionHandler({ detail, model });
+                  });
                   onNotificationAdd({
                     notification: {
                       id: Date.now(),
@@ -2979,7 +3007,9 @@ function createAppModel(appConfig: IAppInitialConfig) {
               await runsDeleteRef
                 .call((detail) => exceptionHandler({ detail, model }))
                 .then(() => {
-                  getRunsData(false, true).call();
+                  getRunsData(false, true).call((detail: any) => {
+                    exceptionHandler({ detail, model });
+                  });
                   onNotificationAdd({
                     notification: {
                       id: Date.now(),
@@ -3011,6 +3041,7 @@ function createAppModel(appConfig: IAppInitialConfig) {
         initialize,
         getRunsData,
         abortRequest,
+        updateModelData,
         getLastRunsData,
         onExportTableData,
         onNotificationDelete: onModelNotificationDelete,
@@ -3700,6 +3731,7 @@ function createAppModel(appConfig: IAppInitialConfig) {
         const sortFields = model.getState()?.config?.table.sortFields;
 
         const tableColumns = getParamsTableColumns(
+          groupingSelectOptions,
           metricsColumns,
           params,
           data[0]?.config,
@@ -3939,7 +3971,7 @@ function createAppModel(appConfig: IAppInitialConfig) {
         const uniqParams = _.uniq(params);
         const uniqHighLevelParams = _.uniq(highLevelParams);
         const mappedData =
-          data.reduce((acc: any, item: any) => {
+          data?.reduce((acc: any, item: any) => {
             acc[item.hash] = { runHash: item.hash, ...item.props };
             return acc;
           }, {}) || {};
@@ -3973,12 +4005,13 @@ function createAppModel(appConfig: IAppInitialConfig) {
         if (config.table.resizeMode !== ResizeModeEnum.Hide) {
           const tableRef: any = refs?.tableRef;
           if (tableRef) {
-            tableRef.current?.setHoveredRow?.(activePoint.key);
-            tableRef.current?.setActiveRow?.(
-              focusedStateActive ? activePoint.key : null,
-            );
             if (focusedStateActive) {
               tableRef.current?.scrollToRow?.(activePoint.key);
+              tableRef.current?.setActiveRow?.(
+                focusedStateActive ? activePoint.key : null,
+              );
+            } else {
+              tableRef.current?.setHoveredRow?.(activePoint.key);
             }
           }
         }
@@ -4030,6 +4063,7 @@ function createAppModel(appConfig: IAppInitialConfig) {
           groupingSelectOptions,
         );
         const tableColumns: ITableColumn[] = getParamsTableColumns(
+          groupingSelectOptions,
           metricsColumns,
           params,
           data[0]?.config,
@@ -4063,7 +4097,7 @@ function createAppModel(appConfig: IAppInitialConfig) {
 
         groupedRows.forEach(
           (groupedRow: IMetricTableRowData[], groupedRowIndex: number) => {
-            groupedRow.forEach((row: IMetricTableRowData) => {
+            groupedRow?.forEach((row: IMetricTableRowData) => {
               const filteredRow = getFilteredRow<IMetricTableRowData>({
                 columnKeys: filteredHeader,
                 row,
@@ -4111,6 +4145,7 @@ function createAppModel(appConfig: IAppInitialConfig) {
           groupingSelectOptions,
         );
         const tableColumns = getParamsTableColumns(
+          groupingSelectOptions,
           metricsColumns,
           params,
           data[0]?.config,
@@ -4599,6 +4634,7 @@ function createAppModel(appConfig: IAppInitialConfig) {
         const sortFields = model.getState()?.config?.table.sortFields;
 
         const tableColumns = getParamsTableColumns(
+          groupingSelectOptions,
           metricsColumns,
           params,
           data[0]?.config,
@@ -5035,7 +5071,7 @@ function createAppModel(appConfig: IAppInitialConfig) {
         const uniqParams = _.uniq(params);
         const uniqHighLevelParams = _.uniq(highLevelParams);
         const mappedData =
-          data.reduce((acc: any, item: any) => {
+          data?.reduce((acc: any, item: any) => {
             acc[item.hash] = { runHash: item.hash, ...item.props };
             return acc;
           }, {}) || {};
@@ -5226,6 +5262,7 @@ function createAppModel(appConfig: IAppInitialConfig) {
           groupingSelectOptions,
         );
         const tableColumns = getParamsTableColumns(
+          groupingSelectOptions,
           metricsColumns,
           params,
           data[0]?.config,
@@ -5403,9 +5440,14 @@ function createAppModel(appConfig: IAppInitialConfig) {
                 });
               } catch (ex: Error | any) {
                 if (ex.name === 'AbortError') {
-                  // Abort Error
-                } else {
-                  console.log('Unhandled error: ', ex);
+                  onNotificationAdd({
+                    notification: {
+                      message: ex.message,
+                      id: Date.now(),
+                      severity: 'error',
+                    },
+                    model,
+                  });
                 }
               }
             }
@@ -5426,6 +5468,7 @@ function createAppModel(appConfig: IAppInitialConfig) {
           groupingSelectOptions,
         );
         const tableColumns: ITableColumn[] = getParamsTableColumns(
+          groupingSelectOptions,
           metricsColumns,
           params,
           data[0]?.config,
@@ -5459,7 +5502,7 @@ function createAppModel(appConfig: IAppInitialConfig) {
 
         groupedRows.forEach(
           (groupedRow: IMetricTableRowData[], groupedRowIndex: number) => {
-            groupedRow.forEach((row: IMetricTableRowData) => {
+            groupedRow?.forEach((row: IMetricTableRowData) => {
               const filteredRow = getFilteredRow<IMetricTableRowData>({
                 columnKeys: filteredHeader,
                 row,
@@ -5490,12 +5533,13 @@ function createAppModel(appConfig: IAppInitialConfig) {
         if (config.table.resizeMode !== ResizeModeEnum.Hide) {
           const tableRef: any = refs?.tableRef;
           if (tableRef) {
-            tableRef.current?.setHoveredRow?.(activePoint.key);
-            tableRef.current?.setActiveRow?.(
-              focusedStateActive ? activePoint.key : null,
-            );
             if (focusedStateActive) {
               tableRef.current?.scrollToRow?.(activePoint.key);
+              tableRef.current?.setActiveRow?.(
+                focusedStateActive ? activePoint.key : null,
+              );
+            } else {
+              tableRef.current?.setHoveredRow?.(activePoint.key);
             }
           }
         }

@@ -5,7 +5,7 @@ import { IAppModelConfig } from 'types/services/models/explorer/createAppModel';
 export interface ISelectFormProps {
   requestIsPending: boolean;
   selectedMetricsData: IAppModelConfig['select'];
-  selectFormOptions: IAppModelConfig['selectFormOptions'];
+  selectFormOptions: ISelectOption[];
   onMetricsSelectChange: (options: ISelectOption[]) => void;
   onSelectRunQueryChange: (query: string) => void;
   onSelectAdvancedQueryChange: (query: string) => void;

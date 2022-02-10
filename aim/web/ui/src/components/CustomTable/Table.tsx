@@ -10,7 +10,11 @@ import { Checkbox } from '@material-ui/core';
 import { Icon } from 'components/kit';
 import ErrorBoundary from 'components/ErrorBoundary/ErrorBoundary';
 
-import { rowCeilSizeConfig } from 'config/table/tableConfigs';
+import {
+  ROW_CELL_SIZE_CONFIG,
+  COLORED_SELECTION_COLUMN_WIDTH,
+  SELECTION_COLUMN_WIDTH,
+} from 'config/table/tableConfigs';
 
 import Column from './TableColumn';
 
@@ -205,8 +209,9 @@ function Table(props) {
       <div
         className={classNames({
           Table__container: true,
-          [`Table__container--${rowCeilSizeConfig[props.rowHeightMode].name}`]:
-            true,
+          [`Table__container--${
+            ROW_CELL_SIZE_CONFIG[props.rowHeightMode].name
+          }`]: true,
         })}
       >
         <div
@@ -238,7 +243,13 @@ function Table(props) {
                         <Checkbox
                           color='primary'
                           size='small'
-                          className='Table__column__selectCheckbox'
+                          className={classNames(
+                            'Table__column__selectCheckbox',
+                            {
+                              Table__column__headerCheckbox:
+                                props.data[0]?.rowMeta?.color,
+                            },
+                          )}
                           icon={
                             <span className='Table__column__defaultSelectIcon'></span>
                           }
@@ -270,9 +281,14 @@ function Table(props) {
                     expanded={expanded}
                     expand={expand}
                     onRowSelect={props.onRowSelect}
+                    onRowClick={props.onRowClick}
                     selectedRows={props.selectedRows}
                     firstColumn={true}
-                    width={32}
+                    width={
+                      props.data[0]?.rowMeta?.color
+                        ? COLORED_SELECTION_COLUMN_WIDTH
+                        : SELECTION_COLUMN_WIDTH
+                    }
                     isAlwaysVisible={true}
                     onRowHover={props.onRowHover}
                   />
@@ -371,6 +387,7 @@ function Table(props) {
                   onRowClick={props.onRowClick}
                   columnOptions={col.columnOptions}
                   listWindow={props.listWindow}
+                  selectedRows={props.selectedRows}
                 />
               </ErrorBoundary>
             ))}
@@ -424,6 +441,7 @@ function Table(props) {
                     onRowHover={props.onRowHover}
                     onRowClick={props.onRowClick}
                     columnOptions={col.columnOptions}
+                    selectedRows={props.selectedRows}
                   />
                 </ErrorBoundary>
               ))}

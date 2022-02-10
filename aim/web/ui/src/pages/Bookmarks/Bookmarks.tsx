@@ -4,6 +4,7 @@ import AppBar from 'components/AppBar/AppBar';
 import BusyLoaderWrapper from 'components/BusyLoaderWrapper/BusyLoaderWrapper';
 import IllustrationBlock from 'components/IllustrationBlock/IllustrationBlock';
 import ErrorBoundary from 'components/ErrorBoundary/ErrorBoundary';
+import NotificationContainer from 'components/NotificationContainer/NotificationContainer';
 
 import { IllustrationsEnum } from 'config/illustrationConfig/illustrationConfig';
 
@@ -17,6 +18,8 @@ function Bookmarks({
   data,
   onBookmarkDelete,
   isLoading,
+  notifyData,
+  onNotificationDelete,
 }: IBookmarksProps): React.FunctionComponentElement<React.ReactNode> {
   return (
     <ErrorBoundary>
@@ -43,6 +46,12 @@ function Bookmarks({
           ) : null}
         </div>
       </section>
+      {notifyData?.length > 0 && (
+        <NotificationContainer
+          handleClose={onNotificationDelete}
+          data={notifyData}
+        />
+      )}
     </ErrorBoundary>
   );
 }

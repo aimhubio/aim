@@ -8,6 +8,7 @@ import TableSortIcons from 'components/Table/TableSortIcons';
 import { Badge, Button, Icon } from 'components/kit';
 import ControlPopover from 'components/ControlPopover/ControlPopover';
 import JsonViewPopover from 'components/kit/JsonViewPopover';
+import ErrorBoundary from 'components/ErrorBoundary/ErrorBoundary';
 
 import COLORS from 'config/colors/colors';
 import { PathEnum } from 'config/enums/routesEnum';
@@ -228,8 +229,11 @@ function getMetricsTableColumns(
                         ? groupingSelectOptions.find(
                             (value) => value.value === paramKey,
                           )
-                        : null,
-                    actionType: SortActionTypes.ORDER_TABLE_TRIGGER,
+                        : sortItem,
+                    actionType:
+                      sortItem?.order === 'desc'
+                        ? SortActionTypes.DELETE
+                        : SortActionTypes.ORDER_TABLE_TRIGGER,
                   })
                 }
                 sort={!_.isNil(sortItem) ? sortItem.order : null}
@@ -264,6 +268,23 @@ function getMetricsTableColumns(
       };
     }),
   );
+
+  const columnsOrder = order?.left.concat(order.middle).concat(order.right);
+  columns.sort((a, b) => {
+    if (a.key === '#') {
+      return -1;
+    } else if (a.key === 'actions') {
+      return 1;
+    }
+    if (!columnsOrder.includes(a.key) && !columnsOrder.includes(b.key)) {
+      return 0;
+    } else if (!columnsOrder.includes(a.key)) {
+      return 1;
+    } else if (!columnsOrder.includes(b.key)) {
+      return -1;
+    }
+    return columnsOrder.indexOf(a.key) - columnsOrder.indexOf(b.key);
+  });
 
   if (groupFields) {
     columns = [
@@ -308,29 +329,10 @@ function getMetricsTableColumns(
       ...columns,
     ];
   }
-
   columns = columns.map((col) => ({
     ...col,
     isHidden: hiddenColumns.includes(col.key),
   }));
-
-  const columnsOrder = order?.left.concat(order.middle).concat(order.right);
-  columns.sort((a, b) => {
-    if (a.key === '#') {
-      return -1;
-    } else if (a.key === 'actions') {
-      return 1;
-    }
-    if (!columnsOrder.includes(a.key) && !columnsOrder.includes(b.key)) {
-      return 0;
-    } else if (!columnsOrder.includes(a.key)) {
-      return 1;
-    } else if (!columnsOrder.includes(b.key)) {
-      return -1;
-    }
-    return columnsOrder.indexOf(a.key) - columnsOrder.indexOf(b.key);
-  });
-
   return columns;
 }
 
@@ -390,38 +392,42 @@ function metricsTableRowRenderer(
       } else if (col === 'groups') {
         row.groups = {
           content: (
-            <div className='Table__groupsColumn__cell'>
-              {Object.keys(rowData[col]).map((item) => {
-                const value: string | { [key: string]: unknown } =
-                  rowData[col][item];
-                return typeof value === 'object' ? (
-                  <ControlPopover
-                    key={contextToString(value)}
-                    title={item}
-                    anchorOrigin={{
-                      vertical: 'bottom',
-                      horizontal: 'left',
-                    }}
-                    transformOrigin={{
-                      vertical: 'top',
-                      horizontal: 'left',
-                    }}
-                    anchor={({ onAnchorClick }) => (
-                      <Tooltip title={(contextToString(value) as string) || ''}>
-                        <span onClick={onAnchorClick}>
-                          {contextToString(value)}
-                        </span>
-                      </Tooltip>
-                    )}
-                    component={<JsonViewPopover json={value} />}
-                  />
-                ) : (
-                  <Tooltip key={item} title={value || ''}>
-                    <span>{formatValue(value)}</span>
-                  </Tooltip>
-                );
-              })}
-            </div>
+            <ErrorBoundary>
+              <div className='Table__groupsColumn__cell'>
+                {Object.keys(rowData[col]).map((item) => {
+                  const value: string | { [key: string]: unknown } =
+                    rowData[col][item];
+                  return typeof value === 'object' ? (
+                    <ControlPopover
+                      key={contextToString(value)}
+                      title={item}
+                      anchorOrigin={{
+                        vertical: 'bottom',
+                        horizontal: 'left',
+                      }}
+                      transformOrigin={{
+                        vertical: 'top',
+                        horizontal: 'left',
+                      }}
+                      anchor={({ onAnchorClick }) => (
+                        <Tooltip
+                          title={(contextToString(value) as string) || ''}
+                        >
+                          <span onClick={onAnchorClick}>
+                            {contextToString(value)}
+                          </span>
+                        </Tooltip>
+                      )}
+                      component={<JsonViewPopover json={value} />}
+                    />
+                  ) : (
+                    <Tooltip key={item} title={value || ''}>
+                      <span>{formatValue(value)}</span>
+                    </Tooltip>
+                  );
+                })}
+              </div>
+            </ErrorBoundary>
           ),
         };
       } else if (['step', 'epoch'].includes(col)) {

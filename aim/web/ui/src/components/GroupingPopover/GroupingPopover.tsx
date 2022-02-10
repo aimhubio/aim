@@ -32,8 +32,7 @@ function GroupingPopover({
   onSelect,
   onGroupingModeChange,
 }: IGroupingPopoverProps): React.FunctionComponentElement<React.ReactNode> {
-  let [inputValue, setInputValue] = React.useState('');
-
+  const [inputValue, setInputValue] = React.useState('');
   function onChange(e: object, values: IGroupingSelectOption[]): void {
     onSelect({
       groupName,
@@ -101,7 +100,6 @@ function GroupingPopover({
               }
               value={values}
               onChange={onChange}
-              onInputChange={(e, value) => setInputValue(value)}
               groupBy={(option) => option.group}
               getOptionLabel={(option) => option.label}
               getOptionSelected={(option, value) =>
@@ -110,6 +108,13 @@ function GroupingPopover({
               renderInput={(params) => (
                 <TextField
                   {...params}
+                  inputProps={{
+                    ...params.inputProps,
+                    value: inputValue,
+                    onChange: (e: any) => {
+                      setInputValue(e.target?.value);
+                    },
+                  }}
                   variant='outlined'
                   placeholder='Select Params'
                 />

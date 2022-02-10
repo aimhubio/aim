@@ -52,6 +52,7 @@ export interface IScattersProps extends Partial<RouteChildrenProps> {
   sortFields: [string, 'asc' | 'desc' | boolean][];
   hiddenMetrics: string[];
   hiddenColumns: string[];
+  hideSystemMetrics: boolean;
   groupingSelectOptions: IGroupingSelectOption[];
   projectsDataMetrics: IProjectParamsMetrics['metrics'];
   resizeMode: ResizeModeEnum;

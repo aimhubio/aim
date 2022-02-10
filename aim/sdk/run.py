@@ -4,6 +4,7 @@ import os
 import datetime
 import json
 import pytz
+import sys
 
 from collections import defaultdict
 from copy import deepcopy
@@ -11,7 +12,16 @@ from copy import deepcopy
 from aim.sdk.sequence import Sequence
 from aim.storage.object import CustomObject
 from aim.sdk.sequence_collection import SingleRunSequenceCollection
-from aim.sdk.utils import generate_run_hash, get_object_typename, check_types_compatibility
+from aim.sdk.utils import (
+    check_types_compatibility,
+    generate_run_hash,
+    get_object_typename,
+)
+from aim.ext.utils import (
+    get_environment_variables,
+    get_installed_packages,
+    get_git_info,
+)
 from aim.sdk.num_utils import convert_to_py_number, is_number
 from aim.sdk.types import AimObject
 from aim.sdk.configs import AIM_ENABLE_TRACKING_THREAD, AIM_RUN_INDEXING_TIMEOUT
@@ -27,7 +37,6 @@ from aim.ext.cleanup import AutoClean
 from typing import Any, Dict, Iterator, Optional, Tuple, Union
 from typing import TYPE_CHECKING
 
-
 if TYPE_CHECKING:
     from pandas import DataFrame
 
@@ -39,7 +48,6 @@ if TYPE_CHECKING:
     from aim.sdk.sequences.text_sequence import Texts
     from aim.sdk.sequence_collection import SequenceCollection
     from aim.sdk.repo import Repo
-
 
 logger = logging.getLogger(__name__)
 
@@ -205,6 +213,7 @@ class SequenceInfo:
         self.val_view = None
         self.epoch_view = None
         self.time_view = None
+        self.record_max_length = None
 
 
 class Run(StructuredRunMixin):
@@ -224,6 +233,8 @@ class Run(StructuredRunMixin):
             Can be used later to query runs/sequences.
          system_tracking_interval (:obj:`int`, optional): Sets the tracking interval in seconds for system usage
             metrics (CPU, Memory, etc.). Set to `None` to disable system metrics tracking.
+         log_system_params (:obj:`bool`, optional): Enable/Disable logging of system params such as installed packages,
+            git info, environment variables, etc.
     """
 
     _idx_to_ctx: Dict[int, Context] = dict()
@@ -235,7 +246,8 @@ class Run(StructuredRunMixin):
                  repo: Optional[Union[str, 'Repo']] = None,
                  read_only: bool = False,
                  experiment: Optional[str] = None,
-                 system_tracking_interval: Optional[int] = DEFAULT_SYSTEM_TRACKING_INT):
+                 system_tracking_interval: Optional[int] = DEFAULT_SYSTEM_TRACKING_INT,
+                 log_system_params: Optional[bool] = False):
         self._resources: Optional[RunAutoClean] = None
         run_hash = run_hash or generate_run_hash()
         self.hash = run_hash
@@ -267,10 +279,17 @@ class Run(StructuredRunMixin):
             'seqs', self.hash, read_only=read_only
         ).subtree('seqs').subtree('chunks').subtree(self.hash)
 
-        self._system_resource_tracker: ResourceTracker = None
-        self._prepare_resource_tracker(system_tracking_interval)
-
         if not read_only:
+            if log_system_params:
+                system_params = {
+                    'packages': get_installed_packages(),
+                    'env_variables': get_environment_variables(),
+                    'git_info': get_git_info(),
+                    'executable': sys.executable,
+                    'arguments': sys.argv
+                }
+                self.__setitem__("__system_params", system_params)
+
             try:
                 self.meta_run_attrs_tree.first()
             except (KeyError, StopIteration):
@@ -280,6 +299,11 @@ class Run(StructuredRunMixin):
             self.props
         if experiment:
             self.experiment = experiment
+
+        self._prepare_sequence_info(read_only)
+
+        self._system_resource_tracker: ResourceTracker = None
+        self._prepare_resource_tracker(system_tracking_interval)
 
         self._resources = RunAutoClean(self)
 
@@ -407,50 +431,19 @@ class Run(StructuredRunMixin):
         else:
             raise ValueError(f'Input metric of type {type(value)} is neither python number nor AimObject')
 
-        dtype = get_object_typename(val)
-
         ctx = Context(context)
-        sequence = SequenceDescriptor(name, ctx)
-
         if ctx not in self.contexts:
             self.meta_tree['contexts', ctx.idx] = context
             self.meta_run_tree['contexts', ctx.idx] = context
             self.contexts[ctx] = ctx.idx
             self._idx_to_ctx[ctx.idx] = ctx
 
-        seq_info = self.sequence_info[sequence.selector]
-        if not seq_info.initialized:
-            seq_info.val_view = self.series_run_tree.subtree(sequence.selector).array('val').allocate()
-            seq_info.epoch_view = self.series_run_tree.subtree(sequence.selector).array('epoch').allocate()
-            seq_info.time_view = self.series_run_tree.subtree(sequence.selector).array('time').allocate()
-
-            seq_info.count = len(seq_info.val_view)
-            seq_info.sequence_dtype = self.meta_run_tree.get(('traces', ctx.idx, name, 'dtype'), None)
-            if seq_info.count != 0 and seq_info.sequence_dtype is None:  # continue tracking on old sequence
-                seq_info.sequence_dtype = 'float'
-            seq_info.initialized = True
-
-        if seq_info.sequence_dtype is not None:
-            def update_trace_dtype(new_dtype):
-                self.meta_tree['traces_types', new_dtype, ctx.idx, name] = 1
-                seq_info.sequence_dtype = self.meta_run_tree['traces', ctx.idx, name, 'dtype'] = new_dtype
-
-            compatible = check_types_compatibility(dtype, seq_info.sequence_dtype, update_trace_dtype)
-            if not compatible:
-                raise ValueError(f'Cannot log value \'{value}\' on sequence \'{name}\'. Incompatible data types.')
-
-        step = step or seq_info.count
-
-        if seq_info.count == 0:
-            self.meta_tree['traces_types', dtype, ctx.idx, name] = 1
-            seq_info.sequence_dtype = self.meta_run_tree['traces', ctx.idx, name, 'dtype'] = dtype
-            self.meta_run_tree['traces', ctx.idx, name, 'first_step'] = step
+        seq_info = self._get_or_create_sequence_info(ctx, name)
+        step = step if step is not None else seq_info.count
+        self._update_sequence_info(seq_info, ctx, val, name, step)
 
         self.meta_run_tree['traces', ctx.idx, name, 'last'] = val
         self.meta_run_tree['traces', ctx.idx, name, 'last_step'] = step
-        if isinstance(val, (tuple, list)):
-            record_max_length = self.meta_run_tree.get(('traces', ctx.idx, name, 'record_max_length'), 0)
-            self.meta_run_tree['traces', ctx.idx, name, 'record_max_length'] = max(record_max_length, len(val))
 
         # TODO perform assignments in an atomic way
         seq_info.val_view[step] = val
@@ -635,6 +628,75 @@ class Run(StructuredRunMixin):
             return None
         sequence = seq_cls(sequence_name, context, self)
         return sequence if bool(sequence) else None
+
+    def _prepare_sequence_info(self, read_only):
+        if read_only:
+            return
+
+        for ctx_id, traces in self.meta_run_tree.get('traces', {}).items():
+            for name in traces:
+                try:
+                    self._read_sequence_info(self.idx_to_ctx(ctx_id), name)
+                except KeyError:
+                    pass
+
+    def _read_sequence_info(self, ctx, name):
+        sequence_selector = SequenceDescriptor(name, ctx).selector
+        seq_info = self.sequence_info[sequence_selector]
+
+        assert not seq_info.initialized
+        seq_info.val_view = self.series_run_tree.subtree(sequence_selector).array('val').allocate()
+        seq_info.epoch_view = self.series_run_tree.subtree(sequence_selector).array('epoch').allocate()
+        seq_info.time_view = self.series_run_tree.subtree(sequence_selector).array('time').allocate()
+        seq_info.count = len(seq_info.val_view)
+        seq_info.sequence_dtype = self.meta_run_tree.get(('traces', ctx.idx, name, 'dtype'), None)
+        seq_info.record_max_length = self.meta_run_tree.get(('traces', ctx.idx, name, 'record_max_length'), 0)
+        seq_info.initialized = True
+
+    def _get_or_create_sequence_info(self, ctx, name):
+        # this method is used in the `run.track()`, so please use only write-only instructions
+        sequence_selector = SequenceDescriptor(name, ctx).selector
+        seq_info = self.sequence_info[sequence_selector]
+
+        if seq_info.initialized:
+            return seq_info
+
+        # the subtree().array().allocate() method is write-only
+        seq_info.val_view = self.series_run_tree.subtree(sequence_selector).array('val').allocate()
+        seq_info.epoch_view = self.series_run_tree.subtree(sequence_selector).array('epoch').allocate()
+        seq_info.time_view = self.series_run_tree.subtree(sequence_selector).array('time').allocate()
+        seq_info.count = 0
+        seq_info.sequence_dtype = None
+        seq_info.record_max_length = 0
+        seq_info.initialized = True
+        return seq_info
+
+    def _update_sequence_info(self, seq_info, ctx, val, name, step):
+        # this method is used in the `run.track()`, so please use only write-only instructions
+        dtype = get_object_typename(val)
+
+        if seq_info.sequence_dtype is not None:
+            def update_trace_dtype(new_dtype):
+                self.meta_tree['traces_types', new_dtype, ctx.idx, name] = 1
+                self.meta_run_tree['traces', ctx.idx, name, 'dtype'] = new_dtype
+                seq_info.sequence_dtype = new_dtype
+
+            compatible = check_types_compatibility(dtype, seq_info.sequence_dtype, update_trace_dtype)
+            if not compatible:
+                raise ValueError(f'Cannot log value \'{val}\' on sequence \'{name}\'. Incompatible data types.')
+
+        if seq_info.count == 0:
+            self.meta_tree['traces_types', dtype, ctx.idx, name] = 1
+            self.meta_run_tree['traces', ctx.idx, name, 'dtype'] = dtype
+            self.meta_run_tree['traces', ctx.idx, name, 'first_step'] = step
+            seq_info.sequence_dtype = dtype
+
+        if isinstance(val, (tuple, list)):
+            record_max_length = max(seq_info.record_max_length, len(val))
+            self.meta_run_tree['traces', ctx.idx, name, 'record_max_length'] = record_max_length
+            seq_info.record_max_length = record_max_length
+
+        return seq_info
 
     def collect_sequence_info(self, sequence_types: Tuple[str, ...], skip_last_value=False) -> Dict[str, list]:
         """Retrieve Run's all sequences general overview.

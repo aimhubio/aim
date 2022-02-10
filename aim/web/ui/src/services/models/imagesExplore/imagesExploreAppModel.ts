@@ -1,4 +1,4 @@
-import React, { ChangeEvent } from 'react';
+import React from 'react';
 import _ from 'lodash-es';
 import moment from 'moment';
 import { saveAs } from 'file-saver';
@@ -50,6 +50,7 @@ import {
   ISelectOption,
 } from 'types/services/models/explorer/createAppModel';
 import { IProjectParamsMetrics } from 'types/services/models/projects/projectsModel';
+import { IApiRequest } from 'types/services/services';
 
 import onRowSelectAction from 'utils/app/onRowSelect';
 import { decode, encode } from 'utils/encoder/encoder';
@@ -67,7 +68,6 @@ import JsonToCSV from 'utils/JsonToCSV';
 import { formatValue } from 'utils/formatValue';
 import getValueByField from 'utils/getValueByField';
 import arrayBufferToBase64 from 'utils/arrayBufferToBase64';
-import { formatToPositiveNumber } from 'utils/formatToPositiveNumber';
 import getMinAndMaxBetweenArrays from 'utils/getMinAndMaxBetweenArrays';
 import getTooltipData from 'utils/app/getTooltipData';
 import filterTooltipContent from 'utils/filterTooltipContent';
@@ -127,6 +127,7 @@ function getConfig(): IImagesExploreAppConfig {
       },
       sortFields: [],
       sortFieldsDict: {},
+      inputsValidations: {},
     },
     table: {
       resizeMode: ResizeModeEnum.Resizable,
@@ -134,6 +135,7 @@ function getConfig(): IImagesExploreAppConfig {
       sortFields: [],
       hiddenMetrics: [],
       hiddenColumns: [],
+      hideSystemMetrics: undefined,
       columnsWidths: {},
       columnsOrder: {
         left: [],
@@ -146,7 +148,7 @@ function getConfig(): IImagesExploreAppConfig {
 }
 
 let appRequestRef: {
-  call: () => Promise<IAppData>;
+  call: (exceptionHandler: (detail: any) => void) => Promise<IAppData>;
   abort: () => void;
 };
 
@@ -210,7 +212,9 @@ function getAppConfigData(appId: string) {
   appRequestRef = appsService.fetchApp(appId);
   return {
     call: async () => {
-      const appData = await appRequestRef.call();
+      const appData = await appRequestRef.call((detail: any) => {
+        exceptionHandler({ detail, model });
+      });
       let select = appData?.state?.select;
       if (select) {
         const compatibleSelectConfig = getCompatibleSelectConfig(
@@ -342,7 +346,7 @@ function getImagesData(
         model.setState({
           requestStatus: RequestStatusEnum.Pending,
           queryIsEmpty: false,
-          applyButtonDisabled: true,
+          applyButtonDisabled: false,
           selectedRows: shouldResetSelectedRows
             ? {}
             : model.getState()?.selectedRows,
@@ -511,7 +515,7 @@ function processData(data: any[]): {
   const uniqHighLevelParams = _.uniq(highLevelParams);
   const uniqContexts = _.uniq(contexts);
   const mappedData =
-    data.reduce((acc: any, item: any) => {
+    data?.reduce((acc: any, item: any) => {
       acc[item.hash] = { runHash: item.hash, ...item.props };
       return acc;
     }, {}) || {};
@@ -991,7 +995,9 @@ function getImagesBlobsData(uris: string[]) {
     abort: request.abort,
     call: () => {
       return request
-        .call()
+        .call((detail: any) => {
+          exceptionHandler({ detail, model });
+        })
         .then(async (stream) => {
           let gen = adjustable_reader(stream);
           let buffer_pairs = decode_buffer_pairs(gen);
@@ -1348,11 +1354,15 @@ async function onBookmarkCreate({ name, description }: IBookmarkFormState) {
   if (configData) {
     const app: IAppData | any = await appsService
       .createApp({ state: configData, type: 'images' })
-      .call();
+      .call((detail: any) => {
+        exceptionHandler({ detail, model });
+      });
     if (app.id) {
       const bookmark: IDashboardData = await dashboardService
         .createDashboard({ app_id: app.id, name, description })
-        .call();
+        .call((detail: any) => {
+          exceptionHandler({ detail, model });
+        });
       if (bookmark.name) {
         onNotificationAdd({
           notification: {
@@ -1383,7 +1393,9 @@ function onBookmarkUpdate(id: string) {
   if (configData) {
     appsService
       .updateApp(id, { state: configData, type: 'images' })
-      .call()
+      .call((detail: any) => {
+        exceptionHandler({ detail, model });
+      })
       .then((res: IDashboardData | any) => {
         if (res.id) {
           onNotificationAdd({
@@ -1588,7 +1600,7 @@ function onExportTableData(e: React.ChangeEvent<any>): void {
   const dataToExport: { [key: string]: string }[] = [];
 
   groupedRows.forEach((groupedRow: any[], groupedRowIndex: number) => {
-    groupedRow.forEach((row: any) => {
+    groupedRow?.forEach((row: any) => {
       const filteredRow: any = getFilteredRow(filteredHeader, row);
       dataToExport.push(filteredRow);
     });
@@ -1958,59 +1970,50 @@ function onSliceRangeChange(key: string, newValue: number[] | number) {
       images,
     };
 
-    const searchButtonDisabled: boolean =
-      images.recordDensity === '0' || images.indexDensity === '0';
     model.setState({
       config,
-      searchButtonDisabled,
-      applyButtonDisabled: searchButtonDisabled,
     });
   }
 }
 
-function onDensityChange(e: React.ChangeEvent<HTMLInputElement>, key: string) {
-  let { value } = e.target;
+function onDensityChange(value: number, metaData: any, key: string) {
   const configData: IImagesExploreAppConfig | undefined =
     model.getState()?.config;
   if (configData?.images) {
     const images = {
       ...configData.images,
-      [key]: formatToPositiveNumber(+value),
+      [key]: +value,
+      inputsValidations: {
+        ...configData.images?.inputsValidations,
+        [key]: metaData?.isValid,
+      },
     };
     const config = {
       ...configData,
       images,
     };
-    const searchButtonDisabled =
-      images.recordDensity === '0' || images.indexDensity === '0';
     model.setState({
       config,
-      searchButtonDisabled,
-      applyButtonDisabled: searchButtonDisabled,
     });
   }
+  applyBtnDisabledHandler();
 }
 
-function onRecordDensityChange(event: ChangeEvent<{ value: number }>) {
-  const configData: IImagesExploreAppConfig | undefined =
-    model.getState()?.config;
-  if (configData?.images) {
-    const images = {
-      ...configData.images,
-      recordDensity: formatToPositiveNumber(+event.target.value),
-    };
-    const config = {
-      ...configData,
-      images,
-    };
-    const searchButtonDisabled =
-      images.recordDensity === '0' || images.indexDensity === '0';
-    model.setState({
-      config,
-      searchButtonDisabled,
-      applyButtonDisabled: searchButtonDisabled,
-    });
-  }
+function applyBtnDisabledHandler() {
+  const state = model.getState();
+  const inputsValidations = state.config?.images?.inputsValidations || {};
+
+  const isInputsValid =
+    _.size(
+      Object.keys(inputsValidations).filter((key) => {
+        return inputsValidations[key] === false;
+      }),
+    ) <= 0;
+
+  model.setState({
+    ...state,
+    applyButtonDisabled: !isInputsValid,
+  });
 }
 
 const onImageSizeChange = _.throttle((value: number) => {
@@ -2050,6 +2053,7 @@ function onImageRenderingChange(type: ImageRenderingEnum) {
       ...configData,
       images,
     };
+
     updateURL(config as IImagesExploreAppConfig);
     model.setState({
       config,
@@ -2237,7 +2241,6 @@ const imagesExploreAppModel = {
   onImageVisibilityChange,
   onSliceRangeChange,
   onDensityChange,
-  onRecordDensityChange,
   getImagesBlobsData,
   onChangeTooltip,
   onActivePointChange,
