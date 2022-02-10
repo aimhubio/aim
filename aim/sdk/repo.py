@@ -3,6 +3,7 @@ import shutil
 import logging
 
 from collections import defaultdict
+from contextlib import contextmanager
 from enum import Enum
 from filelock import FileLock
 from packaging import version
@@ -109,6 +110,17 @@ class Repo:
             self.root_path = path
         self.path = os.path.join(self.root_path, get_aim_repo_name())
 
+        self.container_pool: Dict[ContainerConfig, Container] = WeakValueDictionary()
+        self.persistent_pool: Dict[ContainerConfig, Container] = dict()
+        self.container_view_pool: Dict[ContainerConfig, Container] = WeakValueDictionary()
+
+        self._run_props_cache_hint = None
+        self._encryption_key = None
+        self.structured_db = None
+
+        self._lock_path = os.path.join(self.path, '.repo_lock')
+        self._lock = FileLock(self._lock_path, timeout=5)
+
         if init:
             os.makedirs(self.path, exist_ok=True)
             with open(os.path.join(self.path, 'VERSION'), 'w') as version_fh:
@@ -118,19 +130,16 @@ class Repo:
                 unmount_remote_repo(self.root_path, self._mount_root)
             raise RuntimeError(f'Cannot find repository \'{self.path}\'. Please init first.')
 
-        self.container_pool: Dict[ContainerConfig, Container] = WeakValueDictionary()
-        self.persistent_pool: Dict[ContainerConfig, Container] = dict()
-        self.container_view_pool: Dict[ContainerConfig, Container] = WeakValueDictionary()
+        self._lock.acquire()
+        try:
+            if not self.is_remote_repo:
+                self.structured_db = DB.from_path(self.path)
+                if init:
+                    self.structured_db.run_upgrades()
 
-        self._run_props_cache_hint = None
-        self._encryption_key = None
-        self.structured_db = None
-        if not self.is_remote_repo:
-            self.structured_db = DB.from_path(self.path)
-            if init:
-                self.structured_db.run_upgrades()
-
-        self._resources = RepoAutoClean(self)
+            self._resources = RepoAutoClean(self)
+        finally:
+            self._lock.release()
 
     @property
     def meta_tree(self):
@@ -144,6 +153,14 @@ class Repo:
 
     def __eq__(self, o: 'Repo') -> bool:
         return self.path == o.path
+
+    @contextmanager
+    def lock(self):
+        self._lock.acquire()
+        try:
+            yield self._lock
+        finally:
+            self._lock.release()
 
     @classmethod
     def default_repo_path(cls) -> str:
