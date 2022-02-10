@@ -16,7 +16,7 @@ function HomeContainer(): React.FunctionComponentElement<React.ReactNode> {
 
   React.useEffect(() => {
     homeAppModel.initialize();
-    console.log(ANALYTICS_EVENT_KEYS.home.pageView);
+    analytics.trackEvent(ANALYTICS_EVENT_KEYS.home.pageView);
     return () => {
       homeAppModel.destroy();
     };
