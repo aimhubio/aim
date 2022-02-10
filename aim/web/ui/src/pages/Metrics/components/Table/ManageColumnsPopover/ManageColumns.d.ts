@@ -5,7 +5,7 @@ import { IColumnsOrder } from 'types/services/models/explorer/createAppModel';
 
 export interface IManageColumnsPopoverProps {
   columnsData: ITableColumn[];
-  hiddenColumns: string[] | any;
+  hiddenColumns: string[];
   columnsOrder: IColumnsOrder;
   onTableDiffShow: () => void;
   onManageColumns: (columns: any) => void;
