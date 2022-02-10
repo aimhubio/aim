@@ -119,7 +119,7 @@ class Repo:
         self.structured_db = None
 
         self._lock_path = os.path.join(self.path, '.repo_lock')
-        self._lock = FileLock(self._lock_path, timeout=5)
+        self._lock = FileLock(self._lock_path, timeout=10)
 
         if init:
             os.makedirs(self.path, exist_ok=True)
