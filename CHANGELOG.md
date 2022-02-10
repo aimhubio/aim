@@ -2,6 +2,7 @@
 
 ## Unreleased
 
+- Fix issue with displaying current day activity cell on week's first day (rubenaprikyan)
 - Fix issue with filtering options while typing in input of autocomplete in Tooltip and Grouping popovers (rubenaprikyan)
 
 ## 3.5.1 Feb 4 2022
