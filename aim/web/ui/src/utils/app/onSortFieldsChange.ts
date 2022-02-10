@@ -1,6 +1,6 @@
 import { isEmpty } from 'lodash-es';
 
-import analyticsKeysMap from 'config/analytics/analyticsKeysMap';
+import { ANALYTICS_EVENT_KEYS } from 'config/analytics/analyticsKeysMap';
 
 import * as analytics from 'services/analytics';
 
@@ -35,7 +35,7 @@ export default function onSortFieldsChange<M extends State>({
   }
   analytics.trackEvent(
     // @ts-ignore
-    `${analyticsKeysMap[appName].table.changeSorting} ${
+    `${ANALYTICS_EVENT_KEYS[appName].table.changeSorting} ${
       isEmpty(sortFields) ? 'Reset' : 'Apply'
     } table sorting by a key`,
   );

@@ -2,7 +2,7 @@ import React from 'react';
 
 import ErrorBoundary from 'components/ErrorBoundary/ErrorBoundary';
 
-import analyticsKeysMap from 'config/analytics/analyticsKeysMap';
+import { ANALYTICS_EVENT_KEYS } from 'config/analytics/analyticsKeysMap';
 
 import useModel from 'hooks/model/useModel';
 
@@ -19,7 +19,7 @@ function TagsContainer(): React.FunctionComponentElement<React.ReactNode> {
   React.useEffect(() => {
     tagsAppModel.initialize();
     tagsRequestRef.call();
-    analytics.pageView(analyticsKeysMap.tags.pageView);
+    analytics.pageView(ANALYTICS_EVENT_KEYS.tags.pageView);
   }, []);
   return (
     <ErrorBoundary>

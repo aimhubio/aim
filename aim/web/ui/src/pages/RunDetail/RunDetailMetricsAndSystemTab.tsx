@@ -5,7 +5,7 @@ import EmptyComponent from 'components/EmptyComponent/EmptyComponent';
 import BusyLoaderWrapper from 'components/BusyLoaderWrapper/BusyLoaderWrapper';
 import ErrorBoundary from 'components/ErrorBoundary/ErrorBoundary';
 
-import analyticsKeysMap from 'config/analytics/analyticsKeysMap';
+import { ANALYTICS_EVENT_KEYS } from 'config/analytics/analyticsKeysMap';
 
 import runDetailAppModel from 'services/models/runs/runDetailAppModel';
 import * as analytics from 'services/analytics';
@@ -33,7 +33,8 @@ function RunDetailMetricsAndSystemTab({
 
   React.useEffect(() => {
     analytics.pageView(
-      analyticsKeysMap.runDetails.tabs[isSystem ? 'system' : 'metrics'].tabView,
+      ANALYTICS_EVENT_KEYS.runDetails.tabs[isSystem ? 'system' : 'metrics']
+        .tabView,
     );
   }, [isSystem]);
 

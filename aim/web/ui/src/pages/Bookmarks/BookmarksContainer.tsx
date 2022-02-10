@@ -2,7 +2,7 @@ import React from 'react';
 
 import ErrorBoundary from 'components/ErrorBoundary/ErrorBoundary';
 
-import analyticsKeysMap from 'config/analytics/analyticsKeysMap';
+import { ANALYTICS_EVENT_KEYS } from 'config/analytics/analyticsKeysMap';
 
 import useModel from 'hooks/model/useModel';
 
@@ -18,7 +18,7 @@ function BookmarksContainer(): React.FunctionComponentElement<React.ReactNode> {
 
   React.useEffect(() => {
     bookmarkAppModel.initialize();
-    analytics.pageView(analyticsKeysMap.bookmarks.pageView);
+    analytics.pageView(ANALYTICS_EVENT_KEYS.bookmarks.pageView);
     return () => {
       bookmarkAppModel.destroy();
     };

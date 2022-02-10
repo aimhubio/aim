@@ -1,4 +1,4 @@
-import analyticsKeysMap from 'config/analytics/analyticsKeysMap';
+import { ANALYTICS_EVENT_KEYS } from 'config/analytics/analyticsKeysMap';
 
 import * as analytics from 'services/analytics';
 
@@ -49,6 +49,6 @@ export default function onChangeTooltip<M extends State>({
   }
   analytics.trackEvent(
     // @ts-ignore
-    analyticsKeysMap[appName].chart.controls.tooltip.changeTooltipContent,
+    ANALYTICS_EVENT_KEYS[appName].chart.controls.tooltip.changeTooltipContent,
   );
 }

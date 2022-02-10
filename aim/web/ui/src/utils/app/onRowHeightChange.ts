@@ -1,6 +1,6 @@
 import { RowHeightEnum } from 'config/enums/tableEnums';
 import { RowHeightSize } from 'config/table/tableConfigs';
-import analyticsKeysMap from 'config/analytics/analyticsKeysMap';
+import { ANALYTICS_EVENT_KEYS } from 'config/analytics/analyticsKeysMap';
 
 import * as analytics from 'services/analytics';
 
@@ -34,7 +34,7 @@ export default function onRowHeightChange<M extends State>({
   analytics.trackEvent(
     `${
       // @ts-ignore
-      analyticsKeysMap[appName].table.changeTableRowHeight
+      ANALYTICS_EVENT_KEYS[appName].table.changeTableRowHeight
     } to "${RowHeightEnum[height].toLowerCase()}"`,
   );
 }

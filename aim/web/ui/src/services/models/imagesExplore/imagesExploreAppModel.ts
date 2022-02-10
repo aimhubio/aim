@@ -9,7 +9,7 @@ import { ResizeModeEnum, RowHeightEnum } from 'config/enums/tableEnums';
 import { IMAGE_SIZE_CHANGE_DELAY } from 'config/mediaConfigs/mediaConfigs';
 import { ImageRenderingEnum } from 'config/enums/imageEnums';
 import { CONTROLS_DEFAULT_CONFIG } from 'config/controls/controlsDefaultConfig';
-import analyticsKeysMap from 'config/analytics/analyticsKeysMap';
+import { ANALYTICS_EVENT_KEYS } from 'config/analytics/analyticsKeysMap';
 
 import {
   getImagesExploreTableColumns,
@@ -819,7 +819,7 @@ function onGroupingSelectChange({
   }
   analytics.trackEvent(
     // @ts-ignore
-    `${analyticsKeysMap.images.groupings[groupName].select}`,
+    `${ANALYTICS_EVENT_KEYS.images.groupings[groupName].select}`,
   );
 }
 
@@ -845,7 +845,7 @@ function onGroupingModeChange({ value }: IOnGroupingModeChangeParams): void {
   if (value) {
     analytics.trackEvent(
       // @ts-ignore
-      analyticsKeysMap.images.groupings.group.modeChange,
+      ANALYTICS_EVENT_KEYS.images.groupings.group.modeChange,
       //@TODO change group to dynamic groupName when adding grouping type
     );
   }
@@ -1124,7 +1124,8 @@ function onChangeTooltip(tooltip: Partial<IPanelTooltip>): void {
     updateURL(configData);
   }
   analytics.trackEvent(
-    analyticsKeysMap.images.imagesPanel.controls.tooltip.changeTooltipContent,
+    ANALYTICS_EVENT_KEYS.images.imagesPanel.controls.tooltip
+      .changeTooltipContent,
   );
 }
 
@@ -1342,7 +1343,7 @@ async function onBookmarkCreate({ name, description }: IBookmarkFormState) {
       }
     }
   }
-  analytics.trackEvent(analyticsKeysMap.images.createBookmark);
+  analytics.trackEvent(ANALYTICS_EVENT_KEYS.images.createBookmark);
 }
 
 function onBookmarkUpdate(id: string) {
@@ -1416,7 +1417,7 @@ function updateTableSortFields(sortFields: SortFields) {
     updateModelData(configUpdate, true);
   }
   analytics.trackEvent(
-    `${analyticsKeysMap.images.table.changeSorting} ${
+    `${ANALYTICS_EVENT_KEYS.images.table.changeSorting} ${
       _.isEmpty(sortFields) ? 'Reset' : 'Apply'
     }`,
   );
@@ -1442,7 +1443,7 @@ function updateImagesSortFields(sortFields: SortFields, sortFieldsDict: any) {
     updateModelData(configUpdate, true);
   }
   analytics.trackEvent(
-    `${analyticsKeysMap.images.imagesPanel.controls.changeSorting} ${
+    `${ANALYTICS_EVENT_KEYS.images.imagesPanel.controls.changeSorting} ${
       _.isEmpty(sortFields) ? 'Reset' : 'Apply'
     } images sorting by a key`,
   );
@@ -1570,7 +1571,7 @@ function onExportTableData(e: React.ChangeEvent<any>): void {
     type: 'text/csv;charset=utf-8;',
   });
   saveAs(blob, `images-${moment().format('HH:mm:ss · D MMM, YY')}.csv`);
-  analytics.trackEvent(analyticsKeysMap.images.table.exports.csv);
+  analytics.trackEvent(ANALYTICS_EVENT_KEYS.images.table.exports.csv);
 }
 
 function onRowVisibilityChange(metricKey: string) {
@@ -1673,7 +1674,7 @@ function onTableResizeModeChange(mode: ResizeModeEnum): void {
     });
     setItem('imagesExploreTable', encode(table));
   }
-  analytics.trackEvent(analyticsKeysMap.images.table.changeResizeMode);
+  analytics.trackEvent(ANALYTICS_EVENT_KEYS.images.table.changeResizeMode);
 }
 
 function onSearchQueryCopy(): void {
@@ -1783,7 +1784,7 @@ function toggleSelectAdvancedMode() {
   }
 
   analytics.trackEvent(
-    `${analyticsKeysMap.images.useAdvancedSearch} ${
+    `${ANALYTICS_EVENT_KEYS.images.useAdvancedSearch} ${
       !configData?.select.advancedMode ? 'on' : 'off'
     }`,
   );
@@ -1808,7 +1809,7 @@ function onColumnsOrderChange(columnsOrder: any) {
     setItem('imagesExploreTable', encode(table));
     updateModelData(config);
   }
-  analytics.trackEvent(analyticsKeysMap.images.table.changeColumnsOrder);
+  analytics.trackEvent(ANALYTICS_EVENT_KEYS.images.table.changeColumnsOrder);
 }
 
 function onColumnsVisibilityChange(hiddenColumns: string[]) {
@@ -1834,9 +1835,9 @@ function onColumnsVisibilityChange(hiddenColumns: string[]) {
     updateModelData(configUpdate);
   }
   if (hiddenColumns[0] === 'all') {
-    analytics.trackEvent(analyticsKeysMap.images.table.showAllColumns);
+    analytics.trackEvent(ANALYTICS_EVENT_KEYS.images.table.showAllColumns);
   } else if (_.isEmpty(hiddenColumns)) {
-    analytics.trackEvent(analyticsKeysMap.images.table.hideAllColumns);
+    analytics.trackEvent(ANALYTICS_EVENT_KEYS.images.table.hideAllColumns);
   }
 }
 
@@ -1845,7 +1846,7 @@ function onTableDiffShow() {
   if (sameValueColumns) {
     onColumnsVisibilityChange(sameValueColumns);
   }
-  analytics.trackEvent(analyticsKeysMap.images.table.showDiff);
+  analytics.trackEvent(ANALYTICS_EVENT_KEYS.images.table.showDiff);
 }
 
 function onRowHeightChange(height: RowHeightSize) {
@@ -1866,9 +1867,9 @@ function onRowHeightChange(height: RowHeightSize) {
     setItem('metricsTable', encode(table));
   }
   analytics.trackEvent(
-    `${analyticsKeysMap.images.table.changeTableRowHeight} to "${RowHeightEnum[
-      height
-    ].toLowerCase()}"`,
+    `${
+      ANALYTICS_EVENT_KEYS.images.table.changeTableRowHeight
+    } to "${RowHeightEnum[height].toLowerCase()}"`,
   );
 }
 
@@ -1899,7 +1900,7 @@ function onImageVisibilityChange(metricsKeys: string[]) {
     updateModelData(config);
   }
   analytics.trackEvent(
-    `${analyticsKeysMap.images.table.metricVisibilityChange} ${
+    `${ANALYTICS_EVENT_KEYS.images.table.metricVisibilityChange} ${
       metricsKeys[0] === 'all'
         ? 'Visualize all hidden metrics from table'
         : 'Hide all metrics from table'
@@ -1988,7 +1989,7 @@ const onImageSizeChange = _.throttle((value: number) => {
   }
 
   analytics.trackEvent(
-    `${analyticsKeysMap.images.imagesPanel.controls.changeImageProperties} / size`,
+    `${ANALYTICS_EVENT_KEYS.images.imagesPanel.controls.changeImageProperties} / size`,
   );
 }, IMAGE_SIZE_CHANGE_DELAY);
 
@@ -2014,7 +2015,7 @@ function onImageRenderingChange(type: ImageRenderingEnum) {
     });
   }
   console.log(
-    `${analyticsKeysMap.images.imagesPanel.controls.changeImageProperties} / image rendering to ${type}`,
+    `${ANALYTICS_EVENT_KEYS.images.imagesPanel.controls.changeImageProperties} / image rendering to ${type}`,
   );
 }
 
@@ -2040,7 +2041,7 @@ function onImageAlignmentChange(
   }
 
   analytics.trackEvent(
-    `${analyticsKeysMap.images.imagesPanel.controls.changeImageProperties} / Alignment to ${option?.label}`,
+    `${ANALYTICS_EVENT_KEYS.images.imagesPanel.controls.changeImageProperties} / Alignment to ${option?.label}`,
   );
 }
 
@@ -2086,7 +2087,9 @@ function archiveRuns(
           });
         }
       } finally {
-        analytics.trackEvent(analyticsKeysMap.images.table.archiveRunsBatch);
+        analytics.trackEvent(
+          ANALYTICS_EVENT_KEYS.images.table.archiveRunsBatch,
+        );
       }
     },
     abort: runsArchiveRef.abort,
@@ -2126,7 +2129,7 @@ function deleteRuns(ids: string[]): {
           });
         }
       } finally {
-        analytics.trackEvent(analyticsKeysMap.images.table.deleteRunsBatch);
+        analytics.trackEvent(ANALYTICS_EVENT_KEYS.images.table.deleteRunsBatch);
       }
     },
     abort: runsDeleteRef.abort,
@@ -2162,7 +2165,7 @@ function onStackingToggle(): void {
     updateURL(config as IImagesExploreAppConfig);
     model.setState({ config });
     analytics.trackEvent(
-      `${analyticsKeysMap.images.imagesPanel.controls.groupStacking} to ${
+      `${ANALYTICS_EVENT_KEYS.images.imagesPanel.controls.groupStacking} to ${
         !configData.images.additionalProperties.stacking
           ? 'Enabled'
           : 'Disabled'

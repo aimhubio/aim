@@ -3,7 +3,7 @@ import { useHistory } from 'react-router-dom';
 
 import ErrorBoundary from 'components/ErrorBoundary/ErrorBoundary';
 
-import analyticsKeysMap from 'config/analytics/analyticsKeysMap';
+import { ANALYTICS_EVENT_KEYS } from 'config/analytics/analyticsKeysMap';
 
 import useModel from 'hooks/model/useModel';
 
@@ -39,7 +39,7 @@ function RunsContainer(): React.FunctionComponentElement<React.ReactNode> {
 
   React.useEffect(() => {
     runsAppModel.initialize();
-    analytics.pageView(analyticsKeysMap.runs.pageView);
+    analytics.pageView(ANALYTICS_EVENT_KEYS.runs.pageView);
     const unListenHistory = history.listen((location) => {
       if (!!runsData?.config!) {
         if (runsData.config.select !== getStateFromUrl('search')) {

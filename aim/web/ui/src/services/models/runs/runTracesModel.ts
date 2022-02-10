@@ -1,6 +1,6 @@
 import _ from 'lodash-es';
 
-import analyticsKeysMap from 'config/analytics/analyticsKeysMap';
+import { ANALYTICS_EVENT_KEYS } from 'config/analytics/analyticsKeysMap';
 
 import createModel from 'services/models/model';
 import runsService from 'services/api/runs/runsService';
@@ -139,7 +139,7 @@ function changeActiveItemKey(key: string, name: string) {
 
   trackEvent(
     // @ts-ignore
-    analyticsKeysMap.runDetails.tabs[state.traceType].changeActiveItemKey,
+    ANALYTICS_EVENT_KEYS.runDetails.tabs[state.traceType].changeActiveItemKey,
   );
 }
 
@@ -295,7 +295,7 @@ function onApply() {
   const { traceType } = model.getState();
   getRunTraceBatch().then().catch();
   // @ts-ignore
-  trackEvent(analyticsKeysMap.runDetails.tabs[traceType].clickApplyButton);
+  trackEvent(ANALYTICS_EVENT_KEYS.runDetails.tabs[traceType].clickApplyButton);
 }
 
 function destroy() {

@@ -1,4 +1,4 @@
-import analyticsKeysMap from 'config/analytics/analyticsKeysMap';
+import { ANALYTICS_EVENT_KEYS } from 'config/analytics/analyticsKeysMap';
 
 import * as analytics from 'services/analytics';
 
@@ -34,10 +34,10 @@ export default function onAxesScaleTypeChange<M extends State>({
   }
   analytics.trackEvent(
     // @ts-ignore
-    `${analyticsKeysMap[appName].chart.controls.changeAxesScale} to "${args.xAxis}"`,
+    `${ANALYTICS_EVENT_KEYS[appName].chart.controls.changeAxesScale} to "${args.xAxis}"`,
   );
   analytics.trackEvent(
     // @ts-ignore
-    `${analyticsKeysMap[appName].chart.controls.changeAxesScale} to "${args.yAxis}"`,
+    `${ANALYTICS_EVENT_KEYS[appName].chart.controls.changeAxesScale} to "${args.yAxis}"`,
   );
 }

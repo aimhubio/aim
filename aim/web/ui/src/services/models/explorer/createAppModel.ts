@@ -12,7 +12,7 @@ import { AlignmentNotificationsEnum } from 'config/notification-messages/notific
 import { RowHeightSize } from 'config/table/tableConfigs';
 import { DensityOptions } from 'config/enums/densityEnum';
 import { CONTROLS_DEFAULT_CONFIG } from 'config/controls/controlsDefaultConfig';
-import analyticsKeysMap from 'config/analytics/analyticsKeysMap';
+import { ANALYTICS_EVENT_KEYS } from 'config/analytics/analyticsKeysMap';
 
 import {
   getMetricsTableColumns,
@@ -1573,7 +1573,7 @@ function createAppModel(appConfig: IAppInitialConfig) {
         type: 'text/csv;charset=utf-8;',
       });
       saveAs(blob, `${appName}-${moment().format('HH:mm:ss · D MMM, YY')}.csv`);
-      analytics.trackEvent(analyticsKeysMap[appName].table.exports.csv);
+      analytics.trackEvent(ANALYTICS_EVENT_KEYS[appName].table.exports.csv);
     }
 
     const onActivePointChange = _.debounce(
@@ -1751,7 +1751,7 @@ function createAppModel(appConfig: IAppInitialConfig) {
       setItem('metricsLUConfig', encode(newLiveUpdateConfig));
       analytics.trackEvent(
         // @ts-ignore
-        `${analyticsKeysMap[appName].liveUpdate} ${
+        `${ANALYTICS_EVENT_KEYS[appName].liveUpdate} ${
           config.enabled ? 'on' : 'off'
         }`,
       );
@@ -1801,7 +1801,7 @@ function createAppModel(appConfig: IAppInitialConfig) {
             }
           } finally {
             analytics.trackEvent(
-              analyticsKeysMap[appName].table.archiveRunsBatch,
+              ANALYTICS_EVENT_KEYS[appName].table.archiveRunsBatch,
             );
           }
         },
@@ -1843,7 +1843,7 @@ function createAppModel(appConfig: IAppInitialConfig) {
             }
           } finally {
             analytics.trackEvent(
-              analyticsKeysMap[appName].table.deleteRunsBatch,
+              ANALYTICS_EVENT_KEYS[appName].table.deleteRunsBatch,
             );
           }
         },
@@ -2800,7 +2800,7 @@ function createAppModel(appConfig: IAppInitialConfig) {
           type: 'text/csv;charset=utf-8;',
         });
         saveAs(blob, `runs-${moment().format('HH:mm:ss · D MMM, YY')}.csv`);
-        analytics.trackEvent(analyticsKeysMap[appName].table.exports.csv);
+        analytics.trackEvent(ANALYTICS_EVENT_KEYS[appName].table.exports.csv);
       }
 
       function onModelNotificationDelete(id: number): void {
@@ -2890,7 +2890,7 @@ function createAppModel(appConfig: IAppInitialConfig) {
         setItem('runsLUConfig', encode(newLiveUpdateConfig));
         analytics.trackEvent(
           // @ts-ignore
-          `${analyticsKeysMap[appName].liveUpdate} ${
+          `${ANALYTICS_EVENT_KEYS[appName].liveUpdate} ${
             config.enabled ? 'on' : 'off'
           }`,
         );
@@ -2937,7 +2937,7 @@ function createAppModel(appConfig: IAppInitialConfig) {
               }
             } finally {
               analytics.trackEvent(
-                analyticsKeysMap.runs.table.archiveRunsBatch,
+                ANALYTICS_EVENT_KEYS.runs.table.archiveRunsBatch,
               );
             }
           },
@@ -2981,7 +2981,7 @@ function createAppModel(appConfig: IAppInitialConfig) {
               }
             } finally {
               analytics.trackEvent(
-                analyticsKeysMap[appName].table.deleteRunsBatch,
+                ANALYTICS_EVENT_KEYS[appName].table.deleteRunsBatch,
               );
             }
           },
@@ -3984,7 +3984,7 @@ function createAppModel(appConfig: IAppInitialConfig) {
           type: 'text/csv;charset=utf-8;',
         });
         saveAs(blob, `params-${moment().format('HH:mm:ss · D MMM, YY')}.csv`);
-        analytics.trackEvent(analyticsKeysMap[appName].table.exports.csv);
+        analytics.trackEvent(ANALYTICS_EVENT_KEYS[appName].table.exports.csv);
       }
 
       function updateModelData(
@@ -4150,7 +4150,7 @@ function createAppModel(appConfig: IAppInitialConfig) {
         setItem('paramsLUConfig', encode(newLiveUpdateConfig));
         analytics.trackEvent(
           // @ts-ignore
-          `${analyticsKeysMap[appName].liveUpdate} ${
+          `${ANALYTICS_EVENT_KEYS[appName].liveUpdate} ${
             config.enabled ? 'on' : 'off'
           }`,
         );
@@ -4200,7 +4200,7 @@ function createAppModel(appConfig: IAppInitialConfig) {
               }
             } finally {
               analytics.trackEvent(
-                analyticsKeysMap[appName].table.archiveRunsBatch,
+                ANALYTICS_EVENT_KEYS[appName].table.archiveRunsBatch,
               );
             }
           },
@@ -4242,7 +4242,7 @@ function createAppModel(appConfig: IAppInitialConfig) {
               }
             } finally {
               analytics.trackEvent(
-                analyticsKeysMap[appName].table.deleteRunsBatch,
+                ANALYTICS_EVENT_KEYS[appName].table.deleteRunsBatch,
               );
             }
           },
@@ -5342,7 +5342,7 @@ function createAppModel(appConfig: IAppInitialConfig) {
           blob,
           `${appName}-${moment().format('HH:mm:ss · D MMM, YY')}.csv`,
         );
-        analytics.trackEvent(analyticsKeysMap[appName].table.exports.csv);
+        analytics.trackEvent(ANALYTICS_EVENT_KEYS[appName].table.exports.csv);
       }
 
       function onActivePointChange(
@@ -5495,7 +5495,7 @@ function createAppModel(appConfig: IAppInitialConfig) {
         setItem('scattersLUConfig', encode(newLiveUpdateConfig));
         analytics.trackEvent(
           // @ts-ignore
-          `${analyticsKeysMap[appName].liveUpdate} ${
+          `${ANALYTICS_EVENT_KEYS[appName].liveUpdate} ${
             config.enabled ? 'on' : 'off'
           }`,
         );
@@ -5545,7 +5545,7 @@ function createAppModel(appConfig: IAppInitialConfig) {
               }
             } finally {
               analytics.trackEvent(
-                analyticsKeysMap[appName].table.archiveRunsBatch,
+                ANALYTICS_EVENT_KEYS[appName].table.archiveRunsBatch,
               );
             }
           },
@@ -5587,7 +5587,7 @@ function createAppModel(appConfig: IAppInitialConfig) {
               }
             } finally {
               analytics.trackEvent(
-                analyticsKeysMap[appName].table.deleteRunsBatch,
+                ANALYTICS_EVENT_KEYS[appName].table.deleteRunsBatch,
               );
             }
           },

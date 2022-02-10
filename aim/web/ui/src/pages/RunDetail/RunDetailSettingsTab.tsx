@@ -6,7 +6,7 @@ import ConfirmModal from 'components/ConfirmModal/ConfirmModal';
 import { ActionCard, Icon } from 'components/kit';
 import ErrorBoundary from 'components/ErrorBoundary/ErrorBoundary';
 
-import analyticsKeysMap from 'config/analytics/analyticsKeysMap';
+import { ANALYTICS_EVENT_KEYS } from 'config/analytics/analyticsKeysMap';
 
 import runDetailAppModel from 'services/models/runs/runDetailAppModel';
 import * as analytics from 'services/analytics';
@@ -21,12 +21,16 @@ function RunDetailSettingsTab({
   const [openDeleteModal, setOpenDeleteModal] = React.useState<boolean>(false);
 
   function onRunArchive() {
-    analytics.trackEvent(analyticsKeysMap.runDetails.tabs.settings.archiveRun);
+    analytics.trackEvent(
+      ANALYTICS_EVENT_KEYS.runDetails.tabs.settings.archiveRun,
+    );
     runDetailAppModel.archiveRun(runHash, !isArchived);
   }
 
   function onRunDelete() {
-    analytics.trackEvent(analyticsKeysMap.runDetails.tabs.settings.deleteRun);
+    analytics.trackEvent(
+      ANALYTICS_EVENT_KEYS.runDetails.tabs.settings.deleteRun,
+    );
     runDetailAppModel.deleteRun(runHash, () => {
       history.push('/runs');
     });
@@ -41,7 +45,7 @@ function RunDetailSettingsTab({
   }
 
   React.useEffect(() => {
-    analytics.pageView(analyticsKeysMap.runDetails.tabs.settings.tabView);
+    analytics.pageView(ANALYTICS_EVENT_KEYS.runDetails.tabs.settings.tabView);
   }, []);
 
   return (

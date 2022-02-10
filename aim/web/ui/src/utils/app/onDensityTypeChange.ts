@@ -1,5 +1,5 @@
 import { DensityOptions } from 'config/enums/densityEnum';
-import analyticsKeysMap from 'config/analytics/analyticsKeysMap';
+import { ANALYTICS_EVENT_KEYS } from 'config/analytics/analyticsKeysMap';
 
 import * as analytics from 'services/analytics';
 
@@ -39,7 +39,7 @@ export default async function onDensityTypeChange<M extends State>({
   analytics.trackEvent(
     `${
       // @ts-ignore
-      analyticsKeysMap[appName].chart.controls.changeXAxisProperties
+      ANALYTICS_EVENT_KEYS[appName].chart.controls.changeXAxisProperties
     }, Set point density to "${DensityOptions[type].toLowerCase()}"`,
   );
 }

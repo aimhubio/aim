@@ -1,4 +1,4 @@
-import analyticsKeysMap from 'config/analytics/analyticsKeysMap';
+import { ANALYTICS_EVENT_KEYS } from 'config/analytics/analyticsKeysMap';
 
 import * as analytics from 'services/analytics';
 
@@ -37,8 +37,10 @@ export default function onGroupingPersistenceChange<M extends State>({
     updateModelData(configData, true);
   }
   analytics.trackEvent(
-    // @ts-ignore
-    `${analyticsKeysMap[appName].groupings[groupName].persistenceChange} to ${
+    `${
+      // @ts-ignore
+      ANALYTICS_EVENT_KEYS[appName].groupings[groupName].persistenceChange
+    } to ${
       !configData?.grouping.persistence[groupName] ? 'Disable' : 'Enable'
     }`,
   );

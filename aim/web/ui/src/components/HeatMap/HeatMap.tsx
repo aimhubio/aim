@@ -6,7 +6,7 @@ import { Tooltip } from '@material-ui/core';
 import { Text } from 'components/kit';
 import ErrorBoundary from 'components/ErrorBoundary/ErrorBoundary';
 
-import analyticsKeysMap from 'config/analytics/analyticsKeysMap';
+import { ANALYTICS_EVENT_KEYS } from 'config/analytics/analyticsKeysMap';
 
 import * as analytics from 'services/analytics';
 
@@ -150,7 +150,7 @@ function HeatMap({
             startDate / 1000
           } and run.creation_time <= ${endDate / 1000}`,
         });
-        analytics.trackEvent(analyticsKeysMap.home.activityCellClick);
+        analytics.trackEvent(ANALYTICS_EVENT_KEYS.home.activityCellClick);
         history.push(`/runs?select=${search}`);
       }
     }

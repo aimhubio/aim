@@ -1,5 +1,5 @@
 import { BookmarkNotificationsEnum } from 'config/notification-messages/notificationMessages';
-import analyticsKeysMap from 'config/analytics/analyticsKeysMap';
+import { ANALYTICS_EVENT_KEYS } from 'config/analytics/analyticsKeysMap';
 
 import * as analytics from 'services/analytics';
 import appsService from 'services/api/apps/appsService';
@@ -74,5 +74,5 @@ export default async function onBookmarkCreate<M extends State>({
     });
   }
   // @ts-ignore
-  analytics.trackEvent(analyticsKeysMap[appName].createBookmark);
+  analytics.trackEvent(ANALYTICS_EVENT_KEYS[appName].createBookmark);
 }

@@ -1,4 +1,4 @@
-import analyticsKeysMap from 'config/analytics/analyticsKeysMap';
+import { ANALYTICS_EVENT_KEYS } from 'config/analytics/analyticsKeysMap';
 
 import * as analytics from 'services/analytics';
 
@@ -27,7 +27,7 @@ export default function onIgnoreOutliersChange<M extends State>({
     model.setState({ config: configData });
   }
   analytics.trackEvent(
-    `${analyticsKeysMap.metrics.chart.controls.changeOutliers} to ${
+    `${ANALYTICS_EVENT_KEYS.metrics.chart.controls.changeOutliers} to ${
       !configData?.chart.ignoreOutliers ? 'Ignore' : 'Display'
     }`,
   );

@@ -1,6 +1,6 @@
 import _ from 'lodash-es';
 
-import analyticsKeysMap from 'config/analytics/analyticsKeysMap';
+import { ANALYTICS_EVENT_KEYS } from 'config/analytics/analyticsKeysMap';
 
 import * as analytics from 'services/analytics';
 
@@ -37,7 +37,7 @@ export default function onZoomChange<M extends State>({
   if (!_.isNil(zoom.mode)) {
     analytics.trackEvent(
       // @ts-ignore
-      `${analyticsKeysMap[appName].chart.controls.changeZoomMode} to "${
+      `${ANALYTICS_EVENT_KEYS[appName].chart.controls.changeZoomMode} to "${
         zoom.mode === 0 ? 'single' : 'multiple'
       }"`,
     );

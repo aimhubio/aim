@@ -1,7 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 
-import analyticsKeysMap from 'config/analytics/analyticsKeysMap';
+import { ANALYTICS_EVENT_KEYS } from 'config/analytics/analyticsKeysMap';
 
 import { trackEvent } from 'services/analytics';
 
@@ -163,7 +163,7 @@ class ExperimentDistributionCharts extends React.Component {
   handleClick = (e) => {
     this.computeHistogram(e.point.x);
     trackEvent(
-      analyticsKeysMap.runDetails.tabs.distributions.onClickHeatMapCell,
+      ANALYTICS_EVENT_KEYS.runDetails.tabs.distributions.onClickHeatMapCell,
     );
   };
 

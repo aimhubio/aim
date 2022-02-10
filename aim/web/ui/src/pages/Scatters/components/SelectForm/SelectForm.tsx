@@ -7,7 +7,7 @@ import ExpressionAutoComplete from 'components/kit/ExpressionAutoComplete';
 import ErrorBoundary from 'components/ErrorBoundary/ErrorBoundary';
 
 import COLORS from 'config/colors/colors';
-import analyticsKeysMap from 'config/analytics/analyticsKeysMap';
+import { ANALYTICS_EVENT_KEYS } from 'config/analytics/analyticsKeysMap';
 
 import useModel from 'hooks/model/useModel';
 import useParamsSuggestions from 'hooks/projectData/useParamsSuggestions';
@@ -60,7 +60,7 @@ function SelectForm({
     searchRef.current.call((detail: any) => {
       exceptionHandler({ detail, model: scattersAppModel });
     });
-    trackEvent(analyticsKeysMap.scatters.searchClick);
+    trackEvent(ANALYTICS_EVENT_KEYS.scatters.searchClick);
   }
 
   function handleRequestAbort(e: React.SyntheticEvent): void {

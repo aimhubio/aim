@@ -1,6 +1,6 @@
 import _ from 'lodash-es';
 
-import analyticsKeysMap from 'config/analytics/analyticsKeysMap';
+import { ANALYTICS_EVENT_KEYS } from 'config/analytics/analyticsKeysMap';
 
 import * as analytics from 'services/analytics';
 
@@ -39,7 +39,7 @@ export default function onAggregationConfigChange<M extends State>({
     analytics.trackEvent(
       `${
         // @ts-ignore
-        analyticsKeysMap[appName].chart.controls.changeAggregationMethod
+        ANALYTICS_EVENT_KEYS[appName].chart.controls.changeAggregationMethod
       } area to "${AggregationAreaMethods[
         aggregationConfig.methods.area
       ].toLowerCase()}"`,
@@ -47,17 +47,17 @@ export default function onAggregationConfigChange<M extends State>({
     analytics.trackEvent(
       `${
         // @ts-ignore
-        analyticsKeysMap[appName].chart.controls.changeAggregationMethod
+        ANALYTICS_EVENT_KEYS[appName].chart.controls.changeAggregationMethod
       } line to "${AggregationAreaMethods[
         aggregationConfig.methods.line
       ].toLowerCase()}"`,
     );
   } else {
     analytics.trackEvent(
-      // @ts-ignore
-      `${analyticsKeysMap[appName].chart.controls.changeAggregationMode} to ${
-        aggregationConfig.isApplied ? 'Enable' : 'Disable'
-      }`,
+      `${
+        // @ts-ignore
+        ANALYTICS_EVENT_KEYS[appName].chart.controls.changeAggregationMode
+      } to ${aggregationConfig.isApplied ? 'Enable' : 'Disable'}`,
     );
   }
 }

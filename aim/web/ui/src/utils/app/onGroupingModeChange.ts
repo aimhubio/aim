@@ -1,4 +1,4 @@
-import analyticsKeysMap from 'config/analytics/analyticsKeysMap';
+import { ANALYTICS_EVENT_KEYS } from 'config/analytics/analyticsKeysMap';
 
 import * as analytics from 'services/analytics';
 
@@ -43,7 +43,7 @@ export default function onGroupingModeChange<M extends State>({
   if (value) {
     analytics.trackEvent(
       // @ts-ignore
-      analyticsKeysMap[appName].groupings[groupName].modeChange,
+      ANALYTICS_EVENT_KEYS[appName].groupings[groupName].modeChange,
     );
   }
 }

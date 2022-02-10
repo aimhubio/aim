@@ -1,4 +1,4 @@
-import analyticsKeysMap from 'config/analytics/analyticsKeysMap';
+import { ANALYTICS_EVENT_KEYS } from 'config/analytics/analyticsKeysMap';
 
 import * as analytics from 'services/analytics';
 
@@ -34,7 +34,7 @@ export default function toggleSelectAdvancedMode<M extends State>({
   }
   analytics.trackEvent(
     // @ts-ignore
-    `${analyticsKeysMap[appName].useAdvancedSearch} ${
+    `${ANALYTICS_EVENT_KEYS[appName].useAdvancedSearch} ${
       !configData?.select.advancedMode ? 'on' : 'off'
     }`,
   );

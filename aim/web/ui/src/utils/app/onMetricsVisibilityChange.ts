@@ -1,4 +1,4 @@
-import analyticsKeysMap from 'config/analytics/analyticsKeysMap';
+import { ANALYTICS_EVENT_KEYS } from 'config/analytics/analyticsKeysMap';
 
 import * as analytics from 'services/analytics';
 
@@ -48,7 +48,7 @@ export default function onMetricVisibilityChange<M extends State>({
   }
   analytics.trackEvent(
     // @ts-ignore
-    `${analyticsKeysMap[appName].table.metricVisibilityChange} / ${
+    `${ANALYTICS_EVENT_KEYS[appName].table.metricVisibilityChange} / ${
       metricsKeys[0] === 'all'
         ? 'Visualize all hidden metrics from table'
         : 'Hide all metrics from table'

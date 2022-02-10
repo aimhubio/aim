@@ -4,7 +4,7 @@ import Menu from 'components/kit/Menu/Menu';
 import { IValidationMetadata } from 'components/kit/Input';
 import ErrorBoundary from 'components/ErrorBoundary/ErrorBoundary';
 
-import analyticsKeysMap from 'config/analytics/analyticsKeysMap';
+import { ANALYTICS_EVENT_KEYS } from 'config/analytics/analyticsKeysMap';
 
 import useModel from 'hooks/model/useModel';
 
@@ -64,7 +64,7 @@ function TraceVisualizationContainer({
 
   React.useEffect(() => {
     // @ts-ignore
-    analytics.pageView(analyticsKeysMap.runDetails.tabs[traceType].tabView);
+    analytics.pageView(ANALYTICS_EVENT_KEYS.runDetails.tabs[traceType].tabView);
   }, [traceType]);
 
   return (

@@ -1,4 +1,4 @@
-import analyticsKeysMap from 'config/analytics/analyticsKeysMap';
+import { ANALYTICS_EVENT_KEYS } from 'config/analytics/analyticsKeysMap';
 
 import * as analytics from 'services/analytics';
 
@@ -31,7 +31,8 @@ export default function onSmoothingChange<M extends State>({
     analytics.trackEvent(
       `${
         // @ts-ignore
-        analyticsKeysMap[appName].chart.controls.changeCurveInterpolationMode
+        ANALYTICS_EVENT_KEYS[appName].chart.controls
+          .changeCurveInterpolationMode
       } to "${
         args.curveInterpolation === CurveEnum.Linear ? 'linear' : 'cubic'
       }"`,
@@ -39,7 +40,7 @@ export default function onSmoothingChange<M extends State>({
   } else {
     analytics.trackEvent(
       // @ts-ignore
-      `${analyticsKeysMap[appName].chart.controls.selectSmoothingOptions} to "${configData?.chart.smoothingAlgorithm}"`,
+      `${ANALYTICS_EVENT_KEYS[appName].chart.controls.selectSmoothingOptions} to "${configData?.chart.smoothingAlgorithm}"`,
       { smoothingFactor: args.smoothingFactor },
     );
   }

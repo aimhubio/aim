@@ -1,5 +1,5 @@
 import { ResizeModeEnum } from 'config/enums/tableEnums';
-import analyticsKeysMap from 'config/analytics/analyticsKeysMap';
+import { ANALYTICS_EVENT_KEYS } from 'config/analytics/analyticsKeysMap';
 
 import * as analytics from 'services/analytics';
 
@@ -32,5 +32,5 @@ export default function onTableResizeModeChange<M extends State>({
     setItem(`${appName}Table`, encode(table));
   }
   // @ts-ignore
-  analytics.trackEvent(analyticsKeysMap[appName].table.changeResizeMode);
+  analytics.trackEvent(ANALYTICS_EVENT_KEYS[appName].table.changeResizeMode);
 }

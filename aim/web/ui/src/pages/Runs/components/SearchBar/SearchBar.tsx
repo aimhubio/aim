@@ -6,7 +6,7 @@ import { Button, Icon } from 'components/kit';
 import ExpressionAutoComplete from 'components/kit/ExpressionAutoComplete';
 import ErrorBoundary from 'components/ErrorBoundary/ErrorBoundary';
 
-import analyticsKeysMap from 'config/analytics/analyticsKeysMap';
+import { ANALYTICS_EVENT_KEYS } from 'config/analytics/analyticsKeysMap';
 
 import useParamsSuggestions from 'hooks/projectData/useParamsSuggestions';
 
@@ -46,7 +46,7 @@ function SearchBar({
         exceptionHandler({ detail, model: runAppModel });
       })
       .catch();
-    trackEvent(analyticsKeysMap.runs.searchClick);
+    trackEvent(ANALYTICS_EVENT_KEYS.runs.searchClick);
   }
 
   function handleRequestAbort(e: React.SyntheticEvent): void {

@@ -1,4 +1,4 @@
-import analyticsKeysMap from 'config/analytics/analyticsKeysMap';
+import { ANALYTICS_EVENT_KEYS } from 'config/analytics/analyticsKeysMap';
 
 import * as analytics from 'services/analytics';
 
@@ -41,5 +41,5 @@ export default function onColumnsOrderChange<M extends State>({
   }
 
   // @ts-ignore
-  analytics.trackEvent(analyticsKeysMap[appName].table.changeColumnOrder);
+  analytics.trackEvent(ANALYTICS_EVENT_KEYS[appName].table.changeColumnOrder);
 }

@@ -1,4 +1,4 @@
-import analyticsKeysMap from 'config/analytics/analyticsKeysMap';
+import { ANALYTICS_EVENT_KEYS } from 'config/analytics/analyticsKeysMap';
 
 import * as analytics from 'services/analytics';
 
@@ -34,7 +34,7 @@ export default function onGroupingPaletteChange<M extends State>({
   }
   analytics.trackEvent(
     // @ts-ignore
-    `${analyticsKeysMap[appName].groupings.color.paletteChange} to "${
+    `${ANALYTICS_EVENT_KEYS[appName].groupings.color.paletteChange} to "${
       index === 0 ? '8 distinct colors' : '24 colors'
     }"`,
   );

@@ -1,4 +1,4 @@
-import analyticsKeysMap from 'config/analytics/analyticsKeysMap';
+import { ANALYTICS_EVENT_KEYS } from 'config/analytics/analyticsKeysMap';
 
 import * as analytics from 'services/analytics';
 
@@ -37,7 +37,7 @@ export default function onAlignmentTypeChange<M extends State>({
   analytics.trackEvent(
     `${
       // @ts-ignore
-      analyticsKeysMap[appName].chart.controls.changeXAxisProperties
+      ANALYTICS_EVENT_KEYS[appName].chart.controls.changeXAxisProperties
     }, Align X axis by "${AlignmentOptionsEnum[type].toLowerCase()}"`,
   );
 }

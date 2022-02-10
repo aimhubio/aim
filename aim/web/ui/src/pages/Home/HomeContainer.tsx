@@ -2,7 +2,7 @@ import React from 'react';
 
 import ErrorBoundary from 'components/ErrorBoundary/ErrorBoundary';
 
-import analyticsKeysMap from 'config/analytics/analyticsKeysMap';
+import { ANALYTICS_EVENT_KEYS } from 'config/analytics/analyticsKeysMap';
 
 import useModel from 'hooks/model/useModel';
 
@@ -16,7 +16,7 @@ function HomeContainer(): React.FunctionComponentElement<React.ReactNode> {
 
   React.useEffect(() => {
     homeAppModel.initialize();
-    analytics.pageView(analyticsKeysMap.home.pageView);
+    console.log(ANALYTICS_EVENT_KEYS.home.pageView);
     return () => {
       homeAppModel.destroy();
     };

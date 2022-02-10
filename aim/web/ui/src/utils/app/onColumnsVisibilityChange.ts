@@ -1,7 +1,7 @@
 import _ from 'lodash-es';
 
 import { HideColumnsEnum } from 'config/enums/tableEnums';
-import analyticsKeysMap from 'config/analytics/analyticsKeysMap';
+import { ANALYTICS_EVENT_KEYS } from 'config/analytics/analyticsKeysMap';
 
 import * as analytics from 'services/analytics';
 
@@ -83,9 +83,9 @@ export default function onColumnsVisibilityChange<M extends State>({
   }
   if (hiddenColumns[0] === 'all') {
     // @ts-ignore
-    analytics.trackEvent(analyticsKeysMap[appName].table.showAllColumns);
+    analytics.trackEvent(ANALYTICS_EVENT_KEYS[appName].table.showAllColumns);
   } else if (_.isEmpty(hiddenColumns)) {
     // @ts-ignore
-    analytics.trackEvent(analyticsKeysMap[appName].table.hideAllColumns);
+    analytics.trackEvent(ANALYTICS_EVENT_KEYS[appName].table.hideAllColumns);
   }
 }
