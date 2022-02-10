@@ -1,11 +1,17 @@
 from typing import Any, Dict, Optional, Union
 from argparse import Namespace
 
-from pytorch_lightning.loggers.base import (
-    LightningLoggerBase,
-    rank_zero_experiment,
-)
-from pytorch_lightning.utilities import rank_zero_only
+try:
+    from pytorch_lightning.loggers.base import (
+        LightningLoggerBase,
+        rank_zero_experiment,
+    )
+    from pytorch_lightning.utilities import rank_zero_only
+except ImportError:
+    raise RuntimeError(
+        "This contrib module requires pytorch_lightning to be installed. "
+        "Please install it with command: \n pip install pytorch_lightning"
+    )
 
 from aim.sdk.run import Run
 from aim.ext.resource.configs import DEFAULT_SYSTEM_TRACKING_INT
