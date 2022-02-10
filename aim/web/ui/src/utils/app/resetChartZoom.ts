@@ -1,5 +1,3 @@
-import * as analytics from 'services/analytics';
-
 import {
   IAppModelConfig,
   ILineChartConfig,
@@ -22,6 +20,5 @@ export default function resetChartZoom({
       },
     };
   }
-  analytics.trackEvent(`[${appName}Explorer][Chart] Reset zoom`);
   return configData;
 }
