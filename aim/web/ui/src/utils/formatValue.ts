@@ -1,6 +1,6 @@
 export function formatValue(value: any, undefinedValue: any = '-') {
   let formattedValue;
-  if (value === null || value === undefined) {
+  if (value === null || value === undefined || typeof value == 'boolean') {
     formattedValue = replacer(value);
   } else {
     formattedValue = JSON.stringify(value, (key, node) =>
