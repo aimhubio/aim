@@ -27,7 +27,11 @@ function drawPoints(args: IDrawPointsArgs): void {
   pointsRef.current.updatePoints = function (pointData: IPoint[]): void {
     pointsNodeRef.current
       ?.selectAll('.Circle')
-      .data(pointData)
+      .data(
+        pointData.filter(
+          (p: IPoint) => p.data.yValues[0] !== '-' && p.data.xValues[0] !== '-',
+        ),
+      )
       .join('circle')
       .attr('class', 'Circle')
       .attr('id', (p: IPoint) => `Circle-${p.key}`)

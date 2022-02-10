@@ -54,6 +54,8 @@ function drawAxes(args: IDrawAxesArgs): void {
       xAxis.tickValues(tickValues);
     }
 
+    xAxis.tickFormat((d: any) => tickEllipsis(`${d}`, 20));
+
     const alignmentKey = _.capitalize(getKeyByAlignment(alignmentConfig));
     switch (alignmentConfig?.type) {
       case AlignmentOptionsEnum.STEP:
@@ -196,9 +198,11 @@ function drawAxes(args: IDrawAxesArgs): void {
         break;
     }
 
+    xAxis.tickSizeInner(0);
     if (drawBgTickLines.x) {
       xAxis.tickSize(-height + (margin.top + margin.bottom)).tickSizeOuter(0);
     }
+    xAxis.tickPadding(8);
     return { xAlignmentText, xAxis };
   }
 
@@ -215,13 +219,12 @@ function drawAxes(args: IDrawAxesArgs): void {
       yAxis.tickValues(ticks);
     }
 
+    yAxis.tickSizeInner(0);
     if (drawBgTickLines.y) {
       yAxis.tickSize(-width + (margin.left + margin.right)).tickSizeOuter(0);
     }
-
     yAxis.tickFormat((d: any) => tickEllipsis(`${d}`, 8));
     yAxis.tickPadding(8);
-
     return yAxis;
   }
 
@@ -248,7 +251,10 @@ function drawAxes(args: IDrawAxesArgs): void {
       .append('svg:title')
       .text((d: string | number) => d);
 
-    axesRef.current.yAxis.selectAll('.tick line').attr('stroke', '#8E9BAE');
+    axesRef.current.yAxis
+      .selectAll('.tick line')
+      .attr('stroke', '#8E9BAE')
+      .attr('x1', '-6');
   }
 
   function drawXAxis(xScale: IAxisScale) {
@@ -280,7 +286,10 @@ function drawAxes(args: IDrawAxesArgs): void {
         });
       });
 
-    axesRef.current.xAxis.selectAll('.tick line').attr('stroke', '#8E9BAE');
+    axesRef.current.xAxis
+      .selectAll('.tick line')
+      .attr('stroke', '#8E9BAE')
+      .attr('y1', '6');
 
     axesRef.current.xAxis
       .append('text')

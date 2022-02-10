@@ -95,6 +95,9 @@ function Scatters(
                   resizeMode={props.resizeMode}
                   controls={
                     <Controls
+                      chartProps={chartProps}
+                      chartType={ChartTypeEnum.ScatterPlot}
+                      data={props.scatterPlotData}
                       selectOptions={props.groupingSelectOptions}
                       tooltip={props.tooltip}
                       onChangeTooltip={props.onChangeTooltip}

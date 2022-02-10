@@ -134,7 +134,7 @@ const LineChart = React.forwardRef(function LineChart(
       margin,
       alignmentConfig,
       humanizerConfigRef,
-      drawBgTickLines: { y: true },
+      drawBgTickLines: { y: true, x: false },
     });
 
     drawLines({
@@ -215,6 +215,7 @@ const LineChart = React.forwardRef(function LineChart(
       curveInterpolation,
       aggregationConfig,
       readOnly,
+      alignmentConfig,
     ],
   );
 
@@ -242,6 +243,7 @@ const LineChart = React.forwardRef(function LineChart(
     curveInterpolation,
     aggregationConfig,
     readOnly,
+    alignmentConfig,
   ]);
 
   React.useImperativeHandle(ref, () => ({

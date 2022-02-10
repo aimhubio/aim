@@ -7,6 +7,8 @@ import TooltipContentPopover from 'components/TooltipContentPopover/TooltipConte
 import { Icon } from 'components/kit';
 import TrendlineOptionsPopover from 'components/TrendlineOptionsPopover';
 import ErrorBoundary from 'components/ErrorBoundary/ErrorBoundary';
+import ExportPreview from 'components/ExportPreview';
+import ChartGrid from 'components/ChartPanel/ChartGrid';
 
 import { CONTROLS_DEFAULT_CONFIG } from 'config/controls/controlsDefaultConfig';
 
@@ -17,6 +19,8 @@ import './Controls.scss';
 function Controls(
   props: IControlProps,
 ): React.FunctionComponentElement<React.ReactNode> {
+  const [openExportModal, setOpenExportModal] = React.useState<boolean>(false);
+
   const tooltipChanged: boolean = React.useMemo(() => {
     return (
       props.tooltip.display !==
@@ -25,6 +29,11 @@ function Controls(
         CONTROLS_DEFAULT_CONFIG.scatters.tooltip.selectedParams.length
     );
   }, [props.tooltip]);
+
+  const onToggleExportPreview = React.useCallback((): void => {
+    setOpenExportModal((state) => !state);
+  }, [setOpenExportModal]);
+
   return (
     <ErrorBoundary>
       <div className='Controls__container ScrollBar__hidden'>
@@ -111,6 +120,29 @@ function Controls(
               }
             />
           </div>
+        </ErrorBoundary>
+        <ErrorBoundary>
+          {/* TODO add ability to open modals in ControlPopover component and change the name of the ControlPopover to more general*/}
+          <Tooltip title='Export Chart'>
+            <div className='Controls__anchor' onClick={onToggleExportPreview}>
+              <Icon className='Controls__icon' name='download' />
+            </div>
+          </Tooltip>
+          {openExportModal && (
+            <ExportPreview
+              withDynamicDimensions
+              openModal={openExportModal}
+              onToggleExportPreview={onToggleExportPreview}
+            >
+              <ChartGrid
+                nameKey='exportPreview'
+                data={props.data}
+                chartProps={props.chartProps}
+                chartType={props.chartType}
+                readOnly
+              />
+            </ExportPreview>
+          )}
         </ErrorBoundary>
       </div>
     </ErrorBoundary>
