@@ -55,12 +55,12 @@ class AimLogger(LightningLoggerBase):
 
         # Handle OmegaConf object
         try:
-            from omegaconf import OmegaConf, Container
+            from omegaconf import OmegaConf
         except ModuleNotFoundError:
             pass
         else:
             # Convert to primitives
-            if isinstance(params, Container):
+            if OmegaConf.is_config(params):
                 params = OmegaConf.to_container(params, resolve=True)
 
         hparams = self.experiment.meta_run_attrs_tree.subtree('hparams')
