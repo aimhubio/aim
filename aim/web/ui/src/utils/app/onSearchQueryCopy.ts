@@ -11,7 +11,7 @@ function onSearchQueryCopy<M extends State>(model: IModel<M>): void {
     notification: {
       id: Date.now(),
       severity: 'success',
-      message: 'Run Expression Copied',
+      messages: ['Run Expression Copied'],
     },
     model,
   });

@@ -86,7 +86,7 @@ export default async function onAlignmentMetricChange<M extends State>({
           notification: {
             id: Date.now(),
             severity: 'error',
-            message: AlignmentNotificationsEnum.NOT_ALL_ALIGNED,
+            messages: [AlignmentNotificationsEnum.NOT_ALL_ALIGNED],
           },
           model,
         });

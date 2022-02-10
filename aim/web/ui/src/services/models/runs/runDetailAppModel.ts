@@ -157,15 +157,17 @@ function archiveRun(id: string, archived: boolean = false) {
         onNotificationAdd({
           id: Date.now(),
           severity: 'success',
-          message: archived
-            ? 'Run successfully archived'
-            : 'Run successfully unarchived',
+          messages: [
+            archived
+              ? 'Run successfully archived'
+              : 'Run successfully unarchived',
+          ],
         });
       } else {
         onNotificationAdd({
           id: Date.now(),
           severity: 'error',
-          message: 'Something went wrong',
+          messages: ['Something went wrong'],
         });
       }
       analytics.trackEvent(
@@ -188,7 +190,7 @@ function deleteRun(id: string, successCallback: () => void = noop) {
           onNotificationAdd({
             id: Date.now(),
             severity: 'error',
-            message: 'Something went wrong',
+            messages: ['Something went wrong'],
           });
         }
         analytics.trackEvent('[RunDetail] Delete Run');
@@ -197,7 +199,7 @@ function deleteRun(id: string, successCallback: () => void = noop) {
     onNotificationAdd({
       id: Date.now(),
       severity: 'error',
-      message: err.message,
+      messages: [err.message],
     });
   }
 }

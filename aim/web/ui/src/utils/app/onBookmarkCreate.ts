@@ -46,7 +46,7 @@ export default async function onBookmarkCreate<M extends State>({
             notification: {
               id: Date.now(),
               severity: 'success',
-              message: BookmarkNotificationsEnum.CREATE,
+              messages: [BookmarkNotificationsEnum.CREATE],
             },
             model,
           });
@@ -55,7 +55,7 @@ export default async function onBookmarkCreate<M extends State>({
             notification: {
               id: Date.now(),
               severity: 'error',
-              message: BookmarkNotificationsEnum.ERROR,
+              messages: [BookmarkNotificationsEnum.ERROR],
             },
             model,
           });
@@ -66,7 +66,7 @@ export default async function onBookmarkCreate<M extends State>({
     onNotificationAdd({
       notification: {
         id: Date.now(),
-        message: err.message,
+        messages: [err.message],
         severity: 'error',
       },
       model,

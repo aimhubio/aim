@@ -510,7 +510,7 @@ function createAppModel(appConfig: IAppInitialConfig) {
       onModelNotificationAdd({
         id: Date.now(),
         severity: 'info',
-        message: 'Request has been cancelled',
+        messages: ['Request has been cancelled'],
       });
     }
 
@@ -1307,7 +1307,7 @@ function createAppModel(appConfig: IAppInitialConfig) {
               notification: {
                 id: Date.now(),
                 severity: 'error',
-                message: AlignmentNotificationsEnum.NOT_ALL_ALIGNED,
+                messages: [AlignmentNotificationsEnum.NOT_ALL_ALIGNED],
               },
               model,
             });
@@ -1474,7 +1474,7 @@ function createAppModel(appConfig: IAppInitialConfig) {
       onModelNotificationAdd({
         id: Date.now(),
         severity: 'success',
-        message: 'Run Expression Copied',
+        messages: ['Run Expression Copied'],
       });
     }
 
@@ -1779,9 +1779,11 @@ function createAppModel(appConfig: IAppInitialConfig) {
                   notification: {
                     id: Date.now(),
                     severity: 'success',
-                    message: `Runs are successfully ${
-                      archived ? 'archived' : 'unarchived'
-                    } `,
+                    messages: [
+                      `Runs are successfully ${
+                        archived ? 'archived' : 'unarchived'
+                      } `,
+                    ],
                   },
                   model,
                 });
@@ -1792,7 +1794,7 @@ function createAppModel(appConfig: IAppInitialConfig) {
                 notification: {
                   id: Date.now(),
                   severity: 'error',
-                  message: ex.message,
+                  messages: [ex.message],
                 },
                 model,
               });
@@ -1819,7 +1821,7 @@ function createAppModel(appConfig: IAppInitialConfig) {
                   notification: {
                     id: Date.now(),
                     severity: 'success',
-                    message: 'Runs are successfully deleted',
+                    messages: ['Runs are successfully deleted'],
                   },
                   model,
                 });
@@ -1830,7 +1832,7 @@ function createAppModel(appConfig: IAppInitialConfig) {
                 notification: {
                   id: Date.now(),
                   severity: 'error',
-                  message: ex.message,
+                  messages: [ex.message],
                 },
                 model,
               });
@@ -2136,7 +2138,7 @@ function createAppModel(appConfig: IAppInitialConfig) {
             model,
             notification: {
               id: Date.now(),
-              message: err.message,
+              messages: [err.message],
               severity: 'error',
             },
           });
@@ -2155,7 +2157,7 @@ function createAppModel(appConfig: IAppInitialConfig) {
         onModelNotificationAdd({
           id: Date.now(),
           severity: 'info',
-          message: 'Request has been cancelled',
+          messages: ['Request has been cancelled'],
         });
       }
 
@@ -2258,7 +2260,7 @@ function createAppModel(appConfig: IAppInitialConfig) {
                   notification: {
                     id: Date.now(),
                     severity: 'error',
-                    message: `${ex.name}, ${ex.message}`,
+                    messages: [`${ex.name}, ${ex.message}`],
                   },
                   model,
                 });
@@ -2820,7 +2822,10 @@ function createAppModel(appConfig: IAppInitialConfig) {
             notification: {
               id: Date.now(),
               severity: 'info',
-              message: `Live update: runs have been updated. ${unselectedRowsCount} of selected runs have been left out of the table.`,
+              messages: [
+                'Live update: runs have been updated.',
+                `${unselectedRowsCount} of selected runs have been left out of the table.`,
+              ],
             },
             model,
           });
@@ -2933,9 +2938,11 @@ function createAppModel(appConfig: IAppInitialConfig) {
                     notification: {
                       id: Date.now(),
                       severity: 'success',
-                      message: `Runs are successfully ${
-                        archived ? 'archived' : 'unarchived'
-                      } `,
+                      messages: [
+                        `Runs are successfully ${
+                          archived ? 'archived' : 'unarchived'
+                        } `,
+                      ],
                     },
                     model,
                   });
@@ -2946,7 +2953,7 @@ function createAppModel(appConfig: IAppInitialConfig) {
                   notification: {
                     id: Date.now(),
                     severity: 'error',
-                    message: ex.message,
+                    messages: [ex.message],
                   },
                   model,
                 });
@@ -2975,7 +2982,7 @@ function createAppModel(appConfig: IAppInitialConfig) {
                     notification: {
                       id: Date.now(),
                       severity: 'success',
-                      message: 'Runs are successfully deleted',
+                      messages: ['Runs are successfully deleted'],
                     },
                     model,
                   });
@@ -2986,7 +2993,7 @@ function createAppModel(appConfig: IAppInitialConfig) {
                   notification: {
                     id: Date.now(),
                     severity: 'error',
-                    message: ex.message,
+                    messages: [ex.message],
                   },
                   model,
                 });
@@ -3157,7 +3164,7 @@ function createAppModel(appConfig: IAppInitialConfig) {
         onModelNotificationAdd({
           id: Date.now(),
           severity: 'info',
-          message: 'Request has been cancelled',
+          messages: ['Request has been cancelled'],
         });
       }
 
@@ -4187,9 +4194,11 @@ function createAppModel(appConfig: IAppInitialConfig) {
                     notification: {
                       id: Date.now(),
                       severity: 'success',
-                      message: `Runs are successfully ${
-                        archived ? 'archived' : 'unarchived'
-                      } `,
+                      messages: [
+                        `Runs are successfully ${
+                          archived ? 'archived' : 'unarchived'
+                        } `,
+                      ],
                     },
                     model,
                   });
@@ -4200,7 +4209,7 @@ function createAppModel(appConfig: IAppInitialConfig) {
                   notification: {
                     id: Date.now(),
                     severity: 'error',
-                    message: ex.message,
+                    messages: [ex.message],
                   },
                   model,
                 });
@@ -4227,7 +4236,7 @@ function createAppModel(appConfig: IAppInitialConfig) {
                     notification: {
                       id: Date.now(),
                       severity: 'success',
-                      message: 'Runs are successfully deleted',
+                      messages: ['Runs are successfully deleted'],
                     },
                     model,
                   });
@@ -4238,7 +4247,7 @@ function createAppModel(appConfig: IAppInitialConfig) {
                   notification: {
                     id: Date.now(),
                     severity: 'error',
-                    message: ex.message,
+                    messages: [ex.message],
                   },
                   model,
                 });
@@ -5191,7 +5200,7 @@ function createAppModel(appConfig: IAppInitialConfig) {
         onModelNotificationAdd({
           id: Date.now(),
           severity: 'info',
-          message: 'Request has been cancelled',
+          messages: ['Request has been cancelled'],
         });
       }
 
@@ -5261,7 +5270,7 @@ function createAppModel(appConfig: IAppInitialConfig) {
                 if (ex.name === 'AbortError') {
                   onNotificationAdd({
                     notification: {
-                      message: ex.message,
+                      messages: [ex.message],
                       id: Date.now(),
                       severity: 'error',
                     },
@@ -5523,9 +5532,11 @@ function createAppModel(appConfig: IAppInitialConfig) {
                     notification: {
                       id: Date.now(),
                       severity: 'success',
-                      message: `Runs are successfully ${
-                        archived ? 'archived' : 'unarchived'
-                      } `,
+                      messages: [
+                        `Runs are successfully ${
+                          archived ? 'archived' : 'unarchived'
+                        } `,
+                      ],
                     },
                     model,
                   });
@@ -5536,7 +5547,7 @@ function createAppModel(appConfig: IAppInitialConfig) {
                   notification: {
                     id: Date.now(),
                     severity: 'error',
-                    message: ex.message,
+                    messages: [ex.message],
                   },
                   model,
                 });
@@ -5563,7 +5574,7 @@ function createAppModel(appConfig: IAppInitialConfig) {
                     notification: {
                       id: Date.now(),
                       severity: 'success',
-                      message: 'Runs are successfully deleted',
+                      messages: ['Runs are successfully deleted'],
                     },
                     model,
                   });
@@ -5574,7 +5585,7 @@ function createAppModel(appConfig: IAppInitialConfig) {
                   notification: {
                     id: Date.now(),
                     severity: 'error',
-                    message: ex.message,
+                    messages: [ex.message],
                   },
                   model,
                 });
