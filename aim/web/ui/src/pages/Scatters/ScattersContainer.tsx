@@ -3,6 +3,8 @@ import { useRouteMatch, useHistory } from 'react-router-dom';
 
 import ErrorBoundary from 'components/ErrorBoundary/ErrorBoundary';
 
+import { ANALYTICS_EVENT_KEYS } from 'config/analytics/analyticsKeysMap';
+
 import usePanelResize from 'hooks/resize/usePanelResize';
 import useModel from 'hooks/model/useModel';
 
@@ -81,7 +83,7 @@ function ScattersContainer(): React.FunctionComponentElement<React.ReactNode> {
     scattersRequestRef.call((detail: any) => {
       exceptionHandler({ detail, model: scattersAppModel });
     });
-    analytics.pageView('[ScattersExplorer]');
+    analytics.pageView(ANALYTICS_EVENT_KEYS.scatters.pageView);
 
     const unListenHistory = history.listen(() => {
       if (!!scattersData?.config) {
