@@ -1,3 +1,5 @@
+import { ANALYTICS_EVENT_KEYS } from 'config/analytics/analyticsKeysMap';
+
 import * as analytics from 'services/analytics';
 
 import { IModel, State } from 'types/services/models/model';
@@ -21,7 +23,10 @@ export default function onColorIndicatorChange<M extends State>({
     chart.isVisibleColorIndicator = !configData.chart.isVisibleColorIndicator;
     updateModelData({ ...configData, chart }, true);
     analytics.trackEvent(
-      `[${appName}Explorer][Chart] ${
+      `${
+        // @ts-ignore
+        ANALYTICS_EVENT_KEYS[appName].chart.controls.changeColorIndicatorMode
+      } to ${
         configData.chart.isVisibleColorIndicator ? 'Disable' : 'Enable'
       } color indicator`,
     );

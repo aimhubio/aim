@@ -11,14 +11,18 @@ import BusyLoaderWrapper from 'components/BusyLoaderWrapper/BusyLoaderWrapper';
 import ResizeModeActions from 'components/ResizeModeActions/ResizeModeActions';
 import ErrorBoundary from 'components/ErrorBoundary/ErrorBoundary';
 
-import { ROW_CELL_SIZE_CONFIG, RowHeightSize } from 'config/table/tableConfigs';
+import {
+  TABLE_DEFAULT_CONFIG,
+  ROW_CELL_SIZE_CONFIG,
+  RowHeightSize,
+} from 'config/table/tableConfigs';
 
 import useResizeObserver from 'hooks/window/useResizeObserver';
 
-import HideRows from 'pages/Metrics/components/Table/HideRowsPopover/HideRowsPopover';
-import RowHeight from 'pages/Metrics/components/Table/RowHeightPopover/RowHeightPopover';
-import ManageColumns from 'pages/Metrics/components/Table/ManageColumnsPopover/ManageColumnsPopover';
 import SortPopover from 'pages/Metrics/components/Table/SortPopover/SortPopover';
+import ManageColumnsPopover from 'pages/Metrics/components/Table/ManageColumnsPopover/ManageColumnsPopover';
+import HideRowsPopover from 'pages/Metrics/components/Table/HideRowsPopover/HideRowsPopover';
+import RowHeightPopover from 'pages/Metrics/components/Table/RowHeightPopover/RowHeightPopover';
 
 import { ITableProps } from 'types/components/Table/Table';
 
@@ -79,7 +83,10 @@ const Table = React.forwardRef(function Table(
     deleteRuns,
     hideSystemMetrics,
     className = '',
+    appName,
+    hiddenChartRows,
     focusedState,
+    columnsOrder,
     ...props
   }: ITableProps,
   ref,
@@ -605,7 +612,19 @@ const Table = React.forwardRef(function Table(
     setTableBulkActionsVisibility(tableBulkActionsVisibility);
   }, [selectedRows]);
 
-  useResizeObserver(observerReturnCallback, tableContainerRef);
+  const sortPopoverChanged: boolean = React.useMemo(() => {
+    return (
+      TABLE_DEFAULT_CONFIG[appName as Exclude<AppNameEnum, 'runs'>]?.sortFields
+        ?.length !== sortFields?.length
+    );
+  }, [sortFields]);
+
+  useResizeObserver(
+    observerReturnCallback,
+    tableContainerRef,
+    sortPopoverChanged,
+  );
+
   // The right check is !props.isInfiniteLoading && (isLoading || isNil(rowData))
   // but after setting isInfiniteLoading to true, the rowData becomes null, unnecessary renders happening
   // @TODO sanitize this point
@@ -628,74 +647,24 @@ const Table = React.forwardRef(function Table(
                 )}
                 <div className='flex fac Table__header__buttons'>
                   {onManageColumns && (
-                    <ControlPopover
-                      title='Manage Table Columns'
-                      anchorOrigin={{
-                        vertical: 'bottom',
-                        horizontal: 'left',
-                      }}
-                      transformOrigin={{
-                        vertical: 'top',
-                        horizontal: 'left',
-                      }}
-                      anchor={({ onAnchorClick, opened }) => (
-                        <Button
-                          color='secondary'
-                          type='text'
-                          onClick={onAnchorClick}
-                          className={`Table__header__item ${
-                            opened ? 'opened' : ''
-                          }`}
-                        >
-                          <Icon name='manage-column' />
-                          <Text size={14} tint={100}>
-                            Manage Columns
-                          </Text>
-                        </Button>
+                    <ManageColumnsPopover
+                      columnsData={columnsData.filter(
+                        (item: any) =>
+                          item.key !== '#' && item.key !== 'actions',
                       )}
-                      component={
-                        <ManageColumns
-                          columnsData={columnsData.filter(
-                            (item: any) =>
-                              item.key !== '#' && item.key !== 'actions',
-                          )}
-                          hiddenColumns={hiddenColumns}
-                          hideSystemMetrics={hideSystemMetrics}
-                          onManageColumns={onManageColumns}
-                          onColumnsVisibilityChange={onColumnsVisibilityChange}
-                          onTableDiffShow={onTableDiffShow}
-                        />
-                      }
+                      columnsOrder={columnsOrder}
+                      hiddenColumns={hiddenColumns}
+                      hideSystemMetrics={hideSystemMetrics}
+                      onManageColumns={onManageColumns}
+                      onColumnsVisibilityChange={onColumnsVisibilityChange}
+                      onTableDiffShow={onTableDiffShow}
+                      appName={appName}
                     />
                   )}
                   {onRowsChange && (
-                    <ControlPopover
-                      anchorOrigin={{
-                        vertical: 'bottom',
-                        horizontal: 'left',
-                      }}
-                      transformOrigin={{
-                        vertical: 'top',
-                        horizontal: 'left',
-                      }}
-                      anchor={({ onAnchorClick, opened }) => (
-                        <Button
-                          type='text'
-                          color='secondary'
-                          onClick={onAnchorClick}
-                          className={`Table__header__item ${
-                            opened ? 'opened' : ''
-                          }`}
-                        >
-                          <Icon name='eye-outline-hide' />
-                          <Text size={14} tint={100}>
-                            Hide Rows
-                          </Text>
-                        </Button>
-                      )}
-                      component={
-                        <HideRows toggleRowsVisibility={onRowsChange} />
-                      }
+                    <HideRowsPopover
+                      hiddenChartRows={hiddenChartRows}
+                      toggleRowsVisibility={onRowsChange}
                     />
                   )}
                   {onSort && (
@@ -715,7 +684,7 @@ const Table = React.forwardRef(function Table(
                           color='secondary'
                           onClick={onAnchorClick}
                           className={`Table__header__item ${
-                            opened ? 'opened' : ''
+                            opened || sortPopoverChanged ? 'opened' : ''
                           }`}
                         >
                           <Icon name='sort-outside' />
@@ -735,37 +704,10 @@ const Table = React.forwardRef(function Table(
                     />
                   )}
                   {onRowHeightChange && (
-                    <ControlPopover
-                      title='Select Table Row Height'
-                      anchorOrigin={{
-                        vertical: 'bottom',
-                        horizontal: 'left',
-                      }}
-                      transformOrigin={{
-                        vertical: 'top',
-                        horizontal: 'left',
-                      }}
-                      anchor={({ onAnchorClick, opened }) => (
-                        <Button
-                          type='text'
-                          color='secondary'
-                          onClick={onAnchorClick}
-                          className={`Table__header__item ${
-                            opened ? 'opened' : ''
-                          }`}
-                        >
-                          <Icon name='row-height' />
-                          <Text size={14} tint={100}>
-                            Row Height
-                          </Text>
-                        </Button>
-                      )}
-                      component={
-                        <RowHeight
-                          rowHeight={rowHeight}
-                          onRowHeightChange={onRowHeightChange}
-                        />
-                      }
+                    <RowHeightPopover
+                      rowHeight={rowHeight}
+                      onRowHeightChange={onRowHeightChange}
+                      appName={appName}
                     />
                   )}
                 </div>
@@ -992,7 +934,12 @@ function propsComparator(
   if (prevProps.hiddenColumns !== nextProps.hiddenColumns) {
     return false;
   }
-
+  if (prevProps.hiddenChartRows !== nextProps.hiddenChartRows) {
+    return false;
+  }
+  if (prevProps.columnsOrder !== nextProps.columnsOrder) {
+    return false;
+  }
   if (prevProps.focusedState !== nextProps.focusedState) {
     return false;
   }
