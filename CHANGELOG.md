@@ -1,5 +1,9 @@
 # Changelog
 
+## 3.5.3 
+
+- Fix rendering issue in runs explorer page (arsengit)
+
 ## 3.5.2 Feb 10 2022
 
 - Fix issue with displaying current day activity cell on week's first day (rubenaprikyan)
