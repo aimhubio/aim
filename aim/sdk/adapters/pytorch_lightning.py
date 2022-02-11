@@ -45,7 +45,8 @@ class AimLogger(LightningLoggerBase):
             self._run = Run(
                 repo=self._repo_path,
                 experiment=self._experiment_name,
-                system_tracking_interval=self._system_tracking_interval
+                system_tracking_interval=self._system_tracking_interval,
+                log_system_params=True
             )
         return self._run
 
@@ -88,7 +89,7 @@ class AimLogger(LightningLoggerBase):
                     and name.startswith(self._val_metric_prefix):
                 name = name[len(self._val_metric_prefix):]
                 context['subset'] = 'val'
-            self.experiment.track(v, name=name, context=context)
+            self.experiment.track(v, name=name,  step=step, context=context)
 
     @rank_zero_only
     def close(self) -> None:
