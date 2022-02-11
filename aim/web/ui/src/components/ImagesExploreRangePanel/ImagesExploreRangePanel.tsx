@@ -51,7 +51,10 @@ function ImagesExploreRangePanel({
               {
                 errorCondition: (value: string | number) =>
                   +value < stepRange[0],
-                errorText: `Value should be equal or greater then ${stepRange[0]}`,
+                errorText:
+                  stepRange[0] <= 0
+                    ? 'Value should be greater then 0'
+                    : `Value should be equal or greater then ${stepRange[0]}`,
               },
               {
                 errorCondition: (value: string | number) =>
@@ -85,7 +88,10 @@ function ImagesExploreRangePanel({
               {
                 errorCondition: (value: string | number) =>
                   +value < indexRange[0],
-                errorText: `Value should be equal or greater then ${indexRange[0]}`,
+                errorText:
+                  indexRange[0] <= 0
+                    ? 'Value should be greater then 0'
+                    : `Value should be equal or greater then ${indexRange[0]}`,
               },
               {
                 errorCondition: (value: string | number) =>
