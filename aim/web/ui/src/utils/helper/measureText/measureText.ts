@@ -1,30 +1,22 @@
 // Handy JavaScript to measure the size taken to render the supplied text;
 // you can supply additional style information too if you have it.
 
-function measureText(
-  text: string,
-  fontSize: number = 16,
-): {
-  width: number;
-  height: number;
-} {
-  let div = document.createElement('div');
-  document.body.appendChild(div);
-  div.style.fontSize = '' + fontSize + 'px';
-  div.style.position = 'absolute';
-  div.style.visibility = 'hidden';
-  div.style.height = 'auto';
-  div.style.width = 'auto';
-  div.style.whiteSpace = 'nowrap';
+const canvas = document.createElement('canvas') as HTMLCanvasElement;
+const context = canvas.getContext('2d') as CanvasRenderingContext2D;
 
-  div.innerText = text;
-
-  const result = {
-    width: div.clientWidth,
-    height: div.clientHeight,
-  };
-  document.body.removeChild(div);
-
+function measureText({
+  text,
+  fontSize = '16px',
+  fontFamily = 'Inter, sans-serif',
+  fontWeight = 400,
+}: {
+  text: string;
+  fontSize?: string;
+  fontFamily?: string;
+  fontWeight?: number;
+}) {
+  context.font = `${fontWeight} ${fontSize} ${fontFamily}`;
+  const result = context.measureText(text);
   return result;
 }
 

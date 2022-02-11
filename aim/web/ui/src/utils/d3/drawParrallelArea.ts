@@ -2,6 +2,8 @@ import * as d3 from 'd3';
 
 import { IDrawAreaArgs } from 'types/utils/d3/drawArea';
 
+import { toTextEllipsis } from 'utils/helper';
+
 import { CircleEnum } from './index';
 
 function drawParallelArea(args: IDrawAreaArgs): void {
@@ -19,7 +21,6 @@ function drawParallelArea(args: IDrawAreaArgs): void {
     linesNodeRef,
     attributesNodeRef,
     chartTitle = {},
-    readOnly,
   } = args;
   if (!parentRef?.current || !visAreaRef?.current) {
     return;
@@ -97,66 +98,43 @@ function drawParallelArea(args: IDrawAreaArgs): void {
     .attr('width', offsetWidth + 2 * CircleEnum.ActiveRadius + 4)
     .attr('height', offsetHeight + 2 * CircleEnum.ActiveRadius + 4);
 
-  if (!readOnly) {
-    const titleMarginTop = 2;
-    const titleHeight = 15;
-    const keys = Object.keys(chartTitle);
-    const titleText = keys
-      ? `${keys.map((key) => `${key}=${chartTitle[key]}`).join(', ')}`
-      : '';
+  const keys = Object.keys(chartTitle);
+  const titleText = keys
+    ? `${keys.map((key) => `${key}=${chartTitle[key]}`).join(', ')}`
+    : '';
+  const titleXAttr = margin.left - 45;
+  const titleFontSize = '12px';
+  const textEllipsis = toTextEllipsis({
+    text: titleText,
+    width: width - margin.left,
+    fontSize: titleFontSize,
+  });
 
-    if (titleText) {
-      svgNodeRef.current
-        .append('foreignObject')
-        .attr('x', 0)
-        .attr('y', titleMarginTop)
-        .attr('height', titleHeight)
-        .attr('width', width)
-        .html((d: any) => {
-          return keys.length
-            ? `
-        <div 
-            title='#${index + 1} ${titleText}' 
-            style='
-              display: flex; 
-              align-items: center;
-              justify-content: center;
-              color: #484f56;
-              padding: 0 1em;
-            '
-        >
-          <div 
-            style='
-              width: ${titleHeight}px; 
-              height: ${titleHeight}px;
-              display: flex; 
-              align-items: center;
-              justify-content: center;
-              margin-right: 0.5em;
-              padding: 2px;
-              box-shadow: inset 0 0 0 1px #e8e8e8;
-              border-radius: 0.2em;
-              font-size: 0.6em;
-              flex-shrink: 0;
-            '
-          >
-           ${index + 1}
-          </div>
-          <div 
-            style='
-              white-space: nowrap; 
-              text-overflow: ellipsis;
-              overflow: hidden;
-              font-size: 0.75em;
-            '
-          >
-            ${titleText}
-          </div>
-        </div>
-      `
-            : '';
-        });
-    }
+  if (titleText) {
+    const titleGroup = svgNodeRef.current
+      .append('g')
+      .attr('transform', `translate(${titleXAttr}, 3)`);
+
+    titleGroup
+      .append('text')
+      .attr('x', 0)
+      .attr('y', 12)
+      .attr('width', 20)
+      .attr('height', 20)
+      .attr('font-size', '10px')
+      .attr('fill', '#484f56')
+      .style('outline', '1px solid #e8e8e8')
+      .text(`[   ${index + 1}   ]`);
+
+    titleGroup
+      .append('text')
+      .attr('x', titleXAttr + 29)
+      .attr('y', 12)
+      .attr('font-size', titleFontSize)
+      .attr('fill', '#484f56')
+      .text(textEllipsis)
+      .append('svg:title')
+      .text(titleText);
   }
 }
 export default drawParallelArea;

@@ -4,8 +4,7 @@ import { IDrawAreaArgs } from 'types/utils/d3/drawArea';
 
 import { formatSystemMetricName } from 'utils/formatSystemMetricName';
 import { isSystemMetric } from 'utils/isSystemMetric';
-
-import { cutTextByWidth } from '../helper';
+import { toTextEllipsis } from 'utils/helper';
 
 import { CircleEnum } from './index';
 
@@ -24,7 +23,6 @@ function drawArea(args: IDrawAreaArgs): void {
     linesNodeRef,
     attributesNodeRef,
     chartTitle = {},
-    readOnly,
   } = args;
 
   if (!parentRef?.current || !visAreaRef?.current) {
@@ -125,7 +123,12 @@ function drawArea(args: IDrawAreaArgs): void {
         .join(', ')}`
     : '';
   const titleXAttr = margin.left - 45;
-  const croppedText = cutTextByWidth(titleText, width - margin.left, 12);
+  const titleFontSize = '12px';
+  const textEllipsis = toTextEllipsis({
+    text: titleText,
+    width: width - margin.left,
+    fontSize: titleFontSize,
+  });
 
   if (titleText) {
     const titleGroup = svgNodeRef.current
@@ -147,9 +150,9 @@ function drawArea(args: IDrawAreaArgs): void {
       .append('text')
       .attr('x', titleXAttr + 29)
       .attr('y', 12)
-      .attr('font-size', '12px')
+      .attr('font-size', titleFontSize)
       .attr('fill', '#484f56')
-      .text(croppedText)
+      .text(textEllipsis)
       .append('svg:title')
       .text(titleText);
   }

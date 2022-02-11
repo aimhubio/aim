@@ -80,7 +80,6 @@ const HighPlot = React.forwardRef(function HighPlot(
       linesNodeRef,
       attributesNodeRef,
       chartTitle,
-      readOnly,
     });
 
     if (isVisibleColorIndicator) {

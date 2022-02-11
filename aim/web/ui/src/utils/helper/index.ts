@@ -5,7 +5,7 @@ import imgSource2Image from './imgSource2Image/imgSource2Image';
 import getSVGString from './getSVGString/getSVGString';
 import downloadLink from './downloadLink/downloadLink';
 import measureText from './measureText/measureText';
-import cutTextByWidth from './cutTextByWidth/cutTextByWidth';
+import toTextEllipsis from './toTextEllipsis/toTextEllipsis';
 
 export {
   getValue,
@@ -15,5 +15,5 @@ export {
   getSVGString,
   downloadLink,
   measureText,
-  cutTextByWidth,
+  toTextEllipsis,
 };

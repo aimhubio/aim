@@ -103,7 +103,6 @@ const LineChart = React.forwardRef(function LineChart(
       linesNodeRef,
       attributesNodeRef,
       chartTitle,
-      readOnly,
     });
 
     const { width, height, margin } = visBoxRef.current;

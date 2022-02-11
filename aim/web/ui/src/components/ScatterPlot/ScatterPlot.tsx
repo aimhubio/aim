@@ -89,7 +89,6 @@ const ScatterPlot = React.forwardRef(function ScatterPlot(
       linesNodeRef,
       attributesNodeRef,
       chartTitle,
-      readOnly,
     });
 
     const { width, height, margin } = visBoxRef.current;
@@ -190,7 +189,6 @@ const ScatterPlot = React.forwardRef(function ScatterPlot(
         linesNodeRef,
         attributesNodeRef,
         chartTitle,
-        readOnly,
       });
     } else {
       draw();
