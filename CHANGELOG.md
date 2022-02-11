@@ -1,5 +1,10 @@
 # Changelog
 
+## Unreleased
+
+###Enhancements
+
+- Add ability to apply active style on table actions popover buttons with applied changes (arsengit)
 ##Unreleased
 
 ###Fixes 

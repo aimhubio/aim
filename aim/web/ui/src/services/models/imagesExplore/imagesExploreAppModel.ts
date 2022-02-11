@@ -1812,7 +1812,7 @@ function onColumnsOrderChange(columnsOrder: any) {
   analytics.trackEvent(ANALYTICS_EVENT_KEYS.images.table.changeColumnsOrder);
 }
 
-function onColumnsVisibilityChange(hiddenColumns: string[]) {
+function onColumnsVisibilityChange(hiddenColumns: string[] | string | any) {
   const configData: IImagesExploreAppConfig | undefined =
     model.getState()?.config;
   const columnsData = model.getState()!.tableColumns!;

@@ -147,6 +147,7 @@ function MetricsContainer(): React.FunctionComponentElement<React.ReactNode> {
         requestIsPending={metricsData?.requestIsPending!}
         resizeMode={metricsData?.config?.table?.resizeMode!}
         columnsWidths={metricsData?.config?.table?.columnsWidths}
+        columnsOrder={metricsData?.config?.table?.columnsOrder}
         // methods
         onChangeTooltip={metricAppModel.onChangeTooltip}
         onIgnoreOutliersChange={metricAppModel.onIgnoreOutliersChange}

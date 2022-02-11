@@ -54,13 +54,8 @@ export default function onColumnsVisibilityChange<M extends State>({
     }
 
     if (hideSystemMetrics !== undefined) {
-      if (
-        getFilteredSystemMetrics(columnKeys).length === systemMetrics.length
-      ) {
-        hideSystemMetrics = true;
-      } else {
-        hideSystemMetrics = false;
-      }
+      hideSystemMetrics =
+        getFilteredSystemMetrics(columnKeys).length === systemMetrics.length;
     }
     columnKeys =
       hiddenColumns === HideColumnsEnum.All
