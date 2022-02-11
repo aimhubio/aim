@@ -89,7 +89,7 @@ class AimLogger(LightningLoggerBase):
                     and name.startswith(self._val_metric_prefix):
                 name = name[len(self._val_metric_prefix):]
                 context['subset'] = 'val'
-            self.experiment.track(v, name=name,  step=step, context=context)
+            self.experiment.track(v, name=name, step=step, context=context)
 
     @rank_zero_only
     def close(self) -> None:
