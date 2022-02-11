@@ -7,11 +7,12 @@ import { IPoint } from 'components/ScatterPlot';
 
 import COLORS from 'config/colors/colors';
 import DASH_ARRAYS from 'config/dash-arrays/dashArrays';
-import { HideColumnsEnum, ResizeModeEnum } from 'config/enums/tableEnums';
+import { ResizeModeEnum } from 'config/enums/tableEnums';
 import { AlignmentNotificationsEnum } from 'config/notification-messages/notificationMessages';
-import { RowHeightSize } from 'config/table/tableConfigs';
+import { RowHeightSize, TABLE_DEFAULT_CONFIG } from 'config/table/tableConfigs';
 import { DensityOptions } from 'config/enums/densityEnum';
 import { CONTROLS_DEFAULT_CONFIG } from 'config/controls/controlsDefaultConfig';
+import { ANALYTICS_EVENT_KEYS } from 'config/analytics/analyticsKeysMap';
 
 import {
   getMetricsTableColumns,
@@ -226,19 +227,18 @@ function createAppModel(appConfig: IAppInitialConfig) {
         }
         if (components?.table) {
           config.table = {
-            resizeMode: ResizeModeEnum.Resizable,
-            rowHeight: RowHeightSize.md,
-            sortFields: [],
-            hiddenMetrics: [],
-            hiddenColumns: [],
-            hideSystemMetrics: undefined,
+            resizeMode: TABLE_DEFAULT_CONFIG.metrics.resizeMode,
+            rowHeight: TABLE_DEFAULT_CONFIG.metrics.rowHeight,
+            sortFields: [...TABLE_DEFAULT_CONFIG.metrics.sortFields],
+            hiddenMetrics: [...TABLE_DEFAULT_CONFIG.metrics.hiddenMetrics],
+            hiddenColumns: [...TABLE_DEFAULT_CONFIG.metrics.hiddenColumns],
             columnsWidths: {},
             columnsOrder: {
-              left: [],
-              middle: [],
-              right: [],
+              left: [...TABLE_DEFAULT_CONFIG.metrics.columnsOrder.left],
+              middle: [...TABLE_DEFAULT_CONFIG.metrics.columnsOrder.middle],
+              right: [...TABLE_DEFAULT_CONFIG.metrics.columnsOrder.right],
             },
-            height: '0.5',
+            height: TABLE_DEFAULT_CONFIG.metrics.height,
           };
         }
         if (components?.charts?.[0]) {
@@ -339,19 +339,16 @@ function createAppModel(appConfig: IAppInitialConfig) {
         }
         if (components?.table) {
           config.table = {
-            resizeMode: ResizeModeEnum.Resizable,
-            rowHeight: RowHeightSize.md,
-            hideSystemMetrics: true,
-            sortFields: [],
-            hiddenMetrics: [],
-            hiddenColumns: [],
+            rowHeight: TABLE_DEFAULT_CONFIG.runs.rowHeight,
+            hideSystemMetrics: TABLE_DEFAULT_CONFIG.runs.hideSystemMetrics,
+            hiddenMetrics: TABLE_DEFAULT_CONFIG.runs.hiddenMetrics,
+            hiddenColumns: TABLE_DEFAULT_CONFIG.runs.hiddenColumns,
             columnsWidths: {},
             columnsOrder: {
-              left: [],
-              middle: [],
-              right: [],
+              left: [...TABLE_DEFAULT_CONFIG.runs.columnsOrder.left],
+              middle: [...TABLE_DEFAULT_CONFIG.runs.columnsOrder.middle],
+              right: [...TABLE_DEFAULT_CONFIG.runs.columnsOrder.right],
             },
-            height: '0.5',
           };
           if (appName === AppNameEnum.RUNS) {
             config.pagination = {
@@ -1572,7 +1569,7 @@ function createAppModel(appConfig: IAppInitialConfig) {
         type: 'text/csv;charset=utf-8;',
       });
       saveAs(blob, `${appName}-${moment().format('HH:mm:ss · D MMM, YY')}.csv`);
-      analytics.trackEvent(`[${appName}Explore] Export runs data to CSV`);
+      analytics.trackEvent(ANALYTICS_EVENT_KEYS[appName].table.exports.csv);
     }
 
     const onActivePointChange = _.debounce(
@@ -1749,7 +1746,8 @@ function createAppModel(appConfig: IAppInitialConfig) {
       });
       setItem('metricsLUConfig', encode(newLiveUpdateConfig));
       analytics.trackEvent(
-        `[${appName}Explorer] Switch live-update ${
+        // @ts-ignore
+        `${ANALYTICS_EVENT_KEYS[appName].liveUpdate} ${
           config.enabled ? 'on' : 'off'
         }`,
       );
@@ -1797,6 +1795,10 @@ function createAppModel(appConfig: IAppInitialConfig) {
                 model,
               });
             }
+          } finally {
+            analytics.trackEvent(
+              ANALYTICS_EVENT_KEYS[appName].table.archiveRunsBatch,
+            );
           }
         },
         abort: runsArchiveRef.abort,
@@ -1835,6 +1837,10 @@ function createAppModel(appConfig: IAppInitialConfig) {
                 model,
               });
             }
+          } finally {
+            analytics.trackEvent(
+              ANALYTICS_EVENT_KEYS[appName].table.deleteRunsBatch,
+            );
           }
         },
         abort: runsDeleteRef.abort,
@@ -2227,7 +2233,6 @@ function createAppModel(appConfig: IAppInitialConfig) {
               const tableColumns = getRunsTableColumns(
                 metricsColumns,
                 params,
-                data[0]?.config,
                 model.getState()?.config?.table.columnsOrder!,
                 model.getState()?.config?.table.hiddenColumns!,
               );
@@ -2284,7 +2289,6 @@ function createAppModel(appConfig: IAppInitialConfig) {
         const tableColumns: ITableColumn[] = getRunsTableColumns(
           metricsColumns,
           params,
-          data[0]?.config,
           configData?.table?.columnsOrder!,
           configData?.table?.hiddenColumns!,
         );
@@ -2743,7 +2747,6 @@ function createAppModel(appConfig: IAppInitialConfig) {
         const tableColumns: ITableColumn[] = getRunsTableColumns(
           metricsColumns,
           params,
-          data[0]?.config,
           configData?.table.columnsOrder!,
           configData?.table.hiddenColumns!,
         );
@@ -2790,9 +2793,7 @@ function createAppModel(appConfig: IAppInitialConfig) {
           type: 'text/csv;charset=utf-8;',
         });
         saveAs(blob, `runs-${moment().format('HH:mm:ss · D MMM, YY')}.csv`);
-        analytics.trackEvent(
-          `[${appName}Explore][Table] Export runs data to CSV`,
-        );
+        analytics.trackEvent(ANALYTICS_EVENT_KEYS[appName].table.exports.csv);
       }
 
       function onModelNotificationDelete(id: number): void {
@@ -2807,7 +2808,6 @@ function createAppModel(appConfig: IAppInitialConfig) {
         const tableColumns = getRunsTableColumns(
           metricsColumns,
           params,
-          data[0]?.config,
           model.getState()?.config?.table.columnsOrder!,
           model.getState()?.config?.table.hiddenColumns!,
         );
@@ -2881,7 +2881,8 @@ function createAppModel(appConfig: IAppInitialConfig) {
 
         setItem('runsLUConfig', encode(newLiveUpdateConfig));
         analytics.trackEvent(
-          `[${appName}Explorer] Switch live-update ${
+          // @ts-ignore
+          `${ANALYTICS_EVENT_KEYS[appName].liveUpdate} ${
             config.enabled ? 'on' : 'off'
           }`,
         );
@@ -2898,7 +2899,7 @@ function createAppModel(appConfig: IAppInitialConfig) {
         return {
           call: async () => {
             try {
-              await runsArchiveRef
+              /* await runsArchiveRef
                 .call((detail) => exceptionHandler({ detail, model }))
                 .then(() => {
                   getRunsData(false, true).call((detail: any) => {
@@ -2914,7 +2915,7 @@ function createAppModel(appConfig: IAppInitialConfig) {
                     },
                     model,
                   });
-                });
+                });*/
             } catch (ex: Error | any) {
               if (ex.name === 'AbortError') {
                 onNotificationAdd({
@@ -2926,6 +2927,10 @@ function createAppModel(appConfig: IAppInitialConfig) {
                   model,
                 });
               }
+            } finally {
+              analytics.trackEvent(
+                ANALYTICS_EVENT_KEYS.runs.table.archiveRunsBatch,
+              );
             }
           },
           abort: runsArchiveRef.abort,
@@ -2966,6 +2971,10 @@ function createAppModel(appConfig: IAppInitialConfig) {
                   model,
                 });
               }
+            } finally {
+              analytics.trackEvent(
+                ANALYTICS_EVENT_KEYS[appName].table.deleteRunsBatch,
+              );
             }
           },
           abort: runsDeleteRef.abort,
@@ -3967,7 +3976,7 @@ function createAppModel(appConfig: IAppInitialConfig) {
           type: 'text/csv;charset=utf-8;',
         });
         saveAs(blob, `params-${moment().format('HH:mm:ss · D MMM, YY')}.csv`);
-        analytics.trackEvent('[ParamsExplorer] Export runs data to CSV');
+        analytics.trackEvent(ANALYTICS_EVENT_KEYS[appName].table.exports.csv);
       }
 
       function updateModelData(
@@ -4132,7 +4141,8 @@ function createAppModel(appConfig: IAppInitialConfig) {
 
         setItem('paramsLUConfig', encode(newLiveUpdateConfig));
         analytics.trackEvent(
-          `[${appName}Explorer] Switch live-update ${
+          // @ts-ignore
+          `${ANALYTICS_EVENT_KEYS[appName].liveUpdate} ${
             config.enabled ? 'on' : 'off'
           }`,
         );
@@ -4180,6 +4190,10 @@ function createAppModel(appConfig: IAppInitialConfig) {
                   model,
                 });
               }
+            } finally {
+              analytics.trackEvent(
+                ANALYTICS_EVENT_KEYS[appName].table.archiveRunsBatch,
+              );
             }
           },
           abort: runsArchiveRef.abort,
@@ -4218,6 +4232,10 @@ function createAppModel(appConfig: IAppInitialConfig) {
                   model,
                 });
               }
+            } finally {
+              analytics.trackEvent(
+                ANALYTICS_EVENT_KEYS[appName].table.deleteRunsBatch,
+              );
             }
           },
           abort: runsDeleteRef.abort,
@@ -5316,7 +5334,7 @@ function createAppModel(appConfig: IAppInitialConfig) {
           blob,
           `${appName}-${moment().format('HH:mm:ss · D MMM, YY')}.csv`,
         );
-        analytics.trackEvent(`[${appName}Explorer] Export runs data to CSV`);
+        analytics.trackEvent(ANALYTICS_EVENT_KEYS[appName].table.exports.csv);
       }
 
       function onActivePointChange(
@@ -5468,7 +5486,8 @@ function createAppModel(appConfig: IAppInitialConfig) {
 
         setItem('scattersLUConfig', encode(newLiveUpdateConfig));
         analytics.trackEvent(
-          `[${appName}Explorer] Switch live-update ${
+          // @ts-ignore
+          `${ANALYTICS_EVENT_KEYS[appName].liveUpdate} ${
             config.enabled ? 'on' : 'off'
           }`,
         );
@@ -5516,6 +5535,10 @@ function createAppModel(appConfig: IAppInitialConfig) {
                   model,
                 });
               }
+            } finally {
+              analytics.trackEvent(
+                ANALYTICS_EVENT_KEYS[appName].table.archiveRunsBatch,
+              );
             }
           },
           abort: runsArchiveRef.abort,
@@ -5554,6 +5577,10 @@ function createAppModel(appConfig: IAppInitialConfig) {
                   model,
                 });
               }
+            } finally {
+              analytics.trackEvent(
+                ANALYTICS_EVENT_KEYS[appName].table.deleteRunsBatch,
+              );
             }
           },
           abort: runsDeleteRef.abort,

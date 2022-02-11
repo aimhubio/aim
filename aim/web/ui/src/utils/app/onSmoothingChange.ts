@@ -1,3 +1,5 @@
+import { ANALYTICS_EVENT_KEYS } from 'config/analytics/analyticsKeysMap';
+
 import * as analytics from 'services/analytics';
 
 import { IOnSmoothingChange } from 'types/pages/metrics/Metrics';
@@ -27,13 +29,18 @@ export default function onSmoothingChange<M extends State>({
   }
   if (args.curveInterpolation) {
     analytics.trackEvent(
-      `[${appName}Explorer][Chart] Set interpolation mode to "${
+      `${
+        // @ts-ignore
+        ANALYTICS_EVENT_KEYS[appName].chart.controls
+          .changeCurveInterpolationMode
+      } to "${
         args.curveInterpolation === CurveEnum.Linear ? 'linear' : 'cubic'
       }"`,
     );
   } else {
     analytics.trackEvent(
-      `[${appName}Explorer][Chart] Set smoothening algorithm to "${configData?.chart.smoothingAlgorithm}"`,
+      // @ts-ignore
+      `${ANALYTICS_EVENT_KEYS[appName].chart.controls.selectSmoothingOptions} to "${configData?.chart.smoothingAlgorithm}"`,
       { smoothingFactor: args.smoothingFactor },
     );
   }
