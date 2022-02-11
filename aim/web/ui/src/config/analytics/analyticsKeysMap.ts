@@ -1,4 +1,4 @@
-export const ANALYTICS_EVENT_KEYS = {
+export const ANALYTICS_EVENT_KEYS: any = {
   metrics: {
     pageView: '[MetricsExplorer] Page view',
     liveUpdate: '[MetricsExplorer] Live update',
