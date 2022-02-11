@@ -2,12 +2,12 @@
 
 ## Unreleased
 
-###Enhancements
+### Enhancements
 
 - Add ability to apply active style on table actions popover buttons with applied changes (arsengit)
 - Unification of Run Custom Object APIs (alberttorosyan, VkoHov)
 
-###Fixes 
+### Fixes 
 
 - Fix system metric columns pinning functionality and grouping column order (arsengit)
 
