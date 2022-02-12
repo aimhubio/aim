@@ -48,9 +48,6 @@ class TaskQueue(object):
             self._queue.task_done()
 
     def wait_for_finish(self):
-        if self._stopped:
-            return
-
         self._queue.join()
 
     def stop_workers(self):

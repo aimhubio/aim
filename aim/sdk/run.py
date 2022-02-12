@@ -97,7 +97,7 @@ class RunAutoClean(AutoClean['Run']):
         The remote tracker's queues should be cleaned up before calling `Client.release_resource` methods.
         """
         if self.repo._client:
-            self.repo._client._queue.stop_workers()
+            self.repo._client._queue.wait_for_finish()
 
     def _close(self) -> None:
         """
