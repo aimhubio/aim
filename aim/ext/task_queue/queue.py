@@ -51,7 +51,6 @@ class TaskQueue(object):
         if self._stopped:
             return
 
-        # TODO: [MV, AT] think about other solution instead of join()
         self._queue.join()
 
     def stop_workers(self):

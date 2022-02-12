@@ -84,7 +84,6 @@ class Client:
             for chunk in stream:
                 yield rpc_messages.InstructionRequest(message=chunk)
 
-        # TODO [AD] make this atomic in case of parallel write from different thread?
         # TODO [AD] make queue per run? do we need it?
         self._queue.wait_for_finish()
         resp = self.remote.run_instruction(message_stream_generator())
