@@ -36,6 +36,7 @@ import RunDetailMetricsAndSystemTab from './RunDetailMetricsAndSystemTab';
 import RunDetailParamsTab from './RunDetailParamsTab';
 import RunSelectPopoverContent from './RunSelectPopoverContent';
 import TraceVisualizationContainer from './TraceVisualizationContainer';
+import RunOverviewTab from './RunOverviewTab';
 
 import './RunDetail.scss';
 
@@ -51,6 +52,7 @@ function RunDetail(): React.FunctionComponentElement<React.ReactNode> {
   const [activeTab, setActiveTab] = useState(pathname);
 
   const tabs = [
+    'overview',
     'parameters',
     'metrics',
     'system',
@@ -64,6 +66,7 @@ function RunDetail(): React.FunctionComponentElement<React.ReactNode> {
 
   // TODO: add code splitting(lazy loading)
   const tabContent: { [key: string]: JSX.Element } = {
+    overview: <RunOverviewTab />,
     parameters: (
       <RunDetailParamsTab
         runParams={runData?.runParams}
