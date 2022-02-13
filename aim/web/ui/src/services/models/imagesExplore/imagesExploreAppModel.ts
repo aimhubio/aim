@@ -240,7 +240,7 @@ function resetModelOnError(detail?: any) {
 
   setTimeout(() => {
     const tableRef: any = model.getState()?.refs?.tableRef;
-    tableRef.current?.updateData({
+    tableRef?.current?.updateData({
       newData: [],
       newColumns: [],
     });
@@ -654,7 +654,7 @@ function updateModelData(
     onTableSortChange,
   );
   const tableRef: any = model.getState()?.refs?.tableRef;
-  tableRef.current?.updateData({
+  tableRef?.current?.updateData({
     newData: tableData.rows,
     newColumns: tableColumns,
     hiddenColumns: configData.table.hiddenColumns!,

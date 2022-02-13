@@ -435,11 +435,11 @@ function Controls(
               onToggleExportPreview={onToggleExportPreview}
             >
               <ChartGrid
+                readOnly
                 nameKey='exportPreview'
                 data={props.data}
                 chartProps={props.chartProps}
                 chartType={props.chartType}
-                readOnly
               />
             </ExportPreview>
           )}

@@ -1011,7 +1011,7 @@ function createAppModel(appConfig: IAppInitialConfig) {
         onModelGroupingSelectChange,
       );
       const tableRef: any = model.getState()?.refs?.tableRef;
-      tableRef.current?.updateData({
+      tableRef?.current?.updateData({
         newData: tableData.rows,
         newColumns: tableColumns,
         hiddenColumns: configData.table?.hiddenColumns!,
@@ -4006,7 +4006,7 @@ function createAppModel(appConfig: IAppInitialConfig) {
           onModelGroupingSelectChange,
         );
         const tableRef: any = model.getState()?.refs?.tableRef;
-        tableRef.current?.updateData({
+        tableRef?.current?.updateData({
           newData: tableData.rows,
           newColumns: tableColumns,
           hiddenColumns: configData.table?.hiddenColumns!,

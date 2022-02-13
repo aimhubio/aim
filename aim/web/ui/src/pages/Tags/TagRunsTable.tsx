@@ -43,7 +43,7 @@ function TagRunsTable({
 
   useEffect(() => {
     if (runsList) {
-      tableRef.current?.updateData({
+      tableRef?.current?.updateData({
         // eslint-disable-next-line react/prop-types
         newData: runsList.map((run: ITagRun) => ({
           runs: { name: run.run_id, id: run.run_id },

@@ -102,8 +102,8 @@ function drawParallelArea(args: IDrawAreaArgs): void {
   const titleText = keys
     ? `${keys.map((key) => `${key}=${chartTitle[key]}`).join(', ')}`
     : '';
-  const titleXAttr = margin.left - 45;
-  const titleFontSize = '12px';
+  const titleXAttr = margin.left / 6;
+  const titleFontSize = '11px';
   const textEllipsis = toTextEllipsis({
     text: titleText,
     width: width - margin.left,
@@ -113,24 +113,24 @@ function drawParallelArea(args: IDrawAreaArgs): void {
   if (titleText) {
     const titleGroup = svgNodeRef.current
       .append('g')
-      .attr('transform', `translate(${titleXAttr}, 3)`);
+      .attr('transform', `translate(${titleXAttr}, 3)`)
+      .attr('font-size', titleFontSize);
 
-    titleGroup
+    const chartIndex = titleGroup
       .append('text')
       .attr('x', 0)
       .attr('y', 12)
-      .attr('width', 20)
-      .attr('height', 20)
-      .attr('font-size', '10px')
       .attr('fill', '#484f56')
       .style('outline', '1px solid #e8e8e8')
-      .text(`[   ${index + 1}   ]`);
+      .text(`${index + 1}`);
+
+    chartIndex.append('tspan').text('[ ').attr('fill', 'none').lower();
+    chartIndex.append('tspan').text(' ]').attr('fill', 'none').raise();
 
     titleGroup
       .append('text')
-      .attr('x', titleXAttr + 29)
+      .attr('x', titleXAttr + 39)
       .attr('y', 12)
-      .attr('font-size', titleFontSize)
       .attr('fill', '#484f56')
       .text(textEllipsis)
       .append('svg:title')

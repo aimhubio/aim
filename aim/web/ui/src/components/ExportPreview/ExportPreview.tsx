@@ -1,5 +1,6 @@
 import React from 'react';
 import moment from 'moment';
+import { saveAs } from 'file-saver';
 
 import { Grid, Divider } from '@material-ui/core';
 
@@ -50,6 +51,8 @@ function ExportPreview({
         'http://www.w3.org/2000/svg',
         'svg',
       );
+      wrapper.setAttribute('width', `${panelWidth}px`);
+      wrapper.setAttribute('height', `${panelHeight}px`);
       wrapper.setAttribute('viewBox', `0 0 ${panelWidth} ${panelHeight}`);
       wrapper.setAttribute('preserveAspectRatio', 'xMidYMid meet');
       if (format !== FormatEnum.PNG) {
@@ -105,7 +108,8 @@ function ExportPreview({
               width: chartPanel.scrollWidth,
               height: chartPanel.scrollHeight,
               format,
-              callback: (src) => {
+              callback: (blob) => {
+                const src = URL.createObjectURL(blob);
                 downloadLink(src, imgName || 'name');
               },
             });
