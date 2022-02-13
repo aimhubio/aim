@@ -1,6 +1,8 @@
 import React from 'react';
 import { useRouteMatch, useHistory } from 'react-router-dom';
 
+import { ANALYTICS_EVENT_KEYS } from 'config/analytics/analyticsKeysMap';
+
 import useModel from 'hooks/model/useModel';
 import usePanelResize from 'hooks/resize/usePanelResize';
 
@@ -79,7 +81,7 @@ function ParamsContainer(): React.FunctionComponentElement<React.ReactNode> {
       });
     }
 
-    analytics.pageView('[ParamsExplorer]');
+    analytics.pageView(ANALYTICS_EVENT_KEYS.params.pageView);
 
     const unListenHistory = history.listen(() => {
       if (!!paramsData?.config) {
@@ -132,6 +134,7 @@ function ParamsContainer(): React.FunctionComponentElement<React.ReactNode> {
       groupingSelectOptions={paramsData?.groupingSelectOptions!}
       hiddenColumns={paramsData?.config?.table?.hiddenColumns!}
       hideSystemMetrics={paramsData?.config?.table?.hideSystemMetrics!}
+      columnsOrder={paramsData?.config?.table?.columnsOrder!}
       resizeMode={paramsData?.config?.table?.resizeMode!}
       hiddenMetrics={paramsData?.config?.table?.hiddenMetrics!}
       notifyData={paramsData?.notifyData!}

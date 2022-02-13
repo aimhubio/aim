@@ -6,6 +6,8 @@ import slackIcon from 'assets/icons/slack.svg';
 import { Icon, Text } from 'components/kit';
 import ErrorBoundary from 'components/ErrorBoundary/ErrorBoundary';
 
+import { ANALYTICS_EVENT_KEYS } from 'config/analytics/analyticsKeysMap';
+
 import { trackEvent } from 'services/analytics';
 
 import ExploreAimCard from '../ExploreAimCard/ExploreAimCard';
@@ -69,7 +71,9 @@ function ExploreAim(): React.FunctionComponentElement<React.ReactNode> {
               href='https://slack.aimstack.io'
               rel='noreferrer'
               className='ExploreAim__social__item'
-              onClick={() => trackEvent('[Homepage] go to slack')}
+              onClick={() =>
+                trackEvent(ANALYTICS_EVENT_KEYS.home.slackCommunity)
+              }
             >
               <img src={slackIcon} alt='slack' />
               <Text component='span' tint={100} size={16} weight={400}>
@@ -82,7 +86,9 @@ function ExploreAim(): React.FunctionComponentElement<React.ReactNode> {
               href='https://github.com/aimhubio/aim'
               rel='noreferrer'
               className='ExploreAim__social__item'
-              onClick={() => trackEvent('[Homepage] go to github')}
+              onClick={() =>
+                trackEvent(ANALYTICS_EVENT_KEYS.home.createGithubIssue)
+              }
             >
               <img src={githubIcon} alt='github' />
               <Text component='span' tint={100} size={16} weight={400}>

@@ -22,6 +22,7 @@ import {
   IllustrationsEnum,
   Request_Illustrations,
 } from 'config/illustrationConfig/illustrationConfig';
+import { ANALYTICS_EVENT_KEYS } from 'config/analytics/analyticsKeysMap';
 
 import usePanelResize from 'hooks/resize/usePanelResize';
 import useModel from 'hooks/model/useModel';
@@ -32,6 +33,7 @@ import Controls from 'pages/ImagesExplore/components/Controls/Controls';
 
 import imagesExploreAppModel from 'services/models/imagesExplore/imagesExploreAppModel';
 import * as analytics from 'services/analytics';
+import { AppNameEnum } from 'services/models/explorer';
 
 import { IGroupingSelectOption } from 'types/services/models/metrics/metricsAppModel';
 
@@ -176,7 +178,7 @@ function ImagesExplore(): React.FunctionComponentElement<React.ReactNode> {
       imagesRequestRef.call();
     }
 
-    analytics.pageView('[ImagesExplorer]');
+    analytics.pageView(ANALYTICS_EVENT_KEYS.images.pageView);
     return () => {
       imagesRequestRef?.abort();
       if (appRequestRef) {
@@ -399,6 +401,13 @@ function ImagesExplore(): React.FunctionComponentElement<React.ReactNode> {
                       resizeMode={imagesExploreData?.config?.table.resizeMode}
                       columnsWidths={
                         imagesExploreData?.config?.table.columnsWidths
+                      }
+                      appName={AppNameEnum.IMAGES}
+                      hiddenChartRows={
+                        imagesExploreData?.imagesData?.length === 0
+                      }
+                      columnsOrder={
+                        imagesExploreData?.config?.table.columnsOrder
                       }
                       // Table actions
                       onSort={imagesExploreAppModel.onTableSortChange}

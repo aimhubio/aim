@@ -11,9 +11,12 @@ import { Icon, Badge, Button } from 'components/kit';
 import ExpressionAutoComplete from 'components/kit/ExpressionAutoComplete';
 import ErrorBoundary from 'components/ErrorBoundary/ErrorBoundary';
 
+import { ANALYTICS_EVENT_KEYS } from 'config/analytics/analyticsKeysMap';
+
 import useParamsSuggestions from 'hooks/projectData/useParamsSuggestions';
 
 import imagesExploreAppModel from 'services/models/imagesExplore/imagesExploreAppModel';
+import { trackEvent } from 'services/analytics';
 
 import { ISelectFormProps } from 'types/pages/imagesExplore/components/SelectForm/SelectForm';
 import { ISelectOption } from 'types/services/models/explorer/createAppModel';
@@ -47,6 +50,8 @@ function SelectForm({
     }
     searchMetricsRef.current = imagesExploreAppModel.getImagesData(true, true);
     searchMetricsRef.current.call();
+
+    trackEvent(ANALYTICS_EVENT_KEYS.images.searchClick);
   }
 
   function handleRequestAbort(e: React.SyntheticEvent): void {

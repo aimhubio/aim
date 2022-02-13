@@ -38,6 +38,7 @@ import { IBookmarkFormState } from 'types/components/BookmarkForm/BookmarkForm';
 import { INotification } from 'types/components/NotificationContainer/NotificationContainer';
 import { ILine } from 'types/components/LineChart/LineChart';
 import { IProjectParamsMetrics } from 'types/services/models/projects/projectsModel';
+import { IColumnsOrder } from 'types/services/models/explorer/createAppModel';
 
 import { SmoothingAlgorithmEnum } from 'utils/smoothingData';
 import { CurveEnum } from 'utils/d3';
@@ -81,6 +82,7 @@ export interface IMetricProps extends Partial<RouteChildrenProps> {
   requestStatus: RequestStatusEnum;
   resizeMode: ResizeModeEnum;
   selectFormOptions: ISelectOption[];
+  columnsOrder: IColumnsOrder;
   onChangeTooltip: (tooltip: Partial<IPanelTooltip>) => void;
   onIgnoreOutliersChange: () => void;
   onZoomChange: (zoom: Partial<IChartZoom>) => void;
@@ -120,7 +122,7 @@ export interface IMetricProps extends Partial<RouteChildrenProps> {
   onSortChange?: (field: string, value?: 'asc' | 'desc' | 'none') => void;
   onMetricVisibilityChange: (metricKeys: string[]) => void;
   onColumnsOrderChange: (order: any) => void;
-  onColumnsVisibilityChange: (hiddenColumns: string[]) => void;
+  onColumnsVisibilityChange: (hiddenColumns: string[] | string) => void;
   onTableDiffShow: () => void;
   onTableResizeModeChange: (mode: ResizeModeEnum) => void;
   updateColumnsWidths: (key: string, width: number, isReset: boolean) => void;

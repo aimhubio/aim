@@ -20,6 +20,7 @@ import { IChartPanelRef } from 'types/components/ChartPanel/ChartPanel';
 import { INotification } from 'types/components/NotificationContainer/NotificationContainer';
 import { IBookmarkFormState } from 'types/components/BookmarkForm/BookmarkForm';
 import {
+  IColumnsOrder,
   IGroupingConfig,
   ISelectConfig,
   ISelectOption,
@@ -62,6 +63,7 @@ export interface IParamsProps extends Partial<RouteChildrenProps> {
   tableRowHeight?: any;
   hiddenColumns: any;
   selectFormOptions: ISelectOption[];
+  columnsOrder: IColumnsOrder;
   onNotificationDelete: (id: number) => void;
   onCurveInterpolationChange: () => void;
   onActivePointChange: (

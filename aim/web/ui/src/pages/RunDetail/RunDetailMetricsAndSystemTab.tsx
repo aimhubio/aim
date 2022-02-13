@@ -5,7 +5,10 @@ import IllustrationBlock from 'components/IllustrationBlock/IllustrationBlock';
 import BusyLoaderWrapper from 'components/BusyLoaderWrapper/BusyLoaderWrapper';
 import ErrorBoundary from 'components/ErrorBoundary/ErrorBoundary';
 
+import { ANALYTICS_EVENT_KEYS } from 'config/analytics/analyticsKeysMap';
+
 import runDetailAppModel from 'services/models/runs/runDetailAppModel';
+import * as analytics from 'services/analytics';
 
 import { IRunBatch, IRunDetailMetricsAndSystemTabProps } from './types';
 import RunMetricCard from './RunMetricCard';
@@ -27,6 +30,13 @@ function RunDetailMetricsAndSystemTab({
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [runTraces, runHash]);
+
+  React.useEffect(() => {
+    analytics.pageView(
+      ANALYTICS_EVENT_KEYS.runDetails.tabs[isSystem ? 'system' : 'metrics']
+        .tabView,
+    );
+  }, [isSystem]);
 
   return (
     <ErrorBoundary>

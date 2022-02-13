@@ -25,6 +25,8 @@ import {
 
 import AppBar from 'pages/Metrics/components/MetricsBar/MetricsBar';
 
+import { AppNameEnum } from 'services/models/explorer';
+
 import { IParamsProps } from 'types/pages/params/Params';
 
 import { ChartTypeEnum } from 'utils/d3';
@@ -98,6 +100,7 @@ const Params = ({
   archiveRuns,
   deleteRuns,
   selectedRows,
+  columnsOrder,
 }: IParamsProps): React.FunctionComponentElement<React.ReactNode> => {
   const chartProps: any[] = React.useMemo(() => {
     return (highPlotData || []).map((chartData: any, index: number) => ({
@@ -257,6 +260,9 @@ const Params = ({
                     resizeMode={resizeMode}
                     columnsWidths={columnsWidths}
                     selectedRows={selectedRows}
+                    appName={AppNameEnum.PARAMS}
+                    hiddenChartRows={highPlotData?.length === 0}
+                    columnsOrder={columnsOrder}
                     // Table actions
                     onSortReset={onSortReset}
                     onSort={onSortFieldsChange}
