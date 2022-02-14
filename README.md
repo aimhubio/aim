@@ -1,3 +1,4 @@
+
 <div align="center">
   
 <br />
@@ -29,7 +30,7 @@
 [![License](https://img.shields.io/badge/License-Apache%202.0-orange.svg)](https://opensource.org/licenses/Apache-2.0)
 
 <kbd>
-  <img src="https://user-images.githubusercontent.com/13848158/136374529-af267918-5dc6-4a4e-8ed2-f6333a332f96.gif" />
+  <img src="" />
 </kbd>
 
 <br />
@@ -43,19 +44,51 @@
 <img src="https://user-images.githubusercontent.com/13848158/112145238-8cc58200-8bf3-11eb-8d22-bbdb8809f2aa.png" width="100" />
 <img src="https://user-images.githubusercontent.com/13848158/118172152-17c93880-b43d-11eb-9169-785e4b52d89c.png" width="100" />
 
-
 <br />
-
 
 </div>
 
-## About Aim
+# About Aim
+
+| Track and version ML experiments | Visualize MD via beautiful UI | Query any piece of MD within your script |
+|:--------------------:|:------------------------:|:-------------------:|
+| ![](docs/source/_static/images/overview/metrics.png?raw=true) | ![](docs/source/_static/images/overview/metrics.png?raw=true) | ![](docs/source/_static/images/overview/metrics.png?raw=true) |
+
 Aim is an open-source, self-hosted ML experiment tracking tool. Aim is good at tracking lots of (1000s) of runs and allowing you to compare them with a performant and beautiful UI.
 
 You can use Aim not only through its UI but also through its SDK to query your runs' metadata programmatically for automations and additional analysis.
 Aim's mission is to democratize AI dev tools.
 
-# Getting Started in 3 Steps
+# Demos
+
+| WNMT | lightweight-GAN | FastSpeech 2 |
+|:---:|:---:|:---:|
+| ![](docs/source/_static/images/overview/metrics.png?raw=true) | ![](docs/source/_static/images/overview/metrics.png?raw=true) | ![](docs/source/_static/images/overview/metrics.png?raw=true) |
+| Neural machine translation (NMT) competition winning logs. | Tranining logs of 'lightweight' GAN, proposed in ICLR 2021. | Training logs of Microsoft's "FastSpeech 2: Fast and High-Quality End-to-End Text to Speech". |
+
+# Features
+
+### Build better ML models faster
+
+1. Compare 100s of metrics thanks to beautiful visualizations
+
+2. Analyze and finetune hyperparameters
+
+3. Explore images, including matplotlib plots, using easy search and grouping
+
+### Deep dive into details of each run for easy comparison
+
+1. Hyperparameters, metrics, system metrics, distributions, audio and text files and figures all available at a glance to understand the performance of your model.
+
+### Have all your information centralized for increased reproducibility
+
+1. One centralized dashboard for all your runs and their metadata
+
+2. Easy pythonic search to select experiments you want to analyze
+
+3. You own your data. Aim is self hosted and you can export your data both from UI and from the SDK 
+
+# Getting started
 
 Follow the steps below to get started with Aim.
 
@@ -66,11 +99,6 @@ pip3 install aim
 ```
 
 **2. Integrate Aim with your code**
-
-<details open>
-<summary>
-  Integrate your Python script
-</summary>
 
 ```python
 from aim import Run, Image, Distribution
@@ -99,7 +127,31 @@ for step in range(1000):
 
 _See documentation [here](https://aimstack.readthedocs.io/en/latest/quick_start/SDK_basics.html)._
 
-</details>
+**3. Run the training as usual and start Aim UI**
+
+```shell
+aim up
+```
+
+**4. Query MD programmatically**
+
+```python
+from aim import Repo
+
+my_repo = Repo('/path/to/aim/repo')
+
+query = "metric.name == 'loss'" # Example query
+
+# Get collection of metrics
+for run_metrics_collection in my_repo.query_metrics(query).iter_runs():
+    for metric in run_metrics_collection:
+        # Get run params
+        params = metric.run[...]
+        # Get metric values
+        steps, metric_values = metric.values.sparse_numpy()
+```
+
+# Integrations
 
 <details>
 <summary>
@@ -182,109 +234,6 @@ bst = xgb.train(param, xg_train, num_round, watchlist, callbacks=[aim_callback])
 _See documentation [here](https://aimstack.readthedocs.io/en/latest/guides/integrations/basic_aim_xgboost.html)._
 </details>
 
-**3. Run the training as usual and start Aim UI**
-
-```shell
-aim up
-```
-
-# How to use Aim UI?
-
-An overview of the major screens/ features of Aim UI
-
-## Runs explorer
-Runs explorer will help you to holistically view all your [runs](https://aimstack.readthedocs.io/en/latest/quick_start/SDK_basics.html#create-a-run), each metric last tracked values and tracked hyperparameters.
-
-**Features:**
-- Full Research context at hand
-- Search runs by date, experiment, hash, tag or parameters
-- Search by run/experiment
-
-<kbd>
-  <img style="border: 1px solid #1d2253" src="https://aimstack.readthedocs.io/en/latest/_static/images/ui_basics/runs.png" />
-</kbd>
-  
-## Metrics explorer
-Metrics explorer helps you to compare 100s of metrics within a few clicks.
-It helps to save lots of time compared to other open-source experiment tracking tools.
-
-**Features:**
-- Easily query any metric
-- Group by any parameter
-- Divide into subplots
-- Aggregate grouped metrics (by conf. interval, std. dev., std. err., min/max)
-- Apply smoothing
-- Change scale of the axes (linear or log)
-- Align metrics by time, epoch or another metric
-
-<kbd>
-  <img style="border: 1px solid #1d2253" src="https://aimstack.readthedocs.io/en/latest/_static/images/ui_basics/metrics.png" />
-</kbd>
-  
-## Images explorer
-Track intermediate images and search, compare them on the Images Explorer.
-
-**Features:**
-- Easily query any image
-- Group images by run parameters
-- Group images by step
-
-<kbd>
-  <img style="border: 1px solid #1d2253" src="https://user-images.githubusercontent.com/13848158/143069189-2768ef45-a8df-42fd-a044-ae1814ca8c6f.png" />
-</kbd>
-
-## Params explorer
-Params explorer enables a parallel coordinates view for metrics and params. Very helpful when doing hyperparameter search.
-
-**Features:**
-- Easily query any metrics and params
-- Group runs or divide into subplots
-- Apply chart indicator to see correlations
-
-<kbd>
-  <img style="border: 1px solid #1d2253" src="https://aimstack.readthedocs.io/en/latest/_static/images/ui_basics/params.png" />
-</kbd>
-  
-## Single run page
-Explore all the metadata associated with a run on the single run page.
-It's accessible from all the tables and tooltips.
-
-**Features:**
-- See all the logged params of a run
-- See all the tracked metrics(including system metrics)
-
-<kbd>
-  <img style="border: 1px solid #1d2253" src="https://aimstack.readthedocs.io/en/latest/_static/images/ui_basics/single_run.png" />
-</kbd>
-  
-# How to query logs programmatically
-
-Use `Repo` object to query and access saved `Run`s.
-
-Initialize a `Repo` instance:
-
-```python
-from aim import Repo
-
-my_repo = Repo('/path/to/aim/repo')
-```
-`Repo` class full [spec](https://aimstack.readthedocs.io/en/latest/refs/sdk.html#aim.sdk.repo.Repo).
-
-Query logged metrics and parameters:
-
-```python
-query = "metric.name == 'loss'" # Example query
-
-# Get collection of metrics
-for run_metrics_collection in my_repo.query_metrics(query).iter_runs():
-    for metric in run_metrics_collection:
-        # Get run params
-        params = metric.run[...]
-        # Get metric values
-        steps, metric_values = metric.values.sparse_numpy()
-```
-See more advanced usage examples [here](https://colab.research.google.com/drive/14rIAjpEyklf5fSMiRbyZs6iYG7IVibcI).
-
 # Comparisons to familiar tools
 
 ## Tensorboard
@@ -326,16 +275,6 @@ Hosted vs self-hosted
 - Aim is self-hosted free and open-source.
   - Remote self-hosted Aim is coming soon...
 
-# Platform Support
-
-Aim package is available for Python 3.6+ on the following platforms
-
-
-| Linux | MacOS | Windows |
-| ------|-------|---------|
-|:heavy_check_mark:|:heavy_check_mark:|:heavy_minus_sign:|
-
-
 # Roadmap
 
 ## Detailed Sprints
@@ -349,7 +288,7 @@ Aim package is available for Python 3.6+ on the following platforms
 
 The high-level features we are going to work on the next few months
 
-**Done**
+### Done:
   - [x] Live updates (Shipped: _Oct 18 2021_)
   - [x] Images tracking and visualization (Start: _Oct 18 2021_, Shipped: _Nov 19 2021_)
   - [x] Distributions tracking and visualization (Start: _Nov 10 2021_, Shipped: _Dec 3 2021_)
@@ -360,34 +299,39 @@ The high-level features we are going to work on the next few months
   - [x] Colab integration (Start: _Nov 18 2021_, Shipped: _Dec 17 2021_)
   - [x] Centralized tracking server (Start: _Oct 18 2021_, Shipped: _Jan 22 2022_)
 
-**In progress:**
+### In progress:
   - [ ] Scikit-learn integration (Start: _Nov 18 2021_)
   - [ ] Tensorboard adaptor - visualize TensorBoard logs with Aim (Start: _Dec 17 2021_)
   - [ ] Track git info, env vars, CLI arguments, dependencies (Start: _Jan 17 2022_)
 
-### TODO
+### TODO:
 
-**Track and Explore:**
+**Track and Explore**
   - [ ] Models tracking/versioning, model registry
   - [ ] Runs side-by-side comparison
 
-**Data Backup:**
+**Data Backup**
   - [ ] Cloud storage support: aws s3, gsc, azure storage
 
 **Reproducibility:**
   - [ ] Collect stdout, stderr logs
 
-**Integrations:**
+**Integrations**
   - [ ] Kubeflow integration
   - [ ] Streamlit integration
   - [ ] Raytune integration
   - [ ] Google MLMD
   - [ ] MLFlow adaptor (visualize MLflow logs with Aim)
 
-## Community
+# Community
 
-If you have questions please:
+### If you have questions
 
 1. [Read the docs](https://aimstack.readthedocs.io/en/latest/)
-1. [Open a feature request or report a bug](https://github.com/aimhubio/aim/issues)
-1. [Join our slack](https://slack.aimstack.io/)
+2. [Open a feature request or report a bug](https://github.com/aimhubio/aim/issues)
+3. [Join our slack](https://slack.aimstack.io/)
+
+### Support Aim
+
+1. Drop a star
+2. [placeholder]
