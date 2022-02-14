@@ -7,7 +7,7 @@ const getTypesBaseCode = (name) => `
 const getComponentBaseCode = (name) => `
     import React from 'react';
     import { Text } from 'components/kit';
-    import { I${name}Props } from './types.d';
+    import { I${name}Props } from './${name}.d';
     
     import './${name}.scss';
     
