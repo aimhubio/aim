@@ -15,6 +15,8 @@ from aim.web.api.projects.pydantic_models import (
     ProjectParamsOut,
 )
 from aim.web.api.utils import object_factory
+from aim.sdk.index_manager import RepoIndexManager
+
 projects_router = APIRouter()
 
 
@@ -83,3 +85,13 @@ async def project_params_api(sequence: Optional[Tuple[str, ...]] = Query(())):
     }
     response.update(**project.repo.collect_sequence_info(sequence))
     return response
+
+
+@projects_router.get('/status/')
+async def project_status_api():
+    project = Project()
+
+    if not project.exists():
+        raise HTTPException(status_code=404)
+
+    return RepoIndexManager.get_index_manager(project.repo).repo_status
