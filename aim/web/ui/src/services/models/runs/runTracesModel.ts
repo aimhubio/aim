@@ -1,5 +1,10 @@
+import _ from 'lodash-es';
+
+import { ANALYTICS_EVENT_KEYS } from 'config/analytics/analyticsKeysMap';
+
 import createModel from 'services/models/model';
 import runsService from 'services/api/runs/runsService';
+import { trackEvent } from 'services/analytics';
 
 import {
   adjustable_reader,
@@ -34,6 +39,7 @@ function getDefaultQueryAndConfigData(traceType: TraceType) {
   const queryData: QueryData = {
     sliders: {},
     inputs: {},
+    inputsValidations: {},
   };
   const config: IConfig = {
     rangePanel: [],
@@ -84,6 +90,7 @@ function initialize(
   model.setState({
     config,
     queryData,
+    isApplyBtnDisabled: false,
     traceType,
     runHash: run_id,
     isTraceBatchLoading: true,
@@ -129,6 +136,11 @@ function changeActiveItemKey(key: string, name: string) {
   });
 
   getRunTraceBatch(true).then().catch();
+
+  trackEvent(
+    // @ts-ignore
+    ANALYTICS_EVENT_KEYS.runDetails.tabs[state.traceType].changeActiveItemKey,
+  );
 }
 
 function abortGetTraceBatchBatchRequest() {
@@ -228,7 +240,24 @@ async function getRunTraceBatch(isInitial = false) {
   }
 }
 
-function onInputChange(name: string, value: number) {
+function applyBtnDisabledHandler() {
+  const state = model.getState();
+  const inputsValidations = state.queryData?.inputsValidations || {};
+
+  const isInputsValid =
+    _.size(
+      Object.keys(inputsValidations).filter((key) => {
+        return inputsValidations[key] === false;
+      }),
+    ) <= 0;
+
+  model.setState({
+    ...state,
+    isApplyBtnDisabled: !isInputsValid,
+  });
+}
+
+function onInputChange(name: string, value: number, isValid: boolean = true) {
   const state = model.getState();
   model.setState({
     ...state,
@@ -236,10 +265,16 @@ function onInputChange(name: string, value: number) {
       ...state.queryData,
       inputs: {
         ...state.queryData?.inputs,
-        [name]: +value,
+        [name]: value,
+      },
+      inputsValidations: {
+        ...state.queryData?.inputsValidations,
+        [name]: isValid,
       },
     },
   });
+
+  applyBtnDisabledHandler();
 }
 
 function onRangeChange(name: string, value: number | number[]) {
@@ -257,7 +292,10 @@ function onRangeChange(name: string, value: number | number[]) {
 }
 
 function onApply() {
+  const { traceType } = model.getState();
   getRunTraceBatch().then().catch();
+  // @ts-ignore
+  trackEvent(ANALYTICS_EVENT_KEYS.runDetails.tabs[traceType].clickApplyButton);
 }
 
 function destroy() {

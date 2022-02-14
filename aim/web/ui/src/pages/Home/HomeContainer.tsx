@@ -1,31 +1,37 @@
 import React from 'react';
 
+import ErrorBoundary from 'components/ErrorBoundary/ErrorBoundary';
+
+import { ANALYTICS_EVENT_KEYS } from 'config/analytics/analyticsKeysMap';
+
 import useModel from 'hooks/model/useModel';
 
 import homeAppModel from 'services/models/home/homeAppModel';
+import * as analytics from 'services/analytics';
 
 import Home from './Home';
 
 function HomeContainer(): React.FunctionComponentElement<React.ReactNode> {
-  const activityRequestRef = React.useRef(homeAppModel.getActivityData());
   const homeData = useModel(homeAppModel);
 
   React.useEffect(() => {
     homeAppModel.initialize();
-    activityRequestRef.current.call();
+    analytics.trackEvent(ANALYTICS_EVENT_KEYS.home.pageView);
     return () => {
-      activityRequestRef.current.abort();
+      homeAppModel.destroy();
     };
   }, []);
 
   return (
-    <Home
-      onSendEmail={homeAppModel.onSendEmail}
-      activityData={homeData.activityData}
-      notifyData={homeData.notifyData}
-      askEmailSent={homeData.askEmailSent}
-      onNotificationDelete={homeAppModel.onNotificationDelete}
-    />
+    <ErrorBoundary>
+      <Home
+        onSendEmail={homeAppModel.onSendEmail}
+        activityData={homeData.activityData}
+        notifyData={homeData.notifyData}
+        askEmailSent={homeData.askEmailSent}
+        onNotificationDelete={homeAppModel.onHomeNotificationDelete}
+      />
+    </ErrorBoundary>
   );
 }
 export default HomeContainer;

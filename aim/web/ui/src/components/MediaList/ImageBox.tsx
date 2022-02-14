@@ -10,8 +10,10 @@ import ErrorBoundary from 'components/ErrorBoundary/ErrorBoundary';
 
 import { BATCH_COLLECT_DELAY } from 'config/mediaConfigs/mediaConfigs';
 import { MediaItemAlignmentEnum } from 'config/enums/imageEnums';
+import { ANALYTICS_EVENT_KEYS } from 'config/analytics/analyticsKeysMap';
 
 import blobsURIModel from 'services/models/media/blobsURIModel';
+import * as analytics from 'services/analytics';
 
 import { IImageBoxProps } from './MediaList.d';
 
@@ -69,6 +71,9 @@ const ImageBox = ({
   function onImageFullSizeModeButtonClick(e: React.ChangeEvent<any>): void {
     e.stopPropagation();
     setIsImageFullViewPopupOpened(true);
+    analytics.trackEvent(
+      ANALYTICS_EVENT_KEYS.images.imagesPanel.openFullSizeMode,
+    );
   }
 
   const skeletonSize = {
@@ -79,7 +84,7 @@ const ImageBox = ({
         : mediaItemHeight - 10) - 6, // 6px -> 0.375rem gap,
   };
   return (
-    <ErrorBoundary>
+    <ErrorBoundary key={index}>
       <div className='MediaSet__container__mediaItemsList__imageBox'>
         <div
           style={style}
@@ -127,7 +132,7 @@ const ImageBox = ({
               className={classNames(
                 'MediaSet__container__mediaItemsList__imageBox__imageWrapper__zoomIconWrapper',
                 {
-                  isHidden: !(focusedState.key === data.key),
+                  isHidden: focusedState.key !== data.key,
                 },
               )}
               onClick={onImageFullSizeModeButtonClick}

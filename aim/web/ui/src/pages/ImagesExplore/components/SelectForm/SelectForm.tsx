@@ -10,14 +10,17 @@ import {
 
 import { Icon, Badge, Button } from 'components/kit';
 import ExpressionAutoComplete from 'components/kit/ExpressionAutoComplete';
+import ErrorBoundary from 'components/ErrorBoundary/ErrorBoundary';
 
 import COLORS from 'config/colors/colors';
+import { ANALYTICS_EVENT_KEYS } from 'config/analytics/analyticsKeysMap';
 
 import useModel from 'hooks/model/useModel';
 import useParamsSuggestions from 'hooks/projectData/useParamsSuggestions';
 
 import projectsModel from 'services/models/projects/projectsModel';
 import imagesExploreAppModel from 'services/models/imagesExplore/imagesExploreAppModel';
+import { trackEvent } from 'services/analytics';
 
 import { IProjectsModelState } from 'types/services/models/projects/projectsModel';
 import { ISelectFormProps } from 'types/pages/imagesExplore/components/SelectForm/SelectForm';
@@ -53,11 +56,13 @@ function SelectForm({
 
   function handleSearch(e: React.ChangeEvent<any>): void {
     e.preventDefault();
-    if (requestIsPending) {
+    if (requestIsPending || searchButtonDisabled) {
       return;
     }
     searchMetricsRef.current = imagesExploreAppModel.getImagesData(true, true);
     searchMetricsRef.current.call();
+
+    trackEvent(ANALYTICS_EVENT_KEYS.images.searchClick);
   }
 
   function handleRequestAbort(e: React.SyntheticEvent): void {
@@ -157,185 +162,193 @@ function SelectForm({
   const paramsSuggestions = useParamsSuggestions();
 
   return (
-    <div className='SelectForm__container'>
-      <div className='SelectForm__metrics__container'>
-        <Box display='flex'>
-          <Box
-            width='100%'
-            display='flex'
-            justifyContent='space-between'
-            alignItems='center'
-          >
-            {selectedImagesData?.advancedMode ? (
-              <div className='SelectForm__textarea'>
+    <ErrorBoundary>
+      <div className='SelectForm__container'>
+        <div className='SelectForm__metrics__container'>
+          <Box display='flex'>
+            <Box
+              width='100%'
+              display='flex'
+              justifyContent='space-between'
+              alignItems='center'
+            >
+              {selectedImagesData?.advancedMode ? (
+                <div className='SelectForm__textarea'>
+                  <ExpressionAutoComplete
+                    isTextArea={true}
+                    onExpressionChange={onSelectAdvancedQueryChange}
+                    onSubmit={handleSearch}
+                    value={selectedImagesData?.advancedQuery}
+                    placeholder='images.name in [“loss”, “accuracy”] and run.learning_rate > 10'
+                    options={[
+                      'images.name',
+                      'images.context',
+                      ...paramsSuggestions,
+                    ]}
+                  />
+                </div>
+              ) : (
+                <ErrorBoundary>
+                  <Box display='flex' alignItems='center'>
+                    <Button
+                      variant='contained'
+                      color='primary'
+                      onClick={handleClick}
+                      aria-describedby={id}
+                    >
+                      <Icon name='plus' style={{ marginRight: '0.5rem' }} />
+                      Images
+                    </Button>
+                    <Popper
+                      id={id}
+                      open={open}
+                      anchorEl={anchorEl}
+                      placement='bottom-start'
+                      className='SelectForm__Popper'
+                    >
+                      <Autocomplete
+                        open
+                        onClose={handleClose}
+                        multiple
+                        className='Autocomplete__container'
+                        size='small'
+                        disablePortal={true}
+                        disableCloseOnSelect
+                        options={metricsOptions}
+                        value={selectedImagesData?.options ?? ''}
+                        onChange={onSelect}
+                        groupBy={(option) => option.group}
+                        getOptionLabel={(option) => option.label}
+                        renderTags={() => null}
+                        disableClearable={true}
+                        ListboxProps={{
+                          style: {
+                            height: 400,
+                          },
+                        }}
+                        renderInput={(params) => (
+                          <InputBase
+                            ref={params.InputProps.ref}
+                            inputProps={params.inputProps}
+                            spellCheck={false}
+                            placeholder='Search'
+                            autoFocus={true}
+                            className='SelectForm__metric__select'
+                          />
+                        )}
+                        renderOption={(option) => {
+                          let selected: boolean =
+                            !!selectedImagesData?.options.find(
+                              (item: ISelectOption) =>
+                                item.label === option.label,
+                            )?.label;
+                          return (
+                            <React.Fragment>
+                              <Checkbox
+                                color='primary'
+                                icon={<CheckBoxOutlineBlank />}
+                                checkedIcon={<CheckBoxIcon />}
+                                checked={selected}
+                                size='small'
+                              />
+                              <span className='SelectForm__option__label'>
+                                {option.label}
+                              </span>
+                            </React.Fragment>
+                          );
+                        }}
+                      />
+                    </Popper>
+                    <Divider
+                      style={{ margin: '0 1rem' }}
+                      orientation='vertical'
+                      flexItem
+                    />
+                    {selectedImagesData?.options.length === 0 && (
+                      <span className='SelectForm__tags__empty'>
+                        No images are selected
+                      </span>
+                    )}
+                    <Box className='SelectForm__tags ScrollBar__hidden'>
+                      {selectedImagesData?.options?.map(
+                        (tag: ISelectOption) => {
+                          return (
+                            <Badge
+                              size='large'
+                              key={tag.label}
+                              color={tag.color}
+                              label={tag.label}
+                              onDelete={handleDelete}
+                            />
+                          );
+                        },
+                      )}
+                    </Box>
+                  </Box>
+                  {selectedImagesData?.options.length > 1 && (
+                    <ErrorBoundary>
+                      <span
+                        onClick={() => onImagesExploreSelectChange([])}
+                        className='SelectForm__clearAll'
+                      >
+                        <Icon name='close' />
+                      </span>
+                    </ErrorBoundary>
+                  )}
+                </ErrorBoundary>
+              )}
+            </Box>
+          </Box>
+          {selectedImagesData?.advancedMode ? null : (
+            <ErrorBoundary>
+              <div className='SelectForm__TextField'>
                 <ExpressionAutoComplete
-                  isTextArea={true}
-                  onExpressionChange={onSelectAdvancedQueryChange}
+                  onExpressionChange={onSelectRunQueryChange}
                   onSubmit={handleSearch}
-                  value={selectedImagesData?.advancedQuery}
-                  placeholder='images.name in [“loss”, “accuracy”] and run.learning_rate > 10'
-                  options={[
-                    'images.name',
-                    'images.context',
-                    ...paramsSuggestions,
-                  ]}
+                  value={selectedImagesData?.query}
+                  options={paramsSuggestions}
+                  placeholder='Filter runs, e.g. run.learning_rate > 0.0001 and run.batch_size == 32'
                 />
               </div>
-            ) : (
-              <>
-                <Box display='flex' alignItems='center'>
-                  <Button
-                    variant='contained'
-                    color='primary'
-                    onClick={handleClick}
-                    aria-describedby={id}
-                  >
-                    <Icon name='plus' style={{ marginRight: '0.5rem' }} />
-                    Images
-                  </Button>
-                  <Popper
-                    id={id}
-                    open={open}
-                    anchorEl={anchorEl}
-                    placement='bottom-start'
-                    className='SelectForm__Popper'
-                  >
-                    <Autocomplete
-                      open
-                      onClose={handleClose}
-                      multiple
-                      className='Autocomplete__container'
-                      size='small'
-                      disablePortal={true}
-                      disableCloseOnSelect
-                      options={metricsOptions}
-                      value={selectedImagesData?.options ?? ''}
-                      onChange={onSelect}
-                      groupBy={(option) => option.group}
-                      getOptionLabel={(option) => option.label}
-                      renderTags={() => null}
-                      disableClearable={true}
-                      ListboxProps={{
-                        style: {
-                          height: 400,
-                        },
-                      }}
-                      renderInput={(params) => (
-                        <InputBase
-                          ref={params.InputProps.ref}
-                          inputProps={params.inputProps}
-                          spellCheck={false}
-                          placeholder='Search'
-                          autoFocus={true}
-                          className='SelectForm__metric__select'
-                        />
-                      )}
-                      renderOption={(option) => {
-                        let selected: boolean =
-                          !!selectedImagesData?.options.find(
-                            (item: ISelectOption) =>
-                              item.label === option.label,
-                          )?.label;
-                        return (
-                          <React.Fragment>
-                            <Checkbox
-                              color='primary'
-                              icon={<CheckBoxOutlineBlank />}
-                              checkedIcon={<CheckBoxIcon />}
-                              checked={selected}
-                              size='small'
-                            />
-                            <span className='SelectForm__option__label'>
-                              {option.label}
-                            </span>
-                          </React.Fragment>
-                        );
-                      }}
-                    />
-                  </Popper>
-                  <Divider
-                    style={{ margin: '0 1rem' }}
-                    orientation='vertical'
-                    flexItem
-                  />
-                  {selectedImagesData?.options.length === 0 && (
-                    <span className='SelectForm__tags__empty'>
-                      No images are selected
-                    </span>
-                  )}
-                  <Box className='SelectForm__tags ScrollBar__hidden'>
-                    {selectedImagesData?.options?.map((tag: ISelectOption) => {
-                      return (
-                        <Badge
-                          size='large'
-                          key={tag.label}
-                          color={tag.color}
-                          label={tag.label}
-                          onDelete={handleDelete}
-                        />
-                      );
-                    })}
-                  </Box>
-                </Box>
-                {selectedImagesData?.options.length > 1 && (
-                  <span
-                    onClick={() => onImagesExploreSelectChange([])}
-                    className='SelectForm__clearAll'
-                  >
-                    <Icon name='close' />
-                  </span>
-                )}
-              </>
-            )}
-          </Box>
-        </Box>
-        {selectedImagesData?.advancedMode ? null : (
-          <div className='SelectForm__TextField'>
-            <ExpressionAutoComplete
-              onExpressionChange={onSelectRunQueryChange}
-              onSubmit={handleSearch}
-              value={selectedImagesData?.query}
-              options={paramsSuggestions}
-              placeholder='Filter runs, e.g. run.learning_rate > 0.0001 and run.batch_size == 32'
-            />
-          </div>
-        )}
-      </div>
+            </ErrorBoundary>
+          )}
+        </div>
 
-      <div className='SelectForm__search__container'>
-        <Button
-          fullWidth
-          color='primary'
-          variant={requestIsPending ? 'outlined' : 'contained'}
-          startIcon={
-            <Icon
-              name={requestIsPending ? 'close' : 'search'}
-              fontSize={requestIsPending ? 12 : 14}
-            />
-          }
-          className='SelectForm__search__button'
-          onClick={requestIsPending ? handleRequestAbort : handleSearch}
-          disabled={searchButtonDisabled}
-        >
-          {requestIsPending ? 'Cancel' : 'Search'}
-        </Button>
-        <div className='SelectForm__search__actions'>
-          <Button onClick={handleResetSelectForm} withOnlyIcon={true}>
-            <Icon name='reset' />
-          </Button>
+        <div className='SelectForm__search__container'>
           <Button
-            className={selectedImagesData?.advancedMode ? 'active' : ''}
-            withOnlyIcon={true}
-            onClick={toggleEditMode}
+            fullWidth
+            color='primary'
+            variant={requestIsPending ? 'outlined' : 'contained'}
+            startIcon={
+              <Icon
+                name={requestIsPending ? 'close' : 'search'}
+                fontSize={requestIsPending ? 12 : 14}
+              />
+            }
+            className='SelectForm__search__button'
+            onClick={requestIsPending ? handleRequestAbort : handleSearch}
+            disabled={searchButtonDisabled}
           >
-            <Icon name='edit' />
+            {requestIsPending ? 'Cancel' : 'Search'}
           </Button>
-          <Button onClick={onSearchQueryCopy} withOnlyIcon={true}>
-            <Icon name='copy' />
-          </Button>
+          <div className='SelectForm__search__actions'>
+            <Button onClick={handleResetSelectForm} withOnlyIcon={true}>
+              <Icon name='reset' />
+            </Button>
+            <Button
+              className={selectedImagesData?.advancedMode ? 'active' : ''}
+              withOnlyIcon={true}
+              onClick={toggleEditMode}
+            >
+              <Icon name='edit' />
+            </Button>
+            <Button onClick={onSearchQueryCopy} withOnlyIcon={true}>
+              <Icon name='copy' />
+            </Button>
+          </div>
         </div>
       </div>
-    </div>
+    </ErrorBoundary>
   );
 }
 

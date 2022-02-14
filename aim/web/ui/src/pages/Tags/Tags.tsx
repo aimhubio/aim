@@ -4,6 +4,9 @@ import { Paper, Tab, Tabs } from '@material-ui/core';
 
 import TabPanel from 'components/TabPanel/TabPanel';
 import NotificationContainer from 'components/NotificationContainer/NotificationContainer';
+import ErrorBoundary from 'components/ErrorBoundary/ErrorBoundary';
+
+import { ANALYTICS_EVENT_KEYS } from 'config/analytics/analyticsKeysMap';
 
 import * as analytics from 'services/analytics';
 
@@ -33,7 +36,7 @@ function Tags({
 
   const handleChange = (event: React.ChangeEvent<{}>, newValue: number) => {
     setValue(newValue);
-    analytics.trackEvent('[Tags] Tab change');
+    analytics.trackEvent(ANALYTICS_EVENT_KEYS.tags.tabChange);
   };
 
   useEffect(() => {
@@ -42,47 +45,53 @@ function Tags({
   }, [tagsListData]);
 
   return (
-    <section className='Tags container'>
-      <Paper className='Tags__tabsContainer'>
-        <Tabs
-          value={value}
-          onChange={handleChange}
-          aria-label='simple tabs example'
-          indicatorColor='primary'
-          className='Tags__tabsContainer__tabs'
-        >
-          <Tab label='Tags' />
-          <Tab label='Hidden Tags' />
-        </Tabs>
-      </Paper>
-      <TabPanel value={value} index={0} className='Tags__tabPanel'>
-        <TagsList
-          tagsList={tagsList}
-          isTagsDataLoading={isTagsDataLoading}
-          tagInfo={tagInfo}
-          tagRuns={tagRuns}
-          isRunsDataLoading={isRunsDataLoading}
-          isTagInfoDataLoading={isTagInfoDataLoading}
-        />
-      </TabPanel>
-      <TabPanel value={value} index={1} className='Tags__tabPanel'>
-        <TagsList
-          tagsList={archivedTagsList}
-          isHiddenTagsList
-          isTagsDataLoading={isTagsDataLoading}
-          tagInfo={tagInfo}
-          tagRuns={tagRuns}
-          isRunsDataLoading={isRunsDataLoading}
-          isTagInfoDataLoading={isTagInfoDataLoading}
-        />
-      </TabPanel>
-      {notifyData?.length > 0 && (
-        <NotificationContainer
-          handleClose={onNotificationDelete}
-          data={notifyData}
-        />
-      )}
-    </section>
+    <ErrorBoundary>
+      <section className='Tags container'>
+        <Paper className='Tags__tabsContainer'>
+          <Tabs
+            value={value}
+            onChange={handleChange}
+            aria-label='simple tabs example'
+            indicatorColor='primary'
+            className='Tags__tabsContainer__tabs'
+          >
+            <Tab label='Tags' />
+            <Tab label='Hidden Tags' />
+          </Tabs>
+        </Paper>
+        <ErrorBoundary>
+          <TabPanel value={value} index={0} className='Tags__tabPanel'>
+            <TagsList
+              tagsList={tagsList}
+              isTagsDataLoading={isTagsDataLoading}
+              tagInfo={tagInfo}
+              tagRuns={tagRuns}
+              isRunsDataLoading={isRunsDataLoading}
+              isTagInfoDataLoading={isTagInfoDataLoading}
+            />
+          </TabPanel>
+        </ErrorBoundary>
+        <ErrorBoundary>
+          <TabPanel value={value} index={1} className='Tags__tabPanel'>
+            <TagsList
+              tagsList={archivedTagsList}
+              isHiddenTagsList
+              isTagsDataLoading={isTagsDataLoading}
+              tagInfo={tagInfo}
+              tagRuns={tagRuns}
+              isRunsDataLoading={isRunsDataLoading}
+              isTagInfoDataLoading={isTagInfoDataLoading}
+            />
+          </TabPanel>
+        </ErrorBoundary>
+        {notifyData?.length > 0 && (
+          <NotificationContainer
+            handleClose={onNotificationDelete}
+            data={notifyData}
+          />
+        )}
+      </section>
+    </ErrorBoundary>
   );
 }
 

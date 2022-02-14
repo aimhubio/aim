@@ -3,6 +3,7 @@ import { isNil } from 'lodash-es';
 
 import Table from 'components/Table/Table';
 import { Badge, Button, Icon, Text } from 'components/kit';
+import ErrorBoundary from 'components/ErrorBoundary/ErrorBoundary';
 
 import tagsAppModel from 'services/models/tags/tagsAppModel';
 
@@ -133,31 +134,33 @@ function TagsTable({
   }, [tagsList, onTableRunClick, hoveredRowIndex]);
 
   return (
-    <div className='Tags__TagList__tagListBox'>
-      {!isTagsDataLoading && !isNil(tagsList) && (
-        <div className='Tags__TagList__tagListBox__titleBox'>
-          <Text component='h4' size={14} weight={600} tint={100}>
-            {tagsList.length} {tagsList.length > 1 ? 'Tags' : 'Tag'}
-          </Text>
+    <ErrorBoundary>
+      <div className='Tags__TagList__tagListBox'>
+        {!isTagsDataLoading && !isNil(tagsList) && (
+          <div className='Tags__TagList__tagListBox__titleBox'>
+            <Text component='h4' size={14} weight={600} tint={100}>
+              {tagsList.length} {tagsList.length > 1 ? 'Tags' : 'Tag'}
+            </Text>
+          </div>
+        )}
+        <div className='TagsTable'>
+          <Table
+            ref={tableRef}
+            fixed={false}
+            columns={tableColumns}
+            data={null}
+            isLoading={isTagsDataLoading}
+            hideHeaderActions
+            rowHeight={52}
+            headerHeight={32}
+            onRowHover={(rowIndex) => setHoveredRowIndex(rowIndex)}
+            onRowClick={(rowIndex) => onTableRunClick(rowIndex || '')}
+            emptyText={hasSearchValue ? 'No tags found' : 'No tags'}
+            height='100%'
+          />
         </div>
-      )}
-      <div className='TagsTable'>
-        <Table
-          ref={tableRef}
-          fixed={false}
-          columns={tableColumns}
-          data={null}
-          isLoading={isTagsDataLoading}
-          hideHeaderActions
-          rowHeight={52}
-          headerHeight={32}
-          onRowHover={(rowIndex) => setHoveredRowIndex(rowIndex)}
-          onRowClick={(rowIndex) => onTableRunClick(rowIndex || '')}
-          emptyText={hasSearchValue ? 'No tags found' : 'No tags'}
-          height='100%'
-        />
       </div>
-    </div>
+    </ErrorBoundary>
   );
 }
 

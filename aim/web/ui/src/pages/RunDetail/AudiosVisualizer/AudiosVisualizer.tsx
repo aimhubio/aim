@@ -3,6 +3,7 @@ import React from 'react';
 import MediaPanel from 'components/MediaPanel';
 import { MediaTypeEnum } from 'components/MediaPanel/config';
 import BusyLoaderWrapper from 'components/BusyLoaderWrapper/BusyLoaderWrapper';
+import ErrorBoundary from 'components/ErrorBoundary/ErrorBoundary';
 
 import useResizeObserver from 'hooks/window/useResizeObserver';
 
@@ -94,27 +95,29 @@ function AudiosVisualizer(
   }, []);
 
   return (
-    <BusyLoaderWrapper
-      className='VisualizationLoader'
-      isLoading={!!props.isLoading}
-    >
-      <div className='AudiosVisualizer' ref={audioWrapperRef}>
-        <MediaPanel
-          mediaType={MediaTypeEnum.AUDIO}
-          getBlobsData={getAudiosBlobsData}
-          data={data?.audiosSetData}
-          orderedMap={data?.orderedMap}
-          isLoading={!data || isLoading}
-          panelResizing={false}
-          tableHeight={'0'}
-          wrapperOffsetHeight={(offsetHeight || 0) + 44}
-          wrapperOffsetWidth={offsetWidth || 0}
-          focusedState={focusedState}
-          additionalProperties={additionalProperties}
-          onActivePointChange={onActivePointChange}
-        />
-      </div>
-    </BusyLoaderWrapper>
+    <ErrorBoundary>
+      <BusyLoaderWrapper
+        className='VisualizationLoader'
+        isLoading={!!props.isLoading}
+      >
+        <div className='AudiosVisualizer' ref={audioWrapperRef}>
+          <MediaPanel
+            mediaType={MediaTypeEnum.AUDIO}
+            getBlobsData={getAudiosBlobsData}
+            data={data?.audiosSetData}
+            orderedMap={data?.orderedMap}
+            isLoading={!data || isLoading}
+            panelResizing={false}
+            tableHeight={'0'}
+            wrapperOffsetHeight={(offsetHeight || 0) + 44}
+            wrapperOffsetWidth={offsetWidth || 0}
+            focusedState={focusedState}
+            additionalProperties={additionalProperties}
+            onActivePointChange={onActivePointChange}
+          />
+        </div>
+      </BusyLoaderWrapper>
+    </ErrorBoundary>
   );
 }
 
