@@ -127,13 +127,15 @@ import { getValue } from 'utils/helper';
 import onRowSelect from 'utils/app/onRowSelect';
 import { SortField } from 'utils/getSortedFields';
 
-export function getMetricsAppModelMethods({
+export default function getMetricsModelMethods({
   appName,
   model,
   grouping,
   components,
   selectForm,
   setModelDefaultAppConfigData,
+  getModelAppConfigData,
+  getConfig,
 }: any) {
   let metricsRequestRef: {
     call: (
