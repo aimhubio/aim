@@ -43,6 +43,8 @@
    guides/integrations/basic_aim_tensorflow_event_conversion.md
    guides/training_reproducibility.md
    guides/aim_remote_tracking.md
+   guides/aim_repo_reindexing.md
+   guides/basic_aim_matplotlib.md
 
 .. toctree::
    :maxdepth: 1

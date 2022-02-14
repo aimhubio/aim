@@ -49,5 +49,4 @@ export default function onBookmarkUpdate<M extends State>({
       });
     }
   }
-  analytics.trackEvent(`[${appName}Explorer] Update bookmark`);
 }
