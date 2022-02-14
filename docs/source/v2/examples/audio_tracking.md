@@ -1,4 +1,4 @@
-## AIM Audio object
+## Audio tracking with Aim
 
 Aim lets your track an audio data using `aim.Audio` object
 

@@ -1,4 +1,4 @@
-## AIM Image object
+## Image tracking with AIm
 
 Aim lets your track an image using `aim.Image` object
 

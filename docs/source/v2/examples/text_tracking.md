@@ -1,4 +1,4 @@
-## AIM Image object
+## Text tracking with Aim
 
 Aim lets your track text/string during your training process.
 
