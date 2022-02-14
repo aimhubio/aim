@@ -1,3 +1,5 @@
+import _ from 'lodash-es';
+
 import { IGroupingSelectOption } from 'types/services/models/metrics/metricsAppModel';
 
 export default function getGroupingSelectOptions({
@@ -35,6 +37,7 @@ export default function getGroupingSelectOptions({
   ];
 
   let contextOptions: IGroupingSelectOption[];
+  let contextOption: IGroupingSelectOption;
   let nameOption: IGroupingSelectOption;
 
   if (sequenceName) {
@@ -48,7 +51,14 @@ export default function getGroupingSelectOptions({
       label: `${sequenceName}.name`,
       value: 'name',
     };
-    options = options.concat(nameOption, contextOptions);
+    contextOption = {
+      group: sequenceName,
+      label: `${sequenceName}.context`,
+      value: 'context',
+    };
+    options = !_.isEmpty(contexts)
+      ? options.concat(nameOption, contextOption, contextOptions)
+      : options.concat(nameOption);
   }
 
   return options;

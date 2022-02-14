@@ -2,11 +2,12 @@
 
 ## Unreleased
 
-###Enhancements
+### Enhancements:
 
+- Ability to group by metric.context (VkoHov)
 - Add ability to apply active style on table actions popover buttons with applied changes (arsengit)
 
-###Fixes 
+### Fixes: 
 
 - Fix system metric columns pinning functionality and grouping column order (arsengit)
 
