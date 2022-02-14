@@ -1,4 +1,5 @@
 import { ResizeModeEnum } from 'config/enums/tableEnums';
+import { ANALYTICS_EVENT_KEYS } from 'config/analytics/analyticsKeysMap';
 
 import * as analytics from 'services/analytics';
 
@@ -30,7 +31,6 @@ export default function onTableResizeModeChange<M extends State>({
     model.setState({ config });
     setItem(`${appName}Table`, encode(table));
   }
-  analytics.trackEvent(
-    `[${appName}Explorer][Table] Set table view mode to "${mode}"`,
-  );
+  // @ts-ignore
+  analytics.trackEvent(ANALYTICS_EVENT_KEYS[appName].table.changeResizeMode);
 }
