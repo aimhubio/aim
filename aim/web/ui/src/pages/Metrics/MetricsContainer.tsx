@@ -103,6 +103,7 @@ function MetricsContainer(): React.FunctionComponentElement<React.ReactNode> {
       }
     };
   }, []);
+
   return (
     <ErrorBoundary>
       <Metrics

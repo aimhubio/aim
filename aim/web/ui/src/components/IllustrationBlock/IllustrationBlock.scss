@@ -10,6 +10,9 @@
     font-size: $text-xl;
     text-align: center;
   }
+  &__hidden {
+    display: none;
+  }
   &__content {
     font-size: $text-xl;
     text-align: center;

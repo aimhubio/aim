@@ -105,8 +105,6 @@ function ParamsContainer(): React.FunctionComponentElement<React.ReactNode> {
     };
   }, []);
 
-  console.log(paramsData);
-
   return (
     <Params
       tableRef={tableRef}

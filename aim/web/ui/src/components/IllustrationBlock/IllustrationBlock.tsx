@@ -22,12 +22,21 @@ function IllustrationBlock({
   className = '',
   size = 'small',
 }: IIllustrationBlockProps): React.FunctionComponentElement<React.ReactNode> {
-  console.log(type, page);
+  const [imgLoaded, setImgLoaded] = React.useState(false);
 
+  function onImgLoad() {
+    setImgLoaded(true);
+  }
   return (
-    <div className={`IllustrationBlock ${className}`}>
+    <div
+      className={`IllustrationBlock ${className} ${
+        imgLoaded ? '' : 'IllustrationBlock__hidden'
+      }`}
+    >
       <div className={`IllustrationBlock__${size}__img`}>
-        {image || <img src={Illustrations_List[type]} alt='' />}
+        {image || (
+          <img onLoad={onImgLoad} src={Illustrations_List[type]} alt='' />
+        )}
       </div>
       <Text
         component='p'

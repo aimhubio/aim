@@ -257,7 +257,9 @@ function ImagesExplore(): React.FunctionComponentElement<React.ReactNode> {
                 getBlobsData={imagesExploreAppModel.getImagesBlobsData}
                 data={imagesExploreData?.imagesData}
                 orderedMap={imagesExploreData?.orderedMap}
-                isLoading={imagesExploreData?.requestIsPending}
+                isLoading={
+                  imagesExploreData?.requestStatus === RequestStatusEnum.Pending
+                }
                 panelResizing={panelResizing}
                 resizeMode={imagesExploreData?.config?.table.resizeMode}
                 tableHeight={imagesExploreData?.config?.table?.height}
@@ -307,7 +309,8 @@ function ImagesExplore(): React.FunctionComponentElement<React.ReactNode> {
                 actionPanel={
                   imagesExploreData?.config?.images?.stepRange &&
                   imagesExploreData?.config?.images?.indexRange &&
-                  imagesExploreAppModel.showRangePanel() && (
+                  imagesExploreAppModel.showRangePanel() &&
+                  !_.isEmpty(imagesExploreData?.imagesData) && (
                     <ImagesExploreRangePanel
                       recordSlice={
                         imagesExploreData?.config?.images?.recordSlice
@@ -335,7 +338,8 @@ function ImagesExplore(): React.FunctionComponentElement<React.ReactNode> {
             </div>
             <ResizePanel
               className={`ImagesExplore__ResizePanel${
-                imagesExploreData?.requestIsPending ||
+                imagesExploreData?.requestStatus ===
+                  RequestStatusEnum.Pending ||
                 !_.isEmpty(imagesExploreData?.imagesData)
                   ? ''
                   : '__hide'

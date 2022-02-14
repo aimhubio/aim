@@ -1,5 +1,5 @@
 import React from 'react';
-import { isEmpty } from 'lodash-es';
+import _ from 'lodash-es';
 
 import Table from 'components/Table/Table';
 import ChartPanel from 'components/ChartPanel/ChartPanel';
@@ -42,6 +42,8 @@ function Scatters(
     }));
   }, [props.scatterPlotData, props.chartTitleData, props.trendlineOptions]);
 
+  console.log(props.resizeMode);
+
   return (
     <div ref={props.wrapperElemRef} className='Scatters__container'>
       <section className='Scatters__section'>
@@ -82,7 +84,10 @@ function Scatters(
           <div
             ref={props.chartElemRef}
             className={`Scatters__chart__container${
-              props.resizeMode === ResizeModeEnum.MaxHeight ? '__hide' : ''
+              props.resizeMode === ResizeModeEnum.MaxHeight ||
+              _.isEmpty(props.tableData)
+                ? '__hide'
+                : ''
             }`}
           >
             <BusyLoaderWrapper
@@ -119,8 +124,8 @@ function Scatters(
                   size='xLarge'
                   page='scatters'
                   type={
-                    props.selectFormOptions?.length
-                      ? IllustrationsEnum.EmptyData
+                    props.selectFormOptions?.length > 0
+                      ? IllustrationsEnum.ExploreData
                       : Request_Illustrations[props.requestStatus]
                   }
                   content="It's super easy to search Aim experiments. Lookup search docs to learn more."
@@ -130,10 +135,10 @@ function Scatters(
           </div>
           <ResizePanel
             className={`Scatters__ResizePanel${
-              props.requestStatus === RequestStatusEnum.Pending ||
-              props.scatterPlotData?.[0]?.data?.length
-                ? ''
-                : '__hide'
+              props.requestStatus !== RequestStatusEnum.Pending &&
+              _.isEmpty(props.tableData)
+                ? '__hidden'
+                : ''
             }`}
             panelResizing={props.panelResizing}
             resizeElemRef={props.resizeElemRef}
@@ -143,7 +148,11 @@ function Scatters(
           <div
             ref={props.tableElemRef}
             className={`Scatters__table__container${
-              props.resizeMode === ResizeModeEnum.Hide ? '__hide' : ''
+              RequestStatusEnum.Pending !== props.requestStatus &&
+              (props.resizeMode === ResizeModeEnum.MaxHeight ||
+                _.isEmpty(props.tableData))
+                ? '__hidden'
+                : ''
             }`}
           >
             <BusyLoaderWrapper
@@ -152,7 +161,7 @@ function Scatters(
               height='100%'
               loaderComponent={<TableLoader />}
             >
-              {!isEmpty(props.tableData) ? (
+              {!_.isEmpty(props.tableData) ? (
                 <Table
                   // deletable
                   custom

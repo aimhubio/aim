@@ -530,7 +530,6 @@ function createAppModel(appConfig: IAppInitialConfig) {
           chartPanelRef: { current: null },
         };
       }
-      state.requestStatus = RequestStatusEnum.Pending;
       model.setState({ ...state });
       if (!appId) {
         setModelDefaultAppConfigData();
@@ -540,7 +539,6 @@ function createAppModel(appConfig: IAppInitialConfig) {
         .call()
         .then((data) => {
           model.setState({
-            requestStatus: RequestStatusEnum.NotRequested,
             selectFormOptions: getMetricOptions(data),
           });
         });
@@ -3240,13 +3238,11 @@ function createAppModel(appConfig: IAppInitialConfig) {
             chartPanelRef: { current: null },
           };
         }
-        // state.requestStatus = RequestStatusEnum.Pending;
         projectsService
           .getProjectParams(['metric'])
           .call()
           .then((data) => {
             model.setState({
-              requestStatus: RequestStatusEnum.NotRequested,
               selectFormOptions: getParamsOptions(data),
             });
           });
@@ -3756,7 +3752,7 @@ function createAppModel(appConfig: IAppInitialConfig) {
           onModelGroupingSelectChange,
         );
 
-        if (model.getState()?.requestStatus === RequestStatusEnum.Pending) {
+        if (model.getState()?.requestStatus !== RequestStatusEnum.Pending) {
           model.getState()?.refs?.tableRef.current?.updateData({
             newData: tableData.rows,
             newColumns: tableColumns,

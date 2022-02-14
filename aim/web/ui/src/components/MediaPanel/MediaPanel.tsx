@@ -208,8 +208,6 @@ function MediaPanel({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  console.log(mediaType, illustrationType);
-
   return (
     <ErrorBoundary>
       <BusyLoaderWrapper

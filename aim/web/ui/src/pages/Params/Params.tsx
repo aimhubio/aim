@@ -200,8 +200,8 @@ const Params = ({
                   size='xLarge'
                   page='params'
                   type={
-                    selectFormOptions?.length
-                      ? IllustrationsEnum.EmptyData
+                    selectFormOptions?.length > 0
+                      ? IllustrationsEnum.ExploreData
                       : Request_Illustrations[requestStatus]
                   }
                 />

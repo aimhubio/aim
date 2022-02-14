@@ -69,6 +69,8 @@ function Metrics(
     props.onZoomChange,
   ]);
 
+  console.log(props.resizeMode);
+
   return (
     <ErrorBoundary>
       <div ref={props.wrapperElemRef} className='Metrics__container'>
@@ -178,7 +180,11 @@ function Metrics(
                     <IllustrationBlock
                       size='xLarge'
                       page='metrics'
-                      type={IllustrationsEnum.EmptyData}
+                      type={
+                        props.selectFormOptions?.length > 0
+                          ? IllustrationsEnum.ExploreData
+                          : Request_Illustrations[props.requestStatus]
+                      }
                     />
                   )
                 )}
@@ -199,7 +205,10 @@ function Metrics(
             <div
               ref={props.tableElemRef}
               className={`Metrics__table__container${
-                props.resizeMode === ResizeModeEnum.Hide ? '__hide' : ''
+                props.resizeMode === ResizeModeEnum.Hide ||
+                isEmpty(props.tableData)
+                  ? '__hide'
+                  : ''
               }`}
             >
               <BusyLoaderWrapper
