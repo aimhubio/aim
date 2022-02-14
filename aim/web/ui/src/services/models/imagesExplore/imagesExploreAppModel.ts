@@ -51,7 +51,6 @@ import {
   ISelectOption,
 } from 'types/services/models/explorer/createAppModel';
 import { IProjectParamsMetrics } from 'types/services/models/projects/projectsModel';
-import { IApiRequest } from 'types/services/services';
 
 import onRowSelectAction from 'utils/app/onRowSelect';
 import { decode, encode } from 'utils/encoder/encoder';
@@ -788,6 +787,11 @@ function getGroupingSelectOptions({
       group: 'images',
       label: 'images.name',
       value: 'images_name',
+    },
+    {
+      group: 'images',
+      label: 'images.context',
+      value: 'context',
     },
     ...contextOptions,
     {
