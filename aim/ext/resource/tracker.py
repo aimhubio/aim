@@ -2,15 +2,16 @@ from psutil import Process, cpu_percent
 from threading import Thread
 import time
 import weakref
+from typing import Union
 
 from aim.ext.resource.stat import Stat
 from aim.ext.resource.configs import AIM_RESOURCE_METRIC_PREFIX
 
 
 class ResourceTracker(object):
-    STAT_INTERVAL_MIN = 1
-    STAT_INTERVAL_MAX = 3600 * 24
-    STAT_INTERVAL_DEFAULT = 60
+    STAT_INTERVAL_MIN = 1.0
+    STAT_INTERVAL_MAX = 24 * 60 * 60.0
+    STAT_INTERVAL_DEFAULT = 60.0
 
     reset_cpu_cycle = False
 
@@ -22,7 +23,7 @@ class ResourceTracker(object):
         """
         cpu_percent(0.0)
 
-    def __init__(self, track, interval: int = STAT_INTERVAL_DEFAULT):
+    def __init__(self, track, interval: Union[int, float] = STAT_INTERVAL_DEFAULT):
         self._track_func = weakref.WeakMethod(track)
         self.interval = interval
 
