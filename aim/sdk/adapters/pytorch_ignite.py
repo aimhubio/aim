@@ -7,16 +7,16 @@ try:
     from torch.optim import Optimizer
 except ImportError:
     raise RuntimeError(
-        "This contrib module requires pytorch to be installed. "
-        "Please install it with command: \n pip install torch"
+        'This contrib module requires PyTorch to be installed. '
+        'Please install it with command: \n pip install torch'
     )
 try:
     from ignite.contrib.handlers.base_logger import BaseLogger, BaseOptimizerParamsHandler, BaseOutputHandler
     from ignite.engine import Engine, Events
 except ImportError:
     raise RuntimeError(
-        'This contrib module requires pythorch_ignite to be installed. '
-        'Please install it with command: \n pip install pythorch-ignite'
+        'This contrib module requires PyTorch Ignite to be installed. '
+        'Please install it with command: \n pip install pytorch-ignite'
     )
 
 
@@ -131,8 +131,8 @@ class OutputHandler(BaseOutputHandler):
                 metrics.
             output_transform: output transform function to prepare `engine.state.output` as a number.
                 For example, `output_transform = lambda output: output`
-                This function can also return a dictionary, e.g `{'loss': loss1, 'another_loss': loss2}` to label the plot
-                with corresponding keys.
+                This function can also return a dictionary, e.g `{'loss': loss1, 'another_loss': loss2}` to label
+                the plot with corresponding keys.
             global_step_transform: global step transform function to output a desired global step.
                 Input of the function is `(engine, event_name)`. Output of function should be an integer.
                 Default is None, global_step based on attached engine. If provided,

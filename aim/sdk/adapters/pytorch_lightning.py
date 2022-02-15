@@ -9,8 +9,8 @@ try:
     from pytorch_lightning.utilities import rank_zero_only
 except ImportError:
     raise RuntimeError(
-        "This contrib module requires pytorch_lightning to be installed. "
-        "Please install it with command: \n pip install pytorch-lightning"
+        'This contrib module requires PyTorch Lightning to be installed. '
+        'Please install it with command: \n pip install pytorch-lightning'
     )
 
 from aim.sdk.run import Run
