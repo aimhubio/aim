@@ -7,6 +7,8 @@
 - Ability to group by metric.context (VkoHov)
 - Add ability to apply active style on table actions popover buttons with applied changes (arsengit)
 - Aim repo runs data automatic indexing (alberttorosyan)
+- Pytorch Lightning adapter refactoring (mihran113)
+- Add Pytorch Ignite integration (mihran113)  
 
 ### Fixes: 
 

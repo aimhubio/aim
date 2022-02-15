@@ -16,7 +16,7 @@ try:
 except ImportError:
     raise RuntimeError(
         "This contrib module requires pythorch_ignite to be installed. "
-        "Please install it with command: \n pip install pythorch_ignite"
+        "Please install it with command: \n pip install pythorch-ignite"
     )
 
 

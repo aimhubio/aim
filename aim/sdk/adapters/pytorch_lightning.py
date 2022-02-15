@@ -10,7 +10,7 @@ try:
 except ImportError:
     raise RuntimeError(
         "This contrib module requires pytorch_lightning to be installed. "
-        "Please install it with command: \n pip install pytorch_lightning"
+        "Please install it with command: \n pip install pytorch-lightning"
     )
 
 from aim.sdk.run import Run

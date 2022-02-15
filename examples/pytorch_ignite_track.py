@@ -83,9 +83,6 @@ metrics = {
 }
 train_evaluator = create_supervised_evaluator(model, metrics=metrics, device=device)
 val_evaluator = create_supervised_evaluator(model, metrics=metrics, device=device)
-training_history = {'accuracy':[],'loss':[]}
-validation_history = {'accuracy':[],'loss':[]}
-last_epoch = []
 
 RunningAverage(output_transform=lambda x: x).attach(trainer, 'loss')
 
@@ -100,30 +97,9 @@ val_evaluator.add_event_handler(Events.COMPLETED, handler)
 
 
 @trainer.on(Events.EPOCH_COMPLETED)
-def log_training_results(trainer):
-    train_evaluator.run(train_loader)
-    metrics = train_evaluator.state.metrics
-    accuracy = metrics['accuracy'] * 100
-    loss = metrics['nll']
-    last_epoch.append(0)
-    training_history['accuracy'].append(accuracy)
-    training_history['loss'].append(loss)
-    print("Training Results - Epoch: {}  Avg accuracy: {:.2f} Avg loss: {:.2f}"
-          .format(trainer.state.epoch, accuracy, loss))
-
-
 def log_validation_results(trainer):
+    train_evaluator.run(train_loader)
     val_evaluator.run(val_loader)
-    metrics = val_evaluator.state.metrics
-    accuracy = metrics['accuracy'] * 100
-    loss = metrics['nll']
-    validation_history['accuracy'].append(accuracy)
-    validation_history['loss'].append(loss)
-    print("Validation Results - Epoch: {}  Avg accuracy: {:.2f} Avg loss: {:.2f}"
-          .format(trainer.state.epoch, accuracy, loss))
-
-
-trainer.add_event_handler(Events.EPOCH_COMPLETED, log_validation_results)
 
 
 # Create a logger
