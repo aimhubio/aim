@@ -15,6 +15,8 @@ import { ResizeModeEnum } from 'config/enums/tableEnums';
 import { RowHeightSize } from 'config/table/tableConfigs';
 import GroupingPopovers from 'config/grouping/GroupingPopovers';
 
+import { AppNameEnum } from 'services/models/explorer';
+
 import { ILine } from 'types/components/LineChart/LineChart';
 import { IMetricProps } from 'types/pages/metrics/Metrics';
 
@@ -223,6 +225,9 @@ function Metrics(
                       columnsWidths={props.columnsWidths}
                       selectedRows={props.selectedRows}
                       hideSystemMetrics={props.hideSystemMetrics}
+                      appName={AppNameEnum.METRICS}
+                      hiddenChartRows={props.lineChartData?.length === 0}
+                      columnsOrder={props.columnsOrder}
                       // Table actions
                       onSort={props.onSortChange}
                       onSortReset={props.onSortReset}

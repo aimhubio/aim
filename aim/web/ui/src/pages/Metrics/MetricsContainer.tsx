@@ -3,6 +3,8 @@ import { useRouteMatch, useHistory } from 'react-router-dom';
 
 import ErrorBoundary from 'components/ErrorBoundary/ErrorBoundary';
 
+import { ANALYTICS_EVENT_KEYS } from 'config/analytics/analyticsKeysMap';
+
 import usePanelResize from 'hooks/resize/usePanelResize';
 import useModel from 'hooks/model/useModel';
 
@@ -78,7 +80,7 @@ function MetricsContainer(): React.FunctionComponentElement<React.ReactNode> {
         exceptionHandler({ detail, model: metricAppModel });
       });
     }
-    analytics.pageView('[MetricsExplorer]');
+    analytics.pageView(ANALYTICS_EVENT_KEYS.metrics.pageView);
 
     const unListenHistory = history.listen(() => {
       if (!!metricsData?.config) {
@@ -145,6 +147,7 @@ function MetricsContainer(): React.FunctionComponentElement<React.ReactNode> {
         requestIsPending={metricsData?.requestIsPending!}
         resizeMode={metricsData?.config?.table?.resizeMode!}
         columnsWidths={metricsData?.config?.table?.columnsWidths}
+        columnsOrder={metricsData?.config?.table?.columnsOrder}
         // methods
         onChangeTooltip={metricAppModel.onChangeTooltip}
         onIgnoreOutliersChange={metricAppModel.onIgnoreOutliersChange}
