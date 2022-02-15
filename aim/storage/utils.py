@@ -1,5 +1,30 @@
 from copy import deepcopy
 
+
+class KeysIterator:
+    def __init__(self, items_iterator):
+        self.it = items_iterator
+
+    def __iter__(self):
+        return self
+
+    def __next__(self):
+        key, _ = next(self.it)
+        return key
+
+
+class ValuesIterator:
+    def __init__(self, items_iterator):
+        self.it = items_iterator
+
+    def __iter__(self):
+        return self
+
+    def __next__(self):
+        _, value = next(self.it)
+        return value
+
+
 class ArrayFlagType:
     def __repr__(self):
         return "<ArrayFlag>"
