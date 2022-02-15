@@ -12,7 +12,7 @@
 
 - Add repo lock/release feature (devfox-se)
 - Fix system metric columns pinning functionality and grouping column order (arsengit)
-
+- Fix queries on remote repos (mihran113)
 
 ## 3.5.3 Feb 11 2022
 
