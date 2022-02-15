@@ -29,7 +29,8 @@ class ManagerActionResult:
 def run_up(args):
     args_list = []
     for p in args.keys():
-        args_list.append(p + '=' + args[p])
+        if p != '--proxy-url':
+            args_list.append(p + '=' + args[p])
 
     success_msg = 'Open http://{}:{}{}'.format(args['--host'], args['--port'], args['--base-path'])
 

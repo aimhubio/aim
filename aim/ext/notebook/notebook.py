@@ -62,7 +62,7 @@ def get_argument_options(line):
         @TODO add process args all styles to dict
     """
     # @TODO improve this logic
-    supported_args = ['--port', '--host', '--repo']
+    supported_args = ['--port', '--host', '--repo', '--proxy-url']
 
     args = shlex.split(line)
     command = args[0]
@@ -106,14 +106,18 @@ def display_colab(port, display):
         IPython.display.display(script)
 
 
-def display_notebook(host, port, display):
+def display_notebook(host, port, display, proxy_url=None):
     """Display Aim instance in an ipython context output frame.
     """
     import IPython.display
+    url = "{}:{}{}".format(host, port, '/notebook/')
+    if proxy_url:
+        url = "{}/{}{}".format(proxy_url, port, '/notebook/')
+
     shell = """
-          <iframe id="aim" width="100%" height="800" frameborder="0" src={}:{}{}>
+          <iframe id="aim" width="100%" height="800" frameborder="0" src={}>
           </iframe>
-        """.format(host, port, '/notebook/')
+        """.format(url)
 
     # @TODO write passing proxy logic
 
@@ -158,7 +162,7 @@ def up(options, context):
         display_colab(port, display)
         return
     if context == _IPYTHON_EXEC_CONTEXT:
-        display_notebook(host, port, display)
+        display_notebook(host, port, display, options.get("--proxy-url"))
         return
 
     # other context
