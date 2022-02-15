@@ -1,4 +1,6 @@
 # distutils: language = c++
+# cython: language_level=3
+# distutils: language_level = 3
 
 from aim.storage.hashing cimport c_hash
 
