@@ -3,6 +3,7 @@
 ## 3.5.4 Feb 15 2022
 
 - Fix batch archive functionality (VkoHov)
+- Add repo lock/release feature (devfox-se)
 
 ## 3.5.3 Feb 11 2022
 
