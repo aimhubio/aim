@@ -454,8 +454,7 @@ class Run(StructuredRunMixin):
     @property
     def props(self):
         if self._props is None:
-            with self.repo.lock():
-                self._props = self.repo.request_props(self.hash, self.read_only)
+            self._props = self.repo.request_props(self.hash, self.read_only)
         return self._props
 
     def iter_metrics_info(self) -> Iterator[Tuple[str, Context, 'Run']]:
