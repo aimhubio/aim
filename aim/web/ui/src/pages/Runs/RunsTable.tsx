@@ -5,6 +5,8 @@ import { CircularProgress } from '@material-ui/core';
 import Table from 'components/Table/Table';
 import ErrorBoundary from 'components/ErrorBoundary/ErrorBoundary';
 
+import { AppNameEnum } from 'services/models/explorer';
+
 import { IRunsTableProps } from 'types/pages/runs/Runs';
 
 function RunsTable({
@@ -62,6 +64,7 @@ function RunsTable({
             columns={columns}
             isLoading={isRunsDataLoading}
             selectedRows={selectedRows}
+            appName={AppNameEnum.RUNS}
             multiSelect
             // Table options
             topHeader

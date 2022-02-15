@@ -1,5 +1,7 @@
 import { isEmpty } from 'lodash-es';
 
+import { ANALYTICS_EVENT_KEYS } from 'config/analytics/analyticsKeysMap';
+
 import * as analytics from 'services/analytics';
 
 import { IModel, State } from 'types/services/models/model';
@@ -32,7 +34,8 @@ export default function onSortFieldsChange<M extends State>({
     updateModelData(configUpdate);
   }
   analytics.trackEvent(
-    `[${appName}Explorer][Table] ${
+    // @ts-ignore
+    `${ANALYTICS_EVENT_KEYS[appName].table.changeSorting} ${
       isEmpty(sortFields) ? 'Reset' : 'Apply'
     } table sorting by a key`,
   );

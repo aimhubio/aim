@@ -255,7 +255,7 @@ class Run(StructuredRunMixin):
                  repo: Optional[Union[str, 'Repo']] = None,
                  read_only: bool = False,
                  experiment: Optional[str] = None,
-                 system_tracking_interval: Optional[int] = DEFAULT_SYSTEM_TRACKING_INT,
+                 system_tracking_interval: Optional[Union[int, float]] = DEFAULT_SYSTEM_TRACKING_INT,
                  log_system_params: Optional[bool] = False):
         self._resources: Optional[RunAutoClean] = None
         run_hash = run_hash or generate_run_hash()
@@ -367,8 +367,8 @@ class Run(StructuredRunMixin):
     def _collect(self, key, strict: bool = True):
         return self.meta_run_attrs_tree.collect(key, strict=strict)
 
-    def _prepare_resource_tracker(self, tracking_interval: int):
-        if not self.read_only and tracking_interval and isinstance(tracking_interval, int) and tracking_interval > 0:
+    def _prepare_resource_tracker(self, tracking_interval: Union[int, float] = None):
+        if not self.read_only and isinstance(tracking_interval, (int, float)) and tracking_interval > 0:
             try:
                 self._system_resource_tracker = ResourceTracker(self.track, tracking_interval)
             except ValueError:

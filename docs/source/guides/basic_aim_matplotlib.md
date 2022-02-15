@@ -1,4 +1,4 @@
-### Tracking matplotlib figures in Aim
+## Tracking matplotlib figures in Aim
 
 In this guide, we will show you how to track `matplotlib` figures in Aim.
 
