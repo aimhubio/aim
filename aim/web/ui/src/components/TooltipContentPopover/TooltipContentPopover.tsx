@@ -62,6 +62,21 @@ function TooltipContentPopover({
     );
   }, [selectOptions]);
 
+  const options = React.useMemo(() => {
+    if (inputValue.trim() !== '') {
+      const filtered = paramsOptions.filter((item) => {
+        return item.label.indexOf(inputValue) !== -1;
+      });
+
+      return filtered
+        .slice()
+        .sort(
+          (a, b) => a.label.indexOf(inputValue) - b.label.indexOf(inputValue),
+        );
+    }
+    return paramsOptions;
+  }, [paramsOptions, inputValue]);
+
   return (
     <ErrorBoundary>
       <div className='TooltipContentPopover'>
@@ -78,17 +93,7 @@ function TooltipContentPopover({
             size='small'
             multiple
             disableCloseOnSelect
-            options={
-              inputValue.trim() !== ''
-                ? paramsOptions
-                    .slice()
-                    .sort(
-                      (a, b) =>
-                        a.label.indexOf(inputValue) -
-                        b.label.indexOf(inputValue),
-                    )
-                : paramsOptions
-            }
+            options={options}
             value={values}
             onChange={onSelectedParamsChange}
             groupBy={(option) => option.group}

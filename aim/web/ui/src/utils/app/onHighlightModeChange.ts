@@ -1,5 +1,7 @@
 import { HighlightEnum } from 'components/HighlightModesPopover/HighlightModesPopover';
 
+import { ANALYTICS_EVENT_KEYS } from 'config/analytics/analyticsKeysMap';
+
 import * as analytics from 'services/analytics';
 
 import { IModel, State } from 'types/services/models/model';
@@ -29,8 +31,9 @@ export default function onHighlightModeChange<M extends State>({
     updateURL({ configData, appName });
   }
   analytics.trackEvent(
-    `[${appName}][Chart] Set highlight mode to "${HighlightEnum[
-      mode
-    ].toLowerCase()}"`,
+    `${
+      // @ts-ignore
+      ANALYTICS_EVENT_KEYS[appName].chart.controls.changeHighlightMode
+    } to "${HighlightEnum[mode].toLowerCase()}"`,
   );
 }
