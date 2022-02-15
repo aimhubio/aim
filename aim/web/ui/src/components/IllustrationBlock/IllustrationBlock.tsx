@@ -28,7 +28,6 @@ function IllustrationBlock({
     setImgLoaded(true);
   }
 
-  console.log(content);
   return (
     <div
       className={`IllustrationBlock ${className} ${

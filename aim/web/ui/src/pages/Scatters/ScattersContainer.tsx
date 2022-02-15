@@ -107,7 +107,6 @@ function ScattersContainer(): React.FunctionComponentElement<React.ReactNode> {
     };
   }, []);
 
-  console.log(scattersData?.config?.table);
   return (
     <ErrorBoundary>
       <Scatters

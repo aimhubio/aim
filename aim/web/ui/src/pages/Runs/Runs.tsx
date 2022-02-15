@@ -2,6 +2,8 @@ import React from 'react';
 
 import NotificationContainer from 'components/NotificationContainer/NotificationContainer';
 
+import { RequestStatusEnum } from 'config/enums/requestStatusEnum';
+
 import RunsTable from './RunsTable';
 import RunsBar from './components/RunsBar/RunsBar';
 import SearchBar from './components/SearchBar/SearchBar';
@@ -22,7 +24,9 @@ function Runs(props: any): React.FunctionComponentElement<React.ReactNode> {
           <SearchBar
             onSearchInputChange={props.onSelectRunQueryChange}
             searchValue={props.query}
-            isRunsDataLoading={props.isRunsDataLoading}
+            isRunsDataLoading={
+              props.requestStatus === RequestStatusEnum.Pending
+            }
           />
           <div className='Runs__table__container'>
             <RunsTable
@@ -40,7 +44,7 @@ function Runs(props: any): React.FunctionComponentElement<React.ReactNode> {
               tableRowHeight={props.tableRowHeight}
               columns={props.tableColumns}
               runsList={props.tableData}
-              isRunsDataLoading={props.isRunsDataLoading}
+              requestStatus={props.requestStatus}
               tableRef={props.tableRef}
               getLastRunsData={props.getLastRunsData}
               columnsWidths={props.columnsWidths}

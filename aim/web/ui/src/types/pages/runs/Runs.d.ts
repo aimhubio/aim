@@ -1,5 +1,7 @@
 import React from 'react';
 
+import { RequestStatusEnum } from 'config/enums/requestStatusEnum';
+
 import { IColumnsOrder } from 'types/services/models/explorer/createAppModel';
 import {
   IMetricTrace,
@@ -15,12 +17,12 @@ export interface IRunsTableProps {
   columnsOrder: IColumnsOrder;
   tableRef: React.RefObject<any>;
   runsList: ITagProps[];
-  isRunsDataLoading: boolean;
   isInfiniteLoading: boolean;
   hiddenColumns: string[];
   hideSystemMetrics: boolean;
   columns: any;
   tableRowHeight: number;
+  requestStatus: RequestStatusEnum;
   onExportTableData: () => void;
   onManageColumns: () => void;
   onColumnsVisibilityChange: (hiddenColumns: string[] | string) => void;
