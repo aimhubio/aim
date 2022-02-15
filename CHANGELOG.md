@@ -1,5 +1,9 @@
 # Changelog
 
+## 3.5.4 Feb 15 2022
+
+- Fix batch archive functionality (VkoHov)
+
 ## 3.5.3 Feb 11 2022
 
 - Fix rendering issue in runs explorer page (arsengit)
