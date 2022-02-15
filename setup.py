@@ -148,6 +148,16 @@ setup(
             language='c++'
         ),
         Extension(
+            'aim.storage.hashing.hashing',
+            ['aim/storage/hashing/hashing.py'],
+            language='c++'
+        ),
+        Extension(
+            'aim.storage.hashing',
+            ['aim/storage/hashing/__init__.py'],
+            language='c++'
+        ),
+        Extension(
             'aim.storage.encoding.encoding_native',
             ['aim/storage/encoding/encoding_native.pyx'],
             language='c++'
