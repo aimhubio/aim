@@ -1,27 +1,28 @@
-
+<br />
 <div align="center">
-  
+  <img src="https://user-images.githubusercontent.com/13848158/136364717-0939222c-55b6-44f0-ad32-d9ab749546e4.png" height="70" />
+</div>
 <br />
-
-<img src="https://user-images.githubusercontent.com/13848158/136364717-0939222c-55b6-44f0-ad32-d9ab749546e4.png" height="70" />
-
-<br />
-<br />
-
-**Aim logs your training runs, enables a beautiful UI to compare them and an API to query them programmatically.**
-  
-<h3 align="center">
+<div align="center">
+  <strong>An easy-to-use & supercharged open-source experiment tracker</strong><br>
+  Aim logs your training runs, enables a beautiful UI to compare them and an API to query them programmatically.<br>
+  <sub>Available for Linux and macOS.</sub>
+</div>
+<br/>
+<p align="center">
   <a href="https://aimstack.readthedocs.io/en/latest/"><b>Documentation</b></a> &bull;
   <a href="https://aimstack.readthedocs.io/en/latest/quick_start/getting_started.html"><b>Aim in 3 steps</b></a> &bull;
-  <a href="http://play.aimstack.io:10001/metrics?grouping=7pRrVvgN1DJa32JqNDmWLwYyX4KK3GAiJ4CqBcfURxEa4DSnDuLQSiJjdYhxVSpZUxBKvKjoh3h4Ub31zdP6ZoFqPgmjhEJMJ2sEGF9ULoVrBrp7SJm8HpuapSfWTTdpZAbb7fTbhNSrSPqKPd1gp7rEesFqXxyAsQkZ2pS4zqkcATRDJeMYwApi3rmYMdErE3UBQcY7siy8gWoaMEmszcVjqCK1uPmwZ1gf1i1G6E7CWDCF1b4Rffc9eTWjxfMdLX58hKVuH8UQRPQBeBRWDtXd2nU6hAGNuZTzajUoirF5wKtWhEpCB5t3x8Wzy7BLTDktAkNdfuApHaj4W9qrJE4RP1mEBcyDeFBP1USV8iSLpaAarFWETUrTMQ2B&chart=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&select=A6s6QXPYV4KMKzeyHf85R14vNQn3urHMP8cf7wEzn1iUv8vVCx9DawAVay8U843DVDoTK5D4gLrydSBGAVQCZY1AHhNRLmqE3VSmQDHweKkr4v7j9yhnBJA9SPApP5fReRBea9EJGDHnj4p3qL3iBsciuQghCC4PfysuRkRMDvBZgMDbvmM17eybKx1GEbpR6uKrME45B83SJcuSg2dwobYffWsKes7dH2TjYjCGXpr6QEi1FxN4qMJjN8zu7PjMzCi3UHL5tskM7wi3iHcf37D8mFHZLT6KS8wZ7NEEJaz4f8RGXwbEs1sDUH8bL5ERDvdXP85GquCAaMvvGfrDLz7mhTZhwTYfiXEfQb9ndmiUmNDie4fhkUijjk4hJ3HABxvQtKViGGhZzuiczAw5pMLomojbT8E3NFo4zyh3tVwHyJ3FyTD1A5UktZMom8WMBuq8TH4xgwpXL2J6ZMDHQs8AJdogAKWMPC9U5JBoW98Etc85YcUp9wu7BW4pVfi1JprFnuPYJGspBCbJXZtWKKW4GvLTbpTXCJ2CPs6ViqWHB4E4dg4SBGbE6XqknBNYU2oCrkMTWov95UgSFX5EvgHPw5p9BW8T91CZGseuhBfauA2LgqrDHXLkkSgp5e6Ai33BbfEamG6opTsHTTzj3xno74QEWKApvCVmwsW44XVVh7LbVfakvxeBp7eWytCCn1EP6CnP3skgBQygSYgzLAgHWo6XaAw"><b>Demo</b></a> &bull;
+  <a href=""><b>Demo</b></a> &bull;
   <a href="https://github.com/aimhubio/aim/tree/main/examples"><b>Examples</b></a> &bull;
   <a href="https://github.com/aimhubio/aim#roadmap"><b>Roadmap</b></a> &bull;
     <a href="https://github.com/aimhubio/aim#comparisons-to-familiar-tools"><b>Alternatives</b></a> &bull;
   <a href="https://slack.aimstack.io/"><b>Slack Community</b></a> &bull;
   <a href="https://twitter.com/aimstackio"><b>Twitter</b></a>
-</h3>
+</p>
 
 ---
+
+<div align="center">
   
 [![PyPI Package](https://img.shields.io/pypi/v/aim?color=yellow)](https://pypi.org/project/aim/)
 [![PyPI Downloads](https://img.shields.io/pypi/dw/aim?color=green)](https://pypi.org/project/aim/)
@@ -44,49 +45,50 @@
 <img src="https://user-images.githubusercontent.com/13848158/112145238-8cc58200-8bf3-11eb-8d22-bbdb8809f2aa.png" width="100" />
 <img src="https://user-images.githubusercontent.com/13848158/118172152-17c93880-b43d-11eb-9169-785e4b52d89c.png" width="100" />
 
-<br />
-
 </div>
 
 # About Aim
 
-| Track and version ML experiments | Visualize MD via beautiful UI | Query any piece of MD within your script |
+| Track and version ML runs | Visualize runs via beautiful UI | Query runs metadata via SDK |
 |:--------------------:|:------------------------:|:-------------------:|
 | ![](docs/source/_static/images/overview/metrics.png?raw=true) | ![](docs/source/_static/images/overview/metrics.png?raw=true) | ![](docs/source/_static/images/overview/metrics.png?raw=true) |
 
-Aim is an open-source, self-hosted ML experiment tracking tool. Aim is good at tracking lots of (1000s) of runs and allowing you to compare them with a performant and beautiful UI.
+Aim is an open-source, self-hosted ML experiment tracking tool. Aim is good at tracking lots (1000s) of runs and allowing you to compare them with a performant and beautiful UI.
 
 You can use Aim not only through its UI but also through its SDK to query your runs' metadata programmatically for automations and additional analysis.
 Aim's mission is to democratize AI dev tools.
 
 # Demos
 
-| WNMT | lightweight-GAN | FastSpeech 2 |
-|:---:|:---:|:---:|
-| ![](docs/source/_static/images/overview/metrics.png?raw=true) | ![](docs/source/_static/images/overview/metrics.png?raw=true) | ![](docs/source/_static/images/overview/metrics.png?raw=true) |
-| Neural machine translation (NMT) competition winning logs. | Tranining logs of 'lightweight' GAN, proposed in ICLR 2021. | Training logs of Microsoft's "FastSpeech 2: Fast and High-Quality End-to-End Text to Speech". |
+| WNMT | lightweight-GAN |
+|:---:|:---:|
+| ![](docs/source/_static/images/overview/metrics.png?raw=true) | ![](docs/source/_static/images/overview/metrics.png?raw=true) |
+| Neural machine translation (NMT) competition winning logs. | Tranining logs of 'lightweight' GAN, proposed in ICLR 2021. |
 
-# Features
+| FastSpeech 2 | Simple MNIST |
+|:---:|:---:|
+| ![](docs/source/_static/images/overview/metrics.png?raw=true) | ![](docs/source/_static/images/overview/metrics.png?raw=true) |
+| Training logs of Microsoft's "FastSpeech 2: Fast and High-Quality End-to-End Text to Speech". | Simple MNIST training logs |
 
-### Build better ML models faster
+# Why use Aim?
 
-1. Compare 100s of metrics thanks to beautiful visualizations
+### Compare runs easily to build models faster
 
-2. Analyze and finetune hyperparameters
+- Compare, group and aggregate 100s of metrics thanks to beautiful visualizations.
+- Analyze and learn correlations and patterns between hparams and metrics.
+- Easy pythonic search to filter the runs you want to explore.
 
-3. Explore images, including matplotlib plots, using easy search and grouping
+### Deep dive into details of each run for easy debugging
 
-### Deep dive into details of each run for easy comparison
+- Hyperparameters, metrics, images, distributions, audio, text - all available at a glance to understand the performance of your model.
+- Easily track plots built via your favourite visualisation tools, like plotly and matplotlib.
+- Analyze system resource usage to effectively utilize computational resources.
 
-1. Hyperparameters, metrics, system metrics, distributions, audio and text files and figures all available at a glance to understand the performance of your model.
+### Have all relevant information organised and accessible for easy governance
 
-### Have all your information centralized for increased reproducibility
-
-1. One centralized dashboard for all your runs and their metadata
-
-2. Easy pythonic search to select experiments you want to analyze
-
-3. You own your data. Aim is self hosted and you can export your data both from UI and from the SDK 
+- Centralized dashboard to hollistically view all your runs, their hparams and results.
+- Use SDK to query/access all your runs and tracked metadata.
+- You own your data - Aim is open source and self hosted.
 
 # Getting started
 
@@ -273,7 +275,6 @@ The main differences of Aim and MLflow are around the UI scalability and run com
 Hosted vs self-hosted
 - Weights and Biases is a hosted closed-source experiment tracker.
 - Aim is self-hosted free and open-source.
-  - Remote self-hosted Aim is coming soon...
 
 # Roadmap
 
@@ -298,11 +299,11 @@ The high-level features we are going to work on the next few months
   - [x] Plotly integration (Start: _Dec 1 2021_, Shipped: _Dec 17 2021_)
   - [x] Colab integration (Start: _Nov 18 2021_, Shipped: _Dec 17 2021_)
   - [x] Centralized tracking server (Start: _Oct 18 2021_, Shipped: _Jan 22 2022_)
+  - [ ] Tensorboard adaptor - visualize TensorBoard logs with Aim (Start: _Dec 17 2021_)
+  - [ ] Track git info, env vars, CLI arguments, dependencies (Start: _Jan 17 2022_)
 
 ### In progress:
   - [ ] Scikit-learn integration (Start: _Nov 18 2021_)
-  - [ ] Tensorboard adaptor - visualize TensorBoard logs with Aim (Start: _Dec 17 2021_)
-  - [ ] Track git info, env vars, CLI arguments, dependencies (Start: _Jan 17 2022_)
 
 ### TODO:
 
