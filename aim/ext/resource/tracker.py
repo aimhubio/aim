@@ -9,7 +9,7 @@ from aim.ext.resource.configs import AIM_RESOURCE_METRIC_PREFIX
 
 
 class ResourceTracker(object):
-    STAT_INTERVAL_MIN = 1.0
+    STAT_INTERVAL_MIN = 0.1
     STAT_INTERVAL_MAX = 24 * 60 * 60.0
     STAT_INTERVAL_DEFAULT = 60.0
 
