@@ -4,8 +4,7 @@
   justify-content: center;
   align-items: center;
   width: 100%;
-  height: calc(100% - 2.5rem);
-  flex-direction: column;
+  height: calc(100% - 2.5rem); 
   &__title {
     font-size: $text-xl;
     text-align: center;

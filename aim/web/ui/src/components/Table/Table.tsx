@@ -12,9 +12,9 @@ import ResizeModeActions from 'components/ResizeModeActions/ResizeModeActions';
 import ErrorBoundary from 'components/ErrorBoundary/ErrorBoundary';
 
 import {
-  TABLE_DEFAULT_CONFIG,
   ROW_CELL_SIZE_CONFIG,
   RowHeightSize,
+  TABLE_DEFAULT_CONFIG,
 } from 'config/table/tableConfigs';
 
 import useResizeObserver from 'hooks/window/useResizeObserver';
@@ -894,7 +894,7 @@ const Table = React.forwardRef(function Table(
             />
           </div>
         ) : (
-          <IllustrationBlock size='big' content={emptyText} />
+          <IllustrationBlock size='xLarge' content={emptyText} />
         )}
       </BusyLoaderWrapper>
     </ErrorBoundary>

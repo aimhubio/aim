@@ -1,5 +1,5 @@
 import React from 'react';
-import { isEmpty } from 'lodash-es';
+import _ from 'lodash-es';
 
 import ChartPanel from 'components/ChartPanel/ChartPanel';
 // TODO [GA]: MetricsBar is imported as AppBar.
@@ -161,7 +161,7 @@ const Params = ({
             className={`Params__chart__container${
               resizeMode === ResizeModeEnum.MaxHeight
                 ? '__hide'
-                : isEmpty(tableData)
+                : _.isEmpty(tableData)
                 ? '__fullHeight'
                 : ''
             }`}
@@ -196,24 +196,26 @@ const Params = ({
                   }
                 />
               ) : (
-                <IllustrationBlock
-                  size='xLarge'
-                  page='params'
-                  type={
-                    selectFormOptions?.length > 0
-                      ? IllustrationsEnum.ExploreData
-                      : Request_Illustrations[requestStatus]
-                  }
-                />
+                selectFormOptions !== undefined && (
+                  <IllustrationBlock
+                    size='xLarge'
+                    page='params'
+                    type={
+                      selectFormOptions?.length
+                        ? Request_Illustrations[requestStatus]
+                        : IllustrationsEnum.EmptyData
+                    }
+                  />
+                )
               )}
             </BusyLoaderWrapper>
           </div>
           <ResizePanel
             className={`Params__ResizePanel${
-              requestStatus === RequestStatusEnum.Pending ||
-              highPlotData?.[0]?.data?.length
-                ? ''
-                : '__hide'
+              _.isEmpty(tableData) &&
+              requestStatus !== RequestStatusEnum.Pending
+                ? '__hide'
+                : ''
             }`}
             panelResizing={panelResizing}
             resizeElemRef={resizeElemRef}
@@ -223,7 +225,8 @@ const Params = ({
           <div
             ref={tableElemRef}
             className={`Params__table__container${
-              resizeMode === ResizeModeEnum.Hide || isEmpty(tableData)
+              requestStatus !== RequestStatusEnum.Pending &&
+              (resizeMode === ResizeModeEnum.Hide || _.isEmpty(tableData))
                 ? '__hide'
                 : ''
             }`}
@@ -234,7 +237,7 @@ const Params = ({
               height='100%'
               loaderComponent={<TableLoader />}
             >
-              {!isEmpty(tableData) ? (
+              {!_.isEmpty(tableData) ? (
                 <ErrorBoundary>
                   <Table
                     custom

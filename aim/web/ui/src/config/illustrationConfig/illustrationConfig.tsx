@@ -4,7 +4,6 @@ import exploreData from 'assets/illustrations/exploreData.svg';
 import wrongSearch from 'assets/illustrations/wrongSearch.svg';
 
 import CodeBlock from 'components/CodeBlock/CodeBlock';
-import { Text } from 'components/kit';
 
 import { RequestStatusEnum } from 'config/enums/requestStatusEnum';
 

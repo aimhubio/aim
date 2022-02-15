@@ -55,7 +55,7 @@ function RunDetailMetricsAndSystemTab({
           </div>
         ) : (
           <IllustrationBlock
-            size='large'
+            size='xLarge'
             className='runDetailParamsTabLoader'
             content={`No tracked ${isSystem ? 'system' : ''} metrics`}
           />

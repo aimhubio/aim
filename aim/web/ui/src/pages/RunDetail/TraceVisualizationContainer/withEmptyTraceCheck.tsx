@@ -3,6 +3,7 @@ import React from 'react';
 import IllustrationBlock from 'components/IllustrationBlock/IllustrationBlock';
 
 import { ITraceVisualizationContainerProps } from '../types';
+import { IllustrationsEnum } from '../../../config/illustrationConfig/illustrationConfig';
 
 /**
  * Higher order component for trace visualization component
@@ -22,9 +23,10 @@ function withEmptyTraceCheck(
     if (!traces || !traces.length) {
       return (
         <IllustrationBlock
-          size='large'
+          size='xLarge'
           className='TraceEmptyVisualizer'
-          content={emptyText}
+          type={IllustrationsEnum.EmptyData}
+          title={emptyText}
         />
       );
     }

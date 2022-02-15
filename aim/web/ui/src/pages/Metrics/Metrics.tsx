@@ -1,5 +1,5 @@
 import React from 'react';
-import { isEmpty } from 'lodash-es';
+import _ from 'lodash-es';
 
 import Table from 'components/Table/Table';
 import ChartPanel from 'components/ChartPanel/ChartPanel';
@@ -68,9 +68,6 @@ function Metrics(
     props.alignmentConfig,
     props.onZoomChange,
   ]);
-
-  console.log(props.resizeMode);
-
   return (
     <ErrorBoundary>
       <div ref={props.wrapperElemRef} className='Metrics__container'>
@@ -120,15 +117,15 @@ function Metrics(
               className={`Metrics__chart__container${
                 props.resizeMode === ResizeModeEnum.MaxHeight
                   ? '__hide'
-                  : isEmpty(props.tableData)
+                  : _.isEmpty(props.tableData)
                   ? '__fullHeight'
                   : ''
               }`}
             >
               <BusyLoaderWrapper
-                isLoading={props.requestStatus === RequestStatusEnum.Pending}
-                className='Metrics__loader'
                 height='100%'
+                className='Metrics__loader'
+                isLoading={props.requestStatus === RequestStatusEnum.Pending}
                 loaderComponent={<ChartLoader controlsCount={9} />}
               >
                 {!!props.lineChartData?.[0]?.length ? (
@@ -176,14 +173,14 @@ function Metrics(
                     }
                   />
                 ) : (
-                  props.requestStatus !== RequestStatusEnum.Pending && (
+                  props.selectFormOptions !== undefined && (
                     <IllustrationBlock
                       size='xLarge'
                       page='metrics'
                       type={
-                        props.selectFormOptions?.length > 0
-                          ? IllustrationsEnum.ExploreData
-                          : Request_Illustrations[props.requestStatus]
+                        props.selectFormOptions?.length
+                          ? Request_Illustrations[props.requestStatus]
+                          : IllustrationsEnum.EmptyData
                       }
                     />
                   )
@@ -192,10 +189,10 @@ function Metrics(
             </div>
             <ResizePanel
               className={`Metrics__ResizePanel${
-                props.requestStatus === RequestStatusEnum.Pending ||
-                props.lineChartData?.[0]?.length
-                  ? ''
-                  : '__hide'
+                _.isEmpty(props.tableData) &&
+                props.requestStatus !== RequestStatusEnum.Pending
+                  ? '__hide'
+                  : ''
               }`}
               panelResizing={props.panelResizing}
               resizeElemRef={props.resizeElemRef}
@@ -205,8 +202,9 @@ function Metrics(
             <div
               ref={props.tableElemRef}
               className={`Metrics__table__container${
-                props.resizeMode === ResizeModeEnum.Hide ||
-                isEmpty(props.tableData)
+                props.requestStatus !== RequestStatusEnum.Pending &&
+                (props.resizeMode === ResizeModeEnum.Hide ||
+                  _.isEmpty(props.tableData))
                   ? '__hide'
                   : ''
               }`}
@@ -217,7 +215,7 @@ function Metrics(
                 height='100%'
                 loaderComponent={<TableLoader />}
               >
-                {!isEmpty(props.tableData) ? (
+                {!_.isEmpty(props.tableData) ? (
                   <ErrorBoundary>
                     <Table
                       // deletable

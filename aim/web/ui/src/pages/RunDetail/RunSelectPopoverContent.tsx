@@ -144,7 +144,7 @@ function RunSelectPopoverContent({
                     </NavLink>
                   ))
                 ) : (
-                  <IllustrationBlock size='large' content={'No Runs'} />
+                  <IllustrationBlock size='xLarge' content={'No Runs'} />
                 )}
                 {!isEmpty(runsOfExperiment) && isLoadMoreButtonShown && (
                   <div className='RunSelectPopoverWrapper__selectPopoverContent__contentContainer__runsListContainer__runsList__loadMoreButtonWrapper'>

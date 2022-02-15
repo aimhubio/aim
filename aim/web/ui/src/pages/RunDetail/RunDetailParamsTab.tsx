@@ -34,7 +34,7 @@ function RunDetailParamsTab({
           </div>
         ) : (
           <IllustrationBlock
-            size='large'
+            size='xLarge'
             className='runDetailParamsTabLoader'
             content='No Params'
           />

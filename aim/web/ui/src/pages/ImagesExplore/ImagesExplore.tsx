@@ -338,11 +338,10 @@ function ImagesExplore(): React.FunctionComponentElement<React.ReactNode> {
             </div>
             <ResizePanel
               className={`ImagesExplore__ResizePanel${
-                imagesExploreData?.requestStatus ===
-                  RequestStatusEnum.Pending ||
-                !_.isEmpty(imagesExploreData?.imagesData)
-                  ? ''
-                  : '__hide'
+                _.isEmpty(imagesExploreData?.imagesData) &&
+                imagesExploreData?.requestStatus !== RequestStatusEnum.Pending
+                  ? '__hide'
+                  : ''
               }`}
               panelResizing={panelResizing}
               resizeElemRef={resizeElemRef}
@@ -354,9 +353,11 @@ function ImagesExplore(): React.FunctionComponentElement<React.ReactNode> {
             <div
               ref={tableElemRef}
               className={`ImagesExplore__table__container${
-                imagesExploreData?.config?.table.resizeMode ===
+                imagesExploreData?.requestStatus !==
+                  RequestStatusEnum.Pending &&
+                (imagesExploreData?.config?.table.resizeMode ===
                   ResizeModeEnum.Hide ||
-                _.isEmpty(imagesExploreData?.tableData || {})
+                  _.isEmpty(imagesExploreData?.tableData!))
                   ? '__hide'
                   : ''
               }`}

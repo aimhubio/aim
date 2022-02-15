@@ -187,6 +187,7 @@ function createAppModel(appConfig: IAppInitialConfig) {
 
   const model: IModel<IAppModelState> = createModel<IAppModelState>({
     requestStatus: RequestStatusEnum.NotRequested,
+    selectFormOptions: undefined,
     config: getConfig(),
   });
 
@@ -386,6 +387,10 @@ function createAppModel(appConfig: IAppInitialConfig) {
             };
           }
           if (components.charts.indexOf(ChartTypeEnum.ScatterPlot) !== -1) {
+            config.table = {
+              ...config?.table!,
+              resizeMode: TABLE_DEFAULT_CONFIG.scatters.resizeMode,
+            };
             config.chart = {
               focusedState: {
                 key: null,

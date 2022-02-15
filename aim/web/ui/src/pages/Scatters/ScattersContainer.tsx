@@ -1,5 +1,5 @@
 import React from 'react';
-import { useRouteMatch, useHistory } from 'react-router-dom';
+import { useHistory, useRouteMatch } from 'react-router-dom';
 
 import ErrorBoundary from 'components/ErrorBoundary/ErrorBoundary';
 
@@ -107,6 +107,7 @@ function ScattersContainer(): React.FunctionComponentElement<React.ReactNode> {
     };
   }, []);
 
+  console.log(scattersData?.config?.table);
   return (
     <ErrorBoundary>
       <Scatters

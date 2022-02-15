@@ -3,10 +3,10 @@ import React, { memo } from 'react';
 import { Text } from 'components/kit';
 
 import {
-  Illustrations_List,
-  IllustrationsEnum,
   Illustration_Content_Config,
   Illustration_Title_Config,
+  Illustrations_List,
+  IllustrationsEnum,
 } from 'config/illustrationConfig/illustrationConfig';
 
 import { IIllustrationBlockProps } from 'types/components/IllustrationBlock/IllustrationBlock';
@@ -27,23 +27,28 @@ function IllustrationBlock({
   function onImgLoad() {
     setImgLoaded(true);
   }
+
+  console.log(content);
   return (
     <div
       className={`IllustrationBlock ${className} ${
         imgLoaded ? '' : 'IllustrationBlock__hidden'
       }`}
     >
-      <div className={`IllustrationBlock__${size}__img`}>
-        {image || (
-          <img onLoad={onImgLoad} src={Illustrations_List[type]} alt='' />
-        )}
+      <div>
+        <div className={`IllustrationBlock__${size}__img`}>
+          {image || (
+            <img onLoad={onImgLoad} src={Illustrations_List[type]} alt='' />
+          )}
+        </div>
+        <Text
+          component='p'
+          className={`IllustrationBlock__title IllustrationBlock__${size}__title`}
+        >
+          {title || Illustration_Title_Config[page][type]}
+        </Text>
       </div>
-      <Text
-        component='p'
-        className={`IllustrationBlock__title IllustrationBlock__${size}__title`}
-      >
-        {title || Illustration_Title_Config[page][type]}
-      </Text>
+
       {content ? (
         <Text
           component='p'
