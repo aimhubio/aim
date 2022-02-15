@@ -5,6 +5,7 @@
 ### Enhancements:
 
 - Ability to group by metric.context (VkoHov)
+- Tune manage columns items highlighting styles (VkoHov)
 - Add ability to apply active style on table actions popover buttons with applied changes (arsengit)
 - Aim repo runs data automatic indexing (alberttorosyan)
 
