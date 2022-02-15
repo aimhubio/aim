@@ -1,4 +1,5 @@
 # Overview
+
 <div align="center">
 
 <img src="https://user-images.githubusercontent.com/13848158/136364717-0939222c-55b6-44f0-ad32-d9ab749546e4.png" height="70" />
@@ -75,16 +76,6 @@ Use the same pythonic if statement to query the data through the Aim SDK program
     - distributions
 - Aim UI:
   - A self-hosted web interface to deeply explore the tracked metadata
-
-**Integrated with your favorite tools**
-
-<img src="https://user-images.githubusercontent.com/13848158/96861310-f7239c00-1474-11eb-82a4-4fa6eb2c6bb1.jpg" width="70" />
-<img src="https://user-images.githubusercontent.com/13848158/96859323-6ba90b80-1472-11eb-9a6e-c60a90f11396.jpg" width="70" />
-<img src="https://user-images.githubusercontent.com/13848158/96861315-f854c900-1474-11eb-8e9d-c7a07cda8445.jpg" width="70" />
-<img src="https://user-images.githubusercontent.com/13848158/97086626-8b3c6180-1635-11eb-9e90-f215b898e298.png" width="70" />
-<img src="https://user-images.githubusercontent.com/13848158/112145238-8cc58200-8bf3-11eb-8d22-bbdb8809f2aa.png" width="70" />
-<img src="https://user-images.githubusercontent.com/13848158/118172152-17c93880-b43d-11eb-9169-785e4b52d89c.png" width="70" />
-
 ## Comparisons to familiar tools
 
 ### Tensorboard
@@ -125,9 +116,3 @@ Hosted vs self-hosted
 - Weights and Biases is a hosted closed-source experiment tracker.
 - Aim is self-hosted free and open-source.
   - Remote self-hosted Aim is coming soon...
-  
-## Community
-
-If you have questions please:
-1. [Open a feature request or report a bug](https://github.com/aimhubio/aim/issues)
-2. [Join our slack](https://slack.aimstack.io/)

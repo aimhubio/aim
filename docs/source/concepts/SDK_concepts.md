@@ -1,23 +1,23 @@
 ## SDK Concepts
 
 All the functionality in Aim SDK is build around several key concepts. This chapter will give a brief overview of these core
-concepts. For more details please check the [Reference]() section or [Glossary]().
----
-#### Aim Run
+concepts. For more details please check the [Reference](../refs/api/sdk.html) section or [Glossary](./glossary.html).
+**Aim Run**
+
 Run is an abstraction representing the tracked data for a single experiment. Its in memory model is SDK class `aim.Run`.
 It is a core class used in your training script for tracing metrics and objects, as well as storing training hyperparams
 and other data. Run object are queryable and UI provides a rich functionality for exploring runs and browsing single run
 details.
----
 
-#### Aim Repo
+**Aim Repo**
+
 While you do multiple training experiments, multiple runs data stored in a single directory
 called Aim repository (repo for short). You can think of aim repo as an application centralized database.
 SDK provides an in memory model for repo `aim.Repo` class. It is responsible for repository resources management and
 might be used to query and/or iterate over the stored data.
----
 
-#### Run Params
+**Run Params**
+
 Each run has a set of parameters associating with it. This might include the training script hyperparameters,
 dataset information, etc. The Run object provides dictionary-like interface to set and access run params. Run parameters
 are also available in the context of queries. You can set the whole configuration at once with the syntax like this:
@@ -28,18 +28,18 @@ At this moment `Run` supports setting configuration from Python dictionaries and
 Support of popular configuration formats constantly added. You can check the full list in
 [Supported Data types]() section.
 
----
 
-#### Run Sequence
+**Run Sequence**
+
 The sequence is a set of homogeneous ordered objects. In aim sequence must be bound to the Run object. When the value
 is tracked in aim, it is appended to an existing or newly created Sequence object. The entire sequences can be queried
 using aim QL and each sequence can be sliced further down. Sequence object is agnostic to the element type it holds. The way how
 the sequence represented in UI, and the set of additional operations it might have depends on the element type. For example
 Metric is a sequence of scalars. It can be represented as a value chart in UI, and SDK provides methods to convert it to
 `numpy.ndarray`.
----
 
-#### Sequence Context
+**Sequence Context**
+
 The sequence context provides a mechanism to query/group multiple sequences beyond simple string comparison on sequence name.
 Sequences with the same name but with different context can perfectly coexist in the scope of one Run. In other words,
 sequence defined by its Run, name and context. The example usage of this is tracking the same metric 'loss' for different stages
@@ -59,11 +59,10 @@ for i in range(100):
     else:
         aim_run.track(i, name=r'numbers', context={'odds': False})
 ```
----
 
-#### CustomObject
+**CustomObject**
+
 Aim SDK provides capability to track objects beyond simple metrics. This includes images, audio, distribution objects as
 well as interactive charts such as `plotly` or `matplotlib` figure. However, there are multitude of use-cases, and we cannot
 provide implementations for each of them. Instead `CustomObject` provides a simple way to extend existing functionality
 and register objects which can be tracked in the same way as aim built-in types.
----

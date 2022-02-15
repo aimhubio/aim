@@ -1,3 +1,19 @@
+## Converting metadata from other sources 
+
+In order to get most out of Aim UI features it is important to be able to port
+existing metadata for already accomplished experiments. There might be 1000s of those
+tracked with other tools. Though Aim SDK allows to write our own data converters for
+practically any data, it would require knowledge of multiple tools APIs and can be
+a bit tricky to do. Thus aim CLI provides tools for converting metadata.
+
+As of Aim `v3.5.4` the following
+converters supported:
+
+- [TensorFlow events converter](#show-tensorflow-events-in-aim) 
+
+We are working to constantly improve existing converters and implement new ones.
+
+
 ### Show TensorFlow events in Aim 
 
 Aim gives your possibility to convert TensorFlow event files into native format 
@@ -12,8 +28,8 @@ Please note that only the following TF plugins are currently supported
 
 To convert TensorFlow events, `aim convert` command must be run on your log directory.
 
-```commandline
-aim convert tf --logdir ~/tensorflow/logdir
+```shell
+> aim convert tf --logdir ~/tensorflow/logdir
 ```
 
 To make conversion process smooth please ensure that logs directory structure follows conventions below.

@@ -1,4 +1,4 @@
-# Hosting Aim on Kubernetes (K8S)
+## Hosting Aim on Kubernetes (K8S)
 
 Since Aim can run as a local server through FastAPI, it can be deployed to a K8S cluster! Hosting Aim on K8S comes with
 several advantages:
@@ -16,7 +16,7 @@ The following sections illustrate how to deploy and serve Aim on K8S. The sectio
 * a repository that can host Dockerfiles, such as Google Artifact Registry or Dockerhub
 * ability/permissions to provision a `ReadWriteMany` volume, or bind an existing one to a K8S deployment
 
-## Dockerfile
+### Dockerfile
 
 The following Dockerfile image should suffice for getting Aim running in a container:
 
@@ -44,14 +44,14 @@ Assuming you store the above in your current directory, the container can be bui
 using `docker build . -t my-aim-container:1` and pushed to your repository
 with `docker push my-docker-repository.dev/deployments/aim:1`.
 
-## Volume
+### Volume
 
 The core advantage of using a K8S volume to store Aim runs is that other K8S deployments can mount the same volume and
 store their runs on it! This way, the core Aim K8S deployment can read the new runs and display them to users who want
 to visualize their results. For example, one can have a deployment that performs model training and records Aim runs on
 the same volume that is mounted to the Aim deployment! This model is illustrated by the following diagram:
 
-![](./basic_k8s_deployment_vol.png)
+![](../_static/images/guides/integrations/k8s/basic_k8s_deployment_vol.png)
 
 Generally, volumes that support have the `ReadWriteMany` property are manually provisioned, such as Filestore instances
 on Google Cloud or, generally, GlusterFS volumes. Once a disk is provisioned, it can be bound to a persistent volume via
@@ -99,7 +99,7 @@ These can be provisioned via:
 
 Once the volume is provisioned, we can mount it to our deployments!
 
-## Deployment
+### Deployment
 
 The main Aim deployment will have a single container that runs Aim. This deployment will mount the volume that was
 provisioned previously, and the main Aim repository will be initialized at the path the volume is mounted to. For
@@ -159,7 +159,7 @@ This K8S deployment:
   creation, since the repo has to be initialized only once, but it's nice to avoid manual work)
 * starts up the Aim server on port 43800, which reads all the runs stored at `/aim`
 
-## Service
+### Service
 
 Now that a deployment is deployed, the Aim server can be exposed through a K8S service! Depending on your cluster setup,
 you have several options for exposing the deployment. One option is to run:
@@ -190,11 +190,11 @@ The service definition can be applied via:
 > kubectl apply -f aim-svc.yaml
 ```
 
-## Conclusion
+### Conclusion
 
 That's it! Now you have the following structure serving your users' Aim runs:
 
-![](./basic_k8s_deployment_final.png)
+![](../_static/images/guides/integrations/k8s/basic_k8s_deployment_final.png)
 
 Assuming your users can submit a model training run to _some_ pod/deployment that runs model training and has the
 right `aim` code to record a run at path `/aim`, your Aim deployment will be able to display the run the next time it

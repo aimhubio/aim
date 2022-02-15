@@ -1,4 +1,4 @@
-## Integrations
+## Integrate Aim in you training script
 
 Easily integrate Aim with your favorite framework / tool
 
