@@ -31,9 +31,9 @@ def get_structured_run(args: bytes):
         repo = Repo.from_path(repo_path)
     else:
         repo = Repo.default_repo()
-        
+
     kwargs = decode_tree(unpack_args(args))
     hash_ = kwargs['hash_']
     read_only = kwargs['read_only']
-    
+
     return repo.request_props(hash_, read_only)

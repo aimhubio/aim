@@ -85,9 +85,10 @@ class ProxyTree(TreeView):
     ):
         self._rpc_client.run_instruction(self._handler, '__setitem__', (path, value))
 
-    def keys_eager(self,
-                   path: Union[AimObjectKey, AimObjectPath] = (),
-        ) -> List[Union[AimObjectPath, AimObjectKey]]:
+    def keys_eager(
+            self,
+            path: Union[AimObjectKey, AimObjectPath] = (),
+    ) -> List[Union[AimObjectPath, AimObjectKey]]:
         return self._rpc_client.run_instruction(self._handler, 'keys_eager', (path,))
 
     def keys(
