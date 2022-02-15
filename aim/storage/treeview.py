@@ -1,5 +1,3 @@
-from abc import abstractmethod
-
 from aim.storage.types import AimObject, AimObjectKey, AimObjectPath
 
 from typing import TYPE_CHECKING, Any, Iterator, Tuple, Union
@@ -26,7 +24,6 @@ class TreeView:
         # Default to:
         return self.view(path, resolve=False)
 
-    @abstractmethod
     def view(
         self,
         path: Union[AimObjectKey, AimObjectPath],
@@ -34,14 +31,12 @@ class TreeView:
     ):
         ...
 
-    @abstractmethod
     def make_array(
         self,
         path: Union[AimObjectKey, AimObjectPath] = ()
     ):
         ...
 
-    @abstractmethod
     def collect(
         self,
         path: Union[AimObjectKey, AimObjectPath] = (),
@@ -65,14 +60,12 @@ class TreeView:
         except KeyError:
             return default
 
-    @abstractmethod
     def __delitem__(
         self,
         path: Union[AimObjectKey, AimObjectPath]
     ):
         ...
 
-    @abstractmethod
     def set(
         self,
         path: Union[AimObjectKey, AimObjectPath],
@@ -81,7 +74,6 @@ class TreeView:
     ):
         self.__setitem__(path, value)
 
-    @abstractmethod
     def __setitem__(
         self,
         path: Union[AimObjectKey, AimObjectPath],
@@ -89,7 +81,6 @@ class TreeView:
     ):
         self.set(path, value, strict=True)
 
-    @abstractmethod
     def keys(
         self,
         path: Union[AimObjectKey, AimObjectPath] = (),
@@ -97,7 +88,6 @@ class TreeView:
     ) -> Iterator[Union[AimObjectPath, AimObjectKey]]:
         ...
 
-    @abstractmethod
     def items(
         self,
         path: Union[AimObjectKey, AimObjectPath] = ()
@@ -107,32 +97,18 @@ class TreeView:
     ]]:
         ...
 
-    @abstractmethod
-    def iterlevel(
-        self,
-        path: Union[AimObjectKey, AimObjectPath] = (),
-        level: int = 1
-    ) -> Iterator[Tuple[
-        AimObjectPath,
-        AimObject
-    ]]:
-        ...
-
-    @abstractmethod
     def array(
         self,
         path: Union[AimObjectKey, AimObjectPath] = ()
     ) -> 'ArrayView':
         ...
 
-    @abstractmethod
     def first(
         self,
         path: Union[AimObjectKey, AimObjectPath] = ()
     ) -> Tuple[AimObjectKey, AimObject]:
         ...
 
-    @abstractmethod
     def last(
         self,
         path: Union[AimObjectKey, AimObjectPath] = ()
