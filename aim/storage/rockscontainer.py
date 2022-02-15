@@ -45,6 +45,7 @@ class RocksAutoClean(AutoClean):
             if self._db is not None:
                 self._db.flush()
                 self._db.flush_wal()
+                self._db = None
             self._lock.release()
             self._lock = None
         if self._db is not None:
