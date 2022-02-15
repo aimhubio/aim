@@ -246,7 +246,7 @@ class Run(StructuredRunMixin):
                  repo: Optional[Union[str, 'Repo']] = None,
                  read_only: bool = False,
                  experiment: Optional[str] = None,
-                 system_tracking_interval: Optional[int] = DEFAULT_SYSTEM_TRACKING_INT,
+                 system_tracking_interval: Optional[Union[int, float]] = DEFAULT_SYSTEM_TRACKING_INT,
                  log_system_params: Optional[bool] = False):
         self._resources: Optional[RunAutoClean] = None
         run_hash = run_hash or generate_run_hash()
