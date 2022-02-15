@@ -51,7 +51,7 @@
 
 | Track and version ML runs | Visualize runs via beautiful UI | Query runs metadata via SDK |
 |:--------------------:|:------------------------:|:-------------------:|
-| ![](docs/source/_static/images/overview/metrics.png?raw=true) | ![](docs/source/_static/images/overview/metrics.png?raw=true) | ![](docs/source/_static/images/overview/metrics.png?raw=true) |
+| <img src="https://user-images.githubusercontent.com/13848158/154142101-c5d98122-6d7d-4ac9-9d41-dbbbc6a72068.png"> | <img src="https://user-images.githubusercontent.com/13848158/154142081-b29ed57d-85ae-45b0-be87-c6be636afddc.png"> | <img src="https://user-images.githubusercontent.com/13848158/154142097-9c923ffc-8e3e-4a99-8ace-c3dfc7b01a56.png"> |
 
 Aim is an open-source, self-hosted ML experiment tracking tool. Aim is good at tracking lots (1000s) of runs and allowing you to compare them with a performant and beautiful UI.
 
@@ -60,10 +60,10 @@ Aim's mission is to democratize AI dev tools.
 
 # Demos
 
-| WNMT | lightweight-GAN |
+| Machine translation | lightweight-GAN |
 |:---:|:---:|
 | ![](docs/source/_static/images/overview/metrics.png?raw=true) | ![](docs/source/_static/images/overview/metrics.png?raw=true) |
-| Neural machine translation (NMT) competition winning logs. | Tranining logs of 'lightweight' GAN, proposed in ICLR 2021. |
+| WMT'19 competition winning models logs. | Tranining logs of 'lightweight' GAN, proposed in ICLR 2021. |
 
 | FastSpeech 2 | Simple MNIST |
 |:---:|:---:|
