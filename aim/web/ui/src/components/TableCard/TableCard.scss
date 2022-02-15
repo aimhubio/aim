@@ -2,7 +2,9 @@
 
 .TableCard {
   display: flex;
-  justify-content: center;
-  align-items: center;
+  flex-direction: column;
+  padding: toRem(16px) toRem(24px);
+  border: toRem(1px) solid $cuddle;
+  border-radius: toRem(8px);
+  width: 100%;
 }
-  
