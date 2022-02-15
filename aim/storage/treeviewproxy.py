@@ -5,7 +5,7 @@ from aim.storage.treeutils import encode_tree
 from aim.storage.treeview import TreeView
 from aim.storage.types import AimObject, AimObjectKey, AimObjectPath
 
-from typing import TYPE_CHECKING, Iterator, Tuple, Union
+from typing import TYPE_CHECKING, Iterator, Tuple, Union, List
 
 if TYPE_CHECKING:
     from aim.ext.transport.client import Client
@@ -85,12 +85,26 @@ class ProxyTree(TreeView):
     ):
         self._rpc_client.run_instruction(self._handler, '__setitem__', (path, value))
 
+    def keys_eager(self,
+                   path: Union[AimObjectKey, AimObjectPath] = (),
+        ) -> List[Union[AimObjectPath, AimObjectKey]]:
+        return self._rpc_client.run_instruction(self._handler, 'keys_eager', (path,))
+
     def keys(
         self,
         path: Union[AimObjectKey, AimObjectPath] = (),
         level: int = None
-    ) -> Iterator[Union[AimObjectPath, AimObjectKey]]:
-        return self._rpc_client.run_instruction(self._handler, 'keys', (path, level))
+    ) -> List[Union[AimObjectPath, AimObjectKey]]:
+        return self.keys_eager(path)
+
+    def items_eager(
+            self,
+            path: Union[AimObjectKey, AimObjectPath] = ()
+    ) -> List[Tuple[
+        AimObjectKey,
+        AimObject
+    ]]:
+        return self._rpc_client.run_instruction(self._handler, 'items_eager', (path,))
 
     def items(
         self,
@@ -99,7 +113,7 @@ class ProxyTree(TreeView):
         AimObjectKey,
         AimObject
     ]]:
-        return self._rpc_client.run_instruction(self._handler, 'items', (path,))
+        return self.items_eager(path)
 
     def iterlevel(
         self,

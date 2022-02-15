@@ -5,7 +5,7 @@ from aim.storage.types import AimObject, AimObjectKey, AimObjectPath
 from aim.storage.arrayview import TreeArrayView
 from aim.storage.treeview import TreeView
 
-from typing import Iterator, Tuple, Union
+from typing import Iterator, Tuple, Union, List
 
 
 class InMemoryTreeView(TreeView):
@@ -101,6 +101,12 @@ class InMemoryTreeView(TreeView):
 
         container[last_key] = deepcopy(value) if self._constructed else value
 
+    def keys_eager(
+            self,
+            path: Union[AimObjectKey, AimObjectPath] = (),
+    ) -> List[Union[AimObjectPath, AimObjectKey]]:
+        return list(self.subtree(path).keys())
+
     def keys(
         self,
         path: Union[AimObjectKey, AimObjectPath] = (),
@@ -113,6 +119,15 @@ class InMemoryTreeView(TreeView):
             container = container[key]
         for key in container.keys():
             yield key
+
+    def items_eager(
+            self,
+            path: Union[AimObjectKey, AimObjectPath] = ()
+    ) -> List[Tuple[
+        AimObjectKey,
+        AimObject
+    ]]:
+        return list(self.subtree(path).items())
 
     def items(
         self,

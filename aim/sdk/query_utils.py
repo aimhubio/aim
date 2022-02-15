@@ -7,6 +7,7 @@ from aim.storage.proxy import AimObjectProxy
 from aim.storage.structured.entities import StructuredObject
 from aim.storage.treeview import TreeView
 from aim.storage.types import AimObject, AimObjectKey, AimObjectPath, SafeNone
+from aim.storage.structured.sql_engine.entities import ModelMappedRun
 
 if TYPE_CHECKING:
     from aim.sdk.run import Run
@@ -17,9 +18,10 @@ class RunView:
     def __init__(self, run: 'Run'):
         self.db = run.repo.structured_db
         self.hash = run.hash
-        self.structured_run_cls: type(StructuredObject) = self.db.run_cls()
+        self.structured_run_cls: type(StructuredObject) = ModelMappedRun
         self.meta_run_tree: TreeView = run.meta_run_tree
         self.meta_run_attrs_tree: TreeView = run.meta_run_attrs_tree
+        self.run = run
 
     def __getattr__(self, item):
         if item in ['finalized_at', 'end_time']:
@@ -29,7 +31,10 @@ class RunView:
             else:
                 return end_time
         elif item in self.structured_run_cls.fields():
-            return getattr(self.db.caches['runs_cache'][self.hash], item)
+            if self.db:
+                return getattr(self.db.caches['runs_cache'][self.hash], item)
+            else:
+                return getattr(self.run, item)
         else:
             return self[item]
 

@@ -2,7 +2,7 @@ from abc import abstractmethod
 
 from aim.storage.types import AimObject, AimObjectKey, AimObjectPath
 
-from typing import TYPE_CHECKING, Any, Iterator, Tuple, Union
+from typing import TYPE_CHECKING, Any, Iterator, Tuple, Union, List
 
 if TYPE_CHECKING:
     from aim.storage.arrayview import ArrayView
@@ -90,11 +90,28 @@ class TreeView:
         self.set(path, value, strict=True)
 
     @abstractmethod
+    def keys_eager(
+            self,
+            path: Union[AimObjectKey, AimObjectPath] = (),
+    ) -> List[Union[AimObjectPath, AimObjectKey]]:
+        ...
+
+    @abstractmethod
     def keys(
         self,
         path: Union[AimObjectKey, AimObjectPath] = (),
         level: int = None
     ) -> Iterator[Union[AimObjectPath, AimObjectKey]]:
+        ...
+
+    @abstractmethod
+    def items_eager(
+            self,
+            path: Union[AimObjectKey, AimObjectPath] = ()
+    ) -> List[Tuple[
+        AimObjectKey,
+        AimObject
+    ]]:
         ...
 
     @abstractmethod
