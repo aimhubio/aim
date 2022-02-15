@@ -3,8 +3,6 @@ import emptySearch from 'assets/illustrations/emptySearch.svg';
 import exploreData from 'assets/illustrations/exploreData.svg';
 import wrongSearch from 'assets/illustrations/wrongSearch.svg';
 
-import CodeBlock from 'components/CodeBlock/CodeBlock';
-
 import { RequestStatusEnum } from 'config/enums/requestStatusEnum';
 
 enum IllustrationsEnum {
@@ -39,10 +37,7 @@ const Illustration_Title_Config: { [key: string]: object | any } = {
     [IllustrationsEnum.EmptySearch]: 'No Results Found',
     [IllustrationsEnum.ExploreData]: 'Explore Data',
     [IllustrationsEnum.EmptyData]: (
-      <span>
-        You don’t have any tacked metrics. <br /> Use this code for track your
-        training runs
-      </span>
+      <span>You don’t have any tacked metrics.</span>
     ),
   },
   params: {
@@ -50,10 +45,7 @@ const Illustration_Title_Config: { [key: string]: object | any } = {
     [IllustrationsEnum.EmptySearch]: 'No Results Found',
     [IllustrationsEnum.ExploreData]: 'Explore Data',
     [IllustrationsEnum.EmptyData]: (
-      <span>
-        You don’t have any tacked metrics. <br /> Use this code for track your
-        training runs
-      </span>
+      <span>You don’t have any tracked metrics.</span>
     ),
   },
   image: {
@@ -61,10 +53,7 @@ const Illustration_Title_Config: { [key: string]: object | any } = {
     [IllustrationsEnum.EmptySearch]: 'Empty Search',
     [IllustrationsEnum.ExploreData]: 'Explore Data',
     [IllustrationsEnum.EmptyData]: (
-      <span>
-        You don’t have any tacked metrics. <br /> Use this code for track your
-        training runs
-      </span>
+      <span>You don’t have any tracked metrics.</span>
     ),
   },
   scatters: {
@@ -72,10 +61,7 @@ const Illustration_Title_Config: { [key: string]: object | any } = {
     [IllustrationsEnum.EmptySearch]: 'Empty Search',
     [IllustrationsEnum.ExploreData]: 'Explore Data',
     [IllustrationsEnum.EmptyData]: (
-      <span>
-        You don’t have any tacked metrics. <br /> Use this code for track your
-        training runs
-      </span>
+      <span>You don’t have any tracked metrics.</span>
     ),
   },
   bookmarks: {
@@ -89,76 +75,80 @@ const Illustration_Content_Config: { [key: string]: object | any } = {
     [IllustrationsEnum.EmptyData]: '',
   },
   metrics: {
-    [IllustrationsEnum.EmptyData]: (
-      <CodeBlock
-        code={`run_inst = aim.Run(experiment='my_exp_name')
-
-# Save inputs, hparams or any other \`key: value\` pairs
-run_inst['hparams'] = {
-    'learning_rate': 0.01,
-    'batch_size': 32,
-}
-
-# Track metrics
-for step in range(10):
-    run_inst.track(metric_value, name='metric_name', epoch=epoch_number)
-`}
-      />
-    ),
+    [IllustrationsEnum.EmptyData]: '',
+    //     (
+    //     <CodeBlock
+    //       code={`run_inst = aim.Run(experiment='my_exp_name')
+    //
+    // # Save inputs, hparams or any other \`key: value\` pairs
+    // run_inst['hparams'] = {
+    //     'learning_rate': 0.01,
+    //     'batch_size': 32,
+    // }
+    //
+    // # Track metrics
+    // for step in range(10):
+    //     run_inst.track(metric_value, name='metric_name', epoch=epoch_number)
+    // `}
+    //     />
+    //   ),
   },
   params: {
-    [IllustrationsEnum.EmptyData]: (
-      <CodeBlock
-        code={`run_inst = aim.Run(experiment='my_exp_name')
-
-# Save inputs, hparams or any other \`key: value\` pairs
-run_inst['hparams'] = {
-    'learning_rate': 0.01,
-    'batch_size': 32,
-}
-
-# Track metrics
-for step in range(10):
-    run_inst.track(metric_value, name='metric_name', epoch=epoch_number)
-`}
-      />
-    ),
+    [IllustrationsEnum.EmptyData]: '',
+    //       (
+    //       <CodeBlock
+    //         code={`run_inst = aim.Run(experiment='my_exp_name')
+    //
+    // # Save inputs, hparams or any other \`key: value\` pairs
+    // run_inst['hparams'] = {
+    //     'learning_rate': 0.01,
+    //     'batch_size': 32,
+    // }
+    //
+    // # Track metrics
+    // for step in range(10):
+    //     run_inst.track(metric_value, name='metric_name', epoch=epoch_number)
+    // `}
+    //       />
+    //     ),
   },
   image: {
-    [IllustrationsEnum.EmptyData]: (
-      <CodeBlock
-        code={`run_inst = aim.Run(experiment='my_exp_name')
-
-# Save inputs, hparams or any other \`key: value\` pairs
-run_inst['hparams'] = {
-    'learning_rate': 0.01,
-    'batch_size': 32,
-}
-
-# Track metrics
-for step in range(10):
-    run_inst.track(metric_value, name='metric_name', epoch=epoch_number)
-`}
-      />
-    ),
+    [IllustrationsEnum.EmptyData]: '',
+    //       (
+    //       <CodeBlock
+    //         code={`run_inst = aim.Run(experiment='my_exp_name')
+    //
+    // # Save inputs, hparams or any other \`key: value\` pairs
+    // run_inst['hparams'] = {
+    //     'learning_rate': 0.01,
+    //     'batch_size': 32,
+    // }
+    //
+    // # Track metrics
+    // for step in range(10):
+    //     run_inst.track(metric_value, name='metric_name', epoch=epoch_number)
+    // `}
+    //       />
+    //     ),
   },
   scatters: {
-    [IllustrationsEnum.EmptyData]: (
-      <CodeBlock
-        code={`run_inst = aim.Run(experiment='my_exp_name')
-
-# Save inputs, hparams or any other \`key: value\` pairs
-run_inst['hparams'] = {
-    'learning_rate': 0.01,
-    'batch_size': 32,
-}
-
-# Track metrics
-for step in range(10):
-    run_inst.track(metric_value, name='metric_name', epoch=epoch_number)
-`}
-      />
-    ),
+    [IllustrationsEnum.EmptyData]: '',
+    //       (
+    //       <CodeBlock
+    //         code={`run_inst = aim.Run(experiment='my_exp_name')
+    //
+    // # Save inputs, hparams or any other \`key: value\` pairs
+    // run_inst['hparams'] = {
+    //     'learning_rate': 0.01,
+    //     'batch_size': 32,
+    // }
+    //
+    // # Track metrics
+    // for step in range(10):
+    //     run_inst.track(metric_value, name='metric_name', epoch=epoch_number)
+    // `}
+    //       />
+    //     ),
   },
   bookmarks: {},
   tags: {},
