@@ -11,6 +11,7 @@
 ### Fixes: 
 
 - Fix system metric columns pinning functionality and grouping column order (arsengit)
+- Fix system metrics search in manage columns popover (VkoHov)
 
 
 ## 3.5.3 Feb 11 2022

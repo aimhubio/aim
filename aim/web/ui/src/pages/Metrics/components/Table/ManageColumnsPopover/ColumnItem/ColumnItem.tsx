@@ -11,17 +11,28 @@ import { formatSystemMetricName } from 'utils/formatSystemMetricName';
 import './ColumnItem.scss';
 
 function ColumnItem(props: any) {
+  function isHighlighted() {
+    const data = isSystemMetric(props.data)
+      ? formatSystemMetricName(props.data)
+      : props.data;
+    if (
+      props.hasSearchableItems &&
+      !!props.searchKey &&
+      props.searchKey.trim() !== '' &&
+      data.toLowerCase().includes(props.searchKey.toLowerCase())
+    ) {
+      return true;
+    }
+    return false;
+  }
+
   return (
     <ErrorBoundary>
       <Draggable draggableId={props.data} index={props.index}>
         {(provided) => (
           <div
             className={classNames('ColumnItem', {
-              highlighted:
-                props.hasSearchableItems &&
-                !!props.searchKey &&
-                props.searchKey.trim() !== '' &&
-                props.data.includes(props.searchKey),
+              highlighted: isHighlighted(),
             })}
             {...provided.draggableProps}
             ref={provided.innerRef}
