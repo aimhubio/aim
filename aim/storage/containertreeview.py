@@ -5,7 +5,7 @@ from aim.storage.types import AimObject, AimObjectKey, AimObjectPath
 from aim.storage.utils import ArrayFlag, CustomObjectFlagType
 from aim.storage.container import Container
 from aim.storage import treeutils
-from aim.storage.arrayview import TreeArrayView
+from aim.storage.treearrayview import TreeArrayView
 
 from typing import Iterator, Tuple, Union
 
