@@ -232,7 +232,7 @@ function drawAxes(args: IDrawAxesArgs): void {
     return yAxis;
   }
 
-  function drawYAxis(yScale: IAxisScale) {
+  function drawYAxis(yScale: IAxisScale): void {
     axesNodeRef.current?.select('.yAxis')?.remove();
 
     const yAxis = getFormattedYAxis(yScale);
@@ -261,7 +261,7 @@ function drawAxes(args: IDrawAxesArgs): void {
       .attr('x1', '-6');
   }
 
-  function drawXAxis(xScale: IAxisScale) {
+  function drawXAxis(xScale: IAxisScale): void {
     axesNodeRef.current?.select('.xAxis')?.remove();
 
     const { xAlignmentText, xAxis } = getFormattedXAxis(xScale);

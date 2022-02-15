@@ -1571,7 +1571,7 @@ function createAppModel(appConfig: IAppInitialConfig) {
       const blob = new Blob([JsonToCSV(dataToExport)], {
         type: 'text/csv;charset=utf-8;',
       });
-      saveAs(blob, `${appName}-${moment().format('HH_mm_ss · D MMM, YY')}.csv`);
+      saveAs(blob, `${appName}-${moment().format('HH_mm_ss-D-MMM-YY')}.csv`);
       analytics.trackEvent(`[${appName}Explore] Export runs data to CSV`);
     }
 
@@ -2786,7 +2786,7 @@ function createAppModel(appConfig: IAppInitialConfig) {
         const blob = new Blob([JsonToCSV(dataToExport)], {
           type: 'text/csv;charset=utf-8;',
         });
-        saveAs(blob, `runs-${moment().format('HH_mm_ss · D MMM, YY')}.csv`);
+        saveAs(blob, `runs-${moment().format('HH_mm_ss-D-MMM-YY')}.csv`);
         analytics.trackEvent(
           `[${appName}Explore][Table] Export runs data to CSV`,
         );
@@ -3962,7 +3962,7 @@ function createAppModel(appConfig: IAppInitialConfig) {
         const blob = new Blob([JsonToCSV(dataToExport)], {
           type: 'text/csv;charset=utf-8;',
         });
-        saveAs(blob, `params-${moment().format('HH_mm_ss · D MMM, YY')}.csv`);
+        saveAs(blob, `params-${moment().format('HH_mm_ss-D-MMM-YY')}.csv`);
         analytics.trackEvent('[ParamsExplorer] Export runs data to CSV');
       }
 
@@ -5304,14 +5304,10 @@ function createAppModel(appConfig: IAppInitialConfig) {
             }
           },
         );
-
         const blob = new Blob([JsonToCSV(dataToExport)], {
           type: 'text/csv;charset=utf-8;',
         });
-        saveAs(
-          blob,
-          `${appName}-${moment().format('HH:mm:ss · D MMM, YY')}.csv`,
-        );
+        saveAs(blob, `${appName}-${moment().format('HH_mm_ss-D-MMM-YY')}.csv`);
         analytics.trackEvent(`[${appName}Explorer] Export runs data to CSV`);
       }
 

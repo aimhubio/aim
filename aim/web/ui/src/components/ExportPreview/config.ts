@@ -2,12 +2,12 @@ import { IPreviewBounds } from './ExportPreview.d';
 
 const previewBounds: IPreviewBounds = {
   max: {
-    width: 2000,
+    width: 4000,
     height: 2000,
   },
   min: {
-    width: 220,
-    height: 220,
+    width: 200,
+    height: 110,
   },
 };
 

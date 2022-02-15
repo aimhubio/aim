@@ -102,34 +102,40 @@ function drawParallelArea(args: IDrawAreaArgs): void {
   const titleText = keys
     ? `${keys.map((key) => `${key}=${chartTitle[key]}`).join(', ')}`
     : '';
-  const titleXAttr = margin.left / 6;
-  const titleFontSize = '11px';
+  const titleStyle = {
+    x: margin.left / 6,
+    fontSize: 11,
+    fontFamily: 'Inter, sans-serif',
+    fontWeight: 400,
+  };
   const textEllipsis = toTextEllipsis({
     text: titleText,
-    width: width - margin.left,
-    fontSize: titleFontSize,
+    width: titleStyle.x + offsetWidth,
+    fontSize: `${titleStyle.fontSize}px`,
+    fontFamily: titleStyle.fontFamily,
+    fontWeight: titleStyle.fontWeight,
   });
-
   if (titleText) {
     const titleGroup = svgNodeRef.current
       .append('g')
-      .attr('transform', `translate(${titleXAttr}, 3)`)
-      .attr('font-size', titleFontSize);
+      .attr('transform', `translate(${titleStyle.x}, 3)`)
+      .attr('font-size', `${titleStyle.fontSize}px`)
+      .attr('font-weight', titleStyle.fontWeight)
+      .attr('font-family', titleStyle.fontFamily);
 
-    const chartIndex = titleGroup
+    titleGroup
       .append('text')
       .attr('x', 0)
       .attr('y', 12)
       .attr('fill', '#484f56')
-      .style('outline', '1px solid #e8e8e8')
-      .text(`${index + 1}`);
-
-    chartIndex.append('tspan').text('[ ').attr('fill', 'none').lower();
-    chartIndex.append('tspan').text(' ]').attr('fill', 'none').raise();
+      .style('outline', '0.8px solid #dee6f3')
+      .style('border-radius', '1px')
+      .style('white-space', 'pre')
+      .text(`  ${index + 1}  `);
 
     titleGroup
       .append('text')
-      .attr('x', titleXAttr + 39)
+      .attr('x', titleStyle.x + 39)
       .attr('y', 12)
       .attr('fill', '#484f56')
       .text(textEllipsis)

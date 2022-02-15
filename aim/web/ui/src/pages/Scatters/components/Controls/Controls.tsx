@@ -132,6 +132,7 @@ function Controls(
             <ExportPreview
               withDynamicDimensions
               openModal={openExportModal}
+              imageName='scatters'
               onToggleExportPreview={onToggleExportPreview}
             >
               <ChartGrid

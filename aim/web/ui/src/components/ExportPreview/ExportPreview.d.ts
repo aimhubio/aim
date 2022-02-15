@@ -4,6 +4,7 @@ export interface IExportPreviewProps {
   openModal: boolean;
   onToggleExportPreview: () => void;
   withDynamicDimensions?: boolean;
+  imageName?: string;
   children?: React.ReactNode;
 }
 

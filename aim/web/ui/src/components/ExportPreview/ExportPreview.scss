@@ -1,6 +1,14 @@
 @use 'src/styles/abstracts' as *;
 
 .ExportPreview {
+  .ChartGrid {
+    height: 100%;
+    margin: 0;
+    padding: 0;
+    box-shadow: none;
+    border: none;
+    outline: none;
+  }
   &__modal {
     & > .Modal {
       overflow: hidden;
@@ -18,8 +26,9 @@
   }
   &__container {
     overflow: auto;
-    border-radius: 0.5rem;
-    border: 1px solid #bdcee8;
+    margin: toRem(1px);
+    border-radius: $border-radius-lg;
+    box-shadow: 0 0 0 toRem(1px) $cuddle;
     &__grid {
       height: 100%;
       margin: 0;
@@ -28,63 +37,58 @@
   &__controls {
     display: flex;
     align-items: center;
-    margin-top: 1.5rem;
+    margin-top: $space-lg;
     flex-wrap: wrap;
-    // TODO[improve chart grid pattern] dynamic changing image dimension
-    //& .MuiDivider-vertical {
-    //  width: 1px;
-    //  height: toRem(32px);
-    //  margin: 0 24px;
-    //}
-    //&__dimension {
-    //  display: inline-flex;
-    //  justify-content: center;
-    //  align-items: center;
-    //  &__width {
-    //    margin-right: 28px;
-    //    display: inline-flex;
-    //    align-items: center;
-    //    &__slider {
-    //      width: toRem(136px);
-    //      margin: 0 $space-xs;
-    //    }
-    //    &__input {
-    //      & > .MuiInputBase-root {
-    //        font-size: 0.75rem;
-    //      }
-    //    }
-    //    .InputWrapper {
-    //      width: toRem(85px);
-    //    }
-    //  }
-    //  &__height {
-    //    display: inline-flex;
-    //    align-items: center;
-    //    &__slider {
-    //      width: toRem(136px);
-    //      height: 20px;
-    //      margin: 0 $space-xs;
-    //    }
-    //    &__input {
-    //      & > .MuiInputBase-root {
-    //        font-size: 0.75rem;
-    //      }
-    //    }
-    //    .InputWrapper {
-    //      width: toRem(85px);
-    //    }
-    //  }
-    //}
+    &__dimension {
+      display: inline-flex;
+      justify-content: center;
+      align-items: center;
+      &__width {
+        margin-right: $space-sm;
+        display: inline-flex;
+        align-items: center;
+        &__slider {
+          width: toRem(100px);
+          margin: 0 $space-sm 0 $space-xs;
+        }
+        &__input {
+          & > .MuiInputBase-root {
+            font-size: 0.75rem;
+          }
+        }
+        .InputWrapper {
+          width: toRem(85px);
+        }
+      }
+      &__height {
+        margin-right: $space-sm;
+        display: inline-flex;
+        align-items: center;
+        &__slider {
+          width: toRem(100px);
+          height: 20px;
+          margin: 0 $space-sm 0 $space-xs;
+        }
+        &__input {
+          & > .MuiInputBase-root {
+            font-size: 0.75rem;
+          }
+        }
+        .InputWrapper {
+          width: toRem(85px);
+        }
+      }
+    }
     &__formatDropdown {
-      width: toRem(100px);
+      width: toRem(97px);
       display: inline-block;
     }
     &__nameInput{
       display: inline-block;
-      margin-right: toRem(10px);
+      margin-right: $space-xs;
       margin-left: auto;
       & .MuiTextField-root {
-        width: toRem(242px);
+        width: toRem(224px);
       }
     }
   }
