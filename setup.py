@@ -173,8 +173,18 @@ setup(
             language='c++'
         ),
         Extension(
-            'aim.storage.treeutils_',
-            ['aim/storage/treeutils_.pyx'],
+            'aim.storage.treeutils',
+            ['aim/storage/treeutils.pyx'],
+            language='c++'
+        ),
+        Extension(
+            'aim.storage.rockscontainer',
+            ['aim/storage/rockscontainer.pyx'],
+            language='c++'
+        ),
+        Extension(
+            'aim.storage.union',
+            ['aim/storage/union.pyx'],
             language='c++'
         )
     ]),
