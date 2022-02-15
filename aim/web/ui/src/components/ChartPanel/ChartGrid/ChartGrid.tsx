@@ -3,10 +3,9 @@ import React from 'react';
 import { Grid, GridSize } from '@material-ui/core';
 
 import ErrorBoundary from 'components/ErrorBoundary/ErrorBoundary';
+import { chartTypesConfig } from 'components/ChartPanel/config';
 
 import chartGridPattern from 'config/chart-grid-pattern/chartGridPattern';
-
-import { chartTypesConfig } from '../config';
 
 import { IChartGridProps } from './ChartGrid.d';
 

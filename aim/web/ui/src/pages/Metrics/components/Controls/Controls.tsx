@@ -432,7 +432,7 @@ function Controls(
             <ExportPreview
               withDynamicDimensions
               openModal={openExportModal}
-              imageName='metrics'
+              fileNameContext='metrics'
               onToggleExportPreview={onToggleExportPreview}
             >
               <ChartGrid

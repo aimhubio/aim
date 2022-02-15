@@ -128,17 +128,17 @@ const HighPlot = React.forwardRef(function HighPlot(
           axesNodeRef,
           syncHoverState,
         });
-
-        drawParallelAxesBrush({
-          plotBoxRef,
-          plotNodeRef,
-          brushRef,
-          linesRef,
-          attributesRef,
-          dimensions: data.dimensions,
-          data: data.data,
-        });
       }
+
+      drawParallelAxesBrush({
+        plotBoxRef,
+        plotNodeRef,
+        brushRef,
+        linesRef,
+        attributesRef,
+        dimensions: data.dimensions,
+        data: data.data,
+      });
     }
 
     // eslint-disable-next-line react-hooks/exhaustive-deps

@@ -98,14 +98,6 @@
     opacity: 0.2;
   }
 
-  .yAxis,
-  .xAxis {
-    .domain {
-      stroke: $text-color;
-      stroke-width: 0.4;
-    }
-  }
-
   .RegressionLine {
     stroke-width: 2.2;
     opacity: 1;

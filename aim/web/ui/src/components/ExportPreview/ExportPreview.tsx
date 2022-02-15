@@ -17,7 +17,7 @@ function ExportPreview({
   openModal,
   onToggleExportPreview,
   withDynamicDimensions = false,
-  imageName = 'image',
+  fileNameContext = 'name',
   children,
 }: IExportPreviewProps): React.FunctionComponentElement<React.ReactNode> {
   const containerRef = React.useRef<HTMLDivElement>(null);
@@ -29,11 +29,9 @@ function ExportPreview({
     previewModalDimension,
   );
   const [format, setFormat] = React.useState<FormatEnum>(FormatEnum.SVG);
-  const [imgName, setImgName] = React.useState<string>(
-    `${imageName}-${moment().format('HH_mm_ss-D-MMM-YY')}`,
+  const [fileName, setFileName] = React.useState<string>(
+    `${fileNameContext}-${moment().format('HH_mm_ss-D-MMM-YY')}`,
   );
-  const [isImageSizeValid, setIsImageSizeValid] =
-    React.useState<boolean>(false);
   const [isImageWidthValid, setIsImageWidthValid] =
     React.useState<boolean>(false);
   const [isImageHeightValid, setIsImageHeightValid] =
@@ -89,8 +87,8 @@ function ExportPreview({
         }
         const rect = clearedSvgElement.querySelector('rect');
         if (rect && format !== FormatEnum.PNG) {
-          clearedSvgElement.style.fill = 'white';
           clearedSvgElement.style.backgroundColor = 'white';
+          clearedSvgElement.style.fill = 'white';
           rect.style.fill = 'white';
         }
         wrapper.appendChild(clearedSvgElement);
@@ -112,7 +110,7 @@ function ExportPreview({
           btoa(unescape(encodeURIComponent(svgString))); // Convert SVG string to data URL
         switch (format) {
           case FormatEnum.SVG:
-            downloadLink(imgSrc, imgName || 'name');
+            downloadLink(imgSrc, fileName || 'name');
             break;
           default:
             imgSource2Image({
@@ -122,7 +120,7 @@ function ExportPreview({
               format,
               callback: (blob) => {
                 const src = URL.createObjectURL(blob);
-                downloadLink(src, imgName || 'name');
+                downloadLink(src, fileName || 'name');
               },
             });
         }
@@ -132,7 +130,7 @@ function ExportPreview({
         setProcessing(false);
       }
     }
-  }, [format, getSVGWrapper, imgName]);
+  }, [format, getSVGWrapper, fileName]);
 
   const formatOptions = React.useMemo(
     () =>
@@ -184,10 +182,6 @@ function ExportPreview({
     [],
   );
 
-  React.useEffect(() => {
-    setIsImageSizeValid(isImageWidthValid && isImageHeightValid);
-  }, [isImageWidthValid, isImageHeightValid]);
-
   return (
     <ErrorBoundary>
       <Modal
@@ -197,7 +191,9 @@ function ExportPreview({
         withoutTitleIcon
         maxWidth={false}
         okButtonText='Download'
-        isOkButtonDisabled={processing}
+        isOkButtonDisabled={
+          processing || !(isImageWidthValid && isImageHeightValid)
+        }
         onClose={onToggleExportPreview}
         onOk={onExportImage}
         classes={{ paper: 'ExportPreview__modal' }}
@@ -291,9 +287,9 @@ function ExportPreview({
             labelAppearance='swap'
             wrapperClassName='ExportPreview__controls__nameInput'
             placeholder='name'
-            value={imgName}
+            value={fileName}
             onChange={(e, value) => {
-              setImgName(value);
+              setFileName(value);
             }}
           />
           <Dropdown

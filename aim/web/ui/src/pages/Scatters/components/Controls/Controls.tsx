@@ -130,9 +130,9 @@ function Controls(
           </Tooltip>
           {openExportModal && (
             <ExportPreview
-              withDynamicDimensions
               openModal={openExportModal}
-              imageName='scatters'
+              withDynamicDimensions
+              fileNameContext='scatters'
               onToggleExportPreview={onToggleExportPreview}
             >
               <ChartGrid
