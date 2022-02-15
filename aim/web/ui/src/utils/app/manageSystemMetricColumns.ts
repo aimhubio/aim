@@ -13,6 +13,7 @@ export default function manageSystemMetricColumns<M extends State>(
   let hiddenColumns: string[] = [...modelState!.config!.table.hiddenColumns!];
   if (
     hiddenColumns.length === 0 &&
+    systemMetrics.length > 0 &&
     modelState!.config!.table.hideSystemMetrics
   ) {
     hiddenColumns = systemMetrics;

@@ -1,11 +1,27 @@
 # Changelog
 
-##Unreleased
+## Unreleased
 
-### Fixes 
+### Enhancements:
+
+- Ability to group by metric.context (VkoHov)
+- Add ability to apply active style on table actions popover buttons with applied changes (arsengit)
+- Aim repo runs data automatic indexing (alberttorosyan)
+
+### Fixes: 
 
 - Add repo lock/release feature (devfox-se)
 - Fix system metric columns pinning functionality and grouping column order (arsengit)
+
+
+## 3.5.3 Feb 11 2022
+
+- Fix rendering issue in runs explorer page (arsengit)
+
+## 3.5.2 Feb 10 2022
+
+- Fix issue with displaying current day activity cell on week's first day (rubenaprikyan)
+- Fix issue with filtering options while typing in input of autocomplete in Tooltip and Grouping popovers (rubenaprikyan)
 
 ## 3.5.1 Feb 4 2022
 

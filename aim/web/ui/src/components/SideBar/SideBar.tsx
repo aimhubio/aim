@@ -11,6 +11,7 @@ import ErrorBoundary from 'components/ErrorBoundary/ErrorBoundary';
 
 import { PathEnum } from 'config/enums/routesEnum';
 import { AIM_VERSION } from 'config/config';
+import { ANALYTICS_EVENT_KEYS } from 'config/analytics/analyticsKeysMap';
 
 import routes, { IRoute } from 'routes/routes';
 
@@ -106,7 +107,7 @@ function SideBar(): React.FunctionComponentElement<React.ReactNode> {
                 href='https://slack.aimstack.io'
                 rel='noreferrer'
                 className='Sidebar__bottom__anchor'
-                onClick={() => trackEvent('[Sidebar] go to slack')}
+                onClick={() => trackEvent(ANALYTICS_EVENT_KEYS.sidebar.slack)}
               >
                 <Icon name='slack' />
               </a>
@@ -117,7 +118,7 @@ function SideBar(): React.FunctionComponentElement<React.ReactNode> {
                 href='https://aimstack.readthedocs.io'
                 rel='noreferrer'
                 className='Sidebar__bottom__anchor'
-                onClick={() => trackEvent('[Sidebar] go to documentation')}
+                onClick={() => trackEvent(ANALYTICS_EVENT_KEYS.sidebar.docs)}
               >
                 <Icon name='full-docs' />
               </a>
