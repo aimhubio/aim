@@ -77,7 +77,7 @@ class RunAutoClean(AutoClean['Run']):
         self.meta_run_tree['end_time'] = datetime.datetime.now(pytz.utc).timestamp()
         try:
             timeout = os.getenv(AIM_RUN_INDEXING_TIMEOUT, 2 * 60)
-            index = self.repo._get_index_tree('meta', timeout=timeout).view(b'')
+            index = self.repo._get_index_tree('meta', timeout=timeout).view(())
             logger.debug(f'Indexing Run {self.hash}...')
             self.meta_run_tree.finalize(index=index)
         except TimeoutError:
