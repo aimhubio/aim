@@ -5,7 +5,6 @@ import { Grid } from '@material-ui/core';
 
 import { Text } from 'components/kit';
 import ErrorBoundary from 'components/ErrorBoundary/ErrorBoundary';
-import ExportPreview from 'components/ExportPreview/ExportPreview';
 
 import { ResizeModeEnum } from 'config/enums/tableEnums';
 

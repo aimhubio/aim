@@ -1,7 +1,7 @@
 import React from 'react';
 import moment from 'moment';
 
-import { Grid, Divider } from '@material-ui/core';
+import { Grid } from '@material-ui/core';
 
 import { Dropdown, InputWrapper, Modal, Slider, Text } from 'components/kit';
 import ErrorBoundary from 'components/ErrorBoundary/ErrorBoundary';

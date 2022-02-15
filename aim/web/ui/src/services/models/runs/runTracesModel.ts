@@ -303,7 +303,7 @@ function destroy() {
   abortGetTraceBatchBatchRequest();
 }
 
-export default {
+const runTracesModel = {
   ...model,
   destroy,
   onApply,
@@ -312,3 +312,5 @@ export default {
   onRangeChange,
   changeActiveItemKey,
 };
+
+export default runTracesModel;

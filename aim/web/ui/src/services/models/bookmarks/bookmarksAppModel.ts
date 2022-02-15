@@ -1,6 +1,5 @@
 import dashboardService from 'services/api/dashboard/dashboardService';
 import appsService from 'services/api/apps/appsService';
-import * as analytics from 'services/analytics';
 
 import { IBookmarksAppModelState } from 'types/services/models/bookmarks/bookmarksAppModel';
 import { IBookmarksData } from 'types/pages/bookmarks/Bookmarks';
