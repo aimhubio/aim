@@ -10,6 +10,7 @@
 
 ### Fixes: 
 
+- Add repo lock/release feature (devfox-se)
 - Fix system metric columns pinning functionality and grouping column order (arsengit)
 
 
