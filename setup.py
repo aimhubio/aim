@@ -3,6 +3,7 @@ import os
 import io
 from shutil import rmtree
 from setuptools import find_packages, setup, Command, Extension
+from Cython.Build import cythonize
 
 version_file = 'aim/VERSION'
 
@@ -140,7 +141,7 @@ setup(
         'Programming Language :: Python :: 3.10',
         'Programming Language :: Python :: Implementation :: PyPy'
     ],
-    ext_modules=[
+    ext_modules=cythonize([
         Extension(
             'aim.storage.hashing.c_hash',
             ['aim/storage/hashing/c_hash.pyx'],
@@ -152,11 +153,21 @@ setup(
             language='c++'
         ),
         Extension(
+            'aim.storage.encoding.encoding',
+            ['aim/storage/encoding/encoding.pyx'],
+            language='c++'
+        ),
+        Extension(
+            'aim.storage.encoding',
+            ['aim/storage/encoding/__init__.py'],
+            language='c++'
+        ),
+        Extension(
             'aim.storage.treeutils_',
             ['aim/storage/treeutils_.pyx'],
             language='c++'
         )
-    ],
+    ]),
     entry_points={
         'console_scripts': [
             'aim=aim.cli.cli:cli_entry_point',

@@ -11,7 +11,7 @@ cpdef inline bytes encode_int64_big_endian(int64 value):
     """Decode an 64-bit signed integer from a buffer
     encoded in big-endian
     """
-    return bytes([
+    cdef char* buffer = [
         (value >> 56) & 0xff,
         (value >> 48) & 0xff,
         (value >> 40) & 0xff,
@@ -20,7 +20,8 @@ cpdef inline bytes encode_int64_big_endian(int64 value):
         (value >> 16) & 0xff,
         (value >> 8) & 0xff,
         (value >> 0) & 0xff
-    ])
+    ]
+    return <bytes>buffer[:8]
 
 
 cpdef inline bytes encode_int64(int64 value):
@@ -28,25 +29,25 @@ cpdef inline bytes encode_int64(int64 value):
     return (<unsigned char*>(&value))[:8]
 
 
-cpdef inline int64 decode_int64_big_endian(const unsigned char* buf) nogil:
+cpdef inline int64 decode_int64_big_endian(const unsigned char* buf, int offset = 0) nogil:
     """Decode an 64-bit signed integer from a buffer
     encoded in big-endian
     """
     return (
-        ((<int64>buf[0]) << 56) |
-        ((<int64>buf[1]) << 48) |
-        ((<int64>buf[2]) << 40) |
-        ((<int64>buf[3]) << 32) |
-        ((<int64>buf[4]) << 24) |
-        ((<int64>buf[5]) << 16) |
-        ((<int64>buf[6]) << 8) |
-        ((<int64>buf[7]) << 0)
+        ((<int64>buf[0 + offset]) << 56) |
+        ((<int64>buf[1 + offset]) << 48) |
+        ((<int64>buf[2 + offset]) << 40) |
+        ((<int64>buf[3 + offset]) << 32) |
+        ((<int64>buf[4 + offset]) << 24) |
+        ((<int64>buf[5 + offset]) << 16) |
+        ((<int64>buf[6 + offset]) << 8) |
+        ((<int64>buf[7 + offset]) << 0)
     )
 
 
-cpdef inline int64 decode_int64(const unsigned char* buffer) nogil:
+cpdef inline int64 decode_int64(const unsigned char* buffer, int offset = 0) nogil:
     """Decode an 64-bit signed integer from a buffer"""
-    return (<int64*>buffer)[0]
+    return (<int64*>(buffer + offset))[0]
 
 
 cpdef inline vector[pair[int64, int64]] split_path(
@@ -117,7 +118,7 @@ cpdef inline vector[pair[int64, int64]] split_path(
     return path
 
 
-cpdef inline decode_path(bytes buffer):
+cpdef inline list decode_path(bytes buffer):
     """Decode the binary-encoded path from the given buffer.
 
     Args:
@@ -129,7 +130,7 @@ cpdef inline decode_path(bytes buffer):
         For example, the corresponding path for the sample buffer will be:
         `['foo', 19, 'α-γ']`
     """
-    path = []
+    cdef list path = []
     cdef vector[pair[int64, int64]] segments = split_path(buffer, len(buffer))
     for item in segments:
         if item.second == 0:
@@ -147,9 +148,9 @@ cpdef inline bytes encode_double(double value):
     return (<unsigned char*>(&value))[:8]
 
 
-cpdef inline double decode_double(const unsigned char* bytes) nogil:
+cpdef inline double decode_double(const unsigned char* bytes, int offset = 0) nogil:
     """Decode an double precision floating-point number from a buffer"""
-    return (<double*> bytes)[0]
+    return (<double*> (bytes + offset))[0]
 
 
 cpdef inline bytes encode_utf_8_str(str value):
