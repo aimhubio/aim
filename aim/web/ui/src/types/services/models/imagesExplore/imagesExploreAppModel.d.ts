@@ -3,7 +3,10 @@ import { RowHeightSize } from 'config/table/tableConfigs';
 
 import { ITableRef } from 'types/components/Table/Table';
 import { INotification } from 'types/components/NotificationContainer/NotificationContainer';
-import { ISelectConfig } from 'types/services/models/explorer/createAppModel';
+import {
+  IColumnsOrder,
+  ISelectConfig,
+} from 'types/services/models/explorer/createAppModel';
 import { IPanelTooltip } from 'types/services/models/metrics/metricsAppModel';
 
 import { SortFields } from 'utils/getSortedFields';
@@ -50,11 +53,7 @@ export interface IImagesExploreAppConfig {
     hiddenColumns?: string[];
     hideSystemMetrics?: undefined;
     columnsWidths?: { [key: string]: number };
-    columnsOrder?: {
-      left: string[];
-      middle: string[];
-      right: string[];
-    };
+    columnsOrder?: IColumnsOrder;
     height: string;
   };
 }

@@ -19,6 +19,8 @@ import AppBar from 'pages/Metrics/components/MetricsBar/MetricsBar';
 import Controls from 'pages/Scatters/components/Controls/Controls';
 import SelectForm from 'pages/Scatters/components/SelectForm/SelectForm';
 
+import { AppNameEnum } from 'services/models/explorer';
+
 import { IScattersProps } from 'types/pages/scatters/Scatters';
 
 import { ChartTypeEnum } from 'utils/d3';
@@ -146,6 +148,7 @@ function Scatters(
                   columns={props.tableColumns}
                   // Table options
                   topHeader
+                  appName={AppNameEnum.SCATTERS}
                   groups={!Array.isArray(props.tableData)}
                   rowHeight={props.tableRowHeight}
                   rowHeightMode={
@@ -163,6 +166,8 @@ function Scatters(
                   resizeMode={props.resizeMode}
                   columnsWidths={props.columnsWidths}
                   selectedRows={props.selectedRows}
+                  hiddenChartRows={props.scatterPlotData?.length === 0}
+                  columnsOrder={props.columnsOrder}
                   // Table actions
                   onSort={props.onSortChange}
                   onSortReset={props.onSortReset}
