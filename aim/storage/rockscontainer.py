@@ -288,7 +288,7 @@ class RocksContainer(Container):
         *,
         target: aimrocks.WriteBatch
     ):
-        target.delete_range((begin, end))
+        target.delete_range(begin, end)
 
     def _delete_blob_range(
         self,

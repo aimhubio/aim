@@ -41,13 +41,13 @@ version_files = ['../aim/VERSION', ]
 LONG_DESCRIPTION = DESCRIPTION
 
 SETUP_REQUIRED = [
-    'Cython>=0.20.0',
+    'Cython==3.0.0a9',
 ]
 
 # What packages are required for this module to be executed?
 REQUIRED = [
     'aimrecords==0.0.7',
-    'aimrocks==0.0.10',
+    'aimrocks==0.1.0',
     'cachetools>=4.0.0',
     'click>=7.0',
     'cryptography>=3.0',
