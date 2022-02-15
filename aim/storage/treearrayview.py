@@ -2,16 +2,13 @@ import numpy as np
 
 from itertools import islice
 
-from aim.storage.arrayview import ArrayView
+from typing import Any, Generic, Iterator, List, TYPE_CHECKING, Tuple, TypeVar, Union
 from aim.storage.treeview import TreeView
 
-from typing import Any, Iterator, List, TYPE_CHECKING, Tuple, TypeVar, Union
+from aim.storage.arrayview import ArrayView
 
 
-T = TypeVar("T")
-
-
-class TreeArrayView(ArrayView[T]):
+class TreeArrayView(ArrayView):
     def __init__(
         self,
         tree: 'TreeView',
@@ -24,7 +21,7 @@ class TreeArrayView(ArrayView[T]):
         self.tree.make_array()
         return self
 
-    def __iter__(self) -> Iterator[T]:
+    def __iter__(self) -> Iterator[Any]:
         yield from self.values()
 
     def keys(self) -> Iterator[int]:
@@ -33,19 +30,19 @@ class TreeArrayView(ArrayView[T]):
     def indices(self) -> Iterator[int]:
         yield from self.keys()
 
-    def values(self) -> Iterator[T]:
+    def values(self) -> Iterator[Any]:
         for k, v in self.tree.items():
             yield v
 
-    def items(self) -> Iterator[Tuple[int, T]]:
+    def items(self) -> Iterator[Tuple[int, Any]]:
         yield from self.tree.items()
 
-    def values_slice(self, _slice: slice, slice_by: str = 'step') -> Iterator[T]:
+    def values_slice(self, _slice: slice, slice_by: str = 'step') -> Iterator[Any]:
         for k, v in self.items_slice(_slice, slice_by):
             yield v
 
     # TODO [AT]: improve performance (move to cython?)
-    def items_slice(self, _slice: slice, slice_by: str = 'step') -> Iterator[Tuple[int, T]]:
+    def items_slice(self, _slice: slice, slice_by: str = 'step') -> Iterator[Tuple[int, Any]]:
         start, stop, step = _slice.start, _slice.stop, _slice.step
         if start < 0 or stop < 0 or step < 0:
             raise NotImplementedError('Negative index slices are not supported')
@@ -79,11 +76,11 @@ class TreeArrayView(ArrayView[T]):
                     if (idx - start) % step == 0:
                         yield idx, val
 
-    def values_in_range(self, start, stop, count=None) -> Iterator[T]:
+    def values_in_range(self, start, stop, count=None) -> Iterator[Any]:
         for k, v in self.items_in_range(start, stop, count):
             yield v
 
-    def items_in_range(self, start, stop, count=None) -> Iterator[Tuple[int, T]]:
+    def items_in_range(self, start, stop, count=None) -> Iterator[Tuple[int, Any]]:
         if stop <= start or start < 0 or stop < 0:
             return
 
@@ -111,7 +108,7 @@ class TreeArrayView(ArrayView[T]):
     def __getitem__(
         self,
         idx: Union[int, slice]
-    ) -> T:
+    ) -> Any:
         if isinstance(idx, slice):
             raise NotImplementedError
         return self.tree[idx]
@@ -126,7 +123,7 @@ class TreeArrayView(ArrayView[T]):
         assert isinstance(idx, int)
         self.tree[idx] = val
 
-    def sparse_list(self) -> Tuple[List[int], List[T]]:
+    def sparse_list(self) -> Tuple[List[int], List[Any]]:
         indices = []
         values = []
         for k, v in self.items():
@@ -138,7 +135,7 @@ class TreeArrayView(ArrayView[T]):
     def indices_list(self) -> List[int]:
         return list(self.indices())
 
-    def values_list(self) -> List[T]:
+    def values_list(self) -> List[Any]:
         return list(self.values())
 
     def sparse_numpy(self) -> Tuple[np.ndarray, np.ndarray]:
@@ -156,29 +153,29 @@ class TreeArrayView(ArrayView[T]):
         # TODO URGENT implement using cython
         return np.array(self.values_list(), dtype=self.dtype)
 
-    def tolist(self) -> List[T]:
+    def tolist(self) -> List[Any]:
         arr = self.tree[...]
         assert isinstance(arr, list)
         return arr
 
-    def first(self) -> Tuple[int, T]:
+    def first(self) -> Tuple[int, Any]:
         idx = self.min_idx()
         return idx, self[idx]
 
     def first_idx(self) -> int:
         return self.min_idx()
 
-    def first_value(self) -> T:
+    def first_value(self) -> Any:
         return self[self.min_idx()]
 
-    def last(self) -> Tuple[int, T]:
+    def last(self) -> Tuple[int, Any]:
         idx = self.max_idx()
         return idx, self[idx]
 
     def last_idx(self) -> int:
         return self.max_idx()
 
-    def last_value(self) -> T:
+    def last_value(self) -> Any:
         return self[self.max_idx()]
 
     def min_idx(self) -> int:

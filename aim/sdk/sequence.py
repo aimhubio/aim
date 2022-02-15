@@ -75,7 +75,7 @@ class Sequence(Generic[T]):
         return self._hash
 
     @property
-    def values(self) -> ArrayView[T]:
+    def values(self) -> ArrayView:
         """Tracked values array as :obj:`ArrayView`.
 
             :getter: Returns values ArrayView.
@@ -92,7 +92,7 @@ class Sequence(Generic[T]):
         return array_view
 
     @property
-    def epochs(self) -> ArrayView[int]:
+    def epochs(self) -> ArrayView:
         """Tracked epochs array as :obj:`ArrayView`.
 
             :getter: Returns epochs ArrayView.
@@ -100,7 +100,7 @@ class Sequence(Generic[T]):
         return self._series_tree.array('epoch')
 
     @property
-    def timestamps(self) -> ArrayView[float]:
+    def timestamps(self) -> ArrayView:
         """Tracked timestamps array as :obj:`ArrayView`.
 
             :getter: Returns timestamps ArrayView.
