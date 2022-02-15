@@ -39,6 +39,7 @@ import { IActivePoint } from 'types/utils/d3/drawHoverAttributes';
 import { IDimensionsType } from 'types/utils/d3/drawParallelAxes';
 import {
   IAppModelConfig,
+  IAppModelMethods,
   ISelectOption,
 } from 'types/services/models/explorer/createAppModel';
 
@@ -105,7 +106,7 @@ export default function getParamsModelMethods({
   setModelDefaultAppConfigData,
   getModelAppConfigData,
   getConfig,
-}: any) {
+}: IAppModelMethods) {
   let runsRequestRef: {
     call: (
       exceptionHandler: (detail: any) => void,
@@ -202,7 +203,7 @@ export default function getParamsModelMethods({
           if (components?.charts?.indexOf(ChartTypeEnum.HighPlot) !== -1) {
             state.highPlotData = [];
           }
-          if (components.table) {
+          if (components?.table) {
             state.tableData = [];
             state.config = {
               ...configData,
@@ -1094,7 +1095,9 @@ export default function getParamsModelMethods({
   }
 
   function onModelResetConfigData(): void {
-    onResetConfigData({ model, getConfig, updateModelData });
+    if (getConfig) {
+      onResetConfigData({ model, getConfig, updateModelData });
+    }
   }
 
   function onSortChange({

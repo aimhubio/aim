@@ -52,6 +52,7 @@ import { IModel } from 'types/services/models/model';
 import { IActivePoint } from 'types/utils/d3/drawHoverAttributes';
 import {
   IAppModelConfig,
+  IAppModelMethods,
   IAppModelState,
   ISelectOption,
 } from 'types/services/models/explorer/createAppModel';
@@ -136,7 +137,7 @@ export default function getMetricsModelMethods({
   setModelDefaultAppConfigData,
   getModelAppConfigData,
   getConfig,
-}: any) {
+}: IAppModelMethods) {
   let metricsRequestRef: {
     call: (
       exceptionHandler: (detail: any) => void,
@@ -243,7 +244,7 @@ export default function getMetricsModelMethods({
           ) {
             state.lineChartData = [];
           }
-          if (components.table) {
+          if (components?.table) {
             state.tableData = [];
             state.config = {
               ...configData,
@@ -1368,7 +1369,9 @@ export default function getMetricsModelMethods({
   }
 
   function onModelResetConfigData(): void {
-    onResetConfigData({ model, getConfig, updateModelData });
+    if (getConfig) {
+      onResetConfigData({ model, getConfig, updateModelData });
+    }
   }
 
   function onSortChange({

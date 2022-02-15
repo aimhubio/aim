@@ -19,6 +19,7 @@ import {
 import { IParamsAppModelState } from 'types/services/models/params/paramsAppModel';
 import { IRunsAppModelState } from 'types/services/models/runs/runsAppModel';
 import { ITrendlineOptions } from 'types/services/models/scatter/scatterAppModel';
+import { IModel } from 'types/services/models/model';
 
 import { ChartTypeEnum, CurveEnum } from 'utils/d3';
 import { SmoothingAlgorithmEnum } from 'utils/smoothingData';
@@ -154,4 +155,18 @@ export interface IScatterPlotConfig {
   highlightMode: HighlightEnum;
   focusedState: IFocusedState;
   tooltip: IChartTooltip;
+}
+
+export interface IAppModelMethods {
+  appName: AppNameEnum;
+  model: IModel<IAppModelState>;
+  grouping?: boolean;
+  components?: {
+    table?: boolean;
+    charts?: ChartTypeEnum[];
+  };
+  selectForm?: AppNameEnum;
+  setModelDefaultAppConfigData: () => void;
+  getModelAppConfigData?: (appId: string) => void;
+  getConfig?: () => any;
 }

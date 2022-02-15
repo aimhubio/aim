@@ -32,6 +32,7 @@ import { IParam } from 'types/services/models/params/paramsAppModel';
 import { IRunsAppModelState } from 'types/services/models/runs/runsAppModel';
 import {
   IAppModelConfig,
+  IAppModelMethods,
   IAppModelState,
 } from 'types/services/models/explorer/createAppModel';
 
@@ -73,7 +74,7 @@ export default function getRunsModelMethods({
   components,
   selectForm,
   setModelDefaultAppConfigData,
-}: any) {
+}: IAppModelMethods) {
   let runsRequestRef: {
     call: (
       exceptionHandler: (detail: any) => void,

@@ -41,6 +41,7 @@ import { IActivePoint } from 'types/utils/d3/drawHoverAttributes';
 import { IDimensionType } from 'types/utils/d3/drawParallelAxes';
 import {
   IAppModelConfig,
+  IAppModelMethods,
   ISelectOption,
 } from 'types/services/models/explorer/createAppModel';
 import {
@@ -110,7 +111,7 @@ export default function getScattersModelMethods({
   setModelDefaultAppConfigData,
   getModelAppConfigData,
   getConfig,
-}: any) {
+}: IAppModelMethods) {
   let runsRequestRef: {
     call: (
       exceptionHandler: (detail: any) => void,
@@ -899,7 +900,7 @@ export default function getScattersModelMethods({
           if (components?.charts?.indexOf(ChartTypeEnum.ScatterPlot) !== -1) {
             state.chartData = [];
           }
-          if (components.table) {
+          if (components?.table) {
             state.tableData = [];
             state.config = {
               ...configData,
@@ -1130,7 +1131,9 @@ export default function getScattersModelMethods({
   }
 
   function onModelResetConfigData(): void {
-    onResetConfigData({ model, getConfig, updateModelData });
+    if (getConfig) {
+      onResetConfigData({ model, getConfig, updateModelData });
+    }
   }
 
   function changeLiveUpdateConfig(config: {
