@@ -110,17 +110,6 @@ class Repo:
             self.root_path = path
         self.path = os.path.join(self.root_path, get_aim_repo_name())
 
-        self.container_pool: Dict[ContainerConfig, Container] = WeakValueDictionary()
-        self.persistent_pool: Dict[ContainerConfig, Container] = dict()
-        self.container_view_pool: Dict[ContainerConfig, Container] = WeakValueDictionary()
-
-        self._run_props_cache_hint = None
-        self._encryption_key = None
-        self.structured_db = None
-
-        self._lock_path = os.path.join(self.path, '.repo_lock')
-        self._lock = FileLock(self._lock_path, timeout=10)
-
         if init:
             os.makedirs(self.path, exist_ok=True)
             with open(os.path.join(self.path, 'VERSION'), 'w') as version_fh:
@@ -130,16 +119,24 @@ class Repo:
                 unmount_remote_repo(self.root_path, self._mount_root)
             raise RuntimeError(f'Cannot find repository \'{self.path}\'. Please init first.')
 
-        self._lock.acquire()
-        try:
-            if not self.is_remote_repo:
+        self.container_pool: Dict[ContainerConfig, Container] = WeakValueDictionary()
+        self.persistent_pool: Dict[ContainerConfig, Container] = dict()
+        self.container_view_pool: Dict[ContainerConfig, Container] = WeakValueDictionary()
+
+        self._run_props_cache_hint = None
+        self._encryption_key = None
+        self.structured_db = None
+
+        if not self.is_remote_repo:
+            self._lock_path = os.path.join(self.path, '.repo_lock')
+            self._lock = FileLock(self._lock_path, timeout=10)
+
+            with self.lock():
                 self.structured_db = DB.from_path(self.path)
                 if init:
                     self.structured_db.run_upgrades()
 
-            self._resources = RepoAutoClean(self)
-        finally:
-            self._lock.release()
+        self._resources = RepoAutoClean(self)
 
     @property
     def meta_tree(self):
@@ -156,6 +153,8 @@ class Repo:
 
     @contextmanager
     def lock(self):
+        assert not self.is_remote_repo
+
         self._lock.acquire()
         try:
             yield self._lock
@@ -345,17 +344,19 @@ class Repo:
 
         assert self.structured_db
         _props = None
-        if self.run_props_cache_hint:
-            _props = self.structured_db.caches[self.run_props_cache_hint][hash_]
-        if not _props:
-            _props = self.structured_db.find_run(hash_)
-            if not _props:
-                if read_only:
-                    raise RepoIntegrityError(f'Missing props for Run {hash_}')
-                else:
-                    _props = self.structured_db.create_run(hash_)
+
+        with self.lock():
             if self.run_props_cache_hint:
-                self.structured_db.caches[self.run_props_cache_hint][hash_] = _props
+                _props = self.structured_db.caches[self.run_props_cache_hint][hash_]
+            if not _props:
+                _props = self.structured_db.find_run(hash_)
+                if not _props:
+                    if read_only:
+                        raise RepoIntegrityError(f'Missing props for Run {hash_}')
+                    else:
+                        _props = self.structured_db.create_run(hash_)
+                if self.run_props_cache_hint:
+                    self.structured_db.caches[self.run_props_cache_hint][hash_] = _props
 
         return _props
 
