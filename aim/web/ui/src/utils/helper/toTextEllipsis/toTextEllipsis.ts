@@ -1,5 +1,17 @@
 import { measureText } from 'utils/helper';
-
+/**
+ * [Display the text by specified width]
+ * Cut text and display ellipsis if text width is more than specified width
+ *
+ * Usage: toTextEllipsis({ text, width, fontSize, fontFamily, fontWeight })
+ *
+ * @param {string} text which needs to display by specified width,
+ * @param {number} width maximum width of the text,
+ * @param {string} fontSize font size of the measured text,
+ * @param {string} fontFamily font family of the measured text,
+ * @param {number} fontWeight font weight of the measured text,
+ * @returns {string} ellipsis text
+ */
 function toTextEllipsis({
   text,
   width,

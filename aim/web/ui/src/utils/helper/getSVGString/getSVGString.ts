@@ -1,5 +1,12 @@
-// getSVGString ( svgNode ) and imgSource2Image({ imgSrc, width, height, format, callback })
-function getSVGString(svgNode: SVGSVGElement) {
+/**
+ * [Svg node element to serialized string](http://bl.ocks.org/Rokotyan/0556f8facbaf344507cdc45dc3622177)
+ *
+ * Usage: getSVGString(svgNode)
+ *
+ * @param {SVGSVGElement} svgNode a node element,
+ * @returns {string} serialized svg by using XMLSerializer(https://developer.mozilla.org/en-US/docs/Web/API/XMLSerializer)
+ */
+function getSVGString(svgNode: SVGSVGElement): string {
   svgNode.setAttribute('xlink', 'http://www.w3.org/1999/xlink');
   const cssStyleText = getCSSStyles(svgNode);
   appendCSS(cssStyleText, svgNode);
@@ -11,7 +18,7 @@ function getSVGString(svgNode: SVGSVGElement) {
   return svgString;
 }
 
-function getCSSStyles(parentElement: SVGSVGElement) {
+function getCSSStyles(parentElement: SVGSVGElement): string {
   const selectorTextArr = [];
 
   // Add Parent element Id and Classes to the list
@@ -58,7 +65,7 @@ function getCSSStyles(parentElement: SVGSVGElement) {
   }
 }
 
-function appendCSS(cssText: string, element: SVGSVGElement) {
+function appendCSS(cssText: string, element: SVGSVGElement): void {
   let styleElement = document.createElement('style');
   styleElement.setAttribute('type', 'text/css');
   styleElement.innerHTML = cssText;

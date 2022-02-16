@@ -1,11 +1,11 @@
 /**
- * Get segments from path,
- * Usage
- *    getPathSegments(path)
+ * [Get segments from path]
+ *
+ * Usage: getPathSegments(path)
+ *
  * @param {string} path - full path to object property
  * @return {string[]} parts - segments of path
  */
-
 // TODO add test for this helper function
 function getPathSegments(path: string): string[] {
   if (typeof path !== 'string') return [];
