@@ -645,7 +645,7 @@ class Run(StructuredRunMixin):
         seq_info = self.sequence_info[sequence_selector]
 
         assert not seq_info.initialized
-        seq_info.val_view = self.series_run_tree.subtree(sequence_selector).array('val', dtype='double').allocate()
+        seq_info.val_view = self.series_run_tree.subtree(sequence_selector).array('val').allocate()
         seq_info.epoch_view = self.series_run_tree.subtree(sequence_selector).array('epoch', dtype='int64').allocate()
         seq_info.time_view = self.series_run_tree.subtree(sequence_selector).array('time', dtype='int64').allocate()
         seq_info.count = len(seq_info.val_view)
@@ -662,7 +662,7 @@ class Run(StructuredRunMixin):
             return seq_info
 
         # the subtree().array().allocate() method is write-only
-        seq_info.val_view = self.series_run_tree.subtree(sequence_selector).array('val', dtype='double').allocate()
+        seq_info.val_view = self.series_run_tree.subtree(sequence_selector).array('val').allocate()
         seq_info.epoch_view = self.series_run_tree.subtree(sequence_selector).array('epoch', dtype='int64').allocate()
         seq_info.time_view = self.series_run_tree.subtree(sequence_selector).array('time', dtype='int64').allocate()
         seq_info.count = 0

@@ -99,7 +99,8 @@ class TreeView:
 
     def array(
         self,
-        path: Union[AimObjectKey, AimObjectPath] = ()
+        path: Union[AimObjectKey, AimObjectPath] = (),
+        dtype: Any = None
     ) -> 'ArrayView':
         ...
 

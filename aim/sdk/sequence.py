@@ -97,7 +97,7 @@ class Sequence(Generic[T]):
 
             :getter: Returns epochs ArrayView.
         """
-        return self._series_tree.array('epoch')
+        return self._series_tree.array('epoch', dtype='int64')
 
     @property
     def timestamps(self) -> ArrayView:
@@ -105,7 +105,7 @@ class Sequence(Generic[T]):
 
             :getter: Returns timestamps ArrayView.
         """
-        return self._series_tree.array('time')
+        return self._series_tree.array('time', dtype='int64')
 
     @property
     def _meta_tree(self):

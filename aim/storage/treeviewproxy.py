@@ -6,7 +6,7 @@ from aim.storage.treeview import TreeView
 from aim.storage.treearrayview import TreeArrayView
 from aim.storage.types import AimObject, AimObjectKey, AimObjectPath
 
-from typing import TYPE_CHECKING, Iterator, Tuple, Union
+from typing import TYPE_CHECKING, Any, Iterator, Tuple, Union
 
 if TYPE_CHECKING:
     from aim.ext.transport.client import Client
@@ -110,9 +110,10 @@ class ProxyTree(TreeView):
 
     def array(
         self,
-        path: Union[AimObjectKey, AimObjectPath] = ()
+        path: Union[AimObjectKey, AimObjectPath] = (),
+        dtype: Any = None
     ) -> TreeArrayView:
-        return TreeArrayView(self.subtree(path))
+        return TreeArrayView(self.subtree(path), dtype=dtype)
 
     def first(
         self,
@@ -214,9 +215,10 @@ class SubtreeView(TreeView):
 
     def array(
         self,
-        path: Union[AimObjectKey, AimObjectPath] = ()
+        path: Union[AimObjectKey, AimObjectPath] = (),
+        dtype: Any = None
     ) -> TreeArrayView:
-        return TreeArrayView(self.subtree(path))
+        return TreeArrayView(self.subtree(path), dtype=dtype)
 
     def first(
         self,
