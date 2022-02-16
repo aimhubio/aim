@@ -12,6 +12,7 @@
 ### Fixes: 
 
 - Fix system metric columns pinning functionality and grouping column order (arsengit)
+- Fix incorrect boolean value formatting (VkoHov)
 
 ## 3.5.4 Feb 15 2022
 
