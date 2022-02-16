@@ -2,14 +2,20 @@
 
 ## Unreleased
 
-###Enhancements
+### Enhancements:
 
+- Ability to group by metric.context (VkoHov)
 - Add ability to apply active style on table actions popover buttons with applied changes (arsengit)
+- Aim repo runs data automatic indexing (alberttorosyan)
 
-###Fixes 
+### Fixes: 
 
 - Fix system metric columns pinning functionality and grouping column order (arsengit)
 
+## 3.5.4 Feb 15 2022
+
+- Fix batch archive functionality (VkoHov)
+- Add repo lock/release feature (devfox-se)
 
 ## 3.5.3 Feb 11 2022
 
