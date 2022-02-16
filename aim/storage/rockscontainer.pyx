@@ -9,7 +9,7 @@ from typing import Iterator, Optional, Tuple
 
 from aim.ext.cleanup import AutoClean
 from aim.ext.exception_resistant import exception_resistant
-from aim.storage.types import BLOB, BLOBLoader
+from aim.storage.types import BLOB
 from aim.storage.container import Container, ContainerKey, ContainerValue
 from aim.storage.prefixview import PrefixView
 from aim.storage.containertreeview import ContainerTreeView
@@ -231,7 +231,7 @@ class RocksContainer(Container):
     def _get_blob_loader(
         self,
         key: ContainerKey
-    ) -> BLOBLoader:
+    ):
         def loader() -> bytes:
             data = self[BLOB_DOMAIN + key]
             assert isinstance(data, bytes)
@@ -241,8 +241,8 @@ class RocksContainer(Container):
     def _get_blob(
         self,
         key: ContainerKey
-    ) -> BLOB[bytes]:
-        return BLOB[bytes](loader_fn=self._get_blob_loader(key))
+    ) -> BLOB:
+        return BLOB(loader_fn=self._get_blob_loader(key))
 
     def _put(
         self,
