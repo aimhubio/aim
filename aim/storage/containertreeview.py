@@ -7,7 +7,7 @@ from aim.storage.container import Container
 from aim.storage import treeutils
 from aim.storage.treearrayview import TreeArrayView
 
-from typing import Iterator, Tuple, Union
+from typing import Any, Iterator, Tuple, Union
 
 from aim.storage.treeview import TreeView
 
@@ -158,9 +158,10 @@ class ContainerTreeView(TreeView):
 
     def array(
         self,
-        path: Union[AimObjectKey, AimObjectPath] = ()
+        path: Union[AimObjectKey, AimObjectPath] = (),
+        dtype: Any = None
     ) -> TreeArrayView:
-        return TreeArrayView(self.subtree(path))
+        return TreeArrayView(self.subtree(path), dtype=dtype)
 
     def first(
         self,

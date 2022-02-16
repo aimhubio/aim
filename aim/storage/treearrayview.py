@@ -2,7 +2,7 @@ import numpy as np
 
 from itertools import islice
 
-from typing import Any, Generic, Iterator, List, TYPE_CHECKING, Tuple, TypeVar, Union
+from typing import Any, Iterator, List, Tuple, Union
 from aim.storage.treeview import TreeView
 
 from aim.storage.arrayview import ArrayView
