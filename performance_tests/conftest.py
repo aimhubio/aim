@@ -6,6 +6,7 @@ import time
 from pathlib import Path
 
 from aim.sdk.configs import AIM_REPO_NAME
+from performance_tests.utils import get_baseline_filename
 
 TEST_REPO_PATHS = {
     'real_life_repo': '.aim_performance_repo_1',
