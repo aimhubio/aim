@@ -44,7 +44,7 @@
 <div align="center">
   <br/>
   <kbd>
-    <img width="700px" src="https://user-images.githubusercontent.com/13848158/136374529-af267918-5dc6-4a4e-8ed2-f6333a332f96.gif" />
+    <img width="650px" src="https://user-images.githubusercontent.com/13848158/136374529-af267918-5dc6-4a4e-8ed2-f6333a332f96.gif" />
   </kbd>
 </div>
 
@@ -63,13 +63,13 @@ Aim's mission is to democratize AI dev tools.
 
 | Machine translation | lightweight-GAN |
 |:---:|:---:|
-| ![](docs/source/_static/images/overview/metrics.png?raw=true) | ![](docs/source/_static/images/overview/metrics.png?raw=true) |
-| WMT'19 competition winning models logs. | Tranining logs of 'lightweight' GAN, proposed in ICLR 2021. |
+| <img src="https://user-images.githubusercontent.com/13848158/154292009-87b194bb-6527-44ba-9daa-33cb4b6584e1.png"> | <img src="https://user-images.githubusercontent.com/13848158/154292021-238bd864-fd0b-486e-a297-5622f38bd7b1.png"> |
+| Training logs of a neural translation model(from WMT'19 competition). | Tranining logs of 'lightweight' GAN, proposed in ICLR 2021. |
 
 | FastSpeech 2 | Simple MNIST |
 |:---:|:---:|
-| ![](docs/source/_static/images/overview/metrics.png?raw=true) | ![](docs/source/_static/images/overview/metrics.png?raw=true) |
-| Training logs of Microsoft's "FastSpeech 2: Fast and High-Quality End-to-End Text to Speech". | Simple MNIST training logs |
+| <img src="https://user-images.githubusercontent.com/13848158/154292447-373a0b26-6fdb-4e56-a1f2-03c9b6348a2e.png"> | <img src="https://user-images.githubusercontent.com/13848158/154292035-9d8944e5-3fb0-465a-bcd9-07ec09ba09aa.png" > |
+| Training logs of Microsoft's "FastSpeech 2: Fast and High-Quality End-to-End Text to Speech". | Simple MNIST training logs. |
 
 # Why use Aim?
 
