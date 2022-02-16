@@ -28,6 +28,7 @@ import Controls from 'pages/ImagesExplore/components/Controls/Controls';
 
 import imagesExploreAppModel from 'services/models/imagesExplore/imagesExploreAppModel';
 import * as analytics from 'services/analytics';
+import { AppNameEnum } from 'services/models/explorer';
 
 import { IGroupingSelectOption } from 'types/services/models/metrics/metricsAppModel';
 
@@ -380,6 +381,13 @@ function ImagesExplore(): React.FunctionComponentElement<React.ReactNode> {
                       resizeMode={imagesExploreData?.config?.table.resizeMode}
                       columnsWidths={
                         imagesExploreData?.config?.table.columnsWidths
+                      }
+                      appName={AppNameEnum.IMAGES}
+                      hiddenChartRows={
+                        imagesExploreData?.imagesData?.length === 0
+                      }
+                      columnsOrder={
+                        imagesExploreData?.config?.table.columnsOrder
                       }
                       // Table actions
                       onSort={imagesExploreAppModel.onTableSortChange}

@@ -7,9 +7,9 @@ import { IPoint } from 'components/ScatterPlot';
 
 import COLORS from 'config/colors/colors';
 import DASH_ARRAYS from 'config/dash-arrays/dashArrays';
-import { HideColumnsEnum, ResizeModeEnum } from 'config/enums/tableEnums';
+import { ResizeModeEnum } from 'config/enums/tableEnums';
 import { AlignmentNotificationsEnum } from 'config/notification-messages/notificationMessages';
-import { RowHeightSize } from 'config/table/tableConfigs';
+import { RowHeightSize, TABLE_DEFAULT_CONFIG } from 'config/table/tableConfigs';
 import { DensityOptions } from 'config/enums/densityEnum';
 import { CONTROLS_DEFAULT_CONFIG } from 'config/controls/controlsDefaultConfig';
 import { ANALYTICS_EVENT_KEYS } from 'config/analytics/analyticsKeysMap';
@@ -227,19 +227,18 @@ function createAppModel(appConfig: IAppInitialConfig) {
         }
         if (components?.table) {
           config.table = {
-            resizeMode: ResizeModeEnum.Resizable,
-            rowHeight: RowHeightSize.md,
-            sortFields: [],
-            hiddenMetrics: [],
-            hiddenColumns: [],
-            hideSystemMetrics: undefined,
+            resizeMode: TABLE_DEFAULT_CONFIG.metrics.resizeMode,
+            rowHeight: TABLE_DEFAULT_CONFIG.metrics.rowHeight,
+            sortFields: [...TABLE_DEFAULT_CONFIG.metrics.sortFields],
+            hiddenMetrics: [...TABLE_DEFAULT_CONFIG.metrics.hiddenMetrics],
+            hiddenColumns: [...TABLE_DEFAULT_CONFIG.metrics.hiddenColumns],
             columnsWidths: {},
             columnsOrder: {
-              left: [],
-              middle: [],
-              right: [],
+              left: [...TABLE_DEFAULT_CONFIG.metrics.columnsOrder.left],
+              middle: [...TABLE_DEFAULT_CONFIG.metrics.columnsOrder.middle],
+              right: [...TABLE_DEFAULT_CONFIG.metrics.columnsOrder.right],
             },
-            height: '0.5',
+            height: TABLE_DEFAULT_CONFIG.metrics.height,
           };
         }
         if (components?.charts?.[0]) {
@@ -340,19 +339,16 @@ function createAppModel(appConfig: IAppInitialConfig) {
         }
         if (components?.table) {
           config.table = {
-            resizeMode: ResizeModeEnum.Resizable,
-            rowHeight: RowHeightSize.md,
-            hideSystemMetrics: true,
-            sortFields: [],
-            hiddenMetrics: [],
-            hiddenColumns: [],
+            rowHeight: TABLE_DEFAULT_CONFIG.runs.rowHeight,
+            hideSystemMetrics: TABLE_DEFAULT_CONFIG.runs.hideSystemMetrics,
+            hiddenMetrics: TABLE_DEFAULT_CONFIG.runs.hiddenMetrics,
+            hiddenColumns: TABLE_DEFAULT_CONFIG.runs.hiddenColumns,
             columnsWidths: {},
             columnsOrder: {
-              left: [],
-              middle: [],
-              right: [],
+              left: [...TABLE_DEFAULT_CONFIG.runs.columnsOrder.left],
+              middle: [...TABLE_DEFAULT_CONFIG.runs.columnsOrder.middle],
+              right: [...TABLE_DEFAULT_CONFIG.runs.columnsOrder.right],
             },
-            height: '0.5',
           };
           if (appName === AppNameEnum.RUNS) {
             config.pagination = {
@@ -2903,7 +2899,7 @@ function createAppModel(appConfig: IAppInitialConfig) {
         return {
           call: async () => {
             try {
-              /* await runsArchiveRef
+              await runsArchiveRef
                 .call((detail) => exceptionHandler({ detail, model }))
                 .then(() => {
                   getRunsData(false, true).call((detail: any) => {
@@ -2919,7 +2915,7 @@ function createAppModel(appConfig: IAppInitialConfig) {
                     },
                     model,
                   });
-                });*/
+                });
             } catch (ex: Error | any) {
               if (ex.name === 'AbortError') {
                 onNotificationAdd({

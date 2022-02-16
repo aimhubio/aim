@@ -47,7 +47,6 @@ import {
   ISelectConfig,
   ISelectOption,
 } from 'types/services/models/explorer/createAppModel';
-import { IApiRequest } from 'types/services/services';
 
 import onRowSelectAction from 'utils/app/onRowSelect';
 import { decode, encode } from 'utils/encoder/encoder';
@@ -739,6 +738,11 @@ function getGroupingSelectOptions({
       group: 'images',
       label: 'images.name',
       value: 'images_name',
+    },
+    {
+      group: 'images',
+      label: 'images.context',
+      value: 'context',
     },
     ...contextOptions,
     {
@@ -1812,7 +1816,7 @@ function onColumnsOrderChange(columnsOrder: any) {
   analytics.trackEvent(ANALYTICS_EVENT_KEYS.images.table.changeColumnsOrder);
 }
 
-function onColumnsVisibilityChange(hiddenColumns: string[]) {
+function onColumnsVisibilityChange(hiddenColumns: string[] | string | any) {
   const configData: IImagesExploreAppConfig | undefined =
     model.getState()?.config;
   const columnsData = model.getState()!.tableColumns!;
