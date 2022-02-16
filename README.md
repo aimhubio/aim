@@ -1,5 +1,5 @@
 <div align="center">
-  <img src="https://user-images.githubusercontent.com/13848158/154263556-2e685d63-7b0d-4c14-ba6b-c0c361e5f2cf.png">
+  <img src="https://user-images.githubusercontent.com/13848158/154274755-52c8eb47-fce0-42a1-b93d-7dddd1d54f14.png">
   <h3>An easy-to-use & supercharged open-source experiment tracker</h3>
   Aim logs your training runs, enables a beautiful UI to compare them and an API to query them programmatically.
 </div>
@@ -30,15 +30,23 @@
 </div>
 
 <div align="center">
-  <span align="left">Integrations:</span>
+  <h6 style="color: grey">Integrates seamlessly with your favorite tools</h6>
   <img src="https://user-images.githubusercontent.com/13848158/96861310-f7239c00-1474-11eb-82a4-4fa6eb2c6bb1.jpg" width="60" />
   <img src="https://user-images.githubusercontent.com/13848158/96859323-6ba90b80-1472-11eb-9a6e-c60a90f11396.jpg" width="60" />
   <img src="https://user-images.githubusercontent.com/13848158/96861315-f854c900-1474-11eb-8e9d-c7a07cda8445.jpg" width="60" />
   <img src="https://user-images.githubusercontent.com/13848158/97086626-8b3c6180-1635-11eb-9e90-f215b898e298.png" width="60" />
   <img src="https://user-images.githubusercontent.com/13848158/112145238-8cc58200-8bf3-11eb-8d22-bbdb8809f2aa.png" width="60" />
   <img src="https://user-images.githubusercontent.com/13848158/118172152-17c93880-b43d-11eb-9169-785e4b52d89c.png" width="60" />
- </div>
- 
+</div>
+
+<div align="center">
+  <img height="6" src="https://user-images.githubusercontent.com/13848158/154277045-077015c3-1eb9-4897-85af-07e43a95203a.png">
+  <br/><br/>
+  <kbd>
+    <img width="700px" src="https://user-images.githubusercontent.com/13848158/136374529-af267918-5dc6-4a4e-8ed2-f6333a332f96.gif" />
+  </kbd>
+</div>
+
 # About Aim
 
 | Track and version ML runs | Visualize runs via beautiful UI | Query runs metadata via SDK |
