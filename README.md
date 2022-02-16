@@ -4,7 +4,9 @@
   Aim logs your training runs, enables a beautiful UI to compare them and an API to query them programmatically.
 </div>
 
----
+<br/>
+
+<img src="https://user-images.githubusercontent.com/13848158/154279106-fa7356cb-4152-4d2c-9f54-58e60bac32c4.png">
 
 <p align="center">
   <a href="#about-aim"><b>About</b></a> &bull;
@@ -30,7 +32,7 @@
 </div>
 
 <div align="center">
-  <h6 style="color: grey">Integrates seamlessly with your favorite tools</h6>
+  <sub>Integrates seamlessly with your favorite tools</sub><br/><br/>
   <img src="https://user-images.githubusercontent.com/13848158/96861310-f7239c00-1474-11eb-82a4-4fa6eb2c6bb1.jpg" width="60" />
   <img src="https://user-images.githubusercontent.com/13848158/96859323-6ba90b80-1472-11eb-9a6e-c60a90f11396.jpg" width="60" />
   <img src="https://user-images.githubusercontent.com/13848158/96861315-f854c900-1474-11eb-8e9d-c7a07cda8445.jpg" width="60" />
@@ -40,8 +42,7 @@
 </div>
 
 <div align="center">
-  <img height="6" src="https://user-images.githubusercontent.com/13848158/154277045-077015c3-1eb9-4897-85af-07e43a95203a.png">
-  <br/><br/>
+  <br/>
   <kbd>
     <img width="700px" src="https://user-images.githubusercontent.com/13848158/136374529-af267918-5dc6-4a4e-8ed2-f6333a332f96.gif" />
   </kbd>
