@@ -2,8 +2,9 @@ import React from 'react';
 
 import IllustrationBlock from 'components/IllustrationBlock/IllustrationBlock';
 
+import { IllustrationsEnum } from 'config/illustrationConfig/illustrationConfig';
+
 import { ITraceVisualizationContainerProps } from '../types';
-import { IllustrationsEnum } from '../../../config/illustrationConfig/illustrationConfig';
 
 /**
  * Higher order component for trace visualization component

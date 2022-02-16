@@ -57,7 +57,7 @@ function RunDetailMetricsAndSystemTab({
           <IllustrationBlock
             size='xLarge'
             className='runDetailParamsTabLoader'
-            content={`No tracked ${isSystem ? 'system' : ''} metrics`}
+            title={`No tracked ${isSystem ? 'system' : ''} metrics`}
           />
         )}
       </BusyLoaderWrapper>

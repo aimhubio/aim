@@ -12,7 +12,6 @@ import ErrorBoundary from 'components/ErrorBoundary/ErrorBoundary';
 
 import { ResizeModeEnum } from 'config/enums/tableEnums';
 import { BATCH_SEND_DELAY } from 'config/mediaConfigs/mediaConfigs';
-import { RequestStatusEnum } from 'config/enums/requestStatusEnum';
 
 import blobsURIModel from 'services/models/media/blobsURIModel';
 

@@ -29,45 +29,127 @@ const Request_Illustrations = {
 };
 const Illustration_Title_Config: { [key: string]: object | any } = {
   runs: {
-    [IllustrationsEnum.WrongSearch]: '',
-    [IllustrationsEnum.EmptyData]: '',
+    [IllustrationsEnum.WrongSearch]: 'Incorrect Query',
+    [IllustrationsEnum.EmptySearch]: 'No Results',
+    [IllustrationsEnum.ExploreData]: (
+      <>
+        It’s super easy to search Aim experiments. Just start typing your query
+        in the search bar above.
+        <br />
+        Lookup
+        <a
+          className='qlAnchor'
+          href='https://aimstack.readthedocs.io/en/stable/quick_start/QL_basics.html'
+          target='_blank'
+          rel='noreferrer'
+        >
+          search docs
+        </a>
+        to learn more.
+      </>
+    ),
+    [IllustrationsEnum.EmptyData]: <span>You don't have any tracked runs</span>,
   },
   metrics: {
-    [IllustrationsEnum.WrongSearch]: 'Wrong Search',
-    [IllustrationsEnum.EmptySearch]: 'No Results Found',
-    [IllustrationsEnum.ExploreData]: 'Explore Data',
+    [IllustrationsEnum.WrongSearch]: 'Incorrect Query',
+    [IllustrationsEnum.EmptySearch]: 'No Results',
+    [IllustrationsEnum.ExploreData]: (
+      <>
+        It’s super easy to search Aim experiments. Just start typing your query
+        in the search bar above.
+        <br />
+        Lookup
+        <a
+          className='qlAnchor'
+          href='https://aimstack.readthedocs.io/en/stable/quick_start/QL_basics.html'
+          target='_blank'
+          rel='noreferrer'
+        >
+          search docs
+        </a>
+        to learn more.
+      </>
+    ),
     [IllustrationsEnum.EmptyData]: (
-      <span>You don’t have any tacked metrics.</span>
+      <span>You don't have any tracked metrics</span>
     ),
   },
   params: {
-    [IllustrationsEnum.WrongSearch]: 'Wrong Search',
-    [IllustrationsEnum.EmptySearch]: 'No Results Found',
-    [IllustrationsEnum.ExploreData]: 'Explore Data',
-    [IllustrationsEnum.EmptyData]: (
-      <span>You don’t have any tracked metrics.</span>
+    [IllustrationsEnum.WrongSearch]: 'Incorrect Query',
+    [IllustrationsEnum.EmptySearch]: 'No Results',
+    [IllustrationsEnum.ExploreData]: (
+      <>
+        It’s super easy to search Aim experiments. Just start typing your query
+        in the search bar above.
+        <br />
+        Lookup
+        <a
+          className='qlAnchor'
+          href='https://aimstack.readthedocs.io/en/stable/quick_start/QL_basics.html'
+          target='_blank'
+          rel='noreferrer'
+        >
+          search docs
+        </a>
+        to learn more.
+      </>
     ),
+    [IllustrationsEnum.EmptyData]: <span>You don't have any tracked runs</span>,
   },
   image: {
-    [IllustrationsEnum.WrongSearch]: 'Wrong Search',
-    [IllustrationsEnum.EmptySearch]: 'Empty Search',
-    [IllustrationsEnum.ExploreData]: 'Explore Data',
+    [IllustrationsEnum.WrongSearch]: 'Incorrect Query',
+    [IllustrationsEnum.EmptySearch]: 'No Results',
+    [IllustrationsEnum.ExploreData]: (
+      <>
+        It’s super easy to search Aim experiments. Just start typing your query
+        in the search bar above.
+        <br />
+        Lookup
+        <a
+          className='qlAnchor'
+          href='https://aimstack.readthedocs.io/en/stable/quick_start/QL_basics.html'
+          target='_blank'
+          rel='noreferrer'
+        >
+          search docs
+        </a>
+        to learn more.
+      </>
+    ),
     [IllustrationsEnum.EmptyData]: (
-      <span>You don’t have any tracked metrics.</span>
+      <span>You don't have any tracked metrics</span>
     ),
   },
+
   scatters: {
-    [IllustrationsEnum.WrongSearch]: 'Wrong Search',
-    [IllustrationsEnum.EmptySearch]: 'Empty Search',
-    [IllustrationsEnum.ExploreData]: 'Explore Data',
-    [IllustrationsEnum.EmptyData]: (
-      <span>You don’t have any tracked metrics.</span>
+    [IllustrationsEnum.WrongSearch]: 'Incorrect Query',
+    [IllustrationsEnum.EmptySearch]: 'No Results',
+    [IllustrationsEnum.ExploreData]: (
+      <>
+        It’s super easy to search Aim experiments. Just start typing your query
+        in the search bar above.
+        <br />
+        Lookup
+        <a
+          className='qlAnchor'
+          href='https://aimstack.readthedocs.io/en/stable/quick_start/QL_basics.html'
+          target='_blank'
+          rel='noreferrer'
+        >
+          search docs
+        </a>
+        to learn more.
+      </>
     ),
+    [IllustrationsEnum.EmptyData]: <span>You don't have any tracked runs</span>,
   },
   bookmarks: {
-    [IllustrationsEnum.ExploreData]: 'No Bookmarks Yet',
+    [IllustrationsEnum.EmptyData]: 'No Bookmarks Yet',
   },
-  tags: {},
+  tags: {
+    [IllustrationsEnum.EmptySearch]: 'No Results',
+    [IllustrationsEnum.ExploreData]: <span>You don't have any tags</span>,
+  },
 };
 
 const Illustration_Content_Config: { [key: string]: object | any } = {

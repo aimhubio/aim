@@ -8,6 +8,8 @@ import { AppNameEnum } from 'services/models/explorer';
 import { IMetricProps } from 'types/pages/metrics/Metrics';
 import { IColumnsOrder } from 'types/services/models/explorer/createAppModel';
 
+import { IIllustrationBlockProps } from '../IllustrationBlock/IllustrationBlock';
+
 export interface ITableProps {
   custom?: boolean;
   groups?: boolean;
@@ -68,6 +70,11 @@ export interface ITableProps {
   className?: string;
   appName?: AppNameEnum;
   focusedState?: any;
+  illustrationConfig?: {
+    size?: IIllustrationBlockProps['size'];
+    page?: IIllustrationBlockProps['page'];
+    type?: IIllustrationBlockProps['type'];
+  };
 }
 
 export interface ITableRef {

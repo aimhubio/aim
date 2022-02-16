@@ -16,6 +16,7 @@ import {
   RowHeightSize,
   TABLE_DEFAULT_CONFIG,
 } from 'config/table/tableConfigs';
+import { IllustrationsEnum } from 'config/illustrationConfig/illustrationConfig';
 
 import useResizeObserver from 'hooks/window/useResizeObserver';
 
@@ -87,6 +88,7 @@ const Table = React.forwardRef(function Table(
     hiddenChartRows,
     focusedState,
     columnsOrder,
+    illustrationConfig,
     ...props
   }: ITableProps,
   ref,
@@ -633,9 +635,8 @@ const Table = React.forwardRef(function Table(
       <BusyLoaderWrapper
         isLoading={!props.isInfiniteLoading && (isLoading || isNil(rowData))}
         loaderComponent={<TableLoader />}
-        className='Tags__TagList__tagListBusyLoader'
       >
-        {!isEmpty(rowData) ? (
+        {!isEmpty(data) && !isEmpty(rowData) ? (
           <div style={{ height: '100%' }} className={className}>
             {!hideHeaderActions && isEmpty(selectedRows) ? (
               <div className='Table__header'>
@@ -894,7 +895,12 @@ const Table = React.forwardRef(function Table(
             />
           </div>
         ) : (
-          <IllustrationBlock size='xLarge' content={emptyText} />
+          <IllustrationBlock
+            page={illustrationConfig?.page || 'metrics'}
+            type={illustrationConfig?.type || IllustrationsEnum.EmptyData}
+            size={illustrationConfig?.size || 'xLarge'}
+            content={illustrationConfig?.type ? null : emptyText}
+          />
         )}
       </BusyLoaderWrapper>
     </ErrorBoundary>

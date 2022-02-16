@@ -171,7 +171,7 @@ const Params = ({
               isLoading={requestStatus === RequestStatusEnum.Pending}
               loaderComponent={<ChartLoader />}
             >
-              {!!highPlotData?.[0]?.data?.length ? (
+              {!_.isEmpty(tableData) ? (
                 <ChartPanel
                   ref={chartPanelRef}
                   key={highPlotData?.[0]?.data?.length}

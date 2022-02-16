@@ -95,7 +95,7 @@ function Scatters(
               height='100%'
               loaderComponent={<ChartLoader controlsCount={2} />}
             >
-              {!!props.scatterPlotData?.[0]?.data?.length ? (
+              {!_.isEmpty(props.tableData) ? (
                 <ChartPanel
                   key={props.scatterPlotData?.[0]?.data?.length}
                   ref={props.chartPanelRef}
@@ -190,6 +190,7 @@ function Scatters(
                   selectedRows={props.selectedRows}
                   hiddenChartRows={props.scatterPlotData?.length === 0}
                   columnsOrder={props.columnsOrder}
+                  isLoading={props.requestStatus === RequestStatusEnum.Pending}
                   // Table actions
                   onSort={props.onSortChange}
                   onSortReset={props.onSortReset}

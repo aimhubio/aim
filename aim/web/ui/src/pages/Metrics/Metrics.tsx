@@ -128,7 +128,7 @@ function Metrics(
                 isLoading={props.requestStatus === RequestStatusEnum.Pending}
                 loaderComponent={<ChartLoader controlsCount={9} />}
               >
-                {!!props.lineChartData?.[0]?.length ? (
+                {!_.isEmpty(props.tableData) ? (
                   <ChartPanel
                     key={props.lineChartData?.length}
                     ref={props.chartPanelRef}
