@@ -4,6 +4,7 @@
 
 ### Enhancements:
 
+- Ability to export chart as image (KaroMourad)
 - Ability to group by metric.context (VkoHov)
 - Add ability to apply active style on table actions popover buttons with applied changes (arsengit)
 - Aim repo runs data automatic indexing (alberttorosyan)
