@@ -54,22 +54,26 @@
 |:--------------------:|:------------------------:|:-------------------:|
 | <img src="https://user-images.githubusercontent.com/13848158/154142101-c5d98122-6d7d-4ac9-9d41-dbbbc6a72068.png"> | <img src="https://user-images.githubusercontent.com/13848158/154142081-b29ed57d-85ae-45b0-be87-c6be636afddc.png"> | <img src="https://user-images.githubusercontent.com/13848158/154142097-9c923ffc-8e3e-4a99-8ace-c3dfc7b01a56.png"> |
 
-Aim is an open-source, self-hosted ML experiment tracking tool. Aim is good at tracking lots (1000s) of runs and allowing you to compare them with a performant and beautiful UI.
+Aim is an open-source, self-hosted ML experiment tracking tool. 
+It's good at tracking lots (1000s) of training runs and it allows you to compare them with a performant and beautiful UI.
 
-You can use Aim not only through its UI but also through its SDK to query your runs' metadata programmatically for automations and additional analysis.
+You can use not only the great Aim UI but also its SDK to query your runs' metadata programmatically. 
+That's especially useful for automations and additional analysis on a Jupyter Notebook.
+
+
 Aim's mission is to democratize AI dev tools.
 
 ## Why use Aim?
 
-### Compare runs easily to build models faster
+### Compare 100s of runs in a few clicks - build models faster
 
-- Compare, group and aggregate 100s of metrics thanks to beautiful visualizations.
-- Analyze and learn correlations and patterns between hparams and metrics.
-- Easy pythonic search to filter the runs you want to explore.
+- Compare, group and aggregate 100s of metrics thanks to effective visualizations.
+- Analyze, learn correlations and patterns between hparams and metrics.
+- Easy pythonic search to query the runs you want to explore.
 
 ### Deep dive into details of each run for easy debugging
 
-- Hyperparameters, metrics, images, distributions, audio, text - all available at a glance to understand the performance of your model.
+- Hyperparameters, metrics, images, distributions, audio, text - all available at hand on an intuitive UI to understand the performance of your model.
 - Easily track plots built via your favourite visualisation tools, like plotly and matplotlib.
 - Analyze system resource usage to effectively utilize computational resources.
 
@@ -244,11 +248,11 @@ _See documentation [here](https://aimstack.readthedocs.io/en/latest/guides/integ
 
 Order of magnitude faster training run comparison with Aim
 - The tracked params are first class citizens at Aim. You can search, group, aggregate via params - deeply explore all the tracked data (metrics, params, images) on the UI.
-- With tensorboard the users are forced to record those parameters in the training run name to be able to search and compare. This causes a super-tedius comparison experience and usability issues on the UI when there are many experiments and params. TensorBoard doesn't have features to group, aggregate the metrics.
+- With tensorboard the users are forced to record those parameters in the training run name to be able to search and compare. This causes a super-tedius comparison experience and usability issues on the UI when there are many experiments and params. **TensorBoard doesn't have features to group, aggregate the metrics**
 
 **Scalability**
 
-- Aim is built to handle 1000s of training runs with dozens of experiments each - both on the backend and on the UI.
+- Aim is built to handle 1000s of training runs - both on the backend and on the UI.
 - TensorBoard becomes really slow and hard to use when a few hundred training runs are queried / compared.
 
 **Beloved TB visualizations to be added on Aim**
@@ -274,8 +278,8 @@ The main differences of Aim and MLflow are around the UI scalability and run com
 ### Weights and Biases
 
 Hosted vs self-hosted
-- Weights and Biases is a hosted closed-source experiment tracker.
-- Aim is self-hosted free and open-source.
+- Weights and Biases is a hosted closed-source MLOps platform.
+- Aim is self-hosted, free and open-source experiment tracking tool.
 
 ## Roadmap
 
