@@ -186,6 +186,11 @@ setup(
             'aim.storage.union',
             ['aim/storage/union.pyx'],
             language='c++'
+        ),
+        Extension(
+            'aim.storage.utils',
+            ['aim/storage/utils.py'],
+            language='c++'
         )
     ]),
     entry_points={
