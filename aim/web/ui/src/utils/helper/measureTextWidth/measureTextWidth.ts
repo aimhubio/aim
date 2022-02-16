@@ -1,20 +1,20 @@
 /**
- * [Measure text]
+ * [Measure text width]
  * measure the size taken to render the supplied text
  * you can supply additional style information too if you have it
  *
- * Usage: measureText({ text, fontSize, fontFamily, fontWeight })
+ * Usage: measureTextWidth({ text, fontSize, fontFamily, fontWeight })
  *
  * @param {string} text which size needs to measure,
  * @param {string} fontSize font size of the measured text,
  * @param {string} fontFamily font family of the measured text,
  * @param {number} fontWeight font weight of the measured text,
- * @returns {TextMetrics} represents the dimensions of a piece of text in the canvas
+ * @returns {number} represents the width of a piece of text in the canvas
  */
-const canvas = document.createElement('canvas') as HTMLCanvasElement;
-const context = canvas.getContext('2d') as CanvasRenderingContext2D;
+const canvas = document.createElement('canvas');
+const context = canvas.getContext('2d');
 
-function measureText({
+function measureTextWidth({
   text,
   fontSize = '16px',
   fontFamily = 'Inter, sans-serif',
@@ -24,9 +24,13 @@ function measureText({
   fontSize?: string;
   fontFamily?: string;
   fontWeight?: number;
-}): TextMetrics {
-  context.font = `${fontWeight} ${fontSize} ${fontFamily}`;
-  return context.measureText(text);
+}): number {
+  if (canvas && context) {
+    context.font = `${fontWeight} ${fontSize} ${fontFamily}`;
+    const textMetrics = context.measureText(text);
+    return textMetrics?.width || 0;
+  }
+  return 0;
 }
 
-export default measureText;
+export default measureTextWidth;

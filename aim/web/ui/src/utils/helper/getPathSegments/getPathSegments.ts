@@ -6,9 +6,8 @@
  * @param {string} path - full path to object property
  * @return {string[]} parts - segments of path
  */
-// TODO add test for this helper function
 function getPathSegments(path: string): string[] {
-  if (typeof path !== 'string') return [];
+  if (typeof path !== 'string' || path === '') return [];
   const parts = [];
   const pathArray = path.split('.');
 

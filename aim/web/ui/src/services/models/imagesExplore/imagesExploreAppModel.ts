@@ -2018,7 +2018,7 @@ function onImageRenderingChange(type: ImageRenderingEnum) {
       config,
     });
   }
-  console.log(
+  analytics.trackEvent(
     `${ANALYTICS_EVENT_KEYS.images.imagesPanel.controls.changeImageProperties} / image rendering to ${type}`,
   );
 }

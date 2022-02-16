@@ -9,7 +9,6 @@ import { getPathSegments } from 'utils/helper';
  * @param {any} defaultValue - default value, if there is no corresponding key
  * @return value - nested object property value or default value
  */
-// TODO add test for this helper function
 export function getValue(
   object: Record<string, any> | null,
   path: string | string[],
@@ -46,7 +45,6 @@ export function getValue(
       if (i !== pathArray.length - 1) {
         return defaultValue;
       }
-
       break;
     }
   }

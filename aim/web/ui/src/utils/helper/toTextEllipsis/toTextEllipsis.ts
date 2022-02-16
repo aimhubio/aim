@@ -1,4 +1,4 @@
-import { measureText } from 'utils/helper';
+import { measureTextWidth } from 'utils/helper';
 /**
  * [Display the text by specified width]
  * Cut text and display ellipsis if text width is more than specified width
@@ -27,7 +27,7 @@ function toTextEllipsis({
   fontWeight?: number;
   recourseIndex?: number;
 }): string {
-  const { width: currentTextWidth } = measureText({
+  const currentTextWidth = measureTextWidth({
     text,
     fontSize,
     fontFamily,
