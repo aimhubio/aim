@@ -47,6 +47,14 @@ def pytest_sessionstart(session):
         os.chdir('/home/ubuntu/performance_logs/')
     time.sleep(10)
 
+def print_current_baseline():
+    print('==== CURRENT BASELINE ====')
+    with open(get_baseline_filename(), 'r') as f:
+        print(f.read())
+    print('==========================')
+
+def pytest_unconfigure(config):
+    print_current_baseline()
 
 def pytest_sessionfinish(session, exitstatus):
     if os.environ.get('AIM_LOCAL_PERFORMANCE_TEST'):
