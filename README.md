@@ -1,34 +1,31 @@
-<br />
 <div align="center">
-  <img src="https://user-images.githubusercontent.com/13848158/136364717-0939222c-55b6-44f0-ad32-d9ab749546e4.png" height="70" />
+  <img src="https://user-images.githubusercontent.com/13848158/154263556-2e685d63-7b0d-4c14-ba6b-c0c361e5f2cf.png">
+  <h3>An easy-to-use & supercharged open-source experiment tracker</h3>
+  Aim logs your training runs, enables a beautiful UI to compare them and an API to query them programmatically.
 </div>
-<br />
-<div align="center">
-  <strong>An easy-to-use & supercharged open-source experiment tracker</strong><br>
-  Aim logs your training runs, enables a beautiful UI to compare them and an API to query them programmatically.<br>
-  <sub>Available for Linux and macOS.</sub>
-</div>
-<br/>
+
+---
+
 <p align="center">
-  <a href="https://aimstack.readthedocs.io/en/latest/"><b>Documentation</b></a> &bull;
-  <a href="https://aimstack.readthedocs.io/en/latest/quick_start/getting_started.html"><b>Aim in 3 steps</b></a> &bull;
-  <a href=""><b>Demo</b></a> &bull;
+  <a href="#about-aim"><b>About</b></a> &bull;
+  <a href="#why-use-aim"><b>Features</b></a> &bull;
+  <a href="#demos"><b>Demos</b></a> &bull;
   <a href="https://github.com/aimhubio/aim/tree/main/examples"><b>Examples</b></a> &bull;
+  <a href="#quick-start"><b>Quick Start</b></a> &bull;
+  <a href="https://aimstack.readthedocs.io/en/latest/"><b>Documentation</b></a> &bull;
   <a href="https://github.com/aimhubio/aim#roadmap"><b>Roadmap</b></a> &bull;
-    <a href="https://github.com/aimhubio/aim#comparisons-to-familiar-tools"><b>Alternatives</b></a> &bull;
   <a href="https://slack.aimstack.io/"><b>Slack Community</b></a> &bull;
   <a href="https://twitter.com/aimstackio"><b>Twitter</b></a>
 </p>
 
----
-
 <div align="center">
   
-[![PyPI Package](https://img.shields.io/pypi/v/aim?color=yellow)](https://pypi.org/project/aim/)
-[![PyPI Downloads](https://img.shields.io/pypi/dw/aim?color=green)](https://pypi.org/project/aim/)
+[![Platform Support](https://img.shields.io/badge/platform-Linux%20%7C%20macOS-blue)]()
 [![PyPI - Python Version](https://img.shields.io/pypi/pyversions/aim)](https://pypi.org/project/aim/)
-[![Issues](https://img.shields.io/github/issues/aimhubio/aim)](http://github.com/aimhubio/aim/issues)
+[![PyPI Package](https://img.shields.io/pypi/v/aim?color=yellow)](https://pypi.org/project/aim/)
 [![License](https://img.shields.io/badge/License-Apache%202.0-orange.svg)](https://opensource.org/licenses/Apache-2.0)
+[![PyPI Downloads](https://img.shields.io/pypi/dw/aim?color=green)](https://pypi.org/project/aim/)
+[![Issues](https://img.shields.io/github/issues/aimhubio/aim)](http://github.com/aimhubio/aim/issues)
 
 <kbd>
   <img src="" />
@@ -38,15 +35,15 @@
 
 <h6 style="color: grey">Integrate seamlessly with your favorite tools</h6>
 
-<img src="https://user-images.githubusercontent.com/13848158/96861310-f7239c00-1474-11eb-82a4-4fa6eb2c6bb1.jpg" width="100" />
-<img src="https://user-images.githubusercontent.com/13848158/96859323-6ba90b80-1472-11eb-9a6e-c60a90f11396.jpg" width="100" />
-<img src="https://user-images.githubusercontent.com/13848158/96861315-f854c900-1474-11eb-8e9d-c7a07cda8445.jpg" width="100" />
-<img src="https://user-images.githubusercontent.com/13848158/97086626-8b3c6180-1635-11eb-9e90-f215b898e298.png" width="100" />
-<img src="https://user-images.githubusercontent.com/13848158/112145238-8cc58200-8bf3-11eb-8d22-bbdb8809f2aa.png" width="100" />
-<img src="https://user-images.githubusercontent.com/13848158/118172152-17c93880-b43d-11eb-9169-785e4b52d89c.png" width="100" />
+<img src="https://user-images.githubusercontent.com/13848158/96861310-f7239c00-1474-11eb-82a4-4fa6eb2c6bb1.jpg" width="80" />
+<img src="https://user-images.githubusercontent.com/13848158/96859323-6ba90b80-1472-11eb-9a6e-c60a90f11396.jpg" width="80" />
+<img src="https://user-images.githubusercontent.com/13848158/96861315-f854c900-1474-11eb-8e9d-c7a07cda8445.jpg" width="80" />
+<img src="https://user-images.githubusercontent.com/13848158/97086626-8b3c6180-1635-11eb-9e90-f215b898e298.png" width="80" />
+<img src="https://user-images.githubusercontent.com/13848158/112145238-8cc58200-8bf3-11eb-8d22-bbdb8809f2aa.png" width="80" />
+<img src="https://user-images.githubusercontent.com/13848158/118172152-17c93880-b43d-11eb-9169-785e4b52d89c.png" width="80" />
 
 </div>
-
+ 
 # About Aim
 
 | Track and version ML runs | Visualize runs via beautiful UI | Query runs metadata via SDK |
@@ -90,7 +87,7 @@ Aim's mission is to democratize AI dev tools.
 - Use SDK to query/access all your runs and tracked metadata.
 - You own your data - Aim is open source and self hosted.
 
-# Getting started
+# Quick Start
 
 Follow the steps below to get started with Aim.
 
