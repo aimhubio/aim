@@ -20,29 +20,24 @@
 
 <div align="center">
   
-[![Platform Support](https://img.shields.io/badge/platform-Linux%20%7C%20macOS-blue)]()
-[![PyPI - Python Version](https://img.shields.io/pypi/pyversions/aim)](https://pypi.org/project/aim/)
-[![PyPI Package](https://img.shields.io/pypi/v/aim?color=yellow)](https://pypi.org/project/aim/)
-[![License](https://img.shields.io/badge/License-Apache%202.0-orange.svg)](https://opensource.org/licenses/Apache-2.0)
-[![PyPI Downloads](https://img.shields.io/pypi/dw/aim?color=green)](https://pypi.org/project/aim/)
-[![Issues](https://img.shields.io/github/issues/aimhubio/aim)](http://github.com/aimhubio/aim/issues)
-
-<kbd>
-  <img src="" />
-</kbd>
-
-<br />
-
-<h6 style="color: grey">Integrate seamlessly with your favorite tools</h6>
-
-<img src="https://user-images.githubusercontent.com/13848158/96861310-f7239c00-1474-11eb-82a4-4fa6eb2c6bb1.jpg" width="80" />
-<img src="https://user-images.githubusercontent.com/13848158/96859323-6ba90b80-1472-11eb-9a6e-c60a90f11396.jpg" width="80" />
-<img src="https://user-images.githubusercontent.com/13848158/96861315-f854c900-1474-11eb-8e9d-c7a07cda8445.jpg" width="80" />
-<img src="https://user-images.githubusercontent.com/13848158/97086626-8b3c6180-1635-11eb-9e90-f215b898e298.png" width="80" />
-<img src="https://user-images.githubusercontent.com/13848158/112145238-8cc58200-8bf3-11eb-8d22-bbdb8809f2aa.png" width="80" />
-<img src="https://user-images.githubusercontent.com/13848158/118172152-17c93880-b43d-11eb-9169-785e4b52d89c.png" width="80" />
-
+  [![Platform Support](https://img.shields.io/badge/platform-Linux%20%7C%20macOS-blue)]()
+  [![PyPI - Python Version](https://img.shields.io/pypi/pyversions/aim)](https://pypi.org/project/aim/)
+  [![PyPI Package](https://img.shields.io/pypi/v/aim?color=yellow)](https://pypi.org/project/aim/)
+  [![License](https://img.shields.io/badge/License-Apache%202.0-orange.svg)](https://opensource.org/licenses/Apache-2.0)
+  [![PyPI Downloads](https://img.shields.io/pypi/dw/aim?color=green)](https://pypi.org/project/aim/)
+  [![Issues](https://img.shields.io/github/issues/aimhubio/aim)](http://github.com/aimhubio/aim/issues)
+  
 </div>
+
+<div align="center">
+  <span align="left">Integrations:</span>
+  <img src="https://user-images.githubusercontent.com/13848158/96861310-f7239c00-1474-11eb-82a4-4fa6eb2c6bb1.jpg" width="60" />
+  <img src="https://user-images.githubusercontent.com/13848158/96859323-6ba90b80-1472-11eb-9a6e-c60a90f11396.jpg" width="60" />
+  <img src="https://user-images.githubusercontent.com/13848158/96861315-f854c900-1474-11eb-8e9d-c7a07cda8445.jpg" width="60" />
+  <img src="https://user-images.githubusercontent.com/13848158/97086626-8b3c6180-1635-11eb-9e90-f215b898e298.png" width="60" />
+  <img src="https://user-images.githubusercontent.com/13848158/112145238-8cc58200-8bf3-11eb-8d22-bbdb8809f2aa.png" width="60" />
+  <img src="https://user-images.githubusercontent.com/13848158/118172152-17c93880-b43d-11eb-9169-785e4b52d89c.png" width="60" />
+ </div>
  
 # About Aim
 
@@ -132,7 +127,7 @@ _See documentation [here](https://aimstack.readthedocs.io/en/latest/quick_start/
 aim up
 ```
 
-**4. Query MD programmatically**
+**4. Or query runs programmatically via SDK**
 
 ```python
 from aim import Repo
@@ -296,11 +291,12 @@ The high-level features we are going to work on the next few months
   - [x] Plotly integration (Start: _Dec 1 2021_, Shipped: _Dec 17 2021_)
   - [x] Colab integration (Start: _Nov 18 2021_, Shipped: _Dec 17 2021_)
   - [x] Centralized tracking server (Start: _Oct 18 2021_, Shipped: _Jan 22 2022_)
-  - [ ] Tensorboard adaptor - visualize TensorBoard logs with Aim (Start: _Dec 17 2021_)
-  - [ ] Track git info, env vars, CLI arguments, dependencies (Start: _Jan 17 2022_)
+  - [x] Tensorboard adaptor - visualize TensorBoard logs with Aim (Start: _Dec 17 2021_, Shipped: _Feb 3 2022_)
+  - [x] Track git info, env vars, CLI arguments, dependencies (Start: _Jan 17 2022_, Shipped: _Feb 3 2022_)
 
 ### In progress:
   - [ ] Scikit-learn integration (Start: _Nov 18 2021_)
+  - [ ] MLFlow adaptor (visualize MLflow logs with Aim) (Start: _Feb 14 2022_)
 
 ### TODO:
 
@@ -319,7 +315,6 @@ The high-level features we are going to work on the next few months
   - [ ] Streamlit integration
   - [ ] Raytune integration
   - [ ] Google MLMD
-  - [ ] MLFlow adaptor (visualize MLflow logs with Aim)
 
 # Community
 
@@ -328,8 +323,3 @@ The high-level features we are going to work on the next few months
 1. [Read the docs](https://aimstack.readthedocs.io/en/latest/)
 2. [Open a feature request or report a bug](https://github.com/aimhubio/aim/issues)
 3. [Join our slack](https://slack.aimstack.io/)
-
-### Support Aim
-
-1. Drop a star
-2. [placeholder]
