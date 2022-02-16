@@ -201,7 +201,12 @@ setup(
             'aim.storage.treeview',
             ['aim/storage/treeview.py'],
             language='c++'
-        )
+        ),
+        Extension(
+            'aim.storage.utils',
+            ['aim/storage/utils.py'],
+            language='c++'
+        ),
     ]),
     entry_points={
         'console_scripts': [
