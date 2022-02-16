@@ -245,7 +245,7 @@ class Image(CustomObject):
             if self.storage[p] != other.storage[p]:
                 return False
 
-        return (self.storage['data'].data == other.storage['data'].data)
+        return (self.storage['data'].load() == other.storage['data'].load())
 
 
 def convert_to_aim_image_list(images, labels=None) -> List[Image]:
