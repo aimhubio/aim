@@ -7,6 +7,7 @@
 - Ability to group by metric.context (VkoHov)
 - Add ability to apply active style on table actions popover buttons with applied changes (arsengit)
 - Aim repo runs data automatic indexing (alberttorosyan)
+- Add wildcard support for `aim runs` subcommands (mihran113)
 
 ### Fixes: 
 
