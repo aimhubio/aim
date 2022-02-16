@@ -6,6 +6,10 @@ import { Grid } from '@material-ui/core';
 import { Dropdown, InputWrapper, Modal, Slider, Text } from 'components/kit';
 import ErrorBoundary from 'components/ErrorBoundary/ErrorBoundary';
 
+import { ANALYTICS_EVENT_KEYS } from 'config/analytics/analyticsKeysMap';
+
+import * as analytics from 'services/analytics';
+
 import { downloadLink, getSVGString, imgSource2Image } from 'utils/helper';
 
 import { FormatEnum, previewBounds, previewModalDimension } from './config';
@@ -17,7 +21,7 @@ function ExportPreview({
   openModal,
   onToggleExportPreview,
   withDynamicDimensions = false,
-  fileNameContext = 'name',
+  explorerPage = 'metrics',
   children,
 }: IExportPreviewProps): React.FunctionComponentElement<React.ReactNode> {
   const containerRef = React.useRef<HTMLDivElement>(null);
@@ -30,7 +34,7 @@ function ExportPreview({
   );
   const [format, setFormat] = React.useState<FormatEnum>(FormatEnum.SVG);
   const [fileName, setFileName] = React.useState<string>(
-    `${fileNameContext}-${moment().format('HH_mm_ss-D-MMM-YY')}`,
+    `${explorerPage}-${moment().format('HH_mm_ss-D-MMM-YY')}`,
   );
   const [isImageWidthValid, setIsImageWidthValid] =
     React.useState<boolean>(false);
@@ -124,6 +128,9 @@ function ExportPreview({
               },
             });
         }
+        analytics.trackEvent(
+          ANALYTICS_EVENT_KEYS[explorerPage].chart.controls.exportChart,
+        );
       } catch (err) {
         console.error(err);
       } finally {

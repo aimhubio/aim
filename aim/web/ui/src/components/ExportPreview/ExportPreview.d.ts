@@ -4,7 +4,7 @@ export interface IExportPreviewProps {
   openModal: boolean;
   onToggleExportPreview: () => void;
   withDynamicDimensions?: boolean;
-  fileNameContext?: string;
+  explorerPage?: 'metrics' | 'scatters';
   children?: React.ReactNode;
 }
 

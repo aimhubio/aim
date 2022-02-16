@@ -132,7 +132,7 @@ function Controls(
             <ExportPreview
               openModal={openExportModal}
               withDynamicDimensions
-              fileNameContext='scatters'
+              explorerPage='scatters'
               onToggleExportPreview={onToggleExportPreview}
             >
               <ChartGrid
