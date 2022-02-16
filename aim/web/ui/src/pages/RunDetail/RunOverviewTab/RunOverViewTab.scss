@@ -1,4 +1,9 @@
 @use 'src/styles/abstracts' as *;
 
 .RunOverviewTab {
+  height: 100%;
+  width: 100%;
+  &__cardBox {
+    margin-bottom: $space-lg;
+  }
 }

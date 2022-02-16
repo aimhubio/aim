@@ -7,4 +7,12 @@
   border: toRem(1px) solid $cuddle;
   border-radius: toRem(8px);
   width: 100%;
+  &__header {
+    margin-bottom: $space-md;
+    display: flex;
+    flex-direction: column;
+    &__subTitle {
+      margin-top: $space-xxxs;
+    }
+  }
 }
