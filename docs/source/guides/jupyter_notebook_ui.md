@@ -20,7 +20,7 @@ run['hparams'] = {
 ```
 
 .. note::
-   Do not forget to call run.finalize() once the training is over.
+    Do not forget to call run.finalize() once the training is over.
 
 After tracking runs with [aim.Run](../../quick_start/SDK_basics.html#create-a-run),
 run the following commands in the notebook to run the Aim UI:
@@ -37,4 +37,4 @@ run the following commands in the notebook to run the Aim UI:
 %aim up
 ```
 
-<img style="border: 1px solid #1d2253" src="../../_static/images/guides/integrations/jupyter/image.png" />
+<img style="border: 1px solid #1d2253" src="../_static/images/guides/integrations/jupyter/image.png" />
