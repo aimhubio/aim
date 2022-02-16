@@ -193,7 +193,6 @@ function deleteRun(id: string, successCallback: () => void = noop) {
             messages: ['Something went wrong'],
           });
         }
-        analytics.trackEvent('[RunDetail] Delete Run');
       });
   } catch (err: any) {
     onNotificationAdd({

@@ -4,11 +4,12 @@ import Menu from 'components/kit/Menu/Menu';
 import { IValidationMetadata } from 'components/kit/Input';
 import ErrorBoundary from 'components/ErrorBoundary/ErrorBoundary';
 
+import { ANALYTICS_EVENT_KEYS } from 'config/analytics/analyticsKeysMap';
+
 import useModel from 'hooks/model/useModel';
 
 import runTracesModel from 'services/models/runs/runTracesModel';
 import * as analytics from 'services/analytics';
-import { VisualizationMenuTitles } from 'services/models/runs/util';
 
 import DistributionsVisualizer from '../DistributionsVisualizer';
 import TextsVisualizer from '../TextsVisualizer';
@@ -26,7 +27,7 @@ const traceTypeVisualization = {
   images: ImagesVisualizer,
   distributions: DistributionsVisualizer,
   audios: AudiosVisualizer,
-  videos: () => null,
+  videos: () => null, // @TODO add tracking event keys in analyticsKeysMap object
   texts: TextsVisualizer,
   figures: PlotlyVisualizer,
 };
@@ -62,7 +63,8 @@ function TraceVisualizationContainer({
   const Visualizer = traceTypeVisualization[traceType];
 
   React.useEffect(() => {
-    analytics.pageView(`[RunDetail] [${VisualizationMenuTitles[traceType]}]`);
+    // @ts-ignore
+    analytics.pageView(ANALYTICS_EVENT_KEYS.runDetails.tabs[traceType].tabView);
   }, [traceType]);
 
   return (
