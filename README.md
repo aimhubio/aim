@@ -1,12 +1,12 @@
 <div align="center">
-  <img src="https://user-images.githubusercontent.com/13848158/154274755-52c8eb47-fce0-42a1-b93d-7dddd1d54f14.png">
+  <img src="https://user-images.githubusercontent.com/13848158/154338760-edfe1885-06f3-4e02-87fe-4b13a403516b.png">
   <h3>An easy-to-use & supercharged open-source experiment tracker</h3>
   Aim logs your training runs, enables a beautiful UI to compare them and an API to query them programmatically.
 </div>
 
 <br/>
 
-<img src="https://user-images.githubusercontent.com/13848158/154279106-fa7356cb-4152-4d2c-9f54-58e60bac32c4.png">
+<img src="https://user-images.githubusercontent.com/13848158/154338753-34484cda-95b8-4da8-a610-7fdf198c05fd.png">
 
 <p align="center">
   <a href="#about-aim"><b>About</b></a> &bull;
@@ -52,7 +52,7 @@
 
 | Track and version ML runs | Visualize runs via beautiful UI | Query runs metadata via SDK |
 |:--------------------:|:------------------------:|:-------------------:|
-| <img src="https://user-images.githubusercontent.com/13848158/154142101-c5d98122-6d7d-4ac9-9d41-dbbbc6a72068.png"> | <img src="https://user-images.githubusercontent.com/13848158/154142081-b29ed57d-85ae-45b0-be87-c6be636afddc.png"> | <img src="https://user-images.githubusercontent.com/13848158/154142097-9c923ffc-8e3e-4a99-8ace-c3dfc7b01a56.png"> |
+| <img src="https://user-images.githubusercontent.com/13848158/154337794-e9310239-6614-41b3-a95b-bb91f0bb6c4f.png"> | <img src="https://user-images.githubusercontent.com/13848158/154337788-03fe5b31-0fa3-44af-ae79-2861707d8602.png"> | <img src="https://user-images.githubusercontent.com/13848158/154337793-85175c78-5659-4dd0-bb2d-05017278e2fa.png"> |
 
 Aim is an open-source, self-hosted ML experiment tracking tool. 
 It's good at tracking lots (1000s) of training runs and it allows you to compare them with a performant and beautiful UI.
