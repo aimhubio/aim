@@ -55,7 +55,7 @@ function drawAxes(args: IDrawAxesArgs): void {
     }
 
     xAxis.tickFormat((d: any) =>
-      _.truncate(`${d}`, { length: 20 + 3 /* dots */ }),
+      _.truncate(`${d}`, { length: 15 + 3 /* dots */ }),
     );
 
     const alignmentKey = _.capitalize(getKeyByAlignment(alignmentConfig));
