@@ -1,6 +1,7 @@
 import React from 'react';
 
 import NotificationContainer from 'components/NotificationContainer/NotificationContainer';
+import ErrorBoundary from 'components/ErrorBoundary/ErrorBoundary';
 
 import { IHomeProps } from 'types/pages/home/Home';
 
@@ -18,21 +19,23 @@ function Home({
   askEmailSent,
 }: IHomeProps): React.FunctionComponentElement<React.ReactNode> {
   return (
-    <section className='Home__container'>
-      <div className='Home__Activity__container'>
-        <Activity activityData={activityData} />
-      </div>
-      <div className='Home__Explore__container'>
-        <SetupGuide askEmailSent={askEmailSent} onSendEmail={onSendEmail} />
-        <ExploreAim />
-      </div>
-      {notifyData?.length > 0 && (
-        <NotificationContainer
-          handleClose={onNotificationDelete}
-          data={notifyData}
-        />
-      )}
-    </section>
+    <ErrorBoundary>
+      <section className='Home__container'>
+        <div className='Home__Activity__container'>
+          <Activity activityData={activityData} />
+        </div>
+        <div className='Home__Explore__container'>
+          <SetupGuide askEmailSent={askEmailSent} onSendEmail={onSendEmail} />
+          <ExploreAim />
+        </div>
+        {notifyData?.length > 0 && (
+          <NotificationContainer
+            handleClose={onNotificationDelete}
+            data={notifyData}
+          />
+        )}
+      </section>
+    </ErrorBoundary>
   );
 }
 export default Home;

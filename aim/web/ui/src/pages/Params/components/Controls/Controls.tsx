@@ -5,6 +5,7 @@ import { Tooltip } from '@material-ui/core';
 import ControlPopover from 'components/ControlPopover/ControlPopover';
 import TooltipContentPopover from 'components/TooltipContentPopover/TooltipContentPopover';
 import { Icon } from 'components/kit';
+import ErrorBoundary from 'components/ErrorBoundary/ErrorBoundary';
 
 import { CONTROLS_DEFAULT_CONFIG } from 'config/controls/controlsDefaultConfig';
 
@@ -26,71 +27,79 @@ function Controls(
     );
   }, [props.tooltip]);
   return (
-    <div className='Params__Controls__container ScrollBar__hidden'>
-      <Tooltip title='Curve Interpolation'>
-        <div
-          className={`Params__Controls__anchor ${
-            props.curveInterpolation === CurveEnum.Linear
-              ? ''
-              : 'active outlined'
-          }`}
-          onClick={props.onCurveInterpolationChange}
-        >
-          <Icon
-            name='smoothing'
-            className={`Params__Controls__icon ${
-              props.curveInterpolation === CurveEnum.Linear ? '' : 'active'
-            } `}
-          />
-        </div>
-      </Tooltip>
-      <Tooltip title='Color Indicator'>
-        <div
-          className={`Params__Controls__anchor ${
-            props.isVisibleColorIndicator ? 'active outlined' : ''
-          }`}
-          onClick={props.onColorIndicatorChange}
-        >
-          <Icon
-            name='indicator'
-            className={`Params__Controls__icon ${
-              props.isVisibleColorIndicator ? 'active' : ''
-            } `}
-          />
-        </div>
-      </Tooltip>
-      <div>
-        <ControlPopover
-          title='Display in Tooltip'
-          anchor={({ onAnchorClick, opened }) => (
-            <Tooltip title='Tooltip Params'>
-              <div
-                onClick={onAnchorClick}
-                className={`Params__Controls__anchor ${
-                  opened ? 'active' : tooltipChanged ? 'active outlined' : ''
-                } `}
-              >
-                {/*TODO need to change icon */}
-                <Icon
-                  className={`Params__Controls__icon ${
-                    opened || tooltipChanged ? 'active' : ''
-                  } `}
-                  name='cursor'
-                />
-              </div>
-            </Tooltip>
-          )}
-          component={
-            <TooltipContentPopover
-              selectOptions={props.selectOptions}
-              selectedParams={props.tooltip.selectedParams}
-              displayTooltip={props.tooltip.display}
-              onChangeTooltip={props.onChangeTooltip}
+    <ErrorBoundary>
+      <div className='Params__Controls__container ScrollBar__hidden'>
+        <Tooltip title='Curve Interpolation'>
+          <div
+            className={`Params__Controls__anchor ${
+              props.curveInterpolation === CurveEnum.Linear
+                ? ''
+                : 'active outlined'
+            }`}
+            onClick={props.onCurveInterpolationChange}
+          >
+            <Icon
+              name='smoothing'
+              className={`Params__Controls__icon ${
+                props.curveInterpolation === CurveEnum.Linear ? '' : 'active'
+              } `}
             />
-          }
-        />
+          </div>
+        </Tooltip>
+        <Tooltip title='Color Indicator'>
+          <div
+            className={`Params__Controls__anchor ${
+              props.isVisibleColorIndicator ? 'active outlined' : ''
+            }`}
+            onClick={props.onColorIndicatorChange}
+          >
+            <Icon
+              name='indicator'
+              className={`Params__Controls__icon ${
+                props.isVisibleColorIndicator ? 'active' : ''
+              } `}
+            />
+          </div>
+        </Tooltip>
+        <div>
+          <ErrorBoundary>
+            <ControlPopover
+              title='Display in Tooltip'
+              anchor={({ onAnchorClick, opened }) => (
+                <Tooltip title='Tooltip Params'>
+                  <div
+                    onClick={onAnchorClick}
+                    className={`Params__Controls__anchor ${
+                      opened
+                        ? 'active'
+                        : tooltipChanged
+                        ? 'active outlined'
+                        : ''
+                    } `}
+                  >
+                    {/*TODO need to change icon */}
+                    <Icon
+                      className={`Params__Controls__icon ${
+                        opened || tooltipChanged ? 'active' : ''
+                      } `}
+                      name='cursor'
+                    />
+                  </div>
+                </Tooltip>
+              )}
+              component={
+                <TooltipContentPopover
+                  selectOptions={props.selectOptions}
+                  selectedParams={props.tooltip.selectedParams}
+                  displayTooltip={props.tooltip.display}
+                  onChangeTooltip={props.onChangeTooltip}
+                />
+              }
+            />
+          </ErrorBoundary>
+        </div>
       </div>
-    </div>
+    </ErrorBoundary>
   );
 }
 

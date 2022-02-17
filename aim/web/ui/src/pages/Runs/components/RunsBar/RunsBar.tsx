@@ -2,6 +2,7 @@ import React from 'react';
 
 import AppBar from 'components/AppBar/AppBar';
 import LiveUpdateSettings from 'components/LiveUpdateSettings/LiveUpdateSettings';
+import ErrorBoundary from 'components/ErrorBoundary/ErrorBoundary';
 
 function RunsBar(props: {
   enabled: boolean;
@@ -9,9 +10,11 @@ function RunsBar(props: {
   onLiveUpdateConfigChange: () => void;
 }): React.FunctionComponentElement<React.ReactNode> {
   return (
-    <AppBar title='Runs explorer'>
-      <LiveUpdateSettings {...props} />
-    </AppBar>
+    <ErrorBoundary>
+      <AppBar title='Runs explorer'>
+        <LiveUpdateSettings {...props} />
+      </AppBar>
+    </ErrorBoundary>
   );
 }
 

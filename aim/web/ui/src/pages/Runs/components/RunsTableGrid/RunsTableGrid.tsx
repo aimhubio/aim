@@ -17,7 +17,6 @@ import { formatSystemMetricName } from 'utils/formatSystemMetricName';
 function getRunsTableColumns(
   metricsColumns: any,
   runColumns: string[] = [],
-  groupFields: { [key: string]: string } | null,
   order: { left: string[]; middle: string[]; right: string[] },
   hiddenColumns: string[],
 ): ITableColumn[] {
@@ -51,24 +50,27 @@ function getRunsTableColumns(
       const systemMetric: boolean = isSystemMetric(key);
       acc = [
         ...acc,
-        ...Object.keys(metricsColumns[key]).map((metricContext) => ({
-          key: `${systemMetric ? key : `${key}_${metricContext}`}`,
-          content: isSystemMetric(key) ? (
-            <span>{formatSystemMetricName(key)}</span>
-          ) : (
-            <Badge
-              size='small'
-              color={COLORS[0][0]}
-              label={metricContext === '' ? 'Empty context' : metricContext}
-            />
-          ),
-          topHeader: isSystemMetric(key) ? 'System Metrics' : key,
-          pin: order?.left?.includes(`${key}_${metricContext}`)
-            ? 'left'
-            : order?.right?.includes(`${key}_${metricContext}`)
-            ? 'right'
-            : null,
-        })),
+        ...Object.keys(metricsColumns[key]).map((metricContext) => {
+          const columnKey = `${systemMetric ? key : `${key}_${metricContext}`}`;
+          return {
+            key: columnKey,
+            content: systemMetric ? (
+              <span>{formatSystemMetricName(key)}</span>
+            ) : (
+              <Badge
+                size='small'
+                color={COLORS[0][0]}
+                label={metricContext === '' ? 'Empty context' : metricContext}
+              />
+            ),
+            topHeader: systemMetric ? 'System Metrics' : key,
+            pin: order?.left?.includes(columnKey)
+              ? 'left'
+              : order?.right?.includes(columnKey)
+              ? 'right'
+              : null,
+          };
+        }),
       ];
       return acc;
     }, []),

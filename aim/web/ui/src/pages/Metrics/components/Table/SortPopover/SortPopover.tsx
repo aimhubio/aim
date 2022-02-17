@@ -10,6 +10,7 @@ import {
 } from '@material-ui/icons';
 
 import { Button, Text } from 'components/kit';
+import ErrorBoundary from 'components/ErrorBoundary/ErrorBoundary';
 
 import { ISortPopoverProps } from 'types/pages/metrics/components/SortPopover/SortPopover';
 
@@ -74,96 +75,98 @@ function SortPopover({
     }, [sortFields]);
 
   return (
-    <div className='SortPopover__container'>
-      <Text size={12} tint={50} className={'SortPopover__container__label'}>
-        SELECT FIELDS
-      </Text>
-      <div className='SortPopover__container__selectBox'>
-        <Autocomplete
-          id='select-sort'
-          size='small'
-          multiple
-          disableCloseOnSelect
-          options={selectOptions}
-          value={sortFields}
-          disableClearable
-          onChange={onChange}
-          onInputChange={(e, value, reason) => setInputValue(value)}
-          groupBy={(option) => option.group}
-          getOptionLabel={(option) => option.label}
-          getOptionSelected={(option, value) => {
-            return option.value === value.value;
-          }}
-          renderTags={() => null}
-          renderInput={(params) => (
-            <TextField
-              {...params}
-              variant='outlined'
-              className={
-                'TextField__OutLined__Small SortPopover__container__selectBox__selectInput'
-              }
-              placeholder={
-                sortFields.length > 0
-                  ? `${sortFields.length} Selected Items`
-                  : 'Select...'
-              }
+    <ErrorBoundary>
+      <div className='SortPopover__container'>
+        <Text size={12} tint={50} className={'SortPopover__container__label'}>
+          SELECT FIELDS
+        </Text>
+        <div className='SortPopover__container__selectBox'>
+          <Autocomplete
+            id='select-sort'
+            size='small'
+            multiple
+            disableCloseOnSelect
+            options={selectOptions}
+            value={sortFields}
+            disableClearable
+            onChange={onChange}
+            onInputChange={(e, value, reason) => setInputValue(value)}
+            groupBy={(option) => option.group}
+            getOptionLabel={(option) => option.label}
+            getOptionSelected={(option, value) => {
+              return option.value === value.value;
+            }}
+            renderTags={() => null}
+            renderInput={(params) => (
+              <TextField
+                {...params}
+                variant='outlined'
+                className={
+                  'TextField__OutLined__Small SortPopover__container__selectBox__selectInput'
+                }
+                placeholder={
+                  sortFields.length > 0
+                    ? `${sortFields.length} Selected Items`
+                    : 'Select...'
+                }
+              />
+            )}
+            ListboxProps={{
+              style: {
+                height: 250,
+              },
+              className:
+                'MuiAutocomplete-listbox SortPopover__container__selectBox__listBox',
+            }}
+            renderOption={(option, { selected }) => (
+              <div
+                className={classNames('SortPopover__select__item', {
+                  isDisabled: readOnlyFieldsKeys.includes(option.value),
+                })}
+              >
+                <Checkbox
+                  color='primary'
+                  icon={<CheckBoxOutlineBlank />}
+                  checkedIcon={<CheckBoxIcon />}
+                  style={{ marginRight: 4 }}
+                  checked={selected}
+                  disabled={readOnlyFieldsKeys.includes(option.value)}
+                />
+                <span>{option.label}</span>
+              </div>
+            )}
+          />
+        </div>
+        <div className='SortPopover__container__optionList'>
+          {!_.isEmpty(readOnlyFields) && (
+            <SortPopoverList
+              title={readOnlyFieldsLabel}
+              onSort={onSort}
+              filteredSortFields={readOnlyFields}
+              sortFields={sortFields}
             />
           )}
-          ListboxProps={{
-            style: {
-              height: 250,
-            },
-            className:
-              'MuiAutocomplete-listbox SortPopover__container__selectBox__listBox',
-          }}
-          renderOption={(option, { selected }) => (
-            <div
-              className={classNames('SortPopover__select__item', {
-                isDisabled: readOnlyFieldsKeys.includes(option.value),
-              })}
-            >
-              <Checkbox
-                color='primary'
-                icon={<CheckBoxOutlineBlank />}
-                checkedIcon={<CheckBoxIcon />}
-                style={{ marginRight: 4 }}
-                checked={selected}
-                disabled={readOnlyFieldsKeys.includes(option.value)}
-              />
-              <span>{option.label}</span>
-            </div>
+          {!_.isEmpty(filteredSortFields) && (
+            <SortPopoverList
+              title={'SORTED BY'}
+              onSort={onSort}
+              sortFields={sortFields}
+              filteredSortFields={filteredSortFields}
+            />
           )}
-        />
-      </div>
-      <div className='SortPopover__container__optionList'>
-        {!_.isEmpty(readOnlyFields) && (
-          <SortPopoverList
-            title={readOnlyFieldsLabel}
-            onSort={onSort}
-            filteredSortFields={readOnlyFields}
-            sortFields={sortFields}
-          />
-        )}
-        {!_.isEmpty(filteredSortFields) && (
-          <SortPopoverList
-            title={'SORTED BY'}
-            onSort={onSort}
-            sortFields={sortFields}
-            filteredSortFields={filteredSortFields}
-          />
-        )}
-      </div>
+        </div>
 
-      <div
-        className={classNames('SortPopover__reset__sorting', {
-          isEmpty: _.isEmpty(sortFields),
-        })}
-      >
-        <Button size='medium' color='inherit' onClick={onReset}>
-          Reset Sorting
-        </Button>
+        <div
+          className={classNames('SortPopover__reset__sorting', {
+            isEmpty: _.isEmpty(sortFields),
+          })}
+        >
+          <Button size='medium' color='inherit' onClick={onReset}>
+            Reset Sorting
+          </Button>
+        </div>
       </div>
-    </div>
+    </ErrorBoundary>
   );
 }
 

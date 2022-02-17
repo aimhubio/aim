@@ -7,6 +7,8 @@ import {
   IProjectsModelState,
 } from 'types/services/models/projects/projectsModel';
 
+import exceptionHandler from 'utils/app/exceptionHandler';
+
 const model = createModel<Partial<IProjectsModelState>>({});
 
 function getProjectsData() {
@@ -16,7 +18,9 @@ function getProjectsData() {
 
   return {
     call: () =>
-      call().then((data: IProject) => {
+      call((detail: any) => {
+        exceptionHandler({ detail, model });
+      }).then((data: IProject) => {
         //@ts-ignore
         window.telemetry_enabled = data.telemetry_enabled;
         model.setState({
@@ -32,7 +36,9 @@ function getProjectParams(sequences: string[] = ['metric']) {
 
   return {
     call: () =>
-      call().then((data: IProjectParamsMetrics) => {
+      call((detail: any) => {
+        exceptionHandler({ detail, model });
+      }).then((data: IProjectParamsMetrics) => {
         model.setState({
           metrics: data.metric,
           images: data.images,

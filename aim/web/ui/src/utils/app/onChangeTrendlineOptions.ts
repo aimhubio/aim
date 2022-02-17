@@ -1,3 +1,7 @@
+import { ANALYTICS_EVENT_KEYS } from 'config/analytics/analyticsKeysMap';
+
+import * as analytics from 'services/analytics';
+
 import { IModel, State } from 'types/services/models/model';
 import { ITrendlineOptions } from 'types/services/models/scatter/scatterAppModel';
 
@@ -29,6 +33,8 @@ export default function onChangeTrendlineOptions<M extends State>({
     updateURL({ configData, appName });
   }
 
-  // TODO: add analytics track event
-  // analytics.trackEvent(`[${appName}Explorer] Change trendline options`);
+  analytics.trackEvent(
+    // @ts-ignore
+    ANALYTICS_EVENT_KEYS[appName].chart.controls.changeTrendlineOptions,
+  );
 }

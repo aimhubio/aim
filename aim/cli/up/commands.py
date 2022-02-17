@@ -1,8 +1,15 @@
 import os
 import click
 
-from aim.web.configs import AIM_UI_DEFAULT_PORT, AIM_UI_DEFAULT_HOST, AIM_TF_LOGS_PATH_KEY, AIM_ENV_MODE_KEY, \
-    AIM_UI_MOUNTED_REPO_PATH, AIM_UI_TELEMETRY_KEY, AIM_UI_BASE_PATH
+from aim.web.configs import (
+    AIM_ENV_MODE_KEY,
+    AIM_TF_LOGS_PATH_KEY,
+    AIM_UI_BASE_PATH,
+    AIM_UI_DEFAULT_HOST,
+    AIM_UI_DEFAULT_PORT,
+    AIM_UI_MOUNTED_REPO_PATH,
+    AIM_UI_TELEMETRY_KEY,
+)
 from aim.sdk.repo import Repo, RepoStatus
 from aim.sdk.utils import clean_repo_path
 from aim.cli.up.utils import build_db_upgrade_command, build_uvicorn_command
@@ -105,9 +112,7 @@ def up(dev, host, port, workers, repo, tf_logs, ssl_keyfile, ssl_certfile, base_
                                    ' ' * ((line_width - len(opt_out_url)) // 2)))
         click.echo('└{}┘'.format('-' * (line_width - 2)))
 
-    click.echo(
-        click.style('Running Aim UI on repo `{}`'.format(repo_inst),
-                    fg='yellow'))
+    click.echo(click.style('Running Aim UI on repo `{}`'.format(repo_inst), fg='yellow'))
 
     scheme = 'https' if ssl_keyfile or ssl_certfile else 'http'
 
@@ -118,6 +123,5 @@ def up(dev, host, port, workers, repo, tf_logs, ssl_keyfile, ssl_certfile, base_
         server_cmd = build_uvicorn_command(host, port, workers, ssl_keyfile, ssl_certfile)
         exec_cmd(server_cmd, stream_output=True)
     except ShellCommandException:
-        click.echo('Failed to run Aim UI. '
-                   'Please see the logs above for details.')
+        click.echo('Failed to run Aim UI. Please see the logs above for details.')
         return

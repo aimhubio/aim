@@ -62,6 +62,21 @@ function TooltipContentPopover({
     );
   }, [selectOptions]);
 
+  const options = React.useMemo(() => {
+    if (inputValue.trim() !== '') {
+      const filtered = paramsOptions.filter((item) => {
+        return item.label.indexOf(inputValue) !== -1;
+      });
+
+      return filtered
+        .slice()
+        .sort(
+          (a, b) => a.label.indexOf(inputValue) - b.label.indexOf(inputValue),
+        );
+    }
+    return paramsOptions;
+  }, [paramsOptions, inputValue]);
+
   return (
     <ErrorBoundary>
       <div className='TooltipContentPopover'>
@@ -78,26 +93,22 @@ function TooltipContentPopover({
             size='small'
             multiple
             disableCloseOnSelect
-            options={
-              inputValue.trim() !== ''
-                ? paramsOptions
-                    .slice()
-                    .sort(
-                      (a, b) =>
-                        a.label.indexOf(inputValue) -
-                        b.label.indexOf(inputValue),
-                    )
-                : paramsOptions
-            }
+            options={options}
             value={values}
             onChange={onSelectedParamsChange}
-            onInputChange={(e, value) => setInputValue(value)}
             groupBy={(option) => option.group}
             getOptionLabel={(option) => option.label}
             getOptionSelected={(option, value) => option.value === value.value}
             renderInput={(params) => (
               <TextField
                 {...params}
+                inputProps={{
+                  ...params.inputProps,
+                  value: inputValue,
+                  onChange: (e: any) => {
+                    setInputValue(e.target.value);
+                  },
+                }}
                 variant='outlined'
                 placeholder='Select Params'
               />

@@ -1,4 +1,4 @@
-import React, { ChangeEvent } from 'react';
+import React from 'react';
 import _ from 'lodash-es';
 import moment from 'moment';
 import { saveAs } from 'file-saver';
@@ -9,6 +9,7 @@ import { ResizeModeEnum, RowHeightEnum } from 'config/enums/tableEnums';
 import { IMAGE_SIZE_CHANGE_DELAY } from 'config/mediaConfigs/mediaConfigs';
 import { ImageRenderingEnum } from 'config/enums/imageEnums';
 import { CONTROLS_DEFAULT_CONFIG } from 'config/controls/controlsDefaultConfig';
+import { ANALYTICS_EVENT_KEYS } from 'config/analytics/analyticsKeysMap';
 
 import {
   getImagesExploreTableColumns,
@@ -63,8 +64,6 @@ import JsonToCSV from 'utils/JsonToCSV';
 import { formatValue } from 'utils/formatValue';
 import getValueByField from 'utils/getValueByField';
 import arrayBufferToBase64 from 'utils/arrayBufferToBase64';
-import { formatToPositiveNumber } from 'utils/formatToPositiveNumber';
-import getMinAndMaxBetweenArrays from 'utils/getMinAndMaxBetweenArrays';
 import getTooltipData from 'utils/app/getTooltipData';
 import filterTooltipContent from 'utils/filterTooltipContent';
 import { getDataAsMediaSetNestedObject } from 'utils/app/getDataAsMediaSetNestedObject';
@@ -79,7 +78,7 @@ import createModel from '../model';
 const model = createModel<Partial<IImagesExploreAppModelState>>({
   requestIsPending: false,
   searchButtonDisabled: false,
-  applyButtonDisabled: true,
+  applyButtonDisabled: false,
 });
 
 let tooltipData: ITooltipData = {};
@@ -102,7 +101,8 @@ function getConfig(): IImagesExploreAppConfig {
       advancedQuery: '',
     },
     images: {
-      calcRanges: true,
+      indexDensity: '5',
+      recordDensity: '50',
       tooltip: {
         content: {},
         display: CONTROLS_DEFAULT_CONFIG.images.tooltip.display,
@@ -120,6 +120,7 @@ function getConfig(): IImagesExploreAppConfig {
       },
       sortFields: [],
       sortFieldsDict: {},
+      inputsValidations: {},
     },
     table: {
       resizeMode: ResizeModeEnum.Resizable,
@@ -127,6 +128,7 @@ function getConfig(): IImagesExploreAppConfig {
       sortFields: [],
       hiddenMetrics: [],
       hiddenColumns: [],
+      hideSystemMetrics: undefined,
       columnsWidths: {},
       columnsOrder: {
         left: [],
@@ -139,7 +141,7 @@ function getConfig(): IImagesExploreAppConfig {
 }
 
 let appRequestRef: {
-  call: () => Promise<IAppData>;
+  call: (exceptionHandler: (detail: any) => void) => Promise<IAppData>;
   abort: () => void;
 };
 
@@ -203,7 +205,9 @@ function getAppConfigData(appId: string) {
   appRequestRef = appsService.fetchApp(appId);
   return {
     call: async () => {
-      const appData = await appRequestRef.call();
+      const appData = await appRequestRef.call((detail: any) => {
+        exceptionHandler({ detail, model });
+      });
       let select = appData?.state?.select;
       if (select) {
         const compatibleSelectConfig = getCompatibleSelectConfig(
@@ -294,7 +298,6 @@ function getImagesData(
   if (shouldUrlUpdate) {
     updateURL(configData);
   }
-
   const recordSlice: number[] | undefined = configData?.images?.recordSlice as
     | number[]
     | undefined;
@@ -303,19 +306,20 @@ function getImagesData(
     | undefined;
   const recordDensity = configData?.images?.recordDensity;
   const indexDensity = configData?.images?.indexDensity;
-  const calcRanges = !!configData?.images.calcRanges;
   let query = getQueryStringFromSelect(configData?.select as any);
   let imageDataBody: any = {
     q: query !== '()' ? query : '',
-    calc_ranges: calcRanges,
   };
   if (recordSlice) {
+    //TODO check values nullability
     imageDataBody = {
       ...imageDataBody,
-      record_range: recordSlice
+      record_range: !_.isEmpty(recordSlice)
         ? `${recordSlice[0]}:${recordSlice[1] + 1}`
         : '',
-      index_range: indexSlice ? `${indexSlice[0]}:${indexSlice[1] + 1}` : '',
+      index_range: !_.isEmpty(indexSlice)
+        ? `${indexSlice?.[0]}:${(indexSlice?.[1] || 0) + 1}`
+        : '',
       record_density: recordDensity ?? '',
       index_density: indexDensity ?? '',
     };
@@ -328,7 +332,7 @@ function getImagesData(
         model.setState({
           requestIsPending: true,
           queryIsEmpty: false,
-          applyButtonDisabled: true,
+          applyButtonDisabled: false,
           selectedRows: shouldResetSelectedRows
             ? {}
             : model.getState()?.selectedRows,
@@ -339,6 +343,7 @@ function getImagesData(
         try {
           const stream = await imagesRequestRef.call(exceptionHandler);
           const runData = await getImagesMetricsData(stream);
+
           if (configData) {
             setModelData(runData, configData);
           }
@@ -359,7 +364,6 @@ function getImagesData(
           imagesData: {},
           tableData: [],
           images: {
-            calcRanges: true,
             tooltip: {
               content: {},
               display: true,
@@ -462,7 +466,7 @@ function processData(data: any[]): {
   const uniqHighLevelParams = _.uniq(highLevelParams);
   const uniqContexts = _.uniq(contexts);
   const mappedData =
-    data.reduce((acc: any, item: any) => {
+    data?.reduce((acc: any, item: any) => {
       acc[item.hash] = { runHash: item.hash, ...item.props };
       return acc;
     }, {}) || {};
@@ -524,6 +528,7 @@ function setModelData(rawData: any[], configData: IImagesExploreAppConfig) {
       },
     };
   }
+  const ranges = rawData?.[0]?.ranges;
   const tableData = getDataAsTableRows(
     data,
     params,
@@ -532,29 +537,67 @@ function setModelData(rawData: any[], configData: IImagesExploreAppConfig) {
     groupingSelectOptions,
   );
   const config = configData;
+  const recordSlice = [
+    _.inRange(
+      ranges?.record_range_used[0],
+      ranges?.record_range_total[0] - 1,
+      ranges?.record_range_total[1] + 1,
+    )
+      ? ranges?.record_range_used[0]
+      : ranges?.record_range_total[0],
+    _.inRange(
+      ranges?.record_range_used[1] - 1,
+      ranges?.record_range_total[0] - 1,
+      ranges?.record_range_total[1] + 1,
+    )
+      ? ranges?.record_range_used[1] - 1
+      : ranges?.record_range_total[1] - 1,
+  ];
+  const indexSlice = [
+    _.inRange(
+      ranges?.index_range_used[0],
+      ranges?.index_range_total[0] - 1,
+      ranges?.index_range_total[1] + 1,
+    )
+      ? ranges?.index_range_used[0]
+      : ranges?.index_range_total[0],
+    _.inRange(
+      ranges?.index_range_used[1] - 1,
+      ranges?.index_range_total[0] - 1,
+      ranges?.index_range_total[1] + 1,
+    )
+      ? ranges?.index_range_used[1] - 1
+      : ranges?.index_range_total[1] - 1,
+  ];
+  const recordRangeTotalCount =
+    ranges?.record_range_total[1] - 1 - ranges?.record_range_total[0];
+  const indexRangeTotalCount =
+    ranges?.index_range_total[1] - 1 - ranges?.index_range_total[0];
+  const recordDensity =
+    !config.images.recordDensity ||
+    +config.images.recordDensity < ranges?.record_range_total[0] ||
+    +config.images.recordDensity > recordRangeTotalCount
+      ? `${recordRangeTotalCount}`
+      : config.images.recordDensity;
+  const indexDensity =
+    !config.images.indexDensity ||
+    +config.images.indexDensity < ranges?.index_range_total[0] ||
+    +config.images.indexDensity > indexRangeTotalCount
+      ? `${indexRangeTotalCount}`
+      : config.images.indexDensity;
+
   config.images = {
     ...config.images,
-    stepRange: !config.images.calcRanges
-      ? config.images.stepRange
-      : !_.isEmpty(rawData)
-      ? (rawData[0].ranges.record_range as number[])
-      : [],
-    indexRange: !config.images.calcRanges
-      ? config.images.indexRange
-      : !_.isEmpty(rawData)
-      ? (rawData[0].ranges.index_range as number[])
-      : [],
-    recordSlice: getMinAndMaxBetweenArrays(
-      rawData?.[0]?.ranges.record_range as number[],
-      config.images.recordSlice as number[],
-    ),
-    indexSlice: getMinAndMaxBetweenArrays(
-      rawData?.[0]?.ranges.index_range as number[],
-      config.images.indexSlice as number[],
-    ),
-    recordDensity: config.images.recordDensity || '50',
-    indexDensity: config.images.indexDensity || '5',
-    calcRanges: false,
+    stepRange: !_.isEmpty(rawData)
+      ? [ranges?.record_range_total[0], ranges?.record_range_total[1] - 1]
+      : config.images.stepRange,
+    indexRange: !_.isEmpty(rawData)
+      ? [ranges?.index_range_total[0], ranges?.index_range_total[1] - 1]
+      : config.images.indexRange,
+    recordSlice,
+    indexSlice,
+    recordDensity,
+    indexDensity,
     tooltip: config.images.tooltip || {
       content: {},
       display: true,
@@ -735,6 +778,11 @@ function getGroupingSelectOptions({
       label: 'images.name',
       value: 'images_name',
     },
+    {
+      group: 'images',
+      label: 'images.context',
+      value: 'context',
+    },
     ...contextOptions,
     {
       group: 'record',
@@ -812,7 +860,10 @@ function onGroupingSelectChange({
       onStackingToggle();
     }
   }
-  analytics.trackEvent(`[ImagesExplorer] Group by ${groupName}`);
+  analytics.trackEvent(
+    // @ts-ignore
+    `${ANALYTICS_EVENT_KEYS.images.groupings[groupName].select}`,
+  );
 }
 
 function onGroupingModeChange({ value }: IOnGroupingModeChangeParams): void {
@@ -834,11 +885,13 @@ function onGroupingModeChange({ value }: IOnGroupingModeChangeParams): void {
       onStackingToggle();
     }
   }
-  analytics.trackEvent(
-    `[ImagesExplorer] ${
-      value ? 'Disable' : 'Enable'
-    } grouping by groupBy reverse mode`,
-  );
+  if (value) {
+    analytics.trackEvent(
+      // @ts-ignore
+      ANALYTICS_EVENT_KEYS.images.groupings.group.modeChange,
+      //@TODO change group to dynamic groupName when adding grouping type
+    );
+  }
 }
 
 function onGroupingReset(groupName: GroupNameType) {
@@ -861,7 +914,6 @@ function onGroupingReset(groupName: GroupNameType) {
       onStackingToggle();
     }
   }
-  analytics.trackEvent('[ImagesExplorer] Reset grouping');
 }
 
 function onGroupingApplyChange(): void {
@@ -942,7 +994,9 @@ function getImagesBlobsData(uris: string[]) {
     abort: request.abort,
     call: () => {
       return request
-        .call()
+        .call((detail: any) => {
+          exceptionHandler({ detail, model });
+        })
         .then(async (stream) => {
           let gen = adjustable_reader(stream);
           let buffer_pairs = decode_buffer_pairs(gen);
@@ -1112,7 +1166,10 @@ function onChangeTooltip(tooltip: Partial<IPanelTooltip>): void {
     model.setState({ config: configData });
     updateURL(configData);
   }
-  analytics.trackEvent('[ImagesExplorer] Change tooltip content');
+  analytics.trackEvent(
+    ANALYTICS_EVENT_KEYS.images.imagesPanel.controls.tooltip
+      .changeTooltipContent,
+  );
 }
 
 function getDataAsTableRows(
@@ -1299,11 +1356,15 @@ async function onBookmarkCreate({ name, description }: IBookmarkFormState) {
   if (configData) {
     const app: IAppData | any = await appsService
       .createApp({ state: configData, type: 'images' })
-      .call();
+      .call((detail: any) => {
+        exceptionHandler({ detail, model });
+      });
     if (app.id) {
       const bookmark: IDashboardData = await dashboardService
         .createDashboard({ app_id: app.id, name, description })
-        .call();
+        .call((detail: any) => {
+          exceptionHandler({ detail, model });
+        });
       if (bookmark.name) {
         onNotificationAdd({
           notification: {
@@ -1325,7 +1386,7 @@ async function onBookmarkCreate({ name, description }: IBookmarkFormState) {
       }
     }
   }
-  analytics.trackEvent('[ImagesExplorer] Create bookmark');
+  analytics.trackEvent(ANALYTICS_EVENT_KEYS.images.createBookmark);
 }
 
 function onBookmarkUpdate(id: string) {
@@ -1334,7 +1395,9 @@ function onBookmarkUpdate(id: string) {
   if (configData) {
     appsService
       .updateApp(id, { state: configData, type: 'images' })
-      .call()
+      .call((detail: any) => {
+        exceptionHandler({ detail, model });
+      })
       .then((res: IDashboardData | any) => {
         if (res.id) {
           onNotificationAdd({
@@ -1348,7 +1411,6 @@ function onBookmarkUpdate(id: string) {
         }
       });
   }
-  analytics.trackEvent('[ImagesExplorer] Update bookmark');
 }
 
 function updateColumnsWidths(key: string, width: number, isReset: boolean) {
@@ -1398,9 +1460,9 @@ function updateTableSortFields(sortFields: SortFields) {
     updateModelData(configUpdate, true);
   }
   analytics.trackEvent(
-    `[ImagesExplorer][Table] ${
+    `${ANALYTICS_EVENT_KEYS.images.table.changeSorting} ${
       _.isEmpty(sortFields) ? 'Reset' : 'Apply'
-    } table sorting by a key`,
+    }`,
   );
 }
 // internal function to update config.table.sortFields and cache data
@@ -1424,7 +1486,7 @@ function updateImagesSortFields(sortFields: SortFields, sortFieldsDict: any) {
     updateModelData(configUpdate, true);
   }
   analytics.trackEvent(
-    `[ImagesExplorer] ${
+    `${ANALYTICS_EVENT_KEYS.images.imagesPanel.controls.changeSorting} ${
       _.isEmpty(sortFields) ? 'Reset' : 'Apply'
     } images sorting by a key`,
   );
@@ -1539,7 +1601,7 @@ function onExportTableData(e: React.ChangeEvent<any>): void {
   const dataToExport: { [key: string]: string }[] = [];
 
   groupedRows.forEach((groupedRow: any[], groupedRowIndex: number) => {
-    groupedRow.forEach((row: any) => {
+    groupedRow?.forEach((row: any) => {
       const filteredRow: any = getFilteredRow(filteredHeader, row);
       dataToExport.push(filteredRow);
     });
@@ -1552,7 +1614,7 @@ function onExportTableData(e: React.ChangeEvent<any>): void {
     type: 'text/csv;charset=utf-8;',
   });
   saveAs(blob, `images-${moment().format('HH:mm:ss · D MMM, YY')}.csv`);
-  analytics.trackEvent('[ImagesExplorer] Export runs data to CSV');
+  analytics.trackEvent(ANALYTICS_EVENT_KEYS.images.table.exports.csv);
 }
 
 function onRowVisibilityChange(metricKey: string) {
@@ -1629,7 +1691,7 @@ function onSelectRunQueryChange(query: string) {
     const newConfig = {
       ...configData,
       select: { ...configData.select, advancedQuery: query, query },
-      images: { ...configData.images, calcRanges: true },
+      images: { ...configData.images },
     };
 
     model.setState({
@@ -1655,9 +1717,7 @@ function onTableResizeModeChange(mode: ResizeModeEnum): void {
     });
     setItem('imagesExploreTable', encode(table));
   }
-  analytics.trackEvent(
-    `[ImagesExplorer][Table] Set table view mode to "${mode}"`,
-  );
+  analytics.trackEvent(ANALYTICS_EVENT_KEYS.images.table.changeResizeMode);
 }
 
 function onSearchQueryCopy(): void {
@@ -1717,7 +1777,7 @@ function onSelectAdvancedQueryChange(query: string) {
     const newConfig = {
       ...configData,
       select: { ...configData.select, advancedQuery: query },
-      images: { ...configData.images, calcRanges: true },
+      images: { ...configData.images },
     };
 
     model.setState({
@@ -1733,7 +1793,7 @@ function onImagesExploreSelectChange(options: ISelectOption[]) {
     const newConfig = {
       ...configData,
       select: { ...configData.select, options },
-      images: { ...configData.images, calcRanges: true },
+      images: { ...configData.images },
     };
 
     model.setState({
@@ -1765,10 +1825,11 @@ function toggleSelectAdvancedMode() {
 
     model.setState({ config: newConfig });
   }
+
   analytics.trackEvent(
-    `[ImagesExplorer] Turn ${
+    `${ANALYTICS_EVENT_KEYS.images.useAdvancedSearch} ${
       !configData?.select.advancedMode ? 'on' : 'off'
-    } the advanced mode of select form`,
+    }`,
   );
 }
 
@@ -1791,16 +1852,10 @@ function onColumnsOrderChange(columnsOrder: any) {
     setItem('imagesExploreTable', encode(table));
     updateModelData(config);
   }
-  if (
-    _.isEmpty(columnsOrder?.left) &&
-    _.isEmpty(columnsOrder?.middle) &&
-    _.isEmpty(columnsOrder?.right)
-  ) {
-    analytics.trackEvent('[ImagesExplorer][Table] Reset table columns order');
-  }
+  analytics.trackEvent(ANALYTICS_EVENT_KEYS.images.table.changeColumnsOrder);
 }
 
-function onColumnsVisibilityChange(hiddenColumns: string[]) {
+function onColumnsVisibilityChange(hiddenColumns: string[] | string | any) {
   const configData: IImagesExploreAppConfig | undefined =
     model.getState()?.config;
   const columnsData = model.getState()!.tableColumns!;
@@ -1823,9 +1878,9 @@ function onColumnsVisibilityChange(hiddenColumns: string[]) {
     updateModelData(configUpdate);
   }
   if (hiddenColumns[0] === 'all') {
-    analytics.trackEvent('[ImagesExplorer][Table] Hide all table columns');
+    analytics.trackEvent(ANALYTICS_EVENT_KEYS.images.table.showAllColumns);
   } else if (_.isEmpty(hiddenColumns)) {
-    analytics.trackEvent('[ImagesExplorer][Table] Show all table columns');
+    analytics.trackEvent(ANALYTICS_EVENT_KEYS.images.table.hideAllColumns);
   }
 }
 
@@ -1834,7 +1889,7 @@ function onTableDiffShow() {
   if (sameValueColumns) {
     onColumnsVisibilityChange(sameValueColumns);
   }
-  analytics.trackEvent('[ImagesExplorer][Table] Show table columns diff');
+  analytics.trackEvent(ANALYTICS_EVENT_KEYS.images.table.showDiff);
 }
 
 function onRowHeightChange(height: RowHeightSize) {
@@ -1855,9 +1910,9 @@ function onRowHeightChange(height: RowHeightSize) {
     setItem('metricsTable', encode(table));
   }
   analytics.trackEvent(
-    `[ImagesExplorer][Table] Set table row height to "${RowHeightEnum[
-      height
-    ].toLowerCase()}"`,
+    `${
+      ANALYTICS_EVENT_KEYS.images.table.changeTableRowHeight
+    } to "${RowHeightEnum[height].toLowerCase()}"`,
   );
 }
 
@@ -1888,7 +1943,7 @@ function onImageVisibilityChange(metricsKeys: string[]) {
     updateModelData(config);
   }
   analytics.trackEvent(
-    `[ImagesExplorer][Table] ${
+    `${ANALYTICS_EVENT_KEYS.images.table.metricVisibilityChange} ${
       metricsKeys[0] === 'all'
         ? 'Visualize all hidden metrics from table'
         : 'Hide all metrics from table'
@@ -1909,59 +1964,50 @@ function onSliceRangeChange(key: string, newValue: number[] | number) {
       images,
     };
 
-    const searchButtonDisabled: boolean =
-      images.recordDensity === '0' || images.indexDensity === '0';
     model.setState({
       config,
-      searchButtonDisabled,
-      applyButtonDisabled: searchButtonDisabled,
     });
   }
 }
 
-function onDensityChange(e: React.ChangeEvent<HTMLInputElement>, key: string) {
-  let { value } = e.target;
+function onDensityChange(value: number, metaData: any, key: string) {
   const configData: IImagesExploreAppConfig | undefined =
     model.getState()?.config;
   if (configData?.images) {
     const images = {
       ...configData.images,
-      [key]: formatToPositiveNumber(+value),
+      [key]: +value,
+      inputsValidations: {
+        ...configData.images?.inputsValidations,
+        [key]: metaData?.isValid,
+      },
     };
     const config = {
       ...configData,
       images,
     };
-    const searchButtonDisabled =
-      images.recordDensity === '0' || images.indexDensity === '0';
     model.setState({
       config,
-      searchButtonDisabled,
-      applyButtonDisabled: searchButtonDisabled,
     });
   }
+  applyBtnDisabledHandler();
 }
 
-function onRecordDensityChange(event: ChangeEvent<{ value: number }>) {
-  const configData: IImagesExploreAppConfig | undefined =
-    model.getState()?.config;
-  if (configData?.images) {
-    const images = {
-      ...configData.images,
-      recordDensity: formatToPositiveNumber(+event.target.value),
-    };
-    const config = {
-      ...configData,
-      images,
-    };
-    const searchButtonDisabled =
-      images.recordDensity === '0' || images.indexDensity === '0';
-    model.setState({
-      config,
-      searchButtonDisabled,
-      applyButtonDisabled: searchButtonDisabled,
-    });
-  }
+function applyBtnDisabledHandler() {
+  const state = model.getState();
+  const inputsValidations = state.config?.images?.inputsValidations || {};
+
+  const isInputsValid =
+    _.size(
+      Object.keys(inputsValidations).filter((key) => {
+        return inputsValidations[key] === false;
+      }),
+    ) <= 0;
+
+  model.setState({
+    ...state,
+    applyButtonDisabled: !isInputsValid,
+  });
 }
 
 const onImageSizeChange = _.throttle((value: number) => {
@@ -1984,6 +2030,10 @@ const onImageSizeChange = _.throttle((value: number) => {
       config,
     });
   }
+
+  analytics.trackEvent(
+    `${ANALYTICS_EVENT_KEYS.images.imagesPanel.controls.changeImageProperties} / size`,
+  );
 }, IMAGE_SIZE_CHANGE_DELAY);
 
 function onImageRenderingChange(type: ImageRenderingEnum) {
@@ -2001,11 +2051,15 @@ function onImageRenderingChange(type: ImageRenderingEnum) {
       ...configData,
       images,
     };
+
     updateURL(config as IImagesExploreAppConfig);
     model.setState({
       config,
     });
   }
+  console.log(
+    `${ANALYTICS_EVENT_KEYS.images.imagesPanel.controls.changeImageProperties} / image rendering to ${type}`,
+  );
 }
 
 function onImageAlignmentChange(
@@ -2028,6 +2082,10 @@ function onImageAlignmentChange(
     updateURL(config as IImagesExploreAppConfig);
     model.setState({ config });
   }
+
+  analytics.trackEvent(
+    `${ANALYTICS_EVENT_KEYS.images.imagesPanel.controls.changeImageProperties} / Alignment to ${option?.label}`,
+  );
 }
 
 function showRangePanel() {
@@ -2071,6 +2129,10 @@ function archiveRuns(
             model,
           });
         }
+      } finally {
+        analytics.trackEvent(
+          ANALYTICS_EVENT_KEYS.images.table.archiveRunsBatch,
+        );
       }
     },
     abort: runsArchiveRef.abort,
@@ -2109,6 +2171,8 @@ function deleteRuns(ids: string[]): {
             model,
           });
         }
+      } finally {
+        analytics.trackEvent(ANALYTICS_EVENT_KEYS.images.table.deleteRunsBatch);
       }
     },
     abort: runsDeleteRef.abort,
@@ -2143,6 +2207,13 @@ function onStackingToggle(): void {
     const config = { ...configData, images };
     updateURL(config as IImagesExploreAppConfig);
     model.setState({ config });
+    analytics.trackEvent(
+      `${ANALYTICS_EVENT_KEYS.images.imagesPanel.controls.groupStacking} to ${
+        !configData.images.additionalProperties.stacking
+          ? 'Enabled'
+          : 'Disabled'
+      }`,
+    );
   }
 }
 
@@ -2185,7 +2256,6 @@ const imagesExploreAppModel = {
   onImageVisibilityChange,
   onSliceRangeChange,
   onDensityChange,
-  onRecordDensityChange,
   getImagesBlobsData,
   onChangeTooltip,
   onActivePointChange,

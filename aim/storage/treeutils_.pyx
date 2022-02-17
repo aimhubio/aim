@@ -11,6 +11,7 @@ from aim.storage.utils import ArrayFlag, ObjectFlag, CustomObjectFlagType
 from aim.storage.object import CustomObjectBase, CustomObject
 from aim.storage.treeview import TreeView
 from aim.storage.inmemorytreeview import InMemoryTreeView
+from aim.storage.treeutils_non_native import convert_to_native_object
 
 
 def unfold_tree(
@@ -55,10 +56,10 @@ def unfold_tree(
     elif isinstance(obj, TreeView):
         # TODO we need to implement TreeView.traverse()
         raise NotImplementedError
-    elif not strict:
-        yield path, repr(obj)
     else:
-        raise TypeError(f'Not supported value `{obj}` of type `{type(obj)}`.')
+        obj = convert_to_native_object(obj, strict=strict)
+        yield from unfold_tree(obj, path=path, unfold_array=unfold_array, depth=depth, strict=strict)
+
 
 
 cpdef val_to_node(

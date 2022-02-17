@@ -61,6 +61,8 @@ class Image(CustomObject):
             self._from_tf_tensor(image, params)
         elif inst_has_typename(image, ['numpy', 'array']):
             self._from_numpy_array(image, params)
+        elif inst_has_typename(image, ['Figure', 'matplotlib', 'figure']):
+            self._from_matplotlib_figure(image, params)
         else:
             raise TypeError(f'Cannot convert to aim.Image. Unsupported type {type(image)}.')
         self.caption = caption
@@ -221,6 +223,18 @@ class Image(CustomObject):
         else:
             pil_image = PILImage.fromarray(array)
         self._from_pil_image(pil_image, params)
+
+    def _from_matplotlib_figure(self, figure, params):
+        try:
+            assert hasattr(figure, 'savefig')
+        except AssertionError:
+            raise ValueError('Cannot convert from matplotlib figure.')
+
+        buffer = BytesIO()
+        figure.savefig(buffer)
+        buffer.seek(0)
+
+        return self._from_pil_image(PILImage.open(buffer), params)
 
     def __eq__(self, other):
         if not isinstance(other, Image):

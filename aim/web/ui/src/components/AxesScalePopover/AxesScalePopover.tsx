@@ -25,7 +25,6 @@ function AxesScalePopover(
 
   return (
     <ErrorBoundary>
-      {' '}
       <div className='AxesScalePopover'>
         <Text
           size={12}

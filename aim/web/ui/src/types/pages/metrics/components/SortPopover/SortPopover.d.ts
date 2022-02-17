@@ -1,3 +1,5 @@
+import { AppNameEnum } from 'services/models/explorer';
+
 import { SortFields } from 'utils/getSortedFields';
 
 export interface ISortPopoverProps {
@@ -6,6 +8,7 @@ export interface ISortPopoverProps {
   sortOptions: SortFields;
   sortFields: SortFields;
   readOnlyFieldsLabel?: string;
+  appName?: AppNameEnum;
 }
 export interface ISortPopoverListProps {
   onSort: any;

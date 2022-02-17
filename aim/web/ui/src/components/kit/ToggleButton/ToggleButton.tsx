@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 
 import ErrorBoundary from 'components/ErrorBoundary/ErrorBoundary';
 
@@ -19,11 +19,8 @@ function ToggleButton({
   id,
   className,
 }: IToggleButtonProps): React.FunctionComponentElement<React.ReactNode> {
-  const [state, setState] = React.useState<number | string>(value);
-
   function handleToggle(e: any): void {
     const { id, value } = e.currentTarget;
-    setState(value);
     onChange(value, id);
   }
 
@@ -35,9 +32,9 @@ function ToggleButton({
           <Button
             id={id}
             value={leftValue}
-            variant={state === leftValue ? 'contained' : 'text'}
+            variant={value === leftValue ? 'contained' : 'text'}
             size='small'
-            color={state === leftValue ? 'primary' : 'inherit'}
+            color={value === leftValue ? 'primary' : 'inherit'}
             onClick={handleToggle}
           >
             {leftLabel}
@@ -45,9 +42,9 @@ function ToggleButton({
           <Button
             id={id}
             value={rightValue}
-            variant={state === rightValue ? 'contained' : 'text'}
+            variant={value === rightValue ? 'contained' : 'text'}
             size='small'
-            color={state === rightValue ? 'primary' : 'inherit'}
+            color={value === rightValue ? 'primary' : 'inherit'}
             onClick={handleToggle}
           >
             {rightLabel}

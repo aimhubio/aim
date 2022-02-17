@@ -2,6 +2,7 @@ import React, { memo, useRef } from 'react';
 
 import ConfirmModal from 'components/ConfirmModal/ConfirmModal';
 import { Icon } from 'components/kit';
+import ErrorBoundary from 'components/ErrorBoundary/ErrorBoundary';
 
 import tagsAppModel from 'services/models/tags/tagsAppModel';
 
@@ -36,23 +37,25 @@ function TagSoftDelete({
   }
 
   return (
-    <ConfirmModal
-      open={modalIsOpen}
-      onCancel={onSoftDeleteModalToggle}
-      onSubmit={archivedRef.current?.archived ? onTagShow : onTagHide}
-      text={`Are you sure you want to ${
-        archivedRef.current?.archived ? 'bring back' : 'hide'
-      } this tag?`}
-      icon={
-        archivedRef.current?.archived ? (
-          <Icon name='eye-show-outline' />
-        ) : (
-          <Icon name='eye-outline-hide' />
-        )
-      }
-      title='Are you sure?'
-      confirmBtnText={archivedRef.current?.archived ? 'Bring back' : 'Hide'}
-    />
+    <ErrorBoundary>
+      <ConfirmModal
+        open={modalIsOpen}
+        onCancel={onSoftDeleteModalToggle}
+        onSubmit={archivedRef.current?.archived ? onTagShow : onTagHide}
+        text={`Are you sure you want to ${
+          archivedRef.current?.archived ? 'bring back' : 'hide'
+        } this tag?`}
+        icon={
+          archivedRef.current?.archived ? (
+            <Icon name='eye-show-outline' />
+          ) : (
+            <Icon name='eye-outline-hide' />
+          )
+        }
+        title='Are you sure?'
+        confirmBtnText={archivedRef.current?.archived ? 'Bring back' : 'Hide'}
+      />
+    </ErrorBoundary>
   );
 }
 

@@ -1,3 +1,5 @@
+import { ANALYTICS_EVENT_KEYS } from 'config/analytics/analyticsKeysMap';
+
 import * as analytics from 'services/analytics';
 
 import { IModel, State } from 'types/services/models/model';
@@ -28,7 +30,11 @@ export default function onCurveInterpolationChange<M extends State>({
     updateModelData({ ...configData, chart }, true);
 
     analytics.trackEvent(
-      `[${appName}Explorer][Chart] Set interpolation mode to "${
+      `${
+        // @ts-ignore
+        ANALYTICS_EVENT_KEYS[appName].chart.controls
+          .changeCurveInterpolationMode
+      } to "${
         configData.chart.curveInterpolation === CurveEnum.Linear
           ? 'cubic'
           : 'linear'

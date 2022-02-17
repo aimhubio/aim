@@ -5,8 +5,10 @@ import appsService from 'services/api/apps/appsService';
 import { IAppModelConfig } from 'types/services/models/explorer/createAppModel';
 import { IModel, State } from 'types/services/models/model';
 import { IAppData } from 'types/services/models/metrics/metricsAppModel';
+import { IApiRequest } from 'types/services/services';
 
 import { getCompatibleSelectConfig } from './getCompatibleSelectConfig';
+import exceptionHandler from './exceptionHandler';
 
 export default function getAppConfigData<M extends State>({
   appId,
@@ -15,10 +17,7 @@ export default function getAppConfigData<M extends State>({
   model,
 }: {
   appId: string;
-  appRequest: {
-    call: () => Promise<IAppData>;
-    abort: () => void;
-  };
+  appRequest: IApiRequest<IAppData>;
   config: IAppModelConfig;
   model: IModel<M>;
 }): {
@@ -31,7 +30,9 @@ export default function getAppConfigData<M extends State>({
   appRequest = appsService.fetchApp(appId);
   return {
     call: async () => {
-      const appData = await appRequest.call();
+      const appData = await appRequest.call((detail: any) => {
+        exceptionHandler({ detail, model });
+      });
       let select = appData?.state?.select;
       if (select) {
         const compatibleSelectConfig = getCompatibleSelectConfig(

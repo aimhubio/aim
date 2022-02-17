@@ -6,6 +6,8 @@ import { Tooltip } from '@material-ui/core';
 import { Text } from 'components/kit';
 import ErrorBoundary from 'components/ErrorBoundary/ErrorBoundary';
 
+import { ANALYTICS_EVENT_KEYS } from 'config/analytics/analyticsKeysMap';
+
 import * as analytics from 'services/analytics';
 
 import { encode } from 'utils/encoder/encoder';
@@ -56,11 +58,16 @@ function HeatMap({
   }
 
   let lastDay = endDate;
+
   while (lastDay.getDay() !== 0) {
     lastDay = shiftDate(lastDay, 1);
   }
 
-  const diffDays = Math.round(Math.abs((firstDay - lastDay) / oneDay));
+  if (lastDay.getDay() === 0) {
+    lastDay = shiftDate(lastDay, 7);
+  }
+
+  const diffDays = Math.floor(Math.abs((firstDay - lastDay) / oneDay));
 
   const maxVal = Math.max(
     ...data?.map((i: any) => i?.[1]).filter((i: any) => Number.isInteger(i)),
@@ -119,7 +126,6 @@ function HeatMap({
   function getScale(value: number) {
     return Math.ceil((value / maxVal) * scaleRange);
   }
-
   function renderCell(index: number) {
     const dataItem = getItem(index);
     const date = indexToDate(index);
@@ -131,6 +137,7 @@ function HeatMap({
 
     function onClickeCell(e: React.MouseEvent) {
       e.stopPropagation();
+      onCellClick();
       if (scale) {
         const startDate = date.getTime();
         const endDate = new Date(
@@ -147,7 +154,7 @@ function HeatMap({
             startDate / 1000
           } and run.creation_time <= ${endDate / 1000}`,
         });
-        analytics.trackEvent('[Home][HeatMap] Activity cell click');
+        analytics.trackEvent(ANALYTICS_EVENT_KEYS.home.activityCellClick);
         history.push(`/runs?select=${search}`);
       }
     }

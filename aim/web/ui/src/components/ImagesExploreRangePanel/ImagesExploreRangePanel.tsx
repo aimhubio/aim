@@ -4,6 +4,9 @@ import { Button } from 'components/kit';
 import SliderWithInput from 'components/SliderWithInput';
 import ErrorBoundary from 'components/ErrorBoundary/ErrorBoundary';
 
+import { ANALYTICS_EVENT_KEYS } from 'config/analytics/analyticsKeysMap';
+
+import * as analytics from 'services/analytics';
 import imagesExploreAppModel from 'services/models/imagesExplore/imagesExploreAppModel';
 
 import { IImagesExploreRangePanelProps } from './types.d';
@@ -23,6 +26,9 @@ function ImagesExploreRangePanel({
 }: IImagesExploreRangePanelProps): React.FunctionComponentElement<React.ReactNode> {
   const searchMetricsRef = React.useRef<any>(null);
   function handleSearch() {
+    analytics.trackEvent(
+      ANALYTICS_EVENT_KEYS.images.imagesPanel.clickApplyButton,
+    );
     searchMetricsRef.current = imagesExploreAppModel.getImagesData(true);
     searchMetricsRef.current.call();
   }
@@ -44,9 +50,28 @@ function ImagesExploreRangePanel({
             onRangeChange={(value: number | number[]) =>
               onSliceRangeChange('recordSlice', value)
             }
-            onCountChange={(event: React.ChangeEvent<HTMLInputElement>) =>
-              onDensityChange(event, 'recordDensity')
+            onCountChange={(value, metaData) =>
+              onDensityChange(value, metaData, 'recordDensity')
             }
+            inputValidationPatterns={[
+              {
+                errorCondition: (value: string | number) =>
+                  +value < stepRange[0],
+                errorText:
+                  stepRange[0] <= 0
+                    ? 'Value should be greater then 0'
+                    : `Value should be equal or greater then ${stepRange[0]}`,
+              },
+              {
+                errorCondition: (value: string | number) =>
+                  +value > stepRange[1],
+                errorText: `Value should be equal or smaller then ${stepRange[1]}`,
+              },
+              {
+                errorCondition: (value: string | number) => +value === 0,
+                errorText: "Value can't be 0",
+              },
+            ]}
           />
           <div className='ImagesExploreRangePanel__container__sliderContainerSeparator'></div>
           <SliderWithInput
@@ -62,9 +87,28 @@ function ImagesExploreRangePanel({
             onRangeChange={(value: number | number[]) =>
               onSliceRangeChange('indexSlice', value)
             }
-            onCountChange={(event: React.ChangeEvent<HTMLInputElement>) =>
-              onDensityChange(event, 'indexDensity')
+            onCountChange={(value, metaData) =>
+              onDensityChange(value, metaData, 'indexDensity')
             }
+            inputValidationPatterns={[
+              {
+                errorCondition: (value: string | number) =>
+                  +value < indexRange[0],
+                errorText:
+                  indexRange[0] <= 0
+                    ? 'Value should be greater then 0'
+                    : `Value should be equal or greater then ${indexRange[0]}`,
+              },
+              {
+                errorCondition: (value: string | number) =>
+                  +value > indexRange[1],
+                errorText: `Value should be equal or smaller then ${indexRange[1]}`,
+              },
+              {
+                errorCondition: (value: string | number) => +value === 0,
+                errorText: "Value can't be 0",
+              },
+            ]}
           />
           <div className='ImagesExploreRangePanel__container__searchButtonContainer'>
             <Button

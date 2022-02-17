@@ -115,7 +115,7 @@ class TableRow extends React.PureComponent {
     }
 
     return (
-      <ErrorBoundary>
+      <ErrorBoundary key={rest.key}>
         <div {...rest} className={className} style={style} {...eventHandlers}>
           {cells}
         </div>

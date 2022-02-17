@@ -34,4 +34,5 @@ export default function onGroupingSelectChange<M extends State>({
     updateModelData(configData, true);
   }
   analytics.trackEvent(`[${appName}Explorer] Group by ${groupName}`);
+  // doesnt need additional key for tracking, just didnt removed this line
 }

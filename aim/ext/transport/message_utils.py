@@ -11,6 +11,7 @@ Message = Union[rpc_messages.ResourceRequest, rpc_messages.ResourceResponse]
 
 
 def pack_stream(tree: Iterator[Tuple[bytes, bytes]]) -> bytes:
+    # TODO: [MV] check the performance diff of current version vs collecting the whole tree as a chunk
     for key, val in tree:
         if not isinstance(val, BLOB):
             yield struct.pack('I', len(key)) + key + struct.pack('?', False) + struct.pack('I', len(val)) + val

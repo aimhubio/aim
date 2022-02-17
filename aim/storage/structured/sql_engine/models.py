@@ -45,8 +45,9 @@ class Run(Base):
     experiment = relationship('Experiment', backref=backref('runs', uselist=True))
     tags = relationship('Tag', secondary=run_tags, backref=backref('runs', uselist=True))
 
-    def __init__(self, run_hash):
+    def __init__(self, run_hash, created_at=None):
         self.hash = run_hash
+        self.created_at = created_at
 
 
 class Experiment(Base):

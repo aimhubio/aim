@@ -54,10 +54,10 @@ class ModelMappedRun(IRun, metaclass=ModelMappedClassMeta):
         return ModelMappedRun(model_obj, session)
 
     @classmethod
-    def from_hash(cls, runhash: str, session) -> 'ModelMappedRun':
+    def from_hash(cls, runhash: str, created_at, session) -> 'ModelMappedRun':
         if session.query(RunModel).filter(RunModel.hash == runhash).scalar():
             raise ValueError(f'Run with hash \'{runhash}\' already exists.')
-        run = RunModel(runhash)
+        run = RunModel(runhash, created_at)
         session.add(run)
         session.flush()
         return ModelMappedRun(run, session)

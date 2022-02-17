@@ -4,6 +4,9 @@ import githubIcon from 'assets/icons/github.svg';
 import slackIcon from 'assets/icons/slack.svg';
 
 import { Icon, Text } from 'components/kit';
+import ErrorBoundary from 'components/ErrorBoundary/ErrorBoundary';
+
+import { ANALYTICS_EVENT_KEYS } from 'config/analytics/analyticsKeysMap';
 
 import { trackEvent } from 'services/analytics';
 
@@ -56,51 +59,57 @@ const cardsData: IExploreCard[] = [
 
 function ExploreAim(): React.FunctionComponentElement<React.ReactNode> {
   return (
-    <div className='ExploreAim'>
-      <div>
-        <Text component='h2' tint={100} weight={600} size={24}>
-          Get Involved
-        </Text>
-        <div className='ExploreAim__social'>
-          <a
-            target='_blank'
-            href='https://slack.aimstack.io'
-            rel='noreferrer'
-            className='ExploreAim__social__item'
-            onClick={() => trackEvent('[Homepage] go to slack')}
-          >
-            <img src={slackIcon} alt='slack' />
-            <Text component='span' tint={100} size={16} weight={400}>
-              Join Aim slack community
-            </Text>
-            <Icon name='arrow-right' />
-          </a>
-          <a
-            target='_blank'
-            href='https://github.com/aimhubio/aim'
-            rel='noreferrer'
-            className='ExploreAim__social__item'
-            onClick={() => trackEvent('[Homepage] go to github')}
-          >
-            <img src={githubIcon} alt='github' />
-            <Text component='span' tint={100} size={16} weight={400}>
-              Create an issue <br /> or report a bug to help us improve
-            </Text>
-            <Icon name='arrow-right' />
-          </a>
+    <ErrorBoundary>
+      <div className='ExploreAim'>
+        <div>
+          <Text component='h2' tint={100} weight={600} size={24}>
+            Get Involved
+          </Text>
+          <div className='ExploreAim__social'>
+            <a
+              target='_blank'
+              href='https://slack.aimstack.io'
+              rel='noreferrer'
+              className='ExploreAim__social__item'
+              onClick={() =>
+                trackEvent(ANALYTICS_EVENT_KEYS.home.slackCommunity)
+              }
+            >
+              <img src={slackIcon} alt='slack' />
+              <Text component='span' tint={100} size={16} weight={400}>
+                Join Aim slack community
+              </Text>
+              <Icon name='arrow-right' />
+            </a>
+            <a
+              target='_blank'
+              href='https://github.com/aimhubio/aim'
+              rel='noreferrer'
+              className='ExploreAim__social__item'
+              onClick={() =>
+                trackEvent(ANALYTICS_EVENT_KEYS.home.createGithubIssue)
+              }
+            >
+              <img src={githubIcon} alt='github' />
+              <Text component='span' tint={100} size={16} weight={400}>
+                Create an issue <br /> or report a bug to help us improve
+              </Text>
+              <Icon name='arrow-right' />
+            </a>
+          </div>
+        </div>
+        <div className='ExploreAim__block__item'>
+          <Text component='h2' tint={100} weight={600} size={24}>
+            Explore Aim
+          </Text>
+          <div className='ExploreAim__card__container'>
+            {cardsData.map((item: IExploreCard) => (
+              <ExploreAimCard key={item.path} {...item} />
+            ))}
+          </div>
         </div>
       </div>
-      <div className='ExploreAim__block__item'>
-        <Text component='h2' tint={100} weight={600} size={24}>
-          Explore Aim
-        </Text>
-        <div className='ExploreAim__card__container'>
-          {cardsData.map((item: IExploreCard) => (
-            <ExploreAimCard key={item.path} {...item} />
-          ))}
-        </div>
-      </div>
-    </div>
+    </ErrorBoundary>
   );
 }
 

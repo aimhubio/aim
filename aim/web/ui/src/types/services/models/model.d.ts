@@ -1,10 +1,11 @@
 import { INotification } from 'types/components/NotificationContainer/NotificationContainer';
+import { ITableColumn } from 'types/pages/metrics/components/TableColumns/TableColumns';
 
 export type State = {
   config?: Record<string, any>;
   table?: Record<string, any>;
   groupingSelectOptions?: Record<string, any>[];
-  tableColumns?: Record<string, any>[];
+  tableColumns?: ITableColumn[] | Record<string, any>[];
   data?: Record<string, any>[];
   rawData?: Record<string, any>[];
   notifyData?: INotification[];

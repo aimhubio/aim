@@ -100,21 +100,23 @@ export interface ISelectConfig {
 }
 
 export interface ITableConfig {
-  resizeMode: ResizeModeEnum;
+  resizeMode?: ResizeModeEnum;
   rowHeight: RowHeightSize;
   sortFields?: SortField[];
   hiddenMetrics?: string[];
   hiddenColumns?: string[];
+  hideSystemMetrics?: boolean;
   columnsWidths?: { [key: string]: number };
-  columnsOrder?: {
-    left: string[];
-    middle: string[];
-    right: string[];
-  };
-  height: string;
+  columnsOrder?: IColumnsOrder;
+  height?: string;
   selectedRows?: any;
 }
 
+interface IColumnsOrder {
+  left: string[];
+  middle: string[];
+  right: string[];
+}
 export interface IPaginationConfig {
   limit: number;
   offset: null;

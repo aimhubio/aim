@@ -1,3 +1,5 @@
+import { ANALYTICS_EVENT_KEYS } from 'config/analytics/analyticsKeysMap';
+
 import * as analytics from 'services/analytics';
 
 import { IModel, State } from 'types/services/models/model';
@@ -35,8 +37,11 @@ export default function onGroupingPersistenceChange<M extends State>({
     updateModelData(configData, true);
   }
   analytics.trackEvent(
-    `[${appName}Explorer] ${
-      !configData?.grouping.persistence[groupName] ? 'Enable' : 'Disable'
-    } ${groupName} persistence`,
+    `${
+      // @ts-ignore
+      ANALYTICS_EVENT_KEYS[appName].groupings[groupName].persistenceChange
+    } to ${
+      !configData?.grouping.persistence[groupName] ? 'Disable' : 'Enable'
+    }`,
   );
 }

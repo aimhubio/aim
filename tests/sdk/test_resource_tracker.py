@@ -18,10 +18,11 @@ class TestRunResourceTracker(TestBase):
         del run
 
         metrics = list(self.repo.query_metrics(f'run.hash == "{run_hash}" and metric.name.startswith("__")'))
-        self.assertEqual(4, len(metrics))
         expected_metrics = {'__system__cpu', '__system__disk_percent',
                             '__system__memory_percent', '__system__p_memory_percent'}
-        self.assertSetEqual(expected_metrics, set(m.name for m in metrics))
+        metric_names = set(m.name for m in metrics)
+        for name in expected_metrics:
+            self.assertIn(name, metric_names)
 
     def test_custom_tracking_interval(self):
         run = Run(system_tracking_interval=1)
@@ -31,10 +32,11 @@ class TestRunResourceTracker(TestBase):
         del run
 
         metrics = list(self.repo.query_metrics(f'run.hash == "{run_hash}" and metric.name.startswith("__")'))
-        self.assertEqual(4, len(metrics))
         expected_metrics = {'__system__cpu', '__system__disk_percent',
                             '__system__memory_percent', '__system__p_memory_percent'}
-        self.assertSetEqual(expected_metrics, set(m.name for m in metrics))
+        metric_names = set(m.name for m in metrics)
+        for name in expected_metrics:
+            self.assertIn(name, metric_names)
         for metric in metrics:
             # 3 sec. runtime, 1 sec. interval
             self.assertGreaterEqual(len(metric.values), 3)

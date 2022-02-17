@@ -67,7 +67,9 @@ function usePanelResize(
 
   const handleResizeModeChange = React.useCallback(
     (mode: ResizeModeEnum) => {
-      const tableHeight: number = tableConfig ? +tableConfig.height : 0.5;
+      const tableHeight: number = tableConfig?.height
+        ? +tableConfig.height
+        : 0.5;
       if (topPanelRef.current && bottomPanelRef.current) {
         switch (mode) {
           case ResizeModeEnum.Hide:
@@ -93,7 +95,7 @@ function usePanelResize(
 
   React.useEffect(() => {
     resizeElemRef.current.addEventListener('mousedown', handleResize);
-    tableConfig && handleResizeModeChange(tableConfig?.resizeMode);
+    tableConfig?.resizeMode && handleResizeModeChange(tableConfig?.resizeMode);
     return () => {
       setPanelResizing(false);
       resizeElemRef.current?.removeEventListener('mousedown', handleResize);
@@ -109,7 +111,7 @@ function usePanelResize(
   ]);
 
   React.useEffect(() => {
-    tableConfig && handleResizeModeChange(tableConfig?.resizeMode);
+    tableConfig?.resizeMode && handleResizeModeChange(tableConfig?.resizeMode);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [tableConfig?.resizeMode, handleResizeModeChange]);
 

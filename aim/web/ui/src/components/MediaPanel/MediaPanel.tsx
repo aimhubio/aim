@@ -53,70 +53,7 @@ function MediaPanel({
   const activePointRef = React.useRef<any>(null);
   const requestRef = React.useRef<any>();
   const scrollTopOffset = React.useRef<number>(0);
-
-  function addUriToList(blobUrl: string) {
-    if (!blobsURIModel.getState()[blobUrl]) {
-      blobUriArray.current.push(blobUrl);
-      getBatch();
-    }
-  }
-
-  const getBatch = throttle(() => {
-    if (timeoutID.current) {
-      window.clearTimeout(timeoutID.current);
-    }
-
-    timeoutID.current = window.setTimeout(() => {
-      if (!isEmpty(blobUriArray.current)) {
-        requestRef.current = getBlobsData(blobUriArray.current);
-        requestRef.current.call().then(() => {
-          blobUriArray.current = [];
-        });
-      }
-    }, BATCH_SEND_DELAY);
-  }, BATCH_SEND_DELAY);
-
-  function onListScroll({ scrollOffset }: { scrollOffset: number }): void {
-    if (Math.abs(scrollOffset - scrollTopOffset.current) > window.innerHeight) {
-      if (requestRef.current) {
-        requestRef.current.abort();
-      }
-    }
-    scrollTopOffset.current = scrollOffset;
-    closePopover();
-  }
-
-  function closePopover(): void {
-    if (!focusedState?.active) {
-      syncHoverState({ activePoint: null });
-    }
-  }
-
-  function onMouseOver(e: React.MouseEvent<HTMLDivElement>): void {
-    if (e?.target) {
-      e.stopPropagation();
-      const targetElem = e.target as Element;
-      const closestNode = targetElem.closest(
-        '[data-mediasetitem="mediaSetItem"]',
-      );
-      if (closestNode) {
-        const key = closestNode.getAttribute('data-key');
-        const seqKey = closestNode.getAttribute('data-seqkey');
-        const pointRect = closestNode.getBoundingClientRect();
-        if (
-          pointRect &&
-          (focusedState.key !== key || activePointRect === null) &&
-          !focusedState?.active
-        ) {
-          syncHoverState({
-            activePoint: { pointRect, key, seqKey },
-          });
-        }
-      } else {
-        closePopover();
-      }
-    }
-  }
+  const rafMouseOverId = React.useRef<number>(0);
 
   const setActiveElemPos = React.useCallback(() => {
     if (activePointRef.current && containerRef.current) {
@@ -158,6 +95,54 @@ function MediaPanel({
     [onActivePointChange, setActivePointRect, setActiveElemPos],
   );
 
+  const closePopover = React.useCallback((): void => {
+    if (focusedState?.key || activePointRect) {
+      if (rafMouseOverId.current) {
+        window.cancelAnimationFrame(rafMouseOverId.current);
+      }
+      syncHoverState({ activePoint: null });
+    }
+  }, [focusedState?.key, activePointRect, syncHoverState]);
+
+  const onMouseOver = React.useCallback(
+    (e: React.MouseEvent<HTMLDivElement>): void => {
+      if (e) {
+        e.stopPropagation();
+        if (e.target) {
+          rafMouseOverId.current = window.requestAnimationFrame(() => {
+            const targetElem = e.target as Element;
+            const closestNode = targetElem.closest(
+              '[data-mediasetitem="mediaSetItem"]',
+            );
+            if (closestNode) {
+              const key = closestNode.getAttribute('data-key');
+              const seqKey = closestNode.getAttribute('data-seqkey');
+              const pointRect = closestNode.getBoundingClientRect();
+              if (
+                pointRect &&
+                (focusedState.key !== key || activePointRect === null) &&
+                !focusedState?.active
+              ) {
+                syncHoverState({
+                  activePoint: { pointRect, key, seqKey },
+                });
+              }
+            } else {
+              closePopover();
+            }
+          });
+        }
+      }
+    },
+    [
+      focusedState?.key,
+      focusedState?.active,
+      activePointRect,
+      syncHoverState,
+      closePopover,
+    ],
+  );
+
   const mediaSetKey = React.useMemo(
     () => Date.now(),
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -170,10 +155,46 @@ function MediaPanel({
     ],
   );
 
+  function addUriToList(blobUrl: string) {
+    if (!blobsURIModel.getState()[blobUrl]) {
+      blobUriArray.current.push(blobUrl);
+      getBatch();
+    }
+  }
+
+  const getBatch = throttle(() => {
+    if (timeoutID.current) {
+      window.clearTimeout(timeoutID.current);
+    }
+    timeoutID.current = window.setTimeout(() => {
+      if (!isEmpty(blobUriArray.current)) {
+        requestRef.current = getBlobsData(blobUriArray.current);
+        requestRef.current.call().then(() => {
+          blobUriArray.current = [];
+        });
+      }
+    }, BATCH_SEND_DELAY);
+  }, BATCH_SEND_DELAY);
+
+  function onListScroll({ scrollOffset }: { scrollOffset: number }): void {
+    if (Math.abs(scrollOffset - scrollTopOffset.current) > window.innerHeight) {
+      if (requestRef.current) {
+        requestRef.current.abort();
+      }
+    }
+    scrollTopOffset.current = scrollOffset;
+    closePopover();
+  }
+
   React.useEffect(() => {
     document.addEventListener('mouseover', closePopover);
     return () => {
       document.removeEventListener('mouseover', closePopover);
+    };
+  }, [closePopover]);
+
+  React.useEffect(() => {
+    return () => {
       if (timeoutID.current) {
         window.clearTimeout(timeoutID.current);
       }
