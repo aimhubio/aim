@@ -90,10 +90,11 @@ def parse_mlflow_logs(repo_inst, tracking_uri, experiment):
 
                         downloaded_path = client.download_artifacts(run_id, file_info.path, dst_path=temp_path)
                         if file_info.path.endswith(HTML_EXTENSIONS):
-                            # FIXME plotly does not provide interface to load from html - need to implement html custom object ?
+                            # TODO [AP] plotly does not provide interface to load from html
+                            # TODO [AP] need to implement html custom object?
                             if not __html_warning_issued:
                                 click.secho(
-                                    f'Handler for html file types is not yet implemented.', fg='yellow'
+                                    'Handler for html file types is not yet implemented.', fg='yellow'
                                 )
                                 __html_warning_issued = True
                             continue
