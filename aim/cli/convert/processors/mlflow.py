@@ -33,7 +33,7 @@ AUDIO_EXTENSIONS = (
 def parse_mlflow_logs(repo_inst, tracking_uri, experiment):
     try:
         import mlflow
-    except ModuleNotFoundError:
+    except ImportError:
         click.echo(
             'Could not process mlflow logs - failed to import "mlflow" module.', err=True
         )
