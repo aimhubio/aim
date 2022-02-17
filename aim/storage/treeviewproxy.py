@@ -65,9 +65,10 @@ class ProxyTree(TreeView):
     def collect(
         self,
         path: Union[AimObjectKey, AimObjectPath] = (),
-        strict: bool = True
+        strict: bool = True,
+        resolve_objects: bool = False
     ) -> AimObject:
-        return self._rpc_client.run_instruction(self._handler, 'collect', (path, strict))
+        return self._rpc_client.run_instruction(self._handler, 'collect', (path, strict, resolve_objects))
 
     def __delitem__(
         self,

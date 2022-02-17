@@ -351,12 +351,12 @@ class Run(StructuredRunMixin):
 
     def get(self, key, default: Any = None, strict: bool = True):
         try:
-            return self._collect(key, strict=strict)
+            return self._collect(key, strict=strict, resolve_objects=True)
         except KeyError:
             return default
 
-    def _collect(self, key, strict: bool = True):
-        return self.meta_run_attrs_tree.collect(key, strict=strict)
+    def _collect(self, key, strict: bool = True, resolve_objects: bool = False):
+        return self.meta_run_attrs_tree.collect(key, strict=strict, resolve_objects=resolve_objects)
 
     def _prepare_resource_tracker(self, tracking_interval: Union[int, float] = None):
         if not self.read_only and isinstance(tracking_interval, (int, float)) and tracking_interval > 0:
