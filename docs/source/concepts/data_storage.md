@@ -5,7 +5,7 @@ to know the internal storage organization in order to understand how it affects
 queries performance.
 
 ### Storage structure
-The core foundation for Aim storage is [rocksdb](). It is a fast, embedded key-value
+The core foundation for Aim storage is [rocksdb](http://rocksdb.org/docs/getting-started.html). It is a fast, embedded key-value
 store maintained by facebook. The aim repository is a collection of individual
 rocksdb databases with abstraction layers added to manage the collection as one database. The abstraction of
 a single KV store called `Container`. Below is the directory structure for a typical Aim project:

@@ -6,7 +6,7 @@ Aim enables a powerful query language(AimQL) to filter through all the stored me
 
 AimQL filters the tracked metadata using **python expression**.
 Think of it as a python if statement over everything you have tracked.
-Hence, nearly any python compatible expression is available with [security restrictions](#security-restrictions) in place.
+Hence, nearly any python compatible expression is available with [some restrictions](#security-restrictions) in place.
 
 The data is saved as diff types of entities (e.g. `run`, `metric`). The search queries are written against these entities.
 When iterating over entities the python expression is evaluated in a Boolean context. When the value is _"truthy"_, then the current entity is yielded. Otherwise the entity is skipped over.
@@ -185,6 +185,7 @@ While searching images, you can also refer to the related runs via the `run` key
 *Query examples:*
 - images.name == "generated" and run.learning_rate >= 0.001
 - images.name == "generated" and images.context.ema == 0
+
 
 ### Security restrictions
 

@@ -16,7 +16,7 @@ We are working to constantly improve existing converters and implement new ones.
 
 ### Show TensorFlow events in Aim 
 
-Aim gives your possibility to convert TensorFlow event files into native format 
+Aim gives your possibility to convert [TensorFlow](https://www.tensorflow.org/api_docs/python/tf) event files into native format 
 and show them directly inside the Aim interface.
 
 Before showing the events in aim, the event files have to pass 

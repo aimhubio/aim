@@ -87,4 +87,4 @@ Run the following commands in the notebook to run the Aim UI:
 %aim up
 ```
 
-See [integration guide with Jupyter Notebook](../guides/integrations/basic_aim_jupyter_notebook.html) for more details.
+See [integration guide with Jupyter Notebook](../guides/jupyter_notebook_ui.html) for more details.

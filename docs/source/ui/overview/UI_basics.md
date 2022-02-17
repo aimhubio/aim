@@ -3,7 +3,7 @@
 Aim enables powerful UI to explore logged ML runs and metadata.
 
 ### Runs explorer
-Runs explorer will help you to hollistically view all your [runs](./SDK_basics.html#create-a-run), each metric last tracked values and tracked hyperparameters.
+Runs explorer will help you to hollistically view all your [runs](../../concepts/SDK_basics.html#create-a-run), each metric last tracked values and tracked hyperparameters.
 
 Features:
 - Full Research context at hand

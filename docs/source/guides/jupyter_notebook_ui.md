@@ -22,7 +22,7 @@ run['hparams'] = {
 .. note::
     Do not forget to call run.finalize() once the training is over.
 
-After tracking runs with [aim.Run](../../quick_start/SDK_basics.html#create-a-run),
+After tracking runs with [aim.Run](../concepts/SDK_basics.html#create-a-run),
 run the following commands in the notebook to run the Aim UI:
 
 1. Load Aim extension for notebooks:

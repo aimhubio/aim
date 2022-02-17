@@ -1,7 +1,7 @@
 ## SDK Concepts
 
 All the functionality in Aim SDK is build around several key concepts. This chapter will give a brief overview of these core
-concepts. For more details please check the [Reference](../refs/api/sdk.html) section or [Glossary](./glossary.html).
+concepts. For more details please check the [Reference](../refs/sdk.html) section or [Glossary](./glossary.html).
 **Aim Run**
 
 Run is an abstraction representing the tracked data for a single experiment. Its in memory model is SDK class `aim.Run`.
@@ -26,7 +26,7 @@ run['hparams'] = conf
 ```
 At this moment `Run` supports setting configuration from Python dictionaries and `OmegaConf` configs.
 Support of popular configuration formats constantly added. You can check the full list in
-[Supported Data types]() section.
+[Supported Data types](../quick_start/supported_types.html) section.
 
 
 **Run Sequence**

@@ -26,7 +26,7 @@ Aim package logs your training runs, enables a beautiful UI to compare them and 
 
 ### Log metrics and params
 
-Use the [Aim SDK](./quick_start/SDK_basics.html) to [log as many metrics and params](./quick_start/SDK_basics.html#track-params-and-metrics-with-run) as you need for your training and evaluation runs.
+Use the [Aim SDK](./concepts/SDK_basics.html) to [log as many metrics and params](./concepts/SDK_basics.html#track-params-and-metrics-with-run) as you need for your training and evaluation runs.
 Aim users track 1000s of training runs and sometimes more than 100s of metrics per run with lots of steps.
 
 ### Query metadata on Web UI
