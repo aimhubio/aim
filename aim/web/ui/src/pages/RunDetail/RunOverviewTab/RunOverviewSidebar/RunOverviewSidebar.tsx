@@ -101,21 +101,11 @@ function RunOverviewSidebar({
             </Text>
           </Text>
           <div className='RunOverviewSidebar__section__tags-list'>
-            {info.tags.length ? (
-              info.tags.map((tag) => {
-                return (
-                  <Badge color={tag.color} label={tag.name} key={tag.name} />
-                );
-              })
-            ) : (
-              <Text size={14} tint={70}>
-                No Tags
-              </Text>
-            )}
-            {/*<Badge label='tag1' />*/}
-            {/*<Badge label='tag1' />*/}
-            {/*<Badge label='tag1' />*/}
-            {/*<Badge label='tag1' />*/}
+            {info.tags.map((tag) => {
+              return (
+                <Badge color={tag.color} label={tag.name} key={tag.name} />
+              );
+            })}
           </div>
         </div>
       ) : null}
