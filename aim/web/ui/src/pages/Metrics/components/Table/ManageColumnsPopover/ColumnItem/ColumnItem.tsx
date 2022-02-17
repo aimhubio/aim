@@ -22,6 +22,7 @@ function ColumnItem(props: any) {
                 !!props.searchKey &&
                 props.searchKey.trim() !== '' &&
                 props.data.includes(props.searchKey),
+              dragging: props.draggingItemId === props.data,
             })}
             {...provided.draggableProps}
             ref={provided.innerRef}
