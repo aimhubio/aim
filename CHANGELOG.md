@@ -14,6 +14,7 @@
 ### Fixes: 
 
 - Fix system metric columns pinning functionality and grouping column order (arsengit)
+- Fix system metrics search in manage columns popover (VkoHov)
 - Fix queries on remote repos (mihran113)
 - Fix incorrect boolean value formatting (VkoHov)
 
