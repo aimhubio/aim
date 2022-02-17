@@ -204,7 +204,7 @@ export function getMenuData(traceType: TraceType, traces: TraceRawDataItem[]) {
  * process distributions data
  */
 export function processDistributionsData(data: Partial<DistributionsData>) {
-  const { record_range, iters, values } = data;
+  const { record_range_total, iters, values } = data;
   const processedValues: any[] = [];
   const originalValues: TraceProcessedData[] = [];
 
@@ -232,9 +232,10 @@ export function processDistributionsData(data: Partial<DistributionsData>) {
 
   return {
     iters,
-    record_range,
+    record_range: [record_range_total?.[0], (record_range_total?.[1] || 0) - 1],
     processedValues,
     originalValues,
+    processedDataType: VisualizationMenuTitles.distributions,
   };
 }
 
@@ -242,7 +243,7 @@ export function processDistributionsData(data: Partial<DistributionsData>) {
  * process texts data
  */
 export function processTextsData(data: Partial<TextsData>) {
-  const { record_range, index_range, iters, values } = data;
+  const { record_range_total, index_range_total, iters, values } = data;
   const processedValues: any[] = [];
   if (values) {
     let count = 0;
@@ -261,9 +262,10 @@ export function processTextsData(data: Partial<TextsData>) {
 
   return {
     iters,
-    record_range,
-    index_range,
+    record_range: [record_range_total?.[0], (record_range_total?.[1] || 0) - 1],
+    index_range: [index_range_total?.[0], (index_range_total?.[1] || 0) - 1],
     processedValues,
+    processedDataType: VisualizationMenuTitles.texts,
   };
 }
 
@@ -274,7 +276,14 @@ export function processImagesData(
   data: Partial<ImagesData>,
   params?: { [key: string]: unknown },
 ) {
-  const { record_range, iters, values, index_range, context, name } = data;
+  const {
+    record_range_total,
+    iters,
+    values,
+    index_range_total,
+    context,
+    name,
+  } = data;
   const groupingSelectOptions = params
     ? imagesExploreAppModel.getGroupingSelectOptions({
         params: getObjectPaths(params, params),
@@ -310,14 +319,27 @@ export function processImagesData(
     defaultGroupFields: ['step'],
   });
 
-  return { imageSetData: mediaSetData, orderedMap, record_range, index_range };
+  return {
+    imageSetData: mediaSetData,
+    orderedMap,
+    record_range: [record_range_total?.[0], (record_range_total?.[1] || 0) - 1],
+    index_range: [index_range_total?.[0], (index_range_total?.[1] || 0) - 1],
+    processedDataType: VisualizationMenuTitles.images,
+  };
 }
 
 export function processAudiosData(
   data: Partial<ImagesData>,
   params?: { [key: string]: unknown },
 ) {
-  const { record_range, iters, values, index_range, context, name } = data;
+  const {
+    record_range_total,
+    iters,
+    values,
+    index_range_total,
+    context,
+    name,
+  } = data;
   const groupingSelectOptions = params
     ? imagesExploreAppModel.getGroupingSelectOptions({
         params: getObjectPaths(params, params),
@@ -353,7 +375,13 @@ export function processAudiosData(
     groupingSelectOptions,
     defaultGroupFields: ['step'],
   });
-  return { audiosSetData: mediaSetData, orderedMap, record_range, index_range };
+  return {
+    audiosSetData: mediaSetData,
+    orderedMap,
+    record_range: [record_range_total?.[0], (record_range_total?.[1] || 0) - 1],
+    index_range: [index_range_total?.[0], (index_range_total?.[1] || 0) - 1],
+    processedDataType: VisualizationMenuTitles.audios,
+  };
 }
 
 function groupData(data: IProcessedImageData[]): {
@@ -404,17 +432,18 @@ export function reformatArrayQueries(
  * process plotly data
  */
 export function processPlotlyData(data: Partial<IPlotlyData>) {
-  const { record_range, iters, values } = data;
-  const processedValue = _.head(values);
+  const { record_range_total, iters, values } = data;
+  const processedValue = _.head(values).data;
   const originalValues = values;
 
   processedValue.layout.autosize = true;
 
   return {
     iters,
-    record_range,
+    record_range: [record_range_total?.[0], (record_range_total?.[1] || 0) - 1],
     processedValue,
     originalValues,
+    processedDataType: VisualizationMenuTitles.figures,
   };
 }
 

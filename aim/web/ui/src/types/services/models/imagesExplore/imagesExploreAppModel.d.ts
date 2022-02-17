@@ -28,7 +28,6 @@ export interface IImagesExploreAppConfig {
     indexRange?: number[];
     recordDensity?: string;
     indexDensity?: string;
-    calcRanges: boolean;
     tooltip: IPanelTooltip;
     focusedState: {
       key: string | null;
@@ -124,9 +123,7 @@ export interface IImageRunData {
   };
   ranges: {
     index_range: number[];
-    index_slice: number[];
     record_range: number[];
-    record_slice: number[];
   };
   traces: any[];
 }
