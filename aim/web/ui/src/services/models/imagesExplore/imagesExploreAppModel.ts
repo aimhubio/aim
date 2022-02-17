@@ -65,7 +65,6 @@ import JsonToCSV from 'utils/JsonToCSV';
 import { formatValue } from 'utils/formatValue';
 import getValueByField from 'utils/getValueByField';
 import arrayBufferToBase64 from 'utils/arrayBufferToBase64';
-import getMinAndMaxBetweenArrays from 'utils/getMinAndMaxBetweenArrays';
 import getTooltipData from 'utils/app/getTooltipData';
 import filterTooltipContent from 'utils/filterTooltipContent';
 import { getDataAsMediaSetNestedObject } from 'utils/app/getDataAsMediaSetNestedObject';
@@ -103,7 +102,8 @@ function getConfig(): IImagesExploreAppConfig {
       advancedQuery: '',
     },
     images: {
-      calcRanges: true,
+      indexDensity: '5',
+      recordDensity: '50',
       tooltip: {
         content: {},
         display: CONTROLS_DEFAULT_CONFIG.images.tooltip.display,
@@ -299,7 +299,6 @@ function getImagesData(
   if (shouldUrlUpdate) {
     updateURL(configData);
   }
-
   const recordSlice: number[] | undefined = configData?.images?.recordSlice as
     | number[]
     | undefined;
@@ -308,19 +307,20 @@ function getImagesData(
     | undefined;
   const recordDensity = configData?.images?.recordDensity;
   const indexDensity = configData?.images?.indexDensity;
-  const calcRanges = !!configData?.images.calcRanges;
   let query = getQueryStringFromSelect(configData?.select as any);
   let imageDataBody: any = {
     q: query !== '()' ? query : '',
-    calc_ranges: calcRanges,
   };
   if (recordSlice) {
+    //TODO check values nullability
     imageDataBody = {
       ...imageDataBody,
-      record_range: recordSlice
+      record_range: !_.isEmpty(recordSlice)
         ? `${recordSlice[0]}:${recordSlice[1] + 1}`
         : '',
-      index_range: indexSlice ? `${indexSlice[0]}:${indexSlice[1] + 1}` : '',
+      index_range: !_.isEmpty(indexSlice)
+        ? `${indexSlice?.[0]}:${(indexSlice?.[1] || 0) + 1}`
+        : '',
       record_density: recordDensity ?? '',
       index_density: indexDensity ?? '',
     };
@@ -344,6 +344,7 @@ function getImagesData(
         try {
           const stream = await imagesRequestRef.call(exceptionHandler);
           const runData = await getImagesMetricsData(stream);
+
           if (configData) {
             setModelData(runData, configData);
           }
@@ -364,7 +365,6 @@ function getImagesData(
           imagesData: {},
           tableData: [],
           images: {
-            calcRanges: true,
             tooltip: {
               content: {},
               display: true,
@@ -529,6 +529,7 @@ function setModelData(rawData: any[], configData: IImagesExploreAppConfig) {
       },
     };
   }
+  const ranges = rawData?.[0]?.ranges;
   const tableData = getDataAsTableRows(
     data,
     params,
@@ -537,29 +538,67 @@ function setModelData(rawData: any[], configData: IImagesExploreAppConfig) {
     groupingSelectOptions,
   );
   const config = configData;
+  const recordSlice = [
+    _.inRange(
+      ranges?.record_range_used[0],
+      ranges?.record_range_total[0] - 1,
+      ranges?.record_range_total[1] + 1,
+    )
+      ? ranges?.record_range_used[0]
+      : ranges?.record_range_total[0],
+    _.inRange(
+      ranges?.record_range_used[1] - 1,
+      ranges?.record_range_total[0] - 1,
+      ranges?.record_range_total[1] + 1,
+    )
+      ? ranges?.record_range_used[1] - 1
+      : ranges?.record_range_total[1] - 1,
+  ];
+  const indexSlice = [
+    _.inRange(
+      ranges?.index_range_used[0],
+      ranges?.index_range_total[0] - 1,
+      ranges?.index_range_total[1] + 1,
+    )
+      ? ranges?.index_range_used[0]
+      : ranges?.index_range_total[0],
+    _.inRange(
+      ranges?.index_range_used[1] - 1,
+      ranges?.index_range_total[0] - 1,
+      ranges?.index_range_total[1] + 1,
+    )
+      ? ranges?.index_range_used[1] - 1
+      : ranges?.index_range_total[1] - 1,
+  ];
+  const recordRangeTotalCount =
+    ranges?.record_range_total[1] - 1 - ranges?.record_range_total[0];
+  const indexRangeTotalCount =
+    ranges?.index_range_total[1] - 1 - ranges?.index_range_total[0];
+  const recordDensity =
+    !config.images.recordDensity ||
+    +config.images.recordDensity < ranges?.record_range_total[0] ||
+    +config.images.recordDensity > recordRangeTotalCount
+      ? `${recordRangeTotalCount}`
+      : config.images.recordDensity;
+  const indexDensity =
+    !config.images.indexDensity ||
+    +config.images.indexDensity < ranges?.index_range_total[0] ||
+    +config.images.indexDensity > indexRangeTotalCount
+      ? `${indexRangeTotalCount}`
+      : config.images.indexDensity;
+
   config.images = {
     ...config.images,
-    stepRange: !config.images.calcRanges
-      ? config.images.stepRange
-      : !_.isEmpty(rawData)
-      ? (rawData[0].ranges.record_range as number[])
-      : [],
-    indexRange: !config.images.calcRanges
-      ? config.images.indexRange
-      : !_.isEmpty(rawData)
-      ? (rawData[0].ranges.index_range as number[])
-      : [],
-    recordSlice: getMinAndMaxBetweenArrays(
-      rawData?.[0]?.ranges.record_range as number[],
-      config.images.recordSlice as number[],
-    ),
-    indexSlice: getMinAndMaxBetweenArrays(
-      rawData?.[0]?.ranges.index_range as number[],
-      config.images.indexSlice as number[],
-    ),
-    recordDensity: config.images.recordDensity || '50',
-    indexDensity: config.images.indexDensity || '5',
-    calcRanges: false,
+    stepRange: !_.isEmpty(rawData)
+      ? [ranges?.record_range_total[0], ranges?.record_range_total[1] - 1]
+      : config.images.stepRange,
+    indexRange: !_.isEmpty(rawData)
+      ? [ranges?.index_range_total[0], ranges?.index_range_total[1] - 1]
+      : config.images.indexRange,
+    recordSlice,
+    indexSlice,
+    recordDensity,
+    indexDensity,
     tooltip: config.images.tooltip || {
       content: {},
       display: true,
@@ -1653,7 +1692,7 @@ function onSelectRunQueryChange(query: string) {
     const newConfig = {
       ...configData,
       select: { ...configData.select, advancedQuery: query, query },
-      images: { ...configData.images, calcRanges: true },
+      images: { ...configData.images },
     };
 
     model.setState({
@@ -1739,7 +1778,7 @@ function onSelectAdvancedQueryChange(query: string) {
     const newConfig = {
       ...configData,
       select: { ...configData.select, advancedQuery: query },
-      images: { ...configData.images, calcRanges: true },
+      images: { ...configData.images },
     };
 
     model.setState({
@@ -1755,7 +1794,7 @@ function onImagesExploreSelectChange(options: ISelectOption[]) {
     const newConfig = {
       ...configData,
       select: { ...configData.select, options },
-      images: { ...configData.images, calcRanges: true },
+      images: { ...configData.images },
     };
 
     model.setState({
