@@ -11,6 +11,7 @@
 - Aim repo runs data automatic indexing (alberttorosyan)
 - Add wildcard support for `aim runs` subcommands (mihran113)
 - Add MLflow logs conversion command (devfox-se)
+- Add CustomObject implementation for `hub.dataset` (alberttorosyan)
 
 ### Fixes: 
 
