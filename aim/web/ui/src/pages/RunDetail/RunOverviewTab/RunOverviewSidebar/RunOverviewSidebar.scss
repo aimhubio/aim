@@ -1,11 +1,11 @@
 @use 'src/styles/abstracts/index' as *;
 
 .RunOverviewSidebar {
-  max-width: toRem(312px);
+  max-width: 20rem;
   padding: $space-xs;
 
   h3 {
-    margin-bottom: 1rem;
+    margin-bottom: $space-sm;
   }
 
   &__section {
@@ -15,7 +15,17 @@
       div {
         display: flex;
         align-items: center;
-        height: 1.5rem;
+        height: 1.75rem;
+        margin-bottom: 0.125rem;
+        span {
+          max-width: 15rem;
+          white-space: nowrap;
+          overflow: hidden;
+          text-overflow: ellipsis;
+        }
+        &:last-child {
+          margin-bottom: 0;
+        }
       }
 
       .Icon__container {
@@ -56,13 +66,15 @@
 
   &__NavLink {
     display: flex;
+    align-items: center;
     justify-content: space-between;
-    outline: none;
-    text-decoration: none;
-    padding: $space-xs $space-unit;
+    height: 2rem;
+    padding: 0 $space-unit;
+    margin-bottom: 0.125rem;
     border-radius: $border-radius-sm;
     transition: background-color .18s ease-out;
-
+    outline: none;
+    text-decoration: none;
     &:hover {
       background-color: $cuddle-30;
     }

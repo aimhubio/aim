@@ -67,19 +67,19 @@ function RunOverviewSidebar({
           Information
         </Text>
         <div>
-          <Icon name='tags' />
+          <Icon name='calendar' />
           <Text tint={70}>
             {`${moment(info?.creation_time * 1000).format('DD MMMM YYYY')}`}
           </Text>
         </div>
         <div>
-          <Icon name='tags' />
+          <Icon name='time' />
           <Text tint={70}>
             {`${moment(info?.creation_time * 1000).format('HH:MM A')}`}
           </Text>
         </div>
         <div>
-          <Icon name='tags' />
+          <Icon name='duration' />
           <Text tint={70}>
             {processDurationTime(
               info?.creation_time * 1000,
@@ -88,35 +88,37 @@ function RunOverviewSidebar({
           </Text>
         </div>
         <div>
-          <Icon name='tags' />
+          <Icon name='hash' />
           <Text tint={70}>{info.name.split(':')[1]}</Text>
         </div>
       </div>
-      <div className='RunOverviewSidebar__section RunOverviewSidebar__section__tags'>
-        <Text weight={600} size={18} tint={100} component='h3'>
-          Tags{' '}
-          <Text component='span' tint={70} weight={600} size={18}>
-            ({info.tags.length})
+      {info.tags.length ? (
+        <div className='RunOverviewSidebar__section RunOverviewSidebar__section__tags'>
+          <Text weight={600} size={18} tint={100} component='h3'>
+            Tags{' '}
+            <Text component='span' tint={70} weight={400} size={18}>
+              ({info.tags.length})
+            </Text>
           </Text>
-        </Text>
-        <div className='RunOverviewSidebar__section__tags-list'>
-          {/*{info.tags.length ? (*/}
-          {/*  info.tags.map((tag) => {*/}
-          {/*    return (*/}
-          {/*      <Badge color={tag.color} label={tag.name} key={tag.name} />*/}
-          {/*    );*/}
-          {/*  })*/}
-          {/*) : (*/}
-          {/*  <Text size={14} tint={70}>*/}
-          {/*    No Tags*/}
-          {/*  </Text>*/}
-          {/*)}*/}
-          <Badge label='tag1' />
-          <Badge label='tag1' />
-          <Badge label='tag1' />
-          <Badge label='tag1' />
+          <div className='RunOverviewSidebar__section__tags-list'>
+            {info.tags.length ? (
+              info.tags.map((tag) => {
+                return (
+                  <Badge color={tag.color} label={tag.name} key={tag.name} />
+                );
+              })
+            ) : (
+              <Text size={14} tint={70}>
+                No Tags
+              </Text>
+            )}
+            {/*<Badge label='tag1' />*/}
+            {/*<Badge label='tag1' />*/}
+            {/*<Badge label='tag1' />*/}
+            {/*<Badge label='tag1' />*/}
+          </div>
         </div>
-      </div>
+      ) : null}
       <Divider className='RunOverviewSidebar__section__Divider' />
       <div className='RunOverviewSidebar__section RunOverviewSidebar__section__insights'>
         <Text weight={600} size={18} tint={100} component='h3'>
