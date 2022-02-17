@@ -2900,7 +2900,7 @@ function createAppModel(appConfig: IAppInitialConfig) {
         return {
           call: async () => {
             try {
-              /* await runsArchiveRef
+              await runsArchiveRef
                 .call((detail) => exceptionHandler({ detail, model }))
                 .then(() => {
                   getRunsData(false, true).call((detail: any) => {
@@ -2916,7 +2916,7 @@ function createAppModel(appConfig: IAppInitialConfig) {
                     },
                     model,
                   });
-                });*/
+                });
             } catch (ex: Error | any) {
               if (ex.name === 'AbortError') {
                 onNotificationAdd({
