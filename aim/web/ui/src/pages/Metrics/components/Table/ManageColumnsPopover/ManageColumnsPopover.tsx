@@ -45,10 +45,15 @@ function ManageColumnsPopover({
 }: IManageColumnsPopoverProps) {
   const [state, setState] = React.useState<any>(initialData);
   const [searchKey, setSearchKey] = React.useState<string>('');
+  const [draggingItemId, setDraggingItemId] = React.useState<string>('');
+
+  function onDragStart(result: any) {
+    setDraggingItemId(result.draggableId);
+  }
 
   function onDragEnd(result: any) {
     const { destination, source, draggableId } = result;
-
+    setDraggingItemId('');
     if (!destination) {
       return;
     }
@@ -208,7 +213,7 @@ function ManageColumnsPopover({
           </Button>
         )}
         component={
-          <DragDropContext onDragEnd={onDragEnd}>
+          <DragDropContext onDragEnd={onDragEnd} onDragStart={onDragStart}>
             <div className='ManageColumns__container'>
               <div className='ColumnList__container'>
                 <div className='ColumnList__title'>Pinned to the left</div>
@@ -239,6 +244,7 @@ function ManageColumnsPopover({
                                   : hiddenColumns?.concat([data]),
                               )
                             }
+                            draggingItemId={draggingItemId}
                           />
                         ),
                       )}
@@ -290,6 +296,7 @@ function ManageColumnsPopover({
                                   : hiddenColumns?.concat([data]),
                               )
                             }
+                            draggingItemId={draggingItemId}
                           />
                         ),
                       )}
@@ -327,6 +334,7 @@ function ManageColumnsPopover({
                                   : hiddenColumns.concat([data]),
                               )
                             }
+                            draggingItemId={draggingItemId}
                           />
                         ),
                       )}

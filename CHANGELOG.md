@@ -6,13 +6,17 @@
 
 - Ability to export chart as image (KaroMourad)
 - Ability to group by metric.context (VkoHov)
+- Tune manage columns items highlighting styles (VkoHov)
 - Add ability to apply active style on table actions popover buttons with applied changes (arsengit)
 - Unification of Run Custom Object APIs (alberttorosyan, VkoHov)
 - Aim repo runs data automatic indexing (alberttorosyan)
+- Add wildcard support for `aim runs` subcommands (mihran113)
 
 ### Fixes: 
 
 - Fix system metric columns pinning functionality and grouping column order (arsengit)
+- Fix system metrics search in manage columns popover (VkoHov)
+- Fix queries on remote repos (mihran113)
 - Fix incorrect boolean value formatting (VkoHov)
 
 ## 3.5.4 Feb 15 2022
