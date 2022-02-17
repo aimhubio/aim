@@ -2,7 +2,8 @@ import React from 'react';
 
 import SliderWithInput from 'components/SliderWithInput';
 import { Button } from 'components/kit';
-import { IValidationMetadata } from 'components/kit/Input';
+import { IValidationMetadata, IValidationPatterns } from 'components/kit/Input';
+
 interface IRangeSliderWithInputItem {
   sliderName: string;
   inputName: string;
@@ -17,6 +18,7 @@ interface IRangeSliderWithInputItem {
   selectedRangeValue: [number, number];
   inputValue: number;
   sliderType: 'single' | 'range'; // This type is same as SliderWithInput component sliderType prop type.
+  inputValidationPatterns?: IValidationPatterns;
 }
 
 type RangeSliderData = IRangeSliderWithInputItem[];
@@ -57,8 +59,8 @@ function RangePanel({
               countInputTitle={item.inputTitle}
               countTitleTooltip={item.inputTitleTooltip}
               sliderTitleTooltip={item.sliderTitleTooltip}
-              min={item.rangeEndpoints[0]}
-              max={item.rangeEndpoints[1]}
+              min={item.rangeEndpoints?.[0]}
+              max={item.rangeEndpoints?.[1]}
               selectedRangeValue={item.selectedRangeValue}
               selectedCountValue={item.inputValue}
               onSearch={onApply}
@@ -68,6 +70,27 @@ function RangePanel({
               onCountChange={(value, metadata?: IValidationMetadata) => {
                 onInputChange(item.inputName, value, metadata);
               }}
+              inputValidationPatterns={
+                item?.inputValidationPatterns ?? [
+                  {
+                    errorCondition: (value: string | number) =>
+                      +value < item.rangeEndpoints?.[0],
+                    errorText:
+                      item.rangeEndpoints?.[0] <= 0
+                        ? 'Value should be greater then 0'
+                        : `Value should be equal or greater then ${item.rangeEndpoints?.[0]}`,
+                  },
+                  {
+                    errorCondition: (value: string | number) =>
+                      +value > item.rangeEndpoints?.[1],
+                    errorText: `Value should be equal or smaller then ${item.rangeEndpoints?.[1]}`,
+                  },
+                  {
+                    errorCondition: (value: string | number) => +value === 0,
+                    errorText: "Value can't be 0",
+                  },
+                ]
+              }
             />
             <div className='VerticalDivider' />
           </React.Fragment>
