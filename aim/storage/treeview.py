@@ -89,6 +89,7 @@ class TreeView:
     ):
         self.set(path, value, strict=True)
 
+    # TODO [MV]: revisit this approach after cython bindings refactoring
     @abstractmethod
     def keys_eager(
             self,

@@ -10,8 +10,8 @@ from aim.storage.types import BLOB
 Message = Union[rpc_messages.ResourceRequest, rpc_messages.ResourceResponse]
 
 
-def pack_args(tree: Iterator[Tuple[bytes, bytes]]) -> bytes:
-    result = [struct.pack('I', len(key)) + key + struct.pack('I', len(val)) + val for key, val in tree]
+def pack_args(args: Iterator[Tuple[bytes, bytes]]) -> bytes:
+    result = [struct.pack('I', len(key)) + key + struct.pack('I', len(val)) + val for key, val in args]
     return b''.join(result)
 
 
