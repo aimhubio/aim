@@ -1,4 +1,4 @@
-.. mdinclude:: home.md
+.. mdinclude:: overview.md
 
 .. raw:: html
 
@@ -20,48 +20,39 @@
 
 .. toctree::
    :maxdepth: 2
-   :name: concepts
-   :caption: Concepts
-
-   concepts/overview.md
-   concepts/SDK_basics.md
-   concepts/SDK_concepts.md
-   concepts/QL_basics.md
-   concepts/training_reproducibility.md
-   concepts/repo_reindexing.md
-   concepts/data_storage.md
-   concepts/remote_tracking_basics.md
-   concepts/remote_tracking.md
-   concepts/glossary.md
-
-.. toctree::
-   :maxdepth: 2
    :name: ui
    :caption: Aim UI
 
    ui/overview/overview.md
-   ui/overview/UI_basics.md
 
 .. toctree::
    :maxdepth: 2
    :name: guides
-   :caption: Guides
+   :caption: Using Aim
 
-   guides/integrations/basic_huggingface.md
-   guides/integrations/basic_keras.md
-   guides/integrations/basic_pytorch_lightning.md
-   guides/integrations/basic_xgboost.md
-   guides/jupyter_notebook_ui.md
-   guides/k8s_deployment.md
-   guides/k8s_deployment_rt.md
-   guides/basic_aim_matplotlib.md
+   using/manage_runs.md
+   using/configure_runs.md
+   using/query_runs.md
+   using/search.md
+   using/remote_tracking.md
+   using/k8s_deployment.md
+   using/jupyter_notebook_ui.md
+
+.. toctree::
+   :maxdepth: 2
+   :name: concepts
+   :caption: Understanding Aim
+
+   understanding/overview.md
+   understanding/data_storage.md
+   understanding/storage_indexing.md
+   understanding/concepts.md
 
 .. toctree::
    :maxdepth: 1
    :name: examples
    :caption: Examples
 
-   examples/overview.md
    examples/images_explorer_gan.md
 
 .. toctree::

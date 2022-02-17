@@ -1,8 +1,8 @@
-## Search Basics
+## Query language basics
 
 ### Introduction
 
-Aim enables a powerful query language(AimQL) to filter through all the stored metadata. 
+Aim enables a powerful query language(Aim QL) to filter through all the stored metadata.
 
 AimQL filters the tracked metadata using **python expression**.
 Think of it as a python if statement over everything you have tracked.
@@ -12,9 +12,9 @@ The data is saved as diff types of entities (e.g. `run`, `metric`). The search q
 When iterating over entities the python expression is evaluated in a Boolean context. When the value is _"truthy"_, then the current entity is yielded. Otherwise the entity is skipped over.
 
 .. note::
-   Currently, AimQL is only used for filtering data, and has no role in sorting or aggregating the data.
+Currently, AimQL is only used for filtering data, and has no role in sorting or aggregating the data.
 
-### Searching runs
+### Searching
 
 Let's track several [Runs](./SDK_basics.html#create-a-run) via [Aim SDK](./SDK_basics.html):
 
@@ -69,17 +69,17 @@ Run [parameters](./SDK_basics.html#track-params-and-metrics-with-run) could be a
 
 .. note::
 
-   The two following examples are equal:
-    - run.hparams.learning_rate == 32
-    - run["hparams", "learning_rate"] == 32
+The two following examples are equal:
+- run.hparams.learning_rate == 32
+- run["hparams", "learning_rate"] == 32
 
 .. warning::
-   AimQL has been designed to be highly performant.
-   Only the params that are used in the query will be loaded into memory.
+AimQL has been designed to be highly performant.
+Only the params that are used in the query will be loaded into memory.
 
-   If you use the **['hparams']['learning_rate']** syntax Aim will load the whole dictionary into memory. The search performance will be impacted.
+If you use the **['hparams']['learning_rate']** syntax Aim will load the whole dictionary into memory. The search performance will be impacted.
 
-   We recommend to use either **['hparams', 'learning_rate']** or **hparams.learning_rate** syntax which are equivalent to each other in terms of the performance.
+We recommend to use either **['hparams', 'learning_rate']** or **hparams.learning_rate** syntax which are equivalent to each other in terms of the performance.
 
 **Query examples:**
 
@@ -172,7 +172,7 @@ metric.name == "loss" and run.learning_rate >= 0.001
 #### Searching images
 
 Images search works in the same way as metrics.
-When iterating over images, use the `images` keyword which represents the tracked [images sequence](./SDK_basics.html#track-images-with-run). 
+When iterating over images, use the `images` keyword which represents the tracked [images sequence](./SDK_basics.html#track-images-with-run).
 While searching images, you can also refer to the related runs via the `run` keyword.
 
 `images` keyword has the following default properties.
@@ -194,4 +194,3 @@ AimQL expression is evaluated with [RestrictedPython](https://github.com/zopefou
 **RestrictedPython** is a tool that helps to define a subset of the Python language which allows to provide a program input into a trusted environment.
 
 We have followed these [restrictions](https://github.com/aimhubio/aim/blob/e0a089516d0aaf200411358bcb43e7673e02a852/aim/storage/query.py#L150) to avoid security risks such as executing a non-safe function via AimQL.
-

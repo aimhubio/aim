@@ -1,1 +1,0 @@
-## How to use Aim SDK to browse training metadata 

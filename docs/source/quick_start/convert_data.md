@@ -1,26 +1,23 @@
-## Converting metadata from other sources 
+## Migrate from other tools
 
 In order to get most out of Aim UI features it is important to be able to port
-existing metadata for already accomplished experiments. There might be 1000s of those
-tracked with other tools. Though Aim SDK allows to write our own data converters for
-practically any data, it would require knowledge of multiple tools APIs and can be
-a bit tricky to do. Thus aim CLI provides tools for converting metadata.
+existing logs for already executed trainings. There might be 1000s of trainings
+tracked with other tools. Aim has built-in converters to easily migrate logs from 
+other tools for common cases. In case of custom and complex scenarios you can use
+Aim SDK to implement your own conversion script.
 
-As of Aim `v3.5.4` the following
-converters supported:
+As of Aim `v3.5.4` the following converters are supported:
 
 - [TensorFlow events converter](#show-tensorflow-events-in-aim) 
 
 We are working to constantly improve existing converters and implement new ones.
 
+### Show TensorFlow events in Aim
 
-### Show TensorFlow events in Aim 
+Aim gives your possibility to convert [TensorFlow](https://www.tensorflow.org/api_docs/python/tf)
+event files into native format and show them directly inside the Aim UI.
 
-Aim gives your possibility to convert [TensorFlow](https://www.tensorflow.org/api_docs/python/tf) event files into native format 
-and show them directly inside the Aim interface.
-
-Before showing the events in aim, the event files have to pass 
-the conversion process.
+Before showing the events in Aim, the event files have to pass the conversion process.
 
 Please note that only the following TF plugins are currently supported 
 - scalar
@@ -29,7 +26,7 @@ Please note that only the following TF plugins are currently supported
 To convert TensorFlow events, `aim convert` command must be run on your log directory.
 
 ```shell
-> aim convert tf --logdir ~/tensorflow/logdir
+aim convert tf --logdir ~/tensorflow/logdir
 ```
 
 To make conversion process smooth please ensure that logs directory structure follows conventions below.

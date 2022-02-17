@@ -1,4 +1,4 @@
-## Automatic reindexing of Aim repo
+## Storage indexing - how Aim data is indexed
 
 ### Background
 

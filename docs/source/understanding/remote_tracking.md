@@ -6,5 +6,4 @@ Description
 
 ### Code example
 
-
 ### Benefits

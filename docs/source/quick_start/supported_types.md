@@ -1,4 +1,4 @@
-## What data can be tracked with Aim?
+## Track media and objects
 
 Aim supports variety of data sources. Basic logging of `Run` params covers
 Python builtin types (such as `int`, `float`, `bool`, `bytes` and `str`) as well as
@@ -7,9 +7,9 @@ In addition to the builtin types, Aim provides native support for
 [OmegaConf](https://github.com/omry/omegaconf/blob/master/README.md) configs, thus
 simplifying integration for projects running with [Hydra](https://hydra.cc/docs/intro/).
 
-Tracking of data includes scalars, images, audio data and chart figures. Here's
+Tracking of data includes metrics, images, audio, text and chart figures. Here's
 the complete list of Aim objects provided by the package:
-- Scalars
+- Metrics
 - [Image](#image-tracking-with-aim)
 - [Audio](#audio-tracking-with-aim)
 - [Text](#text-tracking-with-aim)
@@ -73,7 +73,7 @@ for step in range(1000):
         quality=50
     )
 
-    run.track(aim_image, name='img', step=step)
+    run.track(aim_image, name='images', step=step)
 ```
 
 ### Audio tracking with Aim
@@ -119,7 +119,7 @@ for step in range(1000):
         caption=os.path.basename(path)
     )
 
-    run.track(aim_audio, name='audio', step=step)
+    run.track(aim_audio, name='audios', step=step)
 ```
 
 ### Text tracking with Aim
@@ -184,7 +184,7 @@ fig = px.bar(x=["a", "b", "c"], y=[1, 3, 2])
 # Now we convert it to Aim Figure
 aim_figure = Figure(fig)
 
-run.track(aim_figure, name="Plotly Figure", step=0)
+run.track(aim_figure, name="plorly_ figures", step=0)
 ```
 
 It is also easy to track `matplotlib` figure. Please note that the conversion process is done by Plotly under the hood.
@@ -204,7 +204,7 @@ plt.close(fig)
 # Now we convert it to Aim Figure using (Plotly's functions)
 aim_figure = Figure(fig)
 
-run.track(aim_figure, name="matplotlib Figure", step=0)
+run.track(aim_figure, name="matplotlib_figures", step=0)
 ```
 
 ### Tracking matplotlib figures in Aim
@@ -228,7 +228,7 @@ plt.close(fig)
 
 # pass it to aim Image
 aim_img = Image(fig)
-run.track(aim_img, step=0, name="matplotlib Image")
+run.track(aim_img, step=0, name="matplotlib_images")
 ```
 
 #### Converting matplotlib to Aim Figure
@@ -247,5 +247,5 @@ plt.plot([1, 2, 3])
 plt.close(fig)
 
 aim_figure = Figure(fig)
-run.track(aim_figure, step=0, name="matplotlib Figure")
+run.track(aim_figure, step=0, name="matplotlib_figures")
 ```

@@ -1,7 +1,8 @@
-## SDK Concepts
+## Concepts
 
-All the functionality in Aim SDK is build around several key concepts. This chapter will give a brief overview of these core
+All the functionality in Aim is build around several key concepts. This chapter will give a brief overview of these core
 concepts. For more details please check the [Reference](../refs/sdk.html) section or [Glossary](./glossary.html).
+
 **Aim Run**
 
 Run is an abstraction representing the tracked data for a single experiment. Its in memory model is SDK class `aim.Run`.
@@ -59,10 +60,3 @@ for i in range(100):
     else:
         aim_run.track(i, name=r'numbers', context={'odds': False})
 ```
-
-**CustomObject**
-
-Aim SDK provides capability to track objects beyond simple metrics. This includes images, audio, distribution objects as
-well as interactive charts such as `plotly` or `matplotlib` figure. However, there are multitude of use-cases, and we cannot
-provide implementations for each of them. Instead `CustomObject` provides a simple way to extend existing functionality
-and register objects which can be tracked in the same way as aim built-in types.

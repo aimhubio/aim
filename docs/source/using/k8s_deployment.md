@@ -1,4 +1,4 @@
-## Hosting Aim on Kubernetes (K8S)
+## Host Aim on Kubernetes (K8S)
 
 Since Aim can run as a local server through FastAPI, it can be deployed to a K8S cluster! Hosting Aim on K8S comes with
 several advantages:

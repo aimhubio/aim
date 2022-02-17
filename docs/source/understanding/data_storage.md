@@ -1,4 +1,4 @@
-## Where Aim data collected?
+## Data storage - where Aim data is collected
 
 This section provided a deep-dive into Aim storage structure. It is important
 to know the internal storage organization in order to understand how it affects
