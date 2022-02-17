@@ -1,6 +1,8 @@
 from fastapi import Depends, HTTPException, Query
 from fastapi.responses import JSONResponse, StreamingResponse
 
+from aim.web.api.runs.object_views import ImageApiConfig, TextApiConfig, DistributionApiConfig, AudioApiConfig, \
+    FigureApiConfig
 from aim.web.api.utils import APIRouter  # wrapper for fastapi.APIRouter
 from typing import Optional, Tuple
 
@@ -202,3 +204,11 @@ async def archive_runs_batch_api(runs_batch: RunsBatchIn, archive: Optional[bool
     return {
         'status': 'OK'
     }
+
+
+def add_api_routes():
+    ImageApiConfig.register_endpoints(runs_router)
+    TextApiConfig.register_endpoints(runs_router)
+    DistributionApiConfig.register_endpoints(runs_router)
+    AudioApiConfig.register_endpoints(runs_router)
+    FigureApiConfig.register_endpoints(runs_router)

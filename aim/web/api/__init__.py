@@ -18,7 +18,7 @@ def create_app():
     )
 
     from aim.web.api.runs.views import runs_router
-    from aim.web.api.runs.object_views import add_api_routes
+    from aim.web.api.runs.views import add_api_routes
     from aim.web.api.tags.views import tags_router
     from aim.web.api.experiments.views import experiment_router
     from aim.web.api.dashboard_apps.views import dashboard_apps_router

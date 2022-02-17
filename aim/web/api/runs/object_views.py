@@ -21,7 +21,6 @@ from aim.web.api.runs.pydantic_models import (
 )
 from aim.web.api.runs.utils import get_project_repo, checked_query, checked_range, numpy_to_encodable
 from aim.web.api.runs.object_api_utils import CustomObjectApi, get_blobs_batch
-from aim.web.api.runs.views import runs_router
 
 
 class CustomObjectApiConfig:
@@ -119,11 +118,3 @@ class FigureApiConfig(CustomObjectApiConfig):
     resolve_blobs = True
     dump_record_fn = lambda x: json.loads(x.data)  # noqa E731
     model = FigureInfo
-
-
-def add_api_routes():
-    ImageApiConfig.register_endpoints(runs_router)
-    TextApiConfig.register_endpoints(runs_router)
-    DistributionApiConfig.register_endpoints(runs_router)
-    AudioApiConfig.register_endpoints(runs_router)
-    FigureApiConfig.register_endpoints(runs_router)
