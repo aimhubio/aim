@@ -2826,6 +2826,7 @@ function createAppModel(appConfig: IAppInitialConfig) {
             notification: {
               id: Date.now(),
               severity: 'info',
+              closeDelay: 5000,
               messages: [
                 'Live update: runs have been updated.',
                 `${unselectedRowsCount} of selected runs have been left out of the table.`,

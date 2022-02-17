@@ -8,5 +8,6 @@ export interface INotificationContainer {
 export interface INotification {
   id: number;
   messages: string[];
+  closeDelay?: number;
   severity: 'error' | 'info' | 'success' | 'warning';
 }
