@@ -7,9 +7,19 @@
   padding: $space-xxxs $space-xs;
   background-color: $cuddle-10;
   display: flex;
+  cursor: default;
 
   &.highlighted {
+    background-color: $cuddle-50;
+  }
+
+  &:hover {
     background-color: $cuddle-30;
+  }
+
+  &.dragging {
+    background-color: $primary-color-10;
+    border: 1px solid $primary-color-50;
   }
 
   div {

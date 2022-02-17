@@ -464,7 +464,7 @@ function Column({
                   {expanded[groupKey] && (
                     <>
                       {data[groupKey]?.items?.map((item, i) => (
-                        <>
+                        <React.Fragment key={col.key + i}>
                           <Cell
                             key={col.key + i}
                             index={item.index}
@@ -499,6 +499,9 @@ function Column({
                                 item[col.key]
                               )
                             }
+                            groupColumnColored={
+                              !!data[groupKey].data.meta.color
+                            }
                             className={classNames(`rowKey-${item.key}`, {
                               hidden: item.isHidden,
                               selected: !!selectedRows?.[item.selectKey],
@@ -508,7 +511,7 @@ function Column({
                             onRowHover={() => onRowHover(item)}
                             onRowClick={() => onRowClick(item)}
                           />
-                        </>
+                        </React.Fragment>
                       ))}
                     </>
                   )}

@@ -7,7 +7,7 @@ from aim.storage.container import Container
 from aim.storage import treeutils
 from aim.storage.arrayview import TreeArrayView
 
-from typing import Iterator, Tuple, Union
+from typing import Iterator, Tuple, Union, List
 
 from aim.storage.treeview import TreeView
 
@@ -104,6 +104,12 @@ class ContainerTreeView(TreeView):
                                store_batch=batch)
         self.container.commit(batch)
 
+    def keys_eager(
+            self,
+            path: Union[AimObjectKey, AimObjectPath] = (),
+    ) -> List[Union[AimObjectPath, AimObjectKey]]:
+        return list(self.subtree(path).keys())
+
     def keys(
         self,
         path: Union[AimObjectKey, AimObjectPath] = (),
@@ -129,6 +135,15 @@ class ContainerTreeView(TreeView):
             p = E.encode_path(path)
             assert p.endswith(b'\xfe')
             path = p[:-1] + b'\xff'
+
+    def items_eager(
+            self,
+            path: Union[AimObjectKey, AimObjectPath] = ()
+    ) -> List[Tuple[
+        AimObjectKey,
+        AimObject
+    ]]:
+        return list(self.subtree(path).items())
 
     def items(
         self,

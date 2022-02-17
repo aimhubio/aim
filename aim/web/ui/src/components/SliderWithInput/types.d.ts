@@ -13,4 +13,5 @@ export interface ISliderWithInputProps {
   onSearch: () => void;
   onCountChange: (value: number, metadata?: IValidationMetadata) => void;
   onRangeChange: (newValue: number[] | number) => void;
+  inputValidationPatterns?: IValidationPatterns;
 }
