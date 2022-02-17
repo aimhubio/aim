@@ -46,6 +46,10 @@ $ aim init
 $ aim convert mlflow --tracking_uri 'file:///Users/aim_user/mlruns'
 ```
 
+You can also set the `MLFLOW_TRACKING_URI` environment variable to have MLflow find a URI from there. In both cases, the
+URI can either be a HTTP/HTTPS URI for a remote server, a database connection string, or a local path to log data to a
+directory.
+
 The conversion process will iterate over all your Experiments and create a distinct run for each run inside the
 experiment. If you want to process only a single experiment, you can provide the experiment id to the conversion
 command:

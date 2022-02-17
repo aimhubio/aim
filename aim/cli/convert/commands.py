@@ -1,4 +1,7 @@
+import os
+
 import click
+from click import ClickException
 
 from aim.sdk.repo import Repo, RepoStatus
 from aim.sdk.utils import clean_repo_path
@@ -41,8 +44,11 @@ def convert_tensorflow(ctx, logdir, flat):
 
 @convert.command(name='mlflow')
 @click.pass_context
-@click.option('--tracking_uri', required=True)
+@click.option('--tracking_uri', required=False, default=None)
 @click.option('--experiment', '-e', required=False, default=None)
-def convert_mlflow(ctx, tracking_uri, **kwargs):
+def convert_mlflow(ctx, tracking_uri=None, **kwargs):
     repo_inst = ctx.obj['repo_inst']
+    tracking_uri = tracking_uri or os.environ.get("MLFLOW_TRACKING_URI")
+    if not tracking_uri:
+        raise ClickException("MLFlow tracking URL must be provided either trough ENV or CLI.")
     parse_mlflow_logs(repo_inst, tracking_uri, **kwargs)
