@@ -134,6 +134,9 @@ __runs subcommands__
 | `cp`        | Copy run data for given runs hashes. At lease one run should be specified|
 | `mv`        | Move run data for given runs hashes. At lease one run should be specified|
 
+Global expression (`*`) support is available for run hashes. 
+If hash contains `*`, it must be enclosed within quotes (`''`) as bash resolves the expression before passing it to `aim runs` command.
+
 ```shell
 $ aim runs ls
 ```

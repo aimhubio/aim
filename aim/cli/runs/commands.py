@@ -1,7 +1,7 @@
 import click
 import os
 
-from aim.cli.runs.utils import list_runs, match_runs
+from aim.cli.runs.utils import list_repo_runs, match_runs
 from aim.sdk.repo import Repo
 
 
@@ -29,7 +29,7 @@ def list_runs(ctx):
         click.echo(f'\'{repo_path}\' is not a valid aim repo.')
         exit(1)
 
-    run_hashes = list_runs(repo_path)
+    run_hashes = list_repo_runs(repo_path)
 
     click.echo('\t'.join(run_hashes))
     click.echo(f'Total {len(run_hashes)} runs.')

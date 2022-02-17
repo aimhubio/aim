@@ -4,7 +4,7 @@ import os
 from typing import List
 
 
-def list_runs(repo_path: str) -> List[str]:
+def list_repo_runs(repo_path: str) -> List[str]:
     chunks_dir = os.path.join(repo_path, '.aim', 'meta', 'chunks')
     return os.listdir(chunks_dir)
 
@@ -17,7 +17,7 @@ def match_runs(repo_path: str, hashes: List[str]) -> List[str]:
             expr = run_hash  # for the sake of readability
             # avoiding multiple or unnecessary list_runs() calls
             if not all_run_hashes:
-                all_run_hashes = list_runs(repo_path)
+                all_run_hashes = list_repo_runs(repo_path)
             if expr == '*':
                 return all_run_hashes
             # update the matches set with current expression matches
