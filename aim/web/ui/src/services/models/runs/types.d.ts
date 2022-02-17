@@ -1,3 +1,4 @@
+import { IValidationPatterns } from 'components/kit/Input';
 import { IMenuItem } from 'components/kit/Menu';
 
 export type IRunTraceModel = {
@@ -51,7 +52,7 @@ export type TraceRawDataItem = {
  * Distributions api response
  */
 export interface DistributionsData extends TraceRawDataItem {
-  record_range: [number, number];
+  record_range_total: [number, number];
   values: DistributionValue[];
   iters: number[];
 }
@@ -62,7 +63,7 @@ export interface DistributionsData extends TraceRawDataItem {
  */
 export interface ImagesData extends DistributionsData {
   context: object;
-  index_range: [number, number];
+  index_range_total: [number, number];
   values: any;
 }
 
@@ -89,7 +90,7 @@ export type DistributionValue = {
  * Plotly api response
  */
 export interface IPlotlyData extends TraceRawDataItem {
-  record_range: [number, number];
+  record_range_total: [number, number];
   values: PlotlyValue[];
   iters: number[];
 }
@@ -98,8 +99,10 @@ export interface IPlotlyData extends TraceRawDataItem {
  * Plotly api response value type
  */
 export type IPlotlyValue = {
-  data: any[];
-  layout: any;
+  data: {
+    data: any[];
+    layout: any;
+  };
 };
 export interface TraceProcessedData extends DistributionValue {
   data: {
@@ -125,6 +128,7 @@ export type RangePanelItem = {
   sliderTitleTooltip: string;
   inputTitleTooltip: string;
   sliderType: 'single' | 'range'; // This type is same as SliderWithInput component sliderType prop type.
+  inputValidationPatterns?: (...args: any) => IValidationPatterns;
 };
 
 export type IConfig = {
