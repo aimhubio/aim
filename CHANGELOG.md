@@ -8,6 +8,7 @@
 - Add ability to apply active style on table actions popover buttons with applied changes (arsengit)
 - Unification of Run Custom Object APIs (alberttorosyan, VkoHov)
 - Aim repo runs data automatic indexing (alberttorosyan)
+- Add wildcard support for `aim runs` subcommands (mihran113)
 
 ### Fixes: 
 
