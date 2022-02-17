@@ -69,6 +69,13 @@ class Audio(CustomObject):
         }
         self._prepare(data, **extra)
 
+    def json(self):
+        """Dump audio metadata to a dict"""
+        return {
+            'caption': self.storage['caption'],
+            'format': self.storage['format']
+        }
+
     def _prepare(self, data, **extra) -> None:
         assert isinstance(data, bytes)
 
