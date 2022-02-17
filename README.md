@@ -48,7 +48,7 @@
   </kbd>
 </div>
 
-## About Aim
+# About Aim
 
 | Track and version ML runs | Visualize runs via beautiful UI | Query runs metadata via SDK |
 |:--------------------:|:------------------------:|:-------------------:|
@@ -63,7 +63,7 @@ That's especially useful for automations and additional analysis on a Jupyter No
 
 Aim's mission is to democratize AI dev tools.
 
-## Why use Aim?
+# Why use Aim?
 
 ### Compare 100s of runs in a few clicks - build models faster
 
@@ -83,7 +83,7 @@ Aim's mission is to democratize AI dev tools.
 - Use SDK to query/access all your runs and tracked metadata.
 - You own your data - Aim is open source and self hosted.
 
-## Demos
+# Demos
 
 | Machine translation | lightweight-GAN |
 |:---:|:---:|
@@ -95,7 +95,7 @@ Aim's mission is to democratize AI dev tools.
 | <a href="http://play.aimstack.io:10003/runs/7f083da898624a2c98e0f363/distributions"> <img width="800px" src="https://user-images.githubusercontent.com/13848158/154340778-dbe19620-2f27-4298-b0cb-caf3904760f1.jpg"> </a> | <a href="http://play.aimstack.io:10004/runs/d9e89aa7875e44b2ba85612a/audios"> <img width="800px" src="https://user-images.githubusercontent.com/13848158/154340785-a7e4d9fd-d048-4207-8cd1-c4edff9cca6a.jpg"> </a> |
 | Training logs of Microsoft's "FastSpeech 2: Fast and High-Quality End-to-End Text to Speech". | Simple MNIST training logs. |
 
-## Quick Start
+# Quick Start
 
 Follow the steps below to get started with Aim.
 
@@ -158,7 +158,7 @@ for run_metrics_collection in my_repo.query_metrics(query).iter_runs():
         steps, metric_values = metric.values.sparse_numpy()
 ```
 
-## Integrations
+# Integrations
 
 <details>
 <summary>
@@ -241,7 +241,7 @@ bst = xgb.train(param, xg_train, num_round, watchlist, callbacks=[aim_callback])
 _See documentation [here](https://aimstack.readthedocs.io/en/latest/guides/integrations/basic_aim_xgboost.html)._
 </details>
 
-## Comparisons to familiar tools
+# Comparisons to familiar tools
 
 ### Tensorboard
 **Training run comparison**
@@ -281,20 +281,20 @@ Hosted vs self-hosted
 - Weights and Biases is a hosted closed-source MLOps platform.
 - Aim is self-hosted, free and open-source experiment tracking tool.
 
-## Roadmap
+# Roadmap
 
-### Detailed Sprints
+## Detailed Sprints
 
 :sparkle: The [Aim product roadmap](https://github.com/orgs/aimhubio/projects/3)
 
 - The `Backlog` contains the issues we are going to choose from and prioritize weekly
 - The issues are mainly prioritized by the highly-requested features
 
-### High-level roadmap
+## High-level roadmap
 
 The high-level features we are going to work on the next few months
 
-**Done**
+### Done
   - [x] Live updates (Shipped: _Oct 18 2021_)
   - [x] Images tracking and visualization (Start: _Oct 18 2021_, Shipped: _Nov 19 2021_)
   - [x] Distributions tracking and visualization (Start: _Nov 10 2021_, Shipped: _Dec 3 2021_)
@@ -307,27 +307,57 @@ The high-level features we are going to work on the next few months
   - [x] Tensorboard adaptor - visualize TensorBoard logs with Aim (Start: _Dec 17 2021_, Shipped: _Feb 3 2022_)
   - [x] Track git info, env vars, CLI arguments, dependencies (Start: _Jan 17 2022_, Shipped: _Feb 3 2022_)
 
-**In progress**
+### In Progress
   - [ ] Scikit-learn integration (Start: _Nov 18 2021_)
   - [ ] MLFlow adaptor (visualize MLflow logs with Aim) (Start: _Feb 14 2022_)
 
-**TODO**
+### To Do
 
-*Track and Explore*
-  - [ ] Models tracking/versioning, model registry
-  - [ ] Runs side-by-side comparison
+**Aim UI**
 
-*Data Backup*
-  - [ ] Cloud storage support: aws s3, gsc, azure storage
+- Runs management
+    - Runs explorer
+        - Table Explorer: an all-in-one explorer with projects full context for comparing runs data
+    - Single run page
+        - Run overview section with insights and reproducibility info
+        - Ability to add run notes
+        - Run execution section (stdout/stderr)
+- Explorers
+    - Enhance functionality for existing Explorers: Metrics, Images, Params
+    - Add Audio Explorer
+    - Add Text Explorer
+    - Add Figures Explorer
+    - Add Distributions Explorer
+- Dashboards: Customizable layouts with embedded visualizations
 
-*Reproducibility:*
-  - [ ] Collect stdout, stderr logs
+**SDK and Storage**
 
-*Integrations*
-  - [ ] Kubeflow integration
-  - [ ] Streamlit integration
-  - [ ] Raytune integration
-  - [ ] Google MLMD
+- Cloud-native support
+    - Remote tracking server: improved robustness, deep integration with kubernetes
+    - Cloud storage support: offload local storage utilizing cloud storage for blob data
+    - Artifact storage: store files, model checkpoints, and beyond
+- Scalability
+    - Support for up to 100.000 runs in a single aim repo
+    - Long sequences support: Millions of steps with constant query performance
+- Runs management
+    - SDK interfaces
+        - Reporting: query and compare runs. Explore data with familiar tools such as matlpotlib and pandas
+        - Manipulations: copy, move, delete runs, params and sequences
+    - CLI interfaces
+        - Reporting: runs summary and run details in a tabular output format
+        - Manipulations: copy, move, delete runs, params and sequences
+
+**Integrations**
+
+- ML Frameworks:
+    - Shortlist: PyTorch-Ignite, MONAI, scikit-learn, SpaCy, AllenNLP, LightGBM, Raytune, Fairseq, fast.ai, KerasTuner
+- Datasets versioning tools
+    - Shortlist: Activeloop Hub, DVC, HuggingFace Datasets
+- Resource management tools
+    - Shortlist: Kubeflow, Slurm
+- Workflow orchestration
+    - Shortlist: Metaflow, Flyte
+- Others: Hydra, Google MLMD, Streamlit, ...
 
 ## Community
 
