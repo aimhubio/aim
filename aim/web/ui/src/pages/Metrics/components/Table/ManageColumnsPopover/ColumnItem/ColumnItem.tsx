@@ -33,6 +33,7 @@ function ColumnItem(props: any) {
           <div
             className={classNames('ColumnItem', {
               highlighted: isHighlighted(),
+              dragging: props.draggingItemId === props.data,
             })}
             {...provided.draggableProps}
             ref={provided.innerRef}
