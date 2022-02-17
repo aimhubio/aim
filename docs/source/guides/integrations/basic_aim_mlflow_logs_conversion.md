@@ -1,4 +1,4 @@
-### Show TensorFlow events in Aim
+### Show MLflows logs in Aim
 
 Aim gives your possibility to convert [MLflow](https://mlflow.org/) runs into native format and show them directly
 inside the Aim interface.

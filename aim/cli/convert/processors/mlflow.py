@@ -79,9 +79,9 @@ def parse_mlflow_logs(repo_inst, tracking_uri, experiment):
                     loc = artifact_loc_stack.pop()
                     artifacts = client.list_artifacts(run_id, path=loc)
 
-                    img_sequence = []
-                    text_sequence = []
-                    audio_sequence = []
+                    img_batch = []
+                    text_batch = []
+                    audio_batch = []
 
                     for file_info in artifacts:
                         if file_info.is_dir:
@@ -98,24 +98,45 @@ def parse_mlflow_logs(repo_inst, tracking_uri, experiment):
                                 __html_warning_issued = True
                             continue
                         elif file_info.path.endswith(IMAGE_EXTENSIONS):
-                            aim_item = Image(downloaded_path, caption=file_info.path)
-                            img_sequence.append(aim_item)
+                            aim_object = Image
+                            kwargs = dict(
+                                image=downloaded_path,
+                                caption=file_info.path
+                            )
+                            container = img_batch
                         elif file_info.path.endswith(TEXT_EXTENSIONS):
                             with open(downloaded_path) as fh:
                                 content = fh.read()
-                            aim_item = Text(content)
-                            text_sequence.append(aim_item)
+                            aim_object = Text
+                            kwargs = dict(
+                                text=content
+                            )
+                            container = text_batch
                         elif file_info.path.endswith(AUDIO_EXTENSIONS):
                             audio_format = os.path.splitext(file_info.path)[1].lstrip('.')
-                            aim_item = Audio(downloaded_path, caption=file_info.path, format=audio_format)
-                            audio_sequence.append(aim_item)
+                            aim_object = Audio
+                            kwargs = dict(
+                                data=downloaded_path,
+                                caption=file_info.path,
+                                format=audio_format
+                            )
+                            container = audio_batch
                         else:
                             click.secho(
                                 f'Unresolved or unsupported type for artifact {file_info.path}', fg='yellow'
                             )
                             continue
 
-                    for content_type, seq in (('image', img_sequence),
-                                              ('text', text_sequence),
-                                              ('audio', audio_sequence)):
+                        try:
+                            item = aim_object(**kwargs)
+                        except Exception as exc:
+                            click.echo(
+                                f'Could not convert artifact {file_info.path} into aim object - {exc}', err=True
+                            )
+                            continue
+                        container.append(item)
+
+                    for content_type, seq in (('image', img_batch),
+                                              ('text', text_batch),
+                                              ('audio', audio_batch)):
                         aim_run.track(seq, step=0, name=loc or 'root', context={'type': content_type})
