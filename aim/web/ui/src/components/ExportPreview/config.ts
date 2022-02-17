@@ -12,14 +12,14 @@ const PREVIEW_BOUNDS: IPreviewBounds = {
 };
 
 const PREVIEW_MODAL_DIMENSION = {
-  width: 976,
-  height: 506,
+  width: 1366,
+  height: 540,
 };
 
-enum FormatEnum {
+enum FORMAT_ENUM {
   SVG = 'svg',
   JPEG = 'jpeg',
   PNG = 'png',
 }
 
-export { PREVIEW_BOUNDS, PREVIEW_MODAL_DIMENSION, FormatEnum };
+export { PREVIEW_BOUNDS, PREVIEW_MODAL_DIMENSION, FORMAT_ENUM };

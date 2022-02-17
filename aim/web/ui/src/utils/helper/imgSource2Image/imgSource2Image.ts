@@ -1,4 +1,4 @@
-import { FormatEnum } from 'components/ExportPreview/config';
+import { FORMAT_ENUM } from 'components/ExportPreview/config';
 /**
  * [Convert image source to the image by specifying format and dimension]
  *
@@ -7,7 +7,7 @@ import { FormatEnum } from 'components/ExportPreview/config';
  * @param {string} imgSrc valid html image source,
  * @param {number} width width of the converted image,
  * @param {number} height height of the converted image,
- * @param {FormatEnum} format of the converted image,
+ * @param {FORMAT_ENUM} format of the converted image,
  * @param {(blob: Blob) => void;} callback of the image conversion,
  * @returns {void}
  */
@@ -15,13 +15,13 @@ function imgSource2Image({
   imgSrc,
   width,
   height,
-  format = FormatEnum.JPEG,
+  format = FORMAT_ENUM.JPEG,
   callback,
 }: {
   imgSrc: string;
   width: number;
   height: number;
-  format: Omit<FormatEnum, 'SVG'>;
+  format: Omit<FORMAT_ENUM, 'SVG'>;
   callback: (blob: Blob) => void;
 }): void {
   const canvas = document.createElement('canvas');

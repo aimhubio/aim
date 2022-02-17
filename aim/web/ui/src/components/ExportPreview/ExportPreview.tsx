@@ -13,7 +13,7 @@ import * as analytics from 'services/analytics';
 
 import { downloadLink, getSVGString, imgSource2Image } from 'utils/helper';
 
-import { FormatEnum, PREVIEW_BOUNDS, PREVIEW_MODAL_DIMENSION } from './config';
+import { FORMAT_ENUM, PREVIEW_BOUNDS, PREVIEW_MODAL_DIMENSION } from './config';
 import { IExportPreviewProps } from './ExportPreview.d';
 
 import './ExportPreview.scss';
@@ -33,7 +33,7 @@ function ExportPreview({
   const [previewDimension, setPreviewDimension] = React.useState(
     PREVIEW_MODAL_DIMENSION,
   );
-  const [format, setFormat] = React.useState<FormatEnum>(FormatEnum.SVG);
+  const [format, setFormat] = React.useState<FORMAT_ENUM>(FORMAT_ENUM.SVG);
   const [fileName, setFileName] = React.useState<string>(
     `${explorerPage}-${moment().format(DATE_EXPORTING_FORMAT)}`,
   );
@@ -63,14 +63,12 @@ function ExportPreview({
       wrapper.setAttribute('height', `${panelHeight}px`);
       wrapper.setAttribute('viewBox', `0 0 ${panelWidth} ${panelHeight}`);
       wrapper.setAttribute('preserveAspectRatio', 'xMidYMid meet');
-      if (format !== FormatEnum.PNG) {
+      if (format !== FORMAT_ENUM.PNG) {
         wrapper.style.backgroundColor = 'white';
         wrapper.style.fill = 'white';
       }
       const svgElements = chartPanel.querySelectorAll('svg');
-      const gridColumns = Math.floor(
-        panelWidth / svgElements[0].getBBox().width,
-      );
+      const gridColumns = Math.round(panelWidth / svgElements[0].clientWidth);
       let gridRows = 0;
       svgElements?.forEach((svgElement, index) => {
         if (index !== 0 && index % gridColumns === 0) {
@@ -91,7 +89,7 @@ function ExportPreview({
           );
         }
         const rect = clearedSvgElement.querySelector('rect');
-        if (rect && format !== FormatEnum.PNG) {
+        if (rect && format !== FORMAT_ENUM.PNG) {
           clearedSvgElement.style.backgroundColor = 'white';
           clearedSvgElement.style.fill = 'white';
           rect.style.fill = 'white';
@@ -114,7 +112,7 @@ function ExportPreview({
           'data:image/svg+xml;base64,' +
           btoa(unescape(encodeURIComponent(svgString))); // Convert SVG string to data URL
         switch (format) {
-          case FormatEnum.SVG:
+          case FORMAT_ENUM.SVG:
             downloadLink(imgSrc, fileName || 'name');
             break;
           default:
@@ -142,7 +140,7 @@ function ExportPreview({
 
   const formatOptions = React.useMemo(
     () =>
-      Object.entries(FormatEnum).map(([label, value]) => ({
+      Object.entries(FORMAT_ENUM).map(([label, value]) => ({
         value,
         label,
       })),
@@ -206,10 +204,7 @@ function ExportPreview({
         onOk={onExportImage}
         classes={{ paper: 'ExportPreview__modal' }}
       >
-        <div
-          className='ExportPreview__container'
-          style={PREVIEW_MODAL_DIMENSION}
-        >
+        <div className='ExportPreview__container'>
           <div ref={previewRef} style={PREVIEW_MODAL_DIMENSION}>
             <Grid
               ref={containerRef}
@@ -293,28 +288,30 @@ function ExportPreview({
               </div>
             </div>
           )}
-          <InputWrapper
-            label='Image Name'
-            labelAppearance='swap'
-            wrapperClassName='ExportPreview__controls__nameInput'
-            placeholder='name'
-            value={fileName}
-            onChange={(e, value) => {
-              setFileName(value);
-            }}
-          />
-          <Dropdown
-            className='ExportPreview__controls__formatDropdown'
-            isColored
-            label='Format'
-            withPortal
-            onChange={(val) => val && setFormat(val.value as FormatEnum)}
-            value={format}
-            options={formatOptions}
-            onMenuOpen={() => setOpenFormatDropdown(true)}
-            onMenuClose={() => setOpenFormatDropdown(false)}
-            open={openFormatDropdown}
-          />
+          <div className='ExportPreview__controls__additional'>
+            <InputWrapper
+              label='Image Name'
+              labelAppearance='swap'
+              wrapperClassName='ExportPreview__controls__additional__nameInput'
+              placeholder='name'
+              value={fileName}
+              onChange={(e, value) => {
+                setFileName(value);
+              }}
+            />
+            <Dropdown
+              className='ExportPreview__controls__additional__formatDropdown'
+              isColored
+              label='Format'
+              withPortal
+              onChange={(val) => val && setFormat(val.value as FORMAT_ENUM)}
+              value={format}
+              options={formatOptions}
+              onMenuOpen={() => setOpenFormatDropdown(true)}
+              onMenuClose={() => setOpenFormatDropdown(false)}
+              open={openFormatDropdown}
+            />
+          </div>
         </div>
       </Modal>
     </ErrorBoundary>

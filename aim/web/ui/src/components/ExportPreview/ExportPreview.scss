@@ -25,6 +25,8 @@
     }
   }
   &__container {
+    width: 80vw;
+    height: 62vh;
     overflow: auto;
     margin: toRem(1px);
     border-radius: $border-radius-lg;
@@ -37,18 +39,25 @@
   &__controls {
     display: flex;
     align-items: center;
-    margin-top: $space-lg;
-    flex-wrap: wrap;
+    margin-top: $space-xs;
+    flex-direction: column;
+    @include mq(xl) {
+      flex-direction: row;
+    }
     &__dimension {
-      display: inline-flex;
+      display: flex;
       justify-content: center;
       align-items: center;
+      white-space: nowrap;
+      width: 100%;
+      margin-top: $space-unit;
       &__width {
         margin-right: $space-sm;
-        display: inline-flex;
+        display: flex;
         align-items: center;
+        flex: 1;
         &__slider {
-          width: toRem(100px);
+          width: 100%;
           margin: 0 $space-sm 0 $space-xs;
         }
         &__input {
@@ -58,15 +67,15 @@
         }
         .InputWrapper {
           width: toRem(85px);
+          min-width: toRem(85px);
         }
       }
       &__height {
-        margin-right: $space-sm;
-        display: inline-flex;
+        display: flex;
         align-items: center;
+        flex: 1;
         &__slider {
-          width: toRem(100px);
-          height: 20px;
+          width: 100%;
           margin: 0 $space-sm 0 $space-xs;
         }
         &__input {
@@ -76,19 +85,28 @@
         }
         .InputWrapper {
           width: toRem(85px);
+          min-width: toRem(85px);
         }
       }
     }
-    &__formatDropdown {
-      width: toRem(97px);
-      display: inline-block;
-    }
-    &__nameInput{
-      display: inline-block;
-      margin-right: $space-xs;
+    &__additional {
+      display: flex;
+      align-items: center;
       margin-left: auto;
-      & .MuiTextField-root {
-        width: toRem(224px);
+      margin-top: $space-unit;
+      @include mq(xl) {
+        margin-left: $space-sm;
+      }
+      &__formatDropdown {
+        width: toRem(97px);
+        display: inline-block;
+      }
+      &__nameInput{
+        display: inline-block;
+        margin-right: $space-xs;
+        & .MuiTextField-root {
+          width: toRem(224px);
+        }
       }
     }
   }
