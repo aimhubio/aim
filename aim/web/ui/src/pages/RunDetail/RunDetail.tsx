@@ -1,13 +1,13 @@
 import React, { memo, useRef, useState } from 'react';
 import moment from 'moment';
 import {
+  Link,
+  Redirect,
+  Route,
+  Switch,
+  useLocation,
   useParams,
   useRouteMatch,
-  Link,
-  Switch,
-  Route,
-  Redirect,
-  useLocation,
 } from 'react-router-dom';
 import classNames from 'classnames';
 
@@ -66,7 +66,7 @@ function RunDetail(): React.FunctionComponentElement<React.ReactNode> {
 
   // TODO: add code splitting(lazy loading)
   const tabContent: { [key: string]: JSX.Element } = {
-    overview: <RunOverviewTab />,
+    overview: <RunOverviewTab runData={runData} />,
     parameters: (
       <RunDetailParamsTab
         runParams={runData?.runParams}
