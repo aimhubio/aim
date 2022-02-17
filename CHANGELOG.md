@@ -6,12 +6,15 @@
 
 - Ability to group by metric.context (VkoHov)
 - Add ability to apply active style on table actions popover buttons with applied changes (arsengit)
+- Unification of Run Custom Object APIs (alberttorosyan, VkoHov)
 - Aim repo runs data automatic indexing (alberttorosyan)
 
 ### Fixes: 
 
 - Fix live updated data loss after triggering endless scroll (VkoHov)
 - Fix system metric columns pinning functionality and grouping column order (arsengit)
+- Fix queries on remote repos (mihran113)
+- Fix incorrect boolean value formatting (VkoHov)
 
 ## 3.5.4 Feb 15 2022
 
