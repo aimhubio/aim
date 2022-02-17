@@ -349,9 +349,9 @@ class Run(StructuredRunMixin):
         """
         return self._collect(key)
 
-    def get(self, key, default: Any = None, strict: bool = True):
+    def get(self, key, default: Any = None, strict: bool = True, resolve_objects=False):
         try:
-            return self._collect(key, strict=strict, resolve_objects=True)
+            return self._collect(key, strict=strict, resolve_objects=resolve_objects)
         except KeyError:
             return default
 

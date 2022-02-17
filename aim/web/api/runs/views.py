@@ -284,7 +284,7 @@ async def run_params_api(run_id: str, sequence: Optional[Tuple[str, ...]] = Quer
         sequence = project.repo.available_sequence_types()
 
     response = {
-        'params': run.get(...),
+        'params': run.get(..., resolve_objects=True),
         'traces': run.collect_sequence_info(sequence, skip_last_value=True),
         'props': get_run_props(run)
     }

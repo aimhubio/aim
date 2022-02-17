@@ -21,7 +21,7 @@ class TestHubDatasetIntegration(TestBase):
 
         # get dataset metadata
         ds_object = run['hub_ds']
-        ds_dict = run.get('hub_ds')
+        ds_dict = run.get('hub_ds', resolve_objects=True)
 
         self.assertTrue(isinstance(ds_object, HubDataset))
         self.assertTrue(isinstance(ds_dict, dict))
