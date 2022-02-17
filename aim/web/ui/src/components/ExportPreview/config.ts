@@ -1,6 +1,6 @@
 import { IPreviewBounds } from './ExportPreview.d';
 
-const previewBounds: IPreviewBounds = {
+const PREVIEW_BOUNDS: IPreviewBounds = {
   max: {
     width: 4000,
     height: 2000,
@@ -11,7 +11,7 @@ const previewBounds: IPreviewBounds = {
   },
 };
 
-const previewModalDimension = {
+const PREVIEW_MODAL_DIMENSION = {
   width: 976,
   height: 506,
 };
@@ -22,4 +22,4 @@ enum FormatEnum {
   PNG = 'png',
 }
 
-export { previewBounds, previewModalDimension, FormatEnum };
+export { PREVIEW_BOUNDS, PREVIEW_MODAL_DIMENSION, FormatEnum };

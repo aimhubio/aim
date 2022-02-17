@@ -10,6 +10,7 @@ import { IMAGE_SIZE_CHANGE_DELAY } from 'config/mediaConfigs/mediaConfigs';
 import { ImageRenderingEnum } from 'config/enums/imageEnums';
 import { CONTROLS_DEFAULT_CONFIG } from 'config/controls/controlsDefaultConfig';
 import { ANALYTICS_EVENT_KEYS } from 'config/analytics/analyticsKeysMap';
+import { DATE_EXPORTING_FORMAT } from 'config/dates/dates';
 
 import {
   getImagesExploreTableColumns,
@@ -1574,7 +1575,7 @@ function onExportTableData(e: React.ChangeEvent<any>): void {
   const blob = new Blob([JsonToCSV(dataToExport)], {
     type: 'text/csv;charset=utf-8;',
   });
-  saveAs(blob, `images-${moment().format('HH_mm_ss-D-MMM-YY')}.csv`);
+  saveAs(blob, `images-${moment().format(DATE_EXPORTING_FORMAT)}.csv`);
   analytics.trackEvent(ANALYTICS_EVENT_KEYS.images.table.exports.csv);
 }
 

@@ -13,6 +13,7 @@ import { RowHeightSize, TABLE_DEFAULT_CONFIG } from 'config/table/tableConfigs';
 import { DensityOptions } from 'config/enums/densityEnum';
 import { CONTROLS_DEFAULT_CONFIG } from 'config/controls/controlsDefaultConfig';
 import { ANALYTICS_EVENT_KEYS } from 'config/analytics/analyticsKeysMap';
+import { DATE_EXPORTING_FORMAT } from 'config/dates/dates';
 
 import {
   getMetricsTableColumns,
@@ -169,7 +170,6 @@ import { SortField } from 'utils/getSortedFields';
 import onChangeTrendlineOptions from 'utils/app/onChangeTrendlineOptions';
 
 import { AppDataTypeEnum, AppNameEnum } from './index';
-
 /**
  * function createAppModel has 2 major functionalities:
  *    1. getConfig() function which depends on appInitialConfig returns corresponding config state
@@ -1568,7 +1568,7 @@ function createAppModel(appConfig: IAppInitialConfig) {
       const blob = new Blob([JsonToCSV(dataToExport)], {
         type: 'text/csv;charset=utf-8;',
       });
-      saveAs(blob, `${appName}-${moment().format('HH_mm_ss-D-MMM-YY')}.csv`);
+      saveAs(blob, `${appName}-${moment().format(DATE_EXPORTING_FORMAT)}.csv`);
       analytics.trackEvent(ANALYTICS_EVENT_KEYS[appName].table.exports.csv);
     }
 
@@ -2792,7 +2792,7 @@ function createAppModel(appConfig: IAppInitialConfig) {
         const blob = new Blob([JsonToCSV(dataToExport)], {
           type: 'text/csv;charset=utf-8;',
         });
-        saveAs(blob, `runs-${moment().format('HH_mm_ss-D-MMM-YY')}.csv`);
+        saveAs(blob, `runs-${moment().format(DATE_EXPORTING_FORMAT)}.csv`);
         analytics.trackEvent(ANALYTICS_EVENT_KEYS[appName].table.exports.csv);
       }
 
@@ -3975,7 +3975,7 @@ function createAppModel(appConfig: IAppInitialConfig) {
         const blob = new Blob([JsonToCSV(dataToExport)], {
           type: 'text/csv;charset=utf-8;',
         });
-        saveAs(blob, `params-${moment().format('HH_mm_ss-D-MMM-YY')}.csv`);
+        saveAs(blob, `params-${moment().format(DATE_EXPORTING_FORMAT)}.csv`);
         analytics.trackEvent(ANALYTICS_EVENT_KEYS[appName].table.exports.csv);
       }
 
@@ -5329,7 +5329,10 @@ function createAppModel(appConfig: IAppInitialConfig) {
         const blob = new Blob([JsonToCSV(dataToExport)], {
           type: 'text/csv;charset=utf-8;',
         });
-        saveAs(blob, `${appName}-${moment().format('HH_mm_ss-D-MMM-YY')}.csv`);
+        saveAs(
+          blob,
+          `${appName}-${moment().format(DATE_EXPORTING_FORMAT)}.csv`,
+        );
         analytics.trackEvent(ANALYTICS_EVENT_KEYS[appName].table.exports.csv);
       }
 

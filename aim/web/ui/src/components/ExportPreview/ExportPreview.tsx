@@ -7,12 +7,13 @@ import { Dropdown, InputWrapper, Modal, Slider, Text } from 'components/kit';
 import ErrorBoundary from 'components/ErrorBoundary/ErrorBoundary';
 
 import { ANALYTICS_EVENT_KEYS } from 'config/analytics/analyticsKeysMap';
+import { DATE_EXPORTING_FORMAT } from 'config/dates/dates';
 
 import * as analytics from 'services/analytics';
 
 import { downloadLink, getSVGString, imgSource2Image } from 'utils/helper';
 
-import { FormatEnum, previewBounds, previewModalDimension } from './config';
+import { FormatEnum, PREVIEW_BOUNDS, PREVIEW_MODAL_DIMENSION } from './config';
 import { IExportPreviewProps } from './ExportPreview.d';
 
 import './ExportPreview.scss';
@@ -30,11 +31,11 @@ function ExportPreview({
   const [openFormatDropdown, setOpenFormatDropdown] =
     React.useState<boolean>(false);
   const [previewDimension, setPreviewDimension] = React.useState(
-    previewModalDimension,
+    PREVIEW_MODAL_DIMENSION,
   );
   const [format, setFormat] = React.useState<FormatEnum>(FormatEnum.SVG);
   const [fileName, setFileName] = React.useState<string>(
-    `${explorerPage}-${moment().format('HH_mm_ss-D-MMM-YY')}`,
+    `${explorerPage}-${moment().format(DATE_EXPORTING_FORMAT)}`,
   );
   const [isImageWidthValid, setIsImageWidthValid] =
     React.useState<boolean>(false);
@@ -205,8 +206,11 @@ function ExportPreview({
         onOk={onExportImage}
         classes={{ paper: 'ExportPreview__modal' }}
       >
-        <div className='ExportPreview__container' style={previewModalDimension}>
-          <div ref={previewRef} style={previewModalDimension}>
+        <div
+          className='ExportPreview__container'
+          style={PREVIEW_MODAL_DIMENSION}
+        >
+          <div ref={previewRef} style={PREVIEW_MODAL_DIMENSION}>
             <Grid
               ref={containerRef}
               container
@@ -225,8 +229,8 @@ function ExportPreview({
                   aria-label='Width'
                   valueLabelDisplay='auto'
                   containerClassName='ExportPreview__controls__dimension__width__slider'
-                  min={previewBounds.min.width}
-                  max={previewBounds.max.width}
+                  min={PREVIEW_BOUNDS.min.width}
+                  max={PREVIEW_BOUNDS.max.width}
                   step={2}
                   value={previewDimension.width}
                   onChange={(
@@ -248,8 +252,8 @@ function ExportPreview({
                     setIsImageWidthValid(metadata.isValid);
                   }}
                   validationPatterns={validationPatterns(
-                    previewBounds.min.width,
-                    previewBounds.max.width,
+                    PREVIEW_BOUNDS.min.width,
+                    PREVIEW_BOUNDS.max.width,
                   )}
                 />
               </div>
@@ -259,8 +263,8 @@ function ExportPreview({
                   aria-label='Height'
                   valueLabelDisplay='auto'
                   containerClassName='ExportPreview__controls__dimension__height__slider'
-                  min={previewBounds.min.height}
-                  max={previewBounds.max.height}
+                  min={PREVIEW_BOUNDS.min.height}
+                  max={PREVIEW_BOUNDS.max.height}
                   step={2}
                   value={previewDimension.height}
                   onChange={(
@@ -282,8 +286,8 @@ function ExportPreview({
                     setIsImageHeightValid(metadata.isValid);
                   }}
                   validationPatterns={validationPatterns(
-                    previewBounds.min.height,
-                    previewBounds.max.height,
+                    PREVIEW_BOUNDS.min.height,
+                    PREVIEW_BOUNDS.max.height,
                   )}
                 />
               </div>
