@@ -20,11 +20,9 @@ def parse_tf_events(tf_logs, repo_inst, flat=False):
         # This import statement takes long to complete
         import tensorflow as tf
         from tensorflow.python.summary.summary_iterator import summary_iterator
-    except ModuleNotFoundError:
+    except ImportError:
         click.echo(
-            click.style(
-                'Could not process TF events - failed to import tensorflow module.', fg='red'
-            )
+            'Could not process TF events - failed to import tensorflow module.', err=True
         )
         return
 

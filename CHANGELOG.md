@@ -10,6 +10,7 @@
 - Unification of Run Custom Object APIs (alberttorosyan, VkoHov)
 - Aim repo runs data automatic indexing (alberttorosyan)
 - Add wildcard support for `aim runs` subcommands (mihran113)
+- Add MLflow logs conversion command (devfox-se)
 
 ### Fixes: 
 
