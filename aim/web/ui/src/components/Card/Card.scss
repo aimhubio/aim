@@ -1,6 +1,6 @@
 @use 'src/styles/abstracts' as *;
 
-.TableCard {
+.Card {
   display: flex;
   flex-direction: column;
   padding: toRem(16px) toRem(24px);
@@ -14,5 +14,8 @@
     &__subTitle {
       margin-top: $space-xxxs;
     }
+  }
+  &__tableWrapper {
+    height: 356px;
   }
 }

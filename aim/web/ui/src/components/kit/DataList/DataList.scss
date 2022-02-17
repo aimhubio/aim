@@ -2,10 +2,12 @@
 
 .DataList {
   display: flex;
-  justify-content: center;
   flex-direction: column;
   height: 100%;
   width: 100%;
+  .VisualizationLoader {
+    height: 100% !important;
+  }
   &__textsTable {
     border: $border-grey;
     border-top-left-radius: $border-radius-main;

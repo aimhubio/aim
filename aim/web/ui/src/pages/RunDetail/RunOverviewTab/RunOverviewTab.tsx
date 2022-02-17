@@ -1,7 +1,7 @@
 import React from 'react';
 
 import ErrorBoundary from 'components/ErrorBoundary/ErrorBoundary';
-import TableCard from 'components/TableCard/TableCard';
+import Card from 'components/Card/Card';
 
 import './RunOverViewTab.scss';
 
@@ -9,21 +9,21 @@ function RunOverviewTab() {
   return (
     <ErrorBoundary>
       <div className='RunOverviewTab'>
-        <TableCard
+        <Card
           name='Params'
           title='Little information about Params'
           className='RunOverviewTab__cardBox'
         />
-        <TableCard
+        <Card
           name='Params'
           title='Little information about Params'
           className='RunOverviewTab__cardBox'
         >
           <div>asfasfsa</div>
-        </TableCard>
-        <TableCard name='Params'>
+        </Card>
+        <Card name='Params'>
           <div>asfasfsa</div>
-        </TableCard>
+        </Card>
       </div>
     </ErrorBoundary>
   );
