@@ -16,20 +16,10 @@
       background-color: $primary-color-5;
       user-select: none;
     }
-    &__paper {
-      padding: 1em;
-      height: 100%;
-      user-select: none;
-    }
-    &__paper__grid {
+    &__grid {
       height: 100%;
       overflow: auto;
       margin: 0;
-      &__chartBox {
-        min-height: 50%;
-        padding: 4px;
-        box-shadow: -1px -1px 0 0 #e8e8e8; // var(--grey-lighter);
-      }
     }
     &__controls {
       width: 3.75rem;

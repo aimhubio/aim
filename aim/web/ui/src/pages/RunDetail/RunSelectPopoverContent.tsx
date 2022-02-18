@@ -10,7 +10,7 @@ import EmptyComponent from 'components/EmptyComponent/EmptyComponent';
 import { Button, Icon, Text } from 'components/kit';
 import ErrorBoundary from 'components/ErrorBoundary/ErrorBoundary';
 
-import { DateWithOutSeconds } from 'config/dates/dates';
+import { DATE_WITHOUT_SECONDS } from 'config/dates/dates';
 
 import { processDurationTime } from 'utils/processDurationTime';
 
@@ -135,7 +135,7 @@ function RunSelectPopoverContent({
                         weight={runInfo?.name === run.name ? 600 : 500}
                       >
                         {`${moment(run.creation_time * 1000).format(
-                          DateWithOutSeconds,
+                          DATE_WITHOUT_SECONDS,
                         )} | ${processDurationTime(
                           run?.creation_time * 1000,
                           run?.end_time ? run?.end_time * 1000 : dateNow,

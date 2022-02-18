@@ -81,7 +81,7 @@ function Scatters(
               isLoading={props.requestIsPending}
               className='Scatters__loader'
               height='100%'
-              loaderComponent={<ChartLoader controlsCount={2} />}
+              loaderComponent={<ChartLoader controlsCount={3} />}
             >
               {!!props.scatterPlotData?.[0]?.data?.length ? (
                 <ChartPanel
@@ -97,6 +97,9 @@ function Scatters(
                   resizeMode={props.resizeMode}
                   controls={
                     <Controls
+                      chartProps={chartProps}
+                      chartType={ChartTypeEnum.ScatterPlot}
+                      data={props.scatterPlotData}
                       selectOptions={props.groupingSelectOptions}
                       tooltip={props.tooltip}
                       onChangeTooltip={props.onChangeTooltip}
