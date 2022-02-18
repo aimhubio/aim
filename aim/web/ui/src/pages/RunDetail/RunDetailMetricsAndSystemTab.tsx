@@ -1,7 +1,7 @@
 import React, { memo } from 'react';
 import { isEmpty, isNil } from 'lodash-es';
 
-import EmptyComponent from 'components/EmptyComponent/EmptyComponent';
+import IllustrationBlock from 'components/IllustrationBlock/IllustrationBlock';
 import BusyLoaderWrapper from 'components/BusyLoaderWrapper/BusyLoaderWrapper';
 import ErrorBoundary from 'components/ErrorBoundary/ErrorBoundary';
 
@@ -54,10 +54,10 @@ function RunDetailMetricsAndSystemTab({
             </div>
           </div>
         ) : (
-          <EmptyComponent
-            size='big'
+          <IllustrationBlock
+            size='xLarge'
             className='runDetailParamsTabLoader'
-            content={`No tracked ${isSystem ? 'system' : ''} metrics`}
+            title={`No tracked ${isSystem ? 'system' : ''} metrics`}
           />
         )}
       </BusyLoaderWrapper>

@@ -58,7 +58,7 @@ function RunsContainer(): React.FunctionComponentElement<React.ReactNode> {
       <Runs
         tableData={runsData?.tableData}
         tableColumns={runsData?.tableColumns}
-        isRunsDataLoading={runsData?.requestIsPending}
+        requestStatus={runsData?.requestStatus}
         isLatest={runsData?.config?.pagination.isLatest}
         onSelectRunQueryChange={runsAppModel.onSelectRunQueryChange}
         tableRowHeight={runsData?.config?.table?.rowHeight}

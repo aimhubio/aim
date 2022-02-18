@@ -6,16 +6,17 @@ import { debounce, isEmpty, isNil } from 'lodash-es';
 
 import { Button, Icon, Text } from 'components/kit';
 import ControlPopover from 'components/ControlPopover/ControlPopover';
-import EmptyComponent from 'components/EmptyComponent/EmptyComponent';
+import IllustrationBlock from 'components/IllustrationBlock/IllustrationBlock';
 import BusyLoaderWrapper from 'components/BusyLoaderWrapper/BusyLoaderWrapper';
 import ResizeModeActions from 'components/ResizeModeActions/ResizeModeActions';
 import ErrorBoundary from 'components/ErrorBoundary/ErrorBoundary';
 
 import {
-  TABLE_DEFAULT_CONFIG,
   ROW_CELL_SIZE_CONFIG,
   RowHeightSize,
+  TABLE_DEFAULT_CONFIG,
 } from 'config/table/tableConfigs';
+import { IllustrationsEnum } from 'config/illustrationConfig/illustrationConfig';
 
 import useResizeObserver from 'hooks/window/useResizeObserver';
 
@@ -58,7 +59,6 @@ const Table = React.forwardRef(function Table(
     sortOptions,
     hideHeaderActions = false,
     fixed = true,
-    emptyText = 'No Data',
     excludedFields,
     setExcludedFields,
     alwaysVisibleColumns,
@@ -87,6 +87,7 @@ const Table = React.forwardRef(function Table(
     hiddenChartRows,
     focusedState,
     columnsOrder,
+    illustrationConfig,
     ...props
   }: ITableProps,
   ref,
@@ -633,9 +634,8 @@ const Table = React.forwardRef(function Table(
       <BusyLoaderWrapper
         isLoading={!props.isInfiniteLoading && (isLoading || isNil(rowData))}
         loaderComponent={<TableLoader />}
-        className='Tags__TagList__tagListBusyLoader'
       >
-        {!isEmpty(rowData) ? (
+        {!isEmpty(data) || !isEmpty(rowData) ? (
           <div style={{ height: '100%' }} className={className}>
             {!hideHeaderActions && isEmpty(selectedRows) ? (
               <div className='Table__header'>
@@ -894,7 +894,13 @@ const Table = React.forwardRef(function Table(
             />
           </div>
         ) : (
-          <EmptyComponent size='big' content={emptyText} />
+          <IllustrationBlock
+            page={illustrationConfig?.page || 'metrics'}
+            type={illustrationConfig?.type || IllustrationsEnum.EmptyData}
+            size={illustrationConfig?.size || 'xLarge'}
+            content={illustrationConfig?.content || ''}
+            title={illustrationConfig?.title || ''}
+          />
         )}
       </BusyLoaderWrapper>
     </ErrorBoundary>

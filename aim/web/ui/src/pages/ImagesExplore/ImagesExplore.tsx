@@ -17,6 +17,11 @@ import ErrorBoundary from 'components/ErrorBoundary/ErrorBoundary';
 import { ResizeModeEnum } from 'config/enums/tableEnums';
 import { RowHeightSize } from 'config/table/tableConfigs';
 import GroupingPopovers from 'config/grouping/GroupingPopovers';
+import { RequestStatusEnum } from 'config/enums/requestStatusEnum';
+import {
+  IllustrationsEnum,
+  Request_Illustrations,
+} from 'config/illustrationConfig/illustrationConfig';
 import { ANALYTICS_EVENT_KEYS } from 'config/analytics/analyticsKeysMap';
 
 import usePanelResize from 'hooks/resize/usePanelResize';
@@ -195,8 +200,11 @@ function ImagesExplore(): React.FunctionComponentElement<React.ReactNode> {
             />
             <div className='ImagesExplore__SelectForm__Grouping__container'>
               <SelectForm
-                requestIsPending={imagesExploreData?.requestIsPending}
+                requestIsPending={
+                  imagesExploreData?.requestStatus === RequestStatusEnum.Pending
+                }
                 selectedImagesData={imagesExploreData?.config?.select}
+                selectFormOptions={imagesExploreData?.selectFormOptions}
                 onImagesExploreSelectChange={
                   imagesExploreAppModel.onImagesExploreSelectChange
                 }
@@ -210,7 +218,7 @@ function ImagesExplore(): React.FunctionComponentElement<React.ReactNode> {
                   imagesExploreAppModel.toggleSelectAdvancedMode
                 }
                 onSearchQueryCopy={imagesExploreAppModel.onSearchQueryCopy}
-                searchButtonDisabled={imagesExploreData?.applyButtonDisabled}
+                searchButtonDisabled={imagesExploreData?.searchButtonDisabled}
               />
               <Grouping
                 groupingPopovers={GroupingPopovers.filter(
@@ -239,6 +247,8 @@ function ImagesExplore(): React.FunctionComponentElement<React.ReactNode> {
                 imagesExploreData?.config?.table.resizeMode ===
                 ResizeModeEnum.MaxHeight
                   ? '__hide'
+                  : _.isEmpty(imagesExploreData?.imagesData)
+                  ? '__fullHeight'
                   : ''
               }`}
             >
@@ -247,7 +257,9 @@ function ImagesExplore(): React.FunctionComponentElement<React.ReactNode> {
                 getBlobsData={imagesExploreAppModel.getImagesBlobsData}
                 data={imagesExploreData?.imagesData}
                 orderedMap={imagesExploreData?.orderedMap}
-                isLoading={imagesExploreData?.requestIsPending}
+                isLoading={
+                  imagesExploreData?.requestStatus === RequestStatusEnum.Pending
+                }
                 panelResizing={panelResizing}
                 resizeMode={imagesExploreData?.config?.table.resizeMode}
                 tableHeight={imagesExploreData?.config?.table?.height}
@@ -260,6 +272,14 @@ function ImagesExplore(): React.FunctionComponentElement<React.ReactNode> {
                 additionalProperties={
                   imagesExploreData?.config?.images?.additionalProperties
                 }
+                illustrationConfig={{
+                  page: 'image',
+                  type: imagesExploreData?.selectFormOptions.length
+                    ? Request_Illustrations[
+                        imagesExploreData.requestStatus as RequestStatusEnum
+                      ]
+                    : IllustrationsEnum.EmptyData,
+                }}
                 onActivePointChange={imagesExploreAppModel.onActivePointChange}
                 controls={
                   <Controls
@@ -290,7 +310,8 @@ function ImagesExplore(): React.FunctionComponentElement<React.ReactNode> {
                 actionPanel={
                   imagesExploreData?.config?.images?.stepRange &&
                   imagesExploreData?.config?.images?.indexRange &&
-                  imagesExploreAppModel.showRangePanel() && (
+                  imagesExploreAppModel.showRangePanel() &&
+                  !_.isEmpty(imagesExploreData?.imagesData) && (
                     <ImagesExploreRangePanel
                       recordSlice={
                         imagesExploreData?.config?.images?.recordSlice
@@ -318,10 +339,10 @@ function ImagesExplore(): React.FunctionComponentElement<React.ReactNode> {
             </div>
             <ResizePanel
               className={`ImagesExplore__ResizePanel${
-                imagesExploreData?.requestIsPending ||
-                !_.isEmpty(imagesExploreData?.imagesData)
-                  ? ''
-                  : '__hide'
+                _.isEmpty(imagesExploreData?.imagesData) &&
+                imagesExploreData?.requestStatus !== RequestStatusEnum.Pending
+                  ? '__hide'
+                  : ''
               }`}
               panelResizing={panelResizing}
               resizeElemRef={resizeElemRef}
@@ -333,14 +354,19 @@ function ImagesExplore(): React.FunctionComponentElement<React.ReactNode> {
             <div
               ref={tableElemRef}
               className={`ImagesExplore__table__container${
-                imagesExploreData?.config?.table.resizeMode ===
-                ResizeModeEnum.Hide
+                imagesExploreData?.requestStatus !==
+                  RequestStatusEnum.Pending &&
+                (imagesExploreData?.config?.table.resizeMode ===
+                  ResizeModeEnum.Hide ||
+                  _.isEmpty(imagesExploreData?.tableData!))
                   ? '__hide'
                   : ''
               }`}
             >
               <BusyLoaderWrapper
-                isLoading={imagesExploreData?.requestIsPending}
+                isLoading={
+                  imagesExploreData?.requestStatus === RequestStatusEnum.Pending
+                }
                 className='ImagesExplore__loader'
                 height='100%'
                 loaderComponent={<TableLoader />}
