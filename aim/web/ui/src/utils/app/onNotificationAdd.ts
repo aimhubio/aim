@@ -12,5 +12,5 @@ export default function onNotificationAdd<
   model.setState({ notifyData });
   setTimeout(() => {
     onNotificationDelete({ id: notification.id, model });
-  }, 3000);
+  }, notification.closeDelay ?? 3000);
 }

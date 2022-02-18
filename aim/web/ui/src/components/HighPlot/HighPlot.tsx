@@ -21,12 +21,14 @@ import './HighPlot.scss';
 
 const HighPlot = React.forwardRef(function HighPlot(
   {
-    index,
+    index = 0,
+    nameKey = '',
     curveInterpolation,
     syncHoverState,
     data,
     isVisibleColorIndicator,
     chartTitle,
+    readOnly = false,
   }: IHighPlotProps,
   ref,
 ): React.FunctionComponentElement<React.ReactNode> {
@@ -66,6 +68,7 @@ const HighPlot = React.forwardRef(function HighPlot(
   const draw = React.useCallback((): void => {
     drawParallelArea({
       index,
+      nameKey,
       visBoxRef,
       plotBoxRef,
       parentRef,
@@ -94,6 +97,8 @@ const HighPlot = React.forwardRef(function HighPlot(
 
     if (attributesRef?.current.xScale && attributesRef.current.yScale) {
       drawParallelLines({
+        index,
+        nameKey,
         linesNodeRef,
         attributesRef,
         attributesNodeRef,
@@ -106,21 +111,24 @@ const HighPlot = React.forwardRef(function HighPlot(
 
       linesRef.current.data = data.data;
 
-      drawParallelHoverAttributes({
-        dimensions: data.dimensions,
-        index,
-        visAreaRef,
-        linesRef,
-        attributesRef,
-        visBoxRef,
-        bgRectNodeRef,
-        attributesNodeRef,
-        linesNodeRef,
-        highlightedNodeRef,
-        isVisibleColorIndicator,
-        axesNodeRef,
-        syncHoverState,
-      });
+      if (!readOnly) {
+        drawParallelHoverAttributes({
+          dimensions: data.dimensions,
+          index,
+          nameKey,
+          visAreaRef,
+          linesRef,
+          attributesRef,
+          visBoxRef,
+          bgRectNodeRef,
+          attributesNodeRef,
+          linesNodeRef,
+          highlightedNodeRef,
+          isVisibleColorIndicator,
+          axesNodeRef,
+          syncHoverState,
+        });
+      }
 
       drawParallelAxesBrush({
         plotBoxRef,
@@ -134,7 +142,7 @@ const HighPlot = React.forwardRef(function HighPlot(
     }
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [curveInterpolation, index, isVisibleColorIndicator, data]);
+  }, [curveInterpolation, index, isVisibleColorIndicator, data, readOnly]);
 
   React.useImperativeHandle(ref, () => ({
     setActiveLine: (lineKey: string) => {

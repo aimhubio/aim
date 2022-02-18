@@ -1,6 +1,7 @@
 -r ../requirements.txt
 torch
 tensorflow
+hub
 requests
 pandas
 pytest

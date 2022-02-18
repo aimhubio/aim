@@ -1,6 +1,7 @@
 import click
 import os
 
+from aim.cli.runs.utils import list_repo_runs, match_runs
 from aim.sdk.repo import Repo
 
 
@@ -27,8 +28,8 @@ def list_runs(ctx):
     if not Repo.exists(repo_path):
         click.echo(f'\'{repo_path}\' is not a valid aim repo.')
         exit(1)
-    chunks_dir = os.path.join(repo_path, '.aim', 'meta', 'chunks')
-    run_hashes = os.listdir(chunks_dir)
+
+    run_hashes = list_repo_runs(repo_path)
 
     click.echo('\t'.join(run_hashes))
     click.echo(f'Total {len(run_hashes)} runs.')
@@ -39,7 +40,7 @@ def list_runs(ctx):
 @click.pass_context
 def remove_runs(ctx, hashes):
     if len(hashes) == 0:
-        click.echo('Please specify at lest one Run to delete.')
+        click.echo('Please specify at least one Run to delete.')
         exit(1)
     repo_path = ctx.obj['repo']
     confirmed = click.confirm(f'This command will permanently delete {len(hashes)} runs from aim repo located at '
@@ -47,9 +48,11 @@ def remove_runs(ctx, hashes):
     if not confirmed:
         return
     repo = Repo.from_path(repo_path)
-    success, remaining_runs = repo.delete_runs(hashes)
+
+    matched_hashes = match_runs(repo_path, hashes)
+    success, remaining_runs = repo.delete_runs(matched_hashes)
     if success:
-        click.echo(f'Successfully deleted {len(hashes)} runs.')
+        click.echo(f'Successfully deleted {len(matched_hashes)} runs.')
     else:
         click.echo('Something went wrong while deleting runs. Remaining runs are:', err=True)
         click.secho('\t'.join(remaining_runs), fg='yellow')
@@ -67,15 +70,16 @@ def remove_runs(ctx, hashes):
 @click.pass_context
 def copy_runs(ctx, destination, hashes):
     if len(hashes) == 0:
-        click.echo('Please specify at lest one Run to delete.')
+        click.echo('Please specify at least one Run to copy.')
         exit(1)
     source = ctx.obj['repo']
     source_repo = Repo.from_path(source)
     destination_repo = Repo.from_path(destination)
 
-    success, remaining_runs = source_repo.copy_runs(hashes, destination_repo)
+    matched_hashes = match_runs(source, hashes)
+    success, remaining_runs = source_repo.copy_runs(matched_hashes, destination_repo)
     if success:
-        click.echo(f'Successfully copied {len(hashes)} runs.')
+        click.echo(f'Successfully copied {len(matched_hashes)} runs.')
     else:
         click.echo('Something went wrong while copying runs. Remaining runs are:', err=True)
         click.secho('\t'.join(remaining_runs), fg='yellow')
@@ -93,15 +97,17 @@ def copy_runs(ctx, destination, hashes):
 @click.pass_context
 def move_runs(ctx, destination, hashes):
     if len(hashes) == 0:
-        click.echo('Please specify at lest one Run to delete.')
+        click.echo('Please specify at least one Run to move.')
         exit(1)
     source = ctx.obj['repo']
     source_repo = Repo.from_path(source)
     destination_repo = Repo.from_path(destination)
 
-    success, remaining_runs = source_repo.move_runs(hashes, destination_repo)
+    matched_hashes = match_runs(source, hashes)
+
+    success, remaining_runs = source_repo.move_runs(matched_hashes, destination_repo)
     if success:
-        click.echo(f'Successfully moved {len(hashes)} runs.')
+        click.echo(f'Successfully moved {len(matched_hashes)} runs.')
     else:
         click.echo('Something went wrong while moving runs. Remaining runs are:', err=True)
         click.secho('\t'.join(remaining_runs), fg='yellow')

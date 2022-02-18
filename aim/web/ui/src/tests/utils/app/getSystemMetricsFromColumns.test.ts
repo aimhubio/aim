@@ -92,11 +92,10 @@ describe('[Filter and get system metrics from table columns data]', () => {
         isHidden: false,
       },
     ];
-    toEqual(getSystemMetricsFromColumns(columns), [
-      '__system__cpu',
-      '__system__disk_percent',
-      '__system__p_memory_percent',
-    ]);
+    toEqual(
+      ['__system__cpu', '__system__disk_percent', '__system__p_memory_percent'],
+      getSystemMetricsFromColumns(columns),
+    );
   });
 
   it('correctly filtering and returning empty array', () => {
@@ -144,6 +143,6 @@ describe('[Filter and get system metrics from table columns data]', () => {
         isHidden: false,
       },
     ];
-    toEqual(getSystemMetricsFromColumns(columns), []);
+    toEqual([], getSystemMetricsFromColumns(columns));
   });
 });
