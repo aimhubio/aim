@@ -3,7 +3,7 @@ import ReactJson from 'react-json-view';
 import { isEmpty } from 'lodash-es';
 
 import BusyLoaderWrapper from 'components/BusyLoaderWrapper/BusyLoaderWrapper';
-import EmptyComponent from 'components/EmptyComponent/EmptyComponent';
+import IllustrationBlock from 'components/IllustrationBlock/IllustrationBlock';
 import ErrorBoundary from 'components/ErrorBoundary/ErrorBoundary';
 
 import { ANALYTICS_EVENT_KEYS } from 'config/analytics/analyticsKeysMap';
@@ -26,17 +26,17 @@ function RunDetailParamsTab({
         className='runDetailParamsTabLoader'
         height='100%'
       >
-        {!isEmpty(runParams) ? (
+        {!isEmpty([]) ? (
           <div className='RunDetailParamsTabWrapper'>
             <div className='RunDetailParamsTab'>
               <ReactJson name={false} theme='bright:inverted' src={runParams} />
             </div>
           </div>
         ) : (
-          <EmptyComponent
-            size='big'
+          <IllustrationBlock
+            size='xLarge'
             className='runDetailParamsTabLoader'
-            content='No Params'
+            title='No Params'
           />
         )}
       </BusyLoaderWrapper>

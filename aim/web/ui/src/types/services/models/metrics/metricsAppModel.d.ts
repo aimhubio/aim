@@ -1,9 +1,12 @@
-import { ZoomEnum } from 'components/ZoomInPopover/ZoomInPopover';
-
 import {
   IAppModelConfig,
   IGroupingConfig,
-} from 'services/models/explorer/createAppModel';
+} from 'src/services/models/metrics/explorer/createAppModel';
+import { IImagesExploreAppConfig } from 'src/services/models/imagesExplore/imagesExploreAppModel';
+
+import { ZoomEnum } from 'components/ZoomInPopover/ZoomInPopover';
+
+import { RequestStatusEnum } from 'config/enums/requestStatusEnum';
 
 import { IChartPanelRef } from 'types/components/ChartPanel/ChartPanel';
 import { ILine } from 'types/components/LineChart/LineChart';
@@ -25,7 +28,7 @@ export interface IMetricAppModelState {
     tableRef?: { current: ITableRef | null };
     chartPanelRef?: { current: IChartPanelRef | null };
   };
-  requestIsPending: boolean;
+  requestStatus: RequestStatusEnum;
   queryIsEmpty: boolean;
   rawData: IRun<IMetricTrace>[];
   config: IAppModelConfig;
@@ -39,6 +42,7 @@ export interface IMetricAppModelState {
   params: string[];
   notifyData: INotification[];
   groupingSelectOptions: IGroupingSelectOption[];
+  selectFormOptions?: ISelectOption[];
   liveUpdateConfig: {
     delay: number;
     enabled: boolean;
@@ -192,7 +196,7 @@ export interface IAppData {
   id?: string;
   updated_at?: string;
   type?: string;
-  state?: Partial<IAppModelConfig>;
+  state?: Partial<IAppModelConfig | IImagesExploreAppConfig>;
 }
 
 export interface IDashboardRequestBody {

@@ -176,7 +176,6 @@ function DeleteModal({
               data={data}
               hideHeaderActions
               headerHeight={28}
-              emptyText='No Text'
               rowHeight={24}
               height='100%'
               className='ActionModal__Table'
@@ -199,7 +198,6 @@ function DeleteModal({
                 data={disabledData}
                 hideHeaderActions
                 headerHeight={28}
-                emptyText='No Text'
                 rowHeight={24}
                 height='100%'
                 className='ActionModal__Table'

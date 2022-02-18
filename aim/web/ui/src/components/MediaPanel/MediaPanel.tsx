@@ -4,14 +4,15 @@ import { isEmpty } from 'lodash-es';
 import MediaSet from 'components/MediaSet/MediaSet';
 import BusyLoaderWrapper from 'components/BusyLoaderWrapper/BusyLoaderWrapper';
 import ChartLoader from 'components/ChartLoader/ChartLoader';
-import EmptyComponent from 'components/EmptyComponent/EmptyComponent';
 import { Text } from 'components/kit';
 import ChartPopover from 'components/ChartPanel/ChartPopover/ChartPopover';
 import { throttle } from 'components/Table/utils';
 import ErrorBoundary from 'components/ErrorBoundary/ErrorBoundary';
+import IllustrationBlock from 'components/IllustrationBlock/IllustrationBlock';
 
 import { ResizeModeEnum } from 'config/enums/tableEnums';
 import { BATCH_SEND_DELAY } from 'config/mediaConfigs/mediaConfigs';
+import { IllustrationsEnum } from 'config/illustrationConfig/illustrationConfig';
 
 import blobsURIModel from 'services/models/media/blobsURIModel';
 
@@ -21,7 +22,6 @@ import './MediaPanel.scss';
 
 function MediaPanel({
   data,
-  getBlobsData,
   isLoading,
   panelResizing,
   wrapperOffsetHeight,
@@ -31,15 +31,17 @@ function MediaPanel({
   tooltip,
   focusedState,
   additionalProperties,
-  onActivePointChange,
   tableHeight,
   mediaType,
   controls,
   actionPanel,
   actionPanelSize,
   tooltipType,
+  onActivePointChange,
+  getBlobsData,
   sortFieldsDict,
   sortFields,
+  illustrationConfig,
 }: IMediaPanelProps): React.FunctionComponentElement<React.ReactNode> {
   const [activePointRect, setActivePointRect] = React.useState<{
     top: number;
@@ -273,11 +275,30 @@ function MediaPanel({
                       <div className='MediaPanel__controls'>{controls}</div>
                     </ErrorBoundary>
                   )}
+                  {tooltipType && (
+                    <ChartPopover
+                      containerNode={containerRef.current}
+                      activePointRect={activePointRect}
+                      open={
+                        resizeMode !== ResizeModeEnum.MaxHeight &&
+                        !panelResizing &&
+                        (tooltip?.display || focusedState?.active)
+                      }
+                      chartType={tooltipType}
+                      tooltipContent={tooltip?.content}
+                      focusedState={focusedState}
+                    />
+                  )}
+                  {controls && (
+                    <div className='MediaPanel__controls'>{controls}</div>
+                  )}
                 </div>
               ) : (
-                <EmptyComponent
-                  size='big'
-                  content="It's super easy to search Aim experiments. Lookup search docs to learn more."
+                <IllustrationBlock
+                  page={illustrationConfig?.page || 'runs'}
+                  type={illustrationConfig?.type || IllustrationsEnum.EmptyData}
+                  size={illustrationConfig?.size || 'xLarge'}
+                  title={illustrationConfig?.title || ''}
                 />
               )}
               {actionPanel}

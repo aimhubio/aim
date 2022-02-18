@@ -8,6 +8,8 @@ import { BookmarkNotificationsEnum } from 'config/notification-messages/notifica
 import { ResizeModeEnum, RowHeightEnum } from 'config/enums/tableEnums';
 import { IMAGE_SIZE_CHANGE_DELAY } from 'config/mediaConfigs/mediaConfigs';
 import { ImageRenderingEnum } from 'config/enums/imageEnums';
+import { RequestStatusEnum } from 'config/enums/requestStatusEnum';
+import COLORS from 'config/colors/colors';
 import { CONTROLS_DEFAULT_CONFIG } from 'config/controls/controlsDefaultConfig';
 import { ANALYTICS_EVENT_KEYS } from 'config/analytics/analyticsKeysMap';
 import { DATE_EXPORTING_FORMAT } from 'config/dates/dates';
@@ -22,6 +24,7 @@ import imagesExploreService from 'services/api/imagesExplore/imagesExploreServic
 import appsService from 'services/api/apps/appsService';
 import dashboardService from 'services/api/dashboard/dashboardService';
 import blobsURIModel from 'services/models/media/blobsURIModel';
+import projectsService from 'services/api/projects/projectsService';
 import runsService from 'services/api/runs/runsService';
 
 import {
@@ -48,6 +51,7 @@ import {
   ISelectConfig,
   ISelectOption,
 } from 'types/services/models/explorer/createAppModel';
+import { IProjectParamsMetrics } from 'types/services/models/projects/projectsModel';
 
 import onRowSelectAction from 'utils/app/onRowSelect';
 import { decode, encode } from 'utils/encoder/encoder';
@@ -71,15 +75,18 @@ import { getDataAsMediaSetNestedObject } from 'utils/app/getDataAsMediaSetNested
 import { getCompatibleSelectConfig } from 'utils/app/getCompatibleSelectConfig';
 import { getSortedFields, SortField, SortFields } from 'utils/getSortedFields';
 import { getValue } from 'utils/helper';
+import contextToString from 'utils/contextToString';
+import alphabeticalSortComparator from 'utils/alphabeticalSortComparator';
 import onNotificationDelete from 'utils/app/onNotificationDelete';
 import onNotificationAdd from 'utils/app/onNotificationAdd';
 
 import createModel from '../model';
 
 const model = createModel<Partial<IImagesExploreAppModelState>>({
-  requestIsPending: false,
+  requestStatus: RequestStatusEnum.NotRequested,
   searchButtonDisabled: false,
-  applyButtonDisabled: false,
+  applyButtonDisabled: true,
+  selectFormOptions: [],
 });
 
 let tooltipData: ITooltipData = {};
@@ -236,7 +243,7 @@ function resetModelOnError(detail?: any) {
     imagesData: {},
     tableData: [],
     tableColumns: [],
-    requestIsPending: false,
+    requestStatus: RequestStatusEnum.BadRequest,
   });
 
   setTimeout(() => {
@@ -275,7 +282,7 @@ function abortRequest(): void {
   }
 
   model.setState({
-    requestIsPending: false,
+    requestStatus: RequestStatusEnum.Ok,
   });
   onNotificationAdd({
     notification: {
@@ -326,21 +333,26 @@ function getImagesData(
     };
   }
   imagesRequestRef = imagesExploreService.getImagesExploreData(imageDataBody);
-
+  projectsService
+    .getProjectParams(['metric'])
+    .call()
+    .then((data: IProjectParamsMetrics) => {
+      model.setState({
+        selectFormOptions: getSelectFormOptions(data),
+      });
+    });
   return {
     call: async () => {
       if (query !== '()') {
         model.setState({
-          requestIsPending: true,
+          requestStatus: RequestStatusEnum.Pending,
           queryIsEmpty: false,
           applyButtonDisabled: false,
           selectedRows: shouldResetSelectedRows
             ? {}
             : model.getState()?.selectedRows,
         });
-
         blobsURIModel.init();
-
         try {
           const stream = await imagesRequestRef.call(exceptionHandler);
           const runData = await getImagesMetricsData(stream);
@@ -360,7 +372,7 @@ function getImagesData(
           selectedRows: shouldResetSelectedRows
             ? {}
             : model.getState()?.selectedRows,
-          requestIsPending: false,
+          requestStatus: RequestStatusEnum.Ok,
           queryIsEmpty: true,
           imagesData: {},
           tableData: [],
@@ -388,7 +400,44 @@ function getImagesData(
     abort: imagesRequestRef.abort,
   };
 }
+function getSelectFormOptions(projectsData: IProjectParamsMetrics) {
+  let data: ISelectOption[] = [];
+  let index: number = 0;
+  if (projectsData?.images) {
+    for (let key in projectsData.images) {
+      data.push({
+        label: key,
+        group: key,
+        color: COLORS[0][index % COLORS[0].length],
+        value: {
+          option_name: key,
+          context: null,
+        },
+      });
+      index++;
 
+      for (let val of projectsData.images[key]) {
+        if (!_.isEmpty(val)) {
+          let label = contextToString(val);
+          data.push({
+            label: `${key} ${label}`,
+            group: key,
+            color: COLORS[0][index % COLORS[0].length],
+            value: {
+              option_name: key,
+              context: val,
+            },
+          });
+          index++;
+        }
+      }
+    }
+  }
+
+  return data.sort(
+    alphabeticalSortComparator<ISelectOption>({ orderBy: 'label' }),
+  );
+}
 function processData(data: any[]): {
   data: IMetricsCollection<IImageData>[];
   params: string[];
@@ -612,7 +661,7 @@ function setModelData(rawData: any[], configData: IImagesExploreAppConfig) {
     additionalProperties: config.images.additionalProperties,
   };
   model.setState({
-    requestIsPending: false,
+    requestStatus: RequestStatusEnum.Ok,
     rawData,
     config,
     params,
@@ -2091,7 +2140,10 @@ function onImageAlignmentChange(
 }
 
 function showRangePanel() {
-  return !model.getState().requestIsPending && !model.getState().queryIsEmpty;
+  return (
+    model.getState().requestStatus !== RequestStatusEnum.Pending &&
+    !model.getState().queryIsEmpty
+  );
 }
 
 function archiveRuns(

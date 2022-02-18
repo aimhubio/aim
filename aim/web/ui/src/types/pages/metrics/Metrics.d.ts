@@ -6,6 +6,7 @@ import { HighlightEnum } from 'components/HighlightModesPopover/HighlightModesPo
 import { RowHeightSize } from 'config/table/tableConfigs';
 import { ResizeModeEnum } from 'config/enums/tableEnums';
 import { DensityOptions } from 'config/enums/densityEnum';
+import { RequestStatusEnum } from 'config/enums/requestStatusEnum';
 
 import {
   IGroupingConfig,
@@ -78,8 +79,9 @@ export interface IMetricProps extends Partial<RouteChildrenProps> {
   hideSystemMetrics: boolean;
   groupingSelectOptions: IGroupingSelectOption[];
   projectsDataMetrics: IProjectParamsMetrics['metric'];
-  requestIsPending: boolean;
+  requestStatus: RequestStatusEnum;
   resizeMode: ResizeModeEnum;
+  selectFormOptions: ISelectOption[];
   columnsOrder: IColumnsOrder;
   onChangeTooltip: (tooltip: Partial<IPanelTooltip>) => void;
   onIgnoreOutliersChange: () => void;
