@@ -28,16 +28,19 @@ export const VIEW_PORT_OFFSET = 500;
 
 export const TABLE_DEFAULT_CONFIG = {
   runs: {
+    resizeMode: ResizeModeEnum.Resizable,
     rowHeight: RowHeightSize.md,
+    sortFields: [],
+    hideSystemMetrics: true,
     hiddenMetrics: [],
     hiddenColumns: [],
     columnsWidths: {},
-    hideSystemMetrics: true,
     columnsOrder: {
-      left: [],
+      left: ['experiment', 'run'],
       middle: [],
       right: [],
     },
+    height: '0.5',
   },
   metrics: {
     resizeMode: ResizeModeEnum.Resizable,
@@ -47,7 +50,7 @@ export const TABLE_DEFAULT_CONFIG = {
     hiddenColumns: [],
     columnsWidths: {},
     columnsOrder: {
-      left: [],
+      left: ['experiment'],
       middle: [],
       right: [],
     },
@@ -62,7 +65,7 @@ export const TABLE_DEFAULT_CONFIG = {
     hideSystemMetrics: true,
     columnsWidths: {},
     columnsOrder: {
-      left: [],
+      left: ['experiment'],
       middle: [],
       right: [],
     },
@@ -76,7 +79,7 @@ export const TABLE_DEFAULT_CONFIG = {
     hiddenColumns: [],
     columnsWidths: {},
     columnsOrder: {
-      left: [],
+      left: ['experiment'],
       middle: [],
       right: [],
     },
@@ -91,7 +94,7 @@ export const TABLE_DEFAULT_CONFIG = {
     hideSystemMetrics: true,
     columnsWidths: {},
     columnsOrder: {
-      left: [],
+      left: ['experiment'],
       middle: [],
       right: [],
     },
