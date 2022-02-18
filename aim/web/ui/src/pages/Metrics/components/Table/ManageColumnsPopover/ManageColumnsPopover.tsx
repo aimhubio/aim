@@ -1,5 +1,6 @@
 import React from 'react';
 import { DragDropContext, Droppable } from 'react-beautiful-dnd';
+import _ from 'lodash-es';
 
 import { Divider, InputBase } from '@material-ui/core';
 
@@ -176,12 +177,15 @@ function ManageColumnsPopover({
 
   const manageColumnsChanged: boolean = React.useMemo(() => {
     return (
-      state.columns.left.list.length !==
-        TABLE_DEFAULT_CONFIG[appName].columnsOrder.left.length ||
-      state.columns.right.list.length !==
-        TABLE_DEFAULT_CONFIG[appName].columnsOrder.right.length ||
-      hiddenColumns.length !==
-        TABLE_DEFAULT_CONFIG[appName].hiddenColumns.length
+      !_.isEqual(
+        state.columns.left.list,
+        TABLE_DEFAULT_CONFIG[appName].columnsOrder.left,
+      ) ||
+      !_.isEqual(
+        state.columns.right.list,
+        TABLE_DEFAULT_CONFIG[appName].columnsOrder.right,
+      ) ||
+      !_.isEqual(hiddenColumns, TABLE_DEFAULT_CONFIG[appName].hiddenColumns)
     );
   }, [appName, hiddenColumns, state]);
 

@@ -349,12 +349,15 @@ function createAppModel(appConfig: IAppInitialConfig) {
             hideSystemMetrics: TABLE_DEFAULT_CONFIG.runs.hideSystemMetrics,
             hiddenMetrics: TABLE_DEFAULT_CONFIG.runs.hiddenMetrics,
             hiddenColumns: TABLE_DEFAULT_CONFIG.runs.hiddenColumns,
+            sortFields: [...TABLE_DEFAULT_CONFIG.runs.sortFields],
             columnsWidths: {},
             columnsOrder: {
               left: [...TABLE_DEFAULT_CONFIG.runs.columnsOrder.left],
               middle: [...TABLE_DEFAULT_CONFIG.runs.columnsOrder.middle],
               right: [...TABLE_DEFAULT_CONFIG.runs.columnsOrder.right],
             },
+            resizeMode: TABLE_DEFAULT_CONFIG.runs.resizeMode,
+            height: TABLE_DEFAULT_CONFIG.runs.height,
           };
           if (appName === AppNameEnum.RUNS) {
             config.pagination = {
