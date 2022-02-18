@@ -8,7 +8,7 @@ import Theme from 'components/Theme/Theme';
 import BusyLoaderWrapper from 'components/BusyLoaderWrapper/BusyLoaderWrapper';
 import ErrorBoundary from 'components/ErrorBoundary/ErrorBoundary';
 
-import { getBasePath, PATHS_TO_SHOW_CACHE_BANNERS } from 'config/config';
+import { checkIsBasePathInCachedEnv, getBasePath } from 'config/config';
 
 import routes from 'routes/routes';
 
@@ -18,8 +18,7 @@ import './App.scss';
 
 const basePath = getBasePath(false);
 
-const isVisibleCacheBanner =
-  PATHS_TO_SHOW_CACHE_BANNERS.includes(basePath) && inIframe();
+const isVisibleCacheBanner = checkIsBasePathInCachedEnv(basePath) && inIframe();
 
 function App(): React.FunctionComponentElement<React.ReactNode> {
   return (
