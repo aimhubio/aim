@@ -6,9 +6,11 @@ tracked with other tools. Aim has built-in converters to easily migrate logs fro
 other tools for common cases. In case of custom and complex scenarios you can use
 Aim SDK to implement your own conversion script.
 
-As of Aim `v3.5.4` the following converters are supported:
+As of Aim `v3.6.0` the following converters are supported:
 
 - [TensorFlow events converter](#show-tensorflow-events-in-aim) 
+- [MLFlow logs converter](#show-mlflow-logs-in-aim) 
+
 
 We are working to constantly improve existing converters and implement new ones.
 
@@ -94,3 +96,73 @@ In this case the following directories will be categorized as a `run` directory.
 - `~/tensorflow/logdir/group_1/run_3/`
 
 The event files in all other directories will be ignored.
+
+
+### Show MLflow logs in Aim
+
+Aim gives your possibility to convert [MLflow](https://mlflow.org/) runs into native format and show them directly
+inside the Aim UI.
+
+Before showing your MLlfow runs in Aim, they need to pass conversion process where your metrics, tags, parameters, run
+description/notes and *some* artifacts will be transferred into Aim storage.
+
+Please note that as for now, only the artifacts having the following file extensions will be transferred into Aim
+storage!
+
+* Images: `(
+  'jpg',
+  'bmp',
+  'jpeg',
+  'png',
+  'gif',
+  'svg'
+  )`
+
+* Texts: `(
+  'txt',
+  'log',
+  'py',
+  'js',
+  'yaml',
+  'yml',
+  'json',
+  'csv',
+  'tsv',
+  'md',
+  'rst',
+  'jsonnet'
+  )`
+
+* Sound/Audios: `(
+  'flac',
+  'mp3',
+  'wav'
+  )`
+
+To convert MLflow runs, `aim convert mlflow` command must be run on your log directory:
+
+```commandline
+$ aim init
+$ aim convert mlflow --tracking_uri 'file:///Users/aim_user/mlruns'
+```
+
+You can also set the `MLFLOW_TRACKING_URI` environment variable to have MLflow find a URI from there. In both cases, the
+URI can either be an HTTP/HTTPS URI for a remote server, a database connection string, or a local path to log data to a
+directory.
+
+The conversion process will iterate over all your Experiments and create a distinct run for each run inside the
+experiment. If you want to process only a single experiment, you can provide the experiment id to the conversion
+command:
+
+```commandline
+$ aim convert mlflow --tracking_uri 'file:///Users/aim_user/mlruns' --experiment 0
+```
+
+While converting the artifacts, the converter will try to determine file content type only based on its extension. A
+warning message will be issued if artifact cannot be categorized, these artifacts will not be transferred to aim!
+Please check the command output logs if you fail to see your artifact in Aim's web.
+
+If you think there is problem with this conversion process
+please [open an issue](https://github.com/aimhubio/aim/issues/new/choose).
+
+Once conversion process is complete - you can enjoy the power of Aim 🚀
