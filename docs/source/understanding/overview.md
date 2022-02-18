@@ -17,13 +17,6 @@ and CLI.
 - **Aim CLI**. A collection of command line utilities for running Aim web server, managing aim repositories, runs, etc.
 - **Remote Tracking server**. A [gRPC](https://grpc.io/about)-based service accepting incoming traffic and storing data on a centralized server.
 
-Here is a diagram showing how data flow in Aim and how different components interact with the data
-
----
-<div align="center">
-<span style="background:lightyellow">TODO: put a flow diagram here</span>
-</div>
-
 
 The next sections will describe various concepts Aim introduces and provide more detailed look on
 individual components introduced above.

@@ -1,6 +1,6 @@
 ## Data storage - where Aim data is collected
 
-This section provided a deep-dive into Aim storage structure. It is important
+This section provides a deep-dive into Aim storage structure. It is important
 to know the internal storage organization in order to understand how it affects
 queries performance.
 
@@ -36,7 +36,7 @@ a single KV store called `Container`. Below is the directory structure for a typ
             80483ab611a24bf5bd8fc288
 ``` 
 
-In the tree above the hash-strings (i.e. `aacf48e769534c32a9cc5a3c`) represent a single Run.
+In the tree above the hash-strings (i.e. `aacf48e769534c32a9cc5a3c`) represent a single `Run`.
 When the new `Run` is started, aim will create two Containers:
 - **Meta** container for logged params as well as metadata about collected sequences, contexts, etc.
 - **Sequence** container for the value series.
@@ -71,9 +71,3 @@ During query execution, aim SDK will walk through all runs in `index` container 
 have progress file (remember that progress file indicates potentially un-indexed data for the Run). If the run/sequence
 match the query expression, the appropriate run/sequence will be yielded. Notice that till this point no data was accessed
 from the **sequence** container. The sequence data itself is read upon request.
-
-<div align="center">
-<span style="background:lightyellow">TODO: put a diagram discribing the following flow:
-User data -> Set to Run -> Encoding -> Encoded data -> Container + decoding of data during queries </span>
-
-</div>
