@@ -3331,7 +3331,6 @@ function createAppModel(appConfig: IAppInitialConfig) {
                 });
 
               model.setState({
-                // requestStatus: RequestStatusEnum.Ok,
                 queryIsEmpty: true,
                 selectedRows: shouldResetSelectedRows
                   ? {}

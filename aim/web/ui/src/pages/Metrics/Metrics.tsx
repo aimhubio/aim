@@ -68,6 +68,7 @@ function Metrics(
     props.alignmentConfig,
     props.onZoomChange,
   ]);
+
   return (
     <ErrorBoundary>
       <div ref={props.wrapperElemRef} className='Metrics__container'>
@@ -117,7 +118,7 @@ function Metrics(
               className={`Metrics__chart__container${
                 props.resizeMode === ResizeModeEnum.MaxHeight
                   ? '__hide'
-                  : _.isEmpty(props.tableData)
+                  : _.isEmpty(props.lineChartData)
                   ? '__fullHeight'
                   : ''
               }`}
@@ -128,7 +129,7 @@ function Metrics(
                 isLoading={props.requestStatus === RequestStatusEnum.Pending}
                 loaderComponent={<ChartLoader controlsCount={9} />}
               >
-                {!_.isEmpty(props.tableData) ? (
+                {!_.isEmpty(props.lineChartData) ? (
                   <ChartPanel
                     key={props.lineChartData?.length}
                     ref={props.chartPanelRef}

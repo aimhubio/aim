@@ -7,11 +7,10 @@ import {
   ITooltipContent,
 } from 'types/services/models/metrics/metricsAppModel';
 import { IImagesExploreAppConfig } from 'types/services/models/imagesExplore/imagesExploreAppModel';
+import { IIllustrationConfig } from 'types/components/Table/Table';
 
 import { ChartTypeEnum } from 'utils/d3';
 import { SortFields } from 'utils/getSortedFields';
-
-import { IIllustrationConfig } from '../../types/components/Table/Table';
 
 import { MediaTypeEnum } from './config';
 

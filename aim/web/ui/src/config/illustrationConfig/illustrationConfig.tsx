@@ -36,7 +36,7 @@ const Illustration_Title_Config: { [key: string]: object | any } = {
         It’s super easy to search Aim experiments. Just start typing your query
         in the search bar above.
         <br />
-        Lookup
+        Look up
         <a
           className='qlAnchor'
           href='https://aimstack.readthedocs.io/en/stable/quick_start/QL_basics.html'
@@ -58,7 +58,7 @@ const Illustration_Title_Config: { [key: string]: object | any } = {
         It’s super easy to search Aim experiments. Just start typing your query
         in the search bar above.
         <br />
-        Lookup
+        Look up
         <a
           className='qlAnchor'
           href='https://aimstack.readthedocs.io/en/stable/quick_start/QL_basics.html'
@@ -82,7 +82,7 @@ const Illustration_Title_Config: { [key: string]: object | any } = {
         It’s super easy to search Aim experiments. Just start typing your query
         in the search bar above.
         <br />
-        Lookup
+        Look up
         <a
           className='qlAnchor'
           href='https://aimstack.readthedocs.io/en/stable/quick_start/QL_basics.html'
@@ -104,7 +104,7 @@ const Illustration_Title_Config: { [key: string]: object | any } = {
         It’s super easy to search Aim experiments. Just start typing your query
         in the search bar above.
         <br />
-        Lookup
+        Look up
         <a
           className='qlAnchor'
           href='https://aimstack.readthedocs.io/en/stable/quick_start/QL_basics.html'
@@ -129,7 +129,7 @@ const Illustration_Title_Config: { [key: string]: object | any } = {
         It’s super easy to search Aim experiments. Just start typing your query
         in the search bar above.
         <br />
-        Lookup
+        Look up
         <a
           className='qlAnchor'
           href='https://aimstack.readthedocs.io/en/stable/quick_start/QL_basics.html'

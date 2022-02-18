@@ -4,11 +4,11 @@ import { isEmpty } from 'lodash-es';
 import MediaSet from 'components/MediaSet/MediaSet';
 import BusyLoaderWrapper from 'components/BusyLoaderWrapper/BusyLoaderWrapper';
 import ChartLoader from 'components/ChartLoader/ChartLoader';
-import IllustrationBlock from 'components/IllustrationBlock/IllustrationBlock';
 import { Text } from 'components/kit';
 import ChartPopover from 'components/ChartPanel/ChartPopover/ChartPopover';
 import { throttle } from 'components/Table/utils';
 import ErrorBoundary from 'components/ErrorBoundary/ErrorBoundary';
+import IllustrationBlock from 'components/IllustrationBlock/IllustrationBlock';
 
 import { ResizeModeEnum } from 'config/enums/tableEnums';
 import { BATCH_SEND_DELAY } from 'config/mediaConfigs/mediaConfigs';

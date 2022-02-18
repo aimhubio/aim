@@ -1,3 +1,9 @@
+import {
+  IAppModelConfig,
+  IGroupingConfig,
+} from 'src/services/models/metrics/explorer/createAppModel';
+import { IImagesExploreAppConfig } from 'src/services/models/imagesExplore/imagesExploreAppModel';
+
 import { ZoomEnum } from 'components/ZoomInPopover/ZoomInPopover';
 
 import { RequestStatusEnum } from 'config/enums/requestStatusEnum';
@@ -13,9 +19,6 @@ import {
   AggregationLineMethods,
 } from 'utils/aggregateGroupData';
 import { AlignmentOptionsEnum } from 'utils/d3';
-
-import { IAppModelConfig, IGroupingConfig } from '../explorer/createAppModel';
-import { IImagesExploreAppConfig } from '../imagesExplore/imagesExploreAppModel';
 
 import { IMetric } from './metricModel';
 import { IMetricTrace, IRun } from './runModel';

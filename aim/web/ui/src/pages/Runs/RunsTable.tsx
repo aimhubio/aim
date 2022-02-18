@@ -88,7 +88,6 @@ function RunsTable({
             illustrationConfig={{
               type: Request_Illustrations[requestStatus as RequestStatusEnum],
               page: 'runs',
-              title: 'No runs found',
             }}
           />
         </div>
