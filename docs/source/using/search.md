@@ -16,7 +16,7 @@ Currently, AimQL is only used for filtering data, and has no role in sorting or 
 
 ### Searching
 
-Let's track several [Runs](./SDK_basics.html#create-a-run) via [Aim SDK](./SDK_basics.html):
+Let's track several Runs via Aim SDK:
 
 ```python
 # Initialize run_1
@@ -53,7 +53,7 @@ Aim SDK will collect and store the above metadata in `.aim` repo.
 | `run_2 <hash=a32c911>` | <table><thead> <tr> <th>learning_rate</th><th>batch_size</th> </tr> </thead>  <tbody> <tr> <th>0.0007</th><th>64</th> </tr> </tbody></table> | <table><tbody> <tr> <th>loss { "subset":"train" }</th> </tr> <tr> <th>loss { "subset":"test" }</th> </tr> </tbody></table> |
 | `run_3 <hash=a32c912>` | <table><thead> <tr> <th>learning_rate</th><th>batch_size</th> </tr> </thead>  <tbody> <tr> <th>0.005</th><th>16</th> </tr> </tbody></table> | <table><tbody> <tr> <th>loss { "subset":"train" }</th> </tr> <tr> <th>loss { "subset":"test" }</th> </tr> </tbody></table> |
 
-When searching runs, use the `run` keyword which represents the [Run](./SDK_basics.html#create-a-run) object. It has the following properties:
+When searching runs, use the `run` keyword which represents the `Run` object. It has the following properties:
 
 | Property | Description |
 | -------- | ----------- |
@@ -65,7 +65,7 @@ When searching runs, use the `run` keyword which represents the [Run](./SDK_basi
 | `creation_time` | Run creation timestamp |
 | `end_time` | Run end timestamp |
 
-Run [parameters](./SDK_basics.html#track-params-and-metrics-with-run) could be accessed both via chained properties and attributes.
+Run parameters could be accessed both via chained properties and attributes.
 
 .. note::
 
@@ -112,7 +112,7 @@ run.learning_rate in [0.0001, 0.005]
 
 #### Searching metrics
 
-When iterating over metrics, use the `metric` keyword which represents the tracked [metric](./SDK_basics.html#track-params-and-metrics-with-run). While searching metrics, you can also refer to the related runs via the `run` keyword.
+When iterating over metrics, use the `metric` keyword which represents the tracked metric. While searching metrics, you can also refer to the related runs via the `run` keyword.
 
 `metric` has the following default properties.
 
@@ -172,7 +172,7 @@ metric.name == "loss" and run.learning_rate >= 0.001
 #### Searching images
 
 Images search works in the same way as metrics.
-When iterating over images, use the `images` keyword which represents the tracked [images sequence](./SDK_basics.html#track-images-with-run).
+When iterating over images, use the `images` keyword which represents the tracked images sequence.
 While searching images, you can also refer to the related runs via the `run` keyword.
 
 `images` keyword has the following default properties.

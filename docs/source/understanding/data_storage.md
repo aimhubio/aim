@@ -54,7 +54,7 @@ routines, and without the risk of loosing or corrupting the data. For example, t
 
 
 ### What is the index container?
-As mentioned in the previous section, each run writes data into its own isolated containers. The aim queries require reading
+Each run writes data into its own isolated containers. The aim queries require reading
 the Run metadata from **meta** container. However, with 1000s of runs opening each meta container database will slow-down
 the queries. Here the indexing of metadata becomes crucial.
 

@@ -1,3 +1,3 @@
 ## Glossary
 
-<span style="background:lightyellow">TODO: do not forget about cross-links !!!</span>
+<span style="background:lightyellow">TODO</span>

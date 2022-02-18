@@ -33,8 +33,6 @@
 - [Examples](examples/images_explorer_gan.html)
 - [API reference](quick_start/setup.html)
 
-
-
 **If you have questions:**
 - [Open a feature request or report a bug](https://github.com/aimhubio/aim/issues)
 - [Join our slack](https://slack.aimstack.io/)
