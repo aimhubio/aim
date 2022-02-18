@@ -69,7 +69,7 @@ function drawParallelAxes({
       .call(yAxis);
 
     axes
-      .selectAll('.tick')
+      ?.selectAll('.tick')
       .append('foreignObject')
       .attr('x', -tickWidth - 10)
       .attr('y', -8)
@@ -84,7 +84,7 @@ function drawParallelAxes({
       i === first || i === last ? titleWidth : titleWidth * 2;
 
     axes
-      .append('foreignObject')
+      ?.append('foreignObject')
       .attr('width', dimensionTitleWidth)
       .attr('height', 20)
       .attr(

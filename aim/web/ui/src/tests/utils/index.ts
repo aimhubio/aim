@@ -27,3 +27,22 @@ export const shouldMatchObject = (expectedValue: any, actualValue: any) => {
 export const toEqual = (expectedValue: any, actualValue: any) => {
   expect(expectedValue).toEqual(actualValue);
 };
+
+export const toBeGreaterThan = (expectedValue: any, actualValue: any) => {
+  expect(expectedValue).toBeGreaterThan(actualValue);
+};
+
+export const toBeLessThan = (expectedValue: any, actualValue: any) => {
+  expect(expectedValue).toBeLessThan(actualValue);
+};
+
+export const toBeGreaterThanOrEqual = (
+  expectedValue: any,
+  actualValue: any,
+) => {
+  expect(expectedValue).toBeGreaterThanOrEqual(actualValue);
+};
+
+export const toBeLessThanOrEqual = (expectedValue: any, actualValue: any) => {
+  expect(expectedValue).toBeLessThanOrEqual(actualValue);
+};

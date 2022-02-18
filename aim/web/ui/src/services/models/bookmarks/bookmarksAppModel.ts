@@ -1,6 +1,5 @@
 import dashboardService from 'services/api/dashboard/dashboardService';
 import appsService from 'services/api/apps/appsService';
-import * as analytics from 'services/analytics';
 
 import { IBookmarksAppModelState } from 'types/services/models/bookmarks/bookmarksAppModel';
 import { IBookmarksData } from 'types/pages/bookmarks/Bookmarks';
@@ -47,7 +46,7 @@ function getBookmarksData() {
           onNotificationAdd({
             notification: {
               id: Date.now(),
-              message: err.message,
+              messages: [err.message],
               severity: 'error',
             },
             model: model as any,
@@ -83,7 +82,7 @@ async function onBookmarkDelete(id: string) {
     onNotificationAdd({
       notification: {
         id: Date.now(),
-        message: err.message,
+        messages: [err.message],
         severity: 'error',
       },
       model: model as any,
@@ -105,7 +104,7 @@ function initialize() {
     onNotificationAdd({
       notification: {
         id: Date.now(),
-        message: err.message,
+        messages: [err.message],
         severity: 'error',
       },
       model: model as any,

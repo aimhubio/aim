@@ -3,7 +3,8 @@ import React from 'react';
 import { IChartTitle } from 'types/services/models/metrics/metricsAppModel';
 
 export interface IDrawAreaArgs {
-  index?: number;
+  index: number;
+  nameKey: string;
   parentRef: React.MutableRefObject<>;
   visAreaRef: React.MutableRefObject<>;
   svgNodeRef: React.MutableRefObject<>;

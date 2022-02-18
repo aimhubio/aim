@@ -101,9 +101,11 @@ function archiveTag(id: string, archived: boolean = false) {
       onNotificationAdd({
         id: Date.now(),
         severity: 'success',
-        message: archived
-          ? 'Tag successfully archived'
-          : 'Tag successfully unarchived',
+        messages: [
+          archived
+            ? 'Tag successfully archived'
+            : 'Tag successfully unarchived',
+        ],
       });
     });
 }
@@ -117,13 +119,13 @@ function createTag(body: object) {
         onNotificationAdd({
           id: Date.now(),
           severity: 'success',
-          message: 'Tag successfully created',
+          messages: ['Tag successfully created'],
         });
       } else {
         onNotificationAdd({
           id: Date.now(),
           severity: 'error',
-          message: res.detail,
+          messages: [res.detail],
         });
       }
       return res;
@@ -139,13 +141,13 @@ function updateTag(body: object, id: string) {
         onNotificationAdd({
           id: Date.now(),
           severity: 'success',
-          message: 'Tag successfully updated',
+          messages: ['Tag successfully updated'],
         });
       } else {
         onNotificationAdd({
           id: Date.now(),
           severity: 'error',
-          message: res.detail,
+          messages: [res.detail],
         });
       }
       return res;
@@ -160,7 +162,7 @@ function deleteTag(id: string) {
       onNotificationAdd({
         id: Date.now(),
         severity: 'success',
-        message: 'Tag successfully deleted',
+        messages: ['Tag successfully deleted'],
       });
     });
 }

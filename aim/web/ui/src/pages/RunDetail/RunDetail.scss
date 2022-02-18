@@ -69,8 +69,8 @@
         display: flex;
         max-width: 50%;
         overflow: auto;
-        .TagContainer__tagBox {
-          margin-left: 10px;
+        .Badge {
+          margin-left: $space-xxs;
           &:first-child {
             margin-left: 0;
           }

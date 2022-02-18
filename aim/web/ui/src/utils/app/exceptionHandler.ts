@@ -21,7 +21,7 @@ export default function exceptionHandler<M extends State>({
     notification: {
       id: Date.now(),
       severity: 'error',
-      message,
+      messages: [message],
     },
     model,
   });

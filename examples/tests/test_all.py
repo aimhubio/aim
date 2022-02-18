@@ -33,7 +33,7 @@ def gen_batch(shape, t):
 
 
 # Create a new run
-run = aim.Run(repo='remote://127.0.0.1:10033')
+run = aim.Run(repo='aim://127.0.0.1:10033')
 
 # Set run params
 run['params'] = {
