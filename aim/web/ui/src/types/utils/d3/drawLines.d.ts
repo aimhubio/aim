@@ -14,6 +14,7 @@ import { IProcessedData } from './processLineChartData';
 
 export interface IDrawLinesArgs {
   index: number;
+  nameKey: string;
   linesRef: React.MutableRefObject<>;
   linesNodeRef: React.MutableRefObject<>;
   data: IProcessedData[];

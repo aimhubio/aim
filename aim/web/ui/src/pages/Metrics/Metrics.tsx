@@ -127,7 +127,7 @@ function Metrics(
                 height='100%'
                 className='Metrics__loader'
                 isLoading={props.requestStatus === RequestStatusEnum.Pending}
-                loaderComponent={<ChartLoader controlsCount={9} />}
+                loaderComponent={<ChartLoader controlsCount={10} />}
               >
                 {!_.isEmpty(props.lineChartData) ? (
                   <ChartPanel
@@ -145,6 +145,9 @@ function Metrics(
                     resizeMode={props.resizeMode}
                     controls={
                       <Controls
+                        data={props.lineChartData}
+                        chartType={ChartTypeEnum.LineChart}
+                        chartProps={chartProps}
                         selectOptions={props.groupingSelectOptions}
                         tooltip={props.tooltip}
                         smoothingAlgorithm={props.smoothingAlgorithm}

@@ -1,6 +1,5 @@
 import React from 'react';
 import { DragDropContext, Droppable } from 'react-beautiful-dnd';
-import _ from 'lodash-es';
 
 import { Divider, InputBase } from '@material-ui/core';
 

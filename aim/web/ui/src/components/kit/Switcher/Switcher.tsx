@@ -26,9 +26,9 @@ function Switcher({
   }
 
   React.useEffect(() => {
-    if (checked !== checkedValue) {
-      setCheckedValue(checked);
-    }
+    setCheckedValue((prevState) => {
+      return checked !== prevState ? checked : prevState;
+    });
   }, [checked]);
 
   return (

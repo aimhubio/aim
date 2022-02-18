@@ -16,6 +16,7 @@ import { TrendlineTypeEnum } from '.';
  */
 function drawScatterTrendline({
   index,
+  nameKey,
   data,
   type,
   xScale,
@@ -56,7 +57,7 @@ function drawScatterTrendline({
     .append('path')
     .datum(regressionPoints)
     .classed('RegressionLine', true)
-    .attr('clip-path', 'url(#lines-rect-clip-' + index + ')')
+    .attr('clip-path', `url(#${nameKey}-lines-rect-clip-${index})`)
     .attr('d', line);
 }
 

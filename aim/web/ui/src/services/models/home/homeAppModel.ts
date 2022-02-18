@@ -43,7 +43,7 @@ function onSendEmail(data: object): Promise<any> {
         onNotificationAdd({
           notification: {
             severity: 'success',
-            message: 'Email Successfully sent',
+            messages: ['Email Successfully sent'],
             id: Date.now(),
           },
           model,
@@ -54,7 +54,7 @@ function onSendEmail(data: object): Promise<any> {
         onNotificationAdd({
           notification: {
             severity: 'error',
-            message: 'Please enter valid email',
+            messages: ['Please enter valid email'],
             id: Date.now(),
           },
           model,
@@ -73,7 +73,7 @@ function initialize() {
   } catch (err: any) {
     onNotificationAdd({
       notification: {
-        message: err.message,
+        messages: [err.message],
         severity: 'error',
         id: Date.now(),
       },

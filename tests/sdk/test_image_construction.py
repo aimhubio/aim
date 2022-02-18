@@ -1,4 +1,7 @@
+import pytest
+
 from tests.base import TestBase
+from tests.utils import is_package_installed
 
 from aim.sdk import Image
 import numpy as np
@@ -12,11 +15,9 @@ class TestImageConstruction(TestBase):
     # RGB, dims = (3,2,2)
     img3 = np.array([[[0, 1], [1, 0]], [[0, 1], [1, 0]], [[0, 1], [1, 0]]], np.uint8)
 
+    @pytest.mark.skipif(not is_package_installed('torch'), reason="'torch' is not installed. skipping.")
     def test_image_from_torch_tensor(self):
-        try:
-            import torch
-        except (ImportError, AssertionError):
-            raise ValueError('Cannot convert from torch.Tensor')
+        import torch
 
         # order of channels in torch.tensor => channels, height, width
 
@@ -28,11 +29,10 @@ class TestImageConstruction(TestBase):
         self.assertEqual(Image(torch.tensor(self.img2.astype(np.float32))), Image(255 * self.img2))
         self.assertEqual(Image(torch.tensor(self.img3.astype(np.float32))), Image(255 * np.transpose(self.img3, (1, 2, 0))))
 
+
+    @pytest.mark.skipif(not is_package_installed('tensorflow'), reason="'tensorflow' is not installed. skipping.")
     def test_image_from_tf_tensor(self):
-        try:
-            import tensorflow as tf
-        except (ImportError, AssertionError):
-            raise ValueError('Cannot convert from tf.Tensor')
+        import tensorflow as tf
 
         # order of channels in tf.tensor => height, width, channels
 
@@ -48,4 +48,3 @@ class TestImageConstruction(TestBase):
 if __name__ == "__main__":
     TestImageConstruction().test_image_from_torch_tensor()
     TestImageConstruction().test_image_from_tf_tensor()
-

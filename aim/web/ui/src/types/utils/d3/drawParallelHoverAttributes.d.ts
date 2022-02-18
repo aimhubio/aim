@@ -13,6 +13,7 @@ import {
 
 export interface IDrawParallelHoverAttributesArgs {
   index: number;
+  nameKey: string;
   dimensions: IDimensionsType;
   visAreaRef: React.MutableRefObject<>;
   linesRef: React.MutableRefObject<>;

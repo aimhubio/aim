@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React from 'react';
 
 import { FilterOptions, MatchTypes, UseTextSearchProps } from './types.d';
 
@@ -104,7 +104,6 @@ function useTextSearch({ rawData, updateData }: UseTextSearchProps) {
               appliedRegExp: null,
             }));
           }
-
           break;
         default:
           if (item.text.toLowerCase().indexOf(search.toLowerCase()) > -1) {
