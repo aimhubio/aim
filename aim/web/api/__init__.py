@@ -50,9 +50,11 @@ def create_app():
     base_path = os.environ.get(AIM_UI_BASE_PATH, '')
 
     app.mount(f'{base_path}/api', api_app)
+    app.mount(f'/api', api_app)
     static_files_app = FastAPI()
 
     static_files_app.include_router(statics_router)
     app.mount(f'{base_path}/', static_files_app)
+    app.mount(f'/', static_files_app)
 
     return app
