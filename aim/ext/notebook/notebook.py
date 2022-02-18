@@ -14,6 +14,11 @@ _OTHER_EXEC_CONTEXT = "_OTHER_EXEC_CONTEXT"
 # current execution context
 _CURRENT_CONTEXT = _OTHER_EXEC_CONTEXT
 
+# environment specific constants
+# useful for detecting the environment from the UI
+_SAGE_MAKER_NOTEBOOK_PATH_POSTFIX = "/aim-sage"
+_NOTEBOOK_PATH_POSTFIX = "/notebook"
+
 
 def get_execution_context():
     """Determine the most specific context that we're in.
@@ -62,20 +67,24 @@ def get_argument_options(line):
         @TODO add process args all styles to dict
     """
     # @TODO improve this logic
-    supported_args = ['--port', '--host', '--repo']
+    # --proxy-url is useful to print the right url, and set UI's url into iframe correctly
+    supported_args = ['--port', '--host', '--repo', '--proxy-url']
 
     args = shlex.split(line)
     command = args[0]
 
     options = {
         '--host': '127.0.0.1',
-        '--port': '43800',
-        '--base-path': '/notebook'
+        '--port': '43801',
+        '--base-path': _NOTEBOOK_PATH_POSTFIX
     }
     for arg in args[1:]:
         key, value = arg.split('=', 1)
         if key in supported_args:
             options[key] = value
+        # if --proxy-url passed
+        if options.get('--proxy-url'):
+            options['--base-path'] = _SAGE_MAKER_NOTEBOOK_PATH_POSTFIX
 
     return command, options
 
@@ -88,7 +97,7 @@ def display_colab(port, display):
 
     shell = """
         (async () => {{
-            const url = new URL('/notebook/', await google.colab.kernel.proxyPort({port}, {{'cache': true}}));
+            const url = new URL({path}, await google.colab.kernel.proxyPort({port}, {{'cache': true}}));
             const iframe = document.createElement('iframe');
             iframe.src = url;
             iframe.setAttribute('width', '100%');
@@ -96,7 +105,7 @@ def display_colab(port, display):
             iframe.setAttribute('frameborder', 0);
             document.body.appendChild(iframe);
         }})();
-    """.format(port=port)
+    """.format(path=_NOTEBOOK_PATH_POSTFIX, port=port)
 
     script = IPython.display.Javascript(shell)
 
@@ -106,16 +115,21 @@ def display_colab(port, display):
         IPython.display.display(script)
 
 
-def display_notebook(host, port, display):
+def display_notebook(host, port, display, proxy_url=None):
     """Display Aim instance in an ipython context output frame.
     """
     import IPython.display
-    shell = """
-          <iframe id="aim" width="100%" height="800" frameborder="0" src={}:{}{}>
-          </iframe>
-        """.format(host, port, '/notebook/')
+    url = "{}:{}{}".format(host, port, _NOTEBOOK_PATH_POSTFIX)
 
-    # @TODO write passing proxy logic
+    if proxy_url:
+        # jupyter-server-proxy supports absolute paths by using it with /proxy/absolute/<port> path
+        url = "{}{}{}{}".format(proxy_url, '/proxy/absolute/', port, _SAGE_MAKER_NOTEBOOK_PATH_POSTFIX)
+        print(url)
+
+    shell = """
+              <iframe id="aim" width="100%" height="800" frameborder="0" src={}>
+              </iframe>
+            """.format(url)
 
     iframe = IPython.display.HTML(shell)
     display.update(iframe)
@@ -158,7 +172,7 @@ def up(options, context):
         display_colab(port, display)
         return
     if context == _IPYTHON_EXEC_CONTEXT:
-        display_notebook(host, port, display)
+        display_notebook(host, port, display, options.get("--proxy-url"))
         return
 
     # other context
