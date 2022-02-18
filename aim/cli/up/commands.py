@@ -121,7 +121,7 @@ def up(dev, host, port, workers, repo, tf_logs, ssl_keyfile, ssl_certfile, base_
 
     proxy_url = os.environ.get(AIM_PROXY_URL)
     if proxy_url:
-        click.echo(f'Proxy {proxy_url}{base_path}')
+        click.echo(f'Proxy {proxy_url}{base_path}/')
 
     click.echo('Press Ctrl+C to exit')
 
