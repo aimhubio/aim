@@ -349,6 +349,10 @@ class Run(StructuredRunMixin):
         """
         return self._collect(key)
 
+    def set(self, key, val: Any, strict: bool = True):
+        self.meta_run_attrs_tree.set(key, val, strict)
+        self.meta_attrs_tree.set(key, val, strict)
+
     def get(self, key, default: Any = None, strict: bool = True):
         try:
             return self._collect(key, strict=strict)

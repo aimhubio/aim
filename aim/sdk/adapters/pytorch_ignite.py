@@ -31,8 +31,9 @@ class AimLogger(BaseLogger):
             train_metric_prefix: prefix to identify training metrics
             val_metric_prefix: prefix to identify validation metrics
             test_metric_prefix: prefix to identify test metrics
-            system_tracking_interval: Sets the tracking interval in seconds
+            system_tracking_interval: sets the tracking interval in seconds
                 for system usage metrics (CPU, Memory, etc.)
+            log_system_params: flag to enable system params logging, True by default
     """
     def __init__(self,
                  repo: Optional[str] = None,
@@ -42,6 +43,7 @@ class AimLogger(BaseLogger):
                  test_metric_prefix: Optional[str] = 'test_',
                  system_tracking_interval: Optional[int]
                  = DEFAULT_SYSTEM_TRACKING_INT,
+                 log_system_params: bool = True,
                  ):
         super().__init__()
 
@@ -52,6 +54,7 @@ class AimLogger(BaseLogger):
         self._val_metric_prefix = val_metric_prefix
         self._test_metric_prefix = test_metric_prefix
         self._system_tracking_interval = system_tracking_interval
+        self._log_system_params = log_system_params
 
         self._run = None
 
@@ -62,7 +65,7 @@ class AimLogger(BaseLogger):
                 repo=self._repo_path,
                 experiment=self._experiment_name,
                 system_tracking_interval=self._system_tracking_interval,
-                log_system_params=True
+                log_system_params=self._log_system_params,
             )
         return self._run
 
@@ -77,9 +80,8 @@ class AimLogger(BaseLogger):
             if isinstance(params, Container):
                 params = OmegaConf.to_container(params, resolve=True)
 
-        hparams = self.experiment.meta_run_attrs_tree.subtree('hparams')
         for key, value in params.items():
-            hparams.set(key, value, strict=False)
+            self.experiment.set(('hparams', key), value, strict=False)
 
     def log_metrics(self, metrics: Dict[str, float],
                     step: Optional[int] = None):
