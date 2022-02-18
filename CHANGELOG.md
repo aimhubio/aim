@@ -4,6 +4,8 @@
 
 ### Enhancements:
 
+- Sort params columns in alphabetical order (arsengit)
+- Add illustrations for indicating explorer search states (arsengit)
 - Ability to export chart as image (KaroMourad)
 - Ability to group by metric.context (VkoHov)
 - Tune manage columns items highlighting styles (VkoHov)
