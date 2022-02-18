@@ -60,7 +60,8 @@ class ContainerTreeView(TreeView):
     def collect(
         self,
         path: Union[AimObjectKey, AimObjectPath] = (),
-        strict: bool = True
+        strict: bool = True,
+        resolve_objects: bool = False
     ) -> AimObject:
         if path == Ellipsis:
             path = ()
@@ -69,7 +70,7 @@ class ContainerTreeView(TreeView):
         prefix = E.encode_path(path)
         it = self.container.view(prefix).items()
         try:
-            return treeutils.decode_tree(it, strict=strict)
+            return treeutils.decode_tree(it, strict=strict, resolve_objects=resolve_objects)
         except KeyError:
             raise KeyError('No key {} is present.'.format(path))
 

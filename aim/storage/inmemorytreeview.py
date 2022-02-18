@@ -53,7 +53,8 @@ class InMemoryTreeView(TreeView):
     def collect(
         self,
         path: Union[AimObjectKey, AimObjectPath] = (),
-        strict: bool = True
+        strict: bool = True,
+        resolve_objects: bool = False
     ) -> AimObject:
         if not strict:
             raise NotImplementedError("Non-strict mode is not supported yet.")

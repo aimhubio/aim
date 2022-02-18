@@ -45,7 +45,8 @@ class TreeView:
     def collect(
         self,
         path: Union[AimObjectKey, AimObjectPath] = (),
-        strict: bool = True
+        strict: bool = True,
+        resolve_objects: bool = False
     ) -> AimObject:
         ...
 

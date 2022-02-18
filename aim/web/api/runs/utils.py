@@ -178,7 +178,7 @@ async def metric_search_result_streamer(traces: SequenceCollection,
         if run:
             run_dict = {
                 run.hash: {
-                    'params': run.get(...),
+                    'params': run.get(..., resolve_objects=True),
                     'traces': traces_list,
                     'props': get_run_props(run)
                 }
@@ -194,7 +194,7 @@ def run_search_result_streamer(runs: SequenceCollection, limit: int) -> bytes:
         run = run_trace_collection.run
         run_dict = {
             run.hash: {
-                'params': run.get(...),
+                'params': run.get(..., resolve_objects=True),
                 'traces': run.collect_sequence_info(sequence_types='metric'),
                 'props': get_run_props(run)
             }
