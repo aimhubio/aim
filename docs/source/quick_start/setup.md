@@ -24,7 +24,7 @@ Aim v3.5.1
 
 
 The installed package includes Python SDK needed for tracking training runs, UI for browsing the results and CLI
-for managing the app and results.
+for managing UI and results.
 
 
 ### Initializing Aim repository
@@ -104,16 +104,16 @@ Press Ctrl+C to exit
 Open your browser and navigate to `http://127.0.0.1:43800`
 You should be able to see the home page of Aim UI:
 
-<span style="background:lightyellow">TODO: add Aim screenshot/GIF</span>
+<img style="border: 1px solid #1d2253" src="../_static/images/quick_start/ui-home.png" />
 
 Click on Metrics Explorer icon
 
-<span style="background:lightyellow">TODO: add Aim screenshot</span>
+<img style="border: 1px solid #1d2253" src="../_static/images/quick_start/ui-metrics.png" />
 
 In the Search bar select a "numbers" metric and click "Search".
 You should be able to see line chart with tracked metric:
 
-<span style="background:lightyellow">TODO: add Aim screenshot</span>
+<img style="border: 1px solid #1d2253" src="../_static/images/quick_start/ui-metrics-search.png" />
 
 ### Running Aim UI inside notebooks
 
@@ -131,6 +131,6 @@ Run the following commands in the notebook to run the Aim UI:
 %aim up
 ```
 
-<span style="background:lightyellow">TODO: add Aim screenshot</span>
+<img style="border: 1px solid #1d2253" src="../_static/images/using/jupyter.png" />
 
-See [integration guide with Jupyter Notebook](../guides/jupyter_notebook_ui.html) for more details.
+See [integration guide with Jupyter Notebook](../using/jupyter_notebook_ui.html) for more details.
