@@ -3,7 +3,7 @@
 set -e
 
 # OVERVIEW
-# This script installs overwrites nbserverproxy package to https://github.com/aimhubio/jupyter-server-proxy
+# This script overwrites nbserverproxy package to https://github.com/aimhubio/jupyter-server-proxy
 # The main idea is to support proxying through /proxy/absolute/<port> and resolve the corrupted headers issue for body supported http requests
 
 # PARAMETERS

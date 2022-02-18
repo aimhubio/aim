@@ -9,6 +9,7 @@ from aim.web.configs import (
     AIM_UI_DEFAULT_PORT,
     AIM_UI_MOUNTED_REPO_PATH,
     AIM_UI_TELEMETRY_KEY,
+    AIM_PROXY_URL
 )
 from aim.sdk.repo import Repo, RepoStatus
 from aim.sdk.utils import clean_repo_path
@@ -117,6 +118,11 @@ def up(dev, host, port, workers, repo, tf_logs, ssl_keyfile, ssl_certfile, base_
     scheme = 'https' if ssl_keyfile or ssl_certfile else 'http'
 
     click.echo('Open {}://{}:{}{}'.format(scheme, host, port, base_path), err=True)
+
+    proxy_url = os.environ.get(AIM_PROXY_URL)
+    if proxy_url:
+        click.echo(f'Proxy {proxy_url}{base_path}')
+
     click.echo('Press Ctrl+C to exit')
 
     try:
