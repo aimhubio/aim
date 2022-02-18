@@ -10,6 +10,8 @@
 - Add ability to apply active style on table actions popover buttons with applied changes (arsengit)
 - Unification of Run Custom Object APIs (alberttorosyan, VkoHov)
 - Aim repo runs data automatic indexing (alberttorosyan)
+- Pytorch Lightning adapter refactoring (mihran113)
+- Add Pytorch Ignite integration (mihran113)
 - Add wildcard support for `aim runs` subcommands (mihran113)
 - Add MLflow logs conversion command (devfox-se)
 - Add CustomObject implementation for `hub.dataset` (alberttorosyan)
