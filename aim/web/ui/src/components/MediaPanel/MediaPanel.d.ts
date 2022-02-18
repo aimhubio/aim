@@ -1,8 +1,6 @@
 import React from 'react';
 
 import { ResizeModeEnum } from 'config/enums/tableEnums';
-import { RequestStatusEnum } from 'config/enums/requestStatusEnum';
-import { IllustrationsEnum } from 'config/illustrationConfig/illustrationConfig';
 
 import {
   IFocusedState,
@@ -12,6 +10,8 @@ import { IImagesExploreAppConfig } from 'types/services/models/imagesExplore/ima
 
 import { ChartTypeEnum } from 'utils/d3';
 import { SortFields } from 'utils/getSortedFields';
+
+import { IIllustrationConfig } from '../../types/components/Table/Table';
 
 import { MediaTypeEnum } from './config';
 
@@ -34,9 +34,9 @@ export interface IMediaPanelProps {
   actionPanel?: React.ReactNode;
   actionPanelSize?: number;
   tooltipType?: ChartTypeEnum;
-  illustrationType?: IllustrationsEnum | any;
   onActivePointChange?: (activePoint: any, focusedStateActive: boolean) => void;
   getBlobsData: (uris: string[]) => Promise;
   sortFieldsDict?: { [key: string]: SortFields };
   sortFields?: SortFields;
+  illustrationConfig?: IIllustrationConfig;
 }

@@ -41,7 +41,7 @@ function Bookmarks({
               size='xLarge'
               page='bookmarks'
               type={IllustrationsEnum.EmptyBookmarks}
-              content={'No Bookmarks Yet'}
+              title={'No Bookmarks Yet'}
             />
           ) : null}
         </div>

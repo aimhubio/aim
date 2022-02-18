@@ -1,12 +1,13 @@
-import React, { memo } from 'react';
+import React from 'react';
+import classNames from 'classnames';
 
 import { Text } from 'components/kit';
 
 import {
-  Illustration_Content_Config,
-  Illustration_Title_Config,
-  Illustrations_List,
   IllustrationsEnum,
+  Illustration_Title_Config,
+  Illustration_Content_Config,
+  Illustrations_List,
 } from 'config/illustrationConfig/illustrationConfig';
 
 import { IIllustrationBlockProps } from 'types/components/IllustrationBlock/IllustrationBlock';
@@ -30,14 +31,18 @@ function IllustrationBlock({
 
   return (
     <div
-      className={`IllustrationBlock ${className} ${
-        imgLoaded ? '' : 'IllustrationBlock__hidden'
-      }`}
+      className={classNames(`IllustrationBlock ${className}`, {
+        IllustrationBlock__hidden: !imgLoaded,
+      })}
     >
       <div>
         <div className={`IllustrationBlock__${size}__img`}>
           {image || (
-            <img onLoad={onImgLoad} src={Illustrations_List[type]} alt='' />
+            <img
+              onLoad={onImgLoad}
+              src={Illustrations_List[type]}
+              alt='Illustration image'
+            />
           )}
         </div>
         <Text
@@ -62,4 +67,4 @@ function IllustrationBlock({
   );
 }
 
-export default memo(IllustrationBlock);
+export default React.memo(IllustrationBlock);

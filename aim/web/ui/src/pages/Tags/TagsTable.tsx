@@ -158,7 +158,6 @@ function TagsTable({
           headerHeight={32}
           onRowHover={(rowIndex) => setHoveredRowIndex(rowIndex)}
           onRowClick={(rowIndex) => onTableRunClick(rowIndex || '')}
-          emptyText={hasSearchValue ? 'No tags found' : 'No tags'}
           illustrationConfig={{
             type: hasSearchValue
               ? IllustrationsEnum.EmptySearch

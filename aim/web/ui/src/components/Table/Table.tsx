@@ -59,7 +59,6 @@ const Table = React.forwardRef(function Table(
     sortOptions,
     hideHeaderActions = false,
     fixed = true,
-    emptyText = 'No Data',
     excludedFields,
     setExcludedFields,
     alwaysVisibleColumns,
@@ -636,7 +635,7 @@ const Table = React.forwardRef(function Table(
         isLoading={!props.isInfiniteLoading && (isLoading || isNil(rowData))}
         loaderComponent={<TableLoader />}
       >
-        {!isEmpty(data) && !isEmpty(rowData) ? (
+        {!isEmpty(data) || !isEmpty(rowData) ? (
           <div style={{ height: '100%' }} className={className}>
             {!hideHeaderActions && isEmpty(selectedRows) ? (
               <div className='Table__header'>
@@ -899,7 +898,8 @@ const Table = React.forwardRef(function Table(
             page={illustrationConfig?.page || 'metrics'}
             type={illustrationConfig?.type || IllustrationsEnum.EmptyData}
             size={illustrationConfig?.size || 'xLarge'}
-            content={illustrationConfig?.type ? null : emptyText}
+            content={illustrationConfig?.content || ''}
+            title={illustrationConfig?.title || ''}
           />
         )}
       </BusyLoaderWrapper>

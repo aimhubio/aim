@@ -81,7 +81,7 @@ function TagDetail({
           {!isEmpty(tagRuns) ? (
             <TagRunsTable runsList={tagRuns} />
           ) : (
-            <IllustrationBlock size='xLarge' content='No Runs' />
+            <IllustrationBlock size='xLarge' title='No Runs' />
           )}
         </BusyLoaderWrapper>
       </div>

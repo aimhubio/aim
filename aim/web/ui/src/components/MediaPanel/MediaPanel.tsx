@@ -12,6 +12,7 @@ import ErrorBoundary from 'components/ErrorBoundary/ErrorBoundary';
 
 import { ResizeModeEnum } from 'config/enums/tableEnums';
 import { BATCH_SEND_DELAY } from 'config/mediaConfigs/mediaConfigs';
+import { IllustrationsEnum } from 'config/illustrationConfig/illustrationConfig';
 
 import blobsURIModel from 'services/models/media/blobsURIModel';
 
@@ -36,11 +37,11 @@ function MediaPanel({
   actionPanel,
   actionPanelSize,
   tooltipType,
-  illustrationType,
   onActivePointChange,
   getBlobsData,
   sortFieldsDict,
   sortFields,
+  illustrationConfig,
 }: IMediaPanelProps): React.FunctionComponentElement<React.ReactNode> {
   const [activePointRect, setActivePointRect] = React.useState<{
     top: number;
@@ -294,9 +295,10 @@ function MediaPanel({
                 </div>
               ) : (
                 <IllustrationBlock
-                  size='xLarge'
-                  type={illustrationType}
-                  page={mediaType}
+                  page={illustrationConfig?.page || 'runs'}
+                  type={illustrationConfig?.type || IllustrationsEnum.EmptyData}
+                  size={illustrationConfig?.size || 'xLarge'}
+                  title={illustrationConfig?.title || ''}
                 />
               )}
               {actionPanel}

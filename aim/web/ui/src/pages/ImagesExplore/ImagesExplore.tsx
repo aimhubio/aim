@@ -272,13 +272,14 @@ function ImagesExplore(): React.FunctionComponentElement<React.ReactNode> {
                 additionalProperties={
                   imagesExploreData?.config?.images?.additionalProperties
                 }
-                illustrationType={
-                  imagesExploreData?.selectFormOptions.length
+                illustrationConfig={{
+                  page: 'image',
+                  type: imagesExploreData?.selectFormOptions.length
                     ? Request_Illustrations[
                         imagesExploreData.requestStatus as RequestStatusEnum
                       ]
-                    : IllustrationsEnum.EmptyData
-                }
+                    : IllustrationsEnum.EmptyData,
+                }}
                 onActivePointChange={imagesExploreAppModel.onActivePointChange}
                 controls={
                   <Controls

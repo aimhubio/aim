@@ -61,7 +61,6 @@ function RunsTable({
             showRowClickBehaviour={false}
             infiniteLoadHandler={handleInfiniteLoad}
             showResizeContainerActionBar={false}
-            emptyText={'No runs found'}
             ref={tableRef}
             data={data}
             columns={columns}
@@ -89,6 +88,7 @@ function RunsTable({
             illustrationConfig={{
               type: Request_Illustrations[requestStatus as RequestStatusEnum],
               page: 'runs',
+              title: 'No runs found',
             }}
           />
         </div>

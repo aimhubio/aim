@@ -40,7 +40,6 @@ export interface ITableProps {
   onRowHover?: (rowKey: string) => void;
   onRowClick?: (rowKey?: string) => void;
   hideHeaderActions?: boolean;
-  emptyText?: string;
   excludedFields?: string[];
   setExcludedFields?: (fields: string[]) => null;
   alwaysVisibleColumns?: string[];
@@ -70,11 +69,7 @@ export interface ITableProps {
   className?: string;
   appName?: AppNameEnum;
   focusedState?: any;
-  illustrationConfig?: {
-    size?: IIllustrationBlockProps['size'];
-    page?: IIllustrationBlockProps['page'];
-    type?: IIllustrationBlockProps['type'];
-  };
+  illustrationConfig?: IIllustrationConfig;
 }
 
 export interface ITableRef {
@@ -88,4 +83,12 @@ export interface IColumnsOrderData {
   left: string[];
   middle: string[];
   right: string[];
+}
+
+export interface IIllustrationConfig {
+  size?: IIllustrationBlockProps['size'];
+  page?: IIllustrationBlockProps['page'];
+  type?: IIllustrationBlockProps['type'];
+  title?: IIllustrationBlockProps['title'];
+  content?: IIllustrationBlockProps['content'];
 }
