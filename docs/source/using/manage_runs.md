@@ -39,4 +39,26 @@ run = Run(run_hash='run_hash')
 
 ### Delete runs
 
-[TODO]
+There are cases when `Run` data is not needed. Examples of such cases are, 
+failed training runs or simple disk space cleanup. Aim provides SDK and CLI interfaces
+to delete `Run`s.
+
+To remove `Run`s via the SDK:
+
+```python
+from aim import Repo
+
+repo = Repo.from_path('aim_repo_path')
+repo.delete_run('run_hash')
+repo.delete_runs(['run_hash_1', 'run_hash_2'])
+```
+
+`Repo` class full [spec](../refs/sdk.html#aim.sdk.repo.Repo).
+
+
+To remove `Run`s using command line:
+```shell
+aim runs rm run_hash_1 run_hash_2 run_hash_3
+```
+
+More details on `aim runs` in CLI [reference](../refs/cli.html#runs).
