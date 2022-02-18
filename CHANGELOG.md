@@ -15,6 +15,7 @@
 
 ### Fixes: 
 
+- Fix live updated data loss after triggering endless scroll (VkoHov)
 - Fix system metric columns pinning functionality and grouping column order (arsengit)
 - Fix system metrics search in manage columns popover (VkoHov)
 - Fix queries on remote repos (mihran113)

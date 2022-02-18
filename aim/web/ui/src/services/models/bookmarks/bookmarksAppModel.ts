@@ -46,7 +46,7 @@ function getBookmarksData() {
           onNotificationAdd({
             notification: {
               id: Date.now(),
-              message: err.message,
+              messages: [err.message],
               severity: 'error',
             },
             model: model as any,
@@ -82,7 +82,7 @@ async function onBookmarkDelete(id: string) {
     onNotificationAdd({
       notification: {
         id: Date.now(),
-        message: err.message,
+        messages: [err.message],
         severity: 'error',
       },
       model: model as any,
@@ -104,7 +104,7 @@ function initialize() {
     onNotificationAdd({
       notification: {
         id: Date.now(),
-        message: err.message,
+        messages: [err.message],
         severity: 'error',
       },
       model: model as any,

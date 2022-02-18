@@ -260,7 +260,7 @@ function exceptionHandler(detail: any) {
     notification: {
       id: Date.now(),
       severity: 'error',
-      message,
+      messages: [message],
     },
     model,
   });
@@ -281,7 +281,7 @@ function abortRequest(): void {
     notification: {
       id: Date.now(),
       severity: 'info',
-      message: 'Request has been cancelled',
+      messages: ['Request has been cancelled'],
     },
     model,
   });
@@ -1371,7 +1371,7 @@ async function onBookmarkCreate({ name, description }: IBookmarkFormState) {
           notification: {
             id: Date.now(),
             severity: 'success',
-            message: BookmarkNotificationsEnum.CREATE,
+            messages: [BookmarkNotificationsEnum.CREATE],
           },
           model,
         });
@@ -1380,7 +1380,7 @@ async function onBookmarkCreate({ name, description }: IBookmarkFormState) {
           notification: {
             id: Date.now(),
             severity: 'error',
-            message: BookmarkNotificationsEnum.ERROR,
+            messages: [BookmarkNotificationsEnum.ERROR],
           },
           model,
         });
@@ -1405,7 +1405,7 @@ function onBookmarkUpdate(id: string) {
             notification: {
               id: Date.now(),
               severity: 'success',
-              message: BookmarkNotificationsEnum.UPDATE,
+              messages: [BookmarkNotificationsEnum.UPDATE],
             },
             model,
           });
@@ -1730,7 +1730,7 @@ function onSearchQueryCopy(): void {
       notification: {
         id: Date.now(),
         severity: 'success',
-        message: 'Run Expression Copied',
+        messages: ['Run Expression Copied'],
       },
       model,
     });
@@ -2112,9 +2112,11 @@ function archiveRuns(
               notification: {
                 id: Date.now(),
                 severity: 'success',
-                message: `Runs are successfully ${
-                  archived ? 'archived' : 'unarchived'
-                } `,
+                messages: [
+                  `Runs are successfully ${
+                    archived ? 'archived' : 'unarchived'
+                  } `,
+                ],
               },
               model,
             });
@@ -2125,7 +2127,7 @@ function archiveRuns(
             notification: {
               id: Date.now(),
               severity: 'error',
-              message: ex.message,
+              messages: [ex.message],
             },
             model,
           });
@@ -2156,7 +2158,7 @@ function deleteRuns(ids: string[]): {
               notification: {
                 id: Date.now(),
                 severity: 'success',
-                message: 'Runs are successfully deleted',
+                messages: ['Runs are successfully deleted'],
               },
               model,
             });
@@ -2167,7 +2169,7 @@ function deleteRuns(ids: string[]): {
             notification: {
               id: Date.now(),
               severity: 'error',
-              message: ex.message,
+              messages: [ex.message],
             },
             model,
           });
