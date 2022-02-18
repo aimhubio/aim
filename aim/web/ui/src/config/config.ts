@@ -39,6 +39,13 @@ function setAPIBasePath(basePath: string) {
 
 export const AIM_VERSION = version;
 
-export const PATHS_TO_SHOW_CACHE_BANNERS = ['/notebook', '/aim-sage'];
+const PATHS_TO_SHOW_CACHE_BANNERS = ['notebook', 'aim-sage'];
+
+export function checkIsBasePathInCachedEnv(basePath: string) {
+  const split_paths = basePath.split('/');
+  const parsed_path = split_paths[split_paths.length - 1];
+
+  return PATHS_TO_SHOW_CACHE_BANNERS.includes(parsed_path);
+}
 
 export { isDEVModeOn, getBasePath, getAPIHost, setAPIBasePath };
