@@ -26,8 +26,9 @@ import 'components/LineChart/LineChart.scss';
 
 function drawHoverAttributes(args: IDrawHoverAttributesArgs): void {
   const {
-    data,
     index,
+    nameKey,
+    data,
     axesScaleType,
     alignmentConfig,
     plotBoxRef,
@@ -408,7 +409,7 @@ function drawHoverAttributes(args: IDrawHoverAttributesArgs): void {
       .join('circle')
       .attr('class', 'HoverCircle')
       .attr('id', (circle: INearestCircle) => `Circle-${circle.key}`)
-      .attr('clip-path', 'url(#circles-rect-clip-' + index + ')')
+      .attr('clip-path', `url(#${nameKey}-circles-rect-clip-${index})`)
       .attr('cx', (circle: INearestCircle) => circle.x)
       .attr('cy', (circle: INearestCircle) => circle.y)
       .attr('r', CircleEnum.Radius)

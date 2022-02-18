@@ -10,6 +10,7 @@ import { IMAGE_SIZE_CHANGE_DELAY } from 'config/mediaConfigs/mediaConfigs';
 import { ImageRenderingEnum } from 'config/enums/imageEnums';
 import { CONTROLS_DEFAULT_CONFIG } from 'config/controls/controlsDefaultConfig';
 import { ANALYTICS_EVENT_KEYS } from 'config/analytics/analyticsKeysMap';
+import { DATE_EXPORTING_FORMAT } from 'config/dates/dates';
 
 import {
   getImagesExploreTableColumns,
@@ -240,7 +241,7 @@ function resetModelOnError(detail?: any) {
 
   setTimeout(() => {
     const tableRef: any = model.getState()?.refs?.tableRef;
-    tableRef.current?.updateData({
+    tableRef?.current?.updateData({
       newData: [],
       newColumns: [],
     });
@@ -693,7 +694,7 @@ function updateModelData(
     onTableSortChange,
   );
   const tableRef: any = model.getState()?.refs?.tableRef;
-  tableRef.current?.updateData({
+  tableRef?.current?.updateData({
     newData: tableData.rows,
     newColumns: tableColumns,
     hiddenColumns: configData.table.hiddenColumns!,
@@ -1613,7 +1614,7 @@ function onExportTableData(e: React.ChangeEvent<any>): void {
   const blob = new Blob([JsonToCSV(dataToExport)], {
     type: 'text/csv;charset=utf-8;',
   });
-  saveAs(blob, `images-${moment().format('HH:mm:ss · D MMM, YY')}.csv`);
+  saveAs(blob, `images-${moment().format(DATE_EXPORTING_FORMAT)}.csv`);
   analytics.trackEvent(ANALYTICS_EVENT_KEYS.images.table.exports.csv);
 }
 
@@ -2057,7 +2058,7 @@ function onImageRenderingChange(type: ImageRenderingEnum) {
       config,
     });
   }
-  console.log(
+  analytics.trackEvent(
     `${ANALYTICS_EVENT_KEYS.images.imagesPanel.controls.changeImageProperties} / image rendering to ${type}`,
   );
 }

@@ -26,6 +26,8 @@ import './Dropdown.scss';
  * @property {boolean} open - is dropdown open
  * @property {string} placeholder - dropdown placeholder
  * @property {{value: string; label: string}} value - dropdown value
+ * @property {string} className - dropdown className
+ * @property {string} selectClassName - select dropdown className,
  * @property {boolean} withPortal - open dropdown menu in portal
  * @property {function} onMenuOpen - callBack on menu opening
  * @property {function} onMenuClose - callBack on menu closing
@@ -42,6 +44,7 @@ function Dropdown({
   placeholder = 'Select...',
   value = null,
   className = '',
+  selectClassName = '',
   withPortal,
   onMenuOpen,
   onMenuClose,
@@ -214,7 +217,7 @@ function Dropdown({
 
   return (
     <ErrorBoundary>
-      <div className='Dropdown'>
+      <div className={`Dropdown ${className}`}>
         {label && (
           <Text
             component='span'
@@ -239,7 +242,7 @@ function Dropdown({
                 value === option.value,
             ) || null
           }
-          className={classNames({ [className]: className })}
+          className={classNames({ [selectClassName]: selectClassName })}
           options={options}
           menuPortalTarget={withPortal && document.querySelector('body')}
           menuIsOpen={open}

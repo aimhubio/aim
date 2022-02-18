@@ -73,6 +73,12 @@
       line-height: 16px;
       height: unset;
     }
+
+    &.InputWrapper_swap {
+      .MuiInputLabel-outlined:not(.MuiInputLabel-shrink) {
+        transform: translate(14px, 8px) scale(1);
+      }
+    }
   }
 
   &_large {

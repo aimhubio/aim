@@ -19,7 +19,7 @@ const ModalType: any = {
 };
 
 function Modal({
-  opened,
+  open,
   onClose,
   onOk,
   title,
@@ -31,11 +31,12 @@ function Modal({
   withoutTitleIcon,
   children,
   maxWidth = 'sm',
+  isOkButtonDisabled = false,
   ...rest
 }: IModalProps): React.FunctionComponentElement<React.ReactNode> {
   return (
     <Dialog
-      open={opened}
+      open={open}
       onClose={onClose}
       aria-labelledby='form-dialog-title'
       maxWidth={maxWidth}
@@ -73,6 +74,7 @@ function Modal({
             {cancelButtonText}
           </Button>
           <Button
+            disabled={isOkButtonDisabled}
             onClick={onOk}
             variant='contained'
             className={'Modal__footer__okButton'}
