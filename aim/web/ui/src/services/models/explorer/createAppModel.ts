@@ -196,8 +196,8 @@ function createAppModel(appConfig: IAppInitialConfig) {
     abort: () => void;
   };
 
-  function getConfig(): IAppModelConfig {
-    switch (dataType) {
+  function getConfig(type?: AppDataTypeEnum): IAppModelConfig {
+    switch (dataType || type) {
       case AppDataTypeEnum.METRICS: {
         const config: IAppModelConfig = {
           liveUpdate: {
@@ -608,30 +608,7 @@ function createAppModel(appConfig: IAppInitialConfig) {
       return {
         call: async () => {
           if (query === '()') {
-            let state: Partial<IMetricAppModelState> = {};
-            if (
-              Array.isArray(components?.charts) &&
-              components?.charts?.indexOf(ChartTypeEnum.LineChart) !== -1
-            ) {
-              state.lineChartData = [];
-            }
-            if (components.table) {
-              state.tableData = [];
-              state.config = {
-                ...configData,
-                table: {
-                  ...configData?.table,
-                  resizeMode: ResizeModeEnum.Resizable,
-                },
-              };
-            }
-            model.setState({
-              queryIsEmpty: true,
-              selectedRows: shouldResetSelectedRows
-                ? {}
-                : model.getState()?.selectedRows,
-              ...state,
-            });
+            resetModelState(configData, shouldResetSelectedRows!);
           } else {
             model.setState({
               requestStatus: RequestStatusEnum.Pending,
@@ -642,9 +619,10 @@ function createAppModel(appConfig: IAppInitialConfig) {
             });
             liveUpdateInstance?.stop().then();
             try {
-              const stream = await metricsRequestRef.call((detail) =>
-                exceptionHandler({ detail, model }),
-              );
+              const stream = await metricsRequestRef.call((detail) => {
+                exceptionHandler({ detail, model });
+                resetModelState(configData, shouldResetSelectedRows!);
+              });
               const runData = await getRunData(stream);
               updateData(runData);
             } catch (ex: Error | any) {
@@ -664,6 +642,40 @@ function createAppModel(appConfig: IAppInitialConfig) {
         },
         abort: metricsRequestRef.abort,
       };
+    }
+
+    function resetModelState(
+      configData: any,
+      shouldResetSelectedRows: boolean,
+    ) {
+      let state: Partial<IMetricAppModelState> = {};
+      if (
+        Array.isArray(components?.charts) &&
+        components?.charts?.indexOf(ChartTypeEnum.LineChart) !== -1
+      ) {
+        state.lineChartData = [];
+      }
+      if (components.table) {
+        state.tableData = [];
+        state.config = {
+          ...configData,
+          table: {
+            ...configData?.table,
+            resizeMode: ResizeModeEnum.Resizable,
+          },
+          grouping: { ...getConfig(AppDataTypeEnum.METRICS).grouping },
+        };
+      }
+      model.setState({
+        queryIsEmpty: true,
+        rawData: [],
+        groupingSelectOptions: [],
+        tableColumns: [],
+        selectedRows: shouldResetSelectedRows
+          ? {}
+          : model.getState()?.selectedRows,
+        ...state,
+      });
     }
 
     function getDataAsTableRows(
@@ -3348,36 +3360,7 @@ function createAppModel(appConfig: IAppInitialConfig) {
         return {
           call: async () => {
             if (_.isEmpty(configData?.select?.options)) {
-              let state: Partial<IParamsAppModelState> = {};
-              if (components?.charts?.indexOf(ChartTypeEnum.HighPlot) !== -1) {
-                state.highPlotData = [];
-              }
-              if (components.table) {
-                state.tableData = [];
-                state.config = {
-                  ...configData,
-                  table: {
-                    ...configData?.table,
-                    resizeMode: ResizeModeEnum.Resizable,
-                  },
-                };
-              }
-              projectsService
-                .getProjectParams(['metric'])
-                .call()
-                .then((data: IProjectParamsMetrics) => {
-                  model.setState({
-                    selectFormOptions: getParamsOptions(data),
-                  });
-                });
-
-              model.setState({
-                queryIsEmpty: true,
-                selectedRows: shouldResetSelectedRows
-                  ? {}
-                  : model.getState()?.selectedRows,
-                ...state,
-              });
+              resetModelState(configData, shouldResetSelectedRows!);
             } else {
               model.setState({
                 requestStatus: RequestStatusEnum.Pending,
@@ -3388,9 +3371,10 @@ function createAppModel(appConfig: IAppInitialConfig) {
               });
               liveUpdateInstance?.stop().then();
               try {
-                const stream = await runsRequestRef.call((detail) =>
-                  exceptionHandler({ detail, model }),
-                );
+                const stream = await runsRequestRef.call((detail) => {
+                  exceptionHandler({ detail, model });
+                  resetModelState(configData, shouldResetSelectedRows!);
+                });
                 const runData = await getRunData(stream);
                 updateData(runData);
               } catch (ex: Error | any) {
@@ -3407,6 +3391,46 @@ function createAppModel(appConfig: IAppInitialConfig) {
           },
           abort: runsRequestRef.abort,
         };
+      }
+
+      function resetModelState(
+        configData: any,
+        shouldResetSelectedRows: boolean,
+      ) {
+        let state: Partial<IParamsAppModelState> = {};
+        if (components?.charts?.indexOf(ChartTypeEnum.HighPlot) !== -1) {
+          state.highPlotData = [];
+        }
+        if (components.table) {
+          state.tableData = [];
+          state.config = {
+            ...configData,
+            table: {
+              ...configData?.table,
+              resizeMode: ResizeModeEnum.Resizable,
+            },
+            grouping: { ...getConfig(AppDataTypeEnum.RUNS).grouping },
+          };
+        }
+        projectsService
+          .getProjectParams(['metric'])
+          .call()
+          .then((data: IProjectParamsMetrics) => {
+            model.setState({
+              selectFormOptions: getParamsOptions(data),
+            });
+          });
+
+        model.setState({
+          queryIsEmpty: true,
+          rawData: [],
+          groupingSelectOptions: [],
+          tableColumns: [],
+          selectedRows: shouldResetSelectedRows
+            ? {}
+            : model.getState()?.selectedRows,
+          ...state,
+        });
       }
 
       function getDataAsTableRows(
@@ -5460,30 +5484,7 @@ function createAppModel(appConfig: IAppInitialConfig) {
         return {
           call: async () => {
             if (_.isEmpty(configData?.select?.options)) {
-              let state: Partial<IScatterAppModelState> = {};
-              if (
-                components?.charts?.indexOf(ChartTypeEnum.ScatterPlot) !== -1
-              ) {
-                state.chartData = [];
-              }
-              if (components.table) {
-                state.tableData = [];
-                state.config = {
-                  ...configData,
-                  table: {
-                    ...configData?.table,
-                    resizeMode: ResizeModeEnum.Resizable,
-                  },
-                };
-              }
-
-              model.setState({
-                queryIsEmpty: true,
-                selectedRows: shouldResetSelectedRows
-                  ? {}
-                  : model.getState()?.selectedRows,
-                ...state,
-              });
+              resetModelState(configData, shouldResetSelectedRows!);
             } else {
               model.setState({
                 requestStatus: RequestStatusEnum.Pending,
@@ -5494,9 +5495,10 @@ function createAppModel(appConfig: IAppInitialConfig) {
               });
               liveUpdateInstance?.stop().then();
               try {
-                const stream = await runsRequestRef.call((detail) =>
-                  exceptionHandler({ detail, model }),
-                );
+                const stream = await runsRequestRef.call((detail) => {
+                  exceptionHandler({ detail, model });
+                  resetModelState(configData, shouldResetSelectedRows!);
+                });
                 const runData = await getRunData(stream);
                 updateData(runData);
 
@@ -5519,6 +5521,40 @@ function createAppModel(appConfig: IAppInitialConfig) {
           },
           abort: runsRequestRef.abort,
         };
+      }
+
+      function resetModelState(
+        configData: any,
+        shouldResetSelectedRows: boolean,
+      ): void {
+        if (_.isEmpty(configData?.select?.options)) {
+          let state: Partial<IScatterAppModelState> = {};
+          if (components?.charts?.indexOf(ChartTypeEnum.ScatterPlot) !== -1) {
+            state.chartData = [];
+          }
+          if (components.table) {
+            state.tableData = [];
+            state.config = {
+              ...configData,
+              table: {
+                ...configData?.table,
+                resizeMode: ResizeModeEnum.Resizable,
+              },
+              grouping: { ...getConfig(AppDataTypeEnum.RUNS).grouping },
+            };
+          }
+
+          model.setState({
+            queryIsEmpty: true,
+            rawData: [],
+            groupingSelectOptions: [],
+            tableColumns: [],
+            selectedRows: shouldResetSelectedRows
+              ? {}
+              : model.getState()?.selectedRows,
+            ...state,
+          });
+        }
       }
 
       function onExportTableData(): void {

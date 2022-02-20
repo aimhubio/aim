@@ -275,23 +275,6 @@ function MediaPanel({
                       <div className='MediaPanel__controls'>{controls}</div>
                     </ErrorBoundary>
                   )}
-                  {tooltipType && (
-                    <ChartPopover
-                      containerNode={containerRef.current}
-                      activePointRect={activePointRect}
-                      open={
-                        resizeMode !== ResizeModeEnum.MaxHeight &&
-                        !panelResizing &&
-                        (tooltip?.display || focusedState?.active)
-                      }
-                      chartType={tooltipType}
-                      tooltipContent={tooltip?.content}
-                      focusedState={focusedState}
-                    />
-                  )}
-                  {controls && (
-                    <div className='MediaPanel__controls'>{controls}</div>
-                  )}
                 </div>
               ) : (
                 <IllustrationBlock

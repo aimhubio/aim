@@ -79,6 +79,7 @@ import contextToString from 'utils/contextToString';
 import alphabeticalSortComparator from 'utils/alphabeticalSortComparator';
 import onNotificationDelete from 'utils/app/onNotificationDelete';
 import onNotificationAdd from 'utils/app/onNotificationAdd';
+import exceptionHandler from 'utils/app/exceptionHandler';
 
 import createModel from '../model';
 
@@ -236,44 +237,18 @@ function getAppConfigData(appId: string) {
   };
 }
 
-function resetModelOnError(detail?: any) {
+function resetModelState() {
   model.setState({
     data: [],
     params: [],
     imagesData: {},
     tableData: [],
     tableColumns: [],
-    requestStatus: RequestStatusEnum.BadRequest,
-  });
-
-  setTimeout(() => {
-    const tableRef: any = model.getState()?.refs?.tableRef;
-    tableRef?.current?.updateData({
-      newData: [],
-      newColumns: [],
-    });
-  }, 0);
-}
-
-function exceptionHandler(detail: any) {
-  let message = '';
-
-  if (detail.name === 'SyntaxError') {
-    message = `Query syntax error at line (${detail.line}, ${detail.offset})`;
-  } else {
-    message = detail.message || 'Something went wrong';
-  }
-  onNotificationAdd({
-    notification: {
-      id: Date.now(),
-      severity: 'error',
-      messages: [message],
+    config: {
+      ...model.getState().config,
+      grouping: { ...getConfig().grouping },
     },
-    model,
   });
-
-  // reset model
-  resetModelOnError(detail);
 }
 
 function abortRequest(): void {
@@ -354,7 +329,10 @@ function getImagesData(
         });
         blobsURIModel.init();
         try {
-          const stream = await imagesRequestRef.call(exceptionHandler);
+          const stream = await imagesRequestRef.call((detail) => {
+            exceptionHandler({ detail, model });
+            resetModelState();
+          });
           const runData = await getImagesMetricsData(stream);
 
           if (configData) {
@@ -389,6 +367,7 @@ function getImagesData(
           },
           config: {
             ...configData,
+            grouping: { ...getConfig().grouping },
             table: {
               ...configData?.table,
               resizeMode: ResizeModeEnum.Resizable,
