@@ -44,7 +44,7 @@
 
   /* on hover */
   .HoverCircle.active {
-    stroke: #7a94cc; /* var(--primary-light); */
+    stroke: $primary-light;
     stroke-width: 3;
     opacity: 1;
   }
@@ -56,10 +56,10 @@
   .ChartMouseValue {
     position: absolute;
     box-sizing: border-box;
-    padding: 0.375em 0.5em; /*var(--space-xxs) var(--space-xs);*/
-    background-color: #f7faff; /*var(--primary-bg);*/
-    border: 1px solid #7a94cc; /*var(--primary-light);*/
-    color: #243969; /*var(--primary-dark);*/
+    padding: $space-xxs $space-xs;
+    background-color: $primary-bg;
+    border: 1px solid $primary-light;
+    color: $primary-dark;
     font-size: 10px;
     font-weight: normal;
     white-space: nowrap;
@@ -98,35 +98,6 @@
     opacity: 0.2;
   }
 
-  .yAxis,
-  .xAxis {
-    .tick {
-      text {
-        display: none;
-      }
-      .yAxisTick,
-      .xAxisTick {
-        color: $text-color;
-      }
-    }
-    .domain {
-      stroke: $text-color;
-      stroke-width: 0.4;
-    }
-    .xAxisTick {
-      text-align: center;
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
-    }
-
-    .yAxisTick {
-      text-align: right;
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
-    }
-  }
   .RegressionLine {
     stroke-width: 2.2;
     opacity: 1;

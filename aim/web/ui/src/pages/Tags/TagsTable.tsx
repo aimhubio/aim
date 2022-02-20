@@ -121,7 +121,7 @@ function TagsTable({
   }
 
   useEffect(() => {
-    tableRef.current?.updateData({
+    tableRef?.current?.updateData({
       newData: tagsList.map((tagData: ITagProps, i: number) => ({
         key: tagData.id,
         name: { name: tagData.name, color: tagData.color },

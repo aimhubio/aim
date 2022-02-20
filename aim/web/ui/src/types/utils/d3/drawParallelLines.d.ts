@@ -25,6 +25,8 @@ export type InitialPathDataType = {
 };
 
 export interface IDrawParallelLinesArgs {
+  index: number;
+  nameKey: string;
   linesNodeRef: React.MutableRefObject<>;
   attributesRef: React.MutableRefObject<>;
   attributesNodeRef: React.MutableRefObject<>;
@@ -36,6 +38,8 @@ export interface IDrawParallelLinesArgs {
 }
 
 export interface IDrawParallelLineArgs {
+  index: number;
+  nameKey: string;
   linesNodeRef: React.MutableRefObject<>;
   attributesRef: React.MutableRefObject<>;
   dasharray: string;
@@ -48,6 +52,8 @@ export interface IDrawParallelLineArgs {
 }
 
 export interface ILineRendererArgs {
+  index: number;
+  nameKey: string;
   linesNodeRef: React.MutableRefObject<>;
   attributesRef: React.MutableRefObject<>;
   curveInterpolation: CurveEnum;
