@@ -196,8 +196,8 @@ function createAppModel(appConfig: IAppInitialConfig) {
     abort: () => void;
   };
 
-  function getConfig(type?: AppDataTypeEnum): IAppModelConfig {
-    switch (dataType || type) {
+  function getConfig(): IAppModelConfig {
+    switch (dataType) {
       case AppDataTypeEnum.METRICS: {
         const config: IAppModelConfig = {
           liveUpdate: {
