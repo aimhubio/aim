@@ -84,7 +84,7 @@ def get_argument_options(line):
             options[key] = value
     # if --proxy-url passed
     if options.get('--proxy-url'):
-        options['--base-path'] = f'/proxy/absolute/{options["--port"]}${_SAGE_MAKER_NOTEBOOK_PATH_POSTFIX}/'
+        options['--base-path'] = f'/proxy/absolute/{options["--port"]}{_SAGE_MAKER_NOTEBOOK_PATH_POSTFIX}'
 
     return command, options
 
