@@ -9,7 +9,7 @@ logger = logging.getLogger(__name__)
 
 
 class TaskQueue(object):
-    def __init__(self, name, num_workers=1, max_backlog=0):
+    def __init__(self, name, num_workers=1, max_backlog=0, register_at_exit=True):
         self.name = name
         self.max_backlog = max_backlog
         self.num_workers = num_workers
@@ -19,7 +19,9 @@ class TaskQueue(object):
         self._threads = []
         self._shutdown = False
         self._stopped = False
-        atexit.register(self.stop_workers)
+
+        if register_at_exit:
+            atexit.register(self.stop_workers)
 
         for thread_num in range(self.num_workers):
             thread = threading.Thread(target=self.worker)
@@ -79,9 +81,9 @@ class TaskQueue(object):
 
 
 class TaskQueueWithRetry(TaskQueue):
-    def __init__(self, name, num_workers=1, max_queue_memory=0,
+    def __init__(self, name, num_workers=1, max_queue_memory=0, register_at_exit=True,
                  retry_count=0, retry_interval=0):
-        super().__init__(name, num_workers)
+        super().__init__(name, num_workers, register_at_exit)
 
         self.retry_count = retry_count or 1
         self.retry_interval = retry_interval

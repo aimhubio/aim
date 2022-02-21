@@ -22,7 +22,7 @@ class Client:
     _thread_local = threading.local()
 
     _queues = defaultdict(lambda: TaskQueueWithRetry(
-        'remote_tracker', max_queue_memory=16 * 1024 * 1024 * 1024,
+        'remote_tracker', max_queue_memory=16 * 1024 * 1024 * 1024, register_at_exit=False,
         retry_count=DEFAULT_RETRY_COUNT, retry_interval=DEFAULT_RETRY_INTERVAL))  # queue per run's hash
 
     def __init__(self, remote_path: str):
