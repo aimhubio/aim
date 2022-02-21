@@ -9,7 +9,11 @@ const defaultFilterOption: FilterOptions = {
   appliedRegExp: null,
 };
 
-function useTextSearch({ rawData, updateData }: UseTextSearchProps) {
+function useTextSearch({
+  rawData,
+  updateData,
+  searchableKeys,
+}: UseTextSearchProps) {
   const [data, setData] = React.useState<{ text: string }[]>(rawData);
   const [filterOptions, setFilterOptions] =
     React.useState<FilterOptions>(defaultFilterOption);
@@ -80,36 +84,46 @@ function useTextSearch({ rawData, updateData }: UseTextSearchProps) {
     appliedRegExp: RegExp | null,
     matchType: MatchTypes | null,
   ) {
-    return rawData?.filter((item: { text: string }) => {
-      switch (matchType) {
-        case MatchTypes.Word:
-          if (item.text.search(appliedRegExp!) > -1) {
-            return item;
-          }
-          break;
-        case MatchTypes.Case:
-          if (item.text.indexOf(search) > -1) {
-            return item;
-          }
-          break;
-        case MatchTypes.RegExp:
-          try {
-            if (appliedRegExp!.test(item.text)) {
+    const searchableKeysList = searchableKeys ?? Object.keys(rawData[0]);
+    const index = searchableKeysList.indexOf('key');
+    if (index > -1) {
+      searchableKeysList.splice(index, 1);
+    }
+    return rawData?.filter((item: any) => {
+      return !!searchableKeysList.find((searchableKey: string) => {
+        const text = `${item[searchableKey]}`;
+        switch (matchType) {
+          case MatchTypes.Word:
+            if (text.search(appliedRegExp!) > -1) {
               return item;
             }
-          } catch (e) {
-            setFilterOptions((fO) => ({
-              ...fO,
-              isValidSearch: false,
-              appliedRegExp: null,
-            }));
-          }
-          break;
-        default:
-          if (item.text.toLowerCase().indexOf(search.toLowerCase()) > -1) {
-            return item;
-          }
-      }
+            break;
+          case MatchTypes.Case:
+            if (text.indexOf(search) > -1) {
+              return item;
+            }
+            break;
+          case MatchTypes.RegExp:
+            try {
+              if (appliedRegExp!.test(text)) {
+                return item;
+              }
+            } catch (e) {
+              setFilterOptions((fO) => ({
+                ...fO,
+                isValidSearch: false,
+                appliedRegExp: null,
+              }));
+            }
+
+            break;
+          default:
+            if (text.toLowerCase().indexOf(search.toLowerCase()) > -1) {
+              return item;
+            }
+        }
+        return false;
+      });
     });
   }
 

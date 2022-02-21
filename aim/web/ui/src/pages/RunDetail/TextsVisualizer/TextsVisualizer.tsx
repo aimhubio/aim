@@ -47,9 +47,10 @@ function TextsVisualizer(
       <div className='TextsVisualizer'>
         <DataList
           tableRef={tableRef}
-          data={props?.data?.processedValues}
+          tableData={props?.data?.processedValues}
           tableColumns={tableColumns}
           isLoading={props?.isLoading}
+          searchableKeys={['text']}
         />
       </div>
     </ErrorBoundary>

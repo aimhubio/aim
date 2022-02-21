@@ -13,9 +13,8 @@ function Card({
   title,
   children,
   className,
-  tableColumns,
   isLoading,
-  data,
+  dataListProps,
 }: ICardProps): React.FunctionComponentElement<React.ReactNode> {
   const tableRef = React.useRef<any>(null);
 
@@ -33,12 +32,13 @@ function Card({
       </div>
       {children || (
         <div className='Card__tableWrapper'>
-          <DataList
-            tableRef={tableRef}
-            data={data}
-            isLoading={isLoading}
-            tableColumns={tableColumns}
-          />
+          {dataListProps?.tableData && (
+            <DataList
+              tableRef={tableRef}
+              isLoading={isLoading}
+              {...dataListProps}
+            />
+          )}
         </div>
       )}
     </div>

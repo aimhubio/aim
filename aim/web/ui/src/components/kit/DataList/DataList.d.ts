@@ -1,7 +1,8 @@
 export interface IDataListProps {
   tableRef: React.RefObject<any>;
-  data: any;
+  tableData: any;
   isLoading?: boolean;
   withoutSearchBar?: boolean;
   tableColumns: any;
+  searchableKeys?: string[];
 }

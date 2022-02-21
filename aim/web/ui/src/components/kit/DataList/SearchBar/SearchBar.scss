@@ -2,14 +2,13 @@
 
 .SearchBar {
   display: flex;
-  width: 60%;
+  width: toRem(415px);
   margin-top: toRem(5px);
   margin-bottom: toRem(15px);
   align-items: center;
   .MatchIcons {
     display: flex;
     align-items: baseline;
-
   }
 
   label {

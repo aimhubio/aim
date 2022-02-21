@@ -334,7 +334,7 @@ function getImagesData(
   }
   imagesRequestRef = imagesExploreService.getImagesExploreData(imageDataBody);
   projectsService
-    .getProjectParams(['metric'])
+    .getProjectParams(['images'])
     .call()
     .then((data: IProjectParamsMetrics) => {
       model.setState({

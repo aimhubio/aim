@@ -3,7 +3,10 @@ export interface ICardProps {
   title?: string;
   children?: React.ReactNode;
   className?: string;
-  data?: any;
-  tableColumns?: any;
   isLoading?: boolean;
+  dataListProps?: {
+    tableColumns: any;
+    tableData: any;
+    searchableKeys?: string[];
+  };
 }

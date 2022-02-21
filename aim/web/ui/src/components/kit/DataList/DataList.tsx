@@ -1,4 +1,5 @@
 import React from 'react';
+import _ from 'lodash';
 
 import Table from 'components/Table/Table';
 import useTextSearch from 'components/kit/DataList/SearchBar/useTextSearch';
@@ -11,38 +12,54 @@ import './DataList.scss';
 
 function DataList({
   tableRef,
-  data,
+  tableData,
   isLoading,
   tableColumns,
   withoutSearchBar,
+  searchableKeys,
 }: IDataListProps): React.FunctionComponentElement<React.ReactNode> {
   const textSearch = useTextSearch({
-    rawData: data,
+    rawData: tableData,
     updateData,
+    searchableKeys,
   });
 
-  function getHighlightedData(data: { text: string }[], regex: RegExp | null) {
-    return data.map((d) => ({
-      ...d,
-      text:
-        regex === null
-          ? d.text
-          : d.text
-              .split(regex)
-              .filter((part: string) => part !== '')
-              .map((part: string, i: number) =>
-                regex.test(part) ? (
-                  <span key={part + i} className='DataList__mark'>
-                    {part}
-                  </span>
-                ) : (
-                  part
-                ),
-              ),
-    }));
+  function getHighlightedData(data: any[], regex: RegExp | null) {
+    const searchableKeysList = searchableKeys ?? Object.keys(data[0] ?? {});
+    const index = searchableKeysList.indexOf('key');
+    if (index > -1) {
+      searchableKeysList.splice(index, 1);
+    }
+    return data.map((item) => {
+      const highlightedItem: any = {};
+      searchableKeysList.forEach((searchableKey: string) => {
+        highlightedItem[searchableKey] =
+          regex === null
+            ? item[searchableKey]
+            : item[searchableKey]
+                .split(regex)
+                .filter((part: string) => part !== '')
+                .map((part: string, i: number) => {
+                  console.log('regex.test(part)', regex.test(part));
+                  return regex.test(part) ? (
+                    <span key={part + i} className='DataList__mark'>
+                      {console.log('aaaa', part)}
+                      {part}
+                    </span>
+                  ) : (
+                    part
+                  );
+                });
+        console.log(highlightedItem[searchableKey]);
+      });
+      return {
+        ...item,
+        ...highlightedItem,
+      };
+    });
   }
 
-  function updateData(data: { text: string }[], regex: RegExp | null) {
+  function updateData(data: any[], regex: RegExp | null) {
     tableRef.current?.updateData({ newData: getHighlightedData(data, regex) });
   }
   return (
@@ -76,7 +93,7 @@ function DataList({
             hideHeaderActions
             estimatedRowHeight={32}
             headerHeight={32}
-            emptyText='No Result'
+            // emptyText='No Result'
             height='100%'
           />
         )}

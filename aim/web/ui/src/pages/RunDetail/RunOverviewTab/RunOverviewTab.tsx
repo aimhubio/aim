@@ -10,9 +10,121 @@ function RunOverviewTab() {
     <ErrorBoundary>
       <div className='RunOverviewTab'>
         <Card
-          name='Params'
+          name='Parameters'
           title='Little information about Params'
           className='RunOverviewTab__cardBox'
+          dataListProps={{
+            tableColumns: [
+              {
+                dataKey: 'name',
+                key: 'name',
+                title: 'Name',
+                flexGrow: 1,
+                cellRenderer: function cellRenderer({ cellData }: any) {
+                  return <p>{cellData}</p>;
+                },
+              },
+              {
+                dataKey: 'texf',
+                key: 'texf',
+                title: 'Texf',
+                flexGrow: 1,
+                cellRenderer: function cellRenderer({ cellData }: any) {
+                  return <p>{cellData}</p>;
+                },
+              },
+              {
+                dataKey: 'value',
+                key: 'value',
+                title: 'Value',
+                flexGrow: 1,
+                cellRenderer: function cellRenderer({ cellData }: any) {
+                  return <p>{cellData}</p>;
+                },
+              },
+              {
+                dataKey: 'a',
+                key: 'a',
+                title: 'a',
+                flexGrow: 1,
+                cellRenderer: function cellRenderer({ cellData }: any) {
+                  return <p>{cellData}</p>;
+                },
+              },
+            ],
+            tableData: [
+              {
+                name: 'asd',
+                a: 'asfasf',
+                texf: 'asfasf',
+                value: 'asfasf',
+                key: 0,
+              },
+              {
+                name: 'asd',
+                texf: 'asfasf',
+                value: 'asfasf',
+                a: 'asfasf',
+                key: 1,
+              },
+              {
+                name: 'asd',
+                texf: 'asfasf',
+                value: 'asfasf',
+                a: 'asfasf',
+                key: 2,
+              },
+              {
+                name: 'asd',
+                value: 'asfasf',
+                texf: 'asfasf',
+                a: 'asfasf',
+                key: 3,
+              },
+              {
+                name: 'asd',
+                value: 'asfasf',
+                texf: 'asfasf',
+                a: 'asfasf',
+                key: 4,
+              },
+              {
+                name: 'asd',
+                value: 'asfasf',
+                texf: 'asfasf',
+                a: 'asfasf',
+                key: 5,
+              },
+              {
+                name: 'asd',
+                value: 'asfasf',
+                texf: 'asfasf',
+                a: 'asfasf',
+                key: 6,
+              },
+              {
+                name: 'asd',
+                value: 'asfasf',
+                texf: 'asfasf',
+                a: 'asfasf',
+                key: 7,
+              },
+              {
+                name: 'asd',
+                value: 'asfasf',
+                texf: 'asfasf',
+                a: 'asfasf',
+                key: 8,
+              },
+              {
+                name: 'asd',
+                value: 'asfasf',
+                texf: 'asfasf',
+                a: 'asfasf',
+                key: 9,
+              },
+            ],
+          }}
         />
         <Card
           name='Params'
