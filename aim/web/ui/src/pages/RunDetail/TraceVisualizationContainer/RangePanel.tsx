@@ -82,6 +82,7 @@ function RangePanel({
                   },
                   {
                     errorCondition: (value: string | number) =>
+                      item.rangeEndpoints?.[1] !== 0 &&
                       +value > item.rangeEndpoints?.[1],
                     errorText: `Value should be equal or smaller then ${item.rangeEndpoints?.[1]}`,
                   },
