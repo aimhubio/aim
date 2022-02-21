@@ -31,7 +31,7 @@
 - [Using Aim](using/manage_runs.html)
 - [Understanding Aim](understanding/overview.html)
 - [Examples](examples/images_explorer_gan.html)
-- [API reference](quick_start/setup.html)
+- [API reference](refs/cli.html)
 
 **If you have questions:**
 - [Open a feature request or report a bug](https://github.com/aimhubio/aim/issues)

@@ -23,7 +23,7 @@
    :name: ui
    :caption: Aim UI
 
-   ui/overview/overview.md
+   ui/overview.md
 
 .. toctree::
    :maxdepth: 2
