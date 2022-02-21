@@ -53,8 +53,8 @@ function TagDelete({
         if (isEmpty(errors)) {
           tagsAppModel.deleteTag(tagHash).then(() => {
             tagsAppModel.getTagsData().call();
-            onDeleteModalToggle();
             isTagDetailOverLayOpened && onTagDetailOverlayToggle();
+            onCancel();
           });
         }
       }),

@@ -3,6 +3,8 @@ import React from 'react';
 import ErrorBoundary from 'components/ErrorBoundary/ErrorBoundary';
 import DataList from 'components/kit/DataList';
 
+import { IllustrationsEnum } from 'config/illustrationConfig/illustrationConfig';
+
 import { ITableRef } from 'types/components/Table/Table';
 
 import { ITextsVisualizerProps } from '../types';

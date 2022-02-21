@@ -2,9 +2,11 @@ import React from 'react';
 
 import AppBar from 'components/AppBar/AppBar';
 import BusyLoaderWrapper from 'components/BusyLoaderWrapper/BusyLoaderWrapper';
-import EmptyComponent from 'components/EmptyComponent/EmptyComponent';
+import IllustrationBlock from 'components/IllustrationBlock/IllustrationBlock';
 import ErrorBoundary from 'components/ErrorBoundary/ErrorBoundary';
 import NotificationContainer from 'components/NotificationContainer/NotificationContainer';
+
+import { IllustrationsEnum } from 'config/illustrationConfig/illustrationConfig';
 
 import { IBookmarksProps } from 'types/pages/bookmarks/Bookmarks';
 
@@ -35,7 +37,12 @@ function Bookmarks({
               ))}
           </BusyLoaderWrapper>
           {!isLoading && data?.length === 0 ? (
-            <EmptyComponent size='big' content={'No Bookmarks'} />
+            <IllustrationBlock
+              size='xLarge'
+              page='bookmarks'
+              type={IllustrationsEnum.EmptyBookmarks}
+              title={'No Bookmarks Yet'}
+            />
           ) : null}
         </div>
       </section>

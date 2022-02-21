@@ -1,6 +1,7 @@
-import struct
-
 from typing import TYPE_CHECKING, List
+
+from aim.storage.treeutils import encode_tree
+from aim.ext.transport.message_utils import pack_args
 from aim.ext.transport.remote_resource import RemoteResourceAutoClean
 
 if TYPE_CHECKING:
@@ -17,8 +18,11 @@ class StructuredRunProxy:
                  read_only: bool):
         self._resources: RunProxyAutoClean = None
         self._rpc_client = client
-        read_only = struct.pack('?', read_only)
-        args = (hash_.encode(), read_only)
+        kwargs = {
+            'hash_': hash_,
+            'read_only': read_only,
+        }
+        args = pack_args(encode_tree(kwargs))
         handler = self._rpc_client.get_resource_handler('StructuredRun', args=args)
 
         self._resources = RunProxyAutoClean(self)
@@ -32,7 +36,7 @@ class StructuredRunProxy:
 
     @name.setter
     def name(self, value):
-        self._rpc_client.run_instruction(self._handler, 'name.setter', (value,))
+        self._rpc_client.run_instruction(self._handler, 'name.setter', (value,), is_write_only=True)
 
     @property
     def description(self):
@@ -40,7 +44,7 @@ class StructuredRunProxy:
 
     @description.setter
     def description(self, value):
-        self._rpc_client.run_instruction(self._handler, 'description.setter', (value,))
+        self._rpc_client.run_instruction(self._handler, 'description.setter', (value,), is_write_only=True)
 
     @property
     def archived(self):
@@ -48,7 +52,7 @@ class StructuredRunProxy:
 
     @archived.setter
     def archived(self, value):
-        self._rpc_client.run_instruction(self._handler, 'archived.setter', (value,))
+        self._rpc_client.run_instruction(self._handler, 'archived.setter', (value,), is_write_only=True)
 
     @property
     def creation_time(self):
@@ -64,7 +68,7 @@ class StructuredRunProxy:
 
     @experiment.setter
     def experiment(self, value: str):
-        self._rpc_client.run_instruction(self._handler, 'experiment.setter', (value,))
+        self._rpc_client.run_instruction(self._handler, 'experiment.setter', (value,), is_write_only=True)
 
     @property
     def tags(self) -> List[str]:

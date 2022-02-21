@@ -101,7 +101,7 @@ function SideBar(): React.FunctionComponentElement<React.ReactNode> {
             })}
           </ul>
           <div className='Sidebar__bottom'>
-            <Tooltip title='Slack' placement='right'>
+            <Tooltip title='Community Slack' placement='right'>
               <a
                 target='_blank'
                 href='https://slack.aimstack.io'

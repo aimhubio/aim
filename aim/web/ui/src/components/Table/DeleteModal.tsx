@@ -8,7 +8,7 @@ import { Tooltip } from '@material-ui/core';
 import Table from 'components/Table/Table';
 import { Button, Icon, Modal, Text } from 'components/kit';
 
-import { DateWithSeconds } from 'config/dates/dates';
+import { DATE_WITH_SECONDS } from 'config/dates/dates';
 
 function DeleteModal({
   opened,
@@ -110,7 +110,7 @@ function DeleteModal({
         const rowData = {
           key: selectedRow.runHash,
           run: `${moment(selectedRow.creation_time * 1000).format(
-            DateWithSeconds,
+            DATE_WITH_SECONDS,
           )}`,
           experiment: selectedRow?.experiment?.name ?? 'default',
           runHash: selectedRow.runHash,
@@ -149,7 +149,7 @@ function DeleteModal({
   return (
     opened && (
       <Modal
-        opened={opened}
+        open={opened}
         onClose={onClose}
         onOk={onDelete}
         cancelButtonText='Cancel'
@@ -176,7 +176,6 @@ function DeleteModal({
               data={data}
               hideHeaderActions
               headerHeight={28}
-              emptyText='No Text'
               rowHeight={24}
               height='100%'
               className='ActionModal__Table'
@@ -199,7 +198,6 @@ function DeleteModal({
                 data={disabledData}
                 hideHeaderActions
                 headerHeight={28}
-                emptyText='No Text'
                 rowHeight={24}
                 height='100%'
                 className='ActionModal__Table'

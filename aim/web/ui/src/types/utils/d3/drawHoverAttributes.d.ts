@@ -16,6 +16,7 @@ import { IAxisScale } from './getAxisScale';
 
 export interface IDrawHoverAttributesArgs {
   index: number;
+  nameKey: string;
   data: ILine[] | IPoint[];
   axesScaleType: { xAxis: ScaleEnum; yAxis: ScaleEnum };
   visAreaRef: React.MutableRefObject<>;

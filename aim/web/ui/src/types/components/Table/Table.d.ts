@@ -8,6 +8,8 @@ import { AppNameEnum } from 'services/models/explorer';
 import { IMetricProps } from 'types/pages/metrics/Metrics';
 import { IColumnsOrder } from 'types/services/models/explorer/createAppModel';
 
+import { IIllustrationBlockProps } from '../IllustrationBlock/IllustrationBlock';
+
 export interface ITableProps {
   custom?: boolean;
   groups?: boolean;
@@ -38,7 +40,6 @@ export interface ITableProps {
   onRowHover?: (rowKey: string) => void;
   onRowClick?: (rowKey?: string) => void;
   hideHeaderActions?: boolean;
-  emptyText?: string;
   excludedFields?: string[];
   setExcludedFields?: (fields: string[]) => null;
   alwaysVisibleColumns?: string[];
@@ -68,6 +69,7 @@ export interface ITableProps {
   className?: string;
   appName?: AppNameEnum;
   focusedState?: any;
+  illustrationConfig?: IIllustrationConfig;
 }
 
 export interface ITableRef {
@@ -81,4 +83,12 @@ export interface IColumnsOrderData {
   left: string[];
   middle: string[];
   right: string[];
+}
+
+export interface IIllustrationConfig {
+  size?: IIllustrationBlockProps['size'];
+  page?: IIllustrationBlockProps['page'];
+  type?: IIllustrationBlockProps['type'];
+  title?: IIllustrationBlockProps['title'];
+  content?: IIllustrationBlockProps['content'];
 }

@@ -12,6 +12,8 @@ import AxesScalePopover from 'components/AxesScalePopover/AxesScalePopover';
 import AlignmentPopover from 'components/AlignmentPopover/AlignmentPopover';
 import TooltipContentPopover from 'components/TooltipContentPopover/TooltipContentPopover';
 import { Icon } from 'components/kit';
+import ExportPreview from 'components/ExportPreview';
+import ChartGrid from 'components/ChartPanel/ChartGrid';
 import ErrorBoundary from 'components/ErrorBoundary/ErrorBoundary';
 
 import { CONTROLS_DEFAULT_CONFIG } from 'config/controls/controlsDefaultConfig';
@@ -23,6 +25,8 @@ import './Controls.scss';
 function Controls(
   props: IControlProps,
 ): React.FunctionComponentElement<React.ReactNode> {
+  const [openExportModal, setOpenExportModal] = React.useState<boolean>(false);
+
   const highlightModeChanged: boolean = React.useMemo(() => {
     return (
       props.highlightMode !== CONTROLS_DEFAULT_CONFIG.metrics.highlightMode
@@ -71,6 +75,10 @@ function Controls(
         CONTROLS_DEFAULT_CONFIG.metrics.tooltip.selectedParams.length
     );
   }, [props.tooltip]);
+
+  const onToggleExportPreview = React.useCallback((): void => {
+    setOpenExportModal((state) => !state);
+  }, [setOpenExportModal]);
 
   return (
     <ErrorBoundary>
@@ -413,6 +421,30 @@ function Controls(
             />
           </ErrorBoundary>
         </div>
+        <ErrorBoundary>
+          {/* TODO add ability to open modals in ControlPopover component and change the name of the ControlPopover to more general*/}
+          <Tooltip title='Export Chart'>
+            <div className='Controls__anchor' onClick={onToggleExportPreview}>
+              <Icon className='Controls__icon' name='download' />
+            </div>
+          </Tooltip>
+          {openExportModal && (
+            <ExportPreview
+              withDynamicDimensions
+              openModal={openExportModal}
+              explorerPage='metrics'
+              onToggleExportPreview={onToggleExportPreview}
+            >
+              <ChartGrid
+                readOnly
+                nameKey='exportPreview'
+                data={props.data}
+                chartProps={props.chartProps}
+                chartType={props.chartType}
+              />
+            </ExportPreview>
+          )}
+        </ErrorBoundary>
       </div>
     </ErrorBoundary>
   );

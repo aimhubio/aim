@@ -21,7 +21,7 @@ import ControlPopover from 'components/ControlPopover/ControlPopover';
 import BusyLoaderWrapper from 'components/BusyLoaderWrapper/BusyLoaderWrapper';
 import ErrorBoundary from 'components/ErrorBoundary/ErrorBoundary';
 
-import { DateWithOutSeconds } from 'config/dates/dates';
+import { DATE_WITHOUT_SECONDS } from 'config/dates/dates';
 import { ANALYTICS_EVENT_KEYS } from 'config/analytics/analyticsKeysMap';
 
 import useModel from 'hooks/model/useModel';
@@ -264,7 +264,7 @@ function RunDetail(): React.FunctionComponentElement<React.ReactNode> {
                     className='RunDetail__runDetailContainer__headerContainer__infoBox__dateTitle'
                   >
                     {`${moment(runData?.runInfo?.creation_time * 1000).format(
-                      DateWithOutSeconds,
+                      DATE_WITHOUT_SECONDS,
                     )} | ${processDurationTime(
                       runData?.runInfo?.creation_time * 1000,
                       runData?.runInfo?.end_time

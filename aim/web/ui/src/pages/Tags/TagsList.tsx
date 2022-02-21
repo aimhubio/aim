@@ -167,6 +167,7 @@ function TagsList({
         )}
         {tagInfo && (
           <TagDelete
+            key={tagInfo?.id}
             modalIsOpen={isDeleteModalOpened}
             tagInfo={tagInfo}
             tagHash={tagInfo?.id}

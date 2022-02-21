@@ -104,7 +104,6 @@ function useTextSearch({ rawData, updateData }: UseTextSearchProps) {
               appliedRegExp: null,
             }));
           }
-
           break;
         default:
           if (item.text.toLowerCase().indexOf(search.toLowerCase()) > -1) {

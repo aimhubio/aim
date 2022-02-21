@@ -1,11 +1,11 @@
 import React from 'react';
-import { isEmpty } from 'lodash-es';
+import _ from 'lodash-es';
 
 import Table from 'components/Table/Table';
 import ChartPanel from 'components/ChartPanel/ChartPanel';
 import NotificationContainer from 'components/NotificationContainer/NotificationContainer';
 import BusyLoaderWrapper from 'components/BusyLoaderWrapper/BusyLoaderWrapper';
-import EmptyComponent from 'components/EmptyComponent/EmptyComponent';
+import IllustrationBlock from 'components/IllustrationBlock/IllustrationBlock';
 import TableLoader from 'components/TableLoader/TableLoader';
 import ChartLoader from 'components/ChartLoader/ChartLoader';
 import ResizePanel from 'components/ResizePanel/ResizePanel';
@@ -14,6 +14,11 @@ import Grouping from 'components/Grouping/Grouping';
 import { ResizeModeEnum } from 'config/enums/tableEnums';
 import { RowHeightSize } from 'config/table/tableConfigs';
 import GroupingPopovers from 'config/grouping/GroupingPopovers';
+import { RequestStatusEnum } from 'config/enums/requestStatusEnum';
+import {
+  IllustrationsEnum,
+  Request_Illustrations,
+} from 'config/illustrationConfig/illustrationConfig';
 
 import AppBar from 'pages/Metrics/components/MetricsBar/MetricsBar';
 import Controls from 'pages/Scatters/components/Controls/Controls';
@@ -51,7 +56,10 @@ function Scatters(
           />
           <div className='Scatters__SelectForm__Grouping__container'>
             <SelectForm
-              requestIsPending={props.requestIsPending}
+              requestIsPending={
+                props.requestStatus === RequestStatusEnum.Pending
+              }
+              selectFormOptions={props.selectFormOptions}
               selectedOptionsData={props.selectedOptionsData}
               onSelectOptionsChange={props.onSelectOptionsChange}
               onSelectRunQueryChange={props.onSelectRunQueryChange}
@@ -74,16 +82,20 @@ function Scatters(
           <div
             ref={props.chartElemRef}
             className={`Scatters__chart__container${
-              props.resizeMode === ResizeModeEnum.MaxHeight ? '__hide' : ''
+              props.resizeMode === ResizeModeEnum.MaxHeight
+                ? '__hide'
+                : _.isEmpty(props.tableData)
+                ? '__fullHeight'
+                : ''
             }`}
           >
             <BusyLoaderWrapper
-              isLoading={props.requestIsPending}
+              isLoading={props.requestStatus === RequestStatusEnum.Pending}
               className='Scatters__loader'
               height='100%'
-              loaderComponent={<ChartLoader controlsCount={2} />}
+              loaderComponent={<ChartLoader controlsCount={3} />}
             >
-              {!!props.scatterPlotData?.[0]?.data?.length ? (
+              {!_.isEmpty(props.tableData) ? (
                 <ChartPanel
                   key={props.scatterPlotData?.[0]?.data?.length}
                   ref={props.chartPanelRef}
@@ -97,6 +109,9 @@ function Scatters(
                   resizeMode={props.resizeMode}
                   controls={
                     <Controls
+                      chartProps={chartProps}
+                      chartType={ChartTypeEnum.ScatterPlot}
+                      data={props.scatterPlotData}
                       selectOptions={props.groupingSelectOptions}
                       tooltip={props.tooltip}
                       onChangeTooltip={props.onChangeTooltip}
@@ -107,10 +122,15 @@ function Scatters(
                   }
                 />
               ) : (
-                !props.requestIsPending && (
-                  <EmptyComponent
-                    size='big'
-                    content="It's super easy to search Aim experiments. Lookup search docs to learn more."
+                props.selectFormOptions !== undefined && (
+                  <IllustrationBlock
+                    size='xLarge'
+                    page='scatters'
+                    type={
+                      props.selectFormOptions?.length
+                        ? Request_Illustrations[props.requestStatus]
+                        : IllustrationsEnum.EmptyData
+                    }
                   />
                 )
               )}
@@ -118,9 +138,10 @@ function Scatters(
           </div>
           <ResizePanel
             className={`Scatters__ResizePanel${
-              props.requestIsPending || props.scatterPlotData?.[0]?.data?.length
-                ? ''
-                : '__hide'
+              _.isEmpty(props.tableData) &&
+              props.requestStatus !== RequestStatusEnum.Pending
+                ? '__hide'
+                : ''
             }`}
             panelResizing={props.panelResizing}
             resizeElemRef={props.resizeElemRef}
@@ -130,16 +151,20 @@ function Scatters(
           <div
             ref={props.tableElemRef}
             className={`Scatters__table__container${
-              props.resizeMode === ResizeModeEnum.Hide ? '__hide' : ''
+              props.requestStatus !== RequestStatusEnum.Pending &&
+              (props.resizeMode === ResizeModeEnum.Hide ||
+                _.isEmpty(props.tableData))
+                ? '__hide'
+                : ''
             }`}
           >
             <BusyLoaderWrapper
-              isLoading={props.requestIsPending}
+              isLoading={props.requestStatus === RequestStatusEnum.Pending}
               className='Scatters__loader'
               height='100%'
               loaderComponent={<TableLoader />}
             >
-              {!isEmpty(props.tableData) ? (
+              {!_.isEmpty(props.tableData) ? (
                 <Table
                   // deletable
                   custom
@@ -168,6 +193,7 @@ function Scatters(
                   selectedRows={props.selectedRows}
                   hiddenChartRows={props.scatterPlotData?.length === 0}
                   columnsOrder={props.columnsOrder}
+                  isLoading={props.requestStatus === RequestStatusEnum.Pending}
                   // Table actions
                   onSort={props.onSortChange}
                   onSortReset={props.onSortReset}

@@ -31,6 +31,9 @@
   .Metrics__chart__container {
     min-height: 11.25rem;
     flex: 0.5 1 0;
+    &__fullHeight {
+      flex: 1 100% !important;
+    }
     &__hide {
       display: none;
     }
