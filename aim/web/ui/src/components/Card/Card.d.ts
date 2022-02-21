@@ -1,3 +1,5 @@
+import { IIllustrationConfig } from 'types/components/Table/Table';
+
 export interface ICardProps {
   name: string;
   title?: string;
@@ -8,5 +10,6 @@ export interface ICardProps {
     tableColumns: any;
     tableData: any;
     searchableKeys?: string[];
+    illustrationConfig?: IIllustrationConfig;
   };
 }

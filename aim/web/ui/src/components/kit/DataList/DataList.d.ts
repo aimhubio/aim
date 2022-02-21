@@ -5,4 +5,5 @@ export interface IDataListProps {
   withoutSearchBar?: boolean;
   tableColumns: any;
   searchableKeys?: string[];
+  illustrationConfig?: IIllustrationConfig;
 }

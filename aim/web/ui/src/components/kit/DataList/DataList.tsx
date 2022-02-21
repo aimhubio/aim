@@ -17,6 +17,7 @@ function DataList({
   tableColumns,
   withoutSearchBar,
   searchableKeys,
+  illustrationConfig,
 }: IDataListProps): React.FunctionComponentElement<React.ReactNode> {
   const textSearch = useTextSearch({
     rawData: tableData,
@@ -33,6 +34,7 @@ function DataList({
     return data.map((item) => {
       const highlightedItem: any = {};
       searchableKeysList.forEach((searchableKey: string) => {
+        const reg = new RegExp(regex?.source ?? '', regex?.flags);
         highlightedItem[searchableKey] =
           regex === null
             ? item[searchableKey]
@@ -40,17 +42,14 @@ function DataList({
                 .split(regex)
                 .filter((part: string) => part !== '')
                 .map((part: string, i: number) => {
-                  console.log('regex.test(part)', regex.test(part));
-                  return regex.test(part) ? (
+                  return reg.test(part) ? (
                     <span key={part + i} className='DataList__mark'>
-                      {console.log('aaaa', part)}
                       {part}
                     </span>
                   ) : (
                     part
                   );
                 });
-        console.log(highlightedItem[searchableKey]);
       });
       return {
         ...item,
@@ -93,7 +92,7 @@ function DataList({
             hideHeaderActions
             estimatedRowHeight={32}
             headerHeight={32}
-            // emptyText='No Result'
+            illustrationConfig={illustrationConfig}
             height='100%'
           />
         )}
