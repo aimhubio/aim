@@ -1,5 +1,11 @@
 # Changelog
 
+## Unreleased
+
+### Fixes: 
+
+- None values are not displayed in group config column (VkoHov, Hamik25)
+
 ## 3.6.0 Feb 22 2022
 
 ### Enhancements:
