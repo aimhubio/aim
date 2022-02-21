@@ -247,15 +247,13 @@ function getAppConfigData(appId: string) {
 
 function resetModelState() {
   model.setState({
+    ...model.getState(),
     data: [],
     params: [],
     imagesData: {},
     tableData: [],
     tableColumns: [],
-    config: {
-      ...model.getState().config,
-      grouping: { ...getConfig().grouping },
-    },
+    rawData: [],
   });
 }
 
