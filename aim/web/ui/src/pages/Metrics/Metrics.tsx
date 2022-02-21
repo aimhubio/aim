@@ -118,7 +118,7 @@ function Metrics(
               className={`Metrics__chart__container${
                 props.resizeMode === ResizeModeEnum.MaxHeight
                   ? '__hide'
-                  : _.isEmpty(props.lineChartData)
+                  : _.isEmpty(props.tableData)
                   ? '__fullHeight'
                   : ''
               }`}
@@ -129,7 +129,7 @@ function Metrics(
                 isLoading={props.requestStatus === RequestStatusEnum.Pending}
                 loaderComponent={<ChartLoader controlsCount={10} />}
               >
-                {!_.isEmpty(props.lineChartData) ? (
+                {!_.isEmpty(props.tableData) ? (
                   <ChartPanel
                     key={props.lineChartData?.length}
                     ref={props.chartPanelRef}

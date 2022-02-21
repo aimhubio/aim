@@ -1,6 +1,5 @@
 from pydantic import BaseModel
-from pydantic.generics import GenericModel
-from typing import Dict, List, Tuple, Optional, Union, Generic, TypeVar
+from typing import Dict, List, Tuple, Optional, Union
 from uuid import UUID
 
 
@@ -157,9 +156,7 @@ URIBatchIn = List[str]
 RunsBatchIn = List[str]
 
 
-# Custom object Models (Generic)
-DataT = TypeVar('DataT')
-
+# Custom object Models "Fully Generic"
 
 class BaseRangeInfo(BaseModel):
     record_range_used: Tuple[int, int]
@@ -168,20 +165,20 @@ class BaseRangeInfo(BaseModel):
     index_range_total: Optional[Tuple[int, int]]
 
 
-class ObjectSequenceBaseView(BaseRangeInfo, TraceBaseView, GenericModel, Generic[DataT]):
-    values: List[DataT]
+class ObjectSequenceBaseView(BaseRangeInfo, TraceBaseView):
+    values: list
 
 
-class ObjectSequenceFullView(TraceBaseView, GenericModel, Generic[DataT]):
-    values: List[DataT]
+class ObjectSequenceFullView(TraceBaseView):
+    values: list
     iters: List[int]
     epochs: List[int]
     timestamps: List[float]
 
 
-class ObjectSearchRunView(GenericModel, Generic[DataT]):
+class ObjectSearchRunView(BaseModel):
     params: dict
-    traces: List[ObjectSequenceFullView[DataT]]
+    traces: List[ObjectSequenceFullView]
     ranges: BaseRangeInfo
     props: PropsView
 
