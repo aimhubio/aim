@@ -316,36 +316,33 @@ The high-level features we are going to work on the next few months
 **Aim UI**
 
 - Runs management
-    - Runs explorer
-        - Table Explorer: an all-in-one explorer with projects full context for comparing runs data
+    - Runs explorer – query and visualize runs data(images, audio, distributions, ...) in a central dashboard
     - Single run page
-        - Run overview section with insights and reproducibility info
-        - Ability to add run notes
-        - Run execution section (stdout/stderr)
+        - Run summary and overview info(system params, CLI args, git info, ...)
+        - Run execution details(display stdout/stderr logs)
+        - Run notes
 - Explorers
-    - Enhance functionality for existing Explorers: Metrics, Images, Params
-    - Add Audio Explorer
-    - Add Text Explorer
-    - Add Figures Explorer
-    - Add Distributions Explorer
-- Dashboards: Customizable layouts with embedded visualizations
+    - Audio Explorer
+    - Text Explorer
+    - Figures Explorer
+    - Distributions Explorer
+- Dashboards – customizable layouts with embedded explorers
 
 **SDK and Storage**
 
 - Cloud-native support
-    - Remote tracking server: improved robustness, deep integration with kubernetes
-    - Cloud storage support: offload local storage utilizing cloud storage for blob data
-    - Artifact storage: store files, model checkpoints, and beyond
+    - Cloud storage support – store runs blob(e.g. images) data on the cloud
+    - Artifact storage – store files, model checkpoints, and beyond
 - Scalability
-    - Support for up to 100.000 runs in a single aim repo
-    - Long sequences support: Millions of steps with constant query performance
+    - Smooth UI and SDK experience with over 10.000 runs
+    - Long sequences(up to 5M of steps) support
 - Runs management
     - SDK interfaces
-        - Reporting: query and compare runs. Explore data with familiar tools such as matlpotlib and pandas
-        - Manipulations: copy, move, delete runs, params and sequences
+        - Reporting – query and compare runs, explore data with familiar tools such as matlpotlib and pandas
+        - Manipulations – copy, move, delete runs, params and sequences
     - CLI interfaces
-        - Reporting: runs summary and run details in a tabular output format
-        - Manipulations: copy, move, delete runs, params and sequences
+        - Reporting - runs summary and run details in a CLI compatible format
+        - Manipulations – copy, move, delete runs, params and sequences
 
 **Integrations**
 
@@ -355,8 +352,7 @@ The high-level features we are going to work on the next few months
     - Shortlist: Activeloop Hub, DVC, HuggingFace Datasets
 - Resource management tools
     - Shortlist: Kubeflow, Slurm
-- Workflow orchestration
-    - Shortlist: Metaflow, Flyte
+- Workflow orchestration tools
 - Others: Hydra, Google MLMD, Streamlit, ...
 
 ## Community
