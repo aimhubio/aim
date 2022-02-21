@@ -5527,34 +5527,31 @@ function createAppModel(appConfig: IAppInitialConfig) {
         configData: any,
         shouldResetSelectedRows: boolean,
       ): void {
-        if (_.isEmpty(configData?.select?.options)) {
-          let state: Partial<IScatterAppModelState> = {};
-          if (components?.charts?.indexOf(ChartTypeEnum.ScatterPlot) !== -1) {
-            state.chartData = [];
-          }
-          if (components.table) {
-            state.tableData = [];
-            state.config = {
-              ...configData,
-              table: {
-                ...configData?.table,
-                resizeMode: ResizeModeEnum.Resizable,
-              },
-              grouping: { ...getConfig(AppDataTypeEnum.RUNS).grouping },
-            };
-          }
-
-          model.setState({
-            queryIsEmpty: true,
-            rawData: [],
-            groupingSelectOptions: [],
-            tableColumns: [],
-            selectedRows: shouldResetSelectedRows
-              ? {}
-              : model.getState()?.selectedRows,
-            ...state,
-          });
+        let state: Partial<IScatterAppModelState> = {};
+        if (components?.charts?.indexOf(ChartTypeEnum.ScatterPlot) !== -1) {
+          state.chartData = [];
         }
+        if (components.table) {
+          state.tableData = [];
+          state.config = {
+            ...configData,
+            table: {
+              ...configData?.table,
+              resizeMode: ResizeModeEnum.Resizable,
+            },
+            grouping: { ...getConfig(AppDataTypeEnum.RUNS).grouping },
+          };
+        }
+        model.setState({
+          queryIsEmpty: true,
+          rawData: [],
+          groupingSelectOptions: [],
+          tableColumns: [],
+          selectedRows: shouldResetSelectedRows
+            ? {}
+            : model.getState()?.selectedRows,
+          ...state,
+        });
       }
 
       function onExportTableData(): void {
