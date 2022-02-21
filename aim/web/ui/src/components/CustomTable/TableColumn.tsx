@@ -496,7 +496,7 @@ function Column({
                                   />
                                 </>
                               ) : (
-                                item[col.key]
+                                item[col.key] || data[groupKey].data[col.key]
                               )
                             }
                             groupColumnColored={
