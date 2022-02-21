@@ -1,9 +1,9 @@
 ## Migrate from other tools
 
-In order to get most out of Aim UI features it is important to be able to port
-existing logs for already executed trainings. There might be 1000s of trainings
+The Aim explorers add true superpowers to the AI engineer's arsenal. However not all training runs may have been tracked by Aim. So it is important to be able to port
+existing training run logs. There might be 1000s of training runs
 tracked with other tools. Aim has built-in converters to easily migrate logs from 
-other tools for common cases. In case of custom and complex scenarios you can use
+other tools. These migrations cover the most common usage scenarios. In case of custom and complex scenarios you can use
 Aim SDK to implement your own conversion script.
 
 As of Aim `v3.6.0` the following converters are supported:
@@ -16,7 +16,7 @@ We are working to constantly improve existing converters and implement new ones.
 
 ### Show TensorFlow events in Aim
 
-Aim gives your possibility to convert [TensorFlow](https://www.tensorflow.org/api_docs/python/tf)
+Aim gives you a possibility to convert [TensorFlow](https://www.tensorflow.org/api_docs/python/tf)
 event files into native format and show them directly inside the Aim UI.
 
 Before showing the events in Aim, the event files have to pass the conversion process.
@@ -100,10 +100,9 @@ The event files in all other directories will be ignored.
 
 ### Show MLflow logs in Aim
 
-Aim gives your possibility to convert [MLflow](https://mlflow.org/) runs into native format and show them directly
-inside the Aim UI.
+Aim gives you a possibility to convert [MLflow](https://mlflow.org/) runs into native format and show them directly on Aim UI.
 
-Before showing your MLlfow runs in Aim, they need to pass conversion process where your metrics, tags, parameters, run
+Before showing your MLlfow runs on Aim, they need to pass conversion process where your metrics, tags, parameters, run
 description/notes and *some* artifacts will be transferred into Aim storage.
 
 Please note that as for now, only the artifacts having the following file extensions will be transferred into Aim

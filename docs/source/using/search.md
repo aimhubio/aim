@@ -8,7 +8,7 @@ AimQL filters the tracked metadata using **python expression**.
 Think of it as a python if statement over everything you have tracked.
 Hence, nearly any python compatible expression is available with [some restrictions](#security-restrictions) in place.
 
-The data is saved as diff types of entities (e.g. `run`, `metric`). The search queries are written against these entities.
+The data is saved as different types of entities (e.g. `run`, `metric`). The search queries are written against these entities.
 When iterating over entities the python expression is evaluated in a Boolean context. When the value is _"truthy"_, then the current entity is yielded. Otherwise the entity is skipped over.
 
 .. note::

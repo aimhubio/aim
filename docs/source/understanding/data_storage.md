@@ -50,7 +50,7 @@ Additionally, per each container two files will be created to properly manage th
 - **progress** file, indicating that container potentially has un-indexed data.
 
 This setup allows implementing concurrent training jobs setup without requiring additional synchronization
-routines, and without the risk of loosing or corrupting the data. For example, two jobs might run on different hosts where aim repo mounted on a shared NFS location. 
+routines, and without the risk of losing or corrupting the data. For example, two jobs might run on different hosts where aim repo mounted on a shared NFS location.
 
 
 ### What is the index container?
@@ -58,7 +58,7 @@ Each run writes data into its own isolated containers. The aim queries require r
 the Run metadata from **meta** container. However, with 1000s of runs opening each meta container database will slow-down
 the queries. Here the indexing of metadata becomes crucial.
 
-`Run` object will maintain lock for both **meta** and **sequence** containers during the training script execution. Run will
+`Run` object maintains lock for both **meta** and **sequence** containers during the training script execution. Run will
 continue to write its data into its own containers. Once the execution finishes, **meta** container data indexed, 
 the container locks released, and the progress file removed. The **sequence** container data is not indexed, since the
 individual points of a sequence are not queryable, and the sequence info is available in **meta** container.

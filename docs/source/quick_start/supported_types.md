@@ -126,13 +126,13 @@ for step in range(1000):
 
 Aim lets your track text/string during your training process.
 
-To get started, first import the `Test` object into your code.
+To get started, first import the `Text` object into your code.
 
 ```python
 from aim import Text
 ```
 
-It is relatively easy to use this object. You just have to ensure that your input data type is a string.
+In order to use the `Text` object, you just need to ensure that your input data type is a string.
 
 Here's an example of `Text` usage:
 
@@ -207,11 +207,10 @@ aim_figure = Figure(fig)
 run.track(aim_figure, name="matplotlib_figures", step=0)
 ```
 
-### Tracking matplotlib figures in Aim
+### Tracking matplotlib figures with Aim
 
-In this guide, we will show you how to track `matplotlib` figures in Aim.
+In order to track `matplotlib` figures with Aim, either pass the `matplotlib` figure to Aim's `Image` or `Figure` object.
 
-This can be accomplished by either passing matplotlib figure to Aim's `Image` or `Figure` object.
 
 #### Converting matplotlib to Aim Image
 

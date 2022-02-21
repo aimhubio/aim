@@ -1,10 +1,10 @@
 ## Overview
 
-Aim is built around several concepts allowing to make sure that it meets the following expectations:
+Aim is built around several concepts allowing to make sure that it meets the following criteria:
 - **Run data isolation**. Each training run process isolated in terms of data and do not require additional services to run.
 - **Scalability**. Aim web app is able to handle 1000s of training runs. Starting from v3.4.0 Aim provides a
 [Remote Tracking server](./remote_tracking_basics.html) allowing to run multiple parallel experiments in a distributed multi-host environment.
-- **Flexibility**. Aim UI and query language allow users to select, group and filter tracked data any way they want.
+- **Flexibility**. Aim UI and query language allow users to select, group and filter the tracked data any way they want.
 
 ### Aim Components
 In order to understand how Aim works, lets take a quick look on a different components it has.
