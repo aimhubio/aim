@@ -126,7 +126,6 @@ class RemoteTrackingServicer(remote_tracking_pb2_grpc.RemoteTrackingServiceServi
                 yield rpc_messages.InstructionResponse(message=chunk)
 
         except Exception as e:
-            print("ERROR", e)
             yield rpc_messages.InstructionResponse(header=rpc_messages.ResponseHeader(
                 version=0.1,
                 status=rpc_messages.ResponseHeader.Status.ERROR,
