@@ -11,7 +11,7 @@ on:
 jobs:
   linux-dist:
     runs-on: ubuntu-latest
-    name: Create
+    name: Docker image creation
     steps:
       - name: Checkout sources
         uses: actions/checkout@v2
@@ -23,7 +23,7 @@ jobs:
           echo '::set-output name=AIM_VERSION::$AIM_VERSION'
 
       - name: Run docker image workflow
-        uses: ./.github/workflows/docker-image
+        uses: ./docker-image
         with:
           pkg_version: ${{ steps.capture-version.outputs.AIM_VERSION }}
           is_latest: 0
