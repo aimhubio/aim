@@ -84,6 +84,7 @@ function Column({
       widthClone.current = newWidth;
       setMaxWidth(newWidth);
     }
+    document.body.style.webkitUserSelect = 'none';
     document.body.style.userSelect = 'none';
     document.body.style.cursor = 'col-resize';
   }
