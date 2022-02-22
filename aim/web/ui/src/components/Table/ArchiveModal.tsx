@@ -179,7 +179,6 @@ function ArchiveModal({
               data={data}
               hideHeaderActions
               headerHeight={28}
-              emptyText='No Data'
               rowHeight={24}
               height='100%'
               className='ActionModal__Table'
@@ -202,7 +201,6 @@ function ArchiveModal({
                 data={disabledData}
                 hideHeaderActions
                 headerHeight={28}
-                emptyText='No Data'
                 rowHeight={24}
                 height='100%'
                 className='ActionModal__Table'

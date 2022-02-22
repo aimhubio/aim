@@ -6,7 +6,7 @@ import { isEmpty } from 'lodash-es';
 
 import { CircularProgress } from '@material-ui/core';
 
-import EmptyComponent from 'components/EmptyComponent/EmptyComponent';
+import IllustrationBlock from 'components/IllustrationBlock/IllustrationBlock';
 import { Button, Icon, Text } from 'components/kit';
 import ErrorBoundary from 'components/ErrorBoundary/ErrorBoundary';
 
@@ -144,7 +144,7 @@ function RunSelectPopoverContent({
                     </NavLink>
                   ))
                 ) : (
-                  <EmptyComponent size='big' content={'No Runs'} />
+                  <IllustrationBlock size='xLarge' content={'No Runs'} />
                 )}
                 {!isEmpty(runsOfExperiment) && isLoadMoreButtonShown && (
                   <div className='RunSelectPopoverWrapper__selectPopoverContent__contentContainer__runsListContainer__runsList__loadMoreButtonWrapper'>

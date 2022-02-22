@@ -1,13 +1,15 @@
 # Changelog
 
-## Unreleased
+## 3.6.0 Feb 22 2022
 
 ### Enhancements:
 
+- Sort params columns in alphabetical order (arsengit)
+- Add illustrations for indicating explorer search states (arsengit)
 - Ability to export chart as image (KaroMourad)
 - Ability to group by metric.context (VkoHov)
 - Tune manage columns items highlighting styles (VkoHov)
-- Add ability to apply active style on table actions popover buttons with applied changes (arsengit)
+- Set active style on table actions popover buttons with applied changes (arsengit)
 - Unification of Run Custom Object APIs (alberttorosyan, VkoHov)
 - Aim repo runs data automatic indexing (alberttorosyan)
 - Pytorch Lightning adapter refactoring (mihran113)

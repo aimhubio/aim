@@ -12,8 +12,8 @@ import audiosExploreService from 'services/api/audiosExplore/audiosExplore';
 
 import {
   adjustable_reader,
-  decodePathsVals,
   decode_buffer_pairs,
+  decodePathsVals,
   iterFoldTree,
 } from 'utils/encoder/streamEncoding';
 import arrayBufferToBase64 from 'utils/arrayBufferToBase64';
@@ -114,6 +114,7 @@ function AudiosVisualizer(
             focusedState={focusedState}
             additionalProperties={additionalProperties}
             onActivePointChange={onActivePointChange}
+            illustrationConfig={{ title: 'No Tracked Audios' }}
           />
         </div>
       </BusyLoaderWrapper>

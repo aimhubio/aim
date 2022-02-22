@@ -1,0 +1,100 @@
+@use 'src/styles/abstracts' as *;
+.IllustrationBlock {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  height: calc(100% - 6.875rem);
+  flex-direction: column;
+  &__title {
+    font-size: $text-xl;
+    text-align: center;
+    .qlAnchor {
+      color: $primary-color;
+      text-decoration: none;
+      margin: 0 $space-xxxs;
+      &:hover {
+        text-decoration: underline;
+      }
+    }
+  }
+  &__hidden {
+    display: none;
+  }
+  &__content {
+    font-size: $text-xl;
+    text-align: center;
+  }
+  &__small {
+    &__title {
+      font-weight: 400;
+      font-size: $text-md;
+    }
+    &__content {
+      font-weight: 400;
+      font-size: $text-md;
+    }
+    &__img {
+      padding: toRem(10px);
+      img {
+        width: toRem(50px);
+        height: toRem(57px);
+        margin: 0 auto;
+        display: block;
+      }
+    }
+  }
+  &__medium {
+    &__title {
+      font-weight: 400;
+      font-size: $text-md;
+    }
+    &__content {
+      font-weight: 400;
+      font-size: $text-md;
+    }
+    &__img {
+      padding: toRem(10px);
+      img {
+        width: toRem(70px);
+        height: toRem(97px);
+        margin: 0 auto;
+        display: block;
+      }
+    }
+  }
+  &__large {
+    &__title {
+      font-weight: 400;
+      font-size: $text-lg;
+    }
+    &__content {
+      font-weight: 400;
+      font-size: $text-lg;
+    }
+    &__img {
+      padding: toRem(10px);
+      img {
+        width: toRem(90px);
+        height: toRem(110px);
+        margin: 0 auto;
+        display: block;
+      }
+    }
+  }
+  &__xLarge {
+    &__title {
+      font-weight: 400;
+      margin-bottom: 1rem;
+    }
+    &__img {
+      padding: 1rem;
+      img {
+        width: 19.5rem;
+        margin: 0 auto;
+        display: block;
+        // height: 110px;
+      }
+    }
+  }
+}

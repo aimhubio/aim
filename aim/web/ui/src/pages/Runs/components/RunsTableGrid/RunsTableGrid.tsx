@@ -13,6 +13,7 @@ import { ITableColumn } from 'types/pages/metrics/components/TableColumns/TableC
 
 import { isSystemMetric } from 'utils/isSystemMetric';
 import { formatSystemMetricName } from 'utils/formatSystemMetricName';
+import alphabeticalSortComparator from 'utils/alphabeticalSortComparator';
 
 function getRunsTableColumns(
   metricsColumns: any,
@@ -48,29 +49,38 @@ function getRunsTableColumns(
   ].concat(
     Object.keys(metricsColumns).reduce((acc: any, key: string) => {
       const systemMetric: boolean = isSystemMetric(key);
+      const systemMetricsList: ITableColumn[] = [];
+      const metricsList: ITableColumn[] = [];
+      Object.keys(metricsColumns[key]).map((metricContext) => {
+        const columnKey = `${systemMetric ? key : `${key}_${metricContext}`}`;
+        let column = {
+          key: columnKey,
+          content: systemMetric ? (
+            <span>{formatSystemMetricName(key)}</span>
+          ) : (
+            <Badge
+              size='small'
+              color={COLORS[0][0]}
+              label={metricContext === '' ? 'Empty context' : metricContext}
+            />
+          ),
+          topHeader: systemMetric ? 'System Metrics' : key,
+          pin: order?.left?.includes(columnKey)
+            ? 'left'
+            : order?.right?.includes(columnKey)
+            ? 'right'
+            : null,
+        };
+        systemMetric
+          ? systemMetricsList.push(column)
+          : metricsList.push(column);
+      });
       acc = [
         ...acc,
-        ...Object.keys(metricsColumns[key]).map((metricContext) => {
-          const columnKey = `${systemMetric ? key : `${key}_${metricContext}`}`;
-          return {
-            key: columnKey,
-            content: systemMetric ? (
-              <span>{formatSystemMetricName(key)}</span>
-            ) : (
-              <Badge
-                size='small'
-                color={COLORS[0][0]}
-                label={metricContext === '' ? 'Empty context' : metricContext}
-              />
-            ),
-            topHeader: systemMetric ? 'System Metrics' : key,
-            pin: order?.left?.includes(columnKey)
-              ? 'left'
-              : order?.right?.includes(columnKey)
-              ? 'right'
-              : null,
-          };
-        }),
+        ...metricsList.sort(alphabeticalSortComparator({ orderBy: 'key' })),
+        ...systemMetricsList.sort(
+          alphabeticalSortComparator({ orderBy: 'key' }),
+        ),
       ];
       return acc;
     }, []),

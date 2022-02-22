@@ -17,6 +17,7 @@
   ],
   "rules": {
     "prettier/prettier": "error",
+    "react/no-unescaped-entities": 0,
     "no-console": "warn",
     "quotes": [
       "error",

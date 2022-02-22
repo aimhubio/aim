@@ -4,6 +4,8 @@ import Table from 'components/Table/Table';
 import BusyLoaderWrapper from 'components/BusyLoaderWrapper/BusyLoaderWrapper';
 import ErrorBoundary from 'components/ErrorBoundary/ErrorBoundary';
 
+import { IllustrationsEnum } from 'config/illustrationConfig/illustrationConfig';
+
 import { ITableRef } from 'types/components/Table/Table';
 
 import { ITextsVisualizerProps } from '../types';
@@ -104,7 +106,11 @@ function TextsVisualizer(
               hideHeaderActions
               estimatedRowHeight={32}
               headerHeight={32}
-              emptyText='No Result'
+              illustrationConfig={{
+                page: 'runs',
+                title: 'No Tracked Texts',
+                type: IllustrationsEnum.EmptyData,
+              }}
               height='100%'
             />
           )}

@@ -2,7 +2,7 @@ import React, { memo, useEffect } from 'react';
 import { isEmpty } from 'lodash-es';
 
 import BusyLoaderWrapper from 'components/BusyLoaderWrapper/BusyLoaderWrapper';
-import EmptyComponent from 'components/EmptyComponent/EmptyComponent';
+import IllustrationBlock from 'components/IllustrationBlock/IllustrationBlock';
 import { Badge, Button, Icon } from 'components/kit';
 import ErrorBoundary from 'components/ErrorBoundary/ErrorBoundary';
 
@@ -73,6 +73,7 @@ function TagDetail({
             </Button>
           </div>
         </div>
+
         <BusyLoaderWrapper
           isLoading={isRunsDataLoading}
           className='Tags__TagList__tagListBusyLoader'
@@ -80,7 +81,7 @@ function TagDetail({
           {!isEmpty(tagRuns) ? (
             <TagRunsTable runsList={tagRuns} />
           ) : (
-            <EmptyComponent size='big' content='No Runs' />
+            <IllustrationBlock size='xLarge' title='No Runs' />
           )}
         </BusyLoaderWrapper>
       </div>

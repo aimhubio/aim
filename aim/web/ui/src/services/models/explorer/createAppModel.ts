@@ -11,6 +11,7 @@ import { ResizeModeEnum } from 'config/enums/tableEnums';
 import { AlignmentNotificationsEnum } from 'config/notification-messages/notificationMessages';
 import { RowHeightSize, TABLE_DEFAULT_CONFIG } from 'config/table/tableConfigs';
 import { DensityOptions } from 'config/enums/densityEnum';
+import { RequestStatusEnum } from 'config/enums/requestStatusEnum';
 import { CONTROLS_DEFAULT_CONFIG } from 'config/controls/controlsDefaultConfig';
 import { ANALYTICS_EVENT_KEYS } from 'config/analytics/analyticsKeysMap';
 import { DATE_EXPORTING_FORMAT } from 'config/dates/dates';
@@ -35,6 +36,7 @@ import createMetricModel from 'services/models/metrics/metricModel';
 import { createRunModel } from 'services/models/metrics/runModel';
 import createModel from 'services/models/model';
 import LiveUpdateService from 'services/live-update/examples/LiveUpdateBridge.example';
+import projectsService from 'services/api/projects/projectsService';
 
 import { IAxesScaleState } from 'types/components/AxesScalePopover/AxesScalePopover';
 import { ILine } from 'types/components/LineChart/LineChart';
@@ -79,6 +81,7 @@ import {
   IAppModelState,
   ISelectOption,
 } from 'types/services/models/explorer/createAppModel';
+import { IProjectParamsMetrics } from 'types/services/models/projects/projectsModel';
 import {
   IScatterAppModelState,
   ITrendlineOptions,
@@ -165,6 +168,8 @@ import { isSystemMetric } from 'utils/isSystemMetric';
 import setDefaultAppConfigData from 'utils/app/setDefaultAppConfigData';
 import getAppConfigData from 'utils/app/getAppConfigData';
 import { getValue } from 'utils/helper';
+import { formatSystemMetricName } from 'utils/formatSystemMetricName';
+import alphabeticalSortComparator from 'utils/alphabeticalSortComparator';
 import onRowSelect from 'utils/app/onRowSelect';
 import { SortField } from 'utils/getSortedFields';
 import onChangeTrendlineOptions from 'utils/app/onChangeTrendlineOptions';
@@ -181,7 +186,8 @@ function createAppModel(appConfig: IAppInitialConfig) {
   const { appName, dataType, grouping, components, selectForm } = appConfig;
 
   const model: IModel<IAppModelState> = createModel<IAppModelState>({
-    requestIsPending: false,
+    requestStatus: RequestStatusEnum.NotRequested,
+    selectFormOptions: undefined,
     config: getConfig(),
   });
 
@@ -343,12 +349,15 @@ function createAppModel(appConfig: IAppInitialConfig) {
             hideSystemMetrics: TABLE_DEFAULT_CONFIG.runs.hideSystemMetrics,
             hiddenMetrics: TABLE_DEFAULT_CONFIG.runs.hiddenMetrics,
             hiddenColumns: TABLE_DEFAULT_CONFIG.runs.hiddenColumns,
+            sortFields: [...TABLE_DEFAULT_CONFIG.runs.sortFields],
             columnsWidths: {},
             columnsOrder: {
               left: [...TABLE_DEFAULT_CONFIG.runs.columnsOrder.left],
               middle: [...TABLE_DEFAULT_CONFIG.runs.columnsOrder.middle],
               right: [...TABLE_DEFAULT_CONFIG.runs.columnsOrder.right],
             },
+            resizeMode: TABLE_DEFAULT_CONFIG.runs.resizeMode,
+            height: TABLE_DEFAULT_CONFIG.runs.height,
           };
           if (appName === AppNameEnum.RUNS) {
             config.pagination = {
@@ -381,6 +390,10 @@ function createAppModel(appConfig: IAppInitialConfig) {
             };
           }
           if (components.charts.indexOf(ChartTypeEnum.ScatterPlot) !== -1) {
+            config.table = {
+              ...config?.table!,
+              resizeMode: TABLE_DEFAULT_CONFIG.scatters.resizeMode,
+            };
             config.chart = {
               focusedState: {
                 key: null,
@@ -453,6 +466,59 @@ function createAppModel(appConfig: IAppInitialConfig) {
     let tooltipData: ITooltipData = {};
     let liveUpdateInstance: LiveUpdateService | null;
 
+    function getOption(
+      system: boolean,
+      key: string,
+      index: number,
+      val: object | null = null,
+    ): ISelectOption {
+      return {
+        label: `${system ? formatSystemMetricName(key) : key}`,
+        group: system ? 'System' : key,
+        color: COLORS[0][index % COLORS[0].length],
+        value: {
+          option_name: key,
+          context: val,
+        },
+      };
+    }
+    function getMetricOptions(
+      projectsData: IProjectParamsMetrics,
+    ): ISelectOption[] {
+      let data: ISelectOption[] = [];
+      const systemOptions: ISelectOption[] = [];
+      let index: number = 0;
+      if (projectsData?.metric) {
+        for (let key in projectsData?.metric) {
+          let system: boolean = isSystemMetric(key);
+          let option = getOption(system, key, index);
+          if (system) {
+            systemOptions.push(option);
+          } else {
+            data.push(option);
+          }
+          index++;
+          for (let val of projectsData?.metric[key]) {
+            if (!_.isEmpty(val)) {
+              let label = contextToString(val);
+              let option = getOption(system, key, index, val);
+              option.label = `${option.label} ${label}`;
+              if (system) {
+                systemOptions.push(option);
+              } else {
+                data.push(option);
+              }
+              index++;
+            }
+          }
+        }
+      }
+      const comparator = alphabeticalSortComparator<ISelectOption>({
+        orderBy: 'label',
+      });
+      systemOptions.sort(comparator);
+      return data.sort(comparator).concat(systemOptions);
+    }
     function initialize(appId: string): void {
       model.init();
       const state: Partial<IAppModelState> = {};
@@ -476,7 +542,14 @@ function createAppModel(appConfig: IAppInitialConfig) {
       if (!appId) {
         setModelDefaultAppConfigData();
       }
-
+      projectsService
+        .getProjectParams(['metric'])
+        .call()
+        .then((data) => {
+          model.setState({
+            selectFormOptions: getMetricOptions(data),
+          });
+        });
       const liveUpdateState = model.getState()?.config?.liveUpdate;
 
       if (liveUpdateState?.enabled) {
@@ -501,7 +574,7 @@ function createAppModel(appConfig: IAppInitialConfig) {
       }
 
       model.setState({
-        requestIsPending: false,
+        requestStatus: RequestStatusEnum.Ok,
       });
 
       onModelNotificationAdd({
@@ -535,34 +608,10 @@ function createAppModel(appConfig: IAppInitialConfig) {
       return {
         call: async () => {
           if (query === '()') {
-            let state: Partial<IMetricAppModelState> = {};
-            if (
-              Array.isArray(components?.charts) &&
-              components?.charts?.indexOf(ChartTypeEnum.LineChart) !== -1
-            ) {
-              state.lineChartData = [];
-            }
-            if (components.table) {
-              state.tableData = [];
-              state.config = {
-                ...configData,
-                table: {
-                  ...configData?.table,
-                  resizeMode: ResizeModeEnum.Resizable,
-                },
-              };
-            }
-            model.setState({
-              requestIsPending: false,
-              queryIsEmpty: true,
-              selectedRows: shouldResetSelectedRows
-                ? {}
-                : model.getState()?.selectedRows,
-              ...state,
-            });
+            resetModelState(configData, shouldResetSelectedRows!);
           } else {
             model.setState({
-              requestIsPending: true,
+              requestStatus: RequestStatusEnum.Pending,
               queryIsEmpty: false,
               selectedRows: shouldResetSelectedRows
                 ? {}
@@ -570,9 +619,10 @@ function createAppModel(appConfig: IAppInitialConfig) {
             });
             liveUpdateInstance?.stop().then();
             try {
-              const stream = await metricsRequestRef.call((detail) =>
-                exceptionHandler({ detail, model }),
-              );
+              const stream = await metricsRequestRef.call((detail) => {
+                exceptionHandler({ detail, model });
+                resetModelState(configData, shouldResetSelectedRows!);
+              });
               const runData = await getRunData(stream);
               updateData(runData);
             } catch (ex: Error | any) {
@@ -592,6 +642,39 @@ function createAppModel(appConfig: IAppInitialConfig) {
         },
         abort: metricsRequestRef.abort,
       };
+    }
+
+    function resetModelState(
+      configData: any,
+      shouldResetSelectedRows: boolean,
+    ) {
+      let state: Partial<IMetricAppModelState> = {};
+      if (
+        Array.isArray(components?.charts) &&
+        components?.charts?.indexOf(ChartTypeEnum.LineChart) !== -1
+      ) {
+        state.lineChartData = [];
+      }
+
+      if (components.table) {
+        state.tableData = [];
+        state.config = {
+          ...configData,
+          table: {
+            ...configData?.table,
+            resizeMode: ResizeModeEnum.Resizable,
+          },
+        };
+      }
+      model.setState({
+        queryIsEmpty: true,
+        rawData: [],
+        tableColumns: [],
+        selectedRows: shouldResetSelectedRows
+          ? {}
+          : model.getState()?.selectedRows,
+        ...state,
+      });
     }
 
     function getDataAsTableRows(
@@ -933,9 +1016,9 @@ function createAppModel(appConfig: IAppInitialConfig) {
           sortFields?.map((f: SortField) => f.order),
         ),
       );
-      const uniqParams = _.uniq(params);
-      const uniqHighLevelParams = _.uniq(highLevelParams);
-      const uniqContexts = _.uniq(contexts);
+      const uniqParams = _.uniq(params).sort();
+      const uniqHighLevelParams = _.uniq(highLevelParams).sort();
+      const uniqContexts = _.uniq(contexts).sort();
 
       const mappedData =
         data?.reduce((acc: any, item: any) => {
@@ -1088,14 +1171,14 @@ function createAppModel(appConfig: IAppInitialConfig) {
         configData.grouping as any,
         onModelGroupingSelectChange,
       );
-      if (!model.getState()?.requestIsPending) {
+      if (model.getState()?.requestStatus !== RequestStatusEnum.Pending) {
         model.getState()?.refs?.tableRef?.current?.updateData({
           newData: tableData.rows,
           newColumns: tableColumns,
         });
       }
       model.setState({
-        requestIsPending: false,
+        requestStatus: RequestStatusEnum.Ok,
         rawData,
         config: configData,
         params,
@@ -2157,7 +2240,7 @@ function createAppModel(appConfig: IAppInitialConfig) {
         }
 
         model.setState({
-          requestIsPending: false,
+          requestStatus: RequestStatusEnum.Ok,
         });
 
         onModelNotificationAdd({
@@ -2243,7 +2326,7 @@ function createAppModel(appConfig: IAppInitialConfig) {
                   ? {}
                   : selectedRows ?? model.getState()?.selectedRows,
                 rawData: runsData,
-                requestIsPending: false,
+                requestStatus: RequestStatusEnum.Ok,
                 infiniteIsPending: false,
                 tableColumns,
                 tableData: tableData.rows,
@@ -2349,7 +2432,9 @@ function createAppModel(appConfig: IAppInitialConfig) {
         }
 
         model.setState({
-          requestIsPending: isInitial,
+          requestStatus: isInitial
+            ? RequestStatusEnum.Pending
+            : RequestStatusEnum.Ok,
           infiniteIsPending: !isInitial,
         });
 
@@ -2390,7 +2475,8 @@ function createAppModel(appConfig: IAppInitialConfig) {
           });
         });
         const processedData = groupData(runs);
-        const uniqParams = _.uniq(params);
+        const uniqParams = _.uniq(params).sort();
+
         const mappedData =
           data?.reduce((acc: any, item: any) => {
             acc[item.hash] = { runHash: item.hash, ...item.props };
@@ -2847,8 +2933,8 @@ function createAppModel(appConfig: IAppInitialConfig) {
         const lastRowKey = newData[newData.length - 1].hash;
         model.setState({
           data,
-          rawData: newData,
-          requestIsPending: false,
+          rowData: newData,
+          requestStatus: RequestStatusEnum.Ok,
           infiniteIsPending: false,
           tableColumns,
           tableData: tableData.rows,
@@ -3125,6 +3211,71 @@ function createAppModel(appConfig: IAppInitialConfig) {
       let tooltipData: ITooltipData = {};
       let liveUpdateInstance: LiveUpdateService | null;
 
+      function getParamsOptions(projectsData: IProjectParamsMetrics) {
+        const comparator = alphabeticalSortComparator<ISelectOption>({
+          orderBy: 'label',
+        });
+
+        let optionsCount = 0; // to calculate color
+        const systemOptions: ISelectOption[] = [];
+        let params: ISelectOption[] = [];
+        let metrics: ISelectOption[] = [];
+
+        if (projectsData?.metric) {
+          for (let key in projectsData.metric) {
+            let system: boolean = isSystemMetric(key);
+            for (let val of projectsData.metric[key]) {
+              let label = contextToString(val);
+              let index: number = optionsCount;
+              let option: ISelectOption = {
+                label: `${system ? formatSystemMetricName(key) : key} ${label}`,
+                group: system ? 'System' : key,
+                type: 'metrics',
+                color: COLORS[0][index % COLORS[0].length],
+                value: {
+                  option_name: key,
+                  context: val,
+                },
+              };
+              optionsCount++;
+              if (system) {
+                systemOptions.push(option);
+              } else {
+                metrics.push(option);
+              }
+            }
+          }
+        }
+        if (projectsData?.params) {
+          const paramPaths = getObjectPaths(
+            projectsData.params,
+            projectsData.params,
+          );
+          paramPaths.forEach((paramPath, index) => {
+            params.push({
+              label: paramPath,
+              group: 'Params',
+              type: 'params',
+              color: COLORS[0][index % COLORS[0].length],
+            });
+          });
+        }
+
+        params = params.sort(comparator);
+        metrics = metrics.sort(comparator);
+        systemOptions.sort(comparator);
+
+        // sort by group
+        const data: ISelectOption[] = [...metrics, ...params];
+
+        data.sort(
+          alphabeticalSortComparator({
+            orderBy: 'type',
+          }),
+        );
+        return data.concat(systemOptions);
+      }
+
       function initialize(appId: string): void {
         model.init();
         const state: Partial<IParamsAppModelState> = {};
@@ -3144,6 +3295,14 @@ function createAppModel(appConfig: IAppInitialConfig) {
             chartPanelRef: { current: null },
           };
         }
+        projectsService
+          .getProjectParams(['metric'])
+          .call()
+          .then((data) => {
+            model.setState({
+              selectFormOptions: getParamsOptions(data),
+            });
+          });
         model.setState({ ...state });
         if (!appId) {
           setModelDefaultAppConfigData();
@@ -3172,7 +3331,7 @@ function createAppModel(appConfig: IAppInitialConfig) {
         }
 
         model.setState({
-          requestIsPending: false,
+          requestStatus: RequestStatusEnum.Ok,
         });
 
         onModelNotificationAdd({
@@ -3200,32 +3359,10 @@ function createAppModel(appConfig: IAppInitialConfig) {
         return {
           call: async () => {
             if (_.isEmpty(configData?.select?.options)) {
-              let state: Partial<IParamsAppModelState> = {};
-              if (components?.charts?.indexOf(ChartTypeEnum.HighPlot) !== -1) {
-                state.highPlotData = [];
-              }
-              if (components.table) {
-                state.tableData = [];
-                state.config = {
-                  ...configData,
-                  table: {
-                    ...configData?.table,
-                    resizeMode: ResizeModeEnum.Resizable,
-                  },
-                };
-              }
-
-              model.setState({
-                requestIsPending: false,
-                queryIsEmpty: true,
-                selectedRows: shouldResetSelectedRows
-                  ? {}
-                  : model.getState()?.selectedRows,
-                ...state,
-              });
+              resetModelState(configData, shouldResetSelectedRows!);
             } else {
               model.setState({
-                requestIsPending: true,
+                requestStatus: RequestStatusEnum.Pending,
                 queryIsEmpty: false,
                 selectedRows: shouldResetSelectedRows
                   ? {}
@@ -3233,9 +3370,10 @@ function createAppModel(appConfig: IAppInitialConfig) {
               });
               liveUpdateInstance?.stop().then();
               try {
-                const stream = await runsRequestRef.call((detail) =>
-                  exceptionHandler({ detail, model }),
-                );
+                const stream = await runsRequestRef.call((detail) => {
+                  exceptionHandler({ detail, model });
+                  resetModelState(configData, shouldResetSelectedRows!);
+                });
                 const runData = await getRunData(stream);
                 updateData(runData);
               } catch (ex: Error | any) {
@@ -3252,6 +3390,36 @@ function createAppModel(appConfig: IAppInitialConfig) {
           },
           abort: runsRequestRef.abort,
         };
+      }
+
+      function resetModelState(
+        configData: any,
+        shouldResetSelectedRows: boolean,
+      ) {
+        let state: Partial<IParamsAppModelState> = {};
+        if (components?.charts?.indexOf(ChartTypeEnum.HighPlot) !== -1) {
+          state.highPlotData = [];
+        }
+        if (components.table) {
+          state.tableData = [];
+          state.config = {
+            ...configData,
+            table: {
+              ...configData?.table,
+              resizeMode: ResizeModeEnum.Resizable,
+            },
+          };
+        }
+
+        model.setState({
+          queryIsEmpty: true,
+          rawData: [],
+          tableColumns: [],
+          selectedRows: shouldResetSelectedRows
+            ? {}
+            : model.getState()?.selectedRows,
+          ...state,
+        });
       }
 
       function getDataAsTableRows(
@@ -3642,7 +3810,7 @@ function createAppModel(appConfig: IAppInitialConfig) {
           onModelGroupingSelectChange,
         );
 
-        if (!model.getState()?.requestIsPending) {
+        if (model.getState()?.requestStatus !== RequestStatusEnum.Pending) {
           model.getState()?.refs?.tableRef.current?.updateData({
             newData: tableData.rows,
             newColumns: tableColumns,
@@ -3650,7 +3818,7 @@ function createAppModel(appConfig: IAppInitialConfig) {
         }
 
         model.setState({
-          requestIsPending: false,
+          requestStatus: RequestStatusEnum.Ok,
           data,
           highPlotData: getDataAsLines(data),
           chartTitleData: getChartTitleData<IParam, IParamsAppModelState>({
@@ -3867,8 +4035,8 @@ function createAppModel(appConfig: IAppInitialConfig) {
             sortFields?.map((f: SortField) => f.order),
           ),
         );
-        const uniqParams = _.uniq(params);
-        const uniqHighLevelParams = _.uniq(highLevelParams);
+        const uniqParams = _.uniq(params).sort();
+        const uniqHighLevelParams = _.uniq(highLevelParams).sort();
         const mappedData =
           data?.reduce((acc: any, item: any) => {
             acc[item.hash] = { runHash: item.hash, ...item.props };
@@ -4495,6 +4663,15 @@ function createAppModel(appConfig: IAppInitialConfig) {
         }
         const liveUpdateState = model.getState()?.config?.liveUpdate;
 
+        projectsService
+          .getProjectParams(['metric'])
+          .call()
+          .then((data: IProjectParamsMetrics) => {
+            model.setState({
+              selectFormOptions: getScattersSelectOptions(data),
+            });
+          });
+
         if (liveUpdateState?.enabled) {
           liveUpdateInstance = new LiveUpdateService(
             appName,
@@ -4556,7 +4733,7 @@ function createAppModel(appConfig: IAppInitialConfig) {
           onModelGroupingSelectChange,
         );
 
-        if (!model.getState()?.requestIsPending) {
+        if (model.getState()?.requestStatus !== RequestStatusEnum.Pending) {
           model.getState()?.refs?.tableRef.current?.updateData({
             newData: tableData.rows,
             newColumns: tableColumns,
@@ -4564,7 +4741,7 @@ function createAppModel(appConfig: IAppInitialConfig) {
         }
 
         model.setState({
-          requestIsPending: false,
+          requestStatus: RequestStatusEnum.Ok,
           data,
           chartData: getChartData(data),
           chartTitleData: getChartTitleData<IParam, IParamsAppModelState>({
@@ -5217,7 +5394,7 @@ function createAppModel(appConfig: IAppInitialConfig) {
         }
 
         model.setState({
-          requestIsPending: false,
+          requestStatus: RequestStatusEnum.Ok,
         });
 
         onModelNotificationAdd({
@@ -5245,34 +5422,10 @@ function createAppModel(appConfig: IAppInitialConfig) {
         return {
           call: async () => {
             if (_.isEmpty(configData?.select?.options)) {
-              let state: Partial<IScatterAppModelState> = {};
-              if (
-                components?.charts?.indexOf(ChartTypeEnum.ScatterPlot) !== -1
-              ) {
-                state.chartData = [];
-              }
-              if (components.table) {
-                state.tableData = [];
-                state.config = {
-                  ...configData,
-                  table: {
-                    ...configData?.table,
-                    resizeMode: ResizeModeEnum.Resizable,
-                  },
-                };
-              }
-
-              model.setState({
-                requestIsPending: false,
-                queryIsEmpty: true,
-                selectedRows: shouldResetSelectedRows
-                  ? {}
-                  : model.getState()?.selectedRows,
-                ...state,
-              });
+              resetModelState(configData, shouldResetSelectedRows!);
             } else {
               model.setState({
-                requestIsPending: true,
+                requestStatus: RequestStatusEnum.Pending,
                 queryIsEmpty: false,
                 selectedRows: shouldResetSelectedRows
                   ? {}
@@ -5280,9 +5433,10 @@ function createAppModel(appConfig: IAppInitialConfig) {
               });
               liveUpdateInstance?.stop().then();
               try {
-                const stream = await runsRequestRef.call((detail) =>
-                  exceptionHandler({ detail, model }),
-                );
+                const stream = await runsRequestRef.call((detail) => {
+                  exceptionHandler({ detail, model });
+                  resetModelState(configData, shouldResetSelectedRows!);
+                });
                 const runData = await getRunData(stream);
                 updateData(runData);
 
@@ -5305,6 +5459,86 @@ function createAppModel(appConfig: IAppInitialConfig) {
           },
           abort: runsRequestRef.abort,
         };
+      }
+
+      function getScattersSelectOptions(projectsData: IProjectParamsMetrics) {
+        let data: ISelectOption[] = [];
+        const systemOptions: ISelectOption[] = [];
+        if (projectsData?.metric) {
+          for (let key in projectsData.metric) {
+            let system: boolean = isSystemMetric(key);
+            for (let val of projectsData.metric[key]) {
+              let label: string = Object.keys(val)
+                .map((item) => `${item}="${val[item]}"`)
+                .join(', ');
+              let index: number = data.length;
+              let option: ISelectOption = {
+                label: `${system ? formatSystemMetricName(key) : key} ${label}`,
+                group: system ? formatSystemMetricName(key) : key,
+                type: 'metrics',
+                color: COLORS[0][index % COLORS[0].length],
+                value: {
+                  option_name: key,
+                  context: val,
+                },
+              };
+              if (system) {
+                systemOptions.push(option);
+              } else {
+                data.push(option);
+              }
+            }
+          }
+        }
+        if (projectsData?.params) {
+          const paramPaths = getObjectPaths(
+            projectsData.params,
+            projectsData.params,
+          );
+          paramPaths.forEach((paramPath, index) => {
+            data.push({
+              label: paramPath,
+              group: 'Params',
+              type: 'params',
+              color: COLORS[0][index % COLORS[0].length],
+            });
+          });
+        }
+        const comparator = alphabeticalSortComparator({
+          orderBy: 'label',
+        });
+
+        systemOptions.sort(comparator);
+        return data.sort(comparator).concat(systemOptions);
+      }
+
+      function resetModelState(
+        configData: any,
+        shouldResetSelectedRows: boolean,
+      ): void {
+        let state: Partial<IScatterAppModelState> = {};
+        if (components?.charts?.indexOf(ChartTypeEnum.ScatterPlot) !== -1) {
+          state.chartData = [];
+        }
+        if (components.table) {
+          state.tableData = [];
+          state.config = {
+            ...configData,
+            table: {
+              ...configData?.table,
+              resizeMode: ResizeModeEnum.Resizable,
+            },
+          };
+        }
+        model.setState({
+          queryIsEmpty: true,
+          rawData: [],
+          tableColumns: [],
+          selectedRows: shouldResetSelectedRows
+            ? {}
+            : model.getState()?.selectedRows,
+          ...state,
+        });
       }
 
       function onExportTableData(): void {
