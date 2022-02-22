@@ -19,11 +19,14 @@
    quick_start/next_steps.md
 
 .. toctree::
-   :maxdepth: 2
+   :maxdepth: 1
    :name: ui
    :caption: Aim UI
 
    ui/overview.md
+   ui/pages.md 
+   ui/guides.md
+
 
 .. toctree::
    :maxdepth: 2
