@@ -8,13 +8,27 @@ import { ICardProps } from './Card.d';
 
 import './Card.scss';
 
+/**
+ * @property {string} title - title
+ * @property {string} subTitle - subtitle (optional)
+ * @property {string} className - additional class name (optional)
+ * @property {boolean} isLoading - is loading
+ * @property {{
+ * tableColumns: any,
+ * tableData: any,
+ * searchableKeys?: string[],
+ * illustrationConfig?: IIllustrationConfig,
+ * isLoading: boolean,
+ * }} dataListProps - table props
+ * @property {React.HTMLElement} children - children element
+ */
+
 function Card({
-  name,
   title,
-  children,
+  subtitle,
   className,
-  isLoading,
   dataListProps,
+  children,
 }: ICardProps): React.FunctionComponentElement<React.ReactNode> {
   const tableRef = React.useRef<any>(null);
 
@@ -22,22 +36,18 @@ function Card({
     <div className={classNames('Card', { [className as string]: className })}>
       <div className='Card__header'>
         <Text size={18} weight={600} tint={100}>
-          {name}
+          {title}
         </Text>
-        {title && (
+        {subtitle && (
           <Text size={12} tint={70} className='Card__header__subTitle'>
-            {title}
+            {subtitle}
           </Text>
         )}
       </div>
       {children || (
         <div className='Card__tableWrapper'>
           {dataListProps?.tableData && (
-            <DataList
-              tableRef={tableRef}
-              isLoading={isLoading}
-              {...dataListProps}
-            />
+            <DataList tableRef={tableRef} {...dataListProps} />
           )}
         </div>
       )}

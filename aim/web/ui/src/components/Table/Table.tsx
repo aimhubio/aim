@@ -635,7 +635,7 @@ const Table = React.forwardRef(function Table(
         isLoading={!props.isInfiniteLoading && (isLoading || isNil(rowData))}
         loaderComponent={<TableLoader />}
       >
-        {!isEmpty(data) || !isEmpty(rowData) ? (
+        {!isEmpty(rowData) ? (
           <div style={{ height: '100%' }} className={className}>
             {!hideHeaderActions && isEmpty(selectedRows) ? (
               <div className='Table__header'>

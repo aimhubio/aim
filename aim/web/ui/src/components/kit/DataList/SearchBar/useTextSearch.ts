@@ -45,28 +45,33 @@ function useTextSearch({
       return;
     }
     let appliedRegExp: RegExp | null;
-    switch (matchType) {
-      case MatchTypes.Word:
-        search = `\\b${search}\\b`;
-        appliedRegExp = new RegExp(`(${search})`, 'gi');
-        break;
-      case MatchTypes.Case:
-        appliedRegExp = new RegExp(`(${search})`, 'g');
-        break;
-      case MatchTypes.RegExp:
-        try {
-          let match = search.match(new RegExp('^/(.*?)/([gimy]*)$'));
-          if (match) {
-            appliedRegExp = new RegExp(`(${match[1]})`, match[2]);
-          } else {
-            appliedRegExp = new RegExp(`(${search})`, 'g');
+    // @TODO fix \ and [ symbols issue
+    try {
+      switch (matchType) {
+        case MatchTypes.Word:
+          search = `\\b${search}\\b`;
+          appliedRegExp = new RegExp(`(${search})`, 'gi');
+          break;
+        case MatchTypes.Case:
+          appliedRegExp = new RegExp(`(${search})`, 'g');
+          break;
+        case MatchTypes.RegExp:
+          try {
+            let match = search.match(new RegExp('^/(.*?)/([gimy]*)$'));
+            if (match) {
+              appliedRegExp = new RegExp(`(${match[1]})`, match[2]);
+            } else {
+              appliedRegExp = new RegExp(`(${search})`, 'g');
+            }
+          } catch (e) {
+            appliedRegExp = null;
           }
-        } catch (e) {
-          appliedRegExp = null;
-        }
-        break;
-      default:
-        appliedRegExp = new RegExp(`(${search})`.toLowerCase(), 'gi');
+          break;
+        default:
+          appliedRegExp = new RegExp(`(${search})`.toLowerCase(), 'gi');
+      }
+    } catch {
+      appliedRegExp = new RegExp('()'.toLowerCase(), 'gi');
     }
 
     const filteredData = filterByCase(search, appliedRegExp, matchType);

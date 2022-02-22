@@ -10,6 +10,16 @@ import { IDataListProps } from './DataList.d';
 
 import './DataList.scss';
 
+/**
+ * @property {any} tableColumns - columns
+ * @property {any} tableData - rows
+ * @property {string[]} searchableKeys - additional class name (optional)
+ * @property {IIllustrationConfig} illustrationConfig - illustration config
+ * @property {boolean} isLoading - data is loading
+ * @property {boolean} withoutSearchBar - hide search bar
+ * @property {React.RefElement} tableRef - ref
+ */
+
 function DataList({
   tableRef,
   tableData,
