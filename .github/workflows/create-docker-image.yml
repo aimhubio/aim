@@ -1,0 +1,31 @@
+name: aim docker image pipeline
+
+on:
+  workflow_dispatch:
+    inputs:
+      pkg_version:
+        description: 'Aim package version'
+        required: true
+        type: string
+
+jobs:
+  linux-dist:
+    runs-on: ubuntu-latest
+    name: Create
+    steps:
+      - name: Checkout sources
+        uses: actions/checkout@v2
+
+      - name: Capture version
+        id: capture-version
+        run:
+          export AIM_VERSION=$(< ./aim/VERSION)
+          echo '::set-output name=AIM_VERSION::$AIM_VERSION'
+
+      - name: Run docker image workflow
+        uses: ./.github/actions/docker-image
+        with:
+          pkg_version: ${{ steps.capture-version.outputs.AIM_VERSION }}
+          is_latest: 0
+
+
