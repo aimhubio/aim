@@ -23,7 +23,7 @@ jobs:
           echo '::set-output name=AIM_VERSION::$AIM_VERSION'
 
       - name: Run docker image workflow
-        uses: ./.github/workflows/docker-image.yml
+        uses: aimhubio/aim/.github/workflows/docker-image.yml
         with:
           pkg_version: ${{ steps.capture-version.outputs.AIM_VERSION }}
           is_latest: 0
