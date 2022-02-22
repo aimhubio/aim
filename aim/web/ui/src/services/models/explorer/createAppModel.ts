@@ -3253,7 +3253,7 @@ function createAppModel(appConfig: IAppInitialConfig) {
           );
           paramPaths.forEach((paramPath, index) => {
             params.push({
-              label: paramPath,
+              label: paramPath.slice(0, paramPath.indexOf('.__example_type__')),
               group: 'Params',
               type: 'params',
               color: COLORS[0][index % COLORS[0].length],
@@ -5497,7 +5497,7 @@ function createAppModel(appConfig: IAppInitialConfig) {
           );
           paramPaths.forEach((paramPath, index) => {
             data.push({
-              label: paramPath,
+              label: paramPath.slice(0, paramPath.indexOf('.__example_type__')),
               group: 'Params',
               type: 'params',
               color: COLORS[0][index % COLORS[0].length],
