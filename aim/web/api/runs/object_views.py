@@ -37,7 +37,7 @@ class CustomObjectApiConfig:
         # search API
         search_endpoint = f'/search/{seq_name}/'
 
-        @router.get(search_endpoint, response_model=Dict[str, ObjectSearchRunView[cls.model]],
+        @router.get(search_endpoint, response_model=Dict[str, ObjectSearchRunView],
                     responses={400: {'model': QuerySyntaxErrorOut}})
         async def search_api(q: Optional[str] = '',
                              record_range: Optional[str] = '', record_density: Optional[int] = 50,
@@ -58,7 +58,7 @@ class CustomObjectApiConfig:
         # run sequence batch API
         sequence_batch_endpoint = f'/{{run_id}}/{seq_name}/get-batch/'
 
-        @router.post(sequence_batch_endpoint, response_model=List[ObjectSequenceBaseView[cls.model]])
+        @router.post(sequence_batch_endpoint, response_model=List[ObjectSequenceBaseView])
         async def sequence_batch_api(run_id: str,
                                      requested_traces: RunTracesBatchApiIn,
                                      record_range: Optional[str] = '', record_density: Optional[int] = 50,
