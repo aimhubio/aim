@@ -59,6 +59,45 @@ Step 2. Pass the aim_logger object to the logger variable
 trainer = Trainer(gpus=1, progress_bar_refresh_rate=20, max_epochs=5, logger=aim_logger)
 ```
 
+
+## Integration with Pytorch Ignite
+
+
+
+It only takes 2 steps to simply and easily inject Aim into pytorch ignite:
+
+```python
+# call aim sdk designed for pytorch ignite
+from aim.pytorch_ignite import AimLogger
+```
+
+Pytorch Ignite provides trainer objects to simplify the training process of pytorch model. We can attach the trainer object as AimLogger's output handler to use the logger function defined by aim to simplify the process of tracking experiments. This process is divided into 2 steps:
+
+Step 1.create AimLogger object
+
+```python
+# track experimential data by using Aim
+aim_logger = AimLogger(
+    experiment='aim_on_pt_ignite',
+    train_metric_prefix='train_',
+    val_metric_prefix='val_',
+    test_metric_prefix='test_',
+)
+```
+
+Step 2. Attach output handler to the aim_logger object
+
+
+```python
+# track experimential data by using Aim
+aim_logger.attach_output_handler(
+    train_evaluator,
+    event_name=Events.EPOCH_COMPLETED,
+    tag="train",
+    metric_names=["nll", "accuracy"],
+    global_step_transform=global_step_from_engine(trainer),
+)
+```
 ### Integration with Hugging Face
 
 [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/drive/1YJsWXmpmJ8s6K9smqIFT7CnM27yjoPq3?usp=sharing)
