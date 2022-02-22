@@ -57,7 +57,7 @@ export interface IScattersProps extends Partial<RouteChildrenProps> {
   groupingSelectOptions: IGroupingSelectOption[];
   projectsDataMetrics: IProjectParamsMetrics['metrics'];
   resizeMode: ResizeModeEnum;
-  selectFormOptions: ISelectOption[];
+  selectFormData: { options: ISelectOption[]; suggestions: string[] };
   requestStatus: RequestStatusEnum;
   trendlineOptions: ITrendlineOptions;
   selectedRows: { [key: string]: any };

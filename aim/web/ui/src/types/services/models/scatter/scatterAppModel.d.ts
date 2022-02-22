@@ -41,7 +41,7 @@ export interface IScatterAppModelState {
   params: string[];
   notifyData: INotification[];
   groupingSelectOptions: IGroupingSelectOption[];
-  selectFormOptions: ISelectOption[];
+  selectFormData: { options: ISelectOption[]; suggestions: string[] };
   liveUpdateConfig: {
     delay: number;
     enabled: boolean;

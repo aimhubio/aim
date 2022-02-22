@@ -87,7 +87,7 @@ function Metrics(
                 requestIsPending={
                   props.requestStatus === RequestStatusEnum.Pending
                 }
-                selectFormOptions={props.selectFormOptions}
+                selectFormData={props.selectFormData}
                 selectedMetricsData={props.selectedMetricsData}
                 onMetricsSelectChange={props.onMetricsSelectChange}
                 onSelectRunQueryChange={props.onSelectRunQueryChange}
@@ -118,7 +118,7 @@ function Metrics(
               className={`Metrics__chart__container${
                 props.resizeMode === ResizeModeEnum.MaxHeight
                   ? '__hide'
-                  : _.isEmpty(props.tableData)
+                  : _.isEmpty(props.lineChartData)
                   ? '__fullHeight'
                   : ''
               }`}
@@ -177,12 +177,12 @@ function Metrics(
                     }
                   />
                 ) : (
-                  props.selectFormOptions !== undefined && (
+                  props.selectFormData.options !== undefined && (
                     <IllustrationBlock
                       size='xLarge'
                       page='metrics'
                       type={
-                        props.selectFormOptions?.length
+                        props.selectFormData.options?.length
                           ? Request_Illustrations[props.requestStatus]
                           : IllustrationsEnum.EmptyData
                       }
