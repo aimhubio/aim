@@ -18,8 +18,8 @@ jobs:
 
       - name: Capture version
         id: capture-version
-        run:
-          export AIM_VERSION=$(< ./aim/VERSION)
+        run: |
+          AIM_VERSION=$(< ./aim/VERSION)
           echo '::set-output name=AIM_VERSION::$AIM_VERSION'
 
       - name: Run docker image workflow
