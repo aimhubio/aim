@@ -126,7 +126,7 @@ const data: [number, number][] = [
 describe('[loess calculation]', () => {
   it('loess(data, bandwidth) calculates the LOESS regression', () => {
     function shuffle(arr: [number, number][]) {
-      var m = arr.length,
+      let m = arr.length,
         t,
         i;
       while (m) {

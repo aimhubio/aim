@@ -29,6 +29,11 @@ class RemoteTrackingServiceStub(object):
                 request_serializer=remote__tracking__pb2.InstructionRequest.SerializeToString,
                 response_deserializer=remote__tracking__pb2.InstructionResponse.FromString,
                 )
+        self.run_write_instructions = channel.stream_unary(
+                '/RemoteTrackingService/run_write_instructions',
+                request_serializer=remote__tracking__pb2.WriteInstructionsRequest.SerializeToString,
+                response_deserializer=remote__tracking__pb2.WriteInstructionsResponse.FromString,
+                )
 
 
 class RemoteTrackingServiceServicer(object):
@@ -52,6 +57,12 @@ class RemoteTrackingServiceServicer(object):
         context.set_details('Method not implemented!')
         raise NotImplementedError('Method not implemented!')
 
+    def run_write_instructions(self, request_iterator, context):
+        """Missing associated documentation comment in .proto file."""
+        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
+        context.set_details('Method not implemented!')
+        raise NotImplementedError('Method not implemented!')
+
 
 def add_RemoteTrackingServiceServicer_to_server(servicer, server):
     rpc_method_handlers = {
@@ -69,6 +80,11 @@ def add_RemoteTrackingServiceServicer_to_server(servicer, server):
                     servicer.run_instruction,
                     request_deserializer=remote__tracking__pb2.InstructionRequest.FromString,
                     response_serializer=remote__tracking__pb2.InstructionResponse.SerializeToString,
+            ),
+            'run_write_instructions': grpc.stream_unary_rpc_method_handler(
+                    servicer.run_write_instructions,
+                    request_deserializer=remote__tracking__pb2.WriteInstructionsRequest.FromString,
+                    response_serializer=remote__tracking__pb2.WriteInstructionsResponse.SerializeToString,
             ),
     }
     generic_handler = grpc.method_handlers_generic_handler(
@@ -128,5 +144,22 @@ class RemoteTrackingService(object):
         return grpc.experimental.stream_stream(request_iterator, target, '/RemoteTrackingService/run_instruction',
             remote__tracking__pb2.InstructionRequest.SerializeToString,
             remote__tracking__pb2.InstructionResponse.FromString,
+            options, channel_credentials,
+            insecure, call_credentials, compression, wait_for_ready, timeout, metadata)
+
+    @staticmethod
+    def run_write_instructions(request_iterator,
+            target,
+            options=(),
+            channel_credentials=None,
+            call_credentials=None,
+            insecure=False,
+            compression=None,
+            wait_for_ready=None,
+            timeout=None,
+            metadata=None):
+        return grpc.experimental.stream_unary(request_iterator, target, '/RemoteTrackingService/run_write_instructions',
+            remote__tracking__pb2.WriteInstructionsRequest.SerializeToString,
+            remote__tracking__pb2.WriteInstructionsResponse.FromString,
             options, channel_credentials,
             insecure, call_credentials, compression, wait_for_ready, timeout, metadata)

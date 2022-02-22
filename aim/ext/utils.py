@@ -1,3 +1,6 @@
+from subprocess import run, PIPE
+
+
 def get_installed_packages():
     import pkg_resources
     packages = {i.key: i.version for i in pkg_resources.working_set}
@@ -19,10 +22,8 @@ def get_environment_variables():
 
 
 def get_git_info():
-    from subprocess import run
-
     git_info = {}
-    r = run(['git', 'rev-parse', '--is-inside-work-tree'], capture_output=True, check=False)
+    r = run(['git', 'rev-parse', '--is-inside-work-tree'], stdout=PIPE, stderr=PIPE, check=False)
     output = r.stdout.decode('utf-8').strip()
     if output == 'true':
         cmds = [
@@ -32,7 +33,7 @@ def get_git_info():
         ]
         results = []
         for cmd in cmds:
-            r = run(cmd.split(), capture_output=True, check=False)
+            r = run(cmd.split(), stdout=PIPE, stderr=PIPE, check=False)
             output = r.stdout.decode('utf-8').strip()
             results.append(output)
 

@@ -3,6 +3,7 @@ import { RouteChildrenProps } from 'react-router-dom';
 
 import { RowHeightSize } from 'config/table/tableConfigs';
 import { ResizeModeEnum } from 'config/enums/tableEnums';
+import { RequestStatusEnum } from 'config/enums/requestStatusEnum';
 
 import { IScatterAppModelState } from 'services/models/scatter/scatterAppModel';
 import {
@@ -55,8 +56,9 @@ export interface IScattersProps extends Partial<RouteChildrenProps> {
   hideSystemMetrics: boolean;
   groupingSelectOptions: IGroupingSelectOption[];
   projectsDataMetrics: IProjectParamsMetrics['metrics'];
-  requestIsPending: boolean;
   resizeMode: ResizeModeEnum;
+  selectFormOptions: ISelectOption[];
+  requestStatus: RequestStatusEnum;
   trendlineOptions: ITrendlineOptions;
   selectedRows: { [key: string]: any };
   columnsOrder: IColumnsOrder;

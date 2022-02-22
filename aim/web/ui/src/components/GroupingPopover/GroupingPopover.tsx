@@ -13,7 +13,7 @@ import {
 } from '@material-ui/icons';
 import Autocomplete from '@material-ui/lab/Autocomplete';
 
-import { ToggleButton, Icon, Badge, Text } from 'components/kit';
+import { Badge, Icon, Text, ToggleButton } from 'components/kit';
 import ErrorBoundary from 'components/ErrorBoundary/ErrorBoundary';
 
 import { IGroupingPopoverProps } from 'types/components/GroupingPopover/GroupingPopover';
@@ -33,7 +33,19 @@ function GroupingPopover({
   onGroupingModeChange,
 }: IGroupingPopoverProps): React.FunctionComponentElement<React.ReactNode> {
   const [inputValue, setInputValue] = React.useState('');
-  function onChange(e: object, values: IGroupingSelectOption[]): void {
+
+  function onChange(e: any, values: IGroupingSelectOption[]): void {
+    if (e?.code !== 'Backspace') {
+      handleSelect(values);
+      setInputValue('');
+    } else {
+      if (inputValue.length === 0) {
+        handleSelect(values);
+      }
+    }
+  }
+
+  function handleSelect(values: IGroupingSelectOption[]) {
     onSelect({
       groupName,
       list: values.map((item: IGroupingSelectOption) =>

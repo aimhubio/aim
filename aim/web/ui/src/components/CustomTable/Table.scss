@@ -1,4 +1,4 @@
-@use "src/styles/abstracts" as *;
+@use 'src/styles/abstracts' as *;
 
 $border-color: $cuddle-50;
 $box-shadow: 0 3px 9px rgba(0, 0, 0, 0.1);
@@ -314,6 +314,12 @@ $border-radius: 0.2rem;
     &::before {
       content: '';
       border-radius: toRem(6px) 0 0 toRem(6px);
+    }
+    &.groupColumnWithoutColor {
+      &::before {
+        content: '';
+        border-radius: toRem(6px);
+      }
     }
   }
   &.hidden {

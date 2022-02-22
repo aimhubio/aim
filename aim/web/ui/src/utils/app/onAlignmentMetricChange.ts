@@ -1,4 +1,5 @@
 import { AlignmentNotificationsEnum } from 'config/notification-messages/notificationMessages';
+import { RequestStatusEnum } from 'config/enums/requestStatusEnum';
 import { ANALYTICS_EVENT_KEYS } from 'config/analytics/analyticsKeysMap';
 
 import * as analytics from 'services/analytics';
@@ -41,7 +42,7 @@ export default async function onAlignmentMetricChange<M extends State>({
     updateURL({ configData, appName });
   }
   if (modelState?.rawData && configData) {
-    model.setState({ requestIsPending: true });
+    model.setState({ RequestStatusEnum: RequestStatusEnum.Pending });
     const runs: Array<{ run_id: string; traces: any }> =
       modelState.rawData?.map((item) => {
         const traces = item.traces.map(({ context, name, slice }: any) => ({
@@ -87,7 +88,7 @@ export default async function onAlignmentMetricChange<M extends State>({
           notification: {
             id: Date.now(),
             severity: 'error',
-            message: AlignmentNotificationsEnum.NOT_ALL_ALIGNED,
+            messages: [AlignmentNotificationsEnum.NOT_ALL_ALIGNED],
           },
           model,
         });
@@ -108,7 +109,7 @@ export default async function onAlignmentMetricChange<M extends State>({
             type: AlignmentOptionsEnum.STEP,
           },
         };
-        model.setState({ requestIsPending: false });
+        model.setState({ requestStatus: RequestStatusEnum.BadRequest });
         updateModelData(configData, true);
         console.log('Unhandled error: ', ex);
       }

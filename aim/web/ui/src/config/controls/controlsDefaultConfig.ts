@@ -59,6 +59,7 @@ export const CONTROLS_DEFAULT_CONFIG = {
       display: true,
       selectedParams: [],
     },
+    sortFields: [],
   },
   images: {
     alignmentType: MediaItemAlignmentEnum.Height,
@@ -81,5 +82,6 @@ export const CONTROLS_DEFAULT_CONFIG = {
       display: true,
       selectedParams: [],
     },
+    sortFields: [],
   },
 };

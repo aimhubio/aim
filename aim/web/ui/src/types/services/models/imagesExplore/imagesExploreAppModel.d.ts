@@ -1,13 +1,14 @@
 import { ResizeModeEnum } from 'config/enums/tableEnums';
 import { RowHeightSize } from 'config/table/tableConfigs';
+import { RequestStatusEnum } from 'config/enums/requestStatusEnum';
 
 import { ITableRef } from 'types/components/Table/Table';
 import { INotification } from 'types/components/NotificationContainer/NotificationContainer';
+import { IPanelTooltip } from 'types/services/models/metrics/metricsAppModel';
 import {
   IColumnsOrder,
   ISelectConfig,
 } from 'types/services/models/explorer/createAppModel';
-import { IPanelTooltip } from 'types/services/models/metrics/metricsAppModel';
 
 import { SortFields } from 'utils/getSortedFields';
 
@@ -28,7 +29,6 @@ export interface IImagesExploreAppConfig {
     indexRange?: number[];
     recordDensity?: string;
     indexDensity?: string;
-    calcRanges: boolean;
     tooltip: IPanelTooltip;
     focusedState: {
       key: string | null;
@@ -62,7 +62,7 @@ export interface IImagesExploreAppModelState {
   refs: {
     tableRef: { current: ITableRef | null };
   };
-  requestIsPending: boolean | null;
+  requestStatus: RequestStatusEnum;
   queryIsEmpty: boolean;
   rawData: any[];
   config: IImagesExploreAppConfig;
@@ -76,6 +76,7 @@ export interface IImagesExploreAppModelState {
   groupingSelectOptions: IGroupingSelectOption[];
   searchButtonDisabled: boolean;
   applyButtonDisabled: boolean;
+  selectFormOptions: ISelectOption[];
   selectedRows: { [key: string]: any };
   // liveUpdateConfig: {
   //   delay: number;
@@ -124,9 +125,7 @@ export interface IImageRunData {
   };
   ranges: {
     index_range: number[];
-    index_slice: number[];
     record_range: number[];
-    record_slice: number[];
   };
   traces: any[];
 }

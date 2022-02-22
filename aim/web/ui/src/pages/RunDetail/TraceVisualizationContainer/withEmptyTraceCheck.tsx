@@ -1,6 +1,8 @@
 import React from 'react';
 
-import EmptyComponent from 'components/EmptyComponent/EmptyComponent';
+import IllustrationBlock from 'components/IllustrationBlock/IllustrationBlock';
+
+import { IllustrationsEnum } from 'config/illustrationConfig/illustrationConfig';
 
 import { ITraceVisualizationContainerProps } from '../types';
 
@@ -21,10 +23,11 @@ function withEmptyTraceCheck(
     const emptyText = `No tracked ${props.traceType}`;
     if (!traces || !traces.length) {
       return (
-        <EmptyComponent
-          size='big'
+        <IllustrationBlock
+          size='xLarge'
           className='TraceEmptyVisualizer'
-          content={emptyText}
+          type={IllustrationsEnum.EmptyData}
+          title={emptyText}
         />
       );
     }
