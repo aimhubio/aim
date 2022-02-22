@@ -121,6 +121,7 @@ def display_notebook(host, port, display, proxy_url=None):
     import IPython.display
     url = "{}:{}{}".format(host, port, _NOTEBOOK_PATH_POSTFIX)
 
+    # @TODO add warning if proxy_url is not defined
     if proxy_url:
         # jupyter-server-proxy supports absolute paths by using it with /proxy/absolute/<port> path
         url = "{}{}{}{}/".format(proxy_url, '/proxy/absolute/', port, _SAGE_MAKER_NOTEBOOK_PATH_POSTFIX)
