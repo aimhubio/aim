@@ -34,5 +34,3 @@ jobs:
           AIM_VERSION: ${{ inputs.pkg_version }}
           UPDATE_LATEST_TAG: 0
         run: . create-docker-image.sh
-
-
