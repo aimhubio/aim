@@ -5,10 +5,10 @@
 #### Overview
 
 Runs explorer helps you to
-- Search runs with query
-- Follow runs in a real time
-- Delete and archive runs by batch
-- Export Runs report
+- [Search runs with query](#search-runs)
+- [Follow runs in a real time](#follow-runs-in-a-real-time)
+- [Delete and archive runs by batch](#delete-and-archive-runs-by-batch)
+- [Export Runs report](#export-runs-report)
 
 <img style="border: 1px solid #1d2253" alt="Runs Explorer" src="https://user-images.githubusercontent.com/21033329/155331282-e24cfd1c-e666-4e76-8891-587d8f314479.png">
 
@@ -28,7 +28,7 @@ To explore runs in a real time mode you need to enable `Live Update` switcher fr
 
 <img style="border: 1px solid #1d2253" alt="Runs Explorer Batch archive" src="https://user-images.githubusercontent.com/21033329/155358532-fafea9c7-8c32-4b9c-80c1-86e894905b2f.gif">
 
-##### Export report
+##### Export Runs report
 
 By clicking on `Export` button in Runs Table, it's possible to generate a Runs report as CSV.
 
