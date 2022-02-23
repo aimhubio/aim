@@ -62,10 +62,11 @@ jobs:
         run: docker login -u $DOCKER_HUB_USERNAME -p $DOCKER_HUB_PASSWORD
 
       - name: Build & Push aim image
+        working-directory: ./docker
         env:
           AIM_VERSION: ${{ steps.capture-version.outputs.AIM_VERSION }}
           UPDATE_LATEST_TAG: 1
-        run: cd docker/ && . create-docker-image.sh
+        run: . create-docker-image.sh
 
   macos-dist:
     if: ${{ github.actor == 'gorarakelyan' || github.actor == 'alberttorosyan' || github.actor == 'roubkar' }}
