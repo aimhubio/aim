@@ -3,9 +3,13 @@
 Aim supports variety of data sources. Basic logging of `Run` params covers
 Python builtin types (such as `int`, `float`, `bool`, `bytes` and `str`) as well as
 composition of those into dictionaries, lists, tuples at any depth.
+
 In addition to the builtin types, Aim provides native support for 
 [OmegaConf](https://github.com/omry/omegaconf/blob/master/README.md) configs, thus
 simplifying integration for projects running with [Hydra](https://hydra.cc/docs/intro/).
+
+Starting from `v3.6.0` Aim provides integration with [activeloop/hub](https://docs.activeloop.ai/)
+datasets. Hub is the open-source dataset format for AI.
 
 Tracking of data includes metrics, images, audio, text and chart figures. Here's
 the complete list of Aim objects provided by the package:
@@ -247,4 +251,25 @@ plt.close(fig)
 
 aim_figure = Figure(fig)
 run.track(aim_figure, step=0, name="matplotlib_figures")
+```
+
+
+### Logging activeloop/hub dataset info with Aim
+
+Aim provides wrapper object for `hub.dataset`. It allows to store the dataset info as a `Run`
+parameter and retrieve it later just as any other `Run` param. Here is an example of using Aim
+to log dataset info:
+
+```python
+import hub
+
+from aim.sdk.objects.plugins.hub_dataset import HubDataset
+from aim.sdk import Run
+
+# create dataset object
+ds = hub.dataset('hub://activeloop/cifar100-test')
+
+# log dataset metadata
+run = Run(system_tracking_interval=None)
+run['hub_ds'] = HubDataset(ds)
 ```
