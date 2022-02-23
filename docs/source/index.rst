@@ -24,7 +24,8 @@
    :caption: Aim UI
 
    ui/overview.md
-   ui/pages.md 
+   ui/pages/run_management.md 
+   ui/pages/explorers.md 
    ui/guides.md
 
 
