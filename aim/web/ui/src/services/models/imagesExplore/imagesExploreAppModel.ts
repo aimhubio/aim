@@ -79,6 +79,7 @@ import contextToString from 'utils/contextToString';
 import alphabeticalSortComparator from 'utils/alphabeticalSortComparator';
 import onNotificationDelete from 'utils/app/onNotificationDelete';
 import onNotificationAdd from 'utils/app/onNotificationAdd';
+import exceptionHandler from 'utils/app/exceptionHandler';
 
 import createModel from '../model';
 
@@ -173,6 +174,14 @@ function initialize(appId: string): void {
   if (!appId) {
     setDefaultAppConfigData();
   }
+  projectsService
+    .getProjectParams(['images'])
+    .call()
+    .then((data: IProjectParamsMetrics) => {
+      model.setState({
+        selectFormOptions: getSelectFormOptions(data),
+      });
+    });
 }
 
 function setDefaultAppConfigData() {
@@ -236,51 +245,22 @@ function getAppConfigData(appId: string) {
   };
 }
 
-function resetModelOnError(detail?: any) {
+function resetModelState() {
   model.setState({
+    ...model.getState(),
     data: [],
     params: [],
     imagesData: {},
     tableData: [],
     tableColumns: [],
-    requestStatus: RequestStatusEnum.BadRequest,
+    rawData: [],
   });
-
-  setTimeout(() => {
-    const tableRef: any = model.getState()?.refs?.tableRef;
-    tableRef?.current?.updateData({
-      newData: [],
-      newColumns: [],
-    });
-  }, 0);
-}
-
-function exceptionHandler(detail: any) {
-  let message = '';
-
-  if (detail.name === 'SyntaxError') {
-    message = `Query syntax error at line (${detail.line}, ${detail.offset})`;
-  } else {
-    message = detail.message || 'Something went wrong';
-  }
-  onNotificationAdd({
-    notification: {
-      id: Date.now(),
-      severity: 'error',
-      messages: [message],
-    },
-    model,
-  });
-
-  // reset model
-  resetModelOnError(detail);
 }
 
 function abortRequest(): void {
   if (imagesRequestRef) {
     imagesRequestRef.abort();
   }
-
   model.setState({
     requestStatus: RequestStatusEnum.Ok,
   });
@@ -301,6 +281,7 @@ function getImagesData(
   if (imagesRequestRef) {
     imagesRequestRef.abort();
   }
+
   const configData: IImagesExploreAppConfig | undefined =
     model.getState()?.config;
   if (shouldUrlUpdate) {
@@ -333,14 +314,6 @@ function getImagesData(
     };
   }
   imagesRequestRef = imagesExploreService.getImagesExploreData(imageDataBody);
-  projectsService
-    .getProjectParams(['metric'])
-    .call()
-    .then((data: IProjectParamsMetrics) => {
-      model.setState({
-        selectFormOptions: getSelectFormOptions(data),
-      });
-    });
   return {
     call: async () => {
       if (query !== '()') {
@@ -354,7 +327,10 @@ function getImagesData(
         });
         blobsURIModel.init();
         try {
-          const stream = await imagesRequestRef.call(exceptionHandler);
+          const stream = await imagesRequestRef.call((detail) => {
+            exceptionHandler({ detail, model });
+            resetModelState();
+          });
           const runData = await getImagesMetricsData(stream);
 
           if (configData) {
@@ -372,7 +348,6 @@ function getImagesData(
           selectedRows: shouldResetSelectedRows
             ? {}
             : model.getState()?.selectedRows,
-          requestStatus: RequestStatusEnum.Ok,
           queryIsEmpty: true,
           imagesData: {},
           tableData: [],
@@ -389,6 +364,7 @@ function getImagesData(
           },
           config: {
             ...configData,
+            grouping: { ...getConfig().grouping },
             table: {
               ...configData?.table,
               resizeMode: ResizeModeEnum.Resizable,
@@ -628,13 +604,13 @@ function setModelData(rawData: any[], configData: IImagesExploreAppConfig) {
     !config.images.recordDensity ||
     +config.images.recordDensity < ranges?.record_range_total[0] ||
     +config.images.recordDensity > recordRangeTotalCount
-      ? `${recordRangeTotalCount}`
+      ? `${recordRangeTotalCount === 0 ? 1 : recordRangeTotalCount}`
       : config.images.recordDensity;
   const indexDensity =
     !config.images.indexDensity ||
     +config.images.indexDensity < ranges?.index_range_total[0] ||
     +config.images.indexDensity > indexRangeTotalCount
-      ? `${indexRangeTotalCount}`
+      ? `${indexRangeTotalCount === 0 ? 1 : indexRangeTotalCount}`
       : config.images.indexDensity;
 
   config.images = {

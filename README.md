@@ -32,13 +32,23 @@
 </div>
 
 <div align="center">
-  <sub>Integrates seamlessly with your favorite tools</sub><br/><br/>
-  <img src="https://user-images.githubusercontent.com/13848158/96861310-f7239c00-1474-11eb-82a4-4fa6eb2c6bb1.jpg" width="60" />
-  <img src="https://user-images.githubusercontent.com/13848158/96859323-6ba90b80-1472-11eb-9a6e-c60a90f11396.jpg" width="60" />
-  <img src="https://user-images.githubusercontent.com/13848158/96861315-f854c900-1474-11eb-8e9d-c7a07cda8445.jpg" width="60" />
-  <img src="https://user-images.githubusercontent.com/13848158/97086626-8b3c6180-1635-11eb-9e90-f215b898e298.png" width="60" />
-  <img src="https://user-images.githubusercontent.com/13848158/112145238-8cc58200-8bf3-11eb-8d22-bbdb8809f2aa.png" width="60" />
-  <img src="https://user-images.githubusercontent.com/13848158/118172152-17c93880-b43d-11eb-9169-785e4b52d89c.png" width="60" />
+  <sub>Integrates seamlessly with your favorite tools</sub><br/>
+  <img src="https://user-images.githubusercontent.com/13848158/155354389-d0301620-77ea-4629-a743-f7aa249e14b5.png" width="60" />
+  <img src="https://user-images.githubusercontent.com/13848158/155354496-b39d7b1c-63ef-40f0-9e59-c08d2c5e337c.png" width="60" />
+  <img src="https://user-images.githubusercontent.com/13848158/155354380-3755c741-6960-42ca-b93e-84a8791f088c.png" width="60" />
+  <img src="https://user-images.githubusercontent.com/13848158/155354342-7df0ef5e-63d2-4df7-b9f1-d2fc0e95f53f.png" width="60" />
+  <img src="https://user-images.githubusercontent.com/13848158/155354392-afbff3de-c845-4d86-855d-53df569f91d1.png" width="60" />
+  <img src="https://user-images.githubusercontent.com/13848158/155354355-89210506-e7e5-4d37-b2d6-ad3fda62ef13.png" width="60" />
+  <img src="https://user-images.githubusercontent.com/13848158/155354397-8af8e1d3-4067-405e-9d42-1f131663ed22.png" width="60" />
+  <br/>
+  <img src="https://user-images.githubusercontent.com/13848158/155354513-f7486146-3891-4f3f-934f-e58bbf9ce695.png" width="60" />
+  <img src="https://user-images.githubusercontent.com/13848158/155354500-c0471ce6-b2ce-4172-b9e4-07a197256303.png" width="60" />
+  <img src="https://user-images.githubusercontent.com/13848158/155354361-9f911785-008d-4b75-877e-651e026cf47e.png" width="60" />
+  <img src="https://user-images.githubusercontent.com/13848158/155354373-1879ae61-b5d1-41f0-a4f1-04b639b6f05e.png" width="60" />
+  <img src="https://user-images.githubusercontent.com/13848158/155354483-75d9853f-7154-4d95-8190-9ad7a73d6654.png" width="60" />
+  <img src="https://user-images.githubusercontent.com/13848158/155354329-cf7c3352-a72a-478d-82a7-04e3833b03b7.png" width="60" />
+  <img src="https://user-images.githubusercontent.com/13848158/155354349-dcdf3bc3-d7a9-4f34-8258-4824a57f59c7.png" width="60" />
+  <img src="https://user-images.githubusercontent.com/13848158/155354471-518f1814-7a41-4b23-9caf-e516507343f1.png" width="60" />
 </div>
 
 <div align="center">
@@ -48,7 +58,7 @@
   </kbd>
 </div>
 
-## About Aim
+# About Aim
 
 | Track and version ML runs | Visualize runs via beautiful UI | Query runs metadata via SDK |
 |:--------------------:|:------------------------:|:-------------------:|
@@ -63,7 +73,7 @@ That's especially useful for automations and additional analysis on a Jupyter No
 
 Aim's mission is to democratize AI dev tools.
 
-## Why use Aim?
+# Why use Aim?
 
 ### Compare 100s of runs in a few clicks - build models faster
 
@@ -83,7 +93,7 @@ Aim's mission is to democratize AI dev tools.
 - Use SDK to query/access all your runs and tracked metadata.
 - You own your data - Aim is open source and self hosted.
 
-## Demos
+# Demos
 
 | Machine translation | lightweight-GAN |
 |:---:|:---:|
@@ -95,7 +105,7 @@ Aim's mission is to democratize AI dev tools.
 | <a href="http://play.aimstack.io:10003/runs/7f083da898624a2c98e0f363/distributions"> <img width="800px" src="https://user-images.githubusercontent.com/13848158/154340778-dbe19620-2f27-4298-b0cb-caf3904760f1.jpg"> </a> | <a href="http://play.aimstack.io:10004/runs/d9e89aa7875e44b2ba85612a/audios"> <img width="800px" src="https://user-images.githubusercontent.com/13848158/154340785-a7e4d9fd-d048-4207-8cd1-c4edff9cca6a.jpg"> </a> |
 | Training logs of Microsoft's "FastSpeech 2: Fast and High-Quality End-to-End Text to Speech". | Simple MNIST training logs. |
 
-## Quick Start
+# Quick Start
 
 Follow the steps below to get started with Aim.
 
@@ -158,7 +168,7 @@ for run_metrics_collection in my_repo.query_metrics(query).iter_runs():
         steps, metric_values = metric.values.sparse_numpy()
 ```
 
-## Integrations
+# Integrations
 
 <details>
 <summary>
@@ -241,7 +251,7 @@ bst = xgb.train(param, xg_train, num_round, watchlist, callbacks=[aim_callback])
 _See documentation [here](https://aimstack.readthedocs.io/en/latest/guides/integrations/basic_aim_xgboost.html)._
 </details>
 
-## Comparisons to familiar tools
+# Comparisons to familiar tools
 
 ### Tensorboard
 **Training run comparison**
@@ -281,20 +291,20 @@ Hosted vs self-hosted
 - Weights and Biases is a hosted closed-source MLOps platform.
 - Aim is self-hosted, free and open-source experiment tracking tool.
 
-## Roadmap
+# Roadmap
 
-### Detailed Sprints
+## Detailed Sprints
 
 :sparkle: The [Aim product roadmap](https://github.com/orgs/aimhubio/projects/3)
 
 - The `Backlog` contains the issues we are going to choose from and prioritize weekly
 - The issues are mainly prioritized by the highly-requested features
 
-### High-level roadmap
+## High-level roadmap
 
 The high-level features we are going to work on the next few months
 
-**Done**
+### Done
   - [x] Live updates (Shipped: _Oct 18 2021_)
   - [x] Images tracking and visualization (Start: _Oct 18 2021_, Shipped: _Nov 19 2021_)
   - [x] Distributions tracking and visualization (Start: _Nov 10 2021_, Shipped: _Dec 3 2021_)
@@ -307,27 +317,53 @@ The high-level features we are going to work on the next few months
   - [x] Tensorboard adaptor - visualize TensorBoard logs with Aim (Start: _Dec 17 2021_, Shipped: _Feb 3 2022_)
   - [x] Track git info, env vars, CLI arguments, dependencies (Start: _Jan 17 2022_, Shipped: _Feb 3 2022_)
 
-**In progress**
+### In Progress
   - [ ] Scikit-learn integration (Start: _Nov 18 2021_)
   - [ ] MLFlow adaptor (visualize MLflow logs with Aim) (Start: _Feb 14 2022_)
 
-**TODO**
+### To Do
 
-*Track and Explore*
-  - [ ] Models tracking/versioning, model registry
-  - [ ] Runs side-by-side comparison
+**Aim UI**
 
-*Data Backup*
-  - [ ] Cloud storage support: aws s3, gsc, azure storage
+- Runs management
+    - Runs explorer – query and visualize runs data(images, audio, distributions, ...) in a central dashboard
+    - Single run page
+        - Run summary and overview info(system params, CLI args, git info, ...)
+        - Run execution details(display stdout/stderr logs)
+        - Run notes
+- Explorers
+    - Audio Explorer
+    - Text Explorer
+    - Figures Explorer
+    - Distributions Explorer
+- Dashboards – customizable layouts with embedded explorers
 
-*Reproducibility:*
-  - [ ] Collect stdout, stderr logs
+**SDK and Storage**
 
-*Integrations*
-  - [ ] Kubeflow integration
-  - [ ] Streamlit integration
-  - [ ] Raytune integration
-  - [ ] Google MLMD
+- Cloud-native support
+    - Cloud storage support – store runs blob(e.g. images) data on the cloud
+    - Artifact storage – store files, model checkpoints, and beyond
+- Scalability
+    - Smooth UI and SDK experience with over 10.000 runs
+    - Long sequences(up to 5M of steps) support
+- Runs management
+    - SDK interfaces
+        - Reporting – query and compare runs, explore data with familiar tools such as matlpotlib and pandas
+        - Manipulations – copy, move, delete runs, params and sequences
+    - CLI interfaces
+        - Reporting - runs summary and run details in a CLI compatible format
+        - Manipulations – copy, move, delete runs, params and sequences
+
+**Integrations**
+
+- ML Frameworks:
+    - Shortlist: PyTorch-Ignite, MONAI, scikit-learn, SpaCy, AllenNLP, LightGBM, Raytune, Fairseq, fast.ai, KerasTuner
+- Datasets versioning tools
+    - Shortlist: Activeloop Hub, DVC, HuggingFace Datasets
+- Resource management tools
+    - Shortlist: Kubeflow, Slurm
+- Workflow orchestration tools
+- Others: Hydra, Google MLMD, Streamlit, ...
 
 ## Community
 
