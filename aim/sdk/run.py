@@ -91,14 +91,6 @@ class RunAutoClean(AutoClean['Run']):
             logger.debug('Stopping resource tracker')
             self._system_resource_tracker.stop()
 
-    def finalize_remote_tracking_queue(self):
-        """
-        Finalize Remote tracking queue.
-        The remote tracker's queues should be cleaned up before calling `Client.release_resource` methods.
-        """
-        if self.repo._client:
-            self.repo._client.get_queue(self.hash).wait_for_finish()
-
     def _close(self) -> None:
         """
         Close the `Run` instance resources and trigger indexing.
@@ -108,7 +100,6 @@ class RunAutoClean(AutoClean['Run']):
             return
         self.finalize_system_tracker()
         self.finalize_run()
-        self.finalize_remote_tracking_queue()
 
 
 # TODO: [AT] generate automatically based on ModelMappedRun

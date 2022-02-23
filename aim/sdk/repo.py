@@ -768,9 +768,9 @@ class Repo:
         return self._client is not None
 
     @contextmanager
-    def atomic_track(self, run_hash):
+    def atomic_track(self, queue_id):
         if self.is_remote_repo:
             self._client.start_instructions_batch()
         yield
         if self.is_remote_repo:
-            self._client.flush_instructions_batch(run_hash)
+            self._client.flush_instructions_batch(queue_id)

@@ -9,8 +9,8 @@ import aim.ext.transport.remote_tracking_pb2 as rpc_messages
 import aim.ext.transport.remote_tracking_pb2_grpc as remote_tracking_pb2_grpc
 
 from aim.ext.transport.message_utils import pack_stream, unpack_stream, raise_exception
-from aim.ext.transport.config import AIM_CLIENT_SSL_CERTIFICATES_FILE
-from aim.ext.task_queue.queue import TaskQueueWithRetry
+from aim.ext.transport.config import AIM_CLIENT_SSL_CERTIFICATES_FILE, AIM_CLIENT_QUEUE_MAX_MEMORY
+from aim.ext.transport.rpc_queue import RpcQueueWithRetry
 from aim.storage.treeutils import encode_tree, decode_tree
 
 
@@ -21,9 +21,10 @@ DEFAULT_RETRY_COUNT = 1
 class Client:
     _thread_local = threading.local()
 
-    _queues = defaultdict(lambda: TaskQueueWithRetry(
-        'remote_tracker', max_queue_memory=16 * 1024 * 1024 * 1024, register_at_exit=False,
-        retry_count=DEFAULT_RETRY_COUNT, retry_interval=DEFAULT_RETRY_INTERVAL))  # queue per run's hash
+    # per run queues. based on run's hash
+    _queues = defaultdict(lambda: RpcQueueWithRetry(
+        'remote_tracker', max_queue_memory=os.getenv(AIM_CLIENT_QUEUE_MAX_MEMORY, 1024 * 1024 * 1024),
+        retry_count=DEFAULT_RETRY_COUNT, retry_interval=DEFAULT_RETRY_INTERVAL))
 
     def __init__(self, remote_path: str):
         self._id = str(uuid.uuid4())
@@ -60,7 +61,7 @@ class Client:
         if response.status == rpc_messages.ReleaseResourceResponse.Status.ERROR:
             raise_exception(response.exception)
 
-    def run_instruction(self, run_hash, resource, method, args=(), is_write_only=False):
+    def run_instruction(self, queue_id, resource, method, args=(), is_write_only=False):
         args = deepcopy(args)
 
         # self._thread_local can be empty in the 'clean up' phase.
@@ -70,13 +71,13 @@ class Client:
             return
 
         if is_write_only:
-            self.get_queue(run_hash).register_task(
+            self.get_queue(queue_id).register_task(
                 self._run_write_instructions, list(encode_tree([(resource, method, args)])))
             return
 
-        return self._run_read_instructions(run_hash, resource, method, args)
+        return self._run_read_instructions(queue_id, resource, method, args)
 
-    def _run_read_instructions(self, run_hash, resource, method, args):
+    def _run_read_instructions(self, queue_id, resource, method, args):
         def message_stream_generator():
             header = rpc_messages.InstructionRequest(
                 header=rpc_messages.RequestHeader(
@@ -92,7 +93,7 @@ class Client:
             for chunk in stream:
                 yield rpc_messages.InstructionRequest(message=chunk)
 
-        self.get_queue(run_hash).wait_for_finish()
+        self.get_queue(queue_id).wait_for_finish()
         resp = self.remote.run_instruction(message_stream_generator())
         status_msg = next(resp)
 
@@ -119,11 +120,11 @@ class Client:
     def start_instructions_batch(self):
         self._thread_local.atomic_instructions = []
 
-    def flush_instructions_batch(self, run_hash):
+    def flush_instructions_batch(self, queue_id):
         if self._thread_local.atomic_instructions is None:
             return
 
-        self.get_queue(run_hash).register_task(
+        self.get_queue(queue_id).register_task(
             self._run_write_instructions, list(encode_tree(self._thread_local.atomic_instructions)))
         self._thread_local.atomic_instructions = None
 
@@ -135,5 +136,5 @@ class Client:
     def uri(self):
         return self._id
 
-    def get_queue(self, run_hash):
-        return self._queues[run_hash]
+    def get_queue(self, queue_id):
+        return self._queues[queue_id]
