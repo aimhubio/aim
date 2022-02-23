@@ -8,7 +8,7 @@ Runs explorer helps you to
 - Search runs with query
 - Follow runs in a real time
 - Delete and archive runs by batch
-- Export report
+- Export Runs report
 
 <img style="border: 1px solid #1d2253" alt="Runs Explorer" src="https://user-images.githubusercontent.com/21033329/155331282-e24cfd1c-e666-4e76-8891-587d8f314479.png">
 
@@ -30,7 +30,7 @@ To explore runs in a real time mode you need to enable `Live Update` switcher fr
 
 ##### Export report
 
-By clicking `Export` button on Runs Table, it's possible to generate a Runs report as CSV.
+By clicking on `Export` button in Runs Table, it's possible to generate a Runs report as CSV.
 
 <img style="border: 1px solid #1d2253" alt="Runs Export" src="https://user-images.githubusercontent.com/21033329/155360435-2151cbb8-4953-4302-91cb-d8ae3daef607.gif">
 
