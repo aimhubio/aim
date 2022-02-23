@@ -31,7 +31,7 @@ jobs:
       - name: Build & Push aim image
         working-directory: ./docker
         env:
-          AIM_VERSION: ${{ inputs.pkg_version }}
+          AIM_VERSION: ${{ github.event.inputs.pkg_version }}
           UPDATE_LATEST_TAG: 0
         run: . create-docker-image.sh
 
