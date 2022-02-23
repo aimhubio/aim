@@ -9,23 +9,29 @@ on:
         type: string
 
 jobs:
-  linux-dist:
+  docker-image:
     runs-on: ubuntu-latest
-    name: Docker image creation
+    name: Build & push new Docker image
+
     steps:
       - name: Checkout sources
         uses: actions/checkout@v2
 
-      - name: Capture version
-        id: capture-version
+      - name: Install Docker
         run: |
-          AIM_VERSION=$(< ./aim/VERSION)
-          echo '::set-output name=AIM_VERSION::$AIM_VERSION'
+          apt update && apt install -y docker.io
+          sudo systemctl enable --now docker
 
-      - name: Run docker image workflow
-        uses: aimhubio/aim/.github/workflows/docker-image.yml@main
-        with:
-          pkg_version: ${{ steps.capture-version.outputs.AIM_VERSION }}
-          is_latest: 0
+      - name: Docker login
+        env:
+          DOCKER_HUB_USERNAME: ${{ secrets.DOCKER_HUB_USERNAME }}
+          DOCKER_HUB_PASSWORD: ${{ secrets.DOCKER_HUB_PASSWORD }}
+        run: docker login -u $DOCKER_HUB_USERNAME -p $DOCKER_HUB_PASSWORD
+
+      - name: Build & Push aim image
+        env:
+          AIM_VERSION: ${{ inputs.pkg_version }}
+          UPDATE_LATEST_TAG: 0
+        run: cd docker/ && . create-docker-image.sh
 
 
