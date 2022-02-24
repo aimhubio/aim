@@ -4,6 +4,7 @@
 
 - Fix rendering issue on `Select` form search suggestions list (arsengit)
 - Fix PL.AimLogger save_dir AttributeError (GeeeekExplorer)
+- Remove example_type substring from param name (VkoHov)
 
 ## 3.6.0 Feb 22 2022
 
