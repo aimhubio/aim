@@ -1,24 +1,19 @@
-## Integrate Aim into an existing project
+## Integrations
 
-Aim easily integrates with your favourite ML frameworks.
+Easily integrate Aim with your favorite framework / tool
 
 ### Python script
 
 ```python
-from aim import Run
-
-run = Run()
+import aim
 
 # Save inputs, hparams or any other `key: value` pairs
-run['hparams'] = {
-    'learning_rate': 0.001,
-    'batch_size': 32,
-}
+aim.set_params(hyperparam_dict, name='hparams') # Passing name argument is optional
 
 # ...
 for step in range(10):
     # Log metrics to visualize performance
-    run.track(step, name='metric_name')
+    aim.track(metric_value, name='metric_name', epoch=epoch_number)
 # ...
 ```
 
@@ -75,3 +70,21 @@ aim_callback = AimCallback(repo='/path/to/logs/dir', experiment='experiment_name
 bst = xgb.train(param, xg_train, num_round, watchlist, callbacks=[aim_callback])
 # ...
 ```
+
+### Jupyter Notebook
+
+Run the following commands in the notebook to run the Aim UI:
+
+1. Load Aim extension for notebooks:
+
+```jupyter
+%load_ext aim
+```
+
+2. Run `%aim up` to open Aim UI in the notebook:
+
+```jupyter
+%aim up
+```
+
+See [integration guide with Jupyter Notebook](../guides/integrations/basic_aim_jupyter_notebook.html) for more details.

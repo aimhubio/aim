@@ -12,64 +12,44 @@
    :name: start
    :caption: Quick Start
 
-   quick_start/setup.md
+   quick_start/getting_started.md
+   quick_start/SDK_basics.md
+   quick_start/QL_basics.md
+   quick_start/UI_basics.md
    quick_start/integrations.md
-   quick_start/convert_data.md
-   quick_start/supported_types.md
-   quick_start/next_steps.md
 
 .. toctree::
    :maxdepth: 2
-   :name: ui
-   :caption: Aim UI
-
-   ui/overview.md
-
-.. toctree::
-   :maxdepth: 2
-   :name: guides
-   :caption: Using Aim
-
-   using/manage_runs.md
-   using/configure_runs.md
-   using/query_runs.md
-   using/search.md
-   using/remote_tracking.md
-   using/k8s_deployment.md
-   using/jupyter_notebook_ui.md
-   using/sagemaker_notebook_ui.md
-
-.. toctree::
-   :maxdepth: 2
-   :name: concepts
-   :caption: Understanding Aim
-
-   understanding/overview.md
-   understanding/data_storage.md
-   understanding/storage_indexing.md
-   understanding/concepts.md
-
-.. toctree::
-   :maxdepth: 1
-   :name: examples
-   :caption: Examples
-
-   examples/images_explorer_gan.md
-
-.. toctree::
-   :maxdepth: 2
-   :name: refs
+   :name: api
    :caption: References
 
-   refs/cli
    refs/sdk
    refs/ql
+   refs/cli
    refs/storage
 
+.. toctree::
+   :maxdepth: 2
+   :name: api
+   :caption: Guides
+
+   guides/images_explorer_gan.md
+   guides/integrations/basic_aim_jupyter_notebook.md
+   guides/integrations/sagemaker_notebook_ui.md
+   guides/integrations/basic_aim_huggingface.md
+   guides/integrations/basic_aim_keras.md
+   guides/integrations/basic_aim_pytorch_lightning.md
+   guides/integrations/basic_aim_xgboost.md
+   guides/integrations/basic_k8s_deployment.md
+   guides/integrations/basic_aim_tensorflow_event_conversion.md
+   guides/training_reproducibility.md
+   guides/aim_remote_tracking.md
+   guides/aim_repo_reindexing.md
+   guides/basic_aim_matplotlib.md
 
 .. toctree::
    :maxdepth: 1
-   :name: community
+   :name: Community
    :caption: Community
 
    community/telemetry.md
