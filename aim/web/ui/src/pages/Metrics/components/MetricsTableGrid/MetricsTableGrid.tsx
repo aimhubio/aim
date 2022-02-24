@@ -397,7 +397,7 @@ function metricsTableRowRenderer(
                 {Object.keys(rowData[col]).map((item) => {
                   const value: string | { [key: string]: unknown } =
                     rowData[col][item];
-                  return typeof value === 'object' ? (
+                  return _.isObject(value) ? (
                     <ControlPopover
                       key={contextToString(value)}
                       title={item}
@@ -421,8 +421,8 @@ function metricsTableRowRenderer(
                       component={<JsonViewPopover json={value} />}
                     />
                   ) : (
-                    <Tooltip key={item} title={value || ''}>
-                      <span>{formatValue(value)}</span>
+                    <Tooltip key={item} title={formatValue(value) || ''}>
+                      <div>{formatValue(value)}</div>
                     </Tooltip>
                   );
                 })}
