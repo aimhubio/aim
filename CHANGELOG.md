@@ -1,5 +1,11 @@
 # Changelog
 
+## Unreleased
+
+### Enhancements:
+
+- Custom max message size for Aim Remote tracking (alberttorosyan)
+
 ## 3.6.0 Feb 22 2022
 
 ### Enhancements:
