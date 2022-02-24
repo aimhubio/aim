@@ -9,13 +9,11 @@ import usePanelResize from 'hooks/resize/usePanelResize';
 import useModel from 'hooks/model/useModel';
 
 import metricAppModel from 'services/models/metrics/metricsAppModel';
-import projectsModel from 'services/models/projects/projectsModel';
 import * as analytics from 'services/analytics';
 
 import { ITableRef } from 'types/components/Table/Table';
 import { IChartPanelRef } from 'types/components/ChartPanel/ChartPanel';
 import { IMetricAppModelState } from 'types/services/models/metrics/metricsAppModel';
-import { IProjectsModelState } from 'types/services/models/projects/projectsModel';
 import { IApiRequest } from 'types/services/services';
 
 import setComponentRefs from 'utils/app/setComponentRefs';
@@ -35,7 +33,6 @@ function MetricsContainer(): React.FunctionComponentElement<React.ReactNode> {
   const history = useHistory();
   const metricsData = useModel<Partial<IMetricAppModelState>>(metricAppModel);
 
-  const projectsData = useModel<Partial<IProjectsModelState>>(projectsModel);
   const panelResizing = usePanelResize(
     wrapperElemRef,
     chartElemRef,
@@ -144,7 +141,6 @@ function MetricsContainer(): React.FunctionComponentElement<React.ReactNode> {
         hiddenColumns={metricsData?.config?.table?.hiddenColumns!}
         selectedRows={metricsData?.selectedRows!}
         groupingSelectOptions={metricsData?.groupingSelectOptions!}
-        projectsDataMetrics={projectsData?.metrics!}
         resizeMode={metricsData?.config?.table?.resizeMode!}
         columnsWidths={metricsData?.config?.table?.columnsWidths!}
         requestStatus={metricsData?.requestStatus!}
