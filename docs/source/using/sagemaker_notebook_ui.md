@@ -1,6 +1,6 @@
 ## Run Aim UI on SageMaker Notebook instance.
 
-In this guide you will learn how to run Aim UI on your Sagemaker Jupyter instance.
+In this guide you will learn how to run Aim UI on your Sagemaker Jupyter instance
 
 Aim can be installed and used on Jupyter notebooks. With SageMaker notebook instance, there are difficulties with establishing POST requests which prevents some Aim functionalities to work.
 So we have built a script to update the proxying package on SageMaker notebook instance.
@@ -26,14 +26,9 @@ It is possible to run this script manually from the terminal of your jupyter ins
 
 Once your notebook instance is successfully restarted you will be able to use Aim UI on the instance.
 
-Next
+Next, install aim.
 ```shell
 $ pip isntall aim
-```
-
-Create a repository for your Aim logs. <br>
-```shell
-$ aim init
 ```
 
 Initialize a new run and save some hyperparameters.
@@ -53,16 +48,18 @@ run['hparams'] = {
 Fore more information about indexing, see [Aim Storage indexing](../understanding/storage_indexing.html).
 
 ### Using Terminal
+
+In order to run Aim UI from a terminal, execute the following command:
 ```shell
 $ aim up --base-path=/proxy/absolute/<your-port>/aim-sage
 ```
 
-After running this command you will be able to open `<sagemker_instance>/proxy/absolute/<your-port>/aim-sage/` in browser.
+After running this command you will be able to open `<sagemker_instance>/proxy/absolute/<your-port>/aim-sage/` in your browser.
 The default port is `43800`.
 
-It is possible to set `__AIM_PROXY_URL__` env variable, and `aim up` command will print the generated url for Aim UI.
+It is possible to set `__AIM_PROXY_URL__` env variable, and `aim up` command will print out the generated url for Aim UI.
 
-To find your proxy url just copy your SageMaker URL and remove `/lab` postfix.
+To find your proxy url, just copy your SageMaker URL and remove `/lab` postfix.
 
 <img style="border: 1px solid #1d2253" src="../_static/images/using/sagemaker/sagemaker-terminal.png"/>
 
@@ -74,17 +71,17 @@ To find your proxy url just copy your SageMaker URL and remove `/lab` postfix.
 %load_ext aim
 ```
 
-2. Run `%aim up` to open Aim UI in the notebook:
+2. Run `%aim up` command to open Aim UI in the notebook:
 
 ```jupyter
 %aim up --proxy-url=https://<instance>.notebook.<region>.sagemaker.aws
 ```
 
-Will load the Aim UI in an iframe.
+Will load the Aim UI in the notebook cell.
 
 <img style="border: 1px solid #1d2253" src="../_static/images/using/sagemaker/sagemaker-notebook.png" />
 
-Will print the proxy url under the loaded Aim UI, which is useful to open the url in a new browser tab.
+Will print out the proxy url under the loaded Aim UI, which is useful to open the url in a new browser tab.
 
 <img style="border: 1px solid #1d2253" src="../_static/images/using/sagemaker/sagemaker-full-view.png" />
 
