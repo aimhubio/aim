@@ -80,6 +80,7 @@ import alphabeticalSortComparator from 'utils/alphabeticalSortComparator';
 import onNotificationDelete from 'utils/app/onNotificationDelete';
 import onNotificationAdd from 'utils/app/onNotificationAdd';
 import exceptionHandler from 'utils/app/exceptionHandler';
+import { getParamsSuggestions } from 'utils/app/getParamsSuggestions';
 
 import createModel from '../model';
 
@@ -87,7 +88,10 @@ const model = createModel<Partial<IImagesExploreAppModelState>>({
   requestStatus: RequestStatusEnum.NotRequested,
   searchButtonDisabled: false,
   applyButtonDisabled: true,
-  selectFormOptions: [],
+  selectFormData: {
+    options: undefined,
+    suggestions: [],
+  },
 });
 
 let tooltipData: ITooltipData = {};
@@ -179,7 +183,10 @@ function initialize(appId: string): void {
     .call()
     .then((data: IProjectParamsMetrics) => {
       model.setState({
-        selectFormOptions: getSelectFormOptions(data),
+        selectFormData: {
+          options: getSelectFormOptions(data),
+          suggestions: getParamsSuggestions(data),
+        },
       });
     });
 }

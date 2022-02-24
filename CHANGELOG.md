@@ -1,10 +1,12 @@
 # Changelog
 
-## Unreleased
+## 3.6.1
 
-### Fixes: 
-
+- Fix rendering issue on `Select` form search suggestions list (arsengit)
+- Fix PL.AimLogger save_dir AttributeError (GeeeekExplorer)
+- Remove example_type substring from param name (VkoHov)
 - None values are not displayed in group config column (VkoHov, Hamik25)
+>>>>>>> bcdaf83b12d17aa3e482baef3d5808fbe19fcd60
 
 ## 3.6.0 Feb 22 2022
 

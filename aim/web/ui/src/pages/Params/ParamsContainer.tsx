@@ -138,7 +138,7 @@ function ParamsContainer(): React.FunctionComponentElement<React.ReactNode> {
       notifyData={paramsData?.notifyData!}
       tableRowHeight={paramsData?.config?.table?.rowHeight!}
       columnsWidths={paramsData?.config?.table?.columnsWidths!}
-      selectFormOptions={paramsData?.selectFormOptions!}
+      selectFormData={paramsData?.selectFormData!}
       onColorIndicatorChange={paramsAppModel.onColorIndicatorChange}
       onCurveInterpolationChange={paramsAppModel.onCurveInterpolationChange}
       onParamsSelectChange={paramsAppModel.onParamsSelectChange}
