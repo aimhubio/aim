@@ -1,7 +1,5 @@
 #!/bin/bash
 
-cd ./docker
-
 if [ $UPDATE_LATEST_TAG == 1 ]
 then
   docker image build --no-cache	 \

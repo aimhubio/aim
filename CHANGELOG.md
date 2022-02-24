@@ -5,6 +5,7 @@
 ### Enhancements:
 
 - Custom max message size for Aim Remote tracking (alberttorosyan)
+- Docker images for aim up/server (alberttorosyan)
 
 ## 3.6.0 Feb 22 2022
 
