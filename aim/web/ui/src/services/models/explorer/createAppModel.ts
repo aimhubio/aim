@@ -173,6 +173,7 @@ import alphabeticalSortComparator from 'utils/alphabeticalSortComparator';
 import onRowSelect from 'utils/app/onRowSelect';
 import { SortField } from 'utils/getSortedFields';
 import onChangeTrendlineOptions from 'utils/app/onChangeTrendlineOptions';
+import { getParamsSuggestions } from 'utils/app/getParamsSuggestions';
 
 import { AppDataTypeEnum, AppNameEnum } from './index';
 /**
@@ -187,7 +188,7 @@ function createAppModel(appConfig: IAppInitialConfig) {
 
   const model: IModel<IAppModelState> = createModel<IAppModelState>({
     requestStatus: RequestStatusEnum.NotRequested,
-    selectFormOptions: undefined,
+    selectFormData: { options: undefined, suggestions: [] },
     config: getConfig(),
   });
 
@@ -547,7 +548,10 @@ function createAppModel(appConfig: IAppInitialConfig) {
         .call()
         .then((data) => {
           model.setState({
-            selectFormOptions: getMetricOptions(data),
+            selectFormData: {
+              options: getMetricOptions(data),
+              suggestions: getParamsSuggestions(data),
+            },
           });
         });
       const liveUpdateState = model.getState()?.config?.liveUpdate;
@@ -2210,7 +2214,16 @@ function createAppModel(appConfig: IAppInitialConfig) {
         }
 
         const liveUpdateState = model.getState()?.config.liveUpdate;
-
+        projectsService
+          .getProjectParams(['metric'])
+          .call()
+          .then((data) => {
+            model.setState({
+              selectFormData: {
+                suggestions: getParamsSuggestions(data),
+              },
+            });
+          });
         if (liveUpdateState?.enabled) {
           liveUpdateInstance = new LiveUpdateService(
             appName,
@@ -3211,6 +3224,51 @@ function createAppModel(appConfig: IAppInitialConfig) {
       let tooltipData: ITooltipData = {};
       let liveUpdateInstance: LiveUpdateService | null;
 
+      function initialize(appId: string): void {
+        model.init();
+        const state: Partial<IParamsAppModelState> = {};
+        if (grouping) {
+          state.groupingSelectOptions = [];
+        }
+        if (components?.table) {
+          state.refs = {
+            ...state.refs,
+            tableRef: { current: null },
+          };
+        }
+        if (components?.charts?.[0]) {
+          tooltipData = {};
+          state.refs = {
+            ...state.refs,
+            chartPanelRef: { current: null },
+          };
+        }
+        projectsService
+          .getProjectParams(['metric'])
+          .call()
+          .then((data) => {
+            model.setState({
+              selectFormData: {
+                options: getParamsOptions(data),
+                suggestions: getParamsSuggestions(data),
+              },
+            });
+          });
+        model.setState({ ...state });
+        if (!appId) {
+          setModelDefaultAppConfigData();
+        }
+        const liveUpdateState = model.getState()?.config?.liveUpdate;
+
+        if (liveUpdateState?.enabled) {
+          liveUpdateInstance = new LiveUpdateService(
+            appName,
+            updateData,
+            liveUpdateState.delay,
+          );
+        }
+      }
+
       function getParamsOptions(projectsData: IProjectParamsMetrics) {
         const comparator = alphabeticalSortComparator<ISelectOption>({
           orderBy: 'label',
@@ -3274,48 +3332,6 @@ function createAppModel(appConfig: IAppInitialConfig) {
           }),
         );
         return data.concat(systemOptions);
-      }
-
-      function initialize(appId: string): void {
-        model.init();
-        const state: Partial<IParamsAppModelState> = {};
-        if (grouping) {
-          state.groupingSelectOptions = [];
-        }
-        if (components?.table) {
-          state.refs = {
-            ...state.refs,
-            tableRef: { current: null },
-          };
-        }
-        if (components?.charts?.[0]) {
-          tooltipData = {};
-          state.refs = {
-            ...state.refs,
-            chartPanelRef: { current: null },
-          };
-        }
-        projectsService
-          .getProjectParams(['metric'])
-          .call()
-          .then((data) => {
-            model.setState({
-              selectFormOptions: getParamsOptions(data),
-            });
-          });
-        model.setState({ ...state });
-        if (!appId) {
-          setModelDefaultAppConfigData();
-        }
-        const liveUpdateState = model.getState()?.config?.liveUpdate;
-
-        if (liveUpdateState?.enabled) {
-          liveUpdateInstance = new LiveUpdateService(
-            appName,
-            updateData,
-            liveUpdateState.delay,
-          );
-        }
       }
 
       function updateData(newData: IRun<IParamTrace>[]): void {
@@ -4668,7 +4684,10 @@ function createAppModel(appConfig: IAppInitialConfig) {
           .call()
           .then((data: IProjectParamsMetrics) => {
             model.setState({
-              selectFormOptions: getScattersSelectOptions(data),
+              selectFormData: {
+                options: getScattersSelectOptions(data),
+                suggestions: getParamsSuggestions(data),
+              },
             });
           });
 

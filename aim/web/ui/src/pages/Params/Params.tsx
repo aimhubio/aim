@@ -68,7 +68,7 @@ const Params = ({
   notifyData,
   hiddenColumns,
   liveUpdateConfig,
-  selectFormOptions,
+  selectFormData,
   onTableRowHover,
   onTableRowClick,
   hideSystemMetrics,
@@ -131,7 +131,7 @@ const Params = ({
           </div>
           <div className='Params__SelectForm__Grouping__container'>
             <SelectForm
-              selectFormOptions={selectFormOptions}
+              selectFormData={selectFormData}
               requestIsPending={requestStatus === RequestStatusEnum.Pending}
               selectedParamsData={selectedParamsData}
               onParamsSelectChange={onParamsSelectChange}
@@ -196,12 +196,12 @@ const Params = ({
                   }
                 />
               ) : (
-                selectFormOptions !== undefined && (
+                selectFormData.options !== undefined && (
                   <IllustrationBlock
                     size='xLarge'
                     page='params'
                     type={
-                      selectFormOptions?.length
+                      selectFormData.options?.length
                         ? Request_Illustrations[requestStatus]
                         : IllustrationsEnum.EmptyData
                     }

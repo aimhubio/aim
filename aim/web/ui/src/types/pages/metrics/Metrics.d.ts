@@ -81,7 +81,7 @@ export interface IMetricProps extends Partial<RouteChildrenProps> {
   projectsDataMetrics: IProjectParamsMetrics['metric'];
   requestStatus: RequestStatusEnum;
   resizeMode: ResizeModeEnum;
-  selectFormOptions: ISelectOption[];
+  selectFormData: { options: ISelectOption[]; suggestions: string[] };
   columnsOrder: IColumnsOrder;
   onChangeTooltip: (tooltip: Partial<IPanelTooltip>) => void;
   onIgnoreOutliersChange: () => void;

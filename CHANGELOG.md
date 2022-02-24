@@ -2,6 +2,7 @@
 
 ## 3.6.1
 
+- Fix rendering issue on `Select` form search suggestions list (arsengit)
 - Fix PL.AimLogger save_dir AttributeError (GeeeekExplorer)
 
 ## 3.6.0 Feb 22 2022

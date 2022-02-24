@@ -59,7 +59,7 @@ function Scatters(
               requestIsPending={
                 props.requestStatus === RequestStatusEnum.Pending
               }
-              selectFormOptions={props.selectFormOptions}
+              selectFormData={props.selectFormData}
               selectedOptionsData={props.selectedOptionsData}
               onSelectOptionsChange={props.onSelectOptionsChange}
               onSelectRunQueryChange={props.onSelectRunQueryChange}
@@ -122,12 +122,12 @@ function Scatters(
                   }
                 />
               ) : (
-                props.selectFormOptions !== undefined && (
+                props.selectFormData.options !== undefined && (
                   <IllustrationBlock
                     size='xLarge'
                     page='scatters'
                     type={
-                      props.selectFormOptions?.length
+                      props.selectFormData.options?.length
                         ? Request_Illustrations[props.requestStatus]
                         : IllustrationsEnum.EmptyData
                     }
