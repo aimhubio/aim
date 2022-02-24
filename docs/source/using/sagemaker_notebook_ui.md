@@ -3,8 +3,8 @@
 Create a lifecycle configuration on your SageMaker Service.
 Copy and past the [script](https://github.com/aimhubio/aim/blob/feature/notebook-extension-sagemaker-support/aim/scripts/sagemaker/on-start.sh) in your configuration's `Start Notebook` phase.
 
-<img style="border: 1px solid #1d2253" src="https://user-images.githubusercontent.com/21033329/155378543-05e053da-0714-46d1-9db3-f791a5634f2b.png" />
-For more information how to create a lifecycle configuration on AWS SageMaker Service, please go through the [Documentation](https://docs.aws.amazon.com/sagemaker/latest/dg/notebook-lifecycle-config.html).
+<img style="border: 1px solid #1d2253" src="../_static/images/using/sagemaker/create-configuration.png" />
+For more information how to create a lifecycle configuration on AWS SageMaker Service, please go through the [AWS SageMaker Documentation](https://docs.aws.amazon.com/sagemaker/latest/dg/notebook-lifecycle-config.html).
 
 After creating a lifecycle configuration, attach it to your SageMaker instance and restart the instance.
 
@@ -42,7 +42,7 @@ run['hparams'] = {
 
 .. note::
   Do not forget to call run.finalize() once the training is over which will finalize the run by indexing all the data.
-
+Fore more information about indexing, see [Aim Storage indexing](../understanding/storage_indexing.html).
 
 ### Using Terminal
 ```shell
@@ -56,7 +56,7 @@ It is possible to set `__AIM_PROXY_URL__` env variable, and `aim up` command wil
 
 To find your proxy url just copy your SageMaker URL and remove `/lab` postfix.
 
-<img style="border: 1px solid #1d2253" src="https://user-images.githubusercontent.com/21033329/155392344-9b8897e0-2b2e-44b1-897a-6f80a5284e11.png"/>
+<img style="border: 1px solid #1d2253" src="../_static/images/using/sagemaker/sagemaker-terminal.png"/>
 
 ### Using Notebook Extension
 
@@ -72,9 +72,13 @@ To find your proxy url just copy your SageMaker URL and remove `/lab` postfix.
 %aim up --proxy-url=https://<instance>.notebook.<region>.sagemaker.aws
 ```
 
-Will load the Aim UI in an iframe and will print the proxy url under the loaded Aim UI, which is useful to open the url in a new browser tab.
+Will load the Aim UI in an iframe.
 
-<img style="border: 1px solid #1d2253" src="../_static/images/using/jupyter.png" />
+<img style="border: 1px solid #1d2253" src="../_static/images/using/sagemaker/sagemaker-notebook.png" />
+
+Will print the proxy url under the loaded Aim UI, which is useful to open the url in a new browser tab.
+
+<img style="border: 1px solid #1d2253" src="../_static/images/using/sagemaker/sagemaker-full-view.png" />
 
 The default port is `43801` for  notebook  extension to prevent confusions.
 The `--port=<your-port>` argument is supported as well.
