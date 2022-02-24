@@ -1,7 +1,7 @@
 ## Home Page
 
 
-This page represents you overall info about aim and tracked experiments/runs.
+This page represents overall info about `Aim` and tracked experiments/runs.
 
 <img style="border: 1px solid #E8F1FC; border-radius: 8px" src="https://raw.githubusercontent.com/arsengit/personalWebsite/master/src/images/home.jpg" />
 
@@ -21,15 +21,15 @@ It's seperated into four sections.
 
 In this section you can see overall info about your experiments and runs.
 
-With the heatmap graphically represented numerical data where the value of each data point is indicated using colors. with the warm colors represented high-value data points and the cool colors representing low-value data points.
+With the `heatmap` graphically represented numerical data where the value of each data point is indicated using colors. with the warm colors represented high-value data points and the cool colors representing low-value data points.
 
-<img style="border: 1px solid #E8F1FC; border-radius: 8px" src="https://raw.githubusercontent.com/arsengit/personalWebsite/master/`src/images/heatmap.jpg" />
+<img style="border: 1px solid #E8F1FC; border-radius: 8px" src="https://raw.githubusercontent.com/arsengit/personalWebsite/master/src/images/heatmap.jpg" />
 
 Each of cell links to the run, which was tracked in that time period.
 
 <img style="border: 1px solid #E8F1FC; border-radius: 8px" src="https://raw.githubusercontent.com/arsengit/personalWebsite/master/src/images/activity.jpg" />
 
-After click, it will navigate you to [Runs explorer](#runs-explorer) page and [query](#query) the runs with selected time period.
+After click, it will navigate you to [Runs explorer](#runs-explorer) page and [query](../../using/search.html) the runs with selected time period.
 
 <img style="border: 1px solid #E8F1FC; border-radius: 8px" src="https://raw.githubusercontent.com/arsengit/personalWebsite/master/src/images/runSearch.jpg" />
 
