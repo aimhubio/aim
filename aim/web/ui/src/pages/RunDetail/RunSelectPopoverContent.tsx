@@ -11,6 +11,7 @@ import { Button, Icon, Text } from 'components/kit';
 import ErrorBoundary from 'components/ErrorBoundary/ErrorBoundary';
 
 import { DATE_WITHOUT_SECONDS } from 'config/dates/dates';
+import { IllustrationsEnum } from 'config/illustrationConfig/illustrationConfig';
 
 import { processDurationTime } from 'utils/processDurationTime';
 
@@ -144,7 +145,11 @@ function RunSelectPopoverContent({
                     </NavLink>
                   ))
                 ) : (
-                  <IllustrationBlock size='xLarge' content={'No Runs'} />
+                  <IllustrationBlock
+                    type={IllustrationsEnum.EmptyData}
+                    size='large'
+                    title={'No Runs'}
+                  />
                 )}
                 {!isEmpty(runsOfExperiment) && isLoadMoreButtonShown && (
                   <div className='RunSelectPopoverWrapper__selectPopoverContent__contentContainer__runsListContainer__runsList__loadMoreButtonWrapper'>

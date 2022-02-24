@@ -257,7 +257,7 @@ function getParamsTableColumns(
               name = name.replace('run.props', 'run');
               return (
                 <Tooltip key={field} title={name || ''}>
-                  <span>{name}</span>
+                  <div>{name}</div>
                 </Tooltip>
               );
             })}
@@ -295,7 +295,7 @@ function paramsTableRowRenderer(
                 {Object.keys(rowData[col]).map((item) => {
                   const value: string | { [key: string]: unknown } =
                     rowData[col][item];
-                  return typeof value === 'object' ? (
+                  return _.isObject(value) ? (
                     <ControlPopover
                       key={contextToString(value)}
                       title={item}
@@ -320,7 +320,7 @@ function paramsTableRowRenderer(
                     />
                   ) : (
                     <Tooltip key={item} title={formatValue(value) || ''}>
-                      <span>{formatValue(value)}</span>
+                      <div>{formatValue(value)}</div>
                     </Tooltip>
                   );
                 })}

@@ -1,12 +1,14 @@
 # Changelog
 
-## Unreleased
-
-## Enhancements
+## 3.6.1
 
 - Add `__AIM_PROXY_URL__` env variable to see full proxy url when running `aim up` command(rubenaprikyan)
 - Add `--proxy-url` argument to notebook extension's `%aim up` to render UI correctly if there is a proxy server  (rubenaprikyan)
 - Add SageMaker integration, `jupyter-server-proxy` s bug-fix script (rubenaprikyan, mahnerak)
+- Display `None` values in group config column (VkoHov, Hamik25)
+- Fix rendering issue on `Select` form search suggestions list (arsengit)
+- Fix PL.AimLogger save_dir AttributeError (GeeeekExplorer)
+- Remove example_type substring from param name (VkoHov)
 
 ## 3.6.0 Feb 22 2022
 
