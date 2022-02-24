@@ -2,6 +2,7 @@
 
 ## 3.6.1
 
+- Fix ability to align x-axis by metric (KaroMourad)
 - Display `None` values in group config column (VkoHov, Hamik25)
 - Fix rendering issue on `Select` form search suggestions list (arsengit)
 - Fix PL.AimLogger save_dir AttributeError (GeeeekExplorer)
