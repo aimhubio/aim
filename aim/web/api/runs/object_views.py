@@ -116,5 +116,5 @@ class AudioApiConfig(CustomObjectApiConfig):
 class FigureApiConfig(CustomObjectApiConfig):
     sequence_type = Figures
     resolve_blobs = True
-    dump_record_fn = lambda x: json.loads(x.data)  # noqa E731
+    dump_record_fn = lambda x: x.data  # noqa E731
     model = FigureInfo
