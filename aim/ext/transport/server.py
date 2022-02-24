@@ -1,14 +1,18 @@
+import grpc
+import os
 import time
 import uuid
-from typing import Dict, Union
 
+from typing import Dict, Union
 from concurrent import futures
-import grpc
+
 import aim.ext.transport.remote_tracking_pb2 as rpc_messages
 import aim.ext.transport.remote_tracking_pb2_grpc as remote_tracking_pb2_grpc
 
 from aim.ext.transport.message_utils import pack_stream, unpack_bytes, unpack_stream, build_exception, ResourceObject
 from aim.ext.transport.handlers import get_tree, get_structured_run
+from aim.ext.transport.config import AIM_RT_MAX_MESSAGE_SIZE, AIM_RT_DEFAULT_MAX_MESSAGE_SIZE
+
 from aim.storage.treeutils import encode_tree, decode_tree
 
 
@@ -183,7 +187,13 @@ class RemoteTrackingServicer(remote_tracking_pb2_grpc.RemoteTrackingServiceServi
 def run_server(host, port, workers=1, ssl_keyfile=None, ssl_certfile=None):
     RemoteTrackingServicer.registry.register('TreeView', get_tree)
     RemoteTrackingServicer.registry.register('StructuredRun', get_structured_run)
-    server = grpc.server(futures.ThreadPoolExecutor(max_workers=workers))
+
+    msg_max_size = os.getenv(AIM_RT_MAX_MESSAGE_SIZE, AIM_RT_DEFAULT_MAX_MESSAGE_SIZE)
+    options = [
+        ('grpc.max_send_message_length', msg_max_size),
+        ('grpc.max_receive_message_length', msg_max_size)
+    ]
+    server = grpc.server(futures.ThreadPoolExecutor(max_workers=workers), options=options)
     remote_tracking_pb2_grpc.add_RemoteTrackingServiceServicer_to_server(RemoteTrackingServicer(), server)
 
     if ssl_keyfile and ssl_certfile:
