@@ -36,7 +36,7 @@ class StructuredRunProxy:
 
     @name.setter
     def name(self, value):
-        self._rpc_client.run_instruction(self._handler, 'name.setter', (value,), is_write_only=True)
+        self._rpc_client.run_instruction(self._handler, 'name.setter', (value,))
 
     @property
     def description(self):
@@ -44,7 +44,7 @@ class StructuredRunProxy:
 
     @description.setter
     def description(self, value):
-        self._rpc_client.run_instruction(self._handler, 'description.setter', (value,), is_write_only=True)
+        self._rpc_client.run_instruction(self._handler, 'description.setter', (value,))
 
     @property
     def archived(self):
@@ -52,7 +52,7 @@ class StructuredRunProxy:
 
     @archived.setter
     def archived(self, value):
-        self._rpc_client.run_instruction(self._handler, 'archived.setter', (value,), is_write_only=True)
+        self._rpc_client.run_instruction(self._handler, 'archived.setter', (value,))
 
     @property
     def creation_time(self):
@@ -68,7 +68,7 @@ class StructuredRunProxy:
 
     @experiment.setter
     def experiment(self, value: str):
-        self._rpc_client.run_instruction(self._handler, 'experiment.setter', (value,), is_write_only=True)
+        self._rpc_client.run_instruction(self._handler, 'experiment.setter', (value,))
 
     @property
     def tags(self) -> List[str]:

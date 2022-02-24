@@ -48,6 +48,9 @@ class TaskQueue(object):
             self._queue.task_done()
 
     def wait_for_finish(self):
+        if self._stopped:
+            return
+        # TODO: [MV, AT] think about other solution instead of join()
         self._queue.join()
 
     def stop_workers(self):
