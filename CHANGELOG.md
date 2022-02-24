@@ -2,10 +2,10 @@
 
 ## 3.6.1
 
+- Display `None` values in group config column (VkoHov, Hamik25)
 - Fix rendering issue on `Select` form search suggestions list (arsengit)
 - Fix PL.AimLogger save_dir AttributeError (GeeeekExplorer)
 - Remove example_type substring from param name (VkoHov)
-- None values are not displayed in group config column (VkoHov, Hamik25)
 
 ## 3.6.0 Feb 22 2022
 
