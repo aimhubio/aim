@@ -4,10 +4,10 @@ In this guide you will learn how to run Aim UI on your Sagemaker Jupyter instanc
 
 Aim can be installed and used on Jupyter notebooks. With SageMaker notebook instance, there are difficulties with establishing POST requests which prevents some Aim functionalities to work.
 So we have built a script to update the proxying package on SageMaker notebook instance.
-In order to work with Aim UI, please follow the steps below
+In order to work with Aim UI, please follow the steps below:
 
 - Create a lifecycle configuration on your SageMaker Service.
-- Copy and past the [script](https://github.com/aimhubio/aim/blob/feature/notebook-extension-sagemaker-support/aim/scripts/sagemaker/on-start.sh) in your configuration's `Start Notebook` phase.
+- Copy and paste the [script](https://github.com/aimhubio/aim/blob/feature/notebook-extension-sagemaker-support/aim/scripts/sagemaker/on-start.sh) in your configuration's `Start Notebook` phase.
 
 <img style="border: 1px solid #1d2253" src="../../_static/images/guides/integrations/jupyter/create-configuration.png" />
 For more information how to create a lifecycle configuration on AWS SageMaker Service, please go through the [AWS SageMaker Documentation](https://docs.aws.amazon.com/sagemaker/latest/dg/notebook-lifecycle-config.html).
@@ -20,7 +20,7 @@ It is possible to run this script manually from the terminal of your jupyter ins
     **Why this script is used for?**
 
     The script above will uptade the `jupyter-server-proxy` package on your notebook instance.
-    To access a port on your instance (i.e. open the Aim UI) API requests and static files need to go through the proxy, which is created by the package to be updated on the script.
+    To access a port on your instance (i.e. open the Aim UI) API requests and static files need to go through the proxy, which is created by the package (see the script).
     It will replace the existing proxy and make sure Aim and other such requests go through. 
     Fore more information please go through the https://github.com/jupyterhub/jupyter-server-proxy/pull/328#issue-1145874348.
 
@@ -77,7 +77,7 @@ Will load the Aim UI in the notebook cell.
 
 <img style="border: 1px solid #1d2253" src="../../_static/images/guides/integrations/jupyter/sagemaker-notebook.png" />
 
-Will print out the proxy url under the loaded Aim UI, which is useful to open the url in a new browser tab.
+Will print out the proxy url under the loaded Aim UI. Use that URL to open Aim UI on your browser.
 
 <img style="border: 1px solid #1d2253" src="../../_static/images/guides/integrations/jupyter/sagemaker-full-view.png" />
 
