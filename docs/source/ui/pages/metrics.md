@@ -1,3 +1,6 @@
+
+### Metrics Explorer
+
 Metrics explorer helps you to compare 100s of metrics within a few clicks.
 You can simply group, filter and compare your tracked metrics with Metrics Explorer.
 It helps to save lots of time compared to other open-source experiment tracking tools.
@@ -9,9 +12,8 @@ Metrics Explorer main parts are:
 - Grouping
 
 Features:
-- [Easily query any metric](#easily-query-any-metric)
+- [Query any metric easily](#query-any-metric-easily)
 - [Group by any parameter](#group-by-any-parameter)
-- [Divide into subplots](#divide-into-subplots)
 - [Aggregate grouped metrics](#aggregate-metrics)
 - [Align metrics by time, epoch or custom metric](#x-axis-properties)
 - [Change scale of the axes (linear or log)](#axes-scale)
@@ -24,23 +26,31 @@ Features:
 
 <img src="../../_static/images/ui/overview/metrics_explorer.png" style="border-radius: 8px; border: 1px solid #E8F1FC" alt="metrics_explorer" />
 
-#### Easily query any metric
+#### Query any metric easily
 
 Select metrics from dropdown
 
-<img alt="Select params and metrics from dropdown" src="https://user-images.githubusercontent.com/43929589/155546987-3d5dbed6-f966-41f9-9bff-fe0bbbaca75e.png">
+<img src="../../_static/images/ui/overview/metrics/select-form/select_form_dropdown.png" style="border-radius: 8px; border: 1px solid #E8F1FC" alt="select_form_dropdown" />
 
 Search runs with [Aim QL](../../using/search.html)
 
-<img alt="Search runs" src="https://user-images.githubusercontent.com/43929589/155377393-aff5604f-9d9d-474d-8509-807b0c3d0846.png">
+<img src="../../_static/images/ui/overview/metrics/select-form/select_form_filter.png" style="border-radius: 8px; border: 1px solid #E8F1FC" alt="select_form_filter" />
 
 #### Group by any parameter
 
 Group by color, stroke, or chart with selected parameters
 
-<img width="1714" alt="Grouping" src="https://user-images.githubusercontent.com/43929589/155545573-89af8bb6-9f8f-4726-8a1b-bc62fb29367f.png">
+##### Group by Color
 
-#### Divide into subplots
+<img src="../../_static/images/ui/overview/metrics/grouping/groupby_color.png" style="border-radius: 8px; border: 1px solid #E8F1FC" alt="groupby_color" />
+
+##### Group by Stroke
+
+<img src="../../_static/images/ui/overview/metrics/grouping/groupby_stroke.png" style="border-radius: 8px; border: 1px solid #E8F1FC" alt="groupby_stroke" />
+
+##### Group by Chart
+
+<img src="../../_static/images/ui/overview/metrics/grouping/groupby_chart.png" style="border-radius: 8px; border: 1px solid #E8F1FC" alt="groupby_chart" />
 
 
 #### Aggregate metrics
@@ -270,9 +280,11 @@ You can select hide or show button to display or hide tooltip on hover.
 
 <img src="../../_static/images/ui/overview/metrics/chart-zoom/zoom_in_action.png" style="border-radius: 8px; border: 1px solid #E8F1FC" alt="zoom-in-action.png" />
 
+<img src="../../_static/images/ui/overview/metrics/chart-zoom/zoom_out.png" style="border-radius: 8px; border: 1px solid #E8F1FC" alt="zoom-out.png" />
+
 ##### Zoom Out
 
-<img src="../../_static/images/ui/overview/metrics/chart-zoom/zoom_out.png" style="border-radius: 8px; border: 1px solid #E8F1FC" alt="zoom-out.png" />
+<img src="../../_static/images/ui/overview/metrics/chart-zoom/zoom_out_popover.png" style="border-radius: 8px; border: 1px solid #E8F1FC" alt="zoom_out_popover" />
 
 #### Export chart as image
 
