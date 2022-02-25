@@ -1,4 +1,3 @@
-
 Metrics explorer helps you to compare 100s of metrics within a few clicks.
 You can simply group, filter and compare your tracked metrics with Metrics Explorer.
 It helps to save lots of time compared to other open-source experiment tracking tools.
@@ -27,9 +26,22 @@ Features:
 
 #### Easily query any metric
 
+Select metrics from dropdown
+
+<img alt="Select params and metrics from dropdown" src="https://user-images.githubusercontent.com/43929589/155546987-3d5dbed6-f966-41f9-9bff-fe0bbbaca75e.png">
+
+Search runs with [Aim QL](../../using/search.html)
+
+<img alt="Search runs" src="https://user-images.githubusercontent.com/43929589/155377393-aff5604f-9d9d-474d-8509-807b0c3d0846.png">
+
 #### Group by any parameter
 
+Group by color, stroke, or chart with selected parameters
+
+<img width="1714" alt="Grouping" src="https://user-images.githubusercontent.com/43929589/155545573-89af8bb6-9f8f-4726-8a1b-bc62fb29367f.png">
+
 #### Divide into subplots
+
 
 #### Aggregate metrics
 
