@@ -38,6 +38,7 @@ Features:
 ### Images Explorer
 
 #### Overview
+
 Track intermediate images search easily by using select form functional compare them on the Images Explorer by using reach controls panel.
 
 <img width="1714" alt="Images explore overview" style="border-radius: 8px; border: 1px solid #E8F1FC" src="https://docs-blobs.s3.us-east-2.amazonaws.com/images/ui/pages/images-explore/images-explore.png">
@@ -53,48 +54,58 @@ Features:
   - [Images tooltip params control](#images-tooltip-params-control)
 
 #### Query any image
+
 Use select form to easily query any image. There are two option to query images using dropdown, by using [Aim QL](../../using/search.html) language and advance mode for [Aim QL](../../using/search.html).
 
 <img width="1714" alt="Images explore overview" style="border-radius: 8px; border: 1px solid #E8F1FC" src="https://docs-blobs.s3.us-east-2.amazonaws.com/images/ui/pages/images-explore/images-explore-select-form.png">
 
 ###### How to use select form?
+
 - Click on Images button
 - Select options you are want to use in query
 - Click on the Search button
 
-
-
 ###### How to reset select form value?
+
 // Select form image with hovered in reset icon
 
 ###### How to use advanced query mode?
+
 - Click on pencel icon in the right side of select form to show input
-- Type advance [Aim QL](../../using/search.html) query 
+- Type advance [Aim QL](../../using/search.html) query
 - Click on the Search button
-// Select form image with typed some AIM ql query and hovered on search button
+  // Select form image with typed some AIM ql query and hovered on search button
 
 #### Group image by run parameters
+
 Use select grouping dropdown which is located in the right top corner of the image explore page.
 // image grouping button
+
 ###### How to use image grouping?
+
 - Click on grouping button
 - Select fields by which you want to groupe images
 
 Grouping will be apply after each field selection also you can select grouping mode (Group or Reverse)
 
 // Grouping opened popover selected some fields
+
 #### Image explorer right controls panel
+
 Any change in controls will help to explore images better on the workspace
+
 #### Images properties control
+
 - Click on image property button
 - Select value from align image by dropdown by default dropdown value is `Height`
 - Use slider to configure value for scale relative to window size by default scale value is `15%`
 - Use image rendering variation by default value of this control is `Pixelated`
+
 ##### Images sorting control
+
 - Click on image sorting button
 - Select fields for sorting images. Selection ordering is meaningful and data will be sorting by selection order. Bellow is visible Ordered By list where contains all selected fields from dropdown. You can remove any already selected field by clicking on `x` icon or change sorting direction by clicking radio button Asc or Desc. Default selected direction is Asc.
 - For reset all existing sorting fields you can simply click on Reset Sorting button
-
 
 Select params and metrics from
 
@@ -119,33 +130,99 @@ Features:
 - [Make the crossings easier with curve interpolation](#curve-interpolation)
 - [Learn patterns and colorations easier colored by the last dimension with a color indicator](#color-indicator)
 
+<img style="border-radius: 8px; border: 1px solid #E8F1FC" alt="Params explore" src="https://docs-blobs.s3.us-east-2.amazonaws.com/images/ui/pages/params-explore/1.png">
+
 ##### Query any metrics and params
 
 Select params and metrics from dropdown
 
-<img width="1008" alt="Select params and metrics from dropdown" style="border-radius: 8px; border: 1px solid #E8F1FC" src="https://user-images.githubusercontent.com/43929589/155546987-3d5dbed6-f966-41f9-9bff-fe0bbbaca75e.png">
+<img style="border-radius: 8px; border: 1px solid #E8F1FC" alt="Select params and metrics from dropdown" src="https://docs-blobs.s3.us-east-2.amazonaws.com/images/ui/pages/params-explore/2.png">
 
 Search runs with [Aim QL](../../using/search.html)
 
-<img width="1498" alt="Search runs" style="border-radius: 8px; border: 1px solid #E8F1FC" src="https://user-images.githubusercontent.com/43929589/155377393-aff5604f-9d9d-474d-8509-807b0c3d0846.png">
+<img style="border-radius: 8px; border: 1px solid #E8F1FC" alt="Search runs" src="https://docs-blobs.s3.us-east-2.amazonaws.com/images/ui/pages/params-explore/3.png">
 
 ##### Grouping
 
 Group by color, stroke, or chart with selected parameters
 
-<img width="1714" alt="Grouping" style="border-radius: 8px; border: 1px solid #E8F1FC" src="https://user-images.githubusercontent.com/43929589/155545573-89af8bb6-9f8f-4726-8a1b-bc62fb29367f.png">
+<img style="border-radius: 8px; border: 1px solid #E8F1FC" alt="Grouping" src="https://docs-blobs.s3.us-east-2.amazonaws.com/images/ui/pages/params-explore/4.png">
 
 ##### Curve interpolation
 
 By clicking on the Curve interpolation button in the Controls panel, it's possible to make lines from straight to curve to show
 correlations between non-adjacent axes.
 
-<img width="1498" alt="Curve interpolation" style="border-radius: 8px; border: 1px solid #E8F1FC" src="https://user-images.githubusercontent.com/43929589/155543991-e32e07e1-e068-4786-b478-26a634206c5a.png">
+<img style="border-radius: 8px; border: 1px solid #E8F1FC" alt="Curve interpolation" src="https://docs-blobs.s3.us-east-2.amazonaws.com/images/ui/pages/params-explore/5.png">
 
 ##### Color indicator
 
 By clicking on the Color indicator button in the Controls panel, it's possible to turn on lines gradient coloring by the last dimension.
 
-<img width="1498" alt="Color indicator" style="border-radius: 8px; border: 1px solid #E8F1FC" src="https://user-images.githubusercontent.com/43929589/155535399-f2c1806c-841f-40e9-8337-fd984119623e.png">
+<img style="border-radius: 8px; border: 1px solid #E8F1FC" alt="Color indicator" src="https://docs-blobs.s3.us-east-2.amazonaws.com/images/ui/pages/params-explore/6.png">
 
 ### Scatters Explorer
+
+Scatter explorer gives ability to visualize correlations between metric last value data with hyper-parameter.
+
+It represents graph where corresponding values from a set of data are placed as points on a coordinate plane. A relationship between the points is sometimes shown to be positive, negative, strong, or weak.
+
+<img alt="scatters-explore" style="border-radius: 8px; border: 1px solid #E8F1FC" src="https://docs-blobs.s3.us-east-2.amazonaws.com/images/ui/pages/scatters-explorer/scatters.png">
+
+Abilities provided by Scatter explorer
+
+- [Easily align metric last value data with hyper parameter](#align-metric-last-value-data-with-hyper-parameter)
+- [Group runs by color and chart](#grouping)
+- [Represent the points with trend line](#trend-line)
+- [Export chart](#export-chart)
+
+##### Align metric last value data with hyper-parameter
+
+Select params and metrics from `X` and `Y` axes dropdowns to align metric last value data with hyper-parameter.
+
+- X axis
+
+<img alt="x axis dropdown" style="border-radius: 8px; border: 1px solid #E8F1FC" src="https://docs-blobs.s3.us-east-2.amazonaws.com/images/ui/pages/scatters-explorer/select-x-axis.png">
+
+- Y axis
+
+<img alt="y axis dropdown" style="border-radius: 8px; border: 1px solid #E8F1FC" src="https://docs-blobs.s3.us-east-2.amazonaws.com/images/ui/pages/scatters-explorer/select-y-axis.png">
+
+Also, you can search runs with [Aim QL](../../using/search.html)
+
+<img alt="search runs" style="border-radius: 8px; border: 1px solid #E8F1FC" src="https://docs-blobs.s3.us-east-2.amazonaws.com/images/ui/pages/scatters-explorer/scatters-search.png">
+
+##### Grouping
+
+Easily group data by color and chart with selected parameters.
+
+- By `Color`
+
+<img alt="Grouping color" style="border-radius: 8px; border: 1px solid #E8F1FC" src="https://docs-blobs.s3.us-east-2.amazonaws.com/images/ui/pages/scatters-explorer/scatters-color-group.png">
+
+- By `Chart`
+
+<img alt="Grouping chart line" style="border-radius: 8px; border: 1px solid #E8F1FC" src="https://docs-blobs.s3.us-east-2.amazonaws.com/images/ui/pages/scatters-explorer/scatters-color-group.png">
+
+##### Trend line
+
+A trend line is a straight line that best represents the points on a `scatter plot`. The trend line may go through some points but need not go through them all.
+
+<img alt="trend line" style="border-radius: 8px; border: 1px solid #E8F1FC" src="https://docs-blobs.s3.us-east-2.amazonaws.com/images/ui/pages/scatters-explorer/trendline.png">
+
+From trend line options popover you can change regression from `Linear` (by default) to `LOESS`(locally weighted smoothing), which creates a smooth line through a `scatter plot` to help you to see relationship between variables and foresee trends. Also, you can change the `bandwidth` with `slider`
+
+<img alt="trend line loess" style="border-radius: 8px; border: 1px solid #E8F1FC" src="https://docs-blobs.s3.us-east-2.amazonaws.com/images/ui/pages/scatters-explorer/trendline-loess.png">
+
+##### Export chart
+
+Scatter explorer also, gives ability to `export` your chart as `image`.
+
+By clicking `export button` from control panel, will be opened chart preview modal.
+You can change exportable chart `image width`, `single chart height`, set `image name` and `format`.
+
+<img alt="export chart" style="border-radius: 8px; border: 1px solid #E8F1FC" src="https://docs-blobs.s3.us-east-2.amazonaws.com/images/ui/pages/scatters-explorer/export-chart.png">
+
+Following image formats are available export: `SVG`, `JPEG`, `PNG`.
+
+<img width="100" alt="export format" style="border-radius: 8px; border: 1px solid #E8F1FC" src="https://docs-blobs.s3.us-east-2.amazonaws.com/images/ui/pages/scatters-explorer/export-format.png">
