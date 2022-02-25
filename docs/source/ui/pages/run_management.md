@@ -3,6 +3,7 @@
 ### Runs
 
 #### Overview
+To navigate into Runs Explorer, click on the `Runs` navigation item from the left sidebar.
 
 Runs explorer helps you to
 - [Search runs with query](#search-runs)
