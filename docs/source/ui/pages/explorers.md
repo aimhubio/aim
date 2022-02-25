@@ -38,7 +38,6 @@ Features:
 ### Images Explorer
 
 #### Overview
-
 Track intermediate images search easily by using select form functional compare them on the Images Explorer by using reach controls panel.
 
 //image
@@ -46,15 +45,56 @@ Track intermediate images search easily by using select form functional compare 
 Features:
 
 - [Easily query any image](#query-any-image)
-- Group by images by run parameters
-- Group images by step and index
-- Use controls from right control panel to configure workspace
+- [Group images by run parameters, step and index](#group-image-by-run-parameters)
+- [Use controls from right control panel to configure workspace](#image-explorer-right-controls-panel)
+  - [Image properties control](#images-properties-control)
   - [Images sorting control](#images-sorting-control)
-  - [Group stacking]()
-  - Image properties
-  - Tooltip params
+  - [Images group stacking control](#images-group-stacking-control)
+  - [Images tooltip params control](#images-tooltip-params-control)
 
-##### Query any image
+#### Query any image
+Use select form to easily query any image. There are two option to query images using dropdown, by using [Aim QL](../../using/search.html) language and advance mode for [Aim QL](../../using/search.html).
+
+// Select form image
+
+###### How to use select form?
+- Click on Images button
+- Select options you are want to use in query
+- Click on the Search button
+
+// Select form image with opened dropdown selected some option and hovered on search button
+
+###### How to reset select form value?
+// Select form image with hovered in reset icon
+
+###### How to use advanced query mode?
+- Click on pencel icon in the right side of select form to show input
+- Type advance [Aim QL](../../using/search.html) query 
+- Click on the Search button
+// Select form image with typed some AIM ql query and hovered on search button
+
+#### Group image by run parameters
+Use select grouping dropdown which is located in the right top corner of the image explore page.
+// image grouping button
+###### How to use image grouping?
+- Click on grouping button
+- Select fields by which you want to groupe images
+
+Grouping will be apply after each field selection also you can select grouping mode (Group or Reverse)
+
+// Grouping opened popover selected some fields
+#### Image explorer right controls panel
+Any change in controls will help to explore images better on the workspace
+#### Images properties control
+- Click on image property button
+- Select value from align image by dropdown by default dropdown value is `Height`
+- Use slider to configure value for scale relative to window size by default scale value is `15%`
+- Use image rendering variation by default value of this control is `Pixelated`
+##### Images sorting control
+- Click on image sorting button
+- Select fields for sorting images. Selection ordering is meaningful and data will be sorting by selection order. Bellow is visible Ordered By list where contains all selected fields from dropdown. You can remove any already selected field by clicking on `x` icon or change sorting direction by clicking radio button Asc or Desc. Default selected direction is Asc.
+- For reset all existing sorting fields you can simply click on Reset Sorting button
+
 
 Select params and metrics from
 
