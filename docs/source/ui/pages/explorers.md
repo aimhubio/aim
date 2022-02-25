@@ -40,7 +40,7 @@ Features:
 #### Overview
 Track intermediate images search easily by using select form functional compare them on the Images Explorer by using reach controls panel.
 
-//image
+<img width="1714" alt="Images explore overview" style="border-radius: 8px; border: 1px solid #E8F1FC" src="https://docs-blobs.s3.us-east-2.amazonaws.com/images/ui/pages/images-explore/images-explore.png">
 
 Features:
 
@@ -55,14 +55,14 @@ Features:
 #### Query any image
 Use select form to easily query any image. There are two option to query images using dropdown, by using [Aim QL](../../using/search.html) language and advance mode for [Aim QL](../../using/search.html).
 
-// Select form image
+<img width="1714" alt="Images explore overview" style="border-radius: 8px; border: 1px solid #E8F1FC" src="https://docs-blobs.s3.us-east-2.amazonaws.com/images/ui/pages/images-explore/images-explore-select-form.png">
 
 ###### How to use select form?
 - Click on Images button
 - Select options you are want to use in query
 - Click on the Search button
 
-// Select form image with opened dropdown selected some option and hovered on search button
+
 
 ###### How to reset select form value?
 // Select form image with hovered in reset icon
