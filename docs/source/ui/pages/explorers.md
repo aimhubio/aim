@@ -82,3 +82,69 @@ By clicking on the Color indicator button in the Controls panel, it's possible t
 <img width="1498" alt="Color indicator" src="https://user-images.githubusercontent.com/43929589/155535399-f2c1806c-841f-40e9-8337-fd984119623e.png">
 
 ### Scatters Explorer
+
+Scatter explorer gives ability to visualize correlations between metric last value data with hyper-parameter.
+
+It represents graph where corresponding values from a set of data are placed as points on a coordinate plane. A relationship between the points is sometimes shown to be positive, negative, strong, or weak.
+
+ <img style="border-radius: 8px; border: 1px solid #E8F1FC"  alt="scatters-explore" src="https://docs-blobs.s3.us-east-2.amazonaws.com/images/ui/pages/scatters-explorer/scatters.png">
+
+Abilities provided by Scatter explorer
+
+- [Easily align metric last value data with hyper parameter](#align-metric-last-value-data-with-hyper-parameter)
+- [Group runs by color and chart](#grouping)
+- [Represent the points with trend line](#trend-line)
+- [Export chart](#export-chart)
+
+
+##### Align metric last value data with hyper-parameter
+
+Select params and metrics from `X` and `Y` axes dropdowns to align metric last value data with hyper-parameter.
+
+- X axis
+
+<img alt="x axis dropdown" style="border-radius: 8px; border: 1px solid #E8F1FC" src="https://docs-blobs.s3.us-east-2.amazonaws.com/images/ui/pages/scatters-explorer/select-x-axis.png">
+
+- Y axis
+
+<img alt="y axis dropdown" style="border-radius: 8px; border: 1px solid #E8F1FC" src="https://docs-blobs.s3.us-east-2.amazonaws.com/images/ui/pages/scatters-explorer/select-y-axis.png">
+
+Also, you can search runs with [Aim QL](../../using/search.html)
+
+<img alt="search runs" style="border-radius: 8px; border: 1px solid #E8F1FC" src="https://docs-blobs.s3.us-east-2.amazonaws.com/images/ui/pages/scatters-explorer/scatters-search.png">
+
+##### Grouping
+
+Easily group data by color and chart with selected parameters.
+
+- By `Color`
+
+<img alt="Grouping color" style="border-radius: 8px; border: 1px solid #E8F1FC" src="https://docs-blobs.s3.us-east-2.amazonaws.com/images/ui/pages/scatters-explorer/scatters-color-group.png">
+
+- By `Chart`
+
+<img alt="Grouping chart line" style="border-radius: 8px; border: 1px solid #E8F1FC" src="https://docs-blobs.s3.us-east-2.amazonaws.com/images/ui/pages/scatters-explorer/scatters-color-group.png">
+
+##### Trend line
+
+A trend line is a straight line that best represents the points on a `scatter plot`. The trend line may go through some points but need not go through them all.
+
+<img alt="trend line" style="border-radius: 8px; border: 1px solid #E8F1FC" src="https://docs-blobs.s3.us-east-2.amazonaws.com/images/ui/pages/scatters-explorer/trendline.png">
+
+From trend line options popover you can change regression from `Linear` (by default) to `LOESS`(locally weighted smoothing), which creates a smooth line through a `scatter plot` to help you to see relationship between variables and foresee trends. Also, you can change the `bandwidth` with `slider`
+
+<img alt="trend line loess" style="border-radius: 8px; border: 1px solid #E8F1FC" src="https://docs-blobs.s3.us-east-2.amazonaws.com/images/ui/pages/scatters-explorer/trendline-loess.png">
+
+
+##### Export chart
+
+Scatter explorer also, gives ability to `export` your chart as `image`.
+
+By clicking `export button` from control panel, will be opened chart preview modal.
+You can change exportable chart `image width`, `single chart height`, set `image name` and `format`.
+
+<img alt="export chart" style="border-radius: 8px; border: 1px solid #E8F1FC" src="https://docs-blobs.s3.us-east-2.amazonaws.com/images/ui/pages/scatters-explorer/export-chart.png">
+
+Following image formats are available export: `SVG`, `JPEG`, `PNG`.
+
+<img width="100" alt="export format" style="border-radius: 8px; border: 1px solid #E8F1FC" src="https://docs-blobs.s3.us-east-2.amazonaws.com/images/ui/pages/scatters-explorer/export-format.png">
