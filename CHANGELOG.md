@@ -1,6 +1,6 @@
 # Changelog
 
-## 3.6.1
+## 3.6.1 Feb 25, 2022
 
 - Fix issue with aligning x-axis by custom metric (KaroMourad)
 - Add `__AIM_PROXY_URL__` env variable to see full proxy url when running `aim up` command(rubenaprikyan)
@@ -10,7 +10,7 @@
 - Display `None` values in group config column (VkoHov, Hamik25)
 - Fix rendering issue on `Select` form search suggestions list (arsengit)
 - Fix PL.AimLogger save_dir AttributeError (GeeeekExplorer)
-- Remove example_type substring from param name (VkoHov)
+- Remove `__example_type__` substring from param name (VkoHov)
 
 ## 3.6.0 Feb 22 2022
 
