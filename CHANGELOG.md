@@ -2,7 +2,11 @@
 
 ## 3.6.1
 
-- Fix ability to align x-axis by metric (KaroMourad)
+- Fix ability to align x-axis by custom metric (KaroMourad)
+- Add `__AIM_PROXY_URL__` env variable to see full proxy url when running `aim up` command(rubenaprikyan)
+- Add `--proxy-url` argument to notebook extension's `%aim up` to render UI correctly if there is a proxy server  (rubenaprikyan)
+- Add SageMaker integration, `jupyter-server-proxy` s bug-fix script (rubenaprikyan, mahnerak)
+- Fix animation support in Plotly visualization and figure loading performance (Hamik25, mihran113)
 - Display `None` values in group config column (VkoHov, Hamik25)
 - Fix rendering issue on `Select` form search suggestions list (arsengit)
 - Fix PL.AimLogger save_dir AttributeError (GeeeekExplorer)
@@ -26,7 +30,7 @@
 - Add MLflow logs conversion command (devfox-se)
 - Add CustomObject implementation for `hub.dataset` (alberttorosyan)
 
-### Fixes: 
+### Fixes:
 
 - Fix live updated data loss after triggering endless scroll (VkoHov)
 - Fix system metric columns pinning functionality and grouping column order (arsengit)
