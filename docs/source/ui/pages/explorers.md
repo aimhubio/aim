@@ -22,11 +22,11 @@ Features:
 - Divide into subplots
 - Chart controls:
     - [Aggregate grouped metrics](#aggregate-metrics)
-    - Align metrics by time, epoch or another metric
-    - Change scale of the axes (linear or log)
-    - Apply smoothing
-    - Ignore outliers
-    - Apply highlighting modes (metric on hover, run on hover)
+    - [Align metrics by time, epoch or custom metric](#x-axis-properties)
+    - [Change scale of the axes (linear or log)](#axes-scale)
+    - [Apply smoothing](#chart-smoothing)
+    - [Ignore outliers](#ignore-outliers)
+    - [Apply highlighting modes (metric on hover, run on hover)](#highlight-modes)
     - Set chart tooltip parameters
     - Apply zoom in/out on charts
     - Export chart as image
@@ -133,36 +133,96 @@ By setting metrics density to Maximum, will query metrics by 500 point.
 
 ##### Alignment:
 
-Following types of metrics alignment are available: [Step](#step), [Epoch](#epoch), [Relative Time](#relative-time), [Absolute Time](#absolute-time) and [Another Metric](#another-metric).
+Following types of metrics alignment are available: [Step](#step), [Epoch](#epoch), [Relative Time](#relative-time), [Absolute Time](#absolute-time) and [Custom Metric](#custom-metric).
 By default, metrics aligned by [Step](#step).
 
 ###### Step
 
-By setting metrics alignment to Step, x-axis values will present the steps of tracked metrics.
+By setting metrics alignment to Step, x-axis values will represent the steps of tracked metrics.
 
   <img src="../../_static/images/ui/overview/metrics/x-axis_properties/alignment_step.png" style="border: 1px solid #1d2253" alt="alignment_step" />
 
 ###### Epoch
 
-By setting metrics alignment to Epoch, x-axis values will present the epochs of tracked metrics.
+By setting metrics alignment to Epoch, x-axis values will represent the epochs of tracked metrics.
 
   <img src="../../_static/images/ui/overview/metrics/x-axis_properties/alignment_epoch.png" style="border: 1px solid #1d2253" alt="alignment_epoch" />
 
 ###### Relative Time
 
-By setting metrics alignment to Relative Time, x-axis values will present by `HH:mm:ss`, relatively since the start of the first run until the last run.
+By setting metrics alignment to Relative Time, x-axis values will represent by `HH:mm:ss`, duration of tracking process.
 
   <img src="../../_static/images/ui/overview/metrics/x-axis_properties/alignment_relative.png" style="border: 1px solid #1d2253" alt="alignment_relative" />
 
 ###### Absolute Time
 
-By setting metrics alignment to Absolute Time, x-axis values will present by date `HH:mm:ss D MMM, YY`, absolutely since the start date of the first run until the last run.
+By setting metrics alignment to Absolute Time, x-axis values will represent by date `HH:mm:ss D MMM, YY`, since the start date of the first run until the last run.
 
   <img src="../../_static/images/ui/overview/metrics/x-axis_properties/alignment_absolute.png" style="border: 1px solid #1d2253" alt="alignment_absolute" />
 
-###### Another Metric
+###### Custom Metric
 
-By setting metrics alignment to Another Metric, x-axis values will present selected metric values, you can detect correlations between selected metric.
+By setting metrics alignment to Custom Metric, x-axis values will represent selected metric values, you can detect correlations between queried metrics and selected metric.
+
+#### Axes Scale
+
+Axes Scale section gives ability to display axes scale's [linear](https://en.wikipedia.org/wiki/Linear_scale) or [logarithmic](https://en.wikipedia.org/wiki/Logarithmic_scale).
+
+By default, axes scale's are [Linear](#linear-scale).
+
+##### Linear Scale
+
+  <img src="../../_static/images/ui/overview/metrics/axes-scale/axes_scale_linear.png" style="border: 1px solid #1d2253" alt="axes_scale_linear" />
+
+##### X-axis scale: Linear, Y-axis scale: Log
+
+  <img src="../../_static/images/ui/overview/metrics/axes-scale/y-axis-scale-log.png" style="border: 1px solid #1d2253" alt="y-axis-scale-log" />
+
+##### X-axis scale: Log, Y-axis scale: Linear  
+
+  <img src="../../_static/images/ui/overview/metrics/axes-scale/x-axis-scale-log.png" style="border: 1px solid #1d2253" alt="x-axis-scale-log" />
+
+##### Log Scale
+
+  <img src="../../_static/images/ui/overview/metrics/axes-scale/axes-scale-log.png" style="border: 1px solid #1d2253" alt="axes-scale-log" />
+
+#### Chart Smoothing
+
+While smoothing the chart, the data points are modified so individual points higher than the adjacent points (presumably because of noise) are reduced, and points that are lower than the adjacent points are increased leading to a smoother signal.
+You can select curve interpolation methods: Linear or Cubic.
+By default, chart smoothing in [Exponential moving average](#exponential-moving-average) mode and curve interpolation method is Linear.
+
+##### Exponential moving average
+
+An [exponential moving average](https://en.wikipedia.org/wiki/Moving_average), also known as an exponentially weighted moving average (EWMA), 
+is a first-order infinite impulse response filter that applies weighting factors which decrease exponentially.
+
+  <img src="../../_static/images/ui/overview/metrics/chart-smoothing/smoothing_ema.png" style="border: 1px solid #1d2253" alt="smoothing_ema" />
+
+##### Centered moving average
+
+When you center the moving averages, the data points are placed at the center of the range rather than the end of it. 
+This is done to position the moving average values at their central positions in time.
+
+  <img src="../../_static/images/ui/overview/metrics/chart-smoothing/smoothing_cma.png" style="border: 1px solid #1d2253" alt="smoothing_cma" />
+
+#### Ignore outliers
+
+An outlier is an observation that lies an abnormal distance from other values in a random sample from a population.
+Examination of the data for unusual observations that are far removed from the mass of data. 
+These points are often referred to as outliers.
+
+  <img src="../../_static/images/ui/overview/metrics/ignore-outliers/ignore-outliers-off.png" style="border: 1px solid #1d2253" alt="ignore-outliers-off" />
+
+Excluding outliers can cause your results to become statistically significant.
+By default, outliers are ignored.
+
+  <img src="../../_static/images/ui/overview/metrics/ignore-outliers/ignore-outliers-on.png" style="border: 1px solid #1d2253" alt="ignore-outliers-on" />
+
+#### Highlight Modes
+
+
+
 
 ### Params explorer
 Params explorer enables a parallel coordinates view for metrics and params. Very helpful when doing hyperparameter search.
