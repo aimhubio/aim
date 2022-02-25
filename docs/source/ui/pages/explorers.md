@@ -41,7 +41,7 @@ Features:
 
 Track intermediate images search easily by using select form functional compare them on the Images Explorer by using reach controls panel.
 
-<img width="1714" alt="Images explore overview" style="border-radius: 8px; border: 1px solid #E8F1FC" src="https://docs-blobs.s3.us-east-2.amazonaws.com/images/ui/pages/images-explore/images-explore.png">
+<img alt="Images explore overview" style="border-radius: 8px; border: 1px solid #E8F1FC" src="https://docs-blobs.s3.us-east-2.amazonaws.com/images/ui/pages/images-explore/images-explore.png">
 
 Features:
 
@@ -51,13 +51,13 @@ Features:
   - [Image properties control](#images-properties-control)
   - [Images sorting control](#images-sorting-control)
   - [Images group stacking control](#images-group-stacking-control)
-  - [Images tooltip params control](#images-tooltip-params-control)
+  - [Images tooltip params control](#set-tooltip-parameters)
 
 #### Query any image
 
 Use select form to easily query any image. There are two option to query images using dropdown, by using [Aim QL](../../using/search.html) language and advance mode for [Aim QL](../../using/search.html).
 
-<img width="1714" alt="Images explore overview" style="border-radius: 8px; border: 1px solid #E8F1FC" src="https://docs-blobs.s3.us-east-2.amazonaws.com/images/ui/pages/images-explore/images-explore-select-form.png">
+<img alt="Images explore overview" style="border-radius: 8px; border: 1px solid #E8F1FC" src="https://docs-blobs.s3.us-east-2.amazonaws.com/images/ui/pages/images-explore/images-explore-select-form.png">
 
 ###### How to use select form?
 
@@ -65,21 +65,27 @@ Use select form to easily query any image. There are two option to query images 
 - Select options you are want to use in query
 - Click on the Search button
 
+<img alt="Images explore overview" style="border-radius: 8px; border: 1px solid #E8F1FC" src="https://docs-blobs.s3.us-east-2.amazonaws.com/images/ui/pages/images-explore/
+images-select-dropdown.png">
+
 ###### How to reset select form value?
 
-// Select form image with hovered in reset icon
+<img alt="Images explore overview" style="border-radius: 8px; border: 1px solid #E8F1FC" src="https://docs-blobs.s3.us-east-2.amazonaws.com/images/ui/pages/images-explore/
+images-explore-select-form-reset.png">
 
 ###### How to use advanced query mode?
 
 - Click on pencel icon in the right side of select form to show input
 - Type advance [Aim QL](../../using/search.html) query
 - Click on the Search button
-  // Select form image with typed some AIM ql query and hovered on search button
+
+<img alt="Images explore overview" style="border-radius: 8px; border: 1px solid #E8F1FC" src="https://docs-blobs.s3.us-east-2.amazonaws.com/images/ui/pages/images-explore/images-explore-query-advanced-mode-on.png">
 
 #### Group image by run parameters
 
 Use select grouping dropdown which is located in the right top corner of the image explore page.
-// image grouping button
+
+<img alt="Images explore overview" style="border-radius: 8px; border: 1px solid #E8F1FC" src="https://docs-blobs.s3.us-east-2.amazonaws.com/images/ui/pages/images-explore/grouping-button.png">
 
 ###### How to use image grouping?
 
@@ -88,41 +94,49 @@ Use select grouping dropdown which is located in the right top corner of the ima
 
 Grouping will be apply after each field selection also you can select grouping mode (Group or Reverse)
 
-// Grouping opened popover selected some fields
+<img alt="Images explore overview" style="border-radius: 8px; border: 1px solid #E8F1FC" src="https://docs-blobs.s3.us-east-2.amazonaws.com/images/ui/pages/images-explore/grouping-with-opened-dropdown.png">
 
 #### Image explorer right controls panel
 
 Any change in controls will help to explore images better on the workspace
 
-#### Images properties control
+#### Images size manipulation control
 
 - Click on image property button
-- Select value from align image by dropdown by default dropdown value is `Height`
-- Use slider to configure value for scale relative to window size by default scale value is `15%`
+- Select value from dropdown to align image. (by default dropdown value is `Height`). Use slider to configure value for scale relative to window size by default scale value is `15%`.
+
+  - By height
+
+    <img alt="Images explore overview" style="border-radius: 8px; border: 1px solid #E8F1FC" src="https://docs-blobs.s3.us-east-2.amazonaws.com/images/ui/pages/images-explore/images-size-by-height.png">
+
+  - By width
+
+    <img alt="Images explore overview" style="border-radius: 8px; border: 1px solid #E8F1FC" src="https://docs-blobs.s3.us-east-2.amazonaws.com/images/ui/pages/images-explore/images-size-by-width.png">
+
+  - Original size
+
+    <img alt="Images explore overview" style="border-radius: 8px; border: 1px solid #E8F1FC" src="https://docs-blobs.s3.us-east-2.amazonaws.com/images/ui/pages/images-explore/images-size-by-original-size.png">
+
 - Use image rendering variation by default value of this control is `Pixelated`
 
-##### Images sorting control
+ <img alt="Images explore overview" style="border-radius: 8px; border: 1px solid #E8F1FC" src="https://docs-blobs.s3.us-east-2.amazonaws.com/images/ui/pages/images-explore/images-rendering.png">
+
+#### Images sorting control
 
 - Click on image sorting button
 - Select fields for sorting images. Selection ordering is meaningful and data will be sorting by selection order. Bellow is visible Ordered By list where contains all selected fields from dropdown. You can remove any already selected field by clicking on `x` icon or change sorting direction by clicking radio button Asc or Desc. Default selected direction is Asc.
 - For reset all existing sorting fields you can simply click on Reset Sorting button
 
-Select params and metrics from
+#### Set tooltip parameters
 
-//image
-
-Search runs with [Aim QL](../../using/search.html)
-
--
+You can select tooltip parameters to show params and values in tooltip Params section.
+You can select hide or show button to display or hide tooltip on hover.
 
 ### Params Explorer
 
 #### Overview
 
-Params explorer helps you to represent high dimensional data as a multi-dimensional visualization
-
-<img width="1790" alt="param-explore" style="border-radius: 8px; border: 1px solid #E8F1FC" src="https://user-images.githubusercontent.com/43929589/155369337-d961536d-e46d-47df-bd73-2a81c965ef4e.png"
-
+Params explorer helps you to represent high dimensional data as a multi-dimensional visualization.
 Features:
 
 - [Easily query any metrics and params](#query-any-metrics-and-params)
