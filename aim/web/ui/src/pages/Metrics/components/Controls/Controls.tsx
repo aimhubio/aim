@@ -163,7 +163,7 @@ function Controls(
               )}
               component={
                 <AlignmentPopover
-                  projectsDataMetrics={props.projectsDataMetrics}
+                  selectFormOptions={props.selectFormOptions}
                   alignmentConfig={props.alignmentConfig}
                   densityType={props.densityType}
                   onAlignmentMetricChange={props.onAlignmentMetricChange}

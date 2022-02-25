@@ -78,7 +78,6 @@ export interface IMetricProps extends Partial<RouteChildrenProps> {
   hiddenColumns: string[];
   hideSystemMetrics: boolean;
   groupingSelectOptions: IGroupingSelectOption[];
-  projectsDataMetrics: IProjectParamsMetrics['metric'];
   requestStatus: RequestStatusEnum;
   resizeMode: ResizeModeEnum;
   selectFormData: { options: ISelectOption[]; suggestions: string[] };
