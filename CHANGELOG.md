@@ -2,7 +2,7 @@
 
 ## 3.6.1
 
-- Fix ability to align x-axis by custom metric (KaroMourad)
+- Fix issue with aligning x-axis by custom metric (KaroMourad)
 - Add `__AIM_PROXY_URL__` env variable to see full proxy url when running `aim up` command(rubenaprikyan)
 - Add `--proxy-url` argument to notebook extension's `%aim up` to render UI correctly if there is a proxy server  (rubenaprikyan)
 - Add SageMaker integration, `jupyter-server-proxy` s bug-fix script (rubenaprikyan, mahnerak)
