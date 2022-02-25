@@ -2,6 +2,7 @@
 
 ## 3.6.1
 
+- Fix animation support in Plotly visualization and figure loading performance (Hamik25, mihran113)
 - Display `None` values in group config column (VkoHov, Hamik25)
 - Fix rendering issue on `Select` form search suggestions list (arsengit)
 - Fix PL.AimLogger save_dir AttributeError (GeeeekExplorer)
@@ -25,7 +26,7 @@
 - Add MLflow logs conversion command (devfox-se)
 - Add CustomObject implementation for `hub.dataset` (alberttorosyan)
 
-### Fixes: 
+### Fixes:
 
 - Fix live updated data loss after triggering endless scroll (VkoHov)
 - Fix system metric columns pinning functionality and grouping column order (arsengit)
