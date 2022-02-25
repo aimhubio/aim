@@ -87,7 +87,7 @@ Scatter explorer gives ability to visualize correlations between metric last val
 
 It represents graph where corresponding values from a set of data are placed as points on a coordinate plane. A relationship between the points is sometimes shown to be positive, negative, strong, or weak.
 
- <img style="border-radius: 8px; border: 1px solid #E8F1FC"  alt="scatters-explore" src="https://docs-blobs.s3.us-east-2.amazonaws.com/images/ui/pages/scatters-explorer/scatters.png">
+<img alt="scatters-explore" style="border-radius: 8px; border: 1px solid #E8F1FC" src="https://docs-blobs.s3.us-east-2.amazonaws.com/images/ui/pages/scatters-explorer/scatters.png">
 
 Abilities provided by Scatter explorer
 

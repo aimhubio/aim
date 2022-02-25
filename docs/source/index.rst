@@ -25,8 +25,9 @@
 
    ui/overview.md
    ui/pages/home_page.md
-   ui/pages/run_management.md 
-   ui/pages/explorers.md 
+   ui/pages/run_management.md
+   ui/pages/explorers.md
+   ui/pages/bookmarks.md
    ui/pages/tags.md
    ui/guides.md
 
