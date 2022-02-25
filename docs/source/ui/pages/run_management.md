@@ -37,7 +37,7 @@ in order to confirm archive runs batch operation, click on `Archive` button on t
 
 <img style="border-radius: 8px; border: 1px solid #E8F1FC" alt="Runs Explorer Batch archive" src="https://docs-blobs.s3.us-east-2.amazonaws.com/images/ui/pages/runs-explorer/archive_runs_model.png">
 
-The same is actions is for deleting runs batch, just click on the `Delete` button after selecting some runs and click on Delete button on the opened popup to confirm.
+You can delete runs batch by repeating the same actions above, just click on the `Delete` button after selecting some runs and click on Delete button on the opened popup to confirm.
 
 <img style="border-radius: 8px; border: 1px solid #E8F1FC" alt="Runs Explorer Batch delete" src="https://docs-blobs.s3.us-east-2.amazonaws.com/images/ui/pages/runs-explorer/delete_runs_model.png">
 
