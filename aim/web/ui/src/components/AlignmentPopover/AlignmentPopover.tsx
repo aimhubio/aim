@@ -80,7 +80,10 @@ function AlignmentPopover({
       let data: { value: string; label: string }[] = [];
       if (selectFormOptions) {
         for (let option of selectFormOptions) {
-          if (!isSystemMetric(option)) {
+          if (
+            option?.value?.option_name &&
+            !isSystemMetric(option.value.option_name)
+          ) {
             data.push({ value: option.label, label: option.label });
           }
         }
