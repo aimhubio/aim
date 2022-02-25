@@ -11,12 +11,14 @@ You can simply group, filter and compare your tracked metrics with Metrics Explo
 It helps to save lots of time compared to other open-source experiment tracking tools.
 
 Metrics Explorer main parts are:
+
 - Select Form
 - Charts
 - Table
 - Grouping
 
 Features:
+
 - [Query any metric easily](#query-any-metric-easily)
 - [Group by any parameter](#group-by-any-parameter)
 - [Aggregate grouped metrics](#aggregate-metrics)
@@ -56,7 +58,6 @@ Group by color, stroke, or chart with selected parameters
 ##### Group by Chart
 
 <img src="../../_static/images/ui/overview/metrics/grouping/groupby_chart.png" style="border-radius: 8px; border: 1px solid #E8F1FC" alt="groupby_chart" />
-
 
 #### Aggregate metrics
 
@@ -117,15 +118,15 @@ By selecting aggregation area Mean ± Standard Deviation, will draw area between
 
 [Mean](#mean), [Standard Deviation](https://en.wikipedia.org/wiki/Standard_deviation)
 
-<img src="../../_static/images/ui/overview/metrics/aggregation/aggr_area_std_dev.png" style="border-radius: 8px; border: 1px solid #E8F1FC" alt="aggr_area_std_dev"/> 
+<img src="../../_static/images/ui/overview/metrics/aggregation/aggr_area_std_dev.png" style="border-radius: 8px; border: 1px solid #E8F1FC" alt="aggr_area_std_dev"/>
 
 ###### Standard Error
 
-By selecting aggregation area Mean ± Standard Error, will draw area between  `mean - standard error` and `mean + standard error` of tracked metrics per X.
+By selecting aggregation area Mean ± Standard Error, will draw area between `mean - standard error` and `mean + standard error` of tracked metrics per X.
 
 [Mean](#mean), [Standard Error](https://en.wikipedia.org/wiki/Standard_error)
 
-<img src="../../_static/images/ui/overview/metrics/aggregation/aggr_area_std_err.png" style="border-radius: 8px; border: 1px solid #E8F1FC" alt="aggr_area_std_err"/> 
+<img src="../../_static/images/ui/overview/metrics/aggregation/aggr_area_std_err.png" style="border-radius: 8px; border: 1px solid #E8F1FC" alt="aggr_area_std_err"/>
 
 ###### Confidence Interval
 
@@ -133,7 +134,7 @@ By selecting aggregation area Mean ± Confidence Interval, will draw area betwee
 
 [Mean](#mean), [Confidence Interval](https://en.wikipedia.org/wiki/Confidence_interval)
 
-<img src="../../_static/images/ui/overview/metrics/aggregation/aggr_area_conf_int.png" style="border-radius: 8px; border: 1px solid #E8F1FC" alt="aggr_area_conf_int"/> 
+<img src="../../_static/images/ui/overview/metrics/aggregation/aggr_area_conf_int.png" style="border-radius: 8px; border: 1px solid #E8F1FC" alt="aggr_area_conf_int"/>
 
 #### X-Axis properties
 
@@ -395,10 +396,14 @@ Any change in controls will help to explore images better on the workspace
 - Select fields for sorting images. Selection ordering is meaningful and data will be sorting by selection order. Bellow is visible Ordered By list where contains all selected fields from dropdown. You can remove any already selected field by clicking on `x` icon or change sorting direction by clicking radio button Asc or Desc. Default selected direction is Asc.
 - For reset all existing sorting fields you can simply click on Reset Sorting button
 
+<img alt="Images sorting popover" style="border-radius: 8px; border: 1px solid #E8F1FC" src="https://docs-blobs.s3.us-east-2.amazonaws.com/images/ui/pages/images-explore/images-explore-sorting-desc.png">
+
 #### Set tooltip parameters
 
 You can select tooltip parameters to show params and values in tooltip Params section.
 You can select hide or show button to display or hide tooltip on hover.
+
+<img src="../../_static/images/ui/overview/metrics/tooltip-parameters/tooltip_parameters_popover.png" style="border-radius: 8px; border: 1px solid #E8F1FC" alt="tooltip-parameters-popover" />
 
 ### Params Explorer
 
