@@ -11,29 +11,41 @@ Runs explorer helps you to
 - [Delete and archive runs by batch](#delete-and-archive-runs-by-batch)
 - [Export Runs report](#export-runs-report)
 
-<img style="border: 1px solid #1d2253" alt="Runs Explorer" src="https://user-images.githubusercontent.com/21033329/155331282-e24cfd1c-e666-4e76-8891-587d8f314479.png">
+<img style="border-radius: 8px; border: 1px solid #E8F1FC" alt="Runs Explorer" src="https://docs-blobs.s3.us-east-2.amazonaws.com/images/ui/pages/runs-explorer/runs.png">
 
 ##### Search Runs
 
 Search bar is designed to search runs with [Aim QL](../../using/search.html).
 
-<img style="border: 1px solid #1d2253" alt="Runs Explorer Search Bar" src="https://user-images.githubusercontent.com/21033329/155337741-d97251c4-3712-426c-9c65-5ef9a3021b21.png">
+<img style="border-radius: 8px; border: 1px solid #E8F1FC" alt="Runs Explorer Search Bar" src="https://docs-blobs.s3.us-east-2.amazonaws.com/images/ui/pages/runs-explorer/search_runs.png">
 
 ##### Follow runs in a real time
 
 To explore runs in a real time mode you need to enable `Live Update` switcher from the top right corner of the page.
 
-<img style="border: 1px solid #1d2253" alt="Runs Explorer Live Update" src="https://user-images.githubusercontent.com/21033329/155357260-02dc0011-fd0b-4c3c-bc5c-0f4702950047.gif">
+<img style="border-radius: 8px; border: 1px solid #E8F1FC" alt="Runs Explorer Live Update" src="https://docs-blobs.s3.us-east-2.amazonaws.com/images/ui/pages/runs-explorer/live_update.gif">
 
 ##### Delete and archive runs by batch
 
-<img style="border: 1px solid #1d2253" alt="Runs Explorer Batch archive" src="https://user-images.githubusercontent.com/21033329/155358532-fafea9c7-8c32-4b9c-80c1-86e894905b2f.gif">
+Select some runs on runs table:
+
+<img style="border-radius: 8px; border: 1px solid #E8F1FC" alt="Runs Explorer Batch archive" src="https://docs-blobs.s3.us-east-2.amazonaws.com/images/ui/pages/runs-explorer/select_runs.png">
+
+Click on the `Archive` button.
+You may remove some runs from the popup opened by clicking on `Archive` button.
+in order to confirm archive runs batch operation, click on `Archive` button on the right bottom of popup.
+
+<img style="border-radius: 8px; border: 1px solid #E8F1FC" alt="Runs Explorer Batch archive" src="https://docs-blobs.s3.us-east-2.amazonaws.com/images/ui/pages/runs-explorer/archive_runs_model.png">
+
+The same is actions is for deleting runs batch, just click on the `Delete` button after selecting some runs and click on Delete button on the opened popup to confirm.
+
+<img style="border-radius: 8px; border: 1px solid #E8F1FC" alt="Runs Explorer Batch delete" src="https://docs-blobs.s3.us-east-2.amazonaws.com/images/ui/pages/runs-explorer/delete_runs_model.png">
 
 ##### Export Runs report
 
 By clicking on `Export` button in Runs Table, it's possible to generate a Runs report as CSV.
 
-<img style="border: 1px solid #1d2253" alt="Runs Export" src="https://user-images.githubusercontent.com/21033329/155360435-2151cbb8-4953-4302-91cb-d8ae3daef607.gif">
+<img style="border-radius: 8px; border: 1px solid #E8F1FC" alt="Runs Explorer export runs" src="https://docs-blobs.s3.us-east-2.amazonaws.com/images/ui/pages/runs-explorer/export_runs.png">
 
 ### Single run page
 
