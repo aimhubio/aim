@@ -43,6 +43,8 @@ Features:
 
 Params explorer helps you to represent high dimensional data as a multi-dimensional visualization
 
+Features:
+
 - [Easily query any metrics and params](#query-any-metrics-and-params)
 - [Group runs by color, stroke, or chart](#grouping)
 - [Make the crossings easier with curve interpolation](#curve-interpolation)
