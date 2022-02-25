@@ -11,6 +11,7 @@ rocksdb databases with abstraction layers added to manage the collection as one 
 a single KV store called `Container`. Below is the directory structure for a typical Aim project:
 ```shell
 .aim
+    run_metadata.sqlite
     meta/
         index/
         chunks/
@@ -35,6 +36,12 @@ a single KV store called `Container`. Below is the directory structure for a typ
             aacf48e769534c32a9cc5a3c
             80483ab611a24bf5bd8fc288
 ``` 
+
+There are two main parts of the storage: 
+- `run_metadata.sqlite`: SQLite database for storing `Run` structured data, such as, creation time, 
+  name, `Experiment` it is attached to, `Tag`s etc.
+- `meta/` and `seqs/` directories: a collection of rocksdb storages. Used to write `Run`s tracked 
+  data, such as params, metrics and objects.
 
 In the tree above the hash-strings (i.e. `aacf48e769534c32a9cc5a3c`) represent a single `Run`.
 When the new `Run` is started, aim will create two Containers:
