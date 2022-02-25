@@ -27,6 +27,7 @@ function PlotlyVisualizer(
               <Plot
                 data={props.data?.processedValue?.data}
                 layout={props.data?.processedValue?.layout}
+                frames={props.data?.processedValue?.frames}
                 className='PlotlyVisualizer__recordCnt__plotWrapper'
                 useResizeHandler={true}
               />
