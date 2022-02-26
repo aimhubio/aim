@@ -2,7 +2,9 @@
 
 ### Overview
 
-Aim enables powerful UI to explore logged ML runs and metadata.
+Explorers are powerful tools for comparing 1000s of AI experiments with a few clicks.
+
+In this section we will introduce you to the Aim explorers, their features and how to use them.
 
 ### Metrics Explorer
 
