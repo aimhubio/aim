@@ -39,7 +39,7 @@ le_Py_HashDouble(
         m *= 268435456.0;  /* 2**28 */
         e -= 28;
         y = (Py_uhash_t)m;  /* pull out integer part */
-        m -= y;
+        m -= (double)y;
         x += y;
         if (x >= _PyHASH_MODULUS)
             x -= _PyHASH_MODULUS;
