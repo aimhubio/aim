@@ -22,6 +22,7 @@ function Runs(props: any): React.FunctionComponentElement<React.ReactNode> {
             }}
           />
           <SearchBar
+            searchSuggestions={props.searchSuggestions}
             onSearchInputChange={props.onSelectRunQueryChange}
             searchValue={props.query}
             isRunsDataLoading={

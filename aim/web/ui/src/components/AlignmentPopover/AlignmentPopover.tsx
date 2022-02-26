@@ -54,7 +54,7 @@ function AlignmentPopover({
   onAlignmentMetricChange,
   alignmentConfig,
   densityType,
-  projectsDataMetrics,
+  selectFormOptions,
 }: IAlignmentPopoverProps): React.FunctionComponentElement<React.ReactNode> {
   const [open, setOpen] = useState<boolean>(false);
   function handleAlignmentTypeChange(e: React.ChangeEvent<any>): void {
@@ -78,15 +78,18 @@ function AlignmentPopover({
   const metricOptions: { value: string; label: string }[] =
     React.useMemo(() => {
       let data: { value: string; label: string }[] = [];
-      if (projectsDataMetrics) {
-        for (let key in projectsDataMetrics) {
-          if (!isSystemMetric(key)) {
-            data.push({ value: key, label: key });
+      if (selectFormOptions) {
+        for (let option of selectFormOptions) {
+          if (
+            option?.value?.option_name &&
+            !isSystemMetric(option.value.option_name)
+          ) {
+            data.push({ value: option.label, label: option.label });
           }
         }
       }
       return data;
-    }, [projectsDataMetrics]);
+    }, [selectFormOptions]);
 
   return (
     <ErrorBoundary>

@@ -9,8 +9,13 @@ import aim.ext.transport.remote_tracking_pb2 as rpc_messages
 import aim.ext.transport.remote_tracking_pb2_grpc as remote_tracking_pb2_grpc
 
 from aim.ext.transport.message_utils import pack_stream, unpack_stream, raise_exception
-from aim.ext.transport.config import AIM_CLIENT_SSL_CERTIFICATES_FILE, AIM_CLIENT_QUEUE_MAX_MEMORY
 from aim.ext.transport.rpc_queue import RpcQueueWithRetry
+from aim.ext.transport.config import (
+    AIM_CLIENT_SSL_CERTIFICATES_FILE,
+    AIM_RT_MAX_MESSAGE_SIZE,
+    AIM_RT_DEFAULT_MAX_MESSAGE_SIZE,
+    AIM_CLIENT_QUEUE_MAX_MEMORY,
+)
 from aim.storage.treeutils import encode_tree, decode_tree
 
 
@@ -30,12 +35,18 @@ class Client:
         self._id = str(uuid.uuid4())
 
         ssl_certfile = os.getenv(AIM_CLIENT_SSL_CERTIFICATES_FILE)
+        msg_max_size = os.getenv(AIM_RT_MAX_MESSAGE_SIZE, AIM_RT_DEFAULT_MAX_MESSAGE_SIZE)
+        options = [
+            ('grpc.max_send_message_length', msg_max_size),
+            ('grpc.max_receive_message_length', msg_max_size)
+        ]
+
         if ssl_certfile:
             with open(ssl_certfile, 'rb') as f:
                 root_certificates = grpc.ssl_channel_credentials(f.read())
-            self._remote_channel = grpc.secure_channel(remote_path, root_certificates)
+            self._remote_channel = grpc.secure_channel(remote_path, root_certificates, options=options)
         else:
-            self._remote_channel = grpc.insecure_channel(remote_path)
+            self._remote_channel = grpc.insecure_channel(remote_path, options=options)
 
         self._remote_stub = remote_tracking_pb2_grpc.RemoteTrackingServiceStub(self._remote_channel)
 

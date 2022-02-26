@@ -104,10 +104,10 @@ function drawArea(args: IDrawAreaArgs): void {
     .append('clipPath')
     .attr('id', `${nameKey}-circles-rect-clip-${index}`)
     .append('rect')
-    .attr('x', -10)
-    .attr('y', -10)
-    .attr('width', offsetWidth + 2 * CircleEnum.ActiveRadius + 10)
-    .attr('height', offsetHeight + 2 * CircleEnum.ActiveRadius + 10);
+    .attr('x', -CircleEnum.Radius)
+    .attr('y', -CircleEnum.Radius)
+    .attr('width', offsetWidth + 2 * CircleEnum.Radius)
+    .attr('height', offsetHeight + 2 * CircleEnum.Radius);
 
   const keys = Object.keys(chartTitle);
   const titleText = keys

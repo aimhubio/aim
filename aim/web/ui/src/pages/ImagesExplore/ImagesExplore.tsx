@@ -204,7 +204,7 @@ function ImagesExplore(): React.FunctionComponentElement<React.ReactNode> {
                   imagesExploreData?.requestStatus === RequestStatusEnum.Pending
                 }
                 selectedImagesData={imagesExploreData?.config?.select}
-                selectFormOptions={imagesExploreData?.selectFormOptions}
+                selectFormData={imagesExploreData?.selectFormData}
                 onImagesExploreSelectChange={
                   imagesExploreAppModel.onImagesExploreSelectChange
                 }
@@ -274,7 +274,7 @@ function ImagesExplore(): React.FunctionComponentElement<React.ReactNode> {
                 }
                 illustrationConfig={{
                   page: 'image',
-                  type: imagesExploreData?.selectFormOptions.length
+                  type: imagesExploreData?.selectFormData?.options?.length
                     ? Request_Illustrations[
                         imagesExploreData.requestStatus as RequestStatusEnum
                       ]

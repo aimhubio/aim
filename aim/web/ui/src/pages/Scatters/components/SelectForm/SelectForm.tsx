@@ -6,24 +6,13 @@ import { Button, Dropdown, Icon } from 'components/kit';
 import ExpressionAutoComplete from 'components/kit/ExpressionAutoComplete';
 import ErrorBoundary from 'components/ErrorBoundary/ErrorBoundary';
 
-import COLORS from 'config/colors/colors';
 import { ANALYTICS_EVENT_KEYS } from 'config/analytics/analyticsKeysMap';
 
-import useModel from 'hooks/model/useModel';
-import useParamsSuggestions from 'hooks/projectData/useParamsSuggestions';
-
-import projectsModel from 'services/models/projects/projectsModel';
 import scattersAppModel from 'services/models/scatters/scattersAppModel';
 import { trackEvent } from 'services/analytics';
 
-import { IProjectsModelState } from 'types/services/models/projects/projectsModel';
-import { ISelectOption } from 'types/services/models/explorer/createAppModel';
 import { ISelectFormProps } from 'types/pages/scatters/components/SelectForm/SelectForm';
 
-import { formatSystemMetricName } from 'utils/formatSystemMetricName';
-import { isSystemMetric } from 'utils/isSystemMetric';
-import getObjectPaths from 'utils/getObjectPaths';
-import alphabeticalSortComparator from 'utils/alphabeticalSortComparator';
 import exceptionHandler from 'utils/app/exceptionHandler';
 
 import './SelectForm.scss';
@@ -31,7 +20,7 @@ import './SelectForm.scss';
 function SelectForm({
   requestIsPending,
   selectedOptionsData,
-  selectFormOptions,
+  selectFormData,
   onSelectOptionsChange,
   onSelectRunQueryChange,
 }: ISelectFormProps): React.FunctionComponentElement<React.ReactNode> {
@@ -40,7 +29,6 @@ function SelectForm({
     y: false,
   });
   const searchRef = React.useRef<any>(null);
-  const paramsSuggestions = useParamsSuggestions();
 
   React.useEffect(() => {
     return () => {
@@ -72,13 +60,13 @@ function SelectForm({
   const dropDownOptions: { value: string; label: string }[] =
     React.useMemo(() => {
       let data: { value: string; label: string }[] = [];
-      if (selectFormOptions) {
-        for (let option of selectFormOptions) {
+      if (selectFormData.options) {
+        for (let option of selectFormData.options) {
           data.push({ value: option.label, label: option.label });
         }
       }
       return data;
-    }, [selectFormOptions]);
+    }, [selectFormData.options]);
 
   function onChange(
     type: 'x' | 'y',
@@ -88,13 +76,13 @@ function SelectForm({
       const selectedOptions = selectedOptionsData?.options;
       if (type === 'y') {
         onSelectOptionsChange([
-          selectFormOptions.find((o) => o.label === option.value),
+          selectFormData.options.find((o) => o.label === option.value),
           selectedOptions.length === 2 ? selectedOptions[1] : null,
         ]);
       } else if (type === 'x') {
         onSelectOptionsChange([
           selectedOptions[0] || null,
-          selectFormOptions.find((o) => o.label === option.value),
+          selectFormData.options.find((o) => o.label === option.value),
         ]);
       }
     }
@@ -188,7 +176,7 @@ function SelectForm({
               onExpressionChange={onSelectRunQueryChange}
               onSubmit={handleParamsSearch}
               value={selectedOptionsData?.query}
-              options={paramsSuggestions}
+              options={selectFormData.suggestions}
               placeholder='Filter runs, e.g. run.learning_rate > 0.0001 and run.batch_size == 32'
             />
           </div>

@@ -328,6 +328,9 @@
         &__runsList {
           overflow: auto;
           height: 100%;
+          .IllustrationBlock {
+            height: calc(100% - 3rem);
+          }
           &__loadMoreButtonWrapper {
             margin-top: 0.5rem;
             display: flex;
