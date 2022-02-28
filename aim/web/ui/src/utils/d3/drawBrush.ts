@@ -23,6 +23,7 @@ function drawBrush(args: IDrawBrushArgs): void {
     max,
     zoom,
     onZoomChange,
+    readOnly,
   } = args;
 
   if (!plotNodeRef.current) {
@@ -40,7 +41,7 @@ function drawBrush(args: IDrawBrushArgs): void {
     ])
     .on('end', handleBrushChange);
 
-  if (zoom?.active) {
+  if (zoom?.active && !readOnly) {
     plotNodeRef.current.append('g').call(brush).attr('class', 'brush');
   }
 

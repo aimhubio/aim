@@ -10,6 +10,7 @@ export interface IDropdownProps {
   open?: boolean;
   withPortal?: true;
   className?: string;
+  selectClassName?: string;
   label?: string;
   maxMenuListHeight?: string;
   isColored?: boolean;

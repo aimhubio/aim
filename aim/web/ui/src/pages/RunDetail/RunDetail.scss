@@ -7,6 +7,9 @@
       .MuiTabs-fixed {
         overflow: auto !important;
       }
+      .MuiTabs-indicator {
+        display: none;
+      }
     }
     &__appBarContainer {
       height: 2.5rem;

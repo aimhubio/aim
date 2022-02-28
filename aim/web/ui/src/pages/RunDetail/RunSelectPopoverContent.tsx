@@ -6,11 +6,11 @@ import { isEmpty } from 'lodash-es';
 
 import { CircularProgress } from '@material-ui/core';
 
-import EmptyComponent from 'components/EmptyComponent/EmptyComponent';
+import IllustrationBlock from 'components/IllustrationBlock/IllustrationBlock';
 import { Button, Icon, Text } from 'components/kit';
 import ErrorBoundary from 'components/ErrorBoundary/ErrorBoundary';
 
-import { DateWithOutSeconds } from 'config/dates/dates';
+import { DATE_WITHOUT_SECONDS } from 'config/dates/dates';
 
 import { processDurationTime } from 'utils/processDurationTime';
 
@@ -135,7 +135,7 @@ function RunSelectPopoverContent({
                         weight={runInfo?.name === run.name ? 600 : 500}
                       >
                         {`${moment(run.creation_time * 1000).format(
-                          DateWithOutSeconds,
+                          DATE_WITHOUT_SECONDS,
                         )} | ${processDurationTime(
                           run?.creation_time * 1000,
                           run?.end_time ? run?.end_time * 1000 : dateNow,
@@ -144,7 +144,7 @@ function RunSelectPopoverContent({
                     </NavLink>
                   ))
                 ) : (
-                  <EmptyComponent size='big' content={'No Runs'} />
+                  <IllustrationBlock size='xLarge' content={'No Runs'} />
                 )}
                 {!isEmpty(runsOfExperiment) && isLoadMoreButtonShown && (
                   <div className='RunSelectPopoverWrapper__selectPopoverContent__contentContainer__runsListContainer__runsList__loadMoreButtonWrapper'>

@@ -4,12 +4,14 @@ import { IDrawAreaArgs } from 'types/utils/d3/drawArea';
 
 import { formatSystemMetricName } from 'utils/formatSystemMetricName';
 import { isSystemMetric } from 'utils/isSystemMetric';
+import { toTextEllipsis } from 'utils/helper';
 
 import { CircleEnum } from './index';
 
 function drawArea(args: IDrawAreaArgs): void {
   const {
-    index = 0,
+    index,
+    nameKey,
     parentRef,
     visAreaRef,
     svgNodeRef,
@@ -62,11 +64,12 @@ function drawArea(args: IDrawAreaArgs): void {
 
   svgNodeRef.current = visArea
     .append('svg')
-    .attr('id', 'svg-area')
+    .attr('id', `${nameKey}-svg-area-${index}`)
     .attr('width', `${width}px`)
     .attr('height', `${height}px`)
     .attr('pointer-events', 'all')
-    .attr('xmlns', 'http://www.w3.org/2000/svg');
+    .attr('xmlns', 'http://www.w3.org/2000/svg')
+    .style('fill', 'transparent');
 
   bgRectNodeRef.current = svgNodeRef.current
     .append('rect')
@@ -82,12 +85,11 @@ function drawArea(args: IDrawAreaArgs): void {
     .attr('transform', `translate(${margin.left}, ${margin.top})`);
 
   axesNodeRef.current = plotNodeRef.current.append('g').attr('class', 'Axes');
-
   linesNodeRef.current = plotNodeRef.current.append('g').attr('class', 'Lines');
 
   linesNodeRef.current
     .append('clipPath')
-    .attr('id', 'lines-rect-clip-' + index)
+    .attr('id', `${nameKey}-lines-rect-clip-${index}`)
     .append('rect')
     .attr('x', 0)
     .attr('y', 0)
@@ -100,16 +102,13 @@ function drawArea(args: IDrawAreaArgs): void {
 
   attributesNodeRef.current
     .append('clipPath')
-    .attr('id', 'circles-rect-clip-' + index)
+    .attr('id', `${nameKey}-circles-rect-clip-${index}`)
     .append('rect')
     .attr('x', -10)
     .attr('y', -10)
     .attr('width', offsetWidth + 2 * CircleEnum.ActiveRadius + 10)
     .attr('height', offsetHeight + 2 * CircleEnum.ActiveRadius + 10);
 
-  const titleMarginTop = 4;
-  const titleMarginBottom = 6;
-  const titleHeight = margin.top - titleMarginTop - titleMarginBottom;
   const keys = Object.keys(chartTitle);
   const titleText = keys
     ? `${keys
@@ -123,59 +122,45 @@ function drawArea(args: IDrawAreaArgs): void {
         )
         .join(', ')}`
     : '';
-
+  const titleStyle = {
+    x: margin.left / 6,
+    fontSize: 11,
+    fontFamily: 'Inter, sans-serif',
+    fontWeight: 400,
+  };
+  const textEllipsis = toTextEllipsis({
+    text: titleText,
+    width: titleStyle.x + offsetWidth,
+    fontSize: `${titleStyle.fontSize}px`,
+    fontFamily: titleStyle.fontFamily,
+    fontWeight: titleStyle.fontWeight,
+  });
   if (titleText) {
-    svgNodeRef.current
-      .append('foreignObject')
+    const titleGroup = svgNodeRef.current
+      .append('g')
+      .attr('transform', `translate(${titleStyle.x}, 3)`)
+      .attr('font-size', `${titleStyle.fontSize}px`)
+      .attr('font-weight', titleStyle.fontWeight)
+      .attr('font-family', titleStyle.fontFamily);
+
+    titleGroup
+      .append('text')
       .attr('x', 0)
-      .attr('y', titleMarginTop)
-      .attr('height', titleHeight)
-      .attr('width', width)
-      .html((d: any) => {
-        if (!keys.length) {
-          return '';
-        }
-        return `
-        <div 
-            title='#${index + 1} ${titleText}' 
-            style='
-              display: flex; 
-              align-items: center;
-              justify-content: center;
-              color: #484f56;
-              padding: 0 1em;
-            '
-        >
-          <div 
-            style='
-              width: ${titleHeight}px; 
-              height: ${titleHeight}px;
-              display: flex; 
-              align-items: center;
-              justify-content: center;
-              margin-right: 0.5em;
-              padding: 2px;
-              box-shadow: inset 0 0 0 1px #e8e8e8;
-              border-radius: 0.2em;
-              font-size: 0.6em;
-              flex-shrink: 0;
-            '
-          >
-           ${index + 1}
-          </div>
-          <div 
-            style='
-              white-space: nowrap; 
-              text-overflow: ellipsis;
-              overflow: hidden;
-              font-size: 0.75em;
-            '
-          >
-            ${titleText}
-          </div>
-        </div>
-      `;
-      });
+      .attr('y', 12)
+      .attr('fill', '#484f56')
+      .style('outline', '0.8px solid #dee6f3')
+      .style('border-radius', '1px')
+      .style('white-space', 'pre')
+      .text(`  ${index + 1}  `);
+
+    titleGroup
+      .append('text')
+      .attr('x', titleStyle.x + 39)
+      .attr('y', 12)
+      .attr('fill', '#484f56')
+      .text(textEllipsis)
+      .append('svg:title')
+      .text(titleText);
   }
 }
 

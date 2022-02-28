@@ -101,7 +101,7 @@ function ImagesExploreRangePanel({
               },
               {
                 errorCondition: (value: string | number) =>
-                  +value > indexRange[1],
+                  indexRange[1] !== 0 && +value > indexRange[1],
                 errorText: `Value should be equal or smaller then ${indexRange[1]}`,
               },
               {

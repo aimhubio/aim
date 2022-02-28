@@ -1,4 +1,4 @@
-import { TextFieldProps } from '@material-ui/core';
+import { TextFieldProps, TooltipProps } from '@material-ui/core';
 
 import { IconName } from 'components/kit/Icon';
 
@@ -42,5 +42,8 @@ export type IInputProps = Override<
       value: any,
       metadata: IValidationMetadata,
     ) => void;
+    restInputProps?: object;
+    tooltipPlacement?: TooltipProps['placement'];
+    wrapperClassName?: string;
   }
 >;

@@ -1,14 +1,21 @@
-// Chart grid pattern based on a 12-column grid layout
-const chartGridPattern: { [key: number]: number[] } = {
-  1: [12],
-  2: [6, 6],
-  3: [4, 4, 4],
-  4: [6, 6, 6, 6],
-  5: [4, 4, 4, 6, 6],
-  6: [4, 4, 4, 4, 4, 4],
-  7: [4, 4, 4, 6, 6, 6, 6],
-  8: [4, 4, 4, 4, 4, 4, 6, 6],
-  9: [4, 4, 4, 4, 4, 4, 4, 4, 4],
+export const GRID_SIZE = {
+  S: 4,
+  M: 6,
+  L: 12,
 };
 
-export default chartGridPattern;
+const { S, M, L } = GRID_SIZE;
+// Chart grid pattern based on a 12-column grid layout
+const CHART_GRID_PATTERN: { [key: number]: number[] } = {
+  1: [L],
+  2: [M, M],
+  3: [S, S, S],
+  4: [M, M, M, M],
+  5: [S, S, S, M, M],
+  6: [S, S, S, S, S, S],
+  7: [S, S, S, M, M, M, M],
+  8: [S, S, S, S, S, S, M, M],
+  9: [S, S, S, S, S, S, S, S, S],
+};
+
+export default CHART_GRID_PATTERN;

@@ -64,7 +64,8 @@ def unfold_tree(
 
 cpdef val_to_node(
     val: Any,
-    strict: bool = True
+    strict: bool = True,
+    resolve_objects: bool = False
 ):
     if not strict:
         node = dict()
@@ -78,24 +79,29 @@ cpdef val_to_node(
     elif val == ArrayFlag:
         return []
     elif isinstance(val, CustomObjectFlagType):
-        return CustomObject._aim_decode(val.aim_name, InMemoryTreeView(container={}, constructed=False))
+        if resolve_objects:
+            return dict()
+        else:
+            return CustomObject._aim_decode(val.aim_name, InMemoryTreeView(container={}, constructed=False))
     else:
         return val
 
 
 def fold_tree(
     paths_vals: Iterator[Tuple[AimObjectPath, Any]],
-    strict: bool = True
+    strict: bool = True,
+    resolve_objects: bool = False
 ) -> AimObject:
     (keys, val), = iter_fold_tree(paths_vals,
-                                  level=0, strict=strict)
+                                  level=0, strict=strict, resolve_objects=resolve_objects)
     return val
 
 
 def iter_fold_tree(
     paths_vals: Iterator[Tuple[AimObjectPath, Any]],
     level: int = 0,
-    strict: bool = True
+    strict: bool = True,
+    resolve_objects: bool = False
 ):
     cdef int idx
     stack = []
@@ -105,7 +111,7 @@ def iter_fold_tree(
         keys, val = next(paths_vals)
         if keys:
             raise StopIteration
-        node = val_to_node(val)
+        node = val_to_node(val, resolve_objects=resolve_objects)
         stack.append(node)
     except StopIteration:
         if level > 0:
@@ -128,7 +134,7 @@ def iter_fold_tree(
                 yield tuple(path), last_state
             path.pop()
 
-        node = val_to_node(val, strict=strict)
+        node = val_to_node(val, strict=strict, resolve_objects=resolve_objects)
 
         if len(keys) == len(path):
             stack.pop()
@@ -254,11 +260,13 @@ def encode_tree(
 
 def decode_tree(
     paths_vals: Iterator[Tuple[bytes, bytes]],
-    strict: bool = True
+    strict: bool = True,
+    resolve_objects: bool = False
 ) -> AimObject:
     return fold_tree(
         DecodePathsVals(paths_vals),
-        strict=strict
+        strict=strict,
+        resolve_objects=resolve_objects
     )
 
 

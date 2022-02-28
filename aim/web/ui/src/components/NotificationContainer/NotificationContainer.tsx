@@ -25,7 +25,7 @@ export default function NotificationContainer({
           anchorOrigin={{ vertical: 'top', horizontal: 'right' }}
         >
           <div className='NotificationContainer'>
-            {data.map(({ id, severity, message }) => (
+            {data.map(({ id, severity, messages }) => (
               <Box key={id} mt={0.5}>
                 <Alert
                   onClose={() => handleClose(+id)}
@@ -35,14 +35,20 @@ export default function NotificationContainer({
                     success: <img src={successIconImg} alt='' />,
                     error: <img src={errorIconImg} alt='' />,
                   }}
+                  style={{ height: 'auto' }}
                 >
                   <div className='NotificationContainer__contentBox'>
                     <p className='NotificationContainer__contentBox__severity'>
                       {severity}
                     </p>
-                    <p className='NotificationContainer__contentBox__message'>
-                      {message}
-                    </p>
+                    {messages.map((message: string, i: number) => (
+                      <p
+                        key={i}
+                        className='NotificationContainer__contentBox__message'
+                      >
+                        {message}
+                      </p>
+                    ))}
                   </div>
                 </Alert>
               </Box>

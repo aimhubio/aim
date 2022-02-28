@@ -90,6 +90,7 @@ class Repo:
     """
     _pool = WeakValueDictionary()  # TODO: take read only into account
 
+    # [AD] create but not used when rack_in_thread = False
     tracking_queue = _get_tracking_queue()
 
     def __init__(self, path: str, *, read_only: bool = None, init: bool = False):
@@ -677,6 +678,9 @@ class Repo:
             return {}
 
     def _prepare_runs_cache(self):
+        if self.is_remote_repo:
+            return
+
         db = self.structured_db
         cache_name = 'runs_cache'
         db.invalidate_cache(cache_name)
@@ -763,3 +767,11 @@ class Repo:
     @property
     def is_remote_repo(self):
         return self._client is not None
+
+    @contextmanager
+    def atomic_track(self):
+        if self.is_remote_repo:
+            self._client.start_instructions_batch()
+        yield
+        if self.is_remote_repo:
+            self._client.flush_instructions_batch()
