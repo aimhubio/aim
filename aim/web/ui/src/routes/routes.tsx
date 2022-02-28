@@ -42,7 +42,7 @@ const ImagesExplore = React.lazy(
 
 const TextsExplorer = React.lazy(
   () =>
-    import(/* webpackChunkName: "texts" */ 'pages/TextsExplorer/TextsExplorer'),
+    import(/* webpackChunkName: "texts" */ 'pages/TextExplorer/TextExplorer'),
 );
 
 export interface IRoute {

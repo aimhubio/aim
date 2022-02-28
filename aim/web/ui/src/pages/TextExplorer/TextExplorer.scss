@@ -1,38 +1,38 @@
 @use 'src/styles/abstracts' as *;
-.TextsExplorer {
+.TextExplorer {
   &__container {
     background-color: #ffffff;
     min-width: 50rem;
     height: 100%;
-    .TextsExplorer__section {
+    .TextExplorer__section {
       height: 100vh;
     }
-    .TextsExplorer__loader {
+    .TextExplorer__loader {
       flex-direction: column;
       justify-content: space-between;
     }
-    .TextsExplorer__fullHeight {
+    .TextExplorer__fullHeight {
       height: 100%;
     }
 
-    .TextsExplorer__section__div {
+    .TextExplorer__section__div {
       display: flex;
       flex-direction: column;
       justify-content: center;
     }
-    .TextsExplorer__table__container {
+    .TextExplorer__table__container {
       flex: 0.5 1 0;
       min-height: 11rem;
       &__hide {
         display: none;
       }
     }
-    .TextsExplorer__ResizePanel {
+    .TextExplorer__ResizePanel {
       &__hide {
         display: none;
       }
     }
-    .TextsExplorer__textsWrapper__container {
+    .TextExplorer__textsWrapper__container {
       min-height: 11.25rem;
       flex: 0.5 1 0;
       overflow: auto;

@@ -7,32 +7,32 @@ import BusyLoaderWrapper from 'components/BusyLoaderWrapper/BusyLoaderWrapper';
 import ErrorBoundary from 'components/ErrorBoundary/ErrorBoundary';
 import TableLoader from 'components/TableLoader/TableLoader';
 
-import './TextsExplorer.scss';
+import './TextExplorer.scss';
 
-function TextsExplorer() {
+function TextExplorer() {
   const tableElemRef = React.useRef<HTMLDivElement>(null);
   const textsWrapperRef = React.useRef<any>(null);
   const wrapperElemRef = React.useRef<HTMLDivElement>(null);
   return (
     <ErrorBoundary>
-      <div className='TextsExplorer__container' ref={wrapperElemRef}>
-        <section className='TextsExplorer__section'>
-          <div className='TextsExplorer__section__div TextsExplorer__fullHeight'>
+      <div className='TextExplorer__container' ref={wrapperElemRef}>
+        <section className='TextExplorer__section'>
+          <div className='TextExplorer__section__div TextExplorer__fullHeight'>
             App bar
             <div className='TextsExplorer__SelectForm__Grouping__container'>
               Search bar
             </div>
             <div
               ref={textsWrapperRef}
-              className='TextsExplorer__textsWrapper__container'
+              className='TextExplorer__textsWrapper__container'
             >
               Texts Panel
             </div>
             Resize panel
-            <div ref={tableElemRef} className='TextsExplorer__table__container'>
+            <div ref={tableElemRef} className='TextExplorer__table__container'>
               <BusyLoaderWrapper
                 isLoading={false}
-                className='TextsExplore__loader'
+                className='TextExplore__loader'
                 height='100%'
                 loaderComponent={<TableLoader />}
               >
@@ -46,4 +46,4 @@ function TextsExplorer() {
   );
 }
 
-export default TextsExplorer;
+export default TextExplorer;
