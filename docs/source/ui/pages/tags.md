@@ -4,7 +4,7 @@ Tags functionality intended to mark a runs. A tag can be attached to the runs to
 ### Create tag
 How to create tag? 
 There are two options for creating a tag. 
-##### First option:
+##### First option
 - Go to the tags page by clicking on the Tags from the left sidebar.
 
 - Click on the create tag button to open the create tag form modal. In this modal there is the form that has two input fields first one for tag name the second one for tag comment and also there are exist color pallets for selecting tag color.
@@ -18,7 +18,7 @@ There are two options for creating a tag.
 
 <img style="border-radius: 8px; border: 1px solid #E8F1FC" alt="Create tag modal" src="https://docs-blobs.s3.us-east-2.amazonaws.com/images/ui/pages/tags/2.png">
 
-##### Second option:
+##### Second option
 - Go to any explorer page (metrics, params, images, scatters).
 - Click to one of the sequence unit to open popover where is exist tag section with attach button.
 - Click on attach button to open the select tag popover where you will see all your previously created tags.
@@ -78,7 +78,7 @@ How to update attached tags?
 
 <img style="border-radius: 8px; border: 1px solid #E8F1FC" alt="Select tag popover" src="https://docs-blobs.s3.us-east-2.amazonaws.com/images/ui/pages/tags/12.png">
 
-### Used in overlay.
+### Used in overlay
 In the tags page you can select tag by clicking on circle icon then will opened overlay in the right side of window. Here is visible that runs which are use the tag. By clicking a run hash you will be redirected to single run page.
 
 <img style="border-radius: 8px; border: 1px solid #E8F1FC" alt="Tags delete modal" src="https://docs-blobs.s3.us-east-2.amazonaws.com/images/ui/pages/tags/13.png">

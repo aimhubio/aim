@@ -29,7 +29,6 @@
    ui/pages/explorers.md
    ui/pages/bookmarks.md
    ui/pages/tags.md
-   ui/guides.md
 
 
 .. toctree::

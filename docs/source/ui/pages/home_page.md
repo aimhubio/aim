@@ -31,7 +31,7 @@ The cells are clickable!
 
 <img alt="heatmap" style="border: 1px solid #E8F1FC; border-radius: 8px" src="https://docs-blobs.s3.us-east-2.amazonaws.com/images/ui/pages/home/heatmap.png" />
 
-Once clicked, you will navigate to the [Runs explorer](#runs-explorer) page and automatically [query](../../using/search.html) the runs made on that day.
+Once clicked, you will navigate to the [Runs explorer](../pages/run_management.html#runs-explorer) page and automatically [query](../../using/search.html) the runs made on that day.
 
 <img alt="search run" style="border: 1px solid #E8F1FC; border-radius: 8px" src="https://docs-blobs.s3.us-east-2.amazonaws.com/images/ui/pages/home/runSearch.png" />
 
@@ -59,7 +59,7 @@ You'll be most welcome!
 ---
 
 #### Explore Aim
-Aim is a collection of super-effective ML experiment [Explorers](#explorers).
+Aim is a collection of super-effective ML experiment [Explorers](../pages/explorers.html).
 Use this section to navigate through them.
 
 <img alt="explore aim" style="border: 1px solid #E8F1FC; border-radius: 8px" src="https://docs-blobs.s3.us-east-2.amazonaws.com/images/ui/pages/home/explore.png" />
