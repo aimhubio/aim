@@ -1,142 +1,131 @@
 ## Explorers
 
-### Overview
+Explorers will help you to compare 1000s of AI experiments with a few clicks.
 
-Explorers are powerful tools for comparing 1000s of AI experiments with a few clicks.
+In this section we will go through the Aim explorers, introduce their features and how to use them.
 
-In this section we will introduce you to the Aim explorers, their features and how to use them.
 
 ### Metrics Explorer
 
-Metrics explorer helps you to compare 100s of metrics within a few clicks.
-You can simply group, filter and compare your tracked metrics with Metrics Explorer.
-It helps to save lots of time compared to other open-source experiment tracking tools.
+#### Overview
 
-Metrics Explorer main parts are:
+Use Metrics explorer to search and compare 1000s of ML training metrics.
 
-- Select Form
-- Charts
-- Table
-- Grouping
+The Metrics Explorer allows you to search, group and compare your metrics.
+Due to this and number of other visual features on the Metrics Explorer, you will save considerable amounts of time when comparing experiments- compared to other open-source experiment tracking tools.
 
-Features:
+The Metric Explorer has the following main sections:
+- **Metrics Select:** to select the metrics for exploration
+- **Search bar:** to query the runs for exploration
+- **Charts explorer:** the space where the metrics are rendered
+- **Metrics modifiers:** all the grouping, chart division and other metrics modifier tools
+- **Context table:** the full information about the selected metrics is available
 
-- [Query any metric easily](#query-any-metric-easily)
-- [Group by any parameter](#group-by-any-parameter)
+.. note::
+There is also an advanced mode of search is available too where you can use the full Aim QL (more on this further in this section).
+
+There are two ways you can query metrics and runs
+- [Select metrics and query runs](#id1)
+- [Advanced Search mode](#advanced-search-mode)
+
+An overview of what you can do with queried metrics - the modifiers:
+- [Group by tracked parameters](#group-by-any-parameter)
 - [Aggregate grouped metrics](#aggregate-metrics)
 - [Align metrics by time, epoch or custom metric](#x-axis-properties)
 - [Change scale of the axes (linear or log)](#axes-scale)
 - [Apply smoothing](#chart-smoothing)
 - [Ignore outliers](#ignore-outliers)
-- [Apply highlighting modes (metric on hover, run on hover)](#highlight-modes)
+- [Metric highligh modes (metric on hover, run on hover)](#highlight-modes)
 - [Set chart tooltip parameters](#set-tooltip-parameters)
 - [Apply zoom in/out on charts](#apply-zoom-on-charts)
 - [Export chart as image](#export-chart-as-image)
 
 <img src="../../_static/images/ui/overview/metrics_explorer.png" style="border-radius: 8px; border: 1px solid #E8F1FC" alt="metrics_explorer" />
 
-#### Query any metric easily
-
-Select metrics from dropdown
+#### Select metrics and query runs
+On the Metrics Explorer, there is `+ Metrics` button.
+Once pressed, a dropdown will appear with all your tracked metrics and their contexts flattened.
+The dropdown is searchable - so you can get to your metric of interest within a stroke!
 
 <img src="../../_static/images/ui/overview/metrics/select-form/select_form_dropdown.png" style="border-radius: 8px; border: 1px solid #E8F1FC" alt="select_form_dropdown" />
+
+The Search bar is located below the `+ Metric` button. It allows to do a pythonic query (that is eval-ed as python statement) over every param you have tracked.
 
 Search runs with [Aim QL](../../using/search.html)
 
 <img src="../../_static/images/ui/overview/metrics/select-form/select_form_filter.png" style="border-radius: 8px; border: 1px solid #E8F1FC" alt="select_form_filter" />
 
+#### Advanced Search mode
+
+Once you press the `Enable advanced search mode` button underneath the main `Search` button, it will enable the full Aim QL search editor - to query the metrics, the runs via full Aim QL
+
+Here is an example:
+
+[TODO: add advanced mode img here]
+
 #### Group by any parameter
 
-Group by color, stroke, or chart with selected parameters
+Grouping selected metrics by any tracked params will allow you to quickly distinguish the most impactful params, decisions you have made (the preprocessing steps, the hyperparams etc).
+
+The parameters include not only the ones you have tracked but also the native Aim objects too such as
+- `metric.name`
+- `metric.context.[context_key]`
+- `run.hash`
+
+There are several ways you can group the selected metrics and runs - by color, by stroke and by chart.
 
 ##### Group by Color
+Use this to divide the selected metrics into different clusters based on selected values of params.
+Each cluster gets colored differently.
+
+There are a number of options available when grouping
+- **group by values** - divides into clusters as per the values of selected params)
+- **reverse grouping** - divides into clusters by every param except for the chosen one.
+
+The grouping colors are picked randomly, however it is possible to fix with the advanced coloring features.
+
+Here are the features in the advanced mode:
+- Fix the colors of the grouping
+- Control the color palette to use during the grouping
 
 <img src="../../_static/images/ui/overview/metrics/grouping/groupby_color.png" style="border-radius: 8px; border: 1px solid #E8F1FC" alt="groupby_color" />
 
 ##### Group by Stroke
+Groups the metrics by a stroke style.
+Has all the rest of the other features available on the color grouping except the advanced mode.
 
 <img src="../../_static/images/ui/overview/metrics/grouping/groupby_stroke.png" style="border-radius: 8px; border: 1px solid #E8F1FC" alt="groupby_stroke" />
 
 ##### Group by Chart
+The end result of using this feature: divides into subplots based on the value of the selected params.
+Why this is a grouping mechanism? It groups the metrics belonging to the same group into separate charts.
 
 <img src="../../_static/images/ui/overview/metrics/grouping/groupby_chart.png" style="border-radius: 8px; border: 1px solid #E8F1FC" alt="groupby_chart" />
 
 #### Aggregate metrics
 
-When in aggregation mode, a chart shows the aggregated (composed) values instead of the individual values.
-This type of display is useful if you want to present summarized results in charts.
+The metrics aggregation helps to quickly see the trends of each individual group of metrics. See more about [metrics grouping](#group-by-any-parameter).
 
-##### Aggregation Line:
+There are two aspects of aggregation you can control:
+- the trend-line
+- the area that the group of metricsc take
 
-Following types of aggregation line are available: [Mean](#mean), [Median](#median), [Min](#min), and [Max](#max).
-By default, aggregation line is the [Mean](#mean).
+The trend-line calculation methods:
+- Mean
+- Median
+- Min
+- Max
 
-###### Mean
+The area calcualtion methods:
+- None _(when you'd like to remove the area)_
+- Min/Max
+- Mean +/- Standard Deviation
+- Mean +/- Standard Error
+- Confidence Interval (95%)
 
-By selecting aggregation line Mean, will represent [Arithmetic mean](https://en.wikipedia.org/wiki/Arithmetic_mean) of the tracked metrics:
-the sum of a collection of numbers divided by the count of numbers in the collection.
+Pls see the screenshot:
 
 <img src="../../_static/images/ui/overview/metrics/aggregation/aggr_line_mean.png" style="border-radius: 8px; border: 1px solid #E8F1FC" alt="aggr_line_mean" />
-
-###### Median
-
-By selecting aggregation line Median, will represent [The Median](https://en.wikipedia.org/wiki/Median) of the tracked metrics:
-the "middle" number of a finite list of numbers, when those numbers are listed in order from smallest to greatest.
-
-<img src="../../_static/images/ui/overview/metrics/aggregation/aggr_line_median.png" style="border-radius: 8px; border: 1px solid #E8F1FC" alt="aggr_line_median" />
-
-###### Min
-
-By selecting aggregation line Min, will represent minimum tracked metrics values per X.
-
-<img src="../../_static/images/ui/overview/metrics/aggregation/aggr_line_min.png" style="border-radius: 8px; border: 1px solid #E8F1FC" alt="aggr_line_min" />
-
-###### Max
-
-By selecting aggregation line Max, will represent maximum tracked metrics values per X.
-
-<img src="../../_static/images/ui/overview/metrics/aggregation/aggr_line_max.png" style="border-radius: 8px; border: 1px solid #E8F1FC" alt="aggr_line_max" />
-
-##### Aggregation Area:
-
-Following types of aggregation area are available: [None](#none), [Min/Max](#min-and-max), [Mean ± Standard Deviation](#standard-deviation), [Mean ± Standard Error](#standard-error), and [Confidence Interval (95%)](#confidence-interval).
-By default, aggregate area is the [Min/Max](#min-and-max).
-
-###### None
-
-By selecting aggregation area None, will remove aggregated area from chart.
-
-<img src="../../_static/images/ui/overview/metrics/aggregation/aggr_area_none.png" style="border-radius: 8px; border: 1px solid #E8F1FC" alt="aggr_area_none" />
-
-###### Min and Max
-
-By selecting aggregation area Min/Max, will draw area between minimum and maximum of tracked metrics per X.
-
-<img src="../../_static/images/ui/overview/metrics/aggregation/aggr_area_min_max.png" style="border-radius: 8px; border: 1px solid #E8F1FC" alt="aggr_area_min_max"/>
-
-###### Standard Deviation
-
-By selecting aggregation area Mean ± Standard Deviation, will draw area between `mean - standard deviation` and `mean + standard deviation` of tracked metrics per X.
-
-[Mean](#mean), [Standard Deviation](https://en.wikipedia.org/wiki/Standard_deviation)
-
-<img src="../../_static/images/ui/overview/metrics/aggregation/aggr_area_std_dev.png" style="border-radius: 8px; border: 1px solid #E8F1FC" alt="aggr_area_std_dev"/>
-
-###### Standard Error
-
-By selecting aggregation area Mean ± Standard Error, will draw area between `mean - standard error` and `mean + standard error` of tracked metrics per X.
-
-[Mean](#mean), [Standard Error](https://en.wikipedia.org/wiki/Standard_error)
-
-<img src="../../_static/images/ui/overview/metrics/aggregation/aggr_area_std_err.png" style="border-radius: 8px; border: 1px solid #E8F1FC" alt="aggr_area_std_err"/>
-
-###### Confidence Interval
-
-By selecting aggregation area Mean ± Confidence Interval, will draw area between `mean - confidence interval` and `mean + confidence interval` of tracked metrics per X.
-
-[Mean](#mean), [Confidence Interval](https://en.wikipedia.org/wiki/Confidence_interval)
-
-<img src="../../_static/images/ui/overview/metrics/aggregation/aggr_area_conf_int.png" style="border-radius: 8px; border: 1px solid #E8F1FC" alt="aggr_area_conf_int"/>
 
 #### X-Axis properties
 
