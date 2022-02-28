@@ -6062,8 +6062,7 @@ static PyObject *__pyx_f_3aim_7storage_5utils_4BLOB_load(struct __pyx_obj_3aim_7
           __Pyx_GOTREF(__pyx_t_2);
           __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
         }
-        if (!(likely(PyBytes_CheckExact(__pyx_t_2))||((__pyx_t_2) == Py_None) || __Pyx_RaiseUnexpectedTypeError("bytes", __pyx_t_2))) __PYX_ERR(0, 76, __pyx_L1_error)
-        __pyx_r = ((PyObject*)__pyx_t_2);
+        __pyx_r = __pyx_t_2;
         __pyx_t_2 = 0;
         __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
         goto __pyx_L0;
@@ -6176,9 +6175,8 @@ static PyObject *__pyx_f_3aim_7storage_5utils_4BLOB_load(struct __pyx_obj_3aim_7
  *     def __deepcopy__(self, memo):
  */
   __Pyx_XDECREF(__pyx_r);
-  if (!(likely(PyBytes_CheckExact(__pyx_v_self->data))||((__pyx_v_self->data) == Py_None) || __Pyx_RaiseUnexpectedTypeError("bytes", __pyx_v_self->data))) __PYX_ERR(0, 81, __pyx_L1_error)
   __Pyx_INCREF(__pyx_v_self->data);
-  __pyx_r = ((PyObject*)__pyx_v_self->data);
+  __pyx_r = __pyx_v_self->data;
   goto __pyx_L0;
 
   /* "aim/storage/utils.py":76
@@ -6370,7 +6368,7 @@ static PyObject *__pyx_pf_3aim_7storage_5utils_4BLOB_6__deepcopy__(struct __pyx_
  */
   __pyx_t_1 = ((struct __pyx_vtabstruct_3aim_7storage_5utils_BLOB *)__pyx_v_self->__pyx_vtab)->load(__pyx_v_self, 0); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 84, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
-  __pyx_v_data = ((PyObject*)__pyx_t_1);
+  __pyx_v_data = __pyx_t_1;
   __pyx_t_1 = 0;
 
   /* "aim/storage/utils.py":85
