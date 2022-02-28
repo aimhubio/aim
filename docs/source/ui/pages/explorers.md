@@ -40,20 +40,20 @@ An overview of what you can do with queried metrics - the modifiers:
 - [Apply zoom in/out on charts](#apply-zoom-on-charts)
 - [Export chart as image](#export-chart-as-image)
 
-<img src="../../_static/images/ui/overview/metrics_explorer.png" style="border-radius: 8px; border: 1px solid #E8F1FC" alt="metrics_explorer" />
+<img src="https://docs-blobs.s3.us-east-2.amazonaws.com/images/ui/pages/metrics-explorer/metrics.png" style="border-radius: 8px; border: 1px solid #E8F1FC" alt="metrics_explorer" />
 
 #### Select metrics and query runs
 On the Metrics Explorer, there is `+ Metrics` button.
 Once pressed, a dropdown will appear with all your tracked metrics and their contexts flattened.
 The dropdown is searchable - so you can get to your metric of interest within a stroke!
 
-<img src="../../_static/images/ui/overview/metrics/select-form/select_form_dropdown.png" style="border-radius: 8px; border: 1px solid #E8F1FC" alt="select_form_dropdown" />
+<img src="https://docs-blobs.s3.us-east-2.amazonaws.com/images/ui/pages/metrics-explorer/select_form_dropdown.png" style="border-radius: 8px; border: 1px solid #E8F1FC" alt="select_form_dropdown" />
 
 The Search bar is located below the `+ Metric` button. It allows to do a pythonic query (that is eval-ed as python statement) over every param you have tracked.
 
 Search runs with [Aim QL](../../using/search.html)
 
-<img src="../../_static/images/ui/overview/metrics/select-form/select_form_filter.png" style="border-radius: 8px; border: 1px solid #E8F1FC" alt="select_form_filter" />
+<img src="https://docs-blobs.s3.us-east-2.amazonaws.com/images/ui/pages/metrics-explorer/select_form_filter.png" style="border-radius: 8px; border: 1px solid #E8F1FC" alt="select_form_filter" />
 
 #### Advanced Search mode
 
@@ -61,7 +61,10 @@ Once you press the `Enable advanced search mode` button underneath the main `Sea
 
 Here is an example:
 
-[TODO: add advanced mode img here]
+`((metric.name == 'bleu' and metric.context.subset == 'val') or (metric.name == 'loss' and metric.context.subset == 'train'))
+and 1e-5 < run.hparams.learning_rate < 1e-2`
+
+<img src="https://docs-blobs.s3.us-east-2.amazonaws.com/images/ui/pages/metrics-explorer/select_form_advanced_search.png" style="border-radius: 8px; border: 1px solid #E8F1FC" alt="select_form_advanced_search" />
 
 #### Group by any parameter
 
@@ -88,19 +91,19 @@ Here are the features in the advanced mode:
 - Fix the colors of the grouping
 - Control the color palette to use during the grouping
 
-<img src="../../_static/images/ui/overview/metrics/grouping/groupby_color.png" style="border-radius: 8px; border: 1px solid #E8F1FC" alt="groupby_color" />
+<img src="https://docs-blobs.s3.us-east-2.amazonaws.com/images/ui/pages/metrics-explorer/groupby_color.png" style="border-radius: 8px; border: 1px solid #E8F1FC" alt="groupby_color" />
 
 ##### Group by Stroke
 Groups the metrics by a stroke style.
 Has all the rest of the other features available on the color grouping except the advanced mode.
 
-<img src="../../_static/images/ui/overview/metrics/grouping/groupby_stroke.png" style="border-radius: 8px; border: 1px solid #E8F1FC" alt="groupby_stroke" />
+<img src="https://docs-blobs.s3.us-east-2.amazonaws.com/images/ui/pages/metrics-explorer/groupby_stroke.png" style="border-radius: 8px; border: 1px solid #E8F1FC" alt="groupby_stroke" />
 
 ##### Group by Chart
 The end result of using this feature: divides into subplots based on the value of the selected params.
 Why this is a grouping mechanism? It groups the metrics belonging to the same group into separate charts.
 
-<img src="../../_static/images/ui/overview/metrics/grouping/groupby_chart.png" style="border-radius: 8px; border: 1px solid #E8F1FC" alt="groupby_chart" />
+<img src="https://docs-blobs.s3.us-east-2.amazonaws.com/images/ui/pages/metrics-explorer/groupby_chart.png" style="border-radius: 8px; border: 1px solid #E8F1FC" alt="groupby_chart" />
 
 #### Aggregate metrics
 
@@ -125,7 +128,7 @@ The area calcualtion methods:
 
 Pls see the screenshot:
 
-<img src="../../_static/images/ui/overview/metrics/aggregation/aggr_line_mean.png" style="border-radius: 8px; border: 1px solid #E8F1FC" alt="aggr_line_mean" />
+<img src="https://docs-blobs.s3.us-east-2.amazonaws.com/images/ui/pages/metrics-explorer/aggr_line_mean.png" style="border-radius: 8px; border: 1px solid #E8F1FC" alt="aggr_line_mean" />
 
 #### X-Axis properties
 
@@ -157,25 +160,25 @@ By default, metrics aligned by [Step](#step).
 
 By setting metrics alignment to Step, x-axis values will represent the steps of tracked metrics.
 
-<img src="../../_static/images/ui/overview/metrics/x-axis_properties/alignment_step.png" style="border-radius: 8px; border: 1px solid #E8F1FC" alt="alignment_step" />
+<img src="https://docs-blobs.s3.us-east-2.amazonaws.com/images/ui/pages/metrics-explorer/alignment_step.png" style="border-radius: 8px; border: 1px solid #E8F1FC" alt="alignment_step" />
 
 ###### Epoch
 
 By setting metrics alignment to Epoch, x-axis values will represent the epochs of tracked metrics.
 
-<img src="../../_static/images/ui/overview/metrics/x-axis_properties/alignment_epoch.png" style="border-radius: 8px; border: 1px solid #E8F1FC" alt="alignment_epoch" />
+<img src="https://docs-blobs.s3.us-east-2.amazonaws.com/images/ui/pages/metrics-explorer/alignment_epoch.png" style="border-radius: 8px; border: 1px solid #E8F1FC" alt="alignment_epoch" />
 
 ###### Relative Time
 
 By setting metrics alignment to Relative Time, x-axis values will represent by `HH:mm:ss`, duration of tracking process.
 
-<img src="../../_static/images/ui/overview/metrics/x-axis_properties/alignment_relative.png" style="border-radius: 8px; border: 1px solid #E8F1FC" alt="alignment_relative" />
+<img src="https://docs-blobs.s3.us-east-2.amazonaws.com/images/ui/pages/metrics-explorer/alignment_relative.png" style="border-radius: 8px; border: 1px solid #E8F1FC" alt="alignment_relative" />
 
 ###### Absolute Time
 
 By setting metrics alignment to Absolute Time, x-axis values will represent by date `HH:mm:ss D MMM, YY`, since the start date of the first run until the last run.
 
-<img src="../../_static/images/ui/overview/metrics/x-axis_properties/alignment_absolute.png" style="border-radius: 8px; border: 1px solid #E8F1FC" alt="alignment_absolute" />
+<img src="https://docs-blobs.s3.us-east-2.amazonaws.com/images/ui/pages/metrics-explorer/alignment_absolute.png" style="border-radius: 8px; border: 1px solid #E8F1FC" alt="alignment_absolute" />
 
 ###### Custom Metric
 
@@ -189,19 +192,19 @@ By default, axes scale's are [Linear](#linear-scale).
 
 ##### Linear Scale
 
-<img src="../../_static/images/ui/overview/metrics/axes-scale/axes_scale_linear.png" style="border-radius: 8px; border: 1px solid #E8F1FC" alt="axes_scale_linear" />
+<img src="https://docs-blobs.s3.us-east-2.amazonaws.com/images/ui/pages/metrics-explorer/axes_scale_linear.png" style="border-radius: 8px; border: 1px solid #E8F1FC" alt="axes_scale_linear" />
 
 ##### X-axis scale: Linear, Y-axis scale: Log
 
-<img src="../../_static/images/ui/overview/metrics/axes-scale/y_axis_scale_log.png" style="border-radius: 8px; border: 1px solid #E8F1FC" alt="y-axis-scale-log" />
+<img src="https://docs-blobs.s3.us-east-2.amazonaws.com/images/ui/pages/metrics-explorer/y_axis_scale_log.png" style="border-radius: 8px; border: 1px solid #E8F1FC" alt="y-axis-scale-log" />
 
 ##### X-axis scale: Log, Y-axis scale: Linear
 
-<img src="../../_static/images/ui/overview/metrics/axes-scale/x_axis_scale_log.png" style="border-radius: 8px; border: 1px solid #E8F1FC" alt="x-axis-scale-log" />
+<img src="https://docs-blobs.s3.us-east-2.amazonaws.com/images/ui/pages/metrics-explorer/x_axis_scale_log.png" style="border-radius: 8px; border: 1px solid #E8F1FC" alt="x-axis-scale-log" />
 
 ##### Log Scale
 
-<img src="../../_static/images/ui/overview/metrics/axes-scale/axes_scale_log.png" style="border-radius: 8px; border: 1px solid #E8F1FC" alt="axes-scale-log" />
+<img src="https://docs-blobs.s3.us-east-2.amazonaws.com/images/ui/pages/metrics-explorer/axes_scale_log.png" style="border-radius: 8px; border: 1px solid #E8F1FC" alt="axes-scale-log" />
 
 #### Chart Smoothing
 
@@ -214,14 +217,14 @@ By default, chart smoothing in [Exponential moving average](#exponential-moving-
 An [exponential moving average](https://en.wikipedia.org/wiki/Moving_average), also known as an exponentially weighted moving average (EWMA),
 is a first-order infinite impulse response filter that applies weighting factors which decrease exponentially.
 
-<img src="../../_static/images/ui/overview/metrics/chart-smoothing/smoothing_ema.png" style="border-radius: 8px; border: 1px solid #E8F1FC" alt="smoothing_ema" />
+<img src="https://docs-blobs.s3.us-east-2.amazonaws.com/images/ui/pages/metrics-explorer/smoothing_ema.png" style="border-radius: 8px; border: 1px solid #E8F1FC" alt="smoothing_ema" />
 
 ##### Centered moving average
 
 When you center the moving averages, the data points are placed at the center of the range rather than the end of it.
 This is done to position the moving average values at their central positions in time.
 
-<img src="../../_static/images/ui/overview/metrics/chart-smoothing/smoothing_cma.png" style="border-radius: 8px; border: 1px solid #E8F1FC" alt="smoothing_cma" />
+<img src="https://docs-blobs.s3.us-east-2.amazonaws.com/images/ui/pages/metrics-explorer/smoothing_cma.png" style="border-radius: 8px; border: 1px solid #E8F1FC" alt="smoothing_cma" />
 
 #### Ignore outliers
 
@@ -229,12 +232,12 @@ An outlier is an observation that lies an abnormal distance from other values in
 Examination of the data for unusual observations that are far removed from the mass of data.
 These points are often referred to as outliers.
 
-<img src="../../_static/images/ui/overview/metrics/ignore-outliers/ignore_outliers_off.png" style="border-radius: 8px; border: 1px solid #E8F1FC" alt="ignore-outliers-off" />
+<img src="https://docs-blobs.s3.us-east-2.amazonaws.com/images/ui/pages/metrics-explorer/ignore_outliers_off.png" style="border-radius: 8px; border: 1px solid #E8F1FC" alt="ignore-outliers-off" />
 
 Excluding outliers can cause your results to become statistically significant.
 By default, outliers are ignored.
 
-<img src="../../_static/images/ui/overview/metrics/ignore-outliers/ignore_outliers_on.png" style="border-radius: 8px; border: 1px solid #E8F1FC" alt="ignore-outliers-on" />
+<img src="https://docs-blobs.s3.us-east-2.amazonaws.com/images/ui/pages/metrics-explorer/ignore_outliers_on.png" style="border-radius: 8px; border: 1px solid #E8F1FC" alt="ignore-outliers-on" />
 
 #### Highlight Modes
 
@@ -246,42 +249,42 @@ By default, highlighting mode is the [Highlight Run on Hover](#highlight-run-on-
 
 By setting Highlight mode Off, there is no highlighting functionality on hover.
 
-<img src="../../_static/images/ui/overview/metrics/highlighting/highlight_off.png" style="border-radius: 8px; border: 1px solid #E8F1FC" alt="highlight_off" />
+<img src="https://docs-blobs.s3.us-east-2.amazonaws.com/images/ui/pages/metrics-explorer/highlight_off.png" style="border-radius: 8px; border: 1px solid #E8F1FC" alt="highlight_off" />
 
 ##### Highlight Metric on Hover
 
 By setting Highlight mode Metric on Hover, mouse point closest metric highlights and other metrics displays with opacity.
 
-<img src="../../_static/images/ui/overview/metrics/highlighting/highlight_metric.png" style="border-radius: 8px; border: 1px solid #E8F1FC" alt="highlight_metric" />
+<img src="https://docs-blobs.s3.us-east-2.amazonaws.com/images/ui/pages/metrics-explorer/highlight_metric.png" style="border-radius: 8px; border: 1px solid #E8F1FC" alt="highlight_metric" />
 
 ##### Highlight Run on Hover
 
 By setting Highlight mode Run on Hover, mouse point closest metric highlights and highlighted metric corresponding run also highlights other metrics displays with opacity.
 
-<img src="../../_static/images/ui/overview/metrics/highlighting/highlight_run.png" style="border-radius: 8px; border: 1px solid #E8F1FC" alt="highlight_run" />
+<img src="https://docs-blobs.s3.us-east-2.amazonaws.com/images/ui/pages/metrics-explorer/highlight_run.png" style="border-radius: 8px; border: 1px solid #E8F1FC" alt="highlight_run" />
 
 #### Set tooltip parameters
 
 You can select tooltip parameters to show params and values in tooltip Params section.
 You can select hide or show button to display or hide tooltip on hover.
 
-<img src="../../_static/images/ui/overview/metrics/tooltip-parameters/tooltip_parameters_popover.png" style="border-radius: 8px; border: 1px solid #E8F1FC" alt="tooltip-parameters-popover" />
+<img src="https://docs-blobs.s3.us-east-2.amazonaws.com/images/ui/pages/metrics-explorer/tooltip_parameters_popover.png" style="border-radius: 8px; border: 1px solid #E8F1FC" alt="tooltip-parameters-popover" />
 
-<img src="../../_static/images/ui/overview/metrics/tooltip-parameters/select_tooltip_parameters.png" style="border-radius: 8px; border: 1px solid #E8F1FC" alt="select-tooltip-parameters" />
+<img src="https://docs-blobs.s3.us-east-2.amazonaws.com/images/ui/pages/metrics-explorer/tooltip_select_parameters.png" style="border-radius: 8px; border: 1px solid #E8F1FC" alt="select-tooltip-parameters" />
 
 #### Apply zoom on charts
 
 ##### Zoom In
 
-<img src="../../_static/images/ui/overview/metrics/chart-zoom/zoom_in_popover.png" style="border-radius: 8px; border: 1px solid #E8F1FC" alt="zoom-in-popover.png" />
+<img src="https://docs-blobs.s3.us-east-2.amazonaws.com/images/ui/pages/metrics-explorer/zoom_in_popover.png" style="border-radius: 8px; border: 1px solid #E8F1FC" alt="zoom-in-popover.png" />
 
-<img src="../../_static/images/ui/overview/metrics/chart-zoom/zoom_in_action.png" style="border-radius: 8px; border: 1px solid #E8F1FC" alt="zoom-in-action.png" />
+<img src="https://docs-blobs.s3.us-east-2.amazonaws.com/images/ui/pages/metrics-explorer/zoom_in_action.png" style="border-radius: 8px; border: 1px solid #E8F1FC" alt="zoom-in-action.png" />
 
-<img src="../../_static/images/ui/overview/metrics/chart-zoom/zoom_out.png" style="border-radius: 8px; border: 1px solid #E8F1FC" alt="zoom-out.png" />
+<img src="https://docs-blobs.s3.us-east-2.amazonaws.com/images/ui/pages/metrics-explorer/zoom_out.png" style="border-radius: 8px; border: 1px solid #E8F1FC" alt="zoom-out.png" />
 
 ##### Zoom Out
 
-<img src="../../_static/images/ui/overview/metrics/chart-zoom/zoom_out_popover.png" style="border-radius: 8px; border: 1px solid #E8F1FC" alt="zoom_out_popover" />
+<img src="https://docs-blobs.s3.us-east-2.amazonaws.com/images/ui/pages/metrics-explorer/zoom_out_popover.png" style="border-radius: 8px; border: 1px solid #E8F1FC" alt="zoom_out_popover" />
 
 #### Export chart as image
 
@@ -289,11 +292,11 @@ Metric explorer also, gives ability to export your chart as image.
 By clicking `export button` from control panel, will be opened chart preview modal.
 You can change exportable chart `image width`, `single chart height`, set `image name` and `format`.
 
-<img src="../../_static/images/ui/overview/metrics/chart-export/export_preview.png" style="border-radius: 8px; border: 1px solid #E8F1FC" alt="export_preview" />
+<img src="https://docs-blobs.s3.us-east-2.amazonaws.com/images/ui/pages/metrics-explorer/export_preview.png" style="border-radius: 8px; border: 1px solid #E8F1FC" alt="export_preview" />
 
 Following formats of chart export are available: `SVG`, `JPEG`, `PNG`.
 
-<img width="100" src="../../_static/images/ui/overview/metrics/chart-export/export_format.png" style="border-radius: 8px; border: 1px solid #E8F1FC" alt="export-format" />
+<img width="100" src="https://docs-blobs.s3.us-east-2.amazonaws.com/images/ui/pages/metrics-explorer/export_format.png" style="border-radius: 8px; border: 1px solid #E8F1FC" alt="export-format" />
 
 ### Images Explorer
 
@@ -325,13 +328,11 @@ Use select form to easily query any image. There are two option to query images 
 - Select options you are want to use in query
 - Click on the Search button
 
-<img alt="Images explore overview" style="border-radius: 8px; border: 1px solid #E8F1FC" src="https://docs-blobs.s3.us-east-2.amazonaws.com/images/ui/pages/images-explore/
-images-select-dropdown.png">
+<img alt="Images explore overview" style="border-radius: 8px; border: 1px solid #E8F1FC" src="https://docs-blobs.s3.us-east-2.amazonaws.com/images/ui/pages/images-explore/images-select-dropdown.png">
 
 ###### How to reset select form value?
 
-<img alt="Images explore overview" style="border-radius: 8px; border: 1px solid #E8F1FC" src="https://docs-blobs.s3.us-east-2.amazonaws.com/images/ui/pages/images-explore/
-images-explore-select-form-reset.png">
+<img alt="Images explore overview" style="border-radius: 8px; border: 1px solid #E8F1FC" src="https://docs-blobs.s3.us-east-2.amazonaws.com/images/ui/pages/images-explore/images-explore-select-form-reset.png">
 
 ###### How to use advanced query mode?
 
@@ -394,7 +395,7 @@ Any change in controls will help to explore images better on the workspace
 You can select tooltip parameters to show params and values in tooltip Params section.
 You can select hide or show button to display or hide tooltip on hover.
 
-<img src="../../_static/images/ui/overview/metrics/tooltip-parameters/tooltip_parameters_popover.png" style="border-radius: 8px; border: 1px solid #E8F1FC" alt="tooltip-parameters-popover" />
+<img src="https://docs-blobs.s3.us-east-2.amazonaws.com/images/ui/pages/metrics-explorer/tooltip_parameters_popover.png" style="border-radius: 8px; border: 1px solid #E8F1FC" alt="tooltip-parameters-popover" />
 
 ### Params Explorer
 
