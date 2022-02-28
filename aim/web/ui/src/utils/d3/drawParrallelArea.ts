@@ -93,10 +93,10 @@ function drawParallelArea(args: IDrawAreaArgs): void {
     .append('clipPath')
     .attr('id', `${nameKey}-circles-rect-clip-${index}`)
     .append('rect')
-    .attr('x', -7)
-    .attr('y', -7)
-    .attr('width', offsetWidth + 2 * CircleEnum.ActiveRadius + 4)
-    .attr('height', offsetHeight + 2 * CircleEnum.ActiveRadius + 4);
+    .attr('x', -CircleEnum.Radius)
+    .attr('y', -CircleEnum.Radius)
+    .attr('width', offsetWidth + 2 * CircleEnum.Radius)
+    .attr('height', offsetHeight + 2 * CircleEnum.Radius);
 
   const keys = Object.keys(chartTitle);
   const titleText = keys

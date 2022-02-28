@@ -1,6 +1,5 @@
 import { BookmarkNotificationsEnum } from 'config/notification-messages/notificationMessages';
 
-import * as analytics from 'services/analytics';
 import appsService from 'services/api/apps/appsService';
 
 import { IDashboardData } from 'types/services/models/metrics/metricsAppModel';
