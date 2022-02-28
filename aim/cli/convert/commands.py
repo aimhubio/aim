@@ -45,13 +45,10 @@ def convert_tensorflow(ctx, logdir, flat):
 @convert.command(name='mlflow')
 @click.pass_context
 @click.option('--tracking_uri', required=False, default=None)
-@click.option('--experiment_id', required=False, default=None)
-@click.option('--experiment_name', required=False, default=None)
+@click.option('--experiment', '-e', required=False, default=None)
 def convert_mlflow(ctx, tracking_uri=None, **kwargs):
     repo_inst = ctx.obj['repo_inst']
     tracking_uri = tracking_uri or os.environ.get("MLFLOW_TRACKING_URI")
-    if kwargs.get('experiment_id') and kwargs.get('experiment_name'):
-        raise ClickException('"experiment_id" and "experiment_name" are mutually exclusive!')
     if not tracking_uri:
         raise ClickException("MLFlow tracking URI must be provided either trough ENV or CLI.")
     parse_mlflow_logs(repo_inst, tracking_uri, **kwargs)
