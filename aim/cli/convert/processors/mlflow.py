@@ -30,7 +30,7 @@ AUDIO_EXTENSIONS = (
 )
 
 
-def parse_mlflow_logs(repo_inst, tracking_uri, experiment):
+def parse_mlflow_logs(repo_inst, tracking_uri, **kwargs):
     try:
         import mlflow
     except ImportError:
@@ -41,11 +41,17 @@ def parse_mlflow_logs(repo_inst, tracking_uri, experiment):
 
     client = mlflow.tracking.client.MlflowClient(tracking_uri=tracking_uri)
 
+    experiment = kwargs.get('experiment_id') or kwargs.get('experiment_name')
+    get_experiment_by_name = kwargs.get('experiment_name') == experiment
+
     if experiment is None:
         # process all experiments
         experiments = client.list_experiments()
     else:
-        experiments = (client.get_experiment_by_name(experiment),)
+        if get_experiment_by_name:
+            experiments = (client.get_experiment_by_name(experiment),)
+        else:
+            experiments = (client.get_experiment(experiment),)
 
     for ex in experiments:
         runs = client.search_runs(ex.experiment_id)

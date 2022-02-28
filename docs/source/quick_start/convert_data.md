@@ -150,11 +150,13 @@ URI can either be an HTTP/HTTPS URI for a remote server, a database connection s
 directory.
 
 The conversion process will iterate over all your Experiments and create a distinct run for each run inside the
-experiment. If you want to process only a single experiment, you can provide the experiment id to the conversion
+experiment. If you want to process only a single experiment, you can provide the experiment id or name to the conversion
 command:
 
 ```commandline
-$ aim convert mlflow --tracking_uri 'file:///Users/aim_user/mlruns' --experiment 0
+$ aim convert mlflow --tracking_uri 'file:///Users/aim_user/mlruns' --experiment_id 0
+OR
+$ aim convert mlflow --tracking_uri 'file:///Users/aim_user/mlruns' --experiment_name my_exp_1
 ```
 
 While converting the artifacts, the converter will try to determine file content type only based on its extension. A
