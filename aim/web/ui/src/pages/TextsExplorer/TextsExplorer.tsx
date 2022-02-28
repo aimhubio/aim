@@ -1,10 +1,10 @@
 import React from 'react';
 
-import ErrorBoundary from 'components/ErrorBoundary/ErrorBoundary';
 // import usePanelResize from 'hooks/resize/usePanelResize';
 
 // import ResizePanel from "components/ResizePanel/ResizePanel";
 import BusyLoaderWrapper from 'components/BusyLoaderWrapper/BusyLoaderWrapper';
+import ErrorBoundary from 'components/ErrorBoundary/ErrorBoundary';
 import TableLoader from 'components/TableLoader/TableLoader';
 
 import './TextsExplorer.scss';
