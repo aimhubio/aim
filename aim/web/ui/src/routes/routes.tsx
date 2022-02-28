@@ -40,6 +40,11 @@ const ImagesExplore = React.lazy(
     ),
 );
 
+const TextsExplorer = React.lazy(
+  () =>
+    import(/* webpackChunkName: "texts" */ 'pages/TextsExplorer/TextsExplorer'),
+);
+
 export interface IRoute {
   path: PathEnum;
   component:
@@ -126,6 +131,21 @@ const routes = {
     component: Scatters,
     showInSidebar: false,
     displayName: 'ScatterId',
+    isExact: true,
+  },
+  TEXTS_EXPLORER: {
+    path: PathEnum.Texts_Explorer,
+    component: TextsExplorer,
+    showInSidebar: true,
+    displayName: 'Texts',
+    icon: 'scatterplot',
+    isExact: true,
+  },
+  TEXTS_EXPLORER_ID: {
+    path: PathEnum.Texts_Explorer_Id,
+    component: TextsExplorer,
+    showInSidebar: false,
+    displayName: 'TextsId',
     isExact: true,
   },
   BOOKMARKS: {
