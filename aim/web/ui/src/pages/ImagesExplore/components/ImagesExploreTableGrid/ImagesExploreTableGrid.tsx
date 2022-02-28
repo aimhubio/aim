@@ -177,7 +177,7 @@ function getImagesExploreTableColumns(
                 name = name.replace('run.props', 'run');
                 return (
                   <Tooltip key={field} title={name || ''}>
-                    <span>{name}</span>
+                    <div>{name}</div>
                   </Tooltip>
                 );
               })}
@@ -241,44 +241,44 @@ function imagesExploreTableRowRenderer(
       } else if (col === 'groups') {
         row.groups = {
           content: (
-            <div className='Table__groupsColumn__cell'>
-              {Object.keys(rowData[col]).map((item) => {
-                const value: string | { [key: string]: unknown } =
-                  rowData[col][item];
-                return typeof value === 'object' ? (
-                  <ErrorBoundary>
-                    <ControlPopover
-                      key={contextToString(value)}
-                      title={item}
-                      anchorOrigin={{
-                        vertical: 'bottom',
-                        horizontal: 'left',
-                      }}
-                      transformOrigin={{
-                        vertical: 'top',
-                        horizontal: 'left',
-                      }}
-                      anchor={({ onAnchorClick }) => (
-                        <Tooltip
-                          title={(contextToString(value) as string) || ''}
-                        >
-                          <span onClick={onAnchorClick}>
-                            {contextToString(value)}
-                          </span>
-                        </Tooltip>
-                      )}
-                      component={<JsonViewPopover json={value} />}
-                    />
-                  </ErrorBoundary>
-                ) : (
-                  <ErrorBoundary key={item}>
-                    <Tooltip title={value || ''}>
-                      <span>{formatValue(value)}</span>
+            <ErrorBoundary>
+              <div className='Table__groupsColumn__cell'>
+                {Object.keys(rowData[col]).map((item) => {
+                  const value: string | { [key: string]: unknown } =
+                    rowData[col][item];
+                  return _.isObject(value) ? (
+                    <ErrorBoundary>
+                      <ControlPopover
+                        key={contextToString(value)}
+                        title={item}
+                        anchorOrigin={{
+                          vertical: 'bottom',
+                          horizontal: 'left',
+                        }}
+                        transformOrigin={{
+                          vertical: 'top',
+                          horizontal: 'left',
+                        }}
+                        anchor={({ onAnchorClick }) => (
+                          <Tooltip
+                            title={(contextToString(value) as string) || ''}
+                          >
+                            <span onClick={onAnchorClick}>
+                              {contextToString(value)}
+                            </span>
+                          </Tooltip>
+                        )}
+                        component={<JsonViewPopover json={value} />}
+                      />
+                    </ErrorBoundary>
+                  ) : (
+                    <Tooltip title={formatValue(value) || ''}>
+                      <div>{formatValue(value)}</div>
                     </Tooltip>
-                  </ErrorBoundary>
-                );
-              })}
-            </div>
+                  );
+                })}
+              </div>
+            </ErrorBoundary>
           ),
         };
       } else if (Array.isArray(rowData[col])) {

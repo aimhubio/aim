@@ -18,6 +18,12 @@ jobs:
       - name: Checkout sources
         uses: actions/checkout@v2
 
+      - name: Capture aim version
+        id: capture-version
+        run: |
+          AIM_VERSION=$(< ./aim/VERSION)
+          echo '::set-output name=AIM_VERSION::$AIM_VERSION'
+
       - name: Use node v16
         uses: actions/setup-node@v2
         with:
@@ -48,6 +54,19 @@ jobs:
           PYPI_PASSWORD: ${{ secrets.pypi_password }}
         run: |
           python -m twine upload -u __token__ -p "${PYPI_PASSWORD}" multilinux_dist/*
+
+      - name: Docker login
+        env:
+          DOCKER_HUB_USERNAME: ${{ secrets.DOCKER_HUB_USERNAME }}
+          DOCKER_HUB_PASSWORD: ${{ secrets.DOCKER_HUB_PASSWORD }}
+        run: docker login -u $DOCKER_HUB_USERNAME -p $DOCKER_HUB_PASSWORD
+
+      - name: Build & Push aim image
+        working-directory: ./docker
+        env:
+          AIM_VERSION: ${{ steps.capture-version.outputs.AIM_VERSION }}
+          UPDATE_LATEST_TAG: 1
+        run: . create-docker-image.sh
 
   macos-dist:
     if: ${{ github.actor == 'gorarakelyan' || github.actor == 'alberttorosyan' || github.actor == 'roubkar' }}

@@ -1,0 +1,39 @@
+name: create docker image base workflow
+
+on:
+  workflow_call:
+    inputs:
+      pkg_version:
+        description: 'Aim package version'
+        required: true
+        type: string
+      is_latest:
+        description: 'Add latest tag to docker image'
+        required: false
+        type: number
+        default: 0
+jobs:
+  docker-image:
+    runs-on: ubuntu-latest
+    name: Build & push new Docker image
+
+    steps:
+      - name: Checkout sources
+        uses: actions/checkout@v2
+
+      - name: Install Docker & pull images
+        run: |
+          apt update && apt install -y docker.io
+          sudo systemctl enable --now docker
+
+      - name: Docker login
+        env:
+          DOCKER_HUB_USERNAME: ${{ secrets.DOCKER_HUB_USERNAME }}
+          DOCKER_HUB_PASSWORD: ${{ secrets.DOCKER_HUB_PASSWORD }}
+        run: docker login -u $DOCKER_HUB_USERNAME -p $DOCKER_HUB_PASSWORD
+
+      - name: Build & Push image
+        env:
+          AIM_VERSION: ${{ inputs.pkg_version }}
+          UPDATE_LATEST_TAG: ${{ inputs.is_latest }}
+        run: cd docker/ && . create-docker-image.sh
