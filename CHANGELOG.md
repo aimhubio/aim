@@ -1,5 +1,10 @@
 # Changelog
 
+
+## Unreleased
+
+- Fix chart interactions issue in the Single Run Page Metrics tab (roubkar)
+
 ## 3.6.1 Feb 25, 2022
 
 - Fix issue with aligning x-axis by custom metric (KaroMourad)
