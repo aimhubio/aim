@@ -7,6 +7,10 @@
 - Custom max message size for Aim Remote tracking (alberttorosyan)
 - Docker images for aim up/server (alberttorosyan)
 
+### Fixes:
+
+- Fix error on mlflow conversion by experiment id (devfox-se)  
+
 ## 3.6.1 Feb 25, 2022
 
 - Fix issue with aligning x-axis by custom metric (KaroMourad)
