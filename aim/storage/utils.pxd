@@ -15,6 +15,6 @@ cdef class BLOB:
     cdef:
         object data
         object loader_fn
-    cpdef bytes load(self)
+    cpdef object load(self)
     # TODO closures inside cython functions are not supported yet
     # cpdef object transform(self, object transform_fn)
