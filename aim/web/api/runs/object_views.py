@@ -47,7 +47,10 @@ class CustomObjectApiConfig:
             record_range = checked_range(record_range)
             index_range = checked_range(index_range)
 
-            traces = repo.query_texts(query=query)
+            repo._prepare_runs_cache()
+            from aim.sdk.sequence_collection import QuerySequenceCollection
+            traces = QuerySequenceCollection(repo=repo, seq_cls=cls.sequence_type, query=query)
+
             api = CustomObjectApi(seq_name, resolve_blobs=cls.resolve_blobs)
             api.set_dump_data_fn(cls.dump_record_fn)
             api.set_trace_collection(traces)
