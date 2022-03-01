@@ -4,6 +4,10 @@
 
 - Reject `0` as step/record count (alberttorosyan, VkoHov)
 
+### Fixes:
+
+- Fix error on mlflow conversion by experiment id (devfox-se)  
+
 ## 3.6.1 Feb 25, 2022
 
 - Fix issue with aligning x-axis by custom metric (KaroMourad)
