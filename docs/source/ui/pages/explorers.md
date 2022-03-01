@@ -1,6 +1,7 @@
 ## Explorers
 
 Explorers will help you to compare 1000s of AI experiments with a few clicks.
+Explorers are the main tools that Aim is built around.
 
 In this section we will go through the Aim explorers, introduce their features and how to use them.
 
