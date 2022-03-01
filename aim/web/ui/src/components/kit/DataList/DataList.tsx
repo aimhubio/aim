@@ -16,7 +16,7 @@ import './DataList.scss';
  * @property {string[]} searchableKeys - additional class name (optional)
  * @property {IIllustrationConfig} illustrationConfig - illustration config
  * @property {boolean} isLoading - data is loading
- * @property {boolean} withoutSearchBar - hide search bar
+ * @property {boolean} withoutSearchBar - show search bar
  * @property {React.RefElement} tableRef - ref
  */
 
@@ -25,7 +25,7 @@ function DataList({
   tableData,
   isLoading,
   tableColumns,
-  withoutSearchBar,
+  withSearchBar = true,
   searchableKeys,
   illustrationConfig,
 }: IDataListProps): React.FunctionComponentElement<React.ReactNode> {
@@ -73,7 +73,7 @@ function DataList({
   }
   return (
     <div className={'DataList'}>
-      {!withoutSearchBar && (
+      {withSearchBar && (
         <SearchBar
           isValidInput={textSearch.filterOptions.isValidSearch}
           searchValue={textSearch.filterOptions.searchValue}

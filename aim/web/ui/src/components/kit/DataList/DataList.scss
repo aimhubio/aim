@@ -42,7 +42,7 @@
         min-height: 32px;
         max-height: 300px;
         padding: toRem(7px) toRem(16px);
-        border-right: $border-grey;
+        border-right: unset;
         border-bottom: $border-grey;
 
         &:last-child {

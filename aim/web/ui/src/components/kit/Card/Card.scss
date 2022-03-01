@@ -5,7 +5,8 @@
   flex-direction: column;
   padding: toRem(16px) toRem(24px);
   border: toRem(1px) solid $cuddle;
-  border-radius: toRem(8px);
+  border-radius: $border-radius-lg;
+  background: $white;
   width: 100%;
   &__header {
     margin-bottom: $space-md;
@@ -13,6 +14,7 @@
     flex-direction: column;
     &__subTitle {
       margin-top: $space-xxxs;
+      margin-bottom: $space-xxxs;
     }
   }
   &__tableWrapper {

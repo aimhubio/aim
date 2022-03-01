@@ -39,7 +39,12 @@ function Card({
           {title}
         </Text>
         {subtitle && (
-          <Text size={12} tint={70} className='Card__header__subTitle'>
+          <Text
+            size={12}
+            tint={70}
+            weight={400}
+            className='Card__header__subTitle'
+          >
             {subtitle}
           </Text>
         )}

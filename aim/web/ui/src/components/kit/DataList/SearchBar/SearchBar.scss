@@ -3,8 +3,7 @@
 .SearchBar {
   display: flex;
   width: toRem(415px);
-  margin-top: toRem(5px);
-  margin-bottom: toRem(15px);
+  margin-bottom: toRem(14px);
   align-items: center;
   .MatchIcons {
     display: flex;
@@ -29,6 +28,7 @@
 
     .Icon__container {
       font-size: $text-lg;
+      color: $pico-80;
     }
   }
 }
