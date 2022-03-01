@@ -1,5 +1,8 @@
 from copy import deepcopy
 
+from aimrocks.lib_rocksdb import Iterator as CyIterator  # noqa: F401
+from aimrocks.lib_rocksdb import IDB as CyDB  # noqa: F401
+
 
 class KeysIterator:
     def __init__(self, items_iterator):
