@@ -1,14 +1,17 @@
 import React from 'react';
 import { useHistory, useRouteMatch } from 'react-router-dom';
+import _ from 'lodash-es';
 
 import ErrorBoundary from 'components/ErrorBoundary/ErrorBoundary';
 import BusyLoaderWrapper from 'components/BusyLoaderWrapper/BusyLoaderWrapper';
 import TableLoader from 'components/TableLoader/TableLoader';
 import NotificationContainer from 'components/NotificationContainer/NotificationContainer';
+import ResizePanel from 'components/ResizePanel/ResizePanel';
 
 import { RequestStatusEnum } from 'config/enums/requestStatusEnum';
 
 import useModel from 'hooks/model/useModel';
+import usePanelResize from 'hooks/resize/usePanelResize';
 
 import SelectForm from 'pages/TextExplorer/components/SelectForm/SelectForm';
 
@@ -29,7 +32,17 @@ function TextExplorer() {
   const wrapperElemRef = React.useRef<HTMLDivElement>(null);
   const route = useRouteMatch<any>();
   const history = useHistory();
-  const textsData = useModel<Partial<any>>(textExplorerAppModel);
+  const textExplorerData = useModel<Partial<any>>(textExplorerAppModel);
+  const resizeElemRef = React.useRef<HTMLDivElement>(null);
+
+  const panelResizing = usePanelResize(
+    wrapperElemRef,
+    textsWrapperRef,
+    tableElemRef,
+    resizeElemRef,
+    textExplorerData?.config?.table || {},
+    textExplorerAppModel.onTableResizeEnd,
+  );
 
   React.useEffect(() => {
     textExplorerAppModel.initialize(route.params.appId);
@@ -57,11 +70,11 @@ function TextExplorer() {
     // analytics.pageView(ANALYTICS_EVENT_KEYS.images.pageView);
 
     const unListenHistory = history.listen(() => {
-      if (!!textsData?.config) {
+      if (!!textExplorerData?.config) {
         if (
           // metricsData.config.grouping !== getStateFromUrl('grouping') ||
           // metricsData.config.chart !== getStateFromUrl('chart') ||
-          textsData.config.select !== getStateFromUrl('select')
+          textExplorerData.config.select !== getStateFromUrl('select')
         ) {
           textExplorerAppModel.setDefaultAppConfigData();
           textExplorerAppModel.updateModelData();
@@ -91,14 +104,14 @@ function TextExplorer() {
             <div className='TextExplorer__SelectForm__Grouping__container'>
               <SelectForm
                 requestIsPending={
-                  textsData?.requestStatus === RequestStatusEnum.Pending
+                  textExplorerData?.requestStatus === RequestStatusEnum.Pending
                 }
-                selectedTextsData={textsData?.config?.select!}
-                selectFormData={textsData?.selectFormData!}
+                selectedTextsData={textExplorerData?.config?.select!}
+                selectFormData={textExplorerData?.selectFormData!}
                 onTextsExplorerSelectChange={
                   textExplorerAppModel.onTextsExplorerSelectChange
                 }
-                searchButtonDisabled={textsData?.searchButtonDisabled!}
+                searchButtonDisabled={textExplorerData?.searchButtonDisabled!}
                 onSelectRunQueryChange={
                   textExplorerAppModel.onSelectRunQueryChange
                 }
@@ -117,7 +130,20 @@ function TextExplorer() {
             >
               Texts Panel
             </div>
-            Resize panel
+            <ResizePanel
+              className={`ImagesExplore__ResizePanel${
+                _.isEmpty(textExplorerData?.textsData) &&
+                textExplorerData?.requestStatus !== RequestStatusEnum.Pending
+                  ? '__hide'
+                  : ''
+              }`}
+              panelResizing={panelResizing}
+              resizeElemRef={resizeElemRef}
+              resizeMode={textExplorerData?.config?.table.resizeMode}
+              onTableResizeModeChange={
+                textExplorerAppModel.onTableResizeModeChange
+              }
+            />
             <div ref={tableElemRef} className='TextExplorer__table__container'>
               <BusyLoaderWrapper
                 isLoading={false}
@@ -130,10 +156,10 @@ function TextExplorer() {
             </div>
           </div>
         </section>
-        {textsData?.notifyData?.length > 0 && (
+        {textExplorerData?.notifyData?.length > 0 && (
           <NotificationContainer
             handleClose={textExplorerAppModel.onNotificationDelete}
-            data={textsData?.notifyData}
+            data={textExplorerData?.notifyData}
           />
         )}
       </div>
