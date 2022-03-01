@@ -4,13 +4,18 @@ import { RequestStatusEnum } from 'config/enums/requestStatusEnum';
 import { ResizeModeEnum } from 'config/enums/tableEnums';
 import { RowHeightSize } from 'config/table/tableConfigs';
 import COLORS from 'config/colors/colors';
+import { BookmarkNotificationsEnum } from 'config/notification-messages/notificationMessages';
+import { ANALYTICS_EVENT_KEYS } from 'config/analytics/analyticsKeysMap';
 
 import projectsService from 'services/api/projects/projectsService';
 import appsService from 'services/api/apps/appsService';
 import textExplorerService from 'services/api/textExplorer/textExplorerService';
+import dashboardService from 'services/api/dashboard/dashboardService';
+import * as analytics from 'services/analytics';
 
 import {
   IAppData,
+  IDashboardData,
   IMetricsCollection,
 } from 'types/services/models/metrics/metricsAppModel';
 import {
@@ -31,6 +36,7 @@ import {
   IImageData,
   IImageRunData,
 } from 'types/services/models/imagesExplore/imagesExploreAppModel';
+import { IBookmarkFormState } from 'types/components/BookmarkForm/BookmarkForm';
 
 import { getCompatibleSelectConfig } from 'utils/app/getCompatibleSelectConfig';
 import onNotificationAdd from 'utils/app/onNotificationAdd';
@@ -50,6 +56,7 @@ import {
   iterFoldTree,
 } from 'utils/encoder/streamEncoding';
 import getObjectPaths from 'utils/getObjectPaths';
+import onNotificationDelete from 'utils/app/onNotificationDelete';
 
 import createModel from '../model';
 import blobsURIModel from '../media/blobsURIModel';
@@ -62,6 +69,7 @@ const model = createModel<Partial<ITextExplorerAppModelState>>({
     options: undefined,
     suggestions: [],
   },
+  notifyData: [],
 });
 
 function getConfig(): ITextExplorerAppConfig {
@@ -1045,13 +1053,84 @@ function onSelectRunQueryChange(query: string) {
   }
 }
 
+async function onBookmarkCreate({ name, description }: IBookmarkFormState) {
+  const configData: ITextExplorerAppConfig | undefined =
+    model.getState()?.config;
+  if (configData) {
+    const app: IAppData | any = await appsService
+      .createApp({ state: configData, type: 'texts' })
+      .call((detail: any) => {
+        exceptionHandler({ detail, model });
+      });
+
+    if (app.id) {
+      const bookmark: IDashboardData = await dashboardService
+        .createDashboard({ app_id: app.id, name, description })
+        .call((detail: any) => {
+          exceptionHandler({ detail, model });
+        });
+      if (bookmark.name) {
+        onNotificationAdd({
+          notification: {
+            id: Date.now(),
+            severity: 'success',
+            messages: [BookmarkNotificationsEnum.CREATE],
+          },
+          model,
+        });
+      } else {
+        onNotificationAdd({
+          notification: {
+            id: Date.now(),
+            severity: 'error',
+            messages: [BookmarkNotificationsEnum.ERROR],
+          },
+          model,
+        });
+      }
+    }
+  }
+  analytics.trackEvent(ANALYTICS_EVENT_KEYS.texts.createBookmark);
+}
+
+function onBookmarkUpdate(id: string) {
+  const configData: ITextExplorerAppConfig | undefined =
+    model.getState()?.config;
+  if (configData) {
+    appsService
+      .updateApp(id, { state: configData, type: 'texts' })
+      .call((detail: any) => {
+        exceptionHandler({ detail, model });
+      })
+      .then((res: IDashboardData | any) => {
+        if (res.id) {
+          onNotificationAdd({
+            notification: {
+              id: Date.now(),
+              severity: 'success',
+              messages: [BookmarkNotificationsEnum.UPDATE],
+            },
+            model,
+          });
+        }
+      });
+  }
+}
+
+function onModelNotificationDelete(id: number): void {
+  onNotificationDelete({ id, model });
+}
+
 const textsExploreAppModel = {
   ...model,
   initialize,
   getTextData,
   abortRequest,
   getAppConfigData,
+  onBookmarkCreate,
   onNotificationAdd,
+  onNotificationDelete: onModelNotificationDelete,
+  onBookmarkUpdate,
   setDefaultAppConfigData,
   onTextsExplorerSelectChange,
   onSelectRunQueryChange,

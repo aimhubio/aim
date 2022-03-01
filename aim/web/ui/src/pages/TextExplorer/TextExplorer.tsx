@@ -4,6 +4,7 @@ import { useHistory, useRouteMatch } from 'react-router-dom';
 import ErrorBoundary from 'components/ErrorBoundary/ErrorBoundary';
 import BusyLoaderWrapper from 'components/BusyLoaderWrapper/BusyLoaderWrapper';
 import TableLoader from 'components/TableLoader/TableLoader';
+import NotificationContainer from 'components/NotificationContainer/NotificationContainer';
 
 import { RequestStatusEnum } from 'config/enums/requestStatusEnum';
 
@@ -14,10 +15,11 @@ import SelectForm from 'pages/TextExplorer/components/SelectForm/SelectForm';
 import textExplorerAppModel from 'services/models/textExplorer/textExplorerAppModel';
 
 import { IApiRequest } from 'types/services/services';
-import { ITextExplorerAppModelState } from 'types/services/models/textExplorer/texteExplorerAppModel';
 
 import exceptionHandler from 'utils/app/exceptionHandler';
 import getStateFromUrl from 'utils/getStateFromUrl';
+
+import TextExplorerAppBar from './components/TextExplorerAppBar/TextExplorerAppBar';
 
 import './TextExplorer.scss';
 
@@ -27,8 +29,7 @@ function TextExplorer() {
   const wrapperElemRef = React.useRef<HTMLDivElement>(null);
   const route = useRouteMatch<any>();
   const history = useHistory();
-  const textsData =
-    useModel<Partial<ITextExplorerAppModelState>>(textExplorerAppModel);
+  const textsData = useModel<Partial<any>>(textExplorerAppModel);
 
   React.useEffect(() => {
     textExplorerAppModel.initialize(route.params.appId);
@@ -82,7 +83,11 @@ function TextExplorer() {
       <div className='TextExplorer__container' ref={wrapperElemRef}>
         <section className='TextExplorer__section'>
           <div className='TextExplorer__section__div TextExplorer__fullHeight'>
-            App bar
+            <TextExplorerAppBar
+              onBookmarkCreate={textExplorerAppModel.onBookmarkCreate}
+              onBookmarkUpdate={textExplorerAppModel.onBookmarkUpdate}
+              title='Text explorer'
+            />
             <div className='TextExplorer__SelectForm__Grouping__container'>
               <SelectForm
                 requestIsPending={
@@ -125,6 +130,12 @@ function TextExplorer() {
             </div>
           </div>
         </section>
+        {textsData?.notifyData?.length > 0 && (
+          <NotificationContainer
+            handleClose={textExplorerAppModel.onNotificationDelete}
+            data={textsData?.notifyData}
+          />
+        )}
       </div>
     </ErrorBoundary>
   );
