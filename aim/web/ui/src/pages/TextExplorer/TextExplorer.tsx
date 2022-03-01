@@ -25,31 +25,6 @@ import exceptionHandler from 'utils/app/exceptionHandler';
 import getStateFromUrl from 'utils/getStateFromUrl';
 
 import './TextExplorer.scss';
-const tableColumns = [
-  {
-    dataKey: 'step',
-    key: 'step',
-    title: 'Step',
-    width: 100,
-  },
-  {
-    dataKey: 'index',
-    key: 'index',
-    title: 'Index',
-    width: 100,
-  },
-  {
-    dataKey: 'text',
-    key: 'text',
-    title: 'Text',
-    width: 0,
-    flexGrow: 1,
-    // TODO: replace with a wrapper component for all types of texts visualization
-    cellRenderer: function cellRenderer({ cellData }: any) {
-      return <p>{cellData}</p>;
-    },
-  },
-];
 
 function TextExplorer() {
   const tableElemRef = React.useRef<HTMLDivElement>(null);
@@ -58,7 +33,7 @@ function TextExplorer() {
   const route = useRouteMatch<any>();
   const history = useHistory();
   const textsData =
-    useModel<Partial<ITextExplorerAppModelState>>(textExplorerAppModel);
+    useModel<Partial<ITextExplorerAppModelState | any>>(textExplorerAppModel);
 
   React.useEffect(() => {
     textExplorerAppModel.initialize(route.params.appId);
@@ -107,6 +82,7 @@ function TextExplorer() {
     };
   }, [route.params.appId]);
 
+  console.log(textsData);
   return (
     <ErrorBoundary>
       <div className='TextExplorer__container' ref={wrapperElemRef}>
@@ -144,8 +120,8 @@ function TextExplorer() {
                 custom
                 ref={tableElemRef}
                 fixed={false}
-                columns={tableColumns}
-                data={[]}
+                columns={textsData?.tablePanelColumns! as any}
+                data={[1]}
                 isLoading={false}
                 hideHeaderActions
                 estimatedRowHeight={32}

@@ -1,9 +1,15 @@
 import _ from 'lodash-es';
+import moment from 'moment';
 
 import { RequestStatusEnum } from 'config/enums/requestStatusEnum';
 import { ResizeModeEnum } from 'config/enums/tableEnums';
 import { RowHeightSize } from 'config/table/tableConfigs';
 import COLORS from 'config/colors/colors';
+
+import {
+  getTablePanelColumns,
+  textsTablePanelRowRenderer,
+} from 'pages/TextExplorer/components/TextPanelGrid/TextPanelGrid';
 
 import projectsService from 'services/api/projects/projectsService';
 import appsService from 'services/api/apps/appsService';
@@ -50,6 +56,10 @@ import {
   iterFoldTree,
 } from 'utils/encoder/streamEncoding';
 import getObjectPaths from 'utils/getObjectPaths';
+import getValueByField from 'utils/getValueByField';
+import onRowVisibilityChange from 'utils/app/onRowVisibilityChange';
+import { isSystemMetric } from 'utils/isSystemMetric';
+import { getValue } from 'utils/helper';
 
 import createModel from '../model';
 import blobsURIModel from '../media/blobsURIModel';
@@ -749,6 +759,17 @@ function setModelData(rawData: any[], configData: ITextExplorerAppConfig) {
   const sortFields = model.getState()?.config?.table.sortFields;
   const { data, params, contexts, highLevelParams, selectedRows } =
     processData(rawData);
+  // const tablePanelData = getPanelDataAsTableRows();
+
+  const tablePanelColumns = getTablePanelColumns(
+    data,
+    params,
+    configData.table.columnsOrder!,
+    configData.table.hiddenColumns!,
+  );
+  console.log(tablePanelColumns, processData(rawData), rawData);
+  model.setState({ tablePanelColumns });
+
   const sortedParams = params.concat(highLevelParams).sort();
   // const groupingSelectOptions = [
   //   ...getGroupingSelectOptions({
@@ -1043,6 +1064,147 @@ function onSelectRunQueryChange(query: string) {
 
     model.setState({ config: newConfig });
   }
+}
+
+function getPanelDataAsTableRows(
+  processedData: any,
+  metricsColumns: any,
+  paramKeys: string[],
+  isRawData?: boolean,
+): { rows: any[] | any; sameValueColumns: string[] } {
+  if (!processedData) {
+    return {
+      rows: [],
+      sameValueColumns: [],
+    };
+  }
+  const initialMetricsRowData = Object.keys(metricsColumns).reduce(
+    (acc: any, key: string) => {
+      const groupByMetricName: any = {};
+      Object.keys(metricsColumns[key]).forEach((metricContext: string) => {
+        groupByMetricName[
+          `${isSystemMetric(key) ? key : `${key}_${metricContext}`}`
+        ] = '-';
+      });
+      acc = { ...acc, ...groupByMetricName };
+      return acc;
+    },
+    {},
+  );
+  const rows: any = processedData[0]?.config !== null ? {} : [];
+  let rowIndex = 0;
+  const sameValueColumns: string[] = [];
+
+  processedData.forEach((metricsCollection: any) => {
+    const groupKey = metricsCollection.key;
+    const columnsValues: { [key: string]: string[] } = {};
+    if (metricsCollection.config !== null) {
+      const groupHeaderRow = {
+        meta: {
+          chartIndex: metricsCollection.chartIndex + 1,
+        },
+        key: groupKey!,
+        color: metricsCollection.color,
+        dasharray: metricsCollection.dasharray,
+        experiment: '',
+        run: '',
+        metric: '',
+        context: [],
+        children: [],
+      };
+      rows[groupKey!] = {
+        data: groupHeaderRow,
+        items: [],
+      };
+    }
+    metricsCollection.data.forEach((metric: any) => {
+      const metricsRowValues = { ...initialMetricsRowData };
+      metric.run.traces.metric.forEach((trace: any) => {
+        metricsRowValues[
+          `${
+            isSystemMetric(trace.name)
+              ? trace.name
+              : `${trace.name}_${contextToString(trace.context)}`
+          }`
+        ] = formatValue(trace.last_value.last);
+      });
+      const rowValues: any = {
+        key: metric.key,
+        selectKey: `${metric.run.hash}/${metric.key}`,
+        runHash: metric.run.hash,
+        index: rowIndex,
+        color: metricsCollection.color ?? metric.color,
+        dasharray: metricsCollection.dasharray ?? metric.dasharray,
+        experiment: metric.run.props.experiment?.name ?? 'default',
+        run: moment(metric.run.props.creation_time * 1000).format(
+          'HH:mm:ss · D MMM, YY',
+        ),
+        metric: metric.name,
+        ...metricsRowValues,
+      };
+      rowIndex++;
+      [
+        'experiment',
+        'run',
+        'metric',
+        'context',
+        'step',
+        'epoch',
+        'time',
+      ].forEach((key) => {
+        if (columnsValues.hasOwnProperty(key)) {
+          if (!_.some(columnsValues[key], rowValues[key])) {
+            columnsValues[key].push(rowValues[key]);
+          }
+        } else {
+          columnsValues[key] = [rowValues[key]];
+        }
+      });
+      paramKeys.forEach((paramKey) => {
+        const value = getValue(metric.run.params, paramKey, '-');
+        rowValues[paramKey] = formatValue(value);
+        if (columnsValues.hasOwnProperty(paramKey)) {
+          if (!columnsValues[paramKey].includes(value)) {
+            columnsValues[paramKey].push(value);
+          }
+        } else {
+          columnsValues[paramKey] = [value];
+        }
+      });
+      if (metricsCollection.config !== null) {
+        rows[groupKey!].items.push(
+          isRawData ? rowValues : textsTablePanelRowRenderer(rowValues),
+        );
+      } else {
+        rows.push(
+          isRawData ? rowValues : textsTablePanelRowRenderer(rowValues),
+        );
+      }
+    });
+
+    for (let columnKey in columnsValues) {
+      if (columnsValues[columnKey].length === 1) {
+        sameValueColumns.push(columnKey);
+      }
+
+      if (metricsCollection.config !== null) {
+        rows[groupKey!].data[columnKey] =
+          columnsValues[columnKey].length === 1
+            ? columnsValues[columnKey][0]
+            : columnsValues[columnKey];
+      }
+
+      if (metricsCollection.config !== null && !isRawData) {
+        rows[groupKey!].data = textsTablePanelRowRenderer(
+          rows[groupKey!].data,
+          true,
+          Object.keys(columnsValues),
+        );
+      }
+    }
+  });
+
+  return { rows, sameValueColumns };
 }
 
 const textsExploreAppModel = {
