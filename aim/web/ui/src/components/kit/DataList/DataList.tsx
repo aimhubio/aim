@@ -7,6 +7,11 @@ import BusyLoaderWrapper from 'components/BusyLoaderWrapper/BusyLoaderWrapper';
 
 import SearchBar from './SearchBar';
 import { IDataListProps } from './DataList.d';
+import {
+  DATA_LIST_HEADER_HEIGHT,
+  DATA_LIST_ROW_HEIGHT,
+  SEARCH_BAR_HEIGHT,
+} from './config';
 
 import './DataList.scss';
 
@@ -34,6 +39,18 @@ function DataList({
     updateData,
     searchableKeys,
   });
+
+  const tableHeight = React.useMemo(() => {
+    const searchBarHeight = withSearchBar ? SEARCH_BAR_HEIGHT : 0;
+
+    return textSearch?.data?.length > 0
+      ? `${
+          textSearch.data.length * DATA_LIST_ROW_HEIGHT +
+          DATA_LIST_HEADER_HEIGHT +
+          searchBarHeight
+        }px`
+      : '100vh';
+  }, [textSearch.data]);
 
   function getHighlightedData(data: any[], regex: RegExp | null) {
     const searchableKeysList = searchableKeys ?? Object.keys(data[0] ?? {});
@@ -72,7 +89,7 @@ function DataList({
     tableRef.current?.updateData({ newData: getHighlightedData(data, regex) });
   }
   return (
-    <div className={'DataList'}>
+    <div className={'DataList'} style={{ height: tableHeight }}>
       {withSearchBar && (
         <SearchBar
           isValidInput={textSearch.filterOptions.isValidSearch}
@@ -104,6 +121,7 @@ function DataList({
             headerHeight={32}
             illustrationConfig={illustrationConfig}
             height='100%'
+            disableRowClick
           />
         )}
       </BusyLoaderWrapper>

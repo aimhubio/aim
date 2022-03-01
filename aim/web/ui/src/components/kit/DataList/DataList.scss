@@ -3,15 +3,14 @@
 .DataList {
   display: flex;
   flex-direction: column;
-  height: 100%;
   width: 100%;
+  max-height: 100%;
   .VisualizationLoader {
     height: 100% !important;
   }
   &__textsTable {
     border: $border-grey;
-    border-top-left-radius: $border-radius-main;
-    border-top-right-radius: $border-radius-main;
+    border-radius: $border-radius-md;
     overflow: hidden;
     width: 100%;
   }
@@ -37,6 +36,7 @@
       &--hovered {
         background: #e8f1fc;
       }
+
       &-cell {
         position: relative;
         min-height: 32px;
@@ -50,6 +50,12 @@
           border-right: none;
           white-space: normal;
           overflow: auto !important;
+        }
+      }
+
+      &:last-child {
+        .BaseTable__row-cell {
+          border-bottom: none;
         }
       }
     }

@@ -1,7 +1,6 @@
 import React from 'react';
 
 import ErrorBoundary from 'components/ErrorBoundary/ErrorBoundary';
-import Card from 'components/kit/Card/Card';
 
 import './RunOverViewTab.scss';
 

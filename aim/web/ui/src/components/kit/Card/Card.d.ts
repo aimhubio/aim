@@ -11,5 +11,6 @@ export interface ICardProps {
     searchableKeys?: string[];
     illustrationConfig?: IIllustrationConfig;
     isLoading?: boolean;
+    withSearchBar?: boolean;
   };
 }

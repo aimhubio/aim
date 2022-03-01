@@ -88,6 +88,7 @@ const Table = React.forwardRef(function Table(
     focusedState,
     columnsOrder,
     illustrationConfig,
+    disableRowClick = false,
     ...props
   }: ITableProps,
   ref,
@@ -864,6 +865,7 @@ const Table = React.forwardRef(function Table(
                         onColumnResizeEnd={() => null}
                         onRowHover={onRowHover}
                         onRowClick={onRowClick}
+                        disableRowClick={disableRowClick}
                       />
                     </ErrorBoundary>
                   )
