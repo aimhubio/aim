@@ -115,13 +115,13 @@ function TextExplorer() {
                 onSelectRunQueryChange={
                   textExplorerAppModel.onSelectRunQueryChange
                 }
-                // onSelectAdvancedQueryChange={
-                //   textExplorerAppModel.onSelectAdvancedQueryChange
-                // }
-                // toggleSelectAdvancedMode={
-                //   textExplorerAppModel.toggleSelectAdvancedMode
-                // }
-                // onSearchQueryCopy={textExplorerAppModel.onSearchQueryCopy}
+                onSelectAdvancedQueryChange={
+                  textExplorerAppModel.onSelectAdvancedQueryChange
+                }
+                toggleSelectAdvancedMode={
+                  textExplorerAppModel.toggleSelectAdvancedMode
+                }
+                onSearchQueryCopy={textExplorerAppModel.onSearchQueryCopy}
               />
             </div>
             <div

@@ -300,7 +300,7 @@ function updateURL(
 
   const appId: string = window.location.pathname.split('/')[2];
   if (!appId) {
-    setItem('textExplorerUrl', url);
+    setItem('textsUrl', url);
   }
 
   window.history.pushState(null, '', url);
@@ -1161,6 +1161,69 @@ function onTableResizeModeChange(mode: ResizeModeEnum): void {
   analytics.trackEvent(ANALYTICS_EVENT_KEYS.texts.table.changeResizeMode);
 }
 
+function onSelectAdvancedQueryChange(query: string) {
+  const configData: ITextExplorerAppConfig | undefined =
+    model.getState()?.config;
+  if (configData?.select) {
+    const newConfig = {
+      ...configData,
+      select: { ...configData.select, advancedQuery: query },
+      images: { ...configData.texts },
+    };
+
+    model.setState({
+      config: newConfig,
+    });
+  }
+}
+
+function toggleSelectAdvancedMode() {
+  const configData: ITextExplorerAppConfig | undefined =
+    model.getState()?.config;
+
+  if (configData?.select) {
+    let query =
+      configData.select.advancedQuery ||
+      getQueryStringFromSelect(configData?.select);
+    if (query === '()') {
+      query = '';
+    }
+    const newConfig = {
+      ...configData,
+      select: {
+        ...configData.select,
+        advancedQuery: query,
+        advancedMode: !configData.select.advancedMode,
+      },
+    };
+    updateURL(newConfig);
+
+    model.setState({ config: newConfig });
+  }
+
+  /*analytics.trackEvent(
+    `${ANALYTICS_EVENT_KEYS.texts.useAdvancedSearch} ${
+      !configData?.select.advancedMode ? 'on' : 'off'
+    }`,
+  );*/
+}
+
+function onSearchQueryCopy(): void {
+  const selectedMetricsData = model.getState()?.config?.select;
+  let query = getQueryStringFromSelect(selectedMetricsData as any);
+  if (query) {
+    navigator.clipboard.writeText(query);
+    onNotificationAdd({
+      notification: {
+        id: Date.now(),
+        severity: 'success',
+        messages: ['Run Expression Copied'],
+      },
+      model,
+    });
+  }
+}
+
 const textsExploreAppModel = {
   ...model,
   initialize,
@@ -1172,10 +1235,13 @@ const textsExploreAppModel = {
   onTableResizeEnd,
   onBookmarkUpdate,
   onNotificationAdd,
+  onSearchQueryCopy,
   setDefaultAppConfigData,
   onSelectRunQueryChange,
   onTableResizeModeChange,
+  toggleSelectAdvancedMode,
   onTextsExplorerSelectChange,
+  onSelectAdvancedQueryChange,
   onNotificationDelete: onModelNotificationDelete,
 };
 
