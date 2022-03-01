@@ -6,6 +6,9 @@ import React from 'react';
 import BusyLoaderWrapper from 'components/BusyLoaderWrapper/BusyLoaderWrapper';
 import ErrorBoundary from 'components/ErrorBoundary/ErrorBoundary';
 import TableLoader from 'components/TableLoader/TableLoader';
+import Table from 'components/Table/Table';
+
+import { IllustrationsEnum } from 'config/illustrationConfig/illustrationConfig';
 
 import './TextExplorer.scss';
 
@@ -13,6 +16,32 @@ function TextExplorer() {
   const tableElemRef = React.useRef<HTMLDivElement>(null);
   const textsWrapperRef = React.useRef<any>(null);
   const wrapperElemRef = React.useRef<HTMLDivElement>(null);
+
+  const tableColumns = [
+    {
+      dataKey: 'step',
+      key: 'step',
+      title: 'Step',
+      width: 100,
+    },
+    {
+      dataKey: 'index',
+      key: 'index',
+      title: 'Index',
+      width: 100,
+    },
+    {
+      dataKey: 'text',
+      key: 'text',
+      title: 'Text',
+      width: 0,
+      flexGrow: 1,
+      // TODO: replace with a wrapper component for all types of texts visualization
+      cellRenderer: function cellRenderer({ cellData }: any) {
+        return <p>{cellData}</p>;
+      },
+    },
+  ];
   return (
     <ErrorBoundary>
       <div className='TextExplorer__container' ref={wrapperElemRef}>
@@ -26,7 +55,24 @@ function TextExplorer() {
               ref={textsWrapperRef}
               className='TextExplorer__textsWrapper__container'
             >
-              Texts Panel
+              <Table
+                custom
+                ref={tableElemRef}
+                fixed={false}
+                columns={tableColumns}
+                data={[]}
+                isLoading={false}
+                hideHeaderActions
+                estimatedRowHeight={32}
+                headerHeight={32}
+                updateColumnsWidths={() => {}}
+                illustrationConfig={{
+                  page: 'runs',
+                  title: 'No Tracked Texts',
+                  type: IllustrationsEnum.EmptyData,
+                }}
+                height='100%'
+              />
             </div>
             Resize panel
             <div ref={tableElemRef} className='TextExplorer__table__container'>
