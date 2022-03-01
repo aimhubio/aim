@@ -1,4 +1,4 @@
-## Run Aim UI on SageMaker Notebook instance.
+## Run Aim UI on SageMaker Notebook instance
 
 In this guide you will learn how to run Aim UI on your Sagemaker Jupyter instance
 
