@@ -1,8 +1,7 @@
 # distutils: language = c++
 # cython: language_level = 3
 
-from aimrocks.lib_rocksdb cimport Iterator as CyIterator
-from aimrocks.lib_rocksdb cimport IDB as CyDB
+cimport aimrocks.lib_rocksdb as interfaces
 
 cdef class ArrayFlagType:
     pass
