@@ -5,16 +5,19 @@ import ErrorBoundary from 'components/ErrorBoundary/ErrorBoundary';
 import BusyLoaderWrapper from 'components/BusyLoaderWrapper/BusyLoaderWrapper';
 import TableLoader from 'components/TableLoader/TableLoader';
 
+import { RequestStatusEnum } from 'config/enums/requestStatusEnum';
+
+import useModel from 'hooks/model/useModel';
+
 import SelectForm from 'pages/TextExplorer/components/SelectForm/SelectForm';
 
 import textExplorerAppModel from 'services/models/textExplorer/textExplorerAppModel';
 
-import exceptionHandler from '../../utils/app/exceptionHandler';
-import { IApiRequest } from '../../types/services/services';
-import getStateFromUrl from '../../utils/getStateFromUrl';
-import useModel from '../../hooks/model/useModel';
-import { ITextExplorerAppModelState } from '../../types/services/models/textExplorer/texteExplorerAppModel';
-import { RequestStatusEnum } from '../../config/enums/requestStatusEnum';
+import { IApiRequest } from 'types/services/services';
+import { ITextExplorerAppModelState } from 'types/services/models/textExplorer/texteExplorerAppModel';
+
+import exceptionHandler from 'utils/app/exceptionHandler';
+import getStateFromUrl from 'utils/getStateFromUrl';
 
 import './TextExplorer.scss';
 
@@ -60,7 +63,7 @@ function TextExplorer() {
           textsData.config.select !== getStateFromUrl('select')
         ) {
           textExplorerAppModel.setDefaultAppConfigData();
-          //textExplorerAppModel.updateModelData();
+          textExplorerAppModel.updateModelData();
         }
       }
     });

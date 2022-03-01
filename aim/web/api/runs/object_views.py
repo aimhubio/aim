@@ -47,8 +47,9 @@ class CustomObjectApiConfig:
             record_range = checked_range(record_range)
             index_range = checked_range(index_range)
 
-            traces = repo.query_images(query=query)
+            traces = repo.query_texts(query=query)
             api = CustomObjectApi(seq_name, resolve_blobs=cls.resolve_blobs)
+            api.set_dump_data_fn(cls.dump_record_fn)
             api.set_trace_collection(traces)
             api.set_ranges(record_range, record_density, index_range, index_density)
             streamer = api.search_result_streamer()

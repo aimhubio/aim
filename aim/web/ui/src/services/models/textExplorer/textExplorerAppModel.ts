@@ -1,10 +1,11 @@
 import _ from 'lodash-es';
-import moment from 'moment';
 
 import { RequestStatusEnum } from 'config/enums/requestStatusEnum';
 import { ResizeModeEnum } from 'config/enums/tableEnums';
 import { RowHeightSize } from 'config/table/tableConfigs';
+import COLORS from 'config/colors/colors';
 
+import projectsService from 'services/api/projects/projectsService';
 import appsService from 'services/api/apps/appsService';
 import textExplorerService from 'services/api/textExplorer/textExplorerService';
 
@@ -20,6 +21,16 @@ import {
   ISelectConfig,
   ISelectOption,
 } from 'types/services/models/explorer/createAppModel';
+import { IProjectParamsMetrics } from 'types/services/models/projects/projectsModel';
+import {
+  IMetricTrace,
+  IParamTrace,
+  IRun,
+} from 'types/services/models/metrics/runModel';
+import {
+  IImageData,
+  IImageRunData,
+} from 'types/services/models/imagesExplore/imagesExploreAppModel';
 
 import { getCompatibleSelectConfig } from 'utils/app/getCompatibleSelectConfig';
 import onNotificationAdd from 'utils/app/onNotificationAdd';
@@ -28,44 +39,20 @@ import { formatValue } from 'utils/formatValue';
 import getUrlWithParam from 'utils/getUrlWithParam';
 import { decode, encode } from 'utils/encoder/encoder';
 import { getItem, setItem } from 'utils/storage';
-
-import createModel from '../model';
-import projectsService from '../../api/projects/projectsService';
-import { IProjectParamsMetrics } from '../../../types/services/models/projects/projectsModel';
-import { getParamsSuggestions } from '../../../utils/app/getParamsSuggestions';
-import COLORS from '../../../config/colors/colors';
-import contextToString from '../../../utils/contextToString';
-import alphabeticalSortComparator from '../../../utils/alphabeticalSortComparator';
-import getStateFromUrl from '../../../utils/getStateFromUrl';
-import {
-  IMetricTrace,
-  IParamTrace,
-  IRun,
-} from '../../../types/services/models/metrics/runModel';
-import getGroupingSelectOptions from '../../../utils/app/getGroupingSelectOptions';
-import {
-  IImageData,
-  IImageRunData,
-  IImagesExploreAppConfig,
-} from '../../../types/services/models/imagesExplore/imagesExploreAppModel';
-import { getDataAsMediaSetNestedObject } from '../../../utils/app/getDataAsMediaSetNestedObject';
-import {
-  getImagesExploreTableColumns,
-  imagesExploreTableRowRenderer,
-} from '../../../pages/ImagesExplore/components/ImagesExploreTableGrid/ImagesExploreTableGrid';
-import { getSortedFields, SortFields } from '../../../utils/getSortedFields';
-import blobsURIModel from '../media/blobsURIModel';
+import { getParamsSuggestions } from 'utils/app/getParamsSuggestions';
+import contextToString from 'utils/contextToString';
+import alphabeticalSortComparator from 'utils/alphabeticalSortComparator';
+import getStateFromUrl from 'utils/getStateFromUrl';
 import {
   adjustable_reader,
   decode_buffer_pairs,
   decodePathsVals,
   iterFoldTree,
-} from '../../../utils/encoder/streamEncoding';
-import getObjectPaths from '../../../utils/getObjectPaths';
-import getValueByField from '../../../utils/getValueByField';
-import { getValue } from '../../../utils/helper';
-import getTooltipData from '../../../utils/app/getTooltipData';
-import filterTooltipContent from '../../../utils/filterTooltipContent';
+} from 'utils/encoder/streamEncoding';
+import getObjectPaths from 'utils/getObjectPaths';
+
+import createModel from '../model';
+import blobsURIModel from '../media/blobsURIModel';
 
 const model = createModel<Partial<ITextExplorerAppModelState>>({
   requestStatus: RequestStatusEnum.NotRequested,
@@ -282,6 +269,7 @@ function getQueryStringFromSelect(selectData: any) {
 
   return query;
 }
+
 /**
  * function updateURL has 2 major functionalities:
  *    1. Keeps URL in sync with the app config
@@ -331,27 +319,27 @@ function processData(data: any[]): {
       contexts = contexts.concat(getObjectPaths(trace.context, trace.context));
       trace.values.forEach((stepData: any[], stepIndex: number) => {
         stepData.forEach((text: any) => {
-          const imageKey = encode({
-            name: trace.name,
-            runHash: run.hash,
-            traceContext: trace.context,
-            index: text.index,
-            step: trace.iters[stepIndex],
-            caption: text.caption,
-          });
-          const seqKey = encode({
-            name: trace.name,
-            runHash: run.hash,
-            traceContext: trace.context,
-          });
+          // const imageKey = encode({
+          //   name: trace.name,
+          //   runHash: run.hash,
+          //   traceContext: trace.context,
+          //   index: text.index,
+          //   step: trace.iters[stepIndex],
+          //   caption: text.caption,
+          // });
+          // const seqKey = encode({
+          //   name: trace.name,
+          //   runHash: run.hash,
+          //   traceContext: trace.context,
+          // });
           metrics.push({
             ...text,
-            images_name: trace.name,
+            // images_name: trace.name,
             step: trace.iters[stepIndex],
             context: trace.context,
             run: _.omit(run, 'traces'),
-            key: imageKey,
-            seqKey: seqKey,
+            // key: imageKey,
+            // seqKey: seqKey,
           });
         });
       });
@@ -412,31 +400,32 @@ function processData(data: any[]): {
   };
 }
 
-function onRowVisibilityChange(metricKey: string) {
-  const configData: ITextExplorerAppConfig | undefined =
-    model.getState()?.config;
-  if (configData?.table) {
-    let hiddenMetrics = configData?.table?.hiddenMetrics || [];
-    if (hiddenMetrics?.includes(metricKey)) {
-      hiddenMetrics = hiddenMetrics.filter(
-        (hiddenMetric: any) => hiddenMetric !== metricKey,
-      );
-    } else {
-      hiddenMetrics = [...hiddenMetrics, metricKey];
-    }
-    const table = {
-      ...configData.table,
-      hiddenMetrics,
-    };
-    const config = {
-      ...configData,
-      table,
-    };
-    model.setState({ config });
-    setItem('textsExplorerTable', encode(table));
-    updateModelData(config);
-  }
-}
+//
+// function onRowVisibilityChange(metricKey: string) {
+//   const configData: ITextExplorerAppConfig | undefined =
+//     model.getState()?.config;
+//   if (configData?.table) {
+//     let hiddenMetrics = configData?.table?.hiddenMetrics || [];
+//     if (hiddenMetrics?.includes(metricKey)) {
+//       hiddenMetrics = hiddenMetrics.filter(
+//         (hiddenMetric: any) => hiddenMetric !== metricKey,
+//       );
+//     } else {
+//       hiddenMetrics = [...hiddenMetrics, metricKey];
+//     }
+//     const table = {
+//       ...configData.table,
+//       hiddenMetrics,
+//     };
+//     const config = {
+//       ...configData,
+//       table,
+//     };
+//     model.setState({ config });
+//     setItem('textsExplorerTable', encode(table));
+//     updateModelData(config);
+//   }
+// }
 
 function updateModelData(
   configData: ITextExplorerAppConfig = model.getState()!.config!,
@@ -521,184 +510,239 @@ function updateModelData(
   });
 }
 
-function getDataAsTableRows(
-  processedData: IMetricsCollection<IImageData>[],
-  paramKeys: string[],
-  isRawData: boolean,
-  config: IImagesExploreAppConfig,
-  groupingSelectOptions: any,
-  dynamicUpdate?: boolean,
-): { rows: any[] | any; sameValueColumns: string[] } {
-  if (!processedData) {
-    return {
-      rows: [],
-      sameValueColumns: [],
-    };
+//
+// function getDataAsTableRows(
+//   processedData: IMetricsCollection<IImageData>[],
+//   paramKeys: string[],
+//   isRawData: boolean,
+//   config: IImagesExploreAppConfig,
+//   groupingSelectOptions: any,
+//   dynamicUpdate?: boolean,
+// ): { rows: any[] | any; sameValueColumns: string[] } {
+//   if (!processedData) {
+//     return {
+//       rows: [],
+//       sameValueColumns: [],
+//     };
+//   }
+//
+//   const rows: any[] | any = processedData[0]?.config !== null ? {} : [];
+//
+//   let rowIndex = 0;
+//   const sameValueColumns: string[] = [];
+//   const tableData = groupData(
+//     Object.values(
+//       _.groupBy(
+//         Object.values(processedData)
+//           .map((v) => v.data)
+//           .flat(),
+//         'seqKey',
+//       ),
+//     ).map((v) => v[0]),
+//   );
+//   tableData.forEach((metricsCollection: IMetricsCollection<IImageData>) => {
+//     const groupKey = metricsCollection.key;
+//     const columnsValues: { [key: string]: string[] } = {};
+//
+//     if (metricsCollection.config !== null) {
+//       const groupConfigData: { [key: string]: string } = {};
+//       for (let key in metricsCollection.config) {
+//         groupConfigData[getValueByField(groupingSelectOptions, key)] =
+//           metricsCollection.config[key];
+//       }
+//       const groupHeaderRow = {
+//         meta: {
+//           dasharray: null,
+//           itemsCount: metricsCollection.data.length,
+//           config: groupConfigData,
+//         },
+//         key: groupKey!,
+//         groupRowsKeys: metricsCollection.data.map(
+//           (metric) => (metric as any).seqKey,
+//         ),
+//         experiment: '',
+//         run: '',
+//         metric: '',
+//         context: [],
+//         children: [],
+//         groups: groupConfigData,
+//       };
+//
+//       rows[groupKey!] = {
+//         data: groupHeaderRow,
+//         items: [],
+//       };
+//     }
+//
+//     Object.values(_.groupBy(metricsCollection.data, 'seqKey'))
+//       .map((v) => v[0])
+//       .forEach((metric: any) => {
+//         const rowValues: any = {
+//           rowMeta: {
+//             color: metricsCollection.color ?? metric.color,
+//           },
+//           key: metric.seqKey,
+//           selectKey: `${metric.run.hash}/${metric.seqKey}`,
+//           runHash: metric.run.hash,
+//           isHidden: config?.table?.hiddenMetrics?.includes(metric.key),
+//           index: rowIndex,
+//           color: metricsCollection.color ?? metric.color,
+//           dasharray: metricsCollection.dasharray ?? metric.dasharray,
+//           experiment: metric.run.props.experiment?.name ?? 'default',
+//           run: moment(metric.run.props.creation_time * 1000).format(
+//             'HH:mm:ss · D MMM, YY',
+//           ),
+//           name: metric.images_name,
+//           context: Object.entries(metric.context).map((entry) =>
+//             entry.join(':'),
+//           ),
+//           parentId: groupKey,
+//         };
+//         rowIndex++;
+//
+//         [
+//           'experiment',
+//           'run',
+//           'metric',
+//           'context',
+//           'step',
+//           'epoch',
+//           'time',
+//           'name',
+//         ].forEach((key) => {
+//           if (columnsValues.hasOwnProperty(key)) {
+//             if (
+//               _.findIndex(columnsValues[key], (value) =>
+//                 _.isEqual(rowValues[key], value),
+//               ) === -1
+//             ) {
+//               columnsValues[key].push(rowValues[key]);
+//             }
+//           } else {
+//             columnsValues[key] = [rowValues[key]];
+//           }
+//         });
+//
+//         if (!dynamicUpdate) {
+//           paramKeys.forEach((paramKey) => {
+//             const value = getValue(metric.run.params, paramKey, '-');
+//             rowValues[paramKey] = formatValue(value);
+//             if (columnsValues.hasOwnProperty(paramKey)) {
+//               if (
+//                 _.findIndex(columnsValues[paramKey], (paramValue) =>
+//                   _.isEqual(value, paramValue),
+//                 ) === -1
+//               ) {
+//                 columnsValues[paramKey].push(value);
+//               }
+//             } else {
+//               columnsValues[paramKey] = [value];
+//             }
+//           });
+//         }
+//         if (metricsCollection.config !== null) {
+//           rows[groupKey!].items.push(
+//             isRawData
+//               ? rowValues
+//               : imagesExploreTableRowRenderer(rowValues, {
+//                   toggleVisibility: (e) => {
+//                     e.stopPropagation();
+//                     onRowVisibilityChange(rowValues.key);
+//                   },
+//                 }),
+//           );
+//         } else {
+//           rows.push(
+//             isRawData
+//               ? rowValues
+//               : imagesExploreTableRowRenderer(rowValues, {
+//                   toggleVisibility: (e) => {
+//                     e.stopPropagation();
+//                     onRowVisibilityChange(rowValues.key);
+//                   },
+//                 }),
+//           );
+//         }
+//       });
+//
+//     for (let columnKey in columnsValues) {
+//       if (columnsValues[columnKey].length === 1) {
+//         sameValueColumns.push(columnKey);
+//       }
+//
+//       if (metricsCollection.config !== null) {
+//         rows[groupKey!].data[columnKey] =
+//           columnsValues[columnKey].length === 1
+//             ? paramKeys.includes(columnKey)
+//               ? formatValue(columnsValues[columnKey][0])
+//               : columnsValues[columnKey][0]
+//             : columnsValues[columnKey];
+//       }
+//     }
+//     if (metricsCollection.config !== null && !isRawData) {
+//       rows[groupKey!].data = imagesExploreTableRowRenderer(
+//         rows[groupKey!].data,
+//         {},
+//         true,
+//         ['value', 'name', 'groups'].concat(Object.keys(columnsValues)),
+//       );
+//     }
+//   });
+//   return { rows, sameValueColumns };
+// }
+
+//
+// // internal function to update config.table.sortFields and cache data
+// function updateTableSortFields(sortFields: SortFields) {
+//   const configData: ITextExplorerAppConfig | undefined =
+//     model.getState()?.config;
+//   if (configData?.table) {
+//     const table = {
+//       ...configData.table,
+//       sortFields,
+//     };
+//     const configUpdate = {
+//       ...configData,
+//       table,
+//     };
+//     model.setState({ config: configUpdate });
+//
+//     setItem('textsExplorerTable', encode(table));
+//     updateModelData(configUpdate, true);
+//   }
+//   // analytics.trackEvent(
+//   //   `${ANALYTICS_EVENT_KEYS.images.table.changeSorting} ${
+//   //     _.isEmpty(sortFields) ? 'Reset' : 'Apply'
+//   //   }`,
+//   // );
+// }
+//
+// function onTableSortChange({
+//   sortFields,
+//   order,
+//   index,
+//   actionType,
+//   field,
+// }: any) {
+//   const configData: ITextExplorerAppConfig | undefined =
+//     model.getState()?.config;
+//
+//   updateTableSortFields(
+//     getSortedFields({
+//       sortFields: sortFields || configData?.table.sortFields || [],
+//       order,
+//       index,
+//       actionType,
+//       field,
+//     }),
+//   );
+// }
+
+function updateData(newData: IRun<IParamTrace>[]): void {
+  const configData = model.getState()?.config;
+  if (configData) {
+    setModelData(newData, configData);
   }
-
-  const rows: any[] | any = processedData[0]?.config !== null ? {} : [];
-
-  let rowIndex = 0;
-  const sameValueColumns: string[] = [];
-  // const tableData = groupData(
-  //   Object.values(
-  //     _.groupBy(
-  //       Object.values(processedData)
-  //         .map((v) => v.data)
-  //         .flat(),
-  //       'seqKey',
-  //     ),
-  //   ).map((v) => v[0]),
-  // );
-  // tableData.forEach((metricsCollection: IMetricsCollection<IImageData>) => {
-  //   const groupKey = metricsCollection.key;
-  //   const columnsValues: { [key: string]: string[] } = {};
-  //
-  //   if (metricsCollection.config !== null) {
-  //     const groupConfigData: { [key: string]: string } = {};
-  //     for (let key in metricsCollection.config) {
-  //       groupConfigData[getValueByField(groupingSelectOptions, key)] =
-  //         metricsCollection.config[key];
-  //     }
-  //     const groupHeaderRow = {
-  //       meta: {
-  //         dasharray: null,
-  //         itemsCount: metricsCollection.data.length,
-  //         config: groupConfigData,
-  //       },
-  //       key: groupKey!,
-  //       groupRowsKeys: metricsCollection.data.map(
-  //         (metric) => (metric as any).seqKey,
-  //       ),
-  //       experiment: '',
-  //       run: '',
-  //       metric: '',
-  //       context: [],
-  //       children: [],
-  //       groups: groupConfigData,
-  //     };
-  //
-  //     rows[groupKey!] = {
-  //       data: groupHeaderRow,
-  //       items: [],
-  //     };
-  //   }
-  //
-  //   Object.values(_.groupBy(metricsCollection.data, 'seqKey'))
-  //     .map((v) => v[0])
-  //     .forEach((metric: any) => {
-  //       const rowValues: any = {
-  //         rowMeta: {
-  //           color: metricsCollection.color ?? metric.color,
-  //         },
-  //         key: metric.seqKey,
-  //         selectKey: `${metric.run.hash}/${metric.seqKey}`,
-  //         runHash: metric.run.hash,
-  //         isHidden: config?.table?.hiddenMetrics?.includes(metric.key),
-  //         index: rowIndex,
-  //         color: metricsCollection.color ?? metric.color,
-  //         dasharray: metricsCollection.dasharray ?? metric.dasharray,
-  //         experiment: metric.run.props.experiment?.name ?? 'default',
-  //         run: moment(metric.run.props.creation_time * 1000).format(
-  //           'HH:mm:ss · D MMM, YY',
-  //         ),
-  //         name: metric.images_name,
-  //         context: Object.entries(metric.context).map((entry) =>
-  //           entry.join(':'),
-  //         ),
-  //         parentId: groupKey,
-  //       };
-  //       rowIndex++;
-  //
-  //       [
-  //         'experiment',
-  //         'run',
-  //         'metric',
-  //         'context',
-  //         'step',
-  //         'epoch',
-  //         'time',
-  //         'name',
-  //       ].forEach((key) => {
-  //         if (columnsValues.hasOwnProperty(key)) {
-  //           if (
-  //             _.findIndex(columnsValues[key], (value) =>
-  //               _.isEqual(rowValues[key], value),
-  //             ) === -1
-  //           ) {
-  //             columnsValues[key].push(rowValues[key]);
-  //           }
-  //         } else {
-  //           columnsValues[key] = [rowValues[key]];
-  //         }
-  //       });
-  //
-  //       if (!dynamicUpdate) {
-  //         paramKeys.forEach((paramKey) => {
-  //           const value = getValue(metric.run.params, paramKey, '-');
-  //           rowValues[paramKey] = formatValue(value);
-  //           if (columnsValues.hasOwnProperty(paramKey)) {
-  //             if (
-  //               _.findIndex(columnsValues[paramKey], (paramValue) =>
-  //                 _.isEqual(value, paramValue),
-  //               ) === -1
-  //             ) {
-  //               columnsValues[paramKey].push(value);
-  //             }
-  //           } else {
-  //             columnsValues[paramKey] = [value];
-  //           }
-  //         });
-  //       }
-  //       if (metricsCollection.config !== null) {
-  //         rows[groupKey!].items.push(
-  //           isRawData
-  //             ? rowValues
-  //             : imagesExploreTableRowRenderer(rowValues, {
-  //                 toggleVisibility: (e) => {
-  //                   e.stopPropagation();
-  //                   onRowVisibilityChange(rowValues.key);
-  //                 },
-  //               }),
-  //         );
-  //       } else {
-  //         rows.push(
-  //           isRawData
-  //             ? rowValues
-  //             : imagesExploreTableRowRenderer(rowValues, {
-  //                 toggleVisibility: (e) => {
-  //                   e.stopPropagation();
-  //                   onRowVisibilityChange(rowValues.key);
-  //                 },
-  //               }),
-  //         );
-  //       }
-  //     });
-  //
-  //   for (let columnKey in columnsValues) {
-  //     if (columnsValues[columnKey].length === 1) {
-  //       sameValueColumns.push(columnKey);
-  //     }
-  //
-  //     if (metricsCollection.config !== null) {
-  //       rows[groupKey!].data[columnKey] =
-  //         columnsValues[columnKey].length === 1
-  //           ? paramKeys.includes(columnKey)
-  //             ? formatValue(columnsValues[columnKey][0])
-  //             : columnsValues[columnKey][0]
-  //           : columnsValues[columnKey];
-  //     }
-  //   }
-  //   if (metricsCollection.config !== null && !isRawData) {
-  //     rows[groupKey!].data = imagesExploreTableRowRenderer(
-  //       rows[groupKey!].data,
-  //       {},
-  //       true,
-  //       ['value', 'name', 'groups'].concat(Object.keys(columnsValues)),
-  //     );
-  //   }
-  // });
-  return { rows, sameValueColumns };
 }
 
 function setModelData(rawData: any[], configData: ITextExplorerAppConfig) {
@@ -845,59 +889,6 @@ function setModelData(rawData: any[], configData: ITextExplorerAppConfig) {
   });
 }
 
-// internal function to update config.table.sortFields and cache data
-function updateTableSortFields(sortFields: SortFields) {
-  const configData: ITextExplorerAppConfig | undefined =
-    model.getState()?.config;
-  if (configData?.table) {
-    const table = {
-      ...configData.table,
-      sortFields,
-    };
-    const configUpdate = {
-      ...configData,
-      table,
-    };
-    model.setState({ config: configUpdate });
-
-    setItem('textsExplorerTable', encode(table));
-    updateModelData(configUpdate, true);
-  }
-  // analytics.trackEvent(
-  //   `${ANALYTICS_EVENT_KEYS.images.table.changeSorting} ${
-  //     _.isEmpty(sortFields) ? 'Reset' : 'Apply'
-  //   }`,
-  // );
-}
-//
-// function onTableSortChange({
-//   sortFields,
-//   order,
-//   index,
-//   actionType,
-//   field,
-// }: any) {
-//   const configData: ITextExplorerAppConfig | undefined =
-//     model.getState()?.config;
-//
-//   updateTableSortFields(
-//     getSortedFields({
-//       sortFields: sortFields || configData?.table.sortFields || [],
-//       order,
-//       index,
-//       actionType,
-//       field,
-//     }),
-//   );
-// }
-
-function updateData(newData: IRun<IParamTrace>[]): void {
-  const configData = model.getState()?.config;
-  if (configData) {
-    setModelData(newData, configData);
-  }
-}
-
 async function getTextsMetricsData(
   stream: ReadableStream<IRun<IMetricTrace>[]>,
 ) {
@@ -944,14 +935,22 @@ function getTextData(
     //TODO check values nullability
     textDataBody = {
       ...textDataBody,
-      record_range: !_.isEmpty(recordSlice)
-        ? `${recordSlice[0]}:${recordSlice[1] + 1}`
-        : '',
-      index_range: !_.isEmpty(indexSlice)
-        ? `${indexSlice?.[0]}:${(indexSlice?.[1] || 0) + 1}`
-        : '',
-      record_density: recordDensity ?? '',
-      index_density: indexDensity ?? '',
+      record_range:
+        !_.isEmpty(recordSlice) &&
+        !_.isNil(recordSlice?.[0]) &&
+        !_.isNil(recordSlice[1])
+          ? `${recordSlice[0]}:${recordSlice[1] + 1}`
+          : '',
+      index_range:
+        !_.isEmpty(indexSlice) &&
+        !_.isNil(recordSlice?.[0]) &&
+        !_.isNil(recordSlice[1])
+          ? `${indexSlice?.[0]}:${(indexSlice?.[1] || 0) + 1}`
+          : '',
+      record_density:
+        !_.isNil(recordDensity) && +recordDensity > 0 ? recordDensity : '',
+      index_density:
+        !_.isNil(indexDensity) && +indexDensity > 0 ? indexDensity : '',
     };
   }
   textsRequestRef = textExplorerService.getTextExplorerData(textDataBody);
@@ -1056,6 +1055,7 @@ const textsExploreAppModel = {
   setDefaultAppConfigData,
   onTextsExplorerSelectChange,
   onSelectRunQueryChange,
+  updateModelData,
 };
 
 export default textsExploreAppModel;
