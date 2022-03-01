@@ -48,7 +48,6 @@ class Container:
         """
         ...
 
-    @abstractmethod
     def get(self, key: ContainerKey, default=None) -> ContainerValue:
         """Returns the value by the given `key` if it exists else `default`.
 
