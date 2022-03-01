@@ -138,7 +138,7 @@ const routes = {
     component: TextsExplorer,
     showInSidebar: true,
     displayName: 'Texts',
-    icon: 'scatterplot',
+    icon: 'text',
     isExact: true,
   },
   TEXTS_EXPLORER_ID: {

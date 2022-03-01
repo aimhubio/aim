@@ -4,23 +4,22 @@ import { useHistory, useRouteMatch } from 'react-router-dom';
 import ErrorBoundary from 'components/ErrorBoundary/ErrorBoundary';
 import BusyLoaderWrapper from 'components/BusyLoaderWrapper/BusyLoaderWrapper';
 import TableLoader from 'components/TableLoader/TableLoader';
+import NotificationContainer from 'components/NotificationContainer/NotificationContainer';
 
 import { RequestStatusEnum } from 'config/enums/requestStatusEnum';
 
 import useModel from 'hooks/model/useModel';
 
 import SelectForm from 'pages/TextExplorer/components/SelectForm/SelectForm';
-import AppBar from 'pages/Metrics/components/MetricsBar/MetricsBar';
 
 import textExplorerAppModel from 'services/models/textExplorer/textExplorerAppModel';
 
 import { IApiRequest } from 'types/services/services';
-import { ITextExplorerAppModelState } from 'types/services/models/textExplorer/texteExplorerAppModel';
 
 import exceptionHandler from 'utils/app/exceptionHandler';
 import getStateFromUrl from 'utils/getStateFromUrl';
 
-import NotificationContainer from '../../components/NotificationContainer/NotificationContainer';
+import TextExplorerAppBar from './components/TextExplorerAppBar/TextExplorerAppBar';
 
 import './TextExplorer.scss';
 
@@ -84,10 +83,9 @@ function TextExplorer() {
       <div className='TextExplorer__container' ref={wrapperElemRef}>
         <section className='TextExplorer__section'>
           <div className='TextExplorer__section__div TextExplorer__fullHeight'>
-            <AppBar
+            <TextExplorerAppBar
               onBookmarkCreate={textExplorerAppModel.onBookmarkCreate}
               onBookmarkUpdate={textExplorerAppModel.onBookmarkUpdate}
-              onResetConfigData={() => null}
               title='Text explorer'
             />
             <div className='TextExplorer__SelectForm__Grouping__container'>
