@@ -15,22 +15,25 @@ import './RunOverviewSidebar.scss';
 function RunOverviewSidebar({
   info,
   traces,
-  systemBatchLength,
+  runHash,
 }: IRunOverviewSidebarProps) {
   const { url } = useRouteMatch();
 
   const insightsList = React.useMemo(() => {
     const path = url.split('/').slice(0, -1).join('/');
+    const systemMetricsLength: number =
+      traces.metric.filter((m) => m.name.startsWith('__system__')).length || 0;
+
     return [
       {
         name: 'Metrics',
         path: `${path}/metrics`,
-        value: traces?.metric?.length || 0,
+        value: traces?.metric?.length - systemMetricsLength || 0,
       },
       {
         name: 'System',
         path: `${path}/system`,
-        value: systemBatchLength || 0,
+        value: systemMetricsLength,
       },
       {
         name: 'Distributions',
@@ -89,7 +92,7 @@ function RunOverviewSidebar({
         </div>
         <div>
           <Icon name='hash' />
-          <Text tint={70}>{info.name.split(':')[1]}</Text>
+          <Text tint={70}>{runHash}</Text>
         </div>
       </div>
       {info.tags.length ? (
