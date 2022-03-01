@@ -44,7 +44,7 @@ function SearchInput({
             />
           }
           style={{
-            height: 28,
+            height: 32,
           }}
         />
       </FormControl>

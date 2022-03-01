@@ -6,11 +6,10 @@ import { Tooltip } from '@material-ui/core';
 import Icon from 'components/kit/Icon';
 import Button from 'components/kit/Button';
 import ErrorBoundary from 'components/ErrorBoundary/ErrorBoundary';
-
 import {
   ISearchBarProps,
   MatchTypes,
-} from 'pages/RunDetail/TextsVisualizer/SearchBar/types.d';
+} from 'components/kit/DataList/SearchBar/types.d';
 
 import SearchInput from './SearchInput';
 
