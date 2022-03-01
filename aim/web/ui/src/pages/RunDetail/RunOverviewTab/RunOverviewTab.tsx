@@ -2,12 +2,16 @@ import React from 'react';
 
 import ErrorBoundary from 'components/ErrorBoundary/ErrorBoundary';
 
+import RunOverviewTabParamsCard from './RunOverviewTabParamsCard';
+
 import './RunOverViewTab.scss';
 
-function RunOverviewTab() {
+function RunOverviewTab({ runData }: any) {
   return (
     <ErrorBoundary>
-      <div className='RunOverviewTab'></div>
+      <div className='RunOverviewTab'>
+        <RunOverviewTabParamsCard runData={runData} />
+      </div>
     </ErrorBoundary>
   );
 }
