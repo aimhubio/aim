@@ -10,6 +10,7 @@ import { RequestStatusEnum } from 'config/enums/requestStatusEnum';
 import useModel from 'hooks/model/useModel';
 
 import SelectForm from 'pages/TextExplorer/components/SelectForm/SelectForm';
+import AppBar from 'pages/Metrics/components/MetricsBar/MetricsBar';
 
 import textExplorerAppModel from 'services/models/textExplorer/textExplorerAppModel';
 
@@ -19,6 +20,8 @@ import { ITextExplorerAppModelState } from 'types/services/models/textExplorer/t
 import exceptionHandler from 'utils/app/exceptionHandler';
 import getStateFromUrl from 'utils/getStateFromUrl';
 
+import NotificationContainer from '../../components/NotificationContainer/NotificationContainer';
+
 import './TextExplorer.scss';
 
 function TextExplorer() {
@@ -27,8 +30,7 @@ function TextExplorer() {
   const wrapperElemRef = React.useRef<HTMLDivElement>(null);
   const route = useRouteMatch<any>();
   const history = useHistory();
-  const textsData =
-    useModel<Partial<ITextExplorerAppModelState>>(textExplorerAppModel);
+  const textsData = useModel<Partial<any>>(textExplorerAppModel);
 
   React.useEffect(() => {
     textExplorerAppModel.initialize(route.params.appId);
@@ -82,7 +84,12 @@ function TextExplorer() {
       <div className='TextExplorer__container' ref={wrapperElemRef}>
         <section className='TextExplorer__section'>
           <div className='TextExplorer__section__div TextExplorer__fullHeight'>
-            App bar
+            <AppBar
+              onBookmarkCreate={textExplorerAppModel.onBookmarkCreate}
+              onBookmarkUpdate={textExplorerAppModel.onBookmarkUpdate}
+              onResetConfigData={() => null}
+              title='Text explorer'
+            />
             <div className='TextExplorer__SelectForm__Grouping__container'>
               <SelectForm
                 requestIsPending={
@@ -125,6 +132,12 @@ function TextExplorer() {
             </div>
           </div>
         </section>
+        {textsData?.notifyData?.length > 0 && (
+          <NotificationContainer
+            handleClose={textExplorerAppModel.onNotificationDelete}
+            data={textsData?.notifyData}
+          />
+        )}
       </div>
     </ErrorBoundary>
   );

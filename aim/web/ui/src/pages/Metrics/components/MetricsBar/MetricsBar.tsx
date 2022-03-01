@@ -47,10 +47,12 @@ function MetricsBar({
   return (
     <ErrorBoundary>
       <AppBar title={title}>
-        <LiveUpdateSettings
-          {...liveUpdateConfig}
-          onLiveUpdateConfigChange={onLiveUpdateConfigChange}
-        />
+        {liveUpdateConfig && onLiveUpdateConfigChange && (
+          <LiveUpdateSettings
+            {...liveUpdateConfig}
+            onLiveUpdateConfigChange={onLiveUpdateConfigChange}
+          />
+        )}
         {route.params.appId ? (
           <ErrorBoundary>
             <ControlPopover

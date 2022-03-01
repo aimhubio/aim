@@ -11,6 +11,7 @@ import textExplorerService from 'services/api/textExplorer/textExplorerService';
 
 import {
   IAppData,
+  IDashboardData,
   IMetricsCollection,
 } from 'types/services/models/metrics/metricsAppModel';
 import {
@@ -30,6 +31,7 @@ import {
 import {
   IImageData,
   IImageRunData,
+  IImagesExploreAppConfig,
 } from 'types/services/models/imagesExplore/imagesExploreAppModel';
 
 import { getCompatibleSelectConfig } from 'utils/app/getCompatibleSelectConfig';
@@ -53,6 +55,12 @@ import getObjectPaths from 'utils/getObjectPaths';
 
 import createModel from '../model';
 import blobsURIModel from '../media/blobsURIModel';
+import { IBookmarkFormState } from '../../../types/components/BookmarkForm/BookmarkForm';
+import dashboardService from '../../api/dashboard/dashboardService';
+import { BookmarkNotificationsEnum } from '../../../config/notification-messages/notificationMessages';
+import * as analytics from '../../analytics';
+import { ANALYTICS_EVENT_KEYS } from '../../../config/analytics/analyticsKeysMap';
+import onNotificationDelete from '../../../utils/app/onNotificationDelete';
 
 const model = createModel<Partial<ITextExplorerAppModelState>>({
   requestStatus: RequestStatusEnum.NotRequested,
@@ -62,6 +70,7 @@ const model = createModel<Partial<ITextExplorerAppModelState>>({
     options: undefined,
     suggestions: [],
   },
+  notifyData: [],
 });
 
 function getConfig(): ITextExplorerAppConfig {
@@ -1045,13 +1054,84 @@ function onSelectRunQueryChange(query: string) {
   }
 }
 
+async function onBookmarkCreate({ name, description }: IBookmarkFormState) {
+  const configData: ITextExplorerAppConfig | undefined =
+    model.getState()?.config;
+  if (configData) {
+    const app: IAppData | any = await appsService
+      .createApp({ state: configData, type: 'texts' })
+      .call((detail: any) => {
+        exceptionHandler({ detail, model });
+      });
+
+    if (app.id) {
+      const bookmark: IDashboardData = await dashboardService
+        .createDashboard({ app_id: app.id, name, description })
+        .call((detail: any) => {
+          exceptionHandler({ detail, model });
+        });
+      if (bookmark.name) {
+        onNotificationAdd({
+          notification: {
+            id: Date.now(),
+            severity: 'success',
+            messages: [BookmarkNotificationsEnum.CREATE],
+          },
+          model,
+        });
+      } else {
+        onNotificationAdd({
+          notification: {
+            id: Date.now(),
+            severity: 'error',
+            messages: [BookmarkNotificationsEnum.ERROR],
+          },
+          model,
+        });
+      }
+    }
+  }
+  analytics.trackEvent(ANALYTICS_EVENT_KEYS.texts.createBookmark);
+}
+
+function onBookmarkUpdate(id: string) {
+  const configData: ITextExplorerAppConfig | undefined =
+    model.getState()?.config;
+  if (configData) {
+    appsService
+      .updateApp(id, { state: configData, type: 'texts' })
+      .call((detail: any) => {
+        exceptionHandler({ detail, model });
+      })
+      .then((res: IDashboardData | any) => {
+        if (res.id) {
+          onNotificationAdd({
+            notification: {
+              id: Date.now(),
+              severity: 'success',
+              messages: [BookmarkNotificationsEnum.UPDATE],
+            },
+            model,
+          });
+        }
+      });
+  }
+}
+
+function onModelNotificationDelete(id: number): void {
+  onNotificationDelete({ id, model });
+}
+
 const textsExploreAppModel = {
   ...model,
   initialize,
   getTextData,
   abortRequest,
   getAppConfigData,
+  onBookmarkCreate,
   onNotificationAdd,
+  onNotificationDelete: onModelNotificationDelete,
+  onBookmarkUpdate,
   setDefaultAppConfigData,
   onTextsExplorerSelectChange,
   onSelectRunQueryChange,
