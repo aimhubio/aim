@@ -1,58 +1,39 @@
 ## Overview
 
-Aim enables powerful UI to explore logged ML runs and metadata.
+Aim UI is one of the key two interfaces to interact with the ML training runs tracked by Aim.
+It's super-powerful for comparing large number of experiments.
 
-### Runs explorer
-Runs explorer will help you to holistically view all your runs, each metric last tracked values and tracked hyperparameters.
+The Aim UI is mainly built around the Explorers that allow to query and compare metrics, images and params, scatterplots etc.
 
-Features:
-- Full Research context at hand
-- Search runs by date, experiment, hash, tag or parameters
-- Search by run/experiment
+Explorers are built around the way to query runs and compare them. Each explorer has a way to navigate to a single run where all the run-related information is visualized and can be used to do deep-dive into runs.
 
-<img style="border: 1px solid #1d2253" src="../_static/images/ui/overview/runs.png" />
+Besides these, Aim UI also allows to tag the runs, delete/archive them and save Explorers state to share with the team.
 
-### Metrics explorer
-Metrics explorer helps you to compare 100s of metrics within a few clicks.
-It helps to save lots of time compared to other open-source experiment tracking tools.
+### Pythonic Search
+Once you track your experiments with Aim, they are available to be searched.
+There are three objects that could be searched:
+- Runs
+- Metrics
+- Images
 
-Features:
-- Easily query any metric
-- Group by any parameter
-- Divide into subplots
-- Aggregate grouped metrics (by conf. interval, std. dev., std. err., min/max)
-- Apply smoothing
-- Change scale of the axes (linear or log)
-- Align metrics by time, epoch or another metric
+This basically means that you can write a python if-statement over everything you have tracked with a few options of the output.
 
-<img style="border: 1px solid #1d2253" src="../_static/images/ui/overview/metrics.png" />
+Explorers encompass these outputs and give you unique supwer-powers to manipulate and compare the results of the search.
 
-### Images explorer
-Track intermediate images and search, compare them on the Images Explorer.
+### Explorers
+Explorers are powerful tools to query ML training runs, select specific type of data tracked (metrics, params etc), apply modifications to them and compare them.
 
-Features:
-- Easily query any image
-- Group by images by run parameters
-- Group images by step
+The runs are compared by grouping and dividing them via the tracked hyperparams.
+**Every** param (even the system params) are available on Aim - to be used for runs comparison on all Explorers.
 
-<img style="border: 1px solid #1d2253" src="../_static/images/ui/overview/images.png" />
 
-### Params explorer
-Params explorer enables a parallel coordinates view for metrics and params. Very helpful when doing hyperparameter search.
+### Runs Management
+Runs Management includes the Runs Explorer.
+You can search through runs on the Runs Explorer and have the holistic view of your runs, their diff, the last values of the metrics, all the params etc.
 
-Features:
-- Easily query any metrics and params
-- Group runs or divide into subplots
-- Apply chart indicator to see correlations
+This also contains the Single Run Page that will help you observer everything you have tracked for your run - all in one place. This includes params, metrics, images, distributions etc.
 
-<img style="border: 1px solid #1d2253" src="../_static/images/ui/overview/params.png" />
 
-### Single run page
-Explore all the metadata associated with a run on the single run page.
-It's accessible from all the tables and tooltips.
-
-Features:
-- See all the logged params of a run
-- See all the tracked metrics(including system metrics)
-
-<img style="border: 1px solid #1d2253" src="../_static/images/ui/overview/single_run.png" />
+### Other Aim UI features
+Besides this, you can also save the Explorer states for reproducible experiment analysis.
+Aim also enables ways to tag the runs.
