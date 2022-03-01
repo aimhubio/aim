@@ -156,7 +156,7 @@ def configure_extension(name: str, path: str):
         path = [path]
     return Extension(
         name,
-        [path],
+        path,
         language='c++',
         include_dirs=INCLUDE_DIRS,
         libraries=LIBS,
