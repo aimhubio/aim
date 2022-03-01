@@ -1,6 +1,5 @@
 # distutils: language = c++
 # cython: language_level = 3
-# cython: profile=True
 
 from aim.storage cimport utils
 from aim.storage.utils cimport interfaces
