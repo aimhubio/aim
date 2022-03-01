@@ -6,6 +6,7 @@ from starlette.responses import StreamingResponse
 
 from aim import Images, Texts, Distributions, Audios, Figures
 from aim.sdk.sequence import Sequence
+from aim.sdk.sequence_collection import QuerySequenceCollection
 from aim.web.api.runs.pydantic_models import (
     RunTracesBatchApiIn,
     URIBatchIn,
@@ -60,8 +61,8 @@ class CustomObjectApiConfig:
             CustomObjectApiConfig.check_density(record_density)
             CustomObjectApiConfig.check_density(index_density)
 
+            # TODO [MV, AT]: move to `repo.py` when `SELECT` statements are introduced
             repo._prepare_runs_cache()
-            from aim.sdk.sequence_collection import QuerySequenceCollection
             traces = QuerySequenceCollection(repo=repo, seq_cls=cls.sequence_type, query=query)
 
             api = CustomObjectApi(seq_name, resolve_blobs=cls.resolve_blobs)
