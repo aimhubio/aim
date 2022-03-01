@@ -10,7 +10,10 @@
   .MenuArea {
     max-width: toRem(380px);
     min-width: toRem(320px);
+  }
+  .Menu {
     background-color: $white;
+    border-bottom-left-radius: 0.5rem;
   }
   .VisualizerArea {
     width: 100%;
