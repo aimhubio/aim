@@ -8,8 +8,11 @@ import { INotification } from 'types/components/NotificationContainer/Notificati
 
 import { SortFields } from 'utils/getSortedFields';
 
+import { ITableColumn } from '../../../pages/metrics/components/TableColumns/TableColumns';
+import { ISelectOption } from '../explorer/createAppModel';
+
 export interface ITextExplorerAppConfig {
-  text: {
+  texts: {
     recordSlice?: number[] | number;
     indexSlice?: number[] | number;
     stepRange?: number[];
@@ -41,7 +44,7 @@ export interface ITextExplorerAppModelState {
   rawData: any[];
   config: ITextExplorerAppConfig;
   data: any;
-  imagesData: any;
+  textsData: any;
   tableData: any[];
   tableColumns: ITableColumn[];
   sameValueColumns: string[];
@@ -50,7 +53,7 @@ export interface ITextExplorerAppModelState {
   searchButtonDisabled: boolean;
   applyButtonDisabled: boolean;
   selectFormData: {
-    options: ISelectOption[] | undefined;
+    options: ISelectOption[] | any;
     suggestions: string[];
   };
   selectedRows: { [key: string]: any };
