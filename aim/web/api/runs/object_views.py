@@ -60,8 +60,12 @@ class CustomObjectApiConfig:
             CustomObjectApiConfig.check_density(record_density)
             CustomObjectApiConfig.check_density(index_density)
 
-            traces = repo.query_images(query=query)
+            repo._prepare_runs_cache()
+            from aim.sdk.sequence_collection import QuerySequenceCollection
+            traces = QuerySequenceCollection(repo=repo, seq_cls=cls.sequence_type, query=query)
+
             api = CustomObjectApi(seq_name, resolve_blobs=cls.resolve_blobs)
+            api.set_dump_data_fn(cls.dump_record_fn)
             api.set_trace_collection(traces)
             api.set_ranges(record_range, record_density, index_range, index_density)
             streamer = api.search_result_streamer()
