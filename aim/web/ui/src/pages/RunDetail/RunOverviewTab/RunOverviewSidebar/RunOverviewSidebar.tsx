@@ -125,7 +125,10 @@ function RunOverviewSidebar({
                 key={path}
                 to={path}
               >
-                <Text size={14}>{name}</Text> <Text size={14}>{value}</Text>
+                <Text size={14}>{name}</Text>
+                <Text tint={70} size={14}>
+                  {value}
+                </Text>
               </NavLink>
             );
           })}

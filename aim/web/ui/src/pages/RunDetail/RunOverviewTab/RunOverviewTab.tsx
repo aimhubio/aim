@@ -24,14 +24,14 @@ function RunOverviewTab(props: any) {
   }, []);
 
   return (
-    <div>
-      <h1>Run Overview</h1>
+    <section className='RunOverViewTab'>
+      <div className='RunOverViewTab__content'></div>
       <RunOverviewSidebar
         runHash={props.runHash}
         info={props.runData.runInfo}
         traces={props.runData.runTraces}
       />
-    </div>
+    </section>
   );
 }
 
