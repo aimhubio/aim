@@ -1,0 +1,61 @@
+import { ResizeModeEnum } from 'config/enums/tableEnums';
+import { RowHeightSize } from 'config/table/tableConfigs';
+import { RequestStatusEnum } from 'config/enums/requestStatusEnum';
+
+import { IColumnsOrder, ISelectConfig } from 'types/explorer/createAppModel';
+import { ITableRef } from 'types/components/Table/Table';
+import { INotification } from 'types/components/NotificationContainer/NotificationContainer';
+
+import { SortFields } from 'utils/getSortedFields';
+
+export interface ITextExplorerAppConfig {
+  text: {
+    recordSlice?: number[] | number;
+    indexSlice?: number[] | number;
+    stepRange?: number[];
+    indexRange?: number[];
+    recordDensity?: string;
+    indexDensity?: string;
+    inputsValidations: any;
+  };
+  select: ISelectConfig;
+  table: {
+    resizeMode: ResizeModeEnum;
+    rowHeight: RowHeightSize;
+    sortFields?: SortFields;
+    hiddenMetrics?: string[];
+    hiddenColumns?: string[];
+    hideSystemMetrics?: undefined;
+    columnsWidths?: { [key: string]: number };
+    columnsOrder?: IColumnsOrder;
+    height: string;
+  };
+}
+
+export interface ITextExplorerAppModelState {
+  refs: {
+    tableRef: { current: ITableRef | null };
+  };
+  requestStatus: RequestStatusEnum;
+  queryIsEmpty: boolean;
+  rawData: any[];
+  config: ITextExplorerAppConfig;
+  data: any;
+  imagesData: any;
+  tableData: any[];
+  tableColumns: ITableColumn[];
+  sameValueColumns: string[];
+  params: string[];
+  notifyData: INotification[];
+  searchButtonDisabled: boolean;
+  applyButtonDisabled: boolean;
+  selectFormData: {
+    options: ISelectOption[] | undefined;
+    suggestions: string[];
+  };
+  selectedRows: { [key: string]: any };
+  // liveUpdateConfig: {
+  //   delay: number;
+  //   enabled: boolean;
+  // };
+}

@@ -227,6 +227,28 @@ export const ANALYTICS_EVENT_KEYS = {
         '[ImagesExplorer][ImagesPanel][ImageBox] Open full size mode',
     },
   },
+  text: {
+    pageView: '[TextExplorer] Page view',
+    createBookmark: '[TextExplorer] Create bookmark',
+    searchClick: '[TextExplorer] Search click',
+    useAdvancedSearch: '[TextExplorer] Use advanced search',
+    table: {
+      exports: {
+        csv: '[TextExplorer][Table] Export CSV',
+      },
+      archiveRunsBatch: '[TextExplorer][Table] Archive runs by batch',
+      deleteRunsBatch: '[TextExplorer][Table] Delete runs by batch',
+      changeResizeMode: '[TextExplorer][Table] Change view (Resize) mode',
+      changeColumnsOrder: '[TextExplorer][Table] Change columns order',
+      showAllColumns: '[TextExplorer][Table] Show all columns',
+      hideAllColumns: '[TextExplorer][Table] Hide all columns',
+      showDiff: '[TextExplorer][Table] Show columns diff',
+      changeTableRowHeight: '[TextExplorer][Table] Change rows height',
+      changeSorting: '[TextExplorer][Table] Change sorting',
+      metricVisibilityChange: '[TextExplorer][Table] Change metric visibility',
+    },
+    textPanel: {},
+  },
   runDetails: {
     pageView: '[RunDetail] Page view',
     tabs: {
