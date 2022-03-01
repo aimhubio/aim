@@ -3,21 +3,21 @@
 All the functionality in Aim is build around several key concepts. This chapter will give a brief overview of these core
 concepts. For more details please check the [Reference](../refs/sdk.html) section or [Glossary](./glossary.html).
 
-**Aim Run**
+### Aim Run
 
 Run is an abstraction representing the tracked data for a single experiment. Its in memory model is SDK class `aim.Run`.
 It is a core class used in your training script for tracing metrics and objects, as well as storing training hyperparams
 and other data. Run object are queryable and UI provides a rich functionality for exploring runs and browsing single run
 details.
 
-**Aim Repo**
+### Aim Repo
 
 While you do multiple training experiments, multiple runs data stored in a single directory
 called Aim repository (repo for short). You can think of aim repo as an application centralized database.
 SDK provides an in memory model for repo `aim.Repo` class. It is responsible for repository resources management and
 might be used to query and/or iterate over the stored data.
 
-**Run Params**
+### Run Params
 
 Each run has a set of parameters associating with it. This might include the training script hyperparameters,
 dataset information, etc. The Run object provides dictionary-like interface to set and access run params. Run parameters
@@ -30,7 +30,7 @@ Support of popular configuration formats constantly added. You can check the ful
 [Supported Data types](../quick_start/supported_types.html) section.
 
 
-**Run Sequence**
+### Run Sequence
 
 The sequence is a set of homogeneous ordered objects. In aim sequence must be bound to the Run object. When the value
 is tracked in aim, it is appended to an existing or newly created Sequence object. The entire sequences can be queried
@@ -39,7 +39,7 @@ the sequence represented in UI, and the set of additional operations it might ha
 Metric is a sequence of scalars. It can be represented as a value chart in UI, and SDK provides methods to convert it to
 `numpy.ndarray`.
 
-**Sequence Context**
+### Sequence Context
 
 The sequence context provides a mechanism to query/group multiple sequences beyond simple string comparison on sequence name.
 Sequences with the same name but with different context can perfectly coexist in the scope of one Run. In other words,
