@@ -4,6 +4,7 @@ import { ANALYTICS_EVENT_KEYS } from 'config/analytics/analyticsKeysMap';
 
 import * as analytics from 'services/analytics';
 
+import GitInfoCard from './GitInfoCard';
 import RunOverviewSidebar from './RunOverviewSidebar/RunOverviewSidebar';
 
 import './RunOverViewTab.scss';
@@ -17,7 +18,9 @@ function RunOverviewTab(props: any) {
 
   return (
     <section className='RunOverViewTab'>
-      <div className='RunOverViewTab__content'></div>
+      <div className='RunOverViewTab__content'>
+        <GitInfoCard />
+      </div>
       <RunOverviewSidebar
         runHash={props.runHash}
         info={props.runData.runInfo}

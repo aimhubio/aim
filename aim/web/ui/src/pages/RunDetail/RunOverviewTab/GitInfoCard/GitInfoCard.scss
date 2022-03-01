@@ -1,0 +1,30 @@
+@use 'src/styles/abstracts' as *;
+
+.GitInfoCard {
+  width: 100%;
+  background-color: #FFFFFF;
+  margin-top: toRem(24px);
+  border: toRem(1px) solid $cuddle;
+  box-sizing: border-box;
+  border-radius: toRem(8px);
+  padding: toRem(20px) toRem(24px) toRem(24px)  toRem(24px);
+
+  .Title {
+    margin-bottom: toRem(18px)
+  }
+
+  .InfoSection {
+    .InfoLabel {
+      margin-bottom: toRem(4px);
+    }
+    .InfoCard {
+      .InfoCardLabelValue {
+        background: $cuddle-10;
+        border: toRem(1px) solid $cuddle-50;
+        box-sizing: border-box;
+        border-radius: toRem(6px);
+        padding: toRem(6px);
+      }
+    }
+  }
+}
