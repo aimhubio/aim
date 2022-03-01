@@ -76,7 +76,10 @@ export interface IImagesExploreAppModelState {
   groupingSelectOptions: IGroupingSelectOption[];
   searchButtonDisabled: boolean;
   applyButtonDisabled: boolean;
-  selectFormOptions: ISelectOption[];
+  selectFormData: {
+    options: ISelectOption[] | undefined;
+    suggestions: string[];
+  };
   selectedRows: { [key: string]: any };
   // liveUpdateConfig: {
   //   delay: number;

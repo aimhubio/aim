@@ -20,8 +20,6 @@ import ErrorBoundary from 'components/ErrorBoundary/ErrorBoundary';
 
 import { ANALYTICS_EVENT_KEYS } from 'config/analytics/analyticsKeysMap';
 
-import useParamsSuggestions from 'hooks/projectData/useParamsSuggestions';
-
 import metricAppModel from 'services/models/metrics/metricsAppModel';
 import { trackEvent } from 'services/analytics';
 
@@ -33,7 +31,7 @@ import './SelectForm.scss';
 function SelectForm({
   requestIsPending,
   selectedMetricsData,
-  selectFormOptions,
+  selectFormData,
   onMetricsSelectChange,
   onSelectRunQueryChange,
   onSelectAdvancedQueryChange,
@@ -42,7 +40,6 @@ function SelectForm({
 }: ISelectFormProps): React.FunctionComponentElement<React.ReactNode> {
   const [anchorEl, setAnchorEl] = React.useState<any>(null);
   const searchRef = React.useRef<any>(null);
-  const paramsSuggestions = useParamsSuggestions();
 
   React.useEffect(() => {
     return () => {
@@ -134,7 +131,7 @@ function SelectForm({
                   options={[
                     'metric.name',
                     'metric.context',
-                    ...paramsSuggestions,
+                    ...selectFormData.suggestions,
                   ]}
                 />
               </div>
@@ -165,7 +162,7 @@ function SelectForm({
                       size='small'
                       disablePortal={true}
                       disableCloseOnSelect
-                      options={selectFormOptions}
+                      options={selectFormData.options}
                       value={selectedMetricsData?.options}
                       onChange={onSelect}
                       groupBy={(option) => option.group}
@@ -255,7 +252,7 @@ function SelectForm({
                 onExpressionChange={onSelectRunQueryChange}
                 onSubmit={handleMetricSearch}
                 value={selectedMetricsData?.query}
-                options={paramsSuggestions}
+                options={selectFormData.suggestions}
                 placeholder='Filter runs, e.g. run.learning_rate > 0.0001 and run.batch_size == 32'
               />
             </div>

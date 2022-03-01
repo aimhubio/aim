@@ -1,3 +1,4 @@
+import os
 from typing import Any, Dict, Optional, Union
 from argparse import Namespace
 
@@ -14,6 +15,8 @@ except ImportError:
     )
 
 from aim.sdk.run import Run
+from aim.sdk.repo import Repo
+from aim.sdk.utils import clean_repo_path, get_aim_repo_name
 from aim.ext.resource.configs import DEFAULT_SYSTEM_TRACKING_INT
 
 
@@ -99,7 +102,8 @@ class AimLogger(LightningLoggerBase):
 
     @property
     def save_dir(self) -> str:
-        return self.experiment.repo.path
+        repo_path = clean_repo_path(self._repo_path) or Repo.default_repo_path()
+        return os.path.join(repo_path, get_aim_repo_name())
 
     @property
     def name(self) -> str:

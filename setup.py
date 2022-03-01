@@ -3,6 +3,7 @@ import os
 import io
 from shutil import rmtree
 from setuptools import find_packages, setup, Command, Extension
+from Cython.Build import cythonize
 
 version_file = 'aim/VERSION'
 
@@ -41,13 +42,13 @@ version_files = ['../aim/VERSION', ]
 LONG_DESCRIPTION = DESCRIPTION
 
 SETUP_REQUIRED = [
-    'Cython>=0.20.0',
+    'Cython==3.0.0a9',
 ]
 
 # What packages are required for this module to be executed?
 REQUIRED = [
     'aimrecords==0.0.7',
-    'aimrocks==0.0.10',
+    'aimrocks==0.1.0',
     'cachetools>=4.0.0',
     'click>=7.0',
     'cryptography>=3.0',
@@ -140,10 +141,20 @@ setup(
         'Programming Language :: Python :: 3.10',
         'Programming Language :: Python :: Implementation :: PyPy'
     ],
-    ext_modules=[
+    ext_modules=cythonize([
         Extension(
             'aim.storage.hashing.c_hash',
             ['aim/storage/hashing/c_hash.pyx'],
+            language='c++'
+        ),
+        Extension(
+            'aim.storage.hashing.hashing',
+            ['aim/storage/hashing/hashing.py'],
+            language='c++'
+        ),
+        Extension(
+            'aim.storage.hashing',
+            ['aim/storage/hashing/__init__.py'],
             language='c++'
         ),
         Extension(
@@ -152,11 +163,51 @@ setup(
             language='c++'
         ),
         Extension(
-            'aim.storage.treeutils_',
-            ['aim/storage/treeutils_.pyx'],
+            'aim.storage.encoding.encoding',
+            ['aim/storage/encoding/encoding.pyx'],
             language='c++'
-        )
-    ],
+        ),
+        Extension(
+            'aim.storage.encoding',
+            ['aim/storage/encoding/__init__.py'],
+            language='c++'
+        ),
+        Extension(
+            'aim.storage.treeutils',
+            ['aim/storage/treeutils.pyx'],
+            language='c++'
+        ),
+        Extension(
+            'aim.storage.rockscontainer',
+            ['aim/storage/rockscontainer.pyx'],
+            language='c++'
+        ),
+        Extension(
+            'aim.storage.union',
+            ['aim/storage/union.pyx'],
+            language='c++'
+        ),
+        Extension(
+            'aim.storage.arrayview',
+            ['aim/storage/arrayview.py'],
+            language='c++'
+        ),
+        Extension(
+            'aim.storage.treearrayview',
+            ['aim/storage/treearrayview.py'],
+            language='c++'
+        ),
+        Extension(
+            'aim.storage.treeview',
+            ['aim/storage/treeview.py'],
+            language='c++'
+        ),
+        Extension(
+            'aim.storage.utils',
+            ['aim/storage/utils.py'],
+            language='c++'
+        ),
+    ]),
     entry_points={
         'console_scripts': [
             'aim=aim.cli.cli:cli_entry_point',
