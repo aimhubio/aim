@@ -49,15 +49,6 @@ class Container:
         """
         ...
 
-    @classmethod
-    def path_join(cls, *args: bytes, prefix: bytes = b'') -> bytes:
-        """Join multiple paths.
-
-        We do not need an separator as by design all the keys, therefore paths
-        as well end with `PATH_SENTINEL`.
-        """
-        return prefix + b''.join(args)
-
     @abstractmethod
     def get(self, key: ContainerKey, default=None) -> ContainerValue:
         """Returns the value by the given `key` if it exists else `default`.

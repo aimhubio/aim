@@ -67,9 +67,11 @@ class PrefixView(Container):
 
     def absolute_path(
         self,
-        *args: bytes
+        path: bytes = None
     ) -> bytes:
-        return Container.path_join(prefix=self.prefix, *args)
+        if path is None:
+            return self.prefix
+        return self.prefix + path
 
     def get(
         self,
