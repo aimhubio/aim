@@ -1,7 +1,6 @@
 import { ISelectOption } from 'types/services/models/explorer/createAppModel';
 
 export interface ISelectFormProps {
-  //   selectedMetricsData: IMetricAppConfig['select'];
   requestIsPending: boolean;
   selectedImagesData: any;
   selectFormData: { options: ISelectOption[]; suggestions: string[] };

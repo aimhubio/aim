@@ -421,6 +421,7 @@ function getSelectFormOptions(projectsData: IProjectParamsMetrics) {
     alphabeticalSortComparator<ISelectOption>({ orderBy: 'label' }),
   );
 }
+
 function processData(data: any[]): {
   data: IMetricsCollection<IImageData>[];
   params: string[];

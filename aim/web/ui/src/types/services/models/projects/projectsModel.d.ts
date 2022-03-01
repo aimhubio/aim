@@ -10,6 +10,7 @@ export interface IProjectParamsMetrics {
   metric: { [key: string]: { [key: string]: string }[] };
   images: { [key: string]: { [key: string]: string }[] };
   params: { [key: string]: any };
+  texts: { [key: string]: { [key: string]: string }[] };
 }
 
 export interface IProjectsModelState {
