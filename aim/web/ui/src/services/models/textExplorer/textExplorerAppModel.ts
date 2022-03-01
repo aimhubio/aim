@@ -4,10 +4,14 @@ import { RequestStatusEnum } from 'config/enums/requestStatusEnum';
 import { ResizeModeEnum } from 'config/enums/tableEnums';
 import { RowHeightSize } from 'config/table/tableConfigs';
 import COLORS from 'config/colors/colors';
+import { BookmarkNotificationsEnum } from 'config/notification-messages/notificationMessages';
+import { ANALYTICS_EVENT_KEYS } from 'config/analytics/analyticsKeysMap';
 
 import projectsService from 'services/api/projects/projectsService';
 import appsService from 'services/api/apps/appsService';
 import textExplorerService from 'services/api/textExplorer/textExplorerService';
+import dashboardService from 'services/api/dashboard/dashboardService';
+import * as analytics from 'services/analytics';
 
 import {
   IAppData,
@@ -31,8 +35,8 @@ import {
 import {
   IImageData,
   IImageRunData,
-  IImagesExploreAppConfig,
 } from 'types/services/models/imagesExplore/imagesExploreAppModel';
+import { IBookmarkFormState } from 'types/components/BookmarkForm/BookmarkForm';
 
 import { getCompatibleSelectConfig } from 'utils/app/getCompatibleSelectConfig';
 import onNotificationAdd from 'utils/app/onNotificationAdd';
@@ -52,15 +56,10 @@ import {
   iterFoldTree,
 } from 'utils/encoder/streamEncoding';
 import getObjectPaths from 'utils/getObjectPaths';
+import onNotificationDelete from 'utils/app/onNotificationDelete';
 
 import createModel from '../model';
 import blobsURIModel from '../media/blobsURIModel';
-import { IBookmarkFormState } from '../../../types/components/BookmarkForm/BookmarkForm';
-import dashboardService from '../../api/dashboard/dashboardService';
-import { BookmarkNotificationsEnum } from '../../../config/notification-messages/notificationMessages';
-import * as analytics from '../../analytics';
-import { ANALYTICS_EVENT_KEYS } from '../../../config/analytics/analyticsKeysMap';
-import onNotificationDelete from '../../../utils/app/onNotificationDelete';
 
 const model = createModel<Partial<ITextExplorerAppModelState>>({
   requestStatus: RequestStatusEnum.NotRequested,
