@@ -20,12 +20,12 @@ import imagesExploreAppModel from '../imagesExplore/imagesExploreAppModel';
 import {
   DistributionsData,
   DistributionValue,
+  ImagesData,
   IPlotlyData,
+  TextsData,
   TraceProcessedData,
   TraceRawDataItem,
   TraceType,
-  ImagesData,
-  TextsData,
 } from './types';
 
 /**
@@ -182,7 +182,8 @@ export function getContextObjFromMenuActiveKey(
 }
 
 export function getMenuData(traceType: TraceType, traces: TraceRawDataItem[]) {
-  let title = VisualizationMenuTitles[traceType];
+  let title =
+    VisualizationMenuTitles[traceType as Exclude<TraceType, 'metric'>];
 
   let defaultActiveKey = '';
   let defaultActiveName = '';
