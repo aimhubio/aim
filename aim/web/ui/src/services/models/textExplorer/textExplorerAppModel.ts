@@ -35,6 +35,7 @@ import {
 import {
   IImageData,
   IImageRunData,
+  IImagesExploreAppConfig,
 } from 'types/services/models/imagesExplore/imagesExploreAppModel';
 import { IBookmarkFormState } from 'types/components/BookmarkForm/BookmarkForm';
 
@@ -1121,20 +1122,61 @@ function onModelNotificationDelete(id: number): void {
   onNotificationDelete({ id, model });
 }
 
+function onTableResizeEnd(tableHeight: string) {
+  const configData: ITextExplorerAppConfig | undefined =
+    model.getState()?.config;
+  if (configData?.table) {
+    const table = {
+      ...configData.table,
+      height: tableHeight,
+    };
+    const config = {
+      ...configData,
+      table,
+    };
+    model.setState({
+      config,
+    });
+    setItem('textExploreTable', encode(table));
+  }
+}
+
+function onTableResizeModeChange(mode: ResizeModeEnum): void {
+  const configData: ITextExplorerAppConfig | undefined =
+    model.getState()?.config;
+  if (configData?.table) {
+    const table = {
+      ...configData.table,
+      resizeMode: mode,
+    };
+    const config = {
+      ...configData,
+      table,
+    };
+    model.setState({
+      config,
+    });
+    setItem('textExploreTable', encode(table));
+  }
+  analytics.trackEvent(ANALYTICS_EVENT_KEYS.texts.table.changeResizeMode);
+}
+
 const textsExploreAppModel = {
   ...model,
   initialize,
   getTextData,
   abortRequest,
+  updateModelData,
   getAppConfigData,
   onBookmarkCreate,
-  onNotificationAdd,
-  onNotificationDelete: onModelNotificationDelete,
+  onTableResizeEnd,
   onBookmarkUpdate,
+  onNotificationAdd,
   setDefaultAppConfigData,
-  onTextsExplorerSelectChange,
   onSelectRunQueryChange,
-  updateModelData,
+  onTableResizeModeChange,
+  onTextsExplorerSelectChange,
+  onNotificationDelete: onModelNotificationDelete,
 };
 
 export default textsExploreAppModel;
