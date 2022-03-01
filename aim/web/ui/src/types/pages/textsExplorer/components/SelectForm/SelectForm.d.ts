@@ -5,8 +5,11 @@ import {
 
 export interface ISelectFormProps {
   requestIsPending: boolean;
-  selectedTextsData: ISelectConfig;
   selectFormData: { options: ISelectOption[]; suggestions: string[] };
+  onSelectAdvancedQueryChange: (query: string) => void;
+  toggleSelectAdvancedMode: () => void;
+  onSearchQueryCopy: () => void;
+  selectedTextsData: ISelectConfig;
   onTextsExplorerSelectChange: (options: ISelectOption[]) => void;
   onSelectRunQueryChange: (query: string) => void;
   searchButtonDisabled: boolean;

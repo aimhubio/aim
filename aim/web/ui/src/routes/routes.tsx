@@ -134,7 +134,7 @@ const routes = {
     isExact: true,
   },
   TEXTS_EXPLORER: {
-    path: PathEnum.Texts_Explorer,
+    path: PathEnum.Texts,
     component: TextsExplorer,
     showInSidebar: true,
     displayName: 'Texts',
