@@ -43,6 +43,7 @@
    using/remote_tracking.md
    using/k8s_deployment.md
    using/jupyter_notebook_ui.md
+   using/sagemaker_notebook_ui.md
 
 .. toctree::
    :maxdepth: 2

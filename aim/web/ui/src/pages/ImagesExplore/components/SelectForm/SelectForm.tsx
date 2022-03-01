@@ -13,8 +13,6 @@ import ErrorBoundary from 'components/ErrorBoundary/ErrorBoundary';
 
 import { ANALYTICS_EVENT_KEYS } from 'config/analytics/analyticsKeysMap';
 
-import useParamsSuggestions from 'hooks/projectData/useParamsSuggestions';
-
 import imagesExploreAppModel from 'services/models/imagesExplore/imagesExploreAppModel';
 import { trackEvent } from 'services/analytics';
 
@@ -27,7 +25,7 @@ function SelectForm({
   requestIsPending,
   selectedImagesData,
   searchButtonDisabled,
-  selectFormOptions,
+  selectFormData,
   onImagesExploreSelectChange,
   onSelectRunQueryChange,
   onSelectAdvancedQueryChange,
@@ -109,8 +107,6 @@ function SelectForm({
   const open: boolean = !!anchorEl;
   const id = open ? 'select-metric' : undefined;
 
-  const paramsSuggestions = useParamsSuggestions();
-
   return (
     <ErrorBoundary>
       <div className='SelectForm__container'>
@@ -133,7 +129,7 @@ function SelectForm({
                     options={[
                       'images.name',
                       'images.context',
-                      ...paramsSuggestions,
+                      ...selectFormData.suggestions,
                     ]}
                   />
                 </div>
@@ -164,7 +160,7 @@ function SelectForm({
                         size='small'
                         disablePortal={true}
                         disableCloseOnSelect
-                        options={selectFormOptions}
+                        options={selectFormData.options}
                         value={selectedImagesData?.options ?? ''}
                         onChange={onSelect}
                         groupBy={(option) => option.group}
@@ -256,7 +252,7 @@ function SelectForm({
                   onExpressionChange={onSelectRunQueryChange}
                   onSubmit={handleSearch}
                   value={selectedImagesData?.query}
-                  options={paramsSuggestions}
+                  options={selectFormData.suggestions}
                   placeholder='Filter runs, e.g. run.learning_rate > 0.0001 and run.batch_size == 32'
                 />
               </div>

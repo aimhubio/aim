@@ -137,3 +137,19 @@ Run the following commands in the notebook to run the Aim UI:
 <img style="border: 1px solid #1d2253" src="../_static/images/using/jupyter.png" />
 
 See [integration guide with Jupyter Notebook](../using/jupyter_notebook_ui.html) for more details.
+
+
+### Running Aim UI and tracking server inside Docker container
+
+Aim Docker [images](https://hub.docker.com/r/aimstack/aim/tags) are available for running Aim UI and Aim Remote tracking server. Default command
+for Aim Docker image is `aim up`. To spin Docker container with Aim UI with port mapping:
+
+```shell
+docker run --publish 43800:43800 aimstack/aim
+```
+
+To run container with Aim Remote tracking server:
+
+```shell
+docker run --publish 53800:53800 aimstack/aim server
+```

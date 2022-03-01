@@ -17,10 +17,8 @@ if TYPE_CHECKING:
 
 
 def collect_streamable_data(encoded_tree: Iterator[Tuple[bytes, bytes]]) -> bytes:
-    result = bytes()
-    for key, val in encoded_tree:
-        result += struct.pack('I', len(key)) + key + struct.pack('I', len(val)) + val
-    return result
+    result = [struct.pack('I', len(key)) + key + struct.pack('I', len(val)) + val for key, val in encoded_tree]
+    return b''.join(result)
 
 
 def get_blobs_batch(uri_batch: List[str], repo: 'Repo') -> Iterator[bytes]:
