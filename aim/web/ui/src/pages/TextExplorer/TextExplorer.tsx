@@ -32,7 +32,7 @@ function TextExplorer() {
   const wrapperElemRef = React.useRef<HTMLDivElement>(null);
   const route = useRouteMatch<any>();
   const history = useHistory();
-  const textsExplorerData = useModel<Partial<any>>(textExplorerAppModel);
+  const textExplorerData = useModel<Partial<any>>(textExplorerAppModel);
   const resizeElemRef = React.useRef<HTMLDivElement>(null);
 
   const panelResizing = usePanelResize(
@@ -40,7 +40,7 @@ function TextExplorer() {
     textsWrapperRef,
     tableElemRef,
     resizeElemRef,
-    textsExplorerData?.config?.table || {},
+    textExplorerData?.config?.table || {},
     textExplorerAppModel.onTableResizeEnd,
   );
 
@@ -70,11 +70,11 @@ function TextExplorer() {
     // analytics.pageView(ANALYTICS_EVENT_KEYS.images.pageView);
 
     const unListenHistory = history.listen(() => {
-      if (!!textsExplorerData?.config) {
+      if (!!textExplorerData?.config) {
         if (
           // metricsData.config.grouping !== getStateFromUrl('grouping') ||
           // metricsData.config.chart !== getStateFromUrl('chart') ||
-          textsExplorerData.config.select !== getStateFromUrl('select')
+          textExplorerData.config.select !== getStateFromUrl('select')
         ) {
           textExplorerAppModel.setDefaultAppConfigData();
           textExplorerAppModel.updateModelData();
@@ -104,14 +104,14 @@ function TextExplorer() {
             <div className='TextExplorer__SelectForm__Grouping__container'>
               <SelectForm
                 requestIsPending={
-                  textsExplorerData?.requestStatus === RequestStatusEnum.Pending
+                  textExplorerData?.requestStatus === RequestStatusEnum.Pending
                 }
-                selectedTextsData={textsExplorerData?.config?.select!}
-                selectFormData={textsExplorerData?.selectFormData!}
+                selectedTextsData={textExplorerData?.config?.select!}
+                selectFormData={textExplorerData?.selectFormData!}
                 onTextsExplorerSelectChange={
                   textExplorerAppModel.onTextsExplorerSelectChange
                 }
-                searchButtonDisabled={textsExplorerData?.searchButtonDisabled!}
+                searchButtonDisabled={textExplorerData?.searchButtonDisabled!}
                 onSelectRunQueryChange={
                   textExplorerAppModel.onSelectRunQueryChange
                 }
@@ -132,14 +132,14 @@ function TextExplorer() {
             </div>
             <ResizePanel
               className={`ImagesExplore__ResizePanel${
-                _.isEmpty(textsExplorerData?.textsData) &&
-                textsExplorerData?.requestStatus !== RequestStatusEnum.Pending
+                _.isEmpty(textExplorerData?.textsData) &&
+                textExplorerData?.requestStatus !== RequestStatusEnum.Pending
                   ? '__hide'
                   : ''
               }`}
               panelResizing={panelResizing}
               resizeElemRef={resizeElemRef}
-              resizeMode={textsExplorerData?.config?.table.resizeMode}
+              resizeMode={textExplorerData?.config?.table.resizeMode}
               onTableResizeModeChange={
                 textExplorerAppModel.onTableResizeModeChange
               }
@@ -156,10 +156,10 @@ function TextExplorer() {
             </div>
           </div>
         </section>
-        {textsExplorerData?.notifyData?.length > 0 && (
+        {textExplorerData?.notifyData?.length > 0 && (
           <NotificationContainer
             handleClose={textExplorerAppModel.onNotificationDelete}
-            data={textsExplorerData?.notifyData}
+            data={textExplorerData?.notifyData}
           />
         )}
       </div>
