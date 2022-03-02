@@ -310,14 +310,22 @@ function getImagesData(
     //TODO check values nullability
     imageDataBody = {
       ...imageDataBody,
-      record_range: !_.isEmpty(recordSlice)
-        ? `${recordSlice[0]}:${recordSlice[1] + 1}`
-        : '',
-      index_range: !_.isEmpty(indexSlice)
-        ? `${indexSlice?.[0]}:${(indexSlice?.[1] || 0) + 1}`
-        : '',
-      record_density: recordDensity ?? '',
-      index_density: indexDensity ?? '',
+      record_range:
+        !_.isEmpty(recordSlice) &&
+        !_.isNil(recordSlice?.[0]) &&
+        !_.isNil(recordSlice[1])
+          ? `${recordSlice[0]}:${recordSlice[1] + 1}`
+          : '',
+      index_range:
+        !_.isEmpty(indexSlice) &&
+        !_.isNil(recordSlice?.[0]) &&
+        !_.isNil(recordSlice[1])
+          ? `${indexSlice?.[0]}:${(indexSlice?.[1] || 0) + 1}`
+          : '',
+      record_density:
+        !_.isNil(recordDensity) && +recordDensity > 0 ? recordDensity : '',
+      index_density:
+        !_.isNil(indexDensity) && +indexDensity > 0 ? indexDensity : '',
     };
   }
   imagesRequestRef = imagesExploreService.getImagesExploreData(imageDataBody);

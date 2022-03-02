@@ -1,9 +1,11 @@
 # Changelog
 
-
-## Unreleased
+## 3.6.2
 
 - Fix chart interactions issue in the Single Run Page Metrics tab (roubkar)
+- Fix `resolve_objects` in remote tracking client subtree (alberttorosyan)
+- Reject `0` as step/record count (alberttorosyan, VkoHov)
+- Fix error on mlflow conversion by experiment id (devfox-se)  
 
 ## 3.6.1 Feb 25, 2022
 

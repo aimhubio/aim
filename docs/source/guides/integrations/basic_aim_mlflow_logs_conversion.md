@@ -51,7 +51,7 @@ URI can either be a HTTP/HTTPS URI for a remote server, a database connection st
 directory.
 
 The conversion process will iterate over all your Experiments and create a distinct run for each run inside the
-experiment. If you want to process only a single experiment, you can provide the experiment id to the conversion
+experiment. If you want to process only a single experiment, you can provide the experiment id or name to the conversion
 command:
 
 ```commandline
