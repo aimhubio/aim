@@ -147,6 +147,7 @@ CYTHON_SCRITPS = [
     ('aim.storage.treearrayview', 'aim/storage/treearrayview.py'),
     ('aim.storage.treeview', 'aim/storage/treeview.py'),
     ('aim.storage.utils', 'aim/storage/utils.py'),
+    ('aim.storage.container', 'aim/storage/container.py'),
 ]
 
 

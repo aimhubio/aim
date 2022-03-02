@@ -67,9 +67,18 @@ class PrefixView(Container):
 
     def absolute_path(
         self,
-        *args: bytes
+        path: bytes = None
     ) -> bytes:
-        return Container.path_join(prefix=self.prefix, *args)
+        """Returns the absolute path for the given relative `path`.
+
+        Path separators / sentinels should be handled in higher level so that
+        `join(a, b) == a + b` property holds. This can be easily achieved by
+        having all the paths end with the sentinel:
+        `join('a/b/c/', 'e/f/') == 'a/b/c/' + 'e/f/' = 'a/b/c/e/f/'`
+        """
+        if path is None:
+            return self.prefix
+        return self.prefix + path
 
     def get(
         self,
