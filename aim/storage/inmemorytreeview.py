@@ -37,7 +37,7 @@ class InMemoryTreeView(TreeView):
 
     def make_array(
         self,
-        path: Union[AimObjectKey, AimObjectPath]
+        path: Union[AimObjectKey, AimObjectPath] = ()
     ):
         if isinstance(path, (int, str)):
             path = (path,)

@@ -83,7 +83,7 @@ class ContainerTreeView(TreeView):
         if not isinstance(path, (tuple, list)):
             path = (path,)
         encoded_path = E.encode_path(path)
-        return self.container.delete_range(encoded_path, encoded_path + b'\xff')
+        self.container.delete_range(encoded_path, encoded_path + b'\xff')
 
     def set(
         self,
