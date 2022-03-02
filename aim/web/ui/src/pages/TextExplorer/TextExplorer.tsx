@@ -11,12 +11,17 @@ import Table from 'components/Table/Table';
 
 import { IllustrationsEnum } from 'config/illustrationConfig/illustrationConfig';
 import { RequestStatusEnum } from 'config/enums/requestStatusEnum';
+import { RowHeightSize } from 'config/table/tableConfigs';
+import { ANALYTICS_EVENT_KEYS } from 'config/analytics/analyticsKeysMap';
+import { ResizeModeEnum } from 'config/enums/tableEnums';
 
 import useModel from 'hooks/model/useModel';
 import usePanelResize from 'hooks/resize/usePanelResize';
 
 import SelectForm from 'pages/TextExplorer/components/SelectForm/SelectForm';
 
+import * as analytics from 'services/analytics';
+import { AppNameEnum } from 'services/models/explorer';
 import textExplorerAppModel from 'services/models/textExplorer/textExplorerAppModel';
 
 import { IApiRequest } from 'types/services/services';
@@ -69,8 +74,7 @@ function TextExplorer() {
         exceptionHandler({ detail, model: textExplorerAppModel });
       });
     }
-    // analytics.pageView(ANALYTICS_EVENT_KEYS.images.pageView);
-
+    analytics.pageView(ANALYTICS_EVENT_KEYS.texts.pageView);
     const unListenHistory = history.listen(() => {
       if (!!textExplorerData?.config) {
         if (
@@ -93,7 +97,6 @@ function TextExplorer() {
     };
   }, [route.params.appId]);
 
-  console.log(textExplorerData);
   return (
     <ErrorBoundary>
       <div className='TextExplorer__container' ref={wrapperElemRef}>
@@ -165,14 +168,94 @@ function TextExplorer() {
                 textExplorerAppModel.onTableResizeModeChange
               }
             />
-            <div ref={tableElemRef} className='TextExplorer__table__container'>
+            <div
+              ref={tableElemRef}
+              className={`TextExplorer__table__container${
+                textExplorerData?.requestStatus !== RequestStatusEnum.Pending &&
+                (textExplorerData?.config?.table.resizeMode ===
+                  ResizeModeEnum.Hide ||
+                  _.isEmpty(textExplorerData?.tableData!))
+                  ? '__hide'
+                  : ''
+              }`}
+            >
               <BusyLoaderWrapper
-                isLoading={false}
-                className='TextExplore__loader'
+                isLoading={
+                  textExplorerData?.requestStatus === RequestStatusEnum.Pending
+                }
+                className='ImagesExplore__loader'
                 height='100%'
                 loaderComponent={<TableLoader />}
               >
-                Table
+                {!_.isEmpty(textExplorerData?.tableData) ? (
+                  <ErrorBoundary>
+                    <Table
+                      // deletable
+                      custom
+                      ref={textExplorerData?.refs?.tableRef}
+                      data={textExplorerData?.tableData || []}
+                      columns={textExplorerData?.tableColumns || []}
+                      // // Table options
+                      topHeader
+                      groups={!Array.isArray(textExplorerData?.tableData)}
+                      rowHeight={textExplorerData?.config?.table.rowHeight}
+                      rowHeightMode={
+                        textExplorerData?.config?.table.rowHeight ===
+                        RowHeightSize.sm
+                          ? 'small'
+                          : textExplorerData?.config?.table.rowHeight ===
+                            RowHeightSize.md
+                          ? 'medium'
+                          : 'large'
+                      }
+                      // focusedState={
+                      //   imagesExploreData?.config?.images?.focusedState!
+                      // }
+                      selectedRows={textExplorerData?.selectedRows}
+                      sortOptions={textExplorerData?.groupingSelectOptions}
+                      sortFields={textExplorerData?.config?.table.sortFields}
+                      hiddenRows={textExplorerData?.config?.table.hiddenMetrics}
+                      hiddenColumns={
+                        textExplorerData?.config?.table.hiddenColumns
+                      }
+                      resizeMode={textExplorerData?.config?.table.resizeMode}
+                      columnsWidths={
+                        textExplorerData?.config?.table.columnsWidths
+                      }
+                      appName={AppNameEnum.TEXTS}
+                      // hiddenChartRows={textsData?.textData?.length === 0}
+                      columnsOrder={
+                        textExplorerData?.config?.table.columnsOrder
+                      }
+                      // // Table actions
+                      onSort={textExplorerAppModel.onTableSortChange}
+                      onSortReset={textExplorerAppModel.onSortReset}
+                      onExport={textExplorerAppModel.onExportTableData}
+                      onManageColumns={
+                        textExplorerAppModel.onColumnsOrderChange
+                      }
+                      onColumnsVisibilityChange={
+                        textExplorerAppModel.onColumnsVisibilityChange
+                      }
+                      onTableDiffShow={textExplorerAppModel.onTableDiffShow}
+                      onRowHeightChange={textExplorerAppModel.onRowHeightChange}
+                      //@TODO add hide sequence functionality
+                      onRowsChange={textExplorerAppModel.onTextVisibilityChange}
+                      // onRowHover={imagesExploreAppModel.onTableRowHover}
+                      // onRowClick={imagesExploreAppModel.onTableRowClick}
+                      onTableResizeModeChange={
+                        textExplorerAppModel.onTableResizeModeChange
+                      }
+                      updateColumnsWidths={
+                        textExplorerAppModel.updateColumnsWidths
+                      }
+                      onRowSelect={textExplorerAppModel.onRowSelect}
+                      archiveRuns={textExplorerAppModel.archiveRuns}
+                      deleteRuns={textExplorerAppModel.deleteRuns}
+                      multiSelect
+                    />
+                  </ErrorBoundary>
+                ) : null}
               </BusyLoaderWrapper>
             </div>
           </div>
