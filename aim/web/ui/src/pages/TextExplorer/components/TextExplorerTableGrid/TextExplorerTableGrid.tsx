@@ -32,7 +32,7 @@ function getTextExplorerTableColumns(
     {
       key: 'experiment',
       content: <span>Experiment</span>,
-      topHeader: 'Images',
+      topHeader: 'Texts',
       pin: order?.left?.includes('experiment')
         ? 'left'
         : order?.middle?.includes('experiment')
@@ -44,7 +44,7 @@ function getTextExplorerTableColumns(
     {
       key: 'run',
       content: <span>Run</span>,
-      topHeader: 'Images',
+      topHeader: 'Texts',
       pin: order?.left?.includes('run')
         ? 'left'
         : order?.right?.includes('run')
@@ -54,7 +54,7 @@ function getTextExplorerTableColumns(
     {
       key: 'name',
       content: <span>Name</span>,
-      topHeader: 'Images',
+      topHeader: 'Texts',
       pin: order?.left?.includes('name')
         ? 'left'
         : order?.right?.includes('name')
@@ -64,7 +64,7 @@ function getTextExplorerTableColumns(
     {
       key: 'context',
       content: <span>Context</span>,
-      topHeader: 'Images',
+      topHeader: 'Texts',
       pin: order?.left?.includes('context')
         ? 'left'
         : order?.right?.includes('context')
