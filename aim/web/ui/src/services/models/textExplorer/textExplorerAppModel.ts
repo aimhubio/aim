@@ -71,6 +71,7 @@ const model = createModel<Partial<ITextExplorerAppModelState>>({
     suggestions: [],
   },
   notifyData: [],
+  config: getConfig(),
 });
 
 function getConfig(): ITextExplorerAppConfig {
