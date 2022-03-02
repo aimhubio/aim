@@ -191,9 +191,10 @@ class SubtreeView(TreeView):
     def collect(
         self,
         path: Union[AimObjectKey, AimObjectPath] = (),
-        strict: bool = True
+        strict: bool = True,
+        resolve_objects: bool = False
     ) -> AimObject:
-        return self.tree.collect(self.absolute_path(path), strict)
+        return self.tree.collect(self.absolute_path(path), strict, resolve_objects)
 
     def __delitem__(
         self,
