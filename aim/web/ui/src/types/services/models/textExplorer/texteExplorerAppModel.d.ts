@@ -38,6 +38,7 @@ export interface ITextExplorerAppConfig {
 export interface ITextExplorerAppModelState {
   refs: {
     tableRef: { current: ITableRef | null };
+    textTableRef: { current: ITableRef | null };
   };
   requestStatus: RequestStatusEnum;
   queryIsEmpty: boolean;

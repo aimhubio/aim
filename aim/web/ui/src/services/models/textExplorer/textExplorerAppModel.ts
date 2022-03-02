@@ -8,10 +8,7 @@ import COLORS from 'config/colors/colors';
 import { BookmarkNotificationsEnum } from 'config/notification-messages/notificationMessages';
 import { ANALYTICS_EVENT_KEYS } from 'config/analytics/analyticsKeysMap';
 
-import {
-  getTablePanelColumns,
-  textsTablePanelRowRenderer,
-} from 'pages/TextExplorer/components/TextPanelGrid/TextPanelGrid';
+import { getTablePanelColumns } from 'pages/TextExplorer/components/TextPanelGrid/TextPanelGrid';
 
 import projectsService from 'services/api/projects/projectsService';
 import appsService from 'services/api/apps/appsService';
@@ -169,6 +166,7 @@ function initialize(appId: string): void {
   model.setState({
     refs: {
       tableRef: { current: null },
+      textTableRef: { current: null },
     },
     groupingSelectOptions: [],
   });
@@ -763,21 +761,107 @@ function updateData(newData: IRun<IParamTrace>[]): void {
   }
 }
 
+function processTablePanelData(data: any) {
+  const configData = model.getState()?.config;
+  let selectedRows = model.getState()?.selectedRows;
+  let textsData: any[] = [];
+  let params: string[] = [];
+  let highLevelParams: string[] = [];
+  let contexts: string[] = [];
+  data?.forEach((run: any) => {
+    params = params.concat(getObjectPaths(run.params, run.params));
+    highLevelParams = highLevelParams.concat(
+      getObjectPaths(run.params, run.params, '', false, true),
+    );
+
+    run.traces.forEach((trace: any) => {
+      contexts = contexts.concat(getObjectPaths(trace.context, trace.context));
+      trace.values.forEach((stepData: any[], stepIndex: number) => {
+        stepData.forEach((text: any) => {
+          const textKey = encode({
+            name: trace.name,
+            runHash: run.hash,
+            traceContext: trace.context,
+            index: text.index,
+            step: trace.iters[stepIndex],
+            caption: text.caption,
+          });
+          const seqKey = encode({
+            name: trace.name,
+            runHash: run.hash,
+            traceContext: trace.context,
+          });
+          textsData.push({
+            ...text,
+            text_name: trace.name,
+            step: trace.iters[stepIndex],
+            context: trace.context,
+            run: _.omit(run, ['traces', 'params']),
+            key: textKey,
+            seqKey: seqKey,
+          });
+        });
+      });
+    });
+  });
+
+  let sortFields = configData?.table?.sortFields ?? [];
+
+  if (sortFields?.length === 0) {
+    sortFields = [
+      {
+        value: 'run.props.creation_time',
+        order: 'desc',
+        label: '',
+        group: '',
+      },
+    ];
+  }
+
+  const processedData = textsData;
+  const uniqParams = _.uniq(params).sort();
+  const uniqHighLevelParams = _.uniq(highLevelParams).sort();
+  const uniqContexts = _.uniq(contexts).sort();
+
+  const mappedData =
+    data?.reduce((acc: any, item: any) => {
+      acc[item.hash] = { runHash: item.hash, ...item.props };
+      return acc;
+    }, {}) || {};
+  if (selectedRows && !_.isEmpty(selectedRows)) {
+    selectedRows = Object.keys(selectedRows).reduce((acc: any, key: string) => {
+      const slicedKey = key.slice(0, key.indexOf('/'));
+      acc[key] = {
+        selectKey: key,
+        ...mappedData[slicedKey],
+      };
+      return acc;
+    }, {});
+  }
+  return {
+    data: processedData,
+    params: uniqParams,
+    highLevelParams: uniqHighLevelParams,
+    contexts: uniqContexts,
+    selectedRows,
+  };
+}
+
 function setModelData(rawData: any[], configData: ITextExplorerAppConfig) {
   const sortFields = model.getState()?.config?.table.sortFields;
-  const { data, params, contexts, highLevelParams, selectedRows } =
-    processData(rawData);
-  // const tablePanelData = getPanelDataAsTableRows();
-
+  const { data, params, highLevelParams, selectedRows } =
+    processTablePanelData(rawData);
   const tablePanelColumns = getTablePanelColumns(
-    data,
-    params,
+    rawData,
     configData.table.columnsOrder!,
     configData.table.hiddenColumns!,
   );
-  console.log(tablePanelColumns, processData(rawData), rawData);
-  model.setState({ tablePanelColumns });
-
+  const tablePanelData = getTablePanelRows(data);
+  model.setState({ tablePanelColumns, tablePanelData });
+  (model.getState().refs?.textTableRef as any).current.updateData({
+    newData: tablePanelData.rows,
+    newColumns: tablePanelColumns,
+  });
   const sortedParams = params.concat(highLevelParams).sort();
   // const groupingSelectOptions = [
   //   ...getGroupingSelectOptions({
@@ -1074,145 +1158,27 @@ function onSelectRunQueryChange(query: string) {
   }
 }
 
-function getPanelDataAsTableRows(
-  processedData: any,
-  metricsColumns: any,
-  paramKeys: string[],
-  isRawData?: boolean,
-): { rows: any[] | any; sameValueColumns: string[] } {
-  if (!processedData) {
+function getTablePanelRows(textsData: any) {
+  if (!textsData) {
     return {
       rows: [],
       sameValueColumns: [],
     };
   }
-  const initialMetricsRowData = Object.keys(metricsColumns).reduce(
-    (acc: any, key: string) => {
-      const groupByMetricName: any = {};
-      Object.keys(metricsColumns[key]).forEach((metricContext: string) => {
-        groupByMetricName[
-          `${isSystemMetric(key) ? key : `${key}_${metricContext}`}`
-        ] = '-';
-      });
-      acc = { ...acc, ...groupByMetricName };
-      return acc;
-    },
-    {},
-  );
-  const rows: any = processedData[0]?.config !== null ? {} : [];
-  let rowIndex = 0;
-  const sameValueColumns: string[] = [];
+  const rows: any[] = [];
 
-  processedData.forEach((metricsCollection: any) => {
-    const groupKey = metricsCollection.key;
-    const columnsValues: { [key: string]: string[] } = {};
-    if (metricsCollection.config !== null) {
-      const groupHeaderRow = {
-        meta: {
-          chartIndex: metricsCollection.chartIndex + 1,
-        },
-        key: groupKey!,
-        color: metricsCollection.color,
-        dasharray: metricsCollection.dasharray,
-        experiment: '',
-        run: '',
-        metric: '',
-        context: [],
-        children: [],
-      };
-      rows[groupKey!] = {
-        data: groupHeaderRow,
-        items: [],
-      };
-    }
-    metricsCollection.data.forEach((metric: any) => {
-      const metricsRowValues = { ...initialMetricsRowData };
-      metric.run.traces.metric.forEach((trace: any) => {
-        metricsRowValues[
-          `${
-            isSystemMetric(trace.name)
-              ? trace.name
-              : `${trace.name}_${contextToString(trace.context)}`
-          }`
-        ] = formatValue(trace.last_value.last);
-      });
-      const rowValues: any = {
-        key: metric.key,
-        selectKey: `${metric.run.hash}/${metric.key}`,
-        runHash: metric.run.hash,
-        index: rowIndex,
-        color: metricsCollection.color ?? metric.color,
-        dasharray: metricsCollection.dasharray ?? metric.dasharray,
-        experiment: metric.run.props.experiment?.name ?? 'default',
-        run: moment(metric.run.props.creation_time * 1000).format(
-          'HH:mm:ss · D MMM, YY',
-        ),
-        metric: metric.name,
-        ...metricsRowValues,
-      };
-      rowIndex++;
-      [
-        'experiment',
-        'run',
-        'metric',
-        'context',
-        'step',
-        'epoch',
-        'time',
-      ].forEach((key) => {
-        if (columnsValues.hasOwnProperty(key)) {
-          if (!_.some(columnsValues[key], rowValues[key])) {
-            columnsValues[key].push(rowValues[key]);
-          }
-        } else {
-          columnsValues[key] = [rowValues[key]];
-        }
-      });
-      paramKeys.forEach((paramKey) => {
-        const value = getValue(metric.run.params, paramKey, '-');
-        rowValues[paramKey] = formatValue(value);
-        if (columnsValues.hasOwnProperty(paramKey)) {
-          if (!columnsValues[paramKey].includes(value)) {
-            columnsValues[paramKey].push(value);
-          }
-        } else {
-          columnsValues[paramKey] = [value];
-        }
-      });
-      if (metricsCollection.config !== null) {
-        rows[groupKey!].items.push(
-          isRawData ? rowValues : textsTablePanelRowRenderer(rowValues),
-        );
-      } else {
-        rows.push(
-          isRawData ? rowValues : textsTablePanelRowRenderer(rowValues),
-        );
-      }
-    });
-
-    for (let columnKey in columnsValues) {
-      if (columnsValues[columnKey].length === 1) {
-        sameValueColumns.push(columnKey);
-      }
-
-      if (metricsCollection.config !== null) {
-        rows[groupKey!].data[columnKey] =
-          columnsValues[columnKey].length === 1
-            ? columnsValues[columnKey][0]
-            : columnsValues[columnKey];
-      }
-
-      if (metricsCollection.config !== null && !isRawData) {
-        rows[groupKey!].data = textsTablePanelRowRenderer(
-          rows[groupKey!].data,
-          true,
-          Object.keys(columnsValues),
-        );
-      }
-    }
+  textsData.forEach((trace: any) => {
+    const row = {
+      step: trace.step,
+      index: trace.index,
+      [`${trace.run.hash}.${trace.text_name}`]: trace.data,
+      key: `${trace.run.hash}.${trace.text_name}`,
+      seqKey: trace.seqKey,
+    };
+    rows.push(row);
   });
 
-  return { rows, sameValueColumns };
+  return { rows, sameValueColumns: [] };
 }
 
 async function onBookmarkCreate({ name, description }: IBookmarkFormState) {

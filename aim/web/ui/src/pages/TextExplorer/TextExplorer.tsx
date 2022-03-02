@@ -133,10 +133,11 @@ function TextExplorer() {
             >
               <Table
                 custom
-                ref={textsTableElementRef}
+                ref={textExplorerData?.refs?.textTableRef}
                 fixed={false}
-                columns={textExplorerData?.tablePanelColumns! as any}
-                data={[1]}
+                topHeader
+                columns={textExplorerData?.tablePanelColumns}
+                data={textExplorerData?.tablePanelData}
                 isLoading={false}
                 hideHeaderActions
                 estimatedRowHeight={32}

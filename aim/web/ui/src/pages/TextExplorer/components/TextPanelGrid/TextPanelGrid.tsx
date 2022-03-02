@@ -11,90 +11,50 @@ import { PathEnum } from 'config/enums/routesEnum';
 
 import { ITableColumn } from 'types/pages/metrics/components/TableColumns/TableColumns';
 
-import { isSystemMetric } from 'utils/isSystemMetric';
-import { formatSystemMetricName } from 'utils/formatSystemMetricName';
-import alphabeticalSortComparator from 'utils/alphabeticalSortComparator';
-
 function getTablePanelColumns(
-  metricsColumns: any,
-  runColumns: string[] = [],
+  rawData: any,
   order: { left: string[]; middle: string[]; right: string[] },
   hiddenColumns: string[],
 ): ITableColumn[] {
+  function getRunAsColumns() {
+    const columns: any = [];
+    rawData.forEach((run: any) => {
+      run.traces.forEach((trace: any) => {
+        const column = {
+          topHeader: run.props.name,
+          key: `${run.hash}.${trace.name}`,
+          pin: null,
+          content: <span>{trace.name}</span>,
+        };
+        columns.push(column);
+      });
+    });
+    return columns;
+  }
   let columns: ITableColumn[] = [
     {
-      key: 'steps',
-      content: <span>Steps</span>,
-      topHeader: 'Steps',
-      pin: order?.left?.includes('steps')
+      key: 'step',
+      content: <span>Step</span>,
+      topHeader: 'Step',
+      pin: order?.left?.includes('step')
         ? 'left'
-        : order?.middle?.includes('steps')
+        : order?.middle?.includes('step')
         ? null
-        : order?.right?.includes('steps')
+        : order?.right?.includes('step')
         ? 'right'
         : 'left',
     },
     {
       key: 'index',
-      content: <span>Index</span>,
+      content: <span>index</span>,
       topHeader: 'Index',
       pin: order?.left?.includes('index')
         ? 'left'
-        : order?.middle?.includes('index')
-        ? null
         : order?.right?.includes('index')
         ? 'right'
         : 'left',
     },
-  ].concat(
-    Object.keys(metricsColumns).reduce((acc: any, key: string) => {
-      const systemMetric: boolean = isSystemMetric(key);
-      const systemMetricsList: ITableColumn[] = [];
-      const metricsList: ITableColumn[] = [];
-      Object.keys(metricsColumns[key]).map((metricContext) => {
-        const columnKey = `${systemMetric ? key : `${key}_${metricContext}`}`;
-        let column = {
-          key: columnKey,
-          content: systemMetric ? (
-            <span>{formatSystemMetricName(key)}</span>
-          ) : (
-            <Badge
-              size='small'
-              color={COLORS[0][0]}
-              label={metricContext === '' ? 'Empty context' : metricContext}
-            />
-          ),
-          topHeader: systemMetric ? 'System Metrics' : key,
-          pin: order?.left?.includes(columnKey)
-            ? 'left'
-            : order?.right?.includes(columnKey)
-            ? 'right'
-            : null,
-        };
-        systemMetric
-          ? systemMetricsList.push(column)
-          : metricsList.push(column);
-      });
-      acc = [
-        ...acc,
-        ...metricsList.sort(alphabeticalSortComparator({ orderBy: 'key' })),
-        ...systemMetricsList.sort(
-          alphabeticalSortComparator({ orderBy: 'key' }),
-        ),
-      ];
-      return acc;
-    }, []),
-    runColumns.map((param) => ({
-      key: param,
-      content: <span>{param}</span>,
-      topHeader: 'Params',
-      pin: order?.left?.includes(param)
-        ? 'left'
-        : order?.right?.includes(param)
-        ? 'right'
-        : null,
-    })),
-  );
+  ].concat(getRunAsColumns());
 
   columns = columns.map((col) => ({
     ...col,
@@ -103,7 +63,9 @@ function getTablePanelColumns(
 
   const columnsOrder = order?.left.concat(order.middle).concat(order.right);
   columns.sort((a, b) => {
-    if (a.key === 'actions') {
+    if (a.key === '#') {
+      return -1;
+    } else if (a.key === 'actions') {
       return 1;
     }
     if (!columnsOrder.includes(a.key) && !columnsOrder.includes(b.key)) {
