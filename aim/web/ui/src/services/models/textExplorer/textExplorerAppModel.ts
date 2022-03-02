@@ -9,12 +9,17 @@ import { BookmarkNotificationsEnum } from 'config/notification-messages/notifica
 import { ANALYTICS_EVENT_KEYS } from 'config/analytics/analyticsKeysMap';
 import { DATE_EXPORTING_FORMAT } from 'config/dates/dates';
 
+<<<<<<< HEAD
 import {
   getTextExplorerTableColumns,
   textExplorerTableRowRenderer,
 } from 'pages/TextExplorer/components/TextExplorerTableGrid/TextExplorerTableGrid';
 
 import * as analytics from 'services/analytics';
+=======
+import { getTablePanelColumns } from 'pages/TextExplorer/components/TextPanelGrid/TextPanelGrid';
+
+>>>>>>> 4b1b2f0194ca25e533d98f8fe102c2eada27b613
 import projectsService from 'services/api/projects/projectsService';
 import appsService from 'services/api/apps/appsService';
 import textExplorerService from 'services/api/textExplorer/textExplorerService';
@@ -44,7 +49,6 @@ import {
   IGroupingSelectOption,
   IImageData,
   IImageRunData,
-  IImagesExploreAppConfig,
 } from 'types/services/models/imagesExplore/imagesExploreAppModel';
 import { ITableColumn } from 'types/pages/metrics/components/TableColumns/TableColumns';
 import { IBookmarkFormState } from 'types/components/BookmarkForm/BookmarkForm';
@@ -68,12 +72,20 @@ import {
   iterFoldTree,
 } from 'utils/encoder/streamEncoding';
 import getObjectPaths from 'utils/getObjectPaths';
+<<<<<<< HEAD
 import { getValue } from 'utils/helper';
 import { getSortedFields, SortField, SortFields } from 'utils/getSortedFields';
 import getValueByField from 'utils/getValueByField';
 import JsonToCSV from 'utils/JsonToCSV';
 import onRowSelectAction from 'utils/app/onRowSelect';
 import onColumnsVisibilityChangeMethod from 'utils/app/onColumnsVisibilityChange';
+=======
+import getValueByField from 'utils/getValueByField';
+import onRowVisibilityChange from 'utils/app/onRowVisibilityChange';
+import { isSystemMetric } from 'utils/isSystemMetric';
+import { getValue } from 'utils/helper';
+import onNotificationDelete from 'utils/app/onNotificationDelete';
+>>>>>>> 4b1b2f0194ca25e533d98f8fe102c2eada27b613
 
 import createModel from '../model';
 import blobsURIModel from '../media/blobsURIModel';
@@ -87,6 +99,7 @@ const model = createModel<Partial<ITextExplorerAppModelState>>({
     suggestions: [],
   },
   notifyData: [],
+  config: getConfig(),
 });
 
 function getConfig(): ITextExplorerAppConfig {
@@ -185,6 +198,7 @@ function initialize(appId: string): void {
   model.setState({
     refs: {
       tableRef: { current: null },
+      textTableRef: { current: null },
     },
     groupingSelectOptions: [],
   });
@@ -677,10 +691,107 @@ function getGroupingSelectOptions({
   ];
 }
 
+function processTablePanelData(data: any) {
+  const configData = model.getState()?.config;
+  let selectedRows = model.getState()?.selectedRows;
+  let textsData: any[] = [];
+  let params: string[] = [];
+  let highLevelParams: string[] = [];
+  let contexts: string[] = [];
+  data?.forEach((run: any) => {
+    params = params.concat(getObjectPaths(run.params, run.params));
+    highLevelParams = highLevelParams.concat(
+      getObjectPaths(run.params, run.params, '', false, true),
+    );
+
+    run.traces.forEach((trace: any) => {
+      contexts = contexts.concat(getObjectPaths(trace.context, trace.context));
+      trace.values.forEach((stepData: any[], stepIndex: number) => {
+        stepData.forEach((text: any) => {
+          const textKey = encode({
+            name: trace.name,
+            runHash: run.hash,
+            traceContext: trace.context,
+            index: text.index,
+            step: trace.iters[stepIndex],
+            caption: text.caption,
+          });
+          const seqKey = encode({
+            name: trace.name,
+            runHash: run.hash,
+            traceContext: trace.context,
+          });
+          textsData.push({
+            ...text,
+            text_name: trace.name,
+            step: trace.iters[stepIndex],
+            context: trace.context,
+            run: _.omit(run, ['traces', 'params']),
+            key: textKey,
+            seqKey: seqKey,
+          });
+        });
+      });
+    });
+  });
+
+  let sortFields = configData?.table?.sortFields ?? [];
+
+  if (sortFields?.length === 0) {
+    sortFields = [
+      {
+        value: 'run.props.creation_time',
+        order: 'desc',
+        label: '',
+        group: '',
+      },
+    ];
+  }
+
+  const processedData = textsData;
+  const uniqParams = _.uniq(params).sort();
+  const uniqHighLevelParams = _.uniq(highLevelParams).sort();
+  const uniqContexts = _.uniq(contexts).sort();
+
+  const mappedData =
+    data?.reduce((acc: any, item: any) => {
+      acc[item.hash] = { runHash: item.hash, ...item.props };
+      return acc;
+    }, {}) || {};
+  if (selectedRows && !_.isEmpty(selectedRows)) {
+    selectedRows = Object.keys(selectedRows).reduce((acc: any, key: string) => {
+      const slicedKey = key.slice(0, key.indexOf('/'));
+      acc[key] = {
+        selectKey: key,
+        ...mappedData[slicedKey],
+      };
+      return acc;
+    }, {});
+  }
+  return {
+    data: processedData,
+    params: uniqParams,
+    highLevelParams: uniqHighLevelParams,
+    contexts: uniqContexts,
+    selectedRows,
+  };
+}
+
 function setModelData(rawData: any[], configData: ITextExplorerAppConfig) {
   const sortFields = model.getState()?.config?.table.sortFields;
-  const { data, params, contexts, highLevelParams, selectedRows } =
-    processData(rawData);
+  const { data, params, highLevelParams, selectedRows } =
+    processTablePanelData(rawData);
+  const tablePanelColumns = getTablePanelColumns(
+    rawData,
+    configData.table.columnsOrder!,
+    configData.table.hiddenColumns!,
+  );
+  const tablePanelData = getTablePanelRows(data);
+  model.setState({ tablePanelColumns, tablePanelData });
+  (model.getState().refs?.textTableRef as any).current.updateData({
+    newData: tablePanelData.rows,
+    newColumns: tablePanelColumns,
+  });
   const sortedParams = params.concat(highLevelParams).sort();
   const groupingSelectOptions = [
     ...getGroupingSelectOptions({
@@ -1263,6 +1374,29 @@ function onColumnsOrderChange(columnsOrder: any) {
   }
   analytics.trackEvent(ANALYTICS_EVENT_KEYS.texts.table.changeColumnsOrder);
 }
+function getTablePanelRows(textsData: any) {
+  if (!textsData) {
+    return {
+      rows: [],
+      sameValueColumns: [],
+    };
+  }
+  const rows: any[] = [];
+
+  textsData.forEach((trace: any) => {
+    const row = {
+      step: trace.step,
+      index: trace.index,
+      [`${trace.run.hash}.${trace.text_name}`]: trace.data,
+      key: `${trace.run.hash}.${trace.text_name}`,
+      seqKey: trace.seqKey,
+    };
+    rows.push(row);
+  });
+
+  return { rows, sameValueColumns: [] };
+}
+
 async function onBookmarkCreate({ name, description }: IBookmarkFormState) {
   const configData: ITextExplorerAppConfig | undefined =
     model.getState()?.config;

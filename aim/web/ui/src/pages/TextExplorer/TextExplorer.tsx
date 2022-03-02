@@ -2,13 +2,14 @@ import React from 'react';
 import { useHistory, useRouteMatch } from 'react-router-dom';
 import _ from 'lodash-es';
 
-import Table from 'components/Table/Table';
-import ErrorBoundary from 'components/ErrorBoundary/ErrorBoundary';
 import BusyLoaderWrapper from 'components/BusyLoaderWrapper/BusyLoaderWrapper';
+import ErrorBoundary from 'components/ErrorBoundary/ErrorBoundary';
 import TableLoader from 'components/TableLoader/TableLoader';
 import NotificationContainer from 'components/NotificationContainer/NotificationContainer';
 import ResizePanel from 'components/ResizePanel/ResizePanel';
+import Table from 'components/Table/Table';
 
+import { IllustrationsEnum } from 'config/illustrationConfig/illustrationConfig';
 import { RequestStatusEnum } from 'config/enums/requestStatusEnum';
 import { RowHeightSize } from 'config/table/tableConfigs';
 import { ANALYTICS_EVENT_KEYS } from 'config/analytics/analyticsKeysMap';
@@ -40,6 +41,7 @@ function TextExplorer() {
   const history = useHistory();
   const textExplorerData = useModel<Partial<any>>(textExplorerAppModel);
   const resizeElemRef = React.useRef<HTMLDivElement>(null);
+  const textsTableElementRef = React.useRef<any>(null);
 
   const panelResizing = usePanelResize(
     wrapperElemRef,
@@ -49,7 +51,6 @@ function TextExplorer() {
     textExplorerData?.config?.table || {},
     textExplorerAppModel.onTableResizeEnd,
   );
-
   React.useEffect(() => {
     textExplorerAppModel.initialize(route.params.appId);
     let appRequestRef: IApiRequest<void>;
@@ -133,7 +134,25 @@ function TextExplorer() {
               ref={textsWrapperRef}
               className='TextExplorer__textsWrapper__container'
             >
-              Texts Panel
+              <Table
+                custom
+                ref={textExplorerData?.refs?.textTableRef}
+                fixed={false}
+                topHeader
+                columns={textExplorerData?.tablePanelColumns}
+                data={textExplorerData?.tablePanelData}
+                isLoading={false}
+                hideHeaderActions
+                estimatedRowHeight={32}
+                headerHeight={32}
+                updateColumnsWidths={() => {}}
+                illustrationConfig={{
+                  page: 'runs',
+                  title: 'No Tracked Texts',
+                  type: IllustrationsEnum.EmptyData,
+                }}
+                height='100%'
+              />
             </div>
             <ResizePanel
               className={`ImagesExplore__ResizePanel${
