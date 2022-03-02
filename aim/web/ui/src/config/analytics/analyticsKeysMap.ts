@@ -227,7 +227,7 @@ export const ANALYTICS_EVENT_KEYS = {
         '[ImagesExplorer][ImagesPanel][ImageBox] Open full size mode',
     },
   },
-  text: {
+  texts: {
     pageView: '[TextExplorer] Page view',
     createBookmark: '[TextExplorer] Create bookmark',
     searchClick: '[TextExplorer] Search click',

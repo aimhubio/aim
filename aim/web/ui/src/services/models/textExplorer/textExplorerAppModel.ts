@@ -5,6 +5,8 @@ import { RequestStatusEnum } from 'config/enums/requestStatusEnum';
 import { ResizeModeEnum } from 'config/enums/tableEnums';
 import { RowHeightSize } from 'config/table/tableConfigs';
 import COLORS from 'config/colors/colors';
+import { BookmarkNotificationsEnum } from 'config/notification-messages/notificationMessages';
+import { ANALYTICS_EVENT_KEYS } from 'config/analytics/analyticsKeysMap';
 
 import {
   getTablePanelColumns,
@@ -14,9 +16,12 @@ import {
 import projectsService from 'services/api/projects/projectsService';
 import appsService from 'services/api/apps/appsService';
 import textExplorerService from 'services/api/textExplorer/textExplorerService';
+import dashboardService from 'services/api/dashboard/dashboardService';
+import * as analytics from 'services/analytics';
 
 import {
   IAppData,
+  IDashboardData,
   IMetricsCollection,
 } from 'types/services/models/metrics/metricsAppModel';
 import {
@@ -37,6 +42,7 @@ import {
   IImageData,
   IImageRunData,
 } from 'types/services/models/imagesExplore/imagesExploreAppModel';
+import { IBookmarkFormState } from 'types/components/BookmarkForm/BookmarkForm';
 
 import { getCompatibleSelectConfig } from 'utils/app/getCompatibleSelectConfig';
 import onNotificationAdd from 'utils/app/onNotificationAdd';
@@ -60,6 +66,7 @@ import getValueByField from 'utils/getValueByField';
 import onRowVisibilityChange from 'utils/app/onRowVisibilityChange';
 import { isSystemMetric } from 'utils/isSystemMetric';
 import { getValue } from 'utils/helper';
+import onNotificationDelete from 'utils/app/onNotificationDelete';
 
 import createModel from '../model';
 import blobsURIModel from '../media/blobsURIModel';
@@ -72,6 +79,7 @@ const model = createModel<Partial<ITextExplorerAppModelState>>({
     options: undefined,
     suggestions: [],
   },
+  notifyData: [],
 });
 
 function getConfig(): ITextExplorerAppConfig {
@@ -301,7 +309,7 @@ function updateURL(
 
   const appId: string = window.location.pathname.split('/')[2];
   if (!appId) {
-    setItem('textExplorerUrl', url);
+    setItem('textsUrl', url);
   }
 
   window.history.pushState(null, '', url);
@@ -1207,17 +1215,195 @@ function getPanelDataAsTableRows(
   return { rows, sameValueColumns };
 }
 
+async function onBookmarkCreate({ name, description }: IBookmarkFormState) {
+  const configData: ITextExplorerAppConfig | undefined =
+    model.getState()?.config;
+  if (configData) {
+    const app: IAppData | any = await appsService
+      .createApp({ state: configData, type: 'texts' })
+      .call((detail: any) => {
+        exceptionHandler({ detail, model });
+      });
+
+    if (app.id) {
+      const bookmark: IDashboardData = await dashboardService
+        .createDashboard({ app_id: app.id, name, description })
+        .call((detail: any) => {
+          exceptionHandler({ detail, model });
+        });
+      if (bookmark.name) {
+        onNotificationAdd({
+          notification: {
+            id: Date.now(),
+            severity: 'success',
+            messages: [BookmarkNotificationsEnum.CREATE],
+          },
+          model,
+        });
+      } else {
+        onNotificationAdd({
+          notification: {
+            id: Date.now(),
+            severity: 'error',
+            messages: [BookmarkNotificationsEnum.ERROR],
+          },
+          model,
+        });
+      }
+    }
+  }
+  analytics.trackEvent(ANALYTICS_EVENT_KEYS.texts.createBookmark);
+}
+
+function onBookmarkUpdate(id: string) {
+  const configData: ITextExplorerAppConfig | undefined =
+    model.getState()?.config;
+  if (configData) {
+    appsService
+      .updateApp(id, { state: configData, type: 'texts' })
+      .call((detail: any) => {
+        exceptionHandler({ detail, model });
+      })
+      .then((res: IDashboardData | any) => {
+        if (res.id) {
+          onNotificationAdd({
+            notification: {
+              id: Date.now(),
+              severity: 'success',
+              messages: [BookmarkNotificationsEnum.UPDATE],
+            },
+            model,
+          });
+        }
+      });
+  }
+}
+
+function onModelNotificationDelete(id: number): void {
+  onNotificationDelete({ id, model });
+}
+
+function onTableResizeEnd(tableHeight: string) {
+  const configData: ITextExplorerAppConfig | undefined =
+    model.getState()?.config;
+  if (configData?.table) {
+    const table = {
+      ...configData.table,
+      height: tableHeight,
+    };
+    const config = {
+      ...configData,
+      table,
+    };
+    model.setState({
+      config,
+    });
+    setItem('textExploreTable', encode(table));
+  }
+}
+
+function onTableResizeModeChange(mode: ResizeModeEnum): void {
+  const configData: ITextExplorerAppConfig | undefined =
+    model.getState()?.config;
+  if (configData?.table) {
+    const table = {
+      ...configData.table,
+      resizeMode: mode,
+    };
+    const config = {
+      ...configData,
+      table,
+    };
+    model.setState({
+      config,
+    });
+    setItem('textExploreTable', encode(table));
+  }
+  analytics.trackEvent(ANALYTICS_EVENT_KEYS.texts.table.changeResizeMode);
+}
+
+function onSelectAdvancedQueryChange(query: string) {
+  const configData: ITextExplorerAppConfig | undefined =
+    model.getState()?.config;
+  if (configData?.select) {
+    const newConfig = {
+      ...configData,
+      select: { ...configData.select, advancedQuery: query },
+      images: { ...configData.texts },
+    };
+
+    model.setState({
+      config: newConfig,
+    });
+  }
+}
+
+function toggleSelectAdvancedMode() {
+  const configData: ITextExplorerAppConfig | undefined =
+    model.getState()?.config;
+
+  if (configData?.select) {
+    let query =
+      configData.select.advancedQuery ||
+      getQueryStringFromSelect(configData?.select);
+    if (query === '()') {
+      query = '';
+    }
+    const newConfig = {
+      ...configData,
+      select: {
+        ...configData.select,
+        advancedQuery: query,
+        advancedMode: !configData.select.advancedMode,
+      },
+    };
+    updateURL(newConfig);
+
+    model.setState({ config: newConfig });
+  }
+
+  /*analytics.trackEvent(
+    `${ANALYTICS_EVENT_KEYS.texts.useAdvancedSearch} ${
+      !configData?.select.advancedMode ? 'on' : 'off'
+    }`,
+  );*/
+}
+
+function onSearchQueryCopy(): void {
+  const selectedMetricsData = model.getState()?.config?.select;
+  let query = getQueryStringFromSelect(selectedMetricsData as any);
+  if (query) {
+    navigator.clipboard.writeText(query);
+    onNotificationAdd({
+      notification: {
+        id: Date.now(),
+        severity: 'success',
+        messages: ['Run Expression Copied'],
+      },
+      model,
+    });
+  }
+}
+
 const textsExploreAppModel = {
   ...model,
   initialize,
   getTextData,
   abortRequest,
-  getAppConfigData,
-  onNotificationAdd,
-  setDefaultAppConfigData,
-  onTextsExplorerSelectChange,
-  onSelectRunQueryChange,
   updateModelData,
+  getAppConfigData,
+  onBookmarkCreate,
+  onTableResizeEnd,
+  onBookmarkUpdate,
+  onNotificationAdd,
+  onSearchQueryCopy,
+  setDefaultAppConfigData,
+  onSelectRunQueryChange,
+  onTableResizeModeChange,
+  toggleSelectAdvancedMode,
+  onTextsExplorerSelectChange,
+  onSelectAdvancedQueryChange,
+  onNotificationDelete: onModelNotificationDelete,
 };
 
 export default textsExploreAppModel;
