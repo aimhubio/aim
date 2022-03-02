@@ -16,10 +16,14 @@ function RunOverviewTab(props: any) {
     );
   }, []);
 
+  const systemParams = props.runData.runParams['__system_params'];
+
   return (
     <section className='RunOverViewTab'>
       <div className='RunOverViewTab__content'>
-        <GitInfoCard />
+        {systemParams && systemParams['git_info'] && (
+          <GitInfoCard data={systemParams['git_info']} />
+        )}
       </div>
       <RunOverviewSidebar
         runHash={props.runHash}

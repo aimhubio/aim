@@ -1,6 +1,6 @@
 import React from 'react';
 
-import { Text } from 'components/kit';
+import { Text, Card, Icon } from 'components/kit';
 
 import { IGitInfoCardProps } from '../RunOvervewTab';
 
@@ -8,11 +8,8 @@ import './GitInfoCard.scss';
 
 function GitInfoCard(props: IGitInfoCardProps) {
   return (
-    <div className='GitInfoCard'>
-      <Text className='Title' weight={600} size={18} tint={100} component='h3'>
-        Git Information
-      </Text>
-      <div className='InfoSection flex fjb'>
+    <Card title='Git Info Card'>
+      <div className='InfoSection ScrollBar__hidden flex fjb'>
         <div className='InfoCard flex fdc'>
           <Text
             className='InfoCardLabel'
@@ -23,15 +20,16 @@ function GitInfoCard(props: IGitInfoCardProps) {
           >
             Branch
           </Text>
-          <div className='InfoCardLabelValue'>
+          <div className='InfoCardValue flex fac'>
+            <Icon name='hash' fontSize={14} />
             <Text
-              className='InfoCardLabel'
+              className='InfoCardValueText'
               weight={500}
               tint={80}
               size={12}
               color='primary'
             >
-              _final_branch_name_
+              {props.data.branch || '-'}
             </Text>
           </div>
         </div>
@@ -45,15 +43,16 @@ function GitInfoCard(props: IGitInfoCardProps) {
           >
             Author
           </Text>
-          <div className='InfoCardLabelValue'>
+          <div className='InfoCardValue flex fac'>
+            <Icon name='hash' fontSize={14} />
             <Text
-              className='InfoCardLabel'
+              className='InfoCardValueText'
               weight={500}
               tint={80}
               size={12}
               color='primary'
             >
-              Adam Bittlingmayer
+              {props.data.commit.author}
             </Text>
           </div>
         </div>
@@ -67,15 +66,16 @@ function GitInfoCard(props: IGitInfoCardProps) {
           >
             Hash
           </Text>
-          <div className='InfoCardLabelValue'>
+          <div className='InfoCardValue flex fac'>
+            <Icon name='hash' fontSize={14} />
             <Text
-              className='InfoCardLabel'
+              className='InfoCardValueText'
               weight={500}
               tint={80}
               size={12}
               color='primary'
             >
-              426032ad2d7e4b0385bc6c51
+              {props.data.commit.hash}
             </Text>
           </div>
         </div>
@@ -89,20 +89,21 @@ function GitInfoCard(props: IGitInfoCardProps) {
           >
             Timestamp
           </Text>
-          <div className='InfoCardLabelValue'>
+          <div className='InfoCardValue flex fac'>
+            <Icon name='time' fontSize={14} />
             <Text
-              className='InfoCardLabel'
+              className='InfoCardValueText'
               weight={500}
               tint={80}
               size={12}
               color='primary'
             >
-              22:35:47 UTC+04:00
+              {props.data.commit.timestamp}
             </Text>
           </div>
         </div>
       </div>
-    </div>
+    </Card>
   );
 }
 

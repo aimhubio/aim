@@ -12,23 +12,25 @@ import Menu, { MenuItem } from './Menu';
 import Modal from './Modal';
 import ActionCard from './ActionCard';
 import InputWrapper from './Input';
+import Card from './Card';
 
 export {
-  Text,
-  Switcher,
-  Button,
-  ToggleButton,
-  Badge,
-  Icon,
-  Dropdown,
-  JsonViewPopover,
   AutoSuggestions,
-  Slider,
-  Menu,
-  MenuItem,
-  Modal,
-  ActionCard,
+  JsonViewPopover,
+  ToggleButton,
   InputWrapper,
+  ActionCard,
+  Dropdown,
+  Switcher,
+  MenuItem,
+  Slider,
+  Button,
+  Modal,
+  Badge,
+  Text,
+  Icon,
+  Menu,
+  Card,
 };
 
 export type { IButtonProps };
