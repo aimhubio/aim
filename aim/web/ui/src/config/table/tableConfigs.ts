@@ -85,6 +85,20 @@ export const TABLE_DEFAULT_CONFIG = {
     },
     height: '0.5',
   },
+  texts: {
+    resizeMode: ResizeModeEnum.Resizable,
+    rowHeight: RowHeightSize.md,
+    sortFields: [],
+    hiddenMetrics: [],
+    hiddenColumns: [],
+    columnsWidths: {},
+    columnsOrder: {
+      left: ['experiment'],
+      middle: [],
+      right: [],
+    },
+    height: '0.5',
+  },
   scatters: {
     resizeMode: ResizeModeEnum.Resizable,
     rowHeight: RowHeightSize.md,

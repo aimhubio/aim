@@ -20,6 +20,7 @@ enum AppNameEnum {
   RUNS = 'runs',
   IMAGES = 'images',
   SCATTERS = 'scatters',
+  TEXTS = 'texts',
 }
 
 /**

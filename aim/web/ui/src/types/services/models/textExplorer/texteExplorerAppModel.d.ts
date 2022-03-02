@@ -51,6 +51,7 @@ export interface ITextExplorerAppModelState {
   params: string[];
   notifyData: INotification[];
   searchButtonDisabled: boolean;
+  groupingSelectOptions: IGroupingSelectOption[];
   applyButtonDisabled: boolean;
   selectFormData: {
     options: ISelectOption[] | any;
