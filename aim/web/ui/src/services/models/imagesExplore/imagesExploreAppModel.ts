@@ -53,6 +53,7 @@ import {
 } from 'types/services/models/explorer/createAppModel';
 import { IProjectParamsMetrics } from 'types/services/models/projects/projectsModel';
 
+import onColumnsVisibilityChangeMethod from 'utils/app/onColumnsVisibilityChange';
 import onRowSelectAction from 'utils/app/onRowSelect';
 import { decode, encode } from 'utils/encoder/encoder';
 import getObjectPaths from 'utils/getObjectPaths';
@@ -201,7 +202,7 @@ function setDefaultAppConfigData() {
   const select: ISelectConfig = compatibleSelectConfig || getConfig().select;
   const images: IImagesExploreAppConfig['images'] =
     getStateFromUrl('images') || getConfig().images;
-  const tableConfigHash = getItem('imagesExploreTable');
+  const tableConfigHash = getItem('imagesTable');
   const table = tableConfigHash
     ? JSON.parse(decode(tableConfigHash))
     : getConfig().table;
@@ -310,14 +311,22 @@ function getImagesData(
     //TODO check values nullability
     imageDataBody = {
       ...imageDataBody,
-      record_range: !_.isEmpty(recordSlice)
-        ? `${recordSlice[0]}:${recordSlice[1] + 1}`
-        : '',
-      index_range: !_.isEmpty(indexSlice)
-        ? `${indexSlice?.[0]}:${(indexSlice?.[1] || 0) + 1}`
-        : '',
-      record_density: recordDensity ?? '',
-      index_density: indexDensity ?? '',
+      record_range:
+        !_.isEmpty(recordSlice) &&
+        !_.isNil(recordSlice?.[0]) &&
+        !_.isNil(recordSlice[1])
+          ? `${recordSlice[0]}:${recordSlice[1] + 1}`
+          : '',
+      index_range:
+        !_.isEmpty(indexSlice) &&
+        !_.isNil(recordSlice?.[0]) &&
+        !_.isNil(recordSlice[1])
+          ? `${indexSlice?.[0]}:${(indexSlice?.[1] || 0) + 1}`
+          : '',
+      record_density:
+        !_.isNil(recordDensity) && +recordDensity > 0 ? recordDensity : '',
+      index_density:
+        !_.isNil(indexDensity) && +indexDensity > 0 ? indexDensity : '',
     };
   }
   imagesRequestRef = imagesExploreService.getImagesExploreData(imageDataBody);
@@ -1471,7 +1480,7 @@ function updateColumnsWidths(key: string, width: number, isReset: boolean) {
     model.setState({
       config,
     });
-    setItem('imagesExploreTable', encode(table));
+    setItem('imagesTable', encode(table));
     updateModelData(config);
   }
 }
@@ -1493,7 +1502,7 @@ function updateTableSortFields(sortFields: SortFields) {
       config: configUpdate,
     });
 
-    setItem('imagesExploreTable', encode(table));
+    setItem('imagesTable', encode(table));
     updateModelData(configUpdate, true);
   }
   analytics.trackEvent(
@@ -1675,7 +1684,7 @@ function onRowVisibilityChange(metricKey: string) {
       table,
     };
     model.setState({ config });
-    setItem('imagesExploreTable', encode(table));
+    setItem('imagesTable', encode(table));
     updateModelData(config);
   }
 }
@@ -1717,7 +1726,7 @@ function onTableResizeEnd(tableHeight: string) {
     model.setState({
       config,
     });
-    setItem('imagesExploreTable', encode(table));
+    setItem('imagesTable', encode(table));
   }
 }
 
@@ -1752,7 +1761,7 @@ function onTableResizeModeChange(mode: ResizeModeEnum): void {
     model.setState({
       config,
     });
-    setItem('imagesExploreTable', encode(table));
+    setItem('imagesTable', encode(table));
   }
   analytics.trackEvent(ANALYTICS_EVENT_KEYS.images.table.changeResizeMode);
 }
@@ -1886,39 +1895,19 @@ function onColumnsOrderChange(columnsOrder: any) {
     model.setState({
       config,
     });
-    setItem('imagesExploreTable', encode(table));
+    setItem('imagesTable', encode(table));
     updateModelData(config);
   }
   analytics.trackEvent(ANALYTICS_EVENT_KEYS.images.table.changeColumnsOrder);
 }
 
 function onColumnsVisibilityChange(hiddenColumns: string[] | string | any) {
-  const configData: IImagesExploreAppConfig | undefined =
-    model.getState()?.config;
-  const columnsData = model.getState()!.tableColumns!;
-  if (configData?.table) {
-    const table = {
-      ...configData.table,
-      hiddenColumns:
-        hiddenColumns[0] === 'all'
-          ? columnsData.map((col: any) => col.key)
-          : hiddenColumns,
-    };
-    const configUpdate = {
-      ...configData,
-      table,
-    };
-    model.setState({
-      config: configUpdate,
-    });
-    setItem('imagesExploreTable', encode(table));
-    updateModelData(configUpdate);
-  }
-  if (hiddenColumns[0] === 'all') {
-    analytics.trackEvent(ANALYTICS_EVENT_KEYS.images.table.showAllColumns);
-  } else if (_.isEmpty(hiddenColumns)) {
-    analytics.trackEvent(ANALYTICS_EVENT_KEYS.images.table.hideAllColumns);
-  }
+  onColumnsVisibilityChangeMethod({
+    hiddenColumns,
+    model,
+    appName: 'images',
+    updateModelData,
+  });
 }
 
 function onTableDiffShow() {
@@ -1944,7 +1933,7 @@ function onRowHeightChange(height: RowHeightSize) {
     model.setState({
       config,
     });
-    setItem('metricsTable', encode(table));
+    setItem('imagesTable', encode(table));
   }
   analytics.trackEvent(
     `${
@@ -1976,7 +1965,7 @@ function onImageVisibilityChange(metricsKeys: string[]) {
     model.setState({
       config,
     });
-    setItem('imagesExploreTable', encode(table));
+    setItem('imagesTable', encode(table));
     updateModelData(config);
   }
   analytics.trackEvent(
