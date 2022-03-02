@@ -5,6 +5,7 @@ import { RequestStatusEnum } from 'config/enums/requestStatusEnum';
 import { ResizeModeEnum, RowHeightEnum } from 'config/enums/tableEnums';
 import { RowHeightSize } from 'config/table/tableConfigs';
 import COLORS from 'config/colors/colors';
+import { BookmarkNotificationsEnum } from 'config/notification-messages/notificationMessages';
 import { ANALYTICS_EVENT_KEYS } from 'config/analytics/analyticsKeysMap';
 import { DATE_EXPORTING_FORMAT } from 'config/dates/dates';
 
@@ -18,9 +19,11 @@ import projectsService from 'services/api/projects/projectsService';
 import appsService from 'services/api/apps/appsService';
 import textExplorerService from 'services/api/textExplorer/textExplorerService';
 import runsService from 'services/api/runs/runsService';
+import dashboardService from 'services/api/dashboard/dashboardService';
 
 import {
   IAppData,
+  IDashboardData,
   IMetricsCollection,
 } from 'types/services/models/metrics/metricsAppModel';
 import {
@@ -43,6 +46,7 @@ import {
   IImageRunData,
 } from 'types/services/models/imagesExplore/imagesExploreAppModel';
 import { ITableColumn } from 'types/pages/metrics/components/TableColumns/TableColumns';
+import { IBookmarkFormState } from 'types/components/BookmarkForm/BookmarkForm';
 
 import onNotificationDelete from 'utils/app/onNotificationDelete';
 import onNotificationAdd from 'utils/app/onNotificationAdd';
@@ -68,6 +72,7 @@ import { getSortedFields, SortField, SortFields } from 'utils/getSortedFields';
 import getValueByField from 'utils/getValueByField';
 import JsonToCSV from 'utils/JsonToCSV';
 import onRowSelectAction from 'utils/app/onRowSelect';
+import onColumnsVisibilityChangeMethod from 'utils/app/onColumnsVisibilityChange';
 
 import createModel from '../model';
 import blobsURIModel from '../media/blobsURIModel';
@@ -80,6 +85,7 @@ const model = createModel<Partial<ITextExplorerAppModelState>>({
     options: undefined,
     suggestions: [],
   },
+  notifyData: [],
 });
 
 function getConfig(): ITextExplorerAppConfig {
@@ -261,7 +267,7 @@ function setDefaultAppConfigData() {
   const select: ISelectConfig = compatibleSelectConfig || getConfig().select;
   const texts: ITextExplorerAppConfig['texts'] =
     getStateFromUrl('texts') || getConfig().texts;
-  const tableConfigHash = getItem('textExplorerTable');
+  const tableConfigHash = getItem('textsTable');
   const table = tableConfigHash
     ? JSON.parse(decode(tableConfigHash))
     : getConfig().table;
@@ -327,7 +333,7 @@ function updateURL(
 
   const appId: string = window.location.pathname.split('/')[2];
   if (!appId) {
-    setItem('textExplorerUrl', url);
+    setItem('textsUrl', url);
   }
 
   window.history.pushState(null, '', url);
@@ -572,7 +578,7 @@ function updateTableSortFields(sortFields: SortFields) {
     };
     model.setState({ config: configUpdate });
 
-    setItem('textExplorerTable', encode(table));
+    setItem('textsTable', encode(table));
     updateModelData(configUpdate, true);
   }
   analytics.trackEvent(
@@ -837,7 +843,7 @@ function onTextVisibilityChange(metricsKeys: string[]) {
     model.setState({
       config,
     });
-    setItem('textExplorerTable', encode(table));
+    setItem('textsTable', encode(table));
     updateModelData(config);
   }
   analytics.trackEvent(
@@ -1208,7 +1214,7 @@ function onRowVisibilityChange(metricKey: string) {
       table,
     };
     model.setState({ config });
-    setItem('textExplorerTable', encode(table));
+    setItem('textsTable', encode(table));
     updateModelData(config);
   }
 }
@@ -1234,7 +1240,7 @@ function updateColumnsWidths(key: string, width: number, isReset: boolean) {
     model.setState({
       config,
     });
-    setItem('textExplorerTable', encode(table));
+    setItem('textsTable', encode(table));
     updateModelData(config);
   }
 }
@@ -1251,42 +1257,100 @@ function onColumnsOrderChange(columnsOrder: any) {
       ...configData,
       table,
     };
-
-    model.setState({
-      config,
-    });
-    setItem('textExplorerTable', encode(table));
+    setItem('textsTable', encode(table));
     updateModelData(config);
   }
   analytics.trackEvent(ANALYTICS_EVENT_KEYS.texts.table.changeColumnsOrder);
 }
-
-function onColumnsVisibilityChange(hiddenColumns: string[] | string | any) {
+async function onBookmarkCreate({ name, description }: IBookmarkFormState) {
   const configData: ITextExplorerAppConfig | undefined =
     model.getState()?.config;
-  const columnsData = model.getState()!.tableColumns!;
+  if (configData) {
+    const app: IAppData | any = await appsService
+      .createApp({ state: configData, type: 'texts' })
+      .call((detail: any) => {
+        exceptionHandler({ detail, model });
+      });
+
+    if (app.id) {
+      const bookmark: IDashboardData = await dashboardService
+        .createDashboard({ app_id: app.id, name, description })
+        .call((detail: any) => {
+          exceptionHandler({ detail, model });
+        });
+      if (bookmark.name) {
+        onNotificationAdd({
+          notification: {
+            id: Date.now(),
+            severity: 'success',
+            messages: [BookmarkNotificationsEnum.CREATE],
+          },
+          model,
+        });
+      } else {
+        onNotificationAdd({
+          notification: {
+            id: Date.now(),
+            severity: 'error',
+            messages: [BookmarkNotificationsEnum.ERROR],
+          },
+          model,
+        });
+      }
+    }
+  }
+  analytics.trackEvent(ANALYTICS_EVENT_KEYS.texts.createBookmark);
+}
+
+function onBookmarkUpdate(id: string) {
+  const configData: ITextExplorerAppConfig | undefined =
+    model.getState()?.config;
+  if (configData) {
+    appsService
+      .updateApp(id, { state: configData, type: 'texts' })
+      .call((detail: any) => {
+        exceptionHandler({ detail, model });
+      })
+      .then((res: IDashboardData | any) => {
+        if (res.id) {
+          onNotificationAdd({
+            notification: {
+              id: Date.now(),
+              severity: 'success',
+              messages: [BookmarkNotificationsEnum.UPDATE],
+            },
+            model,
+          });
+        }
+      });
+  }
+}
+
+function onColumnsVisibilityChange(hiddenColumns: string[] | string | any) {
+  onColumnsVisibilityChangeMethod({
+    hiddenColumns,
+    model,
+    appName: 'texts',
+    updateModelData,
+  });
+}
+
+function onTableResizeEnd(tableHeight: string) {
+  const configData: ITextExplorerAppConfig | undefined =
+    model.getState()?.config;
   if (configData?.table) {
     const table = {
       ...configData.table,
-      hiddenColumns:
-        hiddenColumns[0] === 'all'
-          ? columnsData.map((col: any) => col.key)
-          : hiddenColumns,
+      height: tableHeight,
     };
-    const configUpdate = {
+    const config = {
       ...configData,
       table,
     };
     model.setState({
-      config: configUpdate,
+      config,
     });
-    setItem('textExplorerTable', encode(table));
-    updateModelData(configUpdate);
-  }
-  if (hiddenColumns[0] === 'all') {
-    analytics.trackEvent(ANALYTICS_EVENT_KEYS.texts.table.showAllColumns);
-  } else if (_.isEmpty(hiddenColumns)) {
-    analytics.trackEvent(ANALYTICS_EVENT_KEYS.texts.table.hideAllColumns);
+    setItem('textExploreTable', encode(table));
   }
 }
 
@@ -1313,7 +1377,7 @@ function onRowHeightChange(height: RowHeightSize) {
     model.setState({
       config,
     });
-    setItem('textExplorerTable', encode(table));
+    setItem('textsTable', encode(table));
   }
   analytics.trackEvent(
     `${
@@ -1511,17 +1575,103 @@ function deleteRuns(ids: string[]): {
   };
 }
 
+function onTableResizeModeChange(mode: ResizeModeEnum): void {
+  const configData: ITextExplorerAppConfig | undefined =
+    model.getState()?.config;
+  if (configData?.table) {
+    const table = {
+      ...configData.table,
+      resizeMode: mode,
+    };
+    const config = {
+      ...configData,
+      table,
+    };
+    model.setState({
+      config,
+    });
+    setItem('textExploreTable', encode(table));
+  }
+  analytics.trackEvent(ANALYTICS_EVENT_KEYS.texts.table.changeResizeMode);
+}
+
+function onSelectAdvancedQueryChange(query: string) {
+  const configData: ITextExplorerAppConfig | undefined =
+    model.getState()?.config;
+  if (configData?.select) {
+    const newConfig = {
+      ...configData,
+      select: { ...configData.select, advancedQuery: query },
+      images: { ...configData.texts },
+    };
+
+    model.setState({
+      config: newConfig,
+    });
+  }
+}
+
+function toggleSelectAdvancedMode() {
+  const configData: ITextExplorerAppConfig | undefined =
+    model.getState()?.config;
+
+  if (configData?.select) {
+    let query =
+      configData.select.advancedQuery ||
+      getQueryStringFromSelect(configData?.select);
+    if (query === '()') {
+      query = '';
+    }
+    const newConfig = {
+      ...configData,
+      select: {
+        ...configData.select,
+        advancedQuery: query,
+        advancedMode: !configData.select.advancedMode,
+      },
+    };
+    updateURL(newConfig);
+
+    model.setState({ config: newConfig });
+  }
+
+  /*analytics.trackEvent(
+    `${ANALYTICS_EVENT_KEYS.texts.useAdvancedSearch} ${
+      !configData?.select.advancedMode ? 'on' : 'off'
+    }`,
+  );*/
+}
+
+function onSearchQueryCopy(): void {
+  const selectedMetricsData = model.getState()?.config?.select;
+  let query = getQueryStringFromSelect(selectedMetricsData as any);
+  if (query) {
+    navigator.clipboard.writeText(query);
+    onNotificationAdd({
+      notification: {
+        id: Date.now(),
+        severity: 'success',
+        messages: ['Run Expression Copied'],
+      },
+      model,
+    });
+  }
+}
+
 const textsExploreAppModel = {
   ...model,
   initialize,
   getTextData,
   abortRequest,
-  getAppConfigData,
-  onNotificationAdd,
-  setDefaultAppConfigData,
-  onTextsExplorerSelectChange,
-  onSelectRunQueryChange,
   updateModelData,
+  getAppConfigData,
+  onBookmarkCreate,
+  onTableResizeEnd,
+  onBookmarkUpdate,
+  onNotificationAdd,
+  onSearchQueryCopy,
+  setDefaultAppConfigData,
+  onSelectRunQueryChange,
   updateColumnsWidths,
   onColumnsOrderChange,
   onColumnsVisibilityChange,
@@ -1535,6 +1685,10 @@ const textsExploreAppModel = {
   onNotificationDelete: onModelNotificationDelete,
   archiveRuns,
   deleteRuns,
+  onTableResizeModeChange,
+  toggleSelectAdvancedMode,
+  onTextsExplorerSelectChange,
+  onSelectAdvancedQueryChange,
 };
 
 export default textsExploreAppModel;
