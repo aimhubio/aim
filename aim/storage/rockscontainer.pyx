@@ -10,7 +10,7 @@ from typing import Iterator, Optional, Tuple
 from aim.ext.cleanup import AutoClean
 from aim.ext.exception_resistant import exception_resistant
 from aim.storage.types import BLOB
-from aim.storage.container import Container, ContainerKey, ContainerValue
+from aim.storage.container import Container, ContainerKey, ContainerValue, ContainerItemsIterator
 from aim.storage.prefixview import PrefixView
 from aim.storage.containertreeview import ContainerTreeView
 from aim.storage.treeview import TreeView
@@ -415,15 +415,7 @@ class RocksContainer(Container):
         Args:
             prefix (:obj:`bytes`): the prefix that defines the key range
         """
-        # TODO return ValuesView, not iterator
-        it = self.db.iteritems()
-        it.seek(prefix)
-        for key, val in it:
-            if not key.startswith(prefix):
-                break
-            if val == BLOB_SENTINEL:
-                val = self._get_blob(key)
-            yield key, val
+        return RocksContainerItemsIterator(container=self, prefix=prefix)
 
     def walk(
         self,
@@ -453,58 +445,6 @@ class RocksContainer(Container):
                 break
             jump = yield key
             it.seek(jump)
-
-    def keys(
-        self,
-        prefix: ContainerKey = b''
-    ) -> Iterator[ContainerKey]:
-        """Iterate over all the keys in the prefix range.
-
-        The iteration is always performed in lexiographic order.
-        If `prefix` is provided, iterate only over keys starting with
-        the `prefix`.
-
-        For example, if `prefix == b'meta.'`, and the Container consists of:
-        `{
-            b'e.y': b'012',
-            b'meta.x': b'123',
-            b'meta.z': b'x',
-            b'zzz': b'oOo'
-        }`, the method will yield `b'meta.x'` and `b'meta.z'`
-
-        Args:
-            prefix (:obj:`bytes`): the prefix that defines the key range
-        """
-        # TODO return KeyView, not iterator
-        it = self.db.iterkeys()
-        it.seek(prefix)
-        for key in it:
-            if not key.startswith(prefix):
-                break
-            yield key
-
-    def values(
-        self,
-        prefix: ContainerKey = b''
-    ):
-        """Iterate over all the values in the given prefix key range.
-
-        The iteration is always performed in lexiographic order w.r.t keys.
-        If `prefix` is provided, iterate only over those record values that have
-        key starting with the `prefix`.
-
-        For example, if `prefix == b'meta.'`, and the Container consists of:
-        `{
-            b'e.y': b'012',
-            b'meta.x': b'123',
-            b'meta.z': b'x',
-            b'zzz': b'oOo'
-        }`, the method will yield `b'123'` and `b'x'`
-
-        Args:
-            prefix (:obj:`bytes`): the prefix that defines the key range
-        """
-        raise NotImplementedError
 
     def view(
         self,
@@ -557,33 +497,7 @@ class RocksContainer(Container):
         """
         self.writable_db.write(batch)
 
-    def next_key(
-        self,
-        prefix: ContainerKey = b''
-    ) -> ContainerKey:
-        """Returns the key that comes (lexicographically) right after the
-        provided `key`.
-        """
-        it = self.db.iterkeys()
-        it.seek(prefix + b'\x00')
-        key = next(it)
-
-        if not key.startswith(prefix):
-            raise KeyError
-
-        return key
-
-    def next_value(
-        self,
-        prefix: ContainerKey = b''
-    ) -> ContainerValue:
-        """Returns the value for the key that comes (lexicographically) right
-        after the provided `key`.
-        """
-        key, value = self.next_key_value(prefix)
-        return value
-
-    def next_key_value(
+    def next_item(
         self,
         prefix: ContainerKey = b''
     ) -> Tuple[ContainerKey, ContainerValue]:
@@ -603,27 +517,7 @@ class RocksContainer(Container):
 
         return key, value
 
-    def prev_key(
-        self,
-        prefix: ContainerKey = b''
-    ) -> ContainerKey:
-        """Returns the key that comes (lexicographically) right before the
-        provided `key`.
-        """
-        key, value = self.prev_key_value(prefix)
-        return key
-
-    def prev_value(
-        self,
-        prefix: ContainerKey = b''
-    ) -> ContainerValue:
-        """Returns the value for the key that comes (lexicographically) right
-        before the provided `key`.
-        """
-        key, value = self.prev_key_value(prefix)
-        return value
-
-    def prev_key_value(
+    def prev_item(
         self,
         prefix: ContainerKey = b''
     ) -> Tuple[ContainerKey, ContainerValue]:
@@ -690,3 +584,32 @@ def prepare_lock_path(path: Path):
     locks_dir = path.parent.parent / 'locks'
     locks_dir.mkdir(parents=True, exist_ok=True)
     return locks_dir / path.name
+
+
+class RocksContainerItemsIterator(ContainerItemsIterator):
+    def __init__(
+        self,
+        container: RocksContainer,
+        prefix: ContainerKey = b''
+    ):
+        self.container = container
+        self.prefix = prefix
+        self.it = self.container.db.iteritems()
+        self.it.seek(prefix)
+
+    def next(self):
+        item = self.it.next()
+
+        if item is None:
+            return None
+
+        key = item[0]
+        value = item[1]
+
+        if not key.startswith(self.prefix):
+            return None
+
+        if value == BLOB_SENTINEL:
+            return key, self.container._get_blob(key)
+
+        return key, value
