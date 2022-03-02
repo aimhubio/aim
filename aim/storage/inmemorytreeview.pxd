@@ -5,3 +5,4 @@ from aim.storage.treeview cimport TreeView
 
 cdef class InMemoryTreeView(TreeView):
     cdef public container
+    cdef public _constructed

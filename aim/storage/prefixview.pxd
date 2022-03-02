@@ -8,7 +8,8 @@ from aim.storage.containertreeview cimport ContainerTreeView
 
 cdef class PrefixView(Container):
     cdef public bytes prefix
-    cdef public Container parent
+    # TODO cdef public Container parent after all container bindings are ready
+    cdef public parent
     cdef public bint read_only
 
     cpdef bytes absolute_path(self, bytes path = *)
@@ -21,4 +22,4 @@ cdef class PrefixViewItemsIterator(ContainerItemsIterator):
     cdef ContainerItemsIterator it
 
     @cython.locals(item=tuple, keys=bytes)
-    cdef object next(self)
+    cpdef object next(self)
