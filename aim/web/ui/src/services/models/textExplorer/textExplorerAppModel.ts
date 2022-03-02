@@ -9,17 +9,13 @@ import { BookmarkNotificationsEnum } from 'config/notification-messages/notifica
 import { ANALYTICS_EVENT_KEYS } from 'config/analytics/analyticsKeysMap';
 import { DATE_EXPORTING_FORMAT } from 'config/dates/dates';
 
-<<<<<<< HEAD
 import {
   getTextExplorerTableColumns,
   textExplorerTableRowRenderer,
 } from 'pages/TextExplorer/components/TextExplorerTableGrid/TextExplorerTableGrid';
-
-import * as analytics from 'services/analytics';
-=======
 import { getTablePanelColumns } from 'pages/TextExplorer/components/TextPanelGrid/TextPanelGrid';
 
->>>>>>> 4b1b2f0194ca25e533d98f8fe102c2eada27b613
+import * as analytics from 'services/analytics';
 import projectsService from 'services/api/projects/projectsService';
 import appsService from 'services/api/apps/appsService';
 import textExplorerService from 'services/api/textExplorer/textExplorerService';
@@ -72,20 +68,12 @@ import {
   iterFoldTree,
 } from 'utils/encoder/streamEncoding';
 import getObjectPaths from 'utils/getObjectPaths';
-<<<<<<< HEAD
 import { getValue } from 'utils/helper';
 import { getSortedFields, SortField, SortFields } from 'utils/getSortedFields';
 import getValueByField from 'utils/getValueByField';
 import JsonToCSV from 'utils/JsonToCSV';
 import onRowSelectAction from 'utils/app/onRowSelect';
 import onColumnsVisibilityChangeMethod from 'utils/app/onColumnsVisibilityChange';
-=======
-import getValueByField from 'utils/getValueByField';
-import onRowVisibilityChange from 'utils/app/onRowVisibilityChange';
-import { isSystemMetric } from 'utils/isSystemMetric';
-import { getValue } from 'utils/helper';
-import onNotificationDelete from 'utils/app/onNotificationDelete';
->>>>>>> 4b1b2f0194ca25e533d98f8fe102c2eada27b613
 
 import createModel from '../model';
 import blobsURIModel from '../media/blobsURIModel';
@@ -354,109 +342,6 @@ function updateURL(
   window.history.pushState(null, '', url);
 }
 
-function processData(data: any[]): {
-  data: IMetricsCollection<IImageData>[];
-  params: string[];
-  highLevelParams: string[];
-  contexts: string[];
-  selectedRows: any;
-} {
-  const configData = model.getState()?.config;
-  let selectedRows = model.getState()?.selectedRows;
-  let metrics: any[] = [];
-  let params: string[] = [];
-  let highLevelParams: string[] = [];
-  let contexts: string[] = [];
-  data?.forEach((run: IImageRunData) => {
-    params = params.concat(getObjectPaths(run.params, run.params));
-    highLevelParams = highLevelParams.concat(
-      getObjectPaths(run.params, run.params, '', false, true),
-    );
-    run.traces.forEach((trace: any) => {
-      contexts = contexts.concat(getObjectPaths(trace.context, trace.context));
-      trace.values.forEach((stepData: any[], stepIndex: number) => {
-        stepData.forEach((text: any) => {
-          const textKey = encode({
-            name: trace.name,
-            runHash: run.hash,
-            traceContext: trace.context,
-            index: text.index,
-            step: trace.iters[stepIndex],
-            caption: text.caption,
-          });
-          const seqKey = encode({
-            name: trace.name,
-            runHash: run.hash,
-            traceContext: trace.context,
-          });
-          metrics.push({
-            ...text,
-            text_name: trace.name,
-            step: trace.iters[stepIndex],
-            context: trace.context,
-            run: _.omit(run, 'traces'),
-            key: textKey,
-            seqKey: seqKey,
-          });
-        });
-      });
-    });
-  });
-
-  let sortFields = configData?.table?.sortFields ?? [];
-
-  if (sortFields?.length === 0) {
-    sortFields = [
-      {
-        value: 'run.props.creation_time',
-        order: 'desc',
-        label: '',
-        group: '',
-      },
-    ];
-  }
-
-  const processedData = groupData(
-    _.orderBy(
-      metrics,
-      sortFields?.map(
-        (f: SortField) =>
-          function (metric: SortField) {
-            return getValue(metric, f.value, '');
-          },
-      ),
-      sortFields?.map((f: any) => f.order),
-    ),
-  );
-  // const processedData = metrics;
-  const uniqParams = _.uniq(params).sort();
-  const uniqHighLevelParams = _.uniq(highLevelParams).sort();
-  const uniqContexts = _.uniq(contexts).sort();
-
-  const mappedData =
-    data?.reduce((acc: any, item: any) => {
-      acc[item.hash] = { runHash: item.hash, ...item.props };
-      return acc;
-    }, {}) || {};
-  if (selectedRows && !_.isEmpty(selectedRows)) {
-    selectedRows = Object.keys(selectedRows).reduce((acc: any, key: string) => {
-      const slicedKey = key.slice(0, key.indexOf('/'));
-      acc[key] = {
-        selectKey: key,
-        ...mappedData[slicedKey],
-      };
-      return acc;
-    }, {});
-  }
-  return {
-    data: processedData,
-    params: uniqParams,
-    highLevelParams: uniqHighLevelParams,
-    contexts: uniqContexts,
-    selectedRows,
-  };
-}
-
 function groupData(data: any[]): any {
   // const configData: ITextExplorerAppConfig | undefined =
   //   model.getState()!.config;
@@ -499,9 +384,8 @@ function updateModelData(
   configData: ITextExplorerAppConfig = model.getState()!.config!,
   shouldURLUpdate?: boolean,
 ): void {
-  const { data, params, contexts, highLevelParams, selectedRows } = processData(
-    model.getState()?.rawData as any[],
-  );
+  const { data, params, contexts, highLevelParams, selectedRows } =
+    processTablePanelData(model.getState()?.rawData as any[]);
   const sortedParams = params.concat(highLevelParams).sort();
   const groupingSelectOptions = [
     ...getGroupingSelectOptions({
@@ -726,7 +610,7 @@ function processTablePanelData(data: any) {
             text_name: trace.name,
             step: trace.iters[stepIndex],
             context: trace.context,
-            run: _.omit(run, ['traces', 'params']),
+            run: _.omit(run, 'traces'),
             key: textKey,
             seqKey: seqKey,
           });
@@ -748,7 +632,20 @@ function processTablePanelData(data: any) {
     ];
   }
 
-  const processedData = textsData;
+  const processedData = groupData(
+    _.orderBy(
+      textsData,
+      sortFields?.map(
+        (f: SortField) =>
+          function (metric: SortField) {
+            return getValue(metric, f.value, '');
+          },
+      ),
+      sortFields?.map((f: any) => f.order),
+    ),
+  );
+
+  // const processedData = textsData;
   const uniqParams = _.uniq(params).sort();
   const uniqHighLevelParams = _.uniq(highLevelParams).sort();
   const uniqContexts = _.uniq(contexts).sort();
@@ -779,7 +676,7 @@ function processTablePanelData(data: any) {
 
 function setModelData(rawData: any[], configData: ITextExplorerAppConfig) {
   const sortFields = model.getState()?.config?.table.sortFields;
-  const { data, params, highLevelParams, selectedRows } =
+  const { data, params, highLevelParams, selectedRows, contexts } =
     processTablePanelData(rawData);
   const tablePanelColumns = getTablePanelColumns(
     rawData,
@@ -1157,7 +1054,6 @@ function getDataAsTableRows(
         items: [],
       };
     }
-
     Object.values(_.groupBy(metricsCollection.data, 'seqKey'))
       .map((v) => v[0])
       .forEach((metric: any) => {
@@ -1166,8 +1062,8 @@ function getDataAsTableRows(
             color: metricsCollection.color ?? metric.color,
           },
           key: metric.seqKey,
-          selectKey: `${metric.run.hash}/${metric.seqKey}`,
-          runHash: metric.run.hash,
+          selectKey: `${metric?.run?.hash}/${metric.seqKey}`,
+          runHash: metric.run?.hash,
           isHidden: config?.table?.hiddenMetrics?.includes(metric.key),
           index: rowIndex,
           color: metricsCollection.color ?? metric.color,
@@ -1272,8 +1168,6 @@ function getDataAsTableRows(
       );
     }
   });
-  console.log(rows.map((a: any) => a.experiment));
-
   return { rows, sameValueColumns };
 }
 
@@ -1382,8 +1276,8 @@ function getTablePanelRows(textsData: any) {
     };
   }
   const rows: any[] = [];
-
-  textsData.forEach((trace: any) => {
+  //@TODO change script after grouping implementation
+  textsData[0].data.forEach((trace: any) => {
     const row = {
       step: trace.step,
       index: trace.index,
