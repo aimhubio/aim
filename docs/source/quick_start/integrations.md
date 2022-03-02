@@ -23,7 +23,7 @@ for step in range(10):
 Aim easily integrates with your favourite ML frameworks.
 
 ### Integration with Pytorch Ignite
-[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://github.com/aimhubio/tutorials/blob/publication/notebooks/pytorch_ignite_track.ipynb)  
+[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/aimhubio/tutorials/blob/publication/notebooks/pytorch_ignite_track.ipynb)  
 
 
 It only takes 2 steps to simply and easily inject Aim into pytorch ignite:
