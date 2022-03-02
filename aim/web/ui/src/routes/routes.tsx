@@ -134,11 +134,11 @@ const routes = {
     isExact: true,
   },
   TEXTS_EXPLORER: {
-    path: PathEnum.Texts_Explorer,
+    path: PathEnum.Texts,
     component: TextsExplorer,
     showInSidebar: true,
     displayName: 'Texts',
-    icon: 'scatterplot',
+    icon: 'text',
     isExact: true,
   },
   TEXTS_EXPLORER_ID: {

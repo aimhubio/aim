@@ -58,6 +58,7 @@ export interface ITextExplorerAppModelState {
     suggestions: string[];
   };
   selectedRows: { [key: string]: any };
+
   // liveUpdateConfig: {
   //   delay: number;
   //   enabled: boolean;

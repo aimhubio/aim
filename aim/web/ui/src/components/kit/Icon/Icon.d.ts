@@ -120,4 +120,5 @@ export type IconName =
   | 'circle-with-dot'
   | 'show-system-metrics'
   | 'hide-system-metrics'
-  | 'circle-question';
+  | 'circle-question'
+  | 'text';

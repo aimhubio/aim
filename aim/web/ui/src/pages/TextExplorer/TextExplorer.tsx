@@ -1,12 +1,13 @@
 import React from 'react';
 import { useHistory, useRouteMatch } from 'react-router-dom';
-import _ from 'lodash';
+import _ from 'lodash-es';
 
 import Table from 'components/Table/Table';
 import ErrorBoundary from 'components/ErrorBoundary/ErrorBoundary';
 import BusyLoaderWrapper from 'components/BusyLoaderWrapper/BusyLoaderWrapper';
 import TableLoader from 'components/TableLoader/TableLoader';
 import NotificationContainer from 'components/NotificationContainer/NotificationContainer';
+import ResizePanel from 'components/ResizePanel/ResizePanel';
 
 import { RequestStatusEnum } from 'config/enums/requestStatusEnum';
 import { RowHeightSize } from 'config/table/tableConfigs';
@@ -14,6 +15,7 @@ import { ANALYTICS_EVENT_KEYS } from 'config/analytics/analyticsKeysMap';
 import { ResizeModeEnum } from 'config/enums/tableEnums';
 
 import useModel from 'hooks/model/useModel';
+import usePanelResize from 'hooks/resize/usePanelResize';
 
 import SelectForm from 'pages/TextExplorer/components/SelectForm/SelectForm';
 
@@ -22,10 +24,11 @@ import { AppNameEnum } from 'services/models/explorer';
 import textExplorerAppModel from 'services/models/textExplorer/textExplorerAppModel';
 
 import { IApiRequest } from 'types/services/services';
-import { ITextExplorerAppModelState } from 'types/services/models/textExplorer/texteExplorerAppModel';
 
 import exceptionHandler from 'utils/app/exceptionHandler';
 import getStateFromUrl from 'utils/getStateFromUrl';
+
+import TextExplorerAppBar from './components/TextExplorerAppBar/TextExplorerAppBar';
 
 import './TextExplorer.scss';
 
@@ -35,8 +38,17 @@ function TextExplorer() {
   const wrapperElemRef = React.useRef<HTMLDivElement>(null);
   const route = useRouteMatch<any>();
   const history = useHistory();
-  const textsData =
-    useModel<Partial<ITextExplorerAppModelState>>(textExplorerAppModel);
+  const textExplorerData = useModel<Partial<any>>(textExplorerAppModel);
+  const resizeElemRef = React.useRef<HTMLDivElement>(null);
+
+  const panelResizing = usePanelResize(
+    wrapperElemRef,
+    textsWrapperRef,
+    tableElemRef,
+    resizeElemRef,
+    textExplorerData?.config?.table || {},
+    textExplorerAppModel.onTableResizeEnd,
+  );
 
   React.useEffect(() => {
     textExplorerAppModel.initialize(route.params.appId);
@@ -63,8 +75,12 @@ function TextExplorer() {
     }
     analytics.pageView(ANALYTICS_EVENT_KEYS.texts.pageView);
     const unListenHistory = history.listen(() => {
-      if (!!textsData?.config) {
-        if (textsData.config.select !== getStateFromUrl('select')) {
+      if (!!textExplorerData?.config) {
+        if (
+          // metricsData.config.grouping !== getStateFromUrl('grouping') ||
+          // metricsData.config.chart !== getStateFromUrl('chart') ||
+          textExplorerData.config.select !== getStateFromUrl('select')
+        ) {
           textExplorerAppModel.setDefaultAppConfigData();
           textExplorerAppModel.updateModelData();
         }
@@ -85,28 +101,32 @@ function TextExplorer() {
       <div className='TextExplorer__container' ref={wrapperElemRef}>
         <section className='TextExplorer__section'>
           <div className='TextExplorer__section__div TextExplorer__fullHeight'>
-            App bar
+            <TextExplorerAppBar
+              onBookmarkCreate={textExplorerAppModel.onBookmarkCreate}
+              onBookmarkUpdate={textExplorerAppModel.onBookmarkUpdate}
+              title='Text explorer'
+            />
             <div className='TextExplorer__SelectForm__Grouping__container'>
               <SelectForm
                 requestIsPending={
-                  textsData?.requestStatus === RequestStatusEnum.Pending
+                  textExplorerData?.requestStatus === RequestStatusEnum.Pending
                 }
-                selectedTextsData={textsData?.config?.select!}
-                selectFormData={textsData?.selectFormData!}
+                selectedTextsData={textExplorerData?.config?.select!}
+                selectFormData={textExplorerData?.selectFormData!}
                 onTextsExplorerSelectChange={
                   textExplorerAppModel.onTextsExplorerSelectChange
                 }
-                searchButtonDisabled={textsData?.searchButtonDisabled!}
+                searchButtonDisabled={textExplorerData?.searchButtonDisabled!}
                 onSelectRunQueryChange={
                   textExplorerAppModel.onSelectRunQueryChange
                 }
-                // onSelectAdvancedQueryChange={
-                //   textExplorerAppModel.onSelectAdvancedQueryChange
-                // }
-                // toggleSelectAdvancedMode={
-                //   textExplorerAppModel.toggleSelectAdvancedMode
-                // }
-                // onSearchQueryCopy={textExplorerAppModel.onSearchQueryCopy}
+                onSelectAdvancedQueryChange={
+                  textExplorerAppModel.onSelectAdvancedQueryChange
+                }
+                toggleSelectAdvancedMode={
+                  textExplorerAppModel.toggleSelectAdvancedMode
+                }
+                onSearchQueryCopy={textExplorerAppModel.onSearchQueryCopy}
               />
             </div>
             <div
@@ -115,41 +135,56 @@ function TextExplorer() {
             >
               Texts Panel
             </div>
-            Resize panel
+            <ResizePanel
+              className={`ImagesExplore__ResizePanel${
+                _.isEmpty(textExplorerData?.textsData) &&
+                textExplorerData?.requestStatus !== RequestStatusEnum.Pending
+                  ? '__hide'
+                  : ''
+              }`}
+              panelResizing={panelResizing}
+              resizeElemRef={resizeElemRef}
+              resizeMode={textExplorerData?.config?.table.resizeMode}
+              onTableResizeModeChange={
+                textExplorerAppModel.onTableResizeModeChange
+              }
+            />
             <div
               ref={tableElemRef}
               className={`TextExplorer__table__container${
-                textsData?.requestStatus !== RequestStatusEnum.Pending &&
-                (textsData?.config?.table.resizeMode === ResizeModeEnum.Hide ||
-                  _.isEmpty(textsData?.tableData!))
+                textExplorerData?.requestStatus !== RequestStatusEnum.Pending &&
+                (textExplorerData?.config?.table.resizeMode ===
+                  ResizeModeEnum.Hide ||
+                  _.isEmpty(textExplorerData?.tableData!))
                   ? '__hide'
                   : ''
               }`}
             >
               <BusyLoaderWrapper
                 isLoading={
-                  textsData?.requestStatus === RequestStatusEnum.Pending
+                  textExplorerData?.requestStatus === RequestStatusEnum.Pending
                 }
                 className='ImagesExplore__loader'
                 height='100%'
                 loaderComponent={<TableLoader />}
               >
-                {!_.isEmpty(textsData?.tableData) ? (
+                {!_.isEmpty(textExplorerData?.tableData) ? (
                   <ErrorBoundary>
                     <Table
                       // deletable
                       custom
-                      ref={textsData?.refs?.tableRef}
-                      data={textsData?.tableData || []}
-                      columns={textsData?.tableColumns || []}
+                      ref={textExplorerData?.refs?.tableRef}
+                      data={textExplorerData?.tableData || []}
+                      columns={textExplorerData?.tableColumns || []}
                       // // Table options
                       topHeader
-                      groups={!Array.isArray(textsData?.tableData)}
-                      rowHeight={textsData?.config?.table.rowHeight}
+                      groups={!Array.isArray(textExplorerData?.tableData)}
+                      rowHeight={textExplorerData?.config?.table.rowHeight}
                       rowHeightMode={
-                        textsData?.config?.table.rowHeight === RowHeightSize.sm
+                        textExplorerData?.config?.table.rowHeight ===
+                        RowHeightSize.sm
                           ? 'small'
-                          : textsData?.config?.table.rowHeight ===
+                          : textExplorerData?.config?.table.rowHeight ===
                             RowHeightSize.md
                           ? 'medium'
                           : 'large'
@@ -157,16 +192,22 @@ function TextExplorer() {
                       // focusedState={
                       //   imagesExploreData?.config?.images?.focusedState!
                       // }
-                      selectedRows={textsData?.selectedRows}
-                      sortOptions={textsData?.groupingSelectOptions}
-                      sortFields={textsData?.config?.table.sortFields}
-                      hiddenRows={textsData?.config?.table.hiddenMetrics}
-                      hiddenColumns={textsData?.config?.table.hiddenColumns}
-                      // resizeMode={imagesExploreData?.config?.table.resizeMode}
-                      columnsWidths={textsData?.config?.table.columnsWidths}
+                      selectedRows={textExplorerData?.selectedRows}
+                      sortOptions={textExplorerData?.groupingSelectOptions}
+                      sortFields={textExplorerData?.config?.table.sortFields}
+                      hiddenRows={textExplorerData?.config?.table.hiddenMetrics}
+                      hiddenColumns={
+                        textExplorerData?.config?.table.hiddenColumns
+                      }
+                      resizeMode={textExplorerData?.config?.table.resizeMode}
+                      columnsWidths={
+                        textExplorerData?.config?.table.columnsWidths
+                      }
                       appName={AppNameEnum.TEXTS}
                       // hiddenChartRows={textsData?.textData?.length === 0}
-                      columnsOrder={textsData?.config?.table.columnsOrder}
+                      columnsOrder={
+                        textExplorerData?.config?.table.columnsOrder
+                      }
                       // // Table actions
                       onSort={textExplorerAppModel.onTableSortChange}
                       onSortReset={textExplorerAppModel.onSortReset}
@@ -180,12 +221,12 @@ function TextExplorer() {
                       onTableDiffShow={textExplorerAppModel.onTableDiffShow}
                       onRowHeightChange={textExplorerAppModel.onRowHeightChange}
                       //@TODO add hide sequence functionality
-                      // onRowsChange={textExplorerAppModel.onTextVisibilityChange}
+                      onRowsChange={textExplorerAppModel.onTextVisibilityChange}
                       // onRowHover={imagesExploreAppModel.onTableRowHover}
                       // onRowClick={imagesExploreAppModel.onTableRowClick}
-                      // onTableResizeModeChange={
-                      //   imagesExploreAppModel.onTableResizeModeChange
-                      // }
+                      onTableResizeModeChange={
+                        textExplorerAppModel.onTableResizeModeChange
+                      }
                       updateColumnsWidths={
                         textExplorerAppModel.updateColumnsWidths
                       }
@@ -200,10 +241,10 @@ function TextExplorer() {
             </div>
           </div>
         </section>
-        {textsData?.notifyData && textsData?.notifyData?.length > 0 && (
+        {textExplorerData?.notifyData?.length > 0 && (
           <NotificationContainer
             handleClose={textExplorerAppModel.onNotificationDelete}
-            data={textsData?.notifyData}
+            data={textExplorerData?.notifyData}
           />
         )}
       </div>
