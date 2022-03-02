@@ -1,4 +1,5 @@
 import _ from 'lodash-es';
+import moment from 'moment';
 
 import { RequestStatusEnum } from 'config/enums/requestStatusEnum';
 import { ResizeModeEnum } from 'config/enums/tableEnums';
@@ -6,6 +7,8 @@ import { RowHeightSize } from 'config/table/tableConfigs';
 import COLORS from 'config/colors/colors';
 import { BookmarkNotificationsEnum } from 'config/notification-messages/notificationMessages';
 import { ANALYTICS_EVENT_KEYS } from 'config/analytics/analyticsKeysMap';
+
+import { getTablePanelColumns } from 'pages/TextExplorer/components/TextPanelGrid/TextPanelGrid';
 
 import projectsService from 'services/api/projects/projectsService';
 import appsService from 'services/api/apps/appsService';
@@ -35,7 +38,6 @@ import {
 import {
   IImageData,
   IImageRunData,
-  IImagesExploreAppConfig,
 } from 'types/services/models/imagesExplore/imagesExploreAppModel';
 import { IBookmarkFormState } from 'types/components/BookmarkForm/BookmarkForm';
 
@@ -57,6 +59,10 @@ import {
   iterFoldTree,
 } from 'utils/encoder/streamEncoding';
 import getObjectPaths from 'utils/getObjectPaths';
+import getValueByField from 'utils/getValueByField';
+import onRowVisibilityChange from 'utils/app/onRowVisibilityChange';
+import { isSystemMetric } from 'utils/isSystemMetric';
+import { getValue } from 'utils/helper';
 import onNotificationDelete from 'utils/app/onNotificationDelete';
 
 import createModel from '../model';
@@ -161,6 +167,7 @@ function initialize(appId: string): void {
   model.setState({
     refs: {
       tableRef: { current: null },
+      textTableRef: { current: null },
     },
     groupingSelectOptions: [],
   });
@@ -755,10 +762,107 @@ function updateData(newData: IRun<IParamTrace>[]): void {
   }
 }
 
+function processTablePanelData(data: any) {
+  const configData = model.getState()?.config;
+  let selectedRows = model.getState()?.selectedRows;
+  let textsData: any[] = [];
+  let params: string[] = [];
+  let highLevelParams: string[] = [];
+  let contexts: string[] = [];
+  data?.forEach((run: any) => {
+    params = params.concat(getObjectPaths(run.params, run.params));
+    highLevelParams = highLevelParams.concat(
+      getObjectPaths(run.params, run.params, '', false, true),
+    );
+
+    run.traces.forEach((trace: any) => {
+      contexts = contexts.concat(getObjectPaths(trace.context, trace.context));
+      trace.values.forEach((stepData: any[], stepIndex: number) => {
+        stepData.forEach((text: any) => {
+          const textKey = encode({
+            name: trace.name,
+            runHash: run.hash,
+            traceContext: trace.context,
+            index: text.index,
+            step: trace.iters[stepIndex],
+            caption: text.caption,
+          });
+          const seqKey = encode({
+            name: trace.name,
+            runHash: run.hash,
+            traceContext: trace.context,
+          });
+          textsData.push({
+            ...text,
+            text_name: trace.name,
+            step: trace.iters[stepIndex],
+            context: trace.context,
+            run: _.omit(run, ['traces', 'params']),
+            key: textKey,
+            seqKey: seqKey,
+          });
+        });
+      });
+    });
+  });
+
+  let sortFields = configData?.table?.sortFields ?? [];
+
+  if (sortFields?.length === 0) {
+    sortFields = [
+      {
+        value: 'run.props.creation_time',
+        order: 'desc',
+        label: '',
+        group: '',
+      },
+    ];
+  }
+
+  const processedData = textsData;
+  const uniqParams = _.uniq(params).sort();
+  const uniqHighLevelParams = _.uniq(highLevelParams).sort();
+  const uniqContexts = _.uniq(contexts).sort();
+
+  const mappedData =
+    data?.reduce((acc: any, item: any) => {
+      acc[item.hash] = { runHash: item.hash, ...item.props };
+      return acc;
+    }, {}) || {};
+  if (selectedRows && !_.isEmpty(selectedRows)) {
+    selectedRows = Object.keys(selectedRows).reduce((acc: any, key: string) => {
+      const slicedKey = key.slice(0, key.indexOf('/'));
+      acc[key] = {
+        selectKey: key,
+        ...mappedData[slicedKey],
+      };
+      return acc;
+    }, {});
+  }
+  return {
+    data: processedData,
+    params: uniqParams,
+    highLevelParams: uniqHighLevelParams,
+    contexts: uniqContexts,
+    selectedRows,
+  };
+}
+
 function setModelData(rawData: any[], configData: ITextExplorerAppConfig) {
   const sortFields = model.getState()?.config?.table.sortFields;
-  const { data, params, contexts, highLevelParams, selectedRows } =
-    processData(rawData);
+  const { data, params, highLevelParams, selectedRows } =
+    processTablePanelData(rawData);
+  const tablePanelColumns = getTablePanelColumns(
+    rawData,
+    configData.table.columnsOrder!,
+    configData.table.hiddenColumns!,
+  );
+  const tablePanelData = getTablePanelRows(data);
+  model.setState({ tablePanelColumns, tablePanelData });
+  (model.getState().refs?.textTableRef as any).current.updateData({
+    newData: tablePanelData.rows,
+    newColumns: tablePanelColumns,
+  });
   const sortedParams = params.concat(highLevelParams).sort();
   // const groupingSelectOptions = [
   //   ...getGroupingSelectOptions({
@@ -1053,6 +1157,29 @@ function onSelectRunQueryChange(query: string) {
 
     model.setState({ config: newConfig });
   }
+}
+
+function getTablePanelRows(textsData: any) {
+  if (!textsData) {
+    return {
+      rows: [],
+      sameValueColumns: [],
+    };
+  }
+  const rows: any[] = [];
+
+  textsData.forEach((trace: any) => {
+    const row = {
+      step: trace.step,
+      index: trace.index,
+      [`${trace.run.hash}.${trace.text_name}`]: trace.data,
+      key: `${trace.run.hash}.${trace.text_name}`,
+      seqKey: trace.seqKey,
+    };
+    rows.push(row);
+  });
+
+  return { rows, sameValueColumns: [] };
 }
 
 async function onBookmarkCreate({ name, description }: IBookmarkFormState) {
