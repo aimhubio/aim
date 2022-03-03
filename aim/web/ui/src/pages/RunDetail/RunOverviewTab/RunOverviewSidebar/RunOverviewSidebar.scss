@@ -1,0 +1,82 @@
+@use 'src/styles/abstracts/index' as *;
+
+.RunOverviewSidebar {
+  max-width: 20rem;
+  padding: $space-xs;
+
+  h3 {
+    margin-bottom: $space-sm;
+  }
+
+  &__section {
+    margin: 0 1rem 1.5rem;
+
+    &__info {
+      div {
+        display: flex;
+        align-items: center;
+        height: 1.75rem;
+        margin-bottom: 0.125rem;
+        span {
+          max-width: 15rem;
+          white-space: nowrap;
+          overflow: hidden;
+          text-overflow: ellipsis;
+        }
+        &:last-child {
+          margin-bottom: 0;
+        }
+      }
+
+      .Icon__container {
+        font-size: 0.875rem;
+        margin-right: 0.75rem;
+      }
+    }
+
+    &__tags {
+      &-list {
+        display: flex;
+        align-items: center;
+
+        .Badge {
+          margin-right: 0.5rem;
+
+          &:last-child {
+            margin-right: 0;
+          }
+        }
+      }
+    }
+
+    &__insights {
+      padding-top: 1.5rem;
+      margin: unset;
+
+      h3 {
+        margin-left: 1rem;
+      }
+    }
+
+    &__Divider {
+      margin: 0 1rem;
+    }
+
+  }
+
+  &__NavLink {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    height: 2rem;
+    padding: 0 $space-unit;
+    margin-bottom: 0.125rem;
+    border-radius: $border-radius-sm;
+    transition: background-color .18s ease-out;
+    outline: none;
+    text-decoration: none;
+    &:hover {
+      background-color: $cuddle-30;
+    }
+  }
+}

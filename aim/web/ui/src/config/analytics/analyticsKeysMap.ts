@@ -230,6 +230,9 @@ export const ANALYTICS_EVENT_KEYS = {
   runDetails: {
     pageView: '[RunDetail] Page view',
     tabs: {
+      overview: {
+        tabView: '[RunDetail] [Overview] Tab view',
+      },
       metrics: {
         tabView: '[RunDetail] [Metrics] Tab view',
       },
