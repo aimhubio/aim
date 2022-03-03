@@ -1,0 +1,33 @@
+name: Nightly Releases
+
+#on:
+#  schedule:
+#    # Run at 00:00 UTC Every Day
+#    - cron: "0 0 * * *"
+
+on: workflow_dispatch
+
+jobs:
+  version-override:
+    runs-on: ubuntu-latest
+    name: Build and Publish PyPi binaries
+    steps:
+
+      - name: Rebase with main and update version
+        uses: actions/checkout@v2
+        run: |
+#         add some github credentials
+          git checkout main
+          git pull --rebase
+          git checkout nightly
+          git merge main
+          . ./.github/workflows/override-version.sh
+          git commit -m "Update VERSION file"
+          git push
+
+  trigger-packaging-workflow:
+    runs-on: ubuntu-latest
+    name: packaging workflow trigger
+    steps:
+      - name: workflow call
+        uses: ./.github/workflows/python-package
