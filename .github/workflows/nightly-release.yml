@@ -20,16 +20,16 @@ jobs:
       - name: Rebase with main and update version
         run: |
           git fetch --unshallow
-          git checkout main
-          git pull --rebase
-          git checkout nightly
-          git pull --rebase
-          git merge main --strategy-option theirs
-          git checkout main -- ./aim/VERSION
-          . ./.github/workflows/override-version.sh
-          git add ./aim/VERSION
-          git commit -m "Update VERSION file"
-          git push
+#          git checkout main
+#          git pull --rebase
+#          git checkout nightly
+#          git pull --rebase
+#          git merge main --strategy-option theirs
+#          git checkout main -- ./aim/VERSION
+#          . ./.github/workflows/override-version.sh
+#          git add ./aim/VERSION
+#          git commit -m "Update VERSION file"
+#          git push
 
   trigger-packaging-workflow:
     needs: version-override

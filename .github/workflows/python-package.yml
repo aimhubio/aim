@@ -27,7 +27,7 @@ jobs:
       - name: Checkout sources
         uses: actions/checkout@v2
         with:
-          ref: ${{ inputs.branch }} || ${{ github.ref }}
+          ref: ${{ inputs.branch || github.ref }}
 
       - name: Capture aim version
         id: capture-version
