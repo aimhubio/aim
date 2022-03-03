@@ -13,17 +13,25 @@ jobs:
     name: Build and Publish PyPi binaries
     steps:
       - uses: actions/checkout@v2
+      - name: Set Git config
+        run: |
+          git config --local user.email "actions@github.com"
+          git config --local user.name "Github Actions"
       - name: Rebase with main and update version
         run: |
+          git fetch --unshallow
           git checkout main
           git pull --rebase
           git checkout nightly
-          git merge main
+          git pull --rebase
+          git merge main --strategy-option theirs
           . ./.github/workflows/override-version.sh
           git commit -m "Update VERSION file"
           git push
+          echo ./aim/VERSION
 
   trigger-packaging-workflow:
+    needs: version-override
     runs-on: ubuntu-latest
     name: packaging workflow trigger
     steps:
