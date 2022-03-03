@@ -8,6 +8,7 @@ import TableLoader from 'components/TableLoader/TableLoader';
 import NotificationContainer from 'components/NotificationContainer/NotificationContainer';
 import ResizePanel from 'components/ResizePanel/ResizePanel';
 import Table from 'components/Table/Table';
+import ImagesExploreRangePanel from 'components/ImagesExploreRangePanel';
 
 import { IllustrationsEnum } from 'config/illustrationConfig/illustrationConfig';
 import { RequestStatusEnum } from 'config/enums/requestStatusEnum';
@@ -19,6 +20,7 @@ import useModel from 'hooks/model/useModel';
 import usePanelResize from 'hooks/resize/usePanelResize';
 
 import SelectForm from 'pages/TextExplorer/components/SelectForm/SelectForm';
+import RangePanel from 'pages/RunDetail/TraceVisualizationContainer/RangePanel';
 
 import * as analytics from 'services/analytics';
 import { AppNameEnum } from 'services/models/explorer';
@@ -51,6 +53,13 @@ function TextExplorer() {
     textExplorerData?.config?.table || {},
     textExplorerAppModel.onTableResizeEnd,
   );
+
+  function handleSearch() {
+    analytics.trackEvent(ANALYTICS_EVENT_KEYS.texts.textPanel.clickApplyButton);
+    textsTableElementRef.current = textExplorerAppModel.getTextData(true);
+    textsTableElementRef.current.call();
+  }
+
   React.useEffect(() => {
     textExplorerAppModel.initialize(route.params.appId);
     let appRequestRef: IApiRequest<void>;
@@ -134,32 +143,99 @@ function TextExplorer() {
               ref={textsWrapperRef}
               className='TextExplorer__textsWrapper__container'
             >
-              <Table
-                custom
-                ref={textExplorerData?.refs?.textTableRef}
-                fixed={false}
-                topHeader
-                columns={textExplorerData?.tablePanel?.columns}
-                data={textExplorerData?.tablePanel?.data}
-                isLoading={false}
-                hideHeaderActions
-                estimatedRowHeight={32}
-                headerHeight={32}
-                updateColumnsWidths={() => {}}
-                illustrationConfig={{
-                  page: 'runs',
-                  title: 'No Tracked Texts',
-                  type: IllustrationsEnum.EmptyData,
+              <div style={{ height: 'calc(100% - 44px)' }}>
+                <Table
+                  custom
+                  ref={textExplorerData?.refs?.textTableRef}
+                  fixed={false}
+                  topHeader
+                  columns={textExplorerData?.tablePanelColumns}
+                  data={textExplorerData?.tablePanelData}
+                  isLoading={false}
+                  hideHeaderActions
+                  estimatedRowHeight={32}
+                  headerHeight={32}
+                  updateColumnsWidths={() => {}}
+                  illustrationConfig={{
+                    page: 'runs',
+                    title: 'No Tracked Texts',
+                    type: IllustrationsEnum.EmptyData,
+                  }}
+                  height='100%'
+                  columnsOrder={
+                    textExplorerData?.tablePanel?.config?.columnsOrder
+                  }
+                  //methods
+                  onManageColumns={
+                    textExplorerAppModel.onTablePanelColumnsOrderChange
+                  }
+                />
+              </div>
+              <div
+                style={{
+                  width: '100%',
+                  border: '1px solid $grayish',
+                  borderLeft: 'none',
+                  borderTopRightRadius: '6px',
+                  borderBottomRightRadius: '6px',
+                  display: 'flex',
+                  flexDirection: 'column',
+                  justifyContent: 'space-between',
                 }}
-                columnsOrder={
-                  textExplorerData?.tablePanel?.config?.columnsOrder
-                }
-                height='100%'
-                //methods
-                onManageColumns={
-                  textExplorerAppModel.onTablePanelColumnsOrderChange
-                }
-              />
+              >
+                {textExplorerData?.config?.texts?.stepRange &&
+                  textExplorerData?.config?.texts?.indexRange &&
+                  textExplorerAppModel.showRangePanel() &&
+                  !_.isEmpty(textExplorerData?.textsData) && (
+                    <RangePanel
+                      onApply={handleSearch}
+                      applyButtonDisabled={
+                        textExplorerData?.applyButtonDisabled
+                      }
+                      onInputChange={textExplorerAppModel.onDensityChange}
+                      onRangeSliderChange={
+                        textExplorerAppModel.onSliceRangeChange
+                      }
+                      items={[
+                        {
+                          inputName: 'recordDensity',
+                          inputTitle: 'Steps count',
+                          inputTitleTooltip: 'Number of steps to display',
+                          inputValue:
+                            textExplorerData?.config?.texts?.recordDensity,
+                          // key: 'record_range',
+                          rangeEndpoints:
+                            textExplorerData?.config?.texts?.stepRange,
+                          selectedRangeValue:
+                            textExplorerData?.config?.texts?.recordSlice,
+                          sliderName: 'recordSlice',
+                          sliderTitle: 'Steps',
+                          sliderTitleTooltip:
+                            'Training step. Increments every time track() is called',
+                          sliderType: 'range',
+                        },
+                        {
+                          inputName: 'indexDensity',
+                          inputTitle: 'Indices count',
+                          inputTitleTooltip: 'Number of texts per step',
+                          inputValidationPatterns: undefined,
+                          inputValue:
+                            textExplorerData?.config?.texts?.indexDensity,
+                          // key: 'index_range',
+                          rangeEndpoints:
+                            textExplorerData?.config?.texts?.indexRange,
+                          selectedRangeValue:
+                            textExplorerData?.config?.texts?.indexSlice,
+                          sliderName: 'indexSlice',
+                          sliderTitle: 'Indices',
+                          sliderTitleTooltip:
+                            'Index in the list of texts passed to track() call',
+                          sliderType: 'range',
+                        },
+                      ]}
+                    />
+                  )}
+              </div>
             </div>
             <ResizePanel
               className={`ImagesExplore__ResizePanel${
