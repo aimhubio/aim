@@ -48,6 +48,7 @@ import {
 } from 'types/services/models/imagesExplore/imagesExploreAppModel';
 import { ITableColumn } from 'types/pages/metrics/components/TableColumns/TableColumns';
 import { IBookmarkFormState } from 'types/components/BookmarkForm/BookmarkForm';
+import { IColumnsOrderData } from 'types/components/Table/Table';
 
 import onNotificationDelete from 'utils/app/onNotificationDelete';
 import onNotificationAdd from 'utils/app/onNotificationAdd';
@@ -120,7 +121,6 @@ function getConfig(): ITextExplorerAppConfig {
     },
   };
 }
-
 let appRequestRef: {
   call: (exceptionHandler: (detail: any) => void) => Promise<IAppData>;
   abort: () => void;
@@ -594,6 +594,7 @@ function processTablePanelData(data: any) {
       contexts = contexts.concat(getObjectPaths(trace.context, trace.context));
       trace.values.forEach((stepData: any[], stepIndex: number) => {
         stepData.forEach((text: any) => {
+          const stkey = `${trace.iters[stepIndex]}.${stepIndex}`;
           const textKey = encode({
             name: trace.name,
             runHash: run.hash,
@@ -615,6 +616,7 @@ function processTablePanelData(data: any) {
             run: _.omit(run, 'traces'),
             key: textKey,
             seqKey: seqKey,
+            stkey,
           });
         });
       });
@@ -680,16 +682,22 @@ function setModelData(rawData: any[], configData: ITextExplorerAppConfig) {
   const sortFields = model.getState()?.config?.table.sortFields;
   const { data, params, highLevelParams, selectedRows, contexts } =
     processTablePanelData(rawData);
-  const tablePanelColumns = getTablePanelColumns(
+  const columns = getTablePanelColumns(
     rawData,
     configData.table.columnsOrder!,
     configData.table.hiddenColumns!,
   );
-  const tablePanelData = getTablePanelRows(data);
-  model.setState({ tablePanelColumns, tablePanelData });
-  (model.getState().refs?.textTableRef as any).current.updateData({
-    newData: tablePanelData.rows,
-    newColumns: tablePanelColumns,
+  const { rows } = getTablePanelRows(data);
+
+  model.getState().refs?.textTableRef.current?.updateData({
+    newData: rows,
+    newColumns: columns,
+  });
+  model.setState({
+    tablePanel: {
+      columns,
+      data: rows,
+    },
   });
   const sortedParams = params.concat(highLevelParams).sort();
   const groupingSelectOptions = [
@@ -814,7 +822,7 @@ function setModelData(rawData: any[], configData: ITextExplorerAppConfig) {
     params,
     data,
     selectedRows,
-    textsData: tablePanelData.rows,
+    textsData: rows,
     // orderedMap,
     tableData: tableData.rows,
     tableColumns: getTextExplorerTableColumns(
@@ -1277,18 +1285,25 @@ function getTablePanelRows(textsData: any) {
       sameValueColumns: [],
     };
   }
-  const rows: any[] = [];
+  let rows: any[] = [];
   //@TODO change script after grouping implementation
   textsData[0].data.forEach((trace: any) => {
     const row = {
       step: trace.step,
-      index: trace.index,
+      batchIndex: trace.index,
       [`${trace.run.hash}.${trace.text_name}`]: trace.data,
       key: `${trace.run.hash}.${trace.text_name}`,
       seqKey: trace.seqKey,
+      stKey: `${trace.step}.${trace.index}`,
     };
     rows.push(row);
   });
+
+  // @ts-ignore
+  rows = Object.values(_.groupBy(rows, 'stKey')).map((item: any) =>
+    _.merge({}, ...item),
+  );
+  rows = _.sortBy(rows, ['step', 'index']);
 
   return { rows, sameValueColumns: [] };
 }
@@ -1755,6 +1770,29 @@ function showRangePanel() {
     !model.getState().queryIsEmpty
   );
 }
+function onTablePanelColumnsOrderChange(columnsOrder: IColumnsOrderData) {
+  const modelState = model.getState();
+  if (modelState.tablePanel) {
+    const tableConfig = {
+      ...modelState.tablePanel.config,
+      columnsOrder: columnsOrder,
+    };
+    const columns = getTablePanelColumns(modelState.rawData, columnsOrder, []);
+    modelState.refs?.textTableRef.current?.updateData({
+      newColumns: columns,
+    });
+    model.setState({
+      tablePanel: {
+        ...modelState.tablePanel,
+        columns,
+        config: tableConfig,
+      },
+    });
+    setItem('TextPanelTable', encode(tableConfig));
+  }
+}
+
+function onTablePanelSortChange() {}
 
 const textsExploreAppModel = {
   ...model,
@@ -1790,6 +1828,8 @@ const textsExploreAppModel = {
   onDensityChange,
   onSliceRangeChange,
   showRangePanel,
+  onTablePanelColumnsOrderChange,
+  onTablePanelSortChange,
 };
 
 export default textsExploreAppModel;

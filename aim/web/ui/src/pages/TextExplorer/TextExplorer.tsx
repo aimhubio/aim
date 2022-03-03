@@ -162,6 +162,13 @@ function TextExplorer() {
                     type: IllustrationsEnum.EmptyData,
                   }}
                   height='100%'
+                  columnsOrder={
+                    textExplorerData?.tablePanel?.config?.columnsOrder
+                  }
+                  //methods
+                  onManageColumns={
+                    textExplorerAppModel.onTablePanelColumnsOrderChange
+                  }
                 />
               </div>
               <div
