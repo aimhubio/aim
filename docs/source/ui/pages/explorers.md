@@ -131,91 +131,56 @@ Pls see the screenshot:
 
 <img src="https://docs-blobs.s3.us-east-2.amazonaws.com/images/ui/pages/metrics-explorer/aggr_line_mean.png" style="border-radius: 8px; border: 1px solid #E8F1FC" alt="aggr_line_mean" />
 
-#### X-Axis properties
+### X-Axis properties
 
 X-Axis properties section is for controlling density of metrics x-axis values and aligning metrics by time, epoch or another metric.
 
-##### Density:
+#### Density:
 
-Following types of metrics density are available: [Minimum](#minimum), [Medium](#medium), [Maximum](#maximum).
-By default, metrics density is the [Maximum](#maximum).
+The following types of metrics density are available: [Minimum](#minimum), [Medium](#medium), [Maximum](#maximum).
+By default, the metrics density is set to [Maximum](#maximum).
 
-###### Minimum
+- setting metrics density to Minimum will query metrics by 50 point.
+- setting metrics density to Medium will query metrics by 250 point.
+- setting metrics density to Maximum will query metrics by 500 point.
 
-By setting metrics density to Minimum, will query metrics by 50 point.
+#### Alignment:
 
-###### Medium
+The following types of metrics alignment are available: [Step](#step), [Epoch](#epoch), [Relative Time](#relative-time), [Absolute Time](#absolute-time) and [Custom Metric](#custom-metric).
+By default, the metrics are aligned by [Step](#step).
 
-By setting metrics density to Medium, will query metrics by 250 point.
 
-###### Maximum
-
-By setting metrics density to Maximum, will query metrics by 500 point.
-
-##### Alignment:
-
-Following types of metrics alignment are available: [Step](#step), [Epoch](#epoch), [Relative Time](#relative-time), [Absolute Time](#absolute-time) and [Custom Metric](#custom-metric).
-By default, metrics aligned by [Step](#step).
-
-###### Step
-
-By setting metrics alignment to Step, x-axis values will represent the steps of tracked metrics.
-
-<img src="https://docs-blobs.s3.us-east-2.amazonaws.com/images/ui/pages/metrics-explorer/alignment_step.png" style="border-radius: 8px; border: 1px solid #E8F1FC" alt="alignment_step" />
-
-###### Epoch
-
-By setting metrics alignment to Epoch, x-axis values will represent the epochs of tracked metrics.
-
-<img src="https://docs-blobs.s3.us-east-2.amazonaws.com/images/ui/pages/metrics-explorer/alignment_epoch.png" style="border-radius: 8px; border: 1px solid #E8F1FC" alt="alignment_epoch" />
-
-###### Relative Time
-
-By setting metrics alignment to Relative Time, x-axis values will represent by `HH:mm:ss`, duration of tracking process.
+- By setting metrics alignment to Step, x-axis values will represent the steps of tracked metrics.
+- By setting metrics alignment to Epoch, x-axis values will represent the epochs of tracked metrics.
+- By setting metrics alignment to Relative Time, x-axis values will represent by `HH:mm:ss`, duration of tracking process.
 
 <img src="https://docs-blobs.s3.us-east-2.amazonaws.com/images/ui/pages/metrics-explorer/alignment_relative.png" style="border-radius: 8px; border: 1px solid #E8F1FC" alt="alignment_relative" />
 
-###### Absolute Time
 
-By setting metrics alignment to Absolute Time, x-axis values will represent by date `HH:mm:ss D MMM, YY`, since the start date of the first run until the last run.
+- By setting metrics alignment to Absolute Time, x-axis values will be represented in the following date format `HH:mm:ss D MMM, YY`, for the period since the first run until the last run.
 
 <img src="https://docs-blobs.s3.us-east-2.amazonaws.com/images/ui/pages/metrics-explorer/alignment_absolute.png" style="border-radius: 8px; border: 1px solid #E8F1FC" alt="alignment_absolute" />
 
-###### Custom Metric
-
-By setting metrics alignment to Custom Metric, x-axis values will represent selected metric values, you can detect correlations between queried metrics and selected metric.
+- By setting metrics alignment to Custom Metric, x-axis values will represent selected metric values, so you can detect correlations between the queried metrics and the selected metrics.
 
 #### Axes Scale
 
-Axes Scale section gives ability to display axes scale's [linear](https://en.wikipedia.org/wiki/Linear_scale) or [logarithmic](https://en.wikipedia.org/wiki/Logarithmic_scale).
+Axes Scale allows to choose between [linear](https://en.wikipedia.org/wiki/Linear_scale) and [logarithmic](https://en.wikipedia.org/wiki/Logarithmic_scale) scales.
+By default, axes' scales are [Linear](#linear-scale).
 
-By default, axes scale's are [Linear](#linear-scale).
-
-##### Linear Scale
-
-<img src="https://docs-blobs.s3.us-east-2.amazonaws.com/images/ui/pages/metrics-explorer/axes_scale_linear.png" style="border-radius: 8px; border: 1px solid #E8F1FC" alt="axes_scale_linear" />
-
-##### X-axis scale: Linear, Y-axis scale: Log
+Example: X-axis scale: Linear, Y-axis scale: Log
 
 <img src="https://docs-blobs.s3.us-east-2.amazonaws.com/images/ui/pages/metrics-explorer/y_axis_scale_log.png" style="border-radius: 8px; border: 1px solid #E8F1FC" alt="y-axis-scale-log" />
 
-##### X-axis scale: Log, Y-axis scale: Linear
-
-<img src="https://docs-blobs.s3.us-east-2.amazonaws.com/images/ui/pages/metrics-explorer/x_axis_scale_log.png" style="border-radius: 8px; border: 1px solid #E8F1FC" alt="x-axis-scale-log" />
-
-##### Log Scale
-
-<img src="https://docs-blobs.s3.us-east-2.amazonaws.com/images/ui/pages/metrics-explorer/axes_scale_log.png" style="border-radius: 8px; border: 1px solid #E8F1FC" alt="axes-scale-log" />
-
 #### Chart Smoothing
 
-While smoothing the chart, the data points are modified so individual points higher than the adjacent points (presumably because of noise) are reduced, and points that are lower than the adjacent points are increased leading to a smoother signal.
-You can select curve interpolation methods: Linear or Cubic.
-By default, chart smoothing in [Exponential moving average](#exponential-moving-average) mode and curve interpolation method is Linear.
+While smoothing the chart, the data points are modified so that the individual points that are higher than the adjacent points (presumably because of noise) are reduced, and points that are lower than the adjacent points are increased leading to a smoother signal.
+You can select between 2 curve interpolation methods: Linear or Cubic.
+By default, chart smoothing is set to Linear in [Exponential moving average](#exponential-moving-average) mode and curve interpolation method.
 
-##### Exponential moving average
+#### Exponential moving average
 
-An [exponential moving average](https://en.wikipedia.org/wiki/Moving_average), also known as an exponentially weighted moving average (EWMA),
+[Exponential moving average](https://en.wikipedia.org/wiki/Moving_average), also known as an exponentially weighted moving average (EWMA),
 is a first-order infinite impulse response filter that applies weighting factors which decrease exponentially.
 
 <img src="https://docs-blobs.s3.us-east-2.amazonaws.com/images/ui/pages/metrics-explorer/smoothing_ema.png" style="border-radius: 8px; border: 1px solid #E8F1FC" alt="smoothing_ema" />
@@ -229,16 +194,9 @@ This is done to position the moving average values at their central positions in
 
 #### Ignore outliers
 
-An outlier is an observation that lies an abnormal distance from other values in a random sample from a population.
-Examination of the data for unusual observations that are far removed from the mass of data.
-These points are often referred to as outliers.
+An outlier is an observation that lies an abnormal distance from other values in a random sample from a population. Excluding outliers might increase the statistical significance of your results. By default, outliers are ignored.
 
 <img src="https://docs-blobs.s3.us-east-2.amazonaws.com/images/ui/pages/metrics-explorer/ignore_outliers_off.png" style="border-radius: 8px; border: 1px solid #E8F1FC" alt="ignore-outliers-off" />
-
-Excluding outliers can cause your results to become statistically significant.
-By default, outliers are ignored.
-
-<img src="https://docs-blobs.s3.us-east-2.amazonaws.com/images/ui/pages/metrics-explorer/ignore_outliers_on.png" style="border-radius: 8px; border: 1px solid #E8F1FC" alt="ignore-outliers-on" />
 
 #### Highlight Modes
 
