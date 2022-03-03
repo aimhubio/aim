@@ -52,7 +52,7 @@ function getTablePanelColumns(
         : 'left',
     },
     {
-      key: 'index',
+      key: 'batchIndex',
       content: <span>index</span>,
       topHeader: 'Index',
       pin: order?.left?.includes('index')

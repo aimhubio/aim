@@ -121,7 +121,6 @@ function getConfig(): ITextExplorerAppConfig {
     },
   };
 }
-
 let appRequestRef: {
   call: (exceptionHandler: (detail: any) => void) => Promise<IAppData>;
   abort: () => void;
@@ -593,6 +592,7 @@ function processTablePanelData(data: any) {
       contexts = contexts.concat(getObjectPaths(trace.context, trace.context));
       trace.values.forEach((stepData: any[], stepIndex: number) => {
         stepData.forEach((text: any) => {
+          const stkey = `${trace.iters[stepIndex]}.${stepIndex}`;
           const textKey = encode({
             name: trace.name,
             runHash: run.hash,
@@ -614,6 +614,7 @@ function processTablePanelData(data: any) {
             run: _.omit(run, 'traces'),
             key: textKey,
             seqKey: seqKey,
+            stkey,
           });
         });
       });
@@ -685,16 +686,19 @@ function setModelData(rawData: any[], configData: ITextExplorerAppConfig) {
     configData.table.hiddenColumns!,
   );
   const { rows } = getTablePanelRows(data);
-  model.setState({
-    tablePanel: {
-      columns,
-      data: rows,
-    },
-  });
+
+  console.log('=====>', rows);
+
   model.getState().refs?.textTableRef.current?.updateData({
     newData: rows,
     newColumns: columns,
   });
+  // model.setState({
+  //   tablePanel: {
+  //     columns,
+  //     data: rows,
+  //   },
+  // });
   const sortedParams = params.concat(highLevelParams).sort();
   const groupingSelectOptions = [
     ...getGroupingSelectOptions({
@@ -1281,18 +1285,25 @@ function getTablePanelRows(textsData: any) {
       sameValueColumns: [],
     };
   }
-  const rows: any[] = [];
+  let rows: any[] = [];
   //@TODO change script after grouping implementation
   textsData[0].data.forEach((trace: any) => {
     const row = {
       step: trace.step,
-      index: trace.index,
+      batchIndex: trace.index,
       [`${trace.run.hash}.${trace.text_name}`]: trace.data,
       key: `${trace.run.hash}.${trace.text_name}`,
       seqKey: trace.seqKey,
+      stKey: `${trace.step}.${trace.index}`,
     };
     rows.push(row);
   });
+
+  // @ts-ignore
+  rows = Object.values(_.groupBy(rows, 'stKey')).map((item: any) =>
+    _.merge({}, ...item),
+  );
+  rows = _.sortBy(rows, ['step', 'index']).slice(0);
 
   return { rows, sameValueColumns: [] };
 }
