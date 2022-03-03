@@ -97,15 +97,21 @@ def display_colab(port, display):
 
     shell = """
         (async () => {{
-            const url = new URL({path}, await google.colab.kernel.proxyPort({port}, {{'cache': true}}));
+            const url = new URL('{path}/', await google.colab.kernel.proxyPort({port}, {{'cache': true}}));
             const iframe = document.createElement('iframe');
             iframe.src = url;
+            const a = document.createElement('a');
+            a.href = url;
+            a.innerHTML = 'Open in new browser tab';
+            a.setAttribute('target', '_blank');
+
             iframe.setAttribute('width', '100%');
             iframe.setAttribute('height', '800');
             iframe.setAttribute('frameborder', 0);
             document.body.appendChild(iframe);
+            document.body.appendChild(a);
         }})();
-    """.format(path=_NOTEBOOK_PATH_POSTFIX, port=port)
+        """.format(path=_NOTEBOOK_PATH_POSTFIX, port=port)
 
     script = IPython.display.Javascript(shell)
 
