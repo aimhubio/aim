@@ -687,18 +687,16 @@ function setModelData(rawData: any[], configData: ITextExplorerAppConfig) {
   );
   const { rows } = getTablePanelRows(data);
 
-  console.log('=====>', rows);
-
   model.getState().refs?.textTableRef.current?.updateData({
     newData: rows,
     newColumns: columns,
   });
-  // model.setState({
-  //   tablePanel: {
-  //     columns,
-  //     data: rows,
-  //   },
-  // });
+  model.setState({
+    tablePanel: {
+      columns,
+      data: rows,
+    },
+  });
   const sortedParams = params.concat(highLevelParams).sort();
   const groupingSelectOptions = [
     ...getGroupingSelectOptions({
@@ -1303,7 +1301,7 @@ function getTablePanelRows(textsData: any) {
   rows = Object.values(_.groupBy(rows, 'stKey')).map((item: any) =>
     _.merge({}, ...item),
   );
-  rows = _.sortBy(rows, ['step', 'index']).slice(0);
+  rows = _.sortBy(rows, ['step', 'index']);
 
   return { rows, sameValueColumns: [] };
 }
