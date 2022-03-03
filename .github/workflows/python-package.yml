@@ -4,7 +4,6 @@ on: [workflow_call, workflow_dispatch]
 
 jobs:
   linux-dist:
-    if: ${{ github.event.workflow_call || github.actor == 'gorarakelyan' || github.actor == 'alberttorosyan' || github.actor == 'roubkar' }}
     runs-on: ubuntu-latest
     name: Linux wheels build (using Docker)
     steps:
