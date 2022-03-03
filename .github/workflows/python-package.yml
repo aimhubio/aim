@@ -29,7 +29,8 @@ jobs:
         id: capture-version
         run: |
           AIM_VERSION=$(< ./aim/VERSION)
-          echo '::set-output name=AIM_VERSION::$(echo $AIM_VERSION)'
+          echo $AIM_VERSION
+          echo "::set-output name=AIM_VERSION::$AIM_VERSION"
 
 #      - name: Use node v16
 #        uses: actions/setup-node@v2
