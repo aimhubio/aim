@@ -12,7 +12,6 @@ jobs:
     runs-on: ubuntu-latest
     name: Build and Publish PyPi binaries
     steps:
-
       - name: Rebase with main and update version
         uses: actions/checkout@v2
         run: |
