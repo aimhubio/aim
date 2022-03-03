@@ -36,5 +36,6 @@ jobs:
     runs-on: ubuntu-latest
     name: packaging workflow trigger
     steps:
+      - uses: actions/checkout@v2
       - name: workflow call
         uses: ./.github/workflows/python-package
