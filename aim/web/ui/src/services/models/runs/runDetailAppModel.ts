@@ -9,6 +9,9 @@ import { INotification } from 'types/components/NotificationContainer/Notificati
 import { IApiRequest } from 'types/services/services';
 
 import exceptionHandler from 'utils/app/exceptionHandler';
+import { encode } from 'utils/encoder/encoder';
+import contextToString from 'utils/contextToString';
+import alphabeticalSortComparator from 'utils/alphabeticalSortComparator';
 
 import createModel from '../model';
 
@@ -121,16 +124,28 @@ function getRunMetricsBatch(body: any, runHash: string) {
       const runMetricsBatch: IRunBatch[] = [];
       const runSystemBatch: IRunBatch[] = [];
       data.forEach((run: IRunBatch) => {
+        const metric = {
+          ...run,
+          key: encode({
+            name: run.name,
+            context: run.context,
+          }),
+          sortKey: `${run.name}_${contextToString(run.context)}`,
+        };
         if (run.name.startsWith('__system__')) {
-          runSystemBatch.push(run);
+          runSystemBatch.push(metric);
         } else {
-          runMetricsBatch.push(run);
+          runMetricsBatch.push(metric);
         }
       });
       model.setState({
         ...model.getState(),
-        runMetricsBatch,
-        runSystemBatch,
+        runMetricsBatch: runMetricsBatch.sort(
+          alphabeticalSortComparator({ orderBy: 'sortKey' }),
+        ),
+        runSystemBatch: runSystemBatch.sort(
+          alphabeticalSortComparator({ orderBy: 'sortKey' }),
+        ),
         isRunBatchLoading: false,
       });
     },

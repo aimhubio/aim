@@ -1,4 +1,3 @@
--r ./requirements.txt
-cython
+Cython==3.0.0a9
 wheel
 twine

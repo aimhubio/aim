@@ -45,7 +45,14 @@ def parse_mlflow_logs(repo_inst, tracking_uri, experiment):
         # process all experiments
         experiments = client.list_experiments()
     else:
-        experiments = (client.get_experiment_by_name(experiment),)
+        try:
+            ex = client.get_experiment(experiment)
+        except mlflow.exceptions.MlflowException:
+            ex = client.get_experiment_by_name(experiment)
+        if not ex:
+            click.echo(f'Could not find experiment with id or name "{experiment}"', err=True)
+            return
+        experiments = (ex,)
 
     for ex in experiments:
         runs = client.search_runs(ex.experiment_id)

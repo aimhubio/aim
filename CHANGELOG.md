@@ -7,6 +7,14 @@
 - Custom max message size for Aim Remote tracking (alberttorosyan)
 - Docker images for aim up/server (alberttorosyan)
 
+
+## 3.6.2 Mar 2, 2022
+
+- Fix chart interactions issue in the Single Run Page Metrics tab (roubkar)
+- Fix `resolve_objects` in remote tracking client subtree (alberttorosyan)
+- Reject `0` as step/record count (alberttorosyan, VkoHov)
+- Fix error on mlflow conversion by experiment id (devfox-se)  
+
 ## 3.6.1 Feb 25, 2022
 
 - Fix issue with aligning x-axis by custom metric (KaroMourad)
