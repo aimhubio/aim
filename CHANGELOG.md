@@ -1,5 +1,9 @@
 # Changelog
 
+## 3.6.3
+
+- Fix UI rendering issue on colab (rubenaprikyan)
+
 ## 3.6.2 Mar 2, 2022
 
 - Fix chart interactions issue in the Single Run Page Metrics tab (roubkar)
