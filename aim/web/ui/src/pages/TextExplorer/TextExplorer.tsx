@@ -97,6 +97,8 @@ function TextExplorer() {
     };
   }, [route.params.appId]);
 
+  console.log(textExplorerData);
+
   return (
     <ErrorBoundary>
       <div className='TextExplorer__container' ref={wrapperElemRef}>
@@ -134,32 +136,41 @@ function TextExplorer() {
               ref={textsWrapperRef}
               className='TextExplorer__textsWrapper__container'
             >
-              <Table
-                custom
-                ref={textExplorerData?.refs?.textTableRef}
-                fixed={false}
-                topHeader
-                columns={textExplorerData?.tablePanel?.columns}
-                data={textExplorerData?.tablePanel?.data}
-                isLoading={false}
-                hideHeaderActions
-                estimatedRowHeight={32}
-                headerHeight={32}
-                updateColumnsWidths={() => {}}
-                illustrationConfig={{
-                  page: 'runs',
-                  title: 'No Tracked Texts',
-                  type: IllustrationsEnum.EmptyData,
-                }}
-                columnsOrder={
-                  textExplorerData?.tablePanel?.config?.columnsOrder
+              <BusyLoaderWrapper
+                isLoading={
+                  textExplorerData?.requestStatus === RequestStatusEnum.Pending
                 }
+                className='ImagesExplore__loader'
                 height='100%'
-                //methods
-                onManageColumns={
-                  textExplorerAppModel.onTablePanelColumnsOrderChange
-                }
-              />
+                loaderComponent={<TableLoader />}
+              >
+                <Table
+                  custom
+                  ref={textExplorerData?.refs?.textTableRef}
+                  fixed={false}
+                  topHeader
+                  columns={textExplorerData?.tablePanel?.columns}
+                  data={textExplorerData?.tablePanel?.data}
+                  isLoading={false}
+                  hideHeaderActions
+                  estimatedRowHeight={32}
+                  headerHeight={32}
+                  updateColumnsWidths={() => {}}
+                  illustrationConfig={{
+                    page: 'runs',
+                    title: 'No Tracked Texts',
+                    type: IllustrationsEnum.EmptyData,
+                  }}
+                  columnsOrder={
+                    textExplorerData?.tablePanel?.config?.columnsOrder
+                  }
+                  height='100%'
+                  //methods
+                  onManageColumns={
+                    textExplorerAppModel.onTablePanelColumnsOrderChange
+                  }
+                />
+              </BusyLoaderWrapper>
             </div>
             <ResizePanel
               className={`ImagesExplore__ResizePanel${

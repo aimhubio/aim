@@ -48,6 +48,7 @@ import {
 } from 'types/services/models/imagesExplore/imagesExploreAppModel';
 import { ITableColumn } from 'types/pages/metrics/components/TableColumns/TableColumns';
 import { IBookmarkFormState } from 'types/components/BookmarkForm/BookmarkForm';
+import { IColumnsOrderData } from 'types/components/Table/Table';
 
 import onNotificationDelete from 'utils/app/onNotificationDelete';
 import onNotificationAdd from 'utils/app/onNotificationAdd';
@@ -690,7 +691,7 @@ function setModelData(rawData: any[], configData: ITextExplorerAppConfig) {
       data: rows,
     },
   });
-  (model.getState().refs?.textTableRef as any).current.updateData({
+  model.getState().refs?.textTableRef.current?.updateData({
     newData: rows,
     newColumns: columns,
   });
@@ -1692,27 +1693,30 @@ function onSearchQueryCopy(): void {
   }
 }
 
-function onTablePanelColumnsOrderChange(columnsOrder: any) {
+function onTablePanelColumnsOrderChange(columnsOrder: IColumnsOrderData) {
   const modelState = model.getState();
   if (modelState.tablePanel) {
     const tableConfig = {
       ...modelState.tablePanel.config,
       columnsOrder: columnsOrder,
     };
+    const columns = getTablePanelColumns(modelState.rawData, columnsOrder, []);
+    modelState.refs?.textTableRef.current?.updateData({
+      newColumns: columns,
+    });
     model.setState({
       tablePanel: {
         ...modelState.tablePanel,
+        columns,
         config: tableConfig,
       },
-    });
-    const columns = getTablePanelColumns(modelState.rawData, columnsOrder, []);
-
-    (modelState.refs?.textTableRef as any).current.updateData({
-      columns,
     });
     setItem('TextPanelTable', encode(tableConfig));
   }
 }
+
+function onTablePanelSortChange() {}
+
 const textsExploreAppModel = {
   ...model,
   initialize,
@@ -1745,6 +1749,7 @@ const textsExploreAppModel = {
   onTextsExplorerSelectChange,
   onSelectAdvancedQueryChange,
   onTablePanelColumnsOrderChange,
+  onTablePanelSortChange,
 };
 
 export default textsExploreAppModel;
