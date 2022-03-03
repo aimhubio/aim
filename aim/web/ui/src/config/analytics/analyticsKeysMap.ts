@@ -247,7 +247,9 @@ export const ANALYTICS_EVENT_KEYS = {
       changeSorting: '[TextExplorer][Table] Change sorting',
       metricVisibilityChange: '[TextExplorer][Table] Change metric visibility',
     },
-    textPanel: {},
+    textPanel: {
+      clickApplyButton: '[TextExplorer][TextPanel] Click apply button',
+    },
   },
   runDetails: {
     pageView: '[RunDetail] Page view',

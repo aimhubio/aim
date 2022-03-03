@@ -130,6 +130,7 @@ let runsArchiveRef: {
   call: (exceptionHandler: (detail: any) => void) => Promise<any>;
   abort: () => void;
 };
+
 let runsDeleteRef: {
   call: (exceptionHandler: (detail: any) => void) => Promise<any>;
   abort: () => void;
@@ -386,6 +387,7 @@ function updateModelData(
 ): void {
   const { data, params, contexts, highLevelParams, selectedRows } =
     processTablePanelData(model.getState()?.rawData as any[]);
+  const tablePanelData = getTablePanelRows(data);
   const sortedParams = params.concat(highLevelParams).sort();
   const groupingSelectOptions = [
     ...getGroupingSelectOptions({
@@ -452,7 +454,7 @@ function updateModelData(
   model.setState({
     config: configData,
     data: model.getState()?.data,
-    // imagesData: mediaSetData,
+    textData: tablePanelData.rows,
     // orderedMap,
     tableData: tableData.rows,
     tableColumns,
@@ -812,7 +814,7 @@ function setModelData(rawData: any[], configData: ITextExplorerAppConfig) {
     params,
     data,
     selectedRows,
-    // textsData: data,
+    textsData: tablePanelData.rows,
     // orderedMap,
     tableData: tableData.rows,
     tableColumns: getTextExplorerTableColumns(
@@ -1687,6 +1689,73 @@ function onSearchQueryCopy(): void {
   }
 }
 
+function onSliceRangeChange(key: string, newValue: number[] | number) {
+  console.log(key, newValue);
+  const configData: ITextExplorerAppConfig | undefined =
+    model.getState()?.config;
+  if (configData?.texts) {
+    const texts = {
+      ...configData.texts,
+      [key]: newValue,
+    };
+    const config = {
+      ...configData,
+      texts,
+    };
+
+    model.setState({
+      config,
+    });
+  }
+}
+
+function onDensityChange(name: string, value: number, metaData: any) {
+  const configData: ITextExplorerAppConfig | undefined =
+    model.getState()?.config;
+  if (configData?.texts) {
+    const texts = {
+      ...configData.texts,
+      [name]: +value,
+      inputsValidations: {
+        ...configData.texts?.inputsValidations,
+        [name]: metaData?.isValid,
+      },
+    };
+    const config = {
+      ...configData,
+      texts,
+    };
+    model.setState({
+      config,
+    });
+  }
+  applyBtnDisabledHandler();
+}
+
+function applyBtnDisabledHandler() {
+  const state = model.getState();
+  const inputsValidations = state.config?.texts?.inputsValidations || {};
+
+  const isInputsValid =
+    _.size(
+      Object.keys(inputsValidations).filter((key) => {
+        return inputsValidations[key] === false;
+      }),
+    ) <= 0;
+
+  model.setState({
+    ...state,
+    applyButtonDisabled: !isInputsValid,
+  });
+}
+
+function showRangePanel() {
+  return (
+    model.getState().requestStatus !== RequestStatusEnum.Pending &&
+    !model.getState().queryIsEmpty
+  );
+}
+
 const textsExploreAppModel = {
   ...model,
   initialize,
@@ -1718,6 +1787,9 @@ const textsExploreAppModel = {
   toggleSelectAdvancedMode,
   onTextsExplorerSelectChange,
   onSelectAdvancedQueryChange,
+  onDensityChange,
+  onSliceRangeChange,
+  showRangePanel,
 };
 
 export default textsExploreAppModel;
