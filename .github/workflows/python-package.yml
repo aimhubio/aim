@@ -29,7 +29,6 @@ jobs:
         id: capture-version
         run: |
           AIM_VERSION=$(< ./aim/VERSION)
-          git branch
           echo '::set-output name=AIM_VERSION::$AIM_VERSION'
 
 #      - name: Use node v16

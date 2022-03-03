@@ -9,6 +9,6 @@ if [ $UPDATE_LATEST_TAG == 1 ]
 then
     echo 'latest'
 else
-    ${AIM_VERSION::-8}
+    echo ${AIM_VERSION::-8}
     echo 'yooohoooo'
 fi
