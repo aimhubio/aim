@@ -15,7 +15,6 @@ jobs:
       - name: Rebase with main and update version
         uses: actions/checkout@v2
         run: |
-#         add some github credentials
           git checkout main
           git pull --rebase
           git checkout nightly
