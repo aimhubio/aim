@@ -7,11 +7,11 @@ import ErrorBoundary from 'components/ErrorBoundary/ErrorBoundary';
 
 import { ANALYTICS_EVENT_KEYS } from 'config/analytics/analyticsKeysMap';
 
-import runDetailAppModel from 'services/models/runs/runDetailAppModel';
 import * as analytics from 'services/analytics';
 
 import { IRunBatch, IRunDetailMetricsAndSystemTabProps } from './types';
 import RunMetricCard from './RunMetricCard';
+import useRunMetricsBatch from './useRunMetricsBatch';
 
 function RunDetailMetricsAndSystemTab({
   runHash,
@@ -20,16 +20,7 @@ function RunDetailMetricsAndSystemTab({
   isSystem,
   isRunBatchLoading,
 }: IRunDetailMetricsAndSystemTabProps): React.FunctionComponentElement<React.ReactNode> {
-  React.useEffect(() => {
-    if (!runBatch && !_.isNil(runTraces)) {
-      const runsBatchRequestRef = runDetailAppModel.getRunMetricsBatch(
-        runTraces.metric,
-        runHash,
-      );
-      runsBatchRequestRef.call();
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [runTraces, runHash]);
+  useRunMetricsBatch({ runBatch, runTraces, runHash });
 
   React.useEffect(() => {
     analytics.pageView(

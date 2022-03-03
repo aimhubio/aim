@@ -30,7 +30,8 @@ export type TraceType =
   | 'audios'
   | 'texts'
   | 'videos'
-  | 'figures';
+  | 'figures'
+  | 'metric';
 
 /**
  * The context of info Raw data

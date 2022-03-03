@@ -1,8 +1,10 @@
 @use 'src/styles/abstracts' as *;
-
-.RunOverviewTab {
-  height: 100%;
-  width: 100%;
+.RunOverViewTab {
+  display: flex;
+  height: auto;
+  &__content {
+    flex: 1 100%;
+  }
   &__cardBox {
     margin-bottom: $space-lg;
     &__badge {

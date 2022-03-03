@@ -57,7 +57,7 @@ function RunOverviewTabParamsCard({ runData }: any) {
         <Card
           title='Parameters'
           subtitle='Little information about Params'
-          className='RunOverviewTab__cardBox'
+          className='RunOverViewTab__cardBox'
           dataListProps={{
             tableColumns,
             tableData,

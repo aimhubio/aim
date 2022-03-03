@@ -107,7 +107,7 @@ function RunOverviewTabMetricsCard({
             ? 'Little information about Metrics'
             : 'Little information about System Metrics'
         }
-        className='RunOverviewTab__cardBox'
+        className='RunOverViewTab__cardBox'
         dataListProps={{
           isLoading: runData?.isRunBatchLoading || !runBatch,
           searchableKeys: ['name', 'value'],
