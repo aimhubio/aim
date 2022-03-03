@@ -693,6 +693,7 @@ function setModelData(rawData: any[], configData: ITextExplorerAppConfig) {
     newData: rows,
     newColumns: columns,
   });
+
   model.setState({
     tablePanel: {
       columns,
