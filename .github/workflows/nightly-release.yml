@@ -1,16 +1,13 @@
-name: Nightly Releases
+name: nightly releases
 
-#on:
-#  schedule:
-#    # Run at 00:00 UTC Every Day
-#    - cron: "0 0 * * *"
-
-on: workflow_dispatch
+on:
+  schedule:
+    # Run at 00:00 UTC Every Day
+    - cron: "0 0 * * *"
 
 jobs:
   version-override:
     runs-on: ubuntu-latest
-    name: Build and Publish PyPi binaries
     steps:
       - uses: actions/checkout@v2
       - name: Set Git config
@@ -20,16 +17,16 @@ jobs:
       - name: Rebase with main and update version
         run: |
           git fetch --unshallow
-#          git checkout main
-#          git pull --rebase
-#          git checkout nightly
-#          git pull --rebase
-#          git merge main --strategy-option theirs
-#          git checkout main -- ./aim/VERSION
-#          . ./.github/workflows/override-version.sh
-#          git add ./aim/VERSION
-#          git commit -m "Update VERSION file"
-#          git push
+          git checkout main
+          git pull --rebase
+          git checkout nightly
+          git pull --rebase
+          git merge main --strategy-option theirs
+          git checkout main -- ./aim/VERSION
+          . ./.github/workflows/override-version.sh
+          git add ./aim/VERSION
+          git commit -m "Update VERSION file"
+          git push
 
   trigger-packaging-workflow:
     needs: version-override
