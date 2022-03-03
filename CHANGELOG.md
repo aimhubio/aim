@@ -6,6 +6,7 @@
 
 - Custom max message size for Aim Remote tracking (alberttorosyan)
 - Docker images for aim up/server (alberttorosyan)
+- Remote tracking client-side retry logic (aramaim)
 
 ### Fixes:
 
