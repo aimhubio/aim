@@ -2,18 +2,12 @@
 
 ### Overview
 
-Bookmarks are used to save a given configuration of an explorer (search settings, aggregations, groupings, etc) for later access. The bookmarks page contains the bookmark [cards](#bookmark-card) for quick access to the explorer from which they were created.
+Use the Bookmarks to save the Aim Explorer state. This includes search query, aggregations and any other modifications applied to the explorer. The Bookmarks page is a list of [cards](#bookmark-card) to quickly access the explorer state with one click.
 
 <img alt="bookmarks" style="border-radius: 8px; border: 1px solid #E8F1FC" src="https://docs-blobs.s3.us-east-2.amazonaws.com/images/ui/pages/bookmarks/bookmarks.png">
 <p>&nbsp;</p>
 
-Initially the page is empty.
-
-<img alt="bookmarks" style="border-radius: 8px; border: 1px solid #E8F1FC" src="https://docs-blobs.s3.us-east-2.amazonaws.com/images/ui/pages/bookmarks/bookmarks-empty.png"> 
-<p>&nbsp;</p>
-
-To create a bookmark, open one of our explorers and click the `bookmark` button on the top right.
-
+There are bookmark buttons available on all Explorer pages - on the top right . In order to create a bookmark, just press the bookmark button on your preferred Explorer page.
 <img alt="bookmarks create button" style="border-radius: 8px; border: 1px solid #E8F1FC" src="https://docs-blobs.s3.us-east-2.amazonaws.com/images/ui/pages/bookmarks/bookmark-create-button.png">
 <p>&nbsp;</p>
 
