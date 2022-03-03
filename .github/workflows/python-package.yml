@@ -74,7 +74,10 @@ jobs:
         env:
           AIM_VERSION: ${{ steps.capture-version.outputs.AIM_VERSION }}
           UPDATE_LATEST_TAG: ${{ inputs.branch || 1 }}
-        run: . create-docker-image.sh
+        run: |
+          git branch
+          echo ${{ steps.capture-version.outputs.AIM_VERSION }}
+#          . create-docker-image.sh
 #
 #  macos-dist:
 #    if: ${{ github.actor == 'gorarakelyan' || github.actor == 'alberttorosyan' || github.actor == 'roubkar' }}
