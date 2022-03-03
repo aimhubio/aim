@@ -25,8 +25,8 @@ jobs:
           git checkout nightly
           git pull --rebase
           git merge main --strategy-option theirs
+          git checkout main -- ./aim/VERSION
           . ./.github/workflows/override-version.sh
-          echo ./aim/VERSION
           git add ./aim/VERSION
           git commit -m "Update VERSION file"
           git push
@@ -36,6 +36,5 @@ jobs:
     runs-on: ubuntu-latest
     name: packaging workflow trigger
     steps:
-      - uses: actions/checkout@v2
       - name: workflow call
-        uses: ./.github/workflows/python-package
+        uses: ./.github/workflows/python-package.yml
