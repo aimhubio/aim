@@ -6,6 +6,7 @@
 
 - Custom max message size for Aim Remote tracking (alberttorosyan)
 - Docker images for aim up/server (alberttorosyan)
+- TF/Keras adapters refactoring (mihran113)
 
 
 ## 3.6.2 Mar 2, 2022
