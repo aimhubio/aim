@@ -26,7 +26,7 @@ class RpcQueueAutoClean(AutoClean):
 
     def _close(self):
         """
-        Wait unity rpc queue is empty
+        Wait until rpc queue is empty
         """
         pending_task_count = self._queue.qsize()
         if pending_task_count:
@@ -66,6 +66,10 @@ class RpcQueueWithRetry(object):
         return self._resources._shutdown
 
     def register_task(self, task_f, *args):
+        if self._shutdown:
+            logger.debug('Cannot register task: rpc task queue is stopped.')
+            return
+
         arg_size = self._calculate_size(args)
         with self._queue.not_full:
             while self.current_memory_usage + arg_size >= self.max_memory_usage:
@@ -90,7 +94,7 @@ class RpcQueueWithRetry(object):
                 task_f, args = None, None
                 self._queue.task_done()
             else:
-                self._unput(task_f, args)
+                self._put_front(task_f, args)
 
     def _try_exec_task(self, task_f, *args):
         retry = 0
@@ -107,7 +111,7 @@ class RpcQueueWithRetry(object):
                 time.sleep(self.retry_interval)
         return False
 
-    def _unput(self, task_f, *args):
+    def _put_front(self, task_f, *args):
         with self._queue.not_full:
             self._queue.queue.appendleft((task_f, args))
             self._queue.not_empty.notify()
