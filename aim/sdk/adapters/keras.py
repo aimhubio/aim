@@ -1,30 +1,37 @@
 from typing import Optional
 
 from aim.sdk.run import Run
-from aim.sdk.adapters.keras_mixins import (
-    get_keras_tracker_callback,
-    TrackerKerasCallbackMetricsEpochEndMixin,
-)
+from aim.sdk.adapters.keras_mixins import TrackerKerasCallbackMetricsEpochEndMixin
+
+try:
+    from keras.callbacks import Callback
+except ImportError:
+    raise RuntimeError(
+        'This contrib module requires keras to be installed. '
+        'Please install it with command: \n pip install keras'
+    )
 
 
-class AimCallback(object):
-    __keras_tracker_callback_cls = None
+class AimCallback(TrackerKerasCallbackMetricsEpochEndMixin, Callback):
+    def __init__(self, repo: Optional[str] = None,
+                 experiment: Optional[str] = None,
+                 run: Optional[Run] = None):
+        super(Callback, self).__init__()
 
-    @staticmethod
-    def __new__(cls, *args, **kwargs):
-        keras_callback_cls = cls.__get_callback_cls()
-        return keras_callback_cls(*args, **kwargs)
+        if run is None:
+            if repo is None and experiment is None:
+                self._run = Run()
+            else:
+                self._run = Run(repo=repo, experiment=experiment)
+        else:
+            print('Passing Run instance to AimCallback will be '
+                  'deprecated in future versions, '
+                  'pass the callback arguments explicitly')
+            self._run = run
 
-    @classmethod
-    def __get_callback_cls(cls):
-        if cls.__keras_tracker_callback_cls is None:
-            from keras.callbacks import Callback
-
-            cls.__keras_tracker_callback_cls = get_keras_tracker_callback(
-                Callback, [
-                    TrackerKerasCallbackMetricsEpochEndMixin,
-                ])
-        return cls.__keras_tracker_callback_cls
+    @property
+    def run(self) -> Run:
+        return self._run
 
     @classmethod
     def metrics(cls, repo: Optional[str] = None,
@@ -32,11 +39,6 @@ class AimCallback(object):
                 run: Optional[Run] = None):
         # Keep `metrics` method for backward compatibility
         return cls(repo, experiment, run)
-
-    def __init__(self, repo: Optional[str] = None,
-                 experiment: Optional[str] = None,
-                 run: Optional[Run] = None):
-        pass
 
 
 # Keep `AimTracker` for backward compatibility
