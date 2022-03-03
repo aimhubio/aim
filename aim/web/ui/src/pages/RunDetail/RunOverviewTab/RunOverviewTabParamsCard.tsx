@@ -1,5 +1,4 @@
 import React from 'react';
-import _ from 'lodash';
 
 import ErrorBoundary from 'components/ErrorBoundary/ErrorBoundary';
 import Card from 'components/kit/Card/Card';
@@ -7,6 +6,7 @@ import BusyLoaderWrapper from 'components/BusyLoaderWrapper/BusyLoaderWrapper';
 
 import getObjectPaths from 'utils/getObjectPaths';
 import { formatValue } from 'utils/formatValue';
+import { getValue } from 'utils/helper';
 
 function RunOverviewTabParamsCard({ runData }: any) {
   const [tableData, setTableData]: any = React.useState([]);
@@ -17,11 +17,35 @@ function RunOverviewTabParamsCard({ runData }: any) {
       return {
         key: index,
         name: path,
-        value: formatValue(_.get(runData?.runParams, path)),
+        value: formatValue(getValue(runData?.runParams, path)),
       };
     });
     setTableData(resultTableList);
   }, [runData.runParams]);
+
+  const tableColumns = React.useMemo(() => {
+    const paths = getObjectPaths(runData?.runParams, runData?.runParams);
+    return [
+      {
+        dataKey: 'name',
+        key: 'name',
+        title: `Name (${paths.length})`,
+        width: '50%',
+        cellRenderer: function cellRenderer({ cellData }: any) {
+          return <p>{cellData}</p>;
+        },
+      },
+      {
+        dataKey: 'value',
+        key: 'value',
+        title: 'Value',
+        width: '50%',
+        cellRenderer: function cellRenderer({ cellData }: any) {
+          return <p>{cellData}</p>;
+        },
+      },
+    ];
+  }, [runData?.runParams]);
 
   return (
     <ErrorBoundary>
@@ -35,26 +59,7 @@ function RunOverviewTabParamsCard({ runData }: any) {
           subtitle='Little information about Params'
           className='RunOverviewTab__cardBox'
           dataListProps={{
-            tableColumns: [
-              {
-                dataKey: 'name',
-                key: 'name',
-                title: 'Name',
-                width: '50%',
-                cellRenderer: function cellRenderer({ cellData }: any) {
-                  return <p>{cellData}</p>;
-                },
-              },
-              {
-                dataKey: 'value',
-                key: 'value',
-                title: 'Value',
-                width: '50%',
-                cellRenderer: function cellRenderer({ cellData }: any) {
-                  return <p>{cellData}</p>;
-                },
-              },
-            ],
+            tableColumns,
             tableData,
             illustrationConfig: {
               size: 'large',

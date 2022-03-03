@@ -5,5 +5,13 @@
   width: 100%;
   &__cardBox {
     margin-bottom: $space-lg;
+    &__badge {
+      height: toRem(20px);
+      &.emptyContext {
+        background: $cuddle-10;
+        border: $border-grey;
+        color: $pico-80;
+      }
+    }
   }
 }

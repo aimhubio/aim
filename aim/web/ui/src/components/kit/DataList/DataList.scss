@@ -41,10 +41,15 @@
       &-cell {
         position: relative;
         min-height: 32px;
-        max-height: 300px;
+        max-height: 32px;
         padding: toRem(7px) toRem(16px);
         border-right: unset;
         border-bottom: $border-grey;
+        p {
+          overflow: hidden;
+          max-width: 100%;
+          text-overflow: ellipsis;
+        }
 
         &:last-child {
           display: inline-block;
