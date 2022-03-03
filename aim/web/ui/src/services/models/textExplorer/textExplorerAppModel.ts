@@ -678,16 +678,21 @@ function setModelData(rawData: any[], configData: ITextExplorerAppConfig) {
   const sortFields = model.getState()?.config?.table.sortFields;
   const { data, params, highLevelParams, selectedRows, contexts } =
     processTablePanelData(rawData);
-  const tablePanelColumns = getTablePanelColumns(
+  const columns = getTablePanelColumns(
     rawData,
     configData.table.columnsOrder!,
     configData.table.hiddenColumns!,
   );
-  const tablePanelData = getTablePanelRows(data);
-  model.setState({ tablePanelColumns, tablePanelData });
+  const { rows } = getTablePanelRows(data);
+  model.setState({
+    tablePanel: {
+      columns,
+      data: rows,
+    },
+  });
   (model.getState().refs?.textTableRef as any).current.updateData({
-    newData: tablePanelData.rows,
-    newColumns: tablePanelColumns,
+    newData: rows,
+    newColumns: columns,
   });
   const sortedParams = params.concat(highLevelParams).sort();
   const groupingSelectOptions = [
@@ -1687,6 +1692,27 @@ function onSearchQueryCopy(): void {
   }
 }
 
+function onTablePanelColumnsOrderChange(columnsOrder: any) {
+  const modelState = model.getState();
+  if (modelState.tablePanel) {
+    const tableConfig = {
+      ...modelState.tablePanel.config,
+      columnsOrder: columnsOrder,
+    };
+    model.setState({
+      tablePanel: {
+        ...modelState.tablePanel,
+        config: tableConfig,
+      },
+    });
+    const columns = getTablePanelColumns(modelState.rawData, columnsOrder, []);
+
+    (modelState.refs?.textTableRef as any).current.updateData({
+      columns,
+    });
+    setItem('TextPanelTable', encode(tableConfig));
+  }
+}
 const textsExploreAppModel = {
   ...model,
   initialize,
@@ -1718,6 +1744,7 @@ const textsExploreAppModel = {
   toggleSelectAdvancedMode,
   onTextsExplorerSelectChange,
   onSelectAdvancedQueryChange,
+  onTablePanelColumnsOrderChange,
 };
 
 export default textsExploreAppModel;

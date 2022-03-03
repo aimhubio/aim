@@ -59,7 +59,11 @@ export interface ITextExplorerAppModelState {
     suggestions: string[];
   };
   selectedRows: { [key: string]: any };
-
+  tablePanel: {
+    columns: ITableColumn[];
+    data: any[];
+    config: ITextExplorerAppConfig['table'];
+  };
   // liveUpdateConfig: {
   //   delay: number;
   //   enabled: boolean;
