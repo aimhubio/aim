@@ -26,9 +26,10 @@ jobs:
           git pull --rebase
           git merge main --strategy-option theirs
           . ./.github/workflows/override-version.sh
+          echo ./aim/VERSION
+          git add ./aim/VERSION
           git commit -m "Update VERSION file"
           git push
-          echo ./aim/VERSION
 
   trigger-packaging-workflow:
     needs: version-override
