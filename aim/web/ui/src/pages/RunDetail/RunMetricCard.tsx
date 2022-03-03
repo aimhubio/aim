@@ -24,19 +24,14 @@ function RunMetricCard({
             <LineChart
               data={[
                 {
-                  key:
-                    batch.metric_name +
-                    contextToString(batch.context, 'keyHash'),
+                  key: batch.key,
                   data: {
                     xValues: [...batch.iters],
                     yValues: [...batch.values],
                   },
                   color: '#1c2852',
                   dasharray: '0',
-                  selectors: [
-                    batch.metric_name +
-                      contextToString(batch.context, 'keyHash'),
-                  ],
+                  selectors: [batch.key],
                 },
               ]}
               index={index}
@@ -70,7 +65,7 @@ function RunMetricCard({
             ?.split(',')
             .map((label: string, i: number) => (
               <Badge
-                key={index}
+                key={i}
                 size='large'
                 color={COLORS[0][(i + index) % COLORS[0].length]}
                 label={label || 'Empty context'}

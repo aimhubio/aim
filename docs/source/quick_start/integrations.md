@@ -23,6 +23,8 @@ for step in range(10):
 Aim easily integrates with your favourite ML frameworks.
 
 ### Integration with Pytorch Ignite
+[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/aimhubio/tutorials/blob/publication/notebooks/pytorch_ignite_track.ipynb)  
+
 
 It only takes 2 steps to simply and easily inject Aim into pytorch ignite:
 
@@ -30,7 +32,6 @@ It only takes 2 steps to simply and easily inject Aim into pytorch ignite:
 # import aim sdk designed for pytorch ignite
 from aim.pytorch_ignite import AimLogger
 ```
-
 Pytorch Ignite provides trainer objects to simplify the training process of pytorch model. We can attach the trainer object as AimLogger's output handler to use the logger function defined by aim to simplify the process of tracking experiments. This process is divided into 2 steps:
 
 Step 1. Create `AimLogger` object
