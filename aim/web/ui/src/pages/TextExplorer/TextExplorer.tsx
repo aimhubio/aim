@@ -8,7 +8,6 @@ import TableLoader from 'components/TableLoader/TableLoader';
 import NotificationContainer from 'components/NotificationContainer/NotificationContainer';
 import ResizePanel from 'components/ResizePanel/ResizePanel';
 import Table from 'components/Table/Table';
-import ImagesExploreRangePanel from 'components/ImagesExploreRangePanel';
 
 import { IllustrationsEnum } from 'config/illustrationConfig/illustrationConfig';
 import { RequestStatusEnum } from 'config/enums/requestStatusEnum';
@@ -106,6 +105,8 @@ function TextExplorer() {
     };
   }, [route.params.appId]);
 
+  console.log(textExplorerData?.config?.table.resizeMode);
+
   return (
     <ErrorBoundary>
       <div className='TextExplorer__container' ref={wrapperElemRef}>
@@ -141,105 +142,99 @@ function TextExplorer() {
             </div>
             <div
               ref={textsWrapperRef}
-              className='TextExplorer__textsWrapper__container'
+              className={`TextExplorer__textsWrapper__container ${
+                _.isEmpty(textExplorerData?.tableData) &&
+                textExplorerData?.requestStatus !== RequestStatusEnum.Pending
+                  ? 'TextExplorer__textsWrapper__container__fullHeight'
+                  : textExplorerData?.config?.table.resizeMode ===
+                    ResizeModeEnum.MaxHeight
+                  ? 'TextExplorer__textsWrapper__container__hide'
+                  : ''
+              }`}
             >
-              <div style={{ height: 'calc(100% - 44px)' }}>
-                <Table
-                  custom
-                  ref={textExplorerData?.refs?.textTableRef}
-                  fixed={false}
-                  topHeader
-                  columns={textExplorerData?.tablePanelColumns}
-                  data={textExplorerData?.tablePanelData}
-                  isLoading={false}
-                  hideHeaderActions
-                  estimatedRowHeight={32}
-                  headerHeight={32}
-                  updateColumnsWidths={() => {}}
-                  illustrationConfig={{
-                    page: 'runs',
-                    title: 'No Tracked Texts',
-                    type: IllustrationsEnum.EmptyData,
-                  }}
-                  height='100%'
-                  columnsOrder={
-                    textExplorerData?.tablePanel?.config?.columnsOrder
-                  }
-                  //methods
-                  onManageColumns={
-                    textExplorerAppModel.onTablePanelColumnsOrderChange
-                  }
-                />
-              </div>
-              <div
-                style={{
-                  width: '100%',
-                  border: '1px solid $grayish',
-                  borderLeft: 'none',
-                  borderTopRightRadius: '6px',
-                  borderBottomRightRadius: '6px',
-                  display: 'flex',
-                  flexDirection: 'column',
-                  justifyContent: 'space-between',
+              <Table
+                custom
+                topHeader
+                ref={textExplorerData?.refs?.textTableRef}
+                fixed={false}
+                columns={textExplorerData?.tablePanelColumns || []}
+                data={textExplorerData?.tablePanelData || []}
+                hideHeaderActions
+                estimatedRowHeight={32}
+                headerHeight={32}
+                updateColumnsWidths={() => {}}
+                illustrationConfig={{
+                  page: 'runs',
+                  title: 'No Tracked Texts',
+                  type: IllustrationsEnum.EmptyData,
                 }}
-              >
-                {textExplorerData?.config?.texts?.stepRange &&
-                  textExplorerData?.config?.texts?.indexRange &&
-                  textExplorerAppModel.showRangePanel() &&
-                  !_.isEmpty(textExplorerData?.textsData) && (
-                    <RangePanel
-                      onApply={handleSearch}
-                      applyButtonDisabled={
-                        textExplorerData?.applyButtonDisabled
-                      }
-                      onInputChange={textExplorerAppModel.onDensityChange}
-                      onRangeSliderChange={
-                        textExplorerAppModel.onSliceRangeChange
-                      }
-                      items={[
-                        {
-                          inputName: 'recordDensity',
-                          inputTitle: 'Steps count',
-                          inputTitleTooltip: 'Number of steps to display',
-                          inputValue:
-                            textExplorerData?.config?.texts?.recordDensity,
-                          // key: 'record_range',
-                          rangeEndpoints:
-                            textExplorerData?.config?.texts?.stepRange,
-                          selectedRangeValue:
-                            textExplorerData?.config?.texts?.recordSlice,
-                          sliderName: 'recordSlice',
-                          sliderTitle: 'Steps',
-                          sliderTitleTooltip:
-                            'Training step. Increments every time track() is called',
-                          sliderType: 'range',
-                        },
-                        {
-                          inputName: 'indexDensity',
-                          inputTitle: 'Indices count',
-                          inputTitleTooltip: 'Number of texts per step',
-                          inputValidationPatterns: undefined,
-                          inputValue:
-                            textExplorerData?.config?.texts?.indexDensity,
-                          // key: 'index_range',
-                          rangeEndpoints:
-                            textExplorerData?.config?.texts?.indexRange,
-                          selectedRangeValue:
-                            textExplorerData?.config?.texts?.indexSlice,
-                          sliderName: 'indexSlice',
-                          sliderTitle: 'Indices',
-                          sliderTitleTooltip:
-                            'Index in the list of texts passed to track() call',
-                          sliderType: 'range',
-                        },
-                      ]}
-                    />
-                  )}
-              </div>
+                height='100%'
+                columnsOrder={
+                  textExplorerData?.tablePanel?.config?.columnsOrder
+                }
+                //methods
+                onManageColumns={
+                  textExplorerAppModel.onTablePanelColumnsOrderChange
+                }
+              />
+            </div>
+            <div>
+              {textExplorerData?.config?.texts?.stepRange &&
+                textExplorerData?.config?.texts?.indexRange &&
+                textExplorerData?.config?.table.resizeMode !==
+                  ResizeModeEnum.MaxHeight &&
+                textExplorerAppModel.showRangePanel() &&
+                !_.isEmpty(textExplorerData?.textsData) && (
+                  <RangePanel
+                    onApply={handleSearch}
+                    applyButtonDisabled={textExplorerData?.applyButtonDisabled}
+                    onInputChange={textExplorerAppModel.onDensityChange}
+                    onRangeSliderChange={
+                      textExplorerAppModel.onSliceRangeChange
+                    }
+                    items={[
+                      {
+                        inputName: 'recordDensity',
+                        inputTitle: 'Steps count',
+                        inputTitleTooltip: 'Number of steps to display',
+                        inputValue:
+                          textExplorerData?.config?.texts?.recordDensity,
+                        // key: 'record_range',
+                        rangeEndpoints:
+                          textExplorerData?.config?.texts?.stepRange,
+                        selectedRangeValue:
+                          textExplorerData?.config?.texts?.recordSlice,
+                        sliderName: 'recordSlice',
+                        sliderTitle: 'Steps',
+                        sliderTitleTooltip:
+                          'Training step. Increments every time track() is called',
+                        sliderType: 'range',
+                      },
+                      {
+                        inputName: 'indexDensity',
+                        inputTitle: 'Indices count',
+                        inputTitleTooltip: 'Number of texts per step',
+                        inputValidationPatterns: undefined,
+                        inputValue:
+                          textExplorerData?.config?.texts?.indexDensity,
+                        // key: 'index_range',
+                        rangeEndpoints:
+                          textExplorerData?.config?.texts?.indexRange,
+                        selectedRangeValue:
+                          textExplorerData?.config?.texts?.indexSlice,
+                        sliderName: 'indexSlice',
+                        sliderTitle: 'Indices',
+                        sliderTitleTooltip:
+                          'Index in the list of texts passed to track() call',
+                        sliderType: 'range',
+                      },
+                    ]}
+                  />
+                )}
             </div>
             <ResizePanel
-              className={`ImagesExplore__ResizePanel${
-                _.isEmpty(textExplorerData?.textsData) &&
+              className={`TextExplorer__ResizePanel${
+                _.isEmpty(textExplorerData?.tableData) &&
                 textExplorerData?.requestStatus !== RequestStatusEnum.Pending
                   ? '__hide'
                   : ''
@@ -266,7 +261,7 @@ function TextExplorer() {
                 isLoading={
                   textExplorerData?.requestStatus === RequestStatusEnum.Pending
                 }
-                className='ImagesExplore__loader'
+                className='TextExplorer__loader'
                 height='100%'
                 loaderComponent={<TableLoader />}
               >
@@ -291,9 +286,6 @@ function TextExplorer() {
                           ? 'medium'
                           : 'large'
                       }
-                      // focusedState={
-                      //   imagesExploreData?.config?.images?.focusedState!
-                      // }
                       selectedRows={textExplorerData?.selectedRows}
                       sortOptions={textExplorerData?.groupingSelectOptions}
                       sortFields={textExplorerData?.config?.table.sortFields}
@@ -324,8 +316,6 @@ function TextExplorer() {
                       onRowHeightChange={textExplorerAppModel.onRowHeightChange}
                       //@TODO add hide sequence functionality
                       onRowsChange={textExplorerAppModel.onTextVisibilityChange}
-                      // onRowHover={imagesExploreAppModel.onTableRowHover}
-                      // onRowClick={imagesExploreAppModel.onTableRowClick}
                       onTableResizeModeChange={
                         textExplorerAppModel.onTableResizeModeChange
                       }
