@@ -33,8 +33,4 @@ jobs:
 
   trigger-packaging-workflow:
     needs: version-override
-    runs-on: ubuntu-latest
-    name: packaging workflow trigger
-    steps:
-      - name: workflow call
-        uses: ./.github/workflows/python-package.yml
+    uses: ./.github/workflows/python-package.yml
