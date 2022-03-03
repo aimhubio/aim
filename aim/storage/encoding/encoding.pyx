@@ -1,3 +1,6 @@
+# distutils: language = c++
+# cython: language_level = 3
+
 """Encodings for primitive values for AimObject-compatible data.
 
 This includes None, booleans, integer and floating-point numbers, strings,
@@ -7,22 +10,23 @@ The encodings are implemented `(key, value)` design in mind, so using them to
 stream and store in chunks is easy to manage.
 """
 
-from aim.storage.encoding.encoding_native import PATH_SENTINEL_CODE
-from aim.storage.encoding.encoding_native import (
+from aim.storage.encoding.encoding_native cimport PATH_SENTINEL_CODE
+from aim.storage.encoding.encoding_native cimport (
     encode_int64,
     encode_double,
     encode_utf_8_str,
     encode_int64_big_endian,
 )
-from aim.storage.encoding.encoding_native import (
+from aim.storage.encoding.encoding_native cimport (
     decode_int64,
     decode_double,
     decode_utf_8_str,
 )
-from aim.storage.encoding.encoding_native import decode_path  # noqa F401
-from aim.storage.utils import ArrayFlag, ArrayFlagType, ObjectFlag, ObjectFlagType, CustomObjectFlagType
-from aim.storage.types import AimObjectKey, AimObjectPath
+from aim.storage.encoding.encoding_native cimport decode_path  # noqa F401
+from aim.storage.utils import ArrayFlagType, ObjectFlagType, CustomObjectFlagType
+from aim.storage.utils import ArrayFlag, ObjectFlag
 from aim.storage.container import ContainerValue
+from aim.storage.types import AimObjectKey, AimObjectPath
 from aim.storage.types import BLOB
 
 from typing import Union, Any
@@ -35,20 +39,8 @@ from typing import Union, Any
 _PATH_SENTINEL = b'\xfe'
 assert _PATH_SENTINEL[0] == PATH_SENTINEL_CODE
 
-# We define a mapping for primitive types into a single bit
-# The types are going to be stored in a single byte, so 7 more bits are reserved
-_NONE = 0
-_BOOL = 1
-_INT = 2
-_FLOAT = 3
-_STRING = 4
-_BYTES = 5
-_ARRAY = 6
-_OBJECT = 7
-_CUSTOM_OBJECT = 8 | 7
 
-
-def encode(value: Any) -> ContainerValue:
+cpdef object encode(object value):
     """Automatically detect and encode the value into a buffer.
     This function is to encode only primitive objects.
 
@@ -57,90 +49,94 @@ def encode(value: Any) -> ContainerValue:
     The first byte of the buffer encodes type of the encoded value and the rest
     are for encoded content.
     """
+    cdef int type_id
+    cdef bytes encoding
+
     if isinstance(value, BLOB):
         return value.transform(encode)
 
     if value is None:
         # No need to encode a content for None-values
-        type_id = _NONE
+        type_id = FLAGS._NONE
         encoding = b''
     elif isinstance(value, bool):
         # Booleans are encoded in a single byte
         # 0 and 1 for False and True respectively
-        type_id = _BOOL
+        type_id = FLAGS._BOOL
         encoding = b'\x01' if value else b'\x00'
     elif isinstance(value, int):
         # We encode integers in signed 64-bit
-        type_id = _INT
+        type_id = FLAGS._INT
         encoding = encode_int64(value)
     elif isinstance(value, float):
         # We encode floats in double-precision
-        type_id = _FLOAT
+        type_id = FLAGS._FLOAT
         encoding = encode_double(value)
     elif isinstance(value, str):
         # Strings are stored in utf-8
-        type_id = _STRING
+        type_id = FLAGS._STRING
         encoding = encode_utf_8_str(value)
     elif isinstance(value, bytes):
         # Byte arrays / BLOBS can be used to encode arbitrary binary content
-        type_id = _BYTES
+        type_id = FLAGS._BYTES
         encoding = value
     elif isinstance(value, ArrayFlagType):
         # Array flag is used to denote non-finised object, expecting
         # encodings for its elements
-        type_id = _ARRAY
+        type_id = FLAGS._ARRAY
         encoding = b''
     elif isinstance(value, ObjectFlagType):
         # Object flag is used to denote non-finised object, expecting
         # encodings for its elements
-        type_id = _OBJECT
+        type_id = FLAGS._OBJECT
         encoding = b''
     elif isinstance(value, CustomObjectFlagType):
-        type_id = _CUSTOM_OBJECT
+        type_id = FLAGS._CUSTOM_OBJECT
         encoding = encode_utf_8_str(value.aim_name)
     else:
-        raise NotImplementedError(f'{value} of type {type(value)} not supported')
+        raise NotImplementedError
 
     # Finally, we prepend the content `encoding` with a single byte which
     # encodes the type of the value
-    type_byte = bytes([type_id])
-    return type_byte + encoding
+    cdef char* prefix = [type_id]
+    return <bytes>prefix[:1] + encoding
 
 
-def decode(buffer: ContainerValue):
+cpdef object decode(object buffer):
     """Automatically detect and decode the value from a buffer."""
 
     if isinstance(buffer, BLOB):
         return buffer.transform(decode)
 
     # First, we extract type_id and the content buffer
-    type_id = buffer[0]
-    buffer = buffer[1:]
+    cdef int type_id = buffer[0]
+    cdef bytes content_buffer = buffer[1:]
+    # TODO pass the whole buffer to decode_* functions with offset
 
     # We check for type_id and decode the content for the corresponding type
-    if type_id == _NONE:
+    if type_id == FLAGS._NONE:
         return None
-    elif type_id == _BOOL:
-        return buffer[0] != 0
-    elif type_id == _INT:
-        return decode_int64(buffer)
-    elif type_id == _FLOAT:
-        return decode_double(buffer)
-    elif type_id == _STRING:
-        return decode_utf_8_str(buffer)
-    elif type_id == _BYTES:
-        return buffer
-    elif type_id == _ARRAY:
+    elif type_id == FLAGS._BOOL:
+        return content_buffer[0] != 0
+    elif type_id == FLAGS._INT:
+        return decode_int64(content_buffer)
+    elif type_id == FLAGS._FLOAT:
+        return decode_double(content_buffer)
+    elif type_id == FLAGS._STRING:
+        return decode_utf_8_str(content_buffer)
+    elif type_id == FLAGS._BYTES:
+        return content_buffer
+    elif type_id == FLAGS._ARRAY:
         return ArrayFlag
-    elif type_id == _OBJECT:
+    elif type_id == FLAGS._OBJECT:
         return ObjectFlag
-    elif type_id == _CUSTOM_OBJECT:
-        return CustomObjectFlagType(decode_utf_8_str(buffer))
+    elif type_id == FLAGS._CUSTOM_OBJECT:
+        return CustomObjectFlagType(decode_utf_8_str(content_buffer))
     else:
         return None
 
 
-def encode_key(key: Union[int, str]):
+cpdef bytes encode_key(object key):
     """Encode the value as key in the path.
 
     This is different from what the general `encode()` will result.
@@ -155,16 +151,17 @@ def encode_key(key: Union[int, str]):
     However, in big-endiang encoding:
     `b'\\x00\\x00\\x00\\x00\\x00\\x00\\x03\\xe8' > b'\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\xf9'`
     """
+    prefix = <object>bytes([PATH_SENTINEL_CODE])
     if isinstance(key, str):
-        encoded = encode_utf_8_str(key)
+        encoded = encode_utf_8_str(<str>key)
         return encoded
     elif isinstance(key, int):
-        return _PATH_SENTINEL + encode_int64_big_endian(key)
+        return prefix + encode_int64_big_endian(key)
     else:
         raise ValueError(f'Value {key} of type {type(key)} is not supported')
 
 
-def encode_path(path: Union[AimObjectKey, AimObjectPath] = ()):
+cpdef bytes encode_path(object path):
     """Encode the path into a buffer.
     The encoding of path is designed to effectively use prefix-trees that may
     be used by storage engines.
@@ -183,6 +180,13 @@ def encode_path(path: Union[AimObjectKey, AimObjectPath] = ()):
     integer, as 1) no utf-8 encoded string may start with `PATH_SENTINEL`
                 2) the empty strings are not allowed
     """
+    cdef tuple path_tuple
     if isinstance(path, (int, str)):
-        path = (path,)
-    return b''.join([encode_key(key) + _PATH_SENTINEL for key in path])
+        path_tuple = (path,)
+    elif isinstance(path, list):
+        path_tuple = tuple(path)
+    elif isinstance(path, tuple):
+        path_tuple = path
+    else:
+        raise ValueError(f'Value {path} of type {type(path)} is not supported')
+    return b''.join([encode_key(key) + _PATH_SENTINEL for key in path_tuple])
