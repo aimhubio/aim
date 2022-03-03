@@ -20,10 +20,17 @@ function getTablePanelColumns(
     const columns: any = [];
     rawData.forEach((run: any) => {
       run.traces.forEach((trace: any) => {
+        const key = `${run.hash}.${trace.name}`;
         const column = {
           topHeader: run.props.name,
-          key: `${run.hash}.${trace.name}`,
-          pin: null,
+          key,
+          pin: order?.left?.includes(key)
+            ? 'left'
+            : order?.middle?.includes(key)
+            ? null
+            : order?.right?.includes(key)
+            ? 'right'
+            : null,
           content: <span>{trace.name}</span>,
         };
         columns.push(column);
@@ -45,7 +52,7 @@ function getTablePanelColumns(
         : 'left',
     },
     {
-      key: 'index',
+      key: 'batchIndex',
       content: <span>index</span>,
       topHeader: 'Index',
       pin: order?.left?.includes('index')

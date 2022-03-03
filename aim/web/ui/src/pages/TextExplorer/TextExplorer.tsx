@@ -139,8 +139,8 @@ function TextExplorer() {
                 ref={textExplorerData?.refs?.textTableRef}
                 fixed={false}
                 topHeader
-                columns={textExplorerData?.tablePanelColumns}
-                data={textExplorerData?.tablePanelData}
+                columns={textExplorerData?.tablePanel?.columns}
+                data={textExplorerData?.tablePanel?.data}
                 isLoading={false}
                 hideHeaderActions
                 estimatedRowHeight={32}
@@ -151,7 +151,14 @@ function TextExplorer() {
                   title: 'No Tracked Texts',
                   type: IllustrationsEnum.EmptyData,
                 }}
+                columnsOrder={
+                  textExplorerData?.tablePanel?.config?.columnsOrder
+                }
                 height='100%'
+                //methods
+                onManageColumns={
+                  textExplorerAppModel.onTablePanelColumnsOrderChange
+                }
               />
             </div>
             <ResizePanel
