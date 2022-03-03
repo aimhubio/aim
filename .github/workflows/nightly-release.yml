@@ -34,3 +34,5 @@ jobs:
   trigger-packaging-workflow:
     needs: version-override
     uses: ./.github/workflows/python-package.yml
+    with:
+      branch: nightly

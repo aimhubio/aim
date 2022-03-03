@@ -1,12 +1,22 @@
 name: aim packaging pipeline
 
-on: [workflow_call, workflow_dispatch]
+on:
+  workflow_call:
+    inputs:
+      branch:
+        required: true
+        type: string
+  workflow_dispatch:
 
 jobs:
   linux-dist:
     runs-on: ubuntu-latest
     name: Linux wheels build (using Docker)
     steps:
+      - name: Dump GitHub context
+        id: github_context_step
+        run: echo '${{ toJSON(github) }}'
+
       - name: Install Docker & pull images
         run: |
           apt update && apt install -y docker.io
@@ -16,13 +26,14 @@ jobs:
 
       - name: Checkout sources
         uses: actions/checkout@v2
+        with:
+          ref: ${{ inputs.branch }} || ${{ github.ref }}
 
       - name: Capture aim version
         id: capture-version
         run: |
           AIM_VERSION=$(< ./aim/VERSION)
           git branch
-          git config user.name
           echo '::set-output name=AIM_VERSION::$AIM_VERSION'
 
 #      - name: Use node v16
