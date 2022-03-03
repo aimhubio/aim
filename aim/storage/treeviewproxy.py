@@ -28,6 +28,7 @@ class ProxyTree(TreeView):
         self._resources: ProxyTreeAutoClean = None
 
         self._rpc_client = client
+        self._hash = sub
 
         kwargs = {
             'name': name,
@@ -46,7 +47,7 @@ class ProxyTree(TreeView):
         self._handler = handler
 
     def preload(self):
-        self._rpc_client.run_instruction(self._handler, 'preload')
+        self._rpc_client.run_instruction(self._hash, self._handler, 'preload')
 
     def view(
         self,
@@ -64,7 +65,7 @@ class ProxyTree(TreeView):
         self,
         path: Union[AimObjectKey, AimObjectPath] = ()
     ):
-        self._rpc_client.run_instruction(self._handler, 'make_array', (path,), is_write_only=True)
+        self._rpc_client.run_instruction(self._hash, self._handler, 'make_array', (path,), is_write_only=True)
 
     def collect(
         self,
@@ -72,26 +73,26 @@ class ProxyTree(TreeView):
         strict: bool = True,
         resolve_objects: bool = False
     ) -> AimObject:
-        return self._rpc_client.run_instruction(self._handler, 'collect', (path, strict, resolve_objects))
+        return self._rpc_client.run_instruction(self._hash, self._handler, 'collect', (path, strict, resolve_objects))
 
     def __delitem__(
         self,
         path: Union[AimObjectKey, AimObjectPath]
     ):
-        self._rpc_client.run_instruction(self._handler, '__delitem__', (path,), is_write_only=True)
+        self._rpc_client.run_instruction(self._hash, self._handler, '__delitem__', (path,), is_write_only=True)
 
     def __setitem__(
             self,
             path: Union[AimObjectKey, AimObjectPath],
             value: AimObject
     ):
-        self._rpc_client.run_instruction(self._handler, '__setitem__', (path, value), is_write_only=True)
+        self._rpc_client.run_instruction(self._hash, self._handler, '__setitem__', (path, value), is_write_only=True)
 
     def keys_eager(
             self,
             path: Union[AimObjectKey, AimObjectPath] = (),
     ) -> List[Union[AimObjectPath, AimObjectKey]]:
-        return self._rpc_client.run_instruction(self._handler, 'keys_eager', (path,))
+        return self._rpc_client.run_instruction(self._hash, self._handler, 'keys_eager', (path,))
 
     def keys(
         self,
@@ -107,7 +108,7 @@ class ProxyTree(TreeView):
         AimObjectKey,
         AimObject
     ]]:
-        return self._rpc_client.run_instruction(self._handler, 'items_eager', (path,))
+        return self._rpc_client.run_instruction(self._hash, self._handler, 'items_eager', (path,))
 
     def items(
         self,
@@ -126,7 +127,7 @@ class ProxyTree(TreeView):
         AimObjectPath,
         AimObject
     ]]:
-        return self._rpc_client.run_instruction(self._handler, 'iterlevel', (path, level))
+        return self._rpc_client.run_instruction(self._hash, self._handler, 'iterlevel', (path, level))
 
     def array(
         self,
@@ -139,13 +140,13 @@ class ProxyTree(TreeView):
         self,
         path: Union[AimObjectKey, AimObjectPath] = ()
     ) -> Tuple[AimObjectKey, AimObject]:
-        return self._rpc_client.run_instruction(self._handler, 'first', (path,))
+        return self._rpc_client.run_instruction(self._hash, self._handler, 'first', (path,))
 
     def last(
         self,
         path: Union[AimObjectKey, AimObjectPath] = ()
     ) -> Tuple[AimObjectKey, AimObject]:
-        return self._rpc_client.run_instruction(self._handler, 'last', (path,))
+        return self._rpc_client.run_instruction(self._hash, self._handler, 'last', (path,))
 
     def finalize(
         self,
