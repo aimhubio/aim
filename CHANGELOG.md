@@ -1,6 +1,6 @@
 # Changelog
 
-## 3.6.3
+## 3.6.3 Mar 4, 2022
 
 - Fix UI rendering issue on colab (rubenaprikyan)
 
