@@ -235,6 +235,12 @@ async function getRunTraceBatch(isInitial = false) {
                   ? 0
                   : 1
               ] ?? 1;
+            if (
+              parsed.processedDataType !== VisualizationMenuTitles.figures &&
+              queryData.inputs[key] === 0
+            ) {
+              queryData.inputs[key] = 1;
+            }
           } else {
             queryData.inputs[key] = queryData.inputs[key] ?? 1;
           }

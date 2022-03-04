@@ -422,7 +422,7 @@ export function reformatArrayQueries(
   const formattedQueryObject: Record<string, string> = {};
   Object.keys(queryObj).forEach((key) => {
     const item = queryObj[key];
-    formattedQueryObject[key] = `${item[0]}:${item[1]}`;
+    formattedQueryObject[key] = `${item[0]}:${item[1] + 1}`;
   });
 
   return formattedQueryObject;
