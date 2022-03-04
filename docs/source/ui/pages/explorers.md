@@ -1,4 +1,4 @@
-## Explorers
+# Explorers
 
 Explorers will help you to compare 1000s of AI experiments with a few clicks.
 Explorers are the main tools that Aim is built around.
@@ -6,9 +6,9 @@ Explorers are the main tools that Aim is built around.
 In this section we will go through the Aim explorers, introduce their features and how to use them.
 
 
-### Metrics Explorer
+# Metrics Explorer
 
-#### Overview
+## Overview
 
 Use Metrics explorer to search and compare 1000s of ML training metrics.
 
@@ -43,7 +43,7 @@ An overview of what you can do with queried metrics - the modifiers:
 
 <img src="https://docs-blobs.s3.us-east-2.amazonaws.com/images/ui/pages/metrics-explorer/metrics.png" style="border-radius: 8px; border: 1px solid #E8F1FC" alt="metrics_explorer" />
 
-#### Select metrics and query runs
+## Select metrics and query runs
 On the Metrics Explorer, there is `+ Metrics` button.
 Once pressed, a dropdown will appear with all your tracked metrics and their contexts flattened.
 The dropdown is searchable - so you can get to your metric of interest within a stroke!
@@ -56,7 +56,7 @@ Search runs with [Aim QL](../../using/search.html)
 
 <img src="https://docs-blobs.s3.us-east-2.amazonaws.com/images/ui/pages/metrics-explorer/select_form_filter.png" style="border-radius: 8px; border: 1px solid #E8F1FC" alt="select_form_filter" />
 
-#### Advanced Search mode
+## Advanced Search mode
 
 Once you press the `Enable advanced search mode` button underneath the main `Search` button, it will enable the full Aim QL search editor - to query the metrics, the runs via full Aim QL
 
@@ -67,7 +67,7 @@ and 1e-5 < run.hparams.learning_rate < 1e-2`
 
 <img src="https://docs-blobs.s3.us-east-2.amazonaws.com/images/ui/pages/metrics-explorer/select_form_advanced_search.png" style="border-radius: 8px; border: 1px solid #E8F1FC" alt="select_form_advanced_search" />
 
-#### Group by any parameter
+## Group by any parameter
 
 Grouping selected metrics by any tracked params will allow you to quickly distinguish the most impactful params, decisions you have made (the preprocessing steps, the hyperparams etc).
 
@@ -78,7 +78,7 @@ The parameters include not only the ones you have tracked but also the native Ai
 
 There are several ways you can group the selected metrics and runs - by color, by stroke and by chart.
 
-##### Group by Color
+### Group by Color
 Use this to divide the selected metrics into different clusters based on selected values of params.
 Each cluster gets colored differently.
 
@@ -94,19 +94,20 @@ Here are the features in the advanced mode:
 
 <img src="https://docs-blobs.s3.us-east-2.amazonaws.com/images/ui/pages/metrics-explorer/groupby_color.png" style="border-radius: 8px; border: 1px solid #E8F1FC" alt="groupby_color" />
 
-##### Group by Stroke
+### Group by Stroke
 Groups the metrics by a stroke style.
 Has all the rest of the other features available on the color grouping except the advanced mode.
 
 <img src="https://docs-blobs.s3.us-east-2.amazonaws.com/images/ui/pages/metrics-explorer/groupby_stroke.png" style="border-radius: 8px; border: 1px solid #E8F1FC" alt="groupby_stroke" />
 
-##### Group by Chart
+### Group by Chart
 The end result of using this feature: divides into subplots based on the value of the selected params.
 Why this is a grouping mechanism? It groups the metrics belonging to the same group into separate charts.
 
 <img src="https://docs-blobs.s3.us-east-2.amazonaws.com/images/ui/pages/metrics-explorer/groupby_chart.png" style="border-radius: 8px; border: 1px solid #E8F1FC" alt="groupby_chart" />
 
-#### Aggregate metrics
+
+## Aggregate metrics
 
 The metrics aggregation helps to quickly see the trends of each individual group of metrics. See more about [metrics grouping](#group-by-any-parameter).
 
@@ -131,11 +132,12 @@ Pls see the screenshot:
 
 <img src="https://docs-blobs.s3.us-east-2.amazonaws.com/images/ui/pages/metrics-explorer/aggr_line_mean.png" style="border-radius: 8px; border: 1px solid #E8F1FC" alt="aggr_line_mean" />
 
-### X-Axis properties
+
+## X-Axis properties
 
 X-Axis properties section is for controlling density of metrics x-axis values and aligning metrics by time, epoch or another metric.
 
-#### Density:
+### Density:
 
 The following types of metrics density are available: [Minimum](#minimum), [Medium](#medium), [Maximum](#maximum).
 By default, the metrics density is set to [Maximum](#maximum).
@@ -144,7 +146,7 @@ By default, the metrics density is set to [Maximum](#maximum).
 - setting metrics density to Medium will query metrics by 250 point.
 - setting metrics density to Maximum will query metrics by 500 point.
 
-#### Alignment:
+### Alignment:
 
 The following types of metrics alignment are available: [Step](#step), [Epoch](#epoch), [Relative Time](#relative-time), [Absolute Time](#absolute-time) and [Custom Metric](#custom-metric).
 By default, the metrics are aligned by [Step](#step).
@@ -156,14 +158,14 @@ By default, the metrics are aligned by [Step](#step).
 
 <img src="https://docs-blobs.s3.us-east-2.amazonaws.com/images/ui/pages/metrics-explorer/alignment_relative.png" style="border-radius: 8px; border: 1px solid #E8F1FC" alt="alignment_relative" />
 
-
 - By setting metrics alignment to Absolute Time, x-axis values will be represented in the following date format `HH:mm:ss D MMM, YY`, for the period since the first run until the last run.
 
 <img src="https://docs-blobs.s3.us-east-2.amazonaws.com/images/ui/pages/metrics-explorer/alignment_absolute.png" style="border-radius: 8px; border: 1px solid #E8F1FC" alt="alignment_absolute" />
 
 - By setting metrics alignment to Custom Metric, x-axis values will represent selected metric values, so you can detect correlations between the queried metrics and the selected metrics.
 
-#### Axes Scale
+
+## Axes Scale
 
 Axes Scale allows to choose between [linear](https://en.wikipedia.org/wiki/Linear_scale) and [logarithmic](https://en.wikipedia.org/wiki/Logarithmic_scale) scales.
 By default, axes' scales are [Linear](#linear-scale).
@@ -172,96 +174,104 @@ Example: X-axis scale: Linear, Y-axis scale: Log
 
 <img src="https://docs-blobs.s3.us-east-2.amazonaws.com/images/ui/pages/metrics-explorer/y_axis_scale_log.png" style="border-radius: 8px; border: 1px solid #E8F1FC" alt="y-axis-scale-log" />
 
-#### Chart Smoothing
+## Chart Smoothing
 
 While smoothing the chart, the data points are modified so that the individual points that are higher than the adjacent points (presumably because of noise) are reduced, and points that are lower than the adjacent points are increased leading to a smoother signal.
 You can select between 2 curve interpolation methods: Linear or Cubic.
 By default, chart smoothing is set to Linear in [Exponential moving average](#exponential-moving-average) mode and curve interpolation method.
 
-#### Exponential moving average
+### Exponential moving average
 
 [Exponential moving average](https://en.wikipedia.org/wiki/Moving_average), also known as an exponentially weighted moving average (EWMA),
 is a first-order infinite impulse response filter that applies weighting factors which decrease exponentially.
 
 <img src="https://docs-blobs.s3.us-east-2.amazonaws.com/images/ui/pages/metrics-explorer/smoothing_ema.png" style="border-radius: 8px; border: 1px solid #E8F1FC" alt="smoothing_ema" />
 
-##### Centered moving average
+### Centered moving average
 
 When you center the moving averages, the data points are placed at the center of the range rather than the end of it.
 This is done to position the moving average values at their central positions in time.
 
 <img src="https://docs-blobs.s3.us-east-2.amazonaws.com/images/ui/pages/metrics-explorer/smoothing_cma.png" style="border-radius: 8px; border: 1px solid #E8F1FC" alt="smoothing_cma" />
 
-#### Ignore outliers
+
+## Ignore outliers
 
 An outlier is an observation that lies an abnormal distance from other values in a random sample from a population. Excluding outliers might increase the statistical significance of your results. By default, outliers are ignored.
 
 <img src="https://docs-blobs.s3.us-east-2.amazonaws.com/images/ui/pages/metrics-explorer/ignore_outliers_off.png" style="border-radius: 8px; border: 1px solid #E8F1FC" alt="ignore-outliers-off" />
 
-#### Highlight Modes
 
-Highlighting functionality is useful for filtering metrics and highlight only hovered metric.
-Following types of highlighting mode are available: [Highlight Off](#highlight-off), [Highlight Metric on Hover](#highlight-metric-on-hover), and [Highlight Run on Hover](#highlight-run-on-hover).
-By default, highlighting mode is the [Highlight Run on Hover](#highlight-run-on-hover).
+## Highlight Modes
 
-##### Highlight Off
+This functionality is useful for highlighting the lines you're hovering over.
+The following types of highlighting modes are available: [Highlight Run on Hover](#highlight-run-on-hover), [Highlight Metric on Hover](#highlight-metric-on-hover), and [Highlight Off](#highlight-off).
+The default highlighting mode is [Highlight Run on Hover](#highlight-run-on-hover).
 
-By setting Highlight mode Off, there is no highlighting functionality on hover.
 
-<img src="https://docs-blobs.s3.us-east-2.amazonaws.com/images/ui/pages/metrics-explorer/highlight_off.png" style="border-radius: 8px; border: 1px solid #E8F1FC" alt="highlight_off" />
+### Highlight Run on Hover
 
-##### Highlight Metric on Hover
-
-By setting Highlight mode Metric on Hover, mouse point closest metric highlights and other metrics displays with opacity.
-
-<img src="https://docs-blobs.s3.us-east-2.amazonaws.com/images/ui/pages/metrics-explorer/highlight_metric.png" style="border-radius: 8px; border: 1px solid #E8F1FC" alt="highlight_metric" />
-
-##### Highlight Run on Hover
-
-By setting Highlight mode Run on Hover, mouse point closest metric highlights and highlighted metric corresponding run also highlights other metrics displays with opacity.
+This mode highlights all run-related information on the chart you're hovering over, but also on the other charts that contain metrics from the highlighted run. Non hovered runs are displayed with opacity.
 
 <img src="https://docs-blobs.s3.us-east-2.amazonaws.com/images/ui/pages/metrics-explorer/highlight_run.png" style="border-radius: 8px; border: 1px solid #E8F1FC" alt="highlight_run" />
 
-#### Set tooltip parameters
+### Highlight Metric on Hover
 
-You can select tooltip parameters to show params and values in tooltip Params section.
-You can select hide or show button to display or hide tooltip on hover.
+This mode highlights only the hovered metric.  Non hovered metrics are displayed with opacity.
 
-<img src="https://docs-blobs.s3.us-east-2.amazonaws.com/images/ui/pages/metrics-explorer/tooltip_parameters_popover.png" style="border-radius: 8px; border: 1px solid #E8F1FC" alt="tooltip-parameters-popover" />
+<img src="https://docs-blobs.s3.us-east-2.amazonaws.com/images/ui/pages/metrics-explorer/highlight_metric.png" style="border-radius: 8px; border: 1px solid #E8F1FC" alt="highlight_metric" />
+
+### Highlight Off
+
+By setting Highlight mode Off, no highlighting is applied on hover.
+
+
+
+## Set tooltip parameters
+
+Tooltip keeps the key information visible when hovering over charts. You can select what information to add to the toolti in tooltip 'Parameters' section.
 
 <img src="https://docs-blobs.s3.us-east-2.amazonaws.com/images/ui/pages/metrics-explorer/tooltip_select_parameters.png" style="border-radius: 8px; border: 1px solid #E8F1FC" alt="select-tooltip-parameters" />
 
-#### Apply zoom on charts
+You can also set the tooltip to hidden if needed.
+<img src="https://docs-blobs.s3.us-east-2.amazonaws.com/images/ui/pages/metrics-explorer/tooltip_parameters_popover.png" style="border-radius: 8px; border: 1px solid #E8F1FC" alt="tooltip-parameters-popover" />
 
-##### Zoom In
+## Apply zoom on charts
 
-<img src="https://docs-blobs.s3.us-east-2.amazonaws.com/images/ui/pages/metrics-explorer/zoom_in_popover.png" style="border-radius: 8px; border: 1px solid #E8F1FC" alt="zoom-in-popover.png" />
+## Zoom In
+
+Zoom in has 2 options: single zoom in and multiple zoom in.
+- single zoom in allows to zoom only one time on a given chart
+- multiple zoom in allows to zoom unlimeted times on a given chart
 
 <img src="https://docs-blobs.s3.us-east-2.amazonaws.com/images/ui/pages/metrics-explorer/zoom_in_action.png" style="border-radius: 8px; border: 1px solid #E8F1FC" alt="zoom-in-action.png" />
 
 <img src="https://docs-blobs.s3.us-east-2.amazonaws.com/images/ui/pages/metrics-explorer/zoom_out.png" style="border-radius: 8px; border: 1px solid #E8F1FC" alt="zoom-out.png" />
 
-##### Zoom Out
+## Zoom Out
+Zoom out has 2 options: zoom out and reset zooming. 
+- zoom out will cancel a single zoom in action
+- reset zooming will reset the chart to its intial scale. 
 
 <img src="https://docs-blobs.s3.us-east-2.amazonaws.com/images/ui/pages/metrics-explorer/zoom_out_popover.png" style="border-radius: 8px; border: 1px solid #E8F1FC" alt="zoom_out_popover" />
 
-#### Export chart as image
 
-Metric explorer also, gives ability to export your chart as image.
-By clicking `export button` from control panel, will be opened chart preview modal.
-You can change exportable chart `image width`, `single chart height`, set `image name` and `format`.
+## Export chart as image
+
+Metric explorer gives ability to export your chart as image.
+Clicking `export button` from control panel will open chart preview modal.
+You can change exportable charts' `image width`, `single chart height`, set `image name` and `format`.
+The following formats of chart exports are available: `SVG`, `JPEG`, `PNG`.
 
 <img src="https://docs-blobs.s3.us-east-2.amazonaws.com/images/ui/pages/metrics-explorer/export_preview.png" style="border-radius: 8px; border: 1px solid #E8F1FC" alt="export_preview" />
 
-Following formats of chart export are available: `SVG`, `JPEG`, `PNG`.
 
-<img width="100" src="https://docs-blobs.s3.us-east-2.amazonaws.com/images/ui/pages/metrics-explorer/export_format.png" style="border-radius: 8px; border: 1px solid #E8F1FC" alt="export-format" />
 
-### Images Explorer
+# Images Explorer
 
-#### Overview
+## Overview
 
-Track intermediate images search easily by using select form functional compare them on the Images Explorer by using reach controls panel.
+Images Explorer allows to search and compare the intermediate images you've tracked through Aim's rich controls panel.
 
 <img alt="Images explore overview" style="border-radius: 8px; border: 1px solid #E8F1FC" src="https://docs-blobs.s3.us-east-2.amazonaws.com/images/ui/pages/images-explore/images-explore.png">
 
@@ -269,96 +279,77 @@ Features:
 
 - [Easily query any image](#query-any-image)
 - [Group images by run parameters, step and index](#group-image-by-run-parameters)
-- [Use controls from right control panel to configure workspace](#image-explorer-right-controls-panel)
+- [Use controls from the control panel to configure workspace](#image-explorer-right-controls-panel)
   - [Image properties control](#images-properties-control)
   - [Images sorting control](#images-sorting-control)
   - [Images group stacking control](#images-group-stacking-control)
   - [Images tooltip params control](#set-tooltip-parameters)
 
-#### Query any image
 
-Use select form to easily query any image. There are two option to query images using dropdown, by using [Aim QL](../../using/search.html) language and advance mode for [Aim QL](../../using/search.html).
+## Query images
 
-<img alt="Images explore overview" style="border-radius: 8px; border: 1px solid #E8F1FC" src="https://docs-blobs.s3.us-east-2.amazonaws.com/images/ui/pages/images-explore/images-explore-select-form.png">
-
-###### How to use select form?
-
-- Click on Images button
-- Select options you are want to use in query
-- Click on the Search button
+On the Images Explorer, there is + Images button. Once pressed, a dropdown will appear with all your tracked images and their contexts flattened. The dropdown is searchable - so you can get to your metric of interest within a stroke!
 
 <img alt="Images explore overview" style="border-radius: 8px; border: 1px solid #E8F1FC" src="https://docs-blobs.s3.us-east-2.amazonaws.com/images/ui/pages/images-explore/images-select-dropdown.png">
 
-###### How to reset select form value?
+The Search bar is located below the + Images button. It allows to do a pythonic query (that is eval-ed as python statement) over every param you have tracked. Search runs with [Aim QL](../../using/search.html)
 
-<img alt="Images explore overview" style="border-radius: 8px; border: 1px solid #E8F1FC" src="https://docs-blobs.s3.us-east-2.amazonaws.com/images/ui/pages/images-explore/images-explore-select-form-reset.png">
+<img alt="Images explore overview" style="border-radius: 8px; border: 1px solid #E8F1FC" src="https://docs-blobs.s3.us-east-2.amazonaws.com/images/ui/pages/images-explore/images-explore-select-form.png">
 
-###### How to use advanced query mode?
+### Advanced Search mode
 
-- Click on pencel icon in the right side of select form to show input
-- Type advance [Aim QL](../../using/search.html) query
-- Click on the Search button
+Once you press the 'Enable advanced search mode' button underneath the main 'Search' button, it will enable the full Aim QL search editor - to query the metrics, the runs via full [Aim QL](../../using/search.html)
 
 <img alt="Images explore overview" style="border-radius: 8px; border: 1px solid #E8F1FC" src="https://docs-blobs.s3.us-east-2.amazonaws.com/images/ui/pages/images-explore/images-explore-query-advanced-mode-on.png">
 
-#### Group image by run parameters
 
-Use select grouping dropdown which is located in the right top corner of the image explore page.
+## Group by any parameter
 
-<img alt="Images explore overview" style="border-radius: 8px; border: 1px solid #E8F1FC" src="https://docs-blobs.s3.us-east-2.amazonaws.com/images/ui/pages/images-explore/grouping-button.png">
+Grouping selected images by any tracked params will allow you to quickly distinguish the most impactful params, decisions you have made (the preprocessing steps, the hyperparams etc).
 
-###### How to use image grouping?
+The parameters include not only the ones you have tracked but also the native Aim objects too such as
 
-- Click on grouping button
-- Select fields by which you want to groupe images
+- 'metric.name'
+- 'metric.context.[context_key]'
+- 'run.hash'
 
-Grouping will be apply after each field selection also you can select grouping mode (Group or Reverse)
+### How to use image grouping?
+
+Use select grouping dropdown which is located in the right top corner of the image explorer page. Select fields by which you want to group images. Grouping will be apply after each field selection.
 
 <img alt="Images explore overview" style="border-radius: 8px; border: 1px solid #E8F1FC" src="https://docs-blobs.s3.us-east-2.amazonaws.com/images/ui/pages/images-explore/grouping-with-opened-dropdown.png">
 
-#### Image explorer right controls panel
 
-Any change in controls will help to explore images better on the workspace
+## Image explorer controls panel
 
-#### Images size manipulation control
+### Image properties
 
-- Click on image property button
-- Select value from dropdown to align image. (by default dropdown value is `Height`). Use slider to configure value for scale relative to window size by default scale value is `15%`.
+'Image properties' allows to select 2 values: image size and image smoothness.
 
-  - By height
+1. Image size. Select the parameter by which you'd like to align images: `Height`, `Width` or `Original size` (the default parameter is `Height`). Use the slider to configure the scale relative to the window size.
+2. Image smoothness. The default value of this control is `Pixelated`, you can change it to `Smoother`
 
-    <img alt="Images explore overview" style="border-radius: 8px; border: 1px solid #E8F1FC" src="https://docs-blobs.s3.us-east-2.amazonaws.com/images/ui/pages/images-explore/images-size-by-height.png">
+<img alt="Images explore overview" style="border-radius: 8px; border: 1px solid #E8F1FC" src="https://docs-blobs.s3.us-east-2.amazonaws.com/images/ui/pages/images-explore/images-size-by-height.png">
 
-  - By width
+### Images sorting 
 
-    <img alt="Images explore overview" style="border-radius: 8px; border: 1px solid #E8F1FC" src="https://docs-blobs.s3.us-east-2.amazonaws.com/images/ui/pages/images-explore/images-size-by-width.png">
+This functionality allows to sort images by params and/or metrics you've tracked. 
 
-  - Original size
-
-    <img alt="Images explore overview" style="border-radius: 8px; border: 1px solid #E8F1FC" src="https://docs-blobs.s3.us-east-2.amazonaws.com/images/ui/pages/images-explore/images-size-by-original-size.png">
-
-- Use image rendering variation by default value of this control is `Pixelated`
-
- <img alt="Images explore overview" style="border-radius: 8px; border: 1px solid #E8F1FC" src="https://docs-blobs.s3.us-east-2.amazonaws.com/images/ui/pages/images-explore/images-rendering.png">
-
-#### Images sorting control
-
-- Click on image sorting button
-- Select fields for sorting images. Selection ordering is meaningful and data will be sorting by selection order. Bellow is visible Ordered By list where contains all selected fields from dropdown. You can remove any already selected field by clicking on `x` icon or change sorting direction by clicking radio button Asc or Desc. Default selected direction is Asc.
-- For reset all existing sorting fields you can simply click on Reset Sorting button
+Select fields by which you'd like to sort images. Selection order is meaningful as data will be sorted by selection order.You can remove selected fields by clicking on `x` icon or change the sorting direction by clicking radio button Asc or Desc. Default direction is Asc.
+To reset all existing sorting fields you can simply click on `Reset Sorting` button
 
 <img alt="Images sorting popover" style="border-radius: 8px; border: 1px solid #E8F1FC" src="https://docs-blobs.s3.us-east-2.amazonaws.com/images/ui/pages/images-explore/images-explore-sorting-desc.png">
 
-#### Set tooltip parameters
+### Set tooltip parameters
 
-You can select tooltip parameters to show params and values in tooltip Params section.
-You can select hide or show button to display or hide tooltip on hover.
+Tooltip keeps the key information visible when hovering over charts. You can select what information to add to the toolti in tooltip 'Parameters' section.
 
 <img src="https://docs-blobs.s3.us-east-2.amazonaws.com/images/ui/pages/metrics-explorer/tooltip_parameters_popover.png" style="border-radius: 8px; border: 1px solid #E8F1FC" alt="tooltip-parameters-popover" />
 
-### Params Explorer
 
-#### Overview
+# Params Explorer
+
+## Overview
 
 Params explorer helps you to represent high dimensional data as a multi-dimensional visualization.
 Features:
@@ -370,7 +361,7 @@ Features:
 
 <img style="border-radius: 8px; border: 1px solid #E8F1FC" alt="Params explore" src="https://docs-blobs.s3.us-east-2.amazonaws.com/images/ui/pages/params-explore/1.png">
 
-##### Query any metrics and params
+## Query any metrics and params
 
 Select params and metrics from dropdown
 
@@ -380,30 +371,30 @@ Search runs with [Aim QL](../../using/search.html)
 
 <img style="border-radius: 8px; border: 1px solid #E8F1FC" alt="Search runs" src="https://docs-blobs.s3.us-east-2.amazonaws.com/images/ui/pages/params-explore/3.png">
 
-##### Grouping
+## Grouping
 
 Group by color, stroke, or chart with selected parameters
 
 <img style="border-radius: 8px; border: 1px solid #E8F1FC" alt="Grouping" src="https://docs-blobs.s3.us-east-2.amazonaws.com/images/ui/pages/params-explore/4.png">
 
-##### Curve interpolation
+## Curve interpolation
 
-By clicking on the Curve interpolation button in the Controls panel, it's possible to make lines from straight to curve to show
-correlations between non-adjacent axes.
+By clicking on the Curve interpolation button in the Controls panel, it's possible to change lines from straight to curve to show correlations between non-adjacent axes.
 
 <img style="border-radius: 8px; border: 1px solid #E8F1FC" alt="Curve interpolation" src="https://docs-blobs.s3.us-east-2.amazonaws.com/images/ui/pages/params-explore/5.png">
 
-##### Color indicator
+## Color indicator
 
-By clicking on the Color indicator button in the Controls panel, it's possible to turn on lines gradient coloring by the last dimension.
+Clicking on the Color indicator button in the Controls panel will turn on lines gradient coloring. The coloring is based on the last dimension of your selection.
 
 <img style="border-radius: 8px; border: 1px solid #E8F1FC" alt="Color indicator" src="https://docs-blobs.s3.us-east-2.amazonaws.com/images/ui/pages/params-explore/6.png">
 
-### Scatters Explorer
 
-Scatter explorer gives ability to visualize correlations between metric last value data with hyper-parameter.
+# Scatters Explorer
 
-It represents graph where corresponding values from a set of data are placed as points on a coordinate plane. A relationship between the points is sometimes shown to be positive, negative, strong, or weak.
+Scatter explorer allows to visualize correlations between metrics' last values and hyper-parameters.
+
+It represents a graph where thecorresponding values from a set of data are placed as points on a coordinate plane.
 
 <img alt="scatters-explore" style="border-radius: 8px; border: 1px solid #E8F1FC" src="https://docs-blobs.s3.us-east-2.amazonaws.com/images/ui/pages/scatters-explorer/scatters.png">
 
@@ -414,23 +405,14 @@ Abilities provided by Scatter explorer
 - [Represent the points with trend line](#trend-line)
 - [Export chart](#export-chart)
 
-##### Align metric last value data with hyper-parameter
+## Align metrics' last values with hyper-parameters
 
-Select params and metrics from `X` and `Y` axes dropdowns to align metric last value data with hyper-parameter.
-
-- X axis
-
-<img alt="x axis dropdown" style="border-radius: 8px; border: 1px solid #E8F1FC" src="https://docs-blobs.s3.us-east-2.amazonaws.com/images/ui/pages/scatters-explorer/select-x-axis.png">
-
-- Y axis
-
-<img alt="y axis dropdown" style="border-radius: 8px; border: 1px solid #E8F1FC" src="https://docs-blobs.s3.us-east-2.amazonaws.com/images/ui/pages/scatters-explorer/select-y-axis.png">
-
-Also, you can search runs with [Aim QL](../../using/search.html)
+Select params and metrics from `X` and `Y` axes dropdowns to align metric last values with hyper-parameters.
+You can as well filter runs with [Aim QL](../../using/search.html)
 
 <img alt="search runs" style="border-radius: 8px; border: 1px solid #E8F1FC" src="https://docs-blobs.s3.us-east-2.amazonaws.com/images/ui/pages/scatters-explorer/scatters-search.png">
 
-##### Grouping
+## Grouping
 
 Easily group data by color and chart with selected parameters.
 
@@ -442,25 +424,20 @@ Easily group data by color and chart with selected parameters.
 
 <img alt="Grouping chart line" style="border-radius: 8px; border: 1px solid #E8F1FC" src="https://docs-blobs.s3.us-east-2.amazonaws.com/images/ui/pages/scatters-explorer/scatters-color-group.png">
 
-##### Trend line
+## Trend line
 
-A trend line is a straight line that best represents the points on a `scatter plot`. The trend line may go through some points but need not go through them all.
+The trend line is a straight line that best represents the points on a `scatter plot`. The trend line may go through some points but need not go through them all.
 
 <img alt="trend line" style="border-radius: 8px; border: 1px solid #E8F1FC" src="https://docs-blobs.s3.us-east-2.amazonaws.com/images/ui/pages/scatters-explorer/trendline.png">
 
-From trend line options popover you can change regression from `Linear` (by default) to `LOESS`(locally weighted smoothing), which creates a smooth line through a `scatter plot` to help you to see relationship between variables and foresee trends. Also, you can change the `bandwidth` with `slider`
+From trend line options popover you can change regression from `Linear` (by default) to `LOESS`(locally weighted smoothing), which creates a smooth line through a `scatter plot` to help you see the relationship between variables and foresee trends. You can change the `bandwidth` using the slider.
 
 <img alt="trend line loess" style="border-radius: 8px; border: 1px solid #E8F1FC" src="https://docs-blobs.s3.us-east-2.amazonaws.com/images/ui/pages/scatters-explorer/trendline-loess.png">
 
-##### Export chart
+## Export chart
 
-Scatter explorer also, gives ability to `export` your chart as `image`.
+Scatter explorer gives ability to export your chart as image. Clicking export button from control panel will open chart preview modal. You can change exportable charts' `image width`, `single chart height`, set `image name` and `format`.
 
-By clicking `export button` from control panel, will be opened chart preview modal.
-You can change exportable chart `image width`, `single chart height`, set `image name` and `format`.
+The following image formats are available for export: `SVG`, `JPEG`, `PNG`.
 
 <img alt="export chart" style="border-radius: 8px; border: 1px solid #E8F1FC" src="https://docs-blobs.s3.us-east-2.amazonaws.com/images/ui/pages/scatters-explorer/export-chart.png">
-
-Following image formats are available export: `SVG`, `JPEG`, `PNG`.
-
-<img width="100" alt="export format" style="border-radius: 8px; border: 1px solid #E8F1FC" src="https://docs-blobs.s3.us-east-2.amazonaws.com/images/ui/pages/scatters-explorer/export-format.png">
