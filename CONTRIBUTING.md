@@ -1,92 +1,80 @@
 # Contributing
 
-When contributing to this repository, please first discuss the change you wish to make via issue,
-email, or any other method with the owners of this repository before making a change. 
+Thanks for your interest in helping improve Aim! 🎉
 
-Please note we have a code of conduct, please follow it in all your interactions with the project.
+## Before Contributing
 
-## Pull Request Process
+As with most projects, prior to starting to code on a bug fix or feature request, please post in the respective GitHub issue saying you want to volunteer, and then wait for a positive response. And if there is no issue for it yet, create it first.
 
-1. Ensure any install or build dependencies are removed before the end of the layer when doing a 
-   build.
-2. Update the README.md with details of changes to the interface, this includes new environment 
-   variables, exposed ports, useful file locations and container parameters.
-3. Increase the version numbers in any examples files and the README.md to the new version that this
-   Pull Request would represent. The versioning scheme we use is [SemVer](http://semver.org/).
-4. You may merge the Pull Request in once you have the sign-off of two other developers, or if you 
-   do not have permission to do that, you may request the second reviewer to merge it for you.
+This helps make sure:
+1. Two people aren't working on the same thing.
+2. This is something Aim's maintainers believe should be implemented/fixed.
+3. Any API, UI, or deeper architectural changes that need to be implemented have been fully thought through by the community together with Aim's maintainers.
 
-## Code of Conduct
+Please follow [Aim Contributor Covenant Code of Conduct](./CODE_OF_CONDUCT.md) in all your interactions with the project.
 
-### Our Pledge
+## Governance
 
-In the interest of fostering an open and welcoming environment, we as
-contributors and maintainers pledge to making participation in our project and
-our community a harassment-free experience for everyone, regardless of age, body
-size, disability, ethnicity, gender identity and expression, level of experience,
-nationality, personal appearance, race, religion, or sexual identity and
-orientation.
 
-### Our Standards
+## Contribution Process
 
-Examples of behavior that contributes to creating a positive environment
-include:
+The Aim contribution process starts with filing a GitHub issue. Aim defines six categories of issues: enhancements (feature requests), bug reports, code health improvements, peformance improvements, tests, questions.
 
-* Using welcoming and inclusive language
-* Being respectful of differing viewpoints and experiences
-* Gracefully accepting constructive criticism
-* Focusing on what is best for the community
-* Showing empathy towards other community members
+Aim maintainers actively triage and respond to GitHub issues. In general, we recommend waiting for feebdack from an Aim maintainer or community member before proceeding to implement a feature or patch. This is particularly important for significant changes, and will typically be labeled during triage with `phase / exploring`.
 
-Examples of unacceptable behavior by participants include:
+After you have agreed upon an implementation strategy for your feature or patch with an Aim maintainer, the next step is to introduce your changes as a pull request against the Aim Repository.
 
-* The use of sexualized language or imagery and unwelcome sexual attention or
-advances
-* Trolling, insulting/derogatory comments, and personal or political attacks
-* Public or private harassment
-* Publishing others' private information, such as a physical or electronic
-  address, without explicit permission
-* Other conduct which could reasonably be considered inappropriate in a
-  professional setting
+Once your pull request against the Aim Repository has been merged, your corresponding changes will be automatically included in the next Aim release. Every change is listed in the Aim release notes and [CHANGELOG](./CHANGELOG.md).
 
-### Our Responsibilities
+Congratulations, you have just contributed to Aim. We appreciate your contribution!
 
-Project maintainers are responsible for clarifying the standards of acceptable
-behavior and are expected to take appropriate and fair corrective action in
-response to any instances of unacceptable behavior.
+## Developing and Testing
 
-Project maintainers have the right and responsibility to remove, edit, or
-reject comments, commits, code, wiki edits, issues, and other contributions
-that are not aligned to this Code of Conduct, or to ban temporarily or
-permanently any contributor for other behaviors that they deem inappropriate,
-threatening, offensive, or harmful.
+The majority of the Aim product areas is developed in Python/Cython. This includes the Storage, SDK, Tracking Server, CLI, API. Aim UI is a Web app mostly built with TypeScript and React.
 
-### Scope
+### Developing UI
 
-This Code of Conduct applies both within project spaces and in public spaces
-when an individual is representing the project or its community. Examples of
-representing a project or community include using an official project e-mail
-address, posting via an official social media account, or acting as an appointed
-representative at an online or offline event. Representation of a project may be
-further defined and clarified by project maintainers.
+Aim UI is written in TypeScript. `npm` is required to build Aim UI and to run in DEV mode.
+You can verify that `npm` is on the PATH by running `npm -v`, and
+[install npm](https://www.npmjs.com/get-npm) if needed.
 
-### Enforcement
+#### Style Guide
 
-Instances of abusive, harassing, or otherwise unacceptable behavior may be
-reported by contacting the project team at [INSERT EMAIL ADDRESS]. All
-complaints will be reviewed and investigated and will result in a response that
-is deemed necessary and appropriate to the circumstances. The project team is
-obligated to maintain confidentiality with regard to the reporter of an incident.
-Further details of specific enforcement policies may be posted separately.
+We use Prettier to autoformat code on presubmit.
 
-Project maintainers who do not follow or enforce the Code of Conduct in good
-faith may face temporary or permanent repercussions as determined by other
-members of the project's leadership.
+#### Launching the Development UI
 
-### Attribution
+Before running the Aim UI dev server or building a distributable wheel, install npm
+dependencies via:
 
-This Code of Conduct is adapted from the [Contributor Covenant][homepage], version 1.4,
-available at [http://contributor-covenant.org/version/1/4][version]
+```
+cd aim/web/ui
+npm install
+```
 
-[homepage]: http://contributor-covenant.org
-[version]: http://contributor-covenant.org/version/1/4/
+Then you can start the dev server:
+
+```
+npm start
+```
+
+Aim UI will show logged data in at [http://localhost:3000](http://localhost:3000).
+
+#### Adding New Components
+
+To start building a new component you can run follwoing command:
+
+```
+npm run crc
+```
+
+
+If you want to add a component inside UI kit you can run following command:
+
+```
+npm run crc-kit
+```
+
+These command will create a folder named `ComponentName` with all the necessary files.
+
+## Writing Docs
