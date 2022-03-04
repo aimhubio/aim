@@ -234,9 +234,9 @@ async function getRunTraceBatch(isInitial = false) {
                 parsed.processedDataType === VisualizationMenuTitles.figures
                   ? 0
                   : 1
-              ] || 1;
+              ] ?? 1;
           } else {
-            queryData.inputs[key] = queryData.inputs[key] || 1;
+            queryData.inputs[key] = queryData.inputs[key] ?? 1;
           }
         });
       }
