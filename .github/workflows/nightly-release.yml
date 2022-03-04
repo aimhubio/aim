@@ -23,7 +23,7 @@ jobs:
           git pull --rebase
           git merge main --strategy-option theirs
           git checkout main -- ./aim/VERSION
-          . ./.github/workflows/override-version.sh
+          . ./.github/scripts/override-version.sh
           git add ./aim/VERSION
           git commit -m "Update VERSION file"
           git push
