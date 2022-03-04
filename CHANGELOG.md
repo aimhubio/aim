@@ -9,6 +9,9 @@
 - - TF/Keras adapters refactoring (mihran113)
 - Remote tracking client-side retry logic (aramaim)
 
+## 3.6.3 Mar 4, 2022
+
+- Fix UI rendering issue on colab (rubenaprikyan)
 
 ## 3.6.2 Mar 2, 2022
 
