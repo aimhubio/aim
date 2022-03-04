@@ -74,7 +74,7 @@ jobs:
         working-directory: ./docker
         env:
           AIM_VERSION: ${{ steps.capture-version.outputs.AIM_VERSION }}
-          UPDATE_LATEST_TAG: ${{ inputs.branch || 1 }}
+          UPDATE_TAG: ${{ inputs.branch || 'latest' }}
         run: . create-docker-image.sh
 
   macos-dist:
