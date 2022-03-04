@@ -6,7 +6,8 @@
 
 - Custom max message size for Aim Remote tracking (alberttorosyan)
 - Docker images for aim up/server (alberttorosyan)
-- - TF/Keras adapters refactoring (mihran113)
+- TF/Keras adapters refactoring (mihran113)
+- Hugging Face adapter refactoring (mihran113)
 - Remote tracking client-side retry logic (aramaim)
 
 
