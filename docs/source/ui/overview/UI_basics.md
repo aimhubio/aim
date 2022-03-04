@@ -34,7 +34,7 @@ Features:
 <img style="border: 1px solid #1d2253" src="../_static/images/ui/overview/metrics.png" />
 
 ### Images explorer
-Images Explorer allows to search and compare the intermediate images you're tracked.
+Images Explorer allows to search and compare the intermediate images you've tracked.
 
 Features:
 - Easily query all images corresponding to your search criteria
