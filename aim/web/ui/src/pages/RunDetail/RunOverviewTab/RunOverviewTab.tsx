@@ -6,6 +6,8 @@ import { ANALYTICS_EVENT_KEYS } from 'config/analytics/analyticsKeysMap';
 
 import * as analytics from 'services/analytics';
 
+import useRunMetricsBatch from '../useRunMetricsBatch';
+
 import RunOverviewSidebar from './RunOverviewSidebar/RunOverviewSidebar';
 import RunOverviewTabParamsCard from './RunOverviewTabParamsCard';
 import RunOverviewTabMetricsCard from './RunOverviewTabMetricsCard';
@@ -13,6 +15,12 @@ import RunOverviewTabMetricsCard from './RunOverviewTabMetricsCard';
 import './RunOverViewTab.scss';
 
 function RunOverviewTab({ runData, runHash }: any) {
+  useRunMetricsBatch({
+    runBatch: runData.runMetricsBatch,
+    runTraces: runData.runTraces,
+    runHash,
+  });
+
   React.useEffect(() => {
     analytics.pageView(
       ANALYTICS_EVENT_KEYS.runDetails.tabs['overview'].tabView,
@@ -21,19 +29,20 @@ function RunOverviewTab({ runData, runHash }: any) {
 
   return (
     <ErrorBoundary>
-      <section className='RunOverViewTab'>
-        <div className='RunOverViewTab__content'>
+      <section className='RunOverviewTab'>
+        <div className='RunOverviewTab__content'>
           <RunOverviewTabMetricsCard
-            runData={runData}
+            isLoading={runData?.isRunBatchLoading}
             type='metric'
-            runHash={runHash}
             runBatch={runData?.runMetricsBatch}
           />
-          <RunOverviewTabParamsCard runData={runData} />
+          <RunOverviewTabParamsCard
+            runParams={runData?.runParams}
+            isRunInfoLoading={runData?.isRunInfoLoading}
+          />
           <RunOverviewTabMetricsCard
-            runData={runData}
+            isLoading={runData?.isRunBatchLoading}
             type='systemMetric'
-            runHash={runHash}
             runBatch={runData?.runSystemBatch}
           />
         </div>

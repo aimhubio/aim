@@ -29,6 +29,9 @@
         &:last-child {
           border-right: none;
         }
+        &-text {
+          font-size: $text-md;
+        }
       }
     }
     &__row {

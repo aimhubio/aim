@@ -3,52 +3,38 @@ import _ from 'lodash';
 
 import ErrorBoundary from 'components/ErrorBoundary/ErrorBoundary';
 import Card from 'components/kit/Card/Card';
-import { Badge } from 'components/kit';
+import { Badge, Text } from 'components/kit';
 
 import COLORS from 'config/colors/colors';
 
-import runDetailAppModel from 'services/models/runs/runDetailAppModel';
-
 import contextToString from 'utils/contextToString';
+import { isSystemMetric } from 'utils/isSystemMetric';
+import { formatSystemMetricName } from 'utils/formatSystemMetricName';
 
 function RunOverviewTabMetricsCard({
-  runData,
-  runHash,
+  isLoading,
   runBatch,
   type,
 }: {
-  runData: any;
+  isLoading: boolean;
   runBatch: any;
   type: 'metric' | 'systemMetric';
-  runHash: string;
 }) {
-  const [tableData, setTableData]: any = React.useState([]);
-
-  React.useEffect(() => {
-    if (!runBatch && !_.isNil(runData.runTraces)) {
-      const runsBatchRequestRef = runDetailAppModel.getRunMetricsBatch(
-        runData.runTraces.metric,
-        runHash,
-      );
-      runsBatchRequestRef.call();
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [runData.runTraces, runHash]);
-
-  React.useEffect(() => {
+  const tableData = React.useMemo(() => {
     if (runBatch) {
       const resultTableList = runBatch.map(
         ({ name, values, context }: any, index: number) => {
           return {
             key: index,
-            name: name,
+            name: isSystemMetric(name) ? formatSystemMetricName(name) : name,
             value: `${_.last(values)}`,
             context: context,
           };
         },
       );
-      setTableData(resultTableList);
+      return resultTableList;
     }
+    return [];
   }, [runBatch]);
 
   const tableColumns = React.useMemo(
@@ -56,7 +42,19 @@ function RunOverviewTabMetricsCard({
       {
         dataKey: 'name',
         key: 'name',
-        title: `Name (${runBatch?.length})`,
+        title: (
+          <Text weight={600} size={14} tint={100}>
+            Name
+            <Text
+              weight={500}
+              size={14}
+              tint={50}
+              className='RunOverviewTab__cardBox__tableTitleCount'
+            >
+              ({runBatch?.length})
+            </Text>
+          </Text>
+        ),
         width: '33.3%',
         cellRenderer: function cellRenderer({ cellData }: any) {
           return <p>{cellData}</p>;
@@ -102,14 +100,14 @@ function RunOverviewTabMetricsCard({
     <ErrorBoundary>
       <Card
         title={type === 'metric' ? 'Metrics' : 'System Metrics'}
-        subtitle={
-          type === 'metric'
-            ? 'Little information about Metrics'
-            : 'Little information about System Metrics'
-        }
-        className='RunOverViewTab__cardBox'
+        // subtitle={
+        //   type === 'metric'
+        //     ? 'Little information about Metrics'
+        //     : 'Little information about System Metrics'
+        // }
+        className='RunOverviewTab__cardBox'
         dataListProps={{
-          isLoading: runData?.isRunBatchLoading || !runBatch,
+          isLoading: isLoading || !runBatch,
           searchableKeys: ['name', 'value'],
           tableColumns,
           tableData,

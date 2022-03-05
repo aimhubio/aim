@@ -1,5 +1,5 @@
 @use 'src/styles/abstracts' as *;
-.RunOverViewTab {
+.RunOverviewTab {
   display: flex;
   height: auto;
   &__content {
@@ -7,6 +7,9 @@
   }
   &__cardBox {
     margin-bottom: $space-lg;
+    &__tableTitleCount {
+      margin-left: $space-xxxs;
+    }
     &__badge {
       height: toRem(20px);
       &.emptyContext {
