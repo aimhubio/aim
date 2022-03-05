@@ -13,8 +13,6 @@ import ErrorBoundary from 'components/ErrorBoundary/ErrorBoundary';
 
 import { ANALYTICS_EVENT_KEYS } from 'config/analytics/analyticsKeysMap';
 
-import useParamsSuggestions from 'hooks/projectData/useParamsSuggestions';
-
 import paramsAppModel from 'services/models/params/paramsAppModel';
 import { trackEvent } from 'services/analytics';
 
@@ -28,11 +26,10 @@ function SelectForm({
   onParamsSelectChange,
   selectedParamsData,
   onSelectRunQueryChange,
-  selectFormOptions,
+  selectFormData,
 }: ISelectFormProps): React.FunctionComponentElement<React.ReactNode> {
   const [anchorEl, setAnchorEl] = React.useState<any>(null);
   const searchRef = React.useRef<any>(null);
-  const paramsSuggestions = useParamsSuggestions();
 
   React.useEffect(() => {
     return () => {
@@ -132,7 +129,7 @@ function SelectForm({
                       size='small'
                       disablePortal
                       disableCloseOnSelect
-                      options={selectFormOptions}
+                      options={selectFormData.options}
                       value={selectedParamsData?.options}
                       onChange={onSelect}
                       groupBy={(option) => option.group}
@@ -244,7 +241,7 @@ function SelectForm({
               onExpressionChange={onSelectRunQueryChange}
               onSubmit={handleParamsSearch}
               value={selectedParamsData?.query}
-              options={paramsSuggestions}
+              options={selectFormData?.suggestions}
               placeholder='Filter runs, e.g. run.learning_rate > 0.0001 and run.batch_size == 32'
             />
           </div>

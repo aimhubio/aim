@@ -80,6 +80,7 @@ import alphabeticalSortComparator from 'utils/alphabeticalSortComparator';
 import onNotificationDelete from 'utils/app/onNotificationDelete';
 import onNotificationAdd from 'utils/app/onNotificationAdd';
 import exceptionHandler from 'utils/app/exceptionHandler';
+import { getParamsSuggestions } from 'utils/app/getParamsSuggestions';
 
 import createModel from '../model';
 
@@ -87,7 +88,10 @@ const model = createModel<Partial<IImagesExploreAppModelState>>({
   requestStatus: RequestStatusEnum.NotRequested,
   searchButtonDisabled: false,
   applyButtonDisabled: true,
-  selectFormOptions: [],
+  selectFormData: {
+    options: undefined,
+    suggestions: [],
+  },
 });
 
 let tooltipData: ITooltipData = {};
@@ -179,7 +183,10 @@ function initialize(appId: string): void {
     .call()
     .then((data: IProjectParamsMetrics) => {
       model.setState({
-        selectFormOptions: getSelectFormOptions(data),
+        selectFormData: {
+          options: getSelectFormOptions(data),
+          suggestions: getParamsSuggestions(data),
+        },
       });
     });
 }
@@ -303,14 +310,22 @@ function getImagesData(
     //TODO check values nullability
     imageDataBody = {
       ...imageDataBody,
-      record_range: !_.isEmpty(recordSlice)
-        ? `${recordSlice[0]}:${recordSlice[1] + 1}`
-        : '',
-      index_range: !_.isEmpty(indexSlice)
-        ? `${indexSlice?.[0]}:${(indexSlice?.[1] || 0) + 1}`
-        : '',
-      record_density: recordDensity ?? '',
-      index_density: indexDensity ?? '',
+      record_range:
+        !_.isEmpty(recordSlice) &&
+        !_.isNil(recordSlice?.[0]) &&
+        !_.isNil(recordSlice[1])
+          ? `${recordSlice[0]}:${recordSlice[1] + 1}`
+          : '',
+      index_range:
+        !_.isEmpty(indexSlice) &&
+        !_.isNil(recordSlice?.[0]) &&
+        !_.isNil(recordSlice[1])
+          ? `${indexSlice?.[0]}:${(indexSlice?.[1] || 0) + 1}`
+          : '',
+      record_density:
+        !_.isNil(recordDensity) && +recordDensity > 0 ? recordDensity : '',
+      index_density:
+        !_.isNil(indexDensity) && +indexDensity > 0 ? indexDensity : '',
     };
   }
   imagesRequestRef = imagesExploreService.getImagesExploreData(imageDataBody);
@@ -1361,7 +1376,9 @@ function getDataAsTableRows(
       if (metricsCollection.config !== null) {
         rows[groupKey!].data[columnKey] =
           columnsValues[columnKey].length === 1
-            ? columnsValues[columnKey][0]
+            ? paramKeys.includes(columnKey)
+              ? formatValue(columnsValues[columnKey][0])
+              : columnsValues[columnKey][0]
             : columnsValues[columnKey];
       }
     }

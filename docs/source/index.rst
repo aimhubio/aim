@@ -19,11 +19,17 @@
    quick_start/next_steps.md
 
 .. toctree::
-   :maxdepth: 2
+   :maxdepth: 1
    :name: ui
    :caption: Aim UI
 
    ui/overview.md
+   ui/pages/home_page.md
+   ui/pages/run_management.md
+   ui/pages/explorers.md
+   ui/pages/bookmarks.md
+   ui/pages/tags.md
+
 
 .. toctree::
    :maxdepth: 2
@@ -37,6 +43,7 @@
    using/remote_tracking.md
    using/k8s_deployment.md
    using/jupyter_notebook_ui.md
+   using/sagemaker_notebook_ui.md
 
 .. toctree::
    :maxdepth: 2
