@@ -40,7 +40,9 @@ function RunDetailMetricsAndSystemTab({
           <div className='RunDetailMetricsTab'>
             <div className='RunDetailMetricsTab__container'>
               {runBatch.map((batch: IRunBatch, i: number) => {
-                return <RunMetricCard batch={batch} index={i} key={i} />;
+                return (
+                  <RunMetricCard key={batch.key} batch={batch} index={i} />
+                );
               })}
             </div>
           </div>

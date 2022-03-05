@@ -11,7 +11,8 @@
   color: var(--grey-light);
 
   &.CalendarHeatmap__map__axis--x {
-    font-size: 11px;
+    font-size: 12px;
+    font-weight: 500;
     display: flex;
     flex-direction: row;
     justify-content: space-between;
@@ -97,10 +98,7 @@
     margin-right: 0.25em;
   }
   span {
-    font-weight: 500;
-    font-size: 10px;
     line-height: 12px;
-    color: #35414f;
     margin-right: 0.75em;
     &:last-child {
       margin-left: 0.5em;

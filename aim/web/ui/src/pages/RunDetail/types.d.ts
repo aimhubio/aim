@@ -21,6 +21,7 @@ export interface IRunDetailSettingsTabProps {
 }
 
 export interface IRunBatch {
+  key: string;
   context: { [key: string]: string };
   iters: number[];
   name: string;
