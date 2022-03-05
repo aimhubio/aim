@@ -129,13 +129,13 @@ run["hparams"] = {
     "batch_size": 32,
 }
 
-# Log artifacts
+# Log metrics
 for i in range(10):
     run.track(i, name='loss', step=i, context={ "subset":"train" })
     run.track(i, name='acc', step=i, context={ "subset":"train" })
 ```
 
-_See documentation [here](https://aimstack.readthedocs.io/en/latest/quick_start/SDK_basics.html)._
+_See the full list of supported trackable objects(e.g. images, text, etc) [here](https://aimstack.readthedocs.io/en/latest/quick_start/supported_types.html)._
 
 **3. Run the training as usual and start Aim UI**
 
