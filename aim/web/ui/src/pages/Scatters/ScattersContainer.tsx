@@ -1,5 +1,5 @@
 import React from 'react';
-import { useRouteMatch, useHistory } from 'react-router-dom';
+import { useHistory, useRouteMatch } from 'react-router-dom';
 
 import ErrorBoundary from 'components/ErrorBoundary/ErrorBoundary';
 
@@ -138,9 +138,10 @@ function ScattersContainer(): React.FunctionComponentElement<React.ReactNode> {
         hiddenColumns={scattersData?.config?.table?.hiddenColumns!}
         groupingSelectOptions={scattersData?.groupingSelectOptions!}
         projectsDataMetrics={projectsData?.metrics!}
-        requestIsPending={scattersData?.requestIsPending!}
+        requestStatus={scattersData?.requestStatus!}
         resizeMode={scattersData?.config?.table?.resizeMode!}
         columnsWidths={scattersData?.config?.table?.columnsWidths!}
+        selectFormData={scattersData?.selectFormData!}
         columnsOrder={scattersData?.config?.table?.columnsOrder!}
         // methods
         onChangeTooltip={scattersAppModel.onChangeTooltip}

@@ -224,14 +224,20 @@ async function getRunTraceBatch(isInitial = false) {
         Object.keys(queryData.inputs).forEach((key: string) => {
           const subKey = key.slice(0, key.indexOf('_'));
           const range = parsed[`${subKey}_range`];
-          queryData.inputs[key] =
-            queryData.inputs[key] < range[0] || queryData.inputs[key] > range[1]
-              ? range[
-                  parsed.processedDataType === VisualizationMenuTitles.figures
-                    ? 0
-                    : 1
-                ]
-              : queryData.inputs[key];
+
+          if (
+            queryData.inputs[key] < range[0] ||
+            queryData.inputs[key] > range[1]
+          ) {
+            queryData.inputs[key] =
+              range[
+                parsed.processedDataType === VisualizationMenuTitles.figures
+                  ? 0
+                  : 1
+              ] || 1;
+          } else {
+            queryData.inputs[key] = queryData.inputs[key] || 1;
+          }
         });
       }
     }
@@ -314,7 +320,7 @@ function destroy() {
   abortGetTraceBatchBatchRequest();
 }
 
-export default {
+const runTracesModel = {
   ...model,
   destroy,
   onApply,
@@ -323,3 +329,5 @@ export default {
   onRangeChange,
   changeActiveItemKey,
 };
+
+export default runTracesModel;

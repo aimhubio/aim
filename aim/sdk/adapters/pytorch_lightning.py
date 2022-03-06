@@ -1,3 +1,4 @@
+import os
 from typing import Any, Dict, Optional, Union
 from argparse import Namespace
 
@@ -9,11 +10,13 @@ try:
     from pytorch_lightning.utilities import rank_zero_only
 except ImportError:
     raise RuntimeError(
-        "This contrib module requires pytorch_lightning to be installed. "
-        "Please install it with command: \n pip install pytorch_lightning"
+        'This contrib module requires PyTorch Lightning to be installed. '
+        'Please install it with command: \n pip install pytorch-lightning'
     )
 
 from aim.sdk.run import Run
+from aim.sdk.repo import Repo
+from aim.sdk.utils import clean_repo_path, get_aim_repo_name
 from aim.ext.resource.configs import DEFAULT_SYSTEM_TRACKING_INT
 
 
@@ -25,7 +28,9 @@ class AimLogger(LightningLoggerBase):
                  val_metric_prefix: Optional[str] = 'val_',
                  test_metric_prefix: Optional[str] = 'test_',
                  system_tracking_interval: Optional[int]
-                 = DEFAULT_SYSTEM_TRACKING_INT,):
+                 = DEFAULT_SYSTEM_TRACKING_INT,
+                 log_system_params: bool = True,
+                 ):
         super().__init__()
 
         self._experiment_name = experiment
@@ -35,6 +40,7 @@ class AimLogger(LightningLoggerBase):
         self._val_metric_prefix = val_metric_prefix
         self._test_metric_prefix = test_metric_prefix
         self._system_tracking_interval = system_tracking_interval
+        self._log_system_params = log_system_params
 
         self._run = None
 
@@ -46,7 +52,7 @@ class AimLogger(LightningLoggerBase):
                 repo=self._repo_path,
                 experiment=self._experiment_name,
                 system_tracking_interval=self._system_tracking_interval,
-                log_system_params=True
+                log_system_params=self._log_system_params
             )
         return self._run
 
@@ -64,9 +70,8 @@ class AimLogger(LightningLoggerBase):
             if OmegaConf.is_config(params):
                 params = OmegaConf.to_container(params, resolve=True)
 
-        hparams = self.experiment.meta_run_attrs_tree.subtree('hparams')
         for key, value in params.items():
-            hparams.set(key, value, strict=False)
+            self.experiment.set(('hparams', key), value, strict=False)
 
     @rank_zero_only
     def log_metrics(self, metrics: Dict[str, float],
@@ -97,7 +102,8 @@ class AimLogger(LightningLoggerBase):
 
     @property
     def save_dir(self) -> str:
-        return self.experiment.repo.path
+        repo_path = clean_repo_path(self._repo_path) or Repo.default_repo_path()
+        return os.path.join(repo_path, get_aim_repo_name())
 
     @property
     def name(self) -> str:

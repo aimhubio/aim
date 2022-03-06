@@ -4,14 +4,62 @@
 
 ### Enhancements:
 
+- Custom max message size for Aim Remote tracking (alberttorosyan)
+- Docker images for aim up/server (alberttorosyan)
+- - TF/Keras adapters refactoring (mihran113)
+- Remote tracking client-side retry logic (aramaim)
+
+### Fixes:
+
+- Fix font styles in Aim UI (arsengit)
+
+## 3.6.3 Mar 4, 2022
+
+- Fix UI rendering issue on colab (rubenaprikyan)
+
+## 3.6.2 Mar 2, 2022
+
+- Fix chart interactions issue in the Single Run Page Metrics tab (roubkar)
+- Fix `resolve_objects` in remote tracking client subtree (alberttorosyan)
+- Reject `0` as step/record count (alberttorosyan, VkoHov)
+- Fix error on mlflow conversion by experiment id (devfox-se)  
+
+## 3.6.1 Feb 25, 2022
+
+- Fix issue with aligning x-axis by custom metric (KaroMourad)
+- Add `__AIM_PROXY_URL__` env variable to see full proxy url when running `aim up` command(rubenaprikyan)
+- Add `--proxy-url` argument to notebook extension's `%aim up` to render UI correctly if there is a proxy server  (rubenaprikyan)
+- Add SageMaker integration, `jupyter-server-proxy` s bug-fix script (rubenaprikyan, mahnerak)
+- Fix animation support in Plotly visualization and figure loading performance (Hamik25, mihran113)
+- Display `None` values in group config column (VkoHov, Hamik25)
+- Fix rendering issue on `Select` form search suggestions list (arsengit)
+- Fix PL.AimLogger save_dir AttributeError (GeeeekExplorer)
+- Remove `__example_type__` substring from param name (VkoHov)
+
+## 3.6.0 Feb 22 2022
+
+### Enhancements:
+
+- Sort params columns in alphabetical order (arsengit)
+- Add illustrations for indicating explorer search states (arsengit)
+- Ability to export chart as image (KaroMourad)
 - Ability to group by metric.context (VkoHov)
-- Add ability to apply active style on table actions popover buttons with applied changes (arsengit)
+- Tune manage columns items highlighting styles (VkoHov)
+- Set active style on table actions popover buttons with applied changes (arsengit)
 - Unification of Run Custom Object APIs (alberttorosyan, VkoHov)
 - Aim repo runs data automatic indexing (alberttorosyan)
+- Pytorch Lightning adapter refactoring (mihran113)
+- Add Pytorch Ignite integration (mihran113)
+- Add wildcard support for `aim runs` subcommands (mihran113)
+- Add MLflow logs conversion command (devfox-se)
+- Add CustomObject implementation for `hub.dataset` (alberttorosyan)
 
-### Fixes: 
+### Fixes:
 
+- Fix live updated data loss after triggering endless scroll (VkoHov)
 - Fix system metric columns pinning functionality and grouping column order (arsengit)
+- Fix system metrics search in manage columns popover (VkoHov)
+- Fix queries on remote repos (mihran113)
 - Fix incorrect boolean value formatting (VkoHov)
 
 ## 3.5.4 Feb 15 2022

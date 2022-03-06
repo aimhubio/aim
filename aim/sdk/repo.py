@@ -677,6 +677,9 @@ class Repo:
             return {}
 
     def _prepare_runs_cache(self):
+        if self.is_remote_repo:
+            return
+
         db = self.structured_db
         cache_name = 'runs_cache'
         db.invalidate_cache(cache_name)
@@ -763,3 +766,11 @@ class Repo:
     @property
     def is_remote_repo(self):
         return self._client is not None
+
+    @contextmanager
+    def atomic_track(self, queue_id):
+        if self.is_remote_repo:
+            self._client.start_instructions_batch()
+        yield
+        if self.is_remote_repo:
+            self._client.flush_instructions_batch(queue_id)

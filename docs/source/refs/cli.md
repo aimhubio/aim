@@ -134,6 +134,9 @@ __runs subcommands__
 | `cp`        | Copy run data for given runs hashes. At lease one run should be specified|
 | `mv`        | Move run data for given runs hashes. At lease one run should be specified|
 
+Global expression (`*`) support is available for run hashes. 
+If hash contains `*`, it must be enclosed within quotes (`''`) as bash resolves the expression before passing it to `aim runs` command.
+
 ```shell
 $ aim runs ls
 ```
@@ -151,7 +154,7 @@ $ aim runs cp [ARGS] [HASH] ...
 | `--destination <dest_repo_path>`  | Path to destination repo. __Required.__|
 
 ```shell
-$ aim runs cp [ARGS] [HASH] ...
+$ aim runs mv [ARGS] [HASH] ...
 ```
 
 | Args                              | Description                                               |
@@ -175,9 +178,17 @@ $ aim convert [ARGS] SUBCOMMAND
 | Sub-command | Description                    |
 |-------------|--------------------------------|
 | `tf`        | Convert from TensorFlow events |
+| `mlflow`    | Convert from MLFlow logs       |
 
 **Sub-command: tf**
 
 | Options       | Description                                                                                  |
 |---------------|----------------------------------------------------------------------------------------------|
 | `--flat` | Disregard context directory and treat them as distinct run directories. Inactive by default. |
+
+**Sub-command: mlflow**
+
+| Options                               | Description                                                                                  |
+|---------------------------------------|----------------------------------------------------------------------------------------------|
+| `--tracking_uri` <logs_uri>           | MLFlow logs URI. Can be either an HTTP/HTTPS URI for a remote server, a database connection string, or a local path.|
+| `-e` &#124; `--experiment` <exp_name> | MLFlow Experiment name. If specified, only runs for `exp_name` will be converted. |

@@ -1,4 +1,4 @@
-@use "src/styles/abstracts" as *;
+@use 'src/styles/abstracts' as *;
 
 $border-color: $cuddle-50;
 $box-shadow: 0 3px 9px rgba(0, 0, 0, 0.1);
@@ -38,7 +38,8 @@ $border-radius: 0.2rem;
     }
   }
   &__groupsColumn__cell {
-    span {
+    span,
+    div {
       display: inline-block;
       width: 120px;
       min-width: 120px;

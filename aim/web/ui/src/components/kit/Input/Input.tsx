@@ -41,6 +41,9 @@ function InputWrapper({
   value,
   onChange,
   size = 'medium',
+  restInputProps = {},
+  tooltipPlacement = 'left',
+  wrapperClassName = '',
   ...restProps
 }: IInputProps): React.FunctionComponentElement<React.ReactNode> {
   const [isInputValid, setIsInputValid] = React.useState(true);
@@ -55,6 +58,8 @@ function InputWrapper({
     () => inputTypeConversionFns[type],
     [type],
   );
+
+  const isControlled = React.useMemo(() => !_.isUndefined(value), [value]);
 
   const validatePatterns = (
     validationPatterns: IValidationPatterns,
@@ -116,11 +121,21 @@ function InputWrapper({
     messagesFormatter(errorsMessages);
   }, [errorsMessages]);
 
+  React.useEffect(() => {
+    isControlled &&
+      onChangeHandler({
+        target: { value },
+      } as React.ChangeEvent<HTMLInputElement>);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [value]);
+
   const isRenderTopLabel = () => labelAppearance === 'top-labeled' && label;
 
   React.useEffect(() => {
     if (isValidateInitially) {
-      validatePatterns(validationPatterns, value);
+      onChangeHandler({
+        target: { value },
+      } as React.ChangeEvent<HTMLInputElement>);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
@@ -141,6 +156,7 @@ function InputWrapper({
         `InputWrapper InputWrapper_${labelAppearances[labelAppearance].cssClassName} InputWrapper_${inputSizes[size].cssClassName}`,
         {
           InputWrapper_error: !isInputValid,
+          [wrapperClassName]: !!wrapperClassName,
         },
       )}
     >
@@ -165,7 +181,7 @@ function InputWrapper({
         className={`InputWrapper_textFieldCnt InputWrapper_textFieldCnt_${inputSizes[size].cssClassName}`}
       >
         <TextField
-          inputProps={{ 'data-testid': 'inputWrapper' }}
+          inputProps={{ 'data-testid': 'inputWrapper', ...restInputProps }}
           value={value}
           onChange={onChangeHandler}
           type={type}
@@ -180,14 +196,14 @@ function InputWrapper({
           <Tooltip
             title={helperText}
             open={showMessageByTooltip && isMessageTooltipVisible}
-            placement='left'
+            placement={tooltipPlacement}
             arrow
             classes={{
               tooltip: 'InputWrapper_textFieldCnt_tooltip_error',
               arrow: 'arrow',
             }}
           >
-            <div></div>
+            <div />
           </Tooltip>
         )}
       </div>

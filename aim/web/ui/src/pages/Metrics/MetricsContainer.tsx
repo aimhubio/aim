@@ -1,5 +1,5 @@
 import React from 'react';
-import { useRouteMatch, useHistory } from 'react-router-dom';
+import { useHistory, useRouteMatch } from 'react-router-dom';
 
 import ErrorBoundary from 'components/ErrorBoundary/ErrorBoundary';
 
@@ -9,13 +9,11 @@ import usePanelResize from 'hooks/resize/usePanelResize';
 import useModel from 'hooks/model/useModel';
 
 import metricAppModel from 'services/models/metrics/metricsAppModel';
-import projectsModel from 'services/models/projects/projectsModel';
 import * as analytics from 'services/analytics';
 
 import { ITableRef } from 'types/components/Table/Table';
 import { IChartPanelRef } from 'types/components/ChartPanel/ChartPanel';
 import { IMetricAppModelState } from 'types/services/models/metrics/metricsAppModel';
-import { IProjectsModelState } from 'types/services/models/projects/projectsModel';
 import { IApiRequest } from 'types/services/services';
 
 import setComponentRefs from 'utils/app/setComponentRefs';
@@ -35,13 +33,12 @@ function MetricsContainer(): React.FunctionComponentElement<React.ReactNode> {
   const history = useHistory();
   const metricsData = useModel<Partial<IMetricAppModelState>>(metricAppModel);
 
-  const projectsData = useModel<Partial<IProjectsModelState>>(projectsModel);
   const panelResizing = usePanelResize(
     wrapperElemRef,
     chartElemRef,
     tableElemRef,
     resizeElemRef,
-    metricsData?.config?.table || {},
+    metricsData?.config?.table || undefined,
     metricAppModel.onTableResizeEnd,
   );
 
@@ -103,6 +100,7 @@ function MetricsContainer(): React.FunctionComponentElement<React.ReactNode> {
       }
     };
   }, []);
+
   return (
     <ErrorBoundary>
       <Metrics
@@ -124,30 +122,30 @@ function MetricsContainer(): React.FunctionComponentElement<React.ReactNode> {
         tableColumns={metricsData?.tableColumns!}
         aggregatedData={metricsData?.aggregatedData!}
         zoom={metricsData?.config?.chart?.zoom!}
-        curveInterpolation={metricsData?.config?.chart.curveInterpolation!}
-        highlightMode={metricsData?.config?.chart.highlightMode!}
-        axesScaleType={metricsData?.config?.chart.axesScaleType!}
-        smoothingAlgorithm={metricsData?.config?.chart.smoothingAlgorithm!}
+        curveInterpolation={metricsData?.config?.chart?.curveInterpolation!}
+        highlightMode={metricsData?.config?.chart?.highlightMode!}
+        axesScaleType={metricsData?.config?.chart?.axesScaleType!}
+        smoothingAlgorithm={metricsData?.config?.chart?.smoothingAlgorithm!}
         smoothingFactor={metricsData?.config?.chart?.smoothingFactor!}
         focusedState={metricsData?.config?.chart?.focusedState!}
         notifyData={metricsData?.notifyData!}
         tooltip={metricsData?.config?.chart?.tooltip!}
         aggregationConfig={metricsData?.config?.chart?.aggregationConfig!}
         alignmentConfig={metricsData?.config?.chart?.alignmentConfig!}
-        densityType={metricsData?.config?.chart.densityType!}
+        densityType={metricsData?.config?.chart?.densityType!}
         selectedMetricsData={metricsData?.config?.select!}
         tableRowHeight={metricsData?.config?.table?.rowHeight!}
         sortFields={metricsData?.config?.table?.sortFields!}
         hiddenMetrics={metricsData?.config?.table?.hiddenMetrics!}
-        hideSystemMetrics={metricsData?.config?.table.hideSystemMetrics!}
+        hideSystemMetrics={metricsData?.config?.table?.hideSystemMetrics!}
         hiddenColumns={metricsData?.config?.table?.hiddenColumns!}
         selectedRows={metricsData?.selectedRows!}
         groupingSelectOptions={metricsData?.groupingSelectOptions!}
-        projectsDataMetrics={projectsData?.metrics!}
-        requestIsPending={metricsData?.requestIsPending!}
         resizeMode={metricsData?.config?.table?.resizeMode!}
-        columnsWidths={metricsData?.config?.table?.columnsWidths}
-        columnsOrder={metricsData?.config?.table?.columnsOrder}
+        columnsWidths={metricsData?.config?.table?.columnsWidths!}
+        requestStatus={metricsData?.requestStatus!}
+        selectFormData={metricsData?.selectFormData!}
+        columnsOrder={metricsData?.config?.table?.columnsOrder!}
         // methods
         onChangeTooltip={metricAppModel.onChangeTooltip}
         onIgnoreOutliersChange={metricAppModel.onIgnoreOutliersChange}
@@ -188,7 +186,7 @@ function MetricsContainer(): React.FunctionComponentElement<React.ReactNode> {
         onTableDiffShow={metricAppModel.onTableDiffShow}
         onTableResizeModeChange={metricAppModel.onTableResizeModeChange}
         // live update
-        liveUpdateConfig={metricsData?.config?.liveUpdate}
+        liveUpdateConfig={metricsData?.config?.liveUpdate!}
         onLiveUpdateConfigChange={metricAppModel.changeLiveUpdateConfig}
         onShuffleChange={metricAppModel.onShuffleChange}
         onSearchQueryCopy={metricAppModel.onSearchQueryCopy}

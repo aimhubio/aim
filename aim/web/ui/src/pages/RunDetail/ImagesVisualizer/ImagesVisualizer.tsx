@@ -17,8 +17,8 @@ import imagesExploreService from 'services/api/imagesExplore/imagesExploreServic
 
 import {
   adjustable_reader,
-  decodePathsVals,
   decode_buffer_pairs,
+  decodePathsVals,
   iterFoldTree,
 } from 'utils/encoder/streamEncoding';
 import arrayBufferToBase64 from 'utils/arrayBufferToBase64';
@@ -122,6 +122,7 @@ function ImagesVisualizer(
             focusedState={focusedState}
             additionalProperties={additionalProperties}
             onActivePointChange={onActivePointChange}
+            illustrationConfig={{ title: 'No Tracked Images' }}
           />
         </div>
       </BusyLoaderWrapper>

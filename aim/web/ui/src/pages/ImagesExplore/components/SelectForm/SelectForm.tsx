@@ -1,5 +1,4 @@
 import React from 'react';
-import { isEmpty } from 'lodash-es';
 
 import { Box, Checkbox, Divider, InputBase, Popper } from '@material-ui/core';
 import Autocomplete from '@material-ui/lab/Autocomplete';
@@ -12,44 +11,32 @@ import { Icon, Badge, Button } from 'components/kit';
 import ExpressionAutoComplete from 'components/kit/ExpressionAutoComplete';
 import ErrorBoundary from 'components/ErrorBoundary/ErrorBoundary';
 
-import COLORS from 'config/colors/colors';
 import { ANALYTICS_EVENT_KEYS } from 'config/analytics/analyticsKeysMap';
 
-import useModel from 'hooks/model/useModel';
-import useParamsSuggestions from 'hooks/projectData/useParamsSuggestions';
-
-import projectsModel from 'services/models/projects/projectsModel';
 import imagesExploreAppModel from 'services/models/imagesExplore/imagesExploreAppModel';
 import { trackEvent } from 'services/analytics';
 
-import { IProjectsModelState } from 'types/services/models/projects/projectsModel';
 import { ISelectFormProps } from 'types/pages/imagesExplore/components/SelectForm/SelectForm';
 import { ISelectOption } from 'types/services/models/explorer/createAppModel';
-
-import contextToString from 'utils/contextToString';
-import alphabeticalSortComparator from 'utils/alphabeticalSortComparator';
 
 import './SelectForm.scss';
 
 function SelectForm({
   requestIsPending,
   selectedImagesData,
+  searchButtonDisabled,
+  selectFormData,
   onImagesExploreSelectChange,
   onSelectRunQueryChange,
   onSelectAdvancedQueryChange,
   toggleSelectAdvancedMode,
   onSearchQueryCopy,
-  searchButtonDisabled,
 }: ISelectFormProps): React.FunctionComponentElement<React.ReactNode> {
-  const projectsData = useModel<IProjectsModelState>(projectsModel);
   const [anchorEl, setAnchorEl] = React.useState<any>(null);
   const searchMetricsRef = React.useRef<any>(null);
 
   React.useEffect(() => {
-    const paramsMetricsRequestRef = projectsModel.getProjectParams(['images']);
-    paramsMetricsRequestRef.call();
     return () => {
-      paramsMetricsRequestRef?.abort();
       searchMetricsRef.current?.abort();
     };
   }, []);
@@ -112,45 +99,6 @@ function SelectForm({
     setAnchorEl(null);
   }
 
-  const metricsOptions: ISelectOption[] = React.useMemo(() => {
-    let data: ISelectOption[] = [];
-    let index: number = 0;
-    if (projectsData?.images) {
-      for (let key in projectsData.images) {
-        data.push({
-          label: key,
-          group: key,
-          color: COLORS[0][index % COLORS[0].length],
-          value: {
-            option_name: key,
-            context: null,
-          },
-        });
-        index++;
-
-        for (let val of projectsData.images[key]) {
-          if (!isEmpty(val)) {
-            let label = contextToString(val);
-            data.push({
-              label: `${key} ${label}`,
-              group: key,
-              color: COLORS[0][index % COLORS[0].length],
-              value: {
-                option_name: key,
-                context: val,
-              },
-            });
-            index++;
-          }
-        }
-      }
-    }
-
-    return data.sort(
-      alphabeticalSortComparator<ISelectOption>({ orderBy: 'label' }),
-    );
-  }, [projectsData]);
-
   function handleResetSelectForm(): void {
     onImagesExploreSelectChange([]);
     onSelectRunQueryChange('');
@@ -158,8 +106,6 @@ function SelectForm({
 
   const open: boolean = !!anchorEl;
   const id = open ? 'select-metric' : undefined;
-
-  const paramsSuggestions = useParamsSuggestions();
 
   return (
     <ErrorBoundary>
@@ -183,7 +129,7 @@ function SelectForm({
                     options={[
                       'images.name',
                       'images.context',
-                      ...paramsSuggestions,
+                      ...selectFormData.suggestions,
                     ]}
                   />
                 </div>
@@ -214,7 +160,7 @@ function SelectForm({
                         size='small'
                         disablePortal={true}
                         disableCloseOnSelect
-                        options={metricsOptions}
+                        options={selectFormData.options}
                         value={selectedImagesData?.options ?? ''}
                         onChange={onSelect}
                         groupBy={(option) => option.group}
@@ -306,7 +252,7 @@ function SelectForm({
                   onExpressionChange={onSelectRunQueryChange}
                   onSubmit={handleSearch}
                   value={selectedImagesData?.query}
-                  options={paramsSuggestions}
+                  options={selectFormData.suggestions}
                   placeholder='Filter runs, e.g. run.learning_rate > 0.0001 and run.batch_size == 32'
                 />
               </div>

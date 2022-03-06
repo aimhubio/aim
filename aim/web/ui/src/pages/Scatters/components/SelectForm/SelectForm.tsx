@@ -6,24 +6,13 @@ import { Button, Dropdown, Icon } from 'components/kit';
 import ExpressionAutoComplete from 'components/kit/ExpressionAutoComplete';
 import ErrorBoundary from 'components/ErrorBoundary/ErrorBoundary';
 
-import COLORS from 'config/colors/colors';
 import { ANALYTICS_EVENT_KEYS } from 'config/analytics/analyticsKeysMap';
 
-import useModel from 'hooks/model/useModel';
-import useParamsSuggestions from 'hooks/projectData/useParamsSuggestions';
-
-import projectsModel from 'services/models/projects/projectsModel';
 import scattersAppModel from 'services/models/scatters/scattersAppModel';
 import { trackEvent } from 'services/analytics';
 
-import { IProjectsModelState } from 'types/services/models/projects/projectsModel';
-import { ISelectOption } from 'types/services/models/explorer/createAppModel';
 import { ISelectFormProps } from 'types/pages/scatters/components/SelectForm/SelectForm';
 
-import { formatSystemMetricName } from 'utils/formatSystemMetricName';
-import { isSystemMetric } from 'utils/isSystemMetric';
-import getObjectPaths from 'utils/getObjectPaths';
-import alphabeticalSortComparator from 'utils/alphabeticalSortComparator';
 import exceptionHandler from 'utils/app/exceptionHandler';
 
 import './SelectForm.scss';
@@ -31,6 +20,7 @@ import './SelectForm.scss';
 function SelectForm({
   requestIsPending,
   selectedOptionsData,
+  selectFormData,
   onSelectOptionsChange,
   onSelectRunQueryChange,
 }: ISelectFormProps): React.FunctionComponentElement<React.ReactNode> {
@@ -38,15 +28,10 @@ function SelectForm({
     x: false,
     y: false,
   });
-  const projectsData = useModel<IProjectsModelState>(projectsModel);
   const searchRef = React.useRef<any>(null);
-  const paramsSuggestions = useParamsSuggestions();
 
   React.useEffect(() => {
-    const paramsMetricsRequestRef = projectsModel.getProjectParams(['metric']);
-    paramsMetricsRequestRef.call();
     return () => {
-      paramsMetricsRequestRef?.abort();
       searchRef.current?.abort();
     };
   }, []);
@@ -72,67 +57,16 @@ function SelectForm({
     scattersAppModel.abortRequest();
   }
 
-  const options: ISelectOption[] = React.useMemo(() => {
-    let data: ISelectOption[] = [];
-    const systemOptions: ISelectOption[] = [];
-    if (projectsData?.metrics) {
-      for (let key in projectsData.metrics) {
-        let system: boolean = isSystemMetric(key);
-        for (let val of projectsData.metrics[key]) {
-          let label: string = Object.keys(val)
-            .map((item) => `${item}="${val[item]}"`)
-            .join(', ');
-          let index: number = data.length;
-          let option: ISelectOption = {
-            label: `${system ? formatSystemMetricName(key) : key} ${label}`,
-            group: system ? formatSystemMetricName(key) : key,
-            type: 'metrics',
-            color: COLORS[0][index % COLORS[0].length],
-            value: {
-              option_name: key,
-              context: val,
-            },
-          };
-          if (system) {
-            systemOptions.push(option);
-          } else {
-            data.push(option);
-          }
-        }
-      }
-    }
-    if (projectsData?.params) {
-      const paramPaths = getObjectPaths(
-        projectsData.params,
-        projectsData.params,
-      );
-      paramPaths.forEach((paramPath, index) => {
-        data.push({
-          label: paramPath,
-          group: 'Params',
-          type: 'params',
-          color: COLORS[0][index % COLORS[0].length],
-        });
-      });
-    }
-    const comparator = alphabeticalSortComparator({
-      orderBy: 'label',
-    });
-
-    systemOptions.sort(comparator);
-    return data.sort(comparator).concat(systemOptions);
-  }, [projectsData]);
-
   const dropDownOptions: { value: string; label: string }[] =
     React.useMemo(() => {
       let data: { value: string; label: string }[] = [];
-      if (options) {
-        for (let option of options) {
+      if (selectFormData.options) {
+        for (let option of selectFormData.options) {
           data.push({ value: option.label, label: option.label });
         }
       }
       return data;
-    }, [options]);
+    }, [selectFormData.options]);
 
   function onChange(
     type: 'x' | 'y',
@@ -142,13 +76,13 @@ function SelectForm({
       const selectedOptions = selectedOptionsData?.options;
       if (type === 'y') {
         onSelectOptionsChange([
-          options.find((o) => o.label === option.value),
+          selectFormData.options.find((o) => o.label === option.value),
           selectedOptions.length === 2 ? selectedOptions[1] : null,
         ]);
       } else if (type === 'x') {
         onSelectOptionsChange([
           selectedOptions[0] || null,
-          options.find((o) => o.label === option.value),
+          selectFormData.options.find((o) => o.label === option.value),
         ]);
       }
     }
@@ -242,7 +176,7 @@ function SelectForm({
               onExpressionChange={onSelectRunQueryChange}
               onSubmit={handleParamsSearch}
               value={selectedOptionsData?.query}
-              options={paramsSuggestions}
+              options={selectFormData.suggestions}
               placeholder='Filter runs, e.g. run.learning_rate > 0.0001 and run.batch_size == 32'
             />
           </div>

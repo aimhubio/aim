@@ -8,9 +8,6 @@ import ErrorBoundary from 'components/ErrorBoundary/ErrorBoundary';
 
 import { ANALYTICS_EVENT_KEYS } from 'config/analytics/analyticsKeysMap';
 
-import useParamsSuggestions from 'hooks/projectData/useParamsSuggestions';
-
-import projectsModel from 'services/models/projects/projectsModel';
 import runAppModel from 'services/models/runs/runsAppModel';
 import { trackEvent } from 'services/analytics';
 
@@ -19,19 +16,16 @@ import exceptionHandler from 'utils/app/exceptionHandler';
 import './SearchBar.scss';
 
 function SearchBar({
+  searchSuggestions,
   isRunsDataLoading,
   searchValue,
   onSearchInputChange,
 }: any) {
   const searchRunsRef = React.useRef<any>(null);
-  const paramsSuggestions = useParamsSuggestions();
 
   React.useEffect(() => {
-    const paramsMetricsRequestRef = projectsModel.getProjectParams(['metric']);
-    paramsMetricsRequestRef.call();
     return () => {
       searchRunsRef.current?.abort();
-      paramsMetricsRequestRef?.abort();
     };
   }, []);
 
@@ -66,7 +60,7 @@ function SearchBar({
             onExpressionChange={onSearchInputChange}
             onSubmit={handleRunSearch}
             value={searchValue}
-            options={paramsSuggestions}
+            options={searchSuggestions}
             placeholder='Filter runs, e.g. run.learning_rate > 0.0001 and run.batch_size == 32'
           />
         </form>

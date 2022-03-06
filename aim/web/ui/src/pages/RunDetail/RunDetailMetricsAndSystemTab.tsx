@@ -1,7 +1,7 @@
 import React, { memo } from 'react';
 import { isEmpty, isNil } from 'lodash-es';
 
-import EmptyComponent from 'components/EmptyComponent/EmptyComponent';
+import IllustrationBlock from 'components/IllustrationBlock/IllustrationBlock';
 import BusyLoaderWrapper from 'components/BusyLoaderWrapper/BusyLoaderWrapper';
 import ErrorBoundary from 'components/ErrorBoundary/ErrorBoundary';
 
@@ -49,15 +49,17 @@ function RunDetailMetricsAndSystemTab({
           <div className='RunDetailMetricsTab'>
             <div className='RunDetailMetricsTab__container'>
               {runBatch.map((batch: IRunBatch, i: number) => {
-                return <RunMetricCard batch={batch} index={i} key={i} />;
+                return (
+                  <RunMetricCard key={batch.key} batch={batch} index={i} />
+                );
               })}
             </div>
           </div>
         ) : (
-          <EmptyComponent
-            size='big'
+          <IllustrationBlock
+            size='xLarge'
             className='runDetailParamsTabLoader'
-            content={`No tracked ${isSystem ? 'system' : ''} metrics`}
+            title={`No tracked ${isSystem ? 'system' : ''} metrics`}
           />
         )}
       </BusyLoaderWrapper>

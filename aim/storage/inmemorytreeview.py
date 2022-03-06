@@ -2,10 +2,10 @@ from copy import deepcopy
 
 from aim.storage.types import CustomObjectBase
 from aim.storage.types import AimObject, AimObjectKey, AimObjectPath
-from aim.storage.arrayview import TreeArrayView
+from aim.storage.treearrayview import TreeArrayView
 from aim.storage.treeview import TreeView
 
-from typing import Iterator, Tuple, Union
+from typing import Any, Iterator, Tuple, Union, List
 
 
 class InMemoryTreeView(TreeView):
@@ -53,7 +53,8 @@ class InMemoryTreeView(TreeView):
     def collect(
         self,
         path: Union[AimObjectKey, AimObjectPath] = (),
-        strict: bool = True
+        strict: bool = True,
+        resolve_objects: bool = False
     ) -> AimObject:
         if not strict:
             raise NotImplementedError("Non-strict mode is not supported yet.")
@@ -101,6 +102,12 @@ class InMemoryTreeView(TreeView):
 
         container[last_key] = deepcopy(value) if self._constructed else value
 
+    def keys_eager(
+            self,
+            path: Union[AimObjectKey, AimObjectPath] = (),
+    ) -> List[Union[AimObjectPath, AimObjectKey]]:
+        return list(self.subtree(path).keys())
+
     def keys(
         self,
         path: Union[AimObjectKey, AimObjectPath] = (),
@@ -113,6 +120,15 @@ class InMemoryTreeView(TreeView):
             container = container[key]
         for key in container.keys():
             yield key
+
+    def items_eager(
+            self,
+            path: Union[AimObjectKey, AimObjectPath] = ()
+    ) -> List[Tuple[
+        AimObjectKey,
+        AimObject
+    ]]:
+        return list(self.subtree(path).items())
 
     def items(
         self,
@@ -139,9 +155,10 @@ class InMemoryTreeView(TreeView):
 
     def array(
         self,
-        path: Union[AimObjectKey, AimObjectPath] = ()
+        path: Union[AimObjectKey, AimObjectPath] = (),
+        dtype: Any = None
     ) -> TreeArrayView:
-        return TreeArrayView(self.subtree(path))
+        return TreeArrayView(self.subtree(path), dtype=dtype)
 
     def first(
         self,

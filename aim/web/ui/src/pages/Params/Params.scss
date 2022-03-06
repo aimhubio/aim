@@ -40,6 +40,9 @@
     &__hide {
       display: none;
     }
+    &__fullHeight {
+      flex: 1 100% !important;
+    }
   }
 
   .Params__table__container {

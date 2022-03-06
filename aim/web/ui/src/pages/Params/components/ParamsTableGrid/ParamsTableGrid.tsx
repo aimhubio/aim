@@ -17,6 +17,7 @@ import { ITableColumn } from 'types/pages/metrics/components/TableColumns/TableC
 import { IOnGroupingSelectChangeParams } from 'types/services/models/metrics/metricsAppModel';
 import { IGroupingSelectOption } from 'types/services/models/imagesExplore/imagesExploreAppModel';
 
+import alphabeticalSortComparator from 'utils/alphabeticalSortComparator';
 import { isSystemMetric } from 'utils/isSystemMetric';
 import { formatSystemMetricName } from 'utils/formatSystemMetricName';
 import contextToString from 'utils/contextToString';
@@ -107,29 +108,38 @@ function getParamsTableColumns(
   ].concat(
     Object.keys(metricsColumns).reduce((acc: any, key: string) => {
       const systemMetric: boolean = isSystemMetric(key);
+      const systemMetricsList: ITableColumn[] = [];
+      const metricsList: ITableColumn[] = [];
+      Object.keys(metricsColumns[key]).map((metricContext) => {
+        const columnKey = `${systemMetric ? key : `${key}_${metricContext}`}`;
+        let column = {
+          key: columnKey,
+          content: systemMetric ? (
+            <span>{formatSystemMetricName(key)}</span>
+          ) : (
+            <Badge
+              size='small'
+              color={COLORS[0][0]}
+              label={metricContext === '' ? 'Empty context' : metricContext}
+            />
+          ),
+          topHeader: systemMetric ? 'System Metrics' : key,
+          pin: order?.left?.includes(columnKey)
+            ? 'left'
+            : order?.right?.includes(columnKey)
+            ? 'right'
+            : null,
+        };
+        systemMetric
+          ? systemMetricsList.push(column)
+          : metricsList.push(column);
+      });
       acc = [
         ...acc,
-        ...Object.keys(metricsColumns[key]).map((metricContext) => {
-          const columnKey = `${systemMetric ? key : `${key}_${metricContext}`}`;
-          return {
-            key: columnKey,
-            content: systemMetric ? (
-              <span>{formatSystemMetricName(key)}</span>
-            ) : (
-              <Badge
-                size='small'
-                color={COLORS[0][0]}
-                label={metricContext === '' ? 'Empty context' : metricContext}
-              />
-            ),
-            topHeader: systemMetric ? 'System Metrics' : key,
-            pin: order?.left?.includes(columnKey)
-              ? 'left'
-              : order?.right?.includes(columnKey)
-              ? 'right'
-              : null,
-          };
-        }),
+        ...metricsList.sort(alphabeticalSortComparator({ orderBy: 'key' })),
+        ...systemMetricsList.sort(
+          alphabeticalSortComparator({ orderBy: 'key' }),
+        ),
       ];
       return acc;
     }, []),
@@ -247,7 +257,7 @@ function getParamsTableColumns(
               name = name.replace('run.props', 'run');
               return (
                 <Tooltip key={field} title={name || ''}>
-                  <span>{name}</span>
+                  <div>{name}</div>
                 </Tooltip>
               );
             })}
@@ -285,7 +295,7 @@ function paramsTableRowRenderer(
                 {Object.keys(rowData[col]).map((item) => {
                   const value: string | { [key: string]: unknown } =
                     rowData[col][item];
-                  return typeof value === 'object' ? (
+                  return _.isObject(value) ? (
                     <ControlPopover
                       key={contextToString(value)}
                       title={item}
@@ -310,7 +320,7 @@ function paramsTableRowRenderer(
                     />
                   ) : (
                     <Tooltip key={item} title={formatValue(value) || ''}>
-                      <span>{formatValue(value)}</span>
+                      <div>{formatValue(value)}</div>
                     </Tooltip>
                   );
                 })}

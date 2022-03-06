@@ -28,7 +28,8 @@ const LineChart = React.forwardRef(function LineChart(
 ): React.FunctionComponentElement<React.ReactNode> {
   const {
     data,
-    index,
+    index = 0,
+    nameKey = '',
     aggregatedData,
     aggregationConfig,
     syncHoverState,
@@ -40,6 +41,7 @@ const LineChart = React.forwardRef(function LineChart(
     chartTitle,
     zoom,
     onZoomChange,
+    readOnly = false,
   } = props;
 
   // boxes
@@ -89,6 +91,7 @@ const LineChart = React.forwardRef(function LineChart(
 
     drawArea({
       index,
+      nameKey,
       visBoxRef,
       plotBoxRef,
       parentRef,
@@ -130,12 +133,13 @@ const LineChart = React.forwardRef(function LineChart(
       margin,
       alignmentConfig,
       humanizerConfigRef,
-      drawBgTickLines: { y: true },
+      drawBgTickLines: { y: true, x: false },
     });
 
     drawLines({
       index,
       data: processedData,
+      nameKey,
       linesNodeRef,
       linesRef,
       curveInterpolation,
@@ -146,27 +150,30 @@ const LineChart = React.forwardRef(function LineChart(
       aggregatedData,
     });
 
-    drawHoverAttributes({
-      index,
-      data: processedData,
-      axesScaleType,
-      highlightMode,
-      syncHoverState,
-      visAreaRef,
-      attributesRef,
-      plotBoxRef,
-      visBoxRef,
-      svgNodeRef,
-      bgRectNodeRef,
-      attributesNodeRef,
-      xAxisLabelNodeRef,
-      yAxisLabelNodeRef,
-      linesNodeRef,
-      highlightedNodeRef,
-      aggregationConfig,
-      humanizerConfigRef,
-      alignmentConfig,
-    });
+    if (!readOnly) {
+      drawHoverAttributes({
+        index,
+        nameKey,
+        data: processedData,
+        axesScaleType,
+        highlightMode,
+        syncHoverState,
+        visAreaRef,
+        attributesRef,
+        plotBoxRef,
+        visBoxRef,
+        svgNodeRef,
+        bgRectNodeRef,
+        attributesNodeRef,
+        xAxisLabelNodeRef,
+        yAxisLabelNodeRef,
+        linesNodeRef,
+        highlightedNodeRef,
+        aggregationConfig,
+        humanizerConfigRef,
+        alignmentConfig,
+      });
+    }
 
     drawBrush({
       index,
@@ -183,6 +190,7 @@ const LineChart = React.forwardRef(function LineChart(
       max,
       zoom,
       onZoomChange,
+      readOnly,
     });
   }
 
@@ -205,6 +213,8 @@ const LineChart = React.forwardRef(function LineChart(
       axesScaleType,
       curveInterpolation,
       aggregationConfig,
+      readOnly,
+      alignmentConfig,
     ],
   );
 
@@ -231,6 +241,8 @@ const LineChart = React.forwardRef(function LineChart(
     axesScaleType,
     curveInterpolation,
     aggregationConfig,
+    readOnly,
+    alignmentConfig,
   ]);
 
   React.useImperativeHandle(ref, () => ({
@@ -260,7 +272,7 @@ const LineChart = React.forwardRef(function LineChart(
     <ErrorBoundary>
       <div
         ref={parentRef}
-        className={`LineChart ${zoom?.active ? 'zoomMode' : ''}`}
+        className={`LineChart ${!readOnly && zoom?.active ? 'zoomMode' : ''}`}
       >
         <div ref={visAreaRef} />
       </div>

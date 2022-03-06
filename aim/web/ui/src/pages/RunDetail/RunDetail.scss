@@ -7,6 +7,9 @@
       .MuiTabs-fixed {
         overflow: auto !important;
       }
+      .MuiTabs-indicator {
+        display: none;
+      }
     }
     &__appBarContainer {
       height: 2.5rem;
@@ -325,6 +328,9 @@
         &__runsList {
           overflow: auto;
           height: 100%;
+          .IllustrationBlock {
+            height: calc(100% - 3rem);
+          }
           &__loadMoreButtonWrapper {
             margin-top: 0.5rem;
             display: flex;

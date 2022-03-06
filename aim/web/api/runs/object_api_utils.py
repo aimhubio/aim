@@ -17,10 +17,8 @@ if TYPE_CHECKING:
 
 
 def collect_streamable_data(encoded_tree: Iterator[Tuple[bytes, bytes]]) -> bytes:
-    result = bytes()
-    for key, val in encoded_tree:
-        result += struct.pack('I', len(key)) + key + struct.pack('I', len(val)) + val
-    return result
+    result = [struct.pack('I', len(key)) + key + struct.pack('I', len(val)) + val for key, val in encoded_tree]
+    return b''.join(result)
 
 
 def get_blobs_batch(uri_batch: List[str], repo: 'Repo') -> Iterator[bytes]:
@@ -106,7 +104,7 @@ class CustomObjectApi:
             run_dict = {
                 run_.hash: {
                     'ranges': ranges,
-                    'params': run_.get(...),
+                    'params': run_.get(..., resolve_objects=True),
                     'traces': traces_,
                     'props': get_run_props(run_)
                 }

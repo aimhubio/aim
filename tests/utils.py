@@ -134,3 +134,13 @@ def remove_test_data():
     shutil.rmtree(os.path.join(repo_path_base, 'seqs'), ignore_errors=True)
     shutil.rmtree(os.path.join(repo_path_base, 'locks'), ignore_errors=True)
     shutil.rmtree(os.path.join(repo_path_base, 'progress'), ignore_errors=True)
+
+
+def is_package_installed(pkg_name: str) -> bool:
+    import importlib
+    try:
+        spec = importlib.util.find_spec(pkg_name)
+    except (ModuleNotFoundError, AttributeError):
+        return False
+    finally:
+        return spec is not None

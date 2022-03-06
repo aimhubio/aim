@@ -1,9 +1,11 @@
 import React, { memo, useEffect, useState } from 'react';
-import { isNil } from 'lodash-es';
+import _ from 'lodash-es';
 
 import Table from 'components/Table/Table';
 import { Badge, Button, Icon, Text } from 'components/kit';
 import ErrorBoundary from 'components/ErrorBoundary/ErrorBoundary';
+
+import { IllustrationsEnum } from 'config/illustrationConfig/illustrationConfig';
 
 import tagsAppModel from 'services/models/tags/tagsAppModel';
 
@@ -121,44 +123,49 @@ function TagsTable({
   }
 
   useEffect(() => {
-    tableRef.current?.updateData({
-      newData: tagsList.map((tagData: ITagProps, i: number) => ({
-        key: tagData.id,
-        name: { name: tagData.name, color: tagData.color },
-        comment: tagData,
-        runs: { count: tagData.run_count, tagId: tagData.id },
-      })),
-      newColumns: tableColumns,
-    });
+    if (tableRef.current.updateData) {
+      tableRef?.current?.updateData({
+        newData: tagsList.map((tagData: ITagProps, i: number) => ({
+          key: tagData.id,
+          name: { name: tagData.name, color: tagData.color },
+          comment: tagData,
+          runs: { count: tagData.run_count, tagId: tagData.id },
+        })),
+        newColumns: tableColumns,
+      });
+    }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [tagsList, onTableRunClick, hoveredRowIndex]);
 
   return (
     <ErrorBoundary>
       <div className='Tags__TagList__tagListBox'>
-        {!isTagsDataLoading && !isNil(tagsList) && (
+        {!isTagsDataLoading && !_.isNil(tagsList) && (
           <div className='Tags__TagList__tagListBox__titleBox'>
             <Text component='h4' size={14} weight={600} tint={100}>
               {tagsList.length} {tagsList.length > 1 ? 'Tags' : 'Tag'}
             </Text>
           </div>
         )}
-        <div className='TagsTable'>
-          <Table
-            ref={tableRef}
-            fixed={false}
-            columns={tableColumns}
-            data={null}
-            isLoading={isTagsDataLoading}
-            hideHeaderActions
-            rowHeight={52}
-            headerHeight={32}
-            onRowHover={(rowIndex) => setHoveredRowIndex(rowIndex)}
-            onRowClick={(rowIndex) => onTableRunClick(rowIndex || '')}
-            emptyText={hasSearchValue ? 'No tags found' : 'No tags'}
-            height='100%'
-          />
-        </div>
+        <Table
+          ref={tableRef}
+          fixed={false}
+          columns={tableColumns}
+          data={null}
+          isLoading={isTagsDataLoading}
+          hideHeaderActions
+          rowHeight={52}
+          headerHeight={32}
+          onRowHover={(rowIndex) => setHoveredRowIndex(rowIndex)}
+          onRowClick={(rowIndex) => onTableRunClick(rowIndex || '')}
+          illustrationConfig={{
+            type: hasSearchValue
+              ? IllustrationsEnum.EmptySearch
+              : IllustrationsEnum.ExploreData,
+            page: 'tags',
+          }}
+          height='100%'
+        />
       </div>
     </ErrorBoundary>
   );

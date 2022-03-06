@@ -1,5 +1,5 @@
 import React from 'react';
-import { useRouteMatch, useHistory } from 'react-router-dom';
+import { useHistory, useRouteMatch } from 'react-router-dom';
 
 import { ANALYTICS_EVENT_KEYS } from 'config/analytics/analyticsKeysMap';
 
@@ -118,7 +118,7 @@ function ParamsContainer(): React.FunctionComponentElement<React.ReactNode> {
       tableData={paramsData?.tableData}
       tableColumns={paramsData?.tableColumns}
       focusedState={paramsData?.config?.chart?.focusedState!}
-      requestIsPending={paramsData?.requestIsPending!}
+      requestStatus={paramsData?.requestStatus!}
       selectedRows={paramsData?.selectedRows!}
       isVisibleColorIndicator={
         paramsData?.config?.chart?.isVisibleColorIndicator!
@@ -138,6 +138,7 @@ function ParamsContainer(): React.FunctionComponentElement<React.ReactNode> {
       notifyData={paramsData?.notifyData!}
       tableRowHeight={paramsData?.config?.table?.rowHeight!}
       columnsWidths={paramsData?.config?.table?.columnsWidths!}
+      selectFormData={paramsData?.selectFormData!}
       onColorIndicatorChange={paramsAppModel.onColorIndicatorChange}
       onCurveInterpolationChange={paramsAppModel.onCurveInterpolationChange}
       onParamsSelectChange={paramsAppModel.onParamsSelectChange}

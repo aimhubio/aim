@@ -11,25 +11,13 @@ import { Badge, Button, Icon, Text } from 'components/kit';
 import ExpressionAutoComplete from 'components/kit/ExpressionAutoComplete';
 import ErrorBoundary from 'components/ErrorBoundary/ErrorBoundary';
 
-import COLORS from 'config/colors/colors';
 import { ANALYTICS_EVENT_KEYS } from 'config/analytics/analyticsKeysMap';
 
-import useModel from 'hooks/model/useModel';
-import useParamsSuggestions from 'hooks/projectData/useParamsSuggestions';
-
-import projectsModel from 'services/models/projects/projectsModel';
 import paramsAppModel from 'services/models/params/paramsAppModel';
 import { trackEvent } from 'services/analytics';
 
-import { IProjectsModelState } from 'types/services/models/projects/projectsModel';
 import { ISelectFormProps } from 'types/pages/params/components/SelectForm/SelectForm';
 import { ISelectOption } from 'types/services/models/explorer/createAppModel';
-
-import alphabeticalSortComparator from 'utils/alphabeticalSortComparator';
-import { formatSystemMetricName } from 'utils/formatSystemMetricName';
-import { isSystemMetric } from 'utils/isSystemMetric';
-import contextToString from 'utils/contextToString';
-import getObjectPaths from 'utils/getObjectPaths';
 
 import './SelectForm.scss';
 
@@ -38,17 +26,13 @@ function SelectForm({
   onParamsSelectChange,
   selectedParamsData,
   onSelectRunQueryChange,
+  selectFormData,
 }: ISelectFormProps): React.FunctionComponentElement<React.ReactNode> {
-  const projectsData = useModel<IProjectsModelState>(projectsModel);
   const [anchorEl, setAnchorEl] = React.useState<any>(null);
   const searchRef = React.useRef<any>(null);
-  const paramsSuggestions = useParamsSuggestions();
 
   React.useEffect(() => {
-    const paramsMetricsRequestRef = projectsModel.getProjectParams(['metric']);
-    paramsMetricsRequestRef.call();
     return () => {
-      paramsMetricsRequestRef?.abort();
       searchRef.current?.abort();
     };
   }, []);
@@ -106,71 +90,6 @@ function SelectForm({
     setAnchorEl(null);
   }
 
-  const paramsOptions: ISelectOption[] = React.useMemo(() => {
-    const comparator = alphabeticalSortComparator<ISelectOption>({
-      orderBy: 'label',
-    });
-
-    let optionsCount = 0; // to calculate color
-    const systemOptions: ISelectOption[] = [];
-    let params: ISelectOption[] = [];
-    let metrics: ISelectOption[] = [];
-
-    if (projectsData?.metrics) {
-      for (let key in projectsData.metrics) {
-        let system: boolean = isSystemMetric(key);
-        for (let val of projectsData.metrics[key]) {
-          let label = contextToString(val);
-          let index: number = optionsCount;
-          let option: ISelectOption = {
-            label: `${system ? formatSystemMetricName(key) : key} ${label}`,
-            group: system ? 'System' : key,
-            type: 'metrics',
-            color: COLORS[0][index % COLORS[0].length],
-            value: {
-              option_name: key,
-              context: val,
-            },
-          };
-          optionsCount++;
-          if (system) {
-            systemOptions.push(option);
-          } else {
-            metrics.push(option);
-          }
-        }
-      }
-    }
-    if (projectsData?.params) {
-      const paramPaths = getObjectPaths(
-        projectsData.params,
-        projectsData.params,
-      );
-      paramPaths.forEach((paramPath, index) => {
-        params.push({
-          label: paramPath,
-          group: 'Params',
-          type: 'params',
-          color: COLORS[0][index % COLORS[0].length],
-        });
-      });
-    }
-
-    params = params.sort(comparator);
-    metrics = metrics.sort(comparator);
-    systemOptions.sort(comparator);
-
-    // sort by group
-    const data: ISelectOption[] = [...metrics, ...params];
-
-    data.sort(
-      alphabeticalSortComparator({
-        orderBy: 'type',
-      }),
-    );
-    return data.concat(systemOptions);
-  }, [projectsData]);
-
   const open: boolean = !!anchorEl;
   const id = open ? 'select-metric' : undefined;
 
@@ -210,7 +129,7 @@ function SelectForm({
                       size='small'
                       disablePortal
                       disableCloseOnSelect
-                      options={paramsOptions}
+                      options={selectFormData.options}
                       value={selectedParamsData?.options}
                       onChange={onSelect}
                       groupBy={(option) => option.group}
@@ -322,7 +241,7 @@ function SelectForm({
               onExpressionChange={onSelectRunQueryChange}
               onSubmit={handleParamsSearch}
               value={selectedParamsData?.query}
-              options={paramsSuggestions}
+              options={selectFormData?.suggestions}
               placeholder='Filter runs, e.g. run.learning_rate > 0.0001 and run.batch_size == 32'
             />
           </div>

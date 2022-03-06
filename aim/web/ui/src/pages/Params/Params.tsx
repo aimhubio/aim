@@ -1,11 +1,11 @@
 import React from 'react';
-import { isEmpty } from 'lodash-es';
+import _ from 'lodash-es';
 
 import ChartPanel from 'components/ChartPanel/ChartPanel';
 // TODO [GA]: MetricsBar is imported as AppBar.
 // Implement ParamsBar or use unified NavBar for explorers.
 import BusyLoaderWrapper from 'components/BusyLoaderWrapper/BusyLoaderWrapper';
-import EmptyComponent from 'components/EmptyComponent/EmptyComponent';
+import IllustrationBlock from 'components/IllustrationBlock/IllustrationBlock';
 import ChartLoader from 'components/ChartLoader/ChartLoader';
 import TableLoader from 'components/TableLoader/TableLoader';
 import Table from 'components/Table/Table';
@@ -17,6 +17,11 @@ import ErrorBoundary from 'components/ErrorBoundary/ErrorBoundary';
 import { RowHeightSize } from 'config/table/tableConfigs';
 import { ResizeModeEnum } from 'config/enums/tableEnums';
 import GroupingPopovers from 'config/grouping/GroupingPopovers';
+import { RequestStatusEnum } from 'config/enums/requestStatusEnum';
+import {
+  IllustrationsEnum,
+  Request_Illustrations,
+} from 'config/illustrationConfig/illustrationConfig';
 
 import AppBar from 'pages/Metrics/components/MetricsBar/MetricsBar';
 
@@ -44,7 +49,7 @@ const Params = ({
   tableElemRef,
   groupingData,
   groupingSelectOptions,
-  requestIsPending,
+  requestStatus,
   tooltip,
   hiddenMetrics,
   chartTitleData,
@@ -54,8 +59,6 @@ const Params = ({
   tableData,
   columnsWidths,
   tableRowHeight,
-  onTableRowHover,
-  onTableRowClick,
   onColumnsOrderChange,
   onRowHeightChange,
   onParamVisibilityChange,
@@ -64,6 +67,10 @@ const Params = ({
   resizeMode,
   notifyData,
   hiddenColumns,
+  liveUpdateConfig,
+  selectFormData,
+  onTableRowHover,
+  onTableRowClick,
   hideSystemMetrics,
   onExportTableData,
   onCurveInterpolationChange,
@@ -87,7 +94,6 @@ const Params = ({
   onTableDiffShow,
   onSortReset,
   updateColumnsWidths,
-  liveUpdateConfig,
   onLiveUpdateConfigChange,
   onShuffleChange,
   onRowSelect,
@@ -125,7 +131,8 @@ const Params = ({
           </div>
           <div className='Params__SelectForm__Grouping__container'>
             <SelectForm
-              requestIsPending={requestIsPending}
+              selectFormData={selectFormData}
+              requestIsPending={requestStatus === RequestStatusEnum.Pending}
               selectedParamsData={selectedParamsData}
               onParamsSelectChange={onParamsSelectChange}
               onSelectRunQueryChange={onSelectRunQueryChange}
@@ -152,15 +159,19 @@ const Params = ({
           <div
             ref={chartElemRef}
             className={`Params__chart__container${
-              resizeMode === ResizeModeEnum.MaxHeight ? '__hide' : ''
+              resizeMode === ResizeModeEnum.MaxHeight
+                ? '__hide'
+                : _.isEmpty(tableData)
+                ? '__fullHeight'
+                : ''
             }`}
           >
             <BusyLoaderWrapper
               height='100%'
-              isLoading={requestIsPending}
+              isLoading={requestStatus === RequestStatusEnum.Pending}
               loaderComponent={<ChartLoader />}
             >
-              {!!highPlotData?.[0]?.data?.length ? (
+              {!_.isEmpty(tableData) ? (
                 <ChartPanel
                   ref={chartPanelRef}
                   key={highPlotData?.[0]?.data?.length}
@@ -185,10 +196,15 @@ const Params = ({
                   }
                 />
               ) : (
-                !requestIsPending && (
-                  <EmptyComponent
-                    size='big'
-                    content="It's super easy to search Aim experiments. Lookup search docs to learn more."
+                selectFormData.options !== undefined && (
+                  <IllustrationBlock
+                    size='xLarge'
+                    page='params'
+                    type={
+                      selectFormData.options?.length
+                        ? Request_Illustrations[requestStatus]
+                        : IllustrationsEnum.EmptyData
+                    }
                   />
                 )
               )}
@@ -196,29 +212,32 @@ const Params = ({
           </div>
           <ResizePanel
             className={`Params__ResizePanel${
-              requestIsPending || highPlotData?.[0]?.data?.length
-                ? ''
-                : '__hide'
+              _.isEmpty(tableData) &&
+              requestStatus !== RequestStatusEnum.Pending
+                ? '__hide'
+                : ''
             }`}
             panelResizing={panelResizing}
             resizeElemRef={resizeElemRef}
             resizeMode={resizeMode}
             onTableResizeModeChange={onTableResizeModeChange}
           />
-
           <div
             ref={tableElemRef}
             className={`Params__table__container${
-              resizeMode === ResizeModeEnum.Hide ? '__hide' : ''
+              requestStatus !== RequestStatusEnum.Pending &&
+              (resizeMode === ResizeModeEnum.Hide || _.isEmpty(tableData))
+                ? '__hide'
+                : ''
             }`}
           >
             <BusyLoaderWrapper
-              isLoading={requestIsPending}
+              isLoading={requestStatus === RequestStatusEnum.Pending}
               className='Params__loader'
               height='100%'
               loaderComponent={<TableLoader />}
             >
-              {!isEmpty(tableData) ? (
+              {!_.isEmpty(tableData) ? (
                 <ErrorBoundary>
                   <Table
                     custom

@@ -1,6 +1,5 @@
 import { BookmarkNotificationsEnum } from 'config/notification-messages/notificationMessages';
 
-import * as analytics from 'services/analytics';
 import appsService from 'services/api/apps/appsService';
 
 import { IDashboardData } from 'types/services/models/metrics/metricsAppModel';
@@ -32,7 +31,7 @@ export default function onBookmarkUpdate<M extends State>({
               notification: {
                 id: Date.now(),
                 severity: 'success',
-                message: BookmarkNotificationsEnum.UPDATE,
+                messages: [BookmarkNotificationsEnum.UPDATE],
               },
               model,
             });
@@ -43,7 +42,7 @@ export default function onBookmarkUpdate<M extends State>({
         model,
         notification: {
           id: Date.now(),
-          message: err.message,
+          messages: [err.message],
           severity: 'error',
         },
       });

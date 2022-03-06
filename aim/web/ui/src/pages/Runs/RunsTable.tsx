@@ -5,12 +5,14 @@ import { CircularProgress } from '@material-ui/core';
 import Table from 'components/Table/Table';
 import ErrorBoundary from 'components/ErrorBoundary/ErrorBoundary';
 
+import { RequestStatusEnum } from 'config/enums/requestStatusEnum';
+import { Request_Illustrations } from 'config/illustrationConfig/illustrationConfig';
+
 import { AppNameEnum } from 'services/models/explorer';
 
 import { IRunsTableProps } from 'types/pages/runs/Runs';
 
 function RunsTable({
-  isRunsDataLoading,
   isInfiniteLoading,
   tableRef,
   columns,
@@ -32,6 +34,7 @@ function RunsTable({
   onRowSelect,
   archiveRuns,
   deleteRuns,
+  requestStatus,
 }: IRunsTableProps): React.FunctionComponentElement<React.ReactNode> {
   const getLatestRunsDataRequestRef = React.useRef<any>(null);
   React.useEffect(() => {
@@ -58,11 +61,10 @@ function RunsTable({
             showRowClickBehaviour={false}
             infiniteLoadHandler={handleInfiniteLoad}
             showResizeContainerActionBar={false}
-            emptyText={'No runs found'}
             ref={tableRef}
             data={data}
             columns={columns}
-            isLoading={isRunsDataLoading}
+            isLoading={requestStatus === RequestStatusEnum.Pending}
             selectedRows={selectedRows}
             appName={AppNameEnum.RUNS}
             multiSelect
@@ -83,6 +85,10 @@ function RunsTable({
             onRowSelect={onRowSelect}
             archiveRuns={archiveRuns}
             deleteRuns={deleteRuns}
+            illustrationConfig={{
+              type: Request_Illustrations[requestStatus as RequestStatusEnum],
+              page: 'runs',
+            }}
           />
         </div>
         {isInfiniteLoading && (

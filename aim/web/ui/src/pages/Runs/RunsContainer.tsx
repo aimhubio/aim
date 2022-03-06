@@ -58,7 +58,7 @@ function RunsContainer(): React.FunctionComponentElement<React.ReactNode> {
       <Runs
         tableData={runsData?.tableData}
         tableColumns={runsData?.tableColumns}
-        isRunsDataLoading={runsData?.requestIsPending}
+        requestStatus={runsData?.requestStatus}
         isLatest={runsData?.config?.pagination.isLatest}
         onSelectRunQueryChange={runsAppModel.onSelectRunQueryChange}
         tableRowHeight={runsData?.config?.table?.rowHeight}
@@ -68,6 +68,7 @@ function RunsContainer(): React.FunctionComponentElement<React.ReactNode> {
         hideSystemMetrics={runsData?.config?.table?.hideSystemMetrics}
         selectedRows={runsData?.selectedRows}
         query={runsData?.config?.select?.query}
+        searchSuggestions={runsData?.selectFormData?.suggestions!}
         columnsWidths={runsData?.config?.table.columnsWidths}
         onExportTableData={runsAppModel.onExportTableData}
         updateColumnsWidths={runsAppModel.updateColumnsWidths}

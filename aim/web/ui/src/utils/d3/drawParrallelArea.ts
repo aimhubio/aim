@@ -2,11 +2,14 @@ import * as d3 from 'd3';
 
 import { IDrawAreaArgs } from 'types/utils/d3/drawArea';
 
+import { toTextEllipsis } from 'utils/helper';
+
 import { CircleEnum } from './index';
 
 function drawParallelArea(args: IDrawAreaArgs): void {
   const {
-    index = 0,
+    index,
+    nameKey,
     parentRef,
     visAreaRef,
     svgNodeRef,
@@ -52,7 +55,7 @@ function drawParallelArea(args: IDrawAreaArgs): void {
 
   svgNodeRef.current = visArea
     .append('svg')
-    .attr('id', 'svg-area')
+    .attr('id', `${nameKey}-svg-area-${index}`)
     .attr('width', `${width}px`)
     .attr('height', `${height}px`)
     .attr('xmlns', 'http://www.w3.org/2000/svg');
@@ -75,7 +78,7 @@ function drawParallelArea(args: IDrawAreaArgs): void {
 
   linesNodeRef.current
     .append('clipPath')
-    .attr('id', 'lines-rect-clip-' + index)
+    .attr('id', `${nameKey}-lines-rect-clip-${index}`)
     .append('rect')
     .attr('x', 0)
     .attr('y', 0)
@@ -88,71 +91,56 @@ function drawParallelArea(args: IDrawAreaArgs): void {
 
   attributesNodeRef.current
     .append('clipPath')
-    .attr('id', 'circles-rect-clip-' + index)
+    .attr('id', `${nameKey}-circles-rect-clip-${index}`)
     .append('rect')
-    .attr('x', -7)
-    .attr('y', -7)
-    .attr('width', offsetWidth + 2 * CircleEnum.ActiveRadius + 4)
-    .attr('height', offsetHeight + 2 * CircleEnum.ActiveRadius + 4);
+    .attr('x', -CircleEnum.Radius)
+    .attr('y', -CircleEnum.Radius)
+    .attr('width', offsetWidth + 2 * CircleEnum.Radius)
+    .attr('height', offsetHeight + 2 * CircleEnum.Radius);
 
-  const titleMarginTop = 2;
-  const titleHeight = 15;
   const keys = Object.keys(chartTitle);
   const titleText = keys
     ? `${keys.map((key) => `${key}=${chartTitle[key]}`).join(', ')}`
     : '';
-
+  const titleStyle = {
+    x: margin.left / 6,
+    fontSize: 11,
+    fontFamily: 'Inter, sans-serif',
+    fontWeight: 400,
+  };
+  const textEllipsis = toTextEllipsis({
+    text: titleText,
+    width: titleStyle.x + offsetWidth,
+    fontSize: `${titleStyle.fontSize}px`,
+    fontFamily: titleStyle.fontFamily,
+    fontWeight: titleStyle.fontWeight,
+  });
   if (titleText) {
-    svgNodeRef.current
-      .append('foreignObject')
+    const titleGroup = svgNodeRef.current
+      .append('g')
+      .attr('transform', `translate(${titleStyle.x}, 3)`)
+      .attr('font-size', `${titleStyle.fontSize}px`)
+      .attr('font-weight', titleStyle.fontWeight)
+      .attr('font-family', titleStyle.fontFamily);
+
+    titleGroup
+      .append('text')
       .attr('x', 0)
-      .attr('y', titleMarginTop)
-      .attr('height', titleHeight)
-      .attr('width', width)
-      .html((d: any) => {
-        return keys.length
-          ? `
-        <div 
-            title='#${index + 1} ${titleText}' 
-            style='
-              display: flex; 
-              align-items: center;
-              justify-content: center;
-              color: #484f56;
-              padding: 0 1em;
-            '
-        >
-          <div 
-            style='
-              width: ${titleHeight}px; 
-              height: ${titleHeight}px;
-              display: flex; 
-              align-items: center;
-              justify-content: center;
-              margin-right: 0.5em;
-              padding: 2px;
-              box-shadow: inset 0 0 0 1px #e8e8e8;
-              border-radius: 0.2em;
-              font-size: 0.6em;
-              flex-shrink: 0;
-            '
-          >
-           ${index + 1}
-          </div>
-          <div 
-            style='
-              white-space: nowrap; 
-              text-overflow: ellipsis;
-              overflow: hidden;
-              font-size: 0.75em;
-            '
-          >
-            ${titleText}
-          </div>
-        </div>
-      `
-          : '';
-      });
+      .attr('y', 12)
+      .attr('fill', '#484f56')
+      .style('outline', '0.8px solid #dee6f3')
+      .style('border-radius', '1px')
+      .style('white-space', 'pre')
+      .text(`  ${index + 1}  `);
+
+    titleGroup
+      .append('text')
+      .attr('x', titleStyle.x + 39)
+      .attr('y', 12)
+      .attr('fill', '#484f56')
+      .text(textEllipsis)
+      .append('svg:title')
+      .text(titleText);
   }
 }
 export default drawParallelArea;

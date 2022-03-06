@@ -7,7 +7,7 @@ import {
   CheckBoxOutlineBlank,
 } from '@material-ui/icons';
 
-import { ToggleButton, Badge, Text } from 'components/kit';
+import { Badge, Text, ToggleButton } from 'components/kit';
 import ErrorBoundary from 'components/ErrorBoundary/ErrorBoundary';
 
 import { ITooltipContentPopoverProps } from 'types/components/TooltipContentPopover/TooltipContentPopover';
@@ -23,17 +23,26 @@ function TooltipContentPopover({
 }: ITooltipContentPopoverProps): React.FunctionComponentElement<React.ReactNode> {
   let [inputValue, setInputValue] = React.useState('');
 
-  const onSelectedParamsChange = React.useCallback(
-    (e: object, values: IGroupingSelectOption[]): void => {
-      onChangeTooltip({
-        selectedParams: values.map((item: IGroupingSelectOption) =>
-          typeof item === 'string' ? item : item.value,
-        ),
-      });
-    },
-    [onChangeTooltip],
-  );
-
+  function onSelectedParamsChange(
+    e: any,
+    values: IGroupingSelectOption[],
+  ): void {
+    if (e?.code !== 'Backspace') {
+      handleSelect(values);
+      setInputValue('');
+    } else {
+      if (inputValue.length === 0) {
+        handleSelect(values);
+      }
+    }
+  }
+  function handleSelect(values: IGroupingSelectOption[]) {
+    onChangeTooltip({
+      selectedParams: values.map((item: IGroupingSelectOption) =>
+        typeof item === 'string' ? item : item.value,
+      ),
+    });
+  }
   const onDisplayTooltipChange = React.useCallback(
     (value, id): void => {
       onChangeTooltip({ [id]: value === 'Show' });

@@ -11,8 +11,10 @@ import { ResizeModeEnum } from 'config/enums/tableEnums';
 import { AlignmentNotificationsEnum } from 'config/notification-messages/notificationMessages';
 import { RowHeightSize, TABLE_DEFAULT_CONFIG } from 'config/table/tableConfigs';
 import { DensityOptions } from 'config/enums/densityEnum';
+import { RequestStatusEnum } from 'config/enums/requestStatusEnum';
 import { CONTROLS_DEFAULT_CONFIG } from 'config/controls/controlsDefaultConfig';
 import { ANALYTICS_EVENT_KEYS } from 'config/analytics/analyticsKeysMap';
+import { DATE_EXPORTING_FORMAT } from 'config/dates/dates';
 
 import {
   getMetricsTableColumns,
@@ -34,6 +36,7 @@ import createMetricModel from 'services/models/metrics/metricModel';
 import { createRunModel } from 'services/models/metrics/runModel';
 import createModel from 'services/models/model';
 import LiveUpdateService from 'services/live-update/examples/LiveUpdateBridge.example';
+import projectsService from 'services/api/projects/projectsService';
 
 import { IAxesScaleState } from 'types/components/AxesScalePopover/AxesScalePopover';
 import { ILine } from 'types/components/LineChart/LineChart';
@@ -78,6 +81,7 @@ import {
   IAppModelState,
   ISelectOption,
 } from 'types/services/models/explorer/createAppModel';
+import { IProjectParamsMetrics } from 'types/services/models/projects/projectsModel';
 import {
   IScatterAppModelState,
   ITrendlineOptions,
@@ -164,12 +168,14 @@ import { isSystemMetric } from 'utils/isSystemMetric';
 import setDefaultAppConfigData from 'utils/app/setDefaultAppConfigData';
 import getAppConfigData from 'utils/app/getAppConfigData';
 import { getValue } from 'utils/helper';
+import { formatSystemMetricName } from 'utils/formatSystemMetricName';
+import alphabeticalSortComparator from 'utils/alphabeticalSortComparator';
 import onRowSelect from 'utils/app/onRowSelect';
 import { SortField } from 'utils/getSortedFields';
 import onChangeTrendlineOptions from 'utils/app/onChangeTrendlineOptions';
+import { getParamsSuggestions } from 'utils/app/getParamsSuggestions';
 
 import { AppDataTypeEnum, AppNameEnum } from './index';
-
 /**
  * function createAppModel has 2 major functionalities:
  *    1. getConfig() function which depends on appInitialConfig returns corresponding config state
@@ -181,7 +187,8 @@ function createAppModel(appConfig: IAppInitialConfig) {
   const { appName, dataType, grouping, components, selectForm } = appConfig;
 
   const model: IModel<IAppModelState> = createModel<IAppModelState>({
-    requestIsPending: false,
+    requestStatus: RequestStatusEnum.NotRequested,
+    selectFormData: { options: undefined, suggestions: [] },
     config: getConfig(),
   });
 
@@ -343,12 +350,15 @@ function createAppModel(appConfig: IAppInitialConfig) {
             hideSystemMetrics: TABLE_DEFAULT_CONFIG.runs.hideSystemMetrics,
             hiddenMetrics: TABLE_DEFAULT_CONFIG.runs.hiddenMetrics,
             hiddenColumns: TABLE_DEFAULT_CONFIG.runs.hiddenColumns,
+            sortFields: [...TABLE_DEFAULT_CONFIG.runs.sortFields],
             columnsWidths: {},
             columnsOrder: {
               left: [...TABLE_DEFAULT_CONFIG.runs.columnsOrder.left],
               middle: [...TABLE_DEFAULT_CONFIG.runs.columnsOrder.middle],
               right: [...TABLE_DEFAULT_CONFIG.runs.columnsOrder.right],
             },
+            resizeMode: TABLE_DEFAULT_CONFIG.runs.resizeMode,
+            height: TABLE_DEFAULT_CONFIG.runs.height,
           };
           if (appName === AppNameEnum.RUNS) {
             config.pagination = {
@@ -381,6 +391,10 @@ function createAppModel(appConfig: IAppInitialConfig) {
             };
           }
           if (components.charts.indexOf(ChartTypeEnum.ScatterPlot) !== -1) {
+            config.table = {
+              ...config?.table!,
+              resizeMode: TABLE_DEFAULT_CONFIG.scatters.resizeMode,
+            };
             config.chart = {
               focusedState: {
                 key: null,
@@ -453,6 +467,59 @@ function createAppModel(appConfig: IAppInitialConfig) {
     let tooltipData: ITooltipData = {};
     let liveUpdateInstance: LiveUpdateService | null;
 
+    function getOption(
+      system: boolean,
+      key: string,
+      index: number,
+      val: object | null = null,
+    ): ISelectOption {
+      return {
+        label: `${system ? formatSystemMetricName(key) : key}`,
+        group: system ? 'System' : key,
+        color: COLORS[0][index % COLORS[0].length],
+        value: {
+          option_name: key,
+          context: val,
+        },
+      };
+    }
+    function getMetricOptions(
+      projectsData: IProjectParamsMetrics,
+    ): ISelectOption[] {
+      let data: ISelectOption[] = [];
+      const systemOptions: ISelectOption[] = [];
+      let index: number = 0;
+      if (projectsData?.metric) {
+        for (let key in projectsData?.metric) {
+          let system: boolean = isSystemMetric(key);
+          let option = getOption(system, key, index);
+          if (system) {
+            systemOptions.push(option);
+          } else {
+            data.push(option);
+          }
+          index++;
+          for (let val of projectsData?.metric[key]) {
+            if (!_.isEmpty(val)) {
+              let label = contextToString(val);
+              let option = getOption(system, key, index, val);
+              option.label = `${option.label} ${label}`;
+              if (system) {
+                systemOptions.push(option);
+              } else {
+                data.push(option);
+              }
+              index++;
+            }
+          }
+        }
+      }
+      const comparator = alphabeticalSortComparator<ISelectOption>({
+        orderBy: 'label',
+      });
+      systemOptions.sort(comparator);
+      return data.sort(comparator).concat(systemOptions);
+    }
     function initialize(appId: string): void {
       model.init();
       const state: Partial<IAppModelState> = {};
@@ -476,7 +543,17 @@ function createAppModel(appConfig: IAppInitialConfig) {
       if (!appId) {
         setModelDefaultAppConfigData();
       }
-
+      projectsService
+        .getProjectParams(['metric'])
+        .call()
+        .then((data) => {
+          model.setState({
+            selectFormData: {
+              options: getMetricOptions(data),
+              suggestions: getParamsSuggestions(data),
+            },
+          });
+        });
       const liveUpdateState = model.getState()?.config?.liveUpdate;
 
       if (liveUpdateState?.enabled) {
@@ -501,13 +578,13 @@ function createAppModel(appConfig: IAppInitialConfig) {
       }
 
       model.setState({
-        requestIsPending: false,
+        requestStatus: RequestStatusEnum.Ok,
       });
 
       onModelNotificationAdd({
         id: Date.now(),
         severity: 'info',
-        message: 'Request has been cancelled',
+        messages: ['Request has been cancelled'],
       });
     }
 
@@ -535,34 +612,10 @@ function createAppModel(appConfig: IAppInitialConfig) {
       return {
         call: async () => {
           if (query === '()') {
-            let state: Partial<IMetricAppModelState> = {};
-            if (
-              Array.isArray(components?.charts) &&
-              components?.charts?.indexOf(ChartTypeEnum.LineChart) !== -1
-            ) {
-              state.lineChartData = [];
-            }
-            if (components.table) {
-              state.tableData = [];
-              state.config = {
-                ...configData,
-                table: {
-                  ...configData?.table,
-                  resizeMode: ResizeModeEnum.Resizable,
-                },
-              };
-            }
-            model.setState({
-              requestIsPending: false,
-              queryIsEmpty: true,
-              selectedRows: shouldResetSelectedRows
-                ? {}
-                : model.getState()?.selectedRows,
-              ...state,
-            });
+            resetModelState(configData, shouldResetSelectedRows!);
           } else {
             model.setState({
-              requestIsPending: true,
+              requestStatus: RequestStatusEnum.Pending,
               queryIsEmpty: false,
               selectedRows: shouldResetSelectedRows
                 ? {}
@@ -570,9 +623,10 @@ function createAppModel(appConfig: IAppInitialConfig) {
             });
             liveUpdateInstance?.stop().then();
             try {
-              const stream = await metricsRequestRef.call((detail) =>
-                exceptionHandler({ detail, model }),
-              );
+              const stream = await metricsRequestRef.call((detail) => {
+                exceptionHandler({ detail, model });
+                resetModelState(configData, shouldResetSelectedRows!);
+              });
               const runData = await getRunData(stream);
               updateData(runData);
             } catch (ex: Error | any) {
@@ -592,6 +646,39 @@ function createAppModel(appConfig: IAppInitialConfig) {
         },
         abort: metricsRequestRef.abort,
       };
+    }
+
+    function resetModelState(
+      configData: any,
+      shouldResetSelectedRows: boolean,
+    ) {
+      let state: Partial<IMetricAppModelState> = {};
+      if (
+        Array.isArray(components?.charts) &&
+        components?.charts?.indexOf(ChartTypeEnum.LineChart) !== -1
+      ) {
+        state.lineChartData = [];
+      }
+
+      if (components.table) {
+        state.tableData = [];
+        state.config = {
+          ...configData,
+          table: {
+            ...configData?.table,
+            resizeMode: ResizeModeEnum.Resizable,
+          },
+        };
+      }
+      model.setState({
+        queryIsEmpty: true,
+        rawData: [],
+        tableColumns: [],
+        selectedRows: shouldResetSelectedRows
+          ? {}
+          : model.getState()?.selectedRows,
+        ...state,
+      });
     }
 
     function getDataAsTableRows(
@@ -933,9 +1020,9 @@ function createAppModel(appConfig: IAppInitialConfig) {
           sortFields?.map((f: SortField) => f.order),
         ),
       );
-      const uniqParams = _.uniq(params);
-      const uniqHighLevelParams = _.uniq(highLevelParams);
-      const uniqContexts = _.uniq(contexts);
+      const uniqParams = _.uniq(params).sort();
+      const uniqHighLevelParams = _.uniq(highLevelParams).sort();
+      const uniqContexts = _.uniq(contexts).sort();
 
       const mappedData =
         data?.reduce((acc: any, item: any) => {
@@ -1008,7 +1095,7 @@ function createAppModel(appConfig: IAppInitialConfig) {
         onModelGroupingSelectChange,
       );
       const tableRef: any = model.getState()?.refs?.tableRef;
-      tableRef.current?.updateData({
+      tableRef?.current?.updateData({
         newData: tableData.rows,
         newColumns: tableColumns,
         hiddenColumns: configData.table?.hiddenColumns!,
@@ -1088,14 +1175,14 @@ function createAppModel(appConfig: IAppInitialConfig) {
         configData.grouping as any,
         onModelGroupingSelectChange,
       );
-      if (!model.getState()?.requestIsPending) {
+      if (model.getState()?.requestStatus !== RequestStatusEnum.Pending) {
         model.getState()?.refs?.tableRef?.current?.updateData({
           newData: tableData.rows,
           newColumns: tableColumns,
         });
       }
       model.setState({
-        requestIsPending: false,
+        requestStatus: RequestStatusEnum.Ok,
         rawData,
         config: configData,
         params,
@@ -1304,7 +1391,7 @@ function createAppModel(appConfig: IAppInitialConfig) {
               notification: {
                 id: Date.now(),
                 severity: 'error',
-                message: AlignmentNotificationsEnum.NOT_ALL_ALIGNED,
+                messages: [AlignmentNotificationsEnum.NOT_ALL_ALIGNED],
               },
               model,
             });
@@ -1471,7 +1558,7 @@ function createAppModel(appConfig: IAppInitialConfig) {
       onModelNotificationAdd({
         id: Date.now(),
         severity: 'success',
-        message: 'Run Expression Copied',
+        messages: ['Run Expression Copied'],
       });
     }
 
@@ -1568,7 +1655,7 @@ function createAppModel(appConfig: IAppInitialConfig) {
       const blob = new Blob([JsonToCSV(dataToExport)], {
         type: 'text/csv;charset=utf-8;',
       });
-      saveAs(blob, `${appName}-${moment().format('HH:mm:ss · D MMM, YY')}.csv`);
+      saveAs(blob, `${appName}-${moment().format(DATE_EXPORTING_FORMAT)}.csv`);
       analytics.trackEvent(ANALYTICS_EVENT_KEYS[appName].table.exports.csv);
     }
 
@@ -1777,9 +1864,11 @@ function createAppModel(appConfig: IAppInitialConfig) {
                   notification: {
                     id: Date.now(),
                     severity: 'success',
-                    message: `Runs are successfully ${
-                      archived ? 'archived' : 'unarchived'
-                    } `,
+                    messages: [
+                      `Runs are successfully ${
+                        archived ? 'archived' : 'unarchived'
+                      } `,
+                    ],
                   },
                   model,
                 });
@@ -1790,7 +1879,7 @@ function createAppModel(appConfig: IAppInitialConfig) {
                 notification: {
                   id: Date.now(),
                   severity: 'error',
-                  message: ex.message,
+                  messages: [ex.message],
                 },
                 model,
               });
@@ -1821,7 +1910,7 @@ function createAppModel(appConfig: IAppInitialConfig) {
                   notification: {
                     id: Date.now(),
                     severity: 'success',
-                    message: 'Runs are successfully deleted',
+                    messages: ['Runs are successfully deleted'],
                   },
                   model,
                 });
@@ -1832,7 +1921,7 @@ function createAppModel(appConfig: IAppInitialConfig) {
                 notification: {
                   id: Date.now(),
                   severity: 'error',
-                  message: ex.message,
+                  messages: [ex.message],
                 },
                 model,
               });
@@ -2125,7 +2214,16 @@ function createAppModel(appConfig: IAppInitialConfig) {
         }
 
         const liveUpdateState = model.getState()?.config.liveUpdate;
-
+        projectsService
+          .getProjectParams(['metric'])
+          .call()
+          .then((data) => {
+            model.setState({
+              selectFormData: {
+                suggestions: getParamsSuggestions(data),
+              },
+            });
+          });
         if (liveUpdateState?.enabled) {
           liveUpdateInstance = new LiveUpdateService(
             appName,
@@ -2142,7 +2240,7 @@ function createAppModel(appConfig: IAppInitialConfig) {
             model,
             notification: {
               id: Date.now(),
-              message: err.message,
+              messages: [err.message],
               severity: 'error',
             },
           });
@@ -2155,13 +2253,13 @@ function createAppModel(appConfig: IAppInitialConfig) {
         }
 
         model.setState({
-          requestIsPending: false,
+          requestStatus: RequestStatusEnum.Ok,
         });
 
         onModelNotificationAdd({
           id: Date.now(),
           severity: 'info',
-          message: 'Request has been cancelled',
+          messages: ['Request has been cancelled'],
         });
       }
 
@@ -2185,16 +2283,11 @@ function createAppModel(appConfig: IAppInitialConfig) {
 
         liveUpdateInstance?.stop().then();
 
-        runsRequestRef = runsService.getRunsData(
-          query,
-          pagination?.limit,
-          pagination?.offset,
-        );
-
+        runsRequestRef = runsService.getRunsData(query, 45, pagination?.offset);
+        let limit = pagination.limit;
         if (shouldUrlUpdate) {
           updateURL({ configData, appName });
         }
-
         return {
           call: async () => {
             try {
@@ -2215,7 +2308,7 @@ function createAppModel(appConfig: IAppInitialConfig) {
                   const runData: any = val;
                   runsData.push({ ...runData, hash: keys[0] } as any);
                 } else {
-                  if (count > 0) {
+                  if (count >= 0) {
                     const runData: any = val;
                     runsData.push({ ...runData, hash: keys[0] } as any);
                   }
@@ -2237,13 +2330,16 @@ function createAppModel(appConfig: IAppInitialConfig) {
                 model.getState()?.config?.table.hiddenColumns!,
               );
               updateTableData(tableData, tableColumns, configData);
+              limit = isInitial
+                ? modelState?.config.pagination.limit
+                : modelState?.config.pagination.limit + 45;
               model.setState({
                 data,
                 selectedRows: shouldResetSelectedRows
                   ? {}
                   : selectedRows ?? model.getState()?.selectedRows,
                 rawData: runsData,
-                requestIsPending: false,
+                requestStatus: RequestStatusEnum.Ok,
                 infiniteIsPending: false,
                 tableColumns,
                 tableData: tableData.rows,
@@ -2254,6 +2350,9 @@ function createAppModel(appConfig: IAppInitialConfig) {
                     ...modelState?.config.pagination,
                     isLatest:
                       !isInitial && count < modelState?.config.pagination.limit,
+                    limit: isInitial
+                      ? modelState?.config.pagination.limit
+                      : modelState?.config.pagination.limit + 45,
                   },
                 },
               });
@@ -2263,7 +2362,7 @@ function createAppModel(appConfig: IAppInitialConfig) {
                   notification: {
                     id: Date.now(),
                     severity: 'error',
-                    message: `${ex.name}, ${ex.message}`,
+                    messages: [`${ex.name}, ${ex.message}`],
                   },
                   model,
                 });
@@ -2271,7 +2370,7 @@ function createAppModel(appConfig: IAppInitialConfig) {
             }
             liveUpdateInstance?.start({
               q: query,
-              limit: pagination.limit + model.getState()?.rawData?.length || 0,
+              limit: limit || 0,
             });
           },
           abort: runsRequestRef.abort,
@@ -2346,7 +2445,9 @@ function createAppModel(appConfig: IAppInitialConfig) {
         }
 
         model.setState({
-          requestIsPending: isInitial,
+          requestStatus: isInitial
+            ? RequestStatusEnum.Pending
+            : RequestStatusEnum.Ok,
           infiniteIsPending: !isInitial,
         });
 
@@ -2358,14 +2459,17 @@ function createAppModel(appConfig: IAppInitialConfig) {
         params: string[];
         metricsColumns: any;
         selectedRows: any;
+        runHashArray: string[];
+        unselectedRowsCount: number;
       } {
         const grouping = model.getState()?.config?.grouping;
+        const paletteIndex: number = grouping?.paletteIndex || 0;
+        const metricsColumns: any = {};
+        const runHashArray: string[] = [];
         let selectedRows = model.getState()?.selectedRows;
         let runs: IParam[] = [];
         let params: string[] = [];
-        const paletteIndex: number = grouping?.paletteIndex || 0;
-        const metricsColumns: any = {};
-
+        let unselectedRowsCount = 0;
         data?.forEach((run: IRun<IParamTrace>, index) => {
           params = params.concat(getObjectPaths(run.params, run.params));
           run.traces.metric.forEach((trace) => {
@@ -2374,6 +2478,7 @@ function createAppModel(appConfig: IAppInitialConfig) {
               [contextToString(trace.context) as string]: '-',
             };
           });
+          runHashArray.push(run.hash);
           runs.push({
             run,
             isHidden: false,
@@ -2383,7 +2488,8 @@ function createAppModel(appConfig: IAppInitialConfig) {
           });
         });
         const processedData = groupData(runs);
-        const uniqParams = _.uniq(params);
+        const uniqParams = _.uniq(params).sort();
+
         const mappedData =
           data?.reduce((acc: any, item: any) => {
             acc[item.hash] = { runHash: item.hash, ...item.props };
@@ -2393,10 +2499,14 @@ function createAppModel(appConfig: IAppInitialConfig) {
           selectedRows = Object.keys(selectedRows).reduce(
             (acc: any, key: string) => {
               const slicedKey = key.slice(0, key.indexOf('/'));
-              acc[key] = {
-                selectKey: key,
-                ...mappedData[slicedKey],
-              };
+              if (runHashArray.includes(slicedKey)) {
+                acc[key] = {
+                  selectKey: key,
+                  ...mappedData[slicedKey],
+                };
+              } else {
+                unselectedRowsCount++;
+              }
               return acc;
             },
             {},
@@ -2407,6 +2517,8 @@ function createAppModel(appConfig: IAppInitialConfig) {
           params: uniqParams,
           metricsColumns,
           selectedRows,
+          runHashArray,
+          unselectedRowsCount,
         };
       }
 
@@ -2792,7 +2904,7 @@ function createAppModel(appConfig: IAppInitialConfig) {
         const blob = new Blob([JsonToCSV(dataToExport)], {
           type: 'text/csv;charset=utf-8;',
         });
-        saveAs(blob, `runs-${moment().format('HH:mm:ss · D MMM, YY')}.csv`);
+        saveAs(blob, `runs-${moment().format(DATE_EXPORTING_FORMAT)}.csv`);
         analytics.trackEvent(ANALYTICS_EVENT_KEYS[appName].table.exports.csv);
       }
 
@@ -2801,8 +2913,28 @@ function createAppModel(appConfig: IAppInitialConfig) {
       }
 
       function updateData(newData: any): void {
-        const { data, params, metricsColumns, selectedRows } =
-          processData(newData);
+        const {
+          data,
+          params,
+          metricsColumns,
+          selectedRows,
+          unselectedRowsCount,
+        } = processData(newData);
+        if (unselectedRowsCount) {
+          onNotificationAdd({
+            notification: {
+              id: Date.now(),
+              severity: 'info',
+              closeDelay: 5000,
+              messages: [
+                'Live update: runs have been updated.',
+                `${unselectedRowsCount} of selected runs have been left out of the table.`,
+              ],
+            },
+            model,
+          });
+        }
+
         const modelState = model.getState() as IRunsAppModelState;
         const tableData = getDataAsTableRows(data, metricsColumns, params);
         const tableColumns = getRunsTableColumns(
@@ -2811,10 +2943,11 @@ function createAppModel(appConfig: IAppInitialConfig) {
           model.getState()?.config?.table.columnsOrder!,
           model.getState()?.config?.table.hiddenColumns!,
         );
+        const lastRowKey = newData[newData.length - 1].hash;
         model.setState({
           data,
           rowData: newData,
-          requestIsPending: false,
+          requestStatus: RequestStatusEnum.Ok,
           infiniteIsPending: false,
           tableColumns,
           tableData: tableData.rows,
@@ -2824,6 +2957,7 @@ function createAppModel(appConfig: IAppInitialConfig) {
             ...modelState?.config,
             pagination: {
               ...modelState?.config.pagination,
+              offset: lastRowKey,
               isLatest: false,
             },
           },
@@ -2862,7 +2996,7 @@ function createAppModel(appConfig: IAppInitialConfig) {
           );
           liveUpdateInstance.start({
             q: query,
-            limit: pagination.limit + state?.rawData?.length || 0,
+            limit: pagination.limit || 0,
           });
         } else {
           liveUpdateInstance?.clear();
@@ -2909,9 +3043,11 @@ function createAppModel(appConfig: IAppInitialConfig) {
                     notification: {
                       id: Date.now(),
                       severity: 'success',
-                      message: `Runs are successfully ${
-                        archived ? 'archived' : 'unarchived'
-                      } `,
+                      messages: [
+                        `Runs are successfully ${
+                          archived ? 'archived' : 'unarchived'
+                        } `,
+                      ],
                     },
                     model,
                   });
@@ -2922,7 +3058,7 @@ function createAppModel(appConfig: IAppInitialConfig) {
                   notification: {
                     id: Date.now(),
                     severity: 'error',
-                    message: ex.message,
+                    messages: [ex.message],
                   },
                   model,
                 });
@@ -2955,7 +3091,7 @@ function createAppModel(appConfig: IAppInitialConfig) {
                     notification: {
                       id: Date.now(),
                       severity: 'success',
-                      message: 'Runs are successfully deleted',
+                      messages: ['Runs are successfully deleted'],
                     },
                     model,
                   });
@@ -2966,7 +3102,7 @@ function createAppModel(appConfig: IAppInitialConfig) {
                   notification: {
                     id: Date.now(),
                     severity: 'error',
-                    message: ex.message,
+                    messages: [ex.message],
                   },
                   model,
                 });
@@ -3107,6 +3243,17 @@ function createAppModel(appConfig: IAppInitialConfig) {
             chartPanelRef: { current: null },
           };
         }
+        projectsService
+          .getProjectParams(['metric'])
+          .call()
+          .then((data) => {
+            model.setState({
+              selectFormData: {
+                options: getParamsOptions(data),
+                suggestions: getParamsSuggestions(data),
+              },
+            });
+          });
         model.setState({ ...state });
         if (!appId) {
           setModelDefaultAppConfigData();
@@ -3122,6 +3269,71 @@ function createAppModel(appConfig: IAppInitialConfig) {
         }
       }
 
+      function getParamsOptions(projectsData: IProjectParamsMetrics) {
+        const comparator = alphabeticalSortComparator<ISelectOption>({
+          orderBy: 'label',
+        });
+
+        let optionsCount = 0; // to calculate color
+        const systemOptions: ISelectOption[] = [];
+        let params: ISelectOption[] = [];
+        let metrics: ISelectOption[] = [];
+
+        if (projectsData?.metric) {
+          for (let key in projectsData.metric) {
+            let system: boolean = isSystemMetric(key);
+            for (let val of projectsData.metric[key]) {
+              let label = contextToString(val);
+              let index: number = optionsCount;
+              let option: ISelectOption = {
+                label: `${system ? formatSystemMetricName(key) : key} ${label}`,
+                group: system ? 'System' : key,
+                type: 'metrics',
+                color: COLORS[0][index % COLORS[0].length],
+                value: {
+                  option_name: key,
+                  context: val,
+                },
+              };
+              optionsCount++;
+              if (system) {
+                systemOptions.push(option);
+              } else {
+                metrics.push(option);
+              }
+            }
+          }
+        }
+        if (projectsData?.params) {
+          const paramPaths = getObjectPaths(
+            projectsData.params,
+            projectsData.params,
+          );
+          paramPaths.forEach((paramPath, index) => {
+            params.push({
+              label: paramPath.slice(0, paramPath.indexOf('.__example_type__')),
+              group: 'Params',
+              type: 'params',
+              color: COLORS[0][index % COLORS[0].length],
+            });
+          });
+        }
+
+        params = params.sort(comparator);
+        metrics = metrics.sort(comparator);
+        systemOptions.sort(comparator);
+
+        // sort by group
+        const data: ISelectOption[] = [...metrics, ...params];
+
+        data.sort(
+          alphabeticalSortComparator({
+            orderBy: 'type',
+          }),
+        );
+        return data.concat(systemOptions);
+      }
+
       function updateData(newData: IRun<IParamTrace>[]): void {
         const configData = model.getState()?.config;
         if (configData) {
@@ -3135,13 +3347,13 @@ function createAppModel(appConfig: IAppInitialConfig) {
         }
 
         model.setState({
-          requestIsPending: false,
+          requestStatus: RequestStatusEnum.Ok,
         });
 
         onModelNotificationAdd({
           id: Date.now(),
           severity: 'info',
-          message: 'Request has been cancelled',
+          messages: ['Request has been cancelled'],
         });
       }
 
@@ -3163,32 +3375,10 @@ function createAppModel(appConfig: IAppInitialConfig) {
         return {
           call: async () => {
             if (_.isEmpty(configData?.select?.options)) {
-              let state: Partial<IParamsAppModelState> = {};
-              if (components?.charts?.indexOf(ChartTypeEnum.HighPlot) !== -1) {
-                state.highPlotData = [];
-              }
-              if (components.table) {
-                state.tableData = [];
-                state.config = {
-                  ...configData,
-                  table: {
-                    ...configData?.table,
-                    resizeMode: ResizeModeEnum.Resizable,
-                  },
-                };
-              }
-
-              model.setState({
-                requestIsPending: false,
-                queryIsEmpty: true,
-                selectedRows: shouldResetSelectedRows
-                  ? {}
-                  : model.getState()?.selectedRows,
-                ...state,
-              });
+              resetModelState(configData, shouldResetSelectedRows!);
             } else {
               model.setState({
-                requestIsPending: true,
+                requestStatus: RequestStatusEnum.Pending,
                 queryIsEmpty: false,
                 selectedRows: shouldResetSelectedRows
                   ? {}
@@ -3196,9 +3386,10 @@ function createAppModel(appConfig: IAppInitialConfig) {
               });
               liveUpdateInstance?.stop().then();
               try {
-                const stream = await runsRequestRef.call((detail) =>
-                  exceptionHandler({ detail, model }),
-                );
+                const stream = await runsRequestRef.call((detail) => {
+                  exceptionHandler({ detail, model });
+                  resetModelState(configData, shouldResetSelectedRows!);
+                });
                 const runData = await getRunData(stream);
                 updateData(runData);
               } catch (ex: Error | any) {
@@ -3215,6 +3406,36 @@ function createAppModel(appConfig: IAppInitialConfig) {
           },
           abort: runsRequestRef.abort,
         };
+      }
+
+      function resetModelState(
+        configData: any,
+        shouldResetSelectedRows: boolean,
+      ) {
+        let state: Partial<IParamsAppModelState> = {};
+        if (components?.charts?.indexOf(ChartTypeEnum.HighPlot) !== -1) {
+          state.highPlotData = [];
+        }
+        if (components.table) {
+          state.tableData = [];
+          state.config = {
+            ...configData,
+            table: {
+              ...configData?.table,
+              resizeMode: ResizeModeEnum.Resizable,
+            },
+          };
+        }
+
+        model.setState({
+          queryIsEmpty: true,
+          rawData: [],
+          tableColumns: [],
+          selectedRows: shouldResetSelectedRows
+            ? {}
+            : model.getState()?.selectedRows,
+          ...state,
+        });
       }
 
       function getDataAsTableRows(
@@ -3605,7 +3826,7 @@ function createAppModel(appConfig: IAppInitialConfig) {
           onModelGroupingSelectChange,
         );
 
-        if (!model.getState()?.requestIsPending) {
+        if (model.getState()?.requestStatus !== RequestStatusEnum.Pending) {
           model.getState()?.refs?.tableRef.current?.updateData({
             newData: tableData.rows,
             newColumns: tableColumns,
@@ -3613,7 +3834,7 @@ function createAppModel(appConfig: IAppInitialConfig) {
         }
 
         model.setState({
-          requestIsPending: false,
+          requestStatus: RequestStatusEnum.Ok,
           data,
           highPlotData: getDataAsLines(data),
           chartTitleData: getChartTitleData<IParam, IParamsAppModelState>({
@@ -3830,8 +4051,8 @@ function createAppModel(appConfig: IAppInitialConfig) {
             sortFields?.map((f: SortField) => f.order),
           ),
         );
-        const uniqParams = _.uniq(params);
-        const uniqHighLevelParams = _.uniq(highLevelParams);
+        const uniqParams = _.uniq(params).sort();
+        const uniqHighLevelParams = _.uniq(highLevelParams).sort();
         const mappedData =
           data?.reduce((acc: any, item: any) => {
             acc[item.hash] = { runHash: item.hash, ...item.props };
@@ -3975,7 +4196,7 @@ function createAppModel(appConfig: IAppInitialConfig) {
         const blob = new Blob([JsonToCSV(dataToExport)], {
           type: 'text/csv;charset=utf-8;',
         });
-        saveAs(blob, `params-${moment().format('HH:mm:ss · D MMM, YY')}.csv`);
+        saveAs(blob, `params-${moment().format(DATE_EXPORTING_FORMAT)}.csv`);
         analytics.trackEvent(ANALYTICS_EVENT_KEYS[appName].table.exports.csv);
       }
 
@@ -4019,7 +4240,7 @@ function createAppModel(appConfig: IAppInitialConfig) {
           onModelGroupingSelectChange,
         );
         const tableRef: any = model.getState()?.refs?.tableRef;
-        tableRef.current?.updateData({
+        tableRef?.current?.updateData({
           newData: tableData.rows,
           newColumns: tableColumns,
           hiddenColumns: configData.table?.hiddenColumns!,
@@ -4172,9 +4393,11 @@ function createAppModel(appConfig: IAppInitialConfig) {
                     notification: {
                       id: Date.now(),
                       severity: 'success',
-                      message: `Runs are successfully ${
-                        archived ? 'archived' : 'unarchived'
-                      } `,
+                      messages: [
+                        `Runs are successfully ${
+                          archived ? 'archived' : 'unarchived'
+                        } `,
+                      ],
                     },
                     model,
                   });
@@ -4185,7 +4408,7 @@ function createAppModel(appConfig: IAppInitialConfig) {
                   notification: {
                     id: Date.now(),
                     severity: 'error',
-                    message: ex.message,
+                    messages: [ex.message],
                   },
                   model,
                 });
@@ -4216,7 +4439,7 @@ function createAppModel(appConfig: IAppInitialConfig) {
                     notification: {
                       id: Date.now(),
                       severity: 'success',
-                      message: 'Runs are successfully deleted',
+                      messages: ['Runs are successfully deleted'],
                     },
                     model,
                   });
@@ -4227,7 +4450,7 @@ function createAppModel(appConfig: IAppInitialConfig) {
                   notification: {
                     id: Date.now(),
                     severity: 'error',
-                    message: ex.message,
+                    messages: [ex.message],
                   },
                   model,
                 });
@@ -4456,6 +4679,18 @@ function createAppModel(appConfig: IAppInitialConfig) {
         }
         const liveUpdateState = model.getState()?.config?.liveUpdate;
 
+        projectsService
+          .getProjectParams(['metric'])
+          .call()
+          .then((data: IProjectParamsMetrics) => {
+            model.setState({
+              selectFormData: {
+                options: getScattersSelectOptions(data),
+                suggestions: getParamsSuggestions(data),
+              },
+            });
+          });
+
         if (liveUpdateState?.enabled) {
           liveUpdateInstance = new LiveUpdateService(
             appName,
@@ -4517,7 +4752,7 @@ function createAppModel(appConfig: IAppInitialConfig) {
           onModelGroupingSelectChange,
         );
 
-        if (!model.getState()?.requestIsPending) {
+        if (model.getState()?.requestStatus !== RequestStatusEnum.Pending) {
           model.getState()?.refs?.tableRef.current?.updateData({
             newData: tableData.rows,
             newColumns: tableColumns,
@@ -4525,7 +4760,7 @@ function createAppModel(appConfig: IAppInitialConfig) {
         }
 
         model.setState({
-          requestIsPending: false,
+          requestStatus: RequestStatusEnum.Ok,
           data,
           chartData: getChartData(data),
           chartTitleData: getChartTitleData<IParam, IParamsAppModelState>({
@@ -5145,7 +5380,7 @@ function createAppModel(appConfig: IAppInitialConfig) {
           onModelGroupingSelectChange,
         );
         const tableRef: any = model.getState()?.refs?.tableRef;
-        tableRef.current?.updateData({
+        tableRef?.current?.updateData({
           newData: tableData.rows,
           newColumns: tableColumns,
           hiddenColumns: configData.table?.hiddenColumns!,
@@ -5178,13 +5413,13 @@ function createAppModel(appConfig: IAppInitialConfig) {
         }
 
         model.setState({
-          requestIsPending: false,
+          requestStatus: RequestStatusEnum.Ok,
         });
 
         onModelNotificationAdd({
           id: Date.now(),
           severity: 'info',
-          message: 'Request has been cancelled',
+          messages: ['Request has been cancelled'],
         });
       }
 
@@ -5206,34 +5441,10 @@ function createAppModel(appConfig: IAppInitialConfig) {
         return {
           call: async () => {
             if (_.isEmpty(configData?.select?.options)) {
-              let state: Partial<IScatterAppModelState> = {};
-              if (
-                components?.charts?.indexOf(ChartTypeEnum.ScatterPlot) !== -1
-              ) {
-                state.chartData = [];
-              }
-              if (components.table) {
-                state.tableData = [];
-                state.config = {
-                  ...configData,
-                  table: {
-                    ...configData?.table,
-                    resizeMode: ResizeModeEnum.Resizable,
-                  },
-                };
-              }
-
-              model.setState({
-                requestIsPending: false,
-                queryIsEmpty: true,
-                selectedRows: shouldResetSelectedRows
-                  ? {}
-                  : model.getState()?.selectedRows,
-                ...state,
-              });
+              resetModelState(configData, shouldResetSelectedRows!);
             } else {
               model.setState({
-                requestIsPending: true,
+                requestStatus: RequestStatusEnum.Pending,
                 queryIsEmpty: false,
                 selectedRows: shouldResetSelectedRows
                   ? {}
@@ -5241,9 +5452,10 @@ function createAppModel(appConfig: IAppInitialConfig) {
               });
               liveUpdateInstance?.stop().then();
               try {
-                const stream = await runsRequestRef.call((detail) =>
-                  exceptionHandler({ detail, model }),
-                );
+                const stream = await runsRequestRef.call((detail) => {
+                  exceptionHandler({ detail, model });
+                  resetModelState(configData, shouldResetSelectedRows!);
+                });
                 const runData = await getRunData(stream);
                 updateData(runData);
 
@@ -5254,7 +5466,7 @@ function createAppModel(appConfig: IAppInitialConfig) {
                 if (ex.name === 'AbortError') {
                   onNotificationAdd({
                     notification: {
-                      message: ex.message,
+                      messages: [ex.message],
                       id: Date.now(),
                       severity: 'error',
                     },
@@ -5266,6 +5478,86 @@ function createAppModel(appConfig: IAppInitialConfig) {
           },
           abort: runsRequestRef.abort,
         };
+      }
+
+      function getScattersSelectOptions(projectsData: IProjectParamsMetrics) {
+        let data: ISelectOption[] = [];
+        const systemOptions: ISelectOption[] = [];
+        if (projectsData?.metric) {
+          for (let key in projectsData.metric) {
+            let system: boolean = isSystemMetric(key);
+            for (let val of projectsData.metric[key]) {
+              let label: string = Object.keys(val)
+                .map((item) => `${item}="${val[item]}"`)
+                .join(', ');
+              let index: number = data.length;
+              let option: ISelectOption = {
+                label: `${system ? formatSystemMetricName(key) : key} ${label}`,
+                group: system ? formatSystemMetricName(key) : key,
+                type: 'metrics',
+                color: COLORS[0][index % COLORS[0].length],
+                value: {
+                  option_name: key,
+                  context: val,
+                },
+              };
+              if (system) {
+                systemOptions.push(option);
+              } else {
+                data.push(option);
+              }
+            }
+          }
+        }
+        if (projectsData?.params) {
+          const paramPaths = getObjectPaths(
+            projectsData.params,
+            projectsData.params,
+          );
+          paramPaths.forEach((paramPath, index) => {
+            data.push({
+              label: paramPath.slice(0, paramPath.indexOf('.__example_type__')),
+              group: 'Params',
+              type: 'params',
+              color: COLORS[0][index % COLORS[0].length],
+            });
+          });
+        }
+        const comparator = alphabeticalSortComparator({
+          orderBy: 'label',
+        });
+
+        systemOptions.sort(comparator);
+        return data.sort(comparator).concat(systemOptions);
+      }
+
+      function resetModelState(
+        configData: any,
+        shouldResetSelectedRows: boolean,
+      ): void {
+        let state: Partial<IScatterAppModelState> = {};
+        if (components?.charts?.indexOf(ChartTypeEnum.ScatterPlot) !== -1) {
+          state.chartData = [];
+        }
+        if (components.table) {
+          state.tableData = [];
+          state.config = {
+            ...configData,
+            table: {
+              ...configData?.table,
+              resizeMode: ResizeModeEnum.Resizable,
+            },
+          };
+        }
+        model.setState({
+          queryIsEmpty: true,
+          rawData: [],
+          tableColumns: [],
+          selectedRows: shouldResetSelectedRows
+            ? {}
+            : model.getState()?.selectedRows,
+          ...state,
+        });
       }
 
       function onExportTableData(): void {
@@ -5326,13 +5618,12 @@ function createAppModel(appConfig: IAppInitialConfig) {
             }
           },
         );
-
         const blob = new Blob([JsonToCSV(dataToExport)], {
           type: 'text/csv;charset=utf-8;',
         });
         saveAs(
           blob,
-          `${appName}-${moment().format('HH:mm:ss · D MMM, YY')}.csv`,
+          `${appName}-${moment().format(DATE_EXPORTING_FORMAT)}.csv`,
         );
         analytics.trackEvent(ANALYTICS_EVENT_KEYS[appName].table.exports.csv);
       }
@@ -5517,9 +5808,11 @@ function createAppModel(appConfig: IAppInitialConfig) {
                     notification: {
                       id: Date.now(),
                       severity: 'success',
-                      message: `Runs are successfully ${
-                        archived ? 'archived' : 'unarchived'
-                      } `,
+                      messages: [
+                        `Runs are successfully ${
+                          archived ? 'archived' : 'unarchived'
+                        } `,
+                      ],
                     },
                     model,
                   });
@@ -5530,7 +5823,7 @@ function createAppModel(appConfig: IAppInitialConfig) {
                   notification: {
                     id: Date.now(),
                     severity: 'error',
-                    message: ex.message,
+                    messages: [ex.message],
                   },
                   model,
                 });
@@ -5561,7 +5854,7 @@ function createAppModel(appConfig: IAppInitialConfig) {
                     notification: {
                       id: Date.now(),
                       severity: 'success',
-                      message: 'Runs are successfully deleted',
+                      messages: ['Runs are successfully deleted'],
                     },
                     model,
                   });
@@ -5572,7 +5865,7 @@ function createAppModel(appConfig: IAppInitialConfig) {
                   notification: {
                     id: Date.now(),
                     severity: 'error',
-                    message: ex.message,
+                    messages: [ex.message],
                   },
                   model,
                 });

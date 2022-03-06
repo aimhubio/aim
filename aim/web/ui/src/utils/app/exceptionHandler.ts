@@ -1,3 +1,5 @@
+import { RequestStatusEnum } from 'config/enums/requestStatusEnum';
+
 import { IModel, State } from 'types/services/models/model';
 
 import onNotificationAdd from './onNotificationAdd';
@@ -16,12 +18,12 @@ export default function exceptionHandler<M extends State>({
   } else {
     message = detail.message || 'Something went wrong';
   }
-
+  model.setState({ requestStatus: RequestStatusEnum.BadRequest });
   onNotificationAdd({
     notification: {
       id: Date.now(),
       severity: 'error',
-      message,
+      messages: [message],
     },
     model,
   });

@@ -5,9 +5,9 @@ from aim.storage.types import AimObject, AimObjectKey, AimObjectPath
 from aim.storage.utils import ArrayFlag, CustomObjectFlagType
 from aim.storage.container import Container
 from aim.storage import treeutils
-from aim.storage.arrayview import TreeArrayView
+from aim.storage.treearrayview import TreeArrayView
 
-from typing import Iterator, Tuple, Union
+from typing import Any, Iterator, Tuple, Union, List
 
 from aim.storage.treeview import TreeView
 
@@ -60,7 +60,8 @@ class ContainerTreeView(TreeView):
     def collect(
         self,
         path: Union[AimObjectKey, AimObjectPath] = (),
-        strict: bool = True
+        strict: bool = True,
+        resolve_objects: bool = False
     ) -> AimObject:
         if path == Ellipsis:
             path = ()
@@ -69,7 +70,7 @@ class ContainerTreeView(TreeView):
         prefix = E.encode_path(path)
         it = self.container.view(prefix).items()
         try:
-            return treeutils.decode_tree(it, strict=strict)
+            return treeutils.decode_tree(it, strict=strict, resolve_objects=resolve_objects)
         except KeyError:
             raise KeyError('No key {} is present.'.format(path))
 
@@ -104,6 +105,12 @@ class ContainerTreeView(TreeView):
                                store_batch=batch)
         self.container.commit(batch)
 
+    def keys_eager(
+            self,
+            path: Union[AimObjectKey, AimObjectPath] = (),
+    ) -> List[Union[AimObjectPath, AimObjectKey]]:
+        return list(self.subtree(path).keys())
+
     def keys(
         self,
         path: Union[AimObjectKey, AimObjectPath] = (),
@@ -129,6 +136,15 @@ class ContainerTreeView(TreeView):
             p = E.encode_path(path)
             assert p.endswith(b'\xfe')
             path = p[:-1] + b'\xff'
+
+    def items_eager(
+            self,
+            path: Union[AimObjectKey, AimObjectPath] = ()
+    ) -> List[Tuple[
+        AimObjectKey,
+        AimObject
+    ]]:
+        return list(self.subtree(path).items())
 
     def items(
         self,
@@ -158,9 +174,10 @@ class ContainerTreeView(TreeView):
 
     def array(
         self,
-        path: Union[AimObjectKey, AimObjectPath] = ()
+        path: Union[AimObjectKey, AimObjectPath] = (),
+        dtype: Any = None
     ) -> TreeArrayView:
-        return TreeArrayView(self.subtree(path))
+        return TreeArrayView(self.subtree(path), dtype=dtype)
 
     def first(
         self,
