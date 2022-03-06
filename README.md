@@ -118,8 +118,8 @@ pip3 install aim
 **2. Integrate Aim with your code**
 
 ```python
-from aim import Run, Image, Distribution
-  
+from aim import Run
+
 # Initialize a new run
 run = Run()
 
@@ -129,20 +129,13 @@ run["hparams"] = {
     "batch_size": 32,
 }
 
-# Log artefacts
-for step in range(1000):
-    # Log metrics
-    run.track(loss_val, name='loss', step=step, context={ "subset": "train" })
-    run.track(accuracy_val, name='acc', step=step, context={ "subset": "train" })
-  
-    # Log images
-    run.track(Image(tensor_or_pil, caption), name='gen', step=step, context={ "subset": "train" })
-
-    # Log distributions
-    run.track(Distribution(tensor), name='gradients', step=step, context={ "type": "weights" })
+# Log metrics
+for i in range(10):
+    run.track(i, name='loss', step=i, context={ "subset":"train" })
+    run.track(i, name='acc', step=i, context={ "subset":"train" })
 ```
 
-_See documentation [here](https://aimstack.readthedocs.io/en/latest/quick_start/SDK_basics.html)._
+_See the full list of supported trackable objects(e.g. images, text, etc) [here](https://aimstack.readthedocs.io/en/latest/quick_start/supported_types.html)._
 
 **3. Run the training as usual and start Aim UI**
 

@@ -125,4 +125,6 @@ export type IconName =
   | 'time'
   | 'duration'
   | 'hash'
-  | 'calendar';
+  | 'calendar'
+  | 'avatar'
+  | 'branch';
