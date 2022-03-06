@@ -1,4 +1,5 @@
 import React from 'react';
+import _ from 'lodash-es';
 
 import { ANALYTICS_EVENT_KEYS } from 'config/analytics/analyticsKeysMap';
 
@@ -21,7 +22,7 @@ function RunOverviewTab(props: any) {
   return (
     <section className='RunOverViewTab'>
       <div className='RunOverViewTab__content'>
-        {systemParams && systemParams['git_info'] && (
+        {_.isEmpty(systemParams['git_info']) ? null : (
           <GitInfoCard data={systemParams['git_info']} />
         )}
       </div>
