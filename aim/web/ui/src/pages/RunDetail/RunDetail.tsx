@@ -62,7 +62,7 @@ function RunDetail(): React.FunctionComponentElement<React.ReactNode> {
 
   // TODO: add code splitting(lazy loading)
   const tabContent: { [key: string]: JSX.Element } = {
-    overview: <RunOverviewTab runHash={runHash} runData={runData} />,
+    overview: <RunOverviewTab runData={runData} runHash={runHash} />,
     parameters: (
       <RunDetailParamsTab
         runParams={runData?.runParams}

@@ -5,12 +5,12 @@ import ErrorBoundary from 'components/ErrorBoundary/ErrorBoundary';
 import BusyLoaderWrapper from 'components/BusyLoaderWrapper/BusyLoaderWrapper';
 import { ICardProps } from 'components/kit/Card/Card.d';
 
-import { ICLIArgumentsCardProps } from './CLIArgumentsCard.d';
+import { IRunOverviewTabCLIArgumentsCardProps } from './RunOverviewTabCLIArgumentsCard.d';
 
-function CLIArgumentsCard({
+function RunOverviewTabCLIArgumentsCard({
   cliArguments,
   isRunInfoLoading,
-}: ICLIArgumentsCardProps) {
+}: IRunOverviewTabCLIArgumentsCardProps) {
   const tableData = React.useMemo(
     () =>
       (cliArguments || []).map((argument, index) => {
@@ -44,7 +44,7 @@ function CLIArgumentsCard({
             </Text>
           ),
           cellRenderer: ({ cellData }: any) => (
-            <Text title={cellData}>{cellData}</Text>
+            <p title={cellData}>{cellData}</p>
           ),
         },
         {
@@ -53,7 +53,7 @@ function CLIArgumentsCard({
           width: '50%',
           title: 'Value',
           cellRenderer: ({ cellData }: any) => (
-            <Text title={cellData}>{cellData}</Text>
+            <p title={cellData}>{cellData}</p>
           ),
         },
       ],
@@ -78,6 +78,8 @@ function CLIArgumentsCard({
   );
 }
 
-CLIArgumentsCard.displayName = 'CLIArgumentsCard';
+RunOverviewTabCLIArgumentsCard.displayName = 'RunOverviewTabCLIArgumentsCard';
 
-export default React.memo<ICLIArgumentsCardProps>(CLIArgumentsCard);
+export default React.memo<IRunOverviewTabCLIArgumentsCardProps>(
+  RunOverviewTabCLIArgumentsCard,
+);

@@ -1,4 +1,4 @@
-export interface ICLIArgumentsCardProps {
+export interface IRunOverviewTabCLIArgumentsCardProps {
   cliArguments: null | string[];
   isRunInfoLoading: boolean;
 }
