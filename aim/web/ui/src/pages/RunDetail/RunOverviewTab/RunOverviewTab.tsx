@@ -4,15 +4,16 @@ import ErrorBoundary from 'components/ErrorBoundary/ErrorBoundary';
 
 import { ANALYTICS_EVENT_KEYS } from 'config/analytics/analyticsKeysMap';
 
-import RunOverviewTabCLIArgumentsCard from 'pages/RunDetail/RunOverviewTab/components/CLIArgumentsCard/RunOverviewTabCLIArgumentsCard';
-import RunOverviewSidebar from 'pages/RunDetail/RunOverviewTab/components/RunOverviewSidebar/RunOverviewSidebar';
-import RunOverviewTabParamsCard from 'pages/RunDetail/RunOverviewTab/components/ParamsCard/RunOverviewTabParamsCard';
-import RunOverviewTabMetricsCard from 'pages/RunDetail/RunOverviewTab/components/MetricsCard/RunOverviewTabMetricsCard';
-import useRunMetricsBatch from 'pages/RunDetail/hooks/useRunMetricsBatch';
-
 import * as analytics from 'services/analytics';
 
 import { getValue } from 'utils/helper';
+
+import useRunMetricsBatch from '../hooks/useRunMetricsBatch';
+
+import RunOverviewTabCLIArgumentsCard from './components/CLIArgumentsCard/RunOverviewTabCLIArgumentsCard';
+import RunOverviewSidebar from './components/RunOverviewSidebar/RunOverviewSidebar';
+import RunOverviewTabParamsCard from './components/ParamsCard/RunOverviewTabParamsCard';
+import RunOverviewTabMetricsCard from './components/MetricsCard/RunOverviewTabMetricsCard';
 
 import './RunOverviewTab.scss';
 
