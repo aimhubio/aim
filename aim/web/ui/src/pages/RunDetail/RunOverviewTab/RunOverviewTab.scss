@@ -1,0 +1,22 @@
+@use 'src/styles/abstracts' as *;
+.RunOverviewTab {
+  display: flex;
+  height: auto;
+  &__content {
+    flex: 1 100%;
+  }
+  &__cardBox {
+    margin-bottom: $space-lg;
+    &__tableTitleCount {
+      margin-left: $space-xxxs;
+    }
+    &__badge {
+      height: toRem(20px);
+      &.emptyContext {
+        background: $cuddle-10;
+        border: $border-grey;
+        color: $pico-80;
+      }
+    }
+  }
+}

@@ -1,3 +1,5 @@
+import React from 'react';
+
 import { IIllustrationConfig } from 'types/components/Table/Table';
 
 export interface ICardProps {

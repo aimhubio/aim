@@ -2,11 +2,14 @@ import React from 'react';
 
 import { ANALYTICS_EVENT_KEYS } from 'config/analytics/analyticsKeysMap';
 
+import CLIArgumentsCard from 'pages/RunDetail/RunOverviewTab/components/CLIArgumentsCard/CLIArgumentsCard';
+import RunOverviewSidebar from 'pages/RunDetail/RunOverviewTab/RunOverviewSidebar/RunOverviewSidebar';
+
 import * as analytics from 'services/analytics';
 
-import RunOverviewSidebar from './RunOverviewSidebar/RunOverviewSidebar';
+import { getValue } from 'utils/helper';
 
-import './RunOverViewTab.scss';
+import './RunOverviewTab.scss';
 
 function RunOverviewTab(props: any) {
   React.useEffect(() => {
@@ -16,8 +19,17 @@ function RunOverviewTab(props: any) {
   }, []);
 
   return (
-    <section className='RunOverViewTab'>
-      <div className='RunOverViewTab__content'></div>
+    <section className='RunOverviewTab'>
+      <div className='RunOverviewTab__content'>
+        <CLIArgumentsCard
+          cliArguments={getValue(
+            props.runData,
+            ['runParams', '__system_params', 'arguments'],
+            null,
+          )}
+          isRunInfoLoading={props.runData?.isRunInfoLoading}
+        />
+      </div>
       <RunOverviewSidebar
         runHash={props.runHash}
         info={props.runData.runInfo}

@@ -11,7 +11,7 @@ import * as analytics from 'services/analytics';
 
 import { IRunBatch, IRunDetailMetricsAndSystemTabProps } from './types';
 import RunMetricCard from './RunMetricCard';
-import useRunMetricsBatch from './useRunMetricsBatch';
+import useRunMetricsBatch from './hooks/useRunMetricsBatch';
 
 function RunDetailMetricsAndSystemTab({
   runHash,
