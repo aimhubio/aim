@@ -25,11 +25,10 @@ function GitInfoCard(props: IGitInfoCardProps) {
             <Text
               className='InfoCardValueText'
               weight={500}
-              tint={80}
               size={12}
               color='primary'
             >
-              {props.data.branch || '-'}
+              {props.data.branch || '_final_branch_name_'}
             </Text>
           </div>
         </div>
@@ -48,11 +47,10 @@ function GitInfoCard(props: IGitInfoCardProps) {
             <Text
               className='InfoCardValueText'
               weight={500}
-              tint={80}
               size={12}
               color='primary'
             >
-              {props.data.commit.author}
+              {props.data.commit?.author || 'Adam Bittlingmayer'}
             </Text>
           </div>
         </div>
@@ -71,11 +69,10 @@ function GitInfoCard(props: IGitInfoCardProps) {
             <Text
               className='InfoCardValueText'
               weight={500}
-              tint={80}
               size={12}
               color='primary'
             >
-              {props.data.commit.hash}
+              {props.data.commit?.hash || '426032ad2d7e4b0385bc6c51'}
             </Text>
           </div>
         </div>
@@ -94,11 +91,10 @@ function GitInfoCard(props: IGitInfoCardProps) {
             <Text
               className='InfoCardValueText'
               weight={500}
-              tint={80}
               size={12}
               color='primary'
             >
-              {props.data.commit.timestamp}
+              {props.data.commit?.timestamp || '19 February 2020'}
             </Text>
           </div>
         </div>

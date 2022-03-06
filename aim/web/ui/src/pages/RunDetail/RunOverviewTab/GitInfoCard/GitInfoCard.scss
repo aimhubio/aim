@@ -3,10 +3,17 @@
 .InfoSection {
   overflow-y: scroll;
   .InfoCard {
+    margin-right: toRem(40px);
+    min-width: fit-content;
+    &:last-child {
+      margin-right: 0;
+    }
     .InfoCardLabel {
       margin-bottom: toRem(4px);
     }
-
+    .Icon__container {
+      color: $pico;
+    }
     .InfoCardValue {
       text-align: center;
       background: $cuddle-10;
