@@ -293,7 +293,7 @@ function RunDetail(): React.FunctionComponentElement<React.ReactNode> {
                   </ErrorBoundary>
                 </Route>
               ))}
-              <Redirect to={`${url}/parameters`} />
+              <Redirect to={`${url}/overview`} />
             </Switch>
           </BusyLoaderWrapper>
         </div>

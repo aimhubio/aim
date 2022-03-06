@@ -1,8 +1,9 @@
 import React from 'react';
+import moment from 'moment';
 
 import { Text, Card, Icon } from 'components/kit';
 
-import { IGitInfoCardProps } from '../RunOvervewTab';
+import { IGitInfoCardProps } from '../RunOverViewTab.d';
 
 import './GitInfoCard.scss';
 
@@ -94,7 +95,9 @@ function GitInfoCard(props: IGitInfoCardProps) {
               size={12}
               color='primary'
             >
-              {props.data.commit?.timestamp}
+              {`${moment(props.data.commit?.timestamp).format(
+                'DD MMMM YYYY HH:MM A',
+              )}`}
             </Text>
           </div>
         </div>
