@@ -31,6 +31,8 @@ import exceptionHandler from 'utils/app/exceptionHandler';
 import getStateFromUrl from 'utils/getStateFromUrl';
 
 import TextExplorerAppBar from './components/TextExplorerAppBar/TextExplorerAppBar';
+import useTextSearch from './components/SearchBar/useTextSearch';
+import SearchBar from './components/SearchBar';
 
 import './TextExplorer.scss';
 
@@ -105,7 +107,41 @@ function TextExplorer() {
     };
   }, [route.params.appId]);
 
-  console.log(textExplorerData?.config?.table.resizeMode);
+  console.log(textExplorerData?.data ? textExplorerData?.data[0].data : []);
+
+  const textSearch = useTextSearch({
+    rawData: textExplorerData?.data ? textExplorerData?.data[0].data : [],
+    updateData,
+    searchKey: 'data',
+  });
+
+  function getHighlightedData(data: { text: string }[], regex: RegExp | null) {
+    return data.map((d) => ({
+      ...d,
+      text:
+        regex === null
+          ? d.text
+          : d.text
+              .split(regex)
+              .filter((part: string) => part !== '')
+              .map((part: string, i: number) =>
+                regex.test(part) ? (
+                  <span key={part + i} className='TextsVisualizer__mark'>
+                    {part}
+                  </span>
+                ) : (
+                  part
+                ),
+              ),
+    }));
+  }
+
+  function updateData(data: { text: string }[], regex: RegExp | null) {
+    console.log(data);
+    /*textExplorerData?.refs?.textTableRef.current?.updateData({
+      newData: getHighlightedData(data, regex),
+    });*/
+  }
 
   return (
     <ErrorBoundary>
@@ -152,6 +188,15 @@ function TextExplorer() {
                   : ''
               }`}
             >
+              <SearchBar
+                isValidInput={textSearch.filterOptions.isValidSearch}
+                searchValue={textSearch.filterOptions.searchValue}
+                matchType={textSearch.filterOptions.matchType}
+                onMatchTypeChange={textSearch.changeMatchType}
+                onInputClear={textSearch.clearSearchInputData}
+                onInputChange={textSearch.changeSearchInput}
+                isDisabled={!!textExplorerData?.isRequestPending}
+              />
               <Table
                 custom
                 topHeader
