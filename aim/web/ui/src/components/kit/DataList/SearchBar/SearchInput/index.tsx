@@ -1,4 +1,5 @@
 import React, { ChangeEvent } from 'react';
+import classNames from 'classnames';
 
 import { FormControl, InputLabel, OutlinedInput } from '@material-ui/core';
 
@@ -19,7 +20,9 @@ function SearchInput({
 }: ISearchInputProps) {
   return (
     <ErrorBoundary>
-      <FormControl className='SearchInput'>
+      <FormControl
+        className={classNames('SearchInput', { activeCloseButton: !!value })}
+      >
         <InputLabel htmlFor='search' variant='outlined' color='primary'>
           Search for text
         </InputLabel>
