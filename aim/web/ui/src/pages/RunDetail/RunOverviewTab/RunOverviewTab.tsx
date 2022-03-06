@@ -49,9 +49,7 @@ function RunOverviewTab({ runData, runHash }: any) {
             type='systemMetric'
             runBatch={runData?.runSystemBatch}
           />
-          {_.isEmpty(systemParams?.['git_info']) ? null : (
-            <GitInfoCard data={systemParams?.['git_info']} />
-          )}
+          <GitInfoCard data={systemParams?.['git_info']} />
         </div>
         <RunOverviewSidebar
           runHash={runHash}
