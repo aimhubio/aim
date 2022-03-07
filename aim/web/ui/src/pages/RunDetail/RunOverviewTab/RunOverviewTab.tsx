@@ -1,4 +1,5 @@
 import React from 'react';
+import _ from 'lodash-es';
 
 import ErrorBoundary from 'components/ErrorBoundary/ErrorBoundary';
 
@@ -10,6 +11,8 @@ import { getValue } from 'utils/helper';
 
 import useRunMetricsBatch from '../hooks/useRunMetricsBatch';
 
+import GitInfoCard from './components/GitInfoCard';
+import { IRunOverviewTabProps } from './RunOverviewTab.d';
 import RunOverviewTabMetricsCard from './components/MetricsCard/RunOverviewTabMetricsCard';
 import RunOverviewTabPackagesCard from './components/Packages/RunOverviewTabPackagesCard';
 import RunOverviewTabParamsCard from './components/ParamsCard/RunOverviewTabParamsCard';
@@ -19,7 +22,7 @@ import RunOverviewTabEnvVariablesCard from './components/EnvVariablesCard/RunOve
 
 import './RunOverviewTab.scss';
 
-function RunOverviewTab({ runData, runHash }: any) {
+function RunOverviewTab({ runData, runHash }: IRunOverviewTabProps) {
   useRunMetricsBatch({
     runBatch: runData.runMetricsBatch,
     runTraces: runData.runTraces,
@@ -73,6 +76,13 @@ function RunOverviewTab({ runData, runHash }: any) {
               'packages',
             ])}
             isRunInfoLoading={runData?.isRunInfoLoading}
+          />
+          <GitInfoCard
+            data={getValue(
+              runData,
+              ['runParams', '__system_params', 'git_info'],
+              null,
+            )}
           />
         </div>
         <RunOverviewSidebar

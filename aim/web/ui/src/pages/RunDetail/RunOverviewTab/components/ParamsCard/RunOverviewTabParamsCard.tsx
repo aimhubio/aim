@@ -49,7 +49,8 @@ function RunOverviewTabParamsCard({ runParams, isRunInfoLoading }: any) {
         dataKey: 'value',
         key: 'value',
         title: 'Value',
-        width: '50%',
+        width: 0,
+        flexGrow: 1,
         cellRenderer: ({ cellData }: any) => <p title={cellData}>{cellData}</p>,
       },
     ],
@@ -70,6 +71,7 @@ function RunOverviewTabParamsCard({ runParams, isRunInfoLoading }: any) {
           dataListProps={{
             tableColumns,
             tableData,
+            calcTableHeight: true,
             illustrationConfig: {
               size: 'large',
               title: 'No Results',

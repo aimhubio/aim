@@ -109,6 +109,7 @@
     }
     &__tabPanel {
       padding-top: 1.5rem;
+      padding-bottom: 1.5rem;
       overflow-y: auto;
       height: calc(100vh - 98px);
       .MuiBox-root {

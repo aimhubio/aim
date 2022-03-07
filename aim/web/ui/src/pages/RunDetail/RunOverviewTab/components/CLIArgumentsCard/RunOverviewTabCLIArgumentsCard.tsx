@@ -4,9 +4,11 @@ import { Card } from 'components/kit';
 import ErrorBoundary from 'components/ErrorBoundary/ErrorBoundary';
 import BusyLoaderWrapper from 'components/BusyLoaderWrapper/BusyLoaderWrapper';
 import CodeBlock from 'components/CodeBlock/CodeBlock';
+import IllustrationBlock from 'components/IllustrationBlock/IllustrationBlock';
 
 import { IRunOverviewTabCLIArgumentsCardProps } from './RunOverviewTabCLIArgumentsCard.d';
 
+import './RunOverviewTabCLIArgumentsCard.scss';
 function RunOverviewTabCLIArgumentsCard({
   cliArguments,
   isRunInfoLoading,
@@ -18,8 +20,15 @@ function RunOverviewTabCLIArgumentsCard({
   return (
     <ErrorBoundary>
       <BusyLoaderWrapper isLoading={isRunInfoLoading} height='100%'>
-        <Card title='CLI Arguments' className='RunOverviewTab__cardBox'>
-          <CodeBlock code={code} />
+        <Card
+          title='CLI Arguments'
+          className='RunOverviewTabCLIArgumentsCard RunOverviewTab__cardBox'
+        >
+          {'' ? (
+            <CodeBlock code={code} />
+          ) : (
+            <IllustrationBlock size='large' title='No Results' />
+          )}
         </Card>
       </BusyLoaderWrapper>
     </ErrorBoundary>

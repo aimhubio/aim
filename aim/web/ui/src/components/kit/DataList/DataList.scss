@@ -14,6 +14,15 @@
     overflow: hidden;
     width: 100%;
   }
+  &.fixedTableHeight {
+    .BaseTable {
+      &__row {
+        &-cell {
+          max-height: 32px;
+        }
+      }
+    }
+  }
   .BaseTable {
     &__table-main {
       outline: none;
@@ -44,7 +53,7 @@
       &-cell {
         position: relative;
         min-height: 32px;
-        max-height: 32px;
+        max-height: 300px;
         padding: toRem(7px) toRem(16px);
         border-right: unset;
         border-bottom: $border-grey;

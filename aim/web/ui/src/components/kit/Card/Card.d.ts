@@ -14,5 +14,6 @@ export interface ICardProps {
     illustrationConfig?: IIllustrationConfig;
     isLoading?: boolean;
     withSearchBar?: boolean;
+    calcTableHeight?: boolean;
   };
 }

@@ -24,6 +24,7 @@ function RunOverviewTabEnvVariablesCard({
   );
   const dataListProps = React.useMemo(
     (): ICardProps['dataListProps'] => ({
+      calcTableHeight: true,
       tableColumns: [
         {
           dataKey: 'name',
