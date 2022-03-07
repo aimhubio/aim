@@ -10,11 +10,12 @@ import { getValue } from 'utils/helper';
 
 import useRunMetricsBatch from '../hooks/useRunMetricsBatch';
 
-import RunOverviewTabCLIArgumentsCard from './components/CLIArgumentsCard/RunOverviewTabCLIArgumentsCard';
-import RunOverviewSidebar from './components/RunOverviewSidebar/RunOverviewSidebar';
-import RunOverviewTabParamsCard from './components/ParamsCard/RunOverviewTabParamsCard';
 import RunOverviewTabMetricsCard from './components/MetricsCard/RunOverviewTabMetricsCard';
 import RunOverviewTabPackagesCard from './components/Packages/RunOverviewTabPackagesCard';
+import RunOverviewTabParamsCard from './components/ParamsCard/RunOverviewTabParamsCard';
+import RunOverviewSidebar from './components/RunOverviewSidebar/RunOverviewSidebar';
+import RunOverviewTabCLIArgumentsCard from './components/CLIArgumentsCard/RunOverviewTabCLIArgumentsCard';
+import RunOverviewTabEnvVariablesCard from './components/EnvVariablesCard/RunOverviewTabEnvVariablesCard';
 
 import './RunOverviewTab.scss';
 
@@ -50,19 +51,27 @@ function RunOverviewTab({ runData, runHash }: any) {
             runBatch={runData?.runSystemBatch}
           />
           <RunOverviewTabCLIArgumentsCard
-            cliArguments={getValue(
-              runData,
-              ['runParams', '__system_params', 'arguments'],
-              null,
-            )}
+            cliArguments={getValue(runData, [
+              'runParams',
+              '__system_params',
+              'arguments',
+            ])}
+            isRunInfoLoading={runData?.isRunInfoLoading}
+          />
+          <RunOverviewTabEnvVariablesCard
+            envVariables={getValue(runData, [
+              'runParams',
+              '__system_params',
+              'env_variables',
+            ])}
             isRunInfoLoading={runData?.isRunInfoLoading}
           />
           <RunOverviewTabPackagesCard
-            packages={getValue(
-              runData,
-              ['runParams', '__system_params', 'packages'],
-              null,
-            )}
+            packages={getValue(runData, [
+              'runParams',
+              '__system_params',
+              'packages',
+            ])}
             isRunInfoLoading={runData?.isRunInfoLoading}
           />
         </div>
