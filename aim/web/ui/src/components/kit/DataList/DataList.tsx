@@ -95,7 +95,7 @@ function DataList({
       className={classNames('DataList', {
         fixedTableHeight: calcTableHeight,
       })}
-      style={calcTableHeight ? { height: tableHeight } : { height: '100vh' }}
+      style={{ height: calcTableHeight ? tableHeight : '100vh' }}
     >
       {withSearchBar && (
         <SearchBar

@@ -14,6 +14,7 @@ import useRunMetricsBatch from '../hooks/useRunMetricsBatch';
 import GitInfoCard from './components/GitInfoCard';
 import { IRunOverviewTabProps } from './RunOverviewTab.d';
 import RunOverviewTabMetricsCard from './components/MetricsCard/RunOverviewTabMetricsCard';
+import RunOverviewTabPackagesCard from './components/Packages/RunOverviewTabPackagesCard';
 import RunOverviewTabParamsCard from './components/ParamsCard/RunOverviewTabParamsCard';
 import RunOverviewSidebar from './components/RunOverviewSidebar/RunOverviewSidebar';
 import RunOverviewTabCLIArgumentsCard from './components/CLIArgumentsCard/RunOverviewTabCLIArgumentsCard';
@@ -53,19 +54,27 @@ function RunOverviewTab({ runData, runHash }: IRunOverviewTabProps) {
             runBatch={runData?.runSystemBatch}
           />
           <RunOverviewTabCLIArgumentsCard
-            cliArguments={getValue(
-              runData,
-              ['runParams', '__system_params', 'arguments'],
-              null,
-            )}
+            cliArguments={getValue(runData, [
+              'runParams',
+              '__system_params',
+              'arguments',
+            ])}
             isRunInfoLoading={runData?.isRunInfoLoading}
           />
           <RunOverviewTabEnvVariablesCard
-            envVariables={getValue(
-              runData,
-              ['runParams', '__system_params', 'env_variables'],
-              null,
-            )}
+            envVariables={getValue(runData, [
+              'runParams',
+              '__system_params',
+              'env_variables',
+            ])}
+            isRunInfoLoading={runData?.isRunInfoLoading}
+          />
+          <RunOverviewTabPackagesCard
+            packages={getValue(runData, [
+              'runParams',
+              '__system_params',
+              'packages',
+            ])}
             isRunInfoLoading={runData?.isRunInfoLoading}
           />
           <GitInfoCard
