@@ -62,7 +62,7 @@ function RunDetail(): React.FunctionComponentElement<React.ReactNode> {
 
   // TODO: add code splitting(lazy loading)
   const tabContent: { [key: string]: JSX.Element } = {
-    overview: <RunOverviewTab runData={runData} runHash={runHash} />,
+    overview: <RunOverviewTab runHash={runHash} runData={runData} />,
     parameters: (
       <RunDetailParamsTab
         runParams={runData?.runParams}
@@ -287,7 +287,7 @@ function RunDetail(): React.FunctionComponentElement<React.ReactNode> {
                   </ErrorBoundary>
                 </Route>
               ))}
-              <Redirect to={`${url}/parameters`} />
+              <Redirect to={`${url}/overview`} />
             </Switch>
           </BusyLoaderWrapper>
         </div>
