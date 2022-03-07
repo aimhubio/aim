@@ -25,6 +25,12 @@ Aim v3.5.1
 The installed package includes Python SDK needed for tracking training runs, UI for browsing the results and CLI
 for managing UI and results.
 
+### Nightly releases
+Aim also provides nightly releases every day with the features developed between main minor releases.
+```shell
+pip3 install --pre aim
+```
+Please note, that if the dependencies of `aim` are not already installed, this command will try to install the development versions of those packages as well.
 
 ### Initializing Aim repository
 Aim repository is the space where all your training runs are logged.
