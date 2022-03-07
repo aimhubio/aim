@@ -9,6 +9,7 @@ import IllustrationBlock from 'components/IllustrationBlock/IllustrationBlock';
 import { IRunOverviewTabCLIArgumentsCardProps } from './RunOverviewTabCLIArgumentsCard.d';
 
 import './RunOverviewTabCLIArgumentsCard.scss';
+
 function RunOverviewTabCLIArgumentsCard({
   cliArguments,
   isRunInfoLoading,
@@ -24,7 +25,7 @@ function RunOverviewTabCLIArgumentsCard({
           title='CLI Arguments'
           className='RunOverviewTabCLIArgumentsCard RunOverviewTab__cardBox'
         >
-          {'' ? (
+          {code ? (
             <CodeBlock code={code} />
           ) : (
             <IllustrationBlock size='large' title='No Results' />

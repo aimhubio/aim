@@ -14,7 +14,7 @@ import './GitInfoCard.scss';
 function GitInfoCard(props: IGitInfoCardProps) {
   return (
     <Card title='Git Info Card' className='GitInfoCard'>
-      {_.isEmpty([]) ? (
+      {_.isEmpty(props.data) ? (
         <IllustrationBlock size='large' title='No Results' />
       ) : (
         <div className='InfoSection ScrollBar__hidden flex fjb'>
