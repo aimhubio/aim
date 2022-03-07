@@ -12,6 +12,7 @@ import Menu, { MenuItem } from './Menu';
 import Modal from './Modal';
 import ActionCard from './ActionCard';
 import InputWrapper from './Input';
+import Card from './Card';
 
 export {
   Text,
@@ -29,6 +30,7 @@ export {
   Modal,
   ActionCard,
   InputWrapper,
+  Card,
 };
 
 export type { IButtonProps };

@@ -4,6 +4,7 @@
   height: auto;
   &__content {
     flex: 1 100%;
+    overflow: hidden;
   }
   &__cardBox {
     margin-bottom: $space-lg;

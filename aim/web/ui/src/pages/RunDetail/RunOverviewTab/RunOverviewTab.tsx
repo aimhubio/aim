@@ -6,13 +6,16 @@ import { ANALYTICS_EVENT_KEYS } from 'config/analytics/analyticsKeysMap';
 
 import * as analytics from 'services/analytics';
 
-import useRunMetricsBatch from '../useRunMetricsBatch';
+import { getValue } from 'utils/helper';
 
-import RunOverviewSidebar from './RunOverviewSidebar/RunOverviewSidebar';
-import RunOverviewTabParamsCard from './RunOverviewTabParamsCard';
-import RunOverviewTabMetricsCard from './RunOverviewTabMetricsCard';
+import useRunMetricsBatch from '../hooks/useRunMetricsBatch';
 
-import './RunOverViewTab.scss';
+import RunOverviewTabCLIArgumentsCard from './components/CLIArgumentsCard/RunOverviewTabCLIArgumentsCard';
+import RunOverviewSidebar from './components/RunOverviewSidebar/RunOverviewSidebar';
+import RunOverviewTabParamsCard from './components/ParamsCard/RunOverviewTabParamsCard';
+import RunOverviewTabMetricsCard from './components/MetricsCard/RunOverviewTabMetricsCard';
+
+import './RunOverviewTab.scss';
 
 function RunOverviewTab({ runData, runHash }: any) {
   useRunMetricsBatch({
@@ -44,6 +47,14 @@ function RunOverviewTab({ runData, runHash }: any) {
             isLoading={runData?.isRunBatchLoading}
             type='systemMetric'
             runBatch={runData?.runSystemBatch}
+          />
+          <RunOverviewTabCLIArgumentsCard
+            cliArguments={getValue(
+              runData,
+              ['runParams', '__system_params', 'arguments'],
+              null,
+            )}
+            isRunInfoLoading={runData?.isRunInfoLoading}
           />
         </div>
         <RunOverviewSidebar
