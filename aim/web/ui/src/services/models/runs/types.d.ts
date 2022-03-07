@@ -5,6 +5,7 @@ export type IRunTraceModel = {
   runHash: string;
   traceType: TraceType;
   isTraceBatchLoading: boolean;
+  isTraceContextBatchLoading: boolean;
   menu: {
     title: string;
     items: IMenuItem[];
