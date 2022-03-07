@@ -116,6 +116,7 @@ function changeActiveItemKey(key: string, name: string) {
   const state = model.getState();
   const menuState = state.menu;
   const batchRequestOptions = state.batchRequestOptions;
+  const traceType = state.traceType || 'distributions';
 
   const batchRequestTrace = getContextObjFromMenuActiveKey(
     key || '',
@@ -124,6 +125,8 @@ function changeActiveItemKey(key: string, name: string) {
 
   model.setState({
     ...state,
+    ...getDefaultQueryAndConfigData(traceType),
+    isTraceContextBatchLoading: true,
     menu: {
       ...menuState,
       activeItemKey: key,
@@ -252,6 +255,7 @@ async function getRunTraceBatch(isInitial = false) {
       data: parsed,
       queryData,
       isTraceBatchLoading: false,
+      isTraceContextBatchLoading: false,
     });
   } catch (e) {
     model.setState({

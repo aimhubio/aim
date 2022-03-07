@@ -433,10 +433,16 @@ export function reformatArrayQueries(
  */
 export function processPlotlyData(data: Partial<IPlotlyData>) {
   const { record_range_total, iters, values } = data;
-  const processedValue = JSON.parse(_.head(values).data);
-  const originalValues = values;
-
-  processedValue.layout.autosize = true;
+  let processedValue = null;
+  let originalValues = null;
+  if (_.head(values)?.data) {
+    processedValue = JSON.parse(_.head(values)?.data);
+    originalValues = values;
+    processedValue.layout.autosize = true;
+  } else {
+    processedValue = {};
+    originalValues = [];
+  }
 
   return {
     iters,
