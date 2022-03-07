@@ -16,10 +16,11 @@ import RunOverviewTabCLIArgumentsCard from './components/CLIArgumentsCard/RunOve
 import RunOverviewTabMetricsCard from './components/MetricsCard/RunOverviewTabMetricsCard';
 import RunOverviewTabParamsCard from './components/ParamsCard/RunOverviewTabParamsCard';
 import RunOverviewSidebar from './components/RunOverviewSidebar/RunOverviewSidebar';
+import { IRunOverviewTabProps } from './RunOverviewTab.d';
 
 import './RunOverviewTab.scss';
 
-function RunOverviewTab({ runData, runHash }: any) {
+function RunOverviewTab({ runData, runHash }: IRunOverviewTabProps) {
   useRunMetricsBatch({
     runBatch: runData.runMetricsBatch,
     runTraces: runData.runTraces,

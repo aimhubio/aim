@@ -7,7 +7,7 @@ import IllustrationBlock from 'components/IllustrationBlock/IllustrationBlock';
 
 import { DATE_GIT_COMMIT } from 'config/dates/dates';
 
-import { IGitInfoCardProps } from '../RunOverViewTab.d';
+import { IGitInfoCardProps } from './GitInfoCard.d';
 
 import './GitInfoCard.scss';
 

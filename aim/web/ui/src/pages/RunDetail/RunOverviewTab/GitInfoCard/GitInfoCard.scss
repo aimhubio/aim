@@ -9,7 +9,7 @@
       margin-right: 0;
     }
     .InfoCardLabel {
-      margin-bottom: toRem(4px);
+      margin-bottom: $space-xxxs;
     }
     .Icon__container {
       color: $pico;
@@ -17,10 +17,10 @@
     .InfoCardValue {
       text-align: center;
       background: $cuddle-10;
-      border: toRem(1px) solid $cuddle-50;
+      border: 0.0625rem solid $cuddle-50;
       box-sizing: border-box;
-      border-radius: toRem(6px);
-      padding: toRem(6px) toRem(6px);
+      border-radius: $space-xxs;
+      padding: $space-xxs;
       .InfoCardValueText {
         margin-left: toRem(7px);
       }
