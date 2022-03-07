@@ -57,7 +57,7 @@
         &:last-child {
           display: inline-block;
           border-right: none;
-          white-space: nowrap;
+          white-space: normal;
           overflow: auto !important;
         }
       }
