@@ -23,7 +23,6 @@ function RunOverviewSidebar({
     const path = url.split('/').slice(0, -1).join('/');
     const systemMetricsLength: number =
       traces.metric.filter((m) => m.name.startsWith('__system__')).length || 0;
-
     return [
       {
         name: 'Metrics',
@@ -104,11 +103,9 @@ function RunOverviewSidebar({
             </Text>
           </Text>
           <div className='RunOverviewSidebar__section__tags-list'>
-            {info.tags.map((tag) => {
-              return (
-                <Badge color={tag.color} label={tag.name} key={tag.name} />
-              );
-            })}
+            {info.tags.map((tag) => (
+              <Badge color={tag.color} label={tag.name} key={tag.name} />
+            ))}
           </div>
         </div>
       ) : null}
@@ -118,20 +115,18 @@ function RunOverviewSidebar({
           Insights
         </Text>
         <div>
-          {insightsList.map(({ name, path, value }) => {
-            return (
-              <NavLink
-                className='RunOverviewSidebar__NavLink'
-                key={path}
-                to={path}
-              >
-                <Text size={14}>{name}</Text>
-                <Text tint={70} size={14}>
-                  {value}
-                </Text>
-              </NavLink>
-            );
-          })}
+          {insightsList.map(({ name, path, value }) => (
+            <NavLink
+              className='RunOverviewSidebar__NavLink'
+              key={path}
+              to={path}
+            >
+              <Text size={14}>{name}</Text>
+              <Text tint={70} size={14}>
+                {value}
+              </Text>
+            </NavLink>
+          ))}
         </div>
       </div>
     </div>

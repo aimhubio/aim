@@ -22,17 +22,14 @@ function RunOverviewTabMetricsCard({
 }) {
   const tableData = React.useMemo(() => {
     if (runBatch) {
-      const resultTableList = runBatch.map(
-        ({ name, values, context }: any, index: number) => {
-          return {
-            key: index,
-            name: isSystemMetric(name) ? formatSystemMetricName(name) : name,
-            value: `${_.last(values)}`,
-            context: context,
-          };
-        },
-      );
-      return resultTableList;
+      return runBatch.map(({ name, values, context }: any, index: number) => {
+        return {
+          key: index,
+          name: isSystemMetric(name) ? formatSystemMetricName(name) : name,
+          value: `${_.last(values)}`,
+          context: context,
+        };
+      });
     }
     return [];
   }, [runBatch]);
@@ -56,17 +53,15 @@ function RunOverviewTabMetricsCard({
           </Text>
         ),
         width: '33.3%',
-        cellRenderer: function cellRenderer({ cellData }: any) {
-          return <p>{cellData}</p>;
-        },
+        cellRenderer: ({ cellData }: any) => <p title={cellData}>{cellData}</p>,
       },
       {
         dataKey: 'context',
         key: 'context',
         title: 'Context',
         width: '33.3%',
-        cellRenderer: function cellRenderer({ cellData }: any) {
-          return !_.isEmpty(cellData) && !_.isNil(cellData) ? (
+        cellRenderer: ({ cellData }: any) =>
+          !_.isEmpty(cellData) && !_.isNil(cellData) ? (
             <Badge
               size='small'
               color={COLORS[0][0]}
@@ -80,17 +75,14 @@ function RunOverviewTabMetricsCard({
               label={'Empty Context'}
               className='RunOverviewTab__cardBox__badge emptyContext'
             />
-          );
-        },
+          ),
       },
       {
         dataKey: 'value',
         key: 'value',
         title: 'Last Value',
         width: '33.3%',
-        cellRenderer: function cellRenderer({ cellData }: any) {
-          return <p>{cellData}</p>;
-        },
+        cellRenderer: ({ cellData }: any) => <p title={cellData}>{cellData}</p>,
       },
     ],
     [runBatch],

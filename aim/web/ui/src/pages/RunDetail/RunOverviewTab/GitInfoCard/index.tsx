@@ -13,7 +13,7 @@ function GitInfoCard(props: IGitInfoCardProps) {
   return (
     <Card title='Git Info Card'>
       {_.isEmpty(props.data) ? (
-        <IllustrationBlock size='medium' title='No Results' />
+        <IllustrationBlock size='large' title='No Results' />
       ) : (
         <div className='InfoSection ScrollBar__hidden flex fjb'>
           <div className='InfoCard flex fdc'>

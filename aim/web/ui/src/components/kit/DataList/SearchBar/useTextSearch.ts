@@ -89,7 +89,7 @@ function useTextSearch({
     appliedRegExp: RegExp | null,
     matchType: MatchTypes | null,
   ) {
-    const searchableKeysList = searchableKeys ?? Object.keys(rawData[0] ?? {});
+    const searchableKeysList = searchableKeys ?? Object.keys(rawData[0] || {});
     const index = searchableKeysList.indexOf('key');
     if (index > -1) {
       searchableKeysList.splice(index, 1);
