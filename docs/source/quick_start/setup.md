@@ -26,11 +26,19 @@ The installed package includes Python SDK needed for tracking training runs, UI 
 for managing UI and results.
 
 ### Nightly releases
-Aim also provides nightly releases every day with the features developed between main minor releases.
+Aim also provides daily dev packages with the features developed between main minor releases.
 ```shell
 pip3 install --pre aim
 ```
 Please note, that if the dependencies of `aim` are not already installed, this command will try to install the development versions of those packages as well.
+
+Previous daily dev packages can be installed using the following command:
+
+```shell
+pip3 install aim==3.x.0.devyyyymmdd
+```
+
+[Release history](https://pypi.org/project/aim/#history)
 
 ### Initializing Aim repository
 Aim repository is the space where all your training runs are logged.
