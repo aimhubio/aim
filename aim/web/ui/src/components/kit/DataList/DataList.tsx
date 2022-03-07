@@ -1,5 +1,6 @@
 import React from 'react';
 import _ from 'lodash';
+import classNames from 'classnames';
 
 import Table from 'components/Table/Table';
 import useTextSearch from 'components/kit/DataList/SearchBar/useTextSearch';
@@ -33,6 +34,7 @@ function DataList({
   withSearchBar = true,
   searchableKeys,
   illustrationConfig,
+  calcTableHeight,
 }: IDataListProps): React.FunctionComponentElement<React.ReactNode> {
   const textSearch = useTextSearch({
     rawData: tableData,
@@ -89,7 +91,12 @@ function DataList({
     tableRef.current?.updateData({ newData: getHighlightedData(data, regex) });
   }
   return (
-    <div className={'DataList'} style={{ height: tableHeight }}>
+    <div
+      className={classNames('DataList', {
+        fixedTableHeight: calcTableHeight,
+      })}
+      style={calcTableHeight ? { height: tableHeight } : { height: '100vh' }}
+    >
       {withSearchBar && (
         <SearchBar
           isValidInput={textSearch.filterOptions.isValidSearch}

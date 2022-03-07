@@ -103,6 +103,7 @@ function RunOverviewTabMetricsCard({
           searchableKeys: ['name', 'value'],
           tableColumns,
           tableData,
+          calcTableHeight: true,
           illustrationConfig: {
             size: 'large',
             title: 'No Results',
