@@ -1,5 +1,4 @@
 import React from 'react';
-import _ from 'lodash-es';
 
 import { Card } from 'components/kit';
 import ErrorBoundary from 'components/ErrorBoundary/ErrorBoundary';
@@ -21,10 +20,10 @@ function RunOverviewTabCLIArgumentsCard({
     <ErrorBoundary>
       <BusyLoaderWrapper isLoading={isRunInfoLoading} height='100%'>
         <Card title='CLI Arguments' className='RunOverviewTab__cardBox'>
-          {_.isEmpty(code) ? (
-            <IllustrationBlock size='large' title='No Results' />
-          ) : (
+          {code ? (
             <CodeBlock code={code} />
+          ) : (
+            <IllustrationBlock size='large' title='No Results' />
           )}
         </Card>
       </BusyLoaderWrapper>

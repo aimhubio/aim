@@ -12,11 +12,12 @@ import { getValue } from 'utils/helper';
 import useRunMetricsBatch from '../hooks/useRunMetricsBatch';
 
 import GitInfoCard from './GitInfoCard';
-import RunOverviewTabCLIArgumentsCard from './components/CLIArgumentsCard/RunOverviewTabCLIArgumentsCard';
+import { IRunOverviewTabProps } from './RunOverviewTab.d';
 import RunOverviewTabMetricsCard from './components/MetricsCard/RunOverviewTabMetricsCard';
 import RunOverviewTabParamsCard from './components/ParamsCard/RunOverviewTabParamsCard';
 import RunOverviewSidebar from './components/RunOverviewSidebar/RunOverviewSidebar';
-import { IRunOverviewTabProps } from './RunOverviewTab.d';
+import RunOverviewTabCLIArgumentsCard from './components/CLIArgumentsCard/RunOverviewTabCLIArgumentsCard';
+import RunOverviewTabEnvVariablesCard from './components/EnvVariablesCard/RunOverviewTabEnvVariablesCard';
 
 import './RunOverviewTab.scss';
 
@@ -55,6 +56,14 @@ function RunOverviewTab({ runData, runHash }: IRunOverviewTabProps) {
             cliArguments={getValue(
               runData,
               ['runParams', '__system_params', 'arguments'],
+              null,
+            )}
+            isRunInfoLoading={runData?.isRunInfoLoading}
+          />
+          <RunOverviewTabEnvVariablesCard
+            envVariables={getValue(
+              runData,
+              ['runParams', '__system_params', 'env_variables'],
               null,
             )}
             isRunInfoLoading={runData?.isRunInfoLoading}
