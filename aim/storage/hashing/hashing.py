@@ -9,7 +9,7 @@ This is different from CPython's implementation because of many reasons:
 
 import hashlib
 
-from aim.storage.encoding.encoding import encode_int64, decode_int64  # noqa
+from aim.storage.encoding import encode_int64, decode_int64  # noqa
 from aim.storage.hashing import c_hash
 from aim.storage.types import AimObject, AimObjectArray, AimObjectKey, AimObjectDict, NoneType
 

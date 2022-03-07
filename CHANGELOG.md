@@ -1,5 +1,18 @@
 # Changelog
 
+## Unreleased
+
+### Enhancements:
+
+- Custom max message size for Aim Remote tracking (alberttorosyan)
+- Docker images for aim up/server (alberttorosyan)
+- - TF/Keras adapters refactoring (mihran113)
+- Remote tracking client-side retry logic (aramaim)
+
+### Fixes:
+
+- Fix font styles in Aim UI (arsengit)
+
 ## 3.6.3 Mar 4, 2022
 
 - Fix UI rendering issue on colab (rubenaprikyan)
