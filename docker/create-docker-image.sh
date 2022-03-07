@@ -1,6 +1,6 @@
 #!/bin/bash
 
-if [[ $UPDATE_TAG == "latest" || $UPDATE_TAG == "nightly"]]
+if [ "$UPDATE_TAG" = "latest" ] || [ "$UPDATE_TAG" = "nightly" ]
 then
   docker image build --no-cache	 \
     -t aimstack/aim:$AIM_VERSION -t aimstack/aim:$UPDATE_TAG --build-arg AIM_VERSION=$AIM_VERSION -f Dockerfile .
