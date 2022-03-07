@@ -24,9 +24,8 @@ function RunOverviewTabParamsCard({ runParams, isRunInfoLoading }: any) {
     return resultTableList || [];
   }, [runParams]);
 
-  const tableColumns = React.useMemo(() => {
-    const paths = getObjectPaths(runParams, runParams);
-    return [
+  const tableColumns = React.useMemo(
+    () => [
       {
         dataKey: 'name',
         key: 'name',
@@ -39,26 +38,23 @@ function RunOverviewTabParamsCard({ runParams, isRunInfoLoading }: any) {
               tint={50}
               className='RunOverviewTab__cardBox__tableTitleCount'
             >
-              ({paths?.length})
+              ({tableData.length})
             </Text>
           </Text>
         ),
         width: '50%',
-        cellRenderer: function cellRenderer({ cellData }: any) {
-          return <p>{cellData}</p>;
-        },
+        cellRenderer: ({ cellData }: any) => <p title={cellData}>{cellData}</p>,
       },
       {
         dataKey: 'value',
         key: 'value',
         title: 'Value',
         width: '50%',
-        cellRenderer: function cellRenderer({ cellData }: any) {
-          return <p>{cellData}</p>;
-        },
+        cellRenderer: ({ cellData }: any) => <p title={cellData}>{cellData}</p>,
       },
-    ];
-  }, [runParams]);
+    ],
+    [runParams, tableData],
+  );
 
   return (
     <ErrorBoundary>

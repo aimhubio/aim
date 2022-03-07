@@ -14,6 +14,7 @@ import RunOverviewTabCLIArgumentsCard from './components/CLIArgumentsCard/RunOve
 import RunOverviewSidebar from './components/RunOverviewSidebar/RunOverviewSidebar';
 import RunOverviewTabParamsCard from './components/ParamsCard/RunOverviewTabParamsCard';
 import RunOverviewTabMetricsCard from './components/MetricsCard/RunOverviewTabMetricsCard';
+import RunOverviewTabPackagesCard from './components/Packages/RunOverviewTabPackagesCard';
 
 import './RunOverviewTab.scss';
 
@@ -52,6 +53,14 @@ function RunOverviewTab({ runData, runHash }: any) {
             cliArguments={getValue(
               runData,
               ['runParams', '__system_params', 'arguments'],
+              null,
+            )}
+            isRunInfoLoading={runData?.isRunInfoLoading}
+          />
+          <RunOverviewTabPackagesCard
+            packages={getValue(
+              runData,
+              ['runParams', '__system_params', 'packages'],
               null,
             )}
             isRunInfoLoading={runData?.isRunInfoLoading}
