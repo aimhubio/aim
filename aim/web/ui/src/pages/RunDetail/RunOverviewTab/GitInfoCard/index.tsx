@@ -5,6 +5,8 @@ import _ from 'lodash-es';
 import { Text, Card, Icon } from 'components/kit';
 import IllustrationBlock from 'components/IllustrationBlock/IllustrationBlock';
 
+import { DATE_GIT_COMMIT } from 'config/dates/dates';
+
 import { IGitInfoCardProps } from '../RunOverViewTab.d';
 
 import './GitInfoCard.scss';
@@ -101,7 +103,7 @@ function GitInfoCard(props: IGitInfoCardProps) {
                 color='primary'
               >
                 {`${moment(props.data.commit?.timestamp).format(
-                  'DD MMMM YYYY HH:MM A',
+                  DATE_GIT_COMMIT,
                 )}`}
               </Text>
             </div>

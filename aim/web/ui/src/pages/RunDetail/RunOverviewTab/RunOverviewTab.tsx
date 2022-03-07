@@ -32,8 +32,6 @@ function RunOverviewTab({ runData, runHash }: any) {
     );
   }, []);
 
-  const systemParams = runData.runParams['__system_params'];
-
   return (
     <ErrorBoundary>
       <section className='RunOverviewTab'>
@@ -60,7 +58,13 @@ function RunOverviewTab({ runData, runHash }: any) {
             )}
             isRunInfoLoading={runData?.isRunInfoLoading}
           />
-          <GitInfoCard data={systemParams?.['git_info']} />
+          <GitInfoCard
+            data={getValue(
+              runData,
+              ['runParams', '__system_params', 'git_info'],
+              null,
+            )}
+          />
         </div>
         <RunOverviewSidebar
           runHash={runHash}
