@@ -7,14 +7,14 @@ import IllustrationBlock from 'components/IllustrationBlock/IllustrationBlock';
 
 import { DATE_GIT_COMMIT } from 'config/dates/dates';
 
-import { IGitInfoCardProps } from './GitInfoCard.d';
+import { IGitInfoCardProps } from './GitInfoCard';
 
 import './GitInfoCard.scss';
 
 function GitInfoCard(props: IGitInfoCardProps) {
   return (
-    <Card title='Git Info Card'>
-      {_.isEmpty(props.data) ? (
+    <Card title='Git Info Card' className='GitInfoCard'>
+      {_.isEmpty([]) ? (
         <IllustrationBlock size='large' title='No Results' />
       ) : (
         <div className='InfoSection ScrollBar__hidden flex fjb'>

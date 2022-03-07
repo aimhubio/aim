@@ -11,7 +11,7 @@ import { getValue } from 'utils/helper';
 
 import useRunMetricsBatch from '../hooks/useRunMetricsBatch';
 
-import GitInfoCard from './GitInfoCard';
+import GitInfoCard from './components/GitInfoCard';
 import { IRunOverviewTabProps } from './RunOverviewTab.d';
 import RunOverviewTabMetricsCard from './components/MetricsCard/RunOverviewTabMetricsCard';
 import RunOverviewTabParamsCard from './components/ParamsCard/RunOverviewTabParamsCard';

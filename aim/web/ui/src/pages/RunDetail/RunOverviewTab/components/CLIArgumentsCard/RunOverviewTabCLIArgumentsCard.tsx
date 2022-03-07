@@ -8,6 +8,7 @@ import IllustrationBlock from 'components/IllustrationBlock/IllustrationBlock';
 
 import { IRunOverviewTabCLIArgumentsCardProps } from './RunOverviewTabCLIArgumentsCard.d';
 
+import './RunOverviewTabCLIArgumentsCard.scss';
 function RunOverviewTabCLIArgumentsCard({
   cliArguments,
   isRunInfoLoading,
@@ -19,8 +20,11 @@ function RunOverviewTabCLIArgumentsCard({
   return (
     <ErrorBoundary>
       <BusyLoaderWrapper isLoading={isRunInfoLoading} height='100%'>
-        <Card title='CLI Arguments' className='RunOverviewTab__cardBox'>
-          {code ? (
+        <Card
+          title='CLI Arguments'
+          className='RunOverviewTabCLIArgumentsCard RunOverviewTab__cardBox'
+        >
+          {'' ? (
             <CodeBlock code={code} />
           ) : (
             <IllustrationBlock size='large' title='No Results' />
