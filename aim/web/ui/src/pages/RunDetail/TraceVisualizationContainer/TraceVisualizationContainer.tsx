@@ -92,6 +92,7 @@ function TraceVisualizationContainer({
           />
           {runTracesModelData?.data &&
             runTracesModelData?.config &&
+            !runTracesModelData?.isTraceContextBatchLoading &&
             runTracesModelData?.queryData && (
               <RangePanel
                 items={runTracesModelData?.config?.rangePanel.map((item) => ({

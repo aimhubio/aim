@@ -550,7 +550,7 @@ const Table = React.forwardRef(function Table(
           }
         }
         setListWindowMeasurements();
-      }, 100);
+      }, 30);
     }
 
     return () => {
@@ -942,13 +942,16 @@ function propsComparator(
   if (prevProps.hiddenColumns !== nextProps.hiddenColumns) {
     return false;
   }
+
   if (prevProps.hiddenChartRows !== nextProps.hiddenChartRows) {
     return false;
   }
+
   if (prevProps.columnsOrder !== nextProps.columnsOrder) {
     return false;
   }
-  if (prevProps.focusedState !== nextProps.focusedState) {
+
+  if (prevProps.focusedState?.active !== nextProps.focusedState?.active) {
     return false;
   }
 
