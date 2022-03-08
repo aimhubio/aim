@@ -40,9 +40,8 @@ function TextsVisualizer(
       width: 0,
       flexGrow: 1,
       // TODO: replace with a wrapper component for all types of texts visualization
-      cellRenderer: function cellRenderer({ cellData }: any) {
-        return <p>{cellData}</p>;
-      },
+      // eslint-disable-next-line react/display-name
+      cellRenderer: ({ cellData }: any) => <pre>{cellData}</pre>,
     },
   ];
 
