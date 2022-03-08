@@ -275,7 +275,7 @@ function RunDetail(): React.FunctionComponentElement<React.ReactNode> {
           </Paper>
           <BusyLoaderWrapper
             isLoading={runData?.isRunInfoLoading}
-            height='100%'
+            height='calc(100vh - 98px)'
           >
             <Switch>
               {tabs.map((tab: string) => (
