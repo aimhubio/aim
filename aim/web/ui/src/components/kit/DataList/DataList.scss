@@ -14,15 +14,6 @@
     overflow: hidden;
     width: 100%;
   }
-  &.fixedTableHeight {
-    .BaseTable {
-      &__row {
-        &-cell {
-          max-height: 32px;
-        }
-      }
-    }
-  }
   .BaseTable {
     &__table-main {
       outline: none;
@@ -58,9 +49,8 @@
         border-right: unset;
         border-bottom: $border-grey;
         p {
-          overflow: hidden;
-          max-width: 100%;
-          text-overflow: ellipsis;
+          word-break: break-all;
+          white-space: normal;
         }
 
         &:last-child {

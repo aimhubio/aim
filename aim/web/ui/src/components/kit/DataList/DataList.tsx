@@ -1,6 +1,4 @@
 import React from 'react';
-import _ from 'lodash';
-import classNames from 'classnames';
 
 import Table from 'components/Table/Table';
 import useTextSearch from 'components/kit/DataList/SearchBar/useTextSearch';
@@ -8,11 +6,6 @@ import BusyLoaderWrapper from 'components/BusyLoaderWrapper/BusyLoaderWrapper';
 
 import SearchBar from './SearchBar';
 import { IDataListProps } from './DataList.d';
-import {
-  DATA_LIST_HEADER_HEIGHT,
-  DATA_LIST_ROW_HEIGHT,
-  SEARCH_BAR_HEIGHT,
-} from './config';
 
 import './DataList.scss';
 
@@ -34,25 +27,12 @@ function DataList({
   withSearchBar = true,
   searchableKeys,
   illustrationConfig,
-  calcTableHeight,
 }: IDataListProps): React.FunctionComponentElement<React.ReactNode> {
   const textSearch = useTextSearch({
     rawData: tableData,
     updateData,
     searchableKeys,
   });
-
-  const tableHeight = React.useMemo(() => {
-    const searchBarHeight = withSearchBar ? SEARCH_BAR_HEIGHT : 0;
-
-    return textSearch?.data?.length > 0
-      ? `${
-          textSearch.data.length * DATA_LIST_ROW_HEIGHT +
-          DATA_LIST_HEADER_HEIGHT +
-          searchBarHeight
-        }px`
-      : '100vh';
-  }, [textSearch.data]);
 
   function getHighlightedData(data: any[], regex: RegExp | null) {
     const searchableKeysList = searchableKeys ?? Object.keys(data[0] ?? {});
@@ -91,12 +71,7 @@ function DataList({
     tableRef.current?.updateData({ newData: getHighlightedData(data, regex) });
   }
   return (
-    <div
-      className={classNames('DataList', {
-        fixedTableHeight: calcTableHeight,
-      })}
-      style={{ height: calcTableHeight ? tableHeight : '100vh' }}
-    >
+    <div className={'DataList'} style={{ height: '100vh' }}>
       {withSearchBar && (
         <SearchBar
           isValidInput={textSearch.filterOptions.isValidSearch}
