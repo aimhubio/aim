@@ -4,14 +4,16 @@
 
 ### Enhancements:
 
+- Add Run overview tab in run single page (arsengit, VkoHov, KaroMourad, rubenaprikyan)
 - Custom max message size for Aim Remote tracking (alberttorosyan)
 - Docker images for aim up/server (alberttorosyan)
-- - TF/Keras adapters refactoring (mihran113)
+- TF/Keras adapters refactoring (mihran113)
 - Remote tracking client-side retry logic (aramaim)
+- Add record_density to initial get-batch request for figures (VkoHov)
 
 ### Fixes:
 
-- Fix font styles in Aim UI (arsengit)
+- Fix rendering new lines in texts visualizer (arsengit)
 
 ## 3.6.3 Mar 4, 2022
 

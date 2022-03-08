@@ -1,6 +1,6 @@
 import React, { memo } from 'react';
 import ReactJson from 'react-json-view';
-import { isEmpty } from 'lodash-es';
+import _ from 'lodash-es';
 
 import BusyLoaderWrapper from 'components/BusyLoaderWrapper/BusyLoaderWrapper';
 import IllustrationBlock from 'components/IllustrationBlock/IllustrationBlock';
@@ -26,10 +26,14 @@ function RunDetailParamsTab({
         className='runDetailParamsTabLoader'
         height='100%'
       >
-        {!isEmpty(runParams) ? (
+        {!_.isEmpty(runParams) ? (
           <div className='RunDetailParamsTabWrapper'>
             <div className='RunDetailParamsTab'>
-              <ReactJson name={false} theme='bright:inverted' src={runParams} />
+              <ReactJson
+                name={false}
+                theme='bright:inverted'
+                src={_.omit(runParams, '__system_params')}
+              />
             </div>
           </div>
         ) : (

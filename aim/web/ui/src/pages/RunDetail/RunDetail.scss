@@ -1,8 +1,10 @@
 @use 'src/styles/abstracts' as *;
 
 .RunDetail {
+  height: 100%;
   &__runDetailContainer {
     height: 100%;
+    background: $cuddle-10;
     &__Tabs {
       .MuiTabs-fixed {
         overflow: auto !important;
@@ -12,13 +14,8 @@
       }
     }
     &__appBarContainer {
-      height: 2.5rem;
-      padding: 0 1.5rem;
-      padding: 0 1.5rem 0 0.9rem;
+      height: 3.5rem;
       background: #ffffff;
-      border-right: $border-main;
-      border-left: $border-main;
-      border-bottom: $border-main;
       display: flex;
       align-items: center;
       &__appBarTitleBox {
@@ -26,8 +23,7 @@
         font-size: $text-md;
         font-weight: 600;
         color: $text-color;
-        padding-left: 0.6rem;
-
+        align-items: center;
         &__buttonSelectToggler {
           width: 1.5rem;
           height: 1.5rem;
@@ -39,6 +35,7 @@
           display: flex;
           align-items: center;
           margin-right: 1rem;
+          cursor: pointer;
           &__pageName {
             margin-right: 0.4375em;
             text-transform: capitalize;
@@ -50,41 +47,17 @@
           }
         }
       }
+      .StatusLabel {
+        margin-left: $space-xs;
+      }
     }
 
-    &__headerContainer {
-      padding: 1em 1.5em;
-      height: 3.5rem;
-      border-right: $border-main;
-      border-left: $border-main;
-      border-bottom: $border-grey-lighter;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      &__infoBox {
-        display: flex;
-        justify-content: space-between;
-        &__dateTitle {
-          margin-right: 1rem;
-        }
-      }
-      &__tagsBox {
-        display: flex;
-        max-width: 50%;
-        overflow: auto;
-        .Badge {
-          margin-left: $space-xxs;
-          &:first-child {
-            margin-left: 0;
-          }
-        }
-      }
-    }
     &__tabsContainer {
-      border-right: $border-main;
-      border-left: $border-main;
       border-bottom: $border-grey-lighter;
-      padding-left: 1.5rem;
+      background: #ffffff;
+      box-shadow: 0px 4px 6px rgba(144, 175, 218, 0.2);
+      border-bottom: 0.0625rem solid $cuddle;
+      border-top: 0.0625rem solid $cuddle;
       .PrivateTabIndicator-root-1 {
         display: none;
       }
@@ -130,19 +103,15 @@
       .PrivateTabIndicator-root-5 {
         display: none;
       }
-      &.MuiPaper-elevation1 {
-        box-shadow: none;
-      }
       &.MuiPaper-rounded {
         border-radius: unset;
       }
     }
     &__tabPanel {
-      border-right: $border-main;
-      border-left: $border-main;
-      padding: 1.5rem;
+      padding-top: 1.5rem;
+      padding-bottom: 1.5rem;
       overflow-y: auto;
-      height: calc(100vh - 136px);
+      height: calc(100vh - 98px);
       .MuiBox-root {
         height: 100%;
         .runDetailParamsTabLoader {
@@ -158,6 +127,8 @@
 
 .RunDetailParamsTabWrapper {
   height: 100%;
+  background-color: #ffffff;
+  border-radius: $border-radius-lg;
 }
 
 .RunDetailParamsTab {
@@ -175,7 +146,6 @@
 .RunDetailMetricsTab {
   &__container {
     height: 100%;
-    background: $white;
     display: grid;
     grid-template-columns: 1fr 1fr;
     gap: 1.5rem;
@@ -183,6 +153,7 @@
     &__chartContainer {
       border: $border-grey;
       border-radius: 0.5rem;
+      background: $white;
       &__chartBox {
         height: 24.5rem;
         padding: 0.625rem;
@@ -259,6 +230,7 @@
   &__selectPopoverContent {
     height: 20rem;
     width: 37.5rem;
+
     &__contentContainer {
       height: calc(100% - 2.25rem);
       display: flex;
@@ -378,7 +350,6 @@
         }
       }
     }
-
     &__headerContainer {
       background: #f3f8fe;
       width: 100%;
