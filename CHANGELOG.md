@@ -14,6 +14,7 @@
 ### Fixes:
 
 - Fix rendering new lines in texts visualizer (arsengit)
+- Fix the image full view toggle icon visibility if the image has a white background (VkoHov)
 
 ## 3.6.3 Mar 4, 2022
 
