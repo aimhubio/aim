@@ -9,6 +9,7 @@
 - Docker images for aim up/server (alberttorosyan)
 - TF/Keras adapters refactoring (mihran113)
 - Remote tracking client-side retry logic (aramaim)
+- Add record_density to initial get-batch request for figures (VkoHov)
 
 ### Fixes:
 
