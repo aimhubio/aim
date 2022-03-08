@@ -62,6 +62,7 @@
       }
 
       &:last-child {
+        box-shadow: $cuddle-50 0px 1px 0px 0px;
         .BaseTable__row-cell {
           border-bottom: none;
         }
