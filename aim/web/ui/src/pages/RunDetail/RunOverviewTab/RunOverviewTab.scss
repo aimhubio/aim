@@ -2,9 +2,9 @@
 .RunOverviewTab {
   display: flex;
   height: 100%;
+  overflow-y: auto;
   &__content {
     flex: 1 100%;
-    overflow-y: auto;
   }
   &__cardBox {
     margin-bottom: $space-lg;
