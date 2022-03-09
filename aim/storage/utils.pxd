@@ -1,8 +1,6 @@
 # distutils: language = c++
 # cython: language_level = 3
 
-cimport aimrocks.lib_rocksdb as interfaces
-
 cdef class ArrayFlagType:
     pass
 

@@ -67,9 +67,6 @@ class _ObjectProxyMetaType(type):
 
 
 class Eager1:
-
-    __slots__ = ('name', 'wrapped')
-
     def __init__(self, wrapped, name):
         self.wrapped = lru_cache()(wrapped)
         self.name = name
@@ -91,9 +88,6 @@ class Eager1:
 
 
 class Eager2:
-
-    __slots__ = ('view', 'name')
-
     def __init__(self, view, name):
         self.view = view
         self.name = name
@@ -115,9 +109,6 @@ class Eager2:
 
 
 class Eager3:
-
-    __slots__ = ('wrapped', 'key')
-
     def __init__(self, wrapped, key):
         self.wrapped = lru_cache()(wrapped)
         self.key = key
@@ -135,9 +126,6 @@ class Eager3:
 
 
 class Eager4:
-
-    __slots__ = ('view', 'key')
-
     def __init__(self, view, key):
         self.view = view
         self.key = key
@@ -155,8 +143,6 @@ class Eager4:
 
 
 class AimObjectProxy(with_metaclass(_ObjectProxyMetaType)):
-
-    __slots__ = ('__wrapped__', '__view__')
 
     @property
     def __name__(self):
