@@ -24,7 +24,7 @@ function ExploreAimCard({
         <Text
           component='h4'
           weight={600}
-          size={14}
+          size={16}
           className='ExploreAimCard__title'
           tint={100}
         >
@@ -33,6 +33,7 @@ function ExploreAimCard({
         <Text
           component='span'
           weight={400}
+          size={14}
           className='ExploreAimCard__desc'
           tint={100}
         >

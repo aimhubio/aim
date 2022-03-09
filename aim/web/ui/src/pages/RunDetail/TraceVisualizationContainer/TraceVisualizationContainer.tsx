@@ -10,6 +10,7 @@ import useModel from 'hooks/model/useModel';
 
 import runTracesModel from 'services/models/runs/runTracesModel';
 import * as analytics from 'services/analytics';
+import { TraceType } from 'services/models/runs/types';
 
 import DistributionsVisualizer from '../DistributionsVisualizer';
 import TextsVisualizer from '../TextsVisualizer';
@@ -60,7 +61,8 @@ function TraceVisualizationContainer({
     runTracesModel.onInputChange(name, value, metadata?.isValid);
   };
 
-  const Visualizer = traceTypeVisualization[traceType];
+  const Visualizer =
+    traceTypeVisualization[traceType as Exclude<TraceType, 'metric'>];
 
   React.useEffect(() => {
     // @ts-ignore
@@ -90,6 +92,7 @@ function TraceVisualizationContainer({
           />
           {runTracesModelData?.data &&
             runTracesModelData?.config &&
+            !runTracesModelData?.isTraceContextBatchLoading &&
             runTracesModelData?.queryData && (
               <RangePanel
                 items={runTracesModelData?.config?.rangePanel.map((item) => ({
