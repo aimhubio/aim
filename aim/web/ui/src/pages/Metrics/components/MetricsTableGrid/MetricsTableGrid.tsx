@@ -59,7 +59,7 @@ function getMetricsTableColumns(
         ? null
         : order?.right?.includes('experiment')
         ? 'right'
-        : 'left',
+        : null,
       columnOptions: ['color', 'stroke', 'chart'].map((groupName: string) => ({
         value: `${
           grouping?.[groupName]?.includes('run.props.experiment') ? 'un' : ''
@@ -81,13 +81,15 @@ function getMetricsTableColumns(
     },
     {
       key: 'run',
-      content: <span>Run</span>,
+      content: <span>Run Name</span>,
       topHeader: 'Metrics',
       pin: order?.left?.includes('run')
         ? 'left'
+        : order?.middle?.includes('run')
+        ? null
         : order?.right?.includes('run')
         ? 'right'
-        : null,
+        : 'left',
       columnOptions: ['color', 'stroke', 'chart'].map((groupName: string) => ({
         value: `${
           grouping?.[groupName]?.includes('run.hash') ? 'un' : ''
@@ -104,6 +106,26 @@ function getMetricsTableColumns(
         },
         icon: icons[groupName],
       })),
+    },
+    {
+      key: 'description',
+      content: <span>Description</span>,
+      topHeader: 'Metrics',
+      pin: order?.left?.includes('description')
+        ? 'left'
+        : order?.right?.includes('description')
+        ? 'right'
+        : null,
+    },
+    {
+      key: 'date',
+      content: <span>Date</span>,
+      topHeader: 'Metrics',
+      pin: order?.left?.includes('date')
+        ? 'left'
+        : order?.right?.includes('date')
+        ? 'right'
+        : null,
     },
     {
       key: 'metric',

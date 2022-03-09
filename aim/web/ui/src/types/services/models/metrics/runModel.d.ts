@@ -5,6 +5,7 @@ export interface IRun<T> {
     name: string;
     creation_time: number;
     end_time: number;
+    description: string;
   };
   created_at: number;
   traces: { metric: T[] };
@@ -18,6 +19,7 @@ export interface ISequence<T> {
     name: string;
     creation_time: number;
     end_time: number;
+    description: string;
   };
   created_at: number;
   traces: T[];
@@ -32,6 +34,7 @@ export interface IParamTrace {
 
 export interface IMetricTrace {
   name: string;
+  description: string;
   context: { [key: string]: unknown };
   slice: number[];
   values: ITraceData;

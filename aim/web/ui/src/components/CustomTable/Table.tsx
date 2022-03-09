@@ -319,7 +319,7 @@ function Table(props) {
                     expand={expand}
                     togglePin={togglePin}
                     pinnedTo='left'
-                    firstColumn={index === 0}
+                    firstColumn={index === 0 && !props.multiSelect}
                     width={props.columnsWidths?.[col.key]}
                     updateColumnWidth={props.updateColumnsWidths}
                     headerMeta={props.headerMeta}
@@ -371,7 +371,9 @@ function Table(props) {
                   expand={expand}
                   togglePin={togglePin}
                   pinnedTo={null}
-                  firstColumn={index === 0 && leftPane.length === 0}
+                  firstColumn={
+                    index === 0 && leftPane.length === 0 && !props.multiSelect
+                  }
                   width={props.columnsWidths?.[col.key]}
                   updateColumnWidth={props.updateColumnsWidths}
                   headerMeta={props.headerMeta}
@@ -423,7 +425,8 @@ function Table(props) {
                     firstColumn={
                       index === 0 &&
                       leftPane.length === 0 &&
-                      middlePane.length === 0
+                      middlePane.length === 0 &&
+                      !props.multiSelect
                     }
                     width={props.columnsWidths?.[col.key]}
                     updateColumnWidth={props.updateColumnsWidths}

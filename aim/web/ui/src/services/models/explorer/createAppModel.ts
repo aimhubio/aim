@@ -741,6 +741,8 @@ function createAppModel(appConfig: IAppInitialConfig) {
                 line: '',
               },
               experiment: '',
+              description: '',
+              date: '',
               run: '',
               metric: '',
               context: [],
@@ -778,7 +780,9 @@ function createAppModel(appConfig: IAppInitialConfig) {
               color: metricsCollection.color ?? metric.color,
               dasharray: metricsCollection.dasharray ?? metric.dasharray,
               experiment: metric.run.props?.experiment?.name ?? 'default',
-              run: moment(metric.run.props.creation_time * 1000).format(
+              run: metric.run.props?.name ?? '-',
+              description: metric.run.props?.description ?? '-',
+              date: moment(metric.run.props.creation_time * 1000).format(
                 'HH:mm:ss · D MMM, YY',
               ),
               metric: metric.name,
@@ -821,6 +825,8 @@ function createAppModel(appConfig: IAppInitialConfig) {
 
             [
               'experiment',
+              'description',
+              'date',
               'run',
               'metric',
               'context',
