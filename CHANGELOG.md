@@ -1,5 +1,9 @@
 # Changelog
 
+## Unreleased
+
+Fix freezing UI when tracked data has a lot of steps (KaroMourad)
+
 ## 3.7.0 Mar 9, 2022
 
 ### Enhancements:
