@@ -39,15 +39,41 @@ function getImagesExploreTableColumns(
         ? null
         : order?.right?.includes('experiment')
         ? 'right'
-        : 'left',
+        : null,
     },
     {
       key: 'run',
-      content: <span>Run</span>,
+      content: <span>Run Name</span>,
       topHeader: 'Images',
       pin: order?.left?.includes('run')
         ? 'left'
+        : order?.middle?.includes('run')
+        ? null
         : order?.right?.includes('run')
+        ? 'right'
+        : 'left',
+    },
+    {
+      key: 'description',
+      content: <span>Description</span>,
+      topHeader: 'Images',
+      pin: order?.left?.includes('description')
+        ? 'left'
+        : order?.middle?.includes('description')
+        ? null
+        : order?.right?.includes('description')
+        ? 'right'
+        : null,
+    },
+    {
+      key: 'date',
+      content: <span>Date</span>,
+      topHeader: 'Images',
+      pin: order?.left?.includes('date')
+        ? 'left'
+        : order?.middle?.includes('date')
+        ? null
+        : order?.right?.includes('date')
         ? 'right'
         : null,
     },
