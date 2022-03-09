@@ -1,6 +1,10 @@
 # Changelog
-
 ## Unreleased
+
+### Enhancements:
+- Hugging Face adapter refactoring (mihran113)
+
+## 3.7.0 Mar 9, 2022
 
 ### Enhancements:
 

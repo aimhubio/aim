@@ -73,6 +73,9 @@ class BLOB:
     def __bytes__(self):
         return bytes(self.load())
 
+    def __len__(self):
+        return len(bytes(self))
+
     def load(self):
         if self.data is None:
             assert self.loader_fn is not None

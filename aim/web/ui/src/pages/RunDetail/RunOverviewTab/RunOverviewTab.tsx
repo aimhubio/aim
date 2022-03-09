@@ -1,5 +1,4 @@
 import React from 'react';
-import _ from 'lodash-es';
 
 import ErrorBoundary from 'components/ErrorBoundary/ErrorBoundary';
 
@@ -12,13 +11,13 @@ import { getValue } from 'utils/helper';
 import useRunMetricsBatch from '../hooks/useRunMetricsBatch';
 
 import GitInfoCard from './components/GitInfoCard';
-import { IRunOverviewTabProps } from './RunOverviewTab.d';
 import RunOverviewTabMetricsCard from './components/MetricsCard/RunOverviewTabMetricsCard';
 import RunOverviewTabPackagesCard from './components/Packages/RunOverviewTabPackagesCard';
 import RunOverviewTabParamsCard from './components/ParamsCard/RunOverviewTabParamsCard';
 import RunOverviewSidebar from './components/RunOverviewSidebar/RunOverviewSidebar';
 import RunOverviewTabCLIArgumentsCard from './components/CLIArgumentsCard/RunOverviewTabCLIArgumentsCard';
 import RunOverviewTabEnvVariablesCard from './components/EnvVariablesCard/RunOverviewTabEnvVariablesCard';
+import { IRunOverviewTabProps } from './RunOverviewTab.d';
 
 import './RunOverviewTab.scss';
 
