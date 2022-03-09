@@ -21,32 +21,51 @@ function ImageFullViewPopover({
   handleClose,
 }: IImageFullViewPopoverProps): React.FunctionComponentElement<React.ReactNode> {
   const blobData = blobsURIModel.getState()[imageData?.blob_uri];
-  const imageContainerRef = useRef<any>({});
-  const [containerHeight, setContainerHeight] = useState(
-    imageContainerRef?.current?.offsetHeight || 0,
-  );
+  // const imageContainerRef = useRef<any>({});
+  // const [containerHeight, setContainerHeight] = useState(
+  //   imageContainerRef?.current?.offsetHeight || 0,
+  // );
 
-  const setContainerHeightMemo = useCallback(
-    () => setContainerHeight(imageContainerRef?.current?.offsetHeight || 0),
-    [setContainerHeight],
-  );
+  // const setContainerHeightMemo = useCallback(
+  //   () => setContainerHeight(imageContainerRef?.current?.offsetHeight || 0),
+  //   [setContainerHeight],
+  // );
 
-  useResizeObserver(setContainerHeightMemo, imageContainerRef);
+  // useResizeObserver(setContainerHeightMemo, imageContainerRef);
 
   return (
     <ErrorBoundary>
       <div className='ImageFullViewPopover'>
         <div
-          ref={imageContainerRef}
+          // ref={imageContainerRef}
           className={`ImageFullViewPopover__imageContainer ImageFullViewPopover__imageContainer--${imageRendering}`}
         >
-          <img
-            src={`data:image/${imageData.format};base64, ${blobData}`}
-            alt=''
+          <div
             style={{
-              maxHeight: containerHeight,
+              backgroundSize: 'contain',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              overflow: 'hidden',
+              width: '100%',
+              height: '100%',
             }}
-          />
+          >
+            <img
+              src={`data:image/${imageData.format};base64, ${blobData}`}
+              style={{
+                width: '100%',
+                height: '100%',
+                objectFit: 'contain',
+                maxWidth: imageData.width,
+                maxHeight: imageData.height,
+              }}
+              alt={imageData.caption}
+              // style={{
+              //   maxHeight: containerHeight,
+              // }}
+            />
+          </div>
         </div>
         <div className='ImageFullViewPopover__detailContainer'>
           <div className='ImageFullViewPopover__detailContainer__closeButtonContainer'>
