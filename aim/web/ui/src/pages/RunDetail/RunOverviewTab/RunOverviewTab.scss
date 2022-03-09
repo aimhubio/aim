@@ -1,0 +1,28 @@
+@use 'src/styles/abstracts' as *;
+.RunOverviewTab {
+  display: flex;
+  height: 100%;
+  &__content {
+    flex: 1 100%;
+    overflow-y: auto;
+  }
+  &__cardBox {
+    margin-bottom: $space-lg;
+    &__tableTitleCount {
+      margin-left: $space-xxxs;
+    }
+    &__badge {
+      height: toRem(20px);
+      &.emptyContext {
+        background: $cuddle-10;
+        border: $border-grey;
+        color: $pico-80;
+      }
+    }
+  }
+  .DataList {
+    .IllustrationBlock {
+      height: 100%;
+    }
+  }
+}

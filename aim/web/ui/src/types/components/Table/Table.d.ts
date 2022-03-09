@@ -70,6 +70,7 @@ export interface ITableProps {
   appName?: AppNameEnum;
   focusedState?: any;
   illustrationConfig?: IIllustrationConfig;
+  disableRowClick?: boolean;
 }
 
 export interface ITableRef {

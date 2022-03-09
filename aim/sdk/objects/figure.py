@@ -40,7 +40,7 @@ class Figure(CustomObject):
 
     @property
     def data(self):
-        return self.storage['data'].data
+        return self.storage['data'].load()
 
     def _from_matplotlib_figure(self, obj):
         try:

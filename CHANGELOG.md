@@ -4,12 +4,30 @@
 
 ### Enhancements:
 
+- Add Run overview tab in run single page (arsengit, VkoHov, KaroMourad, rubenaprikyan)
 - Custom max message size for Aim Remote tracking (alberttorosyan)
 - Docker images for aim up/server (alberttorosyan)
 - TF/Keras adapters refactoring (mihran113)
 - Hugging Face adapter refactoring (mihran113)
 - Remote tracking client-side retry logic (aramaim)
+- Add record_density to initial get-batch request for figures (VkoHov)
+- Integrate `aim` with `cimport`-able `aimrocks` (mahnerak)
+- Add `__slots__` to some classes to improve performance (mahnerak)
+- Define base abstractions for `Iterator` and `DB` by borrowing from `aimrocks` (mahnerak)
+- Use `KeysIterator` and `ValuesIterator` wrappers instead of reimplementing (mahnerak)
+- Rename `PrefixView.container` to `PrefixView.parent` (mahnerak)
+- Reimplement `absolute_path` (mahnerak)
+- Cython bindings for `PrefixView`, `TreeView`, `Container`, `ArrayView`
 
+### Fixes:
+
+- Fix rendering new lines in texts visualizer (arsengit)
+- Remove hard-coded installation of pre-requirements (mahnerak)
+- Remove duplicate code from `TreeView` and `Container` methods (mahnerak)
+
+## 3.6.3 Mar 4, 2022
+
+- Fix UI rendering issue on colab (rubenaprikyan)
 
 ## 3.6.2 Mar 2, 2022
 

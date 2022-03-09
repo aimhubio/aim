@@ -27,11 +27,11 @@
   }
   &__small {
     &__title {
-      font-weight: 400;
+      font-weight: 500;
       font-size: $text-md;
     }
     &__content {
-      font-weight: 400;
+      font-weight: 500;
       font-size: $text-md;
     }
     &__img {
@@ -46,18 +46,17 @@
   }
   &__medium {
     &__title {
-      font-weight: 400;
+      font-weight: 500;
       font-size: $text-md;
     }
     &__content {
-      font-weight: 400;
+      font-weight: 500;
       font-size: $text-md;
     }
     &__img {
       padding: toRem(10px);
       img {
-        width: toRem(70px);
-        height: toRem(97px);
+        width: toRem(120px);
         margin: 0 auto;
         display: block;
       }
@@ -65,18 +64,17 @@
   }
   &__large {
     &__title {
-      font-weight: 400;
+      font-weight: 500;
       font-size: $text-lg;
     }
     &__content {
-      font-weight: 400;
+      font-weight: 500;
       font-size: $text-lg;
     }
     &__img {
       padding: toRem(10px);
       img {
-        width: toRem(90px);
-        height: toRem(110px);
+        width: 14.5rem;
         margin: 0 auto;
         display: block;
       }
@@ -84,7 +82,7 @@
   }
   &__xLarge {
     &__title {
-      font-weight: 400;
+      font-weight: 500;
       margin-bottom: 1rem;
     }
     &__img {
@@ -93,7 +91,6 @@
         width: 19.5rem;
         margin: 0 auto;
         display: block;
-        // height: 110px;
       }
     }
   }

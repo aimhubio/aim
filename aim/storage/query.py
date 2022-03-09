@@ -70,6 +70,9 @@ logger = logging.getLogger(__name__)
 
 
 class Query:
+
+    __slots__ = ('__weakref__', 'expr')
+
     def __init__(
         self,
         expr: str
@@ -145,6 +148,9 @@ def query_add_default_expr(query: str) -> str:
 
 
 class RestrictedPythonQuery(Query):
+
+    __slots__ = ('_checker', 'run_metadata_cache')
+
     allowed_params = {'run', 'metric', 'images', 'audios', 'distributions', 'figures', 'texts'}
 
     def __init__(

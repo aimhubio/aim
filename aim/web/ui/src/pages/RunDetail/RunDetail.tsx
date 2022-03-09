@@ -1,27 +1,25 @@
 import React, { memo, useRef, useState } from 'react';
-import moment from 'moment';
 import {
+  Link,
+  Redirect,
+  Route,
+  Switch,
+  useLocation,
   useParams,
   useRouteMatch,
-  Link,
-  Switch,
-  Route,
-  Redirect,
-  useLocation,
 } from 'react-router-dom';
 import classNames from 'classnames';
 
 import { Paper, Tab, Tabs } from '@material-ui/core';
 import { Skeleton } from '@material-ui/lab';
 
-import { Badge, Button, Icon, Text } from 'components/kit';
+import { Button, Icon, Text } from 'components/kit';
 import NotificationContainer from 'components/NotificationContainer/NotificationContainer';
 import StatusLabel from 'components/StatusLabel';
 import ControlPopover from 'components/ControlPopover/ControlPopover';
 import BusyLoaderWrapper from 'components/BusyLoaderWrapper/BusyLoaderWrapper';
 import ErrorBoundary from 'components/ErrorBoundary/ErrorBoundary';
 
-import { DATE_WITHOUT_SECONDS } from 'config/dates/dates';
 import { ANALYTICS_EVENT_KEYS } from 'config/analytics/analyticsKeysMap';
 
 import useModel from 'hooks/model/useModel';
@@ -29,13 +27,12 @@ import useModel from 'hooks/model/useModel';
 import runDetailAppModel from 'services/models/runs/runDetailAppModel';
 import * as analytics from 'services/analytics';
 
-import { processDurationTime } from 'utils/processDurationTime';
-
 import RunDetailSettingsTab from './RunDetailSettingsTab';
 import RunDetailMetricsAndSystemTab from './RunDetailMetricsAndSystemTab';
 import RunDetailParamsTab from './RunDetailParamsTab';
 import RunSelectPopoverContent from './RunSelectPopoverContent';
 import TraceVisualizationContainer from './TraceVisualizationContainer';
+import RunOverviewTab from './RunOverviewTab';
 
 import './RunDetail.scss';
 
@@ -51,6 +48,7 @@ function RunDetail(): React.FunctionComponentElement<React.ReactNode> {
   const [activeTab, setActiveTab] = useState(pathname);
 
   const tabs = [
+    'overview',
     'parameters',
     'metrics',
     'system',
@@ -64,6 +62,7 @@ function RunDetail(): React.FunctionComponentElement<React.ReactNode> {
 
   // TODO: add code splitting(lazy loading)
   const tabContent: { [key: string]: JSX.Element } = {
+    overview: <RunOverviewTab runHash={runHash} runData={runData} />,
     parameters: (
       <RunDetailParamsTab
         runParams={runData?.runParams}
@@ -186,7 +185,7 @@ function RunDetail(): React.FunctionComponentElement<React.ReactNode> {
 
   return (
     <ErrorBoundary>
-      <section className='RunDetail container' ref={containerRef}>
+      <section className='RunDetail' ref={containerRef}>
         <div className='RunDetail__runDetailContainer'>
           <div className='RunDetail__runDetailContainer__appBarContainer'>
             <ControlPopover
@@ -200,7 +199,7 @@ function RunDetail(): React.FunctionComponentElement<React.ReactNode> {
               }}
               anchor={({ onAnchorClick, opened }) => (
                 <div
-                  className='RunDetail__runDetailContainer__appBarContainer__appBarTitleBox'
+                  className='RunDetail__runDetailContainer__appBarContainer__appBarTitleBox container'
                   onClick={onAnchorClick}
                 >
                   {!runData?.isRunInfoLoading ? (
@@ -230,6 +229,12 @@ function RunDetail(): React.FunctionComponentElement<React.ReactNode> {
                   >
                     <Icon name={opened ? 'arrow-up' : 'arrow-down'} />
                   </Button>
+                  <StatusLabel
+                    status={runData?.runInfo?.end_time ? 'alert' : 'success'}
+                    title={
+                      runData?.runInfo?.end_time ? 'Finished' : 'In Progress'
+                    }
+                  />
                 </div>
               )}
               component={
@@ -248,47 +253,9 @@ function RunDetail(): React.FunctionComponentElement<React.ReactNode> {
               }
             />
           </div>
-
-          <div className='RunDetail__runDetailContainer__headerContainer'>
-            <div className='RunDetail__runDetailContainer__headerContainer__infoBox'>
-              {!runData?.isRunInfoLoading ? (
-                <>
-                  <Text
-                    component='p'
-                    tint={100}
-                    size={14}
-                    weight={600}
-                    className='RunDetail__runDetailContainer__headerContainer__infoBox__dateTitle'
-                  >
-                    {`${moment(runData?.runInfo?.creation_time * 1000).format(
-                      DATE_WITHOUT_SECONDS,
-                    )} | ${processDurationTime(
-                      runData?.runInfo?.creation_time * 1000,
-                      runData?.runInfo?.end_time
-                        ? runData?.runInfo?.end_time * 1000
-                        : dateNow,
-                    )}`}
-                  </Text>
-                  <StatusLabel
-                    status={runData?.runInfo?.end_time ? 'alert' : 'success'}
-                    title={
-                      runData?.runInfo?.end_time ? 'Finished' : 'In Progress'
-                    }
-                  />
-                </>
-              ) : (
-                <Skeleton variant='rect' height={24} width={300} />
-              )}
-            </div>
-            <div className='RunDetail__runDetailContainer__headerContainer__tagsBox ScrollBar__hidden'>
-              {runData?.runInfo?.tags.map((tag: any, i: number) => (
-                <Badge color={tag.color} label={tag.name} key={i} />
-              ))}
-            </div>
-          </div>
           <Paper className='RunDetail__runDetailContainer__tabsContainer'>
             <Tabs
-              className='RunDetail__runDetailContainer__Tabs'
+              className='RunDetail__runDetailContainer__Tabs container'
               value={activeTab}
               onChange={handleTabChange}
               aria-label='simple tabs example'
@@ -314,13 +281,13 @@ function RunDetail(): React.FunctionComponentElement<React.ReactNode> {
               {tabs.map((tab: string) => (
                 <Route path={`${url}/${tab}`} key={tab}>
                   <ErrorBoundary>
-                    <div className='RunDetail__runDetailContainer__tabPanel'>
+                    <div className='RunDetail__runDetailContainer__tabPanel container'>
                       {tabContent[tab]}
                     </div>
                   </ErrorBoundary>
                 </Route>
               ))}
-              <Redirect to={`${url}/parameters`} />
+              <Redirect to={`${url}/overview`} />
             </Switch>
           </BusyLoaderWrapper>
         </div>
