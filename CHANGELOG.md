@@ -1,4 +1,8 @@
 # Changelog
+## Unreleased
+
+### Enhancements:
+- Hugging Face adapter refactoring (mihran113)
 
 ## 3.7.0 Mar 9, 2022
 
@@ -8,7 +12,6 @@
 - Custom max message size for Aim Remote tracking (alberttorosyan)
 - Docker images for aim up/server (alberttorosyan)
 - TF/Keras adapters refactoring (mihran113)
-- Hugging Face adapter refactoring (mihran113)
 - Remote tracking client-side retry logic (aramaim)
 - Add record_density to initial get-batch request for figures (VkoHov)
 
