@@ -13,7 +13,7 @@ import './GitInfoCard.scss';
 
 function GitInfoCard(props: IGitInfoCardProps) {
   return (
-    <Card title='Git Info Card' className='GitInfoCard'>
+    <Card title='Git Info Card' className='GitInfoCard RunOverviewTab__cardBox'>
       {_.isEmpty(props.data) ? (
         <IllustrationBlock size='large' title='No Results' />
       ) : (

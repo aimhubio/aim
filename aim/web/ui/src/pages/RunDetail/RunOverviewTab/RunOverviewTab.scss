@@ -8,6 +8,9 @@
   }
   &__cardBox {
     margin-bottom: $space-lg;
+    &:first-child {
+      margin-top: $space-lg;
+    }
     &__tableTitleCount {
       margin-left: $space-xxxs;
     }
