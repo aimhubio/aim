@@ -1,3 +1,4 @@
 Cython==3.0.0a9
+aimrocks==0.1.2
 wheel
 twine
