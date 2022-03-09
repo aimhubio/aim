@@ -77,4 +77,40 @@ npm run crc-kit
 
 These command will create a folder named `ComponentName` with all the necessary files.
 
+### Developing Storage/SDK/CLI
+
+Most of the backend components, including SDK, Storage, Web APIs and CLI are developed using Python/Cython.
+In order to start development you must install dev. requirements and the aim package itself, in editable mode.
+```shell
+pip install -r requirements.dev.txt
+pip install -e .
+```
+
+Verify that Aim installed properly by running
+```shell
+aim version
+```
+or by importing aim in python REPL
+```python
+import aim
+```
+
+#### Style Guide
+Aim follows PEP8 standard for style guide and uses `flake8` as a style checker. Style checks enforced
+as a check on GitHub Actions when new PR opened.
+
+#### Testing Requirements
+
+New unit-tests must be added along with the code changes. In order to setup the testing environment
+```shell
+cd tests
+pip install requirements.txt
+```
+
+Aim python code unit-tests are located at `tests/` directory. Unit-tests are written in Python's `unittest` package style.
+`pytest` is used as a test runner/discovery tool. To make sure unit-tests are not failing run
+```shell
+pytest tests/
+```
+
 ## Writing Docs
