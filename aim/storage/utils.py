@@ -1,7 +1,5 @@
 from copy import deepcopy
 
-import aimrocks.lib_rocksdb as interfaces  # noqa: F401
-
 
 class KeysIterator:
     def __init__(self, items_iterator):

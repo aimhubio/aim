@@ -1,20 +1,18 @@
+from abc import abstractmethod
 from typing import Iterator, Tuple, Union
 
 from typing import TYPE_CHECKING
-
-from aim.storage import utils
-from aim.storage.utils import interfaces
 
 if TYPE_CHECKING:
     from aim.storage.treeview import TreeView
     from aim.storage.types import BLOB
 
 ContainerKey = bytes
-ContainerValue = Union[bytes, 'BLOB']
+ContainerValue = Union[bytes, 'BLOB[bytes]']
 
 
 class Container:
-    """Container is an interface of mutable key-value storage.
+    """Container is a interface of mutable key-value storage.
 
     We can think of :obj:`Container` as a set of `(key, value)` records. This
     definition enables us to easily define union-containers, store a Container
@@ -27,17 +25,20 @@ class Container:
     be designed to provide optimized access to such constructs.
     """
 
+    @abstractmethod
     def close(self):
         """Close all the resources."""
         ...
 
-    def finalize(self, index: 'Container'):
+    @abstractmethod
+    def finalize(self, *, index: 'Container'):
         """Finalize the Container.
 
         Perform operations of compactions, indexing, optimization, etc.
         """
         ...
 
+    @abstractmethod
     def preload(self):
         """Preload the Container.
 
@@ -48,6 +49,16 @@ class Container:
         """
         ...
 
+    @classmethod
+    def path_join(cls, *args: bytes, prefix: bytes = b'') -> bytes:
+        """Join multiple paths.
+
+        We do not need an separator as by design all the keys, therefore paths
+        as well end with `PATH_SENTINEL`.
+        """
+        return prefix + b''.join(args)
+
+    @abstractmethod
     def get(self, key: ContainerKey, default=None) -> ContainerValue:
         """Returns the value by the given `key` if it exists else `default`.
 
@@ -55,26 +66,30 @@ class Container:
         """
         ...
 
+    @abstractmethod
     def __getitem__(self, key: ContainerKey) -> ContainerValue:
         """Returns the value by the given `key`."""
         ...
 
-    def set(self, key: ContainerKey, value: ContainerValue, store_batch=None):
+    @abstractmethod
+    def set(self, key: ContainerKey, value: ContainerValue, *, store_batch=None):
         """Set a value for given key, optionally store in a batch.
 
         If `store_batch` is provided, instead of the `(key, value)` being added
         to the collection immediately, the operation is stored in a batch in
         order to be executed in a whole with other write operations. Depending
-        on the :obj:`Container` implementation, this may feature transactions,
+        on the :obj:`Conainer` implementation, this may feature transactions,
         atomic writes, etc.
         """
         ...
 
+    @abstractmethod
     def __setitem__(self, key: ContainerKey, value: ContainerValue):
         """Set a value for given key."""
         ...
 
-    def delete(self, key: ContainerKey, store_batch=None):
+    @abstractmethod
+    def delete(self, key: ContainerKey, *, store_batch=None):
         """Delete a key-value record by the given key,
         optionally store in a batch.
 
@@ -86,14 +101,17 @@ class Container:
         """
         ...
 
+    @abstractmethod
     def __delitem__(self, key: ContainerKey):
         """Delete a key-value record by the given key."""
         ...
 
-    def delete_range(self, begin: ContainerKey, end: ContainerKey, store_batch=None):
+    @abstractmethod
+    def delete_range(self, begin: ContainerKey, end: ContainerKey, *, store_batch=None):
         """Delete all the records in the given `[begin, end)` key range."""
         ...
 
+    @abstractmethod
     def batch(self):
         """Creates a new batch object to store operations in before executing
         using :obj:`Container.commit`.
@@ -105,6 +123,7 @@ class Container:
         """
         ...
 
+    @abstractmethod
     def commit(self, batch):
         """Execute the accumulated write operations in the given `batch`.
 
@@ -113,10 +132,11 @@ class Container:
         """
         ...
 
+    @abstractmethod
     def items(self, prefix: ContainerKey = b'') -> Iterator[Tuple[ContainerKey, ContainerValue]]:
         """Iterate over all the key-value records in the prefix key range.
 
-        The iteration is always performed in lexicographic order w.r.t keys.
+        The iteration is always performed in lexiographic order w.r.t keys.
         If `prefix` is provided, iterate only over those records that have key
         starting with the `prefix`.
 
@@ -133,10 +153,11 @@ class Container:
         """
         ...
 
+    @abstractmethod
     def keys(self, prefix: ContainerKey = b'') -> Iterator[ContainerKey]:
         """Iterate over all the keys in the prefix range.
 
-        The iteration is always performed in lexicographic order.
+        The iteration is always performed in lexiographic order.
         If `prefix` is provided, iterate only over keys starting with
         the `prefix`.
 
@@ -151,12 +172,13 @@ class Container:
         Args:
             prefix (:obj:`bytes`): the prefix that defines the key range
         """
-        return utils.KeysIterator(self.items(prefix=prefix))
+        ...
 
+    @abstractmethod
     def values(self, prefix: ContainerKey = b'') -> Iterator[ContainerValue]:
         """Iterate over all the values in the given prefix key range.
 
-        The iteration is always performed in lexicographic order w.r.t keys.
+        The iteration is always performed in lexiographic order w.r.t keys.
         If `prefix` is provided, iterate only over those record values that have
         key starting with the `prefix`.
 
@@ -171,8 +193,9 @@ class Container:
         Args:
             prefix (:obj:`bytes`): the prefix that defines the key range
         """
-        return utils.ValuesIterator(self.items(prefix=prefix))
+        ...
 
+    @abstractmethod
     def view(self, prefix: ContainerKey = b'') -> 'Container':
         """Return a view (even mutable ones) that enable access to the container
         but with modifications.
@@ -198,6 +221,7 @@ class Container:
         """
         ...
 
+    @abstractmethod
     def tree(self) -> 'TreeView':
         """Return a :obj:`TreeView` which enables hierarchical view and access
         to the container records.
@@ -217,6 +241,7 @@ class Container:
         """
         ...
 
+    @abstractmethod
     def walk(self, prefix: ContainerKey = b''):
         """A bi-directional generator to walk over the collection of records on
         any arbitrary order. The `prefix` sent to the generator (lets call it
@@ -233,58 +258,44 @@ class Container:
         """
         ...
 
+    @abstractmethod
     def next_key(self, key: ContainerKey = b'') -> ContainerKey:
         """Returns the key that comes (lexicographically) right after the
         provided `key`.
         """
-        key, _ = self.next_item(key)
-        return key
+        ...
 
+    @abstractmethod
     def next_value(self, key: ContainerKey = b'') -> ContainerValue:
         """Returns the value for the key that comes (lexicographically) right
         after the provided `key`.
         """
-        _, value = self.next_item(key)
-        return value
+        ...
 
+    @abstractmethod
     def next_key_value(self, key: ContainerKey = b'') -> Tuple[ContainerKey, ContainerValue]:
         """Returns `(key, value)` for the key that comes (lexicographically)
         right after the provided `key`.
         """
-        return self.next_item(key)
-
-    def next_item(self, key: ContainerKey = b'') -> Tuple[ContainerKey, ContainerValue]:
-        """Returns `(key, value)` for the key that comes (lexicographically)
-        right after the provided `key`.
-        """
         ...
 
+    @abstractmethod
     def prev_key(self, key: ContainerKey = b'') -> ContainerKey:
         """Returns the key that comes (lexicographically) right before the
         provided `key`.
         """
-        key, _ = self.prev_item()
-        return key
+        ...
 
+    @abstractmethod
     def prev_value(self, key: ContainerKey = b'') -> ContainerValue:
         """Returns the value for the key that comes (lexicographically) right
         before the provided `key`.
         """
-        _, value = self.prev_item()
-        return value
+        ...
 
+    @abstractmethod
     def prev_key_value(self, key: ContainerKey = b'') -> Tuple[ContainerKey, ContainerValue]:
         """Returns `(key, value)` for the key that comes (lexicographically)
         right before the provided `key`.
         """
-        return self.prev_item(key)
-
-    def prev_item(self, key: ContainerKey = b'') -> Tuple[ContainerKey, ContainerValue]:
-        """Returns `(key, value)` for the key that comes (lexicographically)
-        right before the provided `key`.
-        """
         ...
-
-
-class ContainerItemsIterator(interfaces.Iterator):
-    pass

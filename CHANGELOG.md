@@ -10,19 +10,10 @@
 - TF/Keras adapters refactoring (mihran113)
 - Remote tracking client-side retry logic (aramaim)
 - Add record_density to initial get-batch request for figures (VkoHov)
-- Integrate `aim` with `cimport`-able `aimrocks` (mahnerak)
-- Add `__slots__` to some classes to improve performance (mahnerak)
-- Define base abstractions for `Iterator` and `DB` by borrowing from `aimrocks` (mahnerak)
-- Use `KeysIterator` and `ValuesIterator` wrappers instead of reimplementing (mahnerak)
-- Rename `PrefixView.container` to `PrefixView.parent` (mahnerak)
-- Reimplement `absolute_path` (mahnerak)
-- Cython bindings for `PrefixView`, `TreeView`, `Container`, `ArrayView`
 
 ### Fixes:
 
 - Fix rendering new lines in texts visualizer (arsengit)
-- Remove hard-coded installation of pre-requirements (mahnerak)
-- Remove duplicate code from `TreeView` and `Container` methods (mahnerak)
 
 ## 3.6.3 Mar 4, 2022
 
