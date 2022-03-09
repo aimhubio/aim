@@ -25,6 +25,7 @@ export interface ISearchInputEndAdornment {
 export interface UseTextSearchProps {
   rawData: { text: string }[];
   updateData: (data: { text: string }[], regex: RegExp | null) => void;
+  searchableKeys?: string[];
 }
 
 export enum MatchTypes {

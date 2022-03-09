@@ -56,7 +56,7 @@ export default function onAggregationConfigChange<M extends State>({
     analytics.trackEvent(
       `${
         // @ts-ignore
-        ANALYTICS_EVENT_KEYS[appName].chart.controls.changeAggregationMode
+        ANALYTICS_EVENT_KEYS[appName].chart.controls.changeAggregation
       } to ${aggregationConfig.isApplied ? 'Enable' : 'Disable'}`,
     );
   }
