@@ -212,7 +212,9 @@ function HeatMap({
         </div>
       </div>
       <div className='CalendarHeatmap__cell__info'>
-        <Text size={10}>Less</Text>
+        <Text weight={400} size={12}>
+          Less
+        </Text>
         {cellScales.map((scale) => (
           <div
             key={scale}
@@ -225,7 +227,9 @@ function HeatMap({
           </div>
         ))}
 
-        <Text size={10}>More</Text>
+        <Text weight={400} size={12}>
+          More
+        </Text>
       </div>
     </div>
   );

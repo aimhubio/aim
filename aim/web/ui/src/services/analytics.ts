@@ -9,8 +9,8 @@ let initialized = false;
 
 const enabled = () => {
   return (
-    (!isDev() && window.analytics !== false) || window.telemetry_enabled !== 0
-  ); //!isDev() && cookies.getCookie(configs.USER_ANALYTICS_COOKIE_NAME) == 1;
+    !isDev() && window.analytics !== false && window.telemetry_enabled === 1
+  );
 };
 
 const init = () => {

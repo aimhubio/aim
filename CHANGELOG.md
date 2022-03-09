@@ -1,4 +1,35 @@
 # Changelog
+## Unreleased
+
+### Enhancements:
+- Hugging Face adapter refactoring (mihran113)
+
+## 3.7.0 Mar 9, 2022
+
+### Enhancements:
+
+- Add Run overview tab in run single page (arsengit, VkoHov, KaroMourad, rubenaprikyan)
+- Custom max message size for Aim Remote tracking (alberttorosyan)
+- Docker images for aim up/server (alberttorosyan)
+- TF/Keras adapters refactoring (mihran113)
+- Remote tracking client-side retry logic (aramaim)
+- Add record_density to initial get-batch request for figures (VkoHov)
+
+### Fixes:
+
+- Fix rendering new lines in texts visualizer (arsengit)
+- Fix the image full view toggle icon visibility if the image has a white background (VkoHov)
+
+## 3.6.3 Mar 4, 2022
+
+- Fix UI rendering issue on colab (rubenaprikyan)
+
+## 3.6.2 Mar 2, 2022
+
+- Fix chart interactions issue in the Single Run Page Metrics tab (roubkar)
+- Fix `resolve_objects` in remote tracking client subtree (alberttorosyan)
+- Reject `0` as step/record count (alberttorosyan, VkoHov)
+- Fix error on mlflow conversion by experiment id (devfox-se)  
 
 ## 3.6.1 Feb 25, 2022
 

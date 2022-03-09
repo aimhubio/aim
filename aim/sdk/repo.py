@@ -766,3 +766,11 @@ class Repo:
     @property
     def is_remote_repo(self):
         return self._client is not None
+
+    @contextmanager
+    def atomic_track(self, queue_id):
+        if self.is_remote_repo:
+            self._client.start_instructions_batch()
+        yield
+        if self.is_remote_repo:
+            self._client.flush_instructions_batch(queue_id)
