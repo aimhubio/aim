@@ -220,80 +220,93 @@ function Table(props) {
             'Table--grouped': groups,
           })}
         >
+          {!groups && props.multiSelect && Array.isArray(props.data) && (
+            <ErrorBoundary key={'selection'}>
+              <div
+                className={classNames({
+                  Table__pane: true,
+                  'Table__pane--selection': true,
+                  onlyGroupColumn: leftPane.length === 0,
+                })}
+              >
+                <Column
+                  topHeader={true}
+                  showTopHeaderContent={true}
+                  showTopHeaderBorder={true}
+                  col={{
+                    isHidden: false,
+                    key: 'selection',
+                    pin: 'left',
+                    topHeader: '',
+                    content: (
+                      <Checkbox
+                        color='primary'
+                        size='small'
+                        className={classNames('Table__column__selectCheckbox', {
+                          Table__column__headerCheckbox:
+                            props.data[0]?.rowMeta?.color,
+                        })}
+                        icon={
+                          <span className='Table__column__defaultSelectIcon'></span>
+                        }
+                        checkedIcon={
+                          props.data.length ===
+                          Object.keys(props.selectedRows).length ? (
+                            <span className='Table__column__selectedSelectIcon'>
+                              <Icon name='check' fontSize={9} />
+                            </span>
+                          ) : (
+                            <span className='Table__column__partiallySelectedSelectIcon'>
+                              <Icon name='partially-selected' fontSize={16} />
+                            </span>
+                          )
+                        }
+                        onClick={() =>
+                          props.onRowSelect({
+                            actionType: isEmpty(props.selectedRows)
+                              ? 'selectAll'
+                              : 'removeAll',
+                            data: props.data,
+                          })
+                        }
+                        checked={!isEmpty(props.selectedRows)}
+                      />
+                    ),
+                  }}
+                  data={props.data}
+                  expanded={expanded}
+                  expand={expand}
+                  onRowSelect={props.onRowSelect}
+                  onRowClick={props.onRowClick}
+                  selectedRows={props.selectedRows}
+                  firstColumn={true}
+                  width={
+                    props.data[0]?.rowMeta?.color
+                      ? COLORED_SELECTION_COLUMN_WIDTH
+                      : SELECTION_COLUMN_WIDTH
+                  }
+                  isAlwaysVisible={true}
+                  onRowHover={props.onRowHover}
+                />
+              </div>
+            </ErrorBoundary>
+          )}
           {(groups || leftPane.length > 0) && (
             <div
               className={classNames({
                 Table__pane: true,
                 'Table__pane--left': true,
+                withSelectionColumn: props.multiSelect && !groups,
                 onlyGroupColumn: leftPane.length === 0,
               })}
+              style={{
+                '--left-position': `${
+                  props.data[0]?.rowMeta?.color
+                    ? COLORED_SELECTION_COLUMN_WIDTH
+                    : SELECTION_COLUMN_WIDTH
+                }px`,
+              }}
             >
-              {props.multiSelect && Array.isArray(props.data) && (
-                <ErrorBoundary key={'selection'}>
-                  <Column
-                    topHeader={true}
-                    showTopHeaderContent={true}
-                    showTopHeaderBorder={true}
-                    col={{
-                      isHidden: false,
-                      key: 'selection',
-                      pin: 'left',
-                      topHeader: '',
-                      content: (
-                        <Checkbox
-                          color='primary'
-                          size='small'
-                          className={classNames(
-                            'Table__column__selectCheckbox',
-                            {
-                              Table__column__headerCheckbox:
-                                props.data[0]?.rowMeta?.color,
-                            },
-                          )}
-                          icon={
-                            <span className='Table__column__defaultSelectIcon'></span>
-                          }
-                          checkedIcon={
-                            props.data.length ===
-                            Object.keys(props.selectedRows).length ? (
-                              <span className='Table__column__selectedSelectIcon'>
-                                <Icon name='check' fontSize={9} />
-                              </span>
-                            ) : (
-                              <span className='Table__column__partiallySelectedSelectIcon'>
-                                <Icon name='partially-selected' fontSize={16} />
-                              </span>
-                            )
-                          }
-                          onClick={() =>
-                            props.onRowSelect({
-                              actionType: isEmpty(props.selectedRows)
-                                ? 'selectAll'
-                                : 'removeAll',
-                              data: props.data,
-                            })
-                          }
-                          checked={!isEmpty(props.selectedRows)}
-                        />
-                      ),
-                    }}
-                    data={props.data}
-                    expanded={expanded}
-                    expand={expand}
-                    onRowSelect={props.onRowSelect}
-                    onRowClick={props.onRowClick}
-                    selectedRows={props.selectedRows}
-                    firstColumn={true}
-                    width={
-                      props.data[0]?.rowMeta?.color
-                        ? COLORED_SELECTION_COLUMN_WIDTH
-                        : SELECTION_COLUMN_WIDTH
-                    }
-                    isAlwaysVisible={true}
-                    onRowHover={props.onRowHover}
-                  />
-                </ErrorBoundary>
-              )}
               {leftPane.map((col, index) => (
                 <ErrorBoundary key={col.key}>
                   <Column
