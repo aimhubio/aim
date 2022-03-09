@@ -1,6 +1,8 @@
+from logging import getLogger
 from typing import Any, Dict, Optional
 
 from aim.ext.resource.configs import DEFAULT_SYSTEM_TRACKING_INT
+from aim.sdk.num_utils import is_number
 from aim.sdk.run import Run
 
 try:
@@ -10,6 +12,8 @@ except ImportError:
         'This contrib module requires Transformers to be installed. '
         'Please install it with command: \n pip install transformers'
     )
+
+logger = getLogger(__name__)
 
 
 class AimCallback(TrainerCallback):
@@ -27,6 +31,7 @@ class AimCallback(TrainerCallback):
         self._current_shift = None
         self._run = None
         self._run_params = run_params
+        self._log_value_warned = False
 
     @property
     def experiment(self):
@@ -72,6 +77,16 @@ class AimCallback(TrainerCallback):
             'subset': self._current_shift,
         }
         for log_name, log_value in logs.items():
+            if not is_number(log_value):
+                if not self._log_value_warned:
+                    self._log_value_warned = True
+                    logger.warning(
+                        f'Trainer is attempting to log a value of '
+                        f'"{log_value}" of type {type(log_value)} for key "{log_name}"'
+                        f' as a metric which is not a supported value type.'
+                    )
+                continue
+
             self._run.track(log_value, name=log_name, context=context)
 
     def on_epoch_end(self, args, state, control, **kwargs):
