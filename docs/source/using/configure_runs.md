@@ -58,6 +58,56 @@ run = Run(repo="~/repo")
 
 The code above will create a new dir entry `~/repo/.aim`
 
+### Adding tags and params to Run
+
+Aim lets you add tags and parameters on your Run object. Example of this would be if you want to tag your run with a
+specific version or keyword. Or you might need to log parameters, so you have some insight on what params have been used
+to process that particular Run.
+
+Example of adding and removing tags
+
+```python
+from aim import Run
+
+run = Run()
+run.add_tag("v1.0")
+run.add_tag("some-awesome-tag")
+```
+
+Or you can modify tags on your existing run, but first you have to restore Run object by using it's hash value
+
+```python
+from aim import Run
+
+uid = '508c5b29-02c7-4875-a157-f099ea193bfa'
+run = Run(run_hash=uid)
+run.remove_tag("some-awesome-tag")
+run.add_tag("another-awesome-tag")
+```
+
+Almost same approach goes for parameters
+
+```python
+from aim import Run
+
+run = Run()
+var = "some value"
+
+run['var'] = var
+```
+
+Also, you can restore the Run object using its hash key and overwrite value of the previously stored parameter.
+
+```python
+from aim import Run
+
+uid = '508c5b29-02c7-4875-a157-f099ea193bfa'
+run = Run(run_hash=uid)
+var = "another value"
+
+run['var'] = var
+```
+
 ### Training Run Reproducibility
 
 When running multiple training jobs it is crucial to understand the factors affecting the trained models performance.
