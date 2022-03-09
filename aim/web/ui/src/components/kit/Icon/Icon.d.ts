@@ -121,4 +121,11 @@ export type IconName =
   | 'show-system-metrics'
   | 'hide-system-metrics'
   | 'circle-question'
-  | 'text';
+  | 'text'
+  | 'hide-system-metrics'
+  | 'time'
+  | 'duration'
+  | 'hash'
+  | 'calendar'
+  | 'avatar'
+  | 'branch';

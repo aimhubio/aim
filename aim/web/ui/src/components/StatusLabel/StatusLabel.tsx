@@ -3,6 +3,8 @@ import React from 'react';
 import { Text } from 'components/kit';
 import ErrorBoundary from 'components/ErrorBoundary/ErrorBoundary';
 
+import stopPropagation from 'utils/stopPropagation';
+
 import { IStatusLabelProps } from './types.d';
 
 import './styles.scss';
@@ -19,7 +21,10 @@ function StatusLabel({
 }: IStatusLabelProps): React.FunctionComponentElement<React.ReactNode> {
   return (
     <ErrorBoundary>
-      <div className={`StatusLabel ${status} ${className}`}>
+      <div
+        onClick={stopPropagation}
+        className={`StatusLabel ${status} ${className}`}
+      >
         <Text size={10} weight={600} className='StatusLabel__title title'>
           {title}
         </Text>

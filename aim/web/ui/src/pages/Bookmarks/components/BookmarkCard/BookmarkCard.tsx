@@ -47,7 +47,7 @@ function BookmarkCard({
   }
 
   const tags: { label: string }[] = React.useMemo(() => {
-    return select[type]?.map((val: any) => ({ label: val.label })) || [];
+    return select?.options?.map((val: any) => ({ label: val.label })) || [];
   }, [select]);
 
   return (

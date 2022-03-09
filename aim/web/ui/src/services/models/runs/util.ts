@@ -20,12 +20,12 @@ import imagesExploreAppModel from '../imagesExplore/imagesExploreAppModel';
 import {
   DistributionsData,
   DistributionValue,
+  ImagesData,
   IPlotlyData,
+  TextsData,
   TraceProcessedData,
   TraceRawDataItem,
   TraceType,
-  ImagesData,
-  TextsData,
 } from './types';
 
 /**
@@ -182,7 +182,8 @@ export function getContextObjFromMenuActiveKey(
 }
 
 export function getMenuData(traceType: TraceType, traces: TraceRawDataItem[]) {
-  let title = VisualizationMenuTitles[traceType];
+  let title =
+    VisualizationMenuTitles[traceType as Exclude<TraceType, 'metric'>];
 
   let defaultActiveKey = '';
   let defaultActiveName = '';
@@ -422,7 +423,7 @@ export function reformatArrayQueries(
   const formattedQueryObject: Record<string, string> = {};
   Object.keys(queryObj).forEach((key) => {
     const item = queryObj[key];
-    formattedQueryObject[key] = `${item[0]}:${item[1]}`;
+    formattedQueryObject[key] = `${item[0]}:${item[1] + 1}`;
   });
 
   return formattedQueryObject;
@@ -433,10 +434,16 @@ export function reformatArrayQueries(
  */
 export function processPlotlyData(data: Partial<IPlotlyData>) {
   const { record_range_total, iters, values } = data;
-  const processedValue = JSON.parse(_.head(values).data);
-  const originalValues = values;
-
-  processedValue.layout.autosize = true;
+  let processedValue = null;
+  let originalValues = null;
+  if (_.head(values)?.data) {
+    processedValue = JSON.parse(_.head(values)?.data);
+    originalValues = values;
+    processedValue.layout.autosize = true;
+  } else {
+    processedValue = {};
+    originalValues = [];
+  }
 
   return {
     iters,
