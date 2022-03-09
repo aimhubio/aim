@@ -36,7 +36,7 @@ export const TABLE_DEFAULT_CONFIG = {
     hiddenColumns: [],
     columnsWidths: {},
     columnsOrder: {
-      left: ['experiment', 'run'],
+      left: ['run'],
       middle: [],
       right: [],
     },

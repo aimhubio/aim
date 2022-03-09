@@ -23,6 +23,18 @@ function getRunsTableColumns(
 ): ITableColumn[] {
   let columns: ITableColumn[] = [
     {
+      key: 'run',
+      content: <span>Run Name</span>,
+      topHeader: 'Runs',
+      pin: order?.left?.includes('run')
+        ? 'left'
+        : order?.middle?.includes('run')
+        ? null
+        : order?.right?.includes('run')
+        ? 'right'
+        : 'left',
+    },
+    {
       key: 'experiment',
       content: <span>Experiment</span>,
       topHeader: 'Runs',
@@ -32,19 +44,31 @@ function getRunsTableColumns(
         ? null
         : order?.right?.includes('experiment')
         ? 'right'
-        : 'left',
+        : null,
     },
     {
-      key: 'run',
-      content: <span>Run</span>,
+      key: 'description',
+      content: <span>Description</span>,
       topHeader: 'Runs',
-      pin: order?.left?.includes('run')
+      pin: order?.left?.includes('description')
         ? 'left'
-        : order?.middle?.includes('run')
+        : order?.middle?.includes('description')
         ? null
-        : order?.right?.includes('run')
+        : order?.right?.includes('description')
         ? 'right'
-        : 'left',
+        : null,
+    },
+    {
+      key: 'date',
+      content: <span>Date</span>,
+      topHeader: 'Runs',
+      pin: order?.left?.includes('date')
+        ? 'left'
+        : order?.middle?.includes('date')
+        ? null
+        : order?.right?.includes('date')
+        ? 'right'
+        : null,
     },
   ].concat(
     Object.keys(metricsColumns).reduce((acc: any, key: string) => {
