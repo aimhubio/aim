@@ -11,6 +11,7 @@ do
     # downgrade to pip-18
     $PYTHON_ROOT/bin/pip install --upgrade pip==18
   fi
+  $PYTHON_ROOT/bin/pip install -r requirements.dev.txt
   $PYTHON_ROOT/bin/python setup.py bdist_wheel -d linux_dist
 done
 
