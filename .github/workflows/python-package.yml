@@ -77,54 +77,54 @@ jobs:
           UPDATE_TAG: ${{ inputs.branch || 'latest' }}
         run: . create-docker-image.sh
 
-  macos-dist:
-    if: ${{ github.event_name == 'scheduled' || github.actor == 'gorarakelyan' || github.actor == 'alberttorosyan' || github.actor == 'roubkar' }}
-    runs-on: ${{matrix.os}}
-    strategy:
-      fail-fast: false
-      matrix:
-        python-version: [ '3.6', '3.7', '3.8', '3.9', '3.10' ]
-        os: [ 'macos-latest' ]
-    name: Python ${{ matrix.python-version }} on ${{ matrix.os }} build
-    steps:
-      - name: Checkout sources
-        uses: actions/checkout@v2
-        with:
-          ref: ${{ inputs.branch || github.ref }}
-
-      - name: Use node v16
-        uses: actions/setup-node@v2
-        with:
-          node-version: '16'
-
-      - name: Build UI
-        working-directory: ./aim/web/ui
-        run: |
-          npm i
-          CI=false npm run build
-
-      - name: Setup python
-        uses: actions/setup-python@v2
-        with:
-          python-version: ${{ matrix.python-version }}
-          architecture: x64
-
-      - name: Install dev dependencies
-        run: |
-          python -m pip install -r requirements.dev.txt
-          python -m pip install -r requirements.txt
-
-      - name: Build bdist wheel
-        run: |
-          python setup.py bdist_wheel -d dist
-
-      - name: Build sdist
-        if: matrix.python-version == '3.9'
-        run: |
-          python setup.py sdist
-
-      - name: Publish wheel
-        env:
-          PYPI_PASSWORD: ${{ secrets.pypi_password }}
-        run: |
-          python -m twine upload -u __token__ -p "${PYPI_PASSWORD}" dist/*
+#  macos-dist:
+#    if: ${{ github.event_name == 'scheduled' || github.actor == 'gorarakelyan' || github.actor == 'alberttorosyan' || github.actor == 'roubkar' }}
+#    runs-on: ${{matrix.os}}
+#    strategy:
+#      fail-fast: false
+#      matrix:
+#        python-version: [ '3.6', '3.7', '3.8', '3.9', '3.10' ]
+#        os: [ 'macos-latest' ]
+#    name: Python ${{ matrix.python-version }} on ${{ matrix.os }} build
+#    steps:
+#      - name: Checkout sources
+#        uses: actions/checkout@v2
+#        with:
+#          ref: ${{ inputs.branch || github.ref }}
+#
+#      - name: Use node v16
+#        uses: actions/setup-node@v2
+#        with:
+#          node-version: '16'
+#
+#      - name: Build UI
+#        working-directory: ./aim/web/ui
+#        run: |
+#          npm i
+#          CI=false npm run build
+#
+#      - name: Setup python
+#        uses: actions/setup-python@v2
+#        with:
+#          python-version: ${{ matrix.python-version }}
+#          architecture: x64
+#
+#      - name: Install dev dependencies
+#        run: |
+#          python -m pip install -r requirements.dev.txt
+#          python -m pip install -r requirements.txt
+#
+#      - name: Build bdist wheel
+#        run: |
+#          python setup.py bdist_wheel -d dist
+#
+#      - name: Build sdist
+#        if: matrix.python-version == '3.9'
+#        run: |
+#          python setup.py sdist
+#
+#      - name: Publish wheel
+#        env:
+#          PYPI_PASSWORD: ${{ secrets.pypi_password }}
+#        run: |
+#          python -m twine upload -u __token__ -p "${PYPI_PASSWORD}" dist/*
