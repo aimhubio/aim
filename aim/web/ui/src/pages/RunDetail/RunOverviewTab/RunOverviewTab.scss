@@ -11,6 +11,9 @@
     &:first-child {
       margin-top: $space-lg;
     }
+    &:last-child {
+      display: inline-block;
+    }
     &__tableTitleCount {
       margin-left: $space-xxxs;
     }
