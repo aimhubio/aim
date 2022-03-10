@@ -26,18 +26,17 @@ This section describes governance processes we follow in developing Aim.
 
 #### Primary Maintainers
 
-- [alberttorosyan](https://github.com/alberttorosyan)
+- Albert Torosyan ([alberttorosyan](https://github.com/alberttorosyan))
 - Karen Hambardzumyan ([mahnerak](https://github.com/mahnerak))
 - Ruben Karapetyan ([roubkar](https://github.com/roubkar))
 
 #### Core Maintainers
 
-- [aramaim](https://github.com/aramaim)
 - Arsen Alkamyan ([arsengit](https://github.com/arsengit))
-- Arthur ([devfox-se](https://github.com/devfox-se))
+- Arthur Poghosyan ([devfox-se](https://github.com/devfox-se))
 - Hamik Hambardzumyan ([Hamik25](https://github.com/Hamik25))
-- Karo ([KaroMourad](https://github.com/KaroMourad))
-- [mihran113](https://github.com/mihran113)
+- Karo Muradyan ([KaroMourad](https://github.com/KaroMourad))
+- Mihran Vanyan ([mihran113](https://github.com/mihran113))
 - Ruben Aprikyan ([rubenaprikyan](https://github.com/rubenaprikyan))
 - Vardges Hovhannisyan ([VkoHov](https://github.com/VkoHov))
 
