@@ -11,6 +11,7 @@
 
 ### Enhancements:
 
+- Add DVC integration (devfox-se)
 - Add Run overview tab in run single page (arsengit, VkoHov, KaroMourad, rubenaprikyan)
 - Custom max message size for Aim Remote tracking (alberttorosyan)
 - Docker images for aim up/server (alberttorosyan)
