@@ -1,0 +1,35 @@
+name: nightly releases
+
+on:
+  schedule:
+    # Run at 00:00 UTC Every Day
+    - cron: "0 0 * * *"
+
+jobs:
+  version-override:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Set Git config
+        run: |
+          git config --local user.email "actions@github.com"
+          git config --local user.name "Github Actions"
+      - name: Rebase with main and update version
+        run: |
+          git fetch --unshallow
+          git checkout main
+          git pull --rebase
+          git checkout nightly
+          git pull --rebase
+          git merge main --strategy-option theirs
+          git checkout main -- ./aim/VERSION
+          . ./.github/scripts/override-version.sh
+          git add ./aim/VERSION
+          git commit -m "Update VERSION file"
+          git push
+
+  trigger-packaging-workflow:
+    needs: version-override
+    uses: ./.github/workflows/python-package.yml
+    with:
+      branch: nightly

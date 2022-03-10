@@ -77,7 +77,7 @@ class RunAutoClean(AutoClean['Run']):
         self.meta_run_tree['end_time'] = datetime.datetime.now(pytz.utc).timestamp()
         try:
             timeout = os.getenv(AIM_RUN_INDEXING_TIMEOUT, 2 * 60)
-            index = self.repo._get_index_tree('meta', timeout=timeout).view(b'')
+            index = self.repo._get_index_tree('meta', timeout=timeout).view(())
             logger.debug(f'Indexing Run {self.hash}...')
             self.meta_run_tree.finalize(index=index)
         except TimeoutError:
@@ -406,7 +406,9 @@ class Run(StructuredRunMixin):
         # since worker might be lagging behind, we want to log the timestamp of run.track() call,
         # not the actual implementation execution time.
         track_time = datetime.datetime.now(pytz.utc).timestamp()
-        if self.track_in_thread:
+
+        # remote tracking creates dedicated thread for tracking, so don't need to create another one here
+        if self.track_in_thread and not self.repo.is_remote_repo:
             val = deepcopy(value)
             track_rate_warning = self.repo.tracking_queue.register_task(
                 self._track_impl, val, track_time, name, step, epoch, context=context)
@@ -435,25 +437,25 @@ class Run(StructuredRunMixin):
         else:
             raise ValueError(f'Input metric of type {type(value)} is neither python number nor AimObject')
 
-        ctx = Context(context)
-        if ctx not in self.contexts:
-            self.meta_tree['contexts', ctx.idx] = context
-            self.meta_run_tree['contexts', ctx.idx] = context
-            self.contexts[ctx] = ctx.idx
-            self._idx_to_ctx[ctx.idx] = ctx
+        with self.repo.atomic_track(self.hash):
+            ctx = Context(context)
+            if ctx not in self.contexts:
+                self.meta_tree['contexts', ctx.idx] = context
+                self.meta_run_tree['contexts', ctx.idx] = context
+                self.contexts[ctx] = ctx.idx
+                self._idx_to_ctx[ctx.idx] = ctx
 
-        seq_info = self._get_or_create_sequence_info(ctx, name)
-        step = step if step is not None else seq_info.count
-        self._update_sequence_info(seq_info, ctx, val, name, step)
+            seq_info = self._get_or_create_sequence_info(ctx, name)
+            step = step if step is not None else seq_info.count
+            self._update_sequence_info(seq_info, ctx, val, name, step)
 
-        self.meta_run_tree['traces', ctx.idx, name, 'last'] = val
-        self.meta_run_tree['traces', ctx.idx, name, 'last_step'] = step
+            self.meta_run_tree['traces', ctx.idx, name, 'last'] = val
+            self.meta_run_tree['traces', ctx.idx, name, 'last_step'] = step
 
-        # TODO perform assignments in an atomic way
-        seq_info.val_view[step] = val
-        seq_info.epoch_view[step] = epoch
-        seq_info.time_view[step] = track_time
-        seq_info.count = seq_info.count + 1
+            seq_info.val_view[step] = val
+            seq_info.epoch_view[step] = epoch
+            seq_info.time_view[step] = track_time
+            seq_info.count = seq_info.count + 1
 
     @property
     def props(self):
@@ -650,8 +652,8 @@ class Run(StructuredRunMixin):
 
         assert not seq_info.initialized
         seq_info.val_view = self.series_run_tree.subtree(sequence_selector).array('val').allocate()
-        seq_info.epoch_view = self.series_run_tree.subtree(sequence_selector).array('epoch').allocate()
-        seq_info.time_view = self.series_run_tree.subtree(sequence_selector).array('time').allocate()
+        seq_info.epoch_view = self.series_run_tree.subtree(sequence_selector).array('epoch', dtype='int64').allocate()
+        seq_info.time_view = self.series_run_tree.subtree(sequence_selector).array('time', dtype='int64').allocate()
         seq_info.count = len(seq_info.val_view)
         seq_info.sequence_dtype = self.meta_run_tree.get(('traces', ctx.idx, name, 'dtype'), None)
         seq_info.record_max_length = self.meta_run_tree.get(('traces', ctx.idx, name, 'record_max_length'), 0)
@@ -667,8 +669,8 @@ class Run(StructuredRunMixin):
 
         # the subtree().array().allocate() method is write-only
         seq_info.val_view = self.series_run_tree.subtree(sequence_selector).array('val').allocate()
-        seq_info.epoch_view = self.series_run_tree.subtree(sequence_selector).array('epoch').allocate()
-        seq_info.time_view = self.series_run_tree.subtree(sequence_selector).array('time').allocate()
+        seq_info.epoch_view = self.series_run_tree.subtree(sequence_selector).array('epoch', dtype='int64').allocate()
+        seq_info.time_view = self.series_run_tree.subtree(sequence_selector).array('time', dtype='int64').allocate()
         seq_info.count = 0
         seq_info.sequence_dtype = None
         seq_info.record_max_length = 0

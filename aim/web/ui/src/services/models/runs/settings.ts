@@ -144,11 +144,11 @@ const settings: Record<string, SettingItem> = {
       return record_range !== -1
         ? {
             ...reformatArrayQueries({
-              record_range: [record_range - 1, record_range],
+              record_range: [record_range, record_range],
             }),
             record_density: 1,
           }
-        : {};
+        : { record_density: 1, record_range: '0:1' };
     },
     inputValidation: (min: number | string, max: number | string) => [
       {

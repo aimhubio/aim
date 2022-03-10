@@ -36,7 +36,8 @@
         &__pointer {
           cursor: pointer;
         }
-        &__key, &__value {
+        &__key,
+        &__value {
           &.stacked {
             overflow: hidden;
             text-overflow: ellipsis;
@@ -108,9 +109,11 @@
             display: flex;
             align-items: center;
             justify-content: center;
+            background: $primary-color-10;
+            color: $primary-color;
             &:hover {
-              background: rgba(232, 241, 252, 0.3);
-              color: $white;
+              background: $primary-color-20;
+              color: $primary-color;
             }
             &.isHidden {
               display: none;
@@ -123,11 +126,14 @@
           padding: toRem(1px);
         }
         .focus img {
-          box-shadow: 0 0 0 toRem(1.5px) $primary-color, inset 0 0 0px toRem(0.5px) $primary-color;
+          box-shadow: 0 0 0 toRem(1.5px) $primary-color,
+            inset 0 0 0px toRem(0.5px) $primary-color;
         }
         .active {
-          & img, & .MuiSkeleton-root {
-            box-shadow: 0 0 0 toRem(1.5px) #b9d5f8, inset 0 0 0px toRem(0.5px) #b9d5f8;
+          & img,
+          & .MuiSkeleton-root {
+            box-shadow: 0 0 0 toRem(1.5px) #b9d5f8,
+              inset 0 0 0px toRem(0.5px) #b9d5f8;
           }
         }
         &__image {

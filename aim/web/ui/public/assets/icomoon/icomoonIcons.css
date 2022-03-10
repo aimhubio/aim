@@ -1,10 +1,10 @@
 @font-face {
   font-family: 'icomoon';
-  src:  url('fonts/icomoon.eot?qfull5');
-  src:  url('fonts/icomoon.eot?qfull5#iefix') format('embedded-opentype'),
-  url('fonts/icomoon.ttf?qfull5') format('truetype'),
-  url('fonts/icomoon.woff?qfull5') format('woff'),
-  url('fonts/icomoon.svg?qfull5#icomoon') format('svg');
+  src:  url('fonts/icomoon.eot?9q1ohy');
+  src:  url('fonts/icomoon.eot?9q1ohy#iefix') format('embedded-opentype'),
+    url('fonts/icomoon.ttf?9q1ohy') format('truetype'),
+    url('fonts/icomoon.woff?9q1ohy') format('woff'),
+    url('fonts/icomoon.svg?9q1ohy#icomoon') format('svg');
   font-weight: normal;
   font-style: normal;
   font-display: block;
@@ -27,6 +27,12 @@
 
 .icon-text:before {
   content: "\e96d";
+}
+.icon-avatar:before {
+  content: "\e971";
+}
+.icon-branch:before {
+  content: "\e972";
 }
 .icon-circle-question:before {
   content: "\e96c";
@@ -354,4 +360,16 @@
 }
 .icon-params:before {
   content: "\e940";
+}
+.icon-time:before {
+  content: "\e96e";
+}
+.icon-duration:before {
+  content: "\e96f";
+}
+.icon-hash:before {
+  content: "\e970";
+}
+.icon-calendar:before {
+  content: "\e973";
 }
