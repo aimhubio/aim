@@ -2760,6 +2760,8 @@ function createAppModel(appConfig: IAppInitialConfig) {
             [
               'experiment',
               'run',
+              'date',
+              'description',
               'metric',
               'context',
               'step',
@@ -3566,6 +3568,8 @@ function createAppModel(appConfig: IAppInitialConfig) {
               [
                 'experiment',
                 'run',
+                'date',
+                'description',
                 'metric',
                 'context',
                 'step',
@@ -4981,6 +4985,7 @@ function createAppModel(appConfig: IAppInitialConfig) {
                   (metric) => metric.key,
                 ),
                 color: metricsCollection.color,
+
                 dasharray: metricsCollection.dasharray,
                 experiment: '',
                 run: '',
@@ -5040,6 +5045,8 @@ function createAppModel(appConfig: IAppInitialConfig) {
                 'run',
                 'metric',
                 'context',
+                'date',
+                'description',
                 'step',
                 'epoch',
                 'time',
