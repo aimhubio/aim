@@ -15,6 +15,32 @@ Please follow [Aim Contributor Covenant Code of Conduct](./CODE_OF_CONDUCT.md) i
 
 ## Governance
 
+This section describes governance processes we follow in developing Aim.
+
+### Persons of Interest
+
+#### Authors
+
+- Gevorg Soghomonyan ([SGevorg](https://github.com/SGevorg))
+- Gor Arakelyan ([gorarakelyan](https://github.com/gorarakelyan))
+
+#### Core Maintainers
+
+- [alberttorosyan](https://github.com/alberttorosyan)
+- [aramaim](https://github.com/aramaim)
+- Arsen Alkamyan ([arsengit](https://github.com/arsengit))
+- Arthur ([devfox-se](https://github.com/devfox-se))
+- Hamik Hambardzumyan ([Hamik25](https://github.com/Hamik25))
+- Karo ([KaroMourad](https://github.com/KaroMourad))
+- Karen Hambardzumyan ([mahnerak](https://github.com/mahnerak))
+- [mihran113](https://github.com/mihran113)
+- Ruben Aprikyan ([rubenaprikyan](https://github.com/rubenaprikyan))
+- Ruben Karapetyan ([roubkar](https://github.com/roubkar))
+- Vardges Hovhannisyan ([VkoHov](https://github.com/VkoHov))
+
+### Releases
+
+We release a new minor version (e.g., 3.8.0) every two week and patch releases on demand. The minor versions contain new features, bugfixes and also all previous bugfixes included in previous patch releases. With every release, we publish a CHANGELOG where we list enhancements and fixes.
 
 ## Contribution Process
 
@@ -47,14 +73,14 @@ We use Prettier to autoformat code on presubmit.
 Before running the Aim UI dev server or building a distributable wheel, install npm
 dependencies via:
 
-```
+```shell
 cd aim/web/ui
 npm install
 ```
 
 Then you can start the dev server:
 
-```
+```shell
 npm start
 ```
 
@@ -64,14 +90,14 @@ Aim UI will show logged data in at [http://localhost:3000](http://localhost:3000
 
 To start building a new component you can run follwoing command:
 
-```
+```shell
 npm run crc
 ```
 
 
 If you want to add a component inside UI kit you can run following command:
 
-```
+```shell
 npm run crc-kit
 ```
 
