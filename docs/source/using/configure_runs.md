@@ -52,11 +52,22 @@ directory will be created or just reused.
 ```python
 from aim import Run
 
-run = Run(repo="~/repo")
+run = Run(repo='~/repo')
 ...
 ```
 
 The code above will create a new dir entry `~/repo/.aim`
+
+### Organizing Runs in Experiments
+
+Aim allows you to group runs under experiments, which can be useful for comparing runs intended to tackle a particular
+task.
+
+```python
+from aim import Run
+
+run = Run(experiment="fraud-detection")
+```
 
 ### Adding tags and params to Run
 
@@ -70,8 +81,8 @@ Example of adding and removing tags
 from aim import Run
 
 run = Run()
-run.add_tag("v1.0")
-run.add_tag("some-awesome-tag")
+run.add_tag('v1.0')
+run.add_tag('some-awesome-tag')
 ```
 
 Or you can modify tags on your existing run, but first you have to restore Run object by using it's hash value
@@ -81,8 +92,8 @@ from aim import Run
 
 uid = '508c5b29-02c7-4875-a157-f099ea193bfa'
 run = Run(run_hash=uid)
-run.remove_tag("some-awesome-tag")
-run.add_tag("another-awesome-tag")
+run.remove_tag('some-awesome-tag')
+run.add_tag('another-awesome-tag')
 ```
 
 Almost same approach goes for parameters
@@ -91,7 +102,7 @@ Almost same approach goes for parameters
 from aim import Run
 
 run = Run()
-var = "some value"
+var = 'some value'
 
 run['var'] = var
 ```
@@ -103,7 +114,7 @@ from aim import Run
 
 uid = '508c5b29-02c7-4875-a157-f099ea193bfa'
 run = Run(run_hash=uid)
-var = "another value"
+var = 'another value'
 
 run['var'] = var
 ```
