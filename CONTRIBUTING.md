@@ -108,9 +108,22 @@ pip install requirements.txt
 ```
 
 Aim python code unit-tests are located at `tests/` directory. Unit-tests are written in Python's `unittest` package style.
-`pytest` is used as a test runner/discovery tool. To make sure unit-tests are not failing run
+[Pytest](https://docs.pytest.org) is used as a test runner/discovery tool. To make sure unit-tests are not failing run
 ```shell
 pytest tests/
 ```
 
 ## Writing Docs
+
+Aim documentation is built using [Sphix](https://www.sphinx-doc.org) and is hosted at
+[Read the Docs](https://aimstack.readthedocs.io).
+The documentation sources are located at `docs/` directory. In order to build documentation locally
+run the following commands
+```shell
+pip install -r requirements.dev.txt
+cd docs
+pip install -r requirements.txt
+make html
+```
+
+Documentation will be available at `docs/build/html/index.html` on your local machine.
