@@ -2,10 +2,16 @@
 ## Unreleased
 
 ### Enhancements:
+
 - Hugging Face adapter refactoring (mihran113)
 
+### Fixes:
+
+- Fix scroll to the end of the audio tab (VkoHov)
+
 ## 3.7.1 Mar 10, 2022
-- Fix matric queries with epoch=None (alberttorosyan)
+
+- Fix metric queries with epoch=None (alberttorosyan)
 
 ## 3.7.0 Mar 9, 2022
 
@@ -19,6 +25,9 @@
 - Remote tracking client-side retry logic (aramaim)
 - Add record_density to initial get-batch request for figures (VkoHov)
 
+### Fixes:
+
+- Fix rendering new lines in texts visualizer (arsengit)
 ### Fixes:
 
 - Fix rendering new lines in texts visualizer (arsengit)
