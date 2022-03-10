@@ -30,7 +30,7 @@ This section describes governance processes we follow in developing Aim.
 - Karen Hambardzumyan ([mahnerak](https://github.com/mahnerak))
 - Ruben Karapetyan ([roubkar](https://github.com/roubkar))
 
-#### Core Maintainers
+#### Core Contributors
 
 - Arsen Alkamyan ([arsengit](https://github.com/arsengit))
 - Arthur Poghosyan ([devfox-se](https://github.com/devfox-se))
