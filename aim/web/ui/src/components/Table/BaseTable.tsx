@@ -1175,13 +1175,15 @@ class BaseTable extends React.PureComponent {
   }
 
   _handleRowClick({ rowKey }) {
-    const clickedOnSameRow = this.state.activeRowKey === rowKey;
-    this.setState({
-      hoveredRowKey: rowKey,
-      activeRowKey: clickedOnSameRow ? null : rowKey,
-    });
-    if (typeof this.props.onRowClick === 'function') {
-      this.props.onRowClick(clickedOnSameRow ? undefined : rowKey);
+    if (!this.props.disableRowClick) {
+      const clickedOnSameRow = this.state.activeRowKey === rowKey;
+      this.setState({
+        hoveredRowKey: rowKey,
+        activeRowKey: clickedOnSameRow ? null : rowKey,
+      });
+      if (typeof this.props.onRowClick === 'function') {
+        this.props.onRowClick(clickedOnSameRow ? undefined : rowKey);
+      }
     }
   }
 
