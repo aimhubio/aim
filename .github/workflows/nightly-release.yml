@@ -31,5 +31,9 @@ jobs:
   trigger-packaging-workflow:
     needs: version-override
     uses: ./.github/workflows/python-package.yml
+    secrets:
+      PYPI_PASSWORD: ${{ secrets.PYPI_PASSWORD }}
+      DOCKER_HUB_USERNAME: ${{ secrets.DOCKER_HUB_USERNAME }}
+      DOCKER_HUB_PASSWORD: ${{ secrets.DOCKER_HUB_PASSWORD }}
     with:
       branch: nightly
