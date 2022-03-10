@@ -83,6 +83,7 @@ const ImageBox = ({
         ? style.width / (data.width / data.height)
         : mediaItemHeight - 10) - 6, // 6px -> 0.375rem gap,
   };
+
   return (
     <ErrorBoundary key={index}>
       <div className='MediaSet__container__mediaItemsList__imageBox'>
@@ -153,11 +154,13 @@ const ImageBox = ({
               imageRendering={additionalProperties?.imageRendering}
               tooltipContent={
                 tooltip?.content || {
-                  caption: data.caption,
-                  images_name: data.images_name,
                   context: data.context,
-                  step: data.step,
-                  index: data.index,
+                  mediaContent: {
+                    step: data.step,
+                    index: data.index,
+                    caption: data.caption,
+                    images_name: data.images_name,
+                  },
                 }
               }
               imageData={data}

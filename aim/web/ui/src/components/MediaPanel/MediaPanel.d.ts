@@ -4,7 +4,7 @@ import { ResizeModeEnum } from 'config/enums/tableEnums';
 
 import {
   IFocusedState,
-  ITooltipContent,
+  IPanelTooltip,
 } from 'types/services/models/metrics/metricsAppModel';
 import { IImagesExploreAppConfig } from 'types/services/models/imagesExplore/imagesExploreAppModel';
 import { IIllustrationConfig } from 'types/components/Table/Table';
@@ -23,7 +23,7 @@ export interface IMediaPanelProps {
   wrapperOffsetWidth: number;
   controls?: React.ReactNode;
   resizeMode?: ResizeModeEnum;
-  tooltip?: ITooltipContent;
+  tooltip?: IPanelTooltip;
   focusedState: IFocusedState;
   additionalProperties?:
     | IImagesExploreAppConfig['images']['additionalProperties']

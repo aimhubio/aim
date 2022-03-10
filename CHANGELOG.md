@@ -9,7 +9,19 @@
 
 - Fix scroll to the end of the audio tab (VkoHov)
 
+## 3.7.2 Mar 10, 2022
+
+### Fixes:
+
+- Fix issue with rendering UI re keeping long URL (KaroMourad)
+
+### Enhancements:
+
+- Split code in the single run page to optimize chunk size (arsengit)
+
 ## 3.7.1 Mar 10, 2022
+
+### Fixes:
 
 - Fix metric queries with epoch=None (alberttorosyan)
 
@@ -25,9 +37,6 @@
 - Remote tracking client-side retry logic (aramaim)
 - Add record_density to initial get-batch request for figures (VkoHov)
 
-### Fixes:
-
-- Fix rendering new lines in texts visualizer (arsengit)
 ### Fixes:
 
 - Fix rendering new lines in texts visualizer (arsengit)
