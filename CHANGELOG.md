@@ -1,6 +1,6 @@
 # Changelog
 
-## Unreleased
+## 3.7.2 Mar 10, 2022
 
 ### Fixes:
 
