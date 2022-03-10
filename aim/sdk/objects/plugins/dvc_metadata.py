@@ -1,4 +1,3 @@
-from dvc.repo import Repo
 from aim.storage.object import CustomObject
 
 
@@ -32,5 +31,12 @@ class DvcData(CustomObject):
         }
 
     def _get_dvc_tracked_files(self, **ls_kwargs):
+        try:
+            from dvc.repo import Repo
+        except ImportError:
+            raise RuntimeError(
+                'Could not import module dvc.'
+            )
+
         entries = Repo.ls(**ls_kwargs)
         return [entry['path'] for entry in entries]
