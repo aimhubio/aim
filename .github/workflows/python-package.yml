@@ -132,6 +132,6 @@ jobs:
 
       - name: Publish wheel
         env:
-          PYPI_PASSWORD: ${{ secrets.pypi_password }}
+          PYPI_PASSWORD: ${{ secrets.PYPI_PASSWORD }}
         run: |
           python -m twine upload -u __token__ -p "${PYPI_PASSWORD}" dist/*
