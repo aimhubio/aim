@@ -54,7 +54,7 @@ function RunDetail(): React.FunctionComponentElement<React.ReactNode> {
   const { pathname } = useLocation();
   const [activeTab, setActiveTab] = React.useState(pathname);
 
-  const tabs = [
+  const tabs: string[] = [
     'overview',
     'parameters',
     'metrics',

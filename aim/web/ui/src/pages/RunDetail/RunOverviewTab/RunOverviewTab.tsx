@@ -36,7 +36,7 @@ function RunOverviewTab({ runData, runHash }: IRunOverviewTabProps) {
 
   const cardsData: Record<any, any> = React.useMemo(() => {
     const data: any = {};
-    const systemParams = runData.runParams.__system_params;
+    const systemParams = runData?.runParams?.__system_params;
     if (!_.isEmpty(runData?.runParams)) {
       data.runParams = runData.runParams;
     }
@@ -46,17 +46,19 @@ function RunOverviewTab({ runData, runHash }: IRunOverviewTabProps) {
     if (!_.isEmpty(runData?.runSystemBatch)) {
       data.runSystemBatch = runData.runSystemBatch;
     }
-    if (!_.isEmpty(systemParams.arguments)) {
-      data.cliArguments = systemParams.arguments;
-    }
-    if (!_.isEmpty(systemParams.env_variables)) {
-      data.envVariables = systemParams.env_variables;
-    }
-    if (!_.isEmpty(systemParams.packages)) {
-      data.packages = systemParams.packages;
-    }
-    if (!_.isEmpty(systemParams.packages)) {
-      data.gitInfo = systemParams.git_info;
+    if (systemParams) {
+      if (!_.isEmpty(systemParams.arguments)) {
+        data.cliArguments = systemParams.arguments;
+      }
+      if (!_.isEmpty(systemParams.env_variables)) {
+        data.envVariables = systemParams.env_variables;
+      }
+      if (!_.isEmpty(systemParams.packages)) {
+        data.packages = systemParams.packages;
+      }
+      if (!_.isEmpty(systemParams.packages)) {
+        data.gitInfo = systemParams.git_info;
+      }
     }
     return data;
   }, [runData]);

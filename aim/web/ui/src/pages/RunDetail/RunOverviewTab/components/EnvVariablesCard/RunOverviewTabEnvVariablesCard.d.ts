@@ -1,4 +1,4 @@
 export interface IRunOverviewTabEnvVariablesCardProps {
-  envVariables: undefined | { [key: string]: string };
+  envVariables: { [key: string]: string };
   isRunInfoLoading: boolean;
 }
