@@ -2,7 +2,15 @@
 
 ## Unreleased
 
-Fix freezing UI when tracked data has a lot of steps (KaroMourad)
+### Fixes:
+
+- Fix issue with rendering UI re keeping long URL (KaroMourad)
+
+## 3.7.1 Mar 10, 2022
+
+### Fixes:
+
+- Fix metric queries with epoch=None (alberttorosyan)
 
 ## 3.7.0 Mar 9, 2022
 
