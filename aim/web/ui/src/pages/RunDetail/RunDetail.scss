@@ -108,8 +108,6 @@
       }
     }
     &__tabPanel {
-      padding-top: 1.5rem;
-      padding-bottom: 1.5rem;
       overflow-y: auto;
       height: calc(100vh - 98px);
       .MuiBox-root {
@@ -123,12 +121,16 @@
       }
     }
   }
+  .TraceVisualizationWrapper {
+    padding: 1.5rem 0;
+  }
 }
 
 .RunDetailParamsTabWrapper {
   height: 100%;
-  background-color: #ffffff;
   border-radius: $border-radius-lg;
+  padding-top: 1.5rem;
+  padding-bottom: 1.5rem;
 }
 
 .RunDetailParamsTab {
@@ -137,6 +139,7 @@
   border-radius: 0.5rem;
   height: 100%;
   overflow: auto;
+  background-color: #ffffff;
 }
 
 .RunDistributionsTab {
@@ -144,6 +147,7 @@
 }
 
 .RunDetailMetricsTab {
+  padding: 1.5rem 0;
   &__container {
     height: 100%;
     display: grid;
@@ -180,6 +184,7 @@
 }
 
 .RunDetailSettingsTab {
+  padding: 1.5rem 0;
   &__actionCardsCnt {
     margin: 0 164px;
 
