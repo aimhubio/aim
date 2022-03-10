@@ -1,5 +1,11 @@
 # Changelog
 
+## Unreleased
+
+### Enhancements:
+
+- Split code in the single run page to optimize chunk size (arsengit)
+
 ## 3.7.1 Mar 10, 2022
 - Fix matric queries with epoch=None (alberttorosyan)
 
