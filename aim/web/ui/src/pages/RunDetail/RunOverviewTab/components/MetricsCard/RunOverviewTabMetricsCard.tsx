@@ -10,6 +10,7 @@ import COLORS from 'config/colors/colors';
 import contextToString from 'utils/contextToString';
 import { isSystemMetric } from 'utils/isSystemMetric';
 import { formatSystemMetricName } from 'utils/formatSystemMetricName';
+import { formatValue } from 'utils/formatValue';
 
 function RunOverviewTabMetricsCard({
   isLoading,
@@ -26,7 +27,7 @@ function RunOverviewTabMetricsCard({
         return {
           key: index,
           name: isSystemMetric(name) ? formatSystemMetricName(name) : name,
-          value: `${_.last(values)}`,
+          value: formatValue(_.last(values)),
           context: context,
         };
       });

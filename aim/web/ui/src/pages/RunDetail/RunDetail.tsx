@@ -1,4 +1,4 @@
-import React, { memo, useRef, useState } from 'react';
+import React from 'react';
 import {
   Link,
   Redirect,
@@ -19,6 +19,7 @@ import StatusLabel from 'components/StatusLabel';
 import ControlPopover from 'components/ControlPopover/ControlPopover';
 import BusyLoaderWrapper from 'components/BusyLoaderWrapper/BusyLoaderWrapper';
 import ErrorBoundary from 'components/ErrorBoundary/ErrorBoundary';
+import Spinner from 'components/kit/Spinner';
 
 import { ANALYTICS_EVENT_KEYS } from 'config/analytics/analyticsKeysMap';
 
@@ -27,27 +28,33 @@ import useModel from 'hooks/model/useModel';
 import runDetailAppModel from 'services/models/runs/runDetailAppModel';
 import * as analytics from 'services/analytics';
 
-import RunDetailSettingsTab from './RunDetailSettingsTab';
-import RunDetailMetricsAndSystemTab from './RunDetailMetricsAndSystemTab';
-import RunDetailParamsTab from './RunDetailParamsTab';
 import RunSelectPopoverContent from './RunSelectPopoverContent';
-import TraceVisualizationContainer from './TraceVisualizationContainer';
-import RunOverviewTab from './RunOverviewTab';
 
 import './RunDetail.scss';
+
+const RunDetailParamsTab = React.lazy(() => import('./RunDetailParamsTab'));
+const RunDetailSettingsTab = React.lazy(() => import('./RunDetailSettingsTab'));
+const RunDetailMetricsAndSystemTab = React.lazy(
+  () => import('./RunDetailMetricsAndSystemTab'),
+);
+const TraceVisualizationContainer = React.lazy(
+  () => import('./TraceVisualizationContainer'),
+);
+const RunOverviewTab = React.lazy(() => import('./RunOverviewTab'));
 
 function RunDetail(): React.FunctionComponentElement<React.ReactNode> {
   let runsOfExperimentRequestRef: any = null;
   const runData = useModel(runDetailAppModel);
-  const containerRef = useRef<HTMLDivElement | any>(null);
-  const [dateNow, setDateNow] = useState(Date.now());
-  const [isRunSelectDropdownOpen, setIsRunSelectDropdownOpen] = useState(false);
+  const containerRef = React.useRef<HTMLDivElement | any>(null);
+  const [dateNow, setDateNow] = React.useState(Date.now());
+  const [isRunSelectDropdownOpen, setIsRunSelectDropdownOpen] =
+    React.useState(false);
   const { runHash } = useParams<{ runHash: string }>();
   const { url } = useRouteMatch();
   const { pathname } = useLocation();
-  const [activeTab, setActiveTab] = useState(pathname);
+  const [activeTab, setActiveTab] = React.useState(pathname);
 
-  const tabs = [
+  const tabs: string[] = [
     'overview',
     'parameters',
     'metrics',
@@ -60,7 +67,6 @@ function RunDetail(): React.FunctionComponentElement<React.ReactNode> {
     'settings',
   ];
 
-  // TODO: add code splitting(lazy loading)
   const tabContent: { [key: string]: JSX.Element } = {
     overview: <RunOverviewTab runHash={runHash} runData={runData} />,
     parameters: (
@@ -282,7 +288,9 @@ function RunDetail(): React.FunctionComponentElement<React.ReactNode> {
                 <Route path={`${url}/${tab}`} key={tab}>
                   <ErrorBoundary>
                     <div className='RunDetail__runDetailContainer__tabPanel container'>
-                      {tabContent[tab]}
+                      <React.Suspense fallback={<Spinner />}>
+                        {tabContent[tab]}
+                      </React.Suspense>
                     </div>
                   </ErrorBoundary>
                 </Route>
@@ -302,4 +310,4 @@ function RunDetail(): React.FunctionComponentElement<React.ReactNode> {
   );
 }
 
-export default memo(RunDetail);
+export default React.memo(RunDetail);
