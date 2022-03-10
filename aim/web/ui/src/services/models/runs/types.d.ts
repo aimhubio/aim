@@ -5,6 +5,7 @@ export type IRunTraceModel = {
   runHash: string;
   traceType: TraceType;
   isTraceBatchLoading: boolean;
+  isTraceContextBatchLoading: boolean;
   menu: {
     title: string;
     items: IMenuItem[];
@@ -30,7 +31,8 @@ export type TraceType =
   | 'audios'
   | 'texts'
   | 'videos'
-  | 'figures';
+  | 'figures'
+  | 'metric';
 
 /**
  * The context of info Raw data

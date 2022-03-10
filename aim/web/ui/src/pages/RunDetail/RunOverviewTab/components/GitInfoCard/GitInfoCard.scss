@@ -1,0 +1,34 @@
+@use 'src/styles/abstracts' as *;
+
+.GitInfoCard {
+  .IllustrationBlock {
+    margin-bottom: 1.75rem;
+  }
+  .InfoSection {
+    overflow-y: scroll;
+    .InfoCard {
+      margin-right: toRem(40px);
+      min-width: fit-content;
+      &:last-child {
+        margin-right: 0;
+      }
+      .InfoCardLabel {
+        margin-bottom: $space-xxxs;
+      }
+      .Icon__container {
+        color: $pico;
+      }
+      .InfoCardValue {
+        text-align: center;
+        background: $cuddle-10;
+        border: 0.0625rem solid $cuddle-50;
+        box-sizing: border-box;
+        border-radius: $space-xxs;
+        padding: $space-xxs;
+        .InfoCardValueText {
+          margin-left: toRem(7px);
+        }
+      }
+    }
+  }
+}

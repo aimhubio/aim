@@ -188,7 +188,7 @@ def run_server(host, port, workers=1, ssl_keyfile=None, ssl_certfile=None):
     RemoteTrackingServicer.registry.register('TreeView', get_tree)
     RemoteTrackingServicer.registry.register('StructuredRun', get_structured_run)
 
-    msg_max_size = os.getenv(AIM_RT_MAX_MESSAGE_SIZE, AIM_RT_DEFAULT_MAX_MESSAGE_SIZE)
+    msg_max_size = int(os.getenv(AIM_RT_MAX_MESSAGE_SIZE, AIM_RT_DEFAULT_MAX_MESSAGE_SIZE))
     options = [
         ('grpc.max_send_message_length', msg_max_size),
         ('grpc.max_receive_message_length', msg_max_size)

@@ -16,6 +16,9 @@
     flex-wrap: nowrap;
     white-space: nowrap;
     line-height: 1rem;
+    overflow: hidden;
+    max-width: 100%;
+    text-overflow: ellipsis;
   }
   i {
     display: flex;
