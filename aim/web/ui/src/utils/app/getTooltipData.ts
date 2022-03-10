@@ -35,7 +35,15 @@ export default function getTooltipData<D, M extends State>({
 
     for (let itemData of collection.data as any) {
       data[itemData.key] = {
-        ...itemData,
+        runHash: itemData.run.hash,
+        name: itemData.name,
+        context: itemData.context,
+        mediaContent: {
+          step: itemData.step,
+          index: itemData.index,
+          caption: itemData.caption,
+          images_name: itemData.images_name,
+        },
         groupConfig,
         params: paramKeys.reduce((acc, paramKey) => {
           Object.assign(acc, {
