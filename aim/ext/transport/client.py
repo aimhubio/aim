@@ -35,7 +35,7 @@ class Client:
         self._id = str(uuid.uuid4())
 
         ssl_certfile = os.getenv(AIM_CLIENT_SSL_CERTIFICATES_FILE)
-        msg_max_size = os.getenv(AIM_RT_MAX_MESSAGE_SIZE, AIM_RT_DEFAULT_MAX_MESSAGE_SIZE)
+        msg_max_size = int(os.getenv(AIM_RT_MAX_MESSAGE_SIZE, AIM_RT_DEFAULT_MAX_MESSAGE_SIZE))
         options = [
             ('grpc.max_send_message_length', msg_max_size),
             ('grpc.max_receive_message_length', msg_max_size)
