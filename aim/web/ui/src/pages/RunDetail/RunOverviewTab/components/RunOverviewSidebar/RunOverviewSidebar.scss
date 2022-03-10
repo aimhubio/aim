@@ -2,9 +2,12 @@
 
 .RunOverviewSidebar {
   margin-top: $space-lg;
-  max-width: 20rem;
+  min-width: 20rem;
+  width: 20rem;
+  overflow: hidden;
   padding: $space-xs;
-
+  position: sticky;
+  top: $space-lg;
   h3 {
     margin-bottom: $space-sm;
   }

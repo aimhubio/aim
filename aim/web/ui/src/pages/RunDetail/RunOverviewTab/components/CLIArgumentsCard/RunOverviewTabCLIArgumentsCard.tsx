@@ -4,7 +4,6 @@ import { Card } from 'components/kit';
 import ErrorBoundary from 'components/ErrorBoundary/ErrorBoundary';
 import BusyLoaderWrapper from 'components/BusyLoaderWrapper/BusyLoaderWrapper';
 import CodeBlock from 'components/CodeBlock/CodeBlock';
-import IllustrationBlock from 'components/IllustrationBlock/IllustrationBlock';
 
 import { IRunOverviewTabCLIArgumentsCardProps } from './RunOverviewTabCLIArgumentsCard.d';
 
@@ -25,11 +24,7 @@ function RunOverviewTabCLIArgumentsCard({
           title='CLI Arguments'
           className='RunOverviewTabCLIArgumentsCard RunOverviewTab__cardBox'
         >
-          {code ? (
-            <CodeBlock code={code} />
-          ) : (
-            <IllustrationBlock size='large' title='No Results' />
-          )}
+          <CodeBlock code={code} />
         </Card>
       </BusyLoaderWrapper>
     </ErrorBoundary>

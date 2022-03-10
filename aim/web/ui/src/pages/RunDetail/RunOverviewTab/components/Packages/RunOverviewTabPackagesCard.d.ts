@@ -1,4 +1,4 @@
 export interface IRunOverviewTabPackagesCardProps {
-  packages:  null | { [key: string]: string };
+  packages: { [key: string]: string };
   isRunInfoLoading: boolean;
 }
