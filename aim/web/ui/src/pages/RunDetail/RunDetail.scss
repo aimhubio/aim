@@ -72,19 +72,22 @@
           font-weight: 500;
           text-transform: unset;
           min-height: 40px;
+          transition: all 0.18s ease-out;
+          &:hover {
+            color: $pico;
+            background-color: $cuddle-30;
+          }
           .MuiTab-wrapper {
             line-height: 1.05;
           }
           &.MuiTab-root {
-            padding: 11px 16px;
+            padding: 0.625rem $space-unit;
             min-width: auto !important;
             border-right: 1px solid transparent;
             text-transform: capitalize;
           }
           &.Mui-selected {
             color: $pico;
-            font-family: 'Inter', sans-serif;
-            font-weight: 600;
             position: relative;
             // border-right: none;
             &::before {
@@ -207,24 +210,20 @@
       }
     }
 
-    &__btn__archive,
-    &__btn__unarchive {
-      border-color: $pico-50;
-
-      &:hover {
-        border-color: $pico-50;
-      }
-    }
-
     &__btn__archive {
-      color: $pico-50;
+      color: $pico-80;
+      border-color: $pico-80;
+      &:hover {
+        border-color: $pico-80;
+      }
     }
 
     &__btn__unarchive {
       background-color: $pico-50;
+      border-color: $pico-50;
       color: $white;
-
       &:hover {
+        border-color: $pico-50;
         background-color: $pico-50;
       }
     }
