@@ -1,5 +1,8 @@
 # Changelog
 
+## 3.7.1 Mar 10, 2022
+- Fix matric queries with epoch=None (alberttorosyan)
+
 ## 3.7.0 Mar 9, 2022
 
 ### Enhancements:
