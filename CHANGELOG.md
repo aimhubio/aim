@@ -2,6 +2,7 @@
 ## Unreleased
 
 ### Enhancements:
+
 - Hugging Face adapter refactoring (mihran113)
 
 ### Fixes:
@@ -9,6 +10,7 @@
 - Add scrollbar to image full view mode content (VkoHov)
 
 ## 3.7.1 Mar 10, 2022
+
 - Fix matric queries with epoch=None (alberttorosyan)
 
 ## 3.7.0 Mar 9, 2022
