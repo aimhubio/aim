@@ -21,21 +21,24 @@ This section describes governance processes we follow in developing Aim.
 
 #### Authors
 
-- Gevorg Soghomonyan ([SGevorg](https://github.com/SGevorg))
+- Gev Soghomonyan ([SGevorg](https://github.com/SGevorg))
 - Gor Arakelyan ([gorarakelyan](https://github.com/gorarakelyan))
+
+#### Primary Maintainers
+
+- [alberttorosyan](https://github.com/alberttorosyan)
+- Karen Hambardzumyan ([mahnerak](https://github.com/mahnerak))
+- Ruben Karapetyan ([roubkar](https://github.com/roubkar))
 
 #### Core Maintainers
 
-- [alberttorosyan](https://github.com/alberttorosyan)
 - [aramaim](https://github.com/aramaim)
 - Arsen Alkamyan ([arsengit](https://github.com/arsengit))
 - Arthur ([devfox-se](https://github.com/devfox-se))
 - Hamik Hambardzumyan ([Hamik25](https://github.com/Hamik25))
 - Karo ([KaroMourad](https://github.com/KaroMourad))
-- Karen Hambardzumyan ([mahnerak](https://github.com/mahnerak))
 - [mihran113](https://github.com/mihran113)
 - Ruben Aprikyan ([rubenaprikyan](https://github.com/rubenaprikyan))
-- Ruben Karapetyan ([roubkar](https://github.com/roubkar))
 - Vardges Hovhannisyan ([VkoHov](https://github.com/VkoHov))
 
 ### Releases
