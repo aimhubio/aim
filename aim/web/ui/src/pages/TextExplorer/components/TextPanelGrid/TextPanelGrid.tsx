@@ -1,13 +1,21 @@
 import * as React from 'react';
 import _ from 'lodash-es';
+import classNames from 'classnames';
 
-import { Badge } from 'components/kit';
+import { Tooltip } from '@material-ui/core';
+
+import { Badge, JsonViewPopover } from 'components/kit';
 
 import COLORS from 'config/colors/colors';
 
 import { ITableColumn } from 'types/pages/metrics/components/TableColumns/TableColumns';
 
 import contextToString from 'utils/contextToString';
+import { encode } from 'utils/encoder/encoder';
+
+import { MEDIA_SET_TITLE_HEIGHT } from '../../../../config/mediaConfigs/mediaConfigs';
+import DepthDropdown from '../../../../components/DepthDropdown/DepthDropdown';
+import ControlPopover from '../../../../components/ControlPopover/ControlPopover';
 
 function getTablePanelColumns(
   rawData: any,
@@ -18,7 +26,62 @@ function getTablePanelColumns(
     const columns: any = [];
     rawData.forEach((run: any) => {
       run.traces.forEach((trace: any) => {
-        const key = `${run.hash}.${trace.name}`;
+        const key = encode({
+          name: trace.name,
+          runHash: run.hash,
+          traceContext: trace.context,
+        });
+
+        const getContextBadgeContent = () => {
+          let Element: any;
+          if (!_.isEmpty(trace.context) && !_.isNil(trace.context)) {
+            const contextLength = Object.keys(trace.context).length;
+
+            if (contextLength > 1) {
+              Element = (
+                <ControlPopover
+                  anchorOrigin={{
+                    vertical: 'bottom',
+                    horizontal: 'left',
+                  }}
+                  transformOrigin={{
+                    vertical: 'top',
+                    horizontal: 'left',
+                  }}
+                  anchor={({ onAnchorClick }) => (
+                    <Badge
+                      onClick={onAnchorClick}
+                      size='small'
+                      style={{ cursor: 'pointer' }}
+                      color={COLORS[0][0]}
+                      label={`${contextLength} values`}
+                    />
+                  )}
+                  component={<JsonViewPopover json={trace.context as object} />}
+                />
+              );
+            } else {
+              Element = (
+                <Badge
+                  size='small'
+                  color={COLORS[0][0]}
+                  label={contextToString(trace.context) as string}
+                />
+              );
+            }
+          } else {
+            Element = (
+              <Badge
+                size='small'
+                color={COLORS[0][0]}
+                label={'Empty Context'}
+              />
+            );
+          }
+
+          return Element;
+        };
+
         const column = {
           topHeader: run.props.name,
           key,
@@ -30,23 +93,10 @@ function getTablePanelColumns(
             ? 'right'
             : null,
           content: (
-            <span style={{ textAlign: 'center' }}>
-              {trace.name}
-              {'  '}
-              {!_.isEmpty(trace.context) && !_.isNil(trace.context) ? (
-                <Badge
-                  size='small'
-                  color={COLORS[0][0]}
-                  label={contextToString(trace.context) || ''}
-                />
-              ) : (
-                <Badge
-                  size='small'
-                  color={COLORS[0][0]}
-                  label={'Empty Context'}
-                />
-              )}
-            </span>
+            <div className='flex fac'>
+              <span style={{ marginRight: '0.5rem' }}>{trace.name}</span>
+              {getContextBadgeContent()}
+            </div>
           ),
         };
         columns.push(column);
@@ -120,6 +170,7 @@ function getTablePanelRows(
   let rows: any[] = [];
   textsData[0].data.forEach((trace: any) => {
     let data = trace.data;
+
     if (highlightOptions) {
       const { regex } = highlightOptions;
       data =
@@ -145,16 +196,15 @@ function getTablePanelRows(
     const row = {
       step: trace.step,
       batchIndex: trace.index,
-      [trace.textKey]: data,
-      key: trace.textKey,
-      seqKey: trace.seqKey,
-      stKey: `${trace.step}.${trace.index}`,
+      [trace.seqKey]: <pre>{data}</pre>,
+      key: trace.key,
+      groupKey: `${trace.step}.${trace.index}`,
     };
     rows.push(row);
   });
 
   // @ts-ignore
-  rows = Object.values(_.groupBy(rows, 'key')).map((item: any) =>
+  rows = Object.values(_.groupBy(rows, 'groupKey')).map((item: any) =>
     _.merge({}, ...item),
   );
   rows = _.sortBy(rows, ['step', 'index']);

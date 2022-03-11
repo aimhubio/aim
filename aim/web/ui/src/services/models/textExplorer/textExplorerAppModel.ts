@@ -598,26 +598,29 @@ function processTablePanelData(data: any) {
       contexts = contexts.concat(getObjectPaths(trace.context, trace.context));
       trace.values.forEach((stepData: any[], stepIndex: number) => {
         stepData.forEach((text: any) => {
-          const textKey = encode({
+          const cellKey = encode({
             name: trace.name,
             runHash: run.hash,
             traceContext: trace.context,
             index: text.index,
             step: trace.iters[stepIndex],
-            caption: text.caption,
           });
+
           const seqKey = encode({
             name: trace.name,
             runHash: run.hash,
             traceContext: trace.context,
           });
+
           textsData.push({
             ...text,
             text_name: trace.name,
             step: trace.iters[stepIndex],
             context: trace.context,
             run: _.omit(run, 'traces'),
-            key: textKey,
+            rowKey: seqKey,
+            key: cellKey,
+            cellKey: cellKey,
             seqKey: seqKey,
           });
         });
@@ -1767,14 +1770,19 @@ function onTablePanelColumnsOrderChange(columnsOrder: IColumnsOrderData) {
 
 function onTablePanelSortChange() {}
 
-function highlightTextTableRows(data: any, regex: RegExp | null) {
-  const modelState = model.getState();
-  modelState.refs?.textTableRef.current?.updateData({
-    newData: getTablePanelRows([{ data: modelState?.rawData || [] }], {
+function highlightTextTableRows(
+  allRows: any,
+  foundRows: any,
+  regex: RegExp | null,
+) {
+  const modelState: Partial<ITextExplorerAppModelState> = model.getState();
+
+  /*modelState.refs?.textTableRef.current?.updateData({
+    newData: getTablePanelRows([{ data: allRows || [] }], {
       regex,
-      foundRows: data,
+      foundRows,
     }).rows,
-  });
+  });*/
 }
 
 const textsExploreAppModel = {

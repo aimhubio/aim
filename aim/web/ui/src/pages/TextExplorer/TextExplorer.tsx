@@ -109,7 +109,12 @@ function TextExplorer() {
 
   const textSearch = useTextSearch({
     rawData: textExplorerData?.data ? textExplorerData?.data[0].data : [],
-    updateData: textExplorerAppModel?.highlightTextTableRows,
+    updateData: (data, regex) =>
+      textExplorerAppModel?.highlightTextTableRows(
+        textExplorerData?.tablePanelData,
+        data,
+        regex,
+      ),
     searchKey: 'data',
   });
 
@@ -158,15 +163,17 @@ function TextExplorer() {
                   : ''
               }`}
             >
-              <SearchBar
-                isValidInput={textSearch.filterOptions.isValidSearch}
-                searchValue={textSearch.filterOptions.searchValue}
-                matchType={textSearch.filterOptions.matchType}
-                onMatchTypeChange={textSearch.changeMatchType}
-                onInputClear={textSearch.clearSearchInputData}
-                onInputChange={textSearch.changeSearchInput}
-                isDisabled={!!textExplorerData?.isRequestPending}
-              />
+              {!_.isEmpty(textExplorerData?.tablePanelData) && (
+                <SearchBar
+                  isValidInput={textSearch.filterOptions.isValidSearch}
+                  searchValue={textSearch.filterOptions.searchValue}
+                  matchType={textSearch.filterOptions.matchType}
+                  onMatchTypeChange={textSearch.changeMatchType}
+                  onInputClear={textSearch.clearSearchInputData}
+                  onInputChange={textSearch.changeSearchInput}
+                  isDisabled={!!textExplorerData?.isRequestPending}
+                />
+              )}
               <Table
                 custom
                 topHeader
