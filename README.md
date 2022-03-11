@@ -312,9 +312,9 @@ The high-level features we are going to work on the next few months
   - [x] Tensorboard adaptor - visualize TensorBoard logs with Aim (Start: _Dec 17 2021_, Shipped: _Feb 3 2022_)
   - [x] Track git info, env vars, CLI arguments, dependencies (Start: _Jan 17 2022_, Shipped: _Feb 3 2022_)
   - [x] MLFlow adaptor (visualize MLflow logs with Aim) (Start: _Feb 14 2022_, Shipped: _Feb 22, 2022_)
-  - [x] Run summary and overview info(system params, CLI args, git info, ...) (Start: _Feb 14 2022_, Shipped: _Mar 9, 2022_)
   - [x] Activeloop Hub integration (Start: _Feb 14 2022_, Shipped: _Feb 22, 2022_)
   - [x] PyTorch-Ignite integration (Start: _Feb 14 2022_, Shipped: _Feb 22, 2022_)
+  - [x] Run summary and overview info(system params, CLI args, git info, ...) (Start: _Feb 14 2022_, Shipped: _Mar 9, 2022_)
 
 ### In Progress
   - [ ] Ability to attach notes to Run from UI (Start: _Mar 7 2022_)
