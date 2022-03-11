@@ -105,8 +105,6 @@ function TextExplorer() {
     };
   }, [route.params.appId]);
 
-  console.log(textExplorerData?.config?.table.resizeMode);
-
   return (
     <ErrorBoundary>
       <div className='TextExplorer__container' ref={wrapperElemRef}>
