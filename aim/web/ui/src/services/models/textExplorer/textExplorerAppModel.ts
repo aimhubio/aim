@@ -7,7 +7,7 @@ import { RowHeightSize } from 'config/table/tableConfigs';
 import COLORS from 'config/colors/colors';
 import { BookmarkNotificationsEnum } from 'config/notification-messages/notificationMessages';
 import { ANALYTICS_EVENT_KEYS } from 'config/analytics/analyticsKeysMap';
-import { DATE_EXPORTING_FORMAT } from 'config/dates/dates';
+import { DATE_EXPORTING_FORMAT, TABLE_DATE_FORMAT } from 'config/dates/dates';
 
 import {
   getTextExplorerTableColumns,
@@ -1083,7 +1083,7 @@ function getDataAsTableRows(
           run: metric.run.props?.name ?? '-',
           description: metric.run.props?.description ?? '-',
           date: moment(metric.run.props.creation_time * 1000).format(
-            'HH:mm:ss · D MMM, YY',
+            TABLE_DATE_FORMAT,
           ),
           name: metric.text_name,
           context: Object.entries(metric.context).map((entry) =>
