@@ -3,10 +3,11 @@ import { MediaTypeEnum } from 'components/MediaPanel/config';
 
 import {
   IFocusedState,
-  ITooltipContent,
+  IPanelTooltip,
 } from 'types/services/models/metrics/metricsAppModel';
 
 import { SortFields } from 'utils/getSortedFields';
+
 export interface IMediaSetProps {
   data: { [key: string]: any };
   orderedMap: { [key: string]: any };
@@ -19,7 +20,7 @@ export interface IMediaSetProps {
   focusedState: IFocusedState;
   additionalProperties?: IMediaPanelProps['additionalProperties'];
   tableHeight: IMediaPanelProps['tableHeight'];
-  tooltip?: ITooltipContent;
+  tooltip?: IPanelTooltip;
   mediaType: MediaTypeEnum;
   sortFieldsDict?: { [key: string]: SortField };
   sortFields?: SortFields;

@@ -3,6 +3,7 @@ import React from 'react';
 import Menu from 'components/kit/Menu/Menu';
 import { IValidationMetadata } from 'components/kit/Input';
 import ErrorBoundary from 'components/ErrorBoundary/ErrorBoundary';
+import Spinner from 'components/kit/Spinner';
 
 import { ANALYTICS_EVENT_KEYS } from 'config/analytics/analyticsKeysMap';
 
@@ -12,17 +13,20 @@ import runTracesModel from 'services/models/runs/runTracesModel';
 import * as analytics from 'services/analytics';
 import { TraceType } from 'services/models/runs/types';
 
-import DistributionsVisualizer from '../DistributionsVisualizer';
-import TextsVisualizer from '../TextsVisualizer';
-import ImagesVisualizer from '../ImagesVisualizer';
-import PlotlyVisualizer from '../PlotlyVisualizer';
 import { ITraceVisualizationContainerProps } from '../types';
-import AudiosVisualizer from '../AudiosVisualizer';
 
 import RangePanel from './RangePanel';
 import withEmptyTraceCheck from './withEmptyTraceCheck';
 
 import './TraceVisualizationContainer.scss';
+
+const DistributionsVisualizer = React.lazy(
+  () => import('../DistributionsVisualizer'),
+);
+const ImagesVisualizer = React.lazy(() => import('../ImagesVisualizer'));
+const TextsVisualizer = React.lazy(() => import('../TextsVisualizer'));
+const PlotlyVisualizer = React.lazy(() => import('../PlotlyVisualizer'));
+const AudiosVisualizer = React.lazy(() => import('../AudiosVisualizer'));
 
 const traceTypeVisualization = {
   images: ImagesVisualizer,
@@ -85,11 +89,13 @@ function TraceVisualizationContainer({
           )}
         </div>
         <div className='VisualizerArea'>
-          <Visualizer
-            data={runTracesModelData?.data}
-            isLoading={runTracesModelData?.isTraceBatchLoading}
-            activeTraceContext={runTracesModelData?.menu?.activeItemName}
-          />
+          <React.Suspense fallback={<Spinner />}>
+            <Visualizer
+              data={runTracesModelData?.data}
+              isLoading={runTracesModelData?.isTraceBatchLoading}
+              activeTraceContext={runTracesModelData?.menu?.activeItemName}
+            />
+          </React.Suspense>
           {runTracesModelData?.data &&
             runTracesModelData?.config &&
             !runTracesModelData?.isTraceContextBatchLoading &&

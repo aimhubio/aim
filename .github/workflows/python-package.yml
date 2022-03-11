@@ -2,6 +2,13 @@ name: aim packaging pipeline
 
 on:
   workflow_call:
+    secrets:
+      PYPI_PASSWORD:
+        required: true
+      DOCKER_HUB_USERNAME:
+        required: true
+      DOCKER_HUB_PASSWORD:
+        required: true
     inputs:
       branch:
         required: true
@@ -60,7 +67,7 @@ jobs:
 
       - name: Publish wheels
         env:
-          PYPI_PASSWORD: ${{ secrets.pypi_password }}
+          PYPI_PASSWORD: ${{ secrets.PYPI_PASSWORD }}
         run: |
           python -m twine upload -u __token__ -p "${PYPI_PASSWORD}" multilinux_dist/*
 
@@ -125,6 +132,6 @@ jobs:
 
       - name: Publish wheel
         env:
-          PYPI_PASSWORD: ${{ secrets.pypi_password }}
+          PYPI_PASSWORD: ${{ secrets.PYPI_PASSWORD }}
         run: |
           python -m twine upload -u __token__ -p "${PYPI_PASSWORD}" dist/*

@@ -265,7 +265,7 @@ function MediaPanel({
                           (tooltip?.display || focusedState?.active)
                         }
                         chartType={tooltipType}
-                        tooltipContent={tooltip?.content}
+                        tooltipContent={tooltip?.content!}
                         focusedState={focusedState}
                       />
                     </ErrorBoundary>

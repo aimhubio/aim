@@ -5,6 +5,8 @@ import ErrorBoundary from 'components/ErrorBoundary/ErrorBoundary';
 import BusyLoaderWrapper from 'components/BusyLoaderWrapper/BusyLoaderWrapper';
 import { ICardProps } from 'components/kit/Card/Card.d';
 
+import { formatValue } from 'utils/formatValue';
+
 import { IRunOverviewTabPackagesCardProps } from './RunOverviewTabPackagesCard.d';
 
 function RunOverviewTabPackagesCard({
@@ -13,10 +15,10 @@ function RunOverviewTabPackagesCard({
 }: IRunOverviewTabPackagesCardProps) {
   const tableData = React.useMemo(
     () =>
-      Object.entries(packages || {}).map(([key = '', value = ''], index) => ({
+      Object.entries(packages || {}).map(([key = '', value], index) => ({
         key: index,
         name: key,
-        value: value,
+        value: formatValue(value),
       })),
     [packages],
   );
