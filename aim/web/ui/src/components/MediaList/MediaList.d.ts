@@ -4,7 +4,7 @@ import { MediaTypeEnum } from 'components/MediaPanel/config';
 import { IImageData } from 'types/services/models/imagesExplore/imagesExploreAppModel';
 import {
   IFocusedState,
-  ITooltipContent,
+  IPanelTooltip,
 } from 'types/services/models/metrics/metricsAppModel';
 
 export interface IMediaListProps {
@@ -15,7 +15,7 @@ export interface IMediaListProps {
   mediaItemHeight: number;
   focusedState: IFocusedState;
   additionalProperties?: IMediaPanelProps['additionalProperties'];
-  tooltip?: ITooltipContent;
+  tooltip?: IPanelTooltip;
   mediaType: MediaTypeEnum;
 }
 
@@ -25,7 +25,7 @@ export interface IImageBoxProps {
   index: number;
   mediaItemHeight: number;
   focusedState: IFocusedState;
-  tooltip?: ITooltipContent;
+  tooltip?: IPanelTooltip;
   additionalProperties?: IMediaPanelProps['additionalProperties'];
   style: { [key: string]: any };
 }
