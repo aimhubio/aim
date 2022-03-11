@@ -46,7 +46,7 @@ function getParamsTableColumns(
     {
       key: 'experiment',
       content: <span>Experiment</span>,
-      topHeader: 'Metrics',
+      topHeader: 'Run',
       pin: order?.left?.includes('experiment')
         ? 'left'
         : order?.middle?.includes('experiment')
@@ -76,7 +76,7 @@ function getParamsTableColumns(
     {
       key: 'run',
       content: <span>Run Name</span>,
-      topHeader: 'Metrics',
+      topHeader: 'Run',
       pin: order?.left?.includes('run')
         ? 'left'
         : order?.middle?.includes('run')
@@ -104,7 +104,7 @@ function getParamsTableColumns(
     {
       key: 'description',
       content: <span>Description</span>,
-      topHeader: 'Metrics',
+      topHeader: 'Run',
       pin: order?.left?.includes('description')
         ? 'left'
         : order?.middle?.includes('description')
@@ -132,7 +132,7 @@ function getParamsTableColumns(
     {
       key: 'date',
       content: <span>Date</span>,
-      topHeader: 'Metrics',
+      topHeader: 'Run',
       pin: order?.left?.includes('date')
         ? 'left'
         : order?.middle?.includes('date')

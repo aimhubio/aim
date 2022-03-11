@@ -53,7 +53,7 @@ function getMetricsTableColumns(
     {
       key: 'experiment',
       content: <span>Experiment</span>,
-      topHeader: 'Metrics',
+      topHeader: 'Run',
       pin: order?.left?.includes('experiment')
         ? 'left'
         : order?.middle?.includes('experiment')
@@ -83,7 +83,7 @@ function getMetricsTableColumns(
     {
       key: 'run',
       content: <span>Run Name</span>,
-      topHeader: 'Metrics',
+      topHeader: 'Run',
       pin: order?.left?.includes('run')
         ? 'left'
         : order?.middle?.includes('run')
@@ -111,7 +111,7 @@ function getMetricsTableColumns(
     {
       key: 'description',
       content: <span>Description</span>,
-      topHeader: 'Metrics',
+      topHeader: 'Run',
       pin: order?.left?.includes('description')
         ? 'left'
         : order?.right?.includes('description')
@@ -121,7 +121,7 @@ function getMetricsTableColumns(
     {
       key: 'date',
       content: <span>Date</span>,
-      topHeader: 'Metrics',
+      topHeader: 'Run',
       pin: order?.left?.includes('date')
         ? 'left'
         : order?.right?.includes('date')

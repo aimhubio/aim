@@ -1,7 +1,7 @@
 // @ts-nocheck
 /* eslint-disable react/prop-types */
 
-import { useRef, useState, useEffect } from 'react';
+import React, { useRef, useState, useEffect } from 'react';
 import classNames from 'classnames';
 import { isEmpty } from 'lodash-es';
 
@@ -68,6 +68,11 @@ function Table(props) {
     }
     prevExpanded.current = props.expanded ?? {};
   }, [props.expanded]);
+
+  const color = React.useMemo(
+    () => props.data[0]?.rowMeta?.color,
+    [props.data[0]?.rowMeta?.color],
+  );
 
   function expand(groupKey) {
     if (groupKey === 'expand_all') {
@@ -207,25 +212,21 @@ function Table(props) {
   return (
     <ErrorBoundary>
       <div
-        className={classNames({
-          Table__container: true,
+        className={classNames('Table__container', {
           [`Table__container--${
             ROW_CELL_SIZE_CONFIG[props.rowHeightMode].name
           }`]: true,
         })}
       >
         <div
-          className={classNames({
-            Table: true,
+          className={classNames('Table', {
             'Table--grouped': groups,
           })}
         >
           {!groups && props.multiSelect && Array.isArray(props.data) && (
             <ErrorBoundary key={'selection'}>
               <div
-                className={classNames({
-                  Table__pane: true,
-                  'Table__pane--selection': true,
+                className={classNames('Table__pane Table__pane--selection', {
                   onlyGroupColumn: leftPane.length === 0,
                 })}
               >
@@ -243,8 +244,7 @@ function Table(props) {
                         color='primary'
                         size='small'
                         className={classNames('Table__column__selectCheckbox', {
-                          Table__column__headerCheckbox:
-                            props.data[0]?.rowMeta?.color,
+                          Table__column__headerCheckbox: color,
                         })}
                         icon={
                           <span className='Table__column__defaultSelectIcon'></span>
@@ -281,7 +281,7 @@ function Table(props) {
                   selectedRows={props.selectedRows}
                   firstColumn={true}
                   width={
-                    props.data[0]?.rowMeta?.color
+                    color
                       ? COLORED_SELECTION_COLUMN_WIDTH
                       : SELECTION_COLUMN_WIDTH
                   }
@@ -293,15 +293,13 @@ function Table(props) {
           )}
           {(groups || leftPane.length > 0) && (
             <div
-              className={classNames({
-                Table__pane: true,
-                'Table__pane--left': true,
+              className={classNames('Table__pane Table__pane--left', {
                 withSelectionColumn: props.multiSelect && !groups,
                 onlyGroupColumn: leftPane.length === 0,
               })}
               style={{
                 '--left-position': `${
-                  props.data[0]?.rowMeta?.color
+                  color
                     ? COLORED_SELECTION_COLUMN_WIDTH
                     : SELECTION_COLUMN_WIDTH
                 }px`,

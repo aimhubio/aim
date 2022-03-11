@@ -25,7 +25,7 @@ function getRunsTableColumns(
     {
       key: 'run',
       content: <span>Run Name</span>,
-      topHeader: 'Runs',
+      topHeader: 'Run',
       pin: order?.left?.includes('run')
         ? 'left'
         : order?.middle?.includes('run')
@@ -37,7 +37,7 @@ function getRunsTableColumns(
     {
       key: 'experiment',
       content: <span>Experiment</span>,
-      topHeader: 'Runs',
+      topHeader: 'Run',
       pin: order?.left?.includes('experiment')
         ? 'left'
         : order?.middle?.includes('experiment')
@@ -49,7 +49,7 @@ function getRunsTableColumns(
     {
       key: 'description',
       content: <span>Description</span>,
-      topHeader: 'Runs',
+      topHeader: 'Run',
       pin: order?.left?.includes('description')
         ? 'left'
         : order?.middle?.includes('description')
@@ -61,7 +61,7 @@ function getRunsTableColumns(
     {
       key: 'date',
       content: <span>Date</span>,
-      topHeader: 'Runs',
+      topHeader: 'Run',
       pin: order?.left?.includes('date')
         ? 'left'
         : order?.middle?.includes('date')

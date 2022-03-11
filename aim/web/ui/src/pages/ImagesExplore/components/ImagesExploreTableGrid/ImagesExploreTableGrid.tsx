@@ -33,7 +33,7 @@ function getImagesExploreTableColumns(
     {
       key: 'experiment',
       content: <span>Experiment</span>,
-      topHeader: 'Images',
+      topHeader: 'Run',
       pin: order?.left?.includes('experiment')
         ? 'left'
         : order?.middle?.includes('experiment')
@@ -45,7 +45,7 @@ function getImagesExploreTableColumns(
     {
       key: 'run',
       content: <span>Run Name</span>,
-      topHeader: 'Images',
+      topHeader: 'Run',
       pin: order?.left?.includes('run')
         ? 'left'
         : order?.middle?.includes('run')
@@ -57,7 +57,7 @@ function getImagesExploreTableColumns(
     {
       key: 'description',
       content: <span>Description</span>,
-      topHeader: 'Images',
+      topHeader: 'Run',
       pin: order?.left?.includes('description')
         ? 'left'
         : order?.middle?.includes('description')
@@ -69,7 +69,7 @@ function getImagesExploreTableColumns(
     {
       key: 'date',
       content: <span>Date</span>,
-      topHeader: 'Images',
+      topHeader: 'Run',
       pin: order?.left?.includes('date')
         ? 'left'
         : order?.middle?.includes('date')
@@ -337,14 +337,20 @@ function imagesExploreTableRowRenderer(
       },
       metric: rowData.metric,
       context: {
-        content: rowData.context.map((item: string) => (
-          <Badge
-            key={item}
-            size='small'
-            color={COLORS[0][0]}
-            label={item || 'Empty Context'}
-          />
-        )),
+        content:
+          rowData.context.length > 1 ? (
+            <Badge
+              size='small'
+              color={COLORS[0][0]}
+              label={`${rowData.context.length} values`}
+            />
+          ) : (
+            <Badge
+              size='small'
+              color={COLORS[0][0]}
+              label={rowData.context[0] || 'Empty Context'}
+            />
+          ),
       },
       value: rowData.value,
       step: rowData.step,
