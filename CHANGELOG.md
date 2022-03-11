@@ -1,4 +1,5 @@
 # Changelog
+
 ## Unreleased
 
 ### Enhancements:
@@ -9,9 +10,21 @@
 
 - Add scrollbar to image full view mode content (VkoHov)
 
+## 3.7.2 Mar 10, 2022
+
+### Fixes:
+
+- Fix issue with rendering UI re keeping long URL (KaroMourad)
+
+### Enhancements:
+
+- Split code in the single run page to optimize chunk size (arsengit)
+
 ## 3.7.1 Mar 10, 2022
 
-- Fix matric queries with epoch=None (alberttorosyan)
+### Fixes:
+
+- Fix metric queries with epoch=None (alberttorosyan)
 
 ## 3.7.0 Mar 9, 2022
 
