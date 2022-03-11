@@ -3,7 +3,7 @@
 .Card {
   display: flex;
   flex-direction: column;
-  padding: toRem(16px) toRem(24px);
+  padding: $space-lg;
   border: $border-grey;
   border-radius: $border-radius-lg;
   background: $white;
