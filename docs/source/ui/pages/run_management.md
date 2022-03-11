@@ -57,6 +57,7 @@ Each training run has a dedicated page on Aim. Use the single run page to observ
 
 Here are the tabs available on the single run page.
 Each tab visualizes respective tracked metadata or empty if not tracked.
+- [Overview](#overview-tab)
 - [Params](#id3)
 - [Metrics](#id4)
 - [System](#id5)
@@ -67,9 +68,22 @@ Each tab visualizes respective tracked metadata or empty if not tracked.
 - [Figures](#id10)
 - [Settings](#id11)
 
+### Overview Tab
+
+Overview tab shows overall info about the run.
+- These cards can contain information about `Parameters`, `Metrics`, `System Metrics`, `CLI Arguments`, `Environment Variables`, `Packages` and `Git information`. With this data, you can easily reproduce your run.
+
+- Sidebar contains information about  `Run Date`, `Run Duration`, `Run Hash`, attached `Tags` and gives the ability to navigate through tabs.
+
+<img style="border-radius: 8px; border: 1px solid #E8F1FC" alt="Single Run page params tab" src="https://docs-blobs.s3.us-east-2.amazonaws.com/images/ui/pages/run-single-page/overview_tab.png">
+
+Also, you can do searching in table, and it will return value by `Match Case`, `Match Word` and `Match Regexp`
+
+<img style="border-radius: 8px; border: 1px solid #E8F1FC" alt="Single Run page params tab" src="https://docs-blobs.s3.us-east-2.amazonaws.com/images/ui/pages/run-single-page/overview_tab_table.png">
+
 ### Params
 
-Params tab contains a JSON-like visualization of all of the tracked params data related to a single run of interest.
+Params tab contains a JSON-like visualization of all the tracked params data related to a single run of interest.
 
 <img style="border-radius: 8px; border: 1px solid #E8F1FC" alt="Single Run page params tab" src="https://docs-blobs.s3.us-east-2.amazonaws.com/images/ui/pages/run-single-page/params_tab.png">
 
@@ -83,9 +97,9 @@ Metrics tab contains the visualizations of all the metrics tracked for the given
 
 ### System
 
-Aim automatically tracks system metrics so you can use them in order to detect potential resource mismanagements or anomalies.
+Aim automatically tracks system metrics, so you can use them in order to detect potential resource mismanagements or anomalies.
 
-System tab contains all of the tracked system metrics for a single run.
+System tab contains all the tracked system metrics for a single run.
 
 <img style="border-radius: 8px; border: 1px solid #E8F1FC" alt="Single Run page system tab" src="https://docs-blobs.s3.us-east-2.amazonaws.com/images/ui/pages/run-single-page/system_tab.png">
 
@@ -138,7 +152,7 @@ Use the bottom controllers to control the steps and the indices of the tracked t
 
 ### Figures
 
-Aim allows to track Plotly and matplotlib figures.
+Aim allows tracking Plotly and matplotlib figures.
 On the `Figures` tab you can view all the track figures over different contexts and steps.
 
 <img style="border-radius: 8px; border: 1px solid #E8F1FC" alt="Single Run page figures tab" src="https://docs-blobs.s3.us-east-2.amazonaws.com/images/ui/pages/run-single-page/figures_tab.png">
