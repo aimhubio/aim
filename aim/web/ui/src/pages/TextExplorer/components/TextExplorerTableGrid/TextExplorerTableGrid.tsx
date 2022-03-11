@@ -339,23 +339,17 @@ function textExplorerTableRowRenderer(
       metric: rowData.metric,
       context: {
         content:
-          rowData.context.length > 0 ? (
-            rowData.context.map((item: string) => {
-              return (
-                <Badge
-                  key={item}
-                  size='small'
-                  color={COLORS[0][0]}
-                  label={item || 'Empty Context'}
-                />
-              );
-            })
-          ) : (
+          rowData.context.length > 1 ? (
             <Badge
-              key={rowData.key}
               size='small'
               color={COLORS[0][0]}
-              label={'Empty Context'}
+              label={`${rowData.context.length} values`}
+            />
+          ) : (
+            <Badge
+              size='small'
+              color={COLORS[0][0]}
+              label={rowData.context[0] || 'Empty Context'}
             />
           ),
       },
