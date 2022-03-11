@@ -107,41 +107,11 @@ function TextExplorer() {
     };
   }, [route.params.appId]);
 
-  console.log(textExplorerData?.data ? textExplorerData?.data[0].data : []);
-
   const textSearch = useTextSearch({
     rawData: textExplorerData?.data ? textExplorerData?.data[0].data : [],
-    updateData,
+    updateData: textExplorerAppModel?.highlightTextTableRows,
     searchKey: 'data',
   });
-
-  function getHighlightedData(data: { text: string }[], regex: RegExp | null) {
-    return data.map((d) => ({
-      ...d,
-      text:
-        regex === null
-          ? d.text
-          : d.text
-              .split(regex)
-              .filter((part: string) => part !== '')
-              .map((part: string, i: number) =>
-                regex.test(part) ? (
-                  <span key={part + i} className='TextsVisualizer__mark'>
-                    {part}
-                  </span>
-                ) : (
-                  part
-                ),
-              ),
-    }));
-  }
-
-  function updateData(data: { text: string }[], regex: RegExp | null) {
-    console.log(data);
-    /*textExplorerData?.refs?.textTableRef.current?.updateData({
-      newData: getHighlightedData(data, regex),
-    });*/
-  }
 
   return (
     <ErrorBoundary>

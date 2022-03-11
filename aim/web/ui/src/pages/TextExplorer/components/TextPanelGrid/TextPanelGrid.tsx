@@ -1,15 +1,13 @@
 import * as React from 'react';
-import { Link as RouteLink } from 'react-router-dom';
-import { merge } from 'lodash-es';
-
-import { Link } from '@material-ui/core';
+import _ from 'lodash-es';
 
 import { Badge } from 'components/kit';
 
 import COLORS from 'config/colors/colors';
-import { PathEnum } from 'config/enums/routesEnum';
 
 import { ITableColumn } from 'types/pages/metrics/components/TableColumns/TableColumns';
+
+import contextToString from 'utils/contextToString';
 
 function getTablePanelColumns(
   rawData: any,
@@ -31,7 +29,25 @@ function getTablePanelColumns(
             : order?.right?.includes(key)
             ? 'right'
             : null,
-          content: <span>{trace.name}</span>,
+          content: (
+            <span style={{ textAlign: 'center' }}>
+              {trace.name}
+              {'  '}
+              {!_.isEmpty(trace.context) && !_.isNil(trace.context) ? (
+                <Badge
+                  size='small'
+                  color={COLORS[0][0]}
+                  label={contextToString(trace.context) || ''}
+                />
+              ) : (
+                <Badge
+                  size='small'
+                  color={COLORS[0][0]}
+                  label={'Empty Context'}
+                />
+              )}
+            </span>
+          ),
         };
         columns.push(column);
       });
@@ -42,7 +58,7 @@ function getTablePanelColumns(
     {
       key: 'step',
       content: <span>Step</span>,
-      topHeader: 'Step',
+      topHeader: '',
       pin: order?.left?.includes('step')
         ? 'left'
         : order?.middle?.includes('step')
@@ -53,8 +69,8 @@ function getTablePanelColumns(
     },
     {
       key: 'batchIndex',
-      content: <span>index</span>,
-      topHeader: 'Index',
+      content: <span>Index</span>,
+      topHeader: '',
       pin: order?.left?.includes('index')
         ? 'left'
         : order?.right?.includes('index')
@@ -88,49 +104,62 @@ function getTablePanelColumns(
   return columns;
 }
 
-function textsTablePanelRowRenderer(
-  rowData: any,
-  groupHeaderRow = false,
-  columns: string[] = [],
+function getTablePanelRows(
+  textsData: any,
+  highlightOptions?: {
+    regex: RegExp | null;
+    foundRows: any[];
+  },
 ) {
-  if (groupHeaderRow) {
-    const row: { [key: string]: any } = {};
-    for (let i = 0; i < columns.length; i++) {
-      const col = columns[i];
-      if (Array.isArray(rowData[col])) {
-        row[col] = {
-          content: (
-            <Badge
-              size='small'
-              color={COLORS[0][0]}
-              label={`${rowData[col].length} values`}
-            />
-          ),
-        };
-      }
+  if (!textsData) {
+    return {
+      rows: [],
+      sameValueColumns: [],
+    };
+  }
+  let rows: any[] = [];
+  textsData[0].data.forEach((trace: any) => {
+    let data = trace.data;
+    if (highlightOptions) {
+      const { regex } = highlightOptions;
+      data =
+        regex === null
+          ? trace.data
+          : trace.data
+              .split(regex)
+              .filter((part: string) => part !== '')
+              .map((part: string, i: number) =>
+                regex.test(part) ? (
+                  <span
+                    key={part + i}
+                    className='TextExplorer__table__container__mark'
+                  >
+                    {part}
+                  </span>
+                ) : (
+                  part
+                ),
+              );
     }
 
-    return merge({}, rowData, row);
-  } else {
     const row = {
-      experiment: rowData.experiment,
-      run: {
-        content: (
-          <Link
-            to={PathEnum.Run_Detail.replace(':runHash', rowData.runHash)}
-            component={RouteLink}
-          >
-            {rowData.run}
-          </Link>
-        ),
-      },
-      actions: {
-        content: null,
-      },
+      step: trace.step,
+      batchIndex: trace.index,
+      [trace.textKey]: data,
+      key: trace.textKey,
+      seqKey: trace.seqKey,
+      stKey: `${trace.step}.${trace.index}`,
     };
+    rows.push(row);
+  });
 
-    return merge({}, rowData, row);
-  }
+  // @ts-ignore
+  rows = Object.values(_.groupBy(rows, 'key')).map((item: any) =>
+    _.merge({}, ...item),
+  );
+  rows = _.sortBy(rows, ['step', 'index']);
+
+  return { rows, sameValueColumns: [] };
 }
 
-export { getTablePanelColumns, textsTablePanelRowRenderer };
+export { getTablePanelColumns, getTablePanelRows };

@@ -1,5 +1,6 @@
 import _ from 'lodash-es';
 import moment from 'moment';
+import React from 'react';
 
 import { RequestStatusEnum } from 'config/enums/requestStatusEnum';
 import { ResizeModeEnum, RowHeightEnum } from 'config/enums/tableEnums';
@@ -13,7 +14,10 @@ import {
   getTextExplorerTableColumns,
   textExplorerTableRowRenderer,
 } from 'pages/TextExplorer/components/TextExplorerTableGrid/TextExplorerTableGrid';
-import { getTablePanelColumns } from 'pages/TextExplorer/components/TextPanelGrid/TextPanelGrid';
+import {
+  getTablePanelColumns,
+  getTablePanelRows,
+} from 'pages/TextExplorer/components/TextPanelGrid/TextPanelGrid';
 
 import * as analytics from 'services/analytics';
 import projectsService from 'services/api/projects/projectsService';
@@ -44,7 +48,6 @@ import {
 import {
   IGroupingSelectOption,
   IImageData,
-  IImageRunData,
 } from 'types/services/models/imagesExplore/imagesExploreAppModel';
 import { ITableColumn } from 'types/pages/metrics/components/TableColumns/TableColumns';
 import { IBookmarkFormState } from 'types/components/BookmarkForm/BookmarkForm';
@@ -584,6 +587,7 @@ function processTablePanelData(data: any) {
   let params: string[] = [];
   let highLevelParams: string[] = [];
   let contexts: string[] = [];
+
   data?.forEach((run: any) => {
     params = params.concat(getObjectPaths(run.params, run.params));
     highLevelParams = highLevelParams.concat(
@@ -594,7 +598,6 @@ function processTablePanelData(data: any) {
       contexts = contexts.concat(getObjectPaths(trace.context, trace.context));
       trace.values.forEach((stepData: any[], stepIndex: number) => {
         stepData.forEach((text: any) => {
-          const stkey = `${trace.iters[stepIndex]}.${stepIndex}`;
           const textKey = encode({
             name: trace.name,
             runHash: run.hash,
@@ -616,7 +619,6 @@ function processTablePanelData(data: any) {
             run: _.omit(run, 'traces'),
             key: textKey,
             seqKey: seqKey,
-            stkey,
           });
         });
       });
@@ -1279,35 +1281,6 @@ function onColumnsOrderChange(columnsOrder: any) {
   }
   analytics.trackEvent(ANALYTICS_EVENT_KEYS.texts.table.changeColumnsOrder);
 }
-function getTablePanelRows(textsData: any) {
-  if (!textsData) {
-    return {
-      rows: [],
-      sameValueColumns: [],
-    };
-  }
-  let rows: any[] = [];
-  //@TODO change script after grouping implementation
-  textsData[0].data.forEach((trace: any) => {
-    const row = {
-      step: trace.step,
-      batchIndex: trace.index,
-      [`${trace.run.hash}.${trace.text_name}`]: trace.data,
-      key: `${trace.run.hash}.${trace.text_name}`,
-      seqKey: trace.seqKey,
-      stKey: `${trace.step}.${trace.index}`,
-    };
-    rows.push(row);
-  });
-
-  // @ts-ignore
-  rows = Object.values(_.groupBy(rows, 'stKey')).map((item: any) =>
-    _.merge({}, ...item),
-  );
-  rows = _.sortBy(rows, ['step', 'index']);
-
-  return { rows, sameValueColumns: [] };
-}
 
 async function onBookmarkCreate({ name, description }: IBookmarkFormState) {
   const configData: ITextExplorerAppConfig | undefined =
@@ -1706,7 +1679,6 @@ function onSearchQueryCopy(): void {
 }
 
 function onSliceRangeChange(key: string, newValue: number[] | number) {
-  console.log(key, newValue);
   const configData: ITextExplorerAppConfig | undefined =
     model.getState()?.config;
   if (configData?.texts) {
@@ -1795,6 +1767,16 @@ function onTablePanelColumnsOrderChange(columnsOrder: IColumnsOrderData) {
 
 function onTablePanelSortChange() {}
 
+function highlightTextTableRows(data: any, regex: RegExp | null) {
+  const modelState = model.getState();
+  modelState.refs?.textTableRef.current?.updateData({
+    newData: getTablePanelRows([{ data: modelState?.rawData || [] }], {
+      regex,
+      foundRows: data,
+    }).rows,
+  });
+}
+
 const textsExploreAppModel = {
   ...model,
   initialize,
@@ -1804,6 +1786,7 @@ const textsExploreAppModel = {
   getAppConfigData,
   onBookmarkCreate,
   onTableResizeEnd,
+  highlightTextTableRows,
   onBookmarkUpdate,
   onNotificationAdd,
   onSearchQueryCopy,

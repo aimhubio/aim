@@ -7,11 +7,7 @@ import Icon from 'components/kit/Icon';
 import Button from 'components/kit/Button';
 import ErrorBoundary from 'components/ErrorBoundary/ErrorBoundary';
 
-import {
-  ISearchBarProps,
-  MatchTypes,
-} from 'pages/RunDetail/TextsVisualizer/SearchBar/types.d';
-
+import { ISearchBarProps, MatchTypes } from './types.d';
 import SearchInput from './SearchInput';
 
 import './SearchBar.scss';
