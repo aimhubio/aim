@@ -338,14 +338,26 @@ function textExplorerTableRowRenderer(
       },
       metric: rowData.metric,
       context: {
-        content: rowData.context.map((item: string) => (
-          <Badge
-            key={item}
-            size='small'
-            color={COLORS[0][0]}
-            label={item || 'Empty Context'}
-          />
-        )),
+        content:
+          rowData.context.length > 0 ? (
+            rowData.context.map((item: string) => {
+              return (
+                <Badge
+                  key={item}
+                  size='small'
+                  color={COLORS[0][0]}
+                  label={item || 'Empty Context'}
+                />
+              );
+            })
+          ) : (
+            <Badge
+              key={rowData.key}
+              size='small'
+              color={COLORS[0][0]}
+              label={'Empty Context'}
+            />
+          ),
       },
       value: rowData.value,
       step: rowData.step,
