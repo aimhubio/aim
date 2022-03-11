@@ -12,6 +12,7 @@ import ErrorBoundary from 'components/ErrorBoundary/ErrorBoundary';
 
 import COLORS from 'config/colors/colors';
 import { PathEnum } from 'config/enums/routesEnum';
+import { TABLE_DATE_FORMAT } from 'config/dates/dates';
 
 import { ITableColumn } from 'types/pages/metrics/components/TableColumns/TableColumns';
 import { IOnGroupingSelectChangeParams } from 'types/services/models/metrics/metricsAppModel';
@@ -465,7 +466,7 @@ function metricsTableRowRenderer(
             ? '-'
             : Array.isArray(rowData.time)
             ? ''
-            : moment(rowData.time).format('HH:mm:ss · D MMM, YY');
+            : moment(rowData.time).format(TABLE_DATE_FORMAT);
       } else if (Array.isArray(rowData[col])) {
         row[col] = {
           content: (
@@ -512,7 +513,7 @@ function metricsTableRowRenderer(
       time:
         rowData.time === null
           ? '-'
-          : moment(rowData.time).format('HH:mm:ss · D MMM, YY'),
+          : moment(rowData.time).format(TABLE_DATE_FORMAT),
       actions: {
         content: (
           <Button
