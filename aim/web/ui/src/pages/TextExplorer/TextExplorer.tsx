@@ -117,7 +117,7 @@ function TextExplorer() {
       ),
     searchKey: 'data',
   });
-
+  console.log(textExplorerData);
   return (
     <ErrorBoundary>
       <div className='TextExplorer__container' ref={wrapperElemRef}>
@@ -163,42 +163,54 @@ function TextExplorer() {
                   : ''
               }`}
             >
-              {!_.isEmpty(textExplorerData?.tablePanelData) && (
-                <SearchBar
-                  isValidInput={textSearch.filterOptions.isValidSearch}
-                  searchValue={textSearch.filterOptions.searchValue}
-                  matchType={textSearch.filterOptions.matchType}
-                  onMatchTypeChange={textSearch.changeMatchType}
-                  onInputClear={textSearch.clearSearchInputData}
-                  onInputChange={textSearch.changeSearchInput}
-                  isDisabled={!!textExplorerData?.isRequestPending}
-                />
-              )}
-              <Table
-                custom
-                topHeader
-                ref={textExplorerData?.refs?.textTableRef}
-                fixed={false}
-                columns={textExplorerData?.tablePanelColumns || []}
-                data={textExplorerData?.tablePanelData || []}
-                hideHeaderActions
-                estimatedRowHeight={32}
-                headerHeight={32}
-                updateColumnsWidths={() => {}}
-                illustrationConfig={{
-                  page: 'runs',
-                  title: 'No Tracked Texts',
-                  type: IllustrationsEnum.EmptyData,
-                }}
-                height='100%'
-                columnsOrder={
-                  textExplorerData?.tablePanel?.config?.columnsOrder
-                }
-                //methods
-                onManageColumns={
-                  textExplorerAppModel.onTablePanelColumnsOrderChange
+              <SearchBar
+                isValidInput={textSearch.filterOptions.isValidSearch}
+                searchValue={textSearch.filterOptions.searchValue}
+                matchType={textSearch.filterOptions.matchType}
+                onMatchTypeChange={textSearch.changeMatchType}
+                onInputClear={textSearch.clearSearchInputData}
+                onInputChange={textSearch.changeSearchInput}
+                isDisabled={
+                  textExplorerData?.requestStatus ===
+                    RequestStatusEnum.Pending ||
+                  _.isEmpty(textExplorerData?.tablePanel?.data)
                 }
               />
+              <BusyLoaderWrapper
+                isLoading={
+                  textExplorerData?.requestStatus === RequestStatusEnum.Pending
+                }
+                className='TextExplorer__loader'
+                loaderComponent={<TableLoader />}
+              >
+                {!_.isEmpty(textExplorerData?.tablePanelData) ? (
+                  <Table
+                    custom
+                    topHeader
+                    ref={textExplorerData?.refs?.textTableRef}
+                    fixed={false}
+                    columns={textExplorerData?.tablePanelColumns || []}
+                    data={textExplorerData?.tablePanelData || []}
+                    hideHeaderActions
+                    estimatedRowHeight={32}
+                    headerHeight={32}
+                    updateColumnsWidths={() => {}}
+                    illustrationConfig={{
+                      page: 'runs',
+                      title: 'No Tracked Texts',
+                      type: IllustrationsEnum.EmptyData,
+                    }}
+                    height='100%'
+                    columnsOrder={
+                      textExplorerData?.tablePanel?.config?.columnsOrder
+                    }
+                    // methods
+                    onManageColumns={
+                      textExplorerAppModel.onTablePanelColumnsOrderChange
+                    }
+                  />
+                ) : null}
+              </BusyLoaderWrapper>
             </div>
             <div>
               {textExplorerData?.config?.texts?.stepRange &&
@@ -206,7 +218,7 @@ function TextExplorer() {
                 textExplorerData?.config?.table.resizeMode !==
                   ResizeModeEnum.MaxHeight &&
                 textExplorerAppModel.showRangePanel() &&
-                !_.isEmpty(textExplorerData?.textsData) && (
+                !_.isEmpty(textExplorerData?.tablePanel.data) && (
                   <RangePanel
                     onApply={handleSearch}
                     applyButtonDisabled={textExplorerData?.applyButtonDisabled}
@@ -274,7 +286,7 @@ function TextExplorer() {
                 textExplorerData?.requestStatus !== RequestStatusEnum.Pending &&
                 (textExplorerData?.config?.table.resizeMode ===
                   ResizeModeEnum.Hide ||
-                  _.isEmpty(textExplorerData?.tableData!))
+                  _.isEmpty(textExplorerData?.tablePanelData!))
                   ? '__hide'
                   : ''
               }`}

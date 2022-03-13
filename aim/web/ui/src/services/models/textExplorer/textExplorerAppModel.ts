@@ -687,22 +687,17 @@ function setModelData(rawData: any[], configData: ITextExplorerAppConfig) {
   const sortFields = model.getState()?.config?.table.sortFields;
   const { data, params, highLevelParams, selectedRows, contexts } =
     processTablePanelData(rawData);
-  const columns = getTablePanelColumns(
+  const tablePanelColumns = getTablePanelColumns(
     rawData,
     configData.table.columnsOrder!,
     configData.table.hiddenColumns!,
   );
-  const { rows } = getTablePanelRows(data);
-
-  model.getState().refs?.textTableRef.current?.updateData({
-    newData: rows,
-    newColumns: columns,
-  });
+  const { rows: tablePanelRows } = getTablePanelRows(data);
 
   model.setState({
     tablePanel: {
-      columns,
-      data: rows,
+      columns: tablePanelColumns,
+      data: tablePanelRows,
     },
   });
   const sortedParams = params.concat(highLevelParams).sort();
@@ -828,8 +823,8 @@ function setModelData(rawData: any[], configData: ITextExplorerAppConfig) {
     params,
     data,
     selectedRows,
-    textsData: rows,
-    // orderedMap,
+    tablePanelData: tablePanelRows,
+    tablePanelColumns: tablePanelColumns,
     tableData: tableData.rows,
     tableColumns: getTextExplorerTableColumns(
       params,
