@@ -17,11 +17,15 @@ function SearchInput({
   isValidInput,
   isDisabled,
 }: ISearchInputProps) {
+  function onChange(event: ChangeEvent<HTMLInputElement>) {
+    onInputChange(event.target.value);
+  }
+
   return (
     <ErrorBoundary>
       <FormControl className='SearchInput'>
         <InputLabel htmlFor='search' variant='outlined' color='primary'>
-          Search/Filter
+          Filter texts
         </InputLabel>
         <OutlinedInput
           fullWidth
@@ -33,9 +37,7 @@ function SearchInput({
           disabled={isDisabled}
           error={!isValidInput}
           autoComplete='off'
-          onChange={(event: ChangeEvent<HTMLInputElement>) =>
-            onInputChange(event.target.value)
-          }
+          onChange={onChange}
           endAdornment={
             <EndAdornment
               isDisabled={isDisabled}

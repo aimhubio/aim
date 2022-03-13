@@ -398,35 +398,6 @@ function updateModelData(
       contexts,
     }),
   ];
-  // const { mediaSetData, orderedMap } = getDataAsMediaSetNestedObject({
-  //   data,
-  //   groupingSelectOptions,
-  //   model,
-  // });
-  // tooltipData = getTooltipData({
-  //   processedData: data,
-  //   paramKeys: sortedParams,
-  //   groupingSelectOptions,
-  //   groupingItems: ['group'],
-  //   model,
-  // });
-
-  // if (configData.images.focusedState.key) {
-  //   configData = {
-  //     ...configData,
-  //     images: {
-  //       ...configData.images,
-  //       tooltip: {
-  //         ...configData.images.tooltip,
-  //         content: filterTooltipContent(
-  //           tooltipData[configData.images.focusedState.key],
-  //           configData?.images.tooltip.selectedParams,
-  //         ),
-  //       },
-  //     },
-  //   };
-  // }
-
   const tableData = getDataAsTableRows(
     data,
     params,
@@ -816,6 +787,7 @@ function setModelData(rawData: any[], configData: ITextExplorerAppConfig) {
     // },
     // additionalProperties: config.images.additionalProperties,
   };
+
   model.setState({
     requestStatus: RequestStatusEnum.Ok,
     rawData,
@@ -1771,13 +1743,12 @@ function highlightTextTableRows(
   regex: RegExp | null,
 ) {
   const modelState: Partial<ITextExplorerAppModelState> = model.getState();
-
-  /*modelState.refs?.textTableRef.current?.updateData({
+  modelState.refs?.textTableRef.current?.updateData({
     newData: getTablePanelRows([{ data: allRows || [] }], {
       regex,
       foundRows,
     }).rows,
-  });*/
+  });
 }
 
 const textsExploreAppModel = {

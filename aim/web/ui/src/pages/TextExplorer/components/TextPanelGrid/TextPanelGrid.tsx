@@ -1,10 +1,8 @@
 import * as React from 'react';
 import _ from 'lodash-es';
-import classNames from 'classnames';
-
-import { Tooltip } from '@material-ui/core';
 
 import { Badge, JsonViewPopover } from 'components/kit';
+import ControlPopover from 'components/ControlPopover/ControlPopover';
 
 import COLORS from 'config/colors/colors';
 
@@ -12,10 +10,6 @@ import { ITableColumn } from 'types/pages/metrics/components/TableColumns/TableC
 
 import contextToString from 'utils/contextToString';
 import { encode } from 'utils/encoder/encoder';
-
-import { MEDIA_SET_TITLE_HEIGHT } from '../../../../config/mediaConfigs/mediaConfigs';
-import DepthDropdown from '../../../../components/DepthDropdown/DepthDropdown';
-import ControlPopover from '../../../../components/ControlPopover/ControlPopover';
 
 function getTablePanelColumns(
   rawData: any,
@@ -168,12 +162,10 @@ function getTablePanelRows(
     };
   }
   let rows: any[] = [];
-  textsData[0].data.forEach((trace: any) => {
-    let data = trace.data;
-
-    if (highlightOptions) {
-      const { regex } = highlightOptions;
-      data =
+  if (highlightOptions) {
+    const { regex } = highlightOptions;
+    highlightOptions?.foundRows.forEach((trace: any) => {
+      let data =
         regex === null
           ? trace.data
           : trace.data
@@ -191,17 +183,30 @@ function getTablePanelRows(
                   part
                 ),
               );
-    }
 
-    const row = {
-      step: trace.step,
-      batchIndex: trace.index,
-      [trace.seqKey]: <pre>{data}</pre>,
-      key: trace.key,
-      groupKey: `${trace.step}.${trace.index}`,
-    };
-    rows.push(row);
-  });
+      const row = {
+        step: trace.step,
+        batchIndex: trace.index,
+        [trace.seqKey]: <pre>{data}</pre>,
+        key: trace.key,
+        groupKey: `${trace.step}.${trace.index}`,
+      };
+      rows.push(row);
+    });
+  } else {
+    textsData[0].data.forEach((trace: any) => {
+      let data = trace.data;
+
+      const row = {
+        step: trace.step,
+        batchIndex: trace.index,
+        [trace.seqKey]: <pre>{data}</pre>,
+        key: trace.key,
+        groupKey: `${trace.step}.${trace.index}`,
+      };
+      rows.push(row);
+    });
+  }
 
   // @ts-ignore
   rows = Object.values(_.groupBy(rows, 'groupKey')).map((item: any) =>

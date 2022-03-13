@@ -8,8 +8,12 @@ import TableLoader from 'components/TableLoader/TableLoader';
 import NotificationContainer from 'components/NotificationContainer/NotificationContainer';
 import ResizePanel from 'components/ResizePanel/ResizePanel';
 import Table from 'components/Table/Table';
+import IllustrationBlock from 'components/IllustrationBlock/IllustrationBlock';
 
-import { IllustrationsEnum } from 'config/illustrationConfig/illustrationConfig';
+import {
+  IllustrationsEnum,
+  Request_Illustrations,
+} from 'config/illustrationConfig/illustrationConfig';
 import { RequestStatusEnum } from 'config/enums/requestStatusEnum';
 import { RowHeightSize } from 'config/table/tableConfigs';
 import { ANALYTICS_EVENT_KEYS } from 'config/analytics/analyticsKeysMap';
@@ -108,16 +112,17 @@ function TextExplorer() {
   }, [route.params.appId]);
 
   const textSearch = useTextSearch({
-    rawData: textExplorerData?.data ? textExplorerData?.data[0].data : [],
+    rawData: textExplorerData?.data?.[0].data,
     updateData: (data, regex) =>
       textExplorerAppModel?.highlightTextTableRows(
-        textExplorerData?.tablePanelData,
+        textExplorerData?.data?.[0].data,
         data,
         regex,
       ),
     searchKey: 'data',
   });
-  console.log(textExplorerData);
+
+  // @ts-ignore
   return (
     <ErrorBoundary>
       <div className='TextExplorer__container' ref={wrapperElemRef}>
@@ -163,19 +168,20 @@ function TextExplorer() {
                   : ''
               }`}
             >
-              <SearchBar
-                isValidInput={textSearch.filterOptions.isValidSearch}
-                searchValue={textSearch.filterOptions.searchValue}
-                matchType={textSearch.filterOptions.matchType}
-                onMatchTypeChange={textSearch.changeMatchType}
-                onInputClear={textSearch.clearSearchInputData}
-                onInputChange={textSearch.changeSearchInput}
-                isDisabled={
-                  textExplorerData?.requestStatus ===
-                    RequestStatusEnum.Pending ||
-                  _.isEmpty(textExplorerData?.tablePanel?.data)
-                }
-              />
+              {!_.isEmpty(textExplorerData?.tablePanelData) ? (
+                <SearchBar
+                  isValidInput={textSearch.filterOptions.isValidSearch}
+                  searchValue={textSearch.filterOptions.searchValue}
+                  matchType={textSearch.filterOptions.matchType}
+                  onMatchTypeChange={textSearch.changeMatchType}
+                  onInputClear={textSearch.clearSearchInputData}
+                  onInputChange={textSearch.changeSearchInput}
+                  isDisabled={
+                    textExplorerData?.requestStatus ===
+                    RequestStatusEnum.Pending
+                  }
+                />
+              ) : null}
               <BusyLoaderWrapper
                 isLoading={
                   textExplorerData?.requestStatus === RequestStatusEnum.Pending
@@ -209,7 +215,22 @@ function TextExplorer() {
                       textExplorerAppModel.onTablePanelColumnsOrderChange
                     }
                   />
-                ) : null}
+                ) : (
+                  textExplorerData?.selectFormData.options !== undefined && (
+                    <IllustrationBlock
+                      size='xLarge'
+                      page='metrics'
+                      type={
+                        textExplorerData?.selectFormData.options?.length
+                          ? Request_Illustrations[
+                              (textExplorerData?.requestStatus as RequestStatusEnum) ||
+                                (RequestStatusEnum.NotRequested as RequestStatusEnum)
+                            ]
+                          : IllustrationsEnum.EmptyData
+                      }
+                    />
+                  )
+                )}
               </BusyLoaderWrapper>
             </div>
             <div>
