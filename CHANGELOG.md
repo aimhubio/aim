@@ -3,6 +3,7 @@
 
 ### Enhancements:
 
+- Add Notes tab in single run page (arsengit)
 - Hugging Face adapter refactoring (mihran113)
 
 ### Fixes:
