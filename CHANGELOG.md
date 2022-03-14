@@ -1,10 +1,12 @@
 # Changelog
+
 ## Unreleased
 
 ### Enhancements:
 
 - Hugging Face adapter refactoring (mihran113)
 - Change images rendering optimization default value to smoother (VkoHov)
+- Set audios and images default steps ordering to desc (VkoHov)
 
 ### Fixes:
 

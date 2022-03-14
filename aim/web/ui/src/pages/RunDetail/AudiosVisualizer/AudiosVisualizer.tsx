@@ -94,6 +94,18 @@ function AudiosVisualizer(
     };
   }, []);
 
+  const sortFieldsDict = React.useMemo(() => {
+    return {
+      step: {
+        group: 'record',
+        label: 'record.step',
+        value: 'step',
+        readonly: false,
+        order: 'desc',
+      },
+    };
+  }, []);
+
   return (
     <ErrorBoundary>
       <BusyLoaderWrapper
@@ -109,6 +121,7 @@ function AudiosVisualizer(
             isLoading={!data || isLoading}
             panelResizing={false}
             tableHeight={'0'}
+            sortFieldsDict={sortFieldsDict}
             wrapperOffsetHeight={offsetHeight || 0}
             wrapperOffsetWidth={offsetWidth || 0}
             focusedState={focusedState}
