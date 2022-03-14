@@ -57,6 +57,7 @@ function RunDetail(): React.FunctionComponentElement<React.ReactNode> {
   const tabs: string[] = [
     'overview',
     'parameters',
+    'notes',
     'metrics',
     'system',
     'distributions',
@@ -130,6 +131,12 @@ function RunDetail(): React.FunctionComponentElement<React.ReactNode> {
       />
     ),
     settings: (
+      <RunDetailSettingsTab
+        isArchived={runData?.runInfo?.archived}
+        runHash={runHash}
+      />
+    ),
+    notes: (
       <RunDetailSettingsTab
         isArchived={runData?.runInfo?.archived}
         runHash={runHash}
