@@ -5,6 +5,11 @@
 ### Enhancements:
 
 - Hugging Face adapter refactoring (mihran113)
+- Change images rendering optimization default value to smoother (VkoHov)
+
+### Fixes:
+
+- Fix scroll to the end of the audio tab (VkoHov)
 
 ### Fixes:
 
