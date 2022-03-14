@@ -2,7 +2,12 @@
 ## Unreleased
 
 ### Enhancements:
+
 - Hugging Face adapter refactoring (mihran113)
+
+### Fixes:
+
+- Fix scroll to the end of the audio tab (VkoHov)
 
 ## 3.7.2 Mar 10, 2022
 
