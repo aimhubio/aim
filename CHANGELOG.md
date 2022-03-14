@@ -4,6 +4,7 @@
 ### Enhancements:
 
 - Hugging Face adapter refactoring (mihran113)
+- Change images rendering optimization default value to smoother (VkoHov)
 
 ### Fixes:
 
