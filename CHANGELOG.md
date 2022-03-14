@@ -6,24 +6,23 @@
 
 - Hugging Face adapter refactoring (mihran113)
 - Add run description columns to all run specific tables (VkoHov, mihran113)
+- Change images rendering optimization default value to smoother (VkoHov)
 
 ### Fixes:
 
 - Fix the image full view toggle icon visibility if the image has a white background (VkoHov)
+- Fix scroll to the end of the audio tab (VkoHov)
+
+## 3.7.3 Mar 14, 2022
+
+- Add missing names for dynamically imported files in single run page (arsengit)
 
 ## 3.7.2 Mar 10, 2022
 
-### Fixes:
-
 - Fix issue with rendering UI re keeping long URL (KaroMourad)
-
-### Enhancements:
-
 - Split code in the single run page to optimize chunk size (arsengit)
 
 ## 3.7.1 Mar 10, 2022
-
-### Fixes:
 
 - Fix metric queries with epoch=None (alberttorosyan)
 
