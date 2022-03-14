@@ -3,6 +3,10 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.middleware.gzip import GZipMiddleware
 import os
 
+from aim.web.configs import AIM_PROFILER_KEY
+from aim.web.middlewares.profiler import PyInstrumentProfilerMiddleware
+from aim.web.utils import get_root_path
+
 
 def create_app():
     app = FastAPI(title=__name__)
@@ -37,6 +41,10 @@ def create_app():
 
     api_app = FastAPI()
     api_app.add_middleware(GZipMiddleware)
+
+    if os.environ.get(AIM_PROFILER_KEY) == "1":
+        api_app.add_middleware(PyInstrumentProfilerMiddleware,
+                               repo_path=get_root_path())
 
     add_api_routes()
 
