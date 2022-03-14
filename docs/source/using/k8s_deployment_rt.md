@@ -19,28 +19,19 @@ The sections assume:
   * an ingress-nginx-controller installed
 * a domain name such as `rt-example.aimstack.io` that is configured to route traffic to the Ingress-NGINX controller.
 * an SSL certificate for the ingress. So you need to have a valid SSL certificate, deployed as a Kubernetes secret of type tls, in the same namespace as the gRPC application. 
-TODO [AD] do we need an instruction for creating SSL certificates? I guess no
-
 
 ### Dockerfile
 
 The following Dockerfile image should suffice for getting Aim RT server running in a container:
 
 ```Dockerfile
-# python3.7 should be sufficient to run Aim
-FROM python:3.7
-# install the `aim` package on the latest version
-
-RUN pip install --upgrade aim
-
-TODO [AD] aim init? 
+# See aim docker hub documentation https://hub.docker.com/r/aimstack/aim
+FROM aimstack/aim:latest
 
 # We run aim listening on 0.0.0.0 to expose all ports.
 # Port 53800 is the default port of `aim server` but explicit is better than implicit.
 CMD yes | aim server --host 0.0.0.0 --port 53800
 ```
-
-TODO [AD] our docker images hosts on dockerhub?
 
 Assuming you store the above in your current directory, the container can be built
 using `docker build . -t aim-server-container:1` and pushed to your repository
