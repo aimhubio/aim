@@ -1,5 +1,11 @@
 # Changelog
 
+## Unreleased
+
+### Fixes
+
+- Add missing names for dynamically imported files in single run page (arsengit)
+
 ## 3.7.2 Mar 10, 2022
 
 ### Fixes:

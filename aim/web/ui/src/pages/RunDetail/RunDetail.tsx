@@ -32,15 +32,31 @@ import RunSelectPopoverContent from './RunSelectPopoverContent';
 
 import './RunDetail.scss';
 
-const RunDetailParamsTab = React.lazy(() => import('./RunDetailParamsTab'));
-const RunDetailSettingsTab = React.lazy(() => import('./RunDetailSettingsTab'));
+const RunDetailParamsTab = React.lazy(
+  () =>
+    import(/* webpackChunkName: "RunDetailParamsTab" */ './RunDetailParamsTab'),
+);
+const RunDetailSettingsTab = React.lazy(
+  () =>
+    import(
+      /* webpackChunkName: "RunDetailSettingsTab" */ './RunDetailSettingsTab'
+    ),
+);
 const RunDetailMetricsAndSystemTab = React.lazy(
-  () => import('./RunDetailMetricsAndSystemTab'),
+  () =>
+    import(
+      /* webpackChunkName: "RunDetailMetricsAndSystemTab" */ './RunDetailMetricsAndSystemTab'
+    ),
 );
 const TraceVisualizationContainer = React.lazy(
-  () => import('./TraceVisualizationContainer'),
+  () =>
+    import(
+      /* webpackChunkName: "TraceVisualizationContainer" */ './TraceVisualizationContainer'
+    ),
 );
-const RunOverviewTab = React.lazy(() => import('./RunOverviewTab'));
+const RunOverviewTab = React.lazy(
+  () => import(/* webpackChunkName: "RunOverviewTab" */ './RunOverviewTab'),
+);
 
 function RunDetail(): React.FunctionComponentElement<React.ReactNode> {
   let runsOfExperimentRequestRef: any = null;
