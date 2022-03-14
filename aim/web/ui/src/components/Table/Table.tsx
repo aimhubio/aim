@@ -3,6 +3,7 @@
 
 import React from 'react';
 import { debounce, isEmpty, isNil } from 'lodash-es';
+import * as d3 from 'd3';
 
 import { Button, Icon, Text } from 'components/kit';
 import ControlPopover from 'components/ControlPopover/ControlPopover';
