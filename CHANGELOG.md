@@ -10,9 +10,6 @@
 ### Fixes:
 
 - Fix scroll to the end of the audio tab (VkoHov)
-
-### Fixes:
-
 - Add scrollbar to image full view mode content (VkoHov)
 
 ## 3.7.2 Mar 10, 2022
