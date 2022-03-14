@@ -10,19 +10,16 @@
 
 - Fix scroll to the end of the audio tab (VkoHov)
 
+## 3.7.3 Mar 14, 2022
+
+- Add missing names for dynamically imported files in single run page (arsengit)
+
 ## 3.7.2 Mar 10, 2022
 
-### Fixes:
-
 - Fix issue with rendering UI re keeping long URL (KaroMourad)
-
-### Enhancements:
-
 - Split code in the single run page to optimize chunk size (arsengit)
 
 ## 3.7.1 Mar 10, 2022
-
-### Fixes:
 
 - Fix metric queries with epoch=None (alberttorosyan)
 
