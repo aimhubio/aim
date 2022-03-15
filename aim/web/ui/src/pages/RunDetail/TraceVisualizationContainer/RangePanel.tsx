@@ -1,4 +1,5 @@
 import React from 'react';
+import _ from 'lodash';
 
 import SliderWithInput from 'components/SliderWithInput';
 import { Button } from 'components/kit';
@@ -51,51 +52,51 @@ function RangePanel({
       }}
     >
       <div className='RangePanelContainer'>
-        {items?.map((item) => (
-          <React.Fragment key={item.sliderName}>
-            <SliderWithInput
-              sliderType={item?.sliderType}
-              sliderTitle={item.sliderTitle}
-              countInputTitle={item.inputTitle}
-              countTitleTooltip={item.inputTitleTooltip}
-              sliderTitleTooltip={item.sliderTitleTooltip}
-              min={item.rangeEndpoints?.[0]}
-              max={item.rangeEndpoints?.[1]}
-              selectedRangeValue={item.selectedRangeValue}
-              selectedCountValue={item.inputValue}
-              onSearch={onApply}
-              onRangeChange={(value) =>
-                onRangeSliderChange(item.sliderName, value)
-              }
-              onCountChange={(value, metadata?: IValidationMetadata) => {
-                onInputChange(item.inputName, value, metadata);
-              }}
-              inputValidationPatterns={
-                item?.inputValidationPatterns ?? [
-                  {
-                    errorCondition: (value: string | number) =>
-                      +value < item.rangeEndpoints?.[0],
-                    errorText:
-                      item.rangeEndpoints?.[0] <= 0
-                        ? 'Value should be greater then 0'
-                        : `Value should be equal or greater then ${item.rangeEndpoints?.[0]}`,
-                  },
-                  {
-                    errorCondition: (value: string | number) =>
-                      item.rangeEndpoints?.[1] !== 0 &&
-                      +value > item.rangeEndpoints?.[1],
-                    errorText: `Value should be equal or smaller then ${item.rangeEndpoints?.[1]}`,
-                  },
-                  {
-                    errorCondition: (value: string | number) => +value === 0,
-                    errorText: "Value can't be 0",
-                  },
-                ]
-              }
-            />
-            <div className='VerticalDivider' />
-          </React.Fragment>
-        ))}
+        {items?.map((item) => {
+          const rangeLength = _.range(
+            item.rangeEndpoints?.[0] ?? 0,
+            (item.rangeEndpoints?.[1] ?? 0) + 1,
+          ).length;
+          return (
+            <React.Fragment key={item.sliderName}>
+              <SliderWithInput
+                sliderType={item?.sliderType}
+                sliderTitle={item.sliderTitle}
+                countInputTitle={item.inputTitle}
+                countTitleTooltip={item.inputTitleTooltip}
+                sliderTitleTooltip={item.sliderTitleTooltip}
+                min={item.rangeEndpoints?.[0]}
+                max={item.rangeEndpoints?.[1]}
+                selectedRangeValue={item.selectedRangeValue}
+                selectedCountValue={item.inputValue}
+                onSearch={onApply}
+                onRangeChange={(value) =>
+                  onRangeSliderChange(item.sliderName, value)
+                }
+                onCountChange={(value, metadata?: IValidationMetadata) => {
+                  onInputChange(item.inputName, value, metadata);
+                }}
+                inputValidationPatterns={
+                  item?.inputValidationPatterns ?? [
+                    {
+                      errorCondition: (value: string | number) => +value <= 0,
+                      errorText: `Value should be greater then ${0}`,
+                    },
+                    {
+                      errorCondition: (value: string | number) => {
+                        return +value > rangeLength;
+                      },
+                      errorText: `Value should be smaller then ${
+                        rangeLength + 1
+                      }`,
+                    },
+                  ]
+                }
+              />
+              <div className='VerticalDivider' />
+            </React.Fragment>
+          );
+        })}
         <div className='ApplyButtonContainer'>
           <Button
             size='small'

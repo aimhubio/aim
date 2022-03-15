@@ -21,12 +21,26 @@ import withEmptyTraceCheck from './withEmptyTraceCheck';
 import './TraceVisualizationContainer.scss';
 
 const DistributionsVisualizer = React.lazy(
-  () => import('../DistributionsVisualizer'),
+  () =>
+    import(
+      /* webpackChunkName: "DistributionsVisualizer" */ '../DistributionsVisualizer'
+    ),
 );
-const ImagesVisualizer = React.lazy(() => import('../ImagesVisualizer'));
-const TextsVisualizer = React.lazy(() => import('../TextsVisualizer'));
-const PlotlyVisualizer = React.lazy(() => import('../PlotlyVisualizer'));
-const AudiosVisualizer = React.lazy(() => import('../AudiosVisualizer'));
+const ImagesVisualizer = React.lazy(
+  () =>
+    import(/* webpackChunkName: "ImagesVisualizer" */ '../ImagesVisualizer'),
+);
+const TextsVisualizer = React.lazy(
+  () => import(/* webpackChunkName: "TextsVisualizer" */ '../TextsVisualizer'),
+);
+const PlotlyVisualizer = React.lazy(
+  () =>
+    import(/* webpackChunkName: "PlotlyVisualizer" */ '../PlotlyVisualizer'),
+);
+const AudiosVisualizer = React.lazy(
+  () =>
+    import(/* webpackChunkName: "AudiosVisualizer" */ '../AudiosVisualizer'),
+);
 
 const traceTypeVisualization = {
   images: ImagesVisualizer,
