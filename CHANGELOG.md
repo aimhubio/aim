@@ -4,6 +4,8 @@
 
 ### Fixes
 
+- Fix density min and max validation calculation (VkoHov)
+
 ## 3.7.3 Mar 14, 2022
 
 - Add missing names for dynamically imported files in single run page (arsengit)
