@@ -117,10 +117,10 @@ function ImagePropertiesPopover({
             className='ImagePropertiesPopover__ToggleButton'
             title='Optimization'
             onChange={onImageRenderingChange}
-            rightLabel='Smoother'
-            leftLabel='Pixelated'
-            leftValue={ImageRenderingEnum.Pixelated}
-            rightValue={ImageRenderingEnum.Smooth}
+            rightLabel='Pixelated'
+            leftLabel='Smoother'
+            leftValue={ImageRenderingEnum.Smooth}
+            rightValue={ImageRenderingEnum.Pixelated}
             value={additionalProperties.imageRendering}
           />
         </div>
