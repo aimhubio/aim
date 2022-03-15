@@ -86,7 +86,7 @@ function RangePanel({
                       errorCondition: (value: string | number) => {
                         return +value > rangeLength;
                       },
-                      errorText: `Value should be equal or smaller then ${
+                      errorText: `Value should be smaller then ${
                         rangeLength + 1
                       }`,
                     },
