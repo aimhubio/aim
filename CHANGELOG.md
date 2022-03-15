@@ -2,7 +2,7 @@
 
 ## Unreleased
 
-### Fixes
+## 3.7.4 Mar 15, 2022
 
 - Fix density min and max validation calculation (VkoHov)
 
