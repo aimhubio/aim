@@ -80,6 +80,9 @@
       &__fullHeight {
         flex: 1 !important;
       }
+      * {
+        --cell-height: 42px;
+      }
     }
   }
   &__SelectForm__Grouping__container {

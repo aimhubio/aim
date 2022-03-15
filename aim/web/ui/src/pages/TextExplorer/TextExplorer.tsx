@@ -121,7 +121,9 @@ function TextExplorer() {
       ),
     searchKey: 'data',
   });
-
+  React.useEffect(() => {
+    console.log(textExplorerData?.tablePanel?.columns);
+  }, [textExplorerData]);
   // @ts-ignore
   return (
     <ErrorBoundary>
@@ -194,19 +196,17 @@ function TextExplorer() {
                     custom
                     topHeader
                     ref={textExplorerData?.refs?.textTableRef}
-                    fixed={false}
-                    columns={textExplorerData?.tablePanelColumns || []}
+                    columns={textExplorerData?.tablePanel.columns || []}
                     data={textExplorerData?.tablePanelData || []}
                     hideHeaderActions
-                    estimatedRowHeight={32}
                     headerHeight={32}
                     updateColumnsWidths={() => {}}
+                    height='100%'
                     illustrationConfig={{
                       page: 'runs',
-                      title: 'No Tracked Texts',
+                      title: 'No Result',
                       type: IllustrationsEnum.EmptyData,
                     }}
-                    height='100%'
                     columnsOrder={
                       textExplorerData?.tablePanel?.config?.columnsOrder
                     }

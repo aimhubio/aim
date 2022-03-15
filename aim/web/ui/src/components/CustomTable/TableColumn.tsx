@@ -140,14 +140,9 @@ function Column({
           'Table__column--selection': col.key === 'selection',
         })}
         style={{
-          minWidth: maxWidth,
-          maxWidth: '100vw',
-          width:
-            col.key === 'selection'
-              ? '32px'
-              : isInViewPort
-              ? 'initial'
-              : columnRef.current?.offsetWidth ?? 'initial',
+          minWidth: 85,
+          maxWidth: 400,
+          width: maxWidth,
           boxShadow: isInViewPort ? null : '1px 30px 0 0 #dee6f3',
           filter: isInViewPort ? null : 'blur(2px)',
         }}

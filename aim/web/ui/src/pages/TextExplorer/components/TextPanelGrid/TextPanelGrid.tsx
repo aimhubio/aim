@@ -87,8 +87,10 @@ function getTablePanelColumns(
             ? 'right'
             : null,
           content: (
-            <div className='flex fac'>
-              <span style={{ marginRight: '0.5rem' }}>{trace.name}</span>
+            <div className='flex fac' style={{ width: '100%', height: '100%' }}>
+              <span style={{ textOverflow: 'ellipsis', marginRight: '0.5rem' }}>
+                {trace.name}
+              </span>
               {getContextBadgeContent()}
             </div>
           ),
@@ -103,6 +105,7 @@ function getTablePanelColumns(
       key: 'step',
       content: <span>Step</span>,
       topHeader: '',
+      resizeable: false,
       pin: order?.left?.includes('step')
         ? 'left'
         : order?.middle?.includes('step')
@@ -115,6 +118,7 @@ function getTablePanelColumns(
       key: 'batchIndex',
       content: <span>Index</span>,
       topHeader: '',
+      resizeable: false,
       pin: order?.left?.includes('index')
         ? 'left'
         : order?.right?.includes('index')
@@ -187,7 +191,40 @@ function getTablePanelRows(
       const row = {
         step: trace.step,
         batchIndex: trace.index,
-        [trace.seqKey]: <pre>{data}</pre>,
+        [trace.seqKey]: (
+          <ControlPopover
+            anchorOrigin={{
+              vertical: 'bottom',
+              horizontal: 'left',
+            }}
+            transformOrigin={{
+              vertical: 'top',
+              horizontal: 'left',
+            }}
+            anchor={({ onAnchorClick }) => (
+              <div
+                onClick={onAnchorClick}
+                style={{
+                  maxWidth: '100%',
+                  overflowY: 'scroll',
+                }}
+              >
+                {data}
+              </div>
+            )}
+            component={
+              <pre
+                style={{
+                  margin: 10,
+                  maxWidth: 'calc(100vw - 400px)',
+                  overflowY: 'scroll',
+                }}
+              >
+                {data}
+              </pre>
+            }
+          />
+        ),
         key: trace.key,
         groupKey: `${trace.step}.${trace.index}`,
       };
@@ -200,7 +237,7 @@ function getTablePanelRows(
       const row = {
         step: trace.step,
         batchIndex: trace.index,
-        [trace.seqKey]: <pre>{data}</pre>,
+        [trace.seqKey]: <div>{data}</div>,
         key: trace.key,
         groupKey: `${trace.step}.${trace.index}`,
       };
