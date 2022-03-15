@@ -61,6 +61,9 @@
       &__hide {
         display: none;
       }
+      &__mark {
+        background-color: $warning-color-50;
+      }
     }
     .TextExplorer__ResizePanel {
       &__hide {
@@ -76,6 +79,9 @@
       }
       &__fullHeight {
         flex: 1 !important;
+      }
+      * {
+        --cell-height: 38px;
       }
     }
   }

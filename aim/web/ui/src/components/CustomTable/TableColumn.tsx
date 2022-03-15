@@ -44,6 +44,7 @@ function Column({
   multiSelect,
   selectedRows,
   onRowSelect,
+  columnsMaxWidth,
 }) {
   const [maxWidth, setMaxWidth] = React.useState(width);
   const [isResizing, setIsResizing] = React.useState(false);
@@ -133,21 +134,22 @@ function Column({
   return (
     <ErrorBoundary>
       <div
-        className={classNames({
-          Table__column: true,
+        className={classNames('Table__column', {
           'Table__column--actions': col.key === 'actions',
           'Table__column--groups': col.key === 'groups',
           'Table__column--selection': col.key === 'selection',
         })}
         style={{
-          minWidth: maxWidth,
-          maxWidth: '100vw',
-          width:
-            col.key === 'selection'
-              ? '32px'
-              : isInViewPort
-              ? 'initial'
-              : columnRef.current?.offsetWidth ?? 'initial',
+          minWidth: columnsMaxWidth ? 85 : maxWidth,
+          maxWidth: columnsMaxWidth || '100vw',
+          width: columnsMaxWidth
+            ? maxWidth
+            : col.key === 'selection'
+            ? '32px'
+            : isInViewPort
+            ? 'initial'
+            : columnRef.current?.offsetWidth ?? 'initial',
+
           boxShadow: isInViewPort ? null : '1px 30px 0 0 #dee6f3',
           filter: isInViewPort ? null : 'blur(2px)',
         }}
@@ -359,8 +361,7 @@ function Column({
                 }
               />
               <div
-                className={classNames({
-                  Table__column__resizeHandler: true,
+                className={classNames('Table__column__resizeHandler', {
                   leftResize: pinnedTo === 'right',
                   isResizing: isResizing,
                 })}
@@ -397,13 +398,12 @@ function Column({
                 >
                   {col.key === '#' ? (
                     <div
-                      className={classNames({
-                        Table__cell: true,
-                        Table__group__config__cell: true,
-                        Table__group__header__cell: true,
-                        expanded: expanded[groupKey],
-                        expandable: true,
-                      })}
+                      className={classNames(
+                        'Table__cell Table__group__config__cell Table__group__header__cell expandable',
+                        {
+                          expanded: expanded[groupKey],
+                        },
+                      )}
                     >
                       <GroupConfig
                         config={data[groupKey].data.meta}
@@ -418,13 +418,12 @@ function Column({
                     </div>
                   ) : col.key === 'actions' ? (
                     <div
-                      className={classNames({
-                        Table__cell: true,
-                        Table__group__config__cell: true,
-                        Table__group__header__cell: true,
-                        expanded: expanded[groupKey],
-                        expandable: true,
-                      })}
+                      className={classNames(
+                        'Table__cell Table__group__config__cell Table__group__header__cell expandable',
+                        {
+                          expanded: expanded[groupKey],
+                        },
+                      )}
                     >
                       <GroupActions
                         expand={expand}
@@ -455,11 +454,12 @@ function Column({
                               },
                             }
                       }
-                      className={classNames({
-                        Table__group__header__cell: true,
-                        expanded: expanded[groupKey],
-                        expandable: true,
-                      })}
+                      className={classNames(
+                        'Table__group__header__cell expandable',
+                        {
+                          expanded: expanded[groupKey],
+                        },
+                      )}
                     />
                   )}
                   {expanded[groupKey] && (
