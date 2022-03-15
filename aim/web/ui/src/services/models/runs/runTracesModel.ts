@@ -232,11 +232,17 @@ async function getRunTraceBatch(isInitial = false) {
             queryData.inputs[key] < range[0] ||
             queryData.inputs[key] > range[1]
           ) {
-            if (parsed.processedDataType === VisualizationMenuTitles.figures) {
-              queryData.inputs[key] = range[0] ?? 1;
-            } else {
-              const rangeLength = _.range(range[0], range[1] + 1).length;
-              queryData.inputs[key] = rangeLength > 0 ? rangeLength : 1;
+            queryData.inputs[key] =
+              range[
+                parsed.processedDataType === VisualizationMenuTitles.figures
+                  ? 0
+                  : 1
+              ] ?? 1;
+            if (
+              parsed.processedDataType !== VisualizationMenuTitles.figures &&
+              queryData.inputs[key] === 0
+            ) {
+              queryData.inputs[key] = 1;
             }
           } else {
             queryData.inputs[key] = queryData.inputs[key] ?? 1;
