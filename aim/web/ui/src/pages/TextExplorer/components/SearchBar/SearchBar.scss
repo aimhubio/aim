@@ -1,0 +1,34 @@
+@use 'src/styles/abstracts' as *;
+
+.TextExplorerSearchBar {
+  display: flex;
+  width: 60%;
+  margin: toRem(10px);
+  align-items: center;
+  .MatchIcons {
+    display: flex;
+    align-items: baseline;
+
+  }
+
+  label {
+    font-size: $text-md;
+  }
+
+  .MatchButton {
+    margin-right: $space-xxs;
+    &:last-child {
+      margin-right: unset;
+    }
+
+    &:not(.active) {
+      .Mui-disabled {
+        color: $pico-30;
+      }
+    }
+
+    .Icon__container {
+      font-size: $text-lg;
+    }
+  }
+}

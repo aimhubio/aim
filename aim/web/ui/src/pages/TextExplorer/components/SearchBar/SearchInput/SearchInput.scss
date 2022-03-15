@@ -1,0 +1,36 @@
+@use 'src/styles/abstracts' as *;
+
+.SearchInput {
+  margin-right: toRem(10px);
+  input {
+    font-size: $text-md;
+    &::placeholder {
+      font-size: $text-md;
+    }
+  }
+  width: 100%;
+  .MuiInputLabel-outlined {
+    z-index: 1;
+    transform: translate(14px, 6px) scale(1);
+    pointer-events: none;
+    &.MuiInputLabel-shrink {
+      transform: translate(14px, -6px) scale(0.75);
+    }
+  }
+
+  .EndAdornment {
+    display: flex;
+    align-items: center;
+    .divider-vertical {
+      width: toRem(1px);
+      height: toRem(20px);
+      margin: 0 toRem(6px) 0 toRem(8px);
+      background: $cuddle-70;
+      border-radius: toRem(1px);
+    }
+
+    .Mui-disabled  {
+      color: $pico-30;
+    }
+  }
+}

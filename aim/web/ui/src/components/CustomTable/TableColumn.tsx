@@ -44,6 +44,7 @@ function Column({
   multiSelect,
   selectedRows,
   onRowSelect,
+  columnsMaxWidth,
 }) {
   const [maxWidth, setMaxWidth] = React.useState(width);
   const [isResizing, setIsResizing] = React.useState(false);
@@ -139,14 +140,16 @@ function Column({
           'Table__column--selection': col.key === 'selection',
         })}
         style={{
-          minWidth: maxWidth,
-          maxWidth: '100vw',
-          width:
-            col.key === 'selection'
-              ? '32px'
-              : isInViewPort
-              ? 'initial'
-              : columnRef.current?.offsetWidth ?? 'initial',
+          minWidth: columnsMaxWidth ? 85 : maxWidth,
+          maxWidth: columnsMaxWidth || '100vw',
+          width: columnsMaxWidth
+            ? maxWidth
+            : col.key === 'selection'
+            ? '32px'
+            : isInViewPort
+            ? 'initial'
+            : columnRef.current?.offsetWidth ?? 'initial',
+
           boxShadow: isInViewPort ? null : '1px 30px 0 0 #dee6f3',
           filter: isInViewPort ? null : 'blur(2px)',
         }}

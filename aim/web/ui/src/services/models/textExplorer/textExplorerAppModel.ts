@@ -1,5 +1,6 @@
 import _ from 'lodash-es';
 import moment from 'moment';
+import React from 'react';
 
 import { RequestStatusEnum } from 'config/enums/requestStatusEnum';
 import { ResizeModeEnum, RowHeightEnum } from 'config/enums/tableEnums';
@@ -13,7 +14,10 @@ import {
   getTextExplorerTableColumns,
   textExplorerTableRowRenderer,
 } from 'pages/TextExplorer/components/TextExplorerTableGrid/TextExplorerTableGrid';
-import { getTablePanelColumns } from 'pages/TextExplorer/components/TextPanelGrid/TextPanelGrid';
+import {
+  getTablePanelColumns,
+  getTablePanelRows,
+} from 'pages/TextExplorer/components/TextPanelGrid/TextPanelGrid';
 
 import * as analytics from 'services/analytics';
 import projectsService from 'services/api/projects/projectsService';
@@ -44,7 +48,6 @@ import {
 import {
   IGroupingSelectOption,
   IImageData,
-  IImageRunData,
 } from 'types/services/models/imagesExplore/imagesExploreAppModel';
 import { ITableColumn } from 'types/pages/metrics/components/TableColumns/TableColumns';
 import { IBookmarkFormState } from 'types/components/BookmarkForm/BookmarkForm';
@@ -395,35 +398,6 @@ function updateModelData(
       contexts,
     }),
   ];
-  // const { mediaSetData, orderedMap } = getDataAsMediaSetNestedObject({
-  //   data,
-  //   groupingSelectOptions,
-  //   model,
-  // });
-  // tooltipData = getTooltipData({
-  //   processedData: data,
-  //   paramKeys: sortedParams,
-  //   groupingSelectOptions,
-  //   groupingItems: ['group'],
-  //   model,
-  // });
-
-  // if (configData.images.focusedState.key) {
-  //   configData = {
-  //     ...configData,
-  //     images: {
-  //       ...configData.images,
-  //       tooltip: {
-  //         ...configData.images.tooltip,
-  //         content: filterTooltipContent(
-  //           tooltipData[configData.images.focusedState.key],
-  //           configData?.images.tooltip.selectedParams,
-  //         ),
-  //       },
-  //     },
-  //   };
-  // }
-
   const tableData = getDataAsTableRows(
     data,
     params,
@@ -584,6 +558,7 @@ function processTablePanelData(data: any) {
   let params: string[] = [];
   let highLevelParams: string[] = [];
   let contexts: string[] = [];
+
   data?.forEach((run: any) => {
     params = params.concat(getObjectPaths(run.params, run.params));
     highLevelParams = highLevelParams.concat(
@@ -594,29 +569,30 @@ function processTablePanelData(data: any) {
       contexts = contexts.concat(getObjectPaths(trace.context, trace.context));
       trace.values.forEach((stepData: any[], stepIndex: number) => {
         stepData.forEach((text: any) => {
-          const stkey = `${trace.iters[stepIndex]}.${stepIndex}`;
-          const textKey = encode({
+          const cellKey = encode({
             name: trace.name,
             runHash: run.hash,
             traceContext: trace.context,
             index: text.index,
             step: trace.iters[stepIndex],
-            caption: text.caption,
           });
+
           const seqKey = encode({
             name: trace.name,
             runHash: run.hash,
             traceContext: trace.context,
           });
+
           textsData.push({
             ...text,
             text_name: trace.name,
             step: trace.iters[stepIndex],
             context: trace.context,
             run: _.omit(run, 'traces'),
-            key: textKey,
+            rowKey: seqKey,
+            key: cellKey,
+            cellKey: cellKey,
             seqKey: seqKey,
-            stkey,
           });
         });
       });
@@ -682,22 +658,17 @@ function setModelData(rawData: any[], configData: ITextExplorerAppConfig) {
   const sortFields = model.getState()?.config?.table.sortFields;
   const { data, params, highLevelParams, selectedRows, contexts } =
     processTablePanelData(rawData);
-  const columns = getTablePanelColumns(
+  const tablePanelColumns = getTablePanelColumns(
     rawData,
     configData.table.columnsOrder!,
     configData.table.hiddenColumns!,
   );
-  const { rows } = getTablePanelRows(data);
-
-  model.getState().refs?.textTableRef.current?.updateData({
-    newData: rows,
-    newColumns: columns,
-  });
+  const { rows: tablePanelRows } = getTablePanelRows(data);
 
   model.setState({
     tablePanel: {
-      columns,
-      data: rows,
+      columns: tablePanelColumns,
+      data: tablePanelRows,
     },
   });
   const sortedParams = params.concat(highLevelParams).sort();
@@ -816,6 +787,7 @@ function setModelData(rawData: any[], configData: ITextExplorerAppConfig) {
     // },
     // additionalProperties: config.images.additionalProperties,
   };
+
   model.setState({
     requestStatus: RequestStatusEnum.Ok,
     rawData,
@@ -823,8 +795,8 @@ function setModelData(rawData: any[], configData: ITextExplorerAppConfig) {
     params,
     data,
     selectedRows,
-    textsData: rows,
-    // orderedMap,
+    tablePanelData: tablePanelRows,
+    tablePanelColumns: tablePanelColumns,
     tableData: tableData.rows,
     tableColumns: getTextExplorerTableColumns(
       params,
@@ -1283,35 +1255,6 @@ function onColumnsOrderChange(columnsOrder: any) {
   }
   analytics.trackEvent(ANALYTICS_EVENT_KEYS.texts.table.changeColumnsOrder);
 }
-function getTablePanelRows(textsData: any) {
-  if (!textsData) {
-    return {
-      rows: [],
-      sameValueColumns: [],
-    };
-  }
-  let rows: any[] = [];
-  //@TODO change script after grouping implementation
-  textsData[0].data.forEach((trace: any) => {
-    const row = {
-      step: trace.step,
-      batchIndex: trace.index,
-      [`${trace.run.hash}.${trace.text_name}`]: trace.data,
-      key: `${trace.run.hash}.${trace.text_name}`,
-      seqKey: trace.seqKey,
-      stKey: `${trace.step}.${trace.index}`,
-    };
-    rows.push(row);
-  });
-
-  // @ts-ignore
-  rows = Object.values(_.groupBy(rows, 'stKey')).map((item: any) =>
-    _.merge({}, ...item),
-  );
-  rows = _.sortBy(rows, ['step', 'index']);
-
-  return { rows, sameValueColumns: [] };
-}
 
 async function onBookmarkCreate({ name, description }: IBookmarkFormState) {
   const configData: ITextExplorerAppConfig | undefined =
@@ -1710,7 +1653,6 @@ function onSearchQueryCopy(): void {
 }
 
 function onSliceRangeChange(key: string, newValue: number[] | number) {
-  console.log(key, newValue);
   const configData: ITextExplorerAppConfig | undefined =
     model.getState()?.config;
   if (configData?.texts) {
@@ -1799,6 +1741,20 @@ function onTablePanelColumnsOrderChange(columnsOrder: IColumnsOrderData) {
 
 function onTablePanelSortChange() {}
 
+function highlightTextTableRows(
+  allRows: any,
+  foundRows: any,
+  regex: RegExp | null,
+) {
+  const modelState: Partial<ITextExplorerAppModelState> = model.getState();
+  modelState.refs?.textTableRef.current?.updateData({
+    newData: getTablePanelRows([{ data: allRows || [] }], {
+      regex,
+      foundRows,
+    }).rows,
+  });
+}
+
 const textsExploreAppModel = {
   ...model,
   initialize,
@@ -1808,6 +1764,7 @@ const textsExploreAppModel = {
   getAppConfigData,
   onBookmarkCreate,
   onTableResizeEnd,
+  highlightTextTableRows,
   onBookmarkUpdate,
   onNotificationAdd,
   onSearchQueryCopy,

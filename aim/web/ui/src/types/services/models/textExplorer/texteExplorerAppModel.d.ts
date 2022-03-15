@@ -40,6 +40,7 @@ export interface ITextExplorerAppModelState {
     tableRef: { current: ITableRef | null };
     textTableRef: { current: ITableRef | null };
   };
+  tablePanelData: any;
   requestStatus: RequestStatusEnum;
   queryIsEmpty: boolean;
   rawData: any[];

@@ -8,8 +8,12 @@ import TableLoader from 'components/TableLoader/TableLoader';
 import NotificationContainer from 'components/NotificationContainer/NotificationContainer';
 import ResizePanel from 'components/ResizePanel/ResizePanel';
 import Table from 'components/Table/Table';
+import IllustrationBlock from 'components/IllustrationBlock/IllustrationBlock';
 
-import { IllustrationsEnum } from 'config/illustrationConfig/illustrationConfig';
+import {
+  IllustrationsEnum,
+  Request_Illustrations,
+} from 'config/illustrationConfig/illustrationConfig';
 import { RequestStatusEnum } from 'config/enums/requestStatusEnum';
 import { RowHeightSize } from 'config/table/tableConfigs';
 import { ANALYTICS_EVENT_KEYS } from 'config/analytics/analyticsKeysMap';
@@ -31,6 +35,8 @@ import exceptionHandler from 'utils/app/exceptionHandler';
 import getStateFromUrl from 'utils/getStateFromUrl';
 
 import TextExplorerAppBar from './components/TextExplorerAppBar/TextExplorerAppBar';
+import useTextSearch from './components/SearchBar/useTextSearch';
+// import SearchBar from './components/SearchBar';
 
 import './TextExplorer.scss';
 
@@ -105,6 +111,17 @@ function TextExplorer() {
     };
   }, [route.params.appId]);
 
+  useTextSearch({
+    rawData: textExplorerData?.data?.[0].data,
+    updateData: (data, regex) =>
+      textExplorerAppModel?.highlightTextTableRows(
+        textExplorerData?.data?.[0].data,
+        data,
+        regex,
+      ),
+    searchKey: 'data',
+  });
+
   return (
     <ErrorBoundary>
       <div className='TextExplorer__container' ref={wrapperElemRef}>
@@ -150,31 +167,69 @@ function TextExplorer() {
                   : ''
               }`}
             >
-              <Table
-                custom
-                topHeader
-                ref={textExplorerData?.refs?.textTableRef}
-                fixed={false}
-                columns={textExplorerData?.tablePanelColumns || []}
-                data={textExplorerData?.tablePanelData || []}
-                hideHeaderActions
-                estimatedRowHeight={32}
-                headerHeight={32}
-                updateColumnsWidths={() => {}}
-                illustrationConfig={{
-                  page: 'runs',
-                  title: 'No Tracked Texts',
-                  type: IllustrationsEnum.EmptyData,
-                }}
-                height='100%'
-                columnsOrder={
-                  textExplorerData?.tablePanel?.config?.columnsOrder
+              {/*{!_.isEmpty(textExplorerData?.tablePanelData) ? (
+                <SearchBar
+                  isValidInput={textSearch.filterOptions.isValidSearch}
+                  searchValue={textSearch.filterOptions.searchValue}
+                  matchType={textSearch.filterOptions.matchType}
+                  onMatchTypeChange={textSearch.changeMatchType}
+                  onInputClear={textSearch.clearSearchInputData}
+                  onInputChange={textSearch.changeSearchInput}
+                  isDisabled={
+                    textExplorerData?.requestStatus ===
+                    RequestStatusEnum.Pending
+                  }
+                />
+              ) : null}*/}
+              <BusyLoaderWrapper
+                isLoading={
+                  textExplorerData?.requestStatus === RequestStatusEnum.Pending
                 }
-                //methods
-                onManageColumns={
-                  textExplorerAppModel.onTablePanelColumnsOrderChange
-                }
-              />
+                className='TextExplorer__loader'
+                loaderComponent={<TableLoader />}
+              >
+                {!_.isEmpty(textExplorerData?.tablePanelData) ? (
+                  <Table
+                    custom
+                    topHeader
+                    columnsMaxWidth={400}
+                    ref={textExplorerData?.refs?.textTableRef}
+                    columns={textExplorerData?.tablePanel.columns || []}
+                    data={textExplorerData?.tablePanelData || []}
+                    hideHeaderActions
+                    headerHeight={32}
+                    updateColumnsWidths={() => {}}
+                    height='100%'
+                    illustrationConfig={{
+                      page: 'runs',
+                      title: 'No Result',
+                      type: IllustrationsEnum.EmptyData,
+                    }}
+                    columnsOrder={
+                      textExplorerData?.tablePanel?.config?.columnsOrder
+                    }
+                    // methods
+                    onManageColumns={
+                      textExplorerAppModel.onTablePanelColumnsOrderChange
+                    }
+                  />
+                ) : (
+                  textExplorerData?.selectFormData.options !== undefined && (
+                    <IllustrationBlock
+                      size='xLarge'
+                      page='metrics'
+                      type={
+                        textExplorerData?.selectFormData.options?.length
+                          ? Request_Illustrations[
+                              (textExplorerData?.requestStatus as RequestStatusEnum) ||
+                                (RequestStatusEnum.NotRequested as RequestStatusEnum)
+                            ]
+                          : IllustrationsEnum.EmptyData
+                      }
+                    />
+                  )
+                )}
+              </BusyLoaderWrapper>
             </div>
             <div>
               {textExplorerData?.config?.texts?.stepRange &&
@@ -182,7 +237,7 @@ function TextExplorer() {
                 textExplorerData?.config?.table.resizeMode !==
                   ResizeModeEnum.MaxHeight &&
                 textExplorerAppModel.showRangePanel() &&
-                !_.isEmpty(textExplorerData?.textsData) && (
+                !_.isEmpty(textExplorerData?.tablePanel.data) && (
                   <RangePanel
                     onApply={handleSearch}
                     applyButtonDisabled={textExplorerData?.applyButtonDisabled}
@@ -250,7 +305,7 @@ function TextExplorer() {
                 textExplorerData?.requestStatus !== RequestStatusEnum.Pending &&
                 (textExplorerData?.config?.table.resizeMode ===
                   ResizeModeEnum.Hide ||
-                  _.isEmpty(textExplorerData?.tableData!))
+                  _.isEmpty(textExplorerData?.tablePanelData!))
                   ? '__hide'
                   : ''
               }`}

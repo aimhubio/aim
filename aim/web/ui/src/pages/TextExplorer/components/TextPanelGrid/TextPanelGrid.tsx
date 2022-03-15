@@ -1,15 +1,15 @@
 import * as React from 'react';
-import { Link as RouteLink } from 'react-router-dom';
-import { merge } from 'lodash-es';
+import _ from 'lodash-es';
 
-import { Link } from '@material-ui/core';
-
-import { Badge } from 'components/kit';
+import { Badge, JsonViewPopover } from 'components/kit';
+import ControlPopover from 'components/ControlPopover/ControlPopover';
 
 import COLORS from 'config/colors/colors';
-import { PathEnum } from 'config/enums/routesEnum';
 
 import { ITableColumn } from 'types/pages/metrics/components/TableColumns/TableColumns';
+
+import contextToString from 'utils/contextToString';
+import { encode } from 'utils/encoder/encoder';
 
 function getTablePanelColumns(
   rawData: any,
@@ -20,7 +20,62 @@ function getTablePanelColumns(
     const columns: any = [];
     rawData.forEach((run: any) => {
       run.traces.forEach((trace: any) => {
-        const key = `${run.hash}.${trace.name}`;
+        const key = encode({
+          name: trace.name,
+          runHash: run.hash,
+          traceContext: trace.context,
+        });
+
+        const getContextBadgeContent = () => {
+          let Element: any;
+          if (!_.isEmpty(trace.context) && !_.isNil(trace.context)) {
+            const contextLength = Object.keys(trace.context).length;
+
+            if (contextLength > 1) {
+              Element = (
+                <ControlPopover
+                  anchorOrigin={{
+                    vertical: 'bottom',
+                    horizontal: 'left',
+                  }}
+                  transformOrigin={{
+                    vertical: 'top',
+                    horizontal: 'left',
+                  }}
+                  anchor={({ onAnchorClick }) => (
+                    <Badge
+                      onClick={onAnchorClick}
+                      size='small'
+                      style={{ cursor: 'pointer' }}
+                      color={COLORS[0][0]}
+                      label={`${contextLength} values`}
+                    />
+                  )}
+                  component={<JsonViewPopover json={trace.context as object} />}
+                />
+              );
+            } else {
+              Element = (
+                <Badge
+                  size='small'
+                  color={COLORS[0][0]}
+                  label={contextToString(trace.context) as string}
+                />
+              );
+            }
+          } else {
+            Element = (
+              <Badge
+                size='small'
+                color={COLORS[0][0]}
+                label={'Empty Context'}
+              />
+            );
+          }
+
+          return Element;
+        };
+
         const column = {
           topHeader: run.props.name,
           key,
@@ -31,7 +86,14 @@ function getTablePanelColumns(
             : order?.right?.includes(key)
             ? 'right'
             : null,
-          content: <span>{trace.name}</span>,
+          content: (
+            <div className='flex fac' style={{ width: '100%', height: '100%' }}>
+              <span style={{ textOverflow: 'ellipsis', marginRight: '0.5rem' }}>
+                {trace.name}
+              </span>
+              {getContextBadgeContent()}
+            </div>
+          ),
         };
         columns.push(column);
       });
@@ -42,7 +104,8 @@ function getTablePanelColumns(
     {
       key: 'step',
       content: <span>Step</span>,
-      topHeader: 'Step',
+      topHeader: '',
+      resizeable: false,
       pin: order?.left?.includes('step')
         ? 'left'
         : order?.middle?.includes('step')
@@ -53,8 +116,9 @@ function getTablePanelColumns(
     },
     {
       key: 'batchIndex',
-      content: <span>index</span>,
-      topHeader: 'Index',
+      content: <span>Index</span>,
+      topHeader: '',
+      resizeable: false,
       pin: order?.left?.includes('index')
         ? 'left'
         : order?.right?.includes('index')
@@ -88,49 +152,106 @@ function getTablePanelColumns(
   return columns;
 }
 
-function textsTablePanelRowRenderer(
-  rowData: any,
-  groupHeaderRow = false,
-  columns: string[] = [],
+function getTablePanelRows(
+  textsData: any,
+  highlightOptions?: {
+    regex: RegExp | null;
+    foundRows: any[];
+  },
 ) {
-  if (groupHeaderRow) {
-    const row: { [key: string]: any } = {};
-    for (let i = 0; i < columns.length; i++) {
-      const col = columns[i];
-      if (Array.isArray(rowData[col])) {
-        row[col] = {
-          content: (
-            <Badge
-              size='small'
-              color={COLORS[0][0]}
-              label={`${rowData[col].length} values`}
-            />
-          ),
-        };
-      }
-    }
-
-    return merge({}, rowData, row);
-  } else {
-    const row = {
-      experiment: rowData.experiment,
-      run: {
-        content: (
-          <Link
-            to={PathEnum.Run_Detail.replace(':runHash', rowData.runHash)}
-            component={RouteLink}
-          >
-            {rowData.run}
-          </Link>
-        ),
-      },
-      actions: {
-        content: null,
-      },
+  if (!textsData) {
+    return {
+      rows: [],
+      sameValueColumns: [],
     };
-
-    return merge({}, rowData, row);
   }
+  let rows: any[] = [];
+  if (highlightOptions) {
+    const { regex } = highlightOptions;
+    highlightOptions?.foundRows.forEach((trace: any) => {
+      let data =
+        regex === null
+          ? trace.data
+          : trace.data
+              .split(regex)
+              .filter((part: string) => part !== '')
+              .map((part: string, i: number) =>
+                regex.test(part) ? (
+                  <span
+                    key={part + i}
+                    className='TextExplorer__table__container__mark'
+                  >
+                    {part}
+                  </span>
+                ) : (
+                  part
+                ),
+              );
+
+      const row = {
+        step: trace.step,
+        batchIndex: trace.index,
+        [trace.seqKey]: (
+          <ControlPopover
+            anchorOrigin={{
+              vertical: 'bottom',
+              horizontal: 'left',
+            }}
+            transformOrigin={{
+              vertical: 'top',
+              horizontal: 'left',
+            }}
+            anchor={({ onAnchorClick }) => (
+              <div
+                onClick={onAnchorClick}
+                style={{
+                  maxWidth: '100%',
+                  overflowY: 'scroll',
+                }}
+              >
+                {data}
+              </div>
+            )}
+            component={
+              <pre
+                style={{
+                  margin: 10,
+                  maxWidth: 'calc(100vw - 400px)',
+                  overflowY: 'scroll',
+                }}
+              >
+                {data}
+              </pre>
+            }
+          />
+        ),
+        key: trace.key,
+        groupKey: `${trace.step}.${trace.index}`,
+      };
+      rows.push(row);
+    });
+  } else {
+    textsData[0].data.forEach((trace: any) => {
+      let data = trace.data;
+
+      const row = {
+        step: trace.step,
+        batchIndex: trace.index,
+        [trace.seqKey]: <div>{data}</div>,
+        key: trace.key,
+        groupKey: `${trace.step}.${trace.index}`,
+      };
+      rows.push(row);
+    });
+  }
+
+  // @ts-ignore
+  rows = Object.values(_.groupBy(rows, 'groupKey')).map((item: any) =>
+    _.merge({}, ...item),
+  );
+  rows = _.sortBy(rows, ['step', 'index']);
+
+  return { rows, sameValueColumns: [] };
 }
 
-export { getTablePanelColumns, textsTablePanelRowRenderer };
+export { getTablePanelColumns, getTablePanelRows };
