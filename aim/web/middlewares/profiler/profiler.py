@@ -1,12 +1,14 @@
+"""
+This code is taken from https://github.com/sunhailin-Leo/fastapi_profiler
+Credit goes to the author of the repo.
+"""
+
 import os.path
 import time
-import codecs
 from typing import Optional
 from logging import getLogger
-from uuid import uuid4
 
 from pyinstrument import Profiler
-from pyinstrument.renderers import HTMLRenderer
 
 from starlette.routing import Router
 from starlette.requests import Request
