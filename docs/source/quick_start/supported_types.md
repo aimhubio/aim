@@ -1,18 +1,18 @@
 ## Track media and objects
 
-Aim supports variety of data sources. Basic logging of `Run` params covers
-Python builtin types (such as `int`, `float`, `bool`, `bytes` and `str`) as well as
-composition of those into dictionaries, lists, tuples at any depth.
+Aim supports variety of data sources. Basic logging of `Run` params covers Python builtin types (such as `int`, `float`
+, `bool`, `bytes` and `str`) as well as composition of those into dictionaries, lists, tuples at any depth.
 
-In addition to the builtin types, Aim provides native support for 
-[OmegaConf](https://github.com/omry/omegaconf/blob/master/README.md) configs, thus
-simplifying integration for projects running with [Hydra](https://hydra.cc/docs/intro/).
+In addition to the builtin types, Aim provides native support for
+[OmegaConf](https://github.com/omry/omegaconf/blob/master/README.md) configs, thus simplifying integration for projects
+running with [Hydra](https://hydra.cc/docs/intro/).
 
 Starting from `v3.6.0` Aim provides integration with [activeloop/hub](https://docs.activeloop.ai/)
 datasets. Hub is the open-source dataset format for AI.
 
-Tracking of data includes metrics, images, audio, text and chart figures. Here's
-the complete list of Aim objects provided by the package:
+Tracking of data includes metrics, images, audio, text and chart figures. Here's the complete list of Aim objects
+provided by the package:
+
 - Metrics
 - [Image](#image-tracking-with-aim)
 - [Audio](#audio-tracking-with-aim)
@@ -213,8 +213,8 @@ run.track(aim_figure, name="matplotlib_figures", step=0)
 
 ### Tracking matplotlib figures with Aim
 
-In order to track `matplotlib` figures with Aim, either pass the `matplotlib` figure to Aim's `Image` or `Figure` object.
-
+In order to track `matplotlib` figures with Aim, either pass the `matplotlib` figure to Aim's `Image` or `Figure`
+object.
 
 #### Converting matplotlib to Aim Image
 
@@ -253,12 +253,10 @@ aim_figure = Figure(fig)
 run.track(aim_figure, step=0, name="matplotlib_figures")
 ```
 
-
 ### Logging activeloop/hub dataset info with Aim
 
 Aim provides wrapper object for `hub.dataset`. It allows to store the dataset info as a `Run`
-parameter and retrieve it later just as any other `Run` param. Here is an example of using Aim
-to log dataset info:
+parameter and retrieve it later just as any other `Run` param. Here is an example of using Aim to log dataset info:
 
 ```python
 import hub
@@ -273,3 +271,19 @@ ds = hub.dataset('hub://activeloop/cifar100-test')
 run = Run(system_tracking_interval=None)
 run['hub_ds'] = HubDataset(ds)
 ```
+
+### Logging DVC tracked files with aim
+
+Just like activeloop/hub, Aim provides another wrapper for DVC that can be used to store DVC tracked files as `Run`
+parameter.
+
+```python
+from aim.sdk import Run
+from aim.sdk.objects.plugins.dvc_metadata import DvcData
+
+run = Run(system_tracking_interval=None)
+
+path_to_dvc_repo = '.'
+run['dvc_files'] = DvcData(path_to_dvc_repo)
+```
+

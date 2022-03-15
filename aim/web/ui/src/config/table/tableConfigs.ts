@@ -93,7 +93,7 @@ export const TABLE_DEFAULT_CONFIG = {
     hiddenColumns: [],
     columnsWidths: {},
     columnsOrder: {
-      left: ['experiment'],
+      left: ['run'],
       middle: [],
       right: [],
     },

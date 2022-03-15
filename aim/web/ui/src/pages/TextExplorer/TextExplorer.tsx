@@ -36,7 +36,7 @@ import getStateFromUrl from 'utils/getStateFromUrl';
 
 import TextExplorerAppBar from './components/TextExplorerAppBar/TextExplorerAppBar';
 import useTextSearch from './components/SearchBar/useTextSearch';
-import SearchBar from './components/SearchBar';
+// import SearchBar from './components/SearchBar';
 
 import './TextExplorer.scss';
 
