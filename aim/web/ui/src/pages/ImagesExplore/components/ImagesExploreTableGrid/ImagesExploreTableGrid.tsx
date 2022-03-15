@@ -11,6 +11,7 @@ import ErrorBoundary from 'components/ErrorBoundary/ErrorBoundary';
 
 import COLORS from 'config/colors/colors';
 import { PathEnum } from 'config/enums/routesEnum';
+import { TABLE_DATE_FORMAT } from 'config/dates/dates';
 
 import { ITableColumn } from 'types/pages/metrics/components/TableColumns/TableColumns';
 import { IGroupingSelectOption } from 'types/services/models/imagesExplore/imagesExploreAppModel';
@@ -32,22 +33,48 @@ function getImagesExploreTableColumns(
     {
       key: 'experiment',
       content: <span>Experiment</span>,
-      topHeader: 'Images',
+      topHeader: 'Run',
       pin: order?.left?.includes('experiment')
         ? 'left'
         : order?.middle?.includes('experiment')
         ? null
         : order?.right?.includes('experiment')
         ? 'right'
-        : 'left',
+        : null,
     },
     {
       key: 'run',
-      content: <span>Run</span>,
-      topHeader: 'Images',
+      content: <span>Run Name</span>,
+      topHeader: 'Run',
       pin: order?.left?.includes('run')
         ? 'left'
+        : order?.middle?.includes('run')
+        ? null
         : order?.right?.includes('run')
+        ? 'right'
+        : 'left',
+    },
+    {
+      key: 'description',
+      content: <span>Description</span>,
+      topHeader: 'Run',
+      pin: order?.left?.includes('description')
+        ? 'left'
+        : order?.middle?.includes('description')
+        ? null
+        : order?.right?.includes('description')
+        ? 'right'
+        : null,
+    },
+    {
+      key: 'date',
+      content: <span>Date</span>,
+      topHeader: 'Run',
+      pin: order?.left?.includes('date')
+        ? 'left'
+        : order?.middle?.includes('date')
+        ? null
+        : order?.right?.includes('date')
         ? 'right'
         : null,
     },
@@ -237,7 +264,7 @@ function imagesExploreTableRowRenderer(
             ? '-'
             : Array.isArray(rowData.time)
             ? ''
-            : moment(rowData.time).format('HH:mm:ss · D MMM, YY');
+            : moment(rowData.time).format(TABLE_DATE_FORMAT);
       } else if (col === 'groups') {
         row.groups = {
           content: (
@@ -310,14 +337,20 @@ function imagesExploreTableRowRenderer(
       },
       metric: rowData.metric,
       context: {
-        content: rowData.context.map((item: string) => (
-          <Badge
-            key={item}
-            size='small'
-            color={COLORS[0][0]}
-            label={item || 'Empty Context'}
-          />
-        )),
+        content:
+          rowData.context.length > 1 ? (
+            <Badge
+              size='small'
+              color={COLORS[0][0]}
+              label={`${rowData.context.length} values`}
+            />
+          ) : (
+            <Badge
+              size='small'
+              color={COLORS[0][0]}
+              label={rowData.context[0] || 'Empty Context'}
+            />
+          ),
       },
       value: rowData.value,
       step: rowData.step,
@@ -325,7 +358,7 @@ function imagesExploreTableRowRenderer(
       time:
         rowData.time === null
           ? '-'
-          : moment(rowData.time).format('HH:mm:ss · D MMM, YY'),
+          : moment(rowData.time).format(TABLE_DATE_FORMAT),
       actions: {
         //@TODO add hide sequence functionality
         content: (

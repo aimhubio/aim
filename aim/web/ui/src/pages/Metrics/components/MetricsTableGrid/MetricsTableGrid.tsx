@@ -12,6 +12,7 @@ import ErrorBoundary from 'components/ErrorBoundary/ErrorBoundary';
 
 import COLORS from 'config/colors/colors';
 import { PathEnum } from 'config/enums/routesEnum';
+import { TABLE_DATE_FORMAT } from 'config/dates/dates';
 
 import { ITableColumn } from 'types/pages/metrics/components/TableColumns/TableColumns';
 import { IOnGroupingSelectChangeParams } from 'types/services/models/metrics/metricsAppModel';
@@ -52,14 +53,14 @@ function getMetricsTableColumns(
     {
       key: 'experiment',
       content: <span>Experiment</span>,
-      topHeader: 'Metrics',
+      topHeader: 'Run',
       pin: order?.left?.includes('experiment')
         ? 'left'
         : order?.middle?.includes('experiment')
         ? null
         : order?.right?.includes('experiment')
         ? 'right'
-        : 'left',
+        : null,
       columnOptions: ['color', 'stroke', 'chart'].map((groupName: string) => ({
         value: `${
           grouping?.[groupName]?.includes('run.props.experiment') ? 'un' : ''
@@ -81,13 +82,15 @@ function getMetricsTableColumns(
     },
     {
       key: 'run',
-      content: <span>Run</span>,
-      topHeader: 'Metrics',
+      content: <span>Run Name</span>,
+      topHeader: 'Run',
       pin: order?.left?.includes('run')
         ? 'left'
+        : order?.middle?.includes('run')
+        ? null
         : order?.right?.includes('run')
         ? 'right'
-        : null,
+        : 'left',
       columnOptions: ['color', 'stroke', 'chart'].map((groupName: string) => ({
         value: `${
           grouping?.[groupName]?.includes('run.hash') ? 'un' : ''
@@ -104,6 +107,26 @@ function getMetricsTableColumns(
         },
         icon: icons[groupName],
       })),
+    },
+    {
+      key: 'description',
+      content: <span>Description</span>,
+      topHeader: 'Run',
+      pin: order?.left?.includes('description')
+        ? 'left'
+        : order?.right?.includes('description')
+        ? 'right'
+        : null,
+    },
+    {
+      key: 'date',
+      content: <span>Date</span>,
+      topHeader: 'Run',
+      pin: order?.left?.includes('date')
+        ? 'left'
+        : order?.right?.includes('date')
+        ? 'right'
+        : null,
     },
     {
       key: 'metric',
@@ -443,7 +466,7 @@ function metricsTableRowRenderer(
             ? '-'
             : Array.isArray(rowData.time)
             ? ''
-            : moment(rowData.time).format('HH:mm:ss · D MMM, YY');
+            : moment(rowData.time).format(TABLE_DATE_FORMAT);
       } else if (Array.isArray(rowData[col])) {
         row[col] = {
           content: (
@@ -490,7 +513,7 @@ function metricsTableRowRenderer(
       time:
         rowData.time === null
           ? '-'
-          : moment(rowData.time).format('HH:mm:ss · D MMM, YY'),
+          : moment(rowData.time).format(TABLE_DATE_FORMAT),
       actions: {
         content: (
           <Button

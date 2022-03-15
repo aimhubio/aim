@@ -134,8 +134,7 @@ function Column({
   return (
     <ErrorBoundary>
       <div
-        className={classNames({
-          Table__column: true,
+        className={classNames('Table__column', {
           'Table__column--actions': col.key === 'actions',
           'Table__column--groups': col.key === 'groups',
           'Table__column--selection': col.key === 'selection',
@@ -362,8 +361,7 @@ function Column({
                 }
               />
               <div
-                className={classNames({
-                  Table__column__resizeHandler: true,
+                className={classNames('Table__column__resizeHandler', {
                   leftResize: pinnedTo === 'right',
                   isResizing: isResizing,
                 })}
@@ -400,13 +398,12 @@ function Column({
                 >
                   {col.key === '#' ? (
                     <div
-                      className={classNames({
-                        Table__cell: true,
-                        Table__group__config__cell: true,
-                        Table__group__header__cell: true,
-                        expanded: expanded[groupKey],
-                        expandable: true,
-                      })}
+                      className={classNames(
+                        'Table__cell Table__group__config__cell Table__group__header__cell expandable',
+                        {
+                          expanded: expanded[groupKey],
+                        },
+                      )}
                     >
                       <GroupConfig
                         config={data[groupKey].data.meta}
@@ -421,13 +418,12 @@ function Column({
                     </div>
                   ) : col.key === 'actions' ? (
                     <div
-                      className={classNames({
-                        Table__cell: true,
-                        Table__group__config__cell: true,
-                        Table__group__header__cell: true,
-                        expanded: expanded[groupKey],
-                        expandable: true,
-                      })}
+                      className={classNames(
+                        'Table__cell Table__group__config__cell Table__group__header__cell expandable',
+                        {
+                          expanded: expanded[groupKey],
+                        },
+                      )}
                     >
                       <GroupActions
                         expand={expand}
@@ -458,11 +454,12 @@ function Column({
                               },
                             }
                       }
-                      className={classNames({
-                        Table__group__header__cell: true,
-                        expanded: expanded[groupKey],
-                        expandable: true,
-                      })}
+                      className={classNames(
+                        'Table__group__header__cell expandable',
+                        {
+                          expanded: expanded[groupKey],
+                        },
+                      )}
                     />
                   )}
                   {expanded[groupKey] && (

@@ -746,7 +746,7 @@ class Repo:
                 'meta', run_hash, read_only=False, from_union=True
             ).subtree('meta').subtree('chunks').subtree(run_hash)
             dest_meta_run_tree[...] = source_meta_run_tree[...]
-            dest_index = dest_repo._get_index_tree('meta', timeout=0).view(b'')
+            dest_index = dest_repo._get_index_tree('meta', timeout=0).view(())
             dest_meta_run_tree.finalize(index=dest_index)
 
             # copy run series tree

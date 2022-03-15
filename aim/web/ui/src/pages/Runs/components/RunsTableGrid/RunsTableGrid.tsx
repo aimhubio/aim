@@ -23,21 +23,9 @@ function getRunsTableColumns(
 ): ITableColumn[] {
   let columns: ITableColumn[] = [
     {
-      key: 'experiment',
-      content: <span>Experiment</span>,
-      topHeader: 'Runs',
-      pin: order?.left?.includes('experiment')
-        ? 'left'
-        : order?.middle?.includes('experiment')
-        ? null
-        : order?.right?.includes('experiment')
-        ? 'right'
-        : 'left',
-    },
-    {
       key: 'run',
-      content: <span>Run</span>,
-      topHeader: 'Runs',
+      content: <span>Run Name</span>,
+      topHeader: 'Run',
       pin: order?.left?.includes('run')
         ? 'left'
         : order?.middle?.includes('run')
@@ -45,6 +33,42 @@ function getRunsTableColumns(
         : order?.right?.includes('run')
         ? 'right'
         : 'left',
+    },
+    {
+      key: 'experiment',
+      content: <span>Experiment</span>,
+      topHeader: 'Run',
+      pin: order?.left?.includes('experiment')
+        ? 'left'
+        : order?.middle?.includes('experiment')
+        ? null
+        : order?.right?.includes('experiment')
+        ? 'right'
+        : null,
+    },
+    {
+      key: 'description',
+      content: <span>Description</span>,
+      topHeader: 'Run',
+      pin: order?.left?.includes('description')
+        ? 'left'
+        : order?.middle?.includes('description')
+        ? null
+        : order?.right?.includes('description')
+        ? 'right'
+        : null,
+    },
+    {
+      key: 'date',
+      content: <span>Date</span>,
+      topHeader: 'Run',
+      pin: order?.left?.includes('date')
+        ? 'left'
+        : order?.middle?.includes('date')
+        ? null
+        : order?.right?.includes('date')
+        ? 'right'
+        : null,
     },
   ].concat(
     Object.keys(metricsColumns).reduce((acc: any, key: string) => {
