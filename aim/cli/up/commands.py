@@ -40,7 +40,7 @@ from aim.web.utils import ShellCommandException
                                                                 readable=True))
 @click.option('--base-path', required=False, default='', type=str)
 @click.option('--force-init', is_flag=True, default=False)
-@click.option('--profiler', '-P', is_flag=True, default=False)
+@click.option('--profiler', is_flag=True, default=False)
 def up(dev, host, port, workers, repo, tf_logs, ssl_keyfile, ssl_certfile, base_path, force_init, profiler):
     if dev:
         os.environ[AIM_ENV_MODE_KEY] = 'dev'

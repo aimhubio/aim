@@ -8,8 +8,6 @@ import time
 from typing import Optional
 from logging import getLogger
 
-from pyinstrument import Profiler
-
 from starlette.routing import Router
 from starlette.requests import Request
 from starlette.types import ASGIApp, Message, Receive, Scope, Send
@@ -28,6 +26,11 @@ class PyInstrumentProfilerMiddleware:
             repo_path=None,
             **profiler_kwargs
     ):
+        try:
+            from pyinstrument import Profiler
+        except ImportError:
+            raise RuntimeError('Please install "pyinstrument" module to use enable api profiler.')
+
         self.app = app
         self._profiler = Profiler(interval=profiler_interval)
 

@@ -1,1 +1,1 @@
-from ..profiler.profiler import PyInstrumentProfilerMiddleware
+from .profiler import PyInstrumentProfilerMiddleware
