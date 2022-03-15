@@ -279,6 +279,7 @@ function Table(props) {
                     }}
                     data={props.data}
                     expanded={expanded}
+                    columnsMaxWidth={props.columnsMaxWidth}
                     expand={expand}
                     onRowSelect={props.onRowSelect}
                     onRowClick={props.onRowClick}
@@ -300,6 +301,7 @@ function Table(props) {
                     <Column
                       topHeader={props.topHeader}
                       showTopHeaderContent={showTopHeaderContent(index, col)}
+                      columnsMaxWidth={props.columnsMaxWidth}
                       showTopHeaderBorder={showTopHeaderContent(
                         index,
                         col,
@@ -356,6 +358,7 @@ function Table(props) {
                 <Column
                   key={col.key + index}
                   topHeader={props.topHeader}
+                  columnsMaxWidth={props.columnsMaxWidth}
                   showTopHeaderContent={showTopHeaderContent(index, col)}
                   showTopHeaderBorder={showTopHeaderContent(index, col, true)}
                   col={col}
@@ -418,6 +421,7 @@ function Table(props) {
                       leftPane.length === 0 &&
                       middlePane.length === 0
                     }
+                    columnsMaxWidth={props.columnsMaxWidth}
                     width={props.columnsWidths?.[col.key]}
                     updateColumnWidth={props.updateColumnsWidths}
                     headerMeta={props.headerMeta}

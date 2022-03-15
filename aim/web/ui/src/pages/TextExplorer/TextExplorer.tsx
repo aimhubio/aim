@@ -111,7 +111,7 @@ function TextExplorer() {
     };
   }, [route.params.appId]);
 
-  const textSearch = useTextSearch({
+  useTextSearch({
     rawData: textExplorerData?.data?.[0].data,
     updateData: (data, regex) =>
       textExplorerAppModel?.highlightTextTableRows(
@@ -121,10 +121,7 @@ function TextExplorer() {
       ),
     searchKey: 'data',
   });
-  React.useEffect(() => {
-    console.log(textExplorerData?.tablePanel?.columns);
-  }, [textExplorerData]);
-  // @ts-ignore
+
   return (
     <ErrorBoundary>
       <div className='TextExplorer__container' ref={wrapperElemRef}>
@@ -170,7 +167,7 @@ function TextExplorer() {
                   : ''
               }`}
             >
-              {!_.isEmpty(textExplorerData?.tablePanelData) ? (
+              {/*{!_.isEmpty(textExplorerData?.tablePanelData) ? (
                 <SearchBar
                   isValidInput={textSearch.filterOptions.isValidSearch}
                   searchValue={textSearch.filterOptions.searchValue}
@@ -183,7 +180,7 @@ function TextExplorer() {
                     RequestStatusEnum.Pending
                   }
                 />
-              ) : null}
+              ) : null}*/}
               <BusyLoaderWrapper
                 isLoading={
                   textExplorerData?.requestStatus === RequestStatusEnum.Pending
@@ -195,6 +192,7 @@ function TextExplorer() {
                   <Table
                     custom
                     topHeader
+                    columnsMaxWidth={400}
                     ref={textExplorerData?.refs?.textTableRef}
                     columns={textExplorerData?.tablePanel.columns || []}
                     data={textExplorerData?.tablePanelData || []}

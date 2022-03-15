@@ -806,6 +806,7 @@ const Table = React.forwardRef(function Table(
                       <ErrorBoundary>
                         <CustomTable
                           expanded={expanded}
+                          columnsMaxWidth={props.columnsMaxWidth}
                           alwaysVisibleColumns={alwaysVisibleColumns}
                           rowHeightMode={rowHeight}
                           updateColumns={onManageColumns}

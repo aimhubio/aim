@@ -33,6 +33,7 @@ export interface ITableProps {
     name: string;
     callBack: () => void;
   }[];
+  columnsMaxWidth?: number;
   className?: string;
   headerHeight?: number;
   sortOptions?: GroupingSelectOptionType[];
