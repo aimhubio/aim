@@ -17,7 +17,6 @@ logger = getLogger("profiler")
 
 
 class PyInstrumentProfilerMiddleware:
-    level = 0
 
     def __init__(
             self, app: ASGIApp,
@@ -87,15 +86,17 @@ class PyInstrumentProfilerMiddleware:
             if scope["type"] == "http" and should_stop:
                 self._profiler.stop()
 
+                request_data = json.dumps({
+                    "path": path,
+                    "body": body,
+                    "method": method,
+                    "params": params
+                }, separators=(',', ':'))
+
                 html_output = self._profiler.output_html(**self._profiler_kwargs)
+
+                # inject request data
+                html_output = html_output[:131] + f"<pre><code>{request_data}</code></pre>" + html_output[131:]
 
                 with open(os.path.join(self._profiler_log_path, f'{file_name}.html'), 'w') as fp:
                     fp.write(html_output)
-
-                with open(os.path.join(self._profiler_log_path, f'{file_name}.json'), 'w') as fp:
-                    json.dump({
-                        "path": path,
-                        "body": body,
-                        "method": method,
-                        "params": params
-                    }, fp)
