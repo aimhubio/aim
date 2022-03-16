@@ -1,4 +1,4 @@
 export interface IRunOverviewTabCLIArgumentsCardProps {
-  cliArguments: undefined | string[];
+  cliArguments: string[];
   isRunInfoLoading: boolean;
 }

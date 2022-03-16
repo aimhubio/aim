@@ -61,10 +61,14 @@ function ImagesExplore(): React.FunctionComponentElement<React.ReactNode> {
     imagesWrapperRef?.current?.offsetWidth,
   );
 
-  useResizeObserver(
-    () => setOffsetWidth(imagesWrapperRef?.current?.offsetWidth),
-    imagesWrapperRef,
-  );
+  useResizeObserver(() => {
+    if (imagesWrapperRef?.current?.offsetHeight !== offsetHeight) {
+      setOffsetHeight(imagesWrapperRef?.current?.offsetHeight);
+    }
+    if (imagesWrapperRef?.current?.offsetWidth !== offsetWidth) {
+      setOffsetWidth(imagesWrapperRef?.current?.offsetWidth);
+    }
+  }, imagesWrapperRef);
 
   // Add effect to recover state from URL when browser history navigation is used
   React.useEffect(() => {
@@ -79,14 +83,6 @@ function ImagesExplore(): React.FunctionComponentElement<React.ReactNode> {
       }
     }
   }, [location.search]);
-
-  React.useEffect(() => {
-    setOffsetHeight(imagesWrapperRef?.current?.offsetHeight);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [
-    imagesWrapperRef?.current?.offsetHeight,
-    imagesExploreData?.config?.table.resizeMode,
-  ]);
 
   React.useEffect(() => {
     setOffsetWidth(imagesWrapperRef?.current?.offsetWidth);

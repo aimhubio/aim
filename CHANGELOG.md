@@ -1,11 +1,35 @@
 # Changelog
+
 ## Unreleased
 
 ### Enhancements:
+
 - Hugging Face adapter refactoring (mihran113)
+- Add run description columns to all run specific tables (VkoHov, mihran113)
+- Change images rendering optimization default value to smoother (VkoHov)
+
+### Fixes:
+
+- Fix the image full view toggle icon visibility if the image has a white background (VkoHov)
+- Fix scroll to the end of the audio tab (VkoHov)
+- Add scrollbar to image full view mode content (VkoHov)
+
+## 3.7.4 Mar 15, 2022
+
+- Fix density min and max validation calculation (VkoHov)
+
+## 3.7.3 Mar 14, 2022
+
+- Add missing names for dynamically imported files in single run page (arsengit)
+
+## 3.7.2 Mar 10, 2022
+
+- Fix issue with rendering UI re keeping long URL (KaroMourad)
+- Split code in the single run page to optimize chunk size (arsengit)
 
 ## 3.7.1 Mar 10, 2022
-- Fix matric queries with epoch=None (alberttorosyan)
+
+- Fix metric queries with epoch=None (alberttorosyan)
 
 ## 3.7.0 Mar 9, 2022
 
@@ -22,7 +46,6 @@
 ### Fixes:
 
 - Fix rendering new lines in texts visualizer (arsengit)
-- Fix the image full view toggle icon visibility if the image has a white background (VkoHov)
 
 ## 3.6.3 Mar 4, 2022
 
@@ -33,13 +56,13 @@
 - Fix chart interactions issue in the Single Run Page Metrics tab (roubkar)
 - Fix `resolve_objects` in remote tracking client subtree (alberttorosyan)
 - Reject `0` as step/record count (alberttorosyan, VkoHov)
-- Fix error on mlflow conversion by experiment id (devfox-se)  
+- Fix error on mlflow conversion by experiment id (devfox-se)
 
 ## 3.6.1 Feb 25, 2022
 
 - Fix issue with aligning x-axis by custom metric (KaroMourad)
 - Add `__AIM_PROXY_URL__` env variable to see full proxy url when running `aim up` command(rubenaprikyan)
-- Add `--proxy-url` argument to notebook extension's `%aim up` to render UI correctly if there is a proxy server  (rubenaprikyan)
+- Add `--proxy-url` argument to notebook extension's `%aim up` to render UI correctly if there is a proxy server (rubenaprikyan)
 - Add SageMaker integration, `jupyter-server-proxy` s bug-fix script (rubenaprikyan, mahnerak)
 - Fix animation support in Plotly visualization and figure loading performance (Hamik25, mihran113)
 - Display `None` values in group config column (VkoHov, Hamik25)

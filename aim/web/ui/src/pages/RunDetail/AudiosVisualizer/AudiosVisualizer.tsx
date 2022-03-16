@@ -109,7 +109,7 @@ function AudiosVisualizer(
             isLoading={!data || isLoading}
             panelResizing={false}
             tableHeight={'0'}
-            wrapperOffsetHeight={(offsetHeight || 0) + 44}
+            wrapperOffsetHeight={offsetHeight || 0}
             wrapperOffsetWidth={offsetWidth || 0}
             focusedState={focusedState}
             additionalProperties={additionalProperties}
