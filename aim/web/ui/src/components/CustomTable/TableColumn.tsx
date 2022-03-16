@@ -12,7 +12,13 @@ import { Button, Icon, Text } from 'components/kit';
 import GroupConfigPopover from 'components/GroupConfigPopover/GroupConfigPopover';
 
 import { BGColorLighten } from 'config/colors/colors';
-import { VIEW_PORT_OFFSET } from 'config/table/tableConfigs';
+import {
+  VIEW_PORT_OFFSET,
+  TABLE_COLUMN_START_COLOR_SCALE,
+  TABLE_COLUMN_END_COLOR_SCALE,
+} from 'config/table/tableConfigs';
+
+import getColorFromRange from 'utils/d3/getColorFromRange';
 
 import ControlPopover from '../ControlPopover/ControlPopover';
 
@@ -44,6 +50,8 @@ function Column({
   multiSelect,
   selectedRows,
   onRowSelect,
+  onToggleColumnsColorScales,
+  columnsColorScales,
 }) {
   const [maxWidth, setMaxWidth] = React.useState(width);
   const [isResizing, setIsResizing] = React.useState(false);
@@ -61,6 +69,34 @@ function Column({
       }, 0);
     }
   }, [data]);
+
+  const colorScaleRange = React.useMemo(
+    () =>
+      [
+        ...new Set(
+          data?.map((a) => +a[col.key]).filter((a) => !isNaN(a)) ?? [],
+        ),
+      ].sort(),
+    [data],
+  );
+
+  const getColumnCelBGColor = React.useCallback(
+    (value: any) => {
+      let range = [...colorScaleRange];
+      if (_.isEmpty(range) || isNaN(+value)) {
+        return null;
+      } else if (range.length === 1) {
+        range = [range[0] - 0.1, range[0]];
+      }
+      const getColor = getColorFromRange(
+        [range[0], _.last(range)],
+        TABLE_COLUMN_START_COLOR_SCALE,
+        TABLE_COLUMN_END_COLOR_SCALE,
+      );
+      return getColor(+value);
+    },
+    [data],
+  );
 
   function resizeStart({ target }) {
     setIsResizing(true);
@@ -235,6 +271,21 @@ function Column({
                 )}
                 component={
                   <div className='Table__action__popup__body'>
+                    {!_.isEmpty(colorScaleRange) && onToggleColumnsColorScales && (
+                      <MenuItem
+                        className='Table__action__popup__item'
+                        onClick={() => onToggleColumnsColorScales(col.key)}
+                      >
+                        <span className='Table__action__popup__item_icon'>
+                          <Icon fontSize={12} name='eye-outline-hide' />
+                        </span>
+                        <span>
+                          {columnsColorScales[col.key]
+                            ? 'Reset color scale'
+                            : 'Apply color scale'}
+                        </span>
+                      </MenuItem>
+                    )}
                     {columnOptions && (
                       <>
                         {columnOptions?.map((option) => (
@@ -434,6 +485,8 @@ function Column({
                       index={groupKey}
                       col={col}
                       multiSelect={multiSelect}
+                      getColumnCelBGColor={getColumnCelBGColor}
+                      columnsColorScales={columnsColorScales}
                       item={
                         typeof data[groupKey].data[col.key] === 'object' &&
                         data[groupKey].data[col.key]?.hasOwnProperty('content')
@@ -468,6 +521,8 @@ function Column({
                             index={item.index}
                             col={col}
                             multiSelect={multiSelect}
+                            getColumnCelBGColor={getColumnCelBGColor}
+                            columnsColorScales={columnsColorScales}
                             item={
                               col.key === '#' ? (
                                 <>
@@ -568,6 +623,8 @@ function Column({
                       index={item.index}
                       col={col}
                       item={item[col.key]}
+                      getColumnCelBGColor={getColumnCelBGColor}
+                      columnsColorScales={columnsColorScales}
                       className={classNames(`rowKey-${item.key}`, {
                         hidden: item.isHidden,
                         selected: !!selectedRows?.[item.selectKey],

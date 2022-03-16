@@ -35,6 +35,8 @@ function RunsTable({
   archiveRuns,
   deleteRuns,
   requestStatus,
+  onToggleColumnsColorScales,
+  columnsColorScales,
 }: IRunsTableProps): React.FunctionComponentElement<React.ReactNode> {
   const getLatestRunsDataRequestRef = React.useRef<any>(null);
   React.useEffect(() => {
@@ -89,6 +91,8 @@ function RunsTable({
               type: Request_Illustrations[requestStatus as RequestStatusEnum],
               page: 'runs',
             }}
+            onToggleColumnsColorScales={onToggleColumnsColorScales}
+            columnsColorScales={columnsColorScales}
           />
         </div>
         {isInfiniteLoading && (

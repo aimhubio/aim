@@ -352,6 +352,7 @@ function createAppModel(appConfig: IAppInitialConfig) {
             hiddenColumns: TABLE_DEFAULT_CONFIG.runs.hiddenColumns,
             sortFields: [...TABLE_DEFAULT_CONFIG.runs.sortFields],
             columnsWidths: {},
+            columnsColorScales: {},
             columnsOrder: {
               left: [...TABLE_DEFAULT_CONFIG.runs.columnsOrder.left],
               middle: [...TABLE_DEFAULT_CONFIG.runs.columnsOrder.middle],
@@ -3209,6 +3210,27 @@ function createAppModel(appConfig: IAppInitialConfig) {
             data?: any;
           }): void {
             return onRowSelect({ actionType, data, model });
+          },
+          onToggleColumnsColorScales(colKey: string): void {
+            const state = model.getState() as IRunsAppModelState;
+            const configData = state?.config;
+            let columnsColorScales =
+              configData?.table?.columnsColorScales || {};
+            const table = {
+              ...configData?.table,
+              columnsColorScales: columnsColorScales[colKey]
+                ? { ..._.omit(columnsColorScales, colKey) }
+                : { ...columnsColorScales, [colKey]: true },
+            };
+            const config = {
+              ...configData,
+              table,
+            };
+            model.setState({
+              config,
+            });
+            setItem(`${appName.toLowerCase()}Table`, encode(table));
+            updateModelData(config);
           },
         });
       }

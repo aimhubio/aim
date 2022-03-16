@@ -3,7 +3,6 @@
 
 import React from 'react';
 import { debounce, isEmpty, isNil } from 'lodash-es';
-import * as d3 from 'd3';
 
 import { Button, Icon, Text } from 'components/kit';
 import ControlPopover from 'components/ControlPopover/ControlPopover';
@@ -90,6 +89,8 @@ const Table = React.forwardRef(function Table(
     columnsOrder,
     illustrationConfig,
     disableRowClick = false,
+    onToggleColumnsColorScales,
+    columnsColorScales,
     ...props
   }: ITableProps,
   ref,
@@ -826,6 +827,10 @@ const Table = React.forwardRef(function Table(
                           multiSelect={multiSelect}
                           selectedRows={selectedRows || {}}
                           onRowSelect={onRowSelect}
+                          columnsColorScales={columnsColorScales}
+                          onToggleColumnsColorScales={
+                            onToggleColumnsColorScales
+                          }
                           {...props}
                         />
                       </ErrorBoundary>
@@ -953,6 +958,10 @@ function propsComparator(
   }
 
   if (prevProps.focusedState?.active !== nextProps.focusedState?.active) {
+    return false;
+  }
+
+  if (prevProps.columnsColorScales !== nextProps.columnsColorScales) {
     return false;
   }
 
