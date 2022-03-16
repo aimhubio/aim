@@ -1,8 +1,9 @@
 """
 This code is taken from https://github.com/sunhailin-Leo/fastapi_profiler
-Credit goes to the author of the repo.
+Credits to the author of the repo.
 """
 
+import json
 import os.path
 import time
 from typing import Optional
@@ -55,9 +56,15 @@ class PyInstrumentProfilerMiddleware:
         request = Request(scope, receive=receive)
         method = request.method
         path = request.url.path
+        params = dict(request.query_params)
+
+        try:
+            body = await request.json()
+        except json.decoder.JSONDecodeError:
+            body = None
 
         file_name = (
-            '{timestamp}_{method}_{path}.html'.format(
+            '{timestamp}_{method}_{path}'.format(
                 timestamp=time.time(),
                 method=method.lower(),
                 path='_'.join(path.strip('/').split('/')).lower()
@@ -82,5 +89,13 @@ class PyInstrumentProfilerMiddleware:
 
                 html_output = self._profiler.output_html(**self._profiler_kwargs)
 
-                with open(os.path.join(self._profiler_log_path, file_name), 'w') as fs:
-                    fs.write(html_output)
+                with open(os.path.join(self._profiler_log_path, f'{file_name}.html'), 'w') as fp:
+                    fp.write(html_output)
+
+                with open(os.path.join(self._profiler_log_path, f'{file_name}.json'), 'w') as fp:
+                    json.dump({
+                        "path": path,
+                        "body": body,
+                        "method": method,
+                        "params": params
+                    }, fp)
