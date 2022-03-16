@@ -354,13 +354,17 @@ The high-level features we are going to work on the next few months
 **Integrations**
 
 - ML Frameworks:
-    - Shortlist: MONAI, scikit-learn, SpaCy, AllenNLP, LightGBM, Raytune, Fairseq, fast.ai, KerasTuner
+    - Shortlist: MONAI, SpaCy, AllenNLP, LightGBM, Raytune, Fairseq, fast.ai, KerasTuner
 - Datasets versioning tools
     - Shortlist: HuggingFace Datasets
 - Resource management tools
     - Shortlist: Kubeflow, Slurm
 - Workflow orchestration tools
 - Others: Hydra, Google MLMD, Streamlit, ...
+
+### On hold
+
+- scikit-learn integration
 
 ## Community
 
