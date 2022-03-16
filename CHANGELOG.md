@@ -4,7 +4,7 @@
 
 ### Fixes
 
-- Rendering plotly figures properly in single run page (arsengit)
+- Render plotly figures properly in single run page (arsengit)
 
 ## 3.7.4 Mar 15, 2022
 
