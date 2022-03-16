@@ -12,6 +12,11 @@
 
 - Fix the image full view toggle icon visibility if the image has a white background (VkoHov)
 - Fix scroll to the end of the audio tab (VkoHov)
+- Add scrollbar to image full view mode content (VkoHov)
+
+## 3.7.4 Mar 15, 2022
+
+- Fix density min and max validation calculation (VkoHov)
 
 ## 3.7.3 Mar 14, 2022
 
