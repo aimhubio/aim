@@ -74,7 +74,7 @@ async def update_experiment_properties_api(exp_id: str, exp_in: ExperimentUpdate
             if exp_in.archived and len(exp.runs) > 0:
                 raise HTTPException(status_code=400, detail={
                     'message': f'Cannot archive experiment \'{exp_id}\'.',
-                    'detail': 'Experiment has associated runs.'
+                    'reason': 'Experiment has associated runs.'
                 })
             exp.archived = exp_in.archived
 

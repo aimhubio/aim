@@ -33,7 +33,7 @@ class CustomObjectApiConfig:
         if density <= 0:
             raise HTTPException(status_code=400, detail={
                 'message': f'Invalid density value: \'{density}\'.',
-                'detail': 'Density must be > 0.'
+                'reason': 'Density must be > 0.'
             })
 
     @classmethod
