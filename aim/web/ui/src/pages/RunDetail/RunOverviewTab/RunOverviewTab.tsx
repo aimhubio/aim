@@ -1,12 +1,12 @@
 import React from 'react';
+import _ from 'lodash-es';
 
 import ErrorBoundary from 'components/ErrorBoundary/ErrorBoundary';
+import IllustrationBlock from 'components/IllustrationBlock/IllustrationBlock';
 
 import { ANALYTICS_EVENT_KEYS } from 'config/analytics/analyticsKeysMap';
 
 import * as analytics from 'services/analytics';
-
-import { getValue } from 'utils/helper';
 
 import useRunMetricsBatch from '../hooks/useRunMetricsBatch';
 
@@ -34,55 +34,87 @@ function RunOverviewTab({ runData, runHash }: IRunOverviewTabProps) {
     );
   }, []);
 
+  const cardsData: Record<any, any> = React.useMemo(() => {
+    const data: any = {};
+    const systemParams = runData?.runParams?.__system_params;
+    if (!_.isEmpty(runData?.runParams)) {
+      data.runParams = runData.runParams;
+    }
+    if (!_.isEmpty(runData?.runMetricsBatch)) {
+      data.runMetricsBatch = runData.runMetricsBatch;
+    }
+    if (!_.isEmpty(runData?.runSystemBatch)) {
+      data.runSystemBatch = runData.runSystemBatch;
+    }
+    if (systemParams) {
+      if (!_.isEmpty(systemParams.arguments)) {
+        data.cliArguments = systemParams.arguments;
+      }
+      if (!_.isEmpty(systemParams.env_variables)) {
+        data.envVariables = systemParams.env_variables;
+      }
+      if (!_.isEmpty(systemParams.packages)) {
+        data.packages = systemParams.packages;
+      }
+      if (!_.isEmpty(systemParams.packages)) {
+        data.gitInfo = systemParams.git_info;
+      }
+    }
+    return data;
+  }, [runData]);
+
   return (
     <ErrorBoundary>
       <section className='RunOverviewTab'>
         <div className='RunOverviewTab__content'>
-          <RunOverviewTabMetricsCard
-            isLoading={runData?.isRunBatchLoading}
-            type='metric'
-            runBatch={runData?.runMetricsBatch}
-          />
-          <RunOverviewTabParamsCard
-            runParams={runData?.runParams}
-            isRunInfoLoading={runData?.isRunInfoLoading}
-          />
-          <RunOverviewTabMetricsCard
-            isLoading={runData?.isRunBatchLoading}
-            type='systemMetric'
-            runBatch={runData?.runSystemBatch}
-          />
-          <RunOverviewTabCLIArgumentsCard
-            cliArguments={getValue(runData, [
-              'runParams',
-              '__system_params',
-              'arguments',
-            ])}
-            isRunInfoLoading={runData?.isRunInfoLoading}
-          />
-          <RunOverviewTabEnvVariablesCard
-            envVariables={getValue(runData, [
-              'runParams',
-              '__system_params',
-              'env_variables',
-            ])}
-            isRunInfoLoading={runData?.isRunInfoLoading}
-          />
-          <RunOverviewTabPackagesCard
-            packages={getValue(runData, [
-              'runParams',
-              '__system_params',
-              'packages',
-            ])}
-            isRunInfoLoading={runData?.isRunInfoLoading}
-          />
-          <GitInfoCard
-            data={getValue(
-              runData,
-              ['runParams', '__system_params', 'git_info'],
-              null,
-            )}
-          />
+          {_.isEmpty(cardsData) ? (
+            <IllustrationBlock size='large' title='No Results' />
+          ) : (
+            <>
+              {_.isEmpty(cardsData?.runParams) ? null : (
+                <RunOverviewTabParamsCard
+                  runParams={cardsData?.runParams}
+                  isRunInfoLoading={runData?.isRunInfoLoading}
+                />
+              )}
+              {_.isEmpty(cardsData?.runMetricsBatch) ? null : (
+                <RunOverviewTabMetricsCard
+                  isLoading={runData?.isRunBatchLoading}
+                  type='metric'
+                  runBatch={cardsData?.runMetricsBatch}
+                />
+              )}
+
+              {_.isEmpty(cardsData?.runSystemBatch) ? null : (
+                <RunOverviewTabMetricsCard
+                  isLoading={runData?.isRunBatchLoading}
+                  type='systemMetric'
+                  runBatch={cardsData?.runSystemBatch}
+                />
+              )}
+              {_.isEmpty(cardsData.arguments) ? null : (
+                <RunOverviewTabCLIArgumentsCard
+                  cliArguments={cardsData.arguments}
+                  isRunInfoLoading={runData?.isRunInfoLoading}
+                />
+              )}
+              {_.isEmpty(cardsData.envVariables) ? null : (
+                <RunOverviewTabEnvVariablesCard
+                  envVariables={cardsData.envVariables}
+                  isRunInfoLoading={runData?.isRunInfoLoading}
+                />
+              )}
+              {_.isEmpty(cardsData.packages) ? null : (
+                <RunOverviewTabPackagesCard
+                  packages={cardsData.packages}
+                  isRunInfoLoading={runData?.isRunInfoLoading}
+                />
+              )}
+              {_.isEmpty(cardsData.gitInfo) ? null : (
+                <GitInfoCard data={cardsData.gitInfo} />
+              )}
+            </>
+          )}
         </div>
         <RunOverviewSidebar
           runHash={runHash}

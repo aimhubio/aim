@@ -1,92 +1,157 @@
 # Contributing
 
-When contributing to this repository, please first discuss the change you wish to make via issue,
-email, or any other method with the owners of this repository before making a change. 
+Thanks for your interest in helping improve Aim! 🎉
 
-Please note we have a code of conduct, please follow it in all your interactions with the project.
+## Before Contributing
 
-## Pull Request Process
+As with most projects, prior to starting to code on a bug fix or feature request, please post in the respective GitHub issue saying you want to volunteer, and then wait for a positive response. And if there is no issue for it yet, create it first.
 
-1. Ensure any install or build dependencies are removed before the end of the layer when doing a 
-   build.
-2. Update the README.md with details of changes to the interface, this includes new environment 
-   variables, exposed ports, useful file locations and container parameters.
-3. Increase the version numbers in any examples files and the README.md to the new version that this
-   Pull Request would represent. The versioning scheme we use is [SemVer](http://semver.org/).
-4. You may merge the Pull Request in once you have the sign-off of two other developers, or if you 
-   do not have permission to do that, you may request the second reviewer to merge it for you.
+This helps make sure:
+1. Two people aren't working on the same thing.
+2. This is something Aim's maintainers believe should be implemented/fixed.
+3. Any API, UI, or deeper architectural changes that need to be implemented have been fully thought through by the community together with Aim's maintainers.
 
-## Code of Conduct
+Please follow [Aim Contributor Covenant Code of Conduct](./CODE_OF_CONDUCT.md) in all your interactions with the project.
 
-### Our Pledge
+## Governance
 
-In the interest of fostering an open and welcoming environment, we as
-contributors and maintainers pledge to making participation in our project and
-our community a harassment-free experience for everyone, regardless of age, body
-size, disability, ethnicity, gender identity and expression, level of experience,
-nationality, personal appearance, race, religion, or sexual identity and
-orientation.
+This section describes governance processes we follow in developing Aim.
 
-### Our Standards
+### Persons of Interest
 
-Examples of behavior that contributes to creating a positive environment
-include:
+#### Authors
 
-* Using welcoming and inclusive language
-* Being respectful of differing viewpoints and experiences
-* Gracefully accepting constructive criticism
-* Focusing on what is best for the community
-* Showing empathy towards other community members
+- Gev Soghomonyan ([SGevorg](https://github.com/SGevorg))
+- Gor Arakelyan ([gorarakelyan](https://github.com/gorarakelyan))
 
-Examples of unacceptable behavior by participants include:
+#### Primary Maintainers
 
-* The use of sexualized language or imagery and unwelcome sexual attention or
-advances
-* Trolling, insulting/derogatory comments, and personal or political attacks
-* Public or private harassment
-* Publishing others' private information, such as a physical or electronic
-  address, without explicit permission
-* Other conduct which could reasonably be considered inappropriate in a
-  professional setting
+- Albert Torosyan ([alberttorosyan](https://github.com/alberttorosyan))
+- Karen Hambardzumyan ([mahnerak](https://github.com/mahnerak))
+- Ruben Karapetyan ([roubkar](https://github.com/roubkar))
 
-### Our Responsibilities
+#### Core Contributors
 
-Project maintainers are responsible for clarifying the standards of acceptable
-behavior and are expected to take appropriate and fair corrective action in
-response to any instances of unacceptable behavior.
+- Arsen Alkamyan ([arsengit](https://github.com/arsengit))
+- Arthur Poghosyan ([devfox-se](https://github.com/devfox-se))
+- Hamik Hambardzumyan ([Hamik25](https://github.com/Hamik25))
+- Karo Muradyan ([KaroMourad](https://github.com/KaroMourad))
+- Mihran Vanyan ([mihran113](https://github.com/mihran113))
+- Ruben Aprikyan ([rubenaprikyan](https://github.com/rubenaprikyan))
+- Vardges Hovhannisyan ([VkoHov](https://github.com/VkoHov))
 
-Project maintainers have the right and responsibility to remove, edit, or
-reject comments, commits, code, wiki edits, issues, and other contributions
-that are not aligned to this Code of Conduct, or to ban temporarily or
-permanently any contributor for other behaviors that they deem inappropriate,
-threatening, offensive, or harmful.
+### Releases
 
-### Scope
+We release a new minor version (e.g., 3.8.0) every two week and patch releases on demand. The minor versions contain new features, bugfixes and also all previous bugfixes included in previous patch releases. With every release, we publish a CHANGELOG where we list enhancements and fixes.
 
-This Code of Conduct applies both within project spaces and in public spaces
-when an individual is representing the project or its community. Examples of
-representing a project or community include using an official project e-mail
-address, posting via an official social media account, or acting as an appointed
-representative at an online or offline event. Representation of a project may be
-further defined and clarified by project maintainers.
+## Contribution Process
 
-### Enforcement
+The Aim contribution process starts with filing a GitHub issue. Aim defines six categories of issues: enhancements (feature requests), bug reports, code health improvements, peformance improvements, tests, questions.
 
-Instances of abusive, harassing, or otherwise unacceptable behavior may be
-reported by contacting the project team at [INSERT EMAIL ADDRESS]. All
-complaints will be reviewed and investigated and will result in a response that
-is deemed necessary and appropriate to the circumstances. The project team is
-obligated to maintain confidentiality with regard to the reporter of an incident.
-Further details of specific enforcement policies may be posted separately.
+Aim maintainers actively triage and respond to GitHub issues. In general, we recommend waiting for feebdack from an Aim maintainer or community member before proceeding to implement a feature or patch. This is particularly important for significant changes, and will typically be labeled during triage with `phase / exploring`.
 
-Project maintainers who do not follow or enforce the Code of Conduct in good
-faith may face temporary or permanent repercussions as determined by other
-members of the project's leadership.
+After you have agreed upon an implementation strategy for your feature or patch with an Aim maintainer, the next step is to introduce your changes as a pull request against the Aim Repository.
 
-### Attribution
+Once your pull request against the Aim Repository has been merged, your corresponding changes will be automatically included in the next Aim release. Every change is listed in the Aim release notes and [CHANGELOG](./CHANGELOG.md).
 
-This Code of Conduct is adapted from the [Contributor Covenant][homepage], version 1.4,
-available at [http://contributor-covenant.org/version/1/4][version]
+Congratulations, you have just contributed to Aim. We appreciate your contribution!
 
-[homepage]: http://contributor-covenant.org
-[version]: http://contributor-covenant.org/version/1/4/
+## Developing and Testing
+
+The majority of the Aim product areas is developed in Python/Cython. This includes the Storage, SDK, Tracking Server, CLI, API. Aim UI is a Web app mostly built with TypeScript and React.
+
+### Developing Storage/SDK/CLI
+
+Most of the backend components, including SDK, Storage, Web APIs and CLI are developed using Python/Cython.
+In order to start development you must install dev. requirements and the aim package itself, in editable mode.
+```shell
+pip install -r requirements.dev.txt
+pip install -e .
+```
+
+Verify that Aim installed properly by running
+```shell
+aim version
+```
+or by importing aim in python REPL
+```python
+import aim
+```
+
+#### Style Guide
+Aim follows PEP8 standard for style guide and uses `flake8` as a style checker. Style checks enforced
+as a check on GitHub Actions when new PR opened.
+
+#### Testing Requirements
+
+New unit-tests must be added along with the code changes. In order to setup the testing environment
+```shell
+cd tests
+pip install requirements.txt
+```
+
+Aim python code unit-tests are located at `tests/` directory. Unit-tests are written in Python's `unittest` package style.
+[Pytest](https://docs.pytest.org) is used as a test runner/discovery tool. To make sure unit-tests are not failing run
+```shell
+pytest tests/
+```
+
+### Developing UI
+
+Aim UI is written in TypeScript. `npm` is required to build Aim UI and to run in DEV mode.
+You can verify that `npm` is on the PATH by running `npm -v`, and
+[install npm](https://www.npmjs.com/get-npm) if needed.
+
+#### Style Guide
+
+We use Prettier to autoformat code on presubmit.
+
+#### Launching the Development UI
+
+Before running the Aim UI dev server or building a distributable wheel, install npm
+dependencies via:
+
+```shell
+cd aim/web/ui
+npm install
+```
+
+Then you can start the dev server:
+
+```shell
+npm start
+```
+
+Aim UI will show logged data in at [http://localhost:3000](http://localhost:3000).
+
+#### Adding New Components
+
+To start building a new component you can run follwoing command:
+
+```shell
+npm run crc
+```
+
+
+If you want to add a component inside UI kit you can run following command:
+
+```shell
+npm run crc-kit
+```
+
+These command will create a folder named `ComponentName` with all the necessary files.
+
+## Writing Docs
+
+Aim documentation is built using [Sphix](https://www.sphinx-doc.org) and is hosted at
+[Read the Docs](https://aimstack.readthedocs.io).
+The documentation sources are located at `docs/` directory. In order to build documentation locally
+run the following commands
+```shell
+pip install -r requirements.dev.txt
+cd docs
+pip install -r requirements.txt
+make html
+```
+
+Documentation will be available at `docs/build/html/index.html` on your local machine.

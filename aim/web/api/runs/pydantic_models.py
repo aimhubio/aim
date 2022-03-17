@@ -59,6 +59,7 @@ class PropsView(BaseModel):
         name: str
 
     name: Optional[str] = None
+    description: Optional[str] = None
     experiment: Optional[Experiment] = None
     tags: Optional[List[Tag]] = []
     creation_time: float

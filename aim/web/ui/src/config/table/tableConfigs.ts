@@ -36,7 +36,7 @@ export const TABLE_DEFAULT_CONFIG = {
     hiddenColumns: [],
     columnsWidths: {},
     columnsOrder: {
-      left: ['experiment', 'run'],
+      left: ['run'],
       middle: [],
       right: [],
     },
@@ -50,7 +50,7 @@ export const TABLE_DEFAULT_CONFIG = {
     hiddenColumns: [],
     columnsWidths: {},
     columnsOrder: {
-      left: ['experiment'],
+      left: ['run'],
       middle: [],
       right: [],
     },
@@ -65,7 +65,7 @@ export const TABLE_DEFAULT_CONFIG = {
     hideSystemMetrics: true,
     columnsWidths: {},
     columnsOrder: {
-      left: ['experiment'],
+      left: ['run'],
       middle: [],
       right: [],
     },
@@ -79,7 +79,7 @@ export const TABLE_DEFAULT_CONFIG = {
     hiddenColumns: [],
     columnsWidths: {},
     columnsOrder: {
-      left: ['experiment'],
+      left: ['run'],
       middle: [],
       right: [],
     },
@@ -94,7 +94,7 @@ export const TABLE_DEFAULT_CONFIG = {
     hideSystemMetrics: true,
     columnsWidths: {},
     columnsOrder: {
-      left: ['experiment'],
+      left: ['run'],
       middle: [],
       right: [],
     },

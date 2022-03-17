@@ -32,7 +32,9 @@
 </div>
 
 <div align="center">
-  <sub>Integrates seamlessly with your favorite tools</sub><br/>
+  <sub>Integrates seamlessly with your favorite tools</sub>
+  <br/>
+  <br/>
   <img src="https://user-images.githubusercontent.com/13848158/155354389-d0301620-77ea-4629-a743-f7aa249e14b5.png" width="60" />
   <img src="https://user-images.githubusercontent.com/13848158/155354496-b39d7b1c-63ef-40f0-9e59-c08d2c5e337c.png" width="60" />
   <img src="https://user-images.githubusercontent.com/13848158/155354380-3755c741-6960-42ca-b93e-84a8791f088c.png" width="60" />
@@ -309,10 +311,14 @@ The high-level features we are going to work on the next few months
   - [x] Centralized tracking server (Start: _Oct 18 2021_, Shipped: _Jan 22 2022_)
   - [x] Tensorboard adaptor - visualize TensorBoard logs with Aim (Start: _Dec 17 2021_, Shipped: _Feb 3 2022_)
   - [x] Track git info, env vars, CLI arguments, dependencies (Start: _Jan 17 2022_, Shipped: _Feb 3 2022_)
+  - [x] MLFlow adaptor (visualize MLflow logs with Aim) (Start: _Feb 14 2022_, Shipped: _Feb 22, 2022_)
+  - [x] Activeloop Hub integration (Start: _Feb 14 2022_, Shipped: _Feb 22, 2022_)
+  - [x] PyTorch-Ignite integration (Start: _Feb 14 2022_, Shipped: _Feb 22, 2022_)
+  - [x] Run summary and overview info(system params, CLI args, git info, ...) (Start: _Feb 14 2022_, Shipped: _Mar 9, 2022_)
 
 ### In Progress
-  - [ ] Scikit-learn integration (Start: _Nov 18 2021_)
-  - [ ] MLFlow adaptor (visualize MLflow logs with Aim) (Start: _Feb 14 2022_)
+  - [ ] Ability to attach notes to Run from UI (Start: _Mar 7 2022_)
+  - [ ] Add DVC related metadata into aim run (Start: _Mar 7 2022_)
 
 ### To Do
 
@@ -321,9 +327,7 @@ The high-level features we are going to work on the next few months
 - Runs management
     - Runs explorer – query and visualize runs data(images, audio, distributions, ...) in a central dashboard
     - Single run page
-        - Run summary and overview info(system params, CLI args, git info, ...)
         - Run execution details(display stdout/stderr logs)
-        - Run notes
 - Explorers
     - Audio Explorer
     - Text Explorer
@@ -350,13 +354,17 @@ The high-level features we are going to work on the next few months
 **Integrations**
 
 - ML Frameworks:
-    - Shortlist: PyTorch-Ignite, MONAI, scikit-learn, SpaCy, AllenNLP, LightGBM, Raytune, Fairseq, fast.ai, KerasTuner
+    - Shortlist: MONAI, SpaCy, AllenNLP, LightGBM, Raytune, Fairseq, fast.ai, KerasTuner
 - Datasets versioning tools
-    - Shortlist: Activeloop Hub, DVC, HuggingFace Datasets
+    - Shortlist: HuggingFace Datasets
 - Resource management tools
     - Shortlist: Kubeflow, Slurm
 - Workflow orchestration tools
 - Others: Hydra, Google MLMD, Streamlit, ...
+
+### On hold
+
+- scikit-learn integration
 
 ## Community
 
