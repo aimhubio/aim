@@ -227,23 +227,19 @@ async function getRunTraceBatch(isInitial = false) {
         Object.keys(queryData.inputs).forEach((key: string) => {
           const subKey = key.slice(0, key.indexOf('_'));
           const range = parsed[`${subKey}_range`];
-
           if (
-            queryData.inputs[key] < range[0] ||
+            parsed.processedDataType === VisualizationMenuTitles.figures &&
+            (queryData.inputs[key] < range[0] ||
+              queryData.inputs[key] > range[1])
+          ) {
+            queryData.inputs[key] = range[0] ?? 1;
+          } else if (
+            (parsed.processedDataType !== VisualizationMenuTitles.figures &&
+              queryData.inputs[key] < 0) ||
             queryData.inputs[key] > range[1]
           ) {
-            queryData.inputs[key] =
-              range[
-                parsed.processedDataType === VisualizationMenuTitles.figures
-                  ? 0
-                  : 1
-              ] ?? 1;
-            if (
-              parsed.processedDataType !== VisualizationMenuTitles.figures &&
-              queryData.inputs[key] === 0
-            ) {
-              queryData.inputs[key] = 1;
-            }
+            const rangeLength = _.range(range[0], range[1] + 1).length;
+            queryData.inputs[key] = rangeLength > 0 ? rangeLength : 1;
           } else {
             queryData.inputs[key] = queryData.inputs[key] ?? 1;
           }
