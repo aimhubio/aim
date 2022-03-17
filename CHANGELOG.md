@@ -1,8 +1,6 @@
 # Changelog
 
-## Unreleased
-
-### Fixes
+## 3.7.5 Mar 18, 2022
 
 - Add request aborting functionality in single run page tabs (arsengit)
 - Render plotly figures properly in single run page (arsengit)
