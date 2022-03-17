@@ -1,9 +1,6 @@
 # Changelog
 
-## 3.7.5 Mar 18, 2022
-
-- Add request aborting functionality in single run page tabs (arsengit)
-- Render plotly figures properly in single run page (arsengit)
+## Unreleased
 
 ### Enhancements:
 
@@ -17,6 +14,11 @@
 - Fix the image full view toggle icon visibility if the image has a white background (VkoHov)
 - Fix scroll to the end of the audio tab (VkoHov)
 - Add scrollbar to image full view mode content (VkoHov)
+
+## 3.7.5 Mar 18, 2022
+
+- Add request aborting functionality in single run page tabs (arsengit)
+- Render plotly figures properly in single run page (arsengit)
 
 ## 3.7.4 Mar 15, 2022
 
