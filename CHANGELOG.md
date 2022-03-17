@@ -7,7 +7,7 @@
 - Hugging Face adapter refactoring (mihran113)
 - Add run description columns to all run specific tables (VkoHov, mihran113)
 - Change images rendering optimization default value to smoother (VkoHov)
-- Set audios and images default steps ordering to desc (VkoHov)
+- Set default steps ordering to desc in single run tabs (VkoHov)
 
 ### Fixes:
 
