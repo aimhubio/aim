@@ -52,28 +52,34 @@ const ChartPanel = React.forwardRef(function ChartPanel(
 
   const syncHoverState = React.useCallback(
     (args: ISyncHoverStateArgs): void => {
-      const { activePoint, focusedStateActive, dataSelector } = args;
+      const { activePoint, focusedStateActive = false, dataSelector } = args;
       // on MouseHover
       activePointRef.current = activePoint;
       if (activePoint !== null) {
-        if (props.chartType === ChartTypeEnum.LineChart) {
-          chartRefs.forEach((chartRef, index) => {
-            if (index === activePoint.chartIndex) {
-              return;
-            }
-            chartRef.current?.updateHoverAttributes?.(
-              activePoint.xValue,
-              dataSelector,
-            );
+        chartRefs.forEach((chartRef, index) => {
+          chartRef.current?.setFocusedState?.({
+            active: focusedStateActive,
+            key: activePoint.key,
+            xValue: activePoint.xValue,
+            yValue: activePoint.yValue,
+            chartIndex: activePoint.chartIndex,
           });
-        } else if (props.chartType === ChartTypeEnum.HighPlot) {
-          chartRefs.forEach((chartRef, index) => {
-            if (index === activePoint.chartIndex) {
-              return;
-            }
-            chartRef.current?.clearHoverAttributes?.();
-          });
-        }
+          if (index === activePoint.chartIndex) {
+            return;
+          }
+          switch (props.chartType) {
+            case ChartTypeEnum.LineChart:
+              chartRef.current?.updateHoverAttributes?.(
+                activePoint.xValue,
+                dataSelector,
+              );
+              break;
+            case ChartTypeEnum.HighPlot:
+              chartRef.current?.clearHoverAttributes?.();
+              break;
+          }
+        });
+
         if (props.onActivePointChange) {
           props.onActivePointChange(activePoint, focusedStateActive);
         }

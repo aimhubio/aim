@@ -291,10 +291,10 @@ function createAppModel(appConfig: IAppInitialConfig) {
                   CONTROLS_DEFAULT_CONFIG.metrics.tooltip.selectedParams,
               },
               focusedState: {
-                active: false,
                 key: null,
                 xValue: null,
                 yValue: null,
+                active: false,
                 chartIndex: null,
               },
             };
