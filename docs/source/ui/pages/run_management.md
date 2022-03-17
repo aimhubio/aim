@@ -138,8 +138,10 @@ Use the bottom controllers to control the steps and the indices of the tracked t
 
 ### Figures
 
-Aim allows to track Plotly and matplotlib figures.
+Aim allows tracking Plotly and matplotlib figures.
 On the `Figures` tab you can view all the track figures over different contexts and steps.
+
+**Note:** Aim will render figures with passed or default dimensions. There will be scrolls if the size exceeds the plotly container space of the Figures tab.
 
 <img style="border-radius: 8px; border: 1px solid #E8F1FC" alt="Single Run page figures tab" src="https://docs-blobs.s3.us-east-2.amazonaws.com/images/ui/pages/run-single-page/figures_tab.png">
 
