@@ -1,10 +1,12 @@
 # Changelog
+
 ## Unreleased
 
 ### Enhancements:
 
 - Hugging Face adapter refactoring (mihran113)
 - Change images rendering optimization default value to smoother (VkoHov)
+- Added API profiler and unified API error response (devfox-se)
 
 ### Fixes:
 
