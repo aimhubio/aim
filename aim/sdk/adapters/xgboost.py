@@ -25,20 +25,26 @@ class AimCallback(TrainingCallback):
         self._system_tracking_interval = system_tracking_interval
         self._log_system_params = log_system_params
         self._initialized = False
-        self._aim_run = None
+        self._run = None
+
+    @property
+    def experiment(self) -> Run:
+        return self._run
 
     def before_training(self, model):
-        self._aim_run = Run(repo=self._repo,
-                            experiment=self._experiment,
-                            system_tracking_interval=self._system_tracking_interval,
-                            log_system_params=self._log_system_params)
+        self._run = Run(
+            repo=self._repo,
+            experiment=self._experiment,
+            system_tracking_interval=self._system_tracking_interval,
+            log_system_params=self._log_system_params
+        )
         self._initialized = True
         return model
 
     def after_training(self, model):
-        if self._initialized and self._aim_run:
-            del self._aim_run
-            self._aim_run = None
+        if self._initialized and self._run:
+            del self._run
+            self._run = None
         return model
 
     def after_iteration(self, model, epoch: int, evals_log: TrainingCallback.EvalsLog) -> bool:
@@ -54,8 +60,8 @@ class AimCallback(TrainingCallback):
                 else:
                     score = log[-1]
 
-                self._aim_run.track(score, step=0, name=metric_name, context={'stdv': False})
+                self._run.track(score, step=0, name=metric_name, context={'stdv': False})
                 if stdv is not None:
-                    self._aim_run.track(score, step=0, name=metric_name, context={'stdv': True})
+                    self._run.track(score, step=0, name=metric_name, context={'stdv': True})
 
         return False
