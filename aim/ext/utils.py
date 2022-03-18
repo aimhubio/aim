@@ -1,4 +1,7 @@
+import logging
 import subprocess
+
+logger = logging.getLogger(__name__)
 
 
 def get_installed_packages():
@@ -47,7 +50,7 @@ def get_git_info():
         try:
             r = subprocess.run(cmd, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, check=True)
         except subprocess.CalledProcessError:
-            print('Something went wrong while collecting git info. Will skip this step.')
+            logger.warning('Something went wrong while collecting git info. Will skip this step.')
             break
         else:
             output = r.stdout.decode('utf-8').strip()
