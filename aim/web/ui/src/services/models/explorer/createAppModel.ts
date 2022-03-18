@@ -174,6 +174,7 @@ import onRowSelect from 'utils/app/onRowSelect';
 import { SortField } from 'utils/getSortedFields';
 import onChangeTrendlineOptions from 'utils/app/onChangeTrendlineOptions';
 import { getParamsSuggestions } from 'utils/app/getParamsSuggestions';
+import onToggleColumnsColorScales from 'utils/app/onToggleColumnsColorScales';
 
 import { AppDataTypeEnum, AppNameEnum } from './index';
 /**
@@ -3212,25 +3213,12 @@ function createAppModel(appConfig: IAppInitialConfig) {
             return onRowSelect({ actionType, data, model });
           },
           onToggleColumnsColorScales(colKey: string): void {
-            const state = model.getState() as IRunsAppModelState;
-            const configData = state?.config;
-            let columnsColorScales =
-              configData?.table?.columnsColorScales || {};
-            const table = {
-              ...configData?.table,
-              columnsColorScales: columnsColorScales[colKey]
-                ? { ..._.omit(columnsColorScales, colKey) }
-                : { ...columnsColorScales, [colKey]: true },
-            };
-            const config = {
-              ...configData,
-              table,
-            };
-            model.setState({
-              config,
+            onToggleColumnsColorScales({
+              colKey,
+              model,
+              appName,
+              updateModelData,
             });
-            setItem(`${appName.toLowerCase()}Table`, encode(table));
-            updateModelData(config);
           },
         });
       }
