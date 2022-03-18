@@ -7,10 +7,12 @@ function getColorFromRange(
   startColor: string = gradientStartColor,
   endColor: string = gradientEndColor,
 ) {
-  return d3
-    .scaleSequential()
-    .domain(range)
-    .interpolator(d3.interpolateRgb(startColor, endColor));
+  return range
+    ? d3
+        .scaleSequential()
+        .domain(range)
+        .interpolator(d3.interpolateRgb(startColor, endColor))
+    : null;
 }
 
 export default getColorFromRange;

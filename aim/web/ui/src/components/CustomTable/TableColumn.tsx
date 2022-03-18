@@ -59,6 +59,7 @@ function Column({
   const columnRef = React.useRef();
   const startingPoint = React.useRef(null);
   const groups = !Array.isArray(data);
+
   const dataLength = React.useMemo(() => {
     if (Array.isArray(data)) {
       return data.length;
@@ -70,31 +71,24 @@ function Column({
     }
   }, [data]);
 
-  const colorScaleRange = React.useMemo(
-    () =>
-      [
-        ...new Set(
-          data?.map((a) => +a[col.key]).filter((a) => !isNaN(a)) ?? [],
-        ),
-      ].sort(),
-    [data],
-  );
+  const colorScaleRange = React.useMemo(() => {
+    let range = [
+      ...new Set(data?.map((a) => +a[col.key]).filter((a) => !isNaN(a)) ?? []),
+    ].sort();
+    if (_.isEmpty(range)) {
+      return null;
+    } else if (range.length === 1) {
+      return [range[0] - 0.1, range[0]];
+    }
+    return range;
+  }, [data]);
 
   const getColumnCelBGColor = React.useCallback(
-    (value: any) => {
-      let range = [...colorScaleRange];
-      if (_.isEmpty(range) || isNaN(+value)) {
-        return null;
-      } else if (range.length === 1) {
-        range = [range[0] - 0.1, range[0]];
-      }
-      const getColor = getColorFromRange(
-        [range[0], _.last(range)],
-        TABLE_COLUMN_START_COLOR_SCALE,
-        TABLE_COLUMN_END_COLOR_SCALE,
-      );
-      return getColor(+value);
-    },
+    getColorFromRange(
+      colorScaleRange ? [colorScaleRange[0], _.last(colorScaleRange)] : null,
+      TABLE_COLUMN_START_COLOR_SCALE,
+      TABLE_COLUMN_END_COLOR_SCALE,
+    ),
     [data],
   );
 
@@ -277,7 +271,11 @@ function Column({
                         onClick={() => onToggleColumnsColorScales(col.key)}
                       >
                         <span className='Table__action__popup__item_icon'>
-                          <Icon fontSize={12} name='eye-outline-hide' />
+                          {columnsColorScales[col.key] ? (
+                            <Icon fontSize={12} name='color-scale-off' />
+                          ) : (
+                            <Icon fontSize={13} name='color-scale-on' />
+                          )}
                         </span>
                         <span>
                           {columnsColorScales[col.key]

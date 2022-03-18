@@ -48,7 +48,7 @@ function Cell({
           ...(getColumnCelBGColor &&
             columnsColorScales[col.key] &&
             !_.isNil(getColumnCelBGColor(item)) && {
-              background: getColumnCelBGColor(item),
+              background: getColumnCelBGColor(+item),
             }),
           ...(typeof item === 'object' &&
             item?.hasOwnProperty('style') &&
