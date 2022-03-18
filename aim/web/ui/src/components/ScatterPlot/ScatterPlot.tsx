@@ -152,7 +152,6 @@ const ScatterPlot = React.forwardRef(function ScatterPlot(
         attributesNodeRef,
         linesNodeRef,
         highlightedNodeRef,
-        humanizerConfigRef,
         drawAxisLines: { x: false, y: false },
         drawAxisLabels: { x: false, y: false },
       });
@@ -252,7 +251,7 @@ const ScatterPlot = React.forwardRef(function ScatterPlot(
         <div ref={visAreaRef} />
         {yDimension.domainData[0] === '-' ||
         xDimension.domainData[0] === '-' ? (
-          <Text className='ScatterPlot__emptyData'> No Data</Text>
+          <Text className='ScatterPlot__emptyData'>No Data</Text>
         ) : null}
       </div>
     </ErrorBoundary>
