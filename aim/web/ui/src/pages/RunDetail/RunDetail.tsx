@@ -31,6 +31,9 @@ import * as analytics from 'services/analytics';
 import RunSelectPopoverContent from './RunSelectPopoverContent';
 
 import './RunDetail.scss';
+const NotesTab = React.lazy(
+  () => /* webpackChunkName: "NotesTab" */ import('./NotesTab'),
+);
 
 const RunDetailParamsTab = React.lazy(() => import('./RunDetailParamsTab'));
 const RunDetailSettingsTab = React.lazy(() => import('./RunDetailSettingsTab'));
@@ -136,12 +139,7 @@ function RunDetail(): React.FunctionComponentElement<React.ReactNode> {
         runHash={runHash}
       />
     ),
-    notes: (
-      <RunDetailSettingsTab
-        isArchived={runData?.runInfo?.archived}
-        runHash={runHash}
-      />
-    ),
+    notes: <NotesTab />,
   };
 
   function getRunsOfExperiment(
