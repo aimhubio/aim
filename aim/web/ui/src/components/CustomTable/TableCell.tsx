@@ -46,7 +46,7 @@ function Cell({
             '--color-indicator': metadata?.color,
           }),
           ...(getColumnCelBGColor &&
-            columnsColorScales[col.key] &&
+            columnsColorScales?.[col.key] &&
             !_.isNil(getColumnCelBGColor(item)) && {
               background: getColumnCelBGColor(+item),
             }),

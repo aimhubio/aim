@@ -72,8 +72,15 @@ function Column({
   }, [data]);
 
   const colorScaleRange = React.useMemo(() => {
+    const columnData = _.isArray(data)
+      ? data
+      : _.values(data).reduce((acc, item) => {
+          return [...acc, ...item.items];
+        }, []);
     let range = [
-      ...new Set(data?.map((a) => +a[col.key]).filter((a) => !isNaN(a)) ?? []),
+      ...new Set(
+        columnData?.map((a) => +a[col.key]).filter((a) => !isNaN(a)) ?? [],
+      ),
     ].sort();
     if (_.isEmpty(range)) {
       return null;
