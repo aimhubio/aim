@@ -78,7 +78,7 @@ function drawHoverAttributes(args: IDrawHoverAttributesArgs): void {
     nearestCircles: INearestCircle[],
   ): INearestCircle {
     // filter [mouseX] nearest circles
-    let nearestX = [];
+    let nearestX: INearestCircle[] = [];
     let minXDistance = {
       distance: Math.abs(nearestCircles[0].x - mouseX),
       index: 0,
@@ -88,6 +88,7 @@ function drawHoverAttributes(args: IDrawHoverAttributesArgs): void {
       if (distance < minXDistance.distance) {
         minXDistance.distance = distance;
         minXDistance.index = i;
+        nearestX = [nearestCircles[i]];
       } else if (distance === minXDistance.distance) {
         nearestX.push(nearestCircles[i]);
       }
