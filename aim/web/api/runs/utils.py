@@ -34,6 +34,7 @@ def str_to_range(range_str: str):
 def get_run_props(run: Run):
     return {
         'name': run.name if run.name else None,
+        'description': run.description if run.description else None,
         'experiment': {
             'id': run.props.experiment_obj.uuid,
             'name': run.props.experiment_obj.name,
