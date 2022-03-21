@@ -1,1 +1,1 @@
-from .profiler import PyInstrumentProfilerMiddleware
+from aim.web.middlewares.profiler.profiler import PyInstrumentProfilerMiddleware
