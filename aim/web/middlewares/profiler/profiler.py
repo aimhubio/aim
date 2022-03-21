@@ -96,7 +96,12 @@ class PyInstrumentProfilerMiddleware:
                 html_output = self._profiler.output_html(**self._profiler_kwargs)
 
                 # inject request data
-                html_output = html_output[:131] + f"<pre><code>{request_data}</code></pre>" + html_output[131:]
+                body_tag_idx_end = html_output.find('<body>') + 6
+                html_output = (
+                    f'{html_output[:body_tag_idx_end]}'
+                    f'<pre><code>{request_data}</code></pre>'
+                    f'{html_output[body_tag_idx_end:]}'
+                )
 
                 with open(os.path.join(self._profiler_log_path, f'{file_name}.html'), 'w') as fp:
                     fp.write(html_output)
