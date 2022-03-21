@@ -14,7 +14,7 @@ Tracking of data includes metrics, images, audio, text and chart figures. Here's
 provided by the package:
 
 - Metrics
-- [Distributions](#distribution-tracking-with-aim)
+- [Distribution](#distribution-tracking-with-aim)
 - [Image](#image-tracking-with-aim)
 - [Audio](#audio-tracking-with-aim)
 - [Text](#text-tracking-with-aim)
