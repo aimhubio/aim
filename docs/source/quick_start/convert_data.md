@@ -8,12 +8,12 @@ script.
 
 As of Aim `v3.6.0` the following converters are supported:
 
-- [TensorFlow events converter](#show-tensorflow-events-in-aim)
+- [TensorBoard events converter](#show-tensorboard-events-in-aim)
 - [MLFlow logs converter](#show-mlflow-logs-in-aim)
 
 We are working to constantly improve existing converters and implement new ones.
 
-### Show TensorFlow events in Aim
+### Show TensorBoard events in Aim
 
 Aim gives you a possibility to convert [TensorFlow](https://www.tensorflow.org/api_docs/python/tf)
 event files into native format and show them directly inside the Aim UI.
@@ -25,17 +25,17 @@ Please note that only the following TF plugins are currently supported
 - scalar
 - image
 
-To convert TensorFlow events, `aim convert` command must be run on your log directory.
+To convert TensorBoard events, `aim convert` command must be run on your log directory.
 
 ```shell
-aim convert tf --logdir ~/tensorflow/logdir
+aim convert tf --logdir ~/tf/logdir
 ```
 
 To make conversion process smooth please ensure that logs directory structure follows conventions below. Consider the
 following directory hierarchy:
 
 ```
-~/tensorflow/logdir/
+~/tf/logdir/
     ├> run_1/
     │    ├> <tf_events_file_1>
     │    └> <tf_events_file_2>
@@ -92,10 +92,10 @@ structure. (i.e. create a new directory and moving your unorganized events there
 You can make converter treat every directory as a distinct run by supplying `--flat` option. In this case the following
 directories will be categorized as a `run` directory.
 
-- `~/tensorflow/logdir/run_1/`
-- `~/tensorflow/logdir/group_1/run_2/train/`
-- `~/tensorflow/logdir/group_1/run_2/validate/`
-- `~/tensorflow/logdir/group_1/run_3/`
+- `~/tf/logdir/run_1/`
+- `~/tf/logdir/group_1/run_2/train/`
+- `~/tf/logdir/group_1/run_2/validate/`
+- `~/tf/logdir/group_1/run_3/`
 
 The event files in all other directories will be ignored.
 
