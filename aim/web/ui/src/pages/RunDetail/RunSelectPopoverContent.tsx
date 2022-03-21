@@ -4,7 +4,7 @@ import classNames from 'classnames';
 import { NavLink, useLocation, useParams } from 'react-router-dom';
 import { isEmpty } from 'lodash-es';
 
-import { CircularProgress } from '@material-ui/core';
+import { CircularProgress, Tooltip } from '@material-ui/core';
 
 import IllustrationBlock from 'components/IllustrationBlock/IllustrationBlock';
 import { Button, Icon, Text } from 'components/kit';
@@ -130,8 +130,22 @@ function RunSelectPopoverContent({
                       to={pathname.replace(runHash, run.run_id)}
                       onClick={onRunsSelectToggle}
                     >
+                      <Tooltip title={run.name} placement='right'>
+                        <div style={{ width: '100%' }}>
+                          <Text
+                            size={14}
+                            tint={runInfo?.name === run.name ? 100 : 80}
+                            weight={runInfo?.name === run.name ? 600 : 500}
+                            className={
+                              'RunSelectPopoverWrapper__selectPopoverContent__contentContainer__runsListContainer__runsList__runBox__runName'
+                            }
+                          >
+                            {run.name}
+                          </Text>
+                        </div>
+                      </Tooltip>
                       <Text
-                        size={14}
+                        size={12}
                         tint={runInfo?.name === run.name ? 100 : 80}
                         weight={runInfo?.name === run.name ? 600 : 500}
                       >

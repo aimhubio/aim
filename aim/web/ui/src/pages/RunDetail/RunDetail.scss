@@ -330,7 +330,14 @@
             text-decoration: unset;
             margin-bottom: 0.125rem;
             position: relative;
-
+            display: flex;
+            flex-direction: column;
+            &__runName {
+              display: block;
+              overflow: hidden;
+              text-overflow: ellipsis;
+              max-width: 100%;
+            }
             &.in-progress {
               &::after {
                 content: '';
