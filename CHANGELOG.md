@@ -8,6 +8,7 @@
 - Add run description columns to all run specific tables (VkoHov, mihran113)
 - Change images rendering optimization default value to smoother (VkoHov)
 - Add run name to grouping, ordering and run navigation popovers (VkoHov)
+- Add ability to apply color scale on columns with numeric values (VkoHov)
 - Fixed git system param tracking (devfox-se)
 - Refactored XGBoost AimCallback (devfox-se)
 
