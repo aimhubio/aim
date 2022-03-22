@@ -14,10 +14,40 @@ Tracking of data includes metrics, images, audio, text and chart figures. Here's
 provided by the package:
 
 - Metrics
+- [Distribution](#distribution-tracking-with-aim)
 - [Image](#image-tracking-with-aim)
 - [Audio](#audio-tracking-with-aim)
 - [Text](#text-tracking-with-aim)
 - [Figure](#figure-tracking-with-aim)
+
+### Distribution tracking with Aim
+
+You can store distribution objects in Aim repository using our `aim.Distribution` object.
+
+```python
+from aim import Distribution
+```
+
+`aim.Distribution` accepts the following parameters
+
+* `distribution`: array-like object used to construct `aim.Distribution`.
+* `bin_count`: Optional distribution bin count. 64 by default, max 512.
+
+Your data is converted to `numpy.histogram` upon initialization of the object.
+
+Simple example of initializing and tracking distribution
+
+```python
+import random
+from aim import Run, Distribution
+
+run = Run()
+d = Distribution(
+    distribution=[random.randrange(0, 10000) for _ in range(1000)],
+    bin_count=250
+)
+run.track(d, name='dist', step=0)
+```
 
 ### Image tracking with Aim
 

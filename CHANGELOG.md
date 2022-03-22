@@ -9,6 +9,7 @@
 - Change images rendering optimization default value to smoother (VkoHov)
 - Add ability to apply color scale on columns with numeric values (VkoHov)
 - Fixed git system param tracking (devfox-se)
+- Refactored XGBoost AimCallback (devfox-se)
 
 ### Fixes:
 
