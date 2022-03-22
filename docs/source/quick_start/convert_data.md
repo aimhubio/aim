@@ -37,24 +37,24 @@ following directory hierarchy:
 ```
 ~/my_logdir/
     ├> run_1/
-    │    ├> <log_file_1>
-    │    └> <log_file_2>
+    │    ├> <evnet_file_1>
+    │    └> <evnet_file_2>
     ├> group_1/
-    │    ├> <log_file_3> (THIS LOG WILL BE IGNORED)
+    │    ├> <evnet_file_3> (THIS LOG WILL BE IGNORED)
     │    ├> run_2/
     │    │    ├> train/
-    │    │    │    ├> <log_file_4>
-    │    │    │    └> <log_file_5>
+    │    │    │    ├> <evnet_file_4>
+    │    │    │    └> <evnet_file_5>
     │    │    ├> validate/
-    │    │    │    ├> <log_file_6>
-    │    │    │    └> <log_file_7>
-    │    │    ├> <log_file_8> (IGNORED IF "--flat" IS ACTIVE)
-    │    │    └> <log_file_9> (IGNORED IF "--flat" IS ACTIVE)
+    │    │    │    ├> <evnet_file_6>
+    │    │    │    └> <evnet_file_7>
+    │    │    ├> <evnet_file_8> (IGNORED IF "--flat" IS ACTIVE)
+    │    │    └> <evnet_file_9> (IGNORED IF "--flat" IS ACTIVE)
     │    └> run_3/
-    │        ├> <log_file_10>
-    │        └> <log_file_11>
-    ├> <log_file_12> (THIS LOG WILL BE IGNORED)
-    └> <log_file_13> (THIS LOG WILL BE IGNORED)
+    │        ├> <evnet_file_10>
+    │        └> <evnet_file_11>
+    ├> <evnet_file_12> (THIS LOG WILL BE IGNORED)
+    └> <evnet_file_13> (THIS LOG WILL BE IGNORED)
 ```
 
 Note that directory naming is not mandated and its up to you how to name them.
@@ -72,9 +72,9 @@ of them.
 From the hierarchy example above you can see that the following log files will be ignored since the converter treats
 them as unorganized log files.
 
-- `~/my_logdir/group_1/log_file_3`
-- `~/my_logdir/log_file_12`
-- `~/my_logdir/log_file_13`
+- `~/my_logdir/group_1/evnet_file_3`
+- `~/my_logdir/evnet_file_12`
+- `~/my_logdir/evnet_file_13`
 
 All other logs will either have `Context` or `No Context`. Context of the log is the name of the parent directory if
 the parent directory hasn't been categorized into neither as `run` nor `group` category.
