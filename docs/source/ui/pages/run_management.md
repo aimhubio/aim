@@ -49,7 +49,7 @@ Generate Runs CSV report by clicking on the `Export` button on the Runs table.
 
 ## Single run page
 
-### Overview
+### General
 
 Each training run has a dedicated page on Aim. Use the single run page to observe all the tracked metadata associated with that run.
 
@@ -57,18 +57,18 @@ Each training run has a dedicated page on Aim. Use the single run page to observ
 
 Here are the tabs available on the single run page.
 Each tab visualizes respective tracked metadata or empty if not tracked.
-- [Overview](#overview-tab)
-- [Params](#id3)
-- [Metrics](#id4)
-- [System](#id5)
-- [Distributions](#id6)
-- [Images](#id7)
-- [Audios](#id8)
-- [Texts](#id9)
-- [Figures](#id10)
-- [Settings](#id11)
+- [Overview](#id4)
+- [Params](#id5)
+- [Metrics](#id6)
+- [System](#id7)
+- [Distributions](#id8)
+- [Images](#id9)
+- [Audios](#id10)
+- [Texts](#id11)
+- [Figures](#id12)
+- [Settings](#id13)
 
-### Overview Tab
+### Overview
 
 Overview tab shows overall info about the run.
 - These cards can contain information about `Parameters`, `Metrics`, `System Metrics`, `CLI Arguments`, `Environment Variables`, `Packages` and `Git information`. With this data, you can easily reproduce your run.
@@ -77,7 +77,8 @@ Overview tab shows overall info about the run.
 
 <img style="border-radius: 8px; border: 1px solid #E8F1FC" alt="Single Run page params tab" src="https://docs-blobs.s3.us-east-2.amazonaws.com/images/ui/pages/run-single-page/overview_tab.png">
 
-Also, you can do searching in table, and it will return value by `Match Case`, `Match Word` and `Match Regexp`
+Also, you can apply advanced `searching/filtering` to those card tables.
+
 
 <img style="border-radius: 8px; border: 1px solid #E8F1FC" alt="Single Run page params tab" src="https://docs-blobs.s3.us-east-2.amazonaws.com/images/ui/pages/run-single-page/overview_tab_table.png">
 
