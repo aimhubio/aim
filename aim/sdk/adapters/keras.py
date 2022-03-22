@@ -63,4 +63,3 @@ class AimCallback(TrackerKerasCallbackMetricsEpochEndMixin, Callback):
 
 # Keep `AimTracker` for backward compatibility
 AimTracker = AimCallback
-
