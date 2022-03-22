@@ -9,6 +9,7 @@
 - Change images rendering optimization default value to smoother (VkoHov)
 - Fixed git system param tracking (devfox-se)
 - Refactored XGBoost AimCallback (devfox-se)
+- Reopenable callbacks for integrations (mihran113)
 
 ### Fixes:
 
