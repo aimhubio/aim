@@ -8,6 +8,7 @@
 - Add run description columns to all run specific tables (VkoHov, mihran113)
 - Change images rendering optimization default value to smoother (VkoHov)
 - Fixed git system param tracking (devfox-se)
+- Refactored XGBoost AimCallback (devfox-se)
 
 ### Fixes:
 
