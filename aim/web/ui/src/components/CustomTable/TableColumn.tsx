@@ -277,18 +277,21 @@ function Column({
                         className='Table__action__popup__item'
                         onClick={() => onToggleColumnsColorScales(col.key)}
                       >
-                        <span className='Table__action__popup__item_icon'>
-                          {columnsColorScales[col.key] ? (
-                            <Icon fontSize={12} name='color-scale-off' />
-                          ) : (
-                            <Icon fontSize={13} name='color-scale-on' />
-                          )}
-                        </span>
-                        <span>
-                          {columnsColorScales[col.key]
-                            ? 'Reset color scale'
-                            : 'Apply color scale'}
-                        </span>
+                        {columnsColorScales[col.key] ? (
+                          <>
+                            <span className='Table__action__popup__item_icon'>
+                              <Icon fontSize={12} name='color-scale-off' />
+                            </span>
+                            <span>Reset color scale</span>
+                          </>
+                        ) : (
+                          <>
+                            <span className='Table__action__popup__item_icon'>
+                              <Icon fontSize={13} name='color-scale-on' />
+                            </span>
+                            <span>Apply color scale</span>
+                          </>
+                        )}
                       </MenuItem>
                     )}
                     {columnOptions && (
