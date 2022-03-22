@@ -131,31 +131,45 @@ function RunSelectPopoverContent({
                       onClick={onRunsSelectToggle}
                     >
                       <Tooltip title={run.name} placement='right'>
-                        <div style={{ width: '100%' }}>
+                        <div
+                          className={
+                            'RunSelectPopoverWrapper__selectPopoverContent__contentContainer__runsListContainer__runsList__runBox__runName'
+                          }
+                        >
                           <Text
                             size={14}
                             tint={runInfo?.name === run.name ? 100 : 80}
-                            weight={runInfo?.name === run.name ? 600 : 500}
-                            className={
-                              'RunSelectPopoverWrapper__selectPopoverContent__contentContainer__runsListContainer__runsList__runBox__runName'
-                            }
+                            weight={500}
                           >
                             {run.name}
                           </Text>
                         </div>
                       </Tooltip>
-                      <Text
-                        size={12}
-                        tint={runInfo?.name === run.name ? 100 : 80}
-                        weight={runInfo?.name === run.name ? 600 : 500}
+                      <div
+                        className={
+                          'RunSelectPopoverWrapper__selectPopoverContent__contentContainer__runsListContainer__runsList__runBox__runDate'
+                        }
                       >
-                        {`${moment(run.creation_time * 1000).format(
-                          DATE_WITHOUT_SECONDS,
-                        )} | ${processDurationTime(
-                          run?.creation_time * 1000,
-                          run?.end_time ? run?.end_time * 1000 : dateNow,
-                        )}`}
-                      </Text>
+                        <Icon
+                          name='calendar'
+                          color={
+                            runInfo?.name === run.name ? '#414B6D' : '#606986'
+                          }
+                          fontSize={12}
+                        />
+                        <Text
+                          size={11}
+                          tint={runInfo?.name === run.name ? 80 : 70}
+                          weight={400}
+                        >
+                          {`${moment(run.creation_time * 1000).format(
+                            DATE_WITHOUT_SECONDS,
+                          )} • ${processDurationTime(
+                            run?.creation_time * 1000,
+                            run?.end_time ? run?.end_time * 1000 : dateNow,
+                          )}`}
+                        </Text>
+                      </div>
                     </NavLink>
                   ))
                 ) : (
