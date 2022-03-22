@@ -261,7 +261,7 @@
             width: 100%;
             bottom: 0;
             left: 0;
-            z-index: 10000000000;
+            z-index: 1;
           }
 
           &__experimentBox {
@@ -328,7 +328,7 @@
           width: 100%;
           bottom: 0;
           left: 0;
-          z-index: 10000000000;
+          z-index: 1;
         }
         &__runsList {
           overflow: auto;
