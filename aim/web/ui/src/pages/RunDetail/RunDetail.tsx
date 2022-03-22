@@ -230,7 +230,7 @@ function RunDetail(): React.FunctionComponentElement<React.ReactNode> {
                         <Text tint={100} size={16} weight={600}>
                           {`${
                             runData?.runInfo?.experiment?.name || 'default'
-                          } / ${runHash || ''}`}
+                          } / ${runData?.runInfo?.name || ''}`}
                         </Text>
                       </div>
                     </>
