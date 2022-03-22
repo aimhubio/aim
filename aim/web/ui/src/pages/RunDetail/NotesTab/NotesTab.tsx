@@ -2,23 +2,19 @@ import React from 'react';
 
 import { Editor } from '@toast-ui/react-editor';
 
-import usePanelResize from 'hooks/resize/usePanelResize';
+import { Button } from 'components/kit';
 
 import '@toast-ui/editor/dist/toastui-editor.css';
 import './NotesTab.scss';
 
 function NotesTab() {
-  const editorRef: any = React.useRef();
+  const editorRef = React.useRef<Editor | any>(null);
   const wrapperRef = React.useRef<any>();
   const leftPanelRef = React.useRef<any>();
   const rightPanelRef = React.useRef<any>();
   const resizeElemRef = React.useRef<any>();
   const frameRef = React.useRef<number>();
   const panelRef = React.useRef<any>();
-
-  const handleClick = () => {
-    editorRef.current.getInstance().exec('Bold');
-  };
 
   React.useEffect(() => {
     resizeElemRef.current = document.querySelector(
@@ -28,12 +24,31 @@ function NotesTab() {
     rightPanelRef.current = document.querySelector(
       '.toastui-editor-md-preview',
     );
-    resizeElemRef.current.addEventListener('mousedown', handleResize);
     panelRef.current = document.querySelector(
       '.RunDetail__runDetailContainer__tabPanel',
     );
+    // const saveBtn = document.createElement('button');
+    // saveBtn.addEventListener('click', handleSave)
+    // console.log(
+    //   editorRef.current.editorInst.defaultUI.insertToolbarItem(
+    //     { groupIndex: 2, itemIndex: 3 },
+    //     {
+    //       name: 'button',
+    //       tooltip: 'string',
+    //       className: 'string',
+    //       command: 'Save',
+    //       text: 'string',
+    //       el: saveBtn,
+    //     },
+    //   ) as any,
+    // );
+
+    resizeElemRef.current.addEventListener('mousedown', handleResize);
   }, [editorRef.current]);
 
+  function handleSave() {
+    console.log('sadasdasd');
+  }
   function handleResize() {
     document.addEventListener('mousemove', startResize);
     document.addEventListener('mouseup', endResize);
@@ -66,6 +81,10 @@ function NotesTab() {
       document.removeEventListener('mousemove', startResize);
     }
   }
+
+  function handleChange(e: any) {
+    console.log(e);
+  }
   return (
     <section ref={wrapperRef} className='NotesTab'>
       <div className='NotesTab__Editor'>
@@ -74,7 +93,15 @@ function NotesTab() {
           initialEditType='markdown'
           height='calc(100vh - 146px)'
           ref={editorRef}
+          onChange={handleChange}
         />
+        <Button
+          variant='contained'
+          size='small'
+          className='NotesTab__Editor__saveBtn'
+        >
+          Save
+        </Button>
       </div>
     </section>
   );
