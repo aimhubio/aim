@@ -8,6 +8,8 @@
 - Add run description columns to all run specific tables (VkoHov, mihran113)
 - Change images rendering optimization default value to smoother (VkoHov)
 - Add run name to grouping, ordering and run navigation popovers (VkoHov)
+- Fixed git system param tracking (devfox-se)
+- Refactored XGBoost AimCallback (devfox-se)
 
 ### Fixes:
 
@@ -15,6 +17,7 @@
 - Fix the image full view toggle icon visibility if the image has a white background (VkoHov)
 - Fix scroll to the end of the audio tab (VkoHov)
 - Add scrollbar to image full view mode content (VkoHov)
+- Fix issues with run name/description not being set (mihran113)
 
 ## 3.7.5 Mar 18, 2022
 
