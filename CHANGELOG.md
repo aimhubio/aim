@@ -17,6 +17,7 @@
 - Fix scroll to the end of the audio tab (VkoHov)
 - Add scrollbar to image full view mode content (VkoHov)
 - Fix issues with run name/description not being set (mihran113)
+- Fix issue with audios tab result caching (mihran113)
 
 ## 3.7.5 Mar 18, 2022
 
