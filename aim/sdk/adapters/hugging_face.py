@@ -22,11 +22,13 @@ class AimCallback(TrainerCallback):
                  experiment: Optional[str] = None,
                  system_tracking_interval: Optional[int]
                  = DEFAULT_SYSTEM_TRACKING_INT,
+                 log_system_params: bool = True,
                  run_params: Optional[Dict[str, Any]] = None,
                  ):
         self._repo_path = repo
         self._experiment_name = experiment
         self._system_tracking_interval = system_tracking_interval
+        self._log_system_params = log_system_params
         self._current_shift = None
         self._run = None
         self._run_hash = None
@@ -47,12 +49,14 @@ class AimCallback(TrainerCallback):
                     repo=self._repo_path,
                     experiment=self._experiment_name,
                     system_tracking_interval=self._system_tracking_interval,
+                    log_system_params=self._log_system_params,
                 )
             else:
                 self._run = Run(
                     repo=self._repo_path,
                     experiment=self._experiment_name,
                     system_tracking_interval=self._system_tracking_interval,
+                    log_system_params=self._log_system_params,
                 )
                 self._run_hash = self._run.hash
 
