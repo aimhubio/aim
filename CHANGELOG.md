@@ -22,6 +22,7 @@
 - Fix issues with run name/description not being set (mihran113)
 - Fix issue with run single page tabs result caching (mihran113)
 - Fix git system param tracking (devfox-se)
+- Fix runs manual closing (mihran113)
 
 ## 3.7.5 Mar 18, 2022
 
