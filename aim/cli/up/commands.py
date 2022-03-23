@@ -9,7 +9,8 @@ from aim.web.configs import (
     AIM_UI_DEFAULT_PORT,
     AIM_UI_MOUNTED_REPO_PATH,
     AIM_UI_TELEMETRY_KEY,
-    AIM_PROXY_URL
+    AIM_PROXY_URL,
+    AIM_PROFILER_KEY
 )
 from aim.sdk.repo import Repo, RepoStatus
 from aim.sdk.utils import clean_repo_path
@@ -39,7 +40,8 @@ from aim.web.utils import ShellCommandException
                                                                 readable=True))
 @click.option('--base-path', required=False, default='', type=str)
 @click.option('--force-init', is_flag=True, default=False)
-def up(dev, host, port, workers, repo, tf_logs, ssl_keyfile, ssl_certfile, base_path, force_init):
+@click.option('--profiler', is_flag=True, default=False)
+def up(dev, host, port, workers, repo, tf_logs, ssl_keyfile, ssl_certfile, base_path, force_init, profiler):
     if dev:
         os.environ[AIM_ENV_MODE_KEY] = 'dev'
     else:
@@ -124,6 +126,9 @@ def up(dev, host, port, workers, repo, tf_logs, ssl_keyfile, ssl_certfile, base_
         click.echo(f'Proxy {proxy_url}{base_path}/')
 
     click.echo('Press Ctrl+C to exit')
+
+    if profiler:
+        os.environ[AIM_PROFILER_KEY] = '1'
 
     try:
         server_cmd = build_uvicorn_command(host, port, workers, ssl_keyfile, ssl_certfile)
