@@ -22,34 +22,47 @@ class AimCallback(TrainerCallback):
                  experiment: Optional[str] = None,
                  system_tracking_interval: Optional[int]
                  = DEFAULT_SYSTEM_TRACKING_INT,
+                 log_system_params: bool = True,
                  run_params: Optional[Dict[str, Any]] = None,
                  ):
         self._repo_path = repo
         self._experiment_name = experiment
         self._system_tracking_interval = system_tracking_interval
-        self._initialized = False
+        self._log_system_params = log_system_params
         self._current_shift = None
         self._run = None
+        self._run_hash = None
         self._run_params = run_params
         self._log_value_warned = False
 
     @property
     def experiment(self):
-        return self._run if self._run else None
+        if not self._run:
+            self.setup()
+        return self._run
 
-    def setup(self, args, state, model):
-        self._initialized = True
+    def setup(self, args=None, state=None, model=None):
+        if not self._run:
+            if self._run_hash:
+                self._run = Run(
+                    self._run_hash,
+                    repo=self._repo_path,
+                    system_tracking_interval=self._system_tracking_interval,
+                )
+            else:
+                self._run = Run(
+                    repo=self._repo_path,
+                    experiment=self._experiment_name,
+                    system_tracking_interval=self._system_tracking_interval,
+                    log_system_params=self._log_system_params,
+                )
+                self._run_hash = self._run.hash
 
-        self._run = Run(
-            repo=self._repo_path,
-            experiment=self._experiment_name,
-            system_tracking_interval=self._system_tracking_interval,
-        )
-
-        combined_dict = {**args.to_sanitized_dict()}
-        self._run['hparams'] = combined_dict
-        if self._run_params:
-            self._run['run_params'] = self._run_params
+        if args:
+            combined_dict = {**args.to_sanitized_dict()}
+            self._run['hparams'] = combined_dict
+            if self._run_params:
+                self._run['run_params'] = self._run_params
 
         # Store model configs as well
         # if hasattr(model, 'config') and model.config is not None:
@@ -70,7 +83,7 @@ class AimCallback(TrainerCallback):
 
     def on_log(self, args, state, control,
                model=None, logs=None, **kwargs):
-        if not self._initialized:
+        if not self._run:
             self.setup(args, state, model)
 
         context = {
@@ -89,11 +102,11 @@ class AimCallback(TrainerCallback):
 
             self._run.track(log_value, name=log_name, context=context)
 
-    def on_epoch_end(self, args, state, control, **kwargs):
-        pass
-
-    def __del__(self):
-        if self._initialized and self._run:
+    def close(self):
+        if self._run:
             self._run.close()
             del self._run
             self._run = None
+
+    def __del__(self):
+        self.close()

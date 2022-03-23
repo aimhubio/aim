@@ -12,7 +12,13 @@ import { Button, Icon, Text } from 'components/kit';
 import GroupConfigPopover from 'components/GroupConfigPopover/GroupConfigPopover';
 
 import { BGColorLighten } from 'config/colors/colors';
-import { VIEW_PORT_OFFSET } from 'config/table/tableConfigs';
+import {
+  VIEW_PORT_OFFSET,
+  TABLE_COLUMN_START_COLOR_SCALE,
+  TABLE_COLUMN_END_COLOR_SCALE,
+} from 'config/table/tableConfigs';
+
+import getColorFromRange from 'utils/d3/getColorFromRange';
 
 import ControlPopover from '../ControlPopover/ControlPopover';
 
@@ -44,6 +50,8 @@ function Column({
   multiSelect,
   selectedRows,
   onRowSelect,
+  onToggleColumnsColorScales,
+  columnsColorScales,
 }) {
   const [maxWidth, setMaxWidth] = React.useState(width);
   const [isResizing, setIsResizing] = React.useState(false);
@@ -51,6 +59,7 @@ function Column({
   const columnRef = React.useRef();
   const startingPoint = React.useRef(null);
   const groups = !Array.isArray(data);
+
   const dataLength = React.useMemo(() => {
     if (Array.isArray(data)) {
       return data.length;
@@ -61,6 +70,34 @@ function Column({
       }, 0);
     }
   }, [data]);
+
+  const colorScaleRange = React.useMemo(() => {
+    const columnData = _.isArray(data)
+      ? data
+      : _.values(data).reduce((acc, item) => {
+          return [...acc, ...item.items];
+        }, []);
+    let range = [
+      ...new Set(
+        columnData?.map((a) => +a[col.key]).filter((a) => !isNaN(a)) ?? [],
+      ),
+    ].sort();
+    if (_.isEmpty(range)) {
+      return null;
+    } else if (range.length === 1) {
+      return [range[0] - 0.1, range[0]];
+    }
+    return range;
+  }, [data]);
+
+  const getColumnCelBGColor = React.useCallback(
+    getColorFromRange(
+      colorScaleRange ? [colorScaleRange[0], _.last(colorScaleRange)] : null,
+      TABLE_COLUMN_START_COLOR_SCALE,
+      TABLE_COLUMN_END_COLOR_SCALE,
+    ),
+    [data],
+  );
 
   function resizeStart({ target }) {
     setIsResizing(true);
@@ -235,6 +272,28 @@ function Column({
                 )}
                 component={
                   <div className='Table__action__popup__body'>
+                    {!_.isEmpty(colorScaleRange) && onToggleColumnsColorScales && (
+                      <MenuItem
+                        className='Table__action__popup__item'
+                        onClick={() => onToggleColumnsColorScales(col.key)}
+                      >
+                        {columnsColorScales[col.key] ? (
+                          <>
+                            <span className='Table__action__popup__item_icon'>
+                              <Icon fontSize={12} name='color-scale-off' />
+                            </span>
+                            <span>Reset color scale</span>
+                          </>
+                        ) : (
+                          <>
+                            <span className='Table__action__popup__item_icon'>
+                              <Icon fontSize={13} name='color-scale-on' />
+                            </span>
+                            <span>Apply color scale</span>
+                          </>
+                        )}
+                      </MenuItem>
+                    )}
                     {columnOptions && (
                       <>
                         {columnOptions?.map((option) => (
@@ -434,6 +493,8 @@ function Column({
                       index={groupKey}
                       col={col}
                       multiSelect={multiSelect}
+                      getColumnCelBGColor={getColumnCelBGColor}
+                      columnsColorScales={columnsColorScales}
                       item={
                         typeof data[groupKey].data[col.key] === 'object' &&
                         data[groupKey].data[col.key]?.hasOwnProperty('content')
@@ -468,6 +529,8 @@ function Column({
                             index={item.index}
                             col={col}
                             multiSelect={multiSelect}
+                            getColumnCelBGColor={getColumnCelBGColor}
+                            columnsColorScales={columnsColorScales}
                             item={
                               col.key === '#' ? (
                                 <>
@@ -568,6 +631,8 @@ function Column({
                       index={item.index}
                       col={col}
                       item={item[col.key]}
+                      getColumnCelBGColor={getColumnCelBGColor}
+                      columnsColorScales={columnsColorScales}
                       className={classNames(`rowKey-${item.key}`, {
                         hidden: item.isHidden,
                         selected: !!selectedRows?.[item.selectKey],
