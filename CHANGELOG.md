@@ -8,8 +8,8 @@
 - Add run description columns to all run specific tables (VkoHov, mihran113)
 - Change images rendering optimization default value to smoother (VkoHov)
 - Add ability to apply color scale on columns with numeric values (VkoHov)
-- Fixed git system param tracking (devfox-se)
 - Refactored XGBoost AimCallback (devfox-se)
+- Add DVC integration (devfox-se)
 
 ### Fixes:
 
@@ -18,6 +18,7 @@
 - Fix scroll to the end of the audio tab (VkoHov)
 - Add scrollbar to image full view mode content (VkoHov)
 - Fix issues with run name/description not being set (mihran113)
+- Fix git system param tracking (devfox-se)
 
 ## 3.7.5 Mar 18, 2022
 
@@ -45,7 +46,6 @@
 
 ### Enhancements:
 
-- Add DVC integration (devfox-se)
 - Add Run overview tab in run single page (arsengit, VkoHov, KaroMourad, rubenaprikyan)
 - Custom max message size for Aim Remote tracking (alberttorosyan)
 - Docker images for aim up/server (alberttorosyan)
