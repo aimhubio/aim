@@ -19,6 +19,7 @@
 - Fix scroll to the end of the audio tab (VkoHov)
 - Add scrollbar to image full view mode content (VkoHov)
 - Fix issues with run name/description not being set (mihran113)
+- Fix issue with run single page tabs result caching (mihran113)
 - Fix git system param tracking (devfox-se)
 
 ## 3.7.5 Mar 18, 2022
