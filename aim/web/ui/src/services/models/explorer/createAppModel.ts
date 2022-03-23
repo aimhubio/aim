@@ -174,6 +174,7 @@ import onRowSelect from 'utils/app/onRowSelect';
 import { SortField } from 'utils/getSortedFields';
 import onChangeTrendlineOptions from 'utils/app/onChangeTrendlineOptions';
 import { getParamsSuggestions } from 'utils/app/getParamsSuggestions';
+import onToggleColumnsColorScales from 'utils/app/onToggleColumnsColorScales';
 
 import { AppDataTypeEnum, AppNameEnum } from './index';
 /**
@@ -352,6 +353,7 @@ function createAppModel(appConfig: IAppInitialConfig) {
             hiddenColumns: TABLE_DEFAULT_CONFIG.runs.hiddenColumns,
             sortFields: [...TABLE_DEFAULT_CONFIG.runs.sortFields],
             columnsWidths: {},
+            columnsColorScales: {},
             columnsOrder: {
               left: [...TABLE_DEFAULT_CONFIG.runs.columnsOrder.left],
               middle: [...TABLE_DEFAULT_CONFIG.runs.columnsOrder.middle],
@@ -3209,6 +3211,14 @@ function createAppModel(appConfig: IAppInitialConfig) {
             data?: any;
           }): void {
             return onRowSelect({ actionType, data, model });
+          },
+          onToggleColumnsColorScales(colKey: string): void {
+            onToggleColumnsColorScales({
+              colKey,
+              model,
+              appName,
+              updateModelData,
+            });
           },
         });
       }

@@ -38,7 +38,7 @@ async def create_experiment_api(exp_in: ExperimentCreateIn, factory=Depends(obje
         try:
             exp = factory.create_experiment(exp_in.name.strip())
         except ValueError as e:
-            raise HTTPException(400, detail=str(e))
+            raise HTTPException(status_code=400, detail=str(e))
 
     return {
         'id': exp.uuid,
