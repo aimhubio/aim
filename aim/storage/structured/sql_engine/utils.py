@@ -45,6 +45,8 @@ class ModelMappedProperty:
                 try:
                     setattr(object_._model, self.mapped_name, value)
                     object_._session.add(object_._model)
+                    if object_._session.autocommit:
+                        object_._session.commit()
                 except Exception:
                     direct_setter(object_, value)
 

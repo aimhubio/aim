@@ -15,6 +15,9 @@ class Project:
         self.repo_path = repo_path
         self.description = ''
         self.repo = Repo.from_path(self.repo_path)
+        self.repo.container_pool.clear()
+        self.repo.container_view_pool.clear()
+        self.repo.persistent_pool.clear()
 
     def exists(self):
         """

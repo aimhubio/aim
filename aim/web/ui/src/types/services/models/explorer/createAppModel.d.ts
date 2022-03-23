@@ -108,6 +108,7 @@ export interface ITableConfig {
   hideSystemMetrics?: boolean;
   columnsWidths?: { [key: string]: number };
   columnsOrder?: IColumnsOrder;
+  columnsColorScales?: { [key: string]: boolean };
   height?: string;
   selectedRows?: any;
 }

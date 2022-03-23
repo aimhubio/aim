@@ -1,5 +1,8 @@
 import { ResizeModeEnum } from 'config/enums/tableEnums';
 
+export const TABLE_COLUMN_START_COLOR_SCALE = '#edc949';
+export const TABLE_COLUMN_END_COLOR_SCALE = '#2bc784';
+
 export enum RowHeightSize {
   sm = 28,
   md = 32,

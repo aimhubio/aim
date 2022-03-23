@@ -1,8 +1,13 @@
 from fastapi import Depends, HTTPException, Query
 from fastapi.responses import JSONResponse, StreamingResponse
 
-from aim.web.api.runs.object_views import ImageApiConfig, TextApiConfig, DistributionApiConfig, AudioApiConfig, \
+from aim.web.api.runs.object_views import (
+    ImageApiConfig,
+    TextApiConfig,
+    DistributionApiConfig,
+    AudioApiConfig,
     FigureApiConfig
+)
 from aim.web.api.utils import APIRouter  # wrapper for fastapi.APIRouter
 from typing import Optional, Tuple
 
