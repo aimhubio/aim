@@ -32,16 +32,16 @@ class AimCallback(TrackerKerasCallbackMetricsEpochEndMixin, Callback):
                 self._run = Run(repo=repo, experiment=experiment,
                                 system_tracking_interval=self._system_tracking_interval,
                                 log_system_params=self._log_system_params,)
-        else:
-            print('Passing Run instance to AimCallback will be '
-                  'deprecated in future versions, '
-                  'pass the callback arguments explicitly')
-            self._run = run
+
+        self._run_hash = self._run.hash
+        self._repo_path = repo
 
     @property
     def experiment(self) -> Run:
         if not self._run:
-            self._run = Run(self._run_hash)
+            self._run = Run(self._run_hash,
+                            repo=self._repo_path,
+                            system_tracking_interval=self._system_tracking_interval,)
         return self._run
 
     @classmethod

@@ -47,9 +47,7 @@ class AimCallback(TrainerCallback):
                 self._run = Run(
                     self._run_hash,
                     repo=self._repo_path,
-                    experiment=self._experiment_name,
                     system_tracking_interval=self._system_tracking_interval,
-                    log_system_params=self._log_system_params,
                 )
             else:
                 self._run = Run(

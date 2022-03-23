@@ -27,18 +27,21 @@ class AimCallback(TrackerKerasCallbackMetricsEpochEndMixin, Callback):
         if run is None:
             if repo is None and experiment is None:
                 self._run = Run(system_tracking_interval=self._system_tracking_interval,
-                                log_system_params=self._log_system_params, )
+                                log_system_params=self._log_system_params,)
             else:
                 self._run = Run(repo=repo, experiment=experiment,
                                 system_tracking_interval=self._system_tracking_interval,
-                                log_system_params=self._log_system_params, )
+                                log_system_params=self._log_system_params,)
 
-        self._run_hash = self._run_hash
+        self._run_hash = self._run.hash
+        self._repo_path = repo
 
     @property
     def experiment(self) -> Run:
         if not self._run:
-            self._run = Run(self._run_hash)
+            self._run = Run(self._run_hash,
+                            repo=self._repo_path,
+                            system_tracking_interval=self._system_tracking_interval,)
         return self._run
 
     @classmethod
