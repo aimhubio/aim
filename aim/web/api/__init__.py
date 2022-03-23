@@ -1,12 +1,29 @@
 import os
 
 from fastapi import FastAPI
+from fastapi.exceptions import HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.middleware.gzip import GZipMiddleware
+from fastapi.responses import JSONResponse
 
 from aim.web.configs import AIM_PROFILER_KEY
 from aim.web.middlewares.profiler import PyInstrumentProfilerMiddleware
 from aim.web.utils import get_root_path
+
+
+async def http_exception_handler(request, exc):
+    if isinstance(exc.detail, dict):
+        message = exc.detail.pop('message', 'Something went wrong')
+        detail = exc.detail
+    else:
+        message = 'Something went wrong'
+        detail = str(exc.detail)
+
+    response = {
+        'message': message,
+        'detail': detail
+    }
+    return JSONResponse(response, status_code=exc.status_code)
 
 
 def create_app():
@@ -42,6 +59,7 @@ def create_app():
 
     api_app = FastAPI()
     api_app.add_middleware(GZipMiddleware)
+    api_app.add_exception_handler(HTTPException, http_exception_handler)
 
     if os.environ.get(AIM_PROFILER_KEY) == "1":
         api_app.add_middleware(PyInstrumentProfilerMiddleware,
