@@ -10,11 +10,21 @@
       right: toRem(41px);
     }
     .toastui-editor {
+      &-toolbar {
+        background-color: $cuddle-20;
+      }
       &-defaultUI {
         border: $border-grey;
         &-toolbar {
           margin-right: 100px;
           border-bottom: unset;
+          background-color: $cuddle-20;
+          input:checked + .switch::before {
+            background-color: $primary-color;
+          }
+          button {
+            border-color: $cuddle-20;
+          }
         }
       }
       &-md-splitter {
@@ -45,6 +55,9 @@
     .scroll-sync {
       font-family: 'Inter', sans-serif;
       font-size: $text-md;
+      &::before {
+        color: $text-color !important;
+      }
     }
     .toastui-editor-md-preview,
     .toastui-editor {
