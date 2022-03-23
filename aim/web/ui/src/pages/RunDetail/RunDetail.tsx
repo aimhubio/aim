@@ -10,7 +10,7 @@ import {
 } from 'react-router-dom';
 import classNames from 'classnames';
 
-import { Paper, Tab, Tabs } from '@material-ui/core';
+import { Paper, Tab, Tabs, Tooltip } from '@material-ui/core';
 import { Skeleton } from '@material-ui/lab';
 
 import { Button, Icon, Text } from 'components/kit';
@@ -210,70 +210,81 @@ function RunDetail(): React.FunctionComponentElement<React.ReactNode> {
       <section className='RunDetail' ref={containerRef}>
         <div className='RunDetail__runDetailContainer'>
           <div className='RunDetail__runDetailContainer__appBarContainer'>
-            <ControlPopover
-              anchorOrigin={{
-                vertical: 'bottom',
-                horizontal: 'left',
-              }}
-              transformOrigin={{
-                vertical: 'top',
-                horizontal: 'left',
-              }}
-              anchor={({ onAnchorClick, opened }) => (
-                <div
-                  className='RunDetail__runDetailContainer__appBarContainer__appBarTitleBox container'
-                  onClick={onAnchorClick}
-                >
-                  {!runData?.isRunInfoLoading ? (
-                    <>
-                      <div className='RunDetail__runDetailContainer__appBarContainer__appBarTitleBox__container'>
-                        <Text tint={100} size={16} weight={600}>
-                          {`${
-                            runData?.runInfo?.experiment?.name || 'default'
-                          } / ${runHash || ''}`}
-                        </Text>
-                      </div>
-                    </>
-                  ) : (
-                    <Skeleton variant='rect' height={24} width={340} />
-                  )}
-                  <Button
-                    disabled={
-                      runData?.isExperimentsLoading || runData?.isRunInfoLoading
-                    }
-                    color={opened ? 'primary' : 'default'}
-                    size='small'
-                    className={classNames(
-                      'RunDetail__runDetailContainer__appBarContainer__appBarTitleBox__buttonSelectToggler',
-                      { opened: opened },
-                    )}
-                    withOnlyIcon
+            <div className='container RunDetail__runDetailContainer__appBarContainer__appBarBox'>
+              <ControlPopover
+                anchorOrigin={{
+                  vertical: 'bottom',
+                  horizontal: 'left',
+                }}
+                transformOrigin={{
+                  vertical: 'top',
+                  horizontal: 'left',
+                }}
+                anchor={({ onAnchorClick, opened }) => (
+                  <div
+                    className='RunDetail__runDetailContainer__appBarContainer__appBarTitleBox'
+                    onClick={onAnchorClick}
                   >
-                    <Icon name={opened ? 'arrow-up' : 'arrow-down'} />
-                  </Button>
-                  <StatusLabel
-                    status={runData?.runInfo?.end_time ? 'alert' : 'success'}
-                    title={
-                      runData?.runInfo?.end_time ? 'Finished' : 'In Progress'
+                    {!runData?.isRunInfoLoading ? (
+                      <>
+                        <Tooltip
+                          title={`${
+                            runData?.runInfo?.experiment?.name || 'default'
+                          } / ${runData?.runInfo?.name || ''}`}
+                        >
+                          <div className='RunDetail__runDetailContainer__appBarContainer__appBarTitleBox__container'>
+                            <Text tint={100} size={16} weight={600}>
+                              {`${
+                                runData?.runInfo?.experiment?.name || 'default'
+                              } / ${runData?.runInfo?.name || ''}`}
+                            </Text>
+                          </div>
+                        </Tooltip>
+                      </>
+                    ) : (
+                      <Skeleton variant='rect' height={24} width={340} />
+                    )}
+                    <Button
+                      disabled={
+                        runData?.isExperimentsLoading ||
+                        runData?.isRunInfoLoading
+                      }
+                      color={opened ? 'primary' : 'default'}
+                      size='small'
+                      className={classNames(
+                        'RunDetail__runDetailContainer__appBarContainer__appBarTitleBox__buttonSelectToggler',
+                        { opened: opened },
+                      )}
+                      withOnlyIcon
+                    >
+                      <Icon name={opened ? 'arrow-up' : 'arrow-down'} />
+                    </Button>
+                    <StatusLabel
+                      status={runData?.runInfo?.end_time ? 'alert' : 'success'}
+                      title={
+                        runData?.runInfo?.end_time ? 'Finished' : 'In Progress'
+                      }
+                    />
+                  </div>
+                )}
+                component={
+                  <RunSelectPopoverContent
+                    getRunsOfExperiment={getRunsOfExperiment}
+                    experimentsData={runData?.experimentsData}
+                    experimentId={runData?.experimentId}
+                    runsOfExperiment={runData?.runsOfExperiment}
+                    runInfo={runData?.runInfo}
+                    isRunsOfExperimentLoading={
+                      runData?.isRunsOfExperimentLoading
                     }
+                    isRunInfoLoading={runData?.isRunInfoLoading}
+                    isLoadMoreButtonShown={runData?.isLoadMoreButtonShown}
+                    onRunsSelectToggle={onRunsSelectToggle}
+                    dateNow={dateNow}
                   />
-                </div>
-              )}
-              component={
-                <RunSelectPopoverContent
-                  getRunsOfExperiment={getRunsOfExperiment}
-                  experimentsData={runData?.experimentsData}
-                  experimentId={runData?.experimentId}
-                  runsOfExperiment={runData?.runsOfExperiment}
-                  runInfo={runData?.runInfo}
-                  isRunsOfExperimentLoading={runData?.isRunsOfExperimentLoading}
-                  isRunInfoLoading={runData?.isRunInfoLoading}
-                  isLoadMoreButtonShown={runData?.isLoadMoreButtonShown}
-                  onRunsSelectToggle={onRunsSelectToggle}
-                  dateNow={dateNow}
-                />
-              }
-            />
+                }
+              />
+            </div>
           </div>
           <Paper className='RunDetail__runDetailContainer__tabsContainer'>
             <Tabs
