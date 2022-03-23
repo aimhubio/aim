@@ -1,6 +1,6 @@
 import os
 
-from fastapi import FastAPI
+from fastapi import FastAPI, status
 from fastapi.exceptions import HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.middleware.gzip import GZipMiddleware
@@ -12,12 +12,15 @@ from aim.web.utils import get_root_path
 
 
 async def http_exception_handler(request, exc):
-    if isinstance(exc.detail, dict):
-        message = exc.detail.pop('message', 'Something went wrong')
-        detail = exc.detail
-    else:
-        message = 'Something went wrong'
-        detail = str(exc.detail)
+    message = 'Something went wrong.'
+    detail = str(exc.detail)
+
+    if exc.status_code == status.HTTP_404_NOT_FOUND:
+        detail = "Item not found."
+    elif exc.status_code == status.HTTP_400_BAD_REQUEST:
+        if isinstance(exc.detail, dict):
+            message = exc.detail.pop('message', message)
+            detail = exc.detail
 
     response = {
         'message': message,
