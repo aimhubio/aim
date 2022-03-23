@@ -18,12 +18,17 @@
       background: #ffffff;
       display: flex;
       align-items: center;
+      &__appBarBox {
+        display: flex;
+        align-items: center;
+      }
       &__appBarTitleBox {
         display: flex;
         font-size: $text-md;
         font-weight: 600;
         color: $text-color;
         align-items: center;
+        height: fit-content;
         &__buttonSelectToggler {
           width: 1.5rem;
           height: 1.5rem;
