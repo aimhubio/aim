@@ -774,10 +774,30 @@ class Run(StructuredRunMixin):
             self._hash = self._calc_hash()
         return self._hash
 
+    def _cleanup_trees(self):
+        del self.meta_run_attrs_tree
+        del self.meta_attrs_tree
+        del self.meta_run_tree
+        del self.meta_tree
+        del self.series_run_tree
+        self.meta_run_attrs_tree = None
+        self.meta_run_tree = None
+        self.meta_attrs_tree = None
+        self.meta_tree = None
+        self.series_run_tree = None
+
     def close(self):
         if self._resources is None:
             return
         self._resources.close()
+        # de-reference trees and other resources
+        del self._resources
+        del self.repo
+        del self._props
+        self._resources = None
+        self.repo = None
+        self._props = None
+        self._cleanup_trees()
 
     @classmethod
     def track_rate_warn(cls):
