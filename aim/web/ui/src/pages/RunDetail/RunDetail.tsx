@@ -10,7 +10,7 @@ import {
 } from 'react-router-dom';
 import classNames from 'classnames';
 
-import { Paper, Tab, Tabs } from '@material-ui/core';
+import { Paper, Tab, Tabs, Tooltip } from '@material-ui/core';
 import { Skeleton } from '@material-ui/lab';
 
 import { Button, Icon, Text } from 'components/kit';
@@ -227,13 +227,19 @@ function RunDetail(): React.FunctionComponentElement<React.ReactNode> {
                   >
                     {!runData?.isRunInfoLoading ? (
                       <>
-                        <div className='RunDetail__runDetailContainer__appBarContainer__appBarTitleBox__container'>
-                          <Text tint={100} size={16} weight={600}>
-                            {`${
-                              runData?.runInfo?.experiment?.name || 'default'
-                            } / ${runData?.runInfo?.name || ''}`}
-                          </Text>
-                        </div>
+                        <Tooltip
+                          title={`${
+                            runData?.runInfo?.experiment?.name || 'default'
+                          } / ${runData?.runInfo?.name || ''}`}
+                        >
+                          <div className='RunDetail__runDetailContainer__appBarContainer__appBarTitleBox__container'>
+                            <Text tint={100} size={16} weight={600}>
+                              {`${
+                                runData?.runInfo?.experiment?.name || 'default'
+                              } / ${runData?.runInfo?.name || ''}`}
+                            </Text>
+                          </div>
+                        </Tooltip>
                       </>
                     ) : (
                       <Skeleton variant='rect' height={24} width={340} />

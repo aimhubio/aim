@@ -29,18 +29,23 @@
         color: $text-color;
         align-items: center;
         height: fit-content;
+        width: 50%;
         &__buttonSelectToggler {
           width: 1.5rem;
           height: 1.5rem;
           &.opened {
-            background: '#E8F1FC';
+            background: #e8f1fc;
+          }
+          .MuiButton-label {
+            padding-top: $space-xxxxs;
           }
         }
         &__container {
           display: flex;
           align-items: center;
-          margin-right: 1rem;
+          margin-right: $space-xxxxs;
           cursor: pointer;
+          width: 100%;
           &__pageName {
             margin-right: 0.4375em;
             text-transform: capitalize;
@@ -50,6 +55,13 @@
             margin-left: 0.4375em;
             text-transform: lowercase;
           }
+        }
+        span {
+          display: block;
+          overflow: hidden;
+          text-overflow: ellipsis;
+          white-space: nowrap;
+          max-width: 100%;
         }
       }
       .StatusLabel {
@@ -370,13 +382,14 @@
               margin-bottom: $space-xs;
             }
             &__runName {
-              width: 100%;
+              width: 95%;
               margin-bottom: $space-xxs;
               span {
                 display: block;
                 overflow: hidden;
                 text-overflow: ellipsis;
                 max-width: 100%;
+                white-space: nowrap;
               }
             }
             &__runDate {
