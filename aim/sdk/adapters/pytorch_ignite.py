@@ -57,16 +57,25 @@ class AimLogger(BaseLogger):
         self._log_system_params = log_system_params
 
         self._run = None
+        self._run_hash = None
 
     @property
     def experiment(self) -> Run:
         if self._run is None:
-            self._run = Run(
-                repo=self._repo_path,
-                experiment=self._experiment_name,
-                system_tracking_interval=self._system_tracking_interval,
-                log_system_params=self._log_system_params,
-            )
+            if self._run_hash:
+                self._run = Run(
+                    self._run_hash,
+                    repo=self._repo_path,
+                    system_tracking_interval=self._system_tracking_interval,
+                )
+            else:
+                self._run = Run(
+                    repo=self._repo_path,
+                    experiment=self._experiment_name,
+                    system_tracking_interval=self._system_tracking_interval,
+                    log_system_params=self._log_system_params,
+                )
+                self._run_hash = self._run.hash
         return self._run
 
     def log_params(self, params: dict):
@@ -115,7 +124,13 @@ class AimLogger(BaseLogger):
         return self.experiment.hash
 
     def close(self) -> None:
-        self._run.finalize()
+        if self._run:
+            self._run.close()
+            del self._run
+            self._run = None
+
+    def __del__(self):
+        self.close()
 
     def _create_output_handler(self, *args: Any, **kwargs: Any) -> "OutputHandler":
         return OutputHandler(*args, **kwargs)
