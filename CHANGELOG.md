@@ -16,6 +16,8 @@
 
 ### Fixes:
 
+- Fix issue with calculation of active point on mouse hover in the LineChart (KaroMourad)
+- Fix issue with wrong URL caching for Explorer pages (roubkar)
 - Fix issue with focusing on the chart active point while moving the cursor (KaroMourad)
 - Fix the image full view toggle icon visibility if the image has a white background (VkoHov)
 - Fix scroll to the end of the audio tab (VkoHov)
