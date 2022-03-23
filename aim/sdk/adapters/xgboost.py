@@ -20,31 +20,38 @@ class AimCallback(TrainingCallback):
                  = DEFAULT_SYSTEM_TRACKING_INT,
                  log_system_params: Optional[int] = True):
         super().__init__()
-        self._repo = repo
+        self._repo_path = repo
         self._experiment = experiment
         self._system_tracking_interval = system_tracking_interval
         self._log_system_params = log_system_params
-        self._initialized = False
         self._run = None
+        self._run_hash = None
 
     @property
     def experiment(self) -> Run:
+        if not self._run:
+            self.setup()
         return self._run
 
-    def before_training(self, model):
-        self._run = Run(
-            repo=self._repo,
-            experiment=self._experiment,
-            system_tracking_interval=self._system_tracking_interval,
-            log_system_params=self._log_system_params
-        )
-        self._initialized = True
-        return model
+    def setup(self):
+        if self._run:
+            return
+        if self._run_hash:
+            self._run = Run(
+                self._run_hash,
+                repo=self._repo_path,
+                system_tracking_interval=self._system_tracking_interval,
+            )
+        else:
+            self._run = Run(
+                repo=self._repo_path,
+                experiment=self._experiment,
+                system_tracking_interval=self._system_tracking_interval,
+                log_system_params=self._log_system_params
+            )
 
-    def after_training(self, model):
-        if self._initialized and self._run:
-            del self._run
-            self._run = None
+    def before_training(self, model):
+        self.setup()
         return model
 
     def after_iteration(self, model, epoch: int, evals_log: TrainingCallback.EvalsLog) -> bool:
@@ -65,3 +72,16 @@ class AimCallback(TrainingCallback):
                     self._run.track(score, step=0, name=metric_name, context={'stdv': True})
 
         return False
+
+    def after_training(self, model):
+        self.close()
+        return model
+
+    def close(self):
+        if self._run:
+            self._run.close()
+            del self._run
+            self._run = None
+
+    def __del__(self):
+        self.close()

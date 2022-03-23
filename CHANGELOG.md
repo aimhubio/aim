@@ -10,6 +10,7 @@
 - Add run name to grouping, ordering and run navigation popovers (VkoHov)
 - Add ability to apply color scale on columns with numeric values (VkoHov)
 - Refactored XGBoost AimCallback (devfox-se)
+- Reopenable callbacks for integrations (mihran113)
 - Add DVC integration (devfox-se)
 - Added API profiler and unified API error response (devfox-se)
 
@@ -22,6 +23,8 @@
 - Fix issues with run name/description not being set (mihran113)
 - Fix issue with run single page tabs result caching (mihran113)
 - Fix git system param tracking (devfox-se)
+- Fix runs manual closing (mihran113)
+- Fix Docker image creation step in packaging workflow (alberttorosyan)
 
 ## 3.7.5 Mar 18, 2022
 
