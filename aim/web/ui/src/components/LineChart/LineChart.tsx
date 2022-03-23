@@ -22,6 +22,8 @@ import {
   drawHoverAttributes,
 } from 'utils/d3';
 
+import './LineChart.scss';
+
 const LineChart = React.forwardRef(function LineChart(
   props: ILineChartProps,
   ref,
@@ -170,7 +172,6 @@ const LineChart = React.forwardRef(function LineChart(
         linesNodeRef,
         highlightedNodeRef,
         aggregationConfig,
-        humanizerConfigRef,
         alignmentConfig,
       });
     }

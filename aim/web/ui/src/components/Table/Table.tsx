@@ -89,6 +89,8 @@ const Table = React.forwardRef(function Table(
     columnsOrder,
     illustrationConfig,
     disableRowClick = false,
+    onToggleColumnsColorScales,
+    columnsColorScales,
     ...props
   }: ITableProps,
   ref,
@@ -826,6 +828,10 @@ const Table = React.forwardRef(function Table(
                           multiSelect={multiSelect}
                           selectedRows={selectedRows || {}}
                           onRowSelect={onRowSelect}
+                          columnsColorScales={columnsColorScales}
+                          onToggleColumnsColorScales={
+                            onToggleColumnsColorScales
+                          }
                           {...props}
                         />
                       </ErrorBoundary>
@@ -953,6 +959,10 @@ function propsComparator(
   }
 
   if (prevProps.focusedState?.active !== nextProps.focusedState?.active) {
+    return false;
+  }
+
+  if (prevProps.columnsColorScales !== nextProps.columnsColorScales) {
     return false;
   }
 

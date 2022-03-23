@@ -323,6 +323,10 @@ function Table(props) {
                     width={props.columnsWidths?.[col.key]}
                     updateColumnWidth={props.updateColumnsWidths}
                     headerMeta={props.headerMeta}
+                    onToggleColumnsColorScales={
+                      props.onToggleColumnsColorScales
+                    }
+                    columnsColorScales={props.columnsColorScales}
                     isAlwaysVisible={props.alwaysVisibleColumns?.includes(
                       col.key,
                     )}
@@ -378,6 +382,8 @@ function Table(props) {
                   width={props.columnsWidths?.[col.key]}
                   updateColumnWidth={props.updateColumnsWidths}
                   headerMeta={props.headerMeta}
+                  onToggleColumnsColorScales={props.onToggleColumnsColorScales}
+                  columnsColorScales={props.columnsColorScales}
                   isAlwaysVisible={props.alwaysVisibleColumns?.includes(
                     col.key,
                   )}
@@ -430,6 +436,10 @@ function Table(props) {
                       !props.multiSelect
                     }
                     width={props.columnsWidths?.[col.key]}
+                    onToggleColumnsColorScales={
+                      props.onToggleColumnsColorScales
+                    }
+                    columnsColorScales={props.columnsColorScales}
                     updateColumnWidth={props.updateColumnsWidths}
                     headerMeta={props.headerMeta}
                     isAlwaysVisible={props.alwaysVisibleColumns?.includes(

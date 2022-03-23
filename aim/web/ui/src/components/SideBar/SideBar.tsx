@@ -17,10 +17,17 @@ import routes, { IRoute } from 'routes/routes';
 
 import { trackEvent } from 'services/analytics';
 
+import { getItem } from 'utils/storage';
+
 import './Sidebar.scss';
 
 function SideBar(): React.FunctionComponentElement<React.ReactNode> {
   function getPathFromStorage(route: PathEnum): PathEnum | string {
+    const path = getItem(`${route.slice(1)}Url`) ?? '';
+    if (path !== '' && path.startsWith(route)) {
+      return path;
+    }
+    return route;
     switch (route) {
       case PathEnum.Metrics:
         if (localStorage.getItem('metricsUrl')) {

@@ -47,7 +47,7 @@ async def create_tag_api(tag_in: TagCreateIn, factory=Depends(object_factory)):
             if tag_in.description is not None:
                 tag.description = tag_in.description.strip()
         except ValueError as e:
-            raise HTTPException(400, detail=str(e))
+            raise HTTPException(status_code=400, detail=str(e))
 
     return {
         'id': tag.uuid,
@@ -59,7 +59,7 @@ async def create_tag_api(tag_in: TagCreateIn, factory=Depends(object_factory)):
 async def get_tag_api(tag_id: str, factory=Depends(object_factory)):
     tag = factory.find_tag(tag_id)
     if not tag:
-        raise HTTPException
+        raise HTTPException(status_code=404)
 
     response = {
         'id': tag.uuid,
@@ -107,7 +107,7 @@ async def get_tagged_runs_api(tag_id: str, factory=Depends(object_factory)):
 
     tag = factory.find_tag(tag_id)
     if not tag:
-        raise HTTPException
+        raise HTTPException(status_code=404)
 
     from aim.sdk.run import Run
 

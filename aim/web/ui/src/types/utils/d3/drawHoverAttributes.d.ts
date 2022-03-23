@@ -34,7 +34,6 @@ export interface IDrawHoverAttributesArgs {
   highlightMode?: HighlightEnum;
   aggregationConfig?: IAggregationConfig;
   alignmentConfig?: IAlignmentConfig;
-  humanizerConfigRef: React.MutableRefObject<{}>;
   drawAxisLines?: { x: Boolean; y: Boolean };
   drawAxisLabels?: { x: Boolean; y: Boolean };
 }

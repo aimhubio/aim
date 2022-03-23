@@ -283,12 +283,12 @@ function drawAxes(args: IDrawAxesArgs): void {
     axesRef.current.xAxis
       .selectAll('.tick')
       .append('svg:title')
-      .text((d: number) => {
-        return formatValueByAlignment({
+      .text((d: number) =>
+        formatValueByAlignment({
           xAxisTickValue: d ?? null,
           type: alignmentConfig?.type,
-        });
-      });
+        }),
+      );
 
     axesRef.current.xAxis
       .selectAll('.tick line')
