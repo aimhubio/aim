@@ -5,9 +5,9 @@ from aim.storage.types import AimObject, AimObjectKey, AimObjectPath
 from aim.storage.utils import ArrayFlag, CustomObjectFlagType
 from aim.storage.container import Container
 from aim.storage import treeutils
-from aim.storage.arrayview import TreeArrayView
+from aim.storage.treearrayview import TreeArrayView
 
-from typing import Iterator, Tuple, Union, List
+from typing import Any, Iterator, Tuple, Union, List
 
 from aim.storage.treeview import TreeView
 
@@ -174,9 +174,10 @@ class ContainerTreeView(TreeView):
 
     def array(
         self,
-        path: Union[AimObjectKey, AimObjectPath] = ()
+        path: Union[AimObjectKey, AimObjectPath] = (),
+        dtype: Any = None
     ) -> TreeArrayView:
-        return TreeArrayView(self.subtree(path))
+        return TreeArrayView(self.subtree(path), dtype=dtype)
 
     def first(
         self,

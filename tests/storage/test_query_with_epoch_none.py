@@ -1,0 +1,36 @@
+import random
+import numpy as np
+from tests.base import TestBase
+
+from aim.sdk.repo import Run
+
+
+class TestTrack(TestBase):
+    def test_query_metrics_default_epoch(self):
+        run = Run(repo=self.repo, system_tracking_interval=None)
+        for i in range(10):
+            run.track(random.random(), name='epoch_none')
+            run.track(random.random(), name='with_epoch', epoch=i)
+            run.track(random.random(), name='with_epoch_and_step', step=i, epoch=i)
+
+        q = 'metric.name == "epoch_none"'
+
+        trace_count = 0
+        for trc in self.repo.query_metrics(query=q):
+            trace_count += 1
+            for epoch in trc.epochs.values_numpy():
+                self.assertTrue(np.isnan(epoch))
+            steps, epochs = trc.epochs.sparse_numpy()
+            for epoch in epochs:
+                self.assertTrue(np.isnan(epoch))
+        self.assertEqual(1, trace_count)
+
+        # crash/no-crash test for mixed queries
+        q = 'metric.name == "epoch_none" or metric.name == "with_epoch"'
+        for trc in self.repo.query_metrics(query=q):
+            trc.epochs.sparse_numpy()
+            trc.epochs.values_numpy()
+        q = ''
+        for trc in self.repo.query_metrics(query=q):
+            trc.epochs.sparse_numpy()
+            trc.epochs.values_numpy()

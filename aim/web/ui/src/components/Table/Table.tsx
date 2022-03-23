@@ -88,6 +88,9 @@ const Table = React.forwardRef(function Table(
     focusedState,
     columnsOrder,
     illustrationConfig,
+    disableRowClick = false,
+    onToggleColumnsColorScales,
+    columnsColorScales,
     ...props
   }: ITableProps,
   ref,
@@ -549,7 +552,7 @@ const Table = React.forwardRef(function Table(
           }
         }
         setListWindowMeasurements();
-      }, 100);
+      }, 30);
     }
 
     return () => {
@@ -635,7 +638,7 @@ const Table = React.forwardRef(function Table(
         isLoading={!props.isInfiniteLoading && (isLoading || isNil(rowData))}
         loaderComponent={<TableLoader />}
       >
-        {!isEmpty(data) || !isEmpty(rowData) ? (
+        {!isEmpty(rowData) ? (
           <div style={{ height: '100%' }} className={className}>
             {!hideHeaderActions && isEmpty(selectedRows) ? (
               <div className='Table__header'>
@@ -824,6 +827,10 @@ const Table = React.forwardRef(function Table(
                           multiSelect={multiSelect}
                           selectedRows={selectedRows || {}}
                           onRowSelect={onRowSelect}
+                          columnsColorScales={columnsColorScales}
+                          onToggleColumnsColorScales={
+                            onToggleColumnsColorScales
+                          }
                           {...props}
                         />
                       </ErrorBoundary>
@@ -864,6 +871,7 @@ const Table = React.forwardRef(function Table(
                         onColumnResizeEnd={() => null}
                         onRowHover={onRowHover}
                         onRowClick={onRowClick}
+                        disableRowClick={disableRowClick}
                       />
                     </ErrorBoundary>
                   )
@@ -940,13 +948,20 @@ function propsComparator(
   if (prevProps.hiddenColumns !== nextProps.hiddenColumns) {
     return false;
   }
+
   if (prevProps.hiddenChartRows !== nextProps.hiddenChartRows) {
     return false;
   }
+
   if (prevProps.columnsOrder !== nextProps.columnsOrder) {
     return false;
   }
-  if (prevProps.focusedState !== nextProps.focusedState) {
+
+  if (prevProps.focusedState?.active !== nextProps.focusedState?.active) {
+    return false;
+  }
+
+  if (prevProps.columnsColorScales !== nextProps.columnsColorScales) {
     return false;
   }
 

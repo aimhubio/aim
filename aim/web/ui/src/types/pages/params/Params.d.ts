@@ -62,7 +62,7 @@ export interface IParamsProps extends Partial<RouteChildrenProps> {
   notifyData: INotification[];
   tableRowHeight?: any;
   hiddenColumns: any;
-  selectFormOptions: ISelectOption[];
+  selectFormData: { options: ISelectOption[]; suggestions: string[] };
   columnsOrder: IColumnsOrder;
   onNotificationDelete: (id: number) => void;
   onCurveInterpolationChange: () => void;

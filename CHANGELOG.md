@@ -4,8 +4,82 @@
 
 ### Enhancements:
 
+- Hugging Face adapter refactoring (mihran113)
+- Add run description columns to all run specific tables (VkoHov, mihran113)
+- Change images rendering optimization default value to smoother (VkoHov)
+- Add ability to apply color scale on columns with numeric values (VkoHov)
+- Refactored XGBoost AimCallback (devfox-se)
+- Add DVC integration (devfox-se)
+- Added API profiler and unified API error response (devfox-se)
+
+### Fixes:
+
+- Fix issue with focusing on the chart active point while moving the cursor (KaroMourad)
+- Fix the image full view toggle icon visibility if the image has a white background (VkoHov)
+- Fix scroll to the end of the audio tab (VkoHov)
+- Add scrollbar to image full view mode content (VkoHov)
+- Fix issues with run name/description not being set (mihran113)
+- Fix git system param tracking (devfox-se)
+
+## 3.7.5 Mar 18, 2022
+
+- Add request aborting functionality in single run page tabs (arsengit)
+- Render plotly figures properly in single run page (arsengit)
+
+## 3.7.4 Mar 15, 2022
+
+- Fix density min and max validation calculation (VkoHov)
+
+## 3.7.3 Mar 14, 2022
+
+- Add missing names for dynamically imported files in single run page (arsengit)
+
+## 3.7.2 Mar 10, 2022
+
+- Fix issue with rendering UI re keeping long URL (KaroMourad)
+- Split code in the single run page to optimize chunk size (arsengit)
+
+## 3.7.1 Mar 10, 2022
+
+- Fix metric queries with epoch=None (alberttorosyan)
+
+## 3.7.0 Mar 9, 2022
+
+### Enhancements:
+
+- Add Run overview tab in run single page (arsengit, VkoHov, KaroMourad, rubenaprikyan)
 - Custom max message size for Aim Remote tracking (alberttorosyan)
 - Docker images for aim up/server (alberttorosyan)
+- TF/Keras adapters refactoring (mihran113)
+- Remote tracking client-side retry logic (aramaim)
+- Add record_density to initial get-batch request for figures (VkoHov)
+
+### Fixes:
+
+- Fix rendering new lines in texts visualizer (arsengit)
+
+## 3.6.3 Mar 4, 2022
+
+- Fix UI rendering issue on colab (rubenaprikyan)
+
+## 3.6.2 Mar 2, 2022
+
+- Fix chart interactions issue in the Single Run Page Metrics tab (roubkar)
+- Fix `resolve_objects` in remote tracking client subtree (alberttorosyan)
+- Reject `0` as step/record count (alberttorosyan, VkoHov)
+- Fix error on mlflow conversion by experiment id (devfox-se)
+
+## 3.6.1 Feb 25, 2022
+
+- Fix issue with aligning x-axis by custom metric (KaroMourad)
+- Add `__AIM_PROXY_URL__` env variable to see full proxy url when running `aim up` command(rubenaprikyan)
+- Add `--proxy-url` argument to notebook extension's `%aim up` to render UI correctly if there is a proxy server (rubenaprikyan)
+- Add SageMaker integration, `jupyter-server-proxy` s bug-fix script (rubenaprikyan, mahnerak)
+- Fix animation support in Plotly visualization and figure loading performance (Hamik25, mihran113)
+- Display `None` values in group config column (VkoHov, Hamik25)
+- Fix rendering issue on `Select` form search suggestions list (arsengit)
+- Fix PL.AimLogger save_dir AttributeError (GeeeekExplorer)
+- Remove `__example_type__` substring from param name (VkoHov)
 
 ## 3.6.0 Feb 22 2022
 
@@ -25,7 +99,7 @@
 - Add MLflow logs conversion command (devfox-se)
 - Add CustomObject implementation for `hub.dataset` (alberttorosyan)
 
-### Fixes: 
+### Fixes:
 
 - Fix live updated data loss after triggering endless scroll (VkoHov)
 - Fix system metric columns pinning functionality and grouping column order (arsengit)

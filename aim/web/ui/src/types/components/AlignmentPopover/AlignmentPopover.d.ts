@@ -1,7 +1,10 @@
 import { DensityOptions } from 'config/enums/densityEnum';
 
+import { ISelectOption } from 'services/models/explorer/createAppModel';
+
 import { IAlignmentConfig } from 'types/services/models/metrics/metricsAppModel';
-import { IProjectParamsMetrics } from 'types/services/models/projects/projectsModel';
+
+import { AlignmentOptionsEnum } from 'utils/d3';
 
 export interface IAlignmentPopoverProps {
   onAlignmentMetricChange: (metric: string) => void;
@@ -9,5 +12,5 @@ export interface IAlignmentPopoverProps {
   onDensityTypeChange: (type: DensityOptions) => void;
   alignmentConfig: IAlignmentConfig;
   densityType: DensityOptions;
-  projectsDataMetrics: IProjectParamsMetrics['metric'];
+  selectFormOptions: ISelectOption[];
 }

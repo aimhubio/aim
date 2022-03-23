@@ -61,10 +61,14 @@ function ImagesExplore(): React.FunctionComponentElement<React.ReactNode> {
     imagesWrapperRef?.current?.offsetWidth,
   );
 
-  useResizeObserver(
-    () => setOffsetWidth(imagesWrapperRef?.current?.offsetWidth),
-    imagesWrapperRef,
-  );
+  useResizeObserver(() => {
+    if (imagesWrapperRef?.current?.offsetHeight !== offsetHeight) {
+      setOffsetHeight(imagesWrapperRef?.current?.offsetHeight);
+    }
+    if (imagesWrapperRef?.current?.offsetWidth !== offsetWidth) {
+      setOffsetWidth(imagesWrapperRef?.current?.offsetWidth);
+    }
+  }, imagesWrapperRef);
 
   // Add effect to recover state from URL when browser history navigation is used
   React.useEffect(() => {
@@ -79,14 +83,6 @@ function ImagesExplore(): React.FunctionComponentElement<React.ReactNode> {
       }
     }
   }, [location.search]);
-
-  React.useEffect(() => {
-    setOffsetHeight(imagesWrapperRef?.current?.offsetHeight);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [
-    imagesWrapperRef?.current?.offsetHeight,
-    imagesExploreData?.config?.table.resizeMode,
-  ]);
 
   React.useEffect(() => {
     setOffsetWidth(imagesWrapperRef?.current?.offsetWidth);
@@ -204,7 +200,7 @@ function ImagesExplore(): React.FunctionComponentElement<React.ReactNode> {
                   imagesExploreData?.requestStatus === RequestStatusEnum.Pending
                 }
                 selectedImagesData={imagesExploreData?.config?.select}
-                selectFormOptions={imagesExploreData?.selectFormOptions}
+                selectFormData={imagesExploreData?.selectFormData}
                 onImagesExploreSelectChange={
                   imagesExploreAppModel.onImagesExploreSelectChange
                 }
@@ -274,7 +270,7 @@ function ImagesExplore(): React.FunctionComponentElement<React.ReactNode> {
                 }
                 illustrationConfig={{
                   page: 'image',
-                  type: imagesExploreData?.selectFormOptions.length
+                  type: imagesExploreData?.selectFormData?.options?.length
                     ? Request_Illustrations[
                         imagesExploreData.requestStatus as RequestStatusEnum
                       ]

@@ -1,5 +1,8 @@
 import { ResizeModeEnum } from 'config/enums/tableEnums';
 
+export const TABLE_COLUMN_START_COLOR_SCALE = '#edc949';
+export const TABLE_COLUMN_END_COLOR_SCALE = '#2bc784';
+
 export enum RowHeightSize {
   sm = 28,
   md = 32,
@@ -36,7 +39,7 @@ export const TABLE_DEFAULT_CONFIG = {
     hiddenColumns: [],
     columnsWidths: {},
     columnsOrder: {
-      left: ['experiment', 'run'],
+      left: ['run'],
       middle: [],
       right: [],
     },
@@ -50,7 +53,7 @@ export const TABLE_DEFAULT_CONFIG = {
     hiddenColumns: [],
     columnsWidths: {},
     columnsOrder: {
-      left: ['experiment'],
+      left: ['run'],
       middle: [],
       right: [],
     },
@@ -65,7 +68,7 @@ export const TABLE_DEFAULT_CONFIG = {
     hideSystemMetrics: true,
     columnsWidths: {},
     columnsOrder: {
-      left: ['experiment'],
+      left: ['run'],
       middle: [],
       right: [],
     },
@@ -79,7 +82,7 @@ export const TABLE_DEFAULT_CONFIG = {
     hiddenColumns: [],
     columnsWidths: {},
     columnsOrder: {
-      left: ['experiment'],
+      left: ['run'],
       middle: [],
       right: [],
     },
@@ -94,7 +97,7 @@ export const TABLE_DEFAULT_CONFIG = {
     hideSystemMetrics: true,
     columnsWidths: {},
     columnsOrder: {
-      left: ['experiment'],
+      left: ['run'],
       middle: [],
       right: [],
     },

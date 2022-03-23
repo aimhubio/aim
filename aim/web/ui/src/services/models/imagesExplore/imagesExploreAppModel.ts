@@ -12,7 +12,7 @@ import { RequestStatusEnum } from 'config/enums/requestStatusEnum';
 import COLORS from 'config/colors/colors';
 import { CONTROLS_DEFAULT_CONFIG } from 'config/controls/controlsDefaultConfig';
 import { ANALYTICS_EVENT_KEYS } from 'config/analytics/analyticsKeysMap';
-import { DATE_EXPORTING_FORMAT } from 'config/dates/dates';
+import { DATE_EXPORTING_FORMAT, TABLE_DATE_FORMAT } from 'config/dates/dates';
 
 import {
   getImagesExploreTableColumns,
@@ -80,6 +80,7 @@ import alphabeticalSortComparator from 'utils/alphabeticalSortComparator';
 import onNotificationDelete from 'utils/app/onNotificationDelete';
 import onNotificationAdd from 'utils/app/onNotificationAdd';
 import exceptionHandler from 'utils/app/exceptionHandler';
+import { getParamsSuggestions } from 'utils/app/getParamsSuggestions';
 
 import createModel from '../model';
 
@@ -87,7 +88,10 @@ const model = createModel<Partial<IImagesExploreAppModelState>>({
   requestStatus: RequestStatusEnum.NotRequested,
   searchButtonDisabled: false,
   applyButtonDisabled: true,
-  selectFormOptions: [],
+  selectFormData: {
+    options: undefined,
+    suggestions: [],
+  },
 });
 
 let tooltipData: ITooltipData = {};
@@ -179,7 +183,10 @@ function initialize(appId: string): void {
     .call()
     .then((data: IProjectParamsMetrics) => {
       model.setState({
-        selectFormOptions: getSelectFormOptions(data),
+        selectFormData: {
+          options: getSelectFormOptions(data),
+          suggestions: getParamsSuggestions(data),
+        },
       });
     });
 }
@@ -303,14 +310,22 @@ function getImagesData(
     //TODO check values nullability
     imageDataBody = {
       ...imageDataBody,
-      record_range: !_.isEmpty(recordSlice)
-        ? `${recordSlice[0]}:${recordSlice[1] + 1}`
-        : '',
-      index_range: !_.isEmpty(indexSlice)
-        ? `${indexSlice?.[0]}:${(indexSlice?.[1] || 0) + 1}`
-        : '',
-      record_density: recordDensity ?? '',
-      index_density: indexDensity ?? '',
+      record_range:
+        !_.isEmpty(recordSlice) &&
+        !_.isNil(recordSlice?.[0]) &&
+        !_.isNil(recordSlice[1])
+          ? `${recordSlice[0]}:${recordSlice[1] + 1}`
+          : '',
+      index_range:
+        !_.isEmpty(indexSlice) &&
+        !_.isNil(recordSlice?.[0]) &&
+        !_.isNil(recordSlice[1])
+          ? `${indexSlice?.[0]}:${(indexSlice?.[1] || 0) + 1}`
+          : '',
+      record_density:
+        !_.isNil(recordDensity) && +recordDensity > 0 ? recordDensity : '',
+      index_density:
+        !_.isNil(indexDensity) && +indexDensity > 0 ? indexDensity : '',
     };
   }
   imagesRequestRef = imagesExploreService.getImagesExploreData(imageDataBody);
@@ -1250,6 +1265,8 @@ function getDataAsTableRows(
         ),
         experiment: '',
         run: '',
+        date: '',
+        description: '',
         metric: '',
         context: [],
         children: [],
@@ -1277,8 +1294,10 @@ function getDataAsTableRows(
           color: metricsCollection.color ?? metric.color,
           dasharray: metricsCollection.dasharray ?? metric.dasharray,
           experiment: metric.run.props.experiment?.name ?? 'default',
-          run: moment(metric.run.props.creation_time * 1000).format(
-            'HH:mm:ss · D MMM, YY',
+          run: metric.run.props?.name ?? '-',
+          description: metric.run.props?.description ?? '-',
+          date: moment(metric.run.props.creation_time * 1000).format(
+            TABLE_DATE_FORMAT,
           ),
           name: metric.images_name,
           context: Object.entries(metric.context).map((entry) =>
@@ -1361,7 +1380,9 @@ function getDataAsTableRows(
       if (metricsCollection.config !== null) {
         rows[groupKey!].data[columnKey] =
           columnsValues[columnKey].length === 1
-            ? columnsValues[columnKey][0]
+            ? paramKeys.includes(columnKey)
+              ? formatValue(columnsValues[columnKey][0])
+              : columnsValues[columnKey][0]
             : columnsValues[columnKey];
       }
     }

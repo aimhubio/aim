@@ -38,7 +38,8 @@ $border-radius: 0.2rem;
     }
   }
   &__groupsColumn__cell {
-    span {
+    span,
+    div {
       display: inline-block;
       width: 120px;
       min-width: 120px;
@@ -74,13 +75,22 @@ $border-radius: 0.2rem;
 }
 
 .Table__pane--left,
-.Table__pane--right {
+.Table__pane--right,
+.Table__pane--selection {
   position: sticky;
   width: auto;
   z-index: 1;
 }
 
 .Table__pane--left {
+  left: 0;
+  box-shadow: 1px 0 3px 0 $cuddle;
+  &.withSelectionColumn {
+    left: var(--left-position);
+  }
+}
+
+.Table__pane--selection {
   left: 0;
   box-shadow: 1px 0 3px 0 $cuddle;
 }

@@ -40,7 +40,7 @@ export interface IParamsAppModelState {
   notifyData: INotification[];
   groupingSelectOptions: IGroupingSelectOption[];
   metricsColumns: any;
-  selectFormOptions: ISelectOption[];
+  selectFormData: { options: ISelectOption[]; suggestions: string[] };
   selectedRows?: any;
 }
 

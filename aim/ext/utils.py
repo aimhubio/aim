@@ -1,4 +1,7 @@
-from subprocess import run, PIPE
+import logging
+import subprocess
+
+logger = logging.getLogger(__name__)
 
 
 def get_installed_packages():
@@ -23,23 +26,42 @@ def get_environment_variables():
 
 def get_git_info():
     git_info = {}
-    r = run(['git', 'rev-parse', '--is-inside-work-tree'], stdout=PIPE, stderr=PIPE, check=False)
-    output = r.stdout.decode('utf-8').strip()
-    if output == 'true':
-        cmds = [
-            'git rev-parse --abbrev-ref HEAD',
-            'git log --pretty=format:%h/%ad/%an --date=iso-strict -1',
-            'git config --get remote.origin.url'
-        ]
-        results = []
-        for cmd in cmds:
-            r = run(cmd.split(), stdout=PIPE, stderr=PIPE, check=False)
+    try:
+        r = subprocess.run(['git', 'rev-parse', '--is-inside-work-tree'],
+                           stdout=subprocess.PIPE,
+                           stderr=subprocess.STDOUT,
+                           check=True)
+    except subprocess.CalledProcessError:
+        # not a git repo
+        return git_info
+    else:
+        output = r.stdout.decode('utf-8').strip().lower()
+        if output != 'true':
+            # malformed result
+            return git_info
+
+    cmds = (
+        ('git', 'rev-parse', '--abbrev-ref', 'HEAD'),
+        ('git', 'config', '--get', 'remote.origin.url'),
+        ('git', 'log', '--pretty=format:%h/%ad/%an', '--date=iso-strict', '-1'),
+    )
+    results = []
+    for cmd in cmds:
+        try:
+            r = subprocess.run(cmd, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, check=True)
+        except subprocess.CalledProcessError:
+            logger.warning('Something went wrong while collecting git info. Will skip this step.')
+            break
+        else:
             output = r.stdout.decode('utf-8').strip()
             results.append(output)
-
+    else:
         branch_name = results[0]
-        commit_hash, commit_timestamp, commit_author = results[1].split('/')
-        git_remote_url = results[2]
+        git_remote_url = results[1]
+        try:
+            commit_hash, commit_timestamp, commit_author = results[2].split('/')
+        except ValueError:
+            commit_hash = commit_timestamp = commit_author = None
 
         git_info.update({
             'branch': branch_name,

@@ -42,7 +42,7 @@ export interface IMetricAppModelState {
   params: string[];
   notifyData: INotification[];
   groupingSelectOptions: IGroupingSelectOption[];
-  selectFormOptions?: ISelectOption[];
+  selectFormData?: { options: ISelectOption[]; suggestions: string[] };
   liveUpdateConfig: {
     delay: number;
     enabled: boolean;
@@ -76,7 +76,15 @@ export interface ITooltipContent {
   params?: {
     [key: string]: any;
   };
-  [key: string]: any;
+  name?: string;
+  context?: { [key: string]: unknown };
+  runHash?: string;
+  mediaContent?: {
+    caption?: string;
+    step?: number | string;
+    index?: number;
+    images_name?: string;
+  };
 }
 
 export interface IMetricsCollection<T> {

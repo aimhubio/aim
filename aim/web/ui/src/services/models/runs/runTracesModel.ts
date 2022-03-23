@@ -116,6 +116,7 @@ function changeActiveItemKey(key: string, name: string) {
   const state = model.getState();
   const menuState = state.menu;
   const batchRequestOptions = state.batchRequestOptions;
+  const traceType = state.traceType || 'distributions';
 
   const batchRequestTrace = getContextObjFromMenuActiveKey(
     key || '',
@@ -124,6 +125,8 @@ function changeActiveItemKey(key: string, name: string) {
 
   model.setState({
     ...state,
+    ...getDefaultQueryAndConfigData(traceType),
+    isTraceContextBatchLoading: true,
     menu: {
       ...menuState,
       activeItemKey: key,
@@ -224,15 +227,22 @@ async function getRunTraceBatch(isInitial = false) {
         Object.keys(queryData.inputs).forEach((key: string) => {
           const subKey = key.slice(0, key.indexOf('_'));
           const range = parsed[`${subKey}_range`];
-          queryData.inputs[key] =
+          if (
+            parsed.processedDataType === VisualizationMenuTitles.figures &&
             (queryData.inputs[key] < range[0] ||
+              queryData.inputs[key] > range[1])
+          ) {
+            queryData.inputs[key] = range[0] ?? 1;
+          } else if (
+            (parsed.processedDataType !== VisualizationMenuTitles.figures &&
+              queryData.inputs[key] < 0) ||
             queryData.inputs[key] > range[1]
-              ? range[
-                  parsed.processedDataType === VisualizationMenuTitles.figures
-                    ? 0
-                    : 1
-                ]
-              : queryData.inputs[key]) || 1;
+          ) {
+            const rangeLength = _.range(range[0], range[1] + 1).length;
+            queryData.inputs[key] = rangeLength > 0 ? rangeLength : 1;
+          } else {
+            queryData.inputs[key] = queryData.inputs[key] ?? 1;
+          }
         });
       }
     }
@@ -241,6 +251,7 @@ async function getRunTraceBatch(isInitial = false) {
       data: parsed,
       queryData,
       isTraceBatchLoading: false,
+      isTraceContextBatchLoading: false,
     });
   } catch (e) {
     model.setState({

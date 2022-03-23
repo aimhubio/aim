@@ -1,10 +1,8 @@
-import React, { useCallback, useRef, useState } from 'react';
+import React from 'react';
 
 import PopoverContent from 'components/ChartPanel/PopoverContent/PopoverContent';
 import { Button, Icon } from 'components/kit';
 import ErrorBoundary from 'components/ErrorBoundary/ErrorBoundary';
-
-import useResizeObserver from 'hooks/window/useResizeObserver';
 
 import blobsURIModel from 'services/models/media/blobsURIModel';
 
@@ -21,32 +19,23 @@ function ImageFullViewPopover({
   handleClose,
 }: IImageFullViewPopoverProps): React.FunctionComponentElement<React.ReactNode> {
   const blobData = blobsURIModel.getState()[imageData?.blob_uri];
-  const imageContainerRef = useRef<any>({});
-  const [containerHeight, setContainerHeight] = useState(
-    imageContainerRef?.current?.offsetHeight || 0,
-  );
-
-  const setContainerHeightMemo = useCallback(
-    () => setContainerHeight(imageContainerRef?.current?.offsetHeight || 0),
-    [setContainerHeight],
-  );
-
-  useResizeObserver(setContainerHeightMemo, imageContainerRef);
 
   return (
     <ErrorBoundary>
       <div className='ImageFullViewPopover'>
         <div
-          ref={imageContainerRef}
           className={`ImageFullViewPopover__imageContainer ImageFullViewPopover__imageContainer--${imageRendering}`}
         >
-          <img
-            src={`data:image/${imageData.format};base64, ${blobData}`}
-            alt=''
-            style={{
-              maxHeight: containerHeight,
-            }}
-          />
+          <div className='ImageFullViewPopover__imageContainer__imageBox'>
+            <img
+              src={`data:image/${imageData.format};base64, ${blobData}`}
+              style={{
+                maxWidth: imageData.width,
+                maxHeight: imageData.height,
+              }}
+              alt={imageData.caption}
+            />
+          </div>
         </div>
         <div className='ImageFullViewPopover__detailContainer'>
           <div className='ImageFullViewPopover__detailContainer__closeButtonContainer'>

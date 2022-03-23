@@ -38,7 +38,7 @@ async def create_experiment_api(exp_in: ExperimentCreateIn, factory=Depends(obje
         try:
             exp = factory.create_experiment(exp_in.name.strip())
         except ValueError as e:
-            raise HTTPException(400, detail=str(e))
+            raise HTTPException(status_code=400, detail=str(e))
 
     return {
         'id': exp.uuid,
@@ -72,8 +72,10 @@ async def update_experiment_properties_api(exp_id: str, exp_in: ExperimentUpdate
             exp.name = exp_in.name.strip()
         if exp_in.archived is not None:
             if exp_in.archived and len(exp.runs) > 0:
-                raise HTTPException(status_code=400,
-                                    detail=f'Cannot archive experiment \'{exp_id}\'. Experiment has associated runs.')
+                raise HTTPException(status_code=400, detail={
+                    'message': f'Cannot archive experiment \'{exp_id}\'.',
+                    'reason': 'Experiment has associated runs.'
+                })
             exp.archived = exp_in.archived
 
     return {

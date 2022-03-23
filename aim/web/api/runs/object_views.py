@@ -1,4 +1,3 @@
-import json
 from typing import Optional, Dict, List
 
 from fastapi import HTTPException
@@ -29,6 +28,14 @@ class CustomObjectApiConfig:
     dump_record_fn: callable = lambda x: x.data  # noqa E731
     model: type = BaseModel
 
+    @staticmethod
+    def check_density(density):
+        if density <= 0:
+            raise HTTPException(status_code=400, detail={
+                'message': f'Invalid density value: \'{density}\'.',
+                'reason': 'Density must be > 0.'
+            })
+
     @classmethod
     def register_endpoints(cls, router):
         assert issubclass(cls.sequence_type, Sequence)
@@ -47,6 +54,8 @@ class CustomObjectApiConfig:
             query = checked_query(q)
             record_range = checked_range(record_range)
             index_range = checked_range(index_range)
+            CustomObjectApiConfig.check_density(record_density)
+            CustomObjectApiConfig.check_density(index_density)
 
             traces = repo.query_images(query=query)
             api = CustomObjectApi(seq_name, resolve_blobs=cls.resolve_blobs)
@@ -67,6 +76,8 @@ class CustomObjectApiConfig:
             repo = get_project_repo()
             record_range = checked_range(record_range)
             index_range = checked_range(index_range)
+            CustomObjectApiConfig.check_density(record_density)
+            CustomObjectApiConfig.check_density(index_density)
 
             run = repo.get_run(run_id)
             if not run:
@@ -116,5 +127,5 @@ class AudioApiConfig(CustomObjectApiConfig):
 class FigureApiConfig(CustomObjectApiConfig):
     sequence_type = Figures
     resolve_blobs = True
-    dump_record_fn = lambda x: json.loads(x.data)  # noqa E731
+    dump_record_fn = lambda x: x.data  # noqa E731
     model = FigureInfo

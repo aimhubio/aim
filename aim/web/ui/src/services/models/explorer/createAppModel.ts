@@ -14,7 +14,7 @@ import { DensityOptions } from 'config/enums/densityEnum';
 import { RequestStatusEnum } from 'config/enums/requestStatusEnum';
 import { CONTROLS_DEFAULT_CONFIG } from 'config/controls/controlsDefaultConfig';
 import { ANALYTICS_EVENT_KEYS } from 'config/analytics/analyticsKeysMap';
-import { DATE_EXPORTING_FORMAT } from 'config/dates/dates';
+import { DATE_EXPORTING_FORMAT, TABLE_DATE_FORMAT } from 'config/dates/dates';
 
 import {
   getMetricsTableColumns,
@@ -173,6 +173,8 @@ import alphabeticalSortComparator from 'utils/alphabeticalSortComparator';
 import onRowSelect from 'utils/app/onRowSelect';
 import { SortField } from 'utils/getSortedFields';
 import onChangeTrendlineOptions from 'utils/app/onChangeTrendlineOptions';
+import { getParamsSuggestions } from 'utils/app/getParamsSuggestions';
+import onToggleColumnsColorScales from 'utils/app/onToggleColumnsColorScales';
 
 import { AppDataTypeEnum, AppNameEnum } from './index';
 /**
@@ -187,7 +189,7 @@ function createAppModel(appConfig: IAppInitialConfig) {
 
   const model: IModel<IAppModelState> = createModel<IAppModelState>({
     requestStatus: RequestStatusEnum.NotRequested,
-    selectFormOptions: undefined,
+    selectFormData: { options: undefined, suggestions: [] },
     config: getConfig(),
   });
 
@@ -290,10 +292,10 @@ function createAppModel(appConfig: IAppInitialConfig) {
                   CONTROLS_DEFAULT_CONFIG.metrics.tooltip.selectedParams,
               },
               focusedState: {
-                active: false,
                 key: null,
                 xValue: null,
                 yValue: null,
+                active: false,
                 chartIndex: null,
               },
             };
@@ -351,6 +353,7 @@ function createAppModel(appConfig: IAppInitialConfig) {
             hiddenColumns: TABLE_DEFAULT_CONFIG.runs.hiddenColumns,
             sortFields: [...TABLE_DEFAULT_CONFIG.runs.sortFields],
             columnsWidths: {},
+            columnsColorScales: {},
             columnsOrder: {
               left: [...TABLE_DEFAULT_CONFIG.runs.columnsOrder.left],
               middle: [...TABLE_DEFAULT_CONFIG.runs.columnsOrder.middle],
@@ -547,7 +550,10 @@ function createAppModel(appConfig: IAppInitialConfig) {
         .call()
         .then((data) => {
           model.setState({
-            selectFormOptions: getMetricOptions(data),
+            selectFormData: {
+              options: getMetricOptions(data),
+              suggestions: getParamsSuggestions(data),
+            },
           });
         });
       const liveUpdateState = model.getState()?.config?.liveUpdate;
@@ -737,6 +743,8 @@ function createAppModel(appConfig: IAppInitialConfig) {
                 line: '',
               },
               experiment: '',
+              description: '',
+              date: '',
               run: '',
               metric: '',
               context: [],
@@ -774,8 +782,10 @@ function createAppModel(appConfig: IAppInitialConfig) {
               color: metricsCollection.color ?? metric.color,
               dasharray: metricsCollection.dasharray ?? metric.dasharray,
               experiment: metric.run.props?.experiment?.name ?? 'default',
-              run: moment(metric.run.props.creation_time * 1000).format(
-                'HH:mm:ss · D MMM, YY',
+              run: metric.run.props?.name ?? '-',
+              description: metric.run.props?.description ?? '-',
+              date: moment(metric.run.props.creation_time * 1000).format(
+                TABLE_DATE_FORMAT,
               ),
               metric: metric.name,
               context: contextToString(metric.context)?.split(',') || [''],
@@ -817,6 +827,8 @@ function createAppModel(appConfig: IAppInitialConfig) {
 
             [
               'experiment',
+              'description',
+              'date',
               'run',
               'metric',
               'context',
@@ -2210,7 +2222,16 @@ function createAppModel(appConfig: IAppInitialConfig) {
         }
 
         const liveUpdateState = model.getState()?.config.liveUpdate;
-
+        projectsService
+          .getProjectParams(['metric'])
+          .call()
+          .then((data) => {
+            model.setState({
+              selectFormData: {
+                suggestions: getParamsSuggestions(data),
+              },
+            });
+          });
         if (liveUpdateState?.enabled) {
           liveUpdateInstance = new LiveUpdateService(
             appName,
@@ -2729,8 +2750,10 @@ function createAppModel(appConfig: IAppInitialConfig) {
               color: metricsCollection.color ?? metric.color,
               dasharray: metricsCollection.dasharray ?? metric.dasharray,
               experiment: metric.run.props.experiment?.name ?? 'default',
-              run: moment(metric.run.props.creation_time * 1000).format(
-                'HH:mm:ss · D MMM, YY',
+              run: metric.run.props.name,
+              description: metric.run.props?.description ?? '-',
+              date: moment(metric.run.props.creation_time * 1000).format(
+                TABLE_DATE_FORMAT,
               ),
               metric: metric.name,
               ...metricsRowValues,
@@ -2739,6 +2762,8 @@ function createAppModel(appConfig: IAppInitialConfig) {
             [
               'experiment',
               'run',
+              'date',
+              'description',
               'metric',
               'context',
               'step',
@@ -3187,6 +3212,14 @@ function createAppModel(appConfig: IAppInitialConfig) {
           }): void {
             return onRowSelect({ actionType, data, model });
           },
+          onToggleColumnsColorScales(colKey: string): void {
+            onToggleColumnsColorScales({
+              colKey,
+              model,
+              appName,
+              updateModelData,
+            });
+          },
         });
       }
 
@@ -3210,6 +3243,51 @@ function createAppModel(appConfig: IAppInitialConfig) {
       };
       let tooltipData: ITooltipData = {};
       let liveUpdateInstance: LiveUpdateService | null;
+
+      function initialize(appId: string): void {
+        model.init();
+        const state: Partial<IParamsAppModelState> = {};
+        if (grouping) {
+          state.groupingSelectOptions = [];
+        }
+        if (components?.table) {
+          state.refs = {
+            ...state.refs,
+            tableRef: { current: null },
+          };
+        }
+        if (components?.charts?.[0]) {
+          tooltipData = {};
+          state.refs = {
+            ...state.refs,
+            chartPanelRef: { current: null },
+          };
+        }
+        projectsService
+          .getProjectParams(['metric'])
+          .call()
+          .then((data) => {
+            model.setState({
+              selectFormData: {
+                options: getParamsOptions(data),
+                suggestions: getParamsSuggestions(data),
+              },
+            });
+          });
+        model.setState({ ...state });
+        if (!appId) {
+          setModelDefaultAppConfigData();
+        }
+        const liveUpdateState = model.getState()?.config?.liveUpdate;
+
+        if (liveUpdateState?.enabled) {
+          liveUpdateInstance = new LiveUpdateService(
+            appName,
+            updateData,
+            liveUpdateState.delay,
+          );
+        }
+      }
 
       function getParamsOptions(projectsData: IProjectParamsMetrics) {
         const comparator = alphabeticalSortComparator<ISelectOption>({
@@ -3253,7 +3331,7 @@ function createAppModel(appConfig: IAppInitialConfig) {
           );
           paramPaths.forEach((paramPath, index) => {
             params.push({
-              label: paramPath,
+              label: paramPath.slice(0, paramPath.indexOf('.__example_type__')),
               group: 'Params',
               type: 'params',
               color: COLORS[0][index % COLORS[0].length],
@@ -3274,48 +3352,6 @@ function createAppModel(appConfig: IAppInitialConfig) {
           }),
         );
         return data.concat(systemOptions);
-      }
-
-      function initialize(appId: string): void {
-        model.init();
-        const state: Partial<IParamsAppModelState> = {};
-        if (grouping) {
-          state.groupingSelectOptions = [];
-        }
-        if (components?.table) {
-          state.refs = {
-            ...state.refs,
-            tableRef: { current: null },
-          };
-        }
-        if (components?.charts?.[0]) {
-          tooltipData = {};
-          state.refs = {
-            ...state.refs,
-            chartPanelRef: { current: null },
-          };
-        }
-        projectsService
-          .getProjectParams(['metric'])
-          .call()
-          .then((data) => {
-            model.setState({
-              selectFormOptions: getParamsOptions(data),
-            });
-          });
-        model.setState({ ...state });
-        if (!appId) {
-          setModelDefaultAppConfigData();
-        }
-        const liveUpdateState = model.getState()?.config?.liveUpdate;
-
-        if (liveUpdateState?.enabled) {
-          liveUpdateInstance = new LiveUpdateService(
-            appName,
-            updateData,
-            liveUpdateState.delay,
-          );
-        }
       }
 
       function updateData(newData: IRun<IParamTrace>[]): void {
@@ -3488,6 +3524,8 @@ function createAppModel(appConfig: IAppInitialConfig) {
                 dasharray: metricsCollection.dasharray,
                 experiment: '',
                 run: '',
+                description: '',
+                date: '',
                 metric: '',
                 context: [],
                 children: [],
@@ -3523,8 +3561,10 @@ function createAppModel(appConfig: IAppInitialConfig) {
                 color: metricsCollection.color ?? metric.color,
                 dasharray: metricsCollection.dasharray ?? metric.dasharray,
                 experiment: metric.run.props.experiment.name ?? 'default',
-                run: moment(metric.run.props.creation_time * 1000).format(
-                  'HH:mm:ss · D MMM, YY',
+                run: metric.run.props?.name ?? '-',
+                description: metric.run.props?.description ?? '-',
+                date: moment(metric.run.props.creation_time * 1000).format(
+                  TABLE_DATE_FORMAT,
                 ),
                 metric: metric.name,
                 ...metricsRowValues,
@@ -3538,6 +3578,8 @@ function createAppModel(appConfig: IAppInitialConfig) {
               [
                 'experiment',
                 'run',
+                'date',
+                'description',
                 'metric',
                 'context',
                 'step',
@@ -4668,7 +4710,10 @@ function createAppModel(appConfig: IAppInitialConfig) {
           .call()
           .then((data: IProjectParamsMetrics) => {
             model.setState({
-              selectFormOptions: getScattersSelectOptions(data),
+              selectFormData: {
+                options: getScattersSelectOptions(data),
+                suggestions: getParamsSuggestions(data),
+              },
             });
           });
 
@@ -4950,9 +4995,12 @@ function createAppModel(appConfig: IAppInitialConfig) {
                   (metric) => metric.key,
                 ),
                 color: metricsCollection.color,
+
                 dasharray: metricsCollection.dasharray,
                 experiment: '',
                 run: '',
+                date: '',
+                description: '',
                 metric: '',
                 context: [],
                 children: [],
@@ -4988,8 +5036,10 @@ function createAppModel(appConfig: IAppInitialConfig) {
                 color: metricsCollection.color ?? metric.color,
                 dasharray: metricsCollection.dasharray ?? metric.dasharray,
                 experiment: metric.run.props.experiment?.name ?? 'default',
-                run: moment(metric.run.props.creation_time * 1000).format(
-                  'HH:mm:ss · D MMM, YY',
+                run: metric.run.props?.name ?? '-',
+                description: metric.run.props?.description ?? '-',
+                date: moment(metric.run.props.creation_time * 1000).format(
+                  TABLE_DATE_FORMAT,
                 ),
                 metric: metric.name,
                 ...metricsRowValues,
@@ -5005,6 +5055,8 @@ function createAppModel(appConfig: IAppInitialConfig) {
                 'run',
                 'metric',
                 'context',
+                'date',
+                'description',
                 'step',
                 'epoch',
                 'time',
@@ -5497,7 +5549,7 @@ function createAppModel(appConfig: IAppInitialConfig) {
           );
           paramPaths.forEach((paramPath, index) => {
             data.push({
-              label: paramPath,
+              label: paramPath.slice(0, paramPath.indexOf('.__example_type__')),
               group: 'Params',
               type: 'params',
               color: COLORS[0][index % COLORS[0].length],
