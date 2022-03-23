@@ -790,9 +790,13 @@ class Run(StructuredRunMixin):
         if self._resources is None:
             return
         self._resources.close()
-        # de-reference trees and resources
+        # de-reference trees and other resources
         del self._resources
+        del self.repo
+        del self._props
         self._resources = None
+        self.repo = None
+        self._props = None
         self._cleanup_trees()
 
     @classmethod
