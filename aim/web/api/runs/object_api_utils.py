@@ -91,6 +91,9 @@ class CustomObjectApi:
             step = (self.index_range.stop - self.index_range.start) // index_density or 1
             self.index_slice = slice(self.index_range.start, self.index_range.stop, step)
 
+    def get_total_record_range(self):
+        return self._calculate_ranges()
+
     async def search_result_streamer(self):
 
         def _pack_run_data(run_: 'Run', traces_: list):

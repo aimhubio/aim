@@ -95,6 +95,38 @@ class CustomObjectApiConfig:
             def blobs_batch_api(uri_batch: URIBatchIn):
                 return StreamingResponse(get_blobs_batch(uri_batch, get_project_repo()))
 
+        # run sequence batch API
+        step_of_sequence_endpoint = f'/{{run_id}}/{seq_name}/get-step/'
+
+        @router.post(step_of_sequence_endpoint, response_model=List[ObjectSequenceBaseView])
+        async def step_of_sequence(run_id: str,
+                                   requested_traces: RunTracesBatchApiIn,
+                                   index_range: Optional[str] = '', index_density: Optional[int] = 5,
+                                   record_step: int = None):
+
+            index_range = checked_range(index_range)
+            CustomObjectApiConfig.check_density(index_density)
+
+            repo = get_project_repo()
+            run = repo.get_run(run_id)
+            if not run:
+                raise HTTPException(status_code=404)
+
+            api = CustomObjectApi(seq_name, resolve_blobs=cls.resolve_blobs)
+            api.set_dump_data_fn(cls.dump_record_fn)
+            api.set_requested_traces(run, requested_traces)
+
+            if record_step is None:
+                total_record_range = api.get_total_record_range()
+                if api.use_list:
+                    total_record_range = total_record_range[0]
+                record_step = total_record_range.stop - 1
+            record_range = checked_range(f"{record_step}:{record_step + 1}")
+
+            api.set_ranges(record_range, 1, index_range, index_density)
+            traces_streamer = api.requested_traces_streamer()
+            return StreamingResponse(traces_streamer)
+
 
 class ImageApiConfig(CustomObjectApiConfig):
     sequence_type = Images
