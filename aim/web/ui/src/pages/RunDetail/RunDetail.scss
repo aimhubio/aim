@@ -387,18 +387,18 @@
               }
             }
 
-            // &.in-progress {
-            &::after {
-              content: '';
-              position: absolute;
-              right: 0.625rem;
-              width: 0.375rem;
-              height: 0.375rem;
-              top: 0.75rem;
-              border-radius: $border-radius-circle;
-              background: $success-color-100;
+            &.in-progress {
+              &::after {
+                content: '';
+                position: absolute;
+                right: 0.625rem;
+                width: 0.375rem;
+                height: 0.375rem;
+                top: 0.75rem;
+                border-radius: $border-radius-circle;
+                background: $success-color-100;
+              }
             }
-            // }
             &:hover {
               background: $cuddle-20;
             }
