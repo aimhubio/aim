@@ -9,6 +9,7 @@
 - Change images rendering optimization default value to smoother (VkoHov)
 - Add ability to apply color scale on columns with numeric values (VkoHov)
 - Refactored XGBoost AimCallback (devfox-se)
+- Reopenable callbacks for integrations (mihran113)
 - Add DVC integration (devfox-se)
 - Added API profiler and unified API error response (devfox-se)
 
