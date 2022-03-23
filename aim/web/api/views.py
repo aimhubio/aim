@@ -18,7 +18,7 @@ async def serve_static_files(path):
 
     # check if path is leading inside ui/build directory
     if not Path(static_files_root).resolve() in Path(static_file_name).resolve().parents:
-        raise HTTPException(404)
+        raise HTTPException(status_code=404)
 
     compressed_file_name = '{}.gz'.format(static_file_name)
     if os.path.exists(compressed_file_name):

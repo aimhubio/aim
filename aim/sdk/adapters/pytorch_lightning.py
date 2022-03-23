@@ -43,17 +43,28 @@ class AimLogger(LightningLoggerBase):
         self._log_system_params = log_system_params
 
         self._run = None
+        self._run_hash = None
 
     @property
     @rank_zero_experiment
     def experiment(self) -> Run:
         if self._run is None:
-            self._run = Run(
-                repo=self._repo_path,
-                experiment=self._experiment_name,
-                system_tracking_interval=self._system_tracking_interval,
-                log_system_params=self._log_system_params
-            )
+            if self._run_hash:
+                self._run = Run(
+                    self._run_hash,
+                    repo=self._repo_path,
+                    system_tracking_interval=self._system_tracking_interval,
+                )
+            else:
+                if self._run_hash:
+                    self._run = Run(
+                        self._run_hash,
+                        repo=self._repo_path,
+                        experiment=self._experiment_name,
+                        system_tracking_interval=self._system_tracking_interval,
+                        log_system_params=self._log_system_params,
+                    )
+                self._run_hash = self._run.hash
         return self._run
 
     @rank_zero_only
@@ -99,6 +110,13 @@ class AimLogger(LightningLoggerBase):
     @rank_zero_only
     def close(self) -> None:
         super().close()
+        if self._run:
+            self._run.close()
+            del self._run
+            self._run = None
+
+    def __del__(self):
+        self.close()
 
     @property
     def save_dir(self) -> str:

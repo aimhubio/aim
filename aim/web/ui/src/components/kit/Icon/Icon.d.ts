@@ -128,4 +128,7 @@ export type IconName =
   | 'hash'
   | 'calendar'
   | 'avatar'
-  | 'branch';
+  | 'branch'
+  | 'color-scale-off'
+  | 'color-scale-on'
+  | 'text';

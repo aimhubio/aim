@@ -17,6 +17,8 @@ function Cell({
   onRowClick,
   multiSelect = false,
   groupColumnColored,
+  getColumnCelBGColor,
+  columnsColorScales,
 }) {
   return (
     <ErrorBoundary>
@@ -43,6 +45,11 @@ function Cell({
           ...(metadata?.color && {
             '--color-indicator': metadata?.color,
           }),
+          ...(getColumnCelBGColor &&
+            columnsColorScales?.[col.key] &&
+            !_.isNil(getColumnCelBGColor(item)) && {
+              background: getColumnCelBGColor(+item),
+            }),
           ...(typeof item === 'object' &&
             item?.hasOwnProperty('style') &&
             item?.style),
