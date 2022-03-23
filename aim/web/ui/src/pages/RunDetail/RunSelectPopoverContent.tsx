@@ -122,7 +122,7 @@ function RunSelectPopoverContent({
                       className={classNames(
                         'RunSelectPopoverWrapper__selectPopoverContent__contentContainer__runsListContainer__runsList__runBox',
                         {
-                          selected: runInfo?.name === run.name,
+                          selected: runHash === run?.run_id,
                           'in-progress': !run?.end_time,
                         },
                       )}
@@ -138,7 +138,7 @@ function RunSelectPopoverContent({
                         >
                           <Text
                             size={14}
-                            tint={runInfo?.name === run.name ? 100 : 80}
+                            tint={runHash === run?.run_id ? 100 : 80}
                             weight={500}
                           >
                             {run.name}
@@ -153,13 +153,13 @@ function RunSelectPopoverContent({
                         <Icon
                           name='calendar'
                           color={
-                            runInfo?.name === run.name ? '#414B6D' : '#606986'
+                            runHash === run?.run_id ? '#414B6D' : '#606986'
                           }
                           fontSize={12}
                         />
                         <Text
                           size={11}
-                          tint={runInfo?.name === run.name ? 80 : 70}
+                          tint={runHash === run?.run_id ? 80 : 70}
                           weight={400}
                         >
                           {`${moment(run.creation_time * 1000).format(

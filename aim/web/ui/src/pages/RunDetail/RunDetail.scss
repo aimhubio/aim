@@ -29,7 +29,8 @@
         color: $text-color;
         align-items: center;
         height: fit-content;
-        width: 50%;
+        max-width: 50%;
+        width: auto;
         &__buttonSelectToggler {
           width: 1.5rem;
           height: 1.5rem;
