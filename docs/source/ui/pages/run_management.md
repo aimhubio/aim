@@ -48,12 +48,8 @@ Generate Runs CSV report by clicking on the `Export` button on the Runs table.
 <img style="border-radius: 8px; border: 1px solid #E8F1FC" alt="Runs Explorer export runs" src="https://docs-blobs.s3.us-east-2.amazonaws.com/images/ui/pages/runs-explorer/export_runs.png">
 
 ## Single run page
-
-### General
-
+ 
 Each training run has a dedicated page on Aim. Use the single run page to observe all the tracked metadata associated with that run.
-
-<img style="border-radius: 8px; border: 1px solid #E8F1FC" alt="Single Run page" src="https://docs-blobs.s3.us-east-2.amazonaws.com/images/ui/pages/run-single-page/single_run_page.png">
 
 Here are the tabs available on the single run page.
 Each tab visualizes respective tracked metadata or empty if not tracked.
