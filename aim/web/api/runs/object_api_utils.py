@@ -72,8 +72,12 @@ class CustomObjectApi:
                 continue
             self.requested_traces.append(trace)
 
-    def set_ranges(self, record_range: IndexRange, record_density: int,
-                   index_range: Optional[IndexRange] = None, index_density: Optional[int] = None):
+    def set_ranges(self,
+                   record_range: IndexRange,
+                   record_density: int,
+                   index_range: Optional[IndexRange] = None,
+                   index_density: Optional[int] = None,
+                   record_step: Optional[int] = None):
         self.record_range = record_range
         self.record_density = record_density
 
@@ -85,6 +89,11 @@ class CustomObjectApi:
             self.total_record_range, self.total_index_range = self._calculate_ranges()
         else:
             self.total_record_range = self._calculate_ranges()
+
+        if record_step is not None:
+            if record_step < 0:
+                record_step += self.total_record_range.stop
+            self.record_range = IndexRange(record_step, record_step + 1)
 
         self._adjust_ranges()
         if self.use_list:
