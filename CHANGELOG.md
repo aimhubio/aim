@@ -13,7 +13,8 @@
 - Refactored XGBoost AimCallback (devfox-se)
 - Reopenable callbacks for integrations (mihran113)
 - Add DVC integration (devfox-se)
-- Added API profiler and unified API error response (devfox-se)
+- Add API profiler and unified API error response (devfox-se)
+- Add API to retrieve N'th step of sequence (devfox-se)
 
 ### Fixes:
 
