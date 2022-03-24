@@ -77,10 +77,32 @@ function drawHoverAttributes(args: IDrawHoverAttributesArgs): void {
     mouseY: number,
     nearestCircles: INearestCircle[],
   ): INearestCircle {
+    // filter [mouseX] nearest circles
+    let nearestX: INearestCircle[] = [];
+    let minXDistance = {
+      distance: Math.abs(nearestCircles[0].x - mouseX),
+      index: 0,
+    };
+    for (let i = 1; i < nearestCircles.length; i++) {
+      const distance = Math.abs(nearestCircles[i].x - mouseX);
+      if (distance < minXDistance.distance) {
+        minXDistance.distance = distance;
+        minXDistance.index = i;
+        nearestX = [nearestCircles[i]];
+      } else if (distance === minXDistance.distance) {
+        nearestX.push(nearestCircles[i]);
+      }
+    }
+
+    if (nearestX.indexOf(nearestCircles[minXDistance.index]) === -1) {
+      nearestX.push(nearestCircles[minXDistance.index]);
+    }
+
+    // find active point
     let closestCircles: INearestCircle[] = [];
     let minRadius = null;
     // Find closest circles
-    for (let circle of nearestCircles) {
+    for (let circle of nearestX) {
       const rX = Math.abs(circle.x - mouseX);
       const rY = Math.abs(circle.y - mouseY);
       const r = Math.sqrt(Math.pow(rX, 2) + Math.pow(rY, 2));

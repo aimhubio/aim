@@ -17,39 +17,17 @@ import routes, { IRoute } from 'routes/routes';
 
 import { trackEvent } from 'services/analytics';
 
+import { getItem } from 'utils/storage';
+
 import './Sidebar.scss';
 
 function SideBar(): React.FunctionComponentElement<React.ReactNode> {
   function getPathFromStorage(route: PathEnum): PathEnum | string {
-    switch (route) {
-      case PathEnum.Metrics:
-        if (localStorage.getItem('metricsUrl')) {
-          return localStorage.getItem('metricsUrl') || '';
-        }
-        return route;
-      case PathEnum.Params:
-        if (localStorage.getItem('paramsUrl')) {
-          return localStorage.getItem('paramsUrl') || '';
-        }
-        return route;
-      case PathEnum.Runs:
-        if (localStorage.getItem('runsUrl')) {
-          return localStorage.getItem('runsUrl') || '';
-        }
-        return route;
-      case PathEnum.Images_Explore:
-        if (localStorage.getItem('imagesExploreUrl')) {
-          return localStorage.getItem('imagesExploreUrl') || '';
-        }
-        return route;
-      case PathEnum.Scatters:
-        if (localStorage.getItem('scattersUrl')) {
-          return localStorage.getItem('scattersUrl') || '';
-        }
-        return route;
-      default:
-        return route;
+    const path = getItem(`${route.slice(1)}Url`) ?? '';
+    if (path !== '' && path.startsWith(route)) {
+      return path;
     }
+    return route;
   }
 
   return (
