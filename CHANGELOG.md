@@ -7,6 +7,7 @@
 - Hugging Face adapter refactoring (mihran113)
 - Add run description columns to all run specific tables (VkoHov, mihran113)
 - Change images rendering optimization default value to smoother (VkoHov)
+- Add run name to grouping, ordering and run navigation popovers (VkoHov)
 - Add ability to apply color scale on columns with numeric values (VkoHov)
 - Refactored XGBoost AimCallback (devfox-se)
 - Reopenable callbacks for integrations (mihran113)
@@ -15,6 +16,8 @@
 
 ### Fixes:
 
+- Fix issue with calculation of active point on mouse hover in the LineChart (KaroMourad)
+- Fix issue with wrong URL caching for Explorer pages (roubkar)
 - Fix issue with focusing on the chart active point while moving the cursor (KaroMourad)
 - Fix the image full view toggle icon visibility if the image has a white background (VkoHov)
 - Fix scroll to the end of the audio tab (VkoHov)
