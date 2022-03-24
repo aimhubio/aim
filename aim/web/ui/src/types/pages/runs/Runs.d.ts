@@ -32,9 +32,11 @@ export interface IRunsTableProps {
   isLatest?: boolean;
   data: any;
   columnsWidths: { [key: string]: number };
+  columnsColorScales: { [key: string]: boolean };
   updateColumnsWidths: (key: string, width: number, isReset: boolean) => void;
   selectedRows: { [key: string]: any };
   onRowSelect: (key: string) => any;
   archiveRuns: (ids: string[], archived: boolean) => void;
   deleteRuns: (ids: string[]) => void;
+  onToggleColumnsColorScales: (colKey: string) => void;
 }

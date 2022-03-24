@@ -8,13 +8,26 @@
 - Add run description columns to all run specific tables (VkoHov, mihran113)
 - Change images rendering optimization default value to smoother (VkoHov)
 - Set default steps ordering to desc in single run tabs (VkoHov)
+- Add run name to grouping, ordering and run navigation popovers (VkoHov)
+- Add ability to apply color scale on columns with numeric values (VkoHov)
+- Refactored XGBoost AimCallback (devfox-se)
+- Reopenable callbacks for integrations (mihran113)
+- Add DVC integration (devfox-se)
+- Added API profiler and unified API error response (devfox-se)
 
 ### Fixes:
 
+- Fix issue with calculation of active point on mouse hover in the LineChart (KaroMourad)
+- Fix issue with wrong URL caching for Explorer pages (roubkar)
 - Fix issue with focusing on the chart active point while moving the cursor (KaroMourad)
 - Fix the image full view toggle icon visibility if the image has a white background (VkoHov)
 - Fix scroll to the end of the audio tab (VkoHov)
 - Add scrollbar to image full view mode content (VkoHov)
+- Fix issues with run name/description not being set (mihran113)
+- Fix issue with run single page tabs result caching (mihran113)
+- Fix git system param tracking (devfox-se)
+- Fix runs manual closing (mihran113)
+- Fix Docker image creation step in packaging workflow (alberttorosyan)
 
 ## 3.7.5 Mar 18, 2022
 
@@ -42,7 +55,6 @@
 
 ### Enhancements:
 
-- Add DVC integration (devfox-se)
 - Add Run overview tab in run single page (arsengit, VkoHov, KaroMourad, rubenaprikyan)
 - Custom max message size for Aim Remote tracking (alberttorosyan)
 - Docker images for aim up/server (alberttorosyan)
