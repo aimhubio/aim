@@ -93,6 +93,8 @@ class CustomObjectApi:
         if record_step is not None:
             if record_step < 0:
                 record_step += self.total_record_range.stop
+            assert record_step < self.total_record_range.stop
+
             self.record_range = IndexRange(record_step, record_step + 1)
 
         self._adjust_ranges()
