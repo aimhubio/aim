@@ -3,7 +3,6 @@ import { RequestStatusEnum } from 'config/enums/requestStatusEnum';
 import { IModel, State } from 'types/services/models/model';
 
 import onNotificationAdd from './onNotificationAdd';
-import resetModelOnError from './resetModelOnError';
 
 export default function exceptionHandler<M extends State>({
   detail,
@@ -27,7 +26,4 @@ export default function exceptionHandler<M extends State>({
     },
     model,
   });
-
-  // reset model
-  resetModelOnError({ detail, model });
 }

@@ -174,7 +174,12 @@ async def delete_run_api(run_id: str):
     repo = get_project_repo()
     success = repo.delete_run(run_id)
     if not success:
-        raise HTTPException(400, detail=f'Error while deleting run {run_id}.')
+        raise HTTPException(status_code=400, detail={
+            'message': 'Error while deleting run.',
+            'detail': {
+                'Run id': run_id
+            }
+        })
 
     return {
         'id': run_id,
@@ -187,8 +192,12 @@ async def delete_runs_batch_api(runs_batch: RunsBatchIn):
     repo = get_project_repo()
     success, remaining_runs = repo.delete_runs(runs_batch)
     if not success:
-        raise HTTPException(400, detail={'message': 'Error while deleting runs.',
-                                         'remaining_runs': remaining_runs})
+        raise HTTPException(status_code=400, detail={
+            'message': 'Error while deleting runs.',
+            'detail': {
+                'Remaining runs id': remaining_runs
+            }
+        })
 
     return {
         'status': 'OK'

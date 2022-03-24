@@ -31,7 +31,7 @@ class CustomObjectApiConfig:
     @staticmethod
     def check_density(density):
         if density <= 0:
-            raise HTTPException(status_code=400, detail=f'Invalid density value: \'{density}\'. Density must be > 0.')
+            raise HTTPException(status_code=400, detail='Density must be greater than 0.')
 
     @classmethod
     def register_endpoints(cls, router):
