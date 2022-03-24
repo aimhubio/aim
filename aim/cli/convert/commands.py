@@ -42,6 +42,20 @@ def convert_tensorflow(ctx, logdir, flat):
     parse_tb_logs(logdir, repo_inst, flat)
 
 
+@convert.command(name='tf')
+@click.pass_context
+@click.option('--logdir', required=True, type=click.Path(exists=True,
+                                                         readable=True,
+                                                         dir_okay=True,
+                                                         resolve_path=True))
+@click.option('--flat', '-f', required=False, is_flag=True, default=False)
+def convert_tensorflow(ctx, logdir, flat):
+    click.secho('WARN: Command \'tf\' is deprecated and will be removed in future release,'
+                ' please use \'tensorboard\' instead.', fg='red')
+    repo_inst = ctx.obj['repo_inst']
+    parse_tb_logs(logdir, repo_inst, flat)
+
+
 @convert.command(name='mlflow')
 @click.pass_context
 @click.option('--tracking_uri', required=False, default=None)
