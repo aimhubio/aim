@@ -19,7 +19,6 @@ from aim.web.api.runs.pydantic_models import (
     ObjectSequenceBaseView,
 )
 from aim.web.api.runs.utils import (
-    IndexRange,
     checked_query,
     checked_range,
     get_project_repo,
