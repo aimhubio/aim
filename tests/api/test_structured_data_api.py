@@ -258,5 +258,5 @@ class TestExperimentsApi(StructuredApiTestBase):
 
         response = client.put(f'/api/experiments/{exp_uuid}/', json={'archived': True})
         self.assertEqual(response.status_code, 400)
-        self.assertEqual(response.json()['message'], f'Cannot archive experiment \'{exp_uuid}\'.')
-        self.assertEqual(response.json()['detail']['reason'], 'Experiment has associated runs.')
+        error_msg = f'Cannot archive experiment \'{exp_uuid}\'. Experiment has associated runs.'
+        self.assertEqual(response.json()['message'], error_msg)
