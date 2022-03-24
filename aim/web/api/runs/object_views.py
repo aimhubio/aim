@@ -18,7 +18,13 @@ from aim.web.api.runs.pydantic_models import (
     ObjectSearchRunView,
     ObjectSequenceBaseView,
 )
-from aim.web.api.runs.utils import get_project_repo, checked_query, checked_range, numpy_to_encodable
+from aim.web.api.runs.utils import (
+    IndexRange,
+    checked_query,
+    checked_range,
+    get_project_repo,
+    numpy_to_encodable
+)
 from aim.web.api.runs.object_api_utils import CustomObjectApi, get_blobs_batch
 
 
@@ -102,7 +108,8 @@ class CustomObjectApiConfig:
         async def step_of_sequence(run_id: str,
                                    requested_traces: RunTracesBatchApiIn,
                                    index_range: Optional[str] = '', index_density: Optional[int] = 5,
-                                   record_step: int = None):
+                                   record_step: int = -1):
+            # get last step by default
 
             index_range = checked_range(index_range)
             CustomObjectApiConfig.check_density(index_density)
@@ -116,14 +123,7 @@ class CustomObjectApiConfig:
             api.set_dump_data_fn(cls.dump_record_fn)
             api.set_requested_traces(run, requested_traces)
 
-            if record_step is None:
-                total_record_range = api.get_total_record_range()
-                if api.use_list:
-                    total_record_range = total_record_range[0]
-                record_step = total_record_range.stop - 1
-            record_range = checked_range(f"{record_step}:{record_step + 1}")
-
-            api.set_ranges(record_range, 1, index_range, index_density)
+            api.set_ranges(None, 1, index_range, index_density, record_step)
             traces_streamer = api.requested_traces_streamer()
             return StreamingResponse(traces_streamer)
 
