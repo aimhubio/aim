@@ -2,6 +2,8 @@ import React, { memo } from 'react';
 import classNames from 'classnames';
 import { useHistory } from 'react-router-dom';
 
+import Editor from '@monaco-editor/react';
+
 import ConfirmModal from 'components/ConfirmModal/ConfirmModal';
 import { ActionCard, Icon } from 'components/kit';
 import ErrorBoundary from 'components/ErrorBoundary/ErrorBoundary';
@@ -18,6 +20,7 @@ function RunDetailSettingsTab({
   isArchived,
 }: IRunDetailSettingsTabProps): React.FunctionComponentElement<React.ReactNode> {
   const history = useHistory();
+  let [value, setValue] = React.useState('');
   const [openDeleteModal, setOpenDeleteModal] = React.useState<boolean>(false);
 
   function onRunArchive() {
@@ -47,6 +50,8 @@ function RunDetailSettingsTab({
   React.useEffect(() => {
     analytics.pageView(ANALYTICS_EVENT_KEYS.runDetails.tabs.settings.tabView);
   }, []);
+
+  console.log(value);
 
   return (
     <ErrorBoundary>
@@ -84,7 +89,13 @@ function RunDetailSettingsTab({
             }}
           />
         </div>
-
+        <Editor
+          language='python'
+          height='100vh'
+          options={{
+            lineNumbers: 'off',
+          }}
+        />
         <ConfirmModal
           open={openDeleteModal}
           onCancel={handleDeleteModalClose}

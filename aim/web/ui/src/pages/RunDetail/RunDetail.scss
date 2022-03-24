@@ -150,14 +150,15 @@
 }
 
 .RunDetailMetricsTab {
-  padding: 1.5rem 0;
+  margin-top: 1.5rem;
   &__container {
     height: 100%;
-    display: grid;
-    grid-template-columns: 1fr 1fr;
+    display: flex;
+    flex-wrap: wrap;
     gap: 1.5rem;
     align-items: stretch;
     &__chartContainer {
+      width: calc(50% - 0.75rem);
       border: $border-grey;
       border-radius: 0.5rem;
       background: $white;
