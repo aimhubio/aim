@@ -10,7 +10,7 @@ class StructuredApiTestBase(PrefilledDataApiTestBase):
             for idx, run in enumerate(self.repo.iter_runs()):
                 exp_name = 'Experiment 1' if idx < 5 else 'Experiment 2'
 
-                run.name = f'Run number {idx+1}'
+                run.name = f'Run number {idx + 1}'
                 run.experiment = exp_name
                 if idx < 3:
                     run.add_tag('first runs')
@@ -258,5 +258,5 @@ class TestExperimentsApi(StructuredApiTestBase):
 
         response = client.put(f'/api/experiments/{exp_uuid}/', json={'archived': True})
         self.assertEqual(response.status_code, 400)
-        expected_text = '{{"detail":"Cannot archive experiment \'{}\'. Experiment has associated runs."}}'.format(exp_uuid)
-        self.assertEqual(response.text, expected_text)
+        error_msg = f'Cannot archive experiment \'{exp_uuid}\'. Experiment has associated runs.'
+        self.assertEqual(response.json()['message'], error_msg)
