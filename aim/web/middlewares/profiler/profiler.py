@@ -30,12 +30,12 @@ class PyInstrumentProfilerMiddleware:
         try:
             from pyinstrument import Profiler, __version__
 
-            if tuple(map(int, __version__.split('.'))) < (3,):
+            if tuple(map(int, __version__.split('.'))) < (4,):
                 raise ImportError
         except ImportError:
             raise RuntimeError(
                 'This contrib module requires \'pyinstrument\' to be installed. '
-                'Please install it with command: \n pip install \'pyinstrument>=3.0.0\''
+                'Please install it with command: \n pip install \'pyinstrument>=4.0.0\''
             )
 
         self.profiler = Profiler
