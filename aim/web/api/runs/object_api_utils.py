@@ -3,7 +3,7 @@ import struct
 from typing import Iterable, Iterator, List, Tuple, Union, Optional
 from typing import TYPE_CHECKING
 
-from aim.web.api.runs.utils import IndexRange, get_run_props, run_props_skip_system
+from aim.web.api.runs.utils import IndexRange, get_run_props, run_params_skip_system
 from aim.sdk.uri_service import URIService, generate_resource_path
 from aim.sdk.sequence_collection import SequenceCollection
 from aim.sdk.sequence import Sequence
@@ -104,7 +104,7 @@ class CustomObjectApi:
             run_dict = {
                 run_.hash: {
                     'ranges': ranges,
-                    'params': run_props_skip_system(run_),
+                    'params': run_params_skip_system(run_),
                     'traces': traces_,
                     'props': get_run_props(run_)
                 }
