@@ -56,6 +56,15 @@ class PyInstrumentProfilerMiddleware:
 
         request = Request(scope, receive=receive)
 
+        request_time = time.time()
+        profiler = self.profiler(interval=self._profiler_interval)
+        try:
+            profiler.start()
+        except:
+            skip_profiling = True
+        else:
+            skip_profiling = False
+
         # Default status code used when the application does not return a valid response
         # or an unhandled exception occurs.
         status_code = 500
@@ -66,12 +75,12 @@ class PyInstrumentProfilerMiddleware:
                 status_code = message['status']
             await send(message)
 
-        request_time = time.time()
-        profiler = self.profiler(interval=self._profiler_interval)
-        profiler.start()
         try:
             await self.app(scope, receive, wrapped_send)
         finally:
+            if skip_profiling:
+                return
+
             profiler.stop()
 
             method = request.method
