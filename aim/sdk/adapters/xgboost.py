@@ -54,7 +54,7 @@ class AimCallback(TrainingCallback):
         self.setup()
         return model
 
-    def after_iteration(self, model, epoch: int, evals_log: TrainingCallback.EvalsLog) -> bool:
+    def after_iteration(self, model, epoch: int, evals_log) -> bool:
         if not evals_log:
             return False
 
