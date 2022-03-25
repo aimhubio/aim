@@ -57,7 +57,6 @@ class AimLogger(LightningLoggerBase):
                 )
             else:
                 self._run = Run(
-                    self._run_hash,
                     repo=self._repo_path,
                     experiment=self._experiment_name,
                     system_tracking_interval=self._system_tracking_interval,
