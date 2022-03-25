@@ -1,6 +1,6 @@
 # Changelog
 
-## Unreleased
+## 3.8.0 Mar 26, 2022
 
 ### Enhancements:
 
@@ -29,6 +29,7 @@
 - Fix git system param tracking (devfox-se)
 - Fix runs manual closing (mihran113)
 - Fix Docker image creation step in packaging workflow (alberttorosyan)
+- Fix Jinja2 template rendering with starlette==0.14.2 (alberttorosyan)
 
 ## 3.7.5 Mar 18, 2022
 
