@@ -26,17 +26,25 @@ class PyInstrumentProfilerMiddleware:
             repo_path=None,
             **profiler_kwargs
     ):
-        try:
-            from pyinstrument import Profiler
-        except ImportError:
-            raise RuntimeError('Please install "pyinstrument" module to use enable api profiler.')
 
+        try:
+            from pyinstrument import Profiler, __version__
+
+            if tuple(map(int, __version__.split('.'))) < (3,):
+                raise ImportError
+        except ImportError:
+            raise RuntimeError(
+                'This contrib module requires \'pyinstrument\' to be installed. '
+                'Please install it with command: \n pip install \'pyinstrument>=3.0.0\''
+            )
+
+        self.profiler = Profiler
         self.app = app
-        self._profiler = Profiler(interval=profiler_interval)
 
         self._server_app = server_app
         self._profiler_kwargs: dict = profiler_kwargs
 
+        self._profiler_interval = profiler_interval
         self._profiler_timestamp = str(time.time())
         self._profiler_log_path = os.path.join(repo_path, "profiler", self._profiler_timestamp)
         os.makedirs(self._profiler_log_path, exist_ok=True)
@@ -46,29 +54,7 @@ class PyInstrumentProfilerMiddleware:
             await self.app(scope, receive, send)
             return
 
-        if self._profiler.is_running:
-            should_stop = False
-        else:
-            should_stop = True
-            self._profiler.start()
-
         request = Request(scope, receive=receive)
-        method = request.method
-        path = request.url.path
-        params = dict(request.query_params)
-
-        try:
-            body = await request.json()
-        except json.decoder.JSONDecodeError:
-            body = None
-
-        file_name = (
-            '{timestamp}_{method}_{path}'.format(
-                timestamp=time.time(),
-                method=method.lower(),
-                path='_'.join(path.strip('/').split('/')).lower()
-            )
-        )
 
         # Default status code used when the application does not return a valid response
         # or an unhandled exception occurs.
@@ -80,28 +66,40 @@ class PyInstrumentProfilerMiddleware:
                 status_code = message['status']
             await send(message)
 
+        request_time = time.time()
+        profiler = self.profiler(interval=self._profiler_interval)
+        profiler.start()
         try:
             await self.app(scope, receive, wrapped_send)
         finally:
-            if scope["type"] == "http" and should_stop:
-                self._profiler.stop()
+            profiler.stop()
 
-                request_data = json.dumps({
-                    "path": path,
-                    "body": body,
-                    "method": method,
-                    "params": params
-                }, separators=(',', ':'))
+            method = request.method
+            path = request.url.path
+            params = dict(request.query_params)
 
-                html_output = self._profiler.output_html(**self._profiler_kwargs)
-
-                # inject request data
-                body_tag_idx_end = html_output.find('<body>') + 6
-                html_output = (
-                    f'{html_output[:body_tag_idx_end]}'
-                    f'<pre><code>{request_data}</code></pre>'
-                    f'{html_output[body_tag_idx_end:]}'
+            file_name = (
+                '{timestamp}_{method}_{path}'.format(
+                    timestamp=request_time,
+                    method=method.lower(),
+                    path='_'.join(path.strip('/').split('/')).lower()
                 )
+            )
+            request_data = json.dumps({
+                'path': path,
+                'method': method,
+                'params': params
+            }, separators=(',', ':'))
 
-                with open(os.path.join(self._profiler_log_path, f'{file_name}.html'), 'w') as fp:
-                    fp.write(html_output)
+            # inject request data
+            html_output = profiler.output_html(**self._profiler_kwargs)
+            body_tag = '<body>'
+            body_tag_idx_end = html_output.find(body_tag) + len(body_tag)
+            html_output = (
+                f'{html_output[:body_tag_idx_end]}'
+                f'<pre><code>{request_data}</code></pre>'
+                f'{html_output[body_tag_idx_end:]}'
+            )
+
+            with open(os.path.join(self._profiler_log_path, f'{file_name}.html'), 'w') as fp:
+                fp.write(html_output)
