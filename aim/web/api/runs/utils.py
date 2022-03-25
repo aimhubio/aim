@@ -273,5 +273,6 @@ def checked_range(range_: str = ''):
 # TODO [AT] remove this method and add proper handling on a storage side (allow skip read by mask)
 def run_params_skip_system(run: Run):
     props = run.get(..., resolve_objects=True)
-    del props['__system_params']
+    if '__system_params' in props:
+        del props['__system_params']
     return props
