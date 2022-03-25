@@ -49,6 +49,7 @@ class AimCallback(TrainingCallback):
                 system_tracking_interval=self._system_tracking_interval,
                 log_system_params=self._log_system_params
             )
+            self._run_hash = self._run.hash
 
     def before_training(self, model):
         self.setup()
