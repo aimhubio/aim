@@ -179,7 +179,7 @@ async def metric_search_result_streamer(traces: SequenceCollection,
         if run:
             run_dict = {
                 run.hash: {
-                    'params': run.get(..., resolve_objects=True),
+                    'params': run_props_skip_system(run),
                     'traces': traces_list,
                     'props': get_run_props(run)
                 }
@@ -195,7 +195,7 @@ def run_search_result_streamer(runs: SequenceCollection, limit: int) -> bytes:
         run = run_trace_collection.run
         run_dict = {
             run.hash: {
-                'params': run.get(..., resolve_objects=True),
+                'params': run_props_skip_system(run),
                 'traces': run.collect_sequence_info(sequence_types='metric'),
                 'props': get_run_props(run)
             }
@@ -268,3 +268,10 @@ def checked_range(range_: str = ''):
     except ValueError:
         raise HTTPException(status_code=400, detail='Invalid range format')
     return range_
+
+
+# TODO [AT] remove this method and add proper handling on a storage side (allow skip read by mask)
+def run_props_skip_system(run: Run):
+    props = run.get(..., resolve_objects=True)
+    del props['__system_params']
+    return props
