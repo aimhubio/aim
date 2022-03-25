@@ -13,15 +13,6 @@ from starlette.routing import Router
 from starlette.requests import Request
 from starlette.types import ASGIApp, Message, Receive, Scope, Send
 
-try:
-    from pyinstrument import Profiler, __version__
-
-    if tuple(map(int, __version__.split('.'))) < (3,):
-        raise ImportError
-    _pyinstrument_installed = True
-except ImportError:
-    _pyinstrument_installed = False
-
 logger = getLogger("profiler")
 
 
@@ -36,12 +27,18 @@ class PyInstrumentProfilerMiddleware:
             **profiler_kwargs
     ):
 
-        if not _pyinstrument_installed:
+        try:
+            from pyinstrument import Profiler, __version__
+
+            if tuple(map(int, __version__.split('.'))) < (3,):
+                raise ImportError
+        except ImportError:
             raise RuntimeError(
                 'This contrib module requires \'pyinstrument\' to be installed. '
                 'Please install it with command: \n pip install \'pyinstrument>=3.0.0\''
             )
 
+        self.profiler = Profiler
         self.app = app
 
         self._server_app = server_app
@@ -70,7 +67,7 @@ class PyInstrumentProfilerMiddleware:
             await send(message)
 
         request_time = time.time()
-        profiler = Profiler(interval=self._profiler_interval)
+        profiler = self.profiler(interval=self._profiler_interval)
         profiler.start()
         try:
             await self.app(scope, receive, wrapped_send)
