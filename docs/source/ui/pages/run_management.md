@@ -48,28 +48,39 @@ Generate Runs CSV report by clicking on the `Export` button on the Runs table.
 <img style="border-radius: 8px; border: 1px solid #E8F1FC" alt="Runs Explorer export runs" src="https://docs-blobs.s3.us-east-2.amazonaws.com/images/ui/pages/runs-explorer/export_runs.png">
 
 ## Single run page
-
-### Overview
-
+ 
 Each training run has a dedicated page on Aim. Use the single run page to observe all the tracked metadata associated with that run.
-
-<img style="border-radius: 8px; border: 1px solid #E8F1FC" alt="Single Run page" src="https://docs-blobs.s3.us-east-2.amazonaws.com/images/ui/pages/run-single-page/single_run_page.png">
 
 Here are the tabs available on the single run page.
 Each tab visualizes respective tracked metadata or empty if not tracked.
-- [Params](#id3)
-- [Metrics](#id4)
-- [System](#id5)
-- [Distributions](#id6)
-- [Images](#id7)
-- [Audios](#id8)
-- [Texts](#id9)
-- [Figures](#id10)
-- [Settings](#id11)
+- [Overview](#id4)
+- [Params](#id5)
+- [Metrics](#id6)
+- [System](#id7)
+- [Distributions](#id8)
+- [Images](#id9)
+- [Audios](#id10)
+- [Texts](#id11)
+- [Figures](#id12)
+- [Settings](#id13)
+
+### Overview
+
+Overview tab shows overall info about the run.
+- These cards can contain information about `Parameters`, `Metrics`, `System Metrics`, `CLI Arguments`, `Environment Variables`, `Packages` and `Git information`. With this data, you can easily reproduce your run.
+
+- Sidebar contains information about  `Run Date`, `Run Duration`, `Run Hash`, attached `Tags` and gives the ability to navigate through tabs.
+
+<img style="border-radius: 8px; border: 1px solid #E8F1FC" alt="Single Run page params tab" src="https://docs-blobs.s3.us-east-2.amazonaws.com/images/ui/pages/run-single-page/overview_tab.png">
+
+Also, you can apply advanced `searching/filtering` to those card tables.
+
+
+<img style="border-radius: 8px; border: 1px solid #E8F1FC" alt="Single Run page params tab" src="https://docs-blobs.s3.us-east-2.amazonaws.com/images/ui/pages/run-single-page/overview_tab_table.png">
 
 ### Params
 
-Params tab contains a JSON-like visualization of all of the tracked params data related to a single run of interest.
+Params tab contains a JSON-like visualization of all the tracked params data related to a single run of interest.
 
 <img style="border-radius: 8px; border: 1px solid #E8F1FC" alt="Single Run page params tab" src="https://docs-blobs.s3.us-east-2.amazonaws.com/images/ui/pages/run-single-page/params_tab.png">
 
@@ -83,9 +94,9 @@ Metrics tab contains the visualizations of all the metrics tracked for the given
 
 ### System
 
-Aim automatically tracks system metrics so you can use them in order to detect potential resource mismanagements or anomalies.
+Aim automatically tracks system metrics, so you can use them in order to detect potential resource mismanagements or anomalies.
 
-System tab contains all of the tracked system metrics for a single run.
+System tab contains all the tracked system metrics for a single run.
 
 <img style="border-radius: 8px; border: 1px solid #E8F1FC" alt="Single Run page system tab" src="https://docs-blobs.s3.us-east-2.amazonaws.com/images/ui/pages/run-single-page/system_tab.png">
 
