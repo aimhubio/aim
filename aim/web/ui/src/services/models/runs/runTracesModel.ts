@@ -181,12 +181,21 @@ async function getRunTraceBatch(isInitial = false) {
     };
   }
 
-  getTraceBatchRequestRef = runsService.getBatch(
-    state.runHash || '',
-    traceType,
-    paramsToApi(queryData),
-    [requestOptions?.trace],
-  );
+  if (traceType === 'figures') {
+    getTraceBatchRequestRef = runsService.getBatchByStep(
+      state.runHash || '',
+      traceType,
+      paramsToApi(queryData),
+      [requestOptions?.trace],
+    );
+  } else {
+    getTraceBatchRequestRef = runsService.getBatch(
+      state.runHash || '',
+      traceType,
+      paramsToApi(queryData),
+      [requestOptions?.trace],
+    );
+  }
   try {
     model.setState({
       ...state,
@@ -232,7 +241,7 @@ async function getRunTraceBatch(isInitial = false) {
             (queryData.inputs[key] < range[0] ||
               queryData.inputs[key] > range[1])
           ) {
-            queryData.inputs[key] = range[0] ?? 1;
+            queryData.inputs[key] = range[1] ?? 1;
           } else if (
             (parsed.processedDataType !== VisualizationMenuTitles.figures &&
               queryData.inputs[key] < 0) ||

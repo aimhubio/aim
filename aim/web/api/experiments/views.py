@@ -72,8 +72,10 @@ async def update_experiment_properties_api(exp_id: str, exp_in: ExperimentUpdate
             exp.name = exp_in.name.strip()
         if exp_in.archived is not None:
             if exp_in.archived and len(exp.runs) > 0:
-                raise HTTPException(status_code=400,
-                                    detail=f'Cannot archive experiment \'{exp_id}\'. Experiment has associated runs.')
+                raise HTTPException(status_code=400, detail=(
+                    f'Cannot archive experiment \'{exp_id}\'. '
+                    'Experiment has associated runs.'
+                ))
             exp.archived = exp_in.archived
 
     return {

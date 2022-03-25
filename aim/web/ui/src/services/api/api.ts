@@ -18,7 +18,7 @@ function createAPIRequestWrapper<ResponseDataType>(
                 const body = await response.json();
 
                 if (typeof exceptionHandler === 'function') {
-                  exceptionHandler(body.detail);
+                  exceptionHandler(body);
                 }
 
                 // return reject(body.detail); @TODO delete comment, after handling

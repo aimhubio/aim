@@ -105,8 +105,10 @@ def collect_x_axis_data(x_trace: Metric, iters: np.ndarray) -> Tuple[Optional[di
     if not x_axis_iters:
         return None, None
 
-    return numpy_to_encodable(np.array(x_axis_iters, dtype='float64')),\
+    return (
+        numpy_to_encodable(np.array(x_axis_iters, dtype='float64')),
         numpy_to_encodable(np.array(x_axis_values, dtype='float64'))
+    )
 
 
 def collect_run_streamable_data(encoded_tree: Iterator[Tuple[bytes, bytes]]) -> bytes:
@@ -254,10 +256,12 @@ def checked_query(q: str):
         syntax_error_check(query)
     except SyntaxError as se:
         raise HTTPException(status_code=400, detail={
-            'name': 'SyntaxError',
-            'statement': se.text,
-            'line': se.lineno,
-            'offset': se.offset
+            'message': 'SyntaxError',
+            'detail': {
+                'Statement': se.text,
+                'Line': se.lineno,
+                'Offset': se.offset
+            }
         })
     return query
 

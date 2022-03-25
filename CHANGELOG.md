@@ -7,12 +7,14 @@
 - Hugging Face adapter refactoring (mihran113)
 - Add run description columns to all run specific tables (VkoHov, mihran113)
 - Change images rendering optimization default value to smoother (VkoHov)
+- Set default steps ordering to desc in single run tabs (VkoHov, devfox-se)
 - Add run name to grouping, ordering and run navigation popovers (VkoHov)
 - Add ability to apply color scale on columns with numeric values (VkoHov)
 - Refactored XGBoost AimCallback (devfox-se)
 - Reopenable callbacks for integrations (mihran113)
 - Add DVC integration (devfox-se)
-- Added API profiler and unified API error response (devfox-se)
+- Add API profiler and unified API error response (devfox-se)
+- Add API to retrieve N'th step of sequence (devfox-se)
 
 ### Fixes:
 
