@@ -14,7 +14,7 @@ import { IAxisScale } from 'types/utils/d3/getAxisScale';
 import { IUpdateFocusedChartArgs } from 'types/components/LineChart/LineChart';
 
 import { AggregationAreaMethods } from 'utils/aggregateGroupData';
-import getFormattedValue from 'utils/formattedValue';
+import getRoundedValue from 'utils/roundValue';
 
 import { formatValueByAlignment } from '../formatByAlignment';
 
@@ -493,7 +493,7 @@ function drawHoverAttributes(args: IDrawHoverAttributesArgs): void {
         axisScale,
       });
     } else {
-      return getFormattedValue(axisScale.invert(pos));
+      return getRoundedValue(axisScale.invert(pos));
     }
   }
 

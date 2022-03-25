@@ -17,7 +17,6 @@ import {
   drawAxes,
   drawLines,
   processLineChartData,
-  getAxisScale,
   drawBrush,
   drawHoverAttributes,
 } from 'utils/d3';
@@ -86,11 +85,6 @@ const LineChart = React.forwardRef(function LineChart(
   const rafIDRef = React.useRef<number>();
 
   function draw() {
-    const { processedData, min, max } = processLineChartData(
-      data,
-      ignoreOutliers,
-    );
-
     drawArea({
       index,
       nameKey,
@@ -107,18 +101,15 @@ const LineChart = React.forwardRef(function LineChart(
       chartTitle,
     });
 
-    const { width, height, margin } = visBoxRef.current;
-
-    const xScale = getAxisScale({
-      domainData: [min.x, max.x],
-      rangeData: [0, width - margin.left - margin.right],
-      scaleType: axesScaleType.xAxis,
-    });
-    const yScale = getAxisScale({
-      domainData: [min.y, max.y],
-      rangeData: [height - margin.top - margin.bottom, 0],
-      scaleType: axesScaleType.yAxis,
-    });
+    const { processedData, processedAggrData, min, max, xScale, yScale } =
+      processLineChartData(
+        data,
+        ignoreOutliers,
+        visBoxRef,
+        axesScaleType,
+        aggregatedData,
+        aggregationConfig,
+      );
 
     attributesRef.current.xScale = xScale;
     attributesRef.current.yScale = yScale;
@@ -130,9 +121,7 @@ const LineChart = React.forwardRef(function LineChart(
       plotBoxRef,
       xScale,
       yScale,
-      width,
-      height,
-      margin,
+      visBoxRef,
       alignmentConfig,
       humanizerConfigRef,
       drawBgTickLines: { y: true, x: false },
@@ -140,7 +129,7 @@ const LineChart = React.forwardRef(function LineChart(
 
     drawLines({
       index,
-      data: processedData,
+      processedData,
       nameKey,
       linesNodeRef,
       linesRef,
@@ -149,14 +138,14 @@ const LineChart = React.forwardRef(function LineChart(
       yScale,
       highlightMode,
       aggregationConfig,
-      aggregatedData,
+      processedAggrData,
     });
 
     if (!readOnly) {
       drawHoverAttributes({
         index,
         nameKey,
-        data: processedData,
+        data,
         axesScaleType,
         highlightMode,
         syncHoverState,

@@ -22,9 +22,7 @@ function drawAxes(args: IDrawAxesArgs): void {
     plotBoxRef,
     xScale,
     yScale,
-    width,
-    height,
-    margin,
+    visBoxRef,
     alignmentConfig,
     humanizerConfigRef,
     drawBgTickLines = {
@@ -33,9 +31,16 @@ function drawAxes(args: IDrawAxesArgs): void {
     },
   } = args;
 
-  if (!axesNodeRef?.current || !axesRef?.current || !svgNodeRef?.current) {
+  if (
+    !axesNodeRef?.current ||
+    !axesRef?.current ||
+    !svgNodeRef?.current ||
+    !visBoxRef?.current
+  ) {
     return;
   }
+
+  const { width, height, margin } = visBoxRef.current;
 
   function getFormattedXAxis(xScale: d3.AxisScale<d3.AxisDomain>) {
     let xAxis = d3.axisBottom(xScale);
@@ -226,7 +231,7 @@ function drawAxes(args: IDrawAxesArgs): void {
       yAxis.tickSize(-width + (margin.left + margin.right)).tickSizeOuter(0);
     }
     yAxis.tickFormat((d: any) =>
-      _.truncate(`${d}`, { length: 8 + 3 /* dots */ }),
+      _.truncate(`${d}`, { length: 6 + 3 /* dots */ }),
     );
     yAxis.tickPadding(8);
     return yAxis;
