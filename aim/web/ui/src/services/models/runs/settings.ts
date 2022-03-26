@@ -6,7 +6,6 @@ import {
   processImagesData,
   processTextsData,
   processPlotlyData,
-  reformatArrayQueries,
   processAudiosData,
 } from './util';
 
@@ -21,6 +20,7 @@ type SliderItem = {
   defaultValue: [number, number];
   tooltip: string;
   sliderType: 'single' | 'range'; // This type is same as SliderWithInput component sliderType prop type.
+  infoPropertyName?: string;
 };
 
 type SettingItem = {
@@ -40,6 +40,7 @@ const settings: Record<string, SettingItem> = {
         title: 'Steps',
         tooltip: 'Training step. Increments every time track() is called',
         sliderType: 'range',
+        infoPropertyName: 'step',
       },
     },
     inputs: {
@@ -58,12 +59,14 @@ const settings: Record<string, SettingItem> = {
         tooltip: 'Training step. Increments every time track() is called',
         title: 'Steps',
         sliderType: 'range',
+        infoPropertyName: 'step',
       },
       index_range: {
         defaultValue: [0, 50],
         tooltip: 'Index in the list of images passed to track() call',
         title: 'Indices',
         sliderType: 'range',
+        infoPropertyName: 'index',
       },
     },
     inputs: {
@@ -87,12 +90,14 @@ const settings: Record<string, SettingItem> = {
         tooltip: 'Training step. Increments every time track() is called',
         title: 'Steps',
         sliderType: 'range',
+        infoPropertyName: 'step',
       },
       index_range: {
         defaultValue: [0, 50],
         tooltip: 'Index in the list of audios passed to track() call',
         title: 'Indices',
         sliderType: 'range',
+        infoPropertyName: 'index',
       },
     },
     inputs: {
@@ -116,12 +121,14 @@ const settings: Record<string, SettingItem> = {
         tooltip: 'Training step. Increments every time track() is called',
         title: 'Steps',
         sliderType: 'range',
+        infoPropertyName: 'step',
       },
       index_range: {
         defaultValue: [0, 50],
         tooltip: 'Index in the list of texts passed to track() call',
         title: 'Indices',
         sliderType: 'range',
+        infoPropertyName: 'index',
       },
     },
     inputs: {
@@ -164,6 +171,7 @@ const settings: Record<string, SettingItem> = {
         tooltip: 'Training step. Increments every time track() is called',
         title: 'Step',
         sliderType: 'single',
+        infoPropertyName: 'step',
       },
     },
     inputs: {

@@ -134,6 +134,7 @@ function TraceVisualizationContainer({
                     runTracesModelData?.data[item.sliderName][0],
                     runTracesModelData?.data[item.sliderName][1],
                   ),
+                  infoPropertyName: item?.infoPropertyName,
                 }))}
                 onApply={runTracesModel.onApply}
                 onInputChange={(

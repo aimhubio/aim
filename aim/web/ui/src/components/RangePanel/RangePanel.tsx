@@ -68,15 +68,7 @@ function RangePanel({
                   }
                 />
               ) : (
-                <div
-                  className='InfoMassageBox'
-                  style={{
-                    width: '100%',
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                  }}
-                >
+                <div className='InfoMassageBox'>
                   <Icon name='circle-info' color={'#1473E6'} />
                   <Text size={11} tint={80} weight={500}>
                     You have only
