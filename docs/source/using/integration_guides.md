@@ -122,3 +122,23 @@ class CustomCallback(AimCallback):
 
 ```
 ### TF/keras
+
+### XGBoost
+
+And another example for extending the basic provided integration with XGBoost. Below is an example of deriving from the
+original Callback provided by Aim and overriding required method.
+
+```python
+from aim import Text
+from aim.xgboost import AimCallback
+
+
+class CustomCallback(AimCallback):
+
+    def after_iteration(self, model, epoch, evals_log):
+        for data, metric in evals_log.items():
+            for metric_name, log in metric.items():
+                self.experiment.track(Text(log), name=metric_name)
+        
+        return super().after_iteration(model, epoch, evals_log)
+```
