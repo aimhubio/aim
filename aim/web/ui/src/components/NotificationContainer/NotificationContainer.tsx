@@ -41,14 +41,16 @@ export default function NotificationContainer({
                     <p className='NotificationContainer__contentBox__severity'>
                       {severity}
                     </p>
-                    {messages.map((message: string, i: number) => (
-                      <p
-                        key={i}
-                        className='NotificationContainer__contentBox__message'
-                      >
-                        {message}
-                      </p>
-                    ))}
+                    {messages.map((message: string, i: number) => {
+                      return message ? (
+                        <p
+                          key={i}
+                          className='NotificationContainer__contentBox__message'
+                        >
+                          {message}
+                        </p>
+                      ) : null;
+                    })}
                   </div>
                 </Alert>
               </Box>

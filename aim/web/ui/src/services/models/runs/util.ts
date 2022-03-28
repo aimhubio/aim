@@ -265,7 +265,7 @@ export function processTextsData(data: Partial<TextsData>) {
     iters,
     record_range: [record_range_total?.[0], (record_range_total?.[1] || 0) - 1],
     index_range: [index_range_total?.[0], (index_range_total?.[1] || 0) - 1],
-    processedValues,
+    processedValues: _.orderBy(processedValues, ['step'], ['desc']),
     processedDataType: VisualizationMenuTitles.texts,
   };
 }

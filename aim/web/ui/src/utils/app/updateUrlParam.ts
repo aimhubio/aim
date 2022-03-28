@@ -32,7 +32,9 @@ export default function updateUrlParam({
       fullURL = fullURL.replace((window as any).API_BASE_PATH, '');
     }
 
-    setItem(`${appName}Url`, fullURL);
+    if (fullURL.startsWith(`/${appName}?`)) {
+      setItem(`${appName}Url`, fullURL);
+    }
   }
 
   window.history.pushState(null, '', url);

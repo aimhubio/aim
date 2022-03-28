@@ -50,12 +50,13 @@ Start the Aim web UI locally.
 $ aim up [ARGS]
 ```
 
-| Args                              | Description                                               |
-| --------------------------------- | --------------------------------------------------------- |
-| `-h` &#124; `--host <host>`       | Specify host address.                                     |
-| `-p` &#124; `--port <port>`       | Specify port to listen to.                                |
-| `--repo <repo_path>`              | Path to parent directory of `.aim` repo. _Current working directory by default_ |
-| `--dev`                           | Run UI in development mode.                                   |
+| Args                        | Description                                                                     |
+|-----------------------------|---------------------------------------------------------------------------------|
+| `-h` &#124; `--host <host>` | Specify host address.                                                           |
+| `-p` &#124; `--port <port>` | Specify port to listen to.                                                      |
+| `--repo <repo_path>`        | Path to parent directory of `.aim` repo. _Current working directory by default_ |
+| `--dev`                     | Run UI in development mode.                                                     |
+| `--profiler`                | Enables API profiling which logs run trace inside `.aim/profiler` directory.    |
 
 ### upgrade
 
@@ -134,8 +135,8 @@ __runs subcommands__
 | `cp`        | Copy run data for given runs hashes. At lease one run should be specified|
 | `mv`        | Move run data for given runs hashes. At lease one run should be specified|
 
-Global expression (`*`) support is available for run hashes. 
-If hash contains `*`, it must be enclosed within quotes (`''`) as bash resolves the expression before passing it to `aim runs` command.
+Global expression (`*`) support is available for run hashes. If hash contains `*`, it must be enclosed within
+quotes (`''`) as bash resolves the expression before passing it to `aim runs` command.
 
 ```shell
 $ aim runs ls

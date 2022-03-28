@@ -140,15 +140,13 @@ const settings: Record<string, SettingItem> = {
   figures: {
     dataProcessor: processPlotlyData,
     paramsToApi: (queryData?: QueryData) => {
-      const record_range = queryData?.inputs?.record_range || -1;
-      return record_range !== -1
+      const record_step = queryData?.inputs?.record_range ?? -1;
+      return record_step !== -1
         ? {
-            ...reformatArrayQueries({
-              record_range: [record_range, record_range],
-            }),
+            record_step,
             record_density: 1,
           }
-        : { record_density: 1, record_range: '0:1' };
+        : { record_density: 1 };
     },
     inputValidation: (min: number | string, max: number | string) => [
       {

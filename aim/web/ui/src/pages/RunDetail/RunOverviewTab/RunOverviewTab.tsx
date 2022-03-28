@@ -92,9 +92,9 @@ function RunOverviewTab({ runData, runHash }: IRunOverviewTabProps) {
                   runBatch={cardsData?.runSystemBatch}
                 />
               )}
-              {_.isEmpty(cardsData.arguments) ? null : (
+              {_.isEmpty(cardsData.cliArguments) ? null : (
                 <RunOverviewTabCLIArgumentsCard
-                  cliArguments={cardsData.arguments}
+                  cliArguments={cardsData.cliArguments}
                   isRunInfoLoading={runData?.isRunInfoLoading}
                 />
               )}
