@@ -1,5 +1,9 @@
 # Changelog
 
+## 3.8.1
+
+- Fix issue with displaying negative param values on Aim UI (roubkar)
+
 ## 3.8.0 Mar 26, 2022
 
 ### Enhancements:
