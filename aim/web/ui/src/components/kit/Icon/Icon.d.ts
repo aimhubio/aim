@@ -130,4 +130,5 @@ export type IconName =
   | 'branch'
   | 'color-scale-off'
   | 'color-scale-on'
-  | 'text';
+  | 'text'
+  | 'minus';
