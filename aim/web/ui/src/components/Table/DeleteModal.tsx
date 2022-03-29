@@ -5,8 +5,8 @@ import classNames from 'classnames';
 
 import { Tooltip } from '@material-ui/core';
 
-import Table from 'components/Table/Table';
 import { Button, Icon, Modal, Text } from 'components/kit';
+import DataList from 'components/kit/DataList';
 
 import { DATE_WITH_SECONDS } from 'config/dates/dates';
 
@@ -27,8 +27,9 @@ function DeleteModal({
       dataKey: 'experiment',
       key: 'experiment',
       title: 'Experiment',
-      width: 200,
-      cellRenderer: function cellRenderer({ cellData, rowIndex }: any) {
+      width: 0,
+      flexGrow: 1,
+      cellRenderer: function cellRenderer({ cellData }: any) {
         return (
           <Tooltip title={cellData}>
             <div>
@@ -36,6 +37,7 @@ function DeleteModal({
                 size={12}
                 weight={500}
                 className='ActionModal__experimentRow'
+                component='p'
               >
                 {cellData}
               </Text>
@@ -45,9 +47,32 @@ function DeleteModal({
       },
     },
     {
-      dataKey: 'run',
-      key: 'run',
-      title: 'Run',
+      dataKey: 'name',
+      key: 'name',
+      title: 'Name',
+      width: 0,
+      flexGrow: 1,
+      cellRenderer: function cellRenderer({ cellData }: any) {
+        return (
+          <Tooltip title={cellData}>
+            <div>
+              <Text
+                size={12}
+                weight={500}
+                className='ActionModal__experimentRow'
+                component='p'
+              >
+                {cellData}
+              </Text>
+            </div>
+          </Tooltip>
+        );
+      },
+    },
+    {
+      dataKey: 'date',
+      key: 'date',
+      title: 'Date',
       width: 0,
       flexGrow: 1,
       cellRenderer: function cellRenderer({ cellData, rowData }: any) {
@@ -109,10 +134,11 @@ function DeleteModal({
         runHashList.push(selectedRow.runHash);
         const rowData = {
           key: selectedRow.runHash,
-          run: `${moment(selectedRow.creation_time * 1000).format(
+          date: `${moment(selectedRow.creation_time * 1000).format(
             DATE_WITH_SECONDS,
           )}`,
           experiment: selectedRow?.experiment?.name ?? 'default',
+          name: selectedRow?.name ?? '-',
           runHash: selectedRow.runHash,
           selectKey: selectedRow.selectKey,
           isInProgress: !selectedRow?.end_time,
@@ -157,7 +183,7 @@ function DeleteModal({
         title='Are you sure you want to permanently delete the selected runs?'
         modalType='error'
         titleIconName='delete'
-        maxWidth='md'
+        maxWidth='lg'
       >
         <div className='ActionModal'>
           <Text size={14} weight={400} className='ActionModal__infoText'>
@@ -168,17 +194,13 @@ function DeleteModal({
             {`${Object.values(data).length} runs to delete.`}
           </Text>
           {!_.isEmpty(data) && (
-            <Table
-              ref={tableRef}
-              fixed={false}
-              columns={tableColumns}
-              minHeight={'100px'}
-              data={data}
-              hideHeaderActions
-              headerHeight={28}
+            <DataList
+              tableRef={tableRef}
+              tableColumns={tableColumns}
+              tableData={data}
+              withSearchBar={false}
               rowHeight={24}
-              height='100%'
-              className='ActionModal__Table'
+              height='194px'
             />
           )}
           {!_.isEmpty(disabledData) && (
@@ -190,17 +212,14 @@ function DeleteModal({
           )}
           {!_.isEmpty(disabledData) && (
             <div className='ActionModal__disabledTableWrapper'>
-              <Table
-                ref={disabledTableRef}
-                fixed={false}
-                columns={tableColumns}
-                minHeight={'100px'}
-                data={disabledData}
-                hideHeaderActions
-                headerHeight={28}
+              <DataList
+                tableRef={disabledTableRef}
+                tableColumns={tableColumns}
+                tableData={disabledData}
+                withSearchBar={false}
                 rowHeight={24}
-                height='100%'
-                className='ActionModal__Table'
+                tableClassName='ActionModal__Table'
+                height='194px'
               />
             </div>
           )}

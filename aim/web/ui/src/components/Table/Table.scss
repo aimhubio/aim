@@ -39,7 +39,7 @@
   }
 }
 .ActionModal {
-  width: 40rem;
+  width: 50vw;
   &__Table {
     .BaseTable__header {
       border-radius: toRem(4px) toRem(4px) 0 0;
@@ -98,13 +98,18 @@
     align-items: center;
     width: 100%;
     justify-content: space-between;
+    position: relative;
     &.isDisabled {
       justify-content: flex-start;
     }
     &__deleteButton {
       display: none;
+      position: absolute;
+      right: 0;
+      top: -0.25rem;
     }
     &__date {
+      padding-right: toRem(30px);
       &.in-progress {
         &::after {
           content: '';
