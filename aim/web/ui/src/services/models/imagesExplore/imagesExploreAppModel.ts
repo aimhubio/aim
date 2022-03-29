@@ -801,6 +801,11 @@ function getGroupingSelectOptions({
   return [
     {
       group: 'run',
+      label: 'run.name',
+      value: 'run.props.name',
+    },
+    {
+      group: 'run',
       label: 'run.experiment',
       value: 'run.props.experiment.name',
     },
