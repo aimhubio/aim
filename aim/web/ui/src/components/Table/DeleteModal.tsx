@@ -110,7 +110,7 @@ function DeleteModal({
                   }
                 }}
               >
-                <Icon name='close' fontSize={10} />
+                <Icon name='minus' fontSize={10} />
               </Button>
             )}
           </div>
@@ -200,7 +200,7 @@ function DeleteModal({
               tableData={data}
               withSearchBar={false}
               rowHeight={24}
-              height='194px'
+              height='200px'
             />
           )}
           {!_.isEmpty(disabledData) && (
@@ -219,7 +219,7 @@ function DeleteModal({
                 withSearchBar={false}
                 rowHeight={24}
                 tableClassName='ActionModal__Table'
-                height='194px'
+                height='200px'
               />
             </div>
           )}
