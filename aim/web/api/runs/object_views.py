@@ -18,7 +18,12 @@ from aim.web.api.runs.pydantic_models import (
     ObjectSearchRunView,
     ObjectSequenceBaseView,
 )
-from aim.web.api.runs.utils import get_project_repo, checked_query, checked_range, numpy_to_encodable
+from aim.web.api.runs.utils import (
+    checked_query,
+    checked_range,
+    get_project_repo,
+    numpy_to_encodable
+)
 from aim.web.api.runs.object_api_utils import CustomObjectApi, get_blobs_batch
 
 
@@ -31,7 +36,7 @@ class CustomObjectApiConfig:
     @staticmethod
     def check_density(density):
         if density <= 0:
-            raise HTTPException(status_code=400, detail=f'Invalid density value: \'{density}\'. Density must be > 0.')
+            raise HTTPException(status_code=400, detail='Density must be greater than 0.')
 
     @classmethod
     def register_endpoints(cls, router):
@@ -94,6 +99,32 @@ class CustomObjectApiConfig:
             @router.post(uri_batch_endpoint)
             def blobs_batch_api(uri_batch: URIBatchIn):
                 return StreamingResponse(get_blobs_batch(uri_batch, get_project_repo()))
+
+        # run sequence batch API
+        step_of_sequence_endpoint = f'/{{run_id}}/{seq_name}/get-step/'
+
+        @router.post(step_of_sequence_endpoint, response_model=List[ObjectSequenceBaseView])
+        async def step_of_sequence(run_id: str,
+                                   requested_traces: RunTracesBatchApiIn,
+                                   index_range: Optional[str] = '', index_density: Optional[int] = 5,
+                                   record_step: int = -1):
+            # get last step by default
+
+            index_range = checked_range(index_range)
+            CustomObjectApiConfig.check_density(index_density)
+
+            repo = get_project_repo()
+            run = repo.get_run(run_id)
+            if not run:
+                raise HTTPException(status_code=404)
+
+            api = CustomObjectApi(seq_name, resolve_blobs=cls.resolve_blobs)
+            api.set_dump_data_fn(cls.dump_record_fn)
+            api.set_requested_traces(run, requested_traces)
+
+            api.set_ranges(None, 1, index_range, index_density, record_step)
+            traces_streamer = api.requested_traces_streamer()
+            return StreamingResponse(traces_streamer)
 
 
 class ImageApiConfig(CustomObjectApiConfig):

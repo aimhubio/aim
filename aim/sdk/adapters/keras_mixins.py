@@ -14,7 +14,7 @@ class TrackerKerasCallbackMetricsEpochEndMixin(object):
         if not logs:
             return
 
-        track_func = self.run.track
+        track_func = self._run.track
 
         train_logs = {k: v for k, v in logs.items() if
                       not k.startswith('val_')}
