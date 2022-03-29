@@ -176,6 +176,7 @@ function getParamsTableColumns(
             <span>{formatSystemMetricName(key)}</span>
           ) : (
             <Badge
+              monospace
               size='small'
               color={COLORS[0][0]}
               label={metricContext === '' ? 'Empty context' : metricContext}
@@ -391,6 +392,7 @@ function paramsTableRowRenderer(
           content: (
             <ErrorBoundary>
               <Badge
+                monospace
                 size='small'
                 color={COLORS[0][0]}
                 label={`${rowData[col].length} values`}

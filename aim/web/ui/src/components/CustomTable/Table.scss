@@ -387,9 +387,9 @@ $border-radius: 0.2rem;
 
 .Table__column__resizeHandler {
   position: absolute;
-  right: -1px;
+  right: -3px;
   top: 0;
-  width: 3px;
+  width: 6px;
   height: 100%;
   background-color: $primary-color;
   z-index: 10;

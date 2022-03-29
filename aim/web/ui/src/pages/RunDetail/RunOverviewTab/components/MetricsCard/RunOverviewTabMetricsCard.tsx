@@ -64,6 +64,7 @@ function RunOverviewTabMetricsCard({
         cellRenderer: ({ cellData }: any) =>
           !_.isEmpty(cellData) && !_.isNil(cellData) ? (
             <Badge
+              monospace
               size='small'
               color={COLORS[0][0]}
               label={contextToString(cellData) || ''}
@@ -71,6 +72,7 @@ function RunOverviewTabMetricsCard({
             />
           ) : (
             <Badge
+              monospace
               size='small'
               color={'#F8FAFD'}
               label={'Empty Context'}
