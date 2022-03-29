@@ -1,5 +1,11 @@
 # Changelog
 
+## Unreleased
+
+### Fixes:
+
+- Fix issue with rendering lines for large range scale in the LineChart (KaroMourad)
+
 ## 3.8.0 Mar 26, 2022
 
 ### Enhancements:
