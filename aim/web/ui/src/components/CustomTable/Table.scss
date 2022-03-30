@@ -18,6 +18,7 @@ $border-radius: 0.2rem;
   box-sizing: border-box;
   content-visibility: auto;
   contain: content;
+  font-family: monospace, sans-serif;
   &__container {
     height: 100%;
     width: 100%;
@@ -373,6 +374,7 @@ $border-radius: 0.2rem;
   border-color: $border-color;
   z-index: 3;
   overflow: visible;
+  font-family: 'Inter', sans-serif;
 
   & > *:first-child {
     flex: 1;
