@@ -371,12 +371,12 @@
           }
           &__runBox {
             height: 3.5rem;
-            padding: 0.625rem 0.5rem;
+            padding: 0.5rem 0.5rem;
             display: flex;
             align-items: flex-start;
             cursor: pointer;
             text-decoration: unset;
-            margin-bottom: 0.375rem;
+            margin-bottom: 0.125rem;
             position: relative;
             flex-direction: column;
             border-radius: $border-radius-sm;

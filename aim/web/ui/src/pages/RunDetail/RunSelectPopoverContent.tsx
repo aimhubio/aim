@@ -86,23 +86,28 @@ function RunSelectPopoverContent({
             <div className='RunSelectPopoverWrapper__selectPopoverContent__contentContainer__experimentsListContainer__experimentList'>
               {!isRunInfoLoading ? (
                 experimentsData?.map((experiment: IRunSelectExperiment) => (
-                  <div
-                    className={classNames(
-                      'RunSelectPopoverWrapper__selectPopoverContent__contentContainer__experimentsListContainer__experimentList__experimentBox',
-                      { selected: experimentId === experiment.id },
-                    )}
-                    onClick={() => onExperimentClick(experiment.id)}
+                  <Tooltip
+                    title={experiment?.name ?? 'default'}
+                    placement='right'
                     key={experiment.id}
                   >
-                    <Text
-                      size={14}
-                      tint={experimentId === experiment.id ? 100 : 80}
-                      weight={experimentId === experiment.id ? 600 : 500}
-                      className='RunSelectPopoverWrapper__selectPopoverContent__contentContainer__experimentsListContainer__experimentList__experimentBox__experimentName'
+                    <div
+                      className={classNames(
+                        'RunSelectPopoverWrapper__selectPopoverContent__contentContainer__experimentsListContainer__experimentList__experimentBox',
+                        { selected: experimentId === experiment.id },
+                      )}
+                      onClick={() => onExperimentClick(experiment.id)}
                     >
-                      {experiment?.name ?? 'default'}
-                    </Text>
-                  </div>
+                      <Text
+                        size={14}
+                        tint={experimentId === experiment.id ? 100 : 80}
+                        weight={experimentId === experiment.id ? 600 : 500}
+                        className='RunSelectPopoverWrapper__selectPopoverContent__contentContainer__experimentsListContainer__experimentList__experimentBox__experimentName'
+                      >
+                        {experiment?.name ?? 'default'}
+                      </Text>
+                    </div>
+                  </Tooltip>
                 ))
               ) : (
                 <div className='RunSelectPopoverWrapper__loaderContainer'>

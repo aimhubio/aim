@@ -10,6 +10,8 @@ import DataList from 'components/kit/DataList';
 
 import { DATE_WITH_SECONDS } from 'config/dates/dates';
 
+import { processDurationTime } from 'utils/processDurationTime';
+
 function DeleteModal({
   opened,
   onClose,
@@ -22,6 +24,7 @@ function DeleteModal({
   const [disabledData, setDisabledData] = React.useState<any[]>([]);
   const tableRef = React.useRef<any>({});
   const disabledTableRef = React.useRef<any>({});
+  const [dateNow, setDateNow] = React.useState(Date.now());
   const tableColumns = [
     {
       dataKey: 'experiment',
@@ -47,11 +50,10 @@ function DeleteModal({
       },
     },
     {
-      dataKey: 'name',
-      key: 'name',
-      title: 'Name',
-      width: 0,
-      flexGrow: 1,
+      dataKey: 'date',
+      key: 'date',
+      title: 'Date',
+      width: 240,
       cellRenderer: function cellRenderer({ cellData }: any) {
         return (
           <Tooltip title={cellData}>
@@ -70,9 +72,9 @@ function DeleteModal({
       },
     },
     {
-      dataKey: 'date',
-      key: 'date',
-      title: 'Date',
+      dataKey: 'name',
+      key: 'name',
+      title: 'Name',
       width: 0,
       flexGrow: 1,
       cellRenderer: function cellRenderer({ cellData, rowData }: any) {
@@ -82,13 +84,16 @@ function DeleteModal({
               isDisabled: rowData.isDisabled,
             })}
           >
-            <p
+            <Text
+              size={12}
+              weight={500}
               className={classNames('ActionModal__tableRowWithAction__date', {
-                'in-progress': rowData?.isInProgress,
+                'in-progress': !rowData?.isInProgress,
               })}
+              component='p'
             >
               {cellData}
-            </p>
+            </Text>
             {!rowData.isDisabled && (
               <Button
                 size='small'
@@ -120,6 +125,7 @@ function DeleteModal({
   ];
 
   React.useEffect(() => {
+    setDateNow(Date.now());
     return () => {
       runsDeleteRequest?.abort();
     };
@@ -136,6 +142,9 @@ function DeleteModal({
           key: selectedRow.runHash,
           date: `${moment(selectedRow.creation_time * 1000).format(
             DATE_WITH_SECONDS,
+          )} • ${processDurationTime(
+            selectedRow?.creation_time * 1000,
+            selectedRow?.end_time ? selectedRow?.end_time * 1000 : dateNow,
           )}`,
           experiment: selectedRow?.experiment?.name ?? 'default',
           name: selectedRow?.name ?? '-',
@@ -186,13 +195,28 @@ function DeleteModal({
         maxWidth='lg'
       >
         <div className='ActionModal'>
-          <Text size={14} weight={400} className='ActionModal__infoText'>
+          <Text
+            size={14}
+            weight={400}
+            tint={100}
+            className='ActionModal__infoText'
+          >
             You will lose all the logs and data related to them. This action
             cannot be undone.
           </Text>
-          <Text size={12} weight={500} className='ActionModal__tableTitle'>
-            {`${Object.values(data).length} runs to delete.`}
-          </Text>
+          <div className='ActionModal__tableTitle'>
+            <Text
+              size={12}
+              weight={600}
+              color='error'
+              className='ActionModal__tableTitle__count'
+            >
+              {Object.values(data).length}
+            </Text>
+            <Text size={12} weight={400} color='error'>
+              runs to delete.
+            </Text>
+          </div>
           {!_.isEmpty(data) && (
             <DataList
               tableRef={tableRef}
