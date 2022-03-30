@@ -206,6 +206,9 @@ $table-prefix: BaseTable !default;
     }
   }
 
+  &__row-cell {
+    font-family: monospace, sans-serif;
+  }
   &__header-cell {
     position: relative;
     cursor: default;

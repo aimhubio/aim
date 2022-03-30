@@ -85,7 +85,11 @@ function RunOverviewTabMetricsCard({
         key: 'value',
         title: 'Last Value',
         width: '33.3%',
-        cellRenderer: ({ cellData }: any) => <p title={cellData}>{cellData}</p>,
+        cellRenderer: ({ cellData }: any) => (
+          <p className='tar' title={cellData}>
+            {cellData}
+          </p>
+        ),
       },
     ],
     [runBatch],

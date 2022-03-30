@@ -495,6 +495,7 @@ function Column({
                       multiSelect={multiSelect}
                       getColumnCelBGColor={getColumnCelBGColor}
                       columnsColorScales={columnsColorScales}
+                      isNumeric={colorScaleRange}
                       item={
                         typeof data[groupKey].data[col.key] === 'object' &&
                         data[groupKey].data[col.key]?.hasOwnProperty('content')
@@ -531,6 +532,7 @@ function Column({
                             multiSelect={multiSelect}
                             getColumnCelBGColor={getColumnCelBGColor}
                             columnsColorScales={columnsColorScales}
+                            isNumeric={colorScaleRange}
                             item={
                               col.key === '#' ? (
                                 <>
@@ -632,6 +634,7 @@ function Column({
                       col={col}
                       item={item[col.key]}
                       getColumnCelBGColor={getColumnCelBGColor}
+                      isNumeric={colorScaleRange}
                       columnsColorScales={columnsColorScales}
                       className={classNames(`rowKey-${item.key}`, {
                         hidden: item.isHidden,

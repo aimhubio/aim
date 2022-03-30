@@ -265,7 +265,9 @@ $border-radius: 0.2rem;
   text-overflow: ellipsis;
   height: var(--cell-height);
   position: relative;
-
+  &.isNumeric {
+    justify-content: flex-end;
+  }
   &.placeholder {
     border-right: unset;
   }
@@ -543,6 +545,9 @@ $border-radius: 0.2rem;
     .Table__column__selectCheckbox {
       margin-left: 0.5rem;
     }
+  }
+  &.isNumeric {
+    justify-content: flex-end;
   }
 }
 
