@@ -3,6 +3,7 @@ import moment from 'moment';
 import classNames from 'classnames';
 import { NavLink, useLocation, useParams } from 'react-router-dom';
 import { isEmpty } from 'lodash-es';
+import _ from 'lodash';
 
 import { CircularProgress, Tooltip } from '@material-ui/core';
 
@@ -28,7 +29,6 @@ function RunSelectPopoverContent({
   experimentsData,
   experimentId,
   runsOfExperiment,
-  runInfo,
   isRunsOfExperimentLoading,
   isRunInfoLoading,
   isLoadMoreButtonShown,
@@ -38,6 +38,7 @@ function RunSelectPopoverContent({
   const popoverContentWrapperRef = useRef<HTMLDivElement | any>();
   const { runHash } = useParams<{ runHash: string }>();
   const { pathname } = useLocation();
+  const [runs, setRuns] = React.useState<IRunSelectRun[]>([]);
 
   function onLoadMore() {
     if (!isRunsOfExperimentLoading) {
@@ -51,6 +52,12 @@ function RunSelectPopoverContent({
       );
     }
   }
+
+  React.useEffect(() => {
+    setRuns(
+      _.orderBy(runsOfExperiment, ['creation_time', 'name'], ['desc', 'asc']),
+    );
+  }, [runsOfExperiment]);
 
   function onExperimentClick(id: string) {
     getRunsOfExperiment(id);
@@ -117,7 +124,7 @@ function RunSelectPopoverContent({
                 ref={popoverContentWrapperRef}
               >
                 {!isEmpty(runsOfExperiment) ? (
-                  runsOfExperiment?.map((run: IRunSelectRun) => (
+                  runs?.map((run: IRunSelectRun) => (
                     <NavLink
                       className={classNames(
                         'RunSelectPopoverWrapper__selectPopoverContent__contentContainer__runsListContainer__runsList__runBox',

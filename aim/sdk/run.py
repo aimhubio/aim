@@ -789,6 +789,7 @@ class Run(StructuredRunMixin):
     def close(self):
         if self._resources is None:
             return
+        self.sequence_info.clear()
         self._resources.close()
         # de-reference trees and other resources
         del self._resources
