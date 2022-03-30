@@ -122,6 +122,43 @@ class CustomCallback(AimCallback):
 
 ```
 ### TF/keras
+We'll show how to track confusion matrices with Aim while extending the default callback provided for `tf.keras` by examining how to the same with Aim as is provided in this [example.](https://www.tensorflow.org/tensorboard/image_summaries) 
+```python
+from aim.tensorflow import AimCallback
+
+class CustomImageTrackingCallback(AimCallback):
+    def __init__(self, data):
+        super().__init__()
+        self.data = data
+
+    def on_epoch_end(self, epoch, logs=None):
+        super().on_epoch_end(epoch, logs)
+        from aim import Image
+        # Use the model to predict the values from the validation dataset.
+        test_pred_raw = self.model.predict(test_images)
+        test_pred = np.argmax(test_pred_raw, axis=1)
+
+        # Calculate the confusion matrix.
+        cm = sklearn.metrics.confusion_matrix(test_labels, test_pred)
+        # Log the confusion matrix as an image summary.
+        figure = plot_confusion_matrix(cm, class_names=class_names)
+        cm_image = Image(figure)
+
+        # Log the confusion matrix as an Aim image.
+        self.experiment.track(cm_image,"Confusion Matrix", step=epoch)
+
+aim_callback = CustomImageTrackingCallback()
+
+model.fit(
+    train_images,
+    train_labels,
+    epochs=5,
+    verbose=0, # Suppress chatty output
+    callbacks=[aim_callback],
+    validation_data=(test_images, test_labels),
+)
+
+```
 
 ### XGBoost
 
