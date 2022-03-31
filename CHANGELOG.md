@@ -3,6 +3,7 @@
 ## 3.8.1
 
 - Fix `RepoIndexManager` run's reference cleanup (mihran113)
+- Fix remote run finalization (mihran113)
 
 ## 3.8.0 Mar 26, 2022
 

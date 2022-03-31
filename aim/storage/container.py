@@ -5,7 +5,6 @@ from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
     from aim.storage.treeview import TreeView
-    from aim.storage.types import BLOB
 
 ContainerKey = bytes
 ContainerValue = Union[bytes, 'BLOB[bytes]']
@@ -31,7 +30,7 @@ class Container:
         ...
 
     @abstractmethod
-    def finalize(self, *, index: 'Container'):
+    def finalize(self, index: 'Container'):
         """Finalize the Container.
 
         Perform operations of compactions, indexing, optimization, etc.
