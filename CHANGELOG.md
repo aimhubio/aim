@@ -1,5 +1,9 @@
 # Changelog
 
+## 3.8.1
+
+- Fix issue with infinite loader of runs explorers' table (rubenaprikyan)
+
 ## 3.8.0 Mar 26, 2022
 
 ### Enhancements:
