@@ -30,7 +30,7 @@ function formatValueByAlignment({
         return xAxisTickValue;
     }
   }
-  return xAxisTickValue ?? '--';
+  return xAxisTickValue || '--';
 }
 
 function getKeyByAlignment(alignmentConfig?: IAlignmentConfig): string {
