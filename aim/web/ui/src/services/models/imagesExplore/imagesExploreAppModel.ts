@@ -191,26 +191,46 @@ function initialize(appId: string): void {
     });
 }
 
-function setDefaultAppConfigData() {
+function setDefaultAppConfigData(recoverTableState: boolean = true) {
+  const defaultConfig: Partial<IImagesExploreAppConfig> = {};
+
   const grouping: IImagesExploreAppConfig['grouping'] =
-    getStateFromUrl('grouping') || getConfig().grouping;
+    getStateFromUrl('grouping') ?? {};
+
+  defaultConfig.grouping = grouping;
+
   const compatibleSelectConfig = getCompatibleSelectConfig(
     ['images'],
     getStateFromUrl('select'),
   );
-  const select: ISelectConfig = compatibleSelectConfig || getConfig().select;
+  const select: ISelectConfig = compatibleSelectConfig ?? {};
+
+  defaultConfig.select = select;
+
   const images: IImagesExploreAppConfig['images'] =
-    getStateFromUrl('images') || getConfig().images;
-  const tableConfigHash = getItem('imagesExploreTable');
-  const table = tableConfigHash
-    ? JSON.parse(decode(tableConfigHash))
-    : getConfig().table;
-  const configData = _.merge(getConfig(), {
-    grouping,
-    select,
-    table,
-    images,
-  });
+    getStateFromUrl('images') ?? {};
+
+  defaultConfig.images = images;
+
+  if (recoverTableState) {
+    const tableConfigHash = getItem('imagesExploreTable');
+    const table = tableConfigHash
+      ? JSON.parse(decode(tableConfigHash))
+      : getConfig().table;
+
+    defaultConfig.table = table;
+  }
+
+  const configData = _.mergeWith(
+    {},
+    model.getState().config,
+    defaultConfig,
+    (objValue, srcValue) => {
+      if (_.isArray(objValue)) {
+        return srcValue;
+      }
+    },
+  );
 
   model.setState({ config: configData });
 }

@@ -436,11 +436,14 @@ function createAppModel(appConfig: IAppInitialConfig) {
     }
   }
 
-  function setModelDefaultAppConfigData(): void {
+  function setModelDefaultAppConfigData(
+    recoverTableState: boolean = true,
+  ): void {
     setDefaultAppConfigData({
       config: getConfig(),
       appInitialConfig: appConfig,
       model,
+      recoverTableState,
     });
   }
 

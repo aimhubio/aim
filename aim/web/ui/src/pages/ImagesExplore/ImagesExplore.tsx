@@ -165,6 +165,7 @@ function ImagesExplore(): React.FunctionComponentElement<React.ReactNode> {
         route.params.appId,
       );
       appRequestRef.call().then(() => {
+        imagesExploreAppModel.setDefaultAppConfigData(false);
         imagesRequestRef = imagesExploreAppModel.getImagesData();
         imagesRequestRef.call();
       });
