@@ -1,5 +1,9 @@
 # Changelog
 
+## 3.8.1
+
+- Update documentations links on UI (rubenaprikyan)
+
 ## 3.8.0 Mar 26, 2022
 
 ### Enhancements:
