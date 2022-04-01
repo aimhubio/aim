@@ -4,8 +4,6 @@ import queue
 import logging
 import threading
 
-from aim.ext.cleanup import AutoClean
-
 logger = logging.getLogger(__name__)
 
 

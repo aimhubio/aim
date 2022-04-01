@@ -5,6 +5,7 @@ from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
     from aim.storage.treeview import TreeView
+    from aim.storage.types import BLOB
 
 ContainerKey = bytes
 ContainerValue = Union[bytes, 'BLOB[bytes]']
