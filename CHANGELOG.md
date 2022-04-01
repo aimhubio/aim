@@ -2,6 +2,7 @@
 
 ## 3.8.1
 
+- Tune RunOverviewTab container styles (arsengit)
 - Update documentations links on UI (rubenaprikyan)
 - Fix `RepoIndexManager` run's reference cleanup (mihran113)
 - Fix issue with fetch on load more (infinite scroll) functionality in Runs Explorer (rubenaprikyan)
