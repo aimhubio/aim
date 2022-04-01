@@ -1,6 +1,6 @@
 /* eslint-disable react-hooks/rules-of-hooks */
 import React, { useState } from 'react';
-import { useLocation, useRouteMatch } from 'react-router-dom';
+import { useHistory, useRouteMatch } from 'react-router-dom';
 import _ from 'lodash-es';
 
 import NotificationContainer from 'components/NotificationContainer/NotificationContainer';
@@ -38,6 +38,7 @@ import { AppNameEnum } from 'services/models/explorer';
 import { IGroupingSelectOption } from 'types/services/models/metrics/metricsAppModel';
 import { IApiRequest } from 'types/services/services';
 
+import exceptionHandler from 'utils/app/exceptionHandler';
 import getStateFromUrl from 'utils/getStateFromUrl';
 import { ChartTypeEnum } from 'utils/d3';
 import { SortField, SortFields } from 'utils/getSortedFields';
@@ -48,7 +49,7 @@ import './ImagesExplore.scss';
 
 function ImagesExplore(): React.FunctionComponentElement<React.ReactNode> {
   const route = useRouteMatch<any>();
-  const location = useLocation();
+  const history = useHistory();
   const imagesExploreData = useModel<Partial<any>>(imagesExploreAppModel);
   const imagesWrapperRef = React.useRef<any>(null);
   const tableElemRef = React.useRef<HTMLDivElement>(null);
@@ -70,20 +71,6 @@ function ImagesExplore(): React.FunctionComponentElement<React.ReactNode> {
       setOffsetWidth(imagesWrapperRef?.current?.offsetWidth);
     }
   }, imagesWrapperRef);
-
-  // Add effect to recover state from URL when browser history navigation is used
-  React.useEffect(() => {
-    if (!!imagesExploreData?.config) {
-      if (
-        imagesExploreData.config.grouping !== getStateFromUrl('grouping') ||
-        imagesExploreData.config.chart !== getStateFromUrl('chart') ||
-        imagesExploreData.config.select !== getStateFromUrl('select')
-      ) {
-        imagesExploreAppModel.setDefaultAppConfigData();
-        imagesExploreAppModel.updateModelData();
-      }
-    }
-  }, [location.search]);
 
   React.useEffect(() => {
     setOffsetWidth(imagesWrapperRef?.current?.offsetWidth);
@@ -159,20 +146,42 @@ function ImagesExplore(): React.FunctionComponentElement<React.ReactNode> {
       appRequestRef = imagesExploreAppModel.getAppConfigData(
         route.params.appId,
       );
-      appRequestRef.call().then(() => {
-        imagesExploreAppModel.setDefaultAppConfigData(false);
-        imagesRequestRef = imagesExploreAppModel.getImagesData();
-        imagesRequestRef.call();
-      });
+      appRequestRef
+        .call((detail: any) => {
+          exceptionHandler({ detail, model: imagesExploreAppModel });
+        })
+        .then(() => {
+          imagesExploreAppModel.setDefaultAppConfigData(false);
+          imagesRequestRef = imagesExploreAppModel.getImagesData();
+          imagesRequestRef.call((detail: any) => {
+            exceptionHandler({ detail, model: imagesExploreAppModel });
+          });
+        });
     } else {
       imagesExploreAppModel.setDefaultAppConfigData();
       imagesRequestRef = imagesExploreAppModel.getImagesData();
-      imagesRequestRef.call();
+      imagesRequestRef.call((detail: any) => {
+        exceptionHandler({ detail, model: imagesExploreAppModel });
+      });
     }
 
     analytics.pageView(ANALYTICS_EVENT_KEYS.images.pageView);
+    const unListenHistory = history.listen(() => {
+      if (!!imagesExploreData?.config) {
+        if (
+          imagesExploreData.config.grouping !== getStateFromUrl('grouping') ||
+          imagesExploreData.config.images !== getStateFromUrl('images') ||
+          imagesExploreData.config.select !== getStateFromUrl('select')
+        ) {
+          imagesExploreAppModel.setDefaultAppConfigData();
+          imagesExploreAppModel.updateModelData();
+        }
+      }
+    });
     return () => {
+      imagesExploreAppModel.destroy();
       imagesRequestRef?.abort();
+      unListenHistory();
       if (appRequestRef) {
         appRequestRef.abort();
       }

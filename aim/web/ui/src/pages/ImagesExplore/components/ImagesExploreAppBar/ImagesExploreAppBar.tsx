@@ -7,13 +7,12 @@ import {
   DialogContent,
   DialogTitle,
   MenuItem,
-  Typography,
 } from '@material-ui/core';
 
 import BookmarkForm from 'components/BookmarkForm/BookmarkForm';
 import AppBar from 'components/AppBar/AppBar';
 import ControlPopover from 'components/ControlPopover/ControlPopover';
-import { Icon, Button } from 'components/kit';
+import { Icon, Button, Text } from 'components/kit';
 import ErrorBoundary from 'components/ErrorBoundary/ErrorBoundary';
 
 import './ImagesExploreAppBar.scss';
@@ -48,16 +47,17 @@ function ImagesExploreAppBar({
             <ControlPopover
               title='Bookmark'
               anchor={({ onAnchorClick }) => (
-                <Button
-                  color='secondary'
-                  className='ImagesExploreAppBar__item__bookmark'
-                  size='small'
-                  onClick={onAnchorClick}
-                >
-                  <span className='ImagesExploreAppBar__item__bookmark__span'>
+                <Button color='secondary' size='small' onClick={onAnchorClick}>
+                  <Text
+                    size={14}
+                    className='ImagesExploreAppBar__item__bookmark__Text'
+                  >
                     Bookmark
-                  </span>
-                  <Icon name='bookmarks' />
+                  </Text>
+                  <Icon
+                    name='bookmarks'
+                    className='MetricsBar__item__bookmark__Icon'
+                  />
                 </Button>
               )}
               component={
@@ -79,10 +79,17 @@ function ImagesExploreAppBar({
             size='small'
             onClick={() => handleBookmarkClick('create')}
           >
-            <span className='ImagesExploreAppBar__item__bookmark__span'>
+            <Text
+              size={14}
+              className='ImagesExploreAppBar__item__bookmark__Text'
+            >
               Bookmark
-            </span>
-            <Icon name='bookmarks' />
+            </Text>
+            <Icon
+              fontSize={14}
+              name='bookmarks'
+              className='MetricsBar__item__bookmark__Icon'
+            />
           </Button>
         )}
         <div className='ImagesExploreAppBar__menu'>
@@ -96,7 +103,11 @@ function ImagesExploreAppBar({
                   size='small'
                   onClick={onAnchorClick}
                 >
-                  <Icon name='menu' />
+                  <Icon
+                    fontSize={16}
+                    name='menu'
+                    className='MetricsBar__item__bookmark__Icon'
+                  />
                 </Button>
               )}
               component={
@@ -130,7 +141,9 @@ function ImagesExploreAppBar({
         >
           <DialogTitle id='form-dialog-title'>Update Bookmark</DialogTitle>
           <DialogContent>
-            <Typography>Do you want to update bookmark?</Typography>
+            <Text size={16} component='p' weight={500}>
+              Do you want to update bookmark?
+            </Text>
           </DialogContent>
           <DialogActions>
             <Button onClick={handleClosePopover} color='primary'>

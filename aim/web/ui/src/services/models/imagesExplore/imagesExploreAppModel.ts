@@ -93,6 +93,7 @@ const model = createModel<Partial<IImagesExploreAppModelState>>({
     options: undefined,
     suggestions: [],
   },
+  config: getConfig(),
 });
 
 let tooltipData: ITooltipData = {};
