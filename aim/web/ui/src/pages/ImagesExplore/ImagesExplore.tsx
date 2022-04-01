@@ -36,6 +36,7 @@ import * as analytics from 'services/analytics';
 import { AppNameEnum } from 'services/models/explorer';
 
 import { IGroupingSelectOption } from 'types/services/models/metrics/metricsAppModel';
+import { IApiRequest } from 'types/services/services';
 
 import getStateFromUrl from 'utils/getStateFromUrl';
 import { ChartTypeEnum } from 'utils/d3';
@@ -152,14 +153,8 @@ function ImagesExplore(): React.FunctionComponentElement<React.ReactNode> {
 
   React.useEffect(() => {
     imagesExploreAppModel.initialize(route.params.appId);
-    let appRequestRef: {
-      call: () => Promise<void>;
-      abort: () => void;
-    };
-    let imagesRequestRef: {
-      call: () => Promise<void>;
-      abort: () => void;
-    };
+    let appRequestRef: IApiRequest<void>;
+    let imagesRequestRef: IApiRequest<void>;
     if (route.params.appId) {
       appRequestRef = imagesExploreAppModel.getAppConfigData(
         route.params.appId,

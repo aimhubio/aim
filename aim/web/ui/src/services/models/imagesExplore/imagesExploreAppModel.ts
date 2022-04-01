@@ -53,6 +53,7 @@ import {
 } from 'types/services/models/explorer/createAppModel';
 import { IProjectParamsMetrics } from 'types/services/models/projects/projectsModel';
 
+import getAppConfigDataMethod from 'utils/app/getAppConfigData';
 import onRowSelectAction from 'utils/app/onRowSelect';
 import { decode, encode } from 'utils/encoder/encoder';
 import getObjectPaths from 'utils/getObjectPaths';
@@ -243,33 +244,12 @@ let imagesRequestRef: {
 };
 
 function getAppConfigData(appId: string) {
-  if (appRequestRef) {
-    appRequestRef.abort();
-  }
-  appRequestRef = appsService.fetchApp(appId);
-  return {
-    call: async () => {
-      const appData = await appRequestRef.call((detail: any) => {
-        exceptionHandler({ detail, model });
-      });
-      let select = appData?.state?.select;
-      if (select) {
-        const compatibleSelectConfig = getCompatibleSelectConfig(
-          ['images'],
-          select,
-        );
-        appData.state = {
-          ...appData.state,
-          select: {
-            ...compatibleSelectConfig,
-          },
-        };
-      }
-      const configData: any = _.merge(getConfig(), appData.state);
-      model.setState({ config: configData });
-    },
-    abort: appRequestRef.abort,
-  };
+  return getAppConfigDataMethod({
+    appId,
+    appRequest: appRequestRef,
+    config: getConfig(),
+    model,
+  });
 }
 
 function resetModelState() {
