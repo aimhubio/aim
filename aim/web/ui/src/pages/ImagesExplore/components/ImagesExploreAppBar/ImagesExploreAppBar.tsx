@@ -1,19 +1,14 @@
 import React from 'react';
 import { useRouteMatch } from 'react-router-dom';
 
-import {
-  Dialog,
-  DialogActions,
-  DialogContent,
-  DialogTitle,
-  MenuItem,
-} from '@material-ui/core';
+import { MenuItem } from '@material-ui/core';
 
 import BookmarkForm from 'components/BookmarkForm/BookmarkForm';
 import AppBar from 'components/AppBar/AppBar';
 import ControlPopover from 'components/ControlPopover/ControlPopover';
 import { Icon, Button, Text } from 'components/kit';
 import ErrorBoundary from 'components/ErrorBoundary/ErrorBoundary';
+import ConfirmModal from 'components/ConfirmModal/ConfirmModal';
 
 import { DOCUMENTATIONS } from 'config/references';
 
@@ -136,26 +131,16 @@ function ImagesExploreAppBar({
             open={popover === 'create'}
           />
         </ErrorBoundary>
-        <Dialog
+        <ConfirmModal
           open={popover === 'update'}
-          onClose={handleClosePopover}
-          aria-labelledby='form-dialog-title'
-        >
-          <DialogTitle id='form-dialog-title'>Update Bookmark</DialogTitle>
-          <DialogContent>
-            <Text size={16} component='p' weight={500}>
-              Do you want to update bookmark?
-            </Text>
-          </DialogContent>
-          <DialogActions>
-            <Button onClick={handleClosePopover} color='primary'>
-              Cancel
-            </Button>
-            <Button onClick={handleBookmarkUpdate} color='primary'>
-              Save
-            </Button>
-          </DialogActions>
-        </Dialog>
+          onCancel={handleClosePopover}
+          onSubmit={handleBookmarkUpdate}
+          text='Are you sure you want to update bookmark?'
+          icon={<Icon name='check' />}
+          title='Update bookmark'
+          statusType='success'
+          confirmBtnText='Update'
+        />
       </AppBar>
     </ErrorBoundary>
   );

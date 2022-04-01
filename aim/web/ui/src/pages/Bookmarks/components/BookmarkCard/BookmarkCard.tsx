@@ -148,7 +148,7 @@ function BookmarkCard({
           onSubmit={handleBookmarkDelete}
           text='Are you sure you want to delete this bookmark?'
           icon={<Icon name='delete' />}
-          title='Are you sure?'
+          title='Delete bookmark'
           statusType='error'
           confirmBtnText='Delete'
         />

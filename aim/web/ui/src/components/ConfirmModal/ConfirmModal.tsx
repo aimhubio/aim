@@ -47,29 +47,15 @@ function ConfirmModal(
           <div>
             {props.text && (
               <Text
-                size={14}
                 className='ConfirmModal__description'
                 weight={400}
                 component='p'
                 id='dialog-description'
               >
-                {props.title}
+                {props.text || ''}
               </Text>
             )}
-
-            <div>
-              {props.text && (
-                <Text
-                  className='ConfirmModal__description'
-                  weight={400}
-                  component='p'
-                  id='dialog-description'
-                >
-                  {props.text || ''}
-                </Text>
-              )}
-              {props.children && props.children}
-            </div>
+            {props.children && props.children}
           </div>
         </div>
 

@@ -166,6 +166,7 @@ function ImagesExplore(): React.FunctionComponentElement<React.ReactNode> {
     }
 
     analytics.pageView(ANALYTICS_EVENT_KEYS.images.pageView);
+
     const unListenHistory = history.listen(() => {
       if (!!imagesExploreData?.config) {
         if (
