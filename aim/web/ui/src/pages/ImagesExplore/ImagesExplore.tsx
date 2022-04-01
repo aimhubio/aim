@@ -243,7 +243,9 @@ function ImagesExplore(): React.FunctionComponentElement<React.ReactNode> {
                 imagesExploreData?.config?.table.resizeMode ===
                 ResizeModeEnum.MaxHeight
                   ? '__hide'
-                  : _.isEmpty(imagesExploreData?.imagesData)
+                  : imagesExploreData?.requestStatus !==
+                      RequestStatusEnum.Pending &&
+                    _.isEmpty(imagesExploreData?.imagesData)
                   ? '__fullHeight'
                   : ''
               }`}
