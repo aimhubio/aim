@@ -49,6 +49,7 @@ def up(dev, host, port, workers,
        profiler, log_level):
     if dev:
         os.environ[AIM_ENV_MODE_KEY] = 'dev'
+        log_level = log_level or 'debug'
     else:
         os.environ[AIM_ENV_MODE_KEY] = 'prod'
 

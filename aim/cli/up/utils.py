@@ -26,6 +26,6 @@ def build_uvicorn_command(host, port, num_workers, ssl_keyfile, ssl_certfile, lo
         cmd += ['--ssl-keyfile', ssl_keyfile]
     if ssl_certfile:
         cmd += ['--ssl-certfile', ssl_certfile]
-    cmd += ['--log-level', log_level]
+    cmd += ['--log-level', log_level.lower()]
     cmd += ['aim.web.run:app']
     return cmd
