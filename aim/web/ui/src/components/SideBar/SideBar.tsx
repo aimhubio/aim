@@ -12,6 +12,7 @@ import ErrorBoundary from 'components/ErrorBoundary/ErrorBoundary';
 import { PathEnum } from 'config/enums/routesEnum';
 import { AIM_VERSION } from 'config/config';
 import { ANALYTICS_EVENT_KEYS } from 'config/analytics/analyticsKeysMap';
+import { DOCUMENTATIONS } from 'config/references';
 
 import routes, { IRoute } from 'routes/routes';
 
@@ -93,7 +94,7 @@ function SideBar(): React.FunctionComponentElement<React.ReactNode> {
             <Tooltip title='Docs' placement='right'>
               <a
                 target='_blank'
-                href='https://aimstack.readthedocs.io'
+                href={DOCUMENTATIONS.MAIN_PAGE}
                 rel='noreferrer'
                 className='Sidebar__bottom__anchor'
                 onClick={() => trackEvent(ANALYTICS_EVENT_KEYS.sidebar.docs)}
