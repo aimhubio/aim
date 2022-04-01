@@ -329,7 +329,6 @@ function ImagesExplore(): React.FunctionComponentElement<React.ReactNode> {
                           inputTitleTooltip: 'Number of steps to display',
                           inputValue:
                             imagesExploreData?.config?.images?.recordDensity,
-                          // key: 'record_range',
                           rangeEndpoints:
                             imagesExploreData?.config?.images?.stepRange,
                           selectedRangeValue:
@@ -344,11 +343,10 @@ function ImagesExplore(): React.FunctionComponentElement<React.ReactNode> {
                         {
                           inputName: 'indexDensity',
                           inputTitle: 'Indices count',
-                          inputTitleTooltip: 'Number of texts per step',
+                          inputTitleTooltip: 'Number of images per step',
                           inputValidationPatterns: undefined,
                           inputValue:
                             imagesExploreData?.config?.images?.indexDensity,
-                          // key: 'index_range',
                           rangeEndpoints:
                             imagesExploreData?.config?.images?.indexRange,
                           selectedRangeValue:
@@ -356,7 +354,7 @@ function ImagesExplore(): React.FunctionComponentElement<React.ReactNode> {
                           sliderName: 'indexSlice',
                           sliderTitle: 'Indices',
                           sliderTitleTooltip:
-                            'Index in the list of texts passed to track() call',
+                            'Index in the list of images passed to track() call',
                           sliderType: 'range',
                           infoPropertyName: 'index',
                         },
