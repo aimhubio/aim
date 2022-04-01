@@ -60,7 +60,7 @@ class PyInstrumentProfilerMiddleware:
         profiler = self.profiler(interval=self._profiler_interval)
         try:
             profiler.start()
-        except:
+        except: # noqa
             skip_profiling = True
         else:
             skip_profiling = False
