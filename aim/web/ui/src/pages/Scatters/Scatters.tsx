@@ -84,7 +84,8 @@ function Scatters(
             className={`Scatters__chart__container${
               props.resizeMode === ResizeModeEnum.MaxHeight
                 ? '__hide'
-                : _.isEmpty(props.tableData)
+                : props.requestStatus !== RequestStatusEnum.Pending &&
+                  _.isEmpty(props.tableData)
                 ? '__fullHeight'
                 : ''
             }`}

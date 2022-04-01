@@ -2,6 +2,7 @@
 
 ## 3.8.1
 
+- Fix row hiding functionality (roubkar)
 - Fix `RepoIndexManager` run's reference cleanup (mihran113)
 
 ## 3.8.0 Mar 26, 2022
