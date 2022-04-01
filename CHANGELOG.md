@@ -3,8 +3,10 @@
 ## 3.8.1
 
 - Fix row hiding functionality (roubkar)
+- Tune RunOverviewTab container styles (arsengit)
 - Update documentations links on UI (rubenaprikyan)
 - Fix `RepoIndexManager` run's reference cleanup (mihran113)
+- Fix issue with fetch on load more (infinite scroll) functionality in Runs Explorer (rubenaprikyan)
 
 ## 3.8.0 Mar 26, 2022
 

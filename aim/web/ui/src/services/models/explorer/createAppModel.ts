@@ -2326,7 +2326,6 @@ function createAppModel(appConfig: IAppInitialConfig) {
               }
               const { data, params, metricsColumns, selectedRows } =
                 processData(runsData);
-
               const tableData = getDataAsTableRows(
                 data,
                 metricsColumns,
@@ -2339,9 +2338,7 @@ function createAppModel(appConfig: IAppInitialConfig) {
                 model.getState()?.config?.table.hiddenColumns!,
               );
               updateTableData(tableData, tableColumns, configData);
-              limit = isInitial
-                ? modelState?.config.pagination.limit
-                : modelState?.config.pagination.limit + 45;
+
               model.setState({
                 data,
                 selectedRows: shouldResetSelectedRows
@@ -2359,9 +2356,6 @@ function createAppModel(appConfig: IAppInitialConfig) {
                     ...modelState?.config.pagination,
                     isLatest:
                       !isInitial && count < modelState?.config.pagination.limit,
-                    limit: isInitial
-                      ? modelState?.config.pagination.limit
-                      : modelState?.config.pagination.limit + 45,
                   },
                 },
               });
@@ -2377,9 +2371,11 @@ function createAppModel(appConfig: IAppInitialConfig) {
                 });
               }
             }
+            const rowDataLength = model.getState()?.tableData?.length || 0;
+            limit = rowDataLength >= 45 ? rowDataLength : 45;
             liveUpdateInstance?.start({
               q: query,
-              limit: limit || 0,
+              limit,
             });
           },
           abort: runsRequestRef.abort,
@@ -2853,6 +2849,7 @@ function createAppModel(appConfig: IAppInitialConfig) {
               },
             },
           });
+
           return getRunsData(false, false, false);
         }
       }
@@ -3000,8 +2997,8 @@ function createAppModel(appConfig: IAppInitialConfig) {
 
         if (!liveUpdateConfig?.enabled && config.enabled) {
           const query = configData?.select?.query || '';
-          const pagination = configData?.pagination;
-
+          const rowDataLength = model.getState()?.tableData?.length || 0;
+          const limit = rowDataLength >= 45 ? rowDataLength : 45;
           liveUpdateInstance = new LiveUpdateService(
             appName,
             updateData,
@@ -3009,7 +3006,7 @@ function createAppModel(appConfig: IAppInitialConfig) {
           );
           liveUpdateInstance.start({
             q: query,
-            limit: pagination.limit || 0,
+            limit,
           });
         } else {
           liveUpdateInstance?.clear();
