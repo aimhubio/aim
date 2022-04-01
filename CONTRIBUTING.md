@@ -42,17 +42,17 @@ This section describes governance processes we follow in developing Aim.
 
 ### Releases
 
-We release a new minor version (e.g., 3.8.0) every two week and patch releases on demand. The minor versions contain new features, bugfixes and also all previous bugfixes included in previous patch releases. With every release, we publish a CHANGELOG where we list enhancements and fixes.
+We release a new minor version (e.g., 3.8.0) every two week and patch releases on demand. The minor versions contain new features, bugfixes and also all previous bugfixes included in previous patch releases. With every release, we publish a [CHANGELOG](./CHANGELOG.md) where we list enhancements and fixes. The versioning scheme we use is [SemVer](http://semver.org/).
 
 ## Contribution Process
 
 The Aim contribution process starts with filing a GitHub issue. Aim defines six categories of issues: enhancements (feature requests), bug reports, code health improvements, peformance improvements, tests, questions.
 
-Aim maintainers actively triage and respond to GitHub issues. In general, we recommend waiting for feebdack from an Aim maintainer or community member before proceeding to implement a feature or patch. This is particularly important for significant changes, and will typically be labeled during triage with `phase / exploring`.
+Aim maintainers actively triage and respond to GitHub issues. In general, we recommend waiting for feedback from an Aim maintainer or community member before proceeding to implement a feature or patch. This is particularly important for significant changes, and will typically be labeled during triage with `phase / exploring`.
 
 After you have agreed upon an implementation strategy for your feature or patch with an Aim maintainer, the next step is to introduce your changes as a pull request against the Aim Repository.
 
-Once your pull request against the Aim Repository has been merged, your corresponding changes will be automatically included in the next Aim release. Every change is listed in the Aim release notes and [CHANGELOG](./CHANGELOG.md).
+Once your pull request against the Aim Repository has been merged, your corresponding changes will be automatically included in the next Aim release. Every change is listed in the [Aim release notes](https://github.com/aimhubio/aim/releases) and [CHANGELOG](./CHANGELOG.md).
 
 Congratulations, you have just contributed to Aim. We appreciate your contribution!
 
@@ -63,7 +63,7 @@ The majority of the Aim product areas is developed in Python/Cython. This includ
 ### Developing Storage/SDK/CLI
 
 Most of the backend components, including SDK, Storage, Web APIs and CLI are developed using Python/Cython.
-In order to start development you must install dev. requirements and the aim package itself, in editable mode.
+In order to start development you must install dev requirements and the aim package itself, in editable mode.
 ```shell
 pip install -r requirements.dev.txt
 pip install -e .
@@ -126,17 +126,17 @@ Aim UI will show logged data in at [http://localhost:3000](http://localhost:3000
 
 #### Adding New Components
 
-To start building a new component you can run follwoing command:
+To start building a new component you can run following command:
 
 ```shell
-npm run crc
+npm run crc 'ComponentName'
 ```
 
 
 If you want to add a component inside UI kit you can run following command:
 
 ```shell
-npm run crc-kit
+npm run crc-kit 'ComponentName'
 ```
 
 These command will create a folder named `ComponentName` with all the necessary files.

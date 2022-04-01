@@ -1,12 +1,28 @@
 import os
 
 from fastapi import FastAPI
+from fastapi.exceptions import HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.middleware.gzip import GZipMiddleware
+from fastapi.responses import JSONResponse
 
 from aim.web.configs import AIM_PROFILER_KEY
 from aim.web.middlewares.profiler import PyInstrumentProfilerMiddleware
 from aim.web.utils import get_root_path
+
+
+async def http_exception_handler(request, exc):
+    message = str(exc.detail)
+    detail = None
+
+    if isinstance(exc.detail, dict):
+        message = exc.detail.pop('message', message)
+        detail = exc.detail.pop('detail', None)
+
+    response = {'message': message}
+    if detail:
+        response.update({'detail': detail})
+    return JSONResponse(response, status_code=exc.status_code)
 
 
 def create_app():
@@ -37,11 +53,12 @@ def create_app():
 
     # The indexing thread has to run in the same process as the uvicorn app itself.
     # This allows sharing state of indexing using memory instead of process synchronization methods.
-    index_mng = RepoIndexManager.get_index_manager(Project().repo)
+    index_mng = RepoIndexManager.get_index_manager(Project().repo.path)
     index_mng.start_indexing_thread()
 
     api_app = FastAPI()
     api_app.add_middleware(GZipMiddleware)
+    api_app.add_exception_handler(HTTPException, http_exception_handler)
 
     if os.environ.get(AIM_PROFILER_KEY) == "1":
         api_app.add_middleware(PyInstrumentProfilerMiddleware,

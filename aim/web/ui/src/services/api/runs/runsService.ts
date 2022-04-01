@@ -16,6 +16,8 @@ const endpoints = {
   CREATE_RUNS_TAG: (id: string) => `runs/${id}/tags/new`,
   DELETE_RUNS_TAG: (id: string, tag_id: string) => `runs/${id}/tags/${tag_id}`,
   GET_BATCH: (id: string, trace: string) => `runs/${id}/${trace}/get-batch`,
+  GET_BATCH_BY_STEP: (id: string, trace: string) =>
+    `runs/${id}/${trace}/get-step`,
 };
 
 function getRunsData(query?: string, limit?: number, offset?: string) {
@@ -115,9 +117,29 @@ function getBatch(run_id: string, trace: TraceType, params: any, body: any) {
   );
 }
 
+function getBatchByStep(
+  run_id: string,
+  trace: TraceType,
+  params: any,
+  body: any,
+) {
+  return API.getStream1<ReadableStream>(
+    endpoints.GET_BATCH_BY_STEP(run_id, trace),
+    params,
+    {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body,
+    },
+  );
+}
+
 const runsService = {
   endpoints,
   getBatch,
+  getBatchByStep,
   getRunsData,
   getRunInfo,
   getRunMetricsBatch,

@@ -11,10 +11,8 @@ from filelock import FileLock
 from pathlib import Path
 from functools import partial
 
-from typing import Optional, List, TYPE_CHECKING
+from typing import Optional, List
 
-if TYPE_CHECKING:
-    from aim.sdk.repo import Repo
 
 from aim.sdk.run import Run
 from aim.storage.rockscontainer import RocksContainer
@@ -26,17 +24,17 @@ class RepoIndexManager:
     index_manager_pool = {}
 
     @classmethod
-    def get_index_manager(cls, repo: 'Repo'):
-        mng = cls.index_manager_pool.get(repo.path, None)
+    def get_index_manager(cls, repo_path: str):
+        mng = cls.index_manager_pool.get(repo_path, None)
         if mng is None:
-            mng = RepoIndexManager(repo)
-            cls.index_manager_pool[repo.path] = mng
+            mng = RepoIndexManager(repo_path)
+            cls.index_manager_pool[repo_path] = mng
         return mng
 
-    def __init__(self, repo: 'Repo'):
-        self.repo = repo
-        repo_path = Path(self.repo.path)
+    def __init__(self, repo_path: str):
+        self.repo_path = repo_path
 
+        repo_path = Path(self.repo_path)
         self.progress_dir = repo_path / 'meta' / 'progress'
         self.progress_dir.mkdir(parents=True, exist_ok=True)
 
@@ -56,12 +54,12 @@ class RepoIndexManager:
 
     @property
     def reindex_needed(self) -> bool:
-        progress_dir = os.path.join(self.repo.path, 'meta', 'progress')
+        progress_dir = os.path.join(self.repo_path, 'meta', 'progress')
         runs_with_progress = os.listdir(progress_dir)
         return len(runs_with_progress) > 0
 
     def start_indexing_thread(self):
-        logger.info(f'Starting indexing thread for repo \'{self.repo.path}\'')
+        logger.info(f'Starting indexing thread for repo \'{self.repo_path}\'')
         self._reindex_thread = Thread(target=self._run_forever, daemon=True)
         self._reindex_thread.start()
 
@@ -84,11 +82,11 @@ class RepoIndexManager:
 
     def run_flushes_and_compactions(self):
         runs_to_skip = set(self._in_progress_runs())
-        meta_dbs_path = os.path.join(self.repo.path, 'meta', 'chunks')
-        seq_dbs_path = os.path.join(self.repo.path, 'seqs', 'chunks')
+        meta_dbs_path = os.path.join(self.repo_path, 'meta', 'chunks')
+        seq_dbs_path = os.path.join(self.repo_path, 'seqs', 'chunks')
         meta_dbs_names = set(os.listdir(meta_dbs_path)).difference(runs_to_skip)
         seq_dbs_names = set(os.listdir(seq_dbs_path)).difference(runs_to_skip)
-        meta_index_container_path = os.path.join(self.repo.path, 'meta', 'index')
+        meta_index_container_path = os.path.join(self.repo_path, 'meta', 'index')
 
         pool = ThreadPool(cpu_count(logical=False))
 
@@ -116,7 +114,7 @@ class RepoIndexManager:
 
     def _run_forever(self):
         lock_path = self.locks_dir / 'run_index'
-        logger.debug(f'Trying to acquire indexing lock for repo \'{self.repo.path}\'...')
+        logger.debug(f'Trying to acquire indexing lock for repo \'{self.repo_path}\'...')
         lock = FileLock(str(lock_path))
         lock.acquire(timeout=-1)  # block till lock can be acquired
         logger.debug('Lock acquired! Running...')
@@ -128,6 +126,7 @@ class RepoIndexManager:
                 self._indexing_in_progress = True
                 idle_cycles = 0
                 run.finalize()
+                del run
                 # sleep for 2 seconds to release index db lock in between and allow
                 # potential running jobs to properly finalize and index Run.
                 sleep_interval = 2
@@ -143,11 +142,11 @@ class RepoIndexManager:
         # This method is required to detect the case when Run was finalized after collecting
         # un-indexed runs. Such case may occur since there's a significant interval between collecting
         # runs and actual indexing and Run might be finalized manually during that period.
-        run_progress = os.path.join(self.repo.path, 'meta', 'progress', run_hash)
+        run_progress = os.path.join(self.repo_path, 'meta', 'progress', run_hash)
         return os.path.exists(run_progress)
 
     def _is_run_in_progress(self, run_hash: str) -> bool:
-        lock_path = os.path.join(self.repo.path, 'meta', 'locks', run_hash)
+        lock_path = os.path.join(self.repo_path, 'meta', 'locks', run_hash)
         try:
             fl = FileLock(lock_path, timeout=0)
             fl.acquire()
@@ -158,21 +157,21 @@ class RepoIndexManager:
             return False
 
     def _unindexed_runs(self) -> List[str]:
-        progress_dir = os.path.join(self.repo.path, 'meta', 'progress')
+        progress_dir = os.path.join(self.repo_path, 'meta', 'progress')
         runs_with_progress = os.listdir(progress_dir)
         run_hashes = sorted(filter(lambda r: not self._is_run_in_progress(r), runs_with_progress),
                             key=lambda r: os.path.getmtime(os.path.join(progress_dir, r)))
         return run_hashes
 
     def _in_progress_runs(self) -> List[str]:
-        progress_dir = os.path.join(self.repo.path, 'meta', 'progress')
+        progress_dir = os.path.join(self.repo_path, 'meta', 'progress')
         runs_with_progress = os.listdir(progress_dir)
         run_hashes = sorted(filter(lambda r: self._is_run_in_progress(r), runs_with_progress),
                             key=lambda r: os.path.getmtime(os.path.join(progress_dir, r)))
         return run_hashes
 
     def _run(self, run_hash):
-        return Run(run_hash, repo=self.repo, system_tracking_interval=None)
+        return Run(run_hash, repo=self.repo_path, system_tracking_interval=None)
 
     def _next_unindexed_run(self) -> Optional[Run]:
         for run_hash in self._unindexed_runs():

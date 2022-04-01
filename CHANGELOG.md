@@ -1,18 +1,27 @@
 # Changelog
 
-## Unreleased
+## 3.8.1
+
+- Tune RunOverviewTab container styles (arsengit)
+- Update documentations links on UI (rubenaprikyan)
+- Fix `RepoIndexManager` run's reference cleanup (mihran113)
+- Fix issue with fetch on load more (infinite scroll) functionality in Runs Explorer (rubenaprikyan)
+
+## 3.8.0 Mar 26, 2022
 
 ### Enhancements:
 
 - Hugging Face adapter refactoring (mihran113)
 - Add run description columns to all run specific tables (VkoHov, mihran113)
 - Change images rendering optimization default value to smoother (VkoHov)
+- Set default steps ordering to desc in single run tabs (VkoHov, devfox-se)
 - Add run name to grouping, ordering and run navigation popovers (VkoHov)
 - Add ability to apply color scale on columns with numeric values (VkoHov)
 - Refactored XGBoost AimCallback (devfox-se)
 - Reopenable callbacks for integrations (mihran113)
 - Add DVC integration (devfox-se)
-- Added API profiler and unified API error response (devfox-se)
+- Add API profiler and unified API error response (devfox-se)
+- Add API to retrieve N'th step of sequence (devfox-se)
 
 ### Fixes:
 
@@ -27,6 +36,7 @@
 - Fix git system param tracking (devfox-se)
 - Fix runs manual closing (mihran113)
 - Fix Docker image creation step in packaging workflow (alberttorosyan)
+- Fix Jinja2 template rendering with starlette==0.14.2 (alberttorosyan)
 
 ## 3.7.5 Mar 18, 2022
 
