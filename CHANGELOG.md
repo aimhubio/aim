@@ -2,6 +2,7 @@
 
 ## 3.8.1
 
+- Fix displaying incorrect metric values for large range scale in LineChart (KaroMourad)
 - Tune RunOverviewTab container styles (arsengit)
 - Update documentations links on UI (rubenaprikyan)
 - Fix `RepoIndexManager` run's reference cleanup (mihran113)
