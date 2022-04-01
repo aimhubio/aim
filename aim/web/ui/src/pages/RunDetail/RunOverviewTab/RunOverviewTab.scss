@@ -5,6 +5,7 @@
   overflow-y: auto;
   &__content {
     flex: 1 100%;
+    max-width: calc(100% - 20rem);
   }
   &__cardBox {
     margin-bottom: $space-lg;
