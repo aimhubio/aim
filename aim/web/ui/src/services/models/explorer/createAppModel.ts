@@ -429,7 +429,8 @@ function createAppModel(appConfig: IAppInitialConfig) {
             advancedQuery: '',
           };
         }
-        return config;
+        //TODO solve the problem with keeping table config after switching from Scatters explore to Params explore. But the solution is temporal
+        return _.cloneDeep(config);
       }
       default:
         return {};

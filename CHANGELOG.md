@@ -2,6 +2,7 @@
 
 ## 3.8.1
 
+- Fix row hiding functionality (roubkar)
 - Tune RunOverviewTab container styles (arsengit)
 - Update documentations links on UI (rubenaprikyan)
 - Fix `RepoIndexManager` run's reference cleanup (mihran113)
