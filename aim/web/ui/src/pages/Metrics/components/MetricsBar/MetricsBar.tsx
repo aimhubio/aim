@@ -16,6 +16,8 @@ import LiveUpdateSettings from 'components/LiveUpdateSettings/LiveUpdateSettings
 import { Button, Icon, Text } from 'components/kit';
 import ErrorBoundary from 'components/ErrorBoundary/ErrorBoundary';
 
+import { DOCUMENTATIONS } from 'config/references';
+
 import { IMetricsBarProps } from 'types/pages/metrics/components/MetricsBar/MetricsBar';
 
 import './MetricsBar.scss';
@@ -27,6 +29,7 @@ function MetricsBar({
   liveUpdateConfig,
   onLiveUpdateConfigChange,
   title,
+  explorerName = 'METRICS',
 }: IMetricsBarProps): React.FunctionComponentElement<React.ReactNode> {
   const [popover, setPopover] = React.useState<string>('');
   const route = useRouteMatch<any>();
@@ -118,6 +121,13 @@ function MetricsBar({
                   <MenuItem onClick={onResetConfigData}>
                     Reset Controls to System Defaults
                   </MenuItem>
+                  <a
+                    href={DOCUMENTATIONS.EXPLORERS[explorerName].MAIN}
+                    target='_blank'
+                    rel='noreferrer'
+                  >
+                    <MenuItem>Explorer Documentation</MenuItem>
+                  </a>
                 </div>
               }
             />
