@@ -9,7 +9,7 @@ from sqlalchemy.orm import sessionmaker, scoped_session
 from aim.storage.migrations.utils import upgrade_database
 from aim.storage.structured.sql_engine.factory import ModelMappedFactory as ObjectFactory
 from aim.storage.types import SafeNone
-from aim.web.configs import AIM_LOG_LEVEL
+from aim.web.configs import AIM_LOG_LEVEL_KEY
 
 
 class ObjectCache:
@@ -55,7 +55,7 @@ class DB(ObjectFactory):
         self.db_url = self.get_db_url(path)
         self.readonly = readonly
         self.engine = create_engine(self.db_url,
-                                    echo=(logging.INFO >= int(os.environ.get(AIM_LOG_LEVEL, logging.WARNING))))
+                                    echo=(logging.INFO >= int(os.environ.get(AIM_LOG_LEVEL_KEY, logging.WARNING))))
         self.session_cls = scoped_session(sessionmaker(autocommit=False, autoflush=False, bind=self.engine))
         self._upgraded = None
 
