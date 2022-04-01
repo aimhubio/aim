@@ -1,8 +1,10 @@
 import moment from 'moment';
 
-import shortEnglishHumanizer from 'utils/shortEnglishHumanizer';
+import { DATE_CHART_TICK } from 'config/dates/dates';
 
-import { IAlignmentConfig } from '../types/services/models/metrics/metricsAppModel';
+import { IAlignmentConfig } from 'types/services/models/metrics/metricsAppModel';
+
+import shortEnglishHumanizer from 'utils/shortEnglishHumanizer';
 
 import { AlignmentKeysEnum, AlignmentOptionsEnum } from './d3';
 
@@ -25,7 +27,7 @@ function formatValueByAlignment({
           maxDecimalPoints: 2,
         });
       case AlignmentOptionsEnum.ABSOLUTE_TIME:
-        return moment(xAxisTickValue).format('HH:mm:ss D MMM, YY');
+        return moment(xAxisTickValue).format(DATE_CHART_TICK);
       default:
         return xAxisTickValue;
     }

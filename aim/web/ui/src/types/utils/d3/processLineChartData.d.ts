@@ -1,7 +1,12 @@
+import React from 'react';
+
 import { IPoint } from 'components/ScatterPlot';
 
 import { Override } from 'types/utils/common';
-import { IAggregatedData } from 'types/services/models/metrics/metricsAppModel';
+import {
+  IAggregatedData,
+  IAggregationConfig,
+} from 'types/services/models/metrics/metricsAppModel';
 import { ILine } from 'types/components/LineChart/LineChart';
 import { IAxesScaleState } from 'types/components/AxesScalePopover/AxesScalePopover';
 
@@ -28,6 +33,15 @@ export interface IProcessLineChartData {
   allYValues: number[];
   xScale: any;
   yScale: any;
+}
+
+export interface IProcessLineChartDataArgs {
+  data: ILine[];
+  ignoreOutliers?: boolean;
+  visBoxRef: React.MutableRefObject<any>;
+  axesScaleType: IAxesScaleState;
+  aggregatedData?: IAggregatedData[];
+  aggregationConfig?: IAggregationConfig;
 }
 
 export interface ICalculateLineValues {

@@ -1,5 +1,4 @@
 import _ from 'lodash-es';
-import React from 'react';
 
 import {
   ICalculateLineValues,
@@ -7,13 +6,9 @@ import {
   IProcessedAggrData,
   IProcessedData,
   IProcessLineChartData,
+  IProcessLineChartDataArgs,
 } from 'types/utils/d3/processLineChartData';
 import { ILine } from 'types/components/LineChart/LineChart';
-import { IAxesScaleState } from 'types/components/AxesScalePopover/AxesScalePopover';
-import {
-  IAggregatedData,
-  IAggregationConfig,
-} from 'types/services/models/metrics/metricsAppModel';
 
 import { minMaxOfArray } from 'utils/minMaxOfArray';
 import { removeOutliers } from 'utils/removeOutliers';
@@ -23,14 +18,14 @@ import getRoundedValue from '../roundValue';
 
 import { getAxisScale, ScaleEnum } from './index';
 
-function processLineChartData(
-  data: ILine[],
-  ignoreOutliers: boolean = false,
-  visBoxRef: React.MutableRefObject<any>,
-  axesScaleType: IAxesScaleState,
-  aggregatedData?: IAggregatedData[],
-  aggregationConfig?: IAggregationConfig,
-): IProcessLineChartData {
+function processLineChartData({
+  data,
+  ignoreOutliers = false,
+  visBoxRef,
+  axesScaleType,
+  aggregatedData,
+  aggregationConfig,
+}: IProcessLineChartDataArgs): IProcessLineChartData {
   let allXValues: number[] = [];
   let allYValues: number[] = [];
   let tupleLineChartData: IProcessedData[] = [];
@@ -41,9 +36,19 @@ function processLineChartData(
     const line: ILine = data[i];
     const { xValues, yValues } = line.data;
 
+    const tupleData = toTupleData(xValues, yValues);
+
+    const xSyncedValues = [];
+    const ySyncedValues = [];
+
+    for (let d of tupleData) {
+      xSyncedValues.push(d[0]);
+      ySyncedValues.push(d[1]);
+    }
+
     // supposed received x values are sorted by ascending order (y values are sorted by x)
-    allXValues = allXValues.concat(xValues);
-    allYValues = allYValues.concat(yValues);
+    allXValues = allXValues.concat(xSyncedValues);
+    allYValues = allYValues.concat(ySyncedValues);
 
     // find y bounds for lines to ignore "acceptable" outliers
     if (ignoreOutliers) {
@@ -54,7 +59,7 @@ function processLineChartData(
       color: '#000',
       dasharray: '0',
       ...line,
-      data: toTupleData(xValues, yValues),
+      data: tupleData,
     });
   }
 

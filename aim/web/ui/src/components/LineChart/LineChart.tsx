@@ -1,4 +1,5 @@
 import React from 'react';
+import * as d3 from 'd3';
 
 import ErrorBoundary from 'components/ErrorBoundary/ErrorBoundary';
 
@@ -101,15 +102,33 @@ const LineChart = React.forwardRef(function LineChart(
       chartTitle,
     });
 
-    const { processedData, processedAggrData, min, max, xScale, yScale } =
-      processLineChartData(
-        data,
-        ignoreOutliers,
-        visBoxRef,
-        axesScaleType,
-        aggregatedData,
-        aggregationConfig,
-      );
+    const {
+      processedData,
+      processedAggrData,
+      min,
+      max,
+      xScale,
+      yScale,
+      allXValues,
+      allYValues,
+    } = processLineChartData({
+      data,
+      ignoreOutliers,
+      visBoxRef,
+      axesScaleType,
+      aggregatedData,
+      aggregationConfig,
+    });
+
+    if (!allXValues.length || !allYValues.length) {
+      if (visAreaRef.current && !readOnly) {
+        d3.select(visAreaRef.current)
+          .append('text')
+          .attr('class', 'LineChart__emptyData')
+          .text('No Data');
+      }
+      return;
+    }
 
     attributesRef.current.xScale = xScale;
     attributesRef.current.yScale = yScale;
@@ -269,5 +288,7 @@ const LineChart = React.forwardRef(function LineChart(
     </ErrorBoundary>
   );
 });
+
+LineChart.displayName = 'LineChart';
 
 export default React.memo(LineChart);
