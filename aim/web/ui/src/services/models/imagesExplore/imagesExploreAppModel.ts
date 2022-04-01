@@ -392,6 +392,7 @@ function getImagesData(
     abort: imagesRequestRef.abort,
   };
 }
+
 function getSelectFormOptions(projectsData: IProjectParamsMetrics) {
   let data: ISelectOption[] = [];
   let index: number = 0;
@@ -430,6 +431,7 @@ function getSelectFormOptions(projectsData: IProjectParamsMetrics) {
     alphabeticalSortComparator<ISelectOption>({ orderBy: 'label' }),
   );
 }
+
 function processData(data: any[]): {
   data: IMetricsCollection<IImageData>[];
   params: string[];
@@ -1001,7 +1003,7 @@ function updateURL(
 
   const appId: string = window.location.pathname.split('/')[2];
   if (!appId) {
-    setItem('imagesExploreUrl', url);
+    setItem('imagesUrl', url);
   }
 
   window.history.pushState(null, '', url);
