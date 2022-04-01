@@ -121,6 +121,7 @@ const Params = ({
         <div className='Params__fullHeight Params__section__div'>
           <div>
             <AppBar
+              explorerName='PARAMS'
               onBookmarkCreate={onBookmarkCreate}
               onBookmarkUpdate={onBookmarkUpdate}
               onResetConfigData={onResetConfigData}

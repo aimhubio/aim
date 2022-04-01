@@ -47,6 +47,7 @@ function Scatters(
       <section className='Scatters__section'>
         <div className='Scatters__section__div Scatters__fullHeight'>
           <AppBar
+            explorerName='SCATTERS'
             onBookmarkCreate={props.onBookmarkCreate}
             onBookmarkUpdate={props.onBookmarkUpdate}
             onResetConfigData={props.onResetConfigData}
