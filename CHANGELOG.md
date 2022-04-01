@@ -2,6 +2,7 @@
 
 ## 3.8.1
 
+- Fix issue with displaying negative param values on Aim UI (roubkar)
 - Fix row hiding functionality (roubkar)
 - Tune RunOverviewTab container styles (arsengit)
 - Update documentations links on UI (rubenaprikyan)

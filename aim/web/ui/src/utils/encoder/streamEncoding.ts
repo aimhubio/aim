@@ -117,6 +117,23 @@ function decodeValue(buffer: Uint8Array): any {
 }
 
 function decode_q_le(...x: number[]) {
+  if ((x[6] !== 0 || x[7] !== 0) && (x[6] !== 255 || x[7] !== 255)) {
+    console.log(
+      'Potential integer overflow detected. Only 52-bit integers are supported now.',
+    );
+  }
+  if (x[7] & 128) {
+    return ~decode_q_le(
+      255 ^ x[0],
+      255 ^ x[1],
+      255 ^ x[2],
+      255 ^ x[3],
+      255 ^ x[4],
+      255 ^ x[5],
+      255 ^ x[6],
+      255 ^ x[7],
+    );
+  }
   return (
     x[7] * Math.pow(2, 56) +
     x[6] * Math.pow(2, 48) +
