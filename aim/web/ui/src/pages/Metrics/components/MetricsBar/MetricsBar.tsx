@@ -122,7 +122,7 @@ function MetricsBar({
                     Reset Controls to System Defaults
                   </MenuItem>
                   <a
-                    href={DOCUMENTATIONS.EXPLORERS[explorerName]}
+                    href={DOCUMENTATIONS.EXPLORERS[explorerName].MAIN}
                     target='_blank'
                     rel='noreferrer'
                   >

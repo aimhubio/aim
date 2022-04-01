@@ -1,17 +1,33 @@
 const DOCUMENTATIONS = {
   MAIN_PAGE: 'https://aimstack.readthedocs.io',
   STABLE: 'https://aimstack.readthedocs.io/en/stable/',
-  SEARCH: 'https://aimstack.readthedocs.io/en/latest/using/search.html',
+  AIM_QL: 'https://aimstack.readthedocs.io/en/latest/using/search.html',
   EXPLORERS: {
-    PARAMS:
-      'https://aimstack.readthedocs.io/en/latest/ui/pages/explorers.html#params-explorer',
-    METRICS:
-      'https://aimstack.readthedocs.io/en/latest/ui/pages/explorers.html#metrics-explorer',
-    IMAGES:
-      'https://aimstack.readthedocs.io/en/latest/ui/pages/explorers.html#images-explorer',
-    SCATTERS:
-      'https://aimstack.readthedocs.io/en/latest/ui/pages/explorers.html#scatters-explorer',
-    RUNS: 'https://aimstack.readthedocs.io/en/latest/ui/pages/run_management.html#runs-explorer',
+    PARAMS: {
+      MAIN: 'https://aimstack.readthedocs.io/en/latest/ui/pages/explorers.html#params-explorer',
+      SEARCH:
+        'https://aimstack.readthedocs.io/en/latest/ui/pages/explorers.html#query-any-metrics-and-params',
+    },
+    METRICS: {
+      MAIN: 'https://aimstack.readthedocs.io/en/latest/ui/pages/explorers.html#metrics-explorer',
+      SEARCH:
+        'https://aimstack.readthedocs.io/en/latest/ui/pages/explorers.html#id1',
+    },
+    IMAGES: {
+      MAIN: 'https://aimstack.readthedocs.io/en/latest/ui/pages/explorers.html#images-explorer',
+      SEARCH:
+        'https://aimstack.readthedocs.io/en/latest/ui/pages/explorers.html#query-any-image',
+    },
+    SCATTERS: {
+      MAIN: 'https://aimstack.readthedocs.io/en/latest/ui/pages/explorers.html#scatters-explorer',
+      SEARCH:
+        'https://aimstack.readthedocs.io/en/latest/ui/pages/explorers.html#scatters-explorer',
+    },
+    RUNS: {
+      MAIN: 'https://aimstack.readthedocs.io/en/latest/ui/pages/run_management.html#runs-explorer',
+      SEARCH:
+        'https://aimstack.readthedocs.io/en/latest/ui/pages/run_management.html#search-runs',
+    },
   },
 };
 

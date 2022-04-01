@@ -107,7 +107,7 @@ function ImagesExploreAppBar({
                     Reset Controls to System Defaults
                   </MenuItem>
                   <a
-                    href={DOCUMENTATIONS.EXPLORERS.IMAGES}
+                    href={DOCUMENTATIONS.EXPLORERS.IMAGES.MAIN}
                     target='_blank'
                     rel='noreferrer'
                   >

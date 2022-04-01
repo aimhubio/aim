@@ -42,7 +42,7 @@ function RunsBar(props: {
               component={
                 <div className='MetricsBar__popover'>
                   <a
-                    href={DOCUMENTATIONS.EXPLORERS.RUNS}
+                    href={DOCUMENTATIONS.EXPLORERS.RUNS.MAIN}
                     target='_blank'
                     rel='noreferrer'
                   >
