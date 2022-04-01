@@ -15,6 +15,8 @@ import ControlPopover from 'components/ControlPopover/ControlPopover';
 import { Icon, Button, Text } from 'components/kit';
 import ErrorBoundary from 'components/ErrorBoundary/ErrorBoundary';
 
+import { DOCUMENTATIONS } from 'config/references';
+
 import './ImagesExploreAppBar.scss';
 
 function ImagesExploreAppBar({
@@ -116,11 +118,11 @@ function ImagesExploreAppBar({
                     Reset Controls to System Defaults
                   </MenuItem>
                   <a
-                    href='https://github.com/aimhubio/aim#searching-experiments'
+                    href={DOCUMENTATIONS.EXPLORERS.IMAGES.MAIN}
                     target='_blank'
                     rel='noreferrer'
                   >
-                    <MenuItem>Searching Experiments (docs)</MenuItem>
+                    <MenuItem>Explorer Documentation</MenuItem>
                   </a>
                 </div>
               }
