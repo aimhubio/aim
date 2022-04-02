@@ -1,7 +1,14 @@
-from sqlalchemy import Column, Table, ForeignKey
-from sqlalchemy import Integer, Text, Boolean, DateTime
-from sqlalchemy.orm import relationship, backref
-from sqlalchemy.orm import validates
+from sqlalchemy import (
+    Boolean,
+    Column,
+    DateTime,
+    ForeignKey,
+    Integer,
+    Table,
+    Text,
+    UniqueConstraint,
+)
+from sqlalchemy.orm import relationship, backref, validates
 from sqlalchemy.ext.declarative import declarative_base
 
 import uuid

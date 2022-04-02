@@ -12,11 +12,14 @@ from aim.web.api.utils import APIRouter  # wrapper for fastapi.APIRouter
 from typing import Optional, Tuple
 
 from aim.web.api.runs.utils import (
+    checked_query,
     collect_requested_metric_traces,
     custom_aligned_metrics_streamer,
+    get_project_repo,
+    get_run_or_404,
     get_run_props,
     metric_search_result_streamer,
-    run_search_result_streamer, get_project_repo, checked_query,
+    run_search_result_streamer,
 )
 from aim.web.api.runs.pydantic_models import (
     MetricAlignApiIn,
@@ -83,9 +86,7 @@ async def run_metric_search_api(q: Optional[str] = '',
 @runs_router.get('/{run_id}/info/', response_model=RunInfoOut)
 async def run_params_api(run_id: str, sequence: Optional[Tuple[str, ...]] = Query(())):
     repo = get_project_repo()
-    run = repo.get_run(run_id)
-    if not run:
-        raise HTTPException(status_code=404)
+    run = get_run_or_404(run_id, repo=repo)
 
     if sequence != ():
         try:
@@ -105,11 +106,7 @@ async def run_params_api(run_id: str, sequence: Optional[Tuple[str, ...]] = Quer
 
 @runs_router.post('/{run_id}/metric/get-batch/', response_model=RunMetricsBatchApiOut)
 async def run_metric_batch_api(run_id: str, requested_traces: RunTracesBatchApiIn):
-    repo = get_project_repo()
-    run = repo.get_run(run_id)
-    if not run:
-        raise HTTPException(status_code=404)
-
+    run = get_run_or_404(run_id)
     traces_data = collect_requested_metric_traces(run, requested_traces)
 
     return JSONResponse(traces_data)
