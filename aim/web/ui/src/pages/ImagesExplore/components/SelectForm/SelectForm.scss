@@ -73,6 +73,9 @@
   width: 100%;
 }
 
+.SelectForm__TextField {
+  max-width: calc(100vw - 344px);
+}
 .SelectForm__search__actions {
   display: flex;
   justify-content: space-between;

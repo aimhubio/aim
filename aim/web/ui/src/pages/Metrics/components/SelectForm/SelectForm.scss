@@ -45,6 +45,7 @@
   }
   &__TextField {
     position: relative;
+    max-width: calc(100vw - 463px);
   }
   &__textarea {
     flex: 1;
