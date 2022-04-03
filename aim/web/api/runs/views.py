@@ -1,6 +1,7 @@
 from fastapi import Depends, HTTPException, Query
 from fastapi.responses import JSONResponse, StreamingResponse
 
+from aim.web.api.runs.note.views import note_router
 from aim.web.api.runs.object_views import (
     ImageApiConfig,
     TextApiConfig,
@@ -223,3 +224,5 @@ def add_api_routes():
     DistributionApiConfig.register_endpoints(runs_router)
     AudioApiConfig.register_endpoints(runs_router)
     FigureApiConfig.register_endpoints(runs_router)
+
+    runs_router.include_router(note_router)

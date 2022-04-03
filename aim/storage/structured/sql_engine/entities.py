@@ -4,15 +4,19 @@ from typing import Collection, Union, List, Optional
 from sqlalchemy.orm import joinedload
 
 from aim.storage.types import SafeNone
-from aim.storage.structured.entities import \
-    Run as IRun, \
-    Experiment as IExperiment, \
-    Tag as ITag,\
+from aim.storage.structured.entities import (
+    Run as IRun,
+    Experiment as IExperiment,
+    Tag as ITag,
     RunCollection, TagCollection
-from aim.storage.structured.sql_engine.models import \
-    Run as RunModel,\
-    Experiment as ExperimentModel,\
-    Tag as TagModel
+)
+from aim.storage.structured.sql_engine.models import (
+    Run as RunModel,
+    Experiment as ExperimentModel,
+    Tag as TagModel,
+    Note as NoteModel,
+    NoteAuditLog as NoteAuditLogModel
+)
 from aim.storage.structured.sql_engine.utils import ModelMappedClassMeta, ModelMappedCollection
 from aim.storage.structured.sql_engine.utils import ModelMappedProperty as Property
 
@@ -39,6 +43,7 @@ class ModelMappedRun(IRun, metaclass=ModelMappedClassMeta):
         Property('hash', with_setter=False),
         Property('experiment', autogenerate=False),
         Property('tags', autogenerate=False),
+        Property('notes', autogenerate=False),
     ]
 
     def __init__(self, model: RunModel, session):
@@ -174,6 +179,78 @@ class ModelMappedRun(IRun, metaclass=ModelMappedClassMeta):
         session.add(self._model)
         session.flush()
         return tag_removed
+
+    @property
+    def notes(self) -> List[dict]:
+        session = self._session
+
+        qs = session.query(NoteModel).filter(
+            NoteModel.run_id == self._model.id,
+        )
+
+        return [{
+            "id": note.id,
+            "name": note.name,
+            "created_at": note.created_at,
+            "updated_at": note.updated_at
+        } for note in qs]
+
+    def find_note(self, _id: int = None, name: str = None):
+        session = self._session
+
+        qs = session.query(NoteModel).filter(
+            NoteModel.run_id == self._model.id,
+        )
+        if _id is not None:
+            qs = qs.filter(NoteModel.id == _id)
+        if name is not None:
+            qs = qs.filter(NoteModel.name == name)
+        return qs.first()
+
+    def add_note(self, name: str, content: str):
+        session = self._session
+
+        note = NoteModel(name, content)
+        session.add(note)
+        self._model.notes.append(note)
+
+        audit_log = NoteAuditLogModel(action="Created", before=None, after=content)
+        session.add(audit_log)
+        note.audit_logs.append(audit_log)
+
+        session.add(self._model)
+        session.flush()
+
+    def update_note(self, _id: int, name=None, content=None):
+        session = self._session
+
+        note = self.find_note(_id=_id)
+
+        _before = note.content
+        if name is not None:
+            note.name = name
+        if content is not None:
+            note.content = content
+
+        audit_log = NoteAuditLogModel(action="Updated", before=_before, after=content)
+        session.add(audit_log)
+        note.audit_logs.append(audit_log)
+
+        session.add(note)
+        session.flush()
+
+    def remove_note(self, _id: int):
+        session = self._session
+
+        audit_log = NoteAuditLogModel(action="Deleted", before=None, after=None)
+        audit_log.note_id = _id
+        session.add(audit_log)
+
+        session.query(NoteModel).filter(
+            NoteModel.run_id == self._model.id,
+            NoteModel.id == _id,
+        ).delete()
+        session.flush()
 
 
 class ModelMappedExperiment(IExperiment, metaclass=ModelMappedClassMeta):
