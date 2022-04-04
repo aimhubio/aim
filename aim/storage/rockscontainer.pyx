@@ -5,21 +5,27 @@ from filelock import FileLock
 
 import aimrocks
 
-from typing import Iterator, Optional, Tuple
+from typing import Iterator, Optional, Tuple, Union
 
 from aim.ext.cleanup import AutoClean
 from aim.ext.exception_resistant import exception_resistant
-from aim.storage.types import BLOB
+from aim.ext.external_storage import UploadManager, DataNotFoundError
+
+from aim.storage.types import BLOB, ExtBLOB
 from aim.storage.container import Container, ContainerKey, ContainerValue
 from aim.storage.prefixview import PrefixView
 from aim.storage.containertreeview import ContainerTreeView
 from aim.storage.treeview import TreeView
+from aim.storage.encoding import decode
 
 
 logger = logging.getLogger(__name__)
 
 BLOB_SENTINEL = b''
 BLOB_DOMAIN = b'BLOBS\xfe'
+EXTERNAL_BLOB_SUFFIX = b'EXTERNAL\xfe'
+STR_BLOB_FLAG = b'STRING'
+BYTES_BLOB_FLAG = b'BYTES'
 
 
 class RocksAutoClean(AutoClean):
@@ -239,11 +245,38 @@ class RocksContainer(Container):
             return data
         return loader
 
+    def _get_ext_blob_loader(
+        self,
+        key: ContainerKey,
+    ):
+        def loader() -> Union[bytes, str]:
+            chunk = UploadManager.get_uploader_chunk(self)
+            storage = UploadManager.storage_registry[chunk]
+            ext_path: bytes = self[BLOB_DOMAIN + key + EXTERNAL_BLOB_SUFFIX]
+            upload_path = '/'.join((chunk, decode(ext_path)))
+            obj_type = self[BLOB_DOMAIN + key]
+            try:
+                if obj_type == STR_BLOB_FLAG:
+                    data = storage.get_str(upload_path)
+                    assert isinstance(data, str)
+                else:
+                    data = storage.get(upload_path)
+                    assert isinstance(data, bytes)
+            except DataNotFoundError:
+                logger.warning(f'Missing data at \'{decode(ext_path)}\' for storage \'{storage.url}\'. Skipping.')
+                data = b''
+            return data
+        return loader
+
     def _get_blob(
         self,
         key: ContainerKey
-    ) -> BLOB:
-        return BLOB(loader_fn=self._get_blob_loader(key))
+    ) -> Union[BLOB, ExtBLOB]:
+        try:
+            ext_path = self[BLOB_DOMAIN + key + EXTERNAL_BLOB_SUFFIX]
+            return ExtBLOB(loader_fn=self._get_ext_blob_loader(key), ext_path=ext_path)
+        except KeyError:
+            return BLOB(loader_fn=self._get_blob_loader(key))
 
     def _put(
         self,
@@ -265,6 +298,34 @@ class RocksContainer(Container):
                   value=bytes(value),
                   target=target)
 
+    def _put_ext_blob(
+        self,
+        key: ContainerKey,
+        value: ExtBLOB,
+        *,
+        target: aimrocks.WriteBatch
+    ):
+        chunk = UploadManager.get_uploader_chunk(self)
+        if chunk is None:
+            raise RuntimeError('Uploading \'ExtBLOB\' requires valid chunk. Got \'None\'.')
+
+        data = value.load()
+        cache_key = (chunk, decode(value.ext_path), value.checksum())
+
+        if cache_key not in UploadManager.cache:
+            storage = UploadManager.storage_registry[chunk]
+            upload_path = '/'.join((chunk, decode(value.ext_path)))
+            storage.put(upload_path, data)
+            UploadManager.cache.add(key)
+            logger.debug(f'Uploaded ExtBLOB data for key {key}.')
+
+        self._put(key=BLOB_DOMAIN + key,
+                  value=STR_BLOB_FLAG if isinstance(data, str) else BYTES_BLOB_FLAG,
+                  target=target)
+        self._put(key=BLOB_DOMAIN + key + EXTERNAL_BLOB_SUFFIX,
+                  value=value.ext_path,
+                  target=target)
+
     def _delete(
         self,
         key: ContainerKey,
@@ -279,8 +340,9 @@ class RocksContainer(Container):
         *,
         target: aimrocks.WriteBatch
     ):
-        self._delete(key=BLOB_DOMAIN + key,
-                     target=target)
+        self._delete_range(BLOB_DOMAIN + key,
+                           BLOB_DOMAIN + key + EXTERNAL_BLOB_SUFFIX,
+                           target=target)
 
     def _delete_range(
         self,
@@ -323,6 +385,9 @@ class RocksContainer(Container):
         if isinstance(value, BLOB):
             self._put(key=key, value=BLOB_SENTINEL, target=target)
             self._put_blob(key=key, value=value, target=target)
+        elif isinstance(value, ExtBLOB):
+            self._put(key=key, value=BLOB_SENTINEL, target=target)
+            self._put_ext_blob(key=key, value=value, target=target)
         else:
             self._put(key=key, value=value, target=target)
             self._delete_blob(key=key, target=target)
