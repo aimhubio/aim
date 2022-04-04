@@ -3,11 +3,11 @@ import click
 
 from aim.web.configs import (
     AIM_ENV_MODE_KEY,
-    AIM_TF_LOGS_PATH_KEY,
     AIM_UI_BASE_PATH,
     AIM_UI_DEFAULT_HOST,
     AIM_UI_DEFAULT_PORT,
     AIM_UI_MOUNTED_REPO_PATH,
+    AIM_UI_MOUNTED_ARTIFACTS_PATH,
     AIM_UI_TELEMETRY_KEY,
     AIM_PROXY_URL,
     AIM_PROFILER_KEY
@@ -28,7 +28,7 @@ from aim.web.utils import ShellCommandException
                                                         file_okay=False,
                                                         dir_okay=True,
                                                         writable=True))
-@click.option('--tf_logs', type=click.Path(exists=True, readable=True))
+@click.option('--artifacts', required=False, type=str)
 @click.option('--dev', is_flag=True, default=False)
 @click.option('--ssl-keyfile', required=False, type=click.Path(exists=True,
                                                                file_okay=True,
@@ -41,7 +41,7 @@ from aim.web.utils import ShellCommandException
 @click.option('--base-path', required=False, default='', type=str)
 @click.option('--force-init', is_flag=True, default=False)
 @click.option('--profiler', is_flag=True, default=False)
-def up(dev, host, port, workers, repo, tf_logs, ssl_keyfile, ssl_certfile, base_path, force_init, profiler):
+def up(dev, host, port, workers, repo, artifacts, ssl_keyfile, ssl_certfile, base_path, force_init, profiler):
     if dev:
         os.environ[AIM_ENV_MODE_KEY] = 'dev'
     else:
@@ -83,9 +83,8 @@ def up(dev, host, port, workers, repo, tf_logs, ssl_keyfile, ssl_certfile, base_
             repo_inst.structured_db.run_upgrades()
 
     os.environ[AIM_UI_MOUNTED_REPO_PATH] = repo_inst.path
-
-    if tf_logs:
-        os.environ[AIM_TF_LOGS_PATH_KEY] = tf_logs
+    if artifacts is not None:
+        os.environ[AIM_UI_MOUNTED_ARTIFACTS_PATH] = artifacts
 
     try:
         db_cmd = build_db_upgrade_command()

@@ -2,7 +2,7 @@ from importlib import import_module
 import os
 import subprocess
 
-from aim.web.configs import AIM_UI_MOUNTED_REPO_PATH
+from aim.web.configs import AIM_UI_MOUNTED_REPO_PATH, AIM_UI_MOUNTED_ARTIFACTS_PATH
 from aim.sdk.utils import clean_repo_path
 
 
@@ -90,3 +90,7 @@ def ls_dir(path):
 
 def get_root_path():
     return clean_repo_path(os.getenv(AIM_UI_MOUNTED_REPO_PATH, os.getcwd()))
+
+
+def get_artifact_path():
+    return os.getenv(AIM_UI_MOUNTED_ARTIFACTS_PATH, None)
