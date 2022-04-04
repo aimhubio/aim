@@ -3,7 +3,7 @@ from typing import Iterator, List, Optional, Dict
 from typing import TYPE_CHECKING
 
 from aim.storage.encoding import encode_path, decode_path
-from aim.storage.types import BLOB
+from aim.storage.types import BLOB, ExtBLOB
 from aim.sdk.repo import ContainerConfig
 
 if TYPE_CHECKING:
@@ -54,7 +54,7 @@ class URIService:
             # TODO: [MV] change to some other implementation of view when available
             #  which won't collect in case of custom objects
             data = container.tree().subtree(resource_path).collect()
-            if isinstance(data, BLOB):
+            if isinstance(data, (BLOB, ExtBLOB)):
                 data = data.load()
             yield {uri: data}
 
