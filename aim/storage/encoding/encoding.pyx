@@ -27,7 +27,7 @@ from aim.storage.utils import ArrayFlagType, ObjectFlagType, CustomObjectFlagTyp
 from aim.storage.utils import ArrayFlag, ObjectFlag
 from aim.storage.container import ContainerValue
 from aim.storage.types import AimObjectKey, AimObjectPath
-from aim.storage.types import BLOB
+from aim.storage.types import BLOB, ExtBLOB
 
 from typing import Union, Any
 
@@ -52,7 +52,7 @@ cpdef object encode(object value):
     cdef int type_id
     cdef bytes encoding
 
-    if isinstance(value, BLOB):
+    if isinstance(value, (BLOB, ExtBLOB)):
         return value.transform(encode)
 
     if value is None:
@@ -105,7 +105,7 @@ cpdef object encode(object value):
 cpdef object decode(object buffer):
     """Automatically detect and decode the value from a buffer."""
 
-    if isinstance(buffer, BLOB):
+    if isinstance(buffer, (BLOB, ExtBLOB)):
         return buffer.transform(decode)
 
     # First, we extract type_id and the content buffer
