@@ -6,14 +6,11 @@ import {
   YScaleType,
 } from 'types/utils/d3/drawParallelAxes';
 
-import {
-  getAxisScale,
-  ScaleEnum,
-  gradientStartColor,
-  gradientEndColor,
-} from 'utils/d3';
+import { getAxisScale, ScaleEnum } from 'utils/d3';
 import { formatSystemMetricName } from 'utils/formatSystemMetricName';
 import { isSystemMetric } from 'utils/isSystemMetric';
+
+import getColorFromRange from './getColorFromRange';
 
 function drawParallelAxes({
   axesNodeRef,
@@ -124,10 +121,7 @@ function drawParallelAxes({
     attributesRef.current.yScale[keysOfDimensions[keysOfDimensions.length - 1]];
   const range = lastYScale?.range();
   if (range) {
-    attributesRef.current.yColorIndicatorScale = d3
-      .scaleSequential()
-      .domain(range)
-      .interpolator(d3.interpolateRgb(gradientStartColor, gradientEndColor));
+    attributesRef.current.yColorIndicatorScale = getColorFromRange(range);
   }
 }
 

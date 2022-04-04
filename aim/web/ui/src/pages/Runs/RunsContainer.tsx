@@ -61,6 +61,7 @@ function RunsContainer(): React.FunctionComponentElement<React.ReactNode> {
         requestStatus={runsData?.requestStatus}
         isLatest={runsData?.config?.pagination.isLatest}
         onSelectRunQueryChange={runsAppModel.onSelectRunQueryChange}
+        onToggleColumnsColorScales={runsAppModel.onToggleColumnsColorScales}
         tableRowHeight={runsData?.config?.table?.rowHeight}
         tableRef={tableRef}
         columnsOrder={runsData?.config?.table.columnsOrder}
@@ -76,6 +77,7 @@ function RunsContainer(): React.FunctionComponentElement<React.ReactNode> {
         isInfiniteLoading={runsData?.infiniteIsPending}
         onNotificationDelete={runsAppModel.onNotificationDelete}
         notifyData={runsData?.notifyData}
+        columnsColorScales={runsData?.config?.table?.columnsColorScales}
         onRowHeightChange={runsAppModel.onRowHeightChange}
         onManageColumns={runsAppModel.onColumnsOrderChange}
         onColumnsVisibilityChange={runsAppModel.onColumnsVisibilityChange}
