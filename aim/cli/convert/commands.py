@@ -50,7 +50,7 @@ def convert_tensorflow(ctx, logdir, flat):
                                                          resolve_path=True))
 @click.option('--flat', '-f', required=False, is_flag=True, default=False)
 def convert_tensorflow(ctx, logdir, flat):
-    click.secho('WARN: Command \'tf\' is deprecated and will be removed in future release,'
+    click.secho('WARN: Command \'tf\' is deprecated and will be removed in future releases,'
                 ' please use \'tensorboard\' instead.', fg='red')
     repo_inst = ctx.obj['repo_inst']
     parse_tb_logs(logdir, repo_inst, flat)
