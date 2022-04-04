@@ -11,6 +11,7 @@ from copy import deepcopy
 
 from aim.sdk.sequence import Sequence
 from aim.storage.object import CustomObject
+
 from aim.sdk.sequence_collection import SingleRunSequenceCollection
 from aim.sdk.utils import (
     check_types_compatibility,
@@ -244,6 +245,7 @@ class Run(StructuredRunMixin):
 
     def __init__(self, run_hash: Optional[str] = None, *,
                  repo: Optional[Union[str, 'Repo']] = None,
+                 artifact_path: Optional[str] = None,
                  read_only: bool = False,
                  experiment: Optional[str] = None,
                  system_tracking_interval: Optional[Union[int, float]] = DEFAULT_SYSTEM_TRACKING_INT,
@@ -255,7 +257,7 @@ class Run(StructuredRunMixin):
         self._finalized = False
 
         self.repo: Repo = None
-        self._set_repo(repo)
+        self._set_repo(repo, artifact_path)
 
         self.read_only = read_only
         if not read_only:
@@ -353,14 +355,15 @@ class Run(StructuredRunMixin):
         self.meta_run_attrs_tree.set(key, val, strict)
         self.meta_attrs_tree.set(key, val, strict)
 
-    def get(self, key, default: Any = None, strict: bool = True, resolve_objects=False):
+    def get(self, key, default: Any = None, strict: bool = True, resolve_objects=False, skip_blobs: bool = False):
         try:
-            return self._collect(key, strict=strict, resolve_objects=resolve_objects)
+            return self._collect(key, strict=strict, resolve_objects=resolve_objects, skip_blobs=skip_blobs)
         except KeyError:
             return default
 
-    def _collect(self, key, strict: bool = True, resolve_objects: bool = False):
-        return self.meta_run_attrs_tree.collect(key, strict=strict, resolve_objects=resolve_objects)
+    def _collect(self, key, strict: bool = True, resolve_objects: bool = False, skip_blobs: bool = False):
+        return self.meta_run_attrs_tree.collect(key, strict=strict,
+                                                resolve_objects=resolve_objects, skip_blobs=skip_blobs)
 
     def _prepare_resource_tracker(self, tracking_interval: Union[int, float] = None):
         if not self.read_only and isinstance(tracking_interval, (int, float)) and tracking_interval > 0:
@@ -751,7 +754,7 @@ class Run(StructuredRunMixin):
         # TODO maybe take read_only flag into account?
         return hash_auto((self.hash, hash(self.repo)))
 
-    def _set_repo(self, repo):
+    def _set_repo(self, repo, artifact_path):
         if repo is None:
             from aim.sdk.repo import Repo
             repo = Repo.default_repo_path()
@@ -764,10 +767,15 @@ class Run(StructuredRunMixin):
                              f'`aim upgrade --repo {repo} 2to3`.')
                 raise RuntimeError()
             elif repo_status == RepoStatus.MISSING:
-                repo = Repo.from_path(repo, init=True)
+                repo = Repo.from_path(repo, artifact_path=artifact_path, init=True)
             else:
-                repo = Repo.from_path(repo)
+                repo = Repo.from_path(repo, artifact_path=artifact_path)
+        else:
+            if artifact_path is not None and artifact_path != repo.artifact_path:
+                logger.warning(f'Artifact path \'{artifact_path}\' is different from Repo {repo.path} artifact path. '
+                               f'Artifact path \'{repo.artifact_path}\' will be used.')
         self.repo = repo
+        self.repo.register_chunk(self.hash)
 
     def __hash__(self) -> int:
         if self._hash is None:

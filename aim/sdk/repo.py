@@ -14,6 +14,7 @@ from aim.ext.sshfs.utils import mount_remote_repo, unmount_remote_repo
 from aim.ext.task_queue.queue import TaskQueue
 from aim.ext.cleanup import AutoClean
 from aim.ext.transport.client import Client
+from aim.ext.external_storage import ExternalStorage, StorageRegistry, UploadManager
 
 from aim.sdk.configs import get_aim_repo_name, AIM_ENABLE_TRACKING_THREAD
 from aim.sdk.errors import RepoIntegrityError
@@ -92,7 +93,7 @@ class Repo:
 
     tracking_queue = _get_tracking_queue()
 
-    def __init__(self, path: str, *, read_only: bool = None, init: bool = False):
+    def __init__(self, path: str, *, artifact_path: str = None, read_only: bool = None, init: bool = False):
         if read_only is not None:
             raise NotImplementedError
 
@@ -100,6 +101,9 @@ class Repo:
         self.read_only = read_only
         self._mount_root = None
         self._client: Client = None
+        self._external_storage: ExternalStorage = None
+
+        is_local = False
         if path.startswith('ssh://'):
             self._mount_root, self.root_path = mount_remote_repo(path)
         elif self.is_remote_path(path):
@@ -107,8 +111,15 @@ class Repo:
             self._client = Client(remote_path)
             self.root_path = remote_path
         else:
+            is_local = True
             self.root_path = path
         self.path = os.path.join(self.root_path, get_aim_repo_name())
+
+        if artifact_path is None and is_local:
+            artifact_path = f'file://{os.path.abspath(self.path)}/artifacts'
+        self.artifact_path = artifact_path
+        if self.artifact_path is not None:
+            self._external_storage = StorageRegistry.get_storage(artifact_path)
 
         if init:
             os.makedirs(self.path, exist_ok=True)
@@ -169,26 +180,30 @@ class Repo:
         return repo_path
 
     @classmethod
-    def default_repo(cls, init: bool = False):
+    def default_repo(cls, artifact_path: str = None, init: bool = False):
         """Named constructor for default repository.
 
         Searches nearest `.aim` directory from current directory to roo directory.
         If not found, return Repo for current directory.
 
         Args:
+            artifact_path (:obj:`str`, optional): External artifact storage URL. If not specified, local directory
+                'artifacts/' will be created at Repo path and used as artifact storage.
             init (:obj:`bool`, optional): Flag used to initialize new Repo. False by default.
                 Recommended to use `aim init` command instead.
         Returns:
             :obj:`Repo` object.
         """
-        return cls.from_path(cls.default_repo_path(), init=init)
+        return cls.from_path(cls.default_repo_path(), artifact_path=artifact_path, init=init)
 
     @classmethod
-    def from_path(cls, path: str, read_only: bool = None, init: bool = False):
+    def from_path(cls, path: str, artifact_path: str = None, read_only: bool = None, init: bool = False):
         """Named constructor for Repo for given path.
 
         Arguments:
             path (str): Path to Aim repository.
+            artifact_path (:obj:`str`, optional): External artifact storage URL. If not specified, local directory
+                'artifacts/' will be created at Repo path and used as artifact storage.
             read_only (:obj:`bool`, optional): Flag for opening Repo in readonly mode. False by default.
             init (:obj:`bool`, optional): Flag used to initialize new Repo. False by default.
                 Recommended to use ``aim init`` command instead.
@@ -199,8 +214,12 @@ class Repo:
             path = clean_repo_path(path)
         repo = cls._pool.get(path)
         if repo is None:
-            repo = Repo(path, read_only=read_only, init=init)
+            repo = Repo(path, artifact_path=artifact_path, read_only=read_only, init=init)
             cls._pool[path] = repo
+        else:
+            if artifact_path is not None and artifact_path != repo.artifact_path:
+                logger.warning(f'Trying to create Repo \'{repo.path}\' with artifact path different from '
+                               f'{repo.artifact_path}. Artifact path \'{artifact_path}\' will be ignored.')
         return repo
 
     @classmethod
@@ -292,9 +311,16 @@ class Repo:
         if container is None:
             path = os.path.join(self.path, name)
             container = RocksContainer(path, read_only=False, timeout=timeout)
+            UploadManager.register_uploader(container, 'index')
+            self.register_chunk('index')
+            UploadManager.register_storage(self._external_storage, 'index')
             self.container_pool[container_config] = container
 
         return container
+
+    def register_chunk(self, chunk: str):
+        if chunk not in UploadManager.storage_registry:
+            UploadManager.storage_registry[chunk] = self._external_storage
 
     def request_tree(
         self,
@@ -332,6 +358,11 @@ class Repo:
                 assert sub is not None
                 path = os.path.join(name, 'chunks', sub)
                 container = self._get_container(path, read_only=False, from_union=False)
+            if sub is not None:
+                UploadManager.register_uploader(container, sub)
+            else:
+                UploadManager.register_uploader(container, 'index')
+                self.register_chunk('index')
 
             container_view = container
             self.container_view_pool[container_config] = container_view
