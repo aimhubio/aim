@@ -2,8 +2,8 @@ import numpy as np
 
 from typing import Tuple
 
+from aim.sdk.objects.blob_utils import create_blob
 from aim.storage.object import CustomObject
-from aim.storage.types import BLOB
 
 
 @CustomObject.alias('aim.distribution')
@@ -83,7 +83,7 @@ class Distribution(CustomObject):
         assert isinstance(np_histogram[0], np.ndarray)
         assert isinstance(np_histogram[1], np.ndarray)
 
-        self.storage['data'] = BLOB(data=np_histogram[0].tobytes())
+        self.storage['data'] = create_blob(data=np_histogram[0].tobytes(), object_class='distribution')
         self.storage['dtype'] = str(np_histogram[0].dtype)
         self.storage['range'] = [np_histogram[1][0].item(), np_histogram[1][-1].item()]
 

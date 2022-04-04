@@ -9,8 +9,8 @@ from typing import List
 import numpy as np
 
 from aim.sdk.num_utils import inst_has_typename
+from aim.sdk.objects.blob_utils import create_blob
 from aim.storage.object import CustomObject
-from aim.storage.types import BLOB
 
 logger = logging.getLogger(__name__)
 
@@ -158,7 +158,7 @@ class Image(CustomObject):
             # Retry
             pil_image.save(img_container, **params)
 
-        self.storage['data'] = BLOB(data=img_container.getvalue())
+        self.storage['data'] = create_blob(data=img_container.getvalue(), object_class='image')
         self.storage['source'] = 'PIL.Image'
         self.storage['mode'] = pil_image.mode
         self.storage['format'] = params['format']

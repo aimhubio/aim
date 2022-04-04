@@ -1,6 +1,6 @@
 from aim.sdk.num_utils import inst_has_typename
+from aim.sdk.objects.blob_utils import create_blob
 from aim.storage.object import CustomObject
-from aim.storage.types import BLOB
 
 
 @CustomObject.alias('aim.figure')
@@ -36,7 +36,7 @@ class Figure(CustomObject):
         self.storage['source'] = 'plotly'
         self.storage['version'] = plotly_version
         self.storage['format'] = 'raw_json'
-        self.storage['data'] = BLOB(data=obj.to_json())
+        self.storage['data'] = create_blob(data=obj.to_json(), object_class='figure')
 
     @property
     def data(self):

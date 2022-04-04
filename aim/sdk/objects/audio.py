@@ -4,8 +4,8 @@ import os.path
 
 from aim.sdk.num_utils import inst_has_typename
 from aim.sdk.objects.io import wavfile
+from aim.sdk.objects.blob_utils import create_blob
 from aim.storage.object import CustomObject
-from aim.storage.types import BLOB
 
 logger = logging.getLogger(__name__)
 
@@ -81,7 +81,7 @@ class Audio(CustomObject):
 
         for k, v in extra.items():
             self.storage[k] = v
-        self.storage['data'] = BLOB(data=data)
+        self.storage['data'] = create_blob(data=data, object_class='audio')
 
     def to_numpy(self):
         """

@@ -1,5 +1,5 @@
+from aim.sdk.objects.blob_utils import create_blob
 from aim.storage.object import CustomObject
-from aim.storage.types import BLOB
 
 
 @CustomObject.alias('aim.text')
@@ -18,7 +18,7 @@ class Text(CustomObject):
         if not isinstance(text, str):
             raise TypeError('`text` must be a string.')
 
-        self.storage['data'] = BLOB(data=text)
+        self.storage['data'] = create_blob(data=text, object_class='text')
 
     def json(self):
         return {}
@@ -28,4 +28,4 @@ class Text(CustomObject):
         return self.storage['data'].load()
 
     def __repr__(self):
-        return self.data
+        return f'<aim.Text={repr(self.data)}>'
