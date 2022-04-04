@@ -118,7 +118,7 @@ class CustomObjectApi:
             run_dict = {
                 run_.hash: {
                     'ranges': ranges,
-                    'params': run_.get(..., resolve_objects=True),
+                    'params': run_.get(..., resolve_objects=True, skip_blobs=True),
                     'traces': traces_,
                     'props': get_run_props(run_)
                 }

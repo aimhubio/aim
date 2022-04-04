@@ -7,4 +7,4 @@ cdef class TreeView:
 
     cpdef view(self, object path, bint resolve = *)
     cpdef object make_array(self, object path = *)
-    cpdef object collect(self, object path = *, bint strict = *, bint resolve_objects = *)
+    cpdef object collect(self, object path = *, bint strict = *, bint resolve_objects = *, bint skip_blobs = *, )

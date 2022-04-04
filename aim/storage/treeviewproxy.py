@@ -71,9 +71,11 @@ class ProxyTree(TreeView):
         self,
         path: Union[AimObjectKey, AimObjectPath] = (),
         strict: bool = True,
-        resolve_objects: bool = False
+        resolve_objects: bool = False,
+        skip_blobs: bool = False
     ) -> AimObject:
-        return self._rpc_client.run_instruction(self._hash, self._handler, 'collect', (path, strict, resolve_objects))
+        return self._rpc_client.run_instruction(self._hash, self._handler, 'collect',
+                                                (path, strict, resolve_objects, skip_blobs))
 
     def __delitem__(
         self,
@@ -193,9 +195,10 @@ class SubtreeView(TreeView):
         self,
         path: Union[AimObjectKey, AimObjectPath] = (),
         strict: bool = True,
-        resolve_objects: bool = False
+        resolve_objects: bool = False,
+        skip_blobs: bool = False
     ) -> AimObject:
-        return self.tree.collect(self.absolute_path(path), strict, resolve_objects)
+        return self.tree.collect(self.absolute_path(path), strict, resolve_objects, skip_blobs)
 
     def __delitem__(
         self,

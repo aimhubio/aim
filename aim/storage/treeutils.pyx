@@ -5,7 +5,7 @@ from aim.storage.encoding.encoding_native cimport decode_path
 
 from aim.storage.types import AimObject, AimObjectPath
 
-from aim.storage.types import BLOB
+from aim.storage.types import BLOB, ExtBLOB
 from aim.storage.utils import ArrayFlag, ObjectFlag, CustomObjectFlagType
 
 from aim.storage.object import CustomObjectBase, CustomObject
@@ -32,7 +32,7 @@ def unfold_tree(
         yield path, obj
     elif isinstance(obj, (bool, int, float, str, bytes)):
         yield path, obj
-    elif isinstance(obj, BLOB):
+    elif isinstance(obj, (BLOB, ExtBLOB)):
         yield path, obj
     elif isinstance(obj, (list, tuple)):
         if not unfold_array:
@@ -65,7 +65,8 @@ def unfold_tree(
 cpdef val_to_node(
     val: Any,
     strict: bool = True,
-    resolve_objects: bool = False
+    resolve_objects: bool = False,
+    skip_blobs: bool = False
 ):
     if not strict:
         node = dict()
@@ -83,6 +84,11 @@ cpdef val_to_node(
             return dict()
         else:
             return CustomObject._aim_decode(val.aim_name, InMemoryTreeView(container={}, constructed=False))
+    elif isinstance(val, (BLOB, ExtBLOB)):
+        if skip_blobs:
+            return '__BLOB__'
+        else:
+            return val
     else:
         return val
 
@@ -90,10 +96,11 @@ cpdef val_to_node(
 def fold_tree(
     paths_vals: Iterator[Tuple[AimObjectPath, Any]],
     strict: bool = True,
-    resolve_objects: bool = False
+    resolve_objects: bool = False,
+    skip_blobs: bool = False
 ) -> AimObject:
     (keys, val), = iter_fold_tree(paths_vals,
-                                  level=0, strict=strict, resolve_objects=resolve_objects)
+                                  level=0, strict=strict, resolve_objects=resolve_objects, skip_blobs=skip_blobs)
     return val
 
 
@@ -101,7 +108,8 @@ def iter_fold_tree(
     paths_vals: Iterator[Tuple[AimObjectPath, Any]],
     level: int = 0,
     strict: bool = True,
-    resolve_objects: bool = False
+    resolve_objects: bool = False,
+    skip_blobs: bool = False
 ):
     cdef int idx
     stack = []
@@ -111,7 +119,7 @@ def iter_fold_tree(
         keys, val = next(paths_vals)
         if keys:
             raise StopIteration
-        node = val_to_node(val, resolve_objects=resolve_objects)
+        node = val_to_node(val, resolve_objects=resolve_objects, skip_blobs=skip_blobs)
         stack.append(node)
     except StopIteration:
         if level > 0:
@@ -134,7 +142,7 @@ def iter_fold_tree(
                 yield tuple(path), last_state
             path.pop()
 
-        node = val_to_node(val, strict=strict, resolve_objects=resolve_objects)
+        node = val_to_node(val, strict=strict, resolve_objects=resolve_objects, skip_blobs=skip_blobs)
 
         if len(keys) == len(path):
             stack.pop()
@@ -261,12 +269,14 @@ def encode_tree(
 def decode_tree(
     paths_vals: Iterator[Tuple[bytes, bytes]],
     strict: bool = True,
-    resolve_objects: bool = False
+    resolve_objects: bool = False,
+    skip_blobs: bool = False
 ) -> AimObject:
     return fold_tree(
         DecodePathsVals(paths_vals),
         strict=strict,
-        resolve_objects=resolve_objects
+        resolve_objects=resolve_objects,
+        skip_blobs=skip_blobs
     )
 
 

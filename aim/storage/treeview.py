@@ -41,7 +41,8 @@ class TreeView:
         self,
         path: Union[AimObjectKey, AimObjectPath] = (),
         strict: bool = True,
-        resolve_objects: bool = False
+        resolve_objects: bool = False,
+        skip_blobs: bool = False
     ) -> AimObject:
         ...
 
