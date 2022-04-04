@@ -18,3 +18,11 @@ cdef class BLOB:
     cpdef object load(self)
     # TODO closures inside cython functions are not supported yet
     # cpdef object transform(self, object transform_fn)
+
+cdef class ExtBLOB:
+    cdef:
+        object data
+        object loader_fn
+        public object ext_path
+    cpdef object load(self)
+    # cpdef object transform(self, object transform_fn)

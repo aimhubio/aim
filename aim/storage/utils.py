@@ -1,3 +1,5 @@
+import hashlib
+
 from copy import deepcopy
 
 
@@ -97,3 +99,53 @@ class BLOB:
             return transform_fn(self.load())
 
         return self.__class__(loader_fn=loader)
+
+
+class ExtBLOB:
+    def __init__(
+        self,
+        data=None,
+        loader_fn=None,
+        ext_path=None
+    ):
+        self.data = data
+        self.loader_fn = loader_fn
+        self.ext_path = ext_path
+
+    def __bytes__(self):
+        return bytes(self.load())
+
+    def __len__(self):
+        return len(bytes(self))
+
+    def load(self):
+        if self.data is None:
+            assert self.loader_fn is not None
+            self.data = self.loader_fn()
+            self.loader_fn = None
+        return self.data
+
+    def __deepcopy__(self, memo):
+        data = self.load()
+        instance = self.__class__(data=deepcopy(data, memo=memo), ext_path=self.ext_path)
+        memo[id(self)] = instance
+        return instance
+
+    def transform(self, transform_fn):
+        if self.data is not None:
+            return self.__class__(self.data, ext_path=transform_fn(self.ext_path))
+
+        def loader():
+            return self.load()
+
+        return self.__class__(loader_fn=loader, ext_path=transform_fn(self.ext_path))
+
+    def checksum(self):
+        checksum = hashlib.md5()
+        data = self.load()
+        if isinstance(data, str):
+            checksum.update(data.encode('utf-8'))
+        else:
+            checksum = hashlib.md5()
+            checksum.update(data)
+        return checksum.hexdigest()
