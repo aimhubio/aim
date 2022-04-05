@@ -2477,7 +2477,7 @@ function createAppModel(appConfig: IAppInitialConfig) {
             run,
             isHidden: false,
             color: COLORS[paletteIndex][index % COLORS[paletteIndex].length],
-            key: run.hash,
+            key: encode({ runHash: run.hash }),
             dasharray: DASH_ARRAYS[0],
           });
         });
@@ -4034,7 +4034,7 @@ function createAppModel(appConfig: IAppInitialConfig) {
             run,
             isHidden: configData!.table.hiddenMetrics!.includes(run.hash),
             color: COLORS[paletteIndex][index % COLORS[paletteIndex].length],
-            key: run.hash,
+            key: encode({ runHash: run.hash }),
             dasharray: DASH_ARRAYS[0],
           });
         });
@@ -5164,7 +5164,7 @@ function createAppModel(appConfig: IAppInitialConfig) {
             run,
             isHidden: configData!.table.hiddenMetrics!.includes(run.hash),
             color: COLORS[paletteIndex][index % COLORS[paletteIndex].length],
-            key: run.hash,
+            key: encode({ runHash: run.hash }),
             dasharray: DASH_ARRAYS[0],
           });
         });
