@@ -1,5 +1,11 @@
 # Changelog
 
+## Unreleased
+
+### Enhancements:
+
+- Add info massage for single value sliders (VkoHov)
+
 ## 3.8.0 Mar 26, 2022
 
 ### Enhancements:
