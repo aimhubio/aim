@@ -1,19 +1,20 @@
 ## Integration guides
 
-Aim provides integrations with ML frameworks such as Pytorch Ignite, Pytorch Lightning, Hugging Face etc.
-Basic guides can be found in [Quick Start](../quick_start/integrations.html) section. 
-In this section we're going to talk more about how to extend and manipulate the basic integrations to suit the specific needs. 
-In the basic form Aim is providing metric and hyper params logging mainly.
-To be able to achieve this goal more knowledge of SDK provided by Aim is needed.
-All necessary information can be found [here](../quick_start/supported_types.html) 
+Aim integrates seamlessly with your favorite ML frameworks - Pytorch Ignite, Pytorch Lightning, Hugging Face and others.
+Basic integration guides can be found at [Quick Start](../quick_start/integrations.html) section. 
 
-All the callbacks/adapters/loggers provided by Aim can be extended by deriving and overriding the main methods that are responsible for logging. 
-Also, all callbacks/adapters/loggers have public property called `experiment` which gives access to underlying `aim.Run` object to easily track your own metrics and hyper params wherever and whenever you need them to.
+In this section we're going to deep-dive into the ways we can extend the basic loggers, manipulate them to track a lot more. The basic loggers can track specific metrics and hyper-params only.
+
+There are two ways Aim callbacks/adapters/loggers can be extended:
+- by deriving and overriding the main methods that are responsible for logging.
+- by using public property called `experiment` which gives access to underlying `aim.Run` object to easily track new metrics, params and other metadata that would benefit your project.
 
 ### Pytorch Ignite
-Both of the aforementioned ways of extending your integration and with Pytorch Ignite.
-In the example below you'll see how to access the experiment property to track confusion matrix as an image using `aim.Image` after the training's completed. 
-This can be added to the [example colab notebook](https://colab.research.google.com/github/aimhubio/tutorials/blob/publication/notebooks/pytorch_ignite_track.ipynb) we have provided as is done in the [original example](https://github.com/pytorch/ignite/blob/master/examples/notebooks/FashionMNIST.ipynb) of the Pytorch Ignite. 
+Both callback extension mechanisms are available with Pytorch Ignite.
+In the example below you'll see how to use the experiment property to track confusion matrix as an image using `aim.Image` after the training is completed. 
+
+Here is an [example colab notebook](https://colab.research.google.com/github/aimhubio/tutorials/blob/publication/notebooks/pytorch_ignite_track.ipynb). 
+
 ```python
 from aim import Image
 from aim.pytorch_ignite import AimLogger
@@ -88,7 +89,7 @@ aim_logger.attach(
 
 ### Pytorch Lightning
 
-In the [example](https://github.com/aimhubio/aim/blob/main/examples/pytorch_lightning_track.py) provided in our GitHub repo using `PL` + Aim there's already a reference how to customize an integration.
+In the [example](https://github.com/aimhubio/aim/blob/main/examples/pytorch_lightning_track.py) provided in the Aim GitHub repo using `PL` + Aim there's already a reference how to customize an integration.
 
 ```python
     def test_step(self, batch, batch_idx):
@@ -97,11 +98,13 @@ In the [example](https://github.com/aimhubio/aim/blob/main/examples/pytorch_ligh
         self.logger.experiment.track(1, name='manually_tracked_metric')
 ```
 
-So at each iteration of testing step anything can be tracked: images, texts, whatever is needed by you and supported by Aim.
+So you can track lots of metadata at each iteration of test step: images, texts, whatever is needed by you and supported by Aim.
+
 ### Hugging Face
-Let's examine the other possible example of extending the basic provided integration with Hugging Face. 
-Below is an example of deriving from the original `Callback` provided by Aim and overriding the main method, which in case of HF is `on_log()`.
-This will allow us to track any `str` object that is passed to `on_log()` method as `aim.Text`.
+Here is how to extend the basic Hugging Face logger. 
+Below is an example of a `CustomCallback` that's derived from the `AimCallback`. The main HF method here is the `on_log()` that's overriden.
+
+This allows us to track any `str` object that is passed to `on_log()` method as `aim.Text`.
 
 ```python
 from aim.hugging_face import AimCallback
@@ -121,8 +124,11 @@ class CustomCallback(AimCallback):
                 self.experiment.track(Text(log_value), name=log_name, context=context)
 
 ```
+
 ### TF/keras
-We'll show how to track confusion matrices with Aim while extending the default callback provided for `tf.keras` by examining how to the same with Aim as is provided in this [example.](https://www.tensorflow.org/tensorboard/image_summaries) 
+Here is how to track confusion matrices with Aim while extending the default callback provided for `tf.keras`.
+We have taken and adapted this [example.](https://www.tensorflow.org/tensorboard/image_summaries) to Aim. Here is how it looks:
+
 ```python
 from aim.tensorflow import AimCallback
 
@@ -162,8 +168,7 @@ model.fit(
 
 ### XGBoost
 
-And another example for extending the basic provided integration with XGBoost. Below is an example of deriving from the
-original Callback provided by Aim and overriding required method.
+Here is how to override the `AimCallback` for XGBoost.
 
 ```python
 from aim import Text
