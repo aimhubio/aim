@@ -24,7 +24,7 @@ function Bookmarks({
   return (
     <ErrorBoundary>
       <section className='Bookmarks'>
-        <AppBar title='Bookmarks' />
+        <AppBar title='Bookmarks' className='Bookmarks__appBar' />
         <div className='Bookmarks__list container'>
           <BusyLoaderWrapper isLoading={isLoading}>
             {data?.length > 0 &&

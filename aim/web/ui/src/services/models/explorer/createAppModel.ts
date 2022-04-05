@@ -86,6 +86,7 @@ import {
   IScatterAppModelState,
   ITrendlineOptions,
 } from 'types/services/models/scatter/scatterAppModel';
+import { IApiRequest } from 'types/services/services';
 
 import { aggregateGroupData } from 'utils/aggregateGroupData';
 import exceptionHandler from 'utils/app/exceptionHandler';
@@ -437,18 +438,18 @@ function createAppModel(appConfig: IAppInitialConfig) {
     }
   }
 
-  function setModelDefaultAppConfigData(): void {
+  function setModelDefaultAppConfigData(
+    recoverTableState: boolean = true,
+  ): void {
     setDefaultAppConfigData({
       config: getConfig(),
       appInitialConfig: appConfig,
       model,
+      recoverTableState,
     });
   }
 
-  function getModelAppConfigData(appId: string): {
-    call: () => Promise<void>;
-    abort: () => void;
-  } {
+  function getModelAppConfigData(appId: string): IApiRequest<void> {
     return getAppConfigData({ appId, appRequest, config: getConfig(), model });
   }
 
@@ -594,10 +595,7 @@ function createAppModel(appConfig: IAppInitialConfig) {
     function getMetricsData(
       shouldUrlUpdate?: boolean,
       shouldResetSelectedRows?: boolean,
-    ): {
-      call: () => Promise<void>;
-      abort: () => void;
-    } {
+    ): IApiRequest<void> {
       if (metricsRequestRef) {
         metricsRequestRef.abort();
       }
@@ -1854,13 +1852,7 @@ function createAppModel(appConfig: IAppInitialConfig) {
       liveUpdateInstance = null; //@TODO check is this need or not
     }
 
-    function archiveRuns(
-      ids: string[],
-      archived: boolean,
-    ): {
-      call: () => Promise<void>;
-      abort: () => void;
-    } {
+    function archiveRuns(ids: string[], archived: boolean): IApiRequest<void> {
       runsArchiveRef = runsService.archiveRuns(ids, archived);
       return {
         call: async () => {
@@ -1903,10 +1895,7 @@ function createAppModel(appConfig: IAppInitialConfig) {
       };
     }
 
-    function deleteRuns(ids: string[]): {
-      call: () => Promise<void>;
-      abort: () => void;
-    } {
+    function deleteRuns(ids: string[]): IApiRequest<void> {
       runsDeleteRef = runsService.deleteRuns(ids);
       return {
         call: async () => {
@@ -4868,7 +4857,7 @@ function createAppModel(appConfig: IAppInitialConfig) {
                       });
                     } else {
                       const paramValue = getValue(run.run.params, label);
-                      values[i] = formatValue(paramValue, null);
+                      values[i] = formatValue(paramValue, '-');
                       if (values[i] !== null) {
                         if (typeof values[i] === 'string') {
                           dimension[i].scaleType = ScaleEnum.Point;
