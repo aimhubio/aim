@@ -55,7 +55,7 @@ class PrefixView(Container):
         """
         self.container.preload()
 
-    def finalize(self, *, index: Container):
+    def finalize(self, index: Container):
         """Finalize the Container.
 
         Perform operations of compactions, indexing, optimization, etc.

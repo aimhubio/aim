@@ -1,6 +1,8 @@
 import React from 'react';
 import { NavLink } from 'react-router-dom';
 
+import { Tooltip } from '@material-ui/core';
+
 import ConfirmModal from 'components/ConfirmModal/ConfirmModal';
 import CodeBlock from 'components/CodeBlock/CodeBlock';
 import { Button, Icon, Badge, Text } from 'components/kit';
@@ -16,11 +18,13 @@ import { IBookmarkCardProps } from 'types/pages/bookmarks/components/BookmarkCar
 
 import './BookmarkCard.scss';
 
-const BookmarkIconType: { [key: string]: IconName } = {
-  images: 'images',
-  params: 'params',
-  metrics: 'metrics',
-  scatters: 'scatterplot',
+const BookmarkIconType: {
+  [key: string]: { name: IconName; tooltipTitle: string };
+} = {
+  images: { name: 'images', tooltipTitle: 'Images Explorer' },
+  params: { name: 'params', tooltipTitle: 'Params Explorer' },
+  metrics: { name: 'metrics', tooltipTitle: 'Metrics Explorer' },
+  scatters: { name: 'scatterplot', tooltipTitle: 'Scatters Explorer' },
 };
 
 function BookmarkCard({
@@ -53,14 +57,29 @@ function BookmarkCard({
     <ErrorBoundary>
       <div className='BookmarkCard'>
         <div className='BookmarkCard__top'>
-          <div className='BookmarkCard__title__section'>
-            <div className='BookmarkCard__title__section__container'>
-              <Icon name={BookmarkIconType[type]} fontSize={16} />
-              <Text size={18} weight={600} component='h3' tint={100}>
+          <div className='BookmarkCard__titleBox__section'>
+            <div className='BookmarkCard__titleBox__section__container'>
+              <Tooltip
+                title={BookmarkIconType[type].tooltipTitle}
+                placement='top'
+              >
+                <div className='BookmarkCard__titleBox__section__container__iconBox'>
+                  <Icon name={BookmarkIconType[type].name} fontSize={16} />
+                </div>
+              </Tooltip>
+
+              <Text
+                size={18}
+                weight={600}
+                component='h3'
+                tint={100}
+                className='BookmarkCard__titleBox__section__container__title'
+              >
                 {name}
               </Text>
             </div>
-            <div className='flex fac fjc'>
+
+            <div className='BookmarkCard__actionButtonsBox'>
               <NavLink to={`/${type}/${app_id}`}>
                 <Button
                   variant='outlined'
@@ -82,7 +101,13 @@ function BookmarkCard({
               </span>
             </div>
           </div>
-          <Text size={12} weight={400} tint={100} component='p'>
+          <Text
+            size={12}
+            weight={400}
+            tint={100}
+            component='p'
+            className='BookmarkCard__description'
+          >
             {description}
           </Text>
         </div>
@@ -123,7 +148,7 @@ function BookmarkCard({
           onSubmit={handleBookmarkDelete}
           text='Are you sure you want to delete this bookmark?'
           icon={<Icon name='delete' />}
-          title='Are you sure?'
+          title='Delete bookmark'
           statusType='error'
           confirmBtnText='Delete'
         />
