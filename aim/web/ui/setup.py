@@ -2,7 +2,9 @@ import os
 
 from setuptools import setup
 
-version_file = '../../VERSION'
+here = os.path.abspath(os.path.dirname(__file__))
+
+version_file = os.path.join(here, '..', '..', 'VERSION')
 with open(version_file) as vf:
     __version__ = vf.read().strip()
 
