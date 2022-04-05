@@ -25,6 +25,7 @@ function DeleteModal({
   const tableRef = React.useRef<any>({});
   const disabledTableRef = React.useRef<any>({});
   const [dateNow, setDateNow] = React.useState(Date.now());
+
   const tableColumns = [
     {
       dataKey: 'experiment',
@@ -53,7 +54,7 @@ function DeleteModal({
       dataKey: 'date',
       key: 'date',
       title: 'Date',
-      width: 240,
+      width: 300,
       cellRenderer: function cellRenderer({ cellData }: any) {
         return (
           <Tooltip title={cellData}>
@@ -88,7 +89,7 @@ function DeleteModal({
               size={12}
               weight={500}
               className={classNames('ActionModal__tableRowWithAction__date', {
-                'in-progress': !rowData?.isInProgress,
+                'in-progress': rowData?.isInProgress,
               })}
               component='p'
             >
@@ -115,7 +116,7 @@ function DeleteModal({
                   }
                 }}
               >
-                <Icon name='minus' fontSize={10} />
+                <Icon name='close' fontSize={10} />
               </Button>
             )}
           </div>
@@ -162,11 +163,12 @@ function DeleteModal({
       }
     });
 
-    finishedList = _.orderBy(finishedList, ['creationTime'], ['asc']);
-    inProgressList = _.orderBy(inProgressList, ['creationTime'], ['asc']);
+    finishedList = _.orderBy(finishedList, ['creationTime'], ['desc']);
+    inProgressList = _.orderBy(inProgressList, ['creationTime'], ['desc']);
 
     setData(finishedList);
     setDisabledData(inProgressList);
+
     tableRef.current?.updateData?.({
       newData: finishedList,
     });
@@ -228,11 +230,18 @@ function DeleteModal({
             />
           )}
           {!_.isEmpty(disabledData) && (
-            <Text size={12} weight={500} className='ActionModal__tableTitle'>
-              {`${
-                Object.values(disabledData).length
-              } runs are still in progress. Unfinished runs cannot be deleted.`}
-            </Text>
+            <div className='ActionModal__tableTitle'>
+              <Text
+                size={12}
+                weight={600}
+                className='ActionModal__tableTitle__count'
+              >
+                {Object.values(disabledData).length}
+              </Text>
+              <Text size={12} weight={400}>
+                runs are still in progress. Unfinished runs cannot be deleted.
+              </Text>
+            </div>
           )}
           {!_.isEmpty(disabledData) && (
             <div className='ActionModal__disabledTableWrapper'>

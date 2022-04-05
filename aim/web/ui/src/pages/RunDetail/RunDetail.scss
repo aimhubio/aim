@@ -283,14 +283,14 @@
           }
 
           &__experimentBox {
-            height: 2rem;
-            padding: 0 1rem;
+            height: auto;
             display: flex;
             align-items: center;
             cursor: pointer;
             border-radius: 0.3125rem 0 0 0.3125rem;
             margin-bottom: 0.125rem;
             position: relative;
+            padding: 0.5rem 1.5rem 0.5rem 1rem;
             &:last-child {
               margin-bottom: 0;
             }
@@ -298,17 +298,18 @@
               border-radius: $border-radius-sm;
               background: $cuddle-20;
               margin-right: 0.5rem;
+              padding: 0.5rem 1rem;
             }
             &__experimentName {
-              overflow: hidden;
-              text-overflow: ellipsis;
-              white-space: nowrap;
+              width: 100%;
+              word-break: break-all;
             }
             &.selected {
               background: $cuddle-10;
               border-bottom: $border-main;
               border-top: $border-main;
               &:hover {
+                padding: 0.5rem 1.5rem 0.5rem 1rem;
                 margin-right: 0;
                 border-radius: 0.3125rem 0 0 0.3125rem;
               }
@@ -320,7 +321,7 @@
                 top: 0;
                 left: 0;
                 background: $denim;
-                width: 0.375rem;
+                width: 0.25rem;
                 position: absolute;
               }
             }
@@ -370,7 +371,7 @@
             }
           }
           &__runBox {
-            height: 3.5rem;
+            height: auto;
             padding: 0.5rem 0.5rem;
             display: flex;
             align-items: flex-start;
@@ -388,10 +389,8 @@
               margin-bottom: $space-xxs;
               span {
                 display: block;
-                overflow: hidden;
-                text-overflow: ellipsis;
                 max-width: 100%;
-                white-space: nowrap;
+                word-break: break-all;
               }
             }
             &__runDate {

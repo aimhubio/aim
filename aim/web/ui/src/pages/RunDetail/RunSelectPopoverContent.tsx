@@ -86,28 +86,23 @@ function RunSelectPopoverContent({
             <div className='RunSelectPopoverWrapper__selectPopoverContent__contentContainer__experimentsListContainer__experimentList'>
               {!isRunInfoLoading ? (
                 experimentsData?.map((experiment: IRunSelectExperiment) => (
-                  <Tooltip
-                    title={experiment?.name ?? 'default'}
-                    placement='right'
+                  <div
                     key={experiment.id}
+                    className={classNames(
+                      'RunSelectPopoverWrapper__selectPopoverContent__contentContainer__experimentsListContainer__experimentList__experimentBox',
+                      { selected: experimentId === experiment.id },
+                    )}
+                    onClick={() => onExperimentClick(experiment.id)}
                   >
-                    <div
-                      className={classNames(
-                        'RunSelectPopoverWrapper__selectPopoverContent__contentContainer__experimentsListContainer__experimentList__experimentBox',
-                        { selected: experimentId === experiment.id },
-                      )}
-                      onClick={() => onExperimentClick(experiment.id)}
+                    <Text
+                      size={14}
+                      tint={experimentId === experiment.id ? 100 : 80}
+                      weight={experimentId === experiment.id ? 600 : 500}
+                      className='RunSelectPopoverWrapper__selectPopoverContent__contentContainer__experimentsListContainer__experimentList__experimentBox__experimentName'
                     >
-                      <Text
-                        size={14}
-                        tint={experimentId === experiment.id ? 100 : 80}
-                        weight={experimentId === experiment.id ? 600 : 500}
-                        className='RunSelectPopoverWrapper__selectPopoverContent__contentContainer__experimentsListContainer__experimentList__experimentBox__experimentName'
-                      >
-                        {experiment?.name ?? 'default'}
-                      </Text>
-                    </div>
-                  </Tooltip>
+                      {experiment?.name ?? 'default'}
+                    </Text>
+                  </div>
                 ))
               ) : (
                 <div className='RunSelectPopoverWrapper__loaderContainer'>
@@ -142,21 +137,19 @@ function RunSelectPopoverContent({
                       to={pathname.replace(runHash, run.run_id)}
                       onClick={onRunsSelectToggle}
                     >
-                      <Tooltip title={run.name} placement='right'>
-                        <div
-                          className={
-                            'RunSelectPopoverWrapper__selectPopoverContent__contentContainer__runsListContainer__runsList__runBox__runName'
-                          }
+                      <div
+                        className={
+                          'RunSelectPopoverWrapper__selectPopoverContent__contentContainer__runsListContainer__runsList__runBox__runName'
+                        }
+                      >
+                        <Text
+                          size={14}
+                          tint={runHash === run?.run_id ? 100 : 80}
+                          weight={500}
                         >
-                          <Text
-                            size={14}
-                            tint={runHash === run?.run_id ? 100 : 80}
-                            weight={500}
-                          >
-                            {run.name}
-                          </Text>
-                        </div>
-                      </Tooltip>
+                          {run.name}
+                        </Text>
+                      </div>
                       <div
                         className={
                           'RunSelectPopoverWrapper__selectPopoverContent__contentContainer__runsListContainer__runsList__runBox__runDate'

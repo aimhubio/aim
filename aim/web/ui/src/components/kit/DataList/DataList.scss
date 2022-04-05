@@ -58,7 +58,9 @@
           display: flex;
           border-right: none;
           white-space: normal;
-          overflow: auto !important;
+          &:has(> pre) {
+            overflow: auto !important;
+          }
         }
       }
 
