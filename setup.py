@@ -44,13 +44,13 @@ version_files = ['../aim/VERSION', ]
 LONG_DESCRIPTION = DESCRIPTION
 
 SETUP_REQUIRED = [
-    'Cython==3.0.0a9',
+    'Cython>=3.0.0a9',
 ]
 
 # What packages are required for this module to be executed?
 REQUIRED = [
     'aimrecords==0.0.7',
-    'aimrocks==0.1.2',
+    'aimrocks==0.1.3a14',
     'cachetools>=4.0.0',
     'click>=7.0',
     'cryptography>=3.0',
@@ -165,7 +165,6 @@ def configure_extension(name: str, path: str):
         include_dirs=INCLUDE_DIRS,
         libraries=LIBS,
         library_dirs=LIB_DIRS,
-        runtime_library_dirs=LIB_DIRS,
         extra_compile_args=COMPILE_ARGS,
     )
 
