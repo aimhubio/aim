@@ -2,6 +2,7 @@
 
 ## 3.8.1
 
+- Fix displaying incorrect metric values for large range scale in LineChart (KaroMourad)
 - Fix issue with rendering lines for large range scale in LineChart (KaroMourad)
 - Fix issue with URL state sync for bookmarks (roubkar)
 - Fix issue with displaying negative param values on Aim UI (roubkar)
