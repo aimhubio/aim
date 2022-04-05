@@ -162,7 +162,8 @@ const Params = ({
             className={`Params__chart__container${
               resizeMode === ResizeModeEnum.MaxHeight
                 ? '__hide'
-                : _.isEmpty(tableData)
+                : requestStatus !== RequestStatusEnum.Pending &&
+                  _.isEmpty(tableData)
                 ? '__fullHeight'
                 : ''
             }`}
