@@ -5,6 +5,8 @@ import ErrorBoundary from 'components/ErrorBoundary/ErrorBoundary';
 import BusyLoaderWrapper from 'components/BusyLoaderWrapper/BusyLoaderWrapper';
 import { ICardProps } from 'components/kit/Card/Card.d';
 
+import { formatValue } from 'utils/formatValue';
+
 import { IRunOverviewTabEnvVariablesCardProps } from './RunOverviewTabEnvVariablesCard.d';
 
 function RunOverviewTabEnvVariablesCard({
@@ -14,10 +16,10 @@ function RunOverviewTabEnvVariablesCard({
   const tableData = React.useMemo(
     () =>
       Object.entries(envVariables || {}).map(
-        ([key = '', value = '']: string[], index: number) => ({
+        ([key = '', value]: string[], index: number) => ({
           key: index,
           name: key,
-          value: value,
+          value: formatValue(value),
         }),
       ),
     [envVariables],

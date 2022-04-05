@@ -14,7 +14,7 @@ import { DensityOptions } from 'config/enums/densityEnum';
 import { RequestStatusEnum } from 'config/enums/requestStatusEnum';
 import { CONTROLS_DEFAULT_CONFIG } from 'config/controls/controlsDefaultConfig';
 import { ANALYTICS_EVENT_KEYS } from 'config/analytics/analyticsKeysMap';
-import { DATE_EXPORTING_FORMAT } from 'config/dates/dates';
+import { DATE_EXPORTING_FORMAT, TABLE_DATE_FORMAT } from 'config/dates/dates';
 
 import {
   getMetricsTableColumns,
@@ -174,6 +174,7 @@ import onRowSelect from 'utils/app/onRowSelect';
 import { SortField } from 'utils/getSortedFields';
 import onChangeTrendlineOptions from 'utils/app/onChangeTrendlineOptions';
 import { getParamsSuggestions } from 'utils/app/getParamsSuggestions';
+import onToggleColumnsColorScales from 'utils/app/onToggleColumnsColorScales';
 
 import { AppDataTypeEnum, AppNameEnum } from './index';
 /**
@@ -291,10 +292,10 @@ function createAppModel(appConfig: IAppInitialConfig) {
                   CONTROLS_DEFAULT_CONFIG.metrics.tooltip.selectedParams,
               },
               focusedState: {
-                active: false,
                 key: null,
                 xValue: null,
                 yValue: null,
+                active: false,
                 chartIndex: null,
               },
             };
@@ -352,6 +353,7 @@ function createAppModel(appConfig: IAppInitialConfig) {
             hiddenColumns: TABLE_DEFAULT_CONFIG.runs.hiddenColumns,
             sortFields: [...TABLE_DEFAULT_CONFIG.runs.sortFields],
             columnsWidths: {},
+            columnsColorScales: {},
             columnsOrder: {
               left: [...TABLE_DEFAULT_CONFIG.runs.columnsOrder.left],
               middle: [...TABLE_DEFAULT_CONFIG.runs.columnsOrder.middle],
@@ -741,6 +743,8 @@ function createAppModel(appConfig: IAppInitialConfig) {
                 line: '',
               },
               experiment: '',
+              description: '',
+              date: '',
               run: '',
               metric: '',
               context: [],
@@ -778,8 +782,10 @@ function createAppModel(appConfig: IAppInitialConfig) {
               color: metricsCollection.color ?? metric.color,
               dasharray: metricsCollection.dasharray ?? metric.dasharray,
               experiment: metric.run.props?.experiment?.name ?? 'default',
-              run: moment(metric.run.props.creation_time * 1000).format(
-                'HH:mm:ss · D MMM, YY',
+              run: metric.run.props?.name ?? '-',
+              description: metric.run.props?.description ?? '-',
+              date: moment(metric.run.props.creation_time * 1000).format(
+                TABLE_DATE_FORMAT,
               ),
               metric: metric.name,
               context: contextToString(metric.context)?.split(',') || [''],
@@ -821,6 +827,8 @@ function createAppModel(appConfig: IAppInitialConfig) {
 
             [
               'experiment',
+              'description',
+              'date',
               'run',
               'metric',
               'context',
@@ -2742,8 +2750,10 @@ function createAppModel(appConfig: IAppInitialConfig) {
               color: metricsCollection.color ?? metric.color,
               dasharray: metricsCollection.dasharray ?? metric.dasharray,
               experiment: metric.run.props.experiment?.name ?? 'default',
-              run: moment(metric.run.props.creation_time * 1000).format(
-                'HH:mm:ss · D MMM, YY',
+              run: metric.run.props.name,
+              description: metric.run.props?.description ?? '-',
+              date: moment(metric.run.props.creation_time * 1000).format(
+                TABLE_DATE_FORMAT,
               ),
               metric: metric.name,
               ...metricsRowValues,
@@ -2752,6 +2762,8 @@ function createAppModel(appConfig: IAppInitialConfig) {
             [
               'experiment',
               'run',
+              'date',
+              'description',
               'metric',
               'context',
               'step',
@@ -3200,6 +3212,14 @@ function createAppModel(appConfig: IAppInitialConfig) {
           }): void {
             return onRowSelect({ actionType, data, model });
           },
+          onToggleColumnsColorScales(colKey: string): void {
+            onToggleColumnsColorScales({
+              colKey,
+              model,
+              appName,
+              updateModelData,
+            });
+          },
         });
       }
 
@@ -3504,6 +3524,8 @@ function createAppModel(appConfig: IAppInitialConfig) {
                 dasharray: metricsCollection.dasharray,
                 experiment: '',
                 run: '',
+                description: '',
+                date: '',
                 metric: '',
                 context: [],
                 children: [],
@@ -3539,8 +3561,10 @@ function createAppModel(appConfig: IAppInitialConfig) {
                 color: metricsCollection.color ?? metric.color,
                 dasharray: metricsCollection.dasharray ?? metric.dasharray,
                 experiment: metric.run.props.experiment.name ?? 'default',
-                run: moment(metric.run.props.creation_time * 1000).format(
-                  'HH:mm:ss · D MMM, YY',
+                run: metric.run.props?.name ?? '-',
+                description: metric.run.props?.description ?? '-',
+                date: moment(metric.run.props.creation_time * 1000).format(
+                  TABLE_DATE_FORMAT,
                 ),
                 metric: metric.name,
                 ...metricsRowValues,
@@ -3554,6 +3578,8 @@ function createAppModel(appConfig: IAppInitialConfig) {
               [
                 'experiment',
                 'run',
+                'date',
+                'description',
                 'metric',
                 'context',
                 'step',
@@ -4969,9 +4995,12 @@ function createAppModel(appConfig: IAppInitialConfig) {
                   (metric) => metric.key,
                 ),
                 color: metricsCollection.color,
+
                 dasharray: metricsCollection.dasharray,
                 experiment: '',
                 run: '',
+                date: '',
+                description: '',
                 metric: '',
                 context: [],
                 children: [],
@@ -5007,8 +5036,10 @@ function createAppModel(appConfig: IAppInitialConfig) {
                 color: metricsCollection.color ?? metric.color,
                 dasharray: metricsCollection.dasharray ?? metric.dasharray,
                 experiment: metric.run.props.experiment?.name ?? 'default',
-                run: moment(metric.run.props.creation_time * 1000).format(
-                  'HH:mm:ss · D MMM, YY',
+                run: metric.run.props?.name ?? '-',
+                description: metric.run.props?.description ?? '-',
+                date: moment(metric.run.props.creation_time * 1000).format(
+                  TABLE_DATE_FORMAT,
                 ),
                 metric: metric.name,
                 ...metricsRowValues,
@@ -5024,6 +5055,8 @@ function createAppModel(appConfig: IAppInitialConfig) {
                 'run',
                 'metric',
                 'context',
+                'date',
+                'description',
                 'step',
                 'epoch',
                 'time',

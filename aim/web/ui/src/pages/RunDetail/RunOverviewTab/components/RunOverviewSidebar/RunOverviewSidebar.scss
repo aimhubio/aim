@@ -1,9 +1,13 @@
 @use 'src/styles/abstracts/index' as *;
 
 .RunOverviewSidebar {
-  max-width: 20rem;
+  margin-top: $space-lg;
+  min-width: 20rem;
+  width: 20rem;
+  overflow: hidden;
   padding: $space-xs;
-
+  position: sticky;
+  top: $space-lg;
   h3 {
     margin-bottom: $space-sm;
   }
@@ -61,7 +65,6 @@
     &__Divider {
       margin: 0 1rem;
     }
-
   }
 
   &__NavLink {
@@ -72,7 +75,7 @@
     padding: 0 $space-unit;
     margin-bottom: 0.125rem;
     border-radius: $border-radius-sm;
-    transition: background-color .18s ease-out;
+    transition: background-color 0.18s ease-out;
     outline: none;
     text-decoration: none;
     &:hover {

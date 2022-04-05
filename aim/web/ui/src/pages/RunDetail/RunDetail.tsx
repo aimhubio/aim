@@ -1,4 +1,4 @@
-import React, { memo, useRef, useState } from 'react';
+import React from 'react';
 import {
   Link,
   Redirect,
@@ -10,7 +10,7 @@ import {
 } from 'react-router-dom';
 import classNames from 'classnames';
 
-import { Paper, Tab, Tabs } from '@material-ui/core';
+import { Paper, Tab, Tabs, Tooltip } from '@material-ui/core';
 import { Skeleton } from '@material-ui/lab';
 
 import { Button, Icon, Text } from 'components/kit';
@@ -19,6 +19,7 @@ import StatusLabel from 'components/StatusLabel';
 import ControlPopover from 'components/ControlPopover/ControlPopover';
 import BusyLoaderWrapper from 'components/BusyLoaderWrapper/BusyLoaderWrapper';
 import ErrorBoundary from 'components/ErrorBoundary/ErrorBoundary';
+import Spinner from 'components/kit/Spinner';
 
 import { ANALYTICS_EVENT_KEYS } from 'config/analytics/analyticsKeysMap';
 
@@ -27,27 +28,49 @@ import useModel from 'hooks/model/useModel';
 import runDetailAppModel from 'services/models/runs/runDetailAppModel';
 import * as analytics from 'services/analytics';
 
-import RunDetailSettingsTab from './RunDetailSettingsTab';
-import RunDetailMetricsAndSystemTab from './RunDetailMetricsAndSystemTab';
-import RunDetailParamsTab from './RunDetailParamsTab';
 import RunSelectPopoverContent from './RunSelectPopoverContent';
-import TraceVisualizationContainer from './TraceVisualizationContainer';
-import RunOverviewTab from './RunOverviewTab';
 
 import './RunDetail.scss';
+
+const RunDetailParamsTab = React.lazy(
+  () =>
+    import(/* webpackChunkName: "RunDetailParamsTab" */ './RunDetailParamsTab'),
+);
+const RunDetailSettingsTab = React.lazy(
+  () =>
+    import(
+      /* webpackChunkName: "RunDetailSettingsTab" */ './RunDetailSettingsTab'
+    ),
+);
+const RunDetailMetricsAndSystemTab = React.lazy(
+  () =>
+    import(
+      /* webpackChunkName: "RunDetailMetricsAndSystemTab" */ './RunDetailMetricsAndSystemTab'
+    ),
+);
+const TraceVisualizationContainer = React.lazy(
+  () =>
+    import(
+      /* webpackChunkName: "TraceVisualizationContainer" */ './TraceVisualizationContainer'
+    ),
+);
+const RunOverviewTab = React.lazy(
+  () => import(/* webpackChunkName: "RunOverviewTab" */ './RunOverviewTab'),
+);
 
 function RunDetail(): React.FunctionComponentElement<React.ReactNode> {
   let runsOfExperimentRequestRef: any = null;
   const runData = useModel(runDetailAppModel);
-  const containerRef = useRef<HTMLDivElement | any>(null);
-  const [dateNow, setDateNow] = useState(Date.now());
-  const [isRunSelectDropdownOpen, setIsRunSelectDropdownOpen] = useState(false);
+  const containerRef = React.useRef<HTMLDivElement | any>(null);
+  const [dateNow, setDateNow] = React.useState(Date.now());
+  const [isRunSelectDropdownOpen, setIsRunSelectDropdownOpen] =
+    React.useState(false);
   const { runHash } = useParams<{ runHash: string }>();
   const { url } = useRouteMatch();
   const { pathname } = useLocation();
-  const [activeTab, setActiveTab] = useState(pathname);
+  const [activeTab, setActiveTab] = React.useState(pathname);
 
-  const tabs = [
+  const tabs: string[] = [
     'overview',
     'parameters',
     'metrics',
@@ -60,7 +83,6 @@ function RunDetail(): React.FunctionComponentElement<React.ReactNode> {
     'settings',
   ];
 
-  // TODO: add code splitting(lazy loading)
   const tabContent: { [key: string]: JSX.Element } = {
     overview: <RunOverviewTab runHash={runHash} runData={runData} />,
     parameters: (
@@ -188,70 +210,81 @@ function RunDetail(): React.FunctionComponentElement<React.ReactNode> {
       <section className='RunDetail' ref={containerRef}>
         <div className='RunDetail__runDetailContainer'>
           <div className='RunDetail__runDetailContainer__appBarContainer'>
-            <ControlPopover
-              anchorOrigin={{
-                vertical: 'bottom',
-                horizontal: 'left',
-              }}
-              transformOrigin={{
-                vertical: 'top',
-                horizontal: 'left',
-              }}
-              anchor={({ onAnchorClick, opened }) => (
-                <div
-                  className='RunDetail__runDetailContainer__appBarContainer__appBarTitleBox container'
-                  onClick={onAnchorClick}
-                >
-                  {!runData?.isRunInfoLoading ? (
-                    <>
-                      <div className='RunDetail__runDetailContainer__appBarContainer__appBarTitleBox__container'>
-                        <Text tint={100} size={16} weight={600}>
-                          {`${
-                            runData?.runInfo?.experiment?.name || 'default'
-                          } / ${runHash || ''}`}
-                        </Text>
-                      </div>
-                    </>
-                  ) : (
-                    <Skeleton variant='rect' height={24} width={340} />
-                  )}
-                  <Button
-                    disabled={
-                      runData?.isExperimentsLoading || runData?.isRunInfoLoading
-                    }
-                    color={opened ? 'primary' : 'default'}
-                    size='small'
-                    className={classNames(
-                      'RunDetail__runDetailContainer__appBarContainer__appBarTitleBox__buttonSelectToggler',
-                      { opened: opened },
-                    )}
-                    withOnlyIcon
+            <div className='container RunDetail__runDetailContainer__appBarContainer__appBarBox'>
+              <ControlPopover
+                anchorOrigin={{
+                  vertical: 'bottom',
+                  horizontal: 'left',
+                }}
+                transformOrigin={{
+                  vertical: 'top',
+                  horizontal: 'left',
+                }}
+                anchor={({ onAnchorClick, opened }) => (
+                  <div
+                    className='RunDetail__runDetailContainer__appBarContainer__appBarTitleBox'
+                    onClick={onAnchorClick}
                   >
-                    <Icon name={opened ? 'arrow-up' : 'arrow-down'} />
-                  </Button>
-                  <StatusLabel
-                    status={runData?.runInfo?.end_time ? 'alert' : 'success'}
-                    title={
-                      runData?.runInfo?.end_time ? 'Finished' : 'In Progress'
+                    {!runData?.isRunInfoLoading ? (
+                      <>
+                        <Tooltip
+                          title={`${
+                            runData?.runInfo?.experiment?.name || 'default'
+                          } / ${runData?.runInfo?.name || ''}`}
+                        >
+                          <div className='RunDetail__runDetailContainer__appBarContainer__appBarTitleBox__container'>
+                            <Text tint={100} size={16} weight={600}>
+                              {`${
+                                runData?.runInfo?.experiment?.name || 'default'
+                              } / ${runData?.runInfo?.name || ''}`}
+                            </Text>
+                          </div>
+                        </Tooltip>
+                      </>
+                    ) : (
+                      <Skeleton variant='rect' height={24} width={340} />
+                    )}
+                    <Button
+                      disabled={
+                        runData?.isExperimentsLoading ||
+                        runData?.isRunInfoLoading
+                      }
+                      color={opened ? 'primary' : 'default'}
+                      size='small'
+                      className={classNames(
+                        'RunDetail__runDetailContainer__appBarContainer__appBarTitleBox__buttonSelectToggler',
+                        { opened: opened },
+                      )}
+                      withOnlyIcon
+                    >
+                      <Icon name={opened ? 'arrow-up' : 'arrow-down'} />
+                    </Button>
+                    <StatusLabel
+                      status={runData?.runInfo?.end_time ? 'alert' : 'success'}
+                      title={
+                        runData?.runInfo?.end_time ? 'Finished' : 'In Progress'
+                      }
+                    />
+                  </div>
+                )}
+                component={
+                  <RunSelectPopoverContent
+                    getRunsOfExperiment={getRunsOfExperiment}
+                    experimentsData={runData?.experimentsData}
+                    experimentId={runData?.experimentId}
+                    runsOfExperiment={runData?.runsOfExperiment}
+                    runInfo={runData?.runInfo}
+                    isRunsOfExperimentLoading={
+                      runData?.isRunsOfExperimentLoading
                     }
+                    isRunInfoLoading={runData?.isRunInfoLoading}
+                    isLoadMoreButtonShown={runData?.isLoadMoreButtonShown}
+                    onRunsSelectToggle={onRunsSelectToggle}
+                    dateNow={dateNow}
                   />
-                </div>
-              )}
-              component={
-                <RunSelectPopoverContent
-                  getRunsOfExperiment={getRunsOfExperiment}
-                  experimentsData={runData?.experimentsData}
-                  experimentId={runData?.experimentId}
-                  runsOfExperiment={runData?.runsOfExperiment}
-                  runInfo={runData?.runInfo}
-                  isRunsOfExperimentLoading={runData?.isRunsOfExperimentLoading}
-                  isRunInfoLoading={runData?.isRunInfoLoading}
-                  isLoadMoreButtonShown={runData?.isLoadMoreButtonShown}
-                  onRunsSelectToggle={onRunsSelectToggle}
-                  dateNow={dateNow}
-                />
-              }
-            />
+                }
+              />
+            </div>
           </div>
           <Paper className='RunDetail__runDetailContainer__tabsContainer'>
             <Tabs
@@ -275,14 +308,16 @@ function RunDetail(): React.FunctionComponentElement<React.ReactNode> {
           </Paper>
           <BusyLoaderWrapper
             isLoading={runData?.isRunInfoLoading}
-            height='100%'
+            height='calc(100vh - 98px)'
           >
             <Switch>
               {tabs.map((tab: string) => (
                 <Route path={`${url}/${tab}`} key={tab}>
                   <ErrorBoundary>
                     <div className='RunDetail__runDetailContainer__tabPanel container'>
-                      {tabContent[tab]}
+                      <React.Suspense fallback={<Spinner />}>
+                        {tabContent[tab]}
+                      </React.Suspense>
                     </div>
                   </ErrorBoundary>
                 </Route>
@@ -302,4 +337,4 @@ function RunDetail(): React.FunctionComponentElement<React.ReactNode> {
   );
 }
 
-export default memo(RunDetail);
+export default React.memo(RunDetail);

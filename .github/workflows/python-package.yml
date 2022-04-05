@@ -2,6 +2,13 @@ name: aim packaging pipeline
 
 on:
   workflow_call:
+    secrets:
+      PYPI_PASSWORD:
+        required: true
+      DOCKER_HUB_USERNAME:
+        required: true
+      DOCKER_HUB_PASSWORD:
+        required: true
     inputs:
       branch:
         required: true
@@ -10,7 +17,7 @@ on:
 
 jobs:
   linux-dist:
-    if: ${{ github.event_name == 'scheduled' || github.actor == 'gorarakelyan' || github.actor == 'alberttorosyan' || github.actor == 'roubkar' }}
+    if: ${{ github.event_name == 'schedule' || github.actor == 'gorarakelyan' || github.actor == 'alberttorosyan' || github.actor == 'roubkar' }}
     runs-on: ubuntu-latest
     name: Linux wheels build (using Docker)
     steps:
@@ -60,7 +67,7 @@ jobs:
 
       - name: Publish wheels
         env:
-          PYPI_PASSWORD: ${{ secrets.pypi_password }}
+          PYPI_PASSWORD: ${{ secrets.PYPI_PASSWORD }}
         run: |
           python -m twine upload -u __token__ -p "${PYPI_PASSWORD}" multilinux_dist/*
 
@@ -78,7 +85,7 @@ jobs:
         run: . create-docker-image.sh
 
   macos-dist:
-    if: ${{ github.event_name == 'scheduled' || github.actor == 'gorarakelyan' || github.actor == 'alberttorosyan' || github.actor == 'roubkar' }}
+    if: ${{ github.event_name == 'schedule' || github.actor == 'gorarakelyan' || github.actor == 'alberttorosyan' || github.actor == 'roubkar' }}
     runs-on: ${{matrix.os}}
     strategy:
       fail-fast: false
@@ -125,6 +132,6 @@ jobs:
 
       - name: Publish wheel
         env:
-          PYPI_PASSWORD: ${{ secrets.pypi_password }}
+          PYPI_PASSWORD: ${{ secrets.PYPI_PASSWORD }}
         run: |
           python -m twine upload -u __token__ -p "${PYPI_PASSWORD}" dist/*

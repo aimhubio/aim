@@ -54,6 +54,7 @@
    understanding/data_storage.md
    understanding/storage_indexing.md
    understanding/concepts.md
+   understanding/running_aim_with_profiling.md
 
 .. toctree::
    :maxdepth: 1

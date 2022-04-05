@@ -3,8 +3,9 @@ import moment from 'moment';
 import classNames from 'classnames';
 import { NavLink, useLocation, useParams } from 'react-router-dom';
 import { isEmpty } from 'lodash-es';
+import _ from 'lodash';
 
-import { CircularProgress } from '@material-ui/core';
+import { CircularProgress, Tooltip } from '@material-ui/core';
 
 import IllustrationBlock from 'components/IllustrationBlock/IllustrationBlock';
 import { Button, Icon, Text } from 'components/kit';
@@ -28,7 +29,6 @@ function RunSelectPopoverContent({
   experimentsData,
   experimentId,
   runsOfExperiment,
-  runInfo,
   isRunsOfExperimentLoading,
   isRunInfoLoading,
   isLoadMoreButtonShown,
@@ -38,6 +38,7 @@ function RunSelectPopoverContent({
   const popoverContentWrapperRef = useRef<HTMLDivElement | any>();
   const { runHash } = useParams<{ runHash: string }>();
   const { pathname } = useLocation();
+  const [runs, setRuns] = React.useState<IRunSelectRun[]>([]);
 
   function onLoadMore() {
     if (!isRunsOfExperimentLoading) {
@@ -51,6 +52,12 @@ function RunSelectPopoverContent({
       );
     }
   }
+
+  React.useEffect(() => {
+    setRuns(
+      _.orderBy(runsOfExperiment, ['creation_time', 'name'], ['desc', 'asc']),
+    );
+  }, [runsOfExperiment]);
 
   function onExperimentClick(id: string) {
     getRunsOfExperiment(id);
@@ -117,12 +124,12 @@ function RunSelectPopoverContent({
                 ref={popoverContentWrapperRef}
               >
                 {!isEmpty(runsOfExperiment) ? (
-                  runsOfExperiment?.map((run: IRunSelectRun) => (
+                  runs?.map((run: IRunSelectRun) => (
                     <NavLink
                       className={classNames(
                         'RunSelectPopoverWrapper__selectPopoverContent__contentContainer__runsListContainer__runsList__runBox',
                         {
-                          selected: runInfo?.name === run.name,
+                          selected: runHash === run?.run_id,
                           'in-progress': !run?.end_time,
                         },
                       )}
@@ -130,18 +137,46 @@ function RunSelectPopoverContent({
                       to={pathname.replace(runHash, run.run_id)}
                       onClick={onRunsSelectToggle}
                     >
-                      <Text
-                        size={14}
-                        tint={runInfo?.name === run.name ? 100 : 80}
-                        weight={runInfo?.name === run.name ? 600 : 500}
+                      <Tooltip title={run.name} placement='right'>
+                        <div
+                          className={
+                            'RunSelectPopoverWrapper__selectPopoverContent__contentContainer__runsListContainer__runsList__runBox__runName'
+                          }
+                        >
+                          <Text
+                            size={14}
+                            tint={runHash === run?.run_id ? 100 : 80}
+                            weight={500}
+                          >
+                            {run.name}
+                          </Text>
+                        </div>
+                      </Tooltip>
+                      <div
+                        className={
+                          'RunSelectPopoverWrapper__selectPopoverContent__contentContainer__runsListContainer__runsList__runBox__runDate'
+                        }
                       >
-                        {`${moment(run.creation_time * 1000).format(
-                          DATE_WITHOUT_SECONDS,
-                        )} | ${processDurationTime(
-                          run?.creation_time * 1000,
-                          run?.end_time ? run?.end_time * 1000 : dateNow,
-                        )}`}
-                      </Text>
+                        <Icon
+                          name='calendar'
+                          color={
+                            runHash === run?.run_id ? '#414B6D' : '#606986'
+                          }
+                          fontSize={12}
+                        />
+                        <Text
+                          size={11}
+                          tint={runHash === run?.run_id ? 80 : 70}
+                          weight={400}
+                        >
+                          {`${moment(run.creation_time * 1000).format(
+                            DATE_WITHOUT_SECONDS,
+                          )} • ${processDurationTime(
+                            run?.creation_time * 1000,
+                            run?.end_time ? run?.end_time * 1000 : dateNow,
+                          )}`}
+                        </Text>
+                      </div>
                     </NavLink>
                   ))
                 ) : (

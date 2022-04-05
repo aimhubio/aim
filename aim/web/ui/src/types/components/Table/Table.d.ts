@@ -66,11 +66,13 @@ export interface ITableProps {
   onRowSelect?: any;
   archiveRuns?: (ids: string[], archived: boolean) => void;
   deleteRuns?: (ids: string[]) => void;
+  onToggleColumnsColorScales?: (colKey: string) => void;
   className?: string;
   appName?: AppNameEnum;
   focusedState?: any;
   illustrationConfig?: IIllustrationConfig;
   disableRowClick?: boolean;
+  columnsColorScales?: { [key: string]: boolean };
 }
 
 export interface ITableRef {
