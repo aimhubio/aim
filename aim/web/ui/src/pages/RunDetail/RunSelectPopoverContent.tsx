@@ -97,7 +97,7 @@ function RunSelectPopoverContent({
                     <Text
                       size={14}
                       tint={experimentId === experiment.id ? 100 : 80}
-                      weight={experimentId === experiment.id ? 600 : 500}
+                      weight={500}
                       className='RunSelectPopoverWrapper__selectPopoverContent__contentContainer__experimentsListContainer__experimentList__experimentBox__experimentName'
                     >
                       {experiment?.name ?? 'default'}
@@ -130,7 +130,6 @@ function RunSelectPopoverContent({
                         'RunSelectPopoverWrapper__selectPopoverContent__contentContainer__runsListContainer__runsList__runBox',
                         {
                           selected: runHash === run?.run_id,
-                          'in-progress': !run?.end_time,
                         },
                       )}
                       key={run.run_id}
@@ -138,9 +137,10 @@ function RunSelectPopoverContent({
                       onClick={onRunsSelectToggle}
                     >
                       <div
-                        className={
-                          'RunSelectPopoverWrapper__selectPopoverContent__contentContainer__runsListContainer__runsList__runBox__runName'
-                        }
+                        className={classNames(
+                          'RunSelectPopoverWrapper__selectPopoverContent__contentContainer__runsListContainer__runsList__runBox__runName',
+                          { 'in-progress': !run?.end_time },
+                        )}
                       >
                         <Text
                           size={14}
