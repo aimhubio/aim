@@ -4857,7 +4857,7 @@ function createAppModel(appConfig: IAppInitialConfig) {
                       });
                     } else {
                       const paramValue = getValue(run.run.params, label);
-                      values[i] = formatValue(paramValue, null);
+                      values[i] = formatValue(paramValue, '-');
                       if (values[i] !== null) {
                         if (typeof values[i] === 'string') {
                           dimension[i].scaleType = ScaleEnum.Point;

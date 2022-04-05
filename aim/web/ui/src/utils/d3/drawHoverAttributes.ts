@@ -14,7 +14,7 @@ import { IAxisScale } from 'types/utils/d3/getAxisScale';
 import { IUpdateFocusedChartArgs } from 'types/components/LineChart/LineChart';
 
 import { AggregationAreaMethods } from 'utils/aggregateGroupData';
-import getFormattedValue from 'utils/formattedValue';
+import getRoundedValue from 'utils/roundValue';
 
 import { formatValueByAlignment } from '../formatByAlignment';
 
@@ -139,8 +139,8 @@ function drawHoverAttributes(args: IDrawHoverAttributesArgs): void {
       const xValueByIndex = line.data.xValues[index];
       const yValueByIndex = line.data.yValues[index];
       if (xValueByIndex !== '-' && yValueByIndex !== '-') {
-        const closestXPos = attributesRef.current.xScale(xValueByIndex);
-        const closestYPos = attributesRef.current.yScale(yValueByIndex);
+        const closestXPos = attributesRef.current.xScale(xValueByIndex) || 0;
+        const closestYPos = attributesRef.current.yScale(yValueByIndex) || 0;
         const circle = {
           key: line.key,
           color: line.color,
@@ -177,7 +177,7 @@ function drawHoverAttributes(args: IDrawHoverAttributesArgs): void {
         const axisLeftEdge = margin.left - 1;
         const axisRightEdge = width - margin.right + 1;
         let xAxisValueWidth =
-          xAxisLabelNodeRef.current?.node()?.offsetWidth ?? 0;
+          xAxisLabelNodeRef.current?.node()?.offsetWidth || 0;
         if (xAxisValueWidth > plotBoxRef.current.width) {
           xAxisValueWidth = plotBoxRef.current.width;
         }
@@ -238,7 +238,7 @@ function drawHoverAttributes(args: IDrawHoverAttributesArgs): void {
         const axisTopEdge = margin.top - 1;
         const axisBottomEdge = height - margin.top;
         const yAxisValueHeight =
-          yAxisLabelNodeRef.current?.node()?.offsetHeight ?? 0;
+          yAxisLabelNodeRef.current?.node()?.offsetHeight || 0;
         const top =
           y - yAxisValueHeight / 2 < 0
             ? axisTopEdge + yAxisValueHeight / 2
@@ -493,7 +493,7 @@ function drawHoverAttributes(args: IDrawHoverAttributesArgs): void {
         axisScale,
       });
     } else {
-      return getFormattedValue(axisScale.invert(pos));
+      return getRoundedValue(axisScale.invert(pos));
     }
   }
 
@@ -532,7 +532,7 @@ function drawHoverAttributes(args: IDrawHoverAttributesArgs): void {
   }
 
   function updateHoverAttributes(xValue: number, dataSelector?: string): void {
-    const mouseX = attributesRef.current.xScale(xValue);
+    const mouseX = attributesRef.current.xScale(xValue) || 0;
     const nearestCircles = getNearestCircles(mouseX);
 
     drawHighlightedLines(dataSelector);
