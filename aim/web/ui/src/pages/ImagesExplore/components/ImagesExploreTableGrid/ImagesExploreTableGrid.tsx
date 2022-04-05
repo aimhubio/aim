@@ -314,6 +314,7 @@ function imagesExploreTableRowRenderer(
         row[col] = {
           content: (
             <Badge
+              monospace
               size='small'
               color={COLORS[0][0]}
               label={`${rowData[col].length} values`}
