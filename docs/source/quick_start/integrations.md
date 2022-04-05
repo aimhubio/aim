@@ -22,6 +22,10 @@ for step in range(10):
 
 Aim easily integrates with your favourite ML frameworks.
 
+Aim loggers give access to the `aim.Run` object instance via the `experiment` property. The `aim.Run` instance will help you to easily track additional metrics or set any other `key: value` pairs (params) relevant to your project.
+
+In this way you can easily extend the default integrations. More info about this is abailable on Integration guides [section.](../using/integration_guides.html) 
+
 ### Integration with Pytorch Ignite
 [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/aimhubio/tutorials/blob/publication/notebooks/pytorch_ignite_track.ipynb)  
 
