@@ -1,5 +1,11 @@
 # Changelog
 
+## Unreleased
+
+### Enhancements:
+
+- Add the run name to the batch delete and the batch archive modals (VkoHov)
+
 ## 3.8.0 Mar 26, 2022
 
 ### Enhancements:
