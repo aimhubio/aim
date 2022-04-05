@@ -185,7 +185,7 @@ for step in range(100):
         string.digits, k=20)
     )
     aim_text = Text(random_str)
-    run.track(aim_text, step=step)
+    run.track(aim_text, name='text', step=step)
 ```
 
 ### Figure tracking with Aim
