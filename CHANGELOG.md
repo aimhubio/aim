@@ -1,5 +1,9 @@
 # Changelog
 
+### Fixes:
+
+- Fix CSS valid selector issue with Uncaught DOMException (Hamik25)
+
 ## 3.8.1
 
 - Fix issue with URL state sync for bookmarks (roubkar)

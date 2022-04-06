@@ -1586,7 +1586,11 @@ function createAppModel(appConfig: IAppInitialConfig) {
                 color: metricsCollection.color ?? metric.color,
                 dasharray: metricsCollection.dasharray ?? metric.color,
                 chartIndex: metricsCollection.chartIndex,
-                selectors: [metric.key, metric.key, metric.run.hash],
+                selectors: [
+                  metric.key,
+                  metric.key,
+                  encode({ runHash: metric.run.hash }),
+                ],
                 data: {
                   xValues: metric.data.xValues,
                   yValues: metric.data.yValues,
