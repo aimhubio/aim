@@ -1,13 +1,13 @@
 import { HighlightEnum } from 'components/HighlightModesPopover/HighlightModesPopover';
 
 import { IDrawLinesArgs } from 'types/utils/d3/drawLines';
-import { IProcessedData } from 'types/utils/d3/processLineChartData';
+import {
+  IProcessedAggrData,
+  IProcessedData,
+} from 'types/utils/d3/processLineChartData';
 import { IAxisScale } from 'types/utils/d3/getAxisScale';
-import { IAggregatedData } from 'types/services/models/metrics/metricsAppModel';
-import { ILine } from 'types/components/LineChart/LineChart';
 
 import { AggregationAreaMethods } from 'utils/aggregateGroupData';
-import { toQuadrupleData, toTupleData } from 'utils/toFormatData';
 
 import lineGenerator from './lineGenerator';
 import areaGenerator from './areaGenerator';
@@ -25,6 +25,8 @@ function drawLines(args: IDrawLinesArgs): void {
     curveInterpolation,
     highlightMode,
     aggregationConfig,
+    processedData,
+    processedAggrData,
   } = args;
 
   if (!linesNodeRef?.current) {
@@ -47,22 +49,18 @@ function drawLines(args: IDrawLinesArgs): void {
       .data(data)
       .join('path')
       .attr('class', `Line ${aggregationConfig?.isApplied ? 'aggregated' : ''}`)
-      .attr('id', (line: ILine) => `Line-${line.key}`)
+      .attr('id', (line: IProcessedData) => `Line-${line.key}`)
       .attr('clip-path', `url(#${nameKey}-lines-rect-clip-${index})`)
-      .attr('groupKey', (line: ILine) => line.groupKey)
+      .attr('groupKey', (line: IProcessedData) => line.groupKey)
       .attr(
         'data-selector',
-        (line: ILine) =>
+        (line: IProcessedData) =>
           `Line-Sel-${highlightMode}-${line.selectors?.[highlightMode]}`,
       )
       .style('fill', 'none')
-      .style('stroke', (line: ILine) => line.color)
-      .style('stroke-dasharray', (line: ILine) => line.dasharray)
-      .data(
-        data.map((line: IProcessedData) =>
-          toTupleData(line.data.xValues, line.data.yValues),
-        ),
-      )
+      .style('stroke', (line: IProcessedData) => line.color)
+      .style('stroke-dasharray', (line: IProcessedData) => line.dasharray)
+      .data(data.map((line: IProcessedData) => line.data))
       .attr('d', lineGenerator(xScale, yScale, curveInterpolation));
   };
 
@@ -76,27 +74,18 @@ function drawLines(args: IDrawLinesArgs): void {
   };
 
   linesRef.current.updateAggregatedAreas = function (
-    data: IAggregatedData[],
+    data: IProcessedAggrData[],
   ): void {
     linesNodeRef.current
       .selectAll('.AggrArea')
       .data(data)
       .join('path')
       .attr('class', 'AggrArea')
-      .attr('id', (aggrData: IAggregatedData) => `AggrArea-${aggrData.key}`)
+      .attr('id', (aggrData: IProcessedAggrData) => `AggrArea-${aggrData.key}`)
       .attr('clip-path', `url(#${nameKey}-lines-rect-clip-${index})`)
-      .attr('fill', (aggrData: IAggregatedData) => aggrData.color)
+      .attr('fill', (aggrData: IProcessedAggrData) => aggrData.color)
       .attr('fill-opacity', '0.3')
-      .data(
-        data.map((aggrData: IAggregatedData) =>
-          toQuadrupleData(
-            aggrData.area.max?.xValues || [],
-            aggrData.area.min?.xValues || [],
-            aggrData.area.max?.yValues || [],
-            aggrData.area.min?.yValues || [],
-          ),
-        ),
-      )
+      .data(data.map((aggrData: IProcessedAggrData) => aggrData?.area || []))
       .attr('d', areaGenerator(xScale, yScale));
   };
 
@@ -111,42 +100,35 @@ function drawLines(args: IDrawLinesArgs): void {
   };
 
   linesRef.current.updateAggregatedLines = function (
-    data: IAggregatedData[],
+    data: IProcessedAggrData[],
   ): void {
     linesNodeRef.current
       .selectAll('.AggrLine')
       .data(data)
       .join('path')
       .attr('class', 'AggrLine')
-      .attr('id', (aggrData: IAggregatedData) => `AggrLine-${aggrData.key}`)
+      .attr('id', (aggrData: IProcessedAggrData) => `AggrLine-${aggrData.key}`)
       .attr('clip-path', `url(#${nameKey}-lines-rect-clip-${index})`)
       .style('fill', 'none')
-      .style('stroke', (aggrData: IAggregatedData) => aggrData.color)
+      .style('stroke', (aggrData: IProcessedAggrData) => aggrData.color)
       .style(
         'stroke-dasharray',
-        (aggrData: IAggregatedData) => aggrData.dasharray,
+        (aggrData: IProcessedAggrData) => aggrData.dasharray,
       )
-      .data(
-        data.map((aggrData: IAggregatedData) =>
-          toTupleData(
-            aggrData.line?.xValues || [],
-            aggrData.line?.yValues || [],
-          ),
-        ),
-      )
+      .data(data.map((aggrData: IProcessedAggrData) => aggrData.line || []))
       .attr('d', lineGenerator(xScale, yScale, curveInterpolation));
   };
 
   if (aggregationConfig?.isApplied) {
     if (aggregationConfig.methods.area !== AggregationAreaMethods.NONE) {
-      linesRef.current.updateAggregatedAreas(args.aggregatedData);
+      linesRef.current.updateAggregatedAreas(processedAggrData);
     }
-    linesRef.current.updateAggregatedLines(args.aggregatedData);
+    linesRef.current.updateAggregatedLines(processedAggrData);
     if (highlightMode !== HighlightEnum.Off) {
-      linesRef.current.updateLines(args.data);
+      linesRef.current.updateLines(processedData);
     }
   } else {
-    linesRef.current.updateLines(args.data);
+    linesRef.current.updateLines(processedData);
   }
 }
 

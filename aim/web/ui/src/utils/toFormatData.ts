@@ -3,10 +3,10 @@ export const toTupleData = (x: number[], y: number[]): [number, number][] => {
 };
 
 export const toQuadrupleData = (
+  x0: number[],
+  y0: number[],
   x1: number[],
   y1: number[],
-  x2: number[],
-  y2: number[],
 ): [number, number, number, number][] => {
-  return x1.map((v: number, i: number) => [v, y1[i], x2[i], y2[i]]);
+  return x0.map((v: number, i: number) => [v, y0[i], x1[i], y1[i]]);
 };
