@@ -4,7 +4,7 @@ from setuptools import setup
 
 here = os.path.abspath(os.path.dirname(__file__))
 
-version_file = os.path.join(here, '..', '..', 'VERSION')
+version_file = os.path.join(here, 'VERSION')
 with open(version_file) as vf:
     __version__ = vf.read().strip()
 
@@ -22,7 +22,10 @@ def package_files(directory):
     return paths
 
 
-ui_files = package_files('build')
+files = package_files('build')
+
+# This is a symlink so main version
+files.append('VERSION')
 
 setup(
     name=NAME,
@@ -30,5 +33,5 @@ setup(
     description=DESCRIPTION,
     packages=["aim.web.ui"],
     package_dir={'aim.web.ui': '.'},
-    package_data={'aim.web.ui': ui_files}
+    package_data={'aim.web.ui': files}
 )
