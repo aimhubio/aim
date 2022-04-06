@@ -46,7 +46,7 @@
   }
   &__SelectForm__Grouping__container {
     display: flex;
-    border-bottom: 0.0625rem solid #e8f1fc;
+    border-bottom: $border-main;
     min-height: 6rem;
     max-height: 6rem;
   }

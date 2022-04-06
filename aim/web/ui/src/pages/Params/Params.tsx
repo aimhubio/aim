@@ -121,6 +121,7 @@ const Params = ({
         <div className='Params__fullHeight Params__section__div'>
           <div>
             <AppBar
+              explorerName='PARAMS'
               onBookmarkCreate={onBookmarkCreate}
               onBookmarkUpdate={onBookmarkUpdate}
               onResetConfigData={onResetConfigData}
@@ -161,7 +162,8 @@ const Params = ({
             className={`Params__chart__container${
               resizeMode === ResizeModeEnum.MaxHeight
                 ? '__hide'
-                : _.isEmpty(tableData)
+                : requestStatus !== RequestStatusEnum.Pending &&
+                  _.isEmpty(tableData)
                 ? '__fullHeight'
                 : ''
             }`}
