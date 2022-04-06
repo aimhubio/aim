@@ -37,7 +37,7 @@ def convert(ctx, repo):
                                                          dir_okay=True,
                                                          resolve_path=True))
 @click.option('--flat', '-f', required=False, is_flag=True, default=False)
-def convert_tensorflow(ctx, logdir, flat):
+def convert_tensorboard(ctx, logdir, flat):
     repo_inst = ctx.obj['repo_inst']
     parse_tb_logs(logdir, repo_inst, flat)
 
