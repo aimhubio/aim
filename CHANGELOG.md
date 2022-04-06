@@ -1,5 +1,10 @@
 # Changelog
 
+## Unreleased
+
+### Enhancements
+- Add `--log-level` argument for aim up/server commands (mihran113)
+
 ## 3.8.1 Apr 6, 2022
 
 - Encode run hash before including in CSS selectors (Hamik25)
