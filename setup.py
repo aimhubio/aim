@@ -213,8 +213,5 @@ setup(
     },
     cmdclass={
         'upload': UploadCommand
-    },
-    dependency_links=[
-        ''.join(['file://', os.path.join(here, 'aim', 'web', f'ui#egg=aim-webui-{__version__}')])
-    ]
+    }
 )
