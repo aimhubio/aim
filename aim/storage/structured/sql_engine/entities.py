@@ -8,7 +8,10 @@ from aim.storage.structured.entities import (
     Run as IRun,
     Experiment as IExperiment,
     Tag as ITag,
-    RunCollection, TagCollection
+    Note as INote,
+    RunCollection,
+    TagCollection,
+    NoteCollection
 )
 from aim.storage.structured.sql_engine.models import (
     Run as RunModel,
@@ -179,6 +182,14 @@ class ModelMappedRun(IRun, metaclass=ModelMappedClassMeta):
         session.add(self._model)
         session.flush()
         return tag_removed
+
+    @property
+    def notes_obj(self) -> NoteCollection:
+        if self._model:
+            return ModelMappedNoteCollection(self._session,
+                                             collection=[n for n in self._model.notes])
+        else:
+            return []
 
     @property
     def notes(self) -> List[dict]:
@@ -422,6 +433,67 @@ class ModelMappedTag(ITag, metaclass=ModelMappedClassMeta):
         return self.runs
 
 
+class ModelMappedNote(INote, metaclass=ModelMappedClassMeta):
+    __model__ = NoteModel
+    __mapped_properties__ = [
+        Property('id', with_setter=False),
+        Property('content'),
+        Property('run', with_setter=False),
+        Property('created_at', with_setter=False),
+        Property('updated_at', with_setter=False),
+    ]
+
+    def __init__(self, model_inst: NoteModel, session):
+        self._model = model_inst
+        self._id = model_inst.id
+        self._session = session
+
+    def __repr__(self) -> str:
+        return f'<ModelMappedNote id={self._id}>'
+
+    @classmethod
+    def from_model(cls, model_obj, session) -> 'ModelMappedNote':
+        return ModelMappedNote(model_obj, session)
+
+    @classmethod
+    def find(cls, _id: str, **kwargs) -> Union[INote, SafeNone]:
+        session = kwargs.get('session')
+        if not session:
+            return SafeNone()
+        model_obj = session.query(NoteModel).options([
+            joinedload(NoteModel.run),
+        ]).filter(NoteModel.id == _id).first()
+        if model_obj:
+            return ModelMappedNote(model_obj, session)
+        return SafeNone()
+
+    @classmethod
+    def all(cls, **kwargs) -> Collection[INote]:
+        session = kwargs.get('session')
+        if not session:
+            return []
+        q = session.query(NoteModel).options([
+            joinedload(NoteModel.run),
+        ]).order_by(NoteModel.updated_at.desc())
+        return ModelMappedTagCollection(session, query=q)
+
+    @classmethod
+    def search(cls, term: str, **kwargs) -> Collection[INote]:
+        raise NotImplementedError
+
+    @classmethod
+    def delete(cls, _id: str, **kwargs) -> bool:
+        session = kwargs.get('session')
+        if not session:
+            return False
+        model_obj = session.query(NoteModel).filter(NoteModel.id == _id).first()
+        if model_obj:
+            session.delete(model_obj)
+            return True
+        return False
+
+
 ModelMappedRunCollection = ModelMappedCollection[ModelMappedRun]
 ModelMappedExperimentCollection = ModelMappedCollection[ModelMappedExperiment]
 ModelMappedTagCollection = ModelMappedCollection[ModelMappedTag]
+ModelMappedNoteCollection = ModelMappedCollection[ModelMappedNote]
