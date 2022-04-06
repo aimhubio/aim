@@ -186,7 +186,7 @@ class ModelMappedRun(IRun, metaclass=ModelMappedClassMeta):
 
         qs = session.query(NoteModel).filter(
             NoteModel.run_id == self._model.id,
-        )
+        ).order_by(NoteModel.updated_at.desc())
 
         return [{
             "id": note.id,
