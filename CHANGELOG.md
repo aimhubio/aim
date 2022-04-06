@@ -1,6 +1,6 @@
 # Changelog
 
-## 3.8.1
+## 3.8.1 Apr 6, 2022
 
 - Encode run hash before including in CSS selectors (Hamik25)
 - Fix displaying incorrect metric values for large range scale in LineChart (KaroMourad)
