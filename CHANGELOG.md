@@ -1,11 +1,8 @@
 # Changelog
 
-### Fixes:
-
-- Fix CSS valid selector issue with Uncaught DOMException (Hamik25)
-
 ## 3.8.1
 
+- Encode run hash before including in CSS selectors (Hamik25)
 - Fix issue with URL state sync for bookmarks (roubkar)
 - Fix issue with displaying negative param values on Aim UI (roubkar)
 - Fix row hiding functionality (roubkar)
