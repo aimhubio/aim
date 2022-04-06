@@ -215,7 +215,6 @@ class FigureInfo(BaseModel):
 
 
 class NoteIn(BaseModel):
-    name: str
     content: str
 
 

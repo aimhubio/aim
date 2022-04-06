@@ -97,12 +97,8 @@ class Tag(Base):
 
 class Note(Base):
     __tablename__ = 'note'
-    __table_args__ = (
-        UniqueConstraint('run_id', 'name'),
-    )
 
     id = Column(Integer, autoincrement=True, primary_key=True)
-    name = Column(Text, nullable=False, default='New Note')
     content = Column(Text, nullable=False, default='')
     run_id = Column(Integer, ForeignKey('run.id'))
 
@@ -112,8 +108,7 @@ class Note(Base):
     run = relationship('Run', back_populates='notes')
     audit_logs = relationship('NoteAuditLog', back_populates='note')
 
-    def __init__(self, name, content):
-        self.name = name
+    def __init__(self, content):
         self.content = content
 
 

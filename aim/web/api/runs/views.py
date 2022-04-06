@@ -45,7 +45,6 @@ from aim.web.api.utils import object_factory
 runs_router = APIRouter()
 
 # static msgs
-NOTE_EXITS = 'Note with name {name} already exists.'
 NOTE_NOT_FOUND = 'Note with id {id} is not found in this run.'
 
 
@@ -244,19 +243,11 @@ def create_note_api(run_id, note_in: NoteIn, factory=Depends(object_factory)):
         if not run:
             raise HTTPException(status_code=404)
 
-        note_name = note_in.name.strip()
-
-        note = run.find_note(name=note_name)
-        if note:
-            raise HTTPException(status_code=400, detail=NOTE_EXITS.format(name=note_name))
-
         note_content = note_in.content.strip()
-        run.add_note(note_name, note_content)
-        note = run.find_note(name=note_name)
+        note = run.add_note(note_content)
 
     return {
         'id': note.id,
-        'name': note.name,
         'created_at': note.created_at,
     }
 
@@ -274,7 +265,6 @@ def get_note_api(run_id, _id: int, factory=Depends(object_factory)):
 
     return {
         'id': note.id,
-        'name': note.name,
         'content': note.content,
     }
 
@@ -291,18 +281,10 @@ def update_note_api(run_id, _id: int, note_in: NoteIn, factory=Depends(object_fa
             raise HTTPException(status_code=404, detail=NOTE_NOT_FOUND.format(id=_id))
 
         content = note_in.content.strip()
-        name = note_in.name.strip()
-
-        existing_note = run.find_note(name=name)
-        if existing_note and existing_note.id != note.id:
-            raise HTTPException(status_code=400, detail=NOTE_EXITS.format(name=name))
-
-        run.update_note(_id=_id, name=name, content=content)
-        updated_note = run.find_note(_id=_id)
+        updated_note = run.update_note(_id=_id, content=content)
 
     return {
         'id': updated_note.id,
-        'name': updated_note.name,
         'content': updated_note.content,
     }
 

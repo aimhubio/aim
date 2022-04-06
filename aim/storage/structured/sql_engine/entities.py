@@ -190,28 +190,24 @@ class ModelMappedRun(IRun, metaclass=ModelMappedClassMeta):
 
         return [{
             "id": note.id,
-            "name": note.name,
             "content": note.content,
             "created_at": note.created_at,
             "updated_at": note.updated_at
         } for note in qs]
 
-    def find_note(self, _id: int = None, name: str = None):
+    def find_note(self, _id: int):
         session = self._session
 
         qs = session.query(NoteModel).filter(
             NoteModel.run_id == self._model.id,
+            NoteModel.id == _id
         )
-        if _id is not None:
-            qs = qs.filter(NoteModel.id == _id)
-        if name is not None:
-            qs = qs.filter(NoteModel.name == name)
         return qs.first()
 
-    def add_note(self, name: str, content: str):
+    def add_note(self, content: str):
         session = self._session
 
-        note = NoteModel(name, content)
+        note = NoteModel(content)
         session.add(note)
         self._model.notes.append(note)
 
@@ -222,23 +218,24 @@ class ModelMappedRun(IRun, metaclass=ModelMappedClassMeta):
         session.add(self._model)
         session.flush()
 
-    def update_note(self, _id: int, name=None, content=None):
+        return note
+
+    def update_note(self, _id: int, content):
         session = self._session
 
         note = self.find_note(_id=_id)
 
-        _before = note.content
-        if name is not None:
-            note.name = name
-        if content is not None:
-            note.content = content
+        before = note.content
+        note.content = content
 
-        audit_log = NoteAuditLogModel(action="Updated", before=_before, after=content)
+        audit_log = NoteAuditLogModel(action="Updated", before=before, after=content)
         session.add(audit_log)
         note.audit_logs.append(audit_log)
 
         session.add(note)
         session.flush()
+
+        return note
 
     def remove_note(self, _id: int):
         session = self._session
