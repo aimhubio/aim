@@ -20,7 +20,7 @@ def reindex(repo, finalize_only):
     if repo_status != RepoStatus.UPDATED:
         click.echo(f'\'{repo_path}\' is not updated. Cannot run indexing.')
     repo_inst = Repo.from_path(repo_path)
-    index_mng = RepoIndexManager.get_index_manager(repo_inst)
+    index_mng = RepoIndexManager.get_index_manager(repo_inst.path)
     if finalize_only:
         if not index_mng.reindex_needed:
             click.echo('Index is up to date.')

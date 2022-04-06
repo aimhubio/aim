@@ -15,6 +15,9 @@ import ControlPopover from 'components/ControlPopover/ControlPopover';
 import LiveUpdateSettings from 'components/LiveUpdateSettings/LiveUpdateSettings';
 import { Button, Icon, Text } from 'components/kit';
 import ErrorBoundary from 'components/ErrorBoundary/ErrorBoundary';
+import ConfirmModal from 'components/ConfirmModal/ConfirmModal';
+
+import { DOCUMENTATIONS } from 'config/references';
 
 import { IMetricsBarProps } from 'types/pages/metrics/components/MetricsBar/MetricsBar';
 
@@ -27,8 +30,10 @@ function MetricsBar({
   liveUpdateConfig,
   onLiveUpdateConfigChange,
   title,
+  explorerName = 'METRICS',
 }: IMetricsBarProps): React.FunctionComponentElement<React.ReactNode> {
   const [popover, setPopover] = React.useState<string>('');
+
   const route = useRouteMatch<any>();
 
   function handleBookmarkClick(value: string): void {
@@ -118,6 +123,13 @@ function MetricsBar({
                   <MenuItem onClick={onResetConfigData}>
                     Reset Controls to System Defaults
                   </MenuItem>
+                  <a
+                    href={DOCUMENTATIONS.EXPLORERS[explorerName].MAIN}
+                    target='_blank'
+                    rel='noreferrer'
+                  >
+                    <MenuItem>Explorer Documentation</MenuItem>
+                  </a>
                 </div>
               }
             />
@@ -130,26 +142,16 @@ function MetricsBar({
             open={popover === 'create'}
           />
         </ErrorBoundary>
-        <Dialog
+        <ConfirmModal
           open={popover === 'update'}
-          onClose={handleClosePopover}
-          aria-labelledby='form-dialog-title'
-        >
-          <DialogTitle id='form-dialog-title'>Update Bookmark</DialogTitle>
-          <DialogContent>
-            <Text size={16} component='p' weight={500}>
-              Do you want to update bookmark?
-            </Text>
-          </DialogContent>
-          <DialogActions>
-            <Button onClick={handleClosePopover} color='primary'>
-              Cancel
-            </Button>
-            <Button onClick={handleBookmarkUpdate} color='primary'>
-              Save
-            </Button>
-          </DialogActions>
-        </Dialog>
+          onCancel={handleClosePopover}
+          onSubmit={handleBookmarkUpdate}
+          text='Are you sure you want to update bookmark?'
+          icon={<Icon name='check' />}
+          title='Update bookmark'
+          statusType='success'
+          confirmBtnText='Update'
+        />
       </AppBar>
     </ErrorBoundary>
   );

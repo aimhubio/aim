@@ -1,4 +1,5 @@
 import React from 'react';
+import * as d3 from 'd3';
 
 import ErrorBoundary from 'components/ErrorBoundary/ErrorBoundary';
 
@@ -16,8 +17,6 @@ import {
   drawScatterTrendline,
   drawPoints,
 } from 'utils/d3';
-
-import { Text } from '../kit';
 
 import { IScatterPlotProps } from './types.d';
 
@@ -91,6 +90,16 @@ const ScatterPlot = React.forwardRef(function ScatterPlot(
       chartTitle,
     });
 
+    if (yDimension.domainData[0] === '-' || xDimension.domainData[0] === '-') {
+      if (visAreaRef.current && !readOnly) {
+        d3.select(visAreaRef.current)
+          .append('text')
+          .attr('class', 'ScatterPlot__emptyData')
+          .text('No Data');
+      }
+      return;
+    }
+
     const { width, height, margin } = visBoxRef.current;
 
     const axesScaleType = {
@@ -119,9 +128,7 @@ const ScatterPlot = React.forwardRef(function ScatterPlot(
       plotBoxRef,
       xScale,
       yScale,
-      width,
-      height,
-      margin,
+      visBoxRef,
       humanizerConfigRef,
       drawBgTickLines: { y: true, x: true },
     });
@@ -173,25 +180,7 @@ const ScatterPlot = React.forwardRef(function ScatterPlot(
 
   function renderChart() {
     clearArea({ visAreaRef });
-    if (yDimension.domainData[0] === '-' || xDimension.domainData[0] === '-') {
-      drawArea({
-        index,
-        nameKey,
-        visBoxRef,
-        plotBoxRef,
-        parentRef,
-        visAreaRef,
-        svgNodeRef,
-        bgRectNodeRef,
-        plotNodeRef,
-        axesNodeRef,
-        linesNodeRef,
-        attributesNodeRef,
-        chartTitle,
-      });
-    } else {
-      draw();
-    }
+    draw();
   }
 
   const resizeObserverCallback: ResizeObserverCallback = React.useCallback(
@@ -249,10 +238,6 @@ const ScatterPlot = React.forwardRef(function ScatterPlot(
     <ErrorBoundary>
       <div ref={parentRef} className='ScatterPlot'>
         <div ref={visAreaRef} />
-        {yDimension.domainData[0] === '-' ||
-        xDimension.domainData[0] === '-' ? (
-          <Text className='ScatterPlot__emptyData'>No Data</Text>
-        ) : null}
       </div>
     </ErrorBoundary>
   );

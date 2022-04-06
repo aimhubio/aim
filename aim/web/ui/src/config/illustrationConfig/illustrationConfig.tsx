@@ -3,6 +3,7 @@ import emptySearch from 'assets/illustrations/emptySearch.svg';
 import exploreData from 'assets/illustrations/exploreData.svg';
 import wrongSearch from 'assets/illustrations/wrongSearch.svg';
 
+import { DOCUMENTATIONS } from 'config/references';
 import { RequestStatusEnum } from 'config/enums/requestStatusEnum';
 
 enum IllustrationsEnum {
@@ -39,7 +40,7 @@ const Illustration_Title_Config: { [key: string]: object | any } = {
         Look up
         <a
           className='qlAnchor'
-          href='https://aimstack.readthedocs.io/en/stable/quick_start/QL_basics.html'
+          href={DOCUMENTATIONS.EXPLORERS.RUNS.SEARCH}
           target='_blank'
           rel='noreferrer'
         >
@@ -61,7 +62,7 @@ const Illustration_Title_Config: { [key: string]: object | any } = {
         Look up
         <a
           className='qlAnchor'
-          href='https://aimstack.readthedocs.io/en/stable/quick_start/QL_basics.html'
+          href={DOCUMENTATIONS.EXPLORERS.METRICS.SEARCH}
           target='_blank'
           rel='noreferrer'
         >
@@ -85,7 +86,7 @@ const Illustration_Title_Config: { [key: string]: object | any } = {
         Look up
         <a
           className='qlAnchor'
-          href='https://aimstack.readthedocs.io/en/stable/quick_start/QL_basics.html'
+          href={DOCUMENTATIONS.EXPLORERS.PARAMS.SEARCH}
           target='_blank'
           rel='noreferrer'
         >
@@ -107,7 +108,7 @@ const Illustration_Title_Config: { [key: string]: object | any } = {
         Look up
         <a
           className='qlAnchor'
-          href='https://aimstack.readthedocs.io/en/stable/quick_start/QL_basics.html'
+          href={DOCUMENTATIONS.EXPLORERS.IMAGES.SEARCH}
           target='_blank'
           rel='noreferrer'
         >
@@ -132,7 +133,7 @@ const Illustration_Title_Config: { [key: string]: object | any } = {
         Look up
         <a
           className='qlAnchor'
-          href='https://aimstack.readthedocs.io/en/stable/quick_start/QL_basics.html'
+          href={DOCUMENTATIONS.EXPLORERS.SCATTERS.SEARCH}
           target='_blank'
           rel='noreferrer'
         >

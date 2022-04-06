@@ -86,6 +86,7 @@ import {
   IScatterAppModelState,
   ITrendlineOptions,
 } from 'types/services/models/scatter/scatterAppModel';
+import { IApiRequest } from 'types/services/services';
 
 import { aggregateGroupData } from 'utils/aggregateGroupData';
 import exceptionHandler from 'utils/app/exceptionHandler';
@@ -429,25 +430,26 @@ function createAppModel(appConfig: IAppInitialConfig) {
             advancedQuery: '',
           };
         }
-        return config;
+        //TODO solve the problem with keeping table config after switching from Scatters explore to Params explore. But the solution is temporal
+        return _.cloneDeep(config);
       }
       default:
         return {};
     }
   }
 
-  function setModelDefaultAppConfigData(): void {
+  function setModelDefaultAppConfigData(
+    recoverTableState: boolean = true,
+  ): void {
     setDefaultAppConfigData({
       config: getConfig(),
       appInitialConfig: appConfig,
       model,
+      recoverTableState,
     });
   }
 
-  function getModelAppConfigData(appId: string): {
-    call: () => Promise<void>;
-    abort: () => void;
-  } {
+  function getModelAppConfigData(appId: string): IApiRequest<void> {
     return getAppConfigData({ appId, appRequest, config: getConfig(), model });
   }
 
@@ -593,10 +595,7 @@ function createAppModel(appConfig: IAppInitialConfig) {
     function getMetricsData(
       shouldUrlUpdate?: boolean,
       shouldResetSelectedRows?: boolean,
-    ): {
-      call: () => Promise<void>;
-      abort: () => void;
-    } {
+    ): IApiRequest<void> {
       if (metricsRequestRef) {
         metricsRequestRef.abort();
       }
@@ -1587,7 +1586,11 @@ function createAppModel(appConfig: IAppInitialConfig) {
                 color: metricsCollection.color ?? metric.color,
                 dasharray: metricsCollection.dasharray ?? metric.color,
                 chartIndex: metricsCollection.chartIndex,
-                selectors: [metric.key, metric.key, metric.run.hash],
+                selectors: [
+                  metric.key,
+                  metric.key,
+                  encode({ runHash: metric.run.hash }),
+                ],
                 data: {
                   xValues: metric.data.xValues,
                   yValues: metric.data.yValues,
@@ -1853,13 +1856,7 @@ function createAppModel(appConfig: IAppInitialConfig) {
       liveUpdateInstance = null; //@TODO check is this need or not
     }
 
-    function archiveRuns(
-      ids: string[],
-      archived: boolean,
-    ): {
-      call: () => Promise<void>;
-      abort: () => void;
-    } {
+    function archiveRuns(ids: string[], archived: boolean): IApiRequest<void> {
       runsArchiveRef = runsService.archiveRuns(ids, archived);
       return {
         call: async () => {
@@ -1902,10 +1899,7 @@ function createAppModel(appConfig: IAppInitialConfig) {
       };
     }
 
-    function deleteRuns(ids: string[]): {
-      call: () => Promise<void>;
-      abort: () => void;
-    } {
+    function deleteRuns(ids: string[]): IApiRequest<void> {
       runsDeleteRef = runsService.deleteRuns(ids);
       return {
         call: async () => {
@@ -2325,7 +2319,6 @@ function createAppModel(appConfig: IAppInitialConfig) {
               }
               const { data, params, metricsColumns, selectedRows } =
                 processData(runsData);
-
               const tableData = getDataAsTableRows(
                 data,
                 metricsColumns,
@@ -2338,9 +2331,7 @@ function createAppModel(appConfig: IAppInitialConfig) {
                 model.getState()?.config?.table.hiddenColumns!,
               );
               updateTableData(tableData, tableColumns, configData);
-              limit = isInitial
-                ? modelState?.config.pagination.limit
-                : modelState?.config.pagination.limit + 45;
+
               model.setState({
                 data,
                 selectedRows: shouldResetSelectedRows
@@ -2358,9 +2349,6 @@ function createAppModel(appConfig: IAppInitialConfig) {
                     ...modelState?.config.pagination,
                     isLatest:
                       !isInitial && count < modelState?.config.pagination.limit,
-                    limit: isInitial
-                      ? modelState?.config.pagination.limit
-                      : modelState?.config.pagination.limit + 45,
                   },
                 },
               });
@@ -2376,9 +2364,11 @@ function createAppModel(appConfig: IAppInitialConfig) {
                 });
               }
             }
+            const rowDataLength = model.getState()?.tableData?.length || 0;
+            limit = rowDataLength >= 45 ? rowDataLength : 45;
             liveUpdateInstance?.start({
               q: query,
-              limit: limit || 0,
+              limit,
             });
           },
           abort: runsRequestRef.abort,
@@ -2491,7 +2481,7 @@ function createAppModel(appConfig: IAppInitialConfig) {
             run,
             isHidden: false,
             color: COLORS[paletteIndex][index % COLORS[paletteIndex].length],
-            key: run.hash,
+            key: encode({ runHash: run.hash }),
             dasharray: DASH_ARRAYS[0],
           });
         });
@@ -2852,6 +2842,7 @@ function createAppModel(appConfig: IAppInitialConfig) {
               },
             },
           });
+
           return getRunsData(false, false, false);
         }
       }
@@ -2999,8 +2990,8 @@ function createAppModel(appConfig: IAppInitialConfig) {
 
         if (!liveUpdateConfig?.enabled && config.enabled) {
           const query = configData?.select?.query || '';
-          const pagination = configData?.pagination;
-
+          const rowDataLength = model.getState()?.tableData?.length || 0;
+          const limit = rowDataLength >= 45 ? rowDataLength : 45;
           liveUpdateInstance = new LiveUpdateService(
             appName,
             updateData,
@@ -3008,7 +2999,7 @@ function createAppModel(appConfig: IAppInitialConfig) {
           );
           liveUpdateInstance.start({
             q: query,
-            limit: pagination.limit || 0,
+            limit,
           });
         } else {
           liveUpdateInstance?.clear();
@@ -4047,7 +4038,7 @@ function createAppModel(appConfig: IAppInitialConfig) {
             run,
             isHidden: configData!.table.hiddenMetrics!.includes(run.hash),
             color: COLORS[paletteIndex][index % COLORS[paletteIndex].length],
-            key: run.hash,
+            key: encode({ runHash: run.hash }),
             dasharray: DASH_ARRAYS[0],
           });
         });
@@ -4870,7 +4861,7 @@ function createAppModel(appConfig: IAppInitialConfig) {
                       });
                     } else {
                       const paramValue = getValue(run.run.params, label);
-                      values[i] = formatValue(paramValue, null);
+                      values[i] = formatValue(paramValue, '-');
                       if (values[i] !== null) {
                         if (typeof values[i] === 'string') {
                           dimension[i].scaleType = ScaleEnum.Point;
@@ -5177,7 +5168,7 @@ function createAppModel(appConfig: IAppInitialConfig) {
             run,
             isHidden: configData!.table.hiddenMetrics!.includes(run.hash),
             color: COLORS[paletteIndex][index % COLORS[paletteIndex].length],
-            key: run.hash,
+            key: encode({ runHash: run.hash }),
             dasharray: DASH_ARRAYS[0],
           });
         });
