@@ -191,6 +191,7 @@ class ModelMappedRun(IRun, metaclass=ModelMappedClassMeta):
         return [{
             "id": note.id,
             "name": note.name,
+            "content": note.content,
             "created_at": note.created_at,
             "updated_at": note.updated_at
         } for note in qs]

@@ -214,6 +214,11 @@ class FigureInfo(BaseModel):
     blob_uri: str
 
 
+class NoteIn(BaseModel):
+    name: str
+    content: str
+
+
 ImageList = List[ImageInfo]
 TextList = List[TextInfo]
 AudioList = List[AudioInfo]
