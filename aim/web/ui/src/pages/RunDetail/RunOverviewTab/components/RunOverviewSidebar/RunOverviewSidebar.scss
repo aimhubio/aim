@@ -2,8 +2,7 @@
 
 .RunOverviewSidebar {
   margin-top: $space-lg;
-  min-width: 20rem;
-  width: 20rem;
+  width: $run-overview-sidebar-width;
   overflow: hidden;
   padding: $space-xs;
   position: sticky;

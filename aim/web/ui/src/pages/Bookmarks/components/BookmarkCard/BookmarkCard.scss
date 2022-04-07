@@ -22,14 +22,38 @@
     }
   }
 
-  &__title__section {
+  &__description {
+    max-width: 100%;
+    word-break: break-all;
+  }
+
+  &__actionButtonsBox {
+    display: flex;
+    align-items: flex-start;
+    justify-content: center;
+  }
+
+  &__titleBox__section {
     display: flex;
     justify-content: space-between;
     &__container {
       display: flex;
-      i {
-        margin-right: 0.5rem;
+      max-width: calc(100% - 14rem);
+      margin-bottom: toRem(10px);
+
+      &__title {
+        width: 100%;
+        word-break: break-all;
+        cursor: default;
+      }
+
+      &__iconBox {
+        height: fit-content;
         margin-top: 0.125rem;
+        i {
+          margin-right: 0.5rem;
+          margin-top: 0.125rem;
+        }
       }
     }
     a {
@@ -58,5 +82,8 @@
 
   &__run__expression {
     margin-right: 2.8125rem;
+  }
+  &:last-child {
+    margin-bottom: 0;
   }
 }

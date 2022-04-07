@@ -1,6 +1,8 @@
 import os
 import click
 
+from aim.cli.utils import set_log_level
+from aim.cli.up.utils import build_db_upgrade_command, build_uvicorn_command
 from aim.web.configs import (
     AIM_ENV_MODE_KEY,
     AIM_TF_LOGS_PATH_KEY,
@@ -14,8 +16,6 @@ from aim.web.configs import (
 )
 from aim.sdk.repo import Repo, RepoStatus
 from aim.sdk.utils import clean_repo_path
-from aim.cli.up.utils import build_db_upgrade_command, build_uvicorn_command
-
 from aim.web.utils import exec_cmd
 from aim.web.utils import ShellCommandException
 
@@ -41,11 +41,20 @@ from aim.web.utils import ShellCommandException
 @click.option('--base-path', required=False, default='', type=str)
 @click.option('--force-init', is_flag=True, default=False)
 @click.option('--profiler', is_flag=True, default=False)
-def up(dev, host, port, workers, repo, tf_logs, ssl_keyfile, ssl_certfile, base_path, force_init, profiler):
+@click.option('--log-level', required=False, default='', type=str)
+def up(dev, host, port, workers,
+       repo, tf_logs,
+       ssl_keyfile, ssl_certfile,
+       base_path, force_init,
+       profiler, log_level):
     if dev:
         os.environ[AIM_ENV_MODE_KEY] = 'dev'
+        log_level = log_level or 'debug'
     else:
         os.environ[AIM_ENV_MODE_KEY] = 'prod'
+
+    if log_level:
+        set_log_level(log_level)
 
     if base_path:
         # process `base_path` as ui requires leading slash
@@ -131,7 +140,7 @@ def up(dev, host, port, workers, repo, tf_logs, ssl_keyfile, ssl_certfile, base_
         os.environ[AIM_PROFILER_KEY] = '1'
 
     try:
-        server_cmd = build_uvicorn_command(host, port, workers, ssl_keyfile, ssl_certfile)
+        server_cmd = build_uvicorn_command(host, port, workers, ssl_keyfile, ssl_certfile, log_level)
         exec_cmd(server_cmd, stream_output=True)
     except ShellCommandException:
         click.echo('Failed to run Aim UI. Please see the logs above for details.')
