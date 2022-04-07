@@ -20,6 +20,11 @@ jobs:
     if: ${{ github.event_name == 'schedule' || github.actor == 'gorarakelyan' || github.actor == 'alberttorosyan' || github.actor == 'roubkar' }}
     runs-on: ubuntu-latest
     steps:
+      - name: Checkout sources
+        uses: actions/checkout@v2
+        with:
+          ref: ${{ inputs.branch || github.ref }}
+
       - name: Use node v16
         uses: actions/setup-node@v2
         with:
@@ -39,14 +44,16 @@ jobs:
 
       - name: Build sdist
         if: matrix.python-version == '3.9'
+        working-directory: ./aim/web/ui
         run: |
-          python aim/web/ui/setup.py sdist
+          python setup.py sdist
 
       - name: Publish wheel
         env:
           PYPI_PASSWORD: ${{ secrets.PYPI_PASSWORD }}
+        working-directory: ./aim/web/ui
         run: |
-          python -m twine upload -u __token__ -p "${PYPI_PASSWORD}" aim/web/ui/dist/*
+          python -m twine upload -u __token__ -p "${PYPI_PASSWORD}" dist/*
 
   linux-dist:
     if: ${{ github.event_name == 'schedule' || github.actor == 'gorarakelyan' || github.actor == 'alberttorosyan' || github.actor == 'roubkar' }}
