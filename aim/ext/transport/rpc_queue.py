@@ -4,43 +4,12 @@ import queue
 import logging
 import threading
 
-from aim.ext.cleanup import AutoClean
-
 logger = logging.getLogger(__name__)
-
-
-class RpcQueueAutoClean(AutoClean):
-    PRIORITY = 100  # Priority of RpcQueueAutoClean should be higher than priority of RunAutoClean
-
-    def __init__(self, instance: 'RpcQueueWithRetry') -> None:
-        """
-        Prepare the `RpcQueueWithRetry` for automatic cleanup.
-
-        Args:
-            instance: The `RpcQueueWithRetry` instance to be cleaned up.
-        """
-        super().__init__(instance)
-        self._queue = None
-        self._shutdown = None
-        self._name = None
-
-    def _close(self):
-        """
-        Wait until rpc queue is empty
-        """
-        pending_task_count = self._queue.qsize()
-        if pending_task_count:
-            logger.warning(f'Processing {pending_task_count} pending tasks in the rpc queue \'{self._name}\'... '
-                           f'Please do not kill the process.')
-            self._queue.join()
-        logger.debug('No pending tasks left.')
-        self._shutdown = True
 
 
 class RpcQueueWithRetry(object):
     def __init__(self, name, max_queue_memory=0,
                  retry_count=0, retry_interval=0):
-        self._resources: RpcQueueAutoClean = None
 
         self.retry_count = retry_count or 1
         self.retry_interval = retry_interval
@@ -48,22 +17,13 @@ class RpcQueueWithRetry(object):
         self.max_memory_usage = max_queue_memory
         self.current_memory_usage = 0
 
-        self._resources = RpcQueueAutoClean(self)
-        self._resources._shutdown = False
-        self._resources._queue = queue.Queue()
-        self._resources._name = name
+        self._shutdown = False
+        self._queue = queue.Queue()
+        self._name = name
 
         self._thread = threading.Thread(target=self.worker)
         self._thread.daemon = True
         self._thread.start()
-
-    @property
-    def _queue(self):
-        return self._resources._queue
-
-    @property
-    def _shutdown(self):
-        return self._resources._shutdown
 
     def register_task(self, task_f, *args):
         if self._shutdown:
@@ -118,6 +78,15 @@ class RpcQueueWithRetry(object):
 
     def wait_for_finish(self):
         self._queue.join()
+
+    def stop(self):
+        pending_task_count = self._queue.qsize()
+        if pending_task_count:
+            logger.warning(f'Processing {pending_task_count} pending tasks in the rpc queue \'{self._name}\'... '
+                           f'Please do not kill the process.')
+            self._queue.join()
+        logger.debug('No pending tasks left.')
+        self._shutdown = True
 
     @staticmethod
     def _calculate_size(args):

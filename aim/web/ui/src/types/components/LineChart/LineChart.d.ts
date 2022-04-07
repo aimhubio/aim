@@ -24,7 +24,7 @@ export interface ILine {
     xValues: number[];
     yValues: number[];
   };
-  color: string;
+  color?: string;
   dasharray?: string;
   selectors?: string[];
   groupKey?: string;
