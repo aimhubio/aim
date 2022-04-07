@@ -39,7 +39,7 @@ jobs:
       - name: Setup python
         uses: actions/setup-python@v2
         with:
-          python-version: ${{ matrix.python-version }}
+          python-version: 3.9
           architecture: x64
 
       - name: Install dev dependencies
@@ -47,7 +47,6 @@ jobs:
           python -m pip install -r requirements.dev.txt
 
       - name: Build sdist
-        if: matrix.python-version == '3.9'
         working-directory: ./aim/web/ui
         run: |
           python setup.py sdist
