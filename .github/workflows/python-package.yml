@@ -58,6 +58,7 @@ jobs:
     if: ${{ github.event_name == 'schedule' || github.actor == 'gorarakelyan' || github.actor == 'alberttorosyan' || github.actor == 'roubkar' }}
     runs-on: ubuntu-latest
     name: Linux wheels build (using Docker)
+    needs: aim-ui-dist
     steps:
       - name: Install Docker & pull images
         run: |
@@ -119,6 +120,7 @@ jobs:
         python-version: [ '3.6', '3.7', '3.8', '3.9', '3.10' ]
         os: [ 'macos-latest' ]
     name: Python ${{ matrix.python-version }} on ${{ matrix.os }} build
+    needs: aim-ui-dist
     steps:
       - name: Checkout sources
         uses: actions/checkout@v2
