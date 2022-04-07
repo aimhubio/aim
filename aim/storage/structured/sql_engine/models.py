@@ -6,7 +6,6 @@ from sqlalchemy import (
     Integer,
     Table,
     Text,
-    UniqueConstraint,
 )
 from sqlalchemy.orm import relationship, backref, validates
 from sqlalchemy.ext.declarative import declarative_base
