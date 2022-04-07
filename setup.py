@@ -44,7 +44,7 @@ SETUP_REQUIRED = [
 
 # What packages are required for this module to be executed?
 REQUIRED = [
-    f'aim-webui=={__version__}',
+    f'aim-ui=={__version__}',
     'aimrecords==0.0.7',
     'aimrocks==0.1.0',
     'cachetools>=4.0.0',

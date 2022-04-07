@@ -16,7 +16,7 @@ on:
   workflow_dispatch:
 
 jobs:
-  aim-webui-dist:
+  aim-ui-dist:
     if: ${{ github.event_name == 'schedule' || github.actor == 'gorarakelyan' || github.actor == 'alberttorosyan' || github.actor == 'roubkar' }}
     runs-on: ubuntu-latest
     steps:

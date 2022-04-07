@@ -9,8 +9,8 @@ with open(version_file) as vf:
     __version__ = vf.read().strip()
 
 # Package meta-data.
-NAME = 'aim-webui'
-DESCRIPTION = 'Aim Web UI'
+NAME = 'aim-ui'
+DESCRIPTION = 'Aim UI'
 VERSION = __version__
 
 
