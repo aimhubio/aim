@@ -6,7 +6,6 @@ import {
   processImagesData,
   processTextsData,
   processPlotlyData,
-  reformatArrayQueries,
   processAudiosData,
 } from './util';
 

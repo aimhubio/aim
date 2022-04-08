@@ -18,6 +18,7 @@ function useModel<StateType>(model: IModel<StateType>): StateType | null {
       updateSubscription.unsubscribe();
       model.destroy();
     };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   return state;

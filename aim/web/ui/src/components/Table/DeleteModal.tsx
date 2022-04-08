@@ -98,6 +98,7 @@ function DeleteModal({
     return () => {
       runsDeleteRequest?.abort();
     };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   React.useEffect(() => {

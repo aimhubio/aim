@@ -1,4 +1,3 @@
-import React from 'react';
 import { Link as RouteLink } from 'react-router-dom';
 import { merge } from 'lodash-es';
 import _ from 'lodash';
@@ -168,7 +167,7 @@ function getParamsTableColumns(
       const systemMetric: boolean = isSystemMetric(key);
       const systemMetricsList: ITableColumn[] = [];
       const metricsList: ITableColumn[] = [];
-      Object.keys(metricsColumns[key]).map((metricContext) => {
+      Object.keys(metricsColumns[key]).forEach((metricContext) => {
         const columnKey = `${systemMetric ? key : `${key}_${metricContext}`}`;
         let column = {
           key: columnKey,

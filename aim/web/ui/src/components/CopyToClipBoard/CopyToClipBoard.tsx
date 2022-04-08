@@ -18,6 +18,7 @@ function CopyToClipboard({
         setShowCopiedIcon(false);
       }, showSuccessDelay);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [showCopiedIcon]);
 
   const onCopy = React.useCallback(() => {

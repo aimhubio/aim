@@ -69,6 +69,7 @@ function TraceVisualizationContainer({
     return () => {
       runTracesModel.destroy();
     };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [runHash, traceInfo, traceType]);
 
   const onInputChangeHandler = (

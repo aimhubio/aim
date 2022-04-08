@@ -187,18 +187,21 @@ function RunDetail(): React.FunctionComponentElement<React.ReactNode> {
       runsOfExperimentRequestRef?.abort();
       experimentRequestRef?.abort();
     };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [runHash]);
 
   React.useEffect(() => {
     if (runData?.experimentId) {
       getRunsOfExperiment(runData?.experimentId);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [runData?.experimentId]);
 
   React.useEffect(() => {
     if (pathname !== activeTab) {
       setActiveTab(pathname);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [pathname]);
 
   React.useEffect(() => {

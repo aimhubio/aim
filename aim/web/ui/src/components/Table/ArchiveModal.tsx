@@ -101,6 +101,7 @@ function ArchiveModal({
     return () => {
       runsArchiveRequest?.abort();
     };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   React.useEffect(() => {
@@ -141,6 +142,7 @@ function ArchiveModal({
     disabledTableRef.current?.updateData?.({
       newData: !archiveMode ? archivedList : unarchivedList,
     });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [selectedRows]);
 
   function onArchive() {

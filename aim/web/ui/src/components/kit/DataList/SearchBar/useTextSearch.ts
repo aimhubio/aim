@@ -32,6 +32,7 @@ function useTextSearch({
       setData(rawData);
       updateData(rawData, null);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [rawData]);
 
   function search(search: string, matchType: MatchTypes | null) {

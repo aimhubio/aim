@@ -75,7 +75,7 @@ function getRunsTableColumns(
       const systemMetric: boolean = isSystemMetric(key);
       const systemMetricsList: ITableColumn[] = [];
       const metricsList: ITableColumn[] = [];
-      Object.keys(metricsColumns[key]).map((metricContext) => {
+      Object.keys(metricsColumns[key]).forEach((metricContext) => {
         const columnKey = `${systemMetric ? key : `${key}_${metricContext}`}`;
         let column = {
           key: columnKey,
