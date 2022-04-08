@@ -53,8 +53,6 @@ def server(host, port, workers,
             return
     else:
         repo_inst = Repo.from_path(repo_path)
-        if repo_status == RepoStatus.PATCH_REQUIRED:
-            repo_inst.structured_db.run_upgrades()
 
     os.environ[AIM_SERVER_MOUNTED_REPO_PATH] = repo_inst.path
 
