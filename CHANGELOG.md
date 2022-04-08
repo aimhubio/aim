@@ -3,6 +3,8 @@
 ## Unreleased
 
 ### Enhancements:
+
+- Add `Notes Tab` in single run page (arsengit)
 - Add `--log-level` argument for aim up/server commands (mihran113)
 - Add notes backend api interface (devfox-se)
 
