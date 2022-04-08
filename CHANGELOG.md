@@ -27,6 +27,7 @@
 
 ### Enhancements:
 
+- Add Notes tab in single run page (arsengit)
 - Hugging Face adapter refactoring (mihran113)
 - Add run description columns to all run specific tables (VkoHov, mihran113)
 - Change images rendering optimization default value to smoother (VkoHov)
