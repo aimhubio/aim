@@ -1,4 +1,5 @@
 import { noop } from 'lodash';
+import _ from 'lodash';
 
 import { IRunBatch } from 'pages/RunDetail/types';
 
@@ -45,7 +46,7 @@ function getExperimentsData() {
       });
       model.setState({
         isExperimentsLoading: false,
-        experimentsData: data,
+        experimentsData: _.orderBy(data, ['name'], ['asc']),
       });
       return data;
     },

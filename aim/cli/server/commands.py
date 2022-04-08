@@ -1,6 +1,7 @@
 import os
 import click
 
+from aim.cli.utils import set_log_level
 from aim.sdk.repo import Repo, RepoStatus
 from aim.sdk.utils import clean_repo_path
 from aim.ext.transport.config import AIM_SERVER_DEFAULT_HOST, AIM_SERVER_DEFAULT_PORT, AIM_SERVER_MOUNTED_REPO_PATH
@@ -23,8 +24,14 @@ from aim.ext.transport.server import run_server
                                                                 file_okay=True,
                                                                 dir_okay=False,
                                                                 readable=True))
-def server(host, port, workers, repo, ssl_keyfile, ssl_certfile):
+@click.option('--log-level', required=False, default='', type=str)
+def server(host, port, workers,
+           repo, ssl_keyfile, ssl_certfile,
+           log_level):
     # TODO [MV, AT] remove code duplication with aim up cmd implementation
+    if log_level:
+        set_log_level(log_level)
+
     repo_path = clean_repo_path(repo) or Repo.default_repo_path()
     repo_status = Repo.check_repo_status(repo_path)
     if repo_status == RepoStatus.MISSING:

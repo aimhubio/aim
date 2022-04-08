@@ -59,6 +59,7 @@ class PropsView(BaseModel):
         name: str
 
     name: Optional[str] = None
+    description: Optional[str] = None
     experiment: Optional[Experiment] = None
     tags: Optional[List[Tag]] = []
     creation_time: float
@@ -211,6 +212,10 @@ class DistributionInfo(BaseModel):
 
 class FigureInfo(BaseModel):
     blob_uri: str
+
+
+class NoteIn(BaseModel):
+    content: str
 
 
 ImageList = List[ImageInfo]

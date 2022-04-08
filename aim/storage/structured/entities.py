@@ -6,6 +6,7 @@ T = TypeVar('T')
 RunCollection = Collection['Run']
 ExperimentCollection = Collection['Experiment']
 TagCollection = Collection['Tag']
+NoteCollection = Collection['Note']
 
 
 class StructuredObject(ABC):
@@ -173,6 +174,28 @@ class Tag(StructuredObject, Searchable['Tag']):
     @property
     @abstractmethod
     def runs(self) -> RunCollection:
+        ...
+
+
+class Note(StructuredObject, Searchable['Note']):
+    @property
+    @abstractmethod
+    def id(self) -> int:
+        ...
+
+    @property
+    @abstractmethod
+    def content(self) -> str:
+        ...
+
+    @content.setter
+    @abstractmethod
+    def content(self, value: str):
+        ...
+
+    @property
+    @abstractmethod
+    def run(self) -> int:
         ...
 
 

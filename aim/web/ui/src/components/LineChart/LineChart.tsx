@@ -1,4 +1,5 @@
 import React from 'react';
+import * as d3 from 'd3';
 
 import ErrorBoundary from 'components/ErrorBoundary/ErrorBoundary';
 
@@ -17,10 +18,11 @@ import {
   drawAxes,
   drawLines,
   processLineChartData,
-  getAxisScale,
   drawBrush,
   drawHoverAttributes,
 } from 'utils/d3';
+
+import './LineChart.scss';
 
 const LineChart = React.forwardRef(function LineChart(
   props: ILineChartProps,
@@ -84,11 +86,6 @@ const LineChart = React.forwardRef(function LineChart(
   const rafIDRef = React.useRef<number>();
 
   function draw() {
-    const { processedData, min, max } = processLineChartData(
-      data,
-      ignoreOutliers,
-    );
-
     drawArea({
       index,
       nameKey,
@@ -105,18 +102,33 @@ const LineChart = React.forwardRef(function LineChart(
       chartTitle,
     });
 
-    const { width, height, margin } = visBoxRef.current;
+    const {
+      processedData,
+      processedAggrData,
+      min,
+      max,
+      xScale,
+      yScale,
+      allXValues,
+      allYValues,
+    } = processLineChartData({
+      data,
+      ignoreOutliers,
+      visBoxRef,
+      axesScaleType,
+      aggregatedData,
+      aggregationConfig,
+    });
 
-    const xScale = getAxisScale({
-      domainData: [min.x, max.x],
-      rangeData: [0, width - margin.left - margin.right],
-      scaleType: axesScaleType.xAxis,
-    });
-    const yScale = getAxisScale({
-      domainData: [min.y, max.y],
-      rangeData: [height - margin.top - margin.bottom, 0],
-      scaleType: axesScaleType.yAxis,
-    });
+    if (!allXValues.length || !allYValues.length) {
+      if (visAreaRef.current && !readOnly) {
+        d3.select(visAreaRef.current)
+          .append('text')
+          .attr('class', 'LineChart__emptyData')
+          .text('No Data');
+      }
+      return;
+    }
 
     attributesRef.current.xScale = xScale;
     attributesRef.current.yScale = yScale;
@@ -128,9 +140,7 @@ const LineChart = React.forwardRef(function LineChart(
       plotBoxRef,
       xScale,
       yScale,
-      width,
-      height,
-      margin,
+      visBoxRef,
       alignmentConfig,
       humanizerConfigRef,
       drawBgTickLines: { y: true, x: false },
@@ -138,7 +148,7 @@ const LineChart = React.forwardRef(function LineChart(
 
     drawLines({
       index,
-      data: processedData,
+      processedData,
       nameKey,
       linesNodeRef,
       linesRef,
@@ -147,14 +157,14 @@ const LineChart = React.forwardRef(function LineChart(
       yScale,
       highlightMode,
       aggregationConfig,
-      aggregatedData,
+      processedAggrData,
     });
 
     if (!readOnly) {
       drawHoverAttributes({
         index,
         nameKey,
-        data: processedData,
+        data,
         axesScaleType,
         highlightMode,
         syncHoverState,
@@ -170,7 +180,6 @@ const LineChart = React.forwardRef(function LineChart(
         linesNodeRef,
         highlightedNodeRef,
         aggregationConfig,
-        humanizerConfigRef,
         alignmentConfig,
       });
     }
@@ -279,5 +288,7 @@ const LineChart = React.forwardRef(function LineChart(
     </ErrorBoundary>
   );
 });
+
+LineChart.displayName = 'LineChart';
 
 export default React.memo(LineChart);

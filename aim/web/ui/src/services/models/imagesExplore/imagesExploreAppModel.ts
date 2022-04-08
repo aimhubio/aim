@@ -12,7 +12,7 @@ import { RequestStatusEnum } from 'config/enums/requestStatusEnum';
 import COLORS from 'config/colors/colors';
 import { CONTROLS_DEFAULT_CONFIG } from 'config/controls/controlsDefaultConfig';
 import { ANALYTICS_EVENT_KEYS } from 'config/analytics/analyticsKeysMap';
-import { DATE_EXPORTING_FORMAT } from 'config/dates/dates';
+import { DATE_EXPORTING_FORMAT, TABLE_DATE_FORMAT } from 'config/dates/dates';
 
 import {
   getImagesExploreTableColumns,
@@ -53,6 +53,7 @@ import {
 } from 'types/services/models/explorer/createAppModel';
 import { IProjectParamsMetrics } from 'types/services/models/projects/projectsModel';
 
+import getAppConfigDataMethod from 'utils/app/getAppConfigData';
 import onRowSelectAction from 'utils/app/onRowSelect';
 import { decode, encode } from 'utils/encoder/encoder';
 import getObjectPaths from 'utils/getObjectPaths';
@@ -92,6 +93,7 @@ const model = createModel<Partial<IImagesExploreAppModelState>>({
     options: undefined,
     suggestions: [],
   },
+  config: getConfig(),
 });
 
 let tooltipData: ITooltipData = {};
@@ -191,26 +193,46 @@ function initialize(appId: string): void {
     });
 }
 
-function setDefaultAppConfigData() {
+function setDefaultAppConfigData(recoverTableState: boolean = true) {
+  const defaultConfig: Partial<IImagesExploreAppConfig> = {};
+
   const grouping: IImagesExploreAppConfig['grouping'] =
-    getStateFromUrl('grouping') || getConfig().grouping;
+    getStateFromUrl('grouping') ?? {};
+
+  defaultConfig.grouping = grouping;
+
   const compatibleSelectConfig = getCompatibleSelectConfig(
     ['images'],
     getStateFromUrl('select'),
   );
-  const select: ISelectConfig = compatibleSelectConfig || getConfig().select;
+  const select: ISelectConfig = compatibleSelectConfig ?? {};
+
+  defaultConfig.select = select;
+
   const images: IImagesExploreAppConfig['images'] =
-    getStateFromUrl('images') || getConfig().images;
-  const tableConfigHash = getItem('imagesExploreTable');
-  const table = tableConfigHash
-    ? JSON.parse(decode(tableConfigHash))
-    : getConfig().table;
-  const configData = _.merge(getConfig(), {
-    grouping,
-    select,
-    table,
-    images,
-  });
+    getStateFromUrl('images') ?? {};
+
+  defaultConfig.images = images;
+
+  if (recoverTableState) {
+    const tableConfigHash = getItem('imagesExploreTable');
+    const table = tableConfigHash
+      ? JSON.parse(decode(tableConfigHash))
+      : getConfig().table;
+
+    defaultConfig.table = table;
+  }
+
+  const configData = _.mergeWith(
+    {},
+    model.getState().config,
+    defaultConfig,
+    (objValue, srcValue) => {
+      if (_.isArray(objValue)) {
+        return srcValue;
+      }
+    },
+  );
 
   model.setState({ config: configData });
 }
@@ -223,33 +245,12 @@ let imagesRequestRef: {
 };
 
 function getAppConfigData(appId: string) {
-  if (appRequestRef) {
-    appRequestRef.abort();
-  }
-  appRequestRef = appsService.fetchApp(appId);
-  return {
-    call: async () => {
-      const appData = await appRequestRef.call((detail: any) => {
-        exceptionHandler({ detail, model });
-      });
-      let select = appData?.state?.select;
-      if (select) {
-        const compatibleSelectConfig = getCompatibleSelectConfig(
-          ['images'],
-          select,
-        );
-        appData.state = {
-          ...appData.state,
-          select: {
-            ...compatibleSelectConfig,
-          },
-        };
-      }
-      const configData: any = _.merge(getConfig(), appData.state);
-      model.setState({ config: configData });
-    },
-    abort: appRequestRef.abort,
-  };
+  return getAppConfigDataMethod({
+    appId,
+    appRequest: appRequestRef,
+    config: getConfig(),
+    model,
+  });
 }
 
 function resetModelState() {
@@ -391,6 +392,7 @@ function getImagesData(
     abort: imagesRequestRef.abort,
   };
 }
+
 function getSelectFormOptions(projectsData: IProjectParamsMetrics) {
   let data: ISelectOption[] = [];
   let index: number = 0;
@@ -429,6 +431,7 @@ function getSelectFormOptions(projectsData: IProjectParamsMetrics) {
     alphabeticalSortComparator<ISelectOption>({ orderBy: 'label' }),
   );
 }
+
 function processData(data: any[]): {
   data: IMetricsCollection<IImageData>[];
   params: string[];
@@ -801,6 +804,11 @@ function getGroupingSelectOptions({
   return [
     {
       group: 'run',
+      label: 'run.name',
+      value: 'run.props.name',
+    },
+    {
+      group: 'run',
       label: 'run.experiment',
       value: 'run.props.experiment.name',
     },
@@ -995,7 +1003,7 @@ function updateURL(
 
   const appId: string = window.location.pathname.split('/')[2];
   if (!appId) {
-    setItem('imagesExploreUrl', url);
+    setItem('imagesUrl', url);
   }
 
   window.history.pushState(null, '', url);
@@ -1265,6 +1273,8 @@ function getDataAsTableRows(
         ),
         experiment: '',
         run: '',
+        date: '',
+        description: '',
         metric: '',
         context: [],
         children: [],
@@ -1292,8 +1302,10 @@ function getDataAsTableRows(
           color: metricsCollection.color ?? metric.color,
           dasharray: metricsCollection.dasharray ?? metric.dasharray,
           experiment: metric.run.props.experiment?.name ?? 'default',
-          run: moment(metric.run.props.creation_time * 1000).format(
-            'HH:mm:ss · D MMM, YY',
+          run: metric.run.props?.name ?? '-',
+          description: metric.run.props?.description ?? '-',
+          date: moment(metric.run.props.creation_time * 1000).format(
+            TABLE_DATE_FORMAT,
           ),
           name: metric.images_name,
           context: Object.entries(metric.context).map((entry) =>
