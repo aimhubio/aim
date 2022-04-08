@@ -8,6 +8,7 @@
 
 ### Fixes:
 - Fix compatibility with pytorch-lightning v1.6.0 (mihran113)
+- Fix `PATH` related issues for `alembic` and `uvicorn` (mihran113)
 
 ## 3.8.1 Apr 6, 2022
 
