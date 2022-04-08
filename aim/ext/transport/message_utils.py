@@ -84,6 +84,9 @@ def build_exception(exception: Exception):
     )
 
 
+@CustomObject.alias('aim.resource')
 class ResourceObject(CustomObject):
+    AIM_NAME = 'aim.resource'
+
     def __init__(self, handler):
         self.storage['handler'] = handler

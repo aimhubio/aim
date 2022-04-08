@@ -1,5 +1,6 @@
 from fastapi import Depends, HTTPException, Query
 from fastapi.responses import JSONResponse, StreamingResponse
+from starlette import status
 
 from aim.web.api.runs.object_views import (
     ImageApiConfig,
@@ -12,11 +13,14 @@ from aim.web.api.utils import APIRouter  # wrapper for fastapi.APIRouter
 from typing import Optional, Tuple
 
 from aim.web.api.runs.utils import (
+    checked_query,
     collect_requested_metric_traces,
     custom_aligned_metrics_streamer,
+    get_project_repo,
+    get_run_or_404,
     get_run_props,
     metric_search_result_streamer,
-    run_search_result_streamer, get_project_repo, checked_query,
+    run_search_result_streamer,
 )
 from aim.web.api.runs.pydantic_models import (
     MetricAlignApiIn,
@@ -34,10 +38,14 @@ from aim.web.api.runs.pydantic_models import (
     StructuredRunAddTagOut,
     StructuredRunRemoveTagOut,
     StructuredRunsArchivedOut,
+    NoteIn,
 )
 from aim.web.api.utils import object_factory
 
 runs_router = APIRouter()
+
+# static msgs
+NOTE_NOT_FOUND = 'Note with id {id} is not found in this run.'
 
 
 @runs_router.get('/search/run/', response_model=RunSearchApiOut,
@@ -83,9 +91,7 @@ async def run_metric_search_api(q: Optional[str] = '',
 @runs_router.get('/{run_id}/info/', response_model=RunInfoOut)
 async def run_params_api(run_id: str, sequence: Optional[Tuple[str, ...]] = Query(())):
     repo = get_project_repo()
-    run = repo.get_run(run_id)
-    if not run:
-        raise HTTPException(status_code=404)
+    run = get_run_or_404(run_id, repo=repo)
 
     if sequence != ():
         try:
@@ -105,11 +111,7 @@ async def run_params_api(run_id: str, sequence: Optional[Tuple[str, ...]] = Quer
 
 @runs_router.post('/{run_id}/metric/get-batch/', response_model=RunMetricsBatchApiOut)
 async def run_metric_batch_api(run_id: str, requested_traces: RunTracesBatchApiIn):
-    repo = get_project_repo()
-    run = repo.get_run(run_id)
-    if not run:
-        raise HTTPException(status_code=404)
-
+    run = get_run_or_404(run_id)
     traces_data = collect_requested_metric_traces(run, requested_traces)
 
     return JSONResponse(traces_data)
@@ -218,6 +220,87 @@ async def archive_runs_batch_api(runs_batch: RunsBatchIn, archive: Optional[bool
     return {
         'status': 'OK'
     }
+
+
+# Note APIs
+
+@runs_router.get('/{run_id}/note/')
+def list_note_api(run_id, factory=Depends(object_factory)):
+    with factory:
+        run = factory.find_run(run_id)
+        if not run:
+            raise HTTPException(status_code=404)
+
+        notes = run.notes
+
+    return notes
+
+
+@runs_router.post('/{run_id}/note/', status_code=status.HTTP_201_CREATED)
+def create_note_api(run_id, note_in: NoteIn, factory=Depends(object_factory)):
+    with factory:
+        run = factory.find_run(run_id)
+        if not run:
+            raise HTTPException(status_code=404)
+
+        note_content = note_in.content.strip()
+        note = run.add_note(note_content)
+
+    return {
+        'id': note.id,
+        'created_at': note.created_at,
+    }
+
+
+@runs_router.get('/{run_id}/note/{_id}')
+def get_note_api(run_id, _id: int, factory=Depends(object_factory)):
+    with factory:
+        run = factory.find_run(run_id)
+        if not run:
+            raise HTTPException(status_code=404)
+
+        note = run.find_note(_id=_id)
+        if not note:
+            raise HTTPException(status_code=404, detail=NOTE_NOT_FOUND.format(id=_id))
+
+    return {
+        'id': note.id,
+        'content': note.content,
+    }
+
+
+@runs_router.put('/{run_id}/note/{_id}')
+def update_note_api(run_id, _id: int, note_in: NoteIn, factory=Depends(object_factory)):
+    with factory:
+        run = factory.find_run(run_id)
+        if not run:
+            raise HTTPException(status_code=404)
+
+        note = run.find_note(_id=_id)
+        if not note:
+            raise HTTPException(status_code=404, detail=NOTE_NOT_FOUND.format(id=_id))
+
+        content = note_in.content.strip()
+        updated_note = run.update_note(_id=_id, content=content)
+
+    return {
+        'id': updated_note.id,
+        'content': updated_note.content,
+    }
+
+
+@runs_router.delete('/{run_id}/note/{_id}', status_code=status.HTTP_204_NO_CONTENT)
+def delete_note_api(run_id, _id: int, factory=Depends(object_factory)):
+    with factory:
+        run = factory.find_run(run_id)
+        if not run:
+            raise HTTPException(status_code=404)
+
+        note = run.find_note(_id=_id)
+        if not note:
+            raise HTTPException(status_code=404, detail=NOTE_NOT_FOUND.format(id=_id))
+
+        run.remove_note(_id)
 
 
 def add_api_routes():

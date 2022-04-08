@@ -4,15 +4,22 @@ from typing import Collection, Union, List, Optional
 from sqlalchemy.orm import joinedload
 
 from aim.storage.types import SafeNone
-from aim.storage.structured.entities import \
-    Run as IRun, \
-    Experiment as IExperiment, \
-    Tag as ITag,\
-    RunCollection, TagCollection
-from aim.storage.structured.sql_engine.models import \
-    Run as RunModel,\
-    Experiment as ExperimentModel,\
-    Tag as TagModel
+from aim.storage.structured.entities import (
+    Run as IRun,
+    Experiment as IExperiment,
+    Tag as ITag,
+    Note as INote,
+    RunCollection,
+    TagCollection,
+    NoteCollection
+)
+from aim.storage.structured.sql_engine.models import (
+    Run as RunModel,
+    Experiment as ExperimentModel,
+    Tag as TagModel,
+    Note as NoteModel,
+    NoteAuditLog as NoteAuditLogModel
+)
 from aim.storage.structured.sql_engine.utils import ModelMappedClassMeta, ModelMappedCollection
 from aim.storage.structured.sql_engine.utils import ModelMappedProperty as Property
 
@@ -39,6 +46,7 @@ class ModelMappedRun(IRun, metaclass=ModelMappedClassMeta):
         Property('hash', with_setter=False),
         Property('experiment', autogenerate=False),
         Property('tags', autogenerate=False),
+        Property('notes', autogenerate=False),
     ]
 
     def __init__(self, model: RunModel, session):
@@ -174,6 +182,84 @@ class ModelMappedRun(IRun, metaclass=ModelMappedClassMeta):
         session.add(self._model)
         session.flush()
         return tag_removed
+
+    @property
+    def notes_obj(self) -> NoteCollection:
+        if self._model:
+            return ModelMappedNoteCollection(self._session,
+                                             collection=[n for n in self._model.notes])
+        else:
+            return []
+
+    @property
+    def notes(self) -> List[dict]:
+        session = self._session
+
+        qs = session.query(NoteModel).filter(
+            NoteModel.run_id == self._model.id,
+        ).order_by(NoteModel.updated_at.desc())
+
+        return [{
+            "id": note.id,
+            "content": note.content,
+            "created_at": note.created_at,
+            "updated_at": note.updated_at
+        } for note in qs]
+
+    def find_note(self, _id: int):
+        session = self._session
+
+        qs = session.query(NoteModel).filter(
+            NoteModel.run_id == self._model.id,
+            NoteModel.id == _id
+        )
+        return qs.first()
+
+    def add_note(self, content: str):
+        session = self._session
+
+        note = NoteModel(content)
+        session.add(note)
+        self._model.notes.append(note)
+
+        audit_log = NoteAuditLogModel(action="Created", before=None, after=content)
+        session.add(audit_log)
+        note.audit_logs.append(audit_log)
+
+        session.add(self._model)
+        session.flush()
+
+        return note
+
+    def update_note(self, _id: int, content):
+        session = self._session
+
+        note = self.find_note(_id=_id)
+
+        before = note.content
+        note.content = content
+
+        audit_log = NoteAuditLogModel(action="Updated", before=before, after=content)
+        session.add(audit_log)
+        note.audit_logs.append(audit_log)
+
+        session.add(note)
+        session.flush()
+
+        return note
+
+    def remove_note(self, _id: int):
+        session = self._session
+
+        audit_log = NoteAuditLogModel(action="Deleted", before=None, after=None)
+        audit_log.note_id = _id
+        session.add(audit_log)
+
+        session.query(NoteModel).filter(
+            NoteModel.run_id == self._model.id,
+            NoteModel.id == _id,
+        ).delete()
+        session.flush()
 
 
 class ModelMappedExperiment(IExperiment, metaclass=ModelMappedClassMeta):
@@ -347,6 +433,67 @@ class ModelMappedTag(ITag, metaclass=ModelMappedClassMeta):
         return self.runs
 
 
+class ModelMappedNote(INote, metaclass=ModelMappedClassMeta):
+    __model__ = NoteModel
+    __mapped_properties__ = [
+        Property('id', with_setter=False),
+        Property('content'),
+        Property('run', with_setter=False),
+        Property('created_at', with_setter=False),
+        Property('updated_at', with_setter=False),
+    ]
+
+    def __init__(self, model_inst: NoteModel, session):
+        self._model = model_inst
+        self._id = model_inst.id
+        self._session = session
+
+    def __repr__(self) -> str:
+        return f'<ModelMappedNote id={self._id}>'
+
+    @classmethod
+    def from_model(cls, model_obj, session) -> 'ModelMappedNote':
+        return ModelMappedNote(model_obj, session)
+
+    @classmethod
+    def find(cls, _id: str, **kwargs) -> Union[INote, SafeNone]:
+        session = kwargs.get('session')
+        if not session:
+            return SafeNone()
+        model_obj = session.query(NoteModel).options([
+            joinedload(NoteModel.run),
+        ]).filter(NoteModel.id == _id).first()
+        if model_obj:
+            return ModelMappedNote(model_obj, session)
+        return SafeNone()
+
+    @classmethod
+    def all(cls, **kwargs) -> Collection[INote]:
+        session = kwargs.get('session')
+        if not session:
+            return []
+        q = session.query(NoteModel).options([
+            joinedload(NoteModel.run),
+        ]).order_by(NoteModel.updated_at.desc())
+        return ModelMappedTagCollection(session, query=q)
+
+    @classmethod
+    def search(cls, term: str, **kwargs) -> Collection[INote]:
+        raise NotImplementedError
+
+    @classmethod
+    def delete(cls, _id: str, **kwargs) -> bool:
+        session = kwargs.get('session')
+        if not session:
+            return False
+        model_obj = session.query(NoteModel).filter(NoteModel.id == _id).first()
+        if model_obj:
+            session.delete(model_obj)
+            return True
+        return False
+
+
 ModelMappedRunCollection = ModelMappedCollection[ModelMappedRun]
 ModelMappedExperimentCollection = ModelMappedCollection[ModelMappedExperiment]
 ModelMappedTagCollection = ModelMappedCollection[ModelMappedTag]
+ModelMappedNoteCollection = ModelMappedCollection[ModelMappedNote]

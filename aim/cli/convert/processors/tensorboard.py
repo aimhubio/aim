@@ -6,14 +6,14 @@ import click
 from aim import Image, Run
 
 
-def parse_tf_events(tf_logs, repo_inst, flat=False):
+def parse_tb_logs(tb_logs, repo_inst, flat=False):
     """
-    This function scans and collects records from TF event files.
+    This function scans and collects records from TB log files.
 
-    Creates and uses cache file "tf_logs_cache" in the repo dir
+    Creates and uses cache file "tb_logs_cache" in the repo dir
     to track previously processed files and values
 
-    For more info please refer to this guide: docs/source/guides/integrations/basic_aim_tensorflow_event_conversion.md
+    For more info please refer to our integration guides.
     """
 
     try:
@@ -22,19 +22,19 @@ def parse_tf_events(tf_logs, repo_inst, flat=False):
         from tensorflow.python.summary.summary_iterator import summary_iterator
     except ImportError:
         click.echo(
-            'Could not process TF events - failed to import tensorflow module.', err=True
+            'Could not process TensorBoard logs - failed to import tensorflow module.', err=True
         )
         return
 
     supported_plugins = ('images', 'scalars')
     unsupported_plugin_noticed = False
-    tf_logs_cache_path = os.path.join(repo_inst.path, 'tf_logs_cache')
+    tb_logs_cache_path = os.path.join(repo_inst.path, 'tb_logs_cache')
 
     try:
-        with open(tf_logs_cache_path) as FS:
-            tf_logs_cache = json.load(FS)
+        with open(tb_logs_cache_path) as FS:
+            tb_logs_cache = json.load(FS)
     except Exception:
-        tf_logs_cache = {}
+        tb_logs_cache = {}
 
     def get_parent(current_path, level=0):
         # level 0 is the direct parent directory
@@ -44,9 +44,9 @@ def parse_tf_events(tf_logs, repo_inst, flat=False):
             return current_path
         return get_parent(os.path.dirname(current_path), level - 1)
 
-    tf_logs = os.path.abspath(tf_logs)
+    tb_logs = os.path.abspath(tb_logs)
     run_dir_candidates = set()
-    for root, dirs, files in os.walk(tf_logs):
+    for root, dirs, files in os.walk(tb_logs):
         for file in files:
             if not file.startswith('events.out.tfevents'):
                 continue
@@ -54,15 +54,15 @@ def parse_tf_events(tf_logs, repo_inst, flat=False):
             file_path = os.path.abspath(os.path.join(root, file))
             run_dir = get_parent(file_path)
 
-            if not run_dir.startswith(tf_logs):
-                # it's outside tf_logs
+            if not run_dir.startswith(tb_logs):
+                # it's outside tb_logs
                 continue
 
             run_dir_candidates.add(run_dir)
 
     def get_level(current_path):
         level = -1
-        while current_path.startswith(tf_logs):
+        while current_path.startswith(tb_logs):
             current_path, _ = os.path.split(current_path)
             level += 1
         return level
@@ -107,7 +107,7 @@ def parse_tf_events(tf_logs, repo_inst, flat=False):
             click.echo(f'{c}: {r}', err=True)
 
     for path in run_dir_candidates_filtered:
-        click.echo(f'Converting TensorFlow events in {path}')
+        click.echo(f'Converting TensorBoard logs in {path}')
 
         events = {}
         for root, dirs, files in os.walk(path):
@@ -125,10 +125,10 @@ def parse_tf_events(tf_logs, repo_inst, flat=False):
                     }
                 }
 
-        if path not in tf_logs_cache:
-            tf_logs_cache[path] = {}
+        if path not in tb_logs_cache:
+            tb_logs_cache[path] = {}
 
-        run_cache = tf_logs_cache[path]
+        run_cache = tb_logs_cache[path]
         if run_cache:
             run = Run(
                 repo=repo_inst,
@@ -140,33 +140,33 @@ def parse_tf_events(tf_logs, repo_inst, flat=False):
                 repo=repo_inst,
                 system_tracking_interval=None,
             )
-            run['tf_logdir'] = path
+            run['tensorboard_logdir'] = path
             run_cache.update({
                 'run_hash': run.hash,
                 'events': {},
             })
-        run_tf_events = run_cache['events']
+        run_tb_events = run_cache['events']
 
         events_to_process = []
         for event in events:
             last_modified_at = os.path.getmtime(event)
             try:
-                assert last_modified_at == run_tf_events[event]['last_modified_at']
+                assert last_modified_at == run_tb_events[event]['last_modified_at']
             except (KeyError, AssertionError):
                 # Something has changed or hasn't been processed before
                 events_to_process.append(event)
                 try:
-                    run_tf_events[event]['last_modified_at'] = last_modified_at
+                    run_tb_events[event]['last_modified_at'] = last_modified_at
                 except KeyError:
                     # Completely new event
-                    run_tf_events[event] = {
+                    run_tb_events[event] = {
                         'last_modified_at': last_modified_at,
                         'values': {},
                     }
 
         for count, event_file in enumerate(events_to_process, start=1):
-            click.echo(f'({count}/{len(events_to_process)}) Parsing TF event: {os.path.basename(event_file)}')
-            run_tf_event = run_tf_events[event_file]
+            click.echo(f'({count}/{len(events_to_process)}) Parsing log: {os.path.basename(event_file)}')
+            run_tb_log = run_tb_events[event_file]
             event_context = events[event_file]['context']
             for event in summary_iterator(event_file):
                 timestamp = event.wall_time
@@ -175,15 +175,15 @@ def parse_tf_events(tf_logs, repo_inst, flat=False):
                     tag = value.tag
                     plugin_name = value.metadata.plugin_data.plugin_name
                     value_id = f'{tag}_{plugin_name}'
-                    if value_id in run_tf_event['values']:
-                        if run_tf_event['values'][value_id]['timestamp'] >= timestamp:
+                    if value_id in run_tb_log['values']:
+                        if run_tb_log['values'][value_id]['timestamp'] >= timestamp:
                             # prevent previously tracked data from re-tracking upon file update
                             continue
 
                     if plugin_name not in supported_plugins:
                         if not unsupported_plugin_noticed:
                             click.echo(
-                                'Found unsupported plugin type in the TF events. '
+                                'Found unsupported plugin type in the log file. '
                                 'Data for these wont be processed. '
                                 'Supported plugin types are: {}'.format(', '.join(supported_plugins)),
                                 err=True
@@ -192,9 +192,9 @@ def parse_tf_events(tf_logs, repo_inst, flat=False):
                         continue
 
                     if plugin_name == 'images':
-                        tf_tensors = value.tensor.string_val[2:]
+                        tensor = value.tensor.string_val[2:]
                         track_val = [
-                            Image(tf.image.decode_image(tf_tensor).numpy()) for tf_tensor in tf_tensors
+                            Image(tf.image.decode_image(t).numpy()) for t in tensor
                         ]
                         if len(track_val) == 1:
                             track_val = track_val[0]
@@ -203,14 +203,14 @@ def parse_tf_events(tf_logs, repo_inst, flat=False):
                         decoded = tf.io.decode_raw(value.tensor.tensor_content, d_type)
                         track_val = float(decoded)
 
-                    run_tf_event['values'][value_id] = {
+                    run_tb_log['values'][value_id] = {
                         'step': step,
                         'timestamp': timestamp
                     }
                     run._track_impl(track_val, timestamp, tag, step, context=event_context)
 
     # refresh cache
-    with open(tf_logs_cache_path, 'w') as FS:
-        json.dump(tf_logs_cache, FS)
+    with open(tb_logs_cache_path, 'w') as FS:
+        json.dump(tb_logs_cache, FS)
 
-    click.echo('TF logs conversion complete!')
+    click.echo('TensorBoard logs conversion complete!')

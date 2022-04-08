@@ -1,7 +1,11 @@
 @use 'src/styles/abstracts' as *;
 
 .Bookmarks {
-  height: 100vh;
+  height: 100%;
+  &__appBar {
+    position: fixed;
+    width: 100%;
+  }
   &__title {
     margin: 0.5em 0;
     padding: 0;
@@ -9,6 +13,6 @@
   }
 
   &__list {
-    padding: 1.5em;
+    padding: 4rem 1.5em 1.5em;
   }
 }

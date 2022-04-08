@@ -92,6 +92,10 @@ class RunAutoClean(AutoClean['Run']):
             logger.debug('Stopping resource tracker')
             self._system_resource_tracker.stop()
 
+    def finalize_rpc_queue(self):
+        if self.repo.is_remote_repo:
+            self.repo._client.get_queue(self.hash).stop()
+
     def _close(self) -> None:
         """
         Close the `Run` instance resources and trigger indexing.
@@ -101,6 +105,7 @@ class RunAutoClean(AutoClean['Run']):
             return
         self.finalize_system_tracker()
         self.finalize_run()
+        self.finalize_rpc_queue()
 
 
 # TODO: [AT] generate automatically based on ModelMappedRun
