@@ -155,7 +155,7 @@ The conversion process will iterate over all your Experiments and create a disti
 experiment. If you want to process only a single experiment, you can provide the experiment id or name to the conversion
 command:
 
-```commandline
+```bash
 $ aim convert mlflow --tracking_uri 'file:///Users/aim_user/mlruns' --experiment 0
 ```
 

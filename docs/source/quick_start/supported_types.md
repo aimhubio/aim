@@ -317,3 +317,48 @@ path_to_dvc_repo = '.'
 run['dvc_files'] = DvcData(path_to_dvc_repo)
 ```
 
+### Log fies and directories
+
+Aim provides two types of custom Objects which can be used to log any data during training run.
+These types are: `File` and `Directory`. `File` and `Directory` objects can be used to log model checkpoints,
+dataset versions and large data blobs which normally cannot be stored as a regular run parameter.
+Below is an example of saving PyTorch model and adding it as an artifact to the aim `Run`.
+
+```python
+import torch
+import torchvision.models as models
+ 
+from aim import Run, File
+
+aim_run = Run()
+
+model = models.squeezenet1_0(pretrained=True)
+torch.save(model.state_dict(), 'model_weights.pth')
+
+aim_run['artifacts', 'torch_model'] = File('model_weights.pth')
+```
+
+The saved information can be used to later retrieve model.
+
+```python
+from aim import Repo
+
+aim_repo = Repo.default_repo()
+
+# find Run with by run_hash
+aim_run = aim_repo.get_run(RUN_HASH)
+model = aim_run['artifacts', 'torch_model']
+model.download('model_weights_restored.pth')
+
+import torch
+import torchvision.models as models
+
+model = models.squeezenet1_0()
+model.load_state_dict(torch.load('model_weights_restored.pth'))
+model.eval()
+```
+
+You can see the logged artifact metadata in Aim UI
+![](../_static/images/quick_start/run_artifact_ui.png)
+
+In depth description of Aim artifacts storage can be found [here](../using/remote_storage.html).
