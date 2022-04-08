@@ -1,13 +1,27 @@
 @use 'styles/abstracts/index' as *;
 
 .NotesTab {
+  .isLoading {
+    .toastui-editor-main {
+      visibility: hidden;
+    }
+  }
   &__Editor {
     margin-top: 1.5rem;
     position: relative;
     &__saveBtn {
       position: absolute;
       top: toRem(10px);
-      right: toRem(41px);
+      right: toRem(22px);
+    }
+    &__deleteBtn {
+      position: absolute;
+      top: toRem(10px);
+      right: toRem(104px);
+    }
+    .Spinner {
+      position: absolute;
+      top: 0;
     }
     .toastui-editor {
       &-toolbar {
@@ -15,10 +29,12 @@
       }
       &-defaultUI {
         border: $border-grey;
+        background-color: $white;
         &-toolbar {
           margin-right: 100px;
           border-bottom: unset;
           background-color: $cuddle-20;
+          padding: 0 24px;
           input:checked + .switch::before {
             background-color: $primary-color;
           }
@@ -62,8 +78,8 @@
     .toastui-editor-md-preview,
     .toastui-editor {
       border-top: $border-main;
-      background-color: $white;
-      min-width: 200px;
+      min-width: toRem(200px);
+      word-break: break-all;
     }
   }
 }
