@@ -289,7 +289,7 @@ def update_note_api(run_id, _id: int, note_in: NoteIn, factory=Depends(object_fa
     }
 
 
-@runs_router.delete('/{run_id}/note/{_id}', status_code=status.HTTP_204_NO_CONTENT)
+@runs_router.delete('/{run_id}/note/{_id}')
 def delete_note_api(run_id, _id: int, factory=Depends(object_factory)):
     with factory:
         run = factory.find_run(run_id)
@@ -301,6 +301,10 @@ def delete_note_api(run_id, _id: int, factory=Depends(object_factory)):
             raise HTTPException(status_code=404, detail=NOTE_NOT_FOUND.format(id=_id))
 
         run.remove_note(_id)
+
+    return {
+        'status': 'OK'
+    }
 
 
 def add_api_routes():
