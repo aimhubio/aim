@@ -24,8 +24,6 @@ def convert(ctx, repo):
     repo_status = Repo.check_repo_status(repo_path)
 
     repo_inst = Repo.from_path(repo_path)
-    if repo_status == RepoStatus.PATCH_REQUIRED:
-        repo_inst.structured_db.run_upgrades()
 
     ctx.obj['repo_inst'] = repo_inst
 
