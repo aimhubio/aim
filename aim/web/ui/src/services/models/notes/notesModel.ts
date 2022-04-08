@@ -26,12 +26,9 @@ const model = createModel<Partial<INotesAppModelState>>({
 
 // Request references
 let getNotesListRequestRef: IApiRequestRef<any>;
-let createNoteRequestRef: IApiRequestRef<any>;
-let updateNoteRequestRef: IApiRequestRef<any>;
-let deleteNoteRequestRef: IApiRequestRef<any>;
-let getSingleNoteRequestRef: IApiRequestRef<any>;
 
 // API CRUD functionality
+
 function onNotesListFetch(runId: string) {
   const { call, abort } = notesService.getNotes(runId);
   return {
@@ -51,79 +48,61 @@ function onNotesListFetch(runId: string) {
 }
 
 function onNoteCreate(runId: string, reqBody: INoteReqBody): void {
-  model.setState({
-    isLoading: true,
-  });
   analytics.trackEvent(
     ANALYTICS_EVENT_KEYS.runDetails.tabs.notes.clickSaveButton,
   );
+  const { call, abort } = notesService.createNote(runId, reqBody);
   try {
     model.setState({ isLoading: true });
-    createNoteRequestRef = notesService.createNote(runId, reqBody);
-    createNoteRequestRef
-      .call((detail: any) => {
-        exceptionHandler({ detail, model });
-        model.setState({ isLoading: false });
-      })
-      .then((noteData: INote) => {
-        model.setState({ noteData, isLoading: false });
-        handleSuccessNotification(NotesNotificationsEnum.CREATE);
+    call((detail: any) => {
+      exceptionHandler({ detail, model });
+      model.setState({ isLoading: false });
+    }).then((noteData: INote) => {
+      model.setState({
+        noteData: { content: reqBody.content, id: noteData.id },
+        isLoading: false,
       });
+      handleSuccessNotification(NotesNotificationsEnum.CREATE);
+    });
   } catch (err: any) {
+    abort();
     handleErrorNotification(err);
-    createNoteRequestRef.abort();
     model.setState({
       isLoading: false,
     });
   }
 }
 
-// function onGetSingleNote(runId: string) {
-//   // The number 1 is note id, shouldn't be deleted as long as we creating 1 note for each run.
-//   const { call, abort } = notesService.getSingleNote(runId, 1);
-//   return {
-//     call: async () => {
-//       call().then(async (data: INote) => {
-//         model.setState({
-//           noteData: data,
-//           isLoading: false,
-//         });
-//       });
-//     },
-//     abort,
-//   };
-// }
-
 function onNoteUpdate(runId: string, reqBody: INoteReqBody): void {
+  const { id } = model.getState().noteData!;
+  const { call, abort } = notesService.updateNote(runId, id, reqBody);
   analytics.trackEvent(
-    ANALYTICS_EVENT_KEYS.runDetails.tabs.notes.clickSaveButton,
+    ANALYTICS_EVENT_KEYS.runDetails.tabs.notes.clickUpdateButton,
   );
   try {
     model.setState({
       isLoading: true,
     });
-    // The number 1 is note id, shouldn't be deleted as long as we creating 1 note for each run.
-    updateNoteRequestRef = notesService.updateNote(runId, 1, reqBody);
-    updateNoteRequestRef
-      .call((detail: any) => {
-        exceptionHandler({ detail, model });
-        model.setState({ isLoading: false });
-      })
-      .then((noteData: INote) => {
-        model.setState({
-          noteData,
-          isLoading: false,
-        });
-        handleSuccessNotification(NotesNotificationsEnum.UPDATE);
+    call((detail: any) => {
+      exceptionHandler({ detail, model });
+      model.setState({ isLoading: false });
+    }).then((noteData: INote) => {
+      model.setState({
+        noteData,
+        isLoading: false,
       });
+      handleSuccessNotification(NotesNotificationsEnum.UPDATE);
+    });
   } catch (err: any) {
-    updateNoteRequestRef.abort();
+    abort();
     handleErrorNotification(err);
     model.setState({ isLoading: false });
   }
 }
 
 function onNoteDelete(runId: string): void {
+  const { id } = model.getState().noteData!;
+  const { call, abort } = notesService.deleteNote(runId, id);
   analytics.trackEvent(
     ANALYTICS_EVENT_KEYS.runDetails.tabs.notes.clickDeleteButton,
   );
@@ -131,22 +110,18 @@ function onNoteDelete(runId: string): void {
     model.setState({
       isLoading: true,
     });
-    // The number 1 is note id, shouldn't be deleted as long as we creating 1 note for each run.
-    deleteNoteRequestRef = notesService.deleteNote(runId, 2);
-    deleteNoteRequestRef
-      .call((detail: any) => {
-        exceptionHandler({ detail, model });
-        model.setState({ isLoading: false });
-      })
-      .then((noteData: INote) => {
-        console.log(noteData);
-        model.setState({
-          noteData,
-        });
-        handleSuccessNotification(NotesNotificationsEnum.DELETE);
+    call((detail: any) => {
+      exceptionHandler({ detail, model });
+      model.setState({ isLoading: false });
+    }).then((noteData: INote) => {
+      model.setState({
+        noteData: null,
+        isLoading: false,
       });
+      handleSuccessNotification(NotesNotificationsEnum.DELETE);
+    });
   } catch (err: any) {
-    deleteNoteRequestRef.abort();
+    abort();
     handleErrorNotification(err);
     model.setState({ isLoading: false });
   }
@@ -162,7 +137,7 @@ function initialize(runId: string): void {
     });
   } catch (err: any) {
     handleErrorNotification(err);
-    getNotesListRequestRef.abort();
+    getNotesListRequestRef?.abort();
     model.setState({ isLoading: false });
   }
 }
@@ -196,9 +171,6 @@ function onNoteNotificationDelete(id: number): void {
 
 // Destroying model on component unmount
 function destroy(): void {
-  if (createNoteRequestRef) {
-    createNoteRequestRef.abort();
-  }
   getNotesListRequestRef.abort();
   model.destroy();
 }

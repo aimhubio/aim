@@ -7,7 +7,6 @@ import { Tooltip } from '@material-ui/core';
 import { Button, Icon } from 'components/kit';
 import NotificationContainer from 'components/NotificationContainer/NotificationContainer';
 import ConfirmModal from 'components/ConfirmModal/ConfirmModal';
-import BusyLoaderWrapper from 'components/BusyLoaderWrapper/BusyLoaderWrapper';
 import Spinner from 'components/kit/Spinner';
 
 import { ANALYTICS_EVENT_KEYS } from 'config/analytics/analyticsKeysMap';
@@ -43,9 +42,9 @@ function NotesTab({ runHash }: INotesTabProps) {
   }, []);
 
   React.useEffect(() => {
-    if (noteData?.content) {
-      editorRef.current.editorInst.setMarkdown(noteData.content);
-    }
+    editorRef.current.editorInst.setMarkdown(
+      noteData?.id ? noteData?.content : '',
+    );
   }, [noteData]);
 
   React.useEffect(() => {
@@ -97,11 +96,10 @@ function NotesTab({ runHash }: INotesTabProps) {
 
   // CRUD handlers
   function onNoteSave() {
-    if (noteData?.content) {
+    if (noteData?.id) {
       onNoteUpdate();
     } else {
       notesModel.onNoteCreate(runHash, {
-        name: 'Note',
         content: editorRef.current.editorInst.getMarkdown(),
       } as INoteReqBody);
     }
@@ -140,25 +138,27 @@ function NotesTab({ runHash }: INotesTabProps) {
           height='calc(100vh - 146px)'
           ref={editorRef}
         />
-        <Tooltip title='Delete Note'>
-          <div className='NotesTab__Editor__deleteBtn'>
-            <Button
-              color='secondary'
-              size='small'
-              onClick={handleOpenModal}
-              withOnlyIcon
-            >
-              <Icon name='delete' />
-            </Button>
-          </div>
-        </Tooltip>
-        <Tooltip title='Save Note'>
-          <div className='NotesTab__Editor__saveBtn'>
-            <Button variant='contained' size='small' onClick={onNoteSave}>
-              Save
-            </Button>
-          </div>
-        </Tooltip>
+        <div className='NotesTab__Editor__actionBtns'>
+          <Tooltip title='Delete Note'>
+            <div>
+              <Button
+                color='secondary'
+                size='small'
+                onClick={handleOpenModal}
+                withOnlyIcon
+              >
+                <Icon name='delete' />
+              </Button>
+            </div>
+          </Tooltip>
+          <Tooltip title={`${noteData?.id ? 'Update' : 'Save'} Note`}>
+            <div>
+              <Button variant='contained' size='small' onClick={onNoteSave}>
+                {noteData?.id ? 'Update' : 'Save'}
+              </Button>
+            </div>
+          </Tooltip>
+        </div>
         <ConfirmModal
           open={openModal}
           onCancel={handleCloseModal}

@@ -3,21 +3,20 @@
 .NotesTab {
   .isLoading {
     .toastui-editor-main {
-      visibility: hidden;
+      opacity: 0;
     }
   }
   &__Editor {
     margin-top: 1.5rem;
     position: relative;
-    &__saveBtn {
+    &__actionBtns {
       position: absolute;
       top: toRem(10px);
       right: toRem(22px);
-    }
-    &__deleteBtn {
-      position: absolute;
-      top: toRem(10px);
-      right: toRem(104px);
+      display: flex;
+      & > div:first-child {
+        margin-right: $space-xs;
+      }
     }
     .Spinner {
       position: absolute;
