@@ -1,4 +1,5 @@
 import os
+import sys
 
 from aim.web.configs import AIM_ENV_MODE_KEY
 
@@ -11,11 +12,15 @@ def build_db_upgrade_command():
         ini_file = os.path.join(migrations_dir, 'alembic.ini')
     else:
         ini_file = os.path.join(migrations_dir, 'alembic_dev.ini')
-    return ['alembic', '-c', ini_file, 'upgrade', 'head']
+    python_exec = sys.executable
+    alembic_exec = f'{python_exec} -m alembic'
+    return [alembic_exec, '-c', ini_file, 'upgrade', 'head']
 
 
 def build_uvicorn_command(host, port, num_workers, ssl_keyfile, ssl_certfile, log_level):
-    cmd = ['uvicorn', '--host', host, '--port', '%s' % port, '--workers', '%s' % num_workers]
+    python_exec = sys.executable
+    uvicorn_exec = f'{python_exec} -m uvicorn'
+    cmd = [uvicorn_exec, '--host', host, '--port', '%s' % port, '--workers', '%s' % num_workers]
     if os.getenv(AIM_ENV_MODE_KEY, 'prod') == 'prod':
         log_level = log_level or 'error'
     else:
