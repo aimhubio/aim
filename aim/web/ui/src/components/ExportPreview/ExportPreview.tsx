@@ -131,11 +131,13 @@ function ExportPreview({
           ANALYTICS_EVENT_KEYS[explorerPage].chart.controls.exportChart,
         );
       } catch (err) {
+        // eslint-disable-next-line no-console
         console.error(err);
       } finally {
         setProcessing(false);
       }
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [format, getSVGWrapper, fileName]);
 
   const formatOptions = React.useMemo(

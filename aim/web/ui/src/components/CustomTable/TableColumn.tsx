@@ -88,16 +88,16 @@ function Column({
       return [range[0] - 0.1, range[0]];
     }
     return range;
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [data]);
 
-  const getColumnCelBGColor = React.useCallback(
+  const getColumnCelBGColor = React.useCallback(() => {
     getColorFromRange(
       colorScaleRange ? [colorScaleRange[0], _.last(colorScaleRange)] : null,
       TABLE_COLUMN_START_COLOR_SCALE,
       TABLE_COLUMN_END_COLOR_SCALE,
-    ),
-    [data],
-  );
+    );
+  }, [colorScaleRange]);
 
   function resizeStart({ target }) {
     setIsResizing(true);
@@ -150,12 +150,14 @@ function Column({
       document.removeEventListener('mousemove', resize);
       document.removeEventListener('mouseup', resizeEnd);
     };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   React.useEffect(() => {
     if (columnRef.current && col.key !== 'selection') {
       columnRef.current.style.width = 'initial';
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [data, expanded, width]);
 
   const isInViewPort =
