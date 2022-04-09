@@ -118,7 +118,7 @@ const Illustration_Title_Config: { [key: string]: object | any } = {
       </>
     ),
     [IllustrationsEnum.EmptyData]: (
-      <span>You don't have any tracked metrics</span>
+      <span>You don't have any tracked images</span>
     ),
   },
 

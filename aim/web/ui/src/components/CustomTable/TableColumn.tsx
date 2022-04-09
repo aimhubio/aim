@@ -91,13 +91,15 @@ function Column({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [data]);
 
-  const getColumnCelBGColor = React.useCallback(() => {
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  const getColumnCelBGColor = React.useCallback(
     getColorFromRange(
       colorScaleRange ? [colorScaleRange[0], _.last(colorScaleRange)] : null,
       TABLE_COLUMN_START_COLOR_SCALE,
       TABLE_COLUMN_END_COLOR_SCALE,
-    );
-  }, [colorScaleRange]);
+    ),
+    [data],
+  );
 
   function resizeStart({ target }) {
     setIsResizing(true);
