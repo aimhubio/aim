@@ -566,7 +566,7 @@ function Column({
                               !!data[groupKey].data.meta.color
                             }
                             className={classNames(`rowKey-${item.key}`, {
-                              hidden: item.isHidden,
+                              inactive: item.isHidden,
                               selected: !!selectedRows?.[item.selectKey],
                             })}
                             isConfigColumn={col.key === '#'}
@@ -613,7 +613,7 @@ function Column({
                         </>
                       }
                       className={classNames(`rowKey-${item.key}`, {
-                        hidden: item.isHidden,
+                        inactive: item.isHidden,
                         selected: !!selectedRows?.[item.selectKey],
                       })}
                       metadata={
@@ -637,7 +637,7 @@ function Column({
                       isNumeric={colorScaleRange}
                       columnsColorScales={columnsColorScales}
                       className={classNames(`rowKey-${item.key}`, {
-                        hidden: item.isHidden,
+                        inactive: item.isHidden,
                         selected: !!selectedRows?.[item.selectKey],
                       })}
                       metadata={

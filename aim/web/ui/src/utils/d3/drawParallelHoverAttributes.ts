@@ -14,7 +14,7 @@ import {
 import { IAxisScale } from 'types/utils/d3/getAxisScale';
 import { ILineDataType } from 'types/utils/d3/drawParallelLines';
 
-import getFormattedValue from 'utils/formattedValue';
+import getRoundedValue from 'utils/roundValue';
 
 import { getCoordinates, CircleEnum, ScaleEnum } from './';
 
@@ -145,7 +145,7 @@ const drawParallelHoverAttributes = ({
         true,
       );
     } else {
-      yValue = getFormattedValue(
+      yValue = getRoundedValue(
         attributesRef.current.yScale[dimensionLabel].invert(circle.y),
       );
     }

@@ -3,6 +3,7 @@ import os
 import subprocess
 
 from aim.web.configs import AIM_UI_MOUNTED_REPO_PATH
+from aim.sdk.configs import get_aim_repo_name
 from aim.sdk.utils import clean_repo_path
 
 
@@ -90,3 +91,7 @@ def ls_dir(path):
 
 def get_root_path():
     return clean_repo_path(os.getenv(AIM_UI_MOUNTED_REPO_PATH, os.getcwd()))
+
+
+def get_db_url():
+    return 'sqlite:///{}/{}/aim_db'.format(get_root_path(), get_aim_repo_name())

@@ -22,7 +22,8 @@ from aim.web.api.runs.utils import (
     checked_query,
     checked_range,
     get_project_repo,
-    numpy_to_encodable
+    numpy_to_encodable,
+    get_run_or_404
 )
 from aim.web.api.runs.object_api_utils import CustomObjectApi, get_blobs_batch
 
@@ -75,15 +76,12 @@ class CustomObjectApiConfig:
                                      record_range: Optional[str] = '', record_density: Optional[int] = 50,
                                      index_range: Optional[str] = '', index_density: Optional[int] = 5):
             # get Sequence batch API
-            repo = get_project_repo()
             record_range = checked_range(record_range)
             index_range = checked_range(index_range)
             CustomObjectApiConfig.check_density(record_density)
             CustomObjectApiConfig.check_density(index_density)
 
-            run = repo.get_run(run_id)
-            if not run:
-                raise HTTPException(status_code=404)
+            run = get_run_or_404(run_id)
 
             api = CustomObjectApi(seq_name, resolve_blobs=cls.resolve_blobs)
             api.set_dump_data_fn(cls.dump_record_fn)
@@ -113,10 +111,7 @@ class CustomObjectApiConfig:
             index_range = checked_range(index_range)
             CustomObjectApiConfig.check_density(index_density)
 
-            repo = get_project_repo()
-            run = repo.get_run(run_id)
-            if not run:
-                raise HTTPException(status_code=404)
+            run = get_run_or_404(run_id)
 
             api = CustomObjectApi(seq_name, resolve_blobs=cls.resolve_blobs)
             api.set_dump_data_fn(cls.dump_record_fn)

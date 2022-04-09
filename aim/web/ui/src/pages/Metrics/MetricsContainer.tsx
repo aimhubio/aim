@@ -65,6 +65,7 @@ function MetricsContainer(): React.FunctionComponentElement<React.ReactNode> {
           exceptionHandler({ detail, model: metricAppModel });
         })
         .then(() => {
+          metricAppModel.setDefaultAppConfigData(false);
           metricsRequestRef = metricAppModel.getMetricsData();
           metricsRequestRef.call((detail: any) => {
             exceptionHandler({ detail, model: metricAppModel });

@@ -8,7 +8,8 @@ from alembic import context
 from alembic.config import Config
 
 from aim.web.configs import AIM_ENV_MODE_KEY
-from aim.web.api.db import engine, config as api_config
+from aim.web.api.db import engine
+from aim.web.utils import get_db_url
 from aim.web.api.dashboards import models
 from aim.web.api.dashboard_apps import models
 from aim.web.api.db import Base
@@ -48,9 +49,8 @@ def run_migrations_offline():
     script output.
 
     """
-    url = api_config.SQLALCHEMY_DATABASE_URI
     context.configure(
-        url=url, target_metadata=target_metadata, literal_binds=True
+        url=get_db_url(), target_metadata=target_metadata, literal_binds=True
     )
 
     with context.begin_transaction():
