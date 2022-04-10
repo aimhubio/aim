@@ -86,9 +86,8 @@ const ImageBox = ({
 
   return (
     <ErrorBoundary key={index}>
-      <div className='ImageBox'>
+      <div className='ImageBox' style={style}>
         <div
-          style={style}
           className={`ImageBox__image ImageBox__image--${
             additionalProperties.imageRendering
           } ${
