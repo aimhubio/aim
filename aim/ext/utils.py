@@ -31,7 +31,7 @@ def get_git_info():
                            stdout=subprocess.PIPE,
                            stderr=subprocess.STDOUT,
                            check=True)
-    except subprocess.CalledProcessError:
+    except (subprocess.CalledProcessError, FileNotFoundError):
         # not a git repo
         return git_info
     else:

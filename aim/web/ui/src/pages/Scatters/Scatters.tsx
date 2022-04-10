@@ -47,6 +47,7 @@ function Scatters(
       <section className='Scatters__section'>
         <div className='Scatters__section__div Scatters__fullHeight'>
           <AppBar
+            explorerName='SCATTERS'
             onBookmarkCreate={props.onBookmarkCreate}
             onBookmarkUpdate={props.onBookmarkUpdate}
             onResetConfigData={props.onResetConfigData}
@@ -84,7 +85,8 @@ function Scatters(
             className={`Scatters__chart__container${
               props.resizeMode === ResizeModeEnum.MaxHeight
                 ? '__hide'
-                : _.isEmpty(props.tableData)
+                : props.requestStatus !== RequestStatusEnum.Pending &&
+                  _.isEmpty(props.tableData)
                 ? '__fullHeight'
                 : ''
             }`}

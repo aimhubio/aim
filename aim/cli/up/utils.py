@@ -14,16 +14,18 @@ def build_db_upgrade_command():
     return ['alembic', '-c', ini_file, 'upgrade', 'head']
 
 
-def build_uvicorn_command(host, port, num_workers, ssl_keyfile, ssl_certfile):
+def build_uvicorn_command(host, port, num_workers, ssl_keyfile, ssl_certfile, log_level):
     cmd = ['uvicorn', '--host', host, '--port', '%s' % port, '--workers', '%s' % num_workers]
     if os.getenv(AIM_ENV_MODE_KEY, 'prod') == 'prod':
-        cmd += ['--log-level', 'error']
+        log_level = log_level or 'error'
     else:
         import aim
-        cmd += ['--reload', '--reload-dir', os.path.dirname(aim.__file__), '--log-level', 'debug']
+        cmd += ['--reload', '--reload-dir', os.path.dirname(aim.__file__)]
+        log_level = log_level or 'debug'
     if ssl_keyfile:
         cmd += ['--ssl-keyfile', ssl_keyfile]
     if ssl_certfile:
         cmd += ['--ssl-certfile', ssl_certfile]
+    cmd += ['--log-level', log_level.lower()]
     cmd += ['aim.web.run:app']
     return cmd

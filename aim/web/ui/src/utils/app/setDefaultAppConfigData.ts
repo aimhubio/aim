@@ -15,10 +15,12 @@ export default function setDefaultAppConfigData<M extends State>({
   config,
   appInitialConfig,
   model,
+  recoverTableState = true,
 }: {
   config: IAppModelConfig;
   appInitialConfig: IAppInitialConfig;
   model: IModel<M>;
+  recoverTableState: boolean;
 }): void {
   const { grouping, selectForm, components, appName } = appInitialConfig;
 
@@ -30,24 +32,33 @@ export default function setDefaultAppConfigData<M extends State>({
   const defaultConfig: IAppModelConfig = { liveUpdate: luConfig };
 
   if (grouping) {
-    defaultConfig.grouping = getStateFromUrl('grouping') || config?.grouping;
+    defaultConfig.grouping = getStateFromUrl('grouping') ?? {};
   }
   if (selectForm) {
     const compatibleSelectConfig = getCompatibleSelectConfig(
       ['metrics', 'params', 'images'],
       getStateFromUrl('select'),
     );
-    defaultConfig.select = compatibleSelectConfig || config?.select;
+    defaultConfig.select = compatibleSelectConfig ?? {};
   }
   if (components.charts) {
-    defaultConfig.chart = getStateFromUrl('chart') || config?.chart;
+    defaultConfig.chart = getStateFromUrl('chart') ?? {};
   }
-  if (components.table) {
+  if (recoverTableState && components.table) {
     const tableConfigHash = getItem(`${appName}Table`);
     defaultConfig.table = tableConfigHash
       ? JSON.parse(decode(tableConfigHash))
       : config?.table;
   }
-  const configData: IAppModelConfig = _.merge(config, defaultConfig);
+  const configData: IAppModelConfig = _.mergeWith(
+    {},
+    model.getState().config,
+    defaultConfig,
+    (objValue, srcValue) => {
+      if (_.isArray(objValue)) {
+        return srcValue;
+      }
+    },
+  );
   model.setState({ config: configData });
 }
