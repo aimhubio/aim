@@ -357,7 +357,7 @@ If we apply our previous code snippet on the same repo - we can observe the same
 
 ### Log fies and directories
 
-Aim provides two types of custom Objects which can be used to log any data during training run.
+Aim provides two types of Aim objects which can be used to log any data during training run.
 These types are: `File` and `Directory`. `File` and `Directory` objects can be used to log model checkpoints,
 dataset versions and large data blobs which normally cannot be stored as a regular run parameter.
 Below is an example of saving PyTorch model and adding it as an artifact to the aim `Run`.

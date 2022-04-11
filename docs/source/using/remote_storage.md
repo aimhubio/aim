@@ -7,14 +7,14 @@ reducing latency while reading the data or querying objects. In addition to stor
 hyperparameters and tracking metrics, Aim provides ability to track objects, such as images, audio files, etc.
 However, the size of the storage will grow depending on a number of tracked objects and their size, and may eventually
 not fit on a local storage. In order to offload the local storage, Aim provides ability to specify artifact storage
-URL which can be used to store large object blobs. Example of such objects are model checkpoints, datasets, etc.
+URL which can be used to store large binary blobs. Example of such blobs are model checkpoints, datasets, etc.
 Aim supports cloud-based storage such as [S3](https://docs.aws.amazon.com/s3/index.html) and 
 [GCS](https://cloud.google.com/storage/docs).
 In addition to the cloud-based storage, the artifact storage class `local` is also available.
 The artifact storage `local` can be used to move rarely accessed data to less performant but cheaper disk space 
 such as HDD, and save some space on SSDs. Additionally, local storage class can be used for testing and debugging.
 
-**Note.** _Most of space used by Aim can be offloaded to the cloud storage. This can include the large object blobs, 
+**Note.** _Most of the space used by Aim can be offloaded to the cloud storage. This can include the large blobs, 
 as well as contents of tracked files. However, it is important to know that Aim still utilizes local storage to keep 
 the training runs metadata, hyperparameters and metrics. This allows to run Aim with minimal impact on performance
 of queries and UI._
@@ -50,7 +50,7 @@ _will be created and used as a local artifact storage._
 
 Starting from version `3.9.0` Aim provides two new objects: `File` and `Directory`. These classes can be used
 to upload the artifacts to cloud-based storage and log their metadata to Aim. The `File` object accepts a single 
-input argument which can be either file path, in-memory `bytes` object or bytes stream. The `Directory` objects
+input argument which can be either file path, in-memory `bytes` or bytes stream. The `Directory` objects
 takes a directory path as an input and optional argument to include/exclude hidden files during upload.
 
 ```python
@@ -88,7 +88,7 @@ run2['artifacts', 'other_file'] = other_file  # upload to S3 for 2nd Run
 
 ### Moving aim built-in objects blob data to cloud storage
 
-By default, the binary data blobs for objects such as `Image`, `Audio`, `Figure`, `Text` and 
+By default, the binary data blobs for Aim objects such as `Image`, `Audio`, `Figure`, `Text` and 
 `Distribution` are embedded into the Aim storage. This behavior can be changed, however, to
 opt for disk space vs. load latency. In order to store data blobs in external artifact
 storage, the following environment variable must be set
