@@ -1,6 +1,5 @@
 import { Link as RouteLink } from 'react-router-dom';
-import { merge } from 'lodash-es';
-import _ from 'lodash';
+import _ from 'lodash-es';
 
 import { Link, Tooltip } from '@material-ui/core';
 
@@ -400,7 +399,7 @@ function paramsTableRowRenderer(
       }
     }
 
-    return merge({}, rowData, row);
+    return _.merge({}, rowData, row);
   } else {
     const row = {
       experiment: rowData.experiment,
@@ -431,7 +430,7 @@ function paramsTableRowRenderer(
       },
     };
 
-    return merge({}, rowData, row);
+    return _.merge({}, rowData, row);
   }
 }
 

@@ -1,5 +1,5 @@
 import React, { useEffect, useMemo, useState } from 'react';
-import { isNil } from 'lodash';
+import { isNil } from 'lodash-es';
 
 import { Icon, Button } from 'components/kit';
 import ErrorBoundary from 'components/ErrorBoundary/ErrorBoundary';
