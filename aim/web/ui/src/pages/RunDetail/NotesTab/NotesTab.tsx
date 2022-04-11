@@ -18,6 +18,8 @@ import notesModel from 'services/models/notes/notesModel';
 
 import { INoteReqBody } from 'types/services/models/notes/notes';
 
+import useNotesResizePanel from '../hooks/useNotesResizePanel';
+
 import { INotesTabProps } from './types';
 
 import '@toast-ui/editor/dist/toastui-editor.css';
@@ -28,17 +30,15 @@ function NotesTab({ runHash }: INotesTabProps) {
   const { isLoading, noteData, notifyData } = useModel(notesModel)!;
   const editorRef = React.useRef<Editor | any>(null);
   const wrapperRef = React.useRef<any>();
-  const leftPanelRef = React.useRef<any>();
-  const rightPanelRef = React.useRef<any>();
-  const resizeElemRef = React.useRef<any>();
-  const frameRef = React.useRef<number>();
-  const panelRef = React.useRef<any>();
+  useNotesResizePanel(wrapperRef, editorRef);
+
   React.useEffect(() => {
     notesModel.initialize(runHash);
     analytics.pageView(ANALYTICS_EVENT_KEYS.runDetails.tabs.notes.tabView);
     return () => {
       notesModel.destroy();
     };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   React.useEffect(() => {
@@ -46,53 +46,6 @@ function NotesTab({ runHash }: INotesTabProps) {
       noteData?.id ? noteData?.content : '',
     );
   }, [noteData]);
-
-  React.useEffect(() => {
-    resizeElemRef.current = document.querySelector(
-      '.toastui-editor-md-splitter',
-    );
-    leftPanelRef.current = document.querySelector('.toastui-editor');
-    rightPanelRef.current = document.querySelector(
-      '.toastui-editor-md-preview',
-    );
-    panelRef.current = document.querySelector(
-      '.RunDetail__runDetailContainer__tabPanel',
-    );
-    resizeElemRef.current.addEventListener('mousedown', handleResize);
-  }, [editorRef.current]);
-
-  function handleResize() {
-    document.addEventListener('mousemove', startResize);
-    document.addEventListener('mouseup', endResize);
-  }
-
-  function startResize(event: any): void {
-    wrapperRef.current.style.userSelect = 'none';
-    resizeElemRef.current.style.background = '#89b9f2';
-    wrapperRef.current.style.cursor = 'col-resize';
-    if (leftPanelRef.current && rightPanelRef.current && wrapperRef.current) {
-      const containerWidth: number =
-        wrapperRef.current.getBoundingClientRect().width;
-      const width: number =
-        event.pageX -
-        panelRef.current.offsetLeft -
-        wrapperRef.current.offsetLeft;
-      leftPanelRef.current.style.width = `${width}px`;
-      rightPanelRef.current.style.width = `${containerWidth - width}px`;
-    }
-  }
-
-  function endResize(): void {
-    if (frameRef.current) {
-      window.cancelAnimationFrame(frameRef.current);
-    }
-    if (wrapperRef?.current && resizeElemRef?.current) {
-      wrapperRef.current.style.userSelect = 'unset';
-      wrapperRef.current.style.cursor = 'unset';
-      resizeElemRef.current.style.background = '#e8f1fc';
-      document.removeEventListener('mousemove', startResize);
-    }
-  }
 
   // CRUD handlers
   function onNoteSave() {
@@ -108,6 +61,7 @@ function NotesTab({ runHash }: INotesTabProps) {
   const onNoteDelete = React.useCallback(() => {
     handleCloseModal();
     notesModel.onNoteDelete(runHash);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   function onNoteUpdate(): void {
