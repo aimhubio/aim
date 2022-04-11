@@ -17,8 +17,8 @@ def build_db_upgrade_command():
 
 def build_uvicorn_command(host, port, num_workers, ssl_keyfile, ssl_certfile, log_level):
     cmd = [sys.executable, '-m', 'uvicorn',
-           '--host', host, '--port', '%s' % port,
-           '--workers', '%s' % num_workers]
+           '--host', host, '--port', f'{port}',
+           '--workers', f'{num_workers}']
     if os.getenv(AIM_ENV_MODE_KEY, 'prod') == 'prod':
         log_level = log_level or 'error'
     else:
