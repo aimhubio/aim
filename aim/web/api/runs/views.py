@@ -108,7 +108,7 @@ async def run_params_api(run_id: str, sequence: Optional[Tuple[str, ...]] = Quer
     }
 
     response['props'].update({
-        'notes': [{'id': note.id} for note in run.props.notes_obj]
+        'notes': len(run.props.notes_obj)
     })
     return JSONResponse(response)
 
