@@ -124,9 +124,11 @@
       }
     }
   }
-  .MuiSkeleton-root {
-    margin-top: toRem(5px);
-    margin-right: toRem(5px);
+  .skeletonContainer {
+    margin-top: toRem(1px);
+    display: flex;
+    justify-content: center;
+    align-items: center;
     padding: toRem(1px);
   }
   .focus img {
@@ -135,7 +137,7 @@
   }
   .active {
     & img,
-    & .MuiSkeleton-root {
+    & .skeletonContainer {
       box-shadow: 0 0 0 toRem(1.5px) #b9d5f8, inset 0 0 0px toRem(0.5px) #b9d5f8;
     }
   }
