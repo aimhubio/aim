@@ -281,46 +281,53 @@
             left: 0;
             z-index: 1;
           }
-
-          &__experimentBox {
-            height: auto;
-            display: flex;
-            align-items: center;
-            cursor: pointer;
-            border-radius: 0.3125rem 0 0 0.3125rem;
-            margin-bottom: 0.125rem;
+          &__experimentContainer {
             position: relative;
-            padding: 0.5rem 1.5rem 0.5rem 1rem;
-            border-bottom: $border-transparent;
-            border-top: $border-transparent;
+            width: 100%;
+            margin-bottom: 0.125rem;
+            border-radius: 0.3125rem 0 0 0.3125rem;
+
             &:last-child {
               margin-bottom: 0;
             }
-            &:hover {
-              border-radius: $border-radius-sm;
-              background: $cuddle-20;
-              margin-right: 0.5rem;
-              padding: 0.5rem 1rem;
-            }
-            &__experimentName {
-              width: 100%;
-              word-break: break-all;
-            }
-            &.selected {
-              background: $cuddle-10;
-              border-bottom: $border-main;
-              border-top: $border-main;
-              &:hover {
-                padding: 0.5rem 1.5rem 0.5rem 1rem;
-                margin-right: 0;
-                border-radius: 0.3125rem 0 0 0.3125rem;
-              }
+            .experimentBox {
+              height: auto;
+              display: flex;
+              align-items: center;
+              cursor: pointer;
+              border-radius: 0.3125rem 0 0 0.3125rem;
+              padding: 0.5rem 1.5rem 0.5rem 1rem;
+              border-bottom: $border-transparent;
+              border-top: $border-transparent;
 
+              &:hover {
+                border-radius: $border-radius-sm;
+                background: $cuddle-20;
+                margin-right: 0.5rem;
+                padding: 0.5rem 1rem;
+              }
+              &__experimentName {
+                width: 100%;
+                word-break: break-all;
+              }
+            }
+
+            &.selected {
+              .experimentBox {
+                background: $cuddle-10;
+                border-bottom: $border-main;
+                border-top: $border-main;
+                &:hover {
+                  padding: 0.5rem 1.5rem 0.5rem 1rem;
+                  margin-right: 0;
+                  border-radius: 0.3125rem 0 0 0.3125rem;
+                }
+              }
               &::before {
                 content: '';
-                height: toRem(52px);
+                height: 100%;
                 border-radius: 0.3125rem 0 0 0.3125rem;
-                top: toRem(-1px);
+                top: 0;
                 left: 0;
                 background: $denim;
                 width: 0.25rem;

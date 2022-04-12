@@ -89,19 +89,21 @@ function RunSelectPopoverContent({
                   <div
                     key={experiment.id}
                     className={classNames(
-                      'RunSelectPopoverWrapper__selectPopoverContent__contentContainer__experimentsListContainer__experimentList__experimentBox',
+                      'RunSelectPopoverWrapper__selectPopoverContent__contentContainer__experimentsListContainer__experimentList__experimentContainer',
                       { selected: experimentId === experiment.id },
                     )}
                     onClick={() => onExperimentClick(experiment.id)}
                   >
-                    <Text
-                      size={14}
-                      tint={experimentId === experiment.id ? 100 : 80}
-                      weight={500}
-                      className='RunSelectPopoverWrapper__selectPopoverContent__contentContainer__experimentsListContainer__experimentList__experimentBox__experimentName'
-                    >
-                      {experiment?.name ?? 'default'}
-                    </Text>
+                    <div className='experimentBox'>
+                      <Text
+                        size={14}
+                        tint={experimentId === experiment.id ? 100 : 80}
+                        weight={500}
+                        className='experimentBox__experimentName'
+                      >
+                        {experiment?.name ?? 'default'}
+                      </Text>
+                    </div>
                   </div>
                 ))
               ) : (
