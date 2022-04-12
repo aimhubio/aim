@@ -1,5 +1,6 @@
 import os
 import subprocess
+import sys
 
 from aim.web.configs import AIM_ENV_MODE_KEY
 
@@ -11,8 +12,7 @@ def create_migration_cmd():
         migrations_config = os.path.join(storage_dir, 'migrations', 'alembic.ini')
     else:
         migrations_config = os.path.join(storage_dir, 'migrations', 'alembic_dev.ini')
-    cmd = ['alembic', '-c', migrations_config, 'upgrade', 'head']
-    return cmd
+    return [sys.executable, '-m', 'alembic', '-c', migrations_config, 'upgrade', 'head']
 
 
 def upgrade_database(db_url):

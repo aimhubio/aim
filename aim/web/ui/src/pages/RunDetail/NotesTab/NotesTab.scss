@@ -41,6 +41,9 @@
             border-color: $cuddle-20;
           }
         }
+        .ProseMirror {
+          height: 100%;
+        }
       }
       &-md-splitter {
         cursor: pointer;

@@ -27,6 +27,22 @@ const model = createModel<Partial<INotesAppModelState>>({
 // Request references
 let getNotesListRequestRef: IApiRequestRef<any>;
 
+// Initializing model
+function initialize(runId: string): void {
+  model.init();
+  try {
+    getNotesListRequestRef = onNotesListFetch(runId);
+    getNotesListRequestRef.call((detail: any) => {
+      exceptionHandler({ detail, model });
+      model.setState({ isLoading: false });
+    });
+  } catch (err: any) {
+    handleErrorNotification(err);
+    getNotesListRequestRef?.abort();
+    model.setState({ isLoading: false });
+  }
+}
+
 // API CRUD functionality
 
 function onNotesListFetch(runId: string) {
@@ -113,7 +129,7 @@ function onNoteDelete(runId: string): void {
     call((detail: any) => {
       exceptionHandler({ detail, model });
       model.setState({ isLoading: false });
-    }).then((noteData: INote) => {
+    }).then((response: { status: string }) => {
       model.setState({
         noteData: null,
         isLoading: false,
@@ -123,21 +139,6 @@ function onNoteDelete(runId: string): void {
   } catch (err: any) {
     abort();
     handleErrorNotification(err);
-    model.setState({ isLoading: false });
-  }
-}
-
-function initialize(runId: string): void {
-  model.init();
-  try {
-    getNotesListRequestRef = onNotesListFetch(runId);
-    getNotesListRequestRef.call((detail: any) => {
-      exceptionHandler({ detail, model });
-      model.setState({ isLoading: false });
-    });
-  } catch (err: any) {
-    handleErrorNotification(err);
-    getNotesListRequestRef?.abort();
     model.setState({ isLoading: false });
   }
 }
@@ -171,7 +172,7 @@ function onNoteNotificationDelete(id: number): void {
 
 // Destroying model on component unmount
 function destroy(): void {
-  getNotesListRequestRef.abort();
+  getNotesListRequestRef?.abort();
   model.destroy();
 }
 

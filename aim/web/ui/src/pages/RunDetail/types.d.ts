@@ -37,6 +37,7 @@ export interface IRunInfo {
   };
   name: string;
   tags: any[];
+  notes: number;
 }
 
 export interface IRunSelectPopoverContentProps {
