@@ -130,6 +130,7 @@ export type RangePanelItem = {
   inputTitleTooltip: string;
   sliderType: 'single' | 'range'; // This type is same as SliderWithInput component sliderType prop type.
   inputValidationPatterns?: (...args: any) => IValidationPatterns;
+  infoPropertyName?: string;
 };
 
 export type IConfig = {

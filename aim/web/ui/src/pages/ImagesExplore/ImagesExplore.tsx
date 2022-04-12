@@ -10,9 +10,9 @@ import Table from 'components/Table/Table';
 import ResizePanel from 'components/ResizePanel/ResizePanel';
 import MediaPanel from 'components/MediaPanel';
 import { MediaTypeEnum } from 'components/MediaPanel/config';
-import ImagesExploreRangePanel from 'components/ImagesExploreRangePanel';
 import Grouping from 'components/Grouping/Grouping';
 import ErrorBoundary from 'components/ErrorBoundary/ErrorBoundary';
+import RangePanel from 'components/RangePanel';
 
 import { ResizeModeEnum } from 'config/enums/tableEnums';
 import { RowHeightSize } from 'config/table/tableConfigs';
@@ -58,10 +58,19 @@ function ImagesExplore(): React.FunctionComponentElement<React.ReactNode> {
   const [offsetHeight, setOffsetHeight] = useState(
     imagesWrapperRef?.current?.offsetHeight,
   );
+  const imagesRequestRef = React.useRef<any>(null);
 
   const [offsetWidth, setOffsetWidth] = useState(
     imagesWrapperRef?.current?.offsetWidth,
   );
+
+  function handleSearch() {
+    analytics.trackEvent(
+      ANALYTICS_EVENT_KEYS.images.imagesPanel.clickApplyButton,
+    );
+    imagesRequestRef.current = imagesExploreAppModel.getImagesData(true);
+    imagesRequestRef.current.call();
+  }
 
   useResizeObserver(() => {
     if (imagesWrapperRef?.current?.offsetHeight !== offsetHeight) {
@@ -316,26 +325,52 @@ function ImagesExplore(): React.FunctionComponentElement<React.ReactNode> {
                   imagesExploreData?.config?.images?.indexRange &&
                   imagesExploreAppModel.showRangePanel() &&
                   !_.isEmpty(imagesExploreData?.imagesData) && (
-                    <ImagesExploreRangePanel
-                      recordSlice={
-                        imagesExploreData?.config?.images?.recordSlice
-                      }
-                      indexSlice={imagesExploreData?.config?.images?.indexSlice}
-                      indexRange={imagesExploreData?.config?.images?.indexRange}
-                      stepRange={imagesExploreData?.config?.images?.stepRange}
+                    <RangePanel
+                      onApply={handleSearch}
                       applyButtonDisabled={
                         imagesExploreData?.applyButtonDisabled
                       }
-                      indexDensity={
-                        imagesExploreData?.config?.images?.indexDensity
-                      }
-                      recordDensity={
-                        imagesExploreData?.config?.images?.recordDensity
-                      }
-                      onSliceRangeChange={
+                      onInputChange={imagesExploreAppModel.onDensityChange}
+                      onRangeSliderChange={
                         imagesExploreAppModel.onSliceRangeChange
                       }
-                      onDensityChange={imagesExploreAppModel.onDensityChange}
+                      items={[
+                        {
+                          inputName: 'recordDensity',
+                          inputTitle: 'Steps count',
+                          inputTitleTooltip: 'Number of steps to display',
+                          inputValue:
+                            imagesExploreData?.config?.images?.recordDensity,
+                          rangeEndpoints:
+                            imagesExploreData?.config?.images?.stepRange,
+                          selectedRangeValue:
+                            imagesExploreData?.config?.images?.recordSlice,
+                          sliderName: 'recordSlice',
+                          sliderTitle: 'Steps',
+                          sliderTitleTooltip:
+                            'Training step. Increments every time track() is called',
+                          sliderType: 'range',
+                          infoPropertyName: 'step',
+                        },
+                        {
+                          inputName: 'indexDensity',
+                          inputTitle: 'Indices count',
+                          inputTitleTooltip: 'Number of images per step',
+                          inputValidationPatterns: undefined,
+                          inputValue:
+                            imagesExploreData?.config?.images?.indexDensity,
+                          rangeEndpoints:
+                            imagesExploreData?.config?.images?.indexRange,
+                          selectedRangeValue:
+                            imagesExploreData?.config?.images?.indexSlice,
+                          sliderName: 'indexSlice',
+                          sliderTitle: 'Indices',
+                          sliderTitleTooltip:
+                            'Index in the list of images passed to track() call',
+                          sliderType: 'range',
+                          infoPropertyName: 'index',
+                        },
+                      ]}
                     />
                   )
                 }
