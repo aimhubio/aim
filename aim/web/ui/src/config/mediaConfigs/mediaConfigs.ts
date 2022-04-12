@@ -17,7 +17,7 @@ export const BATCH_SEND_DELAY = 300;
 export const IMAGE_SIZE_CHANGE_DELAY = 200;
 export const AUDIO_FIXED_WIDTH = 276;
 export const AUDIO_FIXED_HEIGHT = 40;
-export const SPACE_BETWEEN_ITEMS = 8;
+export const SPACE_BETWEEN_ITEMS = 6;
 
 export const IMAGES_SLIDER_PROPS = {
   step: 1,
