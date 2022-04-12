@@ -9,7 +9,9 @@
 - Add notes backend api interface (devfox-se)
 
 ### Fixes:
+
 - Fix compatibility with pytorch-lightning v1.6.0 (mihran113)
+- Fix the image's original size cropping (VkoHov)
 - Fix `PATH` related issues for `alembic` and `uvicorn` (mihran113)
 - Fix queries for custom object APIs (mihran113) 
 
