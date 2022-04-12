@@ -62,6 +62,7 @@ function getDefaultQueryAndConfigData(traceType: TraceType) {
       inputTitleTooltip: correspondedInput.tooltip,
       sliderType: item.sliderType,
       inputValidationPatterns: traceSettings.inputValidation,
+      infoPropertyName: item?.infoPropertyName,
     };
 
     config.rangePanel.push(processedItem);

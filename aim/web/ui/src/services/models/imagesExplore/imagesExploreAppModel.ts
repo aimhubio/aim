@@ -2026,16 +2026,16 @@ function onSliceRangeChange(key: string, newValue: number[] | number) {
   }
 }
 
-function onDensityChange(value: number, metaData: any, key: string) {
+function onDensityChange(name: string, value: number, metaData: any) {
   const configData: IImagesExploreAppConfig | undefined =
     model.getState()?.config;
   if (configData?.images) {
     const images = {
       ...configData.images,
-      [key]: +value,
+      [name]: +value,
       inputsValidations: {
         ...configData.images?.inputsValidations,
-        [key]: metaData?.isValid,
+        [name]: metaData?.isValid,
       },
     };
     const config = {

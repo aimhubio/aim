@@ -17,6 +17,7 @@ export const BATCH_SEND_DELAY = 300;
 export const IMAGE_SIZE_CHANGE_DELAY = 200;
 export const AUDIO_FIXED_WIDTH = 276;
 export const AUDIO_FIXED_HEIGHT = 40;
+export const SPACE_BETWEEN_ITEMS = 6;
 
 export const IMAGES_SLIDER_PROPS = {
   step: 1,
@@ -38,16 +39,20 @@ function getImageBoxSize({
   let width;
   let height;
   if (additionalProperties?.alignmentType === MediaItemAlignmentEnum.Width) {
-    width = (wrapperOffsetWidth * additionalProperties?.mediaItemSize) / 100;
+    width =
+      (wrapperOffsetWidth * additionalProperties?.mediaItemSize) / 100 +
+      SPACE_BETWEEN_ITEMS;
     height = (wrapperOffsetWidth * additionalProperties?.mediaItemSize) / 100;
   } else if (
     additionalProperties?.alignmentType === MediaItemAlignmentEnum.Height &&
     data
   ) {
     height = (wrapperOffsetHeight * additionalProperties?.mediaItemSize) / 100;
-    width = (height / data?.[index]?.height) * data?.[index]?.width || 100;
+    width =
+      (height / data?.[index]?.height) * data?.[index]?.width +
+        SPACE_BETWEEN_ITEMS || 100;
   } else {
-    width = data?.[index]?.width;
+    width = data?.[index]?.width + SPACE_BETWEEN_ITEMS;
     height = data?.[index]?.height || 100;
   }
   return { width, height };
