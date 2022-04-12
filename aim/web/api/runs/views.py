@@ -106,6 +106,10 @@ async def run_params_api(run_id: str, sequence: Optional[Tuple[str, ...]] = Quer
         'traces': run.collect_sequence_info(sequence, skip_last_value=True),
         'props': get_run_props(run)
     }
+
+    response['props'].update({
+        'notes': [{'id': note.id} for note in run.props.notes_obj]
+    })
     return JSONResponse(response)
 
 
