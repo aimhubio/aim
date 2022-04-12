@@ -55,7 +55,6 @@ def get_run_props(run: Run):
                   'color': tag.color,
                   'description': tag.description}
                  for tag in run.props.tags_obj],
-        'notes': [{'id': note.id} for note in run.props.notes_obj],
         'archived': run.archived if run.archived else False,
         'creation_time': run.creation_time,
         'end_time': run.end_time
