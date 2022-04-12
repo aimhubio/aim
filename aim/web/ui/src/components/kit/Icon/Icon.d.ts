@@ -131,4 +131,5 @@ export type IconName =
   | 'color-scale-off'
   | 'color-scale-on'
   | 'text'
-  | 'minus';
+  | 'minus'
+  | 'circle-info';

@@ -1,20 +1,16 @@
 import React from 'react';
 import { useRouteMatch } from 'react-router-dom';
 
-import {
-  Dialog,
-  DialogActions,
-  DialogContent,
-  DialogTitle,
-  MenuItem,
-  Typography,
-} from '@material-ui/core';
+import { MenuItem } from '@material-ui/core';
 
 import BookmarkForm from 'components/BookmarkForm/BookmarkForm';
 import AppBar from 'components/AppBar/AppBar';
 import ControlPopover from 'components/ControlPopover/ControlPopover';
-import { Icon, Button } from 'components/kit';
+import { Icon, Button, Text } from 'components/kit';
 import ErrorBoundary from 'components/ErrorBoundary/ErrorBoundary';
+import ConfirmModal from 'components/ConfirmModal/ConfirmModal';
+
+import { DOCUMENTATIONS } from 'config/references';
 
 import './ImagesExploreAppBar.scss';
 
@@ -48,16 +44,17 @@ function ImagesExploreAppBar({
             <ControlPopover
               title='Bookmark'
               anchor={({ onAnchorClick }) => (
-                <Button
-                  color='secondary'
-                  className='ImagesExploreAppBar__item__bookmark'
-                  size='small'
-                  onClick={onAnchorClick}
-                >
-                  <span className='ImagesExploreAppBar__item__bookmark__span'>
+                <Button color='secondary' size='small' onClick={onAnchorClick}>
+                  <Text
+                    size={14}
+                    className='ImagesExploreAppBar__item__bookmark__Text'
+                  >
                     Bookmark
-                  </span>
-                  <Icon name='bookmarks' />
+                  </Text>
+                  <Icon
+                    name='bookmarks'
+                    className='MetricsBar__item__bookmark__Icon'
+                  />
                 </Button>
               )}
               component={
@@ -79,10 +76,17 @@ function ImagesExploreAppBar({
             size='small'
             onClick={() => handleBookmarkClick('create')}
           >
-            <span className='ImagesExploreAppBar__item__bookmark__span'>
+            <Text
+              size={14}
+              className='ImagesExploreAppBar__item__bookmark__Text'
+            >
               Bookmark
-            </span>
-            <Icon name='bookmarks' />
+            </Text>
+            <Icon
+              fontSize={14}
+              name='bookmarks'
+              className='MetricsBar__item__bookmark__Icon'
+            />
           </Button>
         )}
         <div className='ImagesExploreAppBar__menu'>
@@ -96,7 +100,11 @@ function ImagesExploreAppBar({
                   size='small'
                   onClick={onAnchorClick}
                 >
-                  <Icon name='menu' />
+                  <Icon
+                    fontSize={16}
+                    name='menu'
+                    className='MetricsBar__item__bookmark__Icon'
+                  />
                 </Button>
               )}
               component={
@@ -105,11 +113,11 @@ function ImagesExploreAppBar({
                     Reset Controls to System Defaults
                   </MenuItem>
                   <a
-                    href='https://github.com/aimhubio/aim#searching-experiments'
+                    href={DOCUMENTATIONS.EXPLORERS.IMAGES.MAIN}
                     target='_blank'
                     rel='noreferrer'
                   >
-                    <MenuItem>Searching Experiments (docs)</MenuItem>
+                    <MenuItem>Explorer Documentation</MenuItem>
                   </a>
                 </div>
               }
@@ -123,24 +131,16 @@ function ImagesExploreAppBar({
             open={popover === 'create'}
           />
         </ErrorBoundary>
-        <Dialog
+        <ConfirmModal
           open={popover === 'update'}
-          onClose={handleClosePopover}
-          aria-labelledby='form-dialog-title'
-        >
-          <DialogTitle id='form-dialog-title'>Update Bookmark</DialogTitle>
-          <DialogContent>
-            <Typography>Do you want to update bookmark?</Typography>
-          </DialogContent>
-          <DialogActions>
-            <Button onClick={handleClosePopover} color='primary'>
-              Cancel
-            </Button>
-            <Button onClick={handleBookmarkUpdate} color='primary'>
-              Save
-            </Button>
-          </DialogActions>
-        </Dialog>
+          onCancel={handleClosePopover}
+          onSubmit={handleBookmarkUpdate}
+          text='Are you sure you want to update bookmark?'
+          icon={<Icon name='check' />}
+          title='Update bookmark'
+          statusType='success'
+          confirmBtnText='Update'
+        />
       </AppBar>
     </ErrorBoundary>
   );

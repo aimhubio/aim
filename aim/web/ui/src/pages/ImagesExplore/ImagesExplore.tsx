@@ -1,6 +1,6 @@
 /* eslint-disable react-hooks/rules-of-hooks */
 import React, { useState } from 'react';
-import { useLocation, useRouteMatch } from 'react-router-dom';
+import { useHistory, useRouteMatch } from 'react-router-dom';
 import _ from 'lodash-es';
 
 import NotificationContainer from 'components/NotificationContainer/NotificationContainer';
@@ -10,9 +10,9 @@ import Table from 'components/Table/Table';
 import ResizePanel from 'components/ResizePanel/ResizePanel';
 import MediaPanel from 'components/MediaPanel';
 import { MediaTypeEnum } from 'components/MediaPanel/config';
-import ImagesExploreRangePanel from 'components/ImagesExploreRangePanel';
 import Grouping from 'components/Grouping/Grouping';
 import ErrorBoundary from 'components/ErrorBoundary/ErrorBoundary';
+import RangePanel from 'components/RangePanel';
 
 import { ResizeModeEnum } from 'config/enums/tableEnums';
 import { RowHeightSize } from 'config/table/tableConfigs';
@@ -36,7 +36,9 @@ import * as analytics from 'services/analytics';
 import { AppNameEnum } from 'services/models/explorer';
 
 import { IGroupingSelectOption } from 'types/services/models/metrics/metricsAppModel';
+import { IApiRequest } from 'types/services/services';
 
+import exceptionHandler from 'utils/app/exceptionHandler';
 import getStateFromUrl from 'utils/getStateFromUrl';
 import { ChartTypeEnum } from 'utils/d3';
 import { SortField, SortFields } from 'utils/getSortedFields';
@@ -47,7 +49,7 @@ import './ImagesExplore.scss';
 
 function ImagesExplore(): React.FunctionComponentElement<React.ReactNode> {
   const route = useRouteMatch<any>();
-  const location = useLocation();
+  const history = useHistory();
   const imagesExploreData = useModel<Partial<any>>(imagesExploreAppModel);
   const imagesWrapperRef = React.useRef<any>(null);
   const tableElemRef = React.useRef<HTMLDivElement>(null);
@@ -56,10 +58,19 @@ function ImagesExplore(): React.FunctionComponentElement<React.ReactNode> {
   const [offsetHeight, setOffsetHeight] = useState(
     imagesWrapperRef?.current?.offsetHeight,
   );
+  const imagesRequestRef = React.useRef<any>(null);
 
   const [offsetWidth, setOffsetWidth] = useState(
     imagesWrapperRef?.current?.offsetWidth,
   );
+
+  function handleSearch() {
+    analytics.trackEvent(
+      ANALYTICS_EVENT_KEYS.images.imagesPanel.clickApplyButton,
+    );
+    imagesRequestRef.current = imagesExploreAppModel.getImagesData(true);
+    imagesRequestRef.current.call();
+  }
 
   useResizeObserver(() => {
     if (imagesWrapperRef?.current?.offsetHeight !== offsetHeight) {
@@ -69,20 +80,6 @@ function ImagesExplore(): React.FunctionComponentElement<React.ReactNode> {
       setOffsetWidth(imagesWrapperRef?.current?.offsetWidth);
     }
   }, imagesWrapperRef);
-
-  // Add effect to recover state from URL when browser history navigation is used
-  React.useEffect(() => {
-    if (!!imagesExploreData?.config) {
-      if (
-        imagesExploreData.config.grouping !== getStateFromUrl('grouping') ||
-        imagesExploreData.config.chart !== getStateFromUrl('chart') ||
-        imagesExploreData.config.select !== getStateFromUrl('select')
-      ) {
-        imagesExploreAppModel.setDefaultAppConfigData();
-        imagesExploreAppModel.updateModelData();
-      }
-    }
-  }, [location.search]);
 
   React.useEffect(() => {
     setOffsetWidth(imagesWrapperRef?.current?.offsetWidth);
@@ -152,31 +149,49 @@ function ImagesExplore(): React.FunctionComponentElement<React.ReactNode> {
 
   React.useEffect(() => {
     imagesExploreAppModel.initialize(route.params.appId);
-    let appRequestRef: {
-      call: () => Promise<void>;
-      abort: () => void;
-    };
-    let imagesRequestRef: {
-      call: () => Promise<void>;
-      abort: () => void;
-    };
+    let appRequestRef: IApiRequest<void>;
+    let imagesRequestRef: IApiRequest<void>;
     if (route.params.appId) {
       appRequestRef = imagesExploreAppModel.getAppConfigData(
         route.params.appId,
       );
-      appRequestRef.call().then(() => {
-        imagesRequestRef = imagesExploreAppModel.getImagesData();
-        imagesRequestRef.call();
-      });
+      appRequestRef
+        .call((detail: any) => {
+          exceptionHandler({ detail, model: imagesExploreAppModel });
+        })
+        .then(() => {
+          imagesExploreAppModel.setDefaultAppConfigData(false);
+          imagesRequestRef = imagesExploreAppModel.getImagesData();
+          imagesRequestRef.call((detail: any) => {
+            exceptionHandler({ detail, model: imagesExploreAppModel });
+          });
+        });
     } else {
       imagesExploreAppModel.setDefaultAppConfigData();
       imagesRequestRef = imagesExploreAppModel.getImagesData();
-      imagesRequestRef.call();
+      imagesRequestRef.call((detail: any) => {
+        exceptionHandler({ detail, model: imagesExploreAppModel });
+      });
     }
 
     analytics.pageView(ANALYTICS_EVENT_KEYS.images.pageView);
+
+    const unListenHistory = history.listen(() => {
+      if (!!imagesExploreData?.config) {
+        if (
+          imagesExploreData.config.grouping !== getStateFromUrl('grouping') ||
+          imagesExploreData.config.images !== getStateFromUrl('images') ||
+          imagesExploreData.config.select !== getStateFromUrl('select')
+        ) {
+          imagesExploreAppModel.setDefaultAppConfigData();
+          imagesExploreAppModel.updateModelData();
+        }
+      }
+    });
     return () => {
+      imagesExploreAppModel.destroy();
       imagesRequestRef?.abort();
+      unListenHistory();
       if (appRequestRef) {
         appRequestRef.abort();
       }
@@ -243,7 +258,9 @@ function ImagesExplore(): React.FunctionComponentElement<React.ReactNode> {
                 imagesExploreData?.config?.table.resizeMode ===
                 ResizeModeEnum.MaxHeight
                   ? '__hide'
-                  : _.isEmpty(imagesExploreData?.imagesData)
+                  : imagesExploreData?.requestStatus !==
+                      RequestStatusEnum.Pending &&
+                    _.isEmpty(imagesExploreData?.imagesData)
                   ? '__fullHeight'
                   : ''
               }`}
@@ -308,26 +325,52 @@ function ImagesExplore(): React.FunctionComponentElement<React.ReactNode> {
                   imagesExploreData?.config?.images?.indexRange &&
                   imagesExploreAppModel.showRangePanel() &&
                   !_.isEmpty(imagesExploreData?.imagesData) && (
-                    <ImagesExploreRangePanel
-                      recordSlice={
-                        imagesExploreData?.config?.images?.recordSlice
-                      }
-                      indexSlice={imagesExploreData?.config?.images?.indexSlice}
-                      indexRange={imagesExploreData?.config?.images?.indexRange}
-                      stepRange={imagesExploreData?.config?.images?.stepRange}
+                    <RangePanel
+                      onApply={handleSearch}
                       applyButtonDisabled={
                         imagesExploreData?.applyButtonDisabled
                       }
-                      indexDensity={
-                        imagesExploreData?.config?.images?.indexDensity
-                      }
-                      recordDensity={
-                        imagesExploreData?.config?.images?.recordDensity
-                      }
-                      onSliceRangeChange={
+                      onInputChange={imagesExploreAppModel.onDensityChange}
+                      onRangeSliderChange={
                         imagesExploreAppModel.onSliceRangeChange
                       }
-                      onDensityChange={imagesExploreAppModel.onDensityChange}
+                      items={[
+                        {
+                          inputName: 'recordDensity',
+                          inputTitle: 'Steps count',
+                          inputTitleTooltip: 'Number of steps to display',
+                          inputValue:
+                            imagesExploreData?.config?.images?.recordDensity,
+                          rangeEndpoints:
+                            imagesExploreData?.config?.images?.stepRange,
+                          selectedRangeValue:
+                            imagesExploreData?.config?.images?.recordSlice,
+                          sliderName: 'recordSlice',
+                          sliderTitle: 'Steps',
+                          sliderTitleTooltip:
+                            'Training step. Increments every time track() is called',
+                          sliderType: 'range',
+                          infoPropertyName: 'step',
+                        },
+                        {
+                          inputName: 'indexDensity',
+                          inputTitle: 'Indices count',
+                          inputTitleTooltip: 'Number of images per step',
+                          inputValidationPatterns: undefined,
+                          inputValue:
+                            imagesExploreData?.config?.images?.indexDensity,
+                          rangeEndpoints:
+                            imagesExploreData?.config?.images?.indexRange,
+                          selectedRangeValue:
+                            imagesExploreData?.config?.images?.indexSlice,
+                          sliderName: 'indexSlice',
+                          sliderTitle: 'Indices',
+                          sliderTitleTooltip:
+                            'Index in the list of images passed to track() call',
+                          sliderType: 'range',
+                          infoPropertyName: 'index',
+                        },
+                      ]}
                     />
                   )
                 }

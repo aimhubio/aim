@@ -1,4 +1,5 @@
 import React from 'react';
+import classNames from 'classnames';
 
 import { Text } from 'components/kit';
 import ErrorBoundary from 'components/ErrorBoundary/ErrorBoundary';
@@ -12,7 +13,11 @@ function AppBar(
 ): React.FunctionComponentElement<React.ReactNode> {
   return (
     <ErrorBoundary>
-      <div className='AppBar'>
+      <div
+        className={classNames('AppBar', {
+          [props?.className ?? '']: props.className,
+        })}
+      >
         <Text
           component='h3'
           weight={600}

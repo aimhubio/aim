@@ -1,16 +1,14 @@
 import sys
 import os
-import io
+
 from shutil import rmtree
 from setuptools import find_packages, setup, Command, Extension
 from Cython.Build import cythonize
 
 version_file = 'aim/VERSION'
 
-__version__ = None
 with open(version_file) as vf:
     __version__ = vf.read().strip()
-
 
 here = os.path.abspath(os.path.dirname(__file__))
 
@@ -33,7 +31,6 @@ def package_files(directory):
     return paths
 
 
-ui_files = package_files('aim/web/ui/build')
 migration_files = package_files('aim/web/migrations')
 storage_migration_files = package_files('aim/storage/migrations')
 version_files = ['../aim/VERSION', ]
@@ -47,6 +44,7 @@ SETUP_REQUIRED = [
 
 # What packages are required for this module to be executed?
 REQUIRED = [
+    f'aim-ui=={__version__}',
     'aimrecords==0.0.7',
     'aimrocks==0.1.0',
     'cachetools>=4.0.0',
@@ -128,7 +126,7 @@ setup(
     setup_requires=SETUP_REQUIRED,
     install_requires=REQUIRED,
     packages=packages,
-    package_data={'aim': ui_files + migration_files + storage_migration_files + version_files},
+    package_data={'aim': migration_files + storage_migration_files + version_files},
     include_package_data=True,
     classifiers=[
         'License :: OSI Approved :: MIT License',
@@ -215,5 +213,5 @@ setup(
     },
     cmdclass={
         'upload': UploadCommand
-    },
+    }
 )

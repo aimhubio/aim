@@ -45,6 +45,17 @@ class AimLogger(LightningLoggerBase):
         self._run = None
         self._run_hash = None
 
+    @staticmethod
+    def _convert_params(params: Union[Dict[str, Any], Namespace]) -> Dict[str, Any]:
+        # in case converting from namespace
+        if isinstance(params, Namespace):
+            params = vars(params)
+
+        if params is None:
+            params = {}
+
+        return params
+
     @property
     @rank_zero_experiment
     def experiment(self) -> Run:

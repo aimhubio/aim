@@ -5,6 +5,30 @@
 ### Enhancements:
 
 - Add the run name to the batch delete and the batch archive modals (VkoHov)
+- Add info massage for single value sliders (VkoHov)
+- Add `--log-level` argument for aim up/server commands (mihran113)
+- Add notes backend api interface (devfox-se)
+
+### Fixes:
+
+- Fix compatibility with pytorch-lightning v1.6.0 (mihran113)
+- Fix the image's original size cropping (VkoHov)
+- Fix `PATH` related issues for `alembic` and `uvicorn` (mihran113)
+- Fix queries for custom object APIs (mihran113) 
+
+## 3.8.1 Apr 6, 2022
+
+- Encode run hash before including in CSS selectors (Hamik25)
+- Fix displaying incorrect metric values for large range scale in LineChart (KaroMourad)
+- Fix issue with rendering lines for large range scale in LineChart (KaroMourad)
+- Fix issue with URL state sync for bookmarks (roubkar)
+- Fix issue with displaying negative param values on Aim UI (roubkar)
+- Fix row hiding functionality (roubkar)
+- Tune RunOverviewTab container styles (arsengit)
+- Update documentations links on UI (rubenaprikyan)
+- Fix `RepoIndexManager` run's reference cleanup (mihran113)
+- Fix remote run finalization (mihran113)
+- Fix issue with fetch on load more (infinite scroll) functionality in Runs Explorer (rubenaprikyan)
 
 ## 3.8.0 Mar 26, 2022
 
