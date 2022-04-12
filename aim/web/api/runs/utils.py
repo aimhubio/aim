@@ -23,6 +23,17 @@ if TYPE_CHECKING:
 IndexRange = namedtuple('IndexRange', ['start', 'stop'])
 
 
+def get_run_or_404(run_id, repo=None):
+    if repo is None:
+        repo = get_project_repo()
+
+    run = repo.get_run(run_id)
+    if not run:
+        raise HTTPException(status_code=404, detail="Run not found.")
+
+    return run
+
+
 def str_to_range(range_str: str):
     defaults = [None, None]
     slice_values = chain(range_str.strip().split(':'), defaults)

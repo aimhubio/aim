@@ -11,10 +11,13 @@ import {
   ISyncHoverStateArgs,
 } from 'types/utils/d3/drawHoverAttributes';
 import { IAxisScale } from 'types/utils/d3/getAxisScale';
-import { IUpdateFocusedChartArgs } from 'types/components/LineChart/LineChart';
+import {
+  ILine,
+  IUpdateFocusedChartArgs,
+} from 'types/components/LineChart/LineChart';
 
 import { AggregationAreaMethods } from 'utils/aggregateGroupData';
-import getFormattedValue from 'utils/formattedValue';
+import getRoundedValue from 'utils/roundValue';
 
 import { formatValueByAlignment } from '../formatByAlignment';
 
@@ -134,16 +137,19 @@ function drawHoverAttributes(args: IDrawHoverAttributesArgs): void {
     for (const line of data) {
       let index = 0;
       if (axesScaleType.xAxis !== ScaleEnum.Point) {
-        index = d3.bisectCenter(line.data.xValues, xValue as number);
+        index = d3.bisectCenter(
+          line.data.xValues as number[],
+          xValue as number,
+        );
       }
       const xValueByIndex = line.data.xValues[index];
       const yValueByIndex = line.data.yValues[index];
       if (xValueByIndex !== '-' && yValueByIndex !== '-') {
-        const closestXPos = attributesRef.current.xScale(xValueByIndex);
-        const closestYPos = attributesRef.current.yScale(yValueByIndex);
+        const closestXPos = attributesRef.current.xScale(xValueByIndex) || 0;
+        const closestYPos = attributesRef.current.yScale(yValueByIndex) || 0;
         const circle = {
           key: line.key,
-          color: line.color,
+          color: line.color as string,
           x: closestXPos,
           y: closestYPos,
         };
@@ -156,32 +162,28 @@ function drawHoverAttributes(args: IDrawHoverAttributesArgs): void {
     return nearestCircles;
   }
 
-  function drawXAxisLabel(x: number): void {
+  function drawXAxisLabel(xValue: string | number): void {
     if (xAxisLabelNodeRef && drawAxisLabels.x) {
       const visArea = d3.select(visAreaRef.current);
       if (visArea?.empty()) return;
-      const xAxisTickValue = getInvertedValue(
-        axesScaleType.xAxis,
-        x,
-        attributesRef.current.xScale,
-      );
-      let xAxisValueText = xAxisTickValue;
-      if (typeof xAxisTickValue === 'number') {
+      let xAxisValueText = xValue;
+      if (typeof xValue === 'number') {
         xAxisValueText = formatValueByAlignment({
-          xAxisTickValue: xAxisTickValue ?? null,
+          xAxisTickValue: xValue ?? null,
           type: alignmentConfig?.type,
         });
       }
-      if (xAxisTickValue || xAxisTickValue === 0) {
+      if (xValue || xValue === 0) {
         // X Axis Label
         const axisLeftEdge = margin.left - 1;
         const axisRightEdge = width - margin.right + 1;
         let xAxisValueWidth =
-          xAxisLabelNodeRef.current?.node()?.offsetWidth ?? 0;
+          xAxisLabelNodeRef.current?.node()?.offsetWidth || 0;
         if (xAxisValueWidth > plotBoxRef.current.width) {
           xAxisValueWidth = plotBoxRef.current.width;
         }
 
+        const x = attributesRef.current.xScale(xValue);
         const left =
           x - xAxisValueWidth / 2 < 0
             ? axisLeftEdge + xAxisValueWidth / 2
@@ -222,23 +224,18 @@ function drawHoverAttributes(args: IDrawHoverAttributesArgs): void {
     }
   }
 
-  function drawYAxisLabel(y: number): void {
+  function drawYAxisLabel(yValue: string | number): void {
     if (yAxisLabelNodeRef && drawAxisLabels.y) {
       const visArea = d3.select(visAreaRef.current);
       if (visArea?.empty()) return;
-      const yAxisTickValue = getInvertedValue(
-        axesScaleType.yAxis,
-        y,
-        attributesRef.current.yScale,
-        true,
-      );
 
-      if (yAxisTickValue || yAxisTickValue === 0) {
+      if (yValue || yValue === 0) {
         // Y Axis Label
         const axisTopEdge = margin.top - 1;
         const axisBottomEdge = height - margin.top;
         const yAxisValueHeight =
-          yAxisLabelNodeRef.current?.node()?.offsetHeight ?? 0;
+          yAxisLabelNodeRef.current?.node()?.offsetHeight || 0;
+        const y = attributesRef.current.yScale(yValue);
         const top =
           y - yAxisValueHeight / 2 < 0
             ? axisTopEdge + yAxisValueHeight / 2
@@ -252,21 +249,21 @@ function drawHoverAttributes(args: IDrawHoverAttributesArgs): void {
         if (yAxisLabelNodeRef.current && yAxisValueHeight) {
           // update y-axis label
           yAxisLabelNodeRef.current
-            .attr('title', yAxisTickValue)
+            .attr('title', yValue)
             .style('top', `${top}px`)
             .style('right', `${right}px`)
             .style('max-width', `${maxWidth}px`)
-            .text(yAxisTickValue);
+            .text(yValue);
         } else {
           // create y-axis label
           yAxisLabelNodeRef.current = visArea
             .append('div')
             .attr('class', 'ChartMouseValue ChartMouseValueYAxis')
-            .attr('title', yAxisTickValue)
+            .attr('title', yValue)
             .style('top', `${top}px`)
             .style('right', `${right}px`)
             .style('max-width', `${maxWidth}px`)
-            .text(yAxisTickValue);
+            .text(yValue);
         }
       }
     }
@@ -493,26 +490,18 @@ function drawHoverAttributes(args: IDrawHoverAttributesArgs): void {
         axisScale,
       });
     } else {
-      return getFormattedValue(axisScale.invert(pos));
+      return getRoundedValue(axisScale.invert(pos));
     }
   }
 
-  function getActivePoint(circle: INearestCircle): IActivePoint {
+  function getActivePoint(
+    circle: INearestCircle,
+    xValue: string | number,
+    yValue: string | number,
+  ): IActivePoint {
     const xPos = circle.x;
     const yPos = circle.y;
     const { boundedX, boundedY } = getBoundedPosition(xPos, yPos);
-
-    const xValue: number | string = getInvertedValue(
-      axesScaleType.xAxis,
-      xPos,
-      attributesRef.current.xScale,
-    );
-    const yValue: number | string = getInvertedValue(
-      axesScaleType.yAxis,
-      yPos,
-      attributesRef.current.yScale,
-      true,
-    );
 
     return {
       key: circle.key,
@@ -532,7 +521,7 @@ function drawHoverAttributes(args: IDrawHoverAttributesArgs): void {
   }
 
   function updateHoverAttributes(xValue: number, dataSelector?: string): void {
-    const mouseX = attributesRef.current.xScale(xValue);
+    const mouseX = attributesRef.current.xScale(xValue) || 0;
     const nearestCircles = getNearestCircles(mouseX);
 
     drawHighlightedLines(dataSelector);
@@ -545,13 +534,15 @@ function drawHoverAttributes(args: IDrawHoverAttributesArgs): void {
 
     drawCircles(nearestCircles);
     drawVerticalAxisLine(mouseX);
-    drawXAxisLabel(mouseX);
 
-    attributesRef.current.xStep = getInvertedValue(
+    const xStep = getInvertedValue(
       axesScaleType.xAxis,
       mouseX,
       attributesRef.current.xScale,
     );
+    drawXAxisLabel(xStep);
+
+    attributesRef.current.xStep = xStep;
     attributesRef.current.dataSelector = dataSelector;
     attributesRef.current.nearestCircles = nearestCircles;
   }
@@ -590,6 +581,29 @@ function drawHoverAttributes(args: IDrawHoverAttributesArgs): void {
       drawActiveLine(circle.key);
     }
 
+    let xValue: number | string = getInvertedValue(
+      axesScaleType.xAxis,
+      circle.x,
+      attributesRef.current.xScale,
+    );
+
+    let yValue: number | string = getInvertedValue(
+      axesScaleType.yAxis,
+      circle.y,
+      attributesRef.current.yScale,
+      true,
+    );
+
+    if (axesScaleType.yAxis !== ScaleEnum.Point && circle.key) {
+      let index = data.findIndex((el) => el.key === circle.key);
+      if (index !== -1) {
+        const el = data[index];
+        let i = d3.bisectCenter(el.data.xValues as number[], xValue as number);
+        xValue = el.data.xValues[i];
+        yValue = el.data.yValues[i];
+      }
+    }
+
     // hover Circle Changed case
     if (
       force ||
@@ -602,12 +616,12 @@ function drawHoverAttributes(args: IDrawHoverAttributesArgs): void {
       drawCircles(nearestCircles);
       drawVerticalAxisLine(circle.x);
       drawHorizontalAxisLine(circle.y);
-      drawXAxisLabel(circle.x);
-      drawYAxisLabel(circle.y);
+      drawXAxisLabel(xValue);
+      drawYAxisLabel(yValue);
       drawActiveCircle(circle.key);
     }
 
-    const activePoint = getActivePoint(circle);
+    const activePoint = getActivePoint(circle, xValue, yValue);
     attributesRef.current.xStep = activePoint.xValue;
     attributesRef.current.activePoint = activePoint;
     attributesRef.current.nearestCircles = nearestCircles;
@@ -657,6 +671,7 @@ function drawHoverAttributes(args: IDrawHoverAttributesArgs): void {
     } else {
       const xValue = attributesRef.current.xStep ?? xScale.domain()[1];
       const mouseX = attributesRef.current.xScale(xValue);
+
       const nearestCircles = getNearestCircles(mouseX);
 
       clearHorizontalAxisLine();
@@ -669,13 +684,14 @@ function drawHoverAttributes(args: IDrawHoverAttributesArgs): void {
 
       drawCircles(nearestCircles);
       drawVerticalAxisLine(mouseX);
-      drawXAxisLabel(mouseX);
 
-      attributesRef.current.xStep = getInvertedValue(
+      const xStep = getInvertedValue(
         axesScaleType.xAxis,
         mouseX,
         attributesRef.current.xScale,
       );
+      drawXAxisLabel(xStep);
+      attributesRef.current.xStep = xStep;
     }
   }
 

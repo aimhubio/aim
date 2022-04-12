@@ -15,7 +15,6 @@ class TreeView:
 
     def finalize(
         self,
-        *,
         index: 'TreeView'
     ):
         ...
