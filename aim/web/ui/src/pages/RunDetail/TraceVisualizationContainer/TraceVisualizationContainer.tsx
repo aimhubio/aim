@@ -4,6 +4,7 @@ import Menu from 'components/kit/Menu/Menu';
 import { IValidationMetadata } from 'components/kit/Input';
 import ErrorBoundary from 'components/ErrorBoundary/ErrorBoundary';
 import Spinner from 'components/kit/Spinner';
+import RangePanel from 'components/RangePanel';
 
 import { ANALYTICS_EVENT_KEYS } from 'config/analytics/analyticsKeysMap';
 
@@ -15,7 +16,6 @@ import { TraceType } from 'services/models/runs/types';
 
 import { ITraceVisualizationContainerProps } from '../types';
 
-import RangePanel from './RangePanel';
 import withEmptyTraceCheck from './withEmptyTraceCheck';
 
 import './TraceVisualizationContainer.scss';
@@ -134,6 +134,7 @@ function TraceVisualizationContainer({
                     runTracesModelData?.data[item.sliderName][0],
                     runTracesModelData?.data[item.sliderName][1],
                   ),
+                  infoPropertyName: item?.infoPropertyName,
                 }))}
                 onApply={runTracesModel.onApply}
                 onInputChange={(
