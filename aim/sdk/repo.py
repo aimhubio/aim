@@ -134,7 +134,7 @@ class Repo:
                 if init or status == RepoStatus.PATCH_REQUIRED:
                     self.structured_db.run_upgrades()
                     with open(os.path.join(self.path, 'VERSION'), 'w') as version_fh:
-                        version_fh.write('.'.join(DATA_VERSION) + '\n')
+                        version_fh.write('.'.join(map(str, DATA_VERSION)) + '\n')
 
         self._resources = RepoAutoClean(self)
 
