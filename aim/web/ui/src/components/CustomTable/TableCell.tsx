@@ -2,6 +2,7 @@
 /* eslint-disable react/prop-types */
 
 import classNames from 'classnames';
+import _ from 'lodash-es';
 
 import ErrorBoundary from 'components/ErrorBoundary/ErrorBoundary';
 
