@@ -204,7 +204,7 @@ function createAppModel(appConfig: IAppInitialConfig) {
       case AppDataTypeEnum.METRICS: {
         const config: IAppModelConfig = {
           liveUpdate: {
-            delay: 2000,
+            delay: 7000,
             enabled: false,
           },
         };
@@ -316,7 +316,7 @@ function createAppModel(appConfig: IAppInitialConfig) {
       case AppDataTypeEnum.RUNS: {
         const config: IAppModelConfig = {
           liveUpdate: {
-            delay: 2000,
+            delay: 7000,
             enabled: false,
           },
         };

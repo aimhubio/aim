@@ -4,6 +4,7 @@
 
 ### Enhancements:
 
+- Increase live update requests delay to prevent performance issues  (rubenaprikyan)
 - Change font-family to monospace in the Table component (arsengit)
 - Add info massage for single value sliders (VkoHov)
 - Add `--log-level` argument for aim up/server commands (mihran113)
