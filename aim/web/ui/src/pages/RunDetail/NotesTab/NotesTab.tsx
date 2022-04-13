@@ -93,18 +93,21 @@ function NotesTab({ runHash }: INotesTabProps) {
           ref={editorRef}
         />
         <div className='NotesTab__Editor__actionBtns'>
-          <Tooltip title='Delete Note'>
-            <div>
-              <Button
-                color='secondary'
-                size='small'
-                onClick={handleOpenModal}
-                withOnlyIcon
-              >
-                <Icon name='delete' />
-              </Button>
-            </div>
-          </Tooltip>
+          {noteData?.id && (
+            <Tooltip title='Delete Note'>
+              <div>
+                <Button
+                  color='secondary'
+                  size='small'
+                  onClick={handleOpenModal}
+                  withOnlyIcon
+                >
+                  <Icon name='delete' />
+                </Button>
+              </div>
+            </Tooltip>
+          )}
+
           <Tooltip title={`${noteData?.id ? 'Update' : 'Save'} Note`}>
             <div>
               <Button variant='contained' size='small' onClick={onNoteSave}>
