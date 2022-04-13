@@ -1,5 +1,5 @@
 import React from 'react';
-import _ from 'lodash';
+import _ from 'lodash-es';
 import moment from 'moment';
 import classNames from 'classnames';
 
@@ -98,6 +98,7 @@ function DeleteModal({
     return () => {
       runsDeleteRequest?.abort();
     };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   React.useEffect(() => {

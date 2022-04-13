@@ -2,8 +2,7 @@ import React, { memo, useRef } from 'react';
 import moment from 'moment';
 import classNames from 'classnames';
 import { NavLink, useLocation, useParams } from 'react-router-dom';
-import { isEmpty } from 'lodash-es';
-import _ from 'lodash';
+import _ from 'lodash-es';
 
 import { CircularProgress, Tooltip } from '@material-ui/core';
 
@@ -114,7 +113,7 @@ function RunSelectPopoverContent({
 
           <div className='RunSelectPopoverWrapper__selectPopoverContent__contentContainer__runsListContainer'>
             {isRunInfoLoading ||
-            (isEmpty(runsOfExperiment) && isRunsOfExperimentLoading) ? (
+            (_.isEmpty(runsOfExperiment) && isRunsOfExperimentLoading) ? (
               <div className='RunSelectPopoverWrapper__loaderContainer'>
                 <CircularProgress size={34} />
               </div>
@@ -123,7 +122,7 @@ function RunSelectPopoverContent({
                 className='RunSelectPopoverWrapper__selectPopoverContent__contentContainer__runsListContainer__runsList'
                 ref={popoverContentWrapperRef}
               >
-                {!isEmpty(runsOfExperiment) ? (
+                {!_.isEmpty(runsOfExperiment) ? (
                   runs?.map((run: IRunSelectRun) => (
                     <NavLink
                       className={classNames(
@@ -186,7 +185,7 @@ function RunSelectPopoverContent({
                     title={'No Runs'}
                   />
                 )}
-                {!isEmpty(runsOfExperiment) && isLoadMoreButtonShown && (
+                {!_.isEmpty(runsOfExperiment) && isLoadMoreButtonShown && (
                   <div className='RunSelectPopoverWrapper__selectPopoverContent__contentContainer__runsListContainer__runsList__loadMoreButtonWrapper'>
                     <Button
                       size='small'

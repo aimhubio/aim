@@ -56,6 +56,7 @@ function RunOverviewTabParamsCard({ runParams, isRunInfoLoading }: any) {
         cellRenderer: ({ cellData }: any) => <p title={cellData}>{cellData}</p>,
       },
     ],
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     [runParams, tableData],
   );
 

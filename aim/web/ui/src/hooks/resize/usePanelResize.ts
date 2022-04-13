@@ -98,6 +98,7 @@ function usePanelResize(
     tableConfig?.resizeMode && handleResizeModeChange(tableConfig?.resizeMode);
     return () => {
       setPanelResizing(false);
+      // eslint-disable-next-line react-hooks/exhaustive-deps
       resizeElemRef.current?.removeEventListener('mousedown', handleResize);
       document.removeEventListener('mouseup', endResize);
     };

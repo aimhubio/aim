@@ -1,13 +1,7 @@
 import React from 'react';
 import { useRouteMatch } from 'react-router-dom';
 
-import {
-  Dialog,
-  DialogActions,
-  DialogContent,
-  DialogTitle,
-  MenuItem,
-} from '@material-ui/core';
+import { MenuItem } from '@material-ui/core';
 
 import BookmarkForm from 'components/BookmarkForm/BookmarkForm';
 import AppBar from 'components/AppBar/AppBar';

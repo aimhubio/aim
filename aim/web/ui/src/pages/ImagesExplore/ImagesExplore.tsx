@@ -132,6 +132,7 @@ function ImagesExplore(): React.FunctionComponentElement<React.ReactNode> {
       ),
       sortFields: sortGroupFields,
     };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [
     imagesExploreData?.config?.grouping,
     imagesExploreData?.config?.images?.sortFields,
@@ -196,6 +197,7 @@ function ImagesExplore(): React.FunctionComponentElement<React.ReactNode> {
         appRequestRef.abort();
       }
     };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   return (

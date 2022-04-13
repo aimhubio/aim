@@ -106,6 +106,7 @@ function ScattersContainer(): React.FunctionComponentElement<React.ReactNode> {
         appRequestRef.abort();
       }
     };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   return (

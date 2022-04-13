@@ -225,6 +225,7 @@ const LineChart = React.forwardRef(function LineChart(
         rafIDRef.current = window.requestAnimationFrame(renderChart);
       }
     },
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     [
       data,
       zoom,
@@ -253,6 +254,7 @@ const LineChart = React.forwardRef(function LineChart(
         window.cancelAnimationFrame(rafIDRef.current);
       }
     };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [
     data,
     zoom,
