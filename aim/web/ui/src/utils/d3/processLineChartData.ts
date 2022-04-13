@@ -57,7 +57,7 @@ function processLineChartData({
 
     tupleLineChartData.push({
       color: '#000',
-      dasharray: '0',
+      dasharray: 'none',
       ...line,
       data: tupleData,
     });

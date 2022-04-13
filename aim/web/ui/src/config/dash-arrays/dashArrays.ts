@@ -1,5 +1,5 @@
 const DASH_ARRAYS: string[] = [
-  '5 0',
+  'none',
   '5 5',
   '10 5 5 5',
   '10 5 5 5 5 5',
