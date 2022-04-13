@@ -315,10 +315,12 @@ The high-level features we are going to work on the next few months
   - [x] Activeloop Hub integration (Start: _Feb 14 2022_, Shipped: _Feb 22, 2022_)
   - [x] PyTorch-Ignite integration (Start: _Feb 14 2022_, Shipped: _Feb 22, 2022_)
   - [x] Run summary and overview info(system params, CLI args, git info, ...) (Start: _Feb 14 2022_, Shipped: _Mar 9, 2022_)
+  - [x] Add DVC related metadata into aim run (Start: _Mar 7 2022_, Shipped: _Mar 26, 2022_)
 
 ### In Progress
   - [ ] Ability to attach notes to Run from UI (Start: _Mar 7 2022_)
-  - [ ] Add DVC related metadata into aim run (Start: _Mar 7 2022_)
+  - [ ] Cloud storage support – store runs blob(e.g. images) data on the cloud (Start: _Mar 21 2022_)
+  - [ ] Artifact storage – store files, model checkpoints, and beyond (Start: _Mar 21 2022_)
 
 ### To Do
 
@@ -337,9 +339,6 @@ The high-level features we are going to work on the next few months
 
 **SDK and Storage**
 
-- Cloud-native support
-    - Cloud storage support – store runs blob(e.g. images) data on the cloud
-    - Artifact storage – store files, model checkpoints, and beyond
 - Scalability
     - Smooth UI and SDK experience with over 10.000 runs
     - Long sequences(up to 5M of steps) support

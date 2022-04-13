@@ -1,6 +1,6 @@
 @use 'src/styles/abstracts' as *;
 
-.ImagesExploreRangePanel {
+.RangePanel {
   display: flex;
   align-items: center;
   height: 2.75rem;
@@ -8,33 +8,43 @@
   justify-content: center;
   background: $white;
   border-top: $border-main;
-  border-bottom: $border-main;
-  &__container {
+  border-bottom-right-radius: toRem(6px);
+  .RangePanelContainer {
     display: flex;
     align-items: center;
     height: 100%;
     width: 100%;
     max-width: 85rem;
     padding: 0 2.125rem;
-
-    &__searchButtonContainer {
-      padding-left: 2.75rem;
-      border-left: $border-main;
-      margin-left: 2.75rem;
+    justify-content: center;
+    .ApplyButtonContainer {
       height: 100%;
       display: flex;
       align-items: center;
-      &__searchButton {
+      .ApplyButton {
         height: 1.5rem !important;
         width: 5.125rem;
       }
     }
-    &__sliderContainerSeparator {
+
+    .VerticalDivider {
       width: 0.0625rem;
       height: 1.5rem;
       background: $primary-color-10;
       margin-right: 2.75rem;
       margin-left: 2.75rem;
+    }
+    .InfoMassageBox {
+      width: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      i {
+        margin-right: $space-sm;
+      }
+      .InfoMessageBoldText {
+        margin: 0 toRem(3px);
+      }
     }
   }
 }

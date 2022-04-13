@@ -239,12 +239,14 @@ function imagesExploreTableRowRenderer(
           content:
             rowData.context.length > 1 ? (
               <Badge
+                monospace
                 size='small'
                 color={COLORS[0][0]}
                 label={`${rowData.context.length} values`}
               />
             ) : (
               <Badge
+                monospace
                 size='small'
                 color={COLORS[0][0]}
                 label={rowData.context[0] || 'Empty Context'}
@@ -312,6 +314,7 @@ function imagesExploreTableRowRenderer(
         row[col] = {
           content: (
             <Badge
+              monospace
               size='small'
               color={COLORS[0][0]}
               label={`${rowData[col].length} values`}
@@ -340,12 +343,14 @@ function imagesExploreTableRowRenderer(
         content:
           rowData.context.length > 1 ? (
             <Badge
+              monospace
               size='small'
               color={COLORS[0][0]}
               label={`${rowData.context.length} values`}
             />
           ) : (
             <Badge
+              monospace
               size='small'
               color={COLORS[0][0]}
               label={rowData.context[0] || 'Empty Context'}

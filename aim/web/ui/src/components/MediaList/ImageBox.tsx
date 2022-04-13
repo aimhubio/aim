@@ -86,10 +86,9 @@ const ImageBox = ({
 
   return (
     <ErrorBoundary key={index}>
-      <div className='MediaSet__container__mediaItemsList__imageBox'>
+      <div className='ImageBox' style={style}>
         <div
-          style={style}
-          className={`MediaSet__container__mediaItemsList__imageBox__image MediaSet__container__mediaItemsList__imageBox__image--${
+          className={`ImageBox__image ImageBox__image--${
             additionalProperties.imageRendering
           } ${
             focusedState.key === data.key
@@ -102,12 +101,12 @@ const ImageBox = ({
           data-seqkey={`${data.seqKey}`}
           data-mediasetitem='mediaSetItem'
         >
-          <div className='MediaSet__container__mediaItemsList__imageBox__imageWrapper'>
+          <div className='ImageBox__imageWrapper'>
             <div
-              className={`MediaSet__container__mediaItemsList__imageBox__imageWrapper-item ${
+              className={`ImageBox__imageWrapper-item ${
                 additionalProperties.alignmentType ===
                 MediaItemAlignmentEnum.Height
-                  ? 'MediaSet__container__mediaItemsList__imageBox__imageWrapper-item-heightAlign'
+                  ? 'ImageBox__imageWrapper-item-heightAlign'
                   : ''
               }`}
             >
@@ -130,12 +129,9 @@ const ImageBox = ({
             <Button
               withOnlyIcon
               size='small'
-              className={classNames(
-                'MediaSet__container__mediaItemsList__imageBox__imageWrapper__zoomIconWrapper',
-                {
-                  isHidden: focusedState.key !== data.key,
-                },
-              )}
+              className={classNames('ImageBox__imageWrapper__zoomIconWrapper', {
+                isHidden: focusedState.key !== data.key,
+              })}
               onClick={onImageFullSizeModeButtonClick}
               color='inherit'
             >
