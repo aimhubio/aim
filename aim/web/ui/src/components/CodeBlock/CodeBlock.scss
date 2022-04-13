@@ -20,13 +20,11 @@
   .prism-code {
     background-color: transparent !important;
   }
-  &__copy__span {
-    top: 1em;
-    right: 1em;
-    width: 1.5rem;
-    height: 1.5rem;
+  &__copy__button {
+    top: 0.75rem;
+    right: 1rem;
     color: $pico-80;
-    display: flex;
+    display: inline-block;
     cursor: pointer;
     position: absolute;
     align-items: center;

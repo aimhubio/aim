@@ -4,6 +4,7 @@
 
 ### Enhancements:
 
+- Change font-family to monospace in the Table component (arsengit)
 - Add info massage for single value sliders (VkoHov)
 - Add `--log-level` argument for aim up/server commands (mihran113)
 - Add notes backend api interface (devfox-se)
