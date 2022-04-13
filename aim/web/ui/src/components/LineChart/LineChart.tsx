@@ -1,7 +1,10 @@
 import React from 'react';
 import * as d3 from 'd3';
+import classNames from 'classnames';
 
 import ErrorBoundary from 'components/ErrorBoundary/ErrorBoundary';
+
+import { RENDER_LINES_OPTIMIZED_LIMIT } from 'config/charts';
 
 import useResizeObserver from 'hooks/window/useResizeObserver';
 
@@ -71,7 +74,7 @@ const LineChart = React.forwardRef(function LineChart(
   const bgRectNodeRef = React.useRef(null);
   const plotNodeRef = React.useRef(null);
   const axesNodeRef = React.useRef(null);
-  const linesNodeRef = React.useRef(null);
+  const linesNodeRef = React.useRef<any>(null);
   const attributesNodeRef = React.useRef(null);
   const xAxisLabelNodeRef = React.useRef(null);
   const yAxisLabelNodeRef = React.useRef(null);
@@ -124,7 +127,7 @@ const LineChart = React.forwardRef(function LineChart(
       if (visAreaRef.current && !readOnly) {
         d3.select(visAreaRef.current)
           .append('text')
-          .attr('class', 'LineChart__emptyData')
+          .classed('LineChart__emptyData', true)
           .text('No Data');
       }
       return;
@@ -159,6 +162,14 @@ const LineChart = React.forwardRef(function LineChart(
       aggregationConfig,
       processedAggrData,
     });
+
+    // render lines with low quality if lines count are more than 'RENDER_LINES_OPTIMIZED_LIMIT'
+    if (!readOnly && linesNodeRef.current) {
+      const linesCount = linesNodeRef.current.selectChildren().size();
+      if (linesCount > RENDER_LINES_OPTIMIZED_LIMIT) {
+        linesNodeRef.current.classed('optimizeRendering', true);
+      }
+    }
 
     if (!readOnly) {
       drawHoverAttributes({
@@ -214,6 +225,7 @@ const LineChart = React.forwardRef(function LineChart(
         rafIDRef.current = window.requestAnimationFrame(renderChart);
       }
     },
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     [
       data,
       zoom,
@@ -242,6 +254,7 @@ const LineChart = React.forwardRef(function LineChart(
         window.cancelAnimationFrame(rafIDRef.current);
       }
     };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [
     data,
     zoom,
@@ -281,7 +294,9 @@ const LineChart = React.forwardRef(function LineChart(
     <ErrorBoundary>
       <div
         ref={parentRef}
-        className={`LineChart ${!readOnly && zoom?.active ? 'zoomMode' : ''}`}
+        className={classNames('LineChart', {
+          zoomMode: !readOnly && zoom?.active,
+        })}
       >
         <div ref={visAreaRef} />
       </div>

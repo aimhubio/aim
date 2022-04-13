@@ -63,6 +63,19 @@ const RunOverviewTab = React.lazy(
   () => import(/* webpackChunkName: "RunOverviewTab" */ './RunOverviewTab'),
 );
 
+const tabs: string[] = [
+  'overview',
+  'parameters',
+  'metrics',
+  'system',
+  'distributions',
+  'images',
+  'audios',
+  'texts',
+  'figures',
+  'settings',
+];
+
 function RunDetail(): React.FunctionComponentElement<React.ReactNode> {
   let runsOfExperimentRequestRef: any = null;
   const runData = useModel(runDetailAppModel);
@@ -75,20 +88,6 @@ function RunDetail(): React.FunctionComponentElement<React.ReactNode> {
   const { url } = useRouteMatch();
   const { pathname } = useLocation();
   const [activeTab, setActiveTab] = React.useState(pathname);
-
-  const tabs: string[] = [
-    'overview',
-    'parameters',
-    'notes',
-    'metrics',
-    'system',
-    'distributions',
-    'images',
-    'audios',
-    'texts',
-    'figures',
-    'settings',
-  ];
 
   const tabContent: { [key: string]: JSX.Element } = {
     overview: <RunOverviewTab runHash={runHash} runData={runData} />,
@@ -195,18 +194,21 @@ function RunDetail(): React.FunctionComponentElement<React.ReactNode> {
       experimentRequestRef?.abort();
       notesModel.destroy();
     };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [runHash]);
 
   React.useEffect(() => {
     if (runData?.experimentId) {
       getRunsOfExperiment(runData?.experimentId);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [runData?.experimentId]);
 
   React.useEffect(() => {
     if (pathname !== activeTab) {
       setActiveTab(pathname);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [pathname]);
 
   React.useEffect(() => {
@@ -299,14 +301,14 @@ function RunDetail(): React.FunctionComponentElement<React.ReactNode> {
               className='RunDetail__runDetailContainer__Tabs container'
               value={activeTab}
               onChange={handleTabChange}
-              aria-label='simple tabs example'
               indicatorColor='primary'
               textColor='primary'
             >
               {tabs.map((tab) => (
                 <Tab
-                  key={tab}
+                  key={`${url}/${tab}`}
                   label={tab}
+                  selected={`${url}/${tab}` === activeTab}
                   value={`${url}/${tab}`}
                   component={Link}
                   to={`${url}/${tab}`}

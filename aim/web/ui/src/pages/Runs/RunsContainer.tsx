@@ -51,6 +51,7 @@ function RunsContainer(): React.FunctionComponentElement<React.ReactNode> {
       unListenHistory();
       runsAppModel.destroy();
     };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   return (

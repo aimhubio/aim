@@ -2,10 +2,7 @@ import React from 'react';
 
 import { HighlightEnum } from 'components/HighlightModesPopover/HighlightModesPopover';
 
-import {
-  IAggregatedData,
-  IAggregationConfig,
-} from 'types/services/models/metrics/metricsAppModel';
+import { IAggregationConfig } from 'types/services/models/metrics/metricsAppModel';
 
 import { CurveEnum } from 'utils/d3';
 

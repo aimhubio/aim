@@ -93,6 +93,7 @@ const ChartPanel = React.forwardRef(function ChartPanel(
         setActivePointRect(null);
       }
     },
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     [chartRefs, setActiveElemPos, props.chartType, props.onActivePointChange],
   );
 

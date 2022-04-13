@@ -111,7 +111,6 @@ export default async function onAlignmentMetricChange<M extends State>({
         };
         model.setState({ requestStatus: RequestStatusEnum.BadRequest });
         updateModelData(configData, true);
-        console.log('Unhandled error: ', ex);
       }
     }
   }

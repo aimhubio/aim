@@ -66,6 +66,7 @@ function RunMetricCard({
             .map((label: string, i: number) => (
               <Badge
                 key={i}
+                monospace
                 size='large'
                 color={COLORS[0][(i + index) % COLORS[0].length]}
                 label={label || 'Empty context'}

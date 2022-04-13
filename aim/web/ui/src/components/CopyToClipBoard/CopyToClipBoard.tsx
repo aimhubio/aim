@@ -1,6 +1,8 @@
 import React from 'react';
 
-import { Icon } from 'components/kit';
+import { Tooltip } from '@material-ui/core';
+
+import { Button, Icon } from 'components/kit';
 import ErrorBoundary from 'components/ErrorBoundary/ErrorBoundary';
 
 import { ICopyToClipBoardProps } from 'types/components/CopyToClipBoard/CopyToClipBoard';
@@ -18,6 +20,7 @@ function CopyToClipboard({
         setShowCopiedIcon(false);
       }, showSuccessDelay);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [showCopiedIcon]);
 
   const onCopy = React.useCallback(() => {
@@ -33,13 +36,13 @@ function CopyToClipboard({
 
   return (
     <ErrorBoundary>
-      <span className={className} onClick={onCopy}>
-        {showCopiedIcon ? (
-          <span style={{ color: 'green', fontSize: 12 }}>Copied!</span>
-        ) : (
-          <Icon name='copy' />
-        )}
-      </span>
+      <Tooltip title={showCopiedIcon ? 'Copied!' : 'Copy to clipboard'}>
+        <span className={className} onClick={onCopy}>
+          <Button withOnlyIcon color='secondary' size='medium'>
+            {showCopiedIcon ? <Icon name='check' /> : <Icon name='copy' />}
+          </Button>
+        </span>
+      </Tooltip>
     </ErrorBoundary>
   );
 }

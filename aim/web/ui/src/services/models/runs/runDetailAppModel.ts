@@ -1,5 +1,4 @@
-import { noop } from 'lodash';
-import _ from 'lodash';
+import _ from 'lodash-es';
 
 import { IRunBatch } from 'pages/RunDetail/types';
 
@@ -192,7 +191,7 @@ function archiveRun(id: string, archived: boolean = false) {
     });
 }
 
-function deleteRun(id: string, successCallback: () => void = noop) {
+function deleteRun(id: string, successCallback: () => void = _.noop) {
   try {
     runsService
       .deleteRun(id)

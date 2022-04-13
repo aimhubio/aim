@@ -5,6 +5,9 @@
   &__runDetailContainer {
     height: 100%;
     background: $cuddle-10;
+    .BaseTable__row-cell {
+      font-family: 'Iosevka', monospace;
+    }
     &__Tabs {
       .MuiTabs-fixed {
         overflow: auto !important;

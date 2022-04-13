@@ -19,6 +19,7 @@ function Cell({
   groupColumnColored,
   getColumnCelBGColor,
   columnsColorScales,
+  isNumeric,
 }) {
   return (
     <ErrorBoundary>
@@ -35,6 +36,7 @@ function Cell({
             (!isConfigColumn && metadata?.color) ||
             (!groupColumnColored && metadata?.color),
           groupColumnWithoutColor: !groupColumnColored,
+          isNumeric: isNumeric,
         })}
         style={{
           cursor:
@@ -66,6 +68,7 @@ function Cell({
           <div
             className={classNames('Table__cell__value', {
               hasColorIndicator: !isConfigColumn && metadata?.color,
+              isNumeric,
             })}
           >
             {typeof item === 'object' && item?.hasOwnProperty('content')
