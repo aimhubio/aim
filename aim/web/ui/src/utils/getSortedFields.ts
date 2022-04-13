@@ -1,4 +1,4 @@
-import _ from 'lodash';
+import _ from 'lodash-es';
 
 import { IGroupingSelectOption } from 'types/services/models/imagesExplore/imagesExploreAppModel';
 

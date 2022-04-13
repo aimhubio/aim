@@ -1,7 +1,5 @@
-import React from 'react';
 import { Link as RouteLink } from 'react-router-dom';
-import { merge } from 'lodash-es';
-import _ from 'lodash';
+import _ from 'lodash-es';
 
 import { Link, Tooltip } from '@material-ui/core';
 
@@ -168,7 +166,7 @@ function getParamsTableColumns(
       const systemMetric: boolean = isSystemMetric(key);
       const systemMetricsList: ITableColumn[] = [];
       const metricsList: ITableColumn[] = [];
-      Object.keys(metricsColumns[key]).map((metricContext) => {
+      Object.keys(metricsColumns[key]).forEach((metricContext) => {
         const columnKey = `${systemMetric ? key : `${key}_${metricContext}`}`;
         let column = {
           key: columnKey,
@@ -176,6 +174,7 @@ function getParamsTableColumns(
             <span>{formatSystemMetricName(key)}</span>
           ) : (
             <Badge
+              monospace
               size='small'
               color={COLORS[0][0]}
               label={metricContext === '' ? 'Empty context' : metricContext}
@@ -391,6 +390,7 @@ function paramsTableRowRenderer(
           content: (
             <ErrorBoundary>
               <Badge
+                monospace
                 size='small'
                 color={COLORS[0][0]}
                 label={`${rowData[col].length} values`}
@@ -401,7 +401,7 @@ function paramsTableRowRenderer(
       }
     }
 
-    return merge({}, rowData, row);
+    return _.merge({}, rowData, row);
   } else {
     const row = {
       experiment: rowData.experiment,
@@ -432,7 +432,7 @@ function paramsTableRowRenderer(
       },
     };
 
-    return merge({}, rowData, row);
+    return _.merge({}, rowData, row);
   }
 }
 

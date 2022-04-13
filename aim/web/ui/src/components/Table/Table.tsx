@@ -161,6 +161,7 @@ const Table = React.forwardRef(function Table(
         beforeScrollHeight += itemHeight + groupMargin;
         scrollBottomHeight += itemHeight + groupMargin;
         if (expandedGroups.current.includes(groupKey)) {
+          // eslint-disable-next-line no-loop-func
           dataRef.current[groupKey].items.forEach((row) => {
             if (scrollTop > beforeScrollHeight) {
               beforeScrollHeight += itemHeight;
@@ -557,9 +558,11 @@ const Table = React.forwardRef(function Table(
 
     return () => {
       if (custom && tableContainerRef.current) {
+        // eslint-disable-next-line react-hooks/exhaustive-deps
         tableContainerRef.current.onscroll = null;
       }
     };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [custom, rowData]);
 
   React.useEffect(() => {
@@ -621,6 +624,7 @@ const Table = React.forwardRef(function Table(
       TABLE_DEFAULT_CONFIG[appName as Exclude<AppNameEnum, 'runs'>]?.sortFields
         ?.length !== sortFields?.length
     );
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [sortFields]);
 
   useResizeObserver(

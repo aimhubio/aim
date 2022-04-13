@@ -11,10 +11,7 @@ import {
   ISyncHoverStateArgs,
 } from 'types/utils/d3/drawHoverAttributes';
 import { IAxisScale } from 'types/utils/d3/getAxisScale';
-import {
-  ILine,
-  IUpdateFocusedChartArgs,
-} from 'types/components/LineChart/LineChart';
+import { IUpdateFocusedChartArgs } from 'types/components/LineChart/LineChart';
 
 import { AggregationAreaMethods } from 'utils/aggregateGroupData';
 import getRoundedValue from 'utils/roundValue';

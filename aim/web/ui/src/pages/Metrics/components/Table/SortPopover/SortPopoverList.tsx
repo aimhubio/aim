@@ -1,6 +1,6 @@
 import React from 'react';
 import classNames from 'classnames';
-import _ from 'lodash';
+import _ from 'lodash-es';
 
 import { ToggleButton, Icon, Text, Button } from 'components/kit';
 import ErrorBoundary from 'components/ErrorBoundary/ErrorBoundary';

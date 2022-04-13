@@ -1,4 +1,5 @@
 import React from 'react';
+import * as dot from 'dot-object';
 
 import ErrorBoundary from 'components/ErrorBoundary/ErrorBoundary';
 import Card from 'components/kit/Card/Card';
@@ -7,18 +8,19 @@ import { Text } from 'components/kit';
 
 import getObjectPaths from 'utils/getObjectPaths';
 import { formatValue } from 'utils/formatValue';
-import { getValue } from 'utils/helper';
 
 function RunOverviewTabParamsCard({ runParams, isRunInfoLoading }: any) {
   const tableData = React.useMemo(() => {
     const paths = getObjectPaths(runParams, runParams).filter(
       (path) => !path.startsWith('__system_params'),
     );
+    const dotted = dot.dot(runParams);
+    const modified = dot.object(dotted);
     const resultTableList = paths.map((path, index) => {
       return {
         key: index,
         name: path,
-        value: formatValue(getValue(runParams, path)),
+        value: formatValue(dot.pick(path, modified)),
       };
     });
     return resultTableList || [];
@@ -54,6 +56,7 @@ function RunOverviewTabParamsCard({ runParams, isRunInfoLoading }: any) {
         cellRenderer: ({ cellData }: any) => <p title={cellData}>{cellData}</p>,
       },
     ],
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     [runParams, tableData],
   );
 

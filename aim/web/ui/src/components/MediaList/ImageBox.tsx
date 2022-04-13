@@ -65,8 +65,7 @@ const ImageBox = ({
         subscription.unsubscribe();
       }
     };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  });
+  }, [addUriToList, blobData, blob_uri]);
 
   function onImageFullSizeModeButtonClick(e: React.ChangeEvent<any>): void {
     e.stopPropagation();

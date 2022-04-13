@@ -34,7 +34,7 @@ export default function getAggregatedData<M extends State>({
       color:
         metricsCollection.color ||
         COLORS[paletteIndex][index % COLORS[paletteIndex].length],
-      dasharray: metricsCollection.dasharray || '0',
+      dasharray: metricsCollection.dasharray || 'none',
     });
   });
 
