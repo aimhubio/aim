@@ -122,6 +122,11 @@
 
   .Lines {
     overflow: hidden;
+    @media (-webkit-min-device-pixel-ratio: 2), (min-resolution: 192dpi) {
+      &.optimizeRendering {
+        shape-rendering: optimizeSpeed;
+      }
+    }
   }
 
   .Line {

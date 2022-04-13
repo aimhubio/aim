@@ -4,6 +4,7 @@
 
 ### Enhancements:
 
+- Increase the scalability of rendering lines in charts (KaroMourad)
 - Increase live update requests delay to prevent performance issues  (rubenaprikyan)
 - Change font-family to monospace in the Table component (arsengit)
 - Add info massage for single value sliders (VkoHov)

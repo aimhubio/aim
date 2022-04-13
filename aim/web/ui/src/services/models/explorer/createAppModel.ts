@@ -984,7 +984,7 @@ function createAppModel(appConfig: IAppInitialConfig) {
               ...trace,
               run: createRunModel(_.omit(run, 'traces') as IRun<IMetricTrace>),
               key: metricKey,
-              dasharray: '0',
+              dasharray: 'none',
               color: COLORS[paletteIndex][index % COLORS[paletteIndex].length],
               isHidden: configData?.table?.hiddenMetrics!.includes(metricKey),
               data: {
