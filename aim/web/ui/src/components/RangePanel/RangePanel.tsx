@@ -1,5 +1,5 @@
 import React from 'react';
-import _ from 'lodash';
+import _ from 'lodash-es';
 
 import SliderWithInput from 'components/SliderWithInput';
 import { Button, Icon, Text } from 'components/kit';
