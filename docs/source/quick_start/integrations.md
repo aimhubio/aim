@@ -22,15 +22,13 @@ for step in range(10):
 
 Aim easily integrates with your favourite ML frameworks.
 
-Aim loggers give access to the `aim.Run` object instance via the `experiment` property. The `aim.Run` instance will help
-you to easily track additional metrics or set any other `key: value` pairs (params) relevant to your project.
+Aim loggers give access to the `aim.Run` object instance via the `experiment` property. The `aim.Run` instance will help you to easily track additional metrics or set any other `key: value` pairs (params) relevant to your project.
 
-In this way you can easily extend the default integrations. More info about this is abailable on Integration
-guides [section.](../using/integration_guides.html)
+In this way you can easily extend the default integrations. More info about this is abailable on Integration guides [section.](../using/integration_guides.html) 
 
 ### Integration with Pytorch Ignite
+[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/aimhubio/tutorials/blob/publication/notebooks/pytorch_ignite_track.ipynb)  
 
-[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/aimhubio/tutorials/blob/publication/notebooks/pytorch_ignite_track.ipynb)
 
 It only takes 2 steps to simply and easily inject Aim into pytorch ignite:
 
@@ -38,10 +36,7 @@ It only takes 2 steps to simply and easily inject Aim into pytorch ignite:
 # import aim sdk designed for pytorch ignite
 from aim.pytorch_ignite import AimLogger
 ```
-
-Pytorch Ignite provides trainer objects to simplify the training process of pytorch model. We can attach the trainer
-object as AimLogger's output handler to use the logger function defined by aim to simplify the process of tracking
-experiments. This process is divided into 2 steps:
+Pytorch Ignite provides trainer objects to simplify the training process of pytorch model. We can attach the trainer object as AimLogger's output handler to use the logger function defined by aim to simplify the process of tracking experiments. This process is divided into 2 steps:
 
 Step 1. Create `AimLogger` object
 
@@ -56,6 +51,7 @@ aim_logger = AimLogger(
 
 Step 2. Attach output handler to the `aim_logger` object
 
+
 ```python
 aim_logger.attach_output_handler(
     trainer,
@@ -66,8 +62,7 @@ aim_logger.attach_output_handler(
 ```
 
 Adapter source can be found [here](https://github.com/aimhubio/aim/blob/main/aim/sdk/adapters/pytorch_ignite.py).  
-Example using Pytorch Ignite can be
-found [here](https://github.com/aimhubio/aim/blob/main/examples/pytorch_ignite_track.py).
+Example using Pytorch Ignite can be found [here](https://github.com/aimhubio/aim/blob/main/examples/pytorch_ignite_track.py).
 
 ### Integration with Pytorch Lightning
 
@@ -82,9 +77,7 @@ We only require 2 steps to simply and easily inject Aim into pytorch lightining:
 from aim.pytorch_lightning import AimLogger
 ```
 
-Pytorch lighting provides trainer objects to simplify the training process of pytorch model. One of the parameters is
-called logger. We can use the logger function defined by aim to simplify the process of tracking experiments. This
-process is divided into 2 steps:
+Pytorch lighting provides trainer objects to simplify the training process of pytorch model. One of the parameters is called logger. We can use the logger function defined by aim to simplify the process of tracking experiments. This process is divided into 2 steps:
 
 Step 1. Create `AimLogger` object
 
@@ -99,14 +92,14 @@ aim_logger = AimLogger(
 
 Step 2. Pass the `aim_logger` object as the `logger` argument
 
+
 ```python
 # track experimental data by using Aim
 trainer = Trainer(gpus=1, progress_bar_refresh_rate=20, max_epochs=5, logger=aim_logger)
 ```
-
 Adapter source can be found [here](https://github.com/aimhubio/aim/blob/main/aim/sdk/adapters/pytorch_lightning.py).  
-Example using Pytorch Lightning can be
-found [here](https://github.com/aimhubio/aim/blob/main/examples/pytorch_lightning_track.py).
+Example using Pytorch Lightning can be found [here](https://github.com/aimhubio/aim/blob/main/examples/pytorch_lightning_track.py).
+
 
 ### Integration with Hugging Face
 
@@ -122,16 +115,14 @@ Step 1: Import the sdk designed by Aim for Huggingface.
 from aim.hugging_face import AimCallback
 ```
 
-Step 2: Hugging Face has a trainer api to help us simplify the training process. This api provides a callback function
-to return the information that the user needs. Therefore, aim has specially designed SDK to simplify the process of the
-user writing callback functions, we only need to initialize `AimCallback` object as follows:
+Step 2: Hugging Face has a trainer api to help us simplify the training process. This api provides a callback function to return the information that the user needs. Therefore, aim has specially designed SDK to simplify the process of the user writing callback functions, we only need to initialize `AimCallback` object as follows:
 
 ```python
 # Initialize aim_callback
 aim_callback = AimCallback(experiment='huggingface_experiment')
 # Initialize trainer
 trainer = Trainer(
-    model=model,
+    model=model,    
     args=training_args,
     train_dataset=small_train_dataset,
     eval_dataset=small_eval_dataset,
@@ -139,10 +130,9 @@ trainer = Trainer(
     callbacks=[aim_callback]
 )
 ```
-
 Adapter source can be found [here](https://github.com/aimhubio/aim/blob/main/aim/sdk/adapters/hugging_face.py).  
-Example using Hugging Face can be found [here](https://github.com/aimhubio/aim/blob/main/examples/hugging_face_track.py)
-.
+Example using Hugging Face can be found [here](https://github.com/aimhubio/aim/blob/main/examples/hugging_face_track.py).
+
 
 ### Integration with Keras & tf.Keras
 
@@ -159,20 +149,18 @@ from aim.tensorflow import AimCallback
 from aim.keras import AimCallback
 ```
 
-In keras, we call the `fit()` method of the model object to train the data. The callbacks are provided
-here. `AimCallback` inherits the usage specification of callbacks. We just need to add it to the callbacks list.
+In keras, we call the `fit()` method of the model object to train the data. The callbacks are provided here. `AimCallback` inherits the usage specification of callbacks. We just need to add it to the callbacks list.
 
 ```python
 model.fit(x_train, y_train, epochs=5, callbacks=[
-    # in case of tf.keras, we use aim.tensorflow.AimCallback 
-    AimCallback(experiment='aim_on_keras')
+          # in case of tf.keras, we use aim.tensorflow.AimCallback 
+          AimCallback(experiment='aim_on_keras')                                      
 ])
 ```
 
 Adapter source can be found [here](https://github.com/aimhubio/aim/blob/main/aim/sdk/adapters/tensorflow.py).  
 Example using Keras can be found [here](https://github.com/aimhubio/aim/blob/main/examples/keras_track.py).  
-Example using tf.Keras can be found [here](https://github.com/aimhubio/aim/blob/main/examples/tensorflow_keras_track.py)
-.
+Example using tf.Keras can be found [here](https://github.com/aimhubio/aim/blob/main/examples/tensorflow_keras_track.py).
 
 ### Integration with XGboost
 
@@ -187,23 +175,23 @@ Step 1: Explicitly import the `AimCallback` for tracking training data.
 from aim.xgboost import AimCallback
 ```
 
-Step 2: XGboost provides the `xgboost.train` method for model training, in which the callbacks parameter can call back
-data information from the outside. Here we pass in aimcallbacl designed for tracking data information
+Step 2: XGboost provides the `xgboost.train` method for model training, in which the callbacks parameter can call back data information from the outside. Here we pass in aimcallbacl designed for tracking data information
 
 ```python
 xgboost.train(param, dtrain, num_round, watchlist,
-              callbacks=[AimCallback(experiment='xgboost_test')])
+                            callbacks=[AimCallback(experiment='xgboost_test')])
 ```
 
-During the training process, you can start another terminal in the same directory, start `aim up` and you can observe
-the information in real time.
+During the training process, you can start another terminal in the same directory, start `aim up` and you can observe the information in real time.
 
 Adapter source can be found [here](https://github.com/aimhubio/aim/blob/main/aim/sdk/adapters/xgboost.py).  
 Example using XGboost can be found [here](https://github.com/aimhubio/aim/blob/main/examples/xgboost_track.py).
 
+
 ### Integration with LightGBM
 
-Aim has integration with [LightGBM](https://lightgbm.readthedocs.io/en/latest/index.html) to help you track your training data.
+Aim has integration with [LightGBM](https://lightgbm.readthedocs.io/en/latest/index.html) to help you track your
+training data.
 
 Step 1: Explicitly import the `AimCallback` for tracking training data.
 
