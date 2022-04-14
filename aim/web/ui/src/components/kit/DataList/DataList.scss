@@ -48,16 +48,19 @@
         padding: toRem(7px) toRem(16px);
         border-right: unset;
         border-bottom: $border-grey;
+        display: flex;
         p {
           word-break: break-all;
           white-space: normal;
         }
 
         &:last-child {
-          display: inline-block;
+          display: flex;
           border-right: none;
           white-space: normal;
-          overflow: auto !important;
+          &:has(> pre) {
+            overflow: auto !important;
+          }
         }
       }
 

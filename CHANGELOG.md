@@ -4,6 +4,7 @@
 
 ### Enhancements:
 
+- Add the run name to the batch delete and the batch archive modals (VkoHov)
 - Increase the scalability of rendering lines in charts (KaroMourad)
 - Increase live update requests delay to prevent performance issues  (rubenaprikyan)
 - Change font-family to monospace in the Table component (arsengit)

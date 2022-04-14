@@ -76,14 +76,14 @@
     &__tabsContainer {
       border-bottom: $border-grey-lighter;
       background: #ffffff;
-      box-shadow: 0px 4px 6px rgba(144, 175, 218, 0.2);
+      box-shadow: 0 toRem(4px) toRem(6px) rgba(144, 175, 218, 0.2);
       border-bottom: 0.0625rem solid $cuddle;
       border-top: 0.0625rem solid $cuddle;
       .PrivateTabIndicator-root-1 {
         display: none;
       }
       .MuiTabs-root {
-        height: 40px;
+        height: toRem(40px);
         min-height: auto;
       }
       .MuiTabs-flexContainer {
@@ -114,7 +114,7 @@
             &::before {
               content: '';
               width: 100%;
-              height: 3px;
+              height: toRem(3px);
               background: $primary-color;
               position: absolute;
               left: 0;
@@ -133,7 +133,7 @@
     }
     &__tabPanel {
       overflow-y: auto;
-      height: calc(100vh - 98px);
+      height: calc(100vh - ToRem(98px));
       .MuiBox-root {
         height: 100%;
         .runDetailParamsTabLoader {
@@ -210,10 +210,10 @@
 .RunDetailSettingsTab {
   padding: 1.5rem 0;
   &__actionCardsCnt {
-    margin: 0 164px;
+    margin: 0 toRem(164px);
 
     .ActionCard {
-      margin-bottom: 16px;
+      margin-bottom: toRem(16px);
     }
 
     &__btn__delete {
@@ -284,38 +284,48 @@
             left: 0;
             z-index: 1;
           }
-
-          &__experimentBox {
-            height: 2rem;
-            padding: 0 1rem;
-            display: flex;
-            align-items: center;
-            cursor: pointer;
-            border-radius: 0.3125rem 0 0 0.3125rem;
-            margin-bottom: 0.125rem;
+          &__experimentContainer {
             position: relative;
+            width: 100%;
+            margin-bottom: $space-xxxxs;
+            border-radius: 0.3125rem 0 0 0.3125rem;
+
             &:last-child {
               margin-bottom: 0;
             }
-            &:hover {
-              border-radius: $border-radius-sm;
-              background: $cuddle-20;
-              margin-right: 0.5rem;
-            }
-            &__experimentName {
-              overflow: hidden;
-              text-overflow: ellipsis;
-              white-space: nowrap;
-            }
-            &.selected {
-              background: $cuddle-10;
-              border-bottom: $border-main;
-              border-top: $border-main;
-              &:hover {
-                margin-right: 0;
-                border-radius: 0.3125rem 0 0 0.3125rem;
-              }
+            .experimentBox {
+              height: auto;
+              display: flex;
+              align-items: center;
+              cursor: pointer;
+              border-radius: 0.3125rem 0 0 0.3125rem;
+              padding: 0.5rem 1.5rem 0.5rem 1rem;
+              border-bottom: $border-transparent;
+              border-top: $border-transparent;
 
+              &:hover {
+                border-radius: $border-radius-sm;
+                background: $cuddle-20;
+                margin-right: 0.5rem;
+                padding: 0.5rem 1rem;
+              }
+              &__experimentName {
+                width: 100%;
+                word-break: break-all;
+              }
+            }
+
+            &.selected {
+              .experimentBox {
+                background: $cuddle-10;
+                border-bottom: $border-main;
+                border-top: $border-main;
+                &:hover {
+                  padding: 0.5rem 1.5rem 0.5rem 1rem;
+                  margin-right: 0;
+                  border-radius: 0.3125rem 0 0 0.3125rem;
+                }
+              }
               &::before {
                 content: '';
                 height: 100%;
@@ -323,7 +333,7 @@
                 top: 0;
                 left: 0;
                 background: $denim;
-                width: 0.375rem;
+                width: 0.25rem;
                 position: absolute;
               }
             }
@@ -373,13 +383,13 @@
             }
           }
           &__runBox {
-            height: 3.5rem;
-            padding: 0.625rem 0.5rem;
+            height: auto;
+            padding: 0.5rem 0.5rem;
             display: flex;
             align-items: flex-start;
             cursor: pointer;
             text-decoration: unset;
-            margin-bottom: 0.375rem;
+            margin-bottom: $space-xxxxs;
             position: relative;
             flex-direction: column;
             border-radius: $border-radius-sm;
@@ -389,12 +399,23 @@
             &__runName {
               width: 95%;
               margin-bottom: $space-xxs;
+              position: relative;
               span {
                 display: block;
-                overflow: hidden;
-                text-overflow: ellipsis;
                 max-width: 100%;
-                white-space: nowrap;
+                word-break: break-all;
+              }
+              &.in-progress {
+                &::after {
+                  content: '';
+                  position: absolute;
+                  right: -0.875rem;
+                  width: 0.375rem;
+                  height: 0.375rem;
+                  top: 0.375rem;
+                  border-radius: $border-radius-circle;
+                  background: $success-color-100;
+                }
               }
             }
             &__runDate {
@@ -405,18 +426,6 @@
               }
             }
 
-            &.in-progress {
-              &::after {
-                content: '';
-                position: absolute;
-                right: 0.625rem;
-                width: 0.375rem;
-                height: 0.375rem;
-                top: 0.75rem;
-                border-radius: $border-radius-circle;
-                background: $success-color-100;
-              }
-            }
             &:hover {
               background: $cuddle-20;
             }

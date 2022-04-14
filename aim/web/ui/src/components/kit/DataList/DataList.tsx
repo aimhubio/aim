@@ -1,4 +1,5 @@
 import React from 'react';
+import classNames from 'classnames';
 
 import Table from 'components/Table/Table';
 import useTextSearch from 'components/kit/DataList/SearchBar/useTextSearch';
@@ -27,6 +28,9 @@ function DataList({
   withSearchBar = true,
   searchableKeys,
   illustrationConfig,
+  rowHeight = 32,
+  height = '100vh',
+  tableClassName = '',
 }: IDataListProps): React.FunctionComponentElement<React.ReactNode> {
   const textSearch = useTextSearch({
     rawData: tableData,
@@ -71,7 +75,7 @@ function DataList({
     tableRef.current?.updateData({ newData: getHighlightedData(data, regex) });
   }
   return (
-    <div className={'DataList'} style={{ height: '100vh' }}>
+    <div className={'DataList'} style={{ height }}>
       {withSearchBar && (
         <SearchBar
           isValidInput={textSearch.filterOptions.isValidSearch}
@@ -91,7 +95,9 @@ function DataList({
           <Table
             ref={tableRef}
             fixed={false}
-            className='DataList__textsTable'
+            className={classNames('DataList__textsTable', {
+              [tableClassName]: tableClassName,
+            })}
             columns={tableColumns}
             data={getHighlightedData(
               textSearch.data,
@@ -104,6 +110,7 @@ function DataList({
             illustrationConfig={illustrationConfig}
             height='100%'
             disableRowClick
+            rowHeight={rowHeight}
           />
         )}
       </BusyLoaderWrapper>
