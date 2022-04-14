@@ -1,79 +1,69 @@
 import { bytes__repr__ } from './encoder/bytes_repr';
 
-export function formatValue(value: any, undefinedValue: any = '-'): any {
-  let formatted = replacer(value, undefinedValue);
+const FORMATTERS: Record<string, Function> = {
+  undefined: format_undefined,
+  number: format_number,
+  string: format_string,
+  boolean: format_boolean,
+  object: format_object,
+};
 
-  // stringify 'object' type
-  if (typeof formatted === 'object') {
-    formatted = JSON.stringify(formatted, (key, node) => {
-      if (typeof node === 'string') {
-        // remove double-strings from 'node'
-        return node.replaceAll('"', '');
-      }
-      return node;
-    });
+function format_number(value: number): string {
+  if (isNaN(value)) {
+    return 'NaN';
   }
-  console.log('value: ', value, 'formatted: ', formatted);
-  return formatString(formatted);
+  if (!isFinite(value)) {
+    return value > 0 ? 'Inf' : '-Inf';
+  }
+
+  return JSON.stringify(value);
 }
 
-function replacer(value: any, undefinedValue: any = '-'): any {
-  switch (typeof value) {
-    case 'number':
-      if (isNaN(value)) {
-        return 'NaN';
+function format_string(value: string): string {
+  return JSON.stringify(value);
+}
+
+function format_boolean(value: boolean): string {
+  return value ? 'True' : 'False';
+}
+
+function format_array(value: unknown[], undefinedValue: string = '-'): string {
+  const pieces = [];
+  for (let i = 0; i < value.length; ++i) {
+    const piece = formatValue(value[i], undefinedValue);
+    pieces.push(piece);
+  }
+  return '[' + pieces.join(', ') + ']';
+}
+
+function format_object(
+  value: Record<string, unknown>,
+  undefinedValue: string = '-',
+): string {
+  if (value === null) {
+    return 'None';
+  } else if (value instanceof ArrayBuffer) {
+    return bytes__repr__(new Uint8Array(value), "'");
+  } else if (Array.isArray(value)) {
+    return format_array(value, undefinedValue);
+  } else {
+    let objStr = '{';
+    const keys = Object.keys(value);
+    for (let i = 0; i < keys.length; i++) {
+      if (i) {
+        objStr += ', ';
       }
-      if (!isFinite(value)) {
-        return value === Infinity ? 'Inf' : '-Inf';
-      }
-      return formatNumber(value);
-    case 'string':
-      return JSON.stringify(value);
-    case 'boolean':
-      return value ? 'True' : 'False';
-    case 'undefined':
-      return undefinedValue;
-    case 'object':
-      if (value === null) {
-        return 'None';
-      } else if (value instanceof ArrayBuffer) {
-        return bytes__repr__(new Uint8Array(value), "'");
-      } else if (Array.isArray(value)) {
-        const arr = [];
-        for (let v of [...value]) {
-          arr.push(replacer(v, undefinedValue));
-        }
-        return arr;
-      } else {
-        const obj: Record<string, unknown> = {};
-        for (let key of Object.keys({ ...value })) {
-          obj[key] = replacer(value[key], undefinedValue);
-        }
-        return obj;
-      }
-    default:
-      return value;
+      objStr += keys[i] + ': ' + formatValue(value[keys[i]], undefinedValue);
+    }
+    return objStr + '}';
   }
 }
 
-// TODO: implement proper formatting for numeric values
-function formatNumber(value: number): number {
-  return value;
+function format_undefined(value: any, undefinedValue: string = '-'): string {
+  return undefinedValue;
 }
 
-const formatsToReplace: [string, string][] = [
-  ['"True"', 'True'],
-  ['"False"', 'False'],
-  ['"NaN"', 'NaN'],
-  ['"Inf"', 'Inf'],
-  ['"-Inf"', '-Inf'],
-];
-
-function formatString(formattedValue: any) {
-  if (typeof formattedValue === 'string') {
-    formatsToReplace.forEach((f) => {
-      formattedValue = formattedValue.replaceAll(f[0], f[1]);
-    });
-  }
-  return formattedValue;
+export function formatValue(value: any, undefinedValue: string = '-'): string {
+  let formatter = FORMATTERS[typeof value];
+  return formatter(value, undefinedValue);
 }

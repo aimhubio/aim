@@ -25,14 +25,14 @@ export function bytes__repr__(arr: Uint8Array, quote?: string): string {
   tokens.push('b');
   tokens.push(quote);
   for (let c of arr) {
-    if (c == quote.charCodeAt(0) || c == 92) {
+    if (c === quote.charCodeAt(0) || c === 92) {
       tokens.push('\\');
       tokens.push(String.fromCharCode(c));
-    } else if (c == 9) {
+    } else if (c === 9) {
       tokens.push('\\t');
-    } else if (c == 10) {
+    } else if (c === 10) {
       tokens.push('\\n');
-    } else if (c == 13) {
+    } else if (c === 13) {
       tokens.push('\\r');
     } else if (c < 32 || c > 0x7f) {
       tokens.push('\\x');
