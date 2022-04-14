@@ -7,11 +7,15 @@ from io import BytesIO
 from pathlib import Path
 
 from aim.ext.external_storage import StorageRegistry
-from aim.storage.object import CustomObject
+from aim.storage.object import CustomObject, StorageClass
 from aim.storage.utils import ExtBLOB
 
 
 class Artifact(CustomObject):
+    @classmethod
+    def default_storage_class(cls) -> str:
+        return StorageClass.EXTERNAL
+
     def upload(self, to: str):
         raise NotImplementedError
 
@@ -22,9 +26,9 @@ class Artifact(CustomObject):
         return self.storage.get('hash') or uuid.uuid4().hex[:16]
 
 
-@CustomObject.alias('aim.File')
+@CustomObject.alias('aim.file')
 class File(Artifact):
-    AIM_NAME = 'aim.File'
+    AIM_NAME = 'aim.file'
 
     def __init__(self, file):
         if isinstance(file, str):
@@ -73,9 +77,9 @@ class File(Artifact):
         return file_name
 
 
-@CustomObject.alias('aim.Directory')
+@CustomObject.alias('aim.directory')
 class Directory(Artifact):
-    AIM_NAME = 'aim.Directory'
+    AIM_NAME = 'aim.directory'
 
     def __init__(self, directory, skip_hidden=True):
         if isinstance(directory, str):

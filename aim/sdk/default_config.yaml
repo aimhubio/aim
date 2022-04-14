@@ -1,0 +1,8 @@
+blob-storage-class:
+  image: embedded
+  audio: embedded
+  figure: embedded
+  text: embedded
+  distribution: embedded
+  file: external
+  directory: external

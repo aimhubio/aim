@@ -17,6 +17,7 @@ from aim.ext.transport.client import Client
 from aim.ext.external_storage import ExternalStorage, StorageRegistry, UploadManager
 
 from aim.sdk.configs import get_aim_repo_name, AIM_ENABLE_TRACKING_THREAD
+from aim.sdk.repo_settings import RepoSettings
 from aim.sdk.errors import RepoIntegrityError
 from aim.sdk.run import Run
 from aim.sdk.utils import search_aim_repo, clean_repo_path
@@ -147,6 +148,9 @@ class Repo:
                     self.structured_db.run_upgrades()
                     with open(os.path.join(self.path, 'VERSION'), 'w') as version_fh:
                         version_fh.write(DATA_VERSION + '\n')
+
+                self.config_file_path = os.path.join(self.path, 'config.yaml')
+                self.settings = RepoSettings(self.config_file_path)
 
         self._resources = RepoAutoClean(self)
 

@@ -4,6 +4,14 @@ from aim.storage.types import CustomObjectBase
 from aim.storage.inmemorytreeview import InMemoryTreeView
 
 
+class StorageClass:
+    AUTO = 'auto'
+    EMBEDDED = 'embedded'
+    EXTERNAL = 'external'
+
+    allowed_classes = (AUTO, EMBEDDED, EXTERNAL)
+
+
 class CustomObject(CustomObjectBase):
     registry: Dict[str, type] = {}
 
@@ -23,6 +31,10 @@ class CustomObject(CustomObjectBase):
     @staticmethod
     def by_name(name: str):
         return CustomObject.registry[name]
+
+    @classmethod
+    def default_storage_class(cls) -> str:
+        return StorageClass.EMBEDDED
 
     @classmethod
     def get_typename(cls):
