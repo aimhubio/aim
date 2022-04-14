@@ -57,6 +57,7 @@ REQUIRED = [
     'py3nvml>=0.2.5',
     'RestrictedPython>=5.1',
     'tqdm>=4.20.0',
+    'aiofiles>=0.5.0',
     'alembic>=1.4.0',
     'fastapi>=0.65.0,<0.68.0',
     'jinja2>=2.10.0',
