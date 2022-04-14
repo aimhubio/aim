@@ -5,8 +5,7 @@ import { Grid, GridSize } from '@material-ui/core';
 import ErrorBoundary from 'components/ErrorBoundary/ErrorBoundary';
 import { CHART_TYPES_CONFIG } from 'components/ChartPanel/config';
 
-import CHART_GRID_PATTERN from 'config/chart-grid-pattern/chartGridPattern';
-import { GRID_SIZE } from 'config/chart-grid-pattern/chartGridPattern';
+import { GRID_SIZE, CHART_GRID_PATTERN } from 'config/charts';
 
 import { IChartGridProps } from './ChartGrid.d';
 

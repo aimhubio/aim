@@ -204,7 +204,7 @@ function createAppModel(appConfig: IAppInitialConfig) {
       case AppDataTypeEnum.METRICS: {
         const config: IAppModelConfig = {
           liveUpdate: {
-            delay: 2000,
+            delay: 7000,
             enabled: false,
           },
         };
@@ -316,7 +316,7 @@ function createAppModel(appConfig: IAppInitialConfig) {
       case AppDataTypeEnum.RUNS: {
         const config: IAppModelConfig = {
           liveUpdate: {
-            delay: 2000,
+            delay: 7000,
             enabled: false,
           },
         };
@@ -634,6 +634,7 @@ function createAppModel(appConfig: IAppInitialConfig) {
               if (ex.name === 'AbortError') {
                 // Abort Error
               } else {
+                // eslint-disable-next-line no-console
                 console.log('Unhandled error: ', ex);
               }
             }
@@ -984,7 +985,7 @@ function createAppModel(appConfig: IAppInitialConfig) {
               ...trace,
               run: createRunModel(_.omit(run, 'traces') as IRun<IMetricTrace>),
               key: metricKey,
-              dasharray: '0',
+              dasharray: 'none',
               color: COLORS[paletteIndex][index % COLORS[paletteIndex].length],
               isHidden: configData?.table?.hiddenMetrics!.includes(metricKey),
               data: {
@@ -3407,6 +3408,7 @@ function createAppModel(appConfig: IAppInitialConfig) {
                 if (ex.name === 'AbortError') {
                   // Abort Error
                 } else {
+                  // eslint-disable-next-line no-console
                   console.log('Unhandled error: ', ex);
                 }
               }

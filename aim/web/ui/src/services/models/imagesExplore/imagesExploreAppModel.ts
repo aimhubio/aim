@@ -356,6 +356,7 @@ function getImagesData(
           if (ex.name === 'AbortError') {
             // Abort Error
           } else {
+            // eslint-disable-next-line no-console
             console.log('Unhandled error: ', ex);
           }
         }
@@ -1064,6 +1065,7 @@ function getImagesBlobsData(uris: string[]) {
           if (ex.name === 'AbortError') {
             // Abort Error
           } else {
+            // eslint-disable-next-line no-console
             console.log('Unhandled error: ');
           }
         });

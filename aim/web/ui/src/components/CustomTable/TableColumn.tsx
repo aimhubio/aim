@@ -3,7 +3,7 @@
 
 import * as React from 'react';
 import classNames from 'classnames';
-import { isNil } from 'lodash-es';
+import _ from 'lodash-es';
 
 import { MenuItem, Tooltip, Divider, Checkbox } from '@material-ui/core';
 
@@ -88,8 +88,10 @@ function Column({
       return [range[0] - 0.1, range[0]];
     }
     return range;
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [data]);
 
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   const getColumnCelBGColor = React.useCallback(
     getColorFromRange(
       colorScaleRange ? [colorScaleRange[0], _.last(colorScaleRange)] : null,
@@ -150,12 +152,14 @@ function Column({
       document.removeEventListener('mousemove', resize);
       document.removeEventListener('mouseup', resizeEnd);
     };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   React.useEffect(() => {
     if (columnRef.current && col.key !== 'selection') {
       columnRef.current.style.width = 'initial';
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [data, expanded, width]);
 
   const isInViewPort =

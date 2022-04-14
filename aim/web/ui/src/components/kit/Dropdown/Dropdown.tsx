@@ -212,7 +212,10 @@ function Dropdown({
   }
 
   useEffect(() => {
-    value && !labelSwapped && setLabelSwapped(true);
+    if (value && !labelSwapped) {
+      setLabelSwapped(true);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [value]);
 
   return (

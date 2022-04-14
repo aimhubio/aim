@@ -28,6 +28,7 @@ function Popover(props) {
     }
     return () => {
       if (document.body.contains(portalRef.current)) {
+        // eslint-disable-next-line react-hooks/exhaustive-deps
         document.body.removeChild(portalRef.current);
       }
     };
@@ -60,6 +61,7 @@ function Popover(props) {
     return () => {
       clearInterval(timerRef.current);
     };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [opened]);
 
   function calculatePosition() {

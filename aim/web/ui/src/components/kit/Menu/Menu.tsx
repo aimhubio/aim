@@ -36,6 +36,7 @@ function Menu({
     if (defaultActiveItemKey !== activeItemKey) {
       setActiveItemKey(defaultActiveItemKey);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [defaultActiveItemKey]);
 
   return (
