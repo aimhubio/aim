@@ -27,10 +27,15 @@ import useModel from 'hooks/model/useModel';
 
 import runDetailAppModel from 'services/models/runs/runDetailAppModel';
 import * as analytics from 'services/analytics';
+import notesModel from 'services/models/notes/notesModel';
 
 import RunSelectPopoverContent from './RunSelectPopoverContent';
 
 import './RunDetail.scss';
+
+const NotesTab = React.lazy(
+  () => /* webpackChunkName: "NotesTab" */ import('./NotesTab'),
+);
 
 const RunDetailParamsTab = React.lazy(
   () =>
@@ -61,6 +66,7 @@ const RunOverviewTab = React.lazy(
 const tabs: string[] = [
   'overview',
   'parameters',
+  'notes',
   'metrics',
   'system',
   'distributions',
@@ -74,6 +80,7 @@ const tabs: string[] = [
 function RunDetail(): React.FunctionComponentElement<React.ReactNode> {
   let runsOfExperimentRequestRef: any = null;
   const runData = useModel(runDetailAppModel);
+
   const containerRef = React.useRef<HTMLDivElement | any>(null);
   const [dateNow, setDateNow] = React.useState(Date.now());
   const [isRunSelectDropdownOpen, setIsRunSelectDropdownOpen] =
@@ -151,6 +158,7 @@ function RunDetail(): React.FunctionComponentElement<React.ReactNode> {
         runHash={runHash}
       />
     ),
+    notes: <NotesTab runHash={runHash} />,
   };
 
   function getRunsOfExperiment(
@@ -181,11 +189,11 @@ function RunDetail(): React.FunctionComponentElement<React.ReactNode> {
     const experimentRequestRef: any = runDetailAppModel.getExperimentsData();
     experimentRequestRef?.call();
     runsRequestRef.call();
-
     return () => {
       runsRequestRef.abort();
       runsOfExperimentRequestRef?.abort();
       experimentRequestRef?.abort();
+      notesModel.destroy();
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [runHash]);

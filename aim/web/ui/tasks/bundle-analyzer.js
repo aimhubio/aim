@@ -5,8 +5,8 @@ process.env.NODE_ENV = 'production';
 // eslint-disable-next-line import/no-extraneous-dependencies
 const webpack = require('webpack');
 const { BundleAnalyzerPlugin } = require('webpack-bundle-analyzer');
-
 const ProgressBarPlugin = require('progress-bar-webpack-plugin');
+
 const webpackConfig = require('react-scripts/config/webpack.config')(
   'production',
 );
