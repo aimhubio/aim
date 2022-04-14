@@ -4,7 +4,7 @@
 
 ### Enhancements:
 
-- Add `Notes Tab` in single run page (arsengit)
+- Add `Notes Tab` to single run page (arsengit)
 - Add the run name to the batch delete and the batch archive modals (VkoHov)
 - Increase the scalability of rendering lines in charts (KaroMourad)
 - Increase live update requests delay to prevent performance issues  (rubenaprikyan)
@@ -38,7 +38,6 @@
 
 ### Enhancements:
 
-- Add Notes tab in single run page (arsengit)
 - Hugging Face adapter refactoring (mihran113)
 - Add run description columns to all run specific tables (VkoHov, mihran113)
 - Change images rendering optimization default value to smoother (VkoHov)
