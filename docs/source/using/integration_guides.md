@@ -184,3 +184,22 @@ class CustomCallback(AimCallback):
         
         return super().after_iteration(model, epoch, evals_log)
 ```
+
+### LightGBM
+
+Here is how to override the `AimCallback` for LightGBM.
+
+```python
+from aim.lightgbm import AimCallback
+
+
+class CustomCallback(AimCallback):
+
+    def before_tracking(self, env):
+        for item in env.evaluation_result_list:
+            # manipulate item here
+            pass
+
+    def after_tracking(self, env):
+        self.experiment.track(env.iteration, name="Iteration")
+```
