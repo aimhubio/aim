@@ -88,7 +88,7 @@ function DeleteModal({
             <Text
               size={12}
               weight={500}
-              className={classNames('ActionModal__tableRowWithAction__date', {
+              className={classNames('ActionModal__tableRowWithAction__name', {
                 'in-progress': rowData?.isInProgress,
               })}
               component='p'
@@ -245,17 +245,15 @@ function DeleteModal({
             </div>
           )}
           {!_.isEmpty(disabledData) && (
-            <div className='ActionModal__disabledTableWrapper'>
-              <DataList
-                tableRef={disabledTableRef}
-                tableColumns={tableColumns}
-                tableData={disabledData}
-                withSearchBar={false}
-                rowHeight={24}
-                tableClassName='ActionModal__Table'
-                height='200px'
-              />
-            </div>
+            <DataList
+              tableRef={disabledTableRef}
+              tableColumns={tableColumns}
+              tableData={disabledData}
+              withSearchBar={false}
+              rowHeight={24}
+              tableClassName='ActionModal__Table ActionModal__disabledTableWrapper'
+              height='200px'
+            />
           )}
         </div>
       </Modal>

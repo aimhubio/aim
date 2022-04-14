@@ -28,7 +28,7 @@
     &__path {
       display: inline-flex;
       &__title {
-        padding-bottom: 0.125rem;
+        padding-bottom: $space-xxxxs;
         font-size: $text-sm;
         position: relative;
         display: inline-flex;
@@ -87,7 +87,7 @@
       width: calc(100% - 0.25rem);
       & > span {
         height: 1rem;
-        margin-top: 0.125rem;
+        margin-top: $space-xxxxs;
         white-space: nowrap;
         overflow: hidden;
         text-overflow: ellipsis;
