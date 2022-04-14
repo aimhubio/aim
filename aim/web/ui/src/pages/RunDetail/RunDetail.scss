@@ -133,7 +133,7 @@
     }
     &__tabPanel {
       overflow-y: auto;
-      height: calc(100vh - ToRem(98px));
+      height: calc(100vh - 98px);
       .MuiBox-root {
         height: 100%;
         .runDetailParamsTabLoader {
