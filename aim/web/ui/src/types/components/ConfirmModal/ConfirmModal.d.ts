@@ -3,6 +3,7 @@ import React from 'react';
 export interface IConfirmModalProps {
   open: boolean;
   text?: string;
+  description?: string;
   icon: React.ReactNode;
   title?: string;
   cancelBtnText?: string;
