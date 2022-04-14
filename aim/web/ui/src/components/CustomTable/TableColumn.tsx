@@ -3,7 +3,7 @@
 
 import * as React from 'react';
 import classNames from 'classnames';
-import { isNil } from 'lodash-es';
+import _ from 'lodash-es';
 
 import { MenuItem, Tooltip, Divider, Checkbox } from '@material-ui/core';
 

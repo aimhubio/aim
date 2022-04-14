@@ -66,6 +66,7 @@ const RunOverviewTab = React.lazy(
 const tabs: string[] = [
   'overview',
   'parameters',
+  'notes',
   'metrics',
   'system',
   'distributions',
