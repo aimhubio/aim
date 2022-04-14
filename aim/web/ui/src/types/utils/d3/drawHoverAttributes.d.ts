@@ -3,8 +3,8 @@ import React from 'react';
 import { IAttributesRef } from 'components/LineChart/LineChart';
 import { HighlightEnum } from 'components/HighlightModesPopover/HighlightModesPopover';
 import { IPoint } from 'components/ScatterPlot';
-import { ILine } from 'components/LineChart/LineChart';
 
+import { ILine } from 'types/components/LineChart/LineChart';
 import {
   IAggregationConfig,
   IAlignmentConfig,

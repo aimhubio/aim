@@ -1,5 +1,5 @@
 import React, { useEffect, useMemo, useState } from 'react';
-import { isNil } from 'lodash';
+import { isNil } from 'lodash-es';
 
 import { Icon, Button } from 'components/kit';
 import ErrorBoundary from 'components/ErrorBoundary/ErrorBoundary';
@@ -37,6 +37,7 @@ function AlertBanner({
         clearTimeout(timeoutPath);
       }
     };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   return (

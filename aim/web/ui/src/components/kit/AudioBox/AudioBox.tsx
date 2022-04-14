@@ -37,6 +37,7 @@ function AudiBoxProgress({ audio, isPlaying, src }: IAudiBoxProgressProps) {
     } else {
       clearInterval(intervalRef.current);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isPlaying, src]);
 
   function startTimer(): void {
@@ -120,6 +121,7 @@ function AudioBoxVolume({ audio }: IAudioBoxVolumeProps) {
     if (audio) {
       audio.volume = volume;
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [volume]);
 
   function onVolumeToggle(): void {
@@ -211,6 +213,7 @@ function AudioBox({
         audio.pause();
       }
     };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [processing]);
 
   React.useEffect(() => {
@@ -223,6 +226,7 @@ function AudioBox({
       setAudio(audioRef);
       setMuted(false);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [blobData]);
 
   React.useEffect(() => {
@@ -254,6 +258,7 @@ function AudioBox({
     if (!muted) {
       audio.muted = false;
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [muted]);
 
   function handleReadyToPlay(): void {

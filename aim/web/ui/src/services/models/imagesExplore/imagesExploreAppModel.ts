@@ -53,6 +53,7 @@ import {
 } from 'types/services/models/explorer/createAppModel';
 import { IProjectParamsMetrics } from 'types/services/models/projects/projectsModel';
 
+import getAppConfigDataMethod from 'utils/app/getAppConfigData';
 import onRowSelectAction from 'utils/app/onRowSelect';
 import { decode, encode } from 'utils/encoder/encoder';
 import getObjectPaths from 'utils/getObjectPaths';
@@ -91,6 +92,7 @@ const model = createModel<Partial<IImagesExploreAppModelState>>({
     options: undefined,
     suggestions: [],
   },
+  config: getConfig(),
 });
 
 let tooltipData: ITooltipData = {};
@@ -190,26 +192,46 @@ function initialize(appId: string): void {
     });
 }
 
-function setDefaultAppConfigData() {
+function setDefaultAppConfigData(recoverTableState: boolean = true) {
+  const defaultConfig: Partial<IImagesExploreAppConfig> = {};
+
   const grouping: IImagesExploreAppConfig['grouping'] =
-    getStateFromUrl('grouping') || getConfig().grouping;
+    getStateFromUrl('grouping') ?? {};
+
+  defaultConfig.grouping = grouping;
+
   const compatibleSelectConfig = getCompatibleSelectConfig(
     ['images'],
     getStateFromUrl('select'),
   );
-  const select: ISelectConfig = compatibleSelectConfig || getConfig().select;
+  const select: ISelectConfig = compatibleSelectConfig ?? {};
+
+  defaultConfig.select = select;
+
   const images: IImagesExploreAppConfig['images'] =
-    getStateFromUrl('images') || getConfig().images;
-  const tableConfigHash = getItem('imagesExploreTable');
-  const table = tableConfigHash
-    ? JSON.parse(decode(tableConfigHash))
-    : getConfig().table;
-  const configData = _.merge(getConfig(), {
-    grouping,
-    select,
-    table,
-    images,
-  });
+    getStateFromUrl('images') ?? {};
+
+  defaultConfig.images = images;
+
+  if (recoverTableState) {
+    const tableConfigHash = getItem('imagesExploreTable');
+    const table = tableConfigHash
+      ? JSON.parse(decode(tableConfigHash))
+      : getConfig().table;
+
+    defaultConfig.table = table;
+  }
+
+  const configData = _.mergeWith(
+    {},
+    model.getState().config,
+    defaultConfig,
+    (objValue, srcValue) => {
+      if (_.isArray(objValue)) {
+        return srcValue;
+      }
+    },
+  );
 
   model.setState({ config: configData });
 }
@@ -222,33 +244,12 @@ let imagesRequestRef: {
 };
 
 function getAppConfigData(appId: string) {
-  if (appRequestRef) {
-    appRequestRef.abort();
-  }
-  appRequestRef = appsService.fetchApp(appId);
-  return {
-    call: async () => {
-      const appData = await appRequestRef.call((detail: any) => {
-        exceptionHandler({ detail, model });
-      });
-      let select = appData?.state?.select;
-      if (select) {
-        const compatibleSelectConfig = getCompatibleSelectConfig(
-          ['images'],
-          select,
-        );
-        appData.state = {
-          ...appData.state,
-          select: {
-            ...compatibleSelectConfig,
-          },
-        };
-      }
-      const configData: any = _.merge(getConfig(), appData.state);
-      model.setState({ config: configData });
-    },
-    abort: appRequestRef.abort,
-  };
+  return getAppConfigDataMethod({
+    appId,
+    appRequest: appRequestRef,
+    config: getConfig(),
+    model,
+  });
 }
 
 function resetModelState() {
@@ -354,6 +355,7 @@ function getImagesData(
           if (ex.name === 'AbortError') {
             // Abort Error
           } else {
+            // eslint-disable-next-line no-console
             console.log('Unhandled error: ', ex);
           }
         }
@@ -390,6 +392,7 @@ function getImagesData(
     abort: imagesRequestRef.abort,
   };
 }
+
 function getSelectFormOptions(projectsData: IProjectParamsMetrics) {
   let data: ISelectOption[] = [];
   let index: number = 0;
@@ -428,6 +431,7 @@ function getSelectFormOptions(projectsData: IProjectParamsMetrics) {
     alphabeticalSortComparator<ISelectOption>({ orderBy: 'label' }),
   );
 }
+
 function processData(data: any[]): {
   data: IMetricsCollection<IImageData>[];
   params: string[];
@@ -999,7 +1003,7 @@ function updateURL(
 
   const appId: string = window.location.pathname.split('/')[2];
   if (!appId) {
-    setItem('imagesExploreUrl', url);
+    setItem('imagesUrl', url);
   }
 
   window.history.pushState(null, '', url);
@@ -1058,6 +1062,7 @@ function getImagesBlobsData(uris: string[]) {
           if (ex.name === 'AbortError') {
             // Abort Error
           } else {
+            // eslint-disable-next-line no-console
             console.log('Unhandled error: ');
           }
         });
@@ -2020,16 +2025,16 @@ function onSliceRangeChange(key: string, newValue: number[] | number) {
   }
 }
 
-function onDensityChange(value: number, metaData: any, key: string) {
+function onDensityChange(name: string, value: number, metaData: any) {
   const configData: IImagesExploreAppConfig | undefined =
     model.getState()?.config;
   if (configData?.images) {
     const images = {
       ...configData.images,
-      [key]: +value,
+      [name]: +value,
       inputsValidations: {
         ...configData.images?.inputsValidations,
-        [key]: metaData?.isValid,
+        [name]: metaData?.isValid,
       },
     };
     const config = {

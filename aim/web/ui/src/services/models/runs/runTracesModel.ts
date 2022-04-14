@@ -1,3 +1,4 @@
+// eslint-disable-next-line react-hooks/exhaustive-deps
 import _ from 'lodash-es';
 
 import { ANALYTICS_EVENT_KEYS } from 'config/analytics/analyticsKeysMap';
@@ -61,6 +62,7 @@ function getDefaultQueryAndConfigData(traceType: TraceType) {
       inputTitleTooltip: correspondedInput.tooltip,
       sliderType: item.sliderType,
       inputValidationPatterns: traceSettings.inputValidation,
+      infoPropertyName: item?.infoPropertyName,
     };
 
     config.rangePanel.push(processedItem);
@@ -206,6 +208,7 @@ async function getRunTraceBatch(isInitial = false) {
     });
     const stream = await getTraceBatchRequestRef?.call((detail: any) => {
       // @TODO add exception
+      // eslint-disable-next-line no-console
       console.error(detail);
     });
 

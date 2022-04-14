@@ -112,8 +112,6 @@ class Repo:
 
         if init:
             os.makedirs(self.path, exist_ok=True)
-            with open(os.path.join(self.path, 'VERSION'), 'w') as version_fh:
-                version_fh.write(DATA_VERSION + '\n')
         if not self.is_remote_repo and not os.path.exists(self.path):
             if self._mount_root:
                 unmount_remote_repo(self.root_path, self._mount_root)
@@ -132,9 +130,12 @@ class Repo:
             self._lock = FileLock(self._lock_path, timeout=10)
 
             with self.lock():
+                status = self.check_repo_status(self.root_path)
                 self.structured_db = DB.from_path(self.path)
-                if init:
+                if init or status == RepoStatus.PATCH_REQUIRED:
                     self.structured_db.run_upgrades()
+                    with open(os.path.join(self.path, 'VERSION'), 'w') as version_fh:
+                        version_fh.write(DATA_VERSION + '\n')
 
         self._resources = RepoAutoClean(self)
 

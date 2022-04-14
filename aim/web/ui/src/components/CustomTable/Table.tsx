@@ -67,10 +67,12 @@ function Table(props) {
       }
     }
     prevExpanded.current = props.expanded ?? {};
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [props.expanded]);
 
   const color = React.useMemo(
     () => props.data[0]?.rowMeta?.color,
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     [props.data[0]?.rowMeta?.color],
   );
 

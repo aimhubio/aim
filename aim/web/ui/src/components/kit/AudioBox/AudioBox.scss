@@ -196,7 +196,7 @@
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
-    margin-top: 0.125rem;
+    margin-top: $space-xxxxs;
     max-width: toRem(268px);
   }
 }

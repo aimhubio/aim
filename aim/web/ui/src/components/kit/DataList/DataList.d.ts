@@ -6,4 +6,7 @@ export interface IDataListProps {
   tableColumns: any;
   searchableKeys?: string[];
   illustrationConfig?: IIllustrationConfig;
+  rowHeight?: number;
+  height?: string;
+  tableClassName?: string;
 }

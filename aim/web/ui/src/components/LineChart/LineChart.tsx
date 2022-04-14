@@ -1,6 +1,10 @@
 import React from 'react';
+import * as d3 from 'd3';
+import classNames from 'classnames';
 
 import ErrorBoundary from 'components/ErrorBoundary/ErrorBoundary';
+
+import { RENDER_LINES_OPTIMIZED_LIMIT } from 'config/charts';
 
 import useResizeObserver from 'hooks/window/useResizeObserver';
 
@@ -17,7 +21,6 @@ import {
   drawAxes,
   drawLines,
   processLineChartData,
-  getAxisScale,
   drawBrush,
   drawHoverAttributes,
 } from 'utils/d3';
@@ -71,7 +74,7 @@ const LineChart = React.forwardRef(function LineChart(
   const bgRectNodeRef = React.useRef(null);
   const plotNodeRef = React.useRef(null);
   const axesNodeRef = React.useRef(null);
-  const linesNodeRef = React.useRef(null);
+  const linesNodeRef = React.useRef<any>(null);
   const attributesNodeRef = React.useRef(null);
   const xAxisLabelNodeRef = React.useRef(null);
   const yAxisLabelNodeRef = React.useRef(null);
@@ -86,11 +89,6 @@ const LineChart = React.forwardRef(function LineChart(
   const rafIDRef = React.useRef<number>();
 
   function draw() {
-    const { processedData, min, max } = processLineChartData(
-      data,
-      ignoreOutliers,
-    );
-
     drawArea({
       index,
       nameKey,
@@ -107,18 +105,33 @@ const LineChart = React.forwardRef(function LineChart(
       chartTitle,
     });
 
-    const { width, height, margin } = visBoxRef.current;
+    const {
+      processedData,
+      processedAggrData,
+      min,
+      max,
+      xScale,
+      yScale,
+      allXValues,
+      allYValues,
+    } = processLineChartData({
+      data,
+      ignoreOutliers,
+      visBoxRef,
+      axesScaleType,
+      aggregatedData,
+      aggregationConfig,
+    });
 
-    const xScale = getAxisScale({
-      domainData: [min.x, max.x],
-      rangeData: [0, width - margin.left - margin.right],
-      scaleType: axesScaleType.xAxis,
-    });
-    const yScale = getAxisScale({
-      domainData: [min.y, max.y],
-      rangeData: [height - margin.top - margin.bottom, 0],
-      scaleType: axesScaleType.yAxis,
-    });
+    if (!allXValues.length || !allYValues.length) {
+      if (visAreaRef.current && !readOnly) {
+        d3.select(visAreaRef.current)
+          .append('text')
+          .classed('LineChart__emptyData', true)
+          .text('No Data');
+      }
+      return;
+    }
 
     attributesRef.current.xScale = xScale;
     attributesRef.current.yScale = yScale;
@@ -130,9 +143,7 @@ const LineChart = React.forwardRef(function LineChart(
       plotBoxRef,
       xScale,
       yScale,
-      width,
-      height,
-      margin,
+      visBoxRef,
       alignmentConfig,
       humanizerConfigRef,
       drawBgTickLines: { y: true, x: false },
@@ -140,7 +151,7 @@ const LineChart = React.forwardRef(function LineChart(
 
     drawLines({
       index,
-      data: processedData,
+      processedData,
       nameKey,
       linesNodeRef,
       linesRef,
@@ -149,14 +160,22 @@ const LineChart = React.forwardRef(function LineChart(
       yScale,
       highlightMode,
       aggregationConfig,
-      aggregatedData,
+      processedAggrData,
     });
+
+    // render lines with low quality if lines count are more than 'RENDER_LINES_OPTIMIZED_LIMIT'
+    if (!readOnly && linesNodeRef.current) {
+      const linesCount = linesNodeRef.current.selectChildren().size();
+      if (linesCount > RENDER_LINES_OPTIMIZED_LIMIT) {
+        linesNodeRef.current.classed('optimizeRendering', true);
+      }
+    }
 
     if (!readOnly) {
       drawHoverAttributes({
         index,
         nameKey,
-        data: processedData,
+        data,
         axesScaleType,
         highlightMode,
         syncHoverState,
@@ -206,6 +225,7 @@ const LineChart = React.forwardRef(function LineChart(
         rafIDRef.current = window.requestAnimationFrame(renderChart);
       }
     },
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     [
       data,
       zoom,
@@ -234,6 +254,7 @@ const LineChart = React.forwardRef(function LineChart(
         window.cancelAnimationFrame(rafIDRef.current);
       }
     };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [
     data,
     zoom,
@@ -273,12 +294,16 @@ const LineChart = React.forwardRef(function LineChart(
     <ErrorBoundary>
       <div
         ref={parentRef}
-        className={`LineChart ${!readOnly && zoom?.active ? 'zoomMode' : ''}`}
+        className={classNames('LineChart', {
+          zoomMode: !readOnly && zoom?.active,
+        })}
       >
         <div ref={visAreaRef} />
       </div>
     </ErrorBoundary>
   );
 });
+
+LineChart.displayName = 'LineChart';
 
 export default React.memo(LineChart);

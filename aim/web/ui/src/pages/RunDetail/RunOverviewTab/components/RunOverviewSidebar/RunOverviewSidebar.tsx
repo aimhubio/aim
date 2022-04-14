@@ -60,6 +60,7 @@ function RunOverviewSidebar({
         value: traces?.figures?.length || 0,
       },
     ];
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [traces]);
 
   return (

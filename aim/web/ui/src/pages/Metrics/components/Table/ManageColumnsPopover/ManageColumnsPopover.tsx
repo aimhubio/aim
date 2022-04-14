@@ -148,6 +148,7 @@ function ManageColumnsPopover({
     newState.columns.middle.list = middleList;
     newState.columns.right.list = rightList;
     setState(newState);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [columnsData]);
 
   React.useEffect(() => {

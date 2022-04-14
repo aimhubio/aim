@@ -131,6 +131,7 @@ function decode_q_le(x: number[], offset: number) {
       'Potential integer overflow detected. Only 52-bit integers are supported now.',
     );
   }
+
   if (x[offset + 7] & 128) {
     return ~decode_q_le([
       255 ^ x[offset + 0],
