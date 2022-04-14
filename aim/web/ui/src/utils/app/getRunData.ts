@@ -5,7 +5,6 @@ import {
 } from 'types/services/models/metrics/runModel';
 
 import {
-  adjustable_reader,
   decodePathsVals,
   decode_buffer_pairs,
   iterFoldTree,
@@ -14,8 +13,7 @@ import {
 export default async function getRunData<
   S extends ReadableStream<IRun<IMetricTrace | IParamTrace>[]>,
 >(stream: S) {
-  let gen = adjustable_reader(stream);
-  let buffer_pairs = decode_buffer_pairs(gen);
+  let buffer_pairs = decode_buffer_pairs(stream);
   let decodedPairs = decodePathsVals(buffer_pairs);
   let objects = iterFoldTree(decodedPairs, 1);
 

@@ -59,7 +59,6 @@ import getObjectPaths from 'utils/getObjectPaths';
 import getUrlWithParam from 'utils/getUrlWithParam';
 import getStateFromUrl from 'utils/getStateFromUrl';
 import {
-  adjustable_reader,
   decode_buffer_pairs,
   decodePathsVals,
   iterFoldTree,
@@ -1020,8 +1019,7 @@ function onResetConfigData(): void {
 async function getImagesMetricsData(
   stream: ReadableStream<IRun<IMetricTrace>[]>,
 ) {
-  let gen = adjustable_reader(stream);
-  let buffer_pairs = decode_buffer_pairs(gen);
+  let buffer_pairs = decode_buffer_pairs(stream);
   let decodedPairs = decodePathsVals(buffer_pairs);
   let objects = iterFoldTree(decodedPairs, 1);
 
@@ -1045,8 +1043,7 @@ function getImagesBlobsData(uris: string[]) {
           exceptionHandler({ detail, model });
         })
         .then(async (stream) => {
-          let gen = adjustable_reader(stream);
-          let buffer_pairs = decode_buffer_pairs(gen);
+          let buffer_pairs = decode_buffer_pairs(stream);
           let decodedPairs = decodePathsVals(buffer_pairs);
           let objects = iterFoldTree(decodedPairs, 1);
 

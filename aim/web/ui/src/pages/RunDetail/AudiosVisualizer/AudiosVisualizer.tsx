@@ -11,7 +11,6 @@ import blobsURIModel from 'services/models/media/blobsURIModel';
 import audiosExploreService from 'services/api/audiosExplore/audiosExplore';
 
 import {
-  adjustable_reader,
   decode_buffer_pairs,
   decodePathsVals,
   iterFoldTree,
@@ -58,8 +57,7 @@ function AudiosVisualizer(
         return request
           .call()
           .then(async (stream) => {
-            let gen = adjustable_reader(stream);
-            let buffer_pairs = decode_buffer_pairs(gen);
+            let buffer_pairs = decode_buffer_pairs(stream);
             let decodedPairs = decodePathsVals(buffer_pairs);
             let objects = iterFoldTree(decodedPairs, 1);
 

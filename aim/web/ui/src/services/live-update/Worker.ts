@@ -9,7 +9,6 @@ import * as Comlink from 'comlink';
 import { setAPIBasePath } from 'config/config';
 
 import {
-  adjustable_reader,
   decode_buffer_pairs,
   decodePathsVals,
   iterFoldTree,
@@ -169,8 +168,7 @@ async function startUpdateCall(): Promise<any> {
   logging && console.time(`${key.toString()} operated`);
 
   const stream = await apiMethods?.call();
-  let gen = adjustable_reader(stream);
-  let buffer_pairs = decode_buffer_pairs(gen);
+  let buffer_pairs = decode_buffer_pairs(stream);
   let decodedPairs = decodePathsVals(buffer_pairs);
   let objects = iterFoldTree(decodedPairs, 1);
 
