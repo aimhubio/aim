@@ -21,6 +21,7 @@
   flex-direction: column;
   padding: 1rem 0.5rem 0 0.5rem;
   position: relative;
+  max-height: calc(100vh - 4rem);
   &__header {
     padding: 0.5rem 1rem;
     display: flex;
@@ -54,6 +55,7 @@
   }
   &__content {
     padding: 0 1rem 1.5rem 1rem;
+    overflow: auto;
   }
   &__footer {
     border-top: $border-main;

@@ -760,7 +760,7 @@ function GroupConfig({
             component={<GroupConfigPopover configData={configData} />}
           />
         )}
-        {!isNil(config.chartIndex) && config.chartIndex !== 0 && (
+        {!_.isNil(config.chartIndex) && config.chartIndex !== 0 && (
           <Tooltip title='Group chart index'>
             <span className='Table__group__config__chart'>
               {config.chartIndex}
