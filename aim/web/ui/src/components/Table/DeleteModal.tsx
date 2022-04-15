@@ -176,6 +176,7 @@ function DeleteModal({
     disabledTableRef.current?.updateData?.({
       newData: inProgressList,
     });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [selectedRows]);
 
   function onDelete() {

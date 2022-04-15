@@ -20,12 +20,12 @@ import { INoteReqBody } from 'types/services/models/notes/notes';
 
 import useNotesResizePanel from '../hooks/useNotesResizePanel';
 
-import { INotesTabProps } from './types';
+import { IRunDetailNotesTabProps } from './types';
 
 import '@toast-ui/editor/dist/toastui-editor.css';
-import './NotesTab.scss';
+import './RunDetailNotesTab.scss';
 
-function NotesTab({ runHash }: INotesTabProps) {
+function RunDetailNotesTab({ runHash }: IRunDetailNotesTabProps) {
   const [openModal, setOpenModal] = React.useState(false);
   const { isLoading, noteData, notifyData } = useModel(notesModel)!;
   const editorRef = React.useRef<Editor | any>(null);
@@ -80,9 +80,9 @@ function NotesTab({ runHash }: INotesTabProps) {
   }, []);
 
   return (
-    <section ref={wrapperRef} className='NotesTab'>
+    <section ref={wrapperRef} className='RunDetailNotesTab'>
       <div
-        className={classNames('NotesTab__Editor', {
+        className={classNames('RunDetailNotesTab__Editor', {
           isLoading,
         })}
       >
@@ -92,7 +92,7 @@ function NotesTab({ runHash }: INotesTabProps) {
           height='calc(100vh - 146px)'
           ref={editorRef}
         />
-        <div className='NotesTab__Editor__actionBtns'>
+        <div className='RunDetailNotesTab__Editor__actionBtns'>
           <Tooltip title='Delete Note'>
             <div>
               <Button
@@ -137,6 +137,6 @@ function NotesTab({ runHash }: INotesTabProps) {
   );
 }
 
-NotesTab.displayName = 'NotesTab';
+RunDetailNotesTab.displayName = 'RunDetailNotesTab';
 
-export default React.memo(NotesTab);
+export default React.memo(RunDetailNotesTab);

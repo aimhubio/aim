@@ -4,7 +4,7 @@ import classNames from 'classnames';
 import { NavLink, useLocation, useParams } from 'react-router-dom';
 import _ from 'lodash-es';
 
-import { CircularProgress, Tooltip } from '@material-ui/core';
+import { CircularProgress } from '@material-ui/core';
 
 import IllustrationBlock from 'components/IllustrationBlock/IllustrationBlock';
 import { Button, Icon, Text } from 'components/kit';
