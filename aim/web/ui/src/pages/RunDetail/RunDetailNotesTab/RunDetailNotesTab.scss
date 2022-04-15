@@ -1,6 +1,6 @@
 @use 'styles/abstracts/index' as *;
 
-.NotesTab {
+.RunDetailNotesTab {
   .isLoading {
     .toastui-editor-main {
       opacity: 0;

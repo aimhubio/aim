@@ -33,8 +33,9 @@ import RunSelectPopoverContent from './RunSelectPopoverContent';
 
 import './RunDetail.scss';
 
-const NotesTab = React.lazy(
-  () => /* webpackChunkName: "NotesTab" */ import('./NotesTab'),
+const RunDetailNotesTab = React.lazy(
+  () =>
+    import(/* webpackChunkName: "RunDetailNotesTab" */ './RunDetailNotesTab'),
 );
 
 const RunDetailParamsTab = React.lazy(
@@ -158,7 +159,7 @@ function RunDetail(): React.FunctionComponentElement<React.ReactNode> {
         runHash={runHash}
       />
     ),
-    notes: <NotesTab runHash={runHash} />,
+    notes: <RunDetailNotesTab runHash={runHash} />,
   };
 
   function getRunsOfExperiment(
