@@ -56,7 +56,7 @@ function drawAxes(args: IDrawAxesArgs): void {
     const first: any = domainData[0];
     const last: any = domainData[domainData.length - 1];
 
-    const minTicksCount = 3;
+    const minTicksCount = 4;
     const maxTicksCount = 10;
     let ticksCount = Math.floor(plotBoxRef.current.width / 90);
     ticksCount = _.clamp(ticksCount, minTicksCount, maxTicksCount);
@@ -232,7 +232,7 @@ function drawAxes(args: IDrawAxesArgs): void {
 
   function getFormattedYAxis(yScale: d3.AxisScale<d3.AxisDomain>) {
     const yAxis = d3.axisLeft(yScale);
-    const minTicksCount = 3;
+    const minTicksCount = 4;
     const maxTicksCount = 20;
     let ticksCount = Math.floor(plotBoxRef.current.height / 40);
     ticksCount = _.clamp(ticksCount, minTicksCount, maxTicksCount);

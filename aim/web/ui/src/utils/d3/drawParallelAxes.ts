@@ -36,7 +36,7 @@ function drawParallelAxes({
 
   function getFormattedYAxis(yScale: d3.AxisScale<d3.AxisDomain>) {
     const yAxis = d3.axisLeft(yScale);
-    const minTicksCount = 3;
+    const minTicksCount = 4;
     const maxTicksCount = 20;
     let ticksCount = Math.floor(plotBoxRef.current.height / 30);
     ticksCount = _.clamp(ticksCount, minTicksCount, maxTicksCount);
