@@ -19,6 +19,7 @@ function ChartGrid({
   chartProps,
   readOnly = false,
   syncHoverState,
+  resizeMode,
 }: IChartGridProps): React.FunctionComponentElement<React.ReactNode> {
   function getGridSize(dataLength: number, index: number): GridSize {
     return (
@@ -40,6 +41,7 @@ function ChartGrid({
               readOnly={readOnly}
               data={chartData}
               syncHoverState={syncHoverState}
+              resizeMode={resizeMode}
             />
           </Grid>
         );

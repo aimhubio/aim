@@ -1,3 +1,5 @@
+import { ResizeModeEnum } from 'config/enums/tableEnums';
+
 import { IChartTitle } from 'types/services/models/metrics/metricsAppModel';
 import { ITrendlineOptions } from 'types/services/models/scatter/scatterAppModel';
 import { ISyncHoverStateArgs } from 'types/utils/d3/drawHoverAttributes';
@@ -22,4 +24,5 @@ export interface IScatterPlotProps {
   trendlineOptions: ITrendlineOptions;
   syncHoverState: (args: ISyncHoverStateArgs) => void;
   readOnly?: boolean;
+  resizeMode?: ResizeModeEnum;
 }
