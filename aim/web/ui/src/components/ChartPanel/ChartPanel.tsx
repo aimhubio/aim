@@ -148,7 +148,7 @@ const ChartPanel = React.forwardRef(function ChartPanel(
         ) : (
           <>
             <ErrorBoundary>
-              <Grid item xs className='ChartPanel'>
+              <Grid item xs className='ChartPanel' key={props.resizeMode}>
                 <Grid ref={containerRef} container className='ChartPanel__grid'>
                   <ChartGrid
                     data={props.data}
