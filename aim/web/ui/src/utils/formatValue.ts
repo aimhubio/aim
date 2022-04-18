@@ -1,12 +1,19 @@
-import { bytes__repr__ } from './encoder/bytes_repr';
+import { format_bytes } from './encoder/format_bytes';
 
 const FORMATTERS: Record<string, Function> = {
   undefined: format_undefined,
   number: format_number,
-  string: format_string,
-  boolean: format_boolean,
+  string: format_str,
+  boolean: format_bool,
   object: format_object,
 };
+
+function format_undefined(
+  value: undefined,
+  undefinedValue: string = '-',
+): string {
+  return undefinedValue;
+}
 
 function format_number(value: number): string {
   if (isNaN(value)) {
@@ -19,21 +26,37 @@ function format_number(value: number): string {
   return JSON.stringify(value);
 }
 
-function format_string(value: string): string {
+function format_str(value: string): string {
   return JSON.stringify(value);
 }
 
-function format_boolean(value: boolean): string {
+function format_bool(value: boolean): string {
   return value ? 'True' : 'False';
 }
 
-function format_array(value: unknown[], undefinedValue: string = '-'): string {
+function format_list(value: unknown[], undefinedValue: string = '-'): string {
   const pieces = [];
-  for (let i = 0; i < value.length; ++i) {
+  for (let i = 0; i < value.length; i++) {
     const piece = formatValue(value[i], undefinedValue);
     pieces.push(piece);
   }
   return '[' + pieces.join(', ') + ']';
+}
+
+function format_dict(
+  value: Record<string, unknown>,
+  undefinedValue: string = '-',
+): string {
+  const pieces = [];
+  const keys = Object.keys(value);
+  for (let i = 0; i < keys.length; i++) {
+    const piece = `${format_str(keys[i])}: ${formatValue(
+      value[keys[i]],
+      undefinedValue,
+    )}`;
+    pieces.push(piece);
+  }
+  return '{' + pieces.join(', ') + '}';
 }
 
 function format_object(
@@ -43,24 +66,12 @@ function format_object(
   if (value === null) {
     return 'None';
   } else if (value instanceof ArrayBuffer) {
-    return bytes__repr__(new Uint8Array(value), "'");
+    return format_bytes(new Uint8Array(value), "'");
   } else if (Array.isArray(value)) {
-    return format_array(value, undefinedValue);
+    return format_list(value, undefinedValue);
   } else {
-    let objStr = '{';
-    const keys = Object.keys(value);
-    for (let i = 0; i < keys.length; i++) {
-      if (i) {
-        objStr += ', ';
-      }
-      objStr += keys[i] + ': ' + formatValue(value[keys[i]], undefinedValue);
-    }
-    return objStr + '}';
+    return format_dict(value, undefinedValue);
   }
-}
-
-function format_undefined(value: any, undefinedValue: string = '-'): string {
-  return undefinedValue;
 }
 
 export function formatValue(value: any, undefinedValue: string = '-'): string {

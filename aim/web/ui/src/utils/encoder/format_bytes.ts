@@ -1,23 +1,7 @@
-const HEXDIGITS = [
-  '0',
-  '1',
-  '2',
-  '3',
-  '4',
-  '5',
-  '6',
-  '7',
-  '8',
-  '9',
-  'a',
-  'b',
-  'c',
-  'd',
-  'e',
-  'f',
-];
+const HEXDIGITS = '0123456789abcdef';
 
-export function bytes__repr__(arr: Uint8Array, quote?: string): string {
+// python 'bytes' representation
+export function format_bytes(arr: Uint8Array, quote?: string): string {
   if (!quote) {
     quote = '"';
   }
