@@ -150,11 +150,9 @@ class ProxyTree(TreeView):
 
     def finalize(
         self,
-        *,
         index: 'ProxyTree'
     ):
-        self._rpc_client.run_instruction(
-            self._handler, 'finalize', (ResourceObject(index._handler),), is_write_only=True)
+        self._rpc_client.run_instruction(self._hash, self._handler, 'finalize', (ResourceObject(index._handler),))
 
 
 class SubtreeView(TreeView):
@@ -254,3 +252,9 @@ class SubtreeView(TreeView):
         path: Union[AimObjectKey, AimObjectPath] = ()
     ) -> Tuple[AimObjectKey, AimObject]:
         return self.tree.last(self.absolute_path(path))
+
+    def finalize(
+        self,
+        index: 'SubtreeView'
+    ):
+        self.tree.finalize(index=index.tree)

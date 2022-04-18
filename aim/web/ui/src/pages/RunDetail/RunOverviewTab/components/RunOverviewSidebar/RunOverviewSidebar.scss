@@ -2,8 +2,7 @@
 
 .RunOverviewSidebar {
   margin-top: $space-lg;
-  min-width: 20rem;
-  width: 20rem;
+  width: $run-overview-sidebar-width;
   overflow: hidden;
   padding: $space-xs;
   position: sticky;
@@ -20,7 +19,7 @@
         display: flex;
         align-items: center;
         height: 1.75rem;
-        margin-bottom: 0.125rem;
+        margin-bottom: $space-xxxxs;
         span {
           max-width: 15rem;
           white-space: nowrap;
@@ -73,7 +72,7 @@
     justify-content: space-between;
     height: 2rem;
     padding: 0 $space-unit;
-    margin-bottom: 0.125rem;
+    margin-bottom: $space-xxxxs;
     border-radius: $border-radius-sm;
     transition: background-color 0.18s ease-out;
     outline: none;

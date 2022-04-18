@@ -49,6 +49,7 @@ function MenuItem({
       isActive: active,
       isOpen: open,
     };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [activeItemKey, id, parentId, name]);
 
   const onClickItem = React.useCallback(

@@ -26,7 +26,6 @@ class ContainerTreeView(TreeView):
 
     def finalize(
         self,
-        *,
         index: 'ContainerTreeView'
     ):
         self.container.finalize(index=index.container)

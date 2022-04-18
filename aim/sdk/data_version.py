@@ -1,1 +1,1 @@
-DATA_VERSION = '1.1'
+DATA_VERSION = '1.2'

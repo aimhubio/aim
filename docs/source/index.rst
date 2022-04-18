@@ -44,6 +44,7 @@
    using/k8s_deployment.md
    using/jupyter_notebook_ui.md
    using/sagemaker_notebook_ui.md
+   using/integration_guides.md
 
 .. toctree::
    :maxdepth: 2

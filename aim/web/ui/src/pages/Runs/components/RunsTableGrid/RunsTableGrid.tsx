@@ -75,7 +75,7 @@ function getRunsTableColumns(
       const systemMetric: boolean = isSystemMetric(key);
       const systemMetricsList: ITableColumn[] = [];
       const metricsList: ITableColumn[] = [];
-      Object.keys(metricsColumns[key]).map((metricContext) => {
+      Object.keys(metricsColumns[key]).forEach((metricContext) => {
         const columnKey = `${systemMetric ? key : `${key}_${metricContext}`}`;
         let column = {
           key: columnKey,
@@ -83,6 +83,7 @@ function getRunsTableColumns(
             <span>{formatSystemMetricName(key)}</span>
           ) : (
             <Badge
+              monospace
               size='small'
               color={COLORS[0][0]}
               label={metricContext === '' ? 'Empty context' : metricContext}
@@ -156,6 +157,7 @@ function runsTableRowRenderer(
         row[col] = {
           content: (
             <Badge
+              monospace
               size='small'
               color={COLORS[0][0]}
               label={`${rowData[col].length} values`}

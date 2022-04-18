@@ -2,8 +2,7 @@ import React, { memo, useRef } from 'react';
 import moment from 'moment';
 import classNames from 'classnames';
 import { NavLink, useLocation, useParams } from 'react-router-dom';
-import { isEmpty } from 'lodash-es';
-import _ from 'lodash';
+import _ from 'lodash-es';
 
 import { CircularProgress, Tooltip } from '@material-ui/core';
 
@@ -87,21 +86,23 @@ function RunSelectPopoverContent({
               {!isRunInfoLoading ? (
                 experimentsData?.map((experiment: IRunSelectExperiment) => (
                   <div
+                    key={experiment.id}
                     className={classNames(
-                      'RunSelectPopoverWrapper__selectPopoverContent__contentContainer__experimentsListContainer__experimentList__experimentBox',
+                      'RunSelectPopoverWrapper__selectPopoverContent__contentContainer__experimentsListContainer__experimentList__experimentContainer',
                       { selected: experimentId === experiment.id },
                     )}
                     onClick={() => onExperimentClick(experiment.id)}
-                    key={experiment.id}
                   >
-                    <Text
-                      size={14}
-                      tint={experimentId === experiment.id ? 100 : 80}
-                      weight={experimentId === experiment.id ? 600 : 500}
-                      className='RunSelectPopoverWrapper__selectPopoverContent__contentContainer__experimentsListContainer__experimentList__experimentBox__experimentName'
-                    >
-                      {experiment?.name ?? 'default'}
-                    </Text>
+                    <div className='experimentBox'>
+                      <Text
+                        size={14}
+                        tint={experimentId === experiment.id ? 100 : 80}
+                        weight={500}
+                        className='experimentBox__experimentName'
+                      >
+                        {experiment?.name ?? 'default'}
+                      </Text>
+                    </div>
                   </div>
                 ))
               ) : (
@@ -114,7 +115,7 @@ function RunSelectPopoverContent({
 
           <div className='RunSelectPopoverWrapper__selectPopoverContent__contentContainer__runsListContainer'>
             {isRunInfoLoading ||
-            (isEmpty(runsOfExperiment) && isRunsOfExperimentLoading) ? (
+            (_.isEmpty(runsOfExperiment) && isRunsOfExperimentLoading) ? (
               <div className='RunSelectPopoverWrapper__loaderContainer'>
                 <CircularProgress size={34} />
               </div>
@@ -123,35 +124,33 @@ function RunSelectPopoverContent({
                 className='RunSelectPopoverWrapper__selectPopoverContent__contentContainer__runsListContainer__runsList'
                 ref={popoverContentWrapperRef}
               >
-                {!isEmpty(runsOfExperiment) ? (
+                {!_.isEmpty(runsOfExperiment) ? (
                   runs?.map((run: IRunSelectRun) => (
                     <NavLink
                       className={classNames(
                         'RunSelectPopoverWrapper__selectPopoverContent__contentContainer__runsListContainer__runsList__runBox',
                         {
                           selected: runHash === run?.run_id,
-                          'in-progress': !run?.end_time,
                         },
                       )}
                       key={run.run_id}
                       to={pathname.replace(runHash, run.run_id)}
                       onClick={onRunsSelectToggle}
                     >
-                      <Tooltip title={run.name} placement='right'>
-                        <div
-                          className={
-                            'RunSelectPopoverWrapper__selectPopoverContent__contentContainer__runsListContainer__runsList__runBox__runName'
-                          }
+                      <div
+                        className={classNames(
+                          'RunSelectPopoverWrapper__selectPopoverContent__contentContainer__runsListContainer__runsList__runBox__runName',
+                          { 'in-progress': !run?.end_time },
+                        )}
+                      >
+                        <Text
+                          size={14}
+                          tint={runHash === run?.run_id ? 100 : 80}
+                          weight={500}
                         >
-                          <Text
-                            size={14}
-                            tint={runHash === run?.run_id ? 100 : 80}
-                            weight={500}
-                          >
-                            {run.name}
-                          </Text>
-                        </div>
-                      </Tooltip>
+                          {run.name}
+                        </Text>
+                      </div>
                       <div
                         className={
                           'RunSelectPopoverWrapper__selectPopoverContent__contentContainer__runsListContainer__runsList__runBox__runDate'
@@ -186,7 +185,7 @@ function RunSelectPopoverContent({
                     title={'No Runs'}
                   />
                 )}
-                {!isEmpty(runsOfExperiment) && isLoadMoreButtonShown && (
+                {!_.isEmpty(runsOfExperiment) && isLoadMoreButtonShown && (
                   <div className='RunSelectPopoverWrapper__selectPopoverContent__contentContainer__runsListContainer__runsList__loadMoreButtonWrapper'>
                     <Button
                       size='small'

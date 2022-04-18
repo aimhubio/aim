@@ -117,7 +117,8 @@ function Metrics(
               className={`Metrics__chart__container${
                 props.resizeMode === ResizeModeEnum.MaxHeight
                   ? '__hide'
-                  : _.isEmpty(props.lineChartData)
+                  : props.requestStatus !== RequestStatusEnum.Pending &&
+                    _.isEmpty(props.tableData)
                   ? '__fullHeight'
                   : ''
               }`}

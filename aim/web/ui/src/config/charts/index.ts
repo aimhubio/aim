@@ -1,3 +1,5 @@
+export const RENDER_LINES_OPTIMIZED_LIMIT = 100;
+
 export const GRID_SIZE = {
   S: 4,
   M: 6,
@@ -6,7 +8,7 @@ export const GRID_SIZE = {
 
 const { S, M, L } = GRID_SIZE;
 // Chart grid pattern based on a 12-column grid layout
-const CHART_GRID_PATTERN: { [key: number]: number[] } = {
+export const CHART_GRID_PATTERN: { [key: number]: number[] } = {
   1: [L],
   2: [M, M],
   3: [S, S, S],
@@ -17,5 +19,3 @@ const CHART_GRID_PATTERN: { [key: number]: number[] } = {
   8: [S, S, S, S, S, S, M, M],
   9: [S, S, S, S, S, S, S, S, S],
 };
-
-export default CHART_GRID_PATTERN;

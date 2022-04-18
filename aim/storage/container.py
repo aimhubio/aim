@@ -31,6 +31,7 @@ class Container:
         """Close all the resources."""
         ...
 
+
     def finalize(self, index: 'Container'):
         """Finalize the Container.
 

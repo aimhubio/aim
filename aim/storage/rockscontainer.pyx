@@ -153,7 +153,7 @@ class RocksContainer(Container):
             self._progress_path.touch(exist_ok=True)
         return db
 
-    def finalize(self, *, index: Container):
+    def finalize(self, index: Container):
         """Finalize the Container.
 
         Store the collection of `(key, value)` records in the :obj:`Container`

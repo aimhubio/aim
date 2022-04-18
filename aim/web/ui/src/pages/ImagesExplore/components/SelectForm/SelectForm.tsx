@@ -222,7 +222,6 @@ function SelectForm({
                             <Badge
                               size='large'
                               key={tag.label}
-                              color={tag.color}
                               label={tag.label}
                               onDelete={handleDelete}
                             />

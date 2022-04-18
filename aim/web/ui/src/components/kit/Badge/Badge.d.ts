@@ -14,4 +14,5 @@ export interface IBadgeProps {
   style?: React.CSSProperties;
   className?: string;
   selectBadge?: boolean;
+  monospace?: boolean;
 }

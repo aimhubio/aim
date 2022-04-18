@@ -17,14 +17,14 @@ const sizes = {
 
 const fontSizes = {
   xSmall: '0.75rem',
-  small: '0.75rem',
+  small: '0.875rem',
   medium: '0.875rem',
   large: '0.875rem',
 };
 
 const withOnlyIconSizes = {
   xSmall: '0.75rem',
-  small: '1.5rem',
+  small: '1.75rem',
   medium: '2rem',
   large: '2.25rem',
 };
