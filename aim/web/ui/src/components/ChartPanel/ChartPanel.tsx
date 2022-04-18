@@ -125,7 +125,7 @@ const ChartPanel = React.forwardRef(function ChartPanel(
         chartRef.current?.setFocusedState?.(props.focusedState);
       });
     }
-  }, [chartRefs, props.focusedState, props.panelResizing]);
+  }, [chartRefs, props.focusedState, props.panelResizing, props.resizeMode]);
 
   React.useEffect(() => {
     const debouncedScroll = _.debounce(onScroll, 100);
@@ -148,7 +148,7 @@ const ChartPanel = React.forwardRef(function ChartPanel(
         ) : (
           <>
             <ErrorBoundary>
-              <Grid item xs className='ChartPanel' key={props.resizeMode}>
+              <Grid item xs className='ChartPanel'>
                 <Grid ref={containerRef} container className='ChartPanel__grid'>
                   <ChartGrid
                     data={props.data}

@@ -237,6 +237,7 @@ const LineChart = React.forwardRef(function LineChart(
       aggregationConfig,
       readOnly,
       alignmentConfig,
+      resizeMode,
     ],
   );
 

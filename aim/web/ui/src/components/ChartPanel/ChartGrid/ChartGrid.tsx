@@ -32,7 +32,12 @@ function ChartGrid({
         const Component = CHART_TYPES_CONFIG[chartType];
         const gridSize = getGridSize(data.length, index);
         return (
-          <Grid key={index} item className='ChartGrid' xs={gridSize}>
+          <Grid
+            key={`${index}-${resizeMode}`}
+            item
+            className='ChartGrid'
+            xs={gridSize}
+          >
             <Component
               ref={chartRefs[index]}
               nameKey={nameKey}
