@@ -7,7 +7,7 @@ const PREVIEW_BOUNDS: IPreviewBounds = {
   },
   min: {
     width: 200,
-    height: 110,
+    height: 150,
   },
 };
 

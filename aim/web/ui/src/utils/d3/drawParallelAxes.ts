@@ -36,8 +36,21 @@ function drawParallelAxes({
 
   function getFormattedYAxis(yScale: d3.AxisScale<d3.AxisDomain>) {
     const yAxis = d3.axisLeft(yScale);
-    const ticksCount = Math.floor(plotBoxRef.current.height / 20);
-    yAxis.ticks(ticksCount > 3 ? (ticksCount < 20 ? ticksCount : 20) : 3);
+    const minTicksCount = 4;
+    const maxTicksCount = 20;
+    let ticksCount = Math.floor(plotBoxRef.current.height / 30);
+    ticksCount = _.clamp(ticksCount, minTicksCount, maxTicksCount);
+    yAxis.ticks(ticksCount);
+
+    const domainData = yScale.domain();
+    if (domainData.length > ticksCount) {
+      const ticks = domainData.filter(
+        (v, i, arr) => i % Math.ceil(arr.length / ticksCount) === 0,
+      );
+
+      yAxis.tickValues(ticks);
+    }
+
     return yAxis;
   }
 
