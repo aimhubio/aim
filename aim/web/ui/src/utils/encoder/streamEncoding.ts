@@ -377,7 +377,7 @@ export async function* decode_buffer_pairs(
 function areEqual(a, b) {
   if (Number.isInteger(a)) {
     if (Number.isInteger(b)) {
-      return a == b;
+      return a === b;
     } else {
       return false;
     }
@@ -386,7 +386,9 @@ function areEqual(a, b) {
       return false;
     }
   }
-  if (a.length != b.length) return false;
+  if (a.length !== b.length) {
+    return false;
+  }
   for (let i = 0; i < a.length; ++i) {
     if (a[i] != b[i]) {
       return false;

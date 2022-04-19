@@ -4,6 +4,7 @@
 
 ### Enhancements:
 
+- Optimize stream decoding performance on UI (mahnerak)
 - Add the run name to the batch delete and the batch archive modals (VkoHov)
 - Increase the scalability of rendering lines in charts (KaroMourad)
 - Increase live update requests delay to prevent performance issues  (rubenaprikyan)
