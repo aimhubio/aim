@@ -4,12 +4,12 @@ Aim introduced [Remote Tracking (RT)](../remote_tracking.md) starting from versi
 Aim RT server as well as client script can be easily deployed to a K8S cluster! Hosting Aim RT on K8S comes with
 several advantages:
 
-* multiple users of your organization can access Aim in a single spot, which removes the need for ML practitioners to
+* multiple users of your organization can ac cess Aim in a single spot, which removes the need for ML practitioners to
   run Aim themselves
 * Aim runs can be centralized on the Remote Tracking server, which provides additional support and encouragement for remote model
   training and monitoring
 
-The following sections demonstrates how to deploy Aim RT server and client on K8S. 
+The following sections demonstrates how to deploy Aim RT server and client on K8S.
 The Aim RT based on [gRPC](https://grpc.io/about/) protocol and this sections also illustrate hot route traffic to a gRPC service through the Ingress-NGINX controller.
 
 The sections assume:
@@ -18,7 +18,7 @@ The sections assume:
 * a kubernetes cluster running, with
   * an ingress-nginx-controller installed
 * a domain name such as `rt-example.aimstack.io` that is configured to route traffic to the Ingress-NGINX controller.
-* an SSL certificate for the ingress. So you need to have a valid SSL certificate, deployed as a Kubernetes secret of type tls, in the same namespace as the gRPC application. 
+* an SSL certificate for the ingress. So you need to have a valid SSL certificate, deployed as a Kubernetes secret of type tls, in the same namespace as the gRPC application.
 
 ### Dockerfile
 
@@ -39,8 +39,8 @@ with `docker push my-docker-repository.dev/deployments/aim-server:1`.
 
 ### Deployment
 
-The main Aim deployment will have a single container that runs Aim RT Server. 
-This deployment will use docker file defined previously. 
+The main Aim deployment will have a single container that runs Aim RT Server.
+This deployment will use docker file defined previously.
 K8S deployment is:
 
 ```YAML
@@ -73,7 +73,7 @@ This K8S deployment:
 * defines a pod with a single replica that runs the Aim remote tracker server defined by the Dockerfile
 * starts up the Aim server on port 53800.
 
-You can save the above example manifest to a file with name `aim-server-deploy.yaml`. 
+You can save the above example manifest to a file with name `aim-server-deploy.yaml`.
 You can create the k8s deployment with a kubectl command like this:
 
 ```shell
@@ -111,9 +111,9 @@ $ kubectl create -f aim-server-service.yaml
 ### Ingress
 
 We need to create the Kubernetes Ingress resource for the `aim server` which is actually gRPC app.
-Use the following example manifest of an ingress resource to create an ingress for `aim server`. 
-Make sure you have the required SSL-Certificate (`aim-server-tls`), existing in your Kubernetes cluster in the same namespace where the `aim server` is. 
-The certificate must be available as a kubernetes secret resource, of type "kubernete.io/tls". 
+Use the following example manifest of an ingress resource to create an ingress for `aim server`.
+Make sure you have the required SSL-Certificate (`aim-server-tls`), existing in your Kubernetes cluster in the same namespace where the `aim server` is.
+The certificate must be available as a kubernetes secret resource, of type "kubernete.io/tls".
 We need SSL-Certificate here because we are terminating TLS on the ingress.
 
 ```YAML
@@ -151,8 +151,8 @@ If you save the above example manifest as a file named `aim-server-ingress.yaml`
 $ kubectl create -f ingress.go-grpc-greeter-server.yaml
 ```
 * Note that we are not doing any TLS configuration on the server, because we are terminating TLS at the ingress level, gRPC traffic will travel unencrypted inside the cluster and arrive "insecure".
-* The ingress are tagged with the annotation nginx.ingress.kubernetes.io/backend-protocol: "GRPC". This sets up the nginx to route http/2 traffic to `aim service`. 
-* We are terminating TLS at the ingress and have configured an SSL certificate `aim-server-tls`. 
+* The ingress are tagged with the annotation nginx.ingress.kubernetes.io/backend-protocol: "GRPC". This sets up the nginx to route http/2 traffic to `aim service`.
+* We are terminating TLS at the ingress and have configured an SSL certificate `aim-server-tls`.
   * The ingress matches traffic arriving as https://rt-example.aimstack.io:443 and routes unencrypted messages to the aim Kubernetes service.
 
 ### Client
@@ -177,8 +177,4 @@ spec:
 ```
 
 The `aim.Run` uses `__AIM_CLIENT_SSL_CERTIFICATE__` environment variable for secure channel establishment; it's a PEM-encoded root certificate.
-
-# TODO [AD] double check with TJ if this client's setup work for him
-# and implement __AIM_CLIENT_SSL_CERTIFICATE__ 
-# (currently we have __AIM_CLIENT_SSL_CERTIFICATES_FILE__)
 
