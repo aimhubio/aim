@@ -28,7 +28,6 @@ export interface IDrawParallelHoverAttributesArgs {
     y: number;
     updateScales?: (xScale: IAxisScale, yScale: IAxisScale) => void;
     updateHoverAttributes?: (mousePosition: [number, number]) => void;
-    setActiveLine: (lineKey: string) => void;
     yColorIndicatorScale: d3.ScaleSequential;
     mousePosition: number[];
     activePoint?: IActivePoint;
