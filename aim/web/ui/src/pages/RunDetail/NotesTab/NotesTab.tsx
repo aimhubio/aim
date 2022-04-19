@@ -1,12 +1,12 @@
 import React from 'react';
 import classNames from 'classnames';
+import Editor from 'rich-markdown-editor';
+import moment from 'moment';
 
-import { Editor } from '@toast-ui/react-editor';
 import { Tooltip } from '@material-ui/core';
 
-import { Button, Icon } from 'components/kit';
+import { Button, Icon, Text } from 'components/kit';
 import NotificationContainer from 'components/NotificationContainer/NotificationContainer';
-import ConfirmModal from 'components/ConfirmModal/ConfirmModal';
 import Spinner from 'components/kit/Spinner';
 
 import { ANALYTICS_EVENT_KEYS } from 'config/analytics/analyticsKeysMap';
@@ -18,19 +18,17 @@ import notesModel from 'services/models/notes/notesModel';
 
 import { INoteReqBody } from 'types/services/models/notes/notes';
 
-import useNotesResizePanel from '../hooks/useNotesResizePanel';
-
 import { INotesTabProps } from './types';
 
 import '@toast-ui/editor/dist/toastui-editor.css';
 import './NotesTab.scss';
 
 function NotesTab({ runHash }: INotesTabProps) {
-  const [openModal, setOpenModal] = React.useState(false);
+  const [value, setValue] = React.useState('');
+  const [theme, setTheme] = React.useState(null);
   const { isLoading, noteData, notifyData } = useModel(notesModel)!;
   const editorRef = React.useRef<Editor | any>(null);
   const wrapperRef = React.useRef<any>();
-  useNotesResizePanel(wrapperRef, editorRef);
 
   React.useEffect(() => {
     notesModel.initialize(runHash);
@@ -42,9 +40,31 @@ function NotesTab({ runHash }: INotesTabProps) {
   }, []);
 
   React.useEffect(() => {
-    editorRef.current.editorInst.setMarkdown(
-      noteData?.id ? noteData?.content : '',
-    );
+    if (editorRef.current) {
+      setValue(noteData?.id ? noteData?.content : '');
+      setTheme({
+        ...editorRef.current?.theme(),
+        fontFamily: 'Inter',
+        toolbarBackground: '#fff',
+        blockToolbarItem: '#1c2852',
+        almostBlack: '1c2852',
+        black: '#1c2852',
+        blockToolbarIcon: '#414b6d',
+        blockToolbarIconSelected: '#414b6d',
+        blockToolbarText: '#414b6d',
+        blockToolbarTriggerIcon: '#414b6d',
+        blockToolbarTextSelected: '#1c2852',
+        blockToolbarSelectedBackground: '#f2f5fa',
+        blockToolbarHoverBackground: '#f2f5fa',
+        blockToolbarDivider: '#E8F1FC',
+        toolbarItem: '#414b6d',
+        fontFamilyMono: 'Iosevka',
+        noticeInfoBackground: '#ffcc00',
+        noticeInfoText: '#414b6d',
+        noticeTipBackground: '#9E5CF7',
+        noticeWarningBackground: '#e64e48',
+      });
+    }
   }, [noteData]);
 
   // CRUD handlers
@@ -53,32 +73,18 @@ function NotesTab({ runHash }: INotesTabProps) {
       onNoteUpdate();
     } else {
       notesModel.onNoteCreate(runHash, {
-        content: editorRef.current.editorInst.getMarkdown(),
+        content: editorRef.current.value(),
       } as INoteReqBody);
     }
   }
 
-  const onNoteDelete = React.useCallback(() => {
-    handleCloseModal();
-    notesModel.onNoteDelete(runHash);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
-
   function onNoteUpdate(): void {
     notesModel.onNoteUpdate(runHash, {
-      content: editorRef.current.editorInst.getMarkdown(),
+      content: editorRef.current.value(),
     } as INoteReqBody);
   }
 
-  // Confirm modal handlers
-  const handleOpenModal: () => void = React.useCallback(() => {
-    setOpenModal(true);
-  }, []);
-
-  const handleCloseModal: () => void = React.useCallback(() => {
-    setOpenModal(false);
-  }, []);
-
+  console.log(editorRef?.current);
   return (
     <section ref={wrapperRef} className='NotesTab'>
       <div
@@ -86,44 +92,48 @@ function NotesTab({ runHash }: INotesTabProps) {
           isLoading,
         })}
       >
-        <Editor
-          previewStyle='vertical'
-          initialEditType='markdown'
-          height='calc(100vh - 146px)'
-          ref={editorRef}
-        />
-        <div className='NotesTab__Editor__actionBtns'>
-          <Tooltip title='Delete Note'>
-            <div>
-              <Button
-                color='secondary'
-                size='small'
-                onClick={handleOpenModal}
-                withOnlyIcon
-                disabled={!noteData?.id}
-              >
-                <Icon name='delete' />
-              </Button>
-            </div>
-          </Tooltip>
-
-          <Tooltip title={`${noteData?.id ? 'Update' : 'Save'} Note`}>
+        <div className='NotesTab__Editor__actionPanel'>
+          <div className='NotesTab__Editor__actionPanel__info'>
+            <Tooltip title='Created At'>
+              <div className='NotesTab__Editor__actionPanel__info-field'>
+                <Icon name='calendar' />
+                <Text tint={70}>
+                  {`${moment(noteData?.created_at).format('YYYY DD HH:MM A')}`}
+                </Text>
+              </div>
+            </Tooltip>
+            <Tooltip title='Updated At'>
+              <div className='NotesTab__Editor__actionPanel__info-field'>
+                <Icon name='time' />
+                <Text tint={70}>
+                  {`${moment(noteData?.updated_at).format('YYYY DD HH:MM A')}`}
+                </Text>
+              </div>
+            </Tooltip>
+          </div>
+          <Tooltip title='Save Note'>
             <div>
               <Button variant='contained' size='small' onClick={onNoteSave}>
-                {noteData?.id ? 'Update' : 'Save'}
+                Save
               </Button>
             </div>
           </Tooltip>
         </div>
-        <ConfirmModal
-          open={openModal}
-          onCancel={handleCloseModal}
-          onSubmit={onNoteDelete}
-          text='Are you sure you want to delete this Note?'
-          icon={<Icon name='delete' />}
-          title='Please Confirm'
-          statusType='error'
-          confirmBtnText='Delete'
+        <Editor
+          uploadImage={async (file) => {
+            const result = await file;
+            return '';
+          }}
+          onKeyDown={(value) => {
+            console.log(
+              editorRef.current,
+              editorRef.current.handleOpenSelectionMenu(),
+            );
+          }}
+          theme={theme ? theme : editorRef.current?.theme()}
+          value={value}
+          ref={editorRef}
+          className='NotesTab__Editor__container'
         />
         {isLoading && <Spinner />}
       </div>
