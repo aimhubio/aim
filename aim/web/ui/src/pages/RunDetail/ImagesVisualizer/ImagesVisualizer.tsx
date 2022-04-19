@@ -80,6 +80,7 @@ function ImagesVisualizer(
             if (ex.name === 'AbortError') {
               // Abort Error
             } else {
+              // eslint-disable-next-line no-console
               console.log('Unhandled error: ');
             }
           });
@@ -102,6 +103,18 @@ function ImagesVisualizer(
     };
   }, []);
 
+  const sortFieldsDict = React.useMemo(() => {
+    return {
+      step: {
+        group: 'record',
+        label: 'record.step',
+        value: 'step',
+        readonly: false,
+        order: 'desc',
+      },
+    };
+  }, []);
+
   return (
     <ErrorBoundary>
       <BusyLoaderWrapper
@@ -119,6 +132,7 @@ function ImagesVisualizer(
             tableHeight={'0'}
             wrapperOffsetHeight={offsetHeight || 0}
             wrapperOffsetWidth={offsetWidth || 0}
+            sortFieldsDict={sortFieldsDict}
             focusedState={focusedState}
             additionalProperties={additionalProperties}
             onActivePointChange={onActivePointChange}

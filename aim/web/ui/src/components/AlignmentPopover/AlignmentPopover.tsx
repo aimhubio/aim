@@ -82,6 +82,7 @@ function AlignmentPopover({
         for (let option of selectFormOptions) {
           if (
             option?.value?.option_name &&
+            option?.value?.context === null &&
             !isSystemMetric(option.value.option_name)
           ) {
             data.push({ value: option.label, label: option.label });

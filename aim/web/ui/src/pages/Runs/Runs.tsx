@@ -54,6 +54,8 @@ function Runs(props: any): React.FunctionComponentElement<React.ReactNode> {
               onRowSelect={props.onRowSelect}
               archiveRuns={props.archiveRuns}
               deleteRuns={props.deleteRuns}
+              onToggleColumnsColorScales={props.onToggleColumnsColorScales}
+              columnsColorScales={props.columnsColorScales}
             />
           </div>
         </div>

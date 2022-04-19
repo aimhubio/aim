@@ -137,7 +137,7 @@ function TooltipContentPopover({
               </React.Fragment>
             )}
             renderTags={(value, getTagProps) => (
-              <div style={{ maxHeight: 110, overflow: 'auto' }}>
+              <div className='TooltipContentPopover__SelectedTagsContainer'>
                 {value.map((selected, i) => (
                   <Badge
                     key={i}

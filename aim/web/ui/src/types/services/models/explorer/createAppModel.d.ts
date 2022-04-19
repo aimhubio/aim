@@ -61,14 +61,16 @@ export interface IGroupingConfig {
   chart?: string[];
   group?: [];
   reverseMode?: {
-    color: boolean;
-    stroke: boolean;
-    chart: boolean;
+    color?: boolean;
+    stroke?: boolean;
+    chart?: boolean;
+    group?: boolean;
   };
   isApplied?: {
-    color: boolean;
-    stroke: boolean;
-    chart: boolean;
+    color?: boolean;
+    stroke?: boolean;
+    chart?: boolean;
+    group?: boolean;
   };
   persistence?: {
     color: boolean;
@@ -108,6 +110,7 @@ export interface ITableConfig {
   hideSystemMetrics?: boolean;
   columnsWidths?: { [key: string]: number };
   columnsOrder?: IColumnsOrder;
+  columnsColorScales?: { [key: string]: boolean };
   height?: string;
   selectedRows?: any;
 }

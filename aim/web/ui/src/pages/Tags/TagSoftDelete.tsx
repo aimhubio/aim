@@ -52,7 +52,7 @@ function TagSoftDelete({
             <Icon name='eye-outline-hide' />
           )
         }
-        title='Are you sure?'
+        title='Hide tag'
         confirmBtnText={archivedRef.current?.archived ? 'Bring back' : 'Hide'}
       />
     </ErrorBoundary>

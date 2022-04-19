@@ -68,6 +68,7 @@ function ParamsContainer(): React.FunctionComponentElement<React.ReactNode> {
           exceptionHandler({ detail, model: paramsAppModel });
         })
         .then(() => {
+          paramsAppModel.setDefaultAppConfigData(false);
           paramsRequestRef = paramsAppModel.getParamsData();
           paramsRequestRef.call((detail: any) => {
             exceptionHandler({ detail, model: paramsAppModel });
@@ -103,6 +104,7 @@ function ParamsContainer(): React.FunctionComponentElement<React.ReactNode> {
         appRequestRef.abort();
       }
     };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   return (

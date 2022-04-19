@@ -1,23 +1,53 @@
 ## Track media and objects
 
-Aim supports variety of data sources. Basic logging of `Run` params covers
-Python builtin types (such as `int`, `float`, `bool`, `bytes` and `str`) as well as
-composition of those into dictionaries, lists, tuples at any depth.
+Aim supports variety of data sources. Basic logging of `Run` params covers Python builtin types (such as `int`, `float`
+, `bool`, `bytes` and `str`) as well as composition of those into dictionaries, lists, tuples at any depth.
 
-In addition to the builtin types, Aim provides native support for 
-[OmegaConf](https://github.com/omry/omegaconf/blob/master/README.md) configs, thus
-simplifying integration for projects running with [Hydra](https://hydra.cc/docs/intro/).
+In addition to the builtin types, Aim provides native support for
+[OmegaConf](https://github.com/omry/omegaconf/blob/master/README.md) configs, thus simplifying integration for projects
+running with [Hydra](https://hydra.cc/docs/intro/).
 
 Starting from `v3.6.0` Aim provides integration with [activeloop/hub](https://docs.activeloop.ai/)
 datasets. Hub is the open-source dataset format for AI.
 
-Tracking of data includes metrics, images, audio, text and chart figures. Here's
-the complete list of Aim objects provided by the package:
+Tracking of data includes metrics, images, audio, text and chart figures. Here's the complete list of Aim objects
+provided by the package:
+
 - Metrics
+- [Distribution](#distribution-tracking-with-aim)
 - [Image](#image-tracking-with-aim)
 - [Audio](#audio-tracking-with-aim)
 - [Text](#text-tracking-with-aim)
 - [Figure](#figure-tracking-with-aim)
+
+### Distribution tracking with Aim
+
+You can store distribution objects in Aim repository using our `aim.Distribution` object.
+
+```python
+from aim import Distribution
+```
+
+`aim.Distribution` accepts the following parameters
+
+* `distribution`: array-like object used to construct `aim.Distribution`.
+* `bin_count`: Optional distribution bin count. 64 by default, max 512.
+
+Your data is converted to `numpy.histogram` upon initialization of the object.
+
+Simple example of initializing and tracking distribution
+
+```python
+import random
+from aim import Run, Distribution
+
+run = Run()
+d = Distribution(
+    distribution=[random.randrange(0, 10000) for _ in range(1000)],
+    bin_count=250
+)
+run.track(d, name='dist', step=0)
+```
 
 ### Image tracking with Aim
 
@@ -155,7 +185,7 @@ for step in range(100):
         string.digits, k=20)
     )
     aim_text = Text(random_str)
-    run.track(aim_text, step=step)
+    run.track(aim_text, name='text', step=step)
 ```
 
 ### Figure tracking with Aim
@@ -213,8 +243,8 @@ run.track(aim_figure, name="matplotlib_figures", step=0)
 
 ### Tracking matplotlib figures with Aim
 
-In order to track `matplotlib` figures with Aim, either pass the `matplotlib` figure to Aim's `Image` or `Figure` object.
-
+In order to track `matplotlib` figures with Aim, either pass the `matplotlib` figure to Aim's `Image` or `Figure`
+object.
 
 #### Converting matplotlib to Aim Image
 
@@ -253,12 +283,10 @@ aim_figure = Figure(fig)
 run.track(aim_figure, step=0, name="matplotlib_figures")
 ```
 
-
 ### Logging activeloop/hub dataset info with Aim
 
 Aim provides wrapper object for `hub.dataset`. It allows to store the dataset info as a `Run`
-parameter and retrieve it later just as any other `Run` param. Here is an example of using Aim
-to log dataset info:
+parameter and retrieve it later just as any other `Run` param. Here is an example of using Aim to log dataset info:
 
 ```python
 import hub
@@ -272,4 +300,57 @@ ds = hub.dataset('hub://activeloop/cifar100-test')
 # log dataset metadata
 run = Run(system_tracking_interval=None)
 run['hub_ds'] = HubDataset(ds)
+```
+
+### Log DVC metadata with Aim
+
+If you are using [DVC](https://dvc.org/) to version your datasets or track checkpoints / other large chunks of data, you
+can use Aim to record the info about the tracked files and datasets on Aim. This will allow to easily connect your
+datasets info to the tracked experiments. Here is how the code looks like
+
+```python
+from aim.sdk import Run
+from aim.sdk.objects.plugins.dvc_metadata import DvcData
+
+run = Run(system_tracking_interval=None)
+
+path_to_dvc_repo = '.'
+run['dvc_info'] = DvcData(path_to_dvc_repo)
+```
+
+If we consider the following [sample repo](https://github.com/iterative/example-get-started) provided by DVC team:
+
+Run the following command to list repository contents, including files and directories tracked by DVC and by Git.
+
+```shell
+$ git clone https://github.com/iterative/example-get-started
+$ cd example-get-started
+$ dvc list .
+.dvcignore
+.github
+.gitignore
+README.md
+data
+dvc.lock
+dvc.yaml
+model.pkl
+params.yaml
+prc.json
+roc.json
+scores.json
+src
+```
+
+If we apply our previous code snippet on the same repo - we can observe the same information added to Run parameters.
+
+```python
+{
+    'dvc_info.dataset.source': 'dvc',
+    'dvc_info.dataset.tracked_files': [
+        '.dvcignore', '.github', '.gitignore',
+        'README.md', 'data', 'dvc.lock',
+        'dvc.yaml', 'model.pkl', 'params.yaml',
+        'prc.json', 'roc.json', 'scores.json', 'src'
+    ]
+}
 ```

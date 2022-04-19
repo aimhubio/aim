@@ -14,7 +14,7 @@ import { DensityOptions } from 'config/enums/densityEnum';
 import { RequestStatusEnum } from 'config/enums/requestStatusEnum';
 import { CONTROLS_DEFAULT_CONFIG } from 'config/controls/controlsDefaultConfig';
 import { ANALYTICS_EVENT_KEYS } from 'config/analytics/analyticsKeysMap';
-import { DATE_EXPORTING_FORMAT } from 'config/dates/dates';
+import { DATE_EXPORTING_FORMAT, TABLE_DATE_FORMAT } from 'config/dates/dates';
 
 import {
   getMetricsTableColumns,
@@ -86,6 +86,7 @@ import {
   IScatterAppModelState,
   ITrendlineOptions,
 } from 'types/services/models/scatter/scatterAppModel';
+import { IApiRequest } from 'types/services/services';
 
 import { aggregateGroupData } from 'utils/aggregateGroupData';
 import exceptionHandler from 'utils/app/exceptionHandler';
@@ -174,6 +175,7 @@ import onRowSelect from 'utils/app/onRowSelect';
 import { SortField } from 'utils/getSortedFields';
 import onChangeTrendlineOptions from 'utils/app/onChangeTrendlineOptions';
 import { getParamsSuggestions } from 'utils/app/getParamsSuggestions';
+import onToggleColumnsColorScales from 'utils/app/onToggleColumnsColorScales';
 
 import { AppDataTypeEnum, AppNameEnum } from './index';
 /**
@@ -202,7 +204,7 @@ function createAppModel(appConfig: IAppInitialConfig) {
       case AppDataTypeEnum.METRICS: {
         const config: IAppModelConfig = {
           liveUpdate: {
-            delay: 2000,
+            delay: 7000,
             enabled: false,
           },
         };
@@ -291,10 +293,10 @@ function createAppModel(appConfig: IAppInitialConfig) {
                   CONTROLS_DEFAULT_CONFIG.metrics.tooltip.selectedParams,
               },
               focusedState: {
-                active: false,
                 key: null,
                 xValue: null,
                 yValue: null,
+                active: false,
                 chartIndex: null,
               },
             };
@@ -314,7 +316,7 @@ function createAppModel(appConfig: IAppInitialConfig) {
       case AppDataTypeEnum.RUNS: {
         const config: IAppModelConfig = {
           liveUpdate: {
-            delay: 2000,
+            delay: 7000,
             enabled: false,
           },
         };
@@ -352,6 +354,7 @@ function createAppModel(appConfig: IAppInitialConfig) {
             hiddenColumns: TABLE_DEFAULT_CONFIG.runs.hiddenColumns,
             sortFields: [...TABLE_DEFAULT_CONFIG.runs.sortFields],
             columnsWidths: {},
+            columnsColorScales: {},
             columnsOrder: {
               left: [...TABLE_DEFAULT_CONFIG.runs.columnsOrder.left],
               middle: [...TABLE_DEFAULT_CONFIG.runs.columnsOrder.middle],
@@ -427,25 +430,26 @@ function createAppModel(appConfig: IAppInitialConfig) {
             advancedQuery: '',
           };
         }
-        return config;
+        //TODO solve the problem with keeping table config after switching from Scatters explore to Params explore. But the solution is temporal
+        return _.cloneDeep(config);
       }
       default:
         return {};
     }
   }
 
-  function setModelDefaultAppConfigData(): void {
+  function setModelDefaultAppConfigData(
+    recoverTableState: boolean = true,
+  ): void {
     setDefaultAppConfigData({
       config: getConfig(),
       appInitialConfig: appConfig,
       model,
+      recoverTableState,
     });
   }
 
-  function getModelAppConfigData(appId: string): {
-    call: () => Promise<void>;
-    abort: () => void;
-  } {
+  function getModelAppConfigData(appId: string): IApiRequest<void> {
     return getAppConfigData({ appId, appRequest, config: getConfig(), model });
   }
 
@@ -591,10 +595,7 @@ function createAppModel(appConfig: IAppInitialConfig) {
     function getMetricsData(
       shouldUrlUpdate?: boolean,
       shouldResetSelectedRows?: boolean,
-    ): {
-      call: () => Promise<void>;
-      abort: () => void;
-    } {
+    ): IApiRequest<void> {
       if (metricsRequestRef) {
         metricsRequestRef.abort();
       }
@@ -633,6 +634,7 @@ function createAppModel(appConfig: IAppInitialConfig) {
               if (ex.name === 'AbortError') {
                 // Abort Error
               } else {
+                // eslint-disable-next-line no-console
                 console.log('Unhandled error: ', ex);
               }
             }
@@ -741,6 +743,8 @@ function createAppModel(appConfig: IAppInitialConfig) {
                 line: '',
               },
               experiment: '',
+              description: '',
+              date: '',
               run: '',
               metric: '',
               context: [],
@@ -778,8 +782,10 @@ function createAppModel(appConfig: IAppInitialConfig) {
               color: metricsCollection.color ?? metric.color,
               dasharray: metricsCollection.dasharray ?? metric.dasharray,
               experiment: metric.run.props?.experiment?.name ?? 'default',
-              run: moment(metric.run.props.creation_time * 1000).format(
-                'HH:mm:ss · D MMM, YY',
+              run: metric.run.props?.name ?? '-',
+              description: metric.run.props?.description ?? '-',
+              date: moment(metric.run.props.creation_time * 1000).format(
+                TABLE_DATE_FORMAT,
               ),
               metric: metric.name,
               context: contextToString(metric.context)?.split(',') || [''],
@@ -821,6 +827,8 @@ function createAppModel(appConfig: IAppInitialConfig) {
 
             [
               'experiment',
+              'description',
+              'date',
               'run',
               'metric',
               'context',
@@ -977,7 +985,7 @@ function createAppModel(appConfig: IAppInitialConfig) {
               ...trace,
               run: createRunModel(_.omit(run, 'traces') as IRun<IMetricTrace>),
               key: metricKey,
-              dasharray: '0',
+              dasharray: 'none',
               color: COLORS[paletteIndex][index % COLORS[paletteIndex].length],
               isHidden: configData?.table?.hiddenMetrics!.includes(metricKey),
               data: {
@@ -1579,7 +1587,11 @@ function createAppModel(appConfig: IAppInitialConfig) {
                 color: metricsCollection.color ?? metric.color,
                 dasharray: metricsCollection.dasharray ?? metric.color,
                 chartIndex: metricsCollection.chartIndex,
-                selectors: [metric.key, metric.key, metric.run.hash],
+                selectors: [
+                  metric.key,
+                  metric.key,
+                  encode({ runHash: metric.run.hash }),
+                ],
                 data: {
                   xValues: metric.data.xValues,
                   yValues: metric.data.yValues,
@@ -1845,13 +1857,7 @@ function createAppModel(appConfig: IAppInitialConfig) {
       liveUpdateInstance = null; //@TODO check is this need or not
     }
 
-    function archiveRuns(
-      ids: string[],
-      archived: boolean,
-    ): {
-      call: () => Promise<void>;
-      abort: () => void;
-    } {
+    function archiveRuns(ids: string[], archived: boolean): IApiRequest<void> {
       runsArchiveRef = runsService.archiveRuns(ids, archived);
       return {
         call: async () => {
@@ -1894,10 +1900,7 @@ function createAppModel(appConfig: IAppInitialConfig) {
       };
     }
 
-    function deleteRuns(ids: string[]): {
-      call: () => Promise<void>;
-      abort: () => void;
-    } {
+    function deleteRuns(ids: string[]): IApiRequest<void> {
       runsDeleteRef = runsService.deleteRuns(ids);
       return {
         call: async () => {
@@ -2317,7 +2320,6 @@ function createAppModel(appConfig: IAppInitialConfig) {
               }
               const { data, params, metricsColumns, selectedRows } =
                 processData(runsData);
-
               const tableData = getDataAsTableRows(
                 data,
                 metricsColumns,
@@ -2330,9 +2332,7 @@ function createAppModel(appConfig: IAppInitialConfig) {
                 model.getState()?.config?.table.hiddenColumns!,
               );
               updateTableData(tableData, tableColumns, configData);
-              limit = isInitial
-                ? modelState?.config.pagination.limit
-                : modelState?.config.pagination.limit + 45;
+
               model.setState({
                 data,
                 selectedRows: shouldResetSelectedRows
@@ -2350,9 +2350,6 @@ function createAppModel(appConfig: IAppInitialConfig) {
                     ...modelState?.config.pagination,
                     isLatest:
                       !isInitial && count < modelState?.config.pagination.limit,
-                    limit: isInitial
-                      ? modelState?.config.pagination.limit
-                      : modelState?.config.pagination.limit + 45,
                   },
                 },
               });
@@ -2368,9 +2365,11 @@ function createAppModel(appConfig: IAppInitialConfig) {
                 });
               }
             }
+            const rowDataLength = model.getState()?.tableData?.length || 0;
+            limit = rowDataLength >= 45 ? rowDataLength : 45;
             liveUpdateInstance?.start({
               q: query,
-              limit: limit || 0,
+              limit,
             });
           },
           abort: runsRequestRef.abort,
@@ -2483,7 +2482,7 @@ function createAppModel(appConfig: IAppInitialConfig) {
             run,
             isHidden: false,
             color: COLORS[paletteIndex][index % COLORS[paletteIndex].length],
-            key: run.hash,
+            key: encode({ runHash: run.hash }),
             dasharray: DASH_ARRAYS[0],
           });
         });
@@ -2742,8 +2741,10 @@ function createAppModel(appConfig: IAppInitialConfig) {
               color: metricsCollection.color ?? metric.color,
               dasharray: metricsCollection.dasharray ?? metric.dasharray,
               experiment: metric.run.props.experiment?.name ?? 'default',
-              run: moment(metric.run.props.creation_time * 1000).format(
-                'HH:mm:ss · D MMM, YY',
+              run: metric.run.props.name,
+              description: metric.run.props?.description ?? '-',
+              date: moment(metric.run.props.creation_time * 1000).format(
+                TABLE_DATE_FORMAT,
               ),
               metric: metric.name,
               ...metricsRowValues,
@@ -2752,6 +2753,8 @@ function createAppModel(appConfig: IAppInitialConfig) {
             [
               'experiment',
               'run',
+              'date',
+              'description',
               'metric',
               'context',
               'step',
@@ -2840,6 +2843,7 @@ function createAppModel(appConfig: IAppInitialConfig) {
               },
             },
           });
+
           return getRunsData(false, false, false);
         }
       }
@@ -2987,8 +2991,8 @@ function createAppModel(appConfig: IAppInitialConfig) {
 
         if (!liveUpdateConfig?.enabled && config.enabled) {
           const query = configData?.select?.query || '';
-          const pagination = configData?.pagination;
-
+          const rowDataLength = model.getState()?.tableData?.length || 0;
+          const limit = rowDataLength >= 45 ? rowDataLength : 45;
           liveUpdateInstance = new LiveUpdateService(
             appName,
             updateData,
@@ -2996,7 +3000,7 @@ function createAppModel(appConfig: IAppInitialConfig) {
           );
           liveUpdateInstance.start({
             q: query,
-            limit: pagination.limit || 0,
+            limit,
           });
         } else {
           liveUpdateInstance?.clear();
@@ -3200,6 +3204,14 @@ function createAppModel(appConfig: IAppInitialConfig) {
           }): void {
             return onRowSelect({ actionType, data, model });
           },
+          onToggleColumnsColorScales(colKey: string): void {
+            onToggleColumnsColorScales({
+              colKey,
+              model,
+              appName,
+              updateModelData,
+            });
+          },
         });
       }
 
@@ -3396,6 +3408,7 @@ function createAppModel(appConfig: IAppInitialConfig) {
                 if (ex.name === 'AbortError') {
                   // Abort Error
                 } else {
+                  // eslint-disable-next-line no-console
                   console.log('Unhandled error: ', ex);
                 }
               }
@@ -3504,6 +3517,8 @@ function createAppModel(appConfig: IAppInitialConfig) {
                 dasharray: metricsCollection.dasharray,
                 experiment: '',
                 run: '',
+                description: '',
+                date: '',
                 metric: '',
                 context: [],
                 children: [],
@@ -3539,8 +3554,10 @@ function createAppModel(appConfig: IAppInitialConfig) {
                 color: metricsCollection.color ?? metric.color,
                 dasharray: metricsCollection.dasharray ?? metric.dasharray,
                 experiment: metric.run.props.experiment.name ?? 'default',
-                run: moment(metric.run.props.creation_time * 1000).format(
-                  'HH:mm:ss · D MMM, YY',
+                run: metric.run.props?.name ?? '-',
+                description: metric.run.props?.description ?? '-',
+                date: moment(metric.run.props.creation_time * 1000).format(
+                  TABLE_DATE_FORMAT,
                 ),
                 metric: metric.name,
                 ...metricsRowValues,
@@ -3554,6 +3571,8 @@ function createAppModel(appConfig: IAppInitialConfig) {
               [
                 'experiment',
                 'run',
+                'date',
+                'description',
                 'metric',
                 'context',
                 'step',
@@ -4021,7 +4040,7 @@ function createAppModel(appConfig: IAppInitialConfig) {
             run,
             isHidden: configData!.table.hiddenMetrics!.includes(run.hash),
             color: COLORS[paletteIndex][index % COLORS[paletteIndex].length],
-            key: run.hash,
+            key: encode({ runHash: run.hash }),
             dasharray: DASH_ARRAYS[0],
           });
         });
@@ -4844,7 +4863,7 @@ function createAppModel(appConfig: IAppInitialConfig) {
                       });
                     } else {
                       const paramValue = getValue(run.run.params, label);
-                      values[i] = formatValue(paramValue, null);
+                      values[i] = formatValue(paramValue, '-');
                       if (values[i] !== null) {
                         if (typeof values[i] === 'string') {
                           dimension[i].scaleType = ScaleEnum.Point;
@@ -4969,9 +4988,12 @@ function createAppModel(appConfig: IAppInitialConfig) {
                   (metric) => metric.key,
                 ),
                 color: metricsCollection.color,
+
                 dasharray: metricsCollection.dasharray,
                 experiment: '',
                 run: '',
+                date: '',
+                description: '',
                 metric: '',
                 context: [],
                 children: [],
@@ -5007,8 +5029,10 @@ function createAppModel(appConfig: IAppInitialConfig) {
                 color: metricsCollection.color ?? metric.color,
                 dasharray: metricsCollection.dasharray ?? metric.dasharray,
                 experiment: metric.run.props.experiment?.name ?? 'default',
-                run: moment(metric.run.props.creation_time * 1000).format(
-                  'HH:mm:ss · D MMM, YY',
+                run: metric.run.props?.name ?? '-',
+                description: metric.run.props?.description ?? '-',
+                date: moment(metric.run.props.creation_time * 1000).format(
+                  TABLE_DATE_FORMAT,
                 ),
                 metric: metric.name,
                 ...metricsRowValues,
@@ -5024,6 +5048,8 @@ function createAppModel(appConfig: IAppInitialConfig) {
                 'run',
                 'metric',
                 'context',
+                'date',
+                'description',
                 'step',
                 'epoch',
                 'time',
@@ -5144,7 +5170,7 @@ function createAppModel(appConfig: IAppInitialConfig) {
             run,
             isHidden: configData!.table.hiddenMetrics!.includes(run.hash),
             color: COLORS[paletteIndex][index % COLORS[paletteIndex].length],
-            key: run.hash,
+            key: encode({ runHash: run.hash }),
             dasharray: DASH_ARRAYS[0],
           });
         });

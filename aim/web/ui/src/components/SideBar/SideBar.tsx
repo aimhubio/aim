@@ -12,44 +12,23 @@ import ErrorBoundary from 'components/ErrorBoundary/ErrorBoundary';
 import { PathEnum } from 'config/enums/routesEnum';
 import { AIM_VERSION } from 'config/config';
 import { ANALYTICS_EVENT_KEYS } from 'config/analytics/analyticsKeysMap';
+import { DOCUMENTATIONS } from 'config/references';
 
 import routes, { IRoute } from 'routes/routes';
 
 import { trackEvent } from 'services/analytics';
 
+import { getItem } from 'utils/storage';
+
 import './Sidebar.scss';
 
 function SideBar(): React.FunctionComponentElement<React.ReactNode> {
   function getPathFromStorage(route: PathEnum): PathEnum | string {
-    switch (route) {
-      case PathEnum.Metrics:
-        if (localStorage.getItem('metricsUrl')) {
-          return localStorage.getItem('metricsUrl') || '';
-        }
-        return route;
-      case PathEnum.Params:
-        if (localStorage.getItem('paramsUrl')) {
-          return localStorage.getItem('paramsUrl') || '';
-        }
-        return route;
-      case PathEnum.Runs:
-        if (localStorage.getItem('runsUrl')) {
-          return localStorage.getItem('runsUrl') || '';
-        }
-        return route;
-      case PathEnum.Images_Explore:
-        if (localStorage.getItem('imagesExploreUrl')) {
-          return localStorage.getItem('imagesExploreUrl') || '';
-        }
-        return route;
-      case PathEnum.Scatters:
-        if (localStorage.getItem('scattersUrl')) {
-          return localStorage.getItem('scattersUrl') || '';
-        }
-        return route;
-      default:
-        return route;
+    const path = getItem(`${route.slice(1)}Url`) ?? '';
+    if (path !== '' && path.startsWith(route)) {
+      return path;
     }
+    return route;
   }
 
   return (
@@ -115,7 +94,7 @@ function SideBar(): React.FunctionComponentElement<React.ReactNode> {
             <Tooltip title='Docs' placement='right'>
               <a
                 target='_blank'
-                href='https://aimstack.readthedocs.io'
+                href={DOCUMENTATIONS.MAIN_PAGE}
                 rel='noreferrer'
                 className='Sidebar__bottom__anchor'
                 onClick={() => trackEvent(ANALYTICS_EVENT_KEYS.sidebar.docs)}

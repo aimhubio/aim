@@ -18,6 +18,7 @@ $border-radius: 0.2rem;
   box-sizing: border-box;
   content-visibility: auto;
   contain: content;
+  font-family: 'Iosevka', monospace;
   &__container {
     height: 100%;
     width: 100%;
@@ -75,13 +76,22 @@ $border-radius: 0.2rem;
 }
 
 .Table__pane--left,
-.Table__pane--right {
+.Table__pane--right,
+.Table__pane--selection {
   position: sticky;
   width: auto;
   z-index: 1;
 }
 
 .Table__pane--left {
+  left: 0;
+  box-shadow: 1px 0 3px 0 $cuddle;
+  &.withSelectionColumn {
+    left: var(--left-position);
+  }
+}
+
+.Table__pane--selection {
   left: 0;
   box-shadow: 1px 0 3px 0 $cuddle;
 }
@@ -255,7 +265,9 @@ $border-radius: 0.2rem;
   text-overflow: ellipsis;
   height: var(--cell-height);
   position: relative;
-
+  &.isNumeric {
+    justify-content: flex-end;
+  }
   &.placeholder {
     border-right: unset;
   }
@@ -323,7 +335,7 @@ $border-radius: 0.2rem;
       }
     }
   }
-  &.hidden {
+  &.inactive {
     background-color: $cuddle-10;
   }
 
@@ -364,6 +376,7 @@ $border-radius: 0.2rem;
   border-color: $border-color;
   z-index: 3;
   overflow: visible;
+  font-family: 'Inter', sans-serif;
 
   & > *:first-child {
     flex: 1;
@@ -378,9 +391,9 @@ $border-radius: 0.2rem;
 
 .Table__column__resizeHandler {
   position: absolute;
-  right: -1px;
+  right: -3px;
   top: 0;
-  width: 3px;
+  width: 6px;
   height: 100%;
   background-color: $primary-color;
   z-index: 10;
@@ -532,6 +545,9 @@ $border-radius: 0.2rem;
     .Table__column__selectCheckbox {
       margin-left: 0.5rem;
     }
+  }
+  &.isNumeric {
+    justify-content: flex-end;
   }
 }
 

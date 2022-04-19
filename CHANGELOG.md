@@ -4,23 +4,120 @@
 
 ### Enhancements:
 
+- Add `Notes Tab` to single run page (arsengit)
+- Add the run name to the batch delete and the batch archive modals (VkoHov)
+- Increase the scalability of rendering lines in charts (KaroMourad)
+- Increase live update requests delay to prevent performance issues  (rubenaprikyan)
+- Change font-family to monospace in the Table component (arsengit)
+- Add info massage for single value sliders (VkoHov)
+- Add `--log-level` argument for aim up/server commands (mihran113)
+- Add notes backend api interface (devfox-se)
+
+### Fixes:
+
+- Fix compatibility with pytorch-lightning v1.6.0 (mihran113)
+- Fix the image's original size cropping (VkoHov)
+- Fix `PATH` related issues for `alembic` and `uvicorn` (mihran113)
+- Fix queries for custom object APIs (mihran113) 
+
+## 3.8.1 Apr 6, 2022
+
+- Encode run hash before including in CSS selectors (Hamik25)
+- Fix displaying incorrect metric values for large range scale in LineChart (KaroMourad)
+- Fix issue with rendering lines for large range scale in LineChart (KaroMourad)
+- Fix issue with URL state sync for bookmarks (roubkar)
+- Fix issue with displaying negative param values on Aim UI (roubkar)
+- Fix row hiding functionality (roubkar)
+- Tune RunOverviewTab container styles (arsengit)
+- Update documentations links on UI (rubenaprikyan)
+- Fix `RepoIndexManager` run's reference cleanup (mihran113)
+- Fix remote run finalization (mihran113)
+- Fix issue with fetch on load more (infinite scroll) functionality in Runs Explorer (rubenaprikyan)
+
+## 3.8.0 Mar 26, 2022
+
+### Enhancements:
+
+- Hugging Face adapter refactoring (mihran113)
+- Add run description columns to all run specific tables (VkoHov, mihran113)
+- Change images rendering optimization default value to smoother (VkoHov)
+- Set default steps ordering to desc in single run tabs (VkoHov, devfox-se)
+- Add run name to grouping, ordering and run navigation popovers (VkoHov)
+- Add ability to apply color scale on columns with numeric values (VkoHov)
+- Refactored XGBoost AimCallback (devfox-se)
+- Reopenable callbacks for integrations (mihran113)
+- Add DVC integration (devfox-se)
+- Add API profiler and unified API error response (devfox-se)
+- Add API to retrieve N'th step of sequence (devfox-se)
+
+### Fixes:
+
+- Fix issue with calculation of active point on mouse hover in the LineChart (KaroMourad)
+- Fix issue with wrong URL caching for Explorer pages (roubkar)
+- Fix issue with focusing on the chart active point while moving the cursor (KaroMourad)
+- Fix the image full view toggle icon visibility if the image has a white background (VkoHov)
+- Fix scroll to the end of the audio tab (VkoHov)
+- Add scrollbar to image full view mode content (VkoHov)
+- Fix issues with run name/description not being set (mihran113)
+- Fix issue with run single page tabs result caching (mihran113)
+- Fix git system param tracking (devfox-se)
+- Fix runs manual closing (mihran113)
+- Fix Docker image creation step in packaging workflow (alberttorosyan)
+- Fix Jinja2 template rendering with starlette==0.14.2 (alberttorosyan)
+
+## 3.7.5 Mar 18, 2022
+
+- Add request aborting functionality in single run page tabs (arsengit)
+- Render plotly figures properly in single run page (arsengit)
+
+## 3.7.4 Mar 15, 2022
+
+- Fix density min and max validation calculation (VkoHov)
+
+## 3.7.3 Mar 14, 2022
+
+- Add missing names for dynamically imported files in single run page (arsengit)
+
+## 3.7.2 Mar 10, 2022
+
+- Fix issue with rendering UI re keeping long URL (KaroMourad)
+- Split code in the single run page to optimize chunk size (arsengit)
+
+## 3.7.1 Mar 10, 2022
+
+- Fix metric queries with epoch=None (alberttorosyan)
+
+## 3.7.0 Mar 9, 2022
+
+### Enhancements:
+
+- Add Run overview tab in run single page (arsengit, VkoHov, KaroMourad, rubenaprikyan)
 - Custom max message size for Aim Remote tracking (alberttorosyan)
 - Docker images for aim up/server (alberttorosyan)
 - TF/Keras adapters refactoring (mihran113)
+- Remote tracking client-side retry logic (aramaim)
+- Add record_density to initial get-batch request for figures (VkoHov)
 
+### Fixes:
+
+- Fix rendering new lines in texts visualizer (arsengit)
+
+## 3.6.3 Mar 4, 2022
+
+- Fix UI rendering issue on colab (rubenaprikyan)
 
 ## 3.6.2 Mar 2, 2022
 
 - Fix chart interactions issue in the Single Run Page Metrics tab (roubkar)
 - Fix `resolve_objects` in remote tracking client subtree (alberttorosyan)
 - Reject `0` as step/record count (alberttorosyan, VkoHov)
-- Fix error on mlflow conversion by experiment id (devfox-se)  
+- Fix error on mlflow conversion by experiment id (devfox-se)
 
 ## 3.6.1 Feb 25, 2022
 
 - Fix issue with aligning x-axis by custom metric (KaroMourad)
 - Add `__AIM_PROXY_URL__` env variable to see full proxy url when running `aim up` command(rubenaprikyan)
-- Add `--proxy-url` argument to notebook extension's `%aim up` to render UI correctly if there is a proxy server  (rubenaprikyan)
+- Add `--proxy-url` argument to notebook extension's `%aim up` to render UI correctly if there is a proxy server (rubenaprikyan)
 - Add SageMaker integration, `jupyter-server-proxy` s bug-fix script (rubenaprikyan, mahnerak)
 - Fix animation support in Plotly visualization and figure loading performance (Hamik25, mihran113)
 - Display `None` values in group config column (VkoHov, Hamik25)

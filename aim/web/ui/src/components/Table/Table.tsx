@@ -88,6 +88,9 @@ const Table = React.forwardRef(function Table(
     focusedState,
     columnsOrder,
     illustrationConfig,
+    disableRowClick = false,
+    onToggleColumnsColorScales,
+    columnsColorScales,
     ...props
   }: ITableProps,
   ref,
@@ -158,6 +161,7 @@ const Table = React.forwardRef(function Table(
         beforeScrollHeight += itemHeight + groupMargin;
         scrollBottomHeight += itemHeight + groupMargin;
         if (expandedGroups.current.includes(groupKey)) {
+          // eslint-disable-next-line no-loop-func
           dataRef.current[groupKey].items.forEach((row) => {
             if (scrollTop > beforeScrollHeight) {
               beforeScrollHeight += itemHeight;
@@ -549,14 +553,16 @@ const Table = React.forwardRef(function Table(
           }
         }
         setListWindowMeasurements();
-      }, 100);
+      }, 30);
     }
 
     return () => {
       if (custom && tableContainerRef.current) {
+        // eslint-disable-next-line react-hooks/exhaustive-deps
         tableContainerRef.current.onscroll = null;
       }
     };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [custom, rowData]);
 
   React.useEffect(() => {
@@ -618,6 +624,7 @@ const Table = React.forwardRef(function Table(
       TABLE_DEFAULT_CONFIG[appName as Exclude<AppNameEnum, 'runs'>]?.sortFields
         ?.length !== sortFields?.length
     );
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [sortFields]);
 
   useResizeObserver(
@@ -635,7 +642,7 @@ const Table = React.forwardRef(function Table(
         isLoading={!props.isInfiniteLoading && (isLoading || isNil(rowData))}
         loaderComponent={<TableLoader />}
       >
-        {!isEmpty(data) || !isEmpty(rowData) ? (
+        {!isEmpty(rowData) ? (
           <div style={{ height: '100%' }} className={className}>
             {!hideHeaderActions && isEmpty(selectedRows) ? (
               <div className='Table__header'>
@@ -824,6 +831,10 @@ const Table = React.forwardRef(function Table(
                           multiSelect={multiSelect}
                           selectedRows={selectedRows || {}}
                           onRowSelect={onRowSelect}
+                          columnsColorScales={columnsColorScales}
+                          onToggleColumnsColorScales={
+                            onToggleColumnsColorScales
+                          }
                           {...props}
                         />
                       </ErrorBoundary>
@@ -864,6 +875,7 @@ const Table = React.forwardRef(function Table(
                         onColumnResizeEnd={() => null}
                         onRowHover={onRowHover}
                         onRowClick={onRowClick}
+                        disableRowClick={disableRowClick}
                       />
                     </ErrorBoundary>
                   )
@@ -940,13 +952,20 @@ function propsComparator(
   if (prevProps.hiddenColumns !== nextProps.hiddenColumns) {
     return false;
   }
+
   if (prevProps.hiddenChartRows !== nextProps.hiddenChartRows) {
     return false;
   }
+
   if (prevProps.columnsOrder !== nextProps.columnsOrder) {
     return false;
   }
-  if (prevProps.focusedState !== nextProps.focusedState) {
+
+  if (prevProps.focusedState?.active !== nextProps.focusedState?.active) {
+    return false;
+  }
+
+  if (prevProps.columnsColorScales !== nextProps.columnsColorScales) {
     return false;
   }
 

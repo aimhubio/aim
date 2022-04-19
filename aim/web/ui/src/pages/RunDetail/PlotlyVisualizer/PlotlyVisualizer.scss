@@ -3,12 +3,9 @@
 .PlotlyVisualizer {
   height: 100%;
   padding: toRem(10px);
-  overflow-y: auto;
+  overflow: auto;
   &__recordCnt {
     height: 100%;
-    &__plotWrapper {
-      width: 100%;
-      height: 100%;
-    }
+    overflow: auto;
   }
 }

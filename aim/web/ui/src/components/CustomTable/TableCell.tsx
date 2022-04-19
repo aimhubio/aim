@@ -2,6 +2,7 @@
 /* eslint-disable react/prop-types */
 
 import classNames from 'classnames';
+import _ from 'lodash-es';
 
 import ErrorBoundary from 'components/ErrorBoundary/ErrorBoundary';
 
@@ -17,6 +18,9 @@ function Cell({
   onRowClick,
   multiSelect = false,
   groupColumnColored,
+  getColumnCelBGColor,
+  columnsColorScales,
+  isNumeric,
 }) {
   return (
     <ErrorBoundary>
@@ -33,6 +37,7 @@ function Cell({
             (!isConfigColumn && metadata?.color) ||
             (!groupColumnColored && metadata?.color),
           groupColumnWithoutColor: !groupColumnColored,
+          isNumeric: isNumeric,
         })}
         style={{
           cursor:
@@ -43,6 +48,11 @@ function Cell({
           ...(metadata?.color && {
             '--color-indicator': metadata?.color,
           }),
+          ...(getColumnCelBGColor &&
+            columnsColorScales?.[col.key] &&
+            !_.isNil(getColumnCelBGColor(item)) && {
+              background: getColumnCelBGColor(+item),
+            }),
           ...(typeof item === 'object' &&
             item?.hasOwnProperty('style') &&
             item?.style),
@@ -59,6 +69,7 @@ function Cell({
           <div
             className={classNames('Table__cell__value', {
               hasColorIndicator: !isConfigColumn && metadata?.color,
+              isNumeric,
             })}
           >
             {typeof item === 'object' && item?.hasOwnProperty('content')

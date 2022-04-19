@@ -230,6 +230,9 @@ export const ANALYTICS_EVENT_KEYS = {
   runDetails: {
     pageView: '[RunDetail] Page view',
     tabs: {
+      overview: {
+        tabView: '[RunDetail] [Overview] Tab view',
+      },
       metrics: {
         tabView: '[RunDetail] [Metrics] Tab view',
       },
@@ -254,6 +257,12 @@ export const ANALYTICS_EVENT_KEYS = {
         tabView: '[RunDetail] [Texts] Tab view',
         clickApplyButton: '[RunDetail] [Texts] Click apply button',
         changeContext: '[RunDetail] [Texts] Change context',
+      },
+      notes: {
+        tabView: '[RunDetail] [Notes] Tab view',
+        clickSaveButton: '[RunDetail] [Notes] Click save button',
+        clickUpdateButton: '[RunDetail] [Notes] Click update button',
+        clickDeleteButton: '[RunDetail] [Notes] Click delete button',
       },
       audios: {
         tabView: '[RunDetail] [Audios] Tab view',

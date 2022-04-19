@@ -91,13 +91,9 @@ class RunAutoClean(AutoClean['Run']):
             logger.debug('Stopping resource tracker')
             self._system_resource_tracker.stop()
 
-    def finalize_remote_tracking_queue(self):
-        """
-        Finalize Remote tracking queue.
-        The remote tracker's queues should be cleaned up before calling `Client.release_resource` methods.
-        """
-        if self.repo._client:
-            self.repo._client._queue.wait_for_finish()
+    def finalize_rpc_queue(self):
+        if self.repo.is_remote_repo:
+            self.repo._client.get_queue(self.hash).stop()
 
     def _close(self) -> None:
         """
@@ -108,8 +104,7 @@ class RunAutoClean(AutoClean['Run']):
             return
         self.finalize_system_tracker()
         self.finalize_run()
-        # TODO: [AD] better solution? make queue per Run and wait until its tracking queue is empty
-        self.finalize_remote_tracking_queue()
+        self.finalize_rpc_queue()
 
 
 # TODO: [AT] generate automatically based on ModelMappedRun
@@ -447,7 +442,7 @@ class Run(StructuredRunMixin):
         else:
             raise ValueError(f'Input metric of type {type(value)} is neither python number nor AimObject')
 
-        with self.repo.atomic_track():
+        with self.repo.atomic_track(self.hash):
             ctx = Context(context)
             if ctx not in self.contexts:
                 self.meta_tree['contexts', ctx.idx] = context
@@ -784,10 +779,31 @@ class Run(StructuredRunMixin):
             self._hash = self._calc_hash()
         return self._hash
 
+    def _cleanup_trees(self):
+        del self.meta_run_attrs_tree
+        del self.meta_attrs_tree
+        del self.meta_run_tree
+        del self.meta_tree
+        del self.series_run_tree
+        self.meta_run_attrs_tree = None
+        self.meta_run_tree = None
+        self.meta_attrs_tree = None
+        self.meta_tree = None
+        self.series_run_tree = None
+
     def close(self):
         if self._resources is None:
             return
+        self.sequence_info.clear()
         self._resources.close()
+        # de-reference trees and other resources
+        del self._resources
+        del self.repo
+        del self._props
+        self._resources = None
+        self.repo = None
+        self._props = None
+        self._cleanup_trees()
 
     @classmethod
     def track_rate_warn(cls):

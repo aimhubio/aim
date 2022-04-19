@@ -28,6 +28,7 @@ function AutoSuggestions({
       suggestionsRef.current.itemProps = { ...itemProps };
       suggestionsRef.current.buttonProps = { ...buttonProps };
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   function onSuggestionsKeyDown(
