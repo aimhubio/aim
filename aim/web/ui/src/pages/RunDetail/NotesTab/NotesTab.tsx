@@ -19,13 +19,14 @@ import notesModel from 'services/models/notes/notesModel';
 import { INoteReqBody } from 'types/services/models/notes/notes';
 
 import { INotesTabProps } from './types';
+import NoteTooltip from './NoteTooltip';
 
 import '@toast-ui/editor/dist/toastui-editor.css';
 import './NotesTab.scss';
 
 function NotesTab({ runHash }: INotesTabProps) {
-  const [value, setValue] = React.useState('');
-  const [theme, setTheme] = React.useState(null);
+  const [value, setValue] = React.useState<string>('');
+  const [theme, setTheme] = React.useState<null | {}>(null);
   const { isLoading, noteData, notifyData } = useModel(notesModel)!;
   const editorRef = React.useRef<Editor | any>(null);
   const wrapperRef = React.useRef<any>();
@@ -59,10 +60,6 @@ function NotesTab({ runHash }: INotesTabProps) {
         blockToolbarDivider: '#E8F1FC',
         toolbarItem: '#414b6d',
         fontFamilyMono: 'Iosevka',
-        noticeInfoBackground: '#f3c304',
-        noticeInfoText: '#414b6d',
-        noticeTipBackground: '#9E5CF7',
-        noticeWarningBackground: '#e64e48',
       });
     }
   }, [noteData]);
@@ -84,7 +81,6 @@ function NotesTab({ runHash }: INotesTabProps) {
     } as INoteReqBody);
   }
 
-  console.log(editorRef.current);
   return (
     <section ref={wrapperRef} className='NotesTab'>
       <div
@@ -94,22 +90,30 @@ function NotesTab({ runHash }: INotesTabProps) {
       >
         <div className='NotesTab__Editor__actionPanel'>
           <div className='NotesTab__Editor__actionPanel__info'>
-            <Tooltip title='Created At'>
-              <div className='NotesTab__Editor__actionPanel__info-field'>
-                <Icon name='calendar' />
-                <Text tint={70}>
-                  {`${moment(noteData?.created_at).format('YYYY DD HH:MM A')}`}
-                </Text>
-              </div>
-            </Tooltip>
-            <Tooltip title='Updated At'>
-              <div className='NotesTab__Editor__actionPanel__info-field'>
-                <Icon name='time' />
-                <Text tint={70}>
-                  {`${moment(noteData?.updated_at).format('YYYY DD HH:MM A')}`}
-                </Text>
-              </div>
-            </Tooltip>
+            {noteData?.created_at && (
+              <Tooltip title='Created At'>
+                <div className='NotesTab__Editor__actionPanel__info-field'>
+                  <Icon name='calendar' />
+                  <Text tint={70}>
+                    {`${moment(noteData?.created_at).format(
+                      'YYYY DD HH:MM A',
+                    )}`}
+                  </Text>
+                </div>
+              </Tooltip>
+            )}
+            {noteData?.updated_at && (
+              <Tooltip title='Updated At'>
+                <div className='NotesTab__Editor__actionPanel__info-field'>
+                  <Icon name='time' />
+                  <Text tint={70}>
+                    {`${moment(noteData?.updated_at).format(
+                      'YYYY DD HH:MM A',
+                    )}`}
+                  </Text>
+                </div>
+              </Tooltip>
+            )}
           </div>
           <Tooltip title='Save Note'>
             <div>
@@ -123,11 +127,11 @@ function NotesTab({ runHash }: INotesTabProps) {
           ref={editorRef}
           className='NotesTab__Editor__container'
           value={value}
-          onChange={() => {
-            console.log(editorRef.current);
-          }}
           theme={theme ? theme : editorRef.current?.theme()}
           disableExtensions={['table', 'image', 'container_notice']}
+          tooltip={({ children }) => {
+            return <NoteTooltip>{children}</NoteTooltip>;
+          }}
         />
         {isLoading && <Spinner />}
       </div>
