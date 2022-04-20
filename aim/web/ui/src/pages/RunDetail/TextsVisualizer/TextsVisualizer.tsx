@@ -35,7 +35,11 @@ function TextsVisualizer(
       flexGrow: 1,
       // TODO: replace with a wrapper component for all types of texts visualization
       // eslint-disable-next-line react/display-name
-      cellRenderer: ({ cellData }: any) => <pre>{cellData}</pre>,
+      cellRenderer: ({ cellData }: any) => (
+        <div className='ScrollBar__hidden' style={{ overflow: 'auto' }}>
+          <pre>{cellData}</pre>
+        </div>
+      ),
     },
   ];
 
