@@ -1,5 +1,6 @@
 import sys
 import os
+import platform
 
 from shutil import rmtree
 from setuptools import find_packages, setup, Command, Extension
@@ -72,8 +73,12 @@ REQUIRED = [
     'SQLAlchemy>=1.4.1',
     'uvicorn>=0.12.0',
     'Pillow>=8.1.0',
-    'grpcio==1.42.0',
 ]
+
+if platform.machine() != 'arm64':
+    # Temporarily avoid `grpcio` until the issue
+    # https://github.com/grpc/grpc/issues/29262 is resolved
+    REQUIRED.append('grpcio==1.42.0')
 
 
 class UploadCommand(Command):
