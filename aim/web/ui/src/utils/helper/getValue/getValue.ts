@@ -35,7 +35,10 @@ export function getValue(
   }
 
   for (let i = 0; i < pathArray.length; i++) {
-    if (!Object.prototype.propertyIsEnumerable.call(object, pathArray[i])) {
+    if (
+      typeof object !== 'object' ||
+      !Object.prototype.propertyIsEnumerable.call(object, pathArray[i])
+    ) {
       return defaultValue;
     }
 
