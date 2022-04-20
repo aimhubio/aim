@@ -34,6 +34,7 @@ const HighPlot = React.forwardRef(function HighPlot(
     isVisibleColorIndicator,
     chartTitle,
     readOnly = false,
+    resizeMode,
   } = props;
 
   // boxes
@@ -169,7 +170,14 @@ const HighPlot = React.forwardRef(function HighPlot(
       }
     },
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    [data, curveInterpolation, index, isVisibleColorIndicator, readOnly],
+    [
+      data,
+      curveInterpolation,
+      index,
+      isVisibleColorIndicator,
+      readOnly,
+      resizeMode,
+    ],
   );
 
   const observerReturnCallback = React.useCallback(() => {
@@ -188,7 +196,14 @@ const HighPlot = React.forwardRef(function HighPlot(
       }
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [data, curveInterpolation, index, isVisibleColorIndicator, readOnly]);
+  }, [
+    data,
+    curveInterpolation,
+    index,
+    isVisibleColorIndicator,
+    readOnly,
+    resizeMode,
+  ]);
 
   React.useImperativeHandle(ref, () => ({
     clearHoverAttributes: () => {
