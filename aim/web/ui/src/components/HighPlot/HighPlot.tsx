@@ -31,6 +31,7 @@ const HighPlot = React.forwardRef(function HighPlot(
     isVisibleColorIndicator,
     chartTitle,
     readOnly = false,
+    resizeMode,
   }: IHighPlotProps,
   ref,
 ): React.FunctionComponentElement<React.ReactNode> {
@@ -152,7 +153,14 @@ const HighPlot = React.forwardRef(function HighPlot(
     }
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [curveInterpolation, index, isVisibleColorIndicator, data, readOnly]);
+  }, [
+    curveInterpolation,
+    index,
+    isVisibleColorIndicator,
+    data,
+    readOnly,
+    resizeMode,
+  ]);
 
   React.useImperativeHandle(ref, () => ({
     setActiveLine: (lineKey: string) => {

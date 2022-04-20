@@ -176,7 +176,7 @@ function DeleteModal({
     disabledTableRef.current?.updateData?.({
       newData: inProgressList,
     });
-  }, [selectedRows]);
+  }, [selectedRows, dateNow]);
 
   function onDelete() {
     const ids = data.map((item: any) => item.runHash);
