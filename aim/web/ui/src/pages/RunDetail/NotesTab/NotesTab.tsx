@@ -44,10 +44,10 @@ function NotesTab({ runHash }: INotesTabProps) {
       setValue(noteData?.id ? noteData?.content : '');
       setTheme({
         ...editorRef.current?.theme(),
+        almostBlack: '#1c2852',
         fontFamily: 'Inter',
         toolbarBackground: '#fff',
         blockToolbarItem: '#1c2852',
-        almostBlack: '1c2852',
         black: '#1c2852',
         blockToolbarIcon: '#414b6d',
         blockToolbarIconSelected: '#414b6d',
@@ -59,7 +59,7 @@ function NotesTab({ runHash }: INotesTabProps) {
         blockToolbarDivider: '#E8F1FC',
         toolbarItem: '#414b6d',
         fontFamilyMono: 'Iosevka',
-        noticeInfoBackground: '#ffcc00',
+        noticeInfoBackground: '#f3c304',
         noticeInfoText: '#414b6d',
         noticeTipBackground: '#9E5CF7',
         noticeWarningBackground: '#e64e48',
@@ -84,7 +84,7 @@ function NotesTab({ runHash }: INotesTabProps) {
     } as INoteReqBody);
   }
 
-  console.log(editorRef?.current);
+  console.log(editorRef.current);
   return (
     <section ref={wrapperRef} className='NotesTab'>
       <div
@@ -120,20 +120,14 @@ function NotesTab({ runHash }: INotesTabProps) {
           </Tooltip>
         </div>
         <Editor
-          uploadImage={async (file) => {
-            const result = await file;
-            return '';
-          }}
-          onKeyDown={(value) => {
-            console.log(
-              editorRef.current,
-              editorRef.current.handleOpenSelectionMenu(),
-            );
-          }}
-          theme={theme ? theme : editorRef.current?.theme()}
-          value={value}
           ref={editorRef}
           className='NotesTab__Editor__container'
+          value={value}
+          onChange={() => {
+            console.log(editorRef.current);
+          }}
+          theme={theme ? theme : editorRef.current?.theme()}
+          disableExtensions={['table', 'image', 'container_notice']}
         />
         {isLoading && <Spinner />}
       </div>
