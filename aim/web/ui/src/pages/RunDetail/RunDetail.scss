@@ -81,6 +81,11 @@
       }
     }
 
+    &__tabPanelBox {
+      overflow-y: auto;
+      height: calc(100vh - 98px);
+    }
+
     &__tabsContainer {
       background: #ffffff;
       box-shadow: 0 toRem(4px) toRem(6px) rgba(144, 175, 218, 0.2);
@@ -117,7 +122,6 @@
           &.Mui-selected {
             color: $pico;
             position: relative;
-            // border-right: none;
             &::before {
               content: '';
               width: 100%;
@@ -139,7 +143,6 @@
       }
     }
     &__tabPanel {
-      overflow-y: auto;
       height: calc(100vh - 98px);
       .MuiBox-root {
         height: 100%;
@@ -150,6 +153,13 @@
           height: 100%;
         }
       }
+      &.overviewPanel {
+        position: relative;
+        overflow: hidden;
+        .RunOverviewTab {
+          padding: 0 1rem;
+        }
+      }
     }
   }
   .TraceVisualizationWrapper {
@@ -158,7 +168,6 @@
 }
 
 .RunDetailParamsTabWrapper {
-  height: 100%;
   border-radius: $border-radius-lg;
   padding-top: 1.5rem;
   padding-bottom: 1.5rem;
@@ -178,8 +187,7 @@
 }
 
 .RunDetailMetricsTab {
-  margin-top: 1.5rem;
-  padding-bottom: 1.5rem;
+  padding: 1.5rem 0;
   &__container {
     height: 100%;
     display: flex;

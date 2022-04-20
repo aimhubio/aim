@@ -7,11 +7,11 @@
     }
   }
   &__Editor {
-    margin-top: 1.5rem;
+    padding-top: 1.5rem;
     position: relative;
     &__actionBtns {
       position: absolute;
-      top: toRem(10px);
+      top: toRem(34px);
       right: toRem(22px);
       display: flex;
       & > div:first-child {

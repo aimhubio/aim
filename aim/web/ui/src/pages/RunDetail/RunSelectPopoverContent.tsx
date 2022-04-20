@@ -82,7 +82,7 @@ function RunSelectPopoverContent({
         </div>
         <div className='RunSelectPopoverWrapper__selectPopoverContent__contentContainer'>
           <div className='RunSelectPopoverWrapper__selectPopoverContent__contentContainer__experimentsListContainer'>
-            <div className='RunSelectPopoverWrapper__selectPopoverContent__contentContainer__experimentsListContainer__experimentList'>
+            <div className='RunSelectPopoverWrapper__selectPopoverContent__contentContainer__experimentsListContainer__experimentList ScrollBar__hidden'>
               {!isRunInfoLoading ? (
                 experimentsData?.map((experiment: IRunSelectExperiment) => (
                   <div
@@ -121,7 +121,7 @@ function RunSelectPopoverContent({
               </div>
             ) : (
               <div
-                className='RunSelectPopoverWrapper__selectPopoverContent__contentContainer__runsListContainer__runsList'
+                className='RunSelectPopoverWrapper__selectPopoverContent__contentContainer__runsListContainer__runsList ScrollBar__hidden'
                 ref={popoverContentWrapperRef}
               >
                 {!_.isEmpty(runsOfExperiment) ? (

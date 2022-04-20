@@ -3,10 +3,12 @@
 .RunOverviewTab {
   display: flex;
   height: 100%;
+  display: flex;
+  justify-content: center;
   overflow-y: auto;
   &__content {
     flex: 1 100%;
-    max-width: calc(100% - #{$run-overview-sidebar-width});
+    max-width: toRem(1068px);
   }
   &__cardBox {
     margin-bottom: $space-lg;
