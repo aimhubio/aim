@@ -15,7 +15,8 @@
 
 ### Fixes:
 
-- Fix Highplot axis ticks overlapping issue (KaroMourad)
+- Fix HighPlot lines partially rendering issue (KaroMourad)
+- Fix HighPlot axis ticks overlapping issue (KaroMourad)
 - Fix compatibility with pytorch-lightning v1.6.0 (mihran113)
 - Fix the image's original size cropping (VkoHov)
 - Fix `PATH` related issues for `alembic` and `uvicorn` (mihran113)
