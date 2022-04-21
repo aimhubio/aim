@@ -51,7 +51,6 @@ class AimCallback:
                 system_tracking_interval=self._system_tracking_interval,
             )
         else:
-
             self._run = Run(
                 repo=self._repo_path,
                 experiment=self._experiment,
@@ -85,7 +84,7 @@ class AimCallback:
                 self._run.track(res_mean, name=f'{eval_name}-mean', context={'data_name': data_name})
                 self._run.track(res_stdv, name=f'{eval_name}-stdv', context={'data_name': data_name})
 
-        self.before_tracking(env=env)
+        self.after_tracking(env=env)
 
     def close(self):
         if self._run:
