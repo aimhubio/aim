@@ -5,7 +5,7 @@ from aim import Run
 from aim.ext.resource import DEFAULT_SYSTEM_TRACKING_INT
 
 
-class AimCallback:
+class AimLogger:
 
     def __init__(self, loss_function: Optional[str] = "Loss",
                  repo: Optional[str] = None,

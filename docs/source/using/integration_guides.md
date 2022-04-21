@@ -188,15 +188,15 @@ class CustomCallback(AimCallback):
 ### Catboost
 
 Catboost's `.fit()` has `log_cout` parameter which can be used to redirect log output into a custom object
-which has `write` attribute. Our callback is an object which implements `write` method to parse log string according to
+which has `write` attribute. Our logger is an object which implements `write` method to parse log string according to
 its content. Thus, most of the log output will be ignored by our parser logic, but you still can code up your own logic
 on top of ours to fill the gap for your needs.
 
 ```python
-from aim.catboost import AimCallback
+from aim.catboost import AimLogger
 
 
-class CustomCallback(AimCallback):
+class CustomLogger(AimLogger):
 
     def write(self, log):
         # Process the log string through our parser

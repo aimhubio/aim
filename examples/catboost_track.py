@@ -5,7 +5,7 @@ https://catboost.ai/en/docs/concepts/python-quickstart#classification
 
 import numpy as np
 
-from aim.catboost import AimCallback
+from aim.catboost import AimLogger
 from catboost import CatBoostClassifier, Pool
 
 # initialize data
@@ -27,7 +27,7 @@ model = CatBoostClassifier(iterations=2,
                            verbose=True)
 
 # train the model
-model.fit(train_data, train_labels, log_cout=AimCallback(loss_function='Logloss'), logging_level="Info")
+model.fit(train_data, train_labels, log_cout=AimLogger(loss_function='Logloss'), logging_level="Info")
 # make the prediction using the resulting model
 preds_class = model.predict(test_data)
 preds_proba = model.predict_proba(test_data)
