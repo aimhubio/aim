@@ -3,9 +3,16 @@ import os
 
 from typing import List
 
+from aim.sdk.configs import get_aim_repo_name
+
+aim_repo_name = get_aim_repo_name()
+
 
 def list_repo_runs(repo_path: str) -> List[str]:
-    chunks_dir = os.path.join(repo_path, '.aim', 'meta', 'chunks')
+    if repo_path.endswith(aim_repo_name):
+        chunks_dir = os.path.join(repo_path, 'meta', 'chunks')
+    else:
+        chunks_dir = os.path.join(repo_path, aim_repo_name, 'meta', 'chunks')
     return os.listdir(chunks_dir)
 
 
