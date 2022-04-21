@@ -26,6 +26,7 @@ import './NotesTab.scss';
 
 function NotesTab({ runHash }: INotesTabProps) {
   const [value, setValue] = React.useState<string>('');
+  const [saveDisabled, setSaveDisabled] = React.useState<boolean>(true);
   const [theme, setTheme] = React.useState<null | {}>(null);
   const { isLoading, noteData, notifyData } = useModel(notesModel)!;
   const editorRef = React.useRef<Editor | any>(null);
@@ -65,7 +66,8 @@ function NotesTab({ runHash }: INotesTabProps) {
   }, [noteData]);
 
   // CRUD handlers
-  function onNoteSave() {
+  const onNoteSave = React.useCallback(() => {
+    setSaveDisabled(true);
     if (noteData?.id) {
       onNoteUpdate();
     } else {
@@ -73,14 +75,23 @@ function NotesTab({ runHash }: INotesTabProps) {
         content: editorRef.current.value(),
       } as INoteReqBody);
     }
-  }
+  }, [noteData?.id, runHash]);
 
-  function onNoteUpdate(): void {
+  const onNoteUpdate = React.useCallback(() => {
     notesModel.onNoteUpdate(runHash, {
       content: editorRef.current.value(),
     } as INoteReqBody);
-  }
+  }, [runHash]);
 
+  const onNoteChange = React.useCallback(
+    (val: () => string) => {
+      const isSaveDisabled: boolean = value === val();
+      if (saveDisabled !== isSaveDisabled) {
+        setSaveDisabled(isSaveDisabled);
+      }
+    },
+    [saveDisabled, value],
+  );
   return (
     <section ref={wrapperRef} className='NotesTab'>
       <div
@@ -95,9 +106,10 @@ function NotesTab({ runHash }: INotesTabProps) {
                 <div className='NotesTab__Editor__actionPanel__info-field'>
                   <Icon name='calendar' />
                   <Text tint={70}>
-                    {`${moment(noteData?.created_at).format(
-                      'YYYY DD HH:MM A',
-                    )}`}
+                    {`${moment
+                      .utc(noteData?.created_at)
+                      .local()
+                      .format('YYYY-MM-DD HH:mm A')}`}
                   </Text>
                 </div>
               </Tooltip>
@@ -107,9 +119,10 @@ function NotesTab({ runHash }: INotesTabProps) {
                 <div className='NotesTab__Editor__actionPanel__info-field'>
                   <Icon name='time' />
                   <Text tint={70}>
-                    {`${moment(noteData?.updated_at).format(
-                      'YYYY DD HH:MM A',
-                    )}`}
+                    {`${moment
+                      .utc(noteData?.updated_at)
+                      .local()
+                      .format('YYYY-MM-DD HH:mm A')}`}
                   </Text>
                 </div>
               </Tooltip>
@@ -117,7 +130,12 @@ function NotesTab({ runHash }: INotesTabProps) {
           </div>
           <Tooltip title='Save Note'>
             <div>
-              <Button variant='contained' size='small' onClick={onNoteSave}>
+              <Button
+                disabled={saveDisabled}
+                variant='contained'
+                size='small'
+                onClick={onNoteSave}
+              >
                 Save
               </Button>
             </div>
@@ -132,6 +150,7 @@ function NotesTab({ runHash }: INotesTabProps) {
           tooltip={({ children }) => {
             return <NoteTooltip>{children}</NoteTooltip>;
           }}
+          onChange={onNoteChange}
         />
         {isLoading && <Spinner />}
       </div>

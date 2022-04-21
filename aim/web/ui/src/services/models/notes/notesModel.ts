@@ -75,7 +75,11 @@ function onNoteCreate(runId: string, reqBody: INoteReqBody): void {
       model.setState({ isLoading: false });
     }).then((noteData: INote) => {
       model.setState({
-        noteData: { content: reqBody.content, id: noteData.id },
+        noteData: {
+          content: reqBody.content,
+          id: noteData.id,
+          created_at: noteData.created_at,
+        },
         isLoading: false,
       });
       handleSuccessNotification(NotesNotificationsEnum.CREATE);
@@ -90,7 +94,7 @@ function onNoteCreate(runId: string, reqBody: INoteReqBody): void {
 }
 
 function onNoteUpdate(runId: string, reqBody: INoteReqBody): void {
-  const { id } = model.getState().noteData!;
+  const { id, created_at } = model.getState().noteData!;
   const { call, abort } = notesService.updateNote(runId, id, reqBody);
   analytics.trackEvent(
     ANALYTICS_EVENT_KEYS.runDetails.tabs.notes.clickUpdateButton,
@@ -104,7 +108,7 @@ function onNoteUpdate(runId: string, reqBody: INoteReqBody): void {
       model.setState({ isLoading: false });
     }).then((noteData: INote) => {
       model.setState({
-        noteData,
+        noteData: { ...noteData, created_at },
         isLoading: false,
       });
       handleSuccessNotification(NotesNotificationsEnum.UPDATE);
