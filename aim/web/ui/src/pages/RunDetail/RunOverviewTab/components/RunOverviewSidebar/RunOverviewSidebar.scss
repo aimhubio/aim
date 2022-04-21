@@ -4,7 +4,8 @@
   margin-top: $space-lg;
   width: $run-overview-sidebar-width;
   min-width: $run-overview-sidebar-width;
-  overflow: hidden;
+  overflow-y: auto;
+  overflow-x: hidden;
   padding: $space-xs;
   position: sticky;
   top: $space-lg;
@@ -42,7 +43,7 @@
       &-list {
         display: flex;
         align-items: center;
-
+        overflow: auto;
         .Badge {
           margin-right: 0.5rem;
 
