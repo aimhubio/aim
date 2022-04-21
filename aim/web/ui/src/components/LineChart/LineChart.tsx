@@ -47,6 +47,7 @@ const LineChart = React.forwardRef(function LineChart(
     zoom,
     onZoomChange,
     readOnly = false,
+    resizeMode,
   } = props;
 
   // boxes
@@ -236,6 +237,7 @@ const LineChart = React.forwardRef(function LineChart(
       aggregationConfig,
       readOnly,
       alignmentConfig,
+      resizeMode,
     ],
   );
 
@@ -265,6 +267,7 @@ const LineChart = React.forwardRef(function LineChart(
     aggregationConfig,
     readOnly,
     alignmentConfig,
+    resizeMode,
   ]);
 
   React.useImperativeHandle(ref, () => ({

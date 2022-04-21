@@ -8,8 +8,8 @@ import measureTextWidth from './measureTextWidth/measureTextWidth';
 import toTextEllipsis from './toTextEllipsis/toTextEllipsis';
 
 export {
-  getValue,
   getPathSegments,
+  getValue,
   inIframe,
   imgSource2Image,
   getSVGString,

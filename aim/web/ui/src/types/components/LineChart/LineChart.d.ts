@@ -1,5 +1,7 @@
 import { HighlightEnum } from 'components/HighlightModesPopover/HighlightModesPopover';
 
+import { ResizeModeEnum } from 'config/enums/tableEnums';
+
 import {
   IActivePoint,
   INearestCircle,
@@ -46,6 +48,7 @@ export interface ILineChartProps {
   zoom?: IChartZoom;
   onZoomChange?: (zoom: Partial<IChartZoom>) => void;
   readOnly?: boolean;
+  resizeMode?: ResizeModeEnum;
 }
 
 export interface IUpdateFocusedChartArgs {
