@@ -54,7 +54,7 @@ function DeleteModal({
       dataKey: 'date',
       key: 'date',
       title: 'Date',
-      width: 300,
+      width: 275,
       cellRenderer: function cellRenderer({ cellData }: any) {
         return (
           <Tooltip title={cellData}>
