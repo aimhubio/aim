@@ -10,6 +10,7 @@ import NotificationContainer from 'components/NotificationContainer/Notification
 import Spinner from 'components/kit/Spinner';
 
 import { ANALYTICS_EVENT_KEYS } from 'config/analytics/analyticsKeysMap';
+import { RichEditorThemeColors } from 'config/colors/colors';
 
 import useModel from 'hooks/model/useModel';
 
@@ -18,19 +19,19 @@ import notesModel from 'services/models/notes/notesModel';
 
 import { INoteReqBody } from 'types/services/models/notes/notes';
 
-import { INotesTabProps } from './types';
 import NoteTooltip from './NoteTooltip';
+import { IRunDetailNotesTabProps } from './types';
 
-import '@toast-ui/editor/dist/toastui-editor.css';
-import './NotesTab.scss';
+import './RunDetailNotesTab.scss';
 
-function NotesTab({ runHash }: INotesTabProps) {
+function RunDetailNotesTab({
+  runHash,
+}: IRunDetailNotesTabProps): React.FunctionComponentElement<React.ReactNode> {
+  const { isLoading, noteData, notifyData } = useModel(notesModel)!;
   const [value, setValue] = React.useState<string>('');
   const [saveDisabled, setSaveDisabled] = React.useState<boolean>(true);
   const [theme, setTheme] = React.useState<null | {}>(null);
-  const { isLoading, noteData, notifyData } = useModel(notesModel)!;
   const editorRef = React.useRef<Editor | any>(null);
-  const wrapperRef = React.useRef<any>();
 
   React.useEffect(() => {
     notesModel.initialize(runHash);
@@ -46,27 +47,13 @@ function NotesTab({ runHash }: INotesTabProps) {
       setValue(noteData?.id ? noteData?.content : '');
       setTheme({
         ...editorRef.current?.theme(),
-        almostBlack: '#1c2852',
-        fontFamily: 'Inter',
-        toolbarBackground: '#fff',
-        blockToolbarItem: '#1c2852',
-        black: '#1c2852',
-        blockToolbarIcon: '#414b6d',
-        blockToolbarIconSelected: '#414b6d',
-        blockToolbarText: '#414b6d',
-        blockToolbarTriggerIcon: '#414b6d',
-        blockToolbarTextSelected: '#1c2852',
-        blockToolbarSelectedBackground: '#f2f5fa',
-        blockToolbarHoverBackground: '#f2f5fa',
-        blockToolbarDivider: '#E8F1FC',
-        toolbarItem: '#414b6d',
-        fontFamilyMono: 'Iosevka',
+        ...RichEditorThemeColors,
       });
     }
   }, [noteData]);
 
   // CRUD handlers
-  const onNoteSave = React.useCallback(() => {
+  const onNoteSave = React.useCallback((): void => {
     setSaveDisabled(true);
     if (noteData?.id) {
       onNoteUpdate();
@@ -75,35 +62,37 @@ function NotesTab({ runHash }: INotesTabProps) {
         content: editorRef.current.value(),
       } as INoteReqBody);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [noteData?.id, runHash]);
 
-  const onNoteUpdate = React.useCallback(() => {
+  const onNoteUpdate = React.useCallback((): void => {
     notesModel.onNoteUpdate(runHash, {
       content: editorRef.current.value(),
     } as INoteReqBody);
   }, [runHash]);
 
   const onNoteChange = React.useCallback(
-    (val: () => string) => {
-      const isSaveDisabled: boolean = value === val();
+    (currentVal: () => string): void => {
+      const isSaveDisabled: boolean = value === currentVal();
       if (saveDisabled !== isSaveDisabled) {
         setSaveDisabled(isSaveDisabled);
       }
     },
     [saveDisabled, value],
   );
+
   return (
-    <section ref={wrapperRef} className='NotesTab'>
+    <section className='RunDetailNotesTab'>
       <div
-        className={classNames('NotesTab__Editor', {
+        className={classNames('RunDetailNotesTab__Editor', {
           isLoading,
         })}
       >
-        <div className='NotesTab__Editor__actionPanel'>
-          <div className='NotesTab__Editor__actionPanel__info'>
+        <div className='RunDetailNotesTab__Editor__actionPanel'>
+          <div className='RunDetailNotesTab__Editor__actionPanel__info'>
             {noteData?.created_at && (
               <Tooltip title='Created At'>
-                <div className='NotesTab__Editor__actionPanel__info-field'>
+                <div className='RunDetailNotesTab__Editor__actionPanel__info-field'>
                   <Icon name='calendar' />
                   <Text tint={70}>
                     {`${moment
@@ -116,7 +105,7 @@ function NotesTab({ runHash }: INotesTabProps) {
             )}
             {noteData?.updated_at && (
               <Tooltip title='Updated At'>
-                <div className='NotesTab__Editor__actionPanel__info-field'>
+                <div className='RunDetailNotesTab__Editor__actionPanel__info-field'>
                   <Icon name='time' />
                   <Text tint={70}>
                     {`${moment
@@ -131,7 +120,7 @@ function NotesTab({ runHash }: INotesTabProps) {
           <Tooltip title='Save Note'>
             <div>
               <Button
-                disabled={saveDisabled}
+                disabled={saveDisabled || isLoading}
                 variant='contained'
                 size='small'
                 onClick={onNoteSave}
@@ -143,9 +132,9 @@ function NotesTab({ runHash }: INotesTabProps) {
         </div>
         <Editor
           ref={editorRef}
-          className='NotesTab__Editor__container'
+          className='RunDetailNotesTab__Editor__container'
           value={value}
-          theme={theme ? theme : editorRef.current?.theme()}
+          theme={theme || editorRef.current?.theme()}
           disableExtensions={['table', 'image', 'container_notice']}
           tooltip={({ children }) => {
             return <NoteTooltip>{children}</NoteTooltip>;
@@ -164,6 +153,6 @@ function NotesTab({ runHash }: INotesTabProps) {
   );
 }
 
-NotesTab.displayName = 'NotesTab';
+RunDetailNotesTab.displayName = 'RunDetailNotesTab';
 
-export default React.memo(NotesTab);
+export default React.memo(RunDetailNotesTab);

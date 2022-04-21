@@ -1,3 +1,5 @@
+import { ResizeModeEnum } from 'config/enums/tableEnums';
+
 import { ISyncHoverStateArgs } from 'types/utils/d3/drawHoverAttributes';
 import { IChartTitle } from 'types/services/models/metrics/metricsAppModel';
 
@@ -12,4 +14,5 @@ export interface IHighPlotProps {
   data: any;
   chartTitle?: IChartTitle;
   readOnly?: boolean;
+  resizeMode?: ResizeModeEnum;
 }

@@ -1,6 +1,11 @@
 @use 'styles/abstracts/index' as *;
 
-.NotesTab {
+.RunDetailNotesTab {
+  .isLoading {
+    .ProseMirror {
+      opacity: 0;
+    }
+  }
   padding: 1.5rem 0;
   height: 100%;
   &__Editor {
@@ -41,13 +46,15 @@
     .ProseMirror {
       font-size: $text-lg;
       padding: $space-unit 2rem;
-      padding-left: 48px;
+      padding-left: toRem(48px);
       font-family: 'Inter', sans-serif;
       font-weight: 500;
       height: 100%;
+      opacity: 1;
       color: $pico;
+      transition: opacity 0.18s ease-out;
       .block-menu-trigger {
-        margin-left: -28px;
+        margin-left: toRem(-27px);
         &:hover {
           color: $pico-80;
         }
@@ -62,11 +69,11 @@
         color: $denim;
       }
       &-selectednode {
-        outline: 1px solid $primary-color-50 !important;
+        outline: $border-main-active !important;
       }
       hr {
         &::before {
-          border-top: 1px solid #bdcee8;
+          border-top: 0.0625rem solid #bdcee8;
         }
       }
     }

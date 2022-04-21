@@ -10,7 +10,7 @@ import {
   INotesAppModelState,
   INotesList,
 } from 'types/services/models/notes/notes';
-import { IApiRequestRef } from 'types/services/services';
+import { IApiRequest } from 'types/services/services';
 
 import onNotificationAdd from 'utils/app/onNotificationAdd';
 import exceptionHandler from 'utils/app/exceptionHandler';
@@ -25,17 +25,14 @@ const model = createModel<Partial<INotesAppModelState>>({
 });
 
 // Request references
-let getNotesListRequestRef: IApiRequestRef<any>;
+let getNotesListRequestRef: IApiRequest<any>;
 
 // Initializing model
 function initialize(runId: string): void {
   model.init();
   try {
     getNotesListRequestRef = onNotesListFetch(runId);
-    getNotesListRequestRef.call((detail: any) => {
-      exceptionHandler({ detail, model });
-      model.setState({ isLoading: false });
-    });
+    getNotesListRequestRef.call();
   } catch (err: any) {
     handleErrorNotification(err);
     getNotesListRequestRef?.abort();
@@ -49,15 +46,15 @@ function onNotesListFetch(runId: string) {
   const { call, abort } = notesService.getNotes(runId);
   return {
     call: async () => {
-      call()
-        .then(async (data: INotesList) => {
-          model.setState({
-            noteData: data[0],
-          });
-        })
-        .finally(() => {
-          model.setState({ isLoading: false });
+      call((detail: any) => {
+        exceptionHandler({ detail, model });
+        model.setState({ isLoading: false });
+      }).then(async (data: INotesList) => {
+        model.setState({
+          noteData: data[0],
+          isLoading: false,
         });
+      });
     },
     abort,
   };

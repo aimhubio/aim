@@ -1,10 +1,10 @@
 import React from 'react';
 
-import { INoteTooltipProps } from './types';
+import { INoteTooltipProps } from '../NotesTab/types';
 
 function NoteTooltip({ children }: INoteTooltipProps) {
   const ref = React.useRef<any>(null);
-  const [mounted, setMounted] = React.useState(false);
+  const [mounted, setMounted] = React.useState<boolean>(false);
 
   React.useEffect(() => {
     if (!mounted) {
