@@ -93,8 +93,14 @@
   }
 }
 .SortPopover__select__item {
-  span {
-    font-size: $text-md;
+  display: flex;
+  width: 100%;
+  overflow: hidden;
+  &__label {
+    margin-left: $space-xs;
+    max-width: 100%;
+    overflow: hidden;
+    word-break: break-all;
   }
 }
 
