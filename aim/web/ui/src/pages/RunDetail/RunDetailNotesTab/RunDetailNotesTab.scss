@@ -53,6 +53,7 @@
       opacity: 1;
       color: $pico;
       transition: opacity 0.18s ease-out;
+      overflow: auto;
       .block-menu-trigger {
         margin-left: toRem(-27px);
         &:hover {
@@ -75,6 +76,10 @@
         &::before {
           border-top: 0.0625rem solid #bdcee8;
         }
+      }
+      mark {
+        background-color: $mark-color;
+        color: $pico;
       }
     }
     .Spinner {
