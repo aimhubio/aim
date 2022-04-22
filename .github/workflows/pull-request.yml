@@ -20,15 +20,6 @@ on:
       - ready_for_review
       - reopened
 jobs:
-  validate-naming-convention:
-    name: Pull request name is well formatted
-    runs-on: ubuntu-latest
-    steps:
-      - uses: deepakputhraya/action-pr-title@master
-        with:
-          regex: '^\[(?:feat|fix|docs)\]\s[A-Z]'
-          github_token: ${{ github.token }}
-
   run-checks:
     if: github.event.pull_request.draft == false
     runs-on: ubuntu-latest
