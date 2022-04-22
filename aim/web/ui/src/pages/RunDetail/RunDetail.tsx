@@ -252,31 +252,43 @@ function RunDetail(): React.FunctionComponentElement<React.ReactNode> {
                             </Text>
                           </div>
                         </Tooltip>
+                        <Button
+                          disabled={
+                            runData?.isExperimentsLoading ||
+                            runData?.isRunInfoLoading
+                          }
+                          color={opened ? 'primary' : 'default'}
+                          size='small'
+                          className={classNames(
+                            'RunDetail__runDetailContainer__appBarContainer__appBarTitleBox__buttonSelectToggler',
+                            { opened: opened },
+                          )}
+                          withOnlyIcon
+                        >
+                          <Icon name={opened ? 'arrow-up' : 'arrow-down'} />
+                        </Button>
+                        <StatusLabel
+                          status={
+                            runData?.runInfo?.end_time ? 'alert' : 'success'
+                          }
+                          title={
+                            runData?.runInfo?.end_time
+                              ? 'Finished'
+                              : 'In Progress'
+                          }
+                        />
                       </>
                     ) : (
-                      <Skeleton variant='rect' height={24} width={340} />
+                      <div className='flex'>
+                        <Skeleton
+                          className='RunDetail__runDetailContainer__appBarContainer__appBarTitleBox__Skeleton'
+                          variant='rect'
+                          height={24}
+                          width={340}
+                        />
+                        <Skeleton variant='rect' height={24} width={70} />
+                      </div>
                     )}
-                    <Button
-                      disabled={
-                        runData?.isExperimentsLoading ||
-                        runData?.isRunInfoLoading
-                      }
-                      color={opened ? 'primary' : 'default'}
-                      size='small'
-                      className={classNames(
-                        'RunDetail__runDetailContainer__appBarContainer__appBarTitleBox__buttonSelectToggler',
-                        { opened: opened },
-                      )}
-                      withOnlyIcon
-                    >
-                      <Icon name={opened ? 'arrow-up' : 'arrow-down'} />
-                    </Button>
-                    <StatusLabel
-                      status={runData?.runInfo?.end_time ? 'alert' : 'success'}
-                      title={
-                        runData?.runInfo?.end_time ? 'Finished' : 'In Progress'
-                      }
-                    />
                   </div>
                 )}
                 component={

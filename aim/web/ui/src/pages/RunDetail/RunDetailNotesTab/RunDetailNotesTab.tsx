@@ -134,6 +134,7 @@ function RunDetailNotesTab({
           ref={editorRef}
           className='RunDetailNotesTab__Editor__container'
           value={value}
+          placeholder='Leave your Note'
           theme={theme || editorRef.current?.theme()}
           disableExtensions={['table', 'image', 'container_notice']}
           tooltip={({ children }) => {
