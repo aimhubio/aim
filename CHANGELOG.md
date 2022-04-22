@@ -23,6 +23,7 @@
 - Fix `PATH` related issues for `alembic` and `uvicorn` (mihran113)
 - Fix queries for custom object APIs (mihran113) 
 - Fix chart height updating when resize mode changed (VkoHov)
+- Fix HuggingFace callback context capturing (mihran113)
 
 ## 3.8.1 Apr 6, 2022
 
