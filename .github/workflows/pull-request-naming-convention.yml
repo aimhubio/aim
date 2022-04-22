@@ -9,5 +9,5 @@ jobs:
     steps:
       - uses: deepakputhraya/action-pr-title@master
         with:
-          regex: '^\[(?:feat|fix|doc|refactor)\]\s[A-Z]'
+          regex: '^\[(?:feat|fix|doc|refactor)\]\s[A-Z].*(?<!\.)$'
           github_token: ${{ github.token }}
