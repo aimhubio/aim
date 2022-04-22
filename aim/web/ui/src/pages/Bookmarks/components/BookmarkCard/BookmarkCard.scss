@@ -82,16 +82,6 @@
 
   &__run__expression {
     margin-right: 2.8125rem;
-    .CodeBlock {
-      .prism-code {
-        --ms-overflow-style: none;
-        --scrollbar-width: none;
-        scrollbar-width: none;
-        &::-webkit-scrollbar {
-          display: none;
-        }
-      }
-    }
   }
   &:last-child {
     margin-bottom: 0;
