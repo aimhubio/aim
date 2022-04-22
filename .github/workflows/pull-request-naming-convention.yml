@@ -1,4 +1,4 @@
-name: naming convention verification
+name: PR naming convention verification
 on:
   pull_request:
     types: [ opened, reopened, edited, ready_for_review ]
@@ -9,5 +9,5 @@ jobs:
     steps:
       - uses: deepakputhraya/action-pr-title@master
         with:
-          regex: '^\[(?:feat|fix|docs|refactor)\]\s[A-Z]'
+          regex: '^\[(?:feat|fix|doc|refactor)\]\s[A-Z]'
           github_token: ${{ github.token }}
