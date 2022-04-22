@@ -20,6 +20,15 @@ on:
       - ready_for_review
       - reopened
 jobs:
+  validate-naming-convention:
+    name: Pull request name is well formatted
+    runs-on: ubuntu-latest
+    steps:
+      - uses: deepakputhraya/action-pr-title@master
+        with:
+          regex: '^\[(?:feat|fix|docs)\]\s[A-Z]'
+          github_token: ${{ github.token }}
+
   run-checks:
     if: github.event.pull_request.draft == false
     runs-on: ubuntu-latest
@@ -73,7 +82,7 @@ jobs:
 
       - name: perf tests
         run: |
-         . venv/bin/activate
-         export AWS_ACCESS_KEY_ID=${{ secrets.AIM_LOGS_AWS_ACCESS_KEY_ID }}
-         export AWS_SECRET_ACCESS_KEY=${{ secrets.AIM_LOGS_AWS_SECRET_ACCESS_KEY }}
-         pytest performance_tests || pytest --lf performance_tests
+          . venv/bin/activate
+          export AWS_ACCESS_KEY_ID=${{ secrets.AIM_LOGS_AWS_ACCESS_KEY_ID }}
+          export AWS_SECRET_ACCESS_KEY=${{ secrets.AIM_LOGS_AWS_SECRET_ACCESS_KEY }}
+          pytest performance_tests || pytest --lf performance_tests
