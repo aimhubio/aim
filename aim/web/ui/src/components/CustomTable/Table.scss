@@ -137,7 +137,7 @@ $border-radius: 0.2rem;
     align-items: center;
   }
   .configCheckbox {
-    margin: 0 $space-xxs;
+    margin: 0 $space-xxs 0 toRem(1.5px);
   }
   &--groups {
     max-width: unset !important;
@@ -305,7 +305,7 @@ $border-radius: 0.2rem;
 
   &.Table__group__config__column__cell {
     border-right: none;
-    padding: 0 0 0 toRem(40px);
+    padding-left: toRem(39px);
 
     .Table__cell__rowMeta {
       display: flex;
