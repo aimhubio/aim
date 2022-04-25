@@ -177,6 +177,7 @@ def parse_tb_logs(tb_logs, repo_inst, flat=False, no_cache=False):
             for event in summary_iterator(event_file):
                 timestamp = event.wall_time
                 step = event.step
+                fail_count = 0
                 for value in event.summary.value:
                     tag = value.tag
                     plugin_name = value.metadata.plugin_data.plugin_name
@@ -217,6 +218,9 @@ def parse_tb_logs(tb_logs, repo_inst, flat=False, no_cache=False):
                         'timestamp': timestamp
                     }
                     run._track_impl(track_val, timestamp, tag, step, context=event_context)
+
+                if fail_count:
+                    click.echo(f'Failed to process {fail_count} entries.', err=True)
 
     # refresh cache
     with open(tb_logs_cache_path, 'w') as FS:
