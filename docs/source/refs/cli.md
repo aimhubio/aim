@@ -185,9 +185,10 @@ $ aim convert [ARGS] SUBCOMMAND
 
 **Sub-command: tf**
 
-| Options       | Description                                                                                  |
-| ------------- | -------------------------------------------------------------------------------------------- |
-| `--flat`      | Disregard context directory and treat them as distinct run directories. Inactive by default. |
+| Options      | Description                                                                                  |
+|--------------|----------------------------------------------------------------------------------------------|
+| `--flat`     | Disregard context directory and treat them as distinct run directories. Inactive by default. |
+| `--no-cache` | Remove existing cache and reprocess all logs (this will create new runs)                     |
 
 **Sub-command: mlflow**
 
