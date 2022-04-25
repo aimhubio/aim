@@ -25,6 +25,7 @@
 - Fix chart height updating when resize mode changed (VkoHov)
 - Fix HuggingFace callback context capturing (mihran113)
 - Fix Params/Scatters explorers' row hiding functionality (VkoHov)
+- Fix Profiler logs are saved outside repo directory (devfox-se) 
 
 ## 3.8.1 Apr 6, 2022
 
