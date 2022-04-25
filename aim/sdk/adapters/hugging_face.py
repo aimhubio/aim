@@ -93,7 +93,7 @@ class AimCallback(TrainerCallback):
 
         for log_name, log_value in logs.items():
             context = {}
-            prefix_set = {'train_, eval_, test_'}
+            prefix_set = {'train_', 'eval_', 'test_'}
             for prefix in prefix_set:
                 if log_name.startswith(prefix):
                     log_name = log_name[len(prefix):]
