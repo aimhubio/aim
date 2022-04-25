@@ -31,7 +31,7 @@ def parse_tb_logs(tb_logs, repo_inst, flat=False, no_cache=False):
     unsupported_plugin_noticed = False
     tb_logs_cache_path = os.path.join(repo_inst.path, 'tb_logs_cache')
 
-    if no_cache:
+    if no_cache and os.path.exists(tb_logs_cache_path):
         os.remove(tb_logs_cache_path)
     try:
         with open(tb_logs_cache_path) as FS:
@@ -178,6 +178,7 @@ def parse_tb_logs(tb_logs, repo_inst, flat=False, no_cache=False):
                 timestamp = event.wall_time
                 step = event.step
                 fail_count = 0
+                _err_info = None
                 for value in event.summary.value:
                     tag = value.tag
                     plugin_name = value.metadata.plugin_data.plugin_name
@@ -209,8 +210,11 @@ def parse_tb_logs(tb_logs, repo_inst, flat=False, no_cache=False):
                         else:
                             proto = tf.make_tensor_proto(value.tensor)
                             track_val = tf.make_ndarray(proto)
-                    except Exception:
+                    except Exception as exc:
                         # catch all the nasty failures
+                        fail_count += 1
+                        if not _err_info:
+                            _err_info = str(exc)
                         continue
 
                     run_tb_log['values'][value_id] = {
@@ -220,7 +224,7 @@ def parse_tb_logs(tb_logs, repo_inst, flat=False, no_cache=False):
                     run._track_impl(track_val, timestamp, tag, step, context=event_context)
 
                 if fail_count:
-                    click.echo(f'Failed to process {fail_count} entries.', err=True)
+                    click.echo(f'Failed to process {fail_count} entries. First exception: {_err_info}', err=True)
 
     # refresh cache
     with open(tb_logs_cache_path, 'w') as FS:
