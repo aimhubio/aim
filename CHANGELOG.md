@@ -7,7 +7,7 @@
 - Add `Notes Tab` to single run page (arsengit)
 - Add the run name to the batch delete and the batch archive modals (VkoHov)
 - Increase the scalability of rendering lines in charts (KaroMourad)
-- Increase live update requests delay to prevent performance issues  (rubenaprikyan)
+- Increase live update requests delay to prevent performance issues (rubenaprikyan)
 - Change font-family to monospace in the Table component (arsengit)
 - Add info massage for single value sliders (VkoHov)
 - Add `--log-level` argument for aim up/server commands (mihran113)
@@ -21,9 +21,10 @@
 - Fix compatibility with pytorch-lightning v1.6.0 (mihran113)
 - Fix the image's original size cropping (VkoHov)
 - Fix `PATH` related issues for `alembic` and `uvicorn` (mihran113)
-- Fix queries for custom object APIs (mihran113) 
+- Fix queries for custom object APIs (mihran113)
 - Fix chart height updating when resize mode changed (VkoHov)
 - Fix HuggingFace callback context capturing (mihran113)
+- Fix Params/Scatters explorers' row hiding functionality (VkoHov)
 
 ## 3.8.1 Apr 6, 2022
 

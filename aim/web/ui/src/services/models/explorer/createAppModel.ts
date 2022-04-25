@@ -4055,11 +4055,12 @@ function createAppModel(appConfig: IAppInitialConfig) {
               [contextToString(trace.context) as string]: '-',
             };
           });
+          const paramKey = encode({ runHash: run.hash });
           runs.push({
             run,
-            isHidden: configData!.table.hiddenMetrics!.includes(run.hash),
+            isHidden: configData!.table.hiddenMetrics!.includes(paramKey),
             color: COLORS[paletteIndex][index % COLORS[paletteIndex].length],
-            key: encode({ runHash: run.hash }),
+            key: paramKey,
             dasharray: DASH_ARRAYS[0],
           });
         });
@@ -5203,12 +5204,12 @@ function createAppModel(appConfig: IAppInitialConfig) {
               [contextToString(trace.context) as string]: '-',
             };
           });
-
+          const paramKey = encode({ runHash: run.hash });
           runs.push({
             run,
-            isHidden: configData!.table.hiddenMetrics!.includes(run.hash),
+            isHidden: configData!.table.hiddenMetrics!.includes(paramKey),
             color: COLORS[paletteIndex][index % COLORS[paletteIndex].length],
-            key: encode({ runHash: run.hash }),
+            key: paramKey,
             dasharray: DASH_ARRAYS[0],
           });
         });
