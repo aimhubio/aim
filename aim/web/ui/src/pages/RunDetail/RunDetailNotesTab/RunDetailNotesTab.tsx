@@ -91,7 +91,7 @@ function RunDetailNotesTab({
         <div className='RunDetailNotesTab__Editor__actionPanel'>
           <div className='RunDetailNotesTab__Editor__actionPanel__info'>
             {noteData?.created_at && (
-              <Tooltip title='Created At'>
+              <Tooltip title='Created at'>
                 <div className='RunDetailNotesTab__Editor__actionPanel__info-field'>
                   <Icon name='calendar' />
                   <Text tint={70}>
@@ -104,7 +104,7 @@ function RunDetailNotesTab({
               </Tooltip>
             )}
             {noteData?.updated_at && (
-              <Tooltip title='Updated At'>
+              <Tooltip title='Updated at'>
                 <div className='RunDetailNotesTab__Editor__actionPanel__info-field'>
                   <Icon name='time' />
                   <Text tint={70}>

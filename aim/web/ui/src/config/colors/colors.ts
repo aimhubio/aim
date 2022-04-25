@@ -59,7 +59,7 @@ export const RichEditorThemeColors = {
   blockToolbarText: '#414b6d',
   blockToolbarTriggerIcon: '#414b6d',
   blockToolbarTextSelected: '#1c2852',
-  blockToolbarSelectedBackground: '#f2f5fa',
+  blockToolbarSelectedBackground: '#dee6f3',
   blockToolbarHoverBackground: '#f2f5fa',
   blockToolbarDivider: '#E8F1FC',
   toolbarItem: '#414b6d',

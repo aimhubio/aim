@@ -77,9 +77,29 @@
           border-top: 0.0625rem solid #bdcee8;
         }
       }
+      .page-break {
+        &::before {
+          border-top: 0.0625rem dashed #bdcee8;
+        }
+      }
+      .heading-actions {
+        display: none;
+      }
+      h1,
+      h2,
+      h3,
+      h4 {
+        &::before {
+          content: unset !important;
+          display: none !important;
+        }
+      }
       mark {
         background-color: $mark-color;
         color: $pico;
+      }
+      h1 {
+        font-size: $text-xxxl;
       }
     }
     .Spinner {
