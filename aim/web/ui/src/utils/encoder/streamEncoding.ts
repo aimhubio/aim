@@ -101,12 +101,12 @@ function decodeByType(typeId: number, buffer: ArrayBuffer) {
   return value;
 }
 
-function typedArrayToBuffer(array: Uint8Array): ArrayBuffer {
-  return array.buffer.slice(
-    array.byteOffset,
-    array.byteLength + array.byteOffset,
-  );
-}
+// function typedArrayToBuffer(array: Uint8Array): ArrayBuffer {
+//   return array.buffer.slice(
+//     array.byteOffset,
+//     array.byteLength + array.byteOffset,
+//   );
+// }
 
 function decodeValue(buffer: Uint8Array): any {
   const bufferValue = buffer.subarray(1);
@@ -183,7 +183,7 @@ function splitPath(buffer: Uint8Array) {
       cursor += keySize + 1;
     } else {
       let start = cursor;
-      while (cursor < buffer.length && buffer[cursor++] != PATH_SENTINEL);
+      while (cursor < buffer.length && buffer[cursor++] !== PATH_SENTINEL);
       let keyBuffer = buffer.subarray(start, --cursor);
       path.push(keyBuffer);
     }
@@ -260,7 +260,7 @@ export async function* iterFoldTree(
       first_records = [];
     }
     for (let [keys, val] of records) {
-      while (!_.isEqual(path, keys.slice(0, path.length))) {
+      while (!isEqual(path, keys.slice(0, path.length))) {
         let lastState = stack.pop();
         if (stack.length === level) {
           yield [path.slice(), lastState];
@@ -340,7 +340,7 @@ export async function* decode_buffer_pairs(
   let records = [];
   let done = false;
 
-  records: while (true) {
+  asyncLoop: while (true) {
     let record = [null, null];
     for (let idx of [0, 1]) {
       while (needs_async_fetch(4) && !done) {
@@ -350,7 +350,7 @@ export async function* decode_buffer_pairs(
         done = !(await promise);
       }
       if (done) {
-        break records;
+        break asyncLoop;
       }
       item = get_next(4);
 
@@ -390,7 +390,7 @@ function areEqual(a, b) {
     return false;
   }
   for (let i = 0; i < a.length; ++i) {
-    if (a[i] != b[i]) {
+    if (a[i] !== b[i]) {
       return false;
     }
   }
@@ -435,12 +435,12 @@ export async function* decodePathsVals(
         path_state.pop();
         pieces_state.pop();
       }
-      while (pieces_state.length != pieces.length) {
+      while (pieces_state.length !== pieces.length) {
         let piece = pieces[pieces_state.length];
         pieces_state.push(piece);
         let key = decodePiece(piece);
         path_state.push(key);
-        if (pieces_state.length != pieces.length) {
+        if (pieces_state.length !== pieces.length) {
           to_yield.push([[...path_state], ObjectFlag]);
         }
       }
@@ -450,4 +450,5 @@ export async function* decodePathsVals(
       yield to_yield;
     }
   }
+  yield [];
 }
