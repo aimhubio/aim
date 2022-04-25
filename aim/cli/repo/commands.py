@@ -8,18 +8,16 @@ from aim.sdk.utils import clean_repo_path
 
 
 @click.group()
-@click.option('--repo', required=False,
-              default=os.getcwd(),
-              help="Path to the aim repository.",
-              type=click.Path(
-                  exists=True,
-                  file_okay=False,
-                  dir_okay=True,
-                  writable=True
-              ))
+@click.option(
+    '--repo',
+    required=False,
+    default=os.getcwd(),
+    help='Path to the aim repository.',
+    type=click.Path(exists=True, file_okay=False, dir_okay=True, writable=True),
+)
 @click.pass_context
 def repo(ctx, repo):
-    """ Manage aim repository. """
+    """Manage aim repository."""
 
     repo_path = clean_repo_path(repo) or Repo.default_repo_path()
     if not Repo.exists(repo_path):
@@ -34,7 +32,7 @@ def repo(ctx, repo):
 @repo.command(name='cleanup')
 @click.pass_context
 def cleanup(ctx):
-    """ Clean dangling/orphan params with no referring runs. """
+    """Clean dangling/orphan params with no referring runs."""
 
     repo = ctx.obj['repo']
     repo_params = set(repo.collect_params_info())
@@ -53,6 +51,6 @@ def cleanup(ctx):
 
     click.echo(f'Found {len(orphan_params)} orphan params: {", ".join(orphan_params)}')
 
-    attrs_meta_tree = repo._get_meta_tree().subtree('attrs')
+    meta_tree = repo._get_index_tree('meta', timeout=5).subtree('meta').subtree('attrs')
     for param in orphan_params:
-        del attrs_meta_tree[param]
+        del meta_tree[param]
