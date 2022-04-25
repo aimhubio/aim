@@ -1,5 +1,6 @@
 import json
 import os
+import time
 
 import click
 from tqdm import tqdm
@@ -208,8 +209,10 @@ def parse_tb_logs(tb_logs, repo_inst, flat=False, no_cache=False):
                             if len(track_val) == 1:
                                 track_val = track_val[0]
                         else:
+                            dtype = tf.dtypes.DType(value.tensor.dtype)
                             proto = tf.make_tensor_proto(value.tensor)
-                            track_val = tf.make_ndarray(proto)
+                            tensor = tf.io.parse_tensor(proto.SerializeToString(), dtype)
+                            track_val = tensor.numpy()
                     except Exception as exc:
                         # catch all the nasty failures
                         fail_count += 1
