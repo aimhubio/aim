@@ -109,8 +109,9 @@ def parse_tb_logs(tb_logs, repo_inst, flat=False, no_cache=False):
         for c, r in enumerate(run_dir_ignored, start=1):
             click.echo(f'{c}: {r}', err=True)
 
-    for path in run_dir_candidates_filtered:
-        click.echo(f'Converting TensorBoard logs in {path}')
+    for path in tqdm(run_dir_candidates_filtered,
+                     desc='Converting TensorBoard logs',
+                     total=len(run_dir_candidates_filtered)):
 
         events = {}
         for root, dirs, files in os.walk(path):
@@ -171,7 +172,7 @@ def parse_tb_logs(tb_logs, repo_inst, flat=False, no_cache=False):
             click.echo('Did not find logs to process.')
             return
 
-        for event_file in tqdm(events_to_process, desc='Parsing logs', total=len(events_to_process)):
+        for event_file in tqdm(events_to_process, desc=f'Parsing logs in {path}', total=len(events_to_process)):
             run_tb_log = run_tb_events[event_file]
             event_context = events[event_file]['context']
             for event in summary_iterator(event_file):
