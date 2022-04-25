@@ -169,8 +169,7 @@ def parse_tb_logs(tb_logs, repo_inst, flat=False, no_cache=False):
                     }
 
         if not events_to_process:
-            click.echo('Did not find logs to process.')
-            return
+            continue
 
         for event_file in tqdm(events_to_process, desc=f'Parsing logs in {path}', total=len(events_to_process)):
             run_tb_log = run_tb_events[event_file]
