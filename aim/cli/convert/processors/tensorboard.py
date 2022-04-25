@@ -2,11 +2,12 @@ import json
 import os
 
 import click
+from tqdm import tqdm
 
 from aim import Image, Run
 
 
-def parse_tb_logs(tb_logs, repo_inst, flat=False):
+def parse_tb_logs(tb_logs, repo_inst, flat=False, no_cache=False):
     """
     This function scans and collects records from TB log files.
 
@@ -30,6 +31,8 @@ def parse_tb_logs(tb_logs, repo_inst, flat=False):
     unsupported_plugin_noticed = False
     tb_logs_cache_path = os.path.join(repo_inst.path, 'tb_logs_cache')
 
+    if no_cache:
+        os.remove(tb_logs_cache_path)
     try:
         with open(tb_logs_cache_path) as FS:
             tb_logs_cache = json.load(FS)
@@ -164,8 +167,11 @@ def parse_tb_logs(tb_logs, repo_inst, flat=False):
                         'values': {},
                     }
 
-        for count, event_file in enumerate(events_to_process, start=1):
-            click.echo(f'({count}/{len(events_to_process)}) Parsing log: {os.path.basename(event_file)}')
+        if not events_to_process:
+            click.echo('Did not find logs to process.')
+            return
+
+        for event_file in tqdm(events_to_process, desc='Parsing logs', total=len(events_to_process)):
             run_tb_log = run_tb_events[event_file]
             event_context = events[event_file]['context']
             for event in summary_iterator(event_file):
@@ -191,17 +197,20 @@ def parse_tb_logs(tb_logs, repo_inst, flat=False):
                             unsupported_plugin_noticed = True
                         continue
 
-                    if plugin_name == 'images':
-                        tensor = value.tensor.string_val[2:]
-                        track_val = [
-                            Image(tf.image.decode_image(t).numpy()) for t in tensor
-                        ]
-                        if len(track_val) == 1:
-                            track_val = track_val[0]
-                    else:
-                        d_type = tf.dtypes.DType(value.tensor.dtype)
-                        decoded = tf.io.decode_raw(value.tensor.tensor_content, d_type)
-                        track_val = float(decoded)
+                    try:
+                        if plugin_name == 'images':
+                            tensor = value.tensor.string_val[2:]
+                            track_val = [
+                                Image(tf.image.decode_image(t).numpy()) for t in tensor
+                            ]
+                            if len(track_val) == 1:
+                                track_val = track_val[0]
+                        else:
+                            proto = tf.make_tensor_proto(value.tensor)
+                            track_val = tf.make_ndarray(proto)
+                    except Exception:
+                        # catch all the nasty failures
+                        continue
 
                     run_tb_log['values'][value_id] = {
                         'step': step,
