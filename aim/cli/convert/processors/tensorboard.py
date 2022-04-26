@@ -1,6 +1,5 @@
 import json
 import os
-import time
 
 import click
 from tqdm import tqdm
@@ -175,59 +174,62 @@ def parse_tb_logs(tb_logs, repo_inst, flat=False, no_cache=False):
         for event_file in tqdm(events_to_process, desc=f'Parsing logs in {path}', total=len(events_to_process)):
             run_tb_log = run_tb_events[event_file]
             event_context = events[event_file]['context']
-            for event in summary_iterator(event_file):
-                timestamp = event.wall_time
-                step = event.step
-                fail_count = 0
-                _err_info = None
-                for value in event.summary.value:
-                    tag = value.tag
-                    plugin_name = value.metadata.plugin_data.plugin_name
-                    value_id = f'{tag}_{plugin_name}'
-                    if value_id in run_tb_log['values']:
-                        if run_tb_log['values'][value_id]['timestamp'] >= timestamp:
-                            # prevent previously tracked data from re-tracking upon file update
+            try:
+                for event in summary_iterator(event_file):
+                    timestamp = event.wall_time
+                    step = event.step
+                    fail_count = 0
+                    _err_info = None
+                    for value in event.summary.value:
+                        tag = value.tag
+                        plugin_name = value.metadata.plugin_data.plugin_name
+                        value_id = f'{tag}_{plugin_name}'
+                        if value_id in run_tb_log['values']:
+                            if run_tb_log['values'][value_id]['timestamp'] >= timestamp:
+                                # prevent previously tracked data from re-tracking upon file update
+                                continue
+
+                        if plugin_name not in supported_plugins:
+                            if not unsupported_plugin_noticed:
+                                click.echo(
+                                    'Found unsupported plugin type in the log file. '
+                                    'Data for these wont be processed. '
+                                    'Supported plugin types are: {}'.format(', '.join(supported_plugins)),
+                                    err=True
+                                )
+                                unsupported_plugin_noticed = True
                             continue
 
-                    if plugin_name not in supported_plugins:
-                        if not unsupported_plugin_noticed:
-                            click.echo(
-                                'Found unsupported plugin type in the log file. '
-                                'Data for these wont be processed. '
-                                'Supported plugin types are: {}'.format(', '.join(supported_plugins)),
-                                err=True
-                            )
-                            unsupported_plugin_noticed = True
-                        continue
+                        try:
+                            if plugin_name == 'images':
+                                tensor = value.tensor.string_val[2:]
+                                track_val = [
+                                    Image(tf.image.decode_image(t).numpy()) for t in tensor
+                                ]
+                                if len(track_val) == 1:
+                                    track_val = track_val[0]
+                            else:
+                                dtype = tf.dtypes.DType(value.tensor.dtype)
+                                proto = tf.make_tensor_proto(value.tensor)
+                                tensor = tf.io.parse_tensor(proto.SerializeToString(), dtype)
+                                track_val = tensor.numpy()
+                        except Exception as exc:
+                            # catch all the nasty failures
+                            fail_count += 1
+                            if not _err_info:
+                                _err_info = str(exc)
+                            continue
 
-                    try:
-                        if plugin_name == 'images':
-                            tensor = value.tensor.string_val[2:]
-                            track_val = [
-                                Image(tf.image.decode_image(t).numpy()) for t in tensor
-                            ]
-                            if len(track_val) == 1:
-                                track_val = track_val[0]
-                        else:
-                            dtype = tf.dtypes.DType(value.tensor.dtype)
-                            proto = tf.make_tensor_proto(value.tensor)
-                            tensor = tf.io.parse_tensor(proto.SerializeToString(), dtype)
-                            track_val = tensor.numpy()
-                    except Exception as exc:
-                        # catch all the nasty failures
-                        fail_count += 1
-                        if not _err_info:
-                            _err_info = str(exc)
-                        continue
+                        run_tb_log['values'][value_id] = {
+                            'step': step,
+                            'timestamp': timestamp
+                        }
+                        run._track_impl(track_val, timestamp, tag, step, context=event_context)
 
-                    run_tb_log['values'][value_id] = {
-                        'step': step,
-                        'timestamp': timestamp
-                    }
-                    run._track_impl(track_val, timestamp, tag, step, context=event_context)
-
-                if fail_count:
-                    click.echo(f'Failed to process {fail_count} entries. First exception: {_err_info}', err=True)
+                    if fail_count:
+                        click.echo(f'Failed to process {fail_count} entries. First exception: {_err_info}', err=True)
+            except Exception as exc:
+                click.echo(f'Failed to read log file {event_file} - {exc}', err=True)
 
     # refresh cache
     with open(tb_logs_cache_path, 'w') as FS:
