@@ -65,6 +65,7 @@ function MetricsContainer(): React.FunctionComponentElement<React.ReactNode> {
           exceptionHandler({ detail, model: metricAppModel });
         })
         .then(() => {
+          metricAppModel.setDefaultAppConfigData(false);
           metricsRequestRef = metricAppModel.getMetricsData();
           metricsRequestRef.call((detail: any) => {
             exceptionHandler({ detail, model: metricAppModel });
@@ -99,6 +100,7 @@ function MetricsContainer(): React.FunctionComponentElement<React.ReactNode> {
         appRequestRef.abort();
       }
     };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   return (

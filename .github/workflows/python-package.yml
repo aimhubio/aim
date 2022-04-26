@@ -16,28 +16,14 @@ on:
   workflow_dispatch:
 
 jobs:
-  linux-dist:
+  aim-ui-dist:
     if: ${{ github.event_name == 'schedule' || github.actor == 'gorarakelyan' || github.actor == 'alberttorosyan' || github.actor == 'roubkar' }}
     runs-on: ubuntu-latest
-    name: Linux wheels build (using Docker)
     steps:
-      - name: Install Docker & pull images
-        run: |
-          apt update && apt install -y docker.io
-          sudo systemctl enable --now docker
-
-          docker pull quay.io/pypa/manylinux_2_24_x86_64
-
       - name: Checkout sources
         uses: actions/checkout@v2
         with:
           ref: ${{ inputs.branch || github.ref }}
-
-      - name: Capture aim version
-        id: capture-version
-        run: |
-          AIM_VERSION=$(< ./aim/VERSION)
-          echo "::set-output name=AIM_VERSION::$AIM_VERSION"
 
       - name: Use node v16
         uses: actions/setup-node@v2
@@ -59,11 +45,56 @@ jobs:
       - name: Install dev dependencies
         run: |
           python -m pip install -r requirements.dev.txt
+
+      - name: Build sdist
+        working-directory: ./aim/web/ui
+        run: |
+          python setup.py sdist
+
+      - name: Publish wheel
+        env:
+          PYPI_PASSWORD: ${{ secrets.PYPI_PASSWORD }}
+        working-directory: ./aim/web/ui
+        run: |
+          python -m twine upload -u __token__ -p "${PYPI_PASSWORD}" dist/*
+
+  linux-dist:
+    if: ${{ github.event_name == 'schedule' || github.actor == 'gorarakelyan' || github.actor == 'alberttorosyan' || github.actor == 'roubkar' }}
+    runs-on: ubuntu-latest
+    name: Linux wheels build (using Docker)
+    needs: aim-ui-dist
+    steps:
+      - name: Install Docker & pull images
+        run: |
+          apt update && apt install -y docker.io
+          sudo systemctl enable --now docker
+          docker pull quay.io/pypa/manylinux_2_24_x86_64
+
+      - name: Checkout sources
+        uses: actions/checkout@v2
+        with:
+          ref: ${{ inputs.branch || github.ref }}
+
+      - name: Capture aim version
+        id: capture-version
+        run: |
+          AIM_VERSION=$(< ./aim/VERSION)
+          echo "::set-output name=AIM_VERSION::$AIM_VERSION"
+
+      - name: Setup python
+        uses: actions/setup-python@v2
+        with:
+          python-version: 3.9
+          architecture: x64
+
+      - name: Install dev dependencies
+        run: |
+          python -m pip install -r requirements.dev.txt
           python -m pip install -r requirements.txt
 
       - name: Build bdist wheels
         run: |
-         docker run --mount type=bind,source=$PWD,target=/opt/aim quay.io/pypa/manylinux_2_24_x86_64 bash /opt/aim/docker/build-wheels.sh
+          docker run --mount type=bind,source=$PWD,target=/opt/aim quay.io/pypa/manylinux_2_24_x86_64 bash /opt/aim/docker/build-wheels.sh
 
       - name: Publish wheels
         env:
@@ -93,22 +124,12 @@ jobs:
         python-version: [ '3.6', '3.7', '3.8', '3.9', '3.10' ]
         os: [ 'macos-latest' ]
     name: Python ${{ matrix.python-version }} on ${{ matrix.os }} build
+    needs: aim-ui-dist
     steps:
       - name: Checkout sources
         uses: actions/checkout@v2
         with:
           ref: ${{ inputs.branch || github.ref }}
-
-      - name: Use node v16
-        uses: actions/setup-node@v2
-        with:
-          node-version: '16'
-
-      - name: Build UI
-        working-directory: ./aim/web/ui
-        run: |
-          npm i
-          CI=false npm run build
 
       - name: Setup python
         uses: actions/setup-python@v2

@@ -72,6 +72,7 @@ function ScattersContainer(): React.FunctionComponentElement<React.ReactNode> {
           exceptionHandler({ detail, model: scattersAppModel });
         })
         .then(() => {
+          scattersAppModel.setDefaultAppConfigData(false);
           scattersAppModel.getScattersData().call((detail: any) => {
             exceptionHandler({ detail, model: scattersAppModel });
           });
@@ -105,6 +106,7 @@ function ScattersContainer(): React.FunctionComponentElement<React.ReactNode> {
         appRequestRef.abort();
       }
     };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   return (

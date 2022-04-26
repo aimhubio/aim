@@ -4,14 +4,51 @@
 
 ### Enhancements:
 
+- Add `Notes Tab` to single run page (arsengit)
+- Add the run name to the batch delete and the batch archive modals (VkoHov)
+- Increase the scalability of rendering lines in charts (KaroMourad)
+- Increase live update requests delay to prevent performance issues  (rubenaprikyan)
+- Change font-family to monospace in the Table component (arsengit)
+- Add info massage for single value sliders (VkoHov)
+- Add `--log-level` argument for aim up/server commands (mihran113)
+- Add notes backend api interface (devfox-se)
+
+### Fixes:
+
+- Fix compatibility with pytorch-lightning v1.6.0 (mihran113)
+- Fix the image's original size cropping (VkoHov)
+- Fix `PATH` related issues for `alembic` and `uvicorn` (mihran113)
+- Fix queries for custom object APIs (mihran113) 
+
+## 3.8.1 Apr 6, 2022
+
+- Encode run hash before including in CSS selectors (Hamik25)
+- Fix displaying incorrect metric values for large range scale in LineChart (KaroMourad)
+- Fix issue with rendering lines for large range scale in LineChart (KaroMourad)
+- Fix issue with URL state sync for bookmarks (roubkar)
+- Fix issue with displaying negative param values on Aim UI (roubkar)
+- Fix row hiding functionality (roubkar)
+- Tune RunOverviewTab container styles (arsengit)
+- Update documentations links on UI (rubenaprikyan)
+- Fix `RepoIndexManager` run's reference cleanup (mihran113)
+- Fix remote run finalization (mihran113)
+- Fix issue with fetch on load more (infinite scroll) functionality in Runs Explorer (rubenaprikyan)
+
+## 3.8.0 Mar 26, 2022
+
+### Enhancements:
+
 - Hugging Face adapter refactoring (mihran113)
 - Add run description columns to all run specific tables (VkoHov, mihran113)
 - Change images rendering optimization default value to smoother (VkoHov)
+- Set default steps ordering to desc in single run tabs (VkoHov, devfox-se)
+- Add run name to grouping, ordering and run navigation popovers (VkoHov)
 - Add ability to apply color scale on columns with numeric values (VkoHov)
 - Refactored XGBoost AimCallback (devfox-se)
 - Reopenable callbacks for integrations (mihran113)
 - Add DVC integration (devfox-se)
-- Added API profiler and unified API error response (devfox-se)
+- Add API profiler and unified API error response (devfox-se)
+- Add API to retrieve N'th step of sequence (devfox-se)
 
 ### Fixes:
 
@@ -26,6 +63,7 @@
 - Fix git system param tracking (devfox-se)
 - Fix runs manual closing (mihran113)
 - Fix Docker image creation step in packaging workflow (alberttorosyan)
+- Fix Jinja2 template rendering with starlette==0.14.2 (alberttorosyan)
 
 ## 3.7.5 Mar 18, 2022
 

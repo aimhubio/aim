@@ -27,6 +27,15 @@ const getFilteredValues = (args: {
   );
 };
 
+function getInvalidIndices(values: number[], scaleType?: ScaleEnum) {
+  return values.reduce((acc: number[], v: number, i: number) => {
+    if (isInvalidValue(v, scaleType)) {
+      acc = acc.concat([i]);
+    }
+    return acc;
+  }, []);
+}
+
 function filterMetricData({
   values = [],
   steps = [],
@@ -34,49 +43,53 @@ function filterMetricData({
   timestamps = [],
   axesScaleType,
 }: IFilterMetricDataParams) {
-  const invalidXIndices: number[] = steps.reduce(
-    (acc: number[], v: number, i: number) => {
-      if (isInvalidValue(v, axesScaleType?.xAxis)) {
-        acc = acc.concat([i]);
-      }
-      return acc;
-    },
-    [],
+  const invalidStepsIndices: number[] = getInvalidIndices(
+    steps,
+    axesScaleType?.xAxis,
   );
 
-  const invalidYIndices: number[] = values.reduce(
-    (acc: number[], v: number, i: number) => {
-      if (isInvalidValue(v, axesScaleType?.yAxis)) {
-        acc = acc.concat([i]);
-      }
-      return acc;
-    },
-    [],
+  const invalidValuesIndices: number[] = getInvalidIndices(
+    values,
+    axesScaleType?.yAxis,
   );
 
-  const filteredXValues: number[] = getFilteredValues({
+  const invalidEpochIndices: number[] = getInvalidIndices(
+    epochs,
+    axesScaleType?.xAxis,
+  );
+
+  const invalidTimeStampsIndices: number[] = getInvalidIndices(
+    timestamps,
+    axesScaleType?.xAxis,
+  );
+
+  const filteredSteps: number[] = getFilteredValues({
     data: steps,
-    invalidXIndices,
-    invalidYIndices,
+    invalidXIndices: invalidStepsIndices,
+    invalidYIndices: invalidValuesIndices,
   });
 
-  const filteredYValues: number[] = getFilteredValues({
+  const filteredValues: number[] = getFilteredValues({
     data: values,
-    invalidXIndices,
-    invalidYIndices,
+    invalidXIndices: invalidStepsIndices,
+    invalidYIndices: invalidValuesIndices,
   });
 
-  const filteredEpochs: number[] = epochs.filter(
-    (epoch) => !isInvalidValue(epoch),
-  );
+  const filteredEpochs: number[] = getFilteredValues({
+    data: epochs,
+    invalidXIndices: invalidEpochIndices,
+    invalidYIndices: invalidValuesIndices,
+  });
 
-  const filteredTimestamps: number[] = timestamps.filter(
-    (timestamp) => !isInvalidValue(timestamp),
-  );
+  const filteredTimestamps: number[] = getFilteredValues({
+    data: timestamps,
+    invalidXIndices: invalidTimeStampsIndices,
+    invalidYIndices: invalidValuesIndices,
+  });
 
   return {
-    values: filteredYValues,
-    steps: filteredXValues,
+    values: filteredValues,
+    steps: filteredSteps,
     epochs: filteredEpochs,
     timestamps: filteredTimestamps,
   };

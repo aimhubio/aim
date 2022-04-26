@@ -32,6 +32,7 @@ function ExpressionAutoComplete({
   React.useEffect(() => {
     let suggestions = getSuggestionsList();
     setSuggestionsList(suggestions);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [value]);
 
   function onCaretPositionChange(

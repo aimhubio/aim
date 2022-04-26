@@ -9,12 +9,15 @@ import { IBadgeProps } from './Badge.d';
 
 import './Badge.scss';
 
-const BadgeContainer = styled.div`
-  ${(props) =>
-    props.color &&
-    `background-color: ${props.color}1a;
-  color: ${props.color};
-  border: 0.0625rem solid ${props.color};`}
+const getBadgeColor: (color: string) => string = (color: string): string =>
+  `background-color: ${color}1a;
+   color: ${color}; 
+   border: 0.0625rem solid ${color};`;
+
+const BadgeContainer: any = styled.div`
+  font-family: ${(props: any) =>
+    props.monospace ? 'Iosevka, monospace' : 'Inter, sans-serif'};
+  ${({ color }) => color && getBadgeColor(color)}
 `;
 
 const BadgeIcon = styled.span`
@@ -46,6 +49,7 @@ function Badge({
   className = '',
   startIcon,
   maxWidth = '100%',
+  monospace = false,
   selectBadge,
   onDelete,
   onClick,
@@ -53,13 +57,14 @@ function Badge({
   return (
     <ErrorBoundary>
       <BadgeContainer
-        color={color}
         id={id}
+        color={color}
         style={{
           ...style,
           maxWidth,
         }}
         role='button'
+        monospace={monospace}
         className={`Badge Badge${'__' + size} ${className} ${
           color ? '' : 'Badge__default'
         } ${selectBadge ? 'Badge__select' : ''}`}

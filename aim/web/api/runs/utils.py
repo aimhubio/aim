@@ -23,6 +23,17 @@ if TYPE_CHECKING:
 IndexRange = namedtuple('IndexRange', ['start', 'stop'])
 
 
+def get_run_or_404(run_id, repo=None):
+    if repo is None:
+        repo = get_project_repo()
+
+    run = repo.get_run(run_id)
+    if not run:
+        raise HTTPException(status_code=404, detail="Run not found.")
+
+    return run
+
+
 def str_to_range(range_str: str):
     defaults = [None, None]
     slice_values = chain(range_str.strip().split(':'), defaults)
@@ -105,8 +116,10 @@ def collect_x_axis_data(x_trace: Metric, iters: np.ndarray) -> Tuple[Optional[di
     if not x_axis_iters:
         return None, None
 
-    return numpy_to_encodable(np.array(x_axis_iters, dtype='float64')),\
+    return (
+        numpy_to_encodable(np.array(x_axis_iters, dtype='float64')),
         numpy_to_encodable(np.array(x_axis_values, dtype='float64'))
+    )
 
 
 def collect_run_streamable_data(encoded_tree: Iterator[Tuple[bytes, bytes]]) -> bytes:
@@ -254,10 +267,12 @@ def checked_query(q: str):
         syntax_error_check(query)
     except SyntaxError as se:
         raise HTTPException(status_code=400, detail={
-            'name': 'SyntaxError',
-            'statement': se.text,
-            'line': se.lineno,
-            'offset': se.offset
+            'message': 'SyntaxError',
+            'detail': {
+                'Statement': se.text,
+                'Line': se.lineno,
+                'Offset': se.offset
+            }
         })
     return query
 

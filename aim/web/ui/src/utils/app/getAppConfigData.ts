@@ -1,4 +1,4 @@
-import _ from 'lodash';
+import _ from 'lodash-es';
 
 import appsService from 'services/api/apps/appsService';
 
@@ -20,10 +20,7 @@ export default function getAppConfigData<M extends State>({
   appRequest: IApiRequest<IAppData>;
   config: IAppModelConfig;
   model: IModel<M>;
-}): {
-  call: () => Promise<void>;
-  abort: () => void;
-} {
+}): IApiRequest<void> {
   if (appRequest) {
     appRequest.abort();
   }

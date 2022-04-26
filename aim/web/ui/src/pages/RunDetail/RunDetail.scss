@@ -5,6 +5,9 @@
   &__runDetailContainer {
     height: 100%;
     background: $cuddle-10;
+    .BaseTable__row-cell {
+      font-family: 'Iosevka', monospace;
+    }
     &__Tabs {
       .MuiTabs-fixed {
         overflow: auto !important;
@@ -18,24 +21,35 @@
       background: #ffffff;
       display: flex;
       align-items: center;
+      &__appBarBox {
+        display: flex;
+        align-items: center;
+      }
       &__appBarTitleBox {
         display: flex;
         font-size: $text-md;
         font-weight: 600;
         color: $text-color;
         align-items: center;
+        height: fit-content;
+        max-width: 50%;
+        width: auto;
         &__buttonSelectToggler {
           width: 1.5rem;
           height: 1.5rem;
           &.opened {
-            background: '#E8F1FC';
+            background: #e8f1fc;
+          }
+          .MuiButton-label {
+            padding-top: $space-xxxxs;
           }
         }
         &__container {
           display: flex;
           align-items: center;
-          margin-right: 1rem;
+          margin-right: $space-xxxxs;
           cursor: pointer;
+          width: 100%;
           &__pageName {
             margin-right: 0.4375em;
             text-transform: capitalize;
@@ -46,6 +60,13 @@
             text-transform: lowercase;
           }
         }
+        span {
+          display: block;
+          overflow: hidden;
+          text-overflow: ellipsis;
+          white-space: nowrap;
+          max-width: 100%;
+        }
       }
       .StatusLabel {
         margin-left: $space-xs;
@@ -55,14 +76,14 @@
     &__tabsContainer {
       border-bottom: $border-grey-lighter;
       background: #ffffff;
-      box-shadow: 0px 4px 6px rgba(144, 175, 218, 0.2);
+      box-shadow: 0 toRem(4px) toRem(6px) rgba(144, 175, 218, 0.2);
       border-bottom: 0.0625rem solid $cuddle;
       border-top: 0.0625rem solid $cuddle;
       .PrivateTabIndicator-root-1 {
         display: none;
       }
       .MuiTabs-root {
-        height: 40px;
+        height: toRem(40px);
         min-height: auto;
       }
       .MuiTabs-flexContainer {
@@ -93,7 +114,7 @@
             &::before {
               content: '';
               width: 100%;
-              height: 3px;
+              height: toRem(3px);
               background: $primary-color;
               position: absolute;
               left: 0;
@@ -190,10 +211,10 @@
 .RunDetailSettingsTab {
   padding: 1.5rem 0;
   &__actionCardsCnt {
-    margin: 0 164px;
+    margin: 0 toRem(164px);
 
     .ActionCard {
-      margin-bottom: 16px;
+      margin-bottom: toRem(16px);
     }
 
     &__btn__delete {
@@ -244,43 +265,68 @@
         width: 50%;
         height: 100%;
         position: relative;
+
         &__experimentList {
           overflow-y: auto;
           height: 100%;
           box-shadow: inset -0.0625rem 0 0 $border-color-main;
           padding: 0.375rem 0 0.5rem 0.5rem;
-
-          &__experimentBox {
-            height: 2rem;
-            padding: 0 1rem;
-            display: flex;
-            align-items: center;
-            cursor: pointer;
-            border-radius: 0.3125rem 0 0 0.3125rem;
-            margin-bottom: 0.125rem;
+          &::before {
+            content: '';
+            position: absolute;
+            background: linear-gradient(
+              180deg,
+              rgba(248, 250, 253, 0) 0%,
+              #f8fafd 75.52%
+            );
+            height: $space-xs;
+            width: 100%;
+            bottom: 0;
+            left: 0;
+            z-index: 1;
+          }
+          &__experimentContainer {
             position: relative;
+            width: 100%;
+            margin-bottom: $space-xxxxs;
+            border-radius: 0.3125rem 0 0 0.3125rem;
+
             &:last-child {
               margin-bottom: 0;
             }
-            &:hover {
-              border-radius: $border-radius-sm;
-              background: $cuddle-20;
-              margin-right: 0.5rem;
-            }
-            &__experimentName {
-              overflow: hidden;
-              text-overflow: ellipsis;
-              white-space: nowrap;
-            }
-            &.selected {
-              background: $cuddle-10;
-              border-bottom: $border-main;
-              border-top: $border-main;
-              &:hover {
-                margin-right: 0;
-                border-radius: 0.3125rem 0 0 0.3125rem;
-              }
+            .experimentBox {
+              height: auto;
+              display: flex;
+              align-items: center;
+              cursor: pointer;
+              border-radius: 0.3125rem 0 0 0.3125rem;
+              padding: 0.5rem 1.5rem 0.5rem 1rem;
+              border-bottom: $border-transparent;
+              border-top: $border-transparent;
 
+              &:hover {
+                border-radius: $border-radius-sm;
+                background: $cuddle-20;
+                margin-right: 0.5rem;
+                padding: 0.5rem 1rem;
+              }
+              &__experimentName {
+                width: 100%;
+                word-break: break-all;
+              }
+            }
+
+            &.selected {
+              .experimentBox {
+                background: $cuddle-10;
+                border-bottom: $border-main;
+                border-top: $border-main;
+                &:hover {
+                  padding: 0.5rem 1.5rem 0.5rem 1rem;
+                  margin-right: 0;
+                  border-radius: 0.3125rem 0 0 0.3125rem;
+                }
+              }
               &::before {
                 content: '';
                 height: 100%;
@@ -288,7 +334,7 @@
                 top: 0;
                 left: 0;
                 background: $denim;
-                width: 0.375rem;
+                width: 0.25rem;
                 position: absolute;
               }
             }
@@ -300,11 +346,26 @@
         height: 100%;
         width: 50%;
         position: relative;
-        padding: 0.5rem 0.5rem 0.375rem;
+        padding: 0.375rem 0.5rem 0 0.5rem;
         border-right: $border-main;
+        &::before {
+          content: '';
+          position: absolute;
+          background: linear-gradient(
+            180deg,
+            rgba(248, 250, 253, 0) 0%,
+            #f8fafd 75.52%
+          );
+          height: $space-xs;
+          width: 100%;
+          bottom: 0;
+          left: 0;
+          z-index: 1;
+        }
         &__runsList {
           overflow: auto;
           height: 100%;
+          padding-bottom: $space-xs;
           .IllustrationBlock {
             height: calc(100% - 3rem);
           }
@@ -318,38 +379,59 @@
                 color: $pico-80;
               }
               &:hover {
-                background: $cuddle-30;
+                background: $cuddle-50;
               }
             }
           }
           &__runBox {
-            height: 2rem;
-            padding: 0 1rem;
+            height: auto;
+            padding: 0.5rem 0.5rem;
             display: flex;
-            align-items: center;
+            align-items: flex-start;
             cursor: pointer;
             text-decoration: unset;
-            margin-bottom: 0.125rem;
+            margin-bottom: $space-xxxxs;
             position: relative;
-
-            &.in-progress {
-              &::after {
-                content: '';
-                position: absolute;
-                right: 0.3125rem;
-                width: 0.375rem;
-                height: 0.375rem;
-                top: 0.6875rem;
-                border-radius: $border-radius-circle;
-                background: $success-color-100;
-              }
-            }
+            flex-direction: column;
+            border-radius: $border-radius-sm;
             &:last-child {
               margin-bottom: 0;
             }
+            &__runName {
+              width: 95%;
+              margin-bottom: $space-xxs;
+              position: relative;
+              span {
+                display: block;
+                max-width: 100%;
+                word-break: break-all;
+              }
+              &.in-progress {
+                &::after {
+                  content: '';
+                  position: absolute;
+                  right: -0.875rem;
+                  width: 0.375rem;
+                  height: 0.375rem;
+                  top: 0.375rem;
+                  border-radius: $border-radius-circle;
+                  background: $success-color-100;
+                }
+              }
+            }
+            &__runDate {
+              display: flex;
+              align-items: center;
+              i {
+                margin-right: $space-xxs;
+              }
+            }
+
             &:hover {
-              border-radius: $border-radius-sm;
               background: $cuddle-20;
+            }
+            &.selected {
+              background: $primary-color-10;
             }
           }
         }

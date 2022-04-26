@@ -2,6 +2,8 @@ import React from 'react';
 
 import ErrorBoundary from 'components/ErrorBoundary/ErrorBoundary';
 
+import { RENDER_LINES_OPTIMIZED_LIMIT } from 'config/charts';
+
 import useResizeObserver from 'hooks/window/useResizeObserver';
 
 import { IFocusedState } from 'types/services/models/metrics/metricsAppModel';
@@ -53,7 +55,7 @@ const HighPlot = React.forwardRef(function HighPlot(
   // d3 node elements
   const svgNodeRef = React.useRef<any>(null);
   const bgRectNodeRef = React.useRef(null);
-  const plotNodeRef = React.useRef(null);
+  const plotNodeRef = React.useRef<any>(null);
   const axesNodeRef = React.useRef<any>(null);
   const linesNodeRef = React.useRef<any>(null);
   const attributesNodeRef = React.useRef(null);
@@ -110,6 +112,14 @@ const HighPlot = React.forwardRef(function HighPlot(
       });
 
       linesRef.current.data = data.data;
+
+      // render lines with low quality if lines count are more than 'RENDER_LINES_OPTIMIZED_LIMIT'
+      if (!readOnly && linesNodeRef.current) {
+        const linesCount = linesNodeRef.current.selectChildren().size();
+        if (linesCount > RENDER_LINES_OPTIMIZED_LIMIT) {
+          linesNodeRef.current.classed('optimizeRendering', true);
+        }
+      }
 
       if (!readOnly) {
         drawParallelHoverAttributes({

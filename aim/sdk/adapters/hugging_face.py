@@ -71,7 +71,7 @@ class AimCallback(TrainerCallback):
 
     def on_train_begin(self, args, state, control,
                        model=None, **kwargs):
-        if not self._initialized:
+        if not self._run:
             self.setup(args, state, model)
         self._current_shift = 'train'
 
