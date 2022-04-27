@@ -1,7 +1,7 @@
 import logging
 import os.path
 
-from PIL import Image as PILImage
+from PIL import Image as PILImage, ImageSequence
 
 from io import BytesIO
 from itertools import chain, repeat
@@ -37,16 +37,11 @@ class Image(CustomObject):
     FLAG_WARN_RGBA_RGB = False
     AIM_NAME = 'aim.image'
 
-    def __init__(self, image, caption: str = '', format='png', quality=90, optimize=False):
+    def __init__(self, image, caption: str = '', format=None, quality=90, optimize=False):
         super().__init__()
 
-        # normalize jpg
-        if format.lower() == 'jpg':
-            # PIL doesn't support 'jpg' key
-            format = 'jpeg'
-
         params = {
-            'format': format.lower(),
+            'format': format,
             'quality': quality,
             'optimize': optimize
         }
@@ -136,27 +131,54 @@ class Image(CustomObject):
         assert isinstance(pil_image, PILImage.Image)
         img_container = BytesIO()
 
-        try:
-            pil_image.save(img_container, **params)
-        except OSError as exc:
-            # The best way to approach this problem is to prepare PIL Image object before hitting this method.
-            # This block only handles case where RGBA/P/LA/PA mode is mandated to save in RGB
-            # PIL won't do that automatically, so we have to convert image to RGB before saving it.
-            # In addition - make transparency "white" before conversion otherwise it will be black.
-            if pil_image.mode not in ('RGBA', 'LA', 'PA', 'P'):
-                raise
-            elif not Image.FLAG_WARN_RGBA_RGB:
-                logger.warning(f'Failed to save the image due to the following error: {exc}')
-                logger.warning(f'Attempting to convert mode "{pil_image.mode}" to "RGB"')
-                Image.FLAG_WARN_RGBA_RGB = True
+        if not params['format']:
+            params['format'] = pil_image.format
+        else:
+            # normalize img format
+            format = params['format'].upper()
+            if format == 'JPG':
+                # PIL doesn't support 'JPG' key
+                params['format'] = 'JPEG'
+            params['format'] = format
 
-            alpha = pil_image.convert('RGBA').split()[-1]  # Get only alpha
-            background = PILImage.new('RGBA', pil_image.size, (255, 255, 255, 255))
-            background.paste(pil_image, mask=alpha)
-            pil_image = background.convert('RGB')
+        if getattr(pil_image, "n_frames", 1) > 1:
+            # is animated
+            frames = ImageSequence.all_frames(pil_image)
+            params.update(
+                dict(
+                    format=params['format'],
+                    save_all=True,
+                    append_images=frames[1:],
+                    duration=pil_image.info.get("duration"),
+                    loop=pil_image.info.get("loop", 0)
+                )
+            )
+            frames[0].save(
+                img_container,
+                **params
+            )
+        else:
+            try:
+                pil_image.save(img_container, **params)
+            except OSError as exc:
+                # The best way to approach this problem is to prepare PIL Image object before hitting this method.
+                # This block only handles case where RGBA/P/LA/PA mode is mandated to save in RGB
+                # PIL won't do that automatically, so we have to convert image to RGB before saving it.
+                # In addition - make transparency "white" before conversion otherwise it will be black.
+                if pil_image.mode not in ('RGBA', 'LA', 'PA', 'P'):
+                    raise
+                elif not Image.FLAG_WARN_RGBA_RGB:
+                    logger.warning(f'Failed to save the image due to the following error: {exc}')
+                    logger.warning(f'Attempting to convert mode "{pil_image.mode}" to "RGB"')
+                    Image.FLAG_WARN_RGBA_RGB = True
 
-            # Retry
-            pil_image.save(img_container, **params)
+                alpha = pil_image.convert('RGBA').split()[-1]  # Get only alpha
+                background = PILImage.new('RGBA', pil_image.size, (255, 255, 255, 255))
+                background.paste(pil_image, mask=alpha)
+                pil_image = background.convert('RGB')
+
+                # Retry
+                pil_image.save(img_container, **params)
 
         self.storage['data'] = BLOB(data=img_container.getvalue())
         self.storage['source'] = 'PIL.Image'
