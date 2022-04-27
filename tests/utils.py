@@ -60,8 +60,7 @@ def generate_image_set(img_count, caption_prefix='Image', img_size=(16, 16)):
     return [
         AimImage(
             pil_image.fromarray((numpy.random.rand(img_size[0], img_size[1], 3) * 255).astype('uint8')),
-            caption=f'{caption_prefix} {idx}',
-            format='PNG'
+            caption=f'{caption_prefix} {idx}'
         ) for idx in range(img_count)
     ]
 
