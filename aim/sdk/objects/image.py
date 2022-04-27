@@ -132,7 +132,7 @@ class Image(CustomObject):
         img_container = BytesIO()
 
         if not params['format']:
-            params['format'] = pil_image.format
+            params['format'] = pil_image.format or 'JPEG'
         else:
             # normalize img format
             format = params['format'].upper()
