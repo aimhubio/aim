@@ -178,7 +178,7 @@ trainer = pl.Trainer(logger=AimLogger(experiment='experiment_name'))
 # ...
 ```
 
-_See documentation [here](https://aimstack.readthedocs.io/en/latest/guides/integrations/basic_aim_pytorch_lightning.html)._
+_See documentation [here](https://aimstack.readthedocs.io/en/latest/quick_start/integrations.html#integration-with-pytorch-lightning)._
 
 </details>
 
@@ -203,7 +203,7 @@ trainer = Trainer(
 # ...
 ```
 
-_See documentation [here](https://aimstack.readthedocs.io/en/latest/guides/integrations/basic_aim_huggingface.html)._
+_See documentation [here](https://aimstack.readthedocs.io/en/latest/quick_start/integrations.html#integration-with-hugging-face)._
 
 </details>
 
@@ -225,7 +225,7 @@ model.fit(x_train, y_train, epochs=epochs, callbacks=[
 # ...
 ```
 
-_See documentation [here](https://aimstack.readthedocs.io/en/latest/guides/integrations/basic_aim_keras.html)._
+_See documentation [here](https://aimstack.readthedocs.io/en/latest/quick_start/integrations.html#integration-with-keras-tf-keras)._
 
 </details>
 
@@ -243,7 +243,7 @@ bst = xgb.train(param, xg_train, num_round, watchlist, callbacks=[aim_callback])
 # ...
 ```
 
-_See documentation [here](https://aimstack.readthedocs.io/en/latest/guides/integrations/basic_aim_xgboost.html)._
+_See documentation [here](https://aimstack.readthedocs.io/en/latest/quick_start/integrations.html#integration-with-xgboost)._
 </details>
 
 # Comparisons to familiar tools
