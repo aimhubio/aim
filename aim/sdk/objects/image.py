@@ -166,7 +166,7 @@ class Image(CustomObject):
                 # PIL won't do that automatically, so we have to convert image to RGB before saving it.
                 # In addition - make transparency "white" before conversion otherwise it will be black.
                 if pil_image.mode not in ('RGBA', 'LA', 'PA', 'P'):
-                    raise
+                    raise exc
                 elif not Image.FLAG_WARN_RGBA_RGB:
                     logger.warning(f'Failed to save the image due to the following error: {exc}')
                     logger.warning(f'Attempting to convert mode "{pil_image.mode}" to "RGB"')
@@ -196,6 +196,8 @@ class Image(CustomObject):
         if array.ndim not in {2, 3}:
             raise ValueError('Cannot convert to aim.Image. array must have 2/3-D shape.')
 
+        if array.dtype == np.float:
+            array = np.asarray(array, np.uint8)
         if array.ndim == 3 and array.shape[2] == 1:  # greyscale
             pil_image = PILImage.fromarray(array[:, :, 0])
         else:
@@ -267,7 +269,7 @@ class Image(CustomObject):
             if self.storage[p] != other.storage[p]:
                 return False
 
-        return (self.storage['data'].load() == other.storage['data'].load())
+        return self.storage['data'].load() == other.storage['data'].load()
 
 
 def convert_to_aim_image_list(images, labels=None) -> List[Image]:
