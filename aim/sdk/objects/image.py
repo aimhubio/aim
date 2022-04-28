@@ -1,7 +1,10 @@
 import logging
 import os.path
 
-from PIL import Image as PILImage, ImageSequence
+from PIL import (
+    Image as PILImage,
+    ImageSequence as PILImageSequence
+)
 
 from io import BytesIO
 from itertools import chain, repeat
@@ -143,7 +146,7 @@ class Image(CustomObject):
 
         if getattr(pil_image, "n_frames", 1) > 1:
             # is animated
-            frames = ImageSequence.all_frames(pil_image)
+            frames = PILImageSequence.all_frames(pil_image)
             params.update(
                 dict(
                     save_all=True,
@@ -193,8 +196,6 @@ class Image(CustomObject):
         if array.ndim not in {2, 3}:
             raise ValueError('Cannot convert to aim.Image. array must have 2/3-D shape.')
 
-        if array.dtype == np.float:
-            array = np.asarray(array, np.uint8)
         if array.ndim == 3 and array.shape[2] == 1:  # greyscale
             pil_image = PILImage.fromarray(array[:, :, 0])
         else:
