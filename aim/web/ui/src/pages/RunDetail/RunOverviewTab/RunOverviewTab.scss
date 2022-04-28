@@ -8,7 +8,9 @@
   overflow-y: auto;
   &__content {
     flex: 1 100%;
-    max-width: toRem(1068px);
+    max-width: calc(
+      #{$container-max-width-without-paddings} - #{$run-overview-sidebar-width}
+    );
   }
   &__cardBox {
     margin-bottom: $space-lg;
