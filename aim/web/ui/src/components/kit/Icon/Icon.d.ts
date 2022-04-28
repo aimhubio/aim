@@ -132,4 +132,6 @@ export type IconName =
   | 'color-scale-on'
   | 'text'
   | 'minus'
-  | 'circle-info';
+  | 'circle-info'
+  | 'warning-outline'
+  | 'warning-contained';

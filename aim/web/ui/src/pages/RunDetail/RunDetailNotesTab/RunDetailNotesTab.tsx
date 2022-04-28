@@ -8,6 +8,7 @@ import { Tooltip } from '@material-ui/core';
 import { Button, Icon, Text } from 'components/kit';
 import NotificationContainer from 'components/NotificationContainer/NotificationContainer';
 import Spinner from 'components/kit/Spinner';
+import RouteLeavingGuard from 'components/RouteLeavingGuard';
 
 import { ANALYTICS_EVENT_KEYS } from 'config/analytics/analyticsKeysMap';
 import { RichEditorThemeColors } from 'config/colors/colors';
@@ -36,6 +37,7 @@ function RunDetailNotesTab({
   React.useEffect(() => {
     notesModel.initialize(runHash);
     analytics.pageView(ANALYTICS_EVENT_KEYS.runDetails.tabs.notes.tabView);
+
     return () => {
       notesModel.destroy();
     };
@@ -83,6 +85,7 @@ function RunDetailNotesTab({
 
   return (
     <section className='RunDetailNotesTab'>
+      <RouteLeavingGuard when={!saveDisabled} />
       <div
         className={classNames('RunDetailNotesTab__Editor', {
           isLoading,
