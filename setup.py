@@ -51,9 +51,7 @@ REQUIRED = [
     'click>=7.0',
     'cryptography>=3.0',
     'filelock>=3.0.0',
-    'GitPython>=3.0.4',
     'numpy>=1.12.0',
-    'packaging>=19.0',
     'protobuf>=3.11.0',
     'psutil>=5.6.7',
     'py3nvml>=0.2.5',
@@ -61,15 +59,16 @@ REQUIRED = [
     'tqdm>=4.20.0',
     'aiofiles>=0.5.0',
     'alembic>=1.4.0',
-    'async-exit-stack>=1.0.0',
-    'async-generator>=1.0',
     'fastapi>=0.65.0,<0.68.0',
-    'jinja2>=2.10.0,<3.1.0',
+    'jinja2>=2.10.0',
     'pytz>=2019.1',
     'SQLAlchemy>=1.4.1',
     'uvicorn>=0.12.0',
-    'Pillow>=8.1.0',
+    'Pillow>=8.0.0',
     'grpcio==1.42.0',
+    # fastapi to support python3.6
+    'async-exit-stack>=1.0.0; python_version<"3.7"',
+    'async-generator>=1.0; python_version<"3.7"',
 ]
 
 
