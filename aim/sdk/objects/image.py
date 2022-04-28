@@ -146,11 +146,8 @@ class Image(CustomObject):
             frames = ImageSequence.all_frames(pil_image)
             params.update(
                 dict(
-                    format=params['format'],
                     save_all=True,
                     append_images=frames[1:],
-                    duration=pil_image.info.get("duration"),
-                    loop=pil_image.info.get("loop", 0)
                 )
             )
             frames[0].save(
