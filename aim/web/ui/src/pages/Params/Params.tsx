@@ -93,6 +93,7 @@ const Params = ({
   onColumnsVisibilityChange,
   onTableDiffShow,
   onSortReset,
+  onAxisBrashExtentChange,
   updateColumnsWidths,
   onLiveUpdateConfigChange,
   onShuffleChange,
@@ -101,11 +102,14 @@ const Params = ({
   deleteRuns,
   selectedRows,
   columnsOrder,
+  brushExtents,
 }: IParamsProps): React.FunctionComponentElement<React.ReactNode> => {
   const chartProps: any[] = React.useMemo(() => {
     return (highPlotData || []).map((chartData: any, index: number) => ({
       curveInterpolation,
       isVisibleColorIndicator,
+      onAxisBrashExtentChange,
+      brushExtents,
       chartTitle: chartTitleData[index],
     }));
   }, [
@@ -113,6 +117,7 @@ const Params = ({
     curveInterpolation,
     isVisibleColorIndicator,
     chartTitleData,
+    brushExtents,
   ]);
 
   return (

@@ -122,6 +122,7 @@ function ParamsContainer(): React.FunctionComponentElement<React.ReactNode> {
       focusedState={paramsData?.config?.chart?.focusedState!}
       requestStatus={paramsData?.requestStatus!}
       selectedRows={paramsData?.selectedRows!}
+      brushExtents={paramsData?.config?.chart?.brushExtents}
       isVisibleColorIndicator={
         paramsData?.config?.chart?.isVisibleColorIndicator!
       }
@@ -171,6 +172,7 @@ function ParamsContainer(): React.FunctionComponentElement<React.ReactNode> {
       onSortReset={paramsAppModel.onSortReset}
       onSortFieldsChange={paramsAppModel.onSortChange}
       onShuffleChange={paramsAppModel.onShuffleChange}
+      onAxisBrashExtentChange={paramsAppModel.onAxisBrashExtentChange}
       liveUpdateConfig={paramsData?.config?.liveUpdate!}
       onLiveUpdateConfigChange={paramsAppModel.changeLiveUpdateConfig}
       onRowSelect={paramsAppModel.onRowSelect}

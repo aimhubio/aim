@@ -30,6 +30,8 @@ const HighPlot = React.forwardRef(function HighPlot(
     data,
     isVisibleColorIndicator,
     chartTitle,
+    onAxisBrashExtentChange,
+    brushExtents,
     readOnly = false,
   }: IHighPlotProps,
   ref,
@@ -146,6 +148,8 @@ const HighPlot = React.forwardRef(function HighPlot(
         brushRef,
         linesRef,
         attributesRef,
+        brushExtents,
+        onAxisBrashExtentChange,
         dimensions: data.dimensions,
         data: data.data,
       });

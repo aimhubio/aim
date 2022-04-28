@@ -176,6 +176,7 @@ import { SortField } from 'utils/getSortedFields';
 import onChangeTrendlineOptions from 'utils/app/onChangeTrendlineOptions';
 import { getParamsSuggestions } from 'utils/app/getParamsSuggestions';
 import onToggleColumnsColorScales from 'utils/app/onToggleColumnsColorScales';
+import onAxisBrashExtentChange from 'utils/app/onAxisBrashExtentChange';
 
 import { AppDataTypeEnum, AppNameEnum } from './index';
 /**
@@ -391,6 +392,7 @@ function createAppModel(appConfig: IAppInitialConfig) {
                 selectedParams:
                   CONTROLS_DEFAULT_CONFIG.params.tooltip.selectedParams,
               },
+              brushExtents: {},
             };
           }
           if (components.charts.indexOf(ChartTypeEnum.ScatterPlot) !== -1) {
@@ -4568,6 +4570,14 @@ function createAppModel(appConfig: IAppInitialConfig) {
           },
           onCurveInterpolationChange(): void {
             onCurveInterpolationChange({ model, appName, updateModelData });
+          },
+          onAxisBrashExtentChange(key: string, extent: [number, number]): void {
+            onAxisBrashExtentChange({
+              key,
+              extent,
+              model,
+              updateModelData,
+            });
           },
         });
       }

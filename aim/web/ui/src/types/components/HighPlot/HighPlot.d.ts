@@ -6,9 +6,11 @@ import { CurveEnum } from 'utils/d3';
 export interface IHighPlotProps {
   index: number;
   nameKey?: string;
+  brushExtents: { [key: string]: [number, number] };
   curveInterpolation: CurveEnum;
   isVisibleColorIndicator: boolean;
   syncHoverState: (args: ISyncHoverStateArgs) => void;
+  onAxisBrashExtentChange: (key: string, extent: [number, number]) => void;
   data: any;
   chartTitle?: IChartTitle;
   readOnly?: boolean;

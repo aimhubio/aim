@@ -1,5 +1,5 @@
 import * as d3 from 'd3';
-import { isNil } from 'lodash-es';
+import _ from 'lodash-es';
 
 import { ILineDataType } from 'types/utils/d3/drawParallelLines';
 import {
@@ -16,24 +16,28 @@ function drawParallelAxesBrush({
   dimensions,
   data,
   linesRef,
+  brushExtents,
+  onAxisBrashExtentChange,
   attributesRef,
 }: IDrawParallelAxesBrushBrushArgs): void {
-  brushRef.current.xScale = attributesRef.current.xScale;
-  brushRef.current.yScale = { ...attributesRef.current.yScale };
-  brushRef.current.domainsData = Object.keys(dimensions).reduce(
-    (acc: DomainsDataType, keyOfDimension: string) => {
-      acc[keyOfDimension] = dimensions[keyOfDimension].domainData;
-      return acc;
-    },
-    {},
-  );
+  if (!brushRef.current.domainsData) {
+    brushRef.current.xScale = attributesRef.current.xScale;
+    brushRef.current.yScale = { ...attributesRef.current.yScale };
+    brushRef.current.domainsData = Object.keys(dimensions).reduce(
+      (acc: DomainsDataType, keyOfDimension: string) => {
+        acc[keyOfDimension] = dimensions[keyOfDimension].domainData;
+        return acc;
+      },
+      {},
+    );
+  }
 
   function handleBrushChange(
     event: d3.D3BrushEvent<d3.BrushSelection>,
     keyOfDimension: string,
   ): void {
     const extent: d3.BrushSelection | any = event.selection;
-    if (!isNil(extent)) {
+    if (!_.isNil(extent)) {
       if (dimensions[keyOfDimension].scaleType === 'point') {
         const domainData = scalePointDomainData(
           brushRef.current.yScale[keyOfDimension],
@@ -52,6 +56,9 @@ function drawParallelAxesBrush({
     } else {
       brushRef.current.domainsData[keyOfDimension] =
         dimensions[keyOfDimension].domainData;
+    }
+    if (event.type === 'end') {
+      onAxisBrashExtentChange(keyOfDimension, extent);
     }
     updateLinesAndHoverAttributes(brushRef, keyOfDimension, extent);
   }
@@ -85,6 +92,7 @@ function drawParallelAxesBrush({
     .selectAll('.Axis')
     .append('g')
     .each(function (this: any, keyOfDimension: string) {
+      const extent = brushExtents?.[keyOfDimension];
       d3.select(this).call(
         d3
           .brushY()
@@ -96,10 +104,14 @@ function drawParallelAxesBrush({
           .on('brush', (event) => handleBrushChange(event, keyOfDimension))
           .on('end', (event) => handleBrushChange(event, keyOfDimension)),
       );
-    })
-    .selectAll('rect')
-    .attr('x', -10)
-    .attr('width', 20);
+      if (extent) {
+        d3.select(this).call(d3.brush().move, [
+          [-15, extent[0]],
+          [15, extent[1]],
+        ]);
+        handleBrushChange({ selection: extent } as any, keyOfDimension);
+      }
+    });
 }
 
 function scalePointDomainData(yScale: IAxisScale, extent: number[]): string[] {
