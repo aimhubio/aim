@@ -182,11 +182,30 @@ xgboost.train(param, dtrain, num_round, watchlist,
                             callbacks=[AimCallback(experiment='xgboost_test')])
 ```
 
-During the training process, you can start another terminal in the same directory, start `aim up` and you can observe the information in real time.
-
 Adapter source can be found [here](https://github.com/aimhubio/aim/blob/main/aim/sdk/adapters/xgboost.py).  
 Example using XGboost can be found [here](https://github.com/aimhubio/aim/blob/main/examples/xgboost_track.py).
 
+### Integration with Catboost
+
+It only takes two steps to integrate Aim with [Catboost](https://catboost.ai/).
+
+```python
+# call sdk aim.catboost 
+from aim.catboost import AimLogger
+```
+
+In Catboost, we call the [`.fit()`](https://catboost.ai/en/docs/concepts/python-reference_catboost_fit) method of the
+model object to train the data. The method can be supplied with `log_cout` parameter to redirect output logs into custom
+handler which in our case is the recently mentioned `AimLogger`. On top of that we can supply the `.fit()` method with
+`logging_level` parameter to make Catboost yield more logs to track `test` & `best` values, but it depends on your
+training log output.
+
+```python
+model.fit(train_data, train_labels, log_cout=AimLogger(loss_function='Logloss'), logging_level='Info')
+```
+
+Beside this `AimLogger` accepts `log_cout` parameter to preserve the default functionality of Catboost's log handling
+callback. You can pass your own handler, else it defaults to `sys.stdout`.
 
 ### Integration with LightGBM
 
@@ -213,3 +232,8 @@ While your training is running you can start `aim up` in another terminal sessio
 time.
 
 Adapter source can be found [here](https://github.com/aimhubio/aim/blob/main/aim/sdk/adapters/lightgbm.py).
+
+### What's next?
+
+During the training process, you can start another terminal in the same directory, start `aim up` and you can observe
+the information in real time.

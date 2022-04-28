@@ -19,6 +19,7 @@ function RunDetailParamsTab({
   React.useEffect(() => {
     analytics.pageView(ANALYTICS_EVENT_KEYS.runDetails.tabs.params.tabView);
   }, []);
+
   return (
     <ErrorBoundary>
       <BusyLoaderWrapper

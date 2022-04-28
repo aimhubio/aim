@@ -270,6 +270,7 @@ def get_note_api(run_id, _id: int, factory=Depends(object_factory)):
     return {
         'id': note.id,
         'content': note.content,
+        'updated_at': note.updated_at,
     }
 
 
@@ -290,6 +291,7 @@ def update_note_api(run_id, _id: int, note_in: NoteIn, factory=Depends(object_fa
     return {
         'id': updated_note.id,
         'content': updated_note.content,
+        'updated_at': updated_note.updated_at,
     }
 
 

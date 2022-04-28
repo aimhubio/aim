@@ -8,3 +8,9 @@ export enum BookmarkNotificationsEnum {
 export enum AlignmentNotificationsEnum {
   NOT_ALL_ALIGNED = 'Not All Lines Are Aligned',
 }
+
+export enum NotesNotificationsEnum {
+  CREATE = 'Note successfully created',
+  UPDATE = 'Note successfully updated',
+  DELETE = 'Note successfully deleted',
+}
