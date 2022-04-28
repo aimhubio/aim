@@ -37,6 +37,7 @@ class Image(CustomObject):
         quality=85
     """
 
+    DEFAULT_IMG_FORMAT = 'png'
     FLAG_WARN_RGBA_RGB = False
     AIM_NAME = 'aim.image'
 
@@ -135,7 +136,7 @@ class Image(CustomObject):
         img_container = BytesIO()
 
         if not params['format']:
-            params['format'] = pil_image.format or 'png'
+            params['format'] = pil_image.format or self.DEFAULT_IMG_FORMAT
         else:
             # normalize img format
             img_format = params['format'].lower()
