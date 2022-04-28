@@ -62,7 +62,7 @@ class TestRunImagesSearchApi(RunImagesTestBase):
         self.assertEqual(9, img['index'])
         self.assertEqual(16, img['width'])
         self.assertEqual(16, img['height'])
-        self.assertEqual('PNG', img['format'])
+        self.assertEqual('png', img['format'])
         self.assertIn('blob_uri', img)
 
     def test_query_images_api_custom_densities_dense(self):
@@ -231,7 +231,7 @@ class TestRunImagesBatchApi(RunImagesTestBase):
         self.assertEqual(9, img['index'])
         self.assertEqual(16, img['width'])
         self.assertEqual(16, img['height'])
-        self.assertEqual('PNG', img['format'])
+        self.assertEqual('png', img['format'])
         self.assertIn('blob_uri', img)
 
 

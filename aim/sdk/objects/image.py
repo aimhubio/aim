@@ -132,14 +132,14 @@ class Image(CustomObject):
         img_container = BytesIO()
 
         if not params['format']:
-            params['format'] = pil_image.format or 'PNG'
+            params['format'] = pil_image.format or 'png'
         else:
             # normalize img format
-            format = params['format'].upper()
-            if format == 'JPG':
-                # PIL doesn't support 'JPG' key
-                params['format'] = 'JPEG'
-            params['format'] = format
+            img_format = params['format'].lower()
+            if img_format == 'jpg':
+                # PIL doesn't support 'jpg' key
+                params['format'] = 'jpeg'
+            params['format'] = img_format
 
         if getattr(pil_image, "n_frames", 1) > 1:
             # is animated
