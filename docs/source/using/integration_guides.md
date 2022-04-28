@@ -209,3 +209,23 @@ class CustomLogger(AimLogger):
             value_score = self._to_number(log[3])
             self.experiment.track(value_score, name='score')
 ```
+
+### LightGBM
+
+Here is how to override the `AimCallback` for LightGBM.
+
+```python
+from aim.lightgbm import AimCallback
+
+
+class CustomCallback(AimCallback):
+
+    def before_tracking(self, env):
+        for item in env.evaluation_result_list:
+            # manipulate item here
+            pass
+
+    def after_tracking(self, env):
+        # do any other action if necessary after tracking value
+        pass
+```
