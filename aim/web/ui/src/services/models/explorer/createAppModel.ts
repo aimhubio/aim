@@ -2223,7 +2223,7 @@ function createAppModel(appConfig: IAppInitialConfig) {
           .then((data) => {
             model.setState({
               selectFormData: {
-                suggestions: getParamsSuggestions(data),
+                suggestions: { run: { ...data.params } },
               },
             });
           });

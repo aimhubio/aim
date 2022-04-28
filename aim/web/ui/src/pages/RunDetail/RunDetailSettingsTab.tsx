@@ -1,8 +1,8 @@
 import React, { memo } from 'react';
 import classNames from 'classnames';
 import { useHistory } from 'react-router-dom';
-
-import Editor from '@monaco-editor/react';
+import * as monaco from 'monaco-editor';
+// import Editor from '@monaco-editor/react';
 
 import ConfirmModal from 'components/ConfirmModal/ConfirmModal';
 import { ActionCard, Icon } from 'components/kit';
@@ -89,13 +89,6 @@ function RunDetailSettingsTab({
             }}
           />
         </div>
-        <Editor
-          language='python'
-          height='100vh'
-          options={{
-            lineNumbers: 'off',
-          }}
-        />
         <ConfirmModal
           open={openDeleteModal}
           onCancel={handleDeleteModalClose}

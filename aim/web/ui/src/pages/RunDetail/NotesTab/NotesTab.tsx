@@ -78,7 +78,6 @@ function NotesTab({ runHash }: INotesTabProps) {
   const handleCloseModal: () => void = React.useCallback(() => {
     setOpenModal(false);
   }, []);
-
   return (
     <section ref={wrapperRef} className='NotesTab'>
       <div

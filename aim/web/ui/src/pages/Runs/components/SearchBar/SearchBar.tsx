@@ -5,6 +5,7 @@ import { Divider } from '@material-ui/core';
 import { Button, Icon } from 'components/kit';
 import ExpressionAutoComplete from 'components/kit/ExpressionAutoComplete';
 import ErrorBoundary from 'components/ErrorBoundary/ErrorBoundary';
+import MonacoEditor from 'components/MonacoEditor';
 
 import { ANALYTICS_EVENT_KEYS } from 'config/analytics/analyticsKeysMap';
 
@@ -22,7 +23,6 @@ function SearchBar({
   onSearchInputChange,
 }: any) {
   const searchRunsRef = React.useRef<any>(null);
-
   React.useEffect(() => {
     return () => {
       searchRunsRef.current?.abort();
@@ -51,18 +51,21 @@ function SearchBar({
     searchRunsRef.current?.abort();
     runAppModel.abortRequest();
   }
-
+  console.log(searchSuggestions);
   return (
     <ErrorBoundary>
       <div className='Runs_Search_Bar'>
         <form onSubmit={handleRunSearch}>
-          <ExpressionAutoComplete
+          {/* <ExpressionAutoComplete
             onExpressionChange={onSearchInputChange}
             onSubmit={handleRunSearch}
             value={searchValue}
             options={searchSuggestions}
             placeholder='Filter runs, e.g. run.learning_rate > 0.0001 and run.batch_size == 32'
-          />
+          /> */}
+          <div style={{ maxWidth: 500 }}>
+            <MonacoEditor context={searchSuggestions} />
+          </div>
         </form>
         <Divider style={{ margin: '0 1em' }} orientation='vertical' flexItem />
         <Button
