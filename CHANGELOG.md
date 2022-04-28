@@ -4,7 +4,7 @@
 
 ### Enhancements:
 
-- Add support for animated image formats to Aim Image object
+- Add support for animated image formats to Aim Image object (devfox-se)
 
 ### Fixes:
 
