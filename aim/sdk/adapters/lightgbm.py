@@ -32,7 +32,7 @@ class AimCallback:
         self._run_hash = None
 
         # callback parameters
-        self.order = 15
+        self.order = 25
         self.before_iteration = False
 
     @property
