@@ -1,5 +1,5 @@
 import * as d3 from 'd3';
-import { isEqual } from 'lodash-es';
+import _ from 'lodash-es';
 
 import { HighlightEnum } from 'components/HighlightModesPopover/HighlightModesPopover';
 
@@ -136,7 +136,13 @@ function drawHoverAttributes(args: IDrawHoverAttributesArgs): void {
       }
       const xValueByIndex = line.data.xValues[index];
       const yValueByIndex = line.data.yValues[index];
-      if (xValueByIndex !== '-' && yValueByIndex !== '-') {
+
+      if (
+        !_.isNil(xValueByIndex) &&
+        !_.isNil(yValueByIndex) &&
+        xValueByIndex !== '-' &&
+        yValueByIndex !== '-'
+      ) {
         const closestXPos = attributesRef.current.xScale(xValueByIndex) || 0;
         const closestYPos = attributesRef.current.yScale(yValueByIndex) || 0;
         const circle = {
@@ -146,8 +152,6 @@ function drawHoverAttributes(args: IDrawHoverAttributesArgs): void {
           y: closestYPos,
         };
         nearestCircles.push(circle);
-      } else {
-        safeSyncHoverState({ activePoint: null });
       }
     }
 
@@ -602,7 +606,7 @@ function drawHoverAttributes(args: IDrawHoverAttributesArgs): void {
       circle.key !== attributesRef.current.activePoint?.key ||
       circle.x !== attributesRef.current.activePoint?.xPos ||
       circle.y !== attributesRef.current.activePoint?.yPos ||
-      !isEqual(attributesRef.current.nearestCircles, nearestCircles)
+      !_.isEqual(attributesRef.current.nearestCircles, nearestCircles)
     ) {
       setCirclesHighlightMode();
       drawCircles(nearestCircles);

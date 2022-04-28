@@ -612,6 +612,7 @@ function createAppModel(appConfig: IAppInitialConfig) {
         p: configData?.chart?.densityType,
         ...(metric ? { x_axis: metric } : {}),
       });
+
       return {
         call: async () => {
           if (query === '()') {

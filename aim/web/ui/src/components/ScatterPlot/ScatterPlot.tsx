@@ -97,6 +97,10 @@ const ScatterPlot = React.forwardRef(function ScatterPlot(
           .append('text')
           .classed('ScatterPlot__emptyData', true)
           .text('No Data');
+
+        if (attributesRef.current?.clearHoverAttributes) {
+          attributesRef.current.clearHoverAttributes();
+        }
       }
       return;
     }

@@ -9,7 +9,7 @@ export function calculateExponentialMovingAverage(
   data: number[],
   smoothFactor: number,
 ): number[] {
-  const smoothedData = [data[0]];
+  const smoothedData = data.length ? [data[0]] : [];
   for (let i = 1; i < data.length; i++) {
     smoothedData.push(
       smoothedData[i - 1] * smoothFactor + data[i] * (1 - smoothFactor),

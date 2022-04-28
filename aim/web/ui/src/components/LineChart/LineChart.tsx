@@ -130,6 +130,10 @@ const LineChart = React.forwardRef(function LineChart(
           .append('text')
           .classed('LineChart__emptyData', true)
           .text('No Data');
+
+        if (attributesRef.current?.clearHoverAttributes) {
+          attributesRef.current.clearHoverAttributes();
+        }
       }
       return;
     }
