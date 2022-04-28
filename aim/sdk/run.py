@@ -47,6 +47,7 @@ if TYPE_CHECKING:
     from aim.sdk.sequences.figure_sequence import Figures
     from aim.sdk.sequences.text_sequence import Texts
     from aim.sdk.sequence_collection import SequenceCollection
+    from aim.ext.resource.log import Logs
     from aim.sdk.repo import Repo
 
 logger = logging.getLogger(__name__)
@@ -596,6 +597,14 @@ class Run(StructuredRunMixin):
             :obj:`Distributions` object if exists, `None` otherwise.
         """
         return self._get_sequence('distributions', name, context)
+
+    def get_terminal_logs(self) -> Optional['Logs']:
+        """Retrieve duplicated terminal logs for a run
+
+                Returns:
+                    :obj:`Logs` object if exists, `None` otherwise.
+                """
+        return self._get_sequence('logs', 'logs', Context({}))
 
     def get_text_sequence(
             self,
