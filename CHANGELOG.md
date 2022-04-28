@@ -15,6 +15,7 @@
 
 ### Fixes:
 
+- Fix LineChart y-dimension margin calculation (KaroMourad)
 - Fix HighPlot lines partially rendering issue (KaroMourad)
 - Fix HighPlot axis ticks overlapping issue (KaroMourad)
 - Fix sorting Params/Scatters explorer axis ticks (KaroMourad)
