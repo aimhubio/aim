@@ -4,6 +4,14 @@
 
 ### Enhancements:
 
+- Add support for animated image formats to Aim Image object (devfox-se)
+
+### Fixes:
+
+## 3.9.x (Unreleased)
+
+### Enhancements:
+
 - Add `Notes Tab` to single run page (arsengit)
 - Add the run name to the batch delete and the batch archive modals (VkoHov)
 - Increase the scalability of rendering lines in charts (KaroMourad)
