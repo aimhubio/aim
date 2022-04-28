@@ -149,7 +149,7 @@ function GroupingPopover({
                 </div>
               )}
               renderOption={(option, { selected }) => (
-                <React.Fragment>
+                <div className='GroupingPopover__option'>
                   <Checkbox
                     color='primary'
                     size='small'
@@ -158,8 +158,10 @@ function GroupingPopover({
                     style={{ marginRight: 4 }}
                     checked={selected}
                   />
-                  {option.label}
-                </React.Fragment>
+                  <Text className='GroupingPopover__option__label' size={14}>
+                    {option.label}
+                  </Text>
+                </div>
               )}
             />
           </div>

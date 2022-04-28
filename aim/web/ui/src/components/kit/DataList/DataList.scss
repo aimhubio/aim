@@ -13,6 +13,14 @@
     border-radius: $border-radius-md;
     overflow: hidden;
     width: 100%;
+    .BaseTable__body {
+      & > div {
+        width: 100% !important;
+        .BaseTable__row {
+          width: 100% !important;
+        }
+      }
+    }
   }
   .BaseTable {
     &__table-main {

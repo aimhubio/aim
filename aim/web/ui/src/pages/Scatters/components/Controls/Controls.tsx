@@ -36,7 +36,7 @@ function Controls(
 
   return (
     <ErrorBoundary>
-      <div className='Controls__container ScrollBar__hidden'>
+      <div className='Controls__container'>
         <ErrorBoundary>
           <div>
             <ControlPopover

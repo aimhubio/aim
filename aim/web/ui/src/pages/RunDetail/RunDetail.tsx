@@ -325,11 +325,21 @@ function RunDetail(): React.FunctionComponentElement<React.ReactNode> {
               {tabs.map((tab: string) => (
                 <Route path={`${url}/${tab}`} key={tab}>
                   <ErrorBoundary>
-                    <div className='RunDetail__runDetailContainer__tabPanel container'>
-                      <React.Suspense fallback={<Spinner />}>
-                        {tabContent[tab]}
-                      </React.Suspense>
-                    </div>
+                    {tab === 'overview' ? (
+                      <div className='RunDetail__runDetailContainer__tabPanel overviewPanel'>
+                        <React.Suspense fallback={<Spinner />}>
+                          {tabContent[tab]}
+                        </React.Suspense>
+                      </div>
+                    ) : (
+                      <div className='RunDetail__runDetailContainer__tabPanelBox'>
+                        <div className='RunDetail__runDetailContainer__tabPanel container'>
+                          <React.Suspense fallback={<Spinner />}>
+                            {tabContent[tab]}
+                          </React.Suspense>
+                        </div>
+                      </div>
+                    )}
                   </ErrorBoundary>
                 </Route>
               ))}

@@ -189,7 +189,7 @@ function SelectForm({
                                 item.label === option.label,
                             )?.label;
                           return (
-                            <React.Fragment>
+                            <div className='SelectForm__option'>
                               <Checkbox
                                 color='primary'
                                 icon={<CheckBoxOutlineBlank />}
@@ -200,7 +200,7 @@ function SelectForm({
                               <span className='SelectForm__option__label'>
                                 {option.label}
                               </span>
-                            </React.Fragment>
+                            </div>
                           );
                         }}
                       />
