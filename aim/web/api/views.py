@@ -12,8 +12,9 @@ statics_router = APIRouter()
 
 @statics_router.get('/static-files/{path:path}/')
 async def serve_static_files(path):
-    from aim import web
-    static_files_root = os.path.join(os.path.dirname(web.__file__), 'ui', 'build')
+    import aim_ui
+
+    static_files_root = os.path.join(os.path.dirname(aim_ui.__file__), 'build')
     static_file_name = '/'.join((static_files_root, path))
 
     # check if path is leading inside ui/build directory
@@ -30,10 +31,10 @@ async def serve_static_files(path):
 # as it also serves as a fallback for wrong url routes
 @statics_router.get('/{path:path}/', response_class=HTMLResponse)
 async def serve_index_html(request: Request):
-    from aim import web
+    import aim_ui
     from jinja2 import Environment, FileSystemLoader
 
-    template_files_dir = os.path.join(os.path.dirname(web.__file__), 'ui', 'build')
+    template_files_dir = os.path.join(os.path.dirname(aim_ui.__file__), 'build')
     env = Environment(
         loader=FileSystemLoader(template_files_dir),
         autoescape=True
