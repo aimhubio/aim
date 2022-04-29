@@ -299,7 +299,7 @@ export async function* iterFoldTree(
   }
 }
 
-export async function* decode_buffer_pairs(
+export async function* decodeBufferPairs(
   stream: ReadableStream,
 ): AsyncGenerator<[Uint8Array, Uint8Array][]> {
   let buffer = new Uint8Array(new ArrayBuffer());

@@ -8,7 +8,7 @@ import runsService from 'services/api/runs/runsService';
 import { trackEvent } from 'services/analytics';
 
 import {
-  decode_buffer_pairs,
+  decodeBufferPairs,
   decodePathsVals,
   iterFoldTree,
 } from 'utils/encoder/streamEncoding';
@@ -212,8 +212,8 @@ async function getRunTraceBatch(isInitial = false) {
       console.error(detail);
     });
 
-    let buffer_pairs = decode_buffer_pairs(stream);
-    let decodedPairs = decodePathsVals(buffer_pairs);
+    let bufferPairs = decodeBufferPairs(stream);
+    let decodedPairs = decodePathsVals(bufferPairs);
     let objects = iterFoldTree(decodedPairs, 1);
 
     let data: Partial<TraceResponseData> = {};
