@@ -19,7 +19,7 @@ VERSION = __version__
 REQUIRES_PYTHON = '>=3.6.0'
 
 # Get packages
-packages = find_packages(exclude=('tests',))
+packages = find_packages(exclude=('tests', 'aim.web.ui'))
 
 
 # Get a list of all files in the html directory to include in our module
