@@ -4,6 +4,7 @@ import time
 import weakref
 import sys
 import io
+import re
 from typing import Union
 
 from aim.ext.resource.stat import Stat
@@ -147,9 +148,21 @@ class ResourceTracker(object):
         if len(lines) == 1:  # we're still on the same line
             self._line_counter -= 1
 
+        ansi_csi_re = re.compile(b"\001?\033\\[((?:\\d|;)*)([a-zA-Z])\002?")
+
+        def _handle_csi(l):
+            for match in ansi_csi_re.finditer(l):
+                arg, command = match.groups()
+                arg = int(arg.decode()) if arg else 1
+                if command == b'A':  # cursor up
+                    self._line_counter -= arg
+                if command == b'B':  # cursor down
+                    self._line_counter += arg
+
         for line in lines:
             # handle each line for carriage returns
             log_line = LogLine(line.rsplit(b'\r')[-1].decode())
+            _handle_csi(line)
             self._track_func()(log_line, name='logs', step=self._line_counter)
             self._line_counter += 1
 
