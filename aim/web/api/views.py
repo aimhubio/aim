@@ -7,6 +7,7 @@ from fastapi.responses import FileResponse, HTMLResponse
 from fastapi.templating import Jinja2Templates
 
 from aim.web.configs import AIM_UI_BASE_PATH
+
 statics_router = APIRouter()
 
 
@@ -30,8 +31,9 @@ async def serve_static_files(path):
 # as it also serves as a fallback for wrong url routes
 @statics_router.get('/{path:path}/', response_class=HTMLResponse)
 async def serve_index_html(request: Request):
-    from aim import web
-    template_files_dir = os.path.join(os.path.dirname(web.__file__), 'ui', 'build')
+    import aim_ui
+
+    template_files_dir = os.path.join(os.path.dirname(aim_ui.__file__), 'build')
     templates = Jinja2Templates(directory=template_files_dir)
     base_path = os.environ.get(AIM_UI_BASE_PATH, '')
 
