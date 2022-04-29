@@ -164,7 +164,7 @@ function TagsTable({
               : IllustrationsEnum.ExploreData,
             page: 'tags',
           }}
-          height='100%'
+          height='calc(100% - 39px)'
         />
       </div>
     </ErrorBoundary>

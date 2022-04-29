@@ -35,7 +35,7 @@ function SideBar(): React.FunctionComponentElement<React.ReactNode> {
     <ErrorBoundary>
       <div className='Sidebar'>
         <Drawer
-          PaperProps={{ className: 'Sidebar__Paper' }}
+          PaperProps={{ className: 'Sidebar__Paper ScrollBar__hidden' }}
           variant='permanent'
           anchor='left'
         >

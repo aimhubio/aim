@@ -9,8 +9,8 @@ import toTextEllipsis from './toTextEllipsis/toTextEllipsis';
 import float64FromUint8 from './float64FromUint8/float64FromUint8';
 
 export {
-  getValue,
   getPathSegments,
+  getValue,
   inIframe,
   imgSource2Image,
   getSVGString,

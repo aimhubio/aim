@@ -1,43 +1,80 @@
-export function formatValue(value: any, undefinedValue: any = '-') {
-  let formattedValue;
-  if (value === null || value === undefined || typeof value == 'boolean') {
-    formattedValue = replacer(value);
-  } else {
-    formattedValue = JSON.stringify(value, (key, node) =>
-      // TODO: remove replacer by implementing custom stringify method
-      replacer(node, undefinedValue),
-    );
-  }
-  return formattedValue
-    .replaceAll('"__None__"', 'None')
-    .replaceAll('"__True__"', 'True')
-    .replaceAll('"__False__"', 'False')
-    .replaceAll('__None__', 'None')
-    .replaceAll('__True__', 'True')
-    .replaceAll('__False__', 'False');
+import { format_bytes } from './encoder/format_bytes';
+
+const FORMATTERS: Record<string, Function> = {
+  undefined: format_undefined,
+  number: format_number,
+  string: format_str,
+  boolean: format_bool,
+  object: format_object,
+};
+
+function format_undefined(
+  value: undefined,
+  undefinedValue: string = '-',
+): string {
+  return undefinedValue;
 }
 
-function replacer(value: any, undefinedValue: any = '-') {
-  if (value === undefined) {
-    return undefinedValue;
+function format_number(value: number): string {
+  if (isNaN(value)) {
+    return 'NaN';
   }
+  if (!isFinite(value)) {
+    return value > 0 ? 'Inf' : '-Inf';
+  }
+
+  return JSON.stringify(value);
+}
+
+function format_str(value: string): string {
+  return JSON.stringify(value);
+}
+
+function format_bool(value: boolean): string {
+  return value ? 'True' : 'False';
+}
+
+function format_list(value: unknown[], undefinedValue: string = '-'): string {
+  const pieces = [];
+  for (let i = 0; i < value.length; i++) {
+    const piece = formatValue(value[i], undefinedValue);
+    pieces.push(piece);
+  }
+  return '[' + pieces.join(', ') + ']';
+}
+
+function format_dict(
+  value: Record<string, unknown>,
+  undefinedValue: string = '-',
+): string {
+  const pieces = [];
+  const keys = Object.keys(value);
+  for (let i = 0; i < keys.length; i++) {
+    const piece = `${format_str(keys[i])}: ${formatValue(
+      value[keys[i]],
+      undefinedValue,
+    )}`;
+    pieces.push(piece);
+  }
+  return '{' + pieces.join(', ') + '}';
+}
+
+function format_object(
+  value: Record<string, unknown>,
+  undefinedValue: string = '-',
+): string {
   if (value === null) {
-    return '__None__';
+    return 'None';
+  } else if (value instanceof ArrayBuffer) {
+    return format_bytes(new Uint8Array(value), "'");
+  } else if (Array.isArray(value)) {
+    return format_list(value, undefinedValue);
+  } else {
+    return format_dict(value, undefinedValue);
   }
-  if (value === true) {
-    return '__True__';
-  }
-  if (value === false) {
-    return '__False__';
-  }
-  if (typeof value === 'number') {
-    return formatNumber(value);
-  }
-
-  return value;
 }
 
-// TODO: implement proper formatting for numeric values
-function formatNumber(value: number) {
-  return value;
+export function formatValue(value: any, undefinedValue: string = '-'): string {
+  let formatter = FORMATTERS[typeof value];
+  return formatter(value, undefinedValue);
 }
