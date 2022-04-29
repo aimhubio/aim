@@ -1,6 +1,6 @@
 # Changelog
 
-## 3.9.0 Apr 29, 2022
+## Unreleased
 
 ### Enhancements:
 
@@ -10,7 +10,7 @@
 
 ### Fixes:
 
-## 3.9.x (Unreleased)
+## 3.9.0 Apr 29, 2022
 
 ### Enhancements:
 
