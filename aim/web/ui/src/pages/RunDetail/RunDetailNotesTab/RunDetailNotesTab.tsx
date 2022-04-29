@@ -1,15 +1,17 @@
 import React from 'react';
 import classNames from 'classnames';
+import Editor from 'rich-markdown-editor';
+import moment from 'moment';
 
-import { Editor } from '@toast-ui/react-editor';
 import { Tooltip } from '@material-ui/core';
 
-import { Button, Icon } from 'components/kit';
+import { Button, Icon, Text } from 'components/kit';
 import NotificationContainer from 'components/NotificationContainer/NotificationContainer';
-import ConfirmModal from 'components/ConfirmModal/ConfirmModal';
 import Spinner from 'components/kit/Spinner';
+import RouteLeavingGuard from 'components/RouteLeavingGuard';
 
 import { ANALYTICS_EVENT_KEYS } from 'config/analytics/analyticsKeysMap';
+import { RichEditorThemeColors } from 'config/colors/colors';
 
 import useModel from 'hooks/model/useModel';
 
@@ -18,23 +20,24 @@ import notesModel from 'services/models/notes/notesModel';
 
 import { INoteReqBody } from 'types/services/models/notes/notes';
 
-import useNotesResizePanel from '../hooks/useNotesResizePanel';
-
+import NoteTooltip from './NoteTooltip';
 import { IRunDetailNotesTabProps } from './types';
 
-import '@toast-ui/editor/dist/toastui-editor.css';
 import './RunDetailNotesTab.scss';
 
-function RunDetailNotesTab({ runHash }: IRunDetailNotesTabProps) {
-  const [openModal, setOpenModal] = React.useState(false);
+function RunDetailNotesTab({
+  runHash,
+}: IRunDetailNotesTabProps): React.FunctionComponentElement<React.ReactNode> {
   const { isLoading, noteData, notifyData } = useModel(notesModel)!;
+  const [value, setValue] = React.useState<string>('');
+  const [saveDisabled, setSaveDisabled] = React.useState<boolean>(true);
+  const [theme, setTheme] = React.useState<null | {}>(null);
   const editorRef = React.useRef<Editor | any>(null);
-  const wrapperRef = React.useRef<any>();
-  useNotesResizePanel(wrapperRef, editorRef);
 
   React.useEffect(() => {
     notesModel.initialize(runHash);
     analytics.pageView(ANALYTICS_EVENT_KEYS.runDetails.tabs.notes.tabView);
+
     return () => {
       notesModel.destroy();
     };
@@ -42,88 +45,105 @@ function RunDetailNotesTab({ runHash }: IRunDetailNotesTabProps) {
   }, []);
 
   React.useEffect(() => {
-    editorRef.current.editorInst.setMarkdown(
-      noteData?.id ? noteData?.content : '',
-    );
+    if (editorRef.current) {
+      setValue(noteData?.id ? noteData?.content : '');
+      setTheme({
+        ...editorRef.current?.theme(),
+        ...RichEditorThemeColors,
+      });
+    }
   }, [noteData]);
 
   // CRUD handlers
-  function onNoteSave() {
+  const onNoteSave = React.useCallback((): void => {
+    setSaveDisabled(true);
     if (noteData?.id) {
       onNoteUpdate();
     } else {
       notesModel.onNoteCreate(runHash, {
-        content: editorRef.current.editorInst.getMarkdown(),
+        content: editorRef.current.value(),
       } as INoteReqBody);
     }
-  }
-
-  const onNoteDelete = React.useCallback(() => {
-    handleCloseModal();
-    notesModel.onNoteDelete(runHash);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [noteData?.id, runHash]);
 
-  function onNoteUpdate(): void {
+  const onNoteUpdate = React.useCallback((): void => {
     notesModel.onNoteUpdate(runHash, {
-      content: editorRef.current.editorInst.getMarkdown(),
+      content: editorRef.current.value(),
     } as INoteReqBody);
-  }
+  }, [runHash]);
 
-  // Confirm modal handlers
-  const handleOpenModal: () => void = React.useCallback(() => {
-    setOpenModal(true);
-  }, []);
-
-  const handleCloseModal: () => void = React.useCallback(() => {
-    setOpenModal(false);
-  }, []);
+  const onNoteChange = React.useCallback(
+    (currentVal: () => string): void => {
+      const isSaveDisabled: boolean = value === currentVal();
+      if (saveDisabled !== isSaveDisabled) {
+        setSaveDisabled(isSaveDisabled);
+      }
+    },
+    [saveDisabled, value],
+  );
 
   return (
-    <section ref={wrapperRef} className='RunDetailNotesTab'>
+    <section className='RunDetailNotesTab'>
+      <RouteLeavingGuard when={!saveDisabled} />
       <div
         className={classNames('RunDetailNotesTab__Editor', {
           isLoading,
         })}
       >
-        <Editor
-          previewStyle='vertical'
-          initialEditType='markdown'
-          height='calc(100vh - 146px)'
-          ref={editorRef}
-        />
-        <div className='RunDetailNotesTab__Editor__actionBtns'>
-          <Tooltip title='Delete Note'>
+        <div className='RunDetailNotesTab__Editor__actionPanel'>
+          <div className='RunDetailNotesTab__Editor__actionPanel__info'>
+            {noteData?.created_at && (
+              <Tooltip title='Created at'>
+                <div className='RunDetailNotesTab__Editor__actionPanel__info-field'>
+                  <Icon name='calendar' />
+                  <Text tint={70}>
+                    {`${moment
+                      .utc(noteData?.created_at)
+                      .local()
+                      .format('YYYY-MM-DD HH:mm A')}`}
+                  </Text>
+                </div>
+              </Tooltip>
+            )}
+            {noteData?.updated_at && (
+              <Tooltip title='Updated at'>
+                <div className='RunDetailNotesTab__Editor__actionPanel__info-field'>
+                  <Icon name='time' />
+                  <Text tint={70}>
+                    {`${moment
+                      .utc(noteData?.updated_at)
+                      .local()
+                      .format('YYYY-MM-DD HH:mm A')}`}
+                  </Text>
+                </div>
+              </Tooltip>
+            )}
+          </div>
+          <Tooltip title='Save Note'>
             <div>
               <Button
-                color='secondary'
+                disabled={saveDisabled || isLoading}
+                variant='contained'
                 size='small'
-                onClick={handleOpenModal}
-                withOnlyIcon
-                disabled={!noteData?.id}
+                onClick={onNoteSave}
               >
-                <Icon name='delete' />
-              </Button>
-            </div>
-          </Tooltip>
-
-          <Tooltip title={`${noteData?.id ? 'Update' : 'Save'} Note`}>
-            <div>
-              <Button variant='contained' size='small' onClick={onNoteSave}>
-                {noteData?.id ? 'Update' : 'Save'}
+                Save
               </Button>
             </div>
           </Tooltip>
         </div>
-        <ConfirmModal
-          open={openModal}
-          onCancel={handleCloseModal}
-          onSubmit={onNoteDelete}
-          text='Are you sure you want to delete this Note?'
-          icon={<Icon name='delete' />}
-          title='Please Confirm'
-          statusType='error'
-          confirmBtnText='Delete'
+        <Editor
+          ref={editorRef}
+          className='RunDetailNotesTab__Editor__container'
+          value={value}
+          placeholder='Leave your Note'
+          theme={theme || editorRef.current?.theme()}
+          disableExtensions={['table', 'image', 'container_notice']}
+          tooltip={({ children }) => {
+            return <NoteTooltip>{children}</NoteTooltip>;
+          }}
+          onChange={onNoteChange}
         />
         {isLoading && <Spinner />}
       </div>
