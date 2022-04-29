@@ -176,8 +176,10 @@ import { SortField } from 'utils/getSortedFields';
 import onChangeTrendlineOptions from 'utils/app/onChangeTrendlineOptions';
 import { getParamsSuggestions } from 'utils/app/getParamsSuggestions';
 import onToggleColumnsColorScales from 'utils/app/onToggleColumnsColorScales';
+import { minMaxOfArray } from 'utils/minMaxOfArray';
 
 import { AppDataTypeEnum, AppNameEnum } from './index';
+
 /**
  * function createAppModel has 2 major functionalities:
  *    1. getConfig() function which depends on appInitialConfig returns corresponding config state
@@ -610,6 +612,7 @@ function createAppModel(appConfig: IAppInitialConfig) {
         p: configData?.chart?.densityType,
         ...(metric ? { x_axis: metric } : {}),
       });
+
       return {
         call: async () => {
           if (query === '()') {
@@ -3728,17 +3731,18 @@ function createAppModel(appConfig: IAppInitialConfig) {
                         }
                       });
                     } else {
-                      const paramValue = getValue(run.run.params, label);
-                      values[label] = formatValue(paramValue, null);
-                      if (values[label] !== null) {
-                        if (typeof values[label] === 'string') {
-                          if (dimension[label]) {
-                            dimension[label].scaleType = ScaleEnum.Point;
-                          }
+                      const paramValue = getValue(run.run.params, label, '-');
+                      const formattedParam = formatValue(paramValue, '-');
+                      values[label] = paramValue;
+                      if (formattedParam !== '-' && dimension[label]) {
+                        if (typeof paramValue !== 'number') {
+                          dimension[label].scaleType = ScaleEnum.Point;
+                          values[label] = formattedParam;
+                        } else if (isNaN(paramValue) || !isFinite(paramValue)) {
+                          values[label] = formattedParam;
+                          dimension[label].scaleType = ScaleEnum.Point;
                         }
-                        if (dimension[label]) {
-                          dimension[label].values.add(values[label]);
-                        }
+                        dimension[label].values.add(values[label]);
                       }
                     }
                   },
@@ -3768,23 +3772,39 @@ function createAppModel(appConfig: IAppInitialConfig) {
                 if (
                   dimensionsObject[keyOfDimension][key].scaleType === 'linear'
                 ) {
+                  const [minDomain, maxDomain] = minMaxOfArray([
+                    ...dimensionsObject[keyOfDimension][key].values,
+                  ]);
+
                   dimensions[key] = {
                     scaleType: dimensionsObject[keyOfDimension][key].scaleType,
-                    domainData: [
-                      Math.min(...dimensionsObject[keyOfDimension][key].values),
-                      Math.max(...dimensionsObject[keyOfDimension][key].values),
-                    ],
+                    domainData: [minDomain, maxDomain],
                     displayName:
                       dimensionsObject[keyOfDimension][key].displayName,
                     dimensionType:
                       dimensionsObject[keyOfDimension][key].dimensionType,
                   };
                 } else {
+                  const numDomain: number[] = [];
+                  const strDomain: string[] = [];
+
+                  [...dimensionsObject[keyOfDimension][key].values].forEach(
+                    (data) => {
+                      if (typeof data === 'number') {
+                        numDomain.push(data);
+                      } else {
+                        strDomain.push(data);
+                      }
+                    },
+                  );
+
+                  // sort domain data
+                  numDomain.sort((a, b) => a - b);
+                  strDomain.sort();
+
                   dimensions[key] = {
                     scaleType: dimensionsObject[keyOfDimension][key].scaleType,
-                    domainData: [
-                      ...dimensionsObject[keyOfDimension][key].values,
-                    ],
+                    domainData: numDomain.concat(strDomain as any[]),
                     displayName:
                       dimensionsObject[keyOfDimension][key].displayName,
                     dimensionType:
@@ -4036,11 +4056,12 @@ function createAppModel(appConfig: IAppInitialConfig) {
               [contextToString(trace.context) as string]: '-',
             };
           });
+          const paramKey = encode({ runHash: run.hash });
           runs.push({
             run,
-            isHidden: configData!.table.hiddenMetrics!.includes(run.hash),
+            isHidden: configData!.table.hiddenMetrics!.includes(paramKey),
             color: COLORS[paletteIndex][index % COLORS[paletteIndex].length],
-            key: encode({ runHash: run.hash }),
+            key: paramKey,
             dasharray: DASH_ARRAYS[0],
           });
         });
@@ -4862,10 +4883,15 @@ function createAppModel(appConfig: IAppInitialConfig) {
                         }
                       });
                     } else {
-                      const paramValue = getValue(run.run.params, label);
-                      values[i] = formatValue(paramValue, '-');
-                      if (values[i] !== null) {
-                        if (typeof values[i] === 'string') {
+                      const paramValue = getValue(run.run.params, label, '-');
+                      const formattedParam = formatValue(paramValue, '-');
+                      values[i] = paramValue;
+                      if (formattedParam !== '-' && dimension[i]) {
+                        if (typeof paramValue !== 'number') {
+                          dimension[i].scaleType = ScaleEnum.Point;
+                          values[i] = formattedParam;
+                        } else if (isNaN(paramValue) || !isFinite(paramValue)) {
+                          values[i] = formattedParam;
                           dimension[i].scaleType = ScaleEnum.Point;
                         }
                         dimension[i].values.push(values[i]);
@@ -4898,21 +4924,35 @@ function createAppModel(appConfig: IAppInitialConfig) {
             const dimensions: IDimensionType[] = [];
             chartDimensions.forEach((dimension) => {
               if (dimension.scaleType === ScaleEnum.Linear) {
+                const [minDomain = '-', maxDomain = '-'] = minMaxOfArray([
+                  ...((dimension.values as number[]) || []),
+                ]);
+
                 dimensions.push({
                   scaleType: dimension.scaleType,
-                  domainData: _.isEmpty(dimension.values)
-                    ? ['-', '-']
-                    : [
-                        Math.min(...(dimension.values as number[])),
-                        Math.max(...(dimension.values as number[])),
-                      ],
+                  domainData: [minDomain, maxDomain] as string[] | number[],
                   displayName: dimension.displayName,
                   dimensionType: dimension.dimensionType,
                 });
               } else {
+                const numDomain: number[] = [];
+                const strDomain: string[] = [];
+
+                [...dimension.values].forEach((data) => {
+                  if (typeof data === 'number') {
+                    numDomain.push(data);
+                  } else {
+                    strDomain.push(data);
+                  }
+                });
+
+                // sort domain data
+                numDomain.sort((a, b) => a - b);
+                strDomain.sort();
+
                 dimensions.push({
                   scaleType: dimension.scaleType,
-                  domainData: dimension.values,
+                  domainData: numDomain.concat(strDomain as any[]),
                   displayName: dimension.displayName,
                   dimensionType: dimension.dimensionType,
                 });
@@ -5165,12 +5205,12 @@ function createAppModel(appConfig: IAppInitialConfig) {
               [contextToString(trace.context) as string]: '-',
             };
           });
-
+          const paramKey = encode({ runHash: run.hash });
           runs.push({
             run,
-            isHidden: configData!.table.hiddenMetrics!.includes(run.hash),
+            isHidden: configData!.table.hiddenMetrics!.includes(paramKey),
             color: COLORS[paletteIndex][index % COLORS[paletteIndex].length],
-            key: encode({ runHash: run.hash }),
+            key: paramKey,
             dasharray: DASH_ARRAYS[0],
           });
         });

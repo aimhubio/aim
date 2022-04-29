@@ -33,8 +33,9 @@ import RunSelectPopoverContent from './RunSelectPopoverContent';
 
 import './RunDetail.scss';
 
-const NotesTab = React.lazy(
-  () => /* webpackChunkName: "NotesTab" */ import('./NotesTab'),
+const RunDetailNotesTab = React.lazy(
+  () =>
+    import(/* webpackChunkName: "RunDetailNotesTab" */ './RunDetailNotesTab'),
 );
 
 const RunDetailParamsTab = React.lazy(
@@ -87,8 +88,8 @@ function RunDetail(): React.FunctionComponentElement<React.ReactNode> {
     React.useState(false);
   const { runHash } = useParams<{ runHash: string }>();
   const { url } = useRouteMatch();
-  const { pathname } = useLocation();
-  const [activeTab, setActiveTab] = React.useState(pathname);
+  const location = useLocation();
+  const [activeTab, setActiveTab] = React.useState(location.pathname);
 
   const tabContent: { [key: string]: JSX.Element } = {
     overview: <RunOverviewTab runHash={runHash} runData={runData} />,
@@ -158,7 +159,7 @@ function RunDetail(): React.FunctionComponentElement<React.ReactNode> {
         runHash={runHash}
       />
     ),
-    notes: <NotesTab runHash={runHash} />,
+    notes: <RunDetailNotesTab runHash={runHash} />,
   };
 
   function getRunsOfExperiment(
@@ -206,11 +207,11 @@ function RunDetail(): React.FunctionComponentElement<React.ReactNode> {
   }, [runData?.experimentId]);
 
   React.useEffect(() => {
-    if (pathname !== activeTab) {
-      setActiveTab(pathname);
+    if (location.pathname !== activeTab) {
+      setActiveTab(location.pathname);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [pathname]);
+  }, [location.pathname]);
 
   React.useEffect(() => {
     analytics.pageView(ANALYTICS_EVENT_KEYS.runDetails.pageView);
@@ -251,31 +252,43 @@ function RunDetail(): React.FunctionComponentElement<React.ReactNode> {
                             </Text>
                           </div>
                         </Tooltip>
+                        <Button
+                          disabled={
+                            runData?.isExperimentsLoading ||
+                            runData?.isRunInfoLoading
+                          }
+                          color={opened ? 'primary' : 'default'}
+                          size='small'
+                          className={classNames(
+                            'RunDetail__runDetailContainer__appBarContainer__appBarTitleBox__buttonSelectToggler',
+                            { opened: opened },
+                          )}
+                          withOnlyIcon
+                        >
+                          <Icon name={opened ? 'arrow-up' : 'arrow-down'} />
+                        </Button>
+                        <StatusLabel
+                          status={
+                            runData?.runInfo?.end_time ? 'alert' : 'success'
+                          }
+                          title={
+                            runData?.runInfo?.end_time
+                              ? 'Finished'
+                              : 'In Progress'
+                          }
+                        />
                       </>
                     ) : (
-                      <Skeleton variant='rect' height={24} width={340} />
+                      <div className='flex'>
+                        <Skeleton
+                          className='RunDetail__runDetailContainer__appBarContainer__appBarTitleBox__Skeleton'
+                          variant='rect'
+                          height={24}
+                          width={340}
+                        />
+                        <Skeleton variant='rect' height={24} width={70} />
+                      </div>
                     )}
-                    <Button
-                      disabled={
-                        runData?.isExperimentsLoading ||
-                        runData?.isRunInfoLoading
-                      }
-                      color={opened ? 'primary' : 'default'}
-                      size='small'
-                      className={classNames(
-                        'RunDetail__runDetailContainer__appBarContainer__appBarTitleBox__buttonSelectToggler',
-                        { opened: opened },
-                      )}
-                      withOnlyIcon
-                    >
-                      <Icon name={opened ? 'arrow-up' : 'arrow-down'} />
-                    </Button>
-                    <StatusLabel
-                      status={runData?.runInfo?.end_time ? 'alert' : 'success'}
-                      title={
-                        runData?.runInfo?.end_time ? 'Finished' : 'In Progress'
-                      }
-                    />
                   </div>
                 )}
                 component={
@@ -300,7 +313,7 @@ function RunDetail(): React.FunctionComponentElement<React.ReactNode> {
           <Paper className='RunDetail__runDetailContainer__tabsContainer'>
             <Tabs
               className='RunDetail__runDetailContainer__Tabs container'
-              value={activeTab}
+              value={location.pathname}
               onChange={handleTabChange}
               indicatorColor='primary'
               textColor='primary'
@@ -309,7 +322,6 @@ function RunDetail(): React.FunctionComponentElement<React.ReactNode> {
                 <Tab
                   key={`${url}/${tab}`}
                   label={tab}
-                  selected={`${url}/${tab}` === activeTab}
                   value={`${url}/${tab}`}
                   component={Link}
                   to={`${url}/${tab}`}

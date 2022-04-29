@@ -65,12 +65,12 @@ function SelectForm({
       {},
     );
     onParamsSelectChange(
-      value.filter((option: ISelectOption) => lookup[option.label] === 0),
+      value?.filter((option: ISelectOption) => lookup[option.label] === 0),
     );
   }
 
   function handleDelete(field: string): void {
-    let fieldData = [...(selectedParamsData?.options || [])].filter(
+    let fieldData = [...(selectedParamsData?.options || [])]?.filter(
       (opt: ISelectOption) => opt.label !== field,
     );
     onParamsSelectChange(fieldData);

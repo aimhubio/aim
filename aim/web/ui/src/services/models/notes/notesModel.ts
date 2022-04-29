@@ -10,7 +10,7 @@ import {
   INotesAppModelState,
   INotesList,
 } from 'types/services/models/notes/notes';
-import { IApiRequestRef } from 'types/services/services';
+import { IApiRequest } from 'types/services/services';
 
 import onNotificationAdd from 'utils/app/onNotificationAdd';
 import exceptionHandler from 'utils/app/exceptionHandler';
@@ -25,17 +25,14 @@ const model = createModel<Partial<INotesAppModelState>>({
 });
 
 // Request references
-let getNotesListRequestRef: IApiRequestRef<any>;
+let getNotesListRequestRef: IApiRequest<any>;
 
 // Initializing model
 function initialize(runId: string): void {
   model.init();
   try {
     getNotesListRequestRef = onNotesListFetch(runId);
-    getNotesListRequestRef.call((detail: any) => {
-      exceptionHandler({ detail, model });
-      model.setState({ isLoading: false });
-    });
+    getNotesListRequestRef.call();
   } catch (err: any) {
     handleErrorNotification(err);
     getNotesListRequestRef?.abort();
@@ -49,15 +46,15 @@ function onNotesListFetch(runId: string) {
   const { call, abort } = notesService.getNotes(runId);
   return {
     call: async () => {
-      call()
-        .then(async (data: INotesList) => {
-          model.setState({
-            noteData: data[0],
-          });
-        })
-        .finally(() => {
-          model.setState({ isLoading: false });
+      call((detail: any) => {
+        exceptionHandler({ detail, model });
+        model.setState({ isLoading: false });
+      }).then(async (data: INotesList) => {
+        model.setState({
+          noteData: data[0],
+          isLoading: false,
         });
+      });
     },
     abort,
   };
@@ -75,7 +72,11 @@ function onNoteCreate(runId: string, reqBody: INoteReqBody): void {
       model.setState({ isLoading: false });
     }).then((noteData: INote) => {
       model.setState({
-        noteData: { content: reqBody.content, id: noteData.id },
+        noteData: {
+          content: reqBody.content,
+          id: noteData.id,
+          created_at: noteData.created_at,
+        },
         isLoading: false,
       });
       handleSuccessNotification(NotesNotificationsEnum.CREATE);
@@ -90,7 +91,7 @@ function onNoteCreate(runId: string, reqBody: INoteReqBody): void {
 }
 
 function onNoteUpdate(runId: string, reqBody: INoteReqBody): void {
-  const { id } = model.getState().noteData!;
+  const { id, created_at } = model.getState().noteData!;
   const { call, abort } = notesService.updateNote(runId, id, reqBody);
   analytics.trackEvent(
     ANALYTICS_EVENT_KEYS.runDetails.tabs.notes.clickUpdateButton,
@@ -104,7 +105,7 @@ function onNoteUpdate(runId: string, reqBody: INoteReqBody): void {
       model.setState({ isLoading: false });
     }).then((noteData: INote) => {
       model.setState({
-        noteData,
+        noteData: { ...noteData, created_at },
         isLoading: false,
       });
       handleSuccessNotification(NotesNotificationsEnum.UPDATE);

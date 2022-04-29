@@ -29,7 +29,6 @@ class AimCallback(TrainerCallback):
         self._experiment_name = experiment
         self._system_tracking_interval = system_tracking_interval
         self._log_system_params = log_system_params
-        self._current_shift = None
         self._run = None
         self._run_hash = None
         self._run_params = run_params
@@ -42,6 +41,9 @@ class AimCallback(TrainerCallback):
         return self._run
 
     def setup(self, args=None, state=None, model=None):
+        if not state.is_world_process_zero:
+            return
+
         if not self._run:
             if self._run_hash:
                 self._run = Run(
@@ -71,25 +73,32 @@ class AimCallback(TrainerCallback):
 
     def on_train_begin(self, args, state, control,
                        model=None, **kwargs):
+        if not state.is_world_process_zero:
+            return
         if not self._run:
             self.setup(args, state, model)
-        self._current_shift = 'train'
 
-    def on_evaluate(self, args, state, control, **kwargs):
-        self._current_shift = 'val'
-
-    def on_prediction_step(self, args, state, control, **kwargs):
-        self._current_shift = 'pred'
+    def on_train_end(self, args, state, control, **kwargs):
+        if not state.is_world_process_zero:
+            return
+        self.close()
 
     def on_log(self, args, state, control,
                model=None, logs=None, **kwargs):
+        if not state.is_world_process_zero:
+            return
+
         if not self._run:
             self.setup(args, state, model)
 
-        context = {
-            'subset': self._current_shift,
-        }
         for log_name, log_value in logs.items():
+            context = {}
+            prefix_set = {'train_', 'eval_', 'test_'}
+            for prefix in prefix_set:
+                if log_name.startswith(prefix):
+                    log_name = log_name[len(prefix):]
+                    context = {'subset': prefix[:-1]}
+                    break
             if not is_number(log_value):
                 if not self._log_value_warned:
                     self._log_value_warned = True
@@ -100,7 +109,9 @@ class AimCallback(TrainerCallback):
                     )
                 continue
 
-            self._run.track(log_value, name=log_name, context=context)
+            self._run.track(log_value,
+                            name=log_name, context=context,
+                            step=state.global_step, epoch=state.epoch)
 
     def close(self):
         if self._run:

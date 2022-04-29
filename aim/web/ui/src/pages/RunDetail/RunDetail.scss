@@ -42,6 +42,9 @@
         height: fit-content;
         max-width: 50%;
         width: auto;
+        &__Skeleton {
+          margin-right: $space-xs;
+        }
         &__buttonSelectToggler {
           width: 1.5rem;
           height: 1.5rem;

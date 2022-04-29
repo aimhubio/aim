@@ -5,9 +5,6 @@
   flex-direction: column;
   width: 100%;
   max-height: 100%;
-  .VisualizationLoader {
-    height: 100% !important;
-  }
   &__textsTable {
     border: $border-grey;
     border-radius: $border-radius-md;
@@ -21,6 +18,13 @@
         }
       }
     }
+  }
+  &__mark {
+    background-color: $mark-color;
+    color: $pico;
+  }
+  .VisualizationLoader {
+    height: 100% !important;
   }
   .BaseTable {
     &__table-main {
@@ -79,8 +83,5 @@
         }
       }
     }
-  }
-  &__mark {
-    background-color: $warning-color-50;
   }
 }
