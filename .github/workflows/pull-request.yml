@@ -19,9 +19,18 @@ on:
       - synchronize
       - ready_for_review
       - reopened
+      - edited
 jobs:
+  validate-naming-convention:
+    name: Pull Request's title matches naming convention
+    runs-on: ubuntu-latest
+    steps:
+      - uses: deepakputhraya/action-pr-title@master
+        with:
+          regex: '^\[(?:feat|fix|doc|refactor)\]\s[A-Z].*(?<!\.)$'
+          github_token: ${{ github.token }}
   run-checks:
-    if: github.event.pull_request.draft == false
+    if: github.event.pull_request.draft == false && github.event.action != 'edited'
     runs-on: ubuntu-latest
     name: Run Unit-tests & Code-style checks
     steps:
@@ -73,7 +82,7 @@ jobs:
 
       - name: perf tests
         run: |
-         . venv/bin/activate
-         export AWS_ACCESS_KEY_ID=${{ secrets.AIM_LOGS_AWS_ACCESS_KEY_ID }}
-         export AWS_SECRET_ACCESS_KEY=${{ secrets.AIM_LOGS_AWS_SECRET_ACCESS_KEY }}
-         pytest performance_tests || pytest --lf performance_tests
+          . venv/bin/activate
+          export AWS_ACCESS_KEY_ID=${{ secrets.AIM_LOGS_AWS_ACCESS_KEY_ID }}
+          export AWS_SECRET_ACCESS_KEY=${{ secrets.AIM_LOGS_AWS_SECRET_ACCESS_KEY }}
+          pytest performance_tests || pytest --lf performance_tests

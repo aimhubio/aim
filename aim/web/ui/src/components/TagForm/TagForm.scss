@@ -15,7 +15,7 @@
       &__colorBox {
         margin-top: $space-xxxs;
         padding: 5px;
-        border: 0.0625rem solid $cuddle;
+        border: $border-grey-lighter;
         border-radius: 6px;
         width: 100%;
         display: flex;
@@ -61,7 +61,7 @@
     &__previewContainer {
       &__tagPreviewBox {
         margin-top: $space-xxxs;
-        border: 0.0625rem solid $cuddle;
+        border: $border-grey-lighter;
         border-radius: 6px;
         width: 100%;
         display: flex;
@@ -69,6 +69,7 @@
         align-items: center;
         height: 56px;
         position: relative;
+        padding: 0 0.5rem;
       }
     }
   }

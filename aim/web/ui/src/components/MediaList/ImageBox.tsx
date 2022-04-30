@@ -78,14 +78,14 @@ const ImageBox = ({
   const skeletonSize = {
     width: style.width - 6, // 6px -> 0.375rem gap
     height:
-      (additionalProperties.alignmentType !== MediaItemAlignmentEnum.Height
-        ? style.width / (data.width / data.height)
-        : mediaItemHeight - 10) - 6, // 6px -> 0.375rem gap,
+      additionalProperties.alignmentType !== MediaItemAlignmentEnum.Height
+        ? style.width / (data.width / data.height) - 6 // 6px -> 0.375rem gap
+        : mediaItemHeight - 40,
     containerWidth: style.width - 4,
     containerHeight:
-      (additionalProperties.alignmentType !== MediaItemAlignmentEnum.Height
-        ? style.width / (data.width / data.height)
-        : mediaItemHeight - 10) - 4,
+      additionalProperties.alignmentType !== MediaItemAlignmentEnum.Height
+        ? style.width / (data.width / data.height) - 4
+        : mediaItemHeight - 40,
   };
 
   return (
