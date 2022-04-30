@@ -28,7 +28,7 @@ function Controls(
   }, [props.tooltip]);
   return (
     <ErrorBoundary>
-      <div className='Params__Controls__container ScrollBar__hidden'>
+      <div className='Params__Controls__container'>
         <Tooltip title='Curve Interpolation'>
           <div
             className={`Params__Controls__anchor ${

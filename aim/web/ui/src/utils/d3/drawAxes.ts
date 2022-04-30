@@ -56,8 +56,10 @@ function drawAxes(args: IDrawAxesArgs): void {
     const first: any = domainData[0];
     const last: any = domainData[domainData.length - 1];
 
+    const minTicksCount = 4;
+    const maxTicksCount = 10;
     let ticksCount = Math.floor(plotBoxRef.current.width / 90);
-    ticksCount = _.clamp(ticksCount, 3, 10);
+    ticksCount = _.clamp(ticksCount, minTicksCount, maxTicksCount);
     xAxis.ticks(ticksCount);
 
     if (domainData.length - 1 > ticksCount) {
@@ -230,14 +232,17 @@ function drawAxes(args: IDrawAxesArgs): void {
 
   function getFormattedYAxis(yScale: d3.AxisScale<d3.AxisDomain>) {
     const yAxis = d3.axisLeft(yScale);
-    let ticksCount = Math.floor(plotBoxRef.current.height / 50);
-    ticksCount = _.clamp(ticksCount, 3, 20);
+    const minTicksCount = 4;
+    const maxTicksCount = 20;
+    let ticksCount = Math.floor(plotBoxRef.current.height / 40);
+    ticksCount = _.clamp(ticksCount, minTicksCount, maxTicksCount);
     yAxis.ticks(ticksCount);
 
-    if (yScale.domain().length > ticksCount) {
-      const ticks = yScale
-        .domain()
-        .filter((v, i, arr) => i % Math.ceil(arr.length / ticksCount) === 0);
+    const domainData = yScale.domain();
+    if (domainData.length > ticksCount) {
+      const ticks = domainData.filter(
+        (v, i, arr) => i % Math.ceil(arr.length / ticksCount) === 0,
+      );
 
       yAxis.tickValues(ticks);
     }

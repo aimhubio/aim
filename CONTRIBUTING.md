@@ -66,6 +66,7 @@ Most of the backend components, including SDK, Storage, Web APIs and CLI are dev
 In order to start development you must install dev requirements and the aim package itself, in editable mode.
 ```shell
 pip install -r requirements.dev.txt
+pip install -e aim/web/ui
 pip install -e .
 ```
 

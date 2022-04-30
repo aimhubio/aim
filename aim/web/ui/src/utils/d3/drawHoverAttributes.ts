@@ -1,5 +1,5 @@
 import * as d3 from 'd3';
-import { isEqual } from 'lodash-es';
+import _ from 'lodash-es';
 
 import { HighlightEnum } from 'components/HighlightModesPopover/HighlightModesPopover';
 
@@ -79,11 +79,10 @@ function drawHoverAttributes(args: IDrawHoverAttributesArgs): void {
   ): INearestCircle {
     // filter [mouseX] nearest circles
     let nearestX: INearestCircle[] = [];
-    let minXDistance = {
-      distance: Math.abs(nearestCircles[0].x - mouseX),
-      index: 0,
+    let minXDistance: { distance: number; index?: number } = {
+      distance: Infinity,
     };
-    for (let i = 1; i < nearestCircles.length; i++) {
+    for (let i = 0; i < nearestCircles.length; i++) {
       const distance = Math.abs(nearestCircles[i].x - mouseX);
       if (distance < minXDistance.distance) {
         minXDistance.distance = distance;
@@ -92,10 +91,6 @@ function drawHoverAttributes(args: IDrawHoverAttributesArgs): void {
       } else if (distance === minXDistance.distance) {
         nearestX.push(nearestCircles[i]);
       }
-    }
-
-    if (nearestX.indexOf(nearestCircles[minXDistance.index]) === -1) {
-      nearestX.push(nearestCircles[minXDistance.index]);
     }
 
     // find active point
@@ -141,7 +136,13 @@ function drawHoverAttributes(args: IDrawHoverAttributesArgs): void {
       }
       const xValueByIndex = line.data.xValues[index];
       const yValueByIndex = line.data.yValues[index];
-      if (xValueByIndex !== '-' && yValueByIndex !== '-') {
+
+      if (
+        !_.isNil(xValueByIndex) &&
+        !_.isNil(yValueByIndex) &&
+        xValueByIndex !== '-' &&
+        yValueByIndex !== '-'
+      ) {
         const closestXPos = attributesRef.current.xScale(xValueByIndex) || 0;
         const closestYPos = attributesRef.current.yScale(yValueByIndex) || 0;
         const circle = {
@@ -151,8 +152,6 @@ function drawHoverAttributes(args: IDrawHoverAttributesArgs): void {
           y: closestYPos,
         };
         nearestCircles.push(circle);
-      } else {
-        safeSyncHoverState({ activePoint: null });
       }
     }
 
@@ -607,7 +606,7 @@ function drawHoverAttributes(args: IDrawHoverAttributesArgs): void {
       circle.key !== attributesRef.current.activePoint?.key ||
       circle.x !== attributesRef.current.activePoint?.xPos ||
       circle.y !== attributesRef.current.activePoint?.yPos ||
-      !isEqual(attributesRef.current.nearestCircles, nearestCircles)
+      !_.isEqual(attributesRef.current.nearestCircles, nearestCircles)
     ) {
       setCirclesHighlightMode();
       drawCircles(nearestCircles);

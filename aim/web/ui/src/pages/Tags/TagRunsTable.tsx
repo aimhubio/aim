@@ -48,6 +48,7 @@ function TagRunsTable({
         newData: runsList.map((run: ITagRun) => ({
           runs: { name: run.run_id, id: run.run_id },
           createdDate: moment(run.creation_time).format('DD-MM-YY HH:mm'),
+          key: run.run_id,
         })),
         newColumns: tableColumns,
       });
@@ -67,6 +68,7 @@ function TagRunsTable({
           hideHeaderActions
           rowHeight={32}
           headerHeight={32}
+          height='calc(100% - 10px)'
         />
       </div>
     </ErrorBoundary>

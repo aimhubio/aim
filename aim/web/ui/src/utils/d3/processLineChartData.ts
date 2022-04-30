@@ -49,7 +49,6 @@ function processLineChartData({
     // supposed received x values are sorted by ascending order (y values are sorted by x)
     allXValues = allXValues.concat(xSyncedValues);
     allYValues = allYValues.concat(ySyncedValues);
-
     // find y bounds for lines to ignore "acceptable" outliers
     if (ignoreOutliers) {
       yBounds = yBounds.concat(minMaxOfArray(removeOutliers(yValues, 4)));
@@ -82,20 +81,18 @@ function processLineChartData({
     }
   }
 
-  let [yMin, yMax] = minMaxOfArray(
+  let [yMin = 0, yMax = 0] = minMaxOfArray(
     ignoreOutliers ? yBounds : _.uniq(allYValues),
   );
   let [xMin, xMax] = minMaxOfArray(_.uniq(allXValues));
 
-  // ADD margins for [yMin, yMax]
-  if (yMax === yMin) {
-    yMax += 1;
-    yMin -= 1;
-  } else {
-    const diff = yMax - yMin;
-    yMax += diff * 0.1;
-    yMin -= (diff * 0.05 >= yMin ? yMin : diff) * 0.05;
-  }
+  // ADD margin for y-dimension
+  const diff = yMax - yMin;
+  const portion = 0.05;
+  const yMargin = yMax !== yMin ? diff * portion : 1;
+  yMax += yMargin;
+  yMin -=
+    axesScaleType.yAxis === ScaleEnum.Log && yMin <= yMargin ? 0 : yMargin;
 
   const { width, height, margin } = visBoxRef.current;
 
