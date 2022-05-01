@@ -4592,7 +4592,10 @@ function createAppModel(appConfig: IAppInitialConfig) {
           onCurveInterpolationChange(): void {
             onCurveInterpolationChange({ model, appName, updateModelData });
           },
-          onAxisBrashExtentChange(key: string, extent: [number, number]): void {
+          onAxisBrashExtentChange(
+            key: string,
+            extent: [number, number] | null,
+          ): void {
             onAxisBrashExtentChange({
               key,
               extent,

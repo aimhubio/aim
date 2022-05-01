@@ -10,7 +10,7 @@ export default function onAxisBrashExtentChange<M extends State>({
   updateModelData,
 }: {
   key: string;
-  extent: [number, number];
+  extent: [number, number] | null;
   model: IModel<M>;
   updateModelData: (
     configData: IAppModelConfig | any,

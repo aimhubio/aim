@@ -12,7 +12,10 @@ export interface IHighPlotProps {
   curveInterpolation: CurveEnum;
   isVisibleColorIndicator: boolean;
   syncHoverState: (args: ISyncHoverStateArgs) => void;
-  onAxisBrashExtentChange: (key: string, extent: [number, number]) => void;
+  onAxisBrashExtentChange: (
+    key: string,
+    extent: [number, number] | null,
+  ) => void;
   data: any;
   chartTitle?: IChartTitle;
   readOnly?: boolean;

@@ -37,6 +37,7 @@ function drawParallelAxesBrush({
     keyOfDimension: string,
   ): void {
     const extent: d3.BrushSelection | any = event.selection;
+    let brushPosition: [number, number] | null = null;
     if (!_.isNil(extent)) {
       if (dimensions[keyOfDimension].scaleType === 'point') {
         const domainData = scalePointDomainData(
@@ -45,20 +46,22 @@ function drawParallelAxesBrush({
         );
         brushRef.current.domainsData[keyOfDimension] = domainData;
       } else {
-        const top: number | string = brushRef.current.yScale[
-          keyOfDimension
-        ].invert(extent[0]);
-        const bottom: number | string = brushRef.current.yScale[
-          keyOfDimension
-        ].invert(extent[1]);
+        const top: number = brushRef.current.yScale[keyOfDimension].invert(
+          extent[0],
+        );
+        const bottom: number = brushRef.current.yScale[keyOfDimension].invert(
+          extent[1],
+        );
         brushRef.current.domainsData[keyOfDimension] = [bottom, top];
       }
+      const range = brushRef.current.yScale[keyOfDimension].range();
+      brushPosition = [range[0] / extent[0], range[0] / extent[1]];
     } else {
       brushRef.current.domainsData[keyOfDimension] =
         dimensions[keyOfDimension].domainData;
     }
     if (event.type === 'end') {
-      onAxisBrashExtentChange(keyOfDimension, extent);
+      onAxisBrashExtentChange(keyOfDimension, brushPosition);
     }
     updateLinesAndHoverAttributes(brushRef, keyOfDimension, extent);
   }
@@ -92,7 +95,7 @@ function drawParallelAxesBrush({
     .selectAll('.Axis')
     .append('g')
     .each(function (this: any, keyOfDimension: string) {
-      const extent = brushExtents?.[keyOfDimension];
+      const brushExtent = brushExtents?.[keyOfDimension];
       d3.select(this).call(
         d3
           .brushY()
@@ -104,12 +107,20 @@ function drawParallelAxesBrush({
           .on('brush', (event) => handleBrushChange(event, keyOfDimension))
           .on('end', (event) => handleBrushChange(event, keyOfDimension)),
       );
-      if (extent) {
+      if (brushExtent) {
+        const yScale = brushRef.current.yScale[keyOfDimension];
+        const range = yScale.range();
+        const extent = [range[0] / brushExtent[0], range[0] / brushExtent[1]];
         d3.select(this).call(d3.brush().move, [
           [-15, extent[0]],
           [15, extent[1]],
         ]);
-        handleBrushChange({ selection: extent } as any, keyOfDimension);
+        handleBrushChange(
+          {
+            selection: extent,
+          } as any,
+          keyOfDimension,
+        );
       }
     });
 }
