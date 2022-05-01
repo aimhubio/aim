@@ -1,0 +1,13 @@
+@use 'styles/abstracts/index' as *;
+.MonacoEditor {
+  height: 2rem;
+  border: $border-grey;
+  display: flex;
+  align-items: center;
+  border-radius: $border-radius-main;
+  padding: 0.5rem;
+  color: $text-color;
+  .mtk1 {
+    color: $pico;
+  }
+}

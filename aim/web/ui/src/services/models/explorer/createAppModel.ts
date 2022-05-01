@@ -2223,7 +2223,18 @@ function createAppModel(appConfig: IAppInitialConfig) {
           .then((data) => {
             model.setState({
               selectFormData: {
-                suggestions: { run: { ...data.params } },
+                suggestions: {
+                  run: {
+                    ...data.params,
+                    hash: '',
+                    name: '',
+                    experiment: '',
+                    tags: '',
+                    archived: undefined,
+                    creation_time: undefined,
+                    end_time: undefined,
+                  },
+                },
               },
             });
           });
