@@ -272,7 +272,9 @@ function MediaPanel({
                   )}
                   {controls && (
                     <ErrorBoundary>
-                      <div className='MediaPanel__controls'>{controls}</div>
+                      <div className='MediaPanel__controls ScrollBar__hidden'>
+                        {controls}
+                      </div>
                     </ErrorBoundary>
                   )}
                 </div>

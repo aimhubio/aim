@@ -36,28 +36,28 @@ function decodeNone(buffer: ArrayBuffer) {
 }
 
 function decodeBool(buffer: ArrayBuffer) {
-  return struct('<?').unpack(buffer)[0];
+  return struct('<?').unpack_from(buffer.buffer, buffer.byteOffset)[0];
 }
 
 function decodeInt(buffer: ArrayBuffer) {
   const len = buffer.byteLength;
   if (len === 8) {
-    return decode_q_le(...new Uint8Array(buffer));
+    return decode_q_le(buffer);
   } else if (len === struct('<l').size) {
-    return struct('<l').unpack(buffer)[0];
+    return struct('<l').unpack_from(buffer.buffer, buffer.byteOffset)[0];
   } else if (len === struct('<h').size) {
-    return struct('<h').unpack(buffer)[0];
+    return struct('<h').unpack_from(buffer.buffer, buffer.byteOffset)[0];
   }
 }
 
 function decodeFloat(buffer: ArrayBuffer) {
   const len = buffer.byteLength;
   if (len === struct('<d').size) {
-    return struct('<d').unpack(buffer)[0];
+    return struct('<d').unpack_from(buffer.buffer, buffer.byteOffset)[0];
   } else if (len === struct('<f').size) {
-    return struct('<f').unpack(buffer)[0];
+    return struct('<f').unpack_from(buffer.buffer, buffer.byteOffset)[0];
   } else if (len === struct('<e').size) {
-    return struct('<e').unpack(buffer)[0];
+    return struct('<e').unpack_from(buffer.buffer, buffer.byteOffset)[0];
   }
 }
 
@@ -101,88 +101,86 @@ function decodeByType(typeId: number, buffer: ArrayBuffer) {
   return value;
 }
 
-function typedArrayToBuffer(array: Uint8Array): ArrayBuffer {
-  return array.buffer.slice(
-    array.byteOffset,
-    array.byteLength + array.byteOffset,
-  );
-}
-
 function decodeValue(buffer: Uint8Array): any {
-  const bufferValue = buffer.slice(1);
-  const arrayBuffer = typedArrayToBuffer(bufferValue);
+  const bufferValue = buffer.subarray(1);
   const typeId = buffer[0];
 
-  return decodeByType(typeId as number, arrayBuffer);
+  return decodeByType(typeId as number, bufferValue);
 }
 
-function decode_q_le(...x: number[]) {
-  if ((x[6] !== 0 || x[7] !== 0) && (x[6] !== 255 || x[7] !== 255)) {
+const _2__56 = Math.pow(2, 56);
+const _2__48 = Math.pow(2, 48);
+const _2__40 = Math.pow(2, 40);
+const _2__32 = Math.pow(2, 32);
+
+function decode_q_le(x: number[], offset: number) {
+  offset = offset | 0;
+  if (
+    (x[offset + 6] !== 0 || x[offset + 7] !== 0) &&
+    (x[offset + 6] !== 255 || x[offset + 7] !== 255)
+  ) {
     // eslint-disable-next-line no-console
     console.log(
       'Potential integer overflow detected. Only 52-bit integers are supported now.',
     );
   }
-  if (x[7] & 128) {
-    return ~decode_q_le(
-      255 ^ x[0],
-      255 ^ x[1],
-      255 ^ x[2],
-      255 ^ x[3],
-      255 ^ x[4],
-      255 ^ x[5],
-      255 ^ x[6],
-      255 ^ x[7],
-    );
+
+  if (x[offset + 7] & 128) {
+    return ~decode_q_le([
+      255 ^ x[offset + 0],
+      255 ^ x[offset + 1],
+      255 ^ x[offset + 2],
+      255 ^ x[offset + 3],
+      255 ^ x[offset + 4],
+      255 ^ x[offset + 5],
+      255 ^ x[offset + 6],
+      255 ^ x[offset + 7],
+    ]);
   }
+
   return (
-    x[7] * Math.pow(2, 56) +
-    x[6] * Math.pow(2, 48) +
-    x[5] * Math.pow(2, 40) +
-    x[4] * Math.pow(2, 32) +
-    x[3] * (1 << 24) +
-    x[2] * (1 << 16) +
-    x[1] * (1 << 8) +
-    x[0] * (1 << 0)
+    x[offset + 7] * _2__56 +
+    x[offset + 6] * _2__48 +
+    x[offset + 5] * _2__40 +
+    x[offset + 4] * _2__32 +
+    (x[offset + 3] << 24) +
+    (x[offset + 2] << 16) +
+    (x[offset + 1] << 8) +
+    (x[offset + 0] << 0)
   );
 }
 
-function decode_q_be(...x: number[]) {
+function decode_q_be(x: number[], offset: number) {
+  offset = offset | 0;
   return (
-    x[0] * Math.pow(2, 56) +
-    x[1] * Math.pow(2, 48) +
-    x[2] * Math.pow(2, 40) +
-    x[3] * Math.pow(2, 32) +
-    x[4] * (1 << 24) +
-    x[5] * (1 << 16) +
-    x[6] * (1 << 8) +
-    x[7] * (1 << 0)
+    x[offset + 0] * _2__56 +
+    x[offset + 1] * _2__48 +
+    x[offset + 2] * _2__40 +
+    x[offset + 3] * _2__32 +
+    (x[offset + 4] << 24) +
+    (x[offset + 5] << 16) +
+    (x[offset + 6] << 8) +
+    (x[offset + 7] << 0)
   );
 }
 
-function decodePath(buffer: Uint8Array): (string | number)[] {
+function splitPath(buffer: Uint8Array) {
   const path = [];
-  let key: string | number;
-
   let len = buffer.length;
 
   for (let cursor = 0; cursor < len; cursor++) {
     if (buffer[cursor] === PATH_SENTINEL) {
       let keySize = 8; // struct.sizeFor(SIZE_T);
-      key = decode_q_be(...buffer.slice(cursor + 1, cursor + keySize + 1));
+      let key = decode_q_be(buffer, cursor + 1);
+      path.push(key);
       cursor += keySize + 1;
     } else {
-      const index = buffer.indexOf(PATH_SENTINEL, cursor);
-      let keyBuffer = buffer.buffer.slice(
-        buffer.byteOffset + cursor,
-        buffer.byteOffset + index,
-      );
-      key = decodeString(keyBuffer);
-      cursor = index;
+      let start = cursor;
+      while (cursor < buffer.length && buffer[cursor++] !== PATH_SENTINEL);
+      let keyBuffer = buffer.subarray(start, --cursor);
+      path.push(keyBuffer);
     }
-    path.push(key);
   }
-
   return path;
 }
 
@@ -213,7 +211,7 @@ function valToNode(val: AimObjectPrimitive | AimObjectFlag): AimObject {
 
 export async function* iterFoldTree(
   pathsVals: AsyncGenerator<
-    [AimObjectPath, AimObjectPrimitive | AimObjectFlag]
+    [AimObjectPath, AimObjectPrimitive | AimObjectFlag][]
   >,
   level: number = 0,
 ): AsyncGenerator<[AimObjectPath, AimObject | undefined]> {
@@ -234,164 +232,216 @@ export async function* iterFoldTree(
     yield [[], undefined];
     return;
   }
-
-  let [keys, val] = item.value;
-
+  let first_records = item.value;
+  if (!first_records.length) {
+    if (level > 0) {
+      return;
+    }
+    yield [[], undefined];
+    return;
+  }
+  let [keys, val] = first_records.shift();
   if (keys.length) {
     return;
   }
 
   let node = valToNode(val);
   stack.push(node);
-
-  for await (let [keys, val] of pathsVals) {
-    while (!isEqual(path, keys.slice(0, path.length))) {
-      let lastState = stack.pop();
-      if (stack.length === level) {
-        yield [path.slice(), lastState];
+  for await (let records of pathsVals) {
+    if (first_records.length) {
+      records = [...first_records, ...records];
+      first_records = [];
+    }
+    for (let [keys, val] of records) {
+      while (!isEqual(path, keys.slice(0, path.length))) {
+        let lastState = stack.pop();
+        if (stack.length === level) {
+          yield [path.slice(), lastState];
+        }
+        path.pop();
       }
-      path.pop();
-    }
 
-    node = valToNode(val);
+      node = valToNode(val);
 
-    if (keys.length !== path.length + 1) {
-      throw new Error('Assertion Error');
-    }
-    let keyToAdd: AimObjectKey = keys[keys.length - 1];
-    path.push(keyToAdd);
-
-    if (stack.length === 0) {
-      throw new Error('Assertion Error');
-    }
-
-    let lastState = stack[stack.length - 1] as AimObjectNode;
-
-    if (Array.isArray(lastState)) {
-      while (lastState.length !== (keyToAdd as number)) {
-        lastState.push(null);
+      if (keys.length !== path.length + 1) {
+        throw new Error('Assertion Error');
       }
-      lastState.push(node);
-    } else {
-      lastState[keyToAdd] = node;
-    }
+      let keyToAdd: AimObjectKey = keys[keys.length - 1];
+      path.push(keyToAdd);
 
-    stack.push(node);
+      if (stack.length === 0) {
+        throw new Error('Assertion Error');
+      }
+
+      let lastState = stack[stack.length - 1] as AimObjectNode;
+
+      if (Array.isArray(lastState)) {
+        while (lastState.length !== (keyToAdd as number)) {
+          lastState.push(null);
+        }
+        lastState.push(node);
+      } else {
+        lastState[keyToAdd] = node;
+      }
+
+      stack.push(node);
+    }
   }
-
   if (level < stack.length) {
     yield [path.slice(0, level), stack[level]];
   }
 }
 
-export async function* adjustable_reader(
+export async function* decodeBufferPairs(
   stream: ReadableStream,
-): AsyncGenerator<Uint8Array, void, number> {
-  // @ts-ignore
-  let buffer = new Uint8Array(new ArrayBuffer(yield));
-  let cursor = 0;
+): AsyncGenerator<[Uint8Array, Uint8Array][]> {
+  let buffer = new Uint8Array(new ArrayBuffer());
   let reader = stream.getReader();
-  let done = false;
+
   let p = reader.read();
-  while (true) {
+
+  function merge(a, b) {
+    var mergedArray = new Uint8Array(a.length + b.length);
+    mergedArray.set(a);
+    mergedArray.set(b, a.length);
+    return mergedArray;
+  }
+
+  function needs_async_fetch(requested_size) {
+    return requested_size > buffer.byteLength;
+  }
+
+  async function do_async_fetch(requested_size) {
+    // get value and ask to fetch next chunk in background
     let item = await p;
+    if (item.done) {
+      return false;
+    }
     p = reader.read();
-    done = item.done;
-    if (done) {
-      break;
-    }
     let chunk = item.value;
-    while (chunk.byteLength > 0) {
-      if (cursor + chunk.byteLength >= buffer.byteLength) {
-        let to_buffer = chunk.subarray(0, buffer.byteLength - cursor);
-        buffer.set(to_buffer, cursor);
-        chunk = chunk.subarray(buffer.byteLength - cursor);
-        buffer = new Uint8Array(new ArrayBuffer(yield buffer));
-        cursor = 0;
-      } else {
-        buffer.set(chunk, cursor);
-        cursor += chunk.byteLength;
-        break;
+    buffer = merge(buffer, chunk);
+    return true;
+  }
+
+  function get_next(requested_size) {
+    let response = buffer.subarray(0, requested_size);
+    buffer = buffer.subarray(requested_size);
+    return response;
+  }
+
+  let item;
+  let records = [];
+  let done = false;
+
+  asyncLoop: while (true) {
+    let record = [null, null];
+    for (let idx of [0, 1]) {
+      while (needs_async_fetch(4) && !done) {
+        let promise = do_async_fetch(4);
+        yield records;
+        records = [];
+        done = !(await promise);
       }
+      if (done) {
+        break asyncLoop;
+      }
+      item = get_next(4);
+
+      let buffer_len =
+        (item[0] << 0) + (item[1] << 8) + (item[2] << 16) + (item[3] << 24);
+
+      while (needs_async_fetch(buffer_len) && !done) {
+        let promise = do_async_fetch(buffer_len);
+        yield records;
+        records = [];
+        done = !(await promise);
+      }
+      if (done) {
+        throw new Error('Corrupted stream');
+      }
+      item = get_next(buffer_len);
+      record[idx] = item;
     }
+    records.push(record);
   }
-  if (cursor !== 0) {
-    throw new RangeError('Can not read given number of bytes. EOF');
-  }
+  yield records;
 }
 
-export async function* decode_buffer_pairs(
-  async_generator: AsyncGenerator<Uint8Array, void, number>,
-): AsyncGenerator<[Uint8Array, Uint8Array]> {
-  let item: IteratorResult<Uint8Array, void>;
-  await async_generator.next();
-  while (true) {
-    item = await async_generator.next(4);
-    if (item.done) {
-      break;
+function areEqual(a, b) {
+  if (Number.isInteger(a)) {
+    if (Number.isInteger(b)) {
+      return a === b;
+    } else {
+      return false;
     }
-
-    let key_buffer_len =
-      (item.value[0] << 0) +
-      (item.value[1] << 8) +
-      (item.value[2] << 16) +
-      (item.value[3] << 24);
-    item = await async_generator.next(key_buffer_len);
-    if (item.done) {
-      throw new Error('Corrupted stream');
+  } else {
+    if (Number.isInteger(a)) {
+      return false;
     }
-
-    let key_buffer = item.value;
-
-    item = await async_generator.next(4);
-    if (item.done) {
-      throw new Error('Corrupted stream');
-    }
-
-    let val_buffer_len =
-      (item.value[0] << 0) +
-      (item.value[1] << 8) +
-      (item.value[2] << 16) +
-      (item.value[3] << 24);
-
-    item = await async_generator.next(val_buffer_len);
-    if (item.done) {
-      throw new Error('Corrupted stream');
-    }
-
-    let value_buffer = item.value;
-
-    yield [key_buffer, value_buffer];
   }
+  if (a.length !== b.length) {
+    return false;
+  }
+  for (let i = 0; i < a.length; ++i) {
+    if (a[i] !== b[i]) {
+      return false;
+    }
+  }
+  return true;
+}
+
+function decodePiece(piece) {
+  if (Number.isInteger(piece)) {
+    return piece;
+  }
+  return decodeString(piece);
 }
 
 export async function* decodePathsVals(
-  pathsVals: AsyncGenerator<[Uint8Array, Uint8Array]>,
-): AsyncGenerator<[AimObjectPath, AimObjectPrimitive | AimObjectFlag]> {
-  let currentPath: AimObjectPath | null = null;
-
-  for await (let [encodedPath, encodedVal] of pathsVals) {
-    let path: AimObjectPath = decodePath(encodedPath);
-    let val: AimObjectPrimitive = decodeValue(encodedVal);
-
-    if (currentPath === null) {
-      if (path.length) {
-        yield [[], ObjectFlag];
+  pathsVals: AsyncGenerator<[Uint8Array, Uint8Array][]>,
+): AsyncGenerator<[AimObjectPath, AimObjectPrimitive | AimObjectFlag][]> {
+  let pieces_state = null;
+  let path_state = null;
+  for await (let records of pathsVals) {
+    let to_yield = [];
+    for (let [encodedPath, encodedVal] of records) {
+      let pieces = splitPath(encodedPath);
+      let val = decodeValue(encodedVal);
+      if (pieces_state === null) {
+        if (pieces.length) {
+          to_yield.push([[], ObjectFlag]);
+        }
+        pieces_state = [];
+        path_state = [];
       }
-      currentPath = [];
-    }
-
-    while (!isEqual(path.slice(0, currentPath.length), currentPath)) {
-      currentPath.pop();
-    }
-
-    while (!isEqual(currentPath, path)) {
-      currentPath.push(path[currentPath.length]);
-      if (!isEqual(currentPath, path)) {
-        yield [currentPath, ObjectFlag];
+      let prefix_len;
+      for (
+        prefix_len = 0;
+        prefix_len < pieces.length && prefix_len < pieces_state.length;
+        ++prefix_len
+      ) {
+        if (!areEqual(pieces[prefix_len], pieces_state[prefix_len])) {
+          break;
+        }
       }
+      while (pieces_state.length > prefix_len) {
+        path_state.pop();
+        pieces_state.pop();
+      }
+      while (pieces_state.length !== pieces.length) {
+        let piece = pieces[pieces_state.length];
+        pieces_state.push(piece);
+        let key = decodePiece(piece);
+        path_state.push(key);
+        if (pieces_state.length !== pieces.length) {
+          to_yield.push([[...path_state], ObjectFlag]);
+        }
+      }
+      to_yield.push([[...path_state], val]);
     }
-
-    yield [path, val];
+    if (to_yield.length) {
+      yield to_yield;
+    }
   }
+  yield [];
 }

@@ -7,6 +7,8 @@
   position: relative;
   overflow: hidden;
   user-select: none;
+  min-width: toRem(150px);
+  min-height: toRem(150px);
 
   .Axes {
     .tick text {

@@ -8,7 +8,7 @@ import { IGetImageMediaSetSizeProps } from 'types/utils/getImageMediaSetSize';
 
 export const IMAGE_FIXED_HEIGHT = 110;
 export const ITEM_WRAPPER_HEIGHT = 33;
-export const ITEM_CAPTION_HEIGHT = 20;
+export const ITEM_CAPTION_HEIGHT = 40;
 export const MEDIA_SET_TITLE_HEIGHT = 17;
 export const MEDIA_SET_WRAPPER_PADDING_HEIGHT = 6;
 export const MEDIA_SET_SLIDER_HEIGHT = 20;

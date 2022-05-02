@@ -143,7 +143,7 @@ function points(
   data = data.filter((d: [number, number]) => {
     let u = x(d);
     let v = y(d);
-    return u != null && isFinite(u) && v != null && isFinite(v);
+    return u !== null && isFinite(u) && v !== null && isFinite(v);
   });
 
   if (sort) {
