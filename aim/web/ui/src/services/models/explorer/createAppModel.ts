@@ -139,8 +139,7 @@ import updateSortFields from 'utils/app/updateTableSortFields';
 import contextToString from 'utils/contextToString';
 import { AlignmentOptionsEnum, ChartTypeEnum, ScaleEnum } from 'utils/d3';
 import {
-  adjustable_reader,
-  decode_buffer_pairs,
+  decodeBufferPairs,
   decodePathsVals,
   iterFoldTree,
 } from 'utils/encoder/streamEncoding';
@@ -168,7 +167,7 @@ import sortDependingArrays from 'utils/app/sortDependingArrays';
 import { isSystemMetric } from 'utils/isSystemMetric';
 import setDefaultAppConfigData from 'utils/app/setDefaultAppConfigData';
 import getAppConfigData from 'utils/app/getAppConfigData';
-import { getValue } from 'utils/helper';
+import { float64FromUint8, getValue } from 'utils/helper';
 import { formatSystemMetricName } from 'utils/formatSystemMetricName';
 import alphabeticalSortComparator from 'utils/alphabeticalSortComparator';
 import onRowSelect from 'utils/app/onRowSelect';
@@ -961,10 +960,10 @@ function createAppModel(appConfig: IAppInitialConfig) {
               getObjectPaths(trace.context, trace.context),
             );
             const { values, steps, epochs, timestamps } = filterMetricData({
-              values: [...new Float64Array(trace.values.blob)],
-              steps: [...new Float64Array(trace.iters.blob)],
-              epochs: [...new Float64Array(trace.epochs?.blob)],
-              timestamps: [...new Float64Array(trace.timestamps.blob)],
+              values: [...float64FromUint8(trace.values.blob)],
+              steps: [...float64FromUint8(trace.iters.blob)],
+              epochs: [...float64FromUint8(trace.epochs?.blob)],
+              timestamps: [...float64FromUint8(trace.timestamps.blob)],
               axesScaleType: configData?.chart?.axesScaleType,
             });
 
@@ -1326,10 +1325,10 @@ function createAppModel(appConfig: IAppInitialConfig) {
               const missingIndexes: number[] = [];
               if (metric.x_axis_iters && metric.x_axis_values) {
                 const xAxisIters: number[] = [
-                  ...new Float64Array(metric.x_axis_iters.blob),
+                  ...float64FromUint8(metric.x_axis_iters.blob),
                 ];
                 const xAxisValues: number[] = [
-                  ...new Float64Array(metric.x_axis_values.blob),
+                  ...float64FromUint8(metric.x_axis_values.blob),
                 ];
                 if (xAxisValues.length === metric.data.values.length) {
                   const { sortedXValues, sortedArrays } = sortDependingArrays(
@@ -2300,9 +2299,10 @@ function createAppModel(appConfig: IAppInitialConfig) {
               const stream = await runsRequestRef.call((detail) => {
                 exceptionHandler({ detail, model });
               });
-              let gen = adjustable_reader(stream as ReadableStream<any>);
-              let buffer_pairs = decode_buffer_pairs(gen);
-              let decodedPairs = decodePathsVals(buffer_pairs);
+              let bufferPairs = decodeBufferPairs(
+                stream as ReadableStream<any>,
+              );
+              let decodedPairs = decodePathsVals(bufferPairs);
               let objects = iterFoldTree(decodedPairs, 1);
 
               const runsData: IRun<IMetricTrace | IParamTrace>[] = isInitial

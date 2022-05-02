@@ -4,6 +4,7 @@
 
 ### Enhancements:
 
+- Optimize stream decoding performance on UI (mahnerak)
 - Add support for animated image formats to Aim Image object (devfox-se)
 - Add `AimLogger` for Catboost (devfox-se)
 - Add `AimCallback` for LightGBM (devfox-se)
