@@ -57,10 +57,12 @@ def decode_encoded_tree_stream(stream: Iterator[bytes], concat_chunks=False) -> 
 
 
 def generate_image_set(img_count, caption_prefix='Image', img_size=(16, 16)):
-    return [AimImage(
-        pil_image.fromarray((numpy.random.rand(img_size[0], img_size[1], 3) * 255).astype('uint8')),
-        f'{caption_prefix} {idx}'
-    ) for idx in range(img_count)]
+    return [
+        AimImage(
+            pil_image.fromarray((numpy.random.rand(img_size[0], img_size[1], 3) * 255).astype('uint8')),
+            caption=f'{caption_prefix} {idx}'
+        ) for idx in range(img_count)
+    ]
 
 
 def truncate_structured_db(db):

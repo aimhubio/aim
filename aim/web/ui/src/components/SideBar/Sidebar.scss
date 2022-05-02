@@ -3,7 +3,8 @@
 .Sidebar {
   width: 75px;
   max-width: 75px;
-
+  position: relative;
+  z-index: 10;
   .MuiDrawer-paperAnchorDockedLeft {
     border-right: unset;
   }

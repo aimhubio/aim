@@ -34,6 +34,7 @@ const ScatterPlot = React.forwardRef(function ScatterPlot(
     chartTitle,
     trendlineOptions,
     readOnly = false,
+    resizeMode,
   } = props;
 
   // boxes
@@ -96,6 +97,10 @@ const ScatterPlot = React.forwardRef(function ScatterPlot(
           .append('text')
           .classed('ScatterPlot__emptyData', true)
           .text('No Data');
+
+        if (attributesRef.current?.clearHoverAttributes) {
+          attributesRef.current.clearHoverAttributes();
+        }
       }
       return;
     }
@@ -190,7 +195,7 @@ const ScatterPlot = React.forwardRef(function ScatterPlot(
       }
     },
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    [data, dimensions, trendlineOptions, readOnly],
+    [data, dimensions, trendlineOptions, readOnly, resizeMode],
   );
 
   const observerReturnCallback = React.useCallback(() => {

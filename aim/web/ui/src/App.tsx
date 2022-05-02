@@ -38,7 +38,7 @@ function App(): React.FunctionComponentElement<React.ReactNode> {
             </ErrorBoundary>
             <div className='mainContainer'>
               <React.Suspense
-                fallback={<BusyLoaderWrapper height='100%' isLoading />}
+                fallback={<BusyLoaderWrapper height='100vh' isLoading />}
               >
                 <Switch>
                   {Object.values(routes).map((route, index) => {

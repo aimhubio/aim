@@ -67,7 +67,6 @@ function drawArea(args: IDrawAreaArgs): void {
     .attr('id', `${nameKey}-svg-area-${index}`)
     .attr('width', `${width}px`)
     .attr('height', `${height}px`)
-    .attr('pointer-events', 'all')
     .attr('xmlns', 'http://www.w3.org/2000/svg')
     .style('fill', 'transparent');
 

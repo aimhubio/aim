@@ -50,7 +50,7 @@ export interface IRunParams {
 }
 
 export interface ITraceData {
-  blob: ArrayBuffer;
+  blob: Uint8Array;
   dtype: string;
   shape: number;
   _type: string;

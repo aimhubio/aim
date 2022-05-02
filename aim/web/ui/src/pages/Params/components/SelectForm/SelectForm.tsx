@@ -65,12 +65,12 @@ function SelectForm({
       {},
     );
     onParamsSelectChange(
-      value.filter((option: ISelectOption) => lookup[option.label] === 0),
+      value?.filter((option: ISelectOption) => lookup[option.label] === 0),
     );
   }
 
   function handleDelete(field: string): void {
-    let fieldData = [...(selectedParamsData?.options || [])].filter(
+    let fieldData = [...(selectedParamsData?.options || [])]?.filter(
       (opt: ISelectOption) => opt.label !== field,
     );
     onParamsSelectChange(fieldData);
@@ -157,7 +157,7 @@ function SelectForm({
                               item.label === option.label,
                           )?.label;
                         return (
-                          <React.Fragment>
+                          <div className='SelectForm__option'>
                             <Checkbox
                               color='primary'
                               icon={<CheckBoxOutlineBlank />}
@@ -170,7 +170,7 @@ function SelectForm({
                             >
                               {option.label}
                             </Text>
-                          </React.Fragment>
+                          </div>
                         );
                       }}
                     />
