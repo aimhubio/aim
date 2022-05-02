@@ -1,6 +1,8 @@
 @use 'styles/abstracts/index' as *;
-.MonacoEditor {
+
+.AutocompleteInput {
   height: 2rem;
+  max-width: 100vw;
   border: $border-grey;
   display: flex;
   align-items: center;

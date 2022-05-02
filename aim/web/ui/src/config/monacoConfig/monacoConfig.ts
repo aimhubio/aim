@@ -1,0 +1,26 @@
+export const MonacoConfig: any = {
+  height: '21px',
+  options: {
+    lineNumbers: 'off',
+    minimap: { enabled: false },
+    fontFamily: 'Iosevka',
+    wordWrap: 'off',
+    fontSize: 14,
+    lineNumbersMinChars: 0,
+    overviewRulerLanes: 0,
+    overviewRulerBorder: false,
+    lineDecorationsWidth: 0,
+    hideCursorInOverviewRuler: true,
+    contextmenu: false,
+    glyphMargin: false,
+    folding: false,
+    scrollBeyondLastColumn: 0,
+    renderLineHighlight: 'none',
+    scrollbar: { horizontal: 'hidden', vertical: 'hidden' },
+    find: {
+      addExtraSpaceOnTop: false,
+      autoFindInSelection: 'never',
+      seedSearchStringFromSelection: 'never',
+    },
+  },
+};

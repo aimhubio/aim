@@ -3,9 +3,8 @@ import React from 'react';
 import { Divider } from '@material-ui/core';
 
 import { Button, Icon } from 'components/kit';
-import ExpressionAutoComplete from 'components/kit/ExpressionAutoComplete';
 import ErrorBoundary from 'components/ErrorBoundary/ErrorBoundary';
-import MonacoEditor from 'components/MonacoEditor';
+import AutocompleteInput from 'components/AutocompleteInput';
 
 import { ANALYTICS_EVENT_KEYS } from 'config/analytics/analyticsKeysMap';
 
@@ -51,7 +50,6 @@ function SearchBar({
     searchRunsRef.current?.abort();
     runAppModel.abortRequest();
   }
-  console.log(searchSuggestions);
   return (
     <ErrorBoundary>
       <div className='Runs_Search_Bar'>
@@ -64,7 +62,7 @@ function SearchBar({
             placeholder='Filter runs, e.g. run.learning_rate > 0.0001 and run.batch_size == 32'
           /> */}
           <div style={{ maxWidth: 500 }}>
-            <MonacoEditor context={searchSuggestions} />
+            <AutocompleteInput context={searchSuggestions} />
           </div>
         </form>
         <Divider style={{ margin: '0 1em' }} orientation='vertical' flexItem />
