@@ -313,16 +313,18 @@ The high-level features we are going to work on the next few months
   - [x] Centralized tracking server (Start: _Oct 18 2021_, Shipped: _Jan 22 2022_)
   - [x] Tensorboard adaptor - visualize TensorBoard logs with Aim (Start: _Dec 17 2021_, Shipped: _Feb 3 2022_)
   - [x] Track git info, env vars, CLI arguments, dependencies (Start: _Jan 17 2022_, Shipped: _Feb 3 2022_)
-  - [x] MLFlow adaptor (visualize MLflow logs with Aim) (Start: _Feb 14 2022_, Shipped: _Feb 22, 2022_)
-  - [x] Activeloop Hub integration (Start: _Feb 14 2022_, Shipped: _Feb 22, 2022_)
-  - [x] PyTorch-Ignite integration (Start: _Feb 14 2022_, Shipped: _Feb 22, 2022_)
-  - [x] Run summary and overview info(system params, CLI args, git info, ...) (Start: _Feb 14 2022_, Shipped: _Mar 9, 2022_)
-  - [x] Add DVC related metadata into aim run (Start: _Mar 7 2022_, Shipped: _Mar 26, 2022_)
+  - [x] MLFlow adaptor (visualize MLflow logs with Aim) (Start: _Feb 14 2022_, Shipped: _Feb 22 2022_)
+  - [x] Activeloop Hub integration (Start: _Feb 14 2022_, Shipped: _Feb 22 2022_)
+  - [x] PyTorch-Ignite integration (Start: _Feb 14 2022_, Shipped: _Feb 22 2022_)
+  - [x] Run summary and overview info(system params, CLI args, git info, ...) (Start: _Feb 14 2022_, Shipped: _Mar 9 2022_)
+  - [x] Add DVC related metadata into aim run (Start: _Mar 7 2022_, Shipped: _Mar 26 2022_)
+  - [x] Ability to attach notes to Run from UI (Start: _Mar 7 2022_, Shipped: _Apr 29 2022_)
 
 ### In Progress
-  - [ ] Ability to attach notes to Run from UI (Start: _Mar 7 2022_)
   - [ ] Cloud storage support – store runs blob(e.g. images) data on the cloud (Start: _Mar 21 2022_)
   - [ ] Artifact storage – store files, model checkpoints, and beyond (Start: _Mar 21 2022_)
+  - [ ] Run execution details(display stdout/stderr logs) (Start: _25 Apr 2022_)
+  - [ ] Long sequences(up to 5M of steps) support (Start: _25 Apr 2022_)
 
 ### To Do
 
@@ -330,8 +332,6 @@ The high-level features we are going to work on the next few months
 
 - Runs management
     - Runs explorer – query and visualize runs data(images, audio, distributions, ...) in a central dashboard
-    - Single run page
-        - Run execution details(display stdout/stderr logs)
 - Explorers
     - Audio Explorer
     - Text Explorer
@@ -343,7 +343,6 @@ The high-level features we are going to work on the next few months
 
 - Scalability
     - Smooth UI and SDK experience with over 10.000 runs
-    - Long sequences(up to 5M of steps) support
 - Runs management
     - SDK interfaces
         - Reporting – query and compare runs, explore data with familiar tools such as matlpotlib and pandas
