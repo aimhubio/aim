@@ -41,7 +41,7 @@ function IllustrationBlock({
             <img
               onLoad={onImgLoad}
               src={Illustrations_List[type]}
-              alt='Illustration image'
+              alt='Illustration'
             />
           )}
         </div>

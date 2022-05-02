@@ -191,7 +191,7 @@ function SelectForm({
                               item.label === option.label,
                           )?.label;
                         return (
-                          <React.Fragment>
+                          <div className='SelectForm__option'>
                             <Checkbox
                               color='primary'
                               icon={<CheckBoxOutlineBlank />}
@@ -205,7 +205,7 @@ function SelectForm({
                             >
                               {option.label}
                             </Text>
-                          </React.Fragment>
+                          </div>
                         );
                       }}
                     />
@@ -226,7 +226,6 @@ function SelectForm({
                         <Badge
                           size='large'
                           key={tag.label}
-                          color={tag.color}
                           label={tag.label}
                           onDelete={handleDelete}
                         />

@@ -6,7 +6,6 @@ from collections import defaultdict
 from contextlib import contextmanager
 from enum import Enum
 from filelock import FileLock
-from packaging import version
 from typing import Dict, Tuple, Iterator, NamedTuple, Optional, List
 from weakref import WeakValueDictionary
 
@@ -112,8 +111,6 @@ class Repo:
 
         if init:
             os.makedirs(self.path, exist_ok=True)
-            with open(os.path.join(self.path, 'VERSION'), 'w') as version_fh:
-                version_fh.write(DATA_VERSION + '\n')
         if not self.is_remote_repo and not os.path.exists(self.path):
             if self._mount_root:
                 unmount_remote_repo(self.root_path, self._mount_root)
@@ -132,9 +129,12 @@ class Repo:
             self._lock = FileLock(self._lock_path, timeout=10)
 
             with self.lock():
+                status = self.check_repo_status(self.root_path)
                 self.structured_db = DB.from_path(self.path)
-                if init:
+                if init or status == RepoStatus.PATCH_REQUIRED:
                     self.structured_db.run_upgrades()
+                    with open(os.path.join(self.path, 'VERSION'), 'w') as version_fh:
+                        version_fh.write('.'.join(map(str, DATA_VERSION)) + '\n')
 
         self._resources = RepoAutoClean(self)
 
@@ -236,12 +236,13 @@ class Repo:
             return RepoStatus.UPDATED
         if not cls.exists(path):
             return RepoStatus.MISSING
-        repo_version = version.parse(cls.get_version(path))
-        current_version = version.parse(DATA_VERSION)
-        if repo_version.major < current_version.major:
-            return RepoStatus.UPDATE_REQUIRED
-        if repo_version.minor < current_version.minor:
-            return RepoStatus.PATCH_REQUIRED
+        repo_version = cls.get_version(path)
+        current_version = DATA_VERSION
+        if repo_version < current_version:
+            if repo_version[0] < current_version[0]:
+                return RepoStatus.UPDATE_REQUIRED
+            else:
+                return RepoStatus.PATCH_REQUIRED
         return RepoStatus.UPDATED
 
     @classmethod
@@ -250,8 +251,9 @@ class Repo:
         version_file_path = os.path.join(path, get_aim_repo_name(), 'VERSION')
         if os.path.exists(version_file_path):
             with open(version_file_path, 'r') as version_fh:
-                return version_fh.read()
-        return '0.0'  # old Aim repos
+                version_tp = version_fh.read().strip().split('.')
+                return tuple(map(int, version_tp))
+        return 0, 0  # old Aim repos
 
     @classmethod
     def is_remote_path(cls, path: str):

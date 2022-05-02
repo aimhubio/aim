@@ -2,9 +2,10 @@
 
 .RunOverviewSidebar {
   margin-top: $space-lg;
-  min-width: 20rem;
-  width: 20rem;
-  overflow: hidden;
+  width: $run-overview-sidebar-width;
+  min-width: $run-overview-sidebar-width;
+  overflow-y: auto;
+  overflow-x: hidden;
   padding: $space-xs;
   position: sticky;
   top: $space-lg;
@@ -20,7 +21,7 @@
         display: flex;
         align-items: center;
         height: 1.75rem;
-        margin-bottom: 0.125rem;
+        margin-bottom: $space-xxxxs;
         span {
           max-width: 15rem;
           white-space: nowrap;
@@ -42,7 +43,7 @@
       &-list {
         display: flex;
         align-items: center;
-
+        overflow: auto;
         .Badge {
           margin-right: 0.5rem;
 
@@ -73,7 +74,7 @@
     justify-content: space-between;
     height: 2rem;
     padding: 0 $space-unit;
-    margin-bottom: 0.125rem;
+    margin-bottom: $space-xxxxs;
     border-radius: $border-radius-sm;
     transition: background-color 0.18s ease-out;
     outline: none;

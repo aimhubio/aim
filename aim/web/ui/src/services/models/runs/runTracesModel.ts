@@ -1,3 +1,4 @@
+// eslint-disable-next-line react-hooks/exhaustive-deps
 import _ from 'lodash-es';
 
 import { ANALYTICS_EVENT_KEYS } from 'config/analytics/analyticsKeysMap';
@@ -7,8 +8,7 @@ import runsService from 'services/api/runs/runsService';
 import { trackEvent } from 'services/analytics';
 
 import {
-  adjustable_reader,
-  decode_buffer_pairs,
+  decodeBufferPairs,
   decodePathsVals,
   iterFoldTree,
 } from 'utils/encoder/streamEncoding';
@@ -62,6 +62,7 @@ function getDefaultQueryAndConfigData(traceType: TraceType) {
       inputTitleTooltip: correspondedInput.tooltip,
       sliderType: item.sliderType,
       inputValidationPatterns: traceSettings.inputValidation,
+      infoPropertyName: item?.infoPropertyName,
     };
 
     config.rangePanel.push(processedItem);
@@ -207,12 +208,12 @@ async function getRunTraceBatch(isInitial = false) {
     });
     const stream = await getTraceBatchRequestRef?.call((detail: any) => {
       // @TODO add exception
+      // eslint-disable-next-line no-console
       console.error(detail);
     });
 
-    let gen = adjustable_reader(stream);
-    let buffer_pairs = decode_buffer_pairs(gen);
-    let decodedPairs = decodePathsVals(buffer_pairs);
+    let bufferPairs = decodeBufferPairs(stream);
+    let decodedPairs = decodePathsVals(bufferPairs);
     let objects = iterFoldTree(decodedPairs, 1);
 
     let data: Partial<TraceResponseData> = {};

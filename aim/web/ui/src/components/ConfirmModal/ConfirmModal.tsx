@@ -45,24 +45,24 @@ function ConfirmModal(
           </div>
 
           <div>
-            {props.text && (
+            {props.description && (
               <Text
-                size={14}
                 className='ConfirmModal__description'
                 weight={400}
                 component='p'
                 id='dialog-description'
               >
-                {props.title}
+                {props.description}
               </Text>
             )}
 
             <div>
               {props.text && (
                 <Text
-                  className='ConfirmModal__description'
+                  className='ConfirmModal__text'
                   weight={400}
                   component='p'
+                  size={14}
                   id='dialog-description'
                 >
                   {props.text || ''}

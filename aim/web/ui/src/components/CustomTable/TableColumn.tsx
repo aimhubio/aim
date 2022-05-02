@@ -3,7 +3,7 @@
 
 import * as React from 'react';
 import classNames from 'classnames';
-import { isNil } from 'lodash-es';
+import _ from 'lodash-es';
 
 import { MenuItem, Tooltip, Divider, Checkbox } from '@material-ui/core';
 
@@ -88,8 +88,10 @@ function Column({
       return [range[0] - 0.1, range[0]];
     }
     return range;
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [data]);
 
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   const getColumnCelBGColor = React.useCallback(
     getColorFromRange(
       colorScaleRange ? [colorScaleRange[0], _.last(colorScaleRange)] : null,
@@ -150,12 +152,14 @@ function Column({
       document.removeEventListener('mousemove', resize);
       document.removeEventListener('mouseup', resizeEnd);
     };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   React.useEffect(() => {
     if (columnRef.current && col.key !== 'selection') {
       columnRef.current.style.width = 'initial';
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [data, expanded, width]);
 
   const isInViewPort =
@@ -495,6 +499,7 @@ function Column({
                       multiSelect={multiSelect}
                       getColumnCelBGColor={getColumnCelBGColor}
                       columnsColorScales={columnsColorScales}
+                      isNumeric={colorScaleRange}
                       item={
                         typeof data[groupKey].data[col.key] === 'object' &&
                         data[groupKey].data[col.key]?.hasOwnProperty('content')
@@ -531,6 +536,7 @@ function Column({
                             multiSelect={multiSelect}
                             getColumnCelBGColor={getColumnCelBGColor}
                             columnsColorScales={columnsColorScales}
+                            isNumeric={colorScaleRange}
                             item={
                               col.key === '#' ? (
                                 <>
@@ -564,7 +570,7 @@ function Column({
                               !!data[groupKey].data.meta.color
                             }
                             className={classNames(`rowKey-${item.key}`, {
-                              hidden: item.isHidden,
+                              inactive: item.isHidden,
                               selected: !!selectedRows?.[item.selectKey],
                             })}
                             isConfigColumn={col.key === '#'}
@@ -611,7 +617,7 @@ function Column({
                         </>
                       }
                       className={classNames(`rowKey-${item.key}`, {
-                        hidden: item.isHidden,
+                        inactive: item.isHidden,
                         selected: !!selectedRows?.[item.selectKey],
                       })}
                       metadata={
@@ -632,9 +638,10 @@ function Column({
                       col={col}
                       item={item[col.key]}
                       getColumnCelBGColor={getColumnCelBGColor}
+                      isNumeric={colorScaleRange}
                       columnsColorScales={columnsColorScales}
                       className={classNames(`rowKey-${item.key}`, {
-                        hidden: item.isHidden,
+                        inactive: item.isHidden,
                         selected: !!selectedRows?.[item.selectKey],
                       })}
                       metadata={
@@ -753,7 +760,7 @@ function GroupConfig({
             component={<GroupConfigPopover configData={configData} />}
           />
         )}
-        {!isNil(config.chartIndex) && config.chartIndex !== 0 && (
+        {!_.isNil(config.chartIndex) && config.chartIndex !== 0 && (
           <Tooltip title='Group chart index'>
             <span className='Table__group__config__chart'>
               {config.chartIndex}

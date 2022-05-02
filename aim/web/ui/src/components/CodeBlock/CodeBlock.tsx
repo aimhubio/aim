@@ -40,7 +40,7 @@ function CodeBlock({
         </Highlight>
         <ErrorBoundary>
           <CopyToClipBoard
-            className='CodeBlock__copy__span'
+            className='CodeBlock__copy__button'
             contentRef={contentRef}
           />
         </ErrorBoundary>

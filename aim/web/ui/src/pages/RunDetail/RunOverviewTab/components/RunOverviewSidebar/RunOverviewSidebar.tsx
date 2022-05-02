@@ -25,6 +25,11 @@ function RunOverviewSidebar({
       traces.metric.filter((m) => m.name.startsWith('__system__')).length || 0;
     return [
       {
+        name: 'Notes',
+        path: `${path}/notes`,
+        value: info.notes || 0,
+      },
+      {
         name: 'Metrics',
         path: `${path}/metrics`,
         value: traces?.metric?.length - systemMetricsLength || 0,
@@ -60,6 +65,7 @@ function RunOverviewSidebar({
         value: traces?.figures?.length || 0,
       },
     ];
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [traces]);
 
   return (
@@ -102,7 +108,7 @@ function RunOverviewSidebar({
               ({info.tags.length})
             </Text>
           </Text>
-          <div className='RunOverviewSidebar__section__tags-list'>
+          <div className='RunOverviewSidebar__section__tags-list ScrollBar__hidden'>
             {info.tags.map((tag) => (
               <Badge color={tag.color} label={tag.name} key={tag.name} />
             ))}

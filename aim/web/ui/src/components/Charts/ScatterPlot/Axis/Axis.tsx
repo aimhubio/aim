@@ -25,6 +25,7 @@ const Axis = ({
 
   useEffect(() => {
     select(ref.current).call(scale);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [scale]);
 
   // Can work width axis's UI easily here

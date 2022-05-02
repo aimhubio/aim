@@ -18,6 +18,7 @@ $border-radius: 0.2rem;
   box-sizing: border-box;
   content-visibility: auto;
   contain: content;
+  font-family: 'Iosevka', monospace;
   &__container {
     height: 100%;
     width: 100%;
@@ -125,7 +126,6 @@ $border-radius: 0.2rem;
     display: flex;
     justify-content: center;
     align-items: center;
-    padding-top: toRem(2px);
   }
   .Table__column__partiallySelectedSelectIcon {
     border-radius: $border-radius-xs;
@@ -136,7 +136,7 @@ $border-radius: 0.2rem;
     align-items: center;
   }
   .configCheckbox {
-    margin: 0 $space-xxs;
+    margin: 0 $space-xxs 0 toRem(1.5px);
   }
   &--groups {
     max-width: unset !important;
@@ -264,7 +264,9 @@ $border-radius: 0.2rem;
   text-overflow: ellipsis;
   height: var(--cell-height);
   position: relative;
-
+  &.isNumeric {
+    justify-content: flex-end;
+  }
   &.placeholder {
     border-right: unset;
   }
@@ -302,7 +304,7 @@ $border-radius: 0.2rem;
 
   &.Table__group__config__column__cell {
     border-right: none;
-    padding: 0 0 0 toRem(40px);
+    padding-left: toRem(39px);
 
     .Table__cell__rowMeta {
       display: flex;
@@ -332,7 +334,7 @@ $border-radius: 0.2rem;
       }
     }
   }
-  &.hidden {
+  &.inactive {
     background-color: $cuddle-10;
   }
 
@@ -373,6 +375,7 @@ $border-radius: 0.2rem;
   border-color: $border-color;
   z-index: 3;
   overflow: visible;
+  font-family: 'Inter', sans-serif;
 
   & > *:first-child {
     flex: 1;
@@ -387,9 +390,9 @@ $border-radius: 0.2rem;
 
 .Table__column__resizeHandler {
   position: absolute;
-  right: -1px;
+  right: -3px;
   top: 0;
-  width: 3px;
+  width: 6px;
   height: 100%;
   background-color: $primary-color;
   z-index: 10;
@@ -541,6 +544,9 @@ $border-radius: 0.2rem;
     .Table__column__selectCheckbox {
       margin-left: 0.5rem;
     }
+  }
+  &.isNumeric {
+    justify-content: flex-end;
   }
 }
 

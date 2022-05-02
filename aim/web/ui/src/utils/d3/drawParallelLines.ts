@@ -1,4 +1,4 @@
-import { cloneDeep, isNil } from 'lodash-es';
+import _ from 'lodash-es';
 
 import {
   IDrawParallelLinesArgs,
@@ -35,6 +35,7 @@ function drawParallelLines({
     return;
   }
   const keysOfDimensions: string[] = Object.keys(dimensions);
+
   linesRenderer({
     index,
     nameKey,
@@ -45,6 +46,7 @@ function drawParallelLines({
     attributesRef,
     isVisibleColorIndicator,
   });
+
   linesRef.current.updateLines = function (updatedData: ILineDataType[]) {
     linesNodeRef.current?.selectAll('*')?.remove();
     attributesNodeRef.current?.selectAll('*')?.remove();
@@ -72,16 +74,18 @@ function linesRenderer({
   isVisibleColorIndicator,
 }: ILineRendererArgs) {
   data.forEach(({ values: line, key, color, dasharray }: ILineDataType) => {
-    const arrayOfPathData: InitialPathDataType[] = [cloneDeep(initialPathData)];
+    const arrayOfPathData: InitialPathDataType[] = [
+      _.cloneDeep(initialPathData),
+    ];
     let pathDataArrayIndex: number = 0;
     for (let i = 0; i < keysOfDimensions.length; i++) {
       const keyOfDimension: string = keysOfDimensions[i];
-      if (isNil(line[keyOfDimension])) {
+      if (_.isNil(line[keyOfDimension])) {
         if (i === 0) continue;
         let nextStep: number = 1;
         while (
           keysOfDimensions[i + nextStep] &&
-          isNil(line[keysOfDimensions[i + nextStep]])
+          _.isNil(line[keysOfDimensions[i + nextStep]])
         ) {
           nextStep++;
         }
@@ -103,7 +107,8 @@ function linesRenderer({
             isEmpty: false,
             isDotted: true,
           };
-          arrayOfPathData[pathDataArrayIndex + 2] = cloneDeep(initialPathData);
+          arrayOfPathData[pathDataArrayIndex + 2] =
+            _.cloneDeep(initialPathData);
           pathDataArrayIndex = pathDataArrayIndex + 2;
         }
         i = i + nextStep - 1;
@@ -159,6 +164,7 @@ function drawParallelLine({
   if (!linesNodeRef.current) {
     return;
   }
+
   linesNodeRef.current
     .append('path')
     .lower()

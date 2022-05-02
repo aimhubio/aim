@@ -1,16 +1,14 @@
 import sys
 import os
-import io
+
 from shutil import rmtree
 from setuptools import find_packages, setup, Command, Extension
 from Cython.Build import cythonize
 
 version_file = 'aim/VERSION'
 
-__version__ = None
 with open(version_file) as vf:
     __version__ = vf.read().strip()
-
 
 here = os.path.abspath(os.path.dirname(__file__))
 
@@ -21,7 +19,7 @@ VERSION = __version__
 REQUIRES_PYTHON = '>=3.6.0'
 
 # Get packages
-packages = find_packages(exclude=('tests',))
+packages = find_packages(exclude=('tests', 'aim.web.ui'))
 
 
 # Get a list of all files in the html directory to include in our module
@@ -33,7 +31,6 @@ def package_files(directory):
     return paths
 
 
-ui_files = package_files('aim/web/ui/build')
 migration_files = package_files('aim/web/migrations')
 storage_migration_files = package_files('aim/storage/migrations')
 version_files = ['../aim/VERSION', ]
@@ -47,15 +44,14 @@ SETUP_REQUIRED = [
 
 # What packages are required for this module to be executed?
 REQUIRED = [
+    f'aim-ui=={__version__}',
     'aimrecords==0.0.7',
     'aimrocks==0.1.0',
     'cachetools>=4.0.0',
     'click>=7.0',
     'cryptography>=3.0',
     'filelock>=3.0.0',
-    'GitPython>=3.0.4',
     'numpy>=1.12.0',
-    'packaging>=19.0',
     'protobuf>=3.11.0',
     'psutil>=5.6.7',
     'py3nvml>=0.2.5',
@@ -63,15 +59,16 @@ REQUIRED = [
     'tqdm>=4.20.0',
     'aiofiles>=0.5.0',
     'alembic>=1.4.0',
-    'async-exit-stack>=1.0.0',
-    'async-generator>=1.0',
     'fastapi>=0.65.0,<0.68.0',
-    'jinja2>=2.10.0,<3.1.0',
+    'jinja2>=2.10.0',
     'pytz>=2019.1',
     'SQLAlchemy>=1.4.1',
     'uvicorn>=0.12.0',
-    'Pillow>=8.1.0',
+    'Pillow>=8.0.0',
     'grpcio==1.42.0',
+    # fastapi to support python3.6
+    'async-exit-stack>=1.0.0; python_version<"3.7"',
+    'async-generator>=1.0; python_version<"3.7"',
 ]
 
 
@@ -128,7 +125,7 @@ setup(
     setup_requires=SETUP_REQUIRED,
     install_requires=REQUIRED,
     packages=packages,
-    package_data={'aim': ui_files + migration_files + storage_migration_files + version_files},
+    package_data={'aim': migration_files + storage_migration_files + version_files},
     include_package_data=True,
     classifiers=[
         'License :: OSI Approved :: MIT License',
@@ -215,5 +212,5 @@ setup(
     },
     cmdclass={
         'upload': UploadCommand
-    },
+    }
 )

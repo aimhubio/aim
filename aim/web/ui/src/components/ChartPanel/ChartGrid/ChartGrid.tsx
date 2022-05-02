@@ -5,8 +5,7 @@ import { Grid, GridSize } from '@material-ui/core';
 import ErrorBoundary from 'components/ErrorBoundary/ErrorBoundary';
 import { CHART_TYPES_CONFIG } from 'components/ChartPanel/config';
 
-import CHART_GRID_PATTERN from 'config/chart-grid-pattern/chartGridPattern';
-import { GRID_SIZE } from 'config/chart-grid-pattern/chartGridPattern';
+import { GRID_SIZE, CHART_GRID_PATTERN } from 'config/charts';
 
 import { IChartGridProps } from './ChartGrid.d';
 
@@ -20,6 +19,7 @@ function ChartGrid({
   chartProps,
   readOnly = false,
   syncHoverState,
+  resizeMode,
 }: IChartGridProps): React.FunctionComponentElement<React.ReactNode> {
   function getGridSize(dataLength: number, index: number): GridSize {
     return (
@@ -32,7 +32,12 @@ function ChartGrid({
         const Component = CHART_TYPES_CONFIG[chartType];
         const gridSize = getGridSize(data.length, index);
         return (
-          <Grid key={index} item className='ChartGrid' xs={gridSize}>
+          <Grid
+            key={`${index}-${resizeMode}`}
+            item
+            className='ChartGrid'
+            xs={gridSize}
+          >
             <Component
               ref={chartRefs[index]}
               nameKey={nameKey}
@@ -41,6 +46,7 @@ function ChartGrid({
               readOnly={readOnly}
               data={chartData}
               syncHoverState={syncHoverState}
+              resizeMode={resizeMode}
             />
           </Grid>
         );

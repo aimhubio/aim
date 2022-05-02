@@ -93,6 +93,7 @@ const ChartPanel = React.forwardRef(function ChartPanel(
         setActivePointRect(null);
       }
     },
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     [chartRefs, setActiveElemPos, props.chartType, props.onActivePointChange],
   );
 
@@ -124,7 +125,7 @@ const ChartPanel = React.forwardRef(function ChartPanel(
         chartRef.current?.setFocusedState?.(props.focusedState);
       });
     }
-  }, [chartRefs, props.focusedState, props.panelResizing]);
+  }, [chartRefs, props.focusedState, props.panelResizing, props.resizeMode]);
 
   React.useEffect(() => {
     const debouncedScroll = _.debounce(onScroll, 100);
@@ -155,6 +156,7 @@ const ChartPanel = React.forwardRef(function ChartPanel(
                     chartRefs={chartRefs}
                     chartType={props.chartType}
                     syncHoverState={syncHoverState}
+                    resizeMode={props.resizeMode}
                   />
                 </Grid>
                 <ErrorBoundary>
@@ -178,7 +180,7 @@ const ChartPanel = React.forwardRef(function ChartPanel(
               </Grid>
             </ErrorBoundary>
             <ErrorBoundary>
-              <Grid className='ChartPanel__controls' item>
+              <Grid className='ChartPanel__controls ScrollBar__hidden' item>
                 {props.controls}
               </Grid>
             </ErrorBoundary>
