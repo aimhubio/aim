@@ -23,4 +23,21 @@ export const MonacoConfig: any = {
       seedSearchStringFromSelection: 'never',
     },
   },
+  theme: {
+    base: 'vs',
+    inherit: true,
+    rules: [{ background: 'ffffff' }],
+    colors: {
+      'editor.foreground': '#000000',
+      'editor.background': '#ffffff',
+      'editorCursor.foreground': '#83899e',
+      'dropdown.background': '#fff',
+      'editorSuggestWidget.background': '#fff',
+      'editorSuggestWidget.border': '#dceafb',
+      'editorSuggestWidget.selectedBackground': '#dceafb',
+      // findMatchHighlightBackground: '#fff',
+      'editorSuggestWidget.foreground': '#414b6d',
+      'editorSuggestWidget.highlightForeground': '#414b6d',
+    },
+  },
 };

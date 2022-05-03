@@ -13,14 +13,15 @@ import { IAutocompleteInputProps } from './ AutocompleteInput';
 import './AutocompleteInput.scss';
 
 // loading monaco from node modules instead of CDN
-loader.config({ monaco });
+// loader.config({ monaco });
 
 function AutocompleteInput({
   context,
-  onEnter,
   className,
-  onChange,
   monacoProps = {},
+  //callback functions
+  onEnter,
+  onChange,
 }: IAutocompleteInputProps) {
   const [focused, setFocused] = React.useState<boolean>(false);
   const [value, setValue] = React.useState<string>('');
@@ -35,6 +36,9 @@ function AutocompleteInput({
 
   function handleDidMount(editor: any) {
     editorRef.current = editor;
+
+    // monacoInstance?.editor.defineTheme('myTheme', MonacoConfig.theme);
+    // monacoInstance?.editor.setTheme('myTheme');
     editorRef.current.onDidFocusEditorWidget(() => {
       setFocused(true);
     });
@@ -43,11 +47,18 @@ function AutocompleteInput({
     });
   }
 
+  React.useEffect(() => {
+    if (focused) {
+      editorRef.current?.focus();
+      monacoInstance?.editor.defineTheme('myTheme', MonacoConfig.theme);
+      monacoInstance?.editor.setTheme('myTheme');
+    }
+  }, [focused]);
   function handleChange(
     val: string | undefined,
     ev: monaco.editor.IModelContentChangedEvent,
   ) {
-    if (val) {
+    if (typeof val === 'string') {
       // formatting value to avoid the new line
       let formatted = val.replace(/[\n\r]/g, '');
       if (ev.changes[0].text === '\n') {
@@ -63,10 +74,12 @@ function AutocompleteInput({
     }
   }
 
+  function handleBeforeMount() {}
   return (
     <div
+      onClick={() => setFocused(true)}
       className={classNames(`AutocompleteInput ${className || ''}`, {
-        focused,
+        AutocompleteInput__focused: focused,
       })}
     >
       <Editor
@@ -75,9 +88,18 @@ function AutocompleteInput({
         value={value}
         onChange={handleChange}
         onMount={handleDidMount}
+        loading={<span></span>}
         options={MonacoConfig.options}
-        {...monacoProps}
+        beforeMount={handleBeforeMount}
+        // {...monacoProps}
       />
+      {!focused && !value && (
+        <div className='AutocompleteInput__placeholder'>
+          {
+            'Filter runs, e.g. run.learning_rate > 0.0001 and run.batch_size == 32'
+          }
+        </div>
+      )}
     </div>
   );
 }

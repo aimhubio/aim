@@ -28,8 +28,8 @@ function SearchBar({
     };
   }, []);
 
-  function handleRunSearch(e: React.ChangeEvent<any>) {
-    e.preventDefault();
+  function handleRunSearch(e?: React.ChangeEvent<any>) {
+    e?.preventDefault();
     if (isRunsDataLoading) {
       return;
     }
@@ -54,16 +54,11 @@ function SearchBar({
     <ErrorBoundary>
       <div className='Runs_Search_Bar'>
         <form onSubmit={handleRunSearch}>
-          {/* <ExpressionAutoComplete
-            onExpressionChange={onSearchInputChange}
-            onSubmit={handleRunSearch}
-            value={searchValue}
-            options={searchSuggestions}
-            placeholder='Filter runs, e.g. run.learning_rate > 0.0001 and run.batch_size == 32'
-          /> */}
-          <div style={{ maxWidth: 500 }}>
-            <AutocompleteInput context={searchSuggestions} />
-          </div>
+          <AutocompleteInput
+            onEnter={handleRunSearch}
+            onChange={onSearchInputChange}
+            context={searchSuggestions}
+          />
         </form>
         <Divider style={{ margin: '0 1em' }} orientation='vertical' flexItem />
         <Button

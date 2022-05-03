@@ -7,5 +7,8 @@ export interface IAutocompleteInputProps {
   onEnter?: () => void;
   className?: string;
   monacoProps?: EditorProps;
-  onChange?: (val: string, ev: monaco.editor.IModelContentChangedEvent) => void;
+  onChange?: (
+    val: string,
+    ev?: monaco.editor.IModelContentChangedEvent,
+  ) => void;
 }

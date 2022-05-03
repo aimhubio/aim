@@ -117,7 +117,7 @@ function getSuggestions(monaco: Monaco, options: Record<string, string>) {
             label: prop,
             kind: getType(monaco, lastToken[prop], isMember),
             insertText: prop,
-            detail: JSON.stringify(get(options, prefix + prop)),
+            // detail: JSON.stringify(get(options, prefix + prop)),
             range,
           };
 

@@ -3,12 +3,31 @@
 .AutocompleteInput {
   height: 2rem;
   max-width: 100vw;
-  border: $border-grey;
+  border: $border-grey-light;
   display: flex;
   align-items: center;
   border-radius: $border-radius-main;
   padding: 0.5rem;
   color: $text-color;
+  position: relative;
+  &__focused {
+    border: $border-grey;
+  }
+  &__placeholder {
+    position: absolute;
+    left: 8px;
+    color: $text-color-50;
+    max-width: 95%;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    font-family: 'Iosevka';
+    font-size: $text-md;
+    top: 6px;
+  }
+  .suggest-widget .monaco-list-row.focused {
+    color: #ff6a00;
+  }
   .mtk1 {
     color: $pico;
   }

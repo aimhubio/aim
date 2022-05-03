@@ -40,7 +40,7 @@ module.exports = {
     }
 
     // Add external variable for base path support.
-    config.plugins.push(new MonacoWebpackPlugin({ languages: ['python'] }));
+    config.plugins.push(new MonacoWebpackPlugin());
     config.plugins.push(
       new WebpackDynamicPublicPathPlugin({
         externalPublicPath: 'window.externalPublicPath',
