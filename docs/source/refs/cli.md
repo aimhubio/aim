@@ -4,13 +4,14 @@ Aim CLI offers a simple interface to easily organize and record your experiments
 a powerful utility to record, search and compare AI experiments. Here are the set of commands supported:
 
 | Command   | Description                                                                               |
-| --------- | ----------------------------------------------------------------------------------------- |
+|-----------|-------------------------------------------------------------------------------------------|
 | `init`    | Initialize the `aim` repository.                                                          |
 | `version` | Displays the version of aim cli currently installed.                                      |
 | `up`      | Runs Aim web UI for the given repo.                                                       |
 | `upgrade` | Upgrades legacy Aim repository from `2.x` to `3.0`.                                       |
 | `reindex` | Process runs left in 'in progress' state and optimized finished runs.                     |
 | `server`  | Run `aim` remote tracking server accepting incoming RPC requests. _Experimental feature._ |
+| `repo`    | Manage given repo data.                                                                   |
 | `runs`    | Manage run data for the given repo.                                                       |
 | `convert` | Tool-set for converting 3rd party data into Aim readable format.                          |
 
@@ -115,6 +116,25 @@ $ aim server [ARGS]
 | `--ssl-keyfile`                   | Specify path to keyfile for secure connection.                                   |
 | `--ssl-certfile`                  | Specify path to cert. file for secure connection.                                |
 | `--log-level`                     | Specifies log level for python logging package. _`WARNING` by default_.          |
+
+### repo
+
+Manage Aim repository
+
+```shell
+$ aim repo [ARGS] SUBCOMMAND
+```
+
+| Args                 | Description                                                                      |
+|----------------------| -------------------------------------------------------------------------------- |
+| `--path <repo_path>` | Path to parent directory of `.aim` repo. _Current working directory by default_. |
+
+__repo subcommands__
+
+| Sub-command | Description                                           |
+|-------------|-------------------------------------------------------|
+| `cleanup`   | Remove orphan/dangling params with no referring runs. |
+
 
 ### runs
 
