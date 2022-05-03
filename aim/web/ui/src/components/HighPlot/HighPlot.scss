@@ -57,6 +57,25 @@
         }
       }
     }
+    .axisBrush{
+      &:active{
+        .handle{
+          fill: $cuddle-110;
+        }
+      }
+      .handle{
+        fill: none;
+      }
+      .selection{
+        fill: $pico-50;
+        stroke: none;
+      }
+      &:hover{
+        .handle{
+          fill: $cuddle-110;
+        }
+      }
+    }
   }
 
   &.backgroundRect {

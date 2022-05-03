@@ -37,7 +37,7 @@ function drawParallelAxesBrush({
     keyOfDimension: string,
   ): void {
     const extent: d3.BrushSelection | any = event.selection;
-    let brushPosition: [number, number] | null = null;
+    let brushPosition: any = null;
     if (!_.isNil(extent)) {
       if (dimensions[keyOfDimension].scaleType === 'point') {
         const domainData = scalePointDomainData(
@@ -45,6 +45,7 @@ function drawParallelAxesBrush({
           extent,
         );
         brushRef.current.domainsData[keyOfDimension] = domainData;
+        brushPosition = [domainData[0], _.last(domainData)];
       } else {
         const top: number = brushRef.current.yScale[keyOfDimension].invert(
           extent[0],
@@ -53,9 +54,8 @@ function drawParallelAxesBrush({
           extent[1],
         );
         brushRef.current.domainsData[keyOfDimension] = [bottom, top];
+        brushPosition = [bottom, top];
       }
-      const range = brushRef.current.yScale[keyOfDimension].range();
-      brushPosition = [range[0] / extent[0], range[0] / extent[1]];
     } else {
       brushRef.current.domainsData[keyOfDimension] =
         dimensions[keyOfDimension].domainData;
@@ -94,6 +94,7 @@ function drawParallelAxesBrush({
   plotNodeRef.current
     .selectAll('.Axis')
     .append('g')
+    .attr('class', 'axisBrush')
     .each(function (this: any, keyOfDimension: string) {
       const brushExtent = brushExtents?.[keyOfDimension];
       d3.select(this).call(
@@ -109,18 +110,21 @@ function drawParallelAxesBrush({
       );
       if (brushExtent) {
         const yScale = brushRef.current.yScale[keyOfDimension];
-        const range = yScale.range();
-        const extent = [range[0] / brushExtent[0], range[0] / brushExtent[1]];
-        d3.select(this).call(d3.brush().move, [
-          [-15, extent[0]],
-          [15, extent[1]],
-        ]);
-        handleBrushChange(
-          {
-            selection: extent,
-          } as any,
-          keyOfDimension,
-        );
+        const extent = [yScale(brushExtent[1]), yScale(brushExtent[0])];
+        if (!_.isNil(extent[0]) && !_.isNil(extent[1])) {
+          d3.select(this).call(d3.brush().move, [
+            [-15, extent[0]],
+            [15, extent[1]],
+          ]);
+          handleBrushChange(
+            {
+              selection: extent,
+            } as any,
+            keyOfDimension,
+          );
+        } else {
+          onAxisBrashExtentChange(keyOfDimension, null);
+        }
       }
     });
 }
@@ -152,7 +156,7 @@ function filterDataByBrushedScale({
     const { scaleType } = dimensions[keyOfDimension];
     if (
       value !== null &&
-      ((scaleType === 'point' && !domainData.includes(value)) ||
+      ((scaleType === 'point' && !domainData?.includes(value)) ||
         (scaleType !== 'point' &&
           (domainData[0] > value || domainData[1] < value)))
     ) {

@@ -10,7 +10,7 @@ export default function onAxisBrashExtentChange<M extends State>({
   updateModelData,
 }: {
   key: string;
-  extent: [number, number] | null;
+  extent: [number, number] | [string, string] | null;
   model: IModel<M>;
   updateModelData: (
     configData: IAppModelConfig | any,
@@ -19,7 +19,9 @@ export default function onAxisBrashExtentChange<M extends State>({
 }): void {
   const configData = model.getState()?.config;
   if (configData?.chart) {
-    let brushExtents = { ...configData.chart.brushExtents };
+    let brushExtents: { [key: string]: [number, number] | [string, string] } = {
+      ...configData.chart.brushExtents,
+    };
     if (_.isNil(extent)) {
       brushExtents = _.omit(brushExtents, key);
     } else {

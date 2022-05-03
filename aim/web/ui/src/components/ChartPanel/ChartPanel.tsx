@@ -157,6 +157,7 @@ const ChartPanel = React.forwardRef(function ChartPanel(
                     chartType={props.chartType}
                     syncHoverState={syncHoverState}
                     resizeMode={props.resizeMode}
+                    chartPanelOffsetHeight={props.chartPanelOffsetHeight}
                   />
                 </Grid>
                 <ErrorBoundary>

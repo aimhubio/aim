@@ -5,6 +5,7 @@ import { ANALYTICS_EVENT_KEYS } from 'config/analytics/analyticsKeysMap';
 
 import useModel from 'hooks/model/useModel';
 import usePanelResize from 'hooks/resize/usePanelResize';
+import useResizeObserver from 'hooks/window/useResizeObserver';
 
 import paramsAppModel from 'services/models/params/paramsAppModel';
 import * as analytics from 'services/analytics';
@@ -32,7 +33,9 @@ function ParamsContainer(): React.FunctionComponentElement<React.ReactNode> {
     useModel<Partial<IParamsAppModelState | any>>(paramsAppModel);
   const route = useRouteMatch<any>();
   const history = useHistory();
-
+  const [chartPanelOffsetHeight, setChartPanelOffsetHeight] = React.useState(
+    chartElemRef?.current?.offsetWidth,
+  );
   const panelResizing = usePanelResize(
     wrapperElemRef,
     chartElemRef,
@@ -41,6 +44,12 @@ function ParamsContainer(): React.FunctionComponentElement<React.ReactNode> {
     paramsData?.config?.table,
     paramsAppModel.onTableResizeEnd,
   );
+
+  useResizeObserver(() => {
+    if (chartElemRef?.current?.offsetHeight !== chartPanelOffsetHeight) {
+      setChartPanelOffsetHeight(chartElemRef?.current?.offsetHeight);
+    }
+  }, chartElemRef);
 
   React.useEffect(() => {
     if (tableRef.current && chartPanelRef.current) {
@@ -126,6 +135,7 @@ function ParamsContainer(): React.FunctionComponentElement<React.ReactNode> {
       isVisibleColorIndicator={
         paramsData?.config?.chart?.isVisibleColorIndicator!
       }
+      chartPanelOffsetHeight={chartPanelOffsetHeight}
       groupingData={paramsData?.config?.grouping!}
       selectedParamsData={paramsData?.config?.select!}
       sortFields={paramsData?.config?.table?.sortFields!}

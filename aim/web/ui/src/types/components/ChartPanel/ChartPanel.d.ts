@@ -26,6 +26,7 @@ export interface IChartPanelProps {
   aggregationConfig?: IAggregationConfig;
   alignmentConfig?: IAlignmentConfig;
   zoom?: Partial<IChartZoom>;
+  chartPanelOffsetHeight?: number;
   // chartProps: Omit<
   //   ILineChartProps | IHighPlotProps,
   //   'data' | 'index' | 'syncHoverState'
@@ -41,7 +42,7 @@ export interface IChartPanelProps {
   resizeMode?: ResizeModeEnum;
 }
 
-export interface IChartPanelRef {
+export interface IChartPanelRef extends HTMLDivElement {
   setActiveLineAndCircle?: (
     lineKey?: string,
     focusedStateActive: boolean = false,

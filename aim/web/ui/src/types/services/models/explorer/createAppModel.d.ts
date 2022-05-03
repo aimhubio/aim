@@ -136,7 +136,7 @@ export interface IHighPlotConfig {
   isVisibleColorIndicator: boolean;
   focusedState: IFocusedState;
   tooltip: IChartTooltip;
-  brushExtents: { [key: string]: [number, number] };
+  brushExtents: { [key: string]: [number, number] | [string, string] };
 }
 
 export interface ILineChartConfig {

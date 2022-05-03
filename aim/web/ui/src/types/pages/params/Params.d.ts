@@ -35,6 +35,7 @@ export interface IParamsProps extends Partial<RouteChildrenProps> {
   tableElemRef: React.RefObject<HTMLDivElement>;
   wrapperElemRef: React.RefObject<HTMLDivElement>;
   resizeElemRef: React.RefObject<HTMLDivElement>;
+  chartPanelOffsetHeight?: number;
   curveInterpolation: CurveEnum;
   panelResizing: boolean;
   requestStatus: RequestStatusEnum;
@@ -55,7 +56,7 @@ export interface IParamsProps extends Partial<RouteChildrenProps> {
   onColumnsOrderChange: any;
   tableData: any;
   selectedRows: { [key: string]: any };
-  brushExtents: { [key: string]: [number, number] };
+  brushExtents: { [key: string]: [number, number] | [string, string] };
   onTableRowHover?: (rowKey?: string) => void;
   onTableRowClick?: (rowKey?: string) => void;
   tableColumns: any;
@@ -94,7 +95,7 @@ export interface IParamsProps extends Partial<RouteChildrenProps> {
   onShuffleChange: (name: 'stroke' | 'color') => void;
   onAxisBrashExtentChange: (
     key: string,
-    extent: [number, number] | null,
+    extent: [number, number] | [string, string] | null,
   ) => void;
   columnsWidths: { [key: string]: number };
   liveUpdateConfig: { delay: number; enabled: boolean };

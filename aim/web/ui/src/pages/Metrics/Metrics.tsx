@@ -133,6 +133,7 @@ function Metrics(
                   <ChartPanel
                     key={props.lineChartData?.length}
                     ref={props.chartPanelRef}
+                    chartPanelOffsetHeight={props.chartPanelOffsetHeight}
                     panelResizing={props.panelResizing}
                     chartType={ChartTypeEnum.LineChart}
                     data={props.lineChartData}

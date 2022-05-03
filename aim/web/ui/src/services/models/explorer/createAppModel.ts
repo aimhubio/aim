@@ -3874,6 +3874,31 @@ function createAppModel(appConfig: IAppInitialConfig) {
           });
         }
 
+        if (!_.isEmpty(configData.chart?.brushExtents)) {
+          const selectOptionList = configData.select?.options.map(
+            (option: ISelectOption) => {
+              if (option.type === 'metrics' && option.value) {
+                return `${option.value.option_name}-${contextToString(
+                  option.value.context,
+                )}`;
+              }
+              return option.label;
+            },
+          );
+          const chart = { ...configData.chart };
+          let brushExtents = { ...chart?.brushExtents };
+          const brushExtentsKeys = Object.keys(brushExtents);
+          brushExtentsKeys.forEach((key: string) => {
+            if (!selectOptionList?.includes(key)) {
+              brushExtents = _.omit(brushExtents, key);
+            }
+          });
+          configData = {
+            ...configData,
+            chart: { ...configData.chart, brushExtents },
+          };
+        }
+
         model.setState({
           requestStatus: RequestStatusEnum.Ok,
           data,
@@ -4594,7 +4619,7 @@ function createAppModel(appConfig: IAppInitialConfig) {
           },
           onAxisBrashExtentChange(
             key: string,
-            extent: [number, number] | null,
+            extent: [number, number] | [string, string] | null,
           ): void {
             onAxisBrashExtentChange({
               key,

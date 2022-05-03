@@ -11,9 +11,9 @@ export interface IDrawParallelAxesBrushBrushArgs {
   linesRef: React.MutableRefObject<>;
   onAxisBrashExtentChange: (
     key: string,
-    extent: [number, number] | null,
+    extent: [number, number] | [string, string] | null,
   ) => void;
-  brushExtents: { [key: string]: [number, number] };
+  brushExtents: { [key: string]: [number, number] | [string, string] };
   data: ILineDataType[];
   dimensions: IDimensionsType;
 }
