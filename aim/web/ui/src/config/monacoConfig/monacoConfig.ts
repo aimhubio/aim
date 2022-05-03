@@ -35,9 +35,11 @@ export const MonacoConfig: any = {
       'editorSuggestWidget.background': '#fff',
       'editorSuggestWidget.border': '#dceafb',
       'editorSuggestWidget.selectedBackground': '#dceafb',
-      // findMatchHighlightBackground: '#fff',
+      'editorSuggestWidget.selectedForeground': '#414b6d',
+      'editorSuggestWidget.highlightForeground': '#1c2852',
+      'editorSuggestWidget.focusHighlightForeground': '#1c2852',
       'editorSuggestWidget.foreground': '#414b6d',
-      'editorSuggestWidget.highlightForeground': '#414b6d',
+      'list.hoverBackground': '#dceafb',
     },
   },
 };
