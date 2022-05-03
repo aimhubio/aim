@@ -13,7 +13,7 @@ import alphabeticalSortComparator from 'utils/alphabeticalSortComparator';
 import { encode } from 'utils/encoder/encoder';
 import getObjectPaths from 'utils/getObjectPaths';
 import { getDataAsMediaSetNestedObject } from 'utils/app/getDataAsMediaSetNestedObject';
-import { getValue } from 'utils/helper';
+import { float64FromUint8, getValue } from 'utils/helper';
 
 import imagesExploreAppModel from '../imagesExplore/imagesExploreAppModel';
 
@@ -211,7 +211,7 @@ export function processDistributionsData(data: Partial<DistributionsData>) {
 
   if (values) {
     values.forEach((value: DistributionValue) => {
-      const parsedBlob: number[] = [...new Float64Array(value.data.blob)];
+      const parsedBlob: number[] = [...float64FromUint8(value.data.blob)];
 
       const bin = [];
       const xMin = value.range[0];
