@@ -15,10 +15,12 @@ function drawParallelAxesBrush({
   plotNodeRef,
   dimensions,
   data,
+  visBoxRef,
   linesRef,
   brushExtents,
   onAxisBrashExtentChange,
   attributesRef,
+  index,
 }: IDrawParallelAxesBrushBrushArgs): void {
   if (!brushRef.current.domainsData) {
     brushRef.current.xScale = attributesRef.current.xScale;
@@ -61,7 +63,7 @@ function drawParallelAxesBrush({
         dimensions[keyOfDimension].domainData;
     }
     if (event.type === 'end') {
-      onAxisBrashExtentChange(keyOfDimension, brushPosition);
+      onAxisBrashExtentChange(keyOfDimension, brushPosition, index);
     }
     updateLinesAndHoverAttributes(brushRef, keyOfDimension, extent);
   }
@@ -80,23 +82,30 @@ function drawParallelAxesBrush({
     );
     linesRef.current.updateLines(filteredData);
     linesRef.current.data = filteredData;
-    attributesRef.current.updateFocusedChart({
-      mouse: [brushRef.current.xScale(keyOfDimension), extent ? extent[0] : 1],
-      force: true,
-    });
+
+    if (!_.isNil(attributesRef.current.focusedState?.yValue)) {
+      attributesRef.current.updateFocusedChart({
+        mouse: [
+          brushRef.current.xScale(keyOfDimension),
+          brushRef.current.yScale[keyOfDimension](
+            attributesRef.current.focusedState?.yValue,
+          ) + visBoxRef.current.margin.top,
+        ],
+        force: true,
+      });
+    }
   }
 
   function handleBrushStart(event: d3.D3BrushEvent<d3.BrushSelection>): void {
     event?.sourceEvent?.stopPropagation();
   }
-
   const brushHeight = plotBoxRef.current.height;
   plotNodeRef.current
     .selectAll('.Axis')
     .append('g')
     .attr('class', 'axisBrush')
     .each(function (this: any, keyOfDimension: string) {
-      const brushExtent = brushExtents?.[keyOfDimension];
+      const brushExtent = brushExtents?.[index]?.[keyOfDimension];
       d3.select(this).call(
         d3
           .brushY()
@@ -123,7 +132,7 @@ function drawParallelAxesBrush({
             keyOfDimension,
           );
         } else {
-          onAxisBrashExtentChange(keyOfDimension, null);
+          onAxisBrashExtentChange(keyOfDimension, null, index);
         }
       }
     });

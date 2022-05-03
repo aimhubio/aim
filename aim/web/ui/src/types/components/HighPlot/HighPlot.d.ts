@@ -8,13 +8,18 @@ import { CurveEnum } from 'utils/d3';
 export interface IHighPlotProps {
   index: number;
   nameKey?: string;
-  brushExtents: { [key: string]: [number, number] | [string, string] };
+  brushExtents: {
+    [key: string]: {
+      [key: string]: [number, number] | [string, string];
+    };
+  };
   curveInterpolation: CurveEnum;
   isVisibleColorIndicator: boolean;
   syncHoverState: (args: ISyncHoverStateArgs) => void;
   onAxisBrashExtentChange: (
     key: string,
     extent: [number, number] | [string, string] | null,
+    chartIndex: number,
   ) => void;
   data: any;
   chartTitle?: IChartTitle;

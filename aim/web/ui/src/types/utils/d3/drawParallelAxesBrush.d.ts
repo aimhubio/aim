@@ -8,14 +8,21 @@ export interface IDrawParallelAxesBrushBrushArgs {
   plotNodeRef: React.MutableRefObject<>;
   brushRef: React.MutableRefObject<>;
   attributesRef: React.MutableRefObject<>;
+  visBoxRef: React.MutableRefObject<>;
   linesRef: React.MutableRefObject<>;
   onAxisBrashExtentChange: (
     key: string,
     extent: [number, number] | [string, string] | null,
+    chartIndex: number,
   ) => void;
-  brushExtents: { [key: string]: [number, number] | [string, string] };
+  brushExtents: {
+    [key: string]: {
+      [key: string]: [number, number] | [string, string];
+    };
+  };
   data: ILineDataType[];
   dimensions: IDimensionsType;
+  index: number;
 }
 
 export type DomainsDataType = {

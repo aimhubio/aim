@@ -153,11 +153,13 @@ const HighPlot = React.forwardRef(function HighPlot(
         plotNodeRef,
         brushRef,
         linesRef,
+        visBoxRef,
         attributesRef,
         brushExtents,
         onAxisBrashExtentChange,
         dimensions: data.dimensions,
         data: data.data,
+        index,
       });
     }
   }
