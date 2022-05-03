@@ -115,6 +115,10 @@ class ResourceTracker(object):
         stat_time_counter = 0
         log_capture_time_counter = 0
 
+        # store initial system usage stats
+        stat = Stat(self._process)
+        self._track(stat)
+
         while True:
             # Get system statistics
             if self._shutdown:
