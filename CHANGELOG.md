@@ -13,6 +13,14 @@
 
 ## 3.9.2 Apr 29, 2022
 
+- Move aim_ui package data to separate directory (devfox-se)
+
+## 3.9.1 Apr 29, 2022
+
+- Move aim_ui package data to separate directory (devfox-se)
+
+## 3.9.0 Apr 29, 2022
+
 ### Enhancements:
 
 - Add `Notes Tab` to single run page (arsengit)
