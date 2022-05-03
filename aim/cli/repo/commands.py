@@ -37,18 +37,18 @@ def cleanup(ctx):
     """Clean dangling/orphan params with no referring runs."""
 
     def flatten(d, parent_key=''):
-        all_items = []
+        all_items = set()
         for k, v in d.items():
             if k == '__example_type__':
                 continue
             new_key = parent_key + '.' + k if parent_key else k
-            all_items.append(new_key)
+            all_items.add(new_key)
             if isinstance(v, collections.MutableMapping):
-                all_items.extend(flatten(v, new_key))
+                all_items.update(flatten(v, new_key))
         return all_items
 
     repo = ctx.obj['repo']
-    repo_params = set(flatten(repo.collect_params_info()))
+    repo_params = flatten(repo.collect_params_info())
     run_params = set()
 
     run_hashes = list_repo_runs(repo.path)
@@ -67,7 +67,7 @@ def cleanup(ctx):
     def remove_nested_key(entry, seq):
         if len(seq) > 1:
             entry[seq[0]] = remove_nested_key(entry[seq[0]], seq[1:])
-        if len(seq) == 1:
+        elif len(seq) == 1:
             del entry[seq[0]]
         return entry
 
