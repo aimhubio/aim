@@ -150,8 +150,8 @@ class ResourceTracker(object):
 
         ansi_csi_re = re.compile(b"\001?\033\\[((?:\\d|;)*)([a-zA-Z])\002?")
 
-        def _handle_csi(l):
-            for match in ansi_csi_re.finditer(l):
+        def _handle_csi(line):
+            for match in ansi_csi_re.finditer(line):
                 arg, command = match.groups()
                 arg = int(arg.decode()) if arg else 1
                 if command == b'A':  # cursor up
@@ -188,4 +188,3 @@ class ResourceTracker(object):
     def _uninstall_stream_patches(self):
         sys.stdout.write = self._old_out_write
         sys.stderr.write = self._old_err_write
-

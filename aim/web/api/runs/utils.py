@@ -249,6 +249,24 @@ def collect_requested_metric_traces(run: Run, requested_traces: List[TraceBase],
     return processed_traces_list
 
 
+async def run_logs_streamer(run: Run, record_range: str) -> bytes:
+    logs = run.get_terminal_logs()
+
+    if not logs:
+        return
+
+    record_range = checked_range(record_range)
+    if not record_range.start:
+        record_range.start = max(logs.last_step() - 100, 0)
+    if not record_range.stop:
+        record_range.stop = logs.last_step()
+
+    steps_vals = logs.values.items_in_range(record_range.start, record_range.stop)
+    for step, val in steps_vals:
+        encoded_tree = encode_tree({step: val.data})
+        yield collect_run_streamable_data(encoded_tree)
+
+
 def get_project():
     project = Project()
     if not project.exists():
