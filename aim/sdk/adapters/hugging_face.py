@@ -1,5 +1,5 @@
 from logging import getLogger
-from typing import Any, Dict, Optional
+from typing import Optional
 
 from aim.ext.resource.configs import DEFAULT_SYSTEM_TRACKING_INT
 from aim.sdk.num_utils import is_number
