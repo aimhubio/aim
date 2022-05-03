@@ -11,6 +11,8 @@
 
 ### Fixes:
 
+- Fix affecting stroke types after changing color persistence (KaroMourad)
+
 ## 3.9.2 Apr 29, 2022
 
 - Move aim_ui package data to separate directory (devfox-se)
