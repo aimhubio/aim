@@ -8,6 +8,7 @@
 - Add support for animated image formats to Aim Image object (devfox-se)
 - Add `AimLogger` for Catboost (devfox-se)
 - Add `AimCallback` for LightGBM (devfox-se)
+- Add CLI command to remove params with no referring runs (devfox-se)
 
 ### Fixes:
 
