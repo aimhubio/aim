@@ -261,7 +261,7 @@ async def run_logs_streamer(run: Run, record_range: str) -> bytes:
     if not record_range.start:
         start = max(logs.last_step() - 100, 0)
     if not record_range.stop:
-        stop = logs.last_step()
+        stop = logs.last_step() + 1
 
     steps_vals = logs.values.items_in_range(start, stop)
     for step, val in steps_vals:

@@ -146,12 +146,9 @@ class ResourceTracker(object):
         # read and reset the buffer
         data = self._io_buffer.read(_buffer_size)
         self._io_buffer.seek(0)
-
         # handle the buffered data and store
-        lines = data.split(b'\n')
-        if len(lines) == 1:  # we're still on the same line
-            self._line_counter -= 1
 
+        lines = data.split(b'\n')
         ansi_csi_re = re.compile(b"\001?\033\\[((?:\\d|;)*)([a-zA-Z])\002?")
 
         def _handle_csi(line):
@@ -169,6 +166,10 @@ class ResourceTracker(object):
             _handle_csi(line)
             self._track_func()(log_line, name='logs', step=self._line_counter)
             self._line_counter += 1
+
+        # if there was no b'\n' at the end of the data, don't move down the cursor
+        if lines[-1] != '':
+            self._line_counter -= 1
 
     def _install_stream_patches(self):
         self._old_out_write = sys.stdout.write
