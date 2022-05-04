@@ -23,9 +23,9 @@ export interface IRunDetailSettingsTabProps {
 export interface IRunBatch {
   key: string;
   context: { [key: string]: string };
-  iters: number[];
   name: string;
-  values: number[];
+  iters: Float64Array;
+  values: Float64Array;
 }
 export interface IRunInfo {
   archived: boolean;
@@ -81,6 +81,11 @@ export interface ITraceVisualizerProps {
   isLoading?: boolean;
   activeTraceContext?: string;
   data: any;
+}
+
+export interface IRunMetricCardProps {
+  batch: IRunBatch;
+  index: number;
 }
 
 export interface IImagesVisualizerProps extends ITraceVisualizerProps {}
