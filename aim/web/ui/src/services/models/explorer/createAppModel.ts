@@ -139,8 +139,7 @@ import updateSortFields from 'utils/app/updateTableSortFields';
 import contextToString from 'utils/contextToString';
 import { AlignmentOptionsEnum, ChartTypeEnum, ScaleEnum } from 'utils/d3';
 import {
-  adjustable_reader,
-  decode_buffer_pairs,
+  decodeBufferPairs,
   decodePathsVals,
   iterFoldTree,
 } from 'utils/encoder/streamEncoding';
@@ -168,7 +167,7 @@ import sortDependingArrays from 'utils/app/sortDependingArrays';
 import { isSystemMetric } from 'utils/isSystemMetric';
 import setDefaultAppConfigData from 'utils/app/setDefaultAppConfigData';
 import getAppConfigData from 'utils/app/getAppConfigData';
-import { getValue } from 'utils/helper';
+import { float64FromUint8, getValue } from 'utils/helper';
 import { formatSystemMetricName } from 'utils/formatSystemMetricName';
 import alphabeticalSortComparator from 'utils/alphabeticalSortComparator';
 import onRowSelect from 'utils/app/onRowSelect';
@@ -176,8 +175,10 @@ import { SortField } from 'utils/getSortedFields';
 import onChangeTrendlineOptions from 'utils/app/onChangeTrendlineOptions';
 import { getParamsSuggestions } from 'utils/app/getParamsSuggestions';
 import onToggleColumnsColorScales from 'utils/app/onToggleColumnsColorScales';
+import { minMaxOfArray } from 'utils/minMaxOfArray';
 
 import { AppDataTypeEnum, AppNameEnum } from './index';
+
 /**
  * function createAppModel has 2 major functionalities:
  *    1. getConfig() function which depends on appInitialConfig returns corresponding config state
@@ -610,6 +611,7 @@ function createAppModel(appConfig: IAppInitialConfig) {
         p: configData?.chart?.densityType,
         ...(metric ? { x_axis: metric } : {}),
       });
+
       return {
         call: async () => {
           if (query === '()') {
@@ -958,10 +960,10 @@ function createAppModel(appConfig: IAppInitialConfig) {
               getObjectPaths(trace.context, trace.context),
             );
             const { values, steps, epochs, timestamps } = filterMetricData({
-              values: [...new Float64Array(trace.values.blob)],
-              steps: [...new Float64Array(trace.iters.blob)],
-              epochs: [...new Float64Array(trace.epochs?.blob)],
-              timestamps: [...new Float64Array(trace.timestamps.blob)],
+              values: [...float64FromUint8(trace.values.blob)],
+              steps: [...float64FromUint8(trace.iters.blob)],
+              epochs: [...float64FromUint8(trace.epochs?.blob)],
+              timestamps: [...float64FromUint8(trace.timestamps.blob)],
               axesScaleType: configData?.chart?.axesScaleType,
             });
 
@@ -1323,10 +1325,10 @@ function createAppModel(appConfig: IAppInitialConfig) {
               const missingIndexes: number[] = [];
               if (metric.x_axis_iters && metric.x_axis_values) {
                 const xAxisIters: number[] = [
-                  ...new Float64Array(metric.x_axis_iters.blob),
+                  ...float64FromUint8(metric.x_axis_iters.blob),
                 ];
                 const xAxisValues: number[] = [
-                  ...new Float64Array(metric.x_axis_values.blob),
+                  ...float64FromUint8(metric.x_axis_values.blob),
                 ];
                 if (xAxisValues.length === metric.data.values.length) {
                   const { sortedXValues, sortedArrays } = sortDependingArrays(
@@ -2297,9 +2299,10 @@ function createAppModel(appConfig: IAppInitialConfig) {
               const stream = await runsRequestRef.call((detail) => {
                 exceptionHandler({ detail, model });
               });
-              let gen = adjustable_reader(stream as ReadableStream<any>);
-              let buffer_pairs = decode_buffer_pairs(gen);
-              let decodedPairs = decodePathsVals(buffer_pairs);
+              let bufferPairs = decodeBufferPairs(
+                stream as ReadableStream<any>,
+              );
+              let decodedPairs = decodePathsVals(bufferPairs);
               let objects = iterFoldTree(decodedPairs, 1);
 
               const runsData: IRun<IMetricTrace | IParamTrace>[] = isInitial
@@ -3728,17 +3731,18 @@ function createAppModel(appConfig: IAppInitialConfig) {
                         }
                       });
                     } else {
-                      const paramValue = getValue(run.run.params, label);
-                      values[label] = formatValue(paramValue, null);
-                      if (values[label] !== null) {
-                        if (typeof values[label] === 'string') {
-                          if (dimension[label]) {
-                            dimension[label].scaleType = ScaleEnum.Point;
-                          }
+                      const paramValue = getValue(run.run.params, label, '-');
+                      const formattedParam = formatValue(paramValue, '-');
+                      values[label] = paramValue;
+                      if (formattedParam !== '-' && dimension[label]) {
+                        if (typeof paramValue !== 'number') {
+                          dimension[label].scaleType = ScaleEnum.Point;
+                          values[label] = formattedParam;
+                        } else if (isNaN(paramValue) || !isFinite(paramValue)) {
+                          values[label] = formattedParam;
+                          dimension[label].scaleType = ScaleEnum.Point;
                         }
-                        if (dimension[label]) {
-                          dimension[label].values.add(values[label]);
-                        }
+                        dimension[label].values.add(values[label]);
                       }
                     }
                   },
@@ -3768,23 +3772,39 @@ function createAppModel(appConfig: IAppInitialConfig) {
                 if (
                   dimensionsObject[keyOfDimension][key].scaleType === 'linear'
                 ) {
+                  const [minDomain, maxDomain] = minMaxOfArray([
+                    ...dimensionsObject[keyOfDimension][key].values,
+                  ]);
+
                   dimensions[key] = {
                     scaleType: dimensionsObject[keyOfDimension][key].scaleType,
-                    domainData: [
-                      Math.min(...dimensionsObject[keyOfDimension][key].values),
-                      Math.max(...dimensionsObject[keyOfDimension][key].values),
-                    ],
+                    domainData: [minDomain, maxDomain],
                     displayName:
                       dimensionsObject[keyOfDimension][key].displayName,
                     dimensionType:
                       dimensionsObject[keyOfDimension][key].dimensionType,
                   };
                 } else {
+                  const numDomain: number[] = [];
+                  const strDomain: string[] = [];
+
+                  [...dimensionsObject[keyOfDimension][key].values].forEach(
+                    (data) => {
+                      if (typeof data === 'number') {
+                        numDomain.push(data);
+                      } else {
+                        strDomain.push(data);
+                      }
+                    },
+                  );
+
+                  // sort domain data
+                  numDomain.sort((a, b) => a - b);
+                  strDomain.sort();
+
                   dimensions[key] = {
                     scaleType: dimensionsObject[keyOfDimension][key].scaleType,
-                    domainData: [
-                      ...dimensionsObject[keyOfDimension][key].values,
-                    ],
+                    domainData: numDomain.concat(strDomain as any[]),
                     displayName:
                       dimensionsObject[keyOfDimension][key].displayName,
                     dimensionType:
@@ -4036,11 +4056,12 @@ function createAppModel(appConfig: IAppInitialConfig) {
               [contextToString(trace.context) as string]: '-',
             };
           });
+          const paramKey = encode({ runHash: run.hash });
           runs.push({
             run,
-            isHidden: configData!.table.hiddenMetrics!.includes(run.hash),
+            isHidden: configData!.table.hiddenMetrics!.includes(paramKey),
             color: COLORS[paletteIndex][index % COLORS[paletteIndex].length],
-            key: encode({ runHash: run.hash }),
+            key: paramKey,
             dasharray: DASH_ARRAYS[0],
           });
         });
@@ -4862,10 +4883,15 @@ function createAppModel(appConfig: IAppInitialConfig) {
                         }
                       });
                     } else {
-                      const paramValue = getValue(run.run.params, label);
-                      values[i] = formatValue(paramValue, '-');
-                      if (values[i] !== null) {
-                        if (typeof values[i] === 'string') {
+                      const paramValue = getValue(run.run.params, label, '-');
+                      const formattedParam = formatValue(paramValue, '-');
+                      values[i] = paramValue;
+                      if (formattedParam !== '-' && dimension[i]) {
+                        if (typeof paramValue !== 'number') {
+                          dimension[i].scaleType = ScaleEnum.Point;
+                          values[i] = formattedParam;
+                        } else if (isNaN(paramValue) || !isFinite(paramValue)) {
+                          values[i] = formattedParam;
                           dimension[i].scaleType = ScaleEnum.Point;
                         }
                         dimension[i].values.push(values[i]);
@@ -4898,21 +4924,35 @@ function createAppModel(appConfig: IAppInitialConfig) {
             const dimensions: IDimensionType[] = [];
             chartDimensions.forEach((dimension) => {
               if (dimension.scaleType === ScaleEnum.Linear) {
+                const [minDomain = '-', maxDomain = '-'] = minMaxOfArray([
+                  ...((dimension.values as number[]) || []),
+                ]);
+
                 dimensions.push({
                   scaleType: dimension.scaleType,
-                  domainData: _.isEmpty(dimension.values)
-                    ? ['-', '-']
-                    : [
-                        Math.min(...(dimension.values as number[])),
-                        Math.max(...(dimension.values as number[])),
-                      ],
+                  domainData: [minDomain, maxDomain] as string[] | number[],
                   displayName: dimension.displayName,
                   dimensionType: dimension.dimensionType,
                 });
               } else {
+                const numDomain: number[] = [];
+                const strDomain: string[] = [];
+
+                [...dimension.values].forEach((data) => {
+                  if (typeof data === 'number') {
+                    numDomain.push(data);
+                  } else {
+                    strDomain.push(data);
+                  }
+                });
+
+                // sort domain data
+                numDomain.sort((a, b) => a - b);
+                strDomain.sort();
+
                 dimensions.push({
                   scaleType: dimension.scaleType,
-                  domainData: dimension.values,
+                  domainData: numDomain.concat(strDomain as any[]),
                   displayName: dimension.displayName,
                   dimensionType: dimension.dimensionType,
                 });
@@ -5165,12 +5205,12 @@ function createAppModel(appConfig: IAppInitialConfig) {
               [contextToString(trace.context) as string]: '-',
             };
           });
-
+          const paramKey = encode({ runHash: run.hash });
           runs.push({
             run,
-            isHidden: configData!.table.hiddenMetrics!.includes(run.hash),
+            isHidden: configData!.table.hiddenMetrics!.includes(paramKey),
             color: COLORS[paletteIndex][index % COLORS[paletteIndex].length],
-            key: encode({ runHash: run.hash }),
+            key: paramKey,
             dasharray: DASH_ARRAYS[0],
           });
         });

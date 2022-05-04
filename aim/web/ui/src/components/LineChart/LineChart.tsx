@@ -47,6 +47,7 @@ const LineChart = React.forwardRef(function LineChart(
     zoom,
     onZoomChange,
     readOnly = false,
+    resizeMode,
   } = props;
 
   // boxes
@@ -129,6 +130,10 @@ const LineChart = React.forwardRef(function LineChart(
           .append('text')
           .classed('LineChart__emptyData', true)
           .text('No Data');
+
+        if (attributesRef.current?.clearHoverAttributes) {
+          attributesRef.current.clearHoverAttributes();
+        }
       }
       return;
     }
@@ -236,6 +241,7 @@ const LineChart = React.forwardRef(function LineChart(
       aggregationConfig,
       readOnly,
       alignmentConfig,
+      resizeMode,
     ],
   );
 
@@ -265,6 +271,7 @@ const LineChart = React.forwardRef(function LineChart(
     aggregationConfig,
     readOnly,
     alignmentConfig,
+    resizeMode,
   ]);
 
   React.useImperativeHandle(ref, () => ({
