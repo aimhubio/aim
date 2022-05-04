@@ -10,6 +10,7 @@ import {
 import { Icon, Badge, Button } from 'components/kit';
 import ExpressionAutoComplete from 'components/kit/ExpressionAutoComplete';
 import ErrorBoundary from 'components/ErrorBoundary/ErrorBoundary';
+import AutocompleteInput from 'components/AutocompleteInput';
 
 import { ANALYTICS_EVENT_KEYS } from 'config/analytics/analyticsKeysMap';
 
@@ -41,8 +42,8 @@ function SelectForm({
     };
   }, []);
 
-  function handleSearch(e: React.ChangeEvent<any>): void {
-    e.preventDefault();
+  function handleSearch(e?: React.ChangeEvent<any>): void {
+    e?.preventDefault();
     if (requestIsPending || searchButtonDisabled) {
       return;
     }
@@ -120,7 +121,14 @@ function SelectForm({
             >
               {selectedImagesData?.advancedMode ? (
                 <div className='SelectForm__textarea'>
-                  <ExpressionAutoComplete
+                  <AutocompleteInput
+                    advanced
+                    context={selectFormData?.suggestions}
+                    onEnter={handleSearch}
+                    onChange={onSelectRunQueryChange}
+                    defaultValue={selectedImagesData?.advancedQuery}
+                  />
+                  {/* <ExpressionAutoComplete
                     isTextArea={true}
                     onExpressionChange={onSelectAdvancedQueryChange}
                     onSubmit={handleSearch}
@@ -131,7 +139,7 @@ function SelectForm({
                       'images.context',
                       ...selectFormData.suggestions,
                     ]}
-                  />
+                  /> */}
                 </div>
               ) : (
                 <ErrorBoundary>
@@ -247,12 +255,18 @@ function SelectForm({
           {selectedImagesData?.advancedMode ? null : (
             <ErrorBoundary>
               <div className='SelectForm__TextField'>
-                <ExpressionAutoComplete
+                {/* <ExpressionAutoComplete
                   onExpressionChange={onSelectRunQueryChange}
                   onSubmit={handleSearch}
                   value={selectedImagesData?.query}
                   options={selectFormData.suggestions}
                   placeholder='Filter runs, e.g. run.learning_rate > 0.0001 and run.batch_size == 32'
+                /> */}
+                <AutocompleteInput
+                  context={selectFormData?.suggestions}
+                  onEnter={handleSearch}
+                  onChange={onSelectRunQueryChange}
+                  defaultValue={selectedImagesData?.advancedQuery}
                 />
               </div>
             </ErrorBoundary>

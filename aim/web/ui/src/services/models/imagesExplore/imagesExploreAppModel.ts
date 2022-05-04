@@ -186,7 +186,22 @@ function initialize(appId: string): void {
       model.setState({
         selectFormData: {
           options: getSelectFormOptions(data),
-          suggestions: getParamsSuggestions(data),
+          suggestions: {
+            run: {
+              images: {
+                name: '',
+                context: '',
+              },
+              ...data.params,
+              hash: '',
+              name: '',
+              experiment: '',
+              tags: '',
+              archived: undefined,
+              creation_time: undefined,
+              end_time: undefined,
+            },
+          },
         },
       });
     });

@@ -555,7 +555,18 @@ function createAppModel(appConfig: IAppInitialConfig) {
           model.setState({
             selectFormData: {
               options: getMetricOptions(data),
-              suggestions: getParamsSuggestions(data),
+              suggestions: {
+                run: {
+                  ...data.params,
+                  hash: '',
+                  name: '',
+                  experiment: '',
+                  tags: '',
+                  archived: undefined,
+                  creation_time: undefined,
+                  end_time: undefined,
+                },
+              },
             },
           });
         });
@@ -3276,7 +3287,18 @@ function createAppModel(appConfig: IAppInitialConfig) {
             model.setState({
               selectFormData: {
                 options: getParamsOptions(data),
-                suggestions: getParamsSuggestions(data),
+                suggestions: {
+                  run: {
+                    ...data.params,
+                    hash: '',
+                    name: '',
+                    experiment: '',
+                    tags: '',
+                    archived: undefined,
+                    creation_time: undefined,
+                    end_time: undefined,
+                  },
+                },
               },
             });
           });
@@ -4737,7 +4759,18 @@ function createAppModel(appConfig: IAppInitialConfig) {
             model.setState({
               selectFormData: {
                 options: getScattersSelectOptions(data),
-                suggestions: getParamsSuggestions(data),
+                suggestions: {
+                  run: {
+                    ...data.params,
+                    hash: '',
+                    name: '',
+                    experiment: '',
+                    tags: '',
+                    archived: undefined,
+                    creation_time: undefined,
+                    end_time: undefined,
+                  },
+                },
               },
             });
           });

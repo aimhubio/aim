@@ -17,6 +17,7 @@ import {
 import { Button, Icon, Badge, Text } from 'components/kit';
 import ExpressionAutoComplete from 'components/kit/ExpressionAutoComplete/ExpressionAutoComplete';
 import ErrorBoundary from 'components/ErrorBoundary/ErrorBoundary';
+import AutocompleteInput from 'components/AutocompleteInput';
 
 import { ANALYTICS_EVENT_KEYS } from 'config/analytics/analyticsKeysMap';
 
@@ -47,8 +48,8 @@ function SelectForm({
     };
   }, []);
 
-  function handleMetricSearch(e: React.ChangeEvent<any>): void {
-    e.preventDefault();
+  function handleMetricSearch(e?: React.ChangeEvent<any>): void {
+    e?.preventDefault();
     if (requestIsPending) {
       return;
     }
@@ -122,7 +123,14 @@ function SelectForm({
           >
             {selectedMetricsData?.advancedMode ? (
               <div className='Metrics__SelectForm__textarea'>
-                <ExpressionAutoComplete
+                <AutocompleteInput
+                  advanced
+                  context={{ run: { params: { a: 1 } } }}
+                  defaultValue={selectedMetricsData?.advancedQuery}
+                  onChange={onSelectAdvancedQueryChange}
+                  onEnter={handleMetricSearch}
+                />
+                {/* <ExpressionAutoComplete
                   isTextArea={true}
                   onExpressionChange={onSelectAdvancedQueryChange}
                   onSubmit={handleMetricSearch}
@@ -133,7 +141,7 @@ function SelectForm({
                     'metric.context',
                     ...selectFormData.suggestions,
                   ]}
-                />
+                /> */}
               </div>
             ) : (
               <>
@@ -247,13 +255,19 @@ function SelectForm({
           </Box>
           {selectedMetricsData?.advancedMode ? null : (
             <div className='Metrics__SelectForm__TextField'>
-              <ExpressionAutoComplete
+              <AutocompleteInput
+                onChange={onSelectRunQueryChange}
+                onEnter={handleMetricSearch}
+                defaultValue={selectedMetricsData?.query}
+                context={selectFormData.suggestions}
+              />
+              {/* <ExpressionAutoComplete
                 onExpressionChange={onSelectRunQueryChange}
                 onSubmit={handleMetricSearch}
                 value={selectedMetricsData?.query}
                 options={selectFormData.suggestions}
                 placeholder='Filter runs, e.g. run.learning_rate > 0.0001 and run.batch_size == 32'
-              />
+              /> */}
             </div>
           )}
         </div>

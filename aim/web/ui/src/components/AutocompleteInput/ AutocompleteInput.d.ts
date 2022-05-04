@@ -4,9 +4,11 @@ import { EditorProps } from '@monaco-editor/react';
 
 export interface IAutocompleteInputProps {
   context: Record<any, any>;
-  onEnter?: () => void;
   className?: string;
-  monacoProps?: EditorProps;
+  editorProps?: EditorProps;
+  advanced?: boolean;
+  defaultValue?: string;
+  onEnter?: () => void;
   onChange?: (
     val: string,
     ev?: monaco.editor.IModelContentChangedEvent,
