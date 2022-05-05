@@ -51,6 +51,8 @@ Features:
 - Group runs or divide into subplots
 - Apply chart indicator to see correlations
 
+<img style="border: 1px solid #1d2253" src="https://docs-blobs.s3.us-east-2.amazonaws.com/images/ui/pages/params-explore/1.png"/>
+
 ### Single run page
 Explore all the metadata associated with a run on the single run page. It’s accessible from all the tables and tooltips.
 
