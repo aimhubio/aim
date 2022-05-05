@@ -55,8 +55,7 @@ class ResourceTracker(object):
 
     @classmethod
     def check_interval(cls, interval, warn=True):
-        if not isinstance(interval, (int, float)) \
-                and not cls.STAT_INTERVAL_MIN <= interval <= cls.STAT_INTERVAL_MAX:
+        if not isinstance(interval, (int, float)) or not cls.STAT_INTERVAL_MIN <= interval <= cls.STAT_INTERVAL_MAX:
             if warn:
                 logger.warning('To track system resource usage '
                                'please set `system_tracking_interval` '
