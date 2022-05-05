@@ -24,7 +24,7 @@ function AutocompleteInput({
   defaultValue = '',
 }: IAutocompleteInputProps) {
   const [focused, setFocused] = React.useState<boolean>(false);
-  const [value, setValue] = React.useState<string>(defaultValue);
+  const [value, setValue] = React.useState<string>('');
   const monacoInstance: any = useMonaco();
   const [mounted, setMounted] = React.useState(false);
   const editorRef = React.useRef<any>();
@@ -52,6 +52,7 @@ function AutocompleteInput({
         monacoConfig.theme.name,
         monacoConfig.theme.config,
       );
+      setValue(defaultValue);
       monacoInstance.editor.setTheme(monacoConfig.theme.name);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -103,7 +104,7 @@ function AutocompleteInput({
         options={monacoConfig.options}
         {...editorProps}
       />
-      {!focused && !value && (
+      {focused || value || defaultValue ? null : (
         <div className='AutocompleteInput__placeholder'>
           Filter runs, e.g. run.learning_rate {'>'} 0.0001 and run.batch_size ==
           32

@@ -57,6 +57,7 @@ function SearchBar({
             onEnter={handleRunSearch}
             onChange={onSearchInputChange}
             context={searchSuggestions}
+            defaultValue={searchValue}
           />
         </form>
         <Divider style={{ margin: '0 1em' }} orientation='vertical' flexItem />
