@@ -1,16 +1,20 @@
-from psutil import Process, cpu_percent
-from threading import Thread
+import io
+import logging
+import re
+import sys
 import time
 import weakref
-import sys
-import io
-import re
+
+from psutil import Process, cpu_percent
+from threading import Thread
 from typing import Union
 from weakref import WeakValueDictionary
 
-from aim.ext.resource.stat import Stat
 from aim.ext.resource.configs import AIM_RESOURCE_METRIC_PREFIX
 from aim.ext.resource.log import LogLine
+from aim.ext.resource.stat import Stat
+
+logger = logging.getLogger(__name__)
 
 
 class ResourceTracker(object):
@@ -49,6 +53,17 @@ class ResourceTracker(object):
     STAT_INTERVAL_MAX = 24 * 60 * 60.0
     STAT_INTERVAL_DEFAULT = 60.0
 
+    @classmethod
+    def check_interval(cls, interval, warn=True):
+        if not isinstance(interval, (int, float)) \
+                and not cls.STAT_INTERVAL_MIN <= interval <= cls.STAT_INTERVAL_MAX:
+            if warn:
+                logger.warning('To track system resource usage '
+                               'please set `system_tracking_interval` '
+                               'greater than 0 and less than 1 day')
+            return False
+        return True
+
     reset_cpu_cycle = False
 
     @staticmethod
@@ -61,7 +76,9 @@ class ResourceTracker(object):
 
     def __init__(self, track, interval: Union[int, float] = STAT_INTERVAL_DEFAULT, capture_logs: bool = True):
         self._track_func = weakref.WeakMethod(track)
-        self.interval = interval
+        self._interval = None
+        if self.check_interval(interval, warn=False):
+            self._interval = interval
 
         # terminal log capturing
         self._capture_logs = capture_logs
@@ -84,20 +101,6 @@ class ResourceTracker(object):
         if ResourceTracker.reset_cpu_cycle is False:
             ResourceTracker.reset_cpu_cycle = True
             self.reset_proc_interval()
-
-    @property
-    def interval(self):
-        return self._interval
-
-    @interval.setter
-    def interval(self, interval: float):
-        if self.STAT_INTERVAL_MIN <= interval <= self.STAT_INTERVAL_MAX:
-            self._interval = interval
-        else:
-            raise ValueError(('interval must be greater than {min}s and less '
-                              'than {max}m'
-                              '').format(min=self.STAT_INTERVAL_MIN,
-                                         max=self.STAT_INTERVAL_MAX / 60))
 
     def start(self):
         """
@@ -155,8 +158,9 @@ class ResourceTracker(object):
         log_capture_time_counter = 0
 
         # store initial system usage stats
-        stat = Stat(self._process)
-        self._track(stat)
+        if self._interval:
+            stat = Stat(self._process)
+            self._track(stat)
 
         while True:
             # Get system statistics
@@ -167,12 +171,12 @@ class ResourceTracker(object):
             stat_time_counter += 0.1
             log_capture_time_counter += 0.1
 
-            if stat_time_counter > self.interval:
+            if self._interval and stat_time_counter > self._interval:
                 stat = Stat(self._process)
                 self._track(stat)
                 stat_time_counter = 0
 
-            if log_capture_time_counter > self._log_capture_interval:
+            if self._capture_logs and log_capture_time_counter > self._log_capture_interval:
                 self._store_buffered_logs()
                 log_capture_time_counter = 0
 
