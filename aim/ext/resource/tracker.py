@@ -6,6 +6,7 @@ import sys
 import io
 import re
 from typing import Union
+from weakref import WeakValueDictionary
 
 from aim.ext.resource.stat import Stat
 from aim.ext.resource.configs import AIM_RESOURCE_METRIC_PREFIX
@@ -13,6 +14,37 @@ from aim.ext.resource.log import LogLine
 
 
 class ResourceTracker(object):
+    _buffer_registry = WeakValueDictionary()
+    _old_out_write = None
+    _old_err_write = None
+
+    @classmethod
+    def _install_stream_patches(cls):
+        cls._old_out_write = sys.stdout.write
+        cls._old_err_write = sys.stderr.write
+
+        def new_out_write(data):
+            cls._old_out_write(data)
+            if isinstance(data, str):
+                data = data.encode()
+            for buffer in cls._buffer_registry.values():
+                buffer.write(data)
+
+        def new_err_write(data):
+            cls._old_err_write(data)
+            if isinstance(data, str):
+                data = data.encode()
+            for buffer in cls._buffer_registry.values():
+                buffer.write(data)
+
+        sys.stdout.write = new_out_write
+        sys.stderr.write = new_err_write
+
+    @classmethod
+    def _uninstall_stream_patches(cls):
+        sys.stdout.write = cls._old_out_write
+        sys.stderr.write = cls._old_err_write
+
     STAT_INTERVAL_MIN = 0.1
     STAT_INTERVAL_MAX = 24 * 60 * 60.0
     STAT_INTERVAL_DEFAULT = 60.0
@@ -76,7 +108,10 @@ class ResourceTracker(object):
 
         self._started = True
         if self._capture_logs:
-            self._install_stream_patches()
+            # install the stream patches if not done yet
+            if not self._buffer_registry:
+                self._install_stream_patches()
+            self._buffer_registry[id(self)] = self._io_buffer
         # Start thread to asynchronously collect statistics
         self._th_collector.start()
 
@@ -89,7 +124,11 @@ class ResourceTracker(object):
         if self._capture_logs:
             # read and store remaining buffered logs
             self._store_buffered_logs()
-            self._uninstall_stream_patches()
+            # unregister the buffer
+            del self._buffer_registry[id(self)]
+            # uninstall stream patching if no buffer is left in the registry
+            if not self._buffer_registry:
+                self._uninstall_stream_patches()
 
     def _track(self, stat: Stat):
         # Store system stats
@@ -170,26 +209,3 @@ class ResourceTracker(object):
         # if there was no b'\n' at the end of the data, don't move down the cursor
         if lines[-1] != '':
             self._line_counter -= 1
-
-    def _install_stream_patches(self):
-        self._old_out_write = sys.stdout.write
-        self._old_err_write = sys.stderr.write
-
-        def new_out_write(data):
-            self._old_out_write(data)
-            if isinstance(data, str):
-                data = data.encode()
-            self._io_buffer.write(data)
-
-        def new_err_write(data):
-            self._old_err_write(data)
-            if isinstance(data, str):
-                data = data.encode()
-            self._io_buffer.write(data)
-
-        sys.stdout.write = new_out_write
-        sys.stderr.write = new_err_write
-
-    def _uninstall_stream_patches(self):
-        sys.stdout.write = self._old_out_write
-        sys.stderr.write = self._old_err_write
