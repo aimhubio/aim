@@ -253,7 +253,8 @@ class Run(StructuredRunMixin):
                  read_only: bool = False,
                  experiment: Optional[str] = None,
                  system_tracking_interval: Optional[Union[int, float]] = DEFAULT_SYSTEM_TRACKING_INT,
-                 log_system_params: Optional[bool] = False):
+                 log_system_params: Optional[bool] = False,
+                 capture_terminal_logs: Optional[bool] = True):
         self._resources: Optional[RunAutoClean] = None
         run_hash = run_hash or generate_run_hash()
         self.hash = run_hash
@@ -309,7 +310,7 @@ class Run(StructuredRunMixin):
         self._prepare_sequence_info(read_only)
 
         self._system_resource_tracker: ResourceTracker = None
-        self._prepare_resource_tracker(system_tracking_interval)
+        self._prepare_resource_tracker(system_tracking_interval, capture_terminal_logs)
 
         self._resources = RunAutoClean(self)
 
@@ -368,16 +369,17 @@ class Run(StructuredRunMixin):
     def _collect(self, key, strict: bool = True, resolve_objects: bool = False):
         return self.meta_run_attrs_tree.collect(key, strict=strict, resolve_objects=resolve_objects)
 
-    def _prepare_resource_tracker(self, tracking_interval: Union[int, float] = None):
-        if not self.read_only and isinstance(tracking_interval, (int, float)) and tracking_interval > 0:
-            try:
-                self._system_resource_tracker = ResourceTracker(self.track, tracking_interval)
-            except ValueError:
-                print('To track system resource usage '
-                      'please set `system_tracking_interval` greater than 0 '
-                      'and less than 1 day')
-            else:
-                self._system_resource_tracker.start()
+    def _prepare_resource_tracker(
+            self,
+            tracking_interval: Union[int, float] = None,
+            capture_terminal_logs: bool = True
+    ):
+        if self.read_only:
+            return
+
+        if ResourceTracker.check_interval(tracking_interval) or capture_terminal_logs:
+            self._system_resource_tracker = ResourceTracker(self.track, tracking_interval, capture_terminal_logs)
+            self._system_resource_tracker.start()
 
     def __delitem__(self, key: str):
         """Remove key from run meta-params.
