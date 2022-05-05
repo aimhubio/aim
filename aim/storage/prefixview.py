@@ -1,4 +1,4 @@
-from aim.storage.container import Container
+from aim.storage.container import Container, ContainerItemsIterator, ContainerKey, ContainerValue
 from aim.storage.containertreeview import ContainerTreeView
 
 from typing import Iterator, Tuple
@@ -37,7 +37,7 @@ class PrefixView(Container):
         read_only: bool = None
     ) -> None:
         self.prefix = prefix
-        self.container = container
+        self.parent = container
 
         self.read_only = read_only
 
@@ -53,7 +53,7 @@ class PrefixView(Container):
         Sometimes there is need to preload the storage without performing an
         operation that will cause an actual read / write access.
         """
-        self.container.preload()
+        self.parent.preload()
 
     def finalize(self, index: Container):
         """Finalize the Container.
@@ -63,39 +63,47 @@ class PrefixView(Container):
         prefix = self.absolute_path()
         # Shadowing
         index.delete_range(prefix, prefix + b'\xff')  # TODO check validity
-        self.container.finalize(index=index)
+        self.parent.finalize(index=index)
 
     def absolute_path(
         self,
-        *args: bytes
+        path: bytes = None
     ) -> bytes:
-        return Container.path_join(prefix=self.prefix, *args)
+        """Returns the absolute path for the given relative `path`.
+
+        Path separators / sentinels should be handled in higher level so that
+        `join(a, b) == a + b` property holds. This can be easily achieved by
+        having all the paths end with the sentinel:
+        `join('a/b/c/', 'e/f/') == 'a/b/c/' + 'e/f/' = 'a/b/c/e/f/'`
+        """
+        if path is None:
+            return self.prefix
+        return self.prefix + path
 
     def get(
         self,
-        key: bytes,
+        key: ContainerKey,
         default=None
-    ) -> bytes:
+    ) -> ContainerValue:
         """Returns the value by the given `key` if it exists else `default`.
 
         The `default` is :obj:`None` by default.
         """
         path = self.absolute_path(key)
-        return self.container.get(path, default)
+        return self.parent.get(path, default)
 
     def __getitem__(
         self,
-        key: bytes
-    ) -> bytes:
+        key: ContainerKey
+    ) -> ContainerValue:
         """Returns the value by the given `key`."""
         path = self.absolute_path(key)
-        return self.container[path]
+        return self.parent[path]
 
     def set(
         self,
-        key: bytes,
-        value: bytes,
-        *,
+        key: ContainerKey,
+        value: ContainerValue,
         store_batch=None
     ) -> None:
         """Set a value for given key, optionally store in a batch.
@@ -107,21 +115,20 @@ class PrefixView(Container):
         atomic writes, etc.
         """
         path = self.absolute_path(key)
-        self.container.set(path, value, store_batch=store_batch)
+        self.parent.set(path, value, store_batch=store_batch)
 
     def __setitem__(
         self,
-        key: bytes,
-        value: bytes
+        key: ContainerKey,
+        value: ContainerValue
     ) -> None:
         """Set a value for given key."""
         path = self.absolute_path(key)
-        self.container[path] = value
+        self.parent[path] = value
 
     def delete(
         self,
-        key: bytes,
-        *,
+        key: ContainerKey,
         store_batch=None
     ):
         """Delete a key-value record by the given key,
@@ -134,111 +141,52 @@ class PrefixView(Container):
         atomic writes, etc.
         """
         path = self.absolute_path(key)
-        return self.container.delete(path, store_batch=store_batch)
+        return self.parent.delete(path, store_batch=store_batch)
 
     def __delitem__(
         self,
-        key: bytes
+        key: ContainerKey
     ) -> None:
         """Delete a key-value record by the given key."""
         path = self.absolute_path(key)
-        del self.container[path]
+        del self.parent[path]
 
     def delete_range(
         self,
-        begin: bytes,
-        end: bytes,
+        begin: ContainerKey,
+        end: ContainerKey,
         store_batch=None
     ):
         """Delete all the records in the given `[begin, end)` key range."""
         begin_path = self.absolute_path(begin)
         end_path = self.absolute_path(end)
-        return self.container.delete_range(begin_path, end_path,
-                                           store_batch=store_batch)
+        self.parent.delete_range(begin_path, end_path,
+                                 store_batch=store_batch)
 
-    def next_key(
+    def next_item(
         self,
-        key: bytes = b''
-    ) -> bytes:
-        """Returns the key that comes (lexicographically) right after the
-        provided `key`.
-        """
-        path = self.absolute_path(key)
-        keys = self.container.next_key(path)
-        if path:
-            _prefix, _path, keys = keys.partition(path)
-            assert not _prefix and _path == path
-        return keys
-
-    def next_value(
-        self,
-        key: bytes = b''
-    ) -> bytes:
-        """Returns the value for the key that comes (lexicographically) right
-        after the provided `key`.
-        """
-        path = self.absolute_path(key)
-        keys, value = self.container.next_key_value(path)
-        if path:
-            _prefix, _path, keys = keys.partition(path)
-            if _prefix or _path != path:
-                raise KeyError
-        return value
-
-    def next_key_value(
-        self,
-        key: bytes = b''
-    ) -> Tuple[bytes, bytes]:
+        key: ContainerKey = b''
+    ) -> Tuple[ContainerKey, ContainerValue]:
         """Returns `(key, value)` for the key that comes (lexicographically)
         right after the provided `key`.
         """
         path = self.absolute_path(key)
-        keys, value = self.container.next_key_value(path)
+        keys, value = self.parent.next_item(path)
         if path:
             _prefix, _path, keys = keys.partition(path)
             if _prefix or _path != path:
                 raise KeyError
         return keys, value
 
-    def prev_key(
+    def prev_item(
         self,
-        key: bytes = b''
-    ) -> bytes:
-        """Returns the key that comes (lexicographically) right before the
-        provided `key`.
-        """
-        path = self.absolute_path(key)
-        keys = self.container.prev_key(path)
-        if path:
-            _prefix, _path, keys = keys.partition(path)
-            if _prefix or _path != path:
-                raise KeyError
-        return keys
-
-    def prev_value(
-        self,
-        key: bytes = b''
-    ) -> bytes:
-        """Returns the value for the key that comes (lexicographically) right
-        before the provided `key`.
-        """
-        path = self.absolute_path(key)
-        keys, value = self.container.prev_key_value(path)
-        if path:
-            _prefix, _path, keys = keys.partition(path)
-            if _prefix or _path != path:
-                raise KeyError
-        return value
-
-    def prev_key_value(
-        self,
-        key: bytes = b''
-    ) -> Tuple[bytes, bytes]:
+        key: ContainerKey = b''
+    ) -> Tuple[ContainerKey, ContainerValue]:
         """Returns `(key, value)` for the key that comes (lexicographically)
         right before the provided `key`.
         """
         path = self.absolute_path(key)
-        keys, value = self.container.prev_key_value(path)
+        keys, value = self.parent.prev_item(path)
         if path:
             _prefix, _path, keys = keys.partition(path)
             if _prefix or _path != path:
@@ -247,7 +195,7 @@ class PrefixView(Container):
 
     def walk(
         self,
-        key: bytes = b''
+        key: ContainerKey = b''
     ):
         """A bi-directional generator to walk over the collection of records on
         any arbitrary order. The `prefix` sent to the generator (lets call it
@@ -263,7 +211,7 @@ class PrefixView(Container):
         `walker.send(b'meta') == b'meta.x'`, `walker.send(b'e.y') == b'e.y'`
         """
         path = self.absolute_path(key)
-        walker = self.container.walk(path)
+        walker = self.parent.walk(path)
         p = None
         while True:
             if p is None:
@@ -283,8 +231,8 @@ class PrefixView(Container):
 
     def items(
         self,
-        key: bytes = b''
-    ) -> Iterator[Tuple[bytes, bytes]]:
+        key: ContainerKey = b''
+    ) -> Iterator[Tuple[ContainerKey, ContainerValue]]:
         """Iterate over all the key-value records in the prefix key range.
 
         The iteration is always performed in lexiographic order w.r.t keys.
@@ -302,60 +250,7 @@ class PrefixView(Container):
         Args:
             prefix (:obj:`bytes`): the prefix that defines the key range
         """
-        path = self.absolute_path(key)
-        for keys, val in self.container.items(path):
-            yield keys[len(path):], val
-
-    def keys(
-        self,
-        key: bytes = b''
-    ) -> Iterator[bytes]:
-        """Iterate over all the keys in the prefix range.
-
-        The iteration is always performed in lexiographic order.
-        If `prefix` is provided, iterate only over keys starting with
-        the `prefix`.
-
-        For example, if `prefix == b'meta.'`, and the Container consists of:
-        `{
-            b'e.y': b'012',
-            b'meta.x': b'123',
-            b'meta.z': b'x',
-            b'zzz': b'oOo'
-        }`, the method will yield `b'meta.x'` and `b'meta.z'`
-
-        Args:
-            prefix (:obj:`bytes`): the prefix that defines the key range
-        """
-        path = self.absolute_path(key)
-        for keys in self.container.keys(path):
-            keys = keys[len(path):]
-            yield keys
-
-    def values(
-        self,
-        key: bytes = b''
-    ) -> Iterator[bytes]:
-        """Iterate over all the values in the given prefix key range.
-
-        The iteration is always performed in lexiographic order w.r.t keys.
-        If `prefix` is provided, iterate only over those record values that have
-        key starting with the `prefix`.
-
-        For example, if `prefix == b'meta.'`, and the Container consists of:
-        `{
-            b'e.y': b'012',
-            b'meta.x': b'123',
-            b'meta.z': b'x',
-            b'zzz': b'oOo'
-        }`, the method will yield `b'123'` and `b'x'`
-
-        Args:
-            prefix (:obj:`bytes`): the prefix that defines the key range
-        """
-        path = self.absolute_path(key)
-        for values in self.container.values(path):
-            yield values
+        return PrefixViewItemsIterator(self, key)
 
     def view(
         self,
@@ -384,7 +279,7 @@ class PrefixView(Container):
                 }`
         """
         # TODO *args instead?
-        return self.container.view(self.prefix + prefix)
+        return self.parent.view(self.prefix + prefix)
 
     def tree(
         self
@@ -416,7 +311,7 @@ class PrefixView(Container):
 
         See more at :obj:`Container.commit`
         """
-        return self.container.batch()
+        return self.parent.batch()
 
     def commit(
         self,
@@ -427,4 +322,25 @@ class PrefixView(Container):
         Depending on the :obj:`Container` implementation, this may feature
         transactions, atomic writes, etc.
         """
-        return self.container.commit(batch)
+        return self.parent.commit(batch)
+
+
+class PrefixViewItemsIterator(ContainerItemsIterator):
+
+    def __init__(self, prefix_view, key):
+        self.prefix_view = prefix_view
+        self.path = prefix_view.absolute_path(key)
+        self.it = prefix_view.parent.items(self.path)
+        # We store length of the path to strip it from the key faster
+        self.prefix_len = len(self.path)
+
+    def next(self):
+        item = self.it.next()
+
+        if item is None:
+            return None
+
+        keys = item[0]
+        value = item[1]
+
+        return keys[self.prefix_len:], value
