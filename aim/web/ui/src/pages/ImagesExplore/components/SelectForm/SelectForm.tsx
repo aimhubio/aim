@@ -8,7 +8,6 @@ import {
 } from '@material-ui/icons';
 
 import { Icon, Badge, Button } from 'components/kit';
-import ExpressionAutoComplete from 'components/kit/ExpressionAutoComplete';
 import ErrorBoundary from 'components/ErrorBoundary/ErrorBoundary';
 import AutocompleteInput from 'components/AutocompleteInput';
 
@@ -123,23 +122,14 @@ function SelectForm({
                 <div className='SelectForm__textarea'>
                   <AutocompleteInput
                     advanced
-                    context={selectFormData?.suggestions}
+                    context={{
+                      images: { name: '', context: '' },
+                      ...selectFormData?.suggestions,
+                    }}
                     onEnter={handleSearch}
                     onChange={onSelectRunQueryChange}
                     defaultValue={selectedImagesData?.advancedQuery}
                   />
-                  {/* <ExpressionAutoComplete
-                    isTextArea={true}
-                    onExpressionChange={onSelectAdvancedQueryChange}
-                    onSubmit={handleSearch}
-                    value={selectedImagesData?.advancedQuery}
-                    placeholder='images.name in [“loss”, “accuracy”] and run.learning_rate > 10'
-                    options={[
-                      'images.name',
-                      'images.context',
-                      ...selectFormData.suggestions,
-                    ]}
-                  /> */}
                 </div>
               ) : (
                 <ErrorBoundary>
@@ -255,13 +245,6 @@ function SelectForm({
           {selectedImagesData?.advancedMode ? null : (
             <ErrorBoundary>
               <div className='SelectForm__TextField'>
-                {/* <ExpressionAutoComplete
-                  onExpressionChange={onSelectRunQueryChange}
-                  onSubmit={handleSearch}
-                  value={selectedImagesData?.query}
-                  options={selectFormData.suggestions}
-                  placeholder='Filter runs, e.g. run.learning_rate > 0.0001 and run.batch_size == 32'
-                /> */}
                 <AutocompleteInput
                   context={selectFormData?.suggestions}
                   onEnter={handleSearch}

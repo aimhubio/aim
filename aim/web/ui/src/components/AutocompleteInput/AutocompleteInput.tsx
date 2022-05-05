@@ -31,7 +31,7 @@ function AutocompleteInput({
 
   const monacoConfig = React.useMemo(() => {
     return getMonacoConfig(advanced);
-  }, []);
+  }, [advanced]);
 
   React.useEffect(() => {
     // inserting given object for autosuggestion
@@ -54,6 +54,7 @@ function AutocompleteInput({
       );
       monacoInstance.editor.setTheme(monacoConfig.theme.name);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [mounted]);
 
   function handleDidMount(editor: any) {
@@ -104,9 +105,8 @@ function AutocompleteInput({
       />
       {!focused && !value && (
         <div className='AutocompleteInput__placeholder'>
-          {
-            'Filter runs, e.g. run.learning_rate > 0.0001 and run.batch_size == 32'
-          }
+          Filter runs, e.g. run.learning_rate {'>'} 0.0001 and run.batch_size ==
+          32
         </div>
       )}
     </div>

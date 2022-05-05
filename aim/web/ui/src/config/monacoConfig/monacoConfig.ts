@@ -1,3 +1,5 @@
+import { AppNameEnum } from 'services/models/explorer';
+
 export const getMonacoConfig = (advanced = false): any => ({
   height: advanced ? '63px' : '21px',
   options: {
@@ -50,3 +52,29 @@ export const getMonacoConfig = (advanced = false): any => ({
     },
   },
 });
+
+export const getSuggestionsByExplorer = (
+  explorerName: AppNameEnum,
+  data: any,
+) => {
+  const defaultSuggestions = {
+    run: {
+      hash: '',
+      name: '',
+      experiment: '',
+      tags: '',
+      archived: '',
+      creation_time: '',
+      end_time: '',
+      ...data,
+    },
+  };
+  const explorersList = {
+    [AppNameEnum.RUNS]: defaultSuggestions,
+    [AppNameEnum.METRICS]: defaultSuggestions,
+    [AppNameEnum.PARAMS]: defaultSuggestions,
+    [AppNameEnum.SCATTERS]: defaultSuggestions,
+    [AppNameEnum.IMAGES]: defaultSuggestions,
+  };
+  return explorersList[explorerName];
+};

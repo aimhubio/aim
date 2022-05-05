@@ -15,6 +15,7 @@ import { RequestStatusEnum } from 'config/enums/requestStatusEnum';
 import { CONTROLS_DEFAULT_CONFIG } from 'config/controls/controlsDefaultConfig';
 import { ANALYTICS_EVENT_KEYS } from 'config/analytics/analyticsKeysMap';
 import { DATE_EXPORTING_FORMAT, TABLE_DATE_FORMAT } from 'config/dates/dates';
+import { getSuggestionsByExplorer } from 'config/monacoConfig/monacoConfig';
 
 import {
   getMetricsTableColumns,
@@ -173,7 +174,6 @@ import alphabeticalSortComparator from 'utils/alphabeticalSortComparator';
 import onRowSelect from 'utils/app/onRowSelect';
 import { SortField } from 'utils/getSortedFields';
 import onChangeTrendlineOptions from 'utils/app/onChangeTrendlineOptions';
-import { getParamsSuggestions } from 'utils/app/getParamsSuggestions';
 import onToggleColumnsColorScales from 'utils/app/onToggleColumnsColorScales';
 import { minMaxOfArray } from 'utils/minMaxOfArray';
 
@@ -555,18 +555,7 @@ function createAppModel(appConfig: IAppInitialConfig) {
           model.setState({
             selectFormData: {
               options: getMetricOptions(data),
-              suggestions: {
-                run: {
-                  ...data.params,
-                  hash: '',
-                  name: '',
-                  experiment: '',
-                  tags: '',
-                  archived: undefined,
-                  creation_time: undefined,
-                  end_time: undefined,
-                },
-              },
+              suggestions: getSuggestionsByExplorer(appName, data),
             },
           });
         });
@@ -2236,18 +2225,7 @@ function createAppModel(appConfig: IAppInitialConfig) {
           .then((data) => {
             model.setState({
               selectFormData: {
-                suggestions: {
-                  run: {
-                    ...data.params,
-                    hash: '',
-                    name: '',
-                    experiment: '',
-                    tags: '',
-                    archived: undefined,
-                    creation_time: undefined,
-                    end_time: undefined,
-                  },
-                },
+                suggestions: getSuggestionsByExplorer(appName, data),
               },
             });
           });
@@ -3287,18 +3265,7 @@ function createAppModel(appConfig: IAppInitialConfig) {
             model.setState({
               selectFormData: {
                 options: getParamsOptions(data),
-                suggestions: {
-                  run: {
-                    ...data.params,
-                    hash: '',
-                    name: '',
-                    experiment: '',
-                    tags: '',
-                    archived: undefined,
-                    creation_time: undefined,
-                    end_time: undefined,
-                  },
-                },
+                suggestions: getSuggestionsByExplorer(appName, data),
               },
             });
           });
@@ -4759,18 +4726,7 @@ function createAppModel(appConfig: IAppInitialConfig) {
             model.setState({
               selectFormData: {
                 options: getScattersSelectOptions(data),
-                suggestions: {
-                  run: {
-                    ...data.params,
-                    hash: '',
-                    name: '',
-                    experiment: '',
-                    tags: '',
-                    archived: undefined,
-                    creation_time: undefined,
-                    end_time: undefined,
-                  },
-                },
+                suggestions: getSuggestionsByExplorer(appName, data),
               },
             });
           });

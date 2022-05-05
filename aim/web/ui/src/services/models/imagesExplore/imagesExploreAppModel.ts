@@ -13,6 +13,7 @@ import COLORS from 'config/colors/colors';
 import { CONTROLS_DEFAULT_CONFIG } from 'config/controls/controlsDefaultConfig';
 import { ANALYTICS_EVENT_KEYS } from 'config/analytics/analyticsKeysMap';
 import { DATE_EXPORTING_FORMAT, TABLE_DATE_FORMAT } from 'config/dates/dates';
+import { getSuggestionsByExplorer } from 'config/monacoConfig/monacoConfig';
 
 import {
   getImagesExploreTableColumns,
@@ -80,9 +81,9 @@ import alphabeticalSortComparator from 'utils/alphabeticalSortComparator';
 import onNotificationDelete from 'utils/app/onNotificationDelete';
 import onNotificationAdd from 'utils/app/onNotificationAdd';
 import exceptionHandler from 'utils/app/exceptionHandler';
-import { getParamsSuggestions } from 'utils/app/getParamsSuggestions';
 
 import createModel from '../model';
+import { AppNameEnum } from '../explorer';
 
 const model = createModel<Partial<IImagesExploreAppModelState>>({
   requestStatus: RequestStatusEnum.NotRequested,
@@ -186,22 +187,7 @@ function initialize(appId: string): void {
       model.setState({
         selectFormData: {
           options: getSelectFormOptions(data),
-          suggestions: {
-            run: {
-              images: {
-                name: '',
-                context: '',
-              },
-              ...data.params,
-              hash: '',
-              name: '',
-              experiment: '',
-              tags: '',
-              archived: undefined,
-              creation_time: undefined,
-              end_time: undefined,
-            },
-          },
+          suggestions: getSuggestionsByExplorer(AppNameEnum.IMAGES, data),
         },
       });
     });

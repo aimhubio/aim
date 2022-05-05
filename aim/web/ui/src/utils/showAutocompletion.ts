@@ -1,5 +1,5 @@
 import last from 'lodash/last';
-import get from 'lodash/get';
+// import get from 'lodash/get';
 import { Monaco } from '@monaco-editor/react';
 
 function showAutocompletion(monaco: Monaco, options: Record<string, string>) {
@@ -134,7 +134,6 @@ function getSuggestions(monaco: Monaco, options: Record<string, string>) {
           suggestions.push(completionItem);
         }
       }
-
       return { suggestions };
     },
   };

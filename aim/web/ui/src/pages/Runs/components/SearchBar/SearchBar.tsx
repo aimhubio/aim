@@ -28,8 +28,7 @@ function SearchBar({
     };
   }, []);
 
-  function handleRunSearch(e?: React.ChangeEvent<any>) {
-    e?.preventDefault();
+  function handleRunSearch() {
     if (isRunsDataLoading) {
       return;
     }
