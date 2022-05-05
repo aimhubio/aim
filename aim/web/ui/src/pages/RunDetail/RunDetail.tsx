@@ -63,6 +63,9 @@ const TraceVisualizationContainer = React.lazy(
 const RunOverviewTab = React.lazy(
   () => import(/* webpackChunkName: "RunOverviewTab" */ './RunOverviewTab'),
 );
+const RunLogsTab = React.lazy(
+  () => import(/* webpackChunkName: "RunLogsTab" */ './RunLogsTab'),
+);
 
 const tabs: string[] = [
   'overview',
@@ -75,6 +78,7 @@ const tabs: string[] = [
   'audios',
   'texts',
   'figures',
+  'logs',
   'settings',
 ];
 
@@ -97,6 +101,13 @@ function RunDetail(): React.FunctionComponentElement<React.ReactNode> {
       <RunDetailParamsTab
         runParams={runData?.runParams}
         isRunInfoLoading={runData?.isRunInfoLoading}
+      />
+    ),
+    logs: (
+      <RunLogsTab
+        runHash={runHash}
+        runLogs={runData?.runLogs}
+        isRunLogsLoading={runData?.isRunLogsLoading}
       />
     ),
     metrics: (

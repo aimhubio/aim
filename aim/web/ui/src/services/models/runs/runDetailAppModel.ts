@@ -12,6 +12,11 @@ import exceptionHandler from 'utils/app/exceptionHandler';
 import { encode } from 'utils/encoder/encoder';
 import contextToString from 'utils/contextToString';
 import alphabeticalSortComparator from 'utils/alphabeticalSortComparator';
+import {
+  decodeBufferPairs,
+  decodePathsVals,
+  iterFoldTree,
+} from 'utils/encoder/streamEncoding';
 
 import createModel from '../model';
 
@@ -20,6 +25,7 @@ const model = createModel<Partial<any>>({
   isExperimentsLoading: false,
   isRunBatchLoading: false,
   isRunsOfExperimentLoading: false,
+  isRunLogsLoading: false,
   isLoadMoreButtonShown: true,
 });
 
@@ -27,6 +33,7 @@ let getRunsInfoRequestRef: IApiRequest<void>;
 let getRunsBatchRequestRef: IApiRequest<void>;
 let getExperimentsDataRequestRef: IApiRequest<void>;
 let getRunsOfExperimentRequestRef: IApiRequest<void>;
+let getRunsLogsRequestRef: IApiRequest<void>;
 
 function initialize() {
   model.init();
@@ -153,6 +160,35 @@ function getRunMetricsBatch(body: any, runHash: string) {
   };
 }
 
+function getRunLogs(runHash: string, body: any) {
+  if (getRunsLogsRequestRef) {
+    getRunsLogsRequestRef.abort();
+  }
+  getRunsLogsRequestRef = runsService.getRunLogs(runHash);
+  return {
+    call: async () => {
+      model.setState({ isRunLogsLoading: true });
+
+      const stream = await getRunsLogsRequestRef.call((detail: any) => {
+        exceptionHandler({ detail, model });
+      });
+      let bufferPairs = decodeBufferPairs(stream);
+      let decodedPairs = decodePathsVals(bufferPairs);
+      let objects = iterFoldTree(decodedPairs, 1);
+      const runLogsData: { [key: string]: any } = {};
+      for await (let [keys, val] of objects) {
+        runLogsData[keys[0]] = val;
+      }
+
+      model.setState({
+        runLogs: runLogsData,
+        isRunLogsLoading: false,
+      });
+    },
+    abort: getRunsLogsRequestRef.abort,
+  };
+}
+
 function archiveRun(id: string, archived: boolean = false) {
   const state = model.getState();
   runsService
@@ -237,6 +273,7 @@ const runDetailAppModel = {
   ...model,
   initialize,
   getRunInfo,
+  getRunLogs,
   getRunMetricsBatch,
   getExperimentsData,
   getRunsOfExperiment,
