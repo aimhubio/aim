@@ -1,7 +1,7 @@
 import React from 'react';
 import classNames from 'classnames';
 
-import Editor, { useMonaco } from '@monaco-editor/react';
+import Editor, { useMonaco, loader } from '@monaco-editor/react';
 
 import { getMonacoConfig } from 'config/monacoConfig/monacoConfig';
 
@@ -12,7 +12,12 @@ import { IAutocompleteInputProps } from './ AutocompleteInput';
 import './AutocompleteInput.scss';
 
 // loading monaco from node modules instead of CDN
-// loader.config({ monaco });
+loader.config({
+  paths: {
+    vs: '/static-files/vs',
+  },
+});
+
 function AutocompleteInput({
   context,
   className,
@@ -100,16 +105,16 @@ function AutocompleteInput({
         value={value}
         onChange={handleChange}
         onMount={handleDidMount}
-        loading={<span></span>}
+        // loading={<span></span>}
         options={monacoConfig.options}
         {...editorProps}
       />
-      {focused || value || defaultValue ? null : (
+      {/* {focused || value || defaultValue ? null : (
         <div className='AutocompleteInput__placeholder'>
           Filter runs, e.g. run.learning_rate {'>'} 0.0001 and run.batch_size ==
           32
         </div>
-      )}
+      )} */}
     </div>
   );
 }
