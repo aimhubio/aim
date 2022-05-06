@@ -30,7 +30,6 @@ class AimCallback(TrainerCallback):
         self._log_system_params = log_system_params
         self._run = None
         self._run_hash = None
-        self._run_params = run_params
         self._log_value_warned = False
 
     @property
