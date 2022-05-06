@@ -1,5 +1,8 @@
 # Changelog
 
+## 3.9.3
+- Fix run remote tracking queue cleanup (mihran113)
+
 ## 3.9.2 Apr 29, 2022
 
 ### Enhancements:
