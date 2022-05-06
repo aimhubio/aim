@@ -82,7 +82,7 @@ class ContainerTreeView(TreeView):
         if not isinstance(path, (tuple, list)):
             path = (path,)
         encoded_path = E.encode_path(path)
-        return self.container.delete_range(encoded_path, encoded_path + b'\xff')
+        self.container.delete_range(encoded_path, encoded_path + b'\xff')
 
     def set(
         self,
@@ -113,7 +113,7 @@ class ContainerTreeView(TreeView):
     def keys(
         self,
         path: Union[AimObjectKey, AimObjectPath] = (),
-        level: int = None
+        level: int = 0
     ) -> Iterator[Union[AimObjectPath, AimObjectKey]]:
         encoded_path = E.encode_path(path)
         walker = self.container.walk(encoded_path)
@@ -127,8 +127,8 @@ class ContainerTreeView(TreeView):
             except StopIteration:
                 return
             path = E.decode_path(path)
-            path = path[:(1 if level is None else level)]
-            if level is None:
+            path = path[:max(level, 1)]
+            if level <= 0:
                 yield path[0]
             else:
                 yield path

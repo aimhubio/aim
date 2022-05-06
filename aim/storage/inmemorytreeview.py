@@ -37,7 +37,7 @@ class InMemoryTreeView(TreeView):
 
     def make_array(
         self,
-        path: Union[AimObjectKey, AimObjectPath]
+        path: Union[AimObjectKey, AimObjectPath] = ()
     ):
         if isinstance(path, (int, str)):
             path = (path,)
@@ -111,9 +111,9 @@ class InMemoryTreeView(TreeView):
     def keys(
         self,
         path: Union[AimObjectKey, AimObjectPath] = (),
-        level: int = None
+        level: int = 0
     ) -> Iterator[Union[AimObjectPath, AimObjectKey]]:
-        if level is not None:
+        if level > 0:
             raise NotImplementedError("Level iteration not supported yet.")
         container = self.container
         for key in path:
