@@ -117,13 +117,24 @@ jobs:
 
   macos-dist:
     if: ${{ github.event_name == 'schedule' || github.actor == 'gorarakelyan' || github.actor == 'alberttorosyan' || github.actor == 'roubkar' }}
-    runs-on: ${{matrix.os}}
+    runs-on: m1
     strategy:
       fail-fast: false
       matrix:
         python-version: [ '3.6', '3.7', '3.8', '3.9', '3.10' ]
-        os: [ 'macos-latest' ]
-    name: Python ${{ matrix.python-version }} on ${{ matrix.os }} build
+        arch: ['arm64', 'x86_64']
+        exclude:
+          - arch: 'arm64'
+            python-version: 3.6
+          - arch: 'arm64'
+            python-version: 3.7
+
+    name: Python ${{ matrix.python-version }} for ${{ matrix.arch }} build
+    env:
+      MACOSX_DEPLOYMENT_TARGET: 10.14
+      AIM_DEP_DIR: /tmp/aim_run/${{ github.run_number }}/${{ matrix.arch }}
+      PYTHON: /opt/conda/${{ matrix.arch }}/envs/py${{ matrix.python-version }}/bin/python
+
     needs: aim-ui-dist
     steps:
       - name: Checkout sources
@@ -131,28 +142,19 @@ jobs:
         with:
           ref: ${{ inputs.branch || github.ref }}
 
-      - name: Setup python
-        uses: actions/setup-python@v2
-        with:
-          python-version: ${{ matrix.python-version }}
-          architecture: x64
-
-      - name: Install dev dependencies
-        run: |
-          python -m pip install -r requirements.dev.txt
-          python -m pip install -r requirements.txt
-
       - name: Build bdist wheel
         run: |
-          python setup.py bdist_wheel -d dist
+          arch -${{matrix.arch}} $PYTHON -m build
 
-      - name: Build sdist
-        if: matrix.python-version == '3.9'
+      - name: Publish source dist
+        if: matrix.python-version == '3.10' && matrix.arch == 'arm64'
+        env:
+          PYPI_PASSWORD: ${{ secrets.PYPI_PASSWORD }}
         run: |
-          python setup.py sdist
+          $PYTHON -m twine upload -u __token__ -p "${PYPI_PASSWORD}" dist/*.tar.gz
 
       - name: Publish wheel
         env:
           PYPI_PASSWORD: ${{ secrets.PYPI_PASSWORD }}
         run: |
-          python -m twine upload -u __token__ -p "${PYPI_PASSWORD}" dist/*
+          $PYTHON -m twine upload -u __token__ -p "${PYPI_PASSWORD}" dist/*.whl

@@ -8,7 +8,7 @@ import cachetools.func
 from pathlib import Path
 
 from aim.storage.encoding import encode_path
-from aim.storage.container import Container
+from aim.storage.container import Container, ContainerItemsIterator
 from aim.storage.prefixview import PrefixView
 from aim.storage.rockscontainer import RocksContainer, optimize_db_for_read
 
@@ -26,7 +26,7 @@ class Racer(NamedTuple):
     iterator: 'aimrocks.ItemsIterator'
 
 
-class ItemsIterator:
+class ItemsIterator(ContainerItemsIterator):
     def __init__(self, dbs: Dict[bytes, "aimrocks.DB"], *args, **kwargs):
         self.args = args
         self.kwargs = kwargs
@@ -67,12 +67,15 @@ class ItemsIterator:
         self.seek(max_key)
 
     def get(self) -> Tuple[bytes, bytes]:
-        return self._get(seek_next=False)
+        item = self._get(seek_next=False)
+        if item is None:
+            raise ValueError()
+        return item
 
     def _get(self, seek_next: bool = False) -> Tuple[bytes, bytes]:
 
         if not self._heap:
-            raise StopIteration
+            return None
 
         key, _, value, prefix, iterator = self._heap[0]
 
@@ -112,7 +115,7 @@ class ItemsIterator:
 
         return max_key
 
-    def __next__(self) -> Tuple[bytes, bytes]:
+    def next(self) -> Tuple[bytes, bytes]:
         return self._get(seek_next=True)
 
 
