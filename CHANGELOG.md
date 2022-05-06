@@ -1,5 +1,9 @@
 # Changelog
 
+## 3.9.3
+
+- Fix HF callback before training access (mihran113) 
+
 ## 3.9.2 Apr 29, 2022
 
 ### Enhancements:

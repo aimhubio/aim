@@ -23,7 +23,6 @@ class AimCallback(TrainerCallback):
                  system_tracking_interval: Optional[int]
                  = DEFAULT_SYSTEM_TRACKING_INT,
                  log_system_params: bool = True,
-                 run_params: Optional[Dict[str, Any]] = None,
                  ):
         self._repo_path = repo
         self._experiment_name = experiment
@@ -41,7 +40,7 @@ class AimCallback(TrainerCallback):
         return self._run
 
     def setup(self, args=None, state=None, model=None):
-        if not state.is_world_process_zero:
+        if state and not state.is_world_process_zero:
             return
 
         if not self._run:
@@ -63,8 +62,6 @@ class AimCallback(TrainerCallback):
         if args:
             combined_dict = {**args.to_sanitized_dict()}
             self._run['hparams'] = combined_dict
-            if self._run_params:
-                self._run['run_params'] = self._run_params
 
         # Store model configs as well
         # if hasattr(model, 'config') and model.config is not None:
