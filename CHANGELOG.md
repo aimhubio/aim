@@ -1,6 +1,7 @@
 # Changelog
 
 ## 3.9.3
+- Fix affecting stroke types after changing color persistence (KaroMourad)
 - Fix run remote tracking queue cleanup (mihran113)
 
 ## 3.9.2 Apr 29, 2022
