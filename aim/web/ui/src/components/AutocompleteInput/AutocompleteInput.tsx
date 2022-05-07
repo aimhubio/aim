@@ -30,7 +30,7 @@ function AutocompleteInput({
 }: IAutocompleteInputProps) {
   const [focused, setFocused] = React.useState<boolean>(false);
   const [value, setValue] = React.useState<string>('');
-  const monacoInstance: any = useMonaco();
+  const monaco: any = useMonaco();
   const [mounted, setMounted] = React.useState(false);
   const editorRef = React.useRef<any>();
 
@@ -41,9 +41,9 @@ function AutocompleteInput({
   React.useEffect(() => {
     // inserting given object for autosuggestion
     setFocused(false);
-    const disposable = showAutocompletion(monacoInstance, context);
+    const disposable = showAutocompletion(monaco, context);
     return disposable?.dispose;
-  }, [monacoInstance, context]);
+  }, [monaco, context]);
 
   React.useEffect(() => {
     if (focused) {
@@ -53,19 +53,19 @@ function AutocompleteInput({
 
   React.useEffect(() => {
     if (mounted) {
-      monacoInstance.editor.defineTheme(
+      monaco.editor.defineTheme(
         monacoConfig.theme.name,
         monacoConfig.theme.config,
       );
       setValue(defaultValue);
-      monacoInstance.editor.setTheme(monacoConfig.theme.name);
+      monaco.editor.setTheme(monacoConfig.theme.name);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [mounted]);
 
   function handleDidMount(editor: any) {
-    editorRef.current = editor;
     setMounted(true);
+    editorRef.current = editor;
     editorRef.current.onDidFocusEditorWidget(() => {
       setFocused(true);
     });
@@ -105,16 +105,16 @@ function AutocompleteInput({
         value={value}
         onChange={handleChange}
         onMount={handleDidMount}
-        // loading={<span></span>}
+        loading={<span />}
         options={monacoConfig.options}
         {...editorProps}
       />
-      {/* {focused || value || defaultValue ? null : (
+      {focused || value || defaultValue ? null : (
         <div className='AutocompleteInput__placeholder'>
           Filter runs, e.g. run.learning_rate {'>'} 0.0001 and run.batch_size ==
           32
         </div>
-      )} */}
+      )}
     </div>
   );
 }
