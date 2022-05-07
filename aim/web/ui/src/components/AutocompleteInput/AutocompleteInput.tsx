@@ -20,36 +20,19 @@ loader.config({
 
 function AutocompleteInput({
   context,
+  advanced,
   className,
   editorProps = {},
-  advanced,
+  defaultValue = '',
   //callback functions
   onEnter,
   onChange,
-  defaultValue = '',
 }: IAutocompleteInputProps) {
-  const [focused, setFocused] = React.useState<boolean>(false);
   const [value, setValue] = React.useState<string>('');
+  const [focused, setFocused] = React.useState<boolean>(false);
+  const [mounted, setMounted] = React.useState<boolean>(false);
   const monaco: any = useMonaco();
-  const [mounted, setMounted] = React.useState(false);
   const editorRef = React.useRef<any>();
-
-  const monacoConfig = React.useMemo(() => {
-    return getMonacoConfig(advanced);
-  }, [advanced]);
-
-  React.useEffect(() => {
-    // inserting given object for autosuggestion
-    setFocused(false);
-    const disposable = showAutocompletion(monaco, context);
-    return disposable?.dispose;
-  }, [monaco, context]);
-
-  React.useEffect(() => {
-    if (focused) {
-      editorRef.current?.focus();
-    }
-  }, [focused, mounted]);
 
   React.useEffect(() => {
     if (mounted) {
@@ -60,40 +43,67 @@ function AutocompleteInput({
       setValue(defaultValue);
       monaco.editor.setTheme(monacoConfig.theme.name);
     }
+    // inserting given object for autosuggestion
+    handleBlur();
+    const disposable = showAutocompletion(monaco, context);
+    return () => {
+      disposable?.dispose();
+    };
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [mounted]);
+  }, [monaco, context, mounted]);
 
-  function handleDidMount(editor: any) {
-    setMounted(true);
-    editorRef.current = editor;
-    editorRef.current.onDidFocusEditorWidget(() => {
-      setFocused(true);
-    });
-    editorRef.current.onDidBlurEditorWidget(() => {
-      setFocused(false);
-    });
-  }
+  React.useEffect(() => {
+    if (focused) {
+      editorRef.current?.focus();
+    }
+  }, [focused, mounted]);
 
-  function handleChange(val: string | undefined, ev: any) {
-    if (typeof val === 'string') {
-      // formatting value to avoid the new line
-      let formatted = val.replace(/[\n\r]/g, '');
-      if (ev.changes[0].text === '\n') {
-        editorRef.current!.setValue(formatted);
-        if (onEnter) {
-          onEnter();
+  const monacoConfig: Record<any, any> = React.useMemo(() => {
+    return getMonacoConfig(advanced);
+  }, [advanced]);
+
+  const handleFocus: () => void = React.useCallback((): void => {
+    setFocused(true);
+  }, []);
+
+  const handleBlur: () => void = React.useCallback((): void => {
+    setFocused(false);
+  }, []);
+
+  const handleDidMount: (editor: any) => void = React.useCallback(
+    (editor: any): void => {
+      setMounted(true);
+      editorRef.current = editor;
+      editorRef.current.onDidFocusEditorWidget(handleFocus);
+      editorRef.current.onDidBlurEditorWidget(handleBlur);
+    },
+    [handleBlur, handleFocus],
+  );
+
+  const handleChange = React.useCallback(
+    (val: string | undefined, ev: any) => {
+      if (typeof val === 'string') {
+        // formatting value to avoid the new line
+        let formatted = val.replace(/[\n\r]/g, '');
+        if (ev.changes[0].text === '\n') {
+          editorRef.current!.setValue(formatted);
+          if (onEnter) {
+            onEnter();
+          }
+        }
+        setValue(formatted);
+        if (onChange) {
+          onChange(formatted, ev);
         }
       }
-      setValue(formatted);
-      if (onChange) {
-        onChange(formatted, ev);
-      }
-    }
-  }
+    },
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [],
+  );
 
   return (
     <div
-      onClick={() => setFocused(true)}
+      onClick={handleFocus}
       className={classNames(`AutocompleteInput ${className || ''}`, {
         AutocompleteInput__focused: focused,
         AutocompleteInput__advanced: advanced,

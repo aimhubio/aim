@@ -7,7 +7,7 @@
   display: flex;
   align-items: center;
   border-radius: $border-radius-main;
-  padding: 0.5rem;
+  padding: $space-xs;
   position: relative;
   &__focused {
     border: $border-grey;
@@ -15,17 +15,17 @@
   &__advanced {
     height: 4.5rem;
     align-items: flex-start;
-    padding: 0.25rem 0.5rem;
+    padding: $space-xxxs $space-xs;
   }
   &__placeholder {
     position: absolute;
-    left: 8px;
+    left: $space-xs;
     color: $text-color-50;
     max-width: 95%;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
-    font-family: 'Iosevka';
+    font-family: 'Iosevka', monospace;
     font-size: $text-md;
     top: 6px;
   }
