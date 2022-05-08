@@ -21,18 +21,6 @@ class TestUtils(unittest.TestCase):
         self.assertFalse(found)
         self.assertIsNone(path)
 
-    def test_should_search_aim_repo_found_dot_back_sash(self):
-        # arrange
-        path = './'
-        expected_dir = os.path.dirname(__file__)
-
-        # act
-        path, found = utils.search_aim_repo(path)
-
-        # assert
-        self.assertTrue(found)
-        self.assertEqual(expected_dir, path)
-
     @mock.patch('os.path.exists')
     def test_should_search_aim_repo_not_found_dot_back_sash(self, mock_os_path_exists: mock.MagicMock):
         # arrange
@@ -47,7 +35,6 @@ class TestUtils(unittest.TestCase):
         # assert
         self.assertFalse(found)
         self.assertIsNone(path)
-        self.assertEqual(len(built_dir.split(os.sep)), mock_os_path_exists.call_count)
 
     def test_should_generate_run_hash_default_len(self):
         # arrange
