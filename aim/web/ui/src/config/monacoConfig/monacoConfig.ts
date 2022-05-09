@@ -66,7 +66,7 @@ export const getSuggestionsByExplorer = (
       archived: '',
       creation_time: '',
       end_time: '',
-      ...data,
+      ...data.params,
     },
   };
   const explorersList = {

@@ -4,6 +4,7 @@ import classNames from 'classnames';
 import Editor, { useMonaco, loader } from '@monaco-editor/react';
 
 import { getMonacoConfig } from 'config/monacoConfig/monacoConfig';
+import { getBasePath } from 'config/config';
 
 import { showAutocompletion } from 'utils/showAutocompletion';
 
@@ -14,7 +15,7 @@ import './AutocompleteInput.scss';
 // loading monaco from node modules instead of CDN
 loader.config({
   paths: {
-    vs: '/static-files/vs',
+    vs: `${getBasePath()}/static-files/vs`,
   },
 });
 
