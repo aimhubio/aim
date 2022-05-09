@@ -2,7 +2,7 @@
 
 ## 3.9.3
 
-- Fix filtering single run metrics data (KaroMourad)
+- Fix issue with filtering metrics values in single run page (KaroMourad)
 
 ## 3.9.2 Apr 29, 2022
 
