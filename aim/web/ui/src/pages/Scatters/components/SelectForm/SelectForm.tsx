@@ -175,7 +175,7 @@ function SelectForm({
               context={selectFormData?.suggestions}
               onEnter={handleParamsSearch}
               onChange={onSelectRunQueryChange}
-              defaultValue={selectedOptionsData?.query}
+              value={selectedOptionsData?.query}
             />
           </div>
         </ErrorBoundary>

@@ -128,7 +128,7 @@ function SelectForm({
                     }}
                     onEnter={handleSearch}
                     onChange={onSelectRunQueryChange}
-                    defaultValue={selectedImagesData?.advancedQuery}
+                    value={selectedImagesData?.advancedQuery}
                   />
                 </div>
               ) : (
@@ -249,7 +249,7 @@ function SelectForm({
                   context={selectFormData?.suggestions}
                   onEnter={handleSearch}
                   onChange={onSelectRunQueryChange}
-                  defaultValue={selectedImagesData?.advancedQuery}
+                  value={selectedImagesData?.advancedQuery}
                 />
               </div>
             </ErrorBoundary>

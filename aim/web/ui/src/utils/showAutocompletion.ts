@@ -1,3 +1,5 @@
+import * as dot from 'dot-object';
+
 import last from 'lodash/last';
 // import get from 'lodash/get';
 import { Monaco } from '@monaco-editor/react';
@@ -46,6 +48,7 @@ function getSuggestions(monaco: Monaco, options: Record<string, string>) {
         endLineNumber: position.lineNumber,
         endColumn: position.column,
       });
+
       const words = lastChars.replace('\t', '').split(' ');
 
       let activeTyping: any = last(words); // What the user is currently typing (everything after the last space)
@@ -67,17 +70,31 @@ function getSuggestions(monaco: Monaco, options: Record<string, string>) {
         return null;
       }
 
+      // flatten strings of array of accessible options.
+      const filteredOptions = Object.keys(dot.dot(options)).map(
+        (option) => option.split('.__example_type__')[0],
+      );
+
       // If the last character typed is a period then we need to look at member objects of the `options` object
       const isMember = activeTyping.charAt(activeTyping.length - 1) === '.';
 
+      let isIncluded: boolean = false;
       // Array of autocompletion results
       const suggestions: any = [];
+
+      //Checking is the word included in options list
+      for (let option of filteredOptions) {
+        if (option.split(activeTyping)[0] === '') {
+          isIncluded = true;
+          break;
+        }
+      }
 
       // Used for generic handling between member and non-member objects
       let lastToken: any = options;
       let prefix = '';
 
-      if (isMember) {
+      if (isMember && isIncluded) {
         // Is a member, get a list of all members, and the prefix
         const parents = activeTyping
           .substring(0, activeTyping.length - 1)
@@ -134,7 +151,7 @@ function getSuggestions(monaco: Monaco, options: Record<string, string>) {
           suggestions.push(completionItem);
         }
       }
-      return { suggestions };
+      return { suggestions: isIncluded ? suggestions : [] };
     },
   };
 }

@@ -7,7 +7,7 @@ export interface IAutocompleteInputProps {
   className?: string;
   editorProps?: EditorProps;
   advanced?: boolean;
-  defaultValue?: string;
+  value: string | undefined;
   onEnter?: () => void;
   onChange?: (
     val: string,

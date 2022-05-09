@@ -28,7 +28,7 @@ function SearchBar({
     };
   }, []);
 
-  function handleRunSearch() {
+  const handleRunSearch = React.useCallback(() => {
     if (isRunsDataLoading) {
       return;
     }
@@ -39,7 +39,7 @@ function SearchBar({
       })
       .catch();
     trackEvent(ANALYTICS_EVENT_KEYS.runs.searchClick);
-  }
+  }, [isRunsDataLoading]);
 
   function handleRequestAbort(e: React.SyntheticEvent): void {
     e.preventDefault();
@@ -57,7 +57,7 @@ function SearchBar({
             onEnter={handleRunSearch}
             onChange={onSearchInputChange}
             context={searchSuggestions}
-            defaultValue={searchValue}
+            value={searchValue}
           />
         </form>
         <Divider style={{ margin: '0 1em' }} orientation='vertical' flexItem />

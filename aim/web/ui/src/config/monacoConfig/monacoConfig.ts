@@ -46,7 +46,7 @@ export const getMonacoConfig = (advanced = false): any => ({
         'editorSuggestWidget.highlightForeground': '#1c2852',
         'editorSuggestWidget.focusHighlightForeground': '#1c2852',
         'editorSuggestWidget.foreground': '#414b6d',
-        'list.hoverBackground': '#dceafb',
+        'list.hoverBackground': '#f3f8fe',
         'scrollbar.shadow': '#fff',
       },
     },

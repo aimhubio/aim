@@ -239,7 +239,7 @@ function SelectForm({
               context={selectFormData?.suggestions}
               onEnter={handleParamsSearch}
               onChange={onSelectRunQueryChange}
-              defaultValue={selectedParamsData?.query}
+              value={selectedParamsData?.query}
             />
           </div>
         </div>

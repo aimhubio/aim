@@ -126,7 +126,7 @@ function SelectForm({
                     metric: { name: '', context: '' },
                     ...selectFormData?.suggestions,
                   }}
-                  defaultValue={selectedMetricsData?.advancedQuery}
+                  value={selectedMetricsData?.advancedQuery}
                   onChange={onSelectAdvancedQueryChange}
                   onEnter={handleMetricSearch}
                 />
@@ -246,7 +246,7 @@ function SelectForm({
               <AutocompleteInput
                 onChange={onSelectRunQueryChange}
                 onEnter={handleMetricSearch}
-                defaultValue={selectedMetricsData?.query}
+                value={selectedMetricsData?.query}
                 context={selectFormData.suggestions}
               />
             </div>
