@@ -1,0 +1,120 @@
+/**
+ * type GetParamsOptions
+ * The request options type of GET /projects/params
+ */
+export type GetParamsOptions = {};
+
+/**
+ * type GetProjectsResult
+ * The response type of GET /projects
+ */
+export type GetProjectsResult = {
+  /**
+   * The name of project
+   */
+  name: string;
+  /**
+   * The path of project
+   */
+  path: string;
+  /**
+   * The description of project
+   */
+  description: string;
+  /**
+   * This flag indicates is analytics tracking enabled by `aim up` command or not
+   */
+  telemetry_enabled: string;
+};
+
+type Context = Record<string, any>;
+/**
+ * type GetParamsResult
+ * The response type of GET /projects/params
+ * This data is used by autosuggestions etc.
+ */
+export type GetParamsResult = {
+  /**
+   * Tracked params for all runs
+   * ```python
+   *   run["hparams"] = {
+   *     "batch_size": 16
+   *     ...
+   *   }
+   * ```
+   * This record includes high level params of run, system defined params like __system_params, environment variables etc.
+   */
+  params: Record<string, any>;
+  /**
+   * Context of tracked metrics sequences by passing name of sequence as`metric`
+   * This generates by calling
+   * ```python
+   *    run.track(1, name="metric", context = {"subset": "val"})
+   * ```
+   */
+  metric?: ?Record<string, Array<Context>>;
+  /**
+   * Context of tracked image sequences by passing name of sequence as`images`
+   * This generates by calling
+   * ```python
+   *    run.track([, , , aim.Image(...)], name="labels", context = {"subset": "test"})
+   *    run.track([, , , aim.Image(...)], , context = {"subset": "val"})
+   * ```
+   * i.e. {labels: [{"subset": "test"}], images: , [{"subset": "val"}]}
+   * Note: Examples of records for the rest of sequences will follow to this example
+   */
+  images?: ?Record<string, Array<Context>>;
+  /**
+   * Context of tracked image sequences by passing name of sequence as`images`
+   * This generates by calling
+   * ```python
+   *    run.track([, , , aim.Text(...)], name="...", context = {"subset": "test"})
+   * ```
+   */
+  texts?: ?Record<string, Array<Context>>;
+  /**
+   * Context of tracked image sequences by passing name of sequence as`images`
+   * This generates by calling
+   * ```python
+   *    run.track([, , , aim.Figure(...)], name="...", context = {"subset": "test"})
+   * ```
+   */
+  figures?: ?Record<string, Array<Context>>;
+  /**
+   * Context of tracked image sequences by passing name of sequence as`images`
+   * This generates by calling
+   * ```python
+   *    run.track([, , , aim.Distribution(...)], name="...", context = {"subset": "test"})
+   * ```
+   */
+  distributions?: ?Record<string, Array<Context>>;
+  /**
+   * Context of tracked image sequences by passing name of sequence as`images`
+   * This generates by calling
+   * ```python
+   *    run.track([, , , aim.Audio(...)], name="...", context = {"subset": "test"})
+   * ```
+   */
+  audios?: ?Record<string, Array<Context>>;
+};
+
+/**
+ * type GetActivityResult
+ * The response type of GET /projects/activity
+ * This data is used by autosuggestions etc.
+ */
+export type GetActivityResult = {
+  /**
+   * Total number of experiments in a single repo/storage/project (.aim directory)
+   */
+  num_experiments: number;
+  /**
+   * Total number of runs in a single repo/storage/project (.aim directory)
+   */
+  num_runs: number;
+  /**
+   * Activity distribution by datetime (creating run, tracking etc.)
+   * This data is used by the activity heatmap of main dashboard of UI
+   */
+  activity_map: Record<string, number>;
+};

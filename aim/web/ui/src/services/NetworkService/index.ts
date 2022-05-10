@@ -4,6 +4,7 @@ import {
   Interceptor,
   RequestOptions,
   RequestInit,
+  HttpRequestResult,
 } from './types';
 import exceptionDetector from './interceptors/exceptionDetector';
 
@@ -28,10 +29,10 @@ class NetworkService {
     this.uri = uri;
   }
 
-  makeAPIGetRequest = (url: string, options: RequestOptions = {}) => {
+  makeAPIGetRequest = <T>(url: string, options: RequestOptions = {}): T => {
     options = options || {};
     options.method = HttpRequestMethods.GET;
-    return this.makeAPIRequest(url, options);
+    return this.makeAPIRequest<T>(url, options);
   };
 
   makeAPIPostRequest = (url: string, options: RequestOptions = {}) => {
@@ -81,10 +82,10 @@ class NetworkService {
       .join('&');
   };
 
-  makeAPIRequest = (
+  makeAPIRequest = <T>(
     partUrl: string,
     options: RequestOptions = {},
-  ): Promise<{ body: any; headers: any }> => {
+  ): Promise<HttpRequestResult<T>> => {
     return new Promise((resolve, reject) => {
       let url = this.createUrl(partUrl);
 

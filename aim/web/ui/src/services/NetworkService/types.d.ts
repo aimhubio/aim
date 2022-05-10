@@ -100,3 +100,12 @@ export interface RequestInit {
    */
   signal?: AbortSignal | null;
 }
+
+export interface HttpResponseBody {
+  status: string
+}
+
+export type HttpResponse<T> = {
+  body: HttpResponseBody extends T;
+  headers: any; // @TODO-V3 fill in later
+};
