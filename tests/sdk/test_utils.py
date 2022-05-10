@@ -10,7 +10,7 @@ class TestUtils(unittest.TestCase):
     def setUp(self):
         self.maxDiff = None
 
-    def test_should_search_aim_repo_not_found_back_sash(self):
+    def test_should_search_aim_repo_not_found_back_slash(self):
         # arrange
         path = '/'
 
@@ -22,7 +22,7 @@ class TestUtils(unittest.TestCase):
         self.assertIsNone(path)
 
     @mock.patch('os.path.exists')
-    def test_should_search_aim_repo_not_found_dot_back_sash(self, mock_os_path_exists: mock.MagicMock):
+    def test_should_search_aim_repo_not_found_dot_back_slash(self, mock_os_path_exists: mock.MagicMock):
         # arrange
         path = './'
         built_dir = os.path.dirname(__file__)
