@@ -1,7 +1,6 @@
 import os
 import uuid
 from copy import deepcopy
-import grpc
 import threading
 from typing import Tuple
 from collections import defaultdict
@@ -32,6 +31,9 @@ class Client:
         retry_count=DEFAULT_RETRY_COUNT, retry_interval=DEFAULT_RETRY_INTERVAL))
 
     def __init__(self, remote_path: str):
+        # temporary workaround for M1 build
+        import grpc
+
         self._id = str(uuid.uuid4())
 
         ssl_certfile = os.getenv(AIM_CLIENT_SSL_CERTIFICATES_FILE)

@@ -8,8 +8,18 @@
 - Add support for animated image formats to Aim Image object (devfox-se)
 - Add `AimLogger` for Catboost (devfox-se)
 - Add `AimCallback` for LightGBM (devfox-se)
+- Integrate `aim` with `cimport`-able `aimrocks` (mahnerak)
+- Add `__slots__` to some classes to improve performance (mahnerak)
+- Define base abstractions for `Iterator` and `DB` by borrowing from `aimrocks` (mahnerak)
+- Use `KeysIterator` and `ValuesIterator` wrappers instead of reimplementing (mahnerak)
+- Rename `PrefixView.container` to `PrefixView.parent` (mahnerak)
+- Reimplement `absolute_path` (mahnerak)
+- Cython bindings for `PrefixView`, `TreeView`, `Container`, `ArrayView` (mahnerak)
 
 ### Fixes:
+
+- Remove hard-coded installation of pre-requirements (mahnerak)
+- Remove duplicate code from `TreeView` and `Container` methods (mahnerak)
 
 ## 3.9.2 Apr 29, 2022
 
@@ -45,7 +55,7 @@
 - Fix chart height updating when resize mode changed (VkoHov)
 - Fix HuggingFace callback context capturing (mihran113)
 - Fix Params/Scatters explorers' row hiding functionality (VkoHov)
-- Fix Profiler logs are saved outside repo directory (devfox-se) 
+- Fix Profiler logs are saved outside repo directory (devfox-se)
 
 ## 3.8.1 Apr 6, 2022
 

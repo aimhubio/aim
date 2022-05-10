@@ -6,7 +6,7 @@ from aim.storage.types import AimObject, AimObjectKey
 
 
 class Context:
-    __slots__ = ['_context', '_hash']
+    __slots__ = ('_context', '_hash')
 
     def __init__(
         self,
@@ -53,7 +53,7 @@ class Context:
 class SequenceDescriptor:
     Selector = Tuple[int, str]
 
-    __slots__ = ['_name', '_context', '_hash', '_sequence_hash']
+    __slots__ = ('_name', '_context', '_hash', '_sequence_hash')
 
     def __init__(
         self,
