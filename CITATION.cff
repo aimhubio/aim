@@ -1,0 +1,16 @@
+cff-version: 1.2.0
+message: "If you want to cite the tool, feel free to use this (but only if you loved it 😊)"
+title: "Aim"
+abstract: "An easy-to-use and performant open-source ML experiment tracking tool."
+date-released: 2020-06-18
+authors:
+  - family-names: "Arakelyan"
+    given-names: "Gor"
+  - family-names: "Soghomonyan"
+    given-names: "Gevorg"
+  - name: "The Aim team"
+version: 3.9.3
+doi: 10.5281/zenodo.6536395
+license: "Apache-2.0"
+url: "https://aimstack.io"
+repository-code: "https://github.com/aimhubio/aim"
