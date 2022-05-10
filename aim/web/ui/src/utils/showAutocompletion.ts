@@ -1,7 +1,7 @@
 import * as dot from 'dot-object';
 
 import last from 'lodash/last';
-// import get from 'lodash/get';
+import get from 'lodash/get';
 import { Monaco } from '@monaco-editor/react';
 
 function showAutocompletion(monaco: Monaco, options: Record<string, string>) {
@@ -24,7 +24,6 @@ function getType(monaco: Monaco, maybe: any, isMember = false) {
       return isMember
         ? monaco.languages.CompletionItemKind.Method
         : monaco.languages.CompletionItemKind.Function;
-
     default:
       return isMember
         ? monaco.languages.CompletionItemKind.Property
@@ -48,9 +47,7 @@ function getSuggestions(monaco: Monaco, options: Record<string, string>) {
         endLineNumber: position.lineNumber,
         endColumn: position.column,
       });
-
       const words = lastChars.replace('\t', '').split(' ');
-
       let activeTyping: any = last(words); // What the user is currently typing (everything after the last space)
 
       specialCharactersForWordSplitting.forEach((char) => {
@@ -129,12 +126,20 @@ function getSuggestions(monaco: Monaco, options: Record<string, string>) {
         // Do not show properites that begin with "__"
         if (lastToken.hasOwnProperty(prop) && !prop.startsWith('__')) {
           // Create completion object
-
+          let detail: any = get(options, prefix + prop);
           const completionItem = {
             label: prop,
-            kind: getType(monaco, lastToken[prop], isMember),
+            kind: getType(
+              monaco,
+              detail?.hasOwnProperty('__example_type__')
+                ? detail.__example_type__.split("'")[1]
+                : lastToken[prop],
+              isMember,
+            ),
             insertText: prop,
-            // detail: JSON.stringify(get(options, prefix + prop)),
+            detail: detail?.hasOwnProperty('__example_type__')
+              ? detail.__example_type__.split("'")[1]
+              : typeof detail,
             range,
           };
 

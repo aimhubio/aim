@@ -29,7 +29,6 @@ function AutocompleteInput({
   onEnter,
   onChange,
 }: IAutocompleteInputProps) {
-  const [editorValue, setEditorValue] = React.useState<string>('');
   const [hasSelection, setHasSelection] = React.useState(false);
   const [focused, setFocused] = React.useState<boolean>(false);
   const [mounted, setMounted] = React.useState<boolean>(false);
@@ -42,7 +41,6 @@ function AutocompleteInput({
         monacoConfig.theme.name,
         monacoConfig.theme.config,
       );
-      setEditorValue(value);
       monaco.editor.setTheme(monacoConfig.theme.name);
     }
     // inserting given object for autosuggestion
@@ -92,23 +90,18 @@ function AutocompleteInput({
     (val: string | undefined, ev: any) => {
       if (typeof val === 'string') {
         // formatting value to avoid the new line
-        let formatted = (hasSelection ? editorValue : val).replace(
-          /[\n\r]/g,
-          '',
-        );
+        let formatted = (hasSelection ? value : val).replace(/[\n\r]/g, '');
         if (ev.changes[0].text === '\n') {
           editorRef.current!.setValue(formatted);
           if (onEnter) {
             onEnter();
           }
         }
-        setEditorValue(formatted);
-        if (onChange) {
-          onChange(formatted, ev);
-        }
+        onChange(formatted, ev);
       }
     },
-    [hasSelection, editorValue, onChange, onEnter],
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [hasSelection, onChange, onEnter],
   );
 
   return (
@@ -122,14 +115,14 @@ function AutocompleteInput({
       <Editor
         language='python'
         height={monacoConfig.height}
-        value={editorValue}
+        value={value}
         onChange={handleChange}
         onMount={handleDidMount}
         loading={<span />}
         options={monacoConfig.options}
         {...editorProps}
       />
-      {focused || editorValue || value ? null : (
+      {focused || value ? null : (
         <div className='AutocompleteInput__placeholder'>
           Filter runs, e.g. run.learning_rate {'>'} 0.0001 and run.batch_size ==
           32

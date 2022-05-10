@@ -123,7 +123,7 @@ function SelectForm({
                 <AutocompleteInput
                   advanced
                   context={{
-                    metric: { name: '', context: '' },
+                    metric: { name: '', context: { subset: '' } },
                     ...selectFormData?.suggestions,
                   }}
                   value={selectedMetricsData?.advancedQuery}
