@@ -19,7 +19,8 @@ export function getGroupingPersistIndex({
         );
       } else if (charCode > 96 && charCode < 103) {
         index += BigInt(
-          (charCode - 87) * Math.ceil(Math.pow(16, i) / grouping?.seed.color),
+          (charCode - 87) *
+            Math.ceil(Math.pow(16, i) / grouping?.seed[groupName]),
         );
       }
     }

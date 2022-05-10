@@ -21,6 +21,12 @@
 - Remove hard-coded installation of pre-requirements (mahnerak)
 - Remove duplicate code from `TreeView` and `Container` methods (mahnerak)
 
+## 3.9.3 May 10, 2022
+
+### Fixes:
+
+- Fix affecting stroke types after changing color persistence (KaroMourad)
+
 ## 3.9.2 Apr 29, 2022
 
 - Move aim_ui package data to separate directory (devfox-se)
