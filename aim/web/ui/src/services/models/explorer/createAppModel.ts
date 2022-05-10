@@ -213,7 +213,7 @@ function createAppModel(appConfig: IAppInitialConfig) {
           config.grouping = {
             color: [],
             stroke: [],
-            chart: [],
+            chart: ['name'],
             reverseMode: {
               color: false,
               stroke: false,
