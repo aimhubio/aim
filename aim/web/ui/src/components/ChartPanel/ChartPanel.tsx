@@ -180,7 +180,7 @@ const ChartPanel = React.forwardRef(function ChartPanel(
               </Grid>
             </ErrorBoundary>
             <ErrorBoundary>
-              <Grid className='ChartPanel__controls' item>
+              <Grid className='ChartPanel__controls ScrollBar__hidden' item>
                 {props.controls}
               </Grid>
             </ErrorBoundary>

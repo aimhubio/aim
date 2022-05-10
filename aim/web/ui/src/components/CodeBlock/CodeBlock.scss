@@ -30,4 +30,12 @@
     align-items: center;
     justify-content: center;
   }
+  .prism-code {
+    --ms-overflow-style: none;
+    --scrollbar-width: none;
+    scrollbar-width: none;
+    &::-webkit-scrollbar {
+      display: none;
+    }
+  }
 }

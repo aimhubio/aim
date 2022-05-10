@@ -24,9 +24,10 @@ export interface IRunBatch {
   key: string;
   context: { [key: string]: string };
   name: string;
-  iters: Float64Array;
-  values: Float64Array;
+  iters: number[];
+  values: number[];
 }
+
 export interface IRunInfo {
   archived: boolean;
   creation_time: number;

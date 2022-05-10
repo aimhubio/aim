@@ -184,3 +184,48 @@ class CustomCallback(AimCallback):
         
         return super().after_iteration(model, epoch, evals_log)
 ```
+
+### Catboost
+
+Catboost's `.fit()` has `log_cout` parameter which can be used to redirect log output into a custom object
+which has `write` attribute. Our logger is an object which implements `write` method to parse log string according to
+its content. Thus, most of the log output will be ignored by our parser logic, but you still can code up your own logic
+on top of ours to fill the gap for your needs.
+
+```python
+from aim.catboost import AimLogger
+
+
+class CustomLogger(AimLogger):
+
+    def write(self, log):
+        # Process the log string through our parser
+        super().write(log)
+
+        # Do your own parsing
+        log = log.strip().split()
+        if log[1] == 'bin:':
+            value_bin = log[1][4:]
+            value_score = self._to_number(log[3])
+            self.experiment.track(value_score, name='score')
+```
+
+### LightGBM
+
+Here is how to override the `AimCallback` for LightGBM.
+
+```python
+from aim.lightgbm import AimCallback
+
+
+class CustomCallback(AimCallback):
+
+    def before_tracking(self, env):
+        for item in env.evaluation_result_list:
+            # manipulate item here
+            pass
+
+    def after_tracking(self, env):
+        # do any other action if necessary after tracking value
+        pass
+```

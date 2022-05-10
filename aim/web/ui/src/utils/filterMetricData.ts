@@ -4,6 +4,7 @@ import { IMetricTrace } from 'types/services/models/metrics/runModel';
 import { IAxesScaleState } from 'types/components/AxesScalePopover/AxesScalePopover';
 
 import { AlignmentOptionsEnum, ScaleEnum } from 'utils/d3';
+import { float64FromUint8 } from 'utils/helper';
 
 function isInvalidValue(
   v: number,
@@ -17,11 +18,12 @@ function isInvalidValue(
   );
 }
 
-function getFilteredValues(args: {
-  data: Float64Array;
+function getFilteredValues<T = number[]>(args: {
+  data: T;
   invalidIndicesArray: number[][];
-}): Float64Array {
+}): T {
   const { data, invalidIndicesArray } = args;
+  // @ts-ignore
   return data.filter((v: number, i: number) =>
     invalidIndicesArray.every(
       (invalidIndices) => invalidIndices.indexOf(i) === -1,
@@ -29,10 +31,11 @@ function getFilteredValues(args: {
   );
 }
 
-function getInvalidIndices(
-  values: Float64Array,
+function getInvalidIndices<T = number[]>(
+  values: T,
   scaleType?: ScaleEnum,
 ): number[] {
+  // @ts-ignore
   return values.reduce((acc: number[], v: number, i: number) => {
     if (isInvalidValue(v, scaleType)) {
       acc = acc.concat([i]);
@@ -46,12 +49,16 @@ export function filterMetricsData(
   alignmentType: AlignmentOptionsEnum,
   axesScaleType?: IAxesScaleState,
 ) {
-  const values = new Float64Array(trace.values.blob);
-  const steps = new Float64Array(trace.iters.blob);
-  const epochs = new Float64Array(trace.epochs.blob);
-  const timestamps = new Float64Array(trace.timestamps.blob);
-  const x_axis_iters = new Float64Array(trace.x_axis_iters?.blob || []);
-  const x_axis_values = new Float64Array(trace.x_axis_values?.blob || []);
+  const values = float64FromUint8(trace.values.blob);
+  const steps = float64FromUint8(trace.iters.blob);
+  const epochs = float64FromUint8(trace.epochs.blob);
+  const timestamps = float64FromUint8(trace.timestamps.blob);
+  const x_axis_iters = float64FromUint8(
+    trace.x_axis_iters?.blob || new Uint8Array(),
+  );
+  const x_axis_values = float64FromUint8(
+    trace.x_axis_values?.blob || new Uint8Array(),
+  );
 
   const { xAxis, yAxis } = axesScaleType || {};
 
@@ -122,7 +129,13 @@ export function filterMetricsData(
 }
 
 export function filterSingleRunMetricsData(run: IRunBatch) {
-  const { values = new Float64Array(), iters = new Float64Array() } = run || {};
+  if (!run?.values?.length || !run?.iters?.length) {
+    return {
+      values: [],
+      iters: [],
+    };
+  }
+  const { values, iters } = run;
   const invalidIndices = {
     values: getInvalidIndices(values),
     iters: getInvalidIndices(iters),

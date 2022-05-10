@@ -139,8 +139,7 @@ import updateSortFields from 'utils/app/updateTableSortFields';
 import contextToString from 'utils/contextToString';
 import { AlignmentOptionsEnum, ChartTypeEnum, ScaleEnum } from 'utils/d3';
 import {
-  adjustable_reader,
-  decode_buffer_pairs,
+  decodeBufferPairs,
   decodePathsVals,
   iterFoldTree,
 } from 'utils/encoder/streamEncoding';
@@ -2306,9 +2305,10 @@ function createAppModel(appConfig: IAppInitialConfig) {
               const stream = await runsRequestRef.call((detail) => {
                 exceptionHandler({ detail, model });
               });
-              let gen = adjustable_reader(stream as ReadableStream<any>);
-              let buffer_pairs = decode_buffer_pairs(gen);
-              let decodedPairs = decodePathsVals(buffer_pairs);
+              let bufferPairs = decodeBufferPairs(
+                stream as ReadableStream<any>,
+              );
+              let decodedPairs = decodePathsVals(bufferPairs);
               let objects = iterFoldTree(decodedPairs, 1);
 
               const runsData: IRun<IMetricTrace | IParamTrace>[] = isInitial

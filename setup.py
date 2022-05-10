@@ -1,9 +1,13 @@
 import sys
 import os
+import platform
 
 from shutil import rmtree
 from setuptools import find_packages, setup, Command, Extension
 from Cython.Build import cythonize
+from aimrocks import lib_utils
+# TODO This `setup.py` assumes that `Cython` and `aimrocks` are installed.
+# This is okay for now as users are expected to install `aim` from wheels.
 
 version_file = 'aim/VERSION'
 
@@ -39,21 +43,19 @@ version_files = ['../aim/VERSION', ]
 LONG_DESCRIPTION = DESCRIPTION
 
 SETUP_REQUIRED = [
-    'Cython==3.0.0a9',
+    'Cython>=3.0.0a9',
 ]
 
 # What packages are required for this module to be executed?
 REQUIRED = [
     f'aim-ui=={__version__}',
     'aimrecords==0.0.7',
-    'aimrocks==0.1.0',
+    'aimrocks==0.2.1',
     'cachetools>=4.0.0',
     'click>=7.0',
     'cryptography>=3.0',
     'filelock>=3.0.0',
-    'GitPython>=3.0.4',
     'numpy>=1.12.0',
-    'packaging>=19.0',
     'protobuf>=3.11.0',
     'psutil>=5.6.7',
     'py3nvml>=0.2.5',
@@ -61,16 +63,21 @@ REQUIRED = [
     'tqdm>=4.20.0',
     'aiofiles>=0.5.0',
     'alembic>=1.4.0',
-    'async-exit-stack>=1.0.0',
-    'async-generator>=1.0',
     'fastapi>=0.65.0,<0.68.0',
-    'jinja2>=2.10.0,<3.1.0',
+    'jinja2>=2.10.0',
     'pytz>=2019.1',
     'SQLAlchemy>=1.4.1',
     'uvicorn>=0.12.0',
     'Pillow>=8.1.0',
-    'grpcio==1.42.0',
+    # fastapi to support python3.6
+    'async-exit-stack>=1.0.0; python_version<"3.7"',
+    'async-generator>=1.0; python_version<"3.7"',
 ]
+
+if platform.machine() != 'arm64':
+    # Temporarily avoid `grpcio` until the issue
+    # https://github.com/grpc/grpc/issues/29262 is resolved
+    REQUIRED.append('grpcio==1.42.0')
 
 
 class UploadCommand(Command):
@@ -116,6 +123,63 @@ class UploadCommand(Command):
         sys.exit()
 
 
+INCLUDE_DIRS = [lib_utils.get_include_dir()]
+LIB_DIRS = [lib_utils.get_lib_dir()]
+LIBS = lib_utils.get_libs()
+COMPILE_ARGS = [
+    '-std=c++11',
+    '-O3',
+    '-Wall',
+    '-Wextra',
+    '-Wconversion',
+    '-fno-strict-aliasing',
+    '-fno-rtti',
+    '-fPIC'
+]
+CYTHON_SCRITPS = [
+    ('aim.storage.hashing.c_hash', 'aim/storage/hashing/c_hash.pyx'),
+    ('aim.storage.hashing.hashing', 'aim/storage/hashing/hashing.py'),
+    ('aim.storage.hashing', 'aim/storage/hashing/__init__.py'),
+    ('aim.storage.encoding.encoding_native', 'aim/storage/encoding/encoding_native.pyx'),
+    ('aim.storage.encoding.encoding', 'aim/storage/encoding/encoding.pyx'),
+    ('aim.storage.encoding', 'aim/storage/encoding/__init__.py'),
+    ('aim.storage.treeutils', 'aim/storage/treeutils.pyx'),
+    ('aim.storage.rockscontainer', 'aim/storage/rockscontainer.pyx'),
+    ('aim.storage.union', 'aim/storage/union.pyx'),
+    ('aim.storage.arrayview', 'aim/storage/arrayview.py'),
+    ('aim.storage.treearrayview', 'aim/storage/treearrayview.py'),
+    ('aim.storage.treeview', 'aim/storage/treeview.py'),
+    ('aim.storage.utils', 'aim/storage/utils.py'),
+    ('aim.storage.container', 'aim/storage/container.py'),
+    ('aim.storage.containertreeview', 'aim/storage/containertreeview.py'),
+    ('aim.storage.inmemorytreeview', 'aim/storage/inmemorytreeview.py'),
+    ('aim.storage.prefixview', 'aim/storage/prefixview.py'),
+]
+
+
+def configure_extension(name: str, path: str):
+    """Configure an extension and bind with third-party libs"""
+    if isinstance(path, str):
+        path = [path]
+    return Extension(
+        name,
+        path,
+        language='c++',
+        include_dirs=INCLUDE_DIRS,
+        libraries=LIBS,
+        library_dirs=LIB_DIRS,
+        extra_compile_args=COMPILE_ARGS,
+    )
+
+
+def cytonize_extensions():
+    """Configure and Cythonize all the extensions"""
+    extensions = []
+    for name, path in CYTHON_SCRITPS:
+        extensions.append(configure_extension(name, path))
+    return cythonize(extensions, show_all_warnings=True)
+
+
 # Where the magic happens
 setup(
     name=NAME,
@@ -139,73 +203,7 @@ setup(
         'Programming Language :: Python :: 3.10',
         'Programming Language :: Python :: Implementation :: PyPy'
     ],
-    ext_modules=cythonize([
-        Extension(
-            'aim.storage.hashing.c_hash',
-            ['aim/storage/hashing/c_hash.pyx'],
-            language='c++'
-        ),
-        Extension(
-            'aim.storage.hashing.hashing',
-            ['aim/storage/hashing/hashing.py'],
-            language='c++'
-        ),
-        Extension(
-            'aim.storage.hashing',
-            ['aim/storage/hashing/__init__.py'],
-            language='c++'
-        ),
-        Extension(
-            'aim.storage.encoding.encoding_native',
-            ['aim/storage/encoding/encoding_native.pyx'],
-            language='c++'
-        ),
-        Extension(
-            'aim.storage.encoding.encoding',
-            ['aim/storage/encoding/encoding.pyx'],
-            language='c++'
-        ),
-        Extension(
-            'aim.storage.encoding',
-            ['aim/storage/encoding/__init__.py'],
-            language='c++'
-        ),
-        Extension(
-            'aim.storage.treeutils',
-            ['aim/storage/treeutils.pyx'],
-            language='c++'
-        ),
-        Extension(
-            'aim.storage.rockscontainer',
-            ['aim/storage/rockscontainer.pyx'],
-            language='c++'
-        ),
-        Extension(
-            'aim.storage.union',
-            ['aim/storage/union.pyx'],
-            language='c++'
-        ),
-        Extension(
-            'aim.storage.arrayview',
-            ['aim/storage/arrayview.py'],
-            language='c++'
-        ),
-        Extension(
-            'aim.storage.treearrayview',
-            ['aim/storage/treearrayview.py'],
-            language='c++'
-        ),
-        Extension(
-            'aim.storage.treeview',
-            ['aim/storage/treeview.py'],
-            language='c++'
-        ),
-        Extension(
-            'aim.storage.utils',
-            ['aim/storage/utils.py'],
-            language='c++'
-        ),
-    ]),
+    ext_modules=cytonize_extensions(),
     entry_points={
         'console_scripts': [
             'aim=aim.cli.cli:cli_entry_point',

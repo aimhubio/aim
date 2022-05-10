@@ -2,9 +2,11 @@
 
 .Tags {
   height: 100vh;
+  overflow: hidden;
   &__tabPanel {
     height: calc(100% - 50px);
     position: relative;
+    padding-bottom: 1.5rem;
     & > div {
       height: 100%;
       position: relative;
@@ -39,6 +41,26 @@
     height: 100%;
     border-left: $border-grey;
     border-right: $border-grey;
+    box-shadow: 0 toRem(1px) toRem(1px) $cuddle-50;
+    border-radius: 0 0 toRem(6px) toRem(6px);
+    .BaseTable {
+      &__body {
+        & > div {
+          width: 100% !important;
+          .BaseTable__row {
+            width: 100% !important;
+          }
+        }
+      }
+      &__row {
+        &-cell {
+          border-right: unset;
+        }
+      }
+      &__header-cell {
+        border-right: unset;
+      }
+    }
     &__tagListBusyLoader {
       padding-top: 100px;
     }
@@ -85,6 +107,8 @@
     &__tagListBox {
       height: calc(100% - 73px);
       position: relative;
+      overflow: hidden;
+      border-radius: 0 0 toRem(6px) toRem(6px);
       &__titleBox {
         position: relative;
         margin-left: 15px;
@@ -123,6 +147,7 @@
         width: 800px;
         box-shadow: -5px 0px 10px rgba(28, 40, 82, 0.1);
         top: 50px;
+        height: calc(100% - 40px);
       }
       .MuiBackdrop-root {
         background-color: transparent;
@@ -167,6 +192,14 @@
     text-decoration: none;
   }
   .BaseTable {
+    &__body {
+      & > div {
+        width: 100% !important;
+        .BaseTable__row {
+          width: 100% !important;
+        }
+      }
+    }
     &__table-main {
       outline: none;
     }

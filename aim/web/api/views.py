@@ -2,10 +2,9 @@ import os
 from pathlib import Path
 
 from fastapi import HTTPException, Request
-from aim.web.api.utils import APIRouter  # wrapper for fastapi.APIRouter
 from fastapi.responses import FileResponse, HTMLResponse
-from fastapi.templating import Jinja2Templates
 
+from aim.web.api.utils import APIRouter  # wrapper for fastapi.APIRouter
 from aim.web.configs import AIM_UI_BASE_PATH
 
 statics_router = APIRouter()
@@ -33,9 +32,13 @@ async def serve_static_files(path):
 @statics_router.get('/{path:path}/', response_class=HTMLResponse)
 async def serve_index_html(request: Request):
     import aim_ui
+    from jinja2 import Environment, FileSystemLoader
 
     template_files_dir = os.path.join(os.path.dirname(aim_ui.__file__), 'build')
-    templates = Jinja2Templates(directory=template_files_dir)
+    env = Environment(
+        loader=FileSystemLoader(template_files_dir),
+        autoescape=True
+    )
+    template = env.get_template('index-template.html')
     base_path = os.environ.get(AIM_UI_BASE_PATH, '')
-
-    return templates.TemplateResponse('index-template.html', {'request': request, 'base_path': base_path})
+    return template.render(base_path=base_path)
