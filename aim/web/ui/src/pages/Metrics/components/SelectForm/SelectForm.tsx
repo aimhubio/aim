@@ -158,7 +158,7 @@ function SelectForm({
                       size='small'
                       disablePortal={true}
                       disableCloseOnSelect
-                      options={selectFormData.options}
+                      options={selectFormData?.options}
                       value={selectedMetricsData?.options}
                       onChange={onSelect}
                       groupBy={(option) => option.group}

@@ -16,7 +16,7 @@ const getBadgeColor: (color: string) => string = (color: string): string =>
 
 const BadgeContainer: any = styled.div`
   font-family: ${(props: any) =>
-    props.monospace ? 'Iosevka, monospace' : 'Inter, sans-serif'};
+    props.monospace ? '"Iosevka", monospace' : 'Inter, sans-serif'};
   ${({ color }) => color && getBadgeColor(color)}
 `;
 

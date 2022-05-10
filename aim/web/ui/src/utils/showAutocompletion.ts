@@ -14,6 +14,27 @@ function showAutocompletion(monaco: Monaco, options: Record<string, string>) {
 
 const specialCharactersForWordSplitting = ['(', '='];
 
+function getDetailType(detail: any): string {
+  let sliced = detail.__example_type__.slice(
+    8,
+    detail.__example_type__.length - 2,
+  );
+  switch (sliced) {
+    case 'str':
+      return 'string';
+    case 'int':
+      return 'integer';
+    case 'bool':
+      return 'bool';
+    case 'list':
+      return 'list';
+    case 'float':
+      return 'float';
+    default:
+      return '';
+  }
+}
+
 // Helper function to return the monaco completion item type of a thing
 function getType(monaco: Monaco, maybe: any, isMember = false) {
   switch ((typeof maybe).toLowerCase()) {
@@ -126,23 +147,25 @@ function getSuggestions(monaco: Monaco, options: Record<string, string>) {
         // Do not show properites that begin with "__"
         if (lastToken.hasOwnProperty(prop) && !prop.startsWith('__')) {
           // Create completion object
-          let detail: any = get(options, prefix + prop);
+          const detail: any = get(options, prefix + prop);
+          const hasExampleType = detail?.hasOwnProperty('__example_type__');
+          let detailType;
+          if (hasExampleType) {
+            detailType = getDetailType(detail);
+          } else {
+            detailType = typeof detail;
+          }
           const completionItem = {
             label: prop,
             kind: getType(
               monaco,
-              detail?.hasOwnProperty('__example_type__')
-                ? detail.__example_type__.split("'")[1]
-                : lastToken[prop],
+              hasExampleType ? detailType : lastToken[prop],
               isMember,
             ),
             insertText: prop,
-            detail: detail?.hasOwnProperty('__example_type__')
-              ? detail.__example_type__.split("'")[1]
-              : typeof detail,
+            detail: detailType,
             range,
           };
-
           // Change insertText for functions
           if (
             completionItem.kind ===
