@@ -1,6 +1,8 @@
 # Changelog
 
-## 3.9.3
+## 3.9.3 May 10, 2022
+
+### Fixes:
 
 - Fix affecting stroke types after changing color persistence (KaroMourad)
 
