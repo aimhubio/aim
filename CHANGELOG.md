@@ -1,8 +1,14 @@
 # Changelog
 
-## 3.9.3
 
+## 3.9.4
+
+- Fix run remote tracking queue cleanup (mihran113)
 - Fix HF callback before training access (mihran113) 
+
+## 3.9.3 May 10, 2022
+
+- Fix affecting stroke types after changing color persistence (KaroMourad)
 
 ## 3.9.2 Apr 29, 2022
 
