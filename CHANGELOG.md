@@ -15,6 +15,7 @@
 - Rename `PrefixView.container` to `PrefixView.parent` (mahnerak)
 - Reimplement `absolute_path` (mahnerak)
 - Cython bindings for `PrefixView`, `TreeView`, `Container`, `ArrayView` (mahnerak)
+- Fix `AimLogger` deprecation issues related to release of PyTorch Lightning v1.5 (arnauddhaene)
 
 ### Fixes:
 
