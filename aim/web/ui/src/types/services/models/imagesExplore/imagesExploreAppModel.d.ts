@@ -14,7 +14,7 @@ import { SortFields } from 'utils/getSortedFields';
 
 export interface IImagesExploreAppConfig {
   grouping: {
-    group: [];
+    group: string[];
     reverseMode: {
       group: boolean;
     };
