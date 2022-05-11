@@ -120,7 +120,7 @@ class AimLogger(LightningLoggerBase):
     def finalize(self) -> None:
         super().finalize()
         if self._run:
-            self._run.finalize()
+            self._run.close()
             del self._run
             self._run = None
 
