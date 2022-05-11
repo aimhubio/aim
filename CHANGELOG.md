@@ -4,6 +4,7 @@
 
 ### Enhancements:
 
+- Show user-selected params before group config in chart popover (roubkar) 
 - Optimize stream decoding performance on UI (mahnerak)
 - Add support for animated image formats to Aim Image object (devfox-se)
 - Add `AimLogger` for Catboost (devfox-se)
@@ -22,8 +23,6 @@
 - Remove duplicate code from `TreeView` and `Container` methods (mahnerak)
 
 ## 3.9.3 May 10, 2022
-
-### Fixes:
 
 - Fix affecting stroke types after changing color persistence (KaroMourad)
 
