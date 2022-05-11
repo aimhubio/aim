@@ -123,7 +123,7 @@ function SelectForm({
                   <AutocompleteInput
                     advanced
                     context={{
-                      images: { name: '', context: { subset: '' } },
+                      ...selectFormData?.advancedSuggestions,
                       ...selectFormData?.suggestions,
                     }}
                     onEnter={handleSearch}

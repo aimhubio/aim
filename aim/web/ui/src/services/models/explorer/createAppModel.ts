@@ -176,6 +176,7 @@ import { SortField } from 'utils/getSortedFields';
 import onChangeTrendlineOptions from 'utils/app/onChangeTrendlineOptions';
 import onToggleColumnsColorScales from 'utils/app/onToggleColumnsColorScales';
 import { minMaxOfArray } from 'utils/minMaxOfArray';
+import getAdvancedSuggestion from 'utils/getAdvancedSuggestions';
 
 import { AppDataTypeEnum, AppNameEnum } from './index';
 
@@ -438,7 +439,6 @@ function createAppModel(appConfig: IAppInitialConfig) {
         return {};
     }
   }
-
   function setModelDefaultAppConfigData(
     recoverTableState: boolean = true,
   ): void {
@@ -552,10 +552,21 @@ function createAppModel(appConfig: IAppInitialConfig) {
         .getProjectParams(['metric'])
         .call()
         .then((data) => {
+          const advancedSuggestions: Record<any, any> = getAdvancedSuggestion(
+            data.metric,
+          );
           model.setState({
             selectFormData: {
               options: getMetricOptions(data),
               suggestions: getSuggestionsByExplorer(appName, data),
+              advancedSuggestions: {
+                metric: {
+                  name: '',
+                  context: _.isEmpty(advancedSuggestions)
+                    ? ''
+                    : { ...advancedSuggestions },
+                },
+              },
             },
           });
         });

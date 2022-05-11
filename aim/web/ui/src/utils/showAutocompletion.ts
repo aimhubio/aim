@@ -14,7 +14,7 @@ function showAutocompletion(monaco: Monaco, options: Record<string, string>) {
 
 const specialCharactersForWordSplitting = ['(', '='];
 
-function getDetailType(detail: any): string {
+function getDetailType(detail: { __example_type__: string }): string {
   let sliced = detail.__example_type__.slice(
     8,
     detail.__example_type__.length - 2,
@@ -30,6 +30,8 @@ function getDetailType(detail: any): string {
       return 'list';
     case 'float':
       return 'float';
+    case 'bytes':
+      return 'bytes';
     default:
       return '';
   }

@@ -81,6 +81,7 @@ import alphabeticalSortComparator from 'utils/alphabeticalSortComparator';
 import onNotificationDelete from 'utils/app/onNotificationDelete';
 import onNotificationAdd from 'utils/app/onNotificationAdd';
 import exceptionHandler from 'utils/app/exceptionHandler';
+import getAdvancedSuggestion from 'utils/getAdvancedSuggestions';
 
 import createModel from '../model';
 import { AppNameEnum } from '../explorer';
@@ -184,10 +185,21 @@ function initialize(appId: string): void {
     .getProjectParams(['images'])
     .call()
     .then((data: IProjectParamsMetrics) => {
+      const advancedSuggestions: Record<any, any> = getAdvancedSuggestion(
+        data.images,
+      );
       model.setState({
         selectFormData: {
           options: getSelectFormOptions(data),
           suggestions: getSuggestionsByExplorer(AppNameEnum.IMAGES, data),
+          advancedSuggestions: {
+            images: {
+              name: '',
+              context: _.isEmpty(advancedSuggestions)
+                ? ''
+                : { ...advancedSuggestions },
+            },
+          },
         },
       });
     });
