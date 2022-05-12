@@ -55,6 +55,7 @@
     "eject": "react-scripts eject",
     "lint": "eslint src/. --ext .js,.jsx,.ts,.tsx",
     "format:fix": "eslint src/. --ext .js,.jsx,.ts,.tsx --quiet --fix",
+    "preinstall": "rimraf public/vs",
     "postinstall": "cp -R node_modules/monaco-editor/min/vs public/vs",
     "analyze-bundles": "node tasks/bundle-analyzer.js",
     "crc-kit": "func() { node tasks/cli/index.js  create-component --name=\"$1\" --path=./src/components/kit/ --lint; }; func",
