@@ -83,7 +83,7 @@ export type DistributionValue = {
   bin_count: number;
   range: [number, number];
   data: {
-    blob: Float64Array;
+    blob: Uint8Array;
   };
 };
 
