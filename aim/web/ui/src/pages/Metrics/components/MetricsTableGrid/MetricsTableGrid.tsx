@@ -378,7 +378,7 @@ function metricsTableRowRenderer(
             Array.isArray(rowData.metric) && rowData.metric.length > 1 ? (
               <Badge
                 monospace
-                size='small'
+                size='xSmall'
                 color={COLORS[0][0]}
                 label={`${rowData.context.length} values`}
               />
@@ -392,14 +392,14 @@ function metricsTableRowRenderer(
             rowData.context.length > 1 ? (
               <Badge
                 monospace
-                size='small'
+                size='xSmall'
                 color={COLORS[0][0]}
                 label={`${rowData.context.length} values`}
               />
             ) : (
               <Badge
                 monospace
-                size='small'
+                size='xSmall'
                 color={COLORS[0][0]}
                 label={rowData.context[0] || 'Empty Context'}
               />
@@ -475,7 +475,7 @@ function metricsTableRowRenderer(
           content: (
             <Badge
               monospace
-              size='small'
+              size='xSmall'
               color={COLORS[0][0]}
               label={`${rowData[col].length} values`}
             />
@@ -506,7 +506,7 @@ function metricsTableRowRenderer(
           <Badge
             monospace
             key={item}
-            size='small'
+            size='xSmall'
             color={COLORS[0][0]}
             label={item || 'Empty Context'}
           />

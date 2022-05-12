@@ -1,7 +1,7 @@
 enum RowHeightEnum {
-  small = 28,
-  medium = 32,
-  large = 36,
+  small = 22,
+  medium = 28,
+  large = 32,
 }
 
 enum HideRowsEnum {

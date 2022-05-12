@@ -14,6 +14,7 @@ import {
   ROW_CELL_SIZE_CONFIG,
   COLORED_SELECTION_COLUMN_WIDTH,
   SELECTION_COLUMN_WIDTH,
+  RowHeightSize,
 } from 'config/table/tableConfigs';
 
 import Column from './TableColumn';
@@ -216,7 +217,8 @@ function Table(props) {
       <div
         className={classNames('Table__container', {
           [`Table__container--${
-            ROW_CELL_SIZE_CONFIG[props.rowHeightMode].name
+            ROW_CELL_SIZE_CONFIG[props.rowHeightMode]?.name ??
+            ROW_CELL_SIZE_CONFIG[RowHeightSize.md].name
           }`]: true,
         })}
       >

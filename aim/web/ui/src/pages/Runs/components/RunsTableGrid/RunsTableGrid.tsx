@@ -84,7 +84,7 @@ function getRunsTableColumns(
           ) : (
             <Badge
               monospace
-              size='small'
+              size='xSmall'
               color={COLORS[0][0]}
               label={metricContext === '' ? 'Empty context' : metricContext}
             />
@@ -158,7 +158,7 @@ function runsTableRowRenderer(
           content: (
             <Badge
               monospace
-              size='small'
+              size='xSmall'
               color={COLORS[0][0]}
               label={`${rowData[col].length} values`}
             />

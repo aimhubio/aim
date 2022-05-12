@@ -262,7 +262,7 @@ function Column({
                     <div>
                       <Button
                         withOnlyIcon
-                        size='small'
+                        size='xSmall'
                         onClick={onAnchorClick}
                         color='secondary'
                       >
@@ -441,7 +441,8 @@ function Column({
                   style={
                     col.key === '#' && data[groupKey].data.meta.color
                       ? {
-                          borderLeft: 'none',
+                          borderTopLeftRadius: '0.375rem',
+                          borderBottomLeftRadius: '0.375rem',
                           '--color-indicator': data[groupKey].data.meta.color,
                           '--extended-group-background-color':
                             BGColorLighten[data[groupKey].data.meta.color] ??
@@ -689,9 +690,9 @@ function GroupConfig({
     <ErrorBoundary>
       <div className='Table__group__config' onClick={() => expand(groupKey)}>
         <Button
-          size='small'
-          withOnlyIcon={true}
+          size='xSmall'
           className='Table__group__config_expandButton'
+          withOnlyIcon={true}
         >
           <Text className='flex'>
             <Icon name={expanded[groupKey] ? 'arrow-up' : 'arrow-down'} />
@@ -747,7 +748,7 @@ function GroupConfig({
               >
                 <div>
                   <Button
-                    size='small'
+                    size='xSmall'
                     className='Table__group__config__popover'
                     onClick={onAnchorClick}
                     withOnlyIcon={true}
@@ -802,7 +803,12 @@ function GroupActions({ expand, expanded, groupKeys, groupKey }) {
         anchor={({ onAnchorClick }) => (
           <Tooltip title='Expand options'>
             <div>
-              <Button color='secondary' withOnlyIcon onClick={onAnchorClick}>
+              <Button
+                size='xSmall'
+                color='secondary'
+                withOnlyIcon
+                onClick={onAnchorClick}
+              >
                 <Icon
                   className='Table__action__anchor'
                   name='more-horizontal'

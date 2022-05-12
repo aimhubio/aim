@@ -4,6 +4,7 @@
 
 ### Enhancements:
 
+- Add ability to adjust the density of the visible content in tables (roubkar)
 - Optimize stream decoding performance on UI (mahnerak)
 - Add support for animated image formats to Aim Image object (devfox-se)
 - Add `AimLogger` for Catboost (devfox-se)
