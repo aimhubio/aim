@@ -14,28 +14,52 @@ function showAutocompletion(monaco: Monaco, options: Record<string, string>) {
 
 const specialCharactersForWordSplitting = ['(', '='];
 
-function getDetailType(detail: { __example_type__: string }): string {
-  let sliced = detail.__example_type__.slice(
-    7,
-    detail.__example_type__.length - 1,
-  );
-  switch (sliced) {
-    case "'str'":
-      return 'str';
-    case "'int'":
-      return 'int';
-    case "'bool'":
-      return 'bool';
-    case "'list'":
-      return 'list';
-    case "'float'":
-      return 'float';
-    case "'bytes'":
-      return 'bytes';
-    //TODO: Add datetime type
-    default:
-      return 'unknown';
+function getDetailType(detail: any): {
+  type: string;
+  hasExampleType: boolean;
+} {
+  const hasExampleType = detail?.hasOwnProperty('__example_type__');
+  let type: string = '';
+  if (hasExampleType) {
+    let sliced = detail.__example_type__.slice(
+      7,
+      detail.__example_type__.length - 1,
+    );
+    switch (sliced) {
+      case "'str'":
+        type = 'str';
+        break;
+      case "'int'":
+        type = 'int';
+        break;
+      case "'bool'":
+        type = 'bool';
+        break;
+      case "'list'":
+        type = 'list';
+        break;
+      case "'float'":
+        type = 'float';
+        break;
+      case "'bytes'":
+        type = 'bytes';
+        break;
+      //TODO: Add datetime type
+      default:
+        type = 'unknown';
+        break;
+    }
+  } else {
+    switch (typeof detail) {
+      case 'object':
+        type = 'dict';
+        break;
+      case 'string':
+        type = 'str';
+        break;
+    }
   }
+  return { type, hasExampleType };
 }
 
 // Helper function to return the monaco completion item type of a thing
@@ -94,7 +118,7 @@ function getSuggestions(monaco: Monaco, options: Record<string, string>) {
         return null;
       }
 
-      // flatten strings of array of accessible options.
+      // flatten strings of array of accessible options paths without example type
       const filteredOptions = Object.keys(dot.dot(options)).map(
         (option) => option.split('.__example_type__')[0],
       );
@@ -153,23 +177,16 @@ function getSuggestions(monaco: Monaco, options: Record<string, string>) {
         // Do not show properites that begin with "__"
         if (lastToken.hasOwnProperty(prop) && !prop.startsWith('__')) {
           // Create completion object
-          const detail: any = get(options, prefix + prop);
-          const hasExampleType = detail?.hasOwnProperty('__example_type__');
-          let detailType;
-          if (hasExampleType) {
-            detailType = getDetailType(detail);
-          } else {
-            detailType = typeof detail;
-          }
+          let detailType = getDetailType(get(options, prefix + prop));
           const completionItem = {
             label: prop,
             kind: getType(
               monaco,
-              hasExampleType ? detailType : lastToken[prop],
+              detailType.hasExampleType ? detailType.type : lastToken[prop],
               isMember,
             ),
             insertText: prop,
-            detail: detailType,
+            detail: detailType.type,
             range,
           };
           // Change insertText for functions
