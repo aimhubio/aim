@@ -4,7 +4,6 @@ import {
   Interceptor,
   RequestOptions,
   RequestInit,
-  HttpRequestResult,
 } from './types';
 import exceptionDetector from './interceptors/exceptionDetector';
 
@@ -29,40 +28,49 @@ class NetworkService {
     this.uri = uri;
   }
 
-  makeAPIGetRequest = <T>(url: string, options: RequestOptions = {}): T => {
+  public makeAPIGetRequest = (url: string, options: RequestOptions = {}) => {
     options = options || {};
     options.method = HttpRequestMethods.GET;
-    return this.makeAPIRequest<T>(url, options);
+    return this.makeAPIRequest(url, options);
   };
 
-  makeAPIPostRequest = (url: string, options: RequestOptions = {}) => {
+  public makeAPIPostRequest = (url: string, options: RequestOptions = {}) => {
     options.method = HttpRequestMethods.POST;
     return this.makeAPIRequest(url, options);
   };
 
-  makeAPIPutRequest = (urlPrefix: string, options: RequestOptions = {}) => {
+  public makeAPIPutRequest = (
+    urlPrefix: string,
+    options: RequestOptions = {},
+  ) => {
     options.method = HttpRequestMethods.PUT;
     return this.makeAPIRequest(urlPrefix, options);
   };
 
-  makeAPIDeleteRequest = (urlPrefix: string, options: RequestOptions = {}) => {
+  public makeAPIDeleteRequest = (
+    urlPrefix: string,
+    options: RequestOptions = {},
+  ) => {
     options.method = HttpRequestMethods.DELETE;
     return this.makeAPIRequest(urlPrefix, options);
   };
 
-  makeAPIPatchRequest = (urlPrefix: string, options: RequestOptions = {}) => {
+  public makeAPIPatchRequest = (
+    urlPrefix: string,
+    options: RequestOptions = {},
+  ) => {
     options.method = HttpRequestMethods.PATCH;
     return this.makeAPIRequest(urlPrefix, options);
   };
 
-  createUrl = (arg: string): string => {
+  public createUrl = (arg: string): string => {
     if (Array.isArray(arg)) {
       return [this.uri, ...arg].join('/');
     }
     return `${this.uri}/${arg}`;
   };
 
-  createQueryParams = (queryParams: Record<string, unknown>) => {
+  private createQueryParams = (queryParams: Record<string, unknown>) => {
     return Object.keys(queryParams)
       .reduce((accumulator: Array<string>, key: string) => {
         const item = queryParams[key];
@@ -82,10 +90,10 @@ class NetworkService {
       .join('&');
   };
 
-  makeAPIRequest = <T>(
+  public makeAPIRequest = (
     partUrl: string,
     options: RequestOptions = {},
-  ): Promise<HttpRequestResult<T>> => {
+  ): Promise<{ body: any; headers: any }> => {
     return new Promise((resolve, reject) => {
       let url = this.createUrl(partUrl);
 
@@ -132,7 +140,7 @@ class NetworkService {
     });
   };
 
-  request = (url: string, options: RequestOptions = {}) => {
+  private request = (url: string, options: RequestOptions = {}) => {
     return new Promise<any>((resolve, reject) => {
       if (!url) {
         return reject(HttpErrorMessages.INVALID_REQUEST_PARAMS);
@@ -161,6 +169,10 @@ class NetworkService {
 
       if (options.headers) {
         fetchOptions.headers = options.headers;
+      }
+
+      if (options.signal) {
+        fetchOptions.signal = options.signal;
       }
 
       try {

@@ -1,8 +1,17 @@
+import { SequenceTypesEnum } from 'types/core/enums';
+
 /**
- * type GetParamsOptions
- * The request options type of GET /projects/params
+ * type GetParamsQueryOptions
+ * The request query options type of GET /projects/params
  */
-export type GetParamsOptions = {};
+export type GetParamsQueryOptions = {
+  sequence: SequenceTypesEnum;
+};
+
+/**
+ * type GetActivityResult
+ * The response type of GET /projects
+ */
 
 /**
  * type GetProjectsResult
@@ -28,6 +37,7 @@ export type GetProjectsResult = {
 };
 
 type Context = Record<string, any>;
+
 /**
  * type GetParamsResult
  * The response type of GET /projects/params
@@ -52,7 +62,7 @@ export type GetParamsResult = {
    *    run.track(1, name="metric", context = {"subset": "val"})
    * ```
    */
-  metric?: ?Record<string, Array<Context>>;
+  metric?: Record<string, Array<Context>>;
   /**
    * Context of tracked image sequences by passing name of sequence as`images`
    * This generates by calling
@@ -63,7 +73,7 @@ export type GetParamsResult = {
    * i.e. {labels: [{"subset": "test"}], images: , [{"subset": "val"}]}
    * Note: Examples of records for the rest of sequences will follow to this example
    */
-  images?: ?Record<string, Array<Context>>;
+  images?: Record<string, Array<Context>>;
   /**
    * Context of tracked image sequences by passing name of sequence as`images`
    * This generates by calling
@@ -71,7 +81,7 @@ export type GetParamsResult = {
    *    run.track([, , , aim.Text(...)], name="...", context = {"subset": "test"})
    * ```
    */
-  texts?: ?Record<string, Array<Context>>;
+  texts?: Record<string, Array<Context>>;
   /**
    * Context of tracked image sequences by passing name of sequence as`images`
    * This generates by calling
@@ -79,7 +89,7 @@ export type GetParamsResult = {
    *    run.track([, , , aim.Figure(...)], name="...", context = {"subset": "test"})
    * ```
    */
-  figures?: ?Record<string, Array<Context>>;
+  figures?: Record<string, Array<Context>>;
   /**
    * Context of tracked image sequences by passing name of sequence as`images`
    * This generates by calling
@@ -87,7 +97,7 @@ export type GetParamsResult = {
    *    run.track([, , , aim.Distribution(...)], name="...", context = {"subset": "test"})
    * ```
    */
-  distributions?: ?Record<string, Array<Context>>;
+  distributions?: Record<string, Array<Context>>;
   /**
    * Context of tracked image sequences by passing name of sequence as`images`
    * This generates by calling
@@ -95,7 +105,7 @@ export type GetParamsResult = {
    *    run.track([, , , aim.Audio(...)], name="...", context = {"subset": "test"})
    * ```
    */
-  audios?: ?Record<string, Array<Context>>;
+  audios?: Record<string, Array<Context>>;
 };
 
 /**

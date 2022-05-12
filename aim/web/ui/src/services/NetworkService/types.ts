@@ -25,6 +25,7 @@ export type RequestOptions = {
   query_params?: Record<string, unknown>;
   headers?: Record<string, unknown>;
   body?: string | Record<string, any> | File | ReadableStream<any>;
+  signal?: AbortSignal;
 };
 
 export interface RequestInit {
@@ -102,10 +103,10 @@ export interface RequestInit {
 }
 
 export interface HttpResponseBody {
-  status: string
+  status: string;
 }
 
-export type HttpResponse<T> = {
-  body: HttpResponseBody extends T;
-  headers: any; // @TODO-V3 fill in later
+export type HttpResponse<T extends HttpResponseBody> = {
+  body: T;
+  headers: any; // @TODO fill in later
 };
