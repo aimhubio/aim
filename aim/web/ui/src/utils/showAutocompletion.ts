@@ -16,24 +16,25 @@ const specialCharactersForWordSplitting = ['(', '='];
 
 function getDetailType(detail: { __example_type__: string }): string {
   let sliced = detail.__example_type__.slice(
-    8,
-    detail.__example_type__.length - 2,
+    7,
+    detail.__example_type__.length - 1,
   );
   switch (sliced) {
-    case 'str':
-      return 'string';
-    case 'int':
-      return 'integer';
-    case 'bool':
+    case "'str'":
+      return 'str';
+    case "'int'":
+      return 'int';
+    case "'bool'":
       return 'bool';
-    case 'list':
+    case "'list'":
       return 'list';
-    case 'float':
+    case "'float'":
       return 'float';
-    case 'bytes':
+    case "'bytes'":
       return 'bytes';
+    //TODO: Add datetime type
     default:
-      return '';
+      return 'unknown';
   }
 }
 
@@ -43,6 +44,8 @@ function getType(monaco: Monaco, maybe: any, isMember = false) {
     case 'object':
       return monaco.languages.CompletionItemKind.Class;
 
+    // Now we don't have such autocompletion scenario,
+    // but we may support showing possible methods with their docstrings in the future
     case 'function':
       return isMember
         ? monaco.languages.CompletionItemKind.Method
@@ -59,6 +62,7 @@ function getSuggestions(monaco: Monaco, options: Record<string, string>) {
   // NOTE: this code segment was taken(modified) from the following git gist
   // https://gist.github.com/mwrouse/05d8c11cd3872c19c684bd1904a2202e
   return {
+    //TODO: Maybe support manual trigger such as [Ctrl + Space]
     triggerCharacters: ['.'],
 
     // Function to generate autocompletion results
