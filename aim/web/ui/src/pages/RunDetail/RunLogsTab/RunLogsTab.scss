@@ -7,23 +7,30 @@
   overflow: hidden;
   height: 100%;
   .RunDetailLogsTab {
-    padding: 1.5rem;
     border: $border-grey;
     border-radius: 0.5rem;
     height: 100%;
-    overflow: hidden;
     background-color: #ffffff;
     .Logs {
-      background: $black;
-      padding: $space-sm;
+      background: #33333312;
       height: 100%;
       overflow-y: auto;
-      &__line {
-        color: $white;
-        font-family: monospace;
+      overflow-x: auto;
+      border-radius: $border-radius-main;
+      &__wrapper {
         width: 100%;
-        word-break: break-all;    
+        height: 100%;
       }
     }
+  }
+}
+
+.LogRow {
+  &__line {
+    color: #333;
+    font-size: 13px;
+    padding: 0 $space-sm;
+    font-family: 'Iosevka';
+    width: 100%;
   }
 }

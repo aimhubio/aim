@@ -9,6 +9,7 @@ import {
   useRouteMatch,
 } from 'react-router-dom';
 import classNames from 'classnames';
+import _ from 'lodash-es';
 
 import { Paper, Tab, Tabs, Tooltip } from '@material-ui/core';
 import { Skeleton } from '@material-ui/lab';
@@ -107,6 +108,8 @@ function RunDetail(): React.FunctionComponentElement<React.ReactNode> {
       <RunLogsTab
         runHash={runHash}
         runLogs={runData?.runLogs}
+        inProgress={_.isNil(runData?.runInfo?.end_time)}
+        updatedLogsCount={runData?.updatedLogsCount}
         isRunLogsLoading={runData?.isRunLogsLoading}
       />
     ),

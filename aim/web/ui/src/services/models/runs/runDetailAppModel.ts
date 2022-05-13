@@ -160,14 +160,25 @@ function getRunMetricsBatch(body: any, runHash: string) {
   };
 }
 
-function getRunLogs(runHash: string, body: any) {
+function getRunLogs({
+  runHash,
+  record_range,
+  isLiveUpdate,
+}: {
+  runHash: string;
+  record_range?: string;
+  isLiveUpdate?: boolean;
+}) {
   if (getRunsLogsRequestRef) {
     getRunsLogsRequestRef.abort();
   }
-  getRunsLogsRequestRef = runsService.getRunLogs(runHash);
+  getRunsLogsRequestRef = runsService.getRunLogs(runHash, record_range);
   return {
     call: async () => {
-      model.setState({ isRunLogsLoading: true });
+      const runLogs = model.getState()?.runLogs ?? {};
+      if (!isLiveUpdate) {
+        model.setState({ isRunLogsLoading: true });
+      }
 
       const stream = await getRunsLogsRequestRef.call((detail: any) => {
         exceptionHandler({ detail, model });
@@ -177,11 +188,18 @@ function getRunLogs(runHash: string, body: any) {
       let objects = iterFoldTree(decodedPairs, 1);
       const runLogsData: { [key: string]: any } = {};
       for await (let [keys, val] of objects) {
-        runLogsData[keys[0]] = val;
+        runLogsData[keys[0]] = { index: +keys[0], value: val };
       }
+      const updatedLogsData: { [key: string]: any } = {
+        ...runLogs,
+        ...runLogsData,
+      };
 
       model.setState({
-        runLogs: runLogsData,
+        runLogs: updatedLogsData,
+        updatedLogsCount: isLiveUpdate
+          ? _.keys(updatedLogsData).length - _.keys(runLogs).length
+          : 0,
         isRunLogsLoading: false,
       });
     },

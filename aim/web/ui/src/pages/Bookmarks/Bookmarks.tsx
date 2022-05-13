@@ -26,7 +26,7 @@ function Bookmarks({
       <section className='Bookmarks'>
         <AppBar title='Bookmarks' className='Bookmarks__appBar' />
         <div className='Bookmarks__list container'>
-          <BusyLoaderWrapper isLoading={isLoading}>
+          <BusyLoaderWrapper isLoading={isLoading} height={'100%'}>
             {data?.length > 0 &&
               data.map((bookmark) => (
                 <BookmarkCard
