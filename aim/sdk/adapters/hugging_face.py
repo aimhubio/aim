@@ -1,5 +1,5 @@
 from logging import getLogger
-from typing import Any, Dict, Optional
+from typing import Optional
 
 from aim.ext.resource.configs import DEFAULT_SYSTEM_TRACKING_INT
 from aim.sdk.num_utils import is_number
@@ -23,7 +23,6 @@ class AimCallback(TrainerCallback):
                  system_tracking_interval: Optional[int]
                  = DEFAULT_SYSTEM_TRACKING_INT,
                  log_system_params: bool = True,
-                 run_params: Optional[Dict[str, Any]] = None,
                  ):
         self._repo_path = repo
         self._experiment_name = experiment
@@ -31,7 +30,6 @@ class AimCallback(TrainerCallback):
         self._log_system_params = log_system_params
         self._run = None
         self._run_hash = None
-        self._run_params = run_params
         self._log_value_warned = False
 
     @property
@@ -41,7 +39,7 @@ class AimCallback(TrainerCallback):
         return self._run
 
     def setup(self, args=None, state=None, model=None):
-        if not state.is_world_process_zero:
+        if state and not state.is_world_process_zero:
             return
 
         if not self._run:
@@ -62,9 +60,8 @@ class AimCallback(TrainerCallback):
 
         if args:
             combined_dict = {**args.to_sanitized_dict()}
-            self._run['hparams'] = combined_dict
-            if self._run_params:
-                self._run['run_params'] = self._run_params
+            for key, value in combined_dict.items():
+                self._run.set(('hparams', key), value, strict=False)
 
         # Store model configs as well
         # if hasattr(model, 'config') and model.config is not None:
