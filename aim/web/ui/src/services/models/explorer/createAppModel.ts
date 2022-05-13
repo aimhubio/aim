@@ -211,7 +211,7 @@ function createAppModel(appConfig: IAppInitialConfig) {
         };
         if (grouping) {
           config.grouping = {
-            color: ['run.hash'],
+            color: [],
             stroke: [],
             chart: ['name'],
             reverseMode: {
@@ -952,10 +952,9 @@ function createAppModel(appConfig: IAppInitialConfig) {
         highLevelParams = highLevelParams.concat(
           getObjectPaths(run.params, run.params, '', false, true),
         );
+        index++;
         metrics = metrics.concat(
           run.traces.map((trace: any) => {
-            index++;
-
             contexts = contexts.concat(
               getObjectPaths(trace.context, trace.context),
             );

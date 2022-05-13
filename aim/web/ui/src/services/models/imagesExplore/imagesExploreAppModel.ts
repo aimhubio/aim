@@ -100,7 +100,7 @@ let tooltipData: ITooltipData = {};
 function getConfig(): IImagesExploreAppConfig {
   return {
     grouping: {
-      group: ['step'],
+      group: [],
       reverseMode: {
         group: false,
       },
