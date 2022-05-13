@@ -211,7 +211,7 @@ function createAppModel(appConfig: IAppInitialConfig) {
         };
         if (grouping) {
           config.grouping = {
-            color: [],
+            color: ['run.hash'],
             stroke: [],
             chart: ['name'],
             reverseMode: {
