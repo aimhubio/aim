@@ -40,7 +40,7 @@ export const getMonacoConfig = (advanced = false): any => ({
         'editorCursor.foreground': '#83899e',
         'dropdown.background': '#fff',
         'editorSuggestWidget.background': '#fff',
-        'editorSuggestWidget.border': '#dceafb',
+        'editorSuggestWidget.border': '#a1c7f5',
         'editorSuggestWidget.selectedBackground': '#dceafb',
         'editorSuggestWidget.selectedForeground': '#414b6d',
         'editorSuggestWidget.highlightForeground': '#1c2852',

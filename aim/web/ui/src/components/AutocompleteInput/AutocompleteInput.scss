@@ -29,4 +29,10 @@
     font-size: $text-md;
     top: 6px;
   }
+  .details-label {
+    width: auto !important;
+  }
+  .codicon-suggest-more-info {
+    display: none !important;
+  }
 }
