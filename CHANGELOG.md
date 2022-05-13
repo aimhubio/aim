@@ -4,7 +4,7 @@
 
 ### Enhancements:
 
-- Set `metric.name` and `run.hash` as default options for grouping (roubkar)
+- Set `metric.name` as default option for grouping (roubkar)
 - Optimize stream decoding performance on UI (mahnerak)
 - Add support for animated image formats to Aim Image object (devfox-se)
 - Add `AimLogger` for Catboost (devfox-se)
