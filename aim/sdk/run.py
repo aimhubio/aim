@@ -378,7 +378,12 @@ class Run(StructuredRunMixin):
             return
 
         if ResourceTracker.check_interval(tracking_interval) or capture_terminal_logs:
-            self._system_resource_tracker = ResourceTracker(self.track, tracking_interval, capture_terminal_logs)
+            current_logs = self.get_terminal_logs()
+            log_offset = current_logs.last_step() + 1 if current_logs else 0
+            self._system_resource_tracker = ResourceTracker(self.track,
+                                                            tracking_interval,
+                                                            capture_terminal_logs,
+                                                            log_offset)
             self._system_resource_tracker.start()
 
     def __delitem__(self, key: str):
