@@ -73,7 +73,11 @@ class ResourceTracker(object):
         """
         cpu_percent(0.0)
 
-    def __init__(self, track, interval: Union[int, float] = STAT_INTERVAL_DEFAULT, capture_logs: bool = True):
+    def __init__(self,
+                 track,
+                 interval: Union[int, float] = STAT_INTERVAL_DEFAULT,
+                 capture_logs: bool = True,
+                 log_offset: int = 0):
         self._track_func = weakref.WeakMethod(track)
         self._interval = None
         if self.check_interval(interval, warn=False):
@@ -85,7 +89,7 @@ class ResourceTracker(object):
         self._old_out = None
         self._old_err = None
         self._io_buffer = io.BytesIO()
-        self._line_counter = 0
+        self._line_counter = log_offset
 
         try:
             self._process = Process()
@@ -205,10 +209,11 @@ class ResourceTracker(object):
         for line in lines:
             # handle each line for carriage returns
             log_line = LogLine(line.rsplit(b'\r')[-1].decode())
-            _handle_csi(line)
+            # _handle_csi(line)
             self._track_func()(log_line, name='logs', step=self._line_counter)
             self._line_counter += 1
 
         # if there was no b'\n' at the end of the data, don't move down the cursor
-        if lines[-1] != '':
+        if lines[-1] != b'':
             self._line_counter -= 1
+            self._io_buffer.write(lines[-1])
