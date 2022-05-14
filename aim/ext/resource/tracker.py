@@ -213,7 +213,8 @@ class ResourceTracker(object):
             self._track_func()(log_line, name='logs', step=self._line_counter)
             self._line_counter += 1
 
-        # if there was no b'\n' at the end of the data, don't move down the cursor
+        self._line_counter -= 1
+
+        # if there was no b'\n' at the end of the data keep the last line in buffer for further writing
         if lines[-1] != b'':
-            self._line_counter -= 1
             self._io_buffer.write(lines[-1])
