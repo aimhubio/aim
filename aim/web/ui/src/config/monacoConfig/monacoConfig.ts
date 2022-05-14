@@ -5,7 +5,7 @@ export const getMonacoConfig = (advanced = false): any => ({
   options: {
     lineNumbers: 'off',
     minimap: { enabled: false },
-    fontFamily: '"Iosevka", monospace',
+    fontFamily: 'Iosevka',
     wordWrap: advanced ? 'on' : 'off',
     fontSize: 15,
     fontWeight: 'medium',

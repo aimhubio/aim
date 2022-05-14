@@ -99,6 +99,7 @@ function AutocompleteInput({
         }
         onChange(formatted, ev);
       }
+      monaco?.editor?.remeasureFonts();
     },
     // eslint-disable-next-line react-hooks/exhaustive-deps
     [hasSelection, onChange, onEnter],
