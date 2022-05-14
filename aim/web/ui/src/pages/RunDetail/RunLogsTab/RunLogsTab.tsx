@@ -6,9 +6,12 @@ import BusyLoaderWrapper from 'components/BusyLoaderWrapper/BusyLoaderWrapper';
 import ErrorBoundary from 'components/ErrorBoundary/ErrorBoundary';
 import IllustrationBlock from 'components/IllustrationBlock/IllustrationBlock';
 
+import { ANALYTICS_EVENT_KEYS } from 'config/analytics/analyticsKeysMap';
+
 import useResizeObserver from 'hooks/window/useResizeObserver';
 
 import runDetailAppModel from 'services/models/runs/runDetailAppModel';
+import * as analytics from 'services/analytics';
 
 import { IRunLogsTabProps } from './RunLogsTab.d';
 
@@ -26,7 +29,6 @@ function RunLogsTab({
 }: IRunLogsTabProps) {
   const liveUpdate = React.useRef<any>(null);
   const logsContainerRef = React.useRef<any>(null);
-  const logsWrapperRef = React.useRef<any>(null);
   const listRef = React.useRef<any>({});
   const runsBatchRequestRef = React.useRef<any>({});
   const [lastRequestType, setLastRequestType] = React.useState<
@@ -43,7 +45,7 @@ function RunLogsTab({
     runsBatchRequestRef.current = runDetailAppModel.getRunLogs({ runHash });
     runsBatchRequestRef.current.call();
 
-    // analytics.pageView(ANALYTICS_EVENT_KEYS.runDetails.tabs.params.tabView);
+    analytics.pageView(ANALYTICS_EVENT_KEYS.runDetails.tabs.logs.tabView);
     startLiveUpdate();
 
     return () => {
@@ -151,13 +153,9 @@ function RunLogsTab({
         {!_.isEmpty(runLogs) ? (
           <div className='RunDetailLogsTabWrapper'>
             <div className='RunDetailLogsTab'>
-              <div className='Logs' ref={logsWrapperRef}>
+              <div className='Logs'>
                 <div ref={logsContainerRef} className={'Logs__wrapper'}>
                   <List
-                    key={
-                      logsWrapperRef.current?.offsetHeight +
-                      logsWrapperRef.current?.offsetWidth
-                    }
                     ref={listRef}
                     height={logsContainerRef.current?.offsetHeight || 100}
                     itemCount={dataRef.current?.length}
