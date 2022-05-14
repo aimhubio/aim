@@ -122,10 +122,7 @@ function SelectForm({
                 <div className='SelectForm__textarea'>
                   <AutocompleteInput
                     advanced
-                    context={{
-                      ...selectFormData?.advancedSuggestions,
-                      ...selectFormData?.suggestions,
-                    }}
+                    context={selectFormData?.advancedSuggestions}
                     onEnter={handleSearch}
                     onChange={onSelectRunQueryChange}
                     value={selectedImagesData?.advancedQuery}

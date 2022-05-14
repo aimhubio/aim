@@ -193,6 +193,7 @@ function initialize(appId: string): void {
           options: getSelectFormOptions(data),
           suggestions: getSuggestionsByExplorer(AppNameEnum.IMAGES, data),
           advancedSuggestions: {
+            ...getSuggestionsByExplorer(AppNameEnum.IMAGES, data),
             images: {
               name: '',
               context: _.isEmpty(advancedSuggestions)

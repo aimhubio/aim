@@ -6,8 +6,8 @@ export interface ISelectFormProps {
   selectedImagesData: any;
   selectFormData: {
     options: ISelectOption[];
-    suggestions: string[];
-    advancedSuggestions?: Record<any, any>;
+    suggestions: Record<any, any>;
+    advancedSuggestions: Record<any, any>;
   };
   onImagesExploreSelectChange: (options: ISelectOption[]) => void;
   onSelectRunQueryChange: (query: string) => void;

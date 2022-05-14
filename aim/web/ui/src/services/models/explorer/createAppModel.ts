@@ -560,6 +560,7 @@ function createAppModel(appConfig: IAppInitialConfig) {
               options: getMetricOptions(data),
               suggestions: getSuggestionsByExplorer(appName, data),
               advancedSuggestions: {
+                ...getSuggestionsByExplorer(appName, data),
                 metric: {
                   name: '',
                   context: _.isEmpty(advancedSuggestions)

@@ -122,10 +122,7 @@ function SelectForm({
               <div className='Metrics__SelectForm__textarea'>
                 <AutocompleteInput
                   advanced
-                  context={{
-                    ...selectFormData?.advancedSuggestions,
-                    ...selectFormData?.suggestions,
-                  }}
+                  context={selectFormData?.advancedSuggestions}
                   value={selectedMetricsData?.advancedQuery}
                   onChange={onSelectAdvancedQueryChange}
                   onEnter={handleMetricSearch}

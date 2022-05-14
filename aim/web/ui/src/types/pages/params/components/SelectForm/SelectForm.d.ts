@@ -3,7 +3,7 @@ import { ISelectOption } from 'services/models/explorer/createAppModel';
 import { IAppModelConfig } from 'types/services/models/explorer/createAppModel';
 
 export interface ISelectFormProps {
-  selectFormData: { options: ISelectOption[]; suggestions: string[] };
+  selectFormData: { options: ISelectOption[]; suggestions: Record<any, any> };
   requestIsPending: boolean;
   selectedParamsData: IAppModelConfig['select'];
   onParamsSelectChange: (options: ISelectOption[]) => void;
