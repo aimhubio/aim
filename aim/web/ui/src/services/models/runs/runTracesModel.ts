@@ -279,9 +279,7 @@ function applyBtnDisabledHandler() {
 
   const isInputsValid =
     _.size(
-      Object.keys(inputsValidations).filter((key) => {
-        return inputsValidations[key] === false;
-      }),
+      Object.keys(inputsValidations).filter((key) => !inputsValidations[key]),
     ) <= 0;
 
   model.setState({
