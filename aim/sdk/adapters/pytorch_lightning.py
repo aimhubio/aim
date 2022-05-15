@@ -117,15 +117,15 @@ class AimLogger(LightningLoggerBase):
             self.experiment.track(v, name=name, step=step, context=context)
 
     @rank_zero_only
-    def close(self) -> None:
-        super().close()
+    def finalize(self) -> None:
+        super().finalize()
         if self._run:
             self._run.close()
             del self._run
             self._run = None
 
     def __del__(self):
-        self.close()
+        self.finalize()
 
     @property
     def save_dir(self) -> str:
