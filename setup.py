@@ -68,7 +68,8 @@ REQUIRED = [
     'pytz>=2019.1',
     'SQLAlchemy>=1.4.1',
     'uvicorn>=0.12.0',
-    'Pillow>=8.1.0',
+    'Pillow>=8.0.0',
+    'grpcio==1.42.0',
     # fastapi to support python3.6
     'async-exit-stack>=1.0.0; python_version<"3.7"',
     'async-generator>=1.0; python_version<"3.7"',

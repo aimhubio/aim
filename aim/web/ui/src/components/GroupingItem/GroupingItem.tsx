@@ -37,7 +37,10 @@ function GroupingItem({
           <div onClick={onAnchorClick} className={'GroupingItem'}>
             <div
               className={`GroupingItem__icon__box ${opened ? 'active' : ''} ${
-                groupingData?.[groupName]?.length ? 'outlined' : ''
+                groupingSelectOptions?.length &&
+                groupingData?.[groupName]?.length
+                  ? 'outlined'
+                  : ''
               }`}
             >
               <Icon name={icons[groupName] as IconName} />

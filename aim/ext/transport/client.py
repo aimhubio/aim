@@ -151,3 +151,6 @@ class Client:
 
     def get_queue(self, queue_id):
         return self._queues[queue_id]
+
+    def remove_queue(self, queue_id):
+        del self._queues[queue_id]
