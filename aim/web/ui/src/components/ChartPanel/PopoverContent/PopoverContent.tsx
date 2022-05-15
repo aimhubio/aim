@@ -164,9 +164,26 @@ const PopoverContent = React.forwardRef(function PopoverContent(
         ref={ref}
         className='PopoverContent__container'
         style={{ pointerEvents: focusedState?.active ? 'auto' : 'none' }}
+        elevation={0}
       >
         <div className='PopoverContent'>
           {renderPopoverHeader()}
+          {_.isEmpty(params) ? null : (
+            <ErrorBoundary>
+              <div>
+                <Divider />
+                <div className='PopoverContent__box'>
+                  <div className='PopoverContent__subtitle1'>Params</div>
+                  {Object.keys(params).map((paramKey) => (
+                    <div key={paramKey} className='PopoverContent__value'>
+                      <Text size={12} tint={50}>{`run.${paramKey}: `}</Text>
+                      <Text size={12}>{formatValue(params[paramKey])}</Text>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </ErrorBoundary>
+          )}
           {_.isEmpty(groupConfig) ? null : (
             <ErrorBoundary>
               <div>
@@ -199,22 +216,6 @@ const PopoverContent = React.forwardRef(function PopoverContent(
                       </React.Fragment>
                     ),
                   )}
-                </div>
-              </div>
-            </ErrorBoundary>
-          )}
-          {_.isEmpty(params) ? null : (
-            <ErrorBoundary>
-              <div>
-                <Divider />
-                <div className='PopoverContent__box'>
-                  <div className='PopoverContent__subtitle1'>Params</div>
-                  {Object.keys(params).map((paramKey) => (
-                    <div key={paramKey} className='PopoverContent__value'>
-                      <Text size={12} tint={50}>{`run.${paramKey}: `}</Text>
-                      <Text size={12}>{formatValue(params[paramKey])}</Text>
-                    </div>
-                  ))}
                 </div>
               </div>
             </ErrorBoundary>
