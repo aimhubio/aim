@@ -15,6 +15,7 @@
 - Rename `PrefixView.container` to `PrefixView.parent` (mahnerak)
 - Reimplement `absolute_path` (mahnerak)
 - Cython bindings for `PrefixView`, `TreeView`, `Container`, `ArrayView` (mahnerak)
+- Add ability to track and visualise stdout/stderr (mihran113, VkoHov)
 
 ### Fixes:
 
