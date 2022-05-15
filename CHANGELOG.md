@@ -5,6 +5,7 @@
 ### Enhancements:
 
 - Set `metric.name` as default option for grouping (roubkar)
+- Show user-selected params before group config in chart popover (roubkar) 
 - Optimize stream decoding performance on UI (mahnerak)
 - Add support for animated image formats to Aim Image object (devfox-se)
 - Add `AimLogger` for Catboost (devfox-se)
