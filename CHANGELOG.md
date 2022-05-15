@@ -4,6 +4,8 @@
 
 ### Enhancements:
 
+- Set `metric.name` as default option for grouping (roubkar)
+- Show user-selected params before group config in chart popover (roubkar) 
 - Optimize stream decoding performance on UI (mahnerak)
 - Add support for animated image formats to Aim Image object (devfox-se)
 - Add `AimLogger` for Catboost (devfox-se)
@@ -15,11 +17,23 @@
 - Rename `PrefixView.container` to `PrefixView.parent` (mahnerak)
 - Reimplement `absolute_path` (mahnerak)
 - Cython bindings for `PrefixView`, `TreeView`, `Container`, `ArrayView` (mahnerak)
+- Fix `AimLogger` deprecation issues related to release of PyTorch Lightning v1.5 (arnauddhaene)
 
 ### Fixes:
 
 - Remove hard-coded installation of pre-requirements (mahnerak)
 - Remove duplicate code from `TreeView` and `Container` methods (mahnerak)
+- Fix issue with filtering metrics values in single run page (KaroMourad)
+
+## 3.9.4 May 12, 2022
+
+- Fix run remote tracking queue cleanup (mihran113)
+- Fix HF callback before training access (mihran113)
+- Fix compatibility with Jinja 3.1 (devfox-se)
+
+## 3.9.3 May 10, 2022
+
+- Fix affecting stroke types after changing color persistence (KaroMourad)
 
 ## 3.9.2 Apr 29, 2022
 

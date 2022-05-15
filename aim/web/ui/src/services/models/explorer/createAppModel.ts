@@ -144,7 +144,7 @@ import {
   iterFoldTree,
 } from 'utils/encoder/streamEncoding';
 import { filterArrayByIndexes } from 'utils/filterArrayByIndexes';
-import filterMetricData from 'utils/filterMetricData';
+import { filterMetricsData } from 'utils/filterMetricData';
 import filterTooltipContent from 'utils/filterTooltipContent';
 import { formatValue } from 'utils/formatValue';
 import getClosestValue from 'utils/getClosestValue';
@@ -167,7 +167,7 @@ import sortDependingArrays from 'utils/app/sortDependingArrays';
 import { isSystemMetric } from 'utils/isSystemMetric';
 import setDefaultAppConfigData from 'utils/app/setDefaultAppConfigData';
 import getAppConfigData from 'utils/app/getAppConfigData';
-import { float64FromUint8, getValue } from 'utils/helper';
+import { getValue } from 'utils/helper';
 import { formatSystemMetricName } from 'utils/formatSystemMetricName';
 import alphabeticalSortComparator from 'utils/alphabeticalSortComparator';
 import onRowSelect from 'utils/app/onRowSelect';
@@ -213,7 +213,7 @@ function createAppModel(appConfig: IAppInitialConfig) {
           config.grouping = {
             color: [],
             stroke: [],
-            chart: [],
+            chart: ['name'],
             reverseMode: {
               color: false,
               stroke: false,
@@ -952,22 +952,26 @@ function createAppModel(appConfig: IAppInitialConfig) {
         highLevelParams = highLevelParams.concat(
           getObjectPaths(run.params, run.params, '', false, true),
         );
+        index++;
         metrics = metrics.concat(
-          run.traces.map((trace: any) => {
-            index++;
-
+          run.traces.map((trace: IMetricTrace) => {
             contexts = contexts.concat(
               getObjectPaths(trace.context, trace.context),
             );
-            const { values, steps, epochs, timestamps } = filterMetricData({
-              values: [...float64FromUint8(trace.values.blob)],
-              steps: [...float64FromUint8(trace.iters.blob)],
-              epochs: [...float64FromUint8(trace.epochs?.blob)],
-              timestamps: [...float64FromUint8(trace.timestamps.blob)],
-              axesScaleType: configData?.chart?.axesScaleType,
-            });
+            const {
+              values,
+              steps,
+              epochs,
+              timestamps,
+              x_axis_values,
+              x_axis_iters,
+            } = filterMetricsData(
+              trace,
+              configData?.chart?.alignmentConfig.type,
+              configData?.chart?.axesScaleType,
+            );
 
-            let processedValues = values;
+            let processedValues = [...values];
             if (
               configData?.chart?.smoothingAlgorithm &&
               configData.chart.smoothingFactor
@@ -975,7 +979,7 @@ function createAppModel(appConfig: IAppInitialConfig) {
               processedValues = getSmoothenedData({
                 smoothingAlgorithm: configData?.chart.smoothingAlgorithm,
                 smoothingFactor: configData.chart.smoothingFactor,
-                data: values,
+                data: processedValues,
               });
             }
             const metricKey = encode({
@@ -990,14 +994,16 @@ function createAppModel(appConfig: IAppInitialConfig) {
               dasharray: 'none',
               color: COLORS[paletteIndex][index % COLORS[paletteIndex].length],
               isHidden: configData?.table?.hiddenMetrics!.includes(metricKey),
+              x_axis_values,
+              x_axis_iters,
               data: {
-                values: processedValues,
+                values: new Float64Array(processedValues),
                 steps,
                 epochs,
                 timestamps: timestamps.map((timestamp) =>
                   Math.round(timestamp * 1000),
                 ),
-                xValues: steps,
+                xValues: [...steps],
                 yValues: processedValues,
               },
             } as IMetric);
@@ -1324,12 +1330,8 @@ function createAppModel(appConfig: IAppInitialConfig) {
               const metric = metricCollection.data[j];
               const missingIndexes: number[] = [];
               if (metric.x_axis_iters && metric.x_axis_values) {
-                const xAxisIters: number[] = [
-                  ...float64FromUint8(metric.x_axis_iters.blob),
-                ];
-                const xAxisValues: number[] = [
-                  ...float64FromUint8(metric.x_axis_values.blob),
-                ];
+                const { x_axis_iters: xAxisIters, x_axis_values: xAxisValues } =
+                  metric;
                 if (xAxisValues.length === metric.data.values.length) {
                   const { sortedXValues, sortedArrays } = sortDependingArrays(
                     [...xAxisValues],

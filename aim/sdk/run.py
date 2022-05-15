@@ -94,6 +94,7 @@ class RunAutoClean(AutoClean['Run']):
     def finalize_rpc_queue(self):
         if self.repo.is_remote_repo:
             self.repo._client.get_queue(self.hash).stop()
+            self.repo._client.remove_queue(self.hash)
 
     def _close(self) -> None:
         """

@@ -59,7 +59,7 @@ export interface IGroupingConfig {
   color?: string[];
   stroke?: string[];
   chart?: string[];
-  group?: [];
+  group?: string[];
   reverseMode?: {
     color?: boolean;
     stroke?: boolean;
