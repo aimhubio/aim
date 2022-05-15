@@ -34,6 +34,8 @@ async def serve_index_html(request: Request):
     import aim_ui
     from jinja2 import Environment, FileSystemLoader
 
+    from jinja2 import Environment, FileSystemLoader
+
     template_files_dir = os.path.join(os.path.dirname(aim_ui.__file__), 'build')
     env = Environment(
         loader=FileSystemLoader(template_files_dir),

@@ -213,7 +213,7 @@ function createAppModel(appConfig: IAppInitialConfig) {
           config.grouping = {
             color: [],
             stroke: [],
-            chart: [],
+            chart: ['name'],
             reverseMode: {
               color: false,
               stroke: false,
@@ -952,10 +952,9 @@ function createAppModel(appConfig: IAppInitialConfig) {
         highLevelParams = highLevelParams.concat(
           getObjectPaths(run.params, run.params, '', false, true),
         );
+        index++;
         metrics = metrics.concat(
           run.traces.map((trace: any) => {
-            index++;
-
             contexts = contexts.concat(
               getObjectPaths(trace.context, trace.context),
             );
