@@ -8,12 +8,11 @@ import IllustrationBlock from 'components/IllustrationBlock/IllustrationBlock';
 
 import { ANALYTICS_EVENT_KEYS } from 'config/analytics/analyticsKeysMap';
 
-import useResizeObserver from 'hooks/window/useResizeObserver';
-
 import runDetailAppModel from 'services/models/runs/runDetailAppModel';
 import * as analytics from 'services/analytics';
 
-import { IRunLogsTabProps } from './RunLogsTab.d';
+import LogRow from './LogRow';
+import { IRunLogsTabProps, LogsLastRequestEnum } from './RunLogsTab.d';
 
 import './RunLogsTab.scss';
 
@@ -31,13 +30,10 @@ function RunLogsTab({
   const logsContainerRef = React.useRef<any>(null);
   const listRef = React.useRef<any>({});
   const runsBatchRequestRef = React.useRef<any>({});
-  const [lastRequestType, setLastRequestType] = React.useState<
-    'default' | 'live-update' | 'load-more'
-  >('default');
+  const [lastRequestType, setLastRequestType] =
+    React.useState<LogsLastRequestEnum>(LogsLastRequestEnum.DEFAULT);
   const rangeRef = React.useRef<any>(null);
   const dataRef = React.useRef<any>(null);
-  const [parentHeight, setParentHeight] = React.useState<any>(0);
-  const [parentWidth, setParentWidth] = React.useState<any>(0);
   const [keysList, setKeyList] = React.useState<any>(null);
   const visibleItemsRange = React.useRef<any>(null);
 
@@ -54,11 +50,12 @@ function RunLogsTab({
         clearInterval(liveUpdate.current.intervalToken);
       }
     };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   function liveUpdateCallBack() {
     return function () {
-      setLastRequestType('live-update');
+      setLastRequestType(LogsLastRequestEnum.LIVE_UPDATE);
       runsBatchRequestRef.current = runDetailAppModel.getRunLogs({
         runHash,
         record_range: dataRef.current
@@ -89,7 +86,7 @@ function RunLogsTab({
         clearInterval(liveUpdate.current.intervalToken);
         runsBatchRequestRef.current.abort();
       }
-      setLastRequestType('load-more');
+      setLastRequestType(LogsLastRequestEnum.LOAD_MORE);
       runsBatchRequestRef.current = runDetailAppModel.getRunLogs({
         runHash,
         record_range: `${
@@ -119,29 +116,23 @@ function RunLogsTab({
   }, [runLogs]);
 
   React.useEffect(() => {
-    if (lastRequestType === 'load-more') {
+    if (lastRequestType === LogsLastRequestEnum.LOAD_MORE) {
       listRef.current?.scrollToItem?.(
         visibleItemsRange.current[0] + updatedLogsCount,
         'start',
       );
     } else if (
-      (lastRequestType === 'live-update' &&
+      (lastRequestType === LogsLastRequestEnum.LIVE_UPDATE &&
         visibleItemsRange.current[1] + updatedLogsCount >=
           dataRef.current?.length - 1) ||
-      lastRequestType === 'default'
+      lastRequestType === LogsLastRequestEnum.DEFAULT
     ) {
       listRef.current?.scrollToItem?.(dataRef.current?.length - 1, 'end');
     } else {
       listRef.current?.scrollToItem?.(visibleItemsRange.current[0], 'start');
     }
-  }, [dataRef.current?.length, listRef.current]);
-
-  useResizeObserver(() => {
-    if (logsContainerRef.current) {
-      setParentHeight(logsContainerRef.current.offsetHeight);
-      setParentWidth(logsContainerRef.current.offsetWidth);
-    }
-  }, logsContainerRef);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [dataRef.current?.length]);
 
   return (
     <ErrorBoundary>
@@ -170,9 +161,6 @@ function RunLogsTab({
                     }}
                     itemData={{
                       logsList: dataRef.current,
-                      parentHeight,
-                      parentWidth,
-                      keysList,
                     }}
                     onScroll={onScroll}
                   >
@@ -191,29 +179,6 @@ function RunLogsTab({
         )}
       </BusyLoaderWrapper>
     </ErrorBoundary>
-  );
-}
-
-function LogRow({
-  index,
-  style,
-  data,
-}: {
-  index: number;
-  style: any;
-  data: {
-    parentHeight: any;
-    parentWidth: any;
-    logsList: Array<{ index: string; value: string }>;
-    keysList: any;
-  };
-}) {
-  return (
-    <div style={style}>
-      <pre className={`LogRow__line line${data.logsList?.[index]?.index}`}>
-        {data.logsList?.[index]?.value}
-      </pre>
-    </div>
   );
 }
 

@@ -12,6 +12,7 @@
     height: 100%;
     background-color: #ffffff;
     .Logs {
+      //ToDo Rethink about background color
       background: #33333312;
       height: 100%;
       overflow-y: auto;
@@ -27,6 +28,7 @@
 
 .LogRow {
   &__line {
+    //ToDo Rethink about color
     color: #333;
     font-size: 13px;
     padding: 0 $space-sm;
