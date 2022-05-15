@@ -1,9 +1,9 @@
 import React, { memo } from 'react';
-import { noop } from 'lodash-es';
 
 import LineChart from 'components/LineChart/LineChart';
 import { Badge, Text } from 'components/kit';
 import ErrorBoundary from 'components/ErrorBoundary/ErrorBoundary';
+import { HighlightEnum } from 'components/HighlightModesPopover/HighlightModesPopover';
 
 import COLORS from 'config/colors/colors';
 
@@ -12,10 +12,12 @@ import { CurveEnum, ScaleEnum } from 'utils/d3';
 import { isSystemMetric } from 'utils/isSystemMetric';
 import { formatSystemMetricName } from 'utils/formatSystemMetricName';
 
+import { IRunMetricCardProps } from './types';
+
 function RunMetricCard({
   batch,
   index,
-}: any): React.FunctionComponentElement<React.ReactNode> {
+}: IRunMetricCardProps): React.FunctionComponentElement<React.ReactNode> {
   return (
     <ErrorBoundary>
       <div className='RunDetailMetricsTab__container__chartContainer'>
@@ -30,26 +32,22 @@ function RunMetricCard({
                     yValues: [...batch.values],
                   },
                   color: '#1c2852',
-                  dasharray: '0',
+                  dasharray: 'none',
                   selectors: [batch.key],
                 },
               ]}
               index={index}
-              syncHoverState={noop}
               axesScaleType={{
                 xAxis: ScaleEnum.Linear,
                 yAxis: ScaleEnum.Linear,
               }}
               ignoreOutliers={false}
-              highlightMode={0}
+              highlightMode={HighlightEnum.Off}
               curveInterpolation={CurveEnum.Linear}
             />
           </ErrorBoundary>
         </div>
         <div className='RunDetailMetricsTab__container__chartContainer__metricDetailBox'>
-          <Text component='p' size={10}>
-            Metric
-          </Text>
           <Text
             component='h4'
             tint={100}

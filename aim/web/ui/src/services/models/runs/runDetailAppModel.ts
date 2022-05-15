@@ -12,6 +12,7 @@ import exceptionHandler from 'utils/app/exceptionHandler';
 import { encode } from 'utils/encoder/encoder';
 import contextToString from 'utils/contextToString';
 import alphabeticalSortComparator from 'utils/alphabeticalSortComparator';
+import { filterSingleRunMetricsData } from 'utils/filterMetricData';
 
 import createModel from '../model';
 
@@ -109,6 +110,39 @@ function getRunsOfExperiment(
   };
 }
 
+function processRunBatchData(data: IRunBatch[]): {
+  runMetricsBatch: IRunBatch[];
+  runSystemBatch: IRunBatch[];
+} {
+  const runMetricsBatch: IRunBatch[] = [];
+  const runSystemBatch: IRunBatch[] = [];
+
+  for (let run of data) {
+    const { values, iters } = filterSingleRunMetricsData(run);
+    const metric = {
+      ...run,
+      values,
+      iters,
+      key: encode({
+        name: run.name,
+        context: run.context,
+      }),
+      sortKey: `${run.name}_${contextToString(run.context)}`,
+    };
+    if (run.name.startsWith('__system__')) {
+      runSystemBatch.push(metric);
+    } else {
+      runMetricsBatch.push(metric);
+    }
+  }
+
+  // sort run batch data
+  runMetricsBatch.sort(alphabeticalSortComparator({ orderBy: 'sortKey' }));
+  runSystemBatch.sort(alphabeticalSortComparator({ orderBy: 'sortKey' }));
+
+  return { runMetricsBatch, runSystemBatch };
+}
+
 function getRunMetricsBatch(body: any, runHash: string) {
   if (getRunsBatchRequestRef) {
     getRunsBatchRequestRef.abort();
@@ -121,31 +155,12 @@ function getRunMetricsBatch(body: any, runHash: string) {
       const data = await getRunsBatchRequestRef.call((detail: any) => {
         exceptionHandler({ detail, model });
       });
-      const runMetricsBatch: IRunBatch[] = [];
-      const runSystemBatch: IRunBatch[] = [];
-      data.forEach((run: IRunBatch) => {
-        const metric = {
-          ...run,
-          key: encode({
-            name: run.name,
-            context: run.context,
-          }),
-          sortKey: `${run.name}_${contextToString(run.context)}`,
-        };
-        if (run.name.startsWith('__system__')) {
-          runSystemBatch.push(metric);
-        } else {
-          runMetricsBatch.push(metric);
-        }
-      });
+      const { runMetricsBatch, runSystemBatch } = processRunBatchData(data);
+
       model.setState({
         ...model.getState(),
-        runMetricsBatch: runMetricsBatch.sort(
-          alphabeticalSortComparator({ orderBy: 'sortKey' }),
-        ),
-        runSystemBatch: runSystemBatch.sort(
-          alphabeticalSortComparator({ orderBy: 'sortKey' }),
-        ),
+        runMetricsBatch,
+        runSystemBatch,
         isRunBatchLoading: false,
       });
     },

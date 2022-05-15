@@ -29,7 +29,7 @@ export interface IDrawHoverAttributesArgs {
   xAxisLabelNodeRef?: React.MutableRefObject<>;
   yAxisLabelNodeRef?: React.MutableRefObject<>;
   linesNodeRef: React.MutableRefObject<>;
-  syncHoverState: (params: ISyncHoverStateParams) => void;
+  syncHoverState?: (params: ISyncHoverStateParams) => void;
   highlightedNodeRef: React.MutableRefObject<>;
   highlightMode?: HighlightEnum;
   aggregationConfig?: IAggregationConfig;
