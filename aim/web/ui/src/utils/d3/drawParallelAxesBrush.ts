@@ -8,6 +8,7 @@ import {
   DomainsDataType,
 } from 'types/utils/d3/drawParallelAxesBrush';
 import { IAxisScale } from 'types/utils/d3/getAxisScale';
+import { ISyncHoverStateArgs } from 'types/utils/d3/drawHoverAttributes';
 
 function drawParallelAxesBrush({
   brushRef,
@@ -18,9 +19,10 @@ function drawParallelAxesBrush({
   visBoxRef,
   linesRef,
   brushExtents,
-  onAxisBrashExtentChange,
+  onAxisBrushExtentChange,
   attributesRef,
   index,
+  syncHoverState,
 }: IDrawParallelAxesBrushBrushArgs): void {
   if (!brushRef.current.domainsData) {
     brushRef.current.xScale = attributesRef.current.xScale;
@@ -37,9 +39,10 @@ function drawParallelAxesBrush({
   function handleBrushChange(
     event: d3.D3BrushEvent<d3.BrushSelection>,
     keyOfDimension: string,
+    removeFocusedCircle?: boolean,
   ): void {
     const extent: d3.BrushSelection | any = event.selection;
-    let brushPosition: any = null;
+    let brushPosition: [number, number] | [string, string] | null = null;
     if (!_.isNil(extent)) {
       if (dimensions[keyOfDimension].scaleType === 'point') {
         const domainData = scalePointDomainData(
@@ -47,7 +50,7 @@ function drawParallelAxesBrush({
           extent,
         );
         brushRef.current.domainsData[keyOfDimension] = domainData;
-        brushPosition = [domainData[0], _.last(domainData)];
+        brushPosition = [domainData[0], _.last(domainData)] as [string, string];
       } else {
         const top: number = brushRef.current.yScale[keyOfDimension].invert(
           extent[0],
@@ -63,9 +66,30 @@ function drawParallelAxesBrush({
         dimensions[keyOfDimension].domainData;
     }
     if (event.type === 'end') {
-      onAxisBrashExtentChange(keyOfDimension, brushPosition, index);
+      onAxisBrushExtentChange(keyOfDimension, brushPosition, index);
+    }
+    if (removeFocusedCircle) {
+      const tmpData = data[0];
+
+      safeSyncHoverState({
+        activePoint: {
+          key: tmpData.key,
+          xValue: 0,
+          yValue: 0,
+          xPos: 0,
+          yPos: 0,
+          chartIndex: index,
+          pointRect: { top: 0, left: 0, right: 0, bottom: 0 },
+        },
+      });
     }
     updateLinesAndHoverAttributes(brushRef, keyOfDimension, extent);
+  }
+
+  function safeSyncHoverState(args: ISyncHoverStateArgs): void {
+    if (typeof syncHoverState === 'function') {
+      syncHoverState(args);
+    }
   }
 
   function updateLinesAndHoverAttributes(
@@ -114,8 +138,10 @@ function drawParallelAxesBrush({
             [15, brushHeight],
           ])
           .on('start', handleBrushStart)
-          .on('brush', (event) => handleBrushChange(event, keyOfDimension))
-          .on('end', (event) => handleBrushChange(event, keyOfDimension)),
+          .on('brush', (event) =>
+            handleBrushChange(event, keyOfDimension, true),
+          )
+          .on('end', (event) => handleBrushChange(event, keyOfDimension, true)),
       );
       if (brushExtent) {
         const yScale = brushRef.current.yScale[keyOfDimension];
@@ -132,7 +158,7 @@ function drawParallelAxesBrush({
             keyOfDimension,
           );
         } else {
-          onAxisBrashExtentChange(keyOfDimension, null, index);
+          onAxisBrushExtentChange(keyOfDimension, null, index);
         }
       }
     });

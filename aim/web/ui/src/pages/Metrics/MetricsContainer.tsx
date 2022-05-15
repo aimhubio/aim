@@ -34,7 +34,7 @@ function MetricsContainer(): React.FunctionComponentElement<React.ReactNode> {
   const history = useHistory();
   const metricsData = useModel<Partial<IMetricAppModelState>>(metricAppModel);
   const [chartPanelOffsetHeight, setChartPanelOffsetHeight] = React.useState(
-    chartElemRef?.current?.offsetWidth,
+    chartElemRef?.current?.offsetHeight,
   );
 
   const panelResizing = usePanelResize(

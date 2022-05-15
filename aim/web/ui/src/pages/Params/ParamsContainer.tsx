@@ -182,7 +182,7 @@ function ParamsContainer(): React.FunctionComponentElement<React.ReactNode> {
       onSortReset={paramsAppModel.onSortReset}
       onSortFieldsChange={paramsAppModel.onSortChange}
       onShuffleChange={paramsAppModel.onShuffleChange}
-      onAxisBrashExtentChange={paramsAppModel.onAxisBrashExtentChange}
+      onAxisBrushExtentChange={paramsAppModel.onAxisBrushExtentChange}
       liveUpdateConfig={paramsData?.config?.liveUpdate!}
       onLiveUpdateConfigChange={paramsAppModel.changeLiveUpdateConfig}
       onRowSelect={paramsAppModel.onRowSelect}

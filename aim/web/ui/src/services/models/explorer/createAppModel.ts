@@ -175,7 +175,7 @@ import { SortField } from 'utils/getSortedFields';
 import onChangeTrendlineOptions from 'utils/app/onChangeTrendlineOptions';
 import { getParamsSuggestions } from 'utils/app/getParamsSuggestions';
 import onToggleColumnsColorScales from 'utils/app/onToggleColumnsColorScales';
-import onAxisBrashExtentChange from 'utils/app/onAxisBrashExtentChange';
+import onAxisBrushExtentChange from 'utils/app/onAxisBrushExtentChange';
 import { minMaxOfArray } from 'utils/minMaxOfArray';
 
 import { AppDataTypeEnum, AppNameEnum } from './index';
@@ -4676,12 +4676,12 @@ function createAppModel(appConfig: IAppInitialConfig) {
           onCurveInterpolationChange(): void {
             onCurveInterpolationChange({ model, appName, updateModelData });
           },
-          onAxisBrashExtentChange(
+          onAxisBrushExtentChange(
             key: string,
             extent: [number, number] | [string, string] | null,
             chartIndex: number,
           ): void {
-            onAxisBrashExtentChange({
+            onAxisBrushExtentChange({
               key,
               extent,
               chartIndex,

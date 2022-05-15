@@ -93,7 +93,7 @@ const Params = ({
   onColumnsVisibilityChange,
   onTableDiffShow,
   onSortReset,
-  onAxisBrashExtentChange,
+  onAxisBrushExtentChange,
   updateColumnsWidths,
   onLiveUpdateConfigChange,
   onShuffleChange,
@@ -109,7 +109,7 @@ const Params = ({
     return (highPlotData || []).map((chartData: any, index: number) => ({
       curveInterpolation,
       isVisibleColorIndicator,
-      onAxisBrashExtentChange,
+      onAxisBrushExtentChange,
       brushExtents,
       chartTitle: chartTitleData[index],
     }));
@@ -118,6 +118,7 @@ const Params = ({
     curveInterpolation,
     isVisibleColorIndicator,
     chartTitleData,
+    onAxisBrushExtentChange,
     brushExtents,
   ]);
 

@@ -3,7 +3,7 @@ import _ from 'lodash';
 import { IModel, State } from 'types/services/models/model';
 import { IAppModelConfig } from 'types/services/models/explorer/createAppModel';
 
-export default function onAxisBrashExtentChange<M extends State>({
+export default function onAxisBrushExtentChange<M extends State>({
   key,
   extent,
   chartIndex,

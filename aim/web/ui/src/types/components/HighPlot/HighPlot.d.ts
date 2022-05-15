@@ -16,7 +16,7 @@ export interface IHighPlotProps {
   curveInterpolation: CurveEnum;
   isVisibleColorIndicator: boolean;
   syncHoverState: (args: ISyncHoverStateArgs) => void;
-  onAxisBrashExtentChange: (
+  onAxisBrushExtentChange: (
     key: string,
     extent: [number, number] | [string, string] | null,
     chartIndex: number,

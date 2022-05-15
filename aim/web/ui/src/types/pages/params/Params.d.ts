@@ -97,7 +97,7 @@ export interface IParamsProps extends Partial<RouteChildrenProps> {
   onSortReset: () => void;
   updateColumnsWidths: (key: string, width: number, isReset: boolean) => void;
   onShuffleChange: (name: 'stroke' | 'color') => void;
-  onAxisBrashExtentChange: (
+  onAxisBrushExtentChange: (
     key: string,
     extent: [number, number] | [string, string] | null,
     chartIndex: number,

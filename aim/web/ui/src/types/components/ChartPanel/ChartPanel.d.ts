@@ -42,7 +42,7 @@ export interface IChartPanelProps {
   resizeMode?: ResizeModeEnum;
 }
 
-export interface IChartPanelRef extends HTMLDivElement {
+export interface IChartPanelRef {
   setActiveLineAndCircle?: (
     lineKey?: string,
     focusedStateActive: boolean = false,
