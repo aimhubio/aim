@@ -70,16 +70,15 @@ function drawParallelAxesBrush({
     }
     if (removeFocusedCircle) {
       const tmpData = data[0];
-
       safeSyncHoverState({
         activePoint: {
           key: tmpData.key,
-          xValue: 0,
-          yValue: 0,
+          xValue: attributesRef.current.focusedState.xValue,
+          yValue: attributesRef.current.focusedState.yValue,
           xPos: 0,
           yPos: 0,
           chartIndex: index,
-          pointRect: { top: 0, left: 0, right: 0, bottom: 0 },
+          pointRect: null,
         },
       });
     }
