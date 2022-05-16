@@ -1,5 +1,6 @@
 import React from 'react';
 import { BrowserRouter, Switch, Route, Redirect } from 'react-router-dom';
+import { timeout } from 'd3';
 
 import AlertBanner from 'components/kit/AlertBanner';
 import SideBar from 'components/SideBar/SideBar';
@@ -21,6 +22,20 @@ const basePath = getBasePath(false);
 const isVisibleCacheBanner = checkIsBasePathInCachedEnv(basePath) && inIframe();
 
 function App(): React.FunctionComponentElement<React.ReactNode> {
+  React.useEffect(() => {
+    let timeoutId: number;
+    if (document) {
+      const preloader = document.getElementById('preload-spinner');
+      preloader?.classList.add('preloader-fade-out');
+      timeoutId = window.setTimeout(() => {
+        preloader?.remove();
+      }, 1500);
+    }
+    return () => {
+      window.clearTimeout(timeoutId);
+    };
+  }, []);
+
   return (
     <>
       <BrowserRouter basename={basePath}>

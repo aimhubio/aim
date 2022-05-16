@@ -106,15 +106,10 @@ function AutocompleteInput({
         }
         onChange(formatted, ev);
       }
-      onRemeasureFonts();
     },
     // eslint-disable-next-line react-hooks/exhaustive-deps
     [hasSelection, onChange, onEnter],
   );
-
-  const onRemeasureFonts = _.throttle(() => {
-    monaco?.editor?.remeasureFonts();
-  }, 3000);
 
   return (
     <div
