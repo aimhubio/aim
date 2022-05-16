@@ -306,7 +306,6 @@ class RocksContainer(Container):
         self,
         key: ContainerKey,
         value: ContainerValue,
-        *,
         store_batch: aimrocks.WriteBatch = None
     ):
         """Set a value for given key, optionally store in a batch.
@@ -373,7 +372,6 @@ class RocksContainer(Container):
         self,
         begin: ContainerKey,
         end: ContainerKey,
-        *,
         store_batch: aimrocks.WriteBatch = None
     ):
         """Delete all the records in the given `[begin, end)` key range,
