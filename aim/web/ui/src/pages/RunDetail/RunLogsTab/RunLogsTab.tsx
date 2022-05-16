@@ -160,6 +160,7 @@ function RunLogsTab({
         listRef.current?.scrollToItem?.(visibleItemsRange.current[0], 'start');
       }
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [parentHeight, parentWidth]);
 
   useResizeObserver(() => {

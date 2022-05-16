@@ -1,6 +1,5 @@
 import React from 'react';
 import classNames from 'classnames';
-import _ from 'lodash-es';
 import * as monacoEditor from 'monaco-editor';
 
 import Editor, { useMonaco, loader } from '@monaco-editor/react';

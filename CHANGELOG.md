@@ -21,6 +21,7 @@
 - Add ability to track and visualize stdout/stderr (mihran113, VkoHov)
 - Fix `AimLogger` deprecation issues related to release of PyTorch Lightning v1.5 (arnauddhaene)
 - Enable better autocomplete experience with monaco editor (arsengit)
+- Pre-loading and caching necessary resources, add pre-loader animation to Aim UI (arsengit) 
 
 ### Fixes:
 

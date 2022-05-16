@@ -1,6 +1,5 @@
 import React from 'react';
 import { BrowserRouter, Switch, Route, Redirect } from 'react-router-dom';
-import { timeout } from 'd3';
 
 import AlertBanner from 'components/kit/AlertBanner';
 import SideBar from 'components/SideBar/SideBar';
