@@ -46,8 +46,8 @@ function RunLogsTab({
 
     return () => {
       runsBatchRequestRef.current.abort();
-      if (liveUpdate.current?.intervalToken) {
-        clearInterval(liveUpdate.current.intervalToken);
+      if (liveUpdate.current?.intervalId) {
+        clearInterval(liveUpdate.current.intervalId);
       }
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -69,9 +69,9 @@ function RunLogsTab({
 
   function startLiveUpdate() {
     if (inProgress) {
-      const intervalToken = setInterval(liveUpdateCallBack(), 3000);
+      const intervalId = setInterval(liveUpdateCallBack(), 3000);
       liveUpdate.current = {
-        intervalToken,
+        intervalId,
       };
     }
   }
@@ -82,8 +82,8 @@ function RunLogsTab({
       +keysList[0] !== 0 &&
       props.scrollDirection === 'backward'
     ) {
-      if (liveUpdate.current?.intervalToken) {
-        clearInterval(liveUpdate.current.intervalToken);
+      if (liveUpdate.current?.intervalId) {
+        clearInterval(liveUpdate.current.intervalId);
         runsBatchRequestRef.current.abort();
       }
       setLastRequestType(LogsLastRequestEnum.LOAD_MORE);
@@ -102,8 +102,8 @@ function RunLogsTab({
   }
 
   React.useEffect(() => {
-    if (!inProgress && liveUpdate.current?.intervalToken) {
-      clearInterval(liveUpdate.current.intervalToken);
+    if (!inProgress && liveUpdate.current?.intervalId) {
+      clearInterval(liveUpdate.current.intervalId);
     }
   }, [inProgress]);
 
