@@ -515,7 +515,7 @@ const Table = React.forwardRef(function Table(
         offsetHeight: tableContainerRef.current.offsetHeight,
         scrollHeight: tableContainerRef.current.scrollHeight,
         itemHeight: rowHeight,
-        groupMargin: ROW_CELL_SIZE_CONFIG[rowHeight].groupMargin,
+        groupMargin: ROW_CELL_SIZE_CONFIG[rowHeight]?.groupMargin ?? 6,
       });
 
       startIndex.current = windowEdges.startIndex;

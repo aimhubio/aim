@@ -137,6 +137,7 @@ function drawParallelAxesBrush({
             [-15, 0],
             [15, brushHeight],
           ])
+          .handleSize(4)
           .on('start', handleBrushStart)
           .on('brush', (event) =>
             handleBrushChange(event, keyOfDimension, true),
@@ -147,7 +148,7 @@ function drawParallelAxesBrush({
         const yScale = brushRef.current.yScale[keyOfDimension];
         const extent = [yScale(brushExtent[1]), yScale(brushExtent[0])];
         if (!_.isNil(extent[0]) && !_.isNil(extent[1])) {
-          d3.select(this).call(d3.brush().move, [
+          d3.select(this).call(d3.brush().handleSize(4).move, [
             [-15, extent[0]],
             [15, extent[1]],
           ]);
