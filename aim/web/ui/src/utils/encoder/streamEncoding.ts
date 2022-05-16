@@ -445,3 +445,18 @@ export async function* decodePathsVals(
   }
   yield [];
 }
+
+export async function parseStream(stream: ReadableStream) {
+  let buffer_pairs = decodeBufferPairs(stream);
+  let decodedPairs = decodePathsVals(buffer_pairs);
+  let objects = iterFoldTree(decodedPairs, 1);
+
+  const data = [];
+
+  for await (let [keys, val] of objects) {
+    const runData: any = val;
+    data.push({ ...runData, hash: keys[0] } as any);
+  }
+
+  return data;
+}

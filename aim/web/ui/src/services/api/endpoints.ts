@@ -5,6 +5,12 @@ const ENDPOINTS = {
     GET_ACTIVITY: 'activity',
     GET_PARAMS: 'params',
   },
+
+  RUNS: {
+    BASE: '/runs',
+    GET: '',
+    SEARCH: 'search',
+  },
 };
 
 export default ENDPOINTS;

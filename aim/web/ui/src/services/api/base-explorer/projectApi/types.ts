@@ -5,6 +5,9 @@ import { SequenceTypesEnum } from 'types/core/enums';
  * The request query options type of GET /projects/params
  */
 export type GetParamsQueryOptions = {
+  /**
+   * Sequence name one of 'metric' | 'distributions' | 'images' | 'figures' | 'audio' etc.
+   */
   sequence: SequenceTypesEnum;
 };
 
