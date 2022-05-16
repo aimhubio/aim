@@ -15,6 +15,7 @@ import { RequestStatusEnum } from 'config/enums/requestStatusEnum';
 import { CONTROLS_DEFAULT_CONFIG } from 'config/controls/controlsDefaultConfig';
 import { ANALYTICS_EVENT_KEYS } from 'config/analytics/analyticsKeysMap';
 import { DATE_EXPORTING_FORMAT, TABLE_DATE_FORMAT } from 'config/dates/dates';
+import { getSuggestionsByExplorer } from 'config/monacoConfig/monacoConfig';
 
 import {
   getMetricsTableColumns,
@@ -173,9 +174,9 @@ import alphabeticalSortComparator from 'utils/alphabeticalSortComparator';
 import onRowSelect from 'utils/app/onRowSelect';
 import { SortField } from 'utils/getSortedFields';
 import onChangeTrendlineOptions from 'utils/app/onChangeTrendlineOptions';
-import { getParamsSuggestions } from 'utils/app/getParamsSuggestions';
 import onToggleColumnsColorScales from 'utils/app/onToggleColumnsColorScales';
 import { minMaxOfArray } from 'utils/minMaxOfArray';
+import getAdvancedSuggestion from 'utils/getAdvancedSuggestions';
 
 import { AppDataTypeEnum, AppNameEnum } from './index';
 
@@ -438,7 +439,6 @@ function createAppModel(appConfig: IAppInitialConfig) {
         return {};
     }
   }
-
   function setModelDefaultAppConfigData(
     recoverTableState: boolean = true,
   ): void {
@@ -552,10 +552,22 @@ function createAppModel(appConfig: IAppInitialConfig) {
         .getProjectParams(['metric'])
         .call()
         .then((data) => {
+          const advancedSuggestions: Record<any, any> = getAdvancedSuggestion(
+            data.metric,
+          );
           model.setState({
             selectFormData: {
               options: getMetricOptions(data),
-              suggestions: getParamsSuggestions(data),
+              suggestions: getSuggestionsByExplorer(appName, data),
+              advancedSuggestions: {
+                ...getSuggestionsByExplorer(appName, data),
+                metric: {
+                  name: '',
+                  context: _.isEmpty(advancedSuggestions)
+                    ? ''
+                    : { ...advancedSuggestions },
+                },
+              },
             },
           });
         });
@@ -2227,7 +2239,7 @@ function createAppModel(appConfig: IAppInitialConfig) {
           .then((data) => {
             model.setState({
               selectFormData: {
-                suggestions: getParamsSuggestions(data),
+                suggestions: getSuggestionsByExplorer(appName, data),
               },
             });
           });
@@ -3267,7 +3279,7 @@ function createAppModel(appConfig: IAppInitialConfig) {
             model.setState({
               selectFormData: {
                 options: getParamsOptions(data),
-                suggestions: getParamsSuggestions(data),
+                suggestions: getSuggestionsByExplorer(appName, data),
               },
             });
           });
@@ -4728,7 +4740,7 @@ function createAppModel(appConfig: IAppInitialConfig) {
             model.setState({
               selectFormData: {
                 options: getScattersSelectOptions(data),
-                suggestions: getParamsSuggestions(data),
+                suggestions: getSuggestionsByExplorer(appName, data),
               },
             });
           });

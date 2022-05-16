@@ -13,6 +13,7 @@ import COLORS from 'config/colors/colors';
 import { CONTROLS_DEFAULT_CONFIG } from 'config/controls/controlsDefaultConfig';
 import { ANALYTICS_EVENT_KEYS } from 'config/analytics/analyticsKeysMap';
 import { DATE_EXPORTING_FORMAT, TABLE_DATE_FORMAT } from 'config/dates/dates';
+import { getSuggestionsByExplorer } from 'config/monacoConfig/monacoConfig';
 
 import {
   getImagesExploreTableColumns,
@@ -80,9 +81,10 @@ import alphabeticalSortComparator from 'utils/alphabeticalSortComparator';
 import onNotificationDelete from 'utils/app/onNotificationDelete';
 import onNotificationAdd from 'utils/app/onNotificationAdd';
 import exceptionHandler from 'utils/app/exceptionHandler';
-import { getParamsSuggestions } from 'utils/app/getParamsSuggestions';
+import getAdvancedSuggestion from 'utils/getAdvancedSuggestions';
 
 import createModel from '../model';
+import { AppNameEnum } from '../explorer';
 
 const model = createModel<Partial<IImagesExploreAppModelState>>({
   requestStatus: RequestStatusEnum.NotRequested,
@@ -183,10 +185,22 @@ function initialize(appId: string): void {
     .getProjectParams(['images'])
     .call()
     .then((data: IProjectParamsMetrics) => {
+      const advancedSuggestions: Record<any, any> = getAdvancedSuggestion(
+        data.images,
+      );
       model.setState({
         selectFormData: {
           options: getSelectFormOptions(data),
-          suggestions: getParamsSuggestions(data),
+          suggestions: getSuggestionsByExplorer(AppNameEnum.IMAGES, data),
+          advancedSuggestions: {
+            ...getSuggestionsByExplorer(AppNameEnum.IMAGES, data),
+            images: {
+              name: '',
+              context: _.isEmpty(advancedSuggestions)
+                ? ''
+                : { ...advancedSuggestions },
+            },
+          },
         },
       });
     });
