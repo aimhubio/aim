@@ -1,2 +1,2 @@
-wheel
-twine
+wheel >= 0.31.0
+twine >= 1.11.0
