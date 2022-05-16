@@ -27,7 +27,7 @@
     text-overflow: ellipsis;
     font-family: 'Iosevka', monospace;
     font-size: $text-md;
-    top: 6px;
+    top: $space-xxs;
   }
   .details-label {
     width: auto !important;
