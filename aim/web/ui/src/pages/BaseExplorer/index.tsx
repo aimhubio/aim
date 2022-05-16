@@ -18,7 +18,7 @@ function BasExplorer() {
       q: 'run.hparams.batch_size > 10',
     })
       .then(async (data) => {
-        setStatus('encoding');
+        setStatus('decoding');
         const streamData = await parseStream(data);
         console.log(streamData);
         setStatus('succeed');

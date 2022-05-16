@@ -6,7 +6,19 @@ import {
   RequestInit,
 } from './types';
 import exceptionDetector from './interceptors/exceptionDetector';
+// remove comment for this line once different platforms will have usage of fetch
+// import 'isomorphic-fetch';
 
+/**
+ * class NetworkService
+ * @Usage
+ *   const api = new NetworkService('host/api', [(body, headers) => { body.data = {}; return {body, headers} }]);
+ *   api.makeApiGetRequest('resource/:resourceId')
+ *     .then({ body, headers } => {
+ *        // body.data always will be {}, because passed interceptor which resets the data property of body
+ *     })
+ * @TODO write methods docs
+ */
 class NetworkService {
   private interceptors: Interceptor[] = [exceptionDetector];
   private readonly uri?: string;
