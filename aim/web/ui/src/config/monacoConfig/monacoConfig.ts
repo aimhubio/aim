@@ -1,13 +1,13 @@
 import { AppNameEnum } from 'services/models/explorer';
 
 export const getMonacoConfig = (advanced = false): any => ({
-  height: advanced ? '63px' : '21px',
+  height: advanced ? '63px' : '22px',
   options: {
     lineNumbers: 'off',
     minimap: { enabled: false },
     fontFamily: 'Iosevka',
     wordWrap: advanced ? 'on' : 'off',
-    fontSize: 15,
+    fontSize: 14,
     fontWeight: 'medium',
     lineNumbersMinChars: 0,
     overviewRulerLanes: 0,

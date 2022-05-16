@@ -9,8 +9,11 @@
   border-radius: $border-radius-main;
   padding: $space-xs;
   position: relative;
+  &:hover {
+    border: 0.0625rem solid $cuddle-110;
+  }
   &__focused {
-    border: $border-grey;
+    border: 0.0625rem solid $cuddle-110;
   }
   &__advanced {
     height: 4.5rem;
