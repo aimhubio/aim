@@ -165,6 +165,14 @@ On the `Figures` tab you can view all the track figures over different contexts 
 
 <img style="border-radius: 8px; border: 1px solid #E8F1FC" alt="Single Run page figures tab" src="https://docs-blobs.s3.us-east-2.amazonaws.com/images/ui/pages/run-single-page/figures_tab.png">
 
+
+### Logs
+
+Aim automatically catches process output(terminal logs) in order to easily get access to the process logs during or after the training.
+Logs are automatically updated when run is still in progress.
+
+<img style="border-radius: 8px; border: 1px solid #E8F1FC" alt="Single Run page logs tab" src="https://docs-blobs.s3.us-east-2.amazonaws.com/images/ui/pages/run-single-page/logs_tab.png">
+
 ### Settings
 
 Use the `Settings` tab to delete or archive the single run

@@ -9,6 +9,7 @@ import {
   useRouteMatch,
 } from 'react-router-dom';
 import classNames from 'classnames';
+import _ from 'lodash-es';
 
 import { Paper, Tab, Tabs, Tooltip } from '@material-ui/core';
 import { Skeleton } from '@material-ui/lab';
@@ -63,6 +64,9 @@ const TraceVisualizationContainer = React.lazy(
 const RunOverviewTab = React.lazy(
   () => import(/* webpackChunkName: "RunOverviewTab" */ './RunOverviewTab'),
 );
+const RunLogsTab = React.lazy(
+  () => import(/* webpackChunkName: "RunLogsTab" */ './RunLogsTab'),
+);
 
 const tabs: string[] = [
   'overview',
@@ -75,6 +79,7 @@ const tabs: string[] = [
   'audios',
   'texts',
   'figures',
+  'logs',
   'settings',
 ];
 
@@ -97,6 +102,15 @@ function RunDetail(): React.FunctionComponentElement<React.ReactNode> {
       <RunDetailParamsTab
         runParams={runData?.runParams}
         isRunInfoLoading={runData?.isRunInfoLoading}
+      />
+    ),
+    logs: (
+      <RunLogsTab
+        runHash={runHash}
+        runLogs={runData?.runLogs}
+        inProgress={_.isNil(runData?.runInfo?.end_time)}
+        updatedLogsCount={runData?.updatedLogsCount}
+        isRunLogsLoading={runData?.isRunLogsLoading}
       />
     ),
     metrics: (

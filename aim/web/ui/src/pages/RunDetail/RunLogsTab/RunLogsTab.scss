@@ -1,0 +1,33 @@
+@use 'src/styles/abstracts' as *;
+
+.RunDetailLogsTabWrapper {
+  overflow: hidden;
+  height: 100%;
+  max-height: 100%;
+  .RunDetailLogsTab {
+    border: $border-grey;
+    height: 100%;
+    background-color: #ffffff;
+    .Logs {
+      height: 100%;
+      overflow-y: auto;
+      overflow-x: auto;
+      border-radius: $border-radius-main;
+      &__wrapper {
+        width: 100%;
+        height: 100%;
+      }
+    }
+  }
+}
+
+.LogRow {
+  &__line {
+    //ToDo Rethink about color
+    color: #333;
+    font-size: 13px;
+    padding: 0 $space-sm;
+    font-family: 'Iosevka';
+    width: 100%;
+  }
+}

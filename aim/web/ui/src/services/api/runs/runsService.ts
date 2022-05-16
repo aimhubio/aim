@@ -6,6 +6,7 @@ const endpoints = {
   GET_RUNS: 'runs/search/run',
   GET_EXPERIMENTS: 'experiments',
   GET_RUN_INFO: (id: string) => `runs/${id}/info`,
+  GET_RUN_LOGS: (id: string) => `runs/${id}/logs`,
   GET_RUNS_BY_EXPERIMENT_ID: (id: string) => `experiments/${id}/runs`,
   GET_RUN_METRICS_BATCH_BY_TRACES: (id: string) =>
     `runs/${id}/metric/get-batch`,
@@ -25,6 +26,12 @@ function getRunsData(query?: string, limit?: number, offset?: string) {
     q: query || '',
     ...(limit ? { limit } : {}),
     ...(offset ? { offset } : {}),
+  });
+}
+
+function getRunLogs(id: string, record_range?: string) {
+  return API.getStream<ReadableStream>(endpoints.GET_RUN_LOGS(id), {
+    record_range: record_range ?? '',
   });
 }
 
@@ -142,6 +149,7 @@ const runsService = {
   getBatchByStep,
   getRunsData,
   getRunInfo,
+  getRunLogs,
   getRunMetricsBatch,
   getExperimentsData,
   getRunsOfExperiment,

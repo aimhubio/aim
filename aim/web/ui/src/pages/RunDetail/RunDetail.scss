@@ -94,6 +94,8 @@
       box-shadow: 0 toRem(4px) toRem(6px) rgba(144, 175, 218, 0.2);
       border-bottom: $border-grey-lighter;
       border-top: $border-grey-lighter;
+      position: relative;
+      z-index: 1;
       .PrivateTabIndicator-root-1 {
         display: none;
       }

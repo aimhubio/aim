@@ -18,6 +18,7 @@
 - Rename `PrefixView.container` to `PrefixView.parent` (mahnerak)
 - Reimplement `absolute_path` (mahnerak)
 - Cython bindings for `PrefixView`, `TreeView`, `Container`, `ArrayView` (mahnerak)
+- Add ability to track and visualize stdout/stderr (mihran113, VkoHov)
 - Fix `AimLogger` deprecation issues related to release of PyTorch Lightning v1.5 (arnauddhaene)
 - Enable better autocomplete experience with monaco editor (arsengit)
 
