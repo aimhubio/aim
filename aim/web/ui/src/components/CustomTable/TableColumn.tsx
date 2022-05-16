@@ -16,6 +16,7 @@ import {
   VIEW_PORT_OFFSET,
   TABLE_COLUMN_START_COLOR_SCALE,
   TABLE_COLUMN_END_COLOR_SCALE,
+  RowHeightSize,
 } from 'config/table/tableConfigs';
 
 import getColorFromRange from 'utils/d3/getColorFromRange';
@@ -52,6 +53,7 @@ function Column({
   onRowSelect,
   onToggleColumnsColorScales,
   columnsColorScales,
+  rowHeightMode,
 }) {
   const [maxWidth, setMaxWidth] = React.useState(width);
   const [isResizing, setIsResizing] = React.useState(false);
@@ -202,7 +204,12 @@ function Column({
             }}
           >
             {showTopHeaderContent && col.topHeader && (
-              <Text component='p' tint={100} size={14} weight={600}>
+              <Text
+                component='p'
+                tint={100}
+                size={rowHeightMode === RowHeightSize.sm ? 12 : 14}
+                weight={600}
+              >
                 {col.topHeader}
               </Text>
             )}
@@ -242,7 +249,11 @@ function Column({
               checked={!_.isEmpty(selectedRows)}
             />
           )}
-          <Text tint={100} size={14} weigh={600}>
+          <Text
+            tint={100}
+            size={rowHeightMode === RowHeightSize.sm ? 12 : 14}
+            weigh={600}
+          >
             {firstColumn ? headerMeta : null}
             {col.content}
           </Text>
