@@ -23,10 +23,11 @@ export interface IRunDetailSettingsTabProps {
 export interface IRunBatch {
   key: string;
   context: { [key: string]: string };
-  iters: number[];
   name: string;
+  iters: number[];
   values: number[];
 }
+
 export interface IRunInfo {
   archived: boolean;
   creation_time: number;
@@ -81,6 +82,11 @@ export interface ITraceVisualizerProps {
   isLoading?: boolean;
   activeTraceContext?: string;
   data: any;
+}
+
+export interface IRunMetricCardProps {
+  batch: IRunBatch;
+  index: number;
 }
 
 export interface IImagesVisualizerProps extends ITraceVisualizerProps {}
