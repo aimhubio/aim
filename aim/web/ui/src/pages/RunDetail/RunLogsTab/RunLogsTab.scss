@@ -1,19 +1,14 @@
 @use 'src/styles/abstracts' as *;
 
 .RunDetailLogsTabWrapper {
-  border-radius: $border-radius-lg;
-  padding-top: 1.5rem;
-  padding-bottom: 1.5rem;
   overflow: hidden;
   height: 100%;
+  max-height: 100%;
   .RunDetailLogsTab {
     border: $border-grey;
-    border-radius: 0.5rem;
     height: 100%;
     background-color: #ffffff;
     .Logs {
-      //ToDo Rethink about background color
-      background: #33333312;
       height: 100%;
       overflow-y: auto;
       overflow-x: auto;

@@ -8,6 +8,8 @@ import IllustrationBlock from 'components/IllustrationBlock/IllustrationBlock';
 
 import { ANALYTICS_EVENT_KEYS } from 'config/analytics/analyticsKeysMap';
 
+import useResizeObserver from 'hooks/window/useResizeObserver';
+
 import runDetailAppModel from 'services/models/runs/runDetailAppModel';
 import * as analytics from 'services/analytics';
 
@@ -33,7 +35,10 @@ function RunLogsTab({
   const [lastRequestType, setLastRequestType] =
     React.useState<LogsLastRequestEnum>(LogsLastRequestEnum.DEFAULT);
   const rangeRef = React.useRef<any>(null);
+  const [parentHeight, setParentHeight] = React.useState<any>(0);
+  const [parentWidth, setParentWidth] = React.useState<any>(0);
   const dataRef = React.useRef<any>(null);
+  const scrollOffsetRef = React.useRef<any>(null);
   const [keysList, setKeyList] = React.useState<any>(null);
   const visibleItemsRange = React.useRef<any>(null);
 
@@ -77,9 +82,10 @@ function RunLogsTab({
   }
 
   function onScroll(props: ListOnScrollProps) {
+    scrollOffsetRef.current = props.scrollOffset;
     if (
       props.scrollOffset === 0 &&
-      +keysList[0] !== 0 &&
+      +keysList?.[0] !== 0 &&
       props.scrollDirection === 'backward'
     ) {
       if (liveUpdate.current?.intervalId) {
@@ -122,38 +128,70 @@ function RunLogsTab({
         visibleItemsRange.current[0] + updatedLogsCount,
         'start',
       );
+      setLastRequestType(LogsLastRequestEnum.DEFAULT);
     } else if (
-      (lastRequestType === LogsLastRequestEnum.LIVE_UPDATE &&
-        visibleItemsRange.current[1] + updatedLogsCount >=
-          dataRef.current?.length - 1) ||
-      lastRequestType === LogsLastRequestEnum.DEFAULT
+      lastRequestType === LogsLastRequestEnum.LIVE_UPDATE &&
+      visibleItemsRange.current[1] + updatedLogsCount >=
+        dataRef.current?.length - 1
     ) {
-      listRef.current?.scrollToItem?.(dataRef.current?.length - 1, 'end');
+      if (!_.isEmpty(keysList)) {
+        listRef.current?.scrollToItem?.(dataRef.current?.length - 1, 'end');
+      }
+    } else if (lastRequestType === LogsLastRequestEnum.DEFAULT) {
+      if (!_.isEmpty(keysList)) {
+        listRef.current?.scrollToItem?.(dataRef.current?.length - 1, 'end');
+      }
     } else {
-      listRef.current?.scrollToItem?.(visibleItemsRange.current[0], 'start');
+      listRef.current?.scrollToItem?.(
+        visibleItemsRange.current?.[0] ?? 0,
+        'start',
+      );
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [dataRef.current?.length]);
+  }, [dataRef.current?.length, keysList]);
+
+  React.useEffect(() => {
+    if (
+      lastRequestType === LogsLastRequestEnum.DEFAULT &&
+      parentHeight &&
+      parentWidth
+    ) {
+      if (!_.isEmpty(keysList)) {
+        listRef.current?.scrollToItem?.(visibleItemsRange.current[0], 'start');
+      }
+    }
+  }, [parentHeight, parentWidth]);
+
+  useResizeObserver(() => {
+    if (logsContainerRef.current) {
+      setParentHeight(logsContainerRef.current.offsetHeight);
+      setParentWidth(logsContainerRef.current.offsetWidth);
+    }
+  }, logsContainerRef);
 
   return (
     <ErrorBoundary>
       <BusyLoaderWrapper
-        isLoading={isRunLogsLoading || _.isNil(runLogs)}
+        isLoading={isRunLogsLoading || _.isNil(runLogs) || _.isEmpty(keysList)}
         className='runDetailParamsTabLoader'
         height='100%'
       >
         {!_.isEmpty(runLogs) ? (
           <div className='RunDetailLogsTabWrapper'>
             <div className='RunDetailLogsTab'>
-              <div className='Logs'>
-                <div ref={logsContainerRef} className={'Logs__wrapper'}>
+              <div className='Logs' ref={logsContainerRef}>
+                <div className={'Logs__wrapper'}>
                   <List
                     ref={listRef}
+                    key={`${parentHeight}${parentWidth}`}
                     height={logsContainerRef.current?.offsetHeight || 100}
                     itemCount={dataRef.current?.length}
                     itemSize={() => SINGLE_LINE_HEIGHT}
                     width={'100%'}
                     overscanCount={100}
+                    initialScrollOffset={
+                      scrollOffsetRef.current ?? dataRef.current?.length * 15
+                    }
                     onItemsRendered={(props) => {
                       visibleItemsRange.current = [
                         props.visibleStartIndex,
