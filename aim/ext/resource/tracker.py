@@ -55,6 +55,8 @@ class ResourceTracker(object):
 
     @classmethod
     def check_interval(cls, interval, warn=True):
+        if interval is None:
+            warn = False
         if not isinstance(interval, (int, float)) or not cls.STAT_INTERVAL_MIN <= interval <= cls.STAT_INTERVAL_MAX:
             if warn:
                 logger.warning('To track system resource usage '
@@ -79,9 +81,9 @@ class ResourceTracker(object):
                  capture_logs: bool = True,
                  log_offset: int = 0):
         self._track_func = weakref.WeakMethod(track)
-        self._interval = None
+        self._stat_capture_interval = None
         if self.check_interval(interval, warn=False):
-            self._interval = interval
+            self._stat_capture_interval = interval
 
         # terminal log capturing
         self._capture_logs = capture_logs
@@ -161,7 +163,7 @@ class ResourceTracker(object):
         log_capture_time_counter = 0
 
         # store initial system usage stats
-        if self._interval:
+        if self._stat_capture_interval:
             stat = Stat(self._process)
             self._track(stat)
 
@@ -174,7 +176,7 @@ class ResourceTracker(object):
             stat_time_counter += 0.1
             log_capture_time_counter += 0.1
 
-            if self._interval and stat_time_counter > self._interval:
+            if self._stat_capture_interval and stat_time_counter > self._stat_capture_interval:
                 stat = Stat(self._process)
                 self._track(stat)
                 stat_time_counter = 0
