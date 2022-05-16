@@ -39,8 +39,9 @@ migration_files = package_files('aim/web/migrations')
 storage_migration_files = package_files('aim/storage/migrations')
 version_files = ['../aim/VERSION', ]
 
-# TODO: Get long description from the README file
-LONG_DESCRIPTION = DESCRIPTION
+readme_file = 'README.md'
+readme_text = open('/'.join((here, readme_file)), encoding="utf-8").read()
+LONG_DESCRIPTION = readme_text.strip()
 
 SETUP_REQUIRED = [
     'Cython>=3.0.0a9',
@@ -187,6 +188,7 @@ setup(
     version=VERSION,
     description=DESCRIPTION,
     long_description=LONG_DESCRIPTION,
+    long_description_content_type='text/markdown',
     python_requires=REQUIRES_PYTHON,
     setup_requires=SETUP_REQUIRED,
     install_requires=REQUIRED,

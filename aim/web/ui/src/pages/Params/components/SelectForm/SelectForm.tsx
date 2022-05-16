@@ -8,8 +8,8 @@ import {
 } from '@material-ui/icons';
 
 import { Badge, Button, Icon, Text } from 'components/kit';
-import ExpressionAutoComplete from 'components/kit/ExpressionAutoComplete';
 import ErrorBoundary from 'components/ErrorBoundary/ErrorBoundary';
+import AutocompleteInput from 'components/AutocompleteInput';
 
 import { ANALYTICS_EVENT_KEYS } from 'config/analytics/analyticsKeysMap';
 
@@ -37,8 +37,7 @@ function SelectForm({
     };
   }, []);
 
-  function handleParamsSearch(e: React.ChangeEvent<any>) {
-    e.preventDefault();
+  function handleParamsSearch() {
     if (requestIsPending) {
       return;
     }
@@ -236,12 +235,11 @@ function SelectForm({
             </Button>
           </Box>
           <div className='SelectForm__TextField'>
-            <ExpressionAutoComplete
-              onExpressionChange={onSelectRunQueryChange}
-              onSubmit={handleParamsSearch}
+            <AutocompleteInput
+              context={selectFormData?.suggestions}
+              onEnter={handleParamsSearch}
+              onChange={onSelectRunQueryChange}
               value={selectedParamsData?.query}
-              options={selectFormData?.suggestions}
-              placeholder='Filter runs, e.g. run.learning_rate > 0.0001 and run.batch_size == 32'
             />
           </div>
         </div>

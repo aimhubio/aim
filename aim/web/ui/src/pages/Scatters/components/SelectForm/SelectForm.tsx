@@ -3,8 +3,8 @@ import React from 'react';
 import { Box, Divider } from '@material-ui/core';
 
 import { Button, Dropdown, Icon } from 'components/kit';
-import ExpressionAutoComplete from 'components/kit/ExpressionAutoComplete';
 import ErrorBoundary from 'components/ErrorBoundary/ErrorBoundary';
+import AutocompleteInput from 'components/AutocompleteInput';
 
 import { ANALYTICS_EVENT_KEYS } from 'config/analytics/analyticsKeysMap';
 
@@ -36,8 +36,7 @@ function SelectForm({
     };
   }, []);
 
-  function handleParamsSearch(e: React.ChangeEvent<any>) {
-    e.preventDefault();
+  function handleParamsSearch() {
     if (requestIsPending) {
       return;
     }
@@ -172,12 +171,11 @@ function SelectForm({
         </Box>
         <ErrorBoundary>
           <div className='Scatters__SelectForm__TextField'>
-            <ExpressionAutoComplete
-              onExpressionChange={onSelectRunQueryChange}
-              onSubmit={handleParamsSearch}
+            <AutocompleteInput
+              context={selectFormData?.suggestions}
+              onEnter={handleParamsSearch}
+              onChange={onSelectRunQueryChange}
               value={selectedOptionsData?.query}
-              options={selectFormData.suggestions}
-              placeholder='Filter runs, e.g. run.learning_rate > 0.0001 and run.batch_size == 32'
             />
           </div>
         </ErrorBoundary>

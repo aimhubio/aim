@@ -84,7 +84,6 @@ function RunDetailSettingsTab({
             }}
           />
         </div>
-
         <ConfirmModal
           open={openDeleteModal}
           onCancel={handleDeleteModalClose}

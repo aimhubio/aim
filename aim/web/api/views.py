@@ -32,7 +32,6 @@ async def serve_static_files(path):
 @statics_router.get('/{path:path}/', response_class=HTMLResponse)
 async def serve_index_html(request: Request):
     import aim_ui
-    from jinja2 import Environment, FileSystemLoader
 
     template_files_dir = os.path.join(os.path.dirname(aim_ui.__file__), 'build')
     env = Environment(
