@@ -16,6 +16,7 @@ import {
   VIEW_PORT_OFFSET,
   TABLE_COLUMN_START_COLOR_SCALE,
   TABLE_COLUMN_END_COLOR_SCALE,
+  RowHeightSize,
 } from 'config/table/tableConfigs';
 
 import getColorFromRange from 'utils/d3/getColorFromRange';
@@ -52,6 +53,7 @@ function Column({
   onRowSelect,
   onToggleColumnsColorScales,
   columnsColorScales,
+  rowHeightMode,
 }) {
   const [maxWidth, setMaxWidth] = React.useState(width);
   const [isResizing, setIsResizing] = React.useState(false);
@@ -202,7 +204,12 @@ function Column({
             }}
           >
             {showTopHeaderContent && col.topHeader && (
-              <Text component='p' tint={100} size={14} weight={600}>
+              <Text
+                component='p'
+                tint={100}
+                size={rowHeightMode === RowHeightSize.sm ? 12 : 14}
+                weight={600}
+              >
                 {col.topHeader}
               </Text>
             )}
@@ -242,7 +249,11 @@ function Column({
               checked={!_.isEmpty(selectedRows)}
             />
           )}
-          <Text tint={100} size={14} weigh={600}>
+          <Text
+            tint={100}
+            size={rowHeightMode === RowHeightSize.sm ? 12 : 14}
+            weigh={600}
+          >
             {firstColumn ? headerMeta : null}
             {col.content}
           </Text>
@@ -262,7 +273,7 @@ function Column({
                     <div>
                       <Button
                         withOnlyIcon
-                        size='small'
+                        size='xSmall'
                         onClick={onAnchorClick}
                         color='secondary'
                       >
@@ -441,7 +452,8 @@ function Column({
                   style={
                     col.key === '#' && data[groupKey].data.meta.color
                       ? {
-                          borderLeft: 'none',
+                          borderTopLeftRadius: '0.375rem',
+                          borderBottomLeftRadius: '0.375rem',
                           '--color-indicator': data[groupKey].data.meta.color,
                           '--extended-group-background-color':
                             BGColorLighten[data[groupKey].data.meta.color] ??
@@ -689,9 +701,9 @@ function GroupConfig({
     <ErrorBoundary>
       <div className='Table__group__config' onClick={() => expand(groupKey)}>
         <Button
-          size='small'
-          withOnlyIcon={true}
+          size='xSmall'
           className='Table__group__config_expandButton'
+          withOnlyIcon={true}
         >
           <Text className='flex'>
             <Icon name={expanded[groupKey] ? 'arrow-up' : 'arrow-down'} />
@@ -747,7 +759,7 @@ function GroupConfig({
               >
                 <div>
                   <Button
-                    size='small'
+                    size='xSmall'
                     className='Table__group__config__popover'
                     onClick={onAnchorClick}
                     withOnlyIcon={true}
@@ -802,7 +814,12 @@ function GroupActions({ expand, expanded, groupKeys, groupKey }) {
         anchor={({ onAnchorClick }) => (
           <Tooltip title='Expand options'>
             <div>
-              <Button color='secondary' withOnlyIcon onClick={onAnchorClick}>
+              <Button
+                size='xSmall'
+                color='secondary'
+                withOnlyIcon
+                onClick={onAnchorClick}
+              >
                 <Icon
                   className='Table__action__anchor'
                   name='more-horizontal'

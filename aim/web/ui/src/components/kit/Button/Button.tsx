@@ -23,7 +23,7 @@ const fontSizes = {
 };
 
 const withOnlyIconSizes = {
-  xSmall: '0.75rem',
+  xSmall: '1.5rem',
   small: '1.75rem',
   medium: '2rem',
   large: '2.25rem',

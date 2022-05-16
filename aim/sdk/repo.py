@@ -91,7 +91,7 @@ class Repo:
 
     tracking_queue = _get_tracking_queue()
 
-    def __init__(self, path: str, *, read_only: bool = None, init: bool = False):
+    def __init__(self, path: str, *, read_only: Optional[bool] = None, init: Optional[bool] = False):
         if read_only is not None:
             raise NotImplementedError
 

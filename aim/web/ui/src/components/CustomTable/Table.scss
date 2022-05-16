@@ -5,8 +5,9 @@ $box-shadow: 0 3px 9px rgba(0, 0, 0, 0.1);
 $border-radius: 0.2rem;
 
 :root {
-  --cell-height: 32px;
-  --group-margin: 6px;
+  --cell-height: 28px;
+  --group-margin: 4px;
+  --cell-font-size: 0.875rem;
 }
 
 .Table {
@@ -25,17 +26,20 @@ $border-radius: 0.2rem;
     box-sizing: border-box;
     background: #fff;
     &--small {
-      --cell-height: 28px;
-      --group-margin: 4px;
+      --cell-height: 22px;
+      --group-margin: 2px;
+      --cell-font-size: 0.75rem;
     }
     &--medium {
-      --cell-height: 32px;
-      --group-margin: 6px;
+      --cell-height: 28px;
+      --group-margin: 4px;
+      --cell-font-size: 0.875rem;
     }
 
     &--large {
-      --cell-height: 36px;
-      --group-margin: 8px;
+      --cell-height: 32px;
+      --group-margin: 6px;
+      --cell-font-size: 0.875rem;
     }
   }
   &__groupsColumn__cell {
@@ -153,6 +157,7 @@ $border-radius: 0.2rem;
   &.Table__column--actions {
     .Table__cell {
       padding: 0;
+      justify-content: center;
     }
   }
   &.Table__column--selection {
@@ -168,8 +173,8 @@ $border-radius: 0.2rem;
     }
   }
   &__selectCheckbox {
-    width: toRem(32px);
-    height: toRem(32px);
+    width: 32px;
+    height: var(--cell-height);
     border-radius: unset;
     padding: 0.5rem;
   }
@@ -253,7 +258,7 @@ $border-radius: 0.2rem;
 .Table__cell {
   display: flex;
   align-items: center;
-  font-size: $text-md;
+  font-size: var(--cell-font-size);
   padding: 0 $space-unit;
   border-bottom: 1px solid $border-color;
   border-right: 1px solid $border-color;
@@ -304,7 +309,7 @@ $border-radius: 0.2rem;
 
   &.Table__group__config__column__cell {
     border-right: none;
-    padding-left: toRem(39px);
+    padding-left: 2.1875rem;
 
     .Table__cell__rowMeta {
       display: flex;
@@ -382,7 +387,7 @@ $border-radius: 0.2rem;
     margin-right: 0.25rem;
     &.Table__column__selectCheckbox {
       flex: unset;
-      margin-left: toRem(30px);
+      margin-left: calc(20px + var(--group-margin));
       margin-right: toRem(14px);
     }
   }

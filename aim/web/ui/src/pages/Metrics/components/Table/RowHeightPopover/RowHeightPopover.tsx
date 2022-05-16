@@ -22,7 +22,7 @@ function RowHeightPopover({ rowHeight, onRowHeightChange, appName }: any) {
   return (
     <ErrorBoundary>
       <ControlPopover
-        title='Select Table Row Height'
+        title='Select Content Density Mode'
         anchorOrigin={{
           vertical: 'bottom',
           horizontal: 'left',
@@ -52,19 +52,13 @@ function RowHeightPopover({ rowHeight, onRowHeightChange, appName }: any) {
               selected={rowHeight === RowHeightSize.sm}
               onClick={() => onRowHeightChange(RowHeightSize.sm)}
             >
-              Small
+              Compact
             </MenuItem>
             <MenuItem
               selected={rowHeight === RowHeightSize.md}
               onClick={() => onRowHeightChange(RowHeightSize.md)}
             >
-              Medium
-            </MenuItem>
-            <MenuItem
-              selected={rowHeight === RowHeightSize.lg}
-              onClick={() => onRowHeightChange(RowHeightSize.lg)}
-            >
-              Large
+              Normal
             </MenuItem>
           </div>
         }
