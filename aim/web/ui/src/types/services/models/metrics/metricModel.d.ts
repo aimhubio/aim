@@ -15,7 +15,7 @@ export interface IMetric {
   };
   color: string;
   dasharray: string;
-  x_axis_iters?: ITraceData;
-  x_axis_values?: ITraceData;
+  x_axis_iters?: Float64Array;
+  x_axis_values?: Float64Array;
   isHidden: boolean;
 }
