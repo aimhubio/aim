@@ -1,6 +1,7 @@
 import React from 'react';
 import classNames from 'classnames';
 import _ from 'lodash-es';
+import * as monacoEditor from 'monaco-editor';
 
 import Editor, { useMonaco, loader } from '@monaco-editor/react';
 
@@ -71,7 +72,7 @@ function AutocompleteInput({
     setFocused(false);
   }, []);
 
-  function handleDidMount(editor: any) {
+  function handleDidMount(editor: monacoEditor.editor.IStandaloneCodeEditor) {
     setMounted(true);
     editorRef.current = editor;
     editorRef.current.onDidFocusEditorWidget(handleFocus);
@@ -79,7 +80,9 @@ function AutocompleteInput({
     editorRef.current.onDidChangeCursorSelection(onSelectionChange);
   }
 
-  function onSelectionChange(e: any) {
+  function onSelectionChange(
+    e: monacoEditor.editor.ICursorSelectionChangedEvent,
+  ) {
     if (e.selection) {
       const { startColumn, endColumn } = e.selection;
       const selectionPosition = startColumn !== endColumn;
@@ -88,7 +91,10 @@ function AutocompleteInput({
   }
 
   const handleChange = React.useCallback(
-    (val: string | undefined, ev: any) => {
+    (
+      val: string | undefined,
+      ev: monacoEditor.editor.IModelContentChangedEvent,
+    ) => {
       if (typeof val === 'string') {
         // formatting value to avoid the new line
         let formatted = (hasSelection ? value : val).replace(/[\n\r]/g, '');

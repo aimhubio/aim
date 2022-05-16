@@ -1,7 +1,7 @@
 import { AppNameEnum } from 'services/models/explorer';
 
-export const getMonacoConfig = (advanced = false): any => ({
-  height: advanced ? '63px' : '22px',
+export const getMonacoConfig = (advanced = false): Record<any, any> => ({
+  height: advanced ? '62px' : '22px',
   options: {
     lineNumbers: 'off',
     minimap: { enabled: false },
@@ -55,8 +55,8 @@ export const getMonacoConfig = (advanced = false): any => ({
 
 export const getSuggestionsByExplorer = (
   explorerName: AppNameEnum,
-  data: any,
-) => {
+  data: Record<any, any>,
+): Record<any, any> => {
   const defaultSuggestions = {
     run: {
       hash: '',
