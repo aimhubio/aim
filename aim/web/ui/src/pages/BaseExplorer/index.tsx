@@ -13,7 +13,7 @@ function BasExplorer() {
 
   function onClick() {
     setStatus('pending');
-    searchRuns(SequenceTypesEnum.Texts, {
+    searchRuns(SequenceTypesEnum.Metric, {
       p: 500,
       q: 'run.hparams.batch_size > 10',
     })
