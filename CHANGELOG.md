@@ -4,6 +4,7 @@
 
 ### Enhancements:
 
+- Add ability to adjust the density of the visible content in tables (roubkar)
 - Set `metric.name` as default option for grouping (roubkar)
 - Show user-selected params before group config in chart popover (roubkar) 
 - Optimize stream decoding performance on UI (mahnerak)
