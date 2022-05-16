@@ -13,9 +13,7 @@ function LogRow({
 }) {
   return (
     <div style={style}>
-      <pre className={`LogRow__line line${data.logsList?.[index]?.index}`}>
-        {data.logsList?.[index]?.value}
-      </pre>
+      <pre className={'LogRow__line'}>{data.logsList?.[index - 1]?.value}</pre>
     </div>
   );
 }

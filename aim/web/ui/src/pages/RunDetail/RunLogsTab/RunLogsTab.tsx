@@ -84,7 +84,7 @@ function RunLogsTab({
   function onScroll(props: ListOnScrollProps) {
     scrollOffsetRef.current = props.scrollOffset;
     if (
-      props.scrollOffset === 0 &&
+      props.scrollOffset <= 15 &&
       +keysList?.[0] !== 0 &&
       props.scrollDirection === 'backward'
     ) {
@@ -185,7 +185,7 @@ function RunLogsTab({
                     ref={listRef}
                     key={`${parentHeight}${parentWidth}`}
                     height={logsContainerRef.current?.offsetHeight || 100}
-                    itemCount={dataRef.current?.length}
+                    itemCount={dataRef.current?.length + 1}
                     itemSize={() => SINGLE_LINE_HEIGHT}
                     width={'100%'}
                     overscanCount={100}
