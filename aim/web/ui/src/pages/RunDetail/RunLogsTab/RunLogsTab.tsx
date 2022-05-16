@@ -104,6 +104,7 @@ function RunLogsTab({
   React.useEffect(() => {
     if (!inProgress && liveUpdate.current?.intervalId) {
       clearInterval(liveUpdate.current.intervalId);
+      runsBatchRequestRef.current.abort();
     }
   }, [inProgress]);
 
