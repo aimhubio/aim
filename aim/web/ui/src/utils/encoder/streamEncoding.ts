@@ -455,7 +455,9 @@ export async function* decodePathsVals(
  * Receives generic T type to indicate the returned data type
  * @param stream
  */
-export async function parseStream<T extends []>(stream: ReadableStream): T {
+export async function parseStream<T extends []>(
+  stream: ReadableStream,
+): Promise<T> {
   let buffer_pairs = decodeBufferPairs(stream);
   let decodedPairs = decodePathsVals(buffer_pairs);
   let objects = iterFoldTree(decodedPairs, 1);

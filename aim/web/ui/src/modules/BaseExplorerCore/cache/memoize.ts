@@ -1,17 +1,17 @@
 import isFunction from 'lodash';
 
 /**
- * memCache is a simple memoizer for functions
+ * memoize is a simple memoizer for functions
  * @param fn
  */
-function memCache(fn: Function): Function {
+function memoize<T, P>(fn: (args: T) => P | unknown): (args: T) => P {
   if (!isFunction(fn)) {
     throw Error('memCache fn:function parameter should be function');
   }
 
   let cache = new Map<string, any>();
 
-  return (args: any) => {
+  return (args: T) => {
     const key = JSON.stringify(args);
 
     if (cache.has(key)) {
@@ -24,4 +24,4 @@ function memCache(fn: Function): Function {
   };
 }
 
-export default memCache;
+export default memoize;

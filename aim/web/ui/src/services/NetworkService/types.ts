@@ -110,3 +110,8 @@ export type HttpResponse<T extends HttpResponseBody> = {
   body: T;
   headers: any; // @TODO fill in later
 };
+
+export type RequestInstance = {
+  call: (...args: any) => Promise<ReadableStream<any>>;
+  cancel: () => void;
+};

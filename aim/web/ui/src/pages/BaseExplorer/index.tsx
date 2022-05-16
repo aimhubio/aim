@@ -1,28 +1,27 @@
 import React from 'react';
 
-import { searchRuns } from 'services/api/base-explorer/runsApi';
+import createQuery from 'modules/BaseExplorerCore/pipeline/query';
 
 import { SequenceTypesEnum } from 'types/core/enums';
 
-import { parseStream } from 'utils/encoder/streamEncoding';
+const query = createQuery(SequenceTypesEnum.Metric);
 
 function BasExplorer() {
   const [status, setStatus] = React.useState('initial');
-  const [data, setData] = React.useState<Array<any>>([]);
+  const [data, setData] = React.useState<any>([]);
   console.log(status);
 
   function onClick() {
     setStatus('pending');
-    searchRuns(SequenceTypesEnum.Metric, {
-      p: 500,
-      q: 'run.hparams.batch_size > 10',
-    })
-      .then(async (data) => {
-        setStatus('decoding');
-        const streamData = await parseStream(data);
-        console.log(streamData);
+    query
+      .execute({
+        p: 500,
+        q: 'run.hparams.batch_size > 10',
+      })
+      .then((data) => {
+        console.log(data);
         setStatus('succeed');
-        setData(streamData);
+        setData(data);
       })
       .catch((err) => {
         alert(err.message);

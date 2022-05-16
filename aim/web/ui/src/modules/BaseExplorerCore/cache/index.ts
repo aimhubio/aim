@@ -1,3 +1,3 @@
-import memCache from './memCache';
+import memoize from './memoize';
 
-export { memCache };
+export { memoize };

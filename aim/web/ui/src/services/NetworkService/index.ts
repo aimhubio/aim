@@ -30,10 +30,7 @@ class NetworkService {
 
     if (interceptors.length) {
       interceptors.forEach((interceptor: Interceptor) => {
-        if (typeof interceptor !== 'function') {
-          throw new Error(`The '${interceptor}' is not a function.`);
-        }
-        this.interceptors.push(interceptor);
+        this.setInterceptor(interceptor);
       });
     }
 
@@ -208,6 +205,13 @@ class NetworkService {
         .catch((error) => reject(error));
     });
   };
+
+  public setInterceptor(interceptor: Interceptor) {
+    if (typeof interceptor !== 'function') {
+      throw new Error(`The '${interceptor}' is not a function.`);
+    }
+    this.interceptors.push(interceptor);
+  }
 }
 
 export default NetworkService;
