@@ -72,55 +72,71 @@ function RunOverviewTab({ runData, runHash }: IRunOverviewTabProps) {
           ) : (
             <>
               {_.isEmpty(cardsData?.runParams) ? null : (
-                <RunOverviewTabParamsCard
-                  runParams={cardsData?.runParams}
-                  isRunInfoLoading={runData?.isRunInfoLoading}
-                />
+                <ErrorBoundary>
+                  <RunOverviewTabParamsCard
+                    runParams={cardsData?.runParams}
+                    isRunInfoLoading={runData?.isRunInfoLoading}
+                  />
+                </ErrorBoundary>
               )}
               {_.isEmpty(cardsData?.runMetricsBatch) ? null : (
-                <RunOverviewTabMetricsCard
-                  isLoading={runData?.isRunBatchLoading}
-                  type='metric'
-                  runBatch={cardsData?.runMetricsBatch}
-                />
+                <ErrorBoundary>
+                  <RunOverviewTabMetricsCard
+                    isLoading={runData?.isRunBatchLoading}
+                    type='metric'
+                    runBatch={cardsData?.runMetricsBatch}
+                  />
+                </ErrorBoundary>
               )}
 
               {_.isEmpty(cardsData?.runSystemBatch) ? null : (
-                <RunOverviewTabMetricsCard
-                  isLoading={runData?.isRunBatchLoading}
-                  type='systemMetric'
-                  runBatch={cardsData?.runSystemBatch}
-                />
+                <ErrorBoundary>
+                  <RunOverviewTabMetricsCard
+                    isLoading={runData?.isRunBatchLoading}
+                    type='systemMetric'
+                    runBatch={cardsData?.runSystemBatch}
+                  />
+                </ErrorBoundary>
               )}
               {_.isEmpty(cardsData.cliArguments) ? null : (
-                <RunOverviewTabCLIArgumentsCard
-                  cliArguments={cardsData.cliArguments}
-                  isRunInfoLoading={runData?.isRunInfoLoading}
-                />
+                <ErrorBoundary>
+                  <RunOverviewTabCLIArgumentsCard
+                    cliArguments={cardsData.cliArguments}
+                    isRunInfoLoading={runData?.isRunInfoLoading}
+                  />
+                </ErrorBoundary>
               )}
               {_.isEmpty(cardsData.envVariables) ? null : (
-                <RunOverviewTabEnvVariablesCard
-                  envVariables={cardsData.envVariables}
-                  isRunInfoLoading={runData?.isRunInfoLoading}
-                />
+                <ErrorBoundary>
+                  <RunOverviewTabEnvVariablesCard
+                    envVariables={cardsData.envVariables}
+                    isRunInfoLoading={runData?.isRunInfoLoading}
+                  />
+                </ErrorBoundary>
               )}
               {_.isEmpty(cardsData.packages) ? null : (
-                <RunOverviewTabPackagesCard
-                  packages={cardsData.packages}
-                  isRunInfoLoading={runData?.isRunInfoLoading}
-                />
+                <ErrorBoundary>
+                  <RunOverviewTabPackagesCard
+                    packages={cardsData.packages}
+                    isRunInfoLoading={runData?.isRunInfoLoading}
+                  />
+                </ErrorBoundary>
               )}
               {_.isEmpty(cardsData.gitInfo) ? null : (
-                <GitInfoCard data={cardsData.gitInfo} />
+                <ErrorBoundary>
+                  <GitInfoCard data={cardsData.gitInfo} />
+                </ErrorBoundary>
               )}
             </>
           )}
         </div>
-        <RunOverviewSidebar
-          runHash={runHash}
-          info={runData.runInfo}
-          traces={runData.runTraces}
-        />
+        <ErrorBoundary>
+          <RunOverviewSidebar
+            runHash={runHash}
+            info={runData.runInfo}
+            traces={runData.runTraces}
+          />
+        </ErrorBoundary>
       </section>
     </ErrorBoundary>
   );

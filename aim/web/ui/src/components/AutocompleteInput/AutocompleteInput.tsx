@@ -1,6 +1,5 @@
 import React from 'react';
 import classNames from 'classnames';
-import _ from 'lodash-es';
 import * as monacoEditor from 'monaco-editor';
 
 import Editor, { useMonaco, loader } from '@monaco-editor/react';
@@ -32,6 +31,7 @@ function AutocompleteInput({
   onChange,
 }: IAutocompleteInputProps) {
   const [hasSelection, setHasSelection] = React.useState(false);
+  const [editorValue, setEditorValue] = React.useState(value);
   const [focused, setFocused] = React.useState<boolean>(false);
   const [mounted, setMounted] = React.useState<boolean>(false);
   const monaco: any = useMonaco();
@@ -54,6 +54,12 @@ function AutocompleteInput({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [monaco, context, mounted]);
 
+  React.useEffect(() => {
+    if (editorValue !== value) {
+      setEditorValue(value);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [value]);
   React.useEffect(() => {
     if (focused) {
       editorRef.current?.focus();
@@ -101,20 +107,15 @@ function AutocompleteInput({
         if (ev.changes[0].text === '\n') {
           editorRef.current!.setValue(formatted);
           if (onEnter) {
+            onChange(formatted, ev);
             onEnter();
           }
         }
-        onChange(formatted, ev);
       }
-      onRemeasureFonts();
     },
     // eslint-disable-next-line react-hooks/exhaustive-deps
     [hasSelection, onChange, onEnter],
   );
-
-  const onRemeasureFonts = _.throttle(() => {
-    monaco?.editor?.remeasureFonts();
-  }, 3000);
 
   return (
     <div

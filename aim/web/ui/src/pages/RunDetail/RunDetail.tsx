@@ -72,6 +72,7 @@ const tabs: string[] = [
   'overview',
   'parameters',
   'notes',
+  'logs',
   'metrics',
   'system',
   'distributions',
@@ -79,7 +80,6 @@ const tabs: string[] = [
   'audios',
   'texts',
   'figures',
-  'logs',
   'settings',
 ];
 

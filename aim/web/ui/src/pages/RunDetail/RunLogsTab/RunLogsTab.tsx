@@ -123,15 +123,18 @@ function RunLogsTab({
   }, [runLogs]);
 
   React.useEffect(() => {
-    if (lastRequestType === LogsLastRequestEnum.LOAD_MORE) {
+    if (
+      lastRequestType === LogsLastRequestEnum.LOAD_MORE &&
+      visibleItemsRange.current
+    ) {
       listRef.current?.scrollToItem?.(
-        visibleItemsRange.current[0] + updatedLogsCount,
+        visibleItemsRange.current?.[0] + updatedLogsCount,
         'start',
       );
       setLastRequestType(LogsLastRequestEnum.DEFAULT);
     } else if (
       lastRequestType === LogsLastRequestEnum.LIVE_UPDATE &&
-      visibleItemsRange.current[1] + updatedLogsCount >=
+      visibleItemsRange.current?.[1] + updatedLogsCount >=
         dataRef.current?.length - 1
     ) {
       if (!_.isEmpty(keysList)) {
@@ -160,6 +163,7 @@ function RunLogsTab({
         listRef.current?.scrollToItem?.(visibleItemsRange.current[0], 'start');
       }
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [parentHeight, parentWidth]);
 
   useResizeObserver(() => {
@@ -172,11 +176,11 @@ function RunLogsTab({
   return (
     <ErrorBoundary>
       <BusyLoaderWrapper
-        isLoading={isRunLogsLoading || _.isNil(runLogs) || _.isEmpty(keysList)}
+        isLoading={isRunLogsLoading}
         className='runDetailParamsTabLoader'
         height='100%'
       >
-        {!_.isEmpty(runLogs) ? (
+        {!_.isEmpty(runLogs) && !_.isEmpty(keysList) ? (
           <div className='RunDetailLogsTabWrapper'>
             <div className='RunDetailLogsTab'>
               <div className='Logs' ref={logsContainerRef}>
