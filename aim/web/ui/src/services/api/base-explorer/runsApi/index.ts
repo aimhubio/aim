@@ -14,21 +14,23 @@ const api = new NetworkService(`${getAPIHost()}${ENDPOINTS.RUNS.BASE}`);
 /**
  * function searchRuns
  * this call is used for getting explorer' data
- * @param sequence - sequence name
+ * @param sequenceType - sequence name
  * @param queryParams
  */
 async function searchRuns(
-  sequence: SequenceTypesEnum,
+  sequenceType: SequenceTypesEnum,
   queryParams: RunsSearchQueryParams,
 ): Promise<RunsSearchResult> {
   return (
-    await api.makeAPIGetRequest(`${ENDPOINTS.RUNS.SEARCH}/${sequence}`, {
+    await api.makeAPIGetRequest(`${ENDPOINTS.RUNS.SEARCH}/${sequenceType}`, {
       query_params: queryParams,
     })
   ).body;
 }
 
-function createSearchRunsRequest(sequence: SequenceTypesEnum): RequestInstance {
+function createSearchRunsRequest(
+  sequenceType: SequenceTypesEnum,
+): RequestInstance {
   const controller = new AbortController();
   const signal = controller.signal;
 
@@ -36,7 +38,7 @@ function createSearchRunsRequest(sequence: SequenceTypesEnum): RequestInstance {
     queryParams: RunsSearchQueryParams,
   ): Promise<RunsSearchResult> {
     return (
-      await api.makeAPIGetRequest(`${ENDPOINTS.RUNS.SEARCH}/${sequence}`, {
+      await api.makeAPIGetRequest(`${ENDPOINTS.RUNS.SEARCH}/${sequenceType}`, {
         query_params: queryParams,
         signal,
       })

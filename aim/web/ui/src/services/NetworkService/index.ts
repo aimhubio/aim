@@ -72,7 +72,7 @@ class NetworkService {
     return this.makeAPIRequest(urlPrefix, options);
   };
 
-  public createUrl = (arg: string): string => {
+  public createUrl = (arg: string | Array<string>): string => {
     if (Array.isArray(arg)) {
       return [this.uri, ...arg].join('/');
     }
