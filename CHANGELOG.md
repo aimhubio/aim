@@ -1,5 +1,11 @@
 # Changelog
 
+## Unreleased
+
+### Fixes:
+
+- Change zooming default option to multiple (VkoHov)
+
 ## 3.10.0 May 17, 2022
 
 ### Enhancements:
