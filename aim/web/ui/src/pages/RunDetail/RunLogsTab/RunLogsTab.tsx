@@ -123,15 +123,18 @@ function RunLogsTab({
   }, [runLogs]);
 
   React.useEffect(() => {
-    if (lastRequestType === LogsLastRequestEnum.LOAD_MORE) {
+    if (
+      lastRequestType === LogsLastRequestEnum.LOAD_MORE &&
+      visibleItemsRange.current
+    ) {
       listRef.current?.scrollToItem?.(
-        visibleItemsRange.current[0] + updatedLogsCount,
+        visibleItemsRange.current?.[0] + updatedLogsCount,
         'start',
       );
       setLastRequestType(LogsLastRequestEnum.DEFAULT);
     } else if (
       lastRequestType === LogsLastRequestEnum.LIVE_UPDATE &&
-      visibleItemsRange.current[1] + updatedLogsCount >=
+      visibleItemsRange.current?.[1] + updatedLogsCount >=
         dataRef.current?.length - 1
     ) {
       if (!_.isEmpty(keysList)) {
