@@ -1,6 +1,5 @@
 import React from 'react';
 import classNames from 'classnames';
-import _ from 'lodash-es';
 import * as monacoEditor from 'monaco-editor';
 
 import Editor, { useMonaco, loader } from '@monaco-editor/react';
@@ -106,15 +105,10 @@ function AutocompleteInput({
         }
         onChange(formatted, ev);
       }
-      onRemeasureFonts();
     },
     // eslint-disable-next-line react-hooks/exhaustive-deps
     [hasSelection, onChange, onEnter],
   );
-
-  const onRemeasureFonts = _.throttle(() => {
-    monaco?.editor?.remeasureFonts();
-  }, 3000);
 
   return (
     <div

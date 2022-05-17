@@ -21,6 +21,20 @@ const basePath = getBasePath(false);
 const isVisibleCacheBanner = checkIsBasePathInCachedEnv(basePath) && inIframe();
 
 function App(): React.FunctionComponentElement<React.ReactNode> {
+  React.useEffect(() => {
+    let timeoutId: number;
+    const preloader = document.getElementById('preload-spinner');
+    if (preloader) {
+      preloader.classList.add('preloader-fade-out');
+      timeoutId = window.setTimeout(() => {
+        preloader.remove();
+      }, 1000);
+    }
+    return () => {
+      window.clearTimeout(timeoutId);
+    };
+  }, []);
+
   return (
     <>
       <BrowserRouter basename={basePath}>
