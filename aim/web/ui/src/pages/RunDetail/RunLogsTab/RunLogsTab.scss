@@ -5,7 +5,8 @@
   height: 100%;
   max-height: 100%;
   .RunDetailLogsTab {
-    border: $border-grey;
+    border-left: $border-grey;
+    border-right: $border-grey;
     height: 100%;
     background-color: #ffffff;
     .Logs {
