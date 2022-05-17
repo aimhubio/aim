@@ -86,8 +86,6 @@ function stringToArrayBuffer(str: string): ArrayBuffer {
 export function createTransferableData(data: any): Buffer {
   const stringData = JSON.stringify(data, (k: string, v) => {
     if (k === 'blob') {
-      console.log(v);
-
       return arrayBufferToString(v);
     }
 
