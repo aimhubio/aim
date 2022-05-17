@@ -1,5 +1,11 @@
 # Changelog
 
+## Unreleased
+
+### Fixes:
+
+- Changed grouped rows' min and max values names to `Group Min` and `Group Max` (VkoHov)
+
 ## 3.10.0 May 17, 2022
 
 ### Enhancements:
