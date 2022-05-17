@@ -173,11 +173,11 @@ function RunLogsTab({
   return (
     <ErrorBoundary>
       <BusyLoaderWrapper
-        isLoading={isRunLogsLoading || _.isNil(runLogs) || _.isEmpty(keysList)}
+        isLoading={isRunLogsLoading}
         className='runDetailParamsTabLoader'
         height='100%'
       >
-        {!_.isEmpty(runLogs) ? (
+        {!_.isEmpty(runLogs) && !_.isEmpty(keysList) ? (
           <div className='RunDetailLogsTabWrapper'>
             <div className='RunDetailLogsTab'>
               <div className='Logs' ref={logsContainerRef}>
