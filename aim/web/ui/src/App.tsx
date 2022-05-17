@@ -28,7 +28,7 @@ function App(): React.FunctionComponentElement<React.ReactNode> {
       preloader?.classList.add('preloader-fade-out');
       timeoutId = window.setTimeout(() => {
         preloader?.remove();
-      }, 1500);
+      }, 1000);
     }
     return () => {
       window.clearTimeout(timeoutId);
