@@ -11,6 +11,7 @@
 - Add support for animated image formats to Aim Image object (devfox-se)
 - Add `AimLogger` for Catboost (devfox-se)
 - Add `AimCallback` for LightGBM (devfox-se)
+- Keep the extents of `HighPlot` axes brush in the state and the URL (VkoHov)
 - Integrate `aim` with `cimport`-able `aimrocks` (mahnerak)
 - Add `__slots__` to some classes to improve performance (mahnerak)
 - Define base abstractions for `Iterator` and `DB` by borrowing from `aimrocks` (mahnerak)

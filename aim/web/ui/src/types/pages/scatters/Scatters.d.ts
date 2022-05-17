@@ -39,6 +39,7 @@ export interface IScattersProps extends Partial<RouteChildrenProps> {
   chartElemRef: React.RefObject<HTMLDivElement>;
   wrapperElemRef: React.RefObject<HTMLDivElement>;
   resizeElemRef: React.RefObject<HTMLDivElement>;
+  chartPanelOffsetHeight?: number;
   scatterPlotData: any[];
   panelResizing: boolean;
   chartTitleData: IChartTitleData;

@@ -93,6 +93,7 @@ const Params = ({
   onColumnsVisibilityChange,
   onTableDiffShow,
   onSortReset,
+  onAxisBrushExtentChange,
   updateColumnsWidths,
   onLiveUpdateConfigChange,
   onShuffleChange,
@@ -101,11 +102,15 @@ const Params = ({
   deleteRuns,
   selectedRows,
   columnsOrder,
+  brushExtents,
+  chartPanelOffsetHeight,
 }: IParamsProps): React.FunctionComponentElement<React.ReactNode> => {
   const chartProps: any[] = React.useMemo(() => {
     return (highPlotData || []).map((chartData: any, index: number) => ({
       curveInterpolation,
       isVisibleColorIndicator,
+      onAxisBrushExtentChange,
+      brushExtents,
       chartTitle: chartTitleData[index],
     }));
   }, [
@@ -113,6 +118,8 @@ const Params = ({
     curveInterpolation,
     isVisibleColorIndicator,
     chartTitleData,
+    onAxisBrushExtentChange,
+    brushExtents,
   ]);
 
   return (
@@ -176,6 +183,7 @@ const Params = ({
               {!_.isEmpty(tableData) ? (
                 <ChartPanel
                   ref={chartPanelRef}
+                  chartPanelOffsetHeight={chartPanelOffsetHeight}
                   key={highPlotData?.[0]?.data?.length}
                   chartType={ChartTypeEnum.HighPlot}
                   data={highPlotData}

@@ -57,6 +57,16 @@
         }
       }
     }
+    .axisBrush{
+    
+      .handle{
+        fill: $cuddle-110;
+      }
+      .selection{
+        fill: $pico-50;
+        stroke: none;
+      }
+    }
   }
 
   &.backgroundRect {

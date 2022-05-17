@@ -49,6 +49,7 @@ export interface IMetricProps extends Partial<RouteChildrenProps> {
   chartElemRef: React.RefObject<HTMLDivElement>;
   wrapperElemRef: React.RefObject<HTMLDivElement>;
   resizeElemRef: React.RefObject<HTMLDivElement>;
+  chartPanelOffsetHeight?: number;
   lineChartData: ILine[][];
   panelResizing: boolean;
   chartTitleData: IChartTitleData;

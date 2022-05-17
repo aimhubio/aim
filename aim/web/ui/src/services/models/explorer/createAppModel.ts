@@ -175,6 +175,7 @@ import onRowSelect from 'utils/app/onRowSelect';
 import { SortField } from 'utils/getSortedFields';
 import onChangeTrendlineOptions from 'utils/app/onChangeTrendlineOptions';
 import onToggleColumnsColorScales from 'utils/app/onToggleColumnsColorScales';
+import onAxisBrushExtentChange from 'utils/app/onAxisBrushExtentChange';
 import { minMaxOfArray } from 'utils/minMaxOfArray';
 import getAdvancedSuggestion from 'utils/getAdvancedSuggestions';
 
@@ -393,6 +394,7 @@ function createAppModel(appConfig: IAppInitialConfig) {
                 selectedParams:
                   CONTROLS_DEFAULT_CONFIG.params.tooltip.selectedParams,
               },
+              brushExtents: {},
             };
           }
           if (components.charts.indexOf(ChartTypeEnum.ScatterPlot) !== -1) {
@@ -3886,6 +3888,38 @@ function createAppModel(appConfig: IAppInitialConfig) {
           });
         }
 
+        if (!_.isEmpty(configData.chart?.brushExtents)) {
+          const chart = { ...configData.chart };
+          let brushExtents = { ...chart?.brushExtents };
+          const resultBrushExtents: any = {};
+          const selectOptionList = configData.select?.options.map(
+            (option: ISelectOption) => {
+              if (option.type === 'metrics' && option.value) {
+                return `${option.value.option_name}-${contextToString(
+                  option.value.context,
+                )}`;
+              }
+              return option.label;
+            },
+          );
+          const brushExtentsKeys = Object.keys(brushExtents);
+          brushExtentsKeys.forEach((chartIndex: string) => {
+            const chartBrushExtents = { ...brushExtents[chartIndex] };
+            const chartBrushExtentsKeys = Object.keys(chartBrushExtents);
+            const omitKeys = chartBrushExtentsKeys.filter(
+              (key: string) => !selectOptionList?.includes(key),
+            );
+            resultBrushExtents[chartIndex] = _.omit(
+              chartBrushExtents,
+              omitKeys,
+            );
+          });
+          configData = {
+            ...configData,
+            chart: { ...configData.chart, brushExtents: resultBrushExtents },
+          };
+        }
+
         model.setState({
           requestStatus: RequestStatusEnum.Ok,
           data,
@@ -4325,6 +4359,8 @@ function createAppModel(appConfig: IAppInitialConfig) {
         groupName,
         list,
       }: IOnGroupingSelectChangeParams): void {
+        let configData = model.getState().config;
+
         onGroupingSelectChange({
           groupName,
           list,
@@ -4332,6 +4368,17 @@ function createAppModel(appConfig: IAppInitialConfig) {
           appName,
           updateModelData,
         });
+        if (configData?.chart) {
+          configData = {
+            ...configData,
+            chart: {
+              ...configData.chart,
+              brushExtents: {},
+            },
+          };
+        }
+
+        model.setState({ config: configData });
       }
 
       function onModelBookmarkCreate({
@@ -4548,6 +4595,8 @@ function createAppModel(appConfig: IAppInitialConfig) {
             groupName,
             value,
           }: IOnGroupingModeChangeParams): void {
+            let configData = model.getState().config;
+
             onGroupingModeChange({
               groupName,
               value,
@@ -4555,20 +4604,57 @@ function createAppModel(appConfig: IAppInitialConfig) {
               appName,
               updateModelData,
             });
+            if (configData?.chart) {
+              configData = {
+                ...configData,
+                chart: {
+                  ...configData.chart,
+                  brushExtents: {},
+                },
+              };
+            }
+
+            model.setState({ config: configData });
           },
           onGroupingPaletteChange(index: number): void {
             onGroupingPaletteChange({ index, model, appName, updateModelData });
           },
           onGroupingReset(groupName: GroupNameType): void {
+            let configData = model.getState().config;
+
             onGroupingReset({ groupName, model, appName, updateModelData });
+            if (configData?.chart) {
+              configData = {
+                ...configData,
+                chart: {
+                  ...configData.chart,
+                  brushExtents: {},
+                },
+              };
+            }
+
+            model.setState({ config: configData });
           },
           onGroupingApplyChange(groupName: GroupNameType): void {
+            let configData = model.getState().config;
+
             onGroupingApplyChange({
               groupName,
               model,
               appName,
               updateModelData,
             });
+            if (configData?.chart) {
+              configData = {
+                ...configData,
+                chart: {
+                  ...configData.chart,
+                  brushExtents: {},
+                },
+              };
+            }
+
+            model.setState({ config: configData });
           },
           onGroupingPersistenceChange(groupName: GroupNameType): void {
             onGroupingPersistenceChange({
@@ -4603,6 +4689,19 @@ function createAppModel(appConfig: IAppInitialConfig) {
           },
           onCurveInterpolationChange(): void {
             onCurveInterpolationChange({ model, appName, updateModelData });
+          },
+          onAxisBrushExtentChange(
+            key: string,
+            extent: [number, number] | [string, string] | null,
+            chartIndex: number,
+          ): void {
+            onAxisBrushExtentChange({
+              key,
+              extent,
+              chartIndex,
+              model,
+              updateModelData,
+            });
           },
         });
       }
