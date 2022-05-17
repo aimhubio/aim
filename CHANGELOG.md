@@ -4,12 +4,14 @@
 
 ### Enhancements:
 
+- Add ability to adjust the density of the visible content in tables (roubkar)
 - Set `metric.name` as default option for grouping (roubkar)
 - Show user-selected params before group config in chart popover (roubkar) 
 - Optimize stream decoding performance on UI (mahnerak)
 - Add support for animated image formats to Aim Image object (devfox-se)
 - Add `AimLogger` for Catboost (devfox-se)
 - Add `AimCallback` for LightGBM (devfox-se)
+- Keep the extents of `HighPlot` axes brush in the state and the URL (VkoHov)
 - Integrate `aim` with `cimport`-able `aimrocks` (mahnerak)
 - Add `__slots__` to some classes to improve performance (mahnerak)
 - Define base abstractions for `Iterator` and `DB` by borrowing from `aimrocks` (mahnerak)
@@ -17,7 +19,9 @@
 - Rename `PrefixView.container` to `PrefixView.parent` (mahnerak)
 - Reimplement `absolute_path` (mahnerak)
 - Cython bindings for `PrefixView`, `TreeView`, `Container`, `ArrayView` (mahnerak)
+- Add ability to track and visualize stdout/stderr (mihran113, VkoHov)
 - Fix `AimLogger` deprecation issues related to release of PyTorch Lightning v1.5 (arnauddhaene)
+- Enable better autocomplete experience with monaco editor (arsengit)
 
 ### Fixes:
 
@@ -55,6 +59,7 @@
 - Add info massage for single value sliders (VkoHov)
 - Add `--log-level` argument for aim up/server commands (mihran113)
 - Add notes backend api interface (devfox-se)
+- Fix type hints in `Repo` class (uduse)
 
 ### Fixes:
 

@@ -405,7 +405,9 @@ const Table = React.forwardRef(function Table(
       offsetHeight: tableContainerRef.current.offsetHeight,
       scrollHeight: tableContainerRef.current.scrollHeight,
       itemHeight: rowHeight,
-      groupMargin: ROW_CELL_SIZE_CONFIG[rowHeight].groupMargin,
+      groupMargin:
+        ROW_CELL_SIZE_CONFIG[rowHeight]?.groupMargin ??
+        ROW_CELL_SIZE_CONFIG[RowHeightSize.md].groupMargin,
     });
 
     startIndex.current = windowEdges.startIndex;
@@ -515,7 +517,9 @@ const Table = React.forwardRef(function Table(
         offsetHeight: tableContainerRef.current.offsetHeight,
         scrollHeight: tableContainerRef.current.scrollHeight,
         itemHeight: rowHeight,
-        groupMargin: ROW_CELL_SIZE_CONFIG[rowHeight].groupMargin,
+        groupMargin:
+          ROW_CELL_SIZE_CONFIG[rowHeight]?.groupMargin ??
+          ROW_CELL_SIZE_CONFIG[RowHeightSize.md].groupMargin,
       });
 
       startIndex.current = windowEdges.startIndex;
@@ -529,7 +533,9 @@ const Table = React.forwardRef(function Table(
           offsetHeight: target.offsetHeight,
           scrollHeight: target.scrollHeight,
           itemHeight: rowHeight,
-          groupMargin: ROW_CELL_SIZE_CONFIG[rowHeight].groupMargin,
+          groupMargin:
+            ROW_CELL_SIZE_CONFIG[rowHeight]?.groupMargin ??
+            ROW_CELL_SIZE_CONFIG[RowHeightSize.md].groupMargin,
         });
 
         startIndex.current = windowEdges.startIndex;

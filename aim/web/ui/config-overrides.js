@@ -44,7 +44,6 @@ module.exports = {
         externalPublicPath: 'window.externalPublicPath',
       }),
     );
-
     return config;
   },
 };

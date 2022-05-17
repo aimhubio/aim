@@ -1,17 +1,69 @@
-from psutil import Process, cpu_percent
-from threading import Thread
+import io
+import logging
+import re
+import sys
 import time
 import weakref
-from typing import Union
 
-from aim.ext.resource.stat import Stat
+from psutil import Process, cpu_percent
+from threading import Thread
+from typing import Union
+from weakref import WeakValueDictionary
+
 from aim.ext.resource.configs import AIM_RESOURCE_METRIC_PREFIX
+from aim.ext.resource.log import LogLine
+from aim.ext.resource.stat import Stat
+
+logger = logging.getLogger(__name__)
 
 
 class ResourceTracker(object):
+    _buffer_registry = WeakValueDictionary()
+    _old_out_write = None
+    _old_err_write = None
+
+    @classmethod
+    def _install_stream_patches(cls):
+        cls._old_out_write = sys.stdout.write
+        cls._old_err_write = sys.stderr.write
+
+        def new_out_write(data):
+            cls._old_out_write(data)
+            if isinstance(data, str):
+                data = data.encode()
+            for buffer in cls._buffer_registry.values():
+                buffer.write(data)
+
+        def new_err_write(data):
+            cls._old_err_write(data)
+            if isinstance(data, str):
+                data = data.encode()
+            for buffer in cls._buffer_registry.values():
+                buffer.write(data)
+
+        sys.stdout.write = new_out_write
+        sys.stderr.write = new_err_write
+
+    @classmethod
+    def _uninstall_stream_patches(cls):
+        sys.stdout.write = cls._old_out_write
+        sys.stderr.write = cls._old_err_write
+
     STAT_INTERVAL_MIN = 0.1
     STAT_INTERVAL_MAX = 24 * 60 * 60.0
     STAT_INTERVAL_DEFAULT = 60.0
+
+    @classmethod
+    def check_interval(cls, interval, warn=True):
+        if interval is None:
+            warn = False
+        if not isinstance(interval, (int, float)) or not cls.STAT_INTERVAL_MIN <= interval <= cls.STAT_INTERVAL_MAX:
+            if warn:
+                logger.warning('To track system resource usage '
+                               'please set `system_tracking_interval` '
+                               'greater than 0 and less than 1 day')
+            return False
+        return True
 
     reset_cpu_cycle = False
 
@@ -23,16 +75,30 @@ class ResourceTracker(object):
         """
         cpu_percent(0.0)
 
-    def __init__(self, track, interval: Union[int, float] = STAT_INTERVAL_DEFAULT):
+    def __init__(self,
+                 track,
+                 interval: Union[int, float] = STAT_INTERVAL_DEFAULT,
+                 capture_logs: bool = True,
+                 log_offset: int = 0):
         self._track_func = weakref.WeakMethod(track)
-        self.interval = interval
+        self._stat_capture_interval = None
+        if self.check_interval(interval, warn=False):
+            self._stat_capture_interval = interval
+
+        # terminal log capturing
+        self._capture_logs = capture_logs
+        self._log_capture_interval = 1
+        self._old_out = None
+        self._old_err = None
+        self._io_buffer = io.BytesIO()
+        self._line_counter = log_offset
 
         try:
             self._process = Process()
         except Exception:
             self._process = None
 
-        # Start thread to collect stats at interval
+        # Start thread to collect stats and logs at intervals
         self._th_collector = Thread(target=self._stat_collector, daemon=True)
         self._shutdown = False
         self._started = False
@@ -40,20 +106,6 @@ class ResourceTracker(object):
         if ResourceTracker.reset_cpu_cycle is False:
             ResourceTracker.reset_cpu_cycle = True
             self.reset_proc_interval()
-
-    @property
-    def interval(self):
-        return self._interval
-
-    @interval.setter
-    def interval(self, interval: float):
-        if self.STAT_INTERVAL_MIN <= interval <= self.STAT_INTERVAL_MAX:
-            self._interval = interval
-        else:
-            raise ValueError(('interval must be greater than {min}s and less '
-                              'than {max}m'
-                              '').format(min=self.STAT_INTERVAL_MIN,
-                                         max=self.STAT_INTERVAL_MAX / 60))
 
     def start(self):
         """
@@ -63,7 +115,11 @@ class ResourceTracker(object):
             return
 
         self._started = True
-
+        if self._capture_logs:
+            # install the stream patches if not done yet
+            if not self._buffer_registry:
+                self._install_stream_patches()
+            self._buffer_registry[id(self)] = self._io_buffer
         # Start thread to asynchronously collect statistics
         self._th_collector.start()
 
@@ -73,6 +129,14 @@ class ResourceTracker(object):
 
         self._shutdown = True
         self._th_collector.join()
+        if self._capture_logs:
+            # read and store remaining buffered logs
+            self._store_buffered_logs()
+            # unregister the buffer
+            del self._buffer_registry[id(self)]
+            # uninstall stream patching if no buffer is left in the registry
+            if not self._buffer_registry:
+                self._uninstall_stream_patches()
 
     def _track(self, stat: Stat):
         # Store system stats
@@ -93,19 +157,66 @@ class ResourceTracker(object):
 
     def _stat_collector(self):
         """
-       Statistics collecting thread body
-       """
+            Statistics collecting thread body
+        """
+        stat_time_counter = 0
+        log_capture_time_counter = 0
+
+        # store initial system usage stats
+        if self._stat_capture_interval:
+            stat = Stat(self._process)
+            self._track(stat)
+
         while True:
             # Get system statistics
-            stat = Stat(self._process)
             if self._shutdown:
                 break
 
-            self._track(stat)
+            time.sleep(0.1)
+            stat_time_counter += 0.1
+            log_capture_time_counter += 0.1
 
-            time_counter = 0
-            while time_counter < self.interval:
-                time.sleep(0.1)
-                time_counter += 0.1
-                if self._shutdown:
-                    break
+            if self._stat_capture_interval and stat_time_counter > self._stat_capture_interval:
+                stat = Stat(self._process)
+                self._track(stat)
+                stat_time_counter = 0
+
+            if self._capture_logs and log_capture_time_counter > self._log_capture_interval:
+                self._store_buffered_logs()
+                log_capture_time_counter = 0
+
+    def _store_buffered_logs(self):
+        _buffer_size = self._io_buffer.tell()
+        if not _buffer_size:
+            return
+
+        self._io_buffer.seek(0)
+        # read and reset the buffer
+        data = self._io_buffer.read(_buffer_size)
+        self._io_buffer.seek(0)
+        # handle the buffered data and store
+
+        lines = data.split(b'\n')
+        ansi_csi_re = re.compile(b"\001?\033\\[((?:\\d|;)*)([a-zA-Z])\002?")
+
+        def _handle_csi(line):
+            for match in ansi_csi_re.finditer(line):
+                arg, command = match.groups()
+                arg = int(arg.decode()) if arg else 1
+                if command == b'A':  # cursor up
+                    self._line_counter -= arg
+                if command == b'B':  # cursor down
+                    self._line_counter += arg
+
+        for line in lines:
+            # handle each line for carriage returns
+            log_line = LogLine(line.rsplit(b'\r')[-1].decode())
+            # _handle_csi(line)
+            self._track_func()(log_line, name='logs', step=self._line_counter)
+            self._line_counter += 1
+
+        self._line_counter -= 1
+
+        # if there was no b'\n' at the end of the data keep the last line in buffer for further writing
+        if lines[-1] != b'':
+            self._io_buffer.write(lines[-1])

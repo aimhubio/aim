@@ -21,6 +21,8 @@ from aim.web.api.runs.utils import (
     get_run_props,
     metric_search_result_streamer,
     run_search_result_streamer,
+    run_logs_streamer
+
 )
 from aim.web.api.runs.pydantic_models import (
     MetricAlignApiIn,
@@ -311,6 +313,14 @@ def delete_note_api(run_id, _id: int, factory=Depends(object_factory)):
     return {
         'status': 'OK'
     }
+
+
+@runs_router.get('/{run_id}/logs/')
+async def get_logs_api(run_id: str, record_range: Optional[str] = ''):
+    repo = get_project_repo()
+    run = get_run_or_404(run_id, repo=repo)
+
+    return StreamingResponse(run_logs_streamer(run, record_range))
 
 
 def add_api_routes():

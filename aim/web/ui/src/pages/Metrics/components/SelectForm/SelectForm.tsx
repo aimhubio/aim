@@ -15,8 +15,8 @@ import {
 } from '@material-ui/icons';
 
 import { Button, Icon, Badge, Text } from 'components/kit';
-import ExpressionAutoComplete from 'components/kit/ExpressionAutoComplete/ExpressionAutoComplete';
 import ErrorBoundary from 'components/ErrorBoundary/ErrorBoundary';
+import AutocompleteInput from 'components/AutocompleteInput';
 
 import { ANALYTICS_EVENT_KEYS } from 'config/analytics/analyticsKeysMap';
 
@@ -47,8 +47,7 @@ function SelectForm({
     };
   }, []);
 
-  function handleMetricSearch(e: React.ChangeEvent<any>): void {
-    e.preventDefault();
+  function handleMetricSearch(): void {
     if (requestIsPending) {
       return;
     }
@@ -109,7 +108,6 @@ function SelectForm({
 
   const open: boolean = !!anchorEl;
   const id = open ? 'select-metric' : undefined;
-
   return (
     <ErrorBoundary>
       <div className='Metrics__SelectForm'>
@@ -122,17 +120,12 @@ function SelectForm({
           >
             {selectedMetricsData?.advancedMode ? (
               <div className='Metrics__SelectForm__textarea'>
-                <ExpressionAutoComplete
-                  isTextArea={true}
-                  onExpressionChange={onSelectAdvancedQueryChange}
-                  onSubmit={handleMetricSearch}
+                <AutocompleteInput
+                  advanced
+                  context={selectFormData?.advancedSuggestions}
                   value={selectedMetricsData?.advancedQuery}
-                  placeholder='metric.name in [“loss”, “accuracy”] and run.learning_rate > 10'
-                  options={[
-                    'metric.name',
-                    'metric.context',
-                    ...selectFormData.suggestions,
-                  ]}
+                  onChange={onSelectAdvancedQueryChange}
+                  onEnter={handleMetricSearch}
                 />
               </div>
             ) : (
@@ -162,7 +155,7 @@ function SelectForm({
                       size='small'
                       disablePortal={true}
                       disableCloseOnSelect
-                      options={selectFormData.options}
+                      options={selectFormData?.options}
                       value={selectedMetricsData?.options}
                       onChange={onSelect}
                       groupBy={(option) => option.group}
@@ -247,12 +240,11 @@ function SelectForm({
           </Box>
           {selectedMetricsData?.advancedMode ? null : (
             <div className='Metrics__SelectForm__TextField'>
-              <ExpressionAutoComplete
-                onExpressionChange={onSelectRunQueryChange}
-                onSubmit={handleMetricSearch}
+              <AutocompleteInput
+                onChange={onSelectRunQueryChange}
+                onEnter={handleMetricSearch}
                 value={selectedMetricsData?.query}
-                options={selectFormData.suggestions}
-                placeholder='Filter runs, e.g. run.learning_rate > 0.0001 and run.batch_size == 32'
+                context={selectFormData.suggestions}
               />
             </div>
           )}

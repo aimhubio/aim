@@ -279,6 +279,9 @@ export const ANALYTICS_EVENT_KEYS = {
         deleteRun: '[RunDetail] [Settings] Delete run',
         archiveRun: '[RunDetail] [Settings] Archive run',
       },
+      logs: {
+        tabView: '[RunDetail] [Logs] Tab view',
+      },
     },
   },
   tags: {

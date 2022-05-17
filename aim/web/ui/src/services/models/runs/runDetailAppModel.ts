@@ -12,6 +12,11 @@ import exceptionHandler from 'utils/app/exceptionHandler';
 import { encode } from 'utils/encoder/encoder';
 import contextToString from 'utils/contextToString';
 import alphabeticalSortComparator from 'utils/alphabeticalSortComparator';
+import {
+  decodeBufferPairs,
+  decodePathsVals,
+  iterFoldTree,
+} from 'utils/encoder/streamEncoding';
 import { filterSingleRunMetricsData } from 'utils/filterMetricData';
 
 import createModel from '../model';
@@ -21,6 +26,7 @@ const model = createModel<Partial<any>>({
   isExperimentsLoading: false,
   isRunBatchLoading: false,
   isRunsOfExperimentLoading: false,
+  isRunLogsLoading: false,
   isLoadMoreButtonShown: true,
 });
 
@@ -28,6 +34,7 @@ let getRunsInfoRequestRef: IApiRequest<void>;
 let getRunsBatchRequestRef: IApiRequest<void>;
 let getExperimentsDataRequestRef: IApiRequest<void>;
 let getRunsOfExperimentRequestRef: IApiRequest<void>;
+let getRunsLogsRequestRef: IApiRequest<void>;
 
 function initialize() {
   model.init();
@@ -168,6 +175,53 @@ function getRunMetricsBatch(body: any, runHash: string) {
   };
 }
 
+function getRunLogs({
+  runHash,
+  record_range,
+  isLiveUpdate,
+}: {
+  runHash: string;
+  record_range?: string;
+  isLiveUpdate?: boolean;
+}) {
+  if (getRunsLogsRequestRef) {
+    getRunsLogsRequestRef.abort();
+  }
+  getRunsLogsRequestRef = runsService.getRunLogs(runHash, record_range);
+  return {
+    call: async () => {
+      const runLogs = model.getState()?.runLogs ?? {};
+      if (!isLiveUpdate) {
+        model.setState({ isRunLogsLoading: true });
+      }
+
+      const stream = await getRunsLogsRequestRef.call((detail: any) => {
+        exceptionHandler({ detail, model });
+      });
+      let bufferPairs = decodeBufferPairs(stream);
+      let decodedPairs = decodePathsVals(bufferPairs);
+      let objects = iterFoldTree(decodedPairs, 1);
+      const runLogsData: { [key: string]: any } = {};
+      for await (let [keys, val] of objects) {
+        runLogsData[keys[0]] = { index: +keys[0], value: val };
+      }
+      const updatedLogsData: { [key: string]: any } = {
+        ...runLogs,
+        ...runLogsData,
+      };
+
+      model.setState({
+        runLogs: updatedLogsData,
+        updatedLogsCount: isLiveUpdate
+          ? _.keys(updatedLogsData).length - _.keys(runLogs).length
+          : 0,
+        isRunLogsLoading: false,
+      });
+    },
+    abort: getRunsLogsRequestRef.abort,
+  };
+}
+
 function archiveRun(id: string, archived: boolean = false) {
   const state = model.getState();
   runsService
@@ -252,6 +306,7 @@ const runDetailAppModel = {
   ...model,
   initialize,
   getRunInfo,
+  getRunLogs,
   getRunMetricsBatch,
   getExperimentsData,
   getRunsOfExperiment,

@@ -171,7 +171,7 @@ class RepoIndexManager:
         return run_hashes
 
     def _run(self, run_hash):
-        return Run(run_hash, repo=self.repo_path, system_tracking_interval=None)
+        return Run(run_hash, repo=self.repo_path, system_tracking_interval=None, capture_terminal_logs=False)
 
     def _next_unindexed_run(self) -> Optional[Run]:
         for run_hash in self._unindexed_runs():

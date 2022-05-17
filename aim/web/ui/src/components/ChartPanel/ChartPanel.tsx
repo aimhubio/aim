@@ -38,8 +38,13 @@ const ChartPanel = React.forwardRef(function ChartPanel(
   const activePointRef = React.useRef<IActivePoint | null>(null);
 
   const setActiveElemPos = React.useCallback(() => {
-    if (activePointRef.current && containerRef.current) {
+    if (
+      activePointRef.current &&
+      containerRef.current &&
+      activePointRef.current?.pointRect !== null
+    ) {
       const { pointRect } = activePointRef.current;
+
       setActivePointRect({
         ...pointRect,
         top: pointRect.top - containerRef.current.scrollTop,
@@ -83,7 +88,11 @@ const ChartPanel = React.forwardRef(function ChartPanel(
         if (props.onActivePointChange) {
           props.onActivePointChange(activePoint, focusedStateActive);
         }
-        setActiveElemPos();
+        if (activePoint.pointRect !== null) {
+          setActiveElemPos();
+        } else {
+          setActivePointRect(null);
+        }
       }
       // on MouseLeave
       else {
@@ -157,6 +166,7 @@ const ChartPanel = React.forwardRef(function ChartPanel(
                     chartType={props.chartType}
                     syncHoverState={syncHoverState}
                     resizeMode={props.resizeMode}
+                    chartPanelOffsetHeight={props.chartPanelOffsetHeight}
                   />
                 </Grid>
                 <ErrorBoundary>

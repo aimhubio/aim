@@ -7,6 +7,7 @@ import { ANALYTICS_EVENT_KEYS } from 'config/analytics/analyticsKeysMap';
 
 import usePanelResize from 'hooks/resize/usePanelResize';
 import useModel from 'hooks/model/useModel';
+import useResizeObserver from 'hooks/window/useResizeObserver';
 
 import metricAppModel from 'services/models/metrics/metricsAppModel';
 import * as analytics from 'services/analytics';
@@ -32,6 +33,9 @@ function MetricsContainer(): React.FunctionComponentElement<React.ReactNode> {
   const route = useRouteMatch<any>();
   const history = useHistory();
   const metricsData = useModel<Partial<IMetricAppModelState>>(metricAppModel);
+  const [chartPanelOffsetHeight, setChartPanelOffsetHeight] = React.useState(
+    chartElemRef?.current?.offsetHeight,
+  );
 
   const panelResizing = usePanelResize(
     wrapperElemRef,
@@ -41,6 +45,12 @@ function MetricsContainer(): React.FunctionComponentElement<React.ReactNode> {
     metricsData?.config?.table || undefined,
     metricAppModel.onTableResizeEnd,
   );
+
+  useResizeObserver(() => {
+    if (chartElemRef?.current?.offsetHeight !== chartPanelOffsetHeight) {
+      setChartPanelOffsetHeight(chartElemRef?.current?.offsetHeight);
+    }
+  }, chartElemRef);
 
   React.useEffect(() => {
     if (tableRef.current && chartPanelRef.current) {
@@ -141,6 +151,7 @@ function MetricsContainer(): React.FunctionComponentElement<React.ReactNode> {
         hiddenMetrics={metricsData?.config?.table?.hiddenMetrics!}
         hideSystemMetrics={metricsData?.config?.table?.hideSystemMetrics!}
         hiddenColumns={metricsData?.config?.table?.hiddenColumns!}
+        chartPanelOffsetHeight={chartPanelOffsetHeight}
         selectedRows={metricsData?.selectedRows!}
         groupingSelectOptions={metricsData?.groupingSelectOptions!}
         resizeMode={metricsData?.config?.table?.resizeMode!}

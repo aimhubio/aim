@@ -12,6 +12,7 @@ Use the following `Run` arguments to:
  - `repo`: define where to store the data
  - `experiment`: define experiment name to group related runs together
  - `system_tracking_interval`: Enable system resource usage tracking (CPU, GPU, memory, etc..). By default enabled. Set to `None` to disable
+ - `capture_terminal_logs`: Enable process output capturing. By default enabled. Set to `False` to disable.
 
 ```python
 from aim import Run

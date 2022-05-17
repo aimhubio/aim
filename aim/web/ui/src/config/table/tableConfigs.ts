@@ -4,22 +4,22 @@ export const TABLE_COLUMN_START_COLOR_SCALE = '#F8EF42';
 export const TABLE_COLUMN_END_COLOR_SCALE = '#0FD64F';
 
 export enum RowHeightSize {
-  sm = 28,
-  md = 32,
-  lg = 36,
+  sm = 22,
+  md = 28,
+  lg = 32,
 }
 
 export const ROW_CELL_SIZE_CONFIG = {
+  22: {
+    groupMargin: 2,
+    name: 'small',
+  },
   28: {
     groupMargin: 4,
-    name: 'small',
+    name: 'medium',
   },
   32: {
     groupMargin: 6,
-    name: 'medium',
-  },
-  36: {
-    groupMargin: 8,
     name: 'large',
   },
 };
