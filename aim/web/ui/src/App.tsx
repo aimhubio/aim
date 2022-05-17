@@ -23,11 +23,11 @@ const isVisibleCacheBanner = checkIsBasePathInCachedEnv(basePath) && inIframe();
 function App(): React.FunctionComponentElement<React.ReactNode> {
   React.useEffect(() => {
     let timeoutId: number;
-    if (document) {
-      const preloader = document.getElementById('preload-spinner');
-      preloader?.classList.add('preloader-fade-out');
+    const preloader = document.getElementById('preload-spinner');
+    if (preloader) {
+      preloader.classList.add('preloader-fade-out');
       timeoutId = window.setTimeout(() => {
-        preloader?.remove();
+        preloader.remove();
       }, 1000);
     }
     return () => {
