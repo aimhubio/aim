@@ -1,5 +1,11 @@
 # Changelog
 
+## Unreleased
+
+### Enhancements:
+
+- Add descriptive document titles for pages (KaroMourad)
+
 ## 3.10.0 May 17, 2022
 
 ### Enhancements:
