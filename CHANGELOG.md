@@ -1,5 +1,10 @@
 # Changelog
 
+## Unreleased
+
+- Fix params card error in the single run page overview tab (arsengit)
+- Fix Autocomplete component previous state setting issue (arsengit)
+
 ## 3.10.0 May 17, 2022
 
 ### Enhancements:
