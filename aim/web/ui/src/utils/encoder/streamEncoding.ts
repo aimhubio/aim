@@ -445,3 +445,29 @@ export async function* decodePathsVals(
   }
   yield [];
 }
+
+/**
+ * async function parseStream
+ * This function uses 3 core functions to decode storage data
+ *  decodeBufferPairs
+ *  decodePathsVals
+ *  iterFoldTree
+ * Receives generic T type to indicate the returned data type
+ * @param stream
+ */
+export async function parseStream<T extends []>(
+  stream: ReadableStream,
+): Promise<T> {
+  let buffer_pairs = decodeBufferPairs(stream);
+  let decodedPairs = decodePathsVals(buffer_pairs);
+  let objects = iterFoldTree(decodedPairs, 1);
+
+  const data: T = [];
+
+  for await (let [keys, val] of objects) {
+    const runData: any = val;
+    data.push({ ...runData, hash: keys[0] } as any);
+  }
+
+  return data;
+}

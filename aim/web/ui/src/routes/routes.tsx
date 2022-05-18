@@ -1,5 +1,7 @@
 import React from 'react';
 
+import BaseExplorer from 'pages/BaseExplorer';
+
 import { PathEnum } from '../config/enums/routesEnum';
 
 const Runs = React.lazy(
@@ -150,6 +152,13 @@ const routes = {
     showInSidebar: false,
     displayName: 'Run Detail',
     isExact: false,
+  },
+  BASE_EXPLORER: {
+    path: PathEnum.Base_Explorer,
+    component: BaseExplorer,
+    showInSidebar: true,
+    displayName: 'BaseExplorer',
+    isExact: true,
   },
 };
 
