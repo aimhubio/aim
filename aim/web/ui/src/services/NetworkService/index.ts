@@ -214,4 +214,5 @@ class NetworkService {
   }
 }
 
+export * from './types';
 export default NetworkService;

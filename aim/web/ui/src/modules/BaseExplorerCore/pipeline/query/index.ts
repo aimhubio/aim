@@ -6,7 +6,7 @@ import {
   createSearchRunsRequest,
   RunsSearchQueryParams,
 } from 'services/api/base-explorer/runsApi';
-import { RequestInstance } from 'services/NetworkService/types';
+import { RequestInstance } from 'services/NetworkService';
 
 import { SequenceTypesEnum } from 'types/core/enums';
 
@@ -28,11 +28,11 @@ async function executeBaseQuery(
   return parseStream(data);
 }
 
-function setCurrentSequenceType(sequenceType: SequenceTypesEnum) {
+function setCurrentSequenceType(sequenceType: SequenceTypesEnum): void {
   currentSequenceType = sequenceType;
 }
 
-function createQueryRequest() {
+function createQueryRequest(): void {
   currentQueryRequest = createSearchRunsRequest(currentSequenceType);
 }
 
@@ -40,7 +40,7 @@ function createQueryRequest() {
  * function cancel
  * This function is useful to abort api request
  */
-function cancel() {
+function cancel(): void {
   if (currentQueryRequest) {
     currentQueryRequest.cancel();
     createQueryRequest();

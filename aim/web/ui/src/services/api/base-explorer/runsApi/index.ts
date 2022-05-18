@@ -1,11 +1,9 @@
 import { getAPIHost } from 'config/config';
 
 import ENDPOINTS from 'services/api/endpoints';
-import NetworkService from 'services/NetworkService';
+import NetworkService, { RequestInstance } from 'services/NetworkService';
 
 import { SequenceTypesEnum } from 'types/core/enums';
-
-import { RequestInstance } from '../../../NetworkService/types';
 
 import { RunsSearchQueryParams, RunsSearchResult } from './types';
 
