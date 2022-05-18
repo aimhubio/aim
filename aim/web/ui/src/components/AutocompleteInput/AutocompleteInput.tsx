@@ -31,7 +31,6 @@ function AutocompleteInput({
   onChange,
 }: IAutocompleteInputProps) {
   const [hasSelection, setHasSelection] = React.useState(false);
-  const [editorValue, setEditorValue] = React.useState(value);
   const [focused, setFocused] = React.useState<boolean>(false);
   const [mounted, setMounted] = React.useState<boolean>(false);
   const monaco: any = useMonaco();
@@ -54,12 +53,6 @@ function AutocompleteInput({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [monaco, context, mounted]);
 
-  React.useEffect(() => {
-    if (editorValue !== value) {
-      setEditorValue(value);
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [value]);
   React.useEffect(() => {
     if (focused) {
       editorRef.current?.focus();
@@ -103,14 +96,15 @@ function AutocompleteInput({
     ) => {
       if (typeof val === 'string') {
         // formatting value to avoid the new line
-        let formatted = (hasSelection ? value : val).replace(/[\n\r]/g, '');
+        let formatted = val.replace(/[\n\r]/g, '');
         if (ev.changes[0].text === '\n') {
+          formatted = value.replace(/[\n\r]/g, '');
           editorRef.current!.setValue(formatted);
           if (onEnter) {
-            onChange(formatted, ev);
             onEnter();
           }
         }
+        onChange(formatted, ev);
       }
     },
     // eslint-disable-next-line react-hooks/exhaustive-deps
