@@ -107,10 +107,11 @@ function AutocompleteInput({
         if (ev.changes[0].text === '\n') {
           editorRef.current!.setValue(formatted);
           if (onEnter) {
-            onChange(formatted, ev);
             onEnter();
           }
         }
+        setEditorValue(formatted);
+        onChange(formatted, ev);
       }
     },
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -131,11 +132,11 @@ function AutocompleteInput({
         value={value}
         onChange={handleChange}
         onMount={handleDidMount}
-        loading={<span />}
+        loading={<span>loading</span>}
         options={monacoConfig.options}
         {...editorProps}
       />
-      {focused || value ? null : (
+      {focused || editorValue ? null : (
         <div className='AutocompleteInput__placeholder'>
           Filter runs, e.g. run.learning_rate {'>'} 0.0001 and run.batch_size ==
           32
