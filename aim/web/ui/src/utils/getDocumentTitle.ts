@@ -2,16 +2,20 @@ import _ from 'lodash-es';
 
 function getDocumentTitle(
   pathname: string,
-  params: { [key: string]: string },
+  locationParams: { [key: string]: string },
 ): string {
   const paths = pathname.slice(1).split('/');
-  const title = paths[0] || 'Aim';
-  if (_.isEmpty(params)) {
-    return _.capitalize(title);
-  } else {
-    const locationParams = Object.values(params);
-    return `${_.capitalize(title)}: ${locationParams[0]}`;
+  if (paths[0]) {
+    let title = paths[0];
+    if (_.isEmpty(locationParams)) {
+      title = _.capitalize(title);
+    } else {
+      const locationParamValues = Object.values(locationParams);
+      title = `${_.capitalize(title)}: ${locationParamValues[0]}`;
+    }
+    return title + ' | Aim';
   }
+  return 'Aim';
 }
 
 export default getDocumentTitle;
