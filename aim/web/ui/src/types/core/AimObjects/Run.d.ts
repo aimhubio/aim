@@ -1,4 +1,4 @@
-import { SequenceOverview } from './Sequence';
+import { SequenceFullView, SequenceOverview } from './Sequence';
 
 export type Params = Record<string, any>;
 
@@ -15,6 +15,7 @@ export interface Experiment {
 }
 
 export interface RunProps {
+  hash: string;
   name: ?string;
   description: ?string;
   experiment: ?Experiment;
@@ -30,7 +31,8 @@ export interface RunInfo {
 }
 
 export interface RunSearchRunView {
+  values: Array<any>;
   params: Params;
-  traces: Array<SequenceOverview>;
+  traces: Array<SequenceFullView>;
   props: RunProps;
 }

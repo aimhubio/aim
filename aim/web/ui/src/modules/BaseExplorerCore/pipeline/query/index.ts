@@ -8,6 +8,7 @@ import {
 } from 'services/api/base-explorer/runsApi';
 import { RequestInstance } from 'services/NetworkService';
 
+import { RunSearchRunView } from 'types/core/AimObjects';
 import { SequenceTypesEnum } from 'types/core/enums';
 
 import { parseStream } from 'utils/encoder/streamEncoding';
@@ -24,8 +25,8 @@ async function executeBaseQuery(
   query: RunsSearchQueryParams,
 ): Promise<unknown> {
   cancel();
-  const data: ReadableStream<any> = await currentQueryRequest.call(query);
-  return parseStream(data);
+  const data: ReadableStream = await currentQueryRequest.call(query);
+  return parseStream<Array<RunSearchRunView>>(data);
 }
 
 function setCurrentSequenceType(sequenceType: SequenceTypesEnum): void {

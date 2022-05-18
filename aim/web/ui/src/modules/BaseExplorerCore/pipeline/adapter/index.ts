@@ -4,6 +4,8 @@ type Adapter = {
   execute: () => any;
 };
 
+function processor() {}
+
 function createAdapter(objectDepth: AimObjectDepths): Adapter {
   return {
     execute: () => null,

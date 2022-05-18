@@ -5,7 +5,7 @@ export interface SequenceBase {
   name: string;
 }
 
-export interface SequenceOverview extends TraceBase {
+export interface SequenceOverview extends SequenceBase {
   last_value: number;
 }
 
@@ -29,7 +29,7 @@ export interface SequenceAlignedView extends SequenceBase {
 export interface SequenceFullView extends SequenceAlignedView {
   slice: [number, number, number];
   values: ?EncodedNumpyArray;
-  iters: ?EncodedNumpyArray;
-  epochs: ?EncodedNumpyArray;
+  epochs: Array<number>;
+  iters: Array<number>;
   timestamps: ?EncodedNumpyArray;
 }

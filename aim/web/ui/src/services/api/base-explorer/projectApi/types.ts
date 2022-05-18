@@ -1,5 +1,6 @@
 import { SequenceTypesEnum } from 'types/core/enums';
 import { Context } from 'types/core/shared';
+
 /**
  * type GetParamsQueryOptions
  * The request query options type of GET /projects/params
@@ -10,11 +11,6 @@ export type GetParamsQueryOptions = {
    */
   sequence: SequenceTypesEnum;
 };
-
-/**
- * type GetActivityResult
- * The response type of GET /projects
- */
 
 /**
  * type GetProjectsResult
