@@ -1,14 +1,13 @@
-export enum ADAPTER_OBJECT_DEPTHS {
-  Container = 0,
-  Sequence = 1,
-  Step = 2,
-  Index = 3,
-}
+import { AimObjectDepths } from 'types/core/enums';
 
 type Adapter = {
   execute: () => any;
 };
 
-function createAdapter(objectDepth: ADAPTER_OBJECT_DEPTHS) {}
+function createAdapter(objectDepth: AimObjectDepths): Adapter {
+  return {
+    execute: () => null,
+  };
+}
 
-export {};
+export default createAdapter;

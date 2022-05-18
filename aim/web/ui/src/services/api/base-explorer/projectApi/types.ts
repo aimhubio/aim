@@ -1,5 +1,5 @@
 import { SequenceTypesEnum } from 'types/core/enums';
-
+import { Context } from 'types/core/shared';
 /**
  * type GetParamsQueryOptions
  * The request query options type of GET /projects/params
@@ -38,8 +38,6 @@ export type GetProjectsResult = {
    */
   telemetry_enabled: string;
 };
-
-type Context = Record<string, any>;
 
 /**
  * type GetParamsResult

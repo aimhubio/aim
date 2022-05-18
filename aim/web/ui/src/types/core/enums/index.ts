@@ -9,3 +9,13 @@ export enum SequenceTypesEnum {
   Metric = 'metric',
   Texts = 'texts',
 }
+
+/**
+ * Depths of data coming from api, from which level should get the actual value of visualization data
+ */
+export enum AimObjectDepths {
+  Container = 0,
+  Sequence = 1,
+  Step = 2,
+  Index = 3,
+}
