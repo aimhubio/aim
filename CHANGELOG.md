@@ -1,5 +1,11 @@
 # Changelog
 
+## Unreleased
+
+### Enhancements:
+
+- Implement unit-tests for aim SDK utils (yeghiakoronian)
+
 ## 3.10.1 May 18, 2022
 
 - Resolve issue with rendering run params in the overview tab of SRP (arsengit)
@@ -9,7 +15,6 @@
 
 ### Enhancements:
 
-- Implement unit-tests for aim SDK utils (yeghiakoronian)
 - Add ability to adjust the density of the visible content in tables (roubkar)
 - Set `metric.name` as default option for grouping (roubkar)
 - Show user-selected params before group config in chart popover (roubkar) 
