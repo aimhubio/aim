@@ -1,5 +1,6 @@
 import React from 'react';
 import * as dot from 'dot-object';
+import _ from 'lodash-es';
 
 import ErrorBoundary from 'components/ErrorBoundary/ErrorBoundary';
 import Card from 'components/kit/Card/Card';
@@ -11,10 +12,11 @@ import { formatValue } from 'utils/formatValue';
 
 function RunOverviewTabParamsCard({ runParams, isRunInfoLoading }: any) {
   const tableData = React.useMemo(() => {
-    const paths = getObjectPaths(runParams, runParams).filter(
-      (path) => !path.startsWith('__system_params'),
-    );
-    const dotted = dot.dot(runParams);
+    const params = runParams.hasOwnProperty('__system_params')
+      ? _.omit(runParams, '__system_params')
+      : runParams;
+    const paths = getObjectPaths(params, params);
+    const dotted = dot.dot(params);
     const modified = dot.object(dotted);
     const resultTableList = paths.map((path, index) => {
       return {

@@ -1,5 +1,10 @@
 # Changelog
 
+## 3.10.1 May 18, 2022
+
+- Resolve issue with rendering run params in the overview tab of SRP (arsengit)
+- Fix issue with search query state update (arsengit)
+
 ## 3.10.0 May 17, 2022
 
 ### Enhancements:
