@@ -67,7 +67,7 @@ export type GetParamsResult = {
    */
   metric?: Record<string, Array<Context>>;
   /**
-   * Context of tracked image sequences by passing name of sequence as`images`
+   * Context of tracked images sequences by passing name of sequence as`images`
    * This generates by calling
    * ```python
    *    run.track([, , , aim.Image(...)], name="labels", context = {"subset": "test"})
@@ -78,7 +78,7 @@ export type GetParamsResult = {
    */
   images?: Record<string, Array<Context>>;
   /**
-   * Context of tracked image sequences by passing name of sequence as`images`
+   * Context of tracked texts sequences by passing name of sequence as`texts`
    * This generates by calling
    * ```python
    *    run.track([, , , aim.Text(...)], name="...", context = {"subset": "test"})
@@ -86,7 +86,7 @@ export type GetParamsResult = {
    */
   texts?: Record<string, Array<Context>>;
   /**
-   * Context of tracked image sequences by passing name of sequence as`images`
+   * Context of tracked figures sequences by passing name of sequence as`figures`
    * This generates by calling
    * ```python
    *    run.track([, , , aim.Figure(...)], name="...", context = {"subset": "test"})
@@ -94,7 +94,7 @@ export type GetParamsResult = {
    */
   figures?: Record<string, Array<Context>>;
   /**
-   * Context of tracked image sequences by passing name of sequence as`images`
+   * Context of tracked distributions sequences by passing name of sequence as`distributions`
    * This generates by calling
    * ```python
    *    run.track([, , , aim.Distribution(...)], name="...", context = {"subset": "test"})
@@ -102,7 +102,7 @@ export type GetParamsResult = {
    */
   distributions?: Record<string, Array<Context>>;
   /**
-   * Context of tracked image sequences by passing name of sequence as`images`
+   * Context of tracked audios sequences by passing name of sequence as`audios`
    * This generates by calling
    * ```python
    *    run.track([, , , aim.Audio(...)], name="...", context = {"subset": "test"})

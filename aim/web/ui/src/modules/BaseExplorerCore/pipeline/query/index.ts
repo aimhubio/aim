@@ -6,7 +6,7 @@ import {
   createSearchRunsRequest,
   RunsSearchQueryParams,
 } from 'services/api/base-explorer/runsApi';
-import { RequestInstance } from 'services/NetworkService/types';
+import { RequestInstance } from 'services/NetworkService';
 
 import { SequenceTypesEnum } from 'types/core/enums';
 
@@ -18,7 +18,7 @@ type Query = {
 };
 
 let currentQueryRequest: RequestInstance;
-let currentSequence: SequenceTypesEnum;
+let currentSequenceType: SequenceTypesEnum;
 
 async function executeBaseQuery(
   query: RunsSearchQueryParams,
@@ -28,19 +28,19 @@ async function executeBaseQuery(
   return parseStream(data);
 }
 
-function setCurrentSequence(sequence: SequenceTypesEnum) {
-  currentSequence = sequence;
+function setCurrentSequenceType(sequenceType: SequenceTypesEnum): void {
+  currentSequenceType = sequenceType;
 }
 
-function createQueryRequest() {
-  currentQueryRequest = createSearchRunsRequest(currentSequence);
+function createQueryRequest(): void {
+  currentQueryRequest = createSearchRunsRequest(currentSequenceType);
 }
 
 /**
  * function cancel
  * This function is useful to abort api request
  */
-function cancel() {
+function cancel(): void {
   if (currentQueryRequest) {
     currentQueryRequest.cancel();
     createQueryRequest();
@@ -49,14 +49,14 @@ function cancel() {
 
 /**
  *
- * @param {SequenceTypesEnum} sequence - sequence name
+ * @param {SequenceTypesEnum} sequenceType - sequence name
  * @param {Boolean} useCache - boolean value to indicate query need to be  cached or not
  */
 function createQuery(
-  sequence: SequenceTypesEnum,
+  sequenceType: SequenceTypesEnum,
   useCache: boolean = false,
 ): Query {
-  setCurrentSequence(sequence);
+  setCurrentSequenceType(sequenceType);
   createQueryRequest();
   // @TODO implement advanced cache with max memory usage limit
   const execute = useCache
