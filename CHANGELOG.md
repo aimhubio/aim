@@ -6,6 +6,10 @@
 
 - Implement unit-tests for aim SDK utils (yeghiakoronian)
 
+### Fixes:
+
+- Change zooming default option to multiple (VkoHov)
+
 ## 3.10.1 May 18, 2022
 
 - Resolve issue with rendering run params in the overview tab of SRP (arsengit)
