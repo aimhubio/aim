@@ -14,14 +14,14 @@ import traverseTree from './traverseTree';
  *      '123.d.e.f'
  *  ]
  * @param {Record<any, any>} obj - target object
- * @param {string} delimiter - delimiter to connect paths
  * @param {string} prefix - the prefix should be concatenated at the start of all paths, aka root node value
+ * @param {string} delimiter - delimiter to connect paths
  * @returns {Array<string>} - returns an array of all paths
  */
 function getObjectPaths(
   obj: Record<any, any>,
+  prefix: string = '',
   delimiter: string = '.',
-  prefix?: string,
 ): Array<string> {
   let arr: Array<string> = [];
   traverseTree(

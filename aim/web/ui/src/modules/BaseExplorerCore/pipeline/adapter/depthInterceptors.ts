@@ -3,7 +3,7 @@ import { RunSearchRunView, SequenceFullView } from 'types/core/AimObjects';
 
 interface Container extends RunSearchRunView {}
 
-type ProcessInterceptor = (...arg: any) => any;
+export type ProcessInterceptor = (...arg: any) => any;
 
 type Record = {
   index: number;
@@ -12,7 +12,7 @@ type DepthInterceptors = {
   [key in AimObjectDepths]: ProcessInterceptor;
 };
 
-export const depthInterceptors: DepthInterceptors = {
+const depthInterceptors: DepthInterceptors = {
   [AimObjectDepths.Container]: (container: Container) => {
     return {
       data: {
@@ -30,18 +30,11 @@ export const depthInterceptors: DepthInterceptors = {
       data: sequenceBase,
     };
   },
-  [AimObjectDepths.Index]: (
-    sequence: SequenceFullView,
-    record: Record,
-    index: number,
-  ) => {
+  [AimObjectDepths.Index]: (record: Record) => {
     return {
-      data: {
-        ...record,
-        step: sequence.iters[index],
-        index: record.index,
-        epoch: sequence.epochs[index],
-      },
+      data: record,
     };
   },
 };
+
+export default depthInterceptors;

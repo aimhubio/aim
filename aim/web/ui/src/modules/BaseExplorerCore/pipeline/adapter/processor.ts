@@ -1,11 +1,13 @@
 import _ from 'lodash';
 
 import { RunSearchRunView } from 'types/core/AimObjects';
-import { SequenceTypesEnum, AimObjectDepths } from 'types/core/enums';
+import { AimObjectDepths, SequenceTypesEnum } from 'types/core/enums';
 
 import getObjectPaths from 'utils/object/getObjectPaths';
 
-type AimObject = {
+import depthInterceptors from './depthInterceptors';
+
+export interface AimFlatObjectBase {
   data: any;
   record?: {
     index: number;
@@ -19,32 +21,30 @@ type AimObject = {
     // params
     [key: string]: any;
   };
-};
+}
+
+export interface ProcessedData {
+  objectList: AimFlatObjectBase[];
+  params: string[];
+  contexts: string[];
+  modifiers: string[];
+}
 
 export function storageDataToFlatList(
   runs: RunSearchRunView[],
   sequenceName: SequenceTypesEnum,
-) {
-  // @ts-ignore
-  const objectDepth = AimObjectDepths[sequenceName];
-
-  const objectHashTable: AimObject[] = []; // @CHECK make by hash function
+  objectDepth: AimObjectDepths,
+): ProcessedData {
+  const objectList: AimFlatObjectBase[] = []; // @CHECK make by hash function
   let params: string[] = [];
   let contexts: string[] = [];
   let modifiers: string[] = ['run.hash', 'run.name', 'run.experiment'];
 
+  const depthInterceptor = depthInterceptors[objectDepth];
+
   runs?.forEach((item) => {
-    params = params.concat(getObjectPaths(item.params, 'run'));
-    let collectedDataByDepth: Omit<AimObject, 'data'> = {
-      /*
-              // by default there are no order and group,
-              // @CHECK maybe need to omit order and group here, because it may break caching mechanism
-              modifiers: {
-                order: 0,
-                group: null
-              }
-            */
-    };
+    params = params.concat(getObjectPaths(item.params, 'run', '.'));
+    let collectedDataByDepth: Omit<AimFlatObjectBase, 'data'> = {};
 
     /** depth 0 */ // RUN
     let run = {
@@ -64,19 +64,15 @@ export function storageDataToFlatList(
       run,
     };
     if (objectDepth === 0) {
-      const object: AimObject = {
+      const object: AimFlatObjectBase = {
         ...collectedDataByDepth,
-        data: {
-          traces: item.traces,
-          values: item.values, // @TEST values key because there is no that key in type definition of BE
-        },
+        data: depthInterceptor(item).data,
       };
 
-      objectHashTable.push(object); // object creation coplete
+      objectList.push(object);
       return;
     }
     /** depth 0 */
-
     if (objectDepth > 0) {
       // for readability
       item.traces.forEach((trace: any) => {
@@ -85,7 +81,7 @@ export function storageDataToFlatList(
           [sequenceName]: {
             name: trace.name,
             context: trace.context,
-            // epoch: trace.epochs.filter((x: any) => !_.isNil(x)), // @CHECK check needness
+            // epoch: trace.epochs.filter((x: any) => !_.isNil(x)), // @TEST check is this need
           },
         };
         contexts = contexts.concat(
@@ -96,15 +92,15 @@ export function storageDataToFlatList(
           ...collectedDataByDepth,
           ...trace_context,
           // maybe need to create some key for contexts, to follow the structure
-          // depth0 add run property, depth1 add "sequence" property, not spreaded contexts
+          // depth0 adding run property, depth1 add "sequence" property, not spread contexts
         };
 
         if (objectDepth === 1) {
-          const object: AimObject = {
+          const object: AimFlatObjectBase = {
             ...collectedDataByDepth,
-            data: trace,
+            data: depthInterceptor(trace).data,
           };
-          objectHashTable.push(object); // object creatin coplete
+          objectList.push(object); // object creating completed
           return;
         }
         /** depth 1 */
@@ -126,10 +122,10 @@ export function storageDataToFlatList(
               };
               const object = {
                 ...collectedDataByDepth,
-                data: rec, // change to just blob_uri similar to Mahnerak' flat list
+                data: depthInterceptor(rec).data, // change to just blob_uri similar to Mahnerak' flat list
               };
 
-              objectHashTable.push(object);
+              objectList.push(object);
             });
           });
         }
@@ -141,14 +137,7 @@ export function storageDataToFlatList(
   contexts = _.uniq(contexts);
   modifiers = [..._.uniq(modifiers), ...params, ...contexts];
 
-  console.log(modifiers);
-
-  return {
-    data: objectHashTable,
-    params,
-    contexts,
-    modifiers,
-  };
+  return { objectList, params, contexts, modifiers };
 }
 
 export default storageDataToFlatList;

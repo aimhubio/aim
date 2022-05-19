@@ -1,32 +1,43 @@
 import React from 'react';
 
-import createQuery from 'modules/BaseExplorerCore/pipeline/query';
+import createPipeline from 'modules/BaseExplorerCore/pipeline';
 
-import { SequenceTypesEnum } from 'types/core/enums';
+import { AimObjectDepths, SequenceTypesEnum } from 'types/core/enums';
 
-const query = createQuery(SequenceTypesEnum.Metric);
+const pipeline = createPipeline({
+  sequenceName: SequenceTypesEnum.Images,
+  query: {
+    useCache: true,
+  },
+  adapter: {
+    useCache: true,
+    objectDepth: AimObjectDepths.Index,
+  },
+});
 
 function BasExplorer() {
   const [status, setStatus] = React.useState('initial');
   const [data, setData] = React.useState<any>([]);
-  console.log(status);
 
   function onClick() {
-    setStatus('pending');
-    query
+    setStatus('executing pipeline');
+    pipeline
       .execute({
-        p: 500,
-        q: 'run.hparams.batch_size > 10',
+        query: {
+          params: {
+            p: 500,
+            q: 'run.hparams.batch_size > 10',
+          },
+        },
       })
       .then((data) => {
+        setStatus('pipeline execution succeed');
         console.log(data);
-        setStatus('succeed');
         setData(data);
       })
       .catch((err) => {
-        alert(err.message);
-        setData([]);
-        setStatus('failed');
+        console.log(err);
+        setStatus('pipeline execution failed');
       });
   }
 
@@ -34,7 +45,15 @@ function BasExplorer() {
     <>
       <h2>Status ::: {status}</h2>
       <button onClick={onClick}>Click to call params</button>
-      <div>Data:::: {JSON.stringify(data[0])}</div>
+      <div>
+        Params:::: {JSON.stringify(data.params)}
+        <br />
+        Contexts:::: {JSON.stringify(data.contexts)}
+        <br />
+        Modifier values:::: {JSON.stringify(data.modifiers)}
+        <br />
+        data:::: {JSON.stringify(data?.objectList?.slice(0, 5))}
+      </div>
     </>
   );
 }
