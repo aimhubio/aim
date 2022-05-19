@@ -49,7 +49,7 @@ export const CONTROLS_DEFAULT_CONFIG = {
     },
     zoom: {
       active: false,
-      mode: ZoomEnum.SINGLE,
+      mode: ZoomEnum.MULTIPLE,
     },
   },
   params: {
