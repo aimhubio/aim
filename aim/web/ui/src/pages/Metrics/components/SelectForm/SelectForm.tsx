@@ -40,8 +40,8 @@ function SelectForm({
 }: ISelectFormProps): React.FunctionComponentElement<React.ReactNode> {
   const [anchorEl, setAnchorEl] = React.useState<any>(null);
   const searchRef: any = React.useRef<React.MutableRefObject<any>>(null);
-  const editorRef: any = React.useRef<React.MutableRefObject<any>>(null);
-  const advancedEditorRef: any =
+  const autocompleteRef: any = React.useRef<React.MutableRefObject<any>>(null);
+  const advancedAutocompleteRef: any =
     React.useRef<React.MutableRefObject<any>>(null);
   React.useEffect(() => {
     return () => {
@@ -54,12 +54,12 @@ function SelectForm({
       return;
     }
     let query = selectedMetricsData?.advancedMode
-      ? advancedEditorRef.current.getValue()
-      : editorRef.current.getValue();
+      ? advancedAutocompleteRef.current.getValue()
+      : autocompleteRef.current.getValue();
     if (selectedMetricsData?.advancedMode) {
-      onSelectAdvancedQueryChange(advancedEditorRef.current.getValue());
+      onSelectAdvancedQueryChange(advancedAutocompleteRef.current.getValue());
     } else {
-      onSelectRunQueryChange(editorRef.current.getValue());
+      onSelectRunQueryChange(autocompleteRef.current.getValue());
     }
     searchRef.current = metricAppModel.getMetricsData(true, true, query);
     searchRef.current.call();
@@ -133,7 +133,7 @@ function SelectForm({
               <div className='Metrics__SelectForm__textarea'>
                 <AutocompleteInput
                   advanced
-                  refObject={advancedEditorRef}
+                  refObject={advancedAutocompleteRef}
                   context={selectFormData?.advancedSuggestions}
                   value={selectedMetricsData?.advancedQuery}
                   onEnter={handleMetricSearch}
@@ -252,10 +252,10 @@ function SelectForm({
           {selectedMetricsData?.advancedMode ? null : (
             <div className='Metrics__SelectForm__TextField'>
               <AutocompleteInput
-                onEnter={handleMetricSearch}
-                refObject={editorRef}
+                refObject={autocompleteRef}
                 value={selectedMetricsData?.query}
                 context={selectFormData.suggestions}
+                onEnter={handleMetricSearch}
               />
             </div>
           )}

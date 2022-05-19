@@ -22,7 +22,7 @@ function SearchBar({
   onSearchInputChange,
 }: any) {
   const searchRunsRef = React.useRef<any>(null);
-  const editorRef: any = React.useRef<React.MutableRefObject<any>>(null);
+  const autocompleteRef: any = React.useRef<React.MutableRefObject<any>>(null);
   React.useEffect(() => {
     return () => {
       searchRunsRef.current?.abort();
@@ -33,7 +33,7 @@ function SearchBar({
     if (isRunsDataLoading) {
       return;
     }
-    const query = editorRef.current.getValue();
+    const query = autocompleteRef.current.getValue();
     onSearchInputChange(query);
     searchRunsRef.current = runAppModel.getRunsData(true, true, true, query);
     searchRunsRef.current
@@ -57,7 +57,7 @@ function SearchBar({
       <div className='Runs_Search_Bar'>
         <form onSubmit={handleRunSearch}>
           <AutocompleteInput
-            refObject={editorRef}
+            refObject={autocompleteRef}
             onEnter={handleRunSearch}
             context={searchSuggestions}
             value={searchValue}

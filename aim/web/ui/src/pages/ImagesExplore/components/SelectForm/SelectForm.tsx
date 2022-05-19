@@ -34,8 +34,8 @@ function SelectForm({
 }: ISelectFormProps): React.FunctionComponentElement<React.ReactNode> {
   const [anchorEl, setAnchorEl] = React.useState<any>(null);
   const searchMetricsRef = React.useRef<any>(null);
-  const editorRef: any = React.useRef<React.MutableRefObject<any>>(null);
-  const advancedEditorRef: any =
+  const autocompleteRef: any = React.useRef<React.MutableRefObject<any>>(null);
+  const advancedAutocompleteRef: any =
     React.useRef<React.MutableRefObject<any>>(null);
   React.useEffect(() => {
     return () => {
@@ -49,12 +49,12 @@ function SelectForm({
       return;
     }
     let query = selectedImagesData?.advancedMode
-      ? advancedEditorRef.current.getValue()
-      : editorRef.current.getValue();
+      ? advancedAutocompleteRef.current.getValue()
+      : autocompleteRef.current.getValue();
     if (selectedImagesData?.advancedMode) {
-      onSelectAdvancedQueryChange(advancedEditorRef.current.getValue());
+      onSelectAdvancedQueryChange(advancedAutocompleteRef.current.getValue());
     } else {
-      onSelectRunQueryChange(editorRef.current.getValue());
+      onSelectRunQueryChange(autocompleteRef.current.getValue());
     }
     searchMetricsRef.current = imagesExploreAppModel.getImagesData(
       true,
@@ -136,7 +136,7 @@ function SelectForm({
                 <div className='SelectForm__textarea'>
                   <AutocompleteInput
                     advanced
-                    refObject={advancedEditorRef}
+                    refObject={advancedAutocompleteRef}
                     context={selectFormData?.advancedSuggestions}
                     value={selectedImagesData?.advancedQuery}
                     onEnter={handleSearch}
@@ -257,11 +257,10 @@ function SelectForm({
             <ErrorBoundary>
               <div className='SelectForm__TextField'>
                 <AutocompleteInput
-                  refObject={editorRef}
+                  refObject={autocompleteRef}
                   context={selectFormData?.suggestions}
-                  value={selectedImagesData?.advancedQuery}
+                  value={selectedImagesData?.query}
                   onEnter={handleSearch}
-                  onChange={onSelectRunQueryChange}
                 />
               </div>
             </ErrorBoundary>

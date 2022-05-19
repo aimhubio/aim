@@ -30,7 +30,7 @@ function SelectForm({
 }: ISelectFormProps): React.FunctionComponentElement<React.ReactNode> {
   const [anchorEl, setAnchorEl] = React.useState<any>(null);
   const searchRef = React.useRef<any>(null);
-  const editorRef: any = React.useRef<React.MutableRefObject<any>>(null);
+  const autocompleteRef: any = React.useRef<React.MutableRefObject<any>>(null);
   React.useEffect(() => {
     return () => {
       searchRef.current?.abort();
@@ -41,7 +41,7 @@ function SelectForm({
     if (requestIsPending) {
       return;
     }
-    const query = editorRef.current.getValue();
+    const query = autocompleteRef.current.getValue();
     onSelectRunQueryChange(query);
     searchRef.current = paramsAppModel.getParamsData(true, true, query);
     searchRef.current.call();
@@ -238,10 +238,9 @@ function SelectForm({
           </Box>
           <div className='SelectForm__TextField'>
             <AutocompleteInput
-              refObject={editorRef}
+              refObject={autocompleteRef}
               context={selectFormData?.suggestions}
               onEnter={handleParamsSearch}
-              // onChange={onSelectRunQueryChange}
               value={selectedParamsData?.query}
             />
           </div>

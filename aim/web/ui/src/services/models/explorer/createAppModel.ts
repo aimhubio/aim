@@ -620,11 +620,12 @@ function createAppModel(appConfig: IAppInitialConfig) {
         updateURL({ configData, appName });
       }
       const metric = configData?.chart?.alignmentConfig?.metric;
+
       if (queryString) {
         if (configData.select.advancedQuery) {
           configData.select.advancedQuery = queryString;
         } else {
-          configData.select.advancedQuery = queryString;
+          configData.select.query = queryString;
         }
       }
       let query = getQueryStringFromSelect(configData?.select);
@@ -5620,6 +5621,7 @@ function createAppModel(appConfig: IAppInitialConfig) {
       function getScattersData(
         shouldUrlUpdate?: boolean,
         shouldResetSelectedRows?: boolean,
+        queryString?: string,
       ): {
         call: () => Promise<void>;
         abort: () => void;
