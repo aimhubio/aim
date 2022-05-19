@@ -113,7 +113,6 @@ function AutocompleteInput({
           '',
         );
         if (ev.changes[0].text === '\n') {
-          // formattedValue = editorValue.replace(/[\n\r]/g, '');
           editorRef.current!.setValue(formattedValue);
           if (onEnter) {
             onEnter();

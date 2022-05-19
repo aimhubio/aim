@@ -1,5 +1,9 @@
 # Changelog
 
+## Unreleased
+
+- Resolve typing latency issue in the query search input (arsengit)
+
 ## 3.10.1 May 18, 2022
 
 - Resolve issue with rendering run params in the overview tab of SRP (arsengit)
