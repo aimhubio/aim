@@ -319,12 +319,15 @@ The high-level features we are going to work on the next few months
   - [x] Run summary and overview info(system params, CLI args, git info, ...) (Start: _Feb 14 2022_, Shipped: _Mar 9 2022_)
   - [x] Add DVC related metadata into aim run (Start: _Mar 7 2022_, Shipped: _Mar 26 2022_)
   - [x] Ability to attach notes to Run from UI (Start: _Mar 7 2022_, Shipped: _Apr 29 2022_)
+  - [x] Fairseq integration (Start: _Mar 27 2022_, Shipped: _Mar 29 2022_)
+  - [x] LightGBM integration (Start: _Apr 14 2022_, Shipped: _May 17 2022_)
+  - [x] CatBoost integration (Start: _Apr 20 2022_, Shipped: _May 17 2022_)
+  - [x] Run execution details(display stdout/stderr logs) (Start: _Apr 25 2022_, Shipped: _May 17 2022_)
 
 ### In Progress
   - [ ] Cloud storage support – store runs blob(e.g. images) data on the cloud (Start: _Mar 21 2022_)
   - [ ] Artifact storage – store files, model checkpoints, and beyond (Start: _Mar 21 2022_)
-  - [ ] Run execution details(display stdout/stderr logs) (Start: _25 Apr 2022_)
-  - [ ] Long sequences(up to 5M of steps) support (Start: _25 Apr 2022_)
+  - [ ] Long sequences(up to 5M of steps) support (Start: _Apr 25 2022_)
 
 ### To Do
 
@@ -354,7 +357,7 @@ The high-level features we are going to work on the next few months
 **Integrations**
 
 - ML Frameworks:
-    - Shortlist: MONAI, SpaCy, AllenNLP, LightGBM, Raytune, Fairseq, fast.ai, KerasTuner
+    - Shortlist: MONAI, SpaCy, AllenNLP, Raytune, fast.ai, KerasTuner
 - Datasets versioning tools
     - Shortlist: HuggingFace Datasets
 - Resource management tools
