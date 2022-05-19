@@ -179,6 +179,12 @@ function getMetricsTableColumns(
               : 'Max'}
           </span>
           <span>Area Max</span>
+          {aggregationMethods!.area === AggregationAreaMethods.STD_DEV && (
+            <span>Group Std Dev</span>
+          )}
+          {aggregationMethods!.area === AggregationAreaMethods.STD_ERR && (
+            <span>Group Std Err</span>
+          )}
         </div>
       ) : (
         <span>Value</span>
@@ -412,6 +418,16 @@ function metricsTableRowRenderer(
               <span key='min'>{rowData.aggregation.area.min}</span>
               <span key='line'>{rowData.aggregation.line}</span>
               <span key='max'>{rowData.aggregation.area.max}</span>
+              {!_.isNil(rowData.aggregation.area.stdDevValue) && (
+                <span key='stdDevValue'>
+                  {rowData.aggregation.area.stdDevValue}
+                </span>
+              )}
+              {!_.isNil(rowData.aggregation.area.stdErrValue) && (
+                <span key='stdErrValue'>
+                  {rowData.aggregation.area.stdErrValue}
+                </span>
+              )}
             </div>
           ),
         };

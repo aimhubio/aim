@@ -5,6 +5,7 @@
 ### Enhancements:
 
 - Implement unit-tests for aim SDK utils (yeghiakoronian)
+- Display std.dev/err aggregated values in the table (VkoHov)
 
 ## 3.10.1 May 18, 2022
 
