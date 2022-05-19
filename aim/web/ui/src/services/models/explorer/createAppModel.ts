@@ -610,6 +610,7 @@ function createAppModel(appConfig: IAppInitialConfig) {
     function getMetricsData(
       shouldUrlUpdate?: boolean,
       shouldResetSelectedRows?: boolean,
+      queryString?: string,
     ): IApiRequest<void> {
       if (metricsRequestRef) {
         metricsRequestRef.abort();
@@ -619,6 +620,13 @@ function createAppModel(appConfig: IAppInitialConfig) {
         updateURL({ configData, appName });
       }
       const metric = configData?.chart?.alignmentConfig?.metric;
+      if (queryString) {
+        if (configData.select.advancedQuery) {
+          configData.select.advancedQuery = queryString;
+        } else {
+          configData.select.advancedQuery = queryString;
+        }
+      }
       let query = getQueryStringFromSelect(configData?.select);
       metricsRequestRef = metricsService.getMetricsData({
         q: query,
@@ -2288,6 +2296,7 @@ function createAppModel(appConfig: IAppInitialConfig) {
         shouldUrlUpdate?: boolean,
         shouldResetSelectedRows?: boolean,
         isInitial = true,
+        queryString?: string,
       ): {
         call: (exceptionHandler: (detail: any) => void) => Promise<any>;
         abort: () => void;
@@ -2298,7 +2307,9 @@ function createAppModel(appConfig: IAppInitialConfig) {
         // isInitial: true --> when search button clicked or data is loading at the first time
         const modelState = prepareModelStateToCall(isInitial);
         const configData = modelState?.config;
-
+        if (queryString) {
+          configData.select.query = queryString;
+        }
         const query = configData?.select?.query || '';
         const pagination = configData?.pagination;
 
@@ -3391,6 +3402,7 @@ function createAppModel(appConfig: IAppInitialConfig) {
       function getParamsData(
         shouldUrlUpdate?: boolean,
         shouldResetSelectedRows?: boolean,
+        queryString?: string,
       ): {
         call: () => Promise<void>;
         abort: () => void;
@@ -3399,6 +3411,9 @@ function createAppModel(appConfig: IAppInitialConfig) {
           runsRequestRef.abort();
         }
         const configData = { ...model.getState()?.config };
+        if (queryString) {
+          configData.select.query = queryString;
+        }
         if (shouldUrlUpdate) {
           updateURL({ configData, appName });
         }
