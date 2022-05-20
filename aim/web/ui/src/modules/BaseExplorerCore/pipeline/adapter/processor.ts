@@ -27,7 +27,6 @@ export interface ProcessedData {
   objectList: AimFlatObjectBase[];
   additionalData: {
     params: string[];
-    sequenceInfo: string[];
     modifiers: string[];
   };
 }
@@ -141,10 +140,8 @@ export function storageDataToFlatList(
 
   return {
     objectList,
-
     additionalData: {
       params,
-      sequenceInfo,
       modifiers,
     },
   };

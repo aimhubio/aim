@@ -2,8 +2,6 @@ import { RunsSearchQueryParams } from 'services/api/base-explorer/runsApi';
 
 import { AimObjectDepths, SequenceTypesEnum } from 'types/core/enums';
 
-import { RunSearchRunView } from '../../../types/core/AimObjects';
-
 import createQuery, { Query } from './query';
 import createAdapter, { Adapter } from './adapter';
 

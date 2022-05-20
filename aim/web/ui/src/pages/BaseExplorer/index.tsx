@@ -48,13 +48,10 @@ function BasExplorer() {
       <button onClick={onClick}>Click to call params</button>
       <div className='flex '>
         <div>
-          Params <JSONViewer json={data.params || []} />
+          Params <JSONViewer json={data?.additionalData?.params || []} />
         </div>
         <div>
-          Contexts <JSONViewer json={data.contexts || []} />
-        </div>
-        <div>
-          Modifiers <JSONViewer json={data.modifiers || []} />
+          Modifiers <JSONViewer json={data?.additionalData?.modifiers || []} />
         </div>
       </div>
       <div style={{ maxWidth: '100vw' }}>
