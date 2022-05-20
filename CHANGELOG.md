@@ -4,6 +4,7 @@
 
 ### Enhancements:
 
+- Add descriptive document titles for pages (KaroMourad)
 - Implement unit-tests for aim SDK utils (yeghiakoronian)
 - Add `active` state indicator property for `aim.Run` (mihran113)
 
