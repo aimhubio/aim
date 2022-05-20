@@ -57,7 +57,8 @@ def get_run_props(run: Run):
                  for tag in run.props.tags_obj],
         'archived': run.archived if run.archived else False,
         'creation_time': run.creation_time,
-        'end_time': run.end_time
+        'end_time': run.end_time,
+        'active': run.active
     }
 
 

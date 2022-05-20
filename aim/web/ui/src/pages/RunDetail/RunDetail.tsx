@@ -30,6 +30,8 @@ import runDetailAppModel from 'services/models/runs/runDetailAppModel';
 import * as analytics from 'services/analytics';
 import notesModel from 'services/models/notes/notesModel';
 
+import { setDocumentTitle } from 'utils/document/documentTitle';
+
 import RunSelectPopoverContent from './RunSelectPopoverContent';
 
 import './RunDetail.scss';
@@ -203,7 +205,9 @@ function RunDetail(): React.FunctionComponentElement<React.ReactNode> {
     const runsRequestRef = runDetailAppModel.getRunInfo(runHash);
     const experimentRequestRef: any = runDetailAppModel.getExperimentsData();
     experimentRequestRef?.call();
-    runsRequestRef.call();
+    runsRequestRef.call().then((runInfo) => {
+      setDocumentTitle(runInfo?.props.name || runHash, true);
+    });
     return () => {
       runsRequestRef.abort();
       runsOfExperimentRequestRef?.abort();
