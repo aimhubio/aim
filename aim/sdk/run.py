@@ -174,6 +174,19 @@ class StructuredRunMixin:
             return self.props.end_time
 
     @property
+    def active(self):
+        """Check if run is active or not.
+
+            :getter: Returns run's active state.
+            :type: bool
+        """
+
+        if self.end_time:
+            return False
+        else:
+            return True
+
+    @property
     def experiment(self):
         """Run experiment.
 
@@ -859,7 +872,8 @@ class Run(StructuredRunMixin):
             data['description'] = self.props.description
             data['archived'] = self.props.archived
             data['creation_time'] = self.props.creation_time
-            data['end_time'] = self.props.end_time
+            data['end_time'] = self.end_time
+            data['active'] = self.active
             data['experiment'] = self.props.experiment
             data['tags'] = json.dumps(self.props.tags)
 

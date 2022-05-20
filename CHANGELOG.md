@@ -5,6 +5,7 @@
 ### Enhancements:
 
 - Implement unit-tests for aim SDK utils (yeghiakoronian)
+- Add `active` state indicator property for `aim.Run` (mihran113)
 
 ### Fixes:
 
