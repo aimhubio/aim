@@ -1,4 +1,6 @@
 import React from 'react';
+// @ts-ignore
+import JSONViewer from 'react-json-viewer';
 
 import createPipeline from 'modules/BaseExplorerCore/pipeline';
 
@@ -20,7 +22,7 @@ function BasExplorer() {
   const [data, setData] = React.useState<any>([]);
 
   function onClick() {
-    setStatus('executing pipeline');
+    setStatus('pipeline-execution-start');
     pipeline
       .execute({
         query: {
@@ -31,8 +33,7 @@ function BasExplorer() {
         },
       })
       .then((data) => {
-        setStatus('pipeline execution succeed');
-        console.log(data);
+        setStatus('pipeline-execution-succeed');
         setData(data);
       })
       .catch((err) => {
@@ -45,14 +46,19 @@ function BasExplorer() {
     <>
       <h2>Status ::: {status}</h2>
       <button onClick={onClick}>Click to call params</button>
-      <div>
-        Params:::: {JSON.stringify(data.params)}
-        <br />
-        Contexts:::: {JSON.stringify(data.contexts)}
-        <br />
-        Modifier values:::: {JSON.stringify(data.modifiers)}
-        <br />
-        data:::: {JSON.stringify(data?.objectList?.slice(0, 5))}
+      <div className='flex '>
+        <div>
+          Params <JSONViewer json={data.params || []} />
+        </div>
+        <div>
+          Contexts <JSONViewer json={data.contexts || []} />
+        </div>
+        <div>
+          Modifiers <JSONViewer json={data.modifiers || []} />
+        </div>
+      </div>
+      <div style={{ maxWidth: '100vw' }}>
+        Visualization <JSONViewer json={data?.objectList?.slice(0, 10) || []} />
       </div>
     </>
   );

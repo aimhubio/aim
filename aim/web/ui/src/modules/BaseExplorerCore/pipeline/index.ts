@@ -49,9 +49,9 @@ function makeQuery(config: any) {
 async function execute(options: PipelineExecutionOptions): Promise<any> {
   // @ts-ignore
   const queryResult = await phases.query.execute(options.query.params);
-  console.log('query-result : ', queryResult);
+
   const adapterResult = phases.adapter?.execute(queryResult);
-  console.log('adapter-result : ', adapterResult);
+
   return adapterResult;
 }
 

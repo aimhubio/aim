@@ -25,9 +25,11 @@ export interface AimFlatObjectBase {
 
 export interface ProcessedData {
   objectList: AimFlatObjectBase[];
-  params: string[];
-  contexts: string[];
-  modifiers: string[];
+  additionalData: {
+    params: string[];
+    sequenceInfo: string[];
+    modifiers: string[];
+  };
 }
 
 export function storageDataToFlatList(
@@ -37,7 +39,7 @@ export function storageDataToFlatList(
 ): ProcessedData {
   const objectList: AimFlatObjectBase[] = []; // @CHECK make by hash function
   let params: string[] = [];
-  let contexts: string[] = [];
+  let sequenceInfo: string[] = [];
   let modifiers: string[] = ['run.hash', 'run.name', 'run.experiment'];
 
   const depthInterceptor = depthInterceptors[objectDepth];
@@ -50,7 +52,7 @@ export function storageDataToFlatList(
     let run = {
       ..._.omit(item.props, ['experiment']),
       // hash: item.hash, @TEST hash should be in run
-      inProgress: !!item.props.end_time,
+      inProgress: !item.props.end_time,
       experiment: item.props.experiment?.name,
       ...item.params,
     };
@@ -84,7 +86,7 @@ export function storageDataToFlatList(
             // epoch: trace.epochs.filter((x: any) => !_.isNil(x)), // @TEST check is this need
           },
         };
-        contexts = contexts.concat(
+        sequenceInfo = sequenceInfo.concat(
           getObjectPaths(trace_context[sequenceName], sequenceName),
         );
         // depth 1, add context data
@@ -134,10 +136,18 @@ export function storageDataToFlatList(
   });
 
   params = _.uniq(params);
-  contexts = _.uniq(contexts);
-  modifiers = [..._.uniq(modifiers), ...params, ...contexts];
+  sequenceInfo = _.uniq(sequenceInfo);
+  modifiers = [..._.uniq(modifiers), ...params, ...sequenceInfo];
 
-  return { objectList, params, contexts, modifiers };
+  return {
+    objectList,
+
+    additionalData: {
+      params,
+      sequenceInfo,
+      modifiers,
+    },
+  };
 }
 
 export default storageDataToFlatList;
