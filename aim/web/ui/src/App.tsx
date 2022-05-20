@@ -10,8 +10,6 @@ import ErrorBoundary from 'components/ErrorBoundary/ErrorBoundary';
 
 import { checkIsBasePathInCachedEnv, getBasePath } from 'config/config';
 
-import PageWrapper from 'pages/PageWrapper';
-
 import routes from 'routes/routes';
 
 import { inIframe } from 'utils/helper';
@@ -61,9 +59,7 @@ function App(): React.FunctionComponentElement<React.ReactNode> {
                   return (
                     <Route path={path} key={index} exact={isExact}>
                       <ErrorBoundary>
-                        <PageWrapper>
-                          <Component />
-                        </PageWrapper>
+                        <Component />
                       </ErrorBoundary>
                     </Route>
                   );

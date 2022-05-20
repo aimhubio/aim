@@ -61,7 +61,7 @@ function getExperimentsData() {
   };
 }
 
-function getRunInfo(runHash: string) {
+function getRunInfo(runHash: string): IApiRequest<void> {
   if (getRunsInfoRequestRef) {
     getRunsInfoRequestRef.abort();
   }
