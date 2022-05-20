@@ -178,6 +178,7 @@ import onToggleColumnsColorScales from 'utils/app/onToggleColumnsColorScales';
 import onAxisBrushExtentChange from 'utils/app/onAxisBrushExtentChange';
 import { minMaxOfArray } from 'utils/minMaxOfArray';
 import getAdvancedSuggestion from 'utils/getAdvancedSuggestions';
+import { processDurationTime } from 'utils/processDurationTime';
 
 import { AppDataTypeEnum, AppNameEnum } from './index';
 
@@ -802,6 +803,12 @@ function createAppModel(appConfig: IAppInitialConfig) {
               description: metric.run.props?.description ?? '-',
               date: moment(metric.run.props.creation_time * 1000).format(
                 TABLE_DATE_FORMAT,
+              ),
+              duration: processDurationTime(
+                metric.run.props.creation_time * 1000,
+                metric.run.props.end_time
+                  ? metric.run.props.end_time * 1000
+                  : Date.now(),
               ),
               metric: metric.name,
               context: contextToString(metric.context)?.split(',') || [''],

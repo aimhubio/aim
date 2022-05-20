@@ -5,6 +5,8 @@ import classNames from 'classnames';
 import { Icon, Text } from 'components/kit';
 import ErrorBoundary from 'components/ErrorBoundary/ErrorBoundary';
 
+import { TABLE_DEFAULT_CONFIG } from 'config/table/tableConfigs';
+
 import { isSystemMetric } from 'utils/isSystemMetric';
 import { formatSystemMetricName } from 'utils/formatSystemMetricName';
 
@@ -38,6 +40,9 @@ function ColumnItem(props: any) {
             {...provided.draggableProps}
             ref={provided.innerRef}
           >
+            {/* {
+              TABLE_DEFAULT_CONFIG[props.appName]
+            } */}
             <span onClick={props.onClick} className='ColumnItem__toggle'>
               <Icon
                 name={props.isHidden ? 'eye-outline-hide' : 'eye-show-outline'}

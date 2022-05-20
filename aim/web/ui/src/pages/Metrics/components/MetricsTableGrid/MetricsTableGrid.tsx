@@ -13,6 +13,7 @@ import ErrorBoundary from 'components/ErrorBoundary/ErrorBoundary';
 import COLORS from 'config/colors/colors';
 import { PathEnum } from 'config/enums/routesEnum';
 import { TABLE_DATE_FORMAT } from 'config/dates/dates';
+import { TABLE_DEFAULT_CONFIG } from 'config/table/tableConfigs';
 
 import { ITableColumn } from 'types/pages/metrics/components/TableColumns/TableColumns';
 import { IOnGroupingSelectChangeParams } from 'types/services/models/metrics/metricsAppModel';
@@ -51,6 +52,47 @@ function getMetricsTableColumns(
 ): ITableColumn[] {
   let columns: ITableColumn[] = [
     {
+      key: 'runHash',
+      content: <span>Hash</span>,
+      topHeader: 'Run',
+      pin: order?.left?.includes('runHash')
+        ? 'left'
+        : order?.middle?.includes('runHash')
+        ? null
+        : order?.right?.includes('runHash')
+        ? 'right'
+        : null,
+    },
+
+    {
+      key: 'run',
+      content: <span>Name</span>,
+      topHeader: 'Run',
+      pin: order?.left?.includes('run')
+        ? 'left'
+        : order?.middle?.includes('run')
+        ? null
+        : order?.right?.includes('run')
+        ? 'right'
+        : 'left',
+      columnOptions: ['color', 'stroke', 'chart'].map((groupName: string) => ({
+        value: `${
+          grouping?.[groupName]?.includes('run.hash') ? 'un' : ''
+        }group by ${groupName}`,
+        onClick: () => {
+          if (onGroupingToggle) {
+            onGroupingToggle({
+              groupName,
+              list: grouping?.[groupName]?.includes('run.hash')
+                ? grouping?.[groupName].filter((item) => item !== 'run.hash')
+                : grouping?.[groupName].concat(['run.hash']),
+            } as IOnGroupingSelectChangeParams);
+          }
+        },
+        icon: icons[groupName],
+      })),
+    },
+    {
       key: 'experiment',
       content: <span>Experiment</span>,
       topHeader: 'Run',
@@ -81,34 +123,6 @@ function getMetricsTableColumns(
       })),
     },
     {
-      key: 'run',
-      content: <span>Run Name</span>,
-      topHeader: 'Run',
-      pin: order?.left?.includes('run')
-        ? 'left'
-        : order?.middle?.includes('run')
-        ? null
-        : order?.right?.includes('run')
-        ? 'right'
-        : 'left',
-      columnOptions: ['color', 'stroke', 'chart'].map((groupName: string) => ({
-        value: `${
-          grouping?.[groupName]?.includes('run.hash') ? 'un' : ''
-        }group by ${groupName}`,
-        onClick: () => {
-          if (onGroupingToggle) {
-            onGroupingToggle({
-              groupName,
-              list: grouping?.[groupName]?.includes('run.hash')
-                ? grouping?.[groupName].filter((item) => item !== 'run.hash')
-                : grouping?.[groupName].concat(['run.hash']),
-            } as IOnGroupingSelectChangeParams);
-          }
-        },
-        icon: icons[groupName],
-      })),
-    },
-    {
       key: 'description',
       content: <span>Description</span>,
       topHeader: 'Run',
@@ -129,8 +143,18 @@ function getMetricsTableColumns(
         : null,
     },
     {
+      key: 'duration',
+      content: <span>Duration</span>,
+      topHeader: 'Run',
+      pin: order?.left?.includes('date')
+        ? 'left'
+        : order?.right?.includes('date')
+        ? 'right'
+        : null,
+    },
+    {
       key: 'metric',
-      content: <span>Metric</span>,
+      content: <span>Name</span>,
       topHeader: 'Metrics',
       pin: order?.left?.includes('metric')
         ? 'left'
@@ -313,17 +337,7 @@ function getMetricsTableColumns(
     columns = [
       {
         key: '#',
-        content: (
-          <span
-            style={{
-              textAlign: 'right',
-              display: 'inline-block',
-              width: '100%',
-            }}
-          >
-            #
-          </span>
-        ),
+        content: '',
         topHeader: 'Grouping',
         pin: 'left',
       },
@@ -354,7 +368,9 @@ function getMetricsTableColumns(
   }
   columns = columns.map((col) => ({
     ...col,
-    isHidden: hiddenColumns.includes(col.key),
+    isHidden:
+      !TABLE_DEFAULT_CONFIG.metrics.nonHidableColumns.has(col.key) &&
+      hiddenColumns.includes(col.key),
   }));
   return columns;
 }
