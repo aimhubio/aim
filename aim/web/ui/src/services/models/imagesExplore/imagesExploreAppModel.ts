@@ -449,7 +449,6 @@ function getSelectFormOptions(projectsData: IProjectParamsMetrics) {
 function processData(data: any[]): {
   data: IMetricsCollection<IImageData>[];
   params: string[];
-  highLevelParams: string[];
   contexts: string[];
   selectedRows: any;
 } {
@@ -541,8 +540,7 @@ function processData(data: any[]): {
   }
   return {
     data: processedData,
-    params: uniqParams,
-    highLevelParams: uniqHighLevelParams,
+    params: [...new Set(uniqParams.concat(uniqHighLevelParams))].sort(),
     contexts: uniqContexts,
     selectedRows,
   };
@@ -550,12 +548,10 @@ function processData(data: any[]): {
 
 function setModelData(rawData: any[], configData: IImagesExploreAppConfig) {
   const sortFields = model.getState()?.config?.table.sortFields;
-  const { data, params, contexts, highLevelParams, selectedRows } =
-    processData(rawData);
-  const sortedParams = params.concat(highLevelParams).sort();
+  const { data, params, contexts, selectedRows } = processData(rawData);
   const groupingSelectOptions = [
     ...getGroupingSelectOptions({
-      params: sortedParams,
+      params,
       contexts,
     }),
   ];
@@ -567,7 +563,7 @@ function setModelData(rawData: any[], configData: IImagesExploreAppConfig) {
 
   tooltipData = getTooltipData({
     processedData: data,
-    paramKeys: sortedParams,
+    paramKeys: params,
     groupingSelectOptions,
     groupingItems: ['group'],
     model,
@@ -696,13 +692,12 @@ function updateModelData(
   configData: IImagesExploreAppConfig = model.getState()!.config!,
   shouldURLUpdate?: boolean,
 ): void {
-  const { data, params, contexts, highLevelParams, selectedRows } = processData(
+  const { data, params, contexts, selectedRows } = processData(
     model.getState()?.rawData as any[],
   );
-  const sortedParams = params.concat(highLevelParams).sort();
   const groupingSelectOptions = [
     ...getGroupingSelectOptions({
-      params: sortedParams,
+      params,
       contexts,
     }),
   ];
@@ -713,7 +708,7 @@ function updateModelData(
   });
   tooltipData = getTooltipData({
     processedData: data,
-    paramKeys: sortedParams,
+    paramKeys: params,
     groupingSelectOptions,
     groupingItems: ['group'],
     model,
