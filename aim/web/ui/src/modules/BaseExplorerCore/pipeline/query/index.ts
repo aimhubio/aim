@@ -8,12 +8,13 @@ import {
 } from 'services/api/base-explorer/runsApi';
 import { RequestInstance } from 'services/NetworkService';
 
+import { RunSearchRunView } from 'types/core/AimObjects';
 import { SequenceTypesEnum } from 'types/core/enums';
 
 import { parseStream } from 'utils/encoder/streamEncoding';
 
-type Query = {
-  execute: (params: RunsSearchQueryParams) => Promise<unknown>;
+export type Query = {
+  execute: (params: RunsSearchQueryParams) => Promise<RunSearchRunView[]>;
   cancel: () => void;
 };
 
@@ -22,10 +23,10 @@ let currentSequenceType: SequenceTypesEnum;
 
 async function executeBaseQuery(
   query: RunsSearchQueryParams,
-): Promise<unknown> {
+): Promise<RunSearchRunView[]> {
   cancel();
-  const data: ReadableStream<any> = await currentQueryRequest.call(query);
-  return parseStream(data);
+  const data: ReadableStream = await currentQueryRequest.call(query);
+  return parseStream<Array<RunSearchRunView>>(data);
 }
 
 function setCurrentSequenceType(sequenceType: SequenceTypesEnum): void {
@@ -60,7 +61,9 @@ function createQuery(
   createQueryRequest();
   // @TODO implement advanced cache with max memory usage limit
   const execute = useCache
-    ? memoize<RunsSearchQueryParams, Promise<unknown>>(executeBaseQuery)
+    ? memoize<RunsSearchQueryParams, Promise<RunSearchRunView[]>>(
+        executeBaseQuery,
+      )
     : executeBaseQuery;
 
   return {

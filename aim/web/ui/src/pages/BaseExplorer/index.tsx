@@ -1,32 +1,44 @@
 import React from 'react';
+// @ts-ignore
+import JSONViewer from 'react-json-viewer';
 
-import createQuery from 'modules/BaseExplorerCore/pipeline/query';
+import createPipeline from 'modules/BaseExplorerCore/pipeline';
 
-import { SequenceTypesEnum } from 'types/core/enums';
+import { AimObjectDepths, SequenceTypesEnum } from 'types/core/enums';
 
-const query = createQuery(SequenceTypesEnum.Metric);
+const pipeline = createPipeline({
+  sequenceName: SequenceTypesEnum.Images,
+  query: {
+    useCache: true,
+  },
+  adapter: {
+    useCache: true,
+    objectDepth: AimObjectDepths.Index,
+  },
+});
 
 function BasExplorer() {
   const [status, setStatus] = React.useState('initial');
   const [data, setData] = React.useState<any>([]);
-  console.log(status);
 
   function onClick() {
-    setStatus('pending');
-    query
+    setStatus('pipeline-execution-start');
+    pipeline
       .execute({
-        p: 500,
-        q: 'run.hparams.batch_size > 10',
+        query: {
+          params: {
+            p: 500,
+            q: 'run.hparams.batch_size > 10',
+          },
+        },
       })
       .then((data) => {
-        console.log(data);
-        setStatus('succeed');
+        setStatus('pipeline-execution-succeed');
         setData(data);
       })
       .catch((err) => {
-        alert(err.message);
-        setData([]);
-        setStatus('failed');
+        console.log(err);
+        setStatus('pipeline execution failed');
       });
   }
 
@@ -34,7 +46,20 @@ function BasExplorer() {
     <>
       <h2>Status ::: {status}</h2>
       <button onClick={onClick}>Click to call params</button>
-      <div>Data:::: {JSON.stringify(data[0])}</div>
+      <div className='flex '>
+        <div>
+          Params <JSONViewer json={data.params || []} />
+        </div>
+        <div>
+          Contexts <JSONViewer json={data.contexts || []} />
+        </div>
+        <div>
+          Modifiers <JSONViewer json={data.modifiers || []} />
+        </div>
+      </div>
+      <div style={{ maxWidth: '100vw' }}>
+        Visualization <JSONViewer json={data?.objectList?.slice(0, 10) || []} />
+      </div>
     </>
   );
 }
