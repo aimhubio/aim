@@ -27,18 +27,18 @@ function ZoomInPopover({
     <ErrorBoundary>
       <div className='ZoomInPopover'>
         <MenuItem
-          data-name={ZoomEnum.SINGLE}
-          selected={mode === ZoomEnum.SINGLE}
-          onClick={handleChange}
-        >
-          Single Zooming
-        </MenuItem>
-        <MenuItem
           data-name={ZoomEnum.MULTIPLE}
           selected={mode === ZoomEnum.MULTIPLE}
           onClick={handleChange}
         >
           Multiple Zooming
+        </MenuItem>
+        <MenuItem
+          data-name={ZoomEnum.SINGLE}
+          selected={mode === ZoomEnum.SINGLE}
+          onClick={handleChange}
+        >
+          Single Zooming
         </MenuItem>
       </div>
     </ErrorBoundary>

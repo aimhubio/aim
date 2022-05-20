@@ -168,7 +168,7 @@ function getMetricsTableColumns(
       key: 'value',
       content: groupFields ? (
         <div className='Metrics__table__aggregationColumn__cell'>
-          <span>Area Min</span>
+          <span>Group Min</span>
           <span>
             {aggregationMethods!.line === AggregationLineMethods.MEAN
               ? 'Mean'
@@ -178,12 +178,12 @@ function getMetricsTableColumns(
               ? 'Min'
               : 'Max'}
           </span>
-          <span>Area Max</span>
+          <span>Group Max</span>
           {aggregationMethods!.area === AggregationAreaMethods.STD_DEV && (
-            <span>Group Std Dev</span>
+            <span>Std. Dev.</span>
           )}
           {aggregationMethods!.area === AggregationAreaMethods.STD_ERR && (
-            <span>Group Std Err</span>
+            <span>Std. Err.</span>
           )}
         </div>
       ) : (

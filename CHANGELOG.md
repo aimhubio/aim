@@ -7,6 +7,11 @@
 - Implement unit-tests for aim SDK utils (yeghiakoronian)
 - Display std.dev/err aggregated values in the table (VkoHov)
 
+### Fixes:
+
+- Change zooming default option to multiple (VkoHov)
+- Changed grouped rows' min and max values names to `Group Min` and `Group Max` (VkoHov)
+
 ## 3.10.1 May 18, 2022
 
 - Resolve issue with rendering run params in the overview tab of SRP (arsengit)
