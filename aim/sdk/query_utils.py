@@ -30,6 +30,8 @@ class RunView:
                 return datetime.datetime.fromtimestamp(end_time) if end_time else None
             else:
                 return end_time
+        if item == 'active':
+            return getattr(self.run, item)
         elif item in self.structured_run_cls.fields():
             if self.db:
                 return getattr(self.db.caches['runs_cache'][self.hash], item)
