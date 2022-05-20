@@ -64,10 +64,11 @@
 .Metrics__table__aggregationColumn__cell {
   display: flex;
   flex: 1;
-
+  justify-content: space-between;
+  width: calc(100% + 28px);
   span {
     display: inline-block;
-    width: 120px;
+    width: 100%;
     min-width: 120px;
     justify-content: center;
     overflow: hidden;
@@ -77,22 +78,14 @@
     &:nth-of-type(2) {
       padding: 0 $space-xs;
       margin: 0 $space-xs;
-      border-left: 1px solid #ccc;
-      border-right: 1px solid #ccc;
+      border-left: $border-separator;
+      border-right: $border-separator;
     }
 
     &:nth-of-type(4) {
       padding: 0 $space-xs;
       margin: 0 $space-xs;
-      border-left: 1px solid #ccc;
-    }
-  }
-}
-
-.Table__cell--header {
-  .Metrics__table__aggregationColumn__cell {
-    span:last-of-type {
-      width: calc(120px - 1rem);
+      border-left: $border-separator;
     }
   }
 }
