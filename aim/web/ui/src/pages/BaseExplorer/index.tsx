@@ -6,6 +6,11 @@ import createPipeline from 'modules/BaseExplorerCore/pipeline';
 
 import { AimObjectDepths, SequenceTypesEnum } from 'types/core/enums';
 
+import useParamsSuggestions from '../../hooks/projectData/useParamsSuggestions';
+import { Text, Button } from '../../components/kit';
+
+import Modifiers from './Modifiers';
+
 const pipeline = createPipeline({
   sequenceName: SequenceTypesEnum.Images,
   query: {
@@ -15,12 +20,15 @@ const pipeline = createPipeline({
     useCache: true,
     objectDepth: AimObjectDepths.Index,
   },
+  modifier: {
+    useCache: true,
+  },
 });
 
 function BasExplorer() {
   const [status, setStatus] = React.useState('initial');
-  const [data, setData] = React.useState<any>([]);
-
+  const [data, setData] = React.useState<any>(null);
+  // const suggestions = useParamsSuggestions();
   function onClick() {
     setStatus('pipeline-execution-start');
     pipeline
@@ -42,22 +50,31 @@ function BasExplorer() {
       });
   }
 
+  function onChange(d: any) {
+    console.log(d);
+  }
   return (
-    <>
+    <div style={{ width: '100%', height: '100vh', padding: '10px' }}>
       <h2>Status ::: {status}</h2>
-      <button onClick={onClick}>Click to call params</button>
-      <div className='flex '>
-        <div>
-          Params <JSONViewer json={data?.additionalData?.params || []} />
-        </div>
-        <div>
-          Modifiers <JSONViewer json={data?.additionalData?.modifiers || []} />
-        </div>
+      <div className='flex fjc fac' style={{ marginTop: 10 }}>
+        <Button onClick={onClick} color='primary' variant='contained'>
+          Search
+        </Button>
+        {data && (
+          <Modifiers
+            data={data?.additionalData?.modifiers}
+            onChange={onChange}
+          />
+        )}
       </div>
+
       <div style={{ maxWidth: '100vw' }}>
-        Visualization <JSONViewer json={data?.objectList?.slice(0, 10) || []} />
+        <Text size={24} weight={600}>
+          Visualization
+        </Text>
+        <JSONViewer json={data?.data?.slice(0, 10) || []} />
       </div>
-    </>
+    </div>
   );
 }
 
