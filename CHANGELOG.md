@@ -4,6 +4,10 @@
 
 ### Enhancements:
 
+- Add cloud storage backups to AWS S3 for aim repo runs(karan2801)
+
+### Enhancements:
+
 - Add descriptive document titles for pages (KaroMourad)
 - Implement unit-tests for aim SDK utils (yeghiakoronian)
 - Add `active` state indicator property for `aim.Run` (mihran113)
