@@ -212,6 +212,7 @@ function ManageColumnsPopover({
           <Button
             color='secondary'
             variant='text'
+            size='small'
             onClick={onAnchorClick}
             className={`ManageColumns__trigger ${
               opened || manageColumnsChanged ? 'opened' : ''

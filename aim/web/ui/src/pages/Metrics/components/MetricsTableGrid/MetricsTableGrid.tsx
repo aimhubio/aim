@@ -9,6 +9,7 @@ import { Badge, Button, Icon } from 'components/kit';
 import ControlPopover from 'components/ControlPopover/ControlPopover';
 import JsonViewPopover from 'components/kit/JsonViewPopover';
 import ErrorBoundary from 'components/ErrorBoundary/ErrorBoundary';
+import StatusLabel from 'components/StatusLabel';
 
 import COLORS from 'config/colors/colors';
 import { PathEnum } from 'config/enums/routesEnum';
@@ -155,7 +156,7 @@ function getMetricsTableColumns(
     {
       key: 'metric',
       content: <span>Name</span>,
-      topHeader: 'Metrics',
+      topHeader: 'Metric',
       pin: order?.left?.includes('metric')
         ? 'left'
         : order?.right?.includes('metric')
@@ -181,7 +182,7 @@ function getMetricsTableColumns(
     {
       key: 'context',
       content: <span>Context</span>,
-      topHeader: 'Metrics',
+      topHeader: 'Metric',
       pin: order?.left?.includes('context')
         ? 'left'
         : order?.right?.includes('context')
@@ -207,7 +208,7 @@ function getMetricsTableColumns(
       ) : (
         <span>Value</span>
       ),
-      topHeader: groupFields ? 'Value' : 'Metrics',
+      topHeader: groupFields ? 'Value' : 'Metric',
       pin: order?.left?.includes('value')
         ? 'left'
         : order?.right?.includes('value')
@@ -217,7 +218,7 @@ function getMetricsTableColumns(
     {
       key: 'step',
       content: <span>Step</span>,
-      topHeader: 'Metrics',
+      topHeader: 'Metric',
       pin: order?.left?.includes('step')
         ? 'left'
         : order?.right?.includes('step')
@@ -227,7 +228,7 @@ function getMetricsTableColumns(
     {
       key: 'epoch',
       content: <span>Epoch</span>,
-      topHeader: 'Metrics',
+      topHeader: 'Metric',
       pin: order?.left?.includes('epoch')
         ? 'left'
         : order?.right?.includes('epoch')
@@ -237,7 +238,7 @@ function getMetricsTableColumns(
     {
       key: 'time',
       content: <span>Time</span>,
-      topHeader: 'Metrics',
+      topHeader: 'Metric',
       pin: order?.left?.includes('time')
         ? 'left'
         : order?.right?.includes('time')
@@ -338,7 +339,7 @@ function getMetricsTableColumns(
       {
         key: '#',
         content: '',
-        topHeader: 'Grouping',
+        topHeader: 'Group',
         pin: 'left',
       },
       {
@@ -361,7 +362,7 @@ function getMetricsTableColumns(
           : order?.right?.includes('groups')
           ? 'right'
           : null,
-        topHeader: 'Groups',
+        topHeader: 'Group Config',
       },
       ...columns,
     ];
@@ -506,12 +507,22 @@ function metricsTableRowRenderer(
       experiment: rowData.experiment,
       run: {
         content: (
-          <Link
-            to={PathEnum.Run_Detail.replace(':runHash', rowData.runHash)}
-            component={RouteLink}
-          >
-            {rowData.run}
-          </Link>
+          <div style={{ display: 'flex' }}>
+            <Tooltip title={rowData.active ? 'In Progress' : 'Finished'}>
+              <div>
+                <StatusLabel
+                  className='Table__status_indicator'
+                  status={rowData.active ? 'alert' : 'success'}
+                />
+              </div>
+            </Tooltip>
+            <Link
+              to={PathEnum.Run_Detail.replace(':runHash', rowData.runHash)}
+              component={RouteLink}
+            >
+              {rowData.run}
+            </Link>
+          </div>
         ),
       },
       metric: isSystemMetric(rowData.metric)

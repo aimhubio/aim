@@ -35,6 +35,7 @@ function RowHeightPopover({ rowHeight, onRowHeightChange, appName }: any) {
           <Button
             variant='text'
             color='secondary'
+            size='small'
             onClick={onAnchorClick}
             className={`RowHeightPopover__trigger ${
               opened || rowHeightChanged ? 'opened' : ''

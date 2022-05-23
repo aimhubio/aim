@@ -810,6 +810,7 @@ function createAppModel(appConfig: IAppInitialConfig) {
                   ? metric.run.props.end_time * 1000
                   : Date.now(),
               ),
+              active: metric.run.props.active,
               metric: metric.name,
               context: contextToString(metric.context)?.split(',') || [''],
               value:

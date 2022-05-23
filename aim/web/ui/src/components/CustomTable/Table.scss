@@ -74,7 +74,18 @@ $border-radius: 0.2rem;
   z-index: 0;
   contain: content;
 }
-
+.Table__status_indicator {
+  width: 18px;
+  height: 18px;
+  padding: 0;
+  // background: unset !important;
+  border: 1px solid $border-color;
+  margin-right: $space-xs;
+  &::before {
+    top: 5px;
+    left: 5px;
+  }
+}
 .Table__action__icon {
   color: $primary-color;
 }

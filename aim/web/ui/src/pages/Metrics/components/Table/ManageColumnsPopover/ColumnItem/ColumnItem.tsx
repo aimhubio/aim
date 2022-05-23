@@ -7,6 +7,8 @@ import ErrorBoundary from 'components/ErrorBoundary/ErrorBoundary';
 
 import { TABLE_DEFAULT_CONFIG } from 'config/table/tableConfigs';
 
+import { AppNameEnum } from 'services/models/explorer';
+
 import { isSystemMetric } from 'utils/isSystemMetric';
 import { formatSystemMetricName } from 'utils/formatSystemMetricName';
 
@@ -28,6 +30,10 @@ function ColumnItem(props: any) {
     return false;
   }
 
+  const isNonHidable: boolean = TABLE_DEFAULT_CONFIG[
+    props.appName as AppNameEnum
+  ]?.nonHidableColumns.has(props.data);
+
   return (
     <ErrorBoundary>
       <Draggable draggableId={props.data} index={props.index}>
@@ -40,14 +46,17 @@ function ColumnItem(props: any) {
             {...provided.draggableProps}
             ref={provided.innerRef}
           >
-            {/* {
-              TABLE_DEFAULT_CONFIG[props.appName]
-            } */}
-            <span onClick={props.onClick} className='ColumnItem__toggle'>
+            <span
+              onClick={isNonHidable ? null : props.onClick}
+              className={classNames('ColumnItem__toggle', {
+                disabled: isNonHidable,
+              })}
+            >
               <Icon
                 name={props.isHidden ? 'eye-outline-hide' : 'eye-show-outline'}
               />
             </span>
+
             <div>
               <Text tint={100} className='ColumnItem__name'>
                 {isSystemMetric(props.data)
