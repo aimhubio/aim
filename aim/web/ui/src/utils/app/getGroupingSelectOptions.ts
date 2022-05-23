@@ -22,7 +22,7 @@ export default function getGroupingSelectOptions({
   ];
 
   if (runProps?.length) {
-    const filterPropsOptions = ['notes', 'tags'];
+    const filterPropsOptions = ['notes', 'tags', 'experiment.id'];
     const replacePropsLabel: { [key: string]: string } = {
       'experiment.name': 'experiment',
     };

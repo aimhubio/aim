@@ -311,6 +311,10 @@ function getParamsTableColumns(
           <div className='Table__groupsColumn__cell'>
             {Object.keys(groupFields).map((field) => {
               let name: string = field.replace('run.params.', '');
+              name = name.replace(
+                'run.props.experiment.name',
+                'run.props.experiment',
+              );
               name = name.replace('run.props', 'run');
               return (
                 <Tooltip key={field} title={name || ''}>
