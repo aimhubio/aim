@@ -235,7 +235,7 @@ function ImagesExplore(): React.FunctionComponentElement<React.ReactNode> {
               />
               <Grouping
                 groupingPopovers={GroupingPopovers.filter(
-                  (g) => g.groupName === 'group',
+                  (g) => g.groupName === 'row',
                 )}
                 groupingData={imagesExploreData?.config?.grouping}
                 groupingSelectOptions={imagesExploreData?.groupingSelectOptions}

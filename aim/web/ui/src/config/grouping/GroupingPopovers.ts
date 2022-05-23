@@ -21,7 +21,7 @@ const GroupingPopovers: IGroupingPopovers[] = [
     title: 'Select fields to divide into charts',
   },
   {
-    groupName: 'group',
+    groupName: 'row',
     title: 'Select Fields For Grouping',
     advancedTitle: 'Select Fields For Grouping',
   },

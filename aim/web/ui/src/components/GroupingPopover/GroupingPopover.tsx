@@ -133,11 +133,11 @@ function GroupingPopover({
                     },
                   }}
                   variant='outlined'
-                  placeholder='Select Params'
+                  placeholder='Select Fields'
                 />
               )}
               renderTags={(value, getTagProps) => (
-                <div style={{ maxHeight: 110, overflow: 'auto' }}>
+                <div className='GroupingPopover__container__select__selectedFieldsContainer'>
                   {value.map((selected, i) => (
                     <Badge
                       key={i}

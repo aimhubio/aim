@@ -13,7 +13,7 @@ import './GroupingItem.scss';
 const icons = {
   stroke: 'line-style',
   chart: 'chart-group',
-  group: 'image-group',
+  row: 'image-group',
   color: 'coloring',
 };
 
