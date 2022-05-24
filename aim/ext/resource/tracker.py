@@ -76,11 +76,11 @@ class ResourceTracker(object):
         cpu_percent(0.0)
 
     def __init__(self,
-                 track,
+                 tracker,
                  interval: Union[int, float] = STAT_INTERVAL_DEFAULT,
                  capture_logs: bool = True,
                  log_offset: int = 0):
-        self._track_func = weakref.WeakMethod(track)
+        self._tracker = weakref.ref(tracker)
         self._stat_capture_interval = None
         if self.check_interval(interval, warn=False):
             self._stat_capture_interval = interval
@@ -141,7 +141,7 @@ class ResourceTracker(object):
     def _track(self, stat: Stat):
         # Store system stats
         for resource, usage in stat.system.items():
-            self._track_func()(
+            self._tracker()(
                 usage,
                 name='{}{}'.format(AIM_RESOURCE_METRIC_PREFIX, resource),
             )
@@ -149,7 +149,7 @@ class ResourceTracker(object):
         # Store GPU stats
         for gpu_idx, gpu in enumerate(stat.gpus):
             for resource, usage in gpu.items():
-                self._track_func()(
+                self._tracker()(
                     usage,
                     name='{}{}'.format(AIM_RESOURCE_METRIC_PREFIX, resource),
                     context={'gpu': gpu_idx}
@@ -212,7 +212,7 @@ class ResourceTracker(object):
             # handle each line for carriage returns
             log_line = LogLine(line.rsplit(b'\r')[-1].decode())
             # _handle_csi(line)
-            self._track_func()(log_line, name='logs', step=self._line_counter)
+            self._tracker()(log_line, name='logs', step=self._line_counter)
             self._line_counter += 1
 
         self._line_counter -= 1
