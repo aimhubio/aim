@@ -386,6 +386,15 @@ class Repo:
         else:
             raise StopIteration
 
+    def total_runs_count(self) -> int:
+        db = self.structured_db
+        cache = db.caches.get('runs_cache')
+        if cache:
+            return len(cache.keys())
+        else:
+            self.meta_tree.preload()
+            return len(list(self.meta_tree.subtree('chunks').keys()))
+
     def get_run(self, run_hash: str) -> Optional['Run']:
         """Get run if exists.
 
@@ -400,7 +409,11 @@ class Repo:
         else:
             return Run(run_hash, repo=self, read_only=True)
 
-    def query_runs(self, query: str = '', paginated: bool = False, offset: str = None) -> QueryRunSequenceCollection:
+    def query_runs(self,
+                   query: str = '',
+                   paginated: bool = False,
+                   offset: str = None,
+                   report_mode: int = 1) -> QueryRunSequenceCollection:
         """Get runs satisfying query expression.
 
         Args:
@@ -408,11 +421,13 @@ class Repo:
                 If not specified, query results will include all runs.
              paginated (:obj:`bool`, optional): query results pagination flag. False if not specified.
              offset (:obj:`str`, optional): `hash` of Run to skip to.
+             report_mode(:obj:`str`, optional): indicates report mode (0: disabled, 1: tqdm progress bar, 2: tuple).
+                                                1 if not specified.
         Returns:
             :obj:`SequenceCollection`: Iterable for runs/metrics matching query expression.
         """
         self._prepare_runs_cache()
-        return QueryRunSequenceCollection(self, Sequence, query, paginated, offset)
+        return QueryRunSequenceCollection(self, Sequence, query, paginated, offset, report_mode)
 
     def delete_run(self, run_hash: str) -> bool:
         """Delete Run data from aim repository
@@ -507,17 +522,19 @@ class Repo:
         else:
             return True, []
 
-    def query_metrics(self, query: str = '') -> QuerySequenceCollection:
+    def query_metrics(self, query: str = '', report_mode: int = 1) -> QuerySequenceCollection:
         """Get metrics satisfying query expression.
 
         Args:
              query (str): query expression.
+             report_mode(:obj:`str`, optional): indicates report mode (0: disabled, 1: tqdm progress bar, 2: tuple).
+                                                1 if not specified.
         Returns:
             :obj:`MetricCollection`: Iterable for metrics matching query expression.
         """
         self._prepare_runs_cache()
         from aim.sdk.sequences.metric import Metric
-        return QuerySequenceCollection(repo=self, seq_cls=Metric, query=query)
+        return QuerySequenceCollection(repo=self, seq_cls=Metric, query=query, report_mode=report_mode)
 
     def query_images(self, query: str = '') -> QuerySequenceCollection:
         """Get image collections satisfying query expression.

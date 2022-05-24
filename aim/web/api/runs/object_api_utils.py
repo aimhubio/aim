@@ -130,6 +130,7 @@ class CustomObjectApi:
             for trace in run_info['traces']:
                 traces_list.append(self._get_trace_info(trace, True, True))
             yield _pack_run_data(run_info['run'], traces_list)
+            yield collect_streamable_data(encode_tree({'progress': run_info['progress']}))
 
     async def requested_traces_streamer(self) -> List[dict]:
         for run_info in self.trace_cache.values():
@@ -210,7 +211,9 @@ class CustomObjectApi:
 
     def _foreach_trace(self, callback: callable):
         if self.traces:
-            for run_trace_collection in self.traces.iter_runs():
+            for run_trace_collection, progress in self.traces.iter_runs():
+                if not run_trace_collection:
+                    continue
                 run = run_trace_collection.run
                 run_traces = []
                 for trace in run_trace_collection.iter():
@@ -219,6 +222,7 @@ class CustomObjectApi:
                 if run_traces:
                     self.trace_cache[run.hash] = {
                         'run': run,
+                        'progress': progress,
                         'traces': run_traces
                     }
         elif self.requested_traces:

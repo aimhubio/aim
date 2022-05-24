@@ -63,11 +63,11 @@ class CustomObjectApiConfig:
 
             # TODO [MV, AT]: move to `repo.py` when `SELECT` statements are introduced
             repo._prepare_runs_cache()
-            traces = QuerySequenceCollection(repo=repo, seq_cls=cls.sequence_type, query=query)
+            query_iterator = QuerySequenceCollection(repo=repo, seq_cls=cls.sequence_type, query=query, report_mode=2)
 
             api = CustomObjectApi(seq_name, resolve_blobs=cls.resolve_blobs)
             api.set_dump_data_fn(cls.dump_record_fn)
-            api.set_trace_collection(traces)
+            api.set_trace_collection(query_iterator)
             api.set_ranges(record_range, record_density, index_range, index_density)
             streamer = api.search_result_streamer()
             return StreamingResponse(streamer)

@@ -56,7 +56,7 @@ def run_search_api(q: Optional[str] = '', limit: Optional[int] = 0, offset: Opti
     repo = get_project_repo()
     query = checked_query(q)
 
-    runs = repo.query_runs(query=query, paginated=bool(limit), offset=offset)
+    runs = repo.query_runs(query=query, paginated=bool(limit), offset=offset, report_mode=2)
 
     streamer = run_search_result_streamer(runs, limit)
     return StreamingResponse(streamer)
@@ -84,7 +84,7 @@ async def run_metric_search_api(q: Optional[str] = '',
 
     repo = get_project_repo()
     query = checked_query(q)
-    traces = repo.query_metrics(query=query)
+    traces = repo.query_metrics(query=query, report_mode=2)
 
     streamer = metric_search_result_streamer(traces, steps_num, x_axis)
     return StreamingResponse(streamer)

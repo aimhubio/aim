@@ -1,5 +1,5 @@
 from abc import abstractmethod
-from typing import Iterator
+from typing import Iterator, Tuple, Union
 from typing import TYPE_CHECKING
 import logging
 
@@ -139,21 +139,38 @@ class QuerySequenceCollection(SequenceCollection):
         self,
         repo: 'Repo',
         seq_cls=Sequence,
-        query: str = ''
+        query: str = '',
+        report_mode: int = 1,
     ):
         self.repo: 'Repo' = repo
         self.seq_cls = seq_cls
         self._item = 'sequence'
         self.query = query
+        self.report_mode = report_mode
 
     def iter_runs(self) -> Iterator['SequenceCollection']:
         """"""
-        for run in self.repo.iter_runs():
-            yield SingleRunSequenceCollection(run, self.seq_cls, self.query)
+        if self.repo.structured_db:
+            runs_iterator = self.repo.iter_runs_from_cache()
+        else:
+            runs_iterator = self.repo.iter_runs()
+        runs_counter = 1
+        total_runs = self.repo.total_runs_count()
+
+        for run in runs_iterator:
+            seq_collection = SingleRunSequenceCollection(run, self.seq_cls, self.query)
+            if self.report_mode == 2:
+                yield seq_collection, (runs_counter, total_runs)
+            else:
+                if self.report_mode == 1:
+                    pass  # tqdm stuff
+                yield seq_collection
+
+        runs_counter += 1
 
     def iter(self) -> Iterator[Sequence]:
         """"""
-        for run_seqs in self.iter_runs():
+        for run_seqs, _ in self.iter_runs():
             yield from run_seqs
 
 
@@ -177,7 +194,8 @@ class QueryRunSequenceCollection(SequenceCollection):
         seq_cls=Sequence,
         query: str = '',
         paginated: bool = False,
-        offset: str = None
+        offset: str = None,
+        report_mode: int = 1,
     ):
         self.repo: 'Repo' = repo
         self.seq_cls = seq_cls
@@ -186,21 +204,34 @@ class QueryRunSequenceCollection(SequenceCollection):
         self.paginated = paginated
         self.offset = offset
         self.query = RestrictedPythonQuery(query)
+        self.report_mode = report_mode
 
     def iter(self) -> Iterator[Sequence]:
         """"""
-        for run_seq in self.iter_runs():
-            yield from run_seq
+        if self.report_mode == 2:
+            for run_seq, _ in self.iter_runs():
+                yield from run_seq
+        else:
+            for run_seq in self.iter_runs():
+                yield from run_seq
 
     def iter_runs(self) -> Iterator['SequenceCollection']:
         """"""
-        if self.paginated:
+        if self.repo.structured_db:
             runs_iterator = self.repo.iter_runs_from_cache(offset=self.offset)
         else:
             runs_iterator = self.repo.iter_runs()
+        runs_counter = 1
+        total_runs = self.repo.total_runs_count()
         for run in runs_iterator:
             run_view = RunView(run)
             match = self.query.check(run=run_view)
-            if not match:
-                continue
-            yield SingleRunSequenceCollection(run, self.seq_cls)
+            seq_collection = SingleRunSequenceCollection(run, self.seq_cls) if match else None
+            if self.report_mode == 2:
+                yield seq_collection, (runs_counter, total_runs)
+            else:
+                if self.report_mode == 1:
+                    pass  # tqdm stuff
+                if match:
+                    yield seq_collection
+        runs_counter += 1
