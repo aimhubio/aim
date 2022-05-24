@@ -54,17 +54,19 @@ function getParamsTableColumns(
         : null,
       columnOptions: ['color', 'stroke', 'chart'].map((groupName: string) => ({
         value: `${
-          grouping?.[groupName]?.includes('run.props.experiment') ? 'un' : ''
+          grouping?.[groupName]?.includes('run.props.experiment.name')
+            ? 'un'
+            : ''
         }group by ${groupName}`,
         onClick: () => {
           if (onGroupingToggle) {
             onGroupingToggle({
               groupName,
-              list: grouping?.[groupName]?.includes('run.props.experiment')
+              list: grouping?.[groupName]?.includes('run.props.experiment.name')
                 ? grouping?.[groupName].filter(
-                    (item) => item !== 'run.props.experiment',
+                    (item) => item !== 'run.props.experiment.name',
                   )
-                : grouping?.[groupName].concat(['run.props.experiment']),
+                : grouping?.[groupName].concat(['run.props.experiment.name']),
             } as IOnGroupingSelectChangeParams);
           }
         },
