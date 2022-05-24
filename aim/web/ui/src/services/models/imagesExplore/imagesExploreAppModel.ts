@@ -947,7 +947,7 @@ function onGroupingModeChange({ value }: IOnGroupingModeChangeParams): void {
   if (value) {
     analytics.trackEvent(
       // @ts-ignore
-      ANALYTICS_EVENT_KEYS.images.groupings.group.modeChange,
+      ANALYTICS_EVENT_KEYS.images.groupings.row.modeChange,
       //@TODO change group to dynamic groupName when adding grouping type
     );
   }

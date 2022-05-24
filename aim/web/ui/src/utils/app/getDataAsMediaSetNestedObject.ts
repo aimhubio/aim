@@ -22,10 +22,10 @@ export function getDataAsMediaSetNestedObject<M extends State>({
     const configData = modelState?.config;
     const grouping = configData?.grouping;
     const mediaSetData: object = {};
-    const group: string[] = [...(grouping?.group || [])];
+    const group: string[] = [...(grouping?.row || [])];
     const groupFields =
       defaultGroupFields ||
-      (grouping?.reverseMode?.group
+      (grouping?.reverseMode?.row
         ? groupingSelectOptions
             .filter(
               (option: IGroupingSelectOption) => !group.includes(option.label),

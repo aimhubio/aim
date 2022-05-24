@@ -92,8 +92,8 @@ function ImagesExplore(): React.FunctionComponentElement<React.ReactNode> {
       return { sortFieldsDict: {}, sortFields: [] };
     }
     const grouping = imagesExploreData?.config?.grouping;
-    const group: string[] = [...(grouping?.group || [])];
-    const groupFields = grouping?.reverseMode?.group
+    const group: string[] = [...(grouping?.row || [])];
+    const groupFields = grouping?.reverseMode?.row
       ? imagesExploreData?.groupingSelectOptions.filter(
           (option: IGroupingSelectOption) => !group.includes(option.value),
         )
@@ -113,7 +113,7 @@ function ImagesExplore(): React.FunctionComponentElement<React.ReactNode> {
     sortGroupFields = sortGroupFields.concat(
       imagesExploreData?.config?.images?.sortFields
         .filter((field: SortField) => {
-          if (grouping?.reverseMode?.group) {
+          if (grouping?.reverseMode?.row) {
             return group.includes(field.value);
           } else {
             return !group.includes(field.value);

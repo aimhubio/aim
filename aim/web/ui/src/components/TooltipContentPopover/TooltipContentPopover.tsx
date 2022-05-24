@@ -95,7 +95,7 @@ function TooltipContentPopover({
             tint={50}
             className='TooltipContentPopover__subtitle'
           >
-            Parameters
+            Select Fields To Display In The Tooltip
           </Text>
           <Autocomplete
             id='select-params'
@@ -119,7 +119,7 @@ function TooltipContentPopover({
                   },
                 }}
                 variant='outlined'
-                placeholder='Select Params'
+                placeholder='Select Fields'
               />
             )}
             renderOption={(option, { selected }) => (
