@@ -7,23 +7,21 @@ const GroupingPopovers: IGroupingPopovers[] = [
   {
     groupName: 'color',
     title: 'Run Color Settings',
-    advancedTitle: 'Color Advanced Options',
     AdvancedComponent: ColorPopoverAdvanced,
   },
   {
     groupName: 'stroke',
     title: 'Select Fields For Grouping by stroke style',
-    advancedTitle: 'stroke style advanced options',
     AdvancedComponent: StrokePopoverAdvanced,
   },
   {
     groupName: 'chart',
     title: 'Select fields to divide into charts',
+    inputLabel: 'Select fields to divide into charts',
   },
   {
     groupName: 'row',
-    title: 'Select Fields For Grouping',
-    advancedTitle: 'Select Fields For Grouping',
+    title: 'Select Fields For Grouping By Row',
   },
 ];
 

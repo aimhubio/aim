@@ -118,6 +118,7 @@ function TooltipContentPopover({
                     setInputValue(e.target.value);
                   },
                 }}
+                className='TextField__OutLined__Small'
                 variant='outlined'
                 placeholder='Select Fields'
               />

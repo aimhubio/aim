@@ -27,12 +27,12 @@ function Grouping({
     <ErrorBoundary>
       <div className='Grouping'>
         {groupingPopovers.map(
-          ({ title, advancedTitle, groupName, AdvancedComponent }) => {
+          ({ title, groupName, AdvancedComponent, inputLabel }) => {
             return (
               <GroupingItem
                 key={groupName}
                 title={title}
-                advancedTitle={advancedTitle}
+                inputLabel={inputLabel}
                 groupName={groupName as GroupNameType}
                 groupingData={groupingData}
                 groupingSelectOptions={groupingSelectOptions}

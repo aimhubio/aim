@@ -108,15 +108,14 @@
   margin-top: 0.5em;
   display: flex;
   justify-content: center;
-  color: $error-color;
   border-top: $border-main;
   padding-top: 0.5rem;
 
   button {
-    background-color: $error-color;
+    background-color: $pico-50;
     color: #fff;
     &:hover {
-      background-color: $error-color;
+      background-color: $pico-50;
     }
   }
 }

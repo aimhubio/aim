@@ -21,13 +21,11 @@ function GroupingItem({
   title,
   groupName,
   groupingData,
-  advancedTitle,
+  inputLabel,
   advancedComponent,
   onSelect,
   onGroupingModeChange,
   groupingSelectOptions,
-  onReset,
-  onVisibilityChange,
 }: IGroupingItemProps): React.FunctionComponentElement<React.ReactNode> {
   return (
     <ErrorBoundary>
@@ -51,6 +49,7 @@ function GroupingItem({
         component={
           <GroupingPopover
             groupName={groupName}
+            inputLabel={inputLabel}
             groupingData={groupingData}
             groupingSelectOptions={groupingSelectOptions}
             advancedComponent={advancedComponent}
