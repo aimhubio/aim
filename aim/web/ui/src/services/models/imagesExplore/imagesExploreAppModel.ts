@@ -451,7 +451,6 @@ function processData(data: any[]): {
   data: IMetricsCollection<IImageData>[];
   params: string[];
   runProps: string[];
-  highLevelParams: string[];
   contexts: string[];
   selectedRows: any;
 } {
@@ -546,9 +545,8 @@ function processData(data: any[]): {
   }
   return {
     data: processedData,
-    params: uniqParams,
     runProps: uniqProps,
-    highLevelParams: uniqHighLevelParams,
+    params: [...new Set(uniqParams.concat(uniqHighLevelParams))].sort(),
     contexts: uniqContexts,
     selectedRows,
   };
@@ -556,12 +554,11 @@ function processData(data: any[]): {
 
 function setModelData(rawData: any[], configData: IImagesExploreAppConfig) {
   const sortFields = model.getState()?.config?.table.sortFields;
-  const { data, params, runProps, contexts, highLevelParams, selectedRows } =
+  const { data, params, runProps, contexts, selectedRows } =
     processData(rawData);
-  const sortedParams = params.concat(highLevelParams).sort();
   const groupingSelectOptions = [
     ...getGroupingSelectOptions({
-      params: sortedParams,
+      params,
       contexts,
       runProps,
       sequenceName: 'images',
@@ -574,7 +571,7 @@ function setModelData(rawData: any[], configData: IImagesExploreAppConfig) {
   });
   tooltipData = getTooltipData({
     processedData: data,
-    paramKeys: sortedParams,
+    paramKeys: params,
     groupingSelectOptions,
     groupingItems: ['group'],
     model,
@@ -703,12 +700,12 @@ function updateModelData(
   configData: IImagesExploreAppConfig = model.getState()!.config!,
   shouldURLUpdate?: boolean,
 ): void {
-  const { data, params, runProps, contexts, highLevelParams, selectedRows } =
-    processData(model.getState()?.rawData as any[]);
-  const sortedParams = params.concat(highLevelParams).sort();
+  const { data, params, runProps, contexts, selectedRows } = processData(
+    model.getState()?.rawData as any[],
+  );
   const groupingSelectOptions = [
     ...getGroupingSelectOptions({
-      params: sortedParams,
+      params,
       runProps,
       contexts,
       sequenceName: 'images',
@@ -721,7 +718,7 @@ function updateModelData(
   });
   tooltipData = getTooltipData({
     processedData: data,
-    paramKeys: sortedParams,
+    paramKeys: params,
     groupingSelectOptions,
     groupingItems: ['group'],
     model,

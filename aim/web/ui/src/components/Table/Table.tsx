@@ -347,6 +347,14 @@ const Table = React.forwardRef(function Table(
                     groupRow.data.aggregation.line;
                   groupHeaderRowCell.children[0].children[0].children[2].textContent =
                     groupRow.data.aggregation.area.max;
+                  if (!_.isNil(groupRow.data.aggregation.area.stdDevValue)) {
+                    groupHeaderRowCell.children[0].children[0].children[3].textContent =
+                      groupRow.data.aggregation.area.stdDevValue;
+                  }
+                  if (!_.isNil(groupRow.data.aggregation.area.stdErrValue)) {
+                    groupHeaderRowCell.children[0].children[0].children[3].textContent =
+                      groupRow.data.aggregation.area.stdErrValue;
+                  }
                 } else {
                   groupHeaderRowCell.textContent = groupRow.data[colKey];
                 }

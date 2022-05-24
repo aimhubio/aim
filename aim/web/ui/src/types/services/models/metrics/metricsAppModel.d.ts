@@ -109,6 +109,14 @@ export interface IAggregationData {
       xValues: number[];
       yValues: number[];
     } | null;
+    stdDevValue?: {
+      xValues: number[];
+      yValues: number[];
+    };
+    stdErrValue?: {
+      xValues: number[];
+      yValues: number[];
+    };
   };
   line: {
     xValues: number[];
