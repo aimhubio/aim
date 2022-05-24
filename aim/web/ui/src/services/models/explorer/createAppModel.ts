@@ -89,7 +89,10 @@ import {
 } from 'types/services/models/scatter/scatterAppModel';
 import { IApiRequest } from 'types/services/services';
 
-import { aggregateGroupData } from 'utils/aggregateGroupData';
+import {
+  aggregateGroupData,
+  AggregationAreaMethods,
+} from 'utils/aggregateGroupData';
 import exceptionHandler from 'utils/app/exceptionHandler';
 import getAggregatedData from 'utils/app/getAggregatedData';
 import getChartTitleData from 'utils/app/getChartTitleData';
@@ -441,6 +444,7 @@ function createAppModel(appConfig: IAppInitialConfig) {
         return {};
     }
   }
+
   function setModelDefaultAppConfigData(
     recoverTableState: boolean = true,
   ): void {
@@ -839,6 +843,24 @@ function createAppModel(appConfig: IAppInitialConfig) {
                   closestIndex
                 ],
               };
+              if (
+                config.chart?.aggregationConfig?.methods.area ===
+                AggregationAreaMethods.STD_DEV
+              ) {
+                rows[groupKey!].data.aggregation.area.stdDevValue =
+                  metricsCollection.aggregation!.area.stdDevValue?.yValues[
+                    closestIndex
+                  ];
+              }
+              if (
+                config.chart?.aggregationConfig?.methods.area ===
+                AggregationAreaMethods.STD_ERR
+              ) {
+                rows[groupKey!].data.aggregation.area.stdErrValue =
+                  metricsCollection.aggregation!.area.stdErrValue?.yValues[
+                    closestIndex
+                  ];
+              }
             }
 
             [
@@ -4688,7 +4710,7 @@ function createAppModel(appConfig: IAppInitialConfig) {
           },
           onAxisBrushExtentChange(
             key: string,
-            extent: [number, number] | [string, string] | null,
+            extent: [number, number] | null,
             chartIndex: number,
           ): void {
             onAxisBrushExtentChange({
