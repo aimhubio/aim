@@ -1,19 +1,17 @@
 import { ITooltipContent } from 'types/services/models/metrics/metricsAppModel';
 
+import { getValue } from './helper';
+
 function filterTooltipContent(
   tooltipContent: ITooltipContent,
-  selectedParams: string[] = [],
+  selectedFields: string[] = [],
 ): ITooltipContent {
-  const params: ITooltipContent['params'] = tooltipContent?.params || {};
-  const filteredParams: ITooltipContent['params'] = {};
-
-  for (let paramKey of Object.keys(params)) {
-    if (selectedParams.indexOf(`run.params.${paramKey}`) !== -1) {
-      filteredParams[paramKey] = params[paramKey];
-    }
-  }
-
-  return { ...tooltipContent, params: filteredParams };
+  const filteredFields: ITooltipContent['selectedFields'] =
+    selectedFields.reduce((acc: any, param: string) => {
+      acc[param] = getValue(tooltipContent, param);
+      return acc;
+    }, {});
+  return { ...tooltipContent, selectedFields: filteredFields };
 }
 
 export default filterTooltipContent;

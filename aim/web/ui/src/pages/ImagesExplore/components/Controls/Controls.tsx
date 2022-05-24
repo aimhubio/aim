@@ -35,8 +35,8 @@ function Controls(
     return (
       props.tooltip.display !==
         CONTROLS_DEFAULT_CONFIG.images.tooltip.display ||
-      props.tooltip.selectedParams.length !==
-        CONTROLS_DEFAULT_CONFIG.images.tooltip.selectedParams.length
+      props.tooltip.selectedFields.length !==
+        CONTROLS_DEFAULT_CONFIG.images.tooltip.selectedFields.length
     );
   }, [props.tooltip]);
 
@@ -165,7 +165,7 @@ function Controls(
             component={
               <TooltipContentPopover
                 selectOptions={props.selectOptions}
-                selectedParams={props.tooltip.selectedParams}
+                selectedFields={props.tooltip.selectedFields}
                 displayTooltip={props.tooltip.display}
                 onChangeTooltip={props.onChangeTooltip}
               />

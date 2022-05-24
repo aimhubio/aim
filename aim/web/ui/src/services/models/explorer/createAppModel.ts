@@ -295,8 +295,8 @@ function createAppModel(appConfig: IAppInitialConfig) {
               tooltip: {
                 content: {},
                 display: CONTROLS_DEFAULT_CONFIG.metrics.tooltip.display,
-                selectedParams:
-                  CONTROLS_DEFAULT_CONFIG.metrics.tooltip.selectedParams,
+                selectedFields:
+                  CONTROLS_DEFAULT_CONFIG.metrics.tooltip.selectedFields,
               },
               focusedState: {
                 key: null,
@@ -394,8 +394,8 @@ function createAppModel(appConfig: IAppInitialConfig) {
               tooltip: {
                 content: {},
                 display: CONTROLS_DEFAULT_CONFIG.params.tooltip.display,
-                selectedParams:
-                  CONTROLS_DEFAULT_CONFIG.params.tooltip.selectedParams,
+                selectedFields:
+                  CONTROLS_DEFAULT_CONFIG.params.tooltip.selectedFields,
               },
               brushExtents: {},
             };
@@ -416,8 +416,8 @@ function createAppModel(appConfig: IAppInitialConfig) {
               tooltip: {
                 content: {},
                 display: CONTROLS_DEFAULT_CONFIG.scatters.tooltip.display,
-                selectedParams:
-                  CONTROLS_DEFAULT_CONFIG.scatters.tooltip.selectedParams,
+                selectedFields:
+                  CONTROLS_DEFAULT_CONFIG.scatters.tooltip.selectedFields,
               },
               trendlineOptions: {
                 type: CONTROLS_DEFAULT_CONFIG.scatters.trendlineOptions.type,
@@ -1768,7 +1768,7 @@ function createAppModel(appConfig: IAppInitialConfig) {
                   ...configData.chart.tooltip,
                   content: filterTooltipContent(
                     tooltipData[activePoint.key],
-                    configData.chart.tooltip?.selectedParams,
+                    configData.chart.tooltip?.selectedFields,
                   ),
                 } as IPanelTooltip,
               },
@@ -4238,7 +4238,7 @@ function createAppModel(appConfig: IAppInitialConfig) {
                 ...configData.chart.tooltip,
                 content: filterTooltipContent(
                   tooltipData[activePoint.key],
-                  configData?.chart.tooltip.selectedParams,
+                  configData?.chart.tooltip.selectedFields,
                 ),
               },
             },
@@ -5880,7 +5880,7 @@ function createAppModel(appConfig: IAppInitialConfig) {
                 ...configData.chart.tooltip,
                 content: filterTooltipContent(
                   tooltipData[activePoint.key],
-                  configData?.chart.tooltip.selectedParams,
+                  configData?.chart.tooltip.selectedFields,
                 ),
               },
             },

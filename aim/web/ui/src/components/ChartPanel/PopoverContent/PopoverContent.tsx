@@ -21,6 +21,7 @@ import { AlignmentOptionsEnum, ChartTypeEnum } from 'utils/d3';
 import { formatValue } from 'utils/formatValue';
 import { isSystemMetric } from 'utils/isSystemMetric';
 import { formatSystemMetricName } from 'utils/formatSystemMetricName';
+import getValueByField from 'utils/getValueByField';
 
 import './PopoverContent.scss';
 
@@ -28,16 +29,21 @@ const PopoverContent = React.forwardRef(function PopoverContent(
   props: IPopoverContentProps,
   ref,
 ): React.FunctionComponentElement<React.ReactNode> {
-  const { tooltipContent, focusedState, chartType, alignmentConfig } = props;
   const {
-    params = {},
+    tooltipContent,
+    focusedState,
+    chartType,
+    alignmentConfig,
+    selectOptions,
+  } = props;
+  const {
+    selectedFields = {},
     groupConfig = {},
     runHash = '',
     name = '',
     context = {},
     mediaContent = {},
   } = tooltipContent || {};
-
   function renderPopoverHeader(): React.ReactNode {
     switch (chartType) {
       case ChartTypeEnum.LineChart: {
@@ -163,16 +169,22 @@ const PopoverContent = React.forwardRef(function PopoverContent(
       >
         <div className='PopoverContent'>
           {renderPopoverHeader()}
-          {_.isEmpty(params) ? null : (
+          {_.isEmpty(selectedFields) ? null : (
             <ErrorBoundary>
               <div>
                 <Divider />
                 <div className='PopoverContent__box'>
-                  <div className='PopoverContent__subtitle1'>Params</div>
-                  {Object.keys(params).map((paramKey) => (
+                  <div className='PopoverContent__subtitle1'>
+                    Selected Fields
+                  </div>
+                  {Object.keys(selectedFields).map((paramKey) => (
                     <div key={paramKey} className='PopoverContent__value'>
-                      <Text size={12} tint={50}>{`run.${paramKey}: `}</Text>
-                      <Text size={12}>{formatValue(params[paramKey])}</Text>
+                      <Text size={12} tint={50}>
+                        {`${getValueByField(selectOptions, paramKey)}: `}
+                      </Text>
+                      <Text size={12}>
+                        {formatValue(selectedFields[paramKey])}
+                      </Text>
                     </div>
                   ))}
                 </div>

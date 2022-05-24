@@ -17,19 +17,18 @@ import './TooltipContentPopover.scss';
 
 function TooltipContentPopover({
   onChangeTooltip,
-  selectedParams,
+  selectedFields,
   displayTooltip,
   selectOptions,
 }: ITooltipContentPopoverProps): React.FunctionComponentElement<React.ReactNode> {
   let [inputValue, setInputValue] = React.useState('');
 
-  function onSelectedParamsChange(
+  function onSelectedFieldsChange(
     e: any,
     values: IGroupingSelectOption[],
   ): void {
     if (e?.code !== 'Backspace') {
       handleSelect(values);
-      setInputValue('');
     } else {
       if (inputValue.length === 0) {
         handleSelect(values);
@@ -38,7 +37,7 @@ function TooltipContentPopover({
   }
   function handleSelect(values: IGroupingSelectOption[]) {
     onChangeTooltip({
-      selectedParams: values.map((item: IGroupingSelectOption) =>
+      selectedFields: values.map((item: IGroupingSelectOption) =>
         typeof item === 'string' ? item : item.value,
       ),
     });
@@ -53,7 +52,7 @@ function TooltipContentPopover({
   const values: IGroupingSelectOption[] = React.useMemo(() => {
     let data: { value: string; group: string; label: string }[] = [];
     selectOptions.forEach((option) => {
-      if (selectedParams.indexOf(option.value) !== -1) {
+      if (selectedFields.indexOf(option.value) !== -1) {
         data.push(option);
       }
     });
@@ -61,19 +60,13 @@ function TooltipContentPopover({
     // Sort selected values by the order of their application
     return data.sort(
       (a, b) =>
-        selectedParams.indexOf(a.value) - selectedParams.indexOf(b.value),
+        selectedFields.indexOf(a.value) - selectedFields.indexOf(b.value),
     );
-  }, [selectOptions, selectedParams]);
-
-  const paramsOptions = React.useMemo(() => {
-    return selectOptions.filter((option) =>
-      option.value.startsWith('run.params.'),
-    );
-  }, [selectOptions]);
+  }, [selectOptions, selectedFields]);
 
   const options = React.useMemo(() => {
     if (inputValue.trim() !== '') {
-      const filtered = paramsOptions.filter((item) => {
+      const filtered = selectOptions.filter((item) => {
         return item.label.indexOf(inputValue) !== -1;
       });
 
@@ -83,8 +76,8 @@ function TooltipContentPopover({
           (a, b) => a.label.indexOf(inputValue) - b.label.indexOf(inputValue),
         );
     }
-    return paramsOptions;
-  }, [paramsOptions, inputValue]);
+    return selectOptions;
+  }, [selectOptions, inputValue]);
 
   return (
     <ErrorBoundary>
@@ -104,7 +97,7 @@ function TooltipContentPopover({
             disableCloseOnSelect
             options={options}
             value={values}
-            onChange={onSelectedParamsChange}
+            onChange={onSelectedFieldsChange}
             groupBy={(option) => option.group}
             getOptionLabel={(option) => option.label}
             getOptionSelected={(option, value) => option.value === value.value}

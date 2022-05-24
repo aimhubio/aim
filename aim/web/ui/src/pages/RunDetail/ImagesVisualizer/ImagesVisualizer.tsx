@@ -135,6 +135,7 @@ function ImagesVisualizer(
             additionalProperties={additionalProperties}
             onActivePointChange={onActivePointChange}
             illustrationConfig={{ title: 'No Tracked Images' }}
+            selectOptions={[]}
           />
         </div>
       </BusyLoaderWrapper>

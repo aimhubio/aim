@@ -45,12 +45,7 @@ export default function getTooltipData<D, M extends State>({
           name: itemData.name,
         },
         groupConfig,
-        params: paramKeys.reduce((acc, paramKey) => {
-          Object.assign(acc, {
-            [paramKey]: getValue(itemData, `run.params.${paramKey}`),
-          });
-          return acc;
-        }, {}),
+        run: itemData.run,
       };
     }
   }

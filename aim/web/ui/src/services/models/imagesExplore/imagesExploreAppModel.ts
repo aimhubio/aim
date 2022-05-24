@@ -123,7 +123,7 @@ function getConfig(): IImagesExploreAppConfig {
       tooltip: {
         content: {},
         display: CONTROLS_DEFAULT_CONFIG.images.tooltip.display,
-        selectedParams: CONTROLS_DEFAULT_CONFIG.images.tooltip.selectedParams,
+        selectedFields: CONTROLS_DEFAULT_CONFIG.images.tooltip.selectedFields,
       },
       additionalProperties: {
         alignmentType: CONTROLS_DEFAULT_CONFIG.images.alignmentType,
@@ -386,7 +386,7 @@ function getImagesData(
             tooltip: {
               content: {},
               display: true,
-              selectedParams: [],
+              selectedFields: [],
             },
             focusedState: {
               active: false,
@@ -585,7 +585,7 @@ function setModelData(rawData: any[], configData: IImagesExploreAppConfig) {
           ...configData.images.tooltip,
           content: filterTooltipContent(
             tooltipData[configData.images.focusedState.key],
-            configData?.images.tooltip.selectedParams,
+            configData?.images.tooltip.selectedFields,
           ),
         },
       },
@@ -664,7 +664,7 @@ function setModelData(rawData: any[], configData: IImagesExploreAppConfig) {
     tooltip: config.images.tooltip || {
       content: {},
       display: true,
-      selectedParams: [],
+      selectedFields: [],
     },
     focusedState: config.images.focusedState || {
       active: false,
@@ -733,7 +733,7 @@ function updateModelData(
           ...configData.images.tooltip,
           content: filterTooltipContent(
             tooltipData[configData.images.focusedState.key],
-            configData?.images.tooltip.selectedParams,
+            configData?.images.tooltip.selectedFields,
           ),
         },
       },
@@ -1125,7 +1125,7 @@ function onActivePointChange(
               ...configData.images.tooltip,
               content: filterTooltipContent(
                 tooltipData[activePoint.key],
-                configData?.images.tooltip.selectedParams,
+                configData?.images.tooltip.selectedFields,
               ),
             }
           : configData.images.tooltip,
@@ -1148,10 +1148,10 @@ function onChangeTooltip(tooltip: Partial<IPanelTooltip>): void {
   let configData = model.getState()?.config;
   if (configData?.images) {
     let content = configData.images.tooltip.content;
-    if (tooltip.selectedParams && configData?.images.focusedState.key) {
+    if (tooltip.selectedFields && configData?.images.focusedState.key) {
       content = filterTooltipContent(
         tooltipData[configData.images.focusedState.key],
-        tooltip.selectedParams,
+        tooltip.selectedFields,
       );
     }
     configData = {

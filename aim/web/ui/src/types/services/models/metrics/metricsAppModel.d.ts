@@ -20,9 +20,10 @@ import {
 } from 'utils/aggregateGroupData';
 import { AlignmentOptionsEnum } from 'utils/d3';
 
-import { IMetric } from './metricModel';
-import { IMetricTrace, ISequence } from './runModel';
 import { ISelectOption } from '../explorer/createAppModel';
+
+import { IMetric } from './metricModel';
+import { IMetricTrace, IRun, ISequence } from './runModel';
 
 export interface IMetricAppModelState {
   refs: {
@@ -74,9 +75,6 @@ export interface ITooltipContent {
   groupConfig?: {
     [key: string]: any;
   };
-  params?: {
-    [key: string]: any;
-  };
   name?: string;
   context?: { [key: string]: unknown };
   runHash?: string;
@@ -86,6 +84,10 @@ export interface ITooltipContent {
     index?: number;
     name?: string;
   };
+  selectedFields?: {
+    [key: string]: any;
+  };
+  run?: IRun;
 }
 
 export interface IMetricsCollection<T> {
@@ -137,7 +139,7 @@ export interface IChartZoom {
 export interface IPanelTooltip {
   content: ITooltipContent;
   display: boolean;
-  selectedParams: string[];
+  selectedFields: string[];
 }
 
 export interface IAlignmentConfig {

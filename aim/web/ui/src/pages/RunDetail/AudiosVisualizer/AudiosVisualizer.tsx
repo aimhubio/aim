@@ -127,6 +127,7 @@ function AudiosVisualizer(
             additionalProperties={additionalProperties}
             onActivePointChange={onActivePointChange}
             illustrationConfig={{ title: 'No Tracked Audios' }}
+            selectOptions={[]}
           />
         </div>
       </BusyLoaderWrapper>
