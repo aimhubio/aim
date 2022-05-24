@@ -1,6 +1,7 @@
 import React from 'react';
 
-import { PathEnum } from '../config/enums/routesEnum';
+import { PathEnum } from 'config/enums/routesEnum';
+import pageTitlesEnum from 'config/pageTitles/pageTitles';
 
 const Runs = React.lazy(
   () => import(/* webpackChunkName: "runs" */ 'pages/Runs/RunsContainer'),
@@ -59,6 +60,7 @@ const routes = {
     showInSidebar: false,
     displayName: null,
     isExact: true,
+    title: pageTitlesEnum.HOME,
   },
   RUNS: {
     path: PathEnum.Runs,
@@ -67,6 +69,7 @@ const routes = {
     displayName: 'Runs',
     icon: 'runs',
     isExact: true,
+    title: pageTitlesEnum.RUNS_EXPLORER,
   },
   METRICS: {
     path: PathEnum.Metrics,
@@ -75,6 +78,7 @@ const routes = {
     displayName: 'Metrics',
     icon: 'metrics',
     isExact: true,
+    title: pageTitlesEnum.METRICS_EXPLORER,
   },
   METRICS_ID: {
     path: PathEnum.Metrics_Id,
@@ -82,6 +86,7 @@ const routes = {
     showInSidebar: false,
     displayName: 'MetricsId',
     isExact: true,
+    title: pageTitlesEnum.METRICS_EXPLORER,
   },
   PARAMS: {
     path: PathEnum.Params,
@@ -90,6 +95,7 @@ const routes = {
     displayName: 'Params',
     icon: 'params',
     isExact: true,
+    title: pageTitlesEnum.PARAMS_EXPLORER,
   },
   PARAMS_ID: {
     path: PathEnum.Params_Id,
@@ -97,6 +103,7 @@ const routes = {
     showInSidebar: false,
     displayName: 'ParamsId',
     isExact: true,
+    title: pageTitlesEnum.PARAMS_EXPLORER,
   },
   IMAGE_EXPLORE: {
     path: PathEnum.Images_Explore,
@@ -105,6 +112,7 @@ const routes = {
     displayName: 'Images',
     icon: 'images',
     isExact: true,
+    title: pageTitlesEnum.IMAGES_EXPLORER,
   },
   IMAGE_EXPLORE_ID: {
     path: PathEnum.Images_Explore_Id,
@@ -112,6 +120,7 @@ const routes = {
     showInSidebar: false,
     displayName: 'ImagesId',
     isExact: true,
+    title: pageTitlesEnum.IMAGES_EXPLORER,
   },
   SCATTERS: {
     path: PathEnum.Scatters,
@@ -120,6 +129,7 @@ const routes = {
     displayName: 'Scatters',
     icon: 'scatterplot',
     isExact: true,
+    title: pageTitlesEnum.SCATTERS_EXPLORER,
   },
   SCATTERS_EXPLORE_ID: {
     path: PathEnum.Scatters_Id,
@@ -127,6 +137,7 @@ const routes = {
     showInSidebar: false,
     displayName: 'ScatterId',
     isExact: true,
+    title: pageTitlesEnum.SCATTERS_EXPLORER,
   },
   BOOKMARKS: {
     path: PathEnum.Bookmarks,
@@ -135,6 +146,7 @@ const routes = {
     displayName: 'Bookmarks',
     icon: 'bookmarks',
     isExact: true,
+    title: pageTitlesEnum.BOOKMARKS,
   },
   TAGS: {
     path: PathEnum.Tags,
@@ -143,6 +155,7 @@ const routes = {
     displayName: 'Tags',
     icon: 'tags',
     isExact: true,
+    title: pageTitlesEnum.TAGS,
   },
   RUN_DETAIL: {
     path: PathEnum.Run_Detail,
@@ -150,6 +163,7 @@ const routes = {
     showInSidebar: false,
     displayName: 'Run Detail',
     isExact: false,
+    title: pageTitlesEnum.RUN_DETAIL,
   },
 };
 

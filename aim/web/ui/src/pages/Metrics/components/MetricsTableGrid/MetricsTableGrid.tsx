@@ -63,17 +63,19 @@ function getMetricsTableColumns(
         : null,
       columnOptions: ['color', 'stroke', 'chart'].map((groupName: string) => ({
         value: `${
-          grouping?.[groupName]?.includes('run.props.experiment') ? 'un' : ''
+          grouping?.[groupName]?.includes('run.props.experiment.name')
+            ? 'un'
+            : ''
         }group by ${groupName}`,
         onClick: () => {
           if (onGroupingToggle) {
             onGroupingToggle({
               groupName,
-              list: grouping?.[groupName]?.includes('run.props.experiment')
+              list: grouping?.[groupName]?.includes('run.props.experiment.name')
                 ? grouping?.[groupName].filter(
-                    (item) => item !== 'run.props.experiment',
+                    (item) => item !== 'run.props.experiment.name',
                   )
-                : grouping?.[groupName].concat(['run.props.experiment']),
+                : grouping?.[groupName].concat(['run.props.experiment.name']),
             } as IOnGroupingSelectChangeParams);
           }
         },
@@ -339,6 +341,10 @@ function getMetricsTableColumns(
           <div className='Table__groupsColumn__cell'>
             {Object.keys(groupFields).map((field) => {
               let name: string = field.replace('run.params.', '');
+              name = name.replace(
+                'run.props.experiment.name',
+                'run.props.experiment',
+              );
               name = name.replace('run.props', 'run');
               return (
                 <Tooltip key={field} title={name || ''}>
