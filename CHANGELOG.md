@@ -2,6 +2,7 @@
 
 ## Unreleased
 
+- Adjust SRP Logs row height calculation (VkoHov)
 - Fix issue with live update requests scheduler (rubenaprikyan)
 
 ## 3.10.1 May 18, 2022
