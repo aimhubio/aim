@@ -14,6 +14,7 @@ import ResizePanel from 'components/ResizePanel/ResizePanel';
 import Grouping from 'components/Grouping/Grouping';
 import ErrorBoundary from 'components/ErrorBoundary/ErrorBoundary';
 
+import pageTitlesEnum from 'config/pageTitles/pageTitles';
 import { RowHeightSize } from 'config/table/tableConfigs';
 import { ResizeModeEnum } from 'config/enums/tableEnums';
 import GroupingPopovers from 'config/grouping/GroupingPopovers';
@@ -134,7 +135,7 @@ const Params = ({
               onResetConfigData={onResetConfigData}
               liveUpdateConfig={liveUpdateConfig}
               onLiveUpdateConfigChange={onLiveUpdateConfigChange}
-              title={'Params explorer'}
+              title={pageTitlesEnum.PARAMS_EXPLORER}
             />
           </div>
           <div className='Params__SelectForm__Grouping__container'>

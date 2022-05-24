@@ -12,6 +12,7 @@ import ResizePanel from 'components/ResizePanel/ResizePanel';
 import ErrorBoundary from 'components/ErrorBoundary/ErrorBoundary';
 import Grouping from 'components/Grouping/Grouping';
 
+import pageTitlesEnum from 'config/pageTitles/pageTitles';
 import { ResizeModeEnum } from 'config/enums/tableEnums';
 import { RowHeightSize } from 'config/table/tableConfigs';
 import GroupingPopovers from 'config/grouping/GroupingPopovers';
@@ -79,7 +80,7 @@ function Metrics(
               onResetConfigData={props.onResetConfigData}
               liveUpdateConfig={props.liveUpdateConfig}
               onLiveUpdateConfigChange={props.onLiveUpdateConfigChange}
-              title={'Metrics explorer'}
+              title={pageTitlesEnum.METRICS_EXPLORER}
             />
             <div className='Metrics__SelectForm__Grouping__container'>
               <SelectForm

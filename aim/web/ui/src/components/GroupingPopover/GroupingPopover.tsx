@@ -37,7 +37,6 @@ function GroupingPopover({
   function onChange(e: any, values: IGroupingSelectOption[]): void {
     if (e?.code !== 'Backspace') {
       handleSelect(values);
-      setInputValue('');
     } else {
       if (inputValue.length === 0) {
         handleSelect(values);
