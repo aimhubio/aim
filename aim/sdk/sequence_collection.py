@@ -1,7 +1,8 @@
 from abc import abstractmethod
-from typing import Iterator, Tuple, Union
+from typing import Iterator
 from typing import TYPE_CHECKING
 import logging
+from tqdm import tqdm
 
 from aim.sdk.sequence import Sequence
 from aim.sdk.query_utils import RunView, SequenceView
@@ -157,21 +158,27 @@ class QuerySequenceCollection(SequenceCollection):
         runs_counter = 1
         total_runs = self.repo.total_runs_count()
 
+        if self.report_mode == 1:
+            progress_bar = tqdm(total=total_runs)
+
         for run in runs_iterator:
             seq_collection = SingleRunSequenceCollection(run, self.seq_cls, self.query)
             if self.report_mode == 2:
                 yield seq_collection, (runs_counter, total_runs)
             else:
                 if self.report_mode == 1:
-                    pass  # tqdm stuff
+                    progress_bar.update(1)
                 yield seq_collection
-
-        runs_counter += 1
+            runs_counter += 1
 
     def iter(self) -> Iterator[Sequence]:
         """"""
-        for run_seqs, _ in self.iter_runs():
-            yield from run_seqs
+        if self.report_mode == 2:
+            for run_seq, _ in self.iter_runs():
+                yield from run_seq
+        else:
+            for run_seq in self.iter_runs():
+                yield from run_seq
 
 
 class QueryRunSequenceCollection(SequenceCollection):
@@ -223,6 +230,8 @@ class QueryRunSequenceCollection(SequenceCollection):
             runs_iterator = self.repo.iter_runs()
         runs_counter = 1
         total_runs = self.repo.total_runs_count()
+        if self.report_mode == 1:
+            progress_bar = tqdm(total=total_runs)
         for run in runs_iterator:
             run_view = RunView(run)
             match = self.query.check(run=run_view)
@@ -231,7 +240,7 @@ class QueryRunSequenceCollection(SequenceCollection):
                 yield seq_collection, (runs_counter, total_runs)
             else:
                 if self.report_mode == 1:
-                    pass  # tqdm stuff
+                    progress_bar.update(1)
                 if match:
                     yield seq_collection
-        runs_counter += 1
+            runs_counter += 1
