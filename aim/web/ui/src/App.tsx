@@ -36,43 +36,41 @@ function App(): React.FunctionComponentElement<React.ReactNode> {
   }, []);
 
   return (
-    <>
-      <BrowserRouter basename={basePath}>
-        <ProjectWrapper />
-        <Theme>
-          {isVisibleCacheBanner && (
-            <AlertBanner type='warning' isVisiblePermanently={true}>
-              You are using UI from notebook env, please make sure to
-              <b>keep server running</b> for a better experience
-            </AlertBanner>
-          )}
-          <div className='pageContainer'>
-            <ErrorBoundary>
-              <SideBar />
-            </ErrorBoundary>
-            <div className='mainContainer'>
-              <React.Suspense
-                fallback={<BusyLoaderWrapper height='100vh' isLoading />}
-              >
-                <Switch>
-                  {Object.values(routes).map((route, index) => {
-                    const { component: Component, path, isExact } = route;
-                    return (
-                      <Route path={path} key={index} exact={isExact}>
-                        <ErrorBoundary>
-                          <Component />
-                        </ErrorBoundary>
-                      </Route>
-                    );
-                  })}
-                  <Redirect to='/' />
-                </Switch>
-              </React.Suspense>
-            </div>
+    <BrowserRouter basename={basePath}>
+      <ProjectWrapper />
+      <Theme>
+        {isVisibleCacheBanner && (
+          <AlertBanner type='warning' isVisiblePermanently={true}>
+            You are using UI from notebook env, please make sure to
+            <b>keep server running</b> for a better experience
+          </AlertBanner>
+        )}
+        <div className='pageContainer'>
+          <ErrorBoundary>
+            <SideBar />
+          </ErrorBoundary>
+          <div className='mainContainer'>
+            <React.Suspense
+              fallback={<BusyLoaderWrapper height='100vh' isLoading />}
+            >
+              <Switch>
+                {Object.values(routes).map((route, index) => {
+                  const { component: Component, path, isExact } = route;
+                  return (
+                    <Route path={path} key={index} exact={isExact}>
+                      <ErrorBoundary>
+                        <Component />
+                      </ErrorBoundary>
+                    </Route>
+                  );
+                })}
+                <Redirect to='/' />
+              </Switch>
+            </React.Suspense>
           </div>
-        </Theme>
-      </BrowserRouter>
-    </>
+        </div>
+      </Theme>
+    </BrowserRouter>
   );
 }
 

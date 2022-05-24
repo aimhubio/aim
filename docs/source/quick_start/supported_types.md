@@ -218,7 +218,7 @@ fig = px.bar(x=["a", "b", "c"], y=[1, 3, 2])
 # Now we convert it to Aim Figure
 aim_figure = Figure(fig)
 
-run.track(aim_figure, name="plorly_ figures", step=0)
+run.track(aim_figure, name="plotly_figures", step=0)
 ```
 
 It is also easy to track `matplotlib` figure. Please note that the conversion process is done by Plotly under the hood.
