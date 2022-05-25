@@ -64,10 +64,11 @@
 .Metrics__table__aggregationColumn__cell {
   display: flex;
   flex: 1;
-
+  justify-content: space-between;
+  width: calc(100% + 28px);
   span {
     display: inline-block;
-    width: 120px;
+    width: 100%;
     min-width: 120px;
     justify-content: center;
     overflow: hidden;
@@ -75,18 +76,16 @@
     white-space: nowrap;
 
     &:nth-of-type(2) {
-      padding: 0 0.5rem;
-      margin: 0 0.5rem;
-      border-left: 1px solid #ccc;
-      border-right: 1px solid #ccc;
+      padding: 0 $space-xs;
+      margin: 0 $space-xs;
+      border-left: $border-separator;
+      border-right: $border-separator;
     }
-  }
-}
 
-.Table__cell--header {
-  .Metrics__table__aggregationColumn__cell {
-    span:last-of-type {
-      width: calc(120px - 1rem);
+    &:nth-of-type(4) {
+      padding: 0 $space-xs;
+      margin: 0 $space-xs;
+      border-left: $border-separator;
     }
   }
 }

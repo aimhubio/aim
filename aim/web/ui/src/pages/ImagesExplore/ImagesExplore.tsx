@@ -14,6 +14,7 @@ import Grouping from 'components/Grouping/Grouping';
 import ErrorBoundary from 'components/ErrorBoundary/ErrorBoundary';
 import RangePanel from 'components/RangePanel';
 
+import pageTitlesEnum from 'config/pageTitles/pageTitles';
 import { ResizeModeEnum } from 'config/enums/tableEnums';
 import { RowHeightSize } from 'config/table/tableConfigs';
 import GroupingPopovers from 'config/grouping/GroupingPopovers';
@@ -209,7 +210,7 @@ function ImagesExplore(): React.FunctionComponentElement<React.ReactNode> {
               onBookmarkCreate={imagesExploreAppModel.onBookmarkCreate}
               onBookmarkUpdate={imagesExploreAppModel.onBookmarkUpdate}
               onResetConfigData={imagesExploreAppModel.onResetConfigData}
-              title={'Images explorer'}
+              title={pageTitlesEnum.IMAGES_EXPLORER}
             />
             <div className='ImagesExplore__SelectForm__Grouping__container'>
               <SelectForm

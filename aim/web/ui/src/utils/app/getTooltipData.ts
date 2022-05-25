@@ -42,7 +42,7 @@ export default function getTooltipData<D, M extends State>({
           step: itemData.step,
           index: itemData.index,
           caption: itemData.caption,
-          images_name: itemData.images_name,
+          name: itemData.name,
         },
         groupConfig,
         params: paramKeys.reduce((acc, paramKey) => {
