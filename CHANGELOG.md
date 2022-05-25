@@ -5,6 +5,7 @@
 - Adjust SRP Logs row height calculation (VkoHov)
 - Fix issue with live update requests scheduler (rubenaprikyan)
 - Fix log capturing crash during run garbage collection (mihran113)
+- Fix Pytorch Lightning adapter `finalize` method (mihran113)
 
 ## 3.10.1 May 18, 2022
 
