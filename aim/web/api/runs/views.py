@@ -12,6 +12,7 @@ from aim.web.api.runs.object_views import (
 from aim.web.api.utils import APIRouter  # wrapper for fastapi.APIRouter
 from typing import Optional, Tuple
 
+from aim.sdk.types import QueryReportMode
 from aim.web.api.runs.utils import (
     checked_query,
     collect_requested_metric_traces,
@@ -59,7 +60,10 @@ def run_search_api(q: Optional[str] = '',
     repo = get_project_repo()
     query = checked_query(q)
 
-    runs = repo.query_runs(query=query, paginated=bool(limit), offset=offset, report_mode=2)
+    runs = repo.query_runs(query=query,
+                           paginated=bool(limit),
+                           offset=offset,
+                           report_mode=QueryReportMode.PROGRESS_TUPLE)
 
     streamer = run_search_result_streamer(runs, limit, report_progress)
     return StreamingResponse(streamer)
@@ -88,7 +92,7 @@ async def run_metric_search_api(q: Optional[str] = '',
 
     repo = get_project_repo()
     query = checked_query(q)
-    traces = repo.query_metrics(query=query, report_mode=2)
+    traces = repo.query_metrics(query=query, report_mode=QueryReportMode.PROGRESS_TUPLE)
 
     streamer = metric_search_result_streamer(traces, steps_num, x_axis, report_progress)
     return StreamingResponse(streamer)

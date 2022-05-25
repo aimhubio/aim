@@ -1,10 +1,11 @@
+import logging
 from abc import abstractmethod
 from typing import Iterator
 from typing import TYPE_CHECKING
-import logging
 from tqdm import tqdm
 
 from aim.sdk.sequence import Sequence
+from aim.sdk.types import QueryReportMode
 from aim.sdk.query_utils import RunView, SequenceView
 from aim.storage.query import RestrictedPythonQuery
 
@@ -141,7 +142,7 @@ class QuerySequenceCollection(SequenceCollection):
         repo: 'Repo',
         seq_cls=Sequence,
         query: str = '',
-        report_mode: int = 1,
+        report_mode: QueryReportMode = QueryReportMode.PROGRESS_BAR,
     ):
         self.repo: 'Repo' = repo
         self.seq_cls = seq_cls
@@ -158,22 +159,22 @@ class QuerySequenceCollection(SequenceCollection):
         runs_counter = 1
         total_runs = self.repo.total_runs_count()
 
-        if self.report_mode == 1:
+        if self.report_mode == QueryReportMode.PROGRESS_BAR:
             progress_bar = tqdm(total=total_runs)
 
         for run in runs_iterator:
             seq_collection = SingleRunSequenceCollection(run, self.seq_cls, self.query)
-            if self.report_mode == 2:
+            if self.report_mode == QueryReportMode.PROGRESS_TUPLE:
                 yield seq_collection, (runs_counter, total_runs)
             else:
-                if self.report_mode == 1:
+                if self.report_mode == QueryReportMode.PROGRESS_BAR:
                     progress_bar.update(1)
                 yield seq_collection
             runs_counter += 1
 
     def iter(self) -> Iterator[Sequence]:
         """"""
-        if self.report_mode == 2:
+        if self.report_mode == QueryReportMode.PROGRESS_TUPLE:
             for run_seq, _ in self.iter_runs():
                 yield from run_seq
         else:
@@ -202,7 +203,7 @@ class QueryRunSequenceCollection(SequenceCollection):
         query: str = '',
         paginated: bool = False,
         offset: str = None,
-        report_mode: int = 1,
+        report_mode: QueryReportMode = QueryReportMode.PROGRESS_BAR,
     ):
         self.repo: 'Repo' = repo
         self.seq_cls = seq_cls
@@ -215,7 +216,7 @@ class QueryRunSequenceCollection(SequenceCollection):
 
     def iter(self) -> Iterator[Sequence]:
         """"""
-        if self.report_mode == 2:
+        if self.report_mode == QueryReportMode.PROGRESS_TUPLE:
             for run_seq, _ in self.iter_runs():
                 yield from run_seq
         else:
@@ -230,16 +231,16 @@ class QueryRunSequenceCollection(SequenceCollection):
             runs_iterator = self.repo.iter_runs()
         runs_counter = 1
         total_runs = self.repo.total_runs_count()
-        if self.report_mode == 1:
+        if self.report_mode == QueryReportMode.PROGRESS_BAR:
             progress_bar = tqdm(total=total_runs)
         for run in runs_iterator:
             run_view = RunView(run)
             match = self.query.check(run=run_view)
             seq_collection = SingleRunSequenceCollection(run, self.seq_cls) if match else None
-            if self.report_mode == 2:
+            if self.report_mode == QueryReportMode.PROGRESS_TUPLE:
                 yield seq_collection, (runs_counter, total_runs)
             else:
-                if self.report_mode == 1:
+                if self.report_mode == QueryReportMode.PROGRESS_BAR:
                     progress_bar.update(1)
                 if match:
                     yield seq_collection

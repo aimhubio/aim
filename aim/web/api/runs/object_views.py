@@ -7,6 +7,7 @@ from starlette.responses import StreamingResponse
 from aim import Images, Texts, Distributions, Audios, Figures
 from aim.sdk.sequence import Sequence
 from aim.sdk.sequence_collection import QuerySequenceCollection
+from aim.sdk.types import QueryReportMode
 from aim.web.api.runs.pydantic_models import (
     RunTracesBatchApiIn,
     URIBatchIn,
@@ -64,7 +65,10 @@ class CustomObjectApiConfig:
 
             # TODO [MV, AT]: move to `repo.py` when `SELECT` statements are introduced
             repo._prepare_runs_cache()
-            query_iterator = QuerySequenceCollection(repo=repo, seq_cls=cls.sequence_type, query=query, report_mode=2)
+            query_iterator = QuerySequenceCollection(repo=repo,
+                                                     seq_cls=cls.sequence_type,
+                                                     query=query,
+                                                     report_mode=QueryReportMode.PROGRESS_TUPLE)
 
             api = CustomObjectApi(seq_name, resolve_blobs=cls.resolve_blobs)
             api.set_dump_data_fn(cls.dump_record_fn)

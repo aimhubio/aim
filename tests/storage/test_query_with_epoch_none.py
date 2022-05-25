@@ -2,6 +2,7 @@ import random
 import numpy as np
 from tests.base import TestBase
 
+from aim.sdk.types import QueryReportMode
 from aim.sdk.repo import Run
 
 
@@ -16,7 +17,7 @@ class TestTrack(TestBase):
         q = 'metric.name == "epoch_none"'
 
         trace_count = 0
-        for trc in self.repo.query_metrics(query=q, report_mode=0):
+        for trc in self.repo.query_metrics(query=q, report_mode=QueryReportMode.DISABLED):
             trace_count += 1
             for epoch in trc.epochs.values_numpy():
                 self.assertTrue(np.isnan(epoch))
@@ -27,10 +28,10 @@ class TestTrack(TestBase):
 
         # crash/no-crash test for mixed queries
         q = 'metric.name == "epoch_none" or metric.name == "with_epoch"'
-        for trc in self.repo.query_metrics(query=q, report_mode=0):
+        for trc in self.repo.query_metrics(query=q, report_mode=QueryReportMode.DISABLED):
             trc.epochs.sparse_numpy()
             trc.epochs.values_numpy()
         q = ''
-        for trc in self.repo.query_metrics(query=q, report_mode=0):
+        for trc in self.repo.query_metrics(query=q, report_mode=QueryReportMode.DISABLED):
             trc.epochs.sparse_numpy()
             trc.epochs.values_numpy()
