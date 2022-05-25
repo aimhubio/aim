@@ -14,8 +14,8 @@ test_query_runs_0 1.0488480806350708
 test_query_runs_1 1.042373251914978
 test_query_runs_2 0.9877374410629273
 test_query_runs_3 0.9614525556564331
-test_container_open 0.1567809296
-test_iterative_access 3.913361788
-test_random_access_0 0.6151781082
-test_random_access_1 1.376271143
-test_random_access_2 2.208219452
+test_container_open 0.14585165977478026
+test_iterative_access 4.095721435546875
+test_random_access_0 0.6270533084869385
+test_random_access_1 1.466196346282959
+test_random_access_2 2.442573571205139
