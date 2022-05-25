@@ -1,8 +1,11 @@
 import React from 'react';
+import _ from 'lodash-es';
+
+import { Tooltip } from '@material-ui/core';
 
 import ControlPopover from 'components/ControlPopover/ControlPopover';
 import GroupingPopover from 'components/GroupingPopover/GroupingPopover';
-import { Icon, Text } from 'components/kit';
+import { Icon } from 'components/kit';
 import { IconName } from 'components/kit/Icon';
 import ErrorBoundary from 'components/ErrorBoundary/ErrorBoundary';
 
@@ -32,19 +35,20 @@ function GroupingItem({
       <ControlPopover
         title={title}
         anchor={({ onAnchorClick, opened }) => (
-          <div onClick={onAnchorClick} className={'GroupingItem'}>
-            <div
-              className={`GroupingItem__icon__box ${opened ? 'active' : ''} ${
-                groupingSelectOptions?.length &&
-                groupingData?.[groupName]?.length
-                  ? 'outlined'
-                  : ''
-              }`}
-            >
-              <Icon name={icons[groupName] as IconName} />
+          <Tooltip title={`Group by ${groupName}`}>
+            <div onClick={onAnchorClick} className={'GroupingItem'}>
+              <div
+                className={`GroupingItem__icon__box ${opened ? 'active' : ''} ${
+                  groupingSelectOptions?.length &&
+                  groupingData?.[groupName]?.length
+                    ? 'outlined'
+                    : ''
+                }`}
+              >
+                <Icon name={icons[groupName] as IconName} />
+              </div>
             </div>
-            <Text>{groupName}</Text>
-          </div>
+          </Tooltip>
         )}
         component={
           <GroupingPopover

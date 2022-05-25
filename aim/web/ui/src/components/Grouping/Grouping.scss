@@ -2,8 +2,19 @@
 
 .Grouping {
   display: flex;
-  align-items: center;
-  justify-content: center;
+  flex-direction: column;
+  justify-content: space-between;
   border-left: $border-main;
-  padding: 0 1.5em;
+  padding: toRem(7px) 1.5rem toRem(11px);
+  &__title {
+    .Text {
+      text-transform: uppercase;
+      letter-spacing: 0.3px;
+    }
+  }
+  &__content {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
 }

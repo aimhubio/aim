@@ -88,9 +88,9 @@ function Controls(
         <ErrorBoundary>
           <div>
             <ControlPopover
-              title='Display In Tooltip'
+              title='Display in tooltip'
               anchor={({ onAnchorClick, opened }) => (
-                <Tooltip title='Tooltip Params'>
+                <Tooltip title='Tooltip fields'>
                   <div
                     onClick={onAnchorClick}
                     className={`Controls__anchor ${
