@@ -38,7 +38,7 @@ export const TABLE_DEFAULT_CONFIG = {
     sortFields: [],
     hideSystemMetrics: true,
     hiddenMetrics: [],
-    hiddenColumns: ['runHash', 'description'],
+    hiddenColumns: ['hash', 'description'],
     nonHidableColumns: new Set(['#', 'run', 'experiment', 'date', 'duration']),
     columnsWidths: {},
     columnsOrder: {
@@ -53,7 +53,7 @@ export const TABLE_DEFAULT_CONFIG = {
     rowHeight: RowHeightSize.md,
     sortFields: [],
     hiddenMetrics: [],
-    hiddenColumns: ['runHash', 'description'],
+    hiddenColumns: ['hash', 'description'],
     nonHidableColumns: new Set([
       '#',
       'run',
@@ -77,7 +77,7 @@ export const TABLE_DEFAULT_CONFIG = {
     rowHeight: RowHeightSize.md,
     sortFields: [],
     hiddenMetrics: [],
-    hiddenColumns: ['runHash', 'description'],
+    hiddenColumns: ['hash', 'description'],
     nonHidableColumns: new Set([
       '#',
       'run',
@@ -100,7 +100,7 @@ export const TABLE_DEFAULT_CONFIG = {
     rowHeight: RowHeightSize.md,
     sortFields: [],
     hiddenMetrics: [],
-    hiddenColumns: ['runHash', 'description'],
+    hiddenColumns: ['hash', 'description'],
     nonHidableColumns: new Set([
       '#',
       'run',
@@ -124,7 +124,7 @@ export const TABLE_DEFAULT_CONFIG = {
     rowHeight: RowHeightSize.md,
     sortFields: [],
     hiddenMetrics: [],
-    hiddenColumns: ['runHash', 'description'],
+    hiddenColumns: ['hash', 'description'],
     nonHidableColumns: new Set([
       '#',
       'run',

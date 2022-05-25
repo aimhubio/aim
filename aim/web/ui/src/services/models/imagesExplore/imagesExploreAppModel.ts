@@ -1251,7 +1251,7 @@ function getDataAsTableRows(
           },
           key: metric.seqKey,
           selectKey: `${metric.run.hash}/${metric.seqKey}`,
-          runHash: metric.run.hash,
+          hash: metric.run.hash,
           isHidden: config?.table?.hiddenMetrics?.includes(metric.key),
           index: rowIndex,
           color: metricsCollection.color ?? metric.color,
@@ -1279,7 +1279,7 @@ function getDataAsTableRows(
         [
           'experiment',
           'run',
-          'runHash',
+          'hash',
           'duration',
           'date',
           'metric',

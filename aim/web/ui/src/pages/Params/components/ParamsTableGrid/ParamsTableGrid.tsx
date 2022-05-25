@@ -43,14 +43,14 @@ function getParamsTableColumns(
 ): ITableColumn[] {
   let columns: ITableColumn[] = [
     {
-      key: 'runHash',
+      key: 'hash',
       content: <span>Hash</span>,
       topHeader: 'Run',
-      pin: order?.left?.includes('runHash')
+      pin: order?.left?.includes('hash')
         ? 'left'
-        : order?.middle?.includes('runHash')
+        : order?.middle?.includes('hash')
         ? null
-        : order?.right?.includes('runHash')
+        : order?.right?.includes('hash')
         ? 'right'
         : null,
     },
@@ -65,6 +65,36 @@ function getParamsTableColumns(
         : order?.right?.includes('run')
         ? 'right'
         : 'left',
+      columnOptions: ['color', 'stroke', 'chart'].map((groupName: string) => ({
+        value: `${
+          grouping?.[groupName]?.includes('run.props.name') ? 'un' : ''
+        }group by ${groupName}`,
+        onClick: () => {
+          if (onGroupingToggle) {
+            onGroupingToggle({
+              groupName,
+              list: grouping?.[groupName]?.includes('run.props.name')
+                ? grouping?.[groupName].filter(
+                    (item) => item !== 'run.props.name',
+                  )
+                : grouping?.[groupName].concat(['run.props.name']),
+            } as IOnGroupingSelectChangeParams);
+          }
+        },
+        icon: icons[groupName],
+      })),
+    },
+    {
+      key: 'experiment',
+      content: <span>Experiment</span>,
+      topHeader: 'Run',
+      pin: order?.left?.includes('experiment')
+        ? 'left'
+        : order?.middle?.includes('experiment')
+        ? null
+        : order?.right?.includes('experiment')
+        ? 'right'
+        : null,
       columnOptions: ['color', 'stroke', 'chart'].map((groupName: string) => ({
         value: `${
           grouping?.[groupName]?.includes('run.props.experiment.name')
@@ -87,36 +117,6 @@ function getParamsTableColumns(
       })),
     },
     {
-      key: 'experiment',
-      content: <span>Experiment</span>,
-      topHeader: 'Run',
-      pin: order?.left?.includes('experiment')
-        ? 'left'
-        : order?.middle?.includes('experiment')
-        ? null
-        : order?.right?.includes('experiment')
-        ? 'right'
-        : null,
-      columnOptions: ['color', 'stroke', 'chart'].map((groupName: string) => ({
-        value: `${
-          grouping?.[groupName]?.includes('run.props.experiment') ? 'un' : ''
-        }group by ${groupName}`,
-        onClick: () => {
-          if (onGroupingToggle) {
-            onGroupingToggle({
-              groupName,
-              list: grouping?.[groupName]?.includes('run.props.experiment')
-                ? grouping?.[groupName].filter(
-                    (item) => item !== 'run.props.experiment',
-                  )
-                : grouping?.[groupName].concat(['run.props.experiment']),
-            } as IOnGroupingSelectChangeParams);
-          }
-        },
-        icon: icons[groupName],
-      })),
-    },
-    {
       key: 'description',
       content: <span>Description</span>,
       topHeader: 'Run',
@@ -127,22 +127,6 @@ function getParamsTableColumns(
         : order?.right?.includes('description')
         ? 'right'
         : null,
-      columnOptions: ['color', 'stroke', 'chart'].map((groupName: string) => ({
-        value: `${
-          grouping?.[groupName]?.includes('run.hash') ? 'un' : ''
-        }group by ${groupName}`,
-        onClick: () => {
-          if (onGroupingToggle) {
-            onGroupingToggle({
-              groupName,
-              list: grouping?.[groupName]?.includes('run.hash')
-                ? grouping?.[groupName].filter((item) => item !== 'run.hash')
-                : grouping?.[groupName].concat(['run.hash']),
-            } as IOnGroupingSelectChangeParams);
-          }
-        },
-        icon: icons[groupName],
-      })),
     },
     {
       key: 'date',
@@ -157,15 +141,15 @@ function getParamsTableColumns(
         : null,
       columnOptions: ['color', 'stroke', 'chart'].map((groupName: string) => ({
         value: `${
-          grouping?.[groupName]?.includes('run.hash') ? 'un' : ''
+          grouping?.[groupName]?.includes('run.date') ? 'un' : ''
         }group by ${groupName}`,
         onClick: () => {
           if (onGroupingToggle) {
             onGroupingToggle({
               groupName,
-              list: grouping?.[groupName]?.includes('run.hash')
-                ? grouping?.[groupName].filter((item) => item !== 'run.hash')
-                : grouping?.[groupName].concat(['run.hash']),
+              list: grouping?.[groupName]?.includes('run.date')
+                ? grouping?.[groupName].filter((item) => item !== 'run.date')
+                : grouping?.[groupName].concat(['run.date']),
             } as IOnGroupingSelectChangeParams);
           }
         },
@@ -436,7 +420,7 @@ function paramsTableRowRenderer(
         content: (
           <RunNameColumn
             run={rowData.run}
-            runHash={rowData.runHash}
+            runHash={rowData.hash}
             active={rowData.active}
           />
         ),

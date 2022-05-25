@@ -52,14 +52,14 @@ function getMetricsTableColumns(
 ): ITableColumn[] {
   let columns: ITableColumn[] = [
     {
-      key: 'runHash',
+      key: 'hash',
       content: <span>Hash</span>,
       topHeader: 'Run',
-      pin: order?.left?.includes('runHash')
+      pin: order?.left?.includes('hash')
         ? 'left'
-        : order?.middle?.includes('runHash')
+        : order?.middle?.includes('hash')
         ? null
-        : order?.right?.includes('runHash')
+        : order?.right?.includes('hash')
         ? 'right'
         : null,
     },
@@ -76,19 +76,17 @@ function getMetricsTableColumns(
         : 'left',
       columnOptions: ['color', 'stroke', 'chart'].map((groupName: string) => ({
         value: `${
-          grouping?.[groupName]?.includes('run.props.experiment.name')
-            ? 'un'
-            : ''
+          grouping?.[groupName]?.includes('run.props.name') ? 'un' : ''
         }group by ${groupName}`,
         onClick: () => {
           if (onGroupingToggle) {
             onGroupingToggle({
               groupName,
-              list: grouping?.[groupName]?.includes('run.props.experiment.name')
+              list: grouping?.[groupName]?.includes('run.props.name')
                 ? grouping?.[groupName].filter(
-                    (item) => item !== 'run.props.experiment.name',
+                    (item) => item !== 'run.props.name',
                   )
-                : grouping?.[groupName].concat(['run.props.experiment.name']),
+                : grouping?.[groupName].concat(['run.props.name']),
             } as IOnGroupingSelectChangeParams);
           }
         },
@@ -108,17 +106,19 @@ function getMetricsTableColumns(
         : null,
       columnOptions: ['color', 'stroke', 'chart'].map((groupName: string) => ({
         value: `${
-          grouping?.[groupName]?.includes('run.props.experiment') ? 'un' : ''
+          grouping?.[groupName]?.includes('run.props.experiment.name')
+            ? 'un'
+            : ''
         }group by ${groupName}`,
         onClick: () => {
           if (onGroupingToggle) {
             onGroupingToggle({
               groupName,
-              list: grouping?.[groupName]?.includes('run.props.experiment')
+              list: grouping?.[groupName]?.includes('run.props.experiment.name')
                 ? grouping?.[groupName].filter(
-                    (item) => item !== 'run.props.experiment',
+                    (item) => item !== 'run.props.experiment.name',
                   )
-                : grouping?.[groupName].concat(['run.props.experiment']),
+                : grouping?.[groupName].concat(['run.props.experiment.name']),
             } as IOnGroupingSelectChangeParams);
           }
         },
@@ -405,7 +405,7 @@ function metricsTableRowRenderer(
         row.metric = {
           content:
             Array.isArray(rowData.metric) && rowData.metric.length > 1 ? (
-              <GroupHeading data={rowData.context} />
+              <GroupHeading data={rowData.metric} />
             ) : (
               <span>{metricName}</span>
             ),
@@ -514,7 +514,7 @@ function metricsTableRowRenderer(
         content: (
           <RunNameColumn
             run={rowData.run}
-            runHash={rowData.runHash}
+            runHash={rowData.hash}
             active={rowData.active}
           />
         ),

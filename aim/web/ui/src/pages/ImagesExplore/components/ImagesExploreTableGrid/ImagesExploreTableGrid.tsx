@@ -9,6 +9,7 @@ import { Badge, JsonViewPopover } from 'components/kit';
 import ControlPopover from 'components/ControlPopover/ControlPopover';
 import ErrorBoundary from 'components/ErrorBoundary/ErrorBoundary';
 import GroupHeading from 'components/Table/GroupHeading';
+import RunNameColumn from 'components/Table/RunNameColumn';
 
 import COLORS from 'config/colors/colors';
 import { PathEnum } from 'config/enums/routesEnum';
@@ -33,14 +34,14 @@ function getImagesExploreTableColumns(
 ): ITableColumn[] {
   let columns: ITableColumn[] = [
     {
-      key: 'runHash',
+      key: 'hash',
       content: <span>Hash</span>,
       topHeader: 'Run',
-      pin: order?.left?.includes('runHash')
+      pin: order?.left?.includes('hash')
         ? 'left'
-        : order?.middle?.includes('runHash')
+        : order?.middle?.includes('hash')
         ? null
-        : order?.right?.includes('runHash')
+        : order?.right?.includes('hash')
         ? 'right'
         : null,
     },
@@ -340,12 +341,11 @@ function imagesExploreTableRowRenderer(
       experiment: rowData?.experiment ?? 'default',
       run: {
         content: (
-          <Link
-            to={PathEnum.Run_Detail.replace(':runHash', rowData.runHash)}
-            component={RouteLink}
-          >
-            {rowData.run}
-          </Link>
+          <RunNameColumn
+            run={rowData.run}
+            runHash={rowData.hash}
+            active={rowData.active}
+          />
         ),
       },
       metric: rowData.metric,

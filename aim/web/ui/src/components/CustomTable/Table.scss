@@ -439,6 +439,9 @@ $border-radius: 0.2rem;
 
 .Table__GroupHeading {
   width: 100%;
+  span {
+    font-weight: 700;
+  }
 }
 
 .Table__header__action {

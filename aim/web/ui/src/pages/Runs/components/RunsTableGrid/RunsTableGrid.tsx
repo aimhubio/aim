@@ -22,14 +22,14 @@ function getRunsTableColumns(
 ): ITableColumn[] {
   let columns: ITableColumn[] = [
     {
-      key: 'runHash',
+      key: 'hash',
       content: <span>Hash</span>,
       topHeader: 'Run',
-      pin: order?.left?.includes('runHash')
+      pin: order?.left?.includes('hash')
         ? 'left'
-        : order?.middle?.includes('runHash')
+        : order?.middle?.includes('hash')
         ? null
-        : order?.right?.includes('runHash')
+        : order?.right?.includes('hash')
         ? 'right'
         : null,
     },
@@ -191,7 +191,7 @@ function runsTableRowRenderer(
         content: (
           <RunNameColumn
             run={rowData.run}
-            runHash={rowData.runHash}
+            runHash={rowData.hash}
             active={rowData.active}
           />
         ),
