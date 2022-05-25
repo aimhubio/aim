@@ -16,7 +16,7 @@ def open_containers_for_read(container_paths_list):
 
 @timing()
 def random_access_metric_values(repo, query, density):
-    traces = repo.query_metrics(query=query)
+    traces = repo.query_metrics(query=query, report_mode=0)
     for trace in traces.iter():
         values = trace.values
         values_length = len(values)
@@ -29,7 +29,7 @@ def random_access_metric_values(repo, query, density):
 
 @timing()
 def iterative_access_metric_values(repo, query):
-    traces = repo.query_metrics(query=query)
+    traces = repo.query_metrics(query=query, report_mode=0)
     for trace in traces.iter():
         _ = trace.values.values_numpy()
 
