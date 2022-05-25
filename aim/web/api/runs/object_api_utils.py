@@ -105,7 +105,7 @@ class CustomObjectApi:
     def get_total_record_range(self):
         return self._calculate_ranges()
 
-    async def search_result_streamer(self):
+    async def search_result_streamer(self, report_progress):
 
         def _pack_run_data(run_: 'Run', traces_: list):
             ranges = {
@@ -130,7 +130,8 @@ class CustomObjectApi:
             for trace in run_info['traces']:
                 traces_list.append(self._get_trace_info(trace, True, True))
             yield _pack_run_data(run_info['run'], traces_list)
-            yield collect_streamable_data(encode_tree({'progress': run_info['progress']}))
+            if report_progress:
+                yield collect_streamable_data(encode_tree({'progress': run_info['progress']}))
 
     async def requested_traces_streamer(self) -> List[dict]:
         for run_info in self.trace_cache.values():

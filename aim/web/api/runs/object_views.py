@@ -52,7 +52,8 @@ class CustomObjectApiConfig:
                     responses={400: {'model': QuerySyntaxErrorOut}})
         async def search_api(q: Optional[str] = '',
                              record_range: Optional[str] = '', record_density: Optional[int] = 50,
-                             index_range: Optional[str] = '', index_density: Optional[int] = 5):
+                             index_range: Optional[str] = '', index_density: Optional[int] = 5,
+                             report_progress: Optional[bool] = True):
             # search Sequence API
             repo = get_project_repo()
             query = checked_query(q)
@@ -69,7 +70,7 @@ class CustomObjectApiConfig:
             api.set_dump_data_fn(cls.dump_record_fn)
             api.set_trace_collection(query_iterator)
             api.set_ranges(record_range, record_density, index_range, index_density)
-            streamer = api.search_result_streamer()
+            streamer = api.search_result_streamer(report_progress)
             return StreamingResponse(streamer)
 
         # run sequence batch API

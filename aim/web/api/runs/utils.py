@@ -163,7 +163,8 @@ def custom_aligned_metrics_streamer(requested_runs: List[AlignedRunIn], x_axis: 
 
 async def metric_search_result_streamer(traces: SequenceCollection,
                                         steps_num: int,
-                                        x_axis: Optional[str]) -> bytes:
+                                        x_axis: Optional[str] = None,
+                                        report_progress: Optional[bool] = True) -> bytes:
     for run_trace_collection, progress in traces.iter_runs():
         run = None
         traces_list = []
@@ -201,10 +202,11 @@ async def metric_search_result_streamer(traces: SequenceCollection,
 
             encoded_tree = encode_tree(run_dict)
             yield collect_run_streamable_data(encoded_tree)
-            yield collect_run_streamable_data(encode_tree({'progress': progress}))
+            if report_progress:
+                yield collect_run_streamable_data(encode_tree({'progress': progress}))
 
 
-def run_search_result_streamer(runs: SequenceCollection, limit: int) -> bytes:
+def run_search_result_streamer(runs: SequenceCollection, limit: int, report_progress: Optional[bool] = True) -> bytes:
     run_count = 0
     for run_trace_collection, progress in runs.iter_runs():
         if not run_trace_collection:
@@ -220,7 +222,8 @@ def run_search_result_streamer(runs: SequenceCollection, limit: int) -> bytes:
 
         encoded_tree = encode_tree(run_dict)
         yield collect_run_streamable_data(encoded_tree)
-        yield collect_run_streamable_data(encode_tree({'progress': progress}))
+        if report_progress:
+            yield collect_run_streamable_data(encode_tree({'progress': progress}))
         run_count += 1
         if limit and run_count >= limit:
             break

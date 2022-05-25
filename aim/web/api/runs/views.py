@@ -52,13 +52,16 @@ NOTE_NOT_FOUND = 'Note with id {id} is not found in this run.'
 
 @runs_router.get('/search/run/', response_model=RunSearchApiOut,
                  responses={400: {'model': QuerySyntaxErrorOut}})
-def run_search_api(q: Optional[str] = '', limit: Optional[int] = 0, offset: Optional[str] = None):
+def run_search_api(q: Optional[str] = '',
+                   limit: Optional[int] = 0,
+                   offset: Optional[str] = None,
+                   report_progress: Optional[bool] = True):
     repo = get_project_repo()
     query = checked_query(q)
 
     runs = repo.query_runs(query=query, paginated=bool(limit), offset=offset, report_mode=2)
 
-    streamer = run_search_result_streamer(runs, limit)
+    streamer = run_search_result_streamer(runs, limit, report_progress)
     return StreamingResponse(streamer)
 
 
@@ -76,7 +79,8 @@ def run_metric_custom_align_api(request_data: MetricAlignApiIn):
                  responses={400: {'model': QuerySyntaxErrorOut}})
 async def run_metric_search_api(q: Optional[str] = '',
                                 p: Optional[int] = 50,
-                                x_axis: Optional[str] = None):
+                                x_axis: Optional[str] = None,
+                                report_progress: Optional[bool] = True):
     steps_num = p
 
     if x_axis:
@@ -86,7 +90,7 @@ async def run_metric_search_api(q: Optional[str] = '',
     query = checked_query(q)
     traces = repo.query_metrics(query=query, report_mode=2)
 
-    streamer = metric_search_result_streamer(traces, steps_num, x_axis)
+    streamer = metric_search_result_streamer(traces, steps_num, x_axis, report_progress)
     return StreamingResponse(streamer)
 
 
