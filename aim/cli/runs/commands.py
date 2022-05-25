@@ -115,16 +115,9 @@ def move_runs(ctx, destination, hashes):
 
 
 @runs.command(name='upload')
-@click.argument('bucket_name', nargs=-1, type=str)
+@click.argument('bucket', nargs=1, type=str)
 @click.pass_context
-def upload_runs(ctx, bucket_name):
-    if len(bucket_name) == 0:
-        click.echo('Please specify bucket name to upload runs.')
-        exit(1)
-    if len(bucket_name) > 1:
-        click.echo('Please specify only 1 bucket name to upload runs.')
-        exit(1)
-    
+def upload_runs(ctx, bucket):
     repo_path = ctx.obj['repo']
     if not Repo.exists(repo_path):
         click.echo(f'\'{repo_path}\' is not a valid aim repo.')
@@ -132,9 +125,9 @@ def upload_runs(ctx, bucket_name):
 
     zip_buffer = make_zip_archive(repo_path)
     zip_buffer.seek(0)
-    success, uploaded_zip_file_name = upload_repo_runs(zip_buffer, bucket_name[0])
+    
+    success, uploaded_zip_file_name = upload_repo_runs(zip_buffer, bucket)
     if success:
-        run_hashes = list_repo_runs(repo_path)
-        click.echo(f'Successfully uploaded {len(run_hashes)} runs in {uploaded_zip_file_name}.')
+        click.echo(f'Successfully uploaded runs in {uploaded_zip_file_name}.')
     else:
         click.echo(f'Something went wrong while uploading runs.')
