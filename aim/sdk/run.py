@@ -68,13 +68,13 @@ class RunTracker:
 
     def __init__(self, run: 'Run'):
         self.hash = run.hash
-        self.sequence_info: Dict[SequenceDescriptor.Selector, SequenceInfo] = defaultdict(SequenceInfo)
+        self.repo = run.repo
         self.meta_tree = run.meta_tree
         self.meta_run_tree = run.meta_run_tree
         self.series_run_tree = run.series_run_tree
-        self._prepare_sequence_info(run.read_only)
-        self.repo = run.repo
         self.contexts: Dict[Context, int] = dict()
+        self.sequence_info: Dict[SequenceDescriptor.Selector, SequenceInfo] = defaultdict(SequenceInfo)
+        self._prepare_sequence_info(run.read_only)
 
     def idx_to_ctx(self, idx):
         ctx = RunTracker._idx_to_ctx.get(idx)
@@ -843,14 +843,12 @@ class Run(StructuredRunMixin):
     def close(self):
         if self._resources is None:
             return
-        self.sequence_info.clear()
         self._resources.close()
+        self._tracker.sequence_info.clear()
         # de-reference trees and other resources
         del self._resources
-        del self.repo
         del self._props
         self._resources = None
-        self.repo = None
         self._props = None
         self._cleanup_trees()
 
