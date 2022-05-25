@@ -763,6 +763,7 @@ function createAppModel(appConfig: IAppInitialConfig) {
               description: '',
               date: '',
               run: '',
+              runHash: '',
               metric: '',
               context: [],
               value: '',
@@ -853,7 +854,9 @@ function createAppModel(appConfig: IAppInitialConfig) {
               'experiment',
               'description',
               'date',
+              'duration',
               'run',
+              'runHash',
               'metric',
               'context',
               'step',
@@ -2739,6 +2742,7 @@ function createAppModel(appConfig: IAppInitialConfig) {
               color: metricsCollection.color,
               dasharray: metricsCollection.dasharray,
               experiment: '',
+              runHash: '',
               run: '',
               metric: '',
               context: [],
@@ -2773,6 +2777,13 @@ function createAppModel(appConfig: IAppInitialConfig) {
               date: moment(metric.run.props.creation_time * 1000).format(
                 TABLE_DATE_FORMAT,
               ),
+              duration: processDurationTime(
+                metric.run.props.creation_time * 1000,
+                metric.run.props.end_time
+                  ? metric.run.props.end_time * 1000
+                  : Date.now(),
+              ),
+              active: metric.run.props.active,
               metric: metric.name,
               ...metricsRowValues,
             };
@@ -2780,7 +2791,9 @@ function createAppModel(appConfig: IAppInitialConfig) {
             [
               'experiment',
               'run',
+              'runHash',
               'date',
+              'duration',
               'description',
               'metric',
               'context',
@@ -3544,6 +3557,7 @@ function createAppModel(appConfig: IAppInitialConfig) {
                 dasharray: metricsCollection.dasharray,
                 experiment: '',
                 run: '',
+                runHash: '',
                 description: '',
                 date: '',
                 metric: '',
@@ -3587,6 +3601,13 @@ function createAppModel(appConfig: IAppInitialConfig) {
                   TABLE_DATE_FORMAT,
                 ),
                 metric: metric.name,
+                duration: processDurationTime(
+                  metric.run.props.creation_time * 1000,
+                  metric.run.props.end_time
+                    ? metric.run.props.end_time * 1000
+                    : Date.now(),
+                ),
+                active: metric.run.props.active,
                 ...metricsRowValues,
               };
               rowIndex++;
@@ -3598,7 +3619,9 @@ function createAppModel(appConfig: IAppInitialConfig) {
               [
                 'experiment',
                 'run',
+                'runHash',
                 'date',
+                'duration',
                 'description',
                 'metric',
                 'context',
@@ -5149,7 +5172,7 @@ function createAppModel(appConfig: IAppInitialConfig) {
                   (metric) => metric.key,
                 ),
                 color: metricsCollection.color,
-
+                runHash: '',
                 dasharray: metricsCollection.dasharray,
                 experiment: '',
                 run: '',
@@ -5196,6 +5219,13 @@ function createAppModel(appConfig: IAppInitialConfig) {
                   TABLE_DATE_FORMAT,
                 ),
                 metric: metric.name,
+                duration: processDurationTime(
+                  metric.run.props.creation_time * 1000,
+                  metric.run.props.end_time
+                    ? metric.run.props.end_time * 1000
+                    : Date.now(),
+                ),
+                active: metric.run.props.active,
                 ...metricsRowValues,
               };
               rowIndex++;
@@ -5207,9 +5237,11 @@ function createAppModel(appConfig: IAppInitialConfig) {
               [
                 'experiment',
                 'run',
+                'runHash',
                 'metric',
                 'context',
                 'date',
+                'duration',
                 'description',
                 'step',
                 'epoch',

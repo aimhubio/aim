@@ -8,10 +8,12 @@ import TableSortIcons from 'components/Table/TableSortIcons';
 import { Badge, JsonViewPopover } from 'components/kit';
 import ControlPopover from 'components/ControlPopover/ControlPopover';
 import ErrorBoundary from 'components/ErrorBoundary/ErrorBoundary';
+import GroupHeading from 'components/Table/GroupHeading';
 
 import COLORS from 'config/colors/colors';
 import { PathEnum } from 'config/enums/routesEnum';
 import { TABLE_DATE_FORMAT } from 'config/dates/dates';
+import { TABLE_DEFAULT_CONFIG } from 'config/table/tableConfigs';
 
 import { ITableColumn } from 'types/pages/metrics/components/TableColumns/TableColumns';
 import { IGroupingSelectOption } from 'types/services/models/imagesExplore/imagesExploreAppModel';
@@ -31,6 +33,30 @@ function getImagesExploreTableColumns(
 ): ITableColumn[] {
   let columns: ITableColumn[] = [
     {
+      key: 'runHash',
+      content: <span>Hash</span>,
+      topHeader: 'Run',
+      pin: order?.left?.includes('runHash')
+        ? 'left'
+        : order?.middle?.includes('runHash')
+        ? null
+        : order?.right?.includes('runHash')
+        ? 'right'
+        : null,
+    },
+    {
+      key: 'run',
+      content: <span>Name</span>,
+      topHeader: 'Run',
+      pin: order?.left?.includes('run')
+        ? 'left'
+        : order?.middle?.includes('run')
+        ? null
+        : order?.right?.includes('run')
+        ? 'right'
+        : 'left',
+    },
+    {
       key: 'experiment',
       content: <span>Experiment</span>,
       topHeader: 'Run',
@@ -41,18 +67,6 @@ function getImagesExploreTableColumns(
         : order?.right?.includes('experiment')
         ? 'right'
         : null,
-    },
-    {
-      key: 'run',
-      content: <span>Run Name</span>,
-      topHeader: 'Run',
-      pin: order?.left?.includes('run')
-        ? 'left'
-        : order?.middle?.includes('run')
-        ? null
-        : order?.right?.includes('run')
-        ? 'right'
-        : 'left',
     },
     {
       key: 'description',
@@ -69,6 +83,18 @@ function getImagesExploreTableColumns(
     {
       key: 'date',
       content: <span>Date</span>,
+      topHeader: 'Run',
+      pin: order?.left?.includes('date')
+        ? 'left'
+        : order?.middle?.includes('date')
+        ? null
+        : order?.right?.includes('date')
+        ? 'right'
+        : null,
+    },
+    {
+      key: 'duration',
+      content: <span>Duration</span>,
       topHeader: 'Run',
       pin: order?.left?.includes('date')
         ? 'left'
@@ -156,7 +182,9 @@ function getImagesExploreTableColumns(
 
   columns = columns.map((col) => ({
     ...col,
-    isHidden: hiddenColumns.includes(col.key),
+    isHidden:
+      !TABLE_DEFAULT_CONFIG.images.nonHidableColumns.has(col.key) &&
+      hiddenColumns.includes(col.key),
   }));
 
   const columnsOrder = order?.left.concat(order.middle).concat(order.right);
@@ -180,18 +208,8 @@ function getImagesExploreTableColumns(
     columns = [
       {
         key: '#',
-        content: (
-          <span
-            style={{
-              textAlign: 'right',
-              display: 'inline-block',
-              width: '100%',
-            }}
-          >
-            #
-          </span>
-        ),
-        topHeader: 'Grouping',
+        content: '',
+        topHeader: 'Group',
         pin: 'left',
       },
       {
@@ -216,7 +234,7 @@ function getImagesExploreTableColumns(
           : order?.right?.includes('groups')
           ? 'right'
           : null,
-        topHeader: 'Groups',
+        topHeader: 'Group Config',
       },
       ...columns,
     ];
@@ -238,12 +256,7 @@ function imagesExploreTableRowRenderer(
         row[col] = {
           content:
             rowData.context.length > 1 ? (
-              <Badge
-                monospace
-                size='xSmall'
-                color={COLORS[0][0]}
-                label={`${rowData.context.length} values`}
-              />
+              <GroupHeading data={rowData.context} />
             ) : (
               <Badge
                 monospace
@@ -312,14 +325,7 @@ function imagesExploreTableRowRenderer(
         };
       } else if (Array.isArray(rowData[col])) {
         row[col] = {
-          content: (
-            <Badge
-              monospace
-              size='xSmall'
-              color={COLORS[0][0]}
-              label={`${rowData[col].length} values`}
-            />
-          ),
+          content: <GroupHeading data={rowData[col]} />,
         };
       }
     }
@@ -342,12 +348,7 @@ function imagesExploreTableRowRenderer(
       context: {
         content:
           rowData.context.length > 1 ? (
-            <Badge
-              monospace
-              size='xSmall'
-              color={COLORS[0][0]}
-              label={`${rowData.context.length} values`}
-            />
+            <GroupHeading data={rowData.context} />
           ) : (
             <Badge
               monospace

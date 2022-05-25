@@ -75,15 +75,14 @@ $border-radius: 0.2rem;
   contain: content;
 }
 .Table__status_indicator {
-  width: 18px;
-  height: 18px;
+  width: 0.75rem;
+  height: 0.75rem;
   padding: 0;
-  // background: unset !important;
-  border: 1px solid $border-color;
+  background-color: unset !important;
   margin-right: $space-xs;
   &::before {
-    top: 5px;
-    left: 5px;
+    top: toRem(3px);
+    left: toRem(3px);
   }
 }
 .Table__action__icon {
@@ -436,6 +435,10 @@ $border-radius: 0.2rem;
 
 .Table__header__action__container {
   display: flex;
+}
+
+.Table__GroupHeading {
+  width: 100%;
 }
 
 .Table__header__action {

@@ -82,6 +82,8 @@ import onNotificationDelete from 'utils/app/onNotificationDelete';
 import onNotificationAdd from 'utils/app/onNotificationAdd';
 import exceptionHandler from 'utils/app/exceptionHandler';
 import getAdvancedSuggestion from 'utils/getAdvancedSuggestions';
+import { processDurationTime } from 'utils/processDurationTime';
+import onVisibilityChange from 'utils/app/onColumnsVisibilityChange';
 
 import createModel from '../model';
 import { AppNameEnum } from '../explorer';
@@ -1320,6 +1322,12 @@ function getDataAsTableRows(
           date: moment(metric.run.props.creation_time * 1000).format(
             TABLE_DATE_FORMAT,
           ),
+          duration: processDurationTime(
+            metric.run.props.creation_time * 1000,
+            metric.run.props.end_time
+              ? metric.run.props.end_time * 1000
+              : Date.now(),
+          ),
           name: metric.images_name,
           context: Object.entries(metric.context).map((entry) =>
             entry.join(':'),
@@ -1331,6 +1339,9 @@ function getDataAsTableRows(
         [
           'experiment',
           'run',
+          'runHash',
+          'duration',
+          'date',
           'metric',
           'context',
           'step',
@@ -1925,32 +1936,40 @@ function onColumnsOrderChange(columnsOrder: any) {
 }
 
 function onColumnsVisibilityChange(hiddenColumns: string[] | string | any) {
-  const configData: IImagesExploreAppConfig | undefined =
-    model.getState()?.config;
-  const columnsData = model.getState()!.tableColumns!;
-  if (configData?.table) {
-    const table = {
-      ...configData.table,
-      hiddenColumns:
-        hiddenColumns[0] === 'all'
-          ? columnsData.map((col: any) => col.key)
-          : hiddenColumns,
-    };
-    const configUpdate = {
-      ...configData,
-      table,
-    };
-    model.setState({
-      config: configUpdate,
-    });
-    setItem('imagesExploreTable', encode(table));
-    updateModelData(configUpdate);
-  }
-  if (hiddenColumns[0] === 'all') {
-    analytics.trackEvent(ANALYTICS_EVENT_KEYS.images.table.showAllColumns);
-  } else if (_.isEmpty(hiddenColumns)) {
-    analytics.trackEvent(ANALYTICS_EVENT_KEYS.images.table.hideAllColumns);
-  }
+  onVisibilityChange({
+    hiddenColumns,
+    model,
+    appName: AppNameEnum.IMAGES,
+    updateModelData,
+  });
+  // const configData: IImagesExploreAppConfig | undefined =
+  //   model.getState()?.config;
+
+  // console.log(hiddenColumns);
+  // const columnsData = model.getState()!.tableColumns!;
+  // if (configData?.table) {
+  //   const table = {
+  //     ...configData.table,
+  //     hiddenColumns:
+  //       hiddenColumns === 'All'
+  //         ? columnsData.map((col: any) => col.key)
+  //         : hiddenColumns,
+  //   };
+  //   const configUpdate = {
+  //     ...configData,
+  //     table,
+  //   };
+  //   model.setState({
+  //     config: configUpdate,
+  //   });
+  //   setItem('imagesExploreTable', encode(table));
+  //   updateModelData(configUpdate);
+  // }
+  // if (hiddenColumns === 'All') {
+  //   analytics.trackEvent(ANALYTICS_EVENT_KEYS.images.table.showAllColumns);
+  // } else if (_.isEmpty(hiddenColumns)) {
+  //   analytics.trackEvent(ANALYTICS_EVENT_KEYS.images.table.hideAllColumns);
+  // }
 }
 
 function onTableDiffShow() {

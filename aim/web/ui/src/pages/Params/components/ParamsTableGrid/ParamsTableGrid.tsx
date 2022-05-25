@@ -1,15 +1,16 @@
-import { Link as RouteLink } from 'react-router-dom';
 import _ from 'lodash-es';
 
-import { Link, Tooltip } from '@material-ui/core';
+import { Tooltip } from '@material-ui/core';
 
 import { Badge, Button, Icon, JsonViewPopover } from 'components/kit';
 import TableSortIcons from 'components/Table/TableSortIcons';
 import ControlPopover from 'components/ControlPopover/ControlPopover';
 import ErrorBoundary from 'components/ErrorBoundary/ErrorBoundary';
+import RunNameColumn from 'components/Table/RunNameColumn';
+import GroupHeading from 'components/Table/GroupHeading';
 
 import COLORS from 'config/colors/colors';
-import { PathEnum } from 'config/enums/routesEnum';
+import { TABLE_DEFAULT_CONFIG } from 'config/table/tableConfigs';
 
 import { ITableColumn } from 'types/pages/metrics/components/TableColumns/TableColumns';
 import { IOnGroupingSelectChangeParams } from 'types/services/models/metrics/metricsAppModel';
@@ -42,6 +43,46 @@ function getParamsTableColumns(
 ): ITableColumn[] {
   let columns: ITableColumn[] = [
     {
+      key: 'runHash',
+      content: <span>Hash</span>,
+      topHeader: 'Run',
+      pin: order?.left?.includes('runHash')
+        ? 'left'
+        : order?.middle?.includes('runHash')
+        ? null
+        : order?.right?.includes('runHash')
+        ? 'right'
+        : null,
+    },
+    {
+      key: 'run',
+      content: <span>Name</span>,
+      topHeader: 'Run',
+      pin: order?.left?.includes('run')
+        ? 'left'
+        : order?.middle?.includes('run')
+        ? null
+        : order?.right?.includes('run')
+        ? 'right'
+        : 'left',
+      columnOptions: ['color', 'stroke', 'chart'].map((groupName: string) => ({
+        value: `${
+          grouping?.[groupName]?.includes('run.hash') ? 'un' : ''
+        }group by ${groupName}`,
+        onClick: () => {
+          if (onGroupingToggle) {
+            onGroupingToggle({
+              groupName,
+              list: grouping?.[groupName]?.includes('run.hash')
+                ? grouping?.[groupName].filter((item) => item !== 'run.hash')
+                : grouping?.[groupName].concat(['run.hash']),
+            } as IOnGroupingSelectChangeParams);
+          }
+        },
+        icon: icons[groupName],
+      })),
+    },
+    {
       key: 'experiment',
       content: <span>Experiment</span>,
       topHeader: 'Run',
@@ -65,34 +106,6 @@ function getParamsTableColumns(
                     (item) => item !== 'run.props.experiment',
                   )
                 : grouping?.[groupName].concat(['run.props.experiment']),
-            } as IOnGroupingSelectChangeParams);
-          }
-        },
-        icon: icons[groupName],
-      })),
-    },
-    {
-      key: 'run',
-      content: <span>Run Name</span>,
-      topHeader: 'Run',
-      pin: order?.left?.includes('run')
-        ? 'left'
-        : order?.middle?.includes('run')
-        ? null
-        : order?.right?.includes('run')
-        ? 'right'
-        : 'left',
-      columnOptions: ['color', 'stroke', 'chart'].map((groupName: string) => ({
-        value: `${
-          grouping?.[groupName]?.includes('run.hash') ? 'un' : ''
-        }group by ${groupName}`,
-        onClick: () => {
-          if (onGroupingToggle) {
-            onGroupingToggle({
-              groupName,
-              list: grouping?.[groupName]?.includes('run.hash')
-                ? grouping?.[groupName].filter((item) => item !== 'run.hash')
-                : grouping?.[groupName].concat(['run.hash']),
             } as IOnGroupingSelectChangeParams);
           }
         },
@@ -154,6 +167,16 @@ function getParamsTableColumns(
         },
         icon: icons[groupName],
       })),
+    },
+    {
+      key: 'duration',
+      content: <span>Duration</span>,
+      topHeader: 'Run',
+      pin: order?.left?.includes('duration')
+        ? 'left'
+        : order?.right?.includes('duration')
+        ? 'right'
+        : null,
     },
     {
       key: 'actions',
@@ -267,7 +290,9 @@ function getParamsTableColumns(
 
   columns = columns.map((col) => ({
     ...col,
-    isHidden: hiddenColumns.includes(col.key),
+    isHidden:
+      !TABLE_DEFAULT_CONFIG.params.nonHidableColumns.has(col.key) &&
+      hiddenColumns.includes(col.key),
   }));
 
   const columnsOrder = order?.left.concat(order.middle).concat(order.right);
@@ -325,7 +350,7 @@ function getParamsTableColumns(
           : order?.right?.includes('groups')
           ? 'right'
           : null,
-        topHeader: 'Groups',
+        topHeader: 'Group Config',
       },
       ...columns,
     ];
@@ -389,30 +414,23 @@ function paramsTableRowRenderer(
         row[col] = {
           content: (
             <ErrorBoundary>
-              <Badge
-                monospace
-                size='xSmall'
-                color={COLORS[0][0]}
-                label={`${rowData[col].length} values`}
-              />
+              <GroupHeading data={rowData[col]} />
             </ErrorBoundary>
           ),
         };
       }
     }
-
     return _.merge({}, rowData, row);
   } else {
     const row = {
       experiment: rowData.experiment,
       run: {
         content: (
-          <Link
-            to={PathEnum.Run_Detail.replace(':runHash', rowData.runHash)}
-            component={RouteLink}
-          >
-            {rowData.run}
-          </Link>
+          <RunNameColumn
+            run={rowData.run}
+            runHash={rowData.runHash}
+            active={rowData.active}
+          />
         ),
       },
       actions: {

@@ -16,18 +16,20 @@ export default function getFilteredSystemMetrics(
   isExclude?: boolean,
 ): string[] | [] {
   let filtered: string[] = [];
-  if (isExclude) {
-    array.forEach((val) => {
-      if (!isSystemMetric(val)) {
-        filtered.push(val);
-      }
-    });
-  } else {
-    array.forEach((val) => {
-      if (isSystemMetric(val)) {
-        filtered.push(val);
-      }
-    });
+  if (Array.isArray(array)) {
+    if (isExclude) {
+      array.forEach((val) => {
+        if (!isSystemMetric(val)) {
+          filtered.push(val);
+        }
+      });
+    } else {
+      array.forEach((val) => {
+        if (isSystemMetric(val)) {
+          filtered.push(val);
+        }
+      });
+    }
   }
 
   return filtered;

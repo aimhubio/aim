@@ -1,18 +1,17 @@
 import moment from 'moment';
 import _ from 'lodash-es';
-import { Link as RouteLink } from 'react-router-dom';
 
-import { Link, Tooltip } from '@material-ui/core';
+import { Tooltip } from '@material-ui/core';
 
 import TableSortIcons from 'components/Table/TableSortIcons';
 import { Badge, Button, Icon } from 'components/kit';
 import ControlPopover from 'components/ControlPopover/ControlPopover';
 import JsonViewPopover from 'components/kit/JsonViewPopover';
 import ErrorBoundary from 'components/ErrorBoundary/ErrorBoundary';
-import StatusLabel from 'components/StatusLabel';
+import RunNameColumn from 'components/Table/RunNameColumn';
+import GroupHeading from 'components/Table/GroupHeading';
 
 import COLORS from 'config/colors/colors';
-import { PathEnum } from 'config/enums/routesEnum';
 import { TABLE_DATE_FORMAT } from 'config/dates/dates';
 import { TABLE_DEFAULT_CONFIG } from 'config/table/tableConfigs';
 
@@ -64,7 +63,6 @@ function getMetricsTableColumns(
         ? 'right'
         : null,
     },
-
     {
       key: 'run',
       content: <span>Name</span>,
@@ -147,9 +145,9 @@ function getMetricsTableColumns(
       key: 'duration',
       content: <span>Duration</span>,
       topHeader: 'Run',
-      pin: order?.left?.includes('date')
+      pin: order?.left?.includes('duration')
         ? 'left'
-        : order?.right?.includes('date')
+        : order?.right?.includes('duration')
         ? 'right'
         : null,
     },
@@ -393,12 +391,7 @@ function metricsTableRowRenderer(
         row.metric = {
           content:
             Array.isArray(rowData.metric) && rowData.metric.length > 1 ? (
-              <Badge
-                monospace
-                size='xSmall'
-                color={COLORS[0][0]}
-                label={`${rowData.context.length} values`}
-              />
+              <GroupHeading data={rowData.context} />
             ) : (
               <span>{metricName}</span>
             ),
@@ -407,12 +400,7 @@ function metricsTableRowRenderer(
         row[col] = {
           content:
             rowData.context.length > 1 ? (
-              <Badge
-                monospace
-                size='xSmall'
-                color={COLORS[0][0]}
-                label={`${rowData.context.length} values`}
-              />
+              <GroupHeading data={rowData.context} />
             ) : (
               <Badge
                 monospace
@@ -489,14 +477,7 @@ function metricsTableRowRenderer(
             : moment(rowData.time).format(TABLE_DATE_FORMAT);
       } else if (Array.isArray(rowData[col])) {
         row[col] = {
-          content: (
-            <Badge
-              monospace
-              size='xSmall'
-              color={COLORS[0][0]}
-              label={`${rowData[col].length} values`}
-            />
-          ),
+          content: <GroupHeading data={rowData[col]} />,
         };
       }
     }
@@ -507,22 +488,11 @@ function metricsTableRowRenderer(
       experiment: rowData.experiment,
       run: {
         content: (
-          <div style={{ display: 'flex' }}>
-            <Tooltip title={rowData.active ? 'In Progress' : 'Finished'}>
-              <div>
-                <StatusLabel
-                  className='Table__status_indicator'
-                  status={rowData.active ? 'alert' : 'success'}
-                />
-              </div>
-            </Tooltip>
-            <Link
-              to={PathEnum.Run_Detail.replace(':runHash', rowData.runHash)}
-              component={RouteLink}
-            >
-              {rowData.run}
-            </Link>
-          </div>
+          <RunNameColumn
+            run={rowData.run}
+            runHash={rowData.runHash}
+            active={rowData.active}
+          />
         ),
       },
       metric: isSystemMetric(rowData.metric)
@@ -563,7 +533,6 @@ function metricsTableRowRenderer(
         ),
       },
     };
-
     return _.merge({}, rowData, row);
   }
 }
