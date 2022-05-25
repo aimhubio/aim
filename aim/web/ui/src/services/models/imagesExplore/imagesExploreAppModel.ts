@@ -692,6 +692,8 @@ function setModelData(rawData: any[], configData: IImagesExploreAppConfig) {
       configData.table.hiddenColumns!,
       sortFields,
       onTableSortChange,
+      config.grouping as any,
+      onGroupingSelectChange,
     ),
     sameValueColumns: tableData.sameValueColumns,
     groupingSelectOptions,
@@ -757,6 +759,8 @@ function updateModelData(
     configData.table.hiddenColumns!,
     configData.table.sortFields,
     onTableSortChange,
+    configData.grouping as any,
+    onGroupingSelectChange,
   );
   const tableRef: any = model.getState()?.refs?.tableRef;
   tableRef?.current?.updateData({
@@ -1593,6 +1597,8 @@ function onExportTableData(e: React.ChangeEvent<any>): void {
     config?.table.hiddenColumns!,
     config?.table.sortFields,
     onTableSortChange,
+    config.grouping as any,
+    onGroupingSelectChange,
   );
 
   const excludedFields: string[] = ['#', 'actions'];
@@ -1882,34 +1888,6 @@ function onColumnsVisibilityChange(hiddenColumns: string[] | string | any) {
     appName: AppNameEnum.IMAGES,
     updateModelData,
   });
-  // const configData: IImagesExploreAppConfig | undefined =
-  //   model.getState()?.config;
-
-  // console.log(hiddenColumns);
-  // const columnsData = model.getState()!.tableColumns!;
-  // if (configData?.table) {
-  //   const table = {
-  //     ...configData.table,
-  //     hiddenColumns:
-  //       hiddenColumns === 'All'
-  //         ? columnsData.map((col: any) => col.key)
-  //         : hiddenColumns,
-  //   };
-  //   const configUpdate = {
-  //     ...configData,
-  //     table,
-  //   };
-  //   model.setState({
-  //     config: configUpdate,
-  //   });
-  //   setItem('imagesExploreTable', encode(table));
-  //   updateModelData(configUpdate);
-  // }
-  // if (hiddenColumns === 'All') {
-  //   analytics.trackEvent(ANALYTICS_EVENT_KEYS.images.table.showAllColumns);
-  // } else if (_.isEmpty(hiddenColumns)) {
-  //   analytics.trackEvent(ANALYTICS_EVENT_KEYS.images.table.hideAllColumns);
-  // }
 }
 
 function onTableDiffShow() {

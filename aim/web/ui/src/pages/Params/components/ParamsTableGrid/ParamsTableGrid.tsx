@@ -12,6 +12,8 @@ import GroupHeading from 'components/Table/GroupHeading';
 import COLORS from 'config/colors/colors';
 import { TABLE_DEFAULT_CONFIG } from 'config/table/tableConfigs';
 
+import { AppNameEnum } from 'services/models/explorer';
+
 import { ITableColumn } from 'types/pages/metrics/components/TableColumns/TableColumns';
 import { IOnGroupingSelectChangeParams } from 'types/services/models/metrics/metricsAppModel';
 import { IGroupingSelectOption } from 'types/services/models/imagesExplore/imagesExploreAppModel';
@@ -22,12 +24,7 @@ import { formatSystemMetricName } from 'utils/formatSystemMetricName';
 import contextToString from 'utils/contextToString';
 import { formatValue } from 'utils/formatValue';
 import { SortActionTypes, SortField } from 'utils/getSortedFields';
-
-const icons: { [key: string]: string } = {
-  color: 'coloring',
-  stroke: 'line-style',
-  chart: 'chart-group',
-};
+import getColumnOptions from 'utils/getColumnOptions';
 
 function getParamsTableColumns(
   groupingSelectOptions: IGroupingSelectOption[],
@@ -40,6 +37,7 @@ function getParamsTableColumns(
   onSort?: ({ sortFields, order, index, actionType }: any) => void,
   grouping?: { [key: string]: string[] },
   onGroupingToggle?: (params: IOnGroupingSelectChangeParams) => void,
+  appName?: AppNameEnum,
 ): ITableColumn[] {
   let columns: ITableColumn[] = [
     {
@@ -53,6 +51,12 @@ function getParamsTableColumns(
         : order?.right?.includes('hash')
         ? 'right'
         : null,
+      columnOptions: getColumnOptions(
+        grouping!,
+        onGroupingToggle!,
+        appName!,
+        'run.hash',
+      ),
     },
     {
       key: 'run',
@@ -65,24 +69,12 @@ function getParamsTableColumns(
         : order?.right?.includes('run')
         ? 'right'
         : 'left',
-      columnOptions: ['color', 'stroke', 'chart'].map((groupName: string) => ({
-        value: `${
-          grouping?.[groupName]?.includes('run.props.name') ? 'un' : ''
-        }group by ${groupName}`,
-        onClick: () => {
-          if (onGroupingToggle) {
-            onGroupingToggle({
-              groupName,
-              list: grouping?.[groupName]?.includes('run.props.name')
-                ? grouping?.[groupName].filter(
-                    (item) => item !== 'run.props.name',
-                  )
-                : grouping?.[groupName].concat(['run.props.name']),
-            } as IOnGroupingSelectChangeParams);
-          }
-        },
-        icon: icons[groupName],
-      })),
+      columnOptions: getColumnOptions(
+        grouping!,
+        onGroupingToggle!,
+        appName!,
+        'run.props.name',
+      ),
     },
     {
       key: 'experiment',
@@ -95,26 +87,12 @@ function getParamsTableColumns(
         : order?.right?.includes('experiment')
         ? 'right'
         : null,
-      columnOptions: ['color', 'stroke', 'chart'].map((groupName: string) => ({
-        value: `${
-          grouping?.[groupName]?.includes('run.props.experiment.name')
-            ? 'un'
-            : ''
-        }group by ${groupName}`,
-        onClick: () => {
-          if (onGroupingToggle) {
-            onGroupingToggle({
-              groupName,
-              list: grouping?.[groupName]?.includes('run.props.experiment.name')
-                ? grouping?.[groupName].filter(
-                    (item) => item !== 'run.props.experiment.name',
-                  )
-                : grouping?.[groupName].concat(['run.props.experiment.name']),
-            } as IOnGroupingSelectChangeParams);
-          }
-        },
-        icon: icons[groupName],
-      })),
+      columnOptions: getColumnOptions(
+        grouping!,
+        onGroupingToggle!,
+        appName!,
+        'run.props.experiment.name',
+      ),
     },
     {
       key: 'description',
@@ -139,22 +117,12 @@ function getParamsTableColumns(
         : order?.right?.includes('date')
         ? 'right'
         : null,
-      columnOptions: ['color', 'stroke', 'chart'].map((groupName: string) => ({
-        value: `${
-          grouping?.[groupName]?.includes('run.date') ? 'un' : ''
-        }group by ${groupName}`,
-        onClick: () => {
-          if (onGroupingToggle) {
-            onGroupingToggle({
-              groupName,
-              list: grouping?.[groupName]?.includes('run.date')
-                ? grouping?.[groupName].filter((item) => item !== 'run.date')
-                : grouping?.[groupName].concat(['run.date']),
-            } as IOnGroupingSelectChangeParams);
-          }
-        },
-        icon: icons[groupName],
-      })),
+      columnOptions: getColumnOptions(
+        grouping!,
+        onGroupingToggle!,
+        appName!,
+        'run.props.experiment.name',
+      ),
     },
     {
       key: 'duration',
@@ -254,23 +222,11 @@ function getParamsTableColumns(
           : order?.right?.includes(param)
           ? 'right'
           : null,
-        columnOptions: ['color', 'stroke', 'chart'].map(
-          (groupName: string) => ({
-            value: `${
-              grouping?.[groupName]?.includes(paramKey) ? 'un' : ''
-            }group by ${groupName}`,
-            onClick: () => {
-              if (onGroupingToggle) {
-                onGroupingToggle({
-                  groupName,
-                  list: grouping?.[groupName]?.includes(paramKey)
-                    ? grouping?.[groupName].filter((item) => item !== paramKey)
-                    : grouping?.[groupName].concat([paramKey]),
-                } as IOnGroupingSelectChangeParams);
-              }
-            },
-            icon: icons[groupName],
-          }),
+        columnOptions: getColumnOptions(
+          grouping!,
+          onGroupingToggle!,
+          appName!,
+          paramKey,
         ),
       };
     }),

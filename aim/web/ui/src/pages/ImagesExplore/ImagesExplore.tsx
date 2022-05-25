@@ -200,7 +200,6 @@ function ImagesExplore(): React.FunctionComponentElement<React.ReactNode> {
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
-  console.log(imagesExploreData?.config?.table);
   return (
     <ErrorBoundary>
       <div className='ImagesExplore__container' ref={wrapperElemRef}>

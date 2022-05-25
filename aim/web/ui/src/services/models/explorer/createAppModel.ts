@@ -3941,6 +3941,7 @@ function createAppModel(appConfig: IAppInitialConfig) {
           onSortChange,
           configData.grouping as any,
           onModelGroupingSelectChange,
+          AppNameEnum.PARAMS,
         );
 
         if (model.getState()?.requestStatus !== RequestStatusEnum.Pending) {
@@ -4392,6 +4393,7 @@ function createAppModel(appConfig: IAppInitialConfig) {
           onSortChange,
           configData.grouping as any,
           onModelGroupingSelectChange,
+          AppNameEnum.PARAMS,
         );
         const tableRef: any = model.getState()?.refs?.tableRef;
         tableRef?.current?.updateData({
@@ -4967,6 +4969,7 @@ function createAppModel(appConfig: IAppInitialConfig) {
           onSortChange,
           configData.grouping as any,
           onModelGroupingSelectChange,
+          AppNameEnum.SCATTERS,
         );
 
         if (model.getState()?.requestStatus !== RequestStatusEnum.Pending) {
@@ -5635,6 +5638,7 @@ function createAppModel(appConfig: IAppInitialConfig) {
           onSortChange,
           configData.grouping as any,
           onModelGroupingSelectChange,
+          AppNameEnum.SCATTERS,
         );
         const tableRef: any = model.getState()?.refs?.tableRef;
         tableRef?.current?.updateData({

@@ -1,8 +1,7 @@
 import moment from 'moment';
 import _ from 'lodash-es';
-import { Link as RouteLink } from 'react-router-dom';
 
-import { Link, Tooltip } from '@material-ui/core';
+import { Tooltip } from '@material-ui/core';
 
 import TableSortIcons from 'components/Table/TableSortIcons';
 import { Badge, JsonViewPopover } from 'components/kit';
@@ -12,16 +11,19 @@ import GroupHeading from 'components/Table/GroupHeading';
 import RunNameColumn from 'components/Table/RunNameColumn';
 
 import COLORS from 'config/colors/colors';
-import { PathEnum } from 'config/enums/routesEnum';
 import { TABLE_DATE_FORMAT } from 'config/dates/dates';
 import { TABLE_DEFAULT_CONFIG } from 'config/table/tableConfigs';
 
+import { AppNameEnum } from 'services/models/explorer';
+
 import { ITableColumn } from 'types/pages/metrics/components/TableColumns/TableColumns';
 import { IGroupingSelectOption } from 'types/services/models/imagesExplore/imagesExploreAppModel';
+import { IOnGroupingSelectChangeParams } from 'types/services/models/metrics/metricsAppModel';
 
 import contextToString from 'utils/contextToString';
 import { formatValue } from 'utils/formatValue';
 import { SortActionTypes, SortField } from 'utils/getSortedFields';
+import getColumnOptions from 'utils/getColumnOptions';
 
 function getImagesExploreTableColumns(
   paramColumns: string[] = [],
@@ -31,6 +33,8 @@ function getImagesExploreTableColumns(
   hiddenColumns: string[],
   sortFields?: any[],
   onSort?: ({ sortFields, order, index, actionType }: any) => void,
+  grouping?: { [key: string]: string[] },
+  onGroupingToggle?: (params: IOnGroupingSelectChangeParams) => void,
 ): ITableColumn[] {
   let columns: ITableColumn[] = [
     {
@@ -44,6 +48,12 @@ function getImagesExploreTableColumns(
         : order?.right?.includes('hash')
         ? 'right'
         : null,
+      columnOptions: getColumnOptions(
+        grouping!,
+        onGroupingToggle!,
+        AppNameEnum.IMAGES!,
+        'run.hash',
+      ),
     },
     {
       key: 'run',
@@ -56,6 +66,12 @@ function getImagesExploreTableColumns(
         : order?.right?.includes('run')
         ? 'right'
         : 'left',
+      columnOptions: getColumnOptions(
+        grouping!,
+        onGroupingToggle!,
+        AppNameEnum.IMAGES!,
+        'run.props.name',
+      ),
     },
     {
       key: 'experiment',
@@ -68,6 +84,12 @@ function getImagesExploreTableColumns(
         : order?.right?.includes('experiment')
         ? 'right'
         : null,
+      columnOptions: getColumnOptions(
+        grouping!,
+        onGroupingToggle!,
+        AppNameEnum.IMAGES!,
+        'run.props.experiment.name',
+      ),
     },
     {
       key: 'description',
@@ -92,6 +114,12 @@ function getImagesExploreTableColumns(
         : order?.right?.includes('date')
         ? 'right'
         : null,
+      columnOptions: getColumnOptions(
+        grouping!,
+        onGroupingToggle!,
+        AppNameEnum.IMAGES!,
+        'run.props.creation_time',
+      ),
     },
     {
       key: 'duration',
@@ -114,6 +142,12 @@ function getImagesExploreTableColumns(
         : order?.right?.includes('name')
         ? 'right'
         : null,
+      columnOptions: getColumnOptions(
+        grouping!,
+        onGroupingToggle!,
+        AppNameEnum.IMAGES!,
+        'name',
+      ),
     },
     {
       key: 'context',
@@ -124,6 +158,12 @@ function getImagesExploreTableColumns(
         : order?.right?.includes('context')
         ? 'right'
         : null,
+      columnOptions: getColumnOptions(
+        grouping!,
+        onGroupingToggle!,
+        AppNameEnum.IMAGES!,
+        'context',
+      ),
     },
     {
       key: 'actions',

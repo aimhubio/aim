@@ -56,7 +56,6 @@ function ColumnItem(props: any) {
                 name={props.isHidden ? 'eye-outline-hide' : 'eye-show-outline'}
               />
             </span>
-
             <div>
               <Text tint={100} className='ColumnItem__name'>
                 {isSystemMetric(props.data)
