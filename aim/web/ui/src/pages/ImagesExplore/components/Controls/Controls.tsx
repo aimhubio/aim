@@ -54,7 +54,7 @@ function Controls(
           <ControlPopover
             title='Image properties'
             anchor={({ onAnchorClick, opened }) => (
-              <Tooltip title='Image Properties'>
+              <Tooltip title='Image properties'>
                 <div
                   onClick={onAnchorClick}
                   className={`Controls__anchor ${
@@ -88,7 +88,7 @@ function Controls(
           <ControlPopover
             title='Images sorting'
             anchor={({ onAnchorClick, opened }) => (
-              <Tooltip title='Images Sorting'>
+              <Tooltip title='Images sorting'>
                 <div
                   onClick={onAnchorClick}
                   className={`Controls__anchor ${

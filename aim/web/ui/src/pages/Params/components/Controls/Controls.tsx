@@ -29,7 +29,7 @@ function Controls(
   return (
     <ErrorBoundary>
       <div className='Params__Controls__container'>
-        <Tooltip title='Curve Interpolation'>
+        <Tooltip title='Curve interpolation'>
           <div
             className={`Params__Controls__anchor ${
               props.curveInterpolation === CurveEnum.Linear
@@ -46,7 +46,7 @@ function Controls(
             />
           </div>
         </Tooltip>
-        <Tooltip title='Color Indicator'>
+        <Tooltip title='Color indicator'>
           <div
             className={`Params__Controls__anchor ${
               props.isVisibleColorIndicator ? 'active outlined' : ''

@@ -40,7 +40,7 @@ function Controls(
         <ErrorBoundary>
           <div>
             <ControlPopover
-              title='Select Trendline Options'
+              title='Select trendline options'
               anchor={({ onAnchorClick, opened }) => (
                 <Tooltip
                   title={
@@ -123,7 +123,7 @@ function Controls(
         </ErrorBoundary>
         <ErrorBoundary>
           {/* TODO add ability to open modals in ControlPopover component and change the name of the ControlPopover to more general*/}
-          <Tooltip title='Export Chart'>
+          <Tooltip title='Export chart'>
             <div className='Controls__anchor' onClick={onToggleExportPreview}>
               <Icon className='Controls__icon' name='download' />
             </div>

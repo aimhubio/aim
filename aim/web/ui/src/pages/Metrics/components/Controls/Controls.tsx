@@ -246,7 +246,7 @@ function Controls(
         </div>
         <Tooltip
           title={
-            props.ignoreOutliers ? 'Outliers Are Ignored' : 'Ignore Outliers'
+            props.ignoreOutliers ? 'Outliers are ignored' : 'Ignore outliers'
           }
         >
           <div
@@ -382,10 +382,10 @@ function Controls(
         <div>
           <ErrorBoundary>
             <ControlPopover
-              title='Select Option To Zoom Out'
+              title='Select option to zoom out'
               open={!!props.zoom?.history.length}
               anchor={({ onAnchorClick, opened }) => (
-                <Tooltip title='Zoom Out'>
+                <Tooltip title='Zoom out'>
                   <div
                     className={`Controls__anchor ${
                       props.zoom?.history.length ? '' : 'disabled'
@@ -423,7 +423,7 @@ function Controls(
         </div>
         <ErrorBoundary>
           {/* TODO add ability to open modals in ControlPopover component and change the name of the ControlPopover to more general*/}
-          <Tooltip title='Export Chart'>
+          <Tooltip title='Export chart'>
             <div className='Controls__anchor' onClick={onToggleExportPreview}>
               <Icon className='Controls__icon' name='download' />
             </div>

@@ -43,7 +43,7 @@ export const ANALYTICS_EVENT_KEYS = {
           changeTooltipContent:
             '[MetricsExplorer][Chart][Controls] Change tooltip content',
         },
-        exportChart: '[MetricsExplorer][Chart][Controls] Export Chart as Image',
+        exportChart: '[MetricsExplorer][Chart][Controls] Export chart as Image',
       },
     },
     groupings: {
@@ -166,7 +166,7 @@ export const ANALYTICS_EVENT_KEYS = {
             '[ScattersExplorer][Chart][Controls] Change tooltip content',
         },
         exportChart:
-          '[ScattersExplorer][Chart][Controls] Export Chart as Image',
+          '[ScattersExplorer][Chart][Controls] Export chart as Image',
       },
     },
     groupings: {
