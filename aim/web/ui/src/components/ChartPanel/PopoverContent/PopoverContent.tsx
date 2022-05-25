@@ -103,18 +103,13 @@ const PopoverContent = React.forwardRef(function PopoverContent(
         );
       }
       case ChartTypeEnum.ImageSet: {
-        const {
-          step = '',
-          index = '',
-          caption = '',
-          images_name = '',
-        } = mediaContent;
+        const { step = '', index = '', caption = '', name = '' } = mediaContent;
         return (
           <ErrorBoundary>
             <div className='PopoverContent__box PopoverContent__imageSetBox'>
               <strong>{caption}</strong>
               <div className='PopoverContent__value'>
-                <strong>{images_name}</strong>
+                <strong>{name}</strong>
                 <Text className='PopoverContent__contextValue'>
                   {contextToString(context)}
                 </Text>

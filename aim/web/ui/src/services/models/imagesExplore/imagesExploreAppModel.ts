@@ -81,6 +81,7 @@ import alphabeticalSortComparator from 'utils/alphabeticalSortComparator';
 import onNotificationDelete from 'utils/app/onNotificationDelete';
 import onNotificationAdd from 'utils/app/onNotificationAdd';
 import exceptionHandler from 'utils/app/exceptionHandler';
+import getGroupingSelectOptions from 'utils/app/getGroupingSelectOptions';
 import getAdvancedSuggestion from 'utils/getAdvancedSuggestions';
 
 import createModel from '../model';
@@ -449,6 +450,7 @@ function getSelectFormOptions(projectsData: IProjectParamsMetrics) {
 function processData(data: any[]): {
   data: IMetricsCollection<IImageData>[];
   params: string[];
+  runProps: string[];
   contexts: string[];
   selectedRows: any;
 } {
@@ -456,10 +458,12 @@ function processData(data: any[]): {
   let selectedRows = model.getState()?.selectedRows;
   let metrics: any[] = [];
   let params: string[] = [];
+  let runProps: string[] = [];
   let highLevelParams: string[] = [];
   let contexts: string[] = [];
   data?.forEach((run: IImageRunData) => {
     params = params.concat(getObjectPaths(run.params, run.params));
+    runProps = runProps.concat(getObjectPaths(run.props, run.props));
     highLevelParams = highLevelParams.concat(
       getObjectPaths(run.params, run.params, '', false, true),
     );
@@ -482,7 +486,7 @@ function processData(data: any[]): {
           });
           metrics.push({
             ...image,
-            images_name: trace.name,
+            name: trace.name,
             step: trace.iters[stepIndex],
             context: trace.context,
             run: _.omit(run, 'traces'),
@@ -519,6 +523,7 @@ function processData(data: any[]): {
       sortFields?.map((f: any) => f.order),
     ),
   );
+  const uniqProps = _.uniq(runProps).sort();
   const uniqParams = _.uniq(params).sort();
   const uniqHighLevelParams = _.uniq(highLevelParams).sort();
   const uniqContexts = _.uniq(contexts).sort();
@@ -540,6 +545,7 @@ function processData(data: any[]): {
   }
   return {
     data: processedData,
+    runProps: uniqProps,
     params: [...new Set(uniqParams.concat(uniqHighLevelParams))].sort(),
     contexts: uniqContexts,
     selectedRows,
@@ -548,11 +554,14 @@ function processData(data: any[]): {
 
 function setModelData(rawData: any[], configData: IImagesExploreAppConfig) {
   const sortFields = model.getState()?.config?.table.sortFields;
-  const { data, params, contexts, selectedRows } = processData(rawData);
+  const { data, params, runProps, contexts, selectedRows } =
+    processData(rawData);
   const groupingSelectOptions = [
     ...getGroupingSelectOptions({
       params,
       contexts,
+      runProps,
+      sequenceName: 'images',
     }),
   ];
   const { mediaSetData, orderedMap } = getDataAsMediaSetNestedObject({
@@ -560,7 +569,6 @@ function setModelData(rawData: any[], configData: IImagesExploreAppConfig) {
     groupingSelectOptions,
     model,
   });
-
   tooltipData = getTooltipData({
     processedData: data,
     paramKeys: params,
@@ -692,13 +700,15 @@ function updateModelData(
   configData: IImagesExploreAppConfig = model.getState()!.config!,
   shouldURLUpdate?: boolean,
 ): void {
-  const { data, params, contexts, selectedRows } = processData(
+  const { data, params, runProps, contexts, selectedRows } = processData(
     model.getState()?.rawData as any[],
   );
   const groupingSelectOptions = [
     ...getGroupingSelectOptions({
       params,
+      runProps,
       contexts,
+      sequenceName: 'images',
     }),
   ];
   const { mediaSetData, orderedMap } = getDataAsMediaSetNestedObject({
@@ -789,71 +799,6 @@ function getFilteredGroupingOptions(
   } else {
     return [];
   }
-}
-
-function getGroupingSelectOptions({
-  params,
-  contexts = [],
-}: {
-  params: string[];
-  contexts?: string[];
-}): IGroupingSelectOption[] {
-  const paramsOptions: IGroupingSelectOption[] = params.map((param) => ({
-    group: 'run',
-    label: `run.${param}`,
-    value: `run.params.${param}`,
-  }));
-
-  const contextOptions: IGroupingSelectOption[] = contexts.map((context) => ({
-    group: 'images',
-    label: `images.context.${context}`,
-    value: `context.${context}`,
-  }));
-
-  return [
-    {
-      group: 'run',
-      label: 'run.name',
-      value: 'run.props.name',
-    },
-    {
-      group: 'run',
-      label: 'run.experiment',
-      value: 'run.props.experiment.name',
-    },
-    {
-      group: 'run',
-      label: 'run.hash',
-      value: 'run.hash',
-    },
-    {
-      group: 'run',
-      label: 'run.creation_time',
-      value: 'run.props.creation_time',
-    },
-    ...paramsOptions,
-    {
-      group: 'images',
-      label: 'images.name',
-      value: 'images_name',
-    },
-    {
-      group: 'images',
-      label: 'images.context',
-      value: 'context',
-    },
-    ...contextOptions,
-    {
-      group: 'record',
-      label: 'record.step',
-      value: 'step',
-    },
-    {
-      group: 'record',
-      label: 'record.index',
-      value: 'index',
-    },
-  ];
 }
 
 function groupData(data: any[]): any {
@@ -1315,7 +1260,7 @@ function getDataAsTableRows(
           date: moment(metric.run.props.creation_time * 1000).format(
             TABLE_DATE_FORMAT,
           ),
-          name: metric.images_name,
+          name: metric.name,
           context: Object.entries(metric.context).map((entry) =>
             entry.join(':'),
           ),
@@ -2332,7 +2277,6 @@ const imagesExploreAppModel = {
   onImageRenderingChange,
   onImageAlignmentChange,
   showRangePanel,
-  getGroupingSelectOptions,
   getDataAsImageSet,
   onStackingToggle,
   onImagesSortChange,
