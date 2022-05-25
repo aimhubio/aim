@@ -68,7 +68,7 @@ class TestQuery(PrefilledDataTestBase):
     def test_invalid_query(self):
         q = 'invalid_varialble.get("hparams", "batch_size") == None'
         with self.assertRaises(Exception):
-            next(iter(self.repo.query_metrics(q)))
+            next(iter(self.repo.query_metrics(q, report_mode=0)))
 
     def test_query_raise_syntax_error(self):
         q = 'run.hash == "x" && metric.name == "y"'

@@ -18,7 +18,7 @@ class TestRunMetricNumpyTypes(TestBase):
         run.track(np.float32(1.0), name='numpy_float32')
 
         repo = Repo.default_repo()
-        metric_names = {metric.name for metric in repo.query_metrics()}
+        metric_names = {metric.name for metric in repo.query_metrics(report_mode=0)}
         expected_metric_names = {'single_item_array', 'single_item_3d_array', 'numpy_float64', 'numpy_float32'}
         self.assertSetEqual(expected_metric_names, metric_names)
 

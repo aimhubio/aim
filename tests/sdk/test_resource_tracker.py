@@ -17,7 +17,8 @@ class TestRunResourceTracker(TestBase):
         time.sleep(.1)  # allow tracker to add resource usage metrics
         del run
 
-        metrics = list(self.repo.query_metrics(f'run.hash == "{run_hash}" and metric.name.startswith("__")'))
+        metrics = list(self.repo.query_metrics(f'run.hash == "{run_hash}" and metric.name.startswith("__")',
+                                               report_mode=0))
         expected_metrics = {'__system__cpu', '__system__disk_percent',
                             '__system__memory_percent', '__system__p_memory_percent'}
         metric_names = set(m.name for m in metrics)
@@ -31,7 +32,8 @@ class TestRunResourceTracker(TestBase):
         time.sleep(3)  # allow tracker to add resource usage metrics
         del run
 
-        metrics = list(self.repo.query_metrics(f'run.hash == "{run_hash}" and metric.name.startswith("__")'))
+        metrics = list(self.repo.query_metrics(f'run.hash == "{run_hash}" and metric.name.startswith("__")',
+                                               report_mode=0))
         expected_metrics = {'__system__cpu', '__system__disk_percent',
                             '__system__memory_percent', '__system__p_memory_percent'}
         metric_names = set(m.name for m in metrics)
@@ -49,7 +51,8 @@ class TestRunResourceTracker(TestBase):
         time.sleep(.1)  # allow tracker to add resource usage metrics
         del run
 
-        metrics = list(self.repo.query_metrics(f'run.hash == "{run_hash}" and metric.name.startswith("__")'))
+        metrics = list(self.repo.query_metrics(f'run.hash == "{run_hash}" and metric.name.startswith("__")',
+                                               report_mode=0))
         self.assertListEqual([], metrics)
 
     def test_resource_tracking_interval_limits(self):
