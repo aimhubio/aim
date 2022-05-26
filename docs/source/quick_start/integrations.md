@@ -185,27 +185,33 @@ xgboost.train(param, dtrain, num_round, watchlist,
 Adapter source can be found [here](https://github.com/aimhubio/aim/blob/main/aim/sdk/adapters/xgboost.py).  
 Example using XGboost can be found [here](https://github.com/aimhubio/aim/blob/main/examples/xgboost_track.py).
 
-### Integration with Catboost
+### Integration with CatBoost
 
-It only takes two steps to integrate Aim with [Catboost](https://catboost.ai/).
+It only takes two steps to integrate Aim with [CatBoost](https://catboost.ai/).
+
+Step 1: Import `AimLogger` to track the training metadata.
 
 ```python
 # call sdk aim.catboost 
 from aim.catboost import AimLogger
 ```
 
-In Catboost, we call the [`.fit()`](https://catboost.ai/en/docs/concepts/python-reference_catboost_fit) method of the
-model object to train the data. The method can be supplied with `log_cout` parameter to redirect output logs into custom
-handler which in our case is the recently mentioned `AimLogger`. On top of that we can supply the `.fit()` method with
-`logging_level` parameter to make Catboost yield more logs to track `test` & `best` values, but it depends on your
-training log output.
+Step 2: Pass the logger to the trainer.
+
+Trainings in CatBoost are initiated with `fit` method. 
+The method can be supplied with `log_cout` parameter to redirect output logs into a custom handler.
+Pass `AimLogger` to automatically track metrics and hyper-parameters with Aim.
+Depending on the training log output, an additional argument `logging_level` could be passed to make Catboost yield more logs to track `test` & `best` values.
 
 ```python
 model.fit(train_data, train_labels, log_cout=AimLogger(loss_function='Logloss'), logging_level='Info')
 ```
 
-Beside this `AimLogger` accepts `log_cout` parameter to preserve the default functionality of Catboost's log handling
-callback. You can pass your own handler, else it defaults to `sys.stdout`.
+`AimLogger` also accepts `log_cout` parameter to preserve the default functionality of Catboost's log handling.
+You can pass your own handler, else it defaults to `sys.stdout`.
+
+See `AimLogger` source [here](https://github.com/aimhubio/aim/blob/main/aim/sdk/adapters/catboost.py).  
+Check out a simple example with Aim and CatBoost [here](https://github.com/aimhubio/aim/blob/main/examples/catboost_track.py).
 
 ### Integration with LightGBM
 
