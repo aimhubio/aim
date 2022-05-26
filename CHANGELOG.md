@@ -16,6 +16,7 @@
 - Changed grouped rows' min and max values names to `Group Min` and `Group Max` (VkoHov)
 - Preserve the search input value of the grouping dropdown (VkoHov)
 - Fix params duplication in dropdowns (VkoHov)
+- Resolve typing latency issue in the query search input (arsengit)
 
 ## 3.10.1 May 18, 2022
 
