@@ -7,6 +7,7 @@
 - Fix log capturing crash during run garbage collection (mihran113)
 - Fix Pytorch Lightning adapter `finalize` method (mihran113)
 - Fix params duplication in dropdowns (VkoHov)
+- Skip system params in Explorer pages (alberttorosyan)
 
 ## 3.10.1 May 18, 2022
 

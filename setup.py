@@ -71,6 +71,7 @@ REQUIRED = [
     'uvicorn>=0.12.0',
     'Pillow>=8.0.0',
     'grpcio==1.42.0',
+    'protobuf >= 3.9.2,<4.0.0',
     # fastapi to support python3.6
     'async-exit-stack>=1.0.0; python_version<"3.7"',
     'async-generator>=1.0; python_version<"3.7"',
