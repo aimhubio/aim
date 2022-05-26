@@ -215,16 +215,16 @@ Check out a simple example with Aim and CatBoost [here](https://github.com/aimhu
 
 ### Integration with LightGBM
 
-Aim has integration with [LightGBM](https://lightgbm.readthedocs.io/en/latest/index.html) to help you track your
-training data.
+Aim comes with a builtin callback designed to automatically track [LightGBM](https://lightgbm.readthedocs.io/en/latest/index.html) trainings.
+It takes two steps to integrate Aim into your training script.
 
-Step 1: Explicitly import the `AimCallback` for tracking training data.
+Step 1: Explicitly import the `AimCallback` for tracking training metadata.
 
 ```python
 from aim.lightgbm import AimCallback
 ```
 
-Step 2: Add callback into `callbacks` list upon initiating your training
+Step 2: Pass the callback to `callbacks` list upon initiating your training.
 
 ```python
 gbm = lgb.train(params,
@@ -237,7 +237,8 @@ gbm = lgb.train(params,
 While your training is running you can start `aim up` in another terminal session and observe the information in real
 time.
 
-Adapter source can be found [here](https://github.com/aimhubio/aim/blob/main/aim/sdk/adapters/lightgbm.py).
+See `AimCallback` source [here](https://github.com/aimhubio/aim/blob/main/aim/sdk/adapters/lightgbm.py).  
+Check out a simple regression task example [here](https://github.com/aimhubio/aim/blob/main/examples/lightgbm_track.py).
 
 ### What's next?
 
