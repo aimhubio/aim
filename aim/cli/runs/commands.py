@@ -130,4 +130,5 @@ def upload_runs(ctx, bucket):
     if success:
         click.echo(f'Successfully uploaded runs in {uploaded_zip_file_name}.')
     else:
-        click.echo(f'Something went wrong while uploading runs.')
+        click.echo(f'The storage backup failed because of the following error: {uploaded_zip_file_name}.')
+
