@@ -1,6 +1,6 @@
 # Changelog
 
-## 3.10.2
+## 3.10.2 May 26, 2022
 
 - Adjust SRP Logs row height calculation (VkoHov)
 - Fix issue with live update requests scheduler (rubenaprikyan)
