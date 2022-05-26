@@ -4,6 +4,7 @@
 
 ### Enhancements:
 
+- Add LightGBM integration example (gorarakelyan)
 - Add descriptive document titles for pages (KaroMourad)
 - Implement unit-tests for aim SDK utils (yeghiakoronian)
 - Display std.dev/err aggregated values in the table (VkoHov)
