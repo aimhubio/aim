@@ -1,3 +1,8 @@
+import moment from 'moment';
+import _ from 'lodash-es';
+
+import { DATE_WITH_SECONDS } from 'config/dates/dates';
+
 import { ITooltipContent } from 'types/services/models/metrics/metricsAppModel';
 
 import { getValue } from './helper';
@@ -8,7 +13,18 @@ function filterTooltipContent(
 ): ITooltipContent {
   const filteredFields: ITooltipContent['selectedFields'] =
     selectedFields.reduce((acc: any, param: string) => {
-      acc[param] = getValue(tooltipContent, param);
+      if (
+        param === 'run.props.creation_time' ||
+        param === 'run.props.end_time'
+      ) {
+        acc[param] = !_.isNil(getValue(tooltipContent, param))
+          ? moment(getValue(tooltipContent, param) * 1000).format(
+              DATE_WITH_SECONDS,
+            )
+          : getValue(tooltipContent, param);
+      } else {
+        acc[param] = getValue(tooltipContent, param);
+      }
       return acc;
     }, {});
   return { ...tooltipContent, selectedFields: filteredFields };
