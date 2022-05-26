@@ -158,3 +158,24 @@ Here is an example of what you can do with it:
 ```python
 run.__system_params.git_info.branch == 'feature/testing'
 ```
+
+### Capturing output logs
+
+When it comes to automating training of multiple runs with job schedulers or workload managers on a cluster,
+it is becomes hard to track the output logs of runs - printed on the command line, the stdout and stderr from the node training the model.
+
+
+Inspecting output logs is important, as it may include crucial information about the training, for example:
+- warnings, alerts and errors about the process,
+- debugging information,
+- model training statistics, model architecture or summary.
+
+Aim makes it is easier to analyze the output logs by auto-capturing and streaming them to Aim UI.
+
+Output logs capturing is enabled by default. In order to disable it, set `capture_terminal_logs` argument to `False`, when initializing a `Run`:
+
+```python
+aim_run = Run(capture_terminal_logs=False)
+```
+
+Check out how to view captured logs on Aim UI [here](../ui/pages/run_management.html#id13).
