@@ -132,7 +132,7 @@ function BookmarkCard({
                   return (
                     <Badge
                       size='large'
-                      key={tag.label}
+                      key={`${tag.label}-${index}`}
                       label={tag.label}
                       color={COLORS[0][index % COLORS[0].length]}
                     />

@@ -21,7 +21,8 @@ import {
 import { AlignmentOptionsEnum } from 'utils/d3';
 
 import { IMetric } from './metricModel';
-import { IMetricTrace, IRun } from './runModel';
+import { IMetricTrace, ISequence } from './runModel';
+import { ISelectOption } from '../explorer/createAppModel';
 
 export interface IMetricAppModelState {
   refs: {
@@ -30,7 +31,7 @@ export interface IMetricAppModelState {
   };
   requestStatus: RequestStatusEnum;
   queryIsEmpty: boolean;
-  rawData: IRun<IMetricTrace>[];
+  rawData: ISequence<IMetricTrace>[];
   config: IAppModelConfig;
   data: IMetricsCollection<IMetric>[];
   lineChartData: ILine[][];
@@ -83,7 +84,7 @@ export interface ITooltipContent {
     caption?: string;
     step?: number | string;
     index?: number;
-    images_name?: string;
+    name?: string;
   };
 }
 
@@ -108,6 +109,14 @@ export interface IAggregationData {
       xValues: number[];
       yValues: number[];
     } | null;
+    stdDevValue?: {
+      xValues: number[];
+      yValues: number[];
+    };
+    stdErrValue?: {
+      xValues: number[];
+      yValues: number[];
+    };
   };
   line: {
     xValues: number[];

@@ -167,7 +167,7 @@ const ImageBox = ({
                     step: data.step,
                     index: data.index,
                     caption: data.caption,
-                    images_name: data.images_name,
+                    name: data.name,
                   },
                 }
               }
