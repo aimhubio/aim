@@ -79,10 +79,30 @@ $border-radius: 0.2rem;
   height: 0.75rem;
   padding: 0;
   background-color: unset !important;
-  margin-right: $space-xs;
+  position: absolute;
+  left: 1px;
+  top: calc(50% - 6px);
   &::before {
-    top: toRem(3px);
-    left: toRem(3px);
+    top: toRem(2px);
+    left: toRem(2px);
+    // animation: indicator-pulse 2s infinite;
+  }
+}
+
+@keyframes indicator-pulse {
+  0% {
+    transform: scale(0.95);
+    box-shadow: 0 0 0 0 rgba(43, 199, 132, 0.7);
+  }
+
+  70% {
+    transform: scale(1);
+    box-shadow: 0 0 0 4px rgba(43, 199, 132, 0);
+  }
+
+  100% {
+    transform: scale(0.95);
+    box-shadow: 0 0 0 0 rgba(43, 199, 132, 0);
   }
 }
 .Table__action__icon {

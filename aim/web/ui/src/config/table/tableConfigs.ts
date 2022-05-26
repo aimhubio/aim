@@ -39,7 +39,7 @@ export const TABLE_DEFAULT_CONFIG = {
     hideSystemMetrics: true,
     hiddenMetrics: [],
     hiddenColumns: ['hash', 'description'],
-    nonHidableColumns: new Set(['#', 'run', 'experiment', 'date', 'duration']),
+    nonHidableColumns: new Set(['#', 'run']),
     columnsWidths: {},
     columnsOrder: {
       left: ['run'],
@@ -54,16 +54,7 @@ export const TABLE_DEFAULT_CONFIG = {
     sortFields: [],
     hiddenMetrics: [],
     hiddenColumns: ['hash', 'description'],
-    nonHidableColumns: new Set([
-      '#',
-      'run',
-      'experiment',
-      'date',
-      'duration',
-      'metric',
-      'context',
-      'actions',
-    ]),
+    nonHidableColumns: new Set(['#', 'run', 'actions']),
     columnsWidths: {},
     columnsOrder: {
       left: ['run'],
@@ -78,14 +69,7 @@ export const TABLE_DEFAULT_CONFIG = {
     sortFields: [],
     hiddenMetrics: [],
     hiddenColumns: ['hash', 'description'],
-    nonHidableColumns: new Set([
-      '#',
-      'run',
-      'experiment',
-      'date',
-      'duration',
-      'actions',
-    ]),
+    nonHidableColumns: new Set(['#', 'run', 'actions']),
     hideSystemMetrics: true,
     columnsWidths: {},
     columnsOrder: {
@@ -101,16 +85,7 @@ export const TABLE_DEFAULT_CONFIG = {
     sortFields: [],
     hiddenMetrics: [],
     hiddenColumns: ['hash', 'description'],
-    nonHidableColumns: new Set([
-      '#',
-      'run',
-      'experiment',
-      'date',
-      'duration',
-      'name',
-      'context',
-      'actions',
-    ]),
+    nonHidableColumns: new Set(['#', 'run', 'actions']),
     columnsWidths: {},
     columnsOrder: {
       left: ['run'],
@@ -125,14 +100,7 @@ export const TABLE_DEFAULT_CONFIG = {
     sortFields: [],
     hiddenMetrics: [],
     hiddenColumns: ['hash', 'description'],
-    nonHidableColumns: new Set([
-      '#',
-      'run',
-      'experiment',
-      'date',
-      'duration',
-      'actions',
-    ]),
+    nonHidableColumns: new Set(['#', 'run', 'actions']),
     hideSystemMetrics: true,
     columnsWidths: {},
     columnsOrder: {
@@ -143,3 +111,11 @@ export const TABLE_DEFAULT_CONFIG = {
     height: '0.5',
   },
 };
+
+export const AVOID_COLUMNS_TO_HIDE_LIST = new Set([
+  'experiment',
+  'date',
+  'duration',
+  'name',
+  'context',
+]);

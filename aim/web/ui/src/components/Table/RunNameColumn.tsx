@@ -26,6 +26,7 @@ function RunNameColumn({
           />
         </div>
       </Tooltip>
+
       <Link
         to={PathEnum.Run_Detail.replace(':runHash', runHash)}
         component={RouteLink}
