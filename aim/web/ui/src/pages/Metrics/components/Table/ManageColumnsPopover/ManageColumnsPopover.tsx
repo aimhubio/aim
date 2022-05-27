@@ -366,11 +366,6 @@ function ManageColumnsPopover({
                     reset columns order
                   </Text>
                 </Button>
-                <Button variant='text' size='xSmall' onClick={onTableDiffShow}>
-                  <Text size={12} tint={100}>
-                    show table diff
-                  </Text>
-                </Button>
               </div>
               <div className='flex'>
                 {hideSystemMetrics !== undefined && (

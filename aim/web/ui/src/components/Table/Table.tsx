@@ -42,6 +42,7 @@ const Table = React.forwardRef(function Table(
     onManageColumns,
     onColumnsVisibilityChange,
     onTableDiffShow,
+    sameValueColumns,
     onSort,
     onRowsChange,
     onExport,
@@ -647,6 +648,14 @@ const Table = React.forwardRef(function Table(
     sortPopoverChanged,
   );
 
+  const isDiffButtonDisabled: boolean = React.useMemo(() => {
+    // let filteredColumns: string[] = sameValueColumns?.filter(
+    //   (value) => !TABLE_DEFAULT_CONFIG[appName].nonHidableColumns.has(value),
+    // );
+    // return filteredColumns.length === 0;
+    return true;
+  }, [appName, sameValueColumns]);
+
   // The right check is !props.isInfiniteLoading && (isLoading || isNil(rowData))
   // but after setting isInfiniteLoading to true, the rowData becomes null, unnecessary renders happening
   // @TODO sanitize this point
@@ -678,7 +687,6 @@ const Table = React.forwardRef(function Table(
                       hideSystemMetrics={hideSystemMetrics}
                       onManageColumns={onManageColumns}
                       onColumnsVisibilityChange={onColumnsVisibilityChange}
-                      onTableDiffShow={onTableDiffShow}
                       appName={appName}
                     />
                   )}
@@ -730,6 +738,17 @@ const Table = React.forwardRef(function Table(
                       onRowHeightChange={onRowHeightChange}
                       appName={appName}
                     />
+                  )}
+                  {onTableDiffShow && (
+                    <Button
+                      size='small'
+                      color='secondary'
+                      disabled={isDiffButtonDisabled}
+                      className='Table__header__item'
+                      onClick={onTableDiffShow}
+                    >
+                      Show Table Diff
+                    </Button>
                   )}
                 </div>
                 {onExport && (

@@ -16,6 +16,7 @@ export interface ITableProps {
   topHeader?: boolean;
   data: any[] | null;
   columns: any[];
+  sameValueColumns?: string[] | [];
   height?: string;
   rowHeight?: RowHeight;
   estimatedRowHeight?: number;
