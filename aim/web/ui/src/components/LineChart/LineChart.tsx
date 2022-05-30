@@ -55,7 +55,7 @@ const LineChart = React.forwardRef(function LineChart(
     margin: {
       top: 30,
       right: 20,
-      bottom: 30,
+      bottom: 40,
       left: 60,
     },
     height: 0,
@@ -146,10 +146,11 @@ const LineChart = React.forwardRef(function LineChart(
       axesNodeRef,
       axesRef,
       plotBoxRef,
-      xScale,
-      yScale,
+      xScale: attributesRef.current.xScale,
+      yScale: attributesRef.current.yScale,
       visBoxRef,
       alignmentConfig,
+      axesScaleType,
       humanizerConfigRef,
       drawBgTickLines: { y: true, x: false },
     });
