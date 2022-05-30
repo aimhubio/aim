@@ -108,7 +108,7 @@ function GroupingPopover({
               component='h3'
               className='GroupingPopover__subtitle'
             >
-              {inputLabel ?? `Select Fields for grouping by ${groupName}`}
+              {inputLabel ?? `Select fields for grouping by ${groupName}`}
             </Text>
             <Autocomplete
               size='small'
@@ -134,7 +134,7 @@ function GroupingPopover({
                   }}
                   className='TextField__OutLined__Small'
                   variant='outlined'
-                  placeholder='Select Fields'
+                  placeholder='Select fields'
                 />
               )}
               renderTags={(value, getTagProps) => (
@@ -176,7 +176,7 @@ function GroupingPopover({
               select grouping mode
             </Text>
             <ToggleButton
-              title='Select Mode'
+              title='Select mode'
               id='yAxis'
               value={
                 groupingData?.reverseMode[groupName as GroupNameType]

@@ -10,7 +10,7 @@
   &__container__select {
     padding: 1rem;
     &__selectedFieldsContainer {
-      max-height: 110px;
+      max-height: toRem(110px);
       overflow: auto;
       width: 100%;
     }

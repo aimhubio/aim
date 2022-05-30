@@ -1,5 +1,4 @@
 import React from 'react';
-import _ from 'lodash-es';
 
 import { Tooltip } from '@material-ui/core';
 

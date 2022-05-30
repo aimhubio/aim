@@ -65,7 +65,6 @@ function ControlPopover({
               onClick={stopPropagation}
               className={`ControlPopover__title ${titleClassName}`}
             >
-              {console.log(title)}
               <Text component='h3' size={14} weight={700} tint={100}>
                 {title}
               </Text>

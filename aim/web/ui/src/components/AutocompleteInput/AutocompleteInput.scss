@@ -38,4 +38,8 @@
   .codicon-suggest-more-info {
     display: none !important;
   }
+
+  .monaco-editor .find-widget.visible {
+    display: none;
+  }
 }
