@@ -299,6 +299,7 @@ function abortRequest(): void {
 function getImagesData(
   shouldUrlUpdate?: boolean,
   shouldResetSelectedRows?: boolean,
+  queryString?: string,
 ) {
   if (imagesRequestRef) {
     imagesRequestRef.abort();
@@ -306,6 +307,13 @@ function getImagesData(
 
   const configData: IImagesExploreAppConfig | undefined =
     model.getState()?.config;
+  if (queryString) {
+    if (configData?.select?.advancedMode) {
+      configData.select.advancedQuery = queryString;
+    } else {
+      configData!.select.query = queryString;
+    }
+  }
   if (shouldUrlUpdate) {
     updateURL(configData);
   }
