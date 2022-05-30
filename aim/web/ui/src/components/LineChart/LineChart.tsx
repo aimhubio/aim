@@ -55,7 +55,7 @@ const LineChart = React.forwardRef(function LineChart(
     margin: {
       top: 30,
       right: 20,
-      bottom: 40,
+      bottom: 30,
       left: 60,
     },
     height: 0,

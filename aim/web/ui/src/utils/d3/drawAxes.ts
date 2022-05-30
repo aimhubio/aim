@@ -14,6 +14,12 @@ import {
 
 import shortEnglishHumanizer from '../shortEnglishHumanizer';
 
+import {
+  formatXAxisByDefault,
+  formatYAxisByDefault,
+  IFormatAxis,
+} from './tickFormatting';
+
 import { AlignmentOptionsEnum, ScaleEnum } from './index';
 
 function drawAxes(args: IDrawAxesArgs): void {
@@ -45,211 +51,23 @@ function drawAxes(args: IDrawAxesArgs): void {
 
   const { width, height, margin } = visBoxRef.current;
 
-  function getLogScaleAttributes(
-    scale: d3.AxisScale<d3.AxisDomain>,
-    ticksCount: number = 10,
-    precision: number = 2,
-  ) {
-    let [min, max] = scale.domain() as number[];
-    if (min === 0) {
-      // TODO calculate 'logMin' dep. on 'max' value
-      let logMin = 0.00001;
-      min = logMin;
-    }
-    const logScale = d3.scaleLog().domain([min, max]);
-    const format = logScale.tickFormat(10);
-    let ticks = logScale.ticks(ticksCount).filter(format);
-    if (ticks.length > ticksCount) {
-      ticks = ticks.filter((v, i, arr) => {
-        if (i === 0 || i === arr.length - 1) {
-          return true;
-        }
-        const interval = Math.floor((arr.length - 2) / (ticksCount - 2));
-        return i % interval === 0 && arr.length - interval > i;
-      });
-    }
-
-    const specifier = d3.formatSpecifier('.' + precision + '~g');
-    return { ticks, specifier };
-  }
-
-  function customFormatting(
-    value: d3.AxisDomain,
-    tickConfig: {
-      defaultFormatMaxLength: number;
-      precision: number;
-      maxLength: number;
-      omission: string;
-    },
-  ) {
-    let tick = value.toString();
-    if (
-      typeof value === 'number' &&
-      tick.length > tickConfig.defaultFormatMaxLength
-    ) {
-      tick = d3.format('.' + tickConfig.precision + '~g')(value);
-    }
-    return _.truncate(tick, {
-      length: tickConfig.maxLength,
-      omission: tickConfig.omission,
-    });
-  }
-
-  function formatXAxisByDefault(
-    scale: d3.AxisScale<d3.AxisDomain>,
-    tickAdditionalConfig = {},
-  ) {
-    const tickConfig = {
-      distance: 90,
-      minCount: 3,
-      maxCount: 20,
-      precision: { log: 4, linear: 3 },
-      maxLength: 14,
-      omission: '..',
-      defaultFormatMaxLength: 6,
-      padding: 10,
-      tickSizeInner: 0,
-      ...tickAdditionalConfig,
-    };
-
-    const xAxis = d3
-      .axisBottom(scale)
-      .tickPadding(tickConfig.padding)
-      .tickSizeInner(tickConfig.tickSizeInner);
-
-    if (drawBgTickLines.x) {
-      const tickSize = -height + (margin.top + margin.bottom);
-      const tickSizeOuter = 0;
-      xAxis.tickSize(tickSize).tickSizeOuter(tickSizeOuter);
-    }
-
-    let ticksCount = _.clamp(
-      Math.floor(plotBoxRef.current.width / tickConfig.distance),
-      tickConfig.minCount,
-      tickConfig.maxCount,
-    );
-
-    let tickValues: d3.AxisDomain[] = [];
-    if (axesScaleType.xAxis === ScaleEnum.Log) {
-      const { ticks, specifier } = getLogScaleAttributes(
-        scale,
-        ticksCount,
-        tickConfig.precision.log,
-      );
-      tickValues = ticks;
-      xAxis
-        .ticks(ticksCount, specifier)
-        .tickValues(tickValues)
-        .tickFormat((d) => {
-          return customFormatting(d, {
-            ...tickConfig,
-            precision: tickConfig.precision.log,
-          });
-        });
-    } else {
-      xAxis.ticks(ticksCount).tickFormat((d) => {
-        return customFormatting(d, {
-          ...tickConfig,
-          precision: tickConfig.precision.linear,
-        });
-      });
-      const domainData = scale.domain();
-      if (domainData.length > ticksCount) {
-        tickValues = domainData.filter(
-          (v, i, arr) => i % Math.ceil(arr.length / ticksCount) === 0,
-        );
-        xAxis.tickValues(tickValues);
-      }
-    }
-
-    return {
-      xAxis,
-      ticksCount,
-      tickValues,
-      tickConfig,
-    };
-  }
-
-  function formatYAxisByDefault(
-    scale: d3.AxisScale<d3.AxisDomain>,
-    tickAdditionalConfig = {},
-  ) {
-    const tickConfig = {
-      distance: 40,
-      minCount: 3,
-      maxCount: 20,
-      precision: { log: 7, linear: 3 },
-      maxLength: 9,
-      omission: '..',
-      defaultFormatMaxLength: 6,
-      padding: 8,
-      tickSizeInner: 0,
-      ...tickAdditionalConfig,
-    };
-
-    const yAxis = d3
-      .axisLeft(scale)
-      .tickPadding(tickConfig.padding)
-      .tickSizeInner(tickConfig.tickSizeInner);
-
-    if (drawBgTickLines.y) {
-      const tickSize = -width + (margin.left + margin.right);
-      const tickSizeOuter = 0;
-      yAxis.tickSize(tickSize).tickSizeOuter(tickSizeOuter);
-    }
-
-    const ticksCount = _.clamp(
-      Math.floor(plotBoxRef.current.height / tickConfig.distance),
-      tickConfig.minCount,
-      tickConfig.maxCount,
-    );
-
-    if (axesScaleType.yAxis === ScaleEnum.Log) {
-      const { ticks: tickValues, specifier } = getLogScaleAttributes(
-        scale,
-        ticksCount,
-        tickConfig.precision.log,
-      );
-      yAxis
-        .ticks(ticksCount, specifier)
-        .tickValues(tickValues)
-        .tickFormat((d) => {
-          return customFormatting(d, {
-            ...tickConfig,
-            precision: tickConfig.precision.log,
-          });
-        });
-    } else {
-      yAxis.ticks(ticksCount).tickFormat((d) => {
-        return customFormatting(d, {
-          ...tickConfig,
-          precision: tickConfig.precision.linear,
-        });
-      });
-      const domainData = scale.domain();
-      if (domainData.length > ticksCount) {
-        const tickValues = domainData.filter(
-          (v, i, arr) => i % Math.ceil(arr.length / ticksCount) === 0,
-        );
-        yAxis.tickValues(tickValues);
-      }
-    }
-
-    return { yAxis };
-  }
-
-  function formatByStep(scale: d3.AxisScale<d3.AxisDomain>) {
-    const { xAxis } = formatXAxisByDefault(scale);
+  function formatByStep(args: IFormatAxis) {
+    const { xAxis } = formatXAxisByDefault(args);
     return {
       xAxis,
       xAxisTitle: _.capitalize(getKeyByAlignment(alignmentConfig)) + 's',
     };
   }
 
-  function formatByEpoch(scale: d3.AxisScale<d3.AxisDomain>) {
-    const { xAxis, ticksCount } = formatXAxisByDefault(scale, {
-      minCount: 3,
+  function formatByEpoch(args: IFormatAxis) {
+    const { xAxis, ticksCount } = formatXAxisByDefault({
+      ...args,
+      tickAdditionalConfig: {
+        minCount: 3,
+      },
     });
+
+    const { scale } = args;
 
     const domain = scale.domain();
     const first = domain[0] as number;
@@ -274,13 +92,15 @@ function drawAxes(args: IDrawAxesArgs): void {
     };
   }
 
-  function formatByRelativeTime(scale: d3.AxisScale<d3.AxisDomain>) {
-    let { xAxis, ticksCount, tickConfig, tickValues } = formatXAxisByDefault(
-      scale,
-      {
+  function formatByRelativeTime(args: IFormatAxis) {
+    let { xAxis, ticksCount, tickConfig, tickValues } = formatXAxisByDefault({
+      ...args,
+      tickAdditionalConfig: {
         distance: 120,
       },
-    );
+    });
+
+    const { scale } = args;
 
     const sec = 1;
     const minute = 60 * sec;
@@ -323,28 +143,14 @@ function drawAxes(args: IDrawAxesArgs): void {
         ),
       );
     } else {
-      tickValues = [];
-      const distance = Math.ceil((last - first) / (ticksCount - 1));
-      for (let i = 0; i < ticksCount; i++) {
-        const lastRounded = Math.floor(last);
-        let current = Math.floor(first + i * distance);
-        if (i === ticksCount - 1 && tickValues.indexOf(lastRounded) === -1) {
-          tickValues.push(lastRounded);
-        } else if (current < last) {
-          tickValues.push(current);
-        }
-      }
-      xAxis
-        .ticks(ticksCount)
-        .tickValues(tickValues)
-        .tickFormat((d, i) =>
-          _.truncate(
-            shortEnglishHumanizer(Math.round(+d), humanizerConfigRef.current),
-            {
-              length: tickConfig.maxLength,
-            },
-          ),
-        );
+      xAxis.ticks(ticksCount).tickFormat((d, i) =>
+        _.truncate(
+          shortEnglishHumanizer(d as number, humanizerConfigRef.current),
+          {
+            length: tickConfig.maxLength,
+          },
+        ),
+      );
     }
 
     return {
@@ -353,12 +159,16 @@ function drawAxes(args: IDrawAxesArgs): void {
     };
   }
 
-  function formatByAbsoluteTime(scale: d3.AxisScale<d3.AxisDomain>) {
-    const { xAxis, ticksCount, tickConfig } = formatXAxisByDefault(scale, {
-      minCount: 2,
-      distance: 120,
-      maxLength: 20,
+  function formatByAbsoluteTime(args: IFormatAxis) {
+    const { xAxis, ticksCount, tickConfig } = formatXAxisByDefault({
+      ...args,
+      tickAdditionalConfig: {
+        distance: 180,
+        maxLength: 20,
+      },
     });
+
+    const { scale } = args;
 
     const domain = scale.domain();
     const first = domain[0] as number;
@@ -366,7 +176,7 @@ function drawAxes(args: IDrawAxesArgs): void {
     const distance = Math.ceil((last - first) / (ticksCount - 1));
     const tickValues: number[] = [];
     for (let i = 0; i < ticksCount; i++) {
-      const lastRounded = Math.floor(last);
+      const lastRounded = Math.ceil(last);
       const current = Math.floor(first + i * distance);
       if (i === ticksCount - 1 && tickValues.indexOf(lastRounded) === -1) {
         tickValues.push(lastRounded);
@@ -390,8 +200,8 @@ function drawAxes(args: IDrawAxesArgs): void {
     };
   }
 
-  function formatByCustomMetric(scale: d3.AxisScale<d3.AxisDomain>) {
-    const { xAxis } = formatXAxisByDefault(scale);
+  function formatByCustomMetric(args: IFormatAxis) {
+    const { xAxis } = formatXAxisByDefault(args);
     return {
       xAxis,
       xAxisTitle: _.capitalize(getKeyByAlignment(alignmentConfig)),
@@ -408,11 +218,27 @@ function drawAxes(args: IDrawAxesArgs): void {
       default: formatXAxisByDefault,
     };
     const formatter = formatters[alignmentConfig?.type || 'default'];
-    return formatter(scale);
+    return formatter({
+      scale,
+      drawTickLines: {
+        ...drawBgTickLines,
+        tickSize: -height + (margin.top + margin.bottom),
+      },
+      plotBoxRef,
+      scaleType: axesScaleType,
+    });
   }
 
   function getFormattedYAxis(scale: d3.AxisScale<d3.AxisDomain>) {
-    const { yAxis } = formatYAxisByDefault(scale);
+    const { yAxis } = formatYAxisByDefault({
+      scale,
+      drawTickLines: {
+        ...drawBgTickLines,
+        tickSize: -width + (margin.left + margin.right),
+      },
+      plotBoxRef,
+      scaleType: axesScaleType,
+    });
     return yAxis;
   }
 
