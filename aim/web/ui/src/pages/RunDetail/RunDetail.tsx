@@ -48,7 +48,7 @@ const RunDetailParamsTab = React.lazy(
 const RunDetailSettingsTab = React.lazy(
   () =>
     import(
-      /* webpackChunkName: "RunDetailSettingsTab" */ './RunDetailSettingsTab'
+      /* webpackChunkName: "RunDetailSettingsTab" */ './RunDetailSettingsTab/RunDetailSettingsTab'
     ),
 );
 const RunDetailMetricsAndSystemTab = React.lazy(
@@ -172,6 +172,8 @@ function RunDetail(): React.FunctionComponentElement<React.ReactNode> {
     settings: (
       <RunDetailSettingsTab
         isArchived={runData?.runInfo?.archived}
+        defaultName={runData?.runInfo?.name}
+        defaultDescription={runData?.runInfo?.description}
         runHash={runHash}
       />
     ),
