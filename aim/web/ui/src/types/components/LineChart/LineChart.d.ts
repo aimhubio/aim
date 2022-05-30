@@ -1,5 +1,7 @@
 import { HighlightEnum } from 'components/HighlightModesPopover/HighlightModesPopover';
 
+import { ResizeModeEnum } from 'config/enums/tableEnums';
+
 import {
   IActivePoint,
   INearestCircle,
@@ -24,7 +26,7 @@ export interface ILine {
     xValues: number[];
     yValues: number[];
   };
-  color: string;
+  color?: string;
   dasharray?: string;
   selectors?: string[];
   groupKey?: string;
@@ -40,12 +42,13 @@ export interface ILineChartProps {
   axesScaleType: IAxesScaleState;
   highlightMode: HighlightEnum;
   curveInterpolation: CurveEnum;
-  syncHoverState: (args: ISyncHoverStateArgs) => void;
+  syncHoverState?: (args: ISyncHoverStateArgs) => void;
   aggregationConfig?: IAggregationConfig;
   chartTitle?: IChartTitle;
   zoom?: IChartZoom;
   onZoomChange?: (zoom: Partial<IChartZoom>) => void;
   readOnly?: boolean;
+  resizeMode?: ResizeModeEnum;
 }
 
 export interface IUpdateFocusedChartArgs {

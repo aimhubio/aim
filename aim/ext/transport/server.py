@@ -1,4 +1,3 @@
-import grpc
 import os
 import time
 import uuid
@@ -185,6 +184,9 @@ class RemoteTrackingServicer(remote_tracking_pb2_grpc.RemoteTrackingServiceServi
 
 
 def run_server(host, port, workers=1, ssl_keyfile=None, ssl_certfile=None):
+    # temporary workaround for M1 build
+    import grpc
+
     RemoteTrackingServicer.registry.register('TreeView', get_tree)
     RemoteTrackingServicer.registry.register('StructuredRun', get_structured_run)
 

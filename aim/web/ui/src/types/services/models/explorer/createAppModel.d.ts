@@ -59,16 +59,18 @@ export interface IGroupingConfig {
   color?: string[];
   stroke?: string[];
   chart?: string[];
-  group?: [];
+  group?: string[];
   reverseMode?: {
-    color: boolean;
-    stroke: boolean;
-    chart: boolean;
+    color?: boolean;
+    stroke?: boolean;
+    chart?: boolean;
+    group?: boolean;
   };
   isApplied?: {
-    color: boolean;
-    stroke: boolean;
-    chart: boolean;
+    color?: boolean;
+    stroke?: boolean;
+    chart?: boolean;
+    group?: boolean;
   };
   persistence?: {
     color: boolean;
@@ -134,6 +136,11 @@ export interface IHighPlotConfig {
   isVisibleColorIndicator: boolean;
   focusedState: IFocusedState;
   tooltip: IChartTooltip;
+  brushExtents: {
+    [key: string]: {
+      [key: string]: [number, number] | [string, string];
+    };
+  };
 }
 
 export interface ILineChartConfig {

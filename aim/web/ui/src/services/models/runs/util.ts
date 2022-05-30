@@ -13,9 +13,8 @@ import alphabeticalSortComparator from 'utils/alphabeticalSortComparator';
 import { encode } from 'utils/encoder/encoder';
 import getObjectPaths from 'utils/getObjectPaths';
 import { getDataAsMediaSetNestedObject } from 'utils/app/getDataAsMediaSetNestedObject';
-import { getValue } from 'utils/helper';
-
-import imagesExploreAppModel from '../imagesExplore/imagesExploreAppModel';
+import { float64FromUint8, getValue } from 'utils/helper';
+import getGroupingSelectOptions from 'utils/app/getGroupingSelectOptions';
 
 import {
   DistributionsData,
@@ -211,7 +210,7 @@ export function processDistributionsData(data: Partial<DistributionsData>) {
 
   if (values) {
     values.forEach((value: DistributionValue) => {
-      const parsedBlob: number[] = [...new Float64Array(value.data.blob)];
+      const parsedBlob: number[] = [...float64FromUint8(value.data.blob)];
 
       const bin = [];
       const xMin = value.range[0];
@@ -286,7 +285,7 @@ export function processImagesData(
     name,
   } = data;
   const groupingSelectOptions = params
-    ? imagesExploreAppModel.getGroupingSelectOptions({
+    ? getGroupingSelectOptions({
         params: getObjectPaths(params, params),
       })
     : [];
@@ -306,7 +305,7 @@ export function processImagesData(
       });
       images.push({
         ...image,
-        images_name: name,
+        name,
         step: iters?.[stepIndex],
         context: context,
         key: imageKey,
@@ -319,7 +318,6 @@ export function processImagesData(
     groupingSelectOptions,
     defaultGroupFields: ['step'],
   });
-
   return {
     imageSetData: mediaSetData,
     orderedMap,
@@ -342,7 +340,7 @@ export function processAudiosData(
     name,
   } = data;
   const groupingSelectOptions = params
-    ? imagesExploreAppModel.getGroupingSelectOptions({
+    ? getGroupingSelectOptions({
         params: getObjectPaths(params, params),
       })
     : [];

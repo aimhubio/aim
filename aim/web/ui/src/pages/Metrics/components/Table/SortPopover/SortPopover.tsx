@@ -132,7 +132,9 @@ function SortPopover({
                   checked={selected}
                   disabled={readOnlyFieldsKeys.includes(option.value)}
                 />
-                <span>{option.label}</span>
+                <Text className='SortPopover__select__item__label' size={14}>
+                  {option.label}
+                </Text>
               </div>
             )}
           />

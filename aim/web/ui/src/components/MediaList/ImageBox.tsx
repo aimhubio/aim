@@ -65,8 +65,7 @@ const ImageBox = ({
         subscription.unsubscribe();
       }
     };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  });
+  }, [addUriToList, blobData, blob_uri]);
 
   function onImageFullSizeModeButtonClick(e: React.ChangeEvent<any>): void {
     e.stopPropagation();
@@ -79,17 +78,21 @@ const ImageBox = ({
   const skeletonSize = {
     width: style.width - 6, // 6px -> 0.375rem gap
     height:
-      (additionalProperties.alignmentType !== MediaItemAlignmentEnum.Height
-        ? style.width / (data.width / data.height)
-        : mediaItemHeight - 10) - 6, // 6px -> 0.375rem gap,
+      additionalProperties.alignmentType !== MediaItemAlignmentEnum.Height
+        ? style.width / (data.width / data.height) - 6 // 6px -> 0.375rem gap
+        : mediaItemHeight - 40,
+    containerWidth: style.width - 4,
+    containerHeight:
+      additionalProperties.alignmentType !== MediaItemAlignmentEnum.Height
+        ? style.width / (data.width / data.height) - 4
+        : mediaItemHeight - 40,
   };
 
   return (
     <ErrorBoundary key={index}>
-      <div className='MediaSet__container__mediaItemsList__imageBox'>
+      <div className='ImageBox' style={style}>
         <div
-          style={style}
-          className={`MediaSet__container__mediaItemsList__imageBox__image MediaSet__container__mediaItemsList__imageBox__image--${
+          className={`ImageBox__image ImageBox__image--${
             additionalProperties.imageRendering
           } ${
             focusedState.key === data.key
@@ -102,12 +105,12 @@ const ImageBox = ({
           data-seqkey={`${data.seqKey}`}
           data-mediasetitem='mediaSetItem'
         >
-          <div className='MediaSet__container__mediaItemsList__imageBox__imageWrapper'>
+          <div className='ImageBox__imageWrapper'>
             <div
-              className={`MediaSet__container__mediaItemsList__imageBox__imageWrapper-item ${
+              className={`ImageBox__imageWrapper-item ${
                 additionalProperties.alignmentType ===
                 MediaItemAlignmentEnum.Height
-                  ? 'MediaSet__container__mediaItemsList__imageBox__imageWrapper-item-heightAlign'
+                  ? 'ImageBox__imageWrapper-item-heightAlign'
                   : ''
               }`}
             >
@@ -117,11 +120,19 @@ const ImageBox = ({
                   alt={data.caption}
                 />
               ) : (
-                <Skeleton
-                  variant='rect'
-                  height={skeletonSize.height}
-                  width={skeletonSize.width}
-                />
+                <div
+                  style={{
+                    height: skeletonSize.containerHeight,
+                    width: skeletonSize.containerWidth,
+                  }}
+                  className='skeletonContainer'
+                >
+                  <Skeleton
+                    variant='rect'
+                    height={skeletonSize.height}
+                    width={skeletonSize.width}
+                  />
+                </div>
               )}
               <Text style={{ maxWidth: style.width }} size={10} weight={400}>
                 {data.caption}
@@ -130,12 +141,9 @@ const ImageBox = ({
             <Button
               withOnlyIcon
               size='small'
-              className={classNames(
-                'MediaSet__container__mediaItemsList__imageBox__imageWrapper__zoomIconWrapper',
-                {
-                  isHidden: focusedState.key !== data.key,
-                },
-              )}
+              className={classNames('ImageBox__imageWrapper__zoomIconWrapper', {
+                isHidden: focusedState.key !== data.key,
+              })}
               onClick={onImageFullSizeModeButtonClick}
               color='inherit'
             >
@@ -159,7 +167,7 @@ const ImageBox = ({
                     step: data.step,
                     index: data.index,
                     caption: data.caption,
-                    images_name: data.images_name,
+                    name: data.name,
                   },
                 }
               }

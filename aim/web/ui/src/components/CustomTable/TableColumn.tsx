@@ -3,7 +3,7 @@
 
 import * as React from 'react';
 import classNames from 'classnames';
-import { isNil } from 'lodash-es';
+import _ from 'lodash-es';
 
 import { MenuItem, Tooltip, Divider, Checkbox } from '@material-ui/core';
 
@@ -16,6 +16,7 @@ import {
   VIEW_PORT_OFFSET,
   TABLE_COLUMN_START_COLOR_SCALE,
   TABLE_COLUMN_END_COLOR_SCALE,
+  RowHeightSize,
 } from 'config/table/tableConfigs';
 
 import getColorFromRange from 'utils/d3/getColorFromRange';
@@ -52,6 +53,7 @@ function Column({
   onRowSelect,
   onToggleColumnsColorScales,
   columnsColorScales,
+  rowHeightMode,
 }) {
   const [maxWidth, setMaxWidth] = React.useState(width);
   const [isResizing, setIsResizing] = React.useState(false);
@@ -77,19 +79,21 @@ function Column({
       : _.values(data).reduce((acc, item) => {
           return [...acc, ...item.items];
         }, []);
-    let range = [
+    let range = _.sortBy([
       ...new Set(
         columnData?.map((a) => +a[col.key]).filter((a) => !isNaN(a)) ?? [],
       ),
-    ].sort();
+    ]);
     if (_.isEmpty(range)) {
       return null;
     } else if (range.length === 1) {
       return [range[0] - 0.1, range[0]];
     }
     return range;
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [data]);
 
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   const getColumnCelBGColor = React.useCallback(
     getColorFromRange(
       colorScaleRange ? [colorScaleRange[0], _.last(colorScaleRange)] : null,
@@ -150,12 +154,14 @@ function Column({
       document.removeEventListener('mousemove', resize);
       document.removeEventListener('mouseup', resizeEnd);
     };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   React.useEffect(() => {
     if (columnRef.current && col.key !== 'selection') {
       columnRef.current.style.width = 'initial';
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [data, expanded, width]);
 
   const isInViewPort =
@@ -198,7 +204,12 @@ function Column({
             }}
           >
             {showTopHeaderContent && col.topHeader && (
-              <Text component='p' tint={100} size={14} weight={600}>
+              <Text
+                component='p'
+                tint={100}
+                size={rowHeightMode === RowHeightSize.sm ? 12 : 14}
+                weight={600}
+              >
                 {col.topHeader}
               </Text>
             )}
@@ -238,7 +249,11 @@ function Column({
               checked={!_.isEmpty(selectedRows)}
             />
           )}
-          <Text tint={100} size={14} weigh={600}>
+          <Text
+            tint={100}
+            size={rowHeightMode === RowHeightSize.sm ? 12 : 14}
+            weigh={600}
+          >
             {firstColumn ? headerMeta : null}
             {col.content}
           </Text>
@@ -258,7 +273,7 @@ function Column({
                     <div>
                       <Button
                         withOnlyIcon
-                        size='small'
+                        size='xSmall'
                         onClick={onAnchorClick}
                         color='secondary'
                       >
@@ -437,7 +452,8 @@ function Column({
                   style={
                     col.key === '#' && data[groupKey].data.meta.color
                       ? {
-                          borderLeft: 'none',
+                          borderTopLeftRadius: '0.375rem',
+                          borderBottomLeftRadius: '0.375rem',
                           '--color-indicator': data[groupKey].data.meta.color,
                           '--extended-group-background-color':
                             BGColorLighten[data[groupKey].data.meta.color] ??
@@ -495,6 +511,7 @@ function Column({
                       multiSelect={multiSelect}
                       getColumnCelBGColor={getColumnCelBGColor}
                       columnsColorScales={columnsColorScales}
+                      isNumeric={colorScaleRange}
                       item={
                         typeof data[groupKey].data[col.key] === 'object' &&
                         data[groupKey].data[col.key]?.hasOwnProperty('content')
@@ -531,6 +548,7 @@ function Column({
                             multiSelect={multiSelect}
                             getColumnCelBGColor={getColumnCelBGColor}
                             columnsColorScales={columnsColorScales}
+                            isNumeric={colorScaleRange}
                             item={
                               col.key === '#' ? (
                                 <>
@@ -564,7 +582,7 @@ function Column({
                               !!data[groupKey].data.meta.color
                             }
                             className={classNames(`rowKey-${item.key}`, {
-                              hidden: item.isHidden,
+                              inactive: item.isHidden,
                               selected: !!selectedRows?.[item.selectKey],
                             })}
                             isConfigColumn={col.key === '#'}
@@ -611,7 +629,7 @@ function Column({
                         </>
                       }
                       className={classNames(`rowKey-${item.key}`, {
-                        hidden: item.isHidden,
+                        inactive: item.isHidden,
                         selected: !!selectedRows?.[item.selectKey],
                       })}
                       metadata={
@@ -632,9 +650,10 @@ function Column({
                       col={col}
                       item={item[col.key]}
                       getColumnCelBGColor={getColumnCelBGColor}
+                      isNumeric={colorScaleRange}
                       columnsColorScales={columnsColorScales}
                       className={classNames(`rowKey-${item.key}`, {
-                        hidden: item.isHidden,
+                        inactive: item.isHidden,
                         selected: !!selectedRows?.[item.selectKey],
                       })}
                       metadata={
@@ -682,9 +701,9 @@ function GroupConfig({
     <ErrorBoundary>
       <div className='Table__group__config' onClick={() => expand(groupKey)}>
         <Button
-          size='small'
-          withOnlyIcon={true}
+          size='xSmall'
           className='Table__group__config_expandButton'
+          withOnlyIcon={true}
         >
           <Text className='flex'>
             <Icon name={expanded[groupKey] ? 'arrow-up' : 'arrow-down'} />
@@ -740,7 +759,7 @@ function GroupConfig({
               >
                 <div>
                   <Button
-                    size='small'
+                    size='xSmall'
                     className='Table__group__config__popover'
                     onClick={onAnchorClick}
                     withOnlyIcon={true}
@@ -753,7 +772,7 @@ function GroupConfig({
             component={<GroupConfigPopover configData={configData} />}
           />
         )}
-        {!isNil(config.chartIndex) && config.chartIndex !== 0 && (
+        {!_.isNil(config.chartIndex) && config.chartIndex !== 0 && (
           <Tooltip title='Group chart index'>
             <span className='Table__group__config__chart'>
               {config.chartIndex}
@@ -795,7 +814,12 @@ function GroupActions({ expand, expanded, groupKeys, groupKey }) {
         anchor={({ onAnchorClick }) => (
           <Tooltip title='Expand options'>
             <div>
-              <Button color='secondary' withOnlyIcon onClick={onAnchorClick}>
+              <Button
+                size='xSmall'
+                color='secondary'
+                withOnlyIcon
+                onClick={onAnchorClick}
+              >
                 <Icon
                   className='Table__action__anchor'
                   name='more-horizontal'

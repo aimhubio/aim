@@ -84,14 +84,13 @@ function RunDetailSettingsTab({
             }}
           />
         </div>
-
         <ConfirmModal
           open={openDeleteModal}
           onCancel={handleDeleteModalClose}
           onSubmit={onRunDelete}
           text='Are you sure you want to delete this run?'
           icon={<Icon name='delete' />}
-          title='Are you sure?'
+          title='Delete run'
           statusType='error'
           confirmBtnText='Delete'
         />

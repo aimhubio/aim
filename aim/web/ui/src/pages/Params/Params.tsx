@@ -14,6 +14,7 @@ import ResizePanel from 'components/ResizePanel/ResizePanel';
 import Grouping from 'components/Grouping/Grouping';
 import ErrorBoundary from 'components/ErrorBoundary/ErrorBoundary';
 
+import pageTitlesEnum from 'config/pageTitles/pageTitles';
 import { RowHeightSize } from 'config/table/tableConfigs';
 import { ResizeModeEnum } from 'config/enums/tableEnums';
 import GroupingPopovers from 'config/grouping/GroupingPopovers';
@@ -93,6 +94,7 @@ const Params = ({
   onColumnsVisibilityChange,
   onTableDiffShow,
   onSortReset,
+  onAxisBrushExtentChange,
   updateColumnsWidths,
   onLiveUpdateConfigChange,
   onShuffleChange,
@@ -101,11 +103,15 @@ const Params = ({
   deleteRuns,
   selectedRows,
   columnsOrder,
+  brushExtents,
+  chartPanelOffsetHeight,
 }: IParamsProps): React.FunctionComponentElement<React.ReactNode> => {
   const chartProps: any[] = React.useMemo(() => {
     return (highPlotData || []).map((chartData: any, index: number) => ({
       curveInterpolation,
       isVisibleColorIndicator,
+      onAxisBrushExtentChange,
+      brushExtents,
       chartTitle: chartTitleData[index],
     }));
   }, [
@@ -113,6 +119,8 @@ const Params = ({
     curveInterpolation,
     isVisibleColorIndicator,
     chartTitleData,
+    onAxisBrushExtentChange,
+    brushExtents,
   ]);
 
   return (
@@ -121,12 +129,13 @@ const Params = ({
         <div className='Params__fullHeight Params__section__div'>
           <div>
             <AppBar
+              explorerName='PARAMS'
               onBookmarkCreate={onBookmarkCreate}
               onBookmarkUpdate={onBookmarkUpdate}
               onResetConfigData={onResetConfigData}
               liveUpdateConfig={liveUpdateConfig}
               onLiveUpdateConfigChange={onLiveUpdateConfigChange}
-              title={'Params explorer'}
+              title={pageTitlesEnum.PARAMS_EXPLORER}
             />
           </div>
           <div className='Params__SelectForm__Grouping__container'>
@@ -161,7 +170,8 @@ const Params = ({
             className={`Params__chart__container${
               resizeMode === ResizeModeEnum.MaxHeight
                 ? '__hide'
-                : _.isEmpty(tableData)
+                : requestStatus !== RequestStatusEnum.Pending &&
+                  _.isEmpty(tableData)
                 ? '__fullHeight'
                 : ''
             }`}
@@ -174,6 +184,7 @@ const Params = ({
               {!_.isEmpty(tableData) ? (
                 <ChartPanel
                   ref={chartPanelRef}
+                  chartPanelOffsetHeight={chartPanelOffsetHeight}
                   key={highPlotData?.[0]?.data?.length}
                   chartType={ChartTypeEnum.HighPlot}
                   data={highPlotData}

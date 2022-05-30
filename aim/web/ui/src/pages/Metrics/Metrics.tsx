@@ -12,6 +12,7 @@ import ResizePanel from 'components/ResizePanel/ResizePanel';
 import ErrorBoundary from 'components/ErrorBoundary/ErrorBoundary';
 import Grouping from 'components/Grouping/Grouping';
 
+import pageTitlesEnum from 'config/pageTitles/pageTitles';
 import { ResizeModeEnum } from 'config/enums/tableEnums';
 import { RowHeightSize } from 'config/table/tableConfigs';
 import GroupingPopovers from 'config/grouping/GroupingPopovers';
@@ -79,7 +80,7 @@ function Metrics(
               onResetConfigData={props.onResetConfigData}
               liveUpdateConfig={props.liveUpdateConfig}
               onLiveUpdateConfigChange={props.onLiveUpdateConfigChange}
-              title={'Metrics explorer'}
+              title={pageTitlesEnum.METRICS_EXPLORER}
             />
             <div className='Metrics__SelectForm__Grouping__container'>
               <SelectForm
@@ -117,7 +118,8 @@ function Metrics(
               className={`Metrics__chart__container${
                 props.resizeMode === ResizeModeEnum.MaxHeight
                   ? '__hide'
-                  : _.isEmpty(props.lineChartData)
+                  : props.requestStatus !== RequestStatusEnum.Pending &&
+                    _.isEmpty(props.tableData)
                   ? '__fullHeight'
                   : ''
               }`}
@@ -132,6 +134,7 @@ function Metrics(
                   <ChartPanel
                     key={props.lineChartData?.length}
                     ref={props.chartPanelRef}
+                    chartPanelOffsetHeight={props.chartPanelOffsetHeight}
                     panelResizing={props.panelResizing}
                     chartType={ChartTypeEnum.LineChart}
                     data={props.lineChartData}

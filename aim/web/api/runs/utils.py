@@ -23,6 +23,17 @@ if TYPE_CHECKING:
 IndexRange = namedtuple('IndexRange', ['start', 'stop'])
 
 
+def get_run_or_404(run_id, repo=None):
+    if repo is None:
+        repo = get_project_repo()
+
+    run = repo.get_run(run_id)
+    if not run:
+        raise HTTPException(status_code=404, detail="Run not found.")
+
+    return run
+
+
 def str_to_range(range_str: str):
     defaults = [None, None]
     slice_values = chain(range_str.strip().split(':'), defaults)
@@ -46,7 +57,8 @@ def get_run_props(run: Run):
                  for tag in run.props.tags_obj],
         'archived': run.archived if run.archived else False,
         'creation_time': run.creation_time,
-        'end_time': run.end_time
+        'end_time': run.end_time,
+        'active': run.active
     }
 
 
@@ -236,6 +248,34 @@ def collect_requested_metric_traces(run: Run, requested_traces: List[TraceBase],
         })
 
     return processed_traces_list
+
+
+async def run_logs_streamer(run: Run, record_range: str) -> bytes:
+    logs = run.get_terminal_logs()
+
+    if not logs:
+        return
+
+    record_range = checked_range(record_range)
+    start = record_range.start
+    stop = record_range.stop
+
+    # range stop is missing
+    if record_range.stop is None:
+        stop = logs.last_step() + 1
+
+    # range start is missing
+    if record_range.start is None:
+        start = 0
+
+    # range is missing completely
+    if record_range.start is None and record_range.stop is None:
+        start = max(logs.last_step() - 100, 0)
+
+    steps_vals = logs.values.items_in_range(start, stop)
+    for step, val in steps_vals:
+        encoded_tree = encode_tree({step: val.data})
+        yield collect_run_streamable_data(encoded_tree)
 
 
 def get_project():

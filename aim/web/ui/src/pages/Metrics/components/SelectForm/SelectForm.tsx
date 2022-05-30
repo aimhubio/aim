@@ -15,8 +15,8 @@ import {
 } from '@material-ui/icons';
 
 import { Button, Icon, Badge, Text } from 'components/kit';
-import ExpressionAutoComplete from 'components/kit/ExpressionAutoComplete/ExpressionAutoComplete';
 import ErrorBoundary from 'components/ErrorBoundary/ErrorBoundary';
+import AutocompleteInput from 'components/AutocompleteInput';
 
 import { ANALYTICS_EVENT_KEYS } from 'config/analytics/analyticsKeysMap';
 
@@ -39,20 +39,29 @@ function SelectForm({
   onSearchQueryCopy,
 }: ISelectFormProps): React.FunctionComponentElement<React.ReactNode> {
   const [anchorEl, setAnchorEl] = React.useState<any>(null);
-  const searchRef = React.useRef<any>(null);
-
+  const searchRef: any = React.useRef<React.MutableRefObject<any>>(null);
+  const autocompleteRef: any = React.useRef<React.MutableRefObject<any>>(null);
+  const advancedAutocompleteRef: any =
+    React.useRef<React.MutableRefObject<any>>(null);
   React.useEffect(() => {
     return () => {
       searchRef.current?.abort();
     };
   }, []);
 
-  function handleMetricSearch(e: React.ChangeEvent<any>): void {
-    e.preventDefault();
+  function handleMetricSearch(): void {
     if (requestIsPending) {
       return;
     }
-    searchRef.current = metricAppModel.getMetricsData(true, true);
+    let query = selectedMetricsData?.advancedMode
+      ? advancedAutocompleteRef.current.getValue()
+      : autocompleteRef.current.getValue();
+    if (selectedMetricsData?.advancedMode) {
+      onSelectAdvancedQueryChange(advancedAutocompleteRef.current.getValue());
+    } else {
+      onSelectRunQueryChange(autocompleteRef.current.getValue());
+    }
+    searchRef.current = metricAppModel.getMetricsData(true, true, query);
     searchRef.current.call();
     trackEvent(ANALYTICS_EVENT_KEYS.metrics.searchClick);
   }
@@ -105,11 +114,11 @@ function SelectForm({
   function handleResetSelectForm(): void {
     onMetricsSelectChange([]);
     onSelectRunQueryChange('');
+    onSelectAdvancedQueryChange('');
   }
 
   const open: boolean = !!anchorEl;
   const id = open ? 'select-metric' : undefined;
-
   return (
     <ErrorBoundary>
       <div className='Metrics__SelectForm'>
@@ -122,17 +131,12 @@ function SelectForm({
           >
             {selectedMetricsData?.advancedMode ? (
               <div className='Metrics__SelectForm__textarea'>
-                <ExpressionAutoComplete
-                  isTextArea={true}
-                  onExpressionChange={onSelectAdvancedQueryChange}
-                  onSubmit={handleMetricSearch}
+                <AutocompleteInput
+                  advanced
+                  refObject={advancedAutocompleteRef}
+                  context={selectFormData?.advancedSuggestions}
                   value={selectedMetricsData?.advancedQuery}
-                  placeholder='metric.name in [“loss”, “accuracy”] and run.learning_rate > 10'
-                  options={[
-                    'metric.name',
-                    'metric.context',
-                    ...selectFormData.suggestions,
-                  ]}
+                  onEnter={handleMetricSearch}
                 />
               </div>
             ) : (
@@ -162,7 +166,7 @@ function SelectForm({
                       size='small'
                       disablePortal={true}
                       disableCloseOnSelect
-                      options={selectFormData.options}
+                      options={selectFormData?.options}
                       value={selectedMetricsData?.options}
                       onChange={onSelect}
                       groupBy={(option) => option.group}
@@ -191,7 +195,7 @@ function SelectForm({
                               item.label === option.label,
                           )?.label;
                         return (
-                          <React.Fragment>
+                          <div className='SelectForm__option'>
                             <Checkbox
                               color='primary'
                               icon={<CheckBoxOutlineBlank />}
@@ -205,7 +209,7 @@ function SelectForm({
                             >
                               {option.label}
                             </Text>
-                          </React.Fragment>
+                          </div>
                         );
                       }}
                     />
@@ -226,7 +230,6 @@ function SelectForm({
                         <Badge
                           size='large'
                           key={tag.label}
-                          color={tag.color}
                           label={tag.label}
                           onDelete={handleDelete}
                         />
@@ -248,12 +251,11 @@ function SelectForm({
           </Box>
           {selectedMetricsData?.advancedMode ? null : (
             <div className='Metrics__SelectForm__TextField'>
-              <ExpressionAutoComplete
-                onExpressionChange={onSelectRunQueryChange}
-                onSubmit={handleMetricSearch}
+              <AutocompleteInput
+                refObject={autocompleteRef}
                 value={selectedMetricsData?.query}
-                options={selectFormData.suggestions}
-                placeholder='Filter runs, e.g. run.learning_rate > 0.0001 and run.batch_size == 32'
+                context={selectFormData.suggestions}
+                onEnter={handleMetricSearch}
               />
             </div>
           )}

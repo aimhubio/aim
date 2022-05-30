@@ -14,7 +14,7 @@ import {
 import { IAxisScale } from 'types/utils/d3/getAxisScale';
 import { ILineDataType } from 'types/utils/d3/drawParallelLines';
 
-import getFormattedValue from 'utils/formattedValue';
+import getRoundedValue from 'utils/roundValue';
 
 import { getCoordinates, CircleEnum, ScaleEnum } from './';
 
@@ -145,7 +145,7 @@ const drawParallelHoverAttributes = ({
         true,
       );
     } else {
-      yValue = getFormattedValue(
+      yValue = getRoundedValue(
         attributesRef.current.yScale[dimensionLabel].invert(circle.y),
       );
     }
@@ -183,7 +183,7 @@ const drawParallelHoverAttributes = ({
       dimensionLabel = scalePointValue(attributesRef.current.xScale, xPos);
       mousePosition = [
         xPos,
-        yScale[dimensionLabel](focusedState.yValue) + margin.top,
+        yScale[dimensionLabel]?.(focusedState.yValue) + margin.top,
       ];
     } else if (activePoint?.xValue && activePoint.yValue) {
       const xPos = xScale(activePoint.xValue);
@@ -359,31 +359,6 @@ const drawParallelHoverAttributes = ({
       .raise();
   }
 
-  function setActiveLine(lineKey: string) {
-    const { mouseX } = getCoordinates({
-      mouse: [attributesRef.current.x, attributesRef.current.y],
-      xScale: attributesRef.current.xScale,
-      yScale:
-        attributesRef.current.yScale[
-          scalePointValue(attributesRef.current.xScale, attributesRef.current.x)
-        ],
-      margin,
-    });
-
-    const nearestCircles = getNearestCircles(mouseX);
-
-    nearestCircles.forEach((circle: INearestCircle) => {
-      if (circle.key !== lineKey) {
-        return;
-      }
-      const mouse: [number, number] = [
-        circle.x + margin.left,
-        circle.y + margin.top,
-      ];
-      updateFocusedChart({ mouse });
-    });
-  }
-
   function handleMouseMove(event: MouseEvent) {
     if (attributesRef.current.focusedState?.active) {
       return;
@@ -513,7 +488,6 @@ const drawParallelHoverAttributes = ({
   linesNodeRef.current?.on('click', handleLeaveFocusedPoint);
   attributesNodeRef.current?.on('click', handleLeaveFocusedPoint);
   axesNodeRef.current?.on('click', handleLeaveFocusedPoint);
-  attributesRef.current.setActiveLine = setActiveLine;
   attributesRef.current.updateFocusedChart = updateFocusedChart;
   attributesRef.current.setActiveLineAndCircle = setActiveLineAndCircle;
   attributesRef.current.clearHoverAttributes = clearHoverAttributes;

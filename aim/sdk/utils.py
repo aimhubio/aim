@@ -2,13 +2,13 @@ import os
 import pathlib
 import re
 import uuid
-from typing import Union
+from typing import Union, Any, Tuple
 from aim.sdk.configs import get_aim_repo_name
 
 from aim.storage.object import CustomObject
 
 
-def search_aim_repo(path):
+def search_aim_repo(path) -> Tuple[Any, bool]:
     found = False
     path = os.path.abspath(path)
     while path:
@@ -21,7 +21,7 @@ def search_aim_repo(path):
         path = os.path.dirname(path)
 
 
-def generate_run_hash(hash_length=24):
+def generate_run_hash(hash_length=24) -> str:
     return uuid.uuid4().hex[:hash_length]
 
 

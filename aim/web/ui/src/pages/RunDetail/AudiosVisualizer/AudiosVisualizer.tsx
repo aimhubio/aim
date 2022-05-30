@@ -11,8 +11,7 @@ import blobsURIModel from 'services/models/media/blobsURIModel';
 import audiosExploreService from 'services/api/audiosExplore/audiosExplore';
 
 import {
-  adjustable_reader,
-  decode_buffer_pairs,
+  decodeBufferPairs,
   decodePathsVals,
   iterFoldTree,
 } from 'utils/encoder/streamEncoding';
@@ -58,9 +57,8 @@ function AudiosVisualizer(
         return request
           .call()
           .then(async (stream) => {
-            let gen = adjustable_reader(stream);
-            let buffer_pairs = decode_buffer_pairs(gen);
-            let decodedPairs = decodePathsVals(buffer_pairs);
+            let bufferPairs = decodeBufferPairs(stream);
+            let decodedPairs = decodePathsVals(bufferPairs);
             let objects = iterFoldTree(decodedPairs, 1);
 
             for await (let [keys, val] of objects) {
@@ -74,6 +72,7 @@ function AudiosVisualizer(
             if (ex.name === 'AbortError') {
               // Abort Error
             } else {
+              // eslint-disable-next-line no-console
               console.log('Unhandled error: ');
             }
           });

@@ -22,6 +22,10 @@ for step in range(10):
 
 Aim easily integrates with your favourite ML frameworks.
 
+Aim loggers give access to the `aim.Run` object instance via the `experiment` property. The `aim.Run` instance will help you to easily track additional metrics or set any other `key: value` pairs (params) relevant to your project.
+
+In this way you can easily extend the default integrations. More info about this is abailable on Integration guides [section.](../using/integration_guides.html) 
+
 ### Integration with Pytorch Ignite
 [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/aimhubio/tutorials/blob/publication/notebooks/pytorch_ignite_track.ipynb)  
 
@@ -178,7 +182,65 @@ xgboost.train(param, dtrain, num_round, watchlist,
                             callbacks=[AimCallback(experiment='xgboost_test')])
 ```
 
-During the training process, you can start another terminal in the same directory, start `aim up` and you can observe the information in real time.
-
 Adapter source can be found [here](https://github.com/aimhubio/aim/blob/main/aim/sdk/adapters/xgboost.py).  
 Example using XGboost can be found [here](https://github.com/aimhubio/aim/blob/main/examples/xgboost_track.py).
+
+### Integration with CatBoost
+
+It only takes two steps to integrate Aim with [CatBoost](https://catboost.ai/).
+
+Step 1: Import `AimLogger` to track the training metadata.
+
+```python
+# call sdk aim.catboost 
+from aim.catboost import AimLogger
+```
+
+Step 2: Pass the logger to the trainer.
+
+Trainings in CatBoost are initiated with `fit` method. 
+The method can be supplied with `log_cout` parameter to redirect output logs into a custom handler.
+Pass `AimLogger` to automatically track metrics and hyper-parameters with Aim.
+Depending on the training log output, an additional argument `logging_level` could be passed to make Catboost yield more logs to track `test` & `best` values.
+
+```python
+model.fit(train_data, train_labels, log_cout=AimLogger(loss_function='Logloss'), logging_level='Info')
+```
+
+`AimLogger` also accepts `log_cout` parameter to preserve the default functionality of Catboost's log handling.
+You can pass your own handler, else it defaults to `sys.stdout`.
+
+See `AimLogger` source [here](https://github.com/aimhubio/aim/blob/main/aim/sdk/adapters/catboost.py).  
+Check out a simple example with Aim and CatBoost [here](https://github.com/aimhubio/aim/blob/main/examples/catboost_track.py).
+
+### Integration with LightGBM
+
+Aim comes with a builtin callback designed to automatically track [LightGBM](https://lightgbm.readthedocs.io/en/latest/index.html) trainings.
+It takes two steps to integrate Aim into your training script.
+
+Step 1: Explicitly import the `AimCallback` for tracking training metadata.
+
+```python
+from aim.lightgbm import AimCallback
+```
+
+Step 2: Pass the callback to `callbacks` list upon initiating your training.
+
+```python
+gbm = lgb.train(params,
+                lgb_train,
+                num_boost_round=20,
+                valid_sets=lgb_eval,
+                callbacks=[AimCallback(experiment='lgb_test')])
+```
+
+While your training is running you can start `aim up` in another terminal session and observe the information in real
+time.
+
+See `AimCallback` source [here](https://github.com/aimhubio/aim/blob/main/aim/sdk/adapters/lightgbm.py).  
+Check out a simple regression task example [here](https://github.com/aimhubio/aim/blob/main/examples/lightgbm_track.py).
+
+### What's next?
+
+During the training process, you can start another terminal in the same directory, start `aim up` and you can observe
+the information in real time.

@@ -43,13 +43,14 @@ def remove_runs(ctx, hashes):
         click.echo('Please specify at least one Run to delete.')
         exit(1)
     repo_path = ctx.obj['repo']
-    confirmed = click.confirm(f'This command will permanently delete {len(hashes)} runs from aim repo located at '
-                              f'\'{repo_path}\'. Do you want to proceed?')
-    if not confirmed:
-        return
     repo = Repo.from_path(repo_path)
 
     matched_hashes = match_runs(repo_path, hashes)
+    confirmed = click.confirm(f'This command will permanently delete {len(matched_hashes)} runs from aim repo '
+                              f'located at \'{repo_path}\'. Do you want to proceed?')
+    if not confirmed:
+        return
+
     success, remaining_runs = repo.delete_runs(matched_hashes)
     if success:
         click.echo(f'Successfully deleted {len(matched_hashes)} runs.')

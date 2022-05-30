@@ -38,8 +38,13 @@ const ChartPanel = React.forwardRef(function ChartPanel(
   const activePointRef = React.useRef<IActivePoint | null>(null);
 
   const setActiveElemPos = React.useCallback(() => {
-    if (activePointRef.current && containerRef.current) {
+    if (
+      activePointRef.current &&
+      containerRef.current &&
+      activePointRef.current?.pointRect !== null
+    ) {
       const { pointRect } = activePointRef.current;
+
       setActivePointRect({
         ...pointRect,
         top: pointRect.top - containerRef.current.scrollTop,
@@ -83,7 +88,11 @@ const ChartPanel = React.forwardRef(function ChartPanel(
         if (props.onActivePointChange) {
           props.onActivePointChange(activePoint, focusedStateActive);
         }
-        setActiveElemPos();
+        if (activePoint.pointRect !== null) {
+          setActiveElemPos();
+        } else {
+          setActivePointRect(null);
+        }
       }
       // on MouseLeave
       else {
@@ -93,6 +102,7 @@ const ChartPanel = React.forwardRef(function ChartPanel(
         setActivePointRect(null);
       }
     },
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     [chartRefs, setActiveElemPos, props.chartType, props.onActivePointChange],
   );
 
@@ -124,7 +134,7 @@ const ChartPanel = React.forwardRef(function ChartPanel(
         chartRef.current?.setFocusedState?.(props.focusedState);
       });
     }
-  }, [chartRefs, props.focusedState, props.panelResizing]);
+  }, [chartRefs, props.focusedState, props.panelResizing, props.resizeMode]);
 
   React.useEffect(() => {
     const debouncedScroll = _.debounce(onScroll, 100);
@@ -155,6 +165,8 @@ const ChartPanel = React.forwardRef(function ChartPanel(
                     chartRefs={chartRefs}
                     chartType={props.chartType}
                     syncHoverState={syncHoverState}
+                    resizeMode={props.resizeMode}
+                    chartPanelOffsetHeight={props.chartPanelOffsetHeight}
                   />
                 </Grid>
                 <ErrorBoundary>
@@ -178,7 +190,7 @@ const ChartPanel = React.forwardRef(function ChartPanel(
               </Grid>
             </ErrorBoundary>
             <ErrorBoundary>
-              <Grid className='ChartPanel__controls' item>
+              <Grid className='ChartPanel__controls ScrollBar__hidden' item>
                 {props.controls}
               </Grid>
             </ErrorBoundary>

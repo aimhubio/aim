@@ -8,8 +8,8 @@ import {
 } from '@material-ui/icons';
 
 import { Icon, Badge, Button } from 'components/kit';
-import ExpressionAutoComplete from 'components/kit/ExpressionAutoComplete';
 import ErrorBoundary from 'components/ErrorBoundary/ErrorBoundary';
+import AutocompleteInput from 'components/AutocompleteInput';
 
 import { ANALYTICS_EVENT_KEYS } from 'config/analytics/analyticsKeysMap';
 
@@ -34,19 +34,33 @@ function SelectForm({
 }: ISelectFormProps): React.FunctionComponentElement<React.ReactNode> {
   const [anchorEl, setAnchorEl] = React.useState<any>(null);
   const searchMetricsRef = React.useRef<any>(null);
-
+  const autocompleteRef: any = React.useRef<React.MutableRefObject<any>>(null);
+  const advancedAutocompleteRef: any =
+    React.useRef<React.MutableRefObject<any>>(null);
   React.useEffect(() => {
     return () => {
       searchMetricsRef.current?.abort();
     };
   }, []);
 
-  function handleSearch(e: React.ChangeEvent<any>): void {
-    e.preventDefault();
+  function handleSearch(e?: React.ChangeEvent<any>): void {
+    e?.preventDefault();
     if (requestIsPending || searchButtonDisabled) {
       return;
     }
-    searchMetricsRef.current = imagesExploreAppModel.getImagesData(true, true);
+    let query = selectedImagesData?.advancedMode
+      ? advancedAutocompleteRef.current.getValue()
+      : autocompleteRef.current.getValue();
+    if (selectedImagesData?.advancedMode) {
+      onSelectAdvancedQueryChange(advancedAutocompleteRef.current.getValue());
+    } else {
+      onSelectRunQueryChange(autocompleteRef.current.getValue());
+    }
+    searchMetricsRef.current = imagesExploreAppModel.getImagesData(
+      true,
+      true,
+      query,
+    );
     searchMetricsRef.current.call();
 
     trackEvent(ANALYTICS_EVENT_KEYS.images.searchClick);
@@ -120,17 +134,12 @@ function SelectForm({
             >
               {selectedImagesData?.advancedMode ? (
                 <div className='SelectForm__textarea'>
-                  <ExpressionAutoComplete
-                    isTextArea={true}
-                    onExpressionChange={onSelectAdvancedQueryChange}
-                    onSubmit={handleSearch}
+                  <AutocompleteInput
+                    advanced
+                    refObject={advancedAutocompleteRef}
+                    context={selectFormData?.advancedSuggestions}
                     value={selectedImagesData?.advancedQuery}
-                    placeholder='images.name in [“loss”, “accuracy”] and run.learning_rate > 10'
-                    options={[
-                      'images.name',
-                      'images.context',
-                      ...selectFormData.suggestions,
-                    ]}
+                    onEnter={handleSearch}
                   />
                 </div>
               ) : (
@@ -189,7 +198,7 @@ function SelectForm({
                                 item.label === option.label,
                             )?.label;
                           return (
-                            <React.Fragment>
+                            <div className='SelectForm__option'>
                               <Checkbox
                                 color='primary'
                                 icon={<CheckBoxOutlineBlank />}
@@ -200,7 +209,7 @@ function SelectForm({
                               <span className='SelectForm__option__label'>
                                 {option.label}
                               </span>
-                            </React.Fragment>
+                            </div>
                           );
                         }}
                       />
@@ -222,7 +231,6 @@ function SelectForm({
                             <Badge
                               size='large'
                               key={tag.label}
-                              color={tag.color}
                               label={tag.label}
                               onDelete={handleDelete}
                             />
@@ -248,12 +256,11 @@ function SelectForm({
           {selectedImagesData?.advancedMode ? null : (
             <ErrorBoundary>
               <div className='SelectForm__TextField'>
-                <ExpressionAutoComplete
-                  onExpressionChange={onSelectRunQueryChange}
-                  onSubmit={handleSearch}
+                <AutocompleteInput
+                  refObject={autocompleteRef}
+                  context={selectFormData?.suggestions}
                   value={selectedImagesData?.query}
-                  options={selectFormData.suggestions}
-                  placeholder='Filter runs, e.g. run.learning_rate > 0.0001 and run.batch_size == 32'
+                  onEnter={handleSearch}
                 />
               </div>
             </ErrorBoundary>

@@ -1,3 +1,2 @@
-Cython==3.0.0a9
-wheel
-twine
+wheel >= 0.31.0
+twine >= 1.11.0

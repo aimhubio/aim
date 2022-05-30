@@ -8,8 +8,8 @@ import {
 } from '@material-ui/icons';
 
 import { Badge, Button, Icon, Text } from 'components/kit';
-import ExpressionAutoComplete from 'components/kit/ExpressionAutoComplete';
 import ErrorBoundary from 'components/ErrorBoundary/ErrorBoundary';
+import AutocompleteInput from 'components/AutocompleteInput';
 
 import { ANALYTICS_EVENT_KEYS } from 'config/analytics/analyticsKeysMap';
 
@@ -30,19 +30,20 @@ function SelectForm({
 }: ISelectFormProps): React.FunctionComponentElement<React.ReactNode> {
   const [anchorEl, setAnchorEl] = React.useState<any>(null);
   const searchRef = React.useRef<any>(null);
-
+  const autocompleteRef: any = React.useRef<React.MutableRefObject<any>>(null);
   React.useEffect(() => {
     return () => {
       searchRef.current?.abort();
     };
   }, []);
 
-  function handleParamsSearch(e: React.ChangeEvent<any>) {
-    e.preventDefault();
+  function handleParamsSearch() {
     if (requestIsPending) {
       return;
     }
-    searchRef.current = paramsAppModel.getParamsData(true, true);
+    const query = autocompleteRef.current.getValue();
+    onSelectRunQueryChange(query);
+    searchRef.current = paramsAppModel.getParamsData(true, true, query);
     searchRef.current.call();
     trackEvent(ANALYTICS_EVENT_KEYS.params.searchClick);
   }
@@ -65,12 +66,12 @@ function SelectForm({
       {},
     );
     onParamsSelectChange(
-      value.filter((option: ISelectOption) => lookup[option.label] === 0),
+      value?.filter((option: ISelectOption) => lookup[option.label] === 0),
     );
   }
 
   function handleDelete(field: string): void {
-    let fieldData = [...(selectedParamsData?.options || [])].filter(
+    let fieldData = [...(selectedParamsData?.options || [])]?.filter(
       (opt: ISelectOption) => opt.label !== field,
     );
     onParamsSelectChange(fieldData);
@@ -157,7 +158,7 @@ function SelectForm({
                               item.label === option.label,
                           )?.label;
                         return (
-                          <React.Fragment>
+                          <div className='SelectForm__option'>
                             <Checkbox
                               color='primary'
                               icon={<CheckBoxOutlineBlank />}
@@ -170,7 +171,7 @@ function SelectForm({
                             >
                               {option.label}
                             </Text>
-                          </React.Fragment>
+                          </div>
                         );
                       }}
                     />
@@ -195,7 +196,6 @@ function SelectForm({
                                 <Badge
                                   size='large'
                                   key={tag.label}
-                                  color={tag.color}
                                   label={tag.label}
                                   onDelete={handleDelete}
                                 />
@@ -237,12 +237,11 @@ function SelectForm({
             </Button>
           </Box>
           <div className='SelectForm__TextField'>
-            <ExpressionAutoComplete
-              onExpressionChange={onSelectRunQueryChange}
-              onSubmit={handleParamsSearch}
+            <AutocompleteInput
+              refObject={autocompleteRef}
+              context={selectFormData?.suggestions}
+              onEnter={handleParamsSearch}
               value={selectedParamsData?.query}
-              options={selectFormData?.suggestions}
-              placeholder='Filter runs, e.g. run.learning_rate > 0.0001 and run.batch_size == 32'
             />
           </div>
         </div>

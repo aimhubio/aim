@@ -37,7 +37,6 @@ function GroupingPopover({
   function onChange(e: any, values: IGroupingSelectOption[]): void {
     if (e?.code !== 'Backspace') {
       handleSelect(values);
-      setInputValue('');
     } else {
       if (inputValue.length === 0) {
         handleSelect(values);
@@ -149,7 +148,7 @@ function GroupingPopover({
                 </div>
               )}
               renderOption={(option, { selected }) => (
-                <React.Fragment>
+                <div className='GroupingPopover__option'>
                   <Checkbox
                     color='primary'
                     size='small'
@@ -158,8 +157,10 @@ function GroupingPopover({
                     style={{ marginRight: 4 }}
                     checked={selected}
                   />
-                  {option.label}
-                </React.Fragment>
+                  <Text className='GroupingPopover__option__label' size={14}>
+                    {option.label}
+                  </Text>
+                </div>
               )}
             />
           </div>

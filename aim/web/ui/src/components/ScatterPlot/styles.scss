@@ -7,10 +7,12 @@
   position: relative;
   overflow: hidden;
   user-select: none;
-  min-width: 100px;
-  min-height: 100px;
+  min-width: toRem(150px);
+  min-height: toRem(150px);
 
   &__emptyData {
+    font-size: 1em;
+    fill: #586069;
     position: absolute;
     top: 50%;
     left: 50%;

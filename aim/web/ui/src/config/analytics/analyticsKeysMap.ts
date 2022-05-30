@@ -258,6 +258,12 @@ export const ANALYTICS_EVENT_KEYS = {
         clickApplyButton: '[RunDetail] [Texts] Click apply button',
         changeContext: '[RunDetail] [Texts] Change context',
       },
+      notes: {
+        tabView: '[RunDetail] [Notes] Tab view',
+        clickSaveButton: '[RunDetail] [Notes] Click save button',
+        clickUpdateButton: '[RunDetail] [Notes] Click update button',
+        clickDeleteButton: '[RunDetail] [Notes] Click delete button',
+      },
       audios: {
         tabView: '[RunDetail] [Audios] Tab view',
         clickApplyButton: '[RunDetail] [Audios] Click apply button',
@@ -272,6 +278,9 @@ export const ANALYTICS_EVENT_KEYS = {
         tabView: '[RunDetail] [Settings] Tab view',
         deleteRun: '[RunDetail] [Settings] Delete run',
         archiveRun: '[RunDetail] [Settings] Archive run',
+      },
+      logs: {
+        tabView: '[RunDetail] [Logs] Tab view',
       },
     },
   },

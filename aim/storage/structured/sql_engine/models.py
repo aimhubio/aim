@@ -1,7 +1,13 @@
-from sqlalchemy import Column, Table, ForeignKey
-from sqlalchemy import Integer, Text, Boolean, DateTime
-from sqlalchemy.orm import relationship, backref
-from sqlalchemy.orm import validates
+from sqlalchemy import (
+    Boolean,
+    Column,
+    DateTime,
+    ForeignKey,
+    Integer,
+    Table,
+    Text,
+)
+from sqlalchemy.orm import relationship, backref, validates
 from sqlalchemy.ext.declarative import declarative_base
 
 import uuid
@@ -44,6 +50,7 @@ class Run(Base):
 
     experiment = relationship('Experiment', backref=backref('runs', uselist=True))
     tags = relationship('Tag', secondary=run_tags, backref=backref('runs', uselist=True))
+    notes = relationship('Note', back_populates='run')
 
     def __init__(self, run_hash, created_at=None):
         self.hash = run_hash
@@ -85,3 +92,40 @@ class Tag(Base):
     def validate_color(self, _, color):
         # TODO: [AT] add color validation
         return color
+
+
+class Note(Base):
+    __tablename__ = 'note'
+
+    id = Column(Integer, autoincrement=True, primary_key=True)
+    content = Column(Text, nullable=False, default='')
+    run_id = Column(Integer, ForeignKey('run.id'))
+
+    created_at = Column(DateTime, default=datetime.datetime.utcnow)
+    updated_at = Column(DateTime, default=datetime.datetime.utcnow, onupdate=datetime.datetime.utcnow)
+
+    run = relationship('Run', back_populates='notes')
+    audit_logs = relationship('NoteAuditLog', back_populates='note')
+
+    def __init__(self, content):
+        self.content = content
+
+
+class NoteAuditLog(Base):
+    __tablename__ = 'note_audit_log'
+
+    id = Column(Integer, autoincrement=True, primary_key=True)
+    note_id = Column(Integer, ForeignKey('note.id', ondelete='CASCADE'), nullable=False)
+
+    datetime = Column(DateTime, default=datetime.datetime.utcnow)
+    action = Column(Text)
+
+    before_edit = Column(Text, nullable=True)
+    after_edit = Column(Text, nullable=True)
+
+    note = relationship('Note', back_populates='audit_logs')
+
+    def __init__(self, action, before, after):
+        self.action = action
+        self.before_edit = before
+        self.after_edit = after

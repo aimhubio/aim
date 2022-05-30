@@ -3,9 +3,11 @@
 ## Runs Explorer
 
 ### Overview
+
 To navigate into Runs Explorer, click on the `Runs` navigation item from the left sidebar.
 
 Runs explorer helps you to
+
 - [Search runs with pythonic query](#search-runs)
 - [Observe runs in real time](#follow-runs-in-a-real-time)
 - [Delete or archive runs](#delete-and-archive-runs-by-batch)
@@ -49,27 +51,40 @@ Generate Runs CSV report by clicking on the `Export` button on the Runs table.
 
 ## Single run page
 
-### Overview
-
 Each training run has a dedicated page on Aim. Use the single run page to observe all the tracked metadata associated with that run.
-
-<img style="border-radius: 8px; border: 1px solid #E8F1FC" alt="Single Run page" src="https://docs-blobs.s3.us-east-2.amazonaws.com/images/ui/pages/run-single-page/single_run_page.png">
 
 Here are the tabs available on the single run page.
 Each tab visualizes respective tracked metadata or empty if not tracked.
-- [Params](#id3)
-- [Metrics](#id4)
-- [System](#id5)
-- [Distributions](#id6)
-- [Images](#id7)
-- [Audios](#id8)
-- [Texts](#id9)
-- [Figures](#id10)
-- [Settings](#id11)
+
+- [Overview](#id4)
+- [Params](#id5)
+- [Metrics](#id6)
+- [System](#id7)
+- [Distributions](#id8)
+- [Images](#id9)
+- [Audios](#id10)
+- [Texts](#id11)
+- [Figures](#id12)
+- [Terminal Logs](#id13)
+- [Settings](#id14)
+
+### Overview
+
+Overview tab shows overall info about the run.
+
+- These cards can contain information about `Parameters`, `Metrics`, `System Metrics`, `CLI Arguments`, `Environment Variables`, `Packages` and `Git information`. With this data, you can easily reproduce your run.
+
+- Sidebar contains information about `Run Date`, `Run Duration`, `Run Hash`, attached `Tags` and gives the ability to navigate through tabs.
+
+<img style="border-radius: 8px; border: 1px solid #E8F1FC" alt="Single Run page params tab" src="https://docs-blobs.s3.us-east-2.amazonaws.com/images/ui/pages/run-single-page/overview_tab.png">
+
+Also, you can apply advanced `searching/filtering` to those card tables.
+
+<img style="border-radius: 8px; border: 1px solid #E8F1FC" alt="Single Run page params tab" src="https://docs-blobs.s3.us-east-2.amazonaws.com/images/ui/pages/run-single-page/overview_tab_table.png">
 
 ### Params
 
-Params tab contains a JSON-like visualization of all of the tracked params data related to a single run of interest.
+Params tab contains a JSON-like visualization of all the tracked params data related to a single run of interest.
 
 <img style="border-radius: 8px; border: 1px solid #E8F1FC" alt="Single Run page params tab" src="https://docs-blobs.s3.us-east-2.amazonaws.com/images/ui/pages/run-single-page/params_tab.png">
 
@@ -83,9 +98,9 @@ Metrics tab contains the visualizations of all the metrics tracked for the given
 
 ### System
 
-Aim automatically tracks system metrics so you can use them in order to detect potential resource mismanagements or anomalies.
+Aim automatically tracks system metrics, so you can use them in order to detect potential resource mismanagements or anomalies.
 
-System tab contains all of the tracked system metrics for a single run.
+System tab contains all the tracked system metrics for a single run.
 
 <img style="border-radius: 8px; border: 1px solid #E8F1FC" alt="Single Run page system tab" src="https://docs-blobs.s3.us-east-2.amazonaws.com/images/ui/pages/run-single-page/system_tab.png">
 
@@ -94,6 +109,7 @@ System tab contains all of the tracked system metrics for a single run.
 You can track the gradient, the weights and the biases distributions of all the layers for lots of steps with Aim.
 
 The Distributions tab will allow you to observe them for a single run. You can also
+
 - navigate between the layers
 - search for distribution on specific steps
 
@@ -114,10 +130,15 @@ On the left-hand side are the names of different image-sets you have tracked alo
 
 Usually the images are tracked at diff steps and with batches. This control will allow you to quickly slice and dice the specific subset of images to view.
 Use these sliders to search
+
 - which subset of steps you'd like to see (on the left-hand side)
 - which indices you'd like to see (on the right-hand side)
 
 <img style="border-radius: 8px; border: 1px solid #E8F1FC" alt="Slider" src="https://docs-blobs.s3.us-east-2.amazonaws.com/images/ui/pages/images-explore/images-explore-range-panel.png">
+
+If there is only 1 step or only 1 index, you will see the info message instead of the control
+
+<img style="border-radius: 8px; border: 1px solid #E8F1FC" alt="Slider" src="https://docs-blobs.s3.us-east-2.amazonaws.com/images/ui/pages/run-single-page/range_panel_with_info_massages.png">
 
 ### Audios
 
@@ -145,6 +166,12 @@ On the `Figures` tab you can view all the track figures over different contexts 
 
 <img style="border-radius: 8px; border: 1px solid #E8F1FC" alt="Single Run page figures tab" src="https://docs-blobs.s3.us-east-2.amazonaws.com/images/ui/pages/run-single-page/figures_tab.png">
 
+### Terminal Logs
+
+Aim streams the process output logs (terminal logs) to the Aim UI automatically near-real-time. The terminal logs are displayed under `Logs` tab on the single run page.The terminal logs can be disabled programmatically if needed. [More on terminal logs here](../../using/configure_runs.html#capturing-terminal-logs).
+
+<img style="border-radius: 8px; border: 1px solid #E8F1FC" alt="Single Run page logs tab" src="https://docs-blobs.s3.us-east-2.amazonaws.com/images/ui/pages/run-single-page/logs_tab.png">
+
 ### Settings
 
 Use the `Settings` tab to delete or archive the single run
@@ -157,5 +184,6 @@ Use the `Settings` tab to delete or archive the single run
 <img style="border-radius: 8px; border: 1px solid #E8F1FC" alt="Delete confirm" src="https://docs-blobs.s3.us-east-2.amazonaws.com/images/ui/pages/run-single-page/delete_modal.png">
 
 #### Archive Run
+
 <img style="border-radius: 8px; border: 1px solid #E8F1FC" alt="Archive card" src="https://docs-blobs.s3.us-east-2.amazonaws.com/images/ui/pages/run-single-page/archive_card.png">
 <img style="border-radius: 8px; border: 1px solid #E8F1FC" alt="Unarchive card" src="https://docs-blobs.s3.us-east-2.amazonaws.com/images/ui/pages/run-single-page/unarchive_card.png">

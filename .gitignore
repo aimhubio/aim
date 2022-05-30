@@ -120,6 +120,5 @@ examples/.git
 coverage_html_report/
 
 # generated cpp files
-aim/storage/treeutils_.cpp
-aim/storage/encoding/encoding_native.cpp
-aim/storage/hashing/c_hash.cpp
+# @TODO remove this line once there will be usage of cpp files
+aim/storage/**/*.cpp

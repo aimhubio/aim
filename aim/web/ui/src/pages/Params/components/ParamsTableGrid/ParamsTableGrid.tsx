@@ -1,7 +1,5 @@
-import React from 'react';
 import { Link as RouteLink } from 'react-router-dom';
-import { merge } from 'lodash-es';
-import _ from 'lodash';
+import _ from 'lodash-es';
 
 import { Link, Tooltip } from '@material-ui/core';
 
@@ -56,17 +54,19 @@ function getParamsTableColumns(
         : null,
       columnOptions: ['color', 'stroke', 'chart'].map((groupName: string) => ({
         value: `${
-          grouping?.[groupName]?.includes('run.props.experiment') ? 'un' : ''
+          grouping?.[groupName]?.includes('run.props.experiment.name')
+            ? 'un'
+            : ''
         }group by ${groupName}`,
         onClick: () => {
           if (onGroupingToggle) {
             onGroupingToggle({
               groupName,
-              list: grouping?.[groupName]?.includes('run.props.experiment')
+              list: grouping?.[groupName]?.includes('run.props.experiment.name')
                 ? grouping?.[groupName].filter(
-                    (item) => item !== 'run.props.experiment',
+                    (item) => item !== 'run.props.experiment.name',
                   )
-                : grouping?.[groupName].concat(['run.props.experiment']),
+                : grouping?.[groupName].concat(['run.props.experiment.name']),
             } as IOnGroupingSelectChangeParams);
           }
         },
@@ -168,7 +168,7 @@ function getParamsTableColumns(
       const systemMetric: boolean = isSystemMetric(key);
       const systemMetricsList: ITableColumn[] = [];
       const metricsList: ITableColumn[] = [];
-      Object.keys(metricsColumns[key]).map((metricContext) => {
+      Object.keys(metricsColumns[key]).forEach((metricContext) => {
         const columnKey = `${systemMetric ? key : `${key}_${metricContext}`}`;
         let column = {
           key: columnKey,
@@ -176,7 +176,8 @@ function getParamsTableColumns(
             <span>{formatSystemMetricName(key)}</span>
           ) : (
             <Badge
-              size='small'
+              monospace
+              size='xSmall'
               color={COLORS[0][0]}
               label={metricContext === '' ? 'Empty context' : metricContext}
             />
@@ -312,6 +313,10 @@ function getParamsTableColumns(
           <div className='Table__groupsColumn__cell'>
             {Object.keys(groupFields).map((field) => {
               let name: string = field.replace('run.params.', '');
+              name = name.replace(
+                'run.props.experiment.name',
+                'run.props.experiment',
+              );
               name = name.replace('run.props', 'run');
               return (
                 <Tooltip key={field} title={name || ''}>
@@ -391,7 +396,8 @@ function paramsTableRowRenderer(
           content: (
             <ErrorBoundary>
               <Badge
-                size='small'
+                monospace
+                size='xSmall'
                 color={COLORS[0][0]}
                 label={`${rowData[col].length} values`}
               />
@@ -401,7 +407,7 @@ function paramsTableRowRenderer(
       }
     }
 
-    return merge({}, rowData, row);
+    return _.merge({}, rowData, row);
   } else {
     const row = {
       experiment: rowData.experiment,
@@ -432,7 +438,7 @@ function paramsTableRowRenderer(
       },
     };
 
-    return merge({}, rowData, row);
+    return _.merge({}, rowData, row);
   }
 }
 

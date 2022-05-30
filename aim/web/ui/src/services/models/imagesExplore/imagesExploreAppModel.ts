@@ -13,6 +13,7 @@ import COLORS from 'config/colors/colors';
 import { CONTROLS_DEFAULT_CONFIG } from 'config/controls/controlsDefaultConfig';
 import { ANALYTICS_EVENT_KEYS } from 'config/analytics/analyticsKeysMap';
 import { DATE_EXPORTING_FORMAT, TABLE_DATE_FORMAT } from 'config/dates/dates';
+import { getSuggestionsByExplorer } from 'config/monacoConfig/monacoConfig';
 
 import {
   getImagesExploreTableColumns,
@@ -53,14 +54,14 @@ import {
 } from 'types/services/models/explorer/createAppModel';
 import { IProjectParamsMetrics } from 'types/services/models/projects/projectsModel';
 
+import getAppConfigDataMethod from 'utils/app/getAppConfigData';
 import onRowSelectAction from 'utils/app/onRowSelect';
 import { decode, encode } from 'utils/encoder/encoder';
 import getObjectPaths from 'utils/getObjectPaths';
 import getUrlWithParam from 'utils/getUrlWithParam';
 import getStateFromUrl from 'utils/getStateFromUrl';
 import {
-  adjustable_reader,
-  decode_buffer_pairs,
+  decodeBufferPairs,
   decodePathsVals,
   iterFoldTree,
 } from 'utils/encoder/streamEncoding';
@@ -80,9 +81,11 @@ import alphabeticalSortComparator from 'utils/alphabeticalSortComparator';
 import onNotificationDelete from 'utils/app/onNotificationDelete';
 import onNotificationAdd from 'utils/app/onNotificationAdd';
 import exceptionHandler from 'utils/app/exceptionHandler';
-import { getParamsSuggestions } from 'utils/app/getParamsSuggestions';
+import getGroupingSelectOptions from 'utils/app/getGroupingSelectOptions';
+import getAdvancedSuggestion from 'utils/getAdvancedSuggestions';
 
 import createModel from '../model';
+import { AppNameEnum } from '../explorer';
 
 const model = createModel<Partial<IImagesExploreAppModelState>>({
   requestStatus: RequestStatusEnum.NotRequested,
@@ -92,6 +95,7 @@ const model = createModel<Partial<IImagesExploreAppModelState>>({
     options: undefined,
     suggestions: [],
   },
+  config: getConfig(),
 });
 
 let tooltipData: ITooltipData = {};
@@ -182,35 +186,67 @@ function initialize(appId: string): void {
     .getProjectParams(['images'])
     .call()
     .then((data: IProjectParamsMetrics) => {
+      const advancedSuggestions: Record<any, any> = getAdvancedSuggestion(
+        data.images,
+      );
       model.setState({
         selectFormData: {
           options: getSelectFormOptions(data),
-          suggestions: getParamsSuggestions(data),
+          suggestions: getSuggestionsByExplorer(AppNameEnum.IMAGES, data),
+          advancedSuggestions: {
+            ...getSuggestionsByExplorer(AppNameEnum.IMAGES, data),
+            images: {
+              name: '',
+              context: _.isEmpty(advancedSuggestions)
+                ? ''
+                : { ...advancedSuggestions },
+            },
+          },
         },
       });
     });
 }
 
-function setDefaultAppConfigData() {
+function setDefaultAppConfigData(recoverTableState: boolean = true) {
+  const defaultConfig: Partial<IImagesExploreAppConfig> = {};
+
   const grouping: IImagesExploreAppConfig['grouping'] =
-    getStateFromUrl('grouping') || getConfig().grouping;
+    getStateFromUrl('grouping') ?? {};
+
+  defaultConfig.grouping = grouping;
+
   const compatibleSelectConfig = getCompatibleSelectConfig(
     ['images'],
     getStateFromUrl('select'),
   );
-  const select: ISelectConfig = compatibleSelectConfig || getConfig().select;
+  const select: ISelectConfig = compatibleSelectConfig ?? {};
+
+  defaultConfig.select = select;
+
   const images: IImagesExploreAppConfig['images'] =
-    getStateFromUrl('images') || getConfig().images;
-  const tableConfigHash = getItem('imagesExploreTable');
-  const table = tableConfigHash
-    ? JSON.parse(decode(tableConfigHash))
-    : getConfig().table;
-  const configData = _.merge(getConfig(), {
-    grouping,
-    select,
-    table,
-    images,
-  });
+    getStateFromUrl('images') ?? {};
+
+  defaultConfig.images = images;
+
+  if (recoverTableState) {
+    const tableConfigHash = getItem('imagesExploreTable');
+    const table = tableConfigHash
+      ? JSON.parse(decode(tableConfigHash))
+      : getConfig().table;
+
+    defaultConfig.table = table;
+  }
+
+  const configData = _.mergeWith(
+    {},
+    model.getState().config,
+    defaultConfig,
+    (objValue, srcValue) => {
+      if (_.isArray(objValue)) {
+        return srcValue;
+      }
+    },
+  );
 
   model.setState({ config: configData });
 }
@@ -223,33 +259,12 @@ let imagesRequestRef: {
 };
 
 function getAppConfigData(appId: string) {
-  if (appRequestRef) {
-    appRequestRef.abort();
-  }
-  appRequestRef = appsService.fetchApp(appId);
-  return {
-    call: async () => {
-      const appData = await appRequestRef.call((detail: any) => {
-        exceptionHandler({ detail, model });
-      });
-      let select = appData?.state?.select;
-      if (select) {
-        const compatibleSelectConfig = getCompatibleSelectConfig(
-          ['images'],
-          select,
-        );
-        appData.state = {
-          ...appData.state,
-          select: {
-            ...compatibleSelectConfig,
-          },
-        };
-      }
-      const configData: any = _.merge(getConfig(), appData.state);
-      model.setState({ config: configData });
-    },
-    abort: appRequestRef.abort,
-  };
+  return getAppConfigDataMethod({
+    appId,
+    appRequest: appRequestRef,
+    config: getConfig(),
+    model,
+  });
 }
 
 function resetModelState() {
@@ -284,6 +299,7 @@ function abortRequest(): void {
 function getImagesData(
   shouldUrlUpdate?: boolean,
   shouldResetSelectedRows?: boolean,
+  queryString?: string,
 ) {
   if (imagesRequestRef) {
     imagesRequestRef.abort();
@@ -291,6 +307,13 @@ function getImagesData(
 
   const configData: IImagesExploreAppConfig | undefined =
     model.getState()?.config;
+  if (queryString) {
+    if (configData?.select?.advancedMode) {
+      configData.select.advancedQuery = queryString;
+    } else {
+      configData!.select.query = queryString;
+    }
+  }
   if (shouldUrlUpdate) {
     updateURL(configData);
   }
@@ -355,6 +378,7 @@ function getImagesData(
           if (ex.name === 'AbortError') {
             // Abort Error
           } else {
+            // eslint-disable-next-line no-console
             console.log('Unhandled error: ', ex);
           }
         }
@@ -391,6 +415,7 @@ function getImagesData(
     abort: imagesRequestRef.abort,
   };
 }
+
 function getSelectFormOptions(projectsData: IProjectParamsMetrics) {
   let data: ISelectOption[] = [];
   let index: number = 0;
@@ -429,10 +454,11 @@ function getSelectFormOptions(projectsData: IProjectParamsMetrics) {
     alphabeticalSortComparator<ISelectOption>({ orderBy: 'label' }),
   );
 }
+
 function processData(data: any[]): {
   data: IMetricsCollection<IImageData>[];
   params: string[];
-  highLevelParams: string[];
+  runProps: string[];
   contexts: string[];
   selectedRows: any;
 } {
@@ -440,10 +466,12 @@ function processData(data: any[]): {
   let selectedRows = model.getState()?.selectedRows;
   let metrics: any[] = [];
   let params: string[] = [];
+  let runProps: string[] = [];
   let highLevelParams: string[] = [];
   let contexts: string[] = [];
   data?.forEach((run: IImageRunData) => {
     params = params.concat(getObjectPaths(run.params, run.params));
+    runProps = runProps.concat(getObjectPaths(run.props, run.props));
     highLevelParams = highLevelParams.concat(
       getObjectPaths(run.params, run.params, '', false, true),
     );
@@ -466,7 +494,7 @@ function processData(data: any[]): {
           });
           metrics.push({
             ...image,
-            images_name: trace.name,
+            name: trace.name,
             step: trace.iters[stepIndex],
             context: trace.context,
             run: _.omit(run, 'traces'),
@@ -503,6 +531,7 @@ function processData(data: any[]): {
       sortFields?.map((f: any) => f.order),
     ),
   );
+  const uniqProps = _.uniq(runProps).sort();
   const uniqParams = _.uniq(params).sort();
   const uniqHighLevelParams = _.uniq(highLevelParams).sort();
   const uniqContexts = _.uniq(contexts).sort();
@@ -524,8 +553,8 @@ function processData(data: any[]): {
   }
   return {
     data: processedData,
-    params: uniqParams,
-    highLevelParams: uniqHighLevelParams,
+    runProps: uniqProps,
+    params: [...new Set(uniqParams.concat(uniqHighLevelParams))].sort(),
     contexts: uniqContexts,
     selectedRows,
   };
@@ -533,13 +562,14 @@ function processData(data: any[]): {
 
 function setModelData(rawData: any[], configData: IImagesExploreAppConfig) {
   const sortFields = model.getState()?.config?.table.sortFields;
-  const { data, params, contexts, highLevelParams, selectedRows } =
+  const { data, params, runProps, contexts, selectedRows } =
     processData(rawData);
-  const sortedParams = params.concat(highLevelParams).sort();
   const groupingSelectOptions = [
     ...getGroupingSelectOptions({
-      params: sortedParams,
+      params,
       contexts,
+      runProps,
+      sequenceName: 'images',
     }),
   ];
   const { mediaSetData, orderedMap } = getDataAsMediaSetNestedObject({
@@ -547,10 +577,9 @@ function setModelData(rawData: any[], configData: IImagesExploreAppConfig) {
     groupingSelectOptions,
     model,
   });
-
   tooltipData = getTooltipData({
     processedData: data,
-    paramKeys: sortedParams,
+    paramKeys: params,
     groupingSelectOptions,
     groupingItems: ['group'],
     model,
@@ -679,14 +708,15 @@ function updateModelData(
   configData: IImagesExploreAppConfig = model.getState()!.config!,
   shouldURLUpdate?: boolean,
 ): void {
-  const { data, params, contexts, highLevelParams, selectedRows } = processData(
+  const { data, params, runProps, contexts, selectedRows } = processData(
     model.getState()?.rawData as any[],
   );
-  const sortedParams = params.concat(highLevelParams).sort();
   const groupingSelectOptions = [
     ...getGroupingSelectOptions({
-      params: sortedParams,
+      params,
+      runProps,
       contexts,
+      sequenceName: 'images',
     }),
   ];
   const { mediaSetData, orderedMap } = getDataAsMediaSetNestedObject({
@@ -696,7 +726,7 @@ function updateModelData(
   });
   tooltipData = getTooltipData({
     processedData: data,
-    paramKeys: sortedParams,
+    paramKeys: params,
     groupingSelectOptions,
     groupingItems: ['group'],
     model,
@@ -777,71 +807,6 @@ function getFilteredGroupingOptions(
   } else {
     return [];
   }
-}
-
-function getGroupingSelectOptions({
-  params,
-  contexts = [],
-}: {
-  params: string[];
-  contexts?: string[];
-}): IGroupingSelectOption[] {
-  const paramsOptions: IGroupingSelectOption[] = params.map((param) => ({
-    group: 'run',
-    label: `run.${param}`,
-    value: `run.params.${param}`,
-  }));
-
-  const contextOptions: IGroupingSelectOption[] = contexts.map((context) => ({
-    group: 'images',
-    label: `images.context.${context}`,
-    value: `context.${context}`,
-  }));
-
-  return [
-    {
-      group: 'run',
-      label: 'run.name',
-      value: 'run.props.name',
-    },
-    {
-      group: 'run',
-      label: 'run.experiment',
-      value: 'run.props.experiment.name',
-    },
-    {
-      group: 'run',
-      label: 'run.hash',
-      value: 'run.hash',
-    },
-    {
-      group: 'run',
-      label: 'run.creation_time',
-      value: 'run.props.creation_time',
-    },
-    ...paramsOptions,
-    {
-      group: 'images',
-      label: 'images.name',
-      value: 'images_name',
-    },
-    {
-      group: 'images',
-      label: 'images.context',
-      value: 'context',
-    },
-    ...contextOptions,
-    {
-      group: 'record',
-      label: 'record.step',
-      value: 'step',
-    },
-    {
-      group: 'record',
-      label: 'record.index',
-      value: 'index',
-    },
-  ];
 }
 
 function groupData(data: any[]): any {
@@ -1000,7 +965,7 @@ function updateURL(
 
   const appId: string = window.location.pathname.split('/')[2];
   if (!appId) {
-    setItem('imagesExploreUrl', url);
+    setItem('imagesUrl', url);
   }
 
   window.history.pushState(null, '', url);
@@ -1020,9 +985,8 @@ function onResetConfigData(): void {
 async function getImagesMetricsData(
   stream: ReadableStream<IRun<IMetricTrace>[]>,
 ) {
-  let gen = adjustable_reader(stream);
-  let buffer_pairs = decode_buffer_pairs(gen);
-  let decodedPairs = decodePathsVals(buffer_pairs);
+  let bufferPairs = decodeBufferPairs(stream);
+  let decodedPairs = decodePathsVals(bufferPairs);
   let objects = iterFoldTree(decodedPairs, 1);
 
   const runData = [];
@@ -1045,9 +1009,8 @@ function getImagesBlobsData(uris: string[]) {
           exceptionHandler({ detail, model });
         })
         .then(async (stream) => {
-          let gen = adjustable_reader(stream);
-          let buffer_pairs = decode_buffer_pairs(gen);
-          let decodedPairs = decodePathsVals(buffer_pairs);
+          let bufferPairs = decodeBufferPairs(stream);
+          let decodedPairs = decodePathsVals(bufferPairs);
           let objects = iterFoldTree(decodedPairs, 1);
 
           for await (let [keys, val] of objects) {
@@ -1061,6 +1024,7 @@ function getImagesBlobsData(uris: string[]) {
           if (ex.name === 'AbortError') {
             // Abort Error
           } else {
+            // eslint-disable-next-line no-console
             console.log('Unhandled error: ');
           }
         });
@@ -1304,7 +1268,7 @@ function getDataAsTableRows(
           date: moment(metric.run.props.creation_time * 1000).format(
             TABLE_DATE_FORMAT,
           ),
-          name: metric.images_name,
+          name: metric.name,
           context: Object.entries(metric.context).map((entry) =>
             entry.join(':'),
           ),
@@ -2023,16 +1987,16 @@ function onSliceRangeChange(key: string, newValue: number[] | number) {
   }
 }
 
-function onDensityChange(value: number, metaData: any, key: string) {
+function onDensityChange(name: string, value: number, metaData: any) {
   const configData: IImagesExploreAppConfig | undefined =
     model.getState()?.config;
   if (configData?.images) {
     const images = {
       ...configData.images,
-      [key]: +value,
+      [name]: +value,
       inputsValidations: {
         ...configData.images?.inputsValidations,
-        [key]: metaData?.isValid,
+        [name]: metaData?.isValid,
       },
     };
     const config = {
@@ -2321,7 +2285,6 @@ const imagesExploreAppModel = {
   onImageRenderingChange,
   onImageAlignmentChange,
   showRangePanel,
-  getGroupingSelectOptions,
   getDataAsImageSet,
   onStackingToggle,
   onImagesSortChange,

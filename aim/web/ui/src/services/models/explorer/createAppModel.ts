@@ -15,6 +15,7 @@ import { RequestStatusEnum } from 'config/enums/requestStatusEnum';
 import { CONTROLS_DEFAULT_CONFIG } from 'config/controls/controlsDefaultConfig';
 import { ANALYTICS_EVENT_KEYS } from 'config/analytics/analyticsKeysMap';
 import { DATE_EXPORTING_FORMAT, TABLE_DATE_FORMAT } from 'config/dates/dates';
+import { getSuggestionsByExplorer } from 'config/monacoConfig/monacoConfig';
 
 import {
   getMetricsTableColumns,
@@ -86,8 +87,12 @@ import {
   IScatterAppModelState,
   ITrendlineOptions,
 } from 'types/services/models/scatter/scatterAppModel';
+import { IApiRequest } from 'types/services/services';
 
-import { aggregateGroupData } from 'utils/aggregateGroupData';
+import {
+  aggregateGroupData,
+  AggregationAreaMethods,
+} from 'utils/aggregateGroupData';
 import exceptionHandler from 'utils/app/exceptionHandler';
 import getAggregatedData from 'utils/app/getAggregatedData';
 import getChartTitleData from 'utils/app/getChartTitleData';
@@ -138,13 +143,12 @@ import updateSortFields from 'utils/app/updateTableSortFields';
 import contextToString from 'utils/contextToString';
 import { AlignmentOptionsEnum, ChartTypeEnum, ScaleEnum } from 'utils/d3';
 import {
-  adjustable_reader,
-  decode_buffer_pairs,
+  decodeBufferPairs,
   decodePathsVals,
   iterFoldTree,
 } from 'utils/encoder/streamEncoding';
 import { filterArrayByIndexes } from 'utils/filterArrayByIndexes';
-import filterMetricData from 'utils/filterMetricData';
+import { filterMetricsData } from 'utils/filterMetricData';
 import filterTooltipContent from 'utils/filterTooltipContent';
 import { formatValue } from 'utils/formatValue';
 import getClosestValue from 'utils/getClosestValue';
@@ -173,10 +177,13 @@ import alphabeticalSortComparator from 'utils/alphabeticalSortComparator';
 import onRowSelect from 'utils/app/onRowSelect';
 import { SortField } from 'utils/getSortedFields';
 import onChangeTrendlineOptions from 'utils/app/onChangeTrendlineOptions';
-import { getParamsSuggestions } from 'utils/app/getParamsSuggestions';
 import onToggleColumnsColorScales from 'utils/app/onToggleColumnsColorScales';
+import onAxisBrushExtentChange from 'utils/app/onAxisBrushExtentChange';
+import { minMaxOfArray } from 'utils/minMaxOfArray';
+import getAdvancedSuggestion from 'utils/getAdvancedSuggestions';
 
 import { AppDataTypeEnum, AppNameEnum } from './index';
+
 /**
  * function createAppModel has 2 major functionalities:
  *    1. getConfig() function which depends on appInitialConfig returns corresponding config state
@@ -203,7 +210,7 @@ function createAppModel(appConfig: IAppInitialConfig) {
       case AppDataTypeEnum.METRICS: {
         const config: IAppModelConfig = {
           liveUpdate: {
-            delay: 2000,
+            delay: 7000,
             enabled: false,
           },
         };
@@ -211,7 +218,7 @@ function createAppModel(appConfig: IAppInitialConfig) {
           config.grouping = {
             color: [],
             stroke: [],
-            chart: [],
+            chart: ['name'],
             reverseMode: {
               color: false,
               stroke: false,
@@ -315,7 +322,7 @@ function createAppModel(appConfig: IAppInitialConfig) {
       case AppDataTypeEnum.RUNS: {
         const config: IAppModelConfig = {
           liveUpdate: {
-            delay: 2000,
+            delay: 7000,
             enabled: false,
           },
         };
@@ -390,6 +397,7 @@ function createAppModel(appConfig: IAppInitialConfig) {
                 selectedParams:
                   CONTROLS_DEFAULT_CONFIG.params.tooltip.selectedParams,
               },
+              brushExtents: {},
             };
           }
           if (components.charts.indexOf(ChartTypeEnum.ScatterPlot) !== -1) {
@@ -429,25 +437,26 @@ function createAppModel(appConfig: IAppInitialConfig) {
             advancedQuery: '',
           };
         }
-        return config;
+        //TODO solve the problem with keeping table config after switching from Scatters explore to Params explore. But the solution is temporal
+        return _.cloneDeep(config);
       }
       default:
         return {};
     }
   }
 
-  function setModelDefaultAppConfigData(): void {
+  function setModelDefaultAppConfigData(
+    recoverTableState: boolean = true,
+  ): void {
     setDefaultAppConfigData({
       config: getConfig(),
       appInitialConfig: appConfig,
       model,
+      recoverTableState,
     });
   }
 
-  function getModelAppConfigData(appId: string): {
-    call: () => Promise<void>;
-    abort: () => void;
-  } {
+  function getModelAppConfigData(appId: string): IApiRequest<void> {
     return getAppConfigData({ appId, appRequest, config: getConfig(), model });
   }
 
@@ -485,6 +494,7 @@ function createAppModel(appConfig: IAppInitialConfig) {
         },
       };
     }
+
     function getMetricOptions(
       projectsData: IProjectParamsMetrics,
     ): ISelectOption[] {
@@ -522,6 +532,7 @@ function createAppModel(appConfig: IAppInitialConfig) {
       systemOptions.sort(comparator);
       return data.sort(comparator).concat(systemOptions);
     }
+
     function initialize(appId: string): void {
       model.init();
       const state: Partial<IAppModelState> = {};
@@ -549,10 +560,22 @@ function createAppModel(appConfig: IAppInitialConfig) {
         .getProjectParams(['metric'])
         .call()
         .then((data) => {
+          const advancedSuggestions: Record<any, any> = getAdvancedSuggestion(
+            data.metric,
+          );
           model.setState({
             selectFormData: {
               options: getMetricOptions(data),
-              suggestions: getParamsSuggestions(data),
+              suggestions: getSuggestionsByExplorer(appName, data),
+              advancedSuggestions: {
+                ...getSuggestionsByExplorer(appName, data),
+                metric: {
+                  name: '',
+                  context: _.isEmpty(advancedSuggestions)
+                    ? ''
+                    : { ...advancedSuggestions },
+                },
+              },
             },
           });
         });
@@ -593,10 +616,8 @@ function createAppModel(appConfig: IAppInitialConfig) {
     function getMetricsData(
       shouldUrlUpdate?: boolean,
       shouldResetSelectedRows?: boolean,
-    ): {
-      call: () => Promise<void>;
-      abort: () => void;
-    } {
+      queryString?: string,
+    ): IApiRequest<void> {
       if (metricsRequestRef) {
         metricsRequestRef.abort();
       }
@@ -605,12 +626,21 @@ function createAppModel(appConfig: IAppInitialConfig) {
         updateURL({ configData, appName });
       }
       const metric = configData?.chart?.alignmentConfig?.metric;
+
+      if (queryString) {
+        if (configData.select.advancedQuery) {
+          configData.select.advancedQuery = queryString;
+        } else {
+          configData.select.query = queryString;
+        }
+      }
       let query = getQueryStringFromSelect(configData?.select);
       metricsRequestRef = metricsService.getMetricsData({
         q: query,
         p: configData?.chart?.densityType,
         ...(metric ? { x_axis: metric } : {}),
       });
+
       return {
         call: async () => {
           if (query === '()') {
@@ -635,6 +665,7 @@ function createAppModel(appConfig: IAppInitialConfig) {
               if (ex.name === 'AbortError') {
                 // Abort Error
               } else {
+                // eslint-disable-next-line no-console
                 console.log('Unhandled error: ', ex);
               }
             }
@@ -823,6 +854,24 @@ function createAppModel(appConfig: IAppInitialConfig) {
                   closestIndex
                 ],
               };
+              if (
+                config.chart?.aggregationConfig?.methods.area ===
+                AggregationAreaMethods.STD_DEV
+              ) {
+                rows[groupKey!].data.aggregation.area.stdDevValue =
+                  metricsCollection.aggregation!.area.stdDevValue?.yValues[
+                    closestIndex
+                  ];
+              }
+              if (
+                config.chart?.aggregationConfig?.methods.area ===
+                AggregationAreaMethods.STD_ERR
+              ) {
+                rows[groupKey!].data.aggregation.area.stdErrValue =
+                  metricsCollection.aggregation!.area.stdErrValue?.yValues[
+                    closestIndex
+                  ];
+              }
             }
 
             [
@@ -932,40 +981,44 @@ function createAppModel(appConfig: IAppInitialConfig) {
     function processData(data: ISequence<IMetricTrace>[]): {
       data: IMetricsCollection<IMetric>[];
       params: string[];
-      highLevelParams: string[];
+      runProps: string[];
       contexts: string[];
       selectedRows: any;
     } {
       const configData = model.getState()?.config;
       let selectedRows = model.getState()?.selectedRows;
       let metrics: IMetric[] = [];
-      let index: number = -1;
-      let params: string[] = [];
+      let runParams: string[] = [];
+      let runProps: string[] = [];
       let highLevelParams: string[] = [];
       let contexts: string[] = [];
       const paletteIndex: number = configData?.grouping?.paletteIndex || 0;
 
-      data?.forEach((run: ISequence<IMetricTrace>) => {
-        params = params.concat(getObjectPaths(run.params, run.params));
+      data?.forEach((run: ISequence<IMetricTrace>, index) => {
+        runParams = runParams.concat(getObjectPaths(run.params, run.params));
+        runProps = runProps.concat(getObjectPaths(run.props, run.props));
         highLevelParams = highLevelParams.concat(
           getObjectPaths(run.params, run.params, '', false, true),
         );
         metrics = metrics.concat(
-          run.traces.map((trace: any) => {
-            index++;
-
+          run.traces.map((trace: IMetricTrace) => {
             contexts = contexts.concat(
               getObjectPaths(trace.context, trace.context),
             );
-            const { values, steps, epochs, timestamps } = filterMetricData({
-              values: [...new Float64Array(trace.values.blob)],
-              steps: [...new Float64Array(trace.iters.blob)],
-              epochs: [...new Float64Array(trace.epochs?.blob)],
-              timestamps: [...new Float64Array(trace.timestamps.blob)],
-              axesScaleType: configData?.chart?.axesScaleType,
-            });
+            const {
+              values,
+              steps,
+              epochs,
+              timestamps,
+              x_axis_values,
+              x_axis_iters,
+            } = filterMetricsData(
+              trace,
+              configData?.chart?.alignmentConfig.type,
+              configData?.chart?.axesScaleType,
+            );
 
-            let processedValues = values;
+            let processedValues = [...values];
             if (
               configData?.chart?.smoothingAlgorithm &&
               configData.chart.smoothingFactor
@@ -973,7 +1026,7 @@ function createAppModel(appConfig: IAppInitialConfig) {
               processedValues = getSmoothenedData({
                 smoothingAlgorithm: configData?.chart.smoothingAlgorithm,
                 smoothingFactor: configData.chart.smoothingFactor,
-                data: values,
+                data: processedValues,
               });
             }
             const metricKey = encode({
@@ -985,17 +1038,19 @@ function createAppModel(appConfig: IAppInitialConfig) {
               ...trace,
               run: createRunModel(_.omit(run, 'traces') as IRun<IMetricTrace>),
               key: metricKey,
-              dasharray: '0',
+              dasharray: 'none',
               color: COLORS[paletteIndex][index % COLORS[paletteIndex].length],
               isHidden: configData?.table?.hiddenMetrics!.includes(metricKey),
+              x_axis_values,
+              x_axis_iters,
               data: {
-                values: processedValues,
+                values: new Float64Array(processedValues),
                 steps,
                 epochs,
                 timestamps: timestamps.map((timestamp) =>
                   Math.round(timestamp * 1000),
                 ),
-                xValues: steps,
+                xValues: [...steps],
                 yValues: processedValues,
               },
             } as IMetric);
@@ -1020,17 +1075,16 @@ function createAppModel(appConfig: IAppInitialConfig) {
         _.orderBy(
           metrics,
           sortFields?.map(
-            (f: SortField) =>
-              function (metric: IMetric) {
-                return getValue(metric, f.value, '');
-              },
+            (f: SortField) => (metric: IMetric) =>
+              getValue(metric, f.value, ''),
           ),
           sortFields?.map((f: SortField) => f.order),
         ),
       );
-      const uniqParams = _.uniq(params).sort();
+      const uniqParams = _.uniq(runParams).sort();
       const uniqHighLevelParams = _.uniq(highLevelParams).sort();
       const uniqContexts = _.uniq(contexts).sort();
+      const uniqProps = _.uniq(runProps).sort();
 
       const mappedData =
         data?.reduce((acc: any, item: any) => {
@@ -1053,9 +1107,9 @@ function createAppModel(appConfig: IAppInitialConfig) {
 
       return {
         data: processedData,
-        params: uniqParams,
-        highLevelParams: uniqHighLevelParams,
+        params: [...new Set(uniqParams.concat(uniqHighLevelParams))].sort(),
         contexts: uniqContexts,
+        runProps: uniqProps,
         selectedRows,
       };
     }
@@ -1064,19 +1118,22 @@ function createAppModel(appConfig: IAppInitialConfig) {
       configData = model.getState()!.config!,
       shouldURLUpdate?: boolean,
     ): void {
-      const { data, params, highLevelParams, contexts, selectedRows } =
-        processData(model.getState()?.rawData as ISequence<IMetricTrace>[]);
-      const sortedParams = params.concat(highLevelParams).sort();
+      const { data, runProps, params, contexts, selectedRows } = processData(
+        model.getState()?.rawData,
+      );
+
       const groupingSelectOptions = [
         ...getGroupingSelectOptions({
-          params: sortedParams,
+          params,
+          runProps,
           contexts,
           sequenceName: 'metric',
         }),
       ];
+
       tooltipData = getTooltipData({
         processedData: data,
-        paramKeys: sortedParams,
+        paramKeys: params,
         groupingSelectOptions,
         groupingItems: ['color', 'stroke', 'chart'],
         model,
@@ -1142,22 +1199,22 @@ function createAppModel(appConfig: IAppInitialConfig) {
       configData: IAppModelConfig,
     ): void {
       const sortFields = model.getState()?.config?.table?.sortFields;
-      const { data, params, highLevelParams, contexts, selectedRows } =
+      const { data, runProps, params, contexts, selectedRows } =
         processData(rawData);
       if (configData) {
         setAggregationEnabled({ model, appName });
       }
-      const sortedParams = params.concat(highLevelParams).sort();
       const groupingSelectOptions = [
         ...getGroupingSelectOptions({
-          params: sortedParams,
+          runProps,
+          params,
           contexts,
           sequenceName: 'metric',
         }),
       ];
       tooltipData = getTooltipData({
         processedData: data,
-        paramKeys: sortedParams,
+        paramKeys: params,
         groupingSelectOptions,
         groupingItems: ['color', 'stroke', 'chart'],
         model,
@@ -1322,12 +1379,8 @@ function createAppModel(appConfig: IAppInitialConfig) {
               const metric = metricCollection.data[j];
               const missingIndexes: number[] = [];
               if (metric.x_axis_iters && metric.x_axis_values) {
-                const xAxisIters: number[] = [
-                  ...new Float64Array(metric.x_axis_iters.blob),
-                ];
-                const xAxisValues: number[] = [
-                  ...new Float64Array(metric.x_axis_values.blob),
-                ];
+                const { x_axis_iters: xAxisIters, x_axis_values: xAxisValues } =
+                  metric;
                 if (xAxisValues.length === metric.data.values.length) {
                   const { sortedXValues, sortedArrays } = sortDependingArrays(
                     [...xAxisValues],
@@ -1587,7 +1640,11 @@ function createAppModel(appConfig: IAppInitialConfig) {
                 color: metricsCollection.color ?? metric.color,
                 dasharray: metricsCollection.dasharray ?? metric.color,
                 chartIndex: metricsCollection.chartIndex,
-                selectors: [metric.key, metric.key, metric.run.hash],
+                selectors: [
+                  metric.key,
+                  metric.key,
+                  encode({ runHash: metric.run.hash }),
+                ],
                 data: {
                   xValues: metric.data.xValues,
                   yValues: metric.data.yValues,
@@ -1853,13 +1910,7 @@ function createAppModel(appConfig: IAppInitialConfig) {
       liveUpdateInstance = null; //@TODO check is this need or not
     }
 
-    function archiveRuns(
-      ids: string[],
-      archived: boolean,
-    ): {
-      call: () => Promise<void>;
-      abort: () => void;
-    } {
+    function archiveRuns(ids: string[], archived: boolean): IApiRequest<void> {
       runsArchiveRef = runsService.archiveRuns(ids, archived);
       return {
         call: async () => {
@@ -1902,10 +1953,7 @@ function createAppModel(appConfig: IAppInitialConfig) {
       };
     }
 
-    function deleteRuns(ids: string[]): {
-      call: () => Promise<void>;
-      abort: () => void;
-    } {
+    function deleteRuns(ids: string[]): IApiRequest<void> {
       runsDeleteRef = runsService.deleteRuns(ids);
       return {
         call: async () => {
@@ -2228,7 +2276,7 @@ function createAppModel(appConfig: IAppInitialConfig) {
           .then((data) => {
             model.setState({
               selectFormData: {
-                suggestions: getParamsSuggestions(data),
+                suggestions: getSuggestionsByExplorer(appName, data),
               },
             });
           });
@@ -2275,6 +2323,7 @@ function createAppModel(appConfig: IAppInitialConfig) {
         shouldUrlUpdate?: boolean,
         shouldResetSelectedRows?: boolean,
         isInitial = true,
+        queryString?: string,
       ): {
         call: (exceptionHandler: (detail: any) => void) => Promise<any>;
         abort: () => void;
@@ -2285,7 +2334,9 @@ function createAppModel(appConfig: IAppInitialConfig) {
         // isInitial: true --> when search button clicked or data is loading at the first time
         const modelState = prepareModelStateToCall(isInitial);
         const configData = modelState?.config;
-
+        if (queryString) {
+          configData.select.query = queryString;
+        }
         const query = configData?.select?.query || '';
         const pagination = configData?.pagination;
 
@@ -2302,9 +2353,10 @@ function createAppModel(appConfig: IAppInitialConfig) {
               const stream = await runsRequestRef.call((detail) => {
                 exceptionHandler({ detail, model });
               });
-              let gen = adjustable_reader(stream as ReadableStream<any>);
-              let buffer_pairs = decode_buffer_pairs(gen);
-              let decodedPairs = decodePathsVals(buffer_pairs);
+              let bufferPairs = decodeBufferPairs(
+                stream as ReadableStream<any>,
+              );
+              let decodedPairs = decodePathsVals(bufferPairs);
               let objects = iterFoldTree(decodedPairs, 1);
 
               const runsData: IRun<IMetricTrace | IParamTrace>[] = isInitial
@@ -2325,7 +2377,6 @@ function createAppModel(appConfig: IAppInitialConfig) {
               }
               const { data, params, metricsColumns, selectedRows } =
                 processData(runsData);
-
               const tableData = getDataAsTableRows(
                 data,
                 metricsColumns,
@@ -2338,9 +2389,7 @@ function createAppModel(appConfig: IAppInitialConfig) {
                 model.getState()?.config?.table.hiddenColumns!,
               );
               updateTableData(tableData, tableColumns, configData);
-              limit = isInitial
-                ? modelState?.config.pagination.limit
-                : modelState?.config.pagination.limit + 45;
+
               model.setState({
                 data,
                 selectedRows: shouldResetSelectedRows
@@ -2358,9 +2407,6 @@ function createAppModel(appConfig: IAppInitialConfig) {
                     ...modelState?.config.pagination,
                     isLatest:
                       !isInitial && count < modelState?.config.pagination.limit,
-                    limit: isInitial
-                      ? modelState?.config.pagination.limit
-                      : modelState?.config.pagination.limit + 45,
                   },
                 },
               });
@@ -2376,9 +2422,11 @@ function createAppModel(appConfig: IAppInitialConfig) {
                 });
               }
             }
+            const rowDataLength = model.getState()?.tableData?.length || 0;
+            limit = rowDataLength >= 45 ? rowDataLength : 45;
             liveUpdateInstance?.start({
               q: query,
-              limit: limit || 0,
+              limit,
             });
           },
           abort: runsRequestRef.abort,
@@ -2390,7 +2438,7 @@ function createAppModel(appConfig: IAppInitialConfig) {
         shouldURLUpdate?: boolean,
       ): void {
         const { data, params, metricsColumns, selectedRows } = processData(
-          model.getState()?.rawData as IRun<IMetricTrace>[],
+          model.getState()?.rawData,
         );
         const tableData = getDataAsTableRows(data, metricsColumns, params);
         const tableColumns: ITableColumn[] = getRunsTableColumns(
@@ -2465,6 +2513,7 @@ function createAppModel(appConfig: IAppInitialConfig) {
       function processData(data: any[]): {
         data: any[];
         params: string[];
+        runProps: string[];
         metricsColumns: any;
         selectedRows: any;
         runHashArray: string[];
@@ -2477,9 +2526,11 @@ function createAppModel(appConfig: IAppInitialConfig) {
         let selectedRows = model.getState()?.selectedRows;
         let runs: IParam[] = [];
         let params: string[] = [];
+        let runProps: string[] = [];
         let unselectedRowsCount = 0;
         data?.forEach((run: IRun<IParamTrace>, index) => {
           params = params.concat(getObjectPaths(run.params, run.params));
+          runProps = runProps.concat(getObjectPaths(run.props, run.props));
           run.traces.metric.forEach((trace) => {
             metricsColumns[trace.name] = {
               ...metricsColumns[trace.name],
@@ -2491,12 +2542,13 @@ function createAppModel(appConfig: IAppInitialConfig) {
             run,
             isHidden: false,
             color: COLORS[paletteIndex][index % COLORS[paletteIndex].length],
-            key: run.hash,
+            key: encode({ runHash: run.hash }),
             dasharray: DASH_ARRAYS[0],
           });
         });
         const processedData = groupData(runs);
         const uniqParams = _.uniq(params).sort();
+        const uniqProps = _.uniq(runProps).sort();
 
         const mappedData =
           data?.reduce((acc: any, item: any) => {
@@ -2523,6 +2575,7 @@ function createAppModel(appConfig: IAppInitialConfig) {
         return {
           data: processedData,
           params: uniqParams,
+          runProps: uniqProps,
           metricsColumns,
           selectedRows,
           runHashArray,
@@ -2852,6 +2905,7 @@ function createAppModel(appConfig: IAppInitialConfig) {
               },
             },
           });
+
           return getRunsData(false, false, false);
         }
       }
@@ -2859,7 +2913,7 @@ function createAppModel(appConfig: IAppInitialConfig) {
       function onExportTableData(): void {
         // @TODO need to get data and params from state not from processData
         const { data, params, metricsColumns } = processData(
-          model.getState()?.rawData as IRun<IMetricTrace>[],
+          model.getState()?.rawData,
         );
         const tableData = getDataAsTableRows(
           data,
@@ -2999,8 +3053,8 @@ function createAppModel(appConfig: IAppInitialConfig) {
 
         if (!liveUpdateConfig?.enabled && config.enabled) {
           const query = configData?.select?.query || '';
-          const pagination = configData?.pagination;
-
+          const rowDataLength = model.getState()?.tableData?.length || 0;
+          const limit = rowDataLength >= 45 ? rowDataLength : 45;
           liveUpdateInstance = new LiveUpdateService(
             appName,
             updateData,
@@ -3008,7 +3062,7 @@ function createAppModel(appConfig: IAppInitialConfig) {
           );
           liveUpdateInstance.start({
             q: query,
-            limit: pagination.limit || 0,
+            limit,
           });
         } else {
           liveUpdateInstance?.clear();
@@ -3270,7 +3324,7 @@ function createAppModel(appConfig: IAppInitialConfig) {
             model.setState({
               selectFormData: {
                 options: getParamsOptions(data),
-                suggestions: getParamsSuggestions(data),
+                suggestions: getSuggestionsByExplorer(appName, data),
               },
             });
           });
@@ -3380,6 +3434,7 @@ function createAppModel(appConfig: IAppInitialConfig) {
       function getParamsData(
         shouldUrlUpdate?: boolean,
         shouldResetSelectedRows?: boolean,
+        queryString?: string,
       ): {
         call: () => Promise<void>;
         abort: () => void;
@@ -3388,6 +3443,9 @@ function createAppModel(appConfig: IAppInitialConfig) {
           runsRequestRef.abort();
         }
         const configData = { ...model.getState()?.config };
+        if (queryString) {
+          configData.select.query = queryString;
+        }
         if (shouldUrlUpdate) {
           updateURL({ configData, appName });
         }
@@ -3416,6 +3474,7 @@ function createAppModel(appConfig: IAppInitialConfig) {
                 if (ex.name === 'AbortError') {
                   // Abort Error
                 } else {
+                  // eslint-disable-next-line no-console
                   console.log('Unhandled error: ', ex);
                 }
               }
@@ -3735,17 +3794,18 @@ function createAppModel(appConfig: IAppInitialConfig) {
                         }
                       });
                     } else {
-                      const paramValue = getValue(run.run.params, label);
-                      values[label] = formatValue(paramValue, null);
-                      if (values[label] !== null) {
-                        if (typeof values[label] === 'string') {
-                          if (dimension[label]) {
-                            dimension[label].scaleType = ScaleEnum.Point;
-                          }
+                      const paramValue = getValue(run.run.params, label, '-');
+                      const formattedParam = formatValue(paramValue, '-');
+                      values[label] = paramValue;
+                      if (formattedParam !== '-' && dimension[label]) {
+                        if (typeof paramValue !== 'number') {
+                          dimension[label].scaleType = ScaleEnum.Point;
+                          values[label] = formattedParam;
+                        } else if (isNaN(paramValue) || !isFinite(paramValue)) {
+                          values[label] = formattedParam;
+                          dimension[label].scaleType = ScaleEnum.Point;
                         }
-                        if (dimension[label]) {
-                          dimension[label].values.add(values[label]);
-                        }
+                        dimension[label].values.add(values[label]);
                       }
                     }
                   },
@@ -3775,23 +3835,39 @@ function createAppModel(appConfig: IAppInitialConfig) {
                 if (
                   dimensionsObject[keyOfDimension][key].scaleType === 'linear'
                 ) {
+                  const [minDomain, maxDomain] = minMaxOfArray([
+                    ...dimensionsObject[keyOfDimension][key].values,
+                  ]);
+
                   dimensions[key] = {
                     scaleType: dimensionsObject[keyOfDimension][key].scaleType,
-                    domainData: [
-                      Math.min(...dimensionsObject[keyOfDimension][key].values),
-                      Math.max(...dimensionsObject[keyOfDimension][key].values),
-                    ],
+                    domainData: [minDomain, maxDomain],
                     displayName:
                       dimensionsObject[keyOfDimension][key].displayName,
                     dimensionType:
                       dimensionsObject[keyOfDimension][key].dimensionType,
                   };
                 } else {
+                  const numDomain: number[] = [];
+                  const strDomain: string[] = [];
+
+                  [...dimensionsObject[keyOfDimension][key].values].forEach(
+                    (data) => {
+                      if (typeof data === 'number') {
+                        numDomain.push(data);
+                      } else {
+                        strDomain.push(data);
+                      }
+                    },
+                  );
+
+                  // sort domain data
+                  numDomain.sort((a, b) => a - b);
+                  strDomain.sort();
+
                   dimensions[key] = {
                     scaleType: dimensionsObject[keyOfDimension][key].scaleType,
-                    domainData: [
-                      ...dimensionsObject[keyOfDimension][key].values,
-                    ],
+                    domainData: numDomain.concat(strDomain as any[]),
                     displayName:
                       dimensionsObject[keyOfDimension][key].displayName,
                     dimensionType:
@@ -3814,17 +3890,17 @@ function createAppModel(appConfig: IAppInitialConfig) {
         rawData: IRun<IParamTrace>[],
         configData: IAppModelConfig,
       ): void {
-        const { data, params, highLevelParams, metricsColumns, selectedRows } =
+        const { data, runProps, params, metricsColumns, selectedRows } =
           processData(rawData);
-        const sortedParams = params.concat(highLevelParams).sort();
         const groupingSelectOptions = [
           ...getGroupingSelectOptions({
-            params: sortedParams,
+            params,
+            runProps,
           }),
         ];
         tooltipData = getTooltipData({
           processedData: data,
-          paramKeys: sortedParams,
+          paramKeys: params,
           groupingSelectOptions,
           groupingItems: ['color', 'stroke', 'chart'],
           model,
@@ -3857,6 +3933,38 @@ function createAppModel(appConfig: IAppInitialConfig) {
             newData: tableData.rows,
             newColumns: tableColumns,
           });
+        }
+
+        if (!_.isEmpty(configData.chart?.brushExtents)) {
+          const chart = { ...configData.chart };
+          let brushExtents = { ...chart?.brushExtents };
+          const resultBrushExtents: any = {};
+          const selectOptionList = configData.select?.options.map(
+            (option: ISelectOption) => {
+              if (option.type === 'metrics' && option.value) {
+                return `${option.value.option_name}-${contextToString(
+                  option.value.context,
+                )}`;
+              }
+              return option.label;
+            },
+          );
+          const brushExtentsKeys = Object.keys(brushExtents);
+          brushExtentsKeys.forEach((chartIndex: string) => {
+            const chartBrushExtents = { ...brushExtents[chartIndex] };
+            const chartBrushExtentsKeys = Object.keys(chartBrushExtents);
+            const omitKeys = chartBrushExtentsKeys.filter(
+              (key: string) => !selectOptionList?.includes(key),
+            );
+            resultBrushExtents[chartIndex] = _.omit(
+              chartBrushExtents,
+              omitKeys,
+            );
+          });
+          configData = {
+            ...configData,
+            chart: { ...configData.chart, brushExtents: resultBrushExtents },
+          };
         }
 
         model.setState({
@@ -4019,7 +4127,7 @@ function createAppModel(appConfig: IAppInitialConfig) {
       function processData(data: IRun<IParamTrace>[]): {
         data: IMetricsCollection<IParam>[];
         params: string[];
-        highLevelParams: string[];
+        runProps: string[];
         metricsColumns: any;
         selectedRows: any;
       } {
@@ -4028,12 +4136,14 @@ function createAppModel(appConfig: IAppInitialConfig) {
         const grouping = model.getState()?.config?.grouping;
         let runs: IParam[] = [];
         let params: string[] = [];
+        let runProps: string[] = [];
         let highLevelParams: string[] = [];
         const paletteIndex: number = grouping?.paletteIndex || 0;
         const metricsColumns: any = {};
 
         data?.forEach((run: IRun<IParamTrace>, index) => {
           params = params.concat(getObjectPaths(run.params, run.params));
+          runProps = runProps.concat(getObjectPaths(run.props, run.props));
           highLevelParams = highLevelParams.concat(
             getObjectPaths(run.params, run.params, '', false, true),
           );
@@ -4043,11 +4153,12 @@ function createAppModel(appConfig: IAppInitialConfig) {
               [contextToString(trace.context) as string]: '-',
             };
           });
+          const paramKey = encode({ runHash: run.hash });
           runs.push({
             run,
-            isHidden: configData!.table.hiddenMetrics!.includes(run.hash),
+            isHidden: configData!.table.hiddenMetrics!.includes(paramKey),
             color: COLORS[paletteIndex][index % COLORS[paletteIndex].length],
-            key: run.hash,
+            key: paramKey,
             dasharray: DASH_ARRAYS[0],
           });
         });
@@ -4077,8 +4188,10 @@ function createAppModel(appConfig: IAppInitialConfig) {
             sortFields?.map((f: SortField) => f.order),
           ),
         );
+        const uniqProps = _.uniq(runProps).sort();
         const uniqParams = _.uniq(params).sort();
         const uniqHighLevelParams = _.uniq(highLevelParams).sort();
+
         const mappedData =
           data?.reduce((acc: any, item: any) => {
             acc[item.hash] = { runHash: item.hash, ...item.props };
@@ -4099,8 +4212,8 @@ function createAppModel(appConfig: IAppInitialConfig) {
         }
         return {
           data: processedData,
-          params: uniqParams,
-          highLevelParams: uniqHighLevelParams,
+          runProps: uniqProps,
+          params: [...new Set(uniqParams.concat(uniqHighLevelParams))].sort(),
           metricsColumns,
           selectedRows,
         };
@@ -4230,17 +4343,17 @@ function createAppModel(appConfig: IAppInitialConfig) {
         configData = model.getState()!.config!,
         shouldURLUpdate?: boolean,
       ): void {
-        const { data, params, highLevelParams, metricsColumns, selectedRows } =
-          processData(model.getState()?.rawData as IRun<IParamTrace>[]);
-        const sortedParams = params.concat(highLevelParams).sort();
+        const { data, runProps, params, metricsColumns, selectedRows } =
+          processData(model.getState()?.rawData);
         const groupingSelectOptions = [
           ...getGroupingSelectOptions({
-            params: sortedParams,
+            params,
+            runProps,
           }),
         ];
         tooltipData = getTooltipData({
           processedData: data,
-          paramKeys: sortedParams,
+          paramKeys: params,
           groupingSelectOptions,
           groupingItems: ['color', 'stroke', 'chart'],
           model,
@@ -4297,6 +4410,8 @@ function createAppModel(appConfig: IAppInitialConfig) {
         groupName,
         list,
       }: IOnGroupingSelectChangeParams): void {
+        let configData = model.getState().config;
+
         onGroupingSelectChange({
           groupName,
           list,
@@ -4304,6 +4419,17 @@ function createAppModel(appConfig: IAppInitialConfig) {
           appName,
           updateModelData,
         });
+        if (configData?.chart) {
+          configData = {
+            ...configData,
+            chart: {
+              ...configData.chart,
+              brushExtents: {},
+            },
+          };
+        }
+
+        model.setState({ config: configData });
       }
 
       function onModelBookmarkCreate({
@@ -4520,6 +4646,8 @@ function createAppModel(appConfig: IAppInitialConfig) {
             groupName,
             value,
           }: IOnGroupingModeChangeParams): void {
+            let configData = model.getState().config;
+
             onGroupingModeChange({
               groupName,
               value,
@@ -4527,20 +4655,57 @@ function createAppModel(appConfig: IAppInitialConfig) {
               appName,
               updateModelData,
             });
+            if (configData?.chart) {
+              configData = {
+                ...configData,
+                chart: {
+                  ...configData.chart,
+                  brushExtents: {},
+                },
+              };
+            }
+
+            model.setState({ config: configData });
           },
           onGroupingPaletteChange(index: number): void {
             onGroupingPaletteChange({ index, model, appName, updateModelData });
           },
           onGroupingReset(groupName: GroupNameType): void {
+            let configData = model.getState().config;
+
             onGroupingReset({ groupName, model, appName, updateModelData });
+            if (configData?.chart) {
+              configData = {
+                ...configData,
+                chart: {
+                  ...configData.chart,
+                  brushExtents: {},
+                },
+              };
+            }
+
+            model.setState({ config: configData });
           },
           onGroupingApplyChange(groupName: GroupNameType): void {
+            let configData = model.getState().config;
+
             onGroupingApplyChange({
               groupName,
               model,
               appName,
               updateModelData,
             });
+            if (configData?.chart) {
+              configData = {
+                ...configData,
+                chart: {
+                  ...configData.chart,
+                  brushExtents: {},
+                },
+              };
+            }
+
+            model.setState({ config: configData });
           },
           onGroupingPersistenceChange(groupName: GroupNameType): void {
             onGroupingPersistenceChange({
@@ -4575,6 +4740,19 @@ function createAppModel(appConfig: IAppInitialConfig) {
           },
           onCurveInterpolationChange(): void {
             onCurveInterpolationChange({ model, appName, updateModelData });
+          },
+          onAxisBrushExtentChange(
+            key: string,
+            extent: [number, number] | null,
+            chartIndex: number,
+          ): void {
+            onAxisBrushExtentChange({
+              key,
+              extent,
+              chartIndex,
+              model,
+              updateModelData,
+            });
           },
         });
       }
@@ -4712,7 +4890,7 @@ function createAppModel(appConfig: IAppInitialConfig) {
             model.setState({
               selectFormData: {
                 options: getScattersSelectOptions(data),
-                suggestions: getParamsSuggestions(data),
+                suggestions: getSuggestionsByExplorer(appName, data),
               },
             });
           });
@@ -4737,19 +4915,17 @@ function createAppModel(appConfig: IAppInitialConfig) {
         rawData: IRun<IParamTrace>[],
         configData: IAppModelConfig,
       ): void {
-        const { data, params, highLevelParams, metricsColumns, selectedRows } =
+        const { data, runProps, params, metricsColumns, selectedRows } =
           processData(rawData);
-
-        const sortedParams = params.concat(highLevelParams).sort();
         const groupingSelectOptions = [
           ...getGroupingSelectOptions({
-            params: sortedParams,
+            params,
+            runProps,
           }),
         ];
-
         tooltipData = getTooltipData({
           processedData: data,
-          paramKeys: sortedParams,
+          paramKeys: params,
           groupingSelectOptions,
           groupingItems: ['color', 'chart'],
           model,
@@ -4869,10 +5045,15 @@ function createAppModel(appConfig: IAppInitialConfig) {
                         }
                       });
                     } else {
-                      const paramValue = getValue(run.run.params, label);
-                      values[i] = formatValue(paramValue, null);
-                      if (values[i] !== null) {
-                        if (typeof values[i] === 'string') {
+                      const paramValue = getValue(run.run.params, label, '-');
+                      const formattedParam = formatValue(paramValue, '-');
+                      values[i] = paramValue;
+                      if (formattedParam !== '-' && dimension[i]) {
+                        if (typeof paramValue !== 'number') {
+                          dimension[i].scaleType = ScaleEnum.Point;
+                          values[i] = formattedParam;
+                        } else if (isNaN(paramValue) || !isFinite(paramValue)) {
+                          values[i] = formattedParam;
                           dimension[i].scaleType = ScaleEnum.Point;
                         }
                         dimension[i].values.push(values[i]);
@@ -4905,21 +5086,35 @@ function createAppModel(appConfig: IAppInitialConfig) {
             const dimensions: IDimensionType[] = [];
             chartDimensions.forEach((dimension) => {
               if (dimension.scaleType === ScaleEnum.Linear) {
+                const [minDomain = '-', maxDomain = '-'] = minMaxOfArray([
+                  ...((dimension.values as number[]) || []),
+                ]);
+
                 dimensions.push({
                   scaleType: dimension.scaleType,
-                  domainData: _.isEmpty(dimension.values)
-                    ? ['-', '-']
-                    : [
-                        Math.min(...(dimension.values as number[])),
-                        Math.max(...(dimension.values as number[])),
-                      ],
+                  domainData: [minDomain, maxDomain] as string[] | number[],
                   displayName: dimension.displayName,
                   dimensionType: dimension.dimensionType,
                 });
               } else {
+                const numDomain: number[] = [];
+                const strDomain: string[] = [];
+
+                [...dimension.values].forEach((data) => {
+                  if (typeof data === 'number') {
+                    numDomain.push(data);
+                  } else {
+                    strDomain.push(data);
+                  }
+                });
+
+                // sort domain data
+                numDomain.sort((a, b) => a - b);
+                strDomain.sort();
+
                 dimensions.push({
                   scaleType: dimension.scaleType,
-                  domainData: dimension.values,
+                  domainData: numDomain.concat(strDomain as any[]),
                   displayName: dimension.displayName,
                   dimensionType: dimension.dimensionType,
                 });
@@ -5148,7 +5343,7 @@ function createAppModel(appConfig: IAppInitialConfig) {
       function processData(data: IRun<IParamTrace>[]): {
         data: IMetricsCollection<IParam>[];
         params: string[];
-        highLevelParams: string[];
+        runProps: string[];
         metricsColumns: any;
         selectedRows: any;
       } {
@@ -5157,12 +5352,14 @@ function createAppModel(appConfig: IAppInitialConfig) {
         const grouping = configData?.grouping;
         let runs: IParam[] = [];
         let params: string[] = [];
+        let runProps: string[] = [];
         let highLevelParams: string[] = [];
         const paletteIndex: number = grouping?.paletteIndex || 0;
         const metricsColumns: any = {};
 
         data?.forEach((run: IRun<IParamTrace>, index) => {
           params = params.concat(getObjectPaths(run.params, run.params));
+          runProps = runProps.concat(getObjectPaths(run.props, run.props));
           highLevelParams = highLevelParams.concat(
             getObjectPaths(run.params, run.params, '', false, true),
           );
@@ -5172,12 +5369,12 @@ function createAppModel(appConfig: IAppInitialConfig) {
               [contextToString(trace.context) as string]: '-',
             };
           });
-
+          const paramKey = encode({ runHash: run.hash });
           runs.push({
             run,
-            isHidden: configData!.table.hiddenMetrics!.includes(run.hash),
+            isHidden: configData!.table.hiddenMetrics!.includes(paramKey),
             color: COLORS[paletteIndex][index % COLORS[paletteIndex].length],
-            key: run.hash,
+            key: paramKey,
             dasharray: DASH_ARRAYS[0],
           });
         });
@@ -5207,8 +5404,11 @@ function createAppModel(appConfig: IAppInitialConfig) {
             sortFields?.map((f: SortField) => f.order),
           ),
         );
-        const uniqParams = _.uniq(params);
-        const uniqHighLevelParams = _.uniq(highLevelParams);
+
+        const uniqProps = _.uniq(runProps).sort();
+        const uniqParams = _.uniq(params).sort();
+        const uniqHighLevelParams = _.uniq(highLevelParams).sort();
+
         const mappedData =
           data?.reduce((acc: any, item: any) => {
             acc[item.hash] = { runHash: item.hash, ...item.props };
@@ -5230,8 +5430,8 @@ function createAppModel(appConfig: IAppInitialConfig) {
 
         return {
           data: processedData,
-          params: uniqParams,
-          highLevelParams: uniqHighLevelParams,
+          params: [...new Set(uniqParams.concat(uniqHighLevelParams))].sort(),
+          runProps: uniqProps,
           metricsColumns,
           selectedRows,
         };
@@ -5377,17 +5577,17 @@ function createAppModel(appConfig: IAppInitialConfig) {
         configData = model.getState()!.config!,
         shouldURLUpdate?: boolean,
       ): void {
-        const { data, params, highLevelParams, metricsColumns, selectedRows } =
-          processData(model.getState()?.rawData as IRun<IParamTrace>[]);
-        const sortedParams = params.concat(highLevelParams).sort();
+        const { data, runProps, params, metricsColumns, selectedRows } =
+          processData(model.getState()?.rawData);
         const groupingSelectOptions = [
           ...getGroupingSelectOptions({
-            params: sortedParams,
+            params,
+            runProps,
           }),
         ];
         tooltipData = getTooltipData({
           processedData: data,
-          paramKeys: sortedParams,
+          paramKeys: params,
           groupingSelectOptions,
           groupingItems: ['color', 'chart'],
           model,
@@ -5459,6 +5659,7 @@ function createAppModel(appConfig: IAppInitialConfig) {
       function getScattersData(
         shouldUrlUpdate?: boolean,
         shouldResetSelectedRows?: boolean,
+        queryString?: string,
       ): {
         call: () => Promise<void>;
         abort: () => void;

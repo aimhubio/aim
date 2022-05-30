@@ -201,6 +201,10 @@ function getImagesExploreTableColumns(
             <div className='Table__groupsColumn__cell'>
               {Object.keys(groupFields).map((field) => {
                 let name: string = field.replace('run.params.', '');
+                name = name.replace(
+                  'run.props.experiment.name',
+                  'run.props.experiment',
+                );
                 name = name.replace('run.props', 'run');
                 return (
                   <Tooltip key={field} title={name || ''}>
@@ -239,13 +243,15 @@ function imagesExploreTableRowRenderer(
           content:
             rowData.context.length > 1 ? (
               <Badge
-                size='small'
+                monospace
+                size='xSmall'
                 color={COLORS[0][0]}
                 label={`${rowData.context.length} values`}
               />
             ) : (
               <Badge
-                size='small'
+                monospace
+                size='xSmall'
                 color={COLORS[0][0]}
                 label={rowData.context[0] || 'Empty Context'}
               />
@@ -270,11 +276,11 @@ function imagesExploreTableRowRenderer(
           content: (
             <ErrorBoundary>
               <div className='Table__groupsColumn__cell'>
-                {Object.keys(rowData[col]).map((item) => {
+                {Object.keys(rowData[col]).map((item, index) => {
                   const value: string | { [key: string]: unknown } =
                     rowData[col][item];
                   return _.isObject(value) ? (
-                    <ErrorBoundary>
+                    <ErrorBoundary key={index}>
                       <ControlPopover
                         key={contextToString(value)}
                         title={item}
@@ -299,7 +305,7 @@ function imagesExploreTableRowRenderer(
                       />
                     </ErrorBoundary>
                   ) : (
-                    <Tooltip title={formatValue(value) || ''}>
+                    <Tooltip key={index} title={formatValue(value) || ''}>
                       <div>{formatValue(value)}</div>
                     </Tooltip>
                   );
@@ -312,7 +318,8 @@ function imagesExploreTableRowRenderer(
         row[col] = {
           content: (
             <Badge
-              size='small'
+              monospace
+              size='xSmall'
               color={COLORS[0][0]}
               label={`${rowData[col].length} values`}
             />
@@ -340,13 +347,15 @@ function imagesExploreTableRowRenderer(
         content:
           rowData.context.length > 1 ? (
             <Badge
-              size='small'
+              monospace
+              size='xSmall'
               color={COLORS[0][0]}
               label={`${rowData.context.length} values`}
             />
           ) : (
             <Badge
-              size='small'
+              monospace
+              size='xSmall'
               color={COLORS[0][0]}
               label={rowData.context[0] || 'Empty Context'}
             />

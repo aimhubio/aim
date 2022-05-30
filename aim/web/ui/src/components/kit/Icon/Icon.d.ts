@@ -129,4 +129,9 @@ export type IconName =
   | 'avatar'
   | 'branch'
   | 'color-scale-off'
-  | 'color-scale-on';
+  | 'color-scale-on'
+  | 'text'
+  | 'minus'
+  | 'circle-info'
+  | 'warning-outline'
+  | 'warning-contained';

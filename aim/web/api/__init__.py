@@ -6,6 +6,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.middleware.gzip import GZipMiddleware
 from fastapi.responses import JSONResponse
 
+from aim.sdk.configs import get_aim_repo_name
 from aim.web.configs import AIM_PROFILER_KEY
 from aim.web.middlewares.profiler import PyInstrumentProfilerMiddleware
 from aim.web.utils import get_root_path
@@ -53,7 +54,7 @@ def create_app():
 
     # The indexing thread has to run in the same process as the uvicorn app itself.
     # This allows sharing state of indexing using memory instead of process synchronization methods.
-    index_mng = RepoIndexManager.get_index_manager(Project().repo)
+    index_mng = RepoIndexManager.get_index_manager(Project().repo.path)
     index_mng.start_indexing_thread()
 
     api_app = FastAPI()
@@ -62,7 +63,7 @@ def create_app():
 
     if os.environ.get(AIM_PROFILER_KEY) == "1":
         api_app.add_middleware(PyInstrumentProfilerMiddleware,
-                               repo_path=get_root_path())
+                               repo_path=os.path.join(get_root_path(), get_aim_repo_name()))
 
     add_api_routes()
 

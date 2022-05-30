@@ -7,6 +7,7 @@ import { ANALYTICS_EVENT_KEYS } from 'config/analytics/analyticsKeysMap';
 
 import usePanelResize from 'hooks/resize/usePanelResize';
 import useModel from 'hooks/model/useModel';
+import useResizeObserver from 'hooks/window/useResizeObserver';
 
 import scattersAppModel from 'services/models/scatters/scattersAppModel';
 import projectsModel from 'services/models/projects/projectsModel';
@@ -36,7 +37,9 @@ function ScattersContainer(): React.FunctionComponentElement<React.ReactNode> {
   const history = useHistory();
   const scattersData =
     useModel<Partial<IScatterAppModelState | any>>(scattersAppModel);
-
+  const [chartPanelOffsetHeight, setChartPanelOffsetHeight] = React.useState(
+    chartElemRef?.current?.offsetWidth,
+  );
   const projectsData = useModel<Partial<IProjectsModelState>>(projectsModel);
   const panelResizing = usePanelResize(
     wrapperElemRef,
@@ -46,6 +49,12 @@ function ScattersContainer(): React.FunctionComponentElement<React.ReactNode> {
     scattersData?.config?.table,
     scattersAppModel.onTableResizeEnd,
   );
+
+  useResizeObserver(() => {
+    if (chartElemRef?.current?.offsetHeight !== chartPanelOffsetHeight) {
+      setChartPanelOffsetHeight(chartElemRef?.current?.offsetHeight);
+    }
+  }, chartElemRef);
 
   React.useEffect(() => {
     if (tableRef.current && chartPanelRef.current) {
@@ -72,6 +81,7 @@ function ScattersContainer(): React.FunctionComponentElement<React.ReactNode> {
           exceptionHandler({ detail, model: scattersAppModel });
         })
         .then(() => {
+          scattersAppModel.setDefaultAppConfigData(false);
           scattersAppModel.getScattersData().call((detail: any) => {
             exceptionHandler({ detail, model: scattersAppModel });
           });
@@ -105,6 +115,7 @@ function ScattersContainer(): React.FunctionComponentElement<React.ReactNode> {
         appRequestRef.abort();
       }
     };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   return (
@@ -143,6 +154,7 @@ function ScattersContainer(): React.FunctionComponentElement<React.ReactNode> {
         columnsWidths={scattersData?.config?.table?.columnsWidths!}
         selectFormData={scattersData?.selectFormData!}
         columnsOrder={scattersData?.config?.table?.columnsOrder!}
+        chartPanelOffsetHeight={chartPanelOffsetHeight}
         // methods
         onChangeTooltip={scattersAppModel.onChangeTooltip}
         onChangeTrendlineOptions={scattersAppModel.onChangeTrendlineOptions}

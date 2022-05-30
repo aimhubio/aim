@@ -3,8 +3,8 @@ import React from 'react';
 import { IAttributesRef } from 'components/LineChart/LineChart';
 import { HighlightEnum } from 'components/HighlightModesPopover/HighlightModesPopover';
 import { IPoint } from 'components/ScatterPlot';
-import { ILine } from 'components/LineChart/LineChart';
 
+import { ILine } from 'types/components/LineChart/LineChart';
 import {
   IAggregationConfig,
   IAlignmentConfig,
@@ -29,7 +29,7 @@ export interface IDrawHoverAttributesArgs {
   xAxisLabelNodeRef?: React.MutableRefObject<>;
   yAxisLabelNodeRef?: React.MutableRefObject<>;
   linesNodeRef: React.MutableRefObject<>;
-  syncHoverState: (params: ISyncHoverStateParams) => void;
+  syncHoverState?: (params: ISyncHoverStateParams) => void;
   highlightedNodeRef: React.MutableRefObject<>;
   highlightMode?: HighlightEnum;
   aggregationConfig?: IAggregationConfig;
@@ -72,5 +72,10 @@ export interface IActivePoint {
   xPos: number;
   yPos: number;
   chartIndex: number;
-  pointRect: { top: number; bottom: number; left: number; right: number };
+  pointRect: {
+    top: number;
+    bottom: number;
+    left: number;
+    right: number;
+  } | null;
 }

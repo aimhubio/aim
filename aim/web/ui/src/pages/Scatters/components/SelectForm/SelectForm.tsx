@@ -3,8 +3,8 @@ import React from 'react';
 import { Box, Divider } from '@material-ui/core';
 
 import { Button, Dropdown, Icon } from 'components/kit';
-import ExpressionAutoComplete from 'components/kit/ExpressionAutoComplete';
 import ErrorBoundary from 'components/ErrorBoundary/ErrorBoundary';
+import AutocompleteInput from 'components/AutocompleteInput';
 
 import { ANALYTICS_EVENT_KEYS } from 'config/analytics/analyticsKeysMap';
 
@@ -29,6 +29,7 @@ function SelectForm({
     y: false,
   });
   const searchRef = React.useRef<any>(null);
+  const autocompleteRef: any = React.useRef<React.MutableRefObject<any>>(null);
 
   React.useEffect(() => {
     return () => {
@@ -36,12 +37,13 @@ function SelectForm({
     };
   }, []);
 
-  function handleParamsSearch(e: React.ChangeEvent<any>) {
-    e.preventDefault();
+  function handleParamsSearch() {
     if (requestIsPending) {
       return;
     }
-    searchRef.current = scattersAppModel.getScattersData(true);
+    let query = autocompleteRef.current.getValue();
+    onSelectRunQueryChange(query);
+    searchRef.current = scattersAppModel.getScattersData(true, query);
     searchRef.current.call((detail: any) => {
       exceptionHandler({ detail, model: scattersAppModel });
     });
@@ -172,12 +174,11 @@ function SelectForm({
         </Box>
         <ErrorBoundary>
           <div className='Scatters__SelectForm__TextField'>
-            <ExpressionAutoComplete
-              onExpressionChange={onSelectRunQueryChange}
-              onSubmit={handleParamsSearch}
+            <AutocompleteInput
+              refObject={autocompleteRef}
+              context={selectFormData?.suggestions}
               value={selectedOptionsData?.query}
-              options={selectFormData.suggestions}
-              placeholder='Filter runs, e.g. run.learning_rate > 0.0001 and run.batch_size == 32'
+              onEnter={handleParamsSearch}
             />
           </div>
         </ErrorBoundary>

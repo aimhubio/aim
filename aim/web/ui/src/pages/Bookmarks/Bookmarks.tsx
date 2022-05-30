@@ -6,6 +6,7 @@ import IllustrationBlock from 'components/IllustrationBlock/IllustrationBlock';
 import ErrorBoundary from 'components/ErrorBoundary/ErrorBoundary';
 import NotificationContainer from 'components/NotificationContainer/NotificationContainer';
 
+import pageTitlesEnum from 'config/pageTitles/pageTitles';
 import { IllustrationsEnum } from 'config/illustrationConfig/illustrationConfig';
 
 import { IBookmarksProps } from 'types/pages/bookmarks/Bookmarks';
@@ -24,9 +25,12 @@ function Bookmarks({
   return (
     <ErrorBoundary>
       <section className='Bookmarks'>
-        <AppBar title='Bookmarks' />
+        <AppBar
+          title={pageTitlesEnum.BOOKMARKS}
+          className='Bookmarks__appBar'
+        />
         <div className='Bookmarks__list container'>
-          <BusyLoaderWrapper isLoading={isLoading}>
+          <BusyLoaderWrapper isLoading={isLoading} height={'100%'}>
             {data?.length > 0 &&
               data.map((bookmark) => (
                 <BookmarkCard

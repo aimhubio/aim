@@ -64,6 +64,8 @@ class PropsView(BaseModel):
     tags: Optional[List[Tag]] = []
     creation_time: float
     end_time: Optional[float]
+    archived: bool
+    active: bool
 
 
 class MetricSearchRunView(BaseModel):
@@ -212,6 +214,10 @@ class DistributionInfo(BaseModel):
 
 class FigureInfo(BaseModel):
     blob_uri: str
+
+
+class NoteIn(BaseModel):
+    content: str
 
 
 ImageList = List[ImageInfo]

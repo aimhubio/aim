@@ -7,8 +7,17 @@
   position: relative;
   overflow: hidden;
   user-select: none;
-  min-width: 100px;
-  min-height: 100px;
+  min-width: toRem(150px);
+  min-height: toRem(150px);
+
+  &__emptyData {
+    font-size: 1em;
+    fill: #586069;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+  }
 
   &.backgroundRect {
     cursor: crosshair;
@@ -75,6 +84,11 @@
 
   .Lines {
     overflow: hidden;
+    @media (-webkit-min-device-pixel-ratio: 2), (min-resolution: 192dpi) {
+      &.optimizeRendering {
+        shape-rendering: optimizeSpeed;
+      }
+    }
   }
 
   .Line {

@@ -23,7 +23,7 @@ $padding_8: toRem(8px);
     display: flex;
     flex-direction: column;
     padding: toRem(8px);
-    overflow-y: scroll;
+    overflow-y: auto;
     height: 100%;
     .MenuItem {
       display: flex;

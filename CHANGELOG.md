@@ -4,6 +4,120 @@
 
 ### Enhancements:
 
+- Add LightGBM integration example (gorarakelyan)
+- Add descriptive document titles for pages (KaroMourad)
+- Implement unit-tests for aim SDK utils (yeghiakoronian)
+- Display std.dev/err aggregated values in the table (VkoHov)
+- Add `active` state indicator property for `aim.Run` (mihran113)
+
+### Fixes:
+
+- Change zooming default option to multiple (VkoHov)
+- Changed grouped rows' min and max values names to `Group Min` and `Group Max` (VkoHov)
+- Preserve the search input value of the grouping dropdown (VkoHov)
+- Fix params duplication in dropdowns (VkoHov)
+- Resolve typing latency issue in the query search input (arsengit)
+
+## 3.10.1 May 18, 2022
+
+- Resolve issue with rendering run params in the overview tab of SRP (arsengit)
+- Fix issue with search query state update (arsengit)
+
+## 3.10.0 May 17, 2022
+
+### Enhancements:
+
+- Add ability to adjust the density of the visible content in tables (roubkar)
+- Set `metric.name` as default option for grouping (roubkar)
+- Show user-selected params before group config in chart popover (roubkar) 
+- Optimize stream decoding performance on UI (mahnerak)
+- Add support for animated image formats to Aim Image object (devfox-se)
+- Add `AimLogger` for Catboost (devfox-se)
+- Add `AimCallback` for LightGBM (devfox-se)
+- Keep the extents of `HighPlot` axes brush in the state and the URL (VkoHov)
+- Integrate `aim` with `cimport`-able `aimrocks` (mahnerak)
+- Add `__slots__` to some classes to improve performance (mahnerak)
+- Define base abstractions for `Iterator` and `DB` by borrowing from `aimrocks` (mahnerak)
+- Use `KeysIterator` and `ValuesIterator` wrappers instead of reimplementing (mahnerak)
+- Rename `PrefixView.container` to `PrefixView.parent` (mahnerak)
+- Reimplement `absolute_path` (mahnerak)
+- Cython bindings for `PrefixView`, `TreeView`, `Container`, `ArrayView` (mahnerak)
+- Add ability to track and visualize stdout/stderr (mihran113, VkoHov)
+- Fix `AimLogger` deprecation issues related to release of PyTorch Lightning v1.5 (arnauddhaene)
+- Enable better autocomplete experience with monaco editor (arsengit)
+- Pre-loading and caching necessary resources, add pre-loader animation to Aim UI (arsengit) 
+
+### Fixes:
+
+- Remove hard-coded installation of pre-requirements (mahnerak)
+- Remove duplicate code from `TreeView` and `Container` methods (mahnerak)
+- Fix issue with filtering metrics values in single run page (KaroMourad)
+
+## 3.9.4 May 12, 2022
+
+- Fix run remote tracking queue cleanup (mihran113)
+- Fix HF callback before training access (mihran113)
+- Fix compatibility with Jinja 3.1 (devfox-se)
+
+## 3.9.3 May 10, 2022
+
+- Fix affecting stroke types after changing color persistence (KaroMourad)
+
+## 3.9.2 Apr 29, 2022
+
+- Move aim_ui package data to separate directory (devfox-se)
+
+## 3.9.1 Apr 29, 2022
+
+- Move aim_ui package data to separate directory (devfox-se)
+
+## 3.9.0 Apr 29, 2022
+
+### Enhancements:
+
+- Add `Notes Tab` to single run page (arsengit)
+- Add the run name to the batch delete and the batch archive modals (VkoHov)
+- Increase the scalability of rendering lines in charts (KaroMourad)
+- Increase live update requests delay to prevent performance issues (rubenaprikyan)
+- Change font-family to monospace in the Table component (arsengit)
+- Add info massage for single value sliders (VkoHov)
+- Add `--log-level` argument for aim up/server commands (mihran113)
+- Add notes backend api interface (devfox-se)
+- Fix type hints in `Repo` class (uduse)
+
+### Fixes:
+
+- Fix LineChart y-dimension margin calculation (KaroMourad)
+- Fix HighPlot lines partially rendering issue (KaroMourad)
+- Fix HighPlot axis ticks overlapping issue (KaroMourad)
+- Fix sorting Params/Scatters explorer axis ticks (KaroMourad)
+- Fix compatibility with pytorch-lightning v1.6.0 (mihran113)
+- Fix the image's original size cropping (VkoHov)
+- Fix `PATH` related issues for `alembic` and `uvicorn` (mihran113)
+- Fix queries for custom object APIs (mihran113)
+- Fix chart height updating when resize mode changed (VkoHov)
+- Fix HuggingFace callback context capturing (mihran113)
+- Fix Params/Scatters explorers' row hiding functionality (VkoHov)
+- Fix Profiler logs are saved outside repo directory (devfox-se)
+
+## 3.8.1 Apr 6, 2022
+
+- Encode run hash before including in CSS selectors (Hamik25)
+- Fix displaying incorrect metric values for large range scale in LineChart (KaroMourad)
+- Fix issue with rendering lines for large range scale in LineChart (KaroMourad)
+- Fix issue with URL state sync for bookmarks (roubkar)
+- Fix issue with displaying negative param values on Aim UI (roubkar)
+- Fix row hiding functionality (roubkar)
+- Tune RunOverviewTab container styles (arsengit)
+- Update documentations links on UI (rubenaprikyan)
+- Fix `RepoIndexManager` run's reference cleanup (mihran113)
+- Fix remote run finalization (mihran113)
+- Fix issue with fetch on load more (infinite scroll) functionality in Runs Explorer (rubenaprikyan)
+
+## 3.8.0 Mar 26, 2022
+
+### Enhancements:
+
 - Hugging Face adapter refactoring (mihran113)
 - Add run description columns to all run specific tables (VkoHov, mihran113)
 - Change images rendering optimization default value to smoother (VkoHov)
@@ -29,6 +143,7 @@
 - Fix git system param tracking (devfox-se)
 - Fix runs manual closing (mihran113)
 - Fix Docker image creation step in packaging workflow (alberttorosyan)
+- Fix Jinja2 template rendering with starlette==0.14.2 (alberttorosyan)
 
 ## 3.7.5 Mar 18, 2022
 

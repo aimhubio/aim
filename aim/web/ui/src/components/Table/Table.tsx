@@ -161,6 +161,7 @@ const Table = React.forwardRef(function Table(
         beforeScrollHeight += itemHeight + groupMargin;
         scrollBottomHeight += itemHeight + groupMargin;
         if (expandedGroups.current.includes(groupKey)) {
+          // eslint-disable-next-line no-loop-func
           dataRef.current[groupKey].items.forEach((row) => {
             if (scrollTop > beforeScrollHeight) {
               beforeScrollHeight += itemHeight;
@@ -346,6 +347,14 @@ const Table = React.forwardRef(function Table(
                     groupRow.data.aggregation.line;
                   groupHeaderRowCell.children[0].children[0].children[2].textContent =
                     groupRow.data.aggregation.area.max;
+                  if (!_.isNil(groupRow.data.aggregation.area.stdDevValue)) {
+                    groupHeaderRowCell.children[0].children[0].children[3].textContent =
+                      groupRow.data.aggregation.area.stdDevValue;
+                  }
+                  if (!_.isNil(groupRow.data.aggregation.area.stdErrValue)) {
+                    groupHeaderRowCell.children[0].children[0].children[3].textContent =
+                      groupRow.data.aggregation.area.stdErrValue;
+                  }
                 } else {
                   groupHeaderRowCell.textContent = groupRow.data[colKey];
                 }
@@ -404,7 +413,9 @@ const Table = React.forwardRef(function Table(
       offsetHeight: tableContainerRef.current.offsetHeight,
       scrollHeight: tableContainerRef.current.scrollHeight,
       itemHeight: rowHeight,
-      groupMargin: ROW_CELL_SIZE_CONFIG[rowHeight].groupMargin,
+      groupMargin:
+        ROW_CELL_SIZE_CONFIG[rowHeight]?.groupMargin ??
+        ROW_CELL_SIZE_CONFIG[RowHeightSize.md].groupMargin,
     });
 
     startIndex.current = windowEdges.startIndex;
@@ -514,7 +525,9 @@ const Table = React.forwardRef(function Table(
         offsetHeight: tableContainerRef.current.offsetHeight,
         scrollHeight: tableContainerRef.current.scrollHeight,
         itemHeight: rowHeight,
-        groupMargin: ROW_CELL_SIZE_CONFIG[rowHeight].groupMargin,
+        groupMargin:
+          ROW_CELL_SIZE_CONFIG[rowHeight]?.groupMargin ??
+          ROW_CELL_SIZE_CONFIG[RowHeightSize.md].groupMargin,
       });
 
       startIndex.current = windowEdges.startIndex;
@@ -528,7 +541,9 @@ const Table = React.forwardRef(function Table(
           offsetHeight: target.offsetHeight,
           scrollHeight: target.scrollHeight,
           itemHeight: rowHeight,
-          groupMargin: ROW_CELL_SIZE_CONFIG[rowHeight].groupMargin,
+          groupMargin:
+            ROW_CELL_SIZE_CONFIG[rowHeight]?.groupMargin ??
+            ROW_CELL_SIZE_CONFIG[RowHeightSize.md].groupMargin,
         });
 
         startIndex.current = windowEdges.startIndex;
@@ -557,9 +572,11 @@ const Table = React.forwardRef(function Table(
 
     return () => {
       if (custom && tableContainerRef.current) {
+        // eslint-disable-next-line react-hooks/exhaustive-deps
         tableContainerRef.current.onscroll = null;
       }
     };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [custom, rowData]);
 
   React.useEffect(() => {
@@ -621,6 +638,7 @@ const Table = React.forwardRef(function Table(
       TABLE_DEFAULT_CONFIG[appName as Exclude<AppNameEnum, 'runs'>]?.sortFields
         ?.length !== sortFields?.length
     );
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [sortFields]);
 
   useResizeObserver(
