@@ -3,6 +3,7 @@
 ## 3.10.3
 
 - Adjust the content overflowing of the Delete and the Archive modals (VkoHov)
+- Resolve issue with redirect in run page (arsengit)
 
 ## 3.10.2 May 26, 2022
 
