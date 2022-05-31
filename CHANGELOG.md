@@ -5,14 +5,19 @@
 ### Enhancements:
 
 - Add cloud storage backups to AWS S3 for aim repo runs(karan2801)
+- Add LightGBM integration example (gorarakelyan)
 - Add descriptive document titles for pages (KaroMourad)
 - Implement unit-tests for aim SDK utils (yeghiakoronian)
+- Display std.dev/err aggregated values in the table (VkoHov)
 - Add `active` state indicator property for `aim.Run` (mihran113)
 
 ### Fixes:
 
 - Change zooming default option to multiple (VkoHov)
 - Changed grouped rows' min and max values names to `Group Min` and `Group Max` (VkoHov)
+- Preserve the search input value of the grouping dropdown (VkoHov)
+- Fix params duplication in dropdowns (VkoHov)
+- Resolve typing latency issue in the query search input (arsengit)
 
 ## 3.10.1 May 18, 2022
 

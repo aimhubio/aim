@@ -29,6 +29,7 @@ function SelectForm({
     y: false,
   });
   const searchRef = React.useRef<any>(null);
+  const autocompleteRef: any = React.useRef<React.MutableRefObject<any>>(null);
 
   React.useEffect(() => {
     return () => {
@@ -40,7 +41,9 @@ function SelectForm({
     if (requestIsPending) {
       return;
     }
-    searchRef.current = scattersAppModel.getScattersData(true);
+    let query = autocompleteRef.current.getValue();
+    onSelectRunQueryChange(query);
+    searchRef.current = scattersAppModel.getScattersData(true, query);
     searchRef.current.call((detail: any) => {
       exceptionHandler({ detail, model: scattersAppModel });
     });
@@ -172,10 +175,10 @@ function SelectForm({
         <ErrorBoundary>
           <div className='Scatters__SelectForm__TextField'>
             <AutocompleteInput
+              refObject={autocompleteRef}
               context={selectFormData?.suggestions}
-              onEnter={handleParamsSearch}
-              onChange={onSelectRunQueryChange}
               value={selectedOptionsData?.query}
+              onEnter={handleParamsSearch}
             />
           </div>
         </ErrorBoundary>

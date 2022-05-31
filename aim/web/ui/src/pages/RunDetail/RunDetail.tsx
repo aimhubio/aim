@@ -205,6 +205,7 @@ function RunDetail(): React.FunctionComponentElement<React.ReactNode> {
     const runsRequestRef = runDetailAppModel.getRunInfo(runHash);
     const experimentRequestRef: any = runDetailAppModel.getExperimentsData();
     experimentRequestRef?.call();
+
     runsRequestRef.call().then((runInfo) => {
       setDocumentTitle(runInfo?.props.name || runHash, true);
     });
