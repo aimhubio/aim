@@ -29,6 +29,7 @@ function SelectForm({
   onImagesExploreSelectChange,
   onSelectRunQueryChange,
   toggleSelectAdvancedMode,
+  onSelectAdvancedQueryChange,
   onSearchQueryCopy,
 }: ISelectFormProps): React.FunctionComponentElement<React.ReactNode> {
   const [anchorEl, setAnchorEl] = React.useState<any>(null);
