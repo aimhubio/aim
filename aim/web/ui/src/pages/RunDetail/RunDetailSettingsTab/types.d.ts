@@ -5,7 +5,5 @@ export interface IRunDetailSettingsTabProps {
   isArchived: boolean;
 }
 
-export interface IRunNameAndDescriptionCardProps {
-  defaultName: string;
-  defaultDescription?: string;
-}
+export interface IRunNameAndDescriptionCardProps
+  extends IRunDetailSettingsTabProps {}

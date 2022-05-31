@@ -1,6 +1,6 @@
 import React, { memo } from 'react';
 import * as yup from 'yup';
-import { noop } from 'lodash-es';
+import _ from 'lodash-es';
 import { useFormik } from 'formik';
 
 import { Button, TextField, Tooltip } from '@material-ui/core';
@@ -18,15 +18,17 @@ import { IRunNameAndDescriptionCardProps } from './types';
 import './RunDetailSettingsTab.scss';
 
 function RunNameAndDescriptionCard({
+  runHash,
   defaultName,
   defaultDescription,
+  isArchived,
 }: IRunNameAndDescriptionCardProps): React.FunctionComponentElement<React.ReactNode> {
   const formik = useFormik({
     initialValues: {
       name: defaultName ?? '',
       description: defaultDescription ?? '',
     },
-    onSubmit: noop,
+    onSubmit: _.noop,
     validationSchema: yup.object({
       name: yup.string().required('Name is a required field'),
     }),
@@ -51,6 +53,15 @@ function RunNameAndDescriptionCard({
   React.useEffect(() => {
     analytics.pageView(ANALYTICS_EVENT_KEYS.runDetails.tabs.settings.tabView);
   }, []);
+
+  function onSave() {
+    runDetailAppModel.editRunNameAndDescription(
+      runHash,
+      values.name,
+      values.description,
+      isArchived,
+    );
+  }
 
   return (
     <ErrorBoundary>
@@ -85,7 +96,16 @@ function RunNameAndDescriptionCard({
         </div>
 
         <Tooltip title={'Save edited name and description'} placement='top'>
-          <Button onClick={() => {}} variant='contained' color='primary'>
+          <Button
+            onClick={onSave}
+            disabled={
+              !_.isEmpty(errors) ||
+              (values.name === defaultName &&
+                values.description === defaultDescription)
+            }
+            variant='contained'
+            color='primary'
+          >
             Save
           </Button>
         </Tooltip>

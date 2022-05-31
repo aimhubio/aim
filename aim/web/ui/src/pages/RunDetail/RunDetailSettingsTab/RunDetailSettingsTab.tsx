@@ -59,6 +59,8 @@ function RunDetailSettingsTab({
           <RunNameAndDescriptionCard
             defaultName={defaultName}
             defaultDescription={defaultDescription}
+            runHash={runHash}
+            isArchived={isArchived}
           />
           <ActionCard
             title={isArchived ? 'Unarchive Run' : 'Archive Run'}

@@ -11,6 +11,7 @@ const endpoints = {
   GET_RUN_METRICS_BATCH_BY_TRACES: (id: string) =>
     `runs/${id}/metric/get-batch`,
   ARCHIVE_RUN: (id: string) => `runs/${id}`,
+  EDIT_RUN_NAME_AND_DESCRIPTION: (id: string) => `runs/${id}`,
   ARCHIVE_RUNS: (archived: boolean) => `runs/archive-batch?archive=${archived}`,
   DELETE_RUN: (id: string) => `runs/${id}`,
   DELETE_RUNS: 'runs/delete-batch',
@@ -62,6 +63,23 @@ function archiveRun(id: string, archived: boolean = false) {
   return API.put(
     endpoints.ARCHIVE_RUN(id),
     { archived },
+    {
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    },
+  );
+}
+
+function editRunNameAndDescription(
+  id: string,
+  name: string,
+  description: string,
+  archived: boolean,
+) {
+  return API.put(
+    endpoints.EDIT_RUN_NAME_AND_DESCRIPTION(id),
+    { name, description, archived },
     {
       headers: {
         'Content-Type': 'application/json',
@@ -159,6 +177,7 @@ const runsService = {
   deleteRunsTag,
   archiveRuns,
   deleteRuns,
+  editRunNameAndDescription,
 };
 
 export default runsService;
