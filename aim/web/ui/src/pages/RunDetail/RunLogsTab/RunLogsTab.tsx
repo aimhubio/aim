@@ -18,7 +18,7 @@ import { IRunLogsTabProps, LogsLastRequestEnum } from './RunLogsTab.d';
 
 import './RunLogsTab.scss';
 
-const SINGLE_LINE_HEIGHT = 16.5;
+const SINGLE_LINE_HEIGHT = 17;
 const LOAD_MORE_LOGS_COUNT = 100;
 
 function RunLogsTab({
