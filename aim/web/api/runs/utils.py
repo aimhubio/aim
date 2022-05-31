@@ -42,6 +42,13 @@ def str_to_range(range_str: str):
     return IndexRange(start, stop)
 
 
+def get_run_params(run: Run, *, skip_system: bool):
+    params = run.get(..., resolve_objects=True)
+    if skip_system and '__system_params' in params:
+        del params['__system_params']
+    return params
+
+
 def get_run_props(run: Run):
     return {
         'name': run.name if run.name else None,
@@ -162,6 +169,7 @@ def custom_aligned_metrics_streamer(requested_runs: List[AlignedRunIn], x_axis: 
 
 
 async def metric_search_result_streamer(traces: SequenceCollection,
+                                        skip_system: bool,
                                         steps_num: int,
                                         x_axis: Optional[str]) -> bytes:
     for run_trace_collection in traces.iter_runs():
@@ -193,7 +201,7 @@ async def metric_search_result_streamer(traces: SequenceCollection,
         if run:
             run_dict = {
                 run.hash: {
-                    'params': run.get(..., resolve_objects=True),
+                    'params': get_run_params(run, skip_system=skip_system),
                     'traces': traces_list,
                     'props': get_run_props(run)
                 }
@@ -203,13 +211,13 @@ async def metric_search_result_streamer(traces: SequenceCollection,
             yield collect_run_streamable_data(encoded_tree)
 
 
-def run_search_result_streamer(runs: SequenceCollection, limit: int) -> bytes:
+def run_search_result_streamer(runs: SequenceCollection, limit: int, skip_system: bool) -> bytes:
     run_count = 0
     for run_trace_collection in runs.iter_runs():
         run = run_trace_collection.run
         run_dict = {
             run.hash: {
-                'params': run.get(..., resolve_objects=True),
+                'params': get_run_params(run, skip_system=skip_system),
                 'traces': run.collect_sequence_info(sequence_types='metric'),
                 'props': get_run_props(run)
             }

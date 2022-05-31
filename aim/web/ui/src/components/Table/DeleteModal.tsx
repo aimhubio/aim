@@ -196,6 +196,8 @@ function DeleteModal({
         modalType='error'
         titleIconName='delete'
         maxWidth='lg'
+        className='ActionModal__container'
+        classes={{ paper: 'ActionModalWrapper' }}
       >
         <div className='ActionModal'>
           <Text

@@ -210,7 +210,7 @@ function createAppModel(appConfig: IAppInitialConfig) {
       case AppDataTypeEnum.METRICS: {
         const config: IAppModelConfig = {
           liveUpdate: {
-            delay: 7000,
+            delay: 10000,
             enabled: false,
           },
         };
@@ -322,7 +322,7 @@ function createAppModel(appConfig: IAppInitialConfig) {
       case AppDataTypeEnum.RUNS: {
         const config: IAppModelConfig = {
           liveUpdate: {
-            delay: 7000,
+            delay: 10000,
             enabled: false,
           },
         };
@@ -982,6 +982,7 @@ function createAppModel(appConfig: IAppInitialConfig) {
       data: IMetricsCollection<IMetric>[];
       params: string[];
       runProps: string[];
+      highLevelParams: string[];
       contexts: string[];
       selectedRows: any;
     } {
@@ -1107,7 +1108,8 @@ function createAppModel(appConfig: IAppInitialConfig) {
 
       return {
         data: processedData,
-        params: [...new Set(uniqParams.concat(uniqHighLevelParams))].sort(),
+        params: uniqParams,
+        highLevelParams: uniqHighLevelParams,
         contexts: uniqContexts,
         runProps: uniqProps,
         selectedRows,
@@ -1118,13 +1120,18 @@ function createAppModel(appConfig: IAppInitialConfig) {
       configData = model.getState()!.config!,
       shouldURLUpdate?: boolean,
     ): void {
-      const { data, runProps, params, contexts, selectedRows } = processData(
-        model.getState()?.rawData,
-      );
-
+      const {
+        data,
+        params,
+        runProps,
+        highLevelParams,
+        contexts,
+        selectedRows,
+      } = processData(model.getState()?.rawData as ISequence<IMetricTrace>[]);
+      const sortedParams = [...new Set(params.concat(highLevelParams))].sort();
       const groupingSelectOptions = [
         ...getGroupingSelectOptions({
-          params,
+          params: sortedParams,
           runProps,
           contexts,
           sequenceName: 'metric',
@@ -1133,7 +1140,7 @@ function createAppModel(appConfig: IAppInitialConfig) {
 
       tooltipData = getTooltipData({
         processedData: data,
-        paramKeys: params,
+        paramKeys: sortedParams,
         groupingSelectOptions,
         groupingItems: ['color', 'stroke', 'chart'],
         model,
@@ -1199,22 +1206,30 @@ function createAppModel(appConfig: IAppInitialConfig) {
       configData: IAppModelConfig,
     ): void {
       const sortFields = model.getState()?.config?.table?.sortFields;
-      const { data, runProps, params, contexts, selectedRows } =
-        processData(rawData);
+      const {
+        data,
+        runProps,
+        params,
+        highLevelParams,
+        contexts,
+        selectedRows,
+      } = processData(rawData);
+      const sortedParams = [...new Set(params.concat(highLevelParams))].sort();
+
       if (configData) {
         setAggregationEnabled({ model, appName });
       }
       const groupingSelectOptions = [
         ...getGroupingSelectOptions({
           runProps,
-          params,
+          params: sortedParams,
           contexts,
           sequenceName: 'metric',
         }),
       ];
       tooltipData = getTooltipData({
         processedData: data,
-        paramKeys: params,
+        paramKeys: sortedParams,
         groupingSelectOptions,
         groupingItems: ['color', 'stroke', 'chart'],
         model,
@@ -3890,17 +3905,27 @@ function createAppModel(appConfig: IAppInitialConfig) {
         rawData: IRun<IParamTrace>[],
         configData: IAppModelConfig,
       ): void {
-        const { data, runProps, params, metricsColumns, selectedRows } =
-          processData(rawData);
+        const {
+          data,
+          runProps,
+          highLevelParams,
+          params,
+          metricsColumns,
+          selectedRows,
+        } = processData(rawData);
+        const sortedParams = [
+          ...new Set(params.concat(highLevelParams)),
+        ].sort();
         const groupingSelectOptions = [
           ...getGroupingSelectOptions({
-            params,
+            params: sortedParams,
             runProps,
           }),
         ];
+
         tooltipData = getTooltipData({
           processedData: data,
-          paramKeys: params,
+          paramKeys: sortedParams,
           groupingSelectOptions,
           groupingItems: ['color', 'stroke', 'chart'],
           model,
@@ -4128,6 +4153,7 @@ function createAppModel(appConfig: IAppInitialConfig) {
         data: IMetricsCollection<IParam>[];
         params: string[];
         runProps: string[];
+        highLevelParams: string[];
         metricsColumns: any;
         selectedRows: any;
       } {
@@ -4213,7 +4239,8 @@ function createAppModel(appConfig: IAppInitialConfig) {
         return {
           data: processedData,
           runProps: uniqProps,
-          params: [...new Set(uniqParams.concat(uniqHighLevelParams))].sort(),
+          params: uniqParams,
+          highLevelParams: uniqHighLevelParams,
           metricsColumns,
           selectedRows,
         };
@@ -4343,17 +4370,27 @@ function createAppModel(appConfig: IAppInitialConfig) {
         configData = model.getState()!.config!,
         shouldURLUpdate?: boolean,
       ): void {
-        const { data, runProps, params, metricsColumns, selectedRows } =
-          processData(model.getState()?.rawData);
+        const {
+          data,
+          params,
+          runProps,
+          highLevelParams,
+          metricsColumns,
+          selectedRows,
+        } = processData(model.getState()?.rawData as IRun<IParamTrace>[]);
+        const sortedParams = [
+          ...new Set(params.concat(highLevelParams)),
+        ].sort();
+
         const groupingSelectOptions = [
           ...getGroupingSelectOptions({
-            params,
+            params: sortedParams,
             runProps,
           }),
         ];
         tooltipData = getTooltipData({
           processedData: data,
-          paramKeys: params,
+          paramKeys: sortedParams,
           groupingSelectOptions,
           groupingItems: ['color', 'stroke', 'chart'],
           model,
@@ -4915,17 +4952,26 @@ function createAppModel(appConfig: IAppInitialConfig) {
         rawData: IRun<IParamTrace>[],
         configData: IAppModelConfig,
       ): void {
-        const { data, runProps, params, metricsColumns, selectedRows } =
-          processData(rawData);
+        const {
+          data,
+          runProps,
+          highLevelParams,
+          params,
+          metricsColumns,
+          selectedRows,
+        } = processData(rawData);
+        const sortedParams = [
+          ...new Set(params.concat(highLevelParams)),
+        ].sort();
         const groupingSelectOptions = [
           ...getGroupingSelectOptions({
-            params,
+            params: sortedParams,
             runProps,
           }),
         ];
         tooltipData = getTooltipData({
           processedData: data,
-          paramKeys: params,
+          paramKeys: sortedParams,
           groupingSelectOptions,
           groupingItems: ['color', 'chart'],
           model,
@@ -5343,6 +5389,7 @@ function createAppModel(appConfig: IAppInitialConfig) {
       function processData(data: IRun<IParamTrace>[]): {
         data: IMetricsCollection<IParam>[];
         params: string[];
+        highLevelParams: string[];
         runProps: string[];
         metricsColumns: any;
         selectedRows: any;
@@ -5430,7 +5477,8 @@ function createAppModel(appConfig: IAppInitialConfig) {
 
         return {
           data: processedData,
-          params: [...new Set(uniqParams.concat(uniqHighLevelParams))].sort(),
+          params: uniqParams,
+          highLevelParams: uniqHighLevelParams,
           runProps: uniqProps,
           metricsColumns,
           selectedRows,
@@ -5577,17 +5625,26 @@ function createAppModel(appConfig: IAppInitialConfig) {
         configData = model.getState()!.config!,
         shouldURLUpdate?: boolean,
       ): void {
-        const { data, runProps, params, metricsColumns, selectedRows } =
-          processData(model.getState()?.rawData);
+        const {
+          data,
+          params,
+          runProps,
+          highLevelParams,
+          metricsColumns,
+          selectedRows,
+        } = processData(model.getState()?.rawData as IRun<IParamTrace>[]);
+        const sortedParams = [
+          ...new Set(params.concat(highLevelParams)),
+        ].sort();
         const groupingSelectOptions = [
           ...getGroupingSelectOptions({
-            params,
+            params: sortedParams,
             runProps,
           }),
         ];
         tooltipData = getTooltipData({
           processedData: data,
-          paramKeys: params,
+          paramKeys: sortedParams,
           groupingSelectOptions,
           groupingItems: ['color', 'chart'],
           model,
