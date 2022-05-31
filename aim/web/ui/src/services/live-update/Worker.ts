@@ -106,6 +106,23 @@ function transferApiCallResponse(data: Array<unknown>) {
   }
 }
 
+function clearScheduler() {
+  if (schedule.timerId) {
+    clearTimeout(schedule.timerId);
+  }
+  schedule = {
+    timerId: null,
+    inProgress: false,
+  };
+}
+
+function updateSchedule(timerId: number) {
+  schedule = {
+    timerId,
+    inProgress: true,
+  };
+}
+
 /**
  * @internal
  * schedule periodic function call
@@ -115,7 +132,7 @@ function scheduler(f: (q: string) => Promise<any>) {
   // @TODO improve
   //  now this will call every for delay ms, need to create delay after each other
 
-  const timerId = setInterval(f, schedulerDelay);
+  const timerId = setTimeout(f, schedulerDelay);
   schedule = {
     timerId,
     inProgress: false,
@@ -131,19 +148,14 @@ function scheduler(f: (q: string) => Promise<any>) {
  */
 async function stop(): Promise<any> {
   try {
+    clearScheduler();
     if (apiMethods) {
       await apiMethods.abort();
-      if (schedule.timerId) {
-        clearTimeout(schedule.timerId);
-      }
-      schedule = {
-        timerId: null,
-        inProgress: false,
-      };
       apiMethods = null;
     }
     invariantSuccess(`Stopped ${key.toString()} success`, logging);
   } catch (e: Error | any) {
+    clearScheduler();
     invariantError(e, logging);
     throw e;
   }
@@ -164,23 +176,30 @@ function start(params: Object = {}): void {
  * @internal
  */
 async function startUpdateCall(): Promise<any> {
-  // calculate nec-s;
-  logging && console.time(`${key.toString()} operated`);
+  try {
+    logging && console.time(`${key.toString()} operated`);
+    const stream = await apiMethods?.call();
+    let bufferPairs = decodeBufferPairs(stream);
+    let decodedPairs = decodePathsVals(bufferPairs);
+    let objects = iterFoldTree(decodedPairs, 1);
 
-  const stream = await apiMethods?.call();
-  let bufferPairs = decodeBufferPairs(stream);
-  let decodedPairs = decodePathsVals(bufferPairs);
-  let objects = iterFoldTree(decodedPairs, 1);
+    const data = [];
 
-  const data = [];
+    for await (let [keys, val] of objects) {
+      const d: any = val;
+      data.push({ ...d, hash: keys[0] } as any);
+    }
 
-  for await (let [keys, val] of objects) {
-    const d: any = val;
-    data.push({ ...d, hash: keys[0] } as any);
+    logging && console.timeEnd(`${key.toString()} operated`);
+    transferApiCallResponse(data);
+    // calculate nec-s;
+    const timerId = setTimeout(startUpdateCall, schedulerDelay);
+    // @ts-ignore
+    updateSchedule(timerId);
+  } catch (e) {
+    invariantError(e, logging);
+    throw e;
   }
-
-  logging && console.timeEnd(`${key.toString()} operated`);
-  transferApiCallResponse(data);
 }
 
 /**

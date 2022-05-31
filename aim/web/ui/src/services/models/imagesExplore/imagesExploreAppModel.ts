@@ -301,6 +301,7 @@ function abortRequest(): void {
 function getImagesData(
   shouldUrlUpdate?: boolean,
   shouldResetSelectedRows?: boolean,
+  queryString?: string,
 ) {
   if (imagesRequestRef) {
     imagesRequestRef.abort();
@@ -308,6 +309,13 @@ function getImagesData(
 
   const configData: IImagesExploreAppConfig | undefined =
     model.getState()?.config;
+  if (queryString) {
+    if (configData?.select?.advancedMode) {
+      configData.select.advancedQuery = queryString;
+    } else {
+      configData!.select.query = queryString;
+    }
+  }
   if (shouldUrlUpdate) {
     updateURL(configData);
   }
@@ -453,6 +461,7 @@ function processData(data: any[]): {
   data: IMetricsCollection<IImageData>[];
   params: string[];
   runProps: string[];
+  highLevelParams: string[];
   contexts: string[];
   selectedRows: any;
 } {
@@ -548,7 +557,8 @@ function processData(data: any[]): {
   return {
     data: processedData,
     runProps: uniqProps,
-    params: [...new Set(uniqParams.concat(uniqHighLevelParams))].sort(),
+    params: uniqParams,
+    highLevelParams: uniqHighLevelParams,
     contexts: uniqContexts,
     selectedRows,
   };
@@ -556,11 +566,12 @@ function processData(data: any[]): {
 
 function setModelData(rawData: any[], configData: IImagesExploreAppConfig) {
   const sortFields = model.getState()?.config?.table.sortFields;
-  const { data, params, runProps, contexts, selectedRows } =
+  const { data, params, runProps, highLevelParams, contexts, selectedRows } =
     processData(rawData);
+  const sortedParams = [...new Set(params.concat(highLevelParams))].sort();
   const groupingSelectOptions = [
     ...getGroupingSelectOptions({
-      params,
+      params: sortedParams,
       contexts,
       runProps,
       sequenceName: 'images',
@@ -573,7 +584,7 @@ function setModelData(rawData: any[], configData: IImagesExploreAppConfig) {
   });
   tooltipData = getTooltipData({
     processedData: data,
-    paramKeys: params,
+    paramKeys: sortedParams,
     groupingSelectOptions,
     groupingItems: ['group'],
     model,
@@ -704,12 +715,12 @@ function updateModelData(
   configData: IImagesExploreAppConfig = model.getState()!.config!,
   shouldURLUpdate?: boolean,
 ): void {
-  const { data, params, runProps, contexts, selectedRows } = processData(
-    model.getState()?.rawData as any[],
-  );
+  const { data, params, runProps, highLevelParams, contexts, selectedRows } =
+    processData(model.getState()?.rawData as any[]);
+  const sortedParams = [...new Set(params.concat(highLevelParams))].sort();
   const groupingSelectOptions = [
     ...getGroupingSelectOptions({
-      params,
+      params: sortedParams,
       runProps,
       contexts,
       sequenceName: 'images',
@@ -722,7 +733,7 @@ function updateModelData(
   });
   tooltipData = getTooltipData({
     processedData: data,
-    paramKeys: params,
+    paramKeys: sortedParams,
     groupingSelectOptions,
     groupingItems: ['group'],
     model,

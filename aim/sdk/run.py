@@ -53,6 +53,171 @@ if TYPE_CHECKING:
 logger = logging.getLogger(__name__)
 
 
+class RunTracker:
+    _idx_to_ctx: Dict[int, Context] = dict()
+    track_in_thread = os.getenv(AIM_ENABLE_TRACKING_THREAD, False)
+    _track_warning_shown = False
+
+    @classmethod
+    def track_rate_warn(cls):
+        if not cls._track_warning_shown:
+            # TODO [AT] add link to FAQ section in docs.
+            logger.warning('Tracking task queue is almost full which might cause performance degradation. '
+                           'Consider tracking at lower pace.')
+            cls._track_warning_shown = True
+
+    def __init__(self, run: 'Run'):
+        self.hash = run.hash
+        self.repo = run.repo
+        self.meta_tree = run.meta_tree
+        self.meta_run_tree = run.meta_run_tree
+        self.series_run_tree = run.series_run_tree
+        self.contexts: Dict[Context, int] = dict()
+        self.sequence_info: Dict[SequenceDescriptor.Selector, SequenceInfo] = defaultdict(SequenceInfo)
+        self._prepare_sequence_info(run.read_only)
+
+    def idx_to_ctx(self, idx):
+        ctx = RunTracker._idx_to_ctx.get(idx)
+        if ctx is not None:
+            return ctx
+        ctx = Context(self.meta_tree['contexts', idx])
+        RunTracker._idx_to_ctx[idx] = ctx
+        self.contexts[ctx] = idx
+        return ctx
+
+    def _prepare_sequence_info(self, read_only):
+        if read_only:
+            return
+
+        for ctx_id, traces in self.meta_run_tree.get('traces', {}).items():
+            for name in traces:
+                try:
+                    self._read_sequence_info(self.idx_to_ctx(ctx_id), name)
+                except KeyError:
+                    pass
+
+    def _read_sequence_info(self, ctx, name):
+        sequence_selector = SequenceDescriptor(name, ctx).selector
+        seq_info = self.sequence_info[sequence_selector]
+
+        assert not seq_info.initialized
+        seq_info.val_view = self.series_run_tree.subtree(sequence_selector).array('val').allocate()
+        seq_info.epoch_view = self.series_run_tree.subtree(sequence_selector).array('epoch', dtype='int64').allocate()
+        seq_info.time_view = self.series_run_tree.subtree(sequence_selector).array('time', dtype='int64').allocate()
+        seq_info.count = len(seq_info.val_view)
+        seq_info.sequence_dtype = self.meta_run_tree.get(('traces', ctx.idx, name, 'dtype'), None)
+        seq_info.record_max_length = self.meta_run_tree.get(('traces', ctx.idx, name, 'record_max_length'), 0)
+        seq_info.initialized = True
+
+    def _get_or_create_sequence_info(self, ctx, name):
+        # this method is used in the `run.track()`, so please use only write-only instructions
+        sequence_selector = SequenceDescriptor(name, ctx).selector
+        seq_info = self.sequence_info[sequence_selector]
+
+        if seq_info.initialized:
+            return seq_info
+
+        # the subtree().array().allocate() method is write-only
+        seq_info.val_view = self.series_run_tree.subtree(sequence_selector).array('val').allocate()
+        seq_info.epoch_view = self.series_run_tree.subtree(sequence_selector).array('epoch', dtype='int64').allocate()
+        seq_info.time_view = self.series_run_tree.subtree(sequence_selector).array('time', dtype='int64').allocate()
+        seq_info.count = 0
+        seq_info.sequence_dtype = None
+        seq_info.record_max_length = 0
+        seq_info.initialized = True
+        return seq_info
+
+    def _update_sequence_info(self, seq_info, ctx, val, name, step):
+        # this method is used in the `run.track()`, so please use only write-only instructions
+        dtype = get_object_typename(val)
+
+        if seq_info.sequence_dtype is not None:
+            def update_trace_dtype(new_dtype):
+                self.meta_tree['traces_types', new_dtype, ctx.idx, name] = 1
+                self.meta_run_tree['traces', ctx.idx, name, 'dtype'] = new_dtype
+                seq_info.sequence_dtype = new_dtype
+
+            compatible = check_types_compatibility(dtype, seq_info.sequence_dtype, update_trace_dtype)
+            if not compatible:
+                raise ValueError(f'Cannot log value \'{val}\' on sequence \'{name}\'. Incompatible data types.')
+
+        if seq_info.count == 0:
+            self.meta_tree['traces_types', dtype, ctx.idx, name] = 1
+            self.meta_run_tree['traces', ctx.idx, name, 'dtype'] = dtype
+            self.meta_run_tree['traces', ctx.idx, name, 'first_step'] = step
+            seq_info.sequence_dtype = dtype
+
+        if isinstance(val, (tuple, list)):
+            record_max_length = max(seq_info.record_max_length, len(val))
+            self.meta_run_tree['traces', ctx.idx, name, 'record_max_length'] = record_max_length
+            seq_info.record_max_length = record_max_length
+
+        return seq_info
+
+    def __call__(
+        self,
+        value,
+        name: str,
+        step: int = None,
+        epoch: int = None,
+        *,
+        context: AimObject = None,
+    ):
+        # since worker might be lagging behind, we want to log the timestamp of run.track() call,
+        # not the actual implementation execution time.
+        track_time = datetime.datetime.now(pytz.utc).timestamp()
+
+        # remote tracking creates dedicated thread for tracking, so don't need to create another one here
+        if self.track_in_thread and not self.repo.is_remote_repo:
+            val = deepcopy(value)
+            track_rate_warning = self.repo.tracking_queue.register_task(
+                self._track, val, track_time, name, step, epoch, context=context)
+            if track_rate_warning:
+                self.track_rate_warn()
+        else:
+            self._track(value, track_time, name, step, epoch, context=context)
+
+    def _track(
+        self,
+        value,
+        track_time: float,
+        name: str,
+        step: int = None,
+        epoch: int = None,
+        *,
+        context: AimObject = None,
+    ):
+        if context is None:
+            context = {}
+
+        if is_number(value):
+            val = convert_to_py_number(value)
+        elif isinstance(value, (CustomObject, list, tuple)):
+            val = value
+        else:
+            raise ValueError(f'Input metric of type {type(value)} is neither python number nor AimObject')
+
+        with self.repo.atomic_track(self.hash):
+            ctx = Context(context)
+            if ctx not in self.contexts:
+                self.meta_tree['contexts', ctx.idx] = context
+                self.meta_run_tree['contexts', ctx.idx] = context
+                self.contexts[ctx] = ctx.idx
+                self._idx_to_ctx[ctx.idx] = ctx
+
+            seq_info = self._get_or_create_sequence_info(ctx, name)
+            step = step if step is not None else seq_info.count
+            self._update_sequence_info(seq_info, ctx, val, name, step)
+
+            self.meta_run_tree['traces', ctx.idx, name, 'last'] = val
+            self.meta_run_tree['traces', ctx.idx, name, 'last_step'] = step
+
+            seq_info.val_view[step] = val
+            seq_info.epoch_view[step] = epoch
+            seq_info.time_view[step] = track_time
+            seq_info.count = seq_info.count + 1
+
+
 class RunAutoClean(AutoClean['Run']):
     PRIORITY = 90
 
@@ -70,6 +235,8 @@ class RunAutoClean(AutoClean['Run']):
         self.meta_run_tree = instance.meta_run_tree
         self.repo = instance.repo
         self._system_resource_tracker = instance._system_resource_tracker
+        # this reference is needed for system resource tracker finalization
+        self._tracker = instance._tracker
 
     def finalize_run(self):
         """
@@ -257,11 +424,6 @@ class Run(StructuredRunMixin):
             git info, environment variables, etc.
     """
 
-    _idx_to_ctx: Dict[int, Context] = dict()
-    _track_warning_shown = False
-
-    track_in_thread = os.getenv(AIM_ENABLE_TRACKING_THREAD, False)
-
     def __init__(self, run_hash: Optional[str] = None, *,
                  repo: Optional[Union[str, 'Repo']] = None,
                  read_only: bool = False,
@@ -284,9 +446,6 @@ class Run(StructuredRunMixin):
 
         self._hash = None
         self._props = None
-
-        self.contexts: Dict[Context, int] = dict()
-        self.sequence_info: Dict[SequenceDescriptor.Selector, SequenceInfo] = defaultdict(SequenceInfo)
 
         self.meta_tree: TreeView = self.repo.request_tree(
             'meta', self.hash, read_only=read_only, from_union=True
@@ -321,7 +480,7 @@ class Run(StructuredRunMixin):
         if experiment:
             self.experiment = experiment
 
-        self._prepare_sequence_info(read_only)
+        self._tracker = RunTracker(self)
 
         self._system_resource_tracker: ResourceTracker = None
         self._prepare_resource_tracker(system_tracking_interval, capture_terminal_logs)
@@ -332,13 +491,7 @@ class Run(StructuredRunMixin):
         return f'<Run#{hash(self)} name={self.hash} repo={self.repo}>'
 
     def idx_to_ctx(self, idx: int) -> Context:
-        ctx = Run._idx_to_ctx.get(idx)
-        if ctx is not None:
-            return ctx
-        ctx = Context(self.meta_tree['contexts', idx])
-        Run._idx_to_ctx[idx] = ctx
-        self.contexts[ctx] = idx
-        return ctx
+        return self._tracker.idx_to_ctx(idx)
 
     def __setitem__(self, key: str, val: Any):
         """Set Run top-level meta-parameter.
@@ -394,7 +547,7 @@ class Run(StructuredRunMixin):
         if ResourceTracker.check_interval(tracking_interval) or capture_terminal_logs:
             current_logs = self.get_terminal_logs()
             log_offset = current_logs.last_step() + 1 if current_logs else 0
-            self._system_resource_tracker = ResourceTracker(self.track,
+            self._system_resource_tracker = ResourceTracker(self._tracker,
                                                             tracking_interval,
                                                             capture_terminal_logs,
                                                             log_offset)
@@ -430,59 +583,7 @@ class Run(StructuredRunMixin):
         Appended values should be of the same type, in other words, sequence is a homogeneous collection.
         """
 
-        # since worker might be lagging behind, we want to log the timestamp of run.track() call,
-        # not the actual implementation execution time.
-        track_time = datetime.datetime.now(pytz.utc).timestamp()
-
-        # remote tracking creates dedicated thread for tracking, so don't need to create another one here
-        if self.track_in_thread and not self.repo.is_remote_repo:
-            val = deepcopy(value)
-            track_rate_warning = self.repo.tracking_queue.register_task(
-                self._track_impl, val, track_time, name, step, epoch, context=context)
-            if track_rate_warning:
-                self.track_rate_warn()
-        else:
-            self._track_impl(value, track_time, name, step, epoch, context=context)
-
-    def _track_impl(
-        self,
-        value,
-        track_time: float,
-        name: str,
-        step: int = None,
-        epoch: int = None,
-        *,
-        context: AimObject = None,
-    ):
-        if context is None:
-            context = {}
-
-        if is_number(value):
-            val = convert_to_py_number(value)
-        elif isinstance(value, (CustomObject, list, tuple)):
-            val = value
-        else:
-            raise ValueError(f'Input metric of type {type(value)} is neither python number nor AimObject')
-
-        with self.repo.atomic_track(self.hash):
-            ctx = Context(context)
-            if ctx not in self.contexts:
-                self.meta_tree['contexts', ctx.idx] = context
-                self.meta_run_tree['contexts', ctx.idx] = context
-                self.contexts[ctx] = ctx.idx
-                self._idx_to_ctx[ctx.idx] = ctx
-
-            seq_info = self._get_or_create_sequence_info(ctx, name)
-            step = step if step is not None else seq_info.count
-            self._update_sequence_info(seq_info, ctx, val, name, step)
-
-            self.meta_run_tree['traces', ctx.idx, name, 'last'] = val
-            self.meta_run_tree['traces', ctx.idx, name, 'last_step'] = step
-
-            seq_info.val_view[step] = val
-            seq_info.epoch_view[step] = epoch
-            seq_info.time_view[step] = track_time
-            seq_info.count = seq_info.count + 1
+        self._tracker(value, name, step, epoch, context=context)
 
     @property
     def props(self):
@@ -670,75 +771,6 @@ class Run(StructuredRunMixin):
         sequence = seq_cls(sequence_name, context, self)
         return sequence if bool(sequence) else None
 
-    def _prepare_sequence_info(self, read_only):
-        if read_only:
-            return
-
-        for ctx_id, traces in self.meta_run_tree.get('traces', {}).items():
-            for name in traces:
-                try:
-                    self._read_sequence_info(self.idx_to_ctx(ctx_id), name)
-                except KeyError:
-                    pass
-
-    def _read_sequence_info(self, ctx, name):
-        sequence_selector = SequenceDescriptor(name, ctx).selector
-        seq_info = self.sequence_info[sequence_selector]
-
-        assert not seq_info.initialized
-        seq_info.val_view = self.series_run_tree.subtree(sequence_selector).array('val').allocate()
-        seq_info.epoch_view = self.series_run_tree.subtree(sequence_selector).array('epoch', dtype='int64').allocate()
-        seq_info.time_view = self.series_run_tree.subtree(sequence_selector).array('time', dtype='int64').allocate()
-        seq_info.count = len(seq_info.val_view)
-        seq_info.sequence_dtype = self.meta_run_tree.get(('traces', ctx.idx, name, 'dtype'), None)
-        seq_info.record_max_length = self.meta_run_tree.get(('traces', ctx.idx, name, 'record_max_length'), 0)
-        seq_info.initialized = True
-
-    def _get_or_create_sequence_info(self, ctx, name):
-        # this method is used in the `run.track()`, so please use only write-only instructions
-        sequence_selector = SequenceDescriptor(name, ctx).selector
-        seq_info = self.sequence_info[sequence_selector]
-
-        if seq_info.initialized:
-            return seq_info
-
-        # the subtree().array().allocate() method is write-only
-        seq_info.val_view = self.series_run_tree.subtree(sequence_selector).array('val').allocate()
-        seq_info.epoch_view = self.series_run_tree.subtree(sequence_selector).array('epoch', dtype='int64').allocate()
-        seq_info.time_view = self.series_run_tree.subtree(sequence_selector).array('time', dtype='int64').allocate()
-        seq_info.count = 0
-        seq_info.sequence_dtype = None
-        seq_info.record_max_length = 0
-        seq_info.initialized = True
-        return seq_info
-
-    def _update_sequence_info(self, seq_info, ctx, val, name, step):
-        # this method is used in the `run.track()`, so please use only write-only instructions
-        dtype = get_object_typename(val)
-
-        if seq_info.sequence_dtype is not None:
-            def update_trace_dtype(new_dtype):
-                self.meta_tree['traces_types', new_dtype, ctx.idx, name] = 1
-                self.meta_run_tree['traces', ctx.idx, name, 'dtype'] = new_dtype
-                seq_info.sequence_dtype = new_dtype
-
-            compatible = check_types_compatibility(dtype, seq_info.sequence_dtype, update_trace_dtype)
-            if not compatible:
-                raise ValueError(f'Cannot log value \'{val}\' on sequence \'{name}\'. Incompatible data types.')
-
-        if seq_info.count == 0:
-            self.meta_tree['traces_types', dtype, ctx.idx, name] = 1
-            self.meta_run_tree['traces', ctx.idx, name, 'dtype'] = dtype
-            self.meta_run_tree['traces', ctx.idx, name, 'first_step'] = step
-            seq_info.sequence_dtype = dtype
-
-        if isinstance(val, (tuple, list)):
-            record_max_length = max(seq_info.record_max_length, len(val))
-            self.meta_run_tree['traces', ctx.idx, name, 'record_max_length'] = record_max_length
-            seq_info.record_max_length = record_max_length
-
-        return seq_info
-
     def collect_sequence_info(self, sequence_types: Tuple[str, ...], skip_last_value=False) -> Dict[str, list]:
         """Retrieve Run's all sequences general overview.
 
@@ -824,24 +856,14 @@ class Run(StructuredRunMixin):
     def close(self):
         if self._resources is None:
             return
-        self.sequence_info.clear()
         self._resources.close()
+        self._tracker.sequence_info.clear()
         # de-reference trees and other resources
         del self._resources
-        del self.repo
         del self._props
         self._resources = None
-        self.repo = None
         self._props = None
         self._cleanup_trees()
-
-    @classmethod
-    def track_rate_warn(cls):
-        if not cls._track_warning_shown:
-            # TODO [AT] add link to FAQ section in docs.
-            logger.warning('Tracking task queue is almost full which might cause performance degradation. '
-                           'Consider tracking at lower pace.')
-            cls._track_warning_shown = True
 
     def finalize(self):
         if self._resources is None:

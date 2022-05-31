@@ -1,9 +1,9 @@
 import React from 'react';
 import {
   Link,
-  Redirect,
   Route,
   Switch,
+  useHistory,
   useLocation,
   useParams,
   useRouteMatch,
@@ -97,6 +97,30 @@ function RunDetail(): React.FunctionComponentElement<React.ReactNode> {
   const { url } = useRouteMatch();
   const location = useLocation();
   const [activeTab, setActiveTab] = React.useState(location.pathname);
+  const history = useHistory();
+
+  React.useEffect(() => {
+    redirect();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  function redirect(): void {
+    const splitPathname: string[] = location.pathname.split('/');
+    const path: string = `${url}/overview`;
+    if (splitPathname.length > 4) {
+      history.replace(path);
+      setActiveTab(path);
+      return;
+    }
+    if (splitPathname[3]) {
+      if (!tabs.includes(splitPathname[3])) {
+        history.replace(path);
+      }
+    } else {
+      history.replace(path);
+    }
+    setActiveTab(path);
+  }
 
   const tabContent: { [key: string]: JSX.Element } = {
     overview: <RunOverviewTab runHash={runHash} runData={runData} />,
@@ -374,7 +398,6 @@ function RunDetail(): React.FunctionComponentElement<React.ReactNode> {
                   </ErrorBoundary>
                 </Route>
               ))}
-              <Redirect to={`${url}/overview`} />
             </Switch>
           </BusyLoaderWrapper>
         </div>
