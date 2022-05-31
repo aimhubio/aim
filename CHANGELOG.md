@@ -18,6 +18,15 @@
 - Fix params duplication in dropdowns (VkoHov)
 - Resolve typing latency issue in the query search input (arsengit)
 
+## 3.10.2 May 26, 2022
+
+- Adjust SRP Logs row height calculation (VkoHov)
+- Fix issue with live update requests scheduler (rubenaprikyan)
+- Fix log capturing crash during run garbage collection (mihran113)
+- Fix Pytorch Lightning adapter `finalize` method (mihran113)
+- Fix params duplication in dropdowns (VkoHov)
+- Skip system params in Explorer pages (alberttorosyan)
+
 ## 3.10.1 May 18, 2022
 
 - Resolve issue with rendering run params in the overview tab of SRP (arsengit)
