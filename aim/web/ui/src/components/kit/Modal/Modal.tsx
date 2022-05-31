@@ -32,6 +32,7 @@ function Modal({
   children,
   maxWidth = 'sm',
   isOkButtonDisabled = false,
+  className = '',
   ...rest
 }: IModalProps): React.FunctionComponentElement<React.ReactNode> {
   return (
@@ -42,7 +43,12 @@ function Modal({
       maxWidth={maxWidth}
       {...rest}
     >
-      <div className={`Modal ${modalType}`}>
+      <div
+        className={classNames('Modal', {
+          [className]: className,
+          [modalType]: modalType,
+        })}
+      >
         <div className='Modal__header'>
           {!withoutTitleIcon && (
             <div

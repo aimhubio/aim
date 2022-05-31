@@ -18,6 +18,11 @@
 - Fix params duplication in dropdowns (VkoHov)
 - Resolve typing latency issue in the query search input (arsengit)
 
+## 3.10.3 May 31, 2022
+
+- Adjust the content overflowing of the Delete and the Archive modals (VkoHov)
+- Resolve issue with redirect in run page (arsengit)
+
 ## 3.10.2 May 26, 2022
 
 - Adjust SRP Logs row height calculation (VkoHov)
