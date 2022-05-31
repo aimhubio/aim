@@ -1,5 +1,9 @@
 # Changelog
 
+## Unreleased 
+
+- Resolve issue with redirect in run page (arsengit)
+
 ## 3.10.2 May 26, 2022
 
 - Adjust SRP Logs row height calculation (VkoHov)
