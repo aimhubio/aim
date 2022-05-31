@@ -12,6 +12,7 @@
 
 ### Fixes:
 
+- Fix issue with rendering incorrect data when x-axis aligned by `timestamp/epoch` (KaroMourad)
 - Change zooming default option to multiple (VkoHov)
 - Changed grouped rows' min and max values names to `Group Min` and `Group Max` (VkoHov)
 - Preserve the search input value of the grouping dropdown (VkoHov)
