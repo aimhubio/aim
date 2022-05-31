@@ -221,13 +221,6 @@ function RunDetail(): React.FunctionComponentElement<React.ReactNode> {
   }, [runHash]);
 
   React.useEffect(() => {
-    if (runData?.experimentId) {
-      getRunsOfExperiment(runData?.experimentId);
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [runData?.experimentId]);
-
-  React.useEffect(() => {
     if (location.pathname !== activeTab) {
       setActiveTab(location.pathname);
     }

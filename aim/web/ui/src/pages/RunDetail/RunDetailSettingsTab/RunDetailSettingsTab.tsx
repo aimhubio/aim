@@ -57,8 +57,8 @@ function RunDetailSettingsTab({
       <div className='RunDetailSettingsTab'>
         <div className='RunDetailSettingsTab__actionCardsCnt'>
           <RunNameAndDescriptionCard
-            defaultName={defaultName}
-            defaultDescription={defaultDescription}
+            defaultName={defaultName ?? ''}
+            defaultDescription={defaultDescription ?? ''}
             runHash={runHash}
             isArchived={isArchived}
           />

@@ -34,15 +34,7 @@ function RunNameAndDescriptionCard({
     }),
   });
 
-  const {
-    values,
-    errors,
-    touched,
-    setFieldValue,
-    setFieldTouched,
-    submitForm,
-    validateForm,
-  } = formik;
+  const { values, errors, touched, setFieldValue, setFieldTouched } = formik;
 
   function onChange(e: React.ChangeEvent<any>, fieldName: string) {
     setFieldValue(fieldName, e?.target?.value, true).then(() => {
@@ -65,37 +57,11 @@ function RunNameAndDescriptionCard({
 
   return (
     <ErrorBoundary>
-      <div className='RunDetailSettingsTab__actionCardsCnt__nameEditContainer'>
-        <div className='RunDetailSettingsTab__actionCardsCnt__nameEditContainer__nameEditWrapper'>
-          <div className='RunDetailSettingsTab__actionCardsCnt__nameEditContainer__nameEditWrapper__nameEditBox'>
-            <Text size={12}>Name</Text>
-            <TextField
-              variant='outlined'
-              placeholder='Name'
-              className={'TextField__OutLined__Small '}
-              value={values.name}
-              onChange={(e) => onChange(e, 'name')}
-              error={!!(touched.name && errors.name)}
-              helperText={touched.name && errors.name}
-            />
-          </div>
-          <div className='RunDetailSettingsTab__actionCardsCnt__nameEditContainer__nameEditWrapper__nameEditBox'>
-            <Text size={12}>Description</Text>
-            <TextField
-              variant='outlined'
-              placeholder='Description'
-              multiline
-              type='textarea'
-              className={'TextField__OutLined__Small '}
-              value={values.description}
-              onChange={(e) => onChange(e, 'description')}
-              error={!!(touched.description && errors.description)}
-              helperText={touched.description && errors.description}
-            />
-          </div>
-        </div>
-
-        <Tooltip title={'Save edited name and description'} placement='top'>
+      <div className='NameAndDescriptionEditCard'>
+        <div className='NameAndDescriptionEditCard__header'>
+          <Text component='h4' weight={600} size={14} tint={100}>
+            General Information
+          </Text>
           <Button
             onClick={onSave}
             disabled={
@@ -108,7 +74,33 @@ function RunNameAndDescriptionCard({
           >
             Save
           </Button>
-        </Tooltip>
+        </div>
+        <div className='NameAndDescriptionEditCard__content'>
+          <div className='NameAndDescriptionEditCard__content__nameBox'>
+            <TextField
+              variant='outlined'
+              className='TextField__OutLined__Medium NameAndDescriptionEditCard__content__nameBox__nameInput'
+              value={values.name}
+              onChange={(e) => onChange(e, 'name')}
+              error={!!(touched.name && errors.name)}
+              helperText={touched.name && errors.name}
+              label='Name'
+            />
+          </div>
+          <div className='NameAndDescriptionEditCard__content__descriptionBox'>
+            <TextField
+              variant='outlined'
+              multiline
+              label='Description'
+              type='textarea'
+              className='NameAndDescriptionEditCard__content__descriptionBox__descriptionInput'
+              value={values.description}
+              onChange={(e) => onChange(e, 'description')}
+              error={!!(touched.description && errors.description)}
+              helperText={touched.description && errors.description}
+            />
+          </div>
+        </div>
       </div>
     </ErrorBoundary>
   );
