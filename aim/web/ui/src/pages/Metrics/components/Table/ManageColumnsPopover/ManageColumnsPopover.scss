@@ -19,24 +19,24 @@
     }
   }
   &__container {
+    max-width: 800px;
+    min-width: 600px;
+    width: 60vw;
     display: flex;
     height: 13.125rem;
   }
 }
 
 .ColumnList__container {
-  width: 15vw;
+  width: 27%;
   overflow: hidden;
   display: flex;
   flex-direction: column;
   border-bottom: $border-main;
   &:nth-child(2) {
-    width: 20vw;
+    width: 46%;
     border-left: $border-main;
     border-right: $border-main;
-    .ColumnItem__name {
-      max-width: 280px;
-    }
   }
 }
 
