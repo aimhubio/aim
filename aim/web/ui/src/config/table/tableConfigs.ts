@@ -113,6 +113,7 @@ export const TABLE_DEFAULT_CONFIG = {
 };
 
 export const AVOID_COLUMNS_TO_HIDE_LIST = new Set([
+  'metric',
   'experiment',
   'date',
   'duration',
