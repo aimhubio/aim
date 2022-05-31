@@ -2,6 +2,8 @@ import React from 'react';
 import { Draggable } from 'react-beautiful-dnd';
 import classNames from 'classnames';
 
+import { Tooltip } from '@material-ui/core';
+
 import { Icon, Text } from 'components/kit';
 import ErrorBoundary from 'components/ErrorBoundary/ErrorBoundary';
 
@@ -30,33 +32,43 @@ function ColumnItem(props: any) {
     <ErrorBoundary>
       <Draggable draggableId={props.data} index={props.index}>
         {(provided) => (
-          <div
-            className={classNames('ColumnItem', {
-              highlighted: isHighlighted(),
-              dragging: props.draggingItemId === props.data,
-            })}
-            {...provided.draggableProps}
-            ref={provided.innerRef}
+          <Tooltip
+            title={
+              isSystemMetric(props.data)
+                ? formatSystemMetricName(props.data)
+                : props.data
+            }
           >
-            <span onClick={props.onClick} className='ColumnItem__toggle'>
-              <Icon
-                name={props.isHidden ? 'eye-outline-hide' : 'eye-show-outline'}
-              />
-            </span>
-            <div>
-              <Text tint={100} className='ColumnItem__name'>
-                {isSystemMetric(props.data)
-                  ? formatSystemMetricName(props.data)
-                  : props.data}
-              </Text>
-              <span
-                className='ColumnItem__iconDrag'
-                {...provided.dragHandleProps}
-              >
-                <Icon name='drag' />
+            <div
+              className={classNames('ColumnItem', {
+                highlighted: isHighlighted(),
+                dragging: props.draggingItemId === props.data,
+              })}
+              {...provided.draggableProps}
+              ref={provided.innerRef}
+            >
+              <span onClick={props.onClick} className='ColumnItem__toggle'>
+                <Icon
+                  name={
+                    props.isHidden ? 'eye-outline-hide' : 'eye-show-outline'
+                  }
+                />
               </span>
+              <div>
+                <Text tint={100} className='ColumnItem__name'>
+                  {isSystemMetric(props.data)
+                    ? formatSystemMetricName(props.data)
+                    : props.data}
+                </Text>
+                <span
+                  className='ColumnItem__iconDrag'
+                  {...provided.dragHandleProps}
+                >
+                  <Icon name='drag' />
+                </span>
+              </div>
             </div>
-          </div>
+          </Tooltip>
         )}
       </Draggable>
     </ErrorBoundary>

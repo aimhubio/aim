@@ -25,14 +25,18 @@
 }
 
 .ColumnList__container {
-  width: toRem(240px);
+  width: 15vw;
   overflow: hidden;
   display: flex;
   flex-direction: column;
   border-bottom: $border-main;
   &:nth-child(2) {
+    width: 20vw;
     border-left: $border-main;
     border-right: $border-main;
+    .ColumnItem__name {
+      max-width: 280px;
+    }
   }
 }
 
@@ -52,6 +56,7 @@
   width: 100%;
   input {
     font-size: $text-sm;
+    font-weight: 500;
   }
 }
 

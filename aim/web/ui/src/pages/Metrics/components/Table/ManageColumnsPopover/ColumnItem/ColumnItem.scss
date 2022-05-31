@@ -40,10 +40,12 @@
 
   &__name {
     display: inline-block;
-    max-width: 130px;
+    max-width: 190px;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
+    direction: rtl;
+    text-align: left;
     flex: 1;
   }
 

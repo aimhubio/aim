@@ -195,11 +195,11 @@ function ManageColumnsPopover({
       <ControlPopover
         title='Manage Table Columns'
         anchorOrigin={{
-          vertical: 'bottom',
+          vertical: 'top',
           horizontal: 'left',
         }}
         transformOrigin={{
-          vertical: 'top',
+          vertical: 'bottom',
           horizontal: 'left',
         }}
         anchor={({ onAnchorClick, opened }) => (
