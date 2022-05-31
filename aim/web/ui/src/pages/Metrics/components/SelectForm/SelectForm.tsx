@@ -40,8 +40,10 @@ function SelectForm({
 }: ISelectFormProps): React.FunctionComponentElement<React.ReactNode> {
   const [anchorEl, setAnchorEl] = React.useState<any>(null);
   const [searchValue, setSearchValue] = React.useState<any>('');
-  const searchRef = React.useRef<any>(null);
-
+  const searchRef: any = React.useRef<React.MutableRefObject<any>>(null);
+  const autocompleteRef: any = React.useRef<React.MutableRefObject<any>>(null);
+  const advancedAutocompleteRef: any =
+    React.useRef<React.MutableRefObject<any>>(null);
   React.useEffect(() => {
     return () => {
       searchRef.current?.abort();
@@ -52,7 +54,15 @@ function SelectForm({
     if (requestIsPending) {
       return;
     }
-    searchRef.current = metricAppModel.getMetricsData(true, true);
+    let query = selectedMetricsData?.advancedMode
+      ? advancedAutocompleteRef.current.getValue()
+      : autocompleteRef.current.getValue();
+    if (selectedMetricsData?.advancedMode) {
+      onSelectAdvancedQueryChange(advancedAutocompleteRef.current.getValue());
+    } else {
+      onSelectRunQueryChange(autocompleteRef.current.getValue());
+    }
+    searchRef.current = metricAppModel.getMetricsData(true, true, query);
     searchRef.current.call();
     trackEvent(ANALYTICS_EVENT_KEYS.metrics.searchClick);
   }
@@ -106,6 +116,7 @@ function SelectForm({
   function handleResetSelectForm(): void {
     onMetricsSelectChange([]);
     onSelectRunQueryChange('');
+    onSelectAdvancedQueryChange('');
   }
 
   function handleSearchInputChange(e: any): void {
@@ -136,9 +147,9 @@ function SelectForm({
               <div className='Metrics__SelectForm__textarea'>
                 <AutocompleteInput
                   advanced
+                  refObject={advancedAutocompleteRef}
                   context={selectFormData?.advancedSuggestions}
                   value={selectedMetricsData?.advancedQuery}
-                  onChange={onSelectAdvancedQueryChange}
                   onEnter={handleMetricSearch}
                 />
               </div>
@@ -259,10 +270,10 @@ function SelectForm({
           {selectedMetricsData?.advancedMode ? null : (
             <div className='Metrics__SelectForm__TextField'>
               <AutocompleteInput
-                onChange={onSelectRunQueryChange}
-                onEnter={handleMetricSearch}
+                refObject={autocompleteRef}
                 value={selectedMetricsData?.query}
                 context={selectFormData.suggestions}
+                onEnter={handleMetricSearch}
               />
             </div>
           )}

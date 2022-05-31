@@ -51,6 +51,7 @@ class CustomObjectApiConfig:
         @router.get(search_endpoint, response_model=Dict[str, ObjectSearchRunView],
                     responses={400: {'model': QuerySyntaxErrorOut}})
         async def search_api(q: Optional[str] = '',
+                             skip_system: Optional[bool] = True,
                              record_range: Optional[str] = '', record_density: Optional[int] = 50,
                              index_range: Optional[str] = '', index_density: Optional[int] = 5):
             # search Sequence API
@@ -69,7 +70,7 @@ class CustomObjectApiConfig:
             api.set_dump_data_fn(cls.dump_record_fn)
             api.set_trace_collection(traces)
             api.set_ranges(record_range, record_density, index_range, index_density)
-            streamer = api.search_result_streamer()
+            streamer = api.search_result_streamer(skip_system)
             return StreamingResponse(streamer)
 
         # run sequence batch API

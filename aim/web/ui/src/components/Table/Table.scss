@@ -38,8 +38,20 @@
     }
   }
 }
+
+.ActionModalWrapper {
+  max-width: 1800px;
+}
+
 .ActionModal {
-  width: 55vw;
+  width: 100%;
+  &__container {
+    width: 60vw;
+    max-width: 100%;
+    .Modal__content {
+      width: 100%;
+    }
+  }
   &__Table {
     .BaseTable__header {
       border-radius: toRem(4px) toRem(4px) 0 0;

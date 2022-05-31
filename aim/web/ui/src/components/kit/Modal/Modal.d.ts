@@ -23,5 +23,6 @@ export type IModalProps = Override<
     children: React.ReactNode;
     maxWidth?: 'xs' | 'sm' | 'md' | 'lg' | 'xl' | false;
     isOkButtonDisabled?: boolean;
+    className?: string;
   }
 >;

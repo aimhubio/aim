@@ -31,7 +31,7 @@ function SelectForm({
   const [anchorEl, setAnchorEl] = React.useState<any>(null);
   const [searchValue, setSearchValue] = React.useState<any>('');
   const searchRef = React.useRef<any>(null);
-
+  const autocompleteRef: any = React.useRef<React.MutableRefObject<any>>(null);
   React.useEffect(() => {
     return () => {
       searchRef.current?.abort();
@@ -42,7 +42,9 @@ function SelectForm({
     if (requestIsPending) {
       return;
     }
-    searchRef.current = paramsAppModel.getParamsData(true, true);
+    const query = autocompleteRef.current.getValue();
+    onSelectRunQueryChange(query);
+    searchRef.current = paramsAppModel.getParamsData(true, true, query);
     searchRef.current.call();
     trackEvent(ANALYTICS_EVENT_KEYS.params.searchClick);
   }
@@ -254,9 +256,9 @@ function SelectForm({
           </Box>
           <div className='SelectForm__TextField'>
             <AutocompleteInput
+              refObject={autocompleteRef}
               context={selectFormData?.suggestions}
               onEnter={handleParamsSearch}
-              onChange={onSelectRunQueryChange}
               value={selectedParamsData?.query}
             />
           </div>
