@@ -1,3 +1,5 @@
+import _ from 'lodash-es';
+
 import { HighlightEnum } from 'components/HighlightModesPopover/HighlightModesPopover';
 
 import { IDrawLinesArgs } from 'types/utils/d3/drawLines';
@@ -62,6 +64,18 @@ function drawLines(args: IDrawLinesArgs): void {
       .style('stroke-dasharray', (line: IProcessedData) => line.dasharray)
       .data(data.map((line: IProcessedData) => line.data))
       .attr('d', lineGenerator(xScale, yScale, curveInterpolation));
+    data.forEach((line: any) => {
+      if (!_.isNil(line.run.props.end_time)) {
+        linesNodeRef.current
+          .append('circle')
+          .attr('class', 'activeCircle')
+          .attr('cx', xScale(line.data[line.data.length - 1][0]))
+          .attr('cy', yScale(line.data[line.data.length - 1][1]))
+          .attr('r', 3)
+          .style('fill', 'green')
+          .raise();
+      }
+    });
   };
 
   linesRef.current.updateAggregatedAreasScales = function (

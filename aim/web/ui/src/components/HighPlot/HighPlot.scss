@@ -57,12 +57,11 @@
         }
       }
     }
-    .axisBrush{
-    
-      .handle{
+    .axisBrush {
+      .handle {
         fill: $cuddle-110;
       }
-      .selection{
+      .selection {
         fill: $pico-50;
         stroke: none;
       }
@@ -159,5 +158,23 @@
   .Line.active {
     opacity: 1;
     stroke-width: 3px;
+  }
+}
+
+.activeCircle {
+  animation: col 1s linear infinite;
+  stroke-width: 10;
+  stroke: #00800080;
+}
+
+@keyframes col {
+  0% {
+    stroke: none;
+  }
+  50% {
+    stroke: #00800080;
+  }
+  100% {
+    stroke: none;
   }
 }
