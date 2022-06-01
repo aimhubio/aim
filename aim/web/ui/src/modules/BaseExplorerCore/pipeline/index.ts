@@ -9,7 +9,7 @@ import createAdapter, { Adapter } from './adapter';
 export type PipelineOptions = {
   sequenceName: SequenceTypesEnum;
   callbacks: {
-    statusChangeCallback?: () => void;
+    statusChangeCallback?: (status: string) => void;
     exceptionCallback?: () => void;
     // warningCallback?: () => void;
     resultCallback?: () => void;
@@ -49,15 +49,29 @@ let phases: {
   modifier?: Modifier;
 } = {};
 
+let callbacks: {
+  statusChangeCallback?: (status: string) => void;
+  exceptionCallback?: () => void;
+  // warningCallback?: () => void;
+  resultCallback?: () => void;
+};
+
+function setCallbacks(cbs: any) {
+  callbacks = cbs;
+}
+
 function createAdapterInstance(config: any) {
-  phases.adapter = createAdapter(config);
+  phases.adapter = createAdapter({
+    ...config,
+    statusChangeCallback: callbacks.statusChangeCallback,
+  });
 }
 
 function createQueryInstance(config: any) {
   phases.query = createQuery(
     config.sequenceName,
     config.query.useCache,
-    () => {},
+    callbacks.statusChangeCallback,
   );
 }
 
@@ -71,17 +85,18 @@ async function execute(options: PipelineExecutionOptions): Promise<any> {
 
   // @ts-ignore
   const adapterResult = await phases.adapter.execute(queryResult);
+
   // @ts-ignore
-  const modifierResult = phases.modifier.execute({
-    objectList: adapterResult.objectList,
-    // @ts-ignore
-    modifiers: ['run.hparams.batch_size', 'run.experiment', 'images.name'],
-  });
+  // const modifierResult = phases.modifier.execute({
+  //   objectList: adapterResult.objectList,
+  //   // @ts-ignore
+  //   modifiers: ['run.hparams.batch_size', 'run.experiment', 'images.name'],
+  // });
 
   return {
-    data: modifierResult.data,
+    data: adapterResult.objectList,
     additionalData: adapterResult.additionalData,
-    modifierConfig: modifierResult.modifierConfig,
+    modifierConfig: {},
   };
 }
 
@@ -91,13 +106,16 @@ async function execute(options: PipelineExecutionOptions): Promise<any> {
  * @param query
  * @param adapter
  * @param modifier
+ * @param callbacks
  */
 function createPipeline({
   sequenceName,
   query,
   adapter,
   modifier,
+  callbacks,
 }: PipelineOptions): Pipeline {
+  setCallbacks(callbacks);
   createQueryInstance({ query, sequenceName });
   createAdapterInstance({ ...adapter, sequenceName });
   createModifierInstance(modifier);

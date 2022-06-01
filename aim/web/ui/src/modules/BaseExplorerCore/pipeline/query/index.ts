@@ -1,4 +1,6 @@
 // @TODO implement live update in this file
+// @TODO complete docs, comments
+// @TODO complete typings
 
 import { memoize } from 'modules/BaseExplorerCore/cache';
 
@@ -20,17 +22,17 @@ export type Query = {
 
 let currentQueryRequest: RequestInstance;
 let currentSequenceType: SequenceTypesEnum;
-let statusCallback: (status: string) => void;
+let statusChangeCallback: ((status: string) => void) | undefined;
 
 async function executeBaseQuery(
   query: RunsSearchQueryParams,
 ): Promise<RunSearchRunView[]> {
   cancel();
-  statusCallback && statusCallback('fetching'); // make invariant with type mapping
+  statusChangeCallback && statusChangeCallback('fetching'); // make invariant with type mapping
 
   const data: ReadableStream = await currentQueryRequest.call(query);
 
-  statusCallback && statusCallback('decoding');
+  statusChangeCallback && statusChangeCallback('decoding');
 
   return parseStream<Array<RunSearchRunView>>(data);
 }
@@ -39,8 +41,8 @@ function setCurrentSequenceType(sequenceType: SequenceTypesEnum): void {
   currentSequenceType = sequenceType;
 }
 
-function setStatusCallback(callback: (status: string) => void) {
-  statusCallback = callback;
+function setStatusChangeCallback(callback?: (status: string) => void) {
+  statusChangeCallback = callback;
 }
 
 function createQueryRequest(): void {
@@ -62,15 +64,15 @@ function cancel(): void {
  *
  * @param {SequenceTypesEnum} sequenceType - sequence name
  * @param {Boolean} useCache - boolean value to indicate query need to be  cached or not
- * @param statusCallback
+ * @param statusChangeCallback
  */
 function createQuery(
   sequenceType: SequenceTypesEnum,
   useCache: boolean = false,
-  statusCallback: (status: string) => void,
+  statusChangeCallback?: (status: string) => void,
 ): Query {
   setCurrentSequenceType(sequenceType);
-  setStatusCallback(statusCallback);
+  setStatusChangeCallback(statusChangeCallback);
 
   createQueryRequest();
   // @TODO implement advanced cache with max memory usage limit

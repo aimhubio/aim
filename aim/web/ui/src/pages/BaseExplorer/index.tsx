@@ -2,7 +2,7 @@ import React, { useEffect } from 'react';
 // @ts-ignore
 import JSONViewer from 'react-json-viewer';
 
-// import createPipeline from 'modules/BaseExplorerCore/pipeline';
+import createPipeline, { Pipeline } from 'modules/BaseExplorerCore/pipeline';
 import BoxVirtualizer from 'modules/BaseExplorer/BoxVirtualizer';
 
 import { Button, Text } from 'components/kit';
@@ -20,47 +20,48 @@ import Image from './Image';
 import Modifiers from './Modifiers';
 import applyStyles from './applyStyles';
 
-// const pipeline = createPipeline({
-//   sequenceName: SequenceTypesEnum.Images,
-//   query: {
-//     useCache: true,
-//   },
-//   adapter: {
-//     useCache: true,
-//     objectDepth: AimObjectDepths.Index,
-//   },
-//   modifier: {
-//     useCache: true,
-//   },
-// });
-
 const coordinatesMap = {
   x: 'visuals.x',
   y: 'visuals.y',
   width: 'visuals.width',
   height: 'visuals.height',
 };
-// createAdapter({
-//     objectDepth: AimObjectDepths.Index,
-//     sequenceName: SequenceTypesEnum.Images,
-//     useCache: false,
-// }),
+
 function BasExplorer() {
   const [status, setStatus] = React.useState('initial');
   const [data, setData] = React.useState<any>([]);
 
-  const queryRef = React.useRef<Adapter>(
-    createAdapter({
-      objectDepth: AimObjectDepths.Index,
+  const queryRef = React.useRef<Pipeline>(
+    createPipeline({
       sequenceName: SequenceTypesEnum.Images,
-      useCache: false,
-      statusCallback: (status) => setStatus(status),
+      query: {
+        useCache: false,
+      },
+      adapter: {
+        useCache: false,
+        objectDepth: AimObjectDepths.Index,
+      },
+      modifier: {
+        useCache: true,
+      },
+      callbacks: {
+        statusChangeCallback: (status: string) => {
+          console.log(status);
+          setStatus(status);
+        },
+      },
     }),
   );
   function onClick() {
     queryRef.current
       // @ts-ignore
-      ?.execute([])
+      ?.execute({
+        query: {
+          params: {
+            p: 500,
+          },
+        },
+      })
       .then((data) => {
         // const res = applyStyles(data.data, data.modifierConfig);
         setStatus('finished');
@@ -79,7 +80,7 @@ function BasExplorer() {
 
   return (
     <div style={{ width: '100%', height: '100vh', padding: '10px' }}>
-      <h2>Status ::: {status}</h2>
+      <h2>Pipeline status ::: {status}</h2>
       <div className='flex fjc fac' style={{ marginTop: 10 }}>
         <Button onClick={onClick} color='primary' variant='contained'>
           Search
