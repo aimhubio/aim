@@ -4,6 +4,7 @@
 
 ### Enhancements:
 
+- Improve formatting of numbers by setting maximum precision (KaroMourad)
 - Add LightGBM integration example (gorarakelyan)
 - Add descriptive document titles for pages (KaroMourad)
 - Implement unit-tests for aim SDK utils (yeghiakoronian)
@@ -13,7 +14,7 @@
 ### Fixes:
 
 - Change zooming default option to multiple (VkoHov)
-- Changed grouped rows' min and max values names to `Group Min` and `Group Max` (VkoHov)
+- Change grouped rows' min and max values names to `Group Min` and `Group Max` (VkoHov)
 - Preserve the search input value of the grouping dropdown (VkoHov)
 - Fix params duplication in dropdowns (VkoHov)
 - Resolve typing latency issue in the query search input (arsengit)
