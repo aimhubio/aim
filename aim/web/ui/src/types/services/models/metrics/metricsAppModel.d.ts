@@ -20,9 +20,10 @@ import {
 } from 'utils/aggregateGroupData';
 import { AlignmentOptionsEnum } from 'utils/d3';
 
+import { ISelectOption } from '../explorer/createAppModel';
+
 import { IMetric } from './metricModel';
 import { IMetricTrace, ISequence } from './runModel';
-import { ISelectOption } from '../explorer/createAppModel';
 
 export interface IMetricAppModelState {
   refs: {
