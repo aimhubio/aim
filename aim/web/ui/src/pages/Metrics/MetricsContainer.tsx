@@ -112,8 +112,6 @@ function MetricsContainer(): React.FunctionComponentElement<React.ReactNode> {
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
-
-  console.log(metricsData);
   return (
     <ErrorBoundary>
       <Metrics

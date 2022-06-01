@@ -456,6 +456,7 @@ function ImagesExplore(): React.FunctionComponentElement<React.ReactNode> {
                       columnsOrder={
                         imagesExploreData?.config?.table.columnsOrder
                       }
+                      sameValueColumns={imagesExploreData?.sameValueColumns!}
                       // Table actions
                       onSort={imagesExploreAppModel.onTableSortChange}
                       onSortReset={imagesExploreAppModel.onSortReset}

@@ -40,7 +40,6 @@ function ManageColumnsPopover({
   hideSystemMetrics,
   columnsOrder,
   appName,
-  onTableDiffShow,
   onManageColumns,
   onColumnsVisibilityChange,
 }: IManageColumnsPopoverProps) {

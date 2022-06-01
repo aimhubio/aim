@@ -196,6 +196,7 @@ function Scatters(
                   selectedRows={props.selectedRows}
                   hiddenChartRows={props.scatterPlotData?.length === 0}
                   columnsOrder={props.columnsOrder}
+                  sameValueColumns={props.sameValueColumns}
                   isLoading={props.requestStatus === RequestStatusEnum.Pending}
                   // Table actions
                   onSort={props.onSortChange}

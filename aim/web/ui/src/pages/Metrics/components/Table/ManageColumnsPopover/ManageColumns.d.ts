@@ -7,7 +7,6 @@ export interface IManageColumnsPopoverProps {
   columnsData: ITableColumn[];
   hiddenColumns: string[];
   columnsOrder: IColumnsOrder;
-  onTableDiffShow: () => void;
   onManageColumns: (columns: any) => void;
   onColumnsVisibilityChange: (hiddenColumns: string[] | string) => void;
   hideSystemMetrics: boolean;

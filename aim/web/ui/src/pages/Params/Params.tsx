@@ -103,6 +103,7 @@ const Params = ({
   deleteRuns,
   selectedRows,
   columnsOrder,
+  sameValueColumns,
   brushExtents,
   chartPanelOffsetHeight,
 }: IParamsProps): React.FunctionComponentElement<React.ReactNode> => {
@@ -277,6 +278,7 @@ const Params = ({
                     appName={AppNameEnum.PARAMS}
                     hiddenChartRows={highPlotData?.length === 0}
                     columnsOrder={columnsOrder}
+                    sameValueColumns={sameValueColumns}
                     // Table actions
                     onSortReset={onSortReset}
                     onSort={onSortFieldsChange}
