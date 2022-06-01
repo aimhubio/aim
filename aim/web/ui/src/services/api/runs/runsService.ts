@@ -10,8 +10,7 @@ const endpoints = {
   GET_RUNS_BY_EXPERIMENT_ID: (id: string) => `experiments/${id}/runs`,
   GET_RUN_METRICS_BATCH_BY_TRACES: (id: string) =>
     `runs/${id}/metric/get-batch`,
-  ARCHIVE_RUN: (id: string) => `runs/${id}`,
-  EDIT_RUN_NAME_AND_DESCRIPTION: (id: string) => `runs/${id}`,
+  EDIT_RUN: (id: string) => `runs/${id}`,
   ARCHIVE_RUNS: (archived: boolean) => `runs/archive-batch?archive=${archived}`,
   DELETE_RUN: (id: string) => `runs/${id}`,
   DELETE_RUNS: 'runs/delete-batch',
@@ -61,7 +60,7 @@ function getRunMetricsBatch(body: any, id: string) {
 
 function archiveRun(id: string, archived: boolean = false) {
   return API.put(
-    endpoints.ARCHIVE_RUN(id),
+    endpoints.EDIT_RUN(id),
     { archived },
     {
       headers: {
@@ -78,7 +77,7 @@ function editRunNameAndDescription(
   archived: boolean,
 ) {
   return API.put(
-    endpoints.EDIT_RUN_NAME_AND_DESCRIPTION(id),
+    endpoints.EDIT_RUN(id),
     { name, description, archived },
     {
       headers: {
