@@ -166,6 +166,7 @@ const LineChart = React.forwardRef(function LineChart(
       highlightMode,
       aggregationConfig,
       processedAggrData,
+      readOnly,
     });
 
     // render lines with low quality if lines count are more than 'RENDER_LINES_OPTIMIZED_LIMIT'

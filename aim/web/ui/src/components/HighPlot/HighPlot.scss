@@ -161,10 +161,15 @@
   }
 }
 
-.activeCircle {
+.inProgressLineIndicator {
   animation: col 1s linear infinite;
-  stroke-width: 10;
+  stroke-width: 3;
   stroke: #00800080;
+  fill: $success-color;
+  opacity: 0.2;
+  &.active {
+    opacity: 1;
+  }
 }
 
 @keyframes col {
