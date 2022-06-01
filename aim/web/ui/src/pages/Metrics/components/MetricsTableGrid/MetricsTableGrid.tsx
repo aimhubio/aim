@@ -9,7 +9,7 @@ import ControlPopover from 'components/ControlPopover/ControlPopover';
 import JsonViewPopover from 'components/kit/JsonViewPopover';
 import ErrorBoundary from 'components/ErrorBoundary/ErrorBoundary';
 import RunNameColumn from 'components/Table/RunNameColumn';
-import GroupHeading from 'components/Table/GroupHeading';
+import GroupedColumnHeader from 'components/Table/GroupedColumnHeader';
 
 import COLORS from 'config/colors/colors';
 import { TABLE_DATE_FORMAT } from 'config/dates/dates';
@@ -372,7 +372,7 @@ function metricsTableRowRenderer(
         row.metric = {
           content:
             Array.isArray(rowData.metric) && rowData.metric.length > 1 ? (
-              <GroupHeading data={rowData.metric} />
+              <GroupedColumnHeader data={rowData.metric} />
             ) : (
               <span>{metricName}</span>
             ),
@@ -381,7 +381,7 @@ function metricsTableRowRenderer(
         row[col] = {
           content:
             rowData.context.length > 1 ? (
-              <GroupHeading data={rowData.context} />
+              <GroupedColumnHeader data={rowData.context} />
             ) : (
               <Badge
                 monospace
@@ -468,7 +468,7 @@ function metricsTableRowRenderer(
             : moment(rowData.time).format(TABLE_DATE_FORMAT);
       } else if (Array.isArray(rowData[col])) {
         row[col] = {
-          content: <GroupHeading data={rowData[col]} />,
+          content: <GroupedColumnHeader data={rowData[col]} />,
         };
       }
     }

@@ -3,7 +3,7 @@ import { merge } from 'lodash-es';
 
 import { Badge } from 'components/kit';
 import RunNameColumn from 'components/Table/RunNameColumn';
-import GroupHeading from 'components/Table/GroupHeading';
+import GroupedColumnHeader from 'components/Table/GroupedColumnHeader';
 
 import COLORS from 'config/colors/colors';
 import { TABLE_DEFAULT_CONFIG } from 'config/table/tableConfigs';
@@ -178,7 +178,7 @@ function runsTableRowRenderer(
       const col = columns[i];
       if (Array.isArray(rowData[col])) {
         row[col] = {
-          content: <GroupHeading data={rowData[col]} />,
+          content: <GroupedColumnHeader data={rowData[col]} />,
         };
       }
     }

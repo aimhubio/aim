@@ -7,7 +7,7 @@ import { isSystemMetric } from 'utils/isSystemMetric';
 import { formatSystemMetricName } from 'utils/formatSystemMetricName';
 
 const TITLE_MAX_LENGTH = 5;
-function GroupHeading({
+function GroupedColumnHeader({
   data,
 }: {
   data: Array<string | number>;
@@ -31,7 +31,7 @@ function GroupHeading({
   }, [data]);
 
   return (
-    <div className='Table__GroupHeading'>
+    <div className='Table__GroupedColumnHeader'>
       <Tooltip title={<div>{Title}</div>}>
         <div>
           <span>Mixed: </span>
@@ -42,6 +42,6 @@ function GroupHeading({
   );
 }
 
-GroupHeading.displayName = 'GroupHeading';
+GroupedColumnHeader.displayName = 'GroupedColumnHeader';
 
-export default React.memo(GroupHeading);
+export default React.memo(GroupedColumnHeader);

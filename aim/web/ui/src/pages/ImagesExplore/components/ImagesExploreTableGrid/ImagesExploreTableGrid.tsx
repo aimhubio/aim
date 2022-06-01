@@ -7,7 +7,7 @@ import TableSortIcons from 'components/Table/TableSortIcons';
 import { Badge, JsonViewPopover } from 'components/kit';
 import ControlPopover from 'components/ControlPopover/ControlPopover';
 import ErrorBoundary from 'components/ErrorBoundary/ErrorBoundary';
-import GroupHeading from 'components/Table/GroupHeading';
+import GroupedColumnHeader from 'components/Table/GroupedColumnHeader';
 import RunNameColumn from 'components/Table/RunNameColumn';
 
 import COLORS from 'config/colors/colors';
@@ -301,7 +301,7 @@ function imagesExploreTableRowRenderer(
         row[col] = {
           content:
             rowData.context.length > 1 ? (
-              <GroupHeading data={rowData.context} />
+              <GroupedColumnHeader data={rowData.context} />
             ) : (
               <Badge
                 monospace
@@ -370,7 +370,7 @@ function imagesExploreTableRowRenderer(
         };
       } else if (Array.isArray(rowData[col])) {
         row[col] = {
-          content: <GroupHeading data={rowData[col]} />,
+          content: <GroupedColumnHeader data={rowData[col]} />,
         };
       }
     }
@@ -392,7 +392,7 @@ function imagesExploreTableRowRenderer(
       context: {
         content:
           rowData.context.length > 1 ? (
-            <GroupHeading data={rowData.context} />
+            <GroupedColumnHeader data={rowData.context} />
           ) : (
             <Badge
               monospace

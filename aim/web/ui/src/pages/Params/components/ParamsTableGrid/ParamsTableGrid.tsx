@@ -7,7 +7,7 @@ import TableSortIcons from 'components/Table/TableSortIcons';
 import ControlPopover from 'components/ControlPopover/ControlPopover';
 import ErrorBoundary from 'components/ErrorBoundary/ErrorBoundary';
 import RunNameColumn from 'components/Table/RunNameColumn';
-import GroupHeading from 'components/Table/GroupHeading';
+import GroupedColumnHeader from 'components/Table/GroupedColumnHeader';
 
 import COLORS from 'config/colors/colors';
 import { TABLE_DEFAULT_CONFIG } from 'config/table/tableConfigs';
@@ -362,7 +362,7 @@ function paramsTableRowRenderer(
         row[col] = {
           content: (
             <ErrorBoundary>
-              <GroupHeading data={rowData[col]} />
+              <GroupedColumnHeader data={rowData[col]} />
             </ErrorBoundary>
           ),
         };
