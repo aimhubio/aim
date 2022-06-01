@@ -60,9 +60,16 @@ async function execute(options: PipelineExecutionOptions): Promise<any> {
   // @ts-ignore
   const adapterResult = phases.adapter.execute(queryResult);
   // @ts-ignore
-  const modifierResult = phases.modifier.execute(adapterResult.objectList);
+  const modifierResult = phases.modifier.execute({
+    objectList: adapterResult.objectList,
+    modifiers: ['run.hparams.batch_size', 'run.experiment', 'images.name'],
+  });
 
-  return { data: modifierResult, additionalData: adapterResult.additionalData };
+  return {
+    data: modifierResult.data,
+    additionalData: adapterResult.additionalData,
+    modifierConfig: modifierResult.modifierConfig,
+  };
 }
 
 function createPipeline({

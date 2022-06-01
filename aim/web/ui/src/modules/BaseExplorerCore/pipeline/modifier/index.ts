@@ -1,9 +1,8 @@
 import { memoize } from 'modules/BaseExplorerCore/cache';
 
-import { AimObjectDepths, SequenceTypesEnum } from 'types/core/enums';
-import { RunSearchRunView } from 'types/core/AimObjects/Run';
-
 import { AimFlatObjectBase } from '../adapter/processor';
+
+import applyModifier, { GroupOptions } from './applyModifier';
 
 interface ModifiedObject extends AimFlatObjectBase {}
 
@@ -11,8 +10,18 @@ export type ModifierConfigOptions = {
   useCache?: boolean;
 };
 
+type ModifierParams = {
+  objectList: any[];
+  modifier: GroupOptions;
+};
+
 export type Modifier = {
-  execute: (data: AimFlatObjectBase[]) => ModifiedObject[];
+  execute: (params: ModifierParams) => ModifierResult;
+};
+
+export type ModifierResult = {
+  data: ModifiedObject[];
+  modifierConfig: any;
 };
 
 let modifierConfig: {
@@ -26,16 +35,21 @@ function setAdapterConfig(options: ModifierConfigOptions): void {
   };
 }
 
-function modify(objectList: AimFlatObjectBase[]): ModifiedObject[] {
-  console.log('modifying');
-  return objectList;
+export function modify({ objectList, modifier }: ModifierParams): any {
+  const result = applyModifier(objectList, modifier);
+
+  // get modifier values learning_rat==0.01
+  // traverse through object set group key to corresponding
+  // set order
+
+  return result;
 }
 
 function createModifier({ useCache = false }: ModifierConfigOptions): Modifier {
   setAdapterConfig({ useCache });
 
   const execute = useCache
-    ? memoize<AimFlatObjectBase[], ModifiedObject[]>(modify)
+    ? memoize<ModifierParams, ModifierResult>(modify)
     : modify;
   return {
     execute,
