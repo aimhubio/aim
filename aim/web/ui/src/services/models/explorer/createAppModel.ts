@@ -181,6 +181,7 @@ import onToggleColumnsColorScales from 'utils/app/onToggleColumnsColorScales';
 import onAxisBrushExtentChange from 'utils/app/onAxisBrushExtentChange';
 import { minMaxOfArray } from 'utils/minMaxOfArray';
 import getAdvancedSuggestion from 'utils/getAdvancedSuggestions';
+import { processDurationTime } from 'utils/processDurationTime';
 
 import { AppDataTypeEnum, AppNameEnum } from './index';
 
@@ -777,6 +778,7 @@ function createAppModel(appConfig: IAppInitialConfig) {
               description: '',
               date: '',
               run: '',
+              hash: '',
               metric: '',
               context: [],
               value: '',
@@ -807,7 +809,7 @@ function createAppModel(appConfig: IAppInitialConfig) {
               },
               key: metric.key,
               selectKey: `${metric.run.hash}/${metric.key}`,
-              runHash: metric.run.hash,
+              hash: metric.run.hash,
               isHidden: metric.isHidden,
               index: rowIndex,
               color: metricsCollection.color ?? metric.color,
@@ -818,6 +820,13 @@ function createAppModel(appConfig: IAppInitialConfig) {
               date: moment(metric.run.props.creation_time * 1000).format(
                 TABLE_DATE_FORMAT,
               ),
+              duration: processDurationTime(
+                metric.run.props.creation_time * 1000,
+                metric.run.props.end_time
+                  ? metric.run.props.end_time * 1000
+                  : Date.now(),
+              ),
+              active: metric.run.props.active,
               metric: metric.name,
               context: contextToString(metric.context)?.split(',') || [''],
               value:
@@ -878,7 +887,9 @@ function createAppModel(appConfig: IAppInitialConfig) {
               'experiment',
               'description',
               'date',
+              'duration',
               'run',
+              'hash',
               'metric',
               'context',
               'step',
@@ -2789,6 +2800,7 @@ function createAppModel(appConfig: IAppInitialConfig) {
               color: metricsCollection.color,
               dasharray: metricsCollection.dasharray,
               experiment: '',
+              hash: '',
               run: '',
               metric: '',
               context: [],
@@ -2813,7 +2825,7 @@ function createAppModel(appConfig: IAppInitialConfig) {
             const rowValues: any = {
               key: metric.key,
               selectKey: `${metric.run.hash}/${metric.key}`,
-              runHash: metric.run.hash,
+              hash: metric.run.hash,
               index: rowIndex,
               color: metricsCollection.color ?? metric.color,
               dasharray: metricsCollection.dasharray ?? metric.dasharray,
@@ -2823,6 +2835,13 @@ function createAppModel(appConfig: IAppInitialConfig) {
               date: moment(metric.run.props.creation_time * 1000).format(
                 TABLE_DATE_FORMAT,
               ),
+              duration: processDurationTime(
+                metric.run.props.creation_time * 1000,
+                metric.run.props.end_time
+                  ? metric.run.props.end_time * 1000
+                  : Date.now(),
+              ),
+              active: metric.run.props.active,
               metric: metric.name,
               ...metricsRowValues,
             };
@@ -2830,7 +2849,9 @@ function createAppModel(appConfig: IAppInitialConfig) {
             [
               'experiment',
               'run',
+              'hash',
               'date',
+              'duration',
               'description',
               'metric',
               'context',
@@ -3598,6 +3619,7 @@ function createAppModel(appConfig: IAppInitialConfig) {
                 dasharray: metricsCollection.dasharray,
                 experiment: '',
                 run: '',
+                hash: '',
                 description: '',
                 date: '',
                 metric: '',
@@ -3629,7 +3651,7 @@ function createAppModel(appConfig: IAppInitialConfig) {
                 },
                 key: metric.key,
                 selectKey: `${metric.run.hash}/${metric.key}`,
-                runHash: metric.run.hash,
+                hash: metric.run.hash,
                 isHidden: metric.isHidden,
                 index: rowIndex,
                 color: metricsCollection.color ?? metric.color,
@@ -3641,6 +3663,13 @@ function createAppModel(appConfig: IAppInitialConfig) {
                   TABLE_DATE_FORMAT,
                 ),
                 metric: metric.name,
+                duration: processDurationTime(
+                  metric.run.props.creation_time * 1000,
+                  metric.run.props.end_time
+                    ? metric.run.props.end_time * 1000
+                    : Date.now(),
+                ),
+                active: metric.run.props.active,
                 ...metricsRowValues,
               };
               rowIndex++;
@@ -3652,7 +3681,9 @@ function createAppModel(appConfig: IAppInitialConfig) {
               [
                 'experiment',
                 'run',
+                'hash',
                 'date',
+                'duration',
                 'description',
                 'metric',
                 'context',
@@ -3951,6 +3982,7 @@ function createAppModel(appConfig: IAppInitialConfig) {
           onSortChange,
           configData.grouping as any,
           onModelGroupingSelectChange,
+          AppNameEnum.PARAMS,
         );
 
         if (model.getState()?.requestStatus !== RequestStatusEnum.Pending) {
@@ -4414,6 +4446,7 @@ function createAppModel(appConfig: IAppInitialConfig) {
           onSortChange,
           configData.grouping as any,
           onModelGroupingSelectChange,
+          AppNameEnum.PARAMS,
         );
         const tableRef: any = model.getState()?.refs?.tableRef;
         tableRef?.current?.updateData({
@@ -4998,6 +5031,7 @@ function createAppModel(appConfig: IAppInitialConfig) {
           onSortChange,
           configData.grouping as any,
           onModelGroupingSelectChange,
+          AppNameEnum.SCATTERS,
         );
 
         if (model.getState()?.requestStatus !== RequestStatusEnum.Pending) {
@@ -5236,7 +5270,7 @@ function createAppModel(appConfig: IAppInitialConfig) {
                   (metric) => metric.key,
                 ),
                 color: metricsCollection.color,
-
+                hash: '',
                 dasharray: metricsCollection.dasharray,
                 experiment: '',
                 run: '',
@@ -5271,7 +5305,7 @@ function createAppModel(appConfig: IAppInitialConfig) {
                 },
                 key: metric.key,
                 selectKey: `${metric.run.hash}/${metric.key}`,
-                runHash: metric.run.hash,
+                hash: metric.run.hash,
                 isHidden: metric.isHidden,
                 index: rowIndex,
                 color: metricsCollection.color ?? metric.color,
@@ -5283,6 +5317,13 @@ function createAppModel(appConfig: IAppInitialConfig) {
                   TABLE_DATE_FORMAT,
                 ),
                 metric: metric.name,
+                duration: processDurationTime(
+                  metric.run.props.creation_time * 1000,
+                  metric.run.props.end_time
+                    ? metric.run.props.end_time * 1000
+                    : Date.now(),
+                ),
+                active: metric.run.props.active,
                 ...metricsRowValues,
               };
               rowIndex++;
@@ -5294,9 +5335,11 @@ function createAppModel(appConfig: IAppInitialConfig) {
               [
                 'experiment',
                 'run',
+                'hash',
                 'metric',
                 'context',
                 'date',
+                'duration',
                 'description',
                 'step',
                 'epoch',
@@ -5668,6 +5711,7 @@ function createAppModel(appConfig: IAppInitialConfig) {
           onSortChange,
           configData.grouping as any,
           onModelGroupingSelectChange,
+          AppNameEnum.SCATTERS,
         );
         const tableRef: any = model.getState()?.refs?.tableRef;
         tableRef?.current?.updateData({

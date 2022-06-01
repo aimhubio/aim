@@ -83,6 +83,8 @@ import onNotificationAdd from 'utils/app/onNotificationAdd';
 import exceptionHandler from 'utils/app/exceptionHandler';
 import getGroupingSelectOptions from 'utils/app/getGroupingSelectOptions';
 import getAdvancedSuggestion from 'utils/getAdvancedSuggestions';
+import { processDurationTime } from 'utils/processDurationTime';
+import onVisibilityChange from 'utils/app/onColumnsVisibilityChange';
 
 import createModel from '../model';
 import { AppNameEnum } from '../explorer';
@@ -701,6 +703,8 @@ function setModelData(rawData: any[], configData: IImagesExploreAppConfig) {
       configData.table.hiddenColumns!,
       sortFields,
       onTableSortChange,
+      config.grouping as any,
+      onGroupingSelectChange,
     ),
     sameValueColumns: tableData.sameValueColumns,
     groupingSelectOptions,
@@ -766,6 +770,8 @@ function updateModelData(
     configData.table.hiddenColumns!,
     configData.table.sortFields,
     onTableSortChange,
+    configData.grouping as any,
+    onGroupingSelectChange,
   );
   const tableRef: any = model.getState()?.refs?.tableRef;
   tableRef?.current?.updateData({
@@ -1260,7 +1266,7 @@ function getDataAsTableRows(
           },
           key: metric.seqKey,
           selectKey: `${metric.run.hash}/${metric.seqKey}`,
-          runHash: metric.run.hash,
+          hash: metric.run.hash,
           isHidden: config?.table?.hiddenMetrics?.includes(metric.key),
           index: rowIndex,
           color: metricsCollection.color ?? metric.color,
@@ -1270,6 +1276,12 @@ function getDataAsTableRows(
           description: metric.run.props?.description ?? '-',
           date: moment(metric.run.props.creation_time * 1000).format(
             TABLE_DATE_FORMAT,
+          ),
+          duration: processDurationTime(
+            metric.run.props.creation_time * 1000,
+            metric.run.props.end_time
+              ? metric.run.props.end_time * 1000
+              : Date.now(),
           ),
           name: metric.name,
           context: Object.entries(metric.context).map((entry) =>
@@ -1282,6 +1294,9 @@ function getDataAsTableRows(
         [
           'experiment',
           'run',
+          'hash',
+          'duration',
+          'date',
           'metric',
           'context',
           'step',
@@ -1593,6 +1608,8 @@ function onExportTableData(e: React.ChangeEvent<any>): void {
     config?.table.hiddenColumns!,
     config?.table.sortFields,
     onTableSortChange,
+    config.grouping as any,
+    onGroupingSelectChange,
   );
 
   const excludedFields: string[] = ['#', 'actions'];
@@ -1876,32 +1893,12 @@ function onColumnsOrderChange(columnsOrder: any) {
 }
 
 function onColumnsVisibilityChange(hiddenColumns: string[] | string | any) {
-  const configData: IImagesExploreAppConfig | undefined =
-    model.getState()?.config;
-  const columnsData = model.getState()!.tableColumns!;
-  if (configData?.table) {
-    const table = {
-      ...configData.table,
-      hiddenColumns:
-        hiddenColumns[0] === 'all'
-          ? columnsData.map((col: any) => col.key)
-          : hiddenColumns,
-    };
-    const configUpdate = {
-      ...configData,
-      table,
-    };
-    model.setState({
-      config: configUpdate,
-    });
-    setItem('imagesExploreTable', encode(table));
-    updateModelData(configUpdate);
-  }
-  if (hiddenColumns[0] === 'all') {
-    analytics.trackEvent(ANALYTICS_EVENT_KEYS.images.table.showAllColumns);
-  } else if (_.isEmpty(hiddenColumns)) {
-    analytics.trackEvent(ANALYTICS_EVENT_KEYS.images.table.hideAllColumns);
-  }
+  onVisibilityChange({
+    hiddenColumns,
+    model,
+    appName: AppNameEnum.IMAGES,
+    updateModelData,
+  });
 }
 
 function onTableDiffShow() {

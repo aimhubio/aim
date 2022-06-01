@@ -18,6 +18,8 @@
 - Change the titles and placeholders in popovers (VkoHov)
 - Fix params duplication in dropdowns (VkoHov)
 - Resolve typing latency issue in the query search input (arsengit)
+- Reorder and add non-hideable table columns (arsengit)
+
 
 ## 3.10.3 May 31, 2022
 
