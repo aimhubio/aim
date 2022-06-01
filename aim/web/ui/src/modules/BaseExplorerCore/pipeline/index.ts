@@ -6,21 +6,29 @@ import createModifier, { Modifier } from './modifier';
 import createQuery, { Query } from './query';
 import createAdapter, { Adapter } from './adapter';
 
-type PipelineOptions = {
+export type PipelineOptions = {
   sequenceName: SequenceTypesEnum;
+  callbacks: {
+    statusChangeCallback?: (status: string) => void;
+    exceptionCallback?: () => void;
+    // warningCallback?: () => void;
+    resultCallback?: () => void;
+  };
   adapter: {
     objectDepth: AimObjectDepths;
     useCache?: boolean;
   };
   query: {
+    getLatestResult?: () => void;
     useCache?: boolean;
   };
   modifier: {
+    getLatestResult?: () => void;
     useCache?: boolean;
   };
 };
 
-type PipelineExecutionOptions = {
+export type PipelineExecutionOptions = {
   query?: {
     // forceRun?: boolean;
     params: RunsSearchQueryParams;
@@ -31,7 +39,7 @@ type PipelineExecutionOptions = {
   };
 };
 
-type Pipeline = {
+export type Pipeline = {
   execute: (options: PipelineExecutionOptions) => Promise<any>;
 };
 
@@ -41,15 +49,33 @@ let phases: {
   modifier?: Modifier;
 } = {};
 
-function makeAdapter(config: any) {
-  phases.adapter = createAdapter(config);
+let callbacks: {
+  statusChangeCallback?: (status: string) => void;
+  exceptionCallback?: () => void;
+  // warningCallback?: () => void;
+  resultCallback?: () => void;
+};
+
+function setCallbacks(cbs: any) {
+  callbacks = cbs;
 }
 
-function makeQuery(config: any) {
-  phases.query = createQuery(config.sequenceName, config.query.useCache);
+function createAdapterInstance(config: any) {
+  phases.adapter = createAdapter({
+    ...config,
+    statusChangeCallback: callbacks.statusChangeCallback,
+  });
 }
 
-function makeModifier(config: any = {}) {
+function createQueryInstance(config: any) {
+  phases.query = createQuery(
+    config.sequenceName,
+    config.query.useCache,
+    callbacks.statusChangeCallback,
+  );
+}
+
+function createModifierInstance(config: any = {}) {
   phases.modifier = createModifier(config);
 }
 
@@ -58,30 +84,41 @@ async function execute(options: PipelineExecutionOptions): Promise<any> {
   const queryResult = await phases.query.execute(options.query.params);
 
   // @ts-ignore
-  const adapterResult = phases.adapter.execute(queryResult);
+  const adapterResult = await phases.adapter.execute(queryResult);
+
   // @ts-ignore
-  const modifierResult = phases.modifier.execute({
-    objectList: adapterResult.objectList,
-    // @ts-ignore
-    modifiers: ['run.hparams.batch_size', 'run.experiment', 'images.name'],
-  });
+  // const modifierResult = phases.modifier.execute({
+  //   objectList: adapterResult.objectList,
+  //   // @ts-ignore
+  //   modifiers: ['run.hparams.batch_size', 'run.experiment', 'images.name'],
+  // });
 
   return {
-    data: modifierResult.data,
+    data: adapterResult.objectList,
     additionalData: adapterResult.additionalData,
-    modifierConfig: modifierResult.modifierConfig,
+    modifierConfig: {},
   };
 }
 
+/**
+ *
+ * @param {SequenceTypesEnum} sequenceName
+ * @param query
+ * @param adapter
+ * @param modifier
+ * @param callbacks
+ */
 function createPipeline({
   sequenceName,
   query,
   adapter,
   modifier,
+  callbacks,
 }: PipelineOptions): Pipeline {
-  makeQuery({ query, sequenceName });
-  makeAdapter({ ...adapter, sequenceName });
-  makeModifier(modifier);
+  setCallbacks(callbacks);
+  createQueryInstance({ query, sequenceName });
+  createAdapterInstance({ ...adapter, sequenceName });
+  createModifierInstance(modifier);
 
   return {
     execute,
