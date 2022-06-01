@@ -2,9 +2,9 @@ import { RunsSearchQueryParams } from 'services/api/base-explorer/runsApi';
 
 import { AimObjectDepths, SequenceTypesEnum } from 'types/core/enums';
 
+import createModifier, { Modifier } from './modifier';
 import createQuery, { Query } from './query';
 import createAdapter, { Adapter } from './adapter';
-import createModifier, { Modifier } from './modifier';
 
 type PipelineOptions = {
   sequenceName: SequenceTypesEnum;
@@ -41,7 +41,7 @@ let phases: {
   modifier?: Modifier;
 } = {};
 
-function makeAdapter(config: any = {}) {
+function makeAdapter(config: any) {
   phases.adapter = createAdapter(config);
 }
 
@@ -62,6 +62,7 @@ async function execute(options: PipelineExecutionOptions): Promise<any> {
   // @ts-ignore
   const modifierResult = phases.modifier.execute({
     objectList: adapterResult.objectList,
+    // @ts-ignore
     modifiers: ['run.hparams.batch_size', 'run.experiment', 'images.name'],
   });
 
