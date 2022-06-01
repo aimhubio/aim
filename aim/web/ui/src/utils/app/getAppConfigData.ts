@@ -9,6 +9,7 @@ import { IApiRequest } from 'types/services/services';
 
 import { getCompatibleSelectConfig } from './getCompatibleSelectConfig';
 import exceptionHandler from './exceptionHandler';
+import { getCompatibleChartConfig } from './getCompatibleChartConfig';
 
 export default function getAppConfigData<M extends State>({
   appId,
@@ -40,6 +41,16 @@ export default function getAppConfigData<M extends State>({
           ...appData.state,
           select: {
             ...compatibleSelectConfig,
+          },
+        };
+      }
+      let chart = appData?.state?.chart;
+      if (chart) {
+        const compatibleChartConfig = getCompatibleChartConfig(chart);
+        appData.state = {
+          ...appData.state,
+          chart: {
+            ...compatibleChartConfig,
           },
         };
       }
