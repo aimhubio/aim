@@ -11,11 +11,12 @@
   pre {
     margin: 0;
     font-style: normal;
-    font-weight: normal;
+    font-weight: 500;
     font-size: $text-md;
     line-height: 1.3125em;
     color: #031123;
     overflow: auto;
+    font-family: 'Inconsolata', monospace;
   }
   .prism-code {
     background-color: transparent !important;

@@ -19,7 +19,9 @@ $border-radius: 0.2rem;
   box-sizing: border-box;
   content-visibility: auto;
   contain: content;
-  font-family: 'Iosevka', monospace;
+  font-family: 'Inconsolata', monospace;
+  font-variation-settings: 'wdth' 82;
+  font-weight: 400;
   &__container {
     height: 100%;
     width: 100%;
@@ -28,12 +30,12 @@ $border-radius: 0.2rem;
     &--small {
       --cell-height: 22px;
       --group-margin: 2px;
-      --cell-font-size: 0.75rem;
+      --cell-font-size: 0.875rem;
     }
     &--medium {
       --cell-height: 28px;
       --group-margin: 4px;
-      --cell-font-size: 0.875rem;
+      --cell-font-size: 1rem;
     }
 
     &--large {

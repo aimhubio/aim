@@ -5,10 +5,10 @@ export const getMonacoConfig = (advanced = false): Record<any, any> => ({
   options: {
     lineNumbers: 'off',
     minimap: { enabled: false },
-    fontFamily: 'Iosevka',
+    fontFamily: '"Inconsolata", monospace',
     wordWrap: advanced ? 'on' : 'off',
     fontSize: 14,
-    fontWeight: 'medium',
+    fontWeight: '600',
     lineNumbersMinChars: 0,
     overviewRulerLanes: 0,
     overviewRulerBorder: false,
