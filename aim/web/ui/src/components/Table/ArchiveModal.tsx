@@ -195,6 +195,8 @@ function ArchiveModal({
         title={`Are you sure you want to ${archivedText} the selected runs?`}
         titleIconName={archivedText}
         maxWidth='lg'
+        className='ActionModal__container'
+        classes={{ paper: 'ActionModalWrapper' }}
       >
         <div className='ActionModal'>
           <Text

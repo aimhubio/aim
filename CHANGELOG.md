@@ -16,6 +16,23 @@
 - Changed grouped rows' min and max values names to `Group Min` and `Group Max` (VkoHov)
 - Preserve the search input value of the grouping dropdown (VkoHov)
 - Fix params duplication in dropdowns (VkoHov)
+- Resolve typing latency issue in the query search input (arsengit)
+- Reorder and add non-hideable table columns (arsengit)
+
+
+## 3.10.3 May 31, 2022
+
+- Adjust the content overflowing of the Delete and the Archive modals (VkoHov)
+- Resolve issue with redirect in run page (arsengit)
+
+## 3.10.2 May 26, 2022
+
+- Adjust SRP Logs row height calculation (VkoHov)
+- Fix issue with live update requests scheduler (rubenaprikyan)
+- Fix log capturing crash during run garbage collection (mihran113)
+- Fix Pytorch Lightning adapter `finalize` method (mihran113)
+- Fix params duplication in dropdowns (VkoHov)
+- Skip system params in Explorer pages (alberttorosyan)
 
 ## 3.10.1 May 18, 2022
 
