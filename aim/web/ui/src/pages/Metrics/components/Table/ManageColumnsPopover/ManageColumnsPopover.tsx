@@ -199,7 +199,7 @@ function ManageColumnsPopover({
   return (
     <ErrorBoundary>
       <ControlPopover
-        title='Manage Table Columns'
+        title='Manage table columns'
         anchorOrigin={{
           vertical: 'bottom',
           horizontal: 'left',

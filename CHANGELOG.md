@@ -13,8 +13,9 @@
 ### Fixes:
 
 - Change zooming default option to multiple (VkoHov)
-- Changed grouped rows' min and max values names to `Group Min` and `Group Max` (VkoHov)
+- Change grouped rows' min and max values names to `Group Min` and `Group Max` (VkoHov)
 - Preserve the search input value of the grouping dropdown (VkoHov)
+- Change the titles and placeholders in popovers (VkoHov)
 - Fix params duplication in dropdowns (VkoHov)
 - Resolve typing latency issue in the query search input (arsengit)
 - Reorder and add non-hideable table columns (arsengit)
