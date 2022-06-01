@@ -28,11 +28,23 @@ function ColumnItem(props: any) {
     return false;
   }
 
+  const itemValue = React.useMemo(() => {
+    const val: string = isSystemMetric(props.data)
+      ? formatSystemMetricName(props.data)
+      : props.data;
+    let splitVal = val.split('.');
+    if (splitVal.length > 2) {
+      return `${splitVal[0]}.~.${splitVal[splitVal.length - 1]}`;
+    }
+    return val;
+  }, [props.data]);
   return (
     <ErrorBoundary>
       <Draggable draggableId={props.data} index={props.index}>
         {(provided) => (
           <Tooltip
+            arrow
+            placement='left'
             title={
               isSystemMetric(props.data)
                 ? formatSystemMetricName(props.data)
@@ -56,9 +68,7 @@ function ColumnItem(props: any) {
               </span>
               <div>
                 <Text tint={100} className='ColumnItem__name'>
-                  {isSystemMetric(props.data)
-                    ? formatSystemMetricName(props.data)
-                    : props.data}
+                  {itemValue}
                 </Text>
                 <span
                   className='ColumnItem__iconDrag'
