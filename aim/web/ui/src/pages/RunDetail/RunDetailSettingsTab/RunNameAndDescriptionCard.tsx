@@ -60,7 +60,7 @@ function RunNameAndDescriptionCard({
       <div className='NameAndDescriptionEditCard'>
         <div className='NameAndDescriptionEditCard__header'>
           <Text component='h4' weight={600} size={14} tint={100}>
-            General Information
+            Run Properties
           </Text>
           <Button
             onClick={onSave}
