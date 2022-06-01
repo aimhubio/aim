@@ -141,7 +141,6 @@ export function storageDataToFlatList(
 
   return {
     objectList,
-
     additionalData: {
       params,
       sequenceInfo,
