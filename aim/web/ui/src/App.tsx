@@ -1,8 +1,6 @@
 import React from 'react';
 import { BrowserRouter, Redirect, Route, Switch } from 'react-router-dom';
 
-import getModificationValues from 'modules/BaseExplorerCore/pipeline/modifier/getModifierValues';
-
 import AlertBanner from 'components/kit/AlertBanner';
 import SideBar from 'components/SideBar/SideBar';
 import ProjectWrapper from 'components/ProjectWrapper/ProjectWrapper';
@@ -20,6 +18,7 @@ import { modify } from './modules/BaseExplorerCore/pipeline/modifier';
 import {
   GroupType,
   Order,
+  // @ts-ignore
 } from './modules/BaseExplorerCore/pipeline/modifier/applyModifier';
 
 import './App.scss';
@@ -57,33 +56,33 @@ const data = [
 ];
 
 function App(): React.FunctionComponentElement<React.ReactNode> {
-  console.log(data);
-  const mod1 = modify({
-    objectList: data,
-    modifier: {
-      fields: ['lr'],
-      orders: [Order.DESC],
-      type: GroupType.COLUMN,
-    },
-  });
-
-  const mod2 = modify({
-    objectList: mod1.data,
-    modifier: {
-      fields: ['name'],
-      orders: [Order.ASC],
-      type: GroupType.ROW,
-    },
-  });
-
-  const mod3 = modify({
-    objectList: mod2.data,
-    modifier: {
-      fields: ['name'],
-      orders: [Order.ASC],
-      type: GroupType.COLUMN,
-    },
-  });
+  // console.log(data);
+  // const mod1 = modify({
+  //   objectList: data,
+  //   modifier: {
+  //     fields: ['lr'],
+  //     orders: [Order.DESC],
+  //     type: GroupType.COLUMN,
+  //   },
+  // });
+  //
+  // const mod2 = modify({
+  //   objectList: mod1.data,
+  //   modifier: {
+  //     fields: ['name'],
+  //     orders: [Order.ASC],
+  //     type: GroupType.ROW,
+  //   },
+  // });
+  //
+  // const mod3 = modify({
+  //   objectList: mod2.data,
+  //   modifier: {
+  //     fields: ['name'],
+  //     orders: [Order.ASC],
+  //     type: GroupType.COLUMN,
+  //   },
+  // });
 
   return (
     <>

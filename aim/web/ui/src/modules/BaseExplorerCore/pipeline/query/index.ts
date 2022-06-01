@@ -20,17 +20,27 @@ export type Query = {
 
 let currentQueryRequest: RequestInstance;
 let currentSequenceType: SequenceTypesEnum;
+let statusCallback: (status: string) => void;
 
 async function executeBaseQuery(
   query: RunsSearchQueryParams,
 ): Promise<RunSearchRunView[]> {
   cancel();
+  statusCallback && statusCallback('fetching'); // make invariant with type mapping
+
   const data: ReadableStream = await currentQueryRequest.call(query);
+
+  statusCallback && statusCallback('decoding');
+
   return parseStream<Array<RunSearchRunView>>(data);
 }
 
 function setCurrentSequenceType(sequenceType: SequenceTypesEnum): void {
   currentSequenceType = sequenceType;
+}
+
+function setStatusCallback(callback: (status: string) => void) {
+  statusCallback = callback;
 }
 
 function createQueryRequest(): void {
@@ -52,12 +62,16 @@ function cancel(): void {
  *
  * @param {SequenceTypesEnum} sequenceType - sequence name
  * @param {Boolean} useCache - boolean value to indicate query need to be  cached or not
+ * @param statusCallback
  */
 function createQuery(
   sequenceType: SequenceTypesEnum,
   useCache: boolean = false,
+  statusCallback: (status: string) => void,
 ): Query {
   setCurrentSequenceType(sequenceType);
+  setStatusCallback(statusCallback);
+
   createQueryRequest();
   // @TODO implement advanced cache with max memory usage limit
   const execute = useCache
