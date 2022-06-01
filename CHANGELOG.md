@@ -17,6 +17,8 @@
 - Preserve the search input value of the grouping dropdown (VkoHov)
 - Fix params duplication in dropdowns (VkoHov)
 - Resolve typing latency issue in the query search input (arsengit)
+- Reorder and add non-hideable table columns (arsengit)
+
 
 ## 3.10.3 May 31, 2022
 

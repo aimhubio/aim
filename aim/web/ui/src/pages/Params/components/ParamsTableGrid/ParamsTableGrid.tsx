@@ -1,15 +1,18 @@
-import { Link as RouteLink } from 'react-router-dom';
 import _ from 'lodash-es';
 
-import { Link, Tooltip } from '@material-ui/core';
+import { Tooltip } from '@material-ui/core';
 
 import { Badge, Button, Icon, JsonViewPopover } from 'components/kit';
 import TableSortIcons from 'components/Table/TableSortIcons';
 import ControlPopover from 'components/ControlPopover/ControlPopover';
 import ErrorBoundary from 'components/ErrorBoundary/ErrorBoundary';
+import RunNameColumn from 'components/Table/RunNameColumn';
+import GroupedColumnHeader from 'components/Table/GroupedColumnHeader';
 
 import COLORS from 'config/colors/colors';
-import { PathEnum } from 'config/enums/routesEnum';
+import { TABLE_DEFAULT_CONFIG } from 'config/table/tableConfigs';
+
+import { AppNameEnum } from 'services/models/explorer';
 
 import { ITableColumn } from 'types/pages/metrics/components/TableColumns/TableColumns';
 import { IOnGroupingSelectChangeParams } from 'types/services/models/metrics/metricsAppModel';
@@ -21,12 +24,7 @@ import { formatSystemMetricName } from 'utils/formatSystemMetricName';
 import contextToString from 'utils/contextToString';
 import { formatValue } from 'utils/formatValue';
 import { SortActionTypes, SortField } from 'utils/getSortedFields';
-
-const icons: { [key: string]: string } = {
-  color: 'coloring',
-  stroke: 'line-style',
-  chart: 'chart-group',
-};
+import getColumnOptions from 'utils/getColumnOptions';
 
 function getParamsTableColumns(
   groupingSelectOptions: IGroupingSelectOption[],
@@ -39,8 +37,45 @@ function getParamsTableColumns(
   onSort?: ({ sortFields, order, index, actionType }: any) => void,
   grouping?: { [key: string]: string[] },
   onGroupingToggle?: (params: IOnGroupingSelectChangeParams) => void,
+  appName?: AppNameEnum,
 ): ITableColumn[] {
   let columns: ITableColumn[] = [
+    {
+      key: 'hash',
+      content: <span>Hash</span>,
+      topHeader: 'Run',
+      pin: order?.left?.includes('hash')
+        ? 'left'
+        : order?.middle?.includes('hash')
+        ? null
+        : order?.right?.includes('hash')
+        ? 'right'
+        : null,
+      columnOptions: getColumnOptions(
+        grouping!,
+        onGroupingToggle!,
+        appName!,
+        'run.hash',
+      ),
+    },
+    {
+      key: 'run',
+      content: <span>Name</span>,
+      topHeader: 'Run',
+      pin: order?.left?.includes('run')
+        ? 'left'
+        : order?.middle?.includes('run')
+        ? null
+        : order?.right?.includes('run')
+        ? 'right'
+        : 'left',
+      columnOptions: getColumnOptions(
+        grouping!,
+        onGroupingToggle!,
+        appName!,
+        'run.props.name',
+      ),
+    },
     {
       key: 'experiment',
       content: <span>Experiment</span>,
@@ -52,54 +87,12 @@ function getParamsTableColumns(
         : order?.right?.includes('experiment')
         ? 'right'
         : null,
-      columnOptions: ['color', 'stroke', 'chart'].map((groupName: string) => ({
-        value: `${
-          grouping?.[groupName]?.includes('run.props.experiment.name')
-            ? 'un'
-            : ''
-        }group by ${groupName}`,
-        onClick: () => {
-          if (onGroupingToggle) {
-            onGroupingToggle({
-              groupName,
-              list: grouping?.[groupName]?.includes('run.props.experiment.name')
-                ? grouping?.[groupName].filter(
-                    (item) => item !== 'run.props.experiment.name',
-                  )
-                : grouping?.[groupName].concat(['run.props.experiment.name']),
-            } as IOnGroupingSelectChangeParams);
-          }
-        },
-        icon: icons[groupName],
-      })),
-    },
-    {
-      key: 'run',
-      content: <span>Run Name</span>,
-      topHeader: 'Run',
-      pin: order?.left?.includes('run')
-        ? 'left'
-        : order?.middle?.includes('run')
-        ? null
-        : order?.right?.includes('run')
-        ? 'right'
-        : 'left',
-      columnOptions: ['color', 'stroke', 'chart'].map((groupName: string) => ({
-        value: `${
-          grouping?.[groupName]?.includes('run.hash') ? 'un' : ''
-        }group by ${groupName}`,
-        onClick: () => {
-          if (onGroupingToggle) {
-            onGroupingToggle({
-              groupName,
-              list: grouping?.[groupName]?.includes('run.hash')
-                ? grouping?.[groupName].filter((item) => item !== 'run.hash')
-                : grouping?.[groupName].concat(['run.hash']),
-            } as IOnGroupingSelectChangeParams);
-          }
-        },
-        icon: icons[groupName],
-      })),
+      columnOptions: getColumnOptions(
+        grouping!,
+        onGroupingToggle!,
+        appName!,
+        'run.props.experiment.name',
+      ),
     },
     {
       key: 'description',
@@ -112,22 +105,6 @@ function getParamsTableColumns(
         : order?.right?.includes('description')
         ? 'right'
         : null,
-      columnOptions: ['color', 'stroke', 'chart'].map((groupName: string) => ({
-        value: `${
-          grouping?.[groupName]?.includes('run.hash') ? 'un' : ''
-        }group by ${groupName}`,
-        onClick: () => {
-          if (onGroupingToggle) {
-            onGroupingToggle({
-              groupName,
-              list: grouping?.[groupName]?.includes('run.hash')
-                ? grouping?.[groupName].filter((item) => item !== 'run.hash')
-                : grouping?.[groupName].concat(['run.hash']),
-            } as IOnGroupingSelectChangeParams);
-          }
-        },
-        icon: icons[groupName],
-      })),
     },
     {
       key: 'date',
@@ -140,22 +117,22 @@ function getParamsTableColumns(
         : order?.right?.includes('date')
         ? 'right'
         : null,
-      columnOptions: ['color', 'stroke', 'chart'].map((groupName: string) => ({
-        value: `${
-          grouping?.[groupName]?.includes('run.hash') ? 'un' : ''
-        }group by ${groupName}`,
-        onClick: () => {
-          if (onGroupingToggle) {
-            onGroupingToggle({
-              groupName,
-              list: grouping?.[groupName]?.includes('run.hash')
-                ? grouping?.[groupName].filter((item) => item !== 'run.hash')
-                : grouping?.[groupName].concat(['run.hash']),
-            } as IOnGroupingSelectChangeParams);
-          }
-        },
-        icon: icons[groupName],
-      })),
+      columnOptions: getColumnOptions(
+        grouping!,
+        onGroupingToggle!,
+        appName!,
+        'run.props.experiment.name',
+      ),
+    },
+    {
+      key: 'duration',
+      content: <span>Duration</span>,
+      topHeader: 'Run',
+      pin: order?.left?.includes('duration')
+        ? 'left'
+        : order?.right?.includes('duration')
+        ? 'right'
+        : null,
     },
     {
       key: 'actions',
@@ -245,23 +222,11 @@ function getParamsTableColumns(
           : order?.right?.includes(param)
           ? 'right'
           : null,
-        columnOptions: ['color', 'stroke', 'chart'].map(
-          (groupName: string) => ({
-            value: `${
-              grouping?.[groupName]?.includes(paramKey) ? 'un' : ''
-            }group by ${groupName}`,
-            onClick: () => {
-              if (onGroupingToggle) {
-                onGroupingToggle({
-                  groupName,
-                  list: grouping?.[groupName]?.includes(paramKey)
-                    ? grouping?.[groupName].filter((item) => item !== paramKey)
-                    : grouping?.[groupName].concat([paramKey]),
-                } as IOnGroupingSelectChangeParams);
-              }
-            },
-            icon: icons[groupName],
-          }),
+        columnOptions: getColumnOptions(
+          grouping!,
+          onGroupingToggle!,
+          appName!,
+          paramKey,
         ),
       };
     }),
@@ -269,7 +234,9 @@ function getParamsTableColumns(
 
   columns = columns.map((col) => ({
     ...col,
-    isHidden: hiddenColumns.includes(col.key),
+    isHidden:
+      !TABLE_DEFAULT_CONFIG.params.nonHidableColumns.has(col.key) &&
+      hiddenColumns.includes(col.key),
   }));
 
   const columnsOrder = order?.left.concat(order.middle).concat(order.right);
@@ -331,7 +298,7 @@ function getParamsTableColumns(
           : order?.right?.includes('groups')
           ? 'right'
           : null,
-        topHeader: 'Groups',
+        topHeader: 'Group Config',
       },
       ...columns,
     ];
@@ -395,30 +362,23 @@ function paramsTableRowRenderer(
         row[col] = {
           content: (
             <ErrorBoundary>
-              <Badge
-                monospace
-                size='xSmall'
-                color={COLORS[0][0]}
-                label={`${rowData[col].length} values`}
-              />
+              <GroupedColumnHeader data={rowData[col]} />
             </ErrorBoundary>
           ),
         };
       }
     }
-
     return _.merge({}, rowData, row);
   } else {
     const row = {
       experiment: rowData.experiment,
       run: {
         content: (
-          <Link
-            to={PathEnum.Run_Detail.replace(':runHash', rowData.runHash)}
-            component={RouteLink}
-          >
-            {rowData.run}
-          </Link>
+          <RunNameColumn
+            run={rowData.run}
+            runHash={rowData.hash}
+            active={rowData.active}
+          />
         ),
       },
       actions: {

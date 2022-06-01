@@ -16,15 +16,9 @@ export default function getFilteredSystemMetrics(
   isExclude?: boolean,
 ): string[] | [] {
   let filtered: string[] = [];
-  if (isExclude) {
+  if (Array.isArray(array)) {
     array.forEach((val) => {
-      if (!isSystemMetric(val)) {
-        filtered.push(val);
-      }
-    });
-  } else {
-    array.forEach((val) => {
-      if (isSystemMetric(val)) {
+      if (isExclude ? !isSystemMetric(val) : isSystemMetric(val)) {
         filtered.push(val);
       }
     });

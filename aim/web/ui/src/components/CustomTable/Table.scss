@@ -74,6 +74,19 @@ $border-radius: 0.2rem;
   z-index: 0;
   contain: content;
 }
+.Table__status_indicator {
+  width: 0.75rem;
+  height: 0.75rem;
+  padding: 0;
+  background-color: unset !important;
+  position: absolute;
+  left: 1px;
+  top: calc(50% - 6px);
+  &::before {
+    top: 3px;
+    left: 3px;
+  }
+}
 
 .Table__action__icon {
   color: $primary-color;
@@ -425,6 +438,13 @@ $border-radius: 0.2rem;
 
 .Table__header__action__container {
   display: flex;
+}
+
+.Table__GroupedColumnHeader {
+  color: $pico-50;
+  span {
+    font-weight: 700;
+  }
 }
 
 .Table__header__action {
