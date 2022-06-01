@@ -20,8 +20,7 @@ $border-radius: 0.2rem;
   content-visibility: auto;
   contain: content;
   font-family: 'Inconsolata', monospace;
-  font-variation-settings: 'wdth' 82;
-  font-weight: 400;
+  font-weight: 500;
   &__container {
     height: 100%;
     width: 100%;
@@ -31,11 +30,13 @@ $border-radius: 0.2rem;
       --cell-height: 22px;
       --group-margin: 2px;
       --cell-font-size: 0.875rem;
+      font-variation-settings: 'wdth' 82;
     }
     &--medium {
       --cell-height: 28px;
       --group-margin: 4px;
       --cell-font-size: 1rem;
+      font-variation-settings: 'wdth' 74;
     }
 
     &--large {
