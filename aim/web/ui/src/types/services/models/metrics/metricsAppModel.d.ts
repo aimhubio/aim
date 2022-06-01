@@ -78,12 +78,10 @@ export interface ITooltipContent {
   name?: string;
   context?: { [key: string]: unknown };
   runHash?: string;
-  mediaContent?: {
-    caption?: string;
-    step?: number | string;
-    index?: number;
-    name?: string;
-  };
+  caption?: string;
+  step?: number | string;
+  index?: number;
+  images_name?: string;
   selectedFields?: {
     [key: string]: any;
   };

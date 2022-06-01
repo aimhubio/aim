@@ -42,7 +42,6 @@ const PopoverContent = React.forwardRef(function PopoverContent(
     runHash = '',
     name = '',
     context = {},
-    mediaContent = {},
   } = tooltipContent || {};
   function renderPopoverHeader(): React.ReactNode {
     switch (chartType) {
@@ -109,13 +108,18 @@ const PopoverContent = React.forwardRef(function PopoverContent(
         );
       }
       case ChartTypeEnum.ImageSet: {
-        const { step = '', index = '', caption = '', name = '' } = mediaContent;
+        const {
+          step = '',
+          index = '',
+          caption = '',
+          images_name = '',
+        } = tooltipContent;
         return (
           <ErrorBoundary>
             <div className='PopoverContent__box PopoverContent__imageSetBox'>
               <strong>{caption}</strong>
               <div className='PopoverContent__value'>
-                <strong>{name}</strong>
+                <strong>{images_name}</strong>
                 <Text className='PopoverContent__contextValue'>
                   {contextToString(context)}
                 </Text>
@@ -174,9 +178,6 @@ const PopoverContent = React.forwardRef(function PopoverContent(
               <div>
                 <Divider />
                 <div className='PopoverContent__box'>
-                  <div className='PopoverContent__subtitle1'>
-                    Selected Fields
-                  </div>
                   {Object.keys(selectedFields).map((paramKey) => (
                     <div key={paramKey} className='PopoverContent__value'>
                       <Text size={12} tint={50}>
