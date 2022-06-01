@@ -11,10 +11,11 @@ export type AdapterConfigOptions = {
   sequenceName: SequenceTypesEnum;
   customInterceptor?: ProcessInterceptor;
   useCache?: boolean;
+  statusCallback?: (status: string) => void;
 };
 
 export type Adapter = {
-  execute: (data: RunSearchRunView[]) => ProcessedData;
+  execute: (data: RunSearchRunView[]) => Promise<ProcessedData>;
 };
 
 let adapterConfig: {
@@ -22,11 +23,13 @@ let adapterConfig: {
   customInterceptor: ProcessInterceptor;
   sequenceName: SequenceTypesEnum;
   useCache: boolean;
+  statusCallback?: (status: string) => void;
 };
 
 function setAdapterConfig(options: AdapterConfigOptions): void {
   const { objectDepth, useCache, customInterceptor, sequenceName } = options;
   adapterConfig = {
+    ...options,
     sequenceName,
     objectDepth,
     useCache: !!useCache,
@@ -35,9 +38,11 @@ function setAdapterConfig(options: AdapterConfigOptions): void {
   };
 }
 
-function baseProcessor(runs: RunSearchRunView[]): ProcessedData {
+function baseProcessor(runs: RunSearchRunView[]): Promise<ProcessedData> {
   const { sequenceName, objectDepth } = adapterConfig;
-  return processor(runs, sequenceName, objectDepth);
+  adapterConfig.statusCallback && adapterConfig.statusCallback('adopting');
+
+  return Promise.resolve(processor(runs, sequenceName, objectDepth));
 }
 
 function createAdapter({
@@ -45,11 +50,18 @@ function createAdapter({
   sequenceName,
   useCache = false,
   customInterceptor,
+  statusCallback,
 }: AdapterConfigOptions): Adapter {
-  setAdapterConfig({ objectDepth, useCache, customInterceptor, sequenceName });
+  setAdapterConfig({
+    objectDepth,
+    useCache,
+    customInterceptor,
+    sequenceName,
+    statusCallback,
+  });
 
   const execute = useCache
-    ? memoize<RunSearchRunView[], ProcessedData>(baseProcessor)
+    ? memoize<RunSearchRunView[], Promise<ProcessedData>>(baseProcessor)
     : baseProcessor;
   return {
     execute,

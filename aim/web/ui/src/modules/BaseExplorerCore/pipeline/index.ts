@@ -70,7 +70,7 @@ async function execute(options: PipelineExecutionOptions): Promise<any> {
   const queryResult = await phases.query.execute(options.query.params);
 
   // @ts-ignore
-  const adapterResult = phases.adapter.execute(queryResult);
+  const adapterResult = await phases.adapter.execute(queryResult);
   // @ts-ignore
   const modifierResult = phases.modifier.execute({
     objectList: adapterResult.objectList,

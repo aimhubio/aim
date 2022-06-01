@@ -11,7 +11,10 @@ import { Button, Text } from 'components/kit';
 import createQuery, {
   Query,
 } from '../../modules/BaseExplorerCore/pipeline/query';
-import { SequenceTypesEnum } from '../../types/core/enums';
+import { AimObjectDepths, SequenceTypesEnum } from '../../types/core/enums';
+import createAdapter, {
+  Adapter,
+} from '../../modules/BaseExplorerCore/pipeline/adapter';
 
 import Image from './Image';
 import Modifiers from './Modifiers';
@@ -37,30 +40,31 @@ const coordinatesMap = {
   width: 'visuals.width',
   height: 'visuals.height',
 };
-
+// createAdapter({
+//     objectDepth: AimObjectDepths.Index,
+//     sequenceName: SequenceTypesEnum.Images,
+//     useCache: false,
+// }),
 function BasExplorer() {
   const [status, setStatus] = React.useState('initial');
   const [data, setData] = React.useState<any>([]);
 
-  const queryRef = React.useRef<Query>(
-    createQuery(SequenceTypesEnum.Images, false, (status: string) => {
-      setStatus(status);
+  const queryRef = React.useRef<Adapter>(
+    createAdapter({
+      objectDepth: AimObjectDepths.Index,
+      sequenceName: SequenceTypesEnum.Images,
+      useCache: false,
+      statusCallback: (status) => setStatus(status),
     }),
   );
-
-  useEffect(() => {
-    // @ts-ignore
-  }, [queryRef]);
-
   function onClick() {
     queryRef.current
-      ?.execute({
-        q: 'run.hparams.batch_size === 64',
-        p: 500,
-      })
+      // @ts-ignore
+      ?.execute([])
       .then((data) => {
         // const res = applyStyles(data.data, data.modifierConfig);
         setStatus('finished');
+        console.log(data);
         setData(data);
       })
       .catch((err) => {
@@ -90,7 +94,7 @@ function BasExplorer() {
       <Text size={24} weight={600}>
         Visualization
       </Text>
-      <JSONViewer json={data.slice(0, 10) || []} />
+      <JSONViewer json={data?.additionalData || []} />
       <div
         style={{
           maxWidth: '100vw',
