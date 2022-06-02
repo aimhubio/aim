@@ -45,7 +45,7 @@ def make_zip_archive(repo_path: str) -> io.BytesIO:
     return zip_buf
 
 
-def upload_repo_runs(buffer: io.BytesIO, bucket_name: str)->Tuple[bool, str]:
+def upload_repo_runs(buffer: io.BytesIO, bucket_name: str) -> Tuple[bool, str]:
     try:
         s3_client = boto3.client('s3')
         buckets = s3_client.list_buckets()
@@ -62,5 +62,3 @@ def upload_repo_runs(buffer: io.BytesIO, bucket_name: str)->Tuple[bool, str]:
         return True, key
     except Exception as e:
         return False, e
-
-       
