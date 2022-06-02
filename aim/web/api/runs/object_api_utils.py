@@ -1,4 +1,5 @@
 import struct
+import time
 
 from typing import Iterable, Iterator, List, Tuple, Union, Optional
 from typing import TYPE_CHECKING
@@ -125,13 +126,18 @@ class CustomObjectApi:
             }
             return collect_streamable_data(encode_tree(run_dict))
 
+        last_reported_progress_time = time.time()
         for run_info in self.trace_cache.values():
+            if report_progress and time.time() - last_reported_progress_time:
+                yield collect_streamable_data(encode_tree({'progress': run_info['progress']}))
+                last_reported_progress_time = time.time()
             traces_list = []
             for trace in run_info['traces']:
                 traces_list.append(self._get_trace_info(trace, True, True))
             yield _pack_run_data(run_info['run'], traces_list)
             if report_progress:
                 yield collect_streamable_data(encode_tree({'progress': run_info['progress']}))
+                last_reported_progress_time = time.time()
 
     async def requested_traces_streamer(self) -> List[dict]:
         for run_info in self.trace_cache.values():

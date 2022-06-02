@@ -1,5 +1,6 @@
 import numpy as np
 import struct
+import time
 
 from collections import namedtuple
 from itertools import chain
@@ -13,6 +14,7 @@ from aim.sdk import Run
 from aim.sdk.sequences.metric import Metric
 from aim.sdk.sequence_collection import SequenceCollection
 from aim.storage.query import syntax_error_check
+from aim.web.configs import AIM_PROGRESS_REPORT_INTERVAL
 from aim.web.api.projects.project import Project
 from aim.web.api.runs.pydantic_models import AlignedRunIn, TraceBase
 from aim.storage.treeutils import encode_tree
@@ -165,7 +167,12 @@ async def metric_search_result_streamer(traces: SequenceCollection,
                                         steps_num: int,
                                         x_axis: Optional[str] = None,
                                         report_progress: Optional[bool] = True) -> bytes:
+    last_reported_progress_time = time.time()
     for run_trace_collection, progress in traces.iter_runs():
+        if report_progress and time.time() - last_reported_progress_time > AIM_PROGRESS_REPORT_INTERVAL:
+            yield collect_run_streamable_data(encode_tree({'progress': progress}))
+            last_reported_progress_time = time.time()
+
         run = None
         traces_list = []
         for trace in run_trace_collection.iter():
@@ -204,11 +211,17 @@ async def metric_search_result_streamer(traces: SequenceCollection,
             yield collect_run_streamable_data(encoded_tree)
             if report_progress:
                 yield collect_run_streamable_data(encode_tree({'progress': progress}))
+                last_reported_progress_time = time.time()
 
 
 def run_search_result_streamer(runs: SequenceCollection, limit: int, report_progress: Optional[bool] = True) -> bytes:
     run_count = 0
+    last_reported_progress_time = time.time()
     for run_trace_collection, progress in runs.iter_runs():
+        # if no progress was reported for a long interval, report progress
+        if report_progress and time.time() - last_reported_progress_time > AIM_PROGRESS_REPORT_INTERVAL:
+            yield collect_run_streamable_data(encode_tree({'progress': progress}))
+            last_reported_progress_time = time.time()
         if not run_trace_collection:
             continue
         run = run_trace_collection.run
@@ -224,6 +237,7 @@ def run_search_result_streamer(runs: SequenceCollection, limit: int, report_prog
         yield collect_run_streamable_data(encoded_tree)
         if report_progress:
             yield collect_run_streamable_data(encode_tree({'progress': progress}))
+            last_reported_progress_time = time.time()
         run_count += 1
         if limit and run_count >= limit:
             break
