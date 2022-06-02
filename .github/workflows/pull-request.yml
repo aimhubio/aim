@@ -7,7 +7,11 @@ on:
       - release/**
       - feature/**
     paths:
-      - 'aim/**'
+      - 'aim/cli/**'
+      - 'aim/ext/**'
+      - 'aim/sdk/**'
+      - 'aim/web/api/**'
+      - 'aim/storage/**'
       - '.github/workflows/pull-request.yml'
       - 'tests/**'
       - 'performance_tests/**'
