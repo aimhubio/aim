@@ -4,7 +4,6 @@ import os
 from typing import List, Tuple
 import io
 import zipfile
-import boto3
 from datetime import datetime
 
 
@@ -47,15 +46,22 @@ def make_zip_archive(repo_path: str) -> io.BytesIO:
 
 def upload_repo_runs(buffer: io.BytesIO, bucket_name: str) -> Tuple[bool, str]:
     try:
+        import boto3
+    except ImportError:
+        raise RuntimeError(
+            'This command requires \'boto3\' to be installed. '
+            'Please install it with command: \n pip install boto3'
+        )
+
+    try:
         s3_client = boto3.client('s3')
         buckets = s3_client.list_buckets()
         bucket_names = []
         for bucket in buckets['Buckets']:
-            bucket_names.append(bucket["Name"])
+            bucket_names.append(bucket['Name'])
+
         if bucket_name not in bucket_names:
-            bucket = s3_client.create_bucket(Bucket=bucket_name)
-        else:
-            bucket = next((bucket for bucket in buckets['Buckets'] if bucket['Name'] == bucket_name), None)
+            s3_client.create_bucket(Bucket=bucket_name)
 
         key = f'aim-{datetime.now().strftime("%Y-%m-%d-%H-%M-%S")}.zip'
         s3_client.upload_fileobj(buffer, bucket_name, key)
