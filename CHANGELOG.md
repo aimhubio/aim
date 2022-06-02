@@ -9,6 +9,7 @@
 - Implement unit-tests for aim SDK utils (yeghiakoronian)
 - Display std.dev/err aggregated values in the table (VkoHov)
 - Add `active` state indicator property for `aim.Run` (mihran113)
+- Increase visibility and usability of the Show table diff button (arsengit)
 
 ### Fixes:
 

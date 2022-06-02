@@ -743,23 +743,12 @@ const Table = React.forwardRef(function Table(
                       appName={appName}
                     />
                   )}
-                  {/* {onTableDiffShow && (
-                    <Button
-                      size='small'
-                      color='secondary'
-                      disabled={isDiffButtonDisabled}
-                      className='Table__header__item'
-                      onClick={onTableDiffShow}
-                    >
-                      Show Table Diff
-                    </Button>
-                  )} */}
                 </div>
                 {onTableDiffShow && (
                   <Button
                     size='small'
                     variant='outlined'
-                    style={{ marginRight: 8 }}
+                    className='Table__header__item--diffBtn'
                     disabled={isDiffButtonDisabled}
                     onClick={onTableDiffShow}
                   >

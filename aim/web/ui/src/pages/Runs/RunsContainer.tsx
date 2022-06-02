@@ -54,7 +54,6 @@ function RunsContainer(): React.FunctionComponentElement<React.ReactNode> {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  console.log(runsData?.sameValueColumns!);
   return (
     <ErrorBoundary>
       <Runs
