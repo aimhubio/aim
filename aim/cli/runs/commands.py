@@ -125,10 +125,9 @@ def upload_runs(ctx, bucket):
 
     zip_buffer = make_zip_archive(repo_path)
     zip_buffer.seek(0)
-    
+
     success, uploaded_zip_file_name = upload_repo_runs(zip_buffer, bucket)
     if success:
         click.echo(f'Successfully uploaded runs in {uploaded_zip_file_name}.')
     else:
         click.echo(f'The storage backup failed because of the following error: {uploaded_zip_file_name}.')
-
