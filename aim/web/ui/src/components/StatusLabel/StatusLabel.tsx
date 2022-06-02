@@ -25,9 +25,11 @@ function StatusLabel({
         onClick={stopPropagation}
         className={`StatusLabel ${status} ${className}`}
       >
-        <Text size={10} weight={600} className='StatusLabel__title title'>
-          {title}
-        </Text>
+        {title && (
+          <Text size={10} weight={600} className='StatusLabel__title title'>
+            {title}
+          </Text>
+        )}
       </div>
     </ErrorBoundary>
   );

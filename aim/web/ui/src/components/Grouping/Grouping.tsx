@@ -1,6 +1,7 @@
 import React from 'react';
 
 import ErrorBoundary from 'components/ErrorBoundary/ErrorBoundary';
+import { Text } from 'components/kit';
 
 import GroupingPopovers from 'config/grouping/GroupingPopovers';
 
@@ -26,44 +27,51 @@ function Grouping({
   return (
     <ErrorBoundary>
       <div className='Grouping'>
-        {groupingPopovers.map(
-          ({ title, advancedTitle, groupName, AdvancedComponent }) => {
-            return (
-              <GroupingItem
-                key={groupName}
-                title={title}
-                advancedTitle={advancedTitle}
-                groupName={groupName as GroupNameType}
-                groupingData={groupingData}
-                groupingSelectOptions={groupingSelectOptions}
-                onSelect={onGroupingSelectChange}
-                onGroupingModeChange={onGroupingModeChange}
-                advancedComponent={
-                  AdvancedComponent && (
-                    <AdvancedComponent
-                      groupingData={groupingData}
-                      onPersistenceChange={onGroupingPersistenceChange}
-                      persistence={
-                        groupingData?.persistence[
-                          groupName as 'color' | 'stroke'
-                        ]
-                      }
-                      onShuffleChange={onShuffleChange}
-                      {...(groupName === 'color' && {
-                        onGroupingPaletteChange,
-                        paletteIndex: groupingData?.paletteIndex,
-                      })}
-                    />
-                  )
-                }
-                onReset={() => onGroupingReset(groupName as GroupNameType)}
-                onVisibilityChange={() =>
-                  onGroupingApplyChange(groupName as GroupNameType)
-                }
-              />
-            );
-          },
-        )}
+        <div className='Grouping__title'>
+          <Text size={12} weight={600}>
+            Group by
+          </Text>
+        </div>
+        <div className='Grouping__content'>
+          {groupingPopovers.map(
+            ({ title, inputLabel, groupName, AdvancedComponent }) => {
+              return (
+                <GroupingItem
+                  key={groupName}
+                  title={title}
+                  inputLabel={inputLabel}
+                  groupName={groupName as GroupNameType}
+                  groupingData={groupingData}
+                  groupingSelectOptions={groupingSelectOptions}
+                  onSelect={onGroupingSelectChange}
+                  onGroupingModeChange={onGroupingModeChange}
+                  advancedComponent={
+                    AdvancedComponent && (
+                      <AdvancedComponent
+                        groupingData={groupingData}
+                        onPersistenceChange={onGroupingPersistenceChange}
+                        persistence={
+                          groupingData?.persistence[
+                            groupName as 'color' | 'stroke'
+                          ]
+                        }
+                        onShuffleChange={onShuffleChange}
+                        {...(groupName === 'color' && {
+                          onGroupingPaletteChange,
+                          paletteIndex: groupingData?.paletteIndex,
+                        })}
+                      />
+                    )
+                  }
+                  onReset={() => onGroupingReset(groupName as GroupNameType)}
+                  onVisibilityChange={() =>
+                    onGroupingApplyChange(groupName as GroupNameType)
+                  }
+                />
+              );
+            },
+          )}
+        </div>
       </div>
     </ErrorBoundary>
   );

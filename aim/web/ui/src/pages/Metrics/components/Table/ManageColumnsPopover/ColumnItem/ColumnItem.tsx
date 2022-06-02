@@ -7,6 +7,10 @@ import { Tooltip } from '@material-ui/core';
 import { Icon, Text } from 'components/kit';
 import ErrorBoundary from 'components/ErrorBoundary/ErrorBoundary';
 
+import { TABLE_DEFAULT_CONFIG } from 'config/table/tableConfigs';
+
+import { AppNameEnum } from 'services/models/explorer';
+
 import { isSystemMetric } from 'utils/isSystemMetric';
 import { formatSystemMetricName } from 'utils/formatSystemMetricName';
 
@@ -29,28 +33,31 @@ function ColumnItem(props: any) {
   }
 
   const itemValue = React.useMemo(() => {
-    const val: string = isSystemMetric(props.data)
+    let value: string = isSystemMetric(props.data)
       ? formatSystemMetricName(props.data)
       : props.data;
-    let splitVal = val.split('.');
+    let splitVal = value.split('.');
     if (splitVal.length > 2) {
-      return `${splitVal[0]}.~.${splitVal[splitVal.length - 1]}`;
+      return {
+        formatted: `${splitVal[0]}.~.${splitVal[splitVal.length - 1]}`,
+        value,
+      };
     }
-    return val;
+    return {
+      formatted: value,
+      value,
+    };
   }, [props.data]);
+
+  const isNonHidable: boolean = TABLE_DEFAULT_CONFIG[
+    props.appName as AppNameEnum
+  ]?.nonHidableColumns.has(props.data);
+
   return (
     <ErrorBoundary>
       <Draggable draggableId={props.data} index={props.index}>
         {(provided) => (
-          <Tooltip
-            arrow
-            placement='left'
-            title={
-              isSystemMetric(props.data)
-                ? formatSystemMetricName(props.data)
-                : props.data
-            }
-          >
+          <Tooltip arrow placement='left' title={itemValue.value}>
             <div
               className={classNames('ColumnItem', {
                 highlighted: isHighlighted(),
@@ -59,7 +66,12 @@ function ColumnItem(props: any) {
               {...provided.draggableProps}
               ref={provided.innerRef}
             >
-              <span onClick={props.onClick} className='ColumnItem__toggle'>
+              <span
+                onClick={isNonHidable ? null : props.onClick}
+                className={classNames('ColumnItem__toggle', {
+                  disabled: isNonHidable,
+                })}
+              >
                 <Icon
                   name={
                     props.isHidden ? 'eye-outline-hide' : 'eye-show-outline'
@@ -68,7 +80,7 @@ function ColumnItem(props: any) {
               </span>
               <div>
                 <Text tint={100} className='ColumnItem__name'>
-                  {itemValue}
+                  {itemValue.formatted}
                 </Text>
                 <span
                   className='ColumnItem__iconDrag'

@@ -3,7 +3,7 @@ import struct
 from typing import Iterable, Iterator, List, Tuple, Union, Optional
 from typing import TYPE_CHECKING
 
-from aim.web.api.runs.utils import IndexRange, get_run_props
+from aim.web.api.runs.utils import IndexRange, get_run_props, get_run_params
 from aim.sdk.uri_service import URIService, generate_resource_path
 from aim.sdk.sequence_collection import SequenceCollection
 from aim.sdk.sequence import Sequence
@@ -105,7 +105,7 @@ class CustomObjectApi:
     def get_total_record_range(self):
         return self._calculate_ranges()
 
-    async def search_result_streamer(self):
+    async def search_result_streamer(self, skip_system: bool):
 
         def _pack_run_data(run_: 'Run', traces_: list):
             ranges = {
@@ -118,7 +118,7 @@ class CustomObjectApi:
             run_dict = {
                 run_.hash: {
                     'ranges': ranges,
-                    'params': run_.get(..., resolve_objects=True),
+                    'params': get_run_params(run_, skip_system=skip_system),
                     'traces': traces_,
                     'props': get_run_props(run_)
                 }

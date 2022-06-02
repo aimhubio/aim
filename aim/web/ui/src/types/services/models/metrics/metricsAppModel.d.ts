@@ -20,9 +20,10 @@ import {
 } from 'utils/aggregateGroupData';
 import { AlignmentOptionsEnum } from 'utils/d3';
 
+import { ISelectOption } from '../explorer/createAppModel';
+
 import { IMetric } from './metricModel';
 import { IMetricTrace, ISequence } from './runModel';
-import { ISelectOption } from '../explorer/createAppModel';
 
 export interface IMetricAppModelState {
   refs: {
@@ -200,7 +201,7 @@ export interface IGetGroupingPersistIndex {
   groupName: 'color' | 'stroke';
 }
 
-export type GroupNameType = 'color' | 'stroke' | 'chart' | 'group';
+export type GroupNameType = 'color' | 'stroke' | 'chart' | 'row';
 export interface IGroupingSelectOption {
   label: string;
   group: string;

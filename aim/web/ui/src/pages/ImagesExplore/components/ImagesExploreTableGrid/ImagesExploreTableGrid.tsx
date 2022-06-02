@@ -1,24 +1,29 @@
 import moment from 'moment';
 import _ from 'lodash-es';
-import { Link as RouteLink } from 'react-router-dom';
 
-import { Link, Tooltip } from '@material-ui/core';
+import { Tooltip } from '@material-ui/core';
 
 import TableSortIcons from 'components/Table/TableSortIcons';
 import { Badge, JsonViewPopover } from 'components/kit';
 import ControlPopover from 'components/ControlPopover/ControlPopover';
 import ErrorBoundary from 'components/ErrorBoundary/ErrorBoundary';
+import GroupedColumnHeader from 'components/Table/GroupedColumnHeader';
+import RunNameColumn from 'components/Table/RunNameColumn';
 
 import COLORS from 'config/colors/colors';
-import { PathEnum } from 'config/enums/routesEnum';
 import { TABLE_DATE_FORMAT } from 'config/dates/dates';
+import { TABLE_DEFAULT_CONFIG } from 'config/table/tableConfigs';
+
+import { AppNameEnum } from 'services/models/explorer';
 
 import { ITableColumn } from 'types/pages/metrics/components/TableColumns/TableColumns';
 import { IGroupingSelectOption } from 'types/services/models/imagesExplore/imagesExploreAppModel';
+import { IOnGroupingSelectChangeParams } from 'types/services/models/metrics/metricsAppModel';
 
 import contextToString from 'utils/contextToString';
 import { formatValue } from 'utils/formatValue';
 import { SortActionTypes, SortField } from 'utils/getSortedFields';
+import getColumnOptions from 'utils/getColumnOptions';
 
 function getImagesExploreTableColumns(
   paramColumns: string[] = [],
@@ -28,8 +33,46 @@ function getImagesExploreTableColumns(
   hiddenColumns: string[],
   sortFields?: any[],
   onSort?: ({ sortFields, order, index, actionType }: any) => void,
+  grouping?: { [key: string]: string[] },
+  onGroupingToggle?: (params: IOnGroupingSelectChangeParams) => void,
 ): ITableColumn[] {
   let columns: ITableColumn[] = [
+    {
+      key: 'hash',
+      content: <span>Hash</span>,
+      topHeader: 'Run',
+      pin: order?.left?.includes('hash')
+        ? 'left'
+        : order?.middle?.includes('hash')
+        ? null
+        : order?.right?.includes('hash')
+        ? 'right'
+        : null,
+      columnOptions: getColumnOptions(
+        grouping!,
+        onGroupingToggle!,
+        AppNameEnum.IMAGES!,
+        'run.hash',
+      ),
+    },
+    {
+      key: 'run',
+      content: <span>Name</span>,
+      topHeader: 'Run',
+      pin: order?.left?.includes('run')
+        ? 'left'
+        : order?.middle?.includes('run')
+        ? null
+        : order?.right?.includes('run')
+        ? 'right'
+        : 'left',
+      columnOptions: getColumnOptions(
+        grouping!,
+        onGroupingToggle!,
+        AppNameEnum.IMAGES!,
+        'run.props.name',
+      ),
+    },
     {
       key: 'experiment',
       content: <span>Experiment</span>,
@@ -41,18 +84,12 @@ function getImagesExploreTableColumns(
         : order?.right?.includes('experiment')
         ? 'right'
         : null,
-    },
-    {
-      key: 'run',
-      content: <span>Run Name</span>,
-      topHeader: 'Run',
-      pin: order?.left?.includes('run')
-        ? 'left'
-        : order?.middle?.includes('run')
-        ? null
-        : order?.right?.includes('run')
-        ? 'right'
-        : 'left',
+      columnOptions: getColumnOptions(
+        grouping!,
+        onGroupingToggle!,
+        AppNameEnum.IMAGES!,
+        'run.props.experiment.name',
+      ),
     },
     {
       key: 'description',
@@ -77,6 +114,24 @@ function getImagesExploreTableColumns(
         : order?.right?.includes('date')
         ? 'right'
         : null,
+      columnOptions: getColumnOptions(
+        grouping!,
+        onGroupingToggle!,
+        AppNameEnum.IMAGES!,
+        'run.props.creation_time',
+      ),
+    },
+    {
+      key: 'duration',
+      content: <span>Duration</span>,
+      topHeader: 'Run',
+      pin: order?.left?.includes('date')
+        ? 'left'
+        : order?.middle?.includes('date')
+        ? null
+        : order?.right?.includes('date')
+        ? 'right'
+        : null,
     },
     {
       key: 'name',
@@ -87,6 +142,12 @@ function getImagesExploreTableColumns(
         : order?.right?.includes('name')
         ? 'right'
         : null,
+      columnOptions: getColumnOptions(
+        grouping!,
+        onGroupingToggle!,
+        AppNameEnum.IMAGES!,
+        'name',
+      ),
     },
     {
       key: 'context',
@@ -97,6 +158,12 @@ function getImagesExploreTableColumns(
         : order?.right?.includes('context')
         ? 'right'
         : null,
+      columnOptions: getColumnOptions(
+        grouping!,
+        onGroupingToggle!,
+        AppNameEnum.IMAGES!,
+        'context',
+      ),
     },
     {
       key: 'actions',
@@ -156,7 +223,9 @@ function getImagesExploreTableColumns(
 
   columns = columns.map((col) => ({
     ...col,
-    isHidden: hiddenColumns.includes(col.key),
+    isHidden:
+      !TABLE_DEFAULT_CONFIG.images.nonHidableColumns.has(col.key) &&
+      hiddenColumns.includes(col.key),
   }));
 
   const columnsOrder = order?.left.concat(order.middle).concat(order.right);
@@ -180,18 +249,8 @@ function getImagesExploreTableColumns(
     columns = [
       {
         key: '#',
-        content: (
-          <span
-            style={{
-              textAlign: 'right',
-              display: 'inline-block',
-              width: '100%',
-            }}
-          >
-            #
-          </span>
-        ),
-        topHeader: 'Grouping',
+        content: '',
+        topHeader: 'Group',
         pin: 'left',
       },
       {
@@ -220,7 +279,7 @@ function getImagesExploreTableColumns(
           : order?.right?.includes('groups')
           ? 'right'
           : null,
-        topHeader: 'Groups',
+        topHeader: 'Group Config',
       },
       ...columns,
     ];
@@ -242,12 +301,7 @@ function imagesExploreTableRowRenderer(
         row[col] = {
           content:
             rowData.context.length > 1 ? (
-              <Badge
-                monospace
-                size='xSmall'
-                color={COLORS[0][0]}
-                label={`${rowData.context.length} values`}
-              />
+              <GroupedColumnHeader data={rowData.context} />
             ) : (
               <Badge
                 monospace
@@ -316,14 +370,7 @@ function imagesExploreTableRowRenderer(
         };
       } else if (Array.isArray(rowData[col])) {
         row[col] = {
-          content: (
-            <Badge
-              monospace
-              size='xSmall'
-              color={COLORS[0][0]}
-              label={`${rowData[col].length} values`}
-            />
-          ),
+          content: <GroupedColumnHeader data={rowData[col]} />,
         };
       }
     }
@@ -334,24 +381,18 @@ function imagesExploreTableRowRenderer(
       experiment: rowData?.experiment ?? 'default',
       run: {
         content: (
-          <Link
-            to={PathEnum.Run_Detail.replace(':runHash', rowData.runHash)}
-            component={RouteLink}
-          >
-            {rowData.run}
-          </Link>
+          <RunNameColumn
+            run={rowData.run}
+            runHash={rowData.hash}
+            active={rowData.active}
+          />
         ),
       },
       metric: rowData.metric,
       context: {
         content:
           rowData.context.length > 1 ? (
-            <Badge
-              monospace
-              size='xSmall'
-              color={COLORS[0][0]}
-              label={`${rowData.context.length} values`}
-            />
+            <GroupedColumnHeader data={rowData.context} />
           ) : (
             <Badge
               monospace

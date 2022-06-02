@@ -15,6 +15,7 @@ export interface IGroupingPopoverProps {
   groupingSelectOptions: IGroupingSelectOption[];
   onSelect: IMetricProps['onGroupingSelectChange'];
   onGroupingModeChange: IMetricProps['onGroupingModeChange'];
+  inputLabel?: string;
 }
 
 export interface IGroupingPopoverAdvancedProps {

@@ -117,8 +117,8 @@ class AimLogger(LightningLoggerBase):
             self.experiment.track(v, name=name, step=step, context=context)
 
     @rank_zero_only
-    def finalize(self) -> None:
-        super().finalize()
+    def finalize(self, status: str = '') -> None:
+        super().finalize(status)
         if self._run:
             self._run.close()
             del self._run
