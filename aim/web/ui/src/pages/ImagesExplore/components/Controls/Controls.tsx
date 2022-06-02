@@ -52,9 +52,9 @@ function Controls(
       <div className='Controls__container ScrollBar__hidden'>
         <div>
           <ControlPopover
-            title='Image Properties'
+            title='Image properties'
             anchor={({ onAnchorClick, opened }) => (
-              <Tooltip title='Image Properties'>
+              <Tooltip title='Image properties'>
                 <div
                   onClick={onAnchorClick}
                   className={`Controls__anchor ${
@@ -86,9 +86,9 @@ function Controls(
         </div>
         <div>
           <ControlPopover
-            title='Images Sorting'
+            title='Images sorting'
             anchor={({ onAnchorClick, opened }) => (
-              <Tooltip title='Images Sorting'>
+              <Tooltip title='Images sorting'>
                 <div
                   onClick={onAnchorClick}
                   className={`Controls__anchor ${
@@ -144,9 +144,9 @@ function Controls(
         </Tooltip>
         <div>
           <ControlPopover
-            title='Display In Tooltip'
+            title='Display in tooltip'
             anchor={({ onAnchorClick, opened }) => (
-              <Tooltip title='Tooltip Params'>
+              <Tooltip title='Tooltip fields'>
                 <div
                   onClick={onAnchorClick}
                   className={`Controls__anchor ${
