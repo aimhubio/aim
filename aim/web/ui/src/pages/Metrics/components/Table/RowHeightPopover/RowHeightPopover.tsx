@@ -22,7 +22,7 @@ function RowHeightPopover({ rowHeight, onRowHeightChange, appName }: any) {
   return (
     <ErrorBoundary>
       <ControlPopover
-        title='Select Content Density Mode'
+        title='Select content density mode'
         anchorOrigin={{
           vertical: 'bottom',
           horizontal: 'left',
@@ -35,6 +35,7 @@ function RowHeightPopover({ rowHeight, onRowHeightChange, appName }: any) {
           <Button
             variant='text'
             color='secondary'
+            size='small'
             onClick={onAnchorClick}
             className={`RowHeightPopover__trigger ${
               opened || rowHeightChanged ? 'opened' : ''

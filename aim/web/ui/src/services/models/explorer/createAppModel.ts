@@ -181,6 +181,7 @@ import onToggleColumnsColorScales from 'utils/app/onToggleColumnsColorScales';
 import onAxisBrushExtentChange from 'utils/app/onAxisBrushExtentChange';
 import { minMaxOfArray } from 'utils/minMaxOfArray';
 import getAdvancedSuggestion from 'utils/getAdvancedSuggestions';
+import { processDurationTime } from 'utils/processDurationTime';
 
 import { AppDataTypeEnum, AppNameEnum } from './index';
 
@@ -210,7 +211,7 @@ function createAppModel(appConfig: IAppInitialConfig) {
       case AppDataTypeEnum.METRICS: {
         const config: IAppModelConfig = {
           liveUpdate: {
-            delay: 7000,
+            delay: 10000,
             enabled: false,
           },
         };
@@ -322,7 +323,7 @@ function createAppModel(appConfig: IAppInitialConfig) {
       case AppDataTypeEnum.RUNS: {
         const config: IAppModelConfig = {
           liveUpdate: {
-            delay: 7000,
+            delay: 10000,
             enabled: false,
           },
         };
@@ -616,6 +617,7 @@ function createAppModel(appConfig: IAppInitialConfig) {
     function getMetricsData(
       shouldUrlUpdate?: boolean,
       shouldResetSelectedRows?: boolean,
+      queryString?: string,
     ): IApiRequest<void> {
       if (metricsRequestRef) {
         metricsRequestRef.abort();
@@ -625,6 +627,14 @@ function createAppModel(appConfig: IAppInitialConfig) {
         updateURL({ configData, appName });
       }
       const metric = configData?.chart?.alignmentConfig?.metric;
+
+      if (queryString) {
+        if (configData.select.advancedQuery) {
+          configData.select.advancedQuery = queryString;
+        } else {
+          configData.select.query = queryString;
+        }
+      }
       let query = getQueryStringFromSelect(configData?.select);
       metricsRequestRef = metricsService.getMetricsData({
         q: query,
@@ -768,6 +778,7 @@ function createAppModel(appConfig: IAppInitialConfig) {
               description: '',
               date: '',
               run: '',
+              hash: '',
               metric: '',
               context: [],
               value: '',
@@ -798,7 +809,7 @@ function createAppModel(appConfig: IAppInitialConfig) {
               },
               key: metric.key,
               selectKey: `${metric.run.hash}/${metric.key}`,
-              runHash: metric.run.hash,
+              hash: metric.run.hash,
               isHidden: metric.isHidden,
               index: rowIndex,
               color: metricsCollection.color ?? metric.color,
@@ -809,6 +820,13 @@ function createAppModel(appConfig: IAppInitialConfig) {
               date: moment(metric.run.props.creation_time * 1000).format(
                 TABLE_DATE_FORMAT,
               ),
+              duration: processDurationTime(
+                metric.run.props.creation_time * 1000,
+                metric.run.props.end_time
+                  ? metric.run.props.end_time * 1000
+                  : Date.now(),
+              ),
+              active: metric.run.props.active,
               metric: metric.name,
               context: contextToString(metric.context)?.split(',') || [''],
               value:
@@ -869,7 +887,9 @@ function createAppModel(appConfig: IAppInitialConfig) {
               'experiment',
               'description',
               'date',
+              'duration',
               'run',
+              'hash',
               'metric',
               'context',
               'step',
@@ -973,6 +993,7 @@ function createAppModel(appConfig: IAppInitialConfig) {
       data: IMetricsCollection<IMetric>[];
       params: string[];
       runProps: string[];
+      highLevelParams: string[];
       contexts: string[];
       selectedRows: any;
     } {
@@ -1098,7 +1119,8 @@ function createAppModel(appConfig: IAppInitialConfig) {
 
       return {
         data: processedData,
-        params: [...new Set(uniqParams.concat(uniqHighLevelParams))].sort(),
+        params: uniqParams,
+        highLevelParams: uniqHighLevelParams,
         contexts: uniqContexts,
         runProps: uniqProps,
         selectedRows,
@@ -1109,13 +1131,18 @@ function createAppModel(appConfig: IAppInitialConfig) {
       configData = model.getState()!.config!,
       shouldURLUpdate?: boolean,
     ): void {
-      const { data, runProps, params, contexts, selectedRows } = processData(
-        model.getState()?.rawData,
-      );
-
+      const {
+        data,
+        params,
+        runProps,
+        highLevelParams,
+        contexts,
+        selectedRows,
+      } = processData(model.getState()?.rawData as ISequence<IMetricTrace>[]);
+      const sortedParams = [...new Set(params.concat(highLevelParams))].sort();
       const groupingSelectOptions = [
         ...getGroupingSelectOptions({
-          params,
+          params: sortedParams,
           runProps,
           contexts,
           sequenceName: 'metric',
@@ -1124,7 +1151,7 @@ function createAppModel(appConfig: IAppInitialConfig) {
 
       tooltipData = getTooltipData({
         processedData: data,
-        paramKeys: params,
+        paramKeys: sortedParams,
         groupingSelectOptions,
         groupingItems: ['color', 'stroke', 'chart'],
         model,
@@ -1190,22 +1217,30 @@ function createAppModel(appConfig: IAppInitialConfig) {
       configData: IAppModelConfig,
     ): void {
       const sortFields = model.getState()?.config?.table?.sortFields;
-      const { data, runProps, params, contexts, selectedRows } =
-        processData(rawData);
+      const {
+        data,
+        runProps,
+        params,
+        highLevelParams,
+        contexts,
+        selectedRows,
+      } = processData(rawData);
+      const sortedParams = [...new Set(params.concat(highLevelParams))].sort();
+
       if (configData) {
         setAggregationEnabled({ model, appName });
       }
       const groupingSelectOptions = [
         ...getGroupingSelectOptions({
           runProps,
-          params,
+          params: sortedParams,
           contexts,
           sequenceName: 'metric',
         }),
       ];
       tooltipData = getTooltipData({
         processedData: data,
-        paramKeys: params,
+        paramKeys: sortedParams,
         groupingSelectOptions,
         groupingItems: ['color', 'stroke', 'chart'],
         model,
@@ -2314,6 +2349,7 @@ function createAppModel(appConfig: IAppInitialConfig) {
         shouldUrlUpdate?: boolean,
         shouldResetSelectedRows?: boolean,
         isInitial = true,
+        queryString?: string,
       ): {
         call: (exceptionHandler: (detail: any) => void) => Promise<any>;
         abort: () => void;
@@ -2324,7 +2360,9 @@ function createAppModel(appConfig: IAppInitialConfig) {
         // isInitial: true --> when search button clicked or data is loading at the first time
         const modelState = prepareModelStateToCall(isInitial);
         const configData = modelState?.config;
-
+        if (queryString) {
+          configData.select.query = queryString;
+        }
         const query = configData?.select?.query || '';
         const pagination = configData?.pagination;
 
@@ -2762,6 +2800,7 @@ function createAppModel(appConfig: IAppInitialConfig) {
               color: metricsCollection.color,
               dasharray: metricsCollection.dasharray,
               experiment: '',
+              hash: '',
               run: '',
               metric: '',
               context: [],
@@ -2786,7 +2825,7 @@ function createAppModel(appConfig: IAppInitialConfig) {
             const rowValues: any = {
               key: metric.key,
               selectKey: `${metric.run.hash}/${metric.key}`,
-              runHash: metric.run.hash,
+              hash: metric.run.hash,
               index: rowIndex,
               color: metricsCollection.color ?? metric.color,
               dasharray: metricsCollection.dasharray ?? metric.dasharray,
@@ -2796,6 +2835,13 @@ function createAppModel(appConfig: IAppInitialConfig) {
               date: moment(metric.run.props.creation_time * 1000).format(
                 TABLE_DATE_FORMAT,
               ),
+              duration: processDurationTime(
+                metric.run.props.creation_time * 1000,
+                metric.run.props.end_time
+                  ? metric.run.props.end_time * 1000
+                  : Date.now(),
+              ),
+              active: metric.run.props.active,
               metric: metric.name,
               ...metricsRowValues,
             };
@@ -2803,7 +2849,9 @@ function createAppModel(appConfig: IAppInitialConfig) {
             [
               'experiment',
               'run',
+              'hash',
               'date',
+              'duration',
               'description',
               'metric',
               'context',
@@ -3422,6 +3470,7 @@ function createAppModel(appConfig: IAppInitialConfig) {
       function getParamsData(
         shouldUrlUpdate?: boolean,
         shouldResetSelectedRows?: boolean,
+        queryString?: string,
       ): {
         call: () => Promise<void>;
         abort: () => void;
@@ -3430,6 +3479,9 @@ function createAppModel(appConfig: IAppInitialConfig) {
           runsRequestRef.abort();
         }
         const configData = { ...model.getState()?.config };
+        if (queryString) {
+          configData.select.query = queryString;
+        }
         if (shouldUrlUpdate) {
           updateURL({ configData, appName });
         }
@@ -3567,6 +3619,7 @@ function createAppModel(appConfig: IAppInitialConfig) {
                 dasharray: metricsCollection.dasharray,
                 experiment: '',
                 run: '',
+                hash: '',
                 description: '',
                 date: '',
                 metric: '',
@@ -3598,7 +3651,7 @@ function createAppModel(appConfig: IAppInitialConfig) {
                 },
                 key: metric.key,
                 selectKey: `${metric.run.hash}/${metric.key}`,
-                runHash: metric.run.hash,
+                hash: metric.run.hash,
                 isHidden: metric.isHidden,
                 index: rowIndex,
                 color: metricsCollection.color ?? metric.color,
@@ -3610,6 +3663,13 @@ function createAppModel(appConfig: IAppInitialConfig) {
                   TABLE_DATE_FORMAT,
                 ),
                 metric: metric.name,
+                duration: processDurationTime(
+                  metric.run.props.creation_time * 1000,
+                  metric.run.props.end_time
+                    ? metric.run.props.end_time * 1000
+                    : Date.now(),
+                ),
+                active: metric.run.props.active,
                 ...metricsRowValues,
               };
               rowIndex++;
@@ -3621,7 +3681,9 @@ function createAppModel(appConfig: IAppInitialConfig) {
               [
                 'experiment',
                 'run',
+                'hash',
                 'date',
+                'duration',
                 'description',
                 'metric',
                 'context',
@@ -3874,17 +3936,27 @@ function createAppModel(appConfig: IAppInitialConfig) {
         rawData: IRun<IParamTrace>[],
         configData: IAppModelConfig,
       ): void {
-        const { data, runProps, params, metricsColumns, selectedRows } =
-          processData(rawData);
+        const {
+          data,
+          runProps,
+          highLevelParams,
+          params,
+          metricsColumns,
+          selectedRows,
+        } = processData(rawData);
+        const sortedParams = [
+          ...new Set(params.concat(highLevelParams)),
+        ].sort();
         const groupingSelectOptions = [
           ...getGroupingSelectOptions({
-            params,
+            params: sortedParams,
             runProps,
           }),
         ];
+
         tooltipData = getTooltipData({
           processedData: data,
-          paramKeys: params,
+          paramKeys: sortedParams,
           groupingSelectOptions,
           groupingItems: ['color', 'stroke', 'chart'],
           model,
@@ -3910,6 +3982,7 @@ function createAppModel(appConfig: IAppInitialConfig) {
           onSortChange,
           configData.grouping as any,
           onModelGroupingSelectChange,
+          AppNameEnum.PARAMS,
         );
 
         if (model.getState()?.requestStatus !== RequestStatusEnum.Pending) {
@@ -4112,6 +4185,7 @@ function createAppModel(appConfig: IAppInitialConfig) {
         data: IMetricsCollection<IParam>[];
         params: string[];
         runProps: string[];
+        highLevelParams: string[];
         metricsColumns: any;
         selectedRows: any;
       } {
@@ -4197,7 +4271,8 @@ function createAppModel(appConfig: IAppInitialConfig) {
         return {
           data: processedData,
           runProps: uniqProps,
-          params: [...new Set(uniqParams.concat(uniqHighLevelParams))].sort(),
+          params: uniqParams,
+          highLevelParams: uniqHighLevelParams,
           metricsColumns,
           selectedRows,
         };
@@ -4327,17 +4402,27 @@ function createAppModel(appConfig: IAppInitialConfig) {
         configData = model.getState()!.config!,
         shouldURLUpdate?: boolean,
       ): void {
-        const { data, runProps, params, metricsColumns, selectedRows } =
-          processData(model.getState()?.rawData);
+        const {
+          data,
+          params,
+          runProps,
+          highLevelParams,
+          metricsColumns,
+          selectedRows,
+        } = processData(model.getState()?.rawData as IRun<IParamTrace>[]);
+        const sortedParams = [
+          ...new Set(params.concat(highLevelParams)),
+        ].sort();
+
         const groupingSelectOptions = [
           ...getGroupingSelectOptions({
-            params,
+            params: sortedParams,
             runProps,
           }),
         ];
         tooltipData = getTooltipData({
           processedData: data,
-          paramKeys: params,
+          paramKeys: sortedParams,
           groupingSelectOptions,
           groupingItems: ['color', 'stroke', 'chart'],
           model,
@@ -4361,6 +4446,7 @@ function createAppModel(appConfig: IAppInitialConfig) {
           onSortChange,
           configData.grouping as any,
           onModelGroupingSelectChange,
+          AppNameEnum.PARAMS,
         );
         const tableRef: any = model.getState()?.refs?.tableRef;
         tableRef?.current?.updateData({
@@ -4899,17 +4985,26 @@ function createAppModel(appConfig: IAppInitialConfig) {
         rawData: IRun<IParamTrace>[],
         configData: IAppModelConfig,
       ): void {
-        const { data, runProps, params, metricsColumns, selectedRows } =
-          processData(rawData);
+        const {
+          data,
+          runProps,
+          highLevelParams,
+          params,
+          metricsColumns,
+          selectedRows,
+        } = processData(rawData);
+        const sortedParams = [
+          ...new Set(params.concat(highLevelParams)),
+        ].sort();
         const groupingSelectOptions = [
           ...getGroupingSelectOptions({
-            params,
+            params: sortedParams,
             runProps,
           }),
         ];
         tooltipData = getTooltipData({
           processedData: data,
-          paramKeys: params,
+          paramKeys: sortedParams,
           groupingSelectOptions,
           groupingItems: ['color', 'chart'],
           model,
@@ -4936,6 +5031,7 @@ function createAppModel(appConfig: IAppInitialConfig) {
           onSortChange,
           configData.grouping as any,
           onModelGroupingSelectChange,
+          AppNameEnum.SCATTERS,
         );
 
         if (model.getState()?.requestStatus !== RequestStatusEnum.Pending) {
@@ -5174,7 +5270,7 @@ function createAppModel(appConfig: IAppInitialConfig) {
                   (metric) => metric.key,
                 ),
                 color: metricsCollection.color,
-
+                hash: '',
                 dasharray: metricsCollection.dasharray,
                 experiment: '',
                 run: '',
@@ -5209,7 +5305,7 @@ function createAppModel(appConfig: IAppInitialConfig) {
                 },
                 key: metric.key,
                 selectKey: `${metric.run.hash}/${metric.key}`,
-                runHash: metric.run.hash,
+                hash: metric.run.hash,
                 isHidden: metric.isHidden,
                 index: rowIndex,
                 color: metricsCollection.color ?? metric.color,
@@ -5221,6 +5317,13 @@ function createAppModel(appConfig: IAppInitialConfig) {
                   TABLE_DATE_FORMAT,
                 ),
                 metric: metric.name,
+                duration: processDurationTime(
+                  metric.run.props.creation_time * 1000,
+                  metric.run.props.end_time
+                    ? metric.run.props.end_time * 1000
+                    : Date.now(),
+                ),
+                active: metric.run.props.active,
                 ...metricsRowValues,
               };
               rowIndex++;
@@ -5232,9 +5335,11 @@ function createAppModel(appConfig: IAppInitialConfig) {
               [
                 'experiment',
                 'run',
+                'hash',
                 'metric',
                 'context',
                 'date',
+                'duration',
                 'description',
                 'step',
                 'epoch',
@@ -5327,6 +5432,7 @@ function createAppModel(appConfig: IAppInitialConfig) {
       function processData(data: IRun<IParamTrace>[]): {
         data: IMetricsCollection<IParam>[];
         params: string[];
+        highLevelParams: string[];
         runProps: string[];
         metricsColumns: any;
         selectedRows: any;
@@ -5414,7 +5520,8 @@ function createAppModel(appConfig: IAppInitialConfig) {
 
         return {
           data: processedData,
-          params: [...new Set(uniqParams.concat(uniqHighLevelParams))].sort(),
+          params: uniqParams,
+          highLevelParams: uniqHighLevelParams,
           runProps: uniqProps,
           metricsColumns,
           selectedRows,
@@ -5561,17 +5668,26 @@ function createAppModel(appConfig: IAppInitialConfig) {
         configData = model.getState()!.config!,
         shouldURLUpdate?: boolean,
       ): void {
-        const { data, runProps, params, metricsColumns, selectedRows } =
-          processData(model.getState()?.rawData);
+        const {
+          data,
+          params,
+          runProps,
+          highLevelParams,
+          metricsColumns,
+          selectedRows,
+        } = processData(model.getState()?.rawData as IRun<IParamTrace>[]);
+        const sortedParams = [
+          ...new Set(params.concat(highLevelParams)),
+        ].sort();
         const groupingSelectOptions = [
           ...getGroupingSelectOptions({
-            params,
+            params: sortedParams,
             runProps,
           }),
         ];
         tooltipData = getTooltipData({
           processedData: data,
-          paramKeys: params,
+          paramKeys: sortedParams,
           groupingSelectOptions,
           groupingItems: ['color', 'chart'],
           model,
@@ -5595,6 +5711,7 @@ function createAppModel(appConfig: IAppInitialConfig) {
           onSortChange,
           configData.grouping as any,
           onModelGroupingSelectChange,
+          AppNameEnum.SCATTERS,
         );
         const tableRef: any = model.getState()?.refs?.tableRef;
         tableRef?.current?.updateData({
@@ -5643,6 +5760,7 @@ function createAppModel(appConfig: IAppInitialConfig) {
       function getScattersData(
         shouldUrlUpdate?: boolean,
         shouldResetSelectedRows?: boolean,
+        queryString?: string,
       ): {
         call: () => Promise<void>;
         abort: () => void;

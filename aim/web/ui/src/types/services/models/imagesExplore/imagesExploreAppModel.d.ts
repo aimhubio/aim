@@ -14,12 +14,12 @@ import { SortFields } from 'utils/getSortedFields';
 
 export interface IImagesExploreAppConfig {
   grouping: {
-    group: string[];
+    row: string[];
     reverseMode: {
-      group: boolean;
+      row: boolean;
     };
     isApplied: {
-      group: boolean;
+      row: boolean;
     };
   };
   images: {

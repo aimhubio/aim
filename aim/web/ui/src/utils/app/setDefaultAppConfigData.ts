@@ -6,8 +6,8 @@ import {
   IAppModelConfig,
 } from 'types/services/models/explorer/createAppModel';
 
-import { getItem } from 'utils/storage';
-import { decode } from 'utils/encoder/encoder';
+import { getItem, setItem } from 'utils/storage';
+import { decode, encode } from 'utils/encoder/encoder';
 import getStateFromUrl from 'utils/getStateFromUrl';
 import { getCompatibleSelectConfig } from 'utils/app/getCompatibleSelectConfig';
 
@@ -28,6 +28,15 @@ export default function setDefaultAppConfigData<M extends State>({
   const luConfig = liveUpdateConfigHash
     ? JSON.parse(decode(liveUpdateConfigHash))
     : config?.liveUpdate;
+
+  // Backward compatibility, update users storage data if code has change in delay
+  // @ts-ignore
+  if (luConfig.delay !== config?.liveUpdate.delay) {
+    // @ts-ignore
+    luConfig.delay = config?.liveUpdate.delay;
+    setItem(`${appName}LuConfig`, encode(luConfig));
+  }
+  ///
 
   const defaultConfig: IAppModelConfig = { liveUpdate: luConfig };
 

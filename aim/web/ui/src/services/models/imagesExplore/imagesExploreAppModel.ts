@@ -83,6 +83,8 @@ import onNotificationAdd from 'utils/app/onNotificationAdd';
 import exceptionHandler from 'utils/app/exceptionHandler';
 import getGroupingSelectOptions from 'utils/app/getGroupingSelectOptions';
 import getAdvancedSuggestion from 'utils/getAdvancedSuggestions';
+import { processDurationTime } from 'utils/processDurationTime';
+import onVisibilityChange from 'utils/app/onColumnsVisibilityChange';
 
 import createModel from '../model';
 import { AppNameEnum } from '../explorer';
@@ -103,12 +105,12 @@ let tooltipData: ITooltipData = {};
 function getConfig(): IImagesExploreAppConfig {
   return {
     grouping: {
-      group: [],
+      row: [],
       reverseMode: {
-        group: false,
+        row: false,
       },
       isApplied: {
-        group: true,
+        row: true,
       },
     },
     select: {
@@ -299,6 +301,7 @@ function abortRequest(): void {
 function getImagesData(
   shouldUrlUpdate?: boolean,
   shouldResetSelectedRows?: boolean,
+  queryString?: string,
 ) {
   if (imagesRequestRef) {
     imagesRequestRef.abort();
@@ -306,6 +309,13 @@ function getImagesData(
 
   const configData: IImagesExploreAppConfig | undefined =
     model.getState()?.config;
+  if (queryString) {
+    if (configData?.select?.advancedMode) {
+      configData.select.advancedQuery = queryString;
+    } else {
+      configData!.select.query = queryString;
+    }
+  }
   if (shouldUrlUpdate) {
     updateURL(configData);
   }
@@ -451,6 +461,7 @@ function processData(data: any[]): {
   data: IMetricsCollection<IImageData>[];
   params: string[];
   runProps: string[];
+  highLevelParams: string[];
   contexts: string[];
   selectedRows: any;
 } {
@@ -546,7 +557,8 @@ function processData(data: any[]): {
   return {
     data: processedData,
     runProps: uniqProps,
-    params: [...new Set(uniqParams.concat(uniqHighLevelParams))].sort(),
+    params: uniqParams,
+    highLevelParams: uniqHighLevelParams,
     contexts: uniqContexts,
     selectedRows,
   };
@@ -554,11 +566,12 @@ function processData(data: any[]): {
 
 function setModelData(rawData: any[], configData: IImagesExploreAppConfig) {
   const sortFields = model.getState()?.config?.table.sortFields;
-  const { data, params, runProps, contexts, selectedRows } =
+  const { data, params, runProps, highLevelParams, contexts, selectedRows } =
     processData(rawData);
+  const sortedParams = [...new Set(params.concat(highLevelParams))].sort();
   const groupingSelectOptions = [
     ...getGroupingSelectOptions({
-      params,
+      params: sortedParams,
       contexts,
       runProps,
       sequenceName: 'images',
@@ -571,9 +584,9 @@ function setModelData(rawData: any[], configData: IImagesExploreAppConfig) {
   });
   tooltipData = getTooltipData({
     processedData: data,
-    paramKeys: params,
+    paramKeys: sortedParams,
     groupingSelectOptions,
-    groupingItems: ['group'],
+    groupingItems: ['row'],
     model,
   });
   if (configData.images.focusedState.key) {
@@ -690,6 +703,8 @@ function setModelData(rawData: any[], configData: IImagesExploreAppConfig) {
       configData.table.hiddenColumns!,
       sortFields,
       onTableSortChange,
+      config.grouping as any,
+      onGroupingSelectChange,
     ),
     sameValueColumns: tableData.sameValueColumns,
     groupingSelectOptions,
@@ -700,12 +715,12 @@ function updateModelData(
   configData: IImagesExploreAppConfig = model.getState()!.config!,
   shouldURLUpdate?: boolean,
 ): void {
-  const { data, params, runProps, contexts, selectedRows } = processData(
-    model.getState()?.rawData as any[],
-  );
+  const { data, params, runProps, highLevelParams, contexts, selectedRows } =
+    processData(model.getState()?.rawData as any[]);
+  const sortedParams = [...new Set(params.concat(highLevelParams))].sort();
   const groupingSelectOptions = [
     ...getGroupingSelectOptions({
-      params,
+      params: sortedParams,
       runProps,
       contexts,
       sequenceName: 'images',
@@ -718,9 +733,9 @@ function updateModelData(
   });
   tooltipData = getTooltipData({
     processedData: data,
-    paramKeys: params,
+    paramKeys: sortedParams,
     groupingSelectOptions,
-    groupingItems: ['group'],
+    groupingItems: ['row'],
     model,
   });
 
@@ -755,6 +770,8 @@ function updateModelData(
     configData.table.hiddenColumns!,
     configData.table.sortFields,
     onTableSortChange,
+    configData.grouping as any,
+    onGroupingSelectChange,
   );
   const tableRef: any = model.getState()?.refs?.tableRef;
   tableRef?.current?.updateData({
@@ -789,12 +806,12 @@ function getFilteredGroupingOptions(
     | undefined = model.getState()?.groupingSelectOptions;
   if (groupingSelectOptions) {
     const filteredOptions = [...groupingSelectOptions]
-      .filter((opt) => grouping['group'].indexOf(opt.value as never) === -1)
+      .filter((opt) => grouping['row'].indexOf(opt.value as never) === -1)
       .map((item) => item.value);
-    return isApplied['group']
-      ? reverseMode['group']
+    return isApplied['row']
+      ? reverseMode['row']
         ? filteredOptions
-        : grouping['group']
+        : grouping['row']
       : [];
   } else {
     return [];
@@ -858,8 +875,8 @@ function onGroupingSelectChange({
     updateModelData(configData, true);
     if (
       configData.images?.additionalProperties?.stacking &&
-      (_.isEmpty(configData.grouping.group) ||
-        configData.grouping.reverseMode.group)
+      (_.isEmpty(configData.grouping.row) ||
+        configData.grouping.reverseMode.row)
     ) {
       onStackingToggle();
     }
@@ -877,14 +894,14 @@ function onGroupingModeChange({ value }: IOnGroupingModeChangeParams): void {
       ...configData.grouping,
       reverseMode: {
         ...configData.grouping.reverseMode,
-        group: value,
+        row: value,
       },
     };
     updateModelData(configData, true);
     if (
       configData.images?.additionalProperties?.stacking &&
-      (_.isEmpty(configData.grouping.group) ||
-        configData.grouping.reverseMode.group)
+      (_.isEmpty(configData.grouping.row) ||
+        configData.grouping.reverseMode.row)
     ) {
       onStackingToggle();
     }
@@ -892,7 +909,7 @@ function onGroupingModeChange({ value }: IOnGroupingModeChangeParams): void {
   if (value) {
     analytics.trackEvent(
       // @ts-ignore
-      ANALYTICS_EVENT_KEYS.images.groupings.group.modeChange,
+      ANALYTICS_EVENT_KEYS.images.groupings.row.modeChange,
       //@TODO change group to dynamic groupName when adding grouping type
     );
   }
@@ -912,8 +929,8 @@ function onGroupingReset(groupName: GroupNameType) {
     updateModelData(configData, true);
     if (
       configData.images?.additionalProperties?.stacking &&
-      (_.isEmpty(configData.grouping.group) ||
-        configData.grouping.reverseMode.group)
+      (_.isEmpty(configData.grouping.row) ||
+        configData.grouping.reverseMode.row)
     ) {
       onStackingToggle();
     }
@@ -928,7 +945,7 @@ function onGroupingApplyChange(): void {
       ...configData.grouping,
       isApplied: {
         ...configData.grouping.isApplied,
-        group: !configData.grouping.isApplied['group'],
+        row: !configData.grouping.isApplied['row'],
       },
     };
     updateModelData(configData, true);
@@ -1033,10 +1050,10 @@ function getDataAsImageSet(
     const configData: IImagesExploreAppConfig | undefined =
       model.getState()?.config;
     const imageSetData: object = {};
-    const group: string[] = [...(configData?.grouping?.group || [])];
+    const group: string[] = [...(configData?.grouping?.row || [])];
     const groupFields =
       defaultGroupFields ||
-      (configData?.grouping?.reverseMode?.group
+      (configData?.grouping?.reverseMode?.row
         ? groupingSelectOptions
             .filter(
               (option: IGroupingSelectOption) => !group.includes(option.label),
@@ -1249,7 +1266,7 @@ function getDataAsTableRows(
           },
           key: metric.seqKey,
           selectKey: `${metric.run.hash}/${metric.seqKey}`,
-          runHash: metric.run.hash,
+          hash: metric.run.hash,
           isHidden: config?.table?.hiddenMetrics?.includes(metric.key),
           index: rowIndex,
           color: metricsCollection.color ?? metric.color,
@@ -1259,6 +1276,12 @@ function getDataAsTableRows(
           description: metric.run.props?.description ?? '-',
           date: moment(metric.run.props.creation_time * 1000).format(
             TABLE_DATE_FORMAT,
+          ),
+          duration: processDurationTime(
+            metric.run.props.creation_time * 1000,
+            metric.run.props.end_time
+              ? metric.run.props.end_time * 1000
+              : Date.now(),
           ),
           name: metric.name,
           context: Object.entries(metric.context).map((entry) =>
@@ -1271,6 +1294,9 @@ function getDataAsTableRows(
         [
           'experiment',
           'run',
+          'hash',
+          'duration',
+          'date',
           'metric',
           'context',
           'step',
@@ -1582,6 +1608,8 @@ function onExportTableData(e: React.ChangeEvent<any>): void {
     config?.table.hiddenColumns!,
     config?.table.sortFields,
     onTableSortChange,
+    config.grouping as any,
+    onGroupingSelectChange,
   );
 
   const excludedFields: string[] = ['#', 'actions'];
@@ -1865,32 +1893,12 @@ function onColumnsOrderChange(columnsOrder: any) {
 }
 
 function onColumnsVisibilityChange(hiddenColumns: string[] | string | any) {
-  const configData: IImagesExploreAppConfig | undefined =
-    model.getState()?.config;
-  const columnsData = model.getState()!.tableColumns!;
-  if (configData?.table) {
-    const table = {
-      ...configData.table,
-      hiddenColumns:
-        hiddenColumns[0] === 'all'
-          ? columnsData.map((col: any) => col.key)
-          : hiddenColumns,
-    };
-    const configUpdate = {
-      ...configData,
-      table,
-    };
-    model.setState({
-      config: configUpdate,
-    });
-    setItem('imagesExploreTable', encode(table));
-    updateModelData(configUpdate);
-  }
-  if (hiddenColumns[0] === 'all') {
-    analytics.trackEvent(ANALYTICS_EVENT_KEYS.images.table.showAllColumns);
-  } else if (_.isEmpty(hiddenColumns)) {
-    analytics.trackEvent(ANALYTICS_EVENT_KEYS.images.table.hideAllColumns);
-  }
+  onVisibilityChange({
+    hiddenColumns,
+    model,
+    appName: AppNameEnum.IMAGES,
+    updateModelData,
+  });
 }
 
 function onTableDiffShow() {
