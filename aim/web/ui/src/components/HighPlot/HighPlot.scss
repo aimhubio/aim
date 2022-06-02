@@ -160,26 +160,3 @@
     stroke-width: 3px;
   }
 }
-
-.inProgressLineIndicator {
-  animation: col 1s linear infinite;
-  stroke-width: 3;
-  stroke: #00800080;
-  fill: $success-color;
-  opacity: 0.2;
-  &.active {
-    opacity: 1;
-  }
-}
-
-@keyframes col {
-  0% {
-    stroke: none;
-  }
-  50% {
-    stroke: #00800080;
-  }
-  100% {
-    stroke: none;
-  }
-}
