@@ -1,9 +1,9 @@
 // @ts-nocheck
 /* eslint-disable react/prop-types */
 
-import React, { useRef, useState, useEffect } from 'react';
+import React, { useRef, useState, useEffect, useMemo } from 'react';
 import classNames from 'classnames';
-import { isEmpty } from 'lodash-es';
+import { debounce, isEmpty } from 'lodash-es';
 
 import { Checkbox } from '@material-ui/core';
 
@@ -16,6 +16,8 @@ import {
   SELECTION_COLUMN_WIDTH,
   RowHeightSize,
 } from 'config/table/tableConfigs';
+
+import getClosestValue from 'utils/getClosestValue';
 
 import Column from './TableColumn';
 
@@ -36,6 +38,8 @@ function Table(props) {
     .map((col) => col.key);
 
   let [expanded, setExpanded] = useState({});
+  let [colWidths, setColWidths] = useState({});
+  let [colLefts, setColLefts] = useState({});
 
   let prevExpanded = useRef(props.expanded ?? {});
 
@@ -69,6 +73,56 @@ function Table(props) {
     prevExpanded.current = props.expanded ?? {};
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [props.expanded]);
+
+  useEffect(() => {
+    let left = 0;
+    let lefts = {};
+    for (let i in colWidths) {
+      lefts[i] = left;
+      left += colWidths[i];
+    }
+    setColLefts(lefts);
+  }, [colWidths]);
+
+  let [middlePaneWindow, setMiddlePaneWindow] = useState({
+    cols: middlePane.slice(0, 10),
+    startIndex: 0,
+  });
+
+  useEffect(() => {
+    const lefts = Object.values(colLefts);
+
+    let leftClosest = getClosestValue(lefts, props.listWindow.left).index;
+    let rightClosest = getClosestValue(
+      lefts,
+      props.listWindow.left + props.listWindow.width,
+    ).index;
+
+    setMiddlePaneWindow({
+      cols: middlePane.slice(
+        leftClosest < 1 ? 0 : leftClosest - 1,
+        rightClosest + 1,
+      ),
+      startIndex: leftClosest < 1 ? 0 : leftClosest - 1,
+    });
+  }, [props.listWindow.left, props.listWindow.width, colLefts]);
+
+  // useEffect(() => {
+  //   let timeoutID;
+  //   if (middlePaneWindow.cols.length !== middlePane.length) {
+  //     timeoutID = setTimeout(
+  //       setMiddlePaneWindow(
+  //         (mPW) => ({
+  //           cols: middlePane.slice(mPW.startIndex, mPW.startIndex + 50),
+  //           startIndex: mPW.startIndex,
+  //         }),
+  //         5000,
+  //       ),
+  //     );
+  //   }
+
+  //   return () => clearTimeout(timeoutID);
+  // }, [middlePaneWindow]);
 
   const color = React.useMemo(
     () => props.data[0]?.rowMeta?.color,
@@ -364,58 +418,79 @@ function Table(props) {
               ))}
             </div>
           )}
-          <div className='Table__pane Table__pane--middle'>
-            {middlePane.map((col, index) => (
-              <ErrorBoundary key={col.key + index}>
-                <Column
-                  key={col.key + index}
-                  topHeader={props.topHeader}
-                  showTopHeaderContent={showTopHeaderContent(index, col)}
-                  showTopHeaderBorder={showTopHeaderContent(index, col, true)}
-                  col={col}
-                  data={props.data}
-                  expanded={expanded}
-                  expand={expand}
-                  togglePin={togglePin}
-                  pinnedTo={null}
-                  firstColumn={
-                    index === 0 && leftPane.length === 0 && !props.multiSelect
-                  }
-                  width={props.columnsWidths?.[col.key]}
-                  updateColumnWidth={props.updateColumnsWidths}
-                  headerMeta={props.headerMeta}
-                  onToggleColumnsColorScales={props.onToggleColumnsColorScales}
-                  columnsColorScales={props.columnsColorScales}
-                  isAlwaysVisible={props.alwaysVisibleColumns?.includes(
-                    col.key,
-                  )}
-                  hideColumn={() =>
-                    props.setExcludedFields?.([
-                      ...(props.excludedFields || []),
+          <div
+            className='Table__pane Table__pane--middle'
+            style={{
+              width:
+                colLefts[Object.keys(colLefts).length - 1] +
+                colWidths[Object.keys(colWidths).length - 1],
+            }}
+          >
+            {middlePaneWindow?.cols?.map((col, i) => {
+              let index = middlePaneWindow.startIndex + i;
+              return (
+                <ErrorBoundary key={col.key + index}>
+                  <Column
+                    key={col.key + index}
+                    topHeader={props.topHeader}
+                    showTopHeaderContent={showTopHeaderContent(index, col)}
+                    showTopHeaderBorder={showTopHeaderContent(index, col, true)}
+                    col={col}
+                    data={props.data}
+                    expanded={expanded}
+                    expand={expand}
+                    togglePin={togglePin}
+                    pinnedTo={null}
+                    firstColumn={
+                      index === 0 && leftPane.length === 0 && !props.multiSelect
+                    }
+                    width={props.columnsWidths?.[col.key]}
+                    updateColumnWidth={props.updateColumnsWidths}
+                    headerMeta={props.headerMeta}
+                    onToggleColumnsColorScales={
+                      props.onToggleColumnsColorScales
+                    }
+                    columnsColorScales={props.columnsColorScales}
+                    isAlwaysVisible={props.alwaysVisibleColumns?.includes(
                       col.key,
-                    ])
-                  }
-                  paneFirstColumn={index === 0}
-                  paneLastColumn={index === middlePane.length - 1}
-                  moveColumn={(dir) =>
-                    moveColumn(col.key, 'middle', index, dir)
-                  }
-                  sortable={
-                    col.sortableKey &&
-                    props.sortFields.findIndex(
-                      (f) => f[0] === col.sortableKey,
-                    ) === -1
-                  }
-                  sortByColumn={(order) => props.onSort(col.sortableKey, order)}
-                  rowHeightMode={props.rowHeightMode}
-                  onRowHover={props.onRowHover}
-                  onRowClick={props.onRowClick}
-                  columnOptions={col.columnOptions}
-                  listWindow={props.listWindow}
-                  selectedRows={props.selectedRows}
-                />
-              </ErrorBoundary>
-            ))}
+                    )}
+                    hideColumn={() =>
+                      props.setExcludedFields?.([
+                        ...(props.excludedFields || []),
+                        col.key,
+                      ])
+                    }
+                    paneFirstColumn={index === 0}
+                    paneLastColumn={index === middlePane.length - 1}
+                    moveColumn={(dir) =>
+                      moveColumn(col.key, 'middle', index, dir)
+                    }
+                    sortable={
+                      col.sortableKey &&
+                      props.sortFields.findIndex(
+                        (f) => f[0] === col.sortableKey,
+                      ) === -1
+                    }
+                    sortByColumn={(order) =>
+                      props.onSort(col.sortableKey, order)
+                    }
+                    rowHeightMode={props.rowHeightMode}
+                    onRowHover={props.onRowHover}
+                    onRowClick={props.onRowClick}
+                    columnOptions={col.columnOptions}
+                    selectedRows={props.selectedRows}
+                    setColWidth={(width) =>
+                      setColWidths((cW) => {
+                        return cW?.[index] === width
+                          ? cW
+                          : { ...cW, [index]: width };
+                      })
+                    }
+                    colLeft={colLefts[index]}
+                  />
+                </ErrorBoundary>
+              );
+            })}
           </div>
           {rightPane.length > 0 && (
             <div className='Table__pane Table__pane--right'>
