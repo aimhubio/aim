@@ -83,7 +83,7 @@ export interface ITooltipContent {
   index?: number;
   images_name?: string;
   selectedFields?: {
-    [key: string]: any;
+    [key: string]: string;
   };
   run?: IRun;
 }

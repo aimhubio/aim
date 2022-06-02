@@ -10,7 +10,7 @@ import { IAxesScaleState } from 'types/components/AxesScalePopover/AxesScalePopo
 import {
   IAggregationConfig,
   IAlignmentConfig,
-  IChartTooltip,
+  IPanelTooltip,
   IChartZoom,
   IFocusedState,
   IMetricAppModelState,
@@ -135,7 +135,7 @@ export interface IHighPlotConfig {
   curveInterpolation: CurveEnum;
   isVisibleColorIndicator: boolean;
   focusedState: IFocusedState;
-  tooltip: IChartTooltip;
+  tooltip: IPanelTooltip;
   brushExtents: {
     [key: string]: {
       [key: string]: [number, number] | [string, string];
@@ -155,11 +155,11 @@ export interface ILineChartConfig {
   densityType: DensityOptions;
   alignmentConfig: IAlignmentConfig;
   focusedState: IFocusedState;
-  tooltip: IChartTooltip;
+  tooltip: IPanelTooltip;
 }
 
 export interface IScatterPlotConfig {
   highlightMode: HighlightEnum;
   focusedState: IFocusedState;
-  tooltip: IChartTooltip;
+  tooltip: IPanelTooltip;
 }
