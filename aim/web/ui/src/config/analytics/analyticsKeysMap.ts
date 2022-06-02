@@ -204,7 +204,7 @@ export const ANALYTICS_EVENT_KEYS = {
         '[ImagesExplorer][Table] Change metric visibility',
     },
     groupings: {
-      group: {
+      row: {
         modeChange: '[ImagesExplorer][Grouping][Group] mode change to reverse', //to reverse
         select: '[ImagesExplorer][Grouping][Group] Select group',
       },

@@ -2,6 +2,7 @@ import _ from 'lodash-es';
 
 import { HideColumnsEnum } from 'config/enums/tableEnums';
 import { ANALYTICS_EVENT_KEYS } from 'config/analytics/analyticsKeysMap';
+import { AVOID_COLUMNS_TO_HIDE_LIST } from 'config/table/tableConfigs';
 
 import * as analytics from 'services/analytics';
 
@@ -59,7 +60,9 @@ export default function onColumnsVisibilityChange<M extends State>({
     }
     columnKeys =
       hiddenColumns === HideColumnsEnum.All
-        ? columnsData.map((col) => col.key)
+        ? columnsData.map(
+            (col) => !AVOID_COLUMNS_TO_HIDE_LIST.has(col.key) && col.key,
+          )
         : columnKeys;
 
     const table = {

@@ -27,6 +27,7 @@ function HideRowsPopover({
           <Button
             variant='text'
             color='secondary'
+            size='small'
             onClick={onAnchorClick}
             className={`HideRowsPopover__trigger ${
               opened || hiddenChartRows ? 'opened' : ''

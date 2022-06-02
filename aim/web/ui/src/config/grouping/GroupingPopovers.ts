@@ -6,24 +6,22 @@ import { IGroupingPopovers } from 'types/pages/components/Grouping/Grouping';
 const GroupingPopovers: IGroupingPopovers[] = [
   {
     groupName: 'color',
-    title: 'Run Color Settings',
-    advancedTitle: 'Color Advanced Options',
+    title: 'Group by color',
     AdvancedComponent: ColorPopoverAdvanced,
   },
   {
     groupName: 'stroke',
-    title: 'Select Fields For Grouping by stroke style',
-    advancedTitle: 'stroke style advanced options',
+    title: 'Group by stroke style',
     AdvancedComponent: StrokePopoverAdvanced,
   },
   {
     groupName: 'chart',
-    title: 'Select fields to divide into charts',
+    title: 'Divide into charts',
+    inputLabel: 'Select fields to divide into charts',
   },
   {
-    groupName: 'group',
-    title: 'Select Fields For Grouping',
-    advancedTitle: 'Select Fields For Grouping',
+    groupName: 'row',
+    title: 'Group by row',
   },
 ];
 
