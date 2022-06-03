@@ -4,6 +4,7 @@
 
 ### Enhancements:
 
+- Add cloud storage backups to AWS S3 for aim repo runs(karan2801)
 - Add LightGBM integration example (gorarakelyan)
 - Add descriptive document titles for pages (KaroMourad)
 - Implement unit-tests for aim SDK utils (yeghiakoronian)
@@ -13,11 +14,15 @@
 ### Fixes:
 
 - Fix issue with rendering incorrect data when x-axis aligned by `timestamp/epoch` (KaroMourad)
+- Fix LineCart axis ticks overlapping issue on log scale (KaroMourad)
 - Change zooming default option to multiple (VkoHov)
-- Changed grouped rows' min and max values names to `Group Min` and `Group Max` (VkoHov)
+- Change grouped rows' min and max values names to `Group Min` and `Group Max` (VkoHov)
 - Preserve the search input value of the grouping dropdown (VkoHov)
+- Change the titles and placeholders in popovers (VkoHov)
 - Fix params duplication in dropdowns (VkoHov)
 - Resolve typing latency issue in the query search input (arsengit)
+- Reorder and add non-hideable table columns (arsengit)
+
 
 ## 3.10.3 May 31, 2022
 

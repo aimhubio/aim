@@ -9,6 +9,11 @@
   display: flex;
   cursor: default;
 
+  &__iconPlaceholder {
+    width: 12px;
+    margin-right: 0.785rem;
+  }
+
   &.highlighted {
     background-color: $cuddle-50;
   }
@@ -36,6 +41,10 @@
     align-items: center;
     cursor: pointer;
     justify-content: center;
+    &.disabled {
+      pointer-events: none;
+      color: $pico-20;
+    }
   }
 
   &__name {

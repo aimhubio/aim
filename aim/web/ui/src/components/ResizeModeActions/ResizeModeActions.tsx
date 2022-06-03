@@ -40,6 +40,7 @@ function ResizeModeActions({
         {resizeButtons.map(({ icon, mode }) => (
           <Button
             key={icon}
+            size='small'
             color={resizeMode === mode ? 'primary' : 'secondary'}
             onClick={() => onTableResizeModeChange(mode)}
             withOnlyIcon

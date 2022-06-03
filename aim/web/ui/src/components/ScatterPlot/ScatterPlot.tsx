@@ -134,6 +134,7 @@ const ScatterPlot = React.forwardRef(function ScatterPlot(
       xScale,
       yScale,
       visBoxRef,
+      axesScaleType,
       humanizerConfigRef,
       drawBgTickLines: { y: true, x: true },
     });

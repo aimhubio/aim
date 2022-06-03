@@ -221,8 +221,8 @@ function processLineChartData({
     max: { x: xMax, y: yMax },
     processedData,
     processedAggrData,
-    allXValues,
-    allYValues,
+    allXValues: _.uniq(allXValues),
+    allYValues: _.uniq(allYValues),
     xScale,
     yScale,
   };

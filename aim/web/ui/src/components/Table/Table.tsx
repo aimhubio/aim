@@ -703,6 +703,7 @@ const Table = React.forwardRef(function Table(
                         <Button
                           type='text'
                           color='secondary'
+                          size='small'
                           onClick={onAnchorClick}
                           className={`Table__header__item ${
                             opened || sortPopoverChanged ? 'opened' : ''
