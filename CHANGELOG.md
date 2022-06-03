@@ -13,6 +13,7 @@
 
 ### Fixes:
 
+- Fix LineCart axis ticks overlapping issue on log scale (KaroMourad)
 - Change zooming default option to multiple (VkoHov)
 - Change grouped rows' min and max values names to `Group Min` and `Group Max` (VkoHov)
 - Preserve the search input value of the grouping dropdown (VkoHov)
