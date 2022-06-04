@@ -11,6 +11,7 @@
 - Display std.dev/err aggregated values in the table (VkoHov)
 - Add `active` state indicator property for `aim.Run` (mihran113)
 - Add ability to edit run name and description of run (VkoHov)
+- Show the description in the sidebar of the run overview tab (VkoHov)
 
 ### Fixes:
 
@@ -22,7 +23,6 @@
 - Fix params duplication in dropdowns (VkoHov)
 - Resolve typing latency issue in the query search input (arsengit)
 - Reorder and add non-hideable table columns (arsengit)
-
 
 ## 3.10.3 May 31, 2022
 
@@ -49,7 +49,7 @@
 
 - Add ability to adjust the density of the visible content in tables (roubkar)
 - Set `metric.name` as default option for grouping (roubkar)
-- Show user-selected params before group config in chart popover (roubkar) 
+- Show user-selected params before group config in chart popover (roubkar)
 - Optimize stream decoding performance on UI (mahnerak)
 - Add support for animated image formats to Aim Image object (devfox-se)
 - Add `AimLogger` for Catboost (devfox-se)
@@ -65,7 +65,7 @@
 - Add ability to track and visualize stdout/stderr (mihran113, VkoHov)
 - Fix `AimLogger` deprecation issues related to release of PyTorch Lightning v1.5 (arnauddhaene)
 - Enable better autocomplete experience with monaco editor (arsengit)
-- Pre-loading and caching necessary resources, add pre-loader animation to Aim UI (arsengit) 
+- Pre-loading and caching necessary resources, add pre-loader animation to Aim UI (arsengit)
 
 ### Fixes:
 
