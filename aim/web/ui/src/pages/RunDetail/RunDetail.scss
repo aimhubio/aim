@@ -32,6 +32,20 @@
       &__appBarBox {
         display: flex;
         align-items: center;
+        justify-content: space-between;
+        &__actionContainer {
+          width: 4.5rem;
+          display: flex;
+          justify-content: center;
+          align-items: center;
+          border-left: $border-main;
+          i {
+            color: $pico-70;
+          }
+          a {
+            text-decoration: unset;
+          }
+        }
       }
       &__appBarTitleBox {
         display: flex;
@@ -228,8 +242,6 @@
     }
   }
 }
-
-
 
 .RunSelectPopoverWrapper {
   &__selectPopoverContent {

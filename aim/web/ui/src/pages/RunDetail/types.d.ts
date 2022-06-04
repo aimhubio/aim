@@ -33,6 +33,7 @@ export interface IRunInfo {
     name: string;
   };
   name: string;
+  description: string;
   tags: any[];
   notes: number;
 }

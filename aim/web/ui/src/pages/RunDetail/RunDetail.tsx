@@ -1,6 +1,7 @@
 import React from 'react';
 import {
   Link,
+  NavLink,
   Route,
   Switch,
   useHistory,
@@ -217,9 +218,9 @@ function RunDetail(): React.FunctionComponentElement<React.ReactNode> {
     runsOfExperimentRequestRef.call();
   }
 
-  const handleTabChange = (event: React.ChangeEvent<{}>, newValue: string) => {
+  function handleTabChange(event: React.ChangeEvent<{}>, newValue: string) {
     setActiveTab(newValue);
-  };
+  }
 
   function onRunsSelectToggle() {
     setIsRunSelectDropdownOpen(!isRunSelectDropdownOpen);
@@ -346,6 +347,13 @@ function RunDetail(): React.FunctionComponentElement<React.ReactNode> {
                   />
                 }
               />
+              <div className='RunDetail__runDetailContainer__appBarContainer__appBarBox__actionContainer'>
+                <NavLink to={`${url}/settings`}>
+                  <Button withOnlyIcon size='small' color='secondary'>
+                    <Icon name='edit' />
+                  </Button>
+                </NavLink>
+              </div>
             </div>
           </div>
           <Paper className='RunDetail__runDetailContainer__tabsContainer'>
