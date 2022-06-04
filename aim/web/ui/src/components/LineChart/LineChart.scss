@@ -138,9 +138,9 @@
 
   .inProgressLineIndicator {
     animation: inProgressIndicator 1s linear infinite;
-    stroke-width: 3;
+    stroke-width: 1;
     stroke: $success-color;
-    fill: $success-color;
+    fill: $teal;
     opacity: 1;
   }
 
@@ -155,19 +155,13 @@
 
   @keyframes inProgressIndicator {
     0% {
-      stroke-width: 0;
-    }
-    25% {
-      stroke-width: 1;
+      stroke: none;
     }
     50% {
-      stroke-width: 3;
-    }
-    75% {
-      stroke-width: 1;
+      stroke: $success-color;
     }
     100% {
-      stroke-width: 0;
+      stroke: none;
     }
   }
 }

@@ -10,6 +10,7 @@
 - Implement unit-tests for aim SDK utils (yeghiakoronian)
 - Display std.dev/err aggregated values in the table (VkoHov)
 - Add `active` state indicator property for `aim.Run` (mihran113)
+- Add `active` state indicators on the chart (VkoHov)
 
 ### Fixes:
 
