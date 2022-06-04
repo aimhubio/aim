@@ -59,7 +59,7 @@ function AlignmentPopover({
   const [open, setOpen] = useState<boolean>(false);
   function handleAlignmentTypeChange(e: React.ChangeEvent<any>): void {
     const { id } = e.target;
-    onAlignmentTypeChange(+id);
+    onAlignmentTypeChange(id);
   }
 
   function handleDensityTypeChange(e: React.ChangeEvent<any>): void {
