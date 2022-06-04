@@ -146,10 +146,11 @@ const LineChart = React.forwardRef(function LineChart(
       axesNodeRef,
       axesRef,
       plotBoxRef,
-      xScale,
-      yScale,
+      xScale: attributesRef.current.xScale,
+      yScale: attributesRef.current.yScale,
       visBoxRef,
       alignmentConfig,
+      axesScaleType,
       humanizerConfigRef,
       drawBgTickLines: { y: true, x: false },
     });

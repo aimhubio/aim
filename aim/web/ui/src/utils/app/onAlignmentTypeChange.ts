@@ -38,6 +38,6 @@ export default function onAlignmentTypeChange<M extends State>({
     `${
       // @ts-ignore
       ANALYTICS_EVENT_KEYS[appName].chart.controls.changeXAxisProperties
-    }, Align X axis by "${AlignmentOptionsEnum[type].toLowerCase()}"`,
+    }, Align X axis by "${type.toLowerCase()}"`,
   );
 }

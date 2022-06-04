@@ -18,19 +18,12 @@ import drawScatterTrendline from './drawScatterTrendline';
 const gradientStartColor = '#2980B9';
 const gradientEndColor = '#E74C3C';
 
-enum AlignmentKeysEnum {
+enum AlignmentOptionsEnum {
   STEP = 'step',
   EPOCH = 'epoch',
   RELATIVE_TIME = 'relative_time',
   ABSOLUTE_TIME = 'absolute_time',
-}
-
-enum AlignmentOptionsEnum {
-  STEP = 0,
-  EPOCH = 1,
-  RELATIVE_TIME = 2,
-  ABSOLUTE_TIME = 3,
-  CUSTOM_METRIC = 4,
+  CUSTOM_METRIC = 'custom',
 }
 
 enum CircleEnum {
@@ -86,7 +79,6 @@ export {
   CurveEnum,
   ScaleEnum,
   ChartTypeEnum,
-  AlignmentKeysEnum,
   AlignmentOptionsEnum,
   PointSymbolEnum,
   TrendlineTypeEnum,
