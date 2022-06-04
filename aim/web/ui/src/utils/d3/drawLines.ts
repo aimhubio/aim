@@ -67,7 +67,7 @@ function drawLines(args: IDrawLinesArgs): void {
       .attr('d', lineGenerator(xScale, yScale, curveInterpolation));
     if (!readOnly) {
       data.forEach((line: any, index) => {
-        if (!_.isNil(line.run.props.end_time) && index > 4 && index > 1) {
+        if (_.isNil(line.run.props.end_time)) {
           linesNodeRef.current
             .append('circle')
             .attr('class', 'inProgressLineIndicator')
