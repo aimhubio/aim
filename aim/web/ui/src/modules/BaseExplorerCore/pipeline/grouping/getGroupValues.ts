@@ -1,9 +1,9 @@
-import { orderBy, pick } from 'lodash-es';
+import { orderBy } from 'lodash-es';
 
 import { getValue } from 'utils/helper';
 import { encode } from 'utils/encoder/encoder';
 
-import { Order } from './applyModifier';
+import { Order } from './types';
 
 type ValueGetter = (...args: any) => Record<string, any>;
 
@@ -24,7 +24,7 @@ type Group = { [key: string]: any };
 
 type GroupValue = { [key: string]: any };
 
-function getModifierValues(
+function getGroups(
   data: any[],
   fields: string[],
   orders: Order[],
@@ -49,12 +49,11 @@ function getModifierValues(
     },
     {},
   );
-  console.log(groups);
-  // sort groups
+
   const orderedGroups = orderBy(
     groups,
     fields.map((p) => `fields.${p}`),
-    [...new Array(fields.length).fill(orders[0])],
+    orders,
   );
 
   // set orders to groups
@@ -68,7 +67,7 @@ function getModifierValues(
   return groups;
 }
 
-export default getModifierValues;
+export default getGroups;
 
 // group by condition
 // apply order

@@ -31,6 +31,7 @@ export interface RunInfo {
 }
 
 export interface RunSearchRunView {
+  hash: string;
   values: Array<any>;
   params: Params;
   traces: Array<SequenceFullView>;

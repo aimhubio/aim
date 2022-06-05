@@ -19,7 +19,7 @@ type ExplorerConfig = {
 const config: ExplorerConfig = {
   sequenceName: SequenceTypesEnum.Images,
   objectDepth: AimObjectDepths.Index,
-  useCache: true,
+  useCache: false,
 };
 
 function BasExplorer() {
@@ -78,6 +78,13 @@ function Modification(props: any) {
       <Text size={24} color='primary'>
         Modification
       </Text>
+      <Button
+        onClick={() => engine.group()}
+        color='primary'
+        variant='contained'
+      >
+        Group
+      </Button>
       <JSONViewer json={modifiers || []} />
     </div>
   );

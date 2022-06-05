@@ -51,7 +51,7 @@ export function storageDataToFlatList(
     /** depth 0 */ // RUN
     let run = {
       ..._.omit(item.props, ['experiment']),
-      // hash: item.hash, @TEST hash should be in run
+      hash: item.hash,
       inProgress: !item.props.end_time,
       experiment: item.props.experiment?.name,
       ...item.params,

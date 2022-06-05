@@ -3,13 +3,14 @@ import createReact from 'zustand';
 import createVanilla from 'zustand/vanilla';
 
 import { getParams } from 'services/api/base-explorer/projectApi';
+import { RunsSearchQueryParams } from 'services/api/base-explorer/runsApi';
 
 import { AimObjectDepths, SequenceTypesEnum } from 'types/core/enums';
 
 import createPipeline, { Pipeline, PipelineOptions } from '../pipeline';
 import { IInstructionsState } from '../store/slices/instructionsSlice';
-import { RunsSearchQueryParams } from '../../../services/api/base-explorer/runsApi';
 import { removeExampleTypesFromProjectData } from '../helpers';
+import { GroupType, Order } from '../pipeline/grouping/types';
 
 type ExplorerState = {
   instructions: IInstructionsState | object;
@@ -62,7 +63,7 @@ function generateEngine() {
         objectDepth: config.objectDepth,
         useCache,
       },
-      modifier: {
+      grouping: {
         useCache,
       },
       query: {
@@ -73,16 +74,46 @@ function generateEngine() {
     pipeline = createPipeline(pipelineOptions);
   }
 
+  let lastQuery: any;
+
   async function search(params: RunsSearchQueryParams) {
+    lastQuery = {
+      query: params,
+    };
     const { data, additionalData } = await pipeline.execute({
       query: {
         params,
+      },
+      group: {
+        columns: [],
       },
     });
 
     storeVanilla.setState({ data, additionalData });
   }
-  async function group() {}
+
+  async function group() {
+    const result = await pipeline.execute({
+      query: lastQuery,
+      group: {
+        [GroupType.COLUMN]: [
+          {
+            field: 'run.hash',
+            order: Order.ASC,
+          },
+          {
+            field: 'run.name',
+            order: Order.DESC,
+          },
+        ],
+      },
+    });
+
+    storeVanilla.setState({
+      data: result.data,
+      additionalData: result.additionalData,
+    });
+  }
 
   function initialize(config: ExplorerConfig) {
     createPipelineInstance(config);
@@ -125,6 +156,9 @@ function generateEngine() {
     sequenceNameSelector: (state: any) => state.sequenceName,
     additionalDataSelector: (state: any) => state.additionalData,
     pipelineStatusSelector: (state: any) => state.pipeline.status,
+
+    // modifications
+    group,
   };
 }
 
