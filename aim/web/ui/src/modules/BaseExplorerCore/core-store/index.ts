@@ -11,6 +11,7 @@ import createPipeline, { Pipeline, PipelineOptions } from '../pipeline';
 import { IInstructionsState } from '../store/slices/instructionsSlice';
 import { removeExampleTypesFromProjectData } from '../helpers';
 import { GroupType, Order } from '../pipeline/grouping/types';
+import { styleApplier } from '../../BaseExplorer/types';
 
 type ExplorerState = {
   instructions: IInstructionsState | object;
@@ -28,6 +29,22 @@ type ExplorerConfig = {
   useCache: boolean;
 };
 
+export interface IEngineConfigFinal {
+  sequenceName: SequenceTypesEnum;
+  adapter: {
+    objectDepth: AimObjectDepths;
+  };
+  grouping?: {};
+  defaultBoxConfig: {
+    width: number;
+    height: number;
+    gap: number;
+  };
+  styleAppliers?: {
+    [key: string]: Function;
+  };
+}
+
 const initialState: ExplorerState = {
   sequenceName: null,
   instructions: {},
@@ -40,10 +57,83 @@ const initialState: ExplorerState = {
 
 let pipeline: Pipeline;
 
-function generateEngine() {
+const applyStyle: styleApplier = (object: any, boxConfig: any, group: any) => {
+  return {
+    x: boxConfig.width * 2 + boxConfig.gap,
+    y: boxConfig.height * 2 + boxConfig.gap,
+  };
+};
+
+function createDefaultBoxStateSlice(config: {
+  width: number;
+  height: number;
+  gap: number;
+}) {
+  const initialBoxConfig = config;
+  const boxConfigSelector = (state: any) => state.boxConfig;
+
+  const generateBoxConfigMethods = <TS extends Function, TG extends Function>(
+    set: TS,
+    get: TG,
+  ) => {
+    function update(newBoxConfig: {
+      width?: number;
+      height?: number;
+      gap?: number;
+    }) {
+      const updatedConfig = {
+        boxConfig: {
+          // @ts-ignore
+          ...get().boxConfig,
+          ...newBoxConfig,
+        },
+      };
+
+      set({
+        boxConfig: updatedConfig,
+      });
+    }
+    function reset() {
+      set({
+        boxConfig: initialBoxConfig,
+      });
+    }
+    return { update, reset };
+  };
+
+  return {
+    initialBoxConfig,
+    boxConfigSelector,
+    methods: generateBoxConfigMethods,
+  };
+}
+
+function createConfiguration(config: IEngineConfigFinal) {
+  const defaultBoxConfig = config.defaultBoxConfig;
+
+  const boxSlice = createDefaultBoxStateSlice(defaultBoxConfig);
+
+  return {
+    boxSlice,
+  };
+}
+
+function createEngine(config: IEngineConfigFinal) {
+  const configs = createConfiguration(config);
+
+  const generatedInitialState = {
+    // @ts-ignore
+    boxConfig: configs.boxSlice.initialBoxConfig,
+  };
   const storeVanilla = createVanilla((set, get) => ({
     ...initialState,
+    ...generatedInitialState,
   }));
+
+  const setState = storeVanilla.setState;
+  const getState = storeVanilla.getState;
+
+  const boxConfigMethods = configs.boxSlice.methods(setState, getState);
 
   const storeReact = createReact(storeVanilla);
 
@@ -157,9 +247,15 @@ function generateEngine() {
     additionalDataSelector: (state: any) => state.additionalData,
     pipelineStatusSelector: (state: any) => state.pipeline.status,
 
+    // boxConfig
+    boxConfig: {
+      stateSelector: configs.boxSlice.boxConfigSelector,
+      methods: boxConfigMethods,
+    },
+
     // modifications
     group,
   };
 }
 
-export default generateEngine;
+export default createEngine;

@@ -5,7 +5,6 @@ export enum ExplorerStatuses {
   waiting = 2,
   fetching = 4,
   decoding = 5,
-
   visualizing = 4,
 }
 
