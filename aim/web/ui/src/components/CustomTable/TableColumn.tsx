@@ -741,7 +741,7 @@ function GroupConfig({
               <Tooltip
                 title={`${config.itemsCount} item${
                   config.itemsCount > 1 ? 's' : ''
-                } in the applyGroups, grouped by ${configData.map(
+                } in the group, grouped by ${configData.map(
                   (item) => ` ${item.name}`,
                 )}`}
               >
