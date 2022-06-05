@@ -2,9 +2,10 @@ import { RunsSearchQueryParams } from 'services/api/base-explorer/runsApi';
 
 import { AimObjectDepths, SequenceTypesEnum } from 'types/core/enums';
 
-import createModifier, { Modifier } from './modifier';
+import createGrouping, { Grouping } from './grouping';
 import createQuery, { Query } from './query';
 import createAdapter, { Adapter } from './adapter';
+import { BettaGroupOption, GroupType, Order } from './grouping/types';
 
 export type PipelineOptions = {
   sequenceName: SequenceTypesEnum;
@@ -22,7 +23,7 @@ export type PipelineOptions = {
     getLatestResult?: () => void;
     useCache?: boolean;
   };
-  modifier: {
+  grouping: {
     getLatestResult?: () => void;
     useCache?: boolean;
   };
@@ -33,9 +34,9 @@ export type PipelineExecutionOptions = {
     // forceRun?: boolean;
     params: RunsSearchQueryParams;
   };
-  modify?: {
-    group: {};
-    order: {};
+  group?: {
+    // @ts-ignore
+    [key in GroupType]?: BettaGroupOption[];
   };
 };
 
@@ -46,14 +47,12 @@ export type Pipeline = {
 let phases: {
   query?: Query;
   adapter?: Adapter;
-  modifier?: Modifier;
+  grouping?: Grouping;
 } = {};
 
 let callbacks: {
   statusChangeCallback?: (status: string) => void;
   exceptionCallback?: () => void;
-  // warningCallback?: () => void;
-  resultCallback?: () => void;
 };
 
 function setCallbacks(cbs: any) {
@@ -75,28 +74,30 @@ function createQueryInstance(config: any) {
   );
 }
 
-function createModifierInstance(config: any = {}) {
-  phases.modifier = createModifier(config);
+function createGroupingInstance(config: any = {}) {
+  phases.grouping = createGrouping({
+    ...config,
+    statusChangeCallback: callbacks.statusChangeCallback,
+  });
 }
 
 async function execute(options: PipelineExecutionOptions): Promise<any> {
   // @ts-ignore
   const queryResult = await phases.query.execute(options.query.params);
-
   // @ts-ignore
   const adapterResult = await phases.adapter.execute(queryResult);
-
   // @ts-ignore
-  // const modifierResult = phases.modifier.execute({
-  //   objectList: adapterResult.objectList,
-  //   // @ts-ignore
-  //   modifiers: ['run.hparams.batch_size', 'run.experiment', 'images.name'],
-  // });
+  const groupingResult = phases.grouping.execute({
+    objectList: adapterResult.objectList,
+    // @ts-ignore
+    grouping: options.group,
+  });
 
   return {
-    data: adapterResult.objectList,
+    data: groupingResult.objectList,
+    foundGroups: groupingResult.foundGroups,
+    appliedGroupsConfig: groupingResult.appliedGroupsConfig,
     additionalData: adapterResult.additionalData,
-    modifierConfig: {},
   };
 }
 
@@ -105,20 +106,20 @@ async function execute(options: PipelineExecutionOptions): Promise<any> {
  * @param {SequenceTypesEnum} sequenceName
  * @param query
  * @param adapter
- * @param modifier
+ * @param grouping
  * @param callbacks
  */
 function createPipeline({
   sequenceName,
   query,
   adapter,
-  modifier,
+  grouping,
   callbacks,
 }: PipelineOptions): Pipeline {
   setCallbacks(callbacks);
   createQueryInstance({ query, sequenceName });
   createAdapterInstance({ ...adapter, sequenceName });
-  createModifierInstance(modifier);
+  createGroupingInstance({ ...grouping, useCache: false });
 
   return {
     execute,

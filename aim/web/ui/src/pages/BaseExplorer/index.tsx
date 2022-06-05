@@ -2,160 +2,119 @@ import React, { useEffect } from 'react';
 // @ts-ignore
 import JSONViewer from 'react-json-viewer';
 
-import createPipeline, { Pipeline } from 'modules/BaseExplorerCore/pipeline';
-import BoxVirtualizer from 'modules/BaseExplorer/BoxVirtualizer';
+import generateEngine from 'modules/BaseExplorerCore/core-store';
 
 import { Button, Text } from 'components/kit';
 
-// import { AimObjectDepths, SequenceTypesEnum } from 'types/core/enums';
-import createQuery, {
-  Query,
-} from '../../modules/BaseExplorerCore/pipeline/query';
-import { AimObjectDepths, SequenceTypesEnum } from '../../types/core/enums';
-import createAdapter, {
-  Adapter,
-} from '../../modules/BaseExplorerCore/pipeline/adapter';
+import { AimObjectDepths, SequenceTypesEnum } from 'types/core/enums';
 
-import Image from './Image';
-import Modifiers from './Modifiers';
-import applyStyles from './applyStyles';
+const engine = generateEngine();
 
-const coordinatesMap = {
-  x: 'visuals.x',
-  y: 'visuals.y',
-  width: 'visuals.width',
-  height: 'visuals.height',
+type ExplorerConfig = {
+  sequenceName: SequenceTypesEnum;
+  objectDepth: AimObjectDepths;
+  useCache: boolean;
+};
+
+const config: ExplorerConfig = {
+  sequenceName: SequenceTypesEnum.Images,
+  objectDepth: AimObjectDepths.Index,
+  useCache: false,
 };
 
 function BasExplorer() {
-  const [status, setStatus] = React.useState('initial');
-  const [data, setData] = React.useState<any>([]);
+  const sequence = engine.useStore(engine.sequenceNameSelector);
+  const pipelineStatus = engine.useStore(engine.pipelineStatusSelector);
 
-  const queryRef = React.useRef<Pipeline>(
-    createPipeline({
-      sequenceName: SequenceTypesEnum.Images,
-      query: {
-        useCache: false,
-      },
-      adapter: {
-        useCache: false,
-        objectDepth: AimObjectDepths.Index,
-      },
-      modifier: {
-        useCache: true,
-      },
-      callbacks: {
-        statusChangeCallback: (status: string) => {
-          console.log(status);
-          setStatus(status);
-        },
-      },
-    }),
-  );
-  function onClick() {
-    queryRef.current
-      // @ts-ignore
-      ?.execute({
-        query: {
-          params: {
-            p: 500,
-          },
-        },
-      })
-      .then((data) => {
-        // const res = applyStyles(data.data, data.modifierConfig);
-        setStatus('finished');
-        console.log(data);
-        setData(data);
-      })
-      .catch((err) => {
-        console.log(err);
-        setStatus('pipeline execution failed');
-      });
-  }
+  useEffect(() => {
+    engine.initialize(config);
+  }, []);
 
-  function onChange(d: any) {
-    console.log(d);
-  }
+  useEffect(() => {
+    console.log(pipelineStatus);
+  }, [pipelineStatus]);
+
+  useEffect(() => {
+    console.log(sequence);
+  }, [sequence]);
 
   return (
     <div style={{ width: '100%', height: '100vh', padding: '10px' }}>
-      <h2>Pipeline status ::: {status}</h2>
-      <div className='flex fjc fac' style={{ marginTop: 10 }}>
-        <Button onClick={onClick} color='primary' variant='contained'>
-          Search
-        </Button>
-        {/*{data && (*/}
-        {/*  <Modifiers*/}
-        {/*    data={data?.additionalData?.modifiers}*/}
-        {/*    onChange={onChange}*/}
-        {/*  />*/}
-        {/*)}*/}
+      <h2>Pipeline status ::: {pipelineStatus}</h2>
+      <div className='flex fj-sb fac' style={{ marginTop: 10 }}>
+        <QueryForm dataSelector={engine.instructionsSelector} />
+        <Modification dataSelector={engine.additionalDataSelector} />
       </div>
-      <Text size={24} weight={600}>
+      <Visualization dataSelector={engine.dataSelector} />
+    </div>
+  );
+}
+
+function Visualization(props: any) {
+  const data: any[] = engine.useStore(props.dataSelector);
+
+  return (
+    <div>
+      <Text size={24} color='primary'>
         Visualization
       </Text>
-      <JSONViewer json={data?.additionalData || []} />
-      <div
-        style={{
-          maxWidth: '100vw',
-          height: '100%',
-          width: '100%',
-          display: 'flex',
-        }}
+      <JSONViewer json={data?.slice(0, 10) || []} />
+    </div>
+  );
+}
+
+function Modification(props: any) {
+  const data: object = engine.useStore(props.dataSelector);
+
+  // @ts-ignore
+  const modifiers = data?.modifiers;
+
+  useEffect(() => {
+    console.log('additional ----> ', data);
+  }, [data]);
+
+  return (
+    <div>
+      <Text size={24} color='primary'>
+        Modification
+      </Text>
+      <Button
+        onClick={() => engine.group()}
+        color='primary'
+        variant='contained'
       >
-        <div
-          style={{
-            width: 400,
-            height: 'auto',
-            display: 'flex',
-            flexDirection: 'column',
-            position: 'relative',
-          }}
+        Group
+      </Button>
+      <JSONViewer json={modifiers || []} />
+    </div>
+  );
+}
+
+function QueryForm(props: any) {
+  const data = engine.useStore(props.dataSelector);
+
+  useEffect(() => {
+    console.log('queryable -----> ', data);
+  }, [data]);
+
+  return (
+    <div className='flex fdc'>
+      <Text size={24} color='primary'>
+        Select Form
+      </Text>
+      <div>
+        <Button
+          onClick={() =>
+            engine.search({
+              q: 'run.hparams.batch_size > 32',
+              p: 500,
+            })
+          }
+          color='primary'
+          variant='contained'
         >
-          {/*{data &&*/}
-          {/*  [...data?.modifierConfig].map((item: any, i: number) => {*/}
-          {/*    if (i % 2 !== 0)*/}
-          {/*      return (*/}
-          {/*        <Text*/}
-          {/*          key={item}*/}
-          {/*          style={{*/}
-          {/*            maxWidth: 350,*/}
-          {/*            position: 'relative',*/}
-          {/*            left: 0,*/}
-          {/*            top: i * 150,*/}
-          {/*          }}*/}
-          {/*          size={18}*/}
-          {/*          weight={400}*/}
-          {/*        >*/}
-          {/*          {item}*/}
-          {/*        </Text>*/}
-          {/*      );*/}
-          {/*  })}*/}
-        </div>
-        <div
-          className='visualizer-container'
-          style={{ height: '100%', width: '100%' }}
-        >
-          {/*<BoxVirtualizer*/}
-          {/*  visualizableContent={Image}*/}
-          {/*  data={data?.data || []}*/}
-          {/*  coordinatesMap={coordinatesMap}*/}
-          {/*  boxGap={20}*/}
-          {/*  isVirtualized*/}
-          {/*/>*/}
-        </div>
-        {/*<JSONViewer json={data?.data?.slice(0, 10) || []} />*/}
-      </div>
-      {/*<button onClick={onClick}>Click to call params</button>*/}
-      <div className='flex '>
-        <div>Data</div>
-        {/*<div>*/}
-        {/*  Contexts <JSONViewer json={data.contexts || []} />*/}
-        {/*</div>*/}
-        {/*<div>*/}
-        {/*  Modifiers <JSONViewer json={data.modifiers || []} />*/}
-        {/*</div>*/}
+          Search
+        </Button>
       </div>
     </div>
   );
