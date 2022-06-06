@@ -1,11 +1,12 @@
 import React from 'react';
-// import AssignmentTurnedInOutlinedIcon from '@material-kit/icons/AssignmentTurnedInOutlined';
-import Highlight, { defaultProps } from 'prism-react-renderer';
+import * as monacoEditor from 'monaco-editor';
 
-import theme from 'prism-react-renderer/themes/nightOwlLight';
+import Editor, { useMonaco } from '@monaco-editor/react';
 
 import CopyToClipBoard from 'components/CopyToClipBoard/CopyToClipBoard';
 import ErrorBoundary from 'components/ErrorBoundary/ErrorBoundary';
+
+import { getMonacoConfig } from 'config/monacoConfig/monacoConfig';
 
 import { ICodeBlockProps } from 'types/components/CodeBlock/CodeBlock';
 
@@ -16,28 +17,56 @@ function CodeBlock({
   className = '',
   language = 'python',
 }: ICodeBlockProps): React.FunctionComponentElement<React.ReactNode> {
+  const [mounted, setMounted] = React.useState(true);
+  const monaco: any = useMonaco();
   const contentRef = React.createRef<HTMLPreElement>();
+  const editorRef = React.useRef<any>();
+
+  const monacoConfig: Record<any, any> = React.useMemo(() => {
+    return getMonacoConfig();
+  }, []);
+
+  React.useEffect(() => {
+    monacoConfig.theme.config.colors = {
+      ...monacoConfig.theme.config.colors,
+      'editor.background': '#f2f3f4',
+    };
+    if (mounted && monaco) {
+      monaco.editor.defineTheme(
+        monacoConfig.theme.name,
+        monacoConfig.theme.config,
+      );
+      monaco.editor.setTheme(monacoConfig.theme.name);
+    }
+    // inserting given object for autosuggestion
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [monaco, mounted]);
+
+  function handleDidMount(editor: monacoEditor.editor.IStandaloneCodeEditor) {
+    editorRef.current = editor;
+    setMounted(true);
+    // console.log(editorRef.current.getContentHeight());
+    editorRef.current.layout({ height: editorRef.current.getContentHeight() });
+  }
+
   return (
     <ErrorBoundary>
       <div className={`CodeBlock ${className}`}>
-        <Highlight
-          {...defaultProps}
-          theme={theme}
-          code={code.trim()}
+        <Editor
           language={language}
-        >
-          {({ className, style, tokens, getLineProps, getTokenProps }) => (
-            <pre className={className} style={style} ref={contentRef}>
-              {tokens.map((line, i) => (
-                <div key={i} {...getLineProps({ line, key: i })}>
-                  {line.map((token, key) => (
-                    <span key={key} {...getTokenProps({ token, key })} />
-                  ))}
-                </div>
-              ))}
-            </pre>
-          )}
-        </Highlight>
+          value={code}
+          onMount={handleDidMount}
+          options={{
+            ...monacoConfig.options,
+            wordWrap: 'off',
+            readOnly: true,
+            scrollbar: {
+              vertical: 'hidden',
+              horizontal: 'hidden',
+              handleMouseWheel: false,
+            },
+          }}
+        />
         <ErrorBoundary>
           <CopyToClipBoard
             className='CodeBlock__copy__button'
