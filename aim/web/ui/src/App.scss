@@ -3,6 +3,10 @@
 @import 'src/styles/components/_inputs.scss';
 @import 'src/styles/_global.scss';
 
+body {
+  -webkit-font-smoothing: antialiased;
+}
+
 #root {
   background-color: #ffff;
 }

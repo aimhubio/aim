@@ -10,6 +10,7 @@ import { getItem, setItem } from 'utils/storage';
 import { decode, encode } from 'utils/encoder/encoder';
 import getStateFromUrl from 'utils/getStateFromUrl';
 import { getCompatibleSelectConfig } from 'utils/app/getCompatibleSelectConfig';
+import { getCompatibleChartConfig } from 'utils/app/getCompatibleChartConfig';
 
 export default function setDefaultAppConfigData<M extends State>({
   config,
@@ -51,7 +52,10 @@ export default function setDefaultAppConfigData<M extends State>({
     defaultConfig.select = compatibleSelectConfig ?? {};
   }
   if (components.charts) {
-    defaultConfig.chart = getStateFromUrl('chart') ?? {};
+    const compatibleChartConfig = getCompatibleChartConfig(
+      getStateFromUrl('chart'),
+    );
+    defaultConfig.chart = compatibleChartConfig ?? {};
   }
   if (recoverTableState && components.table) {
     const tableConfigHash = getItem(`${appName}Table`);

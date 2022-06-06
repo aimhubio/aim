@@ -54,7 +54,7 @@ const PopoverContent = React.forwardRef(function PopoverContent(
                     {contextToString(context)}
                   </Text>
                   <Text component='p' className='PopoverContent__axisValue'>
-                    {focusedState?.yValue ?? '--'}
+                    {formatValue(focusedState?.yValue)}
                   </Text>
                 </span>
               </div>
@@ -96,7 +96,7 @@ const PopoverContent = React.forwardRef(function PopoverContent(
                 {context || null}
               </div>
               <div className='PopoverContent__value'>
-                Value: {focusedState?.yValue ?? '--'}
+                Value: {formatValue(focusedState?.yValue)}
               </div>
             </div>
           </ErrorBoundary>
@@ -132,7 +132,7 @@ const PopoverContent = React.forwardRef(function PopoverContent(
                 <Text>Y: </Text>
                 <span className='PopoverContent__headerValue'>
                   <Text component='p' className='PopoverContent__axisValue'>
-                    {focusedState?.yValue ?? '--'}
+                    {formatValue(focusedState?.yValue)}
                   </Text>
                 </span>
               </div>
@@ -140,7 +140,7 @@ const PopoverContent = React.forwardRef(function PopoverContent(
                 <Text>X: </Text>
                 <span className='PopoverContent__headerValue'>
                   <Text component='p' className='PopoverContent__axisValue'>
-                    {focusedState?.xValue ?? '--'}
+                    {formatValue(focusedState?.xValue)}
                   </Text>
                 </span>
               </div>

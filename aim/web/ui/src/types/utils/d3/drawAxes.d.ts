@@ -2,6 +2,8 @@ import React from 'react';
 
 import { IAlignmentConfig } from 'types/services/models/metrics/metricsAppModel';
 
+import { IAxesScaleState } from 'types/components/AxesScalePopover/AxesScalePopover';
+
 import { IAxisScale } from './getAxisScale';
 
 export interface IDrawAxesArgs {
@@ -13,6 +15,7 @@ export interface IDrawAxesArgs {
   yScale: IAxisScale;
   visBoxRef: React.MutableRefObject<>;
   alignmentConfig?: IAlignmentConfig;
+  axesScaleType: IAxesScaleState;
   humanizerConfigRef: React.MutableRefObject<{}>;
   drawBgTickLines?: { x?: boolean; y?: boolean };
 }
