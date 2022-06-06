@@ -110,7 +110,7 @@ function BookmarkCard({
             {description}
           </Text>
         </div>
-        {tags.length > 0 && (
+        {tags.length && !select.advancedMode && (
           <div className='BookmarkCard__selected__metrics ScrollBar__hidden'>
             {tags.map((tag, index) => {
               return (
