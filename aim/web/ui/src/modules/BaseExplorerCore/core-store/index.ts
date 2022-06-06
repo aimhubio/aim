@@ -14,8 +14,10 @@ import { IInstructionsState } from '../store/slices/instructionsSlice';
 import { removeExampleTypesFromProjectData } from '../helpers';
 import { GroupType, Order } from '../pipeline/grouping/types';
 import { styleApplier } from '../../BaseExplorer/types';
+import { instructionsSelector } from '../store';
 
 type ExplorerState = {
+  initialized: boolean;
   instructions: IInstructionsState | object;
   sequenceName: SequenceTypesEnum | null;
   pipeline: {
@@ -32,6 +34,7 @@ type ExplorerConfig = {
 };
 
 export interface IEngineConfigFinal {
+  useCache?: boolean;
   sequenceName: SequenceTypesEnum;
   adapter: {
     objectDepth: AimObjectDepths;
@@ -48,6 +51,7 @@ export interface IEngineConfigFinal {
 }
 
 const initialState: ExplorerState = {
+  initialized: false,
   sequenceName: null,
   instructions: {},
   pipeline: {
@@ -95,6 +99,7 @@ function createDefaultBoxStateSlice(config: {
         boxConfig: updatedConfig,
       });
     }
+
     function reset() {
       set({
         boxConfig: initialBoxConfig,
@@ -115,11 +120,64 @@ function createConfiguration(config: IEngineConfigFinal) {
 
   const boxSlice = createDefaultBoxStateSlice(defaultBoxConfig);
 
+  const queryUISlice = createQueryUISlice({
+    simpleInput: '',
+    advancedInput: '',
+    selections: [],
+    advancedModeOn: true,
+  });
+
   return {
     boxSlice,
+    queryUISlice,
   };
 }
 
+// QUERY SLICE
+type QueryUIStateUnit = {
+  simpleInput: string;
+  advancedInput: string;
+  selections: Array<any>;
+  advancedModeOn: boolean;
+};
+
+function createQueryUISlice(initialState: QueryUIStateUnit) {
+  const selector = (state: any) => state.query;
+
+  const generateMethods = <TS extends Function, TG extends Function>(
+    set: TS,
+    get: TG,
+  ) => {
+    function update(newState: QueryUIStateUnit) {
+      const updated = {
+        // @ts-ignore
+        ...get().query,
+        ...newState,
+      };
+
+      set({
+        query: updated,
+      });
+    }
+
+    function reset() {
+      set({
+        query: { ...initialState },
+      });
+    }
+
+    return { update, reset };
+  };
+
+  return {
+    methods: generateMethods,
+    initialState,
+    selector,
+  };
+}
+// QUERY SLICE
+
+// CREATE ENGINE
 function createEngine(config: IEngineConfigFinal) {
   const configs = createConfiguration(config);
 
@@ -127,7 +185,7 @@ function createEngine(config: IEngineConfigFinal) {
     // @ts-ignore
     boxConfig: configs.boxSlice.initialBoxConfig,
   };
-  const storeVanilla = createVanilla((set, get) => ({
+  const storeVanilla = createVanilla<ExplorerState>((set, get) => ({
     ...initialState,
     ...generatedInitialState,
   }));
@@ -135,10 +193,18 @@ function createEngine(config: IEngineConfigFinal) {
   const setState = storeVanilla.setState;
   const getState = storeVanilla.getState;
 
+  /*  Slices Creation */
   const boxConfigMethods = configs.boxSlice.methods<
     SetState<any>,
     GetState<any>
   >(setState, getState);
+
+  const createQueryUISlice = configs.queryUISlice.methods<
+    SetState<any>,
+    GetState<any>
+  >(setState, getState);
+
+  /*  Slices Creation */
 
   const storeReact = createReact(storeVanilla);
 
@@ -210,29 +276,34 @@ function createEngine(config: IEngineConfigFinal) {
     });
   }
 
-  function initialize(config: ExplorerConfig) {
-    createPipelineInstance(config);
-    storeVanilla.setState({ sequenceName: config.sequenceName });
+  function initialize() {
+    createPipelineInstance({
+      objectDepth: config.adapter.objectDepth,
+      sequenceName: config.sequenceName,
+      useCache: !!config.useCache,
+    });
+
+    const { initialized } = storeVanilla.getState();
 
     // getProjects
-    getInstructions(config.sequenceName).then((instructions) => {
-      storeVanilla.setState({
-        instructions: {
-          queryable_data: instructions,
-          // @ts-ignore
-          project_sequence_info: instructions[config.sequenceName],
-        },
-      });
-    });
+    !initialized && // @TODO check is this need,  Cache by sidebar click
+      getInstructions(config.sequenceName)
+        .then((instructions) => {
+          storeVanilla.setState({
+            initialized: true,
+            instructions: {
+              queryable_data: instructions,
+              // @ts-ignore
+              project_sequence_info: instructions[config.sequenceName],
+            },
+          });
+        })
+        .catch(); // @TODO exception handling
   }
 
   async function getInstructions(sequence: SequenceTypesEnum) {
-    try {
-      const params = await getParams({ sequence });
-      return removeExampleTypesFromProjectData(params);
-    } catch (e) {
-      // @TODO exception handling
-    }
+    const params = await getParams({ sequence });
+    return removeExampleTypesFromProjectData(params);
   }
 
   return {
@@ -252,14 +323,28 @@ function createEngine(config: IEngineConfigFinal) {
     additionalDataSelector: (state: any) => state.additionalData,
     pipelineStatusSelector: (state: any) => state.pipeline.status,
 
+    engineStatusSelector: (state: ExplorerState) => ({
+      initialized: state.initialized,
+    }),
+    // modifications
+    group,
+
     // boxConfig
     boxConfig: {
       stateSelector: configs.boxSlice.boxConfigSelector,
       methods: boxConfigMethods,
     },
 
-    // modifications
-    group,
+    // queryUI
+    queryUI: {
+      stateSelector: configs.queryUISlice.selector,
+      methods: boxConfigMethods,
+    },
+
+    // instructions
+    instructions: {
+      dataSelector: instructionsSelector,
+    },
   };
 }
 

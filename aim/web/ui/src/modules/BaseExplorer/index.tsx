@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 
 import { Text } from 'components/kit';
 
@@ -7,26 +7,37 @@ import createEngine, {
 } from '../BaseExplorerCore/core-store';
 
 import { IExplorerConfig, IBaseExplorerProps } from './types';
+import ExplorerBar from './components/EexplorerBar';
 
 const __DEV__ = process.env.NODE_ENV;
 
 function BaseExplorer(props: IBaseExplorerProps) {
   const {
     ui: { components },
+    engineInstance,
   } = props;
 
+  const { initialized } = engineInstance.useStore(
+    engineInstance.engineStatusSelector,
+  );
+
+  useEffect(() => {
+    engineInstance.initialize();
+  }, [engineInstance]);
+
   const visualizations = React.useMemo(() => {
-    const p = { engine: props.engineInstance };
+    const p = { engine: engineInstance };
     const Visualizations: React.ReactNode[] = components.visualizations.map(
       (Viz) => <Viz key={Viz.displayName} {...p} />,
     );
 
     return Visualizations;
-  }, [props, components.visualizations]);
+  }, [engineInstance, components.visualizations]);
 
-  return (
+  return initialized ? (
     <div style={{ width: '100%', height: '100vh', padding: '10px' }}>
-      {__DEV__ && <Text>Pipeline status ::: status</Text>}
+      <ExplorerBar engine={props.engineInstance} />
+      {__DEV__ && <Text>Engine status ::: status</Text>}
       <div className='flex fjb fac' style={{ marginTop: 10 }}>
         <components.queryForm engine={props.engineInstance} />
         <components.grouping engine={props.engineInstance} />
@@ -34,6 +45,11 @@ function BaseExplorer(props: IBaseExplorerProps) {
       <br />
       <div className='AimVisualizer'>{visualizations}</div>
     </div>
+  ) : (
+    <>
+      {console.log('initializing')}
+      <div>Initializing</div>
+    </>
   );
 }
 
@@ -49,7 +65,7 @@ function createExplorer(config: IExplorerConfig): () => React.ReactElement {
   };
 
   const engine = createEngine(engineConfig);
-  console.log(engine);
+
   return () => <BaseExplorer {...config} engineInstance={engine} />;
 }
 

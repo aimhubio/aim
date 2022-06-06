@@ -10,7 +10,7 @@ import {
   ExplorerStatuses,
   IExplorerSliceMethods,
   IExplorerSliceState,
-} from './types';
+} from './types.d';
 
 const initialState: IExplorerSliceState = {
   sequenceName: null,
