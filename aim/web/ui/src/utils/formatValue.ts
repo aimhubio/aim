@@ -1,5 +1,8 @@
 import { format_bytes } from './encoder/format_bytes';
 
+const NUMBER_PRECISION = 8;
+const UNDEFINED_VALUE = '--';
+
 const FORMATTERS: Record<string, Function> = {
   undefined: format_undefined,
   number: format_number,
@@ -10,7 +13,7 @@ const FORMATTERS: Record<string, Function> = {
 
 function format_undefined(
   value: undefined,
-  undefinedValue: string = '-',
+  undefinedValue: string = UNDEFINED_VALUE,
 ): string {
   return undefinedValue;
 }
@@ -23,7 +26,7 @@ function format_number(value: number): string {
     return value > 0 ? 'Inf' : '-Inf';
   }
 
-  return JSON.stringify(value);
+  return JSON.stringify(parseFloat(value.toFixed(NUMBER_PRECISION)));
 }
 
 function format_str(value: string): string {
@@ -34,7 +37,10 @@ function format_bool(value: boolean): string {
   return value ? 'True' : 'False';
 }
 
-function format_list(value: unknown[], undefinedValue: string = '-'): string {
+function format_list(
+  value: unknown[],
+  undefinedValue: string = UNDEFINED_VALUE,
+): string {
   const pieces = [];
   for (let i = 0; i < value.length; i++) {
     const piece = formatValue(value[i], undefinedValue);
@@ -45,7 +51,7 @@ function format_list(value: unknown[], undefinedValue: string = '-'): string {
 
 function format_dict(
   value: Record<string, unknown>,
-  undefinedValue: string = '-',
+  undefinedValue: string = UNDEFINED_VALUE,
 ): string {
   const pieces = [];
   const keys = Object.keys(value);
@@ -61,7 +67,7 @@ function format_dict(
 
 function format_object(
   value: Record<string, unknown>,
-  undefinedValue: string = '-',
+  undefinedValue: string = UNDEFINED_VALUE,
 ): string {
   if (value === null) {
     return 'None';
@@ -74,7 +80,10 @@ function format_object(
   }
 }
 
-export function formatValue(value: any, undefinedValue: string = '-'): string {
+export function formatValue(
+  value: unknown,
+  undefinedValue: string = UNDEFINED_VALUE,
+): string {
   let formatter = FORMATTERS[typeof value];
   return formatter(value, undefinedValue);
 }
