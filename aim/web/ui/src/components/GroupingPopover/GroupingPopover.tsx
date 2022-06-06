@@ -72,15 +72,16 @@ function GroupingPopover({
       : data;
   }, [groupName, groupingData, groupingSelectOptions]);
 
-  function handleGroupingMode(val: string | number, id: any) {
-    onGroupingModeChange({
-      groupName,
-      value: val === 'Reverse',
-      options: groupingData?.reverseMode[groupName as GroupNameType]
-        ? groupingSelectOptions
-        : null,
-    });
-  }
+  //ToDo reverse mode
+  // function handleGroupingMode(val: string | number, id: any) {
+  //   onGroupingModeChange({
+  //     groupName,
+  //     value: val === 'Reverse',
+  //     options: groupingData?.reverseMode[groupName as GroupNameType]
+  //       ? groupingSelectOptions
+  //       : null,
+  //   });
+  // }
 
   const options = React.useMemo(() => {
     if (inputValue.trim() !== '') {
@@ -166,7 +167,9 @@ function GroupingPopover({
               )}
             />
           </div>
-          {/* <div className='GroupingPopover__toggleMode__div'>
+
+          {/* //ToDo reverse mode
+          <div className='GroupingPopover__toggleMode__div'>
             <Text
               size={12}
               tint={50}

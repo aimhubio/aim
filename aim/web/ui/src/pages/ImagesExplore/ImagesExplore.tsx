@@ -94,13 +94,16 @@ function ImagesExplore(): React.FunctionComponentElement<React.ReactNode> {
     }
     const grouping = imagesExploreData?.config?.grouping;
     const group: string[] = [...(grouping?.row || [])];
-    const groupFields = grouping?.reverseMode?.row
-      ? imagesExploreData?.groupingSelectOptions.filter(
-          (option: IGroupingSelectOption) => !group.includes(option.value),
-        )
-      : imagesExploreData?.groupingSelectOptions.filter(
-          (option: IGroupingSelectOption) => group.includes(option.value),
-        );
+    //ToDo reverse mode
+    const groupFields =
+      // grouping?.reverseMode?.row
+      //   ? imagesExploreData?.groupingSelectOptions.filter(
+      //       (option: IGroupingSelectOption) => !group.includes(option.value),
+      //     )
+      //   :
+      imagesExploreData?.groupingSelectOptions.filter(
+        (option: IGroupingSelectOption) => group.includes(option.value),
+      );
     let sortGroupFields = groupFields.reduce(
       (acc: SortFields, field: SortField) => {
         const resultField = imagesExploreData?.config?.images?.sortFieldsDict[
@@ -114,11 +117,13 @@ function ImagesExplore(): React.FunctionComponentElement<React.ReactNode> {
     sortGroupFields = sortGroupFields.concat(
       imagesExploreData?.config?.images?.sortFields
         .filter((field: SortField) => {
-          if (grouping?.reverseMode?.row) {
-            return group.includes(field.value);
-          } else {
-            return !group.includes(field.value);
-          }
+          //ToDo reverse mode
+
+          // if (grouping?.reverseMode?.row) {
+          //   return group.includes(field.value);
+          // } else {
+          return !group.includes(field.value);
+          // }
         })
         .map((field: SortField) => ({ ...field, readonly: false })),
     );
