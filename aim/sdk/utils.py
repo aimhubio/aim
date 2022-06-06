@@ -1,8 +1,11 @@
 import os
+import tarfile
 import pathlib
 import re
 import uuid
+from contextlib import contextmanager
 from typing import Union, Any, Tuple
+
 from aim.sdk.configs import get_aim_repo_name
 
 from aim.storage.object import CustomObject
@@ -84,3 +87,27 @@ def check_types_compatibility(dtype: str, base_dtype: str, update_base_dtype_fn=
     if dtype == 'list' and any_list_regex.match(base_dtype):
         return True
     return False
+
+
+@contextmanager
+def work_directory(path: str):
+    curr = os.getcwd()
+    try:
+        os.chdir(path)
+        yield
+    finally:
+        os.chdir(curr)
+
+
+def backup_run(run) -> str:
+    repo_path = run.repo.path
+    backups_dir = os.path.join(repo_path, 'bcp')
+    if not os.path.exists(backups_dir):
+        os.mkdir(backups_dir)
+
+    run_bcp_file = f'bcp/{run.hash}.tar.gz'
+    with work_directory(repo_path):
+        with tarfile.open(run_bcp_file, 'w:gz') as tar:
+            for part in ('meta', 'seqs'):
+                tar.add(os.path.join(part, 'chunks', run.hash))
+    return run_bcp_file
