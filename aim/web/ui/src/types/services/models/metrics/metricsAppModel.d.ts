@@ -23,7 +23,7 @@ import { AlignmentOptionsEnum } from 'utils/d3';
 import { ISelectOption } from '../explorer/createAppModel';
 
 import { IMetric } from './metricModel';
-import { IMetricTrace, ISequence } from './runModel';
+import { IMetricTrace, IRun, ISequence } from './runModel';
 
 export interface IMetricAppModelState {
   refs: {
@@ -75,18 +75,17 @@ export interface ITooltipContent {
   groupConfig?: {
     [key: string]: any;
   };
-  params?: {
-    [key: string]: any;
-  };
   name?: string;
   context?: { [key: string]: unknown };
   runHash?: string;
-  mediaContent?: {
-    caption?: string;
-    step?: number | string;
-    index?: number;
-    name?: string;
+  caption?: string;
+  step?: number | string;
+  index?: number;
+  images_name?: string;
+  selectedFields?: {
+    [key: string]: string;
   };
+  run?: IRun;
 }
 
 export interface IMetricsCollection<T> {
@@ -138,7 +137,7 @@ export interface IChartZoom {
 export interface IPanelTooltip {
   content: ITooltipContent;
   display: boolean;
-  selectedParams: string[];
+  selectedFields: string[];
 }
 
 export interface IAlignmentConfig {

@@ -30,6 +30,7 @@ function MediaList({
   tooltip,
   mediaType,
   wrapperOffsetHeight,
+  selectOptions,
 }: IMediaListProps): React.FunctionComponentElement<React.ReactNode> {
   const itemSize = React.useCallback(
     (index: number) => {
@@ -94,6 +95,7 @@ function MediaList({
           additionalProperties,
           tooltip,
           mediaType,
+          selectOptions,
         }}
       >
         {MediaBoxMemoized}
@@ -120,6 +122,7 @@ const MediaBoxMemoized = React.memo(function MediaBoxMemoized(props: any) {
         focusedState={data.focusedState}
         additionalProperties={data.additionalProperties}
         tooltip={data.tooltip}
+        selectOptions={data.selectOptions}
       />
     </ErrorBoundary>
   );
