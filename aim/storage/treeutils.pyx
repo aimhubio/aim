@@ -112,6 +112,9 @@ def iter_fold_tree(
         if keys:
             raise StopIteration
         node = val_to_node(val, resolve_objects=resolve_objects)
+        # TODO [AT]: fix this
+        if node == []:
+            node = {}
         stack.append(node)
     except StopIteration:
         if level > 0:
