@@ -17,7 +17,8 @@ const getBadgeColor: (color: string) => string = (color: string): string =>
 const BadgeContainer: any = styled.div`
   font-family: ${(props: any) =>
     props.monospace ? '"Inconsolata", monospace' : 'Inter, sans-serif'};
-  ${({ color }) => color && getBadgeColor(color)}
+  ${({ color }) => color && getBadgeColor(color)};
+  font-variation-settings: ${(props: any) => props.monospace && "'wdth' 82"};
 `;
 
 const BadgeIcon = styled.span`
