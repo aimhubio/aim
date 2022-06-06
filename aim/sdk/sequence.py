@@ -43,7 +43,8 @@ class Sequence(Generic[T]):
         self.run = run
 
         self._sequence_meta_tree = None
-        self._series_tree = run.series_run_tree.subtree((context.idx, name))
+
+        self._series_tree = run.series_run_tree[self.version()].subtree((context.idx, name))
 
         self._hash: int = None
 
@@ -126,6 +127,9 @@ class Sequence(Generic[T]):
 
     def preload(self):
         self._series_tree.preload()
+
+    def version(self):
+        return self._meta_tree.get('version', 1)
 
 
 class MediaSequenceBase(Sequence):
