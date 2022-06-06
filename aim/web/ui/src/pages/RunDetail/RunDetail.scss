@@ -335,6 +335,8 @@
               &__experimentName {
                 width: 100%;
                 word-break: break-all;
+                font-family: 'Inconsolata', monospace;
+                font-variation-settings: 'wdth' 82;
               }
             }
 
@@ -369,7 +371,7 @@
         width: 50%;
         position: relative;
         padding: 0.375rem 0.5rem 0 0.5rem;
-        border-right: $border-main;
+        // border-right: $border-main;
         &::before {
           content: '';
           position: absolute;
@@ -423,6 +425,8 @@
               width: 95%;
               margin-bottom: $space-xxs;
               position: relative;
+              font-family: 'Inconsolata', monospace;
+              font-variation-settings: 'wdth' 82;
               span {
                 display: block;
                 max-width: 100%;
@@ -444,6 +448,8 @@
             &__runDate {
               display: flex;
               align-items: center;
+              font-family: 'Inconsolata', monospace;
+              font-variation-settings: 'wdth' 82;
               i {
                 margin-right: $space-xxs;
               }
@@ -476,6 +482,9 @@
         display: flex;
         align-items: center;
         justify-content: center;
+        &:first-child {
+          border-right: $border-main;
+        }
       }
     }
   }
