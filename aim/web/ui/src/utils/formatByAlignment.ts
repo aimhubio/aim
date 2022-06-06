@@ -7,6 +7,7 @@ import { IAlignmentConfig } from 'types/services/models/metrics/metricsAppModel'
 import shortEnglishHumanizer from 'utils/shortEnglishHumanizer';
 
 import { AlignmentOptionsEnum } from './d3';
+import { formatValue } from './formatValue';
 
 function formatValueByAlignment({
   xAxisTickValue,
@@ -17,22 +18,27 @@ function formatValueByAlignment({
   type?: AlignmentOptionsEnum;
   humanizerConfig?: {};
 }) {
+  let formatted: string | number | null = xAxisTickValue;
+
   if (xAxisTickValue || xAxisTickValue === 0) {
     switch (type) {
       case AlignmentOptionsEnum.EPOCH:
-        return Math.floor(xAxisTickValue);
+        formatted = Math.floor(xAxisTickValue);
+        break;
       case AlignmentOptionsEnum.RELATIVE_TIME:
-        return shortEnglishHumanizer(Math.round(xAxisTickValue), {
+        formatted = shortEnglishHumanizer(Math.round(xAxisTickValue), {
           ...humanizerConfig,
           maxDecimalPoints: 2,
         });
+        break;
       case AlignmentOptionsEnum.ABSOLUTE_TIME:
-        return moment(xAxisTickValue).format(DATE_CHART_TICK);
+        formatted = moment(xAxisTickValue).format(DATE_CHART_TICK);
+        break;
       default:
-        return xAxisTickValue;
+        formatted = xAxisTickValue;
     }
   }
-  return xAxisTickValue || '--';
+  return formatValue(formatted);
 }
 
 function getKeyByAlignment(alignmentConfig?: IAlignmentConfig): string {

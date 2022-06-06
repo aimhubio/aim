@@ -4,12 +4,14 @@
 
 ### Enhancements:
 
-- Add cloud storage backups to AWS S3 for aim repo runs(karan2801)
+- Improve formatting of numbers by setting maximum precision (KaroMourad)
+- Add cloud storage backups to AWS S3 for aim repo runs (karan2801)
 - Add LightGBM integration example (gorarakelyan)
 - Add descriptive document titles for pages (KaroMourad)
 - Implement unit-tests for aim SDK utils (yeghiakoronian)
 - Display std.dev/err aggregated values in the table (VkoHov)
 - Add `active` state indicator property for `aim.Run` (mihran113)
+- Optimize the initial render time of Aim UI by using more lightweight font-family (arsengit)
 
 ### Fixes:
 
