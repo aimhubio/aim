@@ -3,7 +3,7 @@ import * as yup from 'yup';
 import _ from 'lodash-es';
 import { useFormik } from 'formik';
 
-import { Button, TextField, Tooltip } from '@material-ui/core';
+import { Button, TextField } from '@material-ui/core';
 
 import { Text } from 'components/kit';
 import ErrorBoundary from 'components/ErrorBoundary/ErrorBoundary';
