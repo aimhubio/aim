@@ -42,7 +42,7 @@ function MediaPanel({
   sortFieldsDict,
   sortFields,
   illustrationConfig,
-  selectOptions,
+  selectOptions = [],
 }: IMediaPanelProps): React.FunctionComponentElement<React.ReactNode> {
   const [activePointRect, setActivePointRect] = React.useState<{
     top: number;

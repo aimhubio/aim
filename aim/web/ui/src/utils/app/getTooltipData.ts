@@ -33,7 +33,6 @@ export default function getTooltipData<D, M extends State>({
 
     for (let itemData of collection.data as any) {
       data[itemData.key] = {
-        runHash: itemData.run.hash,
         name: itemData.name,
         context: itemData.context,
         step: itemData.step,

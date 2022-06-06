@@ -26,7 +26,7 @@ export interface IMediaPanelProps {
   resizeMode?: ResizeModeEnum;
   tooltip?: IPanelTooltip;
   focusedState: IFocusedState;
-  selectOptions: IGroupingSelectOption[];
+  selectOptions?: IGroupingSelectOption[];
   additionalProperties?:
     | IImagesExploreAppConfig['images']['additionalProperties']
     | any;

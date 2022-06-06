@@ -29,7 +29,7 @@ function SelectForm({
   selectFormData,
 }: ISelectFormProps): React.FunctionComponentElement<React.ReactNode> {
   const [anchorEl, setAnchorEl] = React.useState<any>(null);
-  const [searchValue, setSearchValue] = React.useState<any>('');
+  const [searchValue, setSearchValue] = React.useState<string>('');
   const searchRef = React.useRef<any>(null);
   const autocompleteRef: any = React.useRef<React.MutableRefObject<any>>(null);
   React.useEffect(() => {
@@ -93,7 +93,9 @@ function SelectForm({
     setSearchValue('');
   }
 
-  function handleSearchInputChange(e: any): void {
+  function handleSearchInputChange(
+    e: React.ChangeEvent<HTMLInputElement>,
+  ): void {
     setSearchValue(e.target.value);
   }
 

@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { ChangeEvent } from 'react';
 
 import { Box, Checkbox, Divider, InputBase, Popper } from '@material-ui/core';
 import Autocomplete from '@material-ui/lab/Autocomplete';
@@ -33,7 +33,7 @@ function SelectForm({
   onSearchQueryCopy,
 }: ISelectFormProps): React.FunctionComponentElement<React.ReactNode> {
   const [anchorEl, setAnchorEl] = React.useState<any>(null);
-  const [searchValue, setSearchValue] = React.useState<any>('');
+  const [searchValue, setSearchValue] = React.useState<string>('');
   const searchMetricsRef = React.useRef<any>(null);
   const autocompleteRef: any = React.useRef<React.MutableRefObject<any>>(null);
   const advancedAutocompleteRef: any =
@@ -120,7 +120,9 @@ function SelectForm({
     onSelectRunQueryChange('');
   }
 
-  function handleSearchInputChange(e: any): void {
+  function handleSearchInputChange(
+    e: React.ChangeEvent<HTMLInputElement>,
+  ): void {
     setSearchValue(e.target.value);
   }
 

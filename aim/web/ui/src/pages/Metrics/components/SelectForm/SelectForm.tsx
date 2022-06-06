@@ -39,7 +39,7 @@ function SelectForm({
   onSearchQueryCopy,
 }: ISelectFormProps): React.FunctionComponentElement<React.ReactNode> {
   const [anchorEl, setAnchorEl] = React.useState<any>(null);
-  const [searchValue, setSearchValue] = React.useState<any>('');
+  const [searchValue, setSearchValue] = React.useState<string>('');
   const searchRef: any = React.useRef<React.MutableRefObject<any>>(null);
   const autocompleteRef: any = React.useRef<React.MutableRefObject<any>>(null);
   const advancedAutocompleteRef: any =
@@ -119,7 +119,9 @@ function SelectForm({
     onSelectAdvancedQueryChange('');
   }
 
-  function handleSearchInputChange(e: any): void {
+  function handleSearchInputChange(
+    e: React.ChangeEvent<HTMLInputElement>,
+  ): void {
     setSearchValue(e.target.value);
   }
 

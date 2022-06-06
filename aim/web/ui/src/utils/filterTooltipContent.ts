@@ -12,18 +12,17 @@ function filterTooltipContent(
   selectedFields: string[] = [],
 ): ITooltipContent {
   const filteredFields: ITooltipContent['selectedFields'] =
-    selectedFields.reduce((acc: any, param: string) => {
+    selectedFields.reduce((acc: { [key: string]: string }, param: string) => {
+      const value: string | number = getValue(tooltipContent, param);
       if (
         param === 'run.props.creation_time' ||
         param === 'run.props.end_time'
       ) {
-        acc[param] = !_.isNil(getValue(tooltipContent, param))
-          ? moment(getValue(tooltipContent, param) * 1000).format(
-              DATE_WITH_SECONDS,
-            )
-          : getValue(tooltipContent, param);
+        acc[param] = !_.isNil(value)
+          ? moment((value as number) * 1000).format(DATE_WITH_SECONDS)
+          : value;
       } else {
-        acc[param] = getValue(tooltipContent, param);
+        acc[param] = value as string;
       }
       return acc;
     }, {});
