@@ -11,7 +11,10 @@ export function getFilteredGroupingOptions<M extends State>({
   const modelState = model.getState();
   const grouping = modelState?.config?.grouping;
   if (grouping) {
-    const { reverseMode, isApplied } = grouping;
+    const {
+      //  reverseMode,
+      isApplied,
+    } = grouping;
     const groupingSelectOptions = model.getState()?.groupingSelectOptions;
     if (groupingSelectOptions) {
       //ToDo reverse mode

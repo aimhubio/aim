@@ -800,14 +800,17 @@ function updateModelData(
 function getFilteredGroupingOptions(
   grouping: IImagesExploreAppConfig['grouping'],
 ): string[] {
-  const { reverseMode, isApplied } = grouping;
+  const {
+    // reverseMode,
+    isApplied,
+  } = grouping;
   const groupingSelectOptions:
     | IImagesExploreAppModelState['groupingSelectOptions']
     | undefined = model.getState()?.groupingSelectOptions;
   if (groupingSelectOptions) {
-    const filteredOptions = [...groupingSelectOptions]
-      .filter((opt) => grouping['row'].indexOf(opt.value as never) === -1)
-      .map((item) => item.value);
+    // const filteredOptions = [...groupingSelectOptions]
+    //   .filter((opt) => grouping['row'].indexOf(opt.value as never) === -1)
+    //   .map((item) => item.value);
     //ToDo reverse mode
     // return isApplied['row']
     //   ? reverseMode['row']

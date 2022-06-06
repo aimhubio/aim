@@ -13,14 +13,11 @@ import {
 } from '@material-ui/icons';
 import Autocomplete from '@material-ui/lab/Autocomplete';
 
-import { Badge, Icon, Text, ToggleButton } from 'components/kit';
+import { Badge, Icon, Text } from 'components/kit';
 import ErrorBoundary from 'components/ErrorBoundary/ErrorBoundary';
 
 import { IGroupingPopoverProps } from 'types/components/GroupingPopover/GroupingPopover';
-import {
-  GroupNameType,
-  IGroupingSelectOption,
-} from 'types/services/models/metrics/metricsAppModel';
+import { IGroupingSelectOption } from 'types/services/models/metrics/metricsAppModel';
 
 import './GroupingPopover.scss';
 
