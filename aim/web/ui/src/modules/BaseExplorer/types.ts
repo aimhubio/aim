@@ -63,6 +63,7 @@ export type IUIConfig = {
     // accept generic type and use T in UsedGroupsEnum
     [key: string]: styleApplier;
   };
+
   components: {
     queryForm: React.FunctionComponent<IQueryFormProps>;
     grouping: React.FunctionComponent<IGroupingProps>;

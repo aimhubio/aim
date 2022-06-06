@@ -7,6 +7,8 @@ import { RunsSearchQueryParams } from 'services/api/base-explorer/runsApi';
 
 import { AimObjectDepths, SequenceTypesEnum } from 'types/core/enums';
 
+import { GetState, SetState } from 'utils/store/createSlice';
+
 import createPipeline, { Pipeline, PipelineOptions } from '../pipeline';
 import { IInstructionsState } from '../store/slices/instructionsSlice';
 import { removeExampleTypesFromProjectData } from '../helpers';
@@ -133,7 +135,10 @@ function createEngine(config: IEngineConfigFinal) {
   const setState = storeVanilla.setState;
   const getState = storeVanilla.getState;
 
-  const boxConfigMethods = configs.boxSlice.methods(setState, getState);
+  const boxConfigMethods = configs.boxSlice.methods<
+    SetState<any>,
+    GetState<any>
+  >(setState, getState);
 
   const storeReact = createReact(storeVanilla);
 
