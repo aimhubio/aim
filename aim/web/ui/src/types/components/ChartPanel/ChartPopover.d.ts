@@ -1,5 +1,6 @@
 import React from 'react';
 
+import { IGroupingSelectOption } from 'types/services/models/imagesExplore/imagesExploreAppModel';
 import {
   IAlignmentConfig,
   IFocusedState,
@@ -25,4 +26,5 @@ export interface IChartPopover {
   chartType: ChartTypeEnum;
   alignmentConfig?: IAlignmentConfig;
   reCreatePopover?: unknown;
+  selectOptions: IGroupingSelectOption[];
 }

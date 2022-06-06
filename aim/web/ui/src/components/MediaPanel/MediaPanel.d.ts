@@ -4,6 +4,7 @@ import { ResizeModeEnum } from 'config/enums/tableEnums';
 
 import {
   IFocusedState,
+  IGroupingSelectOption,
   IPanelTooltip,
 } from 'types/services/models/metrics/metricsAppModel';
 import { IImagesExploreAppConfig } from 'types/services/models/imagesExplore/imagesExploreAppModel';
@@ -25,6 +26,7 @@ export interface IMediaPanelProps {
   resizeMode?: ResizeModeEnum;
   tooltip?: IPanelTooltip;
   focusedState: IFocusedState;
+  selectOptions?: IGroupingSelectOption[];
   additionalProperties?:
     | IImagesExploreAppConfig['images']['additionalProperties']
     | any;

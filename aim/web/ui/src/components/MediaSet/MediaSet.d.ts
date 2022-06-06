@@ -1,6 +1,7 @@
 import { IMediaPanelProps } from 'components/MediaPanel';
 import { MediaTypeEnum } from 'components/MediaPanel/config';
 
+import { IGroupingSelectOption } from 'types/services/models/imagesExplore/imagesExploreAppModel';
 import {
   IFocusedState,
   IPanelTooltip,
@@ -24,4 +25,5 @@ export interface IMediaSetProps {
   mediaType: MediaTypeEnum;
   sortFieldsDict?: { [key: string]: SortField };
   sortFields?: SortFields;
+  selectOptions: IGroupingSelectOption[];
 }

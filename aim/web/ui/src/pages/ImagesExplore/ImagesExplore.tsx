@@ -275,6 +275,7 @@ function ImagesExplore(): React.FunctionComponentElement<React.ReactNode> {
                 isLoading={
                   imagesExploreData?.requestStatus === RequestStatusEnum.Pending
                 }
+                selectOptions={imagesExploreData?.groupingSelectOptions}
                 panelResizing={panelResizing}
                 resizeMode={imagesExploreData?.config?.table.resizeMode}
                 tableHeight={imagesExploreData?.config?.table?.height}

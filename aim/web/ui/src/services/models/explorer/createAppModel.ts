@@ -296,8 +296,8 @@ function createAppModel(appConfig: IAppInitialConfig) {
               tooltip: {
                 content: {},
                 display: CONTROLS_DEFAULT_CONFIG.metrics.tooltip.display,
-                selectedParams:
-                  CONTROLS_DEFAULT_CONFIG.metrics.tooltip.selectedParams,
+                selectedFields:
+                  CONTROLS_DEFAULT_CONFIG.metrics.tooltip.selectedFields,
               },
               focusedState: {
                 key: null,
@@ -395,8 +395,8 @@ function createAppModel(appConfig: IAppInitialConfig) {
               tooltip: {
                 content: {},
                 display: CONTROLS_DEFAULT_CONFIG.params.tooltip.display,
-                selectedParams:
-                  CONTROLS_DEFAULT_CONFIG.params.tooltip.selectedParams,
+                selectedFields:
+                  CONTROLS_DEFAULT_CONFIG.params.tooltip.selectedFields,
               },
               brushExtents: {},
             };
@@ -417,8 +417,8 @@ function createAppModel(appConfig: IAppInitialConfig) {
               tooltip: {
                 content: {},
                 display: CONTROLS_DEFAULT_CONFIG.scatters.tooltip.display,
-                selectedParams:
-                  CONTROLS_DEFAULT_CONFIG.scatters.tooltip.selectedParams,
+                selectedFields:
+                  CONTROLS_DEFAULT_CONFIG.scatters.tooltip.selectedFields,
               },
               trendlineOptions: {
                 type: CONTROLS_DEFAULT_CONFIG.scatters.trendlineOptions.type,
@@ -852,34 +852,40 @@ function createAppModel(appConfig: IAppInitialConfig) {
             if (metricsCollection.config !== null && closestIndex !== null) {
               rows[groupKey!].data.aggregation = {
                 area: {
-                  min: metricsCollection.aggregation!.area.min?.yValues[
-                    closestIndex
-                  ],
-                  max: metricsCollection.aggregation!.area.max?.yValues[
-                    closestIndex
-                  ],
+                  min: formatValue(
+                    metricsCollection.aggregation!.area.min?.yValues[
+                      closestIndex
+                    ],
+                  ),
+                  max: formatValue(
+                    metricsCollection.aggregation!.area.max?.yValues[
+                      closestIndex
+                    ],
+                  ),
                 },
-                line: metricsCollection.aggregation!.line?.yValues[
-                  closestIndex
-                ],
+                line: formatValue(
+                  metricsCollection.aggregation!.line?.yValues[closestIndex],
+                ),
               };
               if (
                 config.chart?.aggregationConfig?.methods.area ===
                 AggregationAreaMethods.STD_DEV
               ) {
-                rows[groupKey!].data.aggregation.area.stdDevValue =
+                rows[groupKey!].data.aggregation.area.stdDevValue = formatValue(
                   metricsCollection.aggregation!.area.stdDevValue?.yValues[
                     closestIndex
-                  ];
+                  ],
+                );
               }
               if (
                 config.chart?.aggregationConfig?.methods.area ===
                 AggregationAreaMethods.STD_ERR
               ) {
-                rows[groupKey!].data.aggregation.area.stdErrValue =
+                rows[groupKey!].data.aggregation.area.stdErrValue = formatValue(
                   metricsCollection.aggregation!.area.stdErrValue?.yValues[
                     closestIndex
-                  ];
+                  ],
+                );
               }
             }
 
@@ -1803,7 +1809,7 @@ function createAppModel(appConfig: IAppInitialConfig) {
                   ...configData.chart.tooltip,
                   content: filterTooltipContent(
                     tooltipData[activePoint.key],
-                    configData.chart.tooltip?.selectedParams,
+                    configData.chart.tooltip?.selectedFields,
                   ),
                 } as IPanelTooltip,
               },
@@ -4313,7 +4319,7 @@ function createAppModel(appConfig: IAppInitialConfig) {
                 ...configData.chart.tooltip,
                 content: filterTooltipContent(
                   tooltipData[activePoint.key],
-                  configData?.chart.tooltip.selectedParams,
+                  configData?.chart.tooltip.selectedFields,
                 ),
               },
             },
@@ -5998,7 +6004,7 @@ function createAppModel(appConfig: IAppInitialConfig) {
                 ...configData.chart.tooltip,
                 content: filterTooltipContent(
                   tooltipData[activePoint.key],
-                  configData?.chart.tooltip.selectedParams,
+                  configData?.chart.tooltip.selectedFields,
                 ),
               },
             },

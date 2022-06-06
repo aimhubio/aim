@@ -4,14 +4,19 @@
 
 ### Enhancements:
 
+- Improve formatting of numbers by setting maximum precision (KaroMourad)
+- Add cloud storage backups to AWS S3 for aim repo runs (karan2801)
 - Add LightGBM integration example (gorarakelyan)
 - Add descriptive document titles for pages (KaroMourad)
 - Implement unit-tests for aim SDK utils (yeghiakoronian)
 - Display std.dev/err aggregated values in the table (VkoHov)
 - Add `active` state indicator property for `aim.Run` (mihran113)
+- Add all the attributes of run in the tooltip (VkoHov)
+- Optimize the initial render time of Aim UI by using more lightweight font-family (arsengit)
 
 ### Fixes:
 
+- Fix LineCart axis ticks overlapping issue on log scale (KaroMourad)
 - Change zooming default option to multiple (VkoHov)
 - Change grouped rows' min and max values names to `Group Min` and `Group Max` (VkoHov)
 - Preserve the search input value of the grouping dropdown (VkoHov)
