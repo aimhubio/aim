@@ -1,8 +1,10 @@
 import click
 import os
+from tqdm import tqdm
 
 from aim.cli.runs.utils import list_repo_runs, match_runs
 from aim.sdk.repo import Repo
+from aim.sdk.maintenance_run import MaintenanceRun
 
 
 @click.group()
@@ -112,3 +114,28 @@ def move_runs(ctx, destination, hashes):
     else:
         click.echo('Something went wrong while moving runs. Remaining runs are:', err=True)
         click.secho('\t'.join(remaining_runs), fg='yellow')
+
+
+@runs.command(name='update')
+@click.argument('hashes', nargs=-1, type=str)
+@click.pass_context
+def update_runs(ctx, hashes):
+    if len(hashes) == 0:
+        click.echo('Please specify at least one Run to update.')
+        exit(1)
+    repo_path = ctx.obj['repo']
+    repo = Repo.from_path(repo_path)
+
+    matched_hashes = match_runs(repo_path, hashes)
+    confirmed = click.confirm(f'This command will optimize the metrics data for {len(matched_hashes)} runs from aim '
+                              f'repo located at \'{repo_path}\'. This process might take a while. '
+                              f'Do you want to proceed?')
+    if not confirmed:
+        return
+
+    for run_hash in tqdm(matched_hashes):
+        run = MaintenanceRun(run_hash, repo=repo)
+        if run.check_metrics_version():
+            run.update_metrics()
+        else:
+            click.echo(f'Run {run.hash} is already up to date. Skipping')
