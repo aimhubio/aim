@@ -23,7 +23,6 @@ import './Table.scss';
 
 function Table(props) {
   const columns = props.columns;
-
   let leftCols = columns
     .filter((col) => col.pin === 'left')
     .map((col) => col.key);

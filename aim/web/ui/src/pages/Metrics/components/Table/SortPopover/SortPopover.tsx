@@ -78,7 +78,7 @@ function SortPopover({
     <ErrorBoundary>
       <div className='SortPopover__container'>
         <Text size={12} tint={50} className={'SortPopover__container__label'}>
-          SELECT FIELDS
+          SELECT FIELDS FOR SORTING
         </Text>
         <div className='SortPopover__container__selectBox'>
           <Autocomplete
@@ -106,8 +106,8 @@ function SortPopover({
                 }
                 placeholder={
                   sortFields.length > 0
-                    ? `${sortFields.length} Selected Items`
-                    : 'Select...'
+                    ? `${sortFields.length} Selected Fields`
+                    : ' Select Fields'
                 }
               />
             )}

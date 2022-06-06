@@ -86,14 +86,14 @@ function Controls(
         <div>
           <ErrorBoundary>
             <ControlPopover
-              title='Select Aggregation Method'
+              title='Select aggregation method'
               open={props.aggregationConfig.isEnabled}
               anchor={({ onAnchorClick, opened }) => (
                 <Tooltip
                   title={
                     props.aggregationConfig.isApplied
-                      ? 'Deaggregate Metrics'
-                      : 'Aggregate Metrics'
+                      ? 'Deaggregate metrics'
+                      : 'Aggregate metrics'
                   }
                 >
                   <div
@@ -177,9 +177,9 @@ function Controls(
         <div>
           <ErrorBoundary>
             <ControlPopover
-              title='Axes Scale'
+              title='Axes scale'
               anchor={({ onAnchorClick, opened }) => (
-                <Tooltip title='Axes Scale'>
+                <Tooltip title='Axes scale'>
                   <div
                     onClick={onAnchorClick}
                     className={`Controls__anchor ${
@@ -211,9 +211,9 @@ function Controls(
         <div>
           <ErrorBoundary>
             <ControlPopover
-              title='Chart Smoothing Options'
+              title='Chart smoothing options'
               anchor={({ onAnchorClick, opened }) => (
-                <Tooltip title='Chart Smoothing Options'>
+                <Tooltip title='Chart smoothing options'>
                   <div
                     onClick={onAnchorClick}
                     className={`Controls__anchor ${
@@ -246,7 +246,7 @@ function Controls(
         </div>
         <Tooltip
           title={
-            props.ignoreOutliers ? 'Outliers Are Ignored' : 'Ignore Outliers'
+            props.ignoreOutliers ? 'Outliers are ignored' : 'Ignore outliers'
           }
         >
           <div
@@ -270,9 +270,9 @@ function Controls(
         <div>
           <ErrorBoundary>
             <ControlPopover
-              title='Highlight Modes'
+              title='Highlight modes'
               anchor={({ onAnchorClick, opened }) => (
-                <Tooltip title='Highlight Modes'>
+                <Tooltip title='Highlight modes'>
                   <div
                     className={`Controls__anchor ${
                       opened
@@ -304,9 +304,9 @@ function Controls(
         <div>
           <ErrorBoundary>
             <ControlPopover
-              title='Display In Tooltip'
+              title='Display in tooltip'
               anchor={({ onAnchorClick, opened }) => (
-                <Tooltip title='Tooltip Params'>
+                <Tooltip title='Tooltip fields'>
                   <div
                     onClick={onAnchorClick}
                     className={`Controls__anchor ${
@@ -340,9 +340,9 @@ function Controls(
         <div>
           <ErrorBoundary>
             <ControlPopover
-              title='Select Zoom Mode'
+              title='Select zoom mode'
               anchor={({ onAnchorClick, opened }) => (
-                <Tooltip title='Zoom In'>
+                <Tooltip title='Zoom in'>
                   <div
                     className={`Controls__anchor ${
                       props.zoom?.active ? 'active' : ''
@@ -382,10 +382,10 @@ function Controls(
         <div>
           <ErrorBoundary>
             <ControlPopover
-              title='Select Option To Zoom Out'
+              title='Select option to zoom out'
               open={!!props.zoom?.history.length}
               anchor={({ onAnchorClick, opened }) => (
-                <Tooltip title='Zoom Out'>
+                <Tooltip title='Zoom out'>
                   <div
                     className={`Controls__anchor ${
                       props.zoom?.history.length ? '' : 'disabled'
@@ -423,7 +423,7 @@ function Controls(
         </div>
         <ErrorBoundary>
           {/* TODO add ability to open modals in ControlPopover component and change the name of the ControlPopover to more general*/}
-          <Tooltip title='Export Chart'>
+          <Tooltip title='Export chart'>
             <div className='Controls__anchor' onClick={onToggleExportPreview}>
               <Icon className='Controls__icon' name='download' />
             </div>
