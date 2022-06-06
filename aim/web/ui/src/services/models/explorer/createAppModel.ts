@@ -852,34 +852,40 @@ function createAppModel(appConfig: IAppInitialConfig) {
             if (metricsCollection.config !== null && closestIndex !== null) {
               rows[groupKey!].data.aggregation = {
                 area: {
-                  min: metricsCollection.aggregation!.area.min?.yValues[
-                    closestIndex
-                  ],
-                  max: metricsCollection.aggregation!.area.max?.yValues[
-                    closestIndex
-                  ],
+                  min: formatValue(
+                    metricsCollection.aggregation!.area.min?.yValues[
+                      closestIndex
+                    ],
+                  ),
+                  max: formatValue(
+                    metricsCollection.aggregation!.area.max?.yValues[
+                      closestIndex
+                    ],
+                  ),
                 },
-                line: metricsCollection.aggregation!.line?.yValues[
-                  closestIndex
-                ],
+                line: formatValue(
+                  metricsCollection.aggregation!.line?.yValues[closestIndex],
+                ),
               };
               if (
                 config.chart?.aggregationConfig?.methods.area ===
                 AggregationAreaMethods.STD_DEV
               ) {
-                rows[groupKey!].data.aggregation.area.stdDevValue =
+                rows[groupKey!].data.aggregation.area.stdDevValue = formatValue(
                   metricsCollection.aggregation!.area.stdDevValue?.yValues[
                     closestIndex
-                  ];
+                  ],
+                );
               }
               if (
                 config.chart?.aggregationConfig?.methods.area ===
                 AggregationAreaMethods.STD_ERR
               ) {
-                rows[groupKey!].data.aggregation.area.stdErrValue =
+                rows[groupKey!].data.aggregation.area.stdErrValue = formatValue(
                   metricsCollection.aggregation!.area.stdErrValue?.yValues[
                     closestIndex
-                  ];
+                  ],
+                );
               }
             }
 
