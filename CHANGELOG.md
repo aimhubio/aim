@@ -12,6 +12,7 @@
 - Display std.dev/err aggregated values in the table (VkoHov)
 - Add `active` state indicator property for `aim.Run` (mihran113)
 - Optimize the initial render time of Aim UI by using more lightweight font-family (arsengit)
+- Use monaco editor as the syntax highlighter across the Aim UI (arsengit)
 
 ### Fixes:
 
