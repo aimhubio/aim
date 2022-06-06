@@ -166,7 +166,7 @@ function GroupingPopover({
               )}
             />
           </div>
-          <div className='GroupingPopover__toggleMode__div'>
+          {/* <div className='GroupingPopover__toggleMode__div'>
             <Text
               size={12}
               tint={50}
@@ -189,7 +189,7 @@ function GroupingPopover({
               rightLabel='Reverse'
               onChange={handleGroupingMode}
             />
-          </div>
+          </div> */}
           {advancedComponent && (
             <ErrorBoundary>
               <div className='GroupingPopover__advanced__component'>
