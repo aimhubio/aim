@@ -63,4 +63,13 @@ To remove `Run`s using command line:
 aim runs rm run_hash_1 run_hash_2 run_hash_3
 ```
 
+### Upload runs
+
+A user can use upload command to create a snapshot of .aim directory for a given project. The snapshot would be created in an s3 bucket which is specified as an argument. The command would create a new s3 bucket if it does not exist already.
+
+To upload a snapshot using command line:
+```shell
+aim runs upload bucket_name_1
+```
+
 More details on `aim runs` in CLI [reference](../refs/cli.html#runs).

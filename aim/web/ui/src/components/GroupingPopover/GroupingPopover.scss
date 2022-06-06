@@ -9,6 +9,11 @@
 
   &__container__select {
     padding: 1rem;
+    &__selectedFieldsContainer {
+      max-height: toRem(110px);
+      overflow: auto;
+      width: 100%;
+    }
   }
 
   &__toggleMode__div {

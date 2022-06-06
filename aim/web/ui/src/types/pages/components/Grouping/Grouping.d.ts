@@ -26,7 +26,7 @@ export interface IGroupingProps {
 export interface IGroupingPopovers {
   groupName: GroupNameType;
   title: string;
-  advancedTitle?: string;
+  inputLabel?: string;
   AdvancedComponent?: (
     props: IGroupingPopoverAdvancedProps,
   ) => React.FunctionComponentElement<React.ReactNode>;

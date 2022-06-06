@@ -31,6 +31,7 @@ function GroupingPopover({
   groupingSelectOptions,
   onSelect,
   onGroupingModeChange,
+  inputLabel,
 }: IGroupingPopoverProps): React.FunctionComponentElement<React.ReactNode> {
   const [inputValue, setInputValue] = React.useState('');
 
@@ -107,7 +108,7 @@ function GroupingPopover({
               component='h3'
               className='GroupingPopover__subtitle'
             >
-              Select Fields for grouping by {groupName}
+              {inputLabel ?? `Select fields for grouping by ${groupName}`}
             </Text>
             <Autocomplete
               size='small'
@@ -131,12 +132,13 @@ function GroupingPopover({
                       setInputValue(e.target?.value);
                     },
                   }}
+                  className='TextField__OutLined__Small'
                   variant='outlined'
-                  placeholder='Select Params'
+                  placeholder='Select fields'
                 />
               )}
               renderTags={(value, getTagProps) => (
-                <div style={{ maxHeight: 110, overflow: 'auto' }}>
+                <div className='GroupingPopover__container__select__selectedFieldsContainer'>
                   {value.map((selected, i) => (
                     <Badge
                       key={i}
@@ -174,7 +176,7 @@ function GroupingPopover({
               select grouping mode
             </Text>
             <ToggleButton
-              title='Select Mode'
+              title='Select mode'
               id='yAxis'
               value={
                 groupingData?.reverseMode[groupName as GroupNameType]
