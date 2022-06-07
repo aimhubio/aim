@@ -42,6 +42,11 @@ const config: IExplorerConfig = {
       box: Box,
     },
   },
+  states: {
+    custom1: {
+      initialState: { rowLength: 1 },
+    },
+  },
 };
 
 const SampleExplorer = createExplorer(config);

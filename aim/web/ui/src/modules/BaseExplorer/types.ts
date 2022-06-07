@@ -10,6 +10,7 @@ export interface IExplorerConfig {
    * Since it is identifier, it should be a unique
    */
   readonly explorerName: string;
+
   /**
    * Engine configuration
    * You can customize grouping behaviours, style appliers etc.
@@ -19,6 +20,17 @@ export interface IExplorerConfig {
    * Configurations for UI
    */
   readonly ui: IUIConfig;
+
+  /**
+   * additional states
+   */
+  readonly states?: IEngineStates;
+}
+
+export interface IEngineStates {
+  [key: string]: {
+    initialState: Record<string, any>;
+  };
 }
 
 export interface IOptionalEngineConfig {

@@ -62,6 +62,7 @@ function createExplorer(config: IExplorerConfig): () => React.ReactElement {
     adapter: {
       objectDepth: EC.adapter.objectDepth,
     },
+    states: config.states,
   };
 
   const engine = createEngine(engineConfig);

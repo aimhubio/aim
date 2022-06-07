@@ -25,21 +25,21 @@ export type StoreSliceCreator<TSliceState> = {
   [key: string]: SliceCreationConfig<TSliceState>;
 };
 
-interface StoreSliceMethods<T> {
-  update: (store: T) => void;
+interface StoreSliceMethods {
+  update: Function;
   reset(): void;
 }
 
 export type StoreSlice<TStore, TSliceState> = {
   readonly initialState: TSliceState;
-  readonly methods: StoreSliceMethods<TStore>;
-  readonly dataSelector: (store: TStore) => TSliceState;
+  readonly methods: StoreSliceMethods /*<TStore>*/;
+  readonly stateSelector: (store: TStore) => TSliceState;
 };
 
 export type GenerateStoreMethods = <T>(
   setState: SetState<T>,
   getState: GetState<T>,
-) => StoreSliceMethods<T>;
+) => StoreSliceMethods /*<T>*/;
 
 export type CreateStoreSlice = <TStore, TSliceState>(
   initialState: TSliceState,
