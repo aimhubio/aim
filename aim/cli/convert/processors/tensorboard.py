@@ -2,11 +2,13 @@ import json
 import os
 
 import click
+from tqdm import tqdm
 
 from aim import Image, Run
+import time
+import numpy as np
 
-
-def parse_tb_logs(tb_logs, repo_inst, flat=False):
+def parse_tb_logs(tb_logs, repo_inst, flat=False, no_cache=False):
     """
     This function scans and collects records from TB log files.
 
@@ -30,6 +32,8 @@ def parse_tb_logs(tb_logs, repo_inst, flat=False):
     unsupported_plugin_noticed = False
     tb_logs_cache_path = os.path.join(repo_inst.path, 'tb_logs_cache')
 
+    if no_cache and os.path.exists(tb_logs_cache_path):
+        os.remove(tb_logs_cache_path)
     try:
         with open(tb_logs_cache_path) as FS:
             tb_logs_cache = json.load(FS)
@@ -106,8 +110,9 @@ def parse_tb_logs(tb_logs, repo_inst, flat=False):
         for c, r in enumerate(run_dir_ignored, start=1):
             click.echo(f'{c}: {r}', err=True)
 
-    for path in run_dir_candidates_filtered:
-        click.echo(f'Converting TensorBoard logs in {path}')
+    for path in tqdm(run_dir_candidates_filtered,
+                     desc='Converting TensorBoard logs',
+                     total=len(run_dir_candidates_filtered)):
 
         events = {}
         for root, dirs, files in os.walk(path):
@@ -152,7 +157,7 @@ def parse_tb_logs(tb_logs, repo_inst, flat=False):
             last_modified_at = os.path.getmtime(event)
             try:
                 assert last_modified_at == run_tb_events[event]['last_modified_at']
-            except (KeyError, AssertionError):
+            except (KeyError, AssertionError,RuntimeError) as e:
                 # Something has changed or hasn't been processed before
                 events_to_process.append(event)
                 try:
@@ -164,50 +169,73 @@ def parse_tb_logs(tb_logs, repo_inst, flat=False):
                         'values': {},
                     }
 
-        for count, event_file in enumerate(events_to_process, start=1):
-            click.echo(f'({count}/{len(events_to_process)}) Parsing log: {os.path.basename(event_file)}')
+        if not events_to_process:
+            continue
+
+        for event_file in tqdm(events_to_process, desc=f'Parsing logs in {path}', total=len(events_to_process)):
             run_tb_log = run_tb_events[event_file]
             event_context = events[event_file]['context']
-            for event in summary_iterator(event_file):
-                timestamp = event.wall_time
-                step = event.step
-                for value in event.summary.value:
-                    tag = value.tag
-                    plugin_name = value.metadata.plugin_data.plugin_name
-                    value_id = f'{tag}_{plugin_name}'
-                    if value_id in run_tb_log['values']:
-                        if run_tb_log['values'][value_id]['timestamp'] >= timestamp:
-                            # prevent previously tracked data from re-tracking upon file update
+            try:
+                for event in summary_iterator(event_file):
+                    timestamp = event.wall_time
+                    step = event.step
+                    fail_count = 0
+                    _err_info = None
+
+                    for value in event.summary.value:
+                        tag = value.tag
+
+                        plugin_name = value.metadata.plugin_data.plugin_name
+                        value_id = f'{tag}_{plugin_name}'
+                        if value_id in run_tb_log['values']:
+                            if run_tb_log['values'][value_id]['timestamp'] >= timestamp:
+                                # prevent previously tracked data from re-tracking upon file update
+                                continue
+
+                        if len(plugin_name) > 0 and plugin_name not in supported_plugins:
+                            if not unsupported_plugin_noticed:
+                                click.echo(
+                                    'Found unsupported plugin type in the log file. '
+                                    'Data for these wont be processed. '
+                                    'Supported plugin types are: {}'.format(', '.join(supported_plugins)),
+                                    err=True
+                                )
+                                unsupported_plugin_noticed = True
                             continue
 
-                    if plugin_name not in supported_plugins:
-                        if not unsupported_plugin_noticed:
-                            click.echo(
-                                'Found unsupported plugin type in the log file. '
-                                'Data for these wont be processed. '
-                                'Supported plugin types are: {}'.format(', '.join(supported_plugins)),
-                                err=True
-                            )
-                            unsupported_plugin_noticed = True
-                        continue
+                        try:
+                            if plugin_name == 'images':
+                                tensor = value.tensor.string_val[2:]
+                                track_val = [
+                                    Image(tf.image.decode_image(t).numpy()) for t in tensor
+                                ]
+                                if len(track_val) == 1:
+                                    track_val = track_val[0]
+                            else:
 
-                    if plugin_name == 'images':
-                        tensor = value.tensor.string_val[2:]
-                        track_val = [
-                            Image(tf.image.decode_image(t).numpy()) for t in tensor
-                        ]
-                        if len(track_val) == 1:
-                            track_val = track_val[0]
-                    else:
-                        d_type = tf.dtypes.DType(value.tensor.dtype)
-                        decoded = tf.io.decode_raw(value.tensor.tensor_content, d_type)
-                        track_val = float(decoded)
+                                if value.HasField('simple_value'):
+                                    track_val = value.simple_value
+                                else:
+                                    track_val = value.tensor.float_val[0]
 
-                    run_tb_log['values'][value_id] = {
-                        'step': step,
-                        'timestamp': timestamp
-                    }
-                    run._track_impl(track_val, timestamp, tag, step, context=event_context)
+                        except RuntimeError as exc:
+                            # catch all the nasty failures
+                            fail_count += 1
+                            if not _err_info:
+                                _err_info = str(exc)
+                            continue
+
+                        run_tb_log['values'][value_id] = {
+                            'step': step,
+                            'timestamp': timestamp
+                        }
+                        run._track_impl(track_val, timestamp, tag, step, context=event_context)
+
+                    if fail_count:
+                        click.echo(f'Failed to process {fail_count} entries. First exception: {_err_info}', err=True)
+
+            except RuntimeError as exc:
+                click.echo(f'Failed to read log file {event_file} - {exc}', err=True)
 
     # refresh cache
     with open(tb_logs_cache_path, 'w') as FS:
