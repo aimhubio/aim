@@ -281,65 +281,68 @@ function RunDetail(): React.FunctionComponentElement<React.ReactNode> {
                   >
                     {!runData?.isRunInfoLoading ? (
                       <>
-                        <Tooltip
-                          title={`${
-                            runData?.runInfo?.experiment?.name || 'default'
-                          } / ${runData?.runInfo?.name || ''}`}
-                        >
-                          <div className='RunDetail__runDetailContainer__appBarContainer__appBarTitleBox__container'>
-                            <Text
-                              tint={100}
-                              size={16}
-                              weight={600}
-                              className='RunDetail__runDetailContainer__appBarContainer__appBarTitleBox__title'
-                            >
-                              {`${
-                                runData?.runInfo?.experiment?.name || 'default'
-                              } / ${runData?.runInfo?.name || ''}`}
-                            </Text>
-                            <div className='RunDetail__runDetailContainer__appBarContainer__appBarTitleBox__date'>
-                              <Icon name='calendar' fontSize={12} />
-                              <Text size={11} tint={70} weight={400}>
-                                {`${moment(
-                                  runData?.runInfo?.creation_time * 1000,
-                                ).format(
-                                  DATE_WITH_SECONDS,
-                                )} • ${processDurationTime(
-                                  runData?.runInfo?.creation_time * 1000,
-                                  runData?.runInfo?.end_time
-                                    ? runData?.runInfo?.end_time * 1000
-                                    : dateNow,
-                                )}`}
+                        <div className='RunDetail__runDetailContainer__appBarContainer__appBarTitleBox__appBarTitleBoxWrapper'>
+                          <Tooltip
+                            title={`${
+                              runData?.runInfo?.experiment?.name || 'default'
+                            } / ${runData?.runInfo?.name || ''}`}
+                          >
+                            <div className='RunDetail__runDetailContainer__appBarContainer__appBarTitleBox__container'>
+                              <Text
+                                tint={100}
+                                size={16}
+                                weight={600}
+                                className='RunDetail__runDetailContainer__appBarContainer__appBarTitleBox__title'
+                              >
+                                {`${
+                                  runData?.runInfo?.experiment?.name ||
+                                  'default'
+                                } / ${runData?.runInfo?.name || ''}`}
                               </Text>
                             </div>
-                          </div>
-                        </Tooltip>
+                          </Tooltip>
 
-                        <Button
-                          disabled={
-                            runData?.isExperimentsLoading ||
-                            runData?.isRunInfoLoading
-                          }
-                          color={opened ? 'primary' : 'default'}
-                          size='xSmall'
-                          className={classNames(
-                            'RunDetail__runDetailContainer__appBarContainer__appBarTitleBox__buttonSelectToggler',
-                            { opened: opened },
-                          )}
-                          withOnlyIcon
-                        >
-                          <Icon name={opened ? 'arrow-up' : 'arrow-down'} />
-                        </Button>
-                        <StatusLabel
-                          status={
-                            runData?.runInfo?.end_time ? 'alert' : 'success'
-                          }
-                          title={
-                            runData?.runInfo?.end_time
-                              ? 'Finished'
-                              : 'In Progress'
-                          }
-                        />
+                          <Button
+                            disabled={
+                              runData?.isExperimentsLoading ||
+                              runData?.isRunInfoLoading
+                            }
+                            color={opened ? 'primary' : 'default'}
+                            size='xSmall'
+                            className={classNames(
+                              'RunDetail__runDetailContainer__appBarContainer__appBarTitleBox__buttonSelectToggler',
+                              { opened: opened },
+                            )}
+                            withOnlyIcon
+                          >
+                            <Icon name={opened ? 'arrow-up' : 'arrow-down'} />
+                          </Button>
+                          <StatusLabel
+                            status={
+                              runData?.runInfo?.end_time ? 'alert' : 'success'
+                            }
+                            title={
+                              runData?.runInfo?.end_time
+                                ? 'Finished'
+                                : 'In Progress'
+                            }
+                          />
+                        </div>
+                        <div className='RunDetail__runDetailContainer__appBarContainer__appBarTitleBox__date'>
+                          <Icon name='calendar' fontSize={12} />
+                          <Text size={11} tint={70} weight={400}>
+                            {`${moment(
+                              runData?.runInfo?.creation_time * 1000,
+                            ).format(
+                              DATE_WITH_SECONDS,
+                            )} • ${processDurationTime(
+                              runData?.runInfo?.creation_time * 1000,
+                              runData?.runInfo?.end_time
+                                ? runData?.runInfo?.end_time * 1000
+                                : dateNow,
+                            )}`}
+                          </Text>
+                        </div>
                       </>
                     ) : (
                       <div className='flex'>
