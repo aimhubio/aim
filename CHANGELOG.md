@@ -15,6 +15,7 @@
 - Show the description in the sidebar of the run overview tab (VkoHov)
 - Add all the attributes of run in the tooltip (VkoHov)
 - Optimize the initial render time of Aim UI by using more lightweight font-family (arsengit)
+- Use monaco editor as the syntax highlighter across the Aim UI (arsengit)
 
 ### Fixes:
 
