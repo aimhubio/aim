@@ -13,9 +13,12 @@
 - Add `active` state indicator property for `aim.Run` (mihran113)
 - Add ability to edit run name and description of run (VkoHov)
 - Show the description in the sidebar of the run overview tab (VkoHov)
+- Add all the attributes of run in the tooltip (VkoHov)
+- Optimize the initial render time of Aim UI by using more lightweight font-family (arsengit)
 
 ### Fixes:
 
+- Fix issue with rendering incorrect data when x-axis aligned by `relative time/epoch` (KaroMourad)
 - Fix LineCart axis ticks overlapping issue on log scale (KaroMourad)
 - Change zooming default option to multiple (VkoHov)
 - Change grouped rows' min and max values names to `Group Min` and `Group Max` (VkoHov)

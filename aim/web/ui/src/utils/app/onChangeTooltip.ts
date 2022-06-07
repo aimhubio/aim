@@ -26,10 +26,10 @@ export default function onChangeTooltip<M extends State>({
   let configData = model.getState()?.config;
   if (configData?.chart) {
     let content = configData.chart.tooltip.content;
-    if (tooltip.selectedParams && configData?.chart.focusedState.key) {
+    if (tooltip.selectedFields && configData?.chart.focusedState.key) {
       content = filterTooltipContent(
         tooltipData[configData.chart.focusedState.key],
-        tooltip.selectedParams,
+        tooltip.selectedFields,
       );
     }
     configData = {

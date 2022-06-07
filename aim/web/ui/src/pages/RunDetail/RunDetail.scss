@@ -6,7 +6,8 @@
     height: 100%;
     background: $cuddle-10;
     .BaseTable__row-cell {
-      font-family: 'Iosevka', monospace;
+      font-family: 'Inconsolata', monospace;
+      font-variation-settings: 'wdth' 82;
     }
     &__Tabs {
       .MuiTabs-fixed {

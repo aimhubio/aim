@@ -134,6 +134,7 @@ const LineChart = React.forwardRef(function LineChart(
         if (attributesRef.current?.clearHoverAttributes) {
           attributesRef.current.clearHoverAttributes();
         }
+        attributesRef.current = {};
       }
       return;
     }
@@ -146,8 +147,8 @@ const LineChart = React.forwardRef(function LineChart(
       axesNodeRef,
       axesRef,
       plotBoxRef,
-      xScale: attributesRef.current.xScale,
-      yScale: attributesRef.current.yScale,
+      xScale,
+      yScale,
       visBoxRef,
       alignmentConfig,
       axesScaleType,

@@ -1,7 +1,10 @@
 import { IMediaPanelProps } from 'components/MediaPanel';
 import { MediaTypeEnum } from 'components/MediaPanel/config';
 
-import { IImageData } from 'types/services/models/imagesExplore/imagesExploreAppModel';
+import {
+  IGroupingSelectOption,
+  IImageData,
+} from 'types/services/models/imagesExplore/imagesExploreAppModel';
 import {
   IFocusedState,
   IPanelTooltip,
@@ -17,6 +20,7 @@ export interface IMediaListProps {
   additionalProperties?: IMediaPanelProps['additionalProperties'];
   tooltip?: IPanelTooltip;
   mediaType: MediaTypeEnum;
+  selectOptions: IGroupingSelectOption[];
 }
 
 export interface IImageBoxProps {
@@ -28,4 +32,5 @@ export interface IImageBoxProps {
   tooltip?: IPanelTooltip;
   additionalProperties?: IMediaPanelProps['additionalProperties'];
   style: { [key: string]: any };
+  selectOptions: IGroupingSelectOption[];
 }

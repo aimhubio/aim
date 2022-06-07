@@ -21,6 +21,7 @@ import { AlignmentOptionsEnum, ChartTypeEnum } from 'utils/d3';
 import { formatValue } from 'utils/formatValue';
 import { isSystemMetric } from 'utils/isSystemMetric';
 import { formatSystemMetricName } from 'utils/formatSystemMetricName';
+import getValueByField from 'utils/getValueByField';
 
 import './PopoverContent.scss';
 
@@ -28,16 +29,20 @@ const PopoverContent = React.forwardRef(function PopoverContent(
   props: IPopoverContentProps,
   ref,
 ): React.FunctionComponentElement<React.ReactNode> {
-  const { tooltipContent, focusedState, chartType, alignmentConfig } = props;
   const {
-    params = {},
+    tooltipContent,
+    focusedState,
+    chartType,
+    alignmentConfig,
+    selectOptions,
+  } = props;
+  const {
+    selectedFields = {},
     groupConfig = {},
     runHash = '',
     name = '',
     context = {},
-    mediaContent = {},
   } = tooltipContent || {};
-
   function renderPopoverHeader(): React.ReactNode {
     switch (chartType) {
       case ChartTypeEnum.LineChart: {
@@ -103,13 +108,18 @@ const PopoverContent = React.forwardRef(function PopoverContent(
         );
       }
       case ChartTypeEnum.ImageSet: {
-        const { step = '', index = '', caption = '', name = '' } = mediaContent;
+        const {
+          step = '',
+          index = '',
+          caption = '',
+          images_name = '',
+        } = tooltipContent;
         return (
           <ErrorBoundary>
             <div className='PopoverContent__box PopoverContent__imageSetBox'>
               <strong>{caption}</strong>
               <div className='PopoverContent__value'>
-                <strong>{name}</strong>
+                <strong>{images_name}</strong>
                 <Text className='PopoverContent__contextValue'>
                   {contextToString(context)}
                 </Text>
@@ -163,16 +173,19 @@ const PopoverContent = React.forwardRef(function PopoverContent(
       >
         <div className='PopoverContent'>
           {renderPopoverHeader()}
-          {_.isEmpty(params) ? null : (
+          {_.isEmpty(selectedFields) ? null : (
             <ErrorBoundary>
               <div>
                 <Divider />
                 <div className='PopoverContent__box'>
-                  <div className='PopoverContent__subtitle1'>Params</div>
-                  {Object.keys(params).map((paramKey) => (
+                  {Object.keys(selectedFields).map((paramKey) => (
                     <div key={paramKey} className='PopoverContent__value'>
-                      <Text size={12} tint={50}>{`run.${paramKey}: `}</Text>
-                      <Text size={12}>{formatValue(params[paramKey])}</Text>
+                      <Text size={12} tint={50}>
+                        {`${getValueByField(selectOptions, paramKey)}: `}
+                      </Text>
+                      <Text size={12}>
+                        {formatValue(selectedFields[paramKey])}
+                      </Text>
                     </div>
                   ))}
                 </div>
