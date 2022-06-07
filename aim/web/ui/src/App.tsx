@@ -13,6 +13,7 @@ import { checkIsBasePathInCachedEnv, getBasePath } from 'config/config';
 import routes from 'routes/routes';
 
 import { inIframe } from 'utils/helper';
+
 //
 // import { modify } from './modules/BaseExplorerCore/pipeline/modifier';
 // import {
@@ -20,7 +21,6 @@ import { inIframe } from 'utils/helper';
 //   Order,
 //   // @ts-ignore
 // } from './modules/BaseExplorerCore/pipeline/modifier/applyModifier';
-
 import './App.scss';
 
 const basePath = getBasePath(false);

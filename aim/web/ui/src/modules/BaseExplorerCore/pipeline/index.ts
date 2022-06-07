@@ -5,7 +5,8 @@ import { AimObjectDepths, SequenceTypesEnum } from 'types/core/enums';
 import createGrouping, { Grouping } from './grouping';
 import createQuery, { Query } from './query';
 import createAdapter, { Adapter } from './adapter';
-import { BettaGroupOption, GroupType, Order } from './grouping/types';
+// @ts-ignore
+import { BettaGroupOption, GroupType } from './grouping/types';
 
 export type PipelineOptions = {
   sequenceName: SequenceTypesEnum;
