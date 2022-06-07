@@ -5,8 +5,7 @@ import click
 from tqdm import tqdm
 
 from aim import Image, Run
-import time
-import numpy as np
+
 
 def parse_tb_logs(tb_logs, repo_inst, flat=False, no_cache=False):
     """
@@ -157,7 +156,7 @@ def parse_tb_logs(tb_logs, repo_inst, flat=False, no_cache=False):
             last_modified_at = os.path.getmtime(event)
             try:
                 assert last_modified_at == run_tb_events[event]['last_modified_at']
-            except (KeyError, AssertionError,RuntimeError) as e:
+            except (KeyError, AssertionError, RuntimeError):
                 # Something has changed or hasn't been processed before
                 events_to_process.append(event)
                 try:
