@@ -21,6 +21,7 @@ import { AlignmentOptionsEnum, ChartTypeEnum } from 'utils/d3';
 import { formatValue } from 'utils/formatValue';
 import { isSystemMetric } from 'utils/isSystemMetric';
 import { formatSystemMetricName } from 'utils/formatSystemMetricName';
+import getValueByField from 'utils/getValueByField';
 
 import './PopoverContent.scss';
 
@@ -28,16 +29,20 @@ const PopoverContent = React.forwardRef(function PopoverContent(
   props: IPopoverContentProps,
   ref,
 ): React.FunctionComponentElement<React.ReactNode> {
-  const { tooltipContent, focusedState, chartType, alignmentConfig } = props;
   const {
-    params = {},
+    tooltipContent,
+    focusedState,
+    chartType,
+    alignmentConfig,
+    selectOptions,
+  } = props;
+  const {
+    selectedFields = {},
     groupConfig = {},
     runHash = '',
     name = '',
     context = {},
-    mediaContent = {},
   } = tooltipContent || {};
-
   function renderPopoverHeader(): React.ReactNode {
     switch (chartType) {
       case ChartTypeEnum.LineChart: {
@@ -54,7 +59,7 @@ const PopoverContent = React.forwardRef(function PopoverContent(
                     {contextToString(context)}
                   </Text>
                   <Text component='p' className='PopoverContent__axisValue'>
-                    {focusedState?.yValue ?? '--'}
+                    {formatValue(focusedState?.yValue)}
                   </Text>
                 </span>
               </div>
@@ -96,7 +101,7 @@ const PopoverContent = React.forwardRef(function PopoverContent(
                 {context || null}
               </div>
               <div className='PopoverContent__value'>
-                Value: {focusedState?.yValue ?? '--'}
+                Value: {formatValue(focusedState?.yValue)}
               </div>
             </div>
           </ErrorBoundary>
@@ -108,7 +113,7 @@ const PopoverContent = React.forwardRef(function PopoverContent(
           index = '',
           caption = '',
           images_name = '',
-        } = mediaContent;
+        } = tooltipContent;
         return (
           <ErrorBoundary>
             <div className='PopoverContent__box PopoverContent__imageSetBox'>
@@ -137,7 +142,7 @@ const PopoverContent = React.forwardRef(function PopoverContent(
                 <Text>Y: </Text>
                 <span className='PopoverContent__headerValue'>
                   <Text component='p' className='PopoverContent__axisValue'>
-                    {focusedState?.yValue ?? '--'}
+                    {formatValue(focusedState?.yValue)}
                   </Text>
                 </span>
               </div>
@@ -145,7 +150,7 @@ const PopoverContent = React.forwardRef(function PopoverContent(
                 <Text>X: </Text>
                 <span className='PopoverContent__headerValue'>
                   <Text component='p' className='PopoverContent__axisValue'>
-                    {focusedState?.xValue ?? '--'}
+                    {formatValue(focusedState?.xValue)}
                   </Text>
                 </span>
               </div>
@@ -164,9 +169,29 @@ const PopoverContent = React.forwardRef(function PopoverContent(
         ref={ref}
         className='PopoverContent__container'
         style={{ pointerEvents: focusedState?.active ? 'auto' : 'none' }}
+        elevation={0}
       >
         <div className='PopoverContent'>
           {renderPopoverHeader()}
+          {_.isEmpty(selectedFields) ? null : (
+            <ErrorBoundary>
+              <div>
+                <Divider />
+                <div className='PopoverContent__box'>
+                  {Object.keys(selectedFields).map((paramKey) => (
+                    <div key={paramKey} className='PopoverContent__value'>
+                      <Text size={12} tint={50}>
+                        {`${getValueByField(selectOptions, paramKey)}: `}
+                      </Text>
+                      <Text size={12}>
+                        {formatValue(selectedFields[paramKey])}
+                      </Text>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </ErrorBoundary>
+          )}
           {_.isEmpty(groupConfig) ? null : (
             <ErrorBoundary>
               <div>
@@ -199,22 +224,6 @@ const PopoverContent = React.forwardRef(function PopoverContent(
                       </React.Fragment>
                     ),
                   )}
-                </div>
-              </div>
-            </ErrorBoundary>
-          )}
-          {_.isEmpty(params) ? null : (
-            <ErrorBoundary>
-              <div>
-                <Divider />
-                <div className='PopoverContent__box'>
-                  <div className='PopoverContent__subtitle1'>Params</div>
-                  {Object.keys(params).map((paramKey) => (
-                    <div key={paramKey} className='PopoverContent__value'>
-                      <Text size={12} tint={50}>{`run.${paramKey}: `}</Text>
-                      <Text size={12}>{formatValue(params[paramKey])}</Text>
-                    </div>
-                  ))}
                 </div>
               </div>
             </ErrorBoundary>

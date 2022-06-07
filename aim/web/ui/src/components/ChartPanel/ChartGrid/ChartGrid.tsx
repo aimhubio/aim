@@ -20,6 +20,7 @@ function ChartGrid({
   readOnly = false,
   syncHoverState,
   resizeMode,
+  chartPanelOffsetHeight,
 }: IChartGridProps): React.FunctionComponentElement<React.ReactNode> {
   function getGridSize(dataLength: number, index: number): GridSize {
     return (
@@ -33,7 +34,7 @@ function ChartGrid({
         const gridSize = getGridSize(data.length, index);
         return (
           <Grid
-            key={`${index}-${resizeMode}`}
+            key={`${index}-${resizeMode}-${chartPanelOffsetHeight}`}
             item
             className='ChartGrid'
             xs={gridSize}

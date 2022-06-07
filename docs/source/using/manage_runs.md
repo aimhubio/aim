@@ -12,6 +12,7 @@ Use the following `Run` arguments to:
  - `repo`: define where to store the data
  - `experiment`: define experiment name to group related runs together
  - `system_tracking_interval`: Enable system resource usage tracking (CPU, GPU, memory, etc..). By default enabled. Set to `None` to disable
+ - `capture_terminal_logs`: Enable process output capturing. By default enabled. Set to `False` to disable.
 
 ```python
 from aim import Run
@@ -60,6 +61,15 @@ repo.delete_runs(['run_hash_1', 'run_hash_2'])
 To remove `Run`s using command line:
 ```shell
 aim runs rm run_hash_1 run_hash_2 run_hash_3
+```
+
+### Upload runs
+
+A user can use upload command to create a snapshot of .aim directory for a given project. The snapshot would be created in an s3 bucket which is specified as an argument. The command would create a new s3 bucket if it does not exist already.
+
+To upload a snapshot using command line:
+```shell
+aim runs upload bucket_name_1
 ```
 
 More details on `aim runs` in CLI [reference](../refs/cli.html#runs).

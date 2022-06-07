@@ -1,14 +1,16 @@
 import React from 'react';
 import {
   Link,
-  Redirect,
+  NavLink,
   Route,
   Switch,
+  useHistory,
   useLocation,
   useParams,
   useRouteMatch,
 } from 'react-router-dom';
 import classNames from 'classnames';
+import _ from 'lodash-es';
 
 import { Paper, Tab, Tabs, Tooltip } from '@material-ui/core';
 import { Skeleton } from '@material-ui/lab';
@@ -29,6 +31,8 @@ import runDetailAppModel from 'services/models/runs/runDetailAppModel';
 import * as analytics from 'services/analytics';
 import notesModel from 'services/models/notes/notesModel';
 
+import { setDocumentTitle } from 'utils/document/documentTitle';
+
 import RunSelectPopoverContent from './RunSelectPopoverContent';
 
 import './RunDetail.scss';
@@ -45,7 +49,7 @@ const RunDetailParamsTab = React.lazy(
 const RunDetailSettingsTab = React.lazy(
   () =>
     import(
-      /* webpackChunkName: "RunDetailSettingsTab" */ './RunDetailSettingsTab'
+      /* webpackChunkName: "RunDetailSettingsTab" */ './RunDetailSettingsTab/RunDetailSettingsTab'
     ),
 );
 const RunDetailMetricsAndSystemTab = React.lazy(
@@ -63,11 +67,15 @@ const TraceVisualizationContainer = React.lazy(
 const RunOverviewTab = React.lazy(
   () => import(/* webpackChunkName: "RunOverviewTab" */ './RunOverviewTab'),
 );
+const RunLogsTab = React.lazy(
+  () => import(/* webpackChunkName: "RunLogsTab" */ './RunLogsTab'),
+);
 
 const tabs: string[] = [
   'overview',
   'parameters',
   'notes',
+  'logs',
   'metrics',
   'system',
   'distributions',
@@ -90,6 +98,30 @@ function RunDetail(): React.FunctionComponentElement<React.ReactNode> {
   const { url } = useRouteMatch();
   const location = useLocation();
   const [activeTab, setActiveTab] = React.useState(location.pathname);
+  const history = useHistory();
+
+  React.useEffect(() => {
+    redirect();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  function redirect(): void {
+    const splitPathname: string[] = location.pathname.split('/');
+    const path: string = `${url}/overview`;
+    if (splitPathname.length > 4) {
+      history.replace(path);
+      setActiveTab(path);
+      return;
+    }
+    if (splitPathname[3]) {
+      if (!tabs.includes(splitPathname[3])) {
+        history.replace(path);
+      }
+    } else {
+      history.replace(path);
+    }
+    setActiveTab(path);
+  }
 
   const tabContent: { [key: string]: JSX.Element } = {
     overview: <RunOverviewTab runHash={runHash} runData={runData} />,
@@ -97,6 +129,15 @@ function RunDetail(): React.FunctionComponentElement<React.ReactNode> {
       <RunDetailParamsTab
         runParams={runData?.runParams}
         isRunInfoLoading={runData?.isRunInfoLoading}
+      />
+    ),
+    logs: (
+      <RunLogsTab
+        runHash={runHash}
+        runLogs={runData?.runLogs}
+        inProgress={_.isNil(runData?.runInfo?.end_time)}
+        updatedLogsCount={runData?.updatedLogsCount}
+        isRunLogsLoading={runData?.isRunLogsLoading}
       />
     ),
     metrics: (
@@ -156,6 +197,8 @@ function RunDetail(): React.FunctionComponentElement<React.ReactNode> {
     settings: (
       <RunDetailSettingsTab
         isArchived={runData?.runInfo?.archived}
+        defaultName={runData?.runInfo?.name}
+        defaultDescription={runData?.runInfo?.description}
         runHash={runHash}
       />
     ),
@@ -175,9 +218,9 @@ function RunDetail(): React.FunctionComponentElement<React.ReactNode> {
     runsOfExperimentRequestRef.call();
   }
 
-  const handleTabChange = (event: React.ChangeEvent<{}>, newValue: string) => {
+  function handleTabChange(event: React.ChangeEvent<{}>, newValue: string) {
     setActiveTab(newValue);
-  };
+  }
 
   function onRunsSelectToggle() {
     setIsRunSelectDropdownOpen(!isRunSelectDropdownOpen);
@@ -189,7 +232,10 @@ function RunDetail(): React.FunctionComponentElement<React.ReactNode> {
     const runsRequestRef = runDetailAppModel.getRunInfo(runHash);
     const experimentRequestRef: any = runDetailAppModel.getExperimentsData();
     experimentRequestRef?.call();
-    runsRequestRef.call();
+
+    runsRequestRef.call().then((runInfo) => {
+      setDocumentTitle(runInfo?.props.name || runHash, true);
+    });
     return () => {
       runsRequestRef.abort();
       runsOfExperimentRequestRef?.abort();
@@ -198,13 +244,6 @@ function RunDetail(): React.FunctionComponentElement<React.ReactNode> {
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [runHash]);
-
-  React.useEffect(() => {
-    if (runData?.experimentId) {
-      getRunsOfExperiment(runData?.experimentId);
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [runData?.experimentId]);
 
   React.useEffect(() => {
     if (location.pathname !== activeTab) {
@@ -308,6 +347,13 @@ function RunDetail(): React.FunctionComponentElement<React.ReactNode> {
                   />
                 }
               />
+              <div className='RunDetail__runDetailContainer__appBarContainer__appBarBox__actionContainer'>
+                <NavLink to={`${url}/settings`}>
+                  <Button withOnlyIcon size='small' color='secondary'>
+                    <Icon name='edit' />
+                  </Button>
+                </NavLink>
+              </div>
             </div>
           </div>
           <Paper className='RunDetail__runDetailContainer__tabsContainer'>
@@ -355,7 +401,6 @@ function RunDetail(): React.FunctionComponentElement<React.ReactNode> {
                   </ErrorBoundary>
                 </Route>
               ))}
-              <Redirect to={`${url}/overview`} />
             </Switch>
           </BusyLoaderWrapper>
         </div>

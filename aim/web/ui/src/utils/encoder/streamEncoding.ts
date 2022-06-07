@@ -301,7 +301,7 @@ export async function* decodeBufferPairs(
   let p = reader.read();
 
   function merge(a, b) {
-    var mergedArray = new Uint8Array(a.length + b.length);
+    const mergedArray = new Uint8Array(a.length + b.length);
     mergedArray.set(a);
     mergedArray.set(b, a.length);
     return mergedArray;

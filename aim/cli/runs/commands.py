@@ -1,7 +1,7 @@
 import click
 import os
 
-from aim.cli.runs.utils import list_repo_runs, match_runs
+from aim.cli.runs.utils import list_repo_runs, match_runs, make_zip_archive, upload_repo_runs
 from aim.sdk.repo import Repo
 
 
@@ -112,3 +112,22 @@ def move_runs(ctx, destination, hashes):
     else:
         click.echo('Something went wrong while moving runs. Remaining runs are:', err=True)
         click.secho('\t'.join(remaining_runs), fg='yellow')
+
+
+@runs.command(name='upload')
+@click.argument('bucket', nargs=1, type=str)
+@click.pass_context
+def upload_runs(ctx, bucket):
+    repo_path = ctx.obj['repo']
+    if not Repo.exists(repo_path):
+        click.echo(f'\'{repo_path}\' is not a valid aim repo.')
+        exit(1)
+
+    zip_buffer = make_zip_archive(repo_path)
+    zip_buffer.seek(0)
+
+    success, uploaded_zip_file_name = upload_repo_runs(zip_buffer, bucket)
+    if success:
+        click.echo(f'Successfully uploaded runs in {uploaded_zip_file_name}.')
+    else:
+        click.echo(f'The storage backup failed because of the following error: {uploaded_zip_file_name}.')

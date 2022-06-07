@@ -16,7 +16,6 @@ function BaseExplorer(props: IBaseExplorerProps) {
     ui: { components },
     engineInstance,
   } = props;
-
   const { initialized } = engineInstance.useStore(
     engineInstance.engineStatusSelector,
   );
@@ -67,7 +66,9 @@ function createExplorer(config: IExplorerConfig): () => React.ReactElement {
 
   const engine = createEngine(engineConfig);
 
-  return () => <BaseExplorer {...config} engineInstance={engine} />;
+  return (): JSX.Element => (
+    <BaseExplorer {...config} engineInstance={engine} />
+  );
 }
 
 export default createExplorer;

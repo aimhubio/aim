@@ -53,7 +53,7 @@ class TestRunResourceTracker(TestBase):
         self.assertListEqual([], metrics)
 
     def test_resource_tracking_interval_limits(self):
-        run = Run(system_tracking_interval=0)
+        run = Run(system_tracking_interval=0, capture_terminal_logs=False)
         self.assertIsNone(run._system_resource_tracker)
-        run = Run(system_tracking_interval=2 * 24 * 3600)  # two days
+        run = Run(system_tracking_interval=2 * 24 * 3600, capture_terminal_logs=False)  # two days
         self.assertIsNone(run._system_resource_tracker)

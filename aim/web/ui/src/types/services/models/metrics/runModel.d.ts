@@ -6,6 +6,7 @@ export interface IRun<T> {
     creation_time: number;
     end_time: number;
     description: string;
+    active: boolean;
   };
   created_at: number;
   traces: { metric: T[] };

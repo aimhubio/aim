@@ -28,7 +28,7 @@ function DataList({
   withSearchBar = true,
   searchableKeys,
   illustrationConfig,
-  rowHeight = 32,
+  rowHeight = 28,
   height = '100vh',
   tableClassName = '',
 }: IDataListProps): React.FunctionComponentElement<React.ReactNode> {
@@ -105,8 +105,8 @@ function DataList({
             )}
             isLoading={isLoading}
             hideHeaderActions
-            estimatedRowHeight={32}
-            headerHeight={32}
+            estimatedRowHeight={rowHeight}
+            headerHeight={rowHeight}
             illustrationConfig={illustrationConfig}
             height='100%'
             disableRowClick

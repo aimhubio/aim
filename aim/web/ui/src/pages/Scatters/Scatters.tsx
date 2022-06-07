@@ -101,6 +101,7 @@ function Scatters(
                 <ChartPanel
                   key={props.scatterPlotData?.[0]?.data?.length}
                   ref={props.chartPanelRef}
+                  chartPanelOffsetHeight={props.chartPanelOffsetHeight}
                   panelResizing={props.panelResizing}
                   chartType={ChartTypeEnum.ScatterPlot}
                   data={props.scatterPlotData}
@@ -109,6 +110,7 @@ function Scatters(
                   onActivePointChange={props.onActivePointChange}
                   chartProps={chartProps}
                   resizeMode={props.resizeMode}
+                  selectOptions={props.groupingSelectOptions}
                   controls={
                     <Controls
                       chartProps={chartProps}

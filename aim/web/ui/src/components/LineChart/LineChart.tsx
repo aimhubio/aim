@@ -134,6 +134,7 @@ const LineChart = React.forwardRef(function LineChart(
         if (attributesRef.current?.clearHoverAttributes) {
           attributesRef.current.clearHoverAttributes();
         }
+        attributesRef.current = {};
       }
       return;
     }
@@ -150,6 +151,7 @@ const LineChart = React.forwardRef(function LineChart(
       yScale,
       visBoxRef,
       alignmentConfig,
+      axesScaleType,
       humanizerConfigRef,
       drawBgTickLines: { y: true, x: false },
     });

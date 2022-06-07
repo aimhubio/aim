@@ -25,8 +25,8 @@ function Controls(
     return (
       props.tooltip.display !==
         CONTROLS_DEFAULT_CONFIG.scatters.tooltip.display ||
-      props.tooltip.selectedParams.length !==
-        CONTROLS_DEFAULT_CONFIG.scatters.tooltip.selectedParams.length
+      props.tooltip.selectedFields.length !==
+        CONTROLS_DEFAULT_CONFIG.scatters.tooltip.selectedFields.length
     );
   }, [props.tooltip]);
 
@@ -40,7 +40,7 @@ function Controls(
         <ErrorBoundary>
           <div>
             <ControlPopover
-              title='Select Trendline Options'
+              title='Select trendline options'
               anchor={({ onAnchorClick, opened }) => (
                 <Tooltip
                   title={
@@ -88,9 +88,9 @@ function Controls(
         <ErrorBoundary>
           <div>
             <ControlPopover
-              title='Display In Tooltip'
+              title='Display in tooltip'
               anchor={({ onAnchorClick, opened }) => (
-                <Tooltip title='Tooltip Params'>
+                <Tooltip title='Tooltip fields'>
                   <div
                     onClick={onAnchorClick}
                     className={`Controls__anchor ${
@@ -113,7 +113,7 @@ function Controls(
               component={
                 <TooltipContentPopover
                   selectOptions={props.selectOptions}
-                  selectedParams={props.tooltip.selectedParams}
+                  selectedFields={props.tooltip.selectedFields}
                   displayTooltip={props.tooltip.display}
                   onChangeTooltip={props.onChangeTooltip}
                 />
@@ -123,7 +123,7 @@ function Controls(
         </ErrorBoundary>
         <ErrorBoundary>
           {/* TODO add ability to open modals in ControlPopover component and change the name of the ControlPopover to more general*/}
-          <Tooltip title='Export Chart'>
+          <Tooltip title='Export chart'>
             <div className='Controls__anchor' onClick={onToggleExportPreview}>
               <Icon className='Controls__icon' name='download' />
             </div>

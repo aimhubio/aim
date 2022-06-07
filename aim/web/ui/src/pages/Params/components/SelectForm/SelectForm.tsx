@@ -8,8 +8,8 @@ import {
 } from '@material-ui/icons';
 
 import { Badge, Button, Icon, Text } from 'components/kit';
-import ExpressionAutoComplete from 'components/kit/ExpressionAutoComplete';
 import ErrorBoundary from 'components/ErrorBoundary/ErrorBoundary';
+import AutocompleteInput from 'components/AutocompleteInput';
 
 import { ANALYTICS_EVENT_KEYS } from 'config/analytics/analyticsKeysMap';
 
@@ -29,20 +29,22 @@ function SelectForm({
   selectFormData,
 }: ISelectFormProps): React.FunctionComponentElement<React.ReactNode> {
   const [anchorEl, setAnchorEl] = React.useState<any>(null);
+  const [searchValue, setSearchValue] = React.useState<string>('');
   const searchRef = React.useRef<any>(null);
-
+  const autocompleteRef: any = React.useRef<React.MutableRefObject<any>>(null);
   React.useEffect(() => {
     return () => {
       searchRef.current?.abort();
     };
   }, []);
 
-  function handleParamsSearch(e: React.ChangeEvent<any>) {
-    e.preventDefault();
+  function handleParamsSearch() {
     if (requestIsPending) {
       return;
     }
-    searchRef.current = paramsAppModel.getParamsData(true, true);
+    const query = autocompleteRef.current.getValue();
+    onSelectRunQueryChange(query);
+    searchRef.current = paramsAppModel.getParamsData(true, true, query);
     searchRef.current.call();
     trackEvent(ANALYTICS_EVENT_KEYS.params.searchClick);
   }
@@ -88,7 +90,22 @@ function SelectForm({
       anchorEl.focus();
     }
     setAnchorEl(null);
+    setSearchValue('');
   }
+
+  function handleSearchInputChange(
+    e: React.ChangeEvent<HTMLInputElement>,
+  ): void {
+    setSearchValue(e.target.value);
+  }
+
+  const options = React.useMemo(() => {
+    return (
+      selectFormData?.options?.filter(
+        (option) => option.label.indexOf(searchValue) !== -1,
+      ) ?? []
+    );
+  }, [searchValue, selectFormData?.options]);
 
   const open: boolean = !!anchorEl;
   const id = open ? 'select-metric' : undefined;
@@ -129,7 +146,7 @@ function SelectForm({
                       size='small'
                       disablePortal
                       disableCloseOnSelect
-                      options={selectFormData.options}
+                      options={options}
                       value={selectedParamsData?.options}
                       onChange={onSelect}
                       groupBy={(option) => option.group}
@@ -144,7 +161,11 @@ function SelectForm({
                       renderInput={(params) => (
                         <InputBase
                           ref={params.InputProps.ref}
-                          inputProps={params.inputProps}
+                          inputProps={{
+                            ...params.inputProps,
+                            value: searchValue,
+                            onChange: handleSearchInputChange,
+                          }}
                           autoFocus={true}
                           spellCheck={false}
                           className='SelectForm__param__select'
@@ -236,12 +257,11 @@ function SelectForm({
             </Button>
           </Box>
           <div className='SelectForm__TextField'>
-            <ExpressionAutoComplete
-              onExpressionChange={onSelectRunQueryChange}
-              onSubmit={handleParamsSearch}
+            <AutocompleteInput
+              refObject={autocompleteRef}
+              context={selectFormData?.suggestions}
+              onEnter={handleParamsSearch}
               value={selectedParamsData?.query}
-              options={selectFormData?.suggestions}
-              placeholder='Filter runs, e.g. run.learning_rate > 0.0001 and run.batch_size == 32'
             />
           </div>
         </div>

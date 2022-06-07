@@ -42,6 +42,7 @@ function MediaPanel({
   sortFieldsDict,
   sortFields,
   illustrationConfig,
+  selectOptions = [],
 }: IMediaPanelProps): React.FunctionComponentElement<React.ReactNode> {
   const [activePointRect, setActivePointRect] = React.useState<{
     top: number;
@@ -251,6 +252,7 @@ function MediaPanel({
                         tooltip={tooltip}
                         mediaType={mediaType}
                         sortFields={sortFields}
+                        selectOptions={selectOptions}
                       />
                     </ErrorBoundary>
                   </div>
@@ -267,6 +269,7 @@ function MediaPanel({
                         chartType={tooltipType}
                         tooltipContent={tooltip?.content!}
                         focusedState={focusedState}
+                        selectOptions={selectOptions}
                       />
                     </ErrorBoundary>
                   )}

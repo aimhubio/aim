@@ -13,6 +13,7 @@ export interface ITextProps
   className?: string;
   children?: React.ReactNode;
   tint?: componentTintType;
+  ref?: React.MutableRefObject<HTMLElement | any>;
 }
 
 type componentType =

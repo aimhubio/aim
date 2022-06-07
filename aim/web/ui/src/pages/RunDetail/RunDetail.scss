@@ -6,7 +6,8 @@
     height: 100%;
     background: $cuddle-10;
     .BaseTable__row-cell {
-      font-family: 'Iosevka', monospace;
+      font-family: 'Inconsolata', monospace;
+      font-variation-settings: 'wdth' 82;
     }
     &__Tabs {
       .MuiTabs-fixed {
@@ -32,6 +33,20 @@
       &__appBarBox {
         display: flex;
         align-items: center;
+        justify-content: space-between;
+        &__actionContainer {
+          width: 4.5rem;
+          display: flex;
+          justify-content: center;
+          align-items: center;
+          border-left: $border-main;
+          i {
+            color: $pico-70;
+          }
+          a {
+            text-decoration: unset;
+          }
+        }
       }
       &__appBarTitleBox {
         display: flex;
@@ -94,6 +109,8 @@
       box-shadow: 0 toRem(4px) toRem(6px) rgba(144, 175, 218, 0.2);
       border-bottom: $border-grey-lighter;
       border-top: $border-grey-lighter;
+      position: relative;
+      z-index: 1;
       .PrivateTabIndicator-root-1 {
         display: none;
       }
@@ -222,50 +239,6 @@
           margin-right: $space-xxs;
           margin-bottom: $space-xxs;
         }
-      }
-    }
-  }
-}
-
-.RunDetailSettingsTab {
-  padding: 1.5rem 0;
-  &__actionCardsCnt {
-    margin: 0 toRem(164px);
-
-    .ActionCard {
-      margin-bottom: toRem(16px);
-    }
-
-    &__btn__delete {
-      .MuiButton-label {
-        display: initial;
-        text-overflow: ellipsis;
-        overflow: hidden;
-        white-space: nowrap;
-      }
-
-      background-color: $error-color;
-
-      &:hover {
-        background-color: $error-color;
-      }
-    }
-
-    &__btn__archive {
-      color: $pico-80;
-      border-color: $pico-80;
-      &:hover {
-        border-color: $pico-80;
-      }
-    }
-
-    &__btn__unarchive {
-      background-color: $pico-50;
-      border-color: $pico-50;
-      color: $white;
-      &:hover {
-        border-color: $pico-50;
-        background-color: $pico-50;
       }
     }
   }

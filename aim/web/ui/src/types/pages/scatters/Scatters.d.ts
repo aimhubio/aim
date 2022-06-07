@@ -19,7 +19,7 @@ import {
   IOnGroupingModeChangeParams,
   IOnGroupingSelectChangeParams,
   IFocusedState,
-  IChartTooltip,
+  IPanelTooltip,
   IChartTitleData,
   IGroupingSelectOption,
 } from 'types/services/models/metrics/metricsAppModel';
@@ -39,6 +39,7 @@ export interface IScattersProps extends Partial<RouteChildrenProps> {
   chartElemRef: React.RefObject<HTMLDivElement>;
   wrapperElemRef: React.RefObject<HTMLDivElement>;
   resizeElemRef: React.RefObject<HTMLDivElement>;
+  chartPanelOffsetHeight?: number;
   scatterPlotData: any[];
   panelResizing: boolean;
   chartTitleData: IChartTitleData;
@@ -47,7 +48,7 @@ export interface IScattersProps extends Partial<RouteChildrenProps> {
   focusedState: IFocusedState;
   groupingData: IGroupingConfig;
   notifyData: IScatterAppModelState['notifyData'];
-  tooltip: IChartTooltip;
+  tooltip: IPanelTooltip;
   selectedOptionsData: ISelectConfig;
   tableRowHeight: RowHeightSize;
   sortFields: [string, 'asc' | 'desc' | boolean][];
@@ -62,7 +63,7 @@ export interface IScattersProps extends Partial<RouteChildrenProps> {
   trendlineOptions: ITrendlineOptions;
   selectedRows: { [key: string]: any };
   columnsOrder: IColumnsOrder;
-  onChangeTooltip: (tooltip: Partial<IChartTooltip>) => void;
+  onChangeTooltip: (tooltip: Partial<IPanelTooltip>) => void;
   onChangeTrendlineOptions: (options: Partial<ITrendlineOptions>) => void;
   onActivePointChange?: (
     activePoint: IActivePoint,

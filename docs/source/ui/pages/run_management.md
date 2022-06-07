@@ -65,7 +65,8 @@ Each tab visualizes respective tracked metadata or empty if not tracked.
 - [Audios](#id10)
 - [Texts](#id11)
 - [Figures](#id12)
-- [Settings](#id13)
+- [Terminal Logs](#id13)
+- [Settings](#id14)
 
 ### Overview
 
@@ -164,6 +165,12 @@ On the `Figures` tab you can view all the track figures over different contexts 
 **Note:** Aim will render figures with passed or default dimensions. There will be scrolls if the size exceeds the plotly container space of the Figures tab.
 
 <img style="border-radius: 8px; border: 1px solid #E8F1FC" alt="Single Run page figures tab" src="https://docs-blobs.s3.us-east-2.amazonaws.com/images/ui/pages/run-single-page/figures_tab.png">
+
+### Terminal Logs
+
+Aim streams the process output logs (terminal logs) to the Aim UI automatically near-real-time. The terminal logs are displayed under `Logs` tab on the single run page.The terminal logs can be disabled programmatically if needed. [More on terminal logs here](../../using/configure_runs.html#capturing-terminal-logs).
+
+<img style="border-radius: 8px; border: 1px solid #E8F1FC" alt="Single Run page logs tab" src="https://docs-blobs.s3.us-east-2.amazonaws.com/images/ui/pages/run-single-page/logs_tab.png">
 
 ### Settings
 

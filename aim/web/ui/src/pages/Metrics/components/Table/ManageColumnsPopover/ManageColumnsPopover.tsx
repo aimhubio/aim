@@ -176,6 +176,12 @@ function ManageColumnsPopover({
     setSearchKey(e.target.value);
   }
 
+  function isColumnHidden(column: string): boolean {
+    return (
+      !!hiddenColumns?.includes(column) &&
+      !TABLE_DEFAULT_CONFIG[appName].nonHidableColumns.has(column)
+    );
+  }
   const manageColumnsChanged: boolean = React.useMemo(() => {
     return (
       !_.isEqual(
@@ -193,7 +199,7 @@ function ManageColumnsPopover({
   return (
     <ErrorBoundary>
       <ControlPopover
-        title='Manage Table Columns'
+        title='Manage table columns'
         anchorOrigin={{
           vertical: 'bottom',
           horizontal: 'left',
@@ -206,6 +212,7 @@ function ManageColumnsPopover({
           <Button
             color='secondary'
             variant='text'
+            size='small'
             onClick={onAnchorClick}
             className={`ManageColumns__trigger ${
               opened || manageColumnsChanged ? 'opened' : ''
@@ -234,19 +241,20 @@ function ManageColumnsPopover({
                       {...provided.droppableProps}
                     >
                       {state.columns.left.list.map(
-                        (data: string, index: number) => (
+                        (column: string, index: number) => (
                           <ColumnItem
-                            key={`${data}-${index}`}
-                            data={data}
+                            key={`${column}-${index}`}
+                            data={column}
                             index={index}
-                            isHidden={!!hiddenColumns?.includes(data)}
+                            appName={appName}
+                            isHidden={isColumnHidden(column)}
                             onClick={() =>
                               onColumnsVisibilityChange(
-                                hiddenColumns?.includes(data)
+                                hiddenColumns?.includes(column)
                                   ? hiddenColumns?.filter(
-                                      (col: string) => col !== data,
+                                      (col: string) => col !== column,
                                     )
-                                  : hiddenColumns?.concat([data]),
+                                  : hiddenColumns?.concat([column]),
                               )
                             }
                             draggingItemId={draggingItemId}
@@ -284,21 +292,22 @@ function ManageColumnsPopover({
                       {...provided.droppableProps}
                     >
                       {state.columns.middle.list.map(
-                        (data: string, index: number) => (
+                        (column: string, index: number) => (
                           <ColumnItem
-                            key={`${data}-${index}`}
-                            data={data}
+                            key={`${column}-${index}`}
+                            data={column}
                             index={index}
+                            appName={appName}
                             hasSearchableItems
                             searchKey={searchKey}
-                            isHidden={!!hiddenColumns?.includes(data)}
+                            isHidden={isColumnHidden(column)}
                             onClick={() =>
                               onColumnsVisibilityChange(
-                                hiddenColumns?.includes(data)
+                                hiddenColumns?.includes(column)
                                   ? hiddenColumns?.filter(
-                                      (col: string) => col !== data,
+                                      (col: string) => col !== column,
                                     )
-                                  : hiddenColumns?.concat([data]),
+                                  : hiddenColumns?.concat([column]),
                               )
                             }
                             draggingItemId={draggingItemId}
@@ -324,19 +333,20 @@ function ManageColumnsPopover({
                       {...provided.droppableProps}
                     >
                       {state.columns.right.list.map(
-                        (data: string, index: number) => (
+                        (column: string, index: number) => (
                           <ColumnItem
-                            key={`${data}-${index}`}
-                            data={data}
+                            key={`${column}-${index}`}
+                            data={column}
                             index={index}
-                            isHidden={!!hiddenColumns?.includes(data)}
+                            appName={appName}
+                            isHidden={isColumnHidden(column)}
                             onClick={() =>
                               onColumnsVisibilityChange(
-                                hiddenColumns.includes(data)
+                                hiddenColumns.includes(column)
                                   ? hiddenColumns.filter(
-                                      (col: string) => col !== data,
+                                      (col: string) => col !== column,
                                     )
-                                  : hiddenColumns.concat([data]),
+                                  : hiddenColumns.concat([column]),
                               )
                             }
                             draggingItemId={draggingItemId}

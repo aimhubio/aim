@@ -55,9 +55,9 @@
 
       &-cell {
         position: relative;
-        min-height: 32px;
+        min-height: 28px;
         max-height: 300px;
-        padding: toRem(7px) toRem(16px);
+        padding: 0 $space-unit;
         border-right: unset;
         border-bottom: $border-grey;
         display: flex;

@@ -14,6 +14,7 @@ import Grouping from 'components/Grouping/Grouping';
 import ErrorBoundary from 'components/ErrorBoundary/ErrorBoundary';
 import RangePanel from 'components/RangePanel';
 
+import pageTitlesEnum from 'config/pageTitles/pageTitles';
 import { ResizeModeEnum } from 'config/enums/tableEnums';
 import { RowHeightSize } from 'config/table/tableConfigs';
 import GroupingPopovers from 'config/grouping/GroupingPopovers';
@@ -92,8 +93,8 @@ function ImagesExplore(): React.FunctionComponentElement<React.ReactNode> {
       return { sortFieldsDict: {}, sortFields: [] };
     }
     const grouping = imagesExploreData?.config?.grouping;
-    const group: string[] = [...(grouping?.group || [])];
-    const groupFields = grouping?.reverseMode?.group
+    const group: string[] = [...(grouping?.row || [])];
+    const groupFields = grouping?.reverseMode?.row
       ? imagesExploreData?.groupingSelectOptions.filter(
           (option: IGroupingSelectOption) => !group.includes(option.value),
         )
@@ -113,7 +114,7 @@ function ImagesExplore(): React.FunctionComponentElement<React.ReactNode> {
     sortGroupFields = sortGroupFields.concat(
       imagesExploreData?.config?.images?.sortFields
         .filter((field: SortField) => {
-          if (grouping?.reverseMode?.group) {
+          if (grouping?.reverseMode?.row) {
             return group.includes(field.value);
           } else {
             return !group.includes(field.value);
@@ -199,7 +200,6 @@ function ImagesExplore(): React.FunctionComponentElement<React.ReactNode> {
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
-  console.log(imagesExploreData?.config?.grouping);
   return (
     <ErrorBoundary>
       <div className='ImagesExplore__container' ref={wrapperElemRef}>
@@ -209,7 +209,7 @@ function ImagesExplore(): React.FunctionComponentElement<React.ReactNode> {
               onBookmarkCreate={imagesExploreAppModel.onBookmarkCreate}
               onBookmarkUpdate={imagesExploreAppModel.onBookmarkUpdate}
               onResetConfigData={imagesExploreAppModel.onResetConfigData}
-              title={'Images explorer'}
+              title={pageTitlesEnum.IMAGES_EXPLORER}
             />
             <div className='ImagesExplore__SelectForm__Grouping__container'>
               <SelectForm
@@ -235,7 +235,7 @@ function ImagesExplore(): React.FunctionComponentElement<React.ReactNode> {
               />
               <Grouping
                 groupingPopovers={GroupingPopovers.filter(
-                  (g) => g.groupName === 'group',
+                  (g) => g.groupName === 'row',
                 )}
                 groupingData={imagesExploreData?.config?.grouping}
                 groupingSelectOptions={imagesExploreData?.groupingSelectOptions}
@@ -275,6 +275,7 @@ function ImagesExplore(): React.FunctionComponentElement<React.ReactNode> {
                 isLoading={
                   imagesExploreData?.requestStatus === RequestStatusEnum.Pending
                 }
+                selectOptions={imagesExploreData?.groupingSelectOptions}
                 panelResizing={panelResizing}
                 resizeMode={imagesExploreData?.config?.table.resizeMode}
                 tableHeight={imagesExploreData?.config?.table?.height}

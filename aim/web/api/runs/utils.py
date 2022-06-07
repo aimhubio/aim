@@ -42,6 +42,13 @@ def str_to_range(range_str: str):
     return IndexRange(start, stop)
 
 
+def get_run_params(run: Run, *, skip_system: bool):
+    params = run.get(..., resolve_objects=True)
+    if skip_system and '__system_params' in params:
+        del params['__system_params']
+    return params
+
+
 def get_run_props(run: Run):
     return {
         'name': run.name if run.name else None,
@@ -57,7 +64,8 @@ def get_run_props(run: Run):
                  for tag in run.props.tags_obj],
         'archived': run.archived if run.archived else False,
         'creation_time': run.creation_time,
-        'end_time': run.end_time
+        'end_time': run.end_time,
+        'active': run.active
     }
 
 
@@ -161,6 +169,7 @@ def custom_aligned_metrics_streamer(requested_runs: List[AlignedRunIn], x_axis: 
 
 
 async def metric_search_result_streamer(traces: SequenceCollection,
+                                        skip_system: bool,
                                         steps_num: int,
                                         x_axis: Optional[str]) -> bytes:
     for run_trace_collection in traces.iter_runs():
@@ -192,7 +201,7 @@ async def metric_search_result_streamer(traces: SequenceCollection,
         if run:
             run_dict = {
                 run.hash: {
-                    'params': run.get(..., resolve_objects=True),
+                    'params': get_run_params(run, skip_system=skip_system),
                     'traces': traces_list,
                     'props': get_run_props(run)
                 }
@@ -202,13 +211,13 @@ async def metric_search_result_streamer(traces: SequenceCollection,
             yield collect_run_streamable_data(encoded_tree)
 
 
-def run_search_result_streamer(runs: SequenceCollection, limit: int) -> bytes:
+def run_search_result_streamer(runs: SequenceCollection, limit: int, skip_system: bool) -> bytes:
     run_count = 0
     for run_trace_collection in runs.iter_runs():
         run = run_trace_collection.run
         run_dict = {
             run.hash: {
-                'params': run.get(..., resolve_objects=True),
+                'params': get_run_params(run, skip_system=skip_system),
                 'traces': run.collect_sequence_info(sequence_types='metric'),
                 'props': get_run_props(run)
             }
@@ -247,6 +256,34 @@ def collect_requested_metric_traces(run: Run, requested_traces: List[TraceBase],
         })
 
     return processed_traces_list
+
+
+async def run_logs_streamer(run: Run, record_range: str) -> bytes:
+    logs = run.get_terminal_logs()
+
+    if not logs:
+        return
+
+    record_range = checked_range(record_range)
+    start = record_range.start
+    stop = record_range.stop
+
+    # range stop is missing
+    if record_range.stop is None:
+        stop = logs.last_step() + 1
+
+    # range start is missing
+    if record_range.start is None:
+        start = 0
+
+    # range is missing completely
+    if record_range.start is None and record_range.stop is None:
+        start = max(logs.last_step() - 100, 0)
+
+    steps_vals = logs.values.items_in_range(start, stop)
+    for step, val in steps_vals:
+        encoded_tree = encode_tree({step: val.data})
+        yield collect_run_streamable_data(encoded_tree)
 
 
 def get_project():

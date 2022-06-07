@@ -8,7 +8,7 @@ function QueryForm(props: IQueryFormProps) {
   const engine = props.engine;
   const queryable = engine.useStore(engine.instructions.dataSelector);
 
-  const query = engine.useStore((state: any) => state.queryUI);
+  const query = engine.useStore(engine.queryUI.stateSelector);
 
   useEffect(() => {
     console.log('queryable --> ', queryable);

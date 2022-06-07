@@ -13,6 +13,7 @@ import COLORS from 'config/colors/colors';
 import { CONTROLS_DEFAULT_CONFIG } from 'config/controls/controlsDefaultConfig';
 import { ANALYTICS_EVENT_KEYS } from 'config/analytics/analyticsKeysMap';
 import { DATE_EXPORTING_FORMAT, TABLE_DATE_FORMAT } from 'config/dates/dates';
+import { getSuggestionsByExplorer } from 'config/monacoConfig/monacoConfig';
 
 import {
   getImagesExploreTableColumns,
@@ -80,9 +81,13 @@ import alphabeticalSortComparator from 'utils/alphabeticalSortComparator';
 import onNotificationDelete from 'utils/app/onNotificationDelete';
 import onNotificationAdd from 'utils/app/onNotificationAdd';
 import exceptionHandler from 'utils/app/exceptionHandler';
-import { getParamsSuggestions } from 'utils/app/getParamsSuggestions';
+import getGroupingSelectOptions from 'utils/app/getGroupingSelectOptions';
+import getAdvancedSuggestion from 'utils/getAdvancedSuggestions';
+import { processDurationTime } from 'utils/processDurationTime';
+import onVisibilityChange from 'utils/app/onColumnsVisibilityChange';
 
 import createModel from '../model';
+import { AppNameEnum } from '../explorer';
 
 const model = createModel<Partial<IImagesExploreAppModelState>>({
   requestStatus: RequestStatusEnum.NotRequested,
@@ -100,12 +105,12 @@ let tooltipData: ITooltipData = {};
 function getConfig(): IImagesExploreAppConfig {
   return {
     grouping: {
-      group: [],
+      row: [],
       reverseMode: {
-        group: false,
+        row: false,
       },
       isApplied: {
-        group: true,
+        row: true,
       },
     },
     select: {
@@ -120,7 +125,7 @@ function getConfig(): IImagesExploreAppConfig {
       tooltip: {
         content: {},
         display: CONTROLS_DEFAULT_CONFIG.images.tooltip.display,
-        selectedParams: CONTROLS_DEFAULT_CONFIG.images.tooltip.selectedParams,
+        selectedFields: CONTROLS_DEFAULT_CONFIG.images.tooltip.selectedFields,
       },
       additionalProperties: {
         alignmentType: CONTROLS_DEFAULT_CONFIG.images.alignmentType,
@@ -183,10 +188,22 @@ function initialize(appId: string): void {
     .getProjectParams(['images'])
     .call()
     .then((data: IProjectParamsMetrics) => {
+      const advancedSuggestions: Record<any, any> = getAdvancedSuggestion(
+        data.images,
+      );
       model.setState({
         selectFormData: {
           options: getSelectFormOptions(data),
-          suggestions: getParamsSuggestions(data),
+          suggestions: getSuggestionsByExplorer(AppNameEnum.IMAGES, data),
+          advancedSuggestions: {
+            ...getSuggestionsByExplorer(AppNameEnum.IMAGES, data),
+            images: {
+              name: '',
+              context: _.isEmpty(advancedSuggestions)
+                ? ''
+                : { ...advancedSuggestions },
+            },
+          },
         },
       });
     });
@@ -284,6 +301,7 @@ function abortRequest(): void {
 function getImagesData(
   shouldUrlUpdate?: boolean,
   shouldResetSelectedRows?: boolean,
+  queryString?: string,
 ) {
   if (imagesRequestRef) {
     imagesRequestRef.abort();
@@ -291,6 +309,13 @@ function getImagesData(
 
   const configData: IImagesExploreAppConfig | undefined =
     model.getState()?.config;
+  if (queryString) {
+    if (configData?.select?.advancedMode) {
+      configData.select.advancedQuery = queryString;
+    } else {
+      configData!.select.query = queryString;
+    }
+  }
   if (shouldUrlUpdate) {
     updateURL(configData);
   }
@@ -371,7 +396,7 @@ function getImagesData(
             tooltip: {
               content: {},
               display: true,
-              selectedParams: [],
+              selectedFields: [],
             },
             focusedState: {
               active: false,
@@ -435,6 +460,7 @@ function getSelectFormOptions(projectsData: IProjectParamsMetrics) {
 function processData(data: any[]): {
   data: IMetricsCollection<IImageData>[];
   params: string[];
+  runProps: string[];
   highLevelParams: string[];
   contexts: string[];
   selectedRows: any;
@@ -443,10 +469,12 @@ function processData(data: any[]): {
   let selectedRows = model.getState()?.selectedRows;
   let metrics: any[] = [];
   let params: string[] = [];
+  let runProps: string[] = [];
   let highLevelParams: string[] = [];
   let contexts: string[] = [];
   data?.forEach((run: IImageRunData) => {
     params = params.concat(getObjectPaths(run.params, run.params));
+    runProps = runProps.concat(getObjectPaths(run.props, run.props));
     highLevelParams = highLevelParams.concat(
       getObjectPaths(run.params, run.params, '', false, true),
     );
@@ -469,7 +497,7 @@ function processData(data: any[]): {
           });
           metrics.push({
             ...image,
-            images_name: trace.name,
+            name: trace.name,
             step: trace.iters[stepIndex],
             context: trace.context,
             run: _.omit(run, 'traces'),
@@ -506,6 +534,7 @@ function processData(data: any[]): {
       sortFields?.map((f: any) => f.order),
     ),
   );
+  const uniqProps = _.uniq(runProps).sort();
   const uniqParams = _.uniq(params).sort();
   const uniqHighLevelParams = _.uniq(highLevelParams).sort();
   const uniqContexts = _.uniq(contexts).sort();
@@ -527,6 +556,7 @@ function processData(data: any[]): {
   }
   return {
     data: processedData,
+    runProps: uniqProps,
     params: uniqParams,
     highLevelParams: uniqHighLevelParams,
     contexts: uniqContexts,
@@ -536,13 +566,15 @@ function processData(data: any[]): {
 
 function setModelData(rawData: any[], configData: IImagesExploreAppConfig) {
   const sortFields = model.getState()?.config?.table.sortFields;
-  const { data, params, contexts, highLevelParams, selectedRows } =
+  const { data, params, runProps, highLevelParams, contexts, selectedRows } =
     processData(rawData);
-  const sortedParams = params.concat(highLevelParams).sort();
+  const sortedParams = [...new Set(params.concat(highLevelParams))].sort();
   const groupingSelectOptions = [
     ...getGroupingSelectOptions({
       params: sortedParams,
       contexts,
+      runProps,
+      sequenceName: 'images',
     }),
   ];
   const { mediaSetData, orderedMap } = getDataAsMediaSetNestedObject({
@@ -550,12 +582,11 @@ function setModelData(rawData: any[], configData: IImagesExploreAppConfig) {
     groupingSelectOptions,
     model,
   });
-
   tooltipData = getTooltipData({
     processedData: data,
     paramKeys: sortedParams,
     groupingSelectOptions,
-    groupingItems: ['group'],
+    groupingItems: ['row'],
     model,
   });
   if (configData.images.focusedState.key) {
@@ -567,7 +598,7 @@ function setModelData(rawData: any[], configData: IImagesExploreAppConfig) {
           ...configData.images.tooltip,
           content: filterTooltipContent(
             tooltipData[configData.images.focusedState.key],
-            configData?.images.tooltip.selectedParams,
+            configData?.images.tooltip.selectedFields,
           ),
         },
       },
@@ -646,7 +677,7 @@ function setModelData(rawData: any[], configData: IImagesExploreAppConfig) {
     tooltip: config.images.tooltip || {
       content: {},
       display: true,
-      selectedParams: [],
+      selectedFields: [],
     },
     focusedState: config.images.focusedState || {
       active: false,
@@ -672,6 +703,8 @@ function setModelData(rawData: any[], configData: IImagesExploreAppConfig) {
       configData.table.hiddenColumns!,
       sortFields,
       onTableSortChange,
+      config.grouping as any,
+      onGroupingSelectChange,
     ),
     sameValueColumns: tableData.sameValueColumns,
     groupingSelectOptions,
@@ -682,14 +715,15 @@ function updateModelData(
   configData: IImagesExploreAppConfig = model.getState()!.config!,
   shouldURLUpdate?: boolean,
 ): void {
-  const { data, params, contexts, highLevelParams, selectedRows } = processData(
-    model.getState()?.rawData as any[],
-  );
-  const sortedParams = params.concat(highLevelParams).sort();
+  const { data, params, runProps, highLevelParams, contexts, selectedRows } =
+    processData(model.getState()?.rawData as any[]);
+  const sortedParams = [...new Set(params.concat(highLevelParams))].sort();
   const groupingSelectOptions = [
     ...getGroupingSelectOptions({
       params: sortedParams,
+      runProps,
       contexts,
+      sequenceName: 'images',
     }),
   ];
   const { mediaSetData, orderedMap } = getDataAsMediaSetNestedObject({
@@ -701,7 +735,7 @@ function updateModelData(
     processedData: data,
     paramKeys: sortedParams,
     groupingSelectOptions,
-    groupingItems: ['group'],
+    groupingItems: ['row'],
     model,
   });
 
@@ -714,7 +748,7 @@ function updateModelData(
           ...configData.images.tooltip,
           content: filterTooltipContent(
             tooltipData[configData.images.focusedState.key],
-            configData?.images.tooltip.selectedParams,
+            configData?.images.tooltip.selectedFields,
           ),
         },
       },
@@ -736,6 +770,8 @@ function updateModelData(
     configData.table.hiddenColumns!,
     configData.table.sortFields,
     onTableSortChange,
+    configData.grouping as any,
+    onGroupingSelectChange,
   );
   const tableRef: any = model.getState()?.refs?.tableRef;
   tableRef?.current?.updateData({
@@ -770,81 +806,16 @@ function getFilteredGroupingOptions(
     | undefined = model.getState()?.groupingSelectOptions;
   if (groupingSelectOptions) {
     const filteredOptions = [...groupingSelectOptions]
-      .filter((opt) => grouping['group'].indexOf(opt.value as never) === -1)
+      .filter((opt) => grouping['row'].indexOf(opt.value as never) === -1)
       .map((item) => item.value);
-    return isApplied['group']
-      ? reverseMode['group']
+    return isApplied['row']
+      ? reverseMode['row']
         ? filteredOptions
-        : grouping['group']
+        : grouping['row']
       : [];
   } else {
     return [];
   }
-}
-
-function getGroupingSelectOptions({
-  params,
-  contexts = [],
-}: {
-  params: string[];
-  contexts?: string[];
-}): IGroupingSelectOption[] {
-  const paramsOptions: IGroupingSelectOption[] = params.map((param) => ({
-    group: 'run',
-    label: `run.${param}`,
-    value: `run.params.${param}`,
-  }));
-
-  const contextOptions: IGroupingSelectOption[] = contexts.map((context) => ({
-    group: 'images',
-    label: `images.context.${context}`,
-    value: `context.${context}`,
-  }));
-
-  return [
-    {
-      group: 'run',
-      label: 'run.name',
-      value: 'run.props.name',
-    },
-    {
-      group: 'run',
-      label: 'run.experiment',
-      value: 'run.props.experiment.name',
-    },
-    {
-      group: 'run',
-      label: 'run.hash',
-      value: 'run.hash',
-    },
-    {
-      group: 'run',
-      label: 'run.creation_time',
-      value: 'run.props.creation_time',
-    },
-    ...paramsOptions,
-    {
-      group: 'images',
-      label: 'images.name',
-      value: 'images_name',
-    },
-    {
-      group: 'images',
-      label: 'images.context',
-      value: 'context',
-    },
-    ...contextOptions,
-    {
-      group: 'record',
-      label: 'record.step',
-      value: 'step',
-    },
-    {
-      group: 'record',
-      label: 'record.index',
-      value: 'index',
-    },
-  ];
 }
 
 function groupData(data: any[]): any {
@@ -904,8 +875,8 @@ function onGroupingSelectChange({
     updateModelData(configData, true);
     if (
       configData.images?.additionalProperties?.stacking &&
-      (_.isEmpty(configData.grouping.group) ||
-        configData.grouping.reverseMode.group)
+      (_.isEmpty(configData.grouping.row) ||
+        configData.grouping.reverseMode.row)
     ) {
       onStackingToggle();
     }
@@ -923,14 +894,14 @@ function onGroupingModeChange({ value }: IOnGroupingModeChangeParams): void {
       ...configData.grouping,
       reverseMode: {
         ...configData.grouping.reverseMode,
-        group: value,
+        row: value,
       },
     };
     updateModelData(configData, true);
     if (
       configData.images?.additionalProperties?.stacking &&
-      (_.isEmpty(configData.grouping.group) ||
-        configData.grouping.reverseMode.group)
+      (_.isEmpty(configData.grouping.row) ||
+        configData.grouping.reverseMode.row)
     ) {
       onStackingToggle();
     }
@@ -938,7 +909,7 @@ function onGroupingModeChange({ value }: IOnGroupingModeChangeParams): void {
   if (value) {
     analytics.trackEvent(
       // @ts-ignore
-      ANALYTICS_EVENT_KEYS.images.groupings.group.modeChange,
+      ANALYTICS_EVENT_KEYS.images.groupings.row.modeChange,
       //@TODO change group to dynamic groupName when adding grouping type
     );
   }
@@ -958,8 +929,8 @@ function onGroupingReset(groupName: GroupNameType) {
     updateModelData(configData, true);
     if (
       configData.images?.additionalProperties?.stacking &&
-      (_.isEmpty(configData.grouping.group) ||
-        configData.grouping.reverseMode.group)
+      (_.isEmpty(configData.grouping.row) ||
+        configData.grouping.reverseMode.row)
     ) {
       onStackingToggle();
     }
@@ -974,7 +945,7 @@ function onGroupingApplyChange(): void {
       ...configData.grouping,
       isApplied: {
         ...configData.grouping.isApplied,
-        group: !configData.grouping.isApplied['group'],
+        row: !configData.grouping.isApplied['row'],
       },
     };
     updateModelData(configData, true);
@@ -1079,10 +1050,10 @@ function getDataAsImageSet(
     const configData: IImagesExploreAppConfig | undefined =
       model.getState()?.config;
     const imageSetData: object = {};
-    const group: string[] = [...(configData?.grouping?.group || [])];
+    const group: string[] = [...(configData?.grouping?.row || [])];
     const groupFields =
       defaultGroupFields ||
-      (configData?.grouping?.reverseMode?.group
+      (configData?.grouping?.reverseMode?.row
         ? groupingSelectOptions
             .filter(
               (option: IGroupingSelectOption) => !group.includes(option.label),
@@ -1171,7 +1142,7 @@ function onActivePointChange(
               ...configData.images.tooltip,
               content: filterTooltipContent(
                 tooltipData[activePoint.key],
-                configData?.images.tooltip.selectedParams,
+                configData?.images.tooltip.selectedFields,
               ),
             }
           : configData.images.tooltip,
@@ -1194,10 +1165,10 @@ function onChangeTooltip(tooltip: Partial<IPanelTooltip>): void {
   let configData = model.getState()?.config;
   if (configData?.images) {
     let content = configData.images.tooltip.content;
-    if (tooltip.selectedParams && configData?.images.focusedState.key) {
+    if (tooltip.selectedFields && configData?.images.focusedState.key) {
       content = filterTooltipContent(
         tooltipData[configData.images.focusedState.key],
-        tooltip.selectedParams,
+        tooltip.selectedFields,
       );
     }
     configData = {
@@ -1295,7 +1266,7 @@ function getDataAsTableRows(
           },
           key: metric.seqKey,
           selectKey: `${metric.run.hash}/${metric.seqKey}`,
-          runHash: metric.run.hash,
+          hash: metric.run.hash,
           isHidden: config?.table?.hiddenMetrics?.includes(metric.key),
           index: rowIndex,
           color: metricsCollection.color ?? metric.color,
@@ -1306,7 +1277,13 @@ function getDataAsTableRows(
           date: moment(metric.run.props.creation_time * 1000).format(
             TABLE_DATE_FORMAT,
           ),
-          name: metric.images_name,
+          duration: processDurationTime(
+            metric.run.props.creation_time * 1000,
+            metric.run.props.end_time
+              ? metric.run.props.end_time * 1000
+              : Date.now(),
+          ),
+          name: metric.name,
           context: Object.entries(metric.context).map((entry) =>
             entry.join(':'),
           ),
@@ -1317,6 +1294,9 @@ function getDataAsTableRows(
         [
           'experiment',
           'run',
+          'hash',
+          'duration',
+          'date',
           'metric',
           'context',
           'step',
@@ -1628,6 +1608,8 @@ function onExportTableData(e: React.ChangeEvent<any>): void {
     config?.table.hiddenColumns!,
     config?.table.sortFields,
     onTableSortChange,
+    config.grouping as any,
+    onGroupingSelectChange,
   );
 
   const excludedFields: string[] = ['#', 'actions'];
@@ -1911,32 +1893,12 @@ function onColumnsOrderChange(columnsOrder: any) {
 }
 
 function onColumnsVisibilityChange(hiddenColumns: string[] | string | any) {
-  const configData: IImagesExploreAppConfig | undefined =
-    model.getState()?.config;
-  const columnsData = model.getState()!.tableColumns!;
-  if (configData?.table) {
-    const table = {
-      ...configData.table,
-      hiddenColumns:
-        hiddenColumns[0] === 'all'
-          ? columnsData.map((col: any) => col.key)
-          : hiddenColumns,
-    };
-    const configUpdate = {
-      ...configData,
-      table,
-    };
-    model.setState({
-      config: configUpdate,
-    });
-    setItem('imagesExploreTable', encode(table));
-    updateModelData(configUpdate);
-  }
-  if (hiddenColumns[0] === 'all') {
-    analytics.trackEvent(ANALYTICS_EVENT_KEYS.images.table.showAllColumns);
-  } else if (_.isEmpty(hiddenColumns)) {
-    analytics.trackEvent(ANALYTICS_EVENT_KEYS.images.table.hideAllColumns);
-  }
+  onVisibilityChange({
+    hiddenColumns,
+    model,
+    appName: AppNameEnum.IMAGES,
+    updateModelData,
+  });
 }
 
 function onTableDiffShow() {
@@ -2323,7 +2285,6 @@ const imagesExploreAppModel = {
   onImageRenderingChange,
   onImageAlignmentChange,
   showRangePanel,
-  getGroupingSelectOptions,
   getDataAsImageSet,
   onStackingToggle,
   onImagesSortChange,
