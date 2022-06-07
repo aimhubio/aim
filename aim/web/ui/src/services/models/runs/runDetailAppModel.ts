@@ -287,6 +287,53 @@ function deleteRun(id: string, successCallback: () => void = _.noop) {
   }
 }
 
+function editRunNameAndDescription(
+  id: string,
+  name: string,
+  description: string,
+  archived: boolean,
+) {
+  try {
+    runsService
+      .editRunNameAndDescription(id, name, description, archived)
+      .call((detail) => {
+        exceptionHandler({ model, detail });
+      })
+      .then((res: any) => {
+        const state = model.getState();
+
+        model.setState({
+          ...state,
+          runInfo: {
+            ...state?.runInfo,
+            name,
+            description,
+          },
+        });
+        if (res.id) {
+          onNotificationAdd({
+            id: Date.now(),
+            severity: 'success',
+            messages: ['Run name and description were successfully edited'],
+          });
+        } else {
+          onNotificationAdd({
+            id: Date.now(),
+            severity: 'error',
+            messages: ['Something went wrong'],
+          });
+        }
+        analytics.trackEvent('[RunDetail] Edit Run name and description');
+      });
+  } catch (err: any) {
+    onNotificationAdd({
+      id: Date.now(),
+      severity: 'error',
+      messages: [err.message],
+    });
+  }
+}
+
 function onNotificationDelete(id: number) {
   let notifyData: INotification[] | [] = model.getState()?.notifyData || [];
   notifyData = [...notifyData].filter((i) => i.id !== id);
@@ -314,6 +361,7 @@ const runDetailAppModel = {
   deleteRun,
   onNotificationAdd,
   onNotificationDelete,
+  editRunNameAndDescription,
 };
 
 export default runDetailAppModel;

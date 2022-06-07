@@ -26,6 +26,7 @@ const ImageBox = ({
   focusedState,
   tooltip,
   additionalProperties,
+  selectOptions,
 }: IImageBoxProps): React.FunctionComponentElement<React.ReactNode> => {
   const { format, blob_uri } = data;
   const [isImageFullViewPopupOpened, setIsImageFullViewPopupOpened] =
@@ -171,6 +172,7 @@ const ImageBox = ({
                   },
                 }
               }
+              selectOptions={selectOptions}
               imageData={data}
               handleClose={() => setIsImageFullViewPopupOpened(false)}
             />

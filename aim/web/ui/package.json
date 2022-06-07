@@ -26,7 +26,6 @@
     "moment": "^2.29.1",
     "monaco-editor": "^0.33.0",
     "plotly.js": "^2.7.0",
-    "prism-react-renderer": "^1.2.1",
     "prop-types": "^15.7.2",
     "react": "^17.0.2",
     "react-accessible-dropdown-menu-hook": "^3.1.0",

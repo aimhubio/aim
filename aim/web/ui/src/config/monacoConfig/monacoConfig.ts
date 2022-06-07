@@ -27,7 +27,6 @@ export const getMonacoConfig = (advanced = false): Record<any, any> => ({
       seedSearchStringFromSelection: 'never',
     },
   },
-
   theme: {
     name: 'aim-theme',
     config: {
@@ -53,6 +52,10 @@ export const getMonacoConfig = (advanced = false): Record<any, any> => ({
   },
 });
 
+export const monacoSyntaxHighlighter: any = {
+  ...getMonacoConfig().options,
+  readonly: true,
+};
 export const getSuggestionsByExplorer = (
   explorerName: AppNameEnum,
   data: Record<any, any>,

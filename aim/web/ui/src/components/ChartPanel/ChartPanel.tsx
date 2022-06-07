@@ -185,6 +185,7 @@ const ChartPanel = React.forwardRef(function ChartPanel(
                     focusedState={props.focusedState}
                     alignmentConfig={props.alignmentConfig}
                     reCreatePopover={props.focusedState.active}
+                    selectOptions={props.selectOptions}
                   />
                 </ErrorBoundary>
               </Grid>

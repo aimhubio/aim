@@ -1,6 +1,7 @@
 import React from 'react';
 import {
   Link,
+  NavLink,
   Route,
   Switch,
   useHistory,
@@ -48,7 +49,7 @@ const RunDetailParamsTab = React.lazy(
 const RunDetailSettingsTab = React.lazy(
   () =>
     import(
-      /* webpackChunkName: "RunDetailSettingsTab" */ './RunDetailSettingsTab'
+      /* webpackChunkName: "RunDetailSettingsTab" */ './RunDetailSettingsTab/RunDetailSettingsTab'
     ),
 );
 const RunDetailMetricsAndSystemTab = React.lazy(
@@ -196,6 +197,8 @@ function RunDetail(): React.FunctionComponentElement<React.ReactNode> {
     settings: (
       <RunDetailSettingsTab
         isArchived={runData?.runInfo?.archived}
+        defaultName={runData?.runInfo?.name}
+        defaultDescription={runData?.runInfo?.description}
         runHash={runHash}
       />
     ),
@@ -215,9 +218,9 @@ function RunDetail(): React.FunctionComponentElement<React.ReactNode> {
     runsOfExperimentRequestRef.call();
   }
 
-  const handleTabChange = (event: React.ChangeEvent<{}>, newValue: string) => {
+  function handleTabChange(event: React.ChangeEvent<{}>, newValue: string) {
     setActiveTab(newValue);
-  };
+  }
 
   function onRunsSelectToggle() {
     setIsRunSelectDropdownOpen(!isRunSelectDropdownOpen);
@@ -241,13 +244,6 @@ function RunDetail(): React.FunctionComponentElement<React.ReactNode> {
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [runHash]);
-
-  React.useEffect(() => {
-    if (runData?.experimentId) {
-      getRunsOfExperiment(runData?.experimentId);
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [runData?.experimentId]);
 
   React.useEffect(() => {
     if (location.pathname !== activeTab) {
@@ -351,6 +347,13 @@ function RunDetail(): React.FunctionComponentElement<React.ReactNode> {
                   />
                 }
               />
+              <div className='RunDetail__runDetailContainer__appBarContainer__appBarBox__actionContainer'>
+                <NavLink to={`${url}/settings`}>
+                  <Button withOnlyIcon size='small' color='secondary'>
+                    <Icon name='edit' />
+                  </Button>
+                </NavLink>
+              </div>
             </div>
           </div>
           <Paper className='RunDetail__runDetailContainer__tabsContainer'>
