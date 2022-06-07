@@ -10,7 +10,7 @@ import IllustrationBlock from 'components/IllustrationBlock/IllustrationBlock';
 import { Button, Icon, Text } from 'components/kit';
 import ErrorBoundary from 'components/ErrorBoundary/ErrorBoundary';
 
-import { DATE_WITHOUT_SECONDS } from 'config/dates/dates';
+import { DATE_WITH_SECONDS } from 'config/dates/dates';
 import { IllustrationsEnum } from 'config/illustrationConfig/illustrationConfig';
 
 import { processDurationTime } from 'utils/processDurationTime';
@@ -176,7 +176,7 @@ function RunSelectPopoverContent({
                           weight={400}
                         >
                           {`${moment(run.creation_time * 1000).format(
-                            DATE_WITHOUT_SECONDS,
+                            DATE_WITH_SECONDS,
                           )} • ${processDurationTime(
                             run?.creation_time * 1000,
                             run?.end_time ? run?.end_time * 1000 : dateNow,

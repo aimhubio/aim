@@ -26,13 +26,13 @@
       }
     }
     &__appBarContainer {
-      height: 3.5rem;
+      height: 4.375rem;
       background: #ffffff;
       display: flex;
       align-items: center;
       &__appBarBox {
         display: flex;
-        align-items: center;
+        padding-top: $space-unit;
         justify-content: space-between;
         &__actionContainer {
           width: 4.5rem;
@@ -40,6 +40,7 @@
           justify-content: center;
           align-items: center;
           border-left: $border-main;
+          margin-bottom: $space-unit;
           i {
             color: $pico-70;
           }
@@ -53,16 +54,27 @@
         font-size: $text-md;
         font-weight: 600;
         color: $text-color;
-        align-items: center;
+        align-items: flex-start;
         height: fit-content;
         max-width: 50%;
         width: auto;
+        &__title {
+          margin-bottom: $space-xxs;
+        }
+        &__date {
+          display: flex;
+          i {
+            margin-right: $space-xxs;
+            color: #606986;
+          }
+        }
         &__Skeleton {
           margin-right: $space-xs;
         }
         &__buttonSelectToggler {
           width: 1.5rem;
           height: 1.5rem;
+          top: -$space-xxxxs;
           &.opened {
             background: #e8f1fc;
           }
@@ -72,10 +84,12 @@
         }
         &__container {
           display: flex;
-          align-items: center;
-          margin-right: $space-xxxxs;
+          align-items: flex-start;
+          flex-direction: column;
+          margin-right: $space-xxxs;
           cursor: pointer;
           width: 100%;
+
           &__pageName {
             margin-right: 0.4375em;
             text-transform: capitalize;
@@ -101,7 +115,7 @@
 
     &__tabPanelBox {
       overflow-y: auto;
-      height: calc(100vh - 98px);
+      height: calc(100vh - 112px);
     }
 
     &__tabsContainer {

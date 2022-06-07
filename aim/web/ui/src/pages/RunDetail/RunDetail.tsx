@@ -1,4 +1,7 @@
 import React from 'react';
+import _ from 'lodash-es';
+import classNames from 'classnames';
+import moment from 'moment';
 import {
   Link,
   NavLink,
@@ -9,8 +12,6 @@ import {
   useParams,
   useRouteMatch,
 } from 'react-router-dom';
-import classNames from 'classnames';
-import _ from 'lodash-es';
 
 import { Paper, Tab, Tabs, Tooltip } from '@material-ui/core';
 import { Skeleton } from '@material-ui/lab';
@@ -24,6 +25,7 @@ import ErrorBoundary from 'components/ErrorBoundary/ErrorBoundary';
 import Spinner from 'components/kit/Spinner';
 
 import { ANALYTICS_EVENT_KEYS } from 'config/analytics/analyticsKeysMap';
+import { DATE_WITH_SECONDS } from 'config/dates/dates';
 
 import useModel from 'hooks/model/useModel';
 
@@ -32,6 +34,7 @@ import * as analytics from 'services/analytics';
 import notesModel from 'services/models/notes/notesModel';
 
 import { setDocumentTitle } from 'utils/document/documentTitle';
+import { processDurationTime } from 'utils/processDurationTime';
 
 import RunSelectPopoverContent from './RunSelectPopoverContent';
 
@@ -264,7 +267,7 @@ function RunDetail(): React.FunctionComponentElement<React.ReactNode> {
             <div className='container RunDetail__runDetailContainer__appBarContainer__appBarBox'>
               <ControlPopover
                 anchorOrigin={{
-                  vertical: 'bottom',
+                  vertical: 'center',
                   horizontal: 'left',
                 }}
                 transformOrigin={{
@@ -284,20 +287,41 @@ function RunDetail(): React.FunctionComponentElement<React.ReactNode> {
                           } / ${runData?.runInfo?.name || ''}`}
                         >
                           <div className='RunDetail__runDetailContainer__appBarContainer__appBarTitleBox__container'>
-                            <Text tint={100} size={16} weight={600}>
+                            <Text
+                              tint={100}
+                              size={16}
+                              weight={600}
+                              className='RunDetail__runDetailContainer__appBarContainer__appBarTitleBox__title'
+                            >
                               {`${
                                 runData?.runInfo?.experiment?.name || 'default'
                               } / ${runData?.runInfo?.name || ''}`}
                             </Text>
+                            <div className='RunDetail__runDetailContainer__appBarContainer__appBarTitleBox__date'>
+                              <Icon name='calendar' fontSize={12} />
+                              <Text size={11} tint={70} weight={400}>
+                                {`${moment(
+                                  runData?.runInfo?.creation_time * 1000,
+                                ).format(
+                                  DATE_WITH_SECONDS,
+                                )} • ${processDurationTime(
+                                  runData?.runInfo?.creation_time * 1000,
+                                  runData?.runInfo?.end_time
+                                    ? runData?.runInfo?.end_time * 1000
+                                    : dateNow,
+                                )}`}
+                              </Text>
+                            </div>
                           </div>
                         </Tooltip>
+
                         <Button
                           disabled={
                             runData?.isExperimentsLoading ||
                             runData?.isRunInfoLoading
                           }
                           color={opened ? 'primary' : 'default'}
-                          size='small'
+                          size='xSmall'
                           className={classNames(
                             'RunDetail__runDetailContainer__appBarContainer__appBarTitleBox__buttonSelectToggler',
                             { opened: opened },
