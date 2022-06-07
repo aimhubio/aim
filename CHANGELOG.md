@@ -16,6 +16,7 @@
 - Add all the attributes of run in the tooltip (VkoHov)
 - Optimize the initial render time of Aim UI by using more lightweight font-family (arsengit)
 - Use monaco editor as the syntax highlighter across the Aim UI (arsengit)
+- Add the date and the duration of run in the header of the single run page (VkoHov)
 
 ### Fixes:
 
