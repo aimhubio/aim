@@ -9,7 +9,6 @@ import { Button, Icon, Badge, Text } from 'components/kit';
 import { IconName } from 'components/kit/Icon';
 import ErrorBoundary from 'components/ErrorBoundary/ErrorBoundary';
 
-import COLORS from 'config/colors/colors';
 import { ANALYTICS_EVENT_KEYS } from 'config/analytics/analyticsKeysMap';
 
 import * as analytics from 'services/analytics';
@@ -111,37 +110,28 @@ function BookmarkCard({
             {description}
           </Text>
         </div>
-        {select.advancedMode ? (
+        {tags.length && !select.advancedMode && (
+          <div className='BookmarkCard__selected__metrics ScrollBar__hidden'>
+            {tags.map((tag, index) => {
+              return (
+                <Badge
+                  size='large'
+                  key={`${tag.label}-${index}`}
+                  label={tag.label}
+                />
+              );
+            })}
+          </div>
+        )}
+        {select.query || select.advancedQuery ? (
           <div className='BookmarkCard__bottom'>
             <div className='BookmarkCard__run__expression'>
-              <CodeBlock code={select.advancedQuery} />
+              <CodeBlock
+                code={select.advancedMode ? select.advancedQuery : select.query}
+              />
             </div>
           </div>
-        ) : (
-          <>
-            {select.query && (
-              <div className='BookmarkCard__bottom'>
-                <div className='BookmarkCard__run__expression'>
-                  <CodeBlock code={select.query} />
-                </div>
-              </div>
-            )}
-            {tags.length > 0 && (
-              <div className='BookmarkCard__selected__metrics ScrollBar__hidden'>
-                {tags.map((tag, index) => {
-                  return (
-                    <Badge
-                      size='large'
-                      key={`${tag.label}-${index}`}
-                      label={tag.label}
-                      color={COLORS[0][index % COLORS[0].length]}
-                    />
-                  );
-                })}
-              </div>
-            )}
-          </>
-        )}
+        ) : null}
         <ConfirmModal
           open={openModal}
           onCancel={handleCloseModal}

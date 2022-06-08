@@ -63,6 +63,13 @@ function RunSelectPopoverContent({
     popoverContentWrapperRef.current.scrollTop = 0;
   }
 
+  React.useEffect(() => {
+    if (experimentId) {
+      getRunsOfExperiment(experimentId);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [experimentId]);
+
   return (
     <ErrorBoundary>
       <div className='RunSelectPopoverWrapper__selectPopoverContent'>

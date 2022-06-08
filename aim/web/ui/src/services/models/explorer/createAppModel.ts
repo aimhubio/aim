@@ -8,7 +8,6 @@ import { IPoint } from 'components/ScatterPlot';
 import COLORS from 'config/colors/colors';
 import DASH_ARRAYS from 'config/dash-arrays/dashArrays';
 import { ResizeModeEnum } from 'config/enums/tableEnums';
-import { AlignmentNotificationsEnum } from 'config/notification-messages/notificationMessages';
 import { RowHeightSize, TABLE_DEFAULT_CONFIG } from 'config/table/tableConfigs';
 import { DensityOptions } from 'config/enums/densityEnum';
 import { RequestStatusEnum } from 'config/enums/requestStatusEnum';
@@ -147,7 +146,6 @@ import {
   decodePathsVals,
   iterFoldTree,
 } from 'utils/encoder/streamEncoding';
-import { filterArrayByIndexes } from 'utils/filterArrayByIndexes';
 import { filterMetricsData } from 'utils/filterMetricData';
 import filterTooltipContent from 'utils/filterTooltipContent';
 import { formatValue } from 'utils/formatValue';
@@ -167,7 +165,6 @@ import setComponentRefs from 'utils/app/setComponentRefs';
 import updateURL from 'utils/app/updateURL';
 import onDensityTypeChange from 'utils/app/onDensityTypeChange';
 import getValueByField from 'utils/getValueByField';
-import sortDependingArrays from 'utils/app/sortDependingArrays';
 import { isSystemMetric } from 'utils/isSystemMetric';
 import setDefaultAppConfigData from 'utils/app/setDefaultAppConfigData';
 import getAppConfigData from 'utils/app/getAppConfigData';
@@ -179,6 +176,13 @@ import { SortField } from 'utils/getSortedFields';
 import onChangeTrendlineOptions from 'utils/app/onChangeTrendlineOptions';
 import onToggleColumnsColorScales from 'utils/app/onToggleColumnsColorScales';
 import onAxisBrushExtentChange from 'utils/app/onAxisBrushExtentChange';
+import {
+  alignByAbsoluteTime,
+  alignByCustomMetric,
+  alignByEpoch,
+  alignByRelativeTime,
+  alignByStep,
+} from 'utils/app/alignMetricData';
 import { minMaxOfArray } from 'utils/minMaxOfArray';
 import getAdvancedSuggestion from 'utils/getAdvancedSuggestions';
 import { processDurationTime } from 'utils/processDurationTime';
@@ -1308,192 +1312,20 @@ function createAppModel(appConfig: IAppInitialConfig) {
     function alignData(
       data: IMetricsCollection<IMetric>[],
       type: AlignmentOptionsEnum = model.getState()!.config!.chart
-        ?.alignmentConfig.type!,
+        ?.alignmentConfig.type,
     ): IMetricsCollection<IMetric>[] {
-      switch (type) {
-        case AlignmentOptionsEnum.STEP:
-          for (let i = 0; i < data.length; i++) {
-            const metricCollection = data[i];
-            for (let j = 0; j < metricCollection.data.length; j++) {
-              const metric = metricCollection.data[j];
-              metric.data = {
-                ...metric.data,
-                xValues: [...metric.data.steps],
-                yValues: [...metric.data.values],
-              };
-            }
-          }
-          break;
-        case AlignmentOptionsEnum.EPOCH:
-          for (let i = 0; i < data.length; i++) {
-            const metricCollection = data[i];
-            for (let j = 0; j < metricCollection.data.length; j++) {
-              const metric = metricCollection.data[j];
-              const epochs: { [key: number]: number[] } = {};
-
-              metric.data.epochs.forEach((epoch, i) => {
-                if (epochs.hasOwnProperty(epoch)) {
-                  epochs[epoch].push(metric.data.steps[i]);
-                } else {
-                  epochs[epoch] = [metric.data.steps[i]];
-                }
-              });
-
-              metric.data = {
-                ...metric.data,
-                xValues: [
-                  ...metric.data.epochs.map(
-                    (epoch, i) =>
-                      epoch +
-                      (epochs[epoch].length > 1
-                        ? (0.99 / epochs[epoch].length) *
-                          epochs[epoch].indexOf(metric.data.steps[i])
-                        : 0),
-                  ),
-                ],
-                yValues: [...metric.data.values],
-              };
-            }
-          }
-          break;
-        case AlignmentOptionsEnum.RELATIVE_TIME:
-          for (let i = 0; i < data.length; i++) {
-            const metricCollection = data[i];
-            for (let j = 0; j < metricCollection.data.length; j++) {
-              const metric = metricCollection.data[j];
-              const firstDate = metric.data.timestamps[0];
-              const timestamps: { [key: number]: number[] } = {};
-              metric.data.timestamps.forEach((timestamp, i) => {
-                if (timestamps.hasOwnProperty(timestamp)) {
-                  timestamps[timestamp].push(metric.data.steps[i]);
-                } else {
-                  timestamps[timestamp] = [metric.data.steps[i]];
-                }
-              });
-
-              metric.data = {
-                ...metric.data,
-                xValues: [
-                  ...metric.data.timestamps.map(
-                    (timestamp, i) =>
-                      timestamp -
-                      firstDate +
-                      (timestamps[timestamp].length > 1
-                        ? (0.99 / timestamps[timestamp].length) *
-                          timestamps[timestamp].indexOf(metric.data.steps[i])
-                        : 0),
-                  ),
-                ],
-                yValues: [...metric.data.values],
-              };
-            }
-          }
-          break;
-        case AlignmentOptionsEnum.ABSOLUTE_TIME:
-          for (let i = 0; i < data.length; i++) {
-            const metricCollection = data[i];
-            for (let j = 0; j < metricCollection.data.length; j++) {
-              const metric = metricCollection.data[j];
-
-              metric.data = {
-                ...metric.data,
-                xValues: [...metric.data.timestamps],
-                yValues: [...metric.data.values],
-              };
-            }
-          }
-          break;
-        case AlignmentOptionsEnum.CUSTOM_METRIC:
-          let missingTraces = false;
-          for (let i = 0; i < data.length; i++) {
-            const metricCollection = data[i];
-            for (let j = 0; j < metricCollection.data.length; j++) {
-              const metric = metricCollection.data[j];
-              const missingIndexes: number[] = [];
-              if (metric.x_axis_iters && metric.x_axis_values) {
-                const { x_axis_iters: xAxisIters, x_axis_values: xAxisValues } =
-                  metric;
-                if (xAxisValues.length === metric.data.values.length) {
-                  const { sortedXValues, sortedArrays } = sortDependingArrays(
-                    [...xAxisValues],
-                    {
-                      yValues: [...metric.data.values],
-                      epochs: [...metric.data.epochs],
-                      steps: [...metric.data.steps],
-                      timestamps: [...metric.data.timestamps],
-                      values: [...metric.data.values],
-                    },
-                  );
-
-                  metric.data = {
-                    ...metric.data,
-                    ...sortedArrays,
-                    xValues: sortedXValues,
-                  };
-                } else {
-                  metric.data.steps.forEach((step, index) => {
-                    if (xAxisIters.indexOf(step) === -1) {
-                      missingIndexes.push(index);
-                    }
-                  });
-                  const epochs = filterArrayByIndexes(
-                    missingIndexes,
-                    metric.data.epochs,
-                  );
-                  const steps = filterArrayByIndexes(
-                    missingIndexes,
-                    metric.data.steps,
-                  );
-                  const timestamps = filterArrayByIndexes(
-                    missingIndexes,
-                    metric.data.timestamps,
-                  );
-                  const values = filterArrayByIndexes(
-                    missingIndexes,
-                    metric.data.values,
-                  );
-                  const yValues = filterArrayByIndexes(
-                    missingIndexes,
-                    metric.data.yValues,
-                  );
-
-                  const { sortedXValues, sortedArrays } = sortDependingArrays(
-                    [...xAxisValues],
-                    {
-                      yValues: [...yValues],
-                      epochs: [...epochs],
-                      steps: [...steps],
-                      timestamps: [...timestamps],
-                      values: [...values],
-                    },
-                  );
-
-                  metric.data = {
-                    ...metric.data,
-                    ...sortedArrays,
-                    xValues: sortedXValues,
-                  };
-                }
-              } else {
-                missingTraces = true;
-              }
-            }
-          }
-          if (missingTraces) {
-            onNotificationAdd({
-              notification: {
-                id: Date.now(),
-                severity: 'error',
-                messages: [AlignmentNotificationsEnum.NOT_ALL_ALIGNED],
-              },
-              model,
-            });
-          }
-          break;
-        default:
+      const alignmentObj: { [key: string]: Function } = {
+        [AlignmentOptionsEnum.STEP]: alignByStep,
+        [AlignmentOptionsEnum.EPOCH]: alignByEpoch,
+        [AlignmentOptionsEnum.RELATIVE_TIME]: alignByRelativeTime,
+        [AlignmentOptionsEnum.ABSOLUTE_TIME]: alignByAbsoluteTime,
+        [AlignmentOptionsEnum.CUSTOM_METRIC]: alignByCustomMetric,
+        default: () => {
           throw new Error('Unknown value for X axis alignment');
-      }
-      return data;
+        },
+      };
+      const alignment = alignmentObj[type] || alignmentObj.default;
+      return alignment(data, model);
     }
 
     function groupData(data: IMetric[]): IMetricsCollection<IMetric>[] {
