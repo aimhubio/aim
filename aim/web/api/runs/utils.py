@@ -211,7 +211,7 @@ async def metric_search_result_streamer(traces: SequenceCollection,
             yield collect_run_streamable_data(encoded_tree)
 
 
-def run_search_result_streamer(runs: SequenceCollection, limit: int, skip_system: bool) -> bytes:
+async def run_search_result_streamer(runs: SequenceCollection, limit: int, skip_system: bool) -> bytes:
     run_count = 0
     for run_trace_collection in runs.iter_runs():
         run = run_trace_collection.run
