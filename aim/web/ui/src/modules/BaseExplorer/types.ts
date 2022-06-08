@@ -84,7 +84,9 @@ export type IUIConfig = {
   };
 };
 
-export interface IQueryFormProps extends IBaseComponentProps {}
+export interface IQueryFormProps extends IBaseComponentProps {
+  hasAdvancedMode?: boolean;
+}
 export interface IGroupingProps extends IBaseComponentProps {}
 export interface IVisualization extends IBaseComponentProps {}
 export interface IBoxProps extends IBaseComponentProps {}

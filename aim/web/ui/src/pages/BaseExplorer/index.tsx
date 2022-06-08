@@ -36,7 +36,9 @@ const config: IExplorerConfig = {
       grid: applyStyle,
     },
     components: {
-      queryForm: QueryForm,
+      queryForm: (props: any) => (
+        <QueryForm engine={props.engine} hasAdvancedMode />
+      ),
       visualizations: [Visualizer],
       grouping: Grouping,
       box: Box,

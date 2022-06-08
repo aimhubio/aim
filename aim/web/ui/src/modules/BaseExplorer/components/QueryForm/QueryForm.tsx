@@ -16,6 +16,7 @@ import {
   CheckBox as CheckBoxIcon,
   CheckBoxOutlineBlank,
 } from '@material-ui/icons';
+import { IQueryFormProps } from 'modules/BaseExplorer/types';
 
 import { Badge, Button, Icon, Text } from 'components/kit';
 import AutocompleteInput from 'components/AutocompleteInput';
@@ -30,6 +31,8 @@ import { ISelectOption } from 'types/services/models/explorer/createAppModel';
 import contextToString from 'utils/contextToString';
 import alphabeticalSortComparator from 'utils/alphabeticalSortComparator';
 import { formatValue } from 'utils/formatValue';
+
+import SearchButton from './SearchButton';
 
 import './QueryForm.scss';
 
@@ -99,7 +102,7 @@ function getQueryStringFromSelect(queryData: QueryUIStateUnit): string {
   return query;
 }
 
-function QueryForm(props: any) {
+function QueryForm(props: IQueryFormProps) {
   const [anchorEl, setAnchorEl] = React.useState<any>(null);
   const [searchValue, setSearchValue] = React.useState<string>('');
   const engine = props.engine;
@@ -113,6 +116,7 @@ function QueryForm(props: any) {
   const query: QueryUIStateUnit = engine.useStore(engine.queryUI.stateSelector);
   const isFetching: boolean =
     engine.useStore(engine.pipelineStatusSelector) === 'fetching';
+
   function onInputChange(val: string): void {
     updateQuery({
       [query.advancedModeOn ? 'advancedInput' : 'simpleInput']: val,
@@ -196,12 +200,19 @@ function QueryForm(props: any) {
     setSearchValue(e.target.value);
   }
 
-  function handleDelete(field: string): void {
-    let fieldData = [...(query?.selections || [])].filter(
-      (opt: ISelectOption) => opt.label !== field,
-    );
-    updateQuery({ selections: fieldData });
-  }
+  const onSelectOptionDelete: (option: string) => void = React.useCallback(
+    (option: string) => {
+      let fieldData = [...(query?.selections || [])].filter(
+        (opt: ISelectOption) => opt.label !== option,
+      );
+      updateQuery({ selections: fieldData });
+    },
+    [query?.selections, updateQuery],
+  );
+
+  const onQueryCopy: () => void = React.useCallback(() => {
+    navigator.clipboard.writeText(getQueryStringFromSelect(query));
+  }, [query]);
 
   return (
     <ErrorBoundary>
@@ -225,7 +236,7 @@ function QueryForm(props: any) {
               </div>
             ) : (
               <ErrorBoundary>
-                <div className='flex fac'>
+                <div className='flex fac QueryForm__topPanel'>
                   <Button
                     variant='contained'
                     color='primary'
@@ -315,23 +326,27 @@ function QueryForm(props: any) {
                           size='large'
                           key={tag.label}
                           label={tag.label}
-                          onDelete={handleDelete}
+                          onDelete={onSelectOptionDelete}
                         />
                       );
                     })}
                   </div>
+                  {query.selections.length > 1 && (
+                    <span
+                      onClick={() => updateQuery({ selections: [] })}
+                      className='QueryForm__clearAll'
+                    >
+                      <Icon name='close' />
+                    </span>
+                  )}
                 </div>
-                {query.selections.length > 1 && (
-                  <span
-                    onClick={() => updateQuery({ selections: [] })}
-                    className='QueryForm__clearAll'
-                  >
-                    <Icon name='close' />
-                  </span>
+                {props.hasAdvancedMode ? null : (
+                  <SearchButton isFetching={isFetching} onSubmit={onSubmit} />
                 )}
               </ErrorBoundary>
             )}
           </Box>
+
           {query.advancedModeOn ? null : (
             <div className='QueryForm__TextField'>
               <AutocompleteInput
@@ -343,60 +358,44 @@ function QueryForm(props: any) {
             </div>
           )}
         </div>
-        <div className='QueryForm__search'>
-          <Button
-            key={`${isFetching}`}
-            fullWidth
-            color='primary'
-            variant={isFetching ? 'outlined' : 'contained'}
-            startIcon={
-              <Icon
-                name={isFetching ? 'close' : 'search'}
-                fontSize={isFetching ? 12 : 14}
-              />
-            }
-            className='QueryForm__search__button'
-            onClick={onSubmit}
-          >
-            {isFetching ? 'Cancel' : 'Search'}
-          </Button>
-          <div className='QueryForm__search__actions'>
-            <Tooltip title='Reset query'>
-              <div>
-                <Button onClick={handleResetQueryForm} withOnlyIcon={true}>
-                  <Icon name='reset' />
-                </Button>
-              </div>
-            </Tooltip>
-            <Tooltip
-              title={
-                query.advancedModeOn
-                  ? 'Switch to default mode'
-                  : 'Enable advanced search mode '
-              }
-            >
-              <div>
-                <Button
-                  className={query.advancedModeOn ? 'active' : ''}
-                  withOnlyIcon={true}
-                  onClick={onToggleAdvancedMode}
-                >
-                  <Icon name='edit' />
-                </Button>
-              </div>
-            </Tooltip>
-            <Tooltip title='Copy search query'>
-              <div>
-                <Button
-                  // onClick={onSearchQueryCopy}
-                  withOnlyIcon={true}
-                >
-                  <Icon name='copy' />
-                </Button>
-              </div>
-            </Tooltip>
+        {props.hasAdvancedMode ? (
+          <div className='QueryForm__search'>
+            <SearchButton isFetching={isFetching} onSubmit={onSubmit} />
+            <div className='QueryForm__search__actions'>
+              <Tooltip title='Reset query'>
+                <div>
+                  <Button onClick={handleResetQueryForm} withOnlyIcon={true}>
+                    <Icon name='reset' />
+                  </Button>
+                </div>
+              </Tooltip>
+              <Tooltip
+                title={
+                  query.advancedModeOn
+                    ? 'Switch to default mode'
+                    : 'Enable advanced search mode '
+                }
+              >
+                <div>
+                  <Button
+                    className={query.advancedModeOn ? 'active' : ''}
+                    withOnlyIcon={true}
+                    onClick={onToggleAdvancedMode}
+                  >
+                    <Icon name='edit' />
+                  </Button>
+                </div>
+              </Tooltip>
+              <Tooltip title='Copy search query'>
+                <div>
+                  <Button onClick={onQueryCopy} withOnlyIcon={true}>
+                    <Icon name='copy' />
+                  </Button>
+                </div>
+              </Tooltip>
+            </div>
           </div>
-        </div>
+        ) : null}
       </div>
     </ErrorBoundary>
   );

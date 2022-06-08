@@ -6,6 +6,9 @@
   display: flex;
   min-height: 6rem;
   max-height: 6rem;
+  &__topPanel {
+    flex: 1 100%;
+  }
   &__container {
     width: 100%;
     display: flex;
@@ -22,7 +25,7 @@
     justify-content: space-between;
     flex-direction: column;
     &__button {
-      width: 100%;
+      // width: 100%;
     }
     &__actions {
       display: flex;
