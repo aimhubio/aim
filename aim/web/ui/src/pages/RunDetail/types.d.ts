@@ -15,10 +15,6 @@ export interface IRunDetailMetricsAndSystemTabProps {
   isSystem?: boolean;
   isRunBatchLoading: boolean;
 }
-export interface IRunDetailSettingsTabProps {
-  runHash: string;
-  isArchived: boolean;
-}
 
 export interface IRunBatch {
   key: string;
@@ -37,6 +33,7 @@ export interface IRunInfo {
     name: string;
   };
   name: string;
+  description: string;
   tags: any[];
   notes: number;
 }
