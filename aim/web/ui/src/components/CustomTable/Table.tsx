@@ -84,10 +84,13 @@ function Table(props) {
     setColLefts(lefts);
   }, [colWidths]);
 
-  let [middlePaneWindow, setMiddlePaneWindow] = useState({
-    cols: middlePane.slice(0, 10),
-    startIndex: 0,
-  });
+  let [middlePaneWindow, setMiddlePaneWindow] = useState(
+    middlePane.slice(0, 10).map((col, i) => ({
+      ...col,
+      colIndex: i,
+    })),
+  );
+  let [calculatedColsLength, setCalculatedColsLength] = useState(10);
 
   useEffect(() => {
     const lefts = Object.values(colLefts);
@@ -98,31 +101,39 @@ function Table(props) {
       props.listWindow.left + props.listWindow.width,
     ).index;
 
-    setMiddlePaneWindow({
-      cols: middlePane.slice(
-        leftClosest < 1 ? 0 : leftClosest - 1,
-        rightClosest + 1,
-      ),
-      startIndex: leftClosest < 1 ? 0 : leftClosest - 1,
-    });
+    let left = leftClosest < 1 ? 0 : leftClosest - 1;
+    let right = rightClosest + 2;
+
+    setMiddlePaneWindow(
+      middlePane
+        .slice(left, right)
+        ?.map((col, i) => ({
+          ...col,
+          colIndex: left + i,
+        }))
+        ?.concat(
+          middlePane
+            .slice(calculatedColsLength, calculatedColsLength + 10)
+            ?.map((col, i) => ({
+              ...col,
+              colIndex: calculatedColsLength + i,
+              dummy: true,
+            })),
+        ),
+    );
   }, [props.listWindow.left, props.listWindow.width, colLefts]);
 
-  // useEffect(() => {
-  //   let timeoutID;
-  //   if (middlePaneWindow.cols.length !== middlePane.length) {
-  //     timeoutID = setTimeout(
-  //       setMiddlePaneWindow(
-  //         (mPW) => ({
-  //           cols: middlePane.slice(mPW.startIndex, mPW.startIndex + 50),
-  //           startIndex: mPW.startIndex,
-  //         }),
-  //         5000,
-  //       ),
-  //     );
-  //   }
+  useEffect(() => {
+    let timeoutID;
+    if (calculatedColsLength < middlePane.length) {
+      timeoutID = setTimeout(
+        () => setCalculatedColsLength((cCL) => cCL + 10),
+        2000,
+      );
+    }
 
-  //   return () => clearTimeout(timeoutID);
-  // }, [middlePaneWindow]);
+    return () => clearTimeout(timeoutID);
+  }, [calculatedColsLength]);
 
   const color = React.useMemo(
     () => props.data[0]?.rowMeta?.color,
@@ -426,8 +437,8 @@ function Table(props) {
                 colWidths[Object.keys(colWidths).length - 1],
             }}
           >
-            {middlePaneWindow?.cols?.map((col, i) => {
-              let index = middlePaneWindow.startIndex + i;
+            {middlePaneWindow?.map((col, i) => {
+              let index = col.colIndex;
               return (
                 <ErrorBoundary key={col.key + index}>
                   <Column
@@ -487,6 +498,7 @@ function Table(props) {
                       })
                     }
                     colLeft={colLefts[index]}
+                    dummy={col.dummy}
                   />
                 </ErrorBoundary>
               );

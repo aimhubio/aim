@@ -54,6 +54,7 @@ function Column({
   rowHeightMode,
   setColWidth,
   colLeft,
+  dummy,
 }) {
   const [maxWidth, setMaxWidth] = React.useState(width);
   const [isResizing, setIsResizing] = React.useState(false);
@@ -184,8 +185,9 @@ function Column({
         style={{
           minWidth: maxWidth,
           maxWidth: '100vw',
-          width: col.key === 'selection' ? 32 : 'initial',
+          width: col.key === 'selection' ? 32 : widthClone.current ?? 'initial',
           left: colLeft,
+          visibility: dummy ? 'hidden' : null,
         }}
         ref={columnRef}
       >
