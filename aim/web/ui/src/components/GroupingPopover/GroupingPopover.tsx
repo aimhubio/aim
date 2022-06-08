@@ -193,7 +193,10 @@ function GroupingPopover({
           {advancedComponent && (
             <ErrorBoundary>
               <div className='GroupingPopover__advanced__component'>
-                <Accordion className='GroupingPopover__accordion__container'>
+                <Accordion
+                  className='GroupingPopover__accordion__container'
+                  expanded={true}
+                >
                   <AccordionSummary
                     expandIcon={
                       <Icon
