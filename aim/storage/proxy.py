@@ -427,8 +427,9 @@ class AimObjectProxy(with_metaclass(_ObjectProxyMetaType)):
             return AimObjectProxy(Eager3(self.__wrapped__, key))
 
         return AimObjectProxy(
-            Eager4(self.__view__, key),
-            self.__view__.view(key)
+            Eager4(self.__view__, key, self.cache),
+            self.__view__.view(key),
+            self.cache
         )
 
     def __call__(self, *args, **kwargs):
