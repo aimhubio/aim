@@ -265,115 +265,126 @@ function RunDetail(): React.FunctionComponentElement<React.ReactNode> {
         <div className='RunDetail__runDetailContainer'>
           <div className='RunDetail__runDetailContainer__appBarContainer'>
             <div className='container RunDetail__runDetailContainer__appBarContainer__appBarBox'>
-              <ControlPopover
-                anchorOrigin={{
-                  vertical: 'center',
-                  horizontal: 'left',
-                }}
-                transformOrigin={{
-                  vertical: 'top',
-                  horizontal: 'left',
-                }}
-                anchor={({ onAnchorClick, opened }) => (
-                  <div
-                    className='RunDetail__runDetailContainer__appBarContainer__appBarTitleBox'
-                    onClick={onAnchorClick}
-                  >
-                    {!runData?.isRunInfoLoading ? (
-                      <>
-                        <div className='RunDetail__runDetailContainer__appBarContainer__appBarTitleBox__appBarTitleBoxWrapper'>
-                          <Tooltip
-                            title={`${
-                              runData?.runInfo?.experiment?.name || 'default'
-                            } / ${runData?.runInfo?.name || ''}`}
-                          >
-                            <div className='RunDetail__runDetailContainer__appBarContainer__appBarTitleBox__container'>
-                              <Text
-                                tint={100}
-                                size={16}
-                                weight={600}
-                                className='RunDetail__runDetailContainer__appBarContainer__appBarTitleBox__title'
-                              >
-                                {`${
-                                  runData?.runInfo?.experiment?.name ||
-                                  'default'
-                                } / ${runData?.runInfo?.name || ''}`}
-                              </Text>
-                            </div>
-                          </Tooltip>
+              <div className='RunDetail__runDetailContainer__appBarContainer__appBarBox__runInfoBox'>
+                <ControlPopover
+                  anchorOrigin={{
+                    vertical: 'center',
+                    horizontal: 'left',
+                  }}
+                  transformOrigin={{
+                    vertical: 'top',
+                    horizontal: 'left',
+                  }}
+                  anchor={({ onAnchorClick, opened }) => (
+                    <div
+                      className='RunDetail__runDetailContainer__appBarContainer__appBarTitleBox'
+                      onClick={onAnchorClick}
+                    >
+                      {!runData?.isRunInfoLoading ? (
+                        <>
+                          <div className='RunDetail__runDetailContainer__appBarContainer__appBarTitleBox__appBarTitleBoxWrapper'>
+                            <Tooltip
+                              title={`${
+                                runData?.runInfo?.experiment?.name || 'default'
+                              } / ${runData?.runInfo?.name || ''}`}
+                            >
+                              <div className='RunDetail__runDetailContainer__appBarContainer__appBarTitleBox__container'>
+                                <Text
+                                  tint={100}
+                                  size={16}
+                                  weight={600}
+                                  className='RunDetail__runDetailContainer__appBarContainer__appBarTitleBox__title'
+                                >
+                                  {`${
+                                    runData?.runInfo?.experiment?.name ||
+                                    'default'
+                                  } / ${runData?.runInfo?.name || ''}`}
+                                </Text>
+                              </div>
+                            </Tooltip>
 
-                          <Button
-                            disabled={
-                              runData?.isExperimentsLoading ||
-                              runData?.isRunInfoLoading
-                            }
-                            color={opened ? 'primary' : 'default'}
-                            size='xSmall'
-                            className={classNames(
-                              'RunDetail__runDetailContainer__appBarContainer__appBarTitleBox__buttonSelectToggler',
-                              { opened: opened },
-                            )}
-                            withOnlyIcon
-                          >
-                            <Icon name={opened ? 'arrow-up' : 'arrow-down'} />
-                          </Button>
-                          <StatusLabel
-                            status={
-                              runData?.runInfo?.end_time ? 'alert' : 'success'
-                            }
-                            title={
-                              runData?.runInfo?.end_time
-                                ? 'Finished'
-                                : 'In Progress'
-                            }
+                            <Button
+                              disabled={
+                                runData?.isExperimentsLoading ||
+                                runData?.isRunInfoLoading
+                              }
+                              color={opened ? 'primary' : 'default'}
+                              size='xSmall'
+                              className={classNames(
+                                'RunDetail__runDetailContainer__appBarContainer__appBarTitleBox__buttonSelectToggler',
+                                { opened: opened },
+                              )}
+                              withOnlyIcon
+                            >
+                              <Icon name={opened ? 'arrow-up' : 'arrow-down'} />
+                            </Button>
+                            <StatusLabel
+                              status={
+                                runData?.runInfo?.end_time ? 'alert' : 'success'
+                              }
+                              title={
+                                runData?.runInfo?.end_time
+                                  ? 'Finished'
+                                  : 'In Progress'
+                              }
+                            />
+                          </div>
+                        </>
+                      ) : (
+                        <div className='flex'>
+                          <Skeleton
+                            className='RunDetail__runDetailContainer__appBarContainer__appBarTitleBox__Skeleton'
+                            variant='rect'
+                            height={24}
+                            width={340}
                           />
+                          <Skeleton variant='rect' height={24} width={70} />
                         </div>
-                        <div className='RunDetail__runDetailContainer__appBarContainer__appBarTitleBox__date'>
-                          <Icon name='calendar' fontSize={12} />
-                          <Text size={11} tint={70} weight={400}>
-                            {`${moment(
-                              runData?.runInfo?.creation_time * 1000,
-                            ).format(
-                              DATE_WITH_SECONDS,
-                            )} • ${processDurationTime(
-                              runData?.runInfo?.creation_time * 1000,
-                              runData?.runInfo?.end_time
-                                ? runData?.runInfo?.end_time * 1000
-                                : dateNow,
-                            )}`}
-                          </Text>
-                        </div>
-                      </>
-                    ) : (
-                      <div className='flex'>
-                        <Skeleton
-                          className='RunDetail__runDetailContainer__appBarContainer__appBarTitleBox__Skeleton'
-                          variant='rect'
-                          height={24}
-                          width={340}
-                        />
-                        <Skeleton variant='rect' height={24} width={70} />
-                      </div>
-                    )}
-                  </div>
-                )}
-                component={
-                  <RunSelectPopoverContent
-                    getRunsOfExperiment={getRunsOfExperiment}
-                    experimentsData={runData?.experimentsData}
-                    experimentId={runData?.experimentId}
-                    runsOfExperiment={runData?.runsOfExperiment}
-                    runInfo={runData?.runInfo}
-                    isRunsOfExperimentLoading={
-                      runData?.isRunsOfExperimentLoading
-                    }
-                    isRunInfoLoading={runData?.isRunInfoLoading}
-                    isLoadMoreButtonShown={runData?.isLoadMoreButtonShown}
-                    onRunsSelectToggle={onRunsSelectToggle}
-                    dateNow={dateNow}
-                  />
-                }
-              />
+                      )}
+                    </div>
+                  )}
+                  component={
+                    <RunSelectPopoverContent
+                      getRunsOfExperiment={getRunsOfExperiment}
+                      experimentsData={runData?.experimentsData}
+                      experimentId={runData?.experimentId}
+                      runsOfExperiment={runData?.runsOfExperiment}
+                      runInfo={runData?.runInfo}
+                      isRunsOfExperimentLoading={
+                        runData?.isRunsOfExperimentLoading
+                      }
+                      isRunInfoLoading={runData?.isRunInfoLoading}
+                      isLoadMoreButtonShown={runData?.isLoadMoreButtonShown}
+                      onRunsSelectToggle={onRunsSelectToggle}
+                      dateNow={dateNow}
+                    />
+                  }
+                />
+                <div className='RunDetail__runDetailContainer__appBarContainer__appBarTitleBox__date'>
+                  {!runData?.isRunInfoLoading ? (
+                    <>
+                      <Icon name='calendar' fontSize={12} />
+                      <Text size={11} tint={70} weight={400}>
+                        {`${moment(
+                          runData?.runInfo?.creation_time * 1000,
+                        ).format(DATE_WITH_SECONDS)} • ${processDurationTime(
+                          runData?.runInfo?.creation_time * 1000,
+                          runData?.runInfo?.end_time
+                            ? runData?.runInfo?.end_time * 1000
+                            : dateNow,
+                        )}`}
+                      </Text>
+                    </>
+                  ) : (
+                    <Skeleton
+                      className='RunDetail__runDetailContainer__appBarContainer__appBarTitleBox__Skeleton'
+                      variant='rect'
+                      height={24}
+                      width={340}
+                    />
+                  )}
+                </div>
+              </div>
               <div className='RunDetail__runDetailContainer__appBarContainer__appBarBox__actionContainer'>
                 <NavLink to={`${url}/settings`}>
                   <Button withOnlyIcon size='small' color='secondary'>

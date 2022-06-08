@@ -34,6 +34,9 @@
         display: flex;
         padding-top: $space-unit;
         justify-content: space-between;
+        &__runInfoBox {
+          max-width: 50%;
+        }
         &__actionContainer {
           width: 4.5rem;
           display: flex;
@@ -57,7 +60,7 @@
         color: $text-color;
         align-items: flex-start;
         height: fit-content;
-        max-width: 50%;
+        max-width: 100%;
         width: auto;
         &__appBarTitleBoxWrapper {
           display: flex;
