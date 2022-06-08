@@ -56,6 +56,8 @@ export const monacoSyntaxHighlighter: any = {
   ...getMonacoConfig().options,
   readonly: true,
 };
+
+// TODO: Replace AppNameEnum with SequenceNameEnum
 export const getSuggestionsByExplorer = (
   explorerName: AppNameEnum,
   data: Record<any, any>,

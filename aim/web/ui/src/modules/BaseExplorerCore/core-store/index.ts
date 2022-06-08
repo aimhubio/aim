@@ -6,6 +6,7 @@ import { getParams } from 'services/api/base-explorer/projectApi';
 import { RunsSearchQueryParams } from 'services/api/base-explorer/runsApi';
 
 import { AimObjectDepths, SequenceTypesEnum } from 'types/core/enums';
+import { ISelectOption } from 'types/services/models/explorer/createAppModel';
 
 import { GetState, SetState } from 'utils/store/createSlice';
 
@@ -183,7 +184,7 @@ function createConfiguration(config: IEngineConfigFinal): {
     simpleInput: '',
     advancedInput: '',
     selections: [],
-    advancedModeOn: true,
+    advancedModeOn: false,
   });
 
   const names = [
@@ -207,10 +208,10 @@ function createConfiguration(config: IEngineConfigFinal): {
 }
 
 // QUERY SLICE
-type QueryUIStateUnit = {
+export type QueryUIStateUnit = {
   simpleInput: string;
   advancedInput: string;
-  selections: Array<any>;
+  selections: ISelectOption[];
   advancedModeOn: boolean;
 };
 
@@ -382,6 +383,7 @@ function createEngine(config: IEngineConfigFinal) {
         .then((instructions) => {
           storeVanilla.setState({
             initialized: true,
+            sequenceName: config.sequenceName,
             instructions: {
               queryable_data: instructions,
               // @ts-ignore
@@ -394,7 +396,7 @@ function createEngine(config: IEngineConfigFinal) {
 
   async function getInstructions(sequence: SequenceTypesEnum) {
     const params = await getParams({ sequence });
-    return removeExampleTypesFromProjectData(params);
+    return params;
   }
 
   console.log(encapsulatedEngineProperties);

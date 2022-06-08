@@ -117,9 +117,9 @@ function AutocompleteInput({
           if (onEnter) {
             onEnter();
           }
-          if (onChange) {
-            onChange(formattedValue, ev);
-          }
+        }
+        if (onChange) {
+          onChange(formattedValue, ev);
         }
         setEditorValue(formattedValue);
       }
