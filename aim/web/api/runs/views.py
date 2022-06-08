@@ -137,11 +137,11 @@ async def update_run_properties_api(run_id: str, run_in: StructuredRunUpdateIn, 
         if not run:
             raise HTTPException(status_code=404)
 
-        if run_in.name:
+        if run_in.name is not None:
             run.name = run_in.name.strip()
-        if run_in.description:
+        if run_in.description is not None:
             run.description = run_in.description.strip()
-        if run_in.experiment:
+        if run_in.experiment is not None:
             run.experiment = run_in.experiment.strip()
         run.archived = run_in.archived
 

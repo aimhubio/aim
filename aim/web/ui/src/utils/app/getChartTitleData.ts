@@ -1,3 +1,8 @@
+import _ from 'lodash-es';
+import moment from 'moment';
+
+import { DATE_WITH_SECONDS } from 'config/dates/dates';
+
 import {
   IChartTitle,
   IChartTitleData,
@@ -28,8 +33,21 @@ export default function getChartTitleData<D, M extends State>({
       chartTitleData[metricsCollection.chartIndex] = groupData.chart.reduce(
         (acc: IChartTitle, groupItemKey: string) => {
           if (metricsCollection.config?.hasOwnProperty(groupItemKey)) {
-            acc[getValueByField(groupingSelectOptions || [], groupItemKey)] =
-              formatValue(metricsCollection.config[groupItemKey]);
+            const value = metricsCollection.config[groupItemKey];
+            if (
+              groupItemKey === 'run.props.creation_time' ||
+              groupItemKey === 'run.props.end_time'
+            ) {
+              acc[getValueByField(groupingSelectOptions || [], groupItemKey)] =
+                formatValue(
+                  !_.isNil(value) && typeof value === 'number'
+                    ? moment(value * 1000).format(DATE_WITH_SECONDS)
+                    : value,
+                );
+            } else {
+              acc[getValueByField(groupingSelectOptions || [], groupItemKey)] =
+                formatValue(value);
+            }
           }
           return acc;
         },

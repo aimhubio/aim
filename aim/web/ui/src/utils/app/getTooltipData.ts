@@ -6,8 +6,6 @@ import {
 } from 'types/services/models/metrics/metricsAppModel';
 import { IModel, State } from 'types/services/models/model';
 
-import { getValue } from 'utils/helper';
-
 import getGroupConfig from './getGroupConfig';
 
 export default function getTooltipData<D, M extends State>({
@@ -35,22 +33,14 @@ export default function getTooltipData<D, M extends State>({
 
     for (let itemData of collection.data as any) {
       data[itemData.key] = {
-        runHash: itemData.run.hash,
         name: itemData.name,
         context: itemData.context,
-        mediaContent: {
-          step: itemData.step,
-          index: itemData.index,
-          caption: itemData.caption,
-          name: itemData.name,
-        },
+        step: itemData.step,
+        index: itemData.index,
+        caption: itemData.caption,
+        images_name: itemData.name,
         groupConfig,
-        params: paramKeys.reduce((acc, paramKey) => {
-          Object.assign(acc, {
-            [paramKey]: getValue(itemData, `run.params.${paramKey}`),
-          });
-          return acc;
-        }, {}),
+        run: itemData.run,
       };
     }
   }

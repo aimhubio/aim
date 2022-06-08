@@ -45,7 +45,7 @@ export const CONTROLS_DEFAULT_CONFIG = {
     },
     tooltip: {
       display: true,
-      selectedParams: [],
+      selectedFields: [],
     },
     zoom: {
       active: false,
@@ -57,7 +57,7 @@ export const CONTROLS_DEFAULT_CONFIG = {
     isVisibleColorIndicator: false,
     tooltip: {
       display: true,
-      selectedParams: [],
+      selectedFields: [],
     },
     sortFields: [],
   },
@@ -68,7 +68,7 @@ export const CONTROLS_DEFAULT_CONFIG = {
     stacking: false,
     tooltip: {
       display: true,
-      selectedParams: [],
+      selectedFields: [],
     },
     sortFields: [],
   },
@@ -80,7 +80,7 @@ export const CONTROLS_DEFAULT_CONFIG = {
     },
     tooltip: {
       display: true,
-      selectedParams: [],
+      selectedFields: [],
     },
     sortFields: [],
   },

@@ -14,13 +14,9 @@
     font-weight: 500;
     font-size: $text-lg;
     line-height: 1.3125em;
-    color: #031123;
     overflow: auto;
     font-family: 'Inconsolata', monospace;
-    font-variation-settings: 'wdth' 82;
-  }
-  .prism-code {
-    background-color: transparent !important;
+    font-variation-settings: 'wdth' 85;
   }
   &__copy__button {
     top: 0.75rem;
@@ -31,13 +27,5 @@
     position: absolute;
     align-items: center;
     justify-content: center;
-  }
-  .prism-code {
-    --ms-overflow-style: none;
-    --scrollbar-width: none;
-    scrollbar-width: none;
-    &::-webkit-scrollbar {
-      display: none;
-    }
   }
 }
