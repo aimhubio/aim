@@ -6,8 +6,7 @@
     height: 100%;
     background: $cuddle-10;
     .BaseTable__row-cell {
-      font-family: 'Inconsolata', monospace;
-      font-variation-settings: 'wdth' 82;
+      @include monospaceFontFamily();
     }
     &__Tabs {
       .MuiTabs-fixed {
@@ -305,8 +304,7 @@
               &__experimentName {
                 width: 100%;
                 word-break: break-all;
-                font-family: 'Inconsolata', monospace;
-                font-variation-settings: 'wdth' 82;
+                @include monospaceFontFamily();
               }
             }
 
@@ -395,8 +393,7 @@
               width: 95%;
               margin-bottom: $space-xxs;
               position: relative;
-              font-family: 'Inconsolata', monospace;
-              font-variation-settings: 'wdth' 80;
+              @include monospaceFontFamily();
               span {
                 display: block;
                 max-width: 100%;
@@ -418,8 +415,7 @@
             &__runDate {
               display: flex;
               align-items: center;
-              font-family: 'Inconsolata', monospace;
-              font-variation-settings: 'wdth' 78;
+              @include monospaceFontFamily(14);
               i {
                 margin-right: $space-xxs;
               }
