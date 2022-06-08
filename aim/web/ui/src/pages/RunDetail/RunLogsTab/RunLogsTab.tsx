@@ -1,6 +1,9 @@
 import React from 'react';
 import _ from 'lodash-es';
 import { ListOnScrollProps, VariableSizeList as List } from 'react-window';
+import classNames from 'classnames';
+
+import CircularProgress from '@material-ui/core/CircularProgress';
 
 import BusyLoaderWrapper from 'components/BusyLoaderWrapper/BusyLoaderWrapper';
 import ErrorBoundary from 'components/ErrorBoundary/ErrorBoundary';
@@ -100,7 +103,7 @@ function RunLogsTab({
             ? +rangeRef.current?.[0] - LOAD_MORE_LOGS_COUNT
             : 0
         }:${rangeRef.current?.[0]}`,
-        isLiveUpdate: true,
+        isLoadMore: true,
       });
       runsBatchRequestRef.current.call();
       startLiveUpdate();
@@ -176,7 +179,9 @@ function RunLogsTab({
   return (
     <ErrorBoundary>
       <BusyLoaderWrapper
-        isLoading={isRunLogsLoading}
+        isLoading={
+          isRunLogsLoading && lastRequestType === LogsLastRequestEnum.DEFAULT
+        }
         className='runDetailParamsTabLoader'
         height='100%'
       >
@@ -184,7 +189,7 @@ function RunLogsTab({
           <div className='RunDetailLogsTabWrapper'>
             <div className='RunDetailLogsTab'>
               <div className='Logs' ref={logsContainerRef}>
-                <div className={'Logs__wrapper'}>
+                <div className='Logs__wrapper'>
                   <List
                     ref={listRef}
                     key={`${parentHeight}${parentWidth}`}
@@ -192,7 +197,7 @@ function RunLogsTab({
                     itemCount={dataRef.current?.length + 1}
                     itemSize={() => SINGLE_LINE_HEIGHT}
                     width={'100%'}
-                    overscanCount={100}
+                    overscanCount={1000}
                     initialScrollOffset={
                       scrollOffsetRef.current ?? dataRef.current?.length * 15
                     }
@@ -209,6 +214,20 @@ function RunLogsTab({
                   >
                     {LogRow}
                   </List>
+                  <div
+                    className={classNames('overlay', {
+                      loading:
+                        isRunLogsLoading &&
+                        lastRequestType === LogsLastRequestEnum.LOAD_MORE,
+                    })}
+                  >
+                    <CircularProgress
+                      size={24}
+                      value={75}
+                      thickness={4}
+                      color='primary'
+                    />
+                  </div>
                 </div>
               </div>
             </div>
