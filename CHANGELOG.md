@@ -16,6 +16,7 @@
 - Add all the attributes of run in the tooltip (VkoHov)
 - Optimize the initial render time of Aim UI by using more lightweight font-family (arsengit)
 - Use monaco editor as the syntax highlighter across the Aim UI (arsengit)
+- Add loader to the top of the logs box in the run page (VkoHov)
 
 ### Fixes:
 
