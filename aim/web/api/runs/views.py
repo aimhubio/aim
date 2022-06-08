@@ -53,7 +53,7 @@ NOTE_NOT_FOUND = 'Note with id {id} is not found in this run.'
 
 @runs_router.get('/search/run/', response_model=RunSearchApiOut,
                  responses={400: {'model': QuerySyntaxErrorOut}})
-async def run_search_api(q: Optional[str] = '',
+def run_search_api(q: Optional[str] = '',
                    skip_system: Optional[bool] = True,
                    limit: Optional[int] = 0,
                    offset: Optional[str] = None):
