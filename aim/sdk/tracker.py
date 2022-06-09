@@ -3,7 +3,7 @@ import os
 import logging
 from collections import defaultdict
 from copy import deepcopy
-from typing import Dict, Tuple
+from typing import Dict, Tuple, TYPE_CHECKING
 
 import pytz
 
@@ -15,6 +15,9 @@ from aim.storage.hashing import hash_auto
 from aim.storage.context import Context
 from aim.storage.object import CustomObject
 from aim.storage.types import AimObject
+
+if TYPE_CHECKING:
+    from aim.sdk import Run
 
 logger = logging.getLogger(__name__)
 
@@ -45,7 +48,6 @@ class RunTracker:
     _idx_to_ctx: Dict[int, Context] = dict()
     _track_warning_shown = False
 
-
     @classmethod
     def track_rate_warn(cls):
         if not cls._track_warning_shown:
@@ -62,7 +64,7 @@ class RunTracker:
         self.repo = run.repo
         self.meta_tree = run.meta_tree
         self.meta_run_tree = run.meta_run_tree
-        self.series_run_tree = run.series_run_tree
+        self.series_run_trees = run.series_run_trees
         self.contexts: Dict[Context, int] = dict()
         self.sequence_infos: Dict[Selector, SequenceInfo] = defaultdict(SequenceInfo)
 
@@ -158,7 +160,7 @@ class RunTracker:
             self.meta_run_tree['traces', ctx_id, name, 'dtype'] = seq_info.dtype = 'float'
         seq_info.step_hash_fn = STEP_HASH_FUNCTIONS[seq_info.version]
 
-        series_tree = self.series_run_tree[seq_info.version]
+        series_tree = self.series_run_trees[seq_info.version]
         if seq_info.version == 2:
             seq_info.step_view = series_tree.subtree((ctx_id, name)).array('step', dtype='int64')
         seq_info.val_view = series_tree.subtree((ctx_id, name)).array('val')
@@ -179,12 +181,12 @@ class RunTracker:
         seq_info.count = 0
         seq_info.record_max_length = 0
         seq_info.dtype = None
-        seq_info.version = 2 if type(val) in (int, float) else 1
+        seq_info.version = 2 if get_object_typename(val) in ('int', 'float') else 1
         seq_info.step_hash_fn = STEP_HASH_FUNCTIONS[seq_info.version]
 
-        series_tree = self.series_run_tree[seq_info.version]
+        series_tree = self.series_run_trees[seq_info.version]
         if seq_info.version == 2:
-            seq_info.step_view = series_tree.subtree((ctx_id, name)).array('steps', dtype='int64').allocate()
+            seq_info.step_view = series_tree.subtree((ctx_id, name)).array('step', dtype='int64').allocate()
         seq_info.val_view = series_tree.subtree((ctx_id, name)).array('val').allocate()
         seq_info.epoch_view = series_tree.subtree((ctx_id, name)).array('epoch', dtype='int64').allocate()
         seq_info.time_view = series_tree.subtree((ctx_id, name)).array('time', dtype='int64').allocate()
@@ -211,11 +213,12 @@ class RunTracker:
         if seq_info.count == 0:
             self.meta_tree['traces_types', dtype, ctx_id, name] = 1
             self.meta_run_tree['traces', ctx_id, name, 'dtype'] = dtype
+            self.meta_run_tree['traces', ctx_id, name, 'version'] = seq_info.version
             self.meta_run_tree['traces', ctx_id, name, 'first_step'] = step
             seq_info.dtype = dtype
 
-        self.meta_run_tree['traces', ctx_id, name, 'last'] = val
         if step >= seq_info.count:
+            self.meta_run_tree['traces', ctx_id, name, 'last'] = val
             self.meta_run_tree['traces', ctx_id, name, 'last_step'] = step
             seq_info.count = step + 1
 
@@ -238,4 +241,3 @@ class RunTracker:
         seq_info.val_view[step_hash] = val
         seq_info.epoch_view[step_hash] = epoch
         seq_info.time_view[step_hash] = track_time
-        seq_info.count = seq_info.count + 1
