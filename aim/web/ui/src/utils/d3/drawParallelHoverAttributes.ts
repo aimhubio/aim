@@ -302,21 +302,25 @@ const drawParallelHoverAttributes = ({
       .join('circle')
       .raise()
       .attr('class', 'HoverCircle')
-      .attr('id', (circle: IParallelNearestCircle) => `Circle-${circle.key}`)
-      .attr('data-key', (circle: IParallelNearestCircle) => circle.key)
+      .attr('id', (d: IParallelNearestCircle) => `Circle-${d.key}`)
+      .attr('data-key', (d: IParallelNearestCircle) => d.key)
       .attr('clip-path', `url(#${nameKey}-circles-rect-clip-${index})`)
-      .attr('cx', (circle: IParallelNearestCircle) => circle.x.toFixed(0))
-      .attr('cy', (circle: IParallelNearestCircle) => circle.y.toFixed(0))
+      .attr('cx', (d: IParallelNearestCircle) => d.x.toFixed(0))
+      .attr('cy', (d: IParallelNearestCircle) => d.y.toFixed(0))
       .attr('r', CircleEnum.Radius)
-      .attr('fill', (circle: IParallelNearestCircle) =>
+      .attr('stroke', (d: IParallelNearestCircle) =>
         isVisibleColorIndicator
-          ? attrRef.current.yColorIndicatorScale(circle.lastYScalePos)
-          : circle.color,
+          ? attrRef.current.yColorIndicatorScale(d.lastYScalePos)
+          : d.color,
       )
-      .attr('stroke', (d: IParallelNearestCircle) => d.color)
       .attr('color', (d: IParallelNearestCircle) => d.color)
       .style('outline-color', (d: IParallelNearestCircle) =>
-        hexToRgbA(d.color, 0.3),
+        hexToRgbA(
+          isVisibleColorIndicator
+            ? attrRef.current.yColorIndicatorScale(d.lastYScalePos)
+            : d.color,
+          0.3,
+        ),
       )
       .on('click', handlePointClick);
     // set active circle
