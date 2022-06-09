@@ -90,7 +90,6 @@ function Table(props) {
       colIndex: i,
     })),
   );
-  let [calculatedColsLength, setCalculatedColsLength] = useState(10);
 
   useEffect(() => {
     const lefts = Object.values(colLefts);
@@ -105,35 +104,12 @@ function Table(props) {
     let right = rightClosest + 2;
 
     setMiddlePaneWindow(
-      middlePane
-        .slice(left, right)
-        ?.map((col, i) => ({
-          ...col,
-          colIndex: left + i,
-        }))
-        ?.concat(
-          middlePane
-            .slice(calculatedColsLength, calculatedColsLength + 10)
-            ?.map((col, i) => ({
-              ...col,
-              colIndex: calculatedColsLength + i,
-              dummy: true,
-            })),
-        ),
+      middlePane.slice(left, right)?.map((col, i) => ({
+        ...col,
+        colIndex: left + i,
+      })),
     );
   }, [props.listWindow.left, props.listWindow.width, colLefts]);
-
-  useEffect(() => {
-    let timeoutID;
-    if (calculatedColsLength < middlePane.length) {
-      timeoutID = setTimeout(
-        () => setCalculatedColsLength((cCL) => cCL + 10),
-        2000,
-      );
-    }
-
-    return () => clearTimeout(timeoutID);
-  }, [calculatedColsLength]);
 
   const color = React.useMemo(
     () => props.data[0]?.rowMeta?.color,
@@ -274,6 +250,14 @@ function Table(props) {
         (leftPane ? leftPane.length : 0) + (add ? index + 1 : index - 1)
       ]?.topHeader !== col.topHeader
     );
+  }
+
+  let midPaneWidth =
+    colLefts[Object.keys(colLefts).length - 1] +
+    colWidths[Object.keys(colWidths).length - 1];
+
+  if (midPaneWidth < props.listWindow.width) {
+    midPaneWidth = null;
   }
 
   return (
@@ -432,9 +416,7 @@ function Table(props) {
           <div
             className='Table__pane Table__pane--middle'
             style={{
-              width:
-                colLefts[Object.keys(colLefts).length - 1] +
-                colWidths[Object.keys(colWidths).length - 1],
+              width: midPaneWidth,
             }}
           >
             {middlePaneWindow?.map((col, i) => {
@@ -498,7 +480,6 @@ function Table(props) {
                       })
                     }
                     colLeft={colLefts[index]}
-                    dummy={col.dummy}
                   />
                 </ErrorBoundary>
               );
