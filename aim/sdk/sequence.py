@@ -191,9 +191,9 @@ class SequenceV2Data(SequenceData):
         steps = steps[sort_indices]
         if last_step is not None and last_step != steps[-1]:
             step_hash = self.step_hash(last_step)
-            steps = np.append(steps, last_step)
+            steps[-1] = last_step
             for i in range(len(columns)):
-                np.append(columns[i], self.arrays[i][step_hash])
+                columns[i][-1] = self.arrays[i][step_hash]
         return steps, columns
 
 
