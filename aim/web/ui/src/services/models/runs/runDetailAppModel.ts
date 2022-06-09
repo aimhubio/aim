@@ -178,11 +178,13 @@ function getRunMetricsBatch(body: any, runHash: string) {
 function getRunLogs({
   runHash,
   record_range,
-  isLiveUpdate,
+  isLiveUpdate = false,
+  isLoadMore = false,
 }: {
   runHash: string;
   record_range?: string;
   isLiveUpdate?: boolean;
+  isLoadMore?: boolean;
 }) {
   if (getRunsLogsRequestRef) {
     getRunsLogsRequestRef.abort();
@@ -212,9 +214,10 @@ function getRunLogs({
 
       model.setState({
         runLogs: updatedLogsData,
-        updatedLogsCount: isLiveUpdate
-          ? _.keys(updatedLogsData).length - _.keys(runLogs).length
-          : 0,
+        updatedLogsCount:
+          isLiveUpdate || isLoadMore
+            ? _.keys(updatedLogsData).length - _.keys(runLogs).length
+            : 0,
         isRunLogsLoading: false,
       });
     },
