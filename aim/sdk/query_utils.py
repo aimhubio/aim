@@ -24,7 +24,8 @@ class RunView:
         self.run = run
         self.proxy_cache = None
         if runs_proxy_cache is not None:
-            runs_proxy_cache[run.hash] = {}
+            if runs_proxy_cache.get(run.hash) is None:
+                runs_proxy_cache[run.hash] = {}
             self.proxy_cache = runs_proxy_cache[run.hash]
 
     def __getattr__(self, item):
