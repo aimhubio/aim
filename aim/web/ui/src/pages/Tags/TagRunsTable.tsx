@@ -84,7 +84,7 @@ function TagRunsTable({
             id: run.run_id,
             active: _.isNil(run.end_time),
           },
-          date: moment(run.creation_time).format(TABLE_DATE_FORMAT),
+          date: moment(run.creation_time * 1000).format(TABLE_DATE_FORMAT),
           duration: processDurationTime(
             run.creation_time * 1000,
             run.end_time ? run.end_time * 1000 : Date.now(),
