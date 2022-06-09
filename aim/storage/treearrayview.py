@@ -1,7 +1,5 @@
 import numpy as np
 
-from itertools import islice
-
 from typing import Any, Iterator, List, Tuple, Union
 from aim.storage.treeview import TreeView
 
@@ -36,24 +34,6 @@ class TreeArrayView(ArrayView):
 
     def items(self) -> Iterator[Tuple[int, Any]]:
         yield from self.tree.items()
-
-    def values_in_range(self, start, stop, count=None) -> Iterator[Any]:
-        for k, v in self.items_in_range(start, stop, count):
-            yield v
-
-    def items_in_range(self, start, stop, count=None) -> Iterator[Tuple[int, Any]]:
-        if stop <= start or start < 0 or stop < 0:
-            return
-
-        items_ = self.items()
-        items_in_range = []
-        for idx, val in items_:
-            if start <= idx < stop:
-                items_in_range.append((idx, val))
-            if idx >= stop:
-                break
-        step = (len(items_in_range) // count or 1) if count else 1
-        yield from islice(items_in_range, 0, len(items_in_range), step)
 
     def __len__(self) -> int:
         # TODO lazier

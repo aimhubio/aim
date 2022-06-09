@@ -44,14 +44,6 @@ class ArrayView:
         """
         ...
 
-    # TODO [AT]: maybe we need to have a view(slice) method instead?
-    # TODO [AT]: it will have the same ArrayView interface but implement values, items, ... with slicing logic
-    def values_in_range(self, start, stop, count=None) -> Iterator[Any]:
-        ...
-
-    def items_in_range(self, start, stop, count=None) -> Iterator[Tuple[int, Any]]:
-        ...
-
     def __len__(self) -> int:
         ...
 
