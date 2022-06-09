@@ -19,6 +19,7 @@
 - Use monaco editor as the syntax highlighter across the Aim UI (arsengit)
 - Add loader to the top of the logs box in the run page (VkoHov)
 - Add the date and the duration of run in the header of the single run page (VkoHov)
+- Add the name, status and duration of run in the runs table of the tags page (VkoHov)
 
 ### Fixes:
 
