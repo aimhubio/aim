@@ -1,14 +1,14 @@
 import { AppNameEnum } from 'services/models/explorer';
 
 export const getMonacoConfig = (advanced = false): Record<any, any> => ({
-  height: advanced ? '62px' : '22px',
+  height: advanced ? '62px' : '24px',
   options: {
     lineNumbers: 'off',
     minimap: { enabled: false },
-    fontFamily: 'Iosevka',
+    fontFamily: '"Inconsolata", monospace',
     wordWrap: advanced ? 'on' : 'off',
-    fontSize: 14,
-    fontWeight: 'medium',
+    fontSize: 16,
+    fontWeight: '500',
     lineNumbersMinChars: 0,
     overviewRulerLanes: 0,
     overviewRulerBorder: false,
@@ -27,7 +27,6 @@ export const getMonacoConfig = (advanced = false): Record<any, any> => ({
       seedSearchStringFromSelection: 'never',
     },
   },
-
   theme: {
     name: 'aim-theme',
     config: {
@@ -53,6 +52,10 @@ export const getMonacoConfig = (advanced = false): Record<any, any> => ({
   },
 });
 
+export const monacoSyntaxHighlighter: any = {
+  ...getMonacoConfig().options,
+  readonly: true,
+};
 export const getSuggestionsByExplorer = (
   explorerName: AppNameEnum,
   data: Record<any, any>,

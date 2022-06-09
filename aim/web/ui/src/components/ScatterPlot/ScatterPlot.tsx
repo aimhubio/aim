@@ -101,6 +101,7 @@ const ScatterPlot = React.forwardRef(function ScatterPlot(
         if (attributesRef.current?.clearHoverAttributes) {
           attributesRef.current.clearHoverAttributes();
         }
+        attributesRef.current = {};
       }
       return;
     }

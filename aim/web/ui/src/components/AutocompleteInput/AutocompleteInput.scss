@@ -28,9 +28,8 @@
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
-    font-family: 'Iosevka', monospace;
-    font-size: $text-md;
-    top: $space-xxs;
+    @include monospaceFontFamily();
+    font-size: $text-lg;
   }
   .details-label {
     width: auto !important;

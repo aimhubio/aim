@@ -76,7 +76,7 @@ function ExploreAim(): React.FunctionComponentElement<React.ReactNode> {
               }
             >
               <img src={slackIcon} alt='slack' />
-              <Text component='span' tint={100} size={16} weight={500}>
+              <Text component='span' tint={100} size={16} weight={400}>
                 Join Aim slack community
               </Text>
               <Icon name='arrow-right' />
@@ -91,7 +91,7 @@ function ExploreAim(): React.FunctionComponentElement<React.ReactNode> {
               }
             >
               <img src={githubIcon} alt='github' />
-              <Text component='span' tint={100} size={16} weight={500}>
+              <Text component='span' tint={100} size={16} weight={400}>
                 Create an issue <br /> or report a bug to help us improve
               </Text>
               <Icon name='arrow-right' />
