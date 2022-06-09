@@ -1,4 +1,5 @@
 import os
+import shutil
 import tarfile
 import pathlib
 import re
@@ -105,9 +106,22 @@ def backup_run(run) -> str:
     if not os.path.exists(backups_dir):
         os.mkdir(backups_dir)
 
-    run_bcp_file = f'bcp/{run.hash}.tar.gz'
+    run_bcp_file = f'bcp/{run.hash}'
     with work_directory(repo_path):
         with tarfile.open(run_bcp_file, 'w:gz') as tar:
             for part in ('meta', 'seqs'):
                 tar.add(os.path.join(part, 'chunks', run.hash))
     return run_bcp_file
+
+
+def restore_run_backup(repo, run_hash):
+    repo_path = repo.path
+    backups_dir = os.path.join(repo_path, 'bcp')
+
+    assert os.path.exists(backups_dir)
+    with work_directory(repo_path):
+        run_bcp_file = f'bcp/{run_hash}'
+        shutil.rmtree(f'meta/chunks/{run_hash}', ignore_errors=True)
+        shutil.rmtree(f'seqs/chunks/{run_hash}', ignore_errors=True)
+        with tarfile.open(run_bcp_file, 'r:gz') as tar:
+            tar.extractall()
