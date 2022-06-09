@@ -66,8 +66,8 @@ function drawLines(args: IDrawLinesArgs): void {
       .data(data.map((line: IProcessedData) => line.data))
       .attr('d', lineGenerator(xScale, yScale, curveInterpolation));
     if (!readOnly) {
-      data.forEach((line: any, index) => {
-        if (line.run.props.active) {
+      data.forEach((line: IProcessedData) => {
+        if (!line.run.props.active) {
           linesNodeRef.current
             .append('circle')
             .attr('class', 'inProgressLineIndicator')
