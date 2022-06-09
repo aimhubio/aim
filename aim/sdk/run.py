@@ -244,6 +244,8 @@ class Run(BaseRun, StructuredRunMixin):
             git info, environment variables, etc.
     """
 
+    _metric_version_warning_shown = False
+
     def __init__(self, run_hash: Optional[str] = None, *,
                  repo: Optional[Union[str, 'Repo']] = None,
                  read_only: bool = False,
@@ -260,28 +262,27 @@ class Run(BaseRun, StructuredRunMixin):
         if not read_only:
             logger.debug(f'Opening Run {self.hash} in write mode')
 
-        if self.check_metrics_version():
-            if self.read_only:
-                logger.warning(f'Detected sub-optimal format metrics for Run {self.hash}. Consider upgrading repo '
-                               f'to improve queries performance:')
-                logger.warning(f'aim runs --repo {self.repo.path} update \'*\'')
-            elif self.repo.is_remote_repo:
-                raise RuntimeError(f'Cannot track Run with remote repo {self.repo.path}. Please upgrade first.')
-            else:
-                logger.warning(f'Detected sub-optimal format metrics for Run {self.hash}. Upgrading...')
-                backup_path = backup_run(self)
-                try:
-                    self.update_metrics()
-                    logger.warning(f'Successfully converted Run {self.hash}')
-                    logger.warning(f'Run backup can be found at {backup_path}. '
-                                   f'In case of any issues the following command can be used to restore data: '
-                                   f'`aim runs --repo {self.repo.path} restore {self.hash}`')
-                except Exception as e:
-                    logger.error(f'Failed to convert metrics. {e}')
-                    logger.warning(f'Run backup can be found at {backup_path}. '
-                                   f'To restore data please run the following command: '
-                                   f'`aim runs --repo {self.repo.path} restore {self.hash}`')
-                    raise
+            if self.check_metrics_version():
+                if self.repo.is_remote_repo:
+                    logger.warning(f'Cannot track Run with remote repo {self.repo.path}. Please upgrade repo first '
+                                   f'with the following command:')
+                    logger.warning(f'aim runs --repo {self.repo.path} update \'*\'')
+                    raise RuntimeError
+                else:
+                    logger.warning(f'Detected sub-optimal format metrics for Run {self.hash}. Upgrading...')
+                    backup_path = backup_run(self)
+                    try:
+                        self.update_metrics()
+                        logger.warning(f'Successfully converted Run {self.hash}')
+                        logger.warning(f'Run backup can be found at {backup_path}. '
+                                       f'In case of any issues the following command can be used to restore data: '
+                                       f'`aim runs --repo {self.repo.root_path} restore {self.hash}`')
+                    except Exception as e:
+                        logger.error(f'Failed to convert metrics. {e}')
+                        logger.warning(f'Run backup can be found at {backup_path}. '
+                                       f'To restore data please run the following command: '
+                                       f'`aim runs --repo {self.repo.root_path} restore {self.hash}`')
+                        raise
 
         self._props = None
 
@@ -480,6 +481,13 @@ class Run(BaseRun, StructuredRunMixin):
         Returns:
             :obj:`Metric` object if exists, `None` otherwise.
         """
+        if self.read_only and not Run._metric_version_warning_shown:
+            if self.check_metrics_version():
+                logger.warning(f'Detected sub-optimal format metrics for Run {self.hash}. Consider upgrading repo '
+                               f'to improve queries performance:')
+                logger.warning(f'aim runs --repo {self.repo.path} update \'*\'')
+                Run._metric_version_warning_shown = True
+
         return self._get_sequence('metric', name, context)
 
     def get_image_sequence(
@@ -645,12 +653,12 @@ class Run(BaseRun, StructuredRunMixin):
         del self.meta_attrs_tree
         del self.meta_run_tree
         del self.meta_tree
-        del self.series_run_tree
+        del self.series_run_trees
         self.meta_run_attrs_tree = None
         self.meta_run_tree = None
         self.meta_attrs_tree = None
         self.meta_tree = None
-        self.series_run_tree = None
+        self.series_run_trees = None
 
     def close(self):
         if self._resources is None:

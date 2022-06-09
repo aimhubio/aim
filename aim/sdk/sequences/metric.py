@@ -49,15 +49,14 @@ class Metric(Sequence):
 
         if only_last:
             last_step, last_value = self.values.last()
+            last_step = self.data.step_hash(last_step)
             steps = [last_step]
             values = [last_value]
             epochs = [self.epochs[last_step]]
             timestamps = [self.timestamps[last_step]]
         else:
             try:
-                steps, values = self.values.sparse_list()
-                epochs = self.epochs.values_list()
-                timestamps = self.timestamps.values_list()
+                steps, (values, epochs, timestamps) = self.data.items_list()
             except ValueError:
                 steps = []
                 values = []
