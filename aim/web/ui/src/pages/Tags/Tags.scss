@@ -182,14 +182,24 @@
       );
     }
   }
-  &__runCreatedDate {
-    font-weight: 500;
+  &__runDuration {
+    font-weight: 600;
     color: $text-color;
+    font-size: $text-lg;
+    @include monospaceFontFamily(14);
+  }
+  &__runCreatedDate {
+    font-weight: 600;
+    color: $text-color;
+    font-size: $text-lg;
+    @include monospaceFontFamily(14);
   }
   &__runName {
-    font-weight: 500;
+    font-weight: 600;
     color: $primary-color;
     text-decoration: none;
+    font-size: $text-lg;
+    @include monospaceFontFamily(14);
   }
   .BaseTable {
     &__body {
