@@ -145,6 +145,7 @@ const HighPlot = React.forwardRef(function HighPlot(
           isVisibleColorIndicator,
           axesNodeRef,
           syncHoverState,
+          svgNodeRef,
         });
       }
 
