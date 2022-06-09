@@ -47,7 +47,16 @@ function ManageColumnsPopover({
   const [state, setState] = React.useState<any>(initialData);
   const [searchKey, setSearchKey] = React.useState<string>('');
   const [draggingItemId, setDraggingItemId] = React.useState<string>('');
+  const ref = React.useRef<HTMLDivElement | null>(null);
+  React.useEffect(() => {
+    window.addEventListener('resize', onResize);
+  }, []);
 
+  function onResize() {
+    if (ref.current) {
+      console.log(ref.current.getBoundingClientRect().width);
+    }
+  }
   function onDragStart(result: any) {
     setDraggingItemId(result.draggableId);
   }
@@ -226,7 +235,7 @@ function ManageColumnsPopover({
         )}
         component={
           <DragDropContext onDragEnd={onDragEnd} onDragStart={onDragStart}>
-            <div className='ManageColumns__container'>
+            <div ref={ref} className='ManageColumns__container'>
               <div className='ColumnList__container'>
                 <div className='ColumnList__title'>Pinned to the left</div>
                 <Droppable droppableId='left'>
