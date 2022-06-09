@@ -2,9 +2,8 @@ import React, { useEffect } from 'react';
 
 import { Text } from 'components/kit';
 
-import createEngine, {
-  IEngineConfigFinal,
-} from '../BaseExplorerCore/core-store';
+import createEngine from '../BaseExplorerCore/core-store';
+import { IEngineConfigFinal } from '../BaseExplorerCore/types';
 
 import { IExplorerConfig, IBaseExplorerProps } from './types';
 import ExplorerBar from './components/EexplorerBar';
@@ -62,6 +61,7 @@ function createExplorer(config: IExplorerConfig): () => React.ReactElement {
       objectDepth: EC.adapter.objectDepth,
     },
     states: config.states,
+    grouping: EC.grouping,
   };
 
   const engine = createEngine(engineConfig);

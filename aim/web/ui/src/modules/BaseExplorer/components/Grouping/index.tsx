@@ -6,17 +6,18 @@ import { IBaseComponentProps } from '../../types';
 
 function Grouping(props: IBaseComponentProps) {
   const engine = props.engine;
-  const customState = engine.useStore(engine.custom1.stateSelector);
+  const state = engine.useStore(engine.groupings.grid.stateSelector);
 
   React.useEffect(() => {
-    console.log('custom1 --> ', customState);
-  }, [customState]);
+    console.log('grouping additional state --> ', state);
+  }, [state]);
 
-  function updateCustomState() {
-    engine.custom1.methods.update({
+  function updateRowsLength() {
+    engine.groupings.grid.methods.update({
       rowLength: 104,
     });
   }
+
   return (
     <div className='flex fdc'>
       <Text size={18} color='primary'>
@@ -24,7 +25,7 @@ function Grouping(props: IBaseComponentProps) {
       </Text>
       <br />
 
-      <Button onClick={updateCustomState} color='primary' variant='contained'>
+      <Button onClick={updateRowsLength} color='primary' variant='contained'>
         Group
       </Button>
       {/*<JSONViewer json={modifiers || []} />*/}

@@ -1,4 +1,5 @@
 import createReact from 'zustand';
+import { omit } from 'lodash-es';
 
 import createVanilla from 'zustand/vanilla';
 
@@ -7,14 +8,20 @@ import { RunsSearchQueryParams } from 'services/api/base-explorer/runsApi';
 
 import { AimObjectDepths, SequenceTypesEnum } from 'types/core/enums';
 
-import { GetState, SetState } from 'utils/store/createSlice';
-
 import createPipeline, { Pipeline, PipelineOptions } from '../pipeline';
 import { IInstructionsState } from '../store/slices/instructionsSlice';
 import { removeExampleTypesFromProjectData } from '../helpers';
 import { GroupType, Order } from '../pipeline/grouping/types';
 import { instructionsSelector } from '../store';
-import { GenerateStoreMethods } from '../types';
+import { IEngineConfigFinal } from '../types';
+
+import {
+  createDefaultBoxStateSlice,
+  createQueryUISlice,
+  createStateSlices,
+  PreCreatedStateSlice,
+} from './utils';
+import { createGroupingsStateConfig } from './grouping';
 
 type ExplorerState = {
   initialized: boolean;
@@ -33,28 +40,6 @@ type ExplorerConfig = {
   useCache: boolean;
 };
 
-export interface IEngineConfigFinal {
-  useCache?: boolean;
-  sequenceName: SequenceTypesEnum;
-  adapter: {
-    objectDepth: AimObjectDepths;
-  };
-  grouping?: {};
-  defaultBoxConfig: {
-    width: number;
-    height: number;
-    gap: number;
-  };
-  styleAppliers?: {
-    [key: string]: Function;
-  };
-  states?: {
-    [name: string]: {
-      initialState: object;
-    };
-  };
-}
-
 const initialState: ExplorerState = {
   initialized: false,
   sequenceName: null,
@@ -67,102 +52,6 @@ const initialState: ExplorerState = {
 };
 
 let pipeline: Pipeline;
-
-function createStateSlices(
-  states: {
-    [name: string]: {
-      initialState: object;
-    };
-  } = {},
-) {
-  const createdStates: { [key: string]: object } = {};
-
-  Object.keys(states).forEach((name: string) => {
-    // @TODO check reserved keys, is properties are valid and throw exception
-    const { initialState } = states[name];
-
-    createdStates[name] = createSliceState(initialState, name);
-  });
-
-  return createdStates;
-}
-
-function createDefaultBoxStateSlice(config: {
-  width: number;
-  height: number;
-  gap: number;
-}) {
-  const initialBoxConfig = config;
-  const boxConfigSelector = (state: any) => state.boxConfig;
-
-  const generateBoxConfigMethods = <TS extends Function, TG extends Function>(
-    set: TS,
-    get: TG,
-  ) => {
-    function update(newBoxConfig: {
-      width?: number;
-      height?: number;
-      gap?: number;
-    }) {
-      const updatedConfig = {
-        // @ts-ignore
-        ...get().boxConfig,
-        ...newBoxConfig,
-      };
-
-      set({
-        boxConfig: updatedConfig,
-      });
-    }
-
-    function reset() {
-      set({
-        boxConfig: initialBoxConfig,
-      });
-    }
-    return { update, reset };
-  };
-
-  return {
-    initialState: initialBoxConfig,
-    stateSelector: boxConfigSelector,
-    methods: generateBoxConfigMethods,
-  };
-}
-
-function createSliceState(initialState: object, name: string) {
-  const stateSelector = (state: any) => state[name];
-
-  const generateMethods = <TS extends Function, TG extends Function>(
-    set: TS,
-    get: TG,
-  ) => {
-    function update(newState: object) {
-      const updatedState = {
-        // @ts-ignore
-        ...get()[name],
-        ...newState,
-      };
-
-      set({
-        [name]: updatedState,
-      });
-    }
-
-    function reset() {
-      set({
-        [name]: initialState,
-      });
-    }
-    return { update, reset };
-  };
-
-  return {
-    initialState,
-    stateSelector,
-    methods: generateMethods,
-  };
-}
 
 function createConfiguration(config: IEngineConfigFinal): {
   states: {
@@ -206,64 +95,9 @@ function createConfiguration(config: IEngineConfigFinal): {
   };
 }
 
-// QUERY SLICE
-type QueryUIStateUnit = {
-  simpleInput: string;
-  advancedInput: string;
-  selections: Array<any>;
-  advancedModeOn: boolean;
-};
-
-type PreCreatedStateSlice = {
-  initialState: object;
-  stateSelector: Function;
-  methods: GenerateStoreMethods;
-};
-
-function createQueryUISlice(
-  initialState: QueryUIStateUnit,
-): PreCreatedStateSlice {
-  const selector = (state: any) => state.queryUI;
-
-  const generateMethods: GenerateStoreMethods = <T>(
-    set: SetState<T>,
-    get: GetState<T>,
-  ) => {
-    function update(newState: QueryUIStateUnit) {
-      const updated = {
-        // @ts-ignore
-        ...get().queryUI,
-        ...newState,
-      };
-
-      set({
-        // @ts-ignore
-        queryUI: updated,
-      });
-    }
-
-    function reset() {
-      set({
-        // @ts-ignore
-        queryUI: { ...initialState },
-      });
-    }
-
-    return { update, reset };
-  };
-
-  return {
-    methods: generateMethods,
-    initialState,
-    stateSelector: selector,
-  };
-}
-// QUERY SLICE
-
 // CREATE ENGINE
 function createEngine(config: IEngineConfigFinal) {
   const { states } = createConfiguration(config);
-  console.log('pre created states --> ', states);
 
   const generatedInitialStates: { [key: string]: object } = states.names.reduce(
     (acc: { [key: string]: object }, name: string) => {
@@ -272,6 +106,9 @@ function createEngine(config: IEngineConfigFinal) {
     },
     {},
   );
+
+  const groupConfigs = createGroupingsStateConfig(config.grouping);
+  generatedInitialStates['groupings'] = groupConfigs.initialState;
 
   // store creation
   const storeVanilla = createVanilla<ExplorerState>(() => ({
@@ -296,6 +133,18 @@ function createEngine(config: IEngineConfigFinal) {
     {},
   );
   /*  Slices Creation */
+
+  const encapsulatedGroupProperties = Object.keys(groupConfigs.slices).reduce(
+    (acc: { [key: string]: object }, name: string) => {
+      const elem = groupConfigs.slices[name];
+      acc[name] = {
+        ...omit(elem, ['component', 'styleApplier']),
+        methods: elem.methods(storeVanilla.setState, storeVanilla.getState),
+      };
+      return acc;
+    },
+    {},
+  );
 
   const storeReact = createReact(storeVanilla);
 
@@ -421,9 +270,10 @@ function createEngine(config: IEngineConfigFinal) {
     }),
     // modifications
     group,
+    ...encapsulatedEngineProperties, // final
 
-    ...encapsulatedEngineProperties,
-
+    // groupings
+    groupings: encapsulatedGroupProperties,
     // instructions
     instructions: {
       dataSelector: instructionsSelector,
