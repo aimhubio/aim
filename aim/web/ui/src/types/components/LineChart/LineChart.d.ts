@@ -17,8 +17,11 @@ import {
   IChartZoom,
   IFocusedState,
 } from 'types/services/models/metrics/metricsAppModel';
+import { IRun } from 'types/services/models/metrics/runModel';
 
 import { CurveEnum } from 'utils/d3';
+
+import { IChartPanelProps } from '../ChartPanel/ChartPanel';
 
 export interface ILine {
   key: string;
@@ -30,11 +33,12 @@ export interface ILine {
   dasharray?: string;
   selectors?: string[];
   groupKey?: string;
+  run?: IRun;
 }
 
 export interface ILineChartProps {
   index: number;
-  data: ILine[];
+  data: IChartPanelProps['data'];
   nameKey?: string;
   aggregatedData?: IAggregatedData[];
   alignmentConfig?: IAlignmentConfig;

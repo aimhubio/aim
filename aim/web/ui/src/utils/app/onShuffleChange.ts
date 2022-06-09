@@ -22,6 +22,6 @@ export default function onShuffleChange<M extends State>({
         [name]: configData.grouping.seed[name] + 1,
       },
     };
-    updateModelData(configData);
+    updateModelData(configData, true);
   }
 }

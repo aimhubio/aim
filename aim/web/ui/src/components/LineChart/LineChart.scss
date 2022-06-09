@@ -135,4 +135,33 @@
   .AggrArea.highlighted {
     opacity: 1;
   }
+
+  .inProgressLineIndicator {
+    animation: inProgressIndicator 1s linear infinite;
+    stroke-width: 1;
+    stroke: $success-color;
+    fill: $teal;
+    opacity: 1;
+  }
+
+  .Lines.highlight {
+    .inProgressLineIndicator {
+      opacity: 0.2;
+      &.active {
+        opacity: 1;
+      }
+    }
+  }
+
+  @keyframes inProgressIndicator {
+    0% {
+      stroke: none;
+    }
+    50% {
+      stroke: $success-color;
+    }
+    100% {
+      stroke: none;
+    }
+  }
 }
