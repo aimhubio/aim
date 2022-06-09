@@ -4,6 +4,8 @@ import { GroupType } from 'modules/BaseExplorerCore/pipeline/grouping/types';
 
 import { AimObjectDepths, SequenceTypesEnum } from 'types/core/enums';
 
+import { GroupingConfigs } from '../BaseExplorerCore/core-store/grouping';
+
 export interface IExplorerConfig {
   /**
    * The name of explorer, used to identify user configuration for the explorer
@@ -54,11 +56,7 @@ export type IEngineConfig = {
     objectDepth: AimObjectDepths;
     objectCreator?: () => any;
   };
-  grouping: {
-    [key: string]: {
-      type: GroupType;
-    };
-  };
+  grouping?: GroupingConfigs;
 };
 
 export type styleApplier = (object: any, currentConfig: any, group: any) => any;

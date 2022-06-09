@@ -1,7 +1,5 @@
 import { AppNameEnum } from 'services/models/explorer';
 
-import { SequenceTypesEnum } from 'types/core/enums';
-
 export const getMonacoConfig = (
   advanced = false,
 ): Record<string | number | symbol, unknown | any> => ({

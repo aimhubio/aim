@@ -1,5 +1,9 @@
 import { GetState, SetState } from 'utils/store/createSlice';
 
+import { AimObjectDepths, SequenceTypesEnum } from '../../types/core/enums';
+
+import { GroupingConfigs } from './core-store/grouping';
+
 export const engineStoreReservedSliceKeys = {
   initialized: 'initialized',
   instructions: 'instructions',
@@ -44,3 +48,25 @@ export type GenerateStoreMethods = <T>(
 export type CreateStoreSlice = <TStore, TSliceState>(
   initialState: TSliceState,
 ) => StoreSlice<TStore, TSliceState>;
+
+export interface IEngineConfigFinal {
+  useCache?: boolean;
+  sequenceName: SequenceTypesEnum;
+  adapter: {
+    objectDepth: AimObjectDepths;
+  };
+  grouping?: GroupingConfigs;
+  defaultBoxConfig: {
+    width: number;
+    height: number;
+    gap: number;
+  };
+  styleAppliers?: {
+    [key: string]: Function;
+  };
+  states?: {
+    [name: string]: {
+      initialState: object;
+    };
+  };
+}
