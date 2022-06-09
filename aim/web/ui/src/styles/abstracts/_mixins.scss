@@ -13,36 +13,7 @@
 }
 
 @mixin monospaceFontFamily($font-size: 16) {
+  $min-font-width: 110;
   font-family: 'Inconsolata', monospace;
-  @if $font-size == 20 {
-    font-variation-settings: 'wdth' 102;
-  }
-
-  @if $font-size == 18 {
-    font-variation-settings: 'wdth' 92;
-  }
-
-  @if $font-size == 16 {
-    font-variation-settings: 'wdth' 82;
-  }
-
-  @if $font-size == 14 {
-    font-variation-settings: 'wdth' 72;
-  }
-
-  @if $font-size == 12 {
-    font-variation-settings: 'wdth' 62;
-  }
-
-  @if $font-size == 11 {
-    font-variation-settings: 'wdth' 56;
-  }
-
-  @if $font-size == 10 {
-    font-variation-settings: 'wdth' 52;
-  }
-
-  @if $font-size == 8 {
-    font-variation-settings: 'wdth' 41;
-  }
+  font-variation-settings: 'wdth' $min-font-width - ($font-size * 2);
 }
