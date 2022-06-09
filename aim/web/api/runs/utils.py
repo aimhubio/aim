@@ -3,7 +3,7 @@ import struct
 
 from collections import namedtuple
 from itertools import chain
-from typing import Iterator, Tuple, Optional, List, Iterable
+from typing import Iterator, Tuple, Optional, List
 from typing import TYPE_CHECKING
 
 from fastapi import HTTPException
@@ -85,40 +85,20 @@ def numpy_to_encodable(array: np.ndarray) -> Optional[dict]:
     return encoded_numpy
 
 
-def sliced_custom_object_record(values: Iterable, _slice: slice) -> Iterable:
-    yield from zip(range(_slice.start, _slice.stop, _slice.step), values[_slice])
-
-
-def sliced_np_array(array: np.ndarray, _slice: slice) -> np.ndarray:
-    last_step_needed = (_slice.stop - 1) % _slice.step != 0
-    if last_step_needed:
-        return np.append(array[_slice], array[-1])
-    else:
-        return array[_slice]
-
-
-def sliced_array(array: list, _slice: slice) -> list:
-    last_step_needed = (_slice.stop - 1) % _slice.step != 0
-    if last_step_needed:
-        last_value = array[-1]
-        return array[_slice] + [last_value]
-    else:
-        return array[_slice]
-
-
 def collect_x_axis_data(x_trace: Metric, iters: np.ndarray) -> Tuple[Optional[dict], Optional[dict]]:
     if not x_trace:
         return None, None
 
     x_axis_values = []
     x_axis_iters = []
+    step_index_fn = x_trace.data.step_hash
     for idx in iters:
         try:
-            x_val = x_trace.values[idx.item()]
+            x_val = x_trace.values[step_index_fn(idx.item())]
         except KeyError:
             x_val = None
         if x_val:
-            x_axis_iters.append(idx.item())
+            x_axis_iters.append(step_index_fn(idx.item()))
             x_axis_values.append(x_val)
 
     if not x_axis_iters:
@@ -151,10 +131,8 @@ def custom_aligned_metrics_streamer(requested_runs: List[AlignedRunIn], x_axis: 
             if not (trace and x_axis_trace):
                 continue
 
-            _slice = slice(*trace_data.slice)
-            iters = trace.values.sparse_numpy()[0]
-            sliced_iters = sliced_np_array(iters, _slice)
-            x_axis_iters, x_axis_values = collect_x_axis_data(x_axis_trace, sliced_iters)
+            iters = np.array(trace.data.sample(trace_data.slice[-1]).indices_list())
+            x_axis_iters, x_axis_values = collect_x_axis_data(x_axis_trace, iters)
             traces_list.append({
                 'name': trace.name,
                 'context': trace.context.to_dict(),
@@ -178,22 +156,19 @@ async def metric_search_result_streamer(traces: SequenceCollection,
         for trace in run_trace_collection.iter():
             if not run:
                 run = run_trace_collection.run
-            iters, values = trace.values.sparse_numpy()
-            num_records = len(values)
-            step = (num_records // steps_num) or 1
-            _slice = slice(0, num_records, step)
-            sliced_iters = sliced_np_array(iters, _slice)
+            iters, (values, epochs, timestamps) = trace.data.sample(steps_num).numpy()
+
             x_axis_trace = run.get_metric(x_axis, trace.context) if x_axis else None
-            x_axis_iters, x_axis_values = collect_x_axis_data(x_axis_trace, sliced_iters)
+            x_axis_iters, x_axis_values = collect_x_axis_data(x_axis_trace, iters)
 
             traces_list.append({
                 'name': trace.name,
                 'context': trace.context.to_dict(),
-                'slice': [0, num_records, step],
-                'values': numpy_to_encodable(sliced_np_array(values, _slice)),
-                'iters': numpy_to_encodable(sliced_iters),
-                'epochs': numpy_to_encodable(sliced_np_array(trace.epochs.values_numpy(), _slice)),
-                'timestamps': numpy_to_encodable(sliced_np_array(trace.timestamps.values_numpy(), _slice)),
+                'slice': [0, 0, steps_num],  # TODO [AT] change once UI is ready
+                'values': numpy_to_encodable(values),
+                'iters': numpy_to_encodable(iters),
+                'epochs': numpy_to_encodable(epochs),
+                'timestamps': numpy_to_encodable(timestamps),
                 'x_axis_values': x_axis_values,
                 'x_axis_iters': x_axis_iters,
             })
@@ -240,19 +215,14 @@ def collect_requested_metric_traces(run: Run, requested_traces: List[TraceBase],
         if not trace:
             continue
 
-        iters, values = trace.values.sparse_list()
-
+        iters, (values,) = trace.data.view('val').sample(steps_num).items_list()
         values = list(map(lambda x: x if float('-inf') < x < float('inf') and x == x else None, values))
-
-        num_records = len(values)
-        step = (num_records // steps_num) or 1
-        _slice = slice(0, num_records, step)
 
         processed_traces_list.append({
             'name': trace.name,
             'context': trace.context.to_dict(),
-            'values': sliced_array(values, _slice),
-            'iters': sliced_array(iters, _slice),
+            'values': values,
+            'iters': iters,
         })
 
     return processed_traces_list
