@@ -6,7 +6,7 @@ import { IAxesScaleState } from 'types/components/AxesScalePopover/AxesScalePopo
 import { AlignmentOptionsEnum, ScaleEnum } from 'utils/d3';
 import { float64FromUint8 } from 'utils/helper';
 
-function isInvalidValue(
+function isInvalidMetricValue(
   v: number,
   scaleType: ScaleEnum = ScaleEnum.Linear,
 ): boolean {
@@ -18,7 +18,7 @@ function isInvalidValue(
   );
 }
 
-function getFilteredValues<T = number[]>(args: {
+function getFilteredMetricValues<T = number[]>(args: {
   data: T;
   invalidIndicesArray: number[][];
 }): T {
@@ -37,7 +37,7 @@ function getInvalidIndices<T = number[]>(
 ): number[] {
   // @ts-ignore
   return values.reduce((acc: number[], v: number, i: number) => {
-    if (isInvalidValue(v, scaleType)) {
+    if (isInvalidMetricValue(v, scaleType)) {
       acc = acc.concat([i]);
     }
     return acc;
@@ -71,54 +71,45 @@ export function filterMetricsData(
     x_axis_values: getInvalidIndices(x_axis_values, xAxis),
   };
 
-  let invalidXIndicesArray = [];
-
-  switch (alignmentType) {
-    case AlignmentOptionsEnum.STEP:
-      invalidXIndicesArray = [invalidIndices.steps];
-      break;
-    case AlignmentOptionsEnum.EPOCH:
-      invalidXIndicesArray = [invalidIndices.epochs];
-      break;
-    case AlignmentOptionsEnum.RELATIVE_TIME:
-      invalidXIndicesArray = [invalidIndices.timestamps];
-      break;
-    case AlignmentOptionsEnum.ABSOLUTE_TIME:
-      invalidXIndicesArray = [invalidIndices.timestamps];
-      break;
-    case AlignmentOptionsEnum.CUSTOM_METRIC:
-      invalidXIndicesArray = [
-        invalidIndices.x_axis_iters,
-        invalidIndices.x_axis_values,
-      ];
-      break;
-  }
+  const invalidXIndicesObj = {
+    [AlignmentOptionsEnum.STEP]: [invalidIndices.steps],
+    [AlignmentOptionsEnum.EPOCH]: [invalidIndices.epochs],
+    [AlignmentOptionsEnum.RELATIVE_TIME]: [invalidIndices.timestamps],
+    [AlignmentOptionsEnum.ABSOLUTE_TIME]: [invalidIndices.timestamps],
+    [AlignmentOptionsEnum.CUSTOM_METRIC]: [
+      invalidIndices.x_axis_iters,
+      invalidIndices.x_axis_values,
+    ],
+  };
 
   return {
-    values: getFilteredValues({
+    values: getFilteredMetricValues({
       data: values,
-      invalidIndicesArray: [...invalidXIndicesArray, invalidIndices.values],
+      invalidIndicesArray: [
+        ...invalidXIndicesObj[alignmentType],
+        invalidIndices.values,
+      ],
     }),
-    steps: getFilteredValues({
+    steps: getFilteredMetricValues({
       data: steps,
       invalidIndicesArray: [invalidIndices.steps, invalidIndices.values],
     }),
-    epochs: getFilteredValues({
+    epochs: getFilteredMetricValues({
       data: epochs,
       invalidIndicesArray: [invalidIndices.epochs, invalidIndices.values],
     }),
-    timestamps: getFilteredValues({
+    timestamps: getFilteredMetricValues({
       data: timestamps,
       invalidIndicesArray: [invalidIndices.timestamps, invalidIndices.values],
     }),
-    x_axis_values: getFilteredValues({
+    x_axis_values: getFilteredMetricValues({
       data: x_axis_values,
       invalidIndicesArray: [
         invalidIndices.x_axis_iters,
         invalidIndices.x_axis_values,
       ],
     }),
-    x_axis_iters: getFilteredValues({
+    x_axis_iters: getFilteredMetricValues({
       data: x_axis_iters,
       invalidIndicesArray: [
         invalidIndices.x_axis_iters,
@@ -141,11 +132,11 @@ export function filterSingleRunMetricsData(run: IRunBatch) {
     iters: getInvalidIndices(iters),
   };
   return {
-    values: getFilteredValues({
+    values: getFilteredMetricValues({
       data: values,
       invalidIndicesArray: [invalidIndices.iters, invalidIndices.values],
     }),
-    iters: getFilteredValues({
+    iters: getFilteredMetricValues({
       data: iters,
       invalidIndicesArray: [invalidIndices.iters, invalidIndices.values],
     }),

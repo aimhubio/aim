@@ -17,6 +17,7 @@ function ChartPopover(props: IChartPopover): JSX.Element {
     open = false,
     className = '',
     containerNode = document.body,
+    selectOptions,
   } = props;
   const [popoverPos, setPopoverPos] = React.useState<PopoverPosition | null>(
     null,
@@ -89,6 +90,7 @@ function ChartPopover(props: IChartPopover): JSX.Element {
             tooltipContent={props.tooltipContent}
             focusedState={props.focusedState}
             alignmentConfig={props.alignmentConfig}
+            selectOptions={selectOptions}
           />
         </ErrorBoundary>
       </Popover>

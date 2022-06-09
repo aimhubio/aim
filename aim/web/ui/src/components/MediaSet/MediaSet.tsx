@@ -45,6 +45,7 @@ const MediaSet = ({
   mediaType,
   sortFieldsDict,
   sortFields,
+  selectOptions,
 }: IMediaSetProps): React.FunctionComponentElement<React.ReactNode> => {
   const [depthMap, setDepthMap] = React.useState<number[]>([]);
   let content: [(string | {})[], [] | [][]][] = []; // the actual items list to be passed to virtualized list component
@@ -216,6 +217,7 @@ const MediaSet = ({
           mediaType,
           depthMap,
           onDepthChange,
+          selectOptions,
         }}
       >
         {MediaGroupedList}
@@ -372,6 +374,7 @@ const MediaGroupedList = React.memo(function MediaGroupedList({
                 additionalProperties={data.additionalProperties}
                 tooltip={data.tooltip}
                 mediaType={data.mediaType}
+                selectOptions={data.selectOptions}
               />
             </div>
           )}

@@ -11,11 +11,16 @@ import { ANALYTICS_EVENT_KEYS } from 'config/analytics/analyticsKeysMap';
 import runDetailAppModel from 'services/models/runs/runDetailAppModel';
 import * as analytics from 'services/analytics';
 
+import RunNameAndDescriptionCard from './RunNameAndDescriptionCard';
 import { IRunDetailSettingsTabProps } from './types';
+
+import './RunDetailSettingsTab.scss';
 
 function RunDetailSettingsTab({
   runHash,
   isArchived,
+  defaultName,
+  defaultDescription,
 }: IRunDetailSettingsTabProps): React.FunctionComponentElement<React.ReactNode> {
   const history = useHistory();
   const [openDeleteModal, setOpenDeleteModal] = React.useState<boolean>(false);
@@ -47,11 +52,16 @@ function RunDetailSettingsTab({
   React.useEffect(() => {
     analytics.pageView(ANALYTICS_EVENT_KEYS.runDetails.tabs.settings.tabView);
   }, []);
-
   return (
     <ErrorBoundary>
       <div className='RunDetailSettingsTab'>
         <div className='RunDetailSettingsTab__actionCardsCnt'>
+          <RunNameAndDescriptionCard
+            defaultName={defaultName ?? ''}
+            defaultDescription={defaultDescription ?? ''}
+            runHash={runHash}
+            isArchived={isArchived}
+          />
           <ActionCard
             title={isArchived ? 'Unarchive Run' : 'Archive Run'}
             description={

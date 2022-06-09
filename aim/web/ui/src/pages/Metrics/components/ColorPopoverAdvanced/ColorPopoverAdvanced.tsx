@@ -26,7 +26,9 @@ function ColorPopoverAdvanced({
     }
   }
   function isShuffleDisabled(): boolean {
-    if (groupingData?.reverseMode.color || groupingData?.color.length) {
+    //ToDo reverse mode
+    // if (groupingData?.reverseMode.color || groupingData?.color.length) {
+    if (groupingData?.color.length) {
       return false;
     }
     return true;

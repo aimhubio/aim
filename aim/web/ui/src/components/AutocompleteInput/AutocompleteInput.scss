@@ -28,9 +28,9 @@
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
-    font-family: 'Iosevka', monospace;
-    font-size: $text-md;
-    top: $space-xxs;
+    font-family: 'Inconsolata', monospace;
+    font-variation-settings: 'wdth' 82;
+    font-size: $text-lg;
   }
   .details-label {
     width: auto !important;
