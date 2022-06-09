@@ -28,6 +28,12 @@ function QueryForm(props: IQueryFormProps) {
     });
   }
 
+  function search() {
+    engine.search({
+      p: 500,
+      q: '',
+    });
+  }
   return (
     <div className='flex fdc'>
       <Text size={18} color='primary'>
@@ -35,7 +41,7 @@ function QueryForm(props: IQueryFormProps) {
       </Text>
       <br />
       <div>
-        <Button onClick={onInputChange} color='primary' variant='contained'>
+        <Button onClick={search} color='primary' variant='contained'>
           Search
         </Button>
       </div>

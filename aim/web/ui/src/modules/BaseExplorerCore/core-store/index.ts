@@ -108,7 +108,10 @@ function createEngine(config: IEngineConfigFinal) {
   );
 
   const groupConfigs = createGroupingsStateConfig(config.grouping);
-  generatedInitialStates['groupings'] = groupConfigs.initialState;
+
+  generatedInitialStates['groupings'] = {
+    ...groupConfigs.initialState,
+  };
 
   // store creation
   const storeVanilla = createVanilla<ExplorerState>(() => ({
@@ -138,12 +141,17 @@ function createEngine(config: IEngineConfigFinal) {
     (acc: { [key: string]: object }, name: string) => {
       const elem = groupConfigs.slices[name];
       acc[name] = {
-        ...omit(elem, ['component', 'styleApplier']),
+        ...omit(elem, ['styleApplier']),
         methods: elem.methods(storeVanilla.setState, storeVanilla.getState),
       };
       return acc;
     },
     {},
+  );
+
+  const groupingMethods = groupConfigs.generateMethods(
+    storeVanilla.setState,
+    storeVanilla.getState,
   );
 
   const storeReact = createReact(storeVanilla);
@@ -190,30 +198,37 @@ function createEngine(config: IEngineConfigFinal) {
       },
     });
 
+    console.log(additionalData);
+
     storeVanilla.setState({ data, additionalData });
   }
 
-  async function group() {
-    const result = await pipeline.execute({
-      query: lastQuery,
-      group: {
-        [GroupType.COLUMN]: [
-          {
-            field: 'run.hash',
-            order: Order.ASC,
-          },
-          {
-            field: 'run.name',
-            order: Order.DESC,
-          },
-        ],
-      },
-    });
-
-    storeVanilla.setState({
-      data: result.data,
-      additionalData: result.additionalData,
-    });
+  async function group(
+    config: {
+      [key: string]: { fields: string[]; orders: Order[] };
+    } = {},
+  ) {
+    groupingMethods.update(config);
+    // const result = await pipeline.execute({
+    //   query: lastQuery,
+    //   group: {
+    //     [GroupType.COLUMN]: [
+    //       {
+    //         field: 'run.hash',
+    //         order: Order.ASC,
+    //       },
+    //       {
+    //         field: 'run.name',
+    //         order: Order.DESC,
+    //       },
+    //     ],
+    //   },
+    // });
+    //
+    // storeVanilla.setState({
+    //   data: result.data,
+    //   additionalData: result.additionalData,
+    // });
   }
 
   function initialize() {
@@ -246,8 +261,6 @@ function createEngine(config: IEngineConfigFinal) {
     return removeExampleTypesFromProjectData(params);
   }
 
-  console.log(encapsulatedEngineProperties);
-
   return {
     useStore: storeReact,
     destroy: storeVanilla.destroy,
@@ -273,7 +286,10 @@ function createEngine(config: IEngineConfigFinal) {
     ...encapsulatedEngineProperties, // final
 
     // groupings
-    groupings: encapsulatedGroupProperties,
+    groupings: {
+      ...encapsulatedGroupProperties,
+      currentValuesSelector: groupConfigs.currentValuesSelector,
+    },
     // instructions
     instructions: {
       dataSelector: instructionsSelector,

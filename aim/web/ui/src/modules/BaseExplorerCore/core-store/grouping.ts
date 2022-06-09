@@ -52,6 +52,55 @@ export type GroupingConfig<State extends object, Settings> = {
 
   // variant: 'structured' | 'joined'
 };
+function getCurrentValues(
+  defaultValues: {
+    orders: Order[];
+    fields: string[];
+  } = {
+    orders: [],
+    fields: [],
+  },
+): {
+  orders: Order[];
+  fields: string[];
+} {
+  if (!defaultValues) {
+    return {
+      fields: [],
+      orders: [],
+    };
+  }
+
+  if (!defaultValues.orders) {
+    defaultValues.orders = [];
+  }
+
+  if (!defaultValues.fields) {
+    defaultValues.fields = [];
+  }
+
+  const lengthsDiff = defaultValues.orders.length - defaultValues.fields.length;
+
+  if (lengthsDiff === 0) {
+    return defaultValues;
+  }
+
+  if (lengthsDiff > 0) {
+    return {
+      fields: defaultValues.fields,
+      orders: defaultValues.orders.slice(0, defaultValues.fields.length),
+    };
+  }
+
+  const orders = defaultValues.orders.concat(
+    new Array(-lengthsDiff).fill(Order.ASC),
+  );
+
+  return {
+    fields: defaultValues.fields,
+    orders: orders,
+  };
+}
 
 function createGrouping(config: GroupingConfig<unknown & object, any>) {
   const {
@@ -96,7 +145,9 @@ function createGroupingsStateConfig(configs: GroupingConfigs = {}) {
 }
 
 function createGroupingsSlice(groupings: { [key: string]: any }) {
-  let initialState: Record<string, any> = {};
+  let initialState: Record<string, any> = {
+    currentValues: {},
+  };
   const subSlices: Record<string, any> = {};
 
   const stateSelector = (state: any) => state.groupings.state;
@@ -106,6 +157,10 @@ function createGroupingsSlice(groupings: { [key: string]: any }) {
     initialState = {
       ...initialState,
       [name]: group.observableState.initialState,
+      currentValues: {
+        ...initialState.currentValues,
+        [name]: getCurrentValues(group.defaultApplications),
+      },
     };
     subSlices[name] = {
       ...omit(group, 'observableState'),
@@ -113,10 +168,41 @@ function createGroupingsSlice(groupings: { [key: string]: any }) {
     };
   });
 
+  function generateMethods(set: Function, get: Function) {
+    const update = (groupValues: {
+      [key: string]: { orders: Order[]; fields: string[] };
+    }) => {
+      const store = get().groupings.currentValues;
+      const newValues = Object.keys(groupValues).reduce(
+        (
+          acc: {
+            [key: string]: { orders: Order[]; fields: string[] };
+          },
+          name: string,
+        ) => {
+          acc[name] = getCurrentValues(groupValues[name]);
+          return acc;
+        },
+        {},
+      );
+      set({
+        groupings: {
+          ...store.groupings,
+          currentValues: newValues,
+        },
+      });
+    };
+    return {
+      update,
+    };
+  }
+
   return {
-    slices: subSlices,
     initialState,
     stateSelector,
+    generateMethods,
+    slices: subSlices,
+    currentValuesSelector: (state: any) => state.groupings.currentValues,
   };
 }
 

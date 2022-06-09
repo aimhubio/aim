@@ -10,6 +10,7 @@ import {
 import { AimObjectDepths, SequenceTypesEnum } from 'types/core/enums';
 
 import { AimFlatObjectBase } from '../../modules/BaseExplorerCore/pipeline/adapter/processor';
+import { Order } from '../../modules/BaseExplorerCore/pipeline/grouping/types';
 
 const applyStyle: styleApplier = (object: any, boxConfig: any, group: any) => {
   return {
@@ -36,6 +37,10 @@ const config: IExplorerConfig = {
         ) => ({
           x: config.grid.rowLength * config.box.width,
         }),
+        defaultApplications: {
+          fields: ['run.context', 'run.hash'],
+          orders: [Order.DESC, Order.ASC],
+        },
         state: {
           // observable state, to listen on base visualizer
           initialState: {
@@ -46,16 +51,6 @@ const config: IExplorerConfig = {
           // settings to pass to component, to use, alter it can be color scales values for color grouping
           maxRowsLength: 10,
         },
-      },
-      group: {
-        component: () => <div>Group for images</div>,
-        styleApplier: (
-          object: AimFlatObjectBase,
-          group: string[],
-          config: any,
-        ) => ({
-          x: 1,
-        }),
       },
     },
   },
