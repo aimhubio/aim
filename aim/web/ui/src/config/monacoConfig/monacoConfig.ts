@@ -1,6 +1,8 @@
 import { AppNameEnum } from 'services/models/explorer';
 
-export const getMonacoConfig = (advanced = false): Record<any, any> => ({
+export const getMonacoConfig = (
+  advanced = false,
+): Record<string | number | symbol, unknown | any> => ({
   height: advanced ? '62px' : '24px',
   options: {
     lineNumbers: 'off',
@@ -56,6 +58,8 @@ export const monacoSyntaxHighlighter: any = {
   ...getMonacoConfig().options,
   readonly: true,
 };
+
+// TODO: Replace AppNameEnum with SequenceNameEnum
 export const getSuggestionsByExplorer = (
   explorerName: AppNameEnum,
   data: Record<any, any>,

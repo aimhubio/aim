@@ -1,5 +1,9 @@
 import createExplorer from 'modules/BaseExplorer';
-import { IExplorerConfig, styleApplier } from 'modules/BaseExplorer/types';
+import {
+  IExplorerConfig,
+  IQueryFormProps,
+  styleApplier,
+} from 'modules/BaseExplorer/types';
 import {
   Box,
   Grouping,
@@ -65,7 +69,9 @@ const config: IExplorerConfig = {
       grid: applyStyle,
     },
     components: {
-      queryForm: QueryForm,
+      queryForm: (props: IQueryFormProps) => (
+        <QueryForm engine={props.engine} hasAdvancedMode />
+      ),
       visualizations: [Visualizer],
       grouping: Grouping,
       box: Box,

@@ -7,11 +7,11 @@ import { getParams } from 'services/api/base-explorer/projectApi';
 import { RunsSearchQueryParams } from 'services/api/base-explorer/runsApi';
 
 import { AimObjectDepths, SequenceTypesEnum } from 'types/core/enums';
+import { ISelectOption } from 'types/services/models/explorer/createAppModel';
 
 import createPipeline, { Pipeline, PipelineOptions } from '../pipeline';
 import { IInstructionsState } from '../store/slices/instructionsSlice';
-import { removeExampleTypesFromProjectData } from '../helpers';
-import { GroupType, Order } from '../pipeline/grouping/types';
+import { Order } from '../pipeline/grouping/types';
 import { instructionsSelector } from '../store';
 import { IEngineConfigFinal } from '../types';
 
@@ -72,7 +72,7 @@ function createConfiguration(config: IEngineConfigFinal): {
     simpleInput: '',
     advancedInput: '',
     selections: [],
-    advancedModeOn: true,
+    advancedModeOn: false,
   });
 
   const names = [
@@ -94,6 +94,13 @@ function createConfiguration(config: IEngineConfigFinal): {
     },
   };
 }
+
+export type QueryUIStateUnit = {
+  simpleInput: string;
+  advancedInput: string;
+  selections: ISelectOption[];
+  advancedModeOn: boolean;
+};
 
 // CREATE ENGINE
 function createEngine(config: IEngineConfigFinal) {
@@ -246,6 +253,7 @@ function createEngine(config: IEngineConfigFinal) {
         .then((instructions) => {
           storeVanilla.setState({
             initialized: true,
+            sequenceName: config.sequenceName,
             instructions: {
               queryable_data: instructions,
               // @ts-ignore
@@ -258,7 +266,7 @@ function createEngine(config: IEngineConfigFinal) {
 
   async function getInstructions(sequence: SequenceTypesEnum) {
     const params = await getParams({ sequence });
-    return removeExampleTypesFromProjectData(params);
+    return params;
   }
 
   return {
