@@ -15,8 +15,7 @@
     font-size: $text-lg;
     line-height: 1.3125em;
     overflow: auto;
-    font-family: 'Inconsolata', monospace;
-    font-variation-settings: 'wdth' 85;
+    @include monospaceFontFamily();
   }
   &__copy__button {
     top: 0.75rem;

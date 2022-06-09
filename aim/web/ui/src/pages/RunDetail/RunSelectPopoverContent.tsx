@@ -79,8 +79,6 @@ function RunSelectPopoverContent({
               Experiments
             </Text>
           </div>
-
-          <Icon name='sort-inside' />
           <div className='RunSelectPopoverWrapper__selectPopoverContent__headerContainer__titleContainer'>
             <Text size={14} tint={100} weight={700}>
               Runs
@@ -102,7 +100,7 @@ function RunSelectPopoverContent({
                   >
                     <div className='experimentBox'>
                       <Text
-                        size={14}
+                        size={16}
                         tint={experimentId === experiment.id ? 100 : 80}
                         weight={500}
                         className='experimentBox__experimentName'
@@ -151,7 +149,7 @@ function RunSelectPopoverContent({
                         )}
                       >
                         <Text
-                          size={14}
+                          size={16}
                           tint={runHash === run?.run_id ? 100 : 80}
                           weight={500}
                         >
@@ -171,9 +169,9 @@ function RunSelectPopoverContent({
                           fontSize={12}
                         />
                         <Text
-                          size={11}
+                          size={14}
                           tint={runHash === run?.run_id ? 80 : 70}
-                          weight={400}
+                          weight={500}
                         >
                           {`${moment(run.creation_time * 1000).format(
                             DATE_WITH_SECONDS,
