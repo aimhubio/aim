@@ -4,6 +4,7 @@
 
 ### Enhancements:
 
+- Improve the processing speed for tb to aim converter (osoblanco)
 - Improve formatting of numbers by setting maximum precision (KaroMourad)
 - Add cloud storage backups to AWS S3 for aim repo runs (karan2801)
 - Add LightGBM integration example (gorarakelyan)
@@ -19,6 +20,7 @@
 
 ### Fixes:
 
+- Fixed issue with tensorboard to aim conversion (osoblanco)
 - Fix issue with rendering incorrect data when x-axis aligned by `relative time/epoch` (KaroMourad)
 - Fix LineCart axis ticks overlapping issue on log scale (KaroMourad)
 - Change zooming default option to multiple (VkoHov)
