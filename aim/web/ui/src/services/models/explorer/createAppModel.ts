@@ -759,9 +759,11 @@ function createAppModel(appConfig: IAppInitialConfig) {
               meta: {
                 chartIndex:
                   config?.grouping?.chart?.length ||
-                  config?.grouping?.reverseMode?.chart
-                    ? metricsCollection.chartIndex + 1
-                    : null,
+                  //ToDo reverse mode
+                  // config?.grouping?.reverseMode?.chart
+                  //   ? metricsCollection.chartIndex + 1
+                  //   : null,
+                  null,
                 color: metricsCollection.color,
                 dasharray: metricsCollection.dasharray,
                 itemsCount: metricsCollection.data.length,
@@ -3441,9 +3443,11 @@ function createAppModel(appConfig: IAppInitialConfig) {
                 meta: {
                   chartIndex:
                     config.grouping?.chart?.length! > 0 ||
-                    config.grouping?.reverseMode?.chart
-                      ? metricsCollection.chartIndex + 1
-                      : null,
+                    //ToDo reverse mode
+                    // config.grouping?.reverseMode?.chart
+                    //   ? metricsCollection.chartIndex + 1
+                    //   : null,
+                    null,
                   color: metricsCollection.color,
                   dasharray: metricsCollection.dasharray,
                   itemsCount: metricsCollection.data.length,
@@ -5095,9 +5099,11 @@ function createAppModel(appConfig: IAppInitialConfig) {
                 meta: {
                   chartIndex:
                     config.grouping?.chart?.length! > 0 ||
-                    config.grouping?.reverseMode?.chart
-                      ? metricsCollection.chartIndex + 1
-                      : null,
+                    //ToDo reverse mode
+                    // config.grouping?.reverseMode?.chart
+                    //   ? metricsCollection.chartIndex + 1
+                    //   : null,
+                    null,
                   color: metricsCollection.color,
                   dasharray: metricsCollection.dasharray,
                   itemsCount: metricsCollection.data.length,
