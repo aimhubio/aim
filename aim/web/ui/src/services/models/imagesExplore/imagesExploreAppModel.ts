@@ -420,7 +420,6 @@ function getImagesData(
 
 function getSelectFormOptions(projectsData: IProjectParamsMetrics) {
   let data: ISelectOption[] = [];
-  console.log(projectsData);
   let index: number = 0;
   if (projectsData?.images) {
     for (let key in projectsData.images) {

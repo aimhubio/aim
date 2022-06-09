@@ -1,6 +1,10 @@
 import { AppNameEnum } from 'services/models/explorer';
 
-export const getMonacoConfig = (advanced = false): Record<any, any> => ({
+import { SequenceTypesEnum } from 'types/core/enums';
+
+export const getMonacoConfig = (
+  advanced = false,
+): Record<string | number | symbol, unknown | any> => ({
   height: advanced ? '62px' : '24px',
   options: {
     lineNumbers: 'off',

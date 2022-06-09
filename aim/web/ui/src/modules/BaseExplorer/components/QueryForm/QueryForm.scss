@@ -8,6 +8,9 @@
   max-height: 6rem;
   &__topPanel {
     flex: 1 100%;
+    &__plusIcon {
+      margin-right: $space-xs;
+    }
   }
   &__container {
     width: 100%;
