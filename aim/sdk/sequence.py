@@ -70,11 +70,12 @@ class SequenceData:
         # default implementation
         return self.items_list()[1]
 
-    def indices_list(self) -> List[Any]:
+    def indices_list(self) -> List[int]:
         # default implementation
         return self.items_list()[0]
 
     def numpy(self) -> Tuple[np.ndarray, List[np.ndarray]]:
+        # default implementation
         steps, vals_list = self.items_list()
         numpy_list = []
         for col_idx, vals in enumerate(vals_list):
@@ -171,6 +172,10 @@ class SequenceV2Data(SequenceData):
         return SequenceV2Data(self.meta_tree, self.series_tree, columns=self.columns, n_items=k)
 
     def items_list(self) -> Tuple[List[int], List[Any]]:
+        steps, values = self.numpy()
+        return steps.tolist(), [v.tolist() for v in values]
+
+    def numpy(self) -> Tuple[np.ndarray, List[np.ndarray]]:
         if self.n_items == -1:  # select all
             last_step = None
             steps = np.fromiter(self.steps.values(), np.intp)
@@ -182,13 +187,13 @@ class SequenceV2Data(SequenceData):
 
         # sort all columns by step
         sort_indices = steps.argsort()
-        columns = [arr[sort_indices].tolist() for arr in columns]
-        steps = steps[sort_indices].tolist()
+        columns = [arr[sort_indices] for arr in columns]
+        steps = steps[sort_indices]
         if last_step is not None and last_step != steps[-1]:
             step_hash = self.step_hash(last_step)
-            steps.append(last_step)
-            for i, column in enumerate(columns):
-                column.append(self.arrays[i][step_hash])
+            steps = np.append(steps, last_step)
+            for i in range(len(columns)):
+                np.append(columns[i], self.arrays[i][step_hash])
         return steps, columns
 
 

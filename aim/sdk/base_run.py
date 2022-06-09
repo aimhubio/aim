@@ -15,6 +15,12 @@ logger = logging.getLogger(__name__)
 
 
 class BaseRun:
+    def __new__(cls, *args, **kwargs):
+        # prevent BaseRun from being instantiated directly
+        if cls is BaseRun:
+            raise TypeError(f'Only children of \'{cls.__name__}\' may be instantiated.')
+        return object.__new__(cls)
+
     def __init__(self, run_hash: Optional[str] = None, *,
                  repo: Optional[Union[str, 'Repo']] = None,
                  read_only: bool = False):
