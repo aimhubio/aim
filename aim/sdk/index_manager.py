@@ -14,7 +14,7 @@ from functools import partial
 from typing import Optional, List
 
 
-from aim.sdk.run import Run
+from aim.sdk.maintenance_run import MaintenanceRun
 from aim.storage.rockscontainer import RocksContainer
 
 logger = logging.getLogger(__name__)
@@ -125,7 +125,7 @@ class RepoIndexManager:
                 logger.info(f'Found un-indexed run {run.hash}. Indexing...')
                 self._indexing_in_progress = True
                 idle_cycles = 0
-                run.finalize()
+                run.set_finalization_time()
                 del run
                 # sleep for 2 seconds to release index db lock in between and allow
                 # potential running jobs to properly finalize and index Run.
@@ -171,9 +171,9 @@ class RepoIndexManager:
         return run_hashes
 
     def _run(self, run_hash):
-        return Run(run_hash, repo=self.repo_path, system_tracking_interval=None, capture_terminal_logs=False)
+        return MaintenanceRun(run_hash, repo=self.repo_path)
 
-    def _next_unindexed_run(self) -> Optional[Run]:
+    def _next_unindexed_run(self) -> Optional[MaintenanceRun]:
         for run_hash in self._unindexed_runs():
             if self._run_has_progress_file(run_hash):
                 yield self._run(run_hash)

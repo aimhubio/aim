@@ -29,14 +29,14 @@ class BaseRun:
         ).subtree('meta')
         self.meta_run_tree: TreeView = self.meta_tree.subtree('chunks').subtree(self.hash)
 
-        self.series_run_tree: Dict[int, TreeView] = {}
+        self.series_run_trees: Dict[int, TreeView] = {}
         for version in STEP_HASH_FUNCTIONS.keys():
             if version == 1:
-                self.series_run_tree[version] = self.repo.request_tree(
+                self.series_run_trees[version] = self.repo.request_tree(
                     'seqs', self.hash, read_only=read_only
                 ).subtree('seqs').subtree('chunks').subtree(self.hash)
             else:
-                self.series_run_tree[version] = self.repo.request_tree(
+                self.series_run_trees[version] = self.repo.request_tree(
                     'seqs', self.hash, read_only=read_only
                 ).subtree('seqs').subtree(f'v{version}').subtree('chunks').subtree(self.hash)
 
@@ -72,8 +72,8 @@ class BaseRun:
         for ctx_id, ctx_traces in series_meta_tree.items():
             for name, trace_info in ctx_traces.items():
                 if (trace_info['dtype'] in metric_dtypes) and (trace_info.get('version', 1) == 1):
-                    series = self.series_run_tree[1].subtree((ctx_id, name))
-                    new_series = self.series_run_tree[2].subtree((ctx_id, name))
+                    series = self.series_run_trees[1].subtree((ctx_id, name))
+                    new_series = self.series_run_trees[2].subtree((ctx_id, name))
                     step_view = new_series.array('step', dtype='int64').allocate()
                     val_view = new_series.array('val').allocate()
                     epoch_view = new_series.array('epoch', dtype='int64').allocate()
@@ -88,4 +88,4 @@ class BaseRun:
                         epoch_view[step_hash] = epoch
                         time_view[step_hash] = timestamp
                     self.meta_run_tree['traces', ctx_id, name, 'version'] = 2
-                    del self.series_run_tree[1][(ctx_id, name)]
+                    del self.series_run_trees[1][(ctx_id, name)]

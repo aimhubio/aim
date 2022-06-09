@@ -1,6 +1,8 @@
-import logging
 import os
 import logging
+import datetime
+import pytz
+
 from typing import Union, Optional, TYPE_CHECKING
 
 from aim.sdk.configs import AIM_RUN_INDEXING_TIMEOUT
@@ -48,3 +50,5 @@ class MaintenanceRun(BaseRun):
         super().__init__(run_hash, repo=repo)
         self._resources = RunAutoClean(self)
 
+    def set_finalization_time(self):
+        self.meta_run_tree['end_time'] = datetime.datetime.now(pytz.utc).timestamp()
