@@ -35,19 +35,7 @@ class BaseRun:
         ).subtree('meta')
         self.meta_run_tree: TreeView = self.meta_tree.subtree('chunks').subtree(self.hash)
 
-        self.series_run_trees: Dict[int, TreeView] = {}
-        series_tree = self.repo.request_tree(
-            'seqs', self.hash, read_only=read_only
-        ).subtree('seqs')
-        for version in STEP_HASH_FUNCTIONS.keys():
-            if version == 1:
-                self.series_run_trees[version] = series_tree.subtree('chunks').subtree(self.hash)
-            else:
-                self.series_run_trees[version] = series_tree.subtree(f'v{version}').subtree('chunks').subtree(self.hash)
-
-    def _calc_hash(self) -> int:
-        # TODO maybe take read_only flag into account?
-        return hash_auto((self.hash, hash(self.repo)))
+        self._series_run_trees: Dict[int, TreeView] = None
 
     def __hash__(self) -> int:
         if self._hash is None:
@@ -56,6 +44,20 @@ class BaseRun:
 
     def __repr__(self) -> str:
         return f'<Run#{hash(self)} name={self.hash} repo={self.repo}>'
+
+    @property
+    def series_run_trees(self) -> Dict[int, TreeView]:
+        if self._series_run_trees is None:
+            series_tree = self.repo.request_tree(
+                'seqs', self.hash, read_only=self.read_only
+            ).subtree('seqs')
+            self._series_run_trees = {}
+            for version in STEP_HASH_FUNCTIONS.keys():
+                if version == 1:
+                    self._series_run_trees[version] = series_tree.subtree(('chunks', self.hash))
+                else:
+                    self._series_run_trees[version] = series_tree.subtree((f'v{version}', 'chunks', self.hash))
+        return self._series_run_trees
 
     def check_metrics_version(self) -> bool:
         metric_dtypes = ('float', 'float64', 'int')
@@ -94,3 +96,7 @@ class BaseRun:
                         time_view[step_hash] = timestamp
                     self.meta_run_tree['traces', ctx_id, name, 'version'] = 2
                     del self.series_run_trees[1][(ctx_id, name)]
+
+    def _calc_hash(self) -> int:
+        # TODO maybe take read_only flag into account?
+        return hash_auto((self.hash, hash(self.repo)))
