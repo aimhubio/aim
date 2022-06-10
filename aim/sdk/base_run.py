@@ -45,13 +45,13 @@ class BaseRun:
             else:
                 self.series_run_trees[version] = series_tree.subtree(f'v{version}').subtree('chunks').subtree(self.hash)
 
+    def _calc_hash(self) -> int:
+        # TODO maybe take read_only flag into account?
+        return hash_auto((self.hash, hash(self.repo)))
+
     def __hash__(self) -> int:
         if self._hash is None:
-            def calc_hash() -> int:
-                # TODO maybe take read_only flag into account?
-                return hash_auto((self.hash, hash(self.repo)))
-
-            self._hash = calc_hash()
+            self._hash = self._calc_hash()
         return self._hash
 
     def __repr__(self) -> str:
