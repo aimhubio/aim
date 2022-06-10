@@ -16,7 +16,7 @@ import { IUpdateFocusedChartArgs } from 'types/components/LineChart/LineChart';
 import { AggregationAreaMethods } from 'utils/aggregateGroupData';
 import getRoundedValue from 'utils/roundValue';
 
-import hexToRgbA from '../haxToRgba';
+import hexToRgbA from '../hexToRgbA';
 import { formatValueByAlignment } from '../formatByAlignment';
 
 import { getDimensionValue } from './getDimensionValue';

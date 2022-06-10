@@ -15,7 +15,7 @@ import { ILineDataType } from 'types/utils/d3/drawParallelLines';
 
 import getRoundedValue from 'utils/roundValue';
 
-import hexToRgbA from '../haxToRgba';
+import hexToRgbA from '../hexToRgbA';
 
 import { CircleEnum, ScaleEnum } from './';
 
