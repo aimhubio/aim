@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import React from 'react';
 import { DragDropContext, Droppable } from 'react-beautiful-dnd';
 import _ from 'lodash-es';
@@ -47,16 +48,29 @@ function ManageColumnsPopover({
   const [state, setState] = React.useState<any>(initialData);
   const [searchKey, setSearchKey] = React.useState<string>('');
   const [draggingItemId, setDraggingItemId] = React.useState<string>('');
+  const [popoverWidth, setPopoverWidth] = React.useState(800);
   const ref = React.useRef<HTMLDivElement | null>(null);
+
+  const onResize = _.debounce(() => {
+    onPopoverWidthChange();
+  }, 500);
+
   React.useEffect(() => {
+    onPopoverWidthChange();
     window.addEventListener('resize', onResize);
+    return () => {
+      window.removeEventListener('resize', onResize);
+    };
   }, []);
 
-  function onResize() {
+  const onPopoverWidthChange: () => void = () => {
     if (ref.current) {
-      console.log(ref.current.getBoundingClientRect().width);
+      setPopoverWidth(
+        parseInt(ref.current.getBoundingClientRect().width.toFixed()),
+      );
     }
-  }
+  };
+
   function onDragStart(result: any) {
     setDraggingItemId(result.draggableId);
   }
@@ -255,6 +269,7 @@ function ManageColumnsPopover({
                             key={`${column}-${index}`}
                             data={column}
                             index={index}
+                            popoverWidth={popoverWidth}
                             appName={appName}
                             isHidden={isColumnHidden(column)}
                             onClick={() =>
@@ -307,6 +322,7 @@ function ManageColumnsPopover({
                             data={column}
                             index={index}
                             appName={appName}
+                            popoverWidth={popoverWidth}
                             hasSearchableItems
                             searchKey={searchKey}
                             isHidden={isColumnHidden(column)}
@@ -348,6 +364,7 @@ function ManageColumnsPopover({
                             data={column}
                             index={index}
                             appName={appName}
+                            popoverWidth={popoverWidth}
                             isHidden={isColumnHidden(column)}
                             onClick={() =>
                               onColumnsVisibilityChange(

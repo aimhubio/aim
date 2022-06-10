@@ -31,6 +31,7 @@
 - Fix params duplication in dropdowns (VkoHov)
 - Resolve typing latency issue in the query search input (arsengit)
 - Reorder and add non-hideable table columns (arsengit)
+- Change the font of the runs navigation popover (VkoHov)
 - Keep color persistence state after page reload (VkoHov)
 
 ## 3.10.3 May 31, 2022

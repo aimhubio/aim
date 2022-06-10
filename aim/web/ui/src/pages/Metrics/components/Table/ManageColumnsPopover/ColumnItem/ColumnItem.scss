@@ -55,6 +55,7 @@
     overflow: hidden;
     text-overflow: ellipsis;
     flex: 1;
+    @include monospaceFontFamily(14);
   }
 
   &__iconDrag {

@@ -28,8 +28,7 @@
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
-    font-family: 'Inconsolata', monospace;
-    font-variation-settings: 'wdth' 82;
+    @include monospaceFontFamily();
     font-size: $text-lg;
   }
   .details-label {

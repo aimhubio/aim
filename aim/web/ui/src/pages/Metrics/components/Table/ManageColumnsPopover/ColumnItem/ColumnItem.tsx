@@ -15,8 +15,10 @@ import { isSystemMetric } from 'utils/isSystemMetric';
 import { formatSystemMetricName } from 'utils/formatSystemMetricName';
 
 import './ColumnItem.scss';
-
+const CharSize = 6;
 function ColumnItem(props: any) {
+  const [mounted, setMounted] = React.useState(false);
+  const nameRef = React.useRef<HTMLParagraphElement | null>(null);
   function isHighlighted() {
     const data = isSystemMetric(props.data)
       ? formatSystemMetricName(props.data)
@@ -32,22 +34,40 @@ function ColumnItem(props: any) {
     return false;
   }
 
-  const itemValue = React.useMemo(() => {
+  React.useEffect(() => {
+    if (nameRef.current) {
+      setMounted(true);
+    }
+  }, []);
+
+  const itemDetails = React.useMemo(() => {
+    let maxChars: number = 0;
+    let disableTooltip = true;
+    if (nameRef.current) {
+      maxChars = nameRef.current.clientWidth / CharSize;
+    }
     let value: string = isSystemMetric(props.data)
       ? formatSystemMetricName(props.data)
       : props.data;
     let splitVal = value.split('.');
+
     if (splitVal.length > 2) {
+      let isFits = maxChars >= value.length;
       return {
-        formatted: `${splitVal[0]}.~.${splitVal[splitVal.length - 1]}`,
+        formattedValue: isFits
+          ? value
+          : `${splitVal[0]}.~.${splitVal[splitVal.length - 1]}`,
         value,
+        disableTooltip: isFits,
       };
     }
     return {
-      formatted: value,
+      formattedValue: value,
       value,
+      disableTooltip,
     };
-  }, [props.data]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [props.data, props.popoverWidth, nameRef.current, mounted]);
 
   const isNonHidable: boolean = TABLE_DEFAULT_CONFIG[
     props.appName as AppNameEnum
@@ -57,7 +77,12 @@ function ColumnItem(props: any) {
     <ErrorBoundary>
       <Draggable draggableId={props.data} index={props.index}>
         {(provided) => (
-          <Tooltip arrow placement='left' title={itemValue.value}>
+          <Tooltip
+            disableHoverListener={itemDetails.disableTooltip}
+            arrow
+            placement='left'
+            title={itemDetails.value}
+          >
             <div
               className={classNames('ColumnItem', {
                 highlighted: isHighlighted(),
@@ -79,9 +104,11 @@ function ColumnItem(props: any) {
                 />
               </span>
               <div>
-                <Text tint={100} className='ColumnItem__name'>
-                  {itemValue.formatted}
-                </Text>
+                <p ref={nameRef} className='ColumnItem__name fac'>
+                  <Text size={14} className='ColumnItem__name' tint={100}>
+                    {itemDetails.formattedValue}
+                  </Text>
+                </p>
                 <span
                   className='ColumnItem__iconDrag'
                   {...provided.dragHandleProps}
