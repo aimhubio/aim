@@ -1,43 +1,24 @@
-import React from 'react';
+import React, { memo } from 'react';
 
-import { Button, Text } from 'components/kit';
+import { Text } from 'components/kit';
 import ErrorBoundary from 'components/ErrorBoundary/ErrorBoundary';
 
 import { IBaseComponentProps } from '../../../types';
-import { Order } from '../../../../BaseExplorerCore/pipeline/grouping/types';
 
 import './Grouping.scss';
 
 function Grouping(props: IBaseComponentProps) {
   const engine = props.engine;
-  const availableModifiers = engine.useStore(engine.additionalDataSelector);
   const currentValues = engine.useStore(engine.groupings.currentValuesSelector);
-  console.log(engine.groupings);
-  const state = engine.useStore(engine.groupings.grid.stateSelector);
 
-  React.useEffect(() => {
-    console.log('grid current values --> ', currentValues);
-  }, [currentValues]);
-
-  React.useEffect(() => {
-    console.log('modifiers --> ', availableModifiers);
-  }, [availableModifiers]);
-
-  function updateRowsLength() {
-    engine.groupings.grid.methods.update({
-      rowLength: 104,
+  const groupingItems = React.useMemo(() => {
+    return Object.keys(currentValues).map((key: string) => {
+      const Component = engine.groupings[key].component;
+      return <Component key={key} {...props} />;
     });
-  }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
-  function group() {
-    // engine.group(); reset all
-    // engine.group({}); reset all
-    // engine.group({ grid: {fields: ['run.hash'], orders: [Order.ASC]}}); keep only grid
-    engine.group({
-      ...currentValues,
-      grid: { fields: ['run.hash'], orders: [Order.ASC] },
-    }); // keep all groupings + grid
-  }
   return (
     <ErrorBoundary>
       <div className='Grouping'>
@@ -46,16 +27,10 @@ function Grouping(props: IBaseComponentProps) {
             Group by
           </Text>
         </div>
-        <div className='Grouping__content'>
-          <br />
-          <Button onClick={group} color='primary' variant='contained'>
-            Group
-          </Button>
-          {/*<JSONViewer json={modifiers || []} />*/}
-        </div>
+        <div className='Grouping__content'>{groupingItems}</div>
       </div>
     </ErrorBoundary>
   );
 }
 
-export default Grouping;
+export default memo(Grouping);

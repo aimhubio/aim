@@ -5,7 +5,8 @@
   flex-direction: column;
   justify-content: space-between;
   border-left: $border-main;
-  padding: 0.725rem $space-lg;
+  height: 100%;
+  padding: 0.625rem $space-lg;
   &__title {
     display: flex;
     .Text {

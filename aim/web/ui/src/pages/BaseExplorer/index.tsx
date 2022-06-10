@@ -1,5 +1,8 @@
+import { memo } from 'react';
+
 import createExplorer from 'modules/BaseExplorer';
 import {
+  IBaseComponentProps,
   IExplorerConfig,
   IQueryFormProps,
   styleApplier,
@@ -7,6 +10,7 @@ import {
 import {
   Box,
   Grouping,
+  GroupingItem,
   QueryForm,
   Visualizer,
 } from 'modules/BaseExplorer/components';
@@ -33,7 +37,9 @@ const config: IExplorerConfig = {
     },
     grouping: {
       grid: {
-        component: () => <div>Grid</div>,
+        component: memo((props: IBaseComponentProps) => (
+          <GroupingItem groupName='grid' iconName='coloring' {...props} />
+        )),
         styleApplier: (
           object: AimFlatObjectBase,
           group: string[],
@@ -45,40 +51,16 @@ const config: IExplorerConfig = {
           fields: ['run.context', 'run.hash'],
           orders: [Order.DESC, Order.ASC],
         },
-        state: {
-          // observable state, to listen on base visualizer
-          initialState: {
-            rowLength: 4,
-          },
-        },
-        settings: {
-          // settings to pass to component, to use, alter it can be color scales values for color grouping
-          maxRowsLength: 10,
-        },
-      },
-      asd: {
-        component: () => <div>Grid</div>,
-        styleApplier: (
-          object: AimFlatObjectBase,
-          group: string[],
-          config: any,
-        ) => ({
-          x: config.asd.rowLength * config.box.width,
-        }),
-        defaultApplications: {
-          fields: ['run.context', 'run.hash'],
-          orders: [Order.DESC, Order.ASC],
-        },
-        state: {
-          // observable state, to listen on base visualizer
-          initialState: {
-            rowLength: 4,
-          },
-        },
-        settings: {
-          // settings to pass to component, to use, alter it can be color scales values for color grouping
-          maxRowsLength: 10,
-        },
+        // state: {
+        //   // observable state, to listen on base visualizer
+        //   initialState: {
+        //     rowLength: 4,
+        //   },
+        // },
+        // settings: {
+        //   // settings to pass to component, to use, alter it can be color scales values for color grouping
+        //   maxRowsLength: 10,
+        // },
       },
     },
   },
@@ -93,9 +75,9 @@ const config: IExplorerConfig = {
       grid: applyStyle,
     },
     components: {
-      queryForm: (props: IQueryFormProps) => (
+      queryForm: memo((props: IQueryFormProps) => (
         <QueryForm engine={props.engine} hasAdvancedMode />
-      ),
+      )),
       visualizations: [Visualizer],
       grouping: Grouping,
       box: Box,
