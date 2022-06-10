@@ -21,7 +21,7 @@ class BaseRun:
             raise TypeError(f'Only children of \'{cls.__name__}\' may be instantiated.')
         return object.__new__(cls)
 
-    def __init__(self, run_hash: Optional[str] = None, *,
+    def __init__(self, run_hash: Optional[str] = None,
                  repo: Optional[Union[str, 'Repo']] = None,
                  read_only: bool = False):
         self.hash = run_hash or generate_run_hash()
@@ -36,15 +36,14 @@ class BaseRun:
         self.meta_run_tree: TreeView = self.meta_tree.subtree('chunks').subtree(self.hash)
 
         self.series_run_trees: Dict[int, TreeView] = {}
+        series_tree = self.repo.request_tree(
+            'seqs', self.hash, read_only=read_only
+        ).subtree('seqs')
         for version in STEP_HASH_FUNCTIONS.keys():
             if version == 1:
-                self.series_run_trees[version] = self.repo.request_tree(
-                    'seqs', self.hash, read_only=read_only
-                ).subtree('seqs').subtree('chunks').subtree(self.hash)
+                self.series_run_trees[version] = series_tree.subtree('chunks').subtree(self.hash)
             else:
-                self.series_run_trees[version] = self.repo.request_tree(
-                    'seqs', self.hash, read_only=read_only
-                ).subtree('seqs').subtree(f'v{version}').subtree('chunks').subtree(self.hash)
+                self.series_run_trees[version] = series_tree.subtree(f'v{version}').subtree('chunks').subtree(self.hash)
 
     def __hash__(self) -> int:
         if self._hash is None:
