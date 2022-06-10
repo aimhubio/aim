@@ -57,18 +57,21 @@ class RunTracker:
             cls._track_warning_shown = True
 
     def __init__(self, run: 'Run'):
-        # remote tracking creates dedicated thread for tracking, so don't need to create another one here
-        self._non_blocking = os.getenv(AIM_ENABLE_TRACKING_THREAD, False) and not run.repo.is_remote_repo
-
-        self.hash = run.hash
-        self.repo = run.repo
         self.meta_tree = run.meta_tree
-        self.meta_run_tree = run.meta_run_tree
-        self.series_run_trees = run.series_run_trees
+        self.read_only = run.read_only
         self.contexts: Dict[Context, int] = dict()
-        self.sequence_infos: Dict[Selector, SequenceInfo] = defaultdict(SequenceInfo)
 
-        self._preload_sequence_infos(run.read_only)
+        if not self.read_only:
+            # remote tracking creates dedicated thread for tracking, so don't need to create another one here
+            self._non_blocking = os.getenv(AIM_ENABLE_TRACKING_THREAD, False) and not run.repo.is_remote_repo
+
+            self.hash = run.hash
+            self.repo = run.repo
+            self.meta_run_tree = run.meta_run_tree
+            self.series_run_trees = run.series_run_trees
+            self.sequence_infos: Dict[Selector, SequenceInfo] = defaultdict(SequenceInfo)
+
+            self._preload_sequence_infos()
 
     def idx_to_ctx(self, idx):
         ctx = RunTracker._idx_to_ctx.get(idx)
@@ -88,6 +91,7 @@ class RunTracker:
         *,
         context: AimObject = None,
     ):
+        assert not self.read_only
         # since worker might be lagging behind, we want to log the timestamp of run.track() call,
         # not the actual implementation execution time.
         track_time = datetime.datetime.now(pytz.utc).timestamp()
@@ -130,10 +134,7 @@ class RunTracker:
             self._update_sequence_info(ctx.idx, name, val, step)
             self._add_value(seq_info, val, step, epoch, track_time)
 
-    def _preload_sequence_infos(self, read_only):
-        if read_only:
-            return
-
+    def _preload_sequence_infos(self):
         for ctx_id, traces in self.meta_run_tree.get('traces', {}).items():
             for name in traces:
                 try:
