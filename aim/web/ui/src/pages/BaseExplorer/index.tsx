@@ -56,6 +56,30 @@ const config: IExplorerConfig = {
           maxRowsLength: 10,
         },
       },
+      asd: {
+        component: () => <div>Grid</div>,
+        styleApplier: (
+          object: AimFlatObjectBase,
+          group: string[],
+          config: any,
+        ) => ({
+          x: config.asd.rowLength * config.box.width,
+        }),
+        defaultApplications: {
+          fields: ['run.context', 'run.hash'],
+          orders: [Order.DESC, Order.ASC],
+        },
+        state: {
+          // observable state, to listen on base visualizer
+          initialState: {
+            rowLength: 4,
+          },
+        },
+        settings: {
+          // settings to pass to component, to use, alter it can be color scales values for color grouping
+          maxRowsLength: 10,
+        },
+      },
     },
   },
   ui: {

@@ -1,0 +1,21 @@
+@use 'src/styles/abstracts' as *;
+
+.Grouping {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  border-left: $border-main;
+  padding: 0.725rem $space-lg;
+  &__title {
+    display: flex;
+    .Text {
+      text-transform: uppercase;
+      letter-spacing: 0.3px;
+    }
+  }
+  &__content {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+}
