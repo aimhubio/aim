@@ -34,6 +34,7 @@
 - Reorder and add non-hideable table columns (arsengit)
 - Change the font of the runs navigation popover (VkoHov)
 - Keep color persistence state after page reload (VkoHov)
+- Resolve content blinking issue after search in the run page (arsengit)
 
 ## 3.10.3 May 31, 2022
 
