@@ -33,10 +33,17 @@ function BaseExplorer(props: IBaseExplorerProps) {
   }, [engineInstance, components.visualizations]);
 
   return initialized ? (
-    <div style={{ width: '100%', height: '100vh', padding: '10px' }}>
+    <div style={{ width: '100%', height: '100vh' }}>
       <ExplorerBar engine={props.engineInstance} />
       {__DEV__ && <Text>Engine status ::: status</Text>}
-      <div className='flex fjb fac' style={{ marginTop: 10 }}>
+      <div
+        className='flex fjb fac'
+        style={{
+          marginTop: 10,
+          height: '92px',
+          borderBottom: '1px solid #e8f1fc',
+        }}
+      >
         <components.queryForm engine={props.engineInstance} />
         <components.grouping engine={props.engineInstance} />
       </div>

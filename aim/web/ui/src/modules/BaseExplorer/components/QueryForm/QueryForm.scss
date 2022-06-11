@@ -2,10 +2,9 @@
 
 .QueryForm {
   flex: 1;
-  padding: 0.725rem 1.5em;
+  padding: 0.625rem $space-lg;
   display: flex;
-  min-height: 6rem;
-  max-height: 6rem;
+  height: 100%;
   &__topPanel {
     flex: 1 100%;
     &__plusIcon {
