@@ -36,7 +36,7 @@ const config: IExplorerConfig = {
       objectDepth: AimObjectDepths.Index,
     },
     grouping: {
-      grid: {
+      row: {
         component: memo((props: IBaseComponentProps) => (
           <GroupingItem groupName='grid' iconName='coloring' {...props} />
         )),
@@ -45,10 +45,36 @@ const config: IExplorerConfig = {
           group: string[],
           config: any,
         ) => ({
-          x: config.grid.rowLength * config.box.width,
+          x: config.row.rowLength * config.box.width,
         }),
         defaultApplications: {
-          fields: ['run.context', 'run.hash'],
+          fields: ['run.hash'],
+          orders: [Order.DESC, Order.ASC],
+        },
+        // state: {
+        //   // observable state, to listen on base visualizer
+        //   initialState: {
+        //     rowLength: 4,
+        //   },
+        // },
+        // settings: {
+        //   // settings to pass to component, to use, alter it can be color scales values for color grouping
+        //   maxRowsLength: 10,
+        // },
+      },
+      column: {
+        component: memo((props: IBaseComponentProps) => (
+          <GroupingItem groupName='grid' iconName='coloring' {...props} />
+        )),
+        styleApplier: (
+          object: AimFlatObjectBase,
+          group: string[],
+          config: any,
+        ) => ({
+          x: config.column.rowLength * config.box.width,
+        }),
+        defaultApplications: {
+          fields: ['run.hash'],
           orders: [Order.DESC, Order.ASC],
         },
         // state: {
