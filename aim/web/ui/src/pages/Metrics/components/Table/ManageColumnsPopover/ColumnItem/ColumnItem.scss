@@ -7,6 +7,7 @@
   padding: $space-xxxs $space-xs;
   background-color: $cuddle-10;
   display: flex;
+  width: 100%;
   cursor: default;
 
   &__iconPlaceholder {
@@ -32,6 +33,7 @@
     justify-content: space-between;
     align-items: center;
     flex: 1;
+    width: calc(100% - 26px);
   }
 
   &__toggle {
@@ -49,15 +51,16 @@
 
   &__name {
     display: inline-block;
-    max-width: 130px;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
     flex: 1;
+    @include monospaceFontFamily(14);
   }
 
   &__iconDrag {
     display: flex;
+    margin-left: $space-xs;
     i {
       font-size: 0.625rem;
     }
