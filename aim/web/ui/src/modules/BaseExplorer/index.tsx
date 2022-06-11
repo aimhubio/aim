@@ -6,7 +6,7 @@ import createEngine from '../BaseExplorerCore/core-store';
 import { IEngineConfigFinal } from '../BaseExplorerCore/types';
 
 import { IExplorerConfig, IBaseExplorerProps } from './types';
-import ExplorerBar from './components/EexplorerBar';
+import ExplorerBar from './components/ExplorerBar';
 
 const __DEV__ = process.env.NODE_ENV;
 
