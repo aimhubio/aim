@@ -283,9 +283,16 @@ function drawHoverAttributes(args: IDrawHoverAttributesArgs): void {
       linesNodeRef.current
         .select(`[id=Line-${attributesRef.current.lineKey}]`)
         .classed('active', false);
+
+      linesNodeRef.current
+        .select(`[id=inProgressLineIndicator-${attributesRef.current.lineKey}]`)
+        .classed('active', false);
     }
 
     const newActiveLine = linesNodeRef.current.select(`[id=Line-${key}]`);
+    const newActiveLineIndicator = linesNodeRef.current.select(
+      `[id=inProgressLineIndicator-${key}]`,
+    );
 
     if (!newActiveLine.empty()) {
       const dataSelector = newActiveLine.attr('data-selector');
@@ -293,6 +300,7 @@ function drawHoverAttributes(args: IDrawHoverAttributesArgs): void {
 
       // set active line
       newActiveLine.classed('active', true).raise();
+      newActiveLineIndicator.classed('active', true).raise();
 
       if (aggregationConfig?.isApplied) {
         if (aggregationConfig.methods.area !== AggregationAreaMethods.NONE) {

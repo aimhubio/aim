@@ -1,5 +1,7 @@
 @use 'src/styles/abstracts' as *;
 
+$logs-box-background: #ffffff;
+
 .RunDetailLogsTabWrapper {
   overflow: hidden;
   height: 100%;
@@ -8,7 +10,7 @@
     border-left: $border-grey;
     border-right: $border-grey;
     height: 100%;
-    background-color: #ffffff;
+    background-color: $logs-box-background;
     .Logs {
       height: 100%;
       overflow-y: auto;
@@ -17,6 +19,21 @@
       &__wrapper {
         width: 100%;
         height: 100%;
+        position: relative;
+        .overlay {
+          display: none;
+          height: toRem(50px);
+          width: 100%;
+          background: $logs-box-background;
+          position: absolute;
+          top: 0;
+          left: 0;
+        }
+        .loading {
+          display: flex;
+          justify-content: center;
+          align-items: center;
+        }
       }
     }
   }
@@ -28,8 +45,7 @@
     color: #333;
     font-size: 13px;
     padding: 0 $space-sm;
-    font-family: 'Inconsolata', monospace;
-    font-variation-settings: 'wdth' 82;
+    @include monospaceFontFamily();
     width: 100%;
     display: block;
     height: 17px;

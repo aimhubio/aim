@@ -39,8 +39,8 @@ class TestRunResourceTracker(TestBase):
             self.assertIn(name, metric_names)
         for metric in metrics:
             # 3 sec. runtime, 1 sec. interval
-            self.assertGreaterEqual(len(metric.values), 3)
-            self.assertLessEqual(len(metric.values), 4)
+            self.assertGreaterEqual(len(metric.data.indices_list()), 3)
+            self.assertLessEqual(len(metric.data.indices_list()), 4)
 
     def test_disable_resource_tracking(self):
         run = Run(system_tracking_interval=None)

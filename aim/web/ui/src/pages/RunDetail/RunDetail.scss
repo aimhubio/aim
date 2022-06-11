@@ -6,8 +6,7 @@
     height: 100%;
     background: $cuddle-10;
     .BaseTable__row-cell {
-      font-family: 'Inconsolata', monospace;
-      font-variation-settings: 'wdth' 82;
+      @include monospaceFontFamily();
     }
     &__Tabs {
       .MuiTabs-fixed {
@@ -26,20 +25,24 @@
       }
     }
     &__appBarContainer {
-      height: 3.5rem;
+      height: 4.375rem;
       background: #ffffff;
       display: flex;
       align-items: center;
       &__appBarBox {
         display: flex;
-        align-items: center;
+        padding-top: $space-unit;
         justify-content: space-between;
+        &__runInfoBox {
+          max-width: 50%;
+        }
         &__actionContainer {
           width: 4.5rem;
           display: flex;
           justify-content: center;
           align-items: center;
           border-left: $border-main;
+          margin-bottom: $space-unit;
           i {
             color: $pico-70;
           }
@@ -50,19 +53,35 @@
       }
       &__appBarTitleBox {
         display: flex;
+        flex-direction: column;
         font-size: $text-md;
         font-weight: 600;
         color: $text-color;
-        align-items: center;
+        align-items: flex-start;
         height: fit-content;
-        max-width: 50%;
+        max-width: 100%;
         width: auto;
+        &__appBarTitleBoxWrapper {
+          display: flex;
+          width: 100%;
+        }
+        &__title {
+          margin-bottom: $space-xxs;
+        }
+        &__date {
+          display: flex;
+          i {
+            margin-right: $space-xxs;
+            color: #606986;
+          }
+        }
         &__Skeleton {
           margin-right: $space-xs;
         }
         &__buttonSelectToggler {
           width: 1.5rem;
           height: 1.5rem;
+          top: -$space-xxxxs;
           &.opened {
             background: #e8f1fc;
           }
@@ -72,10 +91,12 @@
         }
         &__container {
           display: flex;
-          align-items: center;
-          margin-right: $space-xxxxs;
+          align-items: flex-start;
+          flex-direction: column;
+          margin-right: $space-xxxs;
           cursor: pointer;
-          width: 100%;
+          max-width: calc(100% - 6.5rem);
+
           &__pageName {
             margin-right: 0.4375em;
             text-transform: capitalize;
@@ -101,7 +122,7 @@
 
     &__tabPanelBox {
       overflow-y: auto;
-      height: calc(100vh - 98px);
+      height: calc(100vh - 112px);
     }
 
     &__tabsContainer {
@@ -305,6 +326,7 @@
               &__experimentName {
                 width: 100%;
                 word-break: break-all;
+                @include monospaceFontFamily();
               }
             }
 
@@ -339,7 +361,6 @@
         width: 50%;
         position: relative;
         padding: 0.375rem 0.5rem 0 0.5rem;
-        border-right: $border-main;
         &::before {
           content: '';
           position: absolute;
@@ -393,6 +414,7 @@
               width: 95%;
               margin-bottom: $space-xxs;
               position: relative;
+              @include monospaceFontFamily();
               span {
                 display: block;
                 max-width: 100%;
@@ -414,6 +436,7 @@
             &__runDate {
               display: flex;
               align-items: center;
+              @include monospaceFontFamily(14);
               i {
                 margin-right: $space-xxs;
               }
@@ -446,6 +469,9 @@
         display: flex;
         align-items: center;
         justify-content: center;
+        &:first-child {
+          border-right: $border-main;
+        }
       }
     }
   }

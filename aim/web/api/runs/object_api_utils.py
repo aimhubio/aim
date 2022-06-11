@@ -145,9 +145,12 @@ class CustomObjectApi:
     def _get_trace_info(self, trace: Sequence, include_epochs: bool, include_timestamps: bool) -> dict:
         steps = []
         values = []
-        steps_vals = trace.values.items_in_range(self.record_range.start, self.record_range.stop, self.record_density)
 
-        for step, val in steps_vals:
+        steps_vals = trace.data.view('val').\
+            range(self.record_range.start, self.record_range.stop).\
+            sample(self.record_density)
+
+        for step, (val,) in steps_vals:
             steps.append(step)
             values.append(self._value_retriever(step, val, trace))
 
@@ -158,13 +161,13 @@ class CustomObjectApi:
             'iters': steps
         }
         if include_epochs:
-            result['epochs'] = list(trace.epochs.values_in_range(
-                self.record_range.start, self.record_range.stop, self.record_density
-            ))
+            result['epochs'] = trace.data.view('epoch').\
+                range(self.record_range.start, self.record_range.stop).\
+                sample(self.record_density).values_list()
         if include_timestamps:
-            result['timestamps'] = list(trace.timestamps.values_in_range(
-                self.record_range.start, self.record_range.stop, self.record_density
-            ))
+            result['timestamps'] = trace.data.view('time').\
+                range(self.record_range.start, self.record_range.stop).\
+                sample(self.record_density).values_list()
         return result
 
     def _record_to_encodable(self, step: int, record, trace: Sequence) -> dict:

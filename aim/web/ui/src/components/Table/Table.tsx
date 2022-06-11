@@ -691,11 +691,11 @@ const Table = React.forwardRef(function Table(
                   {onSort && (
                     <ControlPopover
                       anchorOrigin={{
-                        vertical: 'bottom',
+                        vertical: 'top',
                         horizontal: 'left',
                       }}
                       transformOrigin={{
-                        vertical: 'top',
+                        vertical: 'bottom',
                         horizontal: 'left',
                       }}
                       title='Sort table by:'

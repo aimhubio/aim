@@ -11,11 +11,15 @@
 - Implement unit-tests for aim SDK utils (yeghiakoronian)
 - Display std.dev/err aggregated values in the table (VkoHov)
 - Add `active` state indicator property for `aim.Run` (mihran113)
+- Add `active` state indicators on the chart (VkoHov)
 - Add ability to edit run name and description of run (VkoHov)
 - Show the description in the sidebar of the run overview tab (VkoHov)
 - Add all the attributes of run in the tooltip (VkoHov)
 - Optimize the initial render time of Aim UI by using more lightweight font-family (arsengit)
 - Use monaco editor as the syntax highlighter across the Aim UI (arsengit)
+- Add loader to the top of the logs box in the run page (VkoHov)
+- Add the date and the duration of run in the header of the single run page (VkoHov)
+- Fit long name values in manage columns popover (arsengit)
 
 ### Fixes:
 
@@ -28,6 +32,9 @@
 - Fix params duplication in dropdowns (VkoHov)
 - Resolve typing latency issue in the query search input (arsengit)
 - Reorder and add non-hideable table columns (arsengit)
+- Change the font of the runs navigation popover (VkoHov)
+- Keep color persistence state after page reload (VkoHov)
+- Resolve content blinking issue after search in the run page (arsengit)
 
 ## 3.10.3 May 31, 2022
 

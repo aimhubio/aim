@@ -759,9 +759,11 @@ function createAppModel(appConfig: IAppInitialConfig) {
               meta: {
                 chartIndex:
                   config?.grouping?.chart?.length ||
-                  config?.grouping?.reverseMode?.chart
-                    ? metricsCollection.chartIndex + 1
-                    : null,
+                  //ToDo reverse mode
+                  // config?.grouping?.reverseMode?.chart
+                  //   ? metricsCollection.chartIndex + 1
+                  //   : null,
+                  null,
                 color: metricsCollection.color,
                 dasharray: metricsCollection.dasharray,
                 itemsCount: metricsCollection.data.length,
@@ -2260,7 +2262,6 @@ function createAppModel(appConfig: IAppInitialConfig) {
                   ? {}
                   : selectedRows ?? model.getState()?.selectedRows,
                 rawData: runsData,
-                requestStatus: RequestStatusEnum.Ok,
                 infiniteIsPending: false,
                 tableColumns,
                 tableData: tableData.rows,
@@ -2311,7 +2312,6 @@ function createAppModel(appConfig: IAppInitialConfig) {
           configData?.table?.columnsOrder!,
           configData?.table?.hiddenColumns!,
         );
-        updateTableData(tableData, tableColumns, configData);
         model.setState({
           config: configData,
           data,
@@ -2320,6 +2320,7 @@ function createAppModel(appConfig: IAppInitialConfig) {
           sameValueColumns: tableData.sameValueColumns,
           selectedRows,
         });
+        updateTableData(tableData, tableColumns, configData);
       }
 
       function updateTableData(
@@ -2341,6 +2342,7 @@ function createAppModel(appConfig: IAppInitialConfig) {
             newColumns: tableColumns,
             hiddenColumns: configData.table.hiddenColumns!,
           });
+          model.setState({ requestStatus: RequestStatusEnum.Ok });
         }, 0);
       }
 
@@ -3441,9 +3443,11 @@ function createAppModel(appConfig: IAppInitialConfig) {
                 meta: {
                   chartIndex:
                     config.grouping?.chart?.length! > 0 ||
-                    config.grouping?.reverseMode?.chart
-                      ? metricsCollection.chartIndex + 1
-                      : null,
+                    //ToDo reverse mode
+                    // config.grouping?.reverseMode?.chart
+                    //   ? metricsCollection.chartIndex + 1
+                    //   : null,
+                    null,
                   color: metricsCollection.color,
                   dasharray: metricsCollection.dasharray,
                   itemsCount: metricsCollection.data.length,
@@ -5095,9 +5099,11 @@ function createAppModel(appConfig: IAppInitialConfig) {
                 meta: {
                   chartIndex:
                     config.grouping?.chart?.length! > 0 ||
-                    config.grouping?.reverseMode?.chart
-                      ? metricsCollection.chartIndex + 1
-                      : null,
+                    //ToDo reverse mode
+                    // config.grouping?.reverseMode?.chart
+                    //   ? metricsCollection.chartIndex + 1
+                    //   : null,
+                    null,
                   color: metricsCollection.color,
                   dasharray: metricsCollection.dasharray,
                   itemsCount: metricsCollection.data.length,
