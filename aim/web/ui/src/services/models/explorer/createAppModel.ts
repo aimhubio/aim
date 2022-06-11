@@ -2262,7 +2262,6 @@ function createAppModel(appConfig: IAppInitialConfig) {
                   ? {}
                   : selectedRows ?? model.getState()?.selectedRows,
                 rawData: runsData,
-                requestStatus: RequestStatusEnum.Ok,
                 infiniteIsPending: false,
                 tableColumns,
                 tableData: tableData.rows,
@@ -2313,7 +2312,6 @@ function createAppModel(appConfig: IAppInitialConfig) {
           configData?.table?.columnsOrder!,
           configData?.table?.hiddenColumns!,
         );
-        updateTableData(tableData, tableColumns, configData);
         model.setState({
           config: configData,
           data,
@@ -2322,6 +2320,7 @@ function createAppModel(appConfig: IAppInitialConfig) {
           sameValueColumns: tableData.sameValueColumns,
           selectedRows,
         });
+        updateTableData(tableData, tableColumns, configData);
       }
 
       function updateTableData(
@@ -2343,6 +2342,7 @@ function createAppModel(appConfig: IAppInitialConfig) {
             newColumns: tableColumns,
             hiddenColumns: configData.table.hiddenColumns!,
           });
+          model.setState({ requestStatus: RequestStatusEnum.Ok });
         }, 0);
       }
 
