@@ -21,4 +21,5 @@ export interface IDrawLinesArgs {
   curveInterpolation: CurveEnum;
   aggregationConfig?: IAggregationConfig;
   processedAggrData?: IProcessedAggrData[];
+  readOnly?: boolean;
 }

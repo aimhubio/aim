@@ -7,12 +7,15 @@ import zipfile
 from datetime import datetime
 
 
-def list_repo_runs(repo_path: str) -> List[str]:
-    chunks_dir = os.path.join(repo_path, '.aim', 'meta', 'chunks')
+def list_repo_runs(repo_path: str, lookup_dir: str = None) -> List[str]:
+    if lookup_dir is None:
+        chunks_dir = os.path.join(repo_path, '.aim', 'meta', 'chunks')
+    else:
+        chunks_dir = os.path.join(repo_path, '.aim', lookup_dir)
     return os.listdir(chunks_dir)
 
 
-def match_runs(repo_path: str, hashes: List[str]) -> List[str]:
+def match_runs(repo_path: str, hashes: List[str], lookup_dir: str = None) -> List[str]:
     matched_hashes = set()
     all_run_hashes = None
     for run_hash in hashes:
@@ -20,7 +23,7 @@ def match_runs(repo_path: str, hashes: List[str]) -> List[str]:
             expr = run_hash  # for the sake of readability
             # avoiding multiple or unnecessary list_runs() calls
             if not all_run_hashes:
-                all_run_hashes = list_repo_runs(repo_path)
+                all_run_hashes = list_repo_runs(repo_path, lookup_dir)
             if expr == '*':
                 return all_run_hashes
             # update the matches set with current expression matches

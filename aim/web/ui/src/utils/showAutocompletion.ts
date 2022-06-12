@@ -57,6 +57,12 @@ function getDetailType(detail: any): {
       case 'string':
         type = 'str';
         break;
+      case 'boolean':
+        type = 'bool';
+        break;
+      case 'number':
+        type = 'int';
+        break;
     }
   }
   return { type, hasExampleType };
