@@ -1,7 +1,7 @@
 import React, { memo, useEffect, useRef } from 'react';
 import { NavLink } from 'react-router-dom';
 import moment from 'moment';
-import _ from 'lodash';
+import _ from 'lodash-es';
 
 import { Tooltip } from '@material-ui/core';
 

@@ -183,19 +183,19 @@
     }
   }
   &__runDuration {
-    font-weight: 600;
+    font-weight: 500;
     color: $text-color;
     font-size: $text-lg;
     @include monospaceFontFamily(14);
   }
   &__runCreatedDate {
-    font-weight: 600;
+    font-weight: 500;
     color: $text-color;
     font-size: $text-lg;
     @include monospaceFontFamily(14);
   }
   &__runName {
-    font-weight: 600;
+    font-weight: 500;
     color: $primary-color;
     text-decoration: none;
     font-size: $text-lg;

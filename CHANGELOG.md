@@ -20,6 +20,7 @@
 - Add loader to the top of the logs box in the run page (VkoHov)
 - Add the date and the duration of run in the header of the single run page (VkoHov)
 - Add the name, status and duration of run in the runs table of the tags page (VkoHov)
+- Fit long name values in manage columns popover (arsengit)
 
 ### Fixes:
 
@@ -34,6 +35,7 @@
 - Reorder and add non-hideable table columns (arsengit)
 - Change the font of the runs navigation popover (VkoHov)
 - Keep color persistence state after page reload (VkoHov)
+- Resolve content blinking issue after search in the run page (arsengit)
 
 ## 3.10.3 May 31, 2022
 
