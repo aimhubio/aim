@@ -1,27 +1,20 @@
 import React, { useEffect } from 'react';
 
-import { Text } from 'components/kit';
+import AppBar from 'components/AppBar/AppBar';
 
 import { IBaseComponentProps } from '../../types';
-
-const styles = {
-  paddingBottom: 5,
-  borderBottom: '1px solid gray',
-};
 
 function ExplorerBar(props: IBaseComponentProps) {
   const { engine } = props;
   const params = engine.useStore(engine.instructions.dataSelector);
 
   useEffect(() => {
-    console.log(params);
+    console.log('ExplorerBar', params);
   }, [params]);
 
   return (
-    <div style={styles}>
-      <Text size={24} weight={600}>
-        Base Explorer
-      </Text>
+    <div>
+      <AppBar title='Base Explorer' />
     </div>
   );
 }
