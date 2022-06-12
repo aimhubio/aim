@@ -27,7 +27,7 @@ const config: IExplorerConfig = {
   explorerName: 'Images Explorer',
   engine: {
     useCache: false,
-    sequenceName: SequenceTypesEnum.Images,
+    sequenceName: SequenceTypesEnum.Texts,
     adapter: {
       objectDepth: AimObjectDepths.Index,
     },

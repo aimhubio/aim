@@ -1,6 +1,10 @@
 import _ from 'lodash';
 
-import { RunSearchRunView } from 'types/core/AimObjects';
+import {
+  IndexRanges,
+  RecordRanges,
+  RunSearchRunView,
+} from 'types/core/AimObjects';
 import { AimObjectDepths, SequenceTypesEnum } from 'types/core/enums';
 
 import getObjectPaths from 'utils/object/getObjectPaths';
@@ -25,6 +29,9 @@ export interface AimFlatObjectBase {
 
 export interface ProcessedData {
   objectList: AimFlatObjectBase[];
+  queryable_data: {
+    ranges?: RecordRanges & IndexRanges;
+  };
   additionalData: {
     params: string[];
     sequenceInfo: string[];
@@ -32,8 +39,44 @@ export interface ProcessedData {
   };
 }
 
+function collectQueryableData(run: RunSearchRunView):
+  | {
+      ranges: RecordRanges & IndexRanges;
+    }
+  | {} {
+  let queryable_data: {
+    ranges?: RecordRanges & IndexRanges;
+  } = {};
+
+  if (run && run.ranges) {
+    queryable_data = {
+      ranges: {
+        // Those changes are made since python has a mathematical interval for ranges [start, end)
+        record_range_total: [
+          run.ranges.record_range_total?.[0],
+          (run.ranges.record_range_total?.[1] || 0) - 1,
+        ],
+        record_range_used: [
+          run.ranges.record_range_used?.[0],
+          (run.ranges.record_range_used?.[1] || 0) - 1,
+        ],
+        index_range_total: [
+          run.ranges.index_range_total?.[0],
+          (run.ranges.index_range_total?.[1] || 0) - 1,
+        ],
+        index_range_used: [
+          run.ranges.index_range_used?.[0],
+          (run.ranges.index_range_used?.[1] || 0) - 1,
+        ],
+      },
+    };
+  }
+
+  return queryable_data;
+}
+
 export function storageDataToFlatList(
-  runs: RunSearchRunView[],
+  runs: RunSearchRunView[] = [],
   sequenceName: SequenceTypesEnum,
   objectDepth: AimObjectDepths,
 ): ProcessedData {
@@ -44,7 +87,10 @@ export function storageDataToFlatList(
 
   const depthInterceptor = depthInterceptors[objectDepth];
 
-  runs?.forEach((item) => {
+  const queryable_data = collectQueryableData(runs[0]);
+
+  runs.forEach((item) => {
+    // @ts-ignore
     params = params.concat(getObjectPaths(item.params, 'run', '.'));
     let collectedDataByDepth: Omit<AimFlatObjectBase, 'data'> = {};
 
@@ -141,6 +187,7 @@ export function storageDataToFlatList(
 
   return {
     objectList,
+    queryable_data,
     additionalData: {
       params,
       sequenceInfo,

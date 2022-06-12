@@ -11,7 +11,7 @@ import { ISelectOption } from 'types/services/models/explorer/createAppModel';
 
 import createPipeline, { Pipeline, PipelineOptions } from '../pipeline';
 import { IInstructionsState } from '../store/slices/instructionsSlice';
-import { Order } from '../pipeline/grouping/types';
+import { GroupType, Order } from '../pipeline/grouping/types';
 import { instructionsSelector } from '../store';
 import { IEngineConfigFinal } from '../types';
 
@@ -196,7 +196,7 @@ function createEngine(config: IEngineConfigFinal) {
     lastQuery = {
       query: params,
     };
-    const { data, additionalData } = await pipeline.execute({
+    const res = await pipeline.execute({
       query: {
         params,
       },
@@ -205,8 +205,8 @@ function createEngine(config: IEngineConfigFinal) {
       },
     });
 
-    console.log(additionalData);
-
+    console.log('result ----> ', res);
+    const { additionalData, data } = res;
     storeVanilla.setState({ data, additionalData });
   }
 
@@ -216,21 +216,23 @@ function createEngine(config: IEngineConfigFinal) {
     } = {},
   ) {
     groupingMethods.update(config);
-    // const result = await pipeline.execute({
-    //   query: lastQuery,
-    //   group: {
-    //     [GroupType.COLUMN]: [
-    //       {
-    //         field: 'run.hash',
-    //         order: Order.ASC,
-    //       },
-    //       {
-    //         field: 'run.name',
-    //         order: Order.DESC,
-    //       },
-    //     ],
-    //   },
-    // });
+    const result = await pipeline.execute({
+      query: lastQuery,
+      group: {
+        [GroupType.COLUMN]: [
+          {
+            field: 'run.hash',
+            order: Order.ASC,
+          },
+          {
+            field: 'run.name',
+            order: Order.DESC,
+          },
+        ],
+      },
+    });
+
+    console.log('group result ----->', result);
     //
     // storeVanilla.setState({
     //   data: result.data,
