@@ -277,7 +277,7 @@ function drawHoverAttributes(args: IDrawHoverAttributesArgs): void {
         .classed('active', false);
 
       linesNodeRef.current
-        .select(`[id=inProgressLineIndicator-${attributesRef.current.lineKey}]`)
+        .select(`[id=inProgressLineIndicator-${attrRef.current.lineKey}]`)
         .classed('active', false);
     }
 

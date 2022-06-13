@@ -1,5 +1,3 @@
-import _ from 'lodash-es';
-
 import { HighlightEnum } from 'components/HighlightModesPopover/HighlightModesPopover';
 
 import { IDrawLinesArgs } from 'types/utils/d3/drawLines';
