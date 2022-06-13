@@ -50,9 +50,9 @@ class TestRunImagesSearchApi(RunImagesTestBase):
 
         trace_data = run_data['traces'][0]
         self.assertEqual('random_images', trace_data['name'])
-        self.assertEqual(50, len(trace_data['iters']))
+        self.assertEqual(51, len(trace_data['iters']))
         self.assertEqual(4, trace_data['iters'][2])
-        self.assertEqual(50, len(trace_data['values']))
+        self.assertEqual(51, len(trace_data['values']))
 
         img_list = trace_data['values'][2]
         self.assertEqual(6, len(img_list))
@@ -91,8 +91,8 @@ class TestRunImagesSearchApi(RunImagesTestBase):
         self.assertEqual(1, len(decoded_response))
         run_data = decoded_response[self.run_hash]
         trace_data = run_data['traces'][0]
-        self.assertEqual(10, len(trace_data['values']))
-        self.assertEqual(10, len(trace_data['iters']))
+        self.assertEqual(11, len(trace_data['values']))
+        self.assertEqual(11, len(trace_data['iters']))
         self.assertEqual(4, len(trace_data['values'][0]))
         self.assertEqual(4, len(trace_data['values'][9]))
         image_indices = [img['index'] for img in trace_data['values'][0]]
@@ -161,7 +161,7 @@ class RunImagesURIBulkLoadApi(RunImagesTestBase):
         empty_context = Context({})
         for step in range(10):
             for idx in range(5):
-                img_view = run.series_run_tree.subtree(
+                img_view = run.series_run_trees[1].subtree(
                     (empty_context.idx, 'random_images', 'val', step, idx)
                 )
                 cls.image_blobs[img_view['caption']] = img_view['data'].load()
@@ -220,8 +220,9 @@ class TestRunImagesBatchApi(RunImagesTestBase):
         trace_data = decode_tree(decode_encoded_tree_stream(response.iter_content(chunk_size=512 * 1024)))
         self.assertEqual('random_images', trace_data['name'])
         self.assertDictEqual({}, trace_data['context'])
-        self.assertEqual(50, len(trace_data['values']))
-        self.assertListEqual(list(range(0, 100, 2)), trace_data['iters'])
+        self.assertEqual(51, len(trace_data['values']))
+        expected_iters = list(range(0, 100, 2)) + [99]  # include last step
+        self.assertListEqual(expected_iters, trace_data['iters'])
 
         img_list = trace_data['values'][2]
         self.assertEqual(6, len(img_list))

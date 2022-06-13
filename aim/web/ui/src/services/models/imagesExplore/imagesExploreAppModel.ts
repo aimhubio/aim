@@ -800,19 +800,24 @@ function updateModelData(
 function getFilteredGroupingOptions(
   grouping: IImagesExploreAppConfig['grouping'],
 ): string[] {
-  const { reverseMode, isApplied } = grouping;
+  const {
+    // reverseMode,
+    isApplied,
+  } = grouping;
   const groupingSelectOptions:
     | IImagesExploreAppModelState['groupingSelectOptions']
     | undefined = model.getState()?.groupingSelectOptions;
   if (groupingSelectOptions) {
-    const filteredOptions = [...groupingSelectOptions]
-      .filter((opt) => grouping['row'].indexOf(opt.value as never) === -1)
-      .map((item) => item.value);
-    return isApplied['row']
-      ? reverseMode['row']
-        ? filteredOptions
-        : grouping['row']
-      : [];
+    // const filteredOptions = [...groupingSelectOptions]
+    //   .filter((opt) => grouping['row'].indexOf(opt.value as never) === -1)
+    //   .map((item) => item.value);
+    //ToDo reverse mode
+    // return isApplied['row']
+    //   ? reverseMode['row']
+    //     ? filteredOptions
+    //     : grouping['row']
+    //   : [];
+    return isApplied['row'] ? grouping['row'] : [];
   } else {
     return [];
   }
@@ -873,10 +878,17 @@ function onGroupingSelectChange({
   if (configData?.grouping) {
     configData.grouping = { ...configData.grouping, [groupName]: list };
     updateModelData(configData, true);
+    //ToDo reverse mode
+    // if (
+    //   configData.images?.additionalProperties?.stacking &&
+    //   (_.isEmpty(configData.grouping.row) ||
+    //     configData.grouping.reverseMode.row)
+    // ) {
+    //   onStackingToggle();
+    // }
     if (
       configData.images?.additionalProperties?.stacking &&
-      (_.isEmpty(configData.grouping.row) ||
-        configData.grouping.reverseMode.row)
+      _.isEmpty(configData.grouping.row)
     ) {
       onStackingToggle();
     }
@@ -898,10 +910,17 @@ function onGroupingModeChange({ value }: IOnGroupingModeChangeParams): void {
       },
     };
     updateModelData(configData, true);
+    //ToDo reverse mode
+    // if (
+    //   configData.images?.additionalProperties?.stacking &&
+    //   (_.isEmpty(configData.grouping.row) ||
+    //     configData.grouping.reverseMode.row)
+    // ) {
+    //   onStackingToggle();
+    // }
     if (
       configData.images?.additionalProperties?.stacking &&
-      (_.isEmpty(configData.grouping.row) ||
-        configData.grouping.reverseMode.row)
+      _.isEmpty(configData.grouping.row)
     ) {
       onStackingToggle();
     }
@@ -927,10 +946,17 @@ function onGroupingReset(groupName: GroupNameType) {
       isApplied: { ...isApplied, [groupName]: true },
     };
     updateModelData(configData, true);
+    //ToDo reverse mode
+    // if (
+    //   configData.images?.additionalProperties?.stacking &&
+    //   (_.isEmpty(configData.grouping.row) ||
+    //     configData.grouping.reverseMode.row)
+    // ) {
+    //   onStackingToggle();
+    // }
     if (
       configData.images?.additionalProperties?.stacking &&
-      (_.isEmpty(configData.grouping.row) ||
-        configData.grouping.reverseMode.row)
+      _.isEmpty(configData.grouping.row)
     ) {
       onStackingToggle();
     }
@@ -1051,15 +1077,17 @@ function getDataAsImageSet(
       model.getState()?.config;
     const imageSetData: object = {};
     const group: string[] = [...(configData?.grouping?.row || [])];
-    const groupFields =
-      defaultGroupFields ||
-      (configData?.grouping?.reverseMode?.row
-        ? groupingSelectOptions
-            .filter(
-              (option: IGroupingSelectOption) => !group.includes(option.label),
-            )
-            .map((option) => option.value)
-        : group);
+    //ToDo reverse mode
+    // const groupFields =
+    //   defaultGroupFields ||
+    //   (configData?.grouping?.reverseMode?.row
+    //     ? groupingSelectOptions
+    //         .filter(
+    //           (option: IGroupingSelectOption) => !group.includes(option.label),
+    //         )
+    //         .map((option) => option.value)
+    //     : group);
+    const groupFields = defaultGroupFields || group;
     const imagesDataForOrdering = {};
     data.forEach((group: any) => {
       const path = groupFields?.reduce(

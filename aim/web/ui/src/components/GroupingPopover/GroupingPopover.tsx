@@ -13,14 +13,11 @@ import {
 } from '@material-ui/icons';
 import Autocomplete from '@material-ui/lab/Autocomplete';
 
-import { Badge, Icon, Text, ToggleButton } from 'components/kit';
+import { Badge, Icon, Text } from 'components/kit';
 import ErrorBoundary from 'components/ErrorBoundary/ErrorBoundary';
 
 import { IGroupingPopoverProps } from 'types/components/GroupingPopover/GroupingPopover';
-import {
-  GroupNameType,
-  IGroupingSelectOption,
-} from 'types/services/models/metrics/metricsAppModel';
+import { IGroupingSelectOption } from 'types/services/models/metrics/metricsAppModel';
 
 import './GroupingPopover.scss';
 
@@ -72,15 +69,16 @@ function GroupingPopover({
       : data;
   }, [groupName, groupingData, groupingSelectOptions]);
 
-  function handleGroupingMode(val: string | number, id: any) {
-    onGroupingModeChange({
-      groupName,
-      value: val === 'Reverse',
-      options: groupingData?.reverseMode[groupName as GroupNameType]
-        ? groupingSelectOptions
-        : null,
-    });
-  }
+  //ToDo reverse mode
+  // function handleGroupingMode(val: string | number, id: any) {
+  //   onGroupingModeChange({
+  //     groupName,
+  //     value: val === 'Reverse',
+  //     options: groupingData?.reverseMode[groupName as GroupNameType]
+  //       ? groupingSelectOptions
+  //       : null,
+  //   });
+  // }
 
   const options = React.useMemo(() => {
     if (inputValue.trim() !== '') {
@@ -166,6 +164,8 @@ function GroupingPopover({
               )}
             />
           </div>
+
+          {/* //ToDo reverse mode
           <div className='GroupingPopover__toggleMode__div'>
             <Text
               size={12}
@@ -189,11 +189,14 @@ function GroupingPopover({
               rightLabel='Reverse'
               onChange={handleGroupingMode}
             />
-          </div>
+          </div> */}
           {advancedComponent && (
             <ErrorBoundary>
               <div className='GroupingPopover__advanced__component'>
-                <Accordion className='GroupingPopover__accordion__container'>
+                <Accordion
+                  className='GroupingPopover__accordion__container'
+                  expanded={true}
+                >
                   <AccordionSummary
                     expandIcon={
                       <Icon

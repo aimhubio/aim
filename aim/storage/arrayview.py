@@ -44,20 +44,6 @@ class ArrayView:
         """
         ...
 
-    # TODO [AT]: maybe we need to have a view(slice) method instead?
-    # TODO [AT]: it will have the same ArrayView interface but implement values, items, ... with slicing logic
-    def values_slice(self, _slice: slice, slice_by: str = 'step') -> Iterator[Any]:
-        ...
-
-    def items_slice(self, _slice: slice, slice_by: str = 'step') -> Iterator[Tuple[int, Any]]:
-        ...
-
-    def values_in_range(self, start, stop, count=None) -> Iterator[Any]:
-        ...
-
-    def items_in_range(self, start, stop, count=None) -> Iterator[Tuple[int, Any]]:
-        ...
-
     def __len__(self) -> int:
         ...
 
@@ -138,10 +124,4 @@ class ArrayView:
     def last_value(self) -> Any:
         """Last value of the array.
         """
-        ...
-
-    def min_idx(self) -> int:
-        ...
-
-    def max_idx(self) -> int:
         ...

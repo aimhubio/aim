@@ -7,28 +7,24 @@ import pytz
 import sys
 
 from collections import defaultdict
-from copy import deepcopy
 
+from aim.sdk.base_run import BaseRun
 from aim.sdk.sequence import Sequence
-from aim.storage.object import CustomObject
+from aim.sdk.tracker import RunTracker
 from aim.sdk.sequence_collection import SingleRunSequenceCollection
 from aim.sdk.utils import (
-    check_types_compatibility,
-    generate_run_hash,
-    get_object_typename,
+    backup_run,
 )
 from aim.ext.utils import (
     get_environment_variables,
     get_installed_packages,
     get_git_info,
 )
-from aim.sdk.num_utils import convert_to_py_number, is_number
 from aim.sdk.types import AimObject
-from aim.sdk.configs import AIM_ENABLE_TRACKING_THREAD, AIM_RUN_INDEXING_TIMEOUT
+from aim.sdk.configs import AIM_RUN_INDEXING_TIMEOUT
 
-from aim.storage.hashing import hash_auto
-from aim.storage.context import Context, SequenceDescriptor
 from aim.storage.treeview import TreeView
+from aim.storage.context import Context
 from aim.storage import treeutils
 
 from aim.ext.resource import ResourceTracker, DEFAULT_SYSTEM_TRACKING_INT
@@ -51,171 +47,6 @@ if TYPE_CHECKING:
     from aim.sdk.repo import Repo
 
 logger = logging.getLogger(__name__)
-
-
-class RunTracker:
-    _idx_to_ctx: Dict[int, Context] = dict()
-    track_in_thread = os.getenv(AIM_ENABLE_TRACKING_THREAD, False)
-    _track_warning_shown = False
-
-    @classmethod
-    def track_rate_warn(cls):
-        if not cls._track_warning_shown:
-            # TODO [AT] add link to FAQ section in docs.
-            logger.warning('Tracking task queue is almost full which might cause performance degradation. '
-                           'Consider tracking at lower pace.')
-            cls._track_warning_shown = True
-
-    def __init__(self, run: 'Run'):
-        self.hash = run.hash
-        self.repo = run.repo
-        self.meta_tree = run.meta_tree
-        self.meta_run_tree = run.meta_run_tree
-        self.series_run_tree = run.series_run_tree
-        self.contexts: Dict[Context, int] = dict()
-        self.sequence_info: Dict[SequenceDescriptor.Selector, SequenceInfo] = defaultdict(SequenceInfo)
-        self._prepare_sequence_info(run.read_only)
-
-    def idx_to_ctx(self, idx):
-        ctx = RunTracker._idx_to_ctx.get(idx)
-        if ctx is not None:
-            return ctx
-        ctx = Context(self.meta_tree['contexts', idx])
-        RunTracker._idx_to_ctx[idx] = ctx
-        self.contexts[ctx] = idx
-        return ctx
-
-    def _prepare_sequence_info(self, read_only):
-        if read_only:
-            return
-
-        for ctx_id, traces in self.meta_run_tree.get('traces', {}).items():
-            for name in traces:
-                try:
-                    self._read_sequence_info(self.idx_to_ctx(ctx_id), name)
-                except KeyError:
-                    pass
-
-    def _read_sequence_info(self, ctx, name):
-        sequence_selector = SequenceDescriptor(name, ctx).selector
-        seq_info = self.sequence_info[sequence_selector]
-
-        assert not seq_info.initialized
-        seq_info.val_view = self.series_run_tree.subtree(sequence_selector).array('val').allocate()
-        seq_info.epoch_view = self.series_run_tree.subtree(sequence_selector).array('epoch', dtype='int64').allocate()
-        seq_info.time_view = self.series_run_tree.subtree(sequence_selector).array('time', dtype='int64').allocate()
-        seq_info.count = len(seq_info.val_view)
-        seq_info.sequence_dtype = self.meta_run_tree.get(('traces', ctx.idx, name, 'dtype'), None)
-        seq_info.record_max_length = self.meta_run_tree.get(('traces', ctx.idx, name, 'record_max_length'), 0)
-        seq_info.initialized = True
-
-    def _get_or_create_sequence_info(self, ctx, name):
-        # this method is used in the `run.track()`, so please use only write-only instructions
-        sequence_selector = SequenceDescriptor(name, ctx).selector
-        seq_info = self.sequence_info[sequence_selector]
-
-        if seq_info.initialized:
-            return seq_info
-
-        # the subtree().array().allocate() method is write-only
-        seq_info.val_view = self.series_run_tree.subtree(sequence_selector).array('val').allocate()
-        seq_info.epoch_view = self.series_run_tree.subtree(sequence_selector).array('epoch', dtype='int64').allocate()
-        seq_info.time_view = self.series_run_tree.subtree(sequence_selector).array('time', dtype='int64').allocate()
-        seq_info.count = 0
-        seq_info.sequence_dtype = None
-        seq_info.record_max_length = 0
-        seq_info.initialized = True
-        return seq_info
-
-    def _update_sequence_info(self, seq_info, ctx, val, name, step):
-        # this method is used in the `run.track()`, so please use only write-only instructions
-        dtype = get_object_typename(val)
-
-        if seq_info.sequence_dtype is not None:
-            def update_trace_dtype(new_dtype):
-                self.meta_tree['traces_types', new_dtype, ctx.idx, name] = 1
-                self.meta_run_tree['traces', ctx.idx, name, 'dtype'] = new_dtype
-                seq_info.sequence_dtype = new_dtype
-
-            compatible = check_types_compatibility(dtype, seq_info.sequence_dtype, update_trace_dtype)
-            if not compatible:
-                raise ValueError(f'Cannot log value \'{val}\' on sequence \'{name}\'. Incompatible data types.')
-
-        if seq_info.count == 0:
-            self.meta_tree['traces_types', dtype, ctx.idx, name] = 1
-            self.meta_run_tree['traces', ctx.idx, name, 'dtype'] = dtype
-            self.meta_run_tree['traces', ctx.idx, name, 'first_step'] = step
-            seq_info.sequence_dtype = dtype
-
-        if isinstance(val, (tuple, list)):
-            record_max_length = max(seq_info.record_max_length, len(val))
-            self.meta_run_tree['traces', ctx.idx, name, 'record_max_length'] = record_max_length
-            seq_info.record_max_length = record_max_length
-
-        return seq_info
-
-    def __call__(
-        self,
-        value,
-        name: str,
-        step: int = None,
-        epoch: int = None,
-        *,
-        context: AimObject = None,
-    ):
-        # since worker might be lagging behind, we want to log the timestamp of run.track() call,
-        # not the actual implementation execution time.
-        track_time = datetime.datetime.now(pytz.utc).timestamp()
-
-        # remote tracking creates dedicated thread for tracking, so don't need to create another one here
-        if self.track_in_thread and not self.repo.is_remote_repo:
-            val = deepcopy(value)
-            track_rate_warning = self.repo.tracking_queue.register_task(
-                self._track, val, track_time, name, step, epoch, context=context)
-            if track_rate_warning:
-                self.track_rate_warn()
-        else:
-            self._track(value, track_time, name, step, epoch, context=context)
-
-    def _track(
-        self,
-        value,
-        track_time: float,
-        name: str,
-        step: int = None,
-        epoch: int = None,
-        *,
-        context: AimObject = None,
-    ):
-        if context is None:
-            context = {}
-
-        if is_number(value):
-            val = convert_to_py_number(value)
-        elif isinstance(value, (CustomObject, list, tuple)):
-            val = value
-        else:
-            raise ValueError(f'Input metric of type {type(value)} is neither python number nor AimObject')
-
-        with self.repo.atomic_track(self.hash):
-            ctx = Context(context)
-            if ctx not in self.contexts:
-                self.meta_tree['contexts', ctx.idx] = context
-                self.meta_run_tree['contexts', ctx.idx] = context
-                self.contexts[ctx] = ctx.idx
-                self._idx_to_ctx[ctx.idx] = ctx
-
-            seq_info = self._get_or_create_sequence_info(ctx, name)
-            step = step if step is not None else seq_info.count
-            self._update_sequence_info(seq_info, ctx, val, name, step)
-
-            self.meta_run_tree['traces', ctx.idx, name, 'last'] = val
-            self.meta_run_tree['traces', ctx.idx, name, 'last_step'] = step
-
-            seq_info.val_view[step] = val
-            seq_info.epoch_view[step] = epoch
-            seq_info.time_view[step] = track_time
-            seq_info.count = seq_info.count + 1
 
 
 class RunAutoClean(AutoClean['Run']):
@@ -392,18 +223,7 @@ class StructuredRunMixin:
         return self.props.remove_tag(tag_name)
 
 
-class SequenceInfo:
-    def __init__(self):
-        self.initialized = False
-        self.count = None
-        self.sequence_dtype = None
-        self.val_view = None
-        self.epoch_view = None
-        self.time_view = None
-        self.record_max_length = None
-
-
-class Run(StructuredRunMixin):
+class Run(BaseRun, StructuredRunMixin):
     """Run object used for tracking metrics.
 
     Provides method :obj:`track` to track value and object series for multiple names and contexts.
@@ -424,6 +244,8 @@ class Run(StructuredRunMixin):
             git info, environment variables, etc.
     """
 
+    _metric_version_warning_shown = False
+
     def __init__(self, run_hash: Optional[str] = None, *,
                  repo: Optional[Union[str, 'Repo']] = None,
                  read_only: bool = False,
@@ -432,32 +254,37 @@ class Run(StructuredRunMixin):
                  log_system_params: Optional[bool] = False,
                  capture_terminal_logs: Optional[bool] = True):
         self._resources: Optional[RunAutoClean] = None
-        run_hash = run_hash or generate_run_hash()
-        self.hash = run_hash
-
-        self._finalized = False
-
-        self.repo: Repo = None
-        self._set_repo(repo)
-
-        self.read_only = read_only
-        if not read_only:
-            logger.debug(f'Opening Run {self.hash} in write mode')
-
-        self._hash = None
-        self._props = None
-
-        self.meta_tree: TreeView = self.repo.request_tree(
-            'meta', self.hash, read_only=read_only, from_union=True
-        ).subtree('meta')
-        self.meta_run_tree: TreeView = self.meta_tree.subtree('chunks').subtree(self.hash)
+        super().__init__(run_hash, repo=repo, read_only=read_only)
 
         self.meta_attrs_tree: TreeView = self.meta_tree.subtree('attrs')
         self.meta_run_attrs_tree: TreeView = self.meta_run_tree.subtree('attrs')
 
-        self.series_run_tree: TreeView = self.repo.request_tree(
-            'seqs', self.hash, read_only=read_only
-        ).subtree('seqs').subtree('chunks').subtree(self.hash)
+        if not read_only:
+            logger.debug(f'Opening Run {self.hash} in write mode')
+
+            if self.check_metrics_version():
+                if self.repo.is_remote_repo:
+                    logger.warning(f'Cannot track Run with remote repo {self.repo.path}. Please upgrade repo first '
+                                   f'with the following command:')
+                    logger.warning(f'aim runs --repo {self.repo.path} update \'*\'')
+                    raise RuntimeError
+                else:
+                    logger.warning(f'Detected sub-optimal format metrics for Run {self.hash}. Upgrading...')
+                    backup_path = backup_run(self)
+                    try:
+                        self.update_metrics()
+                        logger.warning(f'Successfully converted Run {self.hash}')
+                        logger.warning(f'Run backup can be found at {backup_path}. '
+                                       f'In case of any issues the following command can be used to restore data: '
+                                       f'`aim runs --repo {self.repo.root_path} restore {self.hash}`')
+                    except Exception as e:
+                        logger.error(f'Failed to convert metrics. {e}')
+                        logger.warning(f'Run backup can be found at {backup_path}. '
+                                       f'To restore data please run the following command: '
+                                       f'`aim runs --repo {self.repo.root_path} restore {self.hash}`')
+                        raise
+
+        self._props = None
 
         if not read_only:
             if log_system_params:
@@ -487,8 +314,8 @@ class Run(StructuredRunMixin):
 
         self._resources = RunAutoClean(self)
 
-    def __repr__(self) -> str:
-        return f'<Run#{hash(self)} name={self.hash} repo={self.repo}>'
+    def __hash__(self) -> int:
+        return super().__hash__()
 
     def idx_to_ctx(self, idx: int) -> Context:
         return self._tracker.idx_to_ctx(idx)
@@ -654,6 +481,13 @@ class Run(StructuredRunMixin):
         Returns:
             :obj:`Metric` object if exists, `None` otherwise.
         """
+        if self.read_only and not Run._metric_version_warning_shown:
+            if self.check_metrics_version():
+                logger.warning(f'Detected sub-optimal format metrics for Run {self.hash}. Consider upgrading repo '
+                               f'to improve queries performance:')
+                logger.warning(f'aim runs --repo {self.repo.path} update \'*\'')
+                Run._metric_version_warning_shown = True
+
         return self._get_sequence('metric', name, context)
 
     def get_image_sequence(
@@ -814,50 +648,23 @@ class Run(StructuredRunMixin):
                         traces_overview[seq_type].append(trace_data)
         return traces_overview
 
-    def _calc_hash(self) -> int:
-        # TODO maybe take read_only flag into account?
-        return hash_auto((self.hash, hash(self.repo)))
-
-    def _set_repo(self, repo):
-        if repo is None:
-            from aim.sdk.repo import Repo
-            repo = Repo.default_repo_path()
-        if isinstance(repo, str):
-            from aim.sdk.repo import Repo, RepoStatus
-            repo_status = Repo.check_repo_status(repo)
-            if repo_status == RepoStatus.UPDATE_REQUIRED:
-                logger.error(f'Trying to start Run on repository {repo}, which is out of date. '
-                             f'Please upgrade repository with the following command: '
-                             f'`aim upgrade --repo {repo} 2to3`.')
-                raise RuntimeError()
-            elif repo_status == RepoStatus.MISSING:
-                repo = Repo.from_path(repo, init=True)
-            else:
-                repo = Repo.from_path(repo)
-        self.repo = repo
-
-    def __hash__(self) -> int:
-        if self._hash is None:
-            self._hash = self._calc_hash()
-        return self._hash
-
     def _cleanup_trees(self):
         del self.meta_run_attrs_tree
         del self.meta_attrs_tree
         del self.meta_run_tree
         del self.meta_tree
-        del self.series_run_tree
+        del self.series_run_trees
         self.meta_run_attrs_tree = None
         self.meta_run_tree = None
         self.meta_attrs_tree = None
         self.meta_tree = None
-        self.series_run_tree = None
+        self.series_run_trees = None
 
     def close(self):
         if self._resources is None:
             return
         self._resources.close()
-        self._tracker.sequence_info.clear()
+        self._tracker.sequence_infos.clear()
         # de-reference trees and other resources
         del self._resources
         del self._props

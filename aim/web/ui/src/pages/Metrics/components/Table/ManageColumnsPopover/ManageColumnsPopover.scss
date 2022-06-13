@@ -19,18 +19,22 @@
     }
   }
   &__container {
+    max-width: 800px;
+    min-width: 680px;
+    width: 60vw;
     display: flex;
     height: 13.125rem;
   }
 }
 
 .ColumnList__container {
-  width: toRem(240px);
+  width: 27%;
   overflow: hidden;
   display: flex;
   flex-direction: column;
   border-bottom: $border-main;
   &:nth-child(2) {
+    width: 46%;
     border-left: $border-main;
     border-right: $border-main;
   }
@@ -52,6 +56,7 @@
   width: 100%;
   input {
     font-size: $text-sm;
+    font-weight: 500;
   }
 }
 
