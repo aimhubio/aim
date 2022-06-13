@@ -1,5 +1,5 @@
 from copy import deepcopy
-from typing import Iterator, Tuple
+from typing import Iterator
 
 from aim.storage.hashing import hash_auto
 from aim.storage.types import AimObject, AimObjectKey
@@ -48,46 +48,3 @@ class Context:
         if hash(self) != hash(other):
             return False
         return self._context == other._context
-
-
-class SequenceDescriptor:
-    Selector = Tuple[int, str]
-
-    __slots__ = ('_name', '_context', '_hash', '_sequence_hash')
-
-    def __init__(
-        self,
-        name: str,
-        context: Context
-    ):
-        self._name = name
-        self._context = context
-        self._hash = None
-        self._sequence_hash = None
-
-    @property
-    def selector(self) -> Selector:
-        return self._context.idx, self._name
-
-    @property
-    def context_idx(self) -> int:
-        return self._context.idx
-
-    @property
-    def sequence_idx(self) -> int:
-        if self._sequence_hash is None:
-            self._sequence_hash = hash_auto(self._name)
-        return self._sequence_hash
-
-    def _calc_hash(self) -> int:
-        return hash_auto((self._name, self._context))
-
-    def __hash__(self) -> int:
-        if self._hash is None:
-            self._hash = self._calc_hash()
-        return self._hash
-
-    def __eq__(self, other: 'SequenceDescriptor') -> bool:
-        if hash(self) != hash(other):
-            return False
-        return self._name == other._name and self._context == other._context

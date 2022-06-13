@@ -101,6 +101,7 @@ const ScatterPlot = React.forwardRef(function ScatterPlot(
         if (attributesRef.current?.clearHoverAttributes) {
           attributesRef.current.clearHoverAttributes();
         }
+        attributesRef.current = {};
       }
       return;
     }
@@ -134,6 +135,7 @@ const ScatterPlot = React.forwardRef(function ScatterPlot(
       xScale,
       yScale,
       visBoxRef,
+      axesScaleType,
       humanizerConfigRef,
       drawBgTickLines: { y: true, x: true },
     });

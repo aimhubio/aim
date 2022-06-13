@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { ChangeEvent } from 'react';
 
 import { Box, Checkbox, Divider, InputBase, Popper } from '@material-ui/core';
 import Autocomplete from '@material-ui/lab/Autocomplete';
@@ -28,11 +28,12 @@ function SelectForm({
   selectFormData,
   onImagesExploreSelectChange,
   onSelectRunQueryChange,
-  onSelectAdvancedQueryChange,
   toggleSelectAdvancedMode,
+  onSelectAdvancedQueryChange,
   onSearchQueryCopy,
 }: ISelectFormProps): React.FunctionComponentElement<React.ReactNode> {
   const [anchorEl, setAnchorEl] = React.useState<any>(null);
+  const [searchValue, setSearchValue] = React.useState<string>('');
   const searchMetricsRef = React.useRef<any>(null);
   const autocompleteRef: any = React.useRef<React.MutableRefObject<any>>(null);
   const advancedAutocompleteRef: any =
@@ -111,12 +112,27 @@ function SelectForm({
       anchorEl.focus();
     }
     setAnchorEl(null);
+    setSearchValue('');
   }
 
   function handleResetSelectForm(): void {
     onImagesExploreSelectChange([]);
     onSelectRunQueryChange('');
   }
+
+  function handleSearchInputChange(
+    e: React.ChangeEvent<HTMLInputElement>,
+  ): void {
+    setSearchValue(e.target.value);
+  }
+
+  const options = React.useMemo(() => {
+    return (
+      selectFormData?.options?.filter(
+        (option) => option.label.indexOf(searchValue) !== -1,
+      ) ?? []
+    );
+  }, [searchValue, selectFormData?.options]);
 
   const open: boolean = !!anchorEl;
   const id = open ? 'select-metric' : undefined;
@@ -169,7 +185,7 @@ function SelectForm({
                         size='small'
                         disablePortal={true}
                         disableCloseOnSelect
-                        options={selectFormData.options}
+                        options={options}
                         value={selectedImagesData?.options ?? ''}
                         onChange={onSelect}
                         groupBy={(option) => option.group}
@@ -184,7 +200,11 @@ function SelectForm({
                         renderInput={(params) => (
                           <InputBase
                             ref={params.InputProps.ref}
-                            inputProps={params.inputProps}
+                            inputProps={{
+                              ...params.inputProps,
+                              value: searchValue,
+                              onChange: handleSearchInputChange,
+                            }}
                             spellCheck={false}
                             placeholder='Search'
                             autoFocus={true}

@@ -2,9 +2,9 @@
 
 .ActionCard {
   width: 100%;
-  padding: 24px;
+  padding: $space-lg;
   border: $border-grey;
-  border-radius: 8px;
+  border-radius: $border-radius-lg;
   display: flex;
   align-items: center;
   justify-content: space-between;
