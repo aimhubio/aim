@@ -22,6 +22,11 @@ import { IRunOverviewTabProps } from './RunOverviewTab.d';
 import './RunOverviewTab.scss';
 
 function RunOverviewTab({ runData, runHash }: IRunOverviewTabProps) {
+  const sidebarRef = React.useRef<HTMLElement | any>(null);
+  const overviewSectionRef = React.useRef<HTMLElement | any>(null);
+  const overviewSectionContentRef = React.useRef<HTMLElement | any>(null);
+  const [containerHeight, setContainerHeight] = React.useState<number>(0);
+
   useRunMetricsBatch({
     runBatch: runData.runMetricsBatch,
     runTraces: runData.runTraces,
@@ -63,10 +68,22 @@ function RunOverviewTab({ runData, runHash }: IRunOverviewTabProps) {
     return data;
   }, [runData]);
 
+  function onContainerScroll(e: any) {
+    sidebarRef?.current?.scrollTo(0, e.target.scrollTop);
+  }
+
   return (
     <ErrorBoundary>
-      <section className='RunOverviewTab'>
-        <div className='RunOverviewTab__content'>
+      <section
+        className='RunOverviewTab'
+        ref={overviewSectionRef}
+        onScroll={onContainerScroll}
+      >
+        <div
+          className='RunOverviewTab__content'
+          ref={overviewSectionContentRef}
+          style={{ height: containerHeight }}
+        >
           {_.isEmpty(cardsData) ? (
             <IllustrationBlock size='large' title='No Results' />
           ) : (
@@ -132,6 +149,10 @@ function RunOverviewTab({ runData, runHash }: IRunOverviewTabProps) {
         </div>
         <ErrorBoundary>
           <RunOverviewSidebar
+            sidebarRef={sidebarRef}
+            overviewSectionRef={overviewSectionRef}
+            overviewSectionContentRef={overviewSectionContentRef}
+            setContainerHeight={setContainerHeight}
             runHash={runHash}
             info={runData.runInfo}
             traces={runData.runTraces}

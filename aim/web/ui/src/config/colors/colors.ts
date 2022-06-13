@@ -63,7 +63,7 @@ export const RichEditorThemeColors = {
   blockToolbarHoverBackground: '#f2f5fa',
   blockToolbarDivider: '#E8F1FC',
   toolbarItem: '#414b6d',
-  fontFamilyMono: 'Iosevka',
+  fontFamilyMono: 'Inconsolata',
 };
 
 export default COLORS;

@@ -14,7 +14,9 @@ function StrokePopoverAdvanced({
   groupingData,
 }: IGroupingPopoverAdvancedProps): React.FunctionComponentElement<React.ReactNode> {
   function isShuffleDisabled(): boolean {
-    if (groupingData?.reverseMode.stroke || groupingData?.stroke.length) {
+    //ToDo reverse mode
+    // if (groupingData?.reverseMode.stroke || groupingData?.stroke.length) {
+    if (groupingData?.stroke.length) {
       return false;
     }
     return true;

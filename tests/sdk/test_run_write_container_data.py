@@ -7,6 +7,7 @@ from aim.sdk import Run
 from aim.storage.context import Context
 from aim.storage.containertreeview import ContainerTreeView
 from aim.storage.rockscontainer import RocksContainer
+from aim.storage.hashing import hash_auto
 
 
 class TestRunContainerData(TestBase):
@@ -100,14 +101,22 @@ class TestRunContainerData(TestBase):
         series_container_path = os.path.join(self.repo.path, 'seqs', 'chunks', run.hash)
         rc = RocksContainer(series_container_path, read_only=True)
         tree = ContainerTreeView(rc)
-        traces_dict = tree.view(('seqs', 'chunks', run.hash, Context({}).idx, 'metric 1')).collect()
-        self.assertSetEqual({'val', 'epoch', 'time'}, set(traces_dict.keys()))
-        self.assertEqual(3, len(traces_dict['val']))
-        self.assertEqual(3, len(traces_dict['epoch']))
-        self.assertEqual(3, len(traces_dict['time']))
-        self.assertEqual(1.0, traces_dict['val'][0])
-        self.assertEqual(2.0, traces_dict['val'][1])
-        self.assertEqual(3.0, traces_dict['val'][2])
+        trace = tree.view(('seqs', 'v2', 'chunks', run.hash, Context({}).idx, 'metric 1'))
+        self.assertSetEqual({'step', 'val', 'epoch', 'time'}, set(trace.keys()))
+        steps = sorted(trace.array('step').values_list())
+        vals = trace.array('val').values_list()
+        epochs = trace.array('epoch').values_list()
+        times = trace.array('time').values_list()
+
+        self.assertEqual(3, len(steps))
+        self.assertEqual(3, len(vals))
+        self.assertEqual(3, len(epochs))
+        self.assertEqual(3, len(times))
+
+        self.assertListEqual([0, 1, 2], steps)
+        self.assertEqual(1.0, trace.array('val')[hash_auto(steps[0])])
+        self.assertEqual(2.0, trace.array('val')[hash_auto(steps[1])])
+        self.assertEqual(3.0, trace.array('val')[hash_auto(steps[2])])
 
         # user-specified steps
         run = Run()
@@ -118,21 +127,21 @@ class TestRunContainerData(TestBase):
         series_container_path = os.path.join(self.repo.path, 'seqs', 'chunks', run.hash)
         rc = RocksContainer(series_container_path, read_only=True)
         tree = ContainerTreeView(rc)
-        traces_dict = tree.view(('seqs', 'chunks', run.hash, Context({}).idx, 'metric 1')).collect()
-        self.assertEqual(31, len(traces_dict['val']))  # last index is 30
-        # sparse array
-        self.assertTrue(all(x is None for x in traces_dict['val'][0:10]))
-        self.assertEqual(1.0, traces_dict['val'][10])
-        self.assertTrue(all(x is None for x in traces_dict['val'][11:20]))
-        self.assertEqual(2.0, traces_dict['val'][20])
-        self.assertTrue(all(x is None for x in traces_dict['val'][21:30]))
-        self.assertEqual(3.0, traces_dict['val'][30])
-        val_array_view = tree.view(('seqs', 'chunks', run.hash, Context({}).idx, 'metric 1')).array('val')
-        self.assertEqual(31, len(val_array_view))
-        self.assertEqual(3, len(list(val_array_view)))
-        self.assertEqual(1.0, val_array_view[10])
-        self.assertEqual(2.0, val_array_view[20])
-        self.assertEqual(3.0, val_array_view[30])
+        trace = tree.view(('seqs', 'v2', 'chunks', run.hash, Context({}).idx, 'metric 1'))
+        steps = sorted(trace.array('step').values_list())
+        vals = trace.array('val').values_list()
+        epochs = trace.array('epoch').values_list()
+        times = trace.array('time').values_list()
+
+        self.assertEqual(3, len(steps))
+        self.assertEqual(3, len(vals))
+        self.assertEqual(3, len(epochs))
+        self.assertEqual(3, len(times))
+
+        self.assertListEqual([10, 20, 30], steps)
+        self.assertEqual(1.0, trace.array('val')[hash_auto(steps[0])])
+        self.assertEqual(2.0, trace.array('val')[hash_auto(steps[1])])
+        self.assertEqual(3.0, trace.array('val')[hash_auto(steps[2])])
 
         # user-specified steps, unordered
         run = Run()
@@ -143,15 +152,21 @@ class TestRunContainerData(TestBase):
         series_container_path = os.path.join(self.repo.path, 'seqs', 'chunks', run.hash)
         rc = RocksContainer(series_container_path, read_only=True)
         tree = ContainerTreeView(rc)
-        traces_dict = tree.view(('seqs', 'chunks', run.hash, Context({}).idx, 'metric 1')).collect()
-        self.assertEqual(31, len(traces_dict['val']))  # last index is 30
-        # sparse array
-        self.assertTrue(all(x is None for x in traces_dict['val'][0:10]))
-        self.assertEqual(1.0, traces_dict['val'][10])
-        self.assertTrue(all(x is None for x in traces_dict['val'][11:20]))
-        self.assertEqual(2.0, traces_dict['val'][20])
-        self.assertTrue(all(x is None for x in traces_dict['val'][21:30]))
-        self.assertEqual(3.0, traces_dict['val'][30])
+        trace = tree.view(('seqs', 'v2', 'chunks', run.hash, Context({}).idx, 'metric 1'))
+        steps = sorted(trace.array('step').values_list())
+        vals = trace.array('val').values_list()
+        epochs = trace.array('epoch').values_list()
+        times = trace.array('time').values_list()
+
+        self.assertEqual(3, len(steps))
+        self.assertEqual(3, len(vals))
+        self.assertEqual(3, len(epochs))
+        self.assertEqual(3, len(times))
+
+        self.assertListEqual([10, 20, 30], steps)
+        self.assertEqual(1.0, trace.array('val')[hash_auto(steps[0])])
+        self.assertEqual(2.0, trace.array('val')[hash_auto(steps[1])])
+        self.assertEqual(3.0, trace.array('val')[hash_auto(steps[2])])
 
     def test_run_set_param_meta_tree(self):
         run = Run()

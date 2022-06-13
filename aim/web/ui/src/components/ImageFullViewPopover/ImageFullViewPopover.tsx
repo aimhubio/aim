@@ -17,6 +17,7 @@ function ImageFullViewPopover({
   imageData,
   tooltipContent,
   handleClose,
+  selectOptions,
 }: IImageFullViewPopoverProps): React.FunctionComponentElement<React.ReactNode> {
   const blobData = blobsURIModel.getState()[imageData?.blob_uri];
 
@@ -54,6 +55,7 @@ function ImageFullViewPopover({
                 chartType={ChartTypeEnum.ImageSet}
                 tooltipContent={tooltipContent}
                 focusedState={{ active: true, key: null }}
+                selectOptions={selectOptions}
               />
             </ErrorBoundary>
           </div>

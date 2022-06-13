@@ -20,6 +20,7 @@ export interface IDrawParallelHoverAttributesArgs {
   visBoxRef: React.MutableRefObject<>;
   bgRectNodeRef: React.MutableRefObject<>;
   axesNodeRef: React.MutableRefObject<>;
+  svgNodeRef: React.MutableRefObject<>;
   attributesNodeRef: React.MutableRefObject<>;
   attributesRef: React.MutableRefObject<{
     xScale?: IAxisScale;
@@ -56,7 +57,7 @@ export interface IParallelClosestCircle {
   color: string;
 }
 export interface IUpdateParallelFocusedChartProps {
-  mouse?: [number, number];
+  mousePos?: [number, number];
   focusedStateActive?: boolean;
   force?: boolean;
 }

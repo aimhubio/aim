@@ -4,15 +4,29 @@
 
 ### Enhancements:
 
-- Add cloud storage backups to AWS S3 for aim repo runs(karan2801)
+- Adjust charts hover attributes position calculation and styles (KaroMourad)
+- Improve formatting of numbers by setting maximum precision (KaroMourad)
+- Add cloud storage backups to AWS S3 for aim repo runs (karan2801)
 - Add LightGBM integration example (gorarakelyan)
 - Add descriptive document titles for pages (KaroMourad)
 - Implement unit-tests for aim SDK utils (yeghiakoronian)
 - Display std.dev/err aggregated values in the table (VkoHov)
 - Add `active` state indicator property for `aim.Run` (mihran113)
+- Add `active` state indicators on the chart (VkoHov)
+- Add ability to edit run name and description of run (VkoHov)
+- Show the description in the sidebar of the run overview tab (VkoHov)
+- Add all the attributes of run in the tooltip (VkoHov)
+- Optimize the initial render time of Aim UI by using more lightweight font-family (arsengit)
+- Use monaco editor as the syntax highlighter across the Aim UI (arsengit)
+- Add loader to the top of the logs box in the run page (VkoHov)
+- Add the date and the duration of run in the header of the single run page (VkoHov)
+- Add the name, status and duration of run in the runs table of the tags page (VkoHov)
+- Fit long name values in manage columns popover (arsengit)
 
 ### Fixes:
 
+- Fix issue with rendering incorrect data when x-axis aligned by `relative time/epoch` (KaroMourad)
+- Fix LineCart axis ticks overlapping issue on log scale (KaroMourad)
 - Change zooming default option to multiple (VkoHov)
 - Change grouped rows' min and max values names to `Group Min` and `Group Max` (VkoHov)
 - Preserve the search input value of the grouping dropdown (VkoHov)
@@ -20,7 +34,9 @@
 - Fix params duplication in dropdowns (VkoHov)
 - Resolve typing latency issue in the query search input (arsengit)
 - Reorder and add non-hideable table columns (arsengit)
-
+- Change the font of the runs navigation popover (VkoHov)
+- Keep color persistence state after page reload (VkoHov)
+- Resolve content blinking issue after search in the run page (arsengit)
 
 ## 3.10.3 May 31, 2022
 
@@ -47,7 +63,7 @@
 
 - Add ability to adjust the density of the visible content in tables (roubkar)
 - Set `metric.name` as default option for grouping (roubkar)
-- Show user-selected params before group config in chart popover (roubkar) 
+- Show user-selected params before group config in chart popover (roubkar)
 - Optimize stream decoding performance on UI (mahnerak)
 - Add support for animated image formats to Aim Image object (devfox-se)
 - Add `AimLogger` for Catboost (devfox-se)
@@ -63,7 +79,7 @@
 - Add ability to track and visualize stdout/stderr (mihran113, VkoHov)
 - Fix `AimLogger` deprecation issues related to release of PyTorch Lightning v1.5 (arnauddhaene)
 - Enable better autocomplete experience with monaco editor (arsengit)
-- Pre-loading and caching necessary resources, add pre-loader animation to Aim UI (arsengit) 
+- Pre-loading and caching necessary resources, add pre-loader animation to Aim UI (arsengit)
 
 ### Fixes:
 
