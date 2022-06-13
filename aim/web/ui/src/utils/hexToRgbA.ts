@@ -1,4 +1,4 @@
-function hexToRgbA(hex: string, opacity: number) {
+function hexToRgbA(hex: string, opacity: number): string {
   let hexCode = hex?.substring(1).split('');
   if (hexCode.length === 3) {
     hexCode = [

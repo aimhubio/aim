@@ -4,6 +4,7 @@
 
 ### Enhancements:
 
+- Adjust charts hover attributes position calculation and styles (KaroMourad)
 - Improve formatting of numbers by setting maximum precision (KaroMourad)
 - Add cloud storage backups to AWS S3 for aim repo runs (karan2801)
 - Add LightGBM integration example (gorarakelyan)
@@ -19,6 +20,7 @@
 - Use monaco editor as the syntax highlighter across the Aim UI (arsengit)
 - Add loader to the top of the logs box in the run page (VkoHov)
 - Add the date and the duration of run in the header of the single run page (VkoHov)
+- Add the name, status and duration of run in the runs table of the tags page (VkoHov)
 - Fit long name values in manage columns popover (arsengit)
 
 ### Fixes:
