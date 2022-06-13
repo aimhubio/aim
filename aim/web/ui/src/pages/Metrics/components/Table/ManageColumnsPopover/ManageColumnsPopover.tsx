@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import React from 'react';
 import { DragDropContext, Droppable } from 'react-beautiful-dnd';
 import _ from 'lodash-es';
@@ -46,6 +47,28 @@ function ManageColumnsPopover({
   const [state, setState] = React.useState<any>(initialData);
   const [searchKey, setSearchKey] = React.useState<string>('');
   const [draggingItemId, setDraggingItemId] = React.useState<string>('');
+  const [popoverWidth, setPopoverWidth] = React.useState(800);
+  const ref = React.useRef<HTMLDivElement | null>(null);
+
+  const onResize = _.debounce(() => {
+    onPopoverWidthChange();
+  }, 500);
+
+  React.useEffect(() => {
+    onPopoverWidthChange();
+    window.addEventListener('resize', onResize);
+    return () => {
+      window.removeEventListener('resize', onResize);
+    };
+  }, []);
+
+  const onPopoverWidthChange: () => void = () => {
+    if (ref.current) {
+      setPopoverWidth(
+        parseInt(ref.current.getBoundingClientRect().width.toFixed()),
+      );
+    }
+  };
 
   function onDragStart(result: any) {
     setDraggingItemId(result.draggableId);
@@ -198,13 +221,13 @@ function ManageColumnsPopover({
   return (
     <ErrorBoundary>
       <ControlPopover
-        title='Manage Table Columns'
+        title='Manage table columns'
         anchorOrigin={{
-          vertical: 'bottom',
+          vertical: 'top',
           horizontal: 'left',
         }}
         transformOrigin={{
-          vertical: 'top',
+          vertical: 'bottom',
           horizontal: 'left',
         }}
         anchor={({ onAnchorClick, opened }) => (
@@ -225,7 +248,7 @@ function ManageColumnsPopover({
         )}
         component={
           <DragDropContext onDragEnd={onDragEnd} onDragStart={onDragStart}>
-            <div className='ManageColumns__container'>
+            <div ref={ref} className='ManageColumns__container'>
               <div className='ColumnList__container'>
                 <div className='ColumnList__title'>Pinned to the left</div>
                 <Droppable droppableId='left'>
@@ -245,6 +268,7 @@ function ManageColumnsPopover({
                             key={`${column}-${index}`}
                             data={column}
                             index={index}
+                            popoverWidth={popoverWidth}
                             appName={appName}
                             isHidden={isColumnHidden(column)}
                             onClick={() =>
@@ -297,6 +321,7 @@ function ManageColumnsPopover({
                             data={column}
                             index={index}
                             appName={appName}
+                            popoverWidth={popoverWidth}
                             hasSearchableItems
                             searchKey={searchKey}
                             isHidden={isColumnHidden(column)}
@@ -338,6 +363,7 @@ function ManageColumnsPopover({
                             data={column}
                             index={index}
                             appName={appName}
+                            popoverWidth={popoverWidth}
                             isHidden={isColumnHidden(column)}
                             onClick={() =>
                               onColumnsVisibilityChange(

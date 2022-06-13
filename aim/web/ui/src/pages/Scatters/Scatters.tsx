@@ -110,6 +110,7 @@ function Scatters(
                   onActivePointChange={props.onActivePointChange}
                   chartProps={chartProps}
                   resizeMode={props.resizeMode}
+                  selectOptions={props.groupingSelectOptions}
                   controls={
                     <Controls
                       chartProps={chartProps}

@@ -136,6 +136,7 @@ __runs subcommands__
 | `rm`        | Remove run data for given runs hashes. At lease one run should be specified. |
 | `cp`        | Copy run data for given runs hashes. At lease one run should be specified.   |
 | `mv`        | Move run data for given runs hashes. At lease one run should be specified.   |
+| `upload`    | Create snapshot of .aim directory in cloud. Bucket name should be specified  |
 
 Global expression (`*`) support is available for run hashes. If hash contains `*`, it must be enclosed within
 quotes (`''`) as bash resolves the expression before passing it to `aim runs` command.
@@ -163,6 +164,15 @@ $ aim runs mv [ARGS] [HASH] ...
 | Args                              | Description                                               |
 | --------------------------------- | --------------------------------------------------------- |
 | `--destination <dest_repo_path>`  | Path to destination repo. __Required.__                   |
+
+```shell
+$ aim runs upload [ARGS] ...
+```
+
+| Args                              | Description                                               |
+| --------------------------------- | --------------------------------------------------------- |
+| `--bucket <bucket_name>`          | Name of cloud storage bucket. __Required.__               |
+
 
 ### convert
 

@@ -13,14 +13,11 @@ import {
 } from '@material-ui/icons';
 import Autocomplete from '@material-ui/lab/Autocomplete';
 
-import { Badge, Icon, Text, ToggleButton } from 'components/kit';
+import { Badge, Icon, Text } from 'components/kit';
 import ErrorBoundary from 'components/ErrorBoundary/ErrorBoundary';
 
 import { IGroupingPopoverProps } from 'types/components/GroupingPopover/GroupingPopover';
-import {
-  GroupNameType,
-  IGroupingSelectOption,
-} from 'types/services/models/metrics/metricsAppModel';
+import { IGroupingSelectOption } from 'types/services/models/metrics/metricsAppModel';
 
 import './GroupingPopover.scss';
 
@@ -31,6 +28,7 @@ function GroupingPopover({
   groupingSelectOptions,
   onSelect,
   onGroupingModeChange,
+  inputLabel,
 }: IGroupingPopoverProps): React.FunctionComponentElement<React.ReactNode> {
   const [inputValue, setInputValue] = React.useState('');
 
@@ -71,15 +69,16 @@ function GroupingPopover({
       : data;
   }, [groupName, groupingData, groupingSelectOptions]);
 
-  function handleGroupingMode(val: string | number, id: any) {
-    onGroupingModeChange({
-      groupName,
-      value: val === 'Reverse',
-      options: groupingData?.reverseMode[groupName as GroupNameType]
-        ? groupingSelectOptions
-        : null,
-    });
-  }
+  //ToDo reverse mode
+  // function handleGroupingMode(val: string | number, id: any) {
+  //   onGroupingModeChange({
+  //     groupName,
+  //     value: val === 'Reverse',
+  //     options: groupingData?.reverseMode[groupName as GroupNameType]
+  //       ? groupingSelectOptions
+  //       : null,
+  //   });
+  // }
 
   const options = React.useMemo(() => {
     if (inputValue.trim() !== '') {
@@ -107,7 +106,7 @@ function GroupingPopover({
               component='h3'
               className='GroupingPopover__subtitle'
             >
-              Select Fields for grouping by {groupName}
+              {inputLabel ?? `Select fields for grouping by ${groupName}`}
             </Text>
             <Autocomplete
               size='small'
@@ -131,12 +130,13 @@ function GroupingPopover({
                       setInputValue(e.target?.value);
                     },
                   }}
+                  className='TextField__OutLined__Small'
                   variant='outlined'
-                  placeholder='Select Params'
+                  placeholder='Select fields'
                 />
               )}
               renderTags={(value, getTagProps) => (
-                <div style={{ maxHeight: 110, overflow: 'auto' }}>
+                <div className='GroupingPopover__container__select__selectedFieldsContainer'>
                   {value.map((selected, i) => (
                     <Badge
                       key={i}
@@ -164,6 +164,8 @@ function GroupingPopover({
               )}
             />
           </div>
+
+          {/* //ToDo reverse mode
           <div className='GroupingPopover__toggleMode__div'>
             <Text
               size={12}
@@ -174,7 +176,7 @@ function GroupingPopover({
               select grouping mode
             </Text>
             <ToggleButton
-              title='Select Mode'
+              title='Select mode'
               id='yAxis'
               value={
                 groupingData?.reverseMode[groupName as GroupNameType]
@@ -187,11 +189,14 @@ function GroupingPopover({
               rightLabel='Reverse'
               onChange={handleGroupingMode}
             />
-          </div>
+          </div> */}
           {advancedComponent && (
             <ErrorBoundary>
               <div className='GroupingPopover__advanced__component'>
-                <Accordion className='GroupingPopover__accordion__container'>
+                <Accordion
+                  className='GroupingPopover__accordion__container'
+                  expanded={true}
+                >
                   <AccordionSummary
                     expandIcon={
                       <Icon

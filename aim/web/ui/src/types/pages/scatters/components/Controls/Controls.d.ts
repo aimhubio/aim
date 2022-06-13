@@ -1,5 +1,5 @@
 import {
-  IChartTooltip,
+  IPanelTooltip,
   IGroupingSelectOption,
 } from 'types/services/models/metrics/metricsAppModel';
 import { IProjectParamsMetrics } from 'types/services/models/projects/projectsModel';
@@ -13,9 +13,9 @@ export interface IControlProps {
   chartType: ChartTypeEnum;
   data: IScattersProps['scatterPlotData'];
   selectOptions: IGroupingSelectOption[];
-  tooltip: IChartTooltip;
+  tooltip: IPanelTooltip;
   projectsDataMetrics: IProjectParamsMetrics['metrics'];
-  onChangeTooltip: (tooltip: Partial<IChartTooltip>) => void;
+  onChangeTooltip: (tooltip: Partial<IPanelTooltip>) => void;
   trendlineOptions: ITrendlineOptions;
   onChangeTrendlineOptions: (options: Partial<ITrendlineOptions>) => void;
 }

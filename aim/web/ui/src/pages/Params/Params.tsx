@@ -195,6 +195,7 @@ const Params = ({
                   panelResizing={panelResizing}
                   chartProps={chartProps}
                   resizeMode={resizeMode}
+                  selectOptions={groupingSelectOptions}
                   controls={
                     <Controls
                       curveInterpolation={curveInterpolation}

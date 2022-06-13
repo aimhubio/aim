@@ -93,14 +93,17 @@ function ImagesExplore(): React.FunctionComponentElement<React.ReactNode> {
       return { sortFieldsDict: {}, sortFields: [] };
     }
     const grouping = imagesExploreData?.config?.grouping;
-    const group: string[] = [...(grouping?.group || [])];
-    const groupFields = grouping?.reverseMode?.group
-      ? imagesExploreData?.groupingSelectOptions.filter(
-          (option: IGroupingSelectOption) => !group.includes(option.value),
-        )
-      : imagesExploreData?.groupingSelectOptions.filter(
-          (option: IGroupingSelectOption) => group.includes(option.value),
-        );
+    const group: string[] = [...(grouping?.row || [])];
+    //ToDo reverse mode
+    const groupFields =
+      // grouping?.reverseMode?.row
+      //   ? imagesExploreData?.groupingSelectOptions.filter(
+      //       (option: IGroupingSelectOption) => !group.includes(option.value),
+      //     )
+      //   :
+      imagesExploreData?.groupingSelectOptions.filter(
+        (option: IGroupingSelectOption) => group.includes(option.value),
+      );
     let sortGroupFields = groupFields.reduce(
       (acc: SortFields, field: SortField) => {
         const resultField = imagesExploreData?.config?.images?.sortFieldsDict[
@@ -114,11 +117,13 @@ function ImagesExplore(): React.FunctionComponentElement<React.ReactNode> {
     sortGroupFields = sortGroupFields.concat(
       imagesExploreData?.config?.images?.sortFields
         .filter((field: SortField) => {
-          if (grouping?.reverseMode?.group) {
-            return group.includes(field.value);
-          } else {
-            return !group.includes(field.value);
-          }
+          //ToDo reverse mode
+
+          // if (grouping?.reverseMode?.row) {
+          //   return group.includes(field.value);
+          // } else {
+          return !group.includes(field.value);
+          // }
         })
         .map((field: SortField) => ({ ...field, readonly: false })),
     );
@@ -235,7 +240,7 @@ function ImagesExplore(): React.FunctionComponentElement<React.ReactNode> {
               />
               <Grouping
                 groupingPopovers={GroupingPopovers.filter(
-                  (g) => g.groupName === 'group',
+                  (g) => g.groupName === 'row',
                 )}
                 groupingData={imagesExploreData?.config?.grouping}
                 groupingSelectOptions={imagesExploreData?.groupingSelectOptions}
@@ -275,6 +280,7 @@ function ImagesExplore(): React.FunctionComponentElement<React.ReactNode> {
                 isLoading={
                   imagesExploreData?.requestStatus === RequestStatusEnum.Pending
                 }
+                selectOptions={imagesExploreData?.groupingSelectOptions}
                 panelResizing={panelResizing}
                 resizeMode={imagesExploreData?.config?.table.resizeMode}
                 tableHeight={imagesExploreData?.config?.table?.height}

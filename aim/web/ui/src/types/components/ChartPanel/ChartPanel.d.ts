@@ -11,6 +11,7 @@ import {
   IFocusedState,
   IAlignmentConfig,
   IChartZoom,
+  IGroupingSelectOption,
 } from 'types/services/models/metrics/metricsAppModel';
 import { IHighPlotProps } from 'types/components/HighPlot/HighPlot';
 
@@ -40,6 +41,7 @@ export interface IChartPanelProps {
     focusedStateActive?: boolean,
   ) => void;
   resizeMode?: ResizeModeEnum;
+  selectOptions: IGroupingSelectOption[];
 }
 
 export interface IChartPanelRef {

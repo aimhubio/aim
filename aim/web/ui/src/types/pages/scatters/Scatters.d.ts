@@ -19,7 +19,7 @@ import {
   IOnGroupingModeChangeParams,
   IOnGroupingSelectChangeParams,
   IFocusedState,
-  IChartTooltip,
+  IPanelTooltip,
   IChartTitleData,
   IGroupingSelectOption,
 } from 'types/services/models/metrics/metricsAppModel';
@@ -48,7 +48,7 @@ export interface IScattersProps extends Partial<RouteChildrenProps> {
   focusedState: IFocusedState;
   groupingData: IGroupingConfig;
   notifyData: IScatterAppModelState['notifyData'];
-  tooltip: IChartTooltip;
+  tooltip: IPanelTooltip;
   selectedOptionsData: ISelectConfig;
   tableRowHeight: RowHeightSize;
   sortFields: [string, 'asc' | 'desc' | boolean][];

@@ -11,6 +11,7 @@ import { formatSystemMetricName } from 'utils/formatSystemMetricName';
 import { isSystemMetric } from 'utils/isSystemMetric';
 
 import getColorFromRange from './getColorFromRange';
+import { formatYAxisByDefault } from './tickFormatting';
 
 function drawParallelAxes({
   axesNodeRef,
@@ -34,23 +35,18 @@ function drawParallelAxes({
 
   const yScale: YScaleType = {};
 
-  function getFormattedYAxis(yScale: d3.AxisScale<d3.AxisDomain>) {
-    const yAxis = d3.axisLeft(yScale);
-    const minTicksCount = 4;
-    const maxTicksCount = 20;
-    let ticksCount = Math.floor(plotBoxRef.current.height / 30);
-    ticksCount = _.clamp(ticksCount, minTicksCount, maxTicksCount);
-    yAxis.ticks(ticksCount);
-
-    const domainData = yScale.domain();
-    if (domainData.length > ticksCount) {
-      const ticks = domainData.filter(
-        (v, i, arr) => i % Math.ceil(arr.length / ticksCount) === 0,
-      );
-
-      yAxis.tickValues(ticks);
-    }
-
+  function getFormattedYAxis(scale: d3.AxisScale<d3.AxisDomain>) {
+    const { yAxis } = formatYAxisByDefault({
+      scale,
+      tickAdditionalConfig: {
+        distance: 30,
+      },
+      drawTickLines: {
+        tickSize: -width + (margin.left + margin.right),
+      },
+      plotBoxRef,
+      scaleType: ScaleEnum.Point,
+    });
     return yAxis;
   }
 

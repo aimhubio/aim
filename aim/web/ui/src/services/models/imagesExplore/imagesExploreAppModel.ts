@@ -105,12 +105,12 @@ let tooltipData: ITooltipData = {};
 function getConfig(): IImagesExploreAppConfig {
   return {
     grouping: {
-      group: [],
+      row: [],
       reverseMode: {
-        group: false,
+        row: false,
       },
       isApplied: {
-        group: true,
+        row: true,
       },
     },
     select: {
@@ -125,7 +125,7 @@ function getConfig(): IImagesExploreAppConfig {
       tooltip: {
         content: {},
         display: CONTROLS_DEFAULT_CONFIG.images.tooltip.display,
-        selectedParams: CONTROLS_DEFAULT_CONFIG.images.tooltip.selectedParams,
+        selectedFields: CONTROLS_DEFAULT_CONFIG.images.tooltip.selectedFields,
       },
       additionalProperties: {
         alignmentType: CONTROLS_DEFAULT_CONFIG.images.alignmentType,
@@ -396,7 +396,7 @@ function getImagesData(
             tooltip: {
               content: {},
               display: true,
-              selectedParams: [],
+              selectedFields: [],
             },
             focusedState: {
               active: false,
@@ -586,7 +586,7 @@ function setModelData(rawData: any[], configData: IImagesExploreAppConfig) {
     processedData: data,
     paramKeys: sortedParams,
     groupingSelectOptions,
-    groupingItems: ['group'],
+    groupingItems: ['row'],
     model,
   });
   if (configData.images.focusedState.key) {
@@ -598,7 +598,7 @@ function setModelData(rawData: any[], configData: IImagesExploreAppConfig) {
           ...configData.images.tooltip,
           content: filterTooltipContent(
             tooltipData[configData.images.focusedState.key],
-            configData?.images.tooltip.selectedParams,
+            configData?.images.tooltip.selectedFields,
           ),
         },
       },
@@ -677,7 +677,7 @@ function setModelData(rawData: any[], configData: IImagesExploreAppConfig) {
     tooltip: config.images.tooltip || {
       content: {},
       display: true,
-      selectedParams: [],
+      selectedFields: [],
     },
     focusedState: config.images.focusedState || {
       active: false,
@@ -735,7 +735,7 @@ function updateModelData(
     processedData: data,
     paramKeys: sortedParams,
     groupingSelectOptions,
-    groupingItems: ['group'],
+    groupingItems: ['row'],
     model,
   });
 
@@ -748,7 +748,7 @@ function updateModelData(
           ...configData.images.tooltip,
           content: filterTooltipContent(
             tooltipData[configData.images.focusedState.key],
-            configData?.images.tooltip.selectedParams,
+            configData?.images.tooltip.selectedFields,
           ),
         },
       },
@@ -800,19 +800,24 @@ function updateModelData(
 function getFilteredGroupingOptions(
   grouping: IImagesExploreAppConfig['grouping'],
 ): string[] {
-  const { reverseMode, isApplied } = grouping;
+  const {
+    // reverseMode,
+    isApplied,
+  } = grouping;
   const groupingSelectOptions:
     | IImagesExploreAppModelState['groupingSelectOptions']
     | undefined = model.getState()?.groupingSelectOptions;
   if (groupingSelectOptions) {
-    const filteredOptions = [...groupingSelectOptions]
-      .filter((opt) => grouping['group'].indexOf(opt.value as never) === -1)
-      .map((item) => item.value);
-    return isApplied['group']
-      ? reverseMode['group']
-        ? filteredOptions
-        : grouping['group']
-      : [];
+    // const filteredOptions = [...groupingSelectOptions]
+    //   .filter((opt) => grouping['row'].indexOf(opt.value as never) === -1)
+    //   .map((item) => item.value);
+    //ToDo reverse mode
+    // return isApplied['row']
+    //   ? reverseMode['row']
+    //     ? filteredOptions
+    //     : grouping['row']
+    //   : [];
+    return isApplied['row'] ? grouping['row'] : [];
   } else {
     return [];
   }
@@ -873,10 +878,17 @@ function onGroupingSelectChange({
   if (configData?.grouping) {
     configData.grouping = { ...configData.grouping, [groupName]: list };
     updateModelData(configData, true);
+    //ToDo reverse mode
+    // if (
+    //   configData.images?.additionalProperties?.stacking &&
+    //   (_.isEmpty(configData.grouping.row) ||
+    //     configData.grouping.reverseMode.row)
+    // ) {
+    //   onStackingToggle();
+    // }
     if (
       configData.images?.additionalProperties?.stacking &&
-      (_.isEmpty(configData.grouping.group) ||
-        configData.grouping.reverseMode.group)
+      _.isEmpty(configData.grouping.row)
     ) {
       onStackingToggle();
     }
@@ -894,14 +906,21 @@ function onGroupingModeChange({ value }: IOnGroupingModeChangeParams): void {
       ...configData.grouping,
       reverseMode: {
         ...configData.grouping.reverseMode,
-        group: value,
+        row: value,
       },
     };
     updateModelData(configData, true);
+    //ToDo reverse mode
+    // if (
+    //   configData.images?.additionalProperties?.stacking &&
+    //   (_.isEmpty(configData.grouping.row) ||
+    //     configData.grouping.reverseMode.row)
+    // ) {
+    //   onStackingToggle();
+    // }
     if (
       configData.images?.additionalProperties?.stacking &&
-      (_.isEmpty(configData.grouping.group) ||
-        configData.grouping.reverseMode.group)
+      _.isEmpty(configData.grouping.row)
     ) {
       onStackingToggle();
     }
@@ -909,7 +928,7 @@ function onGroupingModeChange({ value }: IOnGroupingModeChangeParams): void {
   if (value) {
     analytics.trackEvent(
       // @ts-ignore
-      ANALYTICS_EVENT_KEYS.images.groupings.group.modeChange,
+      ANALYTICS_EVENT_KEYS.images.groupings.row.modeChange,
       //@TODO change group to dynamic groupName when adding grouping type
     );
   }
@@ -927,10 +946,17 @@ function onGroupingReset(groupName: GroupNameType) {
       isApplied: { ...isApplied, [groupName]: true },
     };
     updateModelData(configData, true);
+    //ToDo reverse mode
+    // if (
+    //   configData.images?.additionalProperties?.stacking &&
+    //   (_.isEmpty(configData.grouping.row) ||
+    //     configData.grouping.reverseMode.row)
+    // ) {
+    //   onStackingToggle();
+    // }
     if (
       configData.images?.additionalProperties?.stacking &&
-      (_.isEmpty(configData.grouping.group) ||
-        configData.grouping.reverseMode.group)
+      _.isEmpty(configData.grouping.row)
     ) {
       onStackingToggle();
     }
@@ -945,7 +971,7 @@ function onGroupingApplyChange(): void {
       ...configData.grouping,
       isApplied: {
         ...configData.grouping.isApplied,
-        group: !configData.grouping.isApplied['group'],
+        row: !configData.grouping.isApplied['row'],
       },
     };
     updateModelData(configData, true);
@@ -1050,16 +1076,18 @@ function getDataAsImageSet(
     const configData: IImagesExploreAppConfig | undefined =
       model.getState()?.config;
     const imageSetData: object = {};
-    const group: string[] = [...(configData?.grouping?.group || [])];
-    const groupFields =
-      defaultGroupFields ||
-      (configData?.grouping?.reverseMode?.group
-        ? groupingSelectOptions
-            .filter(
-              (option: IGroupingSelectOption) => !group.includes(option.label),
-            )
-            .map((option) => option.value)
-        : group);
+    const group: string[] = [...(configData?.grouping?.row || [])];
+    //ToDo reverse mode
+    // const groupFields =
+    //   defaultGroupFields ||
+    //   (configData?.grouping?.reverseMode?.row
+    //     ? groupingSelectOptions
+    //         .filter(
+    //           (option: IGroupingSelectOption) => !group.includes(option.label),
+    //         )
+    //         .map((option) => option.value)
+    //     : group);
+    const groupFields = defaultGroupFields || group;
     const imagesDataForOrdering = {};
     data.forEach((group: any) => {
       const path = groupFields?.reduce(
@@ -1142,7 +1170,7 @@ function onActivePointChange(
               ...configData.images.tooltip,
               content: filterTooltipContent(
                 tooltipData[activePoint.key],
-                configData?.images.tooltip.selectedParams,
+                configData?.images.tooltip.selectedFields,
               ),
             }
           : configData.images.tooltip,
@@ -1165,10 +1193,10 @@ function onChangeTooltip(tooltip: Partial<IPanelTooltip>): void {
   let configData = model.getState()?.config;
   if (configData?.images) {
     let content = configData.images.tooltip.content;
-    if (tooltip.selectedParams && configData?.images.focusedState.key) {
+    if (tooltip.selectedFields && configData?.images.focusedState.key) {
       content = filterTooltipContent(
         tooltipData[configData.images.focusedState.key],
-        tooltip.selectedParams,
+        tooltip.selectedFields,
       );
     }
     configData = {

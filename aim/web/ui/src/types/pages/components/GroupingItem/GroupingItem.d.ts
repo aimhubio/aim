@@ -9,7 +9,7 @@ import { IGroupingConfig } from 'types/services/models/explorer/createAppModel';
 
 export interface IGroupingItemProps extends IGroupingPopoverProps {
   title: string;
-  advancedTitle?: string;
+  inputLabel?: string;
   groupName: GroupNameType;
   groupingData: IGroupingConfig;
   advancedComponent?: React.FunctionComponentElement<React.ReactNode>;

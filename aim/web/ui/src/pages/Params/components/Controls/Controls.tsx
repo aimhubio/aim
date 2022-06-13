@@ -22,14 +22,14 @@ function Controls(
     return (
       props.tooltip.display !==
         CONTROLS_DEFAULT_CONFIG.params.tooltip.display ||
-      props.tooltip.selectedParams.length !==
-        CONTROLS_DEFAULT_CONFIG.params.tooltip.selectedParams.length
+      props.tooltip.selectedFields.length !==
+        CONTROLS_DEFAULT_CONFIG.params.tooltip.selectedFields.length
     );
   }, [props.tooltip]);
   return (
     <ErrorBoundary>
       <div className='Params__Controls__container'>
-        <Tooltip title='Curve Interpolation'>
+        <Tooltip title='Curve interpolation'>
           <div
             className={`Params__Controls__anchor ${
               props.curveInterpolation === CurveEnum.Linear
@@ -46,7 +46,7 @@ function Controls(
             />
           </div>
         </Tooltip>
-        <Tooltip title='Color Indicator'>
+        <Tooltip title='Color indicator'>
           <div
             className={`Params__Controls__anchor ${
               props.isVisibleColorIndicator ? 'active outlined' : ''
@@ -64,9 +64,9 @@ function Controls(
         <div>
           <ErrorBoundary>
             <ControlPopover
-              title='Display in Tooltip'
+              title='Display in tooltip'
               anchor={({ onAnchorClick, opened }) => (
-                <Tooltip title='Tooltip Params'>
+                <Tooltip title='Tooltip fields'>
                   <div
                     onClick={onAnchorClick}
                     className={`Params__Controls__anchor ${
@@ -90,7 +90,7 @@ function Controls(
               component={
                 <TooltipContentPopover
                   selectOptions={props.selectOptions}
-                  selectedParams={props.tooltip.selectedParams}
+                  selectedFields={props.tooltip.selectedFields}
                   displayTooltip={props.tooltip.display}
                   onChangeTooltip={props.onChangeTooltip}
                 />
