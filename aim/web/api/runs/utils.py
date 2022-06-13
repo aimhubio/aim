@@ -154,6 +154,7 @@ async def metric_search_result_streamer(traces: SequenceCollection,
                                         x_axis: Optional[str] = None,
                                         report_progress: Optional[bool] = True) -> bytes:
     last_reported_progress_time = time.time()
+    progress = None
     for run_trace_collection, progress in traces.iter_runs():
         if report_progress and time.time() - last_reported_progress_time > AIM_PROGRESS_REPORT_INTERVAL:
             yield collect_run_streamable_data(encode_tree({'progress': progress}))
@@ -196,6 +197,9 @@ async def metric_search_result_streamer(traces: SequenceCollection,
                 yield collect_run_streamable_data(encode_tree({'progress': progress}))
                 last_reported_progress_time = time.time()
 
+    if report_progress and progress:
+        yield collect_run_streamable_data(encode_tree({'progress': progress}))
+
 
 def run_search_result_streamer(runs: SequenceCollection,
                                limit: int,
@@ -203,6 +207,7 @@ def run_search_result_streamer(runs: SequenceCollection,
                                report_progress: Optional[bool] = True) -> bytes:
     run_count = 0
     last_reported_progress_time = time.time()
+    progress = None
     for run_trace_collection, progress in runs.iter_runs():
         # if no progress was reported for a long interval, report progress
         if report_progress and time.time() - last_reported_progress_time > AIM_PROGRESS_REPORT_INTERVAL:
@@ -227,6 +232,9 @@ def run_search_result_streamer(runs: SequenceCollection,
         run_count += 1
         if limit and run_count >= limit:
             break
+
+    if report_progress and progress:
+        yield collect_run_streamable_data(encode_tree({'progress': progress}))
 
 
 def collect_requested_metric_traces(run: Run, requested_traces: List[TraceBase], steps_num: int = 200) -> List[dict]:
