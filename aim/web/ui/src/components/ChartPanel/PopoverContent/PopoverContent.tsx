@@ -39,7 +39,6 @@ const PopoverContent = React.forwardRef(function PopoverContent(
   const {
     selectedFields = {},
     groupConfig = {},
-    runHash = '',
     name = '',
     context = {},
   } = tooltipContent || {};
@@ -228,13 +227,16 @@ const PopoverContent = React.forwardRef(function PopoverContent(
               </div>
             </ErrorBoundary>
           )}
-          {focusedState?.active && runHash ? (
+          {focusedState?.active && tooltipContent.run.hash ? (
             <ErrorBoundary>
               <div>
                 <Divider />
                 <div className='PopoverContent__box'>
                   <Link
-                    to={PathEnum.Run_Detail.replace(':runHash', runHash)}
+                    to={PathEnum.Run_Detail.replace(
+                      ':runHash',
+                      tooltipContent.run.hash,
+                    )}
                     component={RouteLink}
                     className='PopoverContent__runDetails'
                     underline='none'
@@ -248,7 +250,7 @@ const PopoverContent = React.forwardRef(function PopoverContent(
                 <Divider />
                 <div className='PopoverContent__box'>
                   <ErrorBoundary>
-                    <AttachedTagsList runHash={runHash} />
+                    <AttachedTagsList runHash={tooltipContent.run.hash} />
                   </ErrorBoundary>
                 </div>
               </div>
