@@ -101,7 +101,8 @@ def iter_fold_tree(
     paths_vals: Iterator[Tuple[AimObjectPath, Any]],
     level: int = 0,
     strict: bool = True,
-    resolve_objects: bool = False
+    resolve_objects: bool = False,
+    skip_top_level: bool = False
 ):
     cdef int idx
     stack = []
@@ -112,6 +113,9 @@ def iter_fold_tree(
         if keys:
             raise StopIteration
         node = val_to_node(val, resolve_objects=resolve_objects)
+        # TODO [AT]: fix this
+        if skip_top_level and node == []:
+            node = {}
         stack.append(node)
     except StopIteration:
         if level > 0:
@@ -272,9 +276,11 @@ def decode_tree(
 
 def iter_decode_tree(
     paths_vals: Iterator[Tuple[bytes, bytes]],
-    level: int = 1
+    level: int = 1,
+    skip_top_level: bool = False
 ):
     return iter_fold_tree(
         DecodePathsVals(paths_vals),
-        level=level
+        level=level,
+        skip_top_level=skip_top_level
     )

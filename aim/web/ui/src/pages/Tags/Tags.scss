@@ -182,16 +182,32 @@
       );
     }
   }
+  &__runDuration {
+    font-weight: 500;
+    color: $text-color;
+    font-size: $text-lg;
+    @include monospaceFontFamily(14);
+  }
   &__runCreatedDate {
     font-weight: 500;
     color: $text-color;
+    font-size: $text-lg;
+    @include monospaceFontFamily(14);
   }
   &__runName {
     font-weight: 500;
     color: $primary-color;
     text-decoration: none;
+    font-size: $text-lg;
+    @include monospaceFontFamily(14);
   }
   .BaseTable {
+    .BaseTable__table-main .BaseTable__row-cell:first-child {
+      padding-left: $space-lg;
+      .Table__status_indicator {
+        left: $space-xxs;
+      }
+    }
     &__body {
       & > div {
         width: 100% !important;

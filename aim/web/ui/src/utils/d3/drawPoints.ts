@@ -19,8 +19,8 @@ function drawPoints(args: IDrawPointsArgs): void {
   ): void {
     pointsNodeRef.current
       .selectAll('.Circle')
-      .attr('cx', (p: IPoint) => xScale(p.data.xValues[0]))
-      .attr('cy', (p: IPoint) => yScale(p.data.yValues[0]))
+      .attr('cx', (p: IPoint) => xScale(p.data.xValues[0]).toFixed(0))
+      .attr('cy', (p: IPoint) => yScale(p.data.yValues[0]).toFixed(0))
       .attr('r', CircleEnum.Radius);
   };
 
@@ -37,10 +37,12 @@ function drawPoints(args: IDrawPointsArgs): void {
       .attr('id', (p: IPoint) => `Circle-${p.key}`)
       .attr('clip-path', `url(#${nameKey}-lines-rect-clip-${index})`)
       .attr('groupKey', (p: IPoint) => p.groupKey)
-      .attr('cx', (p: IPoint) => xScale(p.data.xValues[0]))
-      .attr('cy', (p: IPoint) => yScale(p.data.yValues[0]))
+      .attr('cx', (p: IPoint) => xScale(p.data.xValues[0]).toFixed(0))
+      .attr('cy', (p: IPoint) => yScale(p.data.yValues[0]).toFixed(0))
       .attr('r', CircleEnum.Radius)
-      .style('fill', (p: IPoint) => p.color);
+      .attr('fill', (p: IPoint) => p.color)
+      .attr('stroke', (d: IPoint) => d.color)
+      .attr('color', (d: IPoint) => d.color);
   };
 
   pointsRef.current.updatePoints(data);
