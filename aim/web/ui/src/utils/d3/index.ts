@@ -27,7 +27,7 @@ enum AlignmentOptionsEnum {
 }
 
 enum CircleEnum {
-  Radius = 3,
+  Radius = 2.6,
   ActiveRadius = 5,
 }
 

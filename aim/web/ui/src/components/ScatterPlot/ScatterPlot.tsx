@@ -95,7 +95,7 @@ const ScatterPlot = React.forwardRef(function ScatterPlot(
       if (visAreaRef.current && !readOnly) {
         d3.select(visAreaRef.current)
           .append('text')
-          .classed('ScatterPlot__emptyData', true)
+          .classed('emptyData', true)
           .text('No Data');
 
         if (attributesRef.current?.clearHoverAttributes) {
