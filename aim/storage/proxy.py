@@ -103,8 +103,11 @@ class Eager2:
         res = None
         cache_key = None
         if self.cache is not None:
-            cache_key = self.view.container.prefix + self.name.encode()
-            res = self.cache.get(cache_key)
+            try:
+                cache_key = self.view.container.prefix + str(self.name).encode()
+                res = self.cache.get(cache_key)
+            except Exception:
+                pass
 
         if res is None:
             w = self.view
@@ -119,7 +122,7 @@ class Eager2:
             except KeyError:
                 res = Undefined()
 
-            if self.cache is not None:
+            if self.cache is not None and cache_key is not None:
                 self.cache[cache_key] = res
 
         return res
@@ -158,8 +161,11 @@ class Eager4:
         res = None
         cache_key = None
         if self.cache is not None:
-            cache_key = self.view.container.prefix + self.key.encode()
-            res = self.cache.get(cache_key)
+            try:
+                cache_key = self.view.container.prefix + str(self.key).encode()
+                res = self.cache.get(cache_key)
+            except Exception:
+                pass
 
         if res is None:
             w = self.view
@@ -169,7 +175,7 @@ class Eager4:
             except KeyError:
                 res = Undefined()
 
-            if self.cache is not None:
+            if self.cache is not None and cache_key is not None:
                 self.cache[cache_key] = res
 
             return res
