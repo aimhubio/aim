@@ -9,8 +9,7 @@
   user-select: none;
   min-width: toRem(150px);
   min-height: toRem(150px);
-
-  &__emptyData {
+  .emptyData {
     font-size: 1em;
     fill: #586069;
     position: absolute;
@@ -18,43 +17,38 @@
     left: 50%;
     transform: translate(-50%, -50%);
   }
-
   &.backgroundRect {
     cursor: crosshair;
   }
-
   &.zoomMode rect {
     cursor: zoom-in;
   }
-
   .HoverLine {
     stroke: #94999f; /* var(--grey-light) */
   }
-
   .HoverCircle {
-    stroke: #3b5896; /* var(--primary) */
-    stroke-width: 1;
     cursor: pointer;
-  }
-
-  /* on click */
-  .HoverCircle.focus {
-    stroke: #3b5896; /* var(--primary) */
-    stroke-width: 2;
     opacity: 1;
+    stroke-width: 1.45;
+    fill: white;
+    outline: 0 solid;
+    border-radius: 50%;
+    /* on click */
+    &.focus {
+      stroke-width: 2;
+      outline-width: 6px;
+      clip-path: unset;
+    }
+    /* on hover */
+    &.active {
+      stroke-width: 2.6;
+    }
   }
-
-  /* on hover */
-  .HoverCircle.active {
-    stroke: $primary-light;
-    stroke-width: 3;
-    opacity: 1;
+  .Attributes {
+    &.highlight > .HoverCircle:not(.active):not(.focus) {
+      opacity: 0.5;
+    }
   }
-
-  .Attributes.highlight > .HoverCircle:not(.active):not(.focus) {
-    opacity: 0.5;
-  }
-
   .ChartMouseValue {
     position: absolute;
     box-sizing: border-box;
@@ -66,14 +60,12 @@
     font-weight: normal;
     white-space: nowrap;
   }
-
   .ChartMouseValueXAxis {
     transform: translateX(-50%);
     border-radius: 0 0 6px 6px;
     border-top: none;
     overflow: hidden;
   }
-
   .ChartMouseValueYAxis {
     transform: translateY(-50%);
     border-radius: 6px 0 0 6px;
@@ -81,7 +73,6 @@
     overflow: hidden;
     box-shadow: inset -8px 0 5px -6px #3b5896; /* var(--primary);*/
   }
-
   .Lines {
     overflow: hidden;
     @media (-webkit-min-device-pixel-ratio: 2), (min-resolution: 192dpi) {
@@ -89,51 +80,54 @@
         shape-rendering: optimizeSpeed;
       }
     }
+    &.highlight {
+      .AggrLine {
+        opacity: 0.2;
+        &.highlighted {
+          opacity: 1;
+        }
+      }
+      .AggrArea {
+        &.highlighted {
+          opacity: 1;
+        }
+      }
+      & > .Line:not(.active):not(.highlighted):not(.aggregated) {
+        stroke-width: 1.45;
+        opacity: 0.2;
+      }
+      & > .AggrArea:not(.highlighted) {
+        opacity: 0.2;
+      }
+    }
   }
-
   .Line {
     stroke-width: 1.45;
     opacity: 1;
-
     &.active {
       opacity: 1;
-      stroke-width: 3px;
+      stroke-width: 3;
     }
-
-    &.aggregated {
-      opacity: 0;
-
-      &.highlighted {
-        opacity: 0.5;
-      }
-
-      &.active {
-        opacity: 0.8;
-      }
-    }
-
     &.highlighted {
       opacity: 1;
-      stroke-width: 2.2px;
+      stroke-width: 2.8;
+    }
+    &.aggregated {
+      opacity: 0;
+      stroke-width: 0.4;
+      &.highlighted {
+        opacity: 0.5;
+        stroke-width: 2.8;
+      }
+      &.active {
+        opacity: 0.8;
+        stroke-width: 2.8;
+      }
     }
   }
-
-  .Lines.highlight > .Line:not(.active):not(.highlighted):not(.aggregated) {
-    stroke-width: 1.45;
-    opacity: 0.2;
-  }
-
   .AggrLine {
     opacity: 1;
-    stroke-width: 2.2px;
-  }
-
-  .Lines.highlight > .AggrArea:not(.highlighted) {
-    opacity: 0.2;
-  }
-
-  .AggrArea.highlighted {
-    opacity: 1;
+    stroke-width: 2.2;
   }
 
   .inProgressLineIndicator {
