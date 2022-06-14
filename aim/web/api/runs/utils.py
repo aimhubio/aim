@@ -155,9 +155,11 @@ async def metric_search_result_streamer(traces: SequenceCollection,
                                         report_progress: Optional[bool] = True) -> bytes:
     last_reported_progress_time = time.time()
     progress = None
+    progress_reports_sent = 0
     for run_trace_collection, progress in traces.iter_runs():
         if report_progress and time.time() - last_reported_progress_time > AIM_PROGRESS_REPORT_INTERVAL:
-            yield collect_run_streamable_data(encode_tree({'progress': progress}))
+            yield collect_run_streamable_data(encode_tree({f'progress_{progress_reports_sent}': progress}))
+            progress_reports_sent += 1
             last_reported_progress_time = time.time()
 
         run = None
@@ -194,11 +196,12 @@ async def metric_search_result_streamer(traces: SequenceCollection,
             encoded_tree = encode_tree(run_dict)
             yield collect_run_streamable_data(encoded_tree)
             if report_progress:
-                yield collect_run_streamable_data(encode_tree({'progress': progress}))
+                yield collect_run_streamable_data(encode_tree({f'progress_{progress_reports_sent}': progress}))
+                progress_reports_sent += 1
                 last_reported_progress_time = time.time()
 
     if report_progress and progress:
-        yield collect_run_streamable_data(encode_tree({'progress': progress}))
+        yield collect_run_streamable_data(encode_tree({f'progress_{progress_reports_sent}': progress}))
 
 
 def run_search_result_streamer(runs: SequenceCollection,
@@ -208,10 +211,12 @@ def run_search_result_streamer(runs: SequenceCollection,
     run_count = 0
     last_reported_progress_time = time.time()
     progress = None
+    progress_reports_sent = 0
     for run_trace_collection, progress in runs.iter_runs():
         # if no progress was reported for a long interval, report progress
         if report_progress and time.time() - last_reported_progress_time > AIM_PROGRESS_REPORT_INTERVAL:
-            yield collect_run_streamable_data(encode_tree({'progress': progress}))
+            yield collect_run_streamable_data(encode_tree({f'progress_{progress_reports_sent}': progress}))
+            progress_reports_sent += 1
             last_reported_progress_time = time.time()
         if not run_trace_collection:
             continue
@@ -227,14 +232,15 @@ def run_search_result_streamer(runs: SequenceCollection,
         encoded_tree = encode_tree(run_dict)
         yield collect_run_streamable_data(encoded_tree)
         if report_progress:
-            yield collect_run_streamable_data(encode_tree({'progress': progress}))
+            yield collect_run_streamable_data(encode_tree({f'progress_{progress_reports_sent}': progress}))
+            progress_reports_sent += 1
             last_reported_progress_time = time.time()
         run_count += 1
         if limit and run_count >= limit:
             break
 
     if report_progress and progress:
-        yield collect_run_streamable_data(encode_tree({'progress': progress}))
+        yield collect_run_streamable_data(encode_tree({f'progress_{progress_reports_sent}': progress}))
 
 
 def collect_requested_metric_traces(run: Run, requested_traces: List[TraceBase], steps_num: int = 200) -> List[dict]:
