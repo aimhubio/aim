@@ -48,12 +48,16 @@ function AutocompleteInput({
       );
       monaco.editor.setTheme(monacoConfig.theme.name);
     }
+    const onResize = _.throttle(() => {
+      setContainerWidth(window.innerWidth);
+    }, 500);
     window.addEventListener('resize', onResize);
     // inserting given object for autosuggestion
     handleBlur();
     const disposable = showAutocompletion(monaco, context);
     return () => {
       disposable?.dispose();
+      window.removeEventListener('resize', onResize);
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [monaco, context, mounted]);
@@ -70,10 +74,6 @@ function AutocompleteInput({
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [value]);
-
-  const onResize = _.debounce(() => {
-    setContainerWidth(window.innerWidth);
-  }, 500);
 
   const monacoConfig: Record<any, any> = React.useMemo(() => {
     return getMonacoConfig(advanced);
