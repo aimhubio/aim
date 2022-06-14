@@ -31,9 +31,9 @@ const config: IExplorerConfig = {
   explorerName: 'Images Explorer',
   engine: {
     useCache: false,
-    sequenceName: SequenceTypesEnum.Texts,
+    sequenceName: SequenceTypesEnum.Figures,
     adapter: {
-      objectDepth: AimObjectDepths.Index,
+      objectDepth: AimObjectDepths.Step,
     },
     grouping: {
       row: {
