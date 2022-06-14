@@ -27,6 +27,7 @@ def runs(ctx, repo):
 @runs.command(name='ls')
 @click.pass_context
 def list_runs(ctx):
+    """List Runs available in Repo."""
     repo_path = ctx.obj['repo']
     if not Repo.exists(repo_path):
         click.echo(f'\'{repo_path}\' is not a valid aim repo.')
@@ -42,6 +43,7 @@ def list_runs(ctx):
 @click.argument('hashes', nargs=-1, type=str)
 @click.pass_context
 def remove_runs(ctx, hashes):
+    """Remove Run data for given run hashes."""
     if len(hashes) == 0:
         click.echo('Please specify at least one Run to delete.')
         exit(1)
@@ -73,6 +75,7 @@ def remove_runs(ctx, hashes):
 @click.argument('hashes', nargs=-1, type=str)
 @click.pass_context
 def copy_runs(ctx, destination, hashes):
+    """Copy Run data for given run hashes to destination Repo."""
     if len(hashes) == 0:
         click.echo('Please specify at least one Run to copy.')
         exit(1)
@@ -100,6 +103,7 @@ def copy_runs(ctx, destination, hashes):
 @click.argument('hashes', nargs=-1, type=str)
 @click.pass_context
 def move_runs(ctx, destination, hashes):
+    """Move Run data for given run hashes to destination Repo."""
     if len(hashes) == 0:
         click.echo('Please specify at least one Run to move.')
         exit(1)
@@ -121,6 +125,7 @@ def move_runs(ctx, destination, hashes):
 @click.argument('bucket', nargs=1, type=str)
 @click.pass_context
 def upload_runs(ctx, bucket):
+    """Upload Repo backup to the given S3 bucket."""
     repo_path = ctx.obj['repo']
     if not Repo.exists(repo_path):
         click.echo(f'\'{repo_path}\' is not a valid aim repo.')
@@ -140,6 +145,7 @@ def upload_runs(ctx, bucket):
 @click.argument('hashes', nargs=-1, type=str)
 @click.pass_context
 def update_runs(ctx, hashes):
+    """Update Runs data for given run hashes to use new format."""
     if len(hashes) == 0:
         click.echo('Please specify at least one Run to update.')
         exit(1)
@@ -169,6 +175,7 @@ def update_runs(ctx, hashes):
 @click.argument('hashes', nargs=-1, type=str)
 @click.pass_context
 def restore_runs(ctx, hashes):
+    """Rollback Runs data for given run hashes to the previous ."""
     if len(hashes) == 0:
         click.echo('Please specify at least one Run to delete.')
         exit(1)
