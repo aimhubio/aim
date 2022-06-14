@@ -66,7 +66,7 @@ class BaseRun:
         v1_metric_found = False
         for ctx_metadata in traces_tree.values():
             for seq_metadata in ctx_metadata.values():
-                if seq_metadata['dtype'] in metric_dtypes:
+                if seq_metadata.get('dtype', 'float') in metric_dtypes:
                     if seq_metadata.get('version', 1) == 1:
                         v1_metric_found = True
                         break
@@ -78,7 +78,7 @@ class BaseRun:
 
         for ctx_id, ctx_traces in series_meta_tree.items():
             for name, trace_info in ctx_traces.items():
-                if (trace_info['dtype'] in metric_dtypes) and (trace_info.get('version', 1) == 1):
+                if (trace_info.get('dtype', 'float') in metric_dtypes) and (trace_info.get('version', 1) == 1):
                     series = self.series_run_trees[1].subtree((ctx_id, name))
                     new_series = self.series_run_trees[2].subtree((ctx_id, name))
                     step_view = new_series.array('step', dtype='int64').allocate()
