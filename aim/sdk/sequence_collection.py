@@ -94,12 +94,14 @@ class SingleRunSequenceCollection(SequenceCollection):
         self,
         run: 'Run',
         seq_cls=Sequence,
-        query: str = ''
+        query: str = '',
+        runs_proxy_cache: dict = None
     ):
         self.run: 'Run' = run
         self.seq_cls = seq_cls
         self._item = 'sequence'
         self.query = RestrictedPythonQuery(query)
+        self.runs_proxy_cache = runs_proxy_cache
 
     def iter_runs(self) -> Iterator['SequenceCollection']:
         """"""
@@ -113,7 +115,7 @@ class SingleRunSequenceCollection(SequenceCollection):
         allowed_dtypes = self.seq_cls.allowed_dtypes()
         seq_var = self.seq_cls.sequence_name()
         for seq_name, ctx, run in self.run.iter_sequence_info_by_type(allowed_dtypes):
-            run_view = RunView(run)
+            run_view = RunView(run, self.runs_proxy_cache)
             seq_view = SequenceView(seq_name, ctx.to_dict(), run_view)
             match = self.query.check(**{'run': run_view, seq_var: seq_view})
             if not match:
@@ -149,6 +151,7 @@ class QuerySequenceCollection(SequenceCollection):
         self._item = 'sequence'
         self.query = query
         self.report_mode = report_mode
+        self.runs_proxy_cache = dict()
 
     def iter_runs(self) -> Iterator['SequenceCollection']:
         """"""
@@ -163,7 +166,8 @@ class QuerySequenceCollection(SequenceCollection):
             progress_bar = tqdm(total=total_runs)
 
         for run in runs_iterator:
-            seq_collection = SingleRunSequenceCollection(run, self.seq_cls, self.query)
+            seq_collection = SingleRunSequenceCollection(run, self.seq_cls, self.query,
+                                                         runs_proxy_cache=self.runs_proxy_cache)
             if self.report_mode == QueryReportMode.PROGRESS_TUPLE:
                 yield seq_collection, (runs_counter, total_runs)
             else:
