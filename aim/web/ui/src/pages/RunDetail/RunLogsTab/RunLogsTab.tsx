@@ -141,11 +141,11 @@ function RunLogsTab({
         dataRef.current?.length - 1
     ) {
       if (!_.isEmpty(keysList)) {
-        listRef.current?.scrollToItem?.(dataRef.current?.length - 1, 'end');
+        listRef.current?.scrollToItem?.(dataRef.current?.length, 'end');
       }
     } else if (lastRequestType === LogsLastRequestEnum.DEFAULT) {
       if (!_.isEmpty(keysList)) {
-        listRef.current?.scrollToItem?.(dataRef.current?.length - 1, 'end');
+        listRef.current?.scrollToItem?.(dataRef.current?.length, 'end');
       }
     } else {
       listRef.current?.scrollToItem?.(
