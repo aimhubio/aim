@@ -31,6 +31,7 @@ function GroupingPopover({
   inputLabel,
 }: IGroupingPopoverProps): React.FunctionComponentElement<React.ReactNode> {
   const [inputValue, setInputValue] = React.useState('');
+  const [open, setOpen] = React.useState(false);
 
   function onChange(e: any, values: IGroupingSelectOption[]): void {
     if (e?.code !== 'Backspace') {
@@ -80,6 +81,10 @@ function GroupingPopover({
   //   });
   // }
 
+  function onAutocompleteOpen(): void {
+    setOpen(true);
+  }
+
   const options = React.useMemo(() => {
     if (inputValue.trim() !== '') {
       const filtered = groupingSelectOptions.filter((item) => {
@@ -109,8 +114,9 @@ function GroupingPopover({
               {inputLabel ?? `Select fields for grouping by ${groupName}`}
             </Text>
             <Autocomplete
-              size='small'
               multiple
+              openOnFocus
+              size='small'
               disableCloseOnSelect
               options={options}
               value={values}
