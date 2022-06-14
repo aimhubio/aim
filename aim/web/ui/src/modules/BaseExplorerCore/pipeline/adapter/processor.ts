@@ -83,7 +83,18 @@ export function storageDataToFlatList(
   const objectList: AimFlatObjectBase[] = []; // @CHECK make by hash function
   let params: string[] = [];
   let sequenceInfo: string[] = [];
-  let modifiers: string[] = ['run.hash', 'run.name', 'run.experiment'];
+  let modifiers: string[] = [
+    'run.hash',
+    'run.name',
+    'run.experiment',
+    'run.creation_time',
+    'run.end_time',
+    'run.archived',
+    'run.active',
+    'run.description',
+  ];
+  //@ToDO set name for this var
+  let a: string[] = [];
 
   const depthInterceptor = depthInterceptors[objectDepth];
 
@@ -96,9 +107,9 @@ export function storageDataToFlatList(
 
     /** depth 0 */ // RUN
     let run = {
-      ..._.omit(item.props, ['experiment']),
+      ..._.omit(item.props, ['experiment, creation_time']),
       hash: item.hash,
-      inProgress: !item.props.end_time,
+      active: !item.props.end_time,
       experiment: item.props.experiment?.name,
       ...item.params,
     };
@@ -163,7 +174,7 @@ export function storageDataToFlatList(
                 index: rec.index,
                 epoch: trace.epochs[stepIndex],
               };
-              modifiers = modifiers.concat(getObjectPaths(record, 'record'));
+              a = a.concat(getObjectPaths(record, 'record'));
               collectedDataByDepth = {
                 ...collectedDataByDepth,
                 record,
@@ -180,10 +191,9 @@ export function storageDataToFlatList(
       });
     }
   });
-
   params = _.uniq(params);
   sequenceInfo = _.uniq(sequenceInfo);
-  modifiers = [..._.uniq(modifiers), ...params, ...sequenceInfo];
+  modifiers = [..._.uniq(modifiers), ...params, ..._.uniq(a), ...sequenceInfo];
 
   return {
     objectList,

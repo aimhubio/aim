@@ -61,18 +61,13 @@ export interface IUpdateFocusedChartArgs {
   force?: boolean;
 }
 
-export interface IBrushRef {
-  updateScales?: (xScale: IAxisScale, yScale: IAxisScale) => void;
-  xScale?: IAxisScale;
-  yScale?: IAxisScale;
-  handleZoomIn?: (xValues: [number, number], yValues: [number, number]) => void;
-}
-
 export interface IAttributesRef {
   focusedState?: IFocusedState;
   activePoint?: IActivePoint;
   nearestCircles?: INearestCircle[];
-  xStep?: number;
+  groupKey?: string;
+  currentXValue?: number | string;
+  scaledValues?: { x: number; y: number }[][];
   lineKey?: string;
   dataSelector?: string;
   xScale?: IAxisScale;

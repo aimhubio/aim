@@ -35,6 +35,7 @@ export interface ITagSoftDeleteProps {
 
 export interface ITagRun {
   creation_time: number;
+  end_time: number | null;
   experiment: string | null;
   name: string;
   run_id: string;
@@ -58,9 +59,6 @@ export interface ITagDetailProps {
   tagRuns: any;
 }
 
-export interface ITagRunsTableProps {
-  runsList: ITagRun[];
-}
 export interface ITagsTableProps {
   tableRef: React.RefObject<any>;
   tagsList: ITagProps[];

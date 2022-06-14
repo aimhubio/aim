@@ -10,7 +10,6 @@ import useResizeObserver from 'hooks/window/useResizeObserver';
 
 import {
   IAttributesRef,
-  IBrushRef,
   ILineChartProps,
 } from 'types/components/LineChart/LineChart';
 import { IFocusedState } from 'types/services/models/metrics/metricsAppModel';
@@ -83,7 +82,6 @@ const LineChart = React.forwardRef(function LineChart(
 
   // methods and values refs
   const axesRef = React.useRef({});
-  const brushRef = React.useRef<IBrushRef>({});
   const linesRef = React.useRef({});
   const attributesRef = React.useRef<IAttributesRef>({});
   const humanizerConfigRef = React.useRef({});
@@ -128,7 +126,7 @@ const LineChart = React.forwardRef(function LineChart(
       if (visAreaRef.current && !readOnly) {
         d3.select(visAreaRef.current)
           .append('text')
-          .classed('LineChart__emptyData', true)
+          .classed('emptyData', true)
           .text('No Data');
 
         if (attributesRef.current?.clearHoverAttributes) {
@@ -205,7 +203,6 @@ const LineChart = React.forwardRef(function LineChart(
 
     drawBrush({
       index,
-      brushRef,
       plotBoxRef,
       plotNodeRef,
       visBoxRef,
