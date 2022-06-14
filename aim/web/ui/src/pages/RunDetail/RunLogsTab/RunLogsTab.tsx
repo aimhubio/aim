@@ -120,7 +120,7 @@ function RunLogsTab({
   React.useEffect(() => {
     const values = _.sortBy(Object.values(runLogs ?? {}), 'index');
     const keys = _.sortBy(values.map((value) => value.index));
-    const arrayWithEmptyStrings = Array(3).join('.').split('.');
+    const arrayWithEmptyStrings = Array(3).fill('');
     rangeRef.current = [keys[0], keys[keys.length - 1]];
     setKeyList(keys);
     dataRef.current = values.concat(arrayWithEmptyStrings);
