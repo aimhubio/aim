@@ -22,6 +22,7 @@
 - Add the date and the duration of run in the header of the single run page (VkoHov)
 - Add the name, status and duration of run in the runs table of the tags page (VkoHov)
 - Fit long name values in manage columns popover (arsengit)
+- Add caching mechanism for sequence queries to optimize query performance (mihran113)
 
 ### Fixes:
 
