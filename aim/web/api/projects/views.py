@@ -5,7 +5,6 @@ from typing import Optional, Tuple
 from collections import Counter
 from fastapi import Depends, HTTPException, Request, Query
 from aim.web.api.utils import APIRouter  # wrapper for fastapi.APIRouter
-from urllib import parse
 
 from aim.web.configs import AIM_UI_TELEMETRY_KEY
 from aim.web.api.projects.project import Project
@@ -36,7 +35,7 @@ async def project_api():
 
 
 @projects_router.get('/activity/', response_model=ProjectActivityApiOut)
-async def project_activity_api(request: Request, factory=Depends(object_factory)):
+async def project_activity_api(factory=Depends(object_factory)):
     project = Project()
 
     if not project.exists():
