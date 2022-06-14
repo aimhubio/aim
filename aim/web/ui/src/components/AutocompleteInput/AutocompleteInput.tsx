@@ -48,7 +48,7 @@ function AutocompleteInput({
       );
       monaco.editor.setTheme(monacoConfig.theme.name);
     }
-    const onResize = _.throttle(() => {
+    const onResize = _.debounce(() => {
       setContainerWidth(window.innerWidth);
     }, 500);
     window.addEventListener('resize', onResize);
