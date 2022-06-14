@@ -3,7 +3,7 @@ import pytz
 from typing import Optional, Tuple
 
 from collections import Counter
-from fastapi import Depends, HTTPException, Request, Query
+from fastapi import Depends, HTTPException, Query
 from aim.web.api.utils import APIRouter  # wrapper for fastapi.APIRouter
 
 from aim.web.configs import AIM_UI_TELEMETRY_KEY
