@@ -21,6 +21,7 @@
 - Add loader to the top of the logs box in the run page (VkoHov)
 - Add the date and the duration of run in the header of the single run page (VkoHov)
 - Fit long name values in manage columns popover (arsengit)
+- Use step random hash as a key for metric sequences (alberttorosyan)
 
 ### Fixes:
 

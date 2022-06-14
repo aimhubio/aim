@@ -130,13 +130,15 @@ $ aim runs [ARGS] SUBCOMMAND
 
 __runs subcommands__
 
-| Sub-command | Description                                                                  |
-| ----------- | ---------------------------------------------------------------------------- |
-| `ls`        | List runs in `aim` repository.                                               |
-| `rm`        | Remove run data for given runs hashes. At lease one run should be specified. |
-| `cp`        | Copy run data for given runs hashes. At lease one run should be specified.   |
-| `mv`        | Move run data for given runs hashes. At lease one run should be specified.   |
-| `upload`    | Create snapshot of .aim directory in cloud. Bucket name should be specified  |
+| Sub-command | Description                                                                              |
+| ----------- | ---------------------------------------------------------------------------------------- |
+| `ls`        | List runs in `aim` repository.                                                           |
+| `rm`        | Remove run data for given runs hashes. At least one run should be specified.             |
+| `cp`        | Copy run data for given runs hashes. At least one run should be specified.               |
+| `mv`        | Move run data for given runs hashes. At least one run should be specified.               |
+| `upload`    | Create snapshot of .aim directory in cloud. Bucket name should be specified              |
+| `update`    | Update metric sequence data format for given runs. At least one run should be specified. |
+| `restore`   | Rollback `Run` to old metric format if run backup is available.                          |
 
 Global expression (`*`) support is available for run hashes. If hash contains `*`, it must be enclosed within
 quotes (`''`) as bash resolves the expression before passing it to `aim runs` command.
@@ -173,6 +175,13 @@ $ aim runs upload [ARGS] ...
 | --------------------------------- | --------------------------------------------------------- |
 | `--bucket <bucket_name>`          | Name of cloud storage bucket. __Required.__               |
 
+```shell
+$ aim runs update [HASH] ...
+```
+
+```shell
+$ aim runs restore [HASH] ...
+```
 
 ### convert
 
