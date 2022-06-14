@@ -757,13 +757,13 @@ function createAppModel(appConfig: IAppInitialConfig) {
             }
             const groupHeaderRow = {
               meta: {
-                chartIndex:
-                  config?.grouping?.chart?.length ||
-                  //ToDo reverse mode
-                  // config?.grouping?.reverseMode?.chart
-                  //   ? metricsCollection.chartIndex + 1
-                  //   : null,
-                  null,
+                chartIndex: config?.grouping?.chart?.length
+                  ? metricsCollection.chartIndex + 1
+                  : null,
+                //ToDo reverse mode
+                // config?.grouping?.reverseMode?.chart
+                //   ? metricsCollection.chartIndex + 1
+                //   : null,
                 color: metricsCollection.color,
                 dasharray: metricsCollection.dasharray,
                 itemsCount: metricsCollection.data.length,
@@ -3441,13 +3441,13 @@ function createAppModel(appConfig: IAppInitialConfig) {
               }
               const groupHeaderRow = {
                 meta: {
-                  chartIndex:
-                    config.grouping?.chart?.length! > 0 ||
-                    //ToDo reverse mode
-                    // config.grouping?.reverseMode?.chart
-                    //   ? metricsCollection.chartIndex + 1
-                    //   : null,
-                    null,
+                  chartIndex: config?.grouping?.chart?.length
+                    ? metricsCollection.chartIndex + 1
+                    : null,
+                  //ToDo reverse mode
+                  // config.grouping?.reverseMode?.chart
+                  //   ? metricsCollection.chartIndex + 1
+                  //   : null,
                   color: metricsCollection.color,
                   dasharray: metricsCollection.dasharray,
                   itemsCount: metricsCollection.data.length,
@@ -5097,13 +5097,13 @@ function createAppModel(appConfig: IAppInitialConfig) {
               }
               const groupHeaderRow = {
                 meta: {
-                  chartIndex:
-                    config.grouping?.chart?.length! > 0 ||
-                    //ToDo reverse mode
-                    // config.grouping?.reverseMode?.chart
-                    //   ? metricsCollection.chartIndex + 1
-                    //   : null,
-                    null,
+                  chartIndex: config?.grouping?.chart?.length
+                    ? metricsCollection.chartIndex + 1
+                    : null,
+                  //ToDo reverse mode
+                  // config.grouping?.reverseMode?.chart
+                  //   ? metricsCollection.chartIndex + 1
+                  //   : null,
                   color: metricsCollection.color,
                   dasharray: metricsCollection.dasharray,
                   itemsCount: metricsCollection.data.length,
