@@ -77,15 +77,15 @@ $border-radius: 0.2rem;
   contain: content;
 }
 .Table__status_indicator {
-  width: 4px;
-  height: 4px;
+  width: 8px;
+  height: 8px;
   padding: 0;
   background-color: unset !important;
-  margin-right: 7px;
+  margin-right: 3px;
   &::before {
     width: 4px;
     height: 4px;
-    top: 0;
+    top: 2px;
     left: 0;
   }
 }
