@@ -2181,7 +2181,6 @@ function createAppModel(appConfig: IAppInitialConfig) {
         if (runsRequestRef) {
           runsRequestRef.abort();
         }
-
         setRequestProgress(model);
         model.setState({
           requestStatus: RequestStatusEnum.Ok,
@@ -2221,7 +2220,6 @@ function createAppModel(appConfig: IAppInitialConfig) {
         if (shouldUrlUpdate) {
           updateURL({ configData, appName });
         }
-
         setRequestProgress(model);
         return {
           call: async () => {
@@ -3345,7 +3343,7 @@ function createAppModel(appConfig: IAppInitialConfig) {
           updateURL({ configData, appName });
         }
         runsRequestRef = runsService.getRunsData(configData?.select?.query);
-
+        setRequestProgress(model);
         return {
           call: async () => {
             if (_.isEmpty(configData?.select?.options)) {
@@ -5638,6 +5636,7 @@ function createAppModel(appConfig: IAppInitialConfig) {
           updateURL({ configData, appName });
         }
         runsRequestRef = runsService.getRunsData(configData?.select?.query);
+        setRequestProgress(model);
         return {
           call: async () => {
             if (_.isEmpty(configData?.select?.options)) {

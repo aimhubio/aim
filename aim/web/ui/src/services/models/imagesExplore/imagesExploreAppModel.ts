@@ -85,11 +85,11 @@ import getGroupingSelectOptions from 'utils/app/getGroupingSelectOptions';
 import getAdvancedSuggestion from 'utils/getAdvancedSuggestions';
 import { processDurationTime } from 'utils/processDurationTime';
 import onVisibilityChange from 'utils/app/onColumnsVisibilityChange';
+import setRequestProgress from 'utils/app/setRequestProgress';
+import getRunData from 'utils/app/getRunData';
 
 import createModel from '../model';
 import { AppNameEnum } from '../explorer';
-import setRequestProgress from '../../../utils/app/setRequestProgress';
-import getRunData from '../../../utils/app/getRunData';
 
 const model = createModel<Partial<IImagesExploreAppModelState>>({
   requestStatus: RequestStatusEnum.NotRequested,

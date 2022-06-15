@@ -36,14 +36,14 @@ function ProgressBar({
   }, [processing, pendingStatus]);
 
   const barWidth = pendingStatus ? percent + '%' : 'unset';
-  const fadeOut = !(processing || pendingStatus);
+  const fadeOutProgress = !(processing || pendingStatus);
   const title = pendingStatus
     ? 'Searching over runs...'
     : processing
     ? 'Processing...'
     : 'Done';
   return renderBar ? (
-    <div className={classNames('ProgressBar', { fadeOut })}>
+    <div className={classNames('ProgressBar', { fadeOutProgress })}>
       <div className='ProgressBar__container'>
         <Text
           className='ProgressBar__container__title'
