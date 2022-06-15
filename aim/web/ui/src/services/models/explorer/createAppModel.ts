@@ -2336,13 +2336,13 @@ function createAppModel(appConfig: IAppInitialConfig) {
         }
 
         updateTableTimeoutId = window.setTimeout(() => {
+          model.setState({ requestStatus: RequestStatusEnum.Ok });
           const tableRef: any = model.getState()?.refs?.tableRef;
           tableRef.current?.updateData({
             newData: tableData.rows,
             newColumns: tableColumns,
             hiddenColumns: configData.table.hiddenColumns!,
           });
-          model.setState({ requestStatus: RequestStatusEnum.Ok });
         }, 0);
       }
 
