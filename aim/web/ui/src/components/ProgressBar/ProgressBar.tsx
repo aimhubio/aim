@@ -8,9 +8,9 @@ import { IProgressBarProps } from './ProgressBar.d';
 import './ProgressBar.scss';
 
 function ProgressBar({
-  progress,
+  progress = {},
   processing = false,
-  pendingStatus,
+  pendingStatus = false,
 }: IProgressBarProps) {
   const { checked = 0, trackedRuns = 0, matched = 0, percent = 0 } = progress;
   const [renderBar, setRenderBar] = React.useState(false);

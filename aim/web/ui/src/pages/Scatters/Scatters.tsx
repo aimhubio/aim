@@ -93,7 +93,7 @@ function Scatters(
               _.isEmpty(props.scatterPlotData) ? (
                 <IllustrationBlock
                   size='xLarge'
-                  page='metrics'
+                  page='scatters'
                   type={
                     props.selectFormData.options?.length
                       ? Request_Illustrations[props.requestStatus]

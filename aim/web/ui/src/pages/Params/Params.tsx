@@ -172,7 +172,7 @@ const Params = ({
             {_.isEmpty(tableData) && _.isEmpty(highPlotData) ? (
               <IllustrationBlock
                 size='xLarge'
-                page='metrics'
+                page='params'
                 type={
                   selectFormData.options?.length
                     ? Request_Illustrations[requestStatus]
