@@ -4,6 +4,7 @@
 
 ### Enhancements:
 
+- Display progress bar on Explorer pages when searching metadata (KaroMourad)
 - Adjust charts hover attributes position calculation and styles (KaroMourad)
 - Improve formatting of numbers by setting maximum precision (KaroMourad)
 - Add cloud storage backups to AWS S3 for aim repo runs (karan2801)
