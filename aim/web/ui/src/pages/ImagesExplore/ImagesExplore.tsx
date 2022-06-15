@@ -206,6 +206,7 @@ function ImagesExplore(): React.FunctionComponentElement<React.ReactNode> {
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
   return (
     <ErrorBoundary>
       <div className='ImagesExplore__container' ref={wrapperElemRef}>
@@ -289,14 +290,15 @@ function ImagesExplore(): React.FunctionComponentElement<React.ReactNode> {
                       'ImagesExplore__imagesWrapper__container',
                       {
                         fullHeight:
-                          imagesExploreData?.resizeMode === ResizeModeEnum.Hide,
+                          imagesExploreData?.config?.table.resizeMode ===
+                          ResizeModeEnum.Hide,
                         hide:
-                          imagesExploreData?.resizeMode ===
+                          imagesExploreData?.config?.table.resizeMode ===
                           ResizeModeEnum.MaxHeight,
                       },
                     )}
                   >
-                    {imagesExploreData?.resizeMode ===
+                    {imagesExploreData?.config?.table.resizeMode ===
                     ResizeModeEnum.MaxHeight ? null : (
                       <MediaPanel
                         mediaType={MediaTypeEnum.IMAGE}
@@ -454,13 +456,14 @@ function ImagesExplore(): React.FunctionComponentElement<React.ReactNode> {
                     ref={tableElemRef}
                     className={classNames('ImagesExplore__table__container', {
                       fullHeight:
-                        imagesExploreData?.resizeMode ===
+                        imagesExploreData?.config?.table.resizeMode ===
                         ResizeModeEnum.MaxHeight,
                       hide:
-                        imagesExploreData?.resizeMode === ResizeModeEnum.Hide,
+                        imagesExploreData?.config?.table.resizeMode ===
+                        ResizeModeEnum.Hide,
                     })}
                   >
-                    {imagesExploreData?.resizeMode ===
+                    {imagesExploreData?.config?.table.resizeMode ===
                     ResizeModeEnum.Hide ? null : (
                       <ErrorBoundary>
                         <Table
