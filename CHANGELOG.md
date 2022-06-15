@@ -38,6 +38,7 @@
 - Keep color persistence state after page reload (VkoHov)
 - Resolve content blinking issue after search in the run page (arsengit)
 - Fix scroll to bottom on live-update in logs tab (arsengit)
+- Fix timezone issues for activity map (mihran113)
 
 ## 3.10.3 May 31, 2022
 

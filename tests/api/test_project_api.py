@@ -18,7 +18,7 @@ class TestProjectApi(PrefilledDataApiTestBase):
         response = client.get('/api/projects/activity')
         self.assertEqual(200, response.status_code)
         data = response.json()
-        today_gmt = datetime.datetime.now().astimezone(pytz.timezone('gmt')).date().isoformat()
+        today_gmt = datetime.datetime.now().astimezone(pytz.timezone('gmt')).strftime('%Y-%m-%dT%H:00:00')
         self.assertEqual(10, data['num_runs'])
         self.assertEqual(10, data['activity_map'][today_gmt])
         self.assertEqual(2, data['num_experiments'])  # count 'default' experiment
