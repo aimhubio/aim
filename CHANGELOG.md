@@ -26,6 +26,7 @@
 
 ### Fixes:
 
+- Fix reset zoom history on alignment type change (KaroMourad)
 - Fix issue with rendering incorrect data when x-axis aligned by `relative time/epoch` (KaroMourad)
 - Fix LineCart axis ticks overlapping issue on log scale (KaroMourad)
 - Change zooming default option to multiple (VkoHov)
