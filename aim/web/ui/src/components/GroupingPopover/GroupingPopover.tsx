@@ -193,6 +193,7 @@ function GroupingPopover({
           {advancedComponent && (
             <ErrorBoundary>
               <div className='GroupingPopover__advanced__component'>
+                {/* //ToDo reverse mode 
                 <Accordion
                   className='GroupingPopover__accordion__container'
                   expanded={true}
@@ -216,10 +217,10 @@ function GroupingPopover({
                       Advanced options
                     </Text>
                   </AccordionSummary>
-                  <AccordionDetails style={{ padding: 0 }}>
-                    {advancedComponent}
-                  </AccordionDetails>
-                </Accordion>
+                  <AccordionDetails style={{ padding: 0 }}> */}
+                {advancedComponent}
+                {/* </AccordionDetails>
+                </Accordion> */}
               </div>
             </ErrorBoundary>
           )}
