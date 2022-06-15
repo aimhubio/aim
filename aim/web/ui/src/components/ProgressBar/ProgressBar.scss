@@ -13,7 +13,7 @@
   background-color: white;
   opacity: 1;
   &.fadeOut {
-    animation: fadeOut 1.2s ease-in forwards;
+    animation: fadeOut 1s ease-in forwards;
   }
   @keyframes fadeOut {
     from {
@@ -46,7 +46,7 @@
         position: relative;
         overflow: hidden;
         will-change: width;
-        transition: width 0.1s ease-out;
+        transition: width 0.3s ease-out;
         &::after {
           content: '';
           position: absolute;
@@ -61,7 +61,7 @@
           );
           overflow: hidden;
           transform: translateX(0);
-          animation: move 1.5s linear infinite;
+          animation: move 1.5s ease-out infinite;
         }
         @keyframes move {
           0% {

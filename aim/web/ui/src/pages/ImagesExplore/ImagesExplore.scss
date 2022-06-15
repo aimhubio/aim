@@ -9,8 +9,9 @@
       position: relative;
       flex-direction: column;
       flex: 1 100%;
+      max-height: calc(100% - #{toRem(136px)});
       .ProgressBar {
-        padding-bottom: 136px;
+        padding-bottom: toRem(136px);
       }
     }
     .ImagesExplore__section {
