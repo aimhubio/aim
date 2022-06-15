@@ -3,7 +3,6 @@ import React from 'react';
 import {
   Accordion,
   AccordionDetails,
-  AccordionSummary,
   Checkbox,
   TextField,
 } from '@material-ui/core';
@@ -13,7 +12,7 @@ import {
 } from '@material-ui/icons';
 import Autocomplete from '@material-ui/lab/Autocomplete';
 
-import { Badge, Icon, Text } from 'components/kit';
+import { Badge, Text } from 'components/kit';
 import ErrorBoundary from 'components/ErrorBoundary/ErrorBoundary';
 
 import { IGroupingPopoverProps } from 'types/components/GroupingPopover/GroupingPopover';
@@ -165,32 +164,6 @@ function GroupingPopover({
               )}
             />
           </div>
-
-          {/* //ToDo reverse mode
-          <div className='GroupingPopover__toggleMode__div'>
-            <Text
-              size={12}
-              tint={50}
-              component='h3'
-              className='GroupingPopover__subtitle'
-            >
-              select grouping mode
-            </Text>
-            <ToggleButton
-              title='Select mode'
-              id='yAxis'
-              value={
-                groupingData?.reverseMode[groupName as GroupNameType]
-                  ? 'Reverse'
-                  : 'Group'
-              }
-              leftValue='Group'
-              rightValue='Reverse'
-              leftLabel='Group'
-              rightLabel='Reverse'
-              onChange={handleGroupingMode}
-            />
-          </div> */}
           {advancedComponent && (
             <ErrorBoundary>
               <div className='GroupingPopover__advanced__component'>
@@ -198,25 +171,6 @@ function GroupingPopover({
                   className='GroupingPopover__accordion__container'
                   expanded={true}
                 >
-                  <AccordionSummary
-                    expandIcon={
-                      <Icon
-                        fontSize='0.875rem'
-                        name='arrow-bidirectional-close'
-                      />
-                    }
-                    id='panel1c-header'
-                  >
-                    <Text
-                      size={12}
-                      tint={50}
-                      component='h3'
-                      weight={400}
-                      className='GroupingPopover__subtitle'
-                    >
-                      Advanced options
-                    </Text>
-                  </AccordionSummary>
                   <AccordionDetails style={{ padding: 0 }}>
                     {advancedComponent}
                   </AccordionDetails>
