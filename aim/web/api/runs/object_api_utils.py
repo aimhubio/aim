@@ -241,10 +241,10 @@ class CustomObjectApi:
                     run_traces.append(trace)
                     callback(trace)
                 if run_traces:
-                    self.trace_cache[run.hash] = {
+                    self.trace_cache[run.hash].update({
                         'run': run,
                         'traces': run_traces
-                    }
+                    })
         elif self.requested_traces:
             for trace in self.requested_traces:
                 callback(trace)
