@@ -1,0 +1,87 @@
+@use 'src/styles/abstracts' as *;
+
+.ProgressBar {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  margin: 0 auto;
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  z-index: 1500;
+  background-color: white;
+  opacity: 1;
+  &.fadeOut {
+    animation: fadeOut 1.2s ease-in forwards;
+  }
+  @keyframes fadeOut {
+    from {
+      opacity: 1;
+    }
+    to {
+      opacity: 0;
+    }
+  }
+  &__container {
+    width: 482px;
+    height: 65px;
+    min-height: 65px;
+    max-height: 65px;
+    &__title {
+      color: $pico;
+    }
+    &__bar {
+      box-sizing: content-box;
+      position: relative;
+      background: $cuddle-70;
+      border-radius: 16px;
+      height: 8px;
+      margin: 12px 0 8px;
+      & > span {
+        display: block;
+        height: 100%;
+        border-radius: 16px;
+        background-color: $primary-color;
+        position: relative;
+        overflow: hidden;
+        will-change: width;
+        transition: width 0.1s ease-out;
+        &::after {
+          content: '';
+          position: absolute;
+          top: 0;
+          left: 0;
+          bottom: 0;
+          right: 0;
+          background-image: linear-gradient(
+            45deg,
+            rgba(255, 255, 255, 0.2) 50%,
+            transparent 100%
+          );
+          overflow: hidden;
+          transform: translateX(0);
+          animation: move 1.5s linear infinite;
+        }
+        @keyframes move {
+          0% {
+            transform: translateX(0);
+          }
+          100% {
+            transform: translateX(100%);
+          }
+        }
+      }
+    }
+    &__info {
+      display: flex;
+      color: $pico-70;
+      font-family: Inter, sans-serif;
+      font-feature-settings: 'tnum';
+      &__matched {
+        color: $success-color;
+        margin-left: auto;
+      }
+    }
+  }
+}
