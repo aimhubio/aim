@@ -18,6 +18,8 @@ import {
   IMetricsCollection,
 } from 'types/services/models/metrics/metricsAppModel';
 
+import { IRequestProgress } from 'utils/app/setRequestProgress';
+
 import { TrendlineTypeEnum } from 'utils/d3';
 
 import { IMetricTrace, IRun } from './runModel';
@@ -28,6 +30,7 @@ export interface IScatterAppModelState {
     chartPanelRef?: { current: IChartPanelRef | null };
   };
   requestStatus: RequestStatusEnum;
+  requestProgress: IRequestProgress;
   queryIsEmpty: boolean;
   rawData: IRun<IMetricTrace>[];
   config: IAppModelConfig;

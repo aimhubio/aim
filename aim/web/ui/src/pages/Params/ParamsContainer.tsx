@@ -130,6 +130,7 @@ function ParamsContainer(): React.FunctionComponentElement<React.ReactNode> {
       tableColumns={paramsData?.tableColumns}
       focusedState={paramsData?.config?.chart?.focusedState!}
       requestStatus={paramsData?.requestStatus!}
+      requestProgress={paramsData?.requestProgress!}
       selectedRows={paramsData?.selectedRows!}
       brushExtents={paramsData?.config?.chart?.brushExtents}
       isVisibleColorIndicator={

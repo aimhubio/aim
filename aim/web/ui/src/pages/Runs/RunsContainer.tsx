@@ -60,6 +60,7 @@ function RunsContainer(): React.FunctionComponentElement<React.ReactNode> {
         tableData={runsData?.tableData}
         tableColumns={runsData?.tableColumns}
         requestStatus={runsData?.requestStatus}
+        requestProgress={runsData?.requestProgress!}
         isLatest={runsData?.config?.pagination.isLatest}
         onSelectRunQueryChange={runsAppModel.onSelectRunQueryChange}
         onToggleColumnsColorScales={runsAppModel.onToggleColumnsColorScales}

@@ -1,6 +1,7 @@
 import React from 'react';
 
 import NotificationContainer from 'components/NotificationContainer/NotificationContainer';
+import ProgressBar from 'components/ProgressBar/ProgressBar';
 
 import { RequestStatusEnum } from 'config/enums/requestStatusEnum';
 
@@ -30,6 +31,10 @@ function Runs(props: any): React.FunctionComponentElement<React.ReactNode> {
             }
           />
           <div className='Runs__table__container'>
+            <ProgressBar
+              progress={props.requestProgress}
+              pendingStatus={props.requestStatus === RequestStatusEnum.Pending}
+            />
             <RunsTable
               columnsOrder={props.columnsOrder}
               hiddenColumns={props.hiddenColumns}

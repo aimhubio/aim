@@ -28,10 +28,7 @@ export default function onAlignmentTypeChange<M extends State>({
     if (type !== AlignmentOptionsEnum.CUSTOM_METRIC) {
       alignmentConfig.metric = '';
     }
-    configData.chart = {
-      ...configData.chart,
-      alignmentConfig,
-    };
+    configData.chart = { ...configData.chart, alignmentConfig };
     updateModelData(configData, true);
   }
   analytics.trackEvent(
