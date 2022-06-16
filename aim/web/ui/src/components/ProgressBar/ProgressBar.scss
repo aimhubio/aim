@@ -14,10 +14,10 @@
   opacity: 1;
   transform: translateY(0);
   &.fadeOutProgress {
-    animation: fadeOutProgress 0.55s cubic-bezier(.39,-0.01,.27,1);
+    animation: fadeOutProgress 0.55s cubic-bezier(.39,-0.01,.27,1) forwards;
     animation-delay: 1.5s;
     .ProgressBar__container {
-      animation: fadeOutProgressInner 0.6s cubic-bezier(.39,-0.01,.27,1);
+      animation: fadeOutProgressInner 0.6s cubic-bezier(.39,-0.01,.27,1) forwards;
       animation-delay: 1.55s;
     }
   }
