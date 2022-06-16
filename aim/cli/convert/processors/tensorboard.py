@@ -135,14 +135,18 @@ def parse_tb_logs(tb_logs, repo_inst, flat=False, no_cache=False):
         run_cache = tb_logs_cache[path]
         if run_cache:
             run = Run(
+                run_hash=run_cache['run_hash'],
                 repo=repo_inst,
                 system_tracking_interval=None,
-                run_hash=run_cache['run_hash'],
+                log_system_params=False,
+                capture_terminal_logs=False,
             )
         else:
             run = Run(
                 repo=repo_inst,
                 system_tracking_interval=None,
+                log_system_params=False,
+                capture_terminal_logs=False,
             )
             run['tensorboard_logdir'] = path
             run_cache.update({
