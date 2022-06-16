@@ -290,6 +290,7 @@ function SelectForm({
         <div className='SelectForm__search__container'>
           <Button
             fullWidth
+            key={`${requestIsPending}`}
             color='primary'
             variant={requestIsPending ? 'outlined' : 'contained'}
             startIcon={

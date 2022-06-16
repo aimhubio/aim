@@ -152,6 +152,7 @@ function SelectForm({
           <div className='Scatters__SelectForm__container__search'>
             <Button
               color='primary'
+              key={`${requestIsPending}`}
               variant={requestIsPending ? 'outlined' : 'contained'}
               startIcon={
                 <Icon

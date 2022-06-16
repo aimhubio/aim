@@ -211,7 +211,7 @@ function ImagesExplore(): React.FunctionComponentElement<React.ReactNode> {
     <ErrorBoundary>
       <div className='ImagesExplore__container' ref={wrapperElemRef}>
         <section className='ImagesExplore__section'>
-          <div className='ImagesExplore__section__div ImagesExplore__fullHeight'>
+          <div className='ImagesExplore__section__appBarContainer ImagesExplore__fullHeight'>
             <ImagesExploreAppBar
               onBookmarkCreate={imagesExploreAppModel.onBookmarkCreate}
               onBookmarkUpdate={imagesExploreAppModel.onBookmarkUpdate}

@@ -72,7 +72,7 @@ function Metrics(
     <ErrorBoundary>
       <div ref={props.wrapperElemRef} className='Metrics__container'>
         <section className='Metrics__section'>
-          <div className='Metrics__section__div Metrics__fullHeight'>
+          <div className='Metrics__section__appBarContainer Metrics__fullHeight'>
             <MetricsBar
               onBookmarkCreate={props.onBookmarkCreate}
               onBookmarkUpdate={props.onBookmarkUpdate}

@@ -283,6 +283,7 @@ function SelectForm({
         <div className='Metrics__SelectForm__container__search'>
           <Button
             fullWidth
+            key={`${requestIsPending}`}
             color='primary'
             variant={requestIsPending ? 'outlined' : 'contained'}
             startIcon={

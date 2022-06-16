@@ -125,7 +125,7 @@ const Params = ({
   return (
     <div ref={wrapperElemRef} className='Params__container'>
       <section className='Params__section'>
-        <div className='Params__fullHeight Params__section__div'>
+        <div className='Params__fullHeight Params__section__appBarContainer'>
           <div>
             <AppBar
               explorerName='PARAMS'

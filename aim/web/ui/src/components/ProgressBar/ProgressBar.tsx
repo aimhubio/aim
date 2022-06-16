@@ -35,13 +35,25 @@ function ProgressBar({
     };
   }, [processing, pendingStatus]);
 
-  const barWidth = pendingStatus ? percent + '%' : 'unset';
-  const fadeOutProgress = !(processing || pendingStatus);
-  const title = pendingStatus
-    ? 'Searching over runs...'
-    : processing
-    ? 'Processing...'
-    : 'Done';
+  const barWidth = React.useMemo(
+    () => (pendingStatus ? percent + '%' : 'unset'),
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [pendingStatus],
+  );
+  const fadeOutProgress = React.useMemo(
+    () => !(processing || pendingStatus),
+    [pendingStatus, processing],
+  );
+  const title = React.useMemo(
+    () =>
+      pendingStatus
+        ? 'Searching over runs...'
+        : processing
+        ? 'Processing...'
+        : 'Done',
+    [pendingStatus, processing],
+  );
+
   return renderBar ? (
     <div className={classNames('ProgressBar', { fadeOutProgress })}>
       <div className='ProgressBar__container'>

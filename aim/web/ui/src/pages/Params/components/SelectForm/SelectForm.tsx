@@ -241,6 +241,7 @@ function SelectForm({
             </Box>
             <Button
               color='primary'
+              key={`${requestIsPending}`}
               variant={requestIsPending ? 'outlined' : 'contained'}
               startIcon={
                 <Icon

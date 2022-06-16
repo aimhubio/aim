@@ -15,7 +15,7 @@ function Runs(props: any): React.FunctionComponentElement<React.ReactNode> {
   return (
     <div className='Runs__container'>
       <section className='Runs__section'>
-        <div className='Runs__section__div Runs__fullHeight'>
+        <div className='Runs__section__appBarContainer Runs__fullHeight'>
           <RunsBar
             {...{
               ...props.liveUpdateConfig,

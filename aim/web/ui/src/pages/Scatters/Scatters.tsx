@@ -46,7 +46,7 @@ function Scatters(
     <ErrorBoundary>
       <div ref={props.wrapperElemRef} className='Scatters__container'>
         <section className='Scatters__section'>
-          <div className='Scatters__section__div Scatters__fullHeight'>
+          <div className='Scatters__section__appBarContainer Scatters__fullHeight'>
             <AppBar
               explorerName='SCATTERS'
               onBookmarkCreate={props.onBookmarkCreate}
