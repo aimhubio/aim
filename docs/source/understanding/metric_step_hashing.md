@@ -29,15 +29,15 @@ for selection of `Run`s or for the entire repo:
 
 ```shell
 # update selected list of runs
-aim runs update <RUN_HASH_1> <RUN_HASH_2> ...
+aim storage upgrade 3.11+ <RUN_HASH_1> <RUN_HASH_2> ...
 
 # update all runs in the repo
-aim runs --repo <REPO_PATH> update '*' 
+aim storage --repo <REPO_PATH> upgrade 3.11+ '*' 
 ```
 
 The `Run` data backup with old format is available in case of any issues. In order to rollback format
 change and get back to the old format run the following command:
 
 ```shell
-aim runs restore <RUN_HASH>
+aim storage restore <RUN_HASH>
 ```
