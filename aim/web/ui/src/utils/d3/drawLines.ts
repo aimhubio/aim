@@ -75,9 +75,12 @@ function drawLines(args: IDrawLinesArgs): void {
       .data(data.map((d: IProcessedData) => d.data))
       .attr('d', lineGenerator(xScale, yScale, curveInterpolation));
     if (!readOnly) {
+      const filterdData = data.filter(
+        (d: IProcessedData) => d?.run?.props?.active,
+      );
       linesNodeRef.current
         ?.selectAll('.inProgressLineIndicator')
-        .data(data.filter((d: IProcessedData) => !d?.run?.props?.active))
+        .data(filterdData)
         .join('circle')
         .attr('class', 'inProgressLineIndicator')
         .attr('id', (d: IProcessedData) => `inProgressLineIndicator-${d.key}`)
