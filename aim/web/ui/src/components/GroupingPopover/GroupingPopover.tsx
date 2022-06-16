@@ -164,6 +164,31 @@ function GroupingPopover({
               )}
             />
           </div>
+          {/* //TODO: reverse mode
+          <div className='GroupingPopover__toggleMode__div'>
+            <Text
+              size={12}
+              tint={50}
+              component='h3'
+              className='GroupingPopover__subtitle'
+            >
+              select grouping mode
+            </Text>
+            <ToggleButton
+              title='Select mode'
+              id='yAxis'
+              value={
+                groupingData?.reverseMode[groupName as GroupNameType]
+                  ? 'Reverse'
+                  : 'Group'
+              }
+              leftValue='Group'
+              rightValue='Reverse'
+              leftLabel='Group'
+              rightLabel='Reverse'
+              onChange={handleGroupingMode}
+            />
+          </div> */}
           {advancedComponent && (
             <ErrorBoundary>
               <div className='GroupingPopover__advanced__component'>
