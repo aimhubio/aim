@@ -16,6 +16,9 @@
     }
   }
 
+  &__advanced__component {
+    border-top: $border-main;
+  }
   &__toggleMode__div {
     display: flex;
     flex-direction: column;

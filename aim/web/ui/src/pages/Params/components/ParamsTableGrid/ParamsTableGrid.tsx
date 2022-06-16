@@ -245,6 +245,8 @@ function getParamsTableColumns(
       return -1;
     } else if (a.key === 'actions') {
       return 1;
+    } else if (b.key === 'actions') {
+      return -1;
     }
     if (!columnsOrder.includes(a.key) && !columnsOrder.includes(b.key)) {
       return 0;
@@ -255,7 +257,6 @@ function getParamsTableColumns(
     }
     return columnsOrder.indexOf(a.key) - columnsOrder.indexOf(b.key);
   });
-
   if (groupFields) {
     columns = [
       {
@@ -303,10 +304,8 @@ function getParamsTableColumns(
       ...columns,
     ];
   }
-
   return columns;
 }
-
 function paramsTableRowRenderer(
   rowData: any,
   actions?: { [key: string]: (e: any) => void },
