@@ -441,11 +441,24 @@ function drawHoverAttributes(args: IDrawHoverAttributesArgs): void {
       .classed('active', false)
       .classed('focus', false);
 
-    attrNodeRef.current
-      .select(`[id=Circle-${key}]`)
-      .classed('focus', true)
-      .attr('r', CircleEnum.ActiveRadius)
-      .raise();
+    attrNodeRef.current.select('.focus__shadow')?.remove();
+
+    const newFocusedPoint = attrNodeRef.current.select(`[id=Circle-${key}]`);
+    if (newFocusedPoint) {
+      attrNodeRef.current
+        .append('circle')
+        .classed('HoverCircle focus focus__shadow', true)
+        .attr('r', CircleEnum.ActiveRadius)
+        .attr('cx', newFocusedPoint.attr('cx'))
+        .attr('cy', newFocusedPoint.attr('cy'))
+        .attr('stroke', hexToRgbA(newFocusedPoint.attr('color'), 0.3))
+        .raise();
+
+      newFocusedPoint
+        .classed('focus', true)
+        .attr('r', CircleEnum.ActiveRadius)
+        .raise();
+    }
   }
 
   function drawCircles(nearestCircles: INearestCircle[]): void {
@@ -462,7 +475,6 @@ function drawHoverAttributes(args: IDrawHoverAttributesArgs): void {
       .attr('stroke', (d: INearestCircle) => d.color)
       .attr('fill', (d: INearestCircle) => d.color)
       .attr('color', (d: INearestCircle) => d.color)
-      .style('outline-color', (d: INearestCircle) => hexToRgbA(d.color, 0.3))
       .on('click', handlePointClick);
   }
 
