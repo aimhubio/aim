@@ -38,6 +38,9 @@
     display: none !important;
   }
 
+  .scroll-decoration {
+    box-shadow: unset !important;
+  }
   .monaco-editor .find-widget.visible {
     display: none;
   }
