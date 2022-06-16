@@ -5,6 +5,7 @@
 ### Enhancements:
 
 - Display progress bar on Explorer pages when searching metadata (KaroMourad)
+- Improve the processing speed for tb to aim converter (osoblanco)
 - Adjust charts hover attributes position calculation and styles (KaroMourad)
 - Improve formatting of numbers by setting maximum precision (KaroMourad)
 - Add cloud storage backups to AWS S3 for aim repo runs (karan2801)
@@ -27,6 +28,8 @@
 
 ### Fixes:
 
+- Fix issue with tensorboard to aim conversion (osoblanco)
+- Fix reset zoom history on alignment type change (KaroMourad)
 - Fix issue with rendering incorrect data when x-axis aligned by `relative time/epoch` (KaroMourad)
 - Fix LineCart axis ticks overlapping issue on log scale (KaroMourad)
 - Change zooming default option to multiple (VkoHov)

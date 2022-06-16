@@ -765,13 +765,13 @@ function createAppModel(appConfig: IAppInitialConfig) {
             }
             const groupHeaderRow = {
               meta: {
-                chartIndex:
-                  config?.grouping?.chart?.length ||
-                  //ToDo reverse mode
-                  // config?.grouping?.reverseMode?.chart
-                  //   ? metricsCollection.chartIndex + 1
-                  //   : null,
-                  null,
+                chartIndex: config?.grouping?.chart?.length
+                  ? metricsCollection.chartIndex + 1
+                  : null,
+                //ToDo reverse mode
+                // config?.grouping?.reverseMode?.chart
+                //   ? metricsCollection.chartIndex + 1
+                //   : null,
                 color: metricsCollection.color,
                 dasharray: metricsCollection.dasharray,
                 itemsCount: metricsCollection.data.length,
@@ -2355,13 +2355,13 @@ function createAppModel(appConfig: IAppInitialConfig) {
         }
 
         updateTableTimeoutId = window.setTimeout(() => {
+          model.setState({ requestStatus: RequestStatusEnum.Ok });
           const tableRef: any = model.getState()?.refs?.tableRef;
           tableRef.current?.updateData({
             newData: tableData.rows,
             newColumns: tableColumns,
             hiddenColumns: configData.table.hiddenColumns!,
           });
-          model.setState({ requestStatus: RequestStatusEnum.Ok });
         }, 0);
       }
 
@@ -3461,13 +3461,13 @@ function createAppModel(appConfig: IAppInitialConfig) {
               }
               const groupHeaderRow = {
                 meta: {
-                  chartIndex:
-                    config.grouping?.chart?.length! > 0 ||
-                    //ToDo reverse mode
-                    // config.grouping?.reverseMode?.chart
-                    //   ? metricsCollection.chartIndex + 1
-                    //   : null,
-                    null,
+                  chartIndex: config?.grouping?.chart?.length
+                    ? metricsCollection.chartIndex + 1
+                    : null,
+                  //ToDo reverse mode
+                  // config.grouping?.reverseMode?.chart
+                  //   ? metricsCollection.chartIndex + 1
+                  //   : null,
                   color: metricsCollection.color,
                   dasharray: metricsCollection.dasharray,
                   itemsCount: metricsCollection.data.length,
@@ -5117,13 +5117,13 @@ function createAppModel(appConfig: IAppInitialConfig) {
               }
               const groupHeaderRow = {
                 meta: {
-                  chartIndex:
-                    config.grouping?.chart?.length! > 0 ||
-                    //ToDo reverse mode
-                    // config.grouping?.reverseMode?.chart
-                    //   ? metricsCollection.chartIndex + 1
-                    //   : null,
-                    null,
+                  chartIndex: config?.grouping?.chart?.length
+                    ? metricsCollection.chartIndex + 1
+                    : null,
+                  //ToDo reverse mode
+                  // config.grouping?.reverseMode?.chart
+                  //   ? metricsCollection.chartIndex + 1
+                  //   : null,
                   color: metricsCollection.color,
                   dasharray: metricsCollection.dasharray,
                   itemsCount: metricsCollection.data.length,
