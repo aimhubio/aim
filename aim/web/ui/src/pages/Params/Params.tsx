@@ -152,6 +152,7 @@ const Params = ({
                   p.groupName === 'stroke' ||
                   p.groupName === 'chart',
               )}
+              requestIsPending={requestStatus === RequestStatusEnum.Pending}
               groupingData={groupingData}
               groupingSelectOptions={groupingSelectOptions}
               onGroupingSelectChange={onGroupingSelectChange}

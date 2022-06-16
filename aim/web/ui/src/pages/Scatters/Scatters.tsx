@@ -70,6 +70,9 @@ function Scatters(
                 groupingPopovers={GroupingPopovers.filter(
                   (p) => p.groupName === 'color' || p.groupName === 'chart',
                 )}
+                requestIsPending={
+                  props.requestStatus === RequestStatusEnum.Pending
+                }
                 groupingData={props.groupingData}
                 groupingSelectOptions={props.groupingSelectOptions}
                 onGroupingSelectChange={props.onGroupingSelectChange}

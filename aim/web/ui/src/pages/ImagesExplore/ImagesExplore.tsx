@@ -244,6 +244,9 @@ function ImagesExplore(): React.FunctionComponentElement<React.ReactNode> {
                 groupingPopovers={GroupingPopovers.filter(
                   (g) => g.groupName === 'row',
                 )}
+                requestIsPending={
+                  imagesExploreData?.requestStatus === RequestStatusEnum.Pending
+                }
                 groupingData={imagesExploreData?.config?.grouping}
                 groupingSelectOptions={imagesExploreData?.groupingSelectOptions}
                 onGroupingSelectChange={
