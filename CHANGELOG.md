@@ -4,6 +4,7 @@
 
 ### Enhancements:
 
+- Add all the attributes of runs in the grouping popovers (KaroMourad)
 - Display progress bar on Explorer pages when searching metadata (KaroMourad)
 - Improve the processing speed for tb to aim converter (osoblanco)
 - Adjust charts hover attributes position calculation and styles (KaroMourad)
