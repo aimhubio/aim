@@ -203,10 +203,7 @@
   }
   .BaseTable {
     .BaseTable__table-main .BaseTable__row-cell:first-child {
-      padding-left: $space-lg;
-      .Table__status_indicator {
-        left: $space-xxs;
-      }
+      padding-left: $space-unit;
     }
     &__body {
       & > div {

@@ -266,7 +266,7 @@ class Run(BaseRun, StructuredRunMixin):
                 if self.repo.is_remote_repo:
                     logger.warning(f'Cannot track Run with remote repo {self.repo.path}. Please upgrade repo first '
                                    f'with the following command:')
-                    logger.warning(f'aim runs --repo {self.repo.path} update \'*\'')
+                    logger.warning(f'aim storage --repo {self.repo.path} upgrade 3.11+ \'*\'')
                     raise RuntimeError
                 else:
                     logger.warning(f'Detected sub-optimal format metrics for Run {self.hash}. Upgrading...')
@@ -276,12 +276,12 @@ class Run(BaseRun, StructuredRunMixin):
                         logger.warning(f'Successfully converted Run {self.hash}')
                         logger.warning(f'Run backup can be found at {backup_path}. '
                                        f'In case of any issues the following command can be used to restore data: '
-                                       f'`aim runs --repo {self.repo.root_path} restore {self.hash}`')
+                                       f'`aim storage --repo {self.repo.root_path} restore {self.hash}`')
                     except Exception as e:
                         logger.error(f'Failed to convert metrics. {e}')
                         logger.warning(f'Run backup can be found at {backup_path}. '
                                        f'To restore data please run the following command: '
-                                       f'`aim runs --repo {self.repo.root_path} restore {self.hash}`')
+                                       f'`aim storage --repo {self.repo.root_path} restore {self.hash}`')
                         raise
 
         self._props = None
@@ -485,7 +485,7 @@ class Run(BaseRun, StructuredRunMixin):
             if self.check_metrics_version():
                 logger.warning(f'Detected sub-optimal format metrics for Run {self.hash}. Consider upgrading repo '
                                f'to improve queries performance:')
-                logger.warning(f'aim runs --repo {self.repo.path} update \'*\'')
+                logger.warning(f'aim storage --repo {self.repo.path} upgrade 3.11+\'*\'')
                 Run._metric_version_warning_shown = True
 
         return self._get_sequence('metric', name, context)
@@ -653,12 +653,12 @@ class Run(BaseRun, StructuredRunMixin):
         del self.meta_attrs_tree
         del self.meta_run_tree
         del self.meta_tree
-        del self.series_run_trees
+        del self._series_run_trees
         self.meta_run_attrs_tree = None
         self.meta_run_tree = None
         self.meta_attrs_tree = None
         self.meta_tree = None
-        self.series_run_trees = None
+        self._series_run_trees = None
 
     def close(self):
         if self._resources is None:

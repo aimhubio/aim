@@ -34,7 +34,6 @@ function Table(props) {
   let rightCols = columns
     .filter((col) => col.pin === 'right')
     .map((col) => col.key);
-
   let [expanded, setExpanded] = useState({});
 
   let prevExpanded = useRef(props.expanded ?? {});

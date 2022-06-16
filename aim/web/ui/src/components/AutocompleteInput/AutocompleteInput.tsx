@@ -1,6 +1,7 @@
 import React from 'react';
 import classNames from 'classnames';
 import * as monacoEditor from 'monaco-editor';
+import _ from 'lodash-es';
 
 import Editor, { useMonaco, loader } from '@monaco-editor/react';
 
@@ -32,6 +33,7 @@ function AutocompleteInput({
   onChange,
 }: IAutocompleteInputProps) {
   const [hasSelection, setHasSelection] = React.useState(false);
+  const [containerWidth, setContainerWidth] = React.useState<number>(0);
   const [focused, setFocused] = React.useState<boolean>(false);
   const [mounted, setMounted] = React.useState<boolean>(false);
   const [editorValue, setEditorValue] = React.useState<string>(value);
@@ -46,11 +48,16 @@ function AutocompleteInput({
       );
       monaco.editor.setTheme(monacoConfig.theme.name);
     }
+    const onResize = _.debounce(() => {
+      setContainerWidth(window.innerWidth);
+    }, 500);
+    window.addEventListener('resize', onResize);
     // inserting given object for autosuggestion
     handleBlur();
     const disposable = showAutocompletion(monaco, context);
     return () => {
       disposable?.dispose();
+      window.removeEventListener('resize', onResize);
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [monaco, context, mounted]);
@@ -137,6 +144,7 @@ function AutocompleteInput({
       })}
     >
       <Editor
+        key={containerWidth}
         language='python'
         height={monacoConfig.height}
         value={editorValue}

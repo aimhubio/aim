@@ -8,11 +8,11 @@ a powerful utility to record, search and compare AI experiments. Here are the se
 | `init`    | Initialize the `aim` repository.                                                          |
 | `version` | Displays the version of aim cli currently installed.                                      |
 | `up`      | Runs Aim web UI for the given repo.                                                       |
-| `upgrade` | Upgrades legacy Aim repository from `2.x` to `3.0`.                                       |
 | `reindex` | Process runs left in 'in progress' state and optimized finished runs.                     |
 | `server`  | Run `aim` remote tracking server accepting incoming RPC requests. _Experimental feature._ |
 | `runs`    | Manage run data for the given repo.                                                       |
 | `convert` | Tool-set for converting 3rd party data into Aim readable format.                          |
+| `storage` | Maintain/update Aim repository internal data formats.                                     |
 
 ### init
 
@@ -58,32 +58,6 @@ $ aim up [ARGS]
 | `--dev`                     | Run UI in development mode.                                                                                      |
 | `--profiler`                | Enables API profiling which logs run trace inside `.aim/profiler` directory.                                     |
 | `--log-level`               | Specifies log level for python logging package. _`WARNING` by default, `DEBUG` when `--dev` option is provided_. |
-
-### upgrade
-
-Upgrade Aim repository containing data logged with older version of Aim.
-
-```shell
-$ aim upgrade [ARGS] SUBCOMMAND
-```
-
-| Args                              | Description                                                                      |
-| --------------------------------- | -------------------------------------------------------------------------------- |
-| `--repo <repo_path>`              | Path to parent directory of `.aim` repo. _Current working directory by default_. |
-
-__upgrade subcommands__
-
-Upgrade `aim` repository from `2.x` to `3.0`.
-
-```shell
-$ aim ugrade 2to3 [ARGS]
-```
-
-| Args                  | Description                                                                                |
-| --------------------- | ------------------------------------------------------------------------------------------ |
-| `--skip-failed-runs`  | Use this flag to skip runs which are failed/have missing or incomplete data.               |
-| `--skip-checks`       | Use this flag to skip new repository consistency checks.                                   |
-| `--drop-existing`     | Use this flag to clear old `.aim` directory. By default old data is kept in `.aim_legacy`. |
 
 ### reindex
 
@@ -133,10 +107,10 @@ __runs subcommands__
 | Sub-command | Description                                                                  |
 | ----------- | ---------------------------------------------------------------------------- |
 | `ls`        | List runs in `aim` repository.                                               |
-| `rm`        | Remove run data for given runs hashes. At lease one run should be specified. |
-| `cp`        | Copy run data for given runs hashes. At lease one run should be specified.   |
-| `mv`        | Move run data for given runs hashes. At lease one run should be specified.   |
-| `upload`    | Create snapshot of .aim directory in cloud. Bucket name should be specified  |
+| `rm`        | Remove run data for given runs hashes. At least one run should be specified. |
+| `cp`        | Copy run data for given runs hashes. At least one run should be specified.   |
+| `mv`        | Move run data for given runs hashes. At least one run should be specified.   |
+| `upload`    | Create snapshot of .aim directory in cloud. Bucket name should be specified. |
 
 Global expression (`*`) support is available for run hashes. If hash contains `*`, it must be enclosed within
 quotes (`''`) as bash resolves the expression before passing it to `aim runs` command.
@@ -188,16 +162,17 @@ $ aim convert [ARGS] SUBCOMMAND
 
 **convert subcommands**
 
-| Sub-command | Description                     |
-| ----------- | ------------------------------- |
-| `tf`        | Convert from TensorFlow events. |
-| `mlflow`    | Convert from MLFlow logs.       |
+| Sub-command   | Description                     |
+| ------------- | ------------------------------- |
+| `tensorboard` | Convert from Tensorboard logs.  |
+| `mlflow`      | Convert from MLFlow logs.       |
 
-**Sub-command: tf**
+**Sub-command: tensorboard**
 
 | Options       | Description                                                                                  |
 | ------------- | -------------------------------------------------------------------------------------------- |
 | `--flat`      | Disregard context directory and treat them as distinct run directories. Inactive by default. |
+| `--no-cache`  | Ignore previously cached results and process the logs entirely. Disabled by default.         |
 
 **Sub-command: mlflow**
 
@@ -205,3 +180,49 @@ $ aim convert [ARGS] SUBCOMMAND
 | ------------------------------------- | -------------------------------------------------------------------------------------------------------------------- |
 | `--tracking_uri` <logs_uri>           | MLFlow logs URI. Can be either an HTTP/HTTPS URI for a remote server, a database connection string, or a local path. |
 | `-e` &#124; `--experiment` <exp_name> | MLFlow Experiment name. If specified, only runs for `exp_name` will be converted.                                    |
+
+### storage
+
+Perform various maintenance operations on Aim repository.
+
+```shell
+$ aim storage [ARGS] SUBCOMMAND
+```
+
+| Args                   | Description                                                                      |
+| ---------------------- | -------------------------------------------------------------------------------- |
+| `--repo <repo_path>`   | Path to parent directory of `.aim` repo. _Current working directory by default_. |
+
+__storage subcommands__
+
+| Sub-command      | Description                                                                              |
+| ---------------- | ---------------------------------------------------------------------------------------- |
+| `upgrade 2to3`   | Upgrades legacy Aim repository from `2.x` to `3.0`.                                      |
+| `upgrade 3.11+`  | Update metric sequence data format for given runs. At least one run should be specified. |
+| `restore`        | Rollback `Run` to old metric format if run backup is available.                          |
+
+
+**Sub-command: update 2to3**
+
+```shell
+$ aim storage ugrade 2to3 [ARGS]
+```
+
+| Args                  | Description                                                                                |
+| --------------------- | ------------------------------------------------------------------------------------------ |
+| `--skip-failed-runs`  | Use this flag to skip runs which are failed/have missing or incomplete data.               |
+| `--skip-checks`       | Use this flag to skip new repository consistency checks.                                   |
+| `--drop-existing`     | Use this flag to clear old `.aim` directory. By default old data is kept in `.aim_legacy`. |
+
+
+**Sub-command: update 3.11+**
+
+```shell
+$ aim storage upgrade 3.11+ [HASH] ...
+```
+
+**Sub-command: restore**
+
+```shell
+$ aim storage restore [HASH] ...
+```
