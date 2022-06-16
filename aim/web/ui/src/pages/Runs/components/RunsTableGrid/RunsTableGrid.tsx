@@ -151,9 +151,6 @@ function getRunsTableColumns(
 
   const columnsOrder = order?.left.concat(order.middle).concat(order.right);
   columns.sort((a, b) => {
-    if (a.key === 'actions') {
-      return 1;
-    }
     if (!columnsOrder.includes(a.key) && !columnsOrder.includes(b.key)) {
       return 0;
     } else if (!columnsOrder.includes(a.key)) {
