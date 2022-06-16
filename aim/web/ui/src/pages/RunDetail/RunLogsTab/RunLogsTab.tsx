@@ -120,9 +120,10 @@ function RunLogsTab({
   React.useEffect(() => {
     const values = _.sortBy(Object.values(runLogs ?? {}), 'index');
     const keys = _.sortBy(values.map((value) => value.index));
+    const arrayWithEmptyStrings = Array(3).fill('');
     rangeRef.current = [keys[0], keys[keys.length - 1]];
     setKeyList(keys);
-    dataRef.current = values;
+    dataRef.current = values.concat(arrayWithEmptyStrings);
   }, [runLogs]);
 
   React.useEffect(() => {
@@ -141,11 +142,11 @@ function RunLogsTab({
         dataRef.current?.length - 1
     ) {
       if (!_.isEmpty(keysList)) {
-        listRef.current?.scrollToItem?.(dataRef.current?.length - 1, 'end');
+        listRef.current?.scrollToItem?.(dataRef.current?.length, 'end');
       }
     } else if (lastRequestType === LogsLastRequestEnum.DEFAULT) {
       if (!_.isEmpty(keysList)) {
-        listRef.current?.scrollToItem?.(dataRef.current?.length - 1, 'end');
+        listRef.current?.scrollToItem?.(dataRef.current?.length, 'end');
       }
     } else {
       listRef.current?.scrollToItem?.(

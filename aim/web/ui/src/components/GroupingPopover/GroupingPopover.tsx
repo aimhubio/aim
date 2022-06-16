@@ -192,14 +192,34 @@ function GroupingPopover({
           {advancedComponent && (
             <ErrorBoundary>
               <div className='GroupingPopover__advanced__component'>
+                {/* //ToDo reverse mode 
                 <Accordion
                   className='GroupingPopover__accordion__container'
                   expanded={true}
                 >
-                  <AccordionDetails style={{ padding: 0 }}>
-                    {advancedComponent}
-                  </AccordionDetails>
-                </Accordion>
+                  <AccordionSummary
+                    expandIcon={
+                      <Icon
+                        fontSize='0.875rem'
+                        name='arrow-bidirectional-close'
+                      />
+                    }
+                    id='panel1c-header'
+                  >
+                    <Text
+                      size={12}
+                      tint={50}
+                      component='h3'
+                      weight={400}
+                      className='GroupingPopover__subtitle'
+                    >
+                      Advanced options
+                    </Text>
+                  </AccordionSummary>
+                  <AccordionDetails style={{ padding: 0 }}> */}
+                {advancedComponent}
+                {/* </AccordionDetails>
+                </Accordion> */}
               </div>
             </ErrorBoundary>
           )}

@@ -36,12 +36,12 @@
 - Change grouped rows' min and max values names to `Group Min` and `Group Max` (VkoHov)
 - Preserve the search input value of the grouping dropdown (VkoHov)
 - Change the titles and placeholders in popovers (VkoHov)
-- Fix params duplication in dropdowns (VkoHov)
 - Resolve typing latency issue in the query search input (arsengit)
 - Reorder and add non-hideable table columns (arsengit)
 - Change the font of the runs navigation popover (VkoHov)
 - Keep color persistence state after page reload (VkoHov)
 - Resolve content blinking issue after search in the run page (arsengit)
+- Fix scroll to bottom on live-update in logs tab (VkoHov)
 - Fix timezone issues for activity map (mihran113)
 
 ## 3.10.3 May 31, 2022
