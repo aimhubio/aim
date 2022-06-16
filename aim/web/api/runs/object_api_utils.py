@@ -5,6 +5,7 @@ from typing import Iterable, Iterator, List, Tuple, Union, Optional
 from typing import TYPE_CHECKING
 
 from aim.web.api.runs.utils import IndexRange, get_run_props, get_run_params
+from aim.web.configs import AIM_PROGRESS_REPORT_INTERVAL
 from aim.sdk.uri_service import URIService, generate_resource_path
 from aim.sdk.sequence_collection import SequenceCollection
 from aim.sdk.sequence import Sequence
@@ -129,7 +130,7 @@ class CustomObjectApi:
         run_info = None
         progress_reports_sent = 0
         for run_info in self.trace_cache.values():
-            if report_progress and time.time() - last_reported_progress_time:
+            if report_progress and time.time() - last_reported_progress_time > AIM_PROGRESS_REPORT_INTERVAL:
                 yield collect_streamable_data(encode_tree({f'progress_{progress_reports_sent}':
                                                            run_info['progress']}))
                 progress_reports_sent += 1
