@@ -117,6 +117,7 @@ function SelectForm({
                       withPortal
                       label='X axis'
                       icon={{ name: 'x-axis' }}
+                      isDisabled={requestIsPending}
                     />
                   </ErrorBoundary>
                   <Divider
@@ -138,6 +139,7 @@ function SelectForm({
                       withPortal
                       label='Y axis'
                       icon={{ name: 'y-axis' }}
+                      isDisabled={requestIsPending}
                     />
                   </ErrorBoundary>
                 </Box>
