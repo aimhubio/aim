@@ -37,7 +37,9 @@ export default async function onAlignmentMetricChange<M extends State>({
     configData.chart = {
       ...configData.chart,
       alignmentConfig: { metric, type: AlignmentOptionsEnum.CUSTOM_METRIC },
+      zoom: { ...configData.chart.zoom, history: [] },
     };
+
     model.setState({ config: configData });
     updateURL({ configData, appName });
   }
