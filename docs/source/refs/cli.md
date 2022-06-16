@@ -162,16 +162,17 @@ $ aim convert [ARGS] SUBCOMMAND
 
 **convert subcommands**
 
-| Sub-command | Description                     |
-| ----------- | ------------------------------- |
-| `tf`        | Convert from TensorFlow events. |
-| `mlflow`    | Convert from MLFlow logs.       |
+| Sub-command   | Description                     |
+| ------------- | ------------------------------- |
+| `tensorboard` | Convert from Tensorboard logs.  |
+| `mlflow`      | Convert from MLFlow logs.       |
 
-**Sub-command: tf**
+**Sub-command: tensorboard**
 
 | Options       | Description                                                                                  |
 | ------------- | -------------------------------------------------------------------------------------------- |
 | `--flat`      | Disregard context directory and treat them as distinct run directories. Inactive by default. |
+| `--no-cache`  | Ignore previously cached results and process the logs entirely. Disabled by default.         |
 
 **Sub-command: mlflow**
 
