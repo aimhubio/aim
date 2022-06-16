@@ -154,7 +154,7 @@ class ContainerTreeView(TreeView):
     ]]:
         prefix = E.encode_path(path)
         it = self.container.view(prefix).items()
-        for path, value in treeutils.iter_decode_tree(it, level=1):
+        for path, value in treeutils.iter_decode_tree(it, level=1, skip_top_level=True):
             key, = path
             yield key, value
 
@@ -168,7 +168,7 @@ class ContainerTreeView(TreeView):
     ]]:
         prefix = E.encode_path(path)
         it = self.container.items(prefix)
-        for path, value in treeutils.iter_decode_tree(it, level=level):
+        for path, value in treeutils.iter_decode_tree(it, level=level, skip_top_level=True):
             yield path, value
 
     def array(

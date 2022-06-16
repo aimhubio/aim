@@ -2,16 +2,15 @@
 
 .ChartPopover {
   pointer-events: none;
+  z-index: 0 !important;
 
   &__content {
-    transform: none!important;
+    transform: none !important;
     width: toRem(230px);
     max-height: toRem(250px);
     background: rgba(255, 255, 255, 0.78);
-    box-shadow: 0 1px 1px rgb(34 58 90 / 20%), 
-              0 2px 2px rgb(34 58 90 / 20%), 
-              0 4px 4px rgb(34 58 90 / 20%), 
-              0 6px 8px rgb(34 58 90 / 20%);
+    box-shadow: 0 1px 1px rgb(34 58 90 / 20%), 0 2px 2px rgb(34 58 90 / 20%),
+      0 4px 4px rgb(34 58 90 / 20%), 0 6px 8px rgb(34 58 90 / 20%);
     border: $border-main;
     backdrop-filter: blur(3px);
     overflow: hidden;
