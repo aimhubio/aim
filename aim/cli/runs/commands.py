@@ -1,11 +1,8 @@
 import click
 import os
-from tqdm import tqdm
 
 from aim.cli.runs.utils import list_repo_runs, match_runs, make_zip_archive, upload_repo_runs
 from aim.sdk.repo import Repo
-from aim.sdk.maintenance_run import MaintenanceRun
-from aim.sdk.utils import backup_run, restore_run_backup
 
 
 @click.group()
@@ -27,6 +24,7 @@ def runs(ctx, repo):
 @runs.command(name='ls')
 @click.pass_context
 def list_runs(ctx):
+    """List Runs available in Repo."""
     repo_path = ctx.obj['repo']
     if not Repo.exists(repo_path):
         click.echo(f'\'{repo_path}\' is not a valid aim repo.')
@@ -42,6 +40,7 @@ def list_runs(ctx):
 @click.argument('hashes', nargs=-1, type=str)
 @click.pass_context
 def remove_runs(ctx, hashes):
+    """Remove Run data for given run hashes."""
     if len(hashes) == 0:
         click.echo('Please specify at least one Run to delete.')
         exit(1)
@@ -73,6 +72,7 @@ def remove_runs(ctx, hashes):
 @click.argument('hashes', nargs=-1, type=str)
 @click.pass_context
 def copy_runs(ctx, destination, hashes):
+    """Copy Run data for given run hashes to destination Repo."""
     if len(hashes) == 0:
         click.echo('Please specify at least one Run to copy.')
         exit(1)
@@ -100,6 +100,7 @@ def copy_runs(ctx, destination, hashes):
 @click.argument('hashes', nargs=-1, type=str)
 @click.pass_context
 def move_runs(ctx, destination, hashes):
+    """Move Run data for given run hashes to destination Repo."""
     if len(hashes) == 0:
         click.echo('Please specify at least one Run to move.')
         exit(1)
@@ -121,6 +122,7 @@ def move_runs(ctx, destination, hashes):
 @click.argument('bucket', nargs=1, type=str)
 @click.pass_context
 def upload_runs(ctx, bucket):
+    """Upload Repo backup to the given S3 bucket."""
     repo_path = ctx.obj['repo']
     if not Repo.exists(repo_path):
         click.echo(f'\'{repo_path}\' is not a valid aim repo.')
@@ -134,64 +136,3 @@ def upload_runs(ctx, bucket):
         click.echo(f'Successfully uploaded runs in {uploaded_zip_file_name}.')
     else:
         click.echo(f'The storage backup failed because of the following error: {uploaded_zip_file_name}.')
-
-
-@runs.command(name='update')
-@click.argument('hashes', nargs=-1, type=str)
-@click.pass_context
-def update_runs(ctx, hashes):
-    if len(hashes) == 0:
-        click.echo('Please specify at least one Run to update.')
-        exit(1)
-    repo_path = ctx.obj['repo']
-    repo = Repo.from_path(repo_path)
-
-    matched_hashes = match_runs(repo_path, hashes)
-    confirmed = click.confirm(f'This command will optimize the metrics data for {len(matched_hashes)} runs from aim '
-                              f'repo located at \'{repo_path}\'. This process might take a while. '
-                              f'Do you want to proceed?')
-    if not confirmed:
-        return
-
-    for run_hash in tqdm(matched_hashes):
-        run = MaintenanceRun(run_hash, repo=repo)
-        if run.check_metrics_version():
-            backup_run(run)
-            run.update_metrics()
-        else:
-            click.echo(f'Run {run.hash} is already up to date. Skipping')
-    click.echo('Finished optimizing metric data. '
-               'In case of any issues the following command can be used to restore data:')
-    click.secho(f'aim runs --repo {repo.root_path} restore \'*\'', fg='yellow')
-
-
-@runs.command(name='restore')
-@click.argument('hashes', nargs=-1, type=str)
-@click.pass_context
-def restore_runs(ctx, hashes):
-    if len(hashes) == 0:
-        click.echo('Please specify at least one Run to delete.')
-        exit(1)
-    repo_path = ctx.obj['repo']
-    repo = Repo.from_path(repo_path)
-
-    matched_hashes = match_runs(repo_path, hashes, lookup_dir='bcp')
-    confirmed = click.confirm(f'This command will restore {len(matched_hashes)} runs from aim repo '
-                              f'located at \'{repo_path}\'. Do you want to proceed?')
-    if not confirmed:
-        return
-
-    remaining_runs = []
-    for run_hash in tqdm(matched_hashes):
-        try:
-            restore_run_backup(repo, run_hash)
-            MaintenanceRun(run_hash, repo=repo)  # force indexing to set index metadata
-        except Exception as e:
-            click.echo(f'Error while trying to restore run \'{run_hash}\'. {str(e)}.', err=True)
-            remaining_runs.append(run_hash)
-
-    if not remaining_runs:
-        click.echo(f'Successfully restored {len(matched_hashes)} runs.')
-    else:
-        click.echo('Something went wrong while restoring runs. Remaining runs are:', err=True)
-        click.secho('\t'.join(remaining_runs), fg='yellow')

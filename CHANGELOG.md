@@ -24,6 +24,7 @@
 - Add the name, status and duration of run in the runs table of the tags page (VkoHov)
 - Fit long name values in manage columns popover (arsengit)
 - Add caching mechanism for sequence queries to optimize query performance (mihran113)
+- Use step random hash as a key for metric sequences (alberttorosyan)
 
 ### Fixes:
 
