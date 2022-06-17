@@ -15,7 +15,7 @@ def build_db_upgrade_command():
     return [sys.executable, '-m', 'alembic', '-c', ini_file, 'upgrade', 'head']
 
 
-def build_uvicorn_command(host, port, num_workers, ssl_keyfile, ssl_certfile, log_level):
+def build_uvicorn_command(host, port, num_workers, uds_path, ssl_keyfile, ssl_certfile, log_level):
     cmd = [sys.executable, '-m', 'uvicorn',
            '--host', host, '--port', f'{port}',
            '--workers', f'{num_workers}']
@@ -25,6 +25,8 @@ def build_uvicorn_command(host, port, num_workers, ssl_keyfile, ssl_certfile, lo
         import aim
         cmd += ['--reload', '--reload-dir', os.path.dirname(aim.__file__)]
         log_level = log_level or 'debug'
+    if uds_path:
+        cmd += ['--uds', uds_path]
     if ssl_keyfile:
         cmd += ['--ssl-keyfile', ssl_keyfile]
     if ssl_certfile:

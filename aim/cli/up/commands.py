@@ -24,6 +24,10 @@ from aim.web.utils import ShellCommandException
 @click.option('-h', '--host', default=AIM_UI_DEFAULT_HOST, type=str)
 @click.option('-p', '--port', default=AIM_UI_DEFAULT_PORT, type=int)
 @click.option('-w', '--workers', default=1, type=int)
+@click.option('--uds', required=False, type=click.Path(exists=False,
+                                                       file_okay=True,
+                                                       dir_okay=False,
+                                                       readable=True))
 @click.option('--repo', required=False, type=click.Path(exists=True,
                                                         file_okay=False,
                                                         dir_okay=True,
@@ -42,7 +46,7 @@ from aim.web.utils import ShellCommandException
 @click.option('--force-init', is_flag=True, default=False)
 @click.option('--profiler', is_flag=True, default=False)
 @click.option('--log-level', required=False, default='', type=str)
-def up(dev, host, port, workers,
+def up(dev, host, port, workers, uds,
        repo, tf_logs,
        ssl_keyfile, ssl_certfile,
        base_path, force_init,
@@ -124,9 +128,11 @@ def up(dev, host, port, workers,
 
     click.echo(click.style('Running Aim UI on repo `{}`'.format(repo_inst), fg='yellow'))
 
-    scheme = 'https' if ssl_keyfile or ssl_certfile else 'http'
-
-    click.echo('Open {}://{}:{}{}'.format(scheme, host, port, base_path), err=True)
+    if uds:
+        click.echo('Aim UI running on {}'.format(uds))
+    else:
+        scheme = 'https' if ssl_keyfile or ssl_certfile else 'http'
+        click.echo('Open {}://{}:{}{}'.format(scheme, host, port, base_path), err=True)
 
     proxy_url = os.environ.get(AIM_PROXY_URL)
     if proxy_url:
@@ -138,7 +144,7 @@ def up(dev, host, port, workers,
         os.environ[AIM_PROFILER_KEY] = '1'
 
     try:
-        server_cmd = build_uvicorn_command(host, port, workers, ssl_keyfile, ssl_certfile, log_level)
+        server_cmd = build_uvicorn_command(host, port, workers, uds, ssl_keyfile, ssl_certfile, log_level)
         exec_cmd(server_cmd, stream_output=True)
     except ShellCommandException:
         click.echo('Failed to run Aim UI. Please see the logs above for details.')
