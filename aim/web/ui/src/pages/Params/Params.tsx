@@ -1,18 +1,16 @@
 import React from 'react';
 import _ from 'lodash-es';
+import classNames from 'classnames';
 
 import ChartPanel from 'components/ChartPanel/ChartPanel';
 // TODO [GA]: MetricsBar is imported as AppBar.
-// Implement ParamsBar or use unified NavBar for explorers.
-import BusyLoaderWrapper from 'components/BusyLoaderWrapper/BusyLoaderWrapper';
 import IllustrationBlock from 'components/IllustrationBlock/IllustrationBlock';
-import ChartLoader from 'components/ChartLoader/ChartLoader';
-import TableLoader from 'components/TableLoader/TableLoader';
 import Table from 'components/Table/Table';
 import NotificationContainer from 'components/NotificationContainer/NotificationContainer';
 import ResizePanel from 'components/ResizePanel/ResizePanel';
 import Grouping from 'components/Grouping/Grouping';
 import ErrorBoundary from 'components/ErrorBoundary/ErrorBoundary';
+import ProgressBar from 'components/ProgressBar/ProgressBar';
 
 import pageTitlesEnum from 'config/pageTitles/pageTitles';
 import { RowHeightSize } from 'config/table/tableConfigs';
@@ -105,6 +103,7 @@ const Params = ({
   columnsOrder,
   brushExtents,
   chartPanelOffsetHeight,
+  requestProgress,
 }: IParamsProps): React.FunctionComponentElement<React.ReactNode> => {
   const chartProps: any[] = React.useMemo(() => {
     return (highPlotData || []).map((chartData: any, index: number) => ({
@@ -126,7 +125,7 @@ const Params = ({
   return (
     <div ref={wrapperElemRef} className='Params__container'>
       <section className='Params__section'>
-        <div className='Params__fullHeight Params__section__div'>
+        <div className='Params__fullHeight Params__section__appBarContainer'>
           <div>
             <AppBar
               explorerName='PARAMS'
@@ -153,6 +152,7 @@ const Params = ({
                   p.groupName === 'stroke' ||
                   p.groupName === 'chart',
               )}
+              requestIsPending={requestStatus === RequestStatusEnum.Pending}
               groupingData={groupingData}
               groupingSelectOptions={groupingSelectOptions}
               onGroupingSelectChange={onGroupingSelectChange}
@@ -164,142 +164,128 @@ const Params = ({
               onShuffleChange={onShuffleChange}
             />
           </div>
-
-          <div
-            ref={chartElemRef}
-            className={`Params__chart__container${
-              resizeMode === ResizeModeEnum.MaxHeight
-                ? '__hide'
-                : requestStatus !== RequestStatusEnum.Pending &&
-                  _.isEmpty(tableData)
-                ? '__fullHeight'
-                : ''
-            }`}
-          >
-            <BusyLoaderWrapper
-              height='100%'
-              isLoading={requestStatus === RequestStatusEnum.Pending}
-              loaderComponent={<ChartLoader />}
-            >
-              {!_.isEmpty(tableData) ? (
-                <ChartPanel
-                  ref={chartPanelRef}
-                  chartPanelOffsetHeight={chartPanelOffsetHeight}
-                  key={highPlotData?.[0]?.data?.length}
-                  chartType={ChartTypeEnum.HighPlot}
-                  data={highPlotData}
-                  focusedState={focusedState}
-                  onActivePointChange={onActivePointChange}
-                  tooltip={tooltip}
-                  panelResizing={panelResizing}
-                  chartProps={chartProps}
-                  resizeMode={resizeMode}
-                  selectOptions={groupingSelectOptions}
-                  controls={
-                    <Controls
-                      curveInterpolation={curveInterpolation}
-                      isVisibleColorIndicator={isVisibleColorIndicator}
-                      selectOptions={groupingSelectOptions}
+          <div className='Params__visualization'>
+            <ProgressBar
+              progress={requestProgress}
+              pendingStatus={requestStatus === RequestStatusEnum.Pending}
+              processing={false}
+            />
+            {_.isEmpty(tableData) && _.isEmpty(highPlotData) ? (
+              <IllustrationBlock
+                size='xLarge'
+                page='params'
+                type={
+                  selectFormData.options?.length
+                    ? Request_Illustrations[requestStatus]
+                    : IllustrationsEnum.EmptyData
+                }
+              />
+            ) : (
+              <>
+                <div
+                  ref={chartElemRef}
+                  className={classNames('Params__chart__container', {
+                    fullHeight: resizeMode === ResizeModeEnum.Hide,
+                    hide: resizeMode === ResizeModeEnum.MaxHeight,
+                  })}
+                >
+                  {resizeMode === ResizeModeEnum.MaxHeight ? null : (
+                    <ChartPanel
+                      ref={chartPanelRef}
+                      chartPanelOffsetHeight={chartPanelOffsetHeight}
+                      key={highPlotData?.[0]?.data?.length}
+                      chartType={ChartTypeEnum.HighPlot}
+                      data={highPlotData}
+                      focusedState={focusedState}
+                      onActivePointChange={onActivePointChange}
                       tooltip={tooltip}
-                      onCurveInterpolationChange={onCurveInterpolationChange}
-                      onColorIndicatorChange={onColorIndicatorChange}
-                      onChangeTooltip={onChangeTooltip}
+                      panelResizing={panelResizing}
+                      chartProps={chartProps}
+                      resizeMode={resizeMode}
+                      selectOptions={groupingSelectOptions}
+                      controls={
+                        <Controls
+                          curveInterpolation={curveInterpolation}
+                          isVisibleColorIndicator={isVisibleColorIndicator}
+                          selectOptions={groupingSelectOptions}
+                          tooltip={tooltip}
+                          onCurveInterpolationChange={
+                            onCurveInterpolationChange
+                          }
+                          onColorIndicatorChange={onColorIndicatorChange}
+                          onChangeTooltip={onChangeTooltip}
+                        />
+                      }
                     />
-                  }
+                  )}
+                </div>
+                <ResizePanel
+                  className='Params__ResizePanel'
+                  panelResizing={panelResizing}
+                  resizeElemRef={resizeElemRef}
+                  resizeMode={resizeMode}
+                  onTableResizeModeChange={onTableResizeModeChange}
                 />
-              ) : (
-                selectFormData.options !== undefined && (
-                  <IllustrationBlock
-                    size='xLarge'
-                    page='params'
-                    type={
-                      selectFormData.options?.length
-                        ? Request_Illustrations[requestStatus]
-                        : IllustrationsEnum.EmptyData
-                    }
-                  />
-                )
-              )}
-            </BusyLoaderWrapper>
-          </div>
-          <ResizePanel
-            className={`Params__ResizePanel${
-              _.isEmpty(tableData) &&
-              requestStatus !== RequestStatusEnum.Pending
-                ? '__hide'
-                : ''
-            }`}
-            panelResizing={panelResizing}
-            resizeElemRef={resizeElemRef}
-            resizeMode={resizeMode}
-            onTableResizeModeChange={onTableResizeModeChange}
-          />
-          <div
-            ref={tableElemRef}
-            className={`Params__table__container${
-              requestStatus !== RequestStatusEnum.Pending &&
-              (resizeMode === ResizeModeEnum.Hide || _.isEmpty(tableData))
-                ? '__hide'
-                : ''
-            }`}
-          >
-            <BusyLoaderWrapper
-              isLoading={requestStatus === RequestStatusEnum.Pending}
-              className='Params__loader'
-              height='100%'
-              loaderComponent={<TableLoader />}
-            >
-              {!_.isEmpty(tableData) ? (
-                <ErrorBoundary>
-                  <Table
-                    custom
-                    ref={tableRef}
-                    data={tableData}
-                    columns={tableColumns}
-                    // Table options
-                    topHeader
-                    groups={!Array.isArray(tableData)}
-                    rowHeight={tableRowHeight}
-                    rowHeightMode={
-                      tableRowHeight === RowHeightSize.sm
-                        ? 'small'
-                        : tableRowHeight === RowHeightSize.md
-                        ? 'medium'
-                        : 'large'
-                    }
-                    sortOptions={groupingSelectOptions}
-                    sortFields={sortFields}
-                    hiddenRows={hiddenMetrics}
-                    hiddenColumns={hiddenColumns}
-                    hideSystemMetrics={hideSystemMetrics}
-                    resizeMode={resizeMode}
-                    columnsWidths={columnsWidths}
-                    selectedRows={selectedRows}
-                    appName={AppNameEnum.PARAMS}
-                    hiddenChartRows={highPlotData?.length === 0}
-                    columnsOrder={columnsOrder}
-                    // Table actions
-                    onSortReset={onSortReset}
-                    onSort={onSortFieldsChange}
-                    onExport={onExportTableData}
-                    onColumnsVisibilityChange={onColumnsVisibilityChange}
-                    onManageColumns={onColumnsOrderChange}
-                    onRowHeightChange={onRowHeightChange}
-                    onRowsChange={onParamVisibilityChange}
-                    onRowHover={onTableRowHover}
-                    onRowClick={onTableRowClick}
-                    onTableResizeModeChange={onTableResizeModeChange}
-                    onTableDiffShow={onTableDiffShow}
-                    updateColumnsWidths={updateColumnsWidths}
-                    onRowSelect={onRowSelect}
-                    archiveRuns={archiveRuns}
-                    deleteRuns={deleteRuns}
-                    focusedState={focusedState}
-                    multiSelect
-                  />
-                </ErrorBoundary>
-              ) : null}
-            </BusyLoaderWrapper>
+                <div
+                  ref={tableElemRef}
+                  className={classNames('Params__table__container', {
+                    fullHeight: resizeMode === ResizeModeEnum.MaxHeight,
+                    hide: resizeMode === ResizeModeEnum.Hide,
+                  })}
+                >
+                  {resizeMode === ResizeModeEnum.Hide ? null : (
+                    <ErrorBoundary>
+                      <Table
+                        custom
+                        ref={tableRef}
+                        data={tableData}
+                        columns={tableColumns}
+                        // Table options
+                        topHeader
+                        groups={!Array.isArray(tableData)}
+                        rowHeight={tableRowHeight}
+                        rowHeightMode={
+                          tableRowHeight === RowHeightSize.sm
+                            ? 'small'
+                            : tableRowHeight === RowHeightSize.md
+                            ? 'medium'
+                            : 'large'
+                        }
+                        sortOptions={groupingSelectOptions}
+                        sortFields={sortFields}
+                        hiddenRows={hiddenMetrics}
+                        hiddenColumns={hiddenColumns}
+                        hideSystemMetrics={hideSystemMetrics}
+                        resizeMode={resizeMode}
+                        columnsWidths={columnsWidths}
+                        selectedRows={selectedRows}
+                        appName={AppNameEnum.PARAMS}
+                        hiddenChartRows={highPlotData?.length === 0}
+                        columnsOrder={columnsOrder}
+                        // Table actions
+                        onSortReset={onSortReset}
+                        onSort={onSortFieldsChange}
+                        onExport={onExportTableData}
+                        onColumnsVisibilityChange={onColumnsVisibilityChange}
+                        onManageColumns={onColumnsOrderChange}
+                        onRowHeightChange={onRowHeightChange}
+                        onRowsChange={onParamVisibilityChange}
+                        onRowHover={onTableRowHover}
+                        onRowClick={onTableRowClick}
+                        onTableResizeModeChange={onTableResizeModeChange}
+                        onTableDiffShow={onTableDiffShow}
+                        updateColumnsWidths={updateColumnsWidths}
+                        onRowSelect={onRowSelect}
+                        archiveRuns={archiveRuns}
+                        deleteRuns={deleteRuns}
+                        focusedState={focusedState}
+                        multiSelect
+                      />
+                    </ErrorBoundary>
+                  )}
+                </div>
+              </>
+            )}
           </div>
         </div>
       </section>

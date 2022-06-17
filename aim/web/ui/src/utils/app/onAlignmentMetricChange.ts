@@ -14,6 +14,7 @@ import { AlignmentOptionsEnum } from '../d3';
 import getRunData from './getRunData';
 import onNotificationAdd from './onNotificationAdd';
 import updateURL from './updateURL';
+import setRequestProgress from './setRequestProgress';
 
 export default async function onAlignmentMetricChange<M extends State>({
   metric,
@@ -44,7 +45,7 @@ export default async function onAlignmentMetricChange<M extends State>({
     updateURL({ configData, appName });
   }
   if (modelState?.rawData && configData) {
-    model.setState({ RequestStatusEnum: RequestStatusEnum.Pending });
+    model.setState({ requestStatus: RequestStatusEnum.Pending });
     const runs: Array<{ run_id: string; traces: any }> =
       modelState.rawData?.map((item) => {
         const traces = item.traces.map(({ context, name, slice }: any) => ({
@@ -66,7 +67,9 @@ export default async function onAlignmentMetricChange<M extends State>({
       const stream = await metricsService
         .fetchAlignedMetricsData(reqBody)
         .call();
-      const runData = await getRunData(stream);
+      const runData = await getRunData(stream, (progress) =>
+        setRequestProgress(model, progress),
+      );
       let missingTraces = false;
       const rawData: any = model.getState()?.rawData?.map((item, index) => {
         return {
@@ -98,6 +101,7 @@ export default async function onAlignmentMetricChange<M extends State>({
           ...configData.chart,
           alignmentConfig: { metric: '', type: AlignmentOptionsEnum.STEP },
         };
+        model.setState({ requestStatus: RequestStatusEnum.BadRequest });
       }
       setModelData(rawData, configData);
     } catch (ex: any) {

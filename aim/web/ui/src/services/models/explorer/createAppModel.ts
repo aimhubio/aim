@@ -183,6 +183,7 @@ import {
   alignByRelativeTime,
   alignByStep,
 } from 'utils/app/alignMetricData';
+import setRequestProgress from 'utils/app/setRequestProgress';
 import { minMaxOfArray } from 'utils/minMaxOfArray';
 import getAdvancedSuggestion from 'utils/getAdvancedSuggestions';
 import { processDurationTime } from 'utils/processDurationTime';
@@ -201,6 +202,11 @@ function createAppModel(appConfig: IAppInitialConfig) {
 
   const model: IModel<IAppModelState> = createModel<IAppModelState>({
     requestStatus: RequestStatusEnum.NotRequested,
+    requestProgress: {
+      matched: 0,
+      checked: 0,
+      trackedRuns: 0,
+    },
     selectFormData: { options: undefined, suggestions: [] },
     config: getConfig(),
   });
@@ -606,11 +612,10 @@ function createAppModel(appConfig: IAppInitialConfig) {
       if (metricsRequestRef) {
         metricsRequestRef.abort();
       }
-
+      setRequestProgress(model);
       model.setState({
         requestStatus: RequestStatusEnum.Ok,
       });
-
       onModelNotificationAdd({
         id: Date.now(),
         severity: 'info',
@@ -646,6 +651,7 @@ function createAppModel(appConfig: IAppInitialConfig) {
         ...(metric ? { x_axis: metric } : {}),
       });
 
+      setRequestProgress(model);
       return {
         call: async () => {
           if (query === '()') {
@@ -664,7 +670,9 @@ function createAppModel(appConfig: IAppInitialConfig) {
                 exceptionHandler({ detail, model });
                 resetModelState(configData, shouldResetSelectedRows!);
               });
-              const runData = await getRunData(stream);
+              const runData = await getRunData(stream, (progress) =>
+                setRequestProgress(model, progress),
+              );
               updateData(runData);
             } catch (ex: Error | any) {
               if (ex.name === 'AbortError') {
@@ -2173,11 +2181,10 @@ function createAppModel(appConfig: IAppInitialConfig) {
         if (runsRequestRef) {
           runsRequestRef.abort();
         }
-
+        setRequestProgress(model);
         model.setState({
           requestStatus: RequestStatusEnum.Ok,
         });
-
         onModelNotificationAdd({
           id: Date.now(),
           severity: 'info',
@@ -2213,6 +2220,7 @@ function createAppModel(appConfig: IAppInitialConfig) {
         if (shouldUrlUpdate) {
           updateURL({ configData, appName });
         }
+        setRequestProgress(model);
         return {
           call: async () => {
             try {
@@ -2230,17 +2238,28 @@ function createAppModel(appConfig: IAppInitialConfig) {
                 : modelState?.rawData;
               let count = 0;
               for await (let [keys, val] of objects) {
-                if (isInitial) {
-                  const runData: any = val;
-                  runsData.push({ ...runData, hash: keys[0] } as any);
+                const data = { ...(val as any), hash: keys[0] };
+                if (data.hash.startsWith('progress')) {
+                  const { 0: checked, 1: trackedRuns } = data;
+                  setRequestProgress(model, {
+                    matched: runsData.length,
+                    checked,
+                    trackedRuns,
+                  });
                 } else {
-                  if (count >= 0) {
+                  if (isInitial) {
                     const runData: any = val;
                     runsData.push({ ...runData, hash: keys[0] } as any);
+                  } else {
+                    if (count >= 0) {
+                      const runData: any = val;
+                      runsData.push({ ...runData, hash: keys[0] } as any);
+                    }
                   }
+                  count++;
                 }
-                count++;
               }
+
               const { data, params, metricsColumns, selectedRows } =
                 processData(runsData);
               const tableData = getDataAsTableRows(
@@ -2887,9 +2906,9 @@ function createAppModel(appConfig: IAppInitialConfig) {
         );
         const lastRowKey = newData[newData.length - 1].hash;
         model.setState({
+          requestStatus: RequestStatusEnum.Ok,
           data,
           rowData: newData,
-          requestStatus: RequestStatusEnum.Ok,
           infiniteIsPending: false,
           tableColumns,
           tableData: tableData.rows,
@@ -2904,7 +2923,6 @@ function createAppModel(appConfig: IAppInitialConfig) {
             },
           },
         });
-
         const tableRef: any = model.getState()?.refs?.tableRef;
         tableRef.current?.updateData({
           newData: tableData.rows,
@@ -3295,11 +3313,10 @@ function createAppModel(appConfig: IAppInitialConfig) {
         if (runsRequestRef) {
           runsRequestRef.abort();
         }
-
+        setRequestProgress(model);
         model.setState({
           requestStatus: RequestStatusEnum.Ok,
         });
-
         onModelNotificationAdd({
           id: Date.now(),
           severity: 'info',
@@ -3326,6 +3343,7 @@ function createAppModel(appConfig: IAppInitialConfig) {
           updateURL({ configData, appName });
         }
         runsRequestRef = runsService.getRunsData(configData?.select?.query);
+        setRequestProgress(model);
         return {
           call: async () => {
             if (_.isEmpty(configData?.select?.options)) {
@@ -3344,7 +3362,9 @@ function createAppModel(appConfig: IAppInitialConfig) {
                   exceptionHandler({ detail, model });
                   resetModelState(configData, shouldResetSelectedRows!);
                 });
-                const runData = await getRunData(stream);
+                const runData = await getRunData(stream, (progress) =>
+                  setRequestProgress(model, progress),
+                );
                 updateData(runData);
               } catch (ex: Error | any) {
                 if (ex.name === 'AbortError') {
@@ -5589,11 +5609,10 @@ function createAppModel(appConfig: IAppInitialConfig) {
         if (runsRequestRef) {
           runsRequestRef.abort();
         }
-
+        setRequestProgress(model);
         model.setState({
           requestStatus: RequestStatusEnum.Ok,
         });
-
         onModelNotificationAdd({
           id: Date.now(),
           severity: 'info',
@@ -5617,6 +5636,7 @@ function createAppModel(appConfig: IAppInitialConfig) {
           updateURL({ configData, appName });
         }
         runsRequestRef = runsService.getRunsData(configData?.select?.query);
+        setRequestProgress(model);
         return {
           call: async () => {
             if (_.isEmpty(configData?.select?.options)) {
@@ -5635,7 +5655,9 @@ function createAppModel(appConfig: IAppInitialConfig) {
                   exceptionHandler({ detail, model });
                   resetModelState(configData, shouldResetSelectedRows!);
                 });
-                const runData = await getRunData(stream);
+                const runData = await getRunData(stream, (progress) =>
+                  setRequestProgress(model, progress),
+                );
                 updateData(runData);
 
                 liveUpdateInstance?.start({

@@ -157,6 +157,7 @@ function MetricsContainer(): React.FunctionComponentElement<React.ReactNode> {
         resizeMode={metricsData?.config?.table?.resizeMode!}
         columnsWidths={metricsData?.config?.table?.columnsWidths!}
         requestStatus={metricsData?.requestStatus!}
+        requestProgress={metricsData?.requestProgress!}
         selectFormData={metricsData?.selectFormData!}
         columnsOrder={metricsData?.config?.table?.columnsOrder!}
         // methods

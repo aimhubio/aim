@@ -150,6 +150,7 @@ function ScattersContainer(): React.FunctionComponentElement<React.ReactNode> {
         groupingSelectOptions={scattersData?.groupingSelectOptions!}
         projectsDataMetrics={projectsData?.metrics!}
         requestStatus={scattersData?.requestStatus!}
+        requestProgress={scattersData?.requestProgress!}
         resizeMode={scattersData?.config?.table?.resizeMode!}
         columnsWidths={scattersData?.config?.table?.columnsWidths!}
         selectFormData={scattersData?.selectFormData!}

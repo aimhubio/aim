@@ -74,10 +74,11 @@ function drawLines(args: IDrawLinesArgs): void {
       .style('stroke-dasharray', (d: IProcessedData) => d.dasharray)
       .data(data.map((d: IProcessedData) => d.data))
       .attr('d', lineGenerator(xScale, yScale, curveInterpolation));
+
     if (!readOnly) {
       linesNodeRef.current
         ?.selectAll('.inProgressLineIndicator')
-        .data(data.filter((d: IProcessedData) => !d?.run?.props?.active))
+        .data(data.filter((d: IProcessedData) => d?.run?.props?.active))
         .join('circle')
         .attr('class', 'inProgressLineIndicator')
         .attr('id', (d: IProcessedData) => `inProgressLineIndicator-${d.key}`)

@@ -163,6 +163,7 @@ function SelectForm({
                     color='primary'
                     onClick={handleClick}
                     aria-describedby={id}
+                    disabled={requestIsPending}
                   >
                     <Icon name='plus' style={{ marginRight: '0.5rem' }} />
                     Metrics
@@ -283,6 +284,7 @@ function SelectForm({
         <div className='Metrics__SelectForm__container__search'>
           <Button
             fullWidth
+            key={`${requestIsPending}`}
             color='primary'
             variant={requestIsPending ? 'outlined' : 'contained'}
             startIcon={
@@ -299,7 +301,11 @@ function SelectForm({
           <div className='Metrics__SelectForm__search__actions'>
             <Tooltip title='Reset query'>
               <div>
-                <Button onClick={handleResetSelectForm} withOnlyIcon={true}>
+                <Button
+                  onClick={handleResetSelectForm}
+                  withOnlyIcon={true}
+                  disabled={requestIsPending}
+                >
                   <Icon name='reset' />
                 </Button>
               </div>
@@ -316,6 +322,7 @@ function SelectForm({
                   className={selectedMetricsData?.advancedMode ? 'active' : ''}
                   withOnlyIcon={true}
                   onClick={toggleEditMode}
+                  disabled={requestIsPending}
                 >
                   <Icon name='edit' />
                 </Button>
@@ -323,7 +330,11 @@ function SelectForm({
             </Tooltip>
             <Tooltip title='Copy search query'>
               <div>
-                <Button onClick={onSearchQueryCopy} withOnlyIcon={true}>
+                <Button
+                  onClick={onSearchQueryCopy}
+                  withOnlyIcon={true}
+                  disabled={requestIsPending}
+                >
                   <Icon name='copy' />
                 </Button>
               </div>

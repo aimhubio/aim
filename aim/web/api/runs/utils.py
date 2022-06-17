@@ -1,5 +1,6 @@
 import numpy as np
 import struct
+import time
 
 from collections import namedtuple
 from itertools import chain
@@ -13,6 +14,7 @@ from aim.sdk import Run
 from aim.sdk.sequences.metric import Metric
 from aim.sdk.sequence_collection import SequenceCollection
 from aim.storage.query import syntax_error_check
+from aim.web.configs import AIM_PROGRESS_REPORT_INTERVAL
 from aim.web.api.projects.project import Project
 from aim.web.api.runs.pydantic_models import AlignedRunIn, TraceBase
 from aim.storage.treeutils import encode_tree
@@ -149,8 +151,17 @@ def custom_aligned_metrics_streamer(requested_runs: List[AlignedRunIn], x_axis: 
 async def metric_search_result_streamer(traces: SequenceCollection,
                                         skip_system: bool,
                                         steps_num: int,
-                                        x_axis: Optional[str]) -> bytes:
-    for run_trace_collection in traces.iter_runs():
+                                        x_axis: Optional[str] = None,
+                                        report_progress: Optional[bool] = True) -> bytes:
+    last_reported_progress_time = time.time()
+    progress = None
+    progress_reports_sent = 0
+    for run_trace_collection, progress in traces.iter_runs():
+        if report_progress and time.time() - last_reported_progress_time > AIM_PROGRESS_REPORT_INTERVAL:
+            yield collect_run_streamable_data(encode_tree({f'progress_{progress_reports_sent}': progress}))
+            progress_reports_sent += 1
+            last_reported_progress_time = time.time()
+
         run = None
         traces_list = []
         for trace in run_trace_collection.iter():
@@ -184,11 +195,31 @@ async def metric_search_result_streamer(traces: SequenceCollection,
 
             encoded_tree = encode_tree(run_dict)
             yield collect_run_streamable_data(encoded_tree)
+            if report_progress:
+                yield collect_run_streamable_data(encode_tree({f'progress_{progress_reports_sent}': progress}))
+                progress_reports_sent += 1
+                last_reported_progress_time = time.time()
+
+    if report_progress and progress:
+        yield collect_run_streamable_data(encode_tree({f'progress_{progress_reports_sent}': progress}))
 
 
-def run_search_result_streamer(runs: SequenceCollection, limit: int, skip_system: bool) -> bytes:
+def run_search_result_streamer(runs: SequenceCollection,
+                               limit: int,
+                               skip_system: bool,
+                               report_progress: Optional[bool] = True) -> bytes:
     run_count = 0
-    for run_trace_collection in runs.iter_runs():
+    last_reported_progress_time = time.time()
+    progress = None
+    progress_reports_sent = 0
+    for run_trace_collection, progress in runs.iter_runs():
+        # if no progress was reported for a long interval, report progress
+        if report_progress and time.time() - last_reported_progress_time > AIM_PROGRESS_REPORT_INTERVAL:
+            yield collect_run_streamable_data(encode_tree({f'progress_{progress_reports_sent}': progress}))
+            progress_reports_sent += 1
+            last_reported_progress_time = time.time()
+        if not run_trace_collection:
+            continue
         run = run_trace_collection.run
         run_dict = {
             run.hash: {
@@ -200,10 +231,16 @@ def run_search_result_streamer(runs: SequenceCollection, limit: int, skip_system
 
         encoded_tree = encode_tree(run_dict)
         yield collect_run_streamable_data(encoded_tree)
-
+        if report_progress:
+            yield collect_run_streamable_data(encode_tree({f'progress_{progress_reports_sent}': progress}))
+            progress_reports_sent += 1
+            last_reported_progress_time = time.time()
         run_count += 1
         if limit and run_count >= limit:
             break
+
+    if report_progress and progress:
+        yield collect_run_streamable_data(encode_tree({f'progress_{progress_reports_sent}': progress}))
 
 
 def collect_requested_metric_traces(run: Run, requested_traces: List[TraceBase], steps_num: int = 200) -> List[dict]:
