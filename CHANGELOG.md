@@ -4,6 +4,7 @@
 
 ### Enhancements:
 
+- Add `--uds` option for `aim up` command (mihran113)
 - Add progress reporting for search APIs and tqdm progress for SDK queries (mihran113)
 - Add all the attributes of runs in the grouping popovers (KaroMourad)
 - Display progress bar on Explorer pages when searching metadata (KaroMourad)
