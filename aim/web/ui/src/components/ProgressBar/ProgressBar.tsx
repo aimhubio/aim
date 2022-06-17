@@ -37,8 +37,7 @@ function ProgressBar({
 
   const barWidth = React.useMemo(
     () => (pendingStatus ? percent + '%' : 'unset'),
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    [pendingStatus],
+    [pendingStatus, percent],
   );
   const fadeOutProgress = React.useMemo(
     () => !(processing || pendingStatus),
