@@ -1,11 +1,6 @@
 import React from 'react';
 
-import {
-  Accordion,
-  AccordionDetails,
-  Checkbox,
-  TextField,
-} from '@material-ui/core';
+import { Checkbox, TextField } from '@material-ui/core';
 import {
   CheckBox as CheckBoxIcon,
   CheckBoxOutlineBlank,

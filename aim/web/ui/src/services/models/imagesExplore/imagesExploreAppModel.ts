@@ -85,6 +85,8 @@ import getGroupingSelectOptions from 'utils/app/getGroupingSelectOptions';
 import getAdvancedSuggestion from 'utils/getAdvancedSuggestions';
 import { processDurationTime } from 'utils/processDurationTime';
 import onVisibilityChange from 'utils/app/onColumnsVisibilityChange';
+import setRequestProgress from 'utils/app/setRequestProgress';
+import getRunData from 'utils/app/getRunData';
 
 import createModel from '../model';
 import { AppNameEnum } from '../explorer';
@@ -285,6 +287,7 @@ function abortRequest(): void {
   if (imagesRequestRef) {
     imagesRequestRef.abort();
   }
+  setRequestProgress(model);
   model.setState({
     requestStatus: RequestStatusEnum.Ok,
   });
@@ -354,6 +357,7 @@ function getImagesData(
     };
   }
   imagesRequestRef = imagesExploreService.getImagesExploreData(imageDataBody);
+  setRequestProgress(model);
   return {
     call: async () => {
       if (query !== '()') {
@@ -371,7 +375,9 @@ function getImagesData(
             exceptionHandler({ detail, model });
             resetModelState();
           });
-          const runData = await getImagesMetricsData(stream);
+          const runData = await getRunData(stream, (progress) =>
+            setRequestProgress(model, progress),
+          );
 
           if (configData) {
             setModelData(runData, configData);
@@ -1015,23 +1021,6 @@ function onResetConfigData(): void {
     };
     updateModelData(configData, true);
   }
-}
-
-async function getImagesMetricsData(
-  stream: ReadableStream<IRun<IMetricTrace>[]>,
-) {
-  let bufferPairs = decodeBufferPairs(stream);
-  let decodedPairs = decodePathsVals(bufferPairs);
-  let objects = iterFoldTree(decodedPairs, 1);
-
-  const runData = [];
-  for await (let [keys, val] of objects) {
-    runData.push({
-      ...(val as any),
-      hash: keys[0],
-    });
-  }
-  return runData;
 }
 
 function getImagesBlobsData(uris: string[]) {

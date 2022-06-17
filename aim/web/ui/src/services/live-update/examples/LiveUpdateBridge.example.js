@@ -63,7 +63,7 @@ class UpdateService {
   start(params) {
     this.inProgress = true;
     this.instance
-      .start(params)
+      .start({ ...params, report_progress: 'False' })
       .then()
       .catch((e) => {
         console.log('worker start exception --> ', e);

@@ -1,6 +1,13 @@
 import React from 'react';
 
-import { Box, Checkbox, Divider, InputBase, Popper } from '@material-ui/core';
+import {
+  Box,
+  Checkbox,
+  Divider,
+  InputBase,
+  Popper,
+  Tooltip,
+} from '@material-ui/core';
 import Autocomplete from '@material-ui/lab/Autocomplete';
 import {
   CheckBox as CheckBoxIcon,
@@ -166,6 +173,7 @@ function SelectForm({
                       color='primary'
                       onClick={handleClick}
                       aria-describedby={id}
+                      disabled={requestIsPending}
                     >
                       <Icon name='plus' style={{ marginRight: '0.5rem' }} />
                       Images
@@ -290,6 +298,7 @@ function SelectForm({
         <div className='SelectForm__search__container'>
           <Button
             fullWidth
+            key={`${requestIsPending}`}
             color='primary'
             variant={requestIsPending ? 'outlined' : 'contained'}
             startIcon={
@@ -305,19 +314,46 @@ function SelectForm({
             {requestIsPending ? 'Cancel' : 'Search'}
           </Button>
           <div className='SelectForm__search__actions'>
-            <Button onClick={handleResetSelectForm} withOnlyIcon={true}>
-              <Icon name='reset' />
-            </Button>
-            <Button
-              className={selectedImagesData?.advancedMode ? 'active' : ''}
-              withOnlyIcon={true}
-              onClick={toggleEditMode}
+            <Tooltip title='Reset query'>
+              <div>
+                <Button
+                  onClick={handleResetSelectForm}
+                  withOnlyIcon={true}
+                  disabled={requestIsPending}
+                >
+                  <Icon name='reset' />
+                </Button>
+              </div>
+            </Tooltip>
+            <Tooltip
+              title={
+                selectedImagesData?.advancedMode
+                  ? 'Switch to default mode'
+                  : 'Enable advanced search mode '
+              }
             >
-              <Icon name='edit' />
-            </Button>
-            <Button onClick={onSearchQueryCopy} withOnlyIcon={true}>
-              <Icon name='copy' />
-            </Button>
+              <div>
+                <Button
+                  className={selectedImagesData?.advancedMode ? 'active' : ''}
+                  withOnlyIcon={true}
+                  onClick={toggleEditMode}
+                  disabled={requestIsPending}
+                >
+                  <Icon name='edit' />
+                </Button>
+              </div>
+            </Tooltip>
+            <Tooltip title='Copy search query'>
+              <div>
+                <Button
+                  onClick={onSearchQueryCopy}
+                  withOnlyIcon={true}
+                  disabled={requestIsPending}
+                >
+                  <Icon name='copy' />
+                </Button>
+              </div>
+            </Tooltip>
           </div>
         </div>
       </div>

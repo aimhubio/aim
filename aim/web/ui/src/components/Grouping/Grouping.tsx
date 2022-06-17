@@ -23,6 +23,7 @@ function Grouping({
   onGroupingApplyChange,
   onShuffleChange,
   groupingPopovers = GroupingPopovers,
+  requestIsPending = false,
 }: IGroupingProps): React.FunctionComponentElement<React.ReactNode> {
   return (
     <ErrorBoundary>
@@ -45,6 +46,7 @@ function Grouping({
                   groupingSelectOptions={groupingSelectOptions}
                   onSelect={onGroupingSelectChange}
                   onGroupingModeChange={onGroupingModeChange}
+                  requestIsPending={requestIsPending}
                   advancedComponent={
                     AdvancedComponent && (
                       <AdvancedComponent

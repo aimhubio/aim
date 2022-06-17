@@ -20,6 +20,8 @@ import {
 } from 'utils/aggregateGroupData';
 import { AlignmentOptionsEnum } from 'utils/d3';
 
+import { IRequestProgress } from 'utils/app/setRequestProgress';
+
 import { ISelectOption } from '../explorer/createAppModel';
 
 import { IMetric } from './metricModel';
@@ -31,6 +33,7 @@ export interface IMetricAppModelState {
     chartPanelRef?: { current: IChartPanelRef | null };
   };
   requestStatus: RequestStatusEnum;
+  requestProgress: IRequestProgress;
   queryIsEmpty: boolean;
   rawData: ISequence<IMetricTrace>[];
   config: IAppModelConfig;

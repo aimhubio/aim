@@ -128,6 +128,7 @@ function SelectForm({
                     color='primary'
                     onClick={handleClick}
                     aria-describedby={id}
+                    disabled={requestIsPending}
                   >
                     <Icon name='plus' style={{ marginRight: '0.5rem' }} />{' '}
                     Params
@@ -241,6 +242,7 @@ function SelectForm({
             </Box>
             <Button
               color='primary'
+              key={`${requestIsPending}`}
               variant={requestIsPending ? 'outlined' : 'contained'}
               startIcon={
                 <Icon

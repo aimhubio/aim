@@ -94,7 +94,7 @@ function usePanelResize(
   );
 
   React.useEffect(() => {
-    resizeElemRef.current.addEventListener('mousedown', handleResize);
+    resizeElemRef.current?.addEventListener('mousedown', handleResize);
     tableConfig?.resizeMode && handleResizeModeChange(tableConfig?.resizeMode);
     return () => {
       setPanelResizing(false);
