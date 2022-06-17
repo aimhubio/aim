@@ -1,7 +1,5 @@
 import React from 'react';
 import classNames from 'classnames';
-import { isEmpty } from 'lodash-es';
-import _ from 'lodash';
 
 import { Tooltip } from '@material-ui/core';
 
