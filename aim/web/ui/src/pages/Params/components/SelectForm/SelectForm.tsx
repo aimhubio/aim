@@ -130,7 +130,7 @@ function SelectForm({
                     aria-describedby={id}
                     disabled={requestIsPending}
                   >
-                    <Icon name='plus' style={{ marginRight: '0.5rem' }} />{' '}
+                    <Icon name='plus' style={{ marginRight: '0.5rem' }} /> Run
                     Params
                   </Button>
                   <Popper
