@@ -16,6 +16,8 @@ import {
 
 import { IDimensionsType } from 'utils/d3/drawParallelAxes';
 
+import { IRequestProgress } from 'utils/app/setRequestProgress';
+
 import {
   IChartTitleData,
   IMetricsCollection,
@@ -27,6 +29,7 @@ export interface IParamsAppModelState {
     chartPanelRef?: { current: IChartPanelRef | null };
   };
   requestStatus: RequestStatusEnum;
+  requestProgress: IRequestProgress;
   queryIsEmpty: boolean;
   rawData: IRun<IParamTrace>[];
   config: IAppModelConfig;

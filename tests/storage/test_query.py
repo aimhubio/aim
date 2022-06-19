@@ -2,6 +2,7 @@ from parameterized import parameterized
 
 from tests.base import PrefilledDataTestBase
 
+from aim.sdk.types import QueryReportMode
 from aim.storage.query import syntax_error_check
 
 
@@ -10,7 +11,7 @@ class TestQuery(PrefilledDataTestBase):
     def test_query_metrics(self):
         q = 'run.hparams.batch_size == None and metric.context.is_training == True'
         trace_count = 0
-        for trc in self.repo.query_metrics(query=q):
+        for trc in self.repo.query_metrics(query=q, report_mode=QueryReportMode.DISABLED):
             self.assertIsNone(trc.run['hparams']['batch_size'])
             self.assertTrue(trc.context['is_training'])
             trace_count += 1
@@ -18,7 +19,7 @@ class TestQuery(PrefilledDataTestBase):
 
     def test_query_metrics_empty_query(self):
         q = ''
-        trcs = self.repo.query_metrics(query=q)
+        trcs = self.repo.query_metrics(query=q, report_mode=QueryReportMode.DISABLED)
         trace_count = sum(1 for _ in trcs)
         self.assertEqual(40, trace_count)
 
@@ -26,7 +27,7 @@ class TestQuery(PrefilledDataTestBase):
         q = 'run.hparams.lr < 0.01 and run.run_index >= 5'
 
         run_count = 0
-        for run_trace_collection in self.repo.query_runs(query=q).iter_runs():
+        for run_trace_collection in self.repo.query_runs(query=q, report_mode=QueryReportMode.DISABLED).iter_runs():
             run = run_trace_collection.run
             self.assertLess(run[('hparams', 'lr')], 0.01)
             self.assertGreaterEqual(run['run_index'], 5)
@@ -35,14 +36,14 @@ class TestQuery(PrefilledDataTestBase):
 
     def test_query_runs_empty_query(self):
         q = ''
-        runs = self.repo.query_runs(query=q).iter_runs()
+        runs = self.repo.query_runs(query=q, report_mode=QueryReportMode.DISABLED).iter_runs()
         run_count = sum(1 for _ in runs)
         self.assertEqual(10, run_count)
 
     def test_query_run_structured_params(self):
         q = 'run.name == "Run # 2"'
         run_count = 0
-        for run_trace_collection in self.repo.query_runs(query=q).iter_runs():
+        for run_trace_collection in self.repo.query_runs(query=q, report_mode=QueryReportMode.DISABLED).iter_runs():
             run = run_trace_collection.run
             self.assertEqual("Run # 2", run.name)
             run_count += 1
@@ -60,23 +61,23 @@ class TestQuery(PrefilledDataTestBase):
     def test_query_execution(self, name, q):
         # crash/no-crash test
         # execute query and iterate over result
-        for _ in self.repo.query_metrics(q):
+        for _ in self.repo.query_metrics(q, report_mode=QueryReportMode.DISABLED):
             continue
-        for _ in self.repo.query_runs(q).iter_runs():
+        for _ in self.repo.query_runs(q, report_mode=QueryReportMode.DISABLED).iter_runs():
             continue
 
     def test_invalid_query(self):
         q = 'invalid_varialble.get("hparams", "batch_size") == None'
         with self.assertRaises(Exception):
-            next(iter(self.repo.query_metrics(q)))
+            next(iter(self.repo.query_metrics(q, report_mode=QueryReportMode.DISABLED)))
 
     def test_query_raise_syntax_error(self):
         q = 'run.hash == "x" && metric.name == "y"'
         with self.assertRaises(SyntaxError):
-            next(iter(self.repo.query_metrics(q)))
+            next(iter(self.repo.query_metrics(q, report_mode=QueryReportMode.DISABLED)))
 
         with self.assertRaises(SyntaxError):
-            next(iter(self.repo.query_runs(q)))
+            next(iter(self.repo.query_runs(q, report_mode=QueryReportMode.DISABLED)))
 
     def test_syntax_error_handling(self):
         q = 'run.hash == "x" && metric.name == "y"'
@@ -99,17 +100,17 @@ class TestQueryDefaultExpression(PrefilledDataTestBase):
         self.run.archived = False
 
     def test_default_query_run_results(self):
-        run_hashes = [run.run.hash for run in self.repo.query_runs().iter_runs()]
+        run_hashes = [run.run.hash for run in self.repo.query_runs(report_mode=QueryReportMode.DISABLED).iter_runs()]
         self.assertNotIn(self.run_hash, run_hashes)
 
     def test_default_query_metric_results(self):
-        run_hashes = [metric.run.hash for metric in self.repo.query_metrics()]
+        run_hashes = [metric.run.hash for metric in self.repo.query_metrics(report_mode=QueryReportMode.DISABLED)]
         self.assertNotIn(self.run_hash, run_hashes)
 
     def test_query_with_archived_expression_run_results(self):
         q = 'run.archived == True'
         run_hashes = []
-        for run in self.repo.query_runs(query=q).iter_runs():
+        for run in self.repo.query_runs(query=q, report_mode=QueryReportMode.DISABLED).iter_runs():
             run_hashes.append(run.run.hash)
             self.assertTrue(run.run.archived)
         self.assertIn(self.run_hash, run_hashes)
@@ -117,7 +118,7 @@ class TestQueryDefaultExpression(PrefilledDataTestBase):
     def test_query_without_archived_expression_metric_results(self):
         q = 'metric.name == "accuracy"'
         run_hashes = []
-        for metric in self.repo.query_metrics(query=q):
+        for metric in self.repo.query_metrics(query=q, report_mode=QueryReportMode.DISABLED):
             run_hashes.append(metric.run.hash)
             self.assertFalse(metric.run.archived)
         self.assertNotIn(self.run_hash, run_hashes)

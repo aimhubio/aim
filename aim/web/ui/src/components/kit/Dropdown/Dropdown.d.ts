@@ -14,6 +14,7 @@ export interface IDropdownProps {
   label?: string;
   maxMenuListHeight?: string;
   isColored?: boolean;
+  isDisabled?: boolean;
   isClearable?: boolean;
   onMenuOpen: () => void;
   onMenuClose: () => void;

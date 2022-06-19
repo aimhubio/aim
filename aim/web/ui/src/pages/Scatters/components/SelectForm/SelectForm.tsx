@@ -117,6 +117,7 @@ function SelectForm({
                       withPortal
                       label='X axis'
                       icon={{ name: 'x-axis' }}
+                      isDisabled={requestIsPending}
                     />
                   </ErrorBoundary>
                   <Divider
@@ -138,6 +139,7 @@ function SelectForm({
                       withPortal
                       label='Y axis'
                       icon={{ name: 'y-axis' }}
+                      isDisabled={requestIsPending}
                     />
                   </ErrorBoundary>
                 </Box>
@@ -152,6 +154,7 @@ function SelectForm({
           <div className='Scatters__SelectForm__container__search'>
             <Button
               color='primary'
+              key={`${requestIsPending}`}
               variant={requestIsPending ? 'outlined' : 'contained'}
               startIcon={
                 <Icon

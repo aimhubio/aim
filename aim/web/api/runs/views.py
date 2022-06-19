@@ -12,6 +12,7 @@ from aim.web.api.runs.object_views import (
 from aim.web.api.utils import APIRouter  # wrapper for fastapi.APIRouter
 from typing import Optional, Tuple
 
+from aim.sdk.types import QueryReportMode
 from aim.web.api.runs.utils import (
     checked_query,
     collect_requested_metric_traces,
@@ -54,15 +55,19 @@ NOTE_NOT_FOUND = 'Note with id {id} is not found in this run.'
 @runs_router.get('/search/run/', response_model=RunSearchApiOut,
                  responses={400: {'model': QuerySyntaxErrorOut}})
 def run_search_api(q: Optional[str] = '',
-                   skip_system: Optional[bool] = True,
                    limit: Optional[int] = 0,
-                   offset: Optional[str] = None):
+                   offset: Optional[str] = None,
+                   skip_system: Optional[bool] = True,
+                   report_progress: Optional[bool] = True):
     repo = get_project_repo()
     query = checked_query(q)
 
-    runs = repo.query_runs(query=query, paginated=bool(limit), offset=offset)
+    runs = repo.query_runs(query=query,
+                           paginated=bool(limit),
+                           offset=offset,
+                           report_mode=QueryReportMode.PROGRESS_TUPLE)
 
-    streamer = run_search_result_streamer(runs, limit, skip_system)
+    streamer = run_search_result_streamer(runs, limit, skip_system, report_progress)
     return StreamingResponse(streamer)
 
 
@@ -80,8 +85,9 @@ def run_metric_custom_align_api(request_data: MetricAlignApiIn):
                  responses={400: {'model': QuerySyntaxErrorOut}})
 async def run_metric_search_api(q: Optional[str] = '',
                                 p: Optional[int] = 50,
+                                x_axis: Optional[str] = None,
                                 skip_system: Optional[bool] = True,
-                                x_axis: Optional[str] = None):
+                                report_progress: Optional[bool] = True):
     steps_num = p
 
     if x_axis:
@@ -89,9 +95,9 @@ async def run_metric_search_api(q: Optional[str] = '',
 
     repo = get_project_repo()
     query = checked_query(q)
-    traces = repo.query_metrics(query=query)
+    traces = repo.query_metrics(query=query, report_mode=QueryReportMode.PROGRESS_TUPLE)
 
-    streamer = metric_search_result_streamer(traces, skip_system, steps_num, x_axis)
+    streamer = metric_search_result_streamer(traces, skip_system, steps_num, x_axis, report_progress)
     return StreamingResponse(streamer)
 
 

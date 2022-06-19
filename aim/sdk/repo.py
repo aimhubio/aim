@@ -20,6 +20,7 @@ from aim.sdk.run import Run
 from aim.sdk.utils import search_aim_repo, clean_repo_path
 from aim.sdk.sequence_collection import QuerySequenceCollection, QueryRunSequenceCollection
 from aim.sdk.sequence import Sequence
+from aim.sdk.types import QueryReportMode
 from aim.sdk.data_version import DATA_VERSION
 
 from aim.storage.container import Container
@@ -386,6 +387,15 @@ class Repo:
         else:
             raise StopIteration
 
+    def total_runs_count(self) -> int:
+        db = self.structured_db
+        cache = db.caches.get('runs_cache')
+        if cache:
+            return len(cache.keys())
+        else:
+            self.meta_tree.preload()
+            return len(list(self.meta_tree.subtree('chunks').keys()))
+
     def get_run(self, run_hash: str) -> Optional['Run']:
         """Get run if exists.
 
@@ -400,7 +410,11 @@ class Repo:
         else:
             return Run(run_hash, repo=self, read_only=True)
 
-    def query_runs(self, query: str = '', paginated: bool = False, offset: str = None) -> QueryRunSequenceCollection:
+    def query_runs(self,
+                   query: str = '',
+                   paginated: bool = False,
+                   offset: str = None,
+                   report_mode: QueryReportMode = QueryReportMode.PROGRESS_BAR) -> QueryRunSequenceCollection:
         """Get runs satisfying query expression.
 
         Args:
@@ -408,11 +422,13 @@ class Repo:
                 If not specified, query results will include all runs.
              paginated (:obj:`bool`, optional): query results pagination flag. False if not specified.
              offset (:obj:`str`, optional): `hash` of Run to skip to.
+             report_mode(:obj:`QueryReportMode`, optional): indicates report mode
+                (0: DISABLED, 1: PROGRESS BAR, 2: PROGRESS TUPLE). QueryReportMode.PROGRESS_BAR if not specified.
         Returns:
             :obj:`SequenceCollection`: Iterable for runs/metrics matching query expression.
         """
         self._prepare_runs_cache()
-        return QueryRunSequenceCollection(self, Sequence, query, paginated, offset)
+        return QueryRunSequenceCollection(self, Sequence, query, paginated, offset, report_mode)
 
     def delete_run(self, run_hash: str) -> bool:
         """Delete Run data from aim repository
@@ -507,77 +523,101 @@ class Repo:
         else:
             return True, []
 
-    def query_metrics(self, query: str = '') -> QuerySequenceCollection:
+    def query_metrics(self,
+                      query: str = '',
+                      report_mode: QueryReportMode = QueryReportMode.PROGRESS_BAR) -> QuerySequenceCollection:
         """Get metrics satisfying query expression.
 
         Args:
              query (str): query expression.
+             report_mode(:obj:`QueryReportMode`, optional): indicates report mode
+                (0: DISABLED, 1: PROGRESS BAR, 2: PROGRESS TUPLE). QueryReportMode.PROGRESS_BAR if not specified.
         Returns:
-            :obj:`MetricCollection`: Iterable for metrics matching query expression.
+            :obj:`SequenceCollection`: Iterable for metrics matching query expression.
         """
         self._prepare_runs_cache()
         from aim.sdk.sequences.metric import Metric
-        return QuerySequenceCollection(repo=self, seq_cls=Metric, query=query)
+        return QuerySequenceCollection(repo=self, seq_cls=Metric, query=query, report_mode=report_mode)
 
-    def query_images(self, query: str = '') -> QuerySequenceCollection:
+    def query_images(self,
+                     query: str = '',
+                     report_mode: QueryReportMode = QueryReportMode.PROGRESS_BAR) -> QuerySequenceCollection:
         """Get image collections satisfying query expression.
 
         Args:
              query (str): query expression.
+             report_mode(:obj:`QueryReportMode`, optional): indicates report mode
+                (0: DISABLED, 1: PROGRESS BAR, 2: PROGRESS TUPLE). QueryReportMode.PROGRESS_BAR if not specified.
         Returns:
             :obj:`SequenceCollection`: Iterable for image sequences matching query expression.
         """
         self._prepare_runs_cache()
         from aim.sdk.sequences.image_sequence import Images
-        return QuerySequenceCollection(repo=self, seq_cls=Images, query=query)
+        return QuerySequenceCollection(repo=self, seq_cls=Images, query=query, report_mode=report_mode)
 
-    def query_audios(self, query: str = '') -> QuerySequenceCollection:
+    def query_audios(self,
+                     query: str = '',
+                     report_mode: QueryReportMode = QueryReportMode.PROGRESS_BAR) -> QuerySequenceCollection:
         """Get audio collections satisfying query expression.
 
         Args:
              query (str): query expression.
+             report_mode(:obj:`QueryReportMode`, optional): indicates report mode
+                (0: DISABLED, 1: PROGRESS BAR, 2: PROGRESS TUPLE). QueryReportMode.PROGRESS_BAR if not specified.
         Returns:
             :obj:`SequenceCollection`: Iterable for audio sequences matching query expression.
         """
         self._prepare_runs_cache()
         from aim.sdk.sequences.audio_sequence import Audios
-        return QuerySequenceCollection(repo=self, seq_cls=Audios, query=query)
+        return QuerySequenceCollection(repo=self, seq_cls=Audios, query=query, report_mode=report_mode)
 
-    def query_figure_objects(self, query: str = '') -> QuerySequenceCollection:
+    def query_figure_objects(self,
+                             query: str = '',
+                             report_mode: QueryReportMode = QueryReportMode.PROGRESS_BAR) -> QuerySequenceCollection:
         """Get Figures collections satisfying query expression.
 
         Args:
              query (str): query expression.
+             report_mode(:obj:`QueryReportMode`, optional): indicates report mode
+                (0: DISABLED, 1: PROGRESS BAR, 2: PROGRESS TUPLE). QueryReportMode.PROGRESS_BAR if not specified.
         Returns:
             :obj:`SequenceCollection`: Iterable for Figure sequences matching query expression.
         """
         self._prepare_runs_cache()
         from aim.sdk.sequences.figure_sequence import Figures
-        return QuerySequenceCollection(repo=self, seq_cls=Figures, query=query)
+        return QuerySequenceCollection(repo=self, seq_cls=Figures, query=query, report_mode=report_mode)
 
-    def query_distributions(self, query: str = '') -> QuerySequenceCollection:
+    def query_distributions(self,
+                            query: str = '',
+                            report_mode: QueryReportMode = QueryReportMode.PROGRESS_BAR) -> QuerySequenceCollection:
         """Get distribution collections satisfying query expression.
 
         Args:
              query (str): query expression.
+             report_mode(:obj:`QueryReportMode`, optional): indicates report mode
+                (0: DISABLED, 1: PROGRESS BAR, 2: PROGRESS TUPLE). QueryReportMode.PROGRESS_BAR if not specified.
         Returns:
             :obj:`SequenceCollection`: Iterable for distribution sequences matching query expression.
         """
         self._prepare_runs_cache()
         from aim.sdk.sequences.distribution_sequence import Distributions
-        return QuerySequenceCollection(repo=self, seq_cls=Distributions, query=query)
+        return QuerySequenceCollection(repo=self, seq_cls=Distributions, query=query, report_mode=report_mode)
 
-    def query_texts(self, query: str = '') -> QuerySequenceCollection:
+    def query_texts(self,
+                    query: str = '',
+                    report_mode: QueryReportMode = QueryReportMode.PROGRESS_BAR) -> QuerySequenceCollection:
         """Get text collections satisfying query expression.
 
         Args:
              query (str): query expression.
+             report_mode(:obj:`QueryReportMode`, optional): indicates report mode
+                (0: DISABLED, 1: PROGRESS BAR, 2: PROGRESS TUPLE). QueryReportMode.PROGRESS_BAR if not specified.
         Returns:
             :obj:`SequenceCollection`: Iterable for text sequences matching query expression.
         """
         self._prepare_runs_cache()
         from aim.sdk.sequences.text_sequence import Texts
-        return QuerySequenceCollection(repo=self, seq_cls=Texts, query=query)
+        return QuerySequenceCollection(repo=self, seq_cls=Texts, query=query, report_mode=report_mode)
 
     @property
     def run_props_cache_hint(self):

@@ -93,6 +93,7 @@ function TooltipContentPopover({
           <Autocomplete
             id='select-params'
             size='small'
+            openOnFocus
             multiple
             disableCloseOnSelect
             options={options}

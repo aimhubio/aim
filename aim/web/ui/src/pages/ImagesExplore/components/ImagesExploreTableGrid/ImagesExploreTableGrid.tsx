@@ -234,6 +234,8 @@ function getImagesExploreTableColumns(
       return -1;
     } else if (a.key === 'actions') {
       return 1;
+    } else if (b.key === 'actions') {
+      return -1;
     }
     if (!columnsOrder.includes(a.key) && !columnsOrder.includes(b.key)) {
       return 0;

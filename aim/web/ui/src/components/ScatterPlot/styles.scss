@@ -36,8 +36,10 @@
     /* on click */
     &.focus {
       stroke-width: 2;
-      outline-width: 6px;
       clip-path: unset;
+      &__shadow {
+        stroke-width: 10;
+      }
     }
     /* on hover */
     &.active {

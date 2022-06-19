@@ -18,7 +18,10 @@ import {
 } from 'types/services/models/metrics/metricsAppModel';
 import { IParamsAppModelState } from 'types/services/models/params/paramsAppModel';
 import { IRunsAppModelState } from 'types/services/models/runs/runsAppModel';
-import { ITrendlineOptions } from 'types/services/models/scatter/scatterAppModel';
+import {
+  IScatterAppModelState,
+  ITrendlineOptions,
+} from 'types/services/models/scatter/scatterAppModel';
 
 import { ChartTypeEnum, CurveEnum } from 'utils/d3';
 import { SmoothingAlgorithmEnum } from 'utils/smoothingData';
@@ -37,6 +40,7 @@ export interface IAppInitialConfig {
 export type IAppModelState =
   | IMetricAppModelState
   | IParamsAppModelState
+  | IScatterAppModelState
   | IRunsAppModelState;
 
 export interface IAppModelConfig {
