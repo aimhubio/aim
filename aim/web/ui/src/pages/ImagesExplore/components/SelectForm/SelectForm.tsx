@@ -1,4 +1,5 @@
 import React from 'react';
+import classNames from 'classnames';
 
 import {
   Box,
@@ -30,6 +31,7 @@ import './SelectForm.scss';
 
 function SelectForm({
   requestIsPending,
+  isDisabled = false,
   selectedImagesData,
   searchButtonDisabled,
   selectFormData,
@@ -60,9 +62,9 @@ function SelectForm({
       ? advancedAutocompleteRef?.current?.getValue()
       : autocompleteRef?.current?.getValue();
     if (selectedImagesData?.advancedMode) {
-      onSelectAdvancedQueryChange(advancedAutocompleteRef.current.getValue());
+      onSelectAdvancedQueryChange(query ?? '');
     } else {
-      onSelectRunQueryChange(autocompleteRef.current.getValue());
+      onSelectRunQueryChange(query ?? '');
     }
     searchMetricsRef.current = imagesExploreAppModel.getImagesData(
       true,
@@ -173,7 +175,7 @@ function SelectForm({
                       color='primary'
                       onClick={handleClick}
                       aria-describedby={id}
-                      disabled={requestIsPending}
+                      disabled={isDisabled}
                     >
                       <Icon name='plus' style={{ marginRight: '0.5rem' }} />
                       Images
@@ -261,6 +263,7 @@ function SelectForm({
                               key={tag.label}
                               label={tag.label}
                               onDelete={handleDelete}
+                              disabled={isDisabled}
                             />
                           );
                         },
@@ -269,12 +272,17 @@ function SelectForm({
                   </Box>
                   {selectedImagesData?.options.length > 1 && (
                     <ErrorBoundary>
-                      <span
+                      <Button
                         onClick={() => onImagesExploreSelectChange([])}
-                        className='SelectForm__clearAll'
+                        withOnlyIcon
+                        className={classNames('SelectForm__clearAll', {
+                          disabled: isDisabled,
+                        })}
+                        size='xSmall'
+                        disabled={isDisabled}
                       >
                         <Icon name='close' />
-                      </span>
+                      </Button>
                     </ErrorBoundary>
                   )}
                 </ErrorBoundary>
@@ -289,6 +297,7 @@ function SelectForm({
                   context={selectFormData?.suggestions}
                   value={selectedImagesData?.query}
                   onEnter={handleSearch}
+                  isDisabled={isDisabled}
                 />
               </div>
             </ErrorBoundary>
@@ -319,7 +328,7 @@ function SelectForm({
                 <Button
                   onClick={handleResetSelectForm}
                   withOnlyIcon={true}
-                  disabled={requestIsPending}
+                  disabled={isDisabled}
                 >
                   <Icon name='reset' />
                 </Button>
@@ -337,7 +346,7 @@ function SelectForm({
                   className={selectedImagesData?.advancedMode ? 'active' : ''}
                   withOnlyIcon={true}
                   onClick={toggleEditMode}
-                  disabled={requestIsPending}
+                  disabled={isDisabled}
                 >
                   <Icon name='edit' />
                 </Button>
@@ -348,7 +357,7 @@ function SelectForm({
                 <Button
                   onClick={onSearchQueryCopy}
                   withOnlyIcon={true}
-                  disabled={requestIsPending}
+                  disabled={isDisabled}
                 >
                   <Icon name='copy' />
                 </Button>

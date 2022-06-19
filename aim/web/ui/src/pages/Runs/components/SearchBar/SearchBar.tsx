@@ -20,6 +20,7 @@ function SearchBar({
   isRunsDataLoading,
   searchValue,
   onSearchInputChange,
+  isDisabled,
 }: any) {
   const searchRunsRef = React.useRef<any>(null);
   const autocompleteRef: any = React.useRef<React.MutableRefObject<any>>(null);
@@ -66,6 +67,7 @@ function SearchBar({
             onEnter={handleRunSearch}
             context={searchSuggestions}
             value={searchValue}
+            isDisabled={isDisabled}
           />
         </form>
         <Divider style={{ margin: '0 1em' }} orientation='vertical' flexItem />

@@ -51,6 +51,7 @@ function Badge({
   startIcon,
   maxWidth = '100%',
   monospace = false,
+  disabled = false,
   selectBadge,
   onDelete,
   onClick,
@@ -68,7 +69,9 @@ function Badge({
         monospace={monospace}
         className={`Badge Badge${'__' + size} ${className} ${
           color ? '' : 'Badge__default'
-        } ${selectBadge ? 'Badge__select' : ''}`}
+        } ${selectBadge ? 'Badge__select' : ''} ${
+          disabled ? 'Badge__disabled' : ''
+        }`}
         data-name={label}
         onClick={onClick}
       >

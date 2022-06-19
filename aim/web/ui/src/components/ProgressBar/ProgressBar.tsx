@@ -11,6 +11,7 @@ function ProgressBar({
   progress = {},
   processing = false,
   pendingStatus = false,
+  setIsProgressBarVisible,
 }: IProgressBarProps) {
   const { checked = 0, trackedRuns = 0, matched = 0, percent = 0 } = progress;
   const [renderBar, setRenderBar] = React.useState(false);
@@ -19,6 +20,7 @@ function ProgressBar({
   React.useEffect(() => {
     if (processing || pendingStatus) {
       setRenderBar(true);
+      setIsProgressBarVisible?.(true);
     } else {
       const hidingDelay = 2000;
       if (timeoutIdRef.current) {
@@ -26,6 +28,7 @@ function ProgressBar({
       }
       timeoutIdRef.current = window.setTimeout(() => {
         setRenderBar(false);
+        setIsProgressBarVisible?.(false);
       }, hidingDelay);
     }
     return () => {
@@ -33,6 +36,7 @@ function ProgressBar({
         window.clearTimeout(timeoutIdRef.current);
       }
     };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [processing, pendingStatus]);
 
   const barWidth = React.useMemo(

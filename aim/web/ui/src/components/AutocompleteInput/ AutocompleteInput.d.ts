@@ -8,6 +8,7 @@ export interface IAutocompleteInputProps {
   className?: string;
   editorProps?: EditorProps;
   advanced?: boolean;
+  isDisabled?: boolean;
   value: string | undefined;
   refObject?: React.MutableRefObject<any>;
   getEditorValue?: (value: string) => string;

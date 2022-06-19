@@ -31,6 +31,10 @@
     @include monospaceFontFamily();
     font-size: $text-lg;
   }
+  &__disabled {
+    pointer-events: none;
+    opacity: 0.5;
+  }
   .details-label {
     width: auto !important;
   }

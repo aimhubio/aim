@@ -12,6 +12,8 @@ import SearchBar from './components/SearchBar/SearchBar';
 import './Runs.scss';
 
 function Runs(props: any): React.FunctionComponentElement<React.ReactNode> {
+  const [isProgresBarVisible, setIsProgressBarVisible] =
+    React.useState<boolean>(false);
   return (
     <div className='Runs__container'>
       <section className='Runs__section'>
@@ -29,11 +31,13 @@ function Runs(props: any): React.FunctionComponentElement<React.ReactNode> {
             isRunsDataLoading={
               props.requestStatus === RequestStatusEnum.Pending
             }
+            isDisabled={isProgresBarVisible}
           />
           <div className='Runs__table__container'>
             <ProgressBar
               progress={props.requestProgress}
               pendingStatus={props.requestStatus === RequestStatusEnum.Pending}
+              setIsProgressBarVisible={setIsProgressBarVisible}
             />
             <RunsTable
               columnsOrder={props.columnsOrder}

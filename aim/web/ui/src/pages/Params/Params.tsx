@@ -105,6 +105,8 @@ const Params = ({
   chartPanelOffsetHeight,
   requestProgress,
 }: IParamsProps): React.FunctionComponentElement<React.ReactNode> => {
+  const [isProgresBarVisible, setIsProgressBarVisible] =
+    React.useState<boolean>(false);
   const chartProps: any[] = React.useMemo(() => {
     return (highPlotData || []).map((chartData: any, index: number) => ({
       curveInterpolation,
@@ -141,6 +143,7 @@ const Params = ({
             <SelectForm
               selectFormData={selectFormData}
               requestIsPending={requestStatus === RequestStatusEnum.Pending}
+              isDisabled={isProgresBarVisible}
               selectedParamsData={selectedParamsData}
               onParamsSelectChange={onParamsSelectChange}
               onSelectRunQueryChange={onSelectRunQueryChange}
@@ -152,7 +155,7 @@ const Params = ({
                   p.groupName === 'stroke' ||
                   p.groupName === 'chart',
               )}
-              requestIsPending={requestStatus === RequestStatusEnum.Pending}
+              isDisabled={isProgresBarVisible}
               groupingData={groupingData}
               groupingSelectOptions={groupingSelectOptions}
               onGroupingSelectChange={onGroupingSelectChange}
@@ -169,6 +172,7 @@ const Params = ({
               progress={requestProgress}
               pendingStatus={requestStatus === RequestStatusEnum.Pending}
               processing={false}
+              setIsProgressBarVisible={setIsProgressBarVisible}
             />
             {_.isEmpty(tableData) && _.isEmpty(highPlotData) ? (
               <IllustrationBlock

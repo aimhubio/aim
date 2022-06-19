@@ -19,6 +19,7 @@ import './SelectForm.scss';
 
 function SelectForm({
   requestIsPending,
+  isDisabled = false,
   selectedOptionsData,
   selectFormData,
   onSelectOptionsChange,
@@ -117,7 +118,7 @@ function SelectForm({
                       withPortal
                       label='X axis'
                       icon={{ name: 'x-axis' }}
-                      isDisabled={requestIsPending}
+                      isDisabled={isDisabled}
                     />
                   </ErrorBoundary>
                   <Divider
@@ -139,7 +140,7 @@ function SelectForm({
                       withPortal
                       label='Y axis'
                       icon={{ name: 'y-axis' }}
-                      isDisabled={requestIsPending}
+                      isDisabled={isDisabled}
                     />
                   </ErrorBoundary>
                 </Box>
@@ -182,6 +183,7 @@ function SelectForm({
               context={selectFormData?.suggestions}
               value={selectedOptionsData?.query}
               onEnter={handleParamsSearch}
+              isDisabled={isDisabled}
             />
           </div>
         </ErrorBoundary>

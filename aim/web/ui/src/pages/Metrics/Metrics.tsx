@@ -37,6 +37,8 @@ import './Metrics.scss';
 function Metrics(
   props: IMetricProps,
 ): React.FunctionComponentElement<React.ReactNode> {
+  const [isProgresBarVisible, setIsProgressBarVisible] =
+    React.useState<boolean>(false);
   const chartProps: any[] = React.useMemo(() => {
     return (props.lineChartData || []).map(
       (chartData: ILine[], index: number) => ({
@@ -86,6 +88,7 @@ function Metrics(
                 requestIsPending={
                   props.requestStatus === RequestStatusEnum.Pending
                 }
+                isDisabled={isProgresBarVisible}
                 selectFormData={props.selectFormData}
                 selectedMetricsData={props.selectedMetricsData}
                 onMetricsSelectChange={props.onMetricsSelectChange}
@@ -101,9 +104,7 @@ function Metrics(
                     p.groupName === 'stroke' ||
                     p.groupName === 'chart',
                 )}
-                requestIsPending={
-                  props.requestStatus === RequestStatusEnum.Pending
-                }
+                isDisabled={isProgresBarVisible}
                 groupingData={props.groupingData}
                 groupingSelectOptions={props.groupingSelectOptions}
                 onGroupingSelectChange={props.onGroupingSelectChange}
@@ -122,6 +123,7 @@ function Metrics(
                   props.requestStatus === RequestStatusEnum.Pending
                 }
                 processing={false}
+                setIsProgressBarVisible={setIsProgressBarVisible}
               />
               {_.isEmpty(props.tableData) && _.isEmpty(props.lineChartData) ? (
                 <IllustrationBlock

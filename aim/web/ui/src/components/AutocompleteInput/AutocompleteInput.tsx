@@ -28,6 +28,7 @@ function AutocompleteInput({
   editorProps = {},
   value = '',
   refObject,
+  isDisabled = false,
   //callback functions
   onEnter,
   onChange,
@@ -141,6 +142,7 @@ function AutocompleteInput({
       className={classNames(`AutocompleteInput ${className || ''}`, {
         AutocompleteInput__focused: focused,
         AutocompleteInput__advanced: advanced,
+        AutocompleteInput__disabled: isDisabled,
       })}
     >
       <Editor
