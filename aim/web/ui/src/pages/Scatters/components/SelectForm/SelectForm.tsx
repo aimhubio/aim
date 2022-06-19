@@ -41,9 +41,9 @@ function SelectForm({
     if (requestIsPending) {
       return;
     }
-    let query = autocompleteRef.current.getValue();
-    onSelectRunQueryChange(query);
-    searchRef.current = scattersAppModel.getScattersData(true, query);
+    let query = autocompleteRef?.current?.getValue();
+    onSelectRunQueryChange(query ?? '');
+    searchRef.current = scattersAppModel.getScattersData(true, query ?? '');
     searchRef.current.call((detail: any) => {
       exceptionHandler({ detail, model: scattersAppModel });
     });

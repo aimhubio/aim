@@ -57,8 +57,8 @@ function SelectForm({
       return;
     }
     let query = selectedImagesData?.advancedMode
-      ? advancedAutocompleteRef.current.getValue()
-      : autocompleteRef.current.getValue();
+      ? advancedAutocompleteRef?.current?.getValue()
+      : autocompleteRef?.current?.getValue();
     if (selectedImagesData?.advancedMode) {
       onSelectAdvancedQueryChange(advancedAutocompleteRef.current.getValue());
     } else {
@@ -67,7 +67,7 @@ function SelectForm({
     searchMetricsRef.current = imagesExploreAppModel.getImagesData(
       true,
       true,
-      query,
+      query ?? '',
     );
     searchMetricsRef.current.call();
 

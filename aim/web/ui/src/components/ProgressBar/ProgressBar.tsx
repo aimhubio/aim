@@ -44,13 +44,8 @@ function ProgressBar({
     [pendingStatus, processing],
   );
   const title = React.useMemo(
-    () =>
-      pendingStatus
-        ? 'Searching over runs...'
-        : processing
-        ? 'Processing...'
-        : 'Done',
-    [pendingStatus, processing],
+    () => (pendingStatus ? 'Searching over runs...' : 'Processing...'),
+    [pendingStatus],
   );
 
   return renderBar ? (

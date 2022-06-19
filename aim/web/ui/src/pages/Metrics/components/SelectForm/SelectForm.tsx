@@ -55,14 +55,14 @@ function SelectForm({
       return;
     }
     let query = selectedMetricsData?.advancedMode
-      ? advancedAutocompleteRef.current.getValue()
-      : autocompleteRef.current.getValue();
+      ? advancedAutocompleteRef?.current?.getValue()
+      : autocompleteRef?.current?.getValue();
     if (selectedMetricsData?.advancedMode) {
       onSelectAdvancedQueryChange(advancedAutocompleteRef.current.getValue());
     } else {
       onSelectRunQueryChange(autocompleteRef.current.getValue());
     }
-    searchRef.current = metricAppModel.getMetricsData(true, true, query);
+    searchRef.current = metricAppModel.getMetricsData(true, true, query ?? '');
     searchRef.current.call();
     trackEvent(ANALYTICS_EVENT_KEYS.metrics.searchClick);
   }

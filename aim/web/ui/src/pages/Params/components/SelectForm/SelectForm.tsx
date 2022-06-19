@@ -42,9 +42,9 @@ function SelectForm({
     if (requestIsPending) {
       return;
     }
-    const query = autocompleteRef.current.getValue();
-    onSelectRunQueryChange(query);
-    searchRef.current = paramsAppModel.getParamsData(true, true, query);
+    const query = autocompleteRef?.current?.getValue();
+    onSelectRunQueryChange(query ?? '');
+    searchRef.current = paramsAppModel.getParamsData(true, true, query ?? '');
     searchRef.current.call();
     trackEvent(ANALYTICS_EVENT_KEYS.params.searchClick);
   }

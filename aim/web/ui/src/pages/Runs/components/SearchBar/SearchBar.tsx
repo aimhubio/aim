@@ -33,9 +33,14 @@ function SearchBar({
     if (isRunsDataLoading) {
       return;
     }
-    const query = autocompleteRef.current.getValue();
-    onSearchInputChange(query);
-    searchRunsRef.current = runAppModel.getRunsData(true, true, true, query);
+    const query = autocompleteRef?.current?.getValue();
+    onSearchInputChange(query ?? '');
+    searchRunsRef.current = runAppModel.getRunsData(
+      true,
+      true,
+      true,
+      query ?? '',
+    );
     searchRunsRef.current
       .call((detail: any) => {
         exceptionHandler({ detail, model: runAppModel });
