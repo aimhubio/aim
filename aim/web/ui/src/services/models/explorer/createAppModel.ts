@@ -638,7 +638,7 @@ function createAppModel(appConfig: IAppInitialConfig) {
       const metric = configData?.chart?.alignmentConfig?.metric;
 
       if (queryString) {
-        if (configData.select.advancedQuery) {
+        if (configData.select.advancedMode) {
           configData.select.advancedQuery = queryString;
         } else {
           configData.select.query = queryString;

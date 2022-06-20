@@ -37,7 +37,7 @@ import './Metrics.scss';
 function Metrics(
   props: IMetricProps,
 ): React.FunctionComponentElement<React.ReactNode> {
-  const [isProgresBarVisible, setIsProgressBarVisible] =
+  const [isProgressBarVisible, setIsProgressBarVisible] =
     React.useState<boolean>(false);
   const chartProps: any[] = React.useMemo(() => {
     return (props.lineChartData || []).map(
@@ -88,7 +88,7 @@ function Metrics(
                 requestIsPending={
                   props.requestStatus === RequestStatusEnum.Pending
                 }
-                isDisabled={isProgresBarVisible}
+                isDisabled={isProgressBarVisible}
                 selectFormData={props.selectFormData}
                 selectedMetricsData={props.selectedMetricsData}
                 onMetricsSelectChange={props.onMetricsSelectChange}
@@ -104,7 +104,7 @@ function Metrics(
                     p.groupName === 'stroke' ||
                     p.groupName === 'chart',
                 )}
-                isDisabled={isProgresBarVisible}
+                isDisabled={isProgressBarVisible}
                 groupingData={props.groupingData}
                 groupingSelectOptions={props.groupingSelectOptions}
                 onGroupingSelectChange={props.onGroupingSelectChange}

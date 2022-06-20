@@ -67,7 +67,7 @@ function SearchBar({
             onEnter={handleRunSearch}
             context={searchSuggestions}
             value={searchValue}
-            isDisabled={isDisabled}
+            disabled={isDisabled}
           />
         </form>
         <Divider style={{ margin: '0 1em' }} orientation='vertical' flexItem />

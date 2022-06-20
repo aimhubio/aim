@@ -105,7 +105,7 @@ const Params = ({
   chartPanelOffsetHeight,
   requestProgress,
 }: IParamsProps): React.FunctionComponentElement<React.ReactNode> => {
-  const [isProgresBarVisible, setIsProgressBarVisible] =
+  const [isProgressBarVisible, setIsProgressBarVisible] =
     React.useState<boolean>(false);
   const chartProps: any[] = React.useMemo(() => {
     return (highPlotData || []).map((chartData: any, index: number) => ({
@@ -143,7 +143,7 @@ const Params = ({
             <SelectForm
               selectFormData={selectFormData}
               requestIsPending={requestStatus === RequestStatusEnum.Pending}
-              isDisabled={isProgresBarVisible}
+              isDisabled={isProgressBarVisible}
               selectedParamsData={selectedParamsData}
               onParamsSelectChange={onParamsSelectChange}
               onSelectRunQueryChange={onSelectRunQueryChange}
@@ -155,7 +155,7 @@ const Params = ({
                   p.groupName === 'stroke' ||
                   p.groupName === 'chart',
               )}
-              isDisabled={isProgresBarVisible}
+              isDisabled={isProgressBarVisible}
               groupingData={groupingData}
               groupingSelectOptions={groupingSelectOptions}
               onGroupingSelectChange={onGroupingSelectChange}

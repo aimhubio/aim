@@ -272,7 +272,7 @@ function SelectForm({
               context={selectFormData?.suggestions}
               onEnter={handleParamsSearch}
               value={selectedParamsData?.query}
-              isDisabled={isDisabled}
+              disabled={isDisabled}
             />
           </div>
         </div>

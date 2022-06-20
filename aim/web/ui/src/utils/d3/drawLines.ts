@@ -76,11 +76,11 @@ function drawLines(args: IDrawLinesArgs): void {
       .attr('d', lineGenerator(xScale, yScale, curveInterpolation));
 
     if (!readOnly) {
-      const filterdData =
+      const filteredData =
         data?.filter((d: IProcessedData) => d?.run?.props?.active) ?? [];
       linesNodeRef.current
         ?.selectAll('.inProgressLineIndicator')
-        .data(filterdData)
+        .data(filteredData)
         .join('circle')
         .attr('class', 'inProgressLineIndicator')
         .attr('id', (d: IProcessedData) => `inProgressLineIndicator-${d.key}`)
