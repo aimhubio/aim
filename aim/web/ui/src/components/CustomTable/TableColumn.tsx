@@ -186,6 +186,7 @@ function Column({
           maxWidth: '100vw',
           width: col.key === 'selection' ? 32 : widthClone.current ?? 'initial',
           left: colLeft,
+          visibility: colLeft === null ? 'hidden' : null,
         }}
         ref={columnRef}
       >
