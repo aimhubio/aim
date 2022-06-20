@@ -20,6 +20,7 @@ function SearchBar({
   isRunsDataLoading,
   searchValue,
   onSearchInputChange,
+  isDisabled,
 }: any) {
   const searchRunsRef = React.useRef<any>(null);
   const autocompleteRef: any = React.useRef<React.MutableRefObject<any>>(null);
@@ -33,9 +34,14 @@ function SearchBar({
     if (isRunsDataLoading) {
       return;
     }
-    const query = autocompleteRef.current.getValue();
-    onSearchInputChange(query);
-    searchRunsRef.current = runAppModel.getRunsData(true, true, true, query);
+    const query = autocompleteRef?.current?.getValue();
+    onSearchInputChange(query ?? '');
+    searchRunsRef.current = runAppModel.getRunsData(
+      true,
+      true,
+      true,
+      query ?? '',
+    );
     searchRunsRef.current
       .call((detail: any) => {
         exceptionHandler({ detail, model: runAppModel });
@@ -61,6 +67,7 @@ function SearchBar({
             onEnter={handleRunSearch}
             context={searchSuggestions}
             value={searchValue}
+            disabled={isDisabled}
           />
         </form>
         <Divider style={{ margin: '0 1em' }} orientation='vertical' flexItem />
