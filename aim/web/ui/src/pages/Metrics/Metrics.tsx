@@ -76,6 +76,7 @@ function Metrics(
         <section className='Metrics__section'>
           <div className='Metrics__section__appBarContainer Metrics__fullHeight'>
             <MetricsBar
+              disabled={isProgressBarVisible}
               onBookmarkCreate={props.onBookmarkCreate}
               onBookmarkUpdate={props.onBookmarkUpdate}
               onResetConfigData={props.onResetConfigData}

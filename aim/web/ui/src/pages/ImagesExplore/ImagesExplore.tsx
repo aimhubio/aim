@@ -215,6 +215,7 @@ function ImagesExplore(): React.FunctionComponentElement<React.ReactNode> {
         <section className='ImagesExplore__section'>
           <div className='ImagesExplore__section__appBarContainer ImagesExplore__fullHeight'>
             <ImagesExploreAppBar
+              disabled={isProgressBarVisible}
               onBookmarkCreate={imagesExploreAppModel.onBookmarkCreate}
               onBookmarkUpdate={imagesExploreAppModel.onBookmarkUpdate}
               onResetConfigData={imagesExploreAppModel.onResetConfigData}

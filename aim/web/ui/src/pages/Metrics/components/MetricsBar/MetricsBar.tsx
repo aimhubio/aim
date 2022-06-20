@@ -18,13 +18,14 @@ import { IMetricsBarProps } from 'types/pages/metrics/components/MetricsBar/Metr
 import './MetricsBar.scss';
 
 function MetricsBar({
+  title,
+  explorerName = 'METRICS',
+  liveUpdateConfig,
+  disabled,
   onBookmarkCreate,
   onBookmarkUpdate,
   onResetConfigData,
-  liveUpdateConfig,
   onLiveUpdateConfigChange,
-  title,
-  explorerName = 'METRICS',
 }: IMetricsBarProps): React.FunctionComponentElement<React.ReactNode> {
   const [popover, setPopover] = React.useState<string>('');
 
@@ -45,7 +46,7 @@ function MetricsBar({
 
   return (
     <ErrorBoundary>
-      <AppBar title={title}>
+      <AppBar title={title} disabled={disabled}>
         <LiveUpdateSettings
           {...liveUpdateConfig}
           onLiveUpdateConfigChange={onLiveUpdateConfigChange}

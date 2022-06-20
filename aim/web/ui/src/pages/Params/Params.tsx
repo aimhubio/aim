@@ -130,6 +130,7 @@ const Params = ({
         <div className='Params__fullHeight Params__section__appBarContainer'>
           <div>
             <AppBar
+              disabled={isProgressBarVisible}
               explorerName='PARAMS'
               onBookmarkCreate={onBookmarkCreate}
               onBookmarkUpdate={onBookmarkUpdate}

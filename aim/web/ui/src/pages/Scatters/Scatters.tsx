@@ -50,6 +50,7 @@ function Scatters(
         <section className='Scatters__section'>
           <div className='Scatters__section__appBarContainer Scatters__fullHeight'>
             <AppBar
+              disabled={isProgressBarVisible}
               explorerName='SCATTERS'
               onBookmarkCreate={props.onBookmarkCreate}
               onBookmarkUpdate={props.onBookmarkUpdate}

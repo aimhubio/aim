@@ -23,6 +23,7 @@ function Runs(props: any): React.FunctionComponentElement<React.ReactNode> {
               ...props.liveUpdateConfig,
               onLiveUpdateConfigChange: props.onLiveUpdateConfigChange,
             }}
+            disabled={isProgressBarVisible}
           />
           <SearchBar
             searchSuggestions={props.searchSuggestions}
