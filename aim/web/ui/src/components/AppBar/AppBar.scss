@@ -20,7 +20,7 @@
   &__content {
     display: flex;
     align-items: center;
-    &-disabled {
+    &--disabled {
       pointer-events: none;
       opacity: 0.5;
     }

@@ -42,15 +42,12 @@ function AutocompleteInput({
   const editorRef = React.useRef<any>();
 
   React.useEffect(() => {
-    if (mounted) {
-      monaco.editor.defineTheme(
-        monacoConfig.theme.name,
-        monacoConfig.theme.config,
-      );
-      monaco.editor.setTheme(monacoConfig.theme.name);
-    }
+    initializeTheme();
     const onResize = _.debounce(() => {
       setContainerWidth(window.innerWidth);
+      setTimeout(() => {
+        initializeTheme();
+      }, 100);
     }, 500);
     window.addEventListener('resize', onResize);
     // inserting given object for autosuggestion
@@ -141,6 +138,16 @@ function AutocompleteInput({
     // eslint-disable-next-line react-hooks/exhaustive-deps
     [hasSelection, onChange, onEnter, disabled],
   );
+
+  function initializeTheme(): void {
+    if (mounted) {
+      monaco.editor.defineTheme(
+        monacoConfig.theme.name,
+        monacoConfig.theme.config,
+      );
+      monaco.editor.setTheme(monacoConfig.theme.name);
+    }
+  }
 
   return (
     <div
