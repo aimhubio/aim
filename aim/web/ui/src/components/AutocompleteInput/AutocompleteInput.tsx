@@ -45,9 +45,6 @@ function AutocompleteInput({
     initializeTheme();
     const onResize = _.debounce(() => {
       setContainerWidth(window.innerWidth);
-      setTimeout(() => {
-        initializeTheme();
-      }, 100);
     }, 500);
     window.addEventListener('resize', onResize);
     // inserting given object for autosuggestion
@@ -72,6 +69,13 @@ function AutocompleteInput({
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [value]);
+
+  React.useEffect(() => {
+    setTimeout(() => {
+      initializeTheme();
+    }, 100);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [containerWidth]);
 
   const monacoConfig: Record<any, any> = React.useMemo(() => {
     return getMonacoConfig(advanced);
