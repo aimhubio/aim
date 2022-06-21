@@ -71,7 +71,6 @@ def to_3_11(ctx, hashes):
             else:
                 click.echo(f'Run {run.hash} is already up to date. Skipping')
         except Exception:
-            click.echo(f'\nFailed to optimize metrics for run \'{run_hash}\'. Skipping.', err=True)
             remaining_runs.append(run_hash)
 
     if not remaining_runs:
