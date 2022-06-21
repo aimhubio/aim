@@ -5,8 +5,8 @@ import _ from 'lodash-es';
 
 import Editor, { useMonaco, loader } from '@monaco-editor/react';
 
-import { getMonacoConfig } from 'config/monacoConfig/monacoConfig';
 import { getBasePath } from 'config/config';
+import { getMonacoConfig } from 'config/monacoConfig/monacoConfig';
 
 import { showAutocompletion } from 'utils/showAutocompletion';
 
@@ -42,6 +42,7 @@ function AutocompleteInput({
   const editorRef = React.useRef<any>();
 
   React.useEffect(() => {
+    initializeTheme();
     if (mounted) {
       monaco.editor.defineTheme(
         monacoConfig.theme.name,
@@ -64,19 +65,18 @@ function AutocompleteInput({
   }, [monaco, context, mounted]);
 
   React.useEffect(() => {
-    if (monaco) {
-      monaco.editor.setModelMarkers(monaco.editor.getModels()[0], 'marker', [
-        {
-          startLineNumber: error?.detail.Line,
-          startColumn: error?.detail.Offset,
-          endLineNumber: error?.detail.Line,
-          endColumn: value.length,
-          message: error?.message,
-          severity: monaco.MarkerSeverity.Error,
-        },
-      ]);
-    }
+    setTimeout(() => {
+      initializeTheme();
+      setMarkers();
+    }, 100);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [containerWidth]);
+
+  React.useEffect(() => {
+    setMarkers();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [error, monaco]);
+
   React.useEffect(() => {
     if (focused) {
       editorRef.current?.focus();
@@ -113,6 +113,31 @@ function AutocompleteInput({
     editorRef.current.onDidChangeCursorSelection(onSelectionChange);
   }
 
+  function setMarkers() {
+    if (monaco && error) {
+      monaco.editor.setModelMarkers(monaco.editor.getModels()[0], 'marker', [
+        {
+          startLineNumber: error?.detail.Line,
+          startColumn: error?.detail.Offset,
+          endLineNumber: error?.detail.Line,
+          endColumn: value.length,
+          message: error?.message,
+          severity: monaco.MarkerSeverity.Error,
+          code: 'string',
+        },
+      ]);
+    }
+  }
+
+  function initializeTheme(): void {
+    if (mounted) {
+      monaco.editor.defineTheme(
+        monacoConfig.theme.name,
+        monacoConfig.theme.config,
+      );
+      monaco.editor.setTheme(monacoConfig.theme.name);
+    }
+  }
   function onSelectionChange(
     e: monacoEditor.editor.ICursorSelectionChangedEvent,
   ) {

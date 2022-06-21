@@ -42,9 +42,17 @@
     box-shadow: unset !important;
   }
   .monaco-editor .find-widget.visible {
-    display: none;
-  }
-  .hover-row.status-bar {
     display: none !important;
+  }
+  .monaco-hover {
+    display: none !important;
+  }
+  &__errorWidget {
+    position: absolute;
+    width: 100%;
+    height: 100px;
+    background-color: red;
+    content: '';
+    top: 0;
   }
 }
