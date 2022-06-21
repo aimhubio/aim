@@ -22,8 +22,7 @@ const AIM64_ENCODING_PREFIX = 'O-';
 
 export function aim64encode(value: Record<string, unknown>) {
   const json_encoded = JSON.stringify(value);
-  const bs64_encoded = btoa(json_encoded);
-  let aim64_encoded = bs64_encoded;
+  let aim64_encoded = btoa(json_encoded);
   for (let { searchValue, replaceValue } of BS64_REPLACE_CHARACTERS.ENCODING) {
     aim64_encoded = aim64_encoded.replaceAll(searchValue, replaceValue);
   }
@@ -55,16 +54,11 @@ export function encode(
 
 export function decode(value: string): string {
   try {
-    try {
-      const base64Decoded = aim64decode(value);
-      // check JSON.parse(base64Decoded) validity for backward compatibility
-      JSON.parse(base64Decoded);
-      return base64Decoded;
-    } catch {
-      const base58Decoded = bs58check.decode(value)?.toString();
-      // `base58Decoded` version for backward compatibility
-      return base58Decoded;
+    if (value.startsWith(AIM64_ENCODING_PREFIX)) {
+      return aim64decode(value);
     }
+    // `base58Decoded` version for backward compatibility
+    return bs58check.decode(value)?.toString();
   } catch (ex) {
     return '{}';
   }
