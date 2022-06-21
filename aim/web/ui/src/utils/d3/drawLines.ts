@@ -50,7 +50,7 @@ function drawLines(args: IDrawLinesArgs): void {
           return xScale(d.data[d.data.length - 1][0]);
         })
         .attr('cy', (d: IProcessedData) => yScale(d.data[d.data.length - 1][1]))
-        .attr('r', 3)
+        .attr('r', 2)
         .raise();
     }
   };
@@ -77,16 +77,23 @@ function drawLines(args: IDrawLinesArgs): void {
 
     if (!readOnly) {
       const filteredData =
-        data?.filter((d: IProcessedData) => d?.run?.props?.active) ?? [];
+        data?.filter((d: IProcessedData) => !d?.run?.props?.active) ?? [];
       linesNodeRef.current
         ?.selectAll('.inProgressLineIndicator')
         .data(filteredData)
         .join('circle')
+        .attr(
+          'data-selector',
+          (d: IProcessedData) =>
+            `Line-Sel-${highlightMode}-${d.selectors?.[highlightMode]}`,
+        )
         .attr('class', 'inProgressLineIndicator')
+        .style('stroke', (d: IProcessedData) => d.color)
+        .style('fill', (d: IProcessedData) => d.color)
         .attr('id', (d: IProcessedData) => `inProgressLineIndicator-${d.key}`)
         .attr('cx', (d: IProcessedData) => xScale(d.data[d.data.length - 1][0]))
         .attr('cy', (d: IProcessedData) => yScale(d.data[d.data.length - 1][1]))
-        .attr('r', 3)
+        .attr('r', 2)
         .raise();
     }
   };
