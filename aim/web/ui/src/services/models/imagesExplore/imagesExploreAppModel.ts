@@ -779,8 +779,7 @@ function updateModelData(
     configData.grouping as any,
     onGroupingSelectChange,
   );
-  const tableRef: any = model.getState()?.refs?.tableRef;
-  tableRef?.current?.updateData({
+  model.getState()?.refs?.tableRef?.current?.updateData({
     newData: tableData.rows,
     newColumns: tableColumns,
     hiddenColumns: configData.table.hiddenColumns!,
