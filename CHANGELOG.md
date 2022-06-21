@@ -1,6 +1,6 @@
 # Changelog
 
-## Unreleased
+## 3.11.0 Jun 21, 2022
 
 ### Enhancements:
 
