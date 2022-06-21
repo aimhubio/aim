@@ -77,7 +77,7 @@ function drawLines(args: IDrawLinesArgs): void {
 
     if (!readOnly) {
       const filteredData =
-        data?.filter((d: IProcessedData) => !d?.run?.props?.active) ?? [];
+        data?.filter((d: IProcessedData) => d?.run?.props?.active) ?? [];
       linesNodeRef.current
         ?.selectAll('.inProgressLineIndicator')
         .data(filteredData)
