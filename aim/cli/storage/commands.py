@@ -75,12 +75,12 @@ def to_3_11(ctx, hashes):
             remaining_runs.append(run_hash)
 
     if not remaining_runs:
-        click.echo('Finished optimizing metric data. '
-                   'In case of any issues the following command can be used to restore data:')
-        click.secho(f'aim storage --repo {repo.root_path} restore \'*\'', fg='yellow')
+        click.echo('Finished optimizing metric data.')
     else:
         click.echo('Finished optimizing metric data. The following runs were skipped:')
         click.secho(' '.join(remaining_runs), fg='yellow')
+    click.echo('In case of any issues the following command can be used to restore data:')
+    click.secho(f'aim storage --repo {repo.root_path} restore \'*\'', fg='yellow')
 
 
 @storage.command(name='restore')
