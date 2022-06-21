@@ -16,11 +16,11 @@
   left: $space-xxxxs;
   &.fadeOutProgress {
     animation: fadeOutProgress 0.55s cubic-bezier(0.39, -0.01, 0.27, 1) forwards;
-    animation-delay: 1.5s;
+    animation-delay: 0.7s;
     .ProgressBar__container {
       animation: fadeOutProgressInner 0.6s cubic-bezier(0.39, -0.01, 0.27, 1)
         forwards;
-      animation-delay: 1.55s;
+      animation-delay: 0.75s;
     }
   }
   @keyframes fadeOutProgress {

@@ -638,7 +638,7 @@ function createAppModel(appConfig: IAppInitialConfig) {
       const metric = configData?.chart?.alignmentConfig?.metric;
 
       if (queryString) {
-        if (configData.select.advancedQuery) {
+        if (configData.select.advancedMode) {
           configData.select.advancedQuery = queryString;
         } else {
           configData.select.query = queryString;
@@ -1197,8 +1197,8 @@ function createAppModel(appConfig: IAppInitialConfig) {
         configData.grouping as any,
         onModelGroupingSelectChange,
       );
-      const tableRef: any = model.getState()?.refs?.tableRef;
-      tableRef?.current?.updateData({
+
+      model.getState()?.refs?.tableRef.current?.updateData({
         newData: tableData.rows,
         newColumns: tableColumns,
         hiddenColumns: configData.table?.hiddenColumns!,
@@ -1286,12 +1286,12 @@ function createAppModel(appConfig: IAppInitialConfig) {
         configData.grouping as any,
         onModelGroupingSelectChange,
       );
-      if (model.getState()?.requestStatus !== RequestStatusEnum.Pending) {
-        model.getState()?.refs?.tableRef?.current?.updateData({
-          newData: tableData.rows,
-          newColumns: tableColumns,
-        });
-      }
+
+      model.getState()?.refs?.tableRef.current?.updateData({
+        newData: tableData.rows,
+        newColumns: tableColumns,
+      });
+
       model.setState({
         requestStatus: RequestStatusEnum.Ok,
         rawData,
@@ -2356,8 +2356,7 @@ function createAppModel(appConfig: IAppInitialConfig) {
 
         updateTableTimeoutId = window.setTimeout(() => {
           model.setState({ requestStatus: RequestStatusEnum.Ok });
-          const tableRef: any = model.getState()?.refs?.tableRef;
-          tableRef.current?.updateData({
+          model.getState()?.refs?.tableRef.current?.updateData({
             newData: tableData.rows,
             newColumns: tableColumns,
             hiddenColumns: configData.table.hiddenColumns!,
@@ -2923,8 +2922,8 @@ function createAppModel(appConfig: IAppInitialConfig) {
             },
           },
         });
-        const tableRef: any = model.getState()?.refs?.tableRef;
-        tableRef.current?.updateData({
+
+        model.getState()?.refs?.tableRef.current?.updateData({
           newData: tableData.rows,
           newColumns: tableColumns,
           hiddenColumns: modelState?.config.table.hiddenColumns!,
@@ -3847,12 +3846,10 @@ function createAppModel(appConfig: IAppInitialConfig) {
           AppNameEnum.PARAMS,
         );
 
-        if (model.getState()?.requestStatus !== RequestStatusEnum.Pending) {
-          model.getState()?.refs?.tableRef.current?.updateData({
-            newData: tableData.rows,
-            newColumns: tableColumns,
-          });
-        }
+        model.getState()?.refs?.tableRef.current?.updateData({
+          newData: tableData.rows,
+          newColumns: tableColumns,
+        });
 
         if (!_.isEmpty(configData.chart?.brushExtents)) {
           const chart = { ...configData.chart };
@@ -4310,8 +4307,8 @@ function createAppModel(appConfig: IAppInitialConfig) {
           onModelGroupingSelectChange,
           AppNameEnum.PARAMS,
         );
-        const tableRef: any = model.getState()?.refs?.tableRef;
-        tableRef?.current?.updateData({
+
+        model.getState()?.refs?.tableRef.current?.updateData({
           newData: tableData.rows,
           newColumns: tableColumns,
           hiddenColumns: configData.table?.hiddenColumns!,
@@ -4896,12 +4893,10 @@ function createAppModel(appConfig: IAppInitialConfig) {
           AppNameEnum.SCATTERS,
         );
 
-        if (model.getState()?.requestStatus !== RequestStatusEnum.Pending) {
-          model.getState()?.refs?.tableRef.current?.updateData({
-            newData: tableData.rows,
-            newColumns: tableColumns,
-          });
-        }
+        model.getState()?.refs?.tableRef.current?.updateData({
+          newData: tableData.rows,
+          newColumns: tableColumns,
+        });
 
         model.setState({
           requestStatus: RequestStatusEnum.Ok,
@@ -5577,8 +5572,8 @@ function createAppModel(appConfig: IAppInitialConfig) {
           onModelGroupingSelectChange,
           AppNameEnum.SCATTERS,
         );
-        const tableRef: any = model.getState()?.refs?.tableRef;
-        tableRef?.current?.updateData({
+
+        model.getState()?.refs?.tableRef.current?.updateData({
           newData: tableData.rows,
           newColumns: tableColumns,
           hiddenColumns: configData.table?.hiddenColumns!,

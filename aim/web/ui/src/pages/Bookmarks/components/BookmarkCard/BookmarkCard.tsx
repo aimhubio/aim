@@ -110,7 +110,7 @@ function BookmarkCard({
             {description}
           </Text>
         </div>
-        {tags.length && !select.advancedMode && (
+        {tags.length && !select.advancedMode ? (
           <div className='BookmarkCard__selected__metrics ScrollBar__hidden'>
             {tags.map((tag, index) => {
               return (
@@ -122,7 +122,7 @@ function BookmarkCard({
               );
             })}
           </div>
-        )}
+        ) : null}
         {select.query || select.advancedQuery ? (
           <div className='BookmarkCard__bottom'>
             <div className='BookmarkCard__run__expression'>

@@ -19,6 +19,7 @@ function ImagesExploreAppBar({
   onBookmarkUpdate,
   onResetConfigData,
   title,
+  disabled,
 }: any): React.FunctionComponentElement<React.ReactNode> {
   const [popover, setPopover] = React.useState<string>('');
   const route = useRouteMatch<any>();
@@ -38,7 +39,7 @@ function ImagesExploreAppBar({
 
   return (
     <ErrorBoundary>
-      <AppBar title={title}>
+      <AppBar title={title} disabled={disabled}>
         {route.params.appId ? (
           <ErrorBoundary>
             <ControlPopover
