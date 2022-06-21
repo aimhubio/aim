@@ -12,12 +12,23 @@ export default function exceptionHandler<M extends State>({
   model: IModel<M>;
 }) {
   let message = '';
-  if (detail.name === 'SyntaxError') {
-    message = `Query syntax error at line (${detail.line}, ${detail.offset})`;
+  let state: Record<any, any> = {
+    requestStatus: RequestStatusEnum.BadRequest,
+  };
+  if (detail.message === 'SyntaxError') {
+    message = `Query syntax error at line (${detail.detail.Line}, ${detail.detail.Offset})`;
+    state = {
+      ...state,
+      selectFormData: {
+        ...model.getState().selectFormData,
+        error: { ...detail, message },
+      },
+    };
   } else {
     message = detail.message || 'Something went wrong';
   }
-  model.setState({ requestStatus: RequestStatusEnum.BadRequest });
+
+  model.setState(state);
   onNotificationAdd({
     notification: {
       id: Date.now(),

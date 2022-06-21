@@ -44,4 +44,7 @@
   .monaco-editor .find-widget.visible {
     display: none;
   }
+  .hover-row.status-bar {
+    display: none !important;
+  }
 }

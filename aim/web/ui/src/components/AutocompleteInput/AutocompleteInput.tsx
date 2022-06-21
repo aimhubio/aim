@@ -28,6 +28,7 @@ function AutocompleteInput({
   editorProps = {},
   value = '',
   refObject,
+  error,
   //callback functions
   onEnter,
   onChange,
@@ -62,6 +63,20 @@ function AutocompleteInput({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [monaco, context, mounted]);
 
+  React.useEffect(() => {
+    if (monaco) {
+      monaco.editor.setModelMarkers(monaco.editor.getModels()[0], 'marker', [
+        {
+          startLineNumber: error?.detail.Line,
+          startColumn: error?.detail.Offset,
+          endLineNumber: error?.detail.Line,
+          endColumn: value.length,
+          message: error?.message,
+          severity: monaco.MarkerSeverity.Error,
+        },
+      ]);
+    }
+  }, [error, monaco]);
   React.useEffect(() => {
     if (focused) {
       editorRef.current?.focus();
@@ -113,6 +128,13 @@ function AutocompleteInput({
       val: string | undefined,
       ev: monacoEditor.editor.IModelContentChangedEvent,
     ) => {
+      if (monaco?.editor) {
+        monaco.editor.setModelMarkers(
+          monaco.editor.getModels()[0],
+          'marker',
+          [],
+        );
+      }
       if (typeof val === 'string') {
         // formatting value to avoid the new line
         let formattedValue = (hasSelection ? editorValue : val).replace(

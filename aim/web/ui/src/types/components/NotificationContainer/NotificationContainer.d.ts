@@ -11,3 +11,12 @@ export interface INotification {
   closeDelay?: number;
   severity: 'error' | 'info' | 'success' | 'warning';
 }
+
+export interface ISyntaxErrorDetails {
+  detail: {
+    Line: number;
+    Offset: number;
+    Statement: string;
+  };
+  message: string;
+}
