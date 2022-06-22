@@ -5,6 +5,8 @@ import _ from 'lodash-es';
 
 import Editor, { useMonaco, loader } from '@monaco-editor/react';
 
+import { Text } from 'components/kit';
+
 import { getBasePath } from 'config/config';
 import { getMonacoConfig } from 'config/monacoConfig/monacoConfig';
 
@@ -39,6 +41,7 @@ function AutocompleteInput({
   const [focused, setFocused] = React.useState<boolean>(false);
   const [mounted, setMounted] = React.useState<boolean>(false);
   const [editorValue, setEditorValue] = React.useState<string>(value);
+  const [errorMessage, setErrorMessage] = React.useState('');
   const monaco: any = useMonaco();
   const editorRef = React.useRef<any>();
 
@@ -123,12 +126,13 @@ function AutocompleteInput({
 
   function setMarkers() {
     if (monaco && error) {
+      setErrorMessage(error?.message);
       monaco.editor.setModelMarkers(monaco.editor.getModels()[0], 'marker', [
         {
           startLineNumber: error?.detail.Line,
           startColumn: error?.detail.Offset,
           endLineNumber: error?.detail.Line,
-          endColumn: value.length,
+          endColumn: error?.detail.Offset,
           message: error?.message,
           severity: monaco.MarkerSeverity.Error,
           code: 'string',
@@ -137,15 +141,12 @@ function AutocompleteInput({
     }
   }
 
-  function initializeTheme(): void {
-    if (mounted) {
-      monaco.editor.defineTheme(
-        monacoConfig.theme.name,
-        monacoConfig.theme.config,
-      );
-      monaco.editor.setTheme(monacoConfig.theme.name);
+  function deleteMarkers() {
+    if (monaco?.editor) {
+      monaco.editor.setModelMarkers(monaco.editor.getModels()[0], 'marker', []);
     }
   }
+
   function onSelectionChange(
     e: monacoEditor.editor.ICursorSelectionChangedEvent,
   ) {
@@ -165,13 +166,7 @@ function AutocompleteInput({
         editorRef.current!.setValue(editorValue);
         return;
       }
-      if (monaco?.editor) {
-        monaco.editor.setModelMarkers(
-          monaco.editor.getModels()[0],
-          'marker',
-          [],
-        );
-      }
+      deleteMarkers();
       if (typeof val === 'string') {
         // formatting value to avoid the new line
         let formattedValue = val.replace(/[\n\r]/g, '');
@@ -195,6 +190,16 @@ function AutocompleteInput({
     // eslint-disable-next-line react-hooks/exhaustive-deps
     [hasSelection, onChange, onEnter, disabled],
   );
+
+  function initializeTheme(): void {
+    if (mounted) {
+      monaco.editor.defineTheme(
+        monacoConfig.theme.name,
+        monacoConfig.theme.config,
+      );
+      monaco.editor.setTheme(monacoConfig.theme.name);
+    }
+  }
 
   return (
     <div
@@ -223,6 +228,13 @@ function AutocompleteInput({
             == 32
           </div>
         ))}
+      {errorMessage && (
+        <div className='AutocompleteInput__errorBar'>
+          <Text className='AutocompleteInput__errorBar__message' component='p'>
+            <Text>{errorMessage}</Text>
+          </Text>
+        </div>
+      )}
     </div>
   );
 }

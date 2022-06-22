@@ -51,12 +51,17 @@
   .monaco-hover {
     display: none !important;
   }
-  &__errorWidget {
+  &__errorBar {
     position: absolute;
+    border: 1px solid $error-color-25;
+    border-top: none;
     width: 100%;
     height: 100px;
-    background-color: red;
-    content: '';
-    top: 0;
+    background-color: $error-color-5;
+    left: 0;
+    top: 100%;
+    &__message {
+      color: $error-color;
+    }
   }
 }
