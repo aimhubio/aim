@@ -47,6 +47,10 @@
     margin-top: $space-xxxs;
     margin-right: $space-xxxs;
   }
+  &__disabled {
+    pointer-events: none;
+    opacity: 0.5;
+  }
   &__default {
     color: #414b6d;
     background-color: $cuddle-10;

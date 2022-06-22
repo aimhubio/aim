@@ -19,6 +19,7 @@ import './SelectForm.scss';
 
 function SelectForm({
   requestIsPending,
+  isDisabled = false,
   selectedOptionsData,
   selectFormData,
   onSelectOptionsChange,
@@ -41,9 +42,9 @@ function SelectForm({
     if (requestIsPending) {
       return;
     }
-    let query = autocompleteRef.current.getValue();
-    onSelectRunQueryChange(query);
-    searchRef.current = scattersAppModel.getScattersData(true, query);
+    let query = autocompleteRef?.current?.getValue();
+    onSelectRunQueryChange(query ?? '');
+    searchRef.current = scattersAppModel.getScattersData(true, query ?? '');
     searchRef.current.call((detail: any) => {
       exceptionHandler({ detail, model: scattersAppModel });
     });
@@ -117,7 +118,7 @@ function SelectForm({
                       withPortal
                       label='X axis'
                       icon={{ name: 'x-axis' }}
-                      isDisabled={requestIsPending}
+                      isDisabled={isDisabled}
                     />
                   </ErrorBoundary>
                   <Divider
@@ -139,7 +140,7 @@ function SelectForm({
                       withPortal
                       label='Y axis'
                       icon={{ name: 'y-axis' }}
-                      isDisabled={requestIsPending}
+                      isDisabled={isDisabled}
                     />
                   </ErrorBoundary>
                 </Box>
@@ -182,6 +183,7 @@ function SelectForm({
               context={selectFormData?.suggestions}
               value={selectedOptionsData?.query}
               onEnter={handleParamsSearch}
+              disabled={isDisabled}
             />
           </div>
         </ErrorBoundary>

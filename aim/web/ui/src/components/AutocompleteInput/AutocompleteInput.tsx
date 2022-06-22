@@ -29,6 +29,7 @@ function AutocompleteInput({
   value = '',
   refObject,
   error,
+  disabled = false,
   //callback functions
   onEnter,
   onChange,
@@ -89,6 +90,13 @@ function AutocompleteInput({
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [value]);
+
+  React.useEffect(() => {
+    setTimeout(() => {
+      initializeTheme();
+    }, 100);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [containerWidth]);
 
   const monacoConfig: Record<any, any> = React.useMemo(() => {
     return getMonacoConfig(advanced);
@@ -153,6 +161,10 @@ function AutocompleteInput({
       val: string | undefined,
       ev: monacoEditor.editor.IModelContentChangedEvent,
     ) => {
+      if (disabled) {
+        editorRef.current!.setValue(editorValue);
+        return;
+      }
       if (monaco?.editor) {
         monaco.editor.setModelMarkers(
           monaco.editor.getModels()[0],
@@ -162,11 +174,11 @@ function AutocompleteInput({
       }
       if (typeof val === 'string') {
         // formatting value to avoid the new line
-        let formattedValue = (hasSelection ? editorValue : val).replace(
-          /[\n\r]/g,
-          '',
-        );
+        let formattedValue = val.replace(/[\n\r]/g, '');
         if (ev.changes[0].text === '\n') {
+          formattedValue = hasSelection
+            ? editorValue.replace(/[\n\r]/g, '')
+            : formattedValue;
           editorRef.current!.setValue(formattedValue);
           if (onEnter) {
             onEnter();
@@ -174,12 +186,14 @@ function AutocompleteInput({
           if (onChange) {
             onChange(formattedValue, ev);
           }
+          setEditorValue(formattedValue);
+          return;
         }
         setEditorValue(formattedValue);
       }
     },
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    [hasSelection, onChange, onEnter],
+    [hasSelection, onChange, onEnter, disabled],
   );
 
   return (
@@ -188,10 +202,11 @@ function AutocompleteInput({
       className={classNames(`AutocompleteInput ${className || ''}`, {
         AutocompleteInput__focused: focused,
         AutocompleteInput__advanced: advanced,
+        AutocompleteInput__disabled: disabled,
       })}
     >
       <Editor
-        key={containerWidth}
+        key={`${containerWidth}`}
         language='python'
         height={monacoConfig.height}
         value={editorValue}
@@ -201,12 +216,13 @@ function AutocompleteInput({
         options={monacoConfig.options}
         {...editorProps}
       />
-      {focused || editorValue ? null : (
-        <div className='AutocompleteInput__placeholder'>
-          Filter runs, e.g. run.learning_rate {'>'} 0.0001 and run.batch_size ==
-          32
-        </div>
-      )}
+      {mounted &&
+        (focused || editorValue ? null : (
+          <div className='AutocompleteInput__placeholder'>
+            Filter runs, e.g. run.learning_rate {'>'} 0.0001 and run.batch_size
+            == 32
+          </div>
+        ))}
     </div>
   );
 }

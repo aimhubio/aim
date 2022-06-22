@@ -5,6 +5,7 @@ import {
 
 export interface ISelectFormProps {
   requestIsPending: boolean;
+  isDisabled?: boolean;
   selectedOptionsData: ISelectConfig;
   selectFormData: { options: ISelectOption[]; suggestions: string[] };
   onSelectOptionsChange: (options: ISelectOption[]) => void;

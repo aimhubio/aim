@@ -5,6 +5,7 @@ import { IAppModelConfig } from 'types/services/models/explorer/createAppModel';
 
 export interface ISelectFormProps {
   requestIsPending: boolean;
+  isDisabled?: boolean;
   selectedMetricsData: IAppModelConfig['select'];
   selectFormData: {
     options: ISelectOption[];

@@ -1,4 +1,5 @@
 import React from 'react';
+import classNames from 'classnames';
 
 import { Box, Checkbox, Divider, InputBase, Popper } from '@material-ui/core';
 import Autocomplete from '@material-ui/lab/Autocomplete';
@@ -23,6 +24,7 @@ import './SelectForm.scss';
 
 function SelectForm({
   requestIsPending,
+  isDisabled = false,
   onParamsSelectChange,
   selectedParamsData,
   onSelectRunQueryChange,
@@ -42,9 +44,9 @@ function SelectForm({
     if (requestIsPending) {
       return;
     }
-    const query = autocompleteRef.current.getValue();
-    onSelectRunQueryChange(query);
-    searchRef.current = paramsAppModel.getParamsData(true, true, query);
+    const query = autocompleteRef?.current?.getValue();
+    onSelectRunQueryChange(query ?? '');
+    searchRef.current = paramsAppModel.getParamsData(true, true, query ?? '');
     searchRef.current.call();
     trackEvent(ANALYTICS_EVENT_KEYS.params.searchClick);
   }
@@ -128,7 +130,7 @@ function SelectForm({
                     color='primary'
                     onClick={handleClick}
                     aria-describedby={id}
-                    disabled={requestIsPending}
+                    disabled={isDisabled}
                   >
                     <Icon name='plus' style={{ marginRight: '0.5rem' }} />{' '}
                     Params
@@ -219,6 +221,7 @@ function SelectForm({
                                   key={tag.label}
                                   label={tag.label}
                                   onDelete={handleDelete}
+                                  disabled={isDisabled}
                                 />
                               );
                             },
@@ -230,12 +233,17 @@ function SelectForm({
                 {selectedParamsData?.options &&
                   selectedParamsData.options.length > 1 && (
                     <ErrorBoundary>
-                      <span
+                      <Button
                         onClick={() => onParamsSelectChange([])}
-                        className='SelectForm__clearAll'
+                        withOnlyIcon
+                        className={classNames('SelectForm__clearAll', {
+                          disabled: isDisabled,
+                        })}
+                        size='xSmall'
+                        disabled={isDisabled}
                       >
                         <Icon name='close' />
-                      </span>
+                      </Button>
                     </ErrorBoundary>
                   )}
               </ErrorBoundary>
@@ -264,6 +272,7 @@ function SelectForm({
               context={selectFormData?.suggestions}
               onEnter={handleParamsSearch}
               value={selectedParamsData?.query}
+              disabled={isDisabled}
             />
           </div>
         </div>

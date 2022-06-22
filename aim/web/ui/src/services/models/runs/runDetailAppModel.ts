@@ -317,7 +317,7 @@ function editRunNameAndDescription(
           onNotificationAdd({
             id: Date.now(),
             severity: 'success',
-            messages: ['Run name and description were successfully edited'],
+            messages: ['Changes were saved'],
           });
         } else {
           onNotificationAdd({
