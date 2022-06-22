@@ -1,5 +1,13 @@
 # Changelog
 
+## Unreleased 
+
+### Enhancements:
+
+### Fixes:
+
+- Fix `SyntaxError` handling for python3.10+ (mihran113)
+
 ## 3.11.0 Jun 21, 2022
 
 ### Enhancements:
