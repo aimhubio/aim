@@ -34,3 +34,12 @@ def build_uvicorn_command(host, port, num_workers, uds_path, ssl_keyfile, ssl_ce
     cmd += ['--log-level', log_level.lower()]
     cmd += ['aim.web.run:app']
     return cmd
+
+
+def get_free_port_num():
+    import socket
+    s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    s.bind(('', 0))
+    port_num = s.getsockname()[1]
+    s.close()
+    return port_num

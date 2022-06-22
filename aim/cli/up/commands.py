@@ -2,7 +2,7 @@ import os
 import click
 
 from aim.cli.utils import set_log_level
-from aim.cli.up.utils import build_db_upgrade_command, build_uvicorn_command
+from aim.cli.up.utils import build_db_upgrade_command, build_uvicorn_command, get_free_port_num
 from aim.web.configs import (
     AIM_ENV_MODE_KEY,
     AIM_TF_LOGS_PATH_KEY,
@@ -105,6 +105,12 @@ def up(dev, host, port, workers, uds,
         click.echo('Failed to initialize Aim DB. '
                    'Please see the logs above for details.')
         return
+
+    if port == 0:
+        try:
+            port = get_free_port_num()
+        except Exception:
+            pass
 
     if dev or (os.getenv(AIM_UI_TELEMETRY_KEY) is not None and os.getenv(AIM_UI_TELEMETRY_KEY) == '0'):
         os.environ[AIM_UI_TELEMETRY_KEY] = '0'

@@ -76,7 +76,11 @@ export interface ITableProps {
 }
 
 export interface ITableRef {
-  updateData: (params: { newData?: any[]; newColumns?: any[] }) => void;
+  updateData: (params: {
+    newData?: any[];
+    newColumns?: any[];
+    hiddenColumns?: string[] | string;
+  }) => void;
   setHoveredRow: (rowKey: string) => void;
   setActiveRow: (rowKey: string) => void;
   scrollToRow: (rowKey: string) => void;

@@ -55,6 +55,7 @@ def to_3_11(ctx, hashes):
     repo = Repo.from_path(repo_path)
 
     matched_hashes = match_runs(repo_path, hashes)
+    remaining_runs = []
     confirmed = click.confirm(f'This command will optimize the metrics data for {len(matched_hashes)} runs from aim '
                               f'repo located at \'{repo_path}\'. This process might take a while. '
                               f'Do you want to proceed?')
@@ -62,14 +63,22 @@ def to_3_11(ctx, hashes):
         return
 
     for run_hash in tqdm(matched_hashes):
-        run = MaintenanceRun(run_hash, repo=repo)
-        if run.check_metrics_version():
-            backup_run(run)
-            run.update_metrics()
-        else:
-            click.echo(f'Run {run.hash} is already up to date. Skipping')
-    click.echo('Finished optimizing metric data. '
-               'In case of any issues the following command can be used to restore data:')
+        try:
+            run = MaintenanceRun(run_hash, repo=repo)
+            if run.check_metrics_version():
+                backup_run(run)
+                run.update_metrics()
+            else:
+                click.echo(f'Run {run.hash} is already up to date. Skipping')
+        except Exception:
+            remaining_runs.append(run_hash)
+
+    if not remaining_runs:
+        click.echo('Finished optimizing metric data.')
+    else:
+        click.echo('Finished optimizing metric data. The following runs were skipped:')
+        click.secho(' '.join(remaining_runs), fg='yellow')
+    click.echo('In case of any issues the following command can be used to restore data:')
     click.secho(f'aim storage --repo {repo.root_path} restore \'*\'', fg='yellow')
 
 

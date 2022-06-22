@@ -28,7 +28,12 @@ function AppBar(
           {props.title}
         </Text>
         {props.children && (
-          <div className={`AppBar__content ${props.className || ''}`}>
+          <div
+            className={classNames('AppBar__content', {
+              'AppBar__content--disabled': props.disabled,
+              [props?.className ?? '']: props.className,
+            })}
+          >
             {props.children}
           </div>
         )}

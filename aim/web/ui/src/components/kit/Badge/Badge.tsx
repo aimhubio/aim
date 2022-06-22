@@ -1,5 +1,6 @@
 import React from 'react';
 import styled from 'styled-components';
+import classNames from 'classnames';
 
 import ErrorBoundary from 'components/ErrorBoundary/ErrorBoundary';
 
@@ -51,6 +52,7 @@ function Badge({
   startIcon,
   maxWidth = '100%',
   monospace = false,
+  disabled = false,
   selectBadge,
   onDelete,
   onClick,
@@ -66,9 +68,13 @@ function Badge({
         }}
         role='button'
         monospace={monospace}
-        className={`Badge Badge${'__' + size} ${className} ${
-          color ? '' : 'Badge__default'
-        } ${selectBadge ? 'Badge__select' : ''}`}
+        className={classNames('Badge', {
+          [`Badge${'__' + size}`]: !!size,
+          [className]: !!className,
+          Badge__default: !color,
+          Badge__select: !!selectBadge,
+          Badge__disabled: !!disabled,
+        })}
         data-name={label}
         onClick={onClick}
       >

@@ -485,7 +485,7 @@ class Run(BaseRun, StructuredRunMixin):
             if self.check_metrics_version():
                 logger.warning(f'Detected sub-optimal format metrics for Run {self.hash}. Consider upgrading repo '
                                f'to improve queries performance:')
-                logger.warning(f'aim storage --repo {self.repo.path} upgrade 3.11+\'*\'')
+                logger.warning(f'aim storage --repo {self.repo.path} upgrade 3.11+ \'*\'')
                 Run._metric_version_warning_shown = True
 
         return self._get_sequence('metric', name, context)

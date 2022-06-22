@@ -37,6 +37,8 @@ import './Metrics.scss';
 function Metrics(
   props: IMetricProps,
 ): React.FunctionComponentElement<React.ReactNode> {
+  const [isProgressBarVisible, setIsProgressBarVisible] =
+    React.useState<boolean>(false);
   const chartProps: any[] = React.useMemo(() => {
     return (props.lineChartData || []).map(
       (chartData: ILine[], index: number) => ({
@@ -74,6 +76,7 @@ function Metrics(
         <section className='Metrics__section'>
           <div className='Metrics__section__appBarContainer Metrics__fullHeight'>
             <MetricsBar
+              disabled={isProgressBarVisible}
               onBookmarkCreate={props.onBookmarkCreate}
               onBookmarkUpdate={props.onBookmarkUpdate}
               onResetConfigData={props.onResetConfigData}
@@ -86,6 +89,7 @@ function Metrics(
                 requestIsPending={
                   props.requestStatus === RequestStatusEnum.Pending
                 }
+                isDisabled={isProgressBarVisible}
                 selectFormData={props.selectFormData}
                 selectedMetricsData={props.selectedMetricsData}
                 onMetricsSelectChange={props.onMetricsSelectChange}
@@ -101,9 +105,7 @@ function Metrics(
                     p.groupName === 'stroke' ||
                     p.groupName === 'chart',
                 )}
-                requestIsPending={
-                  props.requestStatus === RequestStatusEnum.Pending
-                }
+                isDisabled={isProgressBarVisible}
                 groupingData={props.groupingData}
                 groupingSelectOptions={props.groupingSelectOptions}
                 onGroupingSelectChange={props.onGroupingSelectChange}
@@ -122,6 +124,7 @@ function Metrics(
                   props.requestStatus === RequestStatusEnum.Pending
                 }
                 processing={false}
+                setIsProgressBarVisible={setIsProgressBarVisible}
               />
               {_.isEmpty(props.tableData) && _.isEmpty(props.lineChartData) ? (
                 <IllustrationBlock

@@ -29,7 +29,7 @@ function GroupingItem({
   onSelect,
   onGroupingModeChange,
   groupingSelectOptions,
-  requestIsPending,
+  isDisabled,
 }: IGroupingItemProps): React.FunctionComponentElement<React.ReactNode> {
   return (
     <ErrorBoundary>
@@ -39,12 +39,12 @@ function GroupingItem({
           <Tooltip title={`Group by ${groupName}`}>
             <div
               onClick={(e: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
-                if (!requestIsPending) {
+                if (!isDisabled) {
                   onAnchorClick(e);
                 }
               }}
               className={classNames('GroupingItem', {
-                isDisabled: requestIsPending,
+                isDisabled: isDisabled,
               })}
             >
               <div

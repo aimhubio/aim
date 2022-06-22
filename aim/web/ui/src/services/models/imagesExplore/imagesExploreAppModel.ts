@@ -233,7 +233,8 @@ function setDefaultAppConfigData(recoverTableState: boolean = true) {
   defaultConfig.images = images;
 
   if (recoverTableState) {
-    const tableConfigHash = getItem('imagesExploreTable');
+    const tableConfigHash =
+      getItem('imagesTable') || getItem('imagesExploreTable');
     const table = tableConfigHash
       ? JSON.parse(decode(tableConfigHash))
       : getConfig().table;
@@ -691,6 +692,24 @@ function setModelData(rawData: any[], configData: IImagesExploreAppConfig) {
     },
     additionalProperties: config.images.additionalProperties,
   };
+
+  const tableColumns = getImagesExploreTableColumns(
+    params,
+    groupingSelectOptions,
+    data[0]?.config,
+    configData.table.columnsOrder!,
+    configData.table.hiddenColumns!,
+    sortFields,
+    onTableSortChange,
+    config.grouping as any,
+    onGroupingSelectChange,
+  );
+
+  model.getState()?.refs?.tableRef.current?.updateData({
+    newData: tableData.rows,
+    newColumns: tableColumns,
+  });
+
   model.setState({
     requestStatus: RequestStatusEnum.Ok,
     rawData,
@@ -701,17 +720,7 @@ function setModelData(rawData: any[], configData: IImagesExploreAppConfig) {
     imagesData: mediaSetData,
     orderedMap,
     tableData: tableData.rows,
-    tableColumns: getImagesExploreTableColumns(
-      params,
-      groupingSelectOptions,
-      data[0]?.config,
-      configData.table.columnsOrder!,
-      configData.table.hiddenColumns!,
-      sortFields,
-      onTableSortChange,
-      config.grouping as any,
-      onGroupingSelectChange,
-    ),
+    tableColumns,
     sameValueColumns: tableData.sameValueColumns,
     groupingSelectOptions,
   });
@@ -779,8 +788,8 @@ function updateModelData(
     configData.grouping as any,
     onGroupingSelectChange,
   );
-  const tableRef: any = model.getState()?.refs?.tableRef;
-  tableRef?.current?.updateData({
+
+  model.getState()?.refs?.tableRef.current?.updateData({
     newData: tableData.rows,
     newColumns: tableColumns,
     hiddenColumns: configData.table.hiddenColumns!,
@@ -1486,7 +1495,7 @@ function updateColumnsWidths(key: string, width: number, isReset: boolean) {
     model.setState({
       config,
     });
-    setItem('imagesExploreTable', encode(table));
+    setItem('imagesTable', encode(table));
     updateModelData(config);
   }
 }
@@ -1508,7 +1517,7 @@ function updateTableSortFields(sortFields: SortFields) {
       config: configUpdate,
     });
 
-    setItem('imagesExploreTable', encode(table));
+    setItem('imagesTable', encode(table));
     updateModelData(configUpdate, true);
   }
   analytics.trackEvent(
@@ -1692,7 +1701,7 @@ function onRowVisibilityChange(metricKey: string) {
       table,
     };
     model.setState({ config });
-    setItem('imagesExploreTable', encode(table));
+    setItem('imagesTable', encode(table));
     updateModelData(config);
   }
 }
@@ -1734,7 +1743,7 @@ function onTableResizeEnd(tableHeight: string) {
     model.setState({
       config,
     });
-    setItem('imagesExploreTable', encode(table));
+    setItem('imagesTable', encode(table));
   }
 }
 
@@ -1769,7 +1778,7 @@ function onTableResizeModeChange(mode: ResizeModeEnum): void {
     model.setState({
       config,
     });
-    setItem('imagesExploreTable', encode(table));
+    setItem('imagesTable', encode(table));
   }
   analytics.trackEvent(ANALYTICS_EVENT_KEYS.images.table.changeResizeMode);
 }
@@ -1903,7 +1912,7 @@ function onColumnsOrderChange(columnsOrder: any) {
     model.setState({
       config,
     });
-    setItem('imagesExploreTable', encode(table));
+    setItem('imagesTable', encode(table));
     updateModelData(config);
   }
   analytics.trackEvent(ANALYTICS_EVENT_KEYS.images.table.changeColumnsOrder);
@@ -1941,7 +1950,7 @@ function onRowHeightChange(height: RowHeightSize) {
     model.setState({
       config,
     });
-    setItem('metricsTable', encode(table));
+    setItem('imagesTable', encode(table));
   }
   analytics.trackEvent(
     `${
@@ -1973,7 +1982,7 @@ function onImageVisibilityChange(metricsKeys: string[]) {
     model.setState({
       config,
     });
-    setItem('imagesExploreTable', encode(table));
+    setItem('imagesTable', encode(table));
     updateModelData(config);
   }
   analytics.trackEvent(
