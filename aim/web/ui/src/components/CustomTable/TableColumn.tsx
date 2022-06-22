@@ -141,7 +141,7 @@ function Column({
       if (setColWidth) {
         setColWidth(widthClone.current);
       }
-    }, 100);
+    }, 50);
   }
 
   function resetWidth() {
@@ -165,7 +165,7 @@ function Column({
 
   React.useEffect(() => {
     if (columnRef.current && col.key !== 'selection') {
-      columnRef.current.style.width = 'initial';
+      columnRef.current.style.width = widthClone.current ?? 'initial';
       if (setColWidth) {
         setColWidth(columnRef.current?.offsetWidth);
       }

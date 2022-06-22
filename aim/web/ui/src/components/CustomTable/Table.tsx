@@ -443,7 +443,6 @@ function Table(props) {
               return (
                 <ErrorBoundary key={col.key + index}>
                   <Column
-                    key={col.key + index}
                     topHeader={props.topHeader}
                     showTopHeaderContent={showTopHeaderContent(index, col)}
                     showTopHeaderBorder={showTopHeaderContent(index, col, true)}
@@ -493,7 +492,9 @@ function Table(props) {
                     selectedRows={props.selectedRows}
                     setColWidth={(width) =>
                       setColWidths((cW) => {
-                        return cW?.[index] === width
+                        return cW?.[index] !== undefined
+                          ? width + 1
+                          : cW?.[index] === width
                           ? cW
                           : { ...cW, [index]: width };
                       })
