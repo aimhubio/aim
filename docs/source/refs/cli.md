@@ -104,13 +104,13 @@ $ aim runs [ARGS] SUBCOMMAND
 
 __runs subcommands__
 
-| Sub-command | Description                                                                    |
-| ----------- | ------------------------------------------------------------------------------ |
-| `ls`        | List runs in `aim` repository.                                                 |
-| `rm`        | Remove run data for given run hashes. At least one run should be specified.   |
-| `cp`        | Copy run data for given run hashes. At least one run should be specified.     |
-| `mv`        | Move run data for given run hashes. At least one run should be specified.     |
-| `upload`    | Create a snapshot of `.aim directory in cloud. Bucket name should be specified. |
+| Sub-command | Description                                                                      |
+| ----------- | -------------------------------------------------------------------------------- |
+| `ls`        | List runs in `aim` repository.                                                   |
+| `rm`        | Remove run data for given run hashes. At least one run should be specified.      |
+| `cp`        | Copy run data for given run hashes. At least one run should be specified.        |
+| `mv`        | Move run data for given run hashes. At least one run should be specified.        |
+| `upload`    | Create a snapshot of `.aim` directory in cloud. Bucket name should be specified. |
 
 Global expression (`*`) support is available for run hashes. If hash contains `*`, it must be enclosed within
 quotes (`''`) as bash resolves the expression before passing it to `aim runs` command.
