@@ -5,8 +5,9 @@ import logging
 from collections import defaultdict
 from contextlib import contextmanager
 from enum import Enum
+from cachetools.func import ttl_cache
 from filelock import FileLock
-from typing import Dict, Tuple, Iterator, NamedTuple, Optional, List
+from typing import Dict, Tuple, Iterator, NamedTuple, Optional, List, Set
 from weakref import WeakValueDictionary
 
 from aim.ext.sshfs.utils import mount_remote_repo, unmount_remote_repo
@@ -386,6 +387,13 @@ class Repo:
                 yield Run(run_name, repo=self, read_only=True)
         else:
             raise StopIteration
+
+    def run_exists(self, run_hash: str) -> bool:
+        return run_hash in self._all_run_hashes()
+
+    @ttl_cache(ttl=0.5)
+    def _all_run_hashes(self) -> Set[str]:
+        return set(os.listdir(os.path.join(self.path, 'meta', 'chunks')))
 
     def total_runs_count(self) -> int:
         db = self.structured_db
