@@ -5,7 +5,7 @@ import _ from 'lodash-es';
 
 import Editor, { useMonaco, loader } from '@monaco-editor/react';
 
-import { Text } from 'components/kit';
+import { Icon, Text } from 'components/kit';
 
 import { getBasePath } from 'config/config';
 import { getMonacoConfig } from 'config/monacoConfig/monacoConfig';
@@ -208,6 +208,7 @@ function AutocompleteInput({
         AutocompleteInput__focused: focused,
         AutocompleteInput__advanced: advanced,
         AutocompleteInput__disabled: disabled,
+        AutocompleteInput__error: errorMessage,
       })}
     >
       <Editor
@@ -230,9 +231,29 @@ function AutocompleteInput({
         ))}
       {errorMessage && (
         <div className='AutocompleteInput__errorBar'>
-          <Text className='AutocompleteInput__errorBar__message' component='p'>
-            <Text>{errorMessage}</Text>
-          </Text>
+          <div>
+            <Text
+              color='error'
+              className='AutocompleteInput__errorBar__message'
+              component='p'
+              size={16}
+            >
+              <Text size={16} color='error' weight={700}>
+                Error:
+              </Text>
+              {errorMessage}
+            </Text>
+          </div>
+          <div className='AutocompleteInput__errorBar__hint'>
+            <span>
+              <Icon name='upload' />
+            </span>
+            <Text>
+              Aim Query Language is pythonic and fairly easy to get used to. If
+              you having issue, please refer to the docs for more examples or
+              the detailed spec.
+            </Text>
+          </div>
         </div>
       )}
     </div>

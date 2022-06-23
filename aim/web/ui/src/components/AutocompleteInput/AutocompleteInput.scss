@@ -9,6 +9,7 @@
   border-radius: $border-radius-main;
   padding: $space-xs;
   position: relative;
+  background-color: $white;
   &:hover {
     border: 0.0625rem solid $cuddle-110;
   }
@@ -28,12 +29,44 @@
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
-    @include monospaceFontFamily();
     font-size: $text-lg;
+    @include monospaceFontFamily();
   }
   &__disabled {
     pointer-events: none;
     opacity: 0.5;
+  }
+  &__error {
+    border-color: $error-color-80;
+    &:hover {
+      border-color: $error-color-80;
+    }
+  }
+  &__errorBar {
+    left: -1px;
+    top: calc(100% - 14px);
+    position: absolute;
+    padding: $space-unit;
+    z-index: -1;
+    border: 1px solid $error-color-25;
+    // border-top: none;
+    width: calc(100% + 2px);
+    background-color: $error-color-5;
+    border-bottom-left-radius: $border-radius-main;
+    border-bottom-right-radius: $border-radius-main;
+    &__message {
+      @include monospaceFontFamily(16);
+      span {
+        margin-right: $space-sm;
+      }
+    }
+    &__hint {
+      padding: 12px;
+      border: 0.0625rem solid $error-color-25;
+      margin-top: $space-sm;
+      background-color: $white;
+      border-radius: $radius-main;
+    }
   }
   .details-label {
     width: auto !important;
@@ -51,17 +84,8 @@
   .monaco-hover {
     display: none !important;
   }
-  &__errorBar {
-    position: absolute;
-    border: 1px solid $error-color-25;
-    border-top: none;
-    width: 100%;
-    height: 100px;
-    background-color: $error-color-5;
-    left: 0;
-    top: 100%;
-    &__message {
-      color: $error-color;
-    }
+  .monaco-editor .squiggly-error {
+    width: 8px !important;
+    background: url('../../assets/icons/arrow-up.svg') repeat-x bottom left;
   }
 }
