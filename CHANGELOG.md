@@ -1,5 +1,11 @@
 # Changelog
 
+## Unreleased
+
+### Fixes
+
+- Fix the loading logic of the `monaco editor` across the Aim Ui
+
 ## 3.11.0 Jun 21, 2022
 
 ### Enhancements:
