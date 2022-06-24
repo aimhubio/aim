@@ -3,23 +3,15 @@ import classNames from 'classnames';
 import * as monacoEditor from 'monaco-editor';
 import _ from 'lodash-es';
 
-import Editor, { useMonaco, loader } from '@monaco-editor/react';
+import Editor, { useMonaco } from '@monaco-editor/react';
 
 import { getMonacoConfig } from 'config/monacoConfig/monacoConfig';
-import { getBasePath } from 'config/config';
 
 import { showAutocompletion } from 'utils/showAutocompletion';
 
 import { IAutocompleteInputProps } from './ AutocompleteInput';
 
 import './AutocompleteInput.scss';
-
-// loading monaco from node modules instead of CDN
-loader.config({
-  paths: {
-    vs: `${getBasePath()}/static-files/vs`,
-  },
-});
 
 function AutocompleteInput({
   context,
