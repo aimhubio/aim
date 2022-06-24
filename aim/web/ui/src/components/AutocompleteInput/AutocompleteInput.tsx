@@ -9,6 +9,7 @@ import { Icon, Text } from 'components/kit';
 
 import { getBasePath } from 'config/config';
 import { getMonacoConfig } from 'config/monacoConfig/monacoConfig';
+import { DOCUMENTATIONS } from 'config/references';
 
 import { showAutocompletion } from 'utils/showAutocompletion';
 
@@ -124,18 +125,20 @@ function AutocompleteInput({
     editorRef.current.onDidChangeCursorSelection(onSelectionChange);
   }
 
-  function setMarkers() {
+  function setMarkers(): void {
     if (monaco && error) {
       setErrorMessage(error?.message);
       monaco.editor.setModelMarkers(monaco.editor.getModels()[0], 'marker', [
         {
           startLineNumber: error?.detail.Line,
-          startColumn: error?.detail.Offset,
+          startColumn: error?.detail.Offset === 2 ? 1 : error?.detail.Offset,
           endLineNumber: error?.detail.Line,
-          endColumn: error?.detail.Offset,
+          endColumn:
+            error?.detail.Offset === 2
+              ? value.length + 1
+              : error?.detail.Offset,
           message: error?.message,
           severity: monaco.MarkerSeverity.Error,
-          code: 'string',
         },
       ]);
     }
@@ -167,6 +170,7 @@ function AutocompleteInput({
         return;
       }
       deleteMarkers();
+      setErrorMessage('');
       if (typeof val === 'string') {
         // formatting value to avoid the new line
         let formattedValue = val.replace(/[\n\r]/g, '');
@@ -202,33 +206,38 @@ function AutocompleteInput({
   }
 
   return (
-    <div
-      onClick={handleFocus}
+    <section
       className={classNames(`AutocompleteInput ${className || ''}`, {
-        AutocompleteInput__focused: focused,
-        AutocompleteInput__advanced: advanced,
         AutocompleteInput__disabled: disabled,
-        AutocompleteInput__error: errorMessage,
       })}
     >
-      <Editor
-        key={`${containerWidth}`}
-        language='python'
-        height={monacoConfig.height}
-        value={editorValue}
-        onChange={handleChange}
-        onMount={handleDidMount}
-        loading={<span />}
-        options={monacoConfig.options}
-        {...editorProps}
-      />
-      {mounted &&
-        (focused || editorValue ? null : (
-          <div className='AutocompleteInput__placeholder'>
-            Filter runs, e.g. run.learning_rate {'>'} 0.0001 and run.batch_size
-            == 32
-          </div>
-        ))}
+      <div
+        onClick={handleFocus}
+        className={classNames('AutocompleteInput__container', {
+          AutocompleteInput__container__focused: focused,
+          AutocompleteInput__container__advanced: advanced,
+          AutocompleteInput__container__error: errorMessage,
+        })}
+      >
+        <Editor
+          key={`${containerWidth}`}
+          language='python'
+          height={monacoConfig.height}
+          value={editorValue}
+          onChange={handleChange}
+          onMount={handleDidMount}
+          loading={<span />}
+          options={monacoConfig.options}
+          {...editorProps}
+        />
+        {mounted &&
+          (focused || editorValue ? null : (
+            <div className='AutocompleteInput__container__placeholder'>
+              Filter runs, e.g. run.learning_rate {'>'} 0.0001 and
+              run.batch_size == 32
+            </div>
+          ))}
+      </div>
       {errorMessage && (
         <div className='AutocompleteInput__errorBar'>
           <div>
@@ -245,18 +254,27 @@ function AutocompleteInput({
             </Text>
           </div>
           <div className='AutocompleteInput__errorBar__hint'>
-            <span>
-              <Icon name='upload' />
-            </span>
+            <Icon name='circle-info' box />
             <Text>
               Aim Query Language is pythonic and fairly easy to get used to. If
-              you having issue, please refer to the docs for more examples or
-              the detailed spec.
+              you having issue, please refer to the{' '}
+              <a
+                href={DOCUMENTATIONS.MAIN_PAGE}
+                target='_blank'
+                rel='noreferrer'
+              >
+                docs
+              </a>{' '}
+              for more examples or the detailed{' '}
+              <a href={DOCUMENTATIONS.AIM_QL} target='_blank' rel='noreferrer'>
+                spec
+              </a>
+              .
             </Text>
           </div>
         </div>
       )}
-    </div>
+    </section>
   );
 }
 

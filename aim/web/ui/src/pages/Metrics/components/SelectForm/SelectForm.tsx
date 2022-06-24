@@ -151,7 +151,7 @@ function SelectForm({
               <div className='Metrics__SelectForm__textarea'>
                 <AutocompleteInput
                   advanced
-                  error={selectFormData.error}
+                  error={selectFormData.advancedError}
                   refObject={advancedAutocompleteRef}
                   context={selectFormData?.advancedSuggestions}
                   value={selectedMetricsData?.advancedQuery}

@@ -53,6 +53,7 @@ export interface IMetricAppModelState {
     options: ISelectOption[];
     suggestions: string[];
     error: ISyntaxErrorDetails;
+    advancedError: ISyntaxErrorDetails;
   };
   liveUpdateConfig: {
     delay: number;

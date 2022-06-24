@@ -12,6 +12,7 @@ export interface ISelectFormProps {
     suggestions: Record<any>;
     advancedSuggestions?: Record<any>;
     error: ISyntaxErrorDetails;
+    advancedError: ISyntaxErrorDetails;
   };
   onMetricsSelectChange: (options: ISelectOption[]) => void;
   onSelectRunQueryChange: (query: string) => void;

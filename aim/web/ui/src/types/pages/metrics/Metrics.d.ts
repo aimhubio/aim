@@ -89,6 +89,7 @@ export interface IMetricProps extends Partial<RouteChildrenProps> {
     options: ISelectOption[];
     suggestions: string[];
     error: ISyntaxErrorDetails;
+    advancedError: ISyntaxErrorDetails;
   };
   columnsOrder: IColumnsOrder;
   onChangeTooltip: (tooltip: Partial<IPanelTooltip>) => void;
