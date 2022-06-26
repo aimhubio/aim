@@ -4209,7 +4209,13 @@ function createAppModel(appConfig: IAppInitialConfig) {
           data[0]?.config,
           config.table?.columnsOrder!,
           config.table?.hiddenColumns!,
+          config.table?.sortFields,
+          onSortChange,
+          config.grouping as any,
+          onModelGroupingSelectChange,
+          AppNameEnum.PARAMS,
         );
+
         const excludedFields: string[] = ['#', 'actions'];
         const filteredHeader: string[] = tableColumns.reduce(
           (acc: string[], column: ITableColumn) =>
@@ -5774,7 +5780,13 @@ function createAppModel(appConfig: IAppInitialConfig) {
           data[0]?.config,
           config.table?.columnsOrder!,
           config.table?.hiddenColumns!,
+          config.table?.sortFields,
+          onSortChange,
+          config.grouping as any,
+          onModelGroupingSelectChange,
+          AppNameEnum.SCATTERS,
         );
+
         const excludedFields: string[] = ['#', 'actions'];
         const filteredHeader: string[] = tableColumns.reduce(
           (acc: string[], column: ITableColumn) =>
