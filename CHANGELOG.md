@@ -1,10 +1,9 @@
 # Changelog
 
-## Unreleased
+## 3.11.1 Jun 27, 2022
 
-### Fixes
-
-- Fix the loading logic of the `monaco editor` across the Aim Ui
+- Fix Notes tab loading issue (arsengit)
+- Fix the loading logic of the `monaco editor` across the Aim Ui (arsengit)
 
 ## 3.11.0 Jun 21, 2022
 
