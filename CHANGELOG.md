@@ -4,6 +4,8 @@
 
 - Fix Notes tab loading issue (arsengit)
 - Fix the loading logic of the `monaco editor` across the Aim Ui (arsengit)
+- Fix `Table` export functionality in Params and Scatters explorers (arsengit)
+- Allow mixing numeric types on a single Sequence (alberttorosyan)
 
 ## 3.11.0 Jun 21, 2022
 
