@@ -66,8 +66,8 @@ aim runs rm run_hash_1 run_hash_2 run_hash_3
 ### Upload runs
 
 Aim provides a way to create backup snapshots of a `.aim` repository in AWS s3.
-The snapshot will be created in an s3 bucket which is specified as an argument. 
-New s3 bucket will be created with the given name if it does not exist already. 
+The snapshot will be created in an s3 bucket. The bucket name is passed as an argument.
+A new s3 bucket will be created if it does not exist already. 
 
 Please note that `boto3` package and sufficient AWS permissions are required for this command.
 
