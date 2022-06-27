@@ -203,7 +203,7 @@ class RunTracker:
 
         if seq_info.dtype is not None:
             def update_trace_dtype(old_dtype: str, new_dtype: str):
-                logger.warning(f'Updating sequence \'{name}\' data type from {old_dtype} to f{new_dtype}.')
+                logger.warning(f'Updating sequence \'{name}\' data type from {old_dtype} to {new_dtype}.')
                 self.meta_tree['traces_types', new_dtype, ctx_id, name] = 1
                 self.meta_run_tree['traces', ctx_id, name, 'dtype'] = new_dtype
                 seq_info.dtype = new_dtype
