@@ -156,6 +156,23 @@ export function storageDataToFlatList(
           // for readability
           trace.values.forEach((sequence: any, stepIndex: number) => {
             /** depth 2 */ // STEP
+            if (objectDepth === 2) {
+              const stepData = {
+                step: trace.iters[stepIndex],
+                epoch: trace.epochs[stepIndex],
+              };
+              collectedDataByDepth = {
+                ...collectedDataByDepth,
+                ...stepData,
+              };
+              const object = {
+                ...collectedDataByDepth,
+                data: depthInterceptor(sequence).data,
+              };
+              objectList.push(object);
+              return;
+            }
+
             sequence.forEach((rec: any) => {
               /** depth 3 */ // INDEX
               const record = {

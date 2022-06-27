@@ -32,6 +32,7 @@ type ExplorerState = {
   };
   data: any;
   additionalData: any;
+  foundGroups: any; // remove this
 };
 
 type ExplorerConfig = {
@@ -49,6 +50,7 @@ const initialState: ExplorerState = {
   },
   data: null,
   additionalData: null,
+  foundGroups: null,
 };
 
 let pipeline: Pipeline;
@@ -216,6 +218,7 @@ function createEngine(config: IEngineConfigFinal) {
     } = {},
   ) {
     groupingMethods.update(config);
+
     const result = await pipeline.execute({
       query: lastQuery,
       group: {
@@ -232,12 +235,13 @@ function createEngine(config: IEngineConfigFinal) {
       },
     });
 
-    console.log('group result ----->', result);
+    const { data, additionalData, foundGroups } = result;
     //
-    // storeVanilla.setState({
-    //   data: result.data,
-    //   additionalData: result.additionalData,
-    // });
+    storeVanilla.setState({
+      data,
+      additionalData,
+      foundGroups,
+    });
   }
 
   function initialize() {
@@ -304,6 +308,9 @@ function createEngine(config: IEngineConfigFinal) {
     instructions: {
       dataSelector: instructionsSelector,
     },
+
+    // pipeline result result
+    foundGroupsSelector: (state: any) => state.foundGroups,
   };
 }
 
