@@ -1567,9 +1567,16 @@ function createAppModel(appConfig: IAppInitialConfig) {
         emptyRow[column] = '--';
       });
 
-      const groupedRows: IMetricTableRowData[][] = Object.keys(
-        tableData.rows,
-      ).map((groupedRowKey: string) => tableData.rows[groupedRowKey].items);
+      const groupedRows: IMetricTableRowData[][] =
+        data.length > 1
+          ? Object.keys(tableData.rows).map(
+              (groupedRowKey: string) => tableData.rows[groupedRowKey].items,
+            )
+          : [
+              Array.isArray(tableData.rows)
+                ? tableData.rows
+                : tableData.rows[Object.keys(tableData.rows)[0]].items,
+            ];
 
       const dataToExport: { [key: string]: string }[] = [];
 
@@ -2835,9 +2842,16 @@ function createAppModel(appConfig: IAppInitialConfig) {
           emptyRow[column] = '--';
         });
 
-        const groupedRows: IMetricTableRowData[][] = Object.keys(
-          tableData.rows,
-        ).map((groupedRowKey: string) => tableData.rows[groupedRowKey].items);
+        const groupedRows: IMetricTableRowData[][] =
+          data.length > 1
+            ? Object.keys(tableData.rows).map(
+                (groupedRowKey: string) => tableData.rows[groupedRowKey].items,
+              )
+            : [
+                Array.isArray(tableData.rows)
+                  ? tableData.rows
+                  : tableData.rows[Object.keys(tableData.rows)[0]].items,
+              ];
 
         const dataToExport: { [key: string]: string }[] = [];
 
@@ -4226,12 +4240,17 @@ function createAppModel(appConfig: IAppInitialConfig) {
           emptyRow[column] = '--';
         });
 
-        const groupedRows: IMetricTableRowData[][] = Object.keys(
-          tableData.rows,
-        )?.map((groupedRowKey: string) => tableData.rows[groupedRowKey].items);
-
+        const groupedRows: IMetricTableRowData[][] =
+          data.length > 1
+            ? Object.keys(tableData.rows).map(
+                (groupedRowKey: string) => tableData.rows[groupedRowKey].items,
+              )
+            : [
+                Array.isArray(tableData.rows)
+                  ? tableData.rows
+                  : tableData.rows[Object.keys(tableData.rows)[0]].items,
+              ];
         const dataToExport: { [key: string]: string }[] = [];
-
         groupedRows?.forEach(
           (groupedRow: IMetricTableRowData[], groupedRowIndex: number) => {
             groupedRow?.forEach((row: IMetricTableRowData) => {
@@ -5794,9 +5813,16 @@ function createAppModel(appConfig: IAppInitialConfig) {
           emptyRow[column] = '--';
         });
 
-        const groupedRows: IMetricTableRowData[][] = Object.keys(
-          tableData.rows,
-        ).map((groupedRowKey: string) => tableData.rows[groupedRowKey].items);
+        const groupedRows: IMetricTableRowData[][] =
+          data.length > 1
+            ? Object.keys(tableData.rows).map(
+                (groupedRowKey: string) => tableData.rows[groupedRowKey].items,
+              )
+            : [
+                Array.isArray(tableData.rows)
+                  ? tableData.rows
+                  : tableData.rows[Object.keys(tableData.rows)[0]].items,
+              ];
 
         const dataToExport: { [key: string]: string }[] = [];
 

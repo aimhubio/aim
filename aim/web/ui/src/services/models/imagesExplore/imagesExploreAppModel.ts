@@ -1805,7 +1805,7 @@ function getQueryStringFromSelect(
       query = selectData.advancedQuery;
     } else {
       query = `${
-        selectData.query ? `${selectData.query} and ` : ''
+        selectData.query ? `(${selectData.query}) and ` : ''
       }(${selectData.options
         .map(
           (option: ISelectOption) =>
