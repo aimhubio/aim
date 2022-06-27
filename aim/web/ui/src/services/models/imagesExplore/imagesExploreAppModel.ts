@@ -1654,21 +1654,18 @@ function onExportTableData(e: React.ChangeEvent<any>): void {
     emptyRow[column] = '--';
   });
 
-  const groupedRows: any[][] =
-    data.length > 1
-      ? Object.keys(tableData.rows).map(
-          (groupedRowKey: string) => tableData.rows[groupedRowKey].items,
-        )
-      : [tableData.rows];
+  const groupedRows: any[][] = Object.keys(tableData.rows).map(
+    (groupedRowKey: string) => tableData.rows[groupedRowKey].items,
+  );
 
   const dataToExport: { [key: string]: string }[] = [];
 
-  groupedRows.forEach((groupedRow: any[], groupedRowIndex: number) => {
+  groupedRows?.forEach((groupedRow: any[], groupedRowIndex: number) => {
     groupedRow?.forEach((row: any) => {
       const filteredRow: any = getFilteredRow(filteredHeader, row);
       dataToExport.push(filteredRow);
     });
-    if (groupedRows.length - 1 !== groupedRowIndex) {
+    if (groupedRows?.length - 1 !== groupedRowIndex) {
       dataToExport.push(emptyRow);
     }
   });
