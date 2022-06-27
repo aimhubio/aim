@@ -189,9 +189,10 @@ function ImagesExplore(): React.FunctionComponentElement<React.ReactNode> {
     const unListenHistory = history.listen(() => {
       if (!!imagesExploreData?.config) {
         if (
-          imagesExploreData.config.grouping !== getStateFromUrl('grouping') ||
-          imagesExploreData.config.images !== getStateFromUrl('images') ||
-          imagesExploreData.config.select !== getStateFromUrl('select')
+          (imagesExploreData.config.grouping !== getStateFromUrl('grouping') ||
+            imagesExploreData.config.images !== getStateFromUrl('images') ||
+            imagesExploreData.config.select !== getStateFromUrl('select')) &&
+          history.location.pathname === `/${AppNameEnum.IMAGES}`
         ) {
           imagesExploreAppModel.setDefaultAppConfigData();
           imagesExploreAppModel.updateModelData();

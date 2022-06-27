@@ -12,6 +12,7 @@ import useResizeObserver from 'hooks/window/useResizeObserver';
 import scattersAppModel from 'services/models/scatters/scattersAppModel';
 import projectsModel from 'services/models/projects/projectsModel';
 import * as analytics from 'services/analytics';
+import { AppNameEnum } from 'services/models/explorer';
 
 import { ITableRef } from 'types/components/Table/Table';
 import { IChartPanelRef } from 'types/components/ChartPanel/ChartPanel';
@@ -98,9 +99,10 @@ function ScattersContainer(): React.FunctionComponentElement<React.ReactNode> {
     const unListenHistory = history.listen(() => {
       if (!!scattersData?.config) {
         if (
-          scattersData.config.grouping !== getStateFromUrl('grouping') ||
-          scattersData.config.chart !== getStateFromUrl('chart') ||
-          scattersData.config.select !== getStateFromUrl('select')
+          (scattersData.config.grouping !== getStateFromUrl('grouping') ||
+            scattersData.config.chart !== getStateFromUrl('chart') ||
+            scattersData.config.select !== getStateFromUrl('select')) &&
+          history.location.pathname === `/${AppNameEnum.SCATTERS}`
         ) {
           scattersAppModel.setDefaultAppConfigData();
           scattersAppModel.updateModelData();
