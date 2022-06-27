@@ -1,5 +1,9 @@
 # Changelog
 
+## 3.11.1 Jun 27, 2022
+
+- Fix Notes tab loading issue (arsengit)
+
 ## 3.11.0 Jun 21, 2022
 
 ### Enhancements:
