@@ -36,19 +36,12 @@ function processLineChartData({
     const line: ILine = data[i];
     const { xValues, yValues } = line.data;
 
-    const tupleData = toTupleData(xValues, yValues);
+    const tupleData = toTupleData(xValues, yValues, (x, y) => {
+      // supposed received x values are sorted by ascending order (y values are sorted by x)
+      allXValues.push(x);
+      allYValues.push(y);
+    });
 
-    const xSyncedValues = [];
-    const ySyncedValues = [];
-
-    for (let d of tupleData) {
-      xSyncedValues.push(d[0]);
-      ySyncedValues.push(d[1]);
-    }
-
-    // supposed received x values are sorted by ascending order (y values are sorted by x)
-    allXValues = allXValues.concat(xSyncedValues);
-    allYValues = allYValues.concat(ySyncedValues);
     // find y bounds for lines to ignore "acceptable" outliers
     if (ignoreOutliers) {
       yBounds = yBounds.concat(minMaxOfArray(removeOutliers(yValues, 4)));

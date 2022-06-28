@@ -56,7 +56,7 @@ import { IProjectParamsMetrics } from 'types/services/models/projects/projectsMo
 
 import getAppConfigDataMethod from 'utils/app/getAppConfigData';
 import onRowSelectAction from 'utils/app/onRowSelect';
-import { decode, encode } from 'utils/encoder/encoder';
+import { AIM64_ENCODING_PREFIX, encode } from 'utils/encoder/encoder';
 import getObjectPaths from 'utils/getObjectPaths';
 import getUrlWithParam from 'utils/getUrlWithParam';
 import getStateFromUrl from 'utils/getStateFromUrl';
@@ -85,6 +85,9 @@ import getGroupingSelectOptions from 'utils/app/getGroupingSelectOptions';
 import getAdvancedSuggestion from 'utils/getAdvancedSuggestions';
 import { processDurationTime } from 'utils/processDurationTime';
 import onVisibilityChange from 'utils/app/onColumnsVisibilityChange';
+import setRequestProgress from 'utils/app/setRequestProgress';
+import getRunData from 'utils/app/getRunData';
+import decodeWithBase58Checker from 'utils/decodeWithBase58Checker';
 
 import createModel from '../model';
 import { AppNameEnum } from '../explorer';
@@ -211,6 +214,7 @@ function initialize(appId: string): void {
 
 function setDefaultAppConfigData(recoverTableState: boolean = true) {
   const defaultConfig: Partial<IImagesExploreAppConfig> = {};
+  const searchParam = new URLSearchParams(window.location.search);
 
   const grouping: IImagesExploreAppConfig['grouping'] =
     getStateFromUrl('grouping') ?? {};
@@ -231,9 +235,17 @@ function setDefaultAppConfigData(recoverTableState: boolean = true) {
   defaultConfig.images = images;
 
   if (recoverTableState) {
-    const tableConfigHash = getItem('imagesExploreTable');
+    const tableConfigHash =
+      getItem('imagesTable') || getItem('imagesExploreTable');
     const table = tableConfigHash
-      ? JSON.parse(decode(tableConfigHash))
+      ? JSON.parse(
+          decodeWithBase58Checker({
+            value: tableConfigHash ?? '',
+            localStorageKey: getItem('imagesTable')
+              ? 'imagesTable'
+              : 'imagesExploreTable',
+          }),
+        )
       : getConfig().table;
 
     defaultConfig.table = table;
@@ -249,6 +261,16 @@ function setDefaultAppConfigData(recoverTableState: boolean = true) {
       }
     },
   );
+  if (
+    (searchParam.get('grouping') &&
+      !searchParam.get('grouping')?.startsWith(AIM64_ENCODING_PREFIX)) ||
+    (searchParam.get('chart') &&
+      !searchParam.get('chart')?.startsWith(AIM64_ENCODING_PREFIX)) ||
+    (searchParam.get('select') &&
+      !searchParam.get('select')?.startsWith(AIM64_ENCODING_PREFIX))
+  ) {
+    updateURL(configData);
+  }
 
   model.setState({ config: configData });
 }
@@ -285,6 +307,7 @@ function abortRequest(): void {
   if (imagesRequestRef) {
     imagesRequestRef.abort();
   }
+  setRequestProgress(model);
   model.setState({
     requestStatus: RequestStatusEnum.Ok,
   });
@@ -354,6 +377,7 @@ function getImagesData(
     };
   }
   imagesRequestRef = imagesExploreService.getImagesExploreData(imageDataBody);
+  setRequestProgress(model);
   return {
     call: async () => {
       if (query !== '()') {
@@ -371,7 +395,9 @@ function getImagesData(
             exceptionHandler({ detail, model });
             resetModelState();
           });
-          const runData = await getImagesMetricsData(stream);
+          const runData = await getRunData(stream, (progress) =>
+            setRequestProgress(model, progress),
+          );
 
           if (configData) {
             setModelData(runData, configData);
@@ -685,6 +711,24 @@ function setModelData(rawData: any[], configData: IImagesExploreAppConfig) {
     },
     additionalProperties: config.images.additionalProperties,
   };
+
+  const tableColumns = getImagesExploreTableColumns(
+    params,
+    groupingSelectOptions,
+    data[0]?.config,
+    configData.table.columnsOrder!,
+    configData.table.hiddenColumns!,
+    sortFields,
+    onTableSortChange,
+    config.grouping as any,
+    onGroupingSelectChange,
+  );
+
+  model.getState()?.refs?.tableRef.current?.updateData({
+    newData: tableData.rows,
+    newColumns: tableColumns,
+  });
+
   model.setState({
     requestStatus: RequestStatusEnum.Ok,
     rawData,
@@ -695,17 +739,7 @@ function setModelData(rawData: any[], configData: IImagesExploreAppConfig) {
     imagesData: mediaSetData,
     orderedMap,
     tableData: tableData.rows,
-    tableColumns: getImagesExploreTableColumns(
-      params,
-      groupingSelectOptions,
-      data[0]?.config,
-      configData.table.columnsOrder!,
-      configData.table.hiddenColumns!,
-      sortFields,
-      onTableSortChange,
-      config.grouping as any,
-      onGroupingSelectChange,
-    ),
+    tableColumns,
     sameValueColumns: tableData.sameValueColumns,
     groupingSelectOptions,
   });
@@ -773,8 +807,8 @@ function updateModelData(
     configData.grouping as any,
     onGroupingSelectChange,
   );
-  const tableRef: any = model.getState()?.refs?.tableRef;
-  tableRef?.current?.updateData({
+
+  model.getState()?.refs?.tableRef.current?.updateData({
     newData: tableData.rows,
     newColumns: tableColumns,
     hiddenColumns: configData.table.hiddenColumns!,
@@ -1015,23 +1049,6 @@ function onResetConfigData(): void {
     };
     updateModelData(configData, true);
   }
-}
-
-async function getImagesMetricsData(
-  stream: ReadableStream<IRun<IMetricTrace>[]>,
-) {
-  let bufferPairs = decodeBufferPairs(stream);
-  let decodedPairs = decodePathsVals(bufferPairs);
-  let objects = iterFoldTree(decodedPairs, 1);
-
-  const runData = [];
-  for await (let [keys, val] of objects) {
-    runData.push({
-      ...(val as any),
-      hash: keys[0],
-    });
-  }
-  return runData;
 }
 
 function getImagesBlobsData(uris: string[]) {
@@ -1497,7 +1514,7 @@ function updateColumnsWidths(key: string, width: number, isReset: boolean) {
     model.setState({
       config,
     });
-    setItem('imagesExploreTable', encode(table));
+    setItem('imagesTable', encode(table));
     updateModelData(config);
   }
 }
@@ -1519,7 +1536,7 @@ function updateTableSortFields(sortFields: SortFields) {
       config: configUpdate,
     });
 
-    setItem('imagesExploreTable', encode(table));
+    setItem('imagesTable', encode(table));
     updateModelData(configUpdate, true);
   }
   analytics.trackEvent(
@@ -1656,21 +1673,18 @@ function onExportTableData(e: React.ChangeEvent<any>): void {
     emptyRow[column] = '--';
   });
 
-  const groupedRows: any[][] =
-    data.length > 1
-      ? Object.keys(tableData.rows).map(
-          (groupedRowKey: string) => tableData.rows[groupedRowKey].items,
-        )
-      : [tableData.rows];
+  const groupedRows: any[][] = Object.keys(tableData.rows).map(
+    (groupedRowKey: string) => tableData.rows[groupedRowKey].items,
+  );
 
   const dataToExport: { [key: string]: string }[] = [];
 
-  groupedRows.forEach((groupedRow: any[], groupedRowIndex: number) => {
+  groupedRows?.forEach((groupedRow: any[], groupedRowIndex: number) => {
     groupedRow?.forEach((row: any) => {
       const filteredRow: any = getFilteredRow(filteredHeader, row);
       dataToExport.push(filteredRow);
     });
-    if (groupedRows.length - 1 !== groupedRowIndex) {
+    if (groupedRows?.length - 1 !== groupedRowIndex) {
       dataToExport.push(emptyRow);
     }
   });
@@ -1703,7 +1717,7 @@ function onRowVisibilityChange(metricKey: string) {
       table,
     };
     model.setState({ config });
-    setItem('imagesExploreTable', encode(table));
+    setItem('imagesTable', encode(table));
     updateModelData(config);
   }
 }
@@ -1745,7 +1759,7 @@ function onTableResizeEnd(tableHeight: string) {
     model.setState({
       config,
     });
-    setItem('imagesExploreTable', encode(table));
+    setItem('imagesTable', encode(table));
   }
 }
 
@@ -1780,7 +1794,7 @@ function onTableResizeModeChange(mode: ResizeModeEnum): void {
     model.setState({
       config,
     });
-    setItem('imagesExploreTable', encode(table));
+    setItem('imagesTable', encode(table));
   }
   analytics.trackEvent(ANALYTICS_EVENT_KEYS.images.table.changeResizeMode);
 }
@@ -1810,7 +1824,7 @@ function getQueryStringFromSelect(
       query = selectData.advancedQuery;
     } else {
       query = `${
-        selectData.query ? `${selectData.query} and ` : ''
+        selectData.query ? `(${selectData.query}) and ` : ''
       }(${selectData.options
         .map(
           (option: ISelectOption) =>
@@ -1914,7 +1928,7 @@ function onColumnsOrderChange(columnsOrder: any) {
     model.setState({
       config,
     });
-    setItem('imagesExploreTable', encode(table));
+    setItem('imagesTable', encode(table));
     updateModelData(config);
   }
   analytics.trackEvent(ANALYTICS_EVENT_KEYS.images.table.changeColumnsOrder);
@@ -1952,7 +1966,7 @@ function onRowHeightChange(height: RowHeightSize) {
     model.setState({
       config,
     });
-    setItem('metricsTable', encode(table));
+    setItem('imagesTable', encode(table));
   }
   analytics.trackEvent(
     `${
@@ -1984,7 +1998,7 @@ function onImageVisibilityChange(metricsKeys: string[]) {
     model.setState({
       config,
     });
-    setItem('imagesExploreTable', encode(table));
+    setItem('imagesTable', encode(table));
     updateModelData(config);
   }
   analytics.trackEvent(

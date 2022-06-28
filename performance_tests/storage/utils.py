@@ -1,5 +1,6 @@
 from aim import Repo
 from aim.sdk.configs import get_aim_repo_name
+from aim.sdk.types import QueryReportMode
 from aim.storage.rockscontainer import RocksContainer
 
 from performance_tests.utils import timing
@@ -16,7 +17,7 @@ def open_containers_for_read(container_paths_list):
 
 @timing()
 def random_access_metric_values(repo, query, density):
-    traces = repo.query_metrics(query=query)
+    traces = repo.query_metrics(query=query, report_mode=QueryReportMode.DISABLED)
     for trace in traces.iter():
         values = trace.values
         values_length = len(values)
@@ -29,7 +30,7 @@ def random_access_metric_values(repo, query, density):
 
 @timing()
 def iterative_access_metric_values(repo, query):
-    traces = repo.query_metrics(query=query)
+    traces = repo.query_metrics(query=query, report_mode=QueryReportMode.DISABLED)
     for trace in traces.iter():
         _ = trace.values.values_numpy()
 

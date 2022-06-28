@@ -27,6 +27,7 @@ import {
 } from 'types/services/models/explorer/createAppModel';
 
 import { CurveEnum } from 'utils/d3';
+import { IRequestProgress } from 'utils/app/setRequestProgress';
 
 export interface IParamsProps extends Partial<RouteChildrenProps> {
   chartElemRef: React.RefObject<HTMLDivElement>;
@@ -39,6 +40,7 @@ export interface IParamsProps extends Partial<RouteChildrenProps> {
   curveInterpolation: CurveEnum;
   panelResizing: boolean;
   requestStatus: RequestStatusEnum;
+  requestProgress: IRequestProgress;
   highPlotData: any;
   groupingData: IGroupingConfig;
   groupingSelectOptions: IGroupingSelectOption[];

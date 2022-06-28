@@ -82,6 +82,7 @@ function SortPopover({
         </Text>
         <div className='SortPopover__container__selectBox'>
           <Autocomplete
+            openOnFocus
             id='select-sort'
             size='small'
             multiple

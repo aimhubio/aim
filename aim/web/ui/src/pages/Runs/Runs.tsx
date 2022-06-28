@@ -1,6 +1,7 @@
 import React from 'react';
 
 import NotificationContainer from 'components/NotificationContainer/NotificationContainer';
+import ProgressBar from 'components/ProgressBar/ProgressBar';
 
 import { RequestStatusEnum } from 'config/enums/requestStatusEnum';
 
@@ -11,15 +12,18 @@ import SearchBar from './components/SearchBar/SearchBar';
 import './Runs.scss';
 
 function Runs(props: any): React.FunctionComponentElement<React.ReactNode> {
+  const [isProgressBarVisible, setIsProgressBarVisible] =
+    React.useState<boolean>(false);
   return (
     <div className='Runs__container'>
       <section className='Runs__section'>
-        <div className='Runs__section__div Runs__fullHeight'>
+        <div className='Runs__section__appBarContainer Runs__fullHeight'>
           <RunsBar
             {...{
               ...props.liveUpdateConfig,
               onLiveUpdateConfigChange: props.onLiveUpdateConfigChange,
             }}
+            disabled={isProgressBarVisible}
           />
           <SearchBar
             searchSuggestions={props.searchSuggestions}
@@ -28,8 +32,14 @@ function Runs(props: any): React.FunctionComponentElement<React.ReactNode> {
             isRunsDataLoading={
               props.requestStatus === RequestStatusEnum.Pending
             }
+            isDisabled={isProgressBarVisible}
           />
           <div className='Runs__table__container'>
+            <ProgressBar
+              progress={props.requestProgress}
+              pendingStatus={props.requestStatus === RequestStatusEnum.Pending}
+              setIsProgressBarVisible={setIsProgressBarVisible}
+            />
             <RunsTable
               columnsOrder={props.columnsOrder}
               hiddenColumns={props.hiddenColumns}

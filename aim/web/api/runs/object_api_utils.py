@@ -1,9 +1,11 @@
 import struct
+import time
 
 from typing import Iterable, Iterator, List, Tuple, Union, Optional
 from typing import TYPE_CHECKING
 
 from aim.web.api.runs.utils import IndexRange, get_run_props, get_run_params
+from aim.web.configs import AIM_PROGRESS_REPORT_INTERVAL
 from aim.sdk.uri_service import URIService, generate_resource_path
 from aim.sdk.sequence_collection import SequenceCollection
 from aim.sdk.sequence import Sequence
@@ -105,8 +107,7 @@ class CustomObjectApi:
     def get_total_record_range(self):
         return self._calculate_ranges()
 
-    async def search_result_streamer(self, skip_system: bool):
-
+    async def search_result_streamer(self, skip_system: bool, report_progress: bool):
         def _pack_run_data(run_: 'Run', traces_: list):
             ranges = {
                 'record_range_used': self.record_range,
@@ -125,11 +126,29 @@ class CustomObjectApi:
             }
             return collect_streamable_data(encode_tree(run_dict))
 
+        last_reported_progress_time = time.time()
+        run_info = None
+        progress_reports_sent = 0
         for run_info in self.trace_cache.values():
-            traces_list = []
-            for trace in run_info['traces']:
-                traces_list.append(self._get_trace_info(trace, True, True))
-            yield _pack_run_data(run_info['run'], traces_list)
+            if report_progress and time.time() - last_reported_progress_time > AIM_PROGRESS_REPORT_INTERVAL:
+                yield collect_streamable_data(encode_tree({f'progress_{progress_reports_sent}':
+                                                           run_info['progress']}))
+                progress_reports_sent += 1
+                last_reported_progress_time = time.time()
+            if run_info.get('traces') and run_info.get('run'):
+                traces_list = []
+                for trace in run_info['traces']:
+                    traces_list.append(self._get_trace_info(trace, True, True))
+                yield _pack_run_data(run_info['run'], traces_list)
+                if report_progress:
+                    yield collect_streamable_data(encode_tree({f'progress_{progress_reports_sent}':
+                                                               run_info['progress']}))
+                    progress_reports_sent += 1
+                    last_reported_progress_time = time.time()
+
+        if report_progress and run_info:
+            yield collect_streamable_data(encode_tree({f'progress_{progress_reports_sent}':
+                                                       run_info['progress']}))
 
     async def requested_traces_streamer(self) -> List[dict]:
         for run_info in self.trace_cache.values():
@@ -213,17 +232,20 @@ class CustomObjectApi:
 
     def _foreach_trace(self, callback: callable):
         if self.traces:
-            for run_trace_collection in self.traces.iter_runs():
+            for run_trace_collection, progress in self.traces.iter_runs():
+                if not run_trace_collection:
+                    continue
                 run = run_trace_collection.run
+                self.trace_cache[run.hash] = {'progress': progress}
                 run_traces = []
                 for trace in run_trace_collection.iter():
                     run_traces.append(trace)
                     callback(trace)
                 if run_traces:
-                    self.trace_cache[run.hash] = {
+                    self.trace_cache[run.hash].update({
                         'run': run,
                         'traces': run_traces
-                    }
+                    })
         elif self.requested_traces:
             for trace in self.requested_traces:
                 callback(trace)

@@ -1,19 +1,13 @@
 import React from 'react';
 
-import {
-  Accordion,
-  AccordionDetails,
-  AccordionSummary,
-  Checkbox,
-  TextField,
-} from '@material-ui/core';
+import { Checkbox, TextField } from '@material-ui/core';
 import {
   CheckBox as CheckBoxIcon,
   CheckBoxOutlineBlank,
 } from '@material-ui/icons';
 import Autocomplete from '@material-ui/lab/Autocomplete';
 
-import { Badge, Icon, Text } from 'components/kit';
+import { Badge, Text } from 'components/kit';
 import ErrorBoundary from 'components/ErrorBoundary/ErrorBoundary';
 
 import { IGroupingPopoverProps } from 'types/components/GroupingPopover/GroupingPopover';
@@ -109,8 +103,9 @@ function GroupingPopover({
               {inputLabel ?? `Select fields for grouping by ${groupName}`}
             </Text>
             <Autocomplete
-              size='small'
               multiple
+              openOnFocus
+              size='small'
               disableCloseOnSelect
               options={options}
               value={values}
@@ -164,8 +159,7 @@ function GroupingPopover({
               )}
             />
           </div>
-
-          {/* //ToDo reverse mode
+          {/* //TODO: reverse mode
           <div className='GroupingPopover__toggleMode__div'>
             <Text
               size={12}
@@ -193,6 +187,7 @@ function GroupingPopover({
           {advancedComponent && (
             <ErrorBoundary>
               <div className='GroupingPopover__advanced__component'>
+                {/* //ToDo reverse mode 
                 <Accordion
                   className='GroupingPopover__accordion__container'
                   expanded={true}
@@ -216,10 +211,10 @@ function GroupingPopover({
                       Advanced options
                     </Text>
                   </AccordionSummary>
-                  <AccordionDetails style={{ padding: 0 }}>
-                    {advancedComponent}
-                  </AccordionDetails>
-                </Accordion>
+                  <AccordionDetails style={{ padding: 0 }}> */}
+                {advancedComponent}
+                {/* </AccordionDetails>
+                </Accordion> */}
               </div>
             </ErrorBoundary>
           )}

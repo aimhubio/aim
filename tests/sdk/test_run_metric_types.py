@@ -4,7 +4,7 @@ import numpy as np
 from tests.base import TestBase
 
 from aim.sdk import Repo, Run
-
+from aim.sdk.types import QueryReportMode
 
 class TestRunMetricNumpyTypes(TestBase):
     @pytest.mark.gh_1206
@@ -18,7 +18,7 @@ class TestRunMetricNumpyTypes(TestBase):
         run.track(np.float32(1.0), name='numpy_float32')
 
         repo = Repo.default_repo()
-        metric_names = {metric.name for metric in repo.query_metrics()}
+        metric_names = {metric.name for metric in repo.query_metrics(report_mode=QueryReportMode.DISABLED)}
         expected_metric_names = {'single_item_array', 'single_item_3d_array', 'numpy_float64', 'numpy_float32'}
         self.assertSetEqual(expected_metric_names, metric_names)
 

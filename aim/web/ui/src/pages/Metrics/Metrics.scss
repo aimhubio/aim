@@ -3,52 +3,54 @@
 .Metrics__section {
   height: 100vh;
   overflow: hidden;
-
   .Metrics__loader {
     flex-direction: column;
     justify-content: space-between;
+  }
+  .Metrics__visualization {
+    display: flex;
+    position: relative;
+    flex-direction: column;
+    flex: 1 100%;
+    max-height: calc(100% - #{toRem(136px)});
+    .ProgressBar {
+      padding-bottom: toRem(136px);
+    }
   }
 }
 
 .Metrics__container {
   background-color: #ffffff;
   min-width: 50rem;
-  .Metrics__paper {
-    padding: 1em;
-    height: 100%;
-    user-select: none;
-  }
-
   .Metrics__fullHeight {
     height: 100%;
   }
-
-  .Metrics__section__div {
+  .Metrics__section__appBarContainer {
     display: flex;
     flex-direction: column;
   }
-
   .Metrics__chart__container {
-    min-height: 11.25rem;
     flex: 0.5 1 0;
-    &__fullHeight {
+    min-height: 11.25rem;
+    &.fullHeight {
       flex: 1 100% !important;
     }
-    &__hide {
+    &.hide {
       display: none;
     }
   }
-
   .Metrics__ResizePanel {
-    &__hide {
+    &.hide {
       display: none;
     }
   }
-
   .Metrics__table__container {
     flex: 0.5 1 0;
     min-height: 11rem;
-    &__hide {
+    &.fullHeight {
+      flex: 1 100% !important;
+    }
+    &.hide {
       display: none;
     }
   }
