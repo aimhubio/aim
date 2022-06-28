@@ -1,6 +1,10 @@
 # Changelog
 
-- Check if gradient is None when tracking gradient distributions
+## Unreleased
+
+### Fixes:
+
+- Check if gradient is None when tracking gradient distributions (kage08)
 
 ## 3.11.1 Jun 27, 2022
 
