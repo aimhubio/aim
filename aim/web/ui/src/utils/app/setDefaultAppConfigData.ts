@@ -6,10 +6,14 @@ import {
   IAppModelConfig,
 } from 'types/services/models/explorer/createAppModel';
 
-import { getItem } from 'utils/storage';
-import { decode } from 'utils/encoder/encoder';
+import { getItem, setItem } from 'utils/storage';
+import { AIM64_ENCODING_PREFIX, encode } from 'utils/encoder/encoder';
 import getStateFromUrl from 'utils/getStateFromUrl';
 import { getCompatibleSelectConfig } from 'utils/app/getCompatibleSelectConfig';
+import { getCompatibleChartConfig } from 'utils/app/getCompatibleChartConfig';
+import decodeWithBase58Checker from 'utils/decodeWithBase58Checker';
+
+import updateURL from './updateURL';
 
 export default function setDefaultAppConfigData<M extends State>({
   config,
@@ -23,11 +27,26 @@ export default function setDefaultAppConfigData<M extends State>({
   recoverTableState: boolean;
 }): void {
   const { grouping, selectForm, components, appName } = appInitialConfig;
+  const searchParam = new URLSearchParams(window.location.search);
 
   const liveUpdateConfigHash = getItem(`${appName}LUConfig`);
   const luConfig = liveUpdateConfigHash
-    ? JSON.parse(decode(liveUpdateConfigHash))
+    ? JSON.parse(
+        decodeWithBase58Checker({
+          value: liveUpdateConfigHash,
+          localStorageKey: `${appName}LUConfig`,
+        }),
+      )
     : config?.liveUpdate;
+
+  // Backward compatibility, update users storage data if code has change in delay
+  // @ts-ignore
+  if (luConfig.delay !== config?.liveUpdate.delay) {
+    // @ts-ignore
+    luConfig.delay = config?.liveUpdate.delay;
+    setItem(`${appName}LuConfig`, encode(luConfig));
+  }
+  ///
 
   const defaultConfig: IAppModelConfig = { liveUpdate: luConfig };
 
@@ -42,12 +61,20 @@ export default function setDefaultAppConfigData<M extends State>({
     defaultConfig.select = compatibleSelectConfig ?? {};
   }
   if (components.charts) {
-    defaultConfig.chart = getStateFromUrl('chart') ?? {};
+    const compatibleChartConfig = getCompatibleChartConfig(
+      getStateFromUrl('chart'),
+    );
+    defaultConfig.chart = compatibleChartConfig ?? {};
   }
   if (recoverTableState && components.table) {
     const tableConfigHash = getItem(`${appName}Table`);
     defaultConfig.table = tableConfigHash
-      ? JSON.parse(decode(tableConfigHash))
+      ? JSON.parse(
+          decodeWithBase58Checker({
+            value: tableConfigHash,
+            localStorageKey: `${appName}Table`,
+          }),
+        )
       : config?.table;
   }
   const configData: IAppModelConfig = _.mergeWith(
@@ -60,5 +87,15 @@ export default function setDefaultAppConfigData<M extends State>({
       }
     },
   );
+  if (
+    (searchParam.get('grouping') &&
+      !searchParam.get('grouping')?.startsWith(AIM64_ENCODING_PREFIX)) ||
+    (searchParam.get('chart') &&
+      !searchParam.get('chart')?.startsWith(AIM64_ENCODING_PREFIX)) ||
+    (searchParam.get('select') &&
+      !searchParam.get('select')?.startsWith(AIM64_ENCODING_PREFIX))
+  ) {
+    updateURL({ configData, appName });
+  }
   model.setState({ config: configData });
 }

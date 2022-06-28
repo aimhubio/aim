@@ -10,6 +10,7 @@ export interface IChartGridProps {
   chartType: IChartPanelProps['chartType'];
   chartProps: IChartPanelProps['chartProps'];
   chartRefs?: React.RefObject<any>[];
+  chartPanelOffsetHeight?: number;
   nameKey?: string;
   readOnly?: boolean;
   syncHoverState?: (args: ISyncHoverStateArgs) => void;

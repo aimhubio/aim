@@ -5,9 +5,11 @@ import { ANALYTICS_EVENT_KEYS } from 'config/analytics/analyticsKeysMap';
 
 import useModel from 'hooks/model/useModel';
 import usePanelResize from 'hooks/resize/usePanelResize';
+import useResizeObserver from 'hooks/window/useResizeObserver';
 
 import paramsAppModel from 'services/models/params/paramsAppModel';
 import * as analytics from 'services/analytics';
+import { AppNameEnum } from 'services/models/explorer';
 
 import { IParamsAppModelState } from 'types/services/models/params/paramsAppModel';
 import { ITableRef } from 'types/components/Table/Table';
@@ -32,7 +34,9 @@ function ParamsContainer(): React.FunctionComponentElement<React.ReactNode> {
     useModel<Partial<IParamsAppModelState | any>>(paramsAppModel);
   const route = useRouteMatch<any>();
   const history = useHistory();
-
+  const [chartPanelOffsetHeight, setChartPanelOffsetHeight] = React.useState(
+    chartElemRef?.current?.offsetWidth,
+  );
   const panelResizing = usePanelResize(
     wrapperElemRef,
     chartElemRef,
@@ -41,6 +45,12 @@ function ParamsContainer(): React.FunctionComponentElement<React.ReactNode> {
     paramsData?.config?.table,
     paramsAppModel.onTableResizeEnd,
   );
+
+  useResizeObserver(() => {
+    if (chartElemRef?.current?.offsetHeight !== chartPanelOffsetHeight) {
+      setChartPanelOffsetHeight(chartElemRef?.current?.offsetHeight);
+    }
+  }, chartElemRef);
 
   React.useEffect(() => {
     if (tableRef.current && chartPanelRef.current) {
@@ -87,9 +97,10 @@ function ParamsContainer(): React.FunctionComponentElement<React.ReactNode> {
     const unListenHistory = history.listen(() => {
       if (!!paramsData?.config) {
         if (
-          paramsData.config.grouping !== getStateFromUrl('grouping') ||
-          paramsData.config.chart !== getStateFromUrl('chart') ||
-          paramsData.config.select !== getStateFromUrl('select')
+          (paramsData.config.grouping !== getStateFromUrl('grouping') ||
+            paramsData.config.chart !== getStateFromUrl('chart') ||
+            paramsData.config.select !== getStateFromUrl('select')) &&
+          history.location.pathname === `/${AppNameEnum.PARAMS}`
         ) {
           paramsAppModel.setDefaultAppConfigData();
           paramsAppModel.updateModelData();
@@ -121,10 +132,13 @@ function ParamsContainer(): React.FunctionComponentElement<React.ReactNode> {
       tableColumns={paramsData?.tableColumns}
       focusedState={paramsData?.config?.chart?.focusedState!}
       requestStatus={paramsData?.requestStatus!}
+      requestProgress={paramsData?.requestProgress!}
       selectedRows={paramsData?.selectedRows!}
+      brushExtents={paramsData?.config?.chart?.brushExtents}
       isVisibleColorIndicator={
         paramsData?.config?.chart?.isVisibleColorIndicator!
       }
+      chartPanelOffsetHeight={chartPanelOffsetHeight}
       groupingData={paramsData?.config?.grouping!}
       selectedParamsData={paramsData?.config?.select!}
       sortFields={paramsData?.config?.table?.sortFields!}
@@ -171,6 +185,7 @@ function ParamsContainer(): React.FunctionComponentElement<React.ReactNode> {
       onSortReset={paramsAppModel.onSortReset}
       onSortFieldsChange={paramsAppModel.onSortChange}
       onShuffleChange={paramsAppModel.onShuffleChange}
+      onAxisBrushExtentChange={paramsAppModel.onAxisBrushExtentChange}
       liveUpdateConfig={paramsData?.config?.liveUpdate!}
       onLiveUpdateConfigChange={paramsAppModel.changeLiveUpdateConfig}
       onRowSelect={paramsAppModel.onRowSelect}

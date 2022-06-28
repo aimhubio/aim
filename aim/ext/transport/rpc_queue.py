@@ -1,5 +1,4 @@
 import time
-import grpc
 import queue
 import logging
 import threading
@@ -57,6 +56,9 @@ class RpcQueueWithRetry(object):
                 self._put_front(task_f, args)
 
     def _try_exec_task(self, task_f, *args):
+        # temporary workaround for M1 build
+        import grpc
+
         retry = 0
         while retry < self.retry_count:
             try:

@@ -17,8 +17,11 @@ import {
   IChartZoom,
   IFocusedState,
 } from 'types/services/models/metrics/metricsAppModel';
+import { IRun } from 'types/services/models/metrics/runModel';
 
 import { CurveEnum } from 'utils/d3';
+
+import { IChartPanelProps } from '../ChartPanel/ChartPanel';
 
 export interface ILine {
   key: string;
@@ -30,11 +33,12 @@ export interface ILine {
   dasharray?: string;
   selectors?: string[];
   groupKey?: string;
+  run?: IRun;
 }
 
 export interface ILineChartProps {
   index: number;
-  data: ILine[];
+  data: IChartPanelProps['data'];
   nameKey?: string;
   aggregatedData?: IAggregatedData[];
   alignmentConfig?: IAlignmentConfig;
@@ -42,7 +46,7 @@ export interface ILineChartProps {
   axesScaleType: IAxesScaleState;
   highlightMode: HighlightEnum;
   curveInterpolation: CurveEnum;
-  syncHoverState: (args: ISyncHoverStateArgs) => void;
+  syncHoverState?: (args: ISyncHoverStateArgs) => void;
   aggregationConfig?: IAggregationConfig;
   chartTitle?: IChartTitle;
   zoom?: IChartZoom;
@@ -57,18 +61,13 @@ export interface IUpdateFocusedChartArgs {
   force?: boolean;
 }
 
-export interface IBrushRef {
-  updateScales?: (xScale: IAxisScale, yScale: IAxisScale) => void;
-  xScale?: IAxisScale;
-  yScale?: IAxisScale;
-  handleZoomIn?: (xValues: [number, number], yValues: [number, number]) => void;
-}
-
 export interface IAttributesRef {
   focusedState?: IFocusedState;
   activePoint?: IActivePoint;
   nearestCircles?: INearestCircle[];
-  xStep?: number;
+  groupKey?: string;
+  currentXValue?: number | string;
+  scaledValues?: { x: number; y: number }[][];
   lineKey?: string;
   dataSelector?: string;
   xScale?: IAxisScale;

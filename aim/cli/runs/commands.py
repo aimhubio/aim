@@ -1,7 +1,7 @@
 import click
 import os
 
-from aim.cli.runs.utils import list_repo_runs, match_runs
+from aim.cli.runs.utils import list_repo_runs, match_runs, make_zip_archive, upload_repo_runs
 from aim.sdk.repo import Repo
 
 
@@ -24,6 +24,7 @@ def runs(ctx, repo):
 @runs.command(name='ls')
 @click.pass_context
 def list_runs(ctx):
+    """List Runs available in Repo."""
     repo_path = ctx.obj['repo']
     if not Repo.exists(repo_path):
         click.echo(f'\'{repo_path}\' is not a valid aim repo.')
@@ -39,6 +40,7 @@ def list_runs(ctx):
 @click.argument('hashes', nargs=-1, type=str)
 @click.pass_context
 def remove_runs(ctx, hashes):
+    """Remove Run data for given run hashes."""
     if len(hashes) == 0:
         click.echo('Please specify at least one Run to delete.')
         exit(1)
@@ -70,6 +72,7 @@ def remove_runs(ctx, hashes):
 @click.argument('hashes', nargs=-1, type=str)
 @click.pass_context
 def copy_runs(ctx, destination, hashes):
+    """Copy Run data for given run hashes to destination Repo."""
     if len(hashes) == 0:
         click.echo('Please specify at least one Run to copy.')
         exit(1)
@@ -97,6 +100,7 @@ def copy_runs(ctx, destination, hashes):
 @click.argument('hashes', nargs=-1, type=str)
 @click.pass_context
 def move_runs(ctx, destination, hashes):
+    """Move Run data for given run hashes to destination Repo."""
     if len(hashes) == 0:
         click.echo('Please specify at least one Run to move.')
         exit(1)
@@ -112,3 +116,23 @@ def move_runs(ctx, destination, hashes):
     else:
         click.echo('Something went wrong while moving runs. Remaining runs are:', err=True)
         click.secho('\t'.join(remaining_runs), fg='yellow')
+
+
+@runs.command(name='upload')
+@click.argument('bucket', nargs=1, type=str)
+@click.pass_context
+def upload_runs(ctx, bucket):
+    """Upload Repo backup to the given S3 bucket."""
+    repo_path = ctx.obj['repo']
+    if not Repo.exists(repo_path):
+        click.echo(f'\'{repo_path}\' is not a valid aim repo.')
+        exit(1)
+
+    zip_buffer = make_zip_archive(repo_path)
+    zip_buffer.seek(0)
+
+    success, uploaded_zip_file_name = upload_repo_runs(zip_buffer, bucket)
+    if success:
+        click.echo(f'Successfully uploaded runs in {uploaded_zip_file_name}.')
+    else:
+        click.echo(f'The storage backup failed because of the following error: {uploaded_zip_file_name}.')

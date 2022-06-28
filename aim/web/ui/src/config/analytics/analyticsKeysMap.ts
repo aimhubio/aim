@@ -204,7 +204,7 @@ export const ANALYTICS_EVENT_KEYS = {
         '[ImagesExplorer][Table] Change metric visibility',
     },
     groupings: {
-      group: {
+      row: {
         modeChange: '[ImagesExplorer][Grouping][Group] mode change to reverse', //to reverse
         select: '[ImagesExplorer][Grouping][Group] Select group',
       },
@@ -278,6 +278,9 @@ export const ANALYTICS_EVENT_KEYS = {
         tabView: '[RunDetail] [Settings] Tab view',
         deleteRun: '[RunDetail] [Settings] Delete run',
         archiveRun: '[RunDetail] [Settings] Archive run',
+      },
+      logs: {
+        tabView: '[RunDetail] [Logs] Tab view',
       },
     },
   },

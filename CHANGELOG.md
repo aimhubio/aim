@@ -1,17 +1,130 @@
 # Changelog
 
-## Unreleased
+## 3.11.1 Jun 27, 2022
+
+- Replace base58 encoder with base64 (KaroMourad, VkoHov)
+- Fix Notes tab loading issue (arsengit)
+- Fix the loading logic of the `monaco editor` across the Aim Ui (arsengit)
+- Fix `Table` export functionality in Params and Scatters explorers (arsengit)
+- Allow mixing numeric types on a single Sequence (alberttorosyan)
+
+## 3.11.0 Jun 21, 2022
 
 ### Enhancements:
 
+- Add `--uds` option for `aim up` command (mihran113)
+- Add progress reporting for search APIs and tqdm progress for SDK queries (mihran113)
+- Add all the attributes of runs in the grouping popovers (KaroMourad)
+- Display progress bar on Explorer pages when searching metadata (KaroMourad)
+- Improve the processing speed for tb to aim converter (osoblanco)
+- Adjust charts hover attributes position calculation and styles (KaroMourad)
+- Improve formatting of numbers by setting maximum precision (KaroMourad)
+- Add cloud storage backups to AWS S3 for aim repo runs (karan2801)
+- Add LightGBM integration example (gorarakelyan)
+- Add descriptive document titles for pages (KaroMourad)
+- Implement unit-tests for aim SDK utils (yeghiakoronian)
+- Display std.dev/err aggregated values in the table (VkoHov)
+- Add `active` state indicator property for `aim.Run` (mihran113)
+- Add `active` state indicators on the chart (VkoHov)
+- Add ability to edit run name and description of run (VkoHov)
+- Show the description in the sidebar of the run overview tab (VkoHov)
+- Add all the attributes of run in the tooltip (VkoHov)
+- Optimize the initial render time of Aim UI by using more lightweight font-family (arsengit)
+- Use monaco editor as the syntax highlighter across the Aim UI (arsengit)
+- Add loader to the top of the logs box in the run page (VkoHov)
+- Add the date and the duration of run in the header of the single run page (VkoHov)
+- Add the name, status and duration of run in the runs table of the tags page (VkoHov)
+- Fit long name values in manage columns popover (arsengit)
+- Add caching mechanism for sequence queries to optimize query performance (mihran113)
+- Use step random hash as a key for metric sequences (alberttorosyan)
+
+### Fixes:
+
+- Fix issue with tensorboard to aim conversion (osoblanco)
+- Fix reset zoom history on alignment type change (KaroMourad)
+- Fix issue with rendering incorrect data when x-axis aligned by `relative time/epoch` (KaroMourad)
+- Fix LineCart axis ticks overlapping issue on log scale (KaroMourad)
+- Change zooming default option to multiple (VkoHov)
+- Change grouped rows' min and max values names to `Group Min` and `Group Max` (VkoHov)
+- Preserve the search input value of the grouping dropdown (VkoHov)
+- Change the titles and placeholders in popovers (VkoHov)
+- Resolve typing latency issue in the query search input (arsengit)
+- Reorder and add non-hideable table columns (arsengit)
+- Change the font of the runs navigation popover (VkoHov)
+- Keep color persistence state after page reload (VkoHov)
+- Resolve content blinking issue after search in the run page (arsengit)
+- Fix scroll to bottom on live-update in logs tab (VkoHov)
+- Fix timezone issues for activity map (mihran113)
+- Fix `aim up` command output when `--port 0` is passed (mihran113)
+
+## 3.10.3 May 31, 2022
+
+- Adjust the content overflowing of the Delete and the Archive modals (VkoHov)
+- Resolve issue with redirect in run page (arsengit)
+
+## 3.10.2 May 26, 2022
+
+- Adjust SRP Logs row height calculation (VkoHov)
+- Fix issue with live update requests scheduler (rubenaprikyan)
+- Fix log capturing crash during run garbage collection (mihran113)
+- Fix Pytorch Lightning adapter `finalize` method (mihran113)
+- Fix params duplication in dropdowns (VkoHov)
+- Skip system params in Explorer pages (alberttorosyan)
+
+## 3.10.1 May 18, 2022
+
+- Resolve issue with rendering run params in the overview tab of SRP (arsengit)
+- Fix issue with search query state update (arsengit)
+
+## 3.10.0 May 17, 2022
+
+### Enhancements:
+
+- Add ability to adjust the density of the visible content in tables (roubkar)
+- Set `metric.name` as default option for grouping (roubkar)
+- Show user-selected params before group config in chart popover (roubkar)
 - Optimize stream decoding performance on UI (mahnerak)
 - Add support for animated image formats to Aim Image object (devfox-se)
 - Add `AimLogger` for Catboost (devfox-se)
 - Add `AimCallback` for LightGBM (devfox-se)
+- Keep the extents of `HighPlot` axes brush in the state and the URL (VkoHov)
+- Integrate `aim` with `cimport`-able `aimrocks` (mahnerak)
+- Add `__slots__` to some classes to improve performance (mahnerak)
+- Define base abstractions for `Iterator` and `DB` by borrowing from `aimrocks` (mahnerak)
+- Use `KeysIterator` and `ValuesIterator` wrappers instead of reimplementing (mahnerak)
+- Rename `PrefixView.container` to `PrefixView.parent` (mahnerak)
+- Reimplement `absolute_path` (mahnerak)
+- Cython bindings for `PrefixView`, `TreeView`, `Container`, `ArrayView` (mahnerak)
+- Add ability to track and visualize stdout/stderr (mihran113, VkoHov)
+- Fix `AimLogger` deprecation issues related to release of PyTorch Lightning v1.5 (arnauddhaene)
+- Enable better autocomplete experience with monaco editor (arsengit)
+- Pre-loading and caching necessary resources, add pre-loader animation to Aim UI (arsengit)
 
 ### Fixes:
 
+- Remove hard-coded installation of pre-requirements (mahnerak)
+- Remove duplicate code from `TreeView` and `Container` methods (mahnerak)
+- Fix issue with filtering metrics values in single run page (KaroMourad)
+
+## 3.9.4 May 12, 2022
+
+- Fix run remote tracking queue cleanup (mihran113)
+- Fix HF callback before training access (mihran113)
+- Fix compatibility with Jinja 3.1 (devfox-se)
+
+## 3.9.3 May 10, 2022
+
+- Fix affecting stroke types after changing color persistence (KaroMourad)
+
 ## 3.9.2 Apr 29, 2022
+
+- Move aim_ui package data to separate directory (devfox-se)
+
+## 3.9.1 Apr 29, 2022
+
+- Move aim_ui package data to separate directory (devfox-se)
+
+## 3.9.0 Apr 29, 2022
 
 ### Enhancements:
 
@@ -23,6 +136,7 @@
 - Add info massage for single value sliders (VkoHov)
 - Add `--log-level` argument for aim up/server commands (mihran113)
 - Add notes backend api interface (devfox-se)
+- Fix type hints in `Repo` class (uduse)
 
 ### Fixes:
 
@@ -37,7 +151,7 @@
 - Fix chart height updating when resize mode changed (VkoHov)
 - Fix HuggingFace callback context capturing (mihran113)
 - Fix Params/Scatters explorers' row hiding functionality (VkoHov)
-- Fix Profiler logs are saved outside repo directory (devfox-se) 
+- Fix Profiler logs are saved outside repo directory (devfox-se)
 
 ## 3.8.1 Apr 6, 2022
 

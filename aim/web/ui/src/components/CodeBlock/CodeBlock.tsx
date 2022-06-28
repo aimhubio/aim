@@ -1,11 +1,11 @@
 import React from 'react';
-// import AssignmentTurnedInOutlinedIcon from '@material-kit/icons/AssignmentTurnedInOutlined';
-import Highlight, { defaultProps } from 'prism-react-renderer';
 
-import theme from 'prism-react-renderer/themes/nightOwlLight';
+import { useMonaco } from '@monaco-editor/react';
 
 import CopyToClipBoard from 'components/CopyToClipBoard/CopyToClipBoard';
 import ErrorBoundary from 'components/ErrorBoundary/ErrorBoundary';
+
+import { getMonacoConfig } from 'config/monacoConfig/monacoConfig';
 
 import { ICodeBlockProps } from 'types/components/CodeBlock/CodeBlock';
 
@@ -16,32 +16,40 @@ function CodeBlock({
   className = '',
   language = 'python',
 }: ICodeBlockProps): React.FunctionComponentElement<React.ReactNode> {
-  const contentRef = React.createRef<HTMLPreElement>();
+  const monaco = useMonaco();
+  const preRef = React.useRef<HTMLPreElement>(null);
+
+  const monacoConfig: Record<string | number | symbol, any> =
+    React.useMemo(() => {
+      return getMonacoConfig();
+    }, []);
+
+  React.useEffect(() => {
+    monacoConfig.theme.config.colors = {
+      ...monacoConfig.theme.config.colors,
+      'editor.background': '#f2f3f4',
+    };
+    if (monaco && preRef.current) {
+      monaco.editor.colorizeElement(preRef.current, { theme: language });
+      monaco.editor.defineTheme(
+        monacoConfig.theme.name,
+        monacoConfig.theme.config,
+      );
+      monaco.editor.setTheme(monacoConfig.theme.name);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [monaco]);
+
   return (
     <ErrorBoundary>
-      <div className={`CodeBlock ${className}`}>
-        <Highlight
-          {...defaultProps}
-          theme={theme}
-          code={code.trim()}
-          language={language}
-        >
-          {({ className, style, tokens, getLineProps, getTokenProps }) => (
-            <pre className={className} style={style} ref={contentRef}>
-              {tokens.map((line, i) => (
-                <div key={i} {...getLineProps({ line, key: i })}>
-                  {line.map((token, key) => (
-                    <span key={key} {...getTokenProps({ token, key })} />
-                  ))}
-                </div>
-              ))}
-            </pre>
-          )}
-        </Highlight>
+      <div className={`CodeBlock ${className} `}>
+        <pre className='ScrollBar__hidden' data-lang={language} ref={preRef}>
+          {code}
+        </pre>
         <ErrorBoundary>
           <CopyToClipBoard
             className='CodeBlock__copy__button'
-            contentRef={contentRef}
+            contentRef={preRef}
           />
         </ErrorBoundary>
       </div>

@@ -6,7 +6,6 @@ from tests.utils import decode_encoded_tree_stream, generate_image_set
 
 from aim.storage.treeutils import decode_tree
 from aim.storage.context import Context
-from aim.storage.types import BLOB
 from aim.sdk.run import Run
 
 
@@ -36,7 +35,7 @@ class TestRunImagesSearchApi(RunImagesTestBase):
     def test_query_images_api_defaults(self):
         client = self.client
 
-        response = client.get('/api/runs/search/images/', params={'q': ''})
+        response = client.get('/api/runs/search/images/', params={'q': '', 'report_progress': False})
         self.assertEqual(200, response.status_code)
 
         decoded_response = decode_tree(decode_encoded_tree_stream(response.iter_content(chunk_size=512 * 1024)))
@@ -50,9 +49,9 @@ class TestRunImagesSearchApi(RunImagesTestBase):
 
         trace_data = run_data['traces'][0]
         self.assertEqual('random_images', trace_data['name'])
-        self.assertEqual(50, len(trace_data['iters']))
+        self.assertEqual(51, len(trace_data['iters']))
         self.assertEqual(4, trace_data['iters'][2])
-        self.assertEqual(50, len(trace_data['values']))
+        self.assertEqual(51, len(trace_data['values']))
 
         img_list = trace_data['values'][2]
         self.assertEqual(6, len(img_list))
@@ -68,7 +67,8 @@ class TestRunImagesSearchApi(RunImagesTestBase):
     def test_query_images_api_custom_densities_dense(self):
         client = self.client
 
-        response = client.get('/api/runs/search/images/', params={'record_density': 200, 'index_density': 10})
+        response = client.get('/api/runs/search/images/',
+                              params={'record_density': 200, 'index_density': 10, 'report_progress': False})
         self.assertEqual(200, response.status_code)
 
         decoded_response = decode_tree(decode_encoded_tree_stream(response.iter_content(chunk_size=512 * 1024),
@@ -84,15 +84,17 @@ class TestRunImagesSearchApi(RunImagesTestBase):
     def test_query_images_api_custom_densities_sparse(self):
         client = self.client
 
-        response = client.get('/api/runs/search/images/', params={'record_density': 10, 'index_density': 4})
+        response = client.get('/api/runs/search/images/', params={'record_density': 10,
+                                                                  'index_density': 4,
+                                                                  'report_progress': False})
         self.assertEqual(200, response.status_code)
 
         decoded_response = decode_tree(decode_encoded_tree_stream(response.iter_content(chunk_size=512 * 1024)))
         self.assertEqual(1, len(decoded_response))
         run_data = decoded_response[self.run_hash]
         trace_data = run_data['traces'][0]
-        self.assertEqual(10, len(trace_data['values']))
-        self.assertEqual(10, len(trace_data['iters']))
+        self.assertEqual(11, len(trace_data['values']))
+        self.assertEqual(11, len(trace_data['iters']))
         self.assertEqual(4, len(trace_data['values'][0]))
         self.assertEqual(4, len(trace_data['values'][9]))
         image_indices = [img['index'] for img in trace_data['values'][0]]
@@ -108,7 +110,9 @@ class TestRunImagesSearchApi(RunImagesTestBase):
     def test_query_images_api_custom_record_ranges(self, input_range, total_range, used_range, count):
         client = self.client
 
-        response = client.get('/api/runs/search/images/', params={'record_range': input_range, 'record_density': 100})
+        response = client.get('/api/runs/search/images/', params={'record_range': input_range,
+                                                                  'record_density': 100,
+                                                                  'report_progress': False})
         self.assertEqual(200, response.status_code)
 
         decoded_response = decode_tree(decode_encoded_tree_stream(response.iter_content(chunk_size=512 * 1024)))
@@ -128,7 +132,8 @@ class TestRunImagesSearchApi(RunImagesTestBase):
         response = client.get('/api/runs/search/images/', params={
             'record_range': '10:20',
             'index_range': '3:6',
-            'calc_ranges': True
+            'calc_ranges': True,
+            'report_progress': False
         })
         self.assertEqual(200, response.status_code)
 
@@ -161,7 +166,7 @@ class RunImagesURIBulkLoadApi(RunImagesTestBase):
         empty_context = Context({})
         for step in range(10):
             for idx in range(5):
-                img_view = run.series_run_tree.subtree(
+                img_view = run.series_run_trees[1].subtree(
                     (empty_context.idx, 'random_images', 'val', step, idx)
                 )
                 cls.image_blobs[img_view['caption']] = img_view['data'].load()
@@ -179,6 +184,7 @@ class RunImagesURIBulkLoadApi(RunImagesTestBase):
         response = client.get('/api/runs/search/images/', params={
             'record_range': '0:10',
             'index_range': '0:5',
+            'report_progress': False,
         })
         decoded_response = decode_tree(decode_encoded_tree_stream(response.iter_content(chunk_size=512 * 1024)))
         run_data = decoded_response[self.run_hash]
@@ -220,8 +226,9 @@ class TestRunImagesBatchApi(RunImagesTestBase):
         trace_data = decode_tree(decode_encoded_tree_stream(response.iter_content(chunk_size=512 * 1024)))
         self.assertEqual('random_images', trace_data['name'])
         self.assertDictEqual({}, trace_data['context'])
-        self.assertEqual(50, len(trace_data['values']))
-        self.assertListEqual(list(range(0, 100, 2)), trace_data['iters'])
+        self.assertEqual(51, len(trace_data['values']))
+        expected_iters = list(range(0, 100, 2)) + [99]  # include last step
+        self.assertListEqual(expected_iters, trace_data['iters'])
 
         img_list = trace_data['values'][2]
         self.assertEqual(6, len(img_list))
@@ -251,7 +258,8 @@ class TestImageListsAndSingleImagesSearchApi(ApiTestBase):
     def test_search_simgle_image_only_default_index_range(self):
         client = self.client
 
-        response = client.get('/api/runs/search/images/', params={'q': 'images.name == "single_images"'})
+        response = client.get('/api/runs/search/images/',
+                              params={'q': 'images.name == "single_images"', 'report_progress': False})
         self.assertEqual(200, response.status_code)
 
         decoded_response = decode_tree(decode_encoded_tree_stream(response.iter_content(chunk_size=512 * 1024)))
@@ -272,7 +280,7 @@ class TestImageListsAndSingleImagesSearchApi(ApiTestBase):
     def test_mixed_search_default_index_range(self):
         client = self.client
 
-        response = client.get('/api/runs/search/images/', params={'q': ''})
+        response = client.get('/api/runs/search/images/', params={'q': '', 'report_progress': False})
         self.assertEqual(200, response.status_code)
 
         decoded_response = decode_tree(decode_encoded_tree_stream(response.iter_content(chunk_size=512 * 1024)))
@@ -299,7 +307,8 @@ class TestImageListsAndSingleImagesSearchApi(ApiTestBase):
     def test_mixed_search_custom_index_range(self):
         client = self.client
 
-        response = client.get('/api/runs/search/images/', params={'q': '', 'index_range': '3:5'})
+        response = client.get('/api/runs/search/images/',
+                              params={'q': '', 'index_range': '3:5', 'report_progress': False})
         self.assertEqual(200, response.status_code)
 
         decoded_response = decode_tree(decode_encoded_tree_stream(response.iter_content(chunk_size=512 * 1024)))
@@ -371,15 +380,16 @@ class TestRunInfoApi(ApiTestBase):
         self.assertEqual('single_images', response_data['traces']['images'][0]['name'])
 
     @parameterized.expand([
-        ({'sequence': ('metric', 'images', 'audios', 'distributions', 'figures', 'texts')},),  # explicit specification
-        (None,)                                                                                # default
+        ({'sequence': ('metric', 'images', 'audios',
+                       'distributions', 'figures', 'texts', 'logs')},),  # explicit specification
+        (None,)                                                          # default
     ])
     def test_run_info_get_all_sequences_api(self, qparams):
         client = self.client
         response = client.get(f'api/runs/{self.run1_hash}/info', params=qparams)
         self.assertEqual(200, response.status_code)
         response_data = response.json()
-        self.assertEqual(6, len(response_data['traces']))
+        self.assertEqual(7, len(response_data['traces']))
         self.assertIn('images', response_data['traces'])
         self.assertIn('audios', response_data['traces'])
         self.assertIn('metric', response_data['traces'])

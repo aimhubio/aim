@@ -12,15 +12,19 @@ from aim.web.api.runs.object_views import (
 from aim.web.api.utils import APIRouter  # wrapper for fastapi.APIRouter
 from typing import Optional, Tuple
 
+from aim.sdk.types import QueryReportMode
 from aim.web.api.runs.utils import (
     checked_query,
     collect_requested_metric_traces,
     custom_aligned_metrics_streamer,
     get_project_repo,
     get_run_or_404,
+    get_run_params,
     get_run_props,
     metric_search_result_streamer,
     run_search_result_streamer,
+    run_logs_streamer
+
 )
 from aim.web.api.runs.pydantic_models import (
     MetricAlignApiIn,
@@ -50,13 +54,20 @@ NOTE_NOT_FOUND = 'Note with id {id} is not found in this run.'
 
 @runs_router.get('/search/run/', response_model=RunSearchApiOut,
                  responses={400: {'model': QuerySyntaxErrorOut}})
-def run_search_api(q: Optional[str] = '', limit: Optional[int] = 0, offset: Optional[str] = None):
+def run_search_api(q: Optional[str] = '',
+                   limit: Optional[int] = 0,
+                   offset: Optional[str] = None,
+                   skip_system: Optional[bool] = True,
+                   report_progress: Optional[bool] = True):
     repo = get_project_repo()
     query = checked_query(q)
 
-    runs = repo.query_runs(query=query, paginated=bool(limit), offset=offset)
+    runs = repo.query_runs(query=query,
+                           paginated=bool(limit),
+                           offset=offset,
+                           report_mode=QueryReportMode.PROGRESS_TUPLE)
 
-    streamer = run_search_result_streamer(runs, limit)
+    streamer = run_search_result_streamer(runs, limit, skip_system, report_progress)
     return StreamingResponse(streamer)
 
 
@@ -74,7 +85,9 @@ def run_metric_custom_align_api(request_data: MetricAlignApiIn):
                  responses={400: {'model': QuerySyntaxErrorOut}})
 async def run_metric_search_api(q: Optional[str] = '',
                                 p: Optional[int] = 50,
-                                x_axis: Optional[str] = None):
+                                x_axis: Optional[str] = None,
+                                skip_system: Optional[bool] = True,
+                                report_progress: Optional[bool] = True):
     steps_num = p
 
     if x_axis:
@@ -82,14 +95,16 @@ async def run_metric_search_api(q: Optional[str] = '',
 
     repo = get_project_repo()
     query = checked_query(q)
-    traces = repo.query_metrics(query=query)
+    traces = repo.query_metrics(query=query, report_mode=QueryReportMode.PROGRESS_TUPLE)
 
-    streamer = metric_search_result_streamer(traces, steps_num, x_axis)
+    streamer = metric_search_result_streamer(traces, skip_system, steps_num, x_axis, report_progress)
     return StreamingResponse(streamer)
 
 
 @runs_router.get('/{run_id}/info/', response_model=RunInfoOut)
-async def run_params_api(run_id: str, sequence: Optional[Tuple[str, ...]] = Query(())):
+async def run_params_api(run_id: str,
+                         skip_system: Optional[bool] = False,
+                         sequence: Optional[Tuple[str, ...]] = Query(())):
     repo = get_project_repo()
     run = get_run_or_404(run_id, repo=repo)
 
@@ -102,7 +117,7 @@ async def run_params_api(run_id: str, sequence: Optional[Tuple[str, ...]] = Quer
         sequence = repo.available_sequence_types()
 
     response = {
-        'params': run.get(..., resolve_objects=True),
+        'params': get_run_params(run, skip_system=skip_system),
         'traces': run.collect_sequence_info(sequence, skip_last_value=True),
         'props': get_run_props(run)
     }
@@ -128,11 +143,11 @@ async def update_run_properties_api(run_id: str, run_in: StructuredRunUpdateIn, 
         if not run:
             raise HTTPException(status_code=404)
 
-        if run_in.name:
+        if run_in.name is not None:
             run.name = run_in.name.strip()
-        if run_in.description:
+        if run_in.description is not None:
             run.description = run_in.description.strip()
-        if run_in.experiment:
+        if run_in.experiment is not None:
             run.experiment = run_in.experiment.strip()
         run.archived = run_in.archived
 
@@ -311,6 +326,14 @@ def delete_note_api(run_id, _id: int, factory=Depends(object_factory)):
     return {
         'status': 'OK'
     }
+
+
+@runs_router.get('/{run_id}/logs/')
+async def get_logs_api(run_id: str, record_range: Optional[str] = ''):
+    repo = get_project_repo()
+    run = get_run_or_404(run_id, repo=repo)
+
+    return StreamingResponse(run_logs_streamer(run, record_range))
 
 
 def add_api_routes():

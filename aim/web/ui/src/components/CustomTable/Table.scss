@@ -5,8 +5,9 @@ $box-shadow: 0 3px 9px rgba(0, 0, 0, 0.1);
 $border-radius: 0.2rem;
 
 :root {
-  --cell-height: 32px;
-  --group-margin: 6px;
+  --cell-height: 28px;
+  --group-margin: 4px;
+  --cell-font-size: 0.875rem;
 }
 
 .Table {
@@ -18,24 +19,29 @@ $border-radius: 0.2rem;
   box-sizing: border-box;
   content-visibility: auto;
   contain: content;
-  font-family: 'Iosevka', monospace;
+  font-weight: 500;
   &__container {
     height: 100%;
     width: 100%;
     box-sizing: border-box;
     background: #fff;
     &--small {
-      --cell-height: 28px;
-      --group-margin: 4px;
+      --cell-height: 22px;
+      --group-margin: 2px;
+      --cell-font-size: 0.875rem;
+      @include monospaceFontFamily(14);
     }
     &--medium {
-      --cell-height: 32px;
-      --group-margin: 6px;
+      --cell-height: 28px;
+      --group-margin: 4px;
+      --cell-font-size: 1rem;
+      @include monospaceFontFamily();
     }
 
     &--large {
-      --cell-height: 36px;
-      --group-margin: 8px;
+      --cell-height: 32px;
+      --group-margin: 6px;
+      --cell-font-size: 0.875rem;
     }
   }
   &__groupsColumn__cell {
@@ -69,6 +75,19 @@ $border-radius: 0.2rem;
   box-sizing: border-box;
   z-index: 0;
   contain: content;
+}
+.Table__status_indicator {
+  width: 8px;
+  height: 8px;
+  padding: 0;
+  background-color: unset !important;
+  margin-right: 3px;
+  &::before {
+    width: 4px;
+    height: 4px;
+    top: 2px;
+    left: 0;
+  }
 }
 
 .Table__action__icon {
@@ -153,6 +172,7 @@ $border-radius: 0.2rem;
   &.Table__column--actions {
     .Table__cell {
       padding: 0;
+      justify-content: center;
     }
   }
   &.Table__column--selection {
@@ -168,8 +188,8 @@ $border-radius: 0.2rem;
     }
   }
   &__selectCheckbox {
-    width: toRem(32px);
-    height: toRem(32px);
+    width: 32px;
+    height: var(--cell-height);
     border-radius: unset;
     padding: 0.5rem;
   }
@@ -253,7 +273,7 @@ $border-radius: 0.2rem;
 .Table__cell {
   display: flex;
   align-items: center;
-  font-size: $text-md;
+  font-size: var(--cell-font-size);
   padding: 0 $space-unit;
   border-bottom: 1px solid $border-color;
   border-right: 1px solid $border-color;
@@ -264,6 +284,7 @@ $border-radius: 0.2rem;
   text-overflow: ellipsis;
   height: var(--cell-height);
   position: relative;
+  color: $pico-100;
   &.isNumeric {
     justify-content: flex-end;
   }
@@ -304,7 +325,7 @@ $border-radius: 0.2rem;
 
   &.Table__group__config__column__cell {
     border-right: none;
-    padding-left: toRem(39px);
+    padding-left: 2.1875rem;
 
     .Table__cell__rowMeta {
       display: flex;
@@ -382,7 +403,7 @@ $border-radius: 0.2rem;
     margin-right: 0.25rem;
     &.Table__column__selectCheckbox {
       flex: unset;
-      margin-left: toRem(30px);
+      margin-left: calc(20px + var(--group-margin));
       margin-right: toRem(14px);
     }
   }
@@ -420,6 +441,13 @@ $border-radius: 0.2rem;
 
 .Table__header__action__container {
   display: flex;
+}
+
+.Table__GroupedColumnHeader {
+  color: $pico-50;
+  span {
+    font-weight: 700;
+  }
 }
 
 .Table__header__action {

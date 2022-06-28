@@ -1,6 +1,7 @@
 import {
   IAlignmentConfig,
   IFocusedState,
+  IGroupingSelectOption,
   ITooltipContent,
 } from 'types/services/models/metrics/metricsAppModel';
 
@@ -11,4 +12,5 @@ export interface IPopoverContentProps {
   focusedState: IFocusedState;
   chartType: ChartTypeEnum;
   alignmentConfig?: IAlignmentConfig;
+  selectOptions: IGroupingSelectOption[];
 }

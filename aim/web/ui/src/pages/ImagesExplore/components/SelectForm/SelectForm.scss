@@ -113,7 +113,9 @@
   justify-content: center;
   cursor: pointer;
   position: relative;
-
+  &.disabled {
+    opacity: 0.5;
+  }
   &:after {
     content: '';
     position: absolute;

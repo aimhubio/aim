@@ -20,8 +20,12 @@ import {
 } from 'utils/aggregateGroupData';
 import { AlignmentOptionsEnum } from 'utils/d3';
 
+import { IRequestProgress } from 'utils/app/setRequestProgress';
+
+import { ISelectOption } from '../explorer/createAppModel';
+
 import { IMetric } from './metricModel';
-import { IMetricTrace, IRun } from './runModel';
+import { IMetricTrace, IRun, ISequence } from './runModel';
 
 export interface IMetricAppModelState {
   refs: {
@@ -29,8 +33,9 @@ export interface IMetricAppModelState {
     chartPanelRef?: { current: IChartPanelRef | null };
   };
   requestStatus: RequestStatusEnum;
+  requestProgress: IRequestProgress;
   queryIsEmpty: boolean;
-  rawData: IRun<IMetricTrace>[];
+  rawData: ISequence<IMetricTrace>[];
   config: IAppModelConfig;
   data: IMetricsCollection<IMetric>[];
   lineChartData: ILine[][];
@@ -73,18 +78,17 @@ export interface ITooltipContent {
   groupConfig?: {
     [key: string]: any;
   };
-  params?: {
-    [key: string]: any;
-  };
   name?: string;
   context?: { [key: string]: unknown };
   runHash?: string;
-  mediaContent?: {
-    caption?: string;
-    step?: number | string;
-    index?: number;
-    images_name?: string;
+  caption?: string;
+  step?: number | string;
+  index?: number;
+  images_name?: string;
+  selectedFields?: {
+    [key: string]: string;
   };
+  run?: IRun;
 }
 
 export interface IMetricsCollection<T> {
@@ -108,6 +112,14 @@ export interface IAggregationData {
       xValues: number[];
       yValues: number[];
     } | null;
+    stdDevValue?: {
+      xValues: number[];
+      yValues: number[];
+    };
+    stdErrValue?: {
+      xValues: number[];
+      yValues: number[];
+    };
   };
   line: {
     xValues: number[];
@@ -128,7 +140,7 @@ export interface IChartZoom {
 export interface IPanelTooltip {
   content: ITooltipContent;
   display: boolean;
-  selectedParams: string[];
+  selectedFields: string[];
 }
 
 export interface IAlignmentConfig {
@@ -191,7 +203,7 @@ export interface IGetGroupingPersistIndex {
   groupName: 'color' | 'stroke';
 }
 
-export type GroupNameType = 'color' | 'stroke' | 'chart' | 'group';
+export type GroupNameType = 'color' | 'stroke' | 'chart' | 'row';
 export interface IGroupingSelectOption {
   label: string;
   group: string;

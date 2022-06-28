@@ -3,9 +3,9 @@
 .RunOverviewTab {
   display: flex;
   height: 100%;
-  display: flex;
   justify-content: center;
   overflow-y: auto;
+  padding: 0 1rem;
   &__content {
     flex: 1 100%;
     max-width: calc(

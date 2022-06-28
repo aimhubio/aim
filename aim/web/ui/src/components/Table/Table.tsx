@@ -347,6 +347,14 @@ const Table = React.forwardRef(function Table(
                     groupRow.data.aggregation.line;
                   groupHeaderRowCell.children[0].children[0].children[2].textContent =
                     groupRow.data.aggregation.area.max;
+                  if (!_.isNil(groupRow.data.aggregation.area.stdDevValue)) {
+                    groupHeaderRowCell.children[0].children[0].children[3].textContent =
+                      groupRow.data.aggregation.area.stdDevValue;
+                  }
+                  if (!_.isNil(groupRow.data.aggregation.area.stdErrValue)) {
+                    groupHeaderRowCell.children[0].children[0].children[3].textContent =
+                      groupRow.data.aggregation.area.stdErrValue;
+                  }
                 } else {
                   groupHeaderRowCell.textContent = groupRow.data[colKey];
                 }
@@ -405,7 +413,9 @@ const Table = React.forwardRef(function Table(
       offsetHeight: tableContainerRef.current.offsetHeight,
       scrollHeight: tableContainerRef.current.scrollHeight,
       itemHeight: rowHeight,
-      groupMargin: ROW_CELL_SIZE_CONFIG[rowHeight].groupMargin,
+      groupMargin:
+        ROW_CELL_SIZE_CONFIG[rowHeight]?.groupMargin ??
+        ROW_CELL_SIZE_CONFIG[RowHeightSize.md].groupMargin,
     });
 
     startIndex.current = windowEdges.startIndex;
@@ -515,7 +525,9 @@ const Table = React.forwardRef(function Table(
         offsetHeight: tableContainerRef.current.offsetHeight,
         scrollHeight: tableContainerRef.current.scrollHeight,
         itemHeight: rowHeight,
-        groupMargin: ROW_CELL_SIZE_CONFIG[rowHeight].groupMargin,
+        groupMargin:
+          ROW_CELL_SIZE_CONFIG[rowHeight]?.groupMargin ??
+          ROW_CELL_SIZE_CONFIG[RowHeightSize.md].groupMargin,
       });
 
       startIndex.current = windowEdges.startIndex;
@@ -529,7 +541,9 @@ const Table = React.forwardRef(function Table(
           offsetHeight: target.offsetHeight,
           scrollHeight: target.scrollHeight,
           itemHeight: rowHeight,
-          groupMargin: ROW_CELL_SIZE_CONFIG[rowHeight].groupMargin,
+          groupMargin:
+            ROW_CELL_SIZE_CONFIG[rowHeight]?.groupMargin ??
+            ROW_CELL_SIZE_CONFIG[RowHeightSize.md].groupMargin,
         });
 
         startIndex.current = windowEdges.startIndex;
@@ -677,11 +691,11 @@ const Table = React.forwardRef(function Table(
                   {onSort && (
                     <ControlPopover
                       anchorOrigin={{
-                        vertical: 'bottom',
+                        vertical: 'top',
                         horizontal: 'left',
                       }}
                       transformOrigin={{
-                        vertical: 'top',
+                        vertical: 'bottom',
                         horizontal: 'left',
                       }}
                       title='Sort table by:'
@@ -689,6 +703,7 @@ const Table = React.forwardRef(function Table(
                         <Button
                           type='text'
                           color='secondary'
+                          size='small'
                           onClick={onAnchorClick}
                           className={`Table__header__item ${
                             opened || sortPopoverChanged ? 'opened' : ''

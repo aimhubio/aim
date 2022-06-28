@@ -28,16 +28,14 @@ export default function onAlignmentTypeChange<M extends State>({
     if (type !== AlignmentOptionsEnum.CUSTOM_METRIC) {
       alignmentConfig.metric = '';
     }
-    configData.chart = {
-      ...configData.chart,
-      alignmentConfig,
-    };
+    const zoom = { ...configData.chart.zoom, history: [] };
+    configData.chart = { ...configData.chart, alignmentConfig, zoom };
     updateModelData(configData, true);
   }
   analytics.trackEvent(
     `${
       // @ts-ignore
       ANALYTICS_EVENT_KEYS[appName].chart.controls.changeXAxisProperties
-    }, Align X axis by "${AlignmentOptionsEnum[type].toLowerCase()}"`,
+    }, Align X axis by "${type.toLowerCase()}"`,
   );
 }

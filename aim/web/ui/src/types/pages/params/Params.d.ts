@@ -27,6 +27,7 @@ import {
 } from 'types/services/models/explorer/createAppModel';
 
 import { CurveEnum } from 'utils/d3';
+import { IRequestProgress } from 'utils/app/setRequestProgress';
 
 export interface IParamsProps extends Partial<RouteChildrenProps> {
   chartElemRef: React.RefObject<HTMLDivElement>;
@@ -35,9 +36,11 @@ export interface IParamsProps extends Partial<RouteChildrenProps> {
   tableElemRef: React.RefObject<HTMLDivElement>;
   wrapperElemRef: React.RefObject<HTMLDivElement>;
   resizeElemRef: React.RefObject<HTMLDivElement>;
+  chartPanelOffsetHeight?: number;
   curveInterpolation: CurveEnum;
   panelResizing: boolean;
   requestStatus: RequestStatusEnum;
+  requestProgress: IRequestProgress;
   highPlotData: any;
   groupingData: IGroupingConfig;
   groupingSelectOptions: IGroupingSelectOption[];
@@ -55,6 +58,11 @@ export interface IParamsProps extends Partial<RouteChildrenProps> {
   onColumnsOrderChange: any;
   tableData: any;
   selectedRows: { [key: string]: any };
+  brushExtents: {
+    [key: string]: {
+      [key: string]: [number, number] | [string, string];
+    };
+  };
   onTableRowHover?: (rowKey?: string) => void;
   onTableRowClick?: (rowKey?: string) => void;
   tableColumns: any;
@@ -91,6 +99,11 @@ export interface IParamsProps extends Partial<RouteChildrenProps> {
   onSortReset: () => void;
   updateColumnsWidths: (key: string, width: number, isReset: boolean) => void;
   onShuffleChange: (name: 'stroke' | 'color') => void;
+  onAxisBrushExtentChange: (
+    key: string,
+    extent: [number, number] | [string, string] | null,
+    chartIndex: number,
+  ) => void;
   columnsWidths: { [key: string]: number };
   liveUpdateConfig: { delay: number; enabled: boolean };
   onLiveUpdateConfigChange: (config: {

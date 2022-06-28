@@ -14,6 +14,7 @@ import {
   ROW_CELL_SIZE_CONFIG,
   COLORED_SELECTION_COLUMN_WIDTH,
   SELECTION_COLUMN_WIDTH,
+  RowHeightSize,
 } from 'config/table/tableConfigs';
 
 import Column from './TableColumn';
@@ -22,7 +23,6 @@ import './Table.scss';
 
 function Table(props) {
   const columns = props.columns;
-
   let leftCols = columns
     .filter((col) => col.pin === 'left')
     .map((col) => col.key);
@@ -34,7 +34,6 @@ function Table(props) {
   let rightCols = columns
     .filter((col) => col.pin === 'right')
     .map((col) => col.key);
-
   let [expanded, setExpanded] = useState({});
 
   let prevExpanded = useRef(props.expanded ?? {});
@@ -216,7 +215,8 @@ function Table(props) {
       <div
         className={classNames('Table__container', {
           [`Table__container--${
-            ROW_CELL_SIZE_CONFIG[props.rowHeightMode].name
+            ROW_CELL_SIZE_CONFIG[props.rowHeightMode]?.name ??
+            ROW_CELL_SIZE_CONFIG[RowHeightSize.md].name
           }`]: true,
         })}
       >
@@ -282,6 +282,7 @@ function Table(props) {
                   onRowClick={props.onRowClick}
                   selectedRows={props.selectedRows}
                   firstColumn={true}
+                  rowHeightMode={props.rowHeightMode}
                   width={
                     color
                       ? COLORED_SELECTION_COLUMN_WIDTH
@@ -339,6 +340,7 @@ function Table(props) {
                     multiSelect={props.multiSelect}
                     paneFirstColumn={index === 0}
                     paneLastColumn={index === leftPane.length - 1}
+                    rowHeightMode={props.rowHeightMode}
                     moveColumn={(dir) =>
                       moveColumn(col.key, 'left', index, dir)
                     }
@@ -404,6 +406,7 @@ function Table(props) {
                     ) === -1
                   }
                   sortByColumn={(order) => props.onSort(col.sortableKey, order)}
+                  rowHeightMode={props.rowHeightMode}
                   onRowHover={props.onRowHover}
                   onRowClick={props.onRowClick}
                   columnOptions={col.columnOptions}
@@ -441,6 +444,7 @@ function Table(props) {
                     columnsColorScales={props.columnsColorScales}
                     updateColumnWidth={props.updateColumnsWidths}
                     headerMeta={props.headerMeta}
+                    rowHeightMode={props.rowHeightMode}
                     isAlwaysVisible={props.alwaysVisibleColumns?.includes(
                       col.key,
                     )}

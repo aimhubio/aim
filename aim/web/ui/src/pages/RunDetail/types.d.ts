@@ -15,18 +15,15 @@ export interface IRunDetailMetricsAndSystemTabProps {
   isSystem?: boolean;
   isRunBatchLoading: boolean;
 }
-export interface IRunDetailSettingsTabProps {
-  runHash: string;
-  isArchived: boolean;
-}
 
 export interface IRunBatch {
   key: string;
   context: { [key: string]: string };
-  iters: number[];
   name: string;
+  iters: number[];
   values: number[];
 }
+
 export interface IRunInfo {
   archived: boolean;
   creation_time: number;
@@ -36,6 +33,7 @@ export interface IRunInfo {
     name: string;
   };
   name: string;
+  description: string;
   tags: any[];
   notes: number;
 }
@@ -81,6 +79,11 @@ export interface ITraceVisualizerProps {
   isLoading?: boolean;
   activeTraceContext?: string;
   data: any;
+}
+
+export interface IRunMetricCardProps {
+  batch: IRunBatch;
+  index: number;
 }
 
 export interface IImagesVisualizerProps extends ITraceVisualizerProps {}

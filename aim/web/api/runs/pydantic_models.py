@@ -64,6 +64,8 @@ class PropsView(BaseModel):
     tags: Optional[List[Tag]] = []
     creation_time: float
     end_time: Optional[float]
+    archived: bool
+    active: bool
 
 
 class MetricSearchRunView(BaseModel):
@@ -112,10 +114,10 @@ RunTracesBatchApiIn = List[TraceBase]
 
 # structured run models
 class StructuredRunUpdateIn(BaseModel):
-    name: Optional[str] = ''
-    description: Optional[str] = ''
+    name: Optional[str] = None
+    description: Optional[str] = None
     archived: Optional[bool] = None
-    experiment: Optional[str] = ''
+    experiment: Optional[str] = None
 
 
 class StructuredRunUpdateOut(BaseModel):

@@ -11,17 +11,23 @@ export function getFilteredGroupingOptions<M extends State>({
   const modelState = model.getState();
   const grouping = modelState?.config?.grouping;
   if (grouping) {
-    const { reverseMode, isApplied } = grouping;
+    const {
+      //  reverseMode,
+      isApplied,
+    } = grouping;
     const groupingSelectOptions = model.getState()?.groupingSelectOptions;
     if (groupingSelectOptions) {
-      const filteredOptions = [...groupingSelectOptions]
-        .filter((opt) => grouping[groupName].indexOf(opt.value) === -1)
-        .map((item) => item.value);
-      return isApplied[groupName]
-        ? reverseMode[groupName]
-          ? filteredOptions
-          : grouping[groupName]
-        : [];
+      //ToDo reverse mode
+      // const filteredOptions = [...groupingSelectOptions]
+      //   .filter((opt) => grouping[groupName].indexOf(opt.value) === -1)
+      //   .map((item) => item.value);
+      //ToDo reverse mode
+      // return isApplied[groupName]
+      //   ? reverseMode[groupName]
+      //     ? filteredOptions
+      //     : grouping[groupName]
+      //   : [];
+      return isApplied[groupName] ? grouping[groupName] : [];
     }
     return [];
   }

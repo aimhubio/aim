@@ -11,9 +11,9 @@ export default function exceptionHandler<M extends State>({
   detail: any;
   model: IModel<M>;
 }) {
-  let message = '';
-  if (detail.name === 'SyntaxError') {
-    message = `Query syntax error at line (${detail.line}, ${detail.offset})`;
+  let message: string = '';
+  if (detail.message === 'SyntaxError') {
+    message = `Query syntax error at line (${detail.detail.Line}, ${detail.detail.Offset})`;
   } else {
     message = detail.message || 'Something went wrong';
   }

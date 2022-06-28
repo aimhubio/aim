@@ -12,6 +12,12 @@ import exceptionHandler from 'utils/app/exceptionHandler';
 import { encode } from 'utils/encoder/encoder';
 import contextToString from 'utils/contextToString';
 import alphabeticalSortComparator from 'utils/alphabeticalSortComparator';
+import {
+  decodeBufferPairs,
+  decodePathsVals,
+  iterFoldTree,
+} from 'utils/encoder/streamEncoding';
+import { filterSingleRunMetricsData } from 'utils/filterMetricData';
 
 import createModel from '../model';
 
@@ -20,6 +26,7 @@ const model = createModel<Partial<any>>({
   isExperimentsLoading: false,
   isRunBatchLoading: false,
   isRunsOfExperimentLoading: false,
+  isRunLogsLoading: false,
   isLoadMoreButtonShown: true,
 });
 
@@ -27,6 +34,7 @@ let getRunsInfoRequestRef: IApiRequest<void>;
 let getRunsBatchRequestRef: IApiRequest<void>;
 let getExperimentsDataRequestRef: IApiRequest<void>;
 let getRunsOfExperimentRequestRef: IApiRequest<void>;
+let getRunsLogsRequestRef: IApiRequest<void>;
 
 function initialize() {
   model.init();
@@ -53,7 +61,7 @@ function getExperimentsData() {
   };
 }
 
-function getRunInfo(runHash: string) {
+function getRunInfo(runHash: string): IApiRequest<void> {
   if (getRunsInfoRequestRef) {
     getRunsInfoRequestRef.abort();
   }
@@ -109,6 +117,39 @@ function getRunsOfExperiment(
   };
 }
 
+function processRunBatchData(data: IRunBatch[]): {
+  runMetricsBatch: IRunBatch[];
+  runSystemBatch: IRunBatch[];
+} {
+  const runMetricsBatch: IRunBatch[] = [];
+  const runSystemBatch: IRunBatch[] = [];
+
+  for (let run of data) {
+    const { values, iters } = filterSingleRunMetricsData(run);
+    const metric = {
+      ...run,
+      values,
+      iters,
+      key: encode({
+        name: run.name,
+        context: run.context,
+      }),
+      sortKey: `${run.name}_${contextToString(run.context)}`,
+    };
+    if (run.name.startsWith('__system__')) {
+      runSystemBatch.push(metric);
+    } else {
+      runMetricsBatch.push(metric);
+    }
+  }
+
+  // sort run batch data
+  runMetricsBatch.sort(alphabeticalSortComparator({ orderBy: 'sortKey' }));
+  runSystemBatch.sort(alphabeticalSortComparator({ orderBy: 'sortKey' }));
+
+  return { runMetricsBatch, runSystemBatch };
+}
+
 function getRunMetricsBatch(body: any, runHash: string) {
   if (getRunsBatchRequestRef) {
     getRunsBatchRequestRef.abort();
@@ -121,35 +162,66 @@ function getRunMetricsBatch(body: any, runHash: string) {
       const data = await getRunsBatchRequestRef.call((detail: any) => {
         exceptionHandler({ detail, model });
       });
-      const runMetricsBatch: IRunBatch[] = [];
-      const runSystemBatch: IRunBatch[] = [];
-      data.forEach((run: IRunBatch) => {
-        const metric = {
-          ...run,
-          key: encode({
-            name: run.name,
-            context: run.context,
-          }),
-          sortKey: `${run.name}_${contextToString(run.context)}`,
-        };
-        if (run.name.startsWith('__system__')) {
-          runSystemBatch.push(metric);
-        } else {
-          runMetricsBatch.push(metric);
-        }
-      });
+      const { runMetricsBatch, runSystemBatch } = processRunBatchData(data);
+
       model.setState({
         ...model.getState(),
-        runMetricsBatch: runMetricsBatch.sort(
-          alphabeticalSortComparator({ orderBy: 'sortKey' }),
-        ),
-        runSystemBatch: runSystemBatch.sort(
-          alphabeticalSortComparator({ orderBy: 'sortKey' }),
-        ),
+        runMetricsBatch,
+        runSystemBatch,
         isRunBatchLoading: false,
       });
     },
     abort: getRunsBatchRequestRef.abort,
+  };
+}
+
+function getRunLogs({
+  runHash,
+  record_range,
+  isLiveUpdate = false,
+  isLoadMore = false,
+}: {
+  runHash: string;
+  record_range?: string;
+  isLiveUpdate?: boolean;
+  isLoadMore?: boolean;
+}) {
+  if (getRunsLogsRequestRef) {
+    getRunsLogsRequestRef.abort();
+  }
+  getRunsLogsRequestRef = runsService.getRunLogs(runHash, record_range);
+  return {
+    call: async () => {
+      const runLogs = model.getState()?.runLogs ?? {};
+      if (!isLiveUpdate) {
+        model.setState({ isRunLogsLoading: true });
+      }
+
+      const stream = await getRunsLogsRequestRef.call((detail: any) => {
+        exceptionHandler({ detail, model });
+      });
+      let bufferPairs = decodeBufferPairs(stream);
+      let decodedPairs = decodePathsVals(bufferPairs);
+      let objects = iterFoldTree(decodedPairs, 1);
+      const runLogsData: { [key: string]: any } = {};
+      for await (let [keys, val] of objects) {
+        runLogsData[keys[0]] = { index: +keys[0], value: val };
+      }
+      const updatedLogsData: { [key: string]: any } = {
+        ...runLogs,
+        ...runLogsData,
+      };
+
+      model.setState({
+        runLogs: updatedLogsData,
+        updatedLogsCount:
+          isLiveUpdate || isLoadMore
+            ? _.keys(updatedLogsData).length - _.keys(runLogs).length
+            : 0,
+        isRunLogsLoading: false,
+      });
+    },
+    abort: getRunsLogsRequestRef.abort,
   };
 }
 
@@ -218,6 +290,53 @@ function deleteRun(id: string, successCallback: () => void = _.noop) {
   }
 }
 
+function editRunNameAndDescription(
+  id: string,
+  name: string,
+  description: string,
+  archived: boolean,
+) {
+  try {
+    runsService
+      .editRunNameAndDescription(id, name, description, archived)
+      .call((detail) => {
+        exceptionHandler({ model, detail });
+      })
+      .then((res: any) => {
+        const state = model.getState();
+
+        model.setState({
+          ...state,
+          runInfo: {
+            ...state?.runInfo,
+            name,
+            description,
+          },
+        });
+        if (res.id) {
+          onNotificationAdd({
+            id: Date.now(),
+            severity: 'success',
+            messages: ['Changes were saved'],
+          });
+        } else {
+          onNotificationAdd({
+            id: Date.now(),
+            severity: 'error',
+            messages: ['Something went wrong'],
+          });
+        }
+        analytics.trackEvent('[RunDetail] Edit Run name and description');
+      });
+  } catch (err: any) {
+    onNotificationAdd({
+      id: Date.now(),
+      severity: 'error',
+      messages: [err.message],
+    });
+  }
+}
+
 function onNotificationDelete(id: number) {
   let notifyData: INotification[] | [] = model.getState()?.notifyData || [];
   notifyData = [...notifyData].filter((i) => i.id !== id);
@@ -237,6 +356,7 @@ const runDetailAppModel = {
   ...model,
   initialize,
   getRunInfo,
+  getRunLogs,
   getRunMetricsBatch,
   getExperimentsData,
   getRunsOfExperiment,
@@ -244,6 +364,7 @@ const runDetailAppModel = {
   deleteRun,
   onNotificationAdd,
   onNotificationDelete,
+  editRunNameAndDescription,
 };
 
 export default runDetailAppModel;

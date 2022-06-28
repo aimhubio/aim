@@ -10,7 +10,7 @@ import { IAxesScaleState } from 'types/components/AxesScalePopover/AxesScalePopo
 import {
   IAggregationConfig,
   IAlignmentConfig,
-  IChartTooltip,
+  IPanelTooltip,
   IChartZoom,
   IFocusedState,
   IMetricAppModelState,
@@ -18,7 +18,10 @@ import {
 } from 'types/services/models/metrics/metricsAppModel';
 import { IParamsAppModelState } from 'types/services/models/params/paramsAppModel';
 import { IRunsAppModelState } from 'types/services/models/runs/runsAppModel';
-import { ITrendlineOptions } from 'types/services/models/scatter/scatterAppModel';
+import {
+  IScatterAppModelState,
+  ITrendlineOptions,
+} from 'types/services/models/scatter/scatterAppModel';
 
 import { ChartTypeEnum, CurveEnum } from 'utils/d3';
 import { SmoothingAlgorithmEnum } from 'utils/smoothingData';
@@ -37,6 +40,7 @@ export interface IAppInitialConfig {
 export type IAppModelState =
   | IMetricAppModelState
   | IParamsAppModelState
+  | IScatterAppModelState
   | IRunsAppModelState;
 
 export interface IAppModelConfig {
@@ -59,18 +63,18 @@ export interface IGroupingConfig {
   color?: string[];
   stroke?: string[];
   chart?: string[];
-  group?: [];
+  row?: string[];
   reverseMode?: {
     color?: boolean;
     stroke?: boolean;
     chart?: boolean;
-    group?: boolean;
+    row?: boolean;
   };
   isApplied?: {
     color?: boolean;
     stroke?: boolean;
     chart?: boolean;
-    group?: boolean;
+    row?: boolean;
   };
   persistence?: {
     color: boolean;
@@ -135,7 +139,12 @@ export interface IHighPlotConfig {
   curveInterpolation: CurveEnum;
   isVisibleColorIndicator: boolean;
   focusedState: IFocusedState;
-  tooltip: IChartTooltip;
+  tooltip: IPanelTooltip;
+  brushExtents: {
+    [key: string]: {
+      [key: string]: [number, number] | [string, string];
+    };
+  };
 }
 
 export interface ILineChartConfig {
@@ -150,11 +159,11 @@ export interface ILineChartConfig {
   densityType: DensityOptions;
   alignmentConfig: IAlignmentConfig;
   focusedState: IFocusedState;
-  tooltip: IChartTooltip;
+  tooltip: IPanelTooltip;
 }
 
 export interface IScatterPlotConfig {
   highlightMode: HighlightEnum;
   focusedState: IFocusedState;
-  tooltip: IChartTooltip;
+  tooltip: IPanelTooltip;
 }

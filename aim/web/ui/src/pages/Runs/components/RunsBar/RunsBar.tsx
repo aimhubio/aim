@@ -8,6 +8,7 @@ import ErrorBoundary from 'components/ErrorBoundary/ErrorBoundary';
 import { Button, Icon } from 'components/kit';
 import ControlPopover from 'components/ControlPopover/ControlPopover';
 
+import pageTitlesEnum from 'config/pageTitles/pageTitles';
 import { DOCUMENTATIONS } from 'config/references';
 
 import 'pages/Metrics/components/MetricsBar/MetricsBar.scss';
@@ -16,10 +17,11 @@ function RunsBar(props: {
   enabled: boolean;
   delay: number;
   onLiveUpdateConfigChange: () => void;
+  disabled: boolean;
 }): React.FunctionComponentElement<React.ReactNode> {
   return (
     <ErrorBoundary>
-      <AppBar title='Runs explorer'>
+      <AppBar title={pageTitlesEnum.RUNS_EXPLORER} disabled={props.disabled}>
         <LiveUpdateSettings {...props} />
         <div className='MetricsBar__menu'>
           <ErrorBoundary>

@@ -35,8 +35,8 @@ function Controls(
     return (
       props.tooltip.display !==
         CONTROLS_DEFAULT_CONFIG.images.tooltip.display ||
-      props.tooltip.selectedParams.length !==
-        CONTROLS_DEFAULT_CONFIG.images.tooltip.selectedParams.length
+      props.tooltip.selectedFields.length !==
+        CONTROLS_DEFAULT_CONFIG.images.tooltip.selectedFields.length
     );
   }, [props.tooltip]);
 
@@ -52,9 +52,9 @@ function Controls(
       <div className='Controls__container ScrollBar__hidden'>
         <div>
           <ControlPopover
-            title='Image Properties'
+            title='Image properties'
             anchor={({ onAnchorClick, opened }) => (
-              <Tooltip title='Image Properties'>
+              <Tooltip title='Image properties'>
                 <div
                   onClick={onAnchorClick}
                   className={`Controls__anchor ${
@@ -86,9 +86,9 @@ function Controls(
         </div>
         <div>
           <ControlPopover
-            title='Images Sorting'
+            title='Images sorting'
             anchor={({ onAnchorClick, opened }) => (
-              <Tooltip title='Images Sorting'>
+              <Tooltip title='Images sorting'>
                 <div
                   onClick={onAnchorClick}
                   className={`Controls__anchor ${
@@ -144,9 +144,9 @@ function Controls(
         </Tooltip>
         <div>
           <ControlPopover
-            title='Display In Tooltip'
+            title='Display in tooltip'
             anchor={({ onAnchorClick, opened }) => (
-              <Tooltip title='Tooltip Params'>
+              <Tooltip title='Tooltip fields'>
                 <div
                   onClick={onAnchorClick}
                   className={`Controls__anchor ${
@@ -165,7 +165,7 @@ function Controls(
             component={
               <TooltipContentPopover
                 selectOptions={props.selectOptions}
-                selectedParams={props.tooltip.selectedParams}
+                selectedFields={props.tooltip.selectedFields}
                 displayTooltip={props.tooltip.display}
                 onChangeTooltip={props.onChangeTooltip}
               />

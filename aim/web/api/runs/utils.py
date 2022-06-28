@@ -1,9 +1,10 @@
 import numpy as np
 import struct
+import time
 
 from collections import namedtuple
 from itertools import chain
-from typing import Iterator, Tuple, Optional, List, Iterable
+from typing import Iterator, Tuple, Optional, List
 from typing import TYPE_CHECKING
 
 from fastapi import HTTPException
@@ -13,6 +14,7 @@ from aim.sdk import Run
 from aim.sdk.sequences.metric import Metric
 from aim.sdk.sequence_collection import SequenceCollection
 from aim.storage.query import syntax_error_check
+from aim.web.configs import AIM_PROGRESS_REPORT_INTERVAL
 from aim.web.api.projects.project import Project
 from aim.web.api.runs.pydantic_models import AlignedRunIn, TraceBase
 from aim.storage.treeutils import encode_tree
@@ -42,6 +44,13 @@ def str_to_range(range_str: str):
     return IndexRange(start, stop)
 
 
+def get_run_params(run: Run, *, skip_system: bool):
+    params = run.get(..., resolve_objects=True)
+    if skip_system and '__system_params' in params:
+        del params['__system_params']
+    return params
+
+
 def get_run_props(run: Run):
     return {
         'name': run.name if run.name else None,
@@ -57,7 +66,8 @@ def get_run_props(run: Run):
                  for tag in run.props.tags_obj],
         'archived': run.archived if run.archived else False,
         'creation_time': run.creation_time,
-        'end_time': run.end_time
+        'end_time': run.end_time,
+        'active': run.active
     }
 
 
@@ -77,40 +87,20 @@ def numpy_to_encodable(array: np.ndarray) -> Optional[dict]:
     return encoded_numpy
 
 
-def sliced_custom_object_record(values: Iterable, _slice: slice) -> Iterable:
-    yield from zip(range(_slice.start, _slice.stop, _slice.step), values[_slice])
-
-
-def sliced_np_array(array: np.ndarray, _slice: slice) -> np.ndarray:
-    last_step_needed = (_slice.stop - 1) % _slice.step != 0
-    if last_step_needed:
-        return np.append(array[_slice], array[-1])
-    else:
-        return array[_slice]
-
-
-def sliced_array(array: list, _slice: slice) -> list:
-    last_step_needed = (_slice.stop - 1) % _slice.step != 0
-    if last_step_needed:
-        last_value = array[-1]
-        return array[_slice] + [last_value]
-    else:
-        return array[_slice]
-
-
 def collect_x_axis_data(x_trace: Metric, iters: np.ndarray) -> Tuple[Optional[dict], Optional[dict]]:
     if not x_trace:
         return None, None
 
     x_axis_values = []
     x_axis_iters = []
+    step_index_fn = x_trace.data.step_hash
     for idx in iters:
         try:
-            x_val = x_trace.values[idx.item()]
+            x_val = x_trace.values[step_index_fn(idx.item())]
         except KeyError:
             x_val = None
         if x_val:
-            x_axis_iters.append(idx.item())
+            x_axis_iters.append(step_index_fn(idx.item()))
             x_axis_values.append(x_val)
 
     if not x_axis_iters:
@@ -143,10 +133,8 @@ def custom_aligned_metrics_streamer(requested_runs: List[AlignedRunIn], x_axis: 
             if not (trace and x_axis_trace):
                 continue
 
-            _slice = slice(*trace_data.slice)
-            iters = trace.values.sparse_numpy()[0]
-            sliced_iters = sliced_np_array(iters, _slice)
-            x_axis_iters, x_axis_values = collect_x_axis_data(x_axis_trace, sliced_iters)
+            iters = np.array(trace.data.sample(trace_data.slice[-1]).indices_list())
+            x_axis_iters, x_axis_values = collect_x_axis_data(x_axis_trace, iters)
             traces_list.append({
                 'name': trace.name,
                 'context': trace.context.to_dict(),
@@ -161,30 +149,37 @@ def custom_aligned_metrics_streamer(requested_runs: List[AlignedRunIn], x_axis: 
 
 
 async def metric_search_result_streamer(traces: SequenceCollection,
+                                        skip_system: bool,
                                         steps_num: int,
-                                        x_axis: Optional[str]) -> bytes:
-    for run_trace_collection in traces.iter_runs():
+                                        x_axis: Optional[str] = None,
+                                        report_progress: Optional[bool] = True) -> bytes:
+    last_reported_progress_time = time.time()
+    progress = None
+    progress_reports_sent = 0
+    for run_trace_collection, progress in traces.iter_runs():
+        if report_progress and time.time() - last_reported_progress_time > AIM_PROGRESS_REPORT_INTERVAL:
+            yield collect_run_streamable_data(encode_tree({f'progress_{progress_reports_sent}': progress}))
+            progress_reports_sent += 1
+            last_reported_progress_time = time.time()
+
         run = None
         traces_list = []
         for trace in run_trace_collection.iter():
             if not run:
                 run = run_trace_collection.run
-            iters, values = trace.values.sparse_numpy()
-            num_records = len(values)
-            step = (num_records // steps_num) or 1
-            _slice = slice(0, num_records, step)
-            sliced_iters = sliced_np_array(iters, _slice)
+            iters, (values, epochs, timestamps) = trace.data.sample(steps_num).numpy()
+
             x_axis_trace = run.get_metric(x_axis, trace.context) if x_axis else None
-            x_axis_iters, x_axis_values = collect_x_axis_data(x_axis_trace, sliced_iters)
+            x_axis_iters, x_axis_values = collect_x_axis_data(x_axis_trace, iters)
 
             traces_list.append({
                 'name': trace.name,
                 'context': trace.context.to_dict(),
-                'slice': [0, num_records, step],
-                'values': numpy_to_encodable(sliced_np_array(values, _slice)),
-                'iters': numpy_to_encodable(sliced_iters),
-                'epochs': numpy_to_encodable(sliced_np_array(trace.epochs.values_numpy(), _slice)),
-                'timestamps': numpy_to_encodable(sliced_np_array(trace.timestamps.values_numpy(), _slice)),
+                'slice': [0, 0, steps_num],  # TODO [AT] change once UI is ready
+                'values': numpy_to_encodable(values),
+                'iters': numpy_to_encodable(iters),
+                'epochs': numpy_to_encodable(epochs),
+                'timestamps': numpy_to_encodable(timestamps),
                 'x_axis_values': x_axis_values,
                 'x_axis_iters': x_axis_iters,
             })
@@ -192,7 +187,7 @@ async def metric_search_result_streamer(traces: SequenceCollection,
         if run:
             run_dict = {
                 run.hash: {
-                    'params': run.get(..., resolve_objects=True),
+                    'params': get_run_params(run, skip_system=skip_system),
                     'traces': traces_list,
                     'props': get_run_props(run)
                 }
@@ -200,15 +195,35 @@ async def metric_search_result_streamer(traces: SequenceCollection,
 
             encoded_tree = encode_tree(run_dict)
             yield collect_run_streamable_data(encoded_tree)
+            if report_progress:
+                yield collect_run_streamable_data(encode_tree({f'progress_{progress_reports_sent}': progress}))
+                progress_reports_sent += 1
+                last_reported_progress_time = time.time()
+
+    if report_progress and progress:
+        yield collect_run_streamable_data(encode_tree({f'progress_{progress_reports_sent}': progress}))
 
 
-def run_search_result_streamer(runs: SequenceCollection, limit: int) -> bytes:
+def run_search_result_streamer(runs: SequenceCollection,
+                               limit: int,
+                               skip_system: bool,
+                               report_progress: Optional[bool] = True) -> bytes:
     run_count = 0
-    for run_trace_collection in runs.iter_runs():
+    last_reported_progress_time = time.time()
+    progress = None
+    progress_reports_sent = 0
+    for run_trace_collection, progress in runs.iter_runs():
+        # if no progress was reported for a long interval, report progress
+        if report_progress and time.time() - last_reported_progress_time > AIM_PROGRESS_REPORT_INTERVAL:
+            yield collect_run_streamable_data(encode_tree({f'progress_{progress_reports_sent}': progress}))
+            progress_reports_sent += 1
+            last_reported_progress_time = time.time()
+        if not run_trace_collection:
+            continue
         run = run_trace_collection.run
         run_dict = {
             run.hash: {
-                'params': run.get(..., resolve_objects=True),
+                'params': get_run_params(run, skip_system=skip_system),
                 'traces': run.collect_sequence_info(sequence_types='metric'),
                 'props': get_run_props(run)
             }
@@ -216,10 +231,16 @@ def run_search_result_streamer(runs: SequenceCollection, limit: int) -> bytes:
 
         encoded_tree = encode_tree(run_dict)
         yield collect_run_streamable_data(encoded_tree)
-
+        if report_progress:
+            yield collect_run_streamable_data(encode_tree({f'progress_{progress_reports_sent}': progress}))
+            progress_reports_sent += 1
+            last_reported_progress_time = time.time()
         run_count += 1
         if limit and run_count >= limit:
             break
+
+    if report_progress and progress:
+        yield collect_run_streamable_data(encode_tree({f'progress_{progress_reports_sent}': progress}))
 
 
 def collect_requested_metric_traces(run: Run, requested_traces: List[TraceBase], steps_num: int = 200) -> List[dict]:
@@ -231,22 +252,45 @@ def collect_requested_metric_traces(run: Run, requested_traces: List[TraceBase],
         if not trace:
             continue
 
-        iters, values = trace.values.sparse_list()
-
+        iters, (values,) = trace.data.view('val').sample(steps_num).items_list()
         values = list(map(lambda x: x if float('-inf') < x < float('inf') and x == x else None, values))
-
-        num_records = len(values)
-        step = (num_records // steps_num) or 1
-        _slice = slice(0, num_records, step)
 
         processed_traces_list.append({
             'name': trace.name,
             'context': trace.context.to_dict(),
-            'values': sliced_array(values, _slice),
-            'iters': sliced_array(iters, _slice),
+            'values': values,
+            'iters': iters,
         })
 
     return processed_traces_list
+
+
+async def run_logs_streamer(run: Run, record_range: str) -> bytes:
+    logs = run.get_terminal_logs()
+
+    if not logs:
+        return
+
+    record_range = checked_range(record_range)
+    start = record_range.start
+    stop = record_range.stop
+
+    # range stop is missing
+    if record_range.stop is None:
+        stop = logs.last_step() + 1
+
+    # range start is missing
+    if record_range.start is None:
+        start = 0
+
+    # range is missing completely
+    if record_range.start is None and record_range.stop is None:
+        start = max(logs.last_step() - 500, 0)
+
+    steps_vals = logs.data.view('val').range(start, stop)
+    for step, (val,) in steps_vals:
+        encoded_tree = encode_tree({step: val.data})
+        yield collect_run_streamable_data(encoded_tree)
 
 
 def get_project():

@@ -3,8 +3,8 @@ import React from 'react';
 import { Divider } from '@material-ui/core';
 
 import { Button, Icon } from 'components/kit';
-import ExpressionAutoComplete from 'components/kit/ExpressionAutoComplete';
 import ErrorBoundary from 'components/ErrorBoundary/ErrorBoundary';
+import AutocompleteInput from 'components/AutocompleteInput';
 
 import { ANALYTICS_EVENT_KEYS } from 'config/analytics/analyticsKeysMap';
 
@@ -20,28 +20,35 @@ function SearchBar({
   isRunsDataLoading,
   searchValue,
   onSearchInputChange,
+  isDisabled,
 }: any) {
   const searchRunsRef = React.useRef<any>(null);
-
+  const autocompleteRef: any = React.useRef<React.MutableRefObject<any>>(null);
   React.useEffect(() => {
     return () => {
       searchRunsRef.current?.abort();
     };
   }, []);
 
-  function handleRunSearch(e: React.ChangeEvent<any>) {
-    e.preventDefault();
+  const handleRunSearch = React.useCallback(() => {
     if (isRunsDataLoading) {
       return;
     }
-    searchRunsRef.current = runAppModel.getRunsData(true, true);
+    const query = autocompleteRef?.current?.getValue();
+    onSearchInputChange(query ?? '');
+    searchRunsRef.current = runAppModel.getRunsData(
+      true,
+      true,
+      true,
+      query ?? '',
+    );
     searchRunsRef.current
       .call((detail: any) => {
         exceptionHandler({ detail, model: runAppModel });
       })
       .catch();
     trackEvent(ANALYTICS_EVENT_KEYS.runs.searchClick);
-  }
+  }, [isRunsDataLoading, onSearchInputChange]);
 
   function handleRequestAbort(e: React.SyntheticEvent): void {
     e.preventDefault();
@@ -51,17 +58,16 @@ function SearchBar({
     searchRunsRef.current?.abort();
     runAppModel.abortRequest();
   }
-
   return (
     <ErrorBoundary>
       <div className='Runs_Search_Bar'>
         <form onSubmit={handleRunSearch}>
-          <ExpressionAutoComplete
-            onExpressionChange={onSearchInputChange}
-            onSubmit={handleRunSearch}
+          <AutocompleteInput
+            refObject={autocompleteRef}
+            onEnter={handleRunSearch}
+            context={searchSuggestions}
             value={searchValue}
-            options={searchSuggestions}
-            placeholder='Filter runs, e.g. run.learning_rate > 0.0001 and run.batch_size == 32'
+            disabled={isDisabled}
           />
         </form>
         <Divider style={{ margin: '0 1em' }} orientation='vertical' flexItem />

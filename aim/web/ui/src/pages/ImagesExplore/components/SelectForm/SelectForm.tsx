@@ -1,6 +1,14 @@
 import React from 'react';
+import classNames from 'classnames';
 
-import { Box, Checkbox, Divider, InputBase, Popper } from '@material-ui/core';
+import {
+  Box,
+  Checkbox,
+  Divider,
+  InputBase,
+  Popper,
+  Tooltip,
+} from '@material-ui/core';
 import Autocomplete from '@material-ui/lab/Autocomplete';
 import {
   CheckBox as CheckBoxIcon,
@@ -8,8 +16,8 @@ import {
 } from '@material-ui/icons';
 
 import { Icon, Badge, Button } from 'components/kit';
-import ExpressionAutoComplete from 'components/kit/ExpressionAutoComplete';
 import ErrorBoundary from 'components/ErrorBoundary/ErrorBoundary';
+import AutocompleteInput from 'components/AutocompleteInput';
 
 import { ANALYTICS_EVENT_KEYS } from 'config/analytics/analyticsKeysMap';
 
@@ -23,30 +31,46 @@ import './SelectForm.scss';
 
 function SelectForm({
   requestIsPending,
+  isDisabled = false,
   selectedImagesData,
   searchButtonDisabled,
   selectFormData,
   onImagesExploreSelectChange,
   onSelectRunQueryChange,
-  onSelectAdvancedQueryChange,
   toggleSelectAdvancedMode,
+  onSelectAdvancedQueryChange,
   onSearchQueryCopy,
 }: ISelectFormProps): React.FunctionComponentElement<React.ReactNode> {
   const [anchorEl, setAnchorEl] = React.useState<any>(null);
+  const [searchValue, setSearchValue] = React.useState<string>('');
   const searchMetricsRef = React.useRef<any>(null);
-
+  const autocompleteRef: any = React.useRef<React.MutableRefObject<any>>(null);
+  const advancedAutocompleteRef: any =
+    React.useRef<React.MutableRefObject<any>>(null);
   React.useEffect(() => {
     return () => {
       searchMetricsRef.current?.abort();
     };
   }, []);
 
-  function handleSearch(e: React.ChangeEvent<any>): void {
-    e.preventDefault();
+  function handleSearch(e?: React.ChangeEvent<any>): void {
+    e?.preventDefault();
     if (requestIsPending || searchButtonDisabled) {
       return;
     }
-    searchMetricsRef.current = imagesExploreAppModel.getImagesData(true, true);
+    let query = selectedImagesData?.advancedMode
+      ? advancedAutocompleteRef?.current?.getValue()
+      : autocompleteRef?.current?.getValue();
+    if (selectedImagesData?.advancedMode) {
+      onSelectAdvancedQueryChange(query ?? '');
+    } else {
+      onSelectRunQueryChange(query ?? '');
+    }
+    searchMetricsRef.current = imagesExploreAppModel.getImagesData(
+      true,
+      true,
+      query ?? '',
+    );
     searchMetricsRef.current.call();
 
     trackEvent(ANALYTICS_EVENT_KEYS.images.searchClick);
@@ -97,12 +121,27 @@ function SelectForm({
       anchorEl.focus();
     }
     setAnchorEl(null);
+    setSearchValue('');
   }
 
   function handleResetSelectForm(): void {
     onImagesExploreSelectChange([]);
     onSelectRunQueryChange('');
   }
+
+  function handleSearchInputChange(
+    e: React.ChangeEvent<HTMLInputElement>,
+  ): void {
+    setSearchValue(e.target.value);
+  }
+
+  const options = React.useMemo(() => {
+    return (
+      selectFormData?.options?.filter(
+        (option) => option.label.indexOf(searchValue) !== -1,
+      ) ?? []
+    );
+  }, [searchValue, selectFormData?.options]);
 
   const open: boolean = !!anchorEl;
   const id = open ? 'select-metric' : undefined;
@@ -120,17 +159,13 @@ function SelectForm({
             >
               {selectedImagesData?.advancedMode ? (
                 <div className='SelectForm__textarea'>
-                  <ExpressionAutoComplete
-                    isTextArea={true}
-                    onExpressionChange={onSelectAdvancedQueryChange}
-                    onSubmit={handleSearch}
+                  <AutocompleteInput
+                    advanced
+                    refObject={advancedAutocompleteRef}
+                    context={selectFormData?.advancedSuggestions}
                     value={selectedImagesData?.advancedQuery}
-                    placeholder='images.name in [“loss”, “accuracy”] and run.learning_rate > 10'
-                    options={[
-                      'images.name',
-                      'images.context',
-                      ...selectFormData.suggestions,
-                    ]}
+                    onEnter={handleSearch}
+                    disabled={isDisabled}
                   />
                 </div>
               ) : (
@@ -141,6 +176,7 @@ function SelectForm({
                       color='primary'
                       onClick={handleClick}
                       aria-describedby={id}
+                      disabled={isDisabled}
                     >
                       <Icon name='plus' style={{ marginRight: '0.5rem' }} />
                       Images
@@ -160,7 +196,7 @@ function SelectForm({
                         size='small'
                         disablePortal={true}
                         disableCloseOnSelect
-                        options={selectFormData.options}
+                        options={options}
                         value={selectedImagesData?.options ?? ''}
                         onChange={onSelect}
                         groupBy={(option) => option.group}
@@ -175,7 +211,11 @@ function SelectForm({
                         renderInput={(params) => (
                           <InputBase
                             ref={params.InputProps.ref}
-                            inputProps={params.inputProps}
+                            inputProps={{
+                              ...params.inputProps,
+                              value: searchValue,
+                              onChange: handleSearchInputChange,
+                            }}
                             spellCheck={false}
                             placeholder='Search'
                             autoFocus={true}
@@ -224,6 +264,7 @@ function SelectForm({
                               key={tag.label}
                               label={tag.label}
                               onDelete={handleDelete}
+                              disabled={isDisabled}
                             />
                           );
                         },
@@ -232,12 +273,17 @@ function SelectForm({
                   </Box>
                   {selectedImagesData?.options.length > 1 && (
                     <ErrorBoundary>
-                      <span
+                      <Button
                         onClick={() => onImagesExploreSelectChange([])}
-                        className='SelectForm__clearAll'
+                        withOnlyIcon
+                        className={classNames('SelectForm__clearAll', {
+                          disabled: isDisabled,
+                        })}
+                        size='xSmall'
+                        disabled={isDisabled}
                       >
                         <Icon name='close' />
-                      </span>
+                      </Button>
                     </ErrorBoundary>
                   )}
                 </ErrorBoundary>
@@ -247,12 +293,12 @@ function SelectForm({
           {selectedImagesData?.advancedMode ? null : (
             <ErrorBoundary>
               <div className='SelectForm__TextField'>
-                <ExpressionAutoComplete
-                  onExpressionChange={onSelectRunQueryChange}
-                  onSubmit={handleSearch}
+                <AutocompleteInput
+                  refObject={autocompleteRef}
+                  context={selectFormData?.suggestions}
                   value={selectedImagesData?.query}
-                  options={selectFormData.suggestions}
-                  placeholder='Filter runs, e.g. run.learning_rate > 0.0001 and run.batch_size == 32'
+                  onEnter={handleSearch}
+                  disabled={isDisabled}
                 />
               </div>
             </ErrorBoundary>
@@ -262,6 +308,7 @@ function SelectForm({
         <div className='SelectForm__search__container'>
           <Button
             fullWidth
+            key={`${requestIsPending}`}
             color='primary'
             variant={requestIsPending ? 'outlined' : 'contained'}
             startIcon={
@@ -277,19 +324,46 @@ function SelectForm({
             {requestIsPending ? 'Cancel' : 'Search'}
           </Button>
           <div className='SelectForm__search__actions'>
-            <Button onClick={handleResetSelectForm} withOnlyIcon={true}>
-              <Icon name='reset' />
-            </Button>
-            <Button
-              className={selectedImagesData?.advancedMode ? 'active' : ''}
-              withOnlyIcon={true}
-              onClick={toggleEditMode}
+            <Tooltip title='Reset query'>
+              <div>
+                <Button
+                  onClick={handleResetSelectForm}
+                  withOnlyIcon={true}
+                  disabled={isDisabled}
+                >
+                  <Icon name='reset' />
+                </Button>
+              </div>
+            </Tooltip>
+            <Tooltip
+              title={
+                selectedImagesData?.advancedMode
+                  ? 'Switch to default mode'
+                  : 'Enable advanced search mode '
+              }
             >
-              <Icon name='edit' />
-            </Button>
-            <Button onClick={onSearchQueryCopy} withOnlyIcon={true}>
-              <Icon name='copy' />
-            </Button>
+              <div>
+                <Button
+                  className={selectedImagesData?.advancedMode ? 'active' : ''}
+                  withOnlyIcon={true}
+                  onClick={toggleEditMode}
+                  disabled={isDisabled}
+                >
+                  <Icon name='edit' />
+                </Button>
+              </div>
+            </Tooltip>
+            <Tooltip title='Copy search query'>
+              <div>
+                <Button
+                  onClick={onSearchQueryCopy}
+                  withOnlyIcon={true}
+                  disabled={isDisabled}
+                >
+                  <Icon name='copy' />
+                </Button>
+              </div>
+            </Tooltip>
           </div>
         </div>
       </div>

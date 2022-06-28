@@ -21,12 +21,13 @@ export interface IGroupingProps {
   onGroupingPersistenceChange: IMetricProps['onGroupingPersistenceChange'];
   onShuffleChange: IMetricProps['onShuffleChange'];
   groupingPopovers?: IGroupingPopovers[];
+  isDisabled?: boolean;
 }
 
 export interface IGroupingPopovers {
   groupName: GroupNameType;
   title: string;
-  advancedTitle?: string;
+  inputLabel?: string;
   AdvancedComponent?: (
     props: IGroupingPopoverAdvancedProps,
   ) => React.FunctionComponentElement<React.ReactNode>;

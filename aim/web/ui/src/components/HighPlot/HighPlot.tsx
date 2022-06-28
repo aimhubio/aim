@@ -33,6 +33,8 @@ const HighPlot = React.forwardRef(function HighPlot(
     data,
     isVisibleColorIndicator,
     chartTitle,
+    onAxisBrushExtentChange,
+    brushExtents,
     readOnly = false,
     resizeMode,
   } = props;
@@ -143,6 +145,7 @@ const HighPlot = React.forwardRef(function HighPlot(
           isVisibleColorIndicator,
           axesNodeRef,
           syncHoverState,
+          svgNodeRef,
         });
       }
 
@@ -151,9 +154,14 @@ const HighPlot = React.forwardRef(function HighPlot(
         plotNodeRef,
         brushRef,
         linesRef,
+        visBoxRef,
         attributesRef,
+        brushExtents,
+        onAxisBrushExtentChange,
         dimensions: data.dimensions,
         data: data.data,
+        index,
+        syncHoverState,
       });
     }
   }

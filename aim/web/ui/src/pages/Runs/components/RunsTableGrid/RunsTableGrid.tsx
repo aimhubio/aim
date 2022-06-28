@@ -1,13 +1,12 @@
 import * as React from 'react';
-import { Link as RouteLink } from 'react-router-dom';
 import { merge } from 'lodash-es';
 
-import { Link } from '@material-ui/core';
-
 import { Badge } from 'components/kit';
+import RunNameColumn from 'components/Table/RunNameColumn';
+import GroupedColumnHeader from 'components/Table/GroupedColumnHeader';
 
 import COLORS from 'config/colors/colors';
-import { PathEnum } from 'config/enums/routesEnum';
+import { TABLE_DEFAULT_CONFIG } from 'config/table/tableConfigs';
 
 import { ITableColumn } from 'types/pages/metrics/components/TableColumns/TableColumns';
 
@@ -23,8 +22,20 @@ function getRunsTableColumns(
 ): ITableColumn[] {
   let columns: ITableColumn[] = [
     {
+      key: 'hash',
+      content: <span>Hash</span>,
+      topHeader: 'Run',
+      pin: order?.left?.includes('hash')
+        ? 'left'
+        : order?.middle?.includes('hash')
+        ? null
+        : order?.right?.includes('hash')
+        ? 'right'
+        : null,
+    },
+    {
       key: 'run',
-      content: <span>Run Name</span>,
+      content: <span>Name</span>,
       topHeader: 'Run',
       pin: order?.left?.includes('run')
         ? 'left'
@@ -70,6 +81,16 @@ function getRunsTableColumns(
         ? 'right'
         : null,
     },
+    {
+      key: 'duration',
+      content: <span>Duration</span>,
+      topHeader: 'Run',
+      pin: order?.left?.includes('date')
+        ? 'left'
+        : order?.right?.includes('date')
+        ? 'right'
+        : null,
+    },
   ].concat(
     Object.keys(metricsColumns).reduce((acc: any, key: string) => {
       const systemMetric: boolean = isSystemMetric(key);
@@ -84,7 +105,7 @@ function getRunsTableColumns(
           ) : (
             <Badge
               monospace
-              size='small'
+              size='xSmall'
               color={COLORS[0][0]}
               label={metricContext === '' ? 'Empty context' : metricContext}
             />
@@ -123,14 +144,13 @@ function getRunsTableColumns(
 
   columns = columns.map((col) => ({
     ...col,
-    isHidden: hiddenColumns.includes(col.key),
+    isHidden:
+      !TABLE_DEFAULT_CONFIG.runs.nonHidableColumns.has(col.key) &&
+      hiddenColumns.includes(col.key),
   }));
 
   const columnsOrder = order?.left.concat(order.middle).concat(order.right);
   columns.sort((a, b) => {
-    if (a.key === 'actions') {
-      return 1;
-    }
     if (!columnsOrder.includes(a.key) && !columnsOrder.includes(b.key)) {
       return 0;
     } else if (!columnsOrder.includes(a.key)) {
@@ -155,14 +175,7 @@ function runsTableRowRenderer(
       const col = columns[i];
       if (Array.isArray(rowData[col])) {
         row[col] = {
-          content: (
-            <Badge
-              monospace
-              size='small'
-              color={COLORS[0][0]}
-              label={`${rowData[col].length} values`}
-            />
-          ),
+          content: <GroupedColumnHeader data={rowData[col]} />,
         };
       }
     }
@@ -173,12 +186,11 @@ function runsTableRowRenderer(
       experiment: rowData.experiment,
       run: {
         content: (
-          <Link
-            to={PathEnum.Run_Detail.replace(':runHash', rowData.runHash)}
-            component={RouteLink}
-          >
-            {rowData.run}
-          </Link>
+          <RunNameColumn
+            run={rowData.run}
+            runHash={rowData.hash}
+            active={rowData.active}
+          />
         ),
       },
       actions: {

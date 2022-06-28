@@ -4,59 +4,67 @@ import { IGroupingSelectOption } from 'types/services/models/metrics/metricsAppM
 
 export default function getGroupingSelectOptions({
   params,
+  runProps = [],
   contexts = [],
   sequenceName = null,
 }: {
   params: string[];
+  runProps?: string[];
   contexts?: string[];
   sequenceName?: null | 'metric' | 'images';
 }): IGroupingSelectOption[] {
-  const paramsOptions: IGroupingSelectOption[] = params.map((param) => ({
-    group: 'run',
-    label: `run.${param}`,
-    value: `run.params.${param}`,
-  }));
-
   let options = [
-    {
-      group: 'run',
-      label: 'run.name',
-      value: 'run.props.name',
-    },
-    {
-      group: 'run',
-      label: 'run.experiment',
-      value: 'run.props.experiment.name',
-    },
     {
       group: 'run',
       label: 'run.hash',
       value: 'run.hash',
     },
-    {
-      group: 'run',
-      label: 'run.creation_time',
-      value: 'run.props.creation_time',
-    },
-    ...paramsOptions,
   ];
 
-  let contextOptions: IGroupingSelectOption[];
-  let contextOption: IGroupingSelectOption;
-  let nameOption: IGroupingSelectOption;
+  if (runProps?.length) {
+    const filterPropsOptions = ['notes', 'tags', 'experiment.id'];
+    const replacePropsLabel: { [key: string]: string } = {
+      'experiment.name': 'experiment',
+    };
+    const propsOptions: IGroupingSelectOption[] = runProps
+      .filter((runProp: string) => filterPropsOptions.indexOf(runProp) === -1)
+      .map((runProp: string) => {
+        let propLabel = runProp;
+        if (replacePropsLabel.hasOwnProperty(runProp)) {
+          propLabel = replacePropsLabel[runProp];
+        }
+        return {
+          group: 'run',
+          label: `run.${propLabel}`,
+          value: `run.props.${runProp}`,
+        };
+      });
+
+    options = options.concat(propsOptions);
+  }
+
+  if (params?.length) {
+    const paramsOptions: IGroupingSelectOption[] = params.map((param) => ({
+      group: 'run',
+      label: `run.${param}`,
+      value: `run.params.${param}`,
+    }));
+
+    options = options.concat(paramsOptions);
+  }
 
   if (sequenceName) {
-    contextOptions = contexts.map((context) => ({
+    let contextOptions = contexts.map((context) => ({
       group: sequenceName,
       label: `${sequenceName}.context.${context}`,
       value: `context.${context}`,
     }));
-    nameOption = {
+    let nameOption = {
       group: sequenceName,
       label: `${sequenceName}.name`,
       value: 'name',
     };
-    contextOption = {
+    let contextOption = {
       group: sequenceName,
       label: `${sequenceName}.context`,
       value: 'context',
@@ -64,6 +72,22 @@ export default function getGroupingSelectOptions({
     options = !_.isEmpty(contexts)
       ? options.concat(nameOption, contextOption, contextOptions)
       : options.concat(nameOption);
+  }
+
+  if (sequenceName === 'images') {
+    const recordOptions = [
+      {
+        group: 'record',
+        label: 'record.step',
+        value: 'step',
+      },
+      {
+        group: 'record',
+        label: 'record.index',
+        value: 'index',
+      },
+    ];
+    options = options.concat(recordOptions);
   }
 
   return options;

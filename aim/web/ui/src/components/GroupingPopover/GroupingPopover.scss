@@ -9,8 +9,16 @@
 
   &__container__select {
     padding: 1rem;
+    &__selectedFieldsContainer {
+      max-height: toRem(110px);
+      overflow: auto;
+      width: 100%;
+    }
   }
 
+  &__advanced__component {
+    border-top: $border-main;
+  }
   &__toggleMode__div {
     display: flex;
     flex-direction: column;
@@ -44,10 +52,6 @@
     .Mui-expanded {
       margin: 0;
     }
-  }
-
-  &__advanced__component {
-    padding-bottom: 0.875rem;
   }
 
   .MuiAccordionSummary-root {
