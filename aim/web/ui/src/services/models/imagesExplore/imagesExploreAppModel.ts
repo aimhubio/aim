@@ -56,7 +56,7 @@ import { IProjectParamsMetrics } from 'types/services/models/projects/projectsMo
 
 import getAppConfigDataMethod from 'utils/app/getAppConfigData';
 import onRowSelectAction from 'utils/app/onRowSelect';
-import { decode, encode } from 'utils/encoder/encoder';
+import { AIM64_ENCODING_PREFIX, encode } from 'utils/encoder/encoder';
 import getObjectPaths from 'utils/getObjectPaths';
 import getUrlWithParam from 'utils/getUrlWithParam';
 import getStateFromUrl from 'utils/getStateFromUrl';
@@ -87,6 +87,7 @@ import { processDurationTime } from 'utils/processDurationTime';
 import onVisibilityChange from 'utils/app/onColumnsVisibilityChange';
 import setRequestProgress from 'utils/app/setRequestProgress';
 import getRunData from 'utils/app/getRunData';
+import decodeWithBase58Checker from 'utils/decodeWithBase58Checker';
 
 import createModel from '../model';
 import { AppNameEnum } from '../explorer';
@@ -213,6 +214,7 @@ function initialize(appId: string): void {
 
 function setDefaultAppConfigData(recoverTableState: boolean = true) {
   const defaultConfig: Partial<IImagesExploreAppConfig> = {};
+  const searchParam = new URLSearchParams(window.location.search);
 
   const grouping: IImagesExploreAppConfig['grouping'] =
     getStateFromUrl('grouping') ?? {};
@@ -236,7 +238,14 @@ function setDefaultAppConfigData(recoverTableState: boolean = true) {
     const tableConfigHash =
       getItem('imagesTable') || getItem('imagesExploreTable');
     const table = tableConfigHash
-      ? JSON.parse(decode(tableConfigHash))
+      ? JSON.parse(
+          decodeWithBase58Checker({
+            value: tableConfigHash ?? '',
+            localStorageKey: getItem('imagesTable')
+              ? 'imagesTable'
+              : 'imagesExploreTable',
+          }),
+        )
       : getConfig().table;
 
     defaultConfig.table = table;
@@ -252,6 +261,16 @@ function setDefaultAppConfigData(recoverTableState: boolean = true) {
       }
     },
   );
+  if (
+    (searchParam.get('grouping') &&
+      !searchParam.get('grouping')?.startsWith(AIM64_ENCODING_PREFIX)) ||
+    (searchParam.get('chart') &&
+      !searchParam.get('chart')?.startsWith(AIM64_ENCODING_PREFIX)) ||
+    (searchParam.get('select') &&
+      !searchParam.get('select')?.startsWith(AIM64_ENCODING_PREFIX))
+  ) {
+    updateURL(configData);
+  }
 
   model.setState({ config: configData });
 }
@@ -1654,21 +1673,18 @@ function onExportTableData(e: React.ChangeEvent<any>): void {
     emptyRow[column] = '--';
   });
 
-  const groupedRows: any[][] =
-    data.length > 1
-      ? Object.keys(tableData.rows).map(
-          (groupedRowKey: string) => tableData.rows[groupedRowKey].items,
-        )
-      : [tableData.rows];
+  const groupedRows: any[][] = Object.keys(tableData.rows).map(
+    (groupedRowKey: string) => tableData.rows[groupedRowKey].items,
+  );
 
   const dataToExport: { [key: string]: string }[] = [];
 
-  groupedRows.forEach((groupedRow: any[], groupedRowIndex: number) => {
+  groupedRows?.forEach((groupedRow: any[], groupedRowIndex: number) => {
     groupedRow?.forEach((row: any) => {
       const filteredRow: any = getFilteredRow(filteredHeader, row);
       dataToExport.push(filteredRow);
     });
-    if (groupedRows.length - 1 !== groupedRowIndex) {
+    if (groupedRows?.length - 1 !== groupedRowIndex) {
       dataToExport.push(emptyRow);
     }
   });
@@ -1808,7 +1824,7 @@ function getQueryStringFromSelect(
       query = selectData.advancedQuery;
     } else {
       query = `${
-        selectData.query ? `${selectData.query} and ` : ''
+        selectData.query ? `(${selectData.query}) and ` : ''
       }(${selectData.options
         .map(
           (option: ISelectOption) =>

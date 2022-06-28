@@ -104,13 +104,13 @@ $ aim runs [ARGS] SUBCOMMAND
 
 __runs subcommands__
 
-| Sub-command | Description                                                                  |
-| ----------- | ---------------------------------------------------------------------------- |
-| `ls`        | List runs in `aim` repository.                                               |
-| `rm`        | Remove run data for given runs hashes. At least one run should be specified. |
-| `cp`        | Copy run data for given runs hashes. At least one run should be specified.   |
-| `mv`        | Move run data for given runs hashes. At least one run should be specified.   |
-| `upload`    | Create snapshot of .aim directory in cloud. Bucket name should be specified. |
+| Sub-command | Description                                                                      |
+| ----------- | -------------------------------------------------------------------------------- |
+| `ls`        | List runs in `aim` repository.                                                   |
+| `rm`        | Remove run data for given run hashes. At least one run should be specified.      |
+| `cp`        | Copy run data for given run hashes. At least one run should be specified.        |
+| `mv`        | Move run data for given run hashes. At least one run should be specified.        |
+| `upload`    | Create a snapshot of `.aim` directory in cloud. Bucket name should be specified. |
 
 Global expression (`*`) support is available for run hashes. If hash contains `*`, it must be enclosed within
 quotes (`''`) as bash resolves the expression before passing it to `aim runs` command.
@@ -145,7 +145,7 @@ $ aim runs upload [ARGS] ...
 
 | Args                              | Description                                               |
 | --------------------------------- | --------------------------------------------------------- |
-| `--bucket <bucket_name>`          | Name of cloud storage bucket. __Required.__               |
+| `--bucket <bucket_name>`          | Name of the  cloud storage bucket. __Required.__          |
 
 
 ### convert
