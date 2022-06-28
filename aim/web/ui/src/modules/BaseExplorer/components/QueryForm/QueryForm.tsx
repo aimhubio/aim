@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { memo } from 'react';
 import _ from 'lodash-es';
 
 import { IInstructionsState } from 'modules/BaseExplorerCore/store/slices/types';
@@ -446,4 +446,4 @@ function QueryForm(props: IQueryFormProps) {
   );
 }
 
-export default QueryForm;
+export default memo(QueryForm);

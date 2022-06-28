@@ -1,5 +1,3 @@
-import _ from 'lodash-es';
-
 import { HighlightEnum } from 'components/HighlightModesPopover/HighlightModesPopover';
 
 import { IDrawLinesArgs } from 'types/utils/d3/drawLines';
@@ -52,18 +50,18 @@ function drawLines(args: IDrawLinesArgs): void {
       .data(data)
       .join('path')
       .attr('class', `Line ${aggregationConfig?.isApplied ? 'aggregated' : ''}`)
-      .attr('id', (line: IProcessedData) => `Line-${line.key}`)
+      .attr('id', (d: IProcessedData) => `Line-${d.key}`)
       .attr('clip-path', `url(#${nameKey}-lines-rect-clip-${index})`)
-      .attr('groupKey', (line: IProcessedData) => line.groupKey)
+      .attr('groupKey', (d: IProcessedData) => d.groupKey)
       .attr(
         'data-selector',
-        (line: IProcessedData) =>
-          `Line-Sel-${highlightMode}-${line.selectors?.[highlightMode]}`,
+        (d: IProcessedData) =>
+          `Line-Sel-${highlightMode}-${d.selectors?.[highlightMode]}`,
       )
       .style('fill', 'none')
-      .style('stroke', (line: IProcessedData) => line.color)
-      .style('stroke-dasharray', (line: IProcessedData) => line.dasharray)
-      .data(data.map((line: IProcessedData) => line.data))
+      .style('stroke', (d: IProcessedData) => d.color)
+      .style('stroke-dasharray', (d: IProcessedData) => d.dasharray)
+      .data(data.map((d: IProcessedData) => d.data))
       .attr('d', lineGenerator(xScale, yScale, curveInterpolation));
     if (!readOnly) {
       data.forEach((line: IProcessedData) => {
@@ -98,11 +96,11 @@ function drawLines(args: IDrawLinesArgs): void {
       .data(data)
       .join('path')
       .attr('class', 'AggrArea')
-      .attr('id', (aggrData: IProcessedAggrData) => `AggrArea-${aggrData.key}`)
+      .attr('id', (d: IProcessedAggrData) => `AggrArea-${d.key}`)
       .attr('clip-path', `url(#${nameKey}-lines-rect-clip-${index})`)
-      .attr('fill', (aggrData: IProcessedAggrData) => aggrData.color)
+      .attr('fill', (d: IProcessedAggrData) => d.color)
       .attr('fill-opacity', '0.3')
-      .data(data.map((aggrData: IProcessedAggrData) => aggrData?.area || []))
+      .data(data.map((d: IProcessedAggrData) => d?.area || []))
       .attr('d', areaGenerator(xScale, yScale));
   };
 
@@ -124,15 +122,12 @@ function drawLines(args: IDrawLinesArgs): void {
       .data(data)
       .join('path')
       .attr('class', 'AggrLine')
-      .attr('id', (aggrData: IProcessedAggrData) => `AggrLine-${aggrData.key}`)
+      .attr('id', (d: IProcessedAggrData) => `AggrLine-${d.key}`)
       .attr('clip-path', `url(#${nameKey}-lines-rect-clip-${index})`)
       .style('fill', 'none')
-      .style('stroke', (aggrData: IProcessedAggrData) => aggrData.color)
-      .style(
-        'stroke-dasharray',
-        (aggrData: IProcessedAggrData) => aggrData.dasharray,
-      )
-      .data(data.map((aggrData: IProcessedAggrData) => aggrData.line || []))
+      .style('stroke', (d: IProcessedAggrData) => d.color)
+      .style('stroke-dasharray', (d: IProcessedAggrData) => d.dasharray)
+      .data(data.map((d: IProcessedAggrData) => d.line || []))
       .attr('d', lineGenerator(xScale, yScale, curveInterpolation));
   };
 

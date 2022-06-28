@@ -9,7 +9,6 @@
   user-select: none;
   min-width: toRem(150px);
   min-height: toRem(150px);
-
   .Axes {
     .tick text {
       display: none;
@@ -67,43 +66,38 @@
       }
     }
   }
-
   &.backgroundRect {
     cursor: crosshair;
   }
-
   &.zoomMode rect {
     cursor: zoom-in;
   }
-
   .HoverLine {
     stroke: #94999f; /* var(--grey-light) */
   }
-
-  .ParallelCircle {
-    stroke: #3b5896; /* var(--primary) */
-    stroke-width: 1;
+  .HoverCircle {
     cursor: pointer;
-  }
-
-  /* on click */
-  .ParallelCircle.focus {
-    stroke: #3b5896; /* var(--primary) */
-    stroke-width: 2;
     opacity: 1;
+    stroke-width: 1.45;
+    fill: white;
+    outline: 0 solid;
+    border-radius: 50%;
+    /* on click */
+    &.focus {
+      stroke-width: 2;
+      outline-width: 6px;
+      clip-path: unset;
+    }
+    /* on hover */
+    &.active {
+      stroke-width: 2.6;
+    }
   }
-
-  /* on hover */
-  .ParallelCircle.active {
-    stroke: $primary-light;
-    stroke-width: 3;
-    opacity: 1;
+  .Attributes {
+    &.highlight > .HoverCircle:not(.active):not(.focus) {
+      opacity: 0.5;
+    }
   }
-
-  .Attributes.highlight > .HoverCircle:not(.active):not(.focus) {
-    opacity: 0.5;
-  }
-
   .ChartMouseValue {
     position: absolute;
     box-sizing: border-box;
@@ -115,14 +109,12 @@
     font-weight: normal;
     white-space: nowrap;
   }
-
   .ChartMouseValueXAxis {
     transform: translateX(-50%);
     border-radius: 0 0 6px 6px;
     border-top: none;
     overflow: hidden;
   }
-
   .ChartMouseValueYAxis {
     transform: translateY(-50%);
     border-radius: 6px 0 0 6px;
@@ -130,7 +122,6 @@
     overflow: hidden;
     box-shadow: inset -8px 0 5px -6px #3b5896; /* var(--primary);*/
   }
-
   .Lines {
     overflow: hidden;
     @media (-webkit-min-device-pixel-ratio: 2), (min-resolution: 192dpi) {
@@ -138,25 +129,22 @@
         shape-rendering: optimizeSpeed;
       }
     }
-  }
+    &.highlight > .Line:not(.active):not(.highlighted) {
+      stroke-width: 1;
+      opacity: 0.2;
+    }
 
+  }
   .Line {
     stroke-width: 2;
     opacity: 0.3;
-  }
-
-  .Lines.highlight > .Line:not(.active):not(.highlighted) {
-    stroke-width: 1;
-    opacity: 0.2;
-  }
-
-  .Line.highlighted {
-    opacity: 1;
-    stroke-width: 2px;
-  }
-
-  .Line.active {
-    opacity: 1;
-    stroke-width: 3px;
+    &.active {
+      opacity: 1;
+      stroke-width: 3px;
+    }
+    &.highlighted {
+      opacity: 1;
+      stroke-width: 2px;
+    }
   }
 }
