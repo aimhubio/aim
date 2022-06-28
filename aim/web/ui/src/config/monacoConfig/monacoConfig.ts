@@ -69,6 +69,7 @@ export const getSuggestionsByExplorer = (
 ): Record<any, any> => {
   const defaultSuggestions = {
     run: {
+      active: false,
       hash: '',
       name: '',
       experiment: '',

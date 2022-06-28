@@ -1298,6 +1298,10 @@ function createAppModel(appConfig: IAppInitialConfig) {
         config: configData,
         params,
         data,
+        selectFormData: {
+          ...model.getState().selectFormData,
+          [configData.select?.advancedMode ? 'advancedError' : 'error']: null,
+        },
         lineChartData: getDataAsLines(data),
         chartTitleData: getChartTitleData<
           IMetric,
@@ -3900,6 +3904,7 @@ function createAppModel(appConfig: IAppInitialConfig) {
             groupingSelectOptions,
             model: model as IModel<IParamsAppModelState>,
           }),
+          selectFormData: { ...model.getState().selectFormData, error: null },
           params,
           selectedRows,
           metricsColumns,
