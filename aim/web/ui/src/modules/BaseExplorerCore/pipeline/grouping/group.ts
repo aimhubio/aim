@@ -74,9 +74,7 @@ function group(
       ...item,
       groups: {
         ...group,
-        [config.type]: {
-          key: groupKey,
-        },
+        [config.type]: [groupKey],
       },
     };
   });

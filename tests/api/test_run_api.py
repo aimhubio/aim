@@ -13,7 +13,8 @@ class TestRunApi(PrefilledDataApiTestBase):
     def test_search_runs_api(self):
         client = self.client
 
-        response = client.get('/api/runs/search/run/', params={'q': 'run["name"] == "Run # 3"'})
+        response = client.get('/api/runs/search/run/', params={'q': 'run["name"] == "Run # 3"',
+                                                               'report_progress': False})
         self.assertEqual(200, response.status_code)
 
         decoded_response = decode_tree(decode_encoded_tree_stream(response.iter_content(chunk_size=512*1024)))
@@ -27,7 +28,7 @@ class TestRunApi(PrefilledDataApiTestBase):
         client = self.client
 
         response = client.get('/api/runs/search/run/', params={'q': 'run["name"] in ["Run # 2","Run # 3"]',
-                                                               'limit': 1})
+                                                               'limit': 1, 'report_progress': False})
         self.assertEqual(200, response.status_code)
 
         decoded_response = decode_tree(decode_encoded_tree_stream(response.iter_content(chunk_size=1024 * 1024)))
@@ -40,7 +41,8 @@ class TestRunApi(PrefilledDataApiTestBase):
 
         response = client.get('/api/runs/search/run/', params={'q': 'run["name"] in ["Run # 2","Run # 3"]',
                                                                'limit': 5,
-                                                               'offset': offset})
+                                                               'offset': offset,
+                                                               'report_progress': False})
         self.assertEqual(200, response.status_code)
 
         decoded_response = decode_tree(decode_encoded_tree_stream(response.iter_content(chunk_size=1024 * 1024)))
@@ -51,7 +53,8 @@ class TestRunApi(PrefilledDataApiTestBase):
     def test_search_metrics_api_default_step(self):
         client = self.client
 
-        response = client.get('/api/runs/search/metric/', params={'q': 'run["name"] == "Run # 3"'})
+        response = client.get('/api/runs/search/metric/', params={'q': 'run["name"] == "Run # 3"',
+                                                                  'report_progress': False})
         self.assertEqual(200, response.status_code)
 
         decoded_response = decode_tree(decode_encoded_tree_stream(response.iter_content(chunk_size=512*1024)))
@@ -76,7 +79,9 @@ class TestRunApi(PrefilledDataApiTestBase):
     def test_search_metrics_api_custom_step(self, step_count):
         client = self.client
 
-        response = client.get('/api/runs/search/metric/', params={'q': 'run["name"] == "Run # 3"', 'p': step_count})
+        response = client.get('/api/runs/search/metric/', params={'q': 'run["name"] == "Run # 3"',
+                                                                  'p': step_count,
+                                                                  'report_progress': False})
         self.assertEqual(200, response.status_code)
 
         decoded_response = decode_tree(decode_encoded_tree_stream(response.iter_content(chunk_size=512*1024)))

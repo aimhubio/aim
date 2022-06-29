@@ -50,6 +50,7 @@ function DepthDropdown({
           <Autocomplete
             open
             size='small'
+            openOnFocus
             disablePortal={true}
             disableCloseOnSelect
             className='DepthDropdown__autocomplete'

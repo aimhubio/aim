@@ -10,6 +10,7 @@ import { IGroupingConfig } from 'types/services/models/explorer/createAppModel';
 export interface IGroupingItemProps extends IGroupingPopoverProps {
   title: string;
   inputLabel?: string;
+  isDisabled: boolean;
   groupName: GroupNameType;
   groupingData: IGroupingConfig;
   advancedComponent?: React.FunctionComponentElement<React.ReactNode>;

@@ -1,9 +1,22 @@
 # Changelog
 
-## Unreleased
+## 3.11.1 Jun 27, 2022
+
+- Replace base58 encoder with base64 (KaroMourad, VkoHov)
+- Fix Notes tab loading issue (arsengit)
+- Fix the loading logic of the `monaco editor` across the Aim Ui (arsengit)
+- Fix `Table` export functionality in Params and Scatters explorers (arsengit)
+- Allow mixing numeric types on a single Sequence (alberttorosyan)
+
+## 3.11.0 Jun 21, 2022
 
 ### Enhancements:
 
+- Add `--uds` option for `aim up` command (mihran113)
+- Add progress reporting for search APIs and tqdm progress for SDK queries (mihran113)
+- Add all the attributes of runs in the grouping popovers (KaroMourad)
+- Display progress bar on Explorer pages when searching metadata (KaroMourad)
+- Improve the processing speed for tb to aim converter (osoblanco)
 - Adjust charts hover attributes position calculation and styles (KaroMourad)
 - Improve formatting of numbers by setting maximum precision (KaroMourad)
 - Add cloud storage backups to AWS S3 for aim repo runs (karan2801)
@@ -22,21 +35,27 @@
 - Add the date and the duration of run in the header of the single run page (VkoHov)
 - Add the name, status and duration of run in the runs table of the tags page (VkoHov)
 - Fit long name values in manage columns popover (arsengit)
+- Add caching mechanism for sequence queries to optimize query performance (mihran113)
+- Use step random hash as a key for metric sequences (alberttorosyan)
 
 ### Fixes:
 
+- Fix issue with tensorboard to aim conversion (osoblanco)
+- Fix reset zoom history on alignment type change (KaroMourad)
 - Fix issue with rendering incorrect data when x-axis aligned by `relative time/epoch` (KaroMourad)
 - Fix LineCart axis ticks overlapping issue on log scale (KaroMourad)
 - Change zooming default option to multiple (VkoHov)
 - Change grouped rows' min and max values names to `Group Min` and `Group Max` (VkoHov)
 - Preserve the search input value of the grouping dropdown (VkoHov)
 - Change the titles and placeholders in popovers (VkoHov)
-- Fix params duplication in dropdowns (VkoHov)
 - Resolve typing latency issue in the query search input (arsengit)
 - Reorder and add non-hideable table columns (arsengit)
 - Change the font of the runs navigation popover (VkoHov)
 - Keep color persistence state after page reload (VkoHov)
 - Resolve content blinking issue after search in the run page (arsengit)
+- Fix scroll to bottom on live-update in logs tab (VkoHov)
+- Fix timezone issues for activity map (mihran113)
+- Fix `aim up` command output when `--port 0` is passed (mihran113)
 
 ## 3.10.3 May 31, 2022
 

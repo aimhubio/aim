@@ -183,6 +183,7 @@ import {
   alignByRelativeTime,
   alignByStep,
 } from 'utils/app/alignMetricData';
+import setRequestProgress from 'utils/app/setRequestProgress';
 import { minMaxOfArray } from 'utils/minMaxOfArray';
 import getAdvancedSuggestion from 'utils/getAdvancedSuggestions';
 import { processDurationTime } from 'utils/processDurationTime';
@@ -201,6 +202,11 @@ function createAppModel(appConfig: IAppInitialConfig) {
 
   const model: IModel<IAppModelState> = createModel<IAppModelState>({
     requestStatus: RequestStatusEnum.NotRequested,
+    requestProgress: {
+      matched: 0,
+      checked: 0,
+      trackedRuns: 0,
+    },
     selectFormData: { options: undefined, suggestions: [] },
     config: getConfig(),
   });
@@ -606,11 +612,10 @@ function createAppModel(appConfig: IAppInitialConfig) {
       if (metricsRequestRef) {
         metricsRequestRef.abort();
       }
-
+      setRequestProgress(model);
       model.setState({
         requestStatus: RequestStatusEnum.Ok,
       });
-
       onModelNotificationAdd({
         id: Date.now(),
         severity: 'info',
@@ -633,7 +638,7 @@ function createAppModel(appConfig: IAppInitialConfig) {
       const metric = configData?.chart?.alignmentConfig?.metric;
 
       if (queryString) {
-        if (configData.select.advancedQuery) {
+        if (configData.select.advancedMode) {
           configData.select.advancedQuery = queryString;
         } else {
           configData.select.query = queryString;
@@ -646,6 +651,7 @@ function createAppModel(appConfig: IAppInitialConfig) {
         ...(metric ? { x_axis: metric } : {}),
       });
 
+      setRequestProgress(model);
       return {
         call: async () => {
           if (query === '()') {
@@ -664,7 +670,9 @@ function createAppModel(appConfig: IAppInitialConfig) {
                 exceptionHandler({ detail, model });
                 resetModelState(configData, shouldResetSelectedRows!);
               });
-              const runData = await getRunData(stream);
+              const runData = await getRunData(stream, (progress) =>
+                setRequestProgress(model, progress),
+              );
               updateData(runData);
             } catch (ex: Error | any) {
               if (ex.name === 'AbortError') {
@@ -757,13 +765,13 @@ function createAppModel(appConfig: IAppInitialConfig) {
             }
             const groupHeaderRow = {
               meta: {
-                chartIndex:
-                  config?.grouping?.chart?.length ||
-                  //ToDo reverse mode
-                  // config?.grouping?.reverseMode?.chart
-                  //   ? metricsCollection.chartIndex + 1
-                  //   : null,
-                  null,
+                chartIndex: config?.grouping?.chart?.length
+                  ? metricsCollection.chartIndex + 1
+                  : null,
+                //ToDo reverse mode
+                // config?.grouping?.reverseMode?.chart
+                //   ? metricsCollection.chartIndex + 1
+                //   : null,
                 color: metricsCollection.color,
                 dasharray: metricsCollection.dasharray,
                 itemsCount: metricsCollection.data.length,
@@ -1189,8 +1197,8 @@ function createAppModel(appConfig: IAppInitialConfig) {
         configData.grouping as any,
         onModelGroupingSelectChange,
       );
-      const tableRef: any = model.getState()?.refs?.tableRef;
-      tableRef?.current?.updateData({
+
+      model.getState()?.refs?.tableRef.current?.updateData({
         newData: tableData.rows,
         newColumns: tableColumns,
         hiddenColumns: configData.table?.hiddenColumns!,
@@ -1278,12 +1286,12 @@ function createAppModel(appConfig: IAppInitialConfig) {
         configData.grouping as any,
         onModelGroupingSelectChange,
       );
-      if (model.getState()?.requestStatus !== RequestStatusEnum.Pending) {
-        model.getState()?.refs?.tableRef?.current?.updateData({
-          newData: tableData.rows,
-          newColumns: tableColumns,
-        });
-      }
+
+      model.getState()?.refs?.tableRef.current?.updateData({
+        newData: tableData.rows,
+        newColumns: tableColumns,
+      });
+
       model.setState({
         requestStatus: RequestStatusEnum.Ok,
         rawData,
@@ -1564,11 +1572,15 @@ function createAppModel(appConfig: IAppInitialConfig) {
           ? Object.keys(tableData.rows).map(
               (groupedRowKey: string) => tableData.rows[groupedRowKey].items,
             )
-          : [tableData.rows];
+          : [
+              Array.isArray(tableData.rows)
+                ? tableData.rows
+                : tableData.rows[Object.keys(tableData.rows)[0]].items,
+            ];
 
       const dataToExport: { [key: string]: string }[] = [];
 
-      groupedRows.forEach(
+      groupedRows?.forEach(
         (groupedRow: IMetricTableRowData[], groupedRowIndex: number) => {
           groupedRow?.forEach((row: IMetricTableRowData) => {
             const filteredRow = getFilteredRow<IMetricTableRowData>({
@@ -1577,7 +1589,7 @@ function createAppModel(appConfig: IAppInitialConfig) {
             });
             dataToExport.push(filteredRow);
           });
-          if (groupedRows.length - 1 !== groupedRowIndex) {
+          if (groupedRows?.length - 1 !== groupedRowIndex) {
             dataToExport.push(emptyRow);
           }
         },
@@ -2173,11 +2185,10 @@ function createAppModel(appConfig: IAppInitialConfig) {
         if (runsRequestRef) {
           runsRequestRef.abort();
         }
-
+        setRequestProgress(model);
         model.setState({
           requestStatus: RequestStatusEnum.Ok,
         });
-
         onModelNotificationAdd({
           id: Date.now(),
           severity: 'info',
@@ -2213,6 +2224,7 @@ function createAppModel(appConfig: IAppInitialConfig) {
         if (shouldUrlUpdate) {
           updateURL({ configData, appName });
         }
+        setRequestProgress(model);
         return {
           call: async () => {
             try {
@@ -2230,17 +2242,28 @@ function createAppModel(appConfig: IAppInitialConfig) {
                 : modelState?.rawData;
               let count = 0;
               for await (let [keys, val] of objects) {
-                if (isInitial) {
-                  const runData: any = val;
-                  runsData.push({ ...runData, hash: keys[0] } as any);
+                const data = { ...(val as any), hash: keys[0] };
+                if (data.hash.startsWith('progress')) {
+                  const { 0: checked, 1: trackedRuns } = data;
+                  setRequestProgress(model, {
+                    matched: runsData.length,
+                    checked,
+                    trackedRuns,
+                  });
                 } else {
-                  if (count >= 0) {
+                  if (isInitial) {
                     const runData: any = val;
                     runsData.push({ ...runData, hash: keys[0] } as any);
+                  } else {
+                    if (count >= 0) {
+                      const runData: any = val;
+                      runsData.push({ ...runData, hash: keys[0] } as any);
+                    }
                   }
+                  count++;
                 }
-                count++;
               }
+
               const { data, params, metricsColumns, selectedRows } =
                 processData(runsData);
               const tableData = getDataAsTableRows(
@@ -2336,13 +2359,12 @@ function createAppModel(appConfig: IAppInitialConfig) {
         }
 
         updateTableTimeoutId = window.setTimeout(() => {
-          const tableRef: any = model.getState()?.refs?.tableRef;
-          tableRef.current?.updateData({
+          model.setState({ requestStatus: RequestStatusEnum.Ok });
+          model.getState()?.refs?.tableRef.current?.updateData({
             newData: tableData.rows,
             newColumns: tableColumns,
             hiddenColumns: configData.table.hiddenColumns!,
           });
-          model.setState({ requestStatus: RequestStatusEnum.Ok });
         }, 0);
       }
 
@@ -2825,11 +2847,15 @@ function createAppModel(appConfig: IAppInitialConfig) {
             ? Object.keys(tableData.rows).map(
                 (groupedRowKey: string) => tableData.rows[groupedRowKey].items,
               )
-            : [tableData.rows];
+            : [
+                Array.isArray(tableData.rows)
+                  ? tableData.rows
+                  : tableData.rows[Object.keys(tableData.rows)[0]].items,
+              ];
 
         const dataToExport: { [key: string]: string }[] = [];
 
-        groupedRows.forEach(
+        groupedRows?.forEach(
           (groupedRow: IMetricTableRowData[], groupedRowIndex: number) => {
             groupedRow?.forEach((row: IMetricTableRowData) => {
               const filteredRow = getFilteredRow({
@@ -2838,7 +2864,7 @@ function createAppModel(appConfig: IAppInitialConfig) {
               });
               dataToExport.push(filteredRow);
             });
-            if (groupedRows.length - 1 !== groupedRowIndex) {
+            if (groupedRows?.length - 1 !== groupedRowIndex) {
               dataToExport.push(emptyRow);
             }
           },
@@ -2887,9 +2913,9 @@ function createAppModel(appConfig: IAppInitialConfig) {
         );
         const lastRowKey = newData[newData.length - 1].hash;
         model.setState({
+          requestStatus: RequestStatusEnum.Ok,
           data,
           rowData: newData,
-          requestStatus: RequestStatusEnum.Ok,
           infiniteIsPending: false,
           tableColumns,
           tableData: tableData.rows,
@@ -2905,8 +2931,7 @@ function createAppModel(appConfig: IAppInitialConfig) {
           },
         });
 
-        const tableRef: any = model.getState()?.refs?.tableRef;
-        tableRef.current?.updateData({
+        model.getState()?.refs?.tableRef.current?.updateData({
           newData: tableData.rows,
           newColumns: tableColumns,
           hiddenColumns: modelState?.config.table.hiddenColumns!,
@@ -3295,11 +3320,10 @@ function createAppModel(appConfig: IAppInitialConfig) {
         if (runsRequestRef) {
           runsRequestRef.abort();
         }
-
+        setRequestProgress(model);
         model.setState({
           requestStatus: RequestStatusEnum.Ok,
         });
-
         onModelNotificationAdd({
           id: Date.now(),
           severity: 'info',
@@ -3326,6 +3350,7 @@ function createAppModel(appConfig: IAppInitialConfig) {
           updateURL({ configData, appName });
         }
         runsRequestRef = runsService.getRunsData(configData?.select?.query);
+        setRequestProgress(model);
         return {
           call: async () => {
             if (_.isEmpty(configData?.select?.options)) {
@@ -3344,7 +3369,9 @@ function createAppModel(appConfig: IAppInitialConfig) {
                   exceptionHandler({ detail, model });
                   resetModelState(configData, shouldResetSelectedRows!);
                 });
-                const runData = await getRunData(stream);
+                const runData = await getRunData(stream, (progress) =>
+                  setRequestProgress(model, progress),
+                );
                 updateData(runData);
               } catch (ex: Error | any) {
                 if (ex.name === 'AbortError') {
@@ -3441,13 +3468,13 @@ function createAppModel(appConfig: IAppInitialConfig) {
               }
               const groupHeaderRow = {
                 meta: {
-                  chartIndex:
-                    config.grouping?.chart?.length! > 0 ||
-                    //ToDo reverse mode
-                    // config.grouping?.reverseMode?.chart
-                    //   ? metricsCollection.chartIndex + 1
-                    //   : null,
-                    null,
+                  chartIndex: config?.grouping?.chart?.length
+                    ? metricsCollection.chartIndex + 1
+                    : null,
+                  //ToDo reverse mode
+                  // config.grouping?.reverseMode?.chart
+                  //   ? metricsCollection.chartIndex + 1
+                  //   : null,
                   color: metricsCollection.color,
                   dasharray: metricsCollection.dasharray,
                   itemsCount: metricsCollection.data.length,
@@ -3827,12 +3854,10 @@ function createAppModel(appConfig: IAppInitialConfig) {
           AppNameEnum.PARAMS,
         );
 
-        if (model.getState()?.requestStatus !== RequestStatusEnum.Pending) {
-          model.getState()?.refs?.tableRef.current?.updateData({
-            newData: tableData.rows,
-            newColumns: tableColumns,
-          });
-        }
+        model.getState()?.refs?.tableRef.current?.updateData({
+          newData: tableData.rows,
+          newColumns: tableColumns,
+        });
 
         if (!_.isEmpty(configData.chart?.brushExtents)) {
           const chart = { ...configData.chart };
@@ -4192,7 +4217,13 @@ function createAppModel(appConfig: IAppInitialConfig) {
           data[0]?.config,
           config.table?.columnsOrder!,
           config.table?.hiddenColumns!,
+          config.table?.sortFields,
+          onSortChange,
+          config.grouping as any,
+          onModelGroupingSelectChange,
+          AppNameEnum.PARAMS,
         );
+
         const excludedFields: string[] = ['#', 'actions'];
         const filteredHeader: string[] = tableColumns.reduce(
           (acc: string[], column: ITableColumn) =>
@@ -4214,11 +4245,13 @@ function createAppModel(appConfig: IAppInitialConfig) {
             ? Object.keys(tableData.rows).map(
                 (groupedRowKey: string) => tableData.rows[groupedRowKey].items,
               )
-            : [tableData.rows];
-
+            : [
+                Array.isArray(tableData.rows)
+                  ? tableData.rows
+                  : tableData.rows[Object.keys(tableData.rows)[0]].items,
+              ];
         const dataToExport: { [key: string]: string }[] = [];
-
-        groupedRows.forEach(
+        groupedRows?.forEach(
           (groupedRow: IMetricTableRowData[], groupedRowIndex: number) => {
             groupedRow?.forEach((row: IMetricTableRowData) => {
               const filteredRow = getFilteredRow<IMetricTableRowData>({
@@ -4227,7 +4260,7 @@ function createAppModel(appConfig: IAppInitialConfig) {
               });
               dataToExport.push(filteredRow);
             });
-            if (groupedRows.length - 1 !== groupedRowIndex) {
+            if (groupedRows?.length - 1 !== groupedRowIndex) {
               dataToExport.push(emptyRow);
             }
           },
@@ -4290,8 +4323,8 @@ function createAppModel(appConfig: IAppInitialConfig) {
           onModelGroupingSelectChange,
           AppNameEnum.PARAMS,
         );
-        const tableRef: any = model.getState()?.refs?.tableRef;
-        tableRef?.current?.updateData({
+
+        model.getState()?.refs?.tableRef.current?.updateData({
           newData: tableData.rows,
           newColumns: tableColumns,
           hiddenColumns: configData.table?.hiddenColumns!,
@@ -4876,12 +4909,10 @@ function createAppModel(appConfig: IAppInitialConfig) {
           AppNameEnum.SCATTERS,
         );
 
-        if (model.getState()?.requestStatus !== RequestStatusEnum.Pending) {
-          model.getState()?.refs?.tableRef.current?.updateData({
-            newData: tableData.rows,
-            newColumns: tableColumns,
-          });
-        }
+        model.getState()?.refs?.tableRef.current?.updateData({
+          newData: tableData.rows,
+          newColumns: tableColumns,
+        });
 
         model.setState({
           requestStatus: RequestStatusEnum.Ok,
@@ -5097,13 +5128,13 @@ function createAppModel(appConfig: IAppInitialConfig) {
               }
               const groupHeaderRow = {
                 meta: {
-                  chartIndex:
-                    config.grouping?.chart?.length! > 0 ||
-                    //ToDo reverse mode
-                    // config.grouping?.reverseMode?.chart
-                    //   ? metricsCollection.chartIndex + 1
-                    //   : null,
-                    null,
+                  chartIndex: config?.grouping?.chart?.length
+                    ? metricsCollection.chartIndex + 1
+                    : null,
+                  //ToDo reverse mode
+                  // config.grouping?.reverseMode?.chart
+                  //   ? metricsCollection.chartIndex + 1
+                  //   : null,
                   color: metricsCollection.color,
                   dasharray: metricsCollection.dasharray,
                   itemsCount: metricsCollection.data.length,
@@ -5557,8 +5588,8 @@ function createAppModel(appConfig: IAppInitialConfig) {
           onModelGroupingSelectChange,
           AppNameEnum.SCATTERS,
         );
-        const tableRef: any = model.getState()?.refs?.tableRef;
-        tableRef?.current?.updateData({
+
+        model.getState()?.refs?.tableRef.current?.updateData({
           newData: tableData.rows,
           newColumns: tableColumns,
           hiddenColumns: configData.table?.hiddenColumns!,
@@ -5589,11 +5620,10 @@ function createAppModel(appConfig: IAppInitialConfig) {
         if (runsRequestRef) {
           runsRequestRef.abort();
         }
-
+        setRequestProgress(model);
         model.setState({
           requestStatus: RequestStatusEnum.Ok,
         });
-
         onModelNotificationAdd({
           id: Date.now(),
           severity: 'info',
@@ -5617,6 +5647,7 @@ function createAppModel(appConfig: IAppInitialConfig) {
           updateURL({ configData, appName });
         }
         runsRequestRef = runsService.getRunsData(configData?.select?.query);
+        setRequestProgress(model);
         return {
           call: async () => {
             if (_.isEmpty(configData?.select?.options)) {
@@ -5635,7 +5666,9 @@ function createAppModel(appConfig: IAppInitialConfig) {
                   exceptionHandler({ detail, model });
                   resetModelState(configData, shouldResetSelectedRows!);
                 });
-                const runData = await getRunData(stream);
+                const runData = await getRunData(stream, (progress) =>
+                  setRequestProgress(model, progress),
+                );
                 updateData(runData);
 
                 liveUpdateInstance?.start({
@@ -5757,7 +5790,13 @@ function createAppModel(appConfig: IAppInitialConfig) {
           data[0]?.config,
           config.table?.columnsOrder!,
           config.table?.hiddenColumns!,
+          config.table?.sortFields,
+          onSortChange,
+          config.grouping as any,
+          onModelGroupingSelectChange,
+          AppNameEnum.SCATTERS,
         );
+
         const excludedFields: string[] = ['#', 'actions'];
         const filteredHeader: string[] = tableColumns.reduce(
           (acc: string[], column: ITableColumn) =>
@@ -5779,11 +5818,15 @@ function createAppModel(appConfig: IAppInitialConfig) {
             ? Object.keys(tableData.rows).map(
                 (groupedRowKey: string) => tableData.rows[groupedRowKey].items,
               )
-            : [tableData.rows];
+            : [
+                Array.isArray(tableData.rows)
+                  ? tableData.rows
+                  : tableData.rows[Object.keys(tableData.rows)[0]].items,
+              ];
 
         const dataToExport: { [key: string]: string }[] = [];
 
-        groupedRows.forEach(
+        groupedRows?.forEach(
           (groupedRow: IMetricTableRowData[], groupedRowIndex: number) => {
             groupedRow?.forEach((row: IMetricTableRowData) => {
               const filteredRow = getFilteredRow<IMetricTableRowData>({
@@ -5792,7 +5835,7 @@ function createAppModel(appConfig: IAppInitialConfig) {
               });
               dataToExport.push(filteredRow);
             });
-            if (groupedRows.length - 1 !== groupedRowIndex) {
+            if (groupedRows?.length - 1 !== groupedRowIndex) {
               dataToExport.push(emptyRow);
             }
           },

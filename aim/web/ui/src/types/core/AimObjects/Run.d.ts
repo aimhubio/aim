@@ -30,10 +30,21 @@ export interface RunInfo {
   props: RunProps;
 }
 
+export interface IndexRanges {
+  index_range_total: [number, number];
+  index_range_used: [number, number];
+}
+
+export interface RecordRanges {
+  record_range_total: [number, number];
+  record_range_used: [number, number];
+}
+
 export interface RunSearchRunView {
   hash: string;
   values: Array<any>;
   params: Params;
   traces: Array<SequenceFullView>;
   props: RunProps;
+  ranges?: IndexRanges & RecordRanges;
 }

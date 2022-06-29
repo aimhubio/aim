@@ -16,7 +16,6 @@ import { IUpdateFocusedChartArgs } from 'types/components/LineChart/LineChart';
 import { AggregationAreaMethods } from 'utils/aggregateGroupData';
 import getRoundedValue from 'utils/roundValue';
 
-import hexToRgbA from '../hexToRgbA';
 import { formatValueByAlignment } from '../formatByAlignment';
 
 import { getDimensionValue } from './getDimensionValue';
@@ -441,11 +440,23 @@ function drawHoverAttributes(args: IDrawHoverAttributesArgs): void {
       .classed('active', false)
       .classed('focus', false);
 
-    attrNodeRef.current
-      .select(`[id=Circle-${key}]`)
+    attrNodeRef.current.select('.focus__shadow')?.remove();
+
+    const newFocusedPoint = attrNodeRef.current.select(`[id=Circle-${key}]`);
+    newFocusedPoint
       .classed('focus', true)
       .attr('r', CircleEnum.ActiveRadius)
       .raise();
+
+    attrNodeRef.current
+      .append('circle')
+      .classed('HoverCircle focus focus__shadow', true)
+      .attr('r', CircleEnum.ActiveRadius)
+      .attr('cx', newFocusedPoint.attr('cx'))
+      .attr('cy', newFocusedPoint.attr('cy'))
+      .attr('stroke', newFocusedPoint.attr('stroke'))
+      .attr('stroke-opacity', 0.4)
+      .lower();
   }
 
   function drawCircles(nearestCircles: INearestCircle[]): void {
@@ -461,8 +472,7 @@ function drawHoverAttributes(args: IDrawHoverAttributesArgs): void {
       .attr('r', CircleEnum.Radius)
       .attr('stroke', (d: INearestCircle) => d.color)
       .attr('fill', (d: INearestCircle) => d.color)
-      .attr('color', (d: INearestCircle) => d.color)
-      .style('outline-color', (d: INearestCircle) => hexToRgbA(d.color, 0.3))
+      .attr('stroke-opacity', 1)
       .on('click', handlePointClick);
   }
 

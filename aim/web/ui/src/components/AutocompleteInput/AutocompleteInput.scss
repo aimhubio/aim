@@ -31,6 +31,10 @@
     @include monospaceFontFamily();
     font-size: $text-lg;
   }
+  &__disabled {
+    pointer-events: none;
+    opacity: 0.5;
+  }
   .details-label {
     width: auto !important;
   }
@@ -38,6 +42,9 @@
     display: none !important;
   }
 
+  .scroll-decoration {
+    box-shadow: unset !important;
+  }
   .monaco-editor .find-widget.visible {
     display: none;
   }

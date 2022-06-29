@@ -422,7 +422,7 @@ function RunDetail(): React.FunctionComponentElement<React.ReactNode> {
                 <Route path={`${url}/${tab}`} key={tab}>
                   <ErrorBoundary>
                     {tab === 'overview' ? (
-                      <div className='RunDetail__runDetailContainer__tabPanel overviewPanel'>
+                      <div className='RunDetail__runDetailContainer__tabPanelBox overviewPanel'>
                         <React.Suspense fallback={<Spinner />}>
                           {tabContent[tab]}
                         </React.Suspense>
