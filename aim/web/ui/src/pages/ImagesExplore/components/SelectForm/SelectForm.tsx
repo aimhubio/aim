@@ -165,6 +165,7 @@ function SelectForm({
                     context={selectFormData?.advancedSuggestions}
                     value={selectedImagesData?.advancedQuery}
                     onEnter={handleSearch}
+                    disabled={isDisabled}
                   />
                 </div>
               ) : (
@@ -297,13 +298,12 @@ function SelectForm({
                   context={selectFormData?.suggestions}
                   value={selectedImagesData?.query}
                   onEnter={handleSearch}
-                  isDisabled={isDisabled}
+                  disabled={isDisabled}
                 />
               </div>
             </ErrorBoundary>
           )}
         </div>
-
         <div className='SelectForm__search__container'>
           <Button
             fullWidth

@@ -9,6 +9,7 @@ import useModel from 'hooks/model/useModel';
 
 import runsAppModel from 'services/models/runs/runsAppModel';
 import * as analytics from 'services/analytics';
+import { AppNameEnum } from 'services/models/explorer';
 
 import { ITableRef } from 'types/components/Table/Table';
 
@@ -42,7 +43,10 @@ function RunsContainer(): React.FunctionComponentElement<React.ReactNode> {
     analytics.pageView(ANALYTICS_EVENT_KEYS.runs.pageView);
     const unListenHistory = history.listen((location) => {
       if (!!runsData?.config!) {
-        if (runsData.config.select !== getStateFromUrl('search')) {
+        if (
+          runsData.config.select !== getStateFromUrl('search') &&
+          history.location.pathname === `/${AppNameEnum.RUNS}`
+        ) {
           runsAppModel.setDefaultAppConfigData();
         }
       }

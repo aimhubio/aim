@@ -155,6 +155,7 @@ function SelectForm({
                   context={selectFormData?.advancedSuggestions}
                   value={selectedMetricsData?.advancedQuery}
                   onEnter={handleMetricSearch}
+                  disabled={isDisabled}
                 />
               </div>
             ) : (
@@ -285,7 +286,7 @@ function SelectForm({
                 value={selectedMetricsData?.query}
                 context={selectFormData.suggestions}
                 onEnter={handleMetricSearch}
-                isDisabled={isDisabled}
+                disabled={isDisabled}
               />
             </div>
           )}

@@ -12,7 +12,7 @@ import SearchBar from './components/SearchBar/SearchBar';
 import './Runs.scss';
 
 function Runs(props: any): React.FunctionComponentElement<React.ReactNode> {
-  const [isProgresBarVisible, setIsProgressBarVisible] =
+  const [isProgressBarVisible, setIsProgressBarVisible] =
     React.useState<boolean>(false);
   return (
     <div className='Runs__container'>
@@ -23,6 +23,7 @@ function Runs(props: any): React.FunctionComponentElement<React.ReactNode> {
               ...props.liveUpdateConfig,
               onLiveUpdateConfigChange: props.onLiveUpdateConfigChange,
             }}
+            disabled={isProgressBarVisible}
           />
           <SearchBar
             searchSuggestions={props.searchSuggestions}
@@ -31,7 +32,7 @@ function Runs(props: any): React.FunctionComponentElement<React.ReactNode> {
             isRunsDataLoading={
               props.requestStatus === RequestStatusEnum.Pending
             }
-            isDisabled={isProgresBarVisible}
+            isDisabled={isProgressBarVisible}
           />
           <div className='Runs__table__container'>
             <ProgressBar

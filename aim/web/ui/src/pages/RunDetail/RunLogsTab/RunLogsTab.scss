@@ -41,13 +41,13 @@ $logs-box-background: #ffffff;
 
 .LogRow {
   &__line {
-    //ToDo Rethink about color
     color: #333;
-    font-size: 13px;
+    font-size: $text-md;
     padding: 0 $space-sm;
     @include monospaceFontFamily();
     width: 100%;
+    line-height: 1.08;
     display: block;
-    height: 17px;
+    height: 15px;
   }
 }

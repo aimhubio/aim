@@ -11,6 +11,7 @@ import useResizeObserver from 'hooks/window/useResizeObserver';
 
 import metricAppModel from 'services/models/metrics/metricsAppModel';
 import * as analytics from 'services/analytics';
+import { AppNameEnum } from 'services/models/explorer';
 
 import { ITableRef } from 'types/components/Table/Table';
 import { IChartPanelRef } from 'types/components/ChartPanel/ChartPanel';
@@ -93,9 +94,10 @@ function MetricsContainer(): React.FunctionComponentElement<React.ReactNode> {
     const unListenHistory = history.listen(() => {
       if (!!metricsData?.config) {
         if (
-          metricsData.config.grouping !== getStateFromUrl('grouping') ||
-          metricsData.config.chart !== getStateFromUrl('chart') ||
-          metricsData.config.select !== getStateFromUrl('select')
+          (metricsData.config.grouping !== getStateFromUrl('grouping') ||
+            metricsData.config.chart !== getStateFromUrl('chart') ||
+            metricsData.config.select !== getStateFromUrl('select')) &&
+          history.location.pathname === `/${AppNameEnum.METRICS}`
         ) {
           metricAppModel.setDefaultAppConfigData();
           metricAppModel.updateModelData();

@@ -9,6 +9,7 @@ import useResizeObserver from 'hooks/window/useResizeObserver';
 
 import paramsAppModel from 'services/models/params/paramsAppModel';
 import * as analytics from 'services/analytics';
+import { AppNameEnum } from 'services/models/explorer';
 
 import { IParamsAppModelState } from 'types/services/models/params/paramsAppModel';
 import { ITableRef } from 'types/components/Table/Table';
@@ -96,9 +97,10 @@ function ParamsContainer(): React.FunctionComponentElement<React.ReactNode> {
     const unListenHistory = history.listen(() => {
       if (!!paramsData?.config) {
         if (
-          paramsData.config.grouping !== getStateFromUrl('grouping') ||
-          paramsData.config.chart !== getStateFromUrl('chart') ||
-          paramsData.config.select !== getStateFromUrl('select')
+          (paramsData.config.grouping !== getStateFromUrl('grouping') ||
+            paramsData.config.chart !== getStateFromUrl('chart') ||
+            paramsData.config.select !== getStateFromUrl('select')) &&
+          history.location.pathname === `/${AppNameEnum.PARAMS}`
         ) {
           paramsAppModel.setDefaultAppConfigData();
           paramsAppModel.updateModelData();

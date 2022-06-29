@@ -37,7 +37,7 @@ import './Scatters.scss';
 function Scatters(
   props: IScattersProps,
 ): React.FunctionComponentElement<React.ReactNode> {
-  const [isProgresBarVisible, setIsProgressBarVisible] =
+  const [isProgressBarVisible, setIsProgressBarVisible] =
     React.useState<boolean>(false);
   const chartProps: any[] = React.useMemo(() => {
     return (props.scatterPlotData || []).map((data: any, index: number) => ({
@@ -52,6 +52,7 @@ function Scatters(
         <section className='Scatters__section'>
           <div className='Scatters__section__appBarContainer Scatters__fullHeight'>
             <AppBar
+              disabled={isProgressBarVisible}
               explorerName='SCATTERS'
               onBookmarkCreate={props.onBookmarkCreate}
               onBookmarkUpdate={props.onBookmarkUpdate}
@@ -62,7 +63,7 @@ function Scatters(
             />
             <div className='Scatters__SelectForm__Grouping__container'>
               <SelectForm
-                isDisabled={isProgresBarVisible}
+                isDisabled={isProgressBarVisible}
                 requestIsPending={
                   props.requestStatus === RequestStatusEnum.Pending
                 }
@@ -77,7 +78,7 @@ function Scatters(
                     p.groupName === GroupNameEnum.COLOR ||
                     p.groupName === GroupNameEnum.CHART,
                 )}
-                isDisabled={isProgresBarVisible}
+                isDisabled={isProgressBarVisible}
                 groupingData={props.groupingData}
                 groupingSelectOptions={props.groupingSelectOptions}
                 onGroupingSelectChange={props.onGroupingSelectChange}

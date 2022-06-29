@@ -162,8 +162,8 @@ import setComponentRefs from 'utils/app/setComponentRefs';
 import updateURL from 'utils/app/updateURL';
 import onDensityTypeChange from 'utils/app/onDensityTypeChange';
 import getValueByField from 'utils/getValueByField';
-import { isSystemMetric } from 'utils/isSystemMetric';
 import getTooltipContent from 'utils/getTooltipContent';
+import { isSystemMetric } from 'utils/isSystemMetric';
 import setDefaultAppConfigData from 'utils/app/setDefaultAppConfigData';
 import getAppConfigData from 'utils/app/getAppConfigData';
 import { getValue } from 'utils/helper';
@@ -633,7 +633,7 @@ function createAppModel(appConfig: IAppInitialConfig) {
       const metric = configData?.chart?.alignmentConfig?.metric;
 
       if (queryString) {
-        if (configData.select.advancedQuery) {
+        if (configData.select.advancedMode) {
           configData.select.advancedQuery = queryString;
         } else {
           configData.select.query = queryString;
@@ -1184,9 +1184,8 @@ function createAppModel(appConfig: IAppInitialConfig) {
         configData.grouping as any,
         onModelGroupingSelectChange,
       );
-      const tableRef: any = model.getState()?.refs?.tableRef;
 
-      tableRef?.current?.updateData({
+      model.getState()?.refs?.tableRef.current?.updateData({
         newData: tableData.rows,
         newColumns: tableColumns,
         hiddenColumns: configData.table?.hiddenColumns!,
@@ -1265,12 +1264,12 @@ function createAppModel(appConfig: IAppInitialConfig) {
         configData.grouping as any,
         onModelGroupingSelectChange,
       );
-      if (model.getState()?.requestStatus !== RequestStatusEnum.Pending) {
-        model.getState()?.refs?.tableRef?.current?.updateData({
-          newData: tableData.rows,
-          newColumns: tableColumns,
-        });
-      }
+
+      model.getState()?.refs?.tableRef.current?.updateData({
+        newData: tableData.rows,
+        newColumns: tableColumns,
+      });
+
       model.setState({
         requestStatus: RequestStatusEnum.Ok,
         rawData,
@@ -1551,11 +1550,15 @@ function createAppModel(appConfig: IAppInitialConfig) {
           ? Object.keys(tableData.rows).map(
               (groupedRowKey: string) => tableData.rows[groupedRowKey].items,
             )
-          : [tableData.rows];
+          : [
+              Array.isArray(tableData.rows)
+                ? tableData.rows
+                : tableData.rows[Object.keys(tableData.rows)[0]].items,
+            ];
 
       const dataToExport: { [key: string]: string }[] = [];
 
-      groupedRows.forEach(
+      groupedRows?.forEach(
         (groupedRow: IMetricTableRowData[], groupedRowIndex: number) => {
           groupedRow?.forEach((row: IMetricTableRowData) => {
             const filteredRow = getFilteredRow<IMetricTableRowData>({
@@ -1564,7 +1567,7 @@ function createAppModel(appConfig: IAppInitialConfig) {
             });
             dataToExport.push(filteredRow);
           });
-          if (groupedRows.length - 1 !== groupedRowIndex) {
+          if (groupedRows?.length - 1 !== groupedRowIndex) {
             dataToExport.push(emptyRow);
           }
         },
@@ -2361,8 +2364,7 @@ function createAppModel(appConfig: IAppInitialConfig) {
 
         updateTableTimeoutId = window.setTimeout(() => {
           model.setState({ requestStatus: RequestStatusEnum.Ok });
-          const tableRef: any = model.getState()?.refs?.tableRef;
-          tableRef.current?.updateData({
+          model.getState()?.refs?.tableRef.current?.updateData({
             newData: tableData.rows,
             newColumns: tableColumns,
             hiddenColumns: configData.table.hiddenColumns!,
@@ -2849,11 +2851,15 @@ function createAppModel(appConfig: IAppInitialConfig) {
             ? Object.keys(tableData.rows).map(
                 (groupedRowKey: string) => tableData.rows[groupedRowKey].items,
               )
-            : [tableData.rows];
+            : [
+                Array.isArray(tableData.rows)
+                  ? tableData.rows
+                  : tableData.rows[Object.keys(tableData.rows)[0]].items,
+              ];
 
         const dataToExport: { [key: string]: string }[] = [];
 
-        groupedRows.forEach(
+        groupedRows?.forEach(
           (groupedRow: IMetricTableRowData[], groupedRowIndex: number) => {
             groupedRow?.forEach((row: IMetricTableRowData) => {
               const filteredRow = getFilteredRow({
@@ -2862,7 +2868,7 @@ function createAppModel(appConfig: IAppInitialConfig) {
               });
               dataToExport.push(filteredRow);
             });
-            if (groupedRows.length - 1 !== groupedRowIndex) {
+            if (groupedRows?.length - 1 !== groupedRowIndex) {
               dataToExport.push(emptyRow);
             }
           },
@@ -2928,8 +2934,8 @@ function createAppModel(appConfig: IAppInitialConfig) {
             },
           },
         });
-        const tableRef: any = model.getState()?.refs?.tableRef;
-        tableRef.current?.updateData({
+
+        model.getState()?.refs?.tableRef.current?.updateData({
           newData: tableData.rows,
           newColumns: tableColumns,
           hiddenColumns: modelState?.config.table.hiddenColumns!,
@@ -3844,12 +3850,10 @@ function createAppModel(appConfig: IAppInitialConfig) {
           AppNameEnum.PARAMS,
         );
 
-        if (model.getState()?.requestStatus !== RequestStatusEnum.Pending) {
-          model.getState()?.refs?.tableRef.current?.updateData({
-            newData: tableData.rows,
-            newColumns: tableColumns,
-          });
-        }
+        model.getState()?.refs?.tableRef.current?.updateData({
+          newData: tableData.rows,
+          newColumns: tableColumns,
+        });
 
         if (!_.isEmpty(configData.chart?.brushExtents)) {
           const chart = { ...configData.chart };
@@ -4223,7 +4227,13 @@ function createAppModel(appConfig: IAppInitialConfig) {
           data[0]?.config,
           config.table?.columnsOrder!,
           config.table?.hiddenColumns!,
+          config.table?.sortFields,
+          onSortChange,
+          config.grouping as any,
+          onModelGroupingSelectChange,
+          AppNameEnum.PARAMS,
         );
+
         const excludedFields: string[] = ['#', 'actions'];
         const filteredHeader: string[] = tableColumns.reduce(
           (acc: string[], column: ITableColumn) =>
@@ -4245,11 +4255,13 @@ function createAppModel(appConfig: IAppInitialConfig) {
             ? Object.keys(tableData.rows).map(
                 (groupedRowKey: string) => tableData.rows[groupedRowKey].items,
               )
-            : [tableData.rows];
-
+            : [
+                Array.isArray(tableData.rows)
+                  ? tableData.rows
+                  : tableData.rows[Object.keys(tableData.rows)[0]].items,
+              ];
         const dataToExport: { [key: string]: string }[] = [];
-
-        groupedRows.forEach(
+        groupedRows?.forEach(
           (groupedRow: IMetricTableRowData[], groupedRowIndex: number) => {
             groupedRow?.forEach((row: IMetricTableRowData) => {
               const filteredRow = getFilteredRow<IMetricTableRowData>({
@@ -4258,7 +4270,7 @@ function createAppModel(appConfig: IAppInitialConfig) {
               });
               dataToExport.push(filteredRow);
             });
-            if (groupedRows.length - 1 !== groupedRowIndex) {
+            if (groupedRows?.length - 1 !== groupedRowIndex) {
               dataToExport.push(emptyRow);
             }
           },
@@ -4314,8 +4326,8 @@ function createAppModel(appConfig: IAppInitialConfig) {
           onModelGroupingSelectChange,
           AppNameEnum.PARAMS,
         );
-        const tableRef: any = model.getState()?.refs?.tableRef;
-        tableRef?.current?.updateData({
+
+        model.getState()?.refs?.tableRef.current?.updateData({
           newData: tableData.rows,
           newColumns: tableColumns,
           hiddenColumns: configData.table?.hiddenColumns!,
@@ -4901,12 +4913,10 @@ function createAppModel(appConfig: IAppInitialConfig) {
           AppNameEnum.SCATTERS,
         );
 
-        if (model.getState()?.requestStatus !== RequestStatusEnum.Pending) {
-          model.getState()?.refs?.tableRef.current?.updateData({
-            newData: tableData.rows,
-            newColumns: tableColumns,
-          });
-        }
+        model.getState()?.refs?.tableRef.current?.updateData({
+          newData: tableData.rows,
+          newColumns: tableColumns,
+        });
 
         model.setState({
           requestStatus: RequestStatusEnum.Ok,
@@ -5575,8 +5585,8 @@ function createAppModel(appConfig: IAppInitialConfig) {
           onModelGroupingSelectChange,
           AppNameEnum.SCATTERS,
         );
-        const tableRef: any = model.getState()?.refs?.tableRef;
-        tableRef?.current?.updateData({
+
+        model.getState()?.refs?.tableRef.current?.updateData({
           newData: tableData.rows,
           newColumns: tableColumns,
           hiddenColumns: configData.table?.hiddenColumns!,
@@ -5777,7 +5787,13 @@ function createAppModel(appConfig: IAppInitialConfig) {
           data[0]?.config,
           config.table?.columnsOrder!,
           config.table?.hiddenColumns!,
+          config.table?.sortFields,
+          onSortChange,
+          config.grouping as any,
+          onModelGroupingSelectChange,
+          AppNameEnum.SCATTERS,
         );
+
         const excludedFields: string[] = ['#', 'actions'];
         const filteredHeader: string[] = tableColumns.reduce(
           (acc: string[], column: ITableColumn) =>
@@ -5799,11 +5815,15 @@ function createAppModel(appConfig: IAppInitialConfig) {
             ? Object.keys(tableData.rows).map(
                 (groupedRowKey: string) => tableData.rows[groupedRowKey].items,
               )
-            : [tableData.rows];
+            : [
+                Array.isArray(tableData.rows)
+                  ? tableData.rows
+                  : tableData.rows[Object.keys(tableData.rows)[0]].items,
+              ];
 
         const dataToExport: { [key: string]: string }[] = [];
 
-        groupedRows.forEach(
+        groupedRows?.forEach(
           (groupedRow: IMetricTableRowData[], groupedRowIndex: number) => {
             groupedRow?.forEach((row: IMetricTableRowData) => {
               const filteredRow = getFilteredRow<IMetricTableRowData>({
@@ -5812,7 +5832,7 @@ function createAppModel(appConfig: IAppInitialConfig) {
               });
               dataToExport.push(filteredRow);
             });
-            if (groupedRows.length - 1 !== groupedRowIndex) {
+            if (groupedRows?.length - 1 !== groupedRowIndex) {
               dataToExport.push(emptyRow);
             }
           },

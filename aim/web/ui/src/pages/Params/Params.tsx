@@ -107,7 +107,7 @@ const Params = ({
   chartPanelOffsetHeight,
   requestProgress,
 }: IParamsProps): React.FunctionComponentElement<React.ReactNode> => {
-  const [isProgresBarVisible, setIsProgressBarVisible] =
+  const [isProgressBarVisible, setIsProgressBarVisible] =
     React.useState<boolean>(false);
   const chartProps: any[] = React.useMemo(() => {
     return (highPlotData || []).map((chartData: any, index: number) => ({
@@ -132,6 +132,7 @@ const Params = ({
         <div className='Params__fullHeight Params__section__appBarContainer'>
           <div>
             <AppBar
+              disabled={isProgressBarVisible}
               explorerName='PARAMS'
               onBookmarkCreate={onBookmarkCreate}
               onBookmarkUpdate={onBookmarkUpdate}
@@ -145,7 +146,7 @@ const Params = ({
             <SelectForm
               selectFormData={selectFormData}
               requestIsPending={requestStatus === RequestStatusEnum.Pending}
-              isDisabled={isProgresBarVisible}
+              isDisabled={isProgressBarVisible}
               selectedParamsData={selectedParamsData}
               onParamsSelectChange={onParamsSelectChange}
               onSelectRunQueryChange={onSelectRunQueryChange}
@@ -157,7 +158,7 @@ const Params = ({
                   p.groupName === GroupNameEnum.STROKE ||
                   p.groupName === GroupNameEnum.CHART,
               )}
-              isDisabled={isProgresBarVisible}
+              isDisabled={isProgressBarVisible}
               groupingData={groupingData}
               groupingSelectOptions={groupingSelectOptions}
               onGroupingSelectChange={onGroupingSelectChange}
