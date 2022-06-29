@@ -59,7 +59,7 @@ function Grouping({
                           ]
                         }
                         onShuffleChange={onShuffleChange}
-                        {...(groupName === 'color' && {
+                        {...(groupName === GroupNameEnum.COLOR && {
                           onGroupingPaletteChange,
                           paletteIndex: groupingData?.paletteIndex,
                         })}

@@ -16,7 +16,7 @@ import { IAppModelConfig } from 'types/services/models/explorer/createAppModel';
 import { getValue } from './helper';
 import getGroupConfig from './app/getGroupConfig';
 
-export default function getTooltipContent({
+function getTooltipContent({
   groupingItems = [],
   groupingSelectOptions = [],
   data = [],
@@ -77,3 +77,5 @@ export default function getTooltipContent({
 
   return { ...tooltipContent, selectedProps };
 }
+
+export default getTooltipContent;

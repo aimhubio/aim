@@ -18,7 +18,9 @@ import IllustrationBlock from 'components/IllustrationBlock/IllustrationBlock';
 import pageTitlesEnum from 'config/pageTitles/pageTitles';
 import { ResizeModeEnum } from 'config/enums/tableEnums';
 import { RowHeightSize } from 'config/table/tableConfigs';
-import GroupingPopovers from 'config/grouping/GroupingPopovers';
+import GroupingPopovers, {
+  GroupNameEnum,
+} from 'config/grouping/GroupingPopovers';
 import { RequestStatusEnum } from 'config/enums/requestStatusEnum';
 import {
   IllustrationsEnum,
@@ -252,7 +254,7 @@ function ImagesExplore(): React.FunctionComponentElement<React.ReactNode> {
               />
               <Grouping
                 groupingPopovers={GroupingPopovers.filter(
-                  (g) => g.groupName === 'row',
+                  (g) => g.groupName === GroupNameEnum.ROW,
                 )}
                 isDisabled={isProgresBarVisible}
                 groupingData={imagesExploreData?.config?.grouping}

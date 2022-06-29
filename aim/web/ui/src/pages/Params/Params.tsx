@@ -15,7 +15,9 @@ import ProgressBar from 'components/ProgressBar/ProgressBar';
 import pageTitlesEnum from 'config/pageTitles/pageTitles';
 import { RowHeightSize } from 'config/table/tableConfigs';
 import { ResizeModeEnum } from 'config/enums/tableEnums';
-import GroupingPopovers from 'config/grouping/GroupingPopovers';
+import GroupingPopovers, {
+  GroupNameEnum,
+} from 'config/grouping/GroupingPopovers';
 import { RequestStatusEnum } from 'config/enums/requestStatusEnum';
 import {
   IllustrationsEnum,
@@ -151,9 +153,9 @@ const Params = ({
             <Grouping
               groupingPopovers={GroupingPopovers.filter(
                 (p) =>
-                  p.groupName === 'color' ||
-                  p.groupName === 'stroke' ||
-                  p.groupName === 'chart',
+                  p.groupName === GroupNameEnum.COLOR ||
+                  p.groupName === GroupNameEnum.STROKE ||
+                  p.groupName === GroupNameEnum.CHART,
               )}
               isDisabled={isProgresBarVisible}
               groupingData={groupingData}

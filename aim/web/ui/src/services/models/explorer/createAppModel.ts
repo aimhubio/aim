@@ -145,7 +145,6 @@ import {
   iterFoldTree,
 } from 'utils/encoder/streamEncoding';
 import { filterMetricsData } from 'utils/filterMetricData';
-import getTooltipContent from 'utils/getTooltipContent';
 import { formatValue } from 'utils/formatValue';
 import getClosestValue from 'utils/getClosestValue';
 import getObjectPaths from 'utils/getObjectPaths';
@@ -164,6 +163,7 @@ import updateURL from 'utils/app/updateURL';
 import onDensityTypeChange from 'utils/app/onDensityTypeChange';
 import getValueByField from 'utils/getValueByField';
 import { isSystemMetric } from 'utils/isSystemMetric';
+import getTooltipContent from 'utils/getTooltipContent';
 import setDefaultAppConfigData from 'utils/app/setDefaultAppConfigData';
 import getAppConfigData from 'utils/app/getAppConfigData';
 import { getValue } from 'utils/helper';
