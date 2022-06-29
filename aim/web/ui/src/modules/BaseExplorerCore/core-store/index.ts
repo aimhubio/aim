@@ -107,7 +107,6 @@ export type QueryUIStateUnit = {
 // CREATE ENGINE
 function createEngine(config: IEngineConfigFinal) {
   const { states } = createConfiguration(config);
-
   const generatedInitialStates: { [key: string]: object } = states.names.reduce(
     (acc: { [key: string]: object }, name: string) => {
       acc[name] = states.values[name].initialState;
@@ -196,8 +195,9 @@ function createEngine(config: IEngineConfigFinal) {
 
   async function search(params: RunsSearchQueryParams) {
     lastQuery = {
-      query: params,
+      query: { params },
     };
+
     const res = await pipeline.execute({
       query: {
         params,
@@ -207,7 +207,6 @@ function createEngine(config: IEngineConfigFinal) {
       },
     });
 
-    console.log('result ----> ', res);
     const { additionalData, data } = res;
     storeVanilla.setState({ data, additionalData });
   }
@@ -220,7 +219,7 @@ function createEngine(config: IEngineConfigFinal) {
     groupingMethods.update(config);
 
     const result = await pipeline.execute({
-      query: lastQuery,
+      query: lastQuery.query,
       group: {
         [GroupType.COLUMN]: [
           {

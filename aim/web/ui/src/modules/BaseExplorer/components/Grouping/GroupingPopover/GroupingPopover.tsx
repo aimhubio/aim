@@ -88,7 +88,7 @@ function GroupingPopover({
   const values: IGroupingSelectOption[] = React.useMemo(() => {
     let data: IGroupingSelectOption[] = [];
     options.forEach((option: IGroupingSelectOption) => {
-      if (currentValues?.[groupName].fields.indexOf(option.value) !== -1) {
+      if (currentValues[groupName].fields.indexOf(option.value) !== -1) {
         data.push(option);
       }
     });

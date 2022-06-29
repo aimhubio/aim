@@ -72,8 +72,7 @@ function getSelectFormOptions(
   );
 }
 
-//TODO: move to utils function directory
-
+// @TODO: move to utils function directory
 function getQueryStringFromSelect(
   queryData: QueryUIStateUnit,
   sequenceName: SequenceTypesEnum,
@@ -139,6 +138,7 @@ function QueryForm(props: IQueryFormProps) {
     } else {
       engine.search({
         q: getQueryStringFromSelect(query, sequenceName),
+        report_progress: false,
       });
     }
   }, [engine, isFetching, query, sequenceName]);
