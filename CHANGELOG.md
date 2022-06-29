@@ -1,5 +1,11 @@
 # Changelog
 
+## Unreleased
+
+### Enhancements
+
+- Highlight the error position when getting search syntax errors (arsengit, mihran113)
+
 ## 3.11.1 Jun 27, 2022
 
 - Replace base58 encoder with base64 (KaroMourad, VkoHov)
