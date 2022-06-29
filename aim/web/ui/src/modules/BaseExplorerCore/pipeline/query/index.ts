@@ -73,7 +73,6 @@ function createQuery(
 ): Query {
   setCurrentSequenceType(sequenceType);
   setStatusChangeCallback(statusChangeCallback);
-
   createQueryRequest();
   // @TODO implement advanced cache with max memory usage limit
   const execute = useCache

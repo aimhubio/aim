@@ -8,7 +8,6 @@ function memoize<T, P>(fn: (args: T) => P | unknown): (args: T) => P {
   if (!isFunction(fn)) {
     throw Error('memCache fn:function parameter should be a function');
   }
-
   let cache = new Map<string, any>();
 
   return (args: T) => {

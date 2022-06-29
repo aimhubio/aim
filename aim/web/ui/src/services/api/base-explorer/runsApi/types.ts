@@ -16,6 +16,10 @@ export type RunsSearchQueryParams = {
    * ```
    */
   q?: string;
+  /**
+   * This flag is using when need to follow to the progress of streaming data
+   */
+  report_progress?: boolean;
 };
 
 /**
