@@ -492,9 +492,7 @@ function Table(props) {
                     selectedRows={props.selectedRows}
                     setColWidth={(width) =>
                       setColWidths((cW) => {
-                        return cW?.[index] !== undefined
-                          ? width + 1
-                          : cW?.[index] === width
+                        return cW?.[index] === width
                           ? cW
                           : { ...cW, [index]: width };
                       })
