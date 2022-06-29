@@ -133,6 +133,8 @@ export type IconName =
   | 'color-scale-on'
   | 'text'
   | 'minus'
+  | 'update-time'
   | 'circle-info'
   | 'warning-outline'
-  | 'warning-contained';
+  | 'warning-contained'
+  | 'info-circle-outline';
