@@ -1,11 +1,12 @@
-import { GroupNameType } from 'types/services/models/metrics/metricsAppModel';
+import { GroupNameEnum } from 'config/grouping/GroupingPopovers';
+
 import { IModel, State } from 'types/services/models/model';
 
 export function getFilteredGroupingOptions<M extends State>({
   groupName,
   model,
 }: {
-  groupName: GroupNameType;
+  groupName: GroupNameEnum;
   model: IModel<M>;
 }): string[] {
   const modelState = model.getState();

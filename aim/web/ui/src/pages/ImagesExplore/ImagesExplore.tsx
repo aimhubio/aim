@@ -39,6 +39,7 @@ import { AppNameEnum } from 'services/models/explorer';
 
 import { IGroupingSelectOption } from 'types/services/models/metrics/metricsAppModel';
 import { IApiRequest } from 'types/services/services';
+import { IModel, State } from 'types/services/models/model';
 
 import exceptionHandler from 'utils/app/exceptionHandler';
 import getStateFromUrl from 'utils/getStateFromUrl';
@@ -52,7 +53,7 @@ import './ImagesExplore.scss';
 function ImagesExplore(): React.FunctionComponentElement<React.ReactNode> {
   const route = useRouteMatch<any>();
   const history = useHistory();
-  const imagesExploreData = useModel<Partial<any>>(imagesExploreAppModel);
+  const imagesExploreData = useModel<any>(imagesExploreAppModel);
   const imagesWrapperRef = React.useRef<any>(null);
   const tableElemRef = React.useRef<HTMLDivElement>(null);
   const wrapperElemRef = React.useRef<HTMLDivElement>(null);
@@ -167,13 +168,19 @@ function ImagesExplore(): React.FunctionComponentElement<React.ReactNode> {
       );
       appRequestRef
         .call((detail: any) => {
-          exceptionHandler({ detail, model: imagesExploreAppModel });
+          exceptionHandler({
+            detail,
+            model: imagesExploreAppModel as IModel<State>,
+          });
         })
         .then(() => {
           imagesExploreAppModel.setDefaultAppConfigData(false);
           imagesRequestRef = imagesExploreAppModel.getImagesData();
           imagesRequestRef.call((detail: any) => {
-            exceptionHandler({ detail, model: imagesExploreAppModel });
+            exceptionHandler({
+              detail,
+              model: imagesExploreAppModel,
+            });
           });
         });
     } else {
@@ -323,7 +330,7 @@ function ImagesExplore(): React.FunctionComponentElement<React.ReactNode> {
                         focusedState={
                           imagesExploreData?.config?.images?.focusedState!
                         }
-                        tooltip={imagesExploreData?.config?.images?.tooltip!}
+                        tooltip={imagesExploreData?.tooltip!}
                         sortFieldsDict={memoizedImagesSortFields.sortFieldsDict}
                         sortFields={memoizedImagesSortFields.sortFields}
                         additionalProperties={
@@ -347,9 +354,7 @@ function ImagesExplore(): React.FunctionComponentElement<React.ReactNode> {
                             selectOptions={
                               imagesExploreData?.groupingSelectOptions!
                             }
-                            tooltip={
-                              imagesExploreData?.config?.images?.tooltip!
-                            }
+                            tooltip={imagesExploreData?.tooltip!}
                             orderedMap={imagesExploreData?.orderedMap}
                             additionalProperties={
                               imagesExploreData?.config?.images

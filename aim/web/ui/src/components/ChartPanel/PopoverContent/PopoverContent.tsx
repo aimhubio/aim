@@ -37,10 +37,11 @@ const PopoverContent = React.forwardRef(function PopoverContent(
     selectOptions,
   } = props;
   const {
-    selectedFields = {},
+    selectedProps = {},
     groupConfig = {},
     name = '',
     context = {},
+    run,
   } = tooltipContent || {};
   function renderPopoverHeader(): React.ReactNode {
     switch (chartType) {
@@ -172,18 +173,18 @@ const PopoverContent = React.forwardRef(function PopoverContent(
       >
         <div className='PopoverContent'>
           {renderPopoverHeader()}
-          {_.isEmpty(selectedFields) ? null : (
+          {_.isEmpty(selectedProps) ? null : (
             <ErrorBoundary>
               <div>
                 <Divider />
                 <div className='PopoverContent__box'>
-                  {Object.keys(selectedFields).map((paramKey) => (
+                  {Object.keys(selectedProps).map((paramKey) => (
                     <div key={paramKey} className='PopoverContent__value'>
                       <Text size={12} tint={50}>
                         {`${getValueByField(selectOptions, paramKey)}: `}
                       </Text>
                       <Text size={12}>
-                        {formatValue(selectedFields[paramKey])}
+                        {formatValue(selectedProps[paramKey])}
                       </Text>
                     </div>
                   ))}
@@ -227,16 +228,13 @@ const PopoverContent = React.forwardRef(function PopoverContent(
               </div>
             </ErrorBoundary>
           )}
-          {focusedState?.active && tooltipContent.run.hash ? (
+          {focusedState?.active && run?.hash ? (
             <ErrorBoundary>
               <div>
                 <Divider />
                 <div className='PopoverContent__box'>
                   <Link
-                    to={PathEnum.Run_Detail.replace(
-                      ':runHash',
-                      tooltipContent.run.hash,
-                    )}
+                    to={PathEnum.Run_Detail.replace(':runHash', run?.hash)}
                     component={RouteLink}
                     className='PopoverContent__runDetails'
                     underline='none'
@@ -250,7 +248,7 @@ const PopoverContent = React.forwardRef(function PopoverContent(
                 <Divider />
                 <div className='PopoverContent__box'>
                   <ErrorBoundary>
-                    <AttachedTagsList runHash={tooltipContent.run.hash} />
+                    <AttachedTagsList runHash={run?.hash} />
                   </ErrorBoundary>
                 </div>
               </div>

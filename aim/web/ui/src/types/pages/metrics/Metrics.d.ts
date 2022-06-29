@@ -16,7 +16,7 @@ import { ISelectOption } from 'services/models/explorer/createAppModel';
 
 import { ITableRef } from 'types/components/Table/Table';
 import {
-  GroupNameType,
+  GroupNameEnum,
   IMetricTableRowData,
   IOnGroupingModeChangeParams,
   IOnGroupingSelectChangeParams,
@@ -25,7 +25,7 @@ import {
   IAggregationConfig,
   IAggregatedData,
   IAlignmentConfig,
-  IPanelTooltip,
+  ITooltip,
   IChartTitleData,
   IGroupingSelectOption,
   IChartZoom,
@@ -68,7 +68,7 @@ export interface IMetricProps extends Partial<RouteChildrenProps> {
   highlightMode: HighlightEnum;
   groupingData: IGroupingConfig;
   notifyData: IMetricAppModelState['notifyData'];
-  tooltip: IPanelTooltip;
+  tooltip: ITooltip;
   aggregationConfig: IAggregationConfig;
   alignmentConfig: IAlignmentConfig;
   selectedMetricsData: ISelectConfig;
@@ -84,7 +84,7 @@ export interface IMetricProps extends Partial<RouteChildrenProps> {
   resizeMode: ResizeModeEnum;
   selectFormData: { options: ISelectOption[]; suggestions: string[] };
   columnsOrder: IColumnsOrder;
-  onChangeTooltip: (tooltip: Partial<IPanelTooltip>) => void;
+  onChangeTooltip: (tooltip: Partial<ITooltip>) => void;
   onIgnoreOutliersChange: () => void;
   onZoomChange: (zoom: Partial<IChartZoom>) => void;
   onActivePointChange?: (
@@ -102,8 +102,8 @@ export interface IMetricProps extends Partial<RouteChildrenProps> {
   onGroupingSelectChange: (params: IOnGroupingSelectChangeParams) => void;
   onGroupingModeChange: (params: IOnGroupingModeChangeParams) => void;
   onGroupingPaletteChange: (index: number) => void;
-  onGroupingReset: (groupName: GroupNameType) => void;
-  onGroupingApplyChange: (groupName: GroupNameType) => void;
+  onGroupingReset: (groupName: GroupNameEnum) => void;
+  onGroupingApplyChange: (groupName: GroupNameEnum) => void;
   onGroupingPersistenceChange: (groupName: 'color' | 'stroke') => void;
   onBookmarkCreate: (params: IBookmarkFormState) => void;
   onBookmarkUpdate: (id: string) => void;

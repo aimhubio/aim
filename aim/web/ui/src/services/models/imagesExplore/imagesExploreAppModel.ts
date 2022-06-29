@@ -14,6 +14,7 @@ import { CONTROLS_DEFAULT_CONFIG } from 'config/controls/controlsDefaultConfig';
 import { ANALYTICS_EVENT_KEYS } from 'config/analytics/analyticsKeysMap';
 import { DATE_EXPORTING_FORMAT, TABLE_DATE_FORMAT } from 'config/dates/dates';
 import { getSuggestionsByExplorer } from 'config/monacoConfig/monacoConfig';
+import { GroupNameEnum } from 'config/grouping/GroupingPopovers';
 
 import {
   getImagesExploreTableColumns,
@@ -29,15 +30,13 @@ import projectsService from 'services/api/projects/projectsService';
 import runsService from 'services/api/runs/runsService';
 
 import {
-  GroupNameType,
   IAppData,
   IDashboardData,
   IGroupingSelectOption,
   IMetricsCollection,
   IOnGroupingModeChangeParams,
   IOnGroupingSelectChangeParams,
-  IPanelTooltip,
-  ITooltipData,
+  ITooltip,
 } from 'types/services/models/metrics/metricsAppModel';
 import { IMetricTrace, IRun } from 'types/services/models/metrics/runModel';
 import { IBookmarkFormState } from 'types/components/BookmarkForm/BookmarkForm';
@@ -49,10 +48,12 @@ import {
   IImagesExploreAppModelState,
 } from 'types/services/models/imagesExplore/imagesExploreAppModel';
 import {
+  IAppModelState,
   ISelectConfig,
   ISelectOption,
 } from 'types/services/models/explorer/createAppModel';
 import { IProjectParamsMetrics } from 'types/services/models/projects/projectsModel';
+import { IModel } from 'types/services/models/model';
 
 import getAppConfigDataMethod from 'utils/app/getAppConfigData';
 import onRowSelectAction from 'utils/app/onRowSelect';
@@ -70,8 +71,6 @@ import JsonToCSV from 'utils/JsonToCSV';
 import { formatValue } from 'utils/formatValue';
 import getValueByField from 'utils/getValueByField';
 import arrayBufferToBase64 from 'utils/arrayBufferToBase64';
-import getTooltipData from 'utils/app/getTooltipData';
-import filterTooltipContent from 'utils/filterTooltipContent';
 import { getDataAsMediaSetNestedObject } from 'utils/app/getDataAsMediaSetNestedObject';
 import { getCompatibleSelectConfig } from 'utils/app/getCompatibleSelectConfig';
 import { getSortedFields, SortField, SortFields } from 'utils/getSortedFields';
@@ -87,22 +86,23 @@ import { processDurationTime } from 'utils/processDurationTime';
 import onVisibilityChange from 'utils/app/onColumnsVisibilityChange';
 import setRequestProgress from 'utils/app/setRequestProgress';
 import getRunData from 'utils/app/getRunData';
+import getTooltipContent from 'utils/getTooltipContent';
 
 import createModel from '../model';
 import { AppNameEnum } from '../explorer';
 
-const model = createModel<Partial<IImagesExploreAppModelState>>({
+const model: IModel<IAppModelState> = createModel<IAppModelState>({
   requestStatus: RequestStatusEnum.NotRequested,
+  requestProgress: {
+    matched: 0,
+    checked: 0,
+    trackedRuns: 0,
+  },
   searchButtonDisabled: false,
   applyButtonDisabled: true,
-  selectFormData: {
-    options: undefined,
-    suggestions: [],
-  },
+  selectFormData: { options: undefined, suggestions: [] },
   config: getConfig(),
 });
-
-let tooltipData: ITooltipData = {};
 
 function getConfig(): IImagesExploreAppConfig {
   return {
@@ -125,7 +125,6 @@ function getConfig(): IImagesExploreAppConfig {
       indexDensity: '5',
       recordDensity: '50',
       tooltip: {
-        content: {},
         display: CONTROLS_DEFAULT_CONFIG.images.tooltip.display,
         selectedFields: CONTROLS_DEFAULT_CONFIG.images.tooltip.selectedFields,
       },
@@ -400,7 +399,6 @@ function getImagesData(
           tableData: [],
           images: {
             tooltip: {
-              content: {},
               display: true,
               selectedFields: [],
             },
@@ -588,28 +586,6 @@ function setModelData(rawData: any[], configData: IImagesExploreAppConfig) {
     groupingSelectOptions,
     model,
   });
-  tooltipData = getTooltipData({
-    processedData: data,
-    paramKeys: sortedParams,
-    groupingSelectOptions,
-    groupingItems: ['row'],
-    model,
-  });
-  if (configData.images.focusedState.key) {
-    configData = {
-      ...configData,
-      images: {
-        ...configData.images,
-        tooltip: {
-          ...configData.images.tooltip,
-          content: filterTooltipContent(
-            tooltipData[configData.images.focusedState.key],
-            configData?.images.tooltip.selectedFields,
-          ),
-        },
-      },
-    };
-  }
   const ranges = rawData?.[0]?.ranges;
   const tableData = getDataAsTableRows(
     data,
@@ -681,7 +657,6 @@ function setModelData(rawData: any[], configData: IImagesExploreAppConfig) {
     recordDensity,
     indexDensity,
     tooltip: config.images.tooltip || {
-      content: {},
       display: true,
       selectedFields: [],
     },
@@ -737,30 +712,6 @@ function updateModelData(
     groupingSelectOptions,
     model,
   });
-  tooltipData = getTooltipData({
-    processedData: data,
-    paramKeys: sortedParams,
-    groupingSelectOptions,
-    groupingItems: ['row'],
-    model,
-  });
-
-  if (configData.images.focusedState.key) {
-    configData = {
-      ...configData,
-      images: {
-        ...configData.images,
-        tooltip: {
-          ...configData.images.tooltip,
-          content: filterTooltipContent(
-            tooltipData[configData.images.focusedState.key],
-            configData?.images.tooltip.selectedFields,
-          ),
-        },
-      },
-    };
-  }
-
   const tableData = getDataAsTableRows(
     data,
     params,
@@ -792,7 +743,7 @@ function updateModelData(
 
   model.setState({
     config: configData,
-    data: model.getState()?.data,
+    data,
     imagesData: mediaSetData,
     orderedMap,
     tableData: tableData.rows,
@@ -940,7 +891,7 @@ function onGroupingModeChange({ value }: IOnGroupingModeChangeParams): void {
   }
 }
 
-function onGroupingReset(groupName: GroupNameType) {
+function onGroupingReset(groupName: GroupNameEnum) {
   const configData: IImagesExploreAppConfig | undefined =
     model.getState()?.config;
   if (configData?.grouping) {
@@ -1131,7 +1082,9 @@ function onActivePointChange(
   activePoint: any,
   focusedStateActive: boolean = false,
 ): void {
-  const { refs, config } = model.getState() as any;
+  const { data, refs, config, groupingSelectOptions, tooltip } =
+    model.getState();
+
   if (config?.table.resizeMode !== ResizeModeEnum.Hide) {
     const tableRef: any = refs?.tableRef;
     if (tableRef && activePoint.seqKey) {
@@ -1146,6 +1099,12 @@ function onActivePointChange(
   }
   let configData = config;
   if (configData?.images) {
+    // TODO remove this later
+    // remove unnecessary content prop from tooltip config
+    if (configData.images.tooltip?.hasOwnProperty('content')) {
+      delete configData.images.tooltip.content;
+    }
+
     configData = {
       ...configData,
       images: {
@@ -1154,15 +1113,6 @@ function onActivePointChange(
           active: focusedStateActive,
           key: activePoint.key,
         },
-        tooltip: activePoint.key
-          ? {
-              ...configData.images.tooltip,
-              content: filterTooltipContent(
-                tooltipData[activePoint.key],
-                configData?.images.tooltip.selectedFields,
-              ),
-            }
-          : configData.images.tooltip,
       },
     };
 
@@ -1175,32 +1125,70 @@ function onActivePointChange(
     }
   }
 
-  model.setState({ config: configData });
+  const tooltipContent = configData.images?.focusedState?.key
+    ? getTooltipContent({
+        groupingItems: [GroupNameEnum.ROW],
+        groupingSelectOptions,
+        data,
+        configData,
+        activePointKey: configData.images?.focusedState?.key,
+        selectedFields: configData.images?.tooltip?.selectedFields,
+      })
+    : tooltip.content;
+
+  model.setState({
+    config: configData,
+    tooltip: {
+      ...configData?.images?.tooltip,
+      content: tooltipContent,
+    },
+  });
 }
 
-function onChangeTooltip(tooltip: Partial<IPanelTooltip>): void {
-  let configData = model.getState()?.config;
+function onChangeTooltip(tooltipObj: Partial<ITooltip>): void {
+  let {
+    config: configData,
+    data,
+    groupingSelectOptions = [],
+    tooltip,
+  } = model.getState();
+
   if (configData?.images) {
-    let content = configData.images.tooltip.content;
-    if (tooltip.selectedFields && configData?.images.focusedState.key) {
-      content = filterTooltipContent(
-        tooltipData[configData.images.focusedState.key],
-        tooltip.selectedFields,
-      );
+    // TODO remove this later
+    // remove unnecessary content prop from tooltip config
+    if (configData.images.tooltip?.hasOwnProperty('content')) {
+      delete configData.images.tooltip.content;
     }
+
     configData = {
       ...configData,
       images: {
         ...configData.images,
         tooltip: {
           ...configData.images.tooltip,
-          ...tooltip,
-          content,
+          ...tooltipObj,
         },
       },
     };
 
-    model.setState({ config: configData });
+    const tooltipContent = configData.images?.focusedState?.key
+      ? getTooltipContent({
+          groupingItems: [GroupNameEnum.ROW],
+          groupingSelectOptions,
+          data,
+          configData,
+          activePointKey: configData.images?.focusedState?.key,
+          selectedFields: configData.images?.tooltip?.selectedFields,
+        })
+      : tooltip.content;
+
+    model.setState({
+      config: configData,
+      tooltip: {
+        ...configData?.images?.tooltip,
+        content: tooltipContent,
+      },
+    });
     updateURL(configData);
   }
   analytics.trackEvent(

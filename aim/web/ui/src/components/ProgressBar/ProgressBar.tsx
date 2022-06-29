@@ -36,8 +36,7 @@ function ProgressBar({
         window.clearTimeout(timeoutIdRef.current);
       }
     };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [processing, pendingStatus]);
+  }, [processing, pendingStatus, setIsProgressBarVisible]);
 
   const barWidth = React.useMemo(
     () => (pendingStatus ? percent + '%' : 'unset'),
