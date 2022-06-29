@@ -135,4 +135,5 @@ export type IconName =
   | 'update-time'
   | 'circle-info'
   | 'warning-outline'
-  | 'warning-contained';
+  | 'warning-contained'
+  | 'info-circle-outline';
