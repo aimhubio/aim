@@ -1,5 +1,13 @@
 # Changelog
 
+## 3.11.1 Jun 27, 2022
+
+- Replace base58 encoder with base64 (KaroMourad, VkoHov)
+- Fix Notes tab loading issue (arsengit)
+- Fix the loading logic of the `monaco editor` across the Aim Ui (arsengit)
+- Fix `Table` export functionality in Params and Scatters explorers (arsengit)
+- Allow mixing numeric types on a single Sequence (alberttorosyan)
+
 ## 3.11.0 Jun 21, 2022
 
 ### Enhancements:
