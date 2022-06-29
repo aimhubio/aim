@@ -73,7 +73,6 @@ function ProgressBar({
             <Text
               className='ProgressBar__container__info__matched'
               size={14}
-              color='success'
               weight={600}
             >
               {matched} matched run(s)
