@@ -1,5 +1,10 @@
 # Changelog
 
+### Enhancements:
+
+- Filter redundant tooltip data from URL config state (KaroMourad)
+
+
 ## 3.11.1 Jun 27, 2022
 
 - Replace base58 encoder with base64 (KaroMourad, VkoHov)
