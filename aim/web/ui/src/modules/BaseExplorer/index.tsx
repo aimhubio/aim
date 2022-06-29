@@ -24,7 +24,7 @@ function BaseExplorer(props: IBaseExplorerProps) {
   }, [engineInstance]);
 
   const visualizations = React.useMemo(() => {
-    const p = { engine: engineInstance };
+    const p = { engine: engineInstance, box: components.box };
     const Visualizations: React.ReactNode[] = components.visualizations.map(
       (Viz) => <Viz key={Viz.displayName} {...p} />,
     );

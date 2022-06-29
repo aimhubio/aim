@@ -8,17 +8,16 @@ import {
   styleApplier,
 } from 'modules/BaseExplorer/types';
 import {
-  Box,
   Grouping,
   GroupingItem,
   QueryForm,
   Visualizer,
 } from 'modules/BaseExplorer/components';
+import { AimFlatObjectBase } from 'modules/BaseExplorerCore/pipeline/adapter/processor';
+import { Order } from 'modules/BaseExplorerCore/pipeline/grouping/types';
+import Figures from 'modules/BaseExplorer/components/Figures/Figures';
 
 import { AimObjectDepths, SequenceTypesEnum } from 'types/core/enums';
-
-import { AimFlatObjectBase } from '../../modules/BaseExplorerCore/pipeline/adapter/processor';
-import { Order } from '../../modules/BaseExplorerCore/pipeline/grouping/types';
 
 const applyStyle: styleApplier = (object: any, boxConfig: any, group: any) => {
   return {
@@ -31,14 +30,14 @@ const config: IExplorerConfig = {
   explorerName: 'Images Explorer',
   engine: {
     useCache: false,
-    sequenceName: SequenceTypesEnum.Images,
+    sequenceName: SequenceTypesEnum.Figures,
     adapter: {
-      objectDepth: AimObjectDepths.Index,
+      objectDepth: AimObjectDepths.Step,
     },
     grouping: {
       row: {
         component: memo((props: IBaseComponentProps) => (
-          <GroupingItem groupName='grid' iconName='coloring' {...props} />
+          <GroupingItem groupName='row' iconName='chart-group' {...props} />
         )),
         styleApplier: (
           object: AimFlatObjectBase,
@@ -64,7 +63,7 @@ const config: IExplorerConfig = {
       },
       column: {
         component: memo((props: IBaseComponentProps) => (
-          <GroupingItem groupName='grid' iconName='coloring' {...props} />
+          <GroupingItem groupName='column' iconName='chart-group' {...props} />
         )),
         styleApplier: (
           object: AimFlatObjectBase,
@@ -106,7 +105,7 @@ const config: IExplorerConfig = {
       )),
       visualizations: [Visualizer],
       grouping: Grouping,
-      box: Box,
+      box: Figures,
     },
   },
   states: {

@@ -1,7 +1,20 @@
 import React from 'react';
 
+import './Box.scss';
+
 function Box(props: any) {
-  return <div>I am a box</div>;
+  const boxConfig = props.engine.useStore(props.engine.boxConfig.stateSelector);
+  return (
+    <div
+      className='BaseBox'
+      style={{
+        ...boxConfig,
+        ...props.style,
+      }}
+    >
+      {props.children}
+    </div>
+  );
 }
 
 export default Box;
