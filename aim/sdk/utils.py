@@ -5,7 +5,7 @@ import pathlib
 import re
 import uuid
 from contextlib import contextmanager
-from typing import Union, Any, Tuple
+from typing import Union, Any, Tuple, Optional, Callable
 
 from aim.sdk.configs import get_aim_repo_name
 
@@ -78,12 +78,21 @@ def get_object_typename(obj) -> str:
 any_list_regex = re.compile(r'list\([A-Za-z]{1}[A-Za-z0-9.]*\)')
 
 
-def check_types_compatibility(dtype: str, base_dtype: str, update_base_dtype_fn=None) -> bool:
+def check_types_compatibility(
+        dtype: str,
+        base_dtype: str,
+        update_base_dtype_fn: Optional[Callable[[str, str], None]] = None) -> bool:
     if dtype == base_dtype:
+        return True
+    if base_dtype == 'number' and dtype in {'int', 'float'}:
+        return True
+    if {dtype, base_dtype} == {'int', 'float'}:
+        if update_base_dtype_fn is not None:
+            update_base_dtype_fn(base_dtype, 'number')
         return True
     if base_dtype == 'list' and any_list_regex.match(dtype):
         if update_base_dtype_fn is not None:
-            update_base_dtype_fn(dtype)
+            update_base_dtype_fn(base_dtype, dtype)
         return True
     if dtype == 'list' and any_list_regex.match(base_dtype):
         return True
