@@ -17,7 +17,10 @@ import {
 } from 'types/services/models/metrics/metricsAppModel';
 import { IActivePoint } from 'types/utils/d3/drawHoverAttributes';
 import { IChartPanelRef } from 'types/components/ChartPanel/ChartPanel';
-import { INotification } from 'types/components/NotificationContainer/NotificationContainer';
+import {
+  INotification,
+  ISyntaxErrorDetails,
+} from 'types/components/NotificationContainer/NotificationContainer';
 import { IBookmarkFormState } from 'types/components/BookmarkForm/BookmarkForm';
 import {
   IColumnsOrder,
@@ -70,7 +73,11 @@ export interface IParamsProps extends Partial<RouteChildrenProps> {
   notifyData: INotification[];
   tableRowHeight?: any;
   hiddenColumns: any;
-  selectFormData: { options: ISelectOption[]; suggestions: string[] };
+  selectFormData: {
+    options: ISelectOption[];
+    suggestions: string[];
+    error: ISyntaxErrorDetails;
+  };
   columnsOrder: IColumnsOrder;
   onNotificationDelete: (id: number) => void;
   onCurveInterpolationChange: () => void;

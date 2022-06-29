@@ -164,6 +164,7 @@ function SelectForm({
                     refObject={advancedAutocompleteRef}
                     context={selectFormData?.advancedSuggestions}
                     value={selectedImagesData?.advancedQuery}
+                    error={selectFormData?.advancedError}
                     onEnter={handleSearch}
                     disabled={isDisabled}
                   />
@@ -297,6 +298,7 @@ function SelectForm({
                   refObject={autocompleteRef}
                   context={selectFormData?.suggestions}
                   value={selectedImagesData?.query}
+                  error={selectFormData?.error}
                   onEnter={handleSearch}
                   disabled={isDisabled}
                 />
