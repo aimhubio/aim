@@ -1,7 +1,7 @@
 import _ from 'lodash-es';
 
 import { getValue } from 'utils/helper';
-const regex = new RegExp('^([a-zA-Z_$][a-zA-Zd_$]*)$');
+const jsValidVariableRegex = new RegExp('^([a-zA-Z_$][a-zA-Z1-9d_$]*)$');
 
 function getObjectPaths(
   obj: { [key: string]: unknown },
@@ -13,16 +13,15 @@ function getObjectPaths(
   if (obj === null) {
     return [];
   }
+
   let rootKeys = Object.keys(obj).map((key) => {
     let prefixedKey = '';
     if (prefix) {
-      if (!regex.test(key)) {
-        prefixedKey = `${prefix}["${key}"]`;
-      } else {
-        prefixedKey = `${prefix}.${key}`;
-      }
+      prefixedKey = !jsValidVariableRegex.test(key)
+        ? `${prefix}["${key}"]`
+        : `${prefix}.${key}`;
     } else {
-      prefixedKey = key;
+      prefixedKey = !jsValidVariableRegex.test(key) ? `["${key}"]` : key;
     }
 
     return { prefixedKey, key };
@@ -32,12 +31,13 @@ function getObjectPaths(
         const val: any = getValue(rootObject, prefixedKey);
         if (typeof val !== 'object' || _.isNil(val) || _.isArray(val)) {
           if (withoutLeaves) {
+            const indexOfPrefixedKey = prefixedKey.indexOf(`.${key}`);
             acc.push(
               prefixedKey.slice(
                 0,
-                prefixedKey.indexOf(`.${key}`) === -1
-                  ? prefixedKey.length - 1
-                  : prefixedKey.indexOf(`.${key}`),
+                indexOfPrefixedKey === -1
+                  ? prefixedKey.length
+                  : indexOfPrefixedKey,
               ),
             );
           } else {
