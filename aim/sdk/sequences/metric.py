@@ -18,7 +18,7 @@ class Metric(Sequence):
     @classmethod
     def allowed_dtypes(cls) -> Union[str, Tuple[str, ...]]:
         # TODO remove 'float64': temporary fix for repos generated with aim < 3.0.7
-        return 'float', 'float64', 'int'
+        return 'float', 'float64', 'int', 'number'
 
     @classmethod
     def sequence_name(cls) -> str:

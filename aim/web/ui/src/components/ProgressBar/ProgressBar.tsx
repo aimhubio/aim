@@ -11,6 +11,7 @@ function ProgressBar({
   progress = {},
   processing = false,
   pendingStatus = false,
+  setIsProgressBarVisible,
 }: IProgressBarProps) {
   const { checked = 0, trackedRuns = 0, matched = 0, percent = 0 } = progress;
   const [renderBar, setRenderBar] = React.useState(false);
@@ -19,6 +20,7 @@ function ProgressBar({
   React.useEffect(() => {
     if (processing || pendingStatus) {
       setRenderBar(true);
+      setIsProgressBarVisible?.(true);
     } else {
       const hidingDelay = 2000;
       if (timeoutIdRef.current) {
@@ -26,6 +28,7 @@ function ProgressBar({
       }
       timeoutIdRef.current = window.setTimeout(() => {
         setRenderBar(false);
+        setIsProgressBarVisible?.(false);
       }, hidingDelay);
     }
     return () => {
@@ -33,25 +36,19 @@ function ProgressBar({
         window.clearTimeout(timeoutIdRef.current);
       }
     };
-  }, [processing, pendingStatus]);
+  }, [processing, pendingStatus, setIsProgressBarVisible]);
 
   const barWidth = React.useMemo(
     () => (pendingStatus ? percent + '%' : 'unset'),
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    [pendingStatus],
+    [pendingStatus, percent],
   );
   const fadeOutProgress = React.useMemo(
     () => !(processing || pendingStatus),
     [pendingStatus, processing],
   );
   const title = React.useMemo(
-    () =>
-      pendingStatus
-        ? 'Searching over runs...'
-        : processing
-        ? 'Processing...'
-        : 'Done',
-    [pendingStatus, processing],
+    () => (pendingStatus ? 'Searching over runs...' : 'Processing...'),
+    [pendingStatus],
   );
 
   return renderBar ? (

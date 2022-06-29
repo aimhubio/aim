@@ -1,9 +1,18 @@
 # Changelog
 
-## Unreleased
+## 3.11.1 Jun 27, 2022
+
+- Replace base58 encoder with base64 (KaroMourad, VkoHov)
+- Fix Notes tab loading issue (arsengit)
+- Fix the loading logic of the `monaco editor` across the Aim Ui (arsengit)
+- Fix `Table` export functionality in Params and Scatters explorers (arsengit)
+- Allow mixing numeric types on a single Sequence (alberttorosyan)
+
+## 3.11.0 Jun 21, 2022
 
 ### Enhancements:
 
+- Add `--uds` option for `aim up` command (mihran113)
 - Add progress reporting for search APIs and tqdm progress for SDK queries (mihran113)
 - Add all the attributes of runs in the grouping popovers (KaroMourad)
 - Display progress bar on Explorer pages when searching metadata (KaroMourad)
@@ -46,6 +55,7 @@
 - Resolve content blinking issue after search in the run page (arsengit)
 - Fix scroll to bottom on live-update in logs tab (VkoHov)
 - Fix timezone issues for activity map (mihran113)
+- Fix `aim up` command output when `--port 0` is passed (mihran113)
 
 ## 3.10.3 May 31, 2022
 

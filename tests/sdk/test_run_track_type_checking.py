@@ -1,6 +1,7 @@
 from tests.base import TestBase
 
 from aim.sdk.run import Run
+from aim.sdk.sequences.metric import Metric
 from aim.storage.context import Context
 
 
@@ -19,9 +20,9 @@ class TestRunSequenceHomogeneousValues(TestBase):
         run = Run(system_tracking_interval=None)
         run.track(1., name='numbers', context={})
         with self.assertRaises(ValueError) as cm:
-            run.track(1, name='numbers', context={})
+            run.track([1], name='numbers', context={})
         exception = cm.exception
-        self.assertEqual('Cannot log value \'1\' on sequence \'numbers\'. Incompatible data types.', exception.args[0])
+        self.assertEqual('Cannot log value \'[1]\' on sequence \'numbers\'. Incompatible data types.', exception.args[0])
 
     def test_incompatible_type_after_tracking_restart(self):
         run = Run(system_tracking_interval=None)
@@ -32,9 +33,9 @@ class TestRunSequenceHomogeneousValues(TestBase):
 
         new_run = Run(run_hash=run_hash, system_tracking_interval=None)
         with self.assertRaises(ValueError) as cm:
-            new_run.track(1, name='numbers', context={})
+            new_run.track([1], name='numbers', context={})
         exception = cm.exception
-        self.assertEqual('Cannot log value \'1\' on sequence \'numbers\'. Incompatible data types.', exception.args[0])
+        self.assertEqual('Cannot log value \'[1]\' on sequence \'numbers\'. Incompatible data types.', exception.args[0])
 
     def test_type_compatibility_for_empty_list(self):
         run = Run(system_tracking_interval=None)
@@ -67,3 +68,16 @@ class TestRunSequenceHomogeneousValues(TestBase):
         self.assertEqual(
             f'Cannot log value \'{[5]}\' on sequence \'{seq_name}\'. Incompatible data types.',
             exception.args[0])
+
+    def test_int_float_compatibility(self):
+        run = Run(system_tracking_interval=None)
+
+        # float first
+        run.track(1., name='float numbers', context={})
+        run.track(1, name='float numbers', context={})
+        run.track(1., name='float numbers', context={})
+
+        # int first
+        run.track(1, name='int numbers', context={})
+        run.track(1., name='int numbers', context={})
+        run.track(1, name='int numbers', context={})

@@ -60,6 +60,8 @@ function ImagesExplore(): React.FunctionComponentElement<React.ReactNode> {
   const [offsetHeight, setOffsetHeight] = useState(
     imagesWrapperRef?.current?.offsetHeight,
   );
+  const [isProgressBarVisible, setIsProgressBarVisible] =
+    React.useState<boolean>(false);
   const imagesRequestRef = React.useRef<any>(null);
 
   const [offsetWidth, setOffsetWidth] = useState(
@@ -187,9 +189,10 @@ function ImagesExplore(): React.FunctionComponentElement<React.ReactNode> {
     const unListenHistory = history.listen(() => {
       if (!!imagesExploreData?.config) {
         if (
-          imagesExploreData.config.grouping !== getStateFromUrl('grouping') ||
-          imagesExploreData.config.images !== getStateFromUrl('images') ||
-          imagesExploreData.config.select !== getStateFromUrl('select')
+          (imagesExploreData.config.grouping !== getStateFromUrl('grouping') ||
+            imagesExploreData.config.images !== getStateFromUrl('images') ||
+            imagesExploreData.config.select !== getStateFromUrl('select')) &&
+          history.location.pathname === `/${AppNameEnum.IMAGES}`
         ) {
           imagesExploreAppModel.setDefaultAppConfigData();
           imagesExploreAppModel.updateModelData();
@@ -213,6 +216,7 @@ function ImagesExplore(): React.FunctionComponentElement<React.ReactNode> {
         <section className='ImagesExplore__section'>
           <div className='ImagesExplore__section__appBarContainer ImagesExplore__fullHeight'>
             <ImagesExploreAppBar
+              disabled={isProgressBarVisible}
               onBookmarkCreate={imagesExploreAppModel.onBookmarkCreate}
               onBookmarkUpdate={imagesExploreAppModel.onBookmarkUpdate}
               onResetConfigData={imagesExploreAppModel.onResetConfigData}
@@ -220,6 +224,7 @@ function ImagesExplore(): React.FunctionComponentElement<React.ReactNode> {
             />
             <div className='ImagesExplore__SelectForm__Grouping__container'>
               <SelectForm
+                isDisabled={isProgressBarVisible}
                 requestIsPending={
                   imagesExploreData?.requestStatus === RequestStatusEnum.Pending
                 }
@@ -244,9 +249,7 @@ function ImagesExplore(): React.FunctionComponentElement<React.ReactNode> {
                 groupingPopovers={GroupingPopovers.filter(
                   (g) => g.groupName === 'row',
                 )}
-                requestIsPending={
-                  imagesExploreData?.requestStatus === RequestStatusEnum.Pending
-                }
+                isDisabled={isProgressBarVisible}
                 groupingData={imagesExploreData?.config?.grouping}
                 groupingSelectOptions={imagesExploreData?.groupingSelectOptions}
                 onGroupingSelectChange={
@@ -271,6 +274,7 @@ function ImagesExplore(): React.FunctionComponentElement<React.ReactNode> {
                   imagesExploreData?.requestStatus === RequestStatusEnum.Pending
                 }
                 processing={false}
+                setIsProgressBarVisible={setIsProgressBarVisible}
               />
               {_.isEmpty(imagesExploreData?.tableData) &&
               _.isEmpty(imagesExploreData?.imagesData) ? (
