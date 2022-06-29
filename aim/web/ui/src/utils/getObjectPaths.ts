@@ -1,6 +1,7 @@
 import _ from 'lodash-es';
 
 import { getValue } from 'utils/helper';
+const regex = new RegExp('^([a-zA-Z_$][a-zA-Zd_$]*)$');
 
 function getObjectPaths(
   obj: { [key: string]: unknown },
@@ -13,14 +14,32 @@ function getObjectPaths(
     return [];
   }
   let rootKeys = Object.keys(obj).map((key) => {
-    return { prefixedKey: prefix ? `${prefix}.${key}` : key, key };
+    let prefixedKey = '';
+    if (prefix) {
+      if (!regex.test(key)) {
+        prefixedKey = `${prefix}["${key}"]`;
+      } else {
+        prefixedKey = `${prefix}.${key}`;
+      }
+    } else {
+      prefixedKey = key;
+    }
+
+    return { prefixedKey, key };
   });
   let paths: string[] = includeRoot
     ? rootKeys.reduce((acc: string[], { prefixedKey, key }) => {
         const val: any = getValue(rootObject, prefixedKey);
         if (typeof val !== 'object' || _.isNil(val) || _.isArray(val)) {
           if (withoutLeaves) {
-            acc.push(prefixedKey.slice(0, prefixedKey.indexOf(`.${key}`)));
+            acc.push(
+              prefixedKey.slice(
+                0,
+                prefixedKey.indexOf(`.${key}`) === -1
+                  ? prefixedKey.length - 1
+                  : prefixedKey.indexOf(`.${key}`),
+              ),
+            );
           } else {
             acc.push(prefixedKey);
           }

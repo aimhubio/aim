@@ -3285,8 +3285,13 @@ function createAppModel(appConfig: IAppInitialConfig) {
             projectsData.params,
           );
           paramPaths.forEach((paramPath, index) => {
+            const indexOf =
+              paramPath.indexOf('.__example_type__') !== -1 ||
+              paramPath[paramPath.length - 1] === '.'
+                ? paramPath.indexOf('.__example_type__')
+                : paramPath.length;
             params.push({
-              label: paramPath.slice(0, paramPath.indexOf('.__example_type__')),
+              label: paramPath.slice(0, indexOf),
               group: 'Params',
               type: 'params',
               color: COLORS[0][index % COLORS[0].length],
@@ -5727,8 +5732,13 @@ function createAppModel(appConfig: IAppInitialConfig) {
             projectsData.params,
           );
           paramPaths.forEach((paramPath, index) => {
+            const indexOf =
+              paramPath.indexOf('.__example_type__') !== -1 ||
+              paramPath[paramPath.length - 1] === '.'
+                ? paramPath.indexOf('.__example_type__')
+                : paramPath.length;
             data.push({
-              label: paramPath.slice(0, paramPath.indexOf('.__example_type__')),
+              label: paramPath.slice(0, indexOf),
               group: 'Params',
               type: 'params',
               color: COLORS[0][index % COLORS[0].length],
