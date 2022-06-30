@@ -1,5 +1,12 @@
 # Changelog
 
+## Unreleased 
+
+### Enhancements
+
+### Fixes
+- Fix tensorboard log conversion for images (mihran113)
+
 ## 3.11.1 Jun 27, 2022
 
 - Replace base58 encoder with base64 (KaroMourad, VkoHov)
