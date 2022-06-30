@@ -1,5 +1,11 @@
 # Changelog
 
+## Unreleased
+
+### Enhancements
+
+- Increase visibility and usability of the Show table diff button (arsengit)
+
 ## 3.11.1 Jun 27, 2022
 
 - Replace base58 encoder with base64 (KaroMourad, VkoHov)
@@ -25,7 +31,6 @@
 - Implement unit-tests for aim SDK utils (yeghiakoronian)
 - Display std.dev/err aggregated values in the table (VkoHov)
 - Add `active` state indicator property for `aim.Run` (mihran113)
-- Increase visibility and usability of the Show table diff button (arsengit)
 - Add `active` state indicators on the chart (VkoHov)
 - Add ability to edit run name and description of run (VkoHov)
 - Show the description in the sidebar of the run overview tab (VkoHov)
