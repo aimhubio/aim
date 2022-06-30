@@ -5,6 +5,7 @@
 ### Enhancements
 
 - Add support for tensorboard audios conversion (mihran113)
+- Format params keys/paths properly (VkoHov)
 
 ### Fixes
 
