@@ -94,7 +94,9 @@
     justify-content: center;
     cursor: pointer;
     position: relative;
-
+    &.disabled {
+      opacity: 0.5;
+    }
     &:after {
       content: '';
       position: absolute;
@@ -102,9 +104,9 @@
       height: 34px;
       background: rgba(255, 255, 255, 0.5);
       background: linear-gradient(
-                      90deg,
-                      rgba(255, 255, 255, 0) 0%,
-                      rgba(255, 255, 255, 1) 92%
+        90deg,
+        rgba(255, 255, 255, 0) 0%,
+        rgba(255, 255, 255, 1) 92%
       );
       left: -20px;
       top: -5px;
@@ -120,6 +122,6 @@
   }
 
   .Dropdown {
-    flex: 1
+    flex: 1;
   }
 }

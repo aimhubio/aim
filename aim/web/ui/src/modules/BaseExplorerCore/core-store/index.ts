@@ -11,7 +11,7 @@ import { ISelectOption } from 'types/services/models/explorer/createAppModel';
 
 import createPipeline, { Pipeline, PipelineOptions } from '../pipeline';
 import { IInstructionsState } from '../store/slices/instructionsSlice';
-import { Order } from '../pipeline/grouping/types';
+import { GroupType, Order } from '../pipeline/grouping/types';
 import { instructionsSelector } from '../store';
 import { IEngineConfigFinal } from '../types';
 
@@ -32,6 +32,7 @@ type ExplorerState = {
   };
   data: any;
   additionalData: any;
+  foundGroups: any; // remove this
 };
 
 type ExplorerConfig = {
@@ -49,6 +50,7 @@ const initialState: ExplorerState = {
   },
   data: null,
   additionalData: null,
+  foundGroups: null,
 };
 
 let pipeline: Pipeline;
@@ -105,7 +107,6 @@ export type QueryUIStateUnit = {
 // CREATE ENGINE
 function createEngine(config: IEngineConfigFinal) {
   const { states } = createConfiguration(config);
-
   const generatedInitialStates: { [key: string]: object } = states.names.reduce(
     (acc: { [key: string]: object }, name: string) => {
       acc[name] = states.values[name].initialState;
@@ -194,9 +195,10 @@ function createEngine(config: IEngineConfigFinal) {
 
   async function search(params: RunsSearchQueryParams) {
     lastQuery = {
-      query: params,
+      query: { params },
     };
-    const { data, additionalData } = await pipeline.execute({
+
+    const res = await pipeline.execute({
       query: {
         params,
       },
@@ -205,8 +207,7 @@ function createEngine(config: IEngineConfigFinal) {
       },
     });
 
-    console.log(additionalData);
-
+    const { additionalData, data } = res;
     storeVanilla.setState({ data, additionalData });
   }
 
@@ -216,26 +217,30 @@ function createEngine(config: IEngineConfigFinal) {
     } = {},
   ) {
     groupingMethods.update(config);
-    // const result = await pipeline.execute({
-    //   query: lastQuery,
-    //   group: {
-    //     [GroupType.COLUMN]: [
-    //       {
-    //         field: 'run.hash',
-    //         order: Order.ASC,
-    //       },
-    //       {
-    //         field: 'run.name',
-    //         order: Order.DESC,
-    //       },
-    //     ],
-    //   },
-    // });
+
+    const result = await pipeline.execute({
+      query: lastQuery.query,
+      group: {
+        [GroupType.COLUMN]: [
+          {
+            field: 'run.hash',
+            order: Order.ASC,
+          },
+          {
+            field: 'run.name',
+            order: Order.DESC,
+          },
+        ],
+      },
+    });
+
+    const { data, additionalData, foundGroups } = result;
     //
-    // storeVanilla.setState({
-    //   data: result.data,
-    //   additionalData: result.additionalData,
-    // });
+    storeVanilla.setState({
+      data,
+      additionalData,
+      foundGroups,
+    });
   }
 
   function initialize() {
@@ -302,6 +307,9 @@ function createEngine(config: IEngineConfigFinal) {
     instructions: {
       dataSelector: instructionsSelector,
     },
+
+    // pipeline result result
+    foundGroupsSelector: (state: any) => state.foundGroups,
   };
 }
 

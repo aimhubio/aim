@@ -27,17 +27,17 @@ const applyStyle: styleApplier = (object: any, boxConfig: any, group: any) => {
 };
 
 const config: IExplorerConfig = {
-  explorerName: 'Images Explorer',
+  explorerName: 'Figures Explorer',
   engine: {
-    useCache: false,
+    useCache: true,
     sequenceName: SequenceTypesEnum.Figures,
     adapter: {
       objectDepth: AimObjectDepths.Step,
     },
     grouping: {
-      row: {
+      grid: {
         component: memo((props: IBaseComponentProps) => (
-          <GroupingItem groupName='row' iconName='chart-group' {...props} />
+          <GroupingItem groupName='grid' iconName='chart-group' {...props} />
         )),
         styleApplier: (
           object: AimFlatObjectBase,
@@ -63,7 +63,7 @@ const config: IExplorerConfig = {
       },
       column: {
         component: memo((props: IBaseComponentProps) => (
-          <GroupingItem groupName='column' iconName='chart-group' {...props} />
+          <GroupingItem groupName='column' iconName='coloring' {...props} />
         )),
         styleApplier: (
           object: AimFlatObjectBase,

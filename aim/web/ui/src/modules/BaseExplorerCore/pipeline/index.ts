@@ -99,6 +99,7 @@ async function execute(options: PipelineExecutionOptions): Promise<any> {
     foundGroups: groupingResult.foundGroups,
     appliedGroupsConfig: groupingResult.appliedGroupsConfig,
     additionalData: adapterResult.additionalData,
+    queryableData: adapterResult.queryable_data,
   };
 }
 

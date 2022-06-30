@@ -17,10 +17,11 @@ function RunsBar(props: {
   enabled: boolean;
   delay: number;
   onLiveUpdateConfigChange: () => void;
+  disabled: boolean;
 }): React.FunctionComponentElement<React.ReactNode> {
   return (
     <ErrorBoundary>
-      <AppBar title={pageTitlesEnum.RUNS_EXPLORER}>
+      <AppBar title={pageTitlesEnum.RUNS_EXPLORER} disabled={props.disabled}>
         <LiveUpdateSettings {...props} />
         <div className='MetricsBar__menu'>
           <ErrorBoundary>

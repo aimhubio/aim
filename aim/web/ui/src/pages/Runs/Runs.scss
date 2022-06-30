@@ -3,6 +3,10 @@
 .Runs__section {
   height: 100vh;
   overflow: hidden;
+  &__appBarContainer {
+    display: flex;
+    flex-direction: column;
+  }
   .Runs__loader {
     flex-direction: column;
     justify-content: space-between;
@@ -24,10 +28,14 @@
   }
 
   .Runs__table__container {
-    -webkit-box-flex: 0.5;
-    -ms-flex: 0.5 1 0px;
-    flex: 0.5 1 0;
-    height: 100%;
+    display: flex;
+    position: relative;
+    flex-direction: column;
+    flex: 1 1 100%;
+    max-height: calc(100% - #{toRem(105px)});
+    .ProgressBar {
+      padding-bottom: toRem(105px);
+    }
   }
 }
 
@@ -82,7 +90,7 @@
       }
     }
     &__runListBox {
-      height: calc(100% - #{toRem(102px)});
+      flex: 1;
       position: relative;
       &__titleBox {
         position: relative;

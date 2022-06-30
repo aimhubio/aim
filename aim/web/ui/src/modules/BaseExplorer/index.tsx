@@ -63,6 +63,7 @@ function createExplorer(config: IExplorerConfig): () => React.ReactElement {
   const engineConfig: IEngineConfigFinal = {
     defaultBoxConfig: ui.defaultBoxConfig,
     sequenceName: EC.sequenceName,
+    useCache: EC.useCache,
     adapter: {
       objectDepth: EC.adapter.objectDepth,
     },
