@@ -1,6 +1,6 @@
 {
   "name": "ui_v2",
-  "version": "3.11.0",
+  "version": "3.11.1",
   "private": true,
   "dependencies": {
     "@aksel/structjs": "^1.0.0",
@@ -39,6 +39,7 @@
     "react-virtualized-auto-sizer": "^1.0.5",
     "react-window": "^1.8.6",
     "rich-markdown-editor": "^11.21.3",
+    "prosemirror-tables": "^1.1.1",
     "styled-components": "^5.3.3",
     "typeface-roboto": "^1.1.13",
     "web-vitals": "^1.0.1",

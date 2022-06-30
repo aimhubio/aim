@@ -1,6 +1,8 @@
 import React from 'react';
 import { BrowserRouter, Switch, Route, Redirect } from 'react-router-dom';
 
+import { loader } from '@monaco-editor/react';
+
 import AlertBanner from 'components/kit/AlertBanner';
 import SideBar from 'components/SideBar/SideBar';
 import ProjectWrapper from 'components/ProjectWrapper/ProjectWrapper';
@@ -21,6 +23,13 @@ import './App.scss';
 const basePath = getBasePath(false);
 
 const isVisibleCacheBanner = checkIsBasePathInCachedEnv(basePath) && inIframe();
+
+// loading monaco from node modules instead of CDN
+loader.config({
+  paths: {
+    vs: `${getBasePath()}/static-files/vs`,
+  },
+});
 
 function App(): React.FunctionComponentElement<React.ReactNode> {
   React.useEffect(() => {

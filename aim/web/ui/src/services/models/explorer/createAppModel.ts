@@ -1572,11 +1572,15 @@ function createAppModel(appConfig: IAppInitialConfig) {
           ? Object.keys(tableData.rows).map(
               (groupedRowKey: string) => tableData.rows[groupedRowKey].items,
             )
-          : [tableData.rows];
+          : [
+              Array.isArray(tableData.rows)
+                ? tableData.rows
+                : tableData.rows[Object.keys(tableData.rows)[0]].items,
+            ];
 
       const dataToExport: { [key: string]: string }[] = [];
 
-      groupedRows.forEach(
+      groupedRows?.forEach(
         (groupedRow: IMetricTableRowData[], groupedRowIndex: number) => {
           groupedRow?.forEach((row: IMetricTableRowData) => {
             const filteredRow = getFilteredRow<IMetricTableRowData>({
@@ -1585,7 +1589,7 @@ function createAppModel(appConfig: IAppInitialConfig) {
             });
             dataToExport.push(filteredRow);
           });
-          if (groupedRows.length - 1 !== groupedRowIndex) {
+          if (groupedRows?.length - 1 !== groupedRowIndex) {
             dataToExport.push(emptyRow);
           }
         },
@@ -2843,11 +2847,15 @@ function createAppModel(appConfig: IAppInitialConfig) {
             ? Object.keys(tableData.rows).map(
                 (groupedRowKey: string) => tableData.rows[groupedRowKey].items,
               )
-            : [tableData.rows];
+            : [
+                Array.isArray(tableData.rows)
+                  ? tableData.rows
+                  : tableData.rows[Object.keys(tableData.rows)[0]].items,
+              ];
 
         const dataToExport: { [key: string]: string }[] = [];
 
-        groupedRows.forEach(
+        groupedRows?.forEach(
           (groupedRow: IMetricTableRowData[], groupedRowIndex: number) => {
             groupedRow?.forEach((row: IMetricTableRowData) => {
               const filteredRow = getFilteredRow({
@@ -2856,7 +2864,7 @@ function createAppModel(appConfig: IAppInitialConfig) {
               });
               dataToExport.push(filteredRow);
             });
-            if (groupedRows.length - 1 !== groupedRowIndex) {
+            if (groupedRows?.length - 1 !== groupedRowIndex) {
               dataToExport.push(emptyRow);
             }
           },
@@ -4209,7 +4217,13 @@ function createAppModel(appConfig: IAppInitialConfig) {
           data[0]?.config,
           config.table?.columnsOrder!,
           config.table?.hiddenColumns!,
+          config.table?.sortFields,
+          onSortChange,
+          config.grouping as any,
+          onModelGroupingSelectChange,
+          AppNameEnum.PARAMS,
         );
+
         const excludedFields: string[] = ['#', 'actions'];
         const filteredHeader: string[] = tableColumns.reduce(
           (acc: string[], column: ITableColumn) =>
@@ -4231,11 +4245,13 @@ function createAppModel(appConfig: IAppInitialConfig) {
             ? Object.keys(tableData.rows).map(
                 (groupedRowKey: string) => tableData.rows[groupedRowKey].items,
               )
-            : [tableData.rows];
-
+            : [
+                Array.isArray(tableData.rows)
+                  ? tableData.rows
+                  : tableData.rows[Object.keys(tableData.rows)[0]].items,
+              ];
         const dataToExport: { [key: string]: string }[] = [];
-
-        groupedRows.forEach(
+        groupedRows?.forEach(
           (groupedRow: IMetricTableRowData[], groupedRowIndex: number) => {
             groupedRow?.forEach((row: IMetricTableRowData) => {
               const filteredRow = getFilteredRow<IMetricTableRowData>({
@@ -4244,7 +4260,7 @@ function createAppModel(appConfig: IAppInitialConfig) {
               });
               dataToExport.push(filteredRow);
             });
-            if (groupedRows.length - 1 !== groupedRowIndex) {
+            if (groupedRows?.length - 1 !== groupedRowIndex) {
               dataToExport.push(emptyRow);
             }
           },
@@ -5774,7 +5790,13 @@ function createAppModel(appConfig: IAppInitialConfig) {
           data[0]?.config,
           config.table?.columnsOrder!,
           config.table?.hiddenColumns!,
+          config.table?.sortFields,
+          onSortChange,
+          config.grouping as any,
+          onModelGroupingSelectChange,
+          AppNameEnum.SCATTERS,
         );
+
         const excludedFields: string[] = ['#', 'actions'];
         const filteredHeader: string[] = tableColumns.reduce(
           (acc: string[], column: ITableColumn) =>
@@ -5796,11 +5818,15 @@ function createAppModel(appConfig: IAppInitialConfig) {
             ? Object.keys(tableData.rows).map(
                 (groupedRowKey: string) => tableData.rows[groupedRowKey].items,
               )
-            : [tableData.rows];
+            : [
+                Array.isArray(tableData.rows)
+                  ? tableData.rows
+                  : tableData.rows[Object.keys(tableData.rows)[0]].items,
+              ];
 
         const dataToExport: { [key: string]: string }[] = [];
 
-        groupedRows.forEach(
+        groupedRows?.forEach(
           (groupedRow: IMetricTableRowData[], groupedRowIndex: number) => {
             groupedRow?.forEach((row: IMetricTableRowData) => {
               const filteredRow = getFilteredRow<IMetricTableRowData>({
@@ -5809,7 +5835,7 @@ function createAppModel(appConfig: IAppInitialConfig) {
               });
               dataToExport.push(filteredRow);
             });
-            if (groupedRows.length - 1 !== groupedRowIndex) {
+            if (groupedRows?.length - 1 !== groupedRowIndex) {
               dataToExport.push(emptyRow);
             }
           },

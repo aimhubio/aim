@@ -8,13 +8,13 @@ import createAppModel from './createAppModel';
  *  Constants and Enums we can create and export from this file
  */
 
-enum AppDataTypeEnum {
+export enum AppDataTypeEnum {
   RUNS = 'runs',
   METRICS = 'metrics',
   IMAGES = 'images',
 }
 
-enum AppNameEnum {
+export enum AppNameEnum {
   METRICS = 'metrics',
   PARAMS = 'params',
   RUNS = 'runs',
@@ -60,4 +60,4 @@ const appInitialConfig: {
   },
 };
 
-export { createAppModel, appInitialConfig, AppDataTypeEnum, AppNameEnum };
+export { createAppModel, appInitialConfig };
