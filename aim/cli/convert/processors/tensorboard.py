@@ -208,6 +208,7 @@ def parse_tb_logs(tb_logs, repo_inst, flat=False, no_cache=False):
                         track_val = None
                         try:
                             if value.HasField('tensor'):
+                                # TODO: [MV] check the case when audios are passed via tensor
                                 if plugin_name == 'images':
                                     tensor = value.tensor.string_val[2:]
                                     track_val = [
@@ -236,7 +237,7 @@ def parse_tb_logs(tb_logs, repo_inst, flat=False, no_cache=False):
                             'step': step,
                             'timestamp': timestamp
                         }
-                        if track_val:
+                        if track_val is not None:
                             run._tracker._track(track_val, timestamp, tag, step, context=event_context)
                     if fail_count:
                         click.echo(f'Failed to process {fail_count} entries. First exception: {_err_info}', err=True)
