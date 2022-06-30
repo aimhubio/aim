@@ -2,11 +2,11 @@
 
 ## Unreleased 
 
-### Enhancements
+### Enhancements:
 
 - Add support for tensorboard audios conversion (mihran113)
 
-### Fixes
+### Fixes:
 
 - Fix tensorboard log conversion for images (mihran113)
 - Fix `SyntaxError` handling for python3.10+ (mihran113)
