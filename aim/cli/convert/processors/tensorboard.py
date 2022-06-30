@@ -233,7 +233,7 @@ def parse_tb_logs(tb_logs, repo_inst, flat=False, no_cache=False):
                             'step': step,
                             'timestamp': timestamp
                         }
-                        if track_val:
+                        if track_val is not None:
                             run._tracker._track(track_val, timestamp, tag, step, context=event_context)
                     if fail_count:
                         click.echo(f'Failed to process {fail_count} entries. First exception: {_err_info}', err=True)
