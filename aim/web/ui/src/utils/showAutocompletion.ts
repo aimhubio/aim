@@ -132,7 +132,6 @@ function getSuggestions(monaco: Monaco, options: Record<string, string>) {
             : option.length;
         return option.slice(0, indexOf);
       });
-
       // If the last character typed is a period then we need to look at member objects of the `options` object
       const isMember = activeTyping.charAt(activeTyping.length - 1) === '.';
 
@@ -142,7 +141,12 @@ function getSuggestions(monaco: Monaco, options: Record<string, string>) {
 
       //Checking is the word included in options list
       for (let option of filteredOptions) {
-        if (option.split(activeTyping)[0] === '') {
+        if (
+          option.split(activeTyping)[0] === '' ||
+          (isMember &&
+            option.split(activeTyping.slice(0, activeTyping.length - 2))[0] ===
+              '')
+        ) {
           isIncluded = true;
           break;
         }
@@ -151,27 +155,10 @@ function getSuggestions(monaco: Monaco, options: Record<string, string>) {
       // Used for generic handling between member and non-member objects
       let lastToken: any = options;
       let prefix = '';
-
       if (isMember && isIncluded) {
         // Is a member, get a list of all members, and the prefix
-        const parents = activeTyping
-          .substring(0, activeTyping.length - 1)
-          .split('.');
-        lastToken = getValue(options, parents[0]);
-        prefix = parents[0];
-
-        // Loop through all the parents the current one will have (to generate prefix)
-        parents.forEach((parent: any) => {
-          if (lastToken?.hasOwnProperty(parent)) {
-            prefix += `.${parent}`;
-            lastToken = lastToken[parent];
-          } else {
-            // Not valid
-            return suggestions;
-          }
-        });
-
-        prefix += '.';
+        prefix = activeTyping.substring(0, activeTyping.length - 1);
+        lastToken = getValue(options, prefix);
       }
 
       const word = model.getWordUntilPosition(position);
@@ -181,7 +168,7 @@ function getSuggestions(monaco: Monaco, options: Record<string, string>) {
         startColumn: word.startColumn,
         endColumn: word.endColumn,
       };
-
+      
       // Get all the child properties of the last token
       for (const prop in lastToken) {
         // Do not show properites that begin with "__"
@@ -189,11 +176,9 @@ function getSuggestions(monaco: Monaco, options: Record<string, string>) {
           // Create completion object
 
           const key = !jsValidVariableRegex.test(prop) ? `["${prop}"]` : prop;
-          const prefixKey = !jsValidVariableRegex.test(prop)
-            ? prefix.slice(0, prefix.length - 1)
-            : prefix;
+      
 
-          let detailType = getDetailType(getValue(options, prefixKey + key));
+          let detailType = getDetailType(getValue(options, prefix + key));
           const completionItem = {
             label: key,
             kind: getType(
