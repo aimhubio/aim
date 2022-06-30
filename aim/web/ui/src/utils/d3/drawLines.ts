@@ -1,5 +1,3 @@
-import _ from 'lodash-es';
-
 import { HighlightEnum } from 'components/HighlightModesPopover/HighlightModesPopover';
 
 import { IDrawLinesArgs } from 'types/utils/d3/drawLines';
@@ -44,6 +42,17 @@ function drawLines(args: IDrawLinesArgs): void {
     linesNodeRef.current
       .selectAll('.Line')
       .attr('d', lineGenerator(xScale, yScale, curve));
+
+    if (!readOnly) {
+      linesNodeRef.current
+        ?.selectAll('.inProgressLineIndicator')
+        .attr('cx', (d: IProcessedData) => {
+          return xScale(d.data[d.data.length - 1][0]);
+        })
+        .attr('cy', (d: IProcessedData) => yScale(d.data[d.data.length - 1][1]))
+        .attr('r', 2)
+        .raise();
+    }
   };
 
   linesRef.current.updateLines = function (data: IProcessedData[]): void {
@@ -65,19 +74,27 @@ function drawLines(args: IDrawLinesArgs): void {
       .style('stroke-dasharray', (d: IProcessedData) => d.dasharray)
       .data(data.map((d: IProcessedData) => d.data))
       .attr('d', lineGenerator(xScale, yScale, curveInterpolation));
+
     if (!readOnly) {
-      data.forEach((line: IProcessedData) => {
-        if (line.run.props.active) {
-          linesNodeRef.current
-            .append('circle')
-            .attr('class', 'inProgressLineIndicator')
-            .attr('id', `inProgressLineIndicator-${line.key}`)
-            .attr('cx', xScale(line.data[line.data.length - 1][0]))
-            .attr('cy', yScale(line.data[line.data.length - 1][1]))
-            .attr('r', 3)
-            .raise();
-        }
-      });
+      const filteredData =
+        data?.filter((d: IProcessedData) => d?.run?.props?.active) ?? [];
+      linesNodeRef.current
+        ?.selectAll('.inProgressLineIndicator')
+        .data(filteredData)
+        .join('circle')
+        .attr(
+          'data-selector',
+          (d: IProcessedData) =>
+            `Line-Sel-${highlightMode}-${d.selectors?.[highlightMode]}`,
+        )
+        .attr('class', 'inProgressLineIndicator')
+        .style('stroke', (d: IProcessedData) => d.color)
+        .style('fill', (d: IProcessedData) => d.color)
+        .attr('id', (d: IProcessedData) => `inProgressLineIndicator-${d.key}`)
+        .attr('cx', (d: IProcessedData) => xScale(d.data[d.data.length - 1][0]))
+        .attr('cy', (d: IProcessedData) => yScale(d.data[d.data.length - 1][1]))
+        .attr('r', 2)
+        .raise();
     }
   };
 

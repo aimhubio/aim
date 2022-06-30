@@ -41,6 +41,7 @@ import { IColumnsOrder } from 'types/services/models/explorer/createAppModel';
 
 import { SmoothingAlgorithmEnum } from 'utils/smoothingData';
 import { CurveEnum } from 'utils/d3';
+import { IRequestProgress } from 'utils/app/setRequestProgress';
 
 export interface IMetricProps extends Partial<RouteChildrenProps> {
   tableRef: React.RefObject<ITableRef>;
@@ -79,6 +80,7 @@ export interface IMetricProps extends Partial<RouteChildrenProps> {
   hideSystemMetrics: boolean;
   groupingSelectOptions: IGroupingSelectOption[];
   requestStatus: RequestStatusEnum;
+  requestProgress: IRequestProgress;
   resizeMode: ResizeModeEnum;
   selectFormData: { options: ISelectOption[]; suggestions: string[] };
   columnsOrder: IColumnsOrder;

@@ -31,13 +31,14 @@
     opacity: 1;
     stroke-width: 1.45;
     fill: white;
-    outline: 0 solid;
     border-radius: 50%;
     /* on click */
     &.focus {
       stroke-width: 2;
-      outline-width: 6px;
       clip-path: unset;
+      &__shadow {
+        stroke-width: 10;
+      }
     }
     /* on hover */
     &.active {
@@ -131,10 +132,8 @@
   }
 
   .inProgressLineIndicator {
-    animation: inProgressIndicator 1s linear infinite;
+    animation: inProgressIndicator 0.5s cubic-bezier(0.6, -0.03, 0.22, 0.76) infinite;
     stroke-width: 1;
-    stroke: $success-color;
-    fill: $teal;
     opacity: 1;
   }
 
@@ -144,18 +143,21 @@
       &.active {
         opacity: 1;
       }
+      &.highlighted {
+        opacity: 1;
+      }
     }
   }
 
   @keyframes inProgressIndicator {
     0% {
-      stroke: none;
+      stroke-width: 0;
     }
     50% {
-      stroke: $success-color;
+      stroke-width: 1.5;
     }
     100% {
-      stroke: none;
+      stroke-width: 0;
     }
   }
 }

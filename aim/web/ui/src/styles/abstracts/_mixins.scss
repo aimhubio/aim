@@ -13,7 +13,7 @@
 }
 
 @mixin monospaceFontFamily($font-size: 16) {
-  $min-font-width: 110;
+  $min-font-width: 114;
   $font-size-unit-width: 2;
   font-family: 'Inconsolata', monospace;
   font-variation-settings: 'wdth' $min-font-width -

@@ -13,7 +13,7 @@ import { INotificationContainer } from 'types/components/NotificationContainer/N
 import './NotificationContainer.scss';
 
 export default function NotificationContainer({
-  data,
+  data = [],
   handleClose,
 }: INotificationContainer): React.FunctionComponentElement<React.ReactNode> {
   return (

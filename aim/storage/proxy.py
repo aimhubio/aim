@@ -92,26 +92,40 @@ class Eager1:
 
 class Eager2:
 
-    __slots__ = ('view', 'name')
+    __slots__ = ('view', 'name', 'cache')
 
-    def __init__(self, view, name):
+    def __init__(self, view, name, cache):
         self.view = view
         self.name = name
+        self.cache = cache
 
     def __call__(self):
-        w = self.view
-        attr = getattr(w, self.name, Undefined())
+        res = None
+        cache_key = None
+        if self.cache is not None:
+            try:
+                cache_key = self.view.container.prefix + str(self.name).encode()
+                res = self.cache.get(cache_key)
+            except Exception:
+                pass
 
-        if not isinstance(attr, Undefined):
-            return attr
+        if res is None:
+            w = self.view
+            res = getattr(w, self.name, Undefined())
 
-        try:
-            item = w[self.name]
-            return item
-        except KeyError:
-            pass
+            if not isinstance(res, Undefined):
+                return res
 
-        return Undefined()
+            try:
+                item = w[self.name]
+                res = item
+            except KeyError:
+                res = Undefined()
+
+            if self.cache is not None and cache_key is not None:
+                self.cache[cache_key] = res
+
+        return res
 
 
 class Eager3:
@@ -136,22 +150,35 @@ class Eager3:
 
 class Eager4:
 
-    __slots__ = ('view', 'key')
+    __slots__ = ('view', 'key', 'cache')
 
-    def __init__(self, view, key):
+    def __init__(self, view, key, cache):
         self.view = view
         self.key = key
+        self.cache = cache
 
     def __call__(self):
-        w = self.view
+        res = None
+        cache_key = None
+        if self.cache is not None:
+            try:
+                cache_key = self.view.container.prefix + str(self.key).encode()
+                res = self.cache.get(cache_key)
+            except Exception:
+                pass
 
-        try:
-            item = w[self.key]
-            return item
-        except KeyError:
-            pass
+        if res is None:
+            w = self.view
 
-        return Undefined()
+            try:
+                res = w[self.key]
+            except KeyError:
+                res = Undefined()
+
+            if self.cache is not None and cache_key is not None:
+                self.cache[cache_key] = res
+
+            return res
 
 
 class AimObjectProxy(with_metaclass(_ObjectProxyMetaType)):
@@ -368,9 +395,9 @@ class AimObjectProxy(with_metaclass(_ObjectProxyMetaType)):
     def __iter__(self):
         return iter(self.__wrapped__())
 
-    __slots__ = '__wrapped__', '__view__'
+    __slots__ = '__wrapped__', '__view__', 'cache'
 
-    def __init__(self, wrapped, view=None):
+    def __init__(self, wrapped, view=None, cache=None):
         object.__setattr__(self, '__wrapped__', wrapped)
         # print('__wrapped__()lazy__', wrapped)
         object.__setattr__(self, '__view__', view)
@@ -378,7 +405,7 @@ class AimObjectProxy(with_metaclass(_ObjectProxyMetaType)):
         # Python 3.2+ has the __qualname__ attribute, but it does not
         # allow it to be overridden using a property and it must instead
         # be an actual string object instead.
-
+        self.cache = cache
         try:
             object.__setattr__(self, '__qualname__', wrapped.__qualname__)
         except AttributeError:
@@ -395,8 +422,9 @@ class AimObjectProxy(with_metaclass(_ObjectProxyMetaType)):
             return AimObjectProxy(Eager1(self.__wrapped__, name))
 
         return AimObjectProxy(
-            Eager2(self.__view__, name),
-            self.__view__.view(name)
+            Eager2(self.__view__, name, self.cache),
+            self.__view__.view(name),
+            self.cache
         )
 
     def __getitem__(self, key):
@@ -405,8 +433,9 @@ class AimObjectProxy(with_metaclass(_ObjectProxyMetaType)):
             return AimObjectProxy(Eager3(self.__wrapped__, key))
 
         return AimObjectProxy(
-            Eager4(self.__view__, key),
-            self.__view__.view(key)
+            Eager4(self.__view__, key, self.cache),
+            self.__view__.view(key),
+            self.cache
         )
 
     def __call__(self, *args, **kwargs):

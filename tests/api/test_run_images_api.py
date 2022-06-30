@@ -6,7 +6,6 @@ from tests.utils import decode_encoded_tree_stream, generate_image_set
 
 from aim.storage.treeutils import decode_tree
 from aim.storage.context import Context
-from aim.storage.types import BLOB
 from aim.sdk.run import Run
 
 
@@ -36,7 +35,7 @@ class TestRunImagesSearchApi(RunImagesTestBase):
     def test_query_images_api_defaults(self):
         client = self.client
 
-        response = client.get('/api/runs/search/images/', params={'q': ''})
+        response = client.get('/api/runs/search/images/', params={'q': '', 'report_progress': False})
         self.assertEqual(200, response.status_code)
 
         decoded_response = decode_tree(decode_encoded_tree_stream(response.iter_content(chunk_size=512 * 1024)))
@@ -68,7 +67,8 @@ class TestRunImagesSearchApi(RunImagesTestBase):
     def test_query_images_api_custom_densities_dense(self):
         client = self.client
 
-        response = client.get('/api/runs/search/images/', params={'record_density': 200, 'index_density': 10})
+        response = client.get('/api/runs/search/images/',
+                              params={'record_density': 200, 'index_density': 10, 'report_progress': False})
         self.assertEqual(200, response.status_code)
 
         decoded_response = decode_tree(decode_encoded_tree_stream(response.iter_content(chunk_size=512 * 1024),
@@ -84,7 +84,9 @@ class TestRunImagesSearchApi(RunImagesTestBase):
     def test_query_images_api_custom_densities_sparse(self):
         client = self.client
 
-        response = client.get('/api/runs/search/images/', params={'record_density': 10, 'index_density': 4})
+        response = client.get('/api/runs/search/images/', params={'record_density': 10,
+                                                                  'index_density': 4,
+                                                                  'report_progress': False})
         self.assertEqual(200, response.status_code)
 
         decoded_response = decode_tree(decode_encoded_tree_stream(response.iter_content(chunk_size=512 * 1024)))
@@ -108,7 +110,9 @@ class TestRunImagesSearchApi(RunImagesTestBase):
     def test_query_images_api_custom_record_ranges(self, input_range, total_range, used_range, count):
         client = self.client
 
-        response = client.get('/api/runs/search/images/', params={'record_range': input_range, 'record_density': 100})
+        response = client.get('/api/runs/search/images/', params={'record_range': input_range,
+                                                                  'record_density': 100,
+                                                                  'report_progress': False})
         self.assertEqual(200, response.status_code)
 
         decoded_response = decode_tree(decode_encoded_tree_stream(response.iter_content(chunk_size=512 * 1024)))
@@ -128,7 +132,8 @@ class TestRunImagesSearchApi(RunImagesTestBase):
         response = client.get('/api/runs/search/images/', params={
             'record_range': '10:20',
             'index_range': '3:6',
-            'calc_ranges': True
+            'calc_ranges': True,
+            'report_progress': False
         })
         self.assertEqual(200, response.status_code)
 
@@ -179,6 +184,7 @@ class RunImagesURIBulkLoadApi(RunImagesTestBase):
         response = client.get('/api/runs/search/images/', params={
             'record_range': '0:10',
             'index_range': '0:5',
+            'report_progress': False,
         })
         decoded_response = decode_tree(decode_encoded_tree_stream(response.iter_content(chunk_size=512 * 1024)))
         run_data = decoded_response[self.run_hash]
@@ -252,7 +258,8 @@ class TestImageListsAndSingleImagesSearchApi(ApiTestBase):
     def test_search_simgle_image_only_default_index_range(self):
         client = self.client
 
-        response = client.get('/api/runs/search/images/', params={'q': 'images.name == "single_images"'})
+        response = client.get('/api/runs/search/images/',
+                              params={'q': 'images.name == "single_images"', 'report_progress': False})
         self.assertEqual(200, response.status_code)
 
         decoded_response = decode_tree(decode_encoded_tree_stream(response.iter_content(chunk_size=512 * 1024)))
@@ -273,7 +280,7 @@ class TestImageListsAndSingleImagesSearchApi(ApiTestBase):
     def test_mixed_search_default_index_range(self):
         client = self.client
 
-        response = client.get('/api/runs/search/images/', params={'q': ''})
+        response = client.get('/api/runs/search/images/', params={'q': '', 'report_progress': False})
         self.assertEqual(200, response.status_code)
 
         decoded_response = decode_tree(decode_encoded_tree_stream(response.iter_content(chunk_size=512 * 1024)))
@@ -300,7 +307,8 @@ class TestImageListsAndSingleImagesSearchApi(ApiTestBase):
     def test_mixed_search_custom_index_range(self):
         client = self.client
 
-        response = client.get('/api/runs/search/images/', params={'q': '', 'index_range': '3:5'})
+        response = client.get('/api/runs/search/images/',
+                              params={'q': '', 'index_range': '3:5', 'report_progress': False})
         self.assertEqual(200, response.status_code)
 
         decoded_response = decode_tree(decode_encoded_tree_stream(response.iter_content(chunk_size=512 * 1024)))

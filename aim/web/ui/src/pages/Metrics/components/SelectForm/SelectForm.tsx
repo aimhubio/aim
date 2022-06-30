@@ -1,4 +1,5 @@
 import React from 'react';
+import classNames from 'classnames';
 
 import {
   Box,
@@ -30,6 +31,7 @@ import './SelectForm.scss';
 
 function SelectForm({
   requestIsPending,
+  isDisabled = false,
   selectedMetricsData,
   selectFormData,
   onMetricsSelectChange,
@@ -55,14 +57,14 @@ function SelectForm({
       return;
     }
     let query = selectedMetricsData?.advancedMode
-      ? advancedAutocompleteRef.current.getValue()
-      : autocompleteRef.current.getValue();
+      ? advancedAutocompleteRef?.current?.getValue()
+      : autocompleteRef?.current?.getValue();
     if (selectedMetricsData?.advancedMode) {
       onSelectAdvancedQueryChange(advancedAutocompleteRef.current.getValue());
     } else {
       onSelectRunQueryChange(autocompleteRef.current.getValue());
     }
-    searchRef.current = metricAppModel.getMetricsData(true, true, query);
+    searchRef.current = metricAppModel.getMetricsData(true, true, query ?? '');
     searchRef.current.call();
     trackEvent(ANALYTICS_EVENT_KEYS.metrics.searchClick);
   }
@@ -153,6 +155,7 @@ function SelectForm({
                   context={selectFormData?.advancedSuggestions}
                   value={selectedMetricsData?.advancedQuery}
                   onEnter={handleMetricSearch}
+                  disabled={isDisabled}
                 />
               </div>
             ) : (
@@ -163,6 +166,7 @@ function SelectForm({
                     color='primary'
                     onClick={handleClick}
                     aria-describedby={id}
+                    disabled={isDisabled}
                   >
                     <Icon name='plus' style={{ marginRight: '0.5rem' }} />
                     Metrics
@@ -252,6 +256,7 @@ function SelectForm({
                           key={tag.label}
                           label={tag.label}
                           onDelete={handleDelete}
+                          disabled={isDisabled}
                         />
                       );
                     })}
@@ -259,12 +264,17 @@ function SelectForm({
                 </Box>
                 {selectedMetricsData?.options &&
                   selectedMetricsData.options.length > 1 && (
-                    <span
+                    <Button
                       onClick={() => onMetricsSelectChange([])}
-                      className='Metrics__SelectForm__clearAll'
+                      withOnlyIcon
+                      className={classNames('Metrics__SelectForm__clearAll', {
+                        disabled: isDisabled,
+                      })}
+                      size='xSmall'
+                      disabled={isDisabled}
                     >
                       <Icon name='close' />
-                    </span>
+                    </Button>
                   )}
               </>
             )}
@@ -276,6 +286,7 @@ function SelectForm({
                 value={selectedMetricsData?.query}
                 context={selectFormData.suggestions}
                 onEnter={handleMetricSearch}
+                disabled={isDisabled}
               />
             </div>
           )}
@@ -283,6 +294,7 @@ function SelectForm({
         <div className='Metrics__SelectForm__container__search'>
           <Button
             fullWidth
+            key={`${requestIsPending}`}
             color='primary'
             variant={requestIsPending ? 'outlined' : 'contained'}
             startIcon={
@@ -299,7 +311,11 @@ function SelectForm({
           <div className='Metrics__SelectForm__search__actions'>
             <Tooltip title='Reset query'>
               <div>
-                <Button onClick={handleResetSelectForm} withOnlyIcon={true}>
+                <Button
+                  onClick={handleResetSelectForm}
+                  withOnlyIcon={true}
+                  disabled={isDisabled}
+                >
                   <Icon name='reset' />
                 </Button>
               </div>
@@ -316,6 +332,7 @@ function SelectForm({
                   className={selectedMetricsData?.advancedMode ? 'active' : ''}
                   withOnlyIcon={true}
                   onClick={toggleEditMode}
+                  disabled={isDisabled}
                 >
                   <Icon name='edit' />
                 </Button>
@@ -323,7 +340,11 @@ function SelectForm({
             </Tooltip>
             <Tooltip title='Copy search query'>
               <div>
-                <Button onClick={onSearchQueryCopy} withOnlyIcon={true}>
+                <Button
+                  onClick={onSearchQueryCopy}
+                  withOnlyIcon={true}
+                  disabled={isDisabled}
+                >
                   <Icon name='copy' />
                 </Button>
               </div>

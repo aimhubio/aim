@@ -7,6 +7,7 @@ from starlette.responses import StreamingResponse
 from aim import Images, Texts, Distributions, Audios, Figures
 from aim.sdk.sequence import Sequence
 from aim.sdk.sequence_collection import QuerySequenceCollection
+from aim.sdk.types import QueryReportMode
 from aim.web.api.runs.pydantic_models import (
     RunTracesBatchApiIn,
     URIBatchIn,
@@ -53,7 +54,8 @@ class CustomObjectApiConfig:
         async def search_api(q: Optional[str] = '',
                              skip_system: Optional[bool] = True,
                              record_range: Optional[str] = '', record_density: Optional[int] = 50,
-                             index_range: Optional[str] = '', index_density: Optional[int] = 5):
+                             index_range: Optional[str] = '', index_density: Optional[int] = 5,
+                             report_progress: Optional[bool] = True):
             # search Sequence API
             repo = get_project_repo()
             query = checked_query(q)
@@ -64,13 +66,16 @@ class CustomObjectApiConfig:
 
             # TODO [MV, AT]: move to `repo.py` when `SELECT` statements are introduced
             repo._prepare_runs_cache()
-            traces = QuerySequenceCollection(repo=repo, seq_cls=cls.sequence_type, query=query)
+            query_iterator = QuerySequenceCollection(repo=repo,
+                                                     seq_cls=cls.sequence_type,
+                                                     query=query,
+                                                     report_mode=QueryReportMode.PROGRESS_TUPLE)
 
             api = CustomObjectApi(seq_name, resolve_blobs=cls.resolve_blobs)
             api.set_dump_data_fn(cls.dump_record_fn)
-            api.set_trace_collection(traces)
+            api.set_trace_collection(query_iterator)
             api.set_ranges(record_range, record_density, index_range, index_density)
-            streamer = api.search_result_streamer(skip_system)
+            streamer = api.search_result_streamer(skip_system, report_progress)
             return StreamingResponse(streamer)
 
         # run sequence batch API

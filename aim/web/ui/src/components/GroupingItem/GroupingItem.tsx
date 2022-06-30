@@ -1,4 +1,5 @@
 import React from 'react';
+import classNames from 'classnames';
 
 import { Tooltip } from '@material-ui/core';
 
@@ -28,6 +29,7 @@ function GroupingItem({
   onSelect,
   onGroupingModeChange,
   groupingSelectOptions,
+  isDisabled,
 }: IGroupingItemProps): React.FunctionComponentElement<React.ReactNode> {
   return (
     <ErrorBoundary>
@@ -35,7 +37,16 @@ function GroupingItem({
         title={title}
         anchor={({ onAnchorClick, opened }) => (
           <Tooltip title={`Group by ${groupName}`}>
-            <div onClick={onAnchorClick} className={'GroupingItem'}>
+            <div
+              onClick={(e: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
+                if (!isDisabled) {
+                  onAnchorClick(e);
+                }
+              }}
+              className={classNames('GroupingItem', {
+                isDisabled: isDisabled,
+              })}
+            >
               <div
                 className={`GroupingItem__icon__box ${opened ? 'active' : ''} ${
                   groupingSelectOptions?.length &&

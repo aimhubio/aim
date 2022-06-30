@@ -21,6 +21,7 @@ export interface IGroupingProps {
   onGroupingPersistenceChange: IMetricProps['onGroupingPersistenceChange'];
   onShuffleChange: IMetricProps['onShuffleChange'];
   groupingPopovers?: IGroupingPopovers[];
+  isDisabled?: boolean;
 }
 
 export interface IGroupingPopovers {

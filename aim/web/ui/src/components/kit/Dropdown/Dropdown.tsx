@@ -54,6 +54,7 @@ function Dropdown({
   maxMenuListHeight = '12.5rem',
   label,
   icon,
+  isDisabled = false,
   ...rest
 }: IDropdownProps): React.FunctionComponentElement<React.ReactNode> {
   const [labelSwapped, setLabelSwapped] = useState(!!value);
@@ -262,6 +263,7 @@ function Dropdown({
           }}
           styles={customStyles}
           menuPlacement='auto'
+          isDisabled={isDisabled}
         />
       </div>
     </ErrorBoundary>
