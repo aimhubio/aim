@@ -18,6 +18,8 @@ import {
   RowHeightSize,
 } from 'config/table/tableConfigs';
 
+import useResizeObserver from 'hooks/window/useResizeObserver';
+
 import getColorFromRange from 'utils/d3/getColorFromRange';
 
 import ControlPopover from '../ControlPopover/ControlPopover';
@@ -138,9 +140,6 @@ function Column({
     document.body.style.cursor = 'unset';
     setTimeout(() => {
       updateColumnWidth(col.key, widthClone.current);
-      if (setColWidth) {
-        setColWidth(widthClone.current);
-      }
     }, 50);
   }
 
@@ -149,9 +148,6 @@ function Column({
     setMaxWidth(undefined);
     if (columnRef.current) {
       columnRef.current.style.width = 'initial';
-      if (setColWidth) {
-        setColWidth(widthClone.current);
-      }
     }
   }
 
@@ -166,12 +162,33 @@ function Column({
   React.useEffect(() => {
     if (columnRef.current && col.key !== 'selection') {
       columnRef.current.style.width = widthClone.current ?? 'initial';
-      if (setColWidth) {
-        setColWidth(columnRef.current?.offsetWidth);
-      }
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [data, expanded, width]);
+
+  const rafIDRef = React.useRef();
+
+  const resizeObserverCallback = React.useCallback(
+    (entries: ResizeObserverEntry[]) => {
+      if (entries?.length) {
+        rafIDRef.current = window.requestAnimationFrame(() => {
+          if (setColWidth) {
+            setColWidth(columnRef.current?.offsetWidth);
+          }
+        });
+      }
+    },
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [data, expanded, width],
+  );
+
+  const observerReturnCallback = React.useCallback(() => {
+    if (rafIDRef.current) {
+      window.cancelAnimationFrame(rafIDRef.current);
+    }
+  }, []);
+
+  useResizeObserver(resizeObserverCallback, columnRef, observerReturnCallback);
 
   return (
     <ErrorBoundary>
