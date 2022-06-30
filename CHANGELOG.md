@@ -1,5 +1,9 @@
 # Changelog
 
+### Fixes:
+
+- Blinks the progress bar when searching runs in Runs Explorer (KaroMourad)
+
 ## 3.11.1 Jun 27, 2022
 
 - Replace base58 encoder with base64 (KaroMourad, VkoHov)
