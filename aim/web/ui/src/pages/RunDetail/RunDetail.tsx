@@ -76,7 +76,7 @@ const RunLogsTab = React.lazy(
 
 const tabs: { [key: string]: string } = {
   overview: 'Overview',
-  run_parameters: 'Run Parameters',
+  run_parameters: 'Run Params',
   notes: 'Notes',
   logs: 'Logs',
   metrics: 'Metrics',
