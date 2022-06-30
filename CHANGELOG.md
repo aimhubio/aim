@@ -4,7 +4,10 @@
 
 ### Enhancements
 
+- Add support for tensorboard audios conversion (mihran113)
+
 ### Fixes
+
 - Fix tensorboard log conversion for images (mihran113)
 
 ## 3.11.1 Jun 27, 2022
