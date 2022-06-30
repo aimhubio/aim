@@ -1,8 +1,8 @@
-import * as dot from 'dot-object';
-
 import last from 'lodash/last';
-import get from 'lodash/get';
 import { Monaco } from '@monaco-editor/react';
+
+import getObjectPaths, { jsValidVariableRegex } from './getObjectPaths';
+import getValue from './helper/getValue/getValue';
 
 function showAutocompletion(monaco: Monaco, options: Record<string, string>) {
   // Register object that will return autocomplete items
@@ -123,11 +123,15 @@ function getSuggestions(monaco: Monaco, options: Record<string, string>) {
         // read more about this issue here - https://github.com/microsoft/monaco-editor/issues/2646
         return null;
       }
-
       // flatten strings of array of accessible options paths without example type
-      const filteredOptions = Object.keys(dot.dot(options)).map(
-        (option) => option.split('.__example_type__')[0],
-      );
+      const filteredOptions = getObjectPaths(options, options).map((option) => {
+        const indexOf =
+          option.indexOf('.__example_type__') !== -1 ||
+          option[option.length - 1] === '.'
+            ? option.indexOf('.__example_type__')
+            : option.length;
+        return option.slice(0, indexOf);
+      });
 
       // If the last character typed is a period then we need to look at member objects of the `options` object
       const isMember = activeTyping.charAt(activeTyping.length - 1) === '.';
@@ -153,7 +157,7 @@ function getSuggestions(monaco: Monaco, options: Record<string, string>) {
         const parents = activeTyping
           .substring(0, activeTyping.length - 1)
           .split('.');
-        lastToken = options[parents[0]];
+        lastToken = getValue(options, parents[0]);
         prefix = parents[0];
 
         // Loop through all the parents the current one will have (to generate prefix)
@@ -183,15 +187,21 @@ function getSuggestions(monaco: Monaco, options: Record<string, string>) {
         // Do not show properites that begin with "__"
         if (lastToken.hasOwnProperty(prop) && !prop.startsWith('__')) {
           // Create completion object
-          let detailType = getDetailType(get(options, prefix + prop));
+
+          const key = !jsValidVariableRegex.test(prop) ? `["${prop}"]` : prop;
+          const prefixKey = !jsValidVariableRegex.test(prop)
+            ? prefix.slice(0, prefix.length - 1)
+            : prefix;
+
+          let detailType = getDetailType(getValue(options, prefixKey + key));
           const completionItem = {
-            label: prop,
+            label: key,
             kind: getType(
               monaco,
               detailType.hasExampleType ? detailType.type : lastToken[prop],
               isMember,
             ),
-            insertText: prop,
+            insertText: key,
             detail: detailType.type,
             range,
           };

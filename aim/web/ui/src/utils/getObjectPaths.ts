@@ -1,7 +1,7 @@
 import _ from 'lodash-es';
 
 import { getValue } from 'utils/helper';
-const jsValidVariableRegex = new RegExp('^([a-zA-Z_$][a-zA-Z1-9d_$]*)$');
+export const jsValidVariableRegex = new RegExp('^([a-zA-Z_$][a-zA-Z1-9d_$]*)$');
 
 function getObjectPaths(
   obj: { [key: string]: unknown },
