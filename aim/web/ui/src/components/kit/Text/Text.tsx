@@ -1,4 +1,5 @@
 import React from 'react';
+import classNames from 'classnames';
 
 import ErrorBoundary from 'components/ErrorBoundary/ErrorBoundary';
 
@@ -27,11 +28,13 @@ function Text({
   ...rest
 }: ITextProps): React.FunctionComponentElement<React.ReactNode> {
   const Element = (): React.FunctionComponentElement<React.ReactNode> => {
-    const classes: string = `${className || ''} Text Text__size_${
-      size ? size : 12
-    } Text__weight_${weight ? weight : 500} Text__color_${`${
-      color ? color : 'primary'
-    }${tint ? `_${tint}` : ''}`}`;
+    const classes: string = classNames({
+      [`${className}`]: !!className,
+      Text: true,
+      [`Text__size_${size || 12}`]: true,
+      [`Text__weight_${weight || 500}`]: true,
+      [`Text__color_${color || 'primary'}${tint ? `_${tint}` : ''}`]: true,
+    });
     switch (component) {
       case 'h1':
         return (
