@@ -1,10 +1,17 @@
 # Changelog
 
-## Unreleased
+## Unreleased 
 
-### Enhancements
+### Enhancements:
 
-- Highlight the error position when getting search syntax errors (arsengit, mihran113)
+- Add support for tensorboard audios conversion (mihran113)
+- Display the error position when getting syntax errors after searching (arsengit)
+
+
+### Fixes:
+
+- Fix tensorboard log conversion for images (mihran113)
+- Fix `SyntaxError` handling for python3.10+ (mihran113)
 
 ## 3.11.1 Jun 27, 2022
 

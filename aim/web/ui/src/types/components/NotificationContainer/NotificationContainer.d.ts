@@ -14,9 +14,10 @@ export interface INotification {
 
 export interface ISyntaxErrorDetails {
   detail: {
-    Line: number;
-    Offset: number;
-    Statement: string;
+    line: number;
+    offset: number;
+    end_offset?: number;
+    statement: string;
   };
   message: string;
 }

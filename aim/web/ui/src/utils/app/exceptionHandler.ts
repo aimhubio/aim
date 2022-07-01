@@ -15,9 +15,10 @@ export default function exceptionHandler<M extends State>({
   let state: Record<any, any> = {
     requestStatus: RequestStatusEnum.BadRequest,
   };
-  const modelState = model.getState();
+  const modelState: any = model.getState();
+
   if (detail.message === 'SyntaxError' && modelState) {
-    message = `Query syntax error at line (${detail.detail.Line}, ${detail.detail.Offset})`;
+    message = `Query syntax error at line (${detail.detail.line}, ${detail.detail.offset})`;
     state = {
       ...state,
       selectFormData: {

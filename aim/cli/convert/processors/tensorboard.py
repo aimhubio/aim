@@ -4,7 +4,7 @@ import os
 import click
 from tqdm import tqdm
 
-from aim import Image, Run
+from aim import Audio, Image, Run
 
 
 def parse_tb_logs(tb_logs, repo_inst, flat=False, no_cache=False):
@@ -205,21 +205,26 @@ def parse_tb_logs(tb_logs, repo_inst, flat=False, no_cache=False):
                                 )
                                 unsupported_plugin_noticed = True
                             continue
-
+                        track_val = None
                         try:
-                            if plugin_name == 'images':
-                                tensor = value.tensor.string_val[2:]
-                                track_val = [
-                                    Image(tf.image.decode_image(t).numpy()) for t in tensor
-                                ]
-                                if len(track_val) == 1:
-                                    track_val = track_val[0]
-                            else:
-
-                                if value.HasField('simple_value'):
-                                    track_val = value.simple_value
+                            if value.HasField('tensor'):
+                                # TODO: [MV] check the case when audios are passed via tensor
+                                if plugin_name == 'images':
+                                    tensor = value.tensor.string_val[2:]
+                                    track_val = [
+                                        Image(tf.image.decode_image(t).numpy()) for t in tensor
+                                    ]
+                                    if len(track_val) == 1:
+                                        track_val = track_val[0]
                                 else:
                                     track_val = value.tensor.float_val[0]
+                            elif value.HasField('simple_value'):
+                                track_val = value.simple_value
+                            elif value.HasField('image'):
+                                track_val = Image(tf.image.decode_image(value.image.encoded_image_string).numpy())
+                            elif value.HasField('audio'):
+                                tf_audio, sample_rate = tf.audio.decode_wav(value.audio.encoded_audio_string)
+                                track_val = Audio(tf_audio.numpy(), rate=sample_rate)
 
                         except RuntimeError as exc:
                             # catch all the nasty failures
@@ -232,7 +237,8 @@ def parse_tb_logs(tb_logs, repo_inst, flat=False, no_cache=False):
                             'step': step,
                             'timestamp': timestamp
                         }
-                        run._tracker._track(track_val, timestamp, tag, step, context=event_context)
+                        if track_val is not None:
+                            run._tracker._track(track_val, timestamp, tag, step, context=event_context)
                     if fail_count:
                         click.echo(f'Failed to process {fail_count} entries. First exception: {_err_info}', err=True)
 
