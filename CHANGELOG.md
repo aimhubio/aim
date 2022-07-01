@@ -2,7 +2,7 @@
 
 ### Fixes:
 
-- Blinks the progress bar when searching runs in Runs Explorer (KaroMourad)
+- Remove the progress bar blinking when searching runs in Runs Explorer (KaroMourad)
 
 ## 3.11.1 Jun 27, 2022
 
