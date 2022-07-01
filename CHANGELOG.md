@@ -2,7 +2,7 @@
 
 ### Fixes:
 
-- Progress Bar `matched runs` text incorrect color style (KaroMourad)
+- Fix the "matched runs" sentence color style in progress bars (KaroMourad)
 
 ## 3.11.1 Jun 27, 2022
 
