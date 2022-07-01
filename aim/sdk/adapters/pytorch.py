@@ -62,13 +62,13 @@ def get_model_layers(model, dt, parent_name=None):
             layers[layer_name] = {}
             weight = None
             if hasattr(m, 'weight') and m.weight is not None:
-                weight = getattr(m.weigth, dt, None)
+                weight = getattr(m.weight, dt, None)
                 if weight is not None:
                     layers[layer_name]['weight'] = get_pt_tensor(weight).numpy()
 
             bias = None
             if hasattr(m, 'bias') and m.bias is not None:
-                bias = getattr(m, 'bias', None)
+                bias = getattr(m.bias, dt, None)
                 if bias is not None:
                     layers[layer_name]['bias'] = get_pt_tensor(bias).numpy()
 
