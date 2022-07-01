@@ -1,4 +1,5 @@
-import last from 'lodash/last';
+import _ from 'lodash-es';
+
 import { Monaco } from '@monaco-editor/react';
 
 import getObjectPaths, { jsValidVariableRegex } from './getObjectPaths';
@@ -105,11 +106,11 @@ function getSuggestions(monaco: Monaco, options: Record<string, string>) {
         endColumn: position.column,
       });
       const words = lastChars.replace('\t', '').split(' ');
-      let activeTyping: any = last(words); // What the user is currently typing (everything after the last space)
+      let activeTyping: any = _.last(words); // What the user is currently typing (everything after the last space)
 
       specialCharactersForWordSplitting.forEach((char) => {
         if (activeTyping.includes(char)) {
-          activeTyping = last(activeTyping.split(char));
+          activeTyping = _.last(activeTyping.split(char));
         }
       });
 
@@ -168,7 +169,7 @@ function getSuggestions(monaco: Monaco, options: Record<string, string>) {
         startColumn: word.startColumn,
         endColumn: word.endColumn,
       };
-      
+
       // Get all the child properties of the last token
       for (const prop in lastToken) {
         // Do not show properites that begin with "__"
@@ -176,7 +177,6 @@ function getSuggestions(monaco: Monaco, options: Record<string, string>) {
           // Create completion object
 
           const key = !jsValidVariableRegex.test(prop) ? `["${prop}"]` : prop;
-      
 
           let detailType = getDetailType(getValue(options, prefix + key));
           const completionItem = {

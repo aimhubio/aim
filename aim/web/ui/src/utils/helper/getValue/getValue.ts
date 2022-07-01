@@ -1,6 +1,3 @@
-import _ from 'lodash';
-
-import { getPathSegments } from 'utils/helper';
 import stringToPath from 'utils/stringToPath';
 /**
  * [Get value from nested object by passed path](https://github.com/sindresorhus/dot-prop/blob/master/index.js)

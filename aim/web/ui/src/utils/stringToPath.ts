@@ -1,5 +1,6 @@
 const charCodeOfDot = '.'.charCodeAt(0);
 const reEscapeChar = /\\(\\)?/g;
+const firstCaptureGroup = '$1';
 const rePropName = RegExp(
   // Match anything that isn't a dot or bracket.
   '[^.[\\]]+' +
@@ -40,7 +41,7 @@ function stringToPath(string: string) {
     ): string => {
       let key = match;
       if (quote) {
-        key = subString.replace(reEscapeChar, '$1');
+        key = subString.replace(reEscapeChar, firstCaptureGroup);
       } else if (expression) {
         key = expression.trim();
       }
