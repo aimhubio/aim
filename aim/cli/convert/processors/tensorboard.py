@@ -224,7 +224,7 @@ def parse_tb_logs(tb_logs, repo_inst, flat=False, no_cache=False):
                                 track_val = Image(tf.image.decode_image(value.image.encoded_image_string).numpy())
                             elif value.HasField('audio'):
                                 tf_audio, sample_rate = tf.audio.decode_wav(value.audio.encoded_audio_string)
-                                track_val = Audio(tf_audio.numpy(), sample_rate=sample_rate)
+                                track_val = Audio(tf_audio.numpy(), rate=sample_rate)
 
                         except RuntimeError as exc:
                             # catch all the nasty failures
