@@ -159,6 +159,27 @@
         color: $primary-color-5;
       }
     }
+    &_success {
+      color: $success-color;
+      &_100 {
+        color: $success-color;
+      }
+      &_80 {
+        color: $success-color-80;
+      }
+      &_50 {
+        color: $success-color-50;
+      }
+      &_25 {
+        color: $success-color-25;
+      }
+      &_10 {
+        color: $success-color-10;
+      }
+      &_5 {
+        color: $success-color-5;
+      }
+    }
     &_inherit {
       color: inherit;
     }

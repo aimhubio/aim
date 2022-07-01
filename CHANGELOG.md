@@ -3,6 +3,7 @@
 ### Fixes:
 
 - Remove the progress bar blinking when searching runs in Runs Explorer (KaroMourad)
+- Fix the "matched runs" sentence color style in progress bars (KaroMourad)
 
 ## 3.11.1 Jun 27, 2022
 
