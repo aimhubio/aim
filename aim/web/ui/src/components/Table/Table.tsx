@@ -606,10 +606,18 @@ const Table = React.forwardRef(function Table(
   }, []);
 
   React.useEffect(() => {
-    const tableBulkActionsVisibility = {
+    const tableBulkActionsVisibility: {
+      delete: boolean;
+      archive: boolean;
+      unarchive: boolean;
+      hideItems: boolean;
+      showItems: boolean;
+    } = {
       delete: false,
       archive: false,
       unarchive: false,
+      hideItems: false,
+      showItems: false,
     };
     const values = Object.values(selectedRows || {});
     for (let i = 0; i < values.length; i++) {

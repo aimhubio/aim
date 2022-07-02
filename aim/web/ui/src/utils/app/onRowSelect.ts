@@ -22,7 +22,10 @@ export default function onRowSelect<M extends State>({
   let selectedRows = model.getState()?.selectedRows || {};
   let rawData =
     model.getState()?.rawData?.reduce((acc: any, item: any) => {
-      acc[item.hash] = { runHash: item.hash, ...item.props };
+      acc[item.hash] = {
+        runHash: item.hash,
+        ...item.props,
+      };
       return acc;
     }, {}) || {};
   switch (actionType) {
@@ -32,6 +35,7 @@ export default function onRowSelect<M extends State>({
       } else {
         selectedRows[data.selectKey] = {
           selectKey: data.selectKey,
+          isHidden: data.isHidden,
           ...rawData[sliceRunHash(data.selectKey)],
         };
       }
@@ -42,6 +46,7 @@ export default function onRowSelect<M extends State>({
           if (!selectedRows[item.selectKey]) {
             selectedRows[item.selectKey] = {
               selectKey: item.selectKey,
+              isHidden: item.isHidden,
               ...rawData[sliceRunHash(item.selectKey)],
             };
           }
@@ -55,6 +60,7 @@ export default function onRowSelect<M extends State>({
             if (!selectedRows[item.selectKey]) {
               selectedRows[item.selectKey] = {
                 selectKey: item.selectKey,
+                isHidden: item.isHidden,
                 ...rawData[sliceRunHash(item.selectKey)],
               };
             }
