@@ -116,8 +116,24 @@ const Table = React.forwardRef(function Table(
     React.useState(false);
   const [isOpenArchiveSelectedPopup, setIsOpenArchiveSelectedPopup] =
     React.useState(false);
+  const [isOpenHideSelectedPopup, setIsOpenHideSelectedPopup] =
+    React.useState(false);
+  const [isOpenShowSelectedPopup, setIsOpenShowSelectedPopup] =
+    React.useState(false);
   const [tableBulkActionsVisibility, setTableBulkActionsVisibility] =
-    React.useState({ delete: false, archive: false, unarchive: false });
+    React.useState<{
+      delete: boolean;
+      archive: boolean;
+      unarchive: boolean;
+      hideItems: boolean;
+      showItems: boolean;
+    }>({
+      delete: false,
+      archive: false,
+      unarchive: false,
+      hideItems: false,
+      showItems: false,
+    });
   const [listWindow, setListWindow] = React.useState({
     left: 0,
     width: 0,
@@ -518,6 +534,14 @@ const Table = React.forwardRef(function Table(
     setIsOpenUnarchiveSelectedPopup(!isOpenUnarchiveSelectedPopup);
   }
 
+  function onToggleHideItemsPopup() {
+    setIsOpenHideSelectedPopup(!isOpenHideSelectedPopup);
+  }
+
+  function onToggleShowItemsPopup() {
+    setIsOpenShowSelectedPopup(!isOpenShowSelectedPopup);
+  }
+
   React.useEffect(() => {
     if (custom && !!tableContainerRef.current) {
       const windowEdges = calculateWindow({
@@ -625,7 +649,9 @@ const Table = React.forwardRef(function Table(
       if (
         tableBulkActionsVisibility.delete &&
         tableBulkActionsVisibility.archive &&
-        tableBulkActionsVisibility.unarchive
+        tableBulkActionsVisibility.unarchive &&
+        tableBulkActionsVisibility.hideItems &&
+        tableBulkActionsVisibility.showItems
       ) {
         break;
       }
@@ -636,6 +662,11 @@ const Table = React.forwardRef(function Table(
       }
       if (value.end_time) {
         tableBulkActionsVisibility.delete = true;
+      }
+      if (value.isHidden) {
+        tableBulkActionsVisibility.showItems = true;
+      } else {
+        tableBulkActionsVisibility.hideItems = true;
       }
     }
     setTableBulkActionsVisibility(tableBulkActionsVisibility);
@@ -766,7 +797,7 @@ const Table = React.forwardRef(function Table(
                   </Text>
                 </div>
                 {tableBulkActionsVisibility.delete && (
-                  <div className='selectedRowActionsContainer__selectedItemsDelete'>
+                  <div>
                     <Button
                       color='secondary'
                       type='text'
@@ -783,7 +814,7 @@ const Table = React.forwardRef(function Table(
                   </div>
                 )}
                 {tableBulkActionsVisibility.unarchive && (
-                  <div className='selectedRowActionsContainer__selectedItemsArchive'>
+                  <div>
                     <Button
                       color='secondary'
                       type='text'
@@ -800,7 +831,7 @@ const Table = React.forwardRef(function Table(
                   </div>
                 )}
                 {tableBulkActionsVisibility.archive && (
-                  <div className='selectedRowActionsContainer__selectedItemsArchive'>
+                  <div>
                     <Button
                       color='secondary'
                       type='text'
@@ -812,6 +843,40 @@ const Table = React.forwardRef(function Table(
                       <Icon name='unarchive' fontSize={18} />
                       <Text size={14} tint={100}>
                         Unarchive
+                      </Text>
+                    </Button>
+                  </div>
+                )}
+                {tableBulkActionsVisibility.hideItems && (
+                  <div>
+                    <Button
+                      color='secondary'
+                      type='text'
+                      onClick={onToggleHideItemsPopup}
+                      className={`Table__header__item ${
+                        isOpenHideSelectedPopup ? 'opened' : ''
+                      }`}
+                    >
+                      <Icon name='eye-outline-hide' fontSize={14} />
+                      <Text size={14} tint={100}>
+                        Hide From
+                      </Text>
+                    </Button>
+                  </div>
+                )}
+                {tableBulkActionsVisibility.showItems && (
+                  <div>
+                    <Button
+                      color='secondary'
+                      type='text'
+                      onClick={onToggleShowItemsPopup}
+                      className={`Table__header__item ${
+                        isOpenShowSelectedPopup ? 'opened' : ''
+                      }`}
+                    >
+                      <Icon name='eye-show-outline' fontSize={14} />
+                      <Text size={14} tint={100}>
+                        Show In
                       </Text>
                     </Button>
                   </div>

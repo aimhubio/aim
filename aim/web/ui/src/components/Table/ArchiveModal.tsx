@@ -19,7 +19,22 @@ function ArchiveModal({
   archiveMode,
   onRowSelect,
   archiveRuns,
-}: any): React.FunctionComponentElement<React.ReactNode> {
+}: {
+  opened: boolean;
+  onClose: () => void;
+  selectedRows: { [key: string]: any };
+  archiveMode: boolean;
+  onRowSelect: ({
+    actionType,
+    data,
+  }: {
+    actionType: 'single' | 'selectAll' | 'removeAll';
+    data?: any;
+  }) => {
+    [key: string]: any;
+  };
+  archiveRuns: (ids: string[], archived: boolean) => void;
+}): React.FunctionComponentElement<React.ReactNode> {
   const archivedText = archiveMode ? 'archive' : 'unarchive';
   let runsArchiveRequest: any = null;
   const [data, setData] = React.useState<any[]>([]);
@@ -184,81 +199,81 @@ function ArchiveModal({
     runsArchiveRequest.call().then(() => onClose());
   }
 
-  return (
-    opened && (
-      <Modal
-        open={opened}
-        onClose={onClose}
-        onOk={onArchive}
-        cancelButtonText='Cancel'
-        okButtonText={archiveMode ? 'Archive' : 'Unarchive'}
-        title={`Are you sure you want to ${archivedText} the selected runs?`}
-        titleIconName={archivedText}
-        maxWidth='lg'
-        className='ActionModal__container'
-        classes={{ paper: 'ActionModalWrapper' }}
-      >
-        <div className='ActionModal'>
+  return opened ? (
+    <Modal
+      open={opened}
+      onClose={onClose}
+      onOk={onArchive}
+      cancelButtonText='Cancel'
+      okButtonText={archiveMode ? 'Archive' : 'Unarchive'}
+      title={`Are you sure you want to ${archivedText} the selected runs?`}
+      titleIconName={archivedText}
+      maxWidth='lg'
+      className='ActionModal__container'
+      classes={{ paper: 'ActionModalWrapper' }}
+    >
+      <div className='ActionModal'>
+        <Text
+          size={14}
+          weight={400}
+          tint={100}
+          className='ActionModal__infoText'
+        >
+          {archiveMode
+            ? 'Archived runs are not visible in search by default. You can always go back and unarchive them.'
+            : 'The runs will become visible in search.'}
+        </Text>
+        <div className='ActionModal__tableTitle'>
           <Text
-            size={14}
-            weight={400}
-            tint={100}
-            className='ActionModal__infoText'
+            size={12}
+            weight={600}
+            className='ActionModal__tableTitle__count'
           >
-            {archiveMode
-              ? 'Archived runs are not visible in search by default. You can always go back and unarchive them.'
-              : 'The runs will become visible in search.'}
+            {Object.values(data).length}
           </Text>
+          <Text size={12} weight={400}>
+            {`runs to ${archivedText}.`}
+          </Text>
+        </div>
+        {!_.isEmpty(data) && (
+          <DataList
+            tableRef={tableRef}
+            tableColumns={tableColumns}
+            tableData={data}
+            withSearchBar={false}
+            rowHeight={24}
+            height='200px'
+          />
+        )}
+        {!_.isEmpty(disabledData) && (
           <div className='ActionModal__tableTitle'>
             <Text
               size={12}
               weight={600}
               className='ActionModal__tableTitle__count'
             >
-              {Object.values(data).length}
+              {Object.values(disabledData).length}
             </Text>
             <Text size={12} weight={400}>
-              {`runs to ${archivedText}.`}
+              {`runs are already ${archivedText}d.`}
             </Text>
           </div>
-          {!_.isEmpty(data) && (
-            <DataList
-              tableRef={tableRef}
-              tableColumns={tableColumns}
-              tableData={data}
-              withSearchBar={false}
-              rowHeight={24}
-              height='200px'
-            />
-          )}
-          {!_.isEmpty(disabledData) && (
-            <div className='ActionModal__tableTitle'>
-              <Text
-                size={12}
-                weight={600}
-                className='ActionModal__tableTitle__count'
-              >
-                {Object.values(disabledData).length}
-              </Text>
-              <Text size={12} weight={400}>
-                {`runs are already ${archivedText}d.`}
-              </Text>
-            </div>
-          )}
-          {!_.isEmpty(disabledData) && (
-            <DataList
-              tableRef={disabledTableRef}
-              tableColumns={tableColumns}
-              tableData={disabledData}
-              withSearchBar={false}
-              rowHeight={24}
-              tableClassName='ActionModal__Table ActionModal__disabledTableWrapper'
-              height='200px'
-            />
-          )}
-        </div>
-      </Modal>
-    )
+        )}
+        {!_.isEmpty(disabledData) && (
+          <DataList
+            tableRef={disabledTableRef}
+            tableColumns={tableColumns}
+            tableData={disabledData}
+            withSearchBar={false}
+            rowHeight={24}
+            tableClassName='ActionModal__Table ActionModal__disabledTableWrapper'
+            height='200px'
+          />
+        )}
+      </div>
+    </Modal>
+  ) : (
+    <></>
   );
 }
 

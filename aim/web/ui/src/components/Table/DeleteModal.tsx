@@ -18,7 +18,21 @@ function DeleteModal({
   selectedRows,
   onRowSelect,
   deleteRuns,
-}: any): React.FunctionComponentElement<React.ReactNode> {
+}: {
+  opened: boolean;
+  onClose: () => void;
+  selectedRows: { [key: string]: any };
+  onRowSelect: ({
+    actionType,
+    data,
+  }: {
+    actionType: 'single' | 'selectAll' | 'removeAll';
+    data?: any;
+  }) => {
+    [key: string]: any;
+  };
+  deleteRuns: (ids: string[]) => void;
+}): React.FunctionComponentElement<React.ReactNode> {
   let runsDeleteRequest: any = null;
   const [data, setData] = React.useState<any[]>([]);
   const [disabledData, setDisabledData] = React.useState<any[]>([]);
@@ -184,82 +198,82 @@ function DeleteModal({
     runsDeleteRequest.call().then(() => onClose());
   }
 
-  return (
-    opened && (
-      <Modal
-        open={opened}
-        onClose={onClose}
-        onOk={onDelete}
-        cancelButtonText='Cancel'
-        okButtonText='Delete'
-        title='Are you sure you want to permanently delete the selected runs?'
-        modalType='error'
-        titleIconName='delete'
-        maxWidth='lg'
-        className='ActionModal__container'
-        classes={{ paper: 'ActionModalWrapper' }}
-      >
-        <div className='ActionModal'>
+  return opened ? (
+    <Modal
+      open={opened}
+      onClose={onClose}
+      onOk={onDelete}
+      cancelButtonText='Cancel'
+      okButtonText='Delete'
+      title='Are you sure you want to permanently delete the selected runs?'
+      modalType='error'
+      titleIconName='delete'
+      maxWidth='lg'
+      className='ActionModal__container'
+      classes={{ paper: 'ActionModalWrapper' }}
+    >
+      <div className='ActionModal'>
+        <Text
+          size={14}
+          weight={400}
+          tint={100}
+          className='ActionModal__infoText'
+        >
+          You will lose all the logs and data related to them. This action
+          cannot be undone.
+        </Text>
+        <div className='ActionModal__tableTitle'>
           <Text
-            size={14}
-            weight={400}
-            tint={100}
-            className='ActionModal__infoText'
+            size={12}
+            weight={600}
+            color='error'
+            className='ActionModal__tableTitle__count'
           >
-            You will lose all the logs and data related to them. This action
-            cannot be undone.
+            {Object.values(data).length}
           </Text>
+          <Text size={12} weight={400} color='error'>
+            runs to delete.
+          </Text>
+        </div>
+        {!_.isEmpty(data) && (
+          <DataList
+            tableRef={tableRef}
+            tableColumns={tableColumns}
+            tableData={data}
+            withSearchBar={false}
+            rowHeight={24}
+            height='200px'
+          />
+        )}
+        {!_.isEmpty(disabledData) && (
           <div className='ActionModal__tableTitle'>
             <Text
               size={12}
               weight={600}
-              color='error'
               className='ActionModal__tableTitle__count'
             >
-              {Object.values(data).length}
+              {Object.values(disabledData).length}
             </Text>
-            <Text size={12} weight={400} color='error'>
-              runs to delete.
+            <Text size={12} weight={400}>
+              runs are still in progress. Unfinished runs cannot be deleted.
             </Text>
           </div>
-          {!_.isEmpty(data) && (
-            <DataList
-              tableRef={tableRef}
-              tableColumns={tableColumns}
-              tableData={data}
-              withSearchBar={false}
-              rowHeight={24}
-              height='200px'
-            />
-          )}
-          {!_.isEmpty(disabledData) && (
-            <div className='ActionModal__tableTitle'>
-              <Text
-                size={12}
-                weight={600}
-                className='ActionModal__tableTitle__count'
-              >
-                {Object.values(disabledData).length}
-              </Text>
-              <Text size={12} weight={400}>
-                runs are still in progress. Unfinished runs cannot be deleted.
-              </Text>
-            </div>
-          )}
-          {!_.isEmpty(disabledData) && (
-            <DataList
-              tableRef={disabledTableRef}
-              tableColumns={tableColumns}
-              tableData={disabledData}
-              withSearchBar={false}
-              rowHeight={24}
-              tableClassName='ActionModal__Table ActionModal__disabledTableWrapper'
-              height='200px'
-            />
-          )}
-        </div>
-      </Modal>
-    )
+        )}
+        {!_.isEmpty(disabledData) && (
+          <DataList
+            tableRef={disabledTableRef}
+            tableColumns={tableColumns}
+            tableData={disabledData}
+            withSearchBar={false}
+            rowHeight={24}
+            tableClassName='ActionModal__Table ActionModal__disabledTableWrapper'
+            height='200px'
+          />
+        )}
+      </div>
+    </Modal>
+  ) : (
+    <></>
   );
 }
 

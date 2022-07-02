@@ -10,15 +10,17 @@ import { IModel, State } from 'types/services/models/model';
  * @param {IModel<M extends State>} model - instance of create model
  */
 
-export default function onRowSelect<M extends State>({
+export interface IRowSelectProps {
+  actionType: 'single' | 'selectAll' | 'removeAll';
+  data?: any;
+  model: IModel<State>;
+}
+
+export default function onRowSelect({
   actionType,
   data,
   model,
-}: {
-  actionType: 'single' | 'selectAll' | 'removeAll';
-  data?: any;
-  model: IModel<M>;
-}): any {
+}: IRowSelectProps): any {
   let selectedRows = model.getState()?.selectedRows || {};
   let rawData =
     model.getState()?.rawData?.reduce((acc: any, item: any) => {
