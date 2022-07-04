@@ -662,10 +662,12 @@ const Table = React.forwardRef(function Table(
         if (value.end_time) {
           tableBulkActionsVisibility.delete = true;
         }
-        if (value.isHidden) {
-          tableBulkActionsVisibility.showItems = true;
-        } else {
-          tableBulkActionsVisibility.hideItems = true;
+        if (onRowsVisibilityChange) {
+          if (value.isHidden) {
+            tableBulkActionsVisibility.showItems = true;
+          } else {
+            tableBulkActionsVisibility.hideItems = true;
+          }
         }
       }
     });

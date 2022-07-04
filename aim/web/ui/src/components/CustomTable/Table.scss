@@ -65,7 +65,12 @@ $border-radius: 0.2rem;
     }
   }
 }
-
+.TableSelectedMode {
+  .Table__action__icon {
+    opacity: 0.5;
+    pointer-events: none;
+  }
+}
 .Table__pane {
   display: flex;
   width: stretch;
