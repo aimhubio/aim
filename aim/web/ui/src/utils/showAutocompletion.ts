@@ -152,14 +152,12 @@ function getSuggestions(monaco: Monaco, options: Record<string, string>) {
           break;
         }
       }
-
       // Used for generic handling between member and non-member objects
       let lastToken: any = options;
-      let prefix = '';
+      let prefix = activeTyping;
       if (isMember && isIncluded) {
         // Is a member, get a list of all members, and the prefix
-        prefix = activeTyping.substring(0, activeTyping.length - 1);
-        lastToken = getValue(options, prefix);
+        lastToken = getValue(options, prefix.substring(0, prefix.length - 1));
       }
 
       const word = model.getWordUntilPosition(position);
