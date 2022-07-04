@@ -70,7 +70,7 @@ function RunOverviewTabParamsCard({ runParams, isRunInfoLoading }: any) {
         height='100%'
       >
         <Card
-          title='Parameters'
+          title='Run Params'
           // subtitle='Little information about Params'
           className='RunOverviewTab__cardBox'
           dataListProps={{
