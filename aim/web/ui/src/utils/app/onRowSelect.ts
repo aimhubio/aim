@@ -38,6 +38,7 @@ export default function onRowSelect({
         selectedRows[data.selectKey] = {
           selectKey: data.selectKey,
           isHidden: data.isHidden,
+          key: data.key,
           ...rawData[sliceRunHash(data.selectKey)],
         };
       }
@@ -49,6 +50,7 @@ export default function onRowSelect({
             selectedRows[item.selectKey] = {
               selectKey: item.selectKey,
               isHidden: item.isHidden,
+              key: item.key,
               ...rawData[sliceRunHash(item.selectKey)],
             };
           }
@@ -63,6 +65,7 @@ export default function onRowSelect({
               selectedRows[item.selectKey] = {
                 selectKey: item.selectKey,
                 isHidden: item.isHidden,
+                key: item.key,
                 ...rawData[sliceRunHash(item.selectKey)],
               };
             }

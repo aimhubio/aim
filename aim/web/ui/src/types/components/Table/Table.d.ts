@@ -66,6 +66,7 @@ export interface ITableProps {
   onRowSelect?: any;
   archiveRuns?: (ids: string[], archived: boolean) => void;
   deleteRuns?: (ids: string[]) => void;
+  onRowsVisibilityChange?: (keys: string[]) => void;
   onToggleColumnsColorScales?: (colKey: string) => void;
   className?: string;
   appName?: AppNameEnum;

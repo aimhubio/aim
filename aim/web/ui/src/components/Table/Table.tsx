@@ -32,6 +32,7 @@ import CustomTable from '../CustomTable/Table';
 
 import ArchiveModal from './ArchiveModal';
 import DeleteModal from './DeleteModal';
+import HideItemsModal from './HideItemsModal';
 import AutoResizer from './AutoResizer';
 import BaseTable from './BaseTable';
 
@@ -91,6 +92,7 @@ const Table = React.forwardRef(function Table(
     disableRowClick = false,
     onToggleColumnsColorScales,
     columnsColorScales,
+    onRowsVisibilityChange,
     ...props
   }: ITableProps,
   ref,
@@ -644,31 +646,30 @@ const Table = React.forwardRef(function Table(
       showItems: false,
     };
     const values = Object.values(selectedRows || {});
-    for (let i = 0; i < values.length; i++) {
-      const value: any = values[i];
+    values.forEach((value) => {
       if (
-        tableBulkActionsVisibility.delete &&
-        tableBulkActionsVisibility.archive &&
-        tableBulkActionsVisibility.unarchive &&
-        tableBulkActionsVisibility.hideItems &&
-        tableBulkActionsVisibility.showItems
+        !tableBulkActionsVisibility.delete ||
+        !tableBulkActionsVisibility.archive ||
+        !tableBulkActionsVisibility.unarchive ||
+        !tableBulkActionsVisibility.hideItems ||
+        !tableBulkActionsVisibility.showItems
       ) {
-        break;
+        if (value.archived) {
+          tableBulkActionsVisibility.archive = true;
+        } else {
+          tableBulkActionsVisibility.unarchive = true;
+        }
+        if (value.end_time) {
+          tableBulkActionsVisibility.delete = true;
+        }
+        if (value.isHidden) {
+          tableBulkActionsVisibility.showItems = true;
+        } else {
+          tableBulkActionsVisibility.hideItems = true;
+        }
       }
-      if (value.archived) {
-        tableBulkActionsVisibility.archive = true;
-      } else {
-        tableBulkActionsVisibility.unarchive = true;
-      }
-      if (value.end_time) {
-        tableBulkActionsVisibility.delete = true;
-      }
-      if (value.isHidden) {
-        tableBulkActionsVisibility.showItems = true;
-      } else {
-        tableBulkActionsVisibility.hideItems = true;
-      }
-    }
+    });
+
     setTableBulkActionsVisibility(tableBulkActionsVisibility);
   }, [selectedRows]);
 
@@ -991,6 +992,21 @@ const Table = React.forwardRef(function Table(
               selectedRows={selectedRows}
               onRowSelect={onRowSelect}
               deleteRuns={deleteRuns}
+            />
+            <HideItemsModal
+              opened={isOpenHideSelectedPopup}
+              onClose={onToggleHideItemsPopup}
+              selectedRows={selectedRows}
+              hideMode
+              onRowSelect={onRowSelect}
+              onRowsVisibilityChange={onRowsVisibilityChange}
+            />
+            <HideItemsModal
+              opened={isOpenShowSelectedPopup}
+              onClose={onToggleShowItemsPopup}
+              selectedRows={selectedRows}
+              onRowSelect={onRowSelect}
+              onRowsVisibilityChange={onRowsVisibilityChange}
             />
           </div>
         ) : (

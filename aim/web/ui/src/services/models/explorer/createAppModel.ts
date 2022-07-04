@@ -187,6 +187,7 @@ import setRequestProgress from 'utils/app/setRequestProgress';
 import { minMaxOfArray } from 'utils/minMaxOfArray';
 import getAdvancedSuggestion from 'utils/getAdvancedSuggestions';
 import { processDurationTime } from 'utils/processDurationTime';
+import onRowsVisibilityChange from 'utils/app/onRowsVisibilityChange';
 
 import { AppDataTypeEnum, AppNameEnum } from './index';
 
@@ -2087,6 +2088,14 @@ function createAppModel(appConfig: IAppInitialConfig) {
           data?: any;
         }): void {
           return onRowSelect({ actionType, data, model });
+        },
+        onRowsVisibilityChange(metricKeys: string[]): void {
+          return onRowsVisibilityChange({
+            metricKeys,
+            model,
+            appName,
+            updateModelData,
+          });
         },
       });
     }

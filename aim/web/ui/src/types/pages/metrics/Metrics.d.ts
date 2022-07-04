@@ -116,6 +116,7 @@ export interface IMetricProps extends Partial<RouteChildrenProps> {
   onMetricsSelectChange: (options: ISelectOption[]) => void;
   onSelectRunQueryChange: (query: string) => void;
   onSelectAdvancedQueryChange: (query: string) => void;
+  onRowsVisibilityChange: (metricKeys: string[]) => void;
   toggleSelectAdvancedMode: () => void;
   onExportTableData: (e: React.ChangeEvent<any>) => void;
   onRowHeightChange: (height: RowHeightSize) => void;

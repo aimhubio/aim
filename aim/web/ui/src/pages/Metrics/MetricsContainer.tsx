@@ -201,6 +201,7 @@ function MetricsContainer(): React.FunctionComponentElement<React.ReactNode> {
         onColumnsVisibilityChange={metricAppModel.onColumnsVisibilityChange}
         onTableDiffShow={metricAppModel.onTableDiffShow}
         onTableResizeModeChange={metricAppModel.onTableResizeModeChange}
+        onRowsVisibilityChange={metricAppModel.onRowsVisibilityChange}
         // live update
         liveUpdateConfig={metricsData?.config?.liveUpdate!}
         onLiveUpdateConfigChange={metricAppModel.changeLiveUpdateConfig}

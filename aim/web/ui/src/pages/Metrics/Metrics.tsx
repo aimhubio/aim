@@ -265,6 +265,7 @@ function Metrics(
                           onRowSelect={props.onRowSelect}
                           archiveRuns={props.archiveRuns}
                           deleteRuns={props.deleteRuns}
+                          onRowsVisibilityChange={props.onRowsVisibilityChange}
                           focusedState={props.focusedState}
                         />
                       </ErrorBoundary>
