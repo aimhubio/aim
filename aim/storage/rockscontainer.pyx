@@ -1,7 +1,7 @@
 import logging
 import os
 from pathlib import Path
-from filelock import FileLock
+from filelock import SoftFileLock
 
 import aimrocks
 
@@ -132,7 +132,7 @@ class RocksContainer(Container):
         if not self.read_only:
             lock_path = prepare_lock_path(self.path)
             self._lock_path = lock_path
-            self._lock = FileLock(str(self._lock_path), timeout=self._extra_opts.get('timeout', 10))
+            self._lock = SoftFileLock(f'{self._lock_path}.softlock', timeout=self._extra_opts.get('timeout', 10))
             self._lock.acquire()
         else:
             self.optimize_for_read()
@@ -559,7 +559,7 @@ def optimize_db_for_read(path: Path, options: dict, run_compactions: bool = Fals
     if non_empty_wal():
         lock_path = prepare_lock_path(path)
 
-        with FileLock(str(lock_path), timeout=0):
+        with SoftFileLock(f'{lock_path}.softlock', timeout=0):
             wdb = aimrocks.DB(str(path), aimrocks.Options(**options), read_only=False)
             wdb.flush()
             wdb.flush_wal()

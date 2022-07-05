@@ -5,7 +5,7 @@ import logging
 from collections import defaultdict
 from contextlib import contextmanager
 from enum import Enum
-from filelock import FileLock
+from filelock import SoftFileLock
 from typing import Dict, Tuple, Iterator, NamedTuple, Optional, List
 from weakref import WeakValueDictionary
 
@@ -127,7 +127,7 @@ class Repo:
 
         if not self.is_remote_repo:
             self._lock_path = os.path.join(self.path, '.repo_lock')
-            self._lock = FileLock(self._lock_path, timeout=10)
+            self._lock = SoftFileLock(f'{self._lock_path}.softlock', timeout=10)
 
             with self.lock():
                 status = self.check_repo_status(self.root_path)
@@ -732,7 +732,7 @@ class Repo:
         # try to acquire a lock on a run container to check if it is still in progress or not
         # in progress runs can't be deleted
         lock_path = os.path.join(self.path, 'meta', 'locks', run_hash)
-        lock = FileLock(str(lock_path), timeout=0)
+        lock = SoftFileLock(f'{lock_path}.softlock', timeout=0)
         lock.acquire()
 
         with self.structured_db:  # rollback db entity delete if subsequent actions fail.
@@ -761,7 +761,7 @@ class Repo:
         # try to acquire a lock on a run container to check if it is still in progress or not
         # in progress runs can't be copied
         lock_path = os.path.join(self.path, 'meta', 'locks', run_hash)
-        lock = FileLock(str(lock_path), timeout=0)
+        lock = SoftFileLock(f'{lock_path}.softlock', timeout=0)
         lock.acquire()
         with dest_repo.structured_db:  # rollback destination db entity if subsequent actions fail.
             # copy run structured data

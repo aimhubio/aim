@@ -7,7 +7,7 @@ import os
 from threading import Thread
 from multiprocessing.pool import ThreadPool
 from psutil import cpu_count
-from filelock import FileLock
+from filelock import SoftFileLock
 from pathlib import Path
 from functools import partial
 
@@ -115,7 +115,7 @@ class RepoIndexManager:
     def _run_forever(self):
         lock_path = self.locks_dir / 'run_index'
         logger.debug(f'Trying to acquire indexing lock for repo \'{self.repo_path}\'...')
-        lock = FileLock(str(lock_path))
+        lock = SoftFileLock(f'{lock_path}.softlock')
         lock.acquire(timeout=-1)  # block till lock can be acquired
         logger.debug('Lock acquired! Running...')
         idle_cycles = 0
@@ -148,7 +148,7 @@ class RepoIndexManager:
     def _is_run_in_progress(self, run_hash: str) -> bool:
         lock_path = os.path.join(self.repo_path, 'meta', 'locks', run_hash)
         try:
-            fl = FileLock(lock_path, timeout=0)
+            fl = SoftFileLock(f'{lock_path}.softlock', timeout=0)
             fl.acquire()
         except TimeoutError:
             return True
