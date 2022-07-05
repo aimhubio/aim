@@ -66,7 +66,6 @@ function RunsTable({
             ref={tableRef}
             data={data}
             columns={columns}
-            isLoading={requestStatus === RequestStatusEnum.Pending}
             selectedRows={selectedRows}
             appName={AppNameEnum.RUNS}
             multiSelect

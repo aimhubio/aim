@@ -19,10 +19,8 @@ function Runs(props: any): React.FunctionComponentElement<React.ReactNode> {
       <section className='Runs__section'>
         <div className='Runs__section__appBarContainer Runs__fullHeight'>
           <RunsBar
-            {...{
-              ...props.liveUpdateConfig,
-              onLiveUpdateConfigChange: props.onLiveUpdateConfigChange,
-            }}
+            {...props.liveUpdateConfig}
+            onLiveUpdateConfigChange={props.onLiveUpdateConfigChange}
             disabled={isProgressBarVisible}
           />
           <SearchBar
