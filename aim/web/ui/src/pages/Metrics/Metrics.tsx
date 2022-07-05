@@ -267,6 +267,7 @@ function Metrics(
                           deleteRuns={props.deleteRuns}
                           onRowsVisibilityChange={props.onRowsVisibilityChange}
                           focusedState={props.focusedState}
+                          visualizationElementType={'lines'}
                         />
                       </ErrorBoundary>
                     )}

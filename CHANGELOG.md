@@ -1,5 +1,9 @@
 # Changelog
 
+### Enhancements:
+
+- Ability to hide a batch of items in explorers (VkoHov)
+
 ### Fixes:
 
 - Fix the "matched runs" sentence color style in progress bars (KaroMourad)

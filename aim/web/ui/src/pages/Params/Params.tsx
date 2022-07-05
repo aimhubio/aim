@@ -104,6 +104,7 @@ const Params = ({
   brushExtents,
   chartPanelOffsetHeight,
   requestProgress,
+  onRowsVisibilityChange,
 }: IParamsProps): React.FunctionComponentElement<React.ReactNode> => {
   const [isProgressBarVisible, setIsProgressBarVisible] =
     React.useState<boolean>(false);
@@ -280,10 +281,12 @@ const Params = ({
                         onTableResizeModeChange={onTableResizeModeChange}
                         onTableDiffShow={onTableDiffShow}
                         updateColumnsWidths={updateColumnsWidths}
+                        onRowsVisibilityChange={onRowsVisibilityChange}
                         onRowSelect={onRowSelect}
                         archiveRuns={archiveRuns}
                         deleteRuns={deleteRuns}
                         focusedState={focusedState}
+                        visualizationElementType={'lines'}
                         multiSelect
                       />
                     </ErrorBoundary>

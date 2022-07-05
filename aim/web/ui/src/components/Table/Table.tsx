@@ -93,6 +93,7 @@ const Table = React.forwardRef(function Table(
     onToggleColumnsColorScales,
     columnsColorScales,
     onRowsVisibilityChange,
+    visualizationElementType,
     ...props
   }: ITableProps,
   ref,
@@ -728,6 +729,7 @@ const Table = React.forwardRef(function Table(
                     <HideRowsPopover
                       hiddenChartRows={hiddenChartRows}
                       toggleRowsVisibility={onRowsChange}
+                      visualizationElementType={visualizationElementType}
                     />
                   )}
                   {onSort && (
@@ -862,7 +864,7 @@ const Table = React.forwardRef(function Table(
                     >
                       <Icon name='eye-outline-hide' fontSize={14} />
                       <Text size={14} tint={100}>
-                        Hide From
+                        {`Hide ${visualizationElementType}`}
                       </Text>
                     </Button>
                   </div>
@@ -879,7 +881,7 @@ const Table = React.forwardRef(function Table(
                     >
                       <Icon name='eye-show-outline' fontSize={14} />
                       <Text size={14} tint={100}>
-                        Show In
+                        {`Show ${visualizationElementType}`}
                       </Text>
                     </Button>
                   </div>

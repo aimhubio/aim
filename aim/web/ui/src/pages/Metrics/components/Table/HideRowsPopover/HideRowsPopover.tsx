@@ -11,6 +11,7 @@ import './HideRowsPopover.scss';
 function HideRowsPopover({
   toggleRowsVisibility,
   hiddenChartRows,
+  visualizationElementType,
 }: any): React.FunctionComponentElement<React.ReactNode> {
   return (
     <ErrorBoundary>
@@ -35,7 +36,7 @@ function HideRowsPopover({
           >
             <Icon name='eye-outline-hide' />
             <Text size={14} tint={100}>
-              Hide Rows
+              {`Hide All ${visualizationElementType}`}
             </Text>
           </Button>
         )}
@@ -45,13 +46,13 @@ function HideRowsPopover({
               className={hiddenChartRows ? '' : 'HideRowsPopover__active'}
               onClick={() => toggleRowsVisibility([])}
             >
-              Visualize All Rows
+              {`Visualize All ${visualizationElementType}`}
             </MenuItem>
             <MenuItem
               className={hiddenChartRows ? 'HideRowsPopover__active' : ''}
               onClick={() => toggleRowsVisibility(['all'])}
             >
-              Hide All Rows
+              {`Hide All ${visualizationElementType}`}
             </MenuItem>
           </div>
         }

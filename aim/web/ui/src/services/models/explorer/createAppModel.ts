@@ -4788,6 +4788,14 @@ function createAppModel(appConfig: IAppInitialConfig) {
           }): void {
             return onRowSelect({ actionType, data, model });
           },
+          onRowsVisibilityChange(metricKeys: string[]): void {
+            return onRowsVisibilityChange({
+              metricKeys,
+              model,
+              appName,
+              updateModelData,
+            });
+          },
         });
       }
 
@@ -6273,6 +6281,14 @@ function createAppModel(appConfig: IAppInitialConfig) {
             data?: any;
           }): void {
             return onRowSelect({ actionType, data, model });
+          },
+          onRowsVisibilityChange(metricKeys: string[]): void {
+            return onRowsVisibilityChange({
+              metricKeys,
+              model,
+              appName,
+              updateModelData,
+            });
           },
         });
       }

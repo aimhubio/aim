@@ -74,6 +74,7 @@ export interface ITableProps {
   illustrationConfig?: IIllustrationConfig;
   disableRowClick?: boolean;
   columnsColorScales?: { [key: string]: boolean };
+  visualizationElementType?: 'lines' | 'images' | 'dots';
 }
 
 export interface ITableRef {

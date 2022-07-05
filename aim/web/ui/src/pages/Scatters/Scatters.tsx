@@ -215,6 +215,8 @@ function Scatters(
                           archiveRuns={props.archiveRuns}
                           deleteRuns={props.deleteRuns}
                           focusedState={props.focusedState}
+                          onRowsVisibilityChange={props.onRowsVisibilityChange}
+                          visualizationElementType={'dots'}
                           multiSelect
                         />
                       </ErrorBoundary>

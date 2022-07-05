@@ -5,13 +5,13 @@ import { RowHeightSize } from 'config/table/tableConfigs';
 import { ResizeModeEnum } from 'config/enums/tableEnums';
 import { RequestStatusEnum } from 'config/enums/requestStatusEnum';
 
-import { IScatterAppModelState } from 'types/services/models/scatter/scatterAppModel';
 import {
   ISelectConfig,
   ISelectOption,
 } from 'services/models/explorer/createAppModel';
 import { IGroupingConfig } from 'services/models/explorer/createAppModel';
 
+import { IScatterAppModelState } from 'types/services/models/scatter/scatterAppModel';
 import { ITableRef } from 'types/components/Table/Table';
 import {
   GroupNameType,
@@ -108,4 +108,5 @@ export interface IScattersProps extends Partial<RouteChildrenProps> {
   onRowSelect: any;
   archiveRuns: (ids: string[], archived: boolean) => void;
   deleteRuns: (ids: string[]) => void;
+  onRowsVisibilityChange: (metricKeys: string[]) => void;
 }
