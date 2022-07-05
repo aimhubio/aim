@@ -84,6 +84,7 @@ export interface IMetricProps extends Partial<RouteChildrenProps> {
   resizeMode: ResizeModeEnum;
   selectFormData: { options: ISelectOption[]; suggestions: string[] };
   columnsOrder: IColumnsOrder;
+  sameValueColumns: string[] | [];
   onChangeTooltip: (tooltip: Partial<IPanelTooltip>) => void;
   onIgnoreOutliersChange: () => void;
   onZoomChange: (zoom: Partial<IChartZoom>) => void;

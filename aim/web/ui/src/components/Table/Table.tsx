@@ -42,6 +42,7 @@ const Table = React.forwardRef(function Table(
     onManageColumns,
     onColumnsVisibilityChange,
     onTableDiffShow,
+    sameValueColumns,
     onSort,
     onRowsChange,
     onExport,
@@ -647,6 +648,17 @@ const Table = React.forwardRef(function Table(
     sortPopoverChanged,
   );
 
+  const isDiffButtonDisabled: boolean = React.useMemo(() => {
+    if (sameValueColumns) {
+      let filteredColumns: string[] = sameValueColumns?.filter(
+        (value) =>
+          !TABLE_DEFAULT_CONFIG[appName].nonHidableColumns.has(value) &&
+          !hiddenColumns?.includes(value),
+      );
+      return !filteredColumns.length;
+    }
+  }, [appName, sameValueColumns, hiddenColumns]);
+
   // The right check is !props.isInfiniteLoading && (isLoading || isNil(rowData))
   // but after setting isInfiniteLoading to true, the rowData becomes null, unnecessary renders happening
   // @TODO sanitize this point
@@ -678,7 +690,6 @@ const Table = React.forwardRef(function Table(
                       hideSystemMetrics={hideSystemMetrics}
                       onManageColumns={onManageColumns}
                       onColumnsVisibilityChange={onColumnsVisibilityChange}
-                      onTableDiffShow={onTableDiffShow}
                       appName={appName}
                     />
                   )}
@@ -733,12 +744,22 @@ const Table = React.forwardRef(function Table(
                     />
                   )}
                 </div>
+                {onTableDiffShow && (
+                  <Button
+                    size='small'
+                    variant='outlined'
+                    className='Table__header__item--diffBtn'
+                    disabled={isDiffButtonDisabled}
+                    onClick={onTableDiffShow}
+                  >
+                    Show Table Diff
+                  </Button>
+                )}
                 {onExport && (
                   <div className='fac'>
                     <Button
                       fullWidth
                       variant='outlined'
-                      color='primary'
                       size='small'
                       onClick={onExport}
                       startIcon={<Icon fontSize={14} name='download' />}

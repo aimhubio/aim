@@ -48,6 +48,7 @@ function Runs(props: any): React.FunctionComponentElement<React.ReactNode> {
               onManageColumns={props.onManageColumns}
               onRowHeightChange={props.onRowHeightChange}
               data={props.tableData}
+              sameValueColumns={props.sameValueColumns}
               isInfiniteLoading={props.isInfiniteLoading}
               isLatest={props.isLatest}
               hideSystemMetrics={props.hideSystemMetrics}

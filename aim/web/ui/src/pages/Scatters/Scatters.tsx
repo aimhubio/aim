@@ -194,6 +194,7 @@ function Scatters(
                           isLoading={
                             props.requestStatus === RequestStatusEnum.Pending
                           }
+                          sameValueColumns={props?.sameValueColumns!}
                           // Table actions
                           onSort={props.onSortChange}
                           onSortReset={props.onSortReset}

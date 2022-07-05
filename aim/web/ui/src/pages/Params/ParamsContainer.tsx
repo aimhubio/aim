@@ -138,6 +138,7 @@ function ParamsContainer(): React.FunctionComponentElement<React.ReactNode> {
       isVisibleColorIndicator={
         paramsData?.config?.chart?.isVisibleColorIndicator!
       }
+      sameValueColumns={paramsData?.sameValueColumns!}
       chartPanelOffsetHeight={chartPanelOffsetHeight}
       groupingData={paramsData?.config?.grouping!}
       selectedParamsData={paramsData?.config?.select!}

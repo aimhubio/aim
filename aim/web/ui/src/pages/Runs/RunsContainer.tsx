@@ -69,6 +69,7 @@ function RunsContainer(): React.FunctionComponentElement<React.ReactNode> {
         onSelectRunQueryChange={runsAppModel.onSelectRunQueryChange}
         onToggleColumnsColorScales={runsAppModel.onToggleColumnsColorScales}
         tableRowHeight={runsData?.config?.table?.rowHeight}
+        sameValueColumns={runsData?.sameValueColumns!}
         tableRef={tableRef}
         columnsOrder={runsData?.config?.table.columnsOrder}
         hiddenColumns={runsData?.config?.table.hiddenColumns!}
