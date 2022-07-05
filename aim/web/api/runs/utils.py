@@ -313,9 +313,10 @@ def checked_query(q: str):
         raise HTTPException(status_code=400, detail={
             'message': 'SyntaxError',
             'detail': {
-                'Statement': se.text,
-                'Line': se.lineno,
-                'Offset': se.offset
+                'statement': se.text,
+                'line': se.lineno,
+                'offset': se.offset,
+                'end_offset': getattr(se, 'end_offset', 0)
             }
         })
     return query
