@@ -4,6 +4,7 @@
 
 ### Enhancements:
 
+- Increase visibility and usability of the Show table diff button (arsengit)
 - Add support for tensorboard audios conversion (mihran113)
 - Mention explicitly run params everywhere params is mentioned (VkoHov)
 

@@ -23,6 +23,7 @@ export interface IRunsTableProps {
   columns: any;
   tableRowHeight: number;
   requestStatus: RequestStatusEnum;
+  sameValueColumns: string[] | [];
   onExportTableData: () => void;
   onManageColumns: () => void;
   onColumnsVisibilityChange: (hiddenColumns: string[] | string) => void;

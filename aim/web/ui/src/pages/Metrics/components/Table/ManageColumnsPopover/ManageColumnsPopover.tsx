@@ -41,7 +41,6 @@ function ManageColumnsPopover({
   hideSystemMetrics,
   columnsOrder,
   appName,
-  onTableDiffShow,
   onManageColumns,
   onColumnsVisibilityChange,
 }: IManageColumnsPopoverProps) {
@@ -400,11 +399,6 @@ function ManageColumnsPopover({
                 >
                   <Text size={12} tint={100}>
                     reset columns order
-                  </Text>
-                </Button>
-                <Button variant='text' size='xSmall' onClick={onTableDiffShow}>
-                  <Text size={12} tint={100}>
-                    show table diff
                   </Text>
                 </Button>
               </div>

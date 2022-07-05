@@ -101,6 +101,7 @@ const Params = ({
   deleteRuns,
   selectedRows,
   columnsOrder,
+  sameValueColumns,
   brushExtents,
   chartPanelOffsetHeight,
   requestProgress,
@@ -267,6 +268,7 @@ const Params = ({
                         appName={AppNameEnum.PARAMS}
                         hiddenChartRows={highPlotData?.length === 0}
                         columnsOrder={columnsOrder}
+                        sameValueColumns={sameValueColumns!}
                         // Table actions
                         onSortReset={onSortReset}
                         onSort={onSortFieldsChange}
