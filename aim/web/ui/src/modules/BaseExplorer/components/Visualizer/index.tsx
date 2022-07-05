@@ -1,24 +1,62 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 
-import { Button, Text } from 'components/kit';
+import { Text } from 'components/kit';
 
 import { IVisualizationProps } from '../../types';
 import Box from '../Box';
+import BoxConfig from '../Controls/BoxConfig';
+import Controls from '../Controls';
 
 function BaseVisualizer(props: IVisualizationProps) {
   const engine = props.engine;
+
   const boxConfig = props.engine.useStore(props.engine.boxConfig.stateSelector);
-  const data = engine
-    .useStore(engine.dataSelector)
-    ?.map((d: any, i: number) => ({
-      ...d,
-      style: {
-        width: boxConfig.width,
-        height: boxConfig.height,
-        left: (i % 10) * (boxConfig.width + boxConfig.gap),
-        top: Math.floor(i / 10) * (boxConfig.height + boxConfig.gap),
-      },
-    }));
+  const styleAppliers = props.engine.styleAppliers;
+
+  const foundGroups = props.engine.useStore(props.engine.foundGroupsSelector);
+
+  // calculate styles by position
+  // get style applier of box  from engine
+  // listen to found groups
+  function applyStyles(obj: any, group: any, iteration: number) {
+    let style = {};
+    styleAppliers.forEach((applier: any) => {
+      style = {
+        ...style,
+        ...applier(obj, group, boxConfig, iteration),
+      };
+    });
+
+    return style;
+  }
+
+  const dataState = engine.useStore(engine.dataSelector);
+
+  const data = React.useMemo(() => {
+    return dataState?.map((d: any, i: number) => {
+      const groupTypes = Object.keys(d.groups || {});
+      const info: Record<string, object> = {};
+      if (foundGroups) {
+        groupTypes.forEach((groupType) => {
+          info[groupType] = {
+            key: foundGroups[d.groups?.[groupType]].key,
+            config: foundGroups[d.groups[groupType]].fields,
+            items_count_in_group: foundGroups[d.groups[groupType]].items.length,
+            order: foundGroups[d.groups[groupType]].order,
+          };
+        });
+      }
+
+      return {
+        ...d,
+        style: {
+          width: boxConfig.width,
+          height: boxConfig.height,
+          ...applyStyles(d, info, i),
+        },
+      };
+    });
+  }, [dataState, foundGroups, boxConfig, applyStyles]);
 
   let container: React.MutableRefObject<HTMLDivElement> =
     React.useRef<HTMLDivElement>(document.createElement('div'));
@@ -62,40 +100,59 @@ function BaseVisualizer(props: IVisualizationProps) {
       item.style.top <= gridWindow.top + gridWindow.height,
   );
 
+  useEffect(() => {
+    container.current.scrollTo(200, 200);
+  }, []);
+
   return (
     <div
-      ref={container}
       style={{
+        padding: '0 0.625rem',
         width: '100%',
-        height: '100%',
-        position: 'relative',
-        overflow: 'auto',
+        display: 'flex',
       }}
-      onScroll={onScroll}
     >
       <div
-        ref={grid}
+        ref={container}
         style={{
-          overflow: 'hidden',
-          width:
-            sortedByPosition?.[sortedByPosition?.length - 1]?.style?.left +
-            sortedByPosition?.[sortedByPosition?.length - 1]?.style?.width,
-          height:
-            sortedByPosition?.[sortedByPosition?.length - 1]?.style?.top +
-            sortedByPosition?.[sortedByPosition?.length - 1]?.style?.height,
+          width: '100%',
+          height: '100%',
+          top: '20px',
+          maxHeight: 'calc(100vh - 160px)',
+          position: 'relative',
+          overflow: 'auto',
         }}
+        onScroll={onScroll}
       >
-        {items?.map((item: any, i: number) => (
-          <Box
-            key={i} // replace with some unique key of box data
-            engine={props.engine}
-            style={item.style}
-          >
-            {/* @ts-ignore */}
-            <props.box engine={props.engine} data={item} />
-          </Box>
-        ))}
+        <Text>
+          Rendered boxes {items?.length || 0}/{data?.length || 0}
+        </Text>
+        <div
+          ref={grid}
+          style={{
+            marginTop: '20px',
+            overflow: 'hidden',
+            width:
+              sortedByPosition?.[sortedByPosition?.length - 1]?.style?.left +
+              sortedByPosition?.[sortedByPosition?.length - 1]?.style?.width,
+            height:
+              sortedByPosition?.[sortedByPosition?.length - 1]?.style?.top +
+              sortedByPosition?.[sortedByPosition?.length - 1]?.style?.height,
+          }}
+        >
+          {items?.map((item: any, i: number) => (
+            <Box
+              key={i} // replace with some unique key of box data
+              engine={props.engine}
+              style={item.style}
+            >
+              {/* @ts-ignore */}
+              <props.box engine={props.engine} data={item} />
+            </Box>
+          ))}
+        </div>
       </div>
+      <Controls engine={engine} />
     </div>
   );
 }

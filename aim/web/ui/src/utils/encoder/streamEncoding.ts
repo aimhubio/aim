@@ -464,9 +464,14 @@ export async function parseStream<T extends Array>(
 
   const data: T = [];
 
-  for await (let [keys, val] of objects) {
-    const runData: any = val;
-    data.push({ ...runData, hash: keys[0] } as any);
+  try {
+    for await (let [keys, val] of objects) {
+      const runData: any = val;
+      data.push({ ...runData, hash: keys[0] } as any);
+    }
+  } catch (e) {
+    console.log(e);
+    throw e;
   }
 
   return data;

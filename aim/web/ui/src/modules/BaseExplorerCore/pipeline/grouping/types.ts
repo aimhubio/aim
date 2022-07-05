@@ -17,6 +17,7 @@ export type GroupOptions = {
 };
 
 export type BettaGroupOption = {
-  field: string;
-  order: Order;
+  type: GroupType;
+  fields: string[];
+  orders: Order[];
 };

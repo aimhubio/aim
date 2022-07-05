@@ -35,10 +35,7 @@ export type PipelineExecutionOptions = {
     // forceRun?: boolean;
     params: RunsSearchQueryParams;
   };
-  group?: {
-    // @ts-ignore
-    [key in GroupType]?: BettaGroupOption[];
-  };
+  group?: BettaGroupOption[];
 };
 
 export type Pipeline = {

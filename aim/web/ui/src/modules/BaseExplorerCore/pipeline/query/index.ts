@@ -29,12 +29,15 @@ async function executeBaseQuery(
 ): Promise<RunSearchRunView[]> {
   cancel();
   statusChangeCallback && statusChangeCallback('fetching'); // make invariant with type mapping
+  try {
+    const data: ReadableStream = await currentQueryRequest.call(query);
+    statusChangeCallback && statusChangeCallback('decoding');
 
-  const data: ReadableStream = await currentQueryRequest.call(query);
-
-  statusChangeCallback && statusChangeCallback('decoding');
-
-  return parseStream<Array<RunSearchRunView>>(data);
+    return parseStream<Array<RunSearchRunView>>(data);
+  } catch (e) {
+    console.log(e);
+    return [];
+  }
 }
 
 function setCurrentSequenceType(sequenceType: SequenceTypesEnum): void {

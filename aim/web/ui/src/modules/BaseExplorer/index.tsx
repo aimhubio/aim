@@ -30,11 +30,14 @@ function BaseExplorer(props: IBaseExplorerProps) {
     );
 
     return Visualizations;
-  }, [engineInstance, components.visualizations]);
+  }, [engineInstance, components.box, components.visualizations]);
 
   return initialized ? (
     <div style={{ width: '100%', height: '100vh' }}>
-      <ExplorerBar engine={props.engineInstance} />
+      <ExplorerBar
+        engine={props.engineInstance}
+        explorerName={props.explorerName}
+      />
       {/* {__DEV__ && <Text>Engine status ::: status</Text>} */}
       <div
         className='flex fjb fac'
@@ -46,7 +49,6 @@ function BaseExplorer(props: IBaseExplorerProps) {
         <components.queryForm engine={props.engineInstance} />
         <components.grouping engine={props.engineInstance} />
       </div>
-      <br />
       <div className='AimVisualizer'>{visualizations}</div>
     </div>
   ) : (

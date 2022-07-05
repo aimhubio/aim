@@ -97,6 +97,7 @@ export interface IOptionalExplorerConfig {}
 
 export interface IBaseExplorerProps extends IExplorerConfig {
   engineInstance: any;
+  explorerName: string;
 }
 
 export interface IBaseComponentProps {

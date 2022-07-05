@@ -116,6 +116,20 @@ function createEngine(config: IEngineConfigFinal) {
   );
 
   const groupConfigs = createGroupingsStateConfig(config.grouping);
+  const styleAppliers = Object.keys(config.grouping || {}).map(
+    (key: string) => {
+      return config.grouping?.[key].styleApplier;
+    },
+  );
+  const defaultApplications = Object.keys(config.grouping || {}).reduce(
+    // @ts-ignore
+    (acc: object, key: string) => {
+      // @ts-ignore
+      acc[key] = config.grouping?.[key].defaultApplications;
+      return acc;
+    },
+    {},
+  );
 
   generatedInitialStates['groupings'] = {
     ...groupConfigs.initialState,
@@ -197,14 +211,27 @@ function createEngine(config: IEngineConfigFinal) {
     lastQuery = {
       query: { params },
     };
-
+    // @ts-ignore
     const res = await pipeline.execute({
       query: {
         params,
       },
-      group: {
-        columns: [],
-      },
+      group: [
+        {
+          type: GroupType.ROW,
+          // @ts-ignore
+          fields: defaultApplications?.[GroupType.ROW].fields || [],
+          // @ts-ignore
+          orders: defaultApplications?.[GroupType.ROW].orders || [],
+        },
+        {
+          type: GroupType.COLUMN,
+          // @ts-ignore
+          fields: defaultApplications?.[GroupType.COLUMN].fields,
+          // @ts-ignore
+          orders: defaultApplications?.[GroupType.COLUMN].orders,
+        },
+      ],
     });
 
     const { additionalData, data } = res;
@@ -213,29 +240,37 @@ function createEngine(config: IEngineConfigFinal) {
 
   async function group(
     config: {
-      [key: string]: { fields: string[]; orders: Order[] };
-    } = {},
+      [key in GroupType]: { fields: string[]; orders: Order[] };
+    },
   ) {
     groupingMethods.update(config);
 
+    type OriginalGroupConfig = {
+      type: GroupType;
+      fields: string[];
+      orders: Order[];
+    };
+
+    const groupConfig: OriginalGroupConfig[] = [];
+
+    // @ts-ignore
+
+    Object.keys(config).forEach((key: string) => {
+      const groupConf: OriginalGroupConfig = {
+        type: key as GroupType,
+        fields: config[key as GroupType].fields,
+        orders: config[key as GroupType].orders,
+      };
+      config[key as GroupType].fields.length && groupConfig.push(groupConf);
+    });
+
     const result = await pipeline.execute({
       query: lastQuery.query,
-      group: {
-        [GroupType.COLUMN]: [
-          {
-            field: 'run.hash',
-            order: Order.ASC,
-          },
-          {
-            field: 'run.name',
-            order: Order.DESC,
-          },
-        ],
-      },
+      group: groupConfig,
     });
 
     const { data, additionalData, foundGroups } = result;
-    //
+
     storeVanilla.setState({
       data,
       additionalData,
@@ -308,6 +343,7 @@ function createEngine(config: IEngineConfigFinal) {
       dataSelector: instructionsSelector,
     },
 
+    styleAppliers,
     // pipeline result result
     foundGroupsSelector: (state: any) => state.foundGroups,
   };

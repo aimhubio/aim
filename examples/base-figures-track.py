@@ -21,8 +21,8 @@ for seed in range(seed_count):
         run = aim.Run(experiment=experiment)
 
         run['hparams'] = {
-            batch_size: batch_size,
-            learning_rate: learning_rate
+            "batch_size": batch_size,
+            "learning_rate": learning_rate
         }
 
         run['seed'] = seed
