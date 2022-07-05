@@ -18,6 +18,7 @@ import {
 } from 'config/table/tableConfigs';
 
 import getClosestValue from 'utils/getClosestValue';
+import { encode } from 'utils/encoder/encoder';
 
 import Column from './TableColumn';
 
@@ -73,6 +74,8 @@ function Table(props) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [props.expanded]);
 
+  let [middlePaneWindow, setMiddlePaneWindow] = useState([]);
+
   useEffect(() => {
     let rAFRef = window.requestAnimationFrame(() => {
       let left = 0;
@@ -91,12 +94,13 @@ function Table(props) {
     };
   }, [colWidths]);
 
-  let [middlePaneWindow, setMiddlePaneWindow] = useState(
-    middlePane.slice(0, 10).map((col, i) => ({
-      ...col,
-      colIndex: i,
-    })),
+  let [middlePaneColsKey, setMiddlePaneColsKey] = useState(
+    encode({ cols: middlePane }, true),
   );
+
+  useEffect(() => {
+    setMiddlePaneColsKey(encode({ cols: middlePane }, true));
+  }, [columns]);
 
   useEffect(() => {
     let rAFRef = window.requestAnimationFrame(() => {
@@ -112,21 +116,28 @@ function Table(props) {
         }
       }
 
-      let left = leftClosest < 1 ? 0 : leftClosest - 1;
-      let right = rightClosest + 2;
+      let left = leftClosest < 6 ? 0 : leftClosest - 5;
+      let right = rightClosest + 5;
 
-      setMiddlePaneWindow(
-        middlePane.slice(left, right)?.map((col, i) => ({
-          ...col,
-          colIndex: left + i,
-        })),
+      setMiddlePaneWindow((mPW) =>
+        middlePane
+          .slice(left, right + (mPW.length === 0 ? 10 : 0))
+          ?.map((col, i) => ({
+            ...col,
+            colIndex: left + i,
+          })),
       );
     });
 
     return () => {
       window.cancelAnimationFrame(rAFRef);
     };
-  }, [props.listWindow.left, props.listWindow.width, colLefts]);
+  }, [
+    props.listWindow.left,
+    props.listWindow.width,
+    colLefts,
+    middlePaneColsKey,
+  ]);
 
   const color = React.useMemo(
     () => props.data[0]?.rowMeta?.color,
@@ -269,15 +280,23 @@ function Table(props) {
     );
   }
 
-  let midPaneWidth;
+  let midPaneWidth =
+    colLefts[Object.keys(colLefts).length - 1] +
+    colWidths[Object.keys(colWidths).length - 1];
 
-  if (midPaneWidth < props.listWindow.width) {
+  if (midPaneWidth < props.listWindow.availableSpace) {
     midPaneWidth = null;
-  } else {
-    midPaneWidth =
-      colLefts[Object.keys(colLefts).length - 1] +
-      colWidths[Object.keys(colWidths).length - 1];
   }
+
+  useEffect(() => {
+    if (middlePane.length < Object.keys(colLefts).length) {
+      let widths = {};
+      middlePaneWindow.forEach((col) => {
+        widths[col.colIndex] = colWidths[col.colIndex];
+      });
+      setColWidths(widths);
+    }
+  }, [middlePaneWindow, colLefts]);
 
   return (
     <ErrorBoundary>

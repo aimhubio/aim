@@ -152,6 +152,9 @@ function Column({
   }
 
   React.useEffect(() => {
+    if (setColWidth) {
+      setColWidth(columnRef.current?.offsetWidth);
+    }
     return () => {
       document.removeEventListener('mousemove', resize);
       document.removeEventListener('mouseup', resizeEnd);
