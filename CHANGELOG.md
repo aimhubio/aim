@@ -11,6 +11,7 @@
 
 - Fix tensorboard log conversion for images (mihran113)
 - Fix `SyntaxError` handling for python3.10+ (mihran113)
+- Check if gradient is None when tracking gradient distributions (kage08)
 
 ## 3.11.1 Jun 27, 2022
 

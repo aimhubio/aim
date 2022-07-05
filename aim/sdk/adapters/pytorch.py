@@ -60,15 +60,17 @@ def get_model_layers(model, dt, parent_name=None):
             layers.update(get_model_layers(m, dt, layer_name))
         else:
             layers[layer_name] = {}
-            if hasattr(m, 'weight') \
-                    and m.weight is not None \
-                    and hasattr(m.weight, dt):
-                layers[layer_name]['weight'] = get_pt_tensor(getattr(m.weight, dt)).numpy()
+            weight = None
+            if hasattr(m, 'weight') and m.weight is not None:
+                weight = getattr(m.weight, dt, None)
+                if weight is not None:
+                    layers[layer_name]['weight'] = get_pt_tensor(weight).numpy()
 
-            if hasattr(m, 'bias') \
-                    and m.bias is not None \
-                    and hasattr(m.bias, dt):
-                layers[layer_name]['bias'] = get_pt_tensor(getattr(m.bias, dt)).numpy()
+            bias = None
+            if hasattr(m, 'bias') and m.bias is not None:
+                bias = getattr(m.bias, dt, None)
+                if bias is not None:
+                    layers[layer_name]['bias'] = get_pt_tensor(bias).numpy()
 
     return layers
 
