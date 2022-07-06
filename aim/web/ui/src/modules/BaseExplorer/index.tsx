@@ -1,14 +1,10 @@
 import React, { useEffect } from 'react';
 
-import { Text } from 'components/kit';
-
 import createEngine from '../BaseExplorerCore/core-store';
 import { IEngineConfigFinal } from '../BaseExplorerCore/types';
 
 import { IExplorerConfig, IBaseExplorerProps } from './types';
 import ExplorerBar from './components/ExplorerBar';
-
-const __DEV__ = process.env.NODE_ENV;
 
 function BaseExplorer(props: IBaseExplorerProps) {
   const {

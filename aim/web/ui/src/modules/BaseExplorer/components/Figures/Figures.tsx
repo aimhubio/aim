@@ -7,10 +7,10 @@ function Figures(props: any) {
   React.useEffect(() => {
     let timerID = setTimeout(() => {
       setData(JSON.parse(props.data.data.data));
-    }, 500);
+    }, 250);
 
     return () => clearTimeout(timerID);
-  }, []);
+  }, [props.data.data.data]);
 
   return (
     data && (

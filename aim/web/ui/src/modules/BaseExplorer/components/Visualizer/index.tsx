@@ -1,10 +1,7 @@
-import React, { useEffect } from 'react';
-
-import { Text } from 'components/kit';
+import * as React from 'react';
 
 import { IVisualizationProps } from '../../types';
 import Box from '../Box';
-import BoxConfig from '../Controls/BoxConfig';
 import Controls from '../Controls';
 import BoxVirtualizer from '../BoxVirtualizer';
 
@@ -15,21 +12,6 @@ function BaseVisualizer(props: IVisualizationProps) {
   const styleAppliers = props.engine.styleAppliers;
 
   const foundGroups = props.engine.useStore(props.engine.foundGroupsSelector);
-
-  // calculate styles by position
-  // get style applier of box  from engine
-  // listen to found groups
-  function applyStyles(obj: any, group: any, iteration: number) {
-    let style = {};
-    styleAppliers.forEach((applier: any) => {
-      style = {
-        ...style,
-        ...applier(obj, group, boxConfig, iteration),
-      };
-    });
-
-    return style;
-  }
 
   const dataState = engine.useStore(engine.dataSelector);
 
@@ -48,6 +30,21 @@ function BaseVisualizer(props: IVisualizationProps) {
         });
       }
 
+      // calculate styles by position
+      // get style applier of box  from engine
+      // listen to found groups
+      function applyStyles(obj: any, group: any, iteration: number) {
+        let style = {};
+        styleAppliers.forEach((applier: any) => {
+          style = {
+            ...style,
+            ...applier(obj, group, boxConfig, iteration),
+          };
+        });
+
+        return style;
+      }
+
       return {
         ...d,
         style: {
@@ -57,7 +54,7 @@ function BaseVisualizer(props: IVisualizationProps) {
         },
       };
     });
-  }, [dataState, foundGroups, boxConfig, applyStyles]);
+  }, [dataState, foundGroups, boxConfig]);
 
   return (
     <div

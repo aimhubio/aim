@@ -38,7 +38,6 @@ function BoxConfig(props: IBaseComponentProps) {
   );
 
   function updateBoxConfigWidth(e: ChangeEvent<{}>, width: number) {
-    console.log(width);
     updateBoxConfig({ width });
   }
 
