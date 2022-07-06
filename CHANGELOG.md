@@ -4,6 +4,7 @@
 
 ### Enhancements:
 
+- Improve rendering performance by enhancing table columns virtualization mechanism (roubkar)
 - Add support for tensorboard audios conversion (mihran113)
 - Mention explicitly run params everywhere params is mentioned (VkoHov)
 
