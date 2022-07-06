@@ -56,12 +56,12 @@ function BoxVirtualizer(props: BoxVirtualizerProps) {
     (entries: ResizeObserverEntry[]) => {
       if (entries?.length) {
         rafIDRef.current = window.requestAnimationFrame(() => {
-          setGridWindow({
-            left: grid.current.scrollLeft,
-            top: grid.current.scrollTop,
+          setGridWindow((gW) => ({
+            left: gW.left,
+            top: gW.top,
             width: container.current.offsetWidth,
             height: container.current.offsetHeight,
-          });
+          }));
         });
       }
     },
