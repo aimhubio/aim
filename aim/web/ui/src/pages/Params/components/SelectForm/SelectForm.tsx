@@ -212,7 +212,10 @@ function SelectForm({
                   {selectedParamsData?.options &&
                     selectedParamsData.options.length > 0 && (
                       <ErrorBoundary>
-                        <Box className='SelectForm__tags ScrollBar__hidden'>
+                        <Box
+                          className='SelectForm__tags ScrollBar__hidden'
+                          flex={1}
+                        >
                           {selectedParamsData?.options?.map(
                             (tag: ISelectOption) => {
                               return (

@@ -148,7 +148,6 @@ const HighPlot = React.forwardRef(function HighPlot(
           svgNodeRef,
         });
       }
-
       drawParallelAxesBrush({
         plotBoxRef,
         plotNodeRef,
@@ -161,7 +160,6 @@ const HighPlot = React.forwardRef(function HighPlot(
         dimensions: data.dimensions,
         data: data.data,
         index,
-        syncHoverState,
       });
     }
   }

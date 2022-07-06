@@ -1,12 +1,13 @@
 # Changelog
 
-## Unreleased 
+## Unreleased
 
 ### Enhancements:
 
 - Increase visibility and usability of the Show table diff button (arsengit)
 - Add support for tensorboard audios conversion (mihran113)
 - Mention explicitly run params everywhere params is mentioned (VkoHov)
+- Preserve active line even if it os dropped out of the filtered area (VkoHov)
 
 ### Fixes:
 

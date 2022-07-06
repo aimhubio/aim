@@ -8,7 +8,6 @@ import {
   DomainsDataType,
 } from 'types/utils/d3/drawParallelAxesBrush';
 import { IAxisScale } from 'types/utils/d3/getAxisScale';
-import { ISyncHoverStateArgs } from 'types/utils/d3/drawHoverAttributes';
 
 function drawParallelAxesBrush({
   brushRef,
@@ -22,7 +21,6 @@ function drawParallelAxesBrush({
   onAxisBrushExtentChange,
   attributesRef,
   index,
-  syncHoverState,
 }: IDrawParallelAxesBrushBrushArgs): void {
   if (!brushRef.current.domainsData) {
     brushRef.current.xScale = attributesRef.current.xScale;
@@ -39,7 +37,6 @@ function drawParallelAxesBrush({
   function handleBrushChange(
     event: d3.D3BrushEvent<d3.BrushSelection>,
     keyOfDimension: string,
-    removeFocusedCircle?: boolean,
   ): void {
     const extent: d3.BrushSelection | any = event.selection;
     let brushPosition: [number, number] | [string, string] | null = null;
@@ -68,27 +65,7 @@ function drawParallelAxesBrush({
     if (event.type === 'end') {
       onAxisBrushExtentChange(keyOfDimension, brushPosition, index);
     }
-    if (removeFocusedCircle) {
-      const tmpData = data[0];
-      safeSyncHoverState({
-        activePoint: {
-          key: tmpData.key,
-          xValue: attributesRef.current.focusedState.xValue,
-          yValue: attributesRef.current.focusedState.yValue,
-          xPos: 0,
-          yPos: 0,
-          chartIndex: index,
-          pointRect: null,
-        },
-      });
-    }
     updateLinesAndHoverAttributes(brushRef, keyOfDimension, extent);
-  }
-
-  function safeSyncHoverState(args: ISyncHoverStateArgs): void {
-    if (typeof syncHoverState === 'function') {
-      syncHoverState(args);
-    }
   }
 
   function updateLinesAndHoverAttributes(
@@ -101,6 +78,7 @@ function drawParallelAxesBrush({
         line,
         domainsData: brushRef.current.domainsData,
         dimensions,
+        attributesRef,
       }),
     );
     linesRef.current.updateLines(filteredData);
@@ -138,10 +116,8 @@ function drawParallelAxesBrush({
           ])
           .handleSize(4)
           .on('start', handleBrushStart)
-          .on('brush', (event) =>
-            handleBrushChange(event, keyOfDimension, true),
-          )
-          .on('end', (event) => handleBrushChange(event, keyOfDimension, true)),
+          .on('brush', (event) => handleBrushChange(event, keyOfDimension))
+          .on('end', (event) => handleBrushChange(event, keyOfDimension)),
       );
       if (brushExtent) {
         const yScale = brushRef.current.yScale[keyOfDimension];
@@ -181,8 +157,16 @@ function filterDataByBrushedScale({
   line,
   domainsData,
   dimensions,
+  attributesRef,
 }: IFilterDataByBrushedScaleProps) {
   const keysOfDimension: string[] = Object.keys(dimensions);
+  if (
+    attributesRef?.current?.focusedState?.active &&
+    attributesRef.current.focusedState.key === line.key
+  ) {
+    return true;
+  }
+
   const { values } = line;
   for (let i = 0; i < keysOfDimension.length; i++) {
     const keyOfDimension = keysOfDimension[i];
