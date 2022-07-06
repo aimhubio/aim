@@ -1,4 +1,5 @@
 import datetime
+import pytz
 
 from typing import Any, Union
 from typing import TYPE_CHECKING
@@ -32,7 +33,7 @@ class RunView:
         if item in ['finalized_at', 'end_time']:
             end_time = self.meta_run_tree['end_time']
             if item == 'finalized_at':
-                return datetime.datetime.fromtimestamp(end_time) if end_time else None
+                return datetime.datetime.fromtimestamp(end_time, tz=pytz.utc) if end_time else None
             else:
                 return end_time
         if item == 'active':

@@ -1,8 +1,8 @@
-from functools import lru_cache
 import logging
-import datetime
 
 from abc import abstractmethod
+from functools import lru_cache
+from datetime import datetime, timedelta
 
 from RestrictedPython import (
     safe_builtins,
@@ -18,14 +18,22 @@ from RestrictedPython.Guards import (
 )
 
 
+def safe_import(*args, **kwargs):
+    if args and args[0] != 'time':
+        raise ImportError(f'{args[0]} package cannot be imported.')
+    return __import__(*args, **kwargs)
+
+
 extra_builtins = {
     'datetime': datetime,
+    'timedelta': timedelta,
     'sorted': sorted,
     'min': min,
     'max': max,
     'sum': sum,
     'any': any,
     'all': all,
+    '__import__': safe_import,
 }
 
 builtins = safe_builtins.copy()
@@ -145,7 +153,7 @@ def query_add_default_expr(query: str) -> str:
             return f'{default_expression} and {query}'
         else:
             return query
-
+import traceback
 
 class RestrictedPythonQuery(Query):
 
@@ -180,5 +188,6 @@ class RestrictedPythonQuery(Query):
             namespace = dict(**params, **restricted_globals)
             return eval(self._checker, restricted_globals, namespace)
         except BaseException as e:
-            logger.warning('query failed, %s', e)
+            traceback.print_exc()
+            # logger.warning('query failed, %s', e.with_traceback())
             return False
