@@ -16,6 +16,7 @@ import { ANALYTICS_EVENT_KEYS } from 'config/analytics/analyticsKeysMap';
 
 import paramsAppModel from 'services/models/params/paramsAppModel';
 import { trackEvent } from 'services/analytics';
+import { AppNameEnumUpperCase } from 'services/models/explorer';
 
 import { ISelectFormProps } from 'types/pages/params/components/SelectForm/SelectForm';
 import { ISelectOption } from 'types/services/models/explorer/createAppModel';
@@ -269,6 +270,7 @@ function SelectForm({
           <div className='SelectForm__TextField'>
             <AutocompleteInput
               refObject={autocompleteRef}
+              appName={AppNameEnumUpperCase.PARAMS}
               context={selectFormData?.suggestions}
               error={selectFormData?.error}
               onEnter={handleParamsSearch}

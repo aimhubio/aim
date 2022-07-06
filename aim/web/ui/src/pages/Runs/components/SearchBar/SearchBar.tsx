@@ -10,6 +10,7 @@ import { ANALYTICS_EVENT_KEYS } from 'config/analytics/analyticsKeysMap';
 
 import runAppModel from 'services/models/runs/runsAppModel';
 import { trackEvent } from 'services/analytics';
+import { AppNameEnumUpperCase } from 'services/models/explorer';
 
 import exceptionHandler from 'utils/app/exceptionHandler';
 
@@ -64,6 +65,7 @@ function SearchBar({
         <form onSubmit={handleRunSearch}>
           <AutocompleteInput
             refObject={autocompleteRef}
+            appName={AppNameEnumUpperCase.RUNS}
             onEnter={handleRunSearch}
             error={selectFormData.error}
             context={selectFormData.suggestions}

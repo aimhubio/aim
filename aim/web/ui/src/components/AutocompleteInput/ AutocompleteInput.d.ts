@@ -3,6 +3,8 @@ import React from 'react';
 
 import { EditorProps } from '@monaco-editor/react';
 
+import { AppNameEnumUpperCase } from 'services/models/explorer';
+
 import { ISyntaxErrorDetails } from 'types/components/NotificationContainer/NotificationContainer';
 
 export interface IAutocompleteInputProps {
@@ -13,6 +15,7 @@ export interface IAutocompleteInputProps {
   disabled?: boolean;
   value: string | undefined;
   refObject?: React.MutableRefObject<any>;
+  appName?: AppNameEnumUpperCase;
   getEditorValue?: (value: string) => string;
   onEnter?: () => void;
   onChange?: (

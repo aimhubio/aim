@@ -22,6 +22,14 @@ export enum AppNameEnum {
   SCATTERS = 'scatters',
 }
 
+export enum AppNameEnumUpperCase {
+  METRICS = 'METRICS',
+  PARAMS = 'PARAMS',
+  RUNS = 'RUNS',
+  IMAGES = 'IMAGES',
+  SCATTERS = 'SCATTERS',
+}
+
 /**
  * appInitialConfig is config object which describes our app models
  * @appInitialConfig { [key: string]: IAppInitialConfig }
