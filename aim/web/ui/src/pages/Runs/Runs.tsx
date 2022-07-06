@@ -24,7 +24,7 @@ function Runs(props: any): React.FunctionComponentElement<React.ReactNode> {
             disabled={isProgressBarVisible}
           />
           <SearchBar
-            searchSuggestions={props.searchSuggestions}
+            selectFormData={props.selectFormData}
             onSearchInputChange={props.onSelectRunQueryChange}
             searchValue={props.query}
             isRunsDataLoading={

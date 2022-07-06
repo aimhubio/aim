@@ -270,6 +270,7 @@ function SelectForm({
             <AutocompleteInput
               refObject={autocompleteRef}
               context={selectFormData?.suggestions}
+              error={selectFormData?.error}
               onEnter={handleParamsSearch}
               value={selectedParamsData?.query}
               disabled={isDisabled}
