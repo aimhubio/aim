@@ -1,9 +1,9 @@
 // @ts-nocheck
 /* eslint-disable react/prop-types */
 
-import React, { useRef, useState, useEffect, useMemo } from 'react';
+import React, { useRef, useState, useEffect } from 'react';
 import classNames from 'classnames';
-import { debounce, isEmpty } from 'lodash-es';
+import { isEmpty } from 'lodash-es';
 
 import { Checkbox } from '@material-ui/core';
 
@@ -40,6 +40,7 @@ function Table(props) {
   let [expanded, setExpanded] = useState({});
   let [colWidths, setColWidths] = useState({});
   let [colLefts, setColLefts] = useState({});
+  let [middlePaneWindow, setMiddlePaneWindow] = useState([]);
 
   let prevExpanded = useRef(props.expanded ?? {});
 
@@ -53,6 +54,10 @@ function Table(props) {
     .filter((col) => rightCols.includes(col.key))
     .sort((a, b) => rightCols.indexOf(a.key) - rightCols.indexOf(b.key));
   const sortedColumns = [...leftPane, ...middlePane, ...rightPane];
+
+  let [middlePaneColsKey, setMiddlePaneColsKey] = useState(
+    encode({ cols: middlePane }, true),
+  );
 
   const groups = !Array.isArray(props.data);
 
@@ -74,8 +79,6 @@ function Table(props) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [props.expanded]);
 
-  let [middlePaneWindow, setMiddlePaneWindow] = useState([]);
-
   useEffect(() => {
     let rAFRef = window.requestAnimationFrame(() => {
       let left = 0;
@@ -94,50 +97,51 @@ function Table(props) {
     };
   }, [colWidths]);
 
-  let [middlePaneColsKey, setMiddlePaneColsKey] = useState(
-    encode({ cols: middlePane }, true),
-  );
-
   useEffect(() => {
     setMiddlePaneColsKey(encode({ cols: middlePane }, true));
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [columns]);
 
-  useEffect(() => {
-    let rAFRef = window.requestAnimationFrame(() => {
-      const lefts = Object.values(colLefts);
+  useEffect(
+    () => {
+      let rAFRef = window.requestAnimationFrame(() => {
+        const lefts = Object.values(colLefts);
 
-      let leftClosest = getClosestValue(lefts, props.listWindow.left).index;
-      let rightClosest = lefts.length - 1;
+        let leftClosest = getClosestValue(lefts, props.listWindow.left).index;
+        let rightClosest = lefts.length - 1;
 
-      for (let i = leftClosest; i < lefts.length; i++) {
-        if (lefts[i] > props.listWindow.left + props.listWindow.width) {
-          rightClosest = i;
-          break;
+        for (let i = leftClosest; i < lefts.length; i++) {
+          if (lefts[i] > props.listWindow.left + props.listWindow.width) {
+            rightClosest = i;
+            break;
+          }
         }
-      }
 
-      let left = leftClosest < 6 ? 0 : leftClosest - 5;
-      let right = rightClosest + 5;
+        let left = leftClosest < 6 ? 0 : leftClosest - 5;
+        let right = rightClosest + 5;
 
-      setMiddlePaneWindow((mPW) =>
-        middlePane
-          .slice(left, right + (mPW.length === 0 ? 10 : 0))
-          ?.map((col, i) => ({
-            ...col,
-            colIndex: left + i,
-          })),
-      );
-    });
+        setMiddlePaneWindow((mPW) =>
+          middlePane
+            .slice(left, right + (mPW.length === 0 ? 10 : 0))
+            ?.map((col, i) => ({
+              ...col,
+              colIndex: left + i,
+            })),
+        );
+      });
 
-    return () => {
-      window.cancelAnimationFrame(rAFRef);
-    };
-  }, [
-    props.listWindow.left,
-    props.listWindow.width,
-    colLefts,
-    middlePaneColsKey,
-  ]);
+      return () => {
+        window.cancelAnimationFrame(rAFRef);
+      };
+    },
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [
+      props.listWindow.left,
+      props.listWindow.width,
+      colLefts,
+      middlePaneColsKey,
+    ],
+  );
 
   const color = React.useMemo(
     () => props.data[0]?.rowMeta?.color,
@@ -288,15 +292,19 @@ function Table(props) {
     midPaneWidth = null;
   }
 
-  useEffect(() => {
-    if (middlePane.length < Object.keys(colLefts).length) {
-      let widths = {};
-      middlePaneWindow.forEach((col) => {
-        widths[col.colIndex] = colWidths[col.colIndex];
-      });
-      setColWidths(widths);
-    }
-  }, [middlePaneWindow, colLefts]);
+  useEffect(
+    () => {
+      if (middlePane.length < Object.keys(colLefts).length) {
+        let widths = {};
+        middlePaneWindow.forEach((col) => {
+          widths[col.colIndex] = colWidths[col.colIndex];
+        });
+        setColWidths(widths);
+      }
+    },
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [middlePaneWindow, colLefts],
+  );
 
   return (
     <ErrorBoundary>
