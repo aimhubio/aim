@@ -4,6 +4,7 @@
 
 ### Enhancements:
 
+- Improve rendering performance by enhancing table columns virtualization mechanism (roubkar)
 - Increase visibility and usability of the Show table diff button (arsengit)
 - Add support for tensorboard audios conversion (mihran113)
 - Mention explicitly run params everywhere params is mentioned (VkoHov)
