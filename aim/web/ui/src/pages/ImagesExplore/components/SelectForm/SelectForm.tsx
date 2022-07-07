@@ -85,17 +85,22 @@ function SelectForm({
     imagesExploreAppModel.abortRequest();
   }
 
-  function onSelect(event: object, value: ISelectOption[]): void {
-    const lookup = value.reduce(
-      (acc: { [key: string]: number }, curr: ISelectOption) => {
-        acc[curr.label] = ++acc[curr.label] || 0;
-        return acc;
-      },
-      {},
-    );
-    onImagesExploreSelectChange(
-      value.filter((option: ISelectOption) => lookup[option.label] === 0),
-    );
+  function onSelect(
+    event: React.ChangeEvent<{}>,
+    value: ISelectOption[],
+  ): void {
+    if (event.type === 'click') {
+      const lookup = value.reduce(
+        (acc: { [key: string]: number }, curr: ISelectOption) => {
+          acc[curr.label] = ++acc[curr.label] || 0;
+          return acc;
+        },
+        {},
+      );
+      onImagesExploreSelectChange(
+        value.filter((option: ISelectOption) => lookup[option.label] === 0),
+      );
+    }
   }
 
   function handleDelete(field: string): void {
