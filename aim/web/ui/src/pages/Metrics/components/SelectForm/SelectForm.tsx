@@ -219,7 +219,7 @@ function SelectForm({
                               item.label === option.label,
                           )?.label;
                         return (
-                          <div className='SelectForm__option'>
+                          <div className='Metrics__SelectForm__option'>
                             <Checkbox
                               color='primary'
                               icon={<CheckBoxOutlineBlank />}
@@ -228,7 +228,7 @@ function SelectForm({
                               size='small'
                             />
                             <Text
-                              className='SelectForm__option__label'
+                              className='Metrics__SelectForm__option__label'
                               size={14}
                             >
                               {option.label}
@@ -248,7 +248,10 @@ function SelectForm({
                       No metrics are selected
                     </Text>
                   )}
-                  <div className='Metrics__SelectForm__tags ScrollBar__hidden'>
+                  <Box
+                    className='Metrics__SelectForm__tags ScrollBar__hidden'
+                    flex={1}
+                  >
                     {selectedMetricsData?.options?.map((tag: ISelectOption) => {
                       return (
                         <Badge
@@ -260,7 +263,7 @@ function SelectForm({
                         />
                       );
                     })}
-                  </div>
+                  </Box>
                 </Box>
                 {selectedMetricsData?.options &&
                   selectedMetricsData.options.length > 1 && (
