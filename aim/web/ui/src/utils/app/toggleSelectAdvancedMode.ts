@@ -13,20 +13,24 @@ export default function toggleSelectAdvancedMode<M extends State>({
   model: IModel<M>;
   appName: string;
 }): void {
-  const configData = model.getState()?.config;
-  if (configData?.select) {
+  const modelState: IModel<M> | any = model.getState();
+  console.log(modelState);
+  if (modelState.config?.select) {
     let query =
-      configData.select.advancedQuery ||
-      getQueryStringFromSelect(configData?.select);
+      modelState.config.select.advancedQuery ||
+      getQueryStringFromSelect(
+        modelState.config?.select,
+        modelState.selectFormData.error,
+      );
     if (query === '()') {
       query = '';
     }
     const newConfig = {
-      ...configData,
+      ...modelState.config,
       select: {
-        ...configData.select,
+        ...modelState.config.select,
         advancedQuery: query,
-        advancedMode: !configData.select.advancedMode,
+        advancedMode: !modelState.config.select.advancedMode,
       },
     };
 
@@ -35,7 +39,7 @@ export default function toggleSelectAdvancedMode<M extends State>({
   analytics.trackEvent(
     // @ts-ignore
     `${ANALYTICS_EVENT_KEYS[appName].useAdvancedSearch} ${
-      !configData?.select.advancedMode ? 'on' : 'off'
+      !modelState.config?.select.advancedMode ? 'on' : 'off'
     }`,
   );
 }

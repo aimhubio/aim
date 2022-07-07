@@ -632,9 +632,7 @@ function createAppModel(appConfig: IAppInitialConfig) {
         metricsRequestRef.abort();
       }
       const configData = model.getState()?.config;
-      if (shouldUrlUpdate) {
-        updateURL({ configData, appName });
-      }
+
       const metric = configData?.chart?.alignmentConfig?.metric;
 
       if (queryString) {
@@ -673,6 +671,9 @@ function createAppModel(appConfig: IAppInitialConfig) {
               const runData = await getRunData(stream, (progress) =>
                 setRequestProgress(model, progress),
               );
+              if (shouldUrlUpdate) {
+                updateURL({ configData, appName });
+              }
               updateData(runData);
             } catch (ex: Error | any) {
               if (ex.name === 'AbortError') {
@@ -2226,9 +2227,6 @@ function createAppModel(appConfig: IAppInitialConfig) {
 
         runsRequestRef = runsService.getRunsData(query, 45, pagination?.offset);
         let limit = pagination.limit;
-        if (shouldUrlUpdate) {
-          updateURL({ configData, appName });
-        }
         setRequestProgress(model);
         return {
           call: async () => {
@@ -2303,6 +2301,9 @@ function createAppModel(appConfig: IAppInitialConfig) {
                   },
                 },
               });
+              if (shouldUrlUpdate) {
+                updateURL({ configData, appName });
+              }
             } catch (ex: Error | any) {
               if (ex.name === 'AbortError') {
                 onNotificationAdd({
@@ -3351,9 +3352,6 @@ function createAppModel(appConfig: IAppInitialConfig) {
         if (queryString) {
           configData.select.query = queryString;
         }
-        if (shouldUrlUpdate) {
-          updateURL({ configData, appName });
-        }
         runsRequestRef = runsService.getRunsData(configData?.select?.query);
         setRequestProgress(model);
         return {
@@ -3378,6 +3376,9 @@ function createAppModel(appConfig: IAppInitialConfig) {
                   setRequestProgress(model, progress),
                 );
                 updateData(runData);
+                if (shouldUrlUpdate) {
+                  updateURL({ configData, appName });
+                }
               } catch (ex: Error | any) {
                 if (ex.name === 'AbortError') {
                   // Abort Error
@@ -5652,9 +5653,7 @@ function createAppModel(appConfig: IAppInitialConfig) {
           runsRequestRef.abort();
         }
         const configData = { ...model.getState()?.config };
-        if (shouldUrlUpdate) {
-          updateURL({ configData, appName });
-        }
+
         runsRequestRef = runsService.getRunsData(configData?.select?.query);
         setRequestProgress(model);
         return {
@@ -5679,7 +5678,9 @@ function createAppModel(appConfig: IAppInitialConfig) {
                   setRequestProgress(model, progress),
                 );
                 updateData(runData);
-
+                if (shouldUrlUpdate) {
+                  updateURL({ configData, appName });
+                }
                 liveUpdateInstance?.start({
                   q: configData?.select?.query,
                 });
