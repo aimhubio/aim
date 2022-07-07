@@ -298,6 +298,11 @@ function resetModelState() {
   model.setState({
     ...model.getState(),
     data: [],
+    selectFormData: {
+      ...model.getState().selectFormData,
+      error: null,
+      advancedError: null,
+    },
     params: [],
     imagesData: {},
     tableData: [],

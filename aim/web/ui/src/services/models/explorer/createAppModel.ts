@@ -721,6 +721,11 @@ function createAppModel(appConfig: IAppInitialConfig) {
         queryIsEmpty: true,
         rawData: [],
         tableColumns: [],
+        selectFormData: {
+          ...model.getState().selectFormData,
+          error: null,
+          advancedError: null,
+        },
         selectedRows: shouldResetSelectedRows
           ? {}
           : model.getState()?.selectedRows,
@@ -2948,6 +2953,13 @@ function createAppModel(appConfig: IAppInitialConfig) {
         runsRequestRef.abort();
         liveUpdateInstance?.clear();
         liveUpdateInstance = null; //@TODO check is this need or not
+        model.setState({
+          ...model.getState(),
+          selectFormData: {
+            ...model.getState().selectFormData,
+            error: null,
+          },
+        });
       }
 
       function changeLiveUpdateConfig(config: {
@@ -3419,6 +3431,7 @@ function createAppModel(appConfig: IAppInitialConfig) {
           queryIsEmpty: true,
           rawData: [],
           tableColumns: [],
+          selectFormData: { ...model.getState().selectFormData, error: null },
           selectedRows: shouldResetSelectedRows
             ? {}
             : model.getState()?.selectedRows,
@@ -5775,6 +5788,10 @@ function createAppModel(appConfig: IAppInitialConfig) {
           queryIsEmpty: true,
           rawData: [],
           tableColumns: [],
+          selectFormData: {
+            ...model.getState().selectFormData,
+            error: null,
+          },
           selectedRows: shouldResetSelectedRows
             ? {}
             : model.getState()?.selectedRows,

@@ -118,7 +118,6 @@ function SelectForm({
 
   const open: boolean = !!anchorEl;
   const id = open ? 'select-metric' : undefined;
-  console.log(selectedParamsData);
   return (
     <ErrorBoundary>
       <div className='SelectForm__container'>
