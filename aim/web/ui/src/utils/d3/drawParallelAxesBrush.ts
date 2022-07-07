@@ -1,5 +1,5 @@
 import * as d3 from 'd3';
-import _ from 'lodash-es';
+import _, { isNil } from 'lodash-es';
 
 import { ILineDataType } from 'types/utils/d3/drawParallelLines';
 import {
@@ -25,6 +25,8 @@ function drawParallelAxesBrush({
   if (!brushRef.current.domainsData) {
     brushRef.current.xScale = attributesRef.current.xScale;
     brushRef.current.yScale = { ...attributesRef.current.yScale };
+    brushRef.current.updateLinesAndHoverAttributes =
+      updateLinesAndHoverAttributes;
     brushRef.current.domainsData = Object.keys(dimensions).reduce(
       (acc: DomainsDataType, keyOfDimension: string) => {
         acc[keyOfDimension] = dimensions[keyOfDimension].domainData;
@@ -65,14 +67,16 @@ function drawParallelAxesBrush({
     if (event.type === 'end') {
       onAxisBrushExtentChange(keyOfDimension, brushPosition, index);
     }
-    updateLinesAndHoverAttributes(brushRef, keyOfDimension, extent);
+    updateLinesAndHoverAttributes({ keyOfDimension });
   }
 
-  function updateLinesAndHoverAttributes(
-    brushRef: React.MutableRefObject<any>,
-    keyOfDimension: string,
-    extent: d3.BrushSelection | any,
-  ) {
+  function updateLinesAndHoverAttributes({
+    keyOfDimension,
+    mouse,
+  }: {
+    keyOfDimension?: string;
+    mouse?: number[];
+  }) {
     const filteredData = data.filter((line: ILineDataType) =>
       filterDataByBrushedScale({
         line,
@@ -84,9 +88,13 @@ function drawParallelAxesBrush({
     linesRef.current.updateLines(filteredData);
     linesRef.current.data = filteredData;
 
-    if (!_.isNil(attributesRef.current.focusedState?.yValue)) {
+    if (
+      (!_.isNil(attributesRef.current.focusedState?.yValue) &&
+        !_.isNil(keyOfDimension)) ||
+      mouse
+    ) {
       attributesRef.current.updateFocusedChart({
-        mouse: [
+        mouse: mouse ?? [
           brushRef.current.xScale(keyOfDimension),
           brushRef.current.yScale[keyOfDimension](
             attributesRef.current.focusedState?.yValue,
