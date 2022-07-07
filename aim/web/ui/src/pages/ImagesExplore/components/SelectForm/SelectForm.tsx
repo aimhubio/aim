@@ -48,7 +48,6 @@ function SelectForm({
   const autocompleteRef: any = React.useRef<React.MutableRefObject<any>>(null);
   const advancedAutocompleteRef: any =
     React.useRef<React.MutableRefObject<any>>(null);
-
   React.useEffect(() => {
     return () => {
       searchMetricsRef.current?.abort();
