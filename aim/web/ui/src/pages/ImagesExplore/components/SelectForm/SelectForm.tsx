@@ -23,7 +23,6 @@ import { ANALYTICS_EVENT_KEYS } from 'config/analytics/analyticsKeysMap';
 
 import imagesExploreAppModel from 'services/models/imagesExplore/imagesExploreAppModel';
 import { trackEvent } from 'services/analytics';
-import { AppNameEnumUpperCase } from 'services/models/explorer';
 
 import { ISelectFormProps } from 'types/pages/imagesExplore/components/SelectForm/SelectForm';
 import { ISelectOption } from 'types/services/models/explorer/createAppModel';
@@ -163,7 +162,6 @@ function SelectForm({
                   <AutocompleteInput
                     advanced
                     refObject={advancedAutocompleteRef}
-                    appName={AppNameEnumUpperCase.IMAGES}
                     context={selectFormData?.advancedSuggestions}
                     value={selectedImagesData?.advancedQuery}
                     error={selectFormData?.advancedError}
@@ -298,7 +296,6 @@ function SelectForm({
               <div className='SelectForm__TextField'>
                 <AutocompleteInput
                   refObject={autocompleteRef}
-                  appName={AppNameEnumUpperCase.IMAGES}
                   context={selectFormData?.suggestions}
                   value={selectedImagesData?.query}
                   error={selectFormData?.error}
