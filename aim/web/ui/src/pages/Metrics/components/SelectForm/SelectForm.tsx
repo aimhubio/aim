@@ -23,7 +23,6 @@ import { ANALYTICS_EVENT_KEYS } from 'config/analytics/analyticsKeysMap';
 
 import metricAppModel from 'services/models/metrics/metricsAppModel';
 import { trackEvent } from 'services/analytics';
-import { AppNameEnumUpperCase } from 'services/models/explorer';
 
 import { ISelectFormProps } from 'types/pages/metrics/components/SelectForm/SelectForm';
 import { ISelectOption } from 'types/services/models/explorer/createAppModel';
@@ -79,15 +78,22 @@ function SelectForm({
     metricAppModel.abortRequest();
   }
 
-  function onSelect(event: object, value: ISelectOption[]): void {
-    const lookup = value.reduce(
-      (acc: { [key: string]: number }, curr: ISelectOption) => {
-        acc[curr.label] = ++acc[curr.label] || 0;
-        return acc;
-      },
-      {},
-    );
-    onMetricsSelectChange(value.filter((option) => lookup[option.label] === 0));
+  function onSelect(
+    event: React.ChangeEvent<{}>,
+    value: ISelectOption[],
+  ): void {
+    if (event.type === 'click') {
+      const lookup = value.reduce(
+        (acc: { [key: string]: number }, curr: ISelectOption) => {
+          acc[curr.label] = ++acc[curr.label] || 0;
+          return acc;
+        },
+        {},
+      );
+      onMetricsSelectChange(
+        value.filter((option) => lookup[option.label] === 0),
+      );
+    }
   }
 
   function handleDelete(field: string): void {
@@ -153,7 +159,6 @@ function SelectForm({
                 <AutocompleteInput
                   advanced
                   error={selectFormData.advancedError}
-                  appName={AppNameEnumUpperCase.IMAGES}
                   refObject={advancedAutocompleteRef}
                   context={selectFormData?.advancedSuggestions}
                   value={selectedMetricsData?.advancedQuery}
@@ -286,7 +291,6 @@ function SelectForm({
             <div className='Metrics__SelectForm__TextField'>
               <AutocompleteInput
                 refObject={autocompleteRef}
-                appName={AppNameEnumUpperCase.METRICS}
                 error={selectFormData.error}
                 value={selectedMetricsData?.query}
                 context={selectFormData.suggestions}

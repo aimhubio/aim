@@ -8,6 +8,7 @@
 
 ### Fixes:
 
+- Avoid saving crashed or terminated search requests as the last state on explorers (arsengit) 
 - Remove the progress bar blinking when searching runs in Runs Explorer (KaroMourad)
 - Fix the "matched runs" sentence color style in progress bars (KaroMourad)
 - Fix `SyntaxError` handling for python3.10+ (mihran113)

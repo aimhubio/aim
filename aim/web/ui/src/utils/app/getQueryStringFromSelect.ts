@@ -1,15 +1,19 @@
+import { ISyntaxErrorDetails } from 'types/components/NotificationContainer/NotificationContainer';
 import { ISelectConfig } from 'types/services/models/explorer/createAppModel';
 
 import { formatValue } from '../formatValue';
 
-export default function getQueryStringFromSelect(selectData: ISelectConfig) {
+export default function getQueryStringFromSelect(
+  selectData: ISelectConfig,
+  error?: ISyntaxErrorDetails,
+) {
   let query = '';
   if (selectData !== undefined) {
     if (selectData.advancedMode) {
       query = selectData.advancedQuery || '';
     } else {
       query = `${
-        selectData.query ? `(${selectData.query}) and ` : ''
+        selectData.query && !error?.message ? `(${selectData.query}) and ` : ''
       }(${selectData.options
         .map(
           (option) =>
