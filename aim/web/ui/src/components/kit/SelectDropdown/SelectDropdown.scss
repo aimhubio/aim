@@ -1,0 +1,31 @@
+@use 'src/styles/abstracts' as *;
+
+.SelectDropdown {
+  &__groupItem {
+    padding: 6px 10px;
+    width: 100%;
+    user-select: none;
+    &__divider {
+      margin: $space-xs 0;
+    }
+  }
+  &__Input {
+    display: flex;
+    padding: 10px 16px;
+  }
+}
+
+.MuiAutocomplete-groupLabel {
+  color: $text-color-50;
+  font-size: $text-sm;
+  font-weight: 500;
+  border-top: $border-separator;
+}
+
+.MuiAutocomplete-option[aria-selected="true"] {
+  .SelectDropdown__option__label {
+    color: $primary-color;
+  }
+}
+
+  
