@@ -122,6 +122,7 @@ const Table = React.forwardRef(function Table(
   const [listWindow, setListWindow] = React.useState({
     left: 0,
     width: 0,
+    availableSpace: 0,
   });
 
   let groups = !Array.isArray(rowData);
@@ -501,9 +502,24 @@ const Table = React.forwardRef(function Table(
   }
 
   function setListWindowMeasurements() {
+    const leftPane =
+      tableContainerRef.current?.querySelector('.Table__pane--left');
+    const rightPane = tableContainerRef.current?.querySelector(
+      '.Table__pane--right',
+    );
+    let availableSpace = 0;
+
+    if (leftPane || rightPane) {
+      availableSpace =
+        tableContainerRef.current.offsetWidth -
+        (leftPane?.offsetWidth ?? 0) -
+        (rightPane?.offsetWidth ?? 0);
+    }
+
     setListWindow({
       left: tableContainerRef.current?.scrollLeft,
       width: tableContainerRef.current?.offsetWidth,
+      availableSpace,
     });
   }
 

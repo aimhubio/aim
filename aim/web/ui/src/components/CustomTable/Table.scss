@@ -120,6 +120,14 @@ $border-radius: 0.2rem;
   box-shadow: -1px 0 3px 0 $cuddle;
 }
 
+.Table__pane--middle {
+  position: relative;
+
+  .Table__column {
+    position: absolute;
+  }
+}
+
 .Table__column {
   display: flex;
   flex-direction: column;
