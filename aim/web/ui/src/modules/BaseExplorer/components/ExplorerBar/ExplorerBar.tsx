@@ -1,20 +1,17 @@
-import React, { useEffect } from 'react';
+import React from 'react';
 
 import AppBar from 'components/AppBar/AppBar';
 
 import { IBaseComponentProps } from '../../types';
 
-function ExplorerBar(props: IBaseComponentProps) {
-  const { engine } = props;
-  const params = engine.useStore(engine.instructions.dataSelector);
+interface IExplorerBarProps extends IBaseComponentProps {
+  explorerName: string;
+}
 
-  useEffect(() => {
-    console.log('ExplorerBar', params);
-  }, [params]);
-
+function ExplorerBar(props: IExplorerBarProps) {
   return (
     <div>
-      <AppBar title='Base Explorer' />
+      <AppBar title={props.explorerName} />
     </div>
   );
 }

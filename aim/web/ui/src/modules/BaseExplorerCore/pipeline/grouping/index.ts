@@ -12,9 +12,7 @@ export type GroupingConfigOptions = {
 
 export type GroupingExecutionOptions = {
   objectList: AimFlatObjectBase[];
-  grouping: {
-    columns: BettaGroupOption[];
-  };
+  grouping: BettaGroupOption[];
 };
 
 export type GroupingResult = {
@@ -48,29 +46,22 @@ export function grouping({
   groupingConfig.statusChangeCallback &&
     groupingConfig.statusChangeCallback('grouping');
 
-  const { columns } = grouping;
-  const groupingParams: {
-    type: GroupType;
-    fields: string[];
-    orders: Order[];
-  } = {
-    type: GroupType.COLUMN,
-    fields: [],
-    orders: [],
-  };
+  let fg = {};
+  let d = objectList;
 
-  columns.length &&
-    columns.forEach((item: BettaGroupOption) => {
-      groupingParams.fields.push(item.field);
-      groupingParams.orders.push(item.order);
-    });
-
-  const { foundGroups, data } = group(objectList, groupingParams);
+  grouping?.forEach((g: BettaGroupOption) => {
+    const { foundGroups, data } = group(d, g);
+    d = data;
+    fg = {
+      ...fg,
+      ...foundGroups,
+    };
+  });
 
   return {
     appliedGroupsConfig: grouping,
-    objectList: data,
-    foundGroups,
+    objectList: d,
+    foundGroups: fg,
   };
 }
 

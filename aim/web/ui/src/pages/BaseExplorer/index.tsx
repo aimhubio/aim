@@ -8,17 +8,19 @@ import {
   styleApplier,
 } from 'modules/BaseExplorer/types';
 import {
-  Box,
   Grouping,
   GroupingItem,
   QueryForm,
   Visualizer,
 } from 'modules/BaseExplorer/components';
+import { AimFlatObjectBase } from 'modules/BaseExplorerCore/pipeline/adapter/processor';
+import {
+  GroupType,
+  Order,
+} from 'modules/BaseExplorerCore/pipeline/grouping/types';
+import Figures from 'modules/BaseExplorer/components/Figures/Figures';
 
 import { AimObjectDepths, SequenceTypesEnum } from 'types/core/enums';
-
-import { AimFlatObjectBase } from '../../modules/BaseExplorerCore/pipeline/adapter/processor';
-import { Order } from '../../modules/BaseExplorerCore/pipeline/grouping/types';
 
 const applyStyle: styleApplier = (object: any, boxConfig: any, group: any) => {
   return {
@@ -27,6 +29,7 @@ const applyStyle: styleApplier = (object: any, boxConfig: any, group: any) => {
   };
 };
 
+// @ts-ignore
 const config: IExplorerConfig = {
   explorerName: 'Figures Explorer',
   engine: {
@@ -36,19 +39,30 @@ const config: IExplorerConfig = {
       objectDepth: AimObjectDepths.Step,
     },
     grouping: {
-      grid: {
+      [GroupType.COLUMN]: {
         component: memo((props: IBaseComponentProps) => (
-          <GroupingItem groupName='grid' iconName='chart-group' {...props} />
+          <GroupingItem
+            groupName='columns'
+            iconName='manage-column'
+            {...props}
+          />
         )),
+        // @ts-ignore
         styleApplier: (
           object: AimFlatObjectBase,
-          group: string[],
-          config: any,
-        ) => ({
-          x: config.row.rowLength * config.box.width,
-        }),
+          group: any,
+          boxConfig: any,
+          iteration: number,
+        ) => {
+          return {
+            left: group[GroupType.COLUMN]
+              ? group[GroupType.COLUMN].order *
+                (boxConfig.width + boxConfig.gap)
+              : 0,
+          };
+        },
         defaultApplications: {
-          fields: ['run.hash'],
+          fields: [],
           orders: [Order.DESC, Order.ASC],
         },
         // state: {
@@ -62,19 +76,27 @@ const config: IExplorerConfig = {
         //   maxRowsLength: 10,
         // },
       },
-      column: {
+      [GroupType.ROW]: {
         component: memo((props: IBaseComponentProps) => (
-          <GroupingItem groupName='column' iconName='coloring' {...props} />
+          <GroupingItem groupName='rows' iconName='row-height' {...props} />
         )),
+        // @ts-ignore
         styleApplier: (
           object: AimFlatObjectBase,
-          group: string[],
-          config: any,
-        ) => ({
-          x: config.column.rowLength * config.box.width,
-        }),
+          group: any,
+          boxConfig: any,
+          iteration: number,
+        ) => {
+          return {
+            top: group[GroupType.ROW]
+              ? group[GroupType.ROW].order *
+                  (boxConfig.height + boxConfig.gap) +
+                30
+              : 30,
+          };
+        },
         defaultApplications: {
-          fields: ['run.hash'],
+          fields: [],
           orders: [Order.DESC, Order.ASC],
         },
         // state: {
@@ -95,7 +117,7 @@ const config: IExplorerConfig = {
     defaultBoxConfig: {
       width: 150,
       height: 150,
-      gap: 20,
+      gap: 10,
     },
     styleAppliers: {
       grid: applyStyle,
@@ -106,7 +128,7 @@ const config: IExplorerConfig = {
       )),
       visualizations: [Visualizer],
       grouping: Grouping,
-      box: Box,
+      box: Figures,
     },
   },
   states: {

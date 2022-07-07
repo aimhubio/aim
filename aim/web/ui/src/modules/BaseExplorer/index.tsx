@@ -1,14 +1,10 @@
 import React, { useEffect } from 'react';
 
-import { Text } from 'components/kit';
-
 import createEngine from '../BaseExplorerCore/core-store';
 import { IEngineConfigFinal } from '../BaseExplorerCore/types';
 
 import { IExplorerConfig, IBaseExplorerProps } from './types';
 import ExplorerBar from './components/ExplorerBar';
-
-const __DEV__ = process.env.NODE_ENV;
 
 function BaseExplorer(props: IBaseExplorerProps) {
   const {
@@ -24,17 +20,20 @@ function BaseExplorer(props: IBaseExplorerProps) {
   }, [engineInstance]);
 
   const visualizations = React.useMemo(() => {
-    const p = { engine: engineInstance };
+    const p = { engine: engineInstance, box: components.box };
     const Visualizations: React.ReactNode[] = components.visualizations.map(
       (Viz) => <Viz key={Viz.displayName} {...p} />,
     );
 
     return Visualizations;
-  }, [engineInstance, components.visualizations]);
+  }, [engineInstance, components.box, components.visualizations]);
 
   return initialized ? (
     <div style={{ width: '100%', height: '100vh' }}>
-      <ExplorerBar engine={props.engineInstance} />
+      <ExplorerBar
+        engine={props.engineInstance}
+        explorerName={props.explorerName}
+      />
       {/* {__DEV__ && <Text>Engine status ::: status</Text>} */}
       <div
         className='flex fjb fac'
@@ -46,7 +45,6 @@ function BaseExplorer(props: IBaseExplorerProps) {
         <components.queryForm engine={props.engineInstance} />
         <components.grouping engine={props.engineInstance} />
       </div>
-      <br />
       <div className='AimVisualizer'>{visualizations}</div>
     </div>
   ) : (

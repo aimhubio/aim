@@ -77,7 +77,7 @@ export type IUIConfig = {
   components: {
     queryForm: React.FunctionComponent<IQueryFormProps>;
     grouping: React.FunctionComponent<IGroupingProps>;
-    visualizations: React.FunctionComponent<IVisualization>[];
+    visualizations: React.FunctionComponent<IVisualizationProps>[];
     box: React.FunctionComponent<IBoxProps>;
   };
 };
@@ -86,13 +86,18 @@ export interface IQueryFormProps extends IBaseComponentProps {
   hasAdvancedMode?: boolean;
 }
 export interface IGroupingProps extends IBaseComponentProps {}
-export interface IVisualization extends IBaseComponentProps {}
-export interface IBoxProps extends IBaseComponentProps {}
+export interface IVisualizationProps extends IBaseComponentProps {
+  box?: React.FunctionComponent<IBoxProps>;
+}
+export interface IBoxProps extends IBaseComponentProps {
+  data: any;
+}
 
 export interface IOptionalExplorerConfig {}
 
 export interface IBaseExplorerProps extends IExplorerConfig {
   engineInstance: any;
+  explorerName: string;
 }
 
 export interface IBaseComponentProps {

@@ -1,154 +1,109 @@
-import React, {
-  useState,
-  useEffect,
-  useMemo,
-  useRef,
-  memo,
-  FC,
-  ReactElement,
-} from 'react';
+import * as React from 'react';
+import * as _ from 'lodash-es';
 
-import {
-  BoxVirtualizerProps,
-  TimeoutID,
-  IScrollEndCallbackObject,
-  IScrollToOptions,
-} from './types';
-import Box from './Box';
-import { iterateData, isFunction } from './utils';
-import { cancelTimeout, requestTimeout } from './timer';
-import { useInViewportArea } from './UseInViewportArea';
+import useResizeObserver from 'hooks/window/useResizeObserver';
 
-// @TODO add scroll to vertical and horizontal positions
-const BoxVirtualizer: FC<BoxVirtualizerProps> = ({
-  data,
-  coordinatesMap,
-  visualizableContent,
-  isVirtualized = true,
-  viewportHeight = '100%',
-  viewportWidth = '100%',
-  boxGap = 0,
-  scrollEndCallback,
-  leftScrollPos,
-  topScrollPos,
-}: BoxVirtualizerProps): ReactElement => {
-  const scrollTimerIdRef: React.MutableRefObject<TimeoutID> = useRef({
-    id: null,
+import { BoxVirtualizerProps } from './types';
+
+function BoxVirtualizer(props: BoxVirtualizerProps) {
+  let container: React.MutableRefObject<HTMLDivElement> =
+    React.useRef<HTMLDivElement>(document.createElement('div'));
+  let grid: React.MutableRefObject<HTMLDivElement> =
+    React.useRef<HTMLDivElement>(document.createElement('div'));
+  const rafIDRef = React.useRef<number>();
+
+  let [gridWindow, setGridWindow] = React.useState({
+    left: 0,
+    top: 0,
+    width: 0,
+    height: 0,
   });
-  const viewportRef: any = useRef(null);
 
-  const [inViewportBoxes, setInViewportBoxes] = useState<any[]>([]);
-
-  const { selectNeedfulBoxes } = useInViewportArea(isVirtualized);
-
-  const { canvasSize, hashTable } = useMemo(() => {
-    return iterateData(data, coordinatesMap);
-  }, [data]);
-
-  function onScroll({ currentTarget }: React.UIEvent<HTMLDivElement>): void {
-    if (scrollTimerIdRef.current.id !== null) {
-      cancelTimeout(scrollTimerIdRef.current);
-    }
-
-    const { scrollLeft, scrollTop, offsetHeight, offsetWidth } = currentTarget;
-
-    scrollTimerIdRef.current = requestTimeout(() => {
-      const selectResult = selectNeedfulBoxes(hashTable, {
-        viewportHeight: currentTarget?.clientHeight,
-        viewportWidth: currentTarget?.clientWidth,
-        scrollLeft,
-        scrollTop,
-      });
-
-      setInViewportBoxes(selectResult);
-
-      if (scrollEndCallback && isFunction(scrollEndCallback)) {
-        scrollEndCallback({
-          canvasWidth: canvasSize.width,
-          canvasHeight: canvasSize.height,
-          canvasScrollLeft: scrollLeft,
-          canvasScrollTop: scrollTop,
-          isScrolledToLeftEnd: canvasSize.width === scrollLeft + offsetWidth,
-          isScrolledToBottomEnd: canvasSize.height === scrollTop + offsetHeight,
-        } as IScrollEndCallbackObject);
-      }
-    }, 150);
-  }
-
-  function scrollToCustomPositionsHandler(
-    x: number | undefined,
-    y: number | undefined,
-  ): void {
-    let options: IScrollToOptions = {
-      behavior: 'auto',
-    };
-
-    if (Number.isInteger(x)) {
-      options.left = x;
-    }
-
-    if (Number.isInteger(y)) {
-      options.top = y;
-    }
-
-    viewportRef.current.scrollTo(options);
-  }
-
-  function init(): void {
-    const selectResult = selectNeedfulBoxes(hashTable, {
-      viewportHeight: viewportRef.current?.offsetHeight,
-      viewportWidth: viewportRef.current?.offsetWidth,
-      scrollLeft: viewportRef.current?.scrollLeft,
-      scrollTop: viewportRef.current?.scrollTop,
+  function onScroll({ target }: any) {
+    setGridWindow({
+      left: target.scrollLeft,
+      top: target.scrollTop,
+      width: container.current.offsetWidth,
+      height: container.current.offsetHeight,
     });
-
-    setInViewportBoxes(selectResult);
   }
 
-  useEffect(() => {
-    console.log(hashTable);
-    init();
-  }, [hashTable]);
+  let sortedByPosition = props.data
+    ?.sort((a: any, b: any) => a.style.left - b.style.left)
+    .sort((a: any, b: any) => a.style.top - b.style.top);
 
-  useEffect(() => {
-    scrollToCustomPositionsHandler(leftScrollPos, topScrollPos);
-  }, [leftScrollPos, topScrollPos]);
+  let items = _.uniqWith<{ style: React.CSSProperties }>(
+    props.data?.filter(
+      (item: any) =>
+        item.style.left >= gridWindow.left - item.style.width &&
+        item.style.left <= gridWindow.left + gridWindow.width &&
+        item.style.top >= gridWindow.top - item.style.height &&
+        item.style.top <= gridWindow.top + gridWindow.height,
+    ),
+    (a, b) => _.isEqual(a.style, b.style),
+  );
+
+  React.useEffect(() => {
+    setGridWindow({
+      left: grid.current.scrollLeft,
+      top: grid.current.scrollTop,
+      width: container.current.offsetWidth,
+      height: container.current.offsetHeight,
+    });
+  }, []);
+
+  const resizeObserverCallback: ResizeObserverCallback = React.useCallback(
+    (entries: ResizeObserverEntry[]) => {
+      if (entries?.length) {
+        rafIDRef.current = window.requestAnimationFrame(() => {
+          setGridWindow((gW) => ({
+            left: gW.left,
+            top: gW.top,
+            width: container.current.offsetWidth,
+            height: container.current.offsetHeight,
+          }));
+        });
+      }
+    },
+    [setGridWindow],
+  );
+
+  const observerReturnCallback = React.useCallback(() => {
+    if (rafIDRef.current) {
+      window.cancelAnimationFrame(rafIDRef.current);
+    }
+  }, []);
+
+  useResizeObserver(resizeObserverCallback, container, observerReturnCallback);
 
   return (
     <div
-      ref={viewportRef}
+      ref={container}
       style={{
-        width: viewportWidth,
-        height: viewportHeight,
-        overflow: 'auto',
+        width: '100%',
+        height: '100%',
         position: 'relative',
+        overflow: 'auto',
       }}
       onScroll={onScroll}
     >
-      {/* viewport */}
       <div
+        ref={grid}
         style={{
-          width: `${canvasSize.width}px`,
-          height: `${canvasSize.height}px`,
-          position: 'relative',
+          marginTop: '20px',
+          overflow: 'hidden',
+          width:
+            sortedByPosition?.[sortedByPosition?.length - 1]?.style?.left +
+            sortedByPosition?.[sortedByPosition?.length - 1]?.style?.width,
+          height:
+            sortedByPosition?.[sortedByPosition?.length - 1]?.style?.top +
+            sortedByPosition?.[sortedByPosition?.length - 1]?.style?.height,
         }}
       >
-        {/* canvas */}
-        {inViewportBoxes.map((box: any, index: number) => {
-          return (
-            <Box
-              key={index}
-              boxData={box}
-              gap={boxGap}
-              visualizableContent={visualizableContent}
-            />
-          );
-        })}
+        {items?.map(props.itemRenderer)}
       </div>
     </div>
   );
-};
+}
 
-BoxVirtualizer.displayName = 'BoxVirtualizer';
-
-export default memo(BoxVirtualizer);
+export default React.memo(BoxVirtualizer);

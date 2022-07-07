@@ -1,0 +1,7 @@
+@use 'src/styles/abstracts' as *;
+
+.BaseBox {
+  position: absolute;
+  border: 0.0625rem solid $primary-color;
+  overflow: auto;
+}
