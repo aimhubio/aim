@@ -1,7 +1,6 @@
 import os
-import pytz
 from datetime import timedelta
-from typing import Optional, Tuple, Union
+from typing import Optional, Tuple
 
 from collections import Counter
 from fastapi import Depends, HTTPException, Query, Header

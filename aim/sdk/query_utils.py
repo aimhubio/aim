@@ -37,12 +37,12 @@ class RunView:
                     return None
                 else:
                     return datetime.datetime.fromtimestamp(end_time, tz=pytz.utc).replace(tzinfo=None)\
-                           - datetime.timedelta(minutes=self._timezone_offset)
+                        - datetime.timedelta(minutes=self._timezone_offset)
             else:
                 return end_time
         if item == 'created_at':
             return getattr(self.db.caches['runs_cache'][self.hash], item)\
-                   - datetime.timedelta(minutes=self._timezone_offset)
+                - datetime.timedelta(minutes=self._timezone_offset)
         if item == 'active':
             return getattr(self.run, item)
         elif item in self.structured_run_cls.fields():

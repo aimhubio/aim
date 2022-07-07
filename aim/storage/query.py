@@ -153,7 +153,7 @@ def query_add_default_expr(query: str) -> str:
             return f'{default_expression} and {query}'
         else:
             return query
-import traceback
+
 
 class RestrictedPythonQuery(Query):
 
@@ -188,6 +188,5 @@ class RestrictedPythonQuery(Query):
             namespace = dict(**params, **restricted_globals)
             return eval(self._checker, restricted_globals, namespace)
         except BaseException as e:
-            traceback.print_exc()
-            # logger.warning('query failed, %s', e.with_traceback())
+            logger.warning('query failed, %s', e)
             return False
