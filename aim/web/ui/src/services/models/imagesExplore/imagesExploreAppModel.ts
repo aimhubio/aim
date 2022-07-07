@@ -86,8 +86,8 @@ import getAdvancedSuggestion from 'utils/getAdvancedSuggestions';
 import { processDurationTime } from 'utils/processDurationTime';
 import onVisibilityChange from 'utils/app/onColumnsVisibilityChange';
 import setRequestProgress from 'utils/app/setRequestProgress';
-import getRunData from 'utils/app/getRunData';
 import decodeWithBase58Checker from 'utils/decodeWithBase58Checker';
+import getRunData from 'utils/app/getRunData';
 
 import createModel from '../model';
 import { AppNameEnum } from '../explorer';
@@ -591,7 +591,8 @@ function processData(data: any[]): {
 }
 
 function setModelData(rawData: any[], configData: IImagesExploreAppConfig) {
-  const sortFields = model.getState()?.config?.table.sortFields;
+  const modelState = model.getState();
+  const sortFields = modelState?.config?.table.sortFields;
   const { data, params, runProps, highLevelParams, contexts, selectedRows } =
     processData(rawData);
   const sortedParams = [...new Set(params.concat(highLevelParams))].sort();
@@ -724,7 +725,7 @@ function setModelData(rawData: any[], configData: IImagesExploreAppConfig) {
     onGroupingSelectChange,
   );
 
-  model.getState()?.refs?.tableRef.current?.updateData({
+  modelState?.refs?.tableRef.current?.updateData({
     newData: tableData.rows,
     newColumns: tableColumns,
   });
@@ -734,6 +735,10 @@ function setModelData(rawData: any[], configData: IImagesExploreAppConfig) {
     rawData,
     config,
     params,
+    selectFormData: {
+      ...modelState.selectFormData,
+      [configData.select?.advancedMode ? 'advancedError' : 'error']: null,
+    },
     data,
     selectedRows,
     imagesData: mediaSetData,

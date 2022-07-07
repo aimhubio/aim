@@ -1236,7 +1236,8 @@ function createAppModel(appConfig: IAppInitialConfig) {
       rawData: ISequence<IMetricTrace>[],
       configData: IAppModelConfig,
     ): void {
-      const sortFields = model.getState()?.config?.table?.sortFields;
+      const modelState: IAppModelState = model.getState();
+      const sortFields = modelState?.config?.table?.sortFields;
       const {
         data,
         runProps,
@@ -1287,7 +1288,7 @@ function createAppModel(appConfig: IAppInitialConfig) {
         onModelGroupingSelectChange,
       );
 
-      model.getState()?.refs?.tableRef.current?.updateData({
+      modelState?.refs?.tableRef.current?.updateData({
         newData: tableData.rows,
         newColumns: tableColumns,
       });
@@ -1298,6 +1299,10 @@ function createAppModel(appConfig: IAppInitialConfig) {
         config: configData,
         params,
         data,
+        selectFormData: {
+          ...modelState?.selectFormData,
+          [configData.select?.advancedMode ? 'advancedError' : 'error']: null,
+        },
         lineChartData: getDataAsLines(data),
         chartTitleData: getChartTitleData<
           IMetric,
@@ -3813,6 +3818,7 @@ function createAppModel(appConfig: IAppInitialConfig) {
           metricsColumns,
           selectedRows,
         } = processData(rawData);
+        const modelState: IAppModelState = model.getState();
         const sortedParams = [
           ...new Set(params.concat(highLevelParams)),
         ].sort();
@@ -3838,7 +3844,7 @@ function createAppModel(appConfig: IAppInitialConfig) {
           configData,
           groupingSelectOptions,
         );
-        const sortFields = model.getState()?.config?.table.sortFields;
+        const sortFields = modelState?.config?.table.sortFields;
 
         const tableColumns = getParamsTableColumns(
           groupingSelectOptions,
@@ -3854,7 +3860,7 @@ function createAppModel(appConfig: IAppInitialConfig) {
           AppNameEnum.PARAMS,
         );
 
-        model.getState()?.refs?.tableRef.current?.updateData({
+        modelState?.refs?.tableRef.current?.updateData({
           newData: tableData.rows,
           newColumns: tableColumns,
         });
@@ -3900,6 +3906,7 @@ function createAppModel(appConfig: IAppInitialConfig) {
             groupingSelectOptions,
             model: model as IModel<IParamsAppModelState>,
           }),
+          selectFormData: { ...modelState.selectFormData, error: null },
           params,
           selectedRows,
           metricsColumns,
@@ -4868,6 +4875,7 @@ function createAppModel(appConfig: IAppInitialConfig) {
           metricsColumns,
           selectedRows,
         } = processData(rawData);
+        const modelState: IAppModelState = model.getState();
         const sortedParams = [
           ...new Set(params.concat(highLevelParams)),
         ].sort();
@@ -4893,7 +4901,7 @@ function createAppModel(appConfig: IAppInitialConfig) {
           configData,
           groupingSelectOptions,
         );
-        const sortFields = model.getState()?.config?.table.sortFields;
+        const sortFields = modelState?.config?.table.sortFields;
 
         const tableColumns = getParamsTableColumns(
           groupingSelectOptions,
@@ -4909,7 +4917,7 @@ function createAppModel(appConfig: IAppInitialConfig) {
           AppNameEnum.SCATTERS,
         );
 
-        model.getState()?.refs?.tableRef.current?.updateData({
+        modelState?.refs?.tableRef.current?.updateData({
           newData: tableData.rows,
           newColumns: tableColumns,
         });
@@ -4923,6 +4931,7 @@ function createAppModel(appConfig: IAppInitialConfig) {
             groupingSelectOptions,
             model: model as IModel<IParamsAppModelState>,
           }),
+          selectFormData: { ...modelState.selectFormData, error: null },
           params,
           metricsColumns,
           rawData,

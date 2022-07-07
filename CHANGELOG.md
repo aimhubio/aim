@@ -2,6 +2,10 @@
 
 ## 3.11.2 
 
+### Enhancements:
+
+- Display the error position when getting syntax errors after searching (arsengit)
+
 ### Fixes:
 
 - Remove the progress bar blinking when searching runs in Runs Explorer (KaroMourad)
