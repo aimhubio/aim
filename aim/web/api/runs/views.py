@@ -1,4 +1,4 @@
-from fastapi import Depends, HTTPException, Query
+from fastapi import Depends, HTTPException, Query, Header
 from fastapi.responses import JSONResponse, StreamingResponse
 from starlette import status
 
@@ -58,14 +58,19 @@ def run_search_api(q: Optional[str] = '',
                    limit: Optional[int] = 0,
                    offset: Optional[str] = None,
                    skip_system: Optional[bool] = True,
-                   report_progress: Optional[bool] = True):
+                   report_progress: Optional[bool] = True,
+                   x_timezone_offset: int = Header(default=0),):
+    from aim.sdk.sequence_collection import QueryRunSequenceCollection
     repo = get_project_repo()
     query = checked_query(q)
 
-    runs = repo.query_runs(query=query,
-                           paginated=bool(limit),
-                           offset=offset,
-                           report_mode=QueryReportMode.PROGRESS_TUPLE)
+    repo._prepare_runs_cache()
+    runs = QueryRunSequenceCollection(repo=repo,
+                                      query=query,
+                                      paginated=bool(limit),
+                                      offset=offset,
+                                      report_mode=QueryReportMode.PROGRESS_TUPLE,
+                                      timezone_offset=x_timezone_offset)
 
     streamer = run_search_result_streamer(runs, limit, skip_system, report_progress)
     return StreamingResponse(streamer)
@@ -87,7 +92,11 @@ async def run_metric_search_api(q: Optional[str] = '',
                                 p: Optional[int] = 50,
                                 x_axis: Optional[str] = None,
                                 skip_system: Optional[bool] = True,
-                                report_progress: Optional[bool] = True):
+                                report_progress: Optional[bool] = True,
+                                x_timezone_offset: int = Header(default=0),):
+    from aim.sdk.sequences.metric import Metric
+    from aim.sdk.sequence_collection import QuerySequenceCollection
+
     steps_num = p
 
     if x_axis:
@@ -95,7 +104,13 @@ async def run_metric_search_api(q: Optional[str] = '',
 
     repo = get_project_repo()
     query = checked_query(q)
-    traces = repo.query_metrics(query=query, report_mode=QueryReportMode.PROGRESS_TUPLE)
+
+    repo._prepare_runs_cache()
+    traces = QuerySequenceCollection(repo=repo,
+                                     seq_cls=Metric,
+                                     query=query,
+                                     report_mode=QueryReportMode.PROGRESS_TUPLE,
+                                     timezone_offset=x_timezone_offset,)
 
     streamer = metric_search_result_streamer(traces, skip_system, steps_num, x_axis, report_progress)
     return StreamingResponse(streamer)

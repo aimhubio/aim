@@ -162,14 +162,14 @@ class StructuredRunMixin:
     @property
     def created_at(self):
         if self.repo.is_remote_repo:
-            return datetime.datetime.fromtimestamp(self.creation_time, tz=pytz.utc)
+            return datetime.datetime.fromtimestamp(self.creation_time, tz=pytz.utc).replace(tzinfo=None)
         else:
-            return self.props.created_at.replace(tzinfo=pytz.utc)
+            return self.props.created_at
 
     @property
     def finalized_at(self):
         if self.end_time:
-            return datetime.datetime.fromtimestamp(self.end_time, tz=pytz.utc)
+            return datetime.datetime.fromtimestamp(self.end_time, tz=pytz.utc).replace(tzinfo=None)
         else:
             return None
 
