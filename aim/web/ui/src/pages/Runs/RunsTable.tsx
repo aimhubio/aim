@@ -24,6 +24,7 @@ function RunsTable({
   onColumnsVisibilityChange,
   onTableDiffShow,
   onManageColumns,
+  sameValueColumns,
   onRowHeightChange,
   hiddenColumns,
   columnsOrder,
@@ -65,6 +66,7 @@ function RunsTable({
             showResizeContainerActionBar={false}
             ref={tableRef}
             data={data}
+            sameValueColumns={sameValueColumns}
             columns={columns}
             isLoading={requestStatus === RequestStatusEnum.Pending}
             selectedRows={selectedRows}
