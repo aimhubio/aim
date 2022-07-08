@@ -2,7 +2,7 @@
 
 .SelectDropdown {
   &__groupItem {
-    padding: 6px 10px;
+    padding: $space-xxs $space-sm;
     width: 100%;
     user-select: none;
     &__divider {
@@ -11,7 +11,7 @@
   }
   &__Input {
     display: flex;
-    padding: 10px 16px;
+    padding: $space-sm $space-unit;
   }
 }
 
@@ -27,5 +27,3 @@
     color: $primary-color;
   }
 }
-
-  
