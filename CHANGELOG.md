@@ -12,6 +12,7 @@
 - Remove the progress bar blinking when searching runs in Runs Explorer (KaroMourad)
 - Fix the "matched runs" sentence color style in progress bars (KaroMourad)
 - Fix `SyntaxError` handling for python3.10+ (mihran113)
+- Fix generic Exceptions handling and adjust HTTPException handling (alberttorosyan)
 
 ## 3.11.1 Jun 27, 2022
 
