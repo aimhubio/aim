@@ -13,6 +13,7 @@ export type State = {
   params?: Record<string, any>;
   sameValueColumns?: string[];
   selectedRows?: any;
+  selectFormData?: any;
 };
 
 export interface IModel<StateType extends Partial<State>> {

@@ -9,6 +9,8 @@ import {
   IRun,
 } from 'types/services/models/metrics/runModel';
 
+import { ITagProps } from '../tags/Tags';
+
 export interface IRunsProps {
   tableData: IRun<IMetricTrace | IParamTrace>[];
 }

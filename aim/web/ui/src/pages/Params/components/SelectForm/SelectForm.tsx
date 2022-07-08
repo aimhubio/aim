@@ -60,17 +60,22 @@ function SelectForm({
     paramsAppModel.abortRequest();
   }
 
-  function onSelect(event: object, value: ISelectOption[]): void {
-    const lookup = value.reduce(
-      (acc: { [key: string]: number }, curr: ISelectOption) => {
-        acc[curr.label] = ++acc[curr.label] || 0;
-        return acc;
-      },
-      {},
-    );
-    onParamsSelectChange(
-      value?.filter((option: ISelectOption) => lookup[option.label] === 0),
-    );
+  function onSelect(
+    event: React.ChangeEvent<{}>,
+    value: ISelectOption[],
+  ): void {
+    if (event.type === 'click') {
+      const lookup = value.reduce(
+        (acc: { [key: string]: number }, curr: ISelectOption) => {
+          acc[curr.label] = ++acc[curr.label] || 0;
+          return acc;
+        },
+        {},
+      );
+      onParamsSelectChange(
+        value?.filter((option: ISelectOption) => lookup[option.label] === 0),
+      );
+    }
   }
 
   function handleDelete(field: string): void {
@@ -98,6 +103,8 @@ function SelectForm({
   function handleSearchInputChange(
     e: React.ChangeEvent<HTMLInputElement>,
   ): void {
+    e.preventDefault();
+    e.stopPropagation();
     setSearchValue(e.target.value);
   }
 
@@ -111,7 +118,6 @@ function SelectForm({
 
   const open: boolean = !!anchorEl;
   const id = open ? 'select-metric' : undefined;
-
   return (
     <ErrorBoundary>
       <div className='SelectForm__container'>
@@ -270,6 +276,7 @@ function SelectForm({
             <AutocompleteInput
               refObject={autocompleteRef}
               context={selectFormData?.suggestions}
+              error={selectFormData?.error}
               onEnter={handleParamsSearch}
               value={selectedParamsData?.query}
               disabled={isDisabled}

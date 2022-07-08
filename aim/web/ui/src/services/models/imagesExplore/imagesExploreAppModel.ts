@@ -53,6 +53,7 @@ import {
   ISelectOption,
 } from 'types/services/models/explorer/createAppModel';
 import { IProjectParamsMetrics } from 'types/services/models/projects/projectsModel';
+import { ISyntaxErrorDetails } from 'types/components/NotificationContainer/NotificationContainer';
 
 import getAppConfigDataMethod from 'utils/app/getAppConfigData';
 import onRowSelectAction from 'utils/app/onRowSelect';
@@ -86,8 +87,8 @@ import getAdvancedSuggestion from 'utils/getAdvancedSuggestions';
 import { processDurationTime } from 'utils/processDurationTime';
 import onVisibilityChange from 'utils/app/onColumnsVisibilityChange';
 import setRequestProgress from 'utils/app/setRequestProgress';
-import getRunData from 'utils/app/getRunData';
 import decodeWithBase58Checker from 'utils/decodeWithBase58Checker';
+import getRunData from 'utils/app/getRunData';
 
 import createModel from '../model';
 import { AppNameEnum } from '../explorer';
@@ -99,6 +100,8 @@ const model = createModel<Partial<IImagesExploreAppModelState>>({
   selectFormData: {
     options: undefined,
     suggestions: [],
+    error: null,
+    advancedError: null,
   },
   config: getConfig(),
 });
@@ -295,6 +298,11 @@ function resetModelState() {
   model.setState({
     ...model.getState(),
     data: [],
+    selectFormData: {
+      ...model.getState().selectFormData,
+      error: null,
+      advancedError: null,
+    },
     params: [],
     imagesData: {},
     tableData: [],
@@ -339,9 +347,6 @@ function getImagesData(
       configData!.select.query = queryString;
     }
   }
-  if (shouldUrlUpdate) {
-    updateURL(configData);
-  }
   const recordSlice: number[] | undefined = configData?.images?.recordSlice as
     | number[]
     | undefined;
@@ -350,7 +355,7 @@ function getImagesData(
     | undefined;
   const recordDensity = configData?.images?.recordDensity;
   const indexDensity = configData?.images?.indexDensity;
-  let query = getQueryStringFromSelect(configData?.select as any);
+  let query = getQueryStringFromSelect(configData!.select);
   let imageDataBody: any = {
     q: query !== '()' ? query : '',
   };
@@ -401,6 +406,9 @@ function getImagesData(
 
           if (configData) {
             setModelData(runData, configData);
+          }
+          if (shouldUrlUpdate) {
+            updateURL(configData);
           }
         } catch (ex: Error | any) {
           if (ex.name === 'AbortError') {
@@ -591,7 +599,8 @@ function processData(data: any[]): {
 }
 
 function setModelData(rawData: any[], configData: IImagesExploreAppConfig) {
-  const sortFields = model.getState()?.config?.table.sortFields;
+  const modelState = model.getState();
+  const sortFields = modelState?.config?.table.sortFields;
   const { data, params, runProps, highLevelParams, contexts, selectedRows } =
     processData(rawData);
   const sortedParams = [...new Set(params.concat(highLevelParams))].sort();
@@ -724,7 +733,7 @@ function setModelData(rawData: any[], configData: IImagesExploreAppConfig) {
     onGroupingSelectChange,
   );
 
-  model.getState()?.refs?.tableRef.current?.updateData({
+  modelState?.refs?.tableRef.current?.updateData({
     newData: tableData.rows,
     newColumns: tableColumns,
   });
@@ -734,6 +743,10 @@ function setModelData(rawData: any[], configData: IImagesExploreAppConfig) {
     rawData,
     config,
     params,
+    selectFormData: {
+      ...modelState?.selectFormData,
+      [configData.select?.advancedMode ? 'advancedError' : 'error']: null,
+    },
     data,
     selectedRows,
     imagesData: mediaSetData,
@@ -1769,7 +1782,7 @@ function onSelectRunQueryChange(query: string) {
   if (configData?.select) {
     const newConfig = {
       ...configData,
-      select: { ...configData.select, advancedQuery: query, query },
+      select: { ...configData.select, query },
       images: { ...configData.images },
     };
 
@@ -1817,6 +1830,7 @@ function onSearchQueryCopy(): void {
 
 function getQueryStringFromSelect(
   selectData: IImagesExploreAppConfig['select'],
+  error?: ISyntaxErrorDetails,
 ) {
   let query: string | undefined = '';
   if (selectData !== undefined) {
@@ -1824,7 +1838,7 @@ function getQueryStringFromSelect(
       query = selectData.advancedQuery;
     } else {
       query = `${
-        selectData.query ? `(${selectData.query}) and ` : ''
+        selectData.query && !error?.message ? `(${selectData.query}) and ` : ''
       }(${selectData.options
         .map(
           (option: ISelectOption) =>
@@ -1882,22 +1896,24 @@ function onImagesExploreSelectChange(options: ISelectOption[]) {
 }
 
 function toggleSelectAdvancedMode() {
-  const configData: IImagesExploreAppConfig | undefined =
-    model.getState()?.config;
+  const modelState: IImagesExploreAppModelState | any = model.getState();
 
-  if (configData?.select) {
+  if (modelState.config?.select) {
     let query =
-      configData.select.advancedQuery ||
-      getQueryStringFromSelect(configData?.select);
+      modelState.config.select.advancedQuery ||
+      getQueryStringFromSelect(
+        modelState.config?.select,
+        modelState.selectFormData.error,
+      );
     if (query === '()') {
       query = '';
     }
     const newConfig = {
-      ...configData,
+      ...modelState.config,
       select: {
-        ...configData.select,
+        ...modelState.config.select,
         advancedQuery: query,
-        advancedMode: !configData.select.advancedMode,
+        advancedMode: !modelState.config.select.advancedMode,
       },
     };
     updateURL(newConfig);
@@ -1907,7 +1923,7 @@ function toggleSelectAdvancedMode() {
 
   analytics.trackEvent(
     `${ANALYTICS_EVENT_KEYS.images.useAdvancedSearch} ${
-      !configData?.select.advancedMode ? 'on' : 'off'
+      !modelState.config?.select.advancedMode ? 'on' : 'off'
     }`,
   );
 }

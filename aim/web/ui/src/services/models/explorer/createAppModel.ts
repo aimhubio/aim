@@ -632,9 +632,7 @@ function createAppModel(appConfig: IAppInitialConfig) {
         metricsRequestRef.abort();
       }
       const configData = model.getState()?.config;
-      if (shouldUrlUpdate) {
-        updateURL({ configData, appName });
-      }
+
       const metric = configData?.chart?.alignmentConfig?.metric;
 
       if (queryString) {
@@ -673,6 +671,9 @@ function createAppModel(appConfig: IAppInitialConfig) {
               const runData = await getRunData(stream, (progress) =>
                 setRequestProgress(model, progress),
               );
+              if (shouldUrlUpdate) {
+                updateURL({ configData, appName });
+              }
               updateData(runData);
             } catch (ex: Error | any) {
               if (ex.name === 'AbortError') {
@@ -720,6 +721,11 @@ function createAppModel(appConfig: IAppInitialConfig) {
         queryIsEmpty: true,
         rawData: [],
         tableColumns: [],
+        selectFormData: {
+          ...model.getState().selectFormData,
+          error: null,
+          advancedError: null,
+        },
         selectedRows: shouldResetSelectedRows
           ? {}
           : model.getState()?.selectedRows,
@@ -1236,7 +1242,8 @@ function createAppModel(appConfig: IAppInitialConfig) {
       rawData: ISequence<IMetricTrace>[],
       configData: IAppModelConfig,
     ): void {
-      const sortFields = model.getState()?.config?.table?.sortFields;
+      const modelState: IAppModelState = model.getState();
+      const sortFields = modelState?.config?.table?.sortFields;
       const {
         data,
         runProps,
@@ -1287,7 +1294,7 @@ function createAppModel(appConfig: IAppInitialConfig) {
         onModelGroupingSelectChange,
       );
 
-      model.getState()?.refs?.tableRef.current?.updateData({
+      modelState?.refs?.tableRef.current?.updateData({
         newData: tableData.rows,
         newColumns: tableColumns,
       });
@@ -1298,6 +1305,10 @@ function createAppModel(appConfig: IAppInitialConfig) {
         config: configData,
         params,
         data,
+        selectFormData: {
+          ...modelState?.selectFormData,
+          [configData.select?.advancedMode ? 'advancedError' : 'error']: null,
+        },
         lineChartData: getDataAsLines(data),
         chartTitleData: getChartTitleData<
           IMetric,
@@ -2221,9 +2232,6 @@ function createAppModel(appConfig: IAppInitialConfig) {
 
         runsRequestRef = runsService.getRunsData(query, 45, pagination?.offset);
         let limit = pagination.limit;
-        if (shouldUrlUpdate) {
-          updateURL({ configData, appName });
-        }
         setRequestProgress(model);
         return {
           call: async () => {
@@ -2298,6 +2306,9 @@ function createAppModel(appConfig: IAppInitialConfig) {
                   },
                 },
               });
+              if (shouldUrlUpdate) {
+                updateURL({ configData, appName });
+              }
             } catch (ex: Error | any) {
               if (ex.name === 'AbortError') {
                 onNotificationAdd({
@@ -2942,6 +2953,13 @@ function createAppModel(appConfig: IAppInitialConfig) {
         runsRequestRef.abort();
         liveUpdateInstance?.clear();
         liveUpdateInstance = null; //@TODO check is this need or not
+        model.setState({
+          ...model.getState(),
+          selectFormData: {
+            ...model.getState().selectFormData,
+            error: null,
+          },
+        });
       }
 
       function changeLiveUpdateConfig(config: {
@@ -3346,9 +3364,6 @@ function createAppModel(appConfig: IAppInitialConfig) {
         if (queryString) {
           configData.select.query = queryString;
         }
-        if (shouldUrlUpdate) {
-          updateURL({ configData, appName });
-        }
         runsRequestRef = runsService.getRunsData(configData?.select?.query);
         setRequestProgress(model);
         return {
@@ -3373,6 +3388,9 @@ function createAppModel(appConfig: IAppInitialConfig) {
                   setRequestProgress(model, progress),
                 );
                 updateData(runData);
+                if (shouldUrlUpdate) {
+                  updateURL({ configData, appName });
+                }
               } catch (ex: Error | any) {
                 if (ex.name === 'AbortError') {
                   // Abort Error
@@ -3413,6 +3431,7 @@ function createAppModel(appConfig: IAppInitialConfig) {
           queryIsEmpty: true,
           rawData: [],
           tableColumns: [],
+          selectFormData: { ...model.getState().selectFormData, error: null },
           selectedRows: shouldResetSelectedRows
             ? {}
             : model.getState()?.selectedRows,
@@ -3813,6 +3832,7 @@ function createAppModel(appConfig: IAppInitialConfig) {
           metricsColumns,
           selectedRows,
         } = processData(rawData);
+        const modelState: IAppModelState = model.getState();
         const sortedParams = [
           ...new Set(params.concat(highLevelParams)),
         ].sort();
@@ -3838,7 +3858,7 @@ function createAppModel(appConfig: IAppInitialConfig) {
           configData,
           groupingSelectOptions,
         );
-        const sortFields = model.getState()?.config?.table.sortFields;
+        const sortFields = modelState?.config?.table.sortFields;
 
         const tableColumns = getParamsTableColumns(
           groupingSelectOptions,
@@ -3854,7 +3874,7 @@ function createAppModel(appConfig: IAppInitialConfig) {
           AppNameEnum.PARAMS,
         );
 
-        model.getState()?.refs?.tableRef.current?.updateData({
+        modelState?.refs?.tableRef.current?.updateData({
           newData: tableData.rows,
           newColumns: tableColumns,
         });
@@ -3900,6 +3920,7 @@ function createAppModel(appConfig: IAppInitialConfig) {
             groupingSelectOptions,
             model: model as IModel<IParamsAppModelState>,
           }),
+          selectFormData: { ...modelState.selectFormData, error: null },
           params,
           selectedRows,
           metricsColumns,
@@ -4868,6 +4889,7 @@ function createAppModel(appConfig: IAppInitialConfig) {
           metricsColumns,
           selectedRows,
         } = processData(rawData);
+        const modelState: IAppModelState = model.getState();
         const sortedParams = [
           ...new Set(params.concat(highLevelParams)),
         ].sort();
@@ -4893,7 +4915,7 @@ function createAppModel(appConfig: IAppInitialConfig) {
           configData,
           groupingSelectOptions,
         );
-        const sortFields = model.getState()?.config?.table.sortFields;
+        const sortFields = modelState?.config?.table.sortFields;
 
         const tableColumns = getParamsTableColumns(
           groupingSelectOptions,
@@ -4909,7 +4931,7 @@ function createAppModel(appConfig: IAppInitialConfig) {
           AppNameEnum.SCATTERS,
         );
 
-        model.getState()?.refs?.tableRef.current?.updateData({
+        modelState?.refs?.tableRef.current?.updateData({
           newData: tableData.rows,
           newColumns: tableColumns,
         });
@@ -4923,6 +4945,7 @@ function createAppModel(appConfig: IAppInitialConfig) {
             groupingSelectOptions,
             model: model as IModel<IParamsAppModelState>,
           }),
+          selectFormData: { ...modelState.selectFormData, error: null },
           params,
           metricsColumns,
           rawData,
@@ -5643,9 +5666,7 @@ function createAppModel(appConfig: IAppInitialConfig) {
           runsRequestRef.abort();
         }
         const configData = { ...model.getState()?.config };
-        if (shouldUrlUpdate) {
-          updateURL({ configData, appName });
-        }
+
         runsRequestRef = runsService.getRunsData(configData?.select?.query);
         setRequestProgress(model);
         return {
@@ -5670,7 +5691,9 @@ function createAppModel(appConfig: IAppInitialConfig) {
                   setRequestProgress(model, progress),
                 );
                 updateData(runData);
-
+                if (shouldUrlUpdate) {
+                  updateURL({ configData, appName });
+                }
                 liveUpdateInstance?.start({
                   q: configData?.select?.query,
                 });
@@ -5765,6 +5788,10 @@ function createAppModel(appConfig: IAppInitialConfig) {
           queryIsEmpty: true,
           rawData: [],
           tableColumns: [],
+          selectFormData: {
+            ...model.getState().selectFormData,
+            error: null,
+          },
           selectedRows: shouldResetSelectedRows
             ? {}
             : model.getState()?.selectedRows,

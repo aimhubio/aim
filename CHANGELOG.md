@@ -1,5 +1,18 @@
 # Changelog
 
+## 3.11.2 
+
+### Enhancements:
+
+- Display the error position when getting syntax errors after searching (arsengit)
+
+### Fixes:
+
+- Avoid saving crashed or terminated search requests as the last state on explorers (arsengit) 
+- Remove the progress bar blinking when searching runs in Runs Explorer (KaroMourad)
+- Fix the "matched runs" sentence color style in progress bars (KaroMourad)
+- Fix `SyntaxError` handling for python3.10+ (mihran113)
+
 ## 3.11.1 Jun 27, 2022
 
 - Replace base58 encoder with base64 (KaroMourad, VkoHov)
