@@ -1,6 +1,6 @@
 # Changelog
 
-## 3.11.2 
+## 3.11.2 Jul 8, 2022
 
 ### Enhancements:
 
