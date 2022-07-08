@@ -19,7 +19,6 @@ import {
 } from 'types/services/models/metrics/metricsAppModel';
 
 import { IRequestProgress } from 'utils/app/setRequestProgress';
-
 import { TrendlineTypeEnum } from 'utils/d3';
 
 import { IMetricTrace, IRun } from './runModel';

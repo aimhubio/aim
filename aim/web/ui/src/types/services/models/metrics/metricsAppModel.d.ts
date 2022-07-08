@@ -19,7 +19,6 @@ import {
   AggregationLineMethods,
 } from 'utils/aggregateGroupData';
 import { AlignmentOptionsEnum } from 'utils/d3';
-
 import { IRequestProgress } from 'utils/app/setRequestProgress';
 
 import { ISelectOption } from '../explorer/createAppModel';
