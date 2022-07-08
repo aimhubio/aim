@@ -45,5 +45,7 @@ export type IInputProps = Override<
     restInputProps?: object;
     tooltipPlacement?: TooltipProps['placement'];
     wrapperClassName?: string;
+    requiredNumberValue?: boolean;
+    isValid?: boolean;
   }
 >;

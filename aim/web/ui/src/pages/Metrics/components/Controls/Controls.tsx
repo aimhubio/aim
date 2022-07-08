@@ -10,7 +10,7 @@ import ZoomOutPopup from 'components/ZoomOutPopover/ZoomOutPopover';
 import HighlightModePopup from 'components/HighlightModesPopover/HighlightModesPopover';
 import ControlPopover from 'components/ControlPopover/ControlPopover';
 import AxesScalePopover from 'components/AxesScalePopover/AxesScalePopover';
-import AlignmentPopover from 'components/AlignmentPopover/AlignmentPopover';
+import AlignmentPopover from 'components/AxesPropsPopover/AxesPropsPopover';
 import TooltipContentPopover from 'components/TooltipContentPopover/TooltipContentPopover';
 import { Icon } from 'components/kit';
 import ExportPreview from 'components/ExportPreview';
@@ -142,9 +142,9 @@ function Controls(
         <div>
           <ErrorBoundary>
             <ControlPopover
-              title='Axis properties'
+              title='Axes properties'
               anchor={({ onAnchorClick, opened }) => (
-                <Tooltip title='Axis properties'>
+                <Tooltip title='Axes properties'>
                   <div
                     onClick={onAnchorClick}
                     className={classNames('Controls__anchor', {
@@ -165,10 +165,10 @@ function Controls(
                 <AlignmentPopover
                   selectFormOptions={props.selectFormOptions}
                   alignmentConfig={props.alignmentConfig}
-                  densityType={props.densityType}
+                  axesScaleRange={props.axesScaleRange}
                   onAlignmentMetricChange={props.onAlignmentMetricChange}
                   onAlignmentTypeChange={props.onAlignmentTypeChange}
-                  onDensityTypeChange={props.onDensityTypeChange}
+                  onAxesScaleRangeChange={props.onAxesScaleRangeChange}
                 />
               }
             />

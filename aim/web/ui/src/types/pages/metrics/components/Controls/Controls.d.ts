@@ -8,6 +8,7 @@ import { DensityOptions } from 'config/enums/densityEnum';
 import { ISelectOption } from 'services/models/explorer/createAppModel';
 
 import { IAxesScaleState } from 'types/components/AxesScalePopover/AxesScalePopover';
+import { IAxesScaleRange } from 'types/components/AxesPropsPopover/AxesPropsPopover';
 import {
   IAggregationConfig,
   IAlignmentConfig,
@@ -31,6 +32,7 @@ export interface IControlProps {
   highlightMode: HighlightEnum;
   aggregationConfig: IAggregationConfig;
   axesScaleType: IAxesScaleState;
+  axesScaleRange: IAxesScaleRange;
   smoothingAlgorithm: SmoothingAlgorithmEnum;
   smoothingFactor: number;
   curveInterpolation: CurveEnum;
@@ -49,4 +51,5 @@ export interface IControlProps {
   onZoomChange?: (zoom: Partial<IChartZoom>) => void;
   onAlignmentTypeChange: IMetricProps['onAlignmentTypeChange'];
   onAlignmentMetricChange: IMetricProps['onAlignmentMetricChange'];
+  onAxesScaleRangeChange: IMetricProps['onAxesScaleRangeChange'];
 }

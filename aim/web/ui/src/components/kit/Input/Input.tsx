@@ -44,6 +44,8 @@ function InputWrapper({
   restInputProps = {},
   tooltipPlacement = 'left',
   wrapperClassName = '',
+  requiredNumberValue = true,
+  isValid,
   ...restProps
 }: IInputProps): React.FunctionComponentElement<React.ReactNode> {
   const [isInputValid, setIsInputValid] = React.useState(true);
@@ -90,7 +92,11 @@ function InputWrapper({
   };
 
   const onChangeHandler = (e: React.ChangeEvent<HTMLInputElement>): void => {
-    const newValue = valueTypeConversionFn(e?.target?.value);
+    const newValue = valueTypeConversionFn(
+      e?.target?.value,
+      requiredNumberValue,
+    );
+
     let metadata: any = {};
 
     if (!_.isEmpty(validationPatterns)) {
@@ -120,6 +126,12 @@ function InputWrapper({
   React.useEffect(() => {
     messagesFormatter(errorsMessages);
   }, [errorsMessages]);
+
+  React.useEffect(() => {
+    if (isValid !== undefined) {
+      setIsInputValid(isValid);
+    }
+  }, [isValid]);
 
   React.useEffect(() => {
     isControlled &&
@@ -165,7 +177,6 @@ function InputWrapper({
           <Text size={10} weight={400} tint={70} color='primary'>
             {label}:
           </Text>
-
           {!_.isUndefined(topLabeledIconName) &&
             !_.isUndefined(labelHelperText) && (
               <Tooltip title={labelHelperText} placement='right-end'>

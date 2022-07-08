@@ -38,6 +38,7 @@ import createModel from 'services/models/model';
 import LiveUpdateService from 'services/live-update/examples/LiveUpdateBridge.example';
 import projectsService from 'services/api/projects/projectsService';
 
+import { IAxesScaleRange } from 'types/components/AxesPropsPopover/AxesPropsPopover';
 import { IAxesScaleState } from 'types/components/AxesScalePopover/AxesScalePopover';
 import { ILine } from 'types/components/LineChart/LineChart';
 import { INotification } from 'types/components/NotificationContainer/NotificationContainer';
@@ -184,6 +185,7 @@ import {
   alignByStep,
 } from 'utils/app/alignMetricData';
 import setRequestProgress from 'utils/app/setRequestProgress';
+import onAxesScaleRangeChange from 'utils/app/onAxesScaleRangeChange';
 import { minMaxOfArray } from 'utils/minMaxOfArray';
 import getAdvancedSuggestion from 'utils/getAdvancedSuggestions';
 import { processDurationTime } from 'utils/processDurationTime';
@@ -280,6 +282,9 @@ function createAppModel(appConfig: IAppInitialConfig) {
               axesScaleType: {
                 xAxis: CONTROLS_DEFAULT_CONFIG.metrics.axesScaleType.xAxis,
                 yAxis: CONTROLS_DEFAULT_CONFIG.metrics.axesScaleType.yAxis,
+              },
+              axesScaleRange: {
+                yAxis: CONTROLS_DEFAULT_CONFIG.metrics.axesScaleRange.yAxis,
               },
               curveInterpolation:
                 CONTROLS_DEFAULT_CONFIG.metrics.curveInterpolation,
@@ -2012,6 +2017,9 @@ function createAppModel(appConfig: IAppInitialConfig) {
         },
         onChangeTooltip(tooltip: Partial<IPanelTooltip>): void {
           onChangeTooltip({ tooltip, tooltipData, model, appName });
+        },
+        onAxesScaleRangeChange(range: Partial<IAxesScaleRange>): void {
+          onAxesScaleRangeChange({ range, model, appName });
         },
         onDensityTypeChange(type: DensityOptions): Promise<void> {
           return onDensityTypeChange({ type, model, appName, getMetricsData });

@@ -27,6 +27,9 @@ export const CONTROLS_DEFAULT_CONFIG = {
       xAxis: ScaleEnum.Linear,
       yAxis: ScaleEnum.Linear,
     },
+    axesScaleRange: {
+      yAxis: { min: undefined, max: undefined },
+    },
     alignmentConfig: {
       type: AlignmentOptionsEnum.STEP,
       metric: '',

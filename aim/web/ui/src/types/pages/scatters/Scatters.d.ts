@@ -5,7 +5,6 @@ import { RowHeightSize } from 'config/table/tableConfigs';
 import { ResizeModeEnum } from 'config/enums/tableEnums';
 import { RequestStatusEnum } from 'config/enums/requestStatusEnum';
 
-import { IScatterAppModelState } from 'types/services/models/scatter/scatterAppModel';
 import {
   ISelectConfig,
   ISelectOption,
@@ -31,6 +30,7 @@ import { INotification } from 'types/components/NotificationContainer/Notificati
 import { IProjectParamsMetrics } from 'types/services/models/projects/projectsModel';
 import { ITrendlineOptions } from 'types/services/models/scatter/scatterAppModel';
 import { IColumnsOrder } from 'types/services/models/explorer/createAppModel';
+import { IScatterAppModelState } from 'types/services/models/scatter/scatterAppModel';
 
 import { IRequestProgress } from 'utils/app/setRequestProgress';
 

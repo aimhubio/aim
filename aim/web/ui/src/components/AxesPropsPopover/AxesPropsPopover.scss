@@ -1,0 +1,37 @@
+@use 'src/styles/abstracts' as *;
+
+.AxesPropsPopover {
+  width: 24.375rem;
+  padding: $space-xs;
+  &__subtitle {
+    padding-block: $space-xs;
+    text-transform: uppercase;
+  }
+  &__divider {
+    margin: $space-xs 0;
+  }
+  &__range, &__alignment {
+    padding: $space-xs;
+  }
+  &__range {
+    &__container {
+      display: flex;
+      align-items: center;
+
+      .AxesPropsPopover__subtitle {
+        margin-right: auto;
+      }
+    }
+  }
+
+  .scaleRangeInput {
+    &__min, &__max {
+      display: inline-block;
+      width: 6.875rem;
+    }
+
+    &__min {
+      margin-right: $space-xs;
+    }
+  }
+}

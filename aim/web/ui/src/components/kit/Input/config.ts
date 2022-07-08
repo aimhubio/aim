@@ -22,10 +22,12 @@ const inputSizes = {
   },
 };
 
-const inputTypeConversionFns: { [key: string]: (value: any) => any } = {
-  number: (value: any) => {
+const inputTypeConversionFns: {
+  [key: string]: (value: any, requiredNumberValue?: boolean) => any;
+} = {
+  number: (value: any, requiredNumberValue?: boolean) => {
     const result = parseInt(value);
-    return !isNaN(result) ? result : 0;
+    return !isNaN(result) ? result : requiredNumberValue ? 0 : undefined;
   },
   text: (value: any) => `${value}`,
 };

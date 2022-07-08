@@ -68,16 +68,19 @@
       padding: 8px 16px;
     }
 
+
+    .MuiInputLabel-root {
+      font-size: 14px;
+    }
+
     .MuiInputBase-input {
       font-size: 14px;
       line-height: 16px;
       height: unset;
     }
 
-    &.InputWrapper_swap {
-      .MuiInputLabel-outlined:not(.MuiInputLabel-shrink) {
-        transform: translate(14px, 8px) scale(1);
-      }
+    .MuiInputLabel-outlined:not(.MuiInputLabel-shrink) {
+      transform: translate(14px, 8px) scale(1);
     }
   }
 

@@ -6,6 +6,7 @@ import { DensityOptions } from 'config/enums/densityEnum';
 
 import { AppDataTypeEnum, AppNameEnum } from 'services/models/explorer';
 
+import { IAxesScaleRange } from 'types/components/AxesPropsPopover/AxesPropsPopover';
 import { IAxesScaleState } from 'types/components/AxesScalePopover/AxesScalePopover';
 import {
   IAggregationConfig,
@@ -152,6 +153,7 @@ export interface ILineChartConfig {
   ignoreOutliers: boolean;
   zoom: IChartZoom;
   axesScaleType: IAxesScaleState;
+  axesScaleRange: IAxesScaleRange;
   curveInterpolation: CurveEnum;
   smoothingAlgorithm: SmoothingAlgorithmEnum;
   smoothingFactor: number;

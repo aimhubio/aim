@@ -37,6 +37,7 @@ import { IActivePoint } from 'types/utils/d3/drawHoverAttributes';
 import { IBookmarkFormState } from 'types/components/BookmarkForm/BookmarkForm';
 import { INotification } from 'types/components/NotificationContainer/NotificationContainer';
 import { ILine } from 'types/components/LineChart/LineChart';
+import { IAxesScaleRange } from 'types/components/AxesPropsPopover/AxesPropsPopover';
 import { IColumnsOrder } from 'types/services/models/explorer/createAppModel';
 
 import { SmoothingAlgorithmEnum } from 'utils/smoothingData';
@@ -62,6 +63,7 @@ export interface IMetricProps extends Partial<RouteChildrenProps> {
   densityType: DensityOptions;
   curveInterpolation: CurveEnum;
   axesScaleType: IAxesScaleState;
+  axesScaleRange: IAxesScaleRange;
   smoothingAlgorithm: SmoothingAlgorithmEnum;
   smoothingFactor: number;
   focusedState: IFocusedState;
@@ -96,6 +98,7 @@ export interface IMetricProps extends Partial<RouteChildrenProps> {
   onTableRowHover: (rowKey?: string) => void;
   onTableRowClick: (rowKey?: string) => void;
   onAxesScaleTypeChange: (params: IAxesScaleState) => void;
+  onAxesScaleRangeChange: (range: Partial<IAxesScaleRange>) => void;
   onAggregationConfigChange: (
     aggregationConfig: Partial<IAggregationConfig>,
   ) => void;
