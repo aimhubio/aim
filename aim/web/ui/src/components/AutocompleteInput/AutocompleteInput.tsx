@@ -245,7 +245,8 @@ function AutocompleteInput({
           <div className='AutocompleteInput__errorBar__hint'>
             <Icon name='info-circle-outline' box />
             <Text>
-              If you are having issues, please refer to the{' '}
+              Aim Query Language is pythonic and fairly easy to get used to. If
+              you are having issues, please refer to the{' '}
               <a href={DOCUMENTATIONS.AIM_QL} target='_blank' rel='noreferrer'>
                 docs
               </a>{' '}
