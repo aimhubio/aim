@@ -16,7 +16,7 @@ import exceptionHandler from 'utils/app/exceptionHandler';
 import './SearchBar.scss';
 
 function SearchBar({
-  searchSuggestions,
+  selectFormData,
   isRunsDataLoading,
   searchValue,
   onSearchInputChange,
@@ -65,7 +65,8 @@ function SearchBar({
           <AutocompleteInput
             refObject={autocompleteRef}
             onEnter={handleRunSearch}
-            context={searchSuggestions}
+            error={selectFormData.error}
+            context={selectFormData.suggestions}
             value={searchValue}
             disabled={isDisabled}
           />
