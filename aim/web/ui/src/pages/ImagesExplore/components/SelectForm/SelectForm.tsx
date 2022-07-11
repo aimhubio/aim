@@ -304,7 +304,6 @@ function SelectForm({
             </ErrorBoundary>
           )}
         </div>
-
         <div className='SelectForm__search__container'>
           <Button
             fullWidth
