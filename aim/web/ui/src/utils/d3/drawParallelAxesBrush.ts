@@ -40,6 +40,12 @@ function drawParallelAxesBrush({
     event: d3.D3BrushEvent<d3.BrushSelection>,
     keyOfDimension: string,
   ): void {
+    if (brushRef.current.yScale[keyOfDimension]) {
+      brushRef.current.yScale = {
+        ...attributesRef.current.yScale,
+        ...brushRef.current.yScale,
+      };
+    }
     const extent: d3.BrushSelection | any = event.selection;
     let brushPosition: [number, number] | [string, string] | null = null;
     if (!_.isNil(extent)) {
@@ -185,6 +191,7 @@ function filterDataByBrushedScale({
       value !== null &&
       ((scaleType === 'point' && !domainData?.includes(value)) ||
         (scaleType !== 'point' &&
+          !_.isNil(domainData) &&
           (domainData[0] > value || domainData[1] < value)))
     ) {
       return false;
