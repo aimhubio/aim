@@ -218,7 +218,6 @@ function Table(props) {
             ROW_CELL_SIZE_CONFIG[props.rowHeightMode]?.name ??
             ROW_CELL_SIZE_CONFIG[RowHeightSize.md].name
           }`]: true,
-          TableSelectedMode: !_.isEmpty(props.selectedRows),
         })}
       >
         <div
