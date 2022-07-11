@@ -114,7 +114,6 @@ function MetricsContainer(): React.FunctionComponentElement<React.ReactNode> {
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
-
   return (
     <ErrorBoundary>
       <Metrics
@@ -133,6 +132,7 @@ function MetricsContainer(): React.FunctionComponentElement<React.ReactNode> {
         chartTitleData={metricsData?.chartTitleData!}
         ignoreOutliers={metricsData?.config?.chart?.ignoreOutliers!}
         tableData={metricsData?.tableData!}
+        sameValueColumns={metricsData?.sameValueColumns!}
         tableColumns={metricsData?.tableColumns!}
         aggregatedData={metricsData?.aggregatedData!}
         zoom={metricsData?.config?.chart?.zoom!}
