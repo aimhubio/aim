@@ -1066,6 +1066,7 @@ function createAppModel(appConfig: IAppInitialConfig) {
               metricName: trace.name,
               traceContext: trace.context,
             });
+            const metricValues = new Float64Array(processedValues);
             return createMetricModel({
               ...trace,
               run: createRunModel(_.omit(run, 'traces') as IRun<IMetricTrace>),
@@ -1075,8 +1076,9 @@ function createAppModel(appConfig: IAppInitialConfig) {
               isHidden: configData?.table?.hiddenMetrics!.includes(metricKey),
               x_axis_values,
               x_axis_iters,
+              lastValue: metricValues[metricValues.length - 1],
               data: {
-                values: new Float64Array(processedValues),
+                values: metricValues,
                 steps,
                 epochs,
                 timestamps: timestamps.map((timestamp) =>
@@ -1168,6 +1170,14 @@ function createAppModel(appConfig: IAppInitialConfig) {
           sequenceName: 'metric',
         }),
       ];
+      const sortOptions = [
+        ...groupingSelectOptions,
+        {
+          group: 'metric',
+          label: 'metric.last_value',
+          value: 'lastValue',
+        },
+      ];
 
       tooltipData = getTooltipData({
         processedData: data,
@@ -1228,6 +1238,7 @@ function createAppModel(appConfig: IAppInitialConfig) {
         tableColumns,
         sameValueColumns: tableData.sameValueColumns,
         groupingSelectOptions,
+        sortOptions,
         selectedRows,
       });
     }
@@ -1258,6 +1269,14 @@ function createAppModel(appConfig: IAppInitialConfig) {
           contexts,
           sequenceName: 'metric',
         }),
+      ];
+      const sortOptions = [
+        ...groupingSelectOptions,
+        {
+          group: 'metric',
+          label: 'metric.last_value',
+          value: 'lastValue',
+        },
       ];
       tooltipData = getTooltipData({
         processedData: data,
@@ -1320,6 +1339,7 @@ function createAppModel(appConfig: IAppInitialConfig) {
         tableColumns: tableColumns,
         sameValueColumns: tableData.sameValueColumns,
         groupingSelectOptions,
+        sortOptions,
         selectedRows,
       });
     }

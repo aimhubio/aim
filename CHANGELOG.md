@@ -1,5 +1,11 @@
 # Changelog
 
+## Unreleased
+
+### Enhancements:
+
+- Add ability to sort by the last value of the metric in table (VkoHov)
+
 ## 3.11.2 
 
 ### Enhancements:
