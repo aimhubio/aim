@@ -6,6 +6,7 @@ export interface IIconProps
   extends React.BaseHTMLAttributes<any>,
     Partial<React.ComponentType<BoxProps | any>> {
   name: IconName;
+  box?: boolean;
   className?: string;
   style?: CSSProperties;
   fontSize?: number | string;
@@ -132,6 +133,8 @@ export type IconName =
   | 'color-scale-on'
   | 'text'
   | 'minus'
+  | 'update-time'
   | 'circle-info'
   | 'warning-outline'
-  | 'warning-contained';
+  | 'warning-contained'
+  | 'info-circle-outline';

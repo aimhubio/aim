@@ -16,6 +16,7 @@ export interface State {
   sameValueColumns?: string[];
   selectedRows?: any;
   tooltip?: ITooltip;
+  selectFormData?: any;
 }
 
 export interface IModel<StateType extends Partial<State>> {
