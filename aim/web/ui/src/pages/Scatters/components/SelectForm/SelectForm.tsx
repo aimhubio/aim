@@ -10,7 +10,6 @@ import { ANALYTICS_EVENT_KEYS } from 'config/analytics/analyticsKeysMap';
 
 import scattersAppModel from 'services/models/scatters/scattersAppModel';
 import { trackEvent } from 'services/analytics';
-import { AppNameEnumUpperCase } from 'services/models/explorer';
 
 import { ISelectFormProps } from 'types/pages/scatters/components/SelectForm/SelectForm';
 
@@ -181,7 +180,6 @@ function SelectForm({
           <div className='Scatters__SelectForm__TextField'>
             <AutocompleteInput
               refObject={autocompleteRef}
-              appName={AppNameEnumUpperCase.SCATTERS}
               context={selectFormData?.suggestions}
               error={selectFormData?.error}
               value={selectedOptionsData?.query}

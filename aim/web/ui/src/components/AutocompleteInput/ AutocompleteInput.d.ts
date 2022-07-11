@@ -15,7 +15,6 @@ export interface IAutocompleteInputProps {
   disabled?: boolean;
   value: string | undefined;
   refObject?: React.MutableRefObject<any>;
-  appName?: AppNameEnumUpperCase;
   getEditorValue?: (value: string) => string;
   onEnter?: () => void;
   onChange?: (

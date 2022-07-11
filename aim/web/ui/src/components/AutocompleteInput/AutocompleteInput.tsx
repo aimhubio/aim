@@ -10,8 +10,6 @@ import { Icon, Text } from 'components/kit';
 import { getMonacoConfig } from 'config/monacoConfig/monacoConfig';
 import { DOCUMENTATIONS } from 'config/references';
 
-import { AppNameEnumUpperCase } from 'services/models/explorer';
-
 import { showAutocompletion } from 'utils/showAutocompletion';
 
 import { IAutocompleteInputProps } from './ AutocompleteInput';
@@ -27,7 +25,6 @@ function AutocompleteInput({
   refObject,
   error,
   disabled = false,
-  appName = AppNameEnumUpperCase.METRICS,
   //callback functions
   onEnter,
   onChange,
@@ -249,19 +246,11 @@ function AutocompleteInput({
             <Icon name='info-circle-outline' box />
             <Text>
               Aim Query Language is pythonic and fairly easy to get used to. If
-              you having issue, please refer to the{' '}
-              <a
-                href={DOCUMENTATIONS.EXPLORERS[appName].SEARCH}
-                target='_blank'
-                rel='noreferrer'
-              >
+              you are having issues, please refer to the{' '}
+              <a href={DOCUMENTATIONS.AIM_QL} target='_blank' rel='noreferrer'>
                 docs
               </a>{' '}
-              for more examples or the detailed{' '}
-              <a href={DOCUMENTATIONS.AIM_QL} target='_blank' rel='noreferrer'>
-                spec
-              </a>
-              .
+              for detailed usage guide and more examples.
             </Text>
           </div>
         </div>
