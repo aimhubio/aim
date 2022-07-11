@@ -4,12 +4,12 @@ import { IGroupingConfig } from 'services/models/explorer/createAppModel';
 
 import { IMetricProps } from 'types/pages/metrics/Metrics';
 import {
-  GroupNameType,
+  GroupNameEnum,
   IGroupingSelectOption,
 } from 'types/services/models/metrics/metricsAppModel';
 
 export interface IGroupingPopoverProps {
-  groupName: GroupNameType;
+  groupName: GroupNameEnum;
   groupingData: IGroupingConfig;
   advancedComponent?: React.FunctionComponentElement<React.ReactNode> | null;
   groupingSelectOptions: IGroupingSelectOption[];

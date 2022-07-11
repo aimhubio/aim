@@ -55,7 +55,7 @@ function MetricsContainer(): React.FunctionComponentElement<React.ReactNode> {
 
   React.useEffect(() => {
     if (tableRef.current && chartPanelRef.current) {
-      setComponentRefs<IMetricAppModelState>({
+      setComponentRefs({
         model: metricAppModel,
         refElement: {
           tableRef,
@@ -143,7 +143,7 @@ function MetricsContainer(): React.FunctionComponentElement<React.ReactNode> {
         smoothingFactor={metricsData?.config?.chart?.smoothingFactor!}
         focusedState={metricsData?.config?.chart?.focusedState!}
         notifyData={metricsData?.notifyData!}
-        tooltip={metricsData?.config?.chart?.tooltip!}
+        tooltip={metricsData?.tooltip!}
         aggregationConfig={metricsData?.config?.chart?.aggregationConfig!}
         alignmentConfig={metricsData?.config?.chart?.alignmentConfig!}
         densityType={metricsData?.config?.chart?.densityType!}

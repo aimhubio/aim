@@ -9,7 +9,7 @@ import { getMonacoConfig } from 'config/monacoConfig/monacoConfig';
 
 import { showAutocompletion } from 'utils/showAutocompletion';
 
-import { IAutocompleteInputProps } from './ AutocompleteInput';
+import { IAutocompleteInputProps } from './AutocompleteInput.d';
 
 import './AutocompleteInput.scss';
 
