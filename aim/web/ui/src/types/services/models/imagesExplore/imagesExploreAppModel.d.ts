@@ -87,6 +87,8 @@ export interface IImagesExploreAppModelState {
   selectFormData: {
     options?: ISelectOption[];
     suggestions: string[];
+    error: ISyntaxErrorDetails;
+    advancedError: ISyntaxErrorDetails;
   };
   selectedRows: { [key: string]: any };
   liveUpdateConfig?: {

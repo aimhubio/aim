@@ -11,6 +11,8 @@ import {
   IGroupingConfig,
   IColumnsOrder,
 } from 'types/services/models/explorer/createAppModel';
+
+import { IScatterAppModelState } from 'types/services/models/scatter/scatterAppModel';
 import { ITableRef } from 'types/components/Table/Table';
 import {
   GroupNameEnum,
@@ -26,7 +28,10 @@ import { ITableColumn } from 'types/components/TableColumns/TableColumns';
 import { IChartPanelRef } from 'types/components/ChartPanel/ChartPanel';
 import { IActivePoint } from 'types/utils/d3/drawHoverAttributes';
 import { IBookmarkFormState } from 'types/components/BookmarkForm/BookmarkForm';
-import { INotification } from 'types/components/NotificationContainer/NotificationContainer';
+import {
+  INotification,
+  ISyntaxErrorDetails,
+} from 'types/components/NotificationContainer/NotificationContainer';
 import { IProjectParamsMetrics } from 'types/services/models/projects/projectsModel';
 import { ITrendlineOptions } from 'types/services/models/scatter/scatterAppModel';
 
@@ -58,7 +63,11 @@ export interface IScattersProps extends Partial<RouteChildrenProps> {
   groupingSelectOptions: IGroupingSelectOption[];
   projectsDataMetrics: IProjectParamsMetrics['metrics'];
   resizeMode: ResizeModeEnum;
-  selectFormData: { options: ISelectOption[]; suggestions: string[] };
+  selectFormData: {
+    options: ISelectOption[];
+    suggestions: string[];
+    error: ISyntaxErrorDetails;
+  };
   requestStatus: RequestStatusEnum;
   requestProgress: IRequestProgress;
   trendlineOptions: ITrendlineOptions;

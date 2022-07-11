@@ -76,7 +76,7 @@ function RunsContainer(): React.FunctionComponentElement<React.ReactNode> {
         hideSystemMetrics={runsData?.config?.table?.hideSystemMetrics}
         selectedRows={runsData?.selectedRows}
         query={runsData?.config?.select?.query}
-        searchSuggestions={runsData?.selectFormData?.suggestions!}
+        selectFormData={runsData?.selectFormData!}
         columnsWidths={runsData?.config?.table.columnsWidths}
         onExportTableData={runsAppModel.onExportTableData}
         updateColumnsWidths={runsAppModel.updateColumnsWidths}
