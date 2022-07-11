@@ -62,6 +62,7 @@ export interface IScattersProps extends Partial<RouteChildrenProps> {
   requestStatus: RequestStatusEnum;
   requestProgress: IRequestProgress;
   trendlineOptions: ITrendlineOptions;
+  sameValueColumns?: string[] | [];
   selectedRows: { [key: string]: any };
   columnsOrder: IColumnsOrder;
   onChangeTooltip: (tooltip: Partial<ITooltip>) => void;
