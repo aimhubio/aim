@@ -13,4 +13,5 @@ export interface IAxesPropsPopoverProps {
 
 export interface IAxesScaleRange {
   yAxis: { min?: number; max?: number };
+  xAxis: { min?: number; max?: number };
 }

@@ -43,6 +43,7 @@ function Metrics(
     return (props.lineChartData || []).map(
       (chartData: ILine[], index: number) => ({
         axesScaleType: props.axesScaleType,
+        axesScaleRange: props.axesScaleRange,
         curveInterpolation: props.curveInterpolation,
         ignoreOutliers: props.ignoreOutliers,
         highlightMode: props.highlightMode,
@@ -68,6 +69,7 @@ function Metrics(
     props.aggregationConfig,
     props.alignmentConfig,
     props.onZoomChange,
+    props.axesScaleRange,
   ]);
 
   return (

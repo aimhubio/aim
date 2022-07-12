@@ -44,10 +44,12 @@ function InputWrapper({
   restInputProps = {},
   tooltipPlacement = 'left',
   wrapperClassName = '',
-  requiredNumberValue = true,
+  isRequiredNumberValue = true,
+  isNumberValueFloat = false,
   isValid,
   ...restProps
 }: IInputProps): React.FunctionComponentElement<React.ReactNode> {
+  const [inputValue, setInputValue] = React.useState();
   const [isInputValid, setIsInputValid] = React.useState(true);
   const [errorsMessages, setErrorsMessages] = React.useState<IMetadataMessages>(
     [],
@@ -92,10 +94,13 @@ function InputWrapper({
   };
 
   const onChangeHandler = (e: React.ChangeEvent<HTMLInputElement>): void => {
-    const newValue = valueTypeConversionFn(
-      e?.target?.value,
-      requiredNumberValue,
-    );
+    const newValue = valueTypeConversionFn({
+      value: e?.target?.value,
+      isRequiredNumberValue,
+      isNumberValueFloat,
+    });
+
+    setInputValue(newValue);
 
     let metadata: any = {};
 
@@ -193,7 +198,7 @@ function InputWrapper({
       >
         <TextField
           inputProps={{ 'data-testid': 'inputWrapper', ...restInputProps }}
-          value={value}
+          value={_.isUndefined(inputValue) ? '' : inputValue}
           onChange={onChangeHandler}
           type={type}
           error={!isInputValid}

@@ -18,6 +18,9 @@
       display: flex;
       align-items: center;
 
+      &.yAxis {
+        margin-top: $space-sm;
+      }
       .AxesPropsPopover__subtitle {
         margin-right: auto;
       }
@@ -32,6 +35,21 @@
 
     &__min {
       margin-right: $space-xs;
+    }
+  }
+
+  &__autocomplete__popper {
+    .MuiAutocomplete-groupLabel {
+      color: $text-color-50;
+      font-size: $text-sm;
+      font-weight: 500;
+      border-top: $border-separator;
+    }
+
+    .MuiAutocomplete-option[aria-selected="true"] {
+      .SelectDropdown__option__label {
+        color: $primary-color;
+      }
     }
   }
 }

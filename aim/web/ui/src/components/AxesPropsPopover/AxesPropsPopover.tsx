@@ -11,7 +11,7 @@ import { IAxesPropsPopoverProps } from 'types/components/AxesPropsPopover/AxesPr
 import { isSystemMetric } from 'utils/isSystemMetric';
 import { AlignmentOptionsEnum } from 'utils/d3';
 
-import { ISelectDropdownOption } from '../kit/SelectDropdown';
+import { ISelectDropdownOption as ISelectOption } from '../kit/SelectDropdown';
 
 import './AxesPropsPopover.scss';
 
@@ -50,9 +50,17 @@ function AxesPropsPopover({
     min: true,
     max: true,
   });
+  const [xScaleRange, setXScaleRange] = React.useState<{
+    min?: number;
+    max?: number;
+  }>({});
+  const [isXScaleRangeValid, setIsXScaleRangeValid] = React.useState({
+    min: true,
+    max: true,
+  });
 
   const handleAlignmentChange = React.useCallback(
-    (option: ISelectDropdownOption): void => {
+    (option: ISelectOption): void => {
       if (option) {
         if (option.group === 'METRIC') {
           onAlignmentMetricChange(option.value);
@@ -64,7 +72,7 @@ function AxesPropsPopover({
     [onAlignmentMetricChange, onAlignmentTypeChange],
   );
 
-  const alignmentOptions = React.useMemo(() => {
+  const alignmentOptions: ISelectOption[] = React.useMemo(() => {
     let metricOptions: { value: string; label: string; group: string }[] = [];
     if (selectFormOptions) {
       for (let option of selectFormOptions) {
@@ -91,32 +99,52 @@ function AxesPropsPopover({
   }, [alignmentConfig]);
 
   const onScaleRangeChange = React.useCallback(
-    (key: string, newValue: number, metadata: any = { isValid: true }) => {
-      setYScaleRange((prev) => ({
+    (
+      axisType: 'x' | 'y',
+      key: string,
+      newValue: number,
+      metadata: any = { isValid: true },
+    ) => {
+      const axisRelated = {
+        x: {
+          scaleRange: xScaleRange,
+          setScaleRange: setXScaleRange,
+          setIsScaleRangeValid: setIsXScaleRangeValid,
+          stateKey: 'xAxis',
+        },
+        y: {
+          scaleRange: yScaleRange,
+          setScaleRange: setYScaleRange,
+          setIsScaleRangeValid: setIsYScaleRangeValid,
+          stateKey: 'yAxis',
+        },
+      };
+      const { setScaleRange, setIsScaleRangeValid, stateKey, scaleRange } =
+        axisRelated[axisType];
+
+      setScaleRange((prev) => ({
         ...prev,
         [key]: newValue,
       }));
-
-      setIsYScaleRangeValid({
+      setIsScaleRangeValid({
         min: true,
         max: true,
         [key]: metadata.isValid,
       });
 
       if (metadata.isValid) {
-        const debouncedScaleRangeChange = _.debounce(
-          onAxesScaleRangeChange,
-          1000,
-        );
-        debouncedScaleRangeChange({
-          yAxis: {
-            ...yScaleRange,
-            [key]: newValue,
-          },
+        onAxesScaleRangeChange({
+          [stateKey]: { ...scaleRange, [key]: newValue },
         });
       }
     },
-    [onAxesScaleRangeChange, yScaleRange, setIsYScaleRangeValid],
+    [
+      xScaleRange,
+      yScaleRange,
+      setXScaleRange,
+      setYScaleRange,
+      onAxesScaleRangeChange,
+    ],
   );
 
   const validationPatterns = React.useCallback(
@@ -139,7 +167,13 @@ function AxesPropsPopover({
     setYScaleRange((state) =>
       _.isEmpty(state) ? axesScaleRange.yAxis : state,
     );
-  }, [axesScaleRange, setYScaleRange]);
+  }, [axesScaleRange.yAxis, setYScaleRange]);
+
+  React.useEffect(() => {
+    setXScaleRange((state) =>
+      _.isEmpty(state) ? axesScaleRange.xAxis : state,
+    );
+  }, [axesScaleRange.xAxis, setXScaleRange]);
 
   return (
     <ErrorBoundary>
@@ -149,9 +183,13 @@ function AxesPropsPopover({
             X AXIS ALIGNMENT:
           </Text>
           <SelectDropdown
-            options={alignmentOptions}
+            selectOptions={alignmentOptions}
             selected={selected}
             handleSelect={handleAlignmentChange}
+            classes={{
+              popper: 'AxesPropsPopover__autocomplete__popper',
+            }}
+            ListboxProps={{ style: { height: 253 } }}
           />
         </div>
         <Divider className='AxesPropsPopover__divider' />
@@ -159,12 +197,57 @@ function AxesPropsPopover({
           <Text component='p' tint={50} className='AxesPropsPopover__subtitle'>
             SELECT RANGE:
           </Text>
-          <div className='AxesPropsPopover__range__container'>
+          <div className='AxesPropsPopover__range__container xAxis'>
+            <Text size={14} className='AxesPropsPopover__subtitle'>
+              X-axis range
+            </Text>
+            <InputWrapper
+              key='x-min'
+              label='Min'
+              type='number'
+              wrapperClassName='scaleRangeInput__min'
+              value={xScaleRange.min}
+              inputProps={{ step: 2 }}
+              showMessageByTooltip
+              tooltipPlacement='bottom'
+              isRequiredNumberValue={false}
+              isNumberValueFloat
+              onChange={(e, value, metadata) => {
+                onScaleRangeChange('x', 'min', value, metadata);
+              }}
+              validationPatterns={validationPatterns({
+                min: xScaleRange.min,
+                max: xScaleRange.max,
+              })}
+              isValid={isXScaleRangeValid.min}
+            />
+            <InputWrapper
+              key='x-max'
+              label='Max'
+              type='number'
+              wrapperClassName='scaleRangeInput__max'
+              value={xScaleRange.max}
+              inputProps={{ step: 2 }}
+              showMessageByTooltip
+              tooltipPlacement='bottom'
+              isRequiredNumberValue={false}
+              isNumberValueFloat
+              onChange={(e, value, metadata) => {
+                onScaleRangeChange('x', 'max', value, metadata);
+              }}
+              validationPatterns={validationPatterns({
+                min: xScaleRange.min,
+                max: xScaleRange.max,
+              })}
+              isValid={isXScaleRangeValid.max}
+            />
+          </div>
+          <div className='AxesPropsPopover__range__container yAxis'>
             <Text size={14} className='AxesPropsPopover__subtitle'>
               Y-axis range
             </Text>
             <InputWrapper
-              key='min'
+              key='y-min'
               label='Min'
               type='number'
               wrapperClassName='scaleRangeInput__min'
@@ -172,9 +255,10 @@ function AxesPropsPopover({
               inputProps={{ step: 2 }}
               showMessageByTooltip
               tooltipPlacement='bottom'
-              requiredNumberValue={false}
+              isRequiredNumberValue={false}
+              isNumberValueFloat
               onChange={(e, value, metadata) => {
-                onScaleRangeChange('min', value, metadata);
+                onScaleRangeChange('y', 'min', value, metadata);
               }}
               validationPatterns={validationPatterns({
                 min: yScaleRange.min,
@@ -183,7 +267,7 @@ function AxesPropsPopover({
               isValid={isYScaleRangeValid.min}
             />
             <InputWrapper
-              key='max'
+              key='y-max'
               label='Max'
               type='number'
               wrapperClassName='scaleRangeInput__max'
@@ -191,9 +275,10 @@ function AxesPropsPopover({
               inputProps={{ step: 2 }}
               showMessageByTooltip
               tooltipPlacement='bottom'
-              requiredNumberValue={false}
+              isRequiredNumberValue={false}
+              isNumberValueFloat
               onChange={(e, value, metadata) => {
-                onScaleRangeChange('max', value, metadata);
+                onScaleRangeChange('y', 'max', value, metadata);
               }}
               validationPatterns={validationPatterns({
                 min: yScaleRange.min,

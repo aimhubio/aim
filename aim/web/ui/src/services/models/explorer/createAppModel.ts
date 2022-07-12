@@ -285,6 +285,7 @@ function createAppModel(appConfig: IAppInitialConfig) {
               },
               axesScaleRange: {
                 yAxis: CONTROLS_DEFAULT_CONFIG.metrics.axesScaleRange.yAxis,
+                xAxis: CONTROLS_DEFAULT_CONFIG.metrics.axesScaleRange.xAxis,
               },
               curveInterpolation:
                 CONTROLS_DEFAULT_CONFIG.metrics.curveInterpolation,

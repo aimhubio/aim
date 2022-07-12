@@ -6,14 +6,14 @@ import { Autocomplete, AutocompleteRenderInputParams } from '@material-ui/lab';
 import { Text } from 'components/kit';
 
 import {
-  ISelectDropdownOption,
+  ISelectDropdownOption as ISelectOption,
   ISelectDropdownProps,
 } from './SelectDropdown.d';
 
 import './SelectDropdown.scss';
 
 /**
- * @property {ISelectDropdownOption[]} options - options for select dropdown
+ * @property {ISelectDropdownOption[]} selectOptions - options for select dropdown
  * @property {Function} handleSelect - handle selected option
  * @property {string | undefined} selected - controlled select dropdown (optional)
  * @property {AutocompleteProps} rest - rest props for Autocomplete component
@@ -21,13 +21,12 @@ import './SelectDropdown.scss';
  */
 
 function SelectDropdown({
-  options = [],
+  selectOptions = [],
   handleSelect,
   selected,
   ...rest
-}: ISelectDropdownProps): React.FunctionComponentElement<React.ReactNode> {
-  const [selectedOption, setSelectedOption] =
-    React.useState<ISelectDropdownOption>();
+}: ISelectDropdownProps<ISelectOption>): React.FunctionComponentElement<React.ReactNode> {
+  const [selectedOption, setSelectedOption] = React.useState<ISelectOption>();
   const [searchValue, setSearchValue] = React.useState<string>();
 
   // ****** memoized functions
@@ -38,18 +37,16 @@ function SelectDropdown({
           {...params}
           inputProps={{
             ...params.inputProps,
-            defaultValue: selectedOption?.label,
             value:
               searchValue ||
-              (searchValue === '' ? '' : selectedOption?.label) ||
-              undefined,
+              (searchValue === '' ? '' : selectedOption?.label || ''),
             onChange: (e: React.ChangeEvent<HTMLInputElement>) => {
               setSearchValue(e.target.value);
             },
             onBlur: (event) => {
               const { onBlur } = params.inputProps as { onBlur: Function };
               onBlur?.(event);
-              setSearchValue(selectedOption?.label || undefined);
+              setSearchValue(selectedOption?.label);
             },
           }}
           className='TextField__OutLined__Small'
@@ -62,7 +59,7 @@ function SelectDropdown({
   );
 
   const renderOption = React.useCallback(
-    (option: ISelectDropdownOption): React.ReactNode => {
+    (option: ISelectOption): React.ReactNode => {
       return (
         <div className='SelectDropdown__option'>
           <Text className='SelectDropdown__option__label' size={14}>
@@ -75,7 +72,7 @@ function SelectDropdown({
   );
 
   const handleOptionChange = React.useCallback(
-    (e: React.ChangeEvent<{}>, option: ISelectDropdownOption) => {
+    (e: React.ChangeEvent<{}>, option: ISelectOption) => {
       handleSelect(option);
       setSelectedOption(option);
       setSearchValue(undefined);
@@ -86,14 +83,14 @@ function SelectDropdown({
   // ****** hooks
   React.useEffect(() => {
     if (selected) {
-      const controlledSelectedOption = options.find(
-        (option) => option.value === selected,
+      const controlledSelectedOption = selectOptions.find(
+        (option: ISelectOption) => option.value === selected,
       );
       if (controlledSelectedOption) {
         setSelectedOption(controlledSelectedOption);
       }
     }
-  }, [selected, options]);
+  }, [selected, selectOptions]);
 
   // ****** memoized data
   const optionsToRender = React.useMemo(() => {
@@ -102,32 +99,36 @@ function SelectDropdown({
       searchValue !== selectedOption?.label
     ) {
       const searchKey = searchValue?.toLowerCase() || '';
-      return options.filter((item) => {
+      return selectOptions.filter((item: ISelectOption) => {
         return item.label.toLowerCase().indexOf(searchKey) !== -1;
       });
     }
-    return options;
-  }, [options, searchValue, selectedOption]);
+    return selectOptions;
+  }, [selectOptions, searchValue, selectedOption]);
 
   return (
     <div className='SelectDropdown'>
       <Autocomplete
-        {...rest}
-        className='SelectDropdown__container'
         fullWidth
         size='small'
         openOnFocus
         disableCloseOnSelect
         disableClearable
         options={optionsToRender}
-        value={selectedOption || (options.length ? options[0] : undefined)}
+        value={
+          selectedOption ||
+          (selectOptions.length ? selectOptions[0] : undefined)
+        }
         onChange={handleOptionChange}
-        groupBy={(option) => option.group || ''}
-        getOptionLabel={(option) => option.label}
-        getOptionSelected={(option, value) => option.value === value.value}
+        groupBy={(option: ISelectOption) => option.group || ''}
+        getOptionLabel={(option: ISelectOption) => option.label}
+        getOptionSelected={(option: ISelectOption, value) =>
+          option.value === value.value
+        }
         renderInput={renderInput}
         renderOption={renderOption}
         ListboxProps={{ style: { height: 253 } }}
+        {...rest}
       />
     </div>
   );
@@ -135,4 +136,4 @@ function SelectDropdown({
 
 SelectDropdown.displayName = 'SelectDropdown';
 
-export default React.memo<ISelectDropdownProps>(SelectDropdown);
+export default React.memo<ISelectDropdownProps<ISelectOption>>(SelectDropdown);

@@ -23,13 +23,21 @@ const inputSizes = {
 };
 
 const inputTypeConversionFns: {
-  [key: string]: (value: any, requiredNumberValue?: boolean) => any;
+  [key: string]: ({
+    value,
+    isRequiredNumberValue,
+    isNumberValueFloat,
+  }: {
+    value: any;
+    isRequiredNumberValue?: boolean;
+    isNumberValueFloat?: boolean;
+  }) => any;
 } = {
-  number: (value: any, requiredNumberValue?: boolean) => {
-    const result = parseInt(value);
-    return !isNaN(result) ? result : requiredNumberValue ? 0 : undefined;
+  number: ({ value, isRequiredNumberValue, isNumberValueFloat }) => {
+    const result = isNumberValueFloat ? parseFloat(value) : parseInt(value);
+    return !isNaN(result) ? result : isRequiredNumberValue ? 0 : undefined;
   },
-  text: (value: any) => `${value}`,
+  text: ({ value }) => `${value}`,
 };
 
 export { labelAppearances, inputSizes, inputTypeConversionFns };

@@ -1,13 +1,18 @@
-import { AutocompleteProps } from '@material-ui/lab/Autocomplete/Autocomplete';
-
-export interface ISelectDropdownProps extends AutocompleteProps {
-  options: ISelectDropdownOption[];
-  handleSelect: (option: ISelectDropdownOption) => void;
-  selected?: ISelectDropdownOption['value'];
-}
+import AutocompleteProps from '@material-ui/lab/Autocomplete/Autocomplete';
+import { UseAutocompleteProps } from '@material-ui/lab';
 
 export interface ISelectDropdownOption {
   value: string;
   label: string;
   group?: string;
 }
+
+export type ISelectDropdownProps<T> = Omit<
+  AutocompleteProps<T>,
+  'ListboxProps'
+> &
+  UseAutocompleteProps<T> & {
+    selectOptions: T[];
+    handleSelect: (option: T) => void;
+    selected?: T['value'];
+  };

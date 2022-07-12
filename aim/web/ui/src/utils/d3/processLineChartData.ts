@@ -16,15 +16,18 @@ import { removeOutliers } from 'utils/removeOutliers';
 import { toQuadrupleData, toTupleData } from '../toFormatData';
 import getRoundedValue from '../roundValue';
 
-import { getAxisScale, ScaleEnum } from './index';
+import { getAxisScale, MIN_LOG_VALUE, ScaleEnum } from './index';
 
 function processLineChartData({
   data,
   ignoreOutliers = false,
   visBoxRef,
   axesScaleType,
+  axesScaleRange,
   aggregatedData,
   aggregationConfig,
+  unableToDrawConditions,
+  attributesRef,
 }: IProcessLineChartDataArgs): IProcessLineChartData {
   let allXValues: number[] = [];
   let allYValues: number[] = [];
@@ -34,7 +37,14 @@ function processLineChartData({
 
   for (let i = 0; i < data.length; i++) {
     const line: ILine = data[i];
-    const { xValues, yValues } = line.data;
+    let { xValues, yValues } = line.data;
+
+    if (axesScaleType.yAxis === ScaleEnum.Log) {
+      yValues = yValues.map((val) => (val <= 0 ? MIN_LOG_VALUE : val));
+    }
+    if (axesScaleType.xAxis === ScaleEnum.Log) {
+      xValues = xValues.map((val) => (val <= 0 ? MIN_LOG_VALUE : val));
+    }
 
     const tupleData = toTupleData(xValues, yValues, (x, y) => {
       // supposed received x values are sorted by ascending order (y values are sorted by x)
@@ -55,6 +65,11 @@ function processLineChartData({
     });
   }
 
+  unableToDrawConditions.unshift({
+    condition: !allXValues.length || !allYValues.length,
+    text: 'Unable to draw lines with the current config. Please adjust the controls.',
+  });
+
   if (aggregationConfig?.isApplied && aggregatedData) {
     for (let i = 0; i < aggregatedData.length; i++) {
       const aggrData = aggregatedData[i];
@@ -74,10 +89,49 @@ function processLineChartData({
     }
   }
 
-  let [yMin = 0, yMax = 0] = minMaxOfArray(
+  let [yMin, yMax] = minMaxOfArray(
     ignoreOutliers ? yBounds : _.uniq(allYValues),
   );
   let [xMin, xMax] = minMaxOfArray(_.uniq(allXValues));
+
+  // add y-axis scale range manually
+  if (axesScaleRange?.yAxis && !_.isEmpty(axesScaleRange?.yAxis)) {
+    if (axesScaleRange.yAxis.min !== undefined) {
+      yMin =
+        axesScaleType.yAxis === ScaleEnum.Log && axesScaleRange.yAxis.min <= 0
+          ? MIN_LOG_VALUE
+          : axesScaleRange.yAxis.min;
+    }
+    if (axesScaleRange.yAxis.max !== undefined) {
+      yMax =
+        axesScaleType.yAxis === ScaleEnum.Log && axesScaleRange.yAxis.max <= 0
+          ? MIN_LOG_VALUE
+          : axesScaleRange.yAxis.max;
+    }
+    unableToDrawConditions.unshift({
+      condition: yMin > yMax,
+      text: 'Unable to draw lines with the current y-axis range. Please adjust the y-axis range.',
+    });
+  }
+  // add x-axis scale range manually
+  if (axesScaleRange?.xAxis && !_.isEmpty(axesScaleRange?.xAxis)) {
+    if (axesScaleRange.xAxis.min !== undefined) {
+      xMin =
+        axesScaleType.xAxis === ScaleEnum.Log && axesScaleRange.xAxis.min <= 0
+          ? MIN_LOG_VALUE
+          : axesScaleRange.xAxis.min;
+    }
+    if (axesScaleRange.xAxis.max !== undefined) {
+      xMax =
+        axesScaleType.xAxis === ScaleEnum.Log && axesScaleRange.xAxis.max <= 0
+          ? MIN_LOG_VALUE
+          : axesScaleRange.xAxis.max;
+    }
+    unableToDrawConditions.unshift({
+      condition: xMin > xMax,
+      text: 'Unable to draw lines with the current x-axis range. Please adjust the x-axis range.',
+    });
+  }
 
   // ADD margin for y-dimension
   const diff = yMax - yMin;
@@ -85,7 +139,9 @@ function processLineChartData({
   const yMargin = yMax !== yMin ? diff * portion : 1;
   yMax += yMargin;
   yMin -=
-    axesScaleType.yAxis === ScaleEnum.Log && yMin <= yMargin ? 0 : yMargin;
+    axesScaleType.yAxis === ScaleEnum.Log && yMin <= yMargin
+      ? MIN_LOG_VALUE
+      : yMargin;
 
   const { width, height, margin } = visBoxRef.current;
 
@@ -209,6 +265,9 @@ function processLineChartData({
     });
   }
 
+  attributesRef.current.xScale = xScale;
+  attributesRef.current.yScale = yScale;
+
   return {
     min: { x: xMin, y: yMin },
     max: { x: xMax, y: yMax },
@@ -216,8 +275,6 @@ function processLineChartData({
     processedAggrData,
     allXValues: _.uniq(allXValues),
     allYValues: _.uniq(allYValues),
-    xScale,
-    yScale,
   };
 }
 
