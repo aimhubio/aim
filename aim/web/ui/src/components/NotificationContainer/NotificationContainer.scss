@@ -33,7 +33,7 @@
   }
   &__contentBox {
     &__severity {
-      font-weight: 600;
+      font-weight: $font-600;
       font-size: $text-md;
       text-transform: capitalize;
       color: $pico;
