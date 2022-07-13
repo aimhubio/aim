@@ -14,7 +14,7 @@ import ErrorBoundary from 'components/ErrorBoundary/ErrorBoundary';
 import { ResizeModeEnum } from 'config/enums/tableEnums';
 import {
   RowHeightSize,
-  VISUALIZATION_ELEMENT_TYPE,
+  VisualizationElementEnum,
 } from 'config/table/tableConfigs';
 import GroupingPopovers, {
   GroupNameEnum,
@@ -225,7 +225,7 @@ function Scatters(
                           focusedState={props.focusedState}
                           onRowsVisibilityChange={props.onRowsVisibilityChange}
                           visualizationElementType={
-                            VISUALIZATION_ELEMENT_TYPE.DOTS
+                            VisualizationElementEnum.DOTS
                           }
                           multiSelect
                         />

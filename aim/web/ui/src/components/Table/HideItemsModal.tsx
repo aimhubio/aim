@@ -15,7 +15,7 @@ import { processDurationTime } from 'utils/processDurationTime';
 function HideItemsModal({
   opened,
   onClose,
-  selectedRows,
+  selectedRows = {},
   hideMode = false,
   onRowSelect,
   onRowsVisibilityChange,
@@ -35,7 +35,6 @@ function HideItemsModal({
   };
   onRowsVisibilityChange: (keys: string[]) => void;
 }): React.FunctionComponentElement<React.ReactNode> {
-  const [dateNow, setDateNow] = React.useState(Date.now());
   const tableRef = React.useRef<any>({});
   const disabledTableRef = React.useRef<any>({});
   const actionText = hideMode ? 'hide' : 'show';
@@ -136,16 +135,11 @@ function HideItemsModal({
     },
   ];
 
-  React.useEffect(() => {
-    setDateNow(Date.now());
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
-
   const { data, disabledData } = React.useMemo(() => {
     let hideList: any[] = [];
     let showList: any[] = [];
     const runHashList: string[] = [];
-    Object.values(selectedRows || {}).forEach((selectedRow: any) => {
+    Object.values(selectedRows).forEach((selectedRow: any) => {
       runHashList.push(selectedRow.runHash);
       const rowData = {
         ...selectedRow,
@@ -154,7 +148,7 @@ function HideItemsModal({
           DATE_WITH_SECONDS,
         )} • ${processDurationTime(
           selectedRow?.creation_time * 1000,
-          selectedRow?.end_time ? selectedRow?.end_time * 1000 : dateNow,
+          selectedRow?.end_time ? selectedRow?.end_time * 1000 : Date.now(),
         )}`,
         experiment: selectedRow?.experiment?.name ?? 'default',
         name: selectedRow?.name ?? '-',

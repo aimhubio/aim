@@ -15,7 +15,7 @@ import pageTitlesEnum from 'config/pageTitles/pageTitles';
 import { ResizeModeEnum } from 'config/enums/tableEnums';
 import {
   RowHeightSize,
-  VISUALIZATION_ELEMENT_TYPE,
+  VisualizationElementEnum,
 } from 'config/table/tableConfigs';
 import GroupingPopovers, {
   GroupNameEnum,
@@ -274,7 +274,7 @@ function Metrics(
                           onRowsVisibilityChange={props.onRowsVisibilityChange}
                           focusedState={props.focusedState}
                           visualizationElementType={
-                            VISUALIZATION_ELEMENT_TYPE.LINES
+                            VisualizationElementEnum.LINES
                           }
                         />
                       </ErrorBoundary>

@@ -15,7 +15,7 @@ import { processDurationTime } from 'utils/processDurationTime';
 function ArchiveModal({
   opened,
   onClose,
-  selectedRows,
+  selectedRows = {},
   archiveMode,
   onRowSelect,
   archiveRuns,
@@ -35,7 +35,6 @@ function ArchiveModal({
   };
   archiveRuns: (ids: string[], archived: boolean) => void;
 }): React.FunctionComponentElement<React.ReactNode> {
-  const [dateNow, setDateNow] = React.useState(Date.now());
   const tableRef = React.useRef<any>({});
   const disabledTableRef = React.useRef<any>({});
   const archivedText = archiveMode ? 'archive' : 'unarchive';
@@ -139,7 +138,6 @@ function ArchiveModal({
   ];
 
   React.useEffect(() => {
-    setDateNow(Date.now());
     return () => {
       runsArchiveRequest?.abort();
     };
@@ -150,7 +148,7 @@ function ArchiveModal({
     let archivedList: any[] = [];
     let unarchivedList: any[] = [];
     const runHashList: string[] = [];
-    Object.values(selectedRows || {}).forEach((selectedRow: any) => {
+    Object.values(selectedRows).forEach((selectedRow: any) => {
       if (!runHashList.includes(selectedRow.runHash)) {
         runHashList.push(selectedRow.runHash);
         const rowData = {
@@ -159,7 +157,7 @@ function ArchiveModal({
             DATE_WITH_SECONDS,
           )} • ${processDurationTime(
             selectedRow?.creation_time * 1000,
-            selectedRow?.end_time ? selectedRow?.end_time * 1000 : dateNow,
+            selectedRow?.end_time ? selectedRow?.end_time * 1000 : Date.now(),
           )}`,
           experiment: selectedRow?.experiment?.name ?? 'default',
           name: selectedRow?.name ?? '-',
@@ -190,7 +188,7 @@ function ArchiveModal({
       data: archiveMode ? archivedList : unarchivedList,
       disabledData: !archiveMode ? archivedList : unarchivedList,
     };
-  }, [selectedRows, archiveMode, dateNow]);
+  }, [selectedRows, archiveMode]);
 
   function onArchive() {
     const ids = data.map((item: any) => item.runHash);

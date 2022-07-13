@@ -15,7 +15,7 @@ import { processDurationTime } from 'utils/processDurationTime';
 function DeleteModal({
   opened,
   onClose,
-  selectedRows,
+  selectedRows = {},
   onRowSelect,
   deleteRuns,
 }: {
@@ -33,7 +33,6 @@ function DeleteModal({
   };
   deleteRuns: (ids: string[]) => void;
 }): React.FunctionComponentElement<React.ReactNode> {
-  const [dateNow, setDateNow] = React.useState(Date.now());
   const tableRef = React.useRef<any>({});
   const disabledTableRef = React.useRef<any>({});
   let runsDeleteRequest: any = null;
@@ -138,7 +137,6 @@ function DeleteModal({
   ];
 
   React.useEffect(() => {
-    setDateNow(Date.now());
     return () => {
       runsDeleteRequest?.abort();
     };
@@ -149,7 +147,7 @@ function DeleteModal({
     let finishedList: any[] = [];
     let inProgressList: any[] = [];
     const runHashList: string[] = [];
-    Object.values(selectedRows || {}).forEach((selectedRow: any) => {
+    Object.values(selectedRows).forEach((selectedRow: any) => {
       if (!runHashList.includes(selectedRow.runHash)) {
         runHashList.push(selectedRow.runHash);
         const rowData = {
@@ -158,7 +156,7 @@ function DeleteModal({
             DATE_WITH_SECONDS,
           )} • ${processDurationTime(
             selectedRow?.creation_time * 1000,
-            selectedRow?.end_time ? selectedRow?.end_time * 1000 : dateNow,
+            Date.now(),
           )}`,
           experiment: selectedRow?.experiment?.name ?? 'default',
           name: selectedRow?.name ?? '-',
@@ -189,7 +187,7 @@ function DeleteModal({
       data: finishedList,
       disabledData: inProgressList,
     };
-  }, [selectedRows, dateNow]);
+  }, [selectedRows]);
 
   function onDelete() {
     const ids = data.map((item: any) => item.runHash);

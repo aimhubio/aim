@@ -11,7 +11,7 @@ export enum RowHeightSize {
   lg = 32,
 }
 
-export enum VISUALIZATION_ELEMENT_TYPE {
+export enum VisualizationElementEnum {
   LINES = 'lines',
   DOTS = 'dots',
   IMAGES = 'images',

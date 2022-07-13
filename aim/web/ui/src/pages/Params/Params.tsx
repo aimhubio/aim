@@ -15,7 +15,7 @@ import ProgressBar from 'components/ProgressBar/ProgressBar';
 import pageTitlesEnum from 'config/pageTitles/pageTitles';
 import {
   RowHeightSize,
-  VISUALIZATION_ELEMENT_TYPE,
+  VisualizationElementEnum,
 } from 'config/table/tableConfigs';
 import { ResizeModeEnum } from 'config/enums/tableEnums';
 import GroupingPopovers, {
@@ -294,7 +294,7 @@ const Params = ({
                         deleteRuns={deleteRuns}
                         focusedState={focusedState}
                         visualizationElementType={
-                          VISUALIZATION_ELEMENT_TYPE.LINES
+                          VisualizationElementEnum.LINES
                         }
                         multiSelect
                       />
