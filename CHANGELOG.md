@@ -4,6 +4,7 @@
 
 ### Enhancements:
 
+- Ability to set axes range manually for line charts on UI (KaroMourad)
 - Filter redundant tooltip data from URL config state (KaroMourad)
 - Improve rendering performance by enhancing table columns virtualization mechanism (roubkar)
 - Increase visibility and usability of the Show table diff button (arsengit)
