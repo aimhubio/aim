@@ -4,6 +4,7 @@
   display: flex;
   padding: 0.2rem 1rem;
   height: toRem(38px);
+  align-items: center;
   &__select__resize {
     padding-right: 1rem;
     display: flex;
@@ -35,6 +36,9 @@
     &.opened {
       border: $border-main-active;
       background-color: $primary-color-10;
+    }
+    &--diffBtn {
+      margin-right: $space-xs;
     }
   }
 }

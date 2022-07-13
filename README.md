@@ -323,11 +323,11 @@ The high-level features we are going to work on the next few months
   - [x] LightGBM integration (Start: _Apr 14 2022_, Shipped: _May 17 2022_)
   - [x] CatBoost integration (Start: _Apr 20 2022_, Shipped: _May 17 2022_)
   - [x] Run execution details(display stdout/stderr logs) (Start: _Apr 25 2022_, Shipped: _May 17 2022_)
+  - [x] Long sequences(up to 5M of steps) support (Start: _Apr 25 2022_, Shipped: _Jun 22 2022_)
 
 ### In Progress
-  - [ ] Cloud storage support – store runs blob(e.g. images) data on the cloud (Start: _Mar 21 2022_)
-  - [ ] Artifact storage – store files, model checkpoints, and beyond (Start: _Mar 21 2022_)
-  - [ ] Long sequences(up to 5M of steps) support (Start: _Apr 25 2022_)
+  - [ ] Figures Explorer
+  - [ ] **Stable** remote tracking server
 
 ### To Do
 
@@ -338,7 +338,6 @@ The high-level features we are going to work on the next few months
 - Explorers
     - Audio Explorer
     - Text Explorer
-    - Figures Explorer
     - Distributions Explorer
 - Dashboards – customizable layouts with embedded explorers
 
@@ -368,6 +367,8 @@ The high-level features we are going to work on the next few months
 ### On hold
 
 - scikit-learn integration
+- Cloud storage support – store runs blob(e.g. images) data on the cloud (Start: _Mar 21 2022_)
+- Artifact storage – store files, model checkpoints, and beyond (Start: _Mar 21 2022_)
 
 ## Community
 

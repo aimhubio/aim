@@ -62,6 +62,7 @@ When searching runs, use the `run` keyword which represents the `Run` object. It
 | `experiment` | Experiment name |
 | `tags` | List of run tags |
 | `archived` | `True` if run is archived, otherwise `False` |
+| `active` | `True` if run is active(in progress), otherwise `False` |
 | `creation_time` | Run creation timestamp |
 | `end_time` | Run end timestamp |
 

@@ -12,7 +12,7 @@ import { IAxesScaleRange } from 'types/components/AxesPropsPopover/AxesPropsPopo
 import {
   IAggregationConfig,
   IAlignmentConfig,
-  IPanelTooltip,
+  ITooltip,
   IChartZoom,
   IGroupingSelectOption,
 } from 'types/services/models/metrics/metricsAppModel';
@@ -26,7 +26,7 @@ export interface IControlProps {
   chartType: ChartTypeEnum;
   data: ILine[][] | any;
   selectOptions: IGroupingSelectOption[];
-  tooltip: IPanelTooltip;
+  tooltip?: ITooltip;
   ignoreOutliers: boolean;
   zoom?: IChartZoom;
   highlightMode: HighlightEnum;
@@ -39,7 +39,7 @@ export interface IControlProps {
   alignmentConfig: IAlignmentConfig;
   densityType: DensityOptions;
   selectFormOptions: ISelectOption[];
-  onChangeTooltip: (tooltip: Partial<IPanelTooltip>) => void;
+  onChangeTooltip: (tooltip: Partial<ITooltip>) => void;
   onIgnoreOutliersChange: () => void;
   onHighlightModeChange: (mode: number) => void;
   onDensityTypeChange: (type: DensityOptions) => void;

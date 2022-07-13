@@ -1,10 +1,12 @@
 import { INotification } from 'types/components/NotificationContainer/NotificationContainer';
 import { ITableColumn } from 'types/pages/metrics/components/TableColumns/TableColumns';
 
-export type State = {
+import { IGroupingSelectOption, ITooltip } from './metrics/metricsAppModel';
+
+export interface State {
   config?: Record<string, any>;
   table?: Record<string, any>;
-  groupingSelectOptions?: Record<string, any>[];
+  groupingSelectOptions?: IGroupingSelectOption[];
   tableColumns?: ITableColumn[] | Record<string, any>[];
   data?: Record<string, any>[];
   rawData?: Record<string, any>[];
@@ -13,7 +15,9 @@ export type State = {
   params?: Record<string, any>;
   sameValueColumns?: string[];
   selectedRows?: any;
-};
+  tooltip?: ITooltip;
+  selectFormData?: any;
+}
 
 export interface IModel<StateType extends Partial<State>> {
   init: () => void;

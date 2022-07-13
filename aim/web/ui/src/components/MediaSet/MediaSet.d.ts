@@ -4,7 +4,7 @@ import { MediaTypeEnum } from 'components/MediaPanel/config';
 import { IGroupingSelectOption } from 'types/services/models/imagesExplore/imagesExploreAppModel';
 import {
   IFocusedState,
-  IPanelTooltip,
+  ITooltip,
 } from 'types/services/models/metrics/metricsAppModel';
 
 import { SortFields } from 'utils/getSortedFields';
@@ -21,7 +21,7 @@ export interface IMediaSetProps {
   focusedState: IFocusedState;
   additionalProperties?: IMediaPanelProps['additionalProperties'];
   tableHeight: IMediaPanelProps['tableHeight'];
-  tooltip?: IPanelTooltip;
+  tooltip?: ITooltip;
   mediaType: MediaTypeEnum;
   sortFieldsDict?: { [key: string]: SortField };
   sortFields?: SortFields;

@@ -16,6 +16,7 @@ import {
   IChartTitleData,
   IGroupingSelectOption,
   IMetricsCollection,
+  ITooltip,
 } from 'types/services/models/metrics/metricsAppModel';
 
 import { IRequestProgress } from 'utils/app/setRequestProgress';
@@ -35,6 +36,7 @@ export interface IScatterAppModelState {
   config: IAppModelConfig;
   data: IMetricsCollection<IParam>[];
   chartData: IScatterData[];
+  tooltip: ITooltip;
   chartTitleData: IChartTitleData;
   tableData: any[];
   tableColumns: ITableColumn[];
@@ -44,7 +46,7 @@ export interface IScatterAppModelState {
   notifyData: INotification[];
   groupingSelectOptions: IGroupingSelectOption[];
   selectFormData: { options: ISelectOption[]; suggestions: string[] };
-  liveUpdateConfig: {
+  liveUpdateConfig?: {
     delay: number;
     enabled: boolean;
   };

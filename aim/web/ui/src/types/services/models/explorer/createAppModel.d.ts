@@ -3,6 +3,7 @@ import { HighlightEnum } from 'components/HighlightModesPopover/HighlightModesPo
 import { ResizeModeEnum } from 'config/enums/tableEnums';
 import { RowHeightSize } from 'config/table/tableConfigs';
 import { DensityOptions } from 'config/enums/densityEnum';
+import { GroupNameEnum } from 'config/grouping/GroupingPopovers';
 
 import { AppDataTypeEnum, AppNameEnum } from 'services/models/explorer';
 
@@ -11,11 +12,12 @@ import { IAxesScaleState } from 'types/components/AxesScalePopover/AxesScalePopo
 import {
   IAggregationConfig,
   IAlignmentConfig,
-  IPanelTooltip,
+  ITooltip,
   IChartZoom,
   IFocusedState,
   IMetricAppModelState,
   SortField,
+  ITooltipConfig,
 } from 'types/services/models/metrics/metricsAppModel';
 import { IParamsAppModelState } from 'types/services/models/params/paramsAppModel';
 import { IRunsAppModelState } from 'types/services/models/runs/runsAppModel';
@@ -26,6 +28,8 @@ import {
 
 import { ChartTypeEnum, CurveEnum } from 'utils/d3';
 import { SmoothingAlgorithmEnum } from 'utils/smoothingData';
+
+import { IImagesExploreAppModelState } from '../imagesExplore/imagesExploreAppModel';
 
 export interface IAppInitialConfig {
   dataType: AppDataTypeEnum;
@@ -42,7 +46,8 @@ export type IAppModelState =
   | IMetricAppModelState
   | IParamsAppModelState
   | IScatterAppModelState
-  | IRunsAppModelState;
+  | IRunsAppModelState
+  | IImagesExploreAppModelState;
 
 export interface IAppModelConfig {
   grouping?: IGroupingConfig;
@@ -61,10 +66,10 @@ export interface IChart
 }
 
 export interface IGroupingConfig {
-  color?: string[];
-  stroke?: string[];
-  chart?: string[];
-  row?: string[];
+  [GroupNameEnum.COLOR]?: string[];
+  [GroupNameEnum.STROKE]?: string[];
+  [GroupNameEnum.CHART]?: string[];
+  [GroupNameEnum.ROW]?: string[];
   reverseMode?: {
     color?: boolean;
     stroke?: boolean;
@@ -140,7 +145,7 @@ export interface IHighPlotConfig {
   curveInterpolation: CurveEnum;
   isVisibleColorIndicator: boolean;
   focusedState: IFocusedState;
-  tooltip: IPanelTooltip;
+  tooltip: ITooltip;
   brushExtents: {
     [key: string]: {
       [key: string]: [number, number] | [string, string];
@@ -161,11 +166,11 @@ export interface ILineChartConfig {
   densityType: DensityOptions;
   alignmentConfig: IAlignmentConfig;
   focusedState: IFocusedState;
-  tooltip: IPanelTooltip;
+  tooltip: ITooltipConfig;
 }
 
 export interface IScatterPlotConfig {
   highlightMode: HighlightEnum;
   focusedState: IFocusedState;
-  tooltip: IPanelTooltip;
+  tooltip: ITooltipConfig;
 }

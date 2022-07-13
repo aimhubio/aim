@@ -33,8 +33,6 @@ This section describes governance processes we follow in developing Aim.
 #### Core Contributors
 
 - Arsen Alkamyan ([arsengit](https://github.com/arsengit))
-- Arthur Poghosyan ([devfox-se](https://github.com/devfox-se))
-- Hamik Hambardzumyan ([Hamik25](https://github.com/Hamik25))
 - Karo Muradyan ([KaroMourad](https://github.com/KaroMourad))
 - Mihran Vanyan ([mihran113](https://github.com/mihran113))
 - Ruben Aprikyan ([rubenaprikyan](https://github.com/rubenaprikyan))
@@ -42,7 +40,7 @@ This section describes governance processes we follow in developing Aim.
 
 ### Releases
 
-We release a new minor version (e.g., 3.8.0) every two week and patch releases on demand. The minor versions contain new features, bugfixes and also all previous bugfixes included in previous patch releases. With every release, we publish a [CHANGELOG](./CHANGELOG.md) where we list enhancements and fixes. The versioning scheme we use is [SemVer](http://semver.org/).
+We release a new minor version (e.g., 3.8.0) every three to four week and patch releases on demand. The minor versions contain new features, bugfixes and also all previous bugfixes included in previous patch releases. With every release, we publish a [CHANGELOG](./CHANGELOG.md) where we list enhancements and fixes. The versioning scheme we use is [SemVer](http://semver.org/).
 
 ## Contribution Process
 
