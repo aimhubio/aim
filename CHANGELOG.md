@@ -9,6 +9,7 @@
 - Increase visibility and usability of the Show table diff button (arsengit)
 - Add support for tensorboard audios conversion (mihran113)
 - Mention explicitly run params everywhere params is mentioned (VkoHov)
+- Add run duration property for SDK and queries (mihran113)
 
 ### Fixes:
 
