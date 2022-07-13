@@ -150,6 +150,7 @@ function ScattersContainer(): React.FunctionComponentElement<React.ReactNode> {
         hideSystemMetrics={scattersData?.config?.table?.hideSystemMetrics!}
         hiddenColumns={scattersData?.config?.table?.hiddenColumns!}
         groupingSelectOptions={scattersData?.groupingSelectOptions!}
+        sortOptions={scattersData?.sortOptions!}
         projectsDataMetrics={projectsData?.metrics!}
         requestStatus={scattersData?.requestStatus!}
         requestProgress={scattersData?.requestProgress!}

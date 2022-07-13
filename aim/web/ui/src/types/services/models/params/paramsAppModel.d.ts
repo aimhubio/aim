@@ -15,7 +15,6 @@ import {
 } from 'types/services/models/explorer/createAppModel';
 
 import { IDimensionsType } from 'utils/d3/drawParallelAxes';
-
 import { IRequestProgress } from 'utils/app/setRequestProgress';
 
 import {
@@ -53,4 +52,5 @@ export interface IParam {
   color: string;
   key: string;
   dasharray: string;
+  metrics: { [key: string]: any };
 }
