@@ -15,7 +15,7 @@ let bookmarksRequestRef: {
   abort: () => void;
 };
 
-const model = createModel<Partial<IBookmarksAppModelState>>({
+const model = createModel<IBookmarksAppModelState>({
   isLoading: true,
   listData: [],
   notifyData: [],

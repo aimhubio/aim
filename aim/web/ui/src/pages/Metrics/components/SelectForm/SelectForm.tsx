@@ -78,15 +78,22 @@ function SelectForm({
     metricAppModel.abortRequest();
   }
 
-  function onSelect(event: object, value: ISelectOption[]): void {
-    const lookup = value.reduce(
-      (acc: { [key: string]: number }, curr: ISelectOption) => {
-        acc[curr.label] = ++acc[curr.label] || 0;
-        return acc;
-      },
-      {},
-    );
-    onMetricsSelectChange(value.filter((option) => lookup[option.label] === 0));
+  function onSelect(
+    event: React.ChangeEvent<{}>,
+    value: ISelectOption[],
+  ): void {
+    if (event.type === 'click') {
+      const lookup = value.reduce(
+        (acc: { [key: string]: number }, curr: ISelectOption) => {
+          acc[curr.label] = ++acc[curr.label] || 0;
+          return acc;
+        },
+        {},
+      );
+      onMetricsSelectChange(
+        value.filter((option) => lookup[option.label] === 0),
+      );
+    }
   }
 
   function handleDelete(field: string): void {
@@ -151,6 +158,7 @@ function SelectForm({
               <div className='Metrics__SelectForm__textarea'>
                 <AutocompleteInput
                   advanced
+                  error={selectFormData.advancedError}
                   refObject={advancedAutocompleteRef}
                   context={selectFormData?.advancedSuggestions}
                   value={selectedMetricsData?.advancedQuery}
@@ -283,6 +291,7 @@ function SelectForm({
             <div className='Metrics__SelectForm__TextField'>
               <AutocompleteInput
                 refObject={autocompleteRef}
+                error={selectFormData.error}
                 value={selectedMetricsData?.query}
                 context={selectFormData.suggestions}
                 onEnter={handleMetricSearch}

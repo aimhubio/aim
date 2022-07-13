@@ -1,28 +1,29 @@
+import { ZoomEnum } from 'components/ZoomInPopover/ZoomInPopover';
+
+import { GroupNameEnum } from 'config/grouping/GroupingPopovers';
+import { RequestStatusEnum } from 'config/enums/requestStatusEnum';
+
 import {
   IAppModelConfig,
   IGroupingConfig,
-} from 'src/services/models/metrics/explorer/createAppModel';
-import { IImagesExploreAppConfig } from 'src/services/models/imagesExplore/imagesExploreAppModel';
-
-import { ZoomEnum } from 'components/ZoomInPopover/ZoomInPopover';
-
-import { RequestStatusEnum } from 'config/enums/requestStatusEnum';
-
+  ISelectOption,
+} from 'types/services/models/explorer/createAppModel';
+import { IImagesExploreAppConfig } from 'types/services/models/imagesExplore/imagesExploreAppModel';
 import { IChartPanelRef } from 'types/components/ChartPanel/ChartPanel';
 import { ILine } from 'types/components/LineChart/LineChart';
 import { ITableRef } from 'types/components/Table/Table';
 import { ITableColumn } from 'types/pages/metrics/components/TableColumns/TableColumns';
-import { INotification } from 'types/components/NotificationContainer/NotificationContainer';
+import {
+  INotification,
+  ISyntaxErrorDetails,
+} from 'types/components/NotificationContainer/NotificationContainer';
 
 import {
   AggregationAreaMethods,
   AggregationLineMethods,
 } from 'utils/aggregateGroupData';
 import { AlignmentOptionsEnum } from 'utils/d3';
-
 import { IRequestProgress } from 'utils/app/setRequestProgress';
-
-import { ISelectOption } from '../explorer/createAppModel';
 
 import { IMetric } from './metricModel';
 import { IMetricTrace, IRun, ISequence } from './runModel';
@@ -41,13 +42,19 @@ export interface IMetricAppModelState {
   lineChartData: ILine[][];
   chartTitleData: IChartTitleData;
   aggregatedData: IAggregatedData[];
+  tooltip: ITooltip;
   tableData: any[];
   tableColumns: ITableColumn[];
   sameValueColumns: string[];
   params: string[];
   notifyData: INotification[];
   groupingSelectOptions: IGroupingSelectOption[];
-  selectFormData?: { options: ISelectOption[]; suggestions: string[] };
+  selectFormData?: {
+    options: ISelectOption[];
+    suggestions: string[];
+    error: ISyntaxErrorDetails;
+    advancedError: ISyntaxErrorDetails;
+  };
   liveUpdateConfig: {
     delay: number;
     enabled: boolean;
@@ -70,25 +77,26 @@ export interface IAggregatedData extends IAggregationData {
   chartIndex: number;
 }
 
-export interface ITooltipData {
-  [key: string]: ITooltipContent;
-}
-
 export interface ITooltipContent {
-  groupConfig?: {
-    [key: string]: any;
-  };
+  groupConfig?: Record<string, any>;
   name?: string;
-  context?: { [key: string]: unknown };
+  context?: Record<string, any>;
   runHash?: string;
   caption?: string;
   step?: number | string;
   index?: number;
   images_name?: string;
-  selectedFields?: {
-    [key: string]: string;
-  };
+  selectedProps?: Record<string, any>;
   run?: IRun;
+}
+
+export interface ITooltipConfig {
+  display: boolean;
+  selectedFields: string[];
+}
+
+export interface ITooltip extends Partial<ITooltipConfig> {
+  content?: ITooltipContent;
 }
 
 export interface IMetricsCollection<T> {
@@ -137,12 +145,6 @@ export interface IChartZoom {
   }[];
 }
 
-export interface IPanelTooltip {
-  content: ITooltipContent;
-  display: boolean;
-  selectedFields: string[];
-}
-
 export interface IAlignmentConfig {
   metric?: string;
   type: AlignmentOptionsEnum;
@@ -187,12 +189,12 @@ export interface IGetDataAsLinesProps {
 }
 
 export interface IOnGroupingSelectChangeParams {
-  groupName: GroupNameType;
+  groupName: GroupNameEnum;
   list: string[];
 }
 
 export interface IOnGroupingModeChangeParams {
-  groupName: GroupNameType;
+  groupName: GroupNameEnum;
   value: boolean;
   options?: any[] | null;
 }
@@ -203,7 +205,6 @@ export interface IGetGroupingPersistIndex {
   groupName: 'color' | 'stroke';
 }
 
-export type GroupNameType = 'color' | 'stroke' | 'chart' | 'row';
 export interface IGroupingSelectOption {
   label: string;
   group: string;

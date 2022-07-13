@@ -14,7 +14,7 @@ const BS64_REPLACE_CHARACTERS = {
 };
 // replace URL and CSS selectors, vulnerable characters '+', '/', '=',
 
-const BS64_ENCODING_PADDING = ['', '=', '==', '==='];
+const BS64_ENCODING_PADDING = ['', '===', '==', '='];
 
 export const AIM64_ENCODING_PREFIX = 'O-';
 // `O` - is a character which cannot exist in the base58-encoded data,
