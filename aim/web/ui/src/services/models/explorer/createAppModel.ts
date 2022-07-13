@@ -3891,24 +3891,25 @@ function createAppModel(appConfig: IAppInitialConfig) {
             runProps,
           }),
         ];
-        const metricsSelectOptions = Object.keys(metricsColumns)
-          .reduce((acc: any, key: string) => {
+        const metricsSelectOptions = Object.keys(metricsColumns).reduce(
+          (acc: any, key: string) => {
             Object.keys(metricsColumns[key]).forEach(
               (metricContext: string) => {
                 const contextName = metricContext ? `_${metricContext}` : '';
-                acc.push(
-                  `${isSystemMetric(key) ? key : `${key}${contextName}`}`,
-                );
+                acc.push({
+                  group: 'metrics',
+                  value: `metrics.${key}${contextName}`,
+                  label: isSystemMetric(key)
+                    ? formatSystemMetricName(key)
+                    : `${key}${contextName}`,
+                });
               },
             );
-
             return acc;
-          }, [])
-          .map((metric: string) => ({
-            group: 'metrics',
-            value: `metrics.${metric}`,
-            label: metric,
-          }));
+          },
+          [],
+        );
+
         const sortOptions = [...groupingSelectOptions, ...metricsSelectOptions];
 
         const tableData = getDataAsTableRows(
@@ -4321,24 +4322,26 @@ function createAppModel(appConfig: IAppInitialConfig) {
           config,
           groupingSelectOptions,
         );
-        const metricsSelectOptions = Object.keys(metricsColumns)
-          .reduce((acc: any, key: string) => {
+        const metricsSelectOptions = Object.keys(metricsColumns).reduce(
+          (acc: any, key: string) => {
             Object.keys(metricsColumns[key]).forEach(
               (metricContext: string) => {
                 const contextName = metricContext ? `_${metricContext}` : '';
-                acc.push(
-                  `${isSystemMetric(key) ? key : `${key}${contextName}`}`,
-                );
+                acc.push({
+                  group: 'metrics',
+                  value: `metrics.${key}${contextName}`,
+                  label: isSystemMetric(key)
+                    ? formatSystemMetricName(key)
+                    : `${key}${contextName}`,
+                });
               },
             );
-
             return acc;
-          }, [])
-          .map((metric: string) => ({
-            group: 'metrics',
-            value: `metrics.${metric}`,
-            label: metric,
-          }));
+          },
+          [],
+        );
+        console.log(metricsSelectOptions);
+
         const sortOptions = [...groupingSelectOptions, ...metricsSelectOptions];
         const tableColumns: ITableColumn[] = getParamsTableColumns(
           sortOptions,
@@ -4425,24 +4428,26 @@ function createAppModel(appConfig: IAppInitialConfig) {
             runProps,
           }),
         ];
-        const metricsSelectOptions = Object.keys(metricsColumns)
-          .reduce((acc: any, key: string) => {
+        const metricsSelectOptions = Object.keys(metricsColumns).reduce(
+          (acc: any, key: string) => {
             Object.keys(metricsColumns[key]).forEach(
               (metricContext: string) => {
                 const contextName = metricContext ? `_${metricContext}` : '';
-                acc.push(
-                  `${isSystemMetric(key) ? key : `${key}${contextName}`}`,
-                );
+                acc.push({
+                  group: 'metrics',
+                  value: `metrics.${key}${contextName}`,
+                  label: isSystemMetric(key)
+                    ? formatSystemMetricName(key)
+                    : `${key}${contextName}`,
+                });
               },
             );
-
             return acc;
-          }, [])
-          .map((metric: string) => ({
-            group: 'metrics',
-            value: `metrics.${metric}`,
-            label: metric,
-          }));
+          },
+          [],
+        );
+        console.log(metricsSelectOptions);
+
         const sortOptions = [...groupingSelectOptions, ...metricsSelectOptions];
 
         const tableData = getDataAsTableRows(
@@ -5031,24 +5036,24 @@ function createAppModel(appConfig: IAppInitialConfig) {
             runProps,
           }),
         ];
-        const metricsSelectOptions = Object.keys(metricsColumns)
-          .reduce((acc: any, key: string) => {
+        const metricsSelectOptions = Object.keys(metricsColumns).reduce(
+          (acc: any, key: string) => {
             Object.keys(metricsColumns[key]).forEach(
               (metricContext: string) => {
                 const contextName = metricContext ? `_${metricContext}` : '';
-                acc.push(
-                  `${isSystemMetric(key) ? key : `${key}${contextName}`}`,
-                );
+                acc.push({
+                  group: 'metrics',
+                  value: `metrics.${key}${contextName}`,
+                  label: isSystemMetric(key)
+                    ? formatSystemMetricName(key)
+                    : `${key}${contextName}`,
+                });
               },
             );
-
             return acc;
-          }, [])
-          .map((metric: string) => ({
-            group: 'metrics',
-            value: `metrics.${metric}`,
-            label: metric,
-          }));
+          },
+          [],
+        );
         const sortOptions = [...groupingSelectOptions, ...metricsSelectOptions];
 
         const tableData = getDataAsTableRows(
@@ -5748,24 +5753,25 @@ function createAppModel(appConfig: IAppInitialConfig) {
             runProps,
           }),
         ];
-        const metricsSelectOptions = Object.keys(metricsColumns)
-          .reduce((acc: any, key: string) => {
+        const metricsSelectOptions = Object.keys(metricsColumns).reduce(
+          (acc: any, key: string) => {
             Object.keys(metricsColumns[key]).forEach(
               (metricContext: string) => {
                 const contextName = metricContext ? `_${metricContext}` : '';
-                acc.push(
-                  `${isSystemMetric(key) ? key : `${key}${contextName}`}`,
-                );
+                acc.push({
+                  group: 'metrics',
+                  value: `metrics.${key}${contextName}`,
+                  label: isSystemMetric(key)
+                    ? formatSystemMetricName(key)
+                    : `${key}${contextName}`,
+                });
               },
             );
-
             return acc;
-          }, [])
-          .map((metric: string) => ({
-            group: 'metrics',
-            value: `metrics.${metric}`,
-            label: metric,
-          }));
+          },
+          [],
+        );
+        console.log(metricsSelectOptions);
         const sortOptions = [...groupingSelectOptions, ...metricsSelectOptions];
 
         const tableData = getDataAsTableRows(
@@ -5989,24 +5995,26 @@ function createAppModel(appConfig: IAppInitialConfig) {
           config,
           groupingSelectOptions,
         );
-        const metricsSelectOptions = Object.keys(metricsColumns)
-          .reduce((acc: any, key: string) => {
+        const metricsSelectOptions = Object.keys(metricsColumns).reduce(
+          (acc: any, key: string) => {
             Object.keys(metricsColumns[key]).forEach(
               (metricContext: string) => {
                 const contextName = metricContext ? `_${metricContext}` : '';
-                acc.push(
-                  `${isSystemMetric(key) ? key : `${key}${contextName}`}`,
-                );
+                acc.push({
+                  group: 'metrics',
+                  value: `metrics.${
+                    isSystemMetric(key) ? key : `${key}${contextName}`
+                  }`,
+                  label: isSystemMetric(key)
+                    ? formatSystemMetricName(key)
+                    : `${key}${contextName}`,
+                });
               },
             );
-
             return acc;
-          }, [])
-          .map((metric: string) => ({
-            group: 'metrics',
-            value: `metrics.${metric}`,
-            label: metric,
-          }));
+          },
+          [],
+        );
         const sortOptions = [...groupingSelectOptions, ...metricsSelectOptions];
         const tableColumns: ITableColumn[] = getParamsTableColumns(
           sortOptions,

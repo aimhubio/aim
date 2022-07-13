@@ -148,9 +148,7 @@ function getParamsTableColumns(
       Object.keys(metricsColumns[key]).forEach((metricContext) => {
         const contextName = metricContext ? `_${metricContext}` : '';
         const columnKey = `${systemMetric ? key : `${key}${contextName}`}`;
-        const sortValueKey = `${
-          systemMetric ? key : `metrics.${key}${contextName}`
-        }`;
+        const sortValueKey = `metrics.${key}${contextName}`;
         let index = -1;
         const sortItem: SortField | undefined = sortFields?.find((value, i) => {
           if (value.value === sortValueKey) {
