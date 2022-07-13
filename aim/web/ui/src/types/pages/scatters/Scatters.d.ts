@@ -11,7 +11,6 @@ import {
   IGroupingConfig,
   IColumnsOrder,
 } from 'types/services/models/explorer/createAppModel';
-
 import { IScatterAppModelState } from 'types/services/models/scatter/scatterAppModel';
 import { ITableRef } from 'types/components/Table/Table';
 import {
@@ -34,8 +33,6 @@ import {
 } from 'types/components/NotificationContainer/NotificationContainer';
 import { IProjectParamsMetrics } from 'types/services/models/projects/projectsModel';
 import { ITrendlineOptions } from 'types/services/models/scatter/scatterAppModel';
-import { IColumnsOrder } from 'types/services/models/explorer/createAppModel';
-import { IScatterAppModelState } from 'types/services/models/scatter/scatterAppModel';
 
 import { IRequestProgress } from 'utils/app/setRequestProgress';
 

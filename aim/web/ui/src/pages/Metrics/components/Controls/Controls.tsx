@@ -1,5 +1,6 @@
 import React from 'react';
 import classNames from 'classnames';
+import _ from 'lodash-es';
 
 import { Tooltip } from '@material-ui/core';
 
@@ -52,6 +53,13 @@ function Controls(
       props.densityType !== CONTROLS_DEFAULT_CONFIG.metrics.densityType
     );
   }, [props.alignmentConfig, props.densityType]);
+
+  const axesRangeChanged: boolean = React.useMemo(() => {
+    return !_.isEqual(
+      props.axesScaleRange,
+      CONTROLS_DEFAULT_CONFIG.metrics.axesScaleRange,
+    );
+  }, [props.axesScaleRange]);
 
   const smootheningChanged: boolean = React.useMemo(() => {
     return (
@@ -148,15 +156,16 @@ function Controls(
                   <div
                     onClick={onAnchorClick}
                     className={classNames('Controls__anchor', {
-                      active: opened || alignmentChanged,
-                      outlined: !opened && alignmentChanged,
+                      active: opened || alignmentChanged || axesRangeChanged,
+                      outlined:
+                        !opened && (alignmentChanged || axesRangeChanged),
                     })}
                   >
                     <Icon
                       className={classNames('Controls__icon', {
-                        active: opened || alignmentChanged,
+                        active: opened || alignmentChanged || axesRangeChanged,
                       })}
-                      name='x-axis'
+                      name='axes-props'
                     />
                   </div>
                 </Tooltip>
