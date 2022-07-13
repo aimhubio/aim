@@ -12,7 +12,10 @@ import ProgressBar from 'components/ProgressBar/ProgressBar';
 import ErrorBoundary from 'components/ErrorBoundary/ErrorBoundary';
 
 import { ResizeModeEnum } from 'config/enums/tableEnums';
-import { RowHeightSize } from 'config/table/tableConfigs';
+import {
+  RowHeightSize,
+  VISUALIZATION_ELEMENT_TYPE,
+} from 'config/table/tableConfigs';
 import GroupingPopovers from 'config/grouping/GroupingPopovers';
 import { RequestStatusEnum } from 'config/enums/requestStatusEnum';
 import {
@@ -216,7 +219,9 @@ function Scatters(
                           deleteRuns={props.deleteRuns}
                           focusedState={props.focusedState}
                           onRowsVisibilityChange={props.onRowsVisibilityChange}
-                          visualizationElementType={'dots'}
+                          visualizationElementType={
+                            VISUALIZATION_ELEMENT_TYPE.DOTS
+                          }
                           multiSelect
                         />
                       </ErrorBoundary>

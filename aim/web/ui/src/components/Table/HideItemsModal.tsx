@@ -35,12 +35,10 @@ function HideItemsModal({
   };
   onRowsVisibilityChange: (keys: string[]) => void;
 }): React.FunctionComponentElement<React.ReactNode> {
-  const actionText = hideMode ? 'hide' : 'show';
-  const [data, setData] = React.useState<any[]>([]);
-  const [disabledData, setDisabledData] = React.useState<any[]>([]);
+  const [dateNow, setDateNow] = React.useState(Date.now());
   const tableRef = React.useRef<any>({});
   const disabledTableRef = React.useRef<any>({});
-  const [dateNow, setDateNow] = React.useState(Date.now());
+  const actionText = hideMode ? 'hide' : 'show';
 
   const tableColumns = [
     {
@@ -117,7 +115,7 @@ function HideItemsModal({
                 onClick={() => {
                   const tmpSelectedRows = onRowSelect({
                     data: Object.values(selectedRows).filter(
-                      (selectRow: any) => selectRow.runHash === rowData.runHash,
+                      (selectRow: any) => selectRow.key === rowData.key,
                     ),
                     actionType: 'removeAll',
                   });
@@ -143,7 +141,7 @@ function HideItemsModal({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  React.useEffect(() => {
+  const { data, disabledData } = React.useMemo(() => {
     let hideList: any[] = [];
     let showList: any[] = [];
     const runHashList: string[] = [];
@@ -177,14 +175,16 @@ function HideItemsModal({
     });
     showList = _.orderBy(showList, ['creationTime'], ['desc']);
     hideList = _.orderBy(hideList, ['creationTime'], ['desc']);
-    setData(hideMode ? hideList : showList);
-    setDisabledData(!hideMode ? hideList : showList);
     tableRef.current?.updateData?.({
       newData: hideMode ? hideList : showList,
     });
     disabledTableRef.current?.updateData?.({
       newData: !hideMode ? hideList : showList,
     });
+    return {
+      data: hideMode ? hideList : showList,
+      disabledData: !hideMode ? hideList : showList,
+    };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [selectedRows]);
 
@@ -200,7 +200,7 @@ function HideItemsModal({
       onClose={onClose}
       onOk={onVisibilityChange}
       cancelButtonText='Cancel'
-      okButtonText={hideMode ? 'Hide' : 'Show'}
+      okButtonText={actionText}
       title={`Are you sure you want to ${actionText} the selected rows?`}
       titleIconName={hideMode ? 'eye-show-outline' : 'eye-outline-hide'}
       maxWidth='lg'

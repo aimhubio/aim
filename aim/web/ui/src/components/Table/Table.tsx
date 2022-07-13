@@ -672,7 +672,7 @@ const Table = React.forwardRef(function Table(
     });
 
     setTableBulkActionsVisibility(tableBulkActionsVisibility);
-  }, [selectedRows]);
+  }, [selectedRows, onRowsVisibilityChange]);
 
   const sortPopoverChanged: boolean = React.useMemo(() => {
     return (

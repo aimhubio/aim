@@ -13,7 +13,10 @@ import ErrorBoundary from 'components/ErrorBoundary/ErrorBoundary';
 import ProgressBar from 'components/ProgressBar/ProgressBar';
 
 import pageTitlesEnum from 'config/pageTitles/pageTitles';
-import { RowHeightSize } from 'config/table/tableConfigs';
+import {
+  RowHeightSize,
+  VISUALIZATION_ELEMENT_TYPE,
+} from 'config/table/tableConfigs';
 import { ResizeModeEnum } from 'config/enums/tableEnums';
 import GroupingPopovers from 'config/grouping/GroupingPopovers';
 import { RequestStatusEnum } from 'config/enums/requestStatusEnum';
@@ -286,7 +289,9 @@ const Params = ({
                         archiveRuns={archiveRuns}
                         deleteRuns={deleteRuns}
                         focusedState={focusedState}
-                        visualizationElementType={'lines'}
+                        visualizationElementType={
+                          VISUALIZATION_ELEMENT_TYPE.LINES
+                        }
                         multiSelect
                       />
                     </ErrorBoundary>

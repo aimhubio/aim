@@ -13,7 +13,10 @@ import ProgressBar from 'components/ProgressBar/ProgressBar';
 
 import pageTitlesEnum from 'config/pageTitles/pageTitles';
 import { ResizeModeEnum } from 'config/enums/tableEnums';
-import { RowHeightSize } from 'config/table/tableConfigs';
+import {
+  RowHeightSize,
+  VISUALIZATION_ELEMENT_TYPE,
+} from 'config/table/tableConfigs';
 import GroupingPopovers from 'config/grouping/GroupingPopovers';
 import { RequestStatusEnum } from 'config/enums/requestStatusEnum';
 import {
@@ -267,7 +270,9 @@ function Metrics(
                           deleteRuns={props.deleteRuns}
                           onRowsVisibilityChange={props.onRowsVisibilityChange}
                           focusedState={props.focusedState}
-                          visualizationElementType={'lines'}
+                          visualizationElementType={
+                            VISUALIZATION_ELEMENT_TYPE.LINES
+                          }
                         />
                       </ErrorBoundary>
                     )}

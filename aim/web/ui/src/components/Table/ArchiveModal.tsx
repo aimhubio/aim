@@ -35,13 +35,11 @@ function ArchiveModal({
   };
   archiveRuns: (ids: string[], archived: boolean) => void;
 }): React.FunctionComponentElement<React.ReactNode> {
-  const archivedText = archiveMode ? 'archive' : 'unarchive';
-  let runsArchiveRequest: any = null;
-  const [data, setData] = React.useState<any[]>([]);
-  const [disabledData, setDisabledData] = React.useState<any[]>([]);
+  const [dateNow, setDateNow] = React.useState(Date.now());
   const tableRef = React.useRef<any>({});
   const disabledTableRef = React.useRef<any>({});
-  const [dateNow, setDateNow] = React.useState(Date.now());
+  const archivedText = archiveMode ? 'archive' : 'unarchive';
+  let runsArchiveRequest: any = null;
 
   const tableColumns = [
     {
@@ -148,7 +146,7 @@ function ArchiveModal({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  React.useEffect(() => {
+  const { data, disabledData } = React.useMemo(() => {
     let archivedList: any[] = [];
     let unarchivedList: any[] = [];
     const runHashList: string[] = [];
@@ -182,16 +180,17 @@ function ArchiveModal({
     });
     archivedList = _.orderBy(archivedList, ['creationTime'], ['desc']);
     unarchivedList = _.orderBy(unarchivedList, ['creationTime'], ['desc']);
-    setData(archiveMode ? archivedList : unarchivedList);
-    setDisabledData(!archiveMode ? archivedList : unarchivedList);
     tableRef.current?.updateData?.({
       newData: archiveMode ? archivedList : unarchivedList,
     });
     disabledTableRef.current?.updateData?.({
       newData: !archiveMode ? archivedList : unarchivedList,
     });
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [selectedRows]);
+    return {
+      data: archiveMode ? archivedList : unarchivedList,
+      disabledData: !archiveMode ? archivedList : unarchivedList,
+    };
+  }, [selectedRows, archiveMode, dateNow]);
 
   function onArchive() {
     const ids = data.map((item: any) => item.runHash);

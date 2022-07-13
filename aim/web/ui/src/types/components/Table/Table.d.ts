@@ -1,7 +1,10 @@
 import React from 'react';
 
 import { RowHeight, RowHeightSize } from 'config/table/tableConfigs';
-import { ResizeModeEnum } from 'config/enums/tableEnums';
+import {
+  ResizeModeEnum,
+  VISUALIZATION_ELEMENT_TYPE,
+} from 'config/enums/tableEnums';
 
 import { AppNameEnum } from 'services/models/explorer';
 
@@ -74,7 +77,7 @@ export interface ITableProps {
   illustrationConfig?: IIllustrationConfig;
   disableRowClick?: boolean;
   columnsColorScales?: { [key: string]: boolean };
-  visualizationElementType?: 'lines' | 'images' | 'dots';
+  visualizationElementType?: VISUALIZATION_ELEMENT_TYPE;
 }
 
 export interface ITableRef {

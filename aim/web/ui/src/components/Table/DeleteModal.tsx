@@ -33,12 +33,10 @@ function DeleteModal({
   };
   deleteRuns: (ids: string[]) => void;
 }): React.FunctionComponentElement<React.ReactNode> {
-  let runsDeleteRequest: any = null;
-  const [data, setData] = React.useState<any[]>([]);
-  const [disabledData, setDisabledData] = React.useState<any[]>([]);
+  const [dateNow, setDateNow] = React.useState(Date.now());
   const tableRef = React.useRef<any>({});
   const disabledTableRef = React.useRef<any>({});
-  const [dateNow, setDateNow] = React.useState(Date.now());
+  let runsDeleteRequest: any = null;
 
   const tableColumns = [
     {
@@ -147,7 +145,7 @@ function DeleteModal({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  React.useEffect(() => {
+  const { data, disabledData } = React.useMemo(() => {
     let finishedList: any[] = [];
     let inProgressList: any[] = [];
     const runHashList: string[] = [];
@@ -181,15 +179,16 @@ function DeleteModal({
     finishedList = _.orderBy(finishedList, ['creationTime'], ['desc']);
     inProgressList = _.orderBy(inProgressList, ['creationTime'], ['desc']);
 
-    setData(finishedList);
-    setDisabledData(inProgressList);
-
     tableRef.current?.updateData?.({
       newData: finishedList,
     });
     disabledTableRef.current?.updateData?.({
       newData: inProgressList,
     });
+    return {
+      data: finishedList,
+      disabledData: inProgressList,
+    };
   }, [selectedRows, dateNow]);
 
   function onDelete() {
