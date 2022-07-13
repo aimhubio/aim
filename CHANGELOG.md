@@ -1,5 +1,11 @@
 # Changelog
 
+## Unreleased
+
+### Fixes
+
+- Fix displaying non-syntax errors across Aim UI (arsengit) 
+
 ## 3.11.2 Jul 8, 2022
 
 ### Enhancements:
