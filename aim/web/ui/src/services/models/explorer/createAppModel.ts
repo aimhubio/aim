@@ -16,6 +16,7 @@ import { CONTROLS_DEFAULT_CONFIG } from 'config/controls/controlsDefaultConfig';
 import { ANALYTICS_EVENT_KEYS } from 'config/analytics/analyticsKeysMap';
 import { DATE_EXPORTING_FORMAT, TABLE_DATE_FORMAT } from 'config/dates/dates';
 import { getSuggestionsByExplorer } from 'config/monacoConfig/monacoConfig';
+import { GroupNameEnum } from 'config/grouping/GroupingPopovers';
 
 import {
   getMetricsTableColumns,
@@ -46,7 +47,6 @@ import { ITableColumn } from 'types/pages/metrics/components/TableColumns/TableC
 import { IOnSmoothingChange } from 'types/pages/metrics/Metrics';
 import { IMetric } from 'types/services/models/metrics/metricModel';
 import {
-  GroupNameType,
   IAggregationConfig,
   IAppData,
   IChartZoom,
@@ -56,8 +56,7 @@ import {
   IMetricTableRowData,
   IOnGroupingModeChangeParams,
   IOnGroupingSelectChangeParams,
-  IPanelTooltip,
-  ITooltipData,
+  ITooltip,
 } from 'types/services/models/metrics/metricsAppModel';
 import {
   IMetricTrace,
@@ -102,7 +101,6 @@ import { getGroupingPersistIndex } from 'utils/app/getGroupingPersistIndex';
 import getGroupingSelectOptions from 'utils/app/getGroupingSelectOptions';
 import getQueryStringFromSelect from 'utils/app/getQueryStringFromSelect';
 import getRunData from 'utils/app/getRunData';
-import getTooltipData from 'utils/app/getTooltipData';
 import onAggregationConfigChange from 'utils/app/onAggregationConfigChange';
 import onAlignmentMetricChange from 'utils/app/onAlignmentMetricChange';
 import onAlignmentTypeChange from 'utils/app/onAlignmentTypeChange';
@@ -148,7 +146,6 @@ import {
   iterFoldTree,
 } from 'utils/encoder/streamEncoding';
 import { filterMetricsData } from 'utils/filterMetricData';
-import filterTooltipContent from 'utils/filterTooltipContent';
 import { formatValue } from 'utils/formatValue';
 import getClosestValue from 'utils/getClosestValue';
 import getObjectPaths from 'utils/getObjectPaths';
@@ -166,6 +163,7 @@ import setComponentRefs from 'utils/app/setComponentRefs';
 import updateURL from 'utils/app/updateURL';
 import onDensityTypeChange from 'utils/app/onDensityTypeChange';
 import getValueByField from 'utils/getValueByField';
+import getTooltipContent from 'utils/getTooltipContent';
 import { isSystemMetric } from 'utils/isSystemMetric';
 import setDefaultAppConfigData from 'utils/app/setDefaultAppConfigData';
 import getAppConfigData from 'utils/app/getAppConfigData';
@@ -201,7 +199,7 @@ import { AppDataTypeEnum, AppNameEnum } from './index';
 function createAppModel(appConfig: IAppInitialConfig) {
   const { appName, dataType, grouping, components, selectForm } = appConfig;
 
-  const model: IModel<IAppModelState> = createModel<IAppModelState>({
+  const model = createModel<IAppModelState>({
     requestStatus: RequestStatusEnum.NotRequested,
     requestProgress: {
       matched: 0,
@@ -305,7 +303,6 @@ function createAppModel(appConfig: IAppInitialConfig) {
                   CONTROLS_DEFAULT_CONFIG.metrics.aggregationConfig.isEnabled,
               },
               tooltip: {
-                content: {},
                 display: CONTROLS_DEFAULT_CONFIG.metrics.tooltip.display,
                 selectedFields:
                   CONTROLS_DEFAULT_CONFIG.metrics.tooltip.selectedFields,
@@ -404,7 +401,6 @@ function createAppModel(appConfig: IAppInitialConfig) {
                 chartIndex: null,
               },
               tooltip: {
-                content: {},
                 display: CONTROLS_DEFAULT_CONFIG.params.tooltip.display,
                 selectedFields:
                   CONTROLS_DEFAULT_CONFIG.params.tooltip.selectedFields,
@@ -426,7 +422,6 @@ function createAppModel(appConfig: IAppInitialConfig) {
                 chartIndex: null,
               },
               tooltip: {
-                content: {},
                 display: CONTROLS_DEFAULT_CONFIG.scatters.tooltip.display,
                 selectedFields:
                   CONTROLS_DEFAULT_CONFIG.scatters.tooltip.selectedFields,
@@ -472,6 +467,8 @@ function createAppModel(appConfig: IAppInitialConfig) {
     return getAppConfigData({ appId, appRequest, config: getConfig(), model });
   }
 
+  // ************ Metrics App Model Methods
+
   function getMetricsAppModelMethods() {
     let metricsRequestRef: {
       call: (
@@ -487,7 +484,6 @@ function createAppModel(appConfig: IAppInitialConfig) {
       call: (exceptionHandler: (detail: any) => void) => Promise<any>;
       abort: () => void;
     };
-    let tooltipData: ITooltipData = {};
     let liveUpdateInstance: LiveUpdateService | null;
 
     function getOption(
@@ -558,7 +554,6 @@ function createAppModel(appConfig: IAppInitialConfig) {
         };
       }
       if (components?.charts?.[0]) {
-        tooltipData = {};
         state.refs = {
           ...state.refs,
           chartPanelRef: { current: null },
@@ -1186,13 +1181,6 @@ function createAppModel(appConfig: IAppInitialConfig) {
         },
       ];
 
-      tooltipData = getTooltipData({
-        processedData: data,
-        paramKeys: sortedParams,
-        groupingSelectOptions,
-        groupingItems: ['color', 'stroke', 'chart'],
-        model,
-      });
       const tableData = getDataAsTableRows(
         data,
         configData?.chart?.focusedState.xValue ?? null,
@@ -1229,17 +1217,14 @@ function createAppModel(appConfig: IAppInitialConfig) {
         config: configData,
         data,
         lineChartData: getDataAsLines(data),
-        chartTitleData: getChartTitleData<
-          IMetric,
-          Partial<IMetricAppModelState>
-        >({
+        chartTitleData: getChartTitleData<IMetric, IAppModelState>({
           processedData: data,
           groupingSelectOptions,
-          model: model as IModel<Partial<IMetricAppModelState>>,
+          model: model as IModel<IMetricAppModelState>,
         }),
         aggregatedData: getAggregatedData<Partial<IMetricAppModelState>>({
           processedData: data,
-          model: model as IModel<Partial<IMetricAppModelState>>,
+          model: model as IModel<IMetricAppModelState>,
         }),
         tableData: tableData.rows,
         tableColumns,
@@ -1285,13 +1270,7 @@ function createAppModel(appConfig: IAppInitialConfig) {
           value: 'lastValue',
         },
       ];
-      tooltipData = getTooltipData({
-        processedData: data,
-        paramKeys: sortedParams,
-        groupingSelectOptions,
-        groupingItems: ['color', 'stroke', 'chart'],
-        model,
-      });
+
       const tableData = getDataAsTableRows(
         data,
         configData?.chart?.focusedState?.xValue ?? null,
@@ -1375,15 +1354,15 @@ function createAppModel(appConfig: IAppInitialConfig) {
       const grouping = configData!.grouping;
       const { paletteIndex = 0 } = grouping || {};
       const groupByColor = getFilteredGroupingOptions({
-        groupName: 'color',
+        groupName: GroupNameEnum.COLOR,
         model,
       });
       const groupByStroke = getFilteredGroupingOptions({
-        groupName: 'stroke',
+        groupName: GroupNameEnum.STROKE,
         model,
       });
       const groupByChart = getFilteredGroupingOptions({
-        groupName: 'chart',
+        groupName: GroupNameEnum.CHART,
         model,
       });
       if (
@@ -1670,8 +1649,14 @@ function createAppModel(appConfig: IAppInitialConfig) {
               }
             }
           }
-          let configData: IAppModelConfig = config;
+          let configData = config;
           if (configData?.chart) {
+            // TODO remove this later
+            // remove unnecessary content prop from tooltip config
+            if (configData.chart.tooltip?.hasOwnProperty('content')) {
+              delete configData.chart.tooltip.content;
+            }
+
             configData = {
               ...configData,
               chart: {
@@ -1683,15 +1668,9 @@ function createAppModel(appConfig: IAppInitialConfig) {
                   yValue: activePoint.yValue,
                   chartIndex: activePoint.chartIndex,
                 },
-                tooltip: {
-                  ...configData.chart.tooltip,
-                  content: filterTooltipContent(
-                    tooltipData[activePoint.key],
-                    configData.chart.tooltip?.selectedFields,
-                  ),
-                } as IPanelTooltip,
               },
             };
+
             if (
               config.chart?.focusedState.active !== focusedStateActive ||
               (config.chart.focusedState.active &&
@@ -1701,7 +1680,22 @@ function createAppModel(appConfig: IAppInitialConfig) {
             }
           }
 
-          model.setState({ config: configData });
+          const tooltipData = {
+            ...configData?.chart?.tooltip,
+            content: getTooltipContent({
+              groupingItems: [
+                GroupNameEnum.COLOR,
+                GroupNameEnum.STROKE,
+                GroupNameEnum.CHART,
+              ],
+              groupingSelectOptions,
+              data,
+              configData,
+              activePointKey: configData.chart?.focusedState?.key,
+              selectedFields: configData.chart?.tooltip?.selectedFields,
+            }),
+          };
+          model.setState({ config: configData, tooltip: tooltipData });
         }
       },
       50,
@@ -1951,7 +1945,7 @@ function createAppModel(appConfig: IAppInitialConfig) {
             setAggregationEnabled,
           });
         },
-        onGroupingReset(groupName: GroupNameType): void {
+        onGroupingReset(groupName: GroupNameEnum): void {
           onGroupingReset({
             groupName,
             model,
@@ -1960,7 +1954,7 @@ function createAppModel(appConfig: IAppInitialConfig) {
             setAggregationEnabled,
           });
         },
-        onGroupingApplyChange(groupName: GroupNameType): void {
+        onGroupingApplyChange(groupName: GroupNameEnum): void {
           onGroupingApplyChange({
             groupName,
             model,
@@ -1969,7 +1963,7 @@ function createAppModel(appConfig: IAppInitialConfig) {
             setAggregationEnabled,
           });
         },
-        onGroupingPersistenceChange(groupName: GroupNameType): void {
+        onGroupingPersistenceChange(groupName: GroupNameEnum): void {
           onGroupingPersistenceChange({
             groupName,
             model,
@@ -2042,8 +2036,17 @@ function createAppModel(appConfig: IAppInitialConfig) {
         onAlignmentTypeChange(type: AlignmentOptionsEnum): void {
           onAlignmentTypeChange({ type, model, appName, updateModelData });
         },
-        onChangeTooltip(tooltip: Partial<IPanelTooltip>): void {
-          onChangeTooltip({ tooltip, tooltipData, model, appName });
+        onChangeTooltip(tooltip: Partial<ITooltip>): void {
+          onChangeTooltip({
+            tooltip,
+            groupingItems: [
+              GroupNameEnum.COLOR,
+              GroupNameEnum.STROKE,
+              GroupNameEnum.CHART,
+            ],
+            model,
+            appName,
+          });
         },
         onDensityTypeChange(type: DensityOptions): Promise<void> {
           return onDensityTypeChange({ type, model, appName, getMetricsData });
@@ -2137,6 +2140,9 @@ function createAppModel(appConfig: IAppInitialConfig) {
       default:
         return {};
     }
+
+    // ************ Runs App Model Methods
+
     function getRunsModelMethods() {
       let runsRequestRef: {
         call: (
@@ -2168,7 +2174,6 @@ function createAppModel(appConfig: IAppInitialConfig) {
           };
         }
         if (components?.charts?.[0]) {
-          // tooltipData = {};
           state.refs = {
             ...state.refs,
             chartPanelRef: { current: null },
@@ -2451,11 +2456,23 @@ function createAppModel(appConfig: IAppInitialConfig) {
         data?.forEach((run: IRun<IParamTrace>, index) => {
           params = params.concat(getObjectPaths(run.params, run.params));
           runProps = runProps.concat(getObjectPaths(run.props, run.props));
+          const metrics: any = {};
           run.traces.metric.forEach((trace) => {
             metricsColumns[trace.name] = {
               ...metricsColumns[trace.name],
               [contextToString(trace.context) as string]: '-',
             };
+            const contextName =
+              contextToString(trace.context) === ''
+                ? ''
+                : `_${contextToString(trace.context)}`;
+
+            const key = `${
+              isSystemMetric(trace.name)
+                ? trace.name
+                : `${trace.name}${contextName}`
+            }`;
+            metrics[key] = trace.last_value.last;
           });
           runHashArray.push(run.hash);
           runs.push({
@@ -2464,6 +2481,7 @@ function createAppModel(appConfig: IAppInitialConfig) {
             color: COLORS[paletteIndex][index % COLORS[paletteIndex].length],
             key: encode({ runHash: run.hash }),
             dasharray: DASH_ARRAYS[0],
+            metrics,
           });
         });
         const processedData = groupData(runs);
@@ -2508,15 +2526,15 @@ function createAppModel(appConfig: IAppInitialConfig) {
         const grouping = configData!.grouping;
 
         const groupByColor = getFilteredGroupingOptions({
-          groupName: 'color',
+          groupName: GroupNameEnum.COLOR,
           model,
         });
         const groupByStroke = getFilteredGroupingOptions({
-          groupName: 'stroke',
+          groupName: GroupNameEnum.STROKE,
           model,
         });
         const groupByChart = getFilteredGroupingOptions({
-          groupName: 'chart',
+          groupName: GroupNameEnum.CHART,
           model,
         });
         if (
@@ -3225,6 +3243,8 @@ function createAppModel(appConfig: IAppInitialConfig) {
       return methods;
     }
 
+    // ************ Params App Model Methods
+
     function getParamsModelMethods() {
       let runsRequestRef: {
         call: (
@@ -3240,7 +3260,6 @@ function createAppModel(appConfig: IAppInitialConfig) {
         call: (exceptionHandler: (detail: any) => void) => Promise<any>;
         abort: () => void;
       };
-      let tooltipData: ITooltipData = {};
       let liveUpdateInstance: LiveUpdateService | null;
 
       function initialize(appId: string): void {
@@ -3256,7 +3275,6 @@ function createAppModel(appConfig: IAppInitialConfig) {
           };
         }
         if (components?.charts?.[0]) {
-          tooltipData = {};
           state.refs = {
             ...state.refs,
             chartPanelRef: { current: null },
@@ -3892,13 +3910,7 @@ function createAppModel(appConfig: IAppInitialConfig) {
             label: metric,
           }));
         const sortOptions = [...groupingSelectOptions, ...metricsSelectOptions];
-        tooltipData = getTooltipData({
-          processedData: data,
-          paramKeys: sortedParams,
-          groupingSelectOptions,
-          groupingItems: ['color', 'stroke', 'chart'],
-          model,
-        });
+
         const tableData = getDataAsTableRows(
           data,
           metricsColumns,
@@ -3987,15 +3999,15 @@ function createAppModel(appConfig: IAppInitialConfig) {
         const grouping = model.getState()!.config!.grouping;
         const { paletteIndex } = grouping;
         const groupByColor = getFilteredGroupingOptions({
-          groupName: 'color',
+          groupName: GroupNameEnum.COLOR,
           model,
         });
         const groupByStroke = getFilteredGroupingOptions({
-          groupName: 'stroke',
+          groupName: GroupNameEnum.STROKE,
           model,
         });
         const groupByChart = getFilteredGroupingOptions({
-          groupName: 'chart',
+          groupName: GroupNameEnum.CHART,
           model,
         });
         if (
@@ -4234,7 +4246,7 @@ function createAppModel(appConfig: IAppInitialConfig) {
         activePoint: IActivePoint,
         focusedStateActive: boolean = false,
       ): void {
-        const { refs, config } = model.getState();
+        const { refs, config, groupingSelectOptions, data } = model.getState();
         if (config.table.resizeMode !== ResizeModeEnum.Hide) {
           const tableRef: any = refs?.tableRef;
           if (tableRef) {
@@ -4250,6 +4262,12 @@ function createAppModel(appConfig: IAppInitialConfig) {
         }
         let configData = config;
         if (configData?.chart) {
+          // TODO remove this later
+          // remove unnecessary content prop from tooltip config
+          if (configData.chart.tooltip?.hasOwnProperty('content')) {
+            delete configData.chart.tooltip.content;
+          }
+
           configData = {
             ...configData,
             chart: {
@@ -4260,13 +4278,6 @@ function createAppModel(appConfig: IAppInitialConfig) {
                 xValue: activePoint.xValue,
                 yValue: activePoint.yValue,
                 chartIndex: activePoint.chartIndex,
-              },
-              tooltip: {
-                ...configData.chart.tooltip,
-                content: filterTooltipContent(
-                  tooltipData[activePoint.key],
-                  configData?.chart.tooltip.selectedFields,
-                ),
               },
             },
           };
@@ -4281,7 +4292,22 @@ function createAppModel(appConfig: IAppInitialConfig) {
           }
         }
 
-        model.setState({ config: configData });
+        const tooltipData = {
+          ...configData?.chart?.tooltip,
+          content: getTooltipContent({
+            groupingItems: [
+              GroupNameEnum.COLOR,
+              GroupNameEnum.STROKE,
+              GroupNameEnum.CHART,
+            ],
+            groupingSelectOptions,
+            data,
+            configData,
+            activePointKey: configData.chart?.focusedState?.key,
+            selectedFields: configData.chart?.tooltip?.selectedFields,
+          }),
+        };
+        model.setState({ config: configData, tooltip: tooltipData });
       }
 
       function onExportTableData(): void {
@@ -4418,13 +4444,7 @@ function createAppModel(appConfig: IAppInitialConfig) {
             label: metric,
           }));
         const sortOptions = [...groupingSelectOptions, ...metricsSelectOptions];
-        tooltipData = getTooltipData({
-          processedData: data,
-          paramKeys: sortedParams,
-          groupingSelectOptions,
-          groupingItems: ['color', 'stroke', 'chart'],
-          model,
-        });
+
         const tableData = getDataAsTableRows(
           data,
           metricsColumns,
@@ -4739,7 +4759,7 @@ function createAppModel(appConfig: IAppInitialConfig) {
           onGroupingPaletteChange(index: number): void {
             onGroupingPaletteChange({ index, model, appName, updateModelData });
           },
-          onGroupingReset(groupName: GroupNameType): void {
+          onGroupingReset(groupName: GroupNameEnum): void {
             let configData = model.getState().config;
 
             onGroupingReset({ groupName, model, appName, updateModelData });
@@ -4755,7 +4775,7 @@ function createAppModel(appConfig: IAppInitialConfig) {
 
             model.setState({ config: configData });
           },
-          onGroupingApplyChange(groupName: GroupNameType): void {
+          onGroupingApplyChange(groupName: GroupNameEnum): void {
             let configData = model.getState().config;
 
             onGroupingApplyChange({
@@ -4776,7 +4796,7 @@ function createAppModel(appConfig: IAppInitialConfig) {
 
             model.setState({ config: configData });
           },
-          onGroupingPersistenceChange(groupName: GroupNameType): void {
+          onGroupingPersistenceChange(groupName: GroupNameEnum): void {
             onGroupingPersistenceChange({
               groupName,
               model,
@@ -4801,8 +4821,17 @@ function createAppModel(appConfig: IAppInitialConfig) {
       }
       if (components?.charts?.[0]) {
         Object.assign(methods, {
-          onChangeTooltip(tooltip: Partial<IPanelTooltip>): void {
-            onChangeTooltip({ tooltip, tooltipData, model, appName });
+          onChangeTooltip(tooltip: Partial<ITooltip>): void {
+            onChangeTooltip({
+              tooltip,
+              groupingItems: [
+                GroupNameEnum.COLOR,
+                GroupNameEnum.STROKE,
+                GroupNameEnum.CHART,
+              ],
+              model,
+              appName,
+            });
           },
           onColorIndicatorChange(): void {
             onColorIndicatorChange({ model, appName, updateModelData });
@@ -4909,6 +4938,8 @@ function createAppModel(appConfig: IAppInitialConfig) {
       return methods;
     }
 
+    // ************ Scatters App Model Methods
+
     function getScattersModelMethods() {
       let runsRequestRef: {
         call: (
@@ -4924,7 +4955,6 @@ function createAppModel(appConfig: IAppInitialConfig) {
         call: (exceptionHandler: (detail: any) => void) => Promise<any>;
         abort: () => void;
       };
-      let tooltipData: ITooltipData = {};
       let liveUpdateInstance: LiveUpdateService | null;
 
       function initialize(appId: string): void {
@@ -4940,7 +4970,6 @@ function createAppModel(appConfig: IAppInitialConfig) {
           };
         }
         if (components?.charts?.[0]) {
-          tooltipData = {};
           state.refs = {
             ...state.refs,
             chartPanelRef: { current: null },
@@ -5021,13 +5050,6 @@ function createAppModel(appConfig: IAppInitialConfig) {
             label: metric,
           }));
         const sortOptions = [...groupingSelectOptions, ...metricsSelectOptions];
-        tooltipData = getTooltipData({
-          processedData: data,
-          paramKeys: sortedParams,
-          groupingSelectOptions,
-          groupingItems: ['color', 'chart'],
-          model,
-        });
 
         const tableData = getDataAsTableRows(
           data,
@@ -5573,15 +5595,15 @@ function createAppModel(appConfig: IAppInitialConfig) {
         const grouping = model.getState()!.config!.grouping;
         const { paletteIndex } = grouping;
         const groupByColor = getFilteredGroupingOptions({
-          groupName: 'color',
+          groupName: GroupNameEnum.COLOR,
           model,
         });
         const groupByStroke = getFilteredGroupingOptions({
-          groupName: 'stroke',
+          groupName: GroupNameEnum.STROKE,
           model,
         });
         const groupByChart = getFilteredGroupingOptions({
-          groupName: 'chart',
+          groupName: GroupNameEnum.CHART,
           model,
         });
         if (
@@ -5745,13 +5767,7 @@ function createAppModel(appConfig: IAppInitialConfig) {
             label: metric,
           }));
         const sortOptions = [...groupingSelectOptions, ...metricsSelectOptions];
-        tooltipData = getTooltipData({
-          processedData: data,
-          paramKeys: sortedParams,
-          groupingSelectOptions,
-          groupingItems: ['color', 'chart'],
-          model,
-        });
+
         const tableData = getDataAsTableRows(
           data,
           metricsColumns,
@@ -6063,7 +6079,7 @@ function createAppModel(appConfig: IAppInitialConfig) {
         activePoint: IActivePoint,
         focusedStateActive: boolean = false,
       ): void {
-        const { refs, config } = model.getState();
+        const { data, refs, config, groupingSelectOptions } = model.getState();
         if (config.table.resizeMode !== ResizeModeEnum.Hide) {
           const tableRef: any = refs?.tableRef;
           if (tableRef) {
@@ -6079,6 +6095,12 @@ function createAppModel(appConfig: IAppInitialConfig) {
         }
         let configData = config;
         if (configData?.chart) {
+          // TODO remove this later
+          // remove unnecessary content prop from tooltip config
+          if (configData.chart.tooltip?.hasOwnProperty('content')) {
+            delete configData.chart.tooltip.content;
+          }
+
           configData = {
             ...configData,
             chart: {
@@ -6089,13 +6111,6 @@ function createAppModel(appConfig: IAppInitialConfig) {
                 xValue: activePoint.xValue,
                 yValue: activePoint.yValue,
                 chartIndex: activePoint.chartIndex,
-              },
-              tooltip: {
-                ...configData.chart.tooltip,
-                content: filterTooltipContent(
-                  tooltipData[activePoint.key],
-                  configData?.chart.tooltip.selectedFields,
-                ),
               },
             },
           };
@@ -6110,7 +6125,18 @@ function createAppModel(appConfig: IAppInitialConfig) {
           }
         }
 
-        model.setState({ config: configData });
+        const tooltipData = {
+          ...configData?.chart?.tooltip,
+          content: getTooltipContent({
+            groupingItems: [GroupNameEnum.COLOR, GroupNameEnum.CHART],
+            groupingSelectOptions,
+            data,
+            configData,
+            activePointKey: configData.chart?.focusedState?.key,
+            selectedFields: configData.chart?.tooltip?.selectedFields,
+          }),
+        };
+        model.setState({ config: configData, tooltip: tooltipData });
       }
 
       function onModelGroupingSelectChange({
@@ -6350,10 +6376,10 @@ function createAppModel(appConfig: IAppInitialConfig) {
           onGroupingPaletteChange(index: number): void {
             onGroupingPaletteChange({ index, model, appName, updateModelData });
           },
-          onGroupingReset(groupName: GroupNameType): void {
+          onGroupingReset(groupName: GroupNameEnum): void {
             onGroupingReset({ groupName, model, appName, updateModelData });
           },
-          onGroupingApplyChange(groupName: GroupNameType): void {
+          onGroupingApplyChange(groupName: GroupNameEnum): void {
             onGroupingApplyChange({
               groupName,
               model,
@@ -6361,7 +6387,7 @@ function createAppModel(appConfig: IAppInitialConfig) {
               updateModelData,
             });
           },
-          onGroupingPersistenceChange(groupName: GroupNameType): void {
+          onGroupingPersistenceChange(groupName: GroupNameEnum): void {
             onGroupingPersistenceChange({
               groupName,
               model,
@@ -6386,8 +6412,13 @@ function createAppModel(appConfig: IAppInitialConfig) {
       }
       if (components?.charts?.[0]) {
         Object.assign(methods, {
-          onChangeTooltip(tooltip: Partial<IPanelTooltip>): void {
-            onChangeTooltip({ tooltip, tooltipData, model, appName });
+          onChangeTooltip(tooltip: Partial<ITooltip>): void {
+            onChangeTooltip({
+              tooltip,
+              groupingItems: [GroupNameEnum.COLOR, GroupNameEnum.CHART],
+              model,
+              appName,
+            });
           },
           onChangeTrendlineOptions(
             trendlineOptions: Partial<ITrendlineOptions>,

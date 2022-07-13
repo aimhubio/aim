@@ -12,7 +12,7 @@ import { DOCUMENTATIONS } from 'config/references';
 
 import { showAutocompletion } from 'utils/showAutocompletion';
 
-import { IAutocompleteInputProps } from './ AutocompleteInput';
+import { IAutocompleteInputProps } from './AutocompleteInput.d';
 
 import './AutocompleteInput.scss';
 

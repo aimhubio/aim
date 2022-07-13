@@ -3,6 +3,7 @@ from itertools import islice
 import numpy as np
 
 from aim.sdk.tracker import STEP_HASH_FUNCTIONS
+from aim.storage.treeview import TreeView
 from aim.storage.arrayview import ArrayView
 from aim.storage.context import Context
 from aim.storage.hashing import hash_auto
@@ -223,18 +224,14 @@ class Sequence(Generic[T]):
     ):
         self._hash: int = None
         self._version: int = None
-        self._meta_tree = run.meta_run_tree.subtree(('traces', context.idx, name))
-        self._series_tree = run.series_run_trees[self.version].subtree((context.idx, name))
+        self._meta_tree: TreeView = run.meta_run_tree.subtree(('traces', context.idx, name))
+        self._series_tree: TreeView = None
+        self._columns = [('val', None), ('epoch', 'float64'), ('time', 'float64')]
+        self._data: SequenceData = None  # use data property
 
         self.name = name
         self.context = context
         self.run = run
-        self.data: SequenceData = None
-        columns = [('val', None), ('epoch', 'float64'), ('time', 'float64')]
-        if self.version == 1:
-            self.data = SequenceV1Data(self._series_tree, columns=columns)
-        else:
-            self.data = SequenceV2Data(self._meta_tree, self._series_tree, columns=columns)
 
     def __repr__(self) -> str:
         return f'<Sequence#{hash(self)} name=`{self.name}` context=`{self.context}` run=`{self.run}`>'
@@ -264,6 +261,21 @@ class Sequence(Generic[T]):
         if self._hash is None:
             self._hash = self._calc_hash()
         return self._hash
+
+    @property
+    def series_tree(self) -> TreeView:
+        if self._series_tree is None:
+            self._series_tree = self.run.series_run_trees[self.version].subtree((self.context.idx, self.name))
+        return self._series_tree
+
+    @property
+    def data(self) -> SequenceData:
+        if self._data is None:
+            if self.version == 1:
+                self._data = SequenceV1Data(self.series_tree, columns=self._columns)
+            else:
+                self._data = SequenceV2Data(self._meta_tree, self.series_tree, columns=self._columns)
+        return self._data
 
     @property
     def version(self):
@@ -305,7 +317,7 @@ class Sequence(Generic[T]):
         return len(self.values)
 
     def preload(self):
-        self._series_tree.preload()
+        self.series_tree.preload()
 
 
 class MediaSequenceBase(Sequence):

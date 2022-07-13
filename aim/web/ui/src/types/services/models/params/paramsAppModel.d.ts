@@ -20,6 +20,7 @@ import { IRequestProgress } from 'utils/app/setRequestProgress';
 import {
   IChartTitleData,
   IMetricsCollection,
+  ITooltip,
 } from '../metrics/metricsAppModel';
 
 export interface IParamsAppModelState {
@@ -34,6 +35,7 @@ export interface IParamsAppModelState {
   config: IAppModelConfig;
   data: IMetricsCollection<IParam>[];
   highPlotData: { dimensions: IDimensionsType; data: any }[];
+  tooltip: ITooltip;
   chartTitleData: IChartTitleData;
   tableData: any[];
   tableColumns: ITableColumn[];
@@ -44,6 +46,10 @@ export interface IParamsAppModelState {
   metricsColumns: any;
   selectFormData: { options: ISelectOption[]; suggestions: string[] };
   selectedRows?: any;
+  liveUpdateConfig?: {
+    delay: number;
+    enabled: boolean;
+  };
 }
 
 export interface IParam {
