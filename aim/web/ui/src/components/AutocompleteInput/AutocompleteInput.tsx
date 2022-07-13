@@ -5,11 +5,14 @@ import _ from 'lodash-es';
 
 import Editor, { useMonaco } from '@monaco-editor/react';
 
+import { Icon, Text } from 'components/kit';
+
 import { getMonacoConfig } from 'config/monacoConfig/monacoConfig';
+import { DOCUMENTATIONS } from 'config/references';
 
 import { showAutocompletion } from 'utils/showAutocompletion';
 
-import { IAutocompleteInputProps } from './ AutocompleteInput';
+import { IAutocompleteInputProps } from './AutocompleteInput.d';
 
 import './AutocompleteInput.scss';
 
@@ -20,6 +23,7 @@ function AutocompleteInput({
   editorProps = {},
   value = '',
   refObject,
+  error,
   disabled = false,
   //callback functions
   onEnter,
@@ -30,11 +34,19 @@ function AutocompleteInput({
   const [focused, setFocused] = React.useState<boolean>(false);
   const [mounted, setMounted] = React.useState<boolean>(false);
   const [editorValue, setEditorValue] = React.useState<string>(value);
+  const [errorMessage, setErrorMessage] = React.useState('');
   const monaco: any = useMonaco();
   const editorRef = React.useRef<any>();
 
   React.useEffect(() => {
     initializeTheme();
+    if (mounted) {
+      monaco.editor.defineTheme(
+        monacoConfig.theme.name,
+        monacoConfig.theme.config,
+      );
+      monaco.editor.setTheme(monacoConfig.theme.name);
+    }
     const onResize = _.debounce(() => {
       setContainerWidth(window.innerWidth);
     }, 500);
@@ -48,6 +60,19 @@ function AutocompleteInput({
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [monaco, context, mounted]);
+
+  React.useEffect(() => {
+    setTimeout(() => {
+      initializeTheme();
+      setMarkers();
+    }, 100);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [containerWidth]);
+
+  React.useEffect(() => {
+    setMarkers();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [error, monaco]);
 
   React.useEffect(() => {
     if (focused) {
@@ -92,6 +117,28 @@ function AutocompleteInput({
     editorRef.current.onDidChangeCursorSelection(onSelectionChange);
   }
 
+  function setMarkers(): void {
+    if (monaco && error) {
+      setErrorMessage(error?.message);
+      monaco.editor.setModelMarkers(monaco.editor.getModels()[0], 'marker', [
+        {
+          startLineNumber: error?.detail.line,
+          startColumn: error?.detail.offset,
+          endLineNumber: error?.detail.line,
+          endColumn: error?.detail?.end_offset || error?.detail.offset,
+          message: error?.message,
+          severity: monaco.MarkerSeverity.Error,
+        },
+      ]);
+    }
+  }
+
+  function deleteMarkers() {
+    if (monaco?.editor) {
+      monaco.editor.setModelMarkers(monaco.editor.getModels()[0], 'marker', []);
+    }
+  }
+
   function onSelectionChange(
     e: monacoEditor.editor.ICursorSelectionChangedEvent,
   ) {
@@ -111,6 +158,8 @@ function AutocompleteInput({
         editorRef.current!.setValue(editorValue);
         return;
       }
+      deleteMarkers();
+      setErrorMessage('');
       if (typeof val === 'string') {
         // formatting value to avoid the new line
         let formattedValue = val.replace(/[\n\r]/g, '');
@@ -146,33 +195,67 @@ function AutocompleteInput({
   }
 
   return (
-    <div
-      onClick={handleFocus}
+    <section
       className={classNames(`AutocompleteInput ${className || ''}`, {
-        AutocompleteInput__focused: focused,
-        AutocompleteInput__advanced: advanced,
         AutocompleteInput__disabled: disabled,
       })}
     >
-      <Editor
-        key={`${containerWidth}`}
-        language='python'
-        height={monacoConfig.height}
-        value={editorValue}
-        onChange={handleChange}
-        onMount={handleDidMount}
-        loading={<span />}
-        options={monacoConfig.options}
-        {...editorProps}
-      />
-      {mounted &&
-        (focused || editorValue ? null : (
-          <div className='AutocompleteInput__placeholder'>
-            Filter runs, e.g. run.learning_rate {'>'} 0.0001 and run.batch_size
-            == 32
+      <div
+        onClick={handleFocus}
+        className={classNames('AutocompleteInput__container', {
+          AutocompleteInput__container__focused: focused,
+          AutocompleteInput__container__advanced: advanced,
+          AutocompleteInput__container__error: errorMessage,
+        })}
+      >
+        <Editor
+          key={`${containerWidth}`}
+          language='python'
+          height={monacoConfig.height}
+          value={editorValue}
+          onChange={handleChange}
+          onMount={handleDidMount}
+          loading={<span />}
+          options={monacoConfig.options}
+          {...editorProps}
+        />
+        {mounted &&
+          (focused || editorValue ? null : (
+            <div className='AutocompleteInput__container__placeholder'>
+              Filter runs, e.g. run.learning_rate {'>'} 0.0001 and
+              run.batch_size == 32
+            </div>
+          ))}
+      </div>
+      {errorMessage && (
+        <div className='AutocompleteInput__errorBar'>
+          <div>
+            <Text
+              color='error'
+              className='AutocompleteInput__errorBar__message'
+              component='p'
+              size={16}
+            >
+              <Text size={16} color='error' weight={700}>
+                Error:
+              </Text>
+              {errorMessage}
+            </Text>
           </div>
-        ))}
-    </div>
+          <div className='AutocompleteInput__errorBar__hint'>
+            <Icon name='info-circle-outline' box />
+            <Text>
+              Aim Query Language is pythonic and fairly easy to get used to. If
+              you are having issues, please refer to the{' '}
+              <a href={DOCUMENTATIONS.AIM_QL} target='_blank' rel='noreferrer'>
+                docs
+              </a>{' '}
+              for detailed usage guide and more examples.
+            </Text>
+          </div>
+        </div>
+      )}
+    </section>
   );
 }
 

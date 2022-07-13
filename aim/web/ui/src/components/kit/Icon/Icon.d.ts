@@ -6,6 +6,7 @@ export interface IIconProps
   extends React.BaseHTMLAttributes<any>,
     Partial<React.ComponentType<BoxProps | any>> {
   name: IconName;
+  box?: boolean;
   className?: string;
   style?: CSSProperties;
   fontSize?: number | string;

@@ -3,24 +3,31 @@ import StrokePopoverAdvanced from 'pages/Metrics/components/StrokePopover/Stroke
 
 import { IGroupingPopovers } from 'types/pages/components/Grouping/Grouping';
 
+export enum GroupNameEnum {
+  COLOR = 'color',
+  STROKE = 'stroke',
+  CHART = 'chart',
+  ROW = 'row',
+}
+
 const GroupingPopovers: IGroupingPopovers[] = [
   {
-    groupName: 'color',
+    groupName: GroupNameEnum.COLOR,
     title: 'Group by color',
     AdvancedComponent: ColorPopoverAdvanced,
   },
   {
-    groupName: 'stroke',
+    groupName: GroupNameEnum.STROKE,
     title: 'Group by stroke style',
     AdvancedComponent: StrokePopoverAdvanced,
   },
   {
-    groupName: 'chart',
+    groupName: GroupNameEnum.CHART,
     title: 'Divide into charts',
     inputLabel: 'Select fields to divide into charts',
   },
   {
-    groupName: 'row',
+    groupName: GroupNameEnum.ROW,
     title: 'Group by row',
   },
 ];

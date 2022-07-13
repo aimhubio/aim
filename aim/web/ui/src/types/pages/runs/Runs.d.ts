@@ -9,6 +9,8 @@ import {
   IRun,
 } from 'types/services/models/metrics/runModel';
 
+import { ITagProps } from '../tags/Tags';
+
 export interface IRunsProps {
   tableData: IRun<IMetricTrace | IParamTrace>[];
 }
@@ -23,6 +25,7 @@ export interface IRunsTableProps {
   columns: any;
   tableRowHeight: number;
   requestStatus: RequestStatusEnum;
+  sameValueColumns: string[] | [];
   onExportTableData: () => void;
   onManageColumns: () => void;
   onColumnsVisibilityChange: (hiddenColumns: string[] | string) => void;

@@ -1,4 +1,5 @@
-import { GroupNameType } from 'types/services/models/metrics/metricsAppModel';
+import { GroupNameEnum } from 'config/grouping/GroupingPopovers';
+
 import { IModel, State } from 'types/services/models/model';
 import { IAppModelConfig } from 'types/services/models/explorer/createAppModel';
 
@@ -9,7 +10,7 @@ export default function onGroupingApplyChange<M extends State>({
   updateModelData,
   setAggregationEnabled,
 }: {
-  groupName: GroupNameType;
+  groupName: GroupNameEnum;
   model: IModel<M>;
   appName: string;
   updateModelData: (

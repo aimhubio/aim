@@ -4,13 +4,19 @@ import { RequestStatusEnum } from 'config/enums/requestStatusEnum';
 
 import { ITableRef } from 'types/components/Table/Table';
 import { INotification } from 'types/components/NotificationContainer/NotificationContainer';
-import { IPanelTooltip } from 'types/services/models/metrics/metricsAppModel';
+import {
+  ITooltip,
+  ITooltipConfig,
+} from 'types/services/models/metrics/metricsAppModel';
 import {
   IColumnsOrder,
   ISelectConfig,
+  ISelectOption,
 } from 'types/services/models/explorer/createAppModel';
+import { ITableColumn } from 'types/pages/metrics/components/TableColumns/TableColumns';
 
 import { SortFields } from 'utils/getSortedFields';
+import { IRequestProgress } from 'utils/app/setRequestProgress';
 
 export interface IImagesExploreAppConfig {
   grouping: {
@@ -29,7 +35,7 @@ export interface IImagesExploreAppConfig {
     indexRange?: number[];
     recordDensity?: string;
     indexDensity?: string;
-    tooltip: IPanelTooltip;
+    tooltip: ITooltipConfig;
     focusedState: {
       key: string | null;
       active: boolean;
@@ -63,11 +69,13 @@ export interface IImagesExploreAppModelState {
     tableRef: { current: ITableRef | null };
   };
   requestStatus: RequestStatusEnum;
+  requestProgress: IRequestProgress;
   queryIsEmpty: boolean;
   rawData: any[];
   config: IImagesExploreAppConfig;
   data: any;
   imagesData: any;
+  tooltip: ITooltip;
   tableData: any[];
   tableColumns: ITableColumn[];
   sameValueColumns: string[];
@@ -77,14 +85,16 @@ export interface IImagesExploreAppModelState {
   searchButtonDisabled: boolean;
   applyButtonDisabled: boolean;
   selectFormData: {
-    options: ISelectOption[] | undefined;
+    options?: ISelectOption[];
     suggestions: string[];
+    error: ISyntaxErrorDetails;
+    advancedError: ISyntaxErrorDetails;
   };
   selectedRows: { [key: string]: any };
-  // liveUpdateConfig: {
-  //   delay: number;
-  //   enabled: boolean;
-  // };
+  liveUpdateConfig?: {
+    delay: number;
+    enabled: boolean;
+  };
 }
 
 export interface IGroupingSelectOption {
