@@ -17,7 +17,9 @@ import {
   RowHeightSize,
   VISUALIZATION_ELEMENT_TYPE,
 } from 'config/table/tableConfigs';
-import GroupingPopovers from 'config/grouping/GroupingPopovers';
+import GroupingPopovers, {
+  GroupNameEnum,
+} from 'config/grouping/GroupingPopovers';
 import { RequestStatusEnum } from 'config/enums/requestStatusEnum';
 import {
   IllustrationsEnum,
@@ -104,9 +106,9 @@ function Metrics(
               <Grouping
                 groupingPopovers={GroupingPopovers.filter(
                   (p) =>
-                    p.groupName === 'color' ||
-                    p.groupName === 'stroke' ||
-                    p.groupName === 'chart',
+                    p.groupName === GroupNameEnum.COLOR ||
+                    p.groupName === GroupNameEnum.STROKE ||
+                    p.groupName === GroupNameEnum.CHART,
                 )}
                 isDisabled={isProgressBarVisible}
                 groupingData={props.groupingData}
@@ -248,6 +250,7 @@ function Metrics(
                           appName={AppNameEnum.METRICS}
                           hiddenChartRows={props.lineChartData?.length === 0}
                           columnsOrder={props.columnsOrder}
+                          sameValueColumns={props?.sameValueColumns!}
                           // Table actions
                           onSort={props.onSortChange}
                           onSortReset={props.onSortReset}

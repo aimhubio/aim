@@ -276,7 +276,7 @@ function getMetricsTableColumns(
             )}
           </span>
         ),
-        topHeader: 'Params',
+        topHeader: 'Run Params',
         pin: order?.left?.includes(param)
           ? 'left'
           : order?.right?.includes(param)

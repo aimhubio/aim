@@ -7,9 +7,9 @@ import { ResizeModeEnum } from 'config/enums/tableEnums';
 import { RequestStatusEnum } from 'config/enums/requestStatusEnum';
 
 import {
-  GroupNameType,
+  GroupNameEnum,
   IChartTitleData,
-  IPanelTooltip,
+  ITooltip,
   IFocusedState,
   IGroupingSelectOption,
   IOnGroupingModeChangeParams,
@@ -52,7 +52,7 @@ export interface IParamsProps extends Partial<RouteChildrenProps> {
   sortFields: [string, 'asc' | 'desc' | boolean][];
   focusedState: IFocusedState;
   isVisibleColorIndicator: boolean;
-  tooltip: IPanelTooltip;
+  tooltip: ITooltip;
   chartTitleData: IChartTitleData;
   selectedParamsData: ISelectConfig;
   onRowHeightChange: any;
@@ -79,6 +79,7 @@ export interface IParamsProps extends Partial<RouteChildrenProps> {
     error: ISyntaxErrorDetails;
   };
   columnsOrder: IColumnsOrder;
+  sameValueColumns: string[] | [];
   onNotificationDelete: (id: number) => void;
   onCurveInterpolationChange: () => void;
   onActivePointChange: (
@@ -91,14 +92,14 @@ export interface IParamsProps extends Partial<RouteChildrenProps> {
   onGroupingSelectChange: (params: IOnGroupingSelectChangeParams) => void;
   onGroupingModeChange: (params: IOnGroupingModeChangeParams) => void;
   onGroupingPaletteChange: (index: number) => void;
-  onGroupingReset: (groupName: GroupNameType) => void;
-  onGroupingApplyChange: (groupName: GroupNameType) => void;
+  onGroupingReset: (groupName: GroupNameEnum) => void;
+  onGroupingApplyChange: (groupName: GroupNameEnum) => void;
   onGroupingPersistenceChange: (groupName: 'color' | 'stroke') => void;
   onBookmarkCreate: (params: IBookmarkFormState) => void;
   onBookmarkUpdate: (id: string) => void;
   onNotificationAdd: (notification: INotification) => void;
   onResetConfigData: () => void;
-  onChangeTooltip: (tooltip: Partial<IPanelTooltip>) => void;
+  onChangeTooltip: (tooltip: Partial<ITooltip>) => void;
   onExportTableData: (e: React.ChangeEvent<any>) => void;
   onColumnsVisibilityChange: (order: any) => void;
   onTableDiffShow: () => void;

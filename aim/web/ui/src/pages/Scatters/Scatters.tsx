@@ -16,7 +16,9 @@ import {
   RowHeightSize,
   VISUALIZATION_ELEMENT_TYPE,
 } from 'config/table/tableConfigs';
-import GroupingPopovers from 'config/grouping/GroupingPopovers';
+import GroupingPopovers, {
+  GroupNameEnum,
+} from 'config/grouping/GroupingPopovers';
 import { RequestStatusEnum } from 'config/enums/requestStatusEnum';
 import {
   IllustrationsEnum,
@@ -75,7 +77,9 @@ function Scatters(
               />
               <Grouping
                 groupingPopovers={GroupingPopovers.filter(
-                  (p) => p.groupName === 'color' || p.groupName === 'chart',
+                  (p) =>
+                    p.groupName === GroupNameEnum.COLOR ||
+                    p.groupName === GroupNameEnum.CHART,
                 )}
                 isDisabled={isProgressBarVisible}
                 groupingData={props.groupingData}
@@ -197,6 +201,7 @@ function Scatters(
                           isLoading={
                             props.requestStatus === RequestStatusEnum.Pending
                           }
+                          sameValueColumns={props?.sameValueColumns!}
                           // Table actions
                           onSort={props.onSortChange}
                           onSortReset={props.onSortReset}

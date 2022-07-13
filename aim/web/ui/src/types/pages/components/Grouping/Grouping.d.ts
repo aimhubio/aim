@@ -5,7 +5,7 @@ import { IGroupingPopoverAdvancedProps } from 'components/GroupingPopover/Groupi
 import { IGroupingConfig } from 'services/models/explorer/createAppModel';
 
 import {
-  GroupNameType,
+  GroupNameEnum,
   IGroupingSelectOption,
 } from 'types/services/models/metrics/metricsAppModel';
 import { IMetricProps } from 'types/pages/metrics/Metrics';
@@ -25,7 +25,7 @@ export interface IGroupingProps {
 }
 
 export interface IGroupingPopovers {
-  groupName: GroupNameType;
+  groupName: GroupNameEnum;
   title: string;
   inputLabel?: string;
   AdvancedComponent?: (

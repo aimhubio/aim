@@ -1,26 +1,26 @@
+import { GroupNameEnum } from 'config/grouping/GroupingPopovers';
+
 import {
-  GroupNameType,
   IGroupingSelectOption,
   IMetricsCollection,
 } from 'types/services/models/metrics/metricsAppModel';
-import { IModel, State } from 'types/services/models/model';
+import { IAppModelConfig } from 'types/services/models/explorer/createAppModel';
 
 import { getValue } from 'utils/helper';
 
 import getValueByField from '../getValueByField';
 
-export default function getGroupConfig<D, M extends State>({
+export default function getGroupConfig<D>({
   collection,
   groupingSelectOptions,
   groupingItems = [],
-  model,
+  configData,
 }: {
   collection: IMetricsCollection<D>;
   groupingSelectOptions: IGroupingSelectOption[];
-  groupingItems: GroupNameType[];
-  model: IModel<M>;
+  groupingItems: GroupNameEnum[];
+  configData: IAppModelConfig;
 }) {
-  const configData = model.getState()?.config;
   let groupConfig: { [key: string]: {} } = {};
 
   for (let groupItemKey of groupingItems) {
