@@ -1,9 +1,9 @@
 import { ANALYTICS_EVENT_KEYS } from 'config/analytics/analyticsKeysMap';
+import { GroupNameEnum } from 'config/grouping/GroupingPopovers';
 
 import * as analytics from 'services/analytics';
 
 import { IModel, State } from 'types/services/models/model';
-import { GroupNameType } from 'types/services/models/metrics/metricsAppModel';
 import { IAppModelConfig } from 'types/services/models/explorer/createAppModel';
 
 export default function onGroupingPersistenceChange<M extends State>({
@@ -13,7 +13,7 @@ export default function onGroupingPersistenceChange<M extends State>({
   updateModelData,
   setAggregationEnabled,
 }: {
-  groupName: GroupNameType;
+  groupName: GroupNameEnum;
   model: IModel<M>;
   appName: string;
   updateModelData: (

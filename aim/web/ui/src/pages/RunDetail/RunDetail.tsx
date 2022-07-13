@@ -74,20 +74,20 @@ const RunLogsTab = React.lazy(
   () => import(/* webpackChunkName: "RunLogsTab" */ './RunLogsTab'),
 );
 
-const tabs: string[] = [
-  'overview',
-  'parameters',
-  'notes',
-  'logs',
-  'metrics',
-  'system',
-  'distributions',
-  'images',
-  'audios',
-  'texts',
-  'figures',
-  'settings',
-];
+const tabs: { [key: string]: string } = {
+  overview: 'Overview',
+  run_parameters: 'Run Params',
+  notes: 'Notes',
+  logs: 'Logs',
+  metrics: 'Metrics',
+  system: 'System',
+  distributions: 'Distributions',
+  images: 'Images',
+  audios: 'Audios',
+  texts: 'Texts',
+  figures: 'Figures',
+  settings: 'Settings',
+};
 
 function RunDetail(): React.FunctionComponentElement<React.ReactNode> {
   let runsOfExperimentRequestRef: any = null;
@@ -117,7 +117,7 @@ function RunDetail(): React.FunctionComponentElement<React.ReactNode> {
       return;
     }
     if (splitPathname[3]) {
-      if (!tabs.includes(splitPathname[3])) {
+      if (!Object.keys(tabs).includes(splitPathname[3])) {
         history.replace(path);
       }
     } else {
@@ -128,7 +128,7 @@ function RunDetail(): React.FunctionComponentElement<React.ReactNode> {
 
   const tabContent: { [key: string]: JSX.Element } = {
     overview: <RunOverviewTab runHash={runHash} runData={runData} />,
-    parameters: (
+    run_parameters: (
       <RunDetailParamsTab
         runParams={runData?.runParams}
         isRunInfoLoading={runData?.isRunInfoLoading}
@@ -402,13 +402,13 @@ function RunDetail(): React.FunctionComponentElement<React.ReactNode> {
               indicatorColor='primary'
               textColor='primary'
             >
-              {tabs.map((tab) => (
+              {Object.keys(tabs).map((tabKey: string) => (
                 <Tab
-                  key={`${url}/${tab}`}
-                  label={tab}
-                  value={`${url}/${tab}`}
+                  key={`${url}/${tabKey}`}
+                  label={tabs[tabKey]}
+                  value={`${url}/${tabKey}`}
                   component={Link}
-                  to={`${url}/${tab}`}
+                  to={`${url}/${tabKey}`}
                 />
               ))}
             </Tabs>
@@ -418,20 +418,20 @@ function RunDetail(): React.FunctionComponentElement<React.ReactNode> {
             height='calc(100vh - 98px)'
           >
             <Switch>
-              {tabs.map((tab: string) => (
-                <Route path={`${url}/${tab}`} key={tab}>
+              {Object.keys(tabs).map((tabKey: string) => (
+                <Route path={`${url}/${tabKey}`} key={tabKey}>
                   <ErrorBoundary>
-                    {tab === 'overview' ? (
+                    {tabKey === 'overview' ? (
                       <div className='RunDetail__runDetailContainer__tabPanelBox overviewPanel'>
                         <React.Suspense fallback={<Spinner />}>
-                          {tabContent[tab]}
+                          {tabContent[tabKey]}
                         </React.Suspense>
                       </div>
                     ) : (
                       <div className='RunDetail__runDetailContainer__tabPanelBox'>
                         <div className='RunDetail__runDetailContainer__tabPanel container'>
                           <React.Suspense fallback={<Spinner />}>
-                            {tabContent[tab]}
+                            {tabContent[tabKey]}
                           </React.Suspense>
                         </div>
                       </div>

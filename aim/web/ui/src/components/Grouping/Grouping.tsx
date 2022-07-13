@@ -3,10 +3,11 @@ import React from 'react';
 import ErrorBoundary from 'components/ErrorBoundary/ErrorBoundary';
 import { Text } from 'components/kit';
 
-import GroupingPopovers from 'config/grouping/GroupingPopovers';
+import GroupingPopovers, {
+  GroupNameEnum,
+} from 'config/grouping/GroupingPopovers';
 
 import { IGroupingProps } from 'types/pages/components/Grouping/Grouping';
-import { GroupNameType } from 'types/services/models/metrics/metricsAppModel';
 
 import GroupingItem from '../GroupingItem/GroupingItem';
 
@@ -41,7 +42,7 @@ function Grouping({
                   key={groupName}
                   title={title}
                   inputLabel={inputLabel}
-                  groupName={groupName as GroupNameType}
+                  groupName={groupName as GroupNameEnum}
                   groupingData={groupingData}
                   groupingSelectOptions={groupingSelectOptions}
                   onSelect={onGroupingSelectChange}
@@ -58,16 +59,16 @@ function Grouping({
                           ]
                         }
                         onShuffleChange={onShuffleChange}
-                        {...(groupName === 'color' && {
+                        {...(groupName === GroupNameEnum.COLOR && {
                           onGroupingPaletteChange,
                           paletteIndex: groupingData?.paletteIndex,
                         })}
                       />
                     )
                   }
-                  onReset={() => onGroupingReset(groupName as GroupNameType)}
+                  onReset={() => onGroupingReset(groupName as GroupNameEnum)}
                   onVisibilityChange={() =>
-                    onGroupingApplyChange(groupName as GroupNameType)
+                    onGroupingApplyChange(groupName as GroupNameEnum)
                   }
                 />
               );

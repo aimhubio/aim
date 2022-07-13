@@ -8,18 +8,19 @@ import { RequestStatusEnum } from 'config/enums/requestStatusEnum';
 import {
   ISelectConfig,
   ISelectOption,
-} from 'services/models/explorer/createAppModel';
-import { IGroupingConfig } from 'services/models/explorer/createAppModel';
+  IGroupingConfig,
+  IColumnsOrder,
+} from 'types/services/models/explorer/createAppModel';
 
 import { IScatterAppModelState } from 'types/services/models/scatter/scatterAppModel';
 import { ITableRef } from 'types/components/Table/Table';
 import {
-  GroupNameType,
+  GroupNameEnum,
   IMetricTableRowData,
   IOnGroupingModeChangeParams,
   IOnGroupingSelectChangeParams,
   IFocusedState,
-  IPanelTooltip,
+  ITooltip,
   IChartTitleData,
   IGroupingSelectOption,
 } from 'types/services/models/metrics/metricsAppModel';
@@ -33,7 +34,6 @@ import {
 } from 'types/components/NotificationContainer/NotificationContainer';
 import { IProjectParamsMetrics } from 'types/services/models/projects/projectsModel';
 import { ITrendlineOptions } from 'types/services/models/scatter/scatterAppModel';
-import { IColumnsOrder } from 'types/services/models/explorer/createAppModel';
 
 import { IRequestProgress } from 'utils/app/setRequestProgress';
 
@@ -53,7 +53,7 @@ export interface IScattersProps extends Partial<RouteChildrenProps> {
   focusedState: IFocusedState;
   groupingData: IGroupingConfig;
   notifyData: IScatterAppModelState['notifyData'];
-  tooltip: IPanelTooltip;
+  tooltip: ITooltip;
   selectedOptionsData: ISelectConfig;
   tableRowHeight: RowHeightSize;
   sortFields: [string, 'asc' | 'desc' | boolean][];
@@ -71,9 +71,10 @@ export interface IScattersProps extends Partial<RouteChildrenProps> {
   requestStatus: RequestStatusEnum;
   requestProgress: IRequestProgress;
   trendlineOptions: ITrendlineOptions;
+  sameValueColumns?: string[] | [];
   selectedRows: { [key: string]: any };
   columnsOrder: IColumnsOrder;
-  onChangeTooltip: (tooltip: Partial<IPanelTooltip>) => void;
+  onChangeTooltip: (tooltip: Partial<ITooltip>) => void;
   onChangeTrendlineOptions: (options: Partial<ITrendlineOptions>) => void;
   onActivePointChange?: (
     activePoint: IActivePoint,
@@ -84,8 +85,8 @@ export interface IScattersProps extends Partial<RouteChildrenProps> {
   onGroupingSelectChange: (params: IOnGroupingSelectChangeParams) => void;
   onGroupingModeChange: (params: IOnGroupingModeChangeParams) => void;
   onGroupingPaletteChange: (index: number) => void;
-  onGroupingReset: (groupName: GroupNameType) => void;
-  onGroupingApplyChange: (groupName: GroupNameType) => void;
+  onGroupingReset: (groupName: GroupNameEnum) => void;
+  onGroupingApplyChange: (groupName: GroupNameEnum) => void;
   onGroupingPersistenceChange: (groupName: 'color' | 'stroke') => void;
   onBookmarkCreate: (params: IBookmarkFormState) => void;
   onBookmarkUpdate: (id: string) => void;

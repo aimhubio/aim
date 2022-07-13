@@ -1,3 +1,5 @@
+import { GroupNameEnum } from 'config/grouping/GroupingPopovers';
+
 import { IModel, State } from 'types/services/models/model';
 
 import { getFilteredGroupingOptions } from './getFilteredGroupingOptions';
@@ -6,15 +8,15 @@ export default function isGroupingApplied<M extends State>(
   model: IModel<M>,
 ): boolean {
   const groupByColor = getFilteredGroupingOptions({
-    groupName: 'color',
+    groupName: GroupNameEnum.COLOR,
     model,
   });
   const groupByStroke = getFilteredGroupingOptions({
-    groupName: 'stroke',
+    groupName: GroupNameEnum.STROKE,
     model,
   });
   const groupByChart = getFilteredGroupingOptions({
-    groupName: 'chart',
+    groupName: GroupNameEnum.CHART,
     model,
   });
   if (
