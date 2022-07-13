@@ -11,11 +11,11 @@
   &__title {
     text-transform: uppercase;
     color: $pico-50;
-    font-weight: 500;
+    font-weight: $font-500;
   }
 
   &__noAttachedTags {
-    font-weight: 500;
+    font-weight: $font-500;
     font-size: 0.688rem;
     color: $pico-70;
   }
@@ -57,7 +57,7 @@
   &__ControlPopover__title {
     color: $pico-50;
     background: inherit;
-    font-weight: 500;
+    font-weight: $font-500;
     border: unset;
   }
 }
