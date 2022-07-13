@@ -70,21 +70,18 @@ function drawAxes(args: IDrawAxesArgs): void {
     const { scale } = args;
 
     const domain = scale.domain();
-    const first = Math.floor(domain[0] as number);
-    const last = Math.floor(domain[domain.length - 1] as number);
-    const distance = (last - first) / (ticksCount - 1);
+    const first = domain[0] as number;
+    const last = domain[domain.length - 1] as number;
+    const distance = Math.ceil((last - first) / (ticksCount - 1));
     const tickValues: number[] = [];
     for (let i = 0; i < ticksCount; i++) {
-      const lastRounded = Math.floor(last);
       const current = Math.floor(first + i * distance);
-      if (i === ticksCount - 1 && tickValues.indexOf(lastRounded) === -1) {
-        if (axesScaleType.xAxis === ScaleEnum.Log && lastRounded > 0) {
-          tickValues.push(lastRounded);
-        }
-      } else if (current < last) {
-        if (axesScaleType.xAxis === ScaleEnum.Log && current > 0) {
-          tickValues.push(current);
-        }
+      if (
+        current >= first &&
+        current <= last &&
+        tickValues.indexOf(current) === -1
+      ) {
+        tickValues.push(current);
       }
     }
 

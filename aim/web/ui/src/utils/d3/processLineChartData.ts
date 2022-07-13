@@ -97,16 +97,10 @@ function processLineChartData({
   // add y-axis scale range manually
   if (axesScaleRange?.yAxis && !_.isEmpty(axesScaleRange?.yAxis)) {
     if (axesScaleRange.yAxis.min !== undefined) {
-      yMin =
-        axesScaleType.yAxis === ScaleEnum.Log && axesScaleRange.yAxis.min <= 0
-          ? MIN_LOG_VALUE
-          : axesScaleRange.yAxis.min;
+      yMin = axesScaleRange.yAxis.min;
     }
     if (axesScaleRange.yAxis.max !== undefined) {
-      yMax =
-        axesScaleType.yAxis === ScaleEnum.Log && axesScaleRange.yAxis.max <= 0
-          ? MIN_LOG_VALUE
-          : axesScaleRange.yAxis.max;
+      yMax = axesScaleRange.yAxis.max;
     }
     unableToDrawConditions.unshift({
       condition: yMin > yMax,
@@ -116,16 +110,10 @@ function processLineChartData({
   // add x-axis scale range manually
   if (axesScaleRange?.xAxis && !_.isEmpty(axesScaleRange?.xAxis)) {
     if (axesScaleRange.xAxis.min !== undefined) {
-      xMin =
-        axesScaleType.xAxis === ScaleEnum.Log && axesScaleRange.xAxis.min <= 0
-          ? MIN_LOG_VALUE
-          : axesScaleRange.xAxis.min;
+      xMin = axesScaleRange.xAxis.min;
     }
     if (axesScaleRange.xAxis.max !== undefined) {
-      xMax =
-        axesScaleType.xAxis === ScaleEnum.Log && axesScaleRange.xAxis.max <= 0
-          ? MIN_LOG_VALUE
-          : axesScaleRange.xAxis.max;
+      xMax = axesScaleRange.xAxis.max;
     }
     unableToDrawConditions.unshift({
       condition: xMin > xMax,
@@ -133,15 +121,30 @@ function processLineChartData({
     });
   }
 
+  if (axesScaleType.xAxis === ScaleEnum.Log) {
+    if (xMin <= 0) {
+      xMin = MIN_LOG_VALUE;
+    }
+    if (xMax <= 0) {
+      xMax = MIN_LOG_VALUE;
+    }
+  }
+
+  if (axesScaleType.yAxis === ScaleEnum.Log) {
+    if (yMin <= 0) {
+      yMin = MIN_LOG_VALUE;
+    }
+    if (yMax <= 0) {
+      yMax = MIN_LOG_VALUE;
+    }
+  }
+
   // ADD margin for y-dimension
   const diff = yMax - yMin;
   const portion = 0.05;
   const yMargin = yMax !== yMin ? diff * portion : 1;
   yMax += yMargin;
-  yMin -=
-    axesScaleType.yAxis === ScaleEnum.Log && yMin <= yMargin
-      ? MIN_LOG_VALUE
-      : yMargin;
+  yMin -= yMin <= yMargin ? 0 : yMargin;
 
   const { width, height, margin } = visBoxRef.current;
 

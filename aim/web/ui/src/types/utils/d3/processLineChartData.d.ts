@@ -9,7 +9,7 @@ import {
 } from 'types/services/models/metrics/metricsAppModel';
 import { ILine } from 'types/components/LineChart/LineChart';
 import { IAxesScaleState } from 'types/components/AxesScalePopover/AxesScalePopover';
-import { IAxesScaleRange } from '../../components/AxesPropsPopover/AxesPropsPopover';
+import { IAxesScaleRange } from 'types/components/AxesPropsPopover/AxesPropsPopover';
 
 export interface IProcessedData extends ILine, IPoint {
   color: string;
