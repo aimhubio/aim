@@ -15,6 +15,7 @@
 - Fix tensorboard log conversion for images (mihran113)
 - Fix `SyntaxError` handling for python3.10+ (mihran113)
 - Check if gradient is None when tracking gradient distributions (kage08)
+- Fix displaying non-syntax errors across Aim UI (arsengit) 
 
 ## 3.11.2 Jul 8, 2022
 
