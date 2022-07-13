@@ -1,16 +1,17 @@
 import { ImageRenderingEnum } from 'config/enums/imageEnums';
 
-import { IPanelTooltip } from 'services/models/metrics/metricsAppModel';
-import { IGroupingSelectOption } from 'services/models/imagesExplore/imagesExploreAppModel';
-
-import { SortField } from 'types/services/models/metrics/metricsAppModel';
+import { IGroupingSelectOption } from 'types/services/models/imagesExplore/imagesExploreAppModel';
+import {
+  ITooltip,
+  SortField,
+} from 'types/services/models/metrics/metricsAppModel';
 import { IImagesExploreAppConfig } from 'types/services/models/imagesExplore/imagesExploreAppModel';
 
 export interface IControlProps {
   selectOptions: IGroupingSelectOption[];
-  tooltip: IPanelTooltip;
+  tooltip?: ITooltip;
   orderedMap: { [key: string]: any };
-  onChangeTooltip: (tooltip: Partial<IPanelTooltip>) => void;
+  onChangeTooltip: (tooltip: Partial<ITooltip>) => void;
   additionalProperties: IImagesExploreAppConfig['images']['additionalProperties'];
   onImageSizeChange: (newValue: number) => void;
   onImageRenderingChange: (type: ImageRenderingEnum) => void;

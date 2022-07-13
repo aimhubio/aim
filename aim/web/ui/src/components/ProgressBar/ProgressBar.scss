@@ -10,7 +10,7 @@
   width: 100%;
   height: 100%;
   background-color: white;
-  z-index: 1350;
+  z-index: 4;
   opacity: 1;
   transform: translateY(0);
   left: $space-xxxxs;
@@ -95,7 +95,6 @@
       font-family: Inter, sans-serif;
       font-feature-settings: 'tnum';
       &__matched {
-        color: $success-color;
         margin-left: auto;
       }
     }

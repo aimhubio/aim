@@ -4,6 +4,7 @@
 
 ### Enhancements:
 
+- Filter redundant tooltip data from URL config state (KaroMourad)
 - Improve rendering performance by enhancing table columns virtualization mechanism (roubkar)
 - Increase visibility and usability of the Show table diff button (arsengit)
 - Add support for tensorboard audios conversion (mihran113)
@@ -14,6 +15,20 @@
 - Fix tensorboard log conversion for images (mihran113)
 - Fix `SyntaxError` handling for python3.10+ (mihran113)
 - Check if gradient is None when tracking gradient distributions (kage08)
+
+## 3.11.2 Jul 8, 2022
+
+### Enhancements:
+
+- Display the error position when getting syntax errors after searching (arsengit)
+
+### Fixes:
+
+- Avoid saving crashed or terminated search requests as the last state on explorers (arsengit) 
+- Remove the progress bar blinking when searching runs in Runs Explorer (KaroMourad)
+- Fix the "matched runs" sentence color style in progress bars (KaroMourad)
+- Fix `SyntaxError` handling for python3.10+ (mihran113)
+- Fix generic Exceptions handling and adjust HTTPException handling (alberttorosyan)
 
 ## 3.11.1 Jun 27, 2022
 

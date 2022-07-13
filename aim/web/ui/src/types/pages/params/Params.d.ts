@@ -7,9 +7,9 @@ import { ResizeModeEnum } from 'config/enums/tableEnums';
 import { RequestStatusEnum } from 'config/enums/requestStatusEnum';
 
 import {
-  GroupNameType,
+  GroupNameEnum,
   IChartTitleData,
-  IPanelTooltip,
+  ITooltip,
   IFocusedState,
   IGroupingSelectOption,
   IOnGroupingModeChangeParams,
@@ -17,7 +17,10 @@ import {
 } from 'types/services/models/metrics/metricsAppModel';
 import { IActivePoint } from 'types/utils/d3/drawHoverAttributes';
 import { IChartPanelRef } from 'types/components/ChartPanel/ChartPanel';
-import { INotification } from 'types/components/NotificationContainer/NotificationContainer';
+import {
+  INotification,
+  ISyntaxErrorDetails,
+} from 'types/components/NotificationContainer/NotificationContainer';
 import { IBookmarkFormState } from 'types/components/BookmarkForm/BookmarkForm';
 import {
   IColumnsOrder,
@@ -49,7 +52,7 @@ export interface IParamsProps extends Partial<RouteChildrenProps> {
   sortFields: [string, 'asc' | 'desc' | boolean][];
   focusedState: IFocusedState;
   isVisibleColorIndicator: boolean;
-  tooltip: IPanelTooltip;
+  tooltip: ITooltip;
   chartTitleData: IChartTitleData;
   selectedParamsData: ISelectConfig;
   onRowHeightChange: any;
@@ -70,7 +73,11 @@ export interface IParamsProps extends Partial<RouteChildrenProps> {
   notifyData: INotification[];
   tableRowHeight?: any;
   hiddenColumns: any;
-  selectFormData: { options: ISelectOption[]; suggestions: string[] };
+  selectFormData: {
+    options: ISelectOption[];
+    suggestions: string[];
+    error: ISyntaxErrorDetails;
+  };
   columnsOrder: IColumnsOrder;
   sameValueColumns: string[] | [];
   onNotificationDelete: (id: number) => void;
@@ -85,14 +92,14 @@ export interface IParamsProps extends Partial<RouteChildrenProps> {
   onGroupingSelectChange: (params: IOnGroupingSelectChangeParams) => void;
   onGroupingModeChange: (params: IOnGroupingModeChangeParams) => void;
   onGroupingPaletteChange: (index: number) => void;
-  onGroupingReset: (groupName: GroupNameType) => void;
-  onGroupingApplyChange: (groupName: GroupNameType) => void;
+  onGroupingReset: (groupName: GroupNameEnum) => void;
+  onGroupingApplyChange: (groupName: GroupNameEnum) => void;
   onGroupingPersistenceChange: (groupName: 'color' | 'stroke') => void;
   onBookmarkCreate: (params: IBookmarkFormState) => void;
   onBookmarkUpdate: (id: string) => void;
   onNotificationAdd: (notification: INotification) => void;
   onResetConfigData: () => void;
-  onChangeTooltip: (tooltip: Partial<IPanelTooltip>) => void;
+  onChangeTooltip: (tooltip: Partial<ITooltip>) => void;
   onExportTableData: (e: React.ChangeEvent<any>) => void;
   onColumnsVisibilityChange: (order: any) => void;
   onTableDiffShow: () => void;
