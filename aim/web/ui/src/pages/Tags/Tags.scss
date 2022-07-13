@@ -20,15 +20,15 @@
     &__tabs {
       .MuiTab-textColorInherit {
         opacity: 1;
-        font-weight: 500;
+        font-weight: $font-500;
         font-size: $text-md;
         text-transform: none;
         &.MuiInputBase-input {
-          font-weight: 600;
+          font-weight: $font-600;
         }
       }
       .Mui-selected {
-        font-weight: 600;
+        font-weight: $font-600;
         color: $pico;
       }
     }
@@ -79,11 +79,11 @@
           padding-right: 0.5625rem;
         }
         .MuiInputBase-input {
-          font-weight: 500;
+          font-weight: $font-500;
           font-size: $text-md;
           color: #414b6d;
           &::placeholder {
-            font-weight: 500;
+            font-weight: $font-500;
             font-size: $text-md;
             color: #606986;
             opacity: 1;
@@ -98,7 +98,7 @@
           padding-right: 0.5rem;
         }
         .MuiButton-label {
-          font-weight: 500;
+          font-weight: $font-500;
           font-size: $text-md;
           justify-content: flex-start;
         }
@@ -127,7 +127,7 @@
           bottom: 0;
         }
         &__title {
-          font-weight: 600;
+          font-weight: $font-600;
           font-size: $text-md;
         }
       }
@@ -183,19 +183,19 @@
     }
   }
   &__runDuration {
-    font-weight: 500;
+    font-weight: $font-500;
     color: $text-color;
     font-size: $text-lg;
     @include monospaceFontFamily(14);
   }
   &__runCreatedDate {
-    font-weight: 500;
+    font-weight: $font-500;
     color: $text-color;
     font-size: $text-lg;
     @include monospaceFontFamily(14);
   }
   &__runName {
-    font-weight: 500;
+    font-weight: $font-500;
     color: $primary-color;
     text-decoration: none;
     font-size: $text-lg;
@@ -309,12 +309,12 @@
     }
     &__textBox {
       &__titleText {
-        font-weight: 600;
+        font-weight: $font-600;
         font-size: $text-md;
         margin-bottom: 5px;
       }
       &__contentText {
-        font-weight: normal;
+        font-weight: $font-400;
         font-size: $text-sm;
       }
     }
