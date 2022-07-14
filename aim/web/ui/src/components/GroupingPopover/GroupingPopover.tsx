@@ -68,7 +68,7 @@ function GroupingPopover({
   //   onGroupingModeChange({
   //     groupName,
   //     value: val === 'Reverse',
-  //     options: groupingData?.reverseMode[groupName as GroupNameType]
+  //     options: groupingData?.reverseMode[groupName as GroupNameEnum]
   //       ? groupingSelectOptions
   //       : null,
   //   });
@@ -173,7 +173,7 @@ function GroupingPopover({
               title='Select mode'
               id='yAxis'
               value={
-                groupingData?.reverseMode[groupName as GroupNameType]
+                groupingData?.reverseMode[groupName as GroupNameEnum]
                   ? 'Reverse'
                   : 'Group'
               }

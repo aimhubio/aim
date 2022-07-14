@@ -23,7 +23,17 @@ async def http_exception_handler(request, exc):
     response = {'message': message}
     if detail:
         response.update({'detail': detail})
+    else:
+        response.update({'detail': str(exc)})
     return JSONResponse(response, status_code=exc.status_code)
+
+
+async def fallback_exception_handler(request, exc):
+    response = {
+        'message': f'\'{type(exc)}\' exception raised!',
+        'detail': str(exc)
+    }
+    return JSONResponse(response, status_code=500)
 
 
 def create_app():
@@ -60,6 +70,7 @@ def create_app():
     api_app = FastAPI()
     api_app.add_middleware(GZipMiddleware)
     api_app.add_exception_handler(HTTPException, http_exception_handler)
+    api_app.add_exception_handler(Exception, fallback_exception_handler)
 
     if os.environ.get(AIM_PROFILER_KEY) == "1":
         api_app.add_middleware(PyInstrumentProfilerMiddleware,

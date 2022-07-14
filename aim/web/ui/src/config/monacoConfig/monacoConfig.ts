@@ -1,5 +1,8 @@
 import { AppNameEnum } from 'services/models/explorer';
 
+const WHITE = '#fff';
+const TEXT_COLOR = '#414b6d';
+const BORDER_COLOR = '#a1c7f5';
 export const getMonacoConfig = (advanced = false): Record<any, any> => ({
   height: advanced ? '62px' : '24px',
   options: {
@@ -34,19 +37,23 @@ export const getMonacoConfig = (advanced = false): Record<any, any> => ({
       inherit: true,
       rules: [{ background: 'ffffff' }],
       colors: {
-        'editor.foreground': '#414b6d',
-        'editor.background': '#ffffff',
+        'editor.foreground': TEXT_COLOR,
+        'editor.background': WHITE,
         'editorCursor.foreground': '#83899e',
-        'dropdown.background': '#fff',
-        'editorSuggestWidget.background': '#fff',
-        'editorSuggestWidget.border': '#a1c7f5',
+        'dropdown.background': WHITE,
+        'editorSuggestWidget.background': WHITE,
+        'editorSuggestWidget.border': BORDER_COLOR,
         'editorSuggestWidget.selectedBackground': '#dceafb',
-        'editorSuggestWidget.selectedForeground': '#414b6d',
+        'editorSuggestWidget.selectedForeground': TEXT_COLOR,
         'editorSuggestWidget.highlightForeground': '#1c2852',
         'editorSuggestWidget.focusHighlightForeground': '#1c2852',
-        'editorSuggestWidget.foreground': '#414b6d',
+        'editorSuggestWidget.foreground': TEXT_COLOR,
         'list.hoverBackground': '#f3f8fe',
-        'scrollbar.shadow': '#fff',
+        'scrollbar.shadow': WHITE,
+        'editorHoverWidget.background': WHITE,
+        'editorHoverWidget.border': BORDER_COLOR,
+        'editorHoverWidget.statusBarBackground': WHITE,
+        'editorHoverWidget.foreground': TEXT_COLOR,
       },
     },
   },
@@ -62,6 +69,7 @@ export const getSuggestionsByExplorer = (
 ): Record<any, any> => {
   const defaultSuggestions = {
     run: {
+      active: false,
       hash: '',
       name: '',
       experiment: '',

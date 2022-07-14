@@ -85,17 +85,22 @@ function SelectForm({
     imagesExploreAppModel.abortRequest();
   }
 
-  function onSelect(event: object, value: ISelectOption[]): void {
-    const lookup = value.reduce(
-      (acc: { [key: string]: number }, curr: ISelectOption) => {
-        acc[curr.label] = ++acc[curr.label] || 0;
-        return acc;
-      },
-      {},
-    );
-    onImagesExploreSelectChange(
-      value.filter((option: ISelectOption) => lookup[option.label] === 0),
-    );
+  function onSelect(
+    event: React.ChangeEvent<{}>,
+    value: ISelectOption[],
+  ): void {
+    if (event.type === 'click') {
+      const lookup = value.reduce(
+        (acc: { [key: string]: number }, curr: ISelectOption) => {
+          acc[curr.label] = ++acc[curr.label] || 0;
+          return acc;
+        },
+        {},
+      );
+      onImagesExploreSelectChange(
+        value.filter((option: ISelectOption) => lookup[option.label] === 0),
+      );
+    }
   }
 
   function handleDelete(field: string): void {
@@ -164,6 +169,7 @@ function SelectForm({
                     refObject={advancedAutocompleteRef}
                     context={selectFormData?.advancedSuggestions}
                     value={selectedImagesData?.advancedQuery}
+                    error={selectFormData?.advancedError}
                     onEnter={handleSearch}
                     disabled={isDisabled}
                   />
@@ -297,6 +303,7 @@ function SelectForm({
                   refObject={autocompleteRef}
                   context={selectFormData?.suggestions}
                   value={selectedImagesData?.query}
+                  error={selectFormData?.error}
                   onEnter={handleSearch}
                   disabled={isDisabled}
                 />
@@ -304,7 +311,6 @@ function SelectForm({
             </ErrorBoundary>
           )}
         </div>
-
         <div className='SelectForm__search__container'>
           <Button
             fullWidth

@@ -12,6 +12,7 @@
   flex-direction: column;
   justify-content: space-between;
   padding-right: 1rem;
+  height: 4.5rem;
   /* TODO [GA]: Override MUI default styles in a nice way */
   .MuiBox-root {
     justify-content: flex-start;
@@ -41,7 +42,7 @@
 .SelectForm__tags__empty {
   font-size: $text-md;
   color: $pico-50;
-  font-weight: normal;
+  font-weight: $font-400;
 }
 
 .SelectForm__metric__select {

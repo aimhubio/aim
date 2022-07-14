@@ -17,8 +17,8 @@ import './TooltipContentPopover.scss';
 
 function TooltipContentPopover({
   onChangeTooltip,
-  selectedFields,
-  displayTooltip,
+  selectedFields = [],
+  displayTooltip = false,
   selectOptions,
 }: ITooltipContentPopoverProps): React.FunctionComponentElement<React.ReactNode> {
   let [inputValue, setInputValue] = React.useState('');
@@ -153,7 +153,7 @@ function TooltipContentPopover({
             tint={50}
             className='TooltipContentPopover__subtitle'
           >
-            Toggle Chart Tooltip Visibility
+            Toggle Tooltip Visibility
           </Text>
           <ToggleButton
             title='Select Mode'

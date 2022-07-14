@@ -1,3 +1,4 @@
+@use 'src/styles/abstracts' as *;
 $table-prefix: BaseTable !default;
 
 @mixin table-edge-padding($padding-left: null, $padding-right: null) {
@@ -40,7 +41,7 @@ $table-prefix: BaseTable !default;
   $box-shadow-blur: 4px !default;
   $border: 1px solid #eeeeee !default;
   $header-background-color: #f8f8f8 !default;
-  $header-font-weight: 600 !default;
+  $header-font-weight: $font-600 !default;
   $row-hovered-background-color: #e2f2ff !default;
   $header-cell-hovered-background-color: #f3f3f3 !default;
   $sort-indicator-hovered-color: #888888 !default;

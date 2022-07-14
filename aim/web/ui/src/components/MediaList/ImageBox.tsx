@@ -93,15 +93,12 @@ const ImageBox = ({
     <ErrorBoundary key={index}>
       <div className='ImageBox' style={style}>
         <div
-          className={`ImageBox__image ImageBox__image--${
-            additionalProperties.imageRendering
-          } ${
-            focusedState.key === data.key
-              ? focusedState?.active
-                ? ' focus'
-                : ' active'
-              : ''
-          }`}
+          className={classNames('ImageBox__image', {
+            [`ImageBox__image--${additionalProperties.imageRendering}`]:
+              !!additionalProperties.imageRendering,
+            focus: focusedState.key === data.key && focusedState?.active,
+            active: focusedState.key === data.key && !focusedState?.active,
+          })}
           data-key={`${data.key}`}
           data-seqkey={`${data.seqKey}`}
           data-mediasetitem='mediaSetItem'
@@ -164,12 +161,10 @@ const ImageBox = ({
               tooltipContent={
                 tooltip?.content || {
                   context: data.context,
-                  mediaContent: {
-                    step: data.step,
-                    index: data.index,
-                    caption: data.caption,
-                    name: data.name,
-                  },
+                  step: data.step,
+                  index: data.index,
+                  caption: data.caption,
+                  images_name: data.name,
                 }
               }
               selectOptions={selectOptions}

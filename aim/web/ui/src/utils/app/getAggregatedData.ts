@@ -17,8 +17,9 @@ export default function getAggregatedData<M extends State>({
   if (!processedData) {
     return [];
   }
+
   const paletteIndex: number =
-    model.getState().config?.grouping?.paletteIndex || 0;
+    model.getState()?.config?.grouping?.paletteIndex || 0;
 
   let aggregatedData: IAggregatedData[] = [];
 

@@ -59,7 +59,7 @@ function ScattersContainer(): React.FunctionComponentElement<React.ReactNode> {
 
   React.useEffect(() => {
     if (tableRef.current && chartPanelRef.current) {
-      setComponentRefs<IScatterAppModelState>({
+      setComponentRefs({
         model: scattersAppModel,
         refElement: {
           tableRef,
@@ -136,8 +136,8 @@ function ScattersContainer(): React.FunctionComponentElement<React.ReactNode> {
         panelResizing={panelResizing}
         scatterPlotData={scattersData?.chartData!}
         chartTitleData={scattersData?.chartTitleData!}
+        tooltip={scattersData?.tooltip!}
         focusedState={scattersData?.config?.chart?.focusedState!}
-        tooltip={scattersData?.config?.chart?.tooltip!}
         trendlineOptions={scattersData?.config?.chart?.trendlineOptions!}
         selectedOptionsData={scattersData?.config?.select!}
         notifyData={scattersData?.notifyData!}
