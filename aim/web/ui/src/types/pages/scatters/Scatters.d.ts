@@ -11,7 +11,6 @@ import {
   IGroupingConfig,
   IColumnsOrder,
 } from 'types/services/models/explorer/createAppModel';
-
 import { IScatterAppModelState } from 'types/services/models/scatter/scatterAppModel';
 import { ITableRef } from 'types/components/Table/Table';
 import {

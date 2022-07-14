@@ -1,5 +1,5 @@
 import * as d3 from 'd3';
-import _, { isNil } from 'lodash-es';
+import _ from 'lodash-es';
 
 import { ILineDataType } from 'types/utils/d3/drawParallelLines';
 import {
