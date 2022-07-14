@@ -185,8 +185,10 @@ function filterDataByBrushedScale({
   for (let i = 0; i < keysOfDimension.length; i++) {
     const keyOfDimension = keysOfDimension[i];
     const value: string | number | null = values[keyOfDimension];
-    const domainData: Array<string | number> = domainsData[keyOfDimension];
+    const domainData: Array<string | number> =
+      domainsData[keyOfDimension] ?? dimensions?.[keyOfDimension]?.domainData;
     const { scaleType } = dimensions[keyOfDimension];
+
     if (
       value !== null &&
       ((scaleType === 'point' && !domainData?.includes(value)) ||
