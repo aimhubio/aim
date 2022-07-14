@@ -9,11 +9,11 @@
 - Increase visibility and usability of the Show table diff button (arsengit)
 - Add support for tensorboard audios conversion (mihran113)
 - Mention explicitly run params everywhere params is mentioned (VkoHov)
+- Add run duration property for SDK and queries (mihran113)
 
 ### Fixes:
 
 - Fix tensorboard log conversion for images (mihran113)
-- Fix `SyntaxError` handling for python3.10+ (mihran113)
 - Check if gradient is None when tracking gradient distributions (kage08)
 - Fix displaying non-syntax errors across Aim UI (arsengit) 
 
