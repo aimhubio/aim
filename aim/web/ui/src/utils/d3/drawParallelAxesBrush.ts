@@ -48,7 +48,7 @@ function drawParallelAxesBrush({
     }
     const extent: d3.BrushSelection | any = event.selection;
     let brushPosition: [number, number] | [string, string] | null = null;
-    if (!_.isNil(extent)) {
+    if (!_.isNil(extent) && brushRef.current?.yScale?.[keyOfDimension]) {
       if (dimensions[keyOfDimension].scaleType === 'point') {
         const domainData = scalePointDomainData(
           brushRef.current.yScale[keyOfDimension],
@@ -101,8 +101,8 @@ function drawParallelAxesBrush({
     ) {
       attributesRef.current.updateFocusedChart({
         mouse: mouse ?? [
-          brushRef?.current?.xScale?.(keyOfDimension) ?? 0,
-          brushRef?.current?.yScale?.[keyOfDimension ?? 0]?.(
+          brushRef.current?.xScale?.(keyOfDimension) ?? 0,
+          brushRef.current?.yScale?.[keyOfDimension ?? 0]?.(
             attributesRef.current.focusedState?.yValue,
           ) + visBoxRef.current.margin.top,
         ],
