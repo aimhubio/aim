@@ -688,6 +688,7 @@ const Table = React.forwardRef(function Table(
                   onTableResizeModeChange={onTableResizeModeChange}
                 />
               )}
+
               <div className='flex fac Table__header__buttons'>
                 {onManageColumns && (
                   <ManageColumnsPopover
@@ -699,103 +700,86 @@ const Table = React.forwardRef(function Table(
                     hideSystemMetrics={hideSystemMetrics}
                     onManageColumns={onManageColumns}
                     onColumnsVisibilityChange={onColumnsVisibilityChange}
-                    onTableDiffShow={onTableDiffShow}
                     appName={appName}
                   />
                 )}
-                <div className='flex fac Table__header__buttons'>
-                  {onManageColumns && (
-                    <ManageColumnsPopover
-                      columnsData={columnsData.filter(
-                        (item: any) =>
-                          item.key !== '#' && item.key !== 'actions',
-                      )}
-                      columnsOrder={columnsOrder}
-                      hiddenColumns={hiddenColumns}
-                      hideSystemMetrics={hideSystemMetrics}
-                      onManageColumns={onManageColumns}
-                      onColumnsVisibilityChange={onColumnsVisibilityChange}
-                      appName={appName}
-                    />
-                  )}
-                  {onRowsChange && (
-                    <HideRowsPopover
-                      hiddenChartRows={hiddenChartRows}
-                      toggleRowsVisibility={onRowsChange}
-                    />
-                  )}
-                  {onSort && (
-                    <ControlPopover
-                      anchorOrigin={{
-                        vertical: 'top',
-                        horizontal: 'left',
-                      }}
-                      transformOrigin={{
-                        vertical: 'bottom',
-                        horizontal: 'left',
-                      }}
-                      title='Sort table by:'
-                      anchor={({ onAnchorClick, opened }) => (
-                        <Button
-                          type='text'
-                          color='secondary'
-                          size='small'
-                          onClick={onAnchorClick}
-                          className={`Table__header__item ${
-                            opened || sortPopoverChanged ? 'opened' : ''
-                          }`}
-                        >
-                          <Icon name='sort-outside' />
-                          <Text size={14} tint={100}>
-                            Sort
-                          </Text>
-                        </Button>
-                      )}
-                      component={
-                        <SortPopover
-                          sortOptions={sortOptions}
-                          sortFields={sortFields}
-                          onSort={onSort}
-                          onReset={onSortReset}
-                        />
-                      }
-                    />
-                  )}
-                  {onRowHeightChange && (
-                    <RowHeightPopover
-                      rowHeight={rowHeight}
-                      onRowHeightChange={onRowHeightChange}
-                      appName={appName}
-                    />
-                  )}
-                </div>
-                {onTableDiffShow && (
-                  <Button
-                    size='small'
-                    variant='outlined'
-                    className='Table__header__item--diffBtn'
-                    disabled={isDiffButtonDisabled}
-                    onClick={onTableDiffShow}
-                  >
-                    Show Table Diff
-                  </Button>
+                {onRowsChange && (
+                  <HideRowsPopover
+                    hiddenChartRows={hiddenChartRows}
+                    toggleRowsVisibility={onRowsChange}
+                  />
                 )}
-                {onExport && (
-                  <div className='fac'>
-                    <Button
-                      fullWidth
-                      variant='outlined'
-                      size='small'
-                      onClick={onExport}
-                      startIcon={<Icon fontSize={14} name='download' />}
-                    >
-                      <Text size={14} color='inherit'>
-                        Export
-                      </Text>
-                    </Button>
-                  </div>
+                {onSort && (
+                  <ControlPopover
+                    anchorOrigin={{
+                      vertical: 'top',
+                      horizontal: 'left',
+                    }}
+                    transformOrigin={{
+                      vertical: 'bottom',
+                      horizontal: 'left',
+                    }}
+                    title='Sort table by:'
+                    anchor={({ onAnchorClick, opened }) => (
+                      <Button
+                        type='text'
+                        color='secondary'
+                        size='small'
+                        onClick={onAnchorClick}
+                        className={`Table__header__item ${
+                          opened || sortPopoverChanged ? 'opened' : ''
+                        }`}
+                      >
+                        <Icon name='sort-outside' />
+                        <Text size={14} tint={100}>
+                          Sort
+                        </Text>
+                      </Button>
+                    )}
+                    component={
+                      <SortPopover
+                        sortOptions={sortOptions}
+                        sortFields={sortFields}
+                        onSort={onSort}
+                        onReset={onSortReset}
+                      />
+                    }
+                  />
+                )}
+                {onRowHeightChange && (
+                  <RowHeightPopover
+                    rowHeight={rowHeight}
+                    onRowHeightChange={onRowHeightChange}
+                    appName={appName}
+                  />
                 )}
               </div>
+              {onTableDiffShow && (
+                <Button
+                  size='small'
+                  variant='outlined'
+                  className='Table__header__item--diffBtn'
+                  disabled={isDiffButtonDisabled}
+                  onClick={onTableDiffShow}
+                >
+                  Show Table Diff
+                </Button>
+              )}
+              {onExport && (
+                <div className='fac'>
+                  <Button
+                    fullWidth
+                    variant='outlined'
+                    size='small'
+                    onClick={onExport}
+                    startIcon={<Icon fontSize={14} name='download' />}
+                  >
+                    <Text size={14} color='inherit'>
+                      Export
+                    </Text>
+                  </Button>
+                </div>
+              )}
             </div>
           ) : !isEmpty(selectedRows) && multiSelect ? (
             <div className='Table__header selectedRowActionsContainer'>
