@@ -4155,7 +4155,7 @@ function createAppModel(appConfig: IAppInitialConfig) {
           highLevelParams = highLevelParams.concat(
             getObjectPaths(run.params, run.params, '', false, true),
           );
-          let metrics: any = {};
+          let metricsLastValues: any = {};
           run.traces.metric.forEach((trace) => {
             metricsColumns[trace.name] = {
               ...metricsColumns[trace.name],
@@ -4171,7 +4171,7 @@ function createAppModel(appConfig: IAppInitialConfig) {
                 ? trace.name
                 : `${trace.name}${contextName}`
             }`;
-            metrics[key] = trace.last_value.last;
+            metricsLastValues[key] = trace.last_value.last;
           });
           const paramKey = encode({ runHash: run.hash });
 
@@ -4180,7 +4180,7 @@ function createAppModel(appConfig: IAppInitialConfig) {
             isHidden: configData!.table.hiddenMetrics!.includes(paramKey),
             color: COLORS[paletteIndex][index % COLORS[paletteIndex].length],
             key: paramKey,
-            metrics,
+            metricsLastValues,
             dasharray: DASH_ARRAYS[0],
           });
         });
