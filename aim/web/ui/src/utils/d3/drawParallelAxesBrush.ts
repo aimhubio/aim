@@ -101,8 +101,8 @@ function drawParallelAxesBrush({
     ) {
       attributesRef.current.updateFocusedChart({
         mouse: mouse ?? [
-          brushRef.current.xScale(keyOfDimension),
-          brushRef.current.yScale[keyOfDimension](
+          brushRef?.current?.xScale?.(keyOfDimension) ?? 0,
+          brushRef?.current?.yScale?.[keyOfDimension ?? 0]?.(
             attributesRef.current.focusedState?.yValue,
           ) + visBoxRef.current.margin.top,
         ],
