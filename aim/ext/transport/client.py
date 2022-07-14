@@ -9,6 +9,7 @@ import aim.ext.transport.remote_tracking_pb2_grpc as remote_tracking_pb2_grpc
 
 from aim.ext.transport.message_utils import pack_stream, unpack_stream, raise_exception
 from aim.ext.transport.rpc_queue import RpcQueueWithRetry
+from aim.ext.transport.heartbeat import HeartBeatSender
 from aim.ext.transport.config import (
     AIM_CLIENT_SSL_CERTIFICATES_FILE,
     AIM_RT_MAX_MESSAGE_SIZE,
@@ -51,8 +52,17 @@ class Client:
             self._remote_channel = grpc.insecure_channel(remote_path, options=options)
 
         self._remote_stub = remote_tracking_pb2_grpc.RemoteTrackingServiceStub(self._remote_channel)
-
+        self._heartbeat_sender = HeartBeatSender(self)
+        self._heartbeat_sender.start()
         self._thread_local.atomic_instructions = None
+
+    def health_check(self, health_check_type='heartbeat'):
+        request = rpc_messages.HealthCheckRequest(
+            resource_handler=self.uri,
+            check_type=health_check_type,
+        )
+        response = self.remote.health_check(request)
+        return response
 
     def get_resource_handler(self, resource_type, args=()):
         request = rpc_messages.ResourceRequest(
