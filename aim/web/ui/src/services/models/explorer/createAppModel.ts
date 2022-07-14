@@ -1,7 +1,6 @@
 import moment from 'moment';
 import { saveAs } from 'file-saver';
 import _ from 'lodash-es';
-import { any } from 'prop-types';
 
 import { HighlightEnum } from 'components/HighlightModesPopover/HighlightModesPopover';
 import { IPoint } from 'components/ScatterPlot';
