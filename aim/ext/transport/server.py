@@ -12,7 +12,7 @@ import aim.ext.transport.remote_tracking_pb2_grpc as remote_tracking_pb2_grpc
 from aim.ext.transport.message_utils import pack_stream, unpack_bytes, unpack_stream, build_exception, ResourceObject
 from aim.ext.transport.handlers import get_tree, get_structured_run
 from aim.ext.transport.config import AIM_RT_MAX_MESSAGE_SIZE, AIM_RT_DEFAULT_MAX_MESSAGE_SIZE
-from aim.ext.transport.heartbeat import HeartBeatWatcher
+from aim.ext.transport.heartbeat import RPCHeartbeatWatcher
 
 from aim.storage.treeutils import encode_tree, decode_tree
 
@@ -230,7 +230,7 @@ def run_server(host, port, workers=1, ssl_keyfile=None, ssl_certfile=None):
 
     server.start()
 
-    heartbeat_watcher = HeartBeatWatcher(
+    heartbeat_watcher = RPCHeartbeatWatcher(
         RemoteTrackingServicer.client_heartbeat_pool,
         RemoteTrackingServicer.resource_pool,
     )
