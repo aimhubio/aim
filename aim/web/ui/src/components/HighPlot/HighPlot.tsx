@@ -1,4 +1,5 @@
 import React from 'react';
+import _ from 'lodash-es';
 
 import ErrorBoundary from 'components/ErrorBoundary/ErrorBoundary';
 
@@ -148,7 +149,6 @@ const HighPlot = React.forwardRef(function HighPlot(
           svgNodeRef,
         });
       }
-
       drawParallelAxesBrush({
         plotBoxRef,
         plotNodeRef,
@@ -161,7 +161,6 @@ const HighPlot = React.forwardRef(function HighPlot(
         dimensions: data.dimensions,
         data: data.data,
         index,
-        syncHoverState,
       });
     }
   }
@@ -218,7 +217,28 @@ const HighPlot = React.forwardRef(function HighPlot(
       attributesRef.current.clearHoverAttributes?.();
     },
     setFocusedState: (focusedState: IFocusedState) => {
+      const prevFocusState = { ...attributesRef.current.focusedState };
       attributesRef.current.focusedState = focusedState;
+
+      if (
+        !_.isEmpty(brushExtents) &&
+        !_.isNil(focusedState?.yValue) &&
+        (focusedState?.active !== prevFocusState?.active ||
+          (focusedState?.active &&
+            prevFocusState?.active &&
+            (prevFocusState.yValue !== focusedState.yValue ||
+              prevFocusState.xValue !== focusedState.xValue)))
+      ) {
+        brushRef?.current?.updateLinesAndHoverAttributes?.({
+          mouse: [
+            brushRef.current.xScale(focusedState?.xValue),
+            brushRef.current.yScale[focusedState?.xValue ?? 0](
+              focusedState?.yValue,
+            ) + visBoxRef.current.margin.top,
+          ],
+          focusedState,
+        });
+      }
     },
     setActiveLineAndCircle: (
       lineKey: string,

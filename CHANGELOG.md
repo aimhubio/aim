@@ -1,6 +1,6 @@
 # Changelog
 
-## Unreleased 
+## Unreleased
 
 ### Enhancements:
 
@@ -10,11 +10,12 @@
 - Add support for tensorboard audios conversion (mihran113)
 - Format params keys/paths properly (VkoHov)
 - Mention explicitly run params everywhere params is mentioned (VkoHov)
+- Preserve active line even if it is dropped out of the filtered area (VkoHov)
+- Add run duration property for SDK and queries (mihran113)
 
 ### Fixes:
 
 - Fix tensorboard log conversion for images (mihran113)
-- Fix `SyntaxError` handling for python3.10+ (mihran113)
 - Check if gradient is None when tracking gradient distributions (kage08)
 - Fix displaying non-syntax errors across Aim UI (arsengit) 
 

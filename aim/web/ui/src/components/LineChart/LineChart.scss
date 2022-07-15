@@ -58,7 +58,7 @@
     border: 1px solid $primary-light;
     color: $primary-dark;
     font-size: 10px;
-    font-weight: normal;
+    font-weight: $font-400;
     white-space: nowrap;
   }
   .ChartMouseValueXAxis {
@@ -132,7 +132,8 @@
   }
 
   .inProgressLineIndicator {
-    animation: inProgressIndicator 0.5s cubic-bezier(0.6, -0.03, 0.22, 0.76) infinite;
+    animation: inProgressIndicator 0.5s cubic-bezier(0.6, -0.03, 0.22, 0.76)
+      infinite;
     stroke-width: 1;
     opacity: 1;
   }

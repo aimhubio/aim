@@ -128,6 +128,17 @@ $lg: 62em; // (min-width: 992px)
 $gl: 64em; //! gap `lg - xl` (min-width: 1024px)
 $xl: 75em; // (min-width: 1200px)
 $xxl: 80em; // (min-width: 1280px)
+
+// font weight
+
+$font-300: 250;
+$font-400: 350;
+$font-500: 450;
+$font-600: 550;
+$font-700: 650;
+$font-800: 750;
+$font-900: 850;
+
 // space
 $space-unit: 1rem;
 $space-xxxxs: $space-unit * 0.125;
