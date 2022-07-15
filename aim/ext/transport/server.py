@@ -57,7 +57,7 @@ class RemoteTrackingServicer(remote_tracking_pb2_grpc.RemoteTrackingServiceServi
         try:
             if request.check_type == 'heartbeat':
                 client_uri = request.client_uri
-                self.client_heartbeat_pool[client_uri] = datetime.datetime.now()
+                self.client_heartbeat_pool[client_uri] = datetime.datetime.now().timestamp()
                 return rpc_messages.ResourceResponse(status=rpc_messages.HealthCheckResponse.Status.OK)
             else:
                 raise ValueError('Incorrect `check_type` specified for `health_check` request.')

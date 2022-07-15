@@ -98,6 +98,7 @@ message WriteInstructionsResponse {
 }
 
 service RemoteTrackingService {
+    rpc health_check(HealthCheckRequest) returns (HealthCheckResponse) {}
     rpc get_resource(ResourceRequest) returns (ResourceResponse) {}
     rpc release_resource(ReleaseResourceRequest) returns (ReleaseResourceResponse) {}
     rpc run_instruction(stream InstructionRequest) returns (stream InstructionResponse) {}

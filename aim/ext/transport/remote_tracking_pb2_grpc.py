@@ -18,6 +18,11 @@ class RemoteTrackingServiceStub(object):
         Args:
             channel: A grpc.Channel.
         """
+        self.health_check = channel.unary_unary(
+                '/RemoteTrackingService/health_check',
+                request_serializer=remote__tracking__pb2.HealthCheckRequest.SerializeToString,
+                response_deserializer=remote__tracking__pb2.HealthCheckResponse.FromString,
+                )
         self.get_resource = channel.unary_unary(
                 '/RemoteTrackingService/get_resource',
                 request_serializer=remote__tracking__pb2.ResourceRequest.SerializeToString,
@@ -42,6 +47,12 @@ class RemoteTrackingServiceStub(object):
 
 class RemoteTrackingServiceServicer(object):
     """Missing associated documentation comment in .proto file."""
+
+    def health_check(self, request, context):
+        """Missing associated documentation comment in .proto file."""
+        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
+        context.set_details('Method not implemented!')
+        raise NotImplementedError('Method not implemented!')
 
     def get_resource(self, request, context):
         """Missing associated documentation comment in .proto file."""
@@ -70,6 +81,11 @@ class RemoteTrackingServiceServicer(object):
 
 def add_RemoteTrackingServiceServicer_to_server(servicer, server):
     rpc_method_handlers = {
+            'health_check': grpc.unary_unary_rpc_method_handler(
+                    servicer.health_check,
+                    request_deserializer=remote__tracking__pb2.HealthCheckRequest.FromString,
+                    response_serializer=remote__tracking__pb2.HealthCheckResponse.SerializeToString,
+            ),
             'get_resource': grpc.unary_unary_rpc_method_handler(
                     servicer.get_resource,
                     request_deserializer=remote__tracking__pb2.ResourceRequest.FromString,
@@ -99,6 +115,23 @@ def add_RemoteTrackingServiceServicer_to_server(servicer, server):
  # This class is part of an EXPERIMENTAL API.
 class RemoteTrackingService(object):
     """Missing associated documentation comment in .proto file."""
+
+    @staticmethod
+    def health_check(request,
+            target,
+            options=(),
+            channel_credentials=None,
+            call_credentials=None,
+            insecure=False,
+            compression=None,
+            wait_for_ready=None,
+            timeout=None,
+            metadata=None):
+        return grpc.experimental.unary_unary(request, target, '/RemoteTrackingService/health_check',
+            remote__tracking__pb2.HealthCheckRequest.SerializeToString,
+            remote__tracking__pb2.HealthCheckResponse.FromString,
+            options, channel_credentials,
+            insecure, call_credentials, compression, wait_for_ready, timeout, metadata)
 
     @staticmethod
     def get_resource(request,

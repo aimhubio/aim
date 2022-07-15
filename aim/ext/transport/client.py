@@ -58,7 +58,7 @@ class Client:
 
     def health_check(self, health_check_type='heartbeat'):
         request = rpc_messages.HealthCheckRequest(
-            resource_handler=self.uri,
+            client_uri=self.uri,
             check_type=health_check_type,
         )
         response = self.remote.health_check(request)

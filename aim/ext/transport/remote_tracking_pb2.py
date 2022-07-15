@@ -19,7 +19,7 @@ DESCRIPTOR = _descriptor.FileDescriptor(
   syntax='proto3',
   serialized_options=None,
   create_key=_descriptor._internal_create_key,
-  serialized_pb=b'\n\x15remote_tracking.proto\"J\n\x11\x45xceptionResponse\x12\x13\n\x0bmodule_name\x18\x01 \x01(\t\x12\x12\n\nclass_name\x18\x02 \x01(\t\x12\x0c\n\x04\x61rgs\x18\x03 \x01(\t\"<\n\x12HealthCheckRequest\x12\x12\n\nclient_uri\x18\x01 \x01(\t\x12\x12\n\ncheck_type\x18\x02 \x01(\t\"\x86\x01\n\x13HealthCheckResponse\x12+\n\x06status\x18\x01 \x01(\x0e\x32\x1b.HealthCheckResponse.Status\x12%\n\texception\x18\x02 \x01(\x0b\x32\x12.ExceptionResponse\"\x1b\n\x06Status\x12\x06\n\x02OK\x10\x00\x12\t\n\x05\x45RROR\x10\x01\"J\n\x0fResourceRequest\x12\x15\n\rresource_type\x18\x01 \x01(\t\x12\x12\n\nclient_uri\x18\x02 \x01(\t\x12\x0c\n\x04\x61rgs\x18\x03 \x01(\x0c\"\x91\x01\n\x10ResourceResponse\x12\x0f\n\x07handler\x18\x01 \x01(\t\x12(\n\x06status\x18\x02 \x01(\x0e\x32\x18.ResourceResponse.Status\x12%\n\texception\x18\x03 \x01(\x0b\x32\x12.ExceptionResponse\"\x1b\n\x06Status\x12\x06\n\x02OK\x10\x00\x12\t\n\x05\x45RROR\x10\x01\"=\n\x16ReleaseResourceRequest\x12\x0f\n\x07handler\x18\x01 \x01(\t\x12\x12\n\nclient_uri\x18\x02 \x01(\t\"\x8e\x01\n\x17ReleaseResourceResponse\x12/\n\x06status\x18\x02 \x01(\x0e\x32\x1f.ReleaseResourceResponse.Status\x12%\n\texception\x18\x03 \x01(\x0b\x32\x12.ExceptionResponse\"\x1b\n\x06Status\x12\x06\n\x02OK\x10\x00\x12\t\n\x05\x45RROR\x10\x01\"Z\n\rRequestHeader\x12\x0f\n\x07version\x18\x01 \x01(\t\x12\x0f\n\x07handler\x18\x02 \x01(\t\x12\x12\n\nclient_uri\x18\x03 \x01(\t\x12\x13\n\x0bmethod_name\x18\x04 \x01(\t\"X\n\x12InstructionRequest\x12 \n\x06header\x18\x01 \x01(\x0b\x32\x0e.RequestHeaderH\x00\x12\x11\n\x07message\x18\x02 \x01(\x0cH\x00\x42\r\n\x0binstruction\"\x8d\x01\n\x0eResponseHeader\x12\x0f\n\x07version\x18\x01 \x01(\x02\x12&\n\x06status\x18\x02 \x01(\x0e\x32\x16.ResponseHeader.Status\x12%\n\texception\x18\x03 \x01(\x0b\x32\x12.ExceptionResponse\"\x1b\n\x06Status\x12\x06\n\x02OK\x10\x00\x12\t\n\x05\x45RROR\x10\x01\"Z\n\x13InstructionResponse\x12!\n\x06header\x18\x01 \x01(\x0b\x32\x0f.ResponseHeaderH\x00\x12\x11\n\x07message\x18\x02 \x01(\x0cH\x00\x42\r\n\x0binstruction\"P\n\x18WriteInstructionsRequest\x12\x0f\n\x07version\x18\x01 \x01(\t\x12\x12\n\nclient_uri\x18\x02 \x01(\t\x12\x0f\n\x07message\x18\x03 \x01(\x0c\"\xa3\x01\n\x19WriteInstructionsResponse\x12\x0f\n\x07version\x18\x01 \x01(\t\x12\x31\n\x06status\x18\x02 \x01(\x0e\x32!.WriteInstructionsResponse.Status\x12%\n\texception\x18\x03 \x01(\x0b\x32\x12.ExceptionResponse\"\x1b\n\x06Status\x12\x06\n\x02OK\x10\x00\x12\t\n\x05\x45RROR\x10\x01\x32\xb0\x02\n\x15RemoteTrackingService\x12\x35\n\x0cget_resource\x12\x10.ResourceRequest\x1a\x11.ResourceResponse\"\x00\x12G\n\x10release_resource\x12\x17.ReleaseResourceRequest\x1a\x18.ReleaseResourceResponse\"\x00\x12\x42\n\x0frun_instruction\x12\x13.InstructionRequest\x1a\x14.InstructionResponse\"\x00(\x01\x30\x01\x12S\n\x16run_write_instructions\x12\x19.WriteInstructionsRequest\x1a\x1a.WriteInstructionsResponse\"\x00(\x01\x62\x06proto3'
+  serialized_pb=b'\n\x15remote_tracking.proto\"J\n\x11\x45xceptionResponse\x12\x13\n\x0bmodule_name\x18\x01 \x01(\t\x12\x12\n\nclass_name\x18\x02 \x01(\t\x12\x0c\n\x04\x61rgs\x18\x03 \x01(\t\"<\n\x12HealthCheckRequest\x12\x12\n\nclient_uri\x18\x01 \x01(\t\x12\x12\n\ncheck_type\x18\x02 \x01(\t\"\x86\x01\n\x13HealthCheckResponse\x12+\n\x06status\x18\x01 \x01(\x0e\x32\x1b.HealthCheckResponse.Status\x12%\n\texception\x18\x02 \x01(\x0b\x32\x12.ExceptionResponse\"\x1b\n\x06Status\x12\x06\n\x02OK\x10\x00\x12\t\n\x05\x45RROR\x10\x01\"J\n\x0fResourceRequest\x12\x15\n\rresource_type\x18\x01 \x01(\t\x12\x12\n\nclient_uri\x18\x02 \x01(\t\x12\x0c\n\x04\x61rgs\x18\x03 \x01(\x0c\"\x91\x01\n\x10ResourceResponse\x12\x0f\n\x07handler\x18\x01 \x01(\t\x12(\n\x06status\x18\x02 \x01(\x0e\x32\x18.ResourceResponse.Status\x12%\n\texception\x18\x03 \x01(\x0b\x32\x12.ExceptionResponse\"\x1b\n\x06Status\x12\x06\n\x02OK\x10\x00\x12\t\n\x05\x45RROR\x10\x01\"=\n\x16ReleaseResourceRequest\x12\x0f\n\x07handler\x18\x01 \x01(\t\x12\x12\n\nclient_uri\x18\x02 \x01(\t\"\x8e\x01\n\x17ReleaseResourceResponse\x12/\n\x06status\x18\x02 \x01(\x0e\x32\x1f.ReleaseResourceResponse.Status\x12%\n\texception\x18\x03 \x01(\x0b\x32\x12.ExceptionResponse\"\x1b\n\x06Status\x12\x06\n\x02OK\x10\x00\x12\t\n\x05\x45RROR\x10\x01\"Z\n\rRequestHeader\x12\x0f\n\x07version\x18\x01 \x01(\t\x12\x0f\n\x07handler\x18\x02 \x01(\t\x12\x12\n\nclient_uri\x18\x03 \x01(\t\x12\x13\n\x0bmethod_name\x18\x04 \x01(\t\"X\n\x12InstructionRequest\x12 \n\x06header\x18\x01 \x01(\x0b\x32\x0e.RequestHeaderH\x00\x12\x11\n\x07message\x18\x02 \x01(\x0cH\x00\x42\r\n\x0binstruction\"\x8d\x01\n\x0eResponseHeader\x12\x0f\n\x07version\x18\x01 \x01(\x02\x12&\n\x06status\x18\x02 \x01(\x0e\x32\x16.ResponseHeader.Status\x12%\n\texception\x18\x03 \x01(\x0b\x32\x12.ExceptionResponse\"\x1b\n\x06Status\x12\x06\n\x02OK\x10\x00\x12\t\n\x05\x45RROR\x10\x01\"Z\n\x13InstructionResponse\x12!\n\x06header\x18\x01 \x01(\x0b\x32\x0f.ResponseHeaderH\x00\x12\x11\n\x07message\x18\x02 \x01(\x0cH\x00\x42\r\n\x0binstruction\"P\n\x18WriteInstructionsRequest\x12\x0f\n\x07version\x18\x01 \x01(\t\x12\x12\n\nclient_uri\x18\x02 \x01(\t\x12\x0f\n\x07message\x18\x03 \x01(\x0c\"\xa3\x01\n\x19WriteInstructionsResponse\x12\x0f\n\x07version\x18\x01 \x01(\t\x12\x31\n\x06status\x18\x02 \x01(\x0e\x32!.WriteInstructionsResponse.Status\x12%\n\texception\x18\x03 \x01(\x0b\x32\x12.ExceptionResponse\"\x1b\n\x06Status\x12\x06\n\x02OK\x10\x00\x12\t\n\x05\x45RROR\x10\x01\x32\xed\x02\n\x15RemoteTrackingService\x12;\n\x0chealth_check\x12\x13.HealthCheckRequest\x1a\x14.HealthCheckResponse\"\x00\x12\x35\n\x0cget_resource\x12\x10.ResourceRequest\x1a\x11.ResourceResponse\"\x00\x12G\n\x10release_resource\x12\x17.ReleaseResourceRequest\x1a\x18.ReleaseResourceResponse\"\x00\x12\x42\n\x0frun_instruction\x12\x13.InstructionRequest\x1a\x14.InstructionResponse\"\x00(\x01\x30\x01\x12S\n\x16run_write_instructions\x12\x19.WriteInstructionsRequest\x1a\x1a.WriteInstructionsResponse\"\x00(\x01\x62\x06proto3'
 )
 
 
@@ -872,12 +872,22 @@ _REMOTETRACKINGSERVICE = _descriptor.ServiceDescriptor(
   serialized_options=None,
   create_key=_descriptor._internal_create_key,
   serialized_start=1399,
-  serialized_end=1703,
+  serialized_end=1764,
   methods=[
+  _descriptor.MethodDescriptor(
+    name='health_check',
+    full_name='RemoteTrackingService.health_check',
+    index=0,
+    containing_service=None,
+    input_type=_HEALTHCHECKREQUEST,
+    output_type=_HEALTHCHECKRESPONSE,
+    serialized_options=None,
+    create_key=_descriptor._internal_create_key,
+  ),
   _descriptor.MethodDescriptor(
     name='get_resource',
     full_name='RemoteTrackingService.get_resource',
-    index=0,
+    index=1,
     containing_service=None,
     input_type=_RESOURCEREQUEST,
     output_type=_RESOURCERESPONSE,
@@ -887,7 +897,7 @@ _REMOTETRACKINGSERVICE = _descriptor.ServiceDescriptor(
   _descriptor.MethodDescriptor(
     name='release_resource',
     full_name='RemoteTrackingService.release_resource',
-    index=1,
+    index=2,
     containing_service=None,
     input_type=_RELEASERESOURCEREQUEST,
     output_type=_RELEASERESOURCERESPONSE,
@@ -897,7 +907,7 @@ _REMOTETRACKINGSERVICE = _descriptor.ServiceDescriptor(
   _descriptor.MethodDescriptor(
     name='run_instruction',
     full_name='RemoteTrackingService.run_instruction',
-    index=2,
+    index=3,
     containing_service=None,
     input_type=_INSTRUCTIONREQUEST,
     output_type=_INSTRUCTIONRESPONSE,
@@ -907,7 +917,7 @@ _REMOTETRACKINGSERVICE = _descriptor.ServiceDescriptor(
   _descriptor.MethodDescriptor(
     name='run_write_instructions',
     full_name='RemoteTrackingService.run_write_instructions',
-    index=3,
+    index=4,
     containing_service=None,
     input_type=_WRITEINSTRUCTIONSREQUEST,
     output_type=_WRITEINSTRUCTIONSRESPONSE,

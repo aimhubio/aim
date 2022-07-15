@@ -57,17 +57,17 @@ class RPCHeartbeatSender(object):
 
 
 class RPCHeartbeatWatcher:
-    HEARTBEAT_CHECK_INTERVAL_DEFAULT = 30 * 60
+    CLIENT_KEEP_ALIVE_TIME_DEFAULT = 30 * 60
 
     def __init__(self,
                  heartbeat_pool,
                  resource_pool,
-                 interval: Union[int, float] = HEARTBEAT_CHECK_INTERVAL_DEFAULT):
+                 keep_alive_time: Union[int, float] = CLIENT_KEEP_ALIVE_TIME_DEFAULT):
 
         self._heartbeat_pool = heartbeat_pool
         self._resource_pool = resource_pool
 
-        self._heartbeat_check_interval = interval
+        self._client_keep_alive_time = keep_alive_time
 
         # Start thread to collect stats and logs at intervals
         self._th_collector = Thread(target=self._interval_check, daemon=True)
@@ -88,22 +88,20 @@ class RPCHeartbeatWatcher:
         self._shutdown = True
         self._th_collector.join()
 
-    def _release_client_resources(self, check_client_uri):
+    def _release_client_resources(self, dead_client_uri):
         for handler, (client_uri, _) in self._resource_pool.items():
-            if check_client_uri == client_uri:
+            if dead_client_uri == client_uri:
                 del self._resource_pool[handler]
 
     def _interval_check(self):
-        heartbeat_interval_counter = 0
         while True:
             # Get system statistics
             if self._shutdown:
                 break
 
             time.sleep(60)
-            heartbeat_interval_counter += 60
 
             for client_uri, last_heartbeat_time in self._heartbeat_pool.items():
-                if datetime.datetime.now().timestamp() - last_heartbeat_time > self._heartbeat_check_interval:
+                if datetime.datetime.now().timestamp() - last_heartbeat_time > self._client_keep_alive_time:
                     self._release_client_resources(client_uri)
-                    heartbeat_interval_counter = 0
+                    del self._heartbeat_pool[client_uri]
