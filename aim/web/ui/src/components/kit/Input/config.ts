@@ -31,7 +31,7 @@ const inputTypeConversionFns: {
     value: any;
     isRequiredNumberValue?: boolean;
     isNumberValueFloat?: boolean;
-  }) => any;
+  }) => string | number | undefined;
 } = {
   number: ({ value, isRequiredNumberValue, isNumberValueFloat }) => {
     const result = isNumberValueFloat ? parseFloat(value) : parseInt(value);

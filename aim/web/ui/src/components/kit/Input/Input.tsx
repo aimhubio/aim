@@ -28,6 +28,8 @@ import './Input.scss';
  * @property {IconName} topLabeledIconName - icon name for top label
  * @property {function} onChange - change handler function receives tree argument event, pure value, metadata for validation state and messages
  * @property {small | medium | large} size - define size of input component. Default value is medium.
+ * @property {boolean} isRequiredNumberValue - define number input value required or not. Default value is true.
+ * @property {boolean} isNumberValueFloat - define number input value type to float. Default value is false, mean type is integer.
  */
 function InputWrapper({
   isValidateInitially = false,
@@ -49,7 +51,7 @@ function InputWrapper({
   isValid,
   ...restProps
 }: IInputProps): React.FunctionComponentElement<React.ReactNode> {
-  const [inputValue, setInputValue] = React.useState();
+  const [inputValue, setInputValue] = React.useState<string | number>();
   const [isInputValid, setIsInputValid] = React.useState(true);
   const [errorsMessages, setErrorsMessages] = React.useState<IMetadataMessages>(
     [],
@@ -133,7 +135,7 @@ function InputWrapper({
   }, [errorsMessages]);
 
   React.useEffect(() => {
-    if (isValid !== undefined) {
+    if (!_.isUndefined(isValid)) {
       setIsInputValid(isValid);
     }
   }, [isValid]);
@@ -198,7 +200,7 @@ function InputWrapper({
       >
         <TextField
           inputProps={{ 'data-testid': 'inputWrapper', ...restInputProps }}
-          value={_.isUndefined(inputValue) ? '' : inputValue}
+          value={inputValue ?? ''}
           onChange={onChangeHandler}
           type={type}
           error={!isInputValid}
