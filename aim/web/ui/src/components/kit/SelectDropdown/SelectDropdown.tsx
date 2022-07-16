@@ -128,6 +128,9 @@ function SelectDropdown({
         renderInput={renderInput}
         renderOption={renderOption}
         ListboxProps={{ style: { height: 253 } }}
+        classes={{
+          popper: 'SelectDropdown__popper',
+        }}
         {...rest}
       />
     </div>

@@ -1,5 +1,9 @@
 @use 'src/styles/abstracts' as *;
 
+.MuiPopover-root {
+  z-index: 5!important;
+}
+
 .MuiAutocomplete-paper {
   // box-shadow: unset;
   margin: unset;

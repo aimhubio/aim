@@ -186,9 +186,6 @@ function AxesPropsPopover({
             selectOptions={alignmentOptions}
             selected={selected}
             handleSelect={handleAlignmentChange}
-            classes={{
-              popper: 'AxesPropsPopover__autocomplete__popper',
-            }}
             ListboxProps={{ style: { height: 253 } }}
           />
         </div>
