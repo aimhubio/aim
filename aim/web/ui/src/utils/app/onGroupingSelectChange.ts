@@ -1,7 +1,8 @@
+import { GroupNameEnum } from 'config/grouping/GroupingPopovers';
+
 import * as analytics from 'services/analytics';
 
 import { IModel, State } from 'types/services/models/model';
-import { GroupNameType } from 'types/services/models/metrics/metricsAppModel';
 import { IAppModelConfig } from 'types/services/models/explorer/createAppModel';
 
 import resetChartZoom from './resetChartZoom';
@@ -14,7 +15,7 @@ export default function onGroupingSelectChange<M extends State>({
   updateModelData,
   setAggregationEnabled,
 }: {
-  groupName: GroupNameType;
+  groupName: GroupNameEnum;
   list: string[];
   model: IModel<M>;
   appName: string;

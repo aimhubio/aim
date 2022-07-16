@@ -19,7 +19,7 @@ $border-radius: 0.2rem;
   box-sizing: border-box;
   content-visibility: auto;
   contain: content;
-  font-weight: 500;
+  font-weight: $font-500;
   &__container {
     height: 100%;
     width: 100%;
@@ -118,6 +118,14 @@ $border-radius: 0.2rem;
 .Table__pane--right {
   right: 0;
   box-shadow: -1px 0 3px 0 $cuddle;
+}
+
+.Table__pane--middle {
+  position: relative;
+
+  .Table__column {
+    position: absolute;
+  }
 }
 
 .Table__column {
@@ -446,7 +454,7 @@ $border-radius: 0.2rem;
 .Table__GroupedColumnHeader {
   color: $pico-50;
   span {
-    font-weight: 700;
+    font-weight: $font-700;
   }
 }
 
