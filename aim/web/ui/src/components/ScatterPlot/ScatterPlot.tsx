@@ -183,6 +183,7 @@ const ScatterPlot = React.forwardRef(function ScatterPlot(
       visAreaRef,
       attributesRef,
       readOnly,
+      syncHoverState,
     });
   }
 

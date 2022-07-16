@@ -1,16 +1,20 @@
 import React from 'react';
 import * as d3 from 'd3';
 
+import { ISyncHoverStateArgs } from 'types/utils/d3/drawHoverAttributes';
+
 function drawUnableToRender({
   renderArr = [],
   visAreaRef,
   attributesRef,
   readOnly = false,
+  syncHoverState,
 }: {
   renderArr: { condition: boolean; text?: string }[];
   attributesRef: React.MutableRefObject<any>;
   visAreaRef: React.MutableRefObject<any>;
   readOnly?: boolean;
+  syncHoverState?: (args: ISyncHoverStateArgs) => void;
 }) {
   const renderItem = renderArr.find((item) => item.condition);
 
@@ -26,6 +30,7 @@ function drawUnableToRender({
       attributesRef.current.clearHoverAttributes();
     }
     attributesRef.current = {};
+    syncHoverState?.({ activePoint: null });
   }
 }
 

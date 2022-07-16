@@ -206,6 +206,7 @@ const LineChart = React.forwardRef(function LineChart(
       visAreaRef,
       attributesRef,
       readOnly,
+      syncHoverState,
     });
   }
 
