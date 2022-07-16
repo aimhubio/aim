@@ -24,3 +24,4 @@ export const METRICS_ALIGNMENT_LIST: {
 ];
 
 export const DROPDOWN_LIST_HEIGHT = 253;
+export const RANGE_DEBOUNCE_DELAY = 300;

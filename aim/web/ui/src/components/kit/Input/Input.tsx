@@ -30,6 +30,8 @@ import './Input.scss';
  * @property {small | medium | large} size - define size of input component. Default value is medium.
  * @property {boolean} isRequiredNumberValue - define number input value required or not. Default value is true.
  * @property {boolean} isNumberValueFloat - define number input value type to float. Default value is false, mean type is integer.
+ * @property {boolean} isValid - define input controlled validation, ability to change validation outside of the component.
+ * @property {number} debounceDelay - add delay to input validation and change.
  */
 function InputWrapper({
   isValidateInitially = false,
@@ -43,16 +45,16 @@ function InputWrapper({
   value,
   onChange,
   size = 'medium',
-  restInputProps = {},
   tooltipPlacement = 'left',
   wrapperClassName = '',
   isRequiredNumberValue = true,
   isNumberValueFloat = false,
   isValid,
+  debounceDelay,
   ...restProps
 }: IInputProps): React.FunctionComponentElement<React.ReactNode> {
   const [inputValue, setInputValue] = React.useState<string | number>();
-  const [isInputValid, setIsInputValid] = React.useState(true);
+  const [isInputValid, setIsInputValid] = React.useState<boolean>(true);
   const [errorsMessages, setErrorsMessages] = React.useState<IMetadataMessages>(
     [],
   );
@@ -66,21 +68,23 @@ function InputWrapper({
   );
 
   const isControlled = React.useMemo(() => !_.isUndefined(value), [value]);
+  const isDebounced = React.useMemo(
+    () => !_.isUndefined(debounceDelay),
+    [debounceDelay],
+  );
 
   const validatePatterns = (
     validationPatterns: IValidationPatterns,
-    value: any,
+    newValue: any,
   ): IValidationMetadata => {
     const facedErrorsMessages: IMetadataMessages = validationPatterns
       .map(({ errorCondition, errorText }): IMetadataMessage => {
         let error: IMetadataMessage = { type: 'error', text: '' };
-
         if (_.isFunction(errorCondition)) {
-          error.text = errorCondition(value) ? errorText : '';
+          error.text = errorCondition(newValue) ? errorText : '';
         } else if (_.isRegExp(errorCondition)) {
-          error.text = errorCondition.test(value) ? errorText : '';
+          error.text = errorCondition.test(newValue) ? errorText : '';
         }
-
         return error;
       })
       .filter((error: IMetadataMessage) => !_.isEmpty(error.text));
@@ -95,27 +99,32 @@ function InputWrapper({
     };
   };
 
+  const onValidateAndChange = React.useCallback(
+    (e: React.ChangeEvent<HTMLInputElement>, newValue?: string | number) => {
+      let metadata: IValidationMetadata = { isValid: true, messages: [] };
+      if (!_.isEmpty(validationPatterns)) {
+        metadata = validatePatterns(validationPatterns, newValue);
+      }
+      onChange && onChange(e, newValue, metadata);
+    },
+    [onChange, validationPatterns],
+  );
+
+  const debouncedValidateAndChange = React.useMemo(() => {
+    return isDebounced
+      ? _.debounce(onValidateAndChange, debounceDelay)
+      : onValidateAndChange;
+  }, [onValidateAndChange, isDebounced, debounceDelay]);
+
   const onChangeHandler = (e: React.ChangeEvent<HTMLInputElement>): void => {
     const newValue = valueTypeConversionFn({
       value: e?.target?.value,
       isRequiredNumberValue,
       isNumberValueFloat,
     });
-
+    setIsInputValid(true);
     setInputValue(newValue);
-
-    let metadata: any = {};
-
-    if (!_.isEmpty(validationPatterns)) {
-      const validationResult: IValidationMetadata = validatePatterns(
-        validationPatterns,
-        newValue,
-      );
-
-      metadata = validationResult;
-    }
-
-    onChange && onChange(e, newValue, metadata);
+    debouncedValidateAndChange(e, newValue);
   };
 
   const messagesFormatter = (messages: IMetadataMessages): void => {
@@ -141,14 +150,13 @@ function InputWrapper({
   }, [isValid]);
 
   React.useEffect(() => {
-    isControlled &&
+    if (isControlled && value !== inputValue) {
       onChangeHandler({
         target: { value },
       } as React.ChangeEvent<HTMLInputElement>);
+    }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [value]);
-
-  const isRenderTopLabel = () => labelAppearance === 'top-labeled' && label;
 
   React.useEffect(() => {
     if (isValidateInitially) {
@@ -162,6 +170,8 @@ function InputWrapper({
   React.useEffect(() => {
     setIsMessageTooltipVisible(!isInputValid);
   }, [isInputValid]);
+
+  const isRenderTopLabel = () => labelAppearance === 'top-labeled' && label;
 
   let dynamicProps: any = {};
 
@@ -199,7 +209,7 @@ function InputWrapper({
         className={`InputWrapper_textFieldCnt InputWrapper_textFieldCnt_${inputSizes[size].cssClassName}`}
       >
         <TextField
-          inputProps={{ 'data-testid': 'inputWrapper', ...restInputProps }}
+          inputProps={{ 'data-testid': 'inputWrapper' }}
           value={inputValue ?? ''}
           onChange={onChangeHandler}
           type={type}

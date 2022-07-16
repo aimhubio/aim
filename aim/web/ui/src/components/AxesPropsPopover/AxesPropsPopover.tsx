@@ -17,6 +17,7 @@ import {
   IAxesRangeValue,
   DROPDOWN_LIST_HEIGHT,
   METRICS_ALIGNMENT_LIST,
+  RANGE_DEBOUNCE_DELAY,
 } from './';
 
 import './AxesPropsPopover.scss';
@@ -81,82 +82,83 @@ function AxesPropsPopover({
       : alignmentConfig.type;
   }, [alignmentConfig]);
 
-  const onScaleRangeChange = React.useCallback(
-    (
-      axisType: 'x' | 'y',
-      key: string,
-      newValue: number,
-      metadata: any = { isValid: true },
-    ) => {
-      const axisRelated = {
-        x: {
-          scaleRange: xScaleRange,
-          setScaleRange: setXScaleRange,
-          setIsScaleRangeValid: setIsXScaleRangeValid,
-          stateKey: 'xAxis',
-        },
-        y: {
-          scaleRange: yScaleRange,
-          setScaleRange: setYScaleRange,
-          setIsScaleRangeValid: setIsYScaleRangeValid,
-          stateKey: 'yAxis',
-        },
-      };
-      const { setScaleRange, setIsScaleRangeValid, stateKey, scaleRange } =
-        axisRelated[axisType];
-
-      setScaleRange((prev) => ({
-        ...prev,
-        [key]: newValue,
-      }));
-      setIsScaleRangeValid({
-        min: true,
-        max: true,
-        [key]: metadata.isValid,
-      });
-
-      if (metadata.isValid) {
-        onAxesScaleRangeChange({
-          [stateKey]: { ...scaleRange, [key]: newValue },
-        });
-      }
-    },
-    [
-      xScaleRange,
-      yScaleRange,
-      setXScaleRange,
-      setYScaleRange,
-      onAxesScaleRangeChange,
-    ],
+  const axesProps = React.useMemo(
+    () => ({
+      xAxis: {
+        scaleRange: xScaleRange,
+        setScaleRange: setXScaleRange,
+        setIsScaleRangeValid: setIsXScaleRangeValid,
+      },
+      yAxis: {
+        scaleRange: yScaleRange,
+        setScaleRange: setYScaleRange,
+        setIsScaleRangeValid: setIsYScaleRangeValid,
+      },
+    }),
+    [xScaleRange, yScaleRange],
   );
 
-  const validationPatterns = React.useCallback(
-    ({ min, max }: { min?: number; max?: number }) => [
-      {
-        errorCondition: (value: number) =>
-          min === undefined ? false : value < min,
-        errorText: `Value should be equal or greater then ${min}`,
-      },
-      {
-        errorCondition: (value: number) =>
-          max === undefined ? false : value > max,
-        errorText: `Value should be equal or smaller then ${max}`,
-      },
-    ],
+  const onScaleRangeChange = React.useCallback(
+    (
+      e: React.ChangeEvent<HTMLInputElement>,
+      value: any,
+      metadata: any = { isValid: true },
+    ) => {
+      const [axisType, key] = (e.target?.id || '').split('-') as [
+        axisType: 'xAxis' | 'yAxis',
+        key: 'min' | 'max',
+      ];
+      if (axisType && key) {
+        const { setScaleRange, setIsScaleRangeValid, scaleRange } =
+          axesProps[axisType];
+        setScaleRange((prev) => ({ ...prev, [key]: value }));
+        setIsScaleRangeValid({
+          min: true,
+          max: true,
+          [key]: metadata.isValid,
+        });
+        if (metadata.isValid) {
+          onAxesScaleRangeChange({
+            [axisType]: { ...scaleRange, [key]: value },
+          });
+        }
+      }
+    },
+    [onAxesScaleRangeChange, axesProps],
+  );
+
+  const validationPatterns = React.useMemo(
+    () => ({
+      min: (max?: number) => [
+        {
+          errorCondition: (value: number) =>
+            max === undefined ? false : value > max,
+          errorText: `Value should be equal or smaller then ${max}`,
+        },
+      ],
+      max: (min?: number) => [
+        {
+          errorCondition: (value: number) =>
+            min === undefined ? false : value < min,
+          errorText: `Value should be equal or greater then ${min}`,
+        },
+      ],
+    }),
     [],
   );
 
   React.useEffect(() => {
-    setYScaleRange((state) =>
-      _.isEmpty(state) ? axesScaleRange.yAxis : state,
+    setXScaleRange((prevState) =>
+      _.isEqual(axesScaleRange.xAxis, prevState)
+        ? prevState
+        : axesScaleRange.xAxis,
     );
-  }, [axesScaleRange.yAxis, setYScaleRange]);
-
-  React.useEffect(() => {
-    setXScaleRange((state) =>
-      _.isEmpty(state) ? axesScaleRange.xAxis : state,
+    setYScaleRange((prevState) =>
+      _.isEqual(axesScaleRange.yAxis, prevState)
+        ? prevState
+        : axesScaleRange.yAxis,
     );
-  }, [axesScaleRange.xAxis, setXScaleRange]);
+  }, [axesScaleRange]);
 
   return (
     <ErrorBoundary>
@@ -184,7 +186,8 @@ function AxesPropsPopover({
               X-axis range
             </Text>
             <InputWrapper
-              key='x-min'
+              id='xAxis-min'
+              key='xAxis-min'
               label='Min'
               type='number'
               wrapperClassName='scaleRangeInputs__min'
@@ -194,17 +197,14 @@ function AxesPropsPopover({
               tooltipPlacement='bottom'
               isRequiredNumberValue={false}
               isNumberValueFloat
-              onChange={(e, value, metadata) => {
-                onScaleRangeChange('x', 'min', value, metadata);
-              }}
-              validationPatterns={validationPatterns({
-                min: xScaleRange.min,
-                max: xScaleRange.max,
-              })}
+              debounceDelay={RANGE_DEBOUNCE_DELAY}
+              onChange={onScaleRangeChange}
+              validationPatterns={validationPatterns.min(xScaleRange.max)}
               isValid={isXScaleRangeValid.min}
             />
             <InputWrapper
-              key='x-max'
+              id='xAxis-max'
+              key='xAxis-max'
               label='Max'
               type='number'
               wrapperClassName='scaleRangeInputs__max'
@@ -214,13 +214,9 @@ function AxesPropsPopover({
               tooltipPlacement='bottom'
               isRequiredNumberValue={false}
               isNumberValueFloat
-              onChange={(e, value, metadata) => {
-                onScaleRangeChange('x', 'max', value, metadata);
-              }}
-              validationPatterns={validationPatterns({
-                min: xScaleRange.min,
-                max: xScaleRange.max,
-              })}
+              debounceDelay={RANGE_DEBOUNCE_DELAY}
+              onChange={onScaleRangeChange}
+              validationPatterns={validationPatterns.max(xScaleRange.min)}
               isValid={isXScaleRangeValid.max}
             />
           </div>
@@ -229,7 +225,8 @@ function AxesPropsPopover({
               Y-axis range
             </Text>
             <InputWrapper
-              key='y-min'
+              id='yAxis-min'
+              key='yAxis-min'
               label='Min'
               type='number'
               wrapperClassName='scaleRangeInputs__min'
@@ -239,17 +236,14 @@ function AxesPropsPopover({
               tooltipPlacement='bottom'
               isRequiredNumberValue={false}
               isNumberValueFloat
-              onChange={(e, value, metadata) => {
-                onScaleRangeChange('y', 'min', value, metadata);
-              }}
-              validationPatterns={validationPatterns({
-                min: yScaleRange.min,
-                max: yScaleRange.max,
-              })}
+              debounceDelay={RANGE_DEBOUNCE_DELAY}
+              onChange={onScaleRangeChange}
+              validationPatterns={validationPatterns.min(yScaleRange.max)}
               isValid={isYScaleRangeValid.min}
             />
             <InputWrapper
-              key='y-max'
+              id='yAxis-max'
+              key='yAxis-max'
               label='Max'
               type='number'
               wrapperClassName='scaleRangeInputs__max'
@@ -259,13 +253,9 @@ function AxesPropsPopover({
               tooltipPlacement='bottom'
               isRequiredNumberValue={false}
               isNumberValueFloat
-              onChange={(e, value, metadata) => {
-                onScaleRangeChange('y', 'max', value, metadata);
-              }}
-              validationPatterns={validationPatterns({
-                min: yScaleRange.min,
-                max: yScaleRange.max,
-              })}
+              debounceDelay={RANGE_DEBOUNCE_DELAY}
+              onChange={onScaleRangeChange}
+              validationPatterns={validationPatterns.max(yScaleRange.min)}
               isValid={isYScaleRangeValid.max}
             />
           </div>
