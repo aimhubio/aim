@@ -1,11 +1,12 @@
 import _ from 'lodash-es';
 
+import { IAxesScaleRange } from 'components/AxesPropsPopover';
+
 import { ANALYTICS_EVENT_KEYS } from 'config/analytics/analyticsKeysMap';
 
 import * as analytics from 'services/analytics';
 
 import { IModel, State } from 'types/services/models/model';
-import { IAxesScaleRange } from 'types/components/AxesPropsPopover/AxesPropsPopover';
 
 import updateURL from './updateURL';
 

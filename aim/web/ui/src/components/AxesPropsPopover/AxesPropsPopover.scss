@@ -17,17 +17,16 @@
     &__container {
       display: flex;
       align-items: center;
-
       &.yAxis {
         margin-top: $space-sm;
-      }
-      .AxesPropsPopover__subtitle {
-        margin-right: auto;
       }
     }
   }
 
-  .scaleRangeInput {
+  .scaleRangeInputs {
+    &__label {
+      margin-right: auto;
+    }
     &__min, &__max {
       display: inline-block;
       width: 6.875rem;

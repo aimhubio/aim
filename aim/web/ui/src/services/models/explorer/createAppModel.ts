@@ -4,6 +4,7 @@ import _ from 'lodash-es';
 
 import { HighlightEnum } from 'components/HighlightModesPopover/HighlightModesPopover';
 import { IPoint } from 'components/ScatterPlot';
+import { IAxesScaleRange } from 'components/AxesPropsPopover';
 
 import COLORS from 'config/colors/colors';
 import DASH_ARRAYS from 'config/dash-arrays/dashArrays';
@@ -39,7 +40,6 @@ import createModel from 'services/models/model';
 import LiveUpdateService from 'services/live-update/examples/LiveUpdateBridge.example';
 import projectsService from 'services/api/projects/projectsService';
 
-import { IAxesScaleRange } from 'types/components/AxesPropsPopover/AxesPropsPopover';
 import { IAxesScaleState } from 'types/components/AxesScalePopover/AxesScalePopover';
 import { ILine } from 'types/components/LineChart/LineChart';
 import { INotification } from 'types/components/NotificationContainer/NotificationContainer';

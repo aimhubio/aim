@@ -15,3 +15,13 @@ export interface IAxesScaleRange {
   yAxis: { min?: number; max?: number };
   xAxis: { min?: number; max?: number };
 }
+
+export interface IAxesRangeValue {
+  min?: number;
+  max?: number;
+}
+
+export interface IAxesRangeValidation {
+  min: boolean;
+  max: boolean;
+}
