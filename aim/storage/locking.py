@@ -39,7 +39,10 @@ class FileSystemInspector:
         """
         mapping: Dict[int, str] = {}
         for partition in disk_partitions(all=True):
-            device_id = os.lstat(partition.mountpoint).st_dev
+            try:
+                device_id = os.lstat(partition.mountpoint).st_dev
+            except (OSError, ValueError, AttributeError):
+                continue
             mapping[device_id] = partition.fstype
         return mapping
 
@@ -50,7 +53,10 @@ class FileSystemInspector:
 
         If the path does not exist, `None` is returned.
         """
-        stat = os.stat(path)
+        try:
+            stat = os.stat(path)
+        except (OSError, ValueError, AttributeError):
+            return None
         return cls.dev_fstype_mapping().get(stat.st_dev)
 
     @classmethod
