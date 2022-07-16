@@ -77,7 +77,7 @@ class FileSystemInspector:
 
 
 def AutoFileLock(
-    lock_file: Union[str, os.PathLike[Any]],
+    lock_file: Union[str, os.PathLike],
     timeout: float = -1
 ) -> BaseFileLock:
     """
