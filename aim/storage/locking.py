@@ -6,7 +6,7 @@ from filelock import BaseFileLock, SoftFileLock, UnixFileLock, has_fcntl
 from cachetools.func import ttl_cache
 from psutil import disk_partitions
 
-from typing import Any, Optional, Union, Dict, Set
+from typing import Optional, Union, Dict, Set
 
 logger = logging.getLogger(__name__)
 
