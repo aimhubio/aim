@@ -30,7 +30,6 @@ import CustomTable from '../CustomTable/Table';
 
 import ArchiveModal from './ArchiveModal';
 import DeleteModal from './DeleteModal';
-import HideItemsModal from './HideItemsModal';
 import AutoResizer from './AutoResizer';
 import BaseTable from './BaseTable';
 
@@ -117,10 +116,6 @@ const Table = React.forwardRef(function Table(
   const [isOpenUnarchiveSelectedPopup, setIsOpenUnarchiveSelectedPopup] =
     React.useState(false);
   const [isOpenArchiveSelectedPopup, setIsOpenArchiveSelectedPopup] =
-    React.useState(false);
-  const [isOpenHideSelectedPopup, setIsOpenHideSelectedPopup] =
-    React.useState(false);
-  const [isOpenShowSelectedPopup, setIsOpenShowSelectedPopup] =
     React.useState(false);
   const [tableBulkActionsVisibility, setTableBulkActionsVisibility] =
     React.useState<{
@@ -552,12 +547,31 @@ const Table = React.forwardRef(function Table(
     setIsOpenUnarchiveSelectedPopup(!isOpenUnarchiveSelectedPopup);
   }
 
-  function onToggleHideItemsPopup() {
-    setIsOpenHideSelectedPopup(!isOpenHideSelectedPopup);
+  function onHideSelectedItems() {
+    onBatchRowsVisibilityChange('hide');
   }
 
-  function onToggleShowItemsPopup() {
-    setIsOpenShowSelectedPopup(!isOpenShowSelectedPopup);
+  function onShowSelectedItems() {
+    onBatchRowsVisibilityChange('show');
+  }
+
+  function onBatchRowsVisibilityChange(changeMode: 'hide' | 'show') {
+    let data: any[] = [];
+    const selectedRowsValues = Object.values(selectedRows);
+    selectedRowsValues.forEach((selectedRow: any) => {
+      if (changeMode === 'hide') {
+        if (!selectedRow.isHidden) {
+          data.push(selectedRow.key);
+        }
+      } else {
+        if (selectedRow.isHidden) {
+          data.push(selectedRow.key);
+        }
+      }
+    });
+
+    onRowsVisibilityChange(data);
+    onRowSelect({ actionType: 'removeAll', data: selectedRowsValues });
   }
 
   React.useEffect(() => {
@@ -748,9 +762,9 @@ const Table = React.forwardRef(function Table(
                 )}
                 {onRowsChange && (
                   <HideRowsPopover
-                    hiddenChartRows={hiddenChartRows}
                     toggleRowsVisibility={onRowsChange}
                     visualizationElementType={visualizationElementType}
+                    data={dataRef.current}
                   />
                 )}
                 {onSort && (
@@ -888,10 +902,8 @@ const Table = React.forwardRef(function Table(
                   <Button
                     color='secondary'
                     type='text'
-                    onClick={onToggleHideItemsPopup}
-                    className={`Table__header__item ${
-                      isOpenHideSelectedPopup ? 'opened' : ''
-                    }`}
+                    onClick={onHideSelectedItems}
+                    className='Table__header__item'
                   >
                     <Icon name='eye-outline-hide' fontSize={14} />
                     <Text size={14} tint={100}>
@@ -905,10 +917,8 @@ const Table = React.forwardRef(function Table(
                   <Button
                     color='secondary'
                     type='text'
-                    onClick={onToggleShowItemsPopup}
-                    className={`Table__header__item ${
-                      isOpenShowSelectedPopup ? 'opened' : ''
-                    }`}
+                    onClick={onShowSelectedItems}
+                    className='Table__header__item'
                   >
                     <Icon name='eye-show-outline' fontSize={14} />
                     <Text size={14} tint={100}>
@@ -1025,21 +1035,6 @@ const Table = React.forwardRef(function Table(
             selectedRows={selectedRows}
             onRowSelect={onRowSelect}
             deleteRuns={deleteRuns}
-          />
-          <HideItemsModal
-            opened={isOpenHideSelectedPopup}
-            onClose={onToggleHideItemsPopup}
-            selectedRows={selectedRows}
-            hideMode
-            onRowSelect={onRowSelect}
-            onRowsVisibilityChange={onRowsVisibilityChange}
-          />
-          <HideItemsModal
-            opened={isOpenShowSelectedPopup}
-            onClose={onToggleShowItemsPopup}
-            selectedRows={selectedRows}
-            onRowSelect={onRowSelect}
-            onRowsVisibilityChange={onRowsVisibilityChange}
           />
         </div>
       ) : (

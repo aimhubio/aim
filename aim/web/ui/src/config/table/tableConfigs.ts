@@ -13,7 +13,7 @@ export enum RowHeightSize {
 
 export enum VisualizationElementEnum {
   LINES = 'lines',
-  DOTS = 'dots',
+  POINTS = 'points',
   IMAGES = 'images',
 }
 

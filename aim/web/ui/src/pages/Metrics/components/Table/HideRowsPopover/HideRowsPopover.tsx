@@ -10,9 +10,14 @@ import './HideRowsPopover.scss';
 
 function HideRowsPopover({
   toggleRowsVisibility,
-  hiddenChartRows,
   visualizationElementType,
+  data,
 }: any): React.FunctionComponentElement<React.ReactNode> {
+  const hiddenRowsCount = React.useMemo(
+    () => data.filter((row: any) => row.isHidden).length,
+    [data],
+  );
+
   return (
     <ErrorBoundary>
       <ControlPopover
@@ -30,26 +35,26 @@ function HideRowsPopover({
             color='secondary'
             size='small'
             onClick={onAnchorClick}
-            className={`HideRowsPopover__trigger ${
-              opened || hiddenChartRows ? 'opened' : ''
-            }`}
+            className='HideRowsPopover__trigger'
           >
             <Icon name='eye-outline-hide' />
             <Text size={14} tint={100}>
-              {`Hide All ${visualizationElementType}`}
+              {hiddenRowsCount > 0
+                ? `${hiddenRowsCount} ${visualizationElementType} are hidden`
+                : `Hide ${visualizationElementType}`}
             </Text>
           </Button>
         )}
         component={
           <div className='HideRowsPopover'>
             <MenuItem
-              className={hiddenChartRows ? '' : 'HideRowsPopover__active'}
+              className='HideRowsPopover__item'
               onClick={() => toggleRowsVisibility([])}
             >
               {`Visualize All ${visualizationElementType}`}
             </MenuItem>
             <MenuItem
-              className={hiddenChartRows ? 'HideRowsPopover__active' : ''}
+              className='HideRowsPopover__item'
               onClick={() => toggleRowsVisibility(['all'])}
             >
               {`Hide All ${visualizationElementType}`}
