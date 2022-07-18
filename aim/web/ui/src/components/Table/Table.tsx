@@ -907,7 +907,7 @@ const Table = React.forwardRef(function Table(
                   >
                     <Icon name='eye-outline-hide' fontSize={14} />
                     <Text size={14} tint={100}>
-                      {`Hide ${visualizationElementType}`}
+                      {`Hide ${visualizationElementType}s`}
                     </Text>
                   </Button>
                 </div>
@@ -922,7 +922,7 @@ const Table = React.forwardRef(function Table(
                   >
                     <Icon name='eye-show-outline' fontSize={14} />
                     <Text size={14} tint={100}>
-                      {`Show ${visualizationElementType}`}
+                      {`Show ${visualizationElementType}s`}
                     </Text>
                   </Button>
                 </div>

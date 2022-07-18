@@ -48,8 +48,10 @@ function HideRowsPopover({
             <Icon name='eye-outline-hide' />
             <Text size={14} tint={100}>
               {hiddenRowsCount > 0
-                ? `${hiddenRowsCount} ${visualizationElementType} are hidden`
-                : `Hide ${visualizationElementType}`}
+                ? `${hiddenRowsCount} ${visualizationElementType}${
+                    hiddenRowsCount > 1 ? 's' : ''
+                  } are hidden`
+                : `Hide ${visualizationElementType}s`}
             </Text>
           </Button>
         )}
@@ -59,13 +61,13 @@ function HideRowsPopover({
               className='HideRowsPopover__item'
               onClick={() => toggleRowsVisibility([])}
             >
-              {`Visualize All ${visualizationElementType}`}
+              {`Visualize All ${visualizationElementType}s`}
             </MenuItem>
             <MenuItem
               className='HideRowsPopover__item'
               onClick={() => toggleRowsVisibility(['all'])}
             >
-              {`Hide All ${visualizationElementType}`}
+              {`Hide All ${visualizationElementType}s`}
             </MenuItem>
           </div>
         }

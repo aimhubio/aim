@@ -293,9 +293,7 @@ const Params = ({
                         archiveRuns={archiveRuns}
                         deleteRuns={deleteRuns}
                         focusedState={focusedState}
-                        visualizationElementType={
-                          VisualizationElementEnum.LINES
-                        }
+                        visualizationElementType={VisualizationElementEnum.LINE}
                         multiSelect
                       />
                     </ErrorBoundary>

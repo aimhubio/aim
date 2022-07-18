@@ -274,7 +274,7 @@ function Metrics(
                           onRowsVisibilityChange={props.onRowsVisibilityChange}
                           focusedState={props.focusedState}
                           visualizationElementType={
-                            VisualizationElementEnum.LINES
+                            VisualizationElementEnum.LINE
                           }
                         />
                       </ErrorBoundary>

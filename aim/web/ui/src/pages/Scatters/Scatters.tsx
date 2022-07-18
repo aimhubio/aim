@@ -225,7 +225,7 @@ function Scatters(
                           focusedState={props.focusedState}
                           onRowsVisibilityChange={props.onRowsVisibilityChange}
                           visualizationElementType={
-                            VisualizationElementEnum.POINTS
+                            VisualizationElementEnum.POINT
                           }
                           multiSelect
                         />

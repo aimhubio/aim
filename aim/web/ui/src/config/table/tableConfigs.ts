@@ -12,9 +12,9 @@ export enum RowHeightSize {
 }
 
 export enum VisualizationElementEnum {
-  LINES = 'lines',
-  POINTS = 'points',
-  IMAGES = 'images',
+  LINE = 'line',
+  POINT = 'point',
+  IMAGE = 'image',
 }
 
 export const ROW_CELL_SIZE_CONFIG = {
