@@ -31,11 +31,13 @@ function DeleteModal({
   }) => {
     [key: string]: any;
   };
-  deleteRuns: (ids: string[]) => void;
+  deleteRuns: (ids: string[]) => {
+    call: () => Promise<any>;
+    abort: () => void;
+  };
 }): React.FunctionComponentElement<React.ReactNode> {
   const tableRef = React.useRef<any>({});
   const disabledTableRef = React.useRef<any>({});
-  let runsDeleteRequest: any = null;
 
   const tableColumns = [
     {
@@ -136,13 +138,6 @@ function DeleteModal({
     },
   ];
 
-  React.useEffect(() => {
-    return () => {
-      runsDeleteRequest?.abort();
-    };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
-
   const { data, disabledData } = React.useMemo(() => {
     let finishedList: any[] = [];
     let inProgressList: any[] = [];
@@ -191,8 +186,9 @@ function DeleteModal({
 
   function onDelete() {
     const ids = data.map((item: any) => item.runHash);
-    runsDeleteRequest = deleteRuns(ids);
-    runsDeleteRequest.call().then(() => onClose());
+    deleteRuns(ids)
+      .call()
+      .then(() => onClose());
   }
 
   return opened ? (

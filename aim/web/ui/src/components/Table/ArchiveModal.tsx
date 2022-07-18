@@ -33,12 +33,17 @@ function ArchiveModal({
   }) => {
     [key: string]: any;
   };
-  archiveRuns: (ids: string[], archived: boolean) => void;
+  archiveRuns: (
+    ids: string[],
+    archived: boolean,
+  ) => {
+    call: () => Promise<any>;
+    abort: () => void;
+  };
 }): React.FunctionComponentElement<React.ReactNode> {
   const tableRef = React.useRef<any>({});
   const disabledTableRef = React.useRef<any>({});
   const archivedText = archiveMode ? 'archive' : 'unarchive';
-  let runsArchiveRequest: any = null;
 
   const tableColumns = [
     {
@@ -137,13 +142,6 @@ function ArchiveModal({
     },
   ];
 
-  React.useEffect(() => {
-    return () => {
-      runsArchiveRequest?.abort();
-    };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
-
   const { data, disabledData } = React.useMemo(() => {
     let archivedList: any[] = [];
     let unarchivedList: any[] = [];
@@ -192,8 +190,9 @@ function ArchiveModal({
 
   function onArchive() {
     const ids = data.map((item: any) => item.runHash);
-    runsArchiveRequest = archiveRuns(ids, archiveMode);
-    runsArchiveRequest.call().then(() => onClose());
+    archiveRuns(ids, archiveMode)
+      .call()
+      .then(() => onClose());
   }
 
   return opened ? (
