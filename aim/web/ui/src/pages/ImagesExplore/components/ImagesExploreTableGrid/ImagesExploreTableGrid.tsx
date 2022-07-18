@@ -188,7 +188,7 @@ function getImagesExploreTableColumns(
                   onSort={() =>
                     onSort({
                       sortFields,
-                      sortItemIndex,
+                      index: sortItemIndex,
                       field:
                         sortItemIndex === -1
                           ? groupingSelectOptions.find(

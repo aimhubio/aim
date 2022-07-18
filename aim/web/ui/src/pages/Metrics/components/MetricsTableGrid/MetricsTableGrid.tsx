@@ -254,7 +254,7 @@ function getMetricsTableColumns(
                 onSort={() =>
                   onSort({
                     sortFields,
-                    sortItemIndex,
+                    index: sortItemIndex,
                     field:
                       sortItemIndex === -1
                         ? groupingSelectOptions.find(

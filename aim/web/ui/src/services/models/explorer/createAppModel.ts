@@ -1174,7 +1174,7 @@ function createAppModel(appConfig: IAppInitialConfig) {
       const sortOptions = [
         ...groupingSelectOptions,
         {
-          group: 'metrics',
+          group: 'metric',
           label: 'metric.last_value',
           value: 'lastValue',
         },
@@ -1264,7 +1264,7 @@ function createAppModel(appConfig: IAppInitialConfig) {
       const sortOptions = [
         ...groupingSelectOptions,
         {
-          group: 'metrics',
+          group: 'metric',
           label: 'metric.last_value',
           value: 'lastValue',
         },
@@ -3897,7 +3897,7 @@ function createAppModel(appConfig: IAppInitialConfig) {
                 const contextName = metricContext ? `_${metricContext}` : '';
                 acc.push({
                   group: 'metrics',
-                  value: `metrics.${key}${contextName}`,
+                  value: `metricsLastValues.${key}${contextName}`,
                   label: isSystemMetric(key)
                     ? formatSystemMetricName(key)
                     : `${key}${contextName}`,
@@ -4328,7 +4328,7 @@ function createAppModel(appConfig: IAppInitialConfig) {
                 const contextName = metricContext ? `_${metricContext}` : '';
                 acc.push({
                   group: 'metrics',
-                  value: `metrics.${key}${contextName}`,
+                  value: `metricsLastValues.${key}${contextName}`,
                   label: isSystemMetric(key)
                     ? formatSystemMetricName(key)
                     : `${key}${contextName}`,
@@ -4433,7 +4433,7 @@ function createAppModel(appConfig: IAppInitialConfig) {
                 const contextName = metricContext ? `_${metricContext}` : '';
                 acc.push({
                   group: 'metrics',
-                  value: `metrics.${key}${contextName}`,
+                  value: `metricsLastValues.${key}${contextName}`,
                   label: isSystemMetric(key)
                     ? formatSystemMetricName(key)
                     : `${key}${contextName}`,
@@ -5040,7 +5040,7 @@ function createAppModel(appConfig: IAppInitialConfig) {
                 const contextName = metricContext ? `_${metricContext}` : '';
                 acc.push({
                   group: 'metrics',
-                  value: `metrics.${key}${contextName}`,
+                  value: `metricsLastValues.${key}${contextName}`,
                   label: isSystemMetric(key)
                     ? formatSystemMetricName(key)
                     : `${key}${contextName}`,
