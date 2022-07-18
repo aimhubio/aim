@@ -6,7 +6,7 @@ from filelock import BaseFileLock, SoftFileLock, UnixFileLock, has_fcntl
 from cachetools.func import ttl_cache
 from psutil import disk_partitions
 
-from typing import Optional, Union, Dict, Set
+from typing import Optional, Union, Dict, Set, Tuple
 
 logger = logging.getLogger(__name__)
 
@@ -30,6 +30,36 @@ class FileSystemInspector:
         # NFS v3 does not support file locks.
         'nfs4',
     }
+    warned_devices: Set[int] = set()
+
+    @classmethod
+    def _warn_only_once(
+        cls,
+        path: str,
+        device: int,
+        fstype: Optional[str],
+    ) -> None:
+        """
+        Warn only once per device. This is used to avoid spamming the logs with
+        the same message.
+        """
+        if device in cls.warned_devices:
+            return
+        cls.warned_devices.add(device)
+
+        if fstype is None:
+            logger.warning(
+                f"Failed to determine filesystem type for {path} "
+                f"(device id: {device}). "
+                f"Using soft file locks to avoid potential data corruption."
+            )
+            return
+
+        logger.warning(
+            f"The lock file {path} is on a filesystem of type `{fstype}` "
+            f"(device id: {device}). "
+            f"Using soft file locks to avoid potential data corruption."
+        )
 
     @classmethod
     @ttl_cache(ttl=10)
@@ -47,39 +77,47 @@ class FileSystemInspector:
         return mapping
 
     @classmethod
-    def get_fstype(cls, path: str) -> Optional[str]:
+    def get_fs(cls, path: str) -> Tuple[Optional[int], Optional[str]]:
         """
-        Returns the filesystem type of the file / directory of the given path.
+        Returns the device id and the filesystem type of the file / directory
+        at the given path.
 
         If the path does not exist, `None` is returned.
         """
         try:
             stat = os.stat(path)
         except (OSError, ValueError, AttributeError):
-            return None
-        return cls.dev_fstype_mapping().get(stat.st_dev)
+            return None, None
+
+        return stat.st_dev, cls.dev_fstype_mapping().get(stat.st_dev)
 
     @classmethod
     def needs_soft_lock(cls, path: str) -> bool:
         """
         Returns `True` if the file system of the given path is not capable of
         using `fcntl` locks.
+
+        This simply checks the device that the parent node resides on and
+        depending on the filesystem type, returns `True` or `False`.
+
+        For unknown filesystem types, we'll use soft file locks.
         """
         if not has_fcntl:
             # We can't use `fcntl` locks on this platform no matter the
-            # underlying filesystem type.
-            logger.warning("fcntl is not available on this platform, "
-                           "using only soft file locks")
+            # underlying filesystem type. The `filelock` package will log a
+            # warning if this happens. No need to log it again.
             return True
 
-        fstype = cls.get_fstype(path)
+        dirname = os.path.dirname(path)
+        device_id, fstype = cls.get_fs(dirname)
 
-        if fstype not in cls.GLOBAL_FILE_LOCK_CAPABLE_FILESYSTEMS:
-            logger.warning(f"Forcing use of soft file locks for the path {path} "
-                           f"locating in a filesystem of type `{fstype}`")
-            return True
-        else:
+        # We'll move forward with `fcntl` locks for certain filesystems.
+        if fstype in cls.GLOBAL_FILE_LOCK_CAPABLE_FILESYSTEMS:
             return False
+
+        # In all other cases, we'll use soft file locks.
+        cls._warn_only_once(path, device_id, fstype)
+        return True
 
 
 def AutoFileLock(
@@ -103,9 +141,7 @@ def AutoFileLock(
         A timeout of 0 means, that there is exactly one attempt to acquire the
         file lock.
     """
-    dirname = os.path.dirname(lock_file)
-
-    if not FileSystemInspector.needs_soft_lock(dirname):
+    if not FileSystemInspector.needs_soft_lock(lock_file):
         return UnixFileLock(lock_file, timeout)
     else:
         # Cleaning lock files is not required by `FileLock`. The leftover lock files
