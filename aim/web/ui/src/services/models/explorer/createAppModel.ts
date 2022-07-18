@@ -185,6 +185,7 @@ import setRequestProgress from 'utils/app/setRequestProgress';
 import { minMaxOfArray } from 'utils/minMaxOfArray';
 import getAdvancedSuggestion from 'utils/getAdvancedSuggestions';
 import { processDurationTime } from 'utils/processDurationTime';
+import { getMetricsSelectOptions } from 'utils/app/getMetricsSelectOptions';
 
 import { AppDataTypeEnum, AppNameEnum } from './index';
 
@@ -3890,25 +3891,7 @@ function createAppModel(appConfig: IAppInitialConfig) {
             runProps,
           }),
         ];
-        const metricsSelectOptions = Object.keys(metricsColumns).reduce(
-          (acc: any, key: string) => {
-            Object.keys(metricsColumns[key]).forEach(
-              (metricContext: string) => {
-                const contextName = metricContext ? `_${metricContext}` : '';
-                acc.push({
-                  group: 'metrics',
-                  value: `metricsLastValues.${key}${contextName}`,
-                  label: isSystemMetric(key)
-                    ? formatSystemMetricName(key)
-                    : `${key}${contextName}`,
-                });
-              },
-            );
-            return acc;
-          },
-          [],
-        );
-
+        const metricsSelectOptions = getMetricsSelectOptions(metricsColumns);
         const sortOptions = [...groupingSelectOptions, ...metricsSelectOptions];
 
         const tableData = getDataAsTableRows(
@@ -4321,26 +4304,9 @@ function createAppModel(appConfig: IAppInitialConfig) {
           config,
           groupingSelectOptions,
         );
-        const metricsSelectOptions = Object.keys(metricsColumns).reduce(
-          (acc: any, key: string) => {
-            Object.keys(metricsColumns[key]).forEach(
-              (metricContext: string) => {
-                const contextName = metricContext ? `_${metricContext}` : '';
-                acc.push({
-                  group: 'metrics',
-                  value: `metricsLastValues.${key}${contextName}`,
-                  label: isSystemMetric(key)
-                    ? formatSystemMetricName(key)
-                    : `${key}${contextName}`,
-                });
-              },
-            );
-            return acc;
-          },
-          [],
-        );
-
+        const metricsSelectOptions = getMetricsSelectOptions(metricsColumns);
         const sortOptions = [...groupingSelectOptions, ...metricsSelectOptions];
+
         const tableColumns: ITableColumn[] = getParamsTableColumns(
           sortOptions,
           metricsColumns,
@@ -4426,25 +4392,7 @@ function createAppModel(appConfig: IAppInitialConfig) {
             runProps,
           }),
         ];
-        const metricsSelectOptions = Object.keys(metricsColumns).reduce(
-          (acc: any, key: string) => {
-            Object.keys(metricsColumns[key]).forEach(
-              (metricContext: string) => {
-                const contextName = metricContext ? `_${metricContext}` : '';
-                acc.push({
-                  group: 'metrics',
-                  value: `metricsLastValues.${key}${contextName}`,
-                  label: isSystemMetric(key)
-                    ? formatSystemMetricName(key)
-                    : `${key}${contextName}`,
-                });
-              },
-            );
-            return acc;
-          },
-          [],
-        );
-
+        const metricsSelectOptions = getMetricsSelectOptions(metricsColumns);
         const sortOptions = [...groupingSelectOptions, ...metricsSelectOptions];
 
         const tableData = getDataAsTableRows(
@@ -5033,24 +4981,7 @@ function createAppModel(appConfig: IAppInitialConfig) {
             runProps,
           }),
         ];
-        const metricsSelectOptions = Object.keys(metricsColumns).reduce(
-          (acc: any, key: string) => {
-            Object.keys(metricsColumns[key]).forEach(
-              (metricContext: string) => {
-                const contextName = metricContext ? `_${metricContext}` : '';
-                acc.push({
-                  group: 'metrics',
-                  value: `metricsLastValues.${key}${contextName}`,
-                  label: isSystemMetric(key)
-                    ? formatSystemMetricName(key)
-                    : `${key}${contextName}`,
-                });
-              },
-            );
-            return acc;
-          },
-          [],
-        );
+        const metricsSelectOptions = getMetricsSelectOptions(metricsColumns);
         const sortOptions = [...groupingSelectOptions, ...metricsSelectOptions];
 
         const tableData = getDataAsTableRows(
@@ -5750,24 +5681,7 @@ function createAppModel(appConfig: IAppInitialConfig) {
             runProps,
           }),
         ];
-        const metricsSelectOptions = Object.keys(metricsColumns).reduce(
-          (acc: any, key: string) => {
-            Object.keys(metricsColumns[key]).forEach(
-              (metricContext: string) => {
-                const contextName = metricContext ? `_${metricContext}` : '';
-                acc.push({
-                  group: 'metrics',
-                  value: `metricsLastValues.${key}${contextName}`,
-                  label: isSystemMetric(key)
-                    ? formatSystemMetricName(key)
-                    : `${key}${contextName}`,
-                });
-              },
-            );
-            return acc;
-          },
-          [],
-        );
+        const metricsSelectOptions = getMetricsSelectOptions(metricsColumns);
         const sortOptions = [...groupingSelectOptions, ...metricsSelectOptions];
 
         const tableData = getDataAsTableRows(
@@ -5991,27 +5905,9 @@ function createAppModel(appConfig: IAppInitialConfig) {
           config,
           groupingSelectOptions,
         );
-        const metricsSelectOptions = Object.keys(metricsColumns).reduce(
-          (acc: any, key: string) => {
-            Object.keys(metricsColumns[key]).forEach(
-              (metricContext: string) => {
-                const contextName = metricContext ? `_${metricContext}` : '';
-                acc.push({
-                  group: 'metrics',
-                  value: `metricsLastValues.${
-                    isSystemMetric(key) ? key : `${key}${contextName}`
-                  }`,
-                  label: isSystemMetric(key)
-                    ? formatSystemMetricName(key)
-                    : `${key}${contextName}`,
-                });
-              },
-            );
-            return acc;
-          },
-          [],
-        );
+        const metricsSelectOptions = getMetricsSelectOptions(metricsColumns);
         const sortOptions = [...groupingSelectOptions, ...metricsSelectOptions];
+
         const tableColumns: ITableColumn[] = getParamsTableColumns(
           sortOptions,
           metricsColumns,
