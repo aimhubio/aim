@@ -41,19 +41,23 @@ class RPCHeartbeatSender(object):
         self._th_collector.join()
 
     def _send_heartbeat(self):
+        heartbeat_interval_counter = 0
         while True:
             # Get system statistics
             if self._shutdown:
                 break
 
-            time.sleep(self._heartbeat_send_interval)
+            time.sleep(1)
+            heartbeat_interval_counter += 1
 
-            if self._remote_client():
-                try:
-                    self._remote_client().health_check(health_check_type='heartbeat')
-                except Exception:
-                    # at the moment we don't care about failures for heartbeats
-                    pass
+            if heartbeat_interval_counter > self._heartbeat_send_interval:
+                if self._remote_client():
+                    try:
+                        self._remote_client().health_check(health_check_type='heartbeat')
+                    except Exception:
+                        # at the moment we don't care about failures for heartbeats
+                        pass
+                heartbeat_interval_counter = 0
 
 
 class RPCHeartbeatWatcher:
