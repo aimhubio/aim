@@ -49,8 +49,8 @@ function HideRowsPopover({
             <Text size={14} tint={100}>
               {hiddenRowsCount > 0
                 ? `${hiddenRowsCount} ${visualizationElementType}${
-                    hiddenRowsCount > 1 ? 's' : ''
-                  } are hidden`
+                    hiddenRowsCount > 1 ? 's are' : ' is'
+                  } hidden`
                 : `Hide ${visualizationElementType}s`}
             </Text>
           </Button>
