@@ -11,6 +11,7 @@
 - Mention explicitly run params everywhere params is mentioned (VkoHov)
 - Preserve active line even if it is dropped out of the filtered area (VkoHov)
 - Add run duration property for SDK and queries (mihran113)
+- Add client vs server version check for remote tracking server (mihran113)
 
 ### Fixes:
 

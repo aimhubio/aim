@@ -47,6 +47,12 @@ class RemoteTrackingServicer(remote_tracking_pb2_grpc.RemoteTrackingServiceServi
     registry = ResourceTypeRegistry()
     count = 0
 
+    def get_version(self, request: rpc_messages.VersionRequest, _context):
+        from aim.__version__ import __version__ as aim_version
+
+        return rpc_messages.VersionResponse(version=aim_version,
+                                            status=rpc_messages.VersionResponse.Status.OK)
+
     def get_resource(self, request: rpc_messages.ResourceRequest, _context):
         resource_handler = _get_handler()
         try:
