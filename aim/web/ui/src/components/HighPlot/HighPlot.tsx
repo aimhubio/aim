@@ -232,9 +232,9 @@ const HighPlot = React.forwardRef(function HighPlot(
         brushRef?.current?.updateLinesAndHoverAttributes?.({
           mouse: [
             brushRef.current.xScale(focusedState?.xValue),
-            brushRef.current.yScale[focusedState?.xValue ?? 0](
+            (brushRef.current.yScale[focusedState?.xValue ?? 0]?.(
               focusedState?.yValue,
-            ) + visBoxRef.current.margin.top,
+            ) ?? 0) + visBoxRef.current.margin.top,
           ],
           focusedState,
         });

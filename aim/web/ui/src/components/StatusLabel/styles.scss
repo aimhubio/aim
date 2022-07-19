@@ -16,6 +16,11 @@
     &::before {
       background: $success-color-100;
     }
+    &.disabled {
+      &::before {
+        background: $success-color-50;
+      }
+    }
   }
   &.alert {
     background: $pico-5;
@@ -24,6 +29,11 @@
     }
     &::before {
       background: $pico-50;
+    }
+    &.disabled {
+      &::before {
+        background: $pico-30;
+      }
     }
   }
   &::before {
