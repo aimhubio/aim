@@ -192,6 +192,7 @@ function ParamsContainer(): React.FunctionComponentElement<React.ReactNode> {
       onRowSelect={paramsAppModel.onRowSelect}
       archiveRuns={paramsAppModel.archiveRuns}
       deleteRuns={paramsAppModel.deleteRuns}
+      onRowsVisibilityChange={paramsAppModel.onRowsVisibilityChange}
     />
   );
 }

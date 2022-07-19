@@ -198,6 +198,7 @@ function ScattersContainer(): React.FunctionComponentElement<React.ReactNode> {
         onRowSelect={scattersAppModel.onRowSelect}
         archiveRuns={scattersAppModel.archiveRuns}
         deleteRuns={scattersAppModel.deleteRuns}
+        onRowsVisibilityChange={scattersAppModel.onRowsVisibilityChange}
       />
     </ErrorBoundary>
   );
