@@ -1,5 +1,7 @@
 import React from 'react';
 
+import { Tooltip } from '@material-ui/core';
+
 import ErrorBoundary from 'components/ErrorBoundary/ErrorBoundary';
 
 import { Button } from '../index';
@@ -27,7 +29,12 @@ function ToggleButton({
   return (
     <ErrorBoundary>
       <div className={`ToggleButton ${className || ''}`}>
-        <span className='ToggleButton__title'>{title}</span>
+        <Tooltip title={title}>
+          <div>
+            <span className='ToggleButton__title'>{title}</span>
+          </div>
+        </Tooltip>
+
         <div className='ToggleButton__container'>
           <Button
             id={id}
