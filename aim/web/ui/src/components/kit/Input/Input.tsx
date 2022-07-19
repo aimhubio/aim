@@ -67,7 +67,6 @@ function InputWrapper({
     [type],
   );
 
-  const isControlled = React.useMemo(() => !_.isUndefined(value), [value]);
   const isDebounced = React.useMemo(
     () => !_.isUndefined(debounceDelay),
     [debounceDelay],
@@ -117,14 +116,19 @@ function InputWrapper({
   }, [onValidateAndChange, isDebounced, debounceDelay]);
 
   const onChangeHandler = (e: React.ChangeEvent<HTMLInputElement>): void => {
+    const newValue = onChangeValue(e?.target?.value);
+    debouncedValidateAndChange(e, newValue);
+  };
+
+  const onChangeValue = (value: unknown): typeof inputValue => {
     const newValue = valueTypeConversionFn({
-      value: e?.target?.value,
+      value,
       isRequiredNumberValue,
       isNumberValueFloat,
     });
     setIsInputValid(true);
     setInputValue(newValue);
-    debouncedValidateAndChange(e, newValue);
+    return newValue;
   };
 
   const messagesFormatter = (messages: IMetadataMessages): void => {
@@ -150,26 +154,22 @@ function InputWrapper({
   }, [isValid]);
 
   React.useEffect(() => {
-    if (isControlled && value !== inputValue) {
-      onChangeHandler({
-        target: { value },
-      } as React.ChangeEvent<HTMLInputElement>);
+    if (value !== inputValue) {
+      onChangeValue(value);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [value]);
 
   React.useEffect(() => {
+    setIsMessageTooltipVisible(!isInputValid);
+  }, [isInputValid]);
+
+  React.useEffect(() => {
     if (isValidateInitially) {
-      onChangeHandler({
-        target: { value },
-      } as React.ChangeEvent<HTMLInputElement>);
+      onChangeValue(value);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
-
-  React.useEffect(() => {
-    setIsMessageTooltipVisible(!isInputValid);
-  }, [isInputValid]);
 
   const isRenderTopLabel = () => labelAppearance === 'top-labeled' && label;
 

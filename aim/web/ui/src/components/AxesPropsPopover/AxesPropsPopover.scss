@@ -30,10 +30,16 @@
     &__min, &__max {
       display: inline-block;
       width: 6.875rem;
+      margin-right: $space-xs;
     }
 
-    &__min {
-      margin-right: $space-xs;
+    &__resetButton {
+      color: $pico-80;
+      border: 0.0625rem solid $cuddle;
+      &.active {
+        border: $border-main-active;
+        background-color: $primary-color-5;
+      }
     }
   }
 }

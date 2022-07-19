@@ -3,7 +3,13 @@ import _ from 'lodash-es';
 
 import { Divider } from '@material-ui/core';
 
-import { Text, SelectDropdown, InputWrapper } from 'components/kit';
+import {
+  Text,
+  SelectDropdown,
+  InputWrapper,
+  Icon,
+  Button,
+} from 'components/kit';
 import ErrorBoundary from 'components/ErrorBoundary/ErrorBoundary';
 
 import { isSystemMetric } from 'utils/isSystemMetric';
@@ -111,7 +117,10 @@ function AxesPropsPopover({
       if (axisType && key) {
         const { setScaleRange, setIsScaleRangeValid, scaleRange } =
           axesProps[axisType];
-        setScaleRange((prev) => ({ ...prev, [key]: value }));
+        setScaleRange((prev) => ({
+          ...prev,
+          [key]: value,
+        }));
         setIsScaleRangeValid({
           min: true,
           max: true,
@@ -125,6 +134,15 @@ function AxesPropsPopover({
       }
     },
     [onAxesScaleRangeChange, axesProps],
+  );
+
+  const onResetRange = React.useCallback(
+    (axisType: 'xAxis' | 'yAxis') => {
+      onAxesScaleRangeChange({
+        [axisType]: { min: undefined, max: undefined },
+      });
+    },
+    [onAxesScaleRangeChange],
   );
 
   const validationPatterns = React.useMemo(
@@ -183,16 +201,16 @@ function AxesPropsPopover({
           </Text>
           <div className='AxesPropsPopover__range__container xAxis'>
             <Text size={14} className='scaleRangeInputs__label'>
-              X-axis range
+              X-axis
             </Text>
             <InputWrapper
               id='xAxis-min'
               key='xAxis-min'
               label='Min'
               type='number'
+              InputLabelProps={{ shrink: true }}
               wrapperClassName='scaleRangeInputs__min'
               value={xScaleRange.min}
-              inputProps={{ step: 2 }}
               showMessageByTooltip
               tooltipPlacement='bottom'
               isRequiredNumberValue={false}
@@ -207,6 +225,7 @@ function AxesPropsPopover({
               key='xAxis-max'
               label='Max'
               type='number'
+              InputLabelProps={{ shrink: true }}
               wrapperClassName='scaleRangeInputs__max'
               value={xScaleRange.max}
               inputProps={{ step: 2 }}
@@ -219,16 +238,24 @@ function AxesPropsPopover({
               validationPatterns={validationPatterns.max(xScaleRange.min)}
               isValid={isXScaleRangeValid.max}
             />
+            <Button
+              className='scaleRangeInputs__resetButton'
+              onClick={() => onResetRange('xAxis')}
+              withOnlyIcon={true}
+            >
+              <Icon name='reset' />
+            </Button>
           </div>
           <div className='AxesPropsPopover__range__container yAxis'>
             <Text size={14} className='scaleRangeInputs__label'>
-              Y-axis range
+              Y-axis
             </Text>
             <InputWrapper
               id='yAxis-min'
               key='yAxis-min'
               label='Min'
               type='number'
+              InputLabelProps={{ shrink: true }}
               wrapperClassName='scaleRangeInputs__min'
               value={yScaleRange.min}
               inputProps={{ step: 2 }}
@@ -246,6 +273,7 @@ function AxesPropsPopover({
               key='yAxis-max'
               label='Max'
               type='number'
+              InputLabelProps={{ shrink: true }}
               wrapperClassName='scaleRangeInputs__max'
               value={yScaleRange.max}
               inputProps={{ step: 2 }}
@@ -258,6 +286,13 @@ function AxesPropsPopover({
               validationPatterns={validationPatterns.max(yScaleRange.min)}
               isValid={isYScaleRangeValid.max}
             />
+            <Button
+              className='scaleRangeInputs__resetButton'
+              onClick={() => onResetRange('yAxis')}
+              withOnlyIcon={true}
+            >
+              <Icon name='reset' />
+            </Button>
           </div>
         </div>
       </div>
