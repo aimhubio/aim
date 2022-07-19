@@ -13,7 +13,10 @@ import ErrorBoundary from 'components/ErrorBoundary/ErrorBoundary';
 import ProgressBar from 'components/ProgressBar/ProgressBar';
 
 import pageTitlesEnum from 'config/pageTitles/pageTitles';
-import { RowHeightSize } from 'config/table/tableConfigs';
+import {
+  RowHeightSize,
+  VisualizationElementEnum,
+} from 'config/table/tableConfigs';
 import { ResizeModeEnum } from 'config/enums/tableEnums';
 import GroupingPopovers, {
   GroupNameEnum,
@@ -107,6 +110,8 @@ const Params = ({
   brushExtents,
   chartPanelOffsetHeight,
   requestProgress,
+  sortOptions,
+  onRowsVisibilityChange,
 }: IParamsProps): React.FunctionComponentElement<React.ReactNode> => {
   const [isProgressBarVisible, setIsProgressBarVisible] =
     React.useState<boolean>(false);
@@ -259,7 +264,7 @@ const Params = ({
                             ? 'medium'
                             : 'large'
                         }
-                        sortOptions={groupingSelectOptions}
+                        sortOptions={sortOptions}
                         sortFields={sortFields}
                         hiddenRows={hiddenMetrics}
                         hiddenColumns={hiddenColumns}
@@ -284,10 +289,12 @@ const Params = ({
                         onTableResizeModeChange={onTableResizeModeChange}
                         onTableDiffShow={onTableDiffShow}
                         updateColumnsWidths={updateColumnsWidths}
+                        onRowsVisibilityChange={onRowsVisibilityChange}
                         onRowSelect={onRowSelect}
                         archiveRuns={archiveRuns}
                         deleteRuns={deleteRuns}
                         focusedState={focusedState}
+                        visualizationElementType={VisualizationElementEnum.LINE}
                         multiSelect
                       />
                     </ErrorBoundary>

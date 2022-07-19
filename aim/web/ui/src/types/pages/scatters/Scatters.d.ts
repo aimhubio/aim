@@ -60,6 +60,7 @@ export interface IScattersProps extends Partial<RouteChildrenProps> {
   hiddenColumns: string[];
   hideSystemMetrics: boolean;
   groupingSelectOptions: IGroupingSelectOption[];
+  sortOptions: IGroupingSelectOption[];
   projectsDataMetrics: IProjectParamsMetrics['metrics'];
   resizeMode: ResizeModeEnum;
   selectFormData: {
@@ -115,4 +116,5 @@ export interface IScattersProps extends Partial<RouteChildrenProps> {
   onRowSelect: any;
   archiveRuns: (ids: string[], archived: boolean) => void;
   deleteRuns: (ids: string[]) => void;
+  onRowsVisibilityChange: (metricKeys: string[]) => void;
 }

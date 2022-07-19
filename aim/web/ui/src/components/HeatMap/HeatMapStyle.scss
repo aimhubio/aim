@@ -1,3 +1,5 @@
+@use 'styles/abstracts/index' as *;
+
 .CalendarHeatmap {
 }
 
@@ -12,7 +14,7 @@
 
   &.CalendarHeatmap__map__axis--x {
     font-size: 12px;
-    font-weight: 500;
+    font-weight: $font-500;
     display: flex;
     flex-direction: row;
     justify-content: space-between;

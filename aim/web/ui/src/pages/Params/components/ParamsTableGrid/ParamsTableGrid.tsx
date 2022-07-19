@@ -27,7 +27,7 @@ import { SortActionTypes, SortField } from 'utils/getSortedFields';
 import getColumnOptions from 'utils/getColumnOptions';
 
 function getParamsTableColumns(
-  groupingSelectOptions: IGroupingSelectOption[],
+  sortOptions: IGroupingSelectOption[],
   metricsColumns: any,
   paramColumns: string[] = [],
   groupFields: { [key: string]: string } | null,
@@ -146,18 +146,79 @@ function getParamsTableColumns(
       const systemMetricsList: ITableColumn[] = [];
       const metricsList: ITableColumn[] = [];
       Object.keys(metricsColumns[key]).forEach((metricContext) => {
-        const columnKey = `${systemMetric ? key : `${key}_${metricContext}`}`;
+        const contextName = metricContext ? `_${metricContext}` : '';
+        const columnKey = `${systemMetric ? key : `${key}${contextName}`}`;
+        const sortValueKey = `metricsLastValues.${key}${contextName}`;
+        const sortItemIndex: number =
+          sortFields?.findIndex(
+            (value: SortField) => value.value === sortValueKey,
+          ) ?? -1;
+
         let column = {
           key: columnKey,
           content: systemMetric ? (
-            <span>{formatSystemMetricName(key)}</span>
+            <span>
+              {formatSystemMetricName(key)}
+              {onSort && (
+                <TableSortIcons
+                  onSort={() =>
+                    onSort({
+                      sortFields,
+                      index: sortItemIndex,
+                      field:
+                        sortItemIndex === -1
+                          ? sortOptions.find(
+                              (value) => value.value === sortValueKey,
+                            )
+                          : (sortFields?.[sortItemIndex] as SortField),
+                      actionType:
+                        sortFields?.[sortItemIndex]?.order === 'desc'
+                          ? SortActionTypes.DELETE
+                          : SortActionTypes.ORDER_TABLE_TRIGGER,
+                    })
+                  }
+                  sort={
+                    !_.isNil(sortFields?.[sortItemIndex])
+                      ? sortFields?.[sortItemIndex]?.order
+                      : null
+                  }
+                />
+              )}
+            </span>
           ) : (
-            <Badge
-              monospace
-              size='xSmall'
-              color={COLORS[0][0]}
-              label={metricContext === '' ? 'Empty context' : metricContext}
-            />
+            <div>
+              <Badge
+                monospace
+                size='xSmall'
+                color={COLORS[0][0]}
+                label={metricContext === '' ? 'Empty context' : metricContext}
+              />
+              {onSort && (
+                <TableSortIcons
+                  onSort={() =>
+                    onSort({
+                      sortFields,
+                      index: sortItemIndex,
+                      field:
+                        sortItemIndex === -1
+                          ? sortOptions.find(
+                              (value) => value.value === sortValueKey,
+                            )
+                          : (sortFields?.[sortItemIndex] as SortField),
+                      actionType:
+                        sortFields?.[sortItemIndex]?.order === 'desc'
+                          ? SortActionTypes.DELETE
+                          : SortActionTypes.ORDER_TABLE_TRIGGER,
+                    })
+                  }
+                  sort={
+                    !_.isNil(sortFields?.[sortItemIndex])
+                      ? sortFields?.[sortItemIndex]?.order
+                      : null
+                  }
+                />
+              )}
+            </div>
           ),
           topHeader: systemMetric ? 'System Metrics' : key,
           pin: order?.left?.includes(columnKey)
@@ -181,13 +242,10 @@ function getParamsTableColumns(
     }, []),
     paramColumns.map((param) => {
       const paramKey = `run.params.${param}`;
-      let index = -1;
-      const sortItem: SortField | undefined = sortFields?.find((value, i) => {
-        if (value.value === paramKey) {
-          index = i;
-        }
-        return value.value === paramKey;
-      });
+      const sortItemIndex: number =
+        sortFields?.findIndex((value: SortField) => value.value === paramKey) ??
+        -1;
+
       return {
         key: param,
         content: (
@@ -198,20 +256,22 @@ function getParamsTableColumns(
                 onSort={() =>
                   onSort({
                     sortFields,
-                    index,
+                    index: sortItemIndex,
                     field:
-                      index === -1
-                        ? groupingSelectOptions.find(
-                            (value) => value.value === paramKey,
-                          )
-                        : sortItem,
+                      sortItemIndex === -1
+                        ? sortOptions.find((value) => value.value === paramKey)
+                        : sortFields?.[sortItemIndex],
                     actionType:
-                      sortItem?.order === 'desc'
+                      sortFields?.[sortItemIndex]?.order === 'desc'
                         ? SortActionTypes.DELETE
                         : SortActionTypes.ORDER_TABLE_TRIGGER,
                   })
                 }
-                sort={!_.isNil(sortItem) ? sortItem.order : null}
+                sort={
+                  !_.isNil(sortFields?.[sortItemIndex])
+                    ? sortFields?.[sortItemIndex].order
+                    : null
+                }
               />
             )}
           </span>
@@ -377,6 +437,7 @@ function paramsTableRowRenderer(
             run={rowData.run}
             runHash={rowData.hash}
             active={rowData.active}
+            hidden={rowData.isHidden}
           />
         ),
       },

@@ -172,6 +172,18 @@ class StructuredRunMixin:
             return self.props.end_time
 
     @property
+    def duration(self):
+        """Run duration in seconds (end_time - creation_time)
+
+            :getter: Returns run duration.
+        """
+        if self.end_time:
+            return self.end_time - self.creation_time
+        else:
+            from aim.web.api.utils import datetime_now
+            return datetime_now().timestamp() - self.creation_time
+
+    @property
     def active(self):
         """Check if run is active or not.
 

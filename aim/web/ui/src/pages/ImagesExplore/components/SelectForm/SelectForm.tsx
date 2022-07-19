@@ -15,7 +15,7 @@ import {
   CheckBoxOutlineBlank,
 } from '@material-ui/icons';
 
-import { Icon, Badge, Button } from 'components/kit';
+import { Icon, Badge, Button, Text } from 'components/kit';
 import ErrorBoundary from 'components/ErrorBoundary/ErrorBoundary';
 import AutocompleteInput from 'components/AutocompleteInput';
 
@@ -153,8 +153,8 @@ function SelectForm({
 
   return (
     <ErrorBoundary>
-      <div className='SelectForm__container'>
-        <div className='SelectForm__metrics__container'>
+      <div className='SelectForm'>
+        <div className='SelectForm__container__metrics'>
           <Box display='flex'>
             <Box
               width='100%'
@@ -257,11 +257,14 @@ function SelectForm({
                       flexItem
                     />
                     {selectedImagesData?.options.length === 0 && (
-                      <span className='SelectForm__tags__empty'>
+                      <Text tint={50} size={14} weight={400}>
                         No images are selected
-                      </span>
+                      </Text>
                     )}
-                    <Box className='SelectForm__tags ScrollBar__hidden'>
+                    <Box
+                      className='SelectForm__tags ScrollBar__hidden'
+                      flex={1}
+                    >
                       {selectedImagesData?.options?.map(
                         (tag: ISelectOption) => {
                           return (
@@ -311,7 +314,8 @@ function SelectForm({
             </ErrorBoundary>
           )}
         </div>
-        <div className='SelectForm__search__container'>
+
+        <div className='SelectForm__container__search'>
           <Button
             fullWidth
             key={`${requestIsPending}`}
