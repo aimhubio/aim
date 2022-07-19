@@ -228,7 +228,6 @@ function AxesPropsPopover({
               InputLabelProps={{ shrink: true }}
               wrapperClassName='scaleRangeInputs__max'
               value={xScaleRange.max}
-              inputProps={{ step: 2 }}
               showMessageByTooltip
               tooltipPlacement='bottom'
               isRequiredNumberValue={false}
@@ -258,7 +257,6 @@ function AxesPropsPopover({
               InputLabelProps={{ shrink: true }}
               wrapperClassName='scaleRangeInputs__min'
               value={yScaleRange.min}
-              inputProps={{ step: 2 }}
               showMessageByTooltip
               tooltipPlacement='bottom'
               isRequiredNumberValue={false}
@@ -276,7 +274,6 @@ function AxesPropsPopover({
               InputLabelProps={{ shrink: true }}
               wrapperClassName='scaleRangeInputs__max'
               value={yScaleRange.max}
-              inputProps={{ step: 2 }}
               showMessageByTooltip
               tooltipPlacement='bottom'
               isRequiredNumberValue={false}
