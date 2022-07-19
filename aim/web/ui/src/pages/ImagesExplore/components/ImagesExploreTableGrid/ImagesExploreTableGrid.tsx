@@ -174,13 +174,9 @@ function getImagesExploreTableColumns(
   ].concat(
     paramColumns.map((param) => {
       const paramKey = `run.params.${param}`;
-      let index = -1;
-      const sortItem: SortField | undefined = sortFields?.find((value, i) => {
-        if (value.value === paramKey) {
-          index = i;
-        }
-        return value.value === paramKey;
-      });
+      const sortItemIndex: number =
+        sortFields?.findIndex((value: SortField) => value.value === paramKey) ??
+        -1;
       return {
         key: param,
         content: (
@@ -192,20 +188,24 @@ function getImagesExploreTableColumns(
                   onSort={() =>
                     onSort({
                       sortFields,
-                      index,
+                      index: sortItemIndex,
                       field:
-                        index === -1
+                        sortItemIndex === -1
                           ? groupingSelectOptions.find(
                               (value) => value.value === paramKey,
                             )
-                          : sortItem,
+                          : sortFields?.[sortItemIndex],
                       actionType:
-                        sortItem?.order === 'desc'
+                        sortFields?.[sortItemIndex]?.order === 'desc'
                           ? SortActionTypes.DELETE
                           : SortActionTypes.ORDER_TABLE_TRIGGER,
                     })
                   }
-                  sort={!_.isNil(sortItem) ? sortItem.order : null}
+                  sort={
+                    !_.isNil(sortFields?.[sortItemIndex])
+                      ? sortFields?.[sortItemIndex]?.order
+                      : null
+                  }
                 />
               )}
             </span>

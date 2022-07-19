@@ -239,7 +239,7 @@ function Metrics(
                               ? 'medium'
                               : 'large'
                           }
-                          sortOptions={props.groupingSelectOptions}
+                          sortOptions={props.sortOptions}
                           sortFields={props.sortFields}
                           hiddenRows={props.hiddenMetrics}
                           hiddenColumns={props.hiddenColumns}
