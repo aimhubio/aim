@@ -2,7 +2,7 @@
 /* eslint-disable react/prop-types */
 
 import React from 'react';
-import { debounce, isEmpty, isEqual } from 'lodash-es';
+import { isEmpty, isEqual } from 'lodash-es';
 
 import { Button, Icon, Text } from 'components/kit';
 import ControlPopover from 'components/ControlPopover/ControlPopover';
@@ -118,7 +118,9 @@ const Table = React.forwardRef(function Table(
   const [tableBulkActionsVisibility, setTableBulkActionsVisibility] =
     React.useState({ delete: false, archive: false, unarchive: false });
   const [listWindow, setListWindow] = React.useState({
+    top: 0,
     left: 0,
+    height: 0,
     width: 0,
     availableSpace: 0,
   });
@@ -267,61 +269,54 @@ const Table = React.forwardRef(function Table(
   function scrollToRow(rowKey: string) {
     window.requestAnimationFrame(() => {
       if (custom) {
-        function scrollToElement() {
-          const rowCell = document.querySelector(
-            `.Table__cell.rowKey-${rowKey}`,
-          );
-          if (!!rowCell) {
-            let top = 0;
-            if (groups) {
-              rowCell.parentElement?.childNodes?.forEach((item, index) => {
-                if ([...item.classList].includes(`rowKey-${rowKey}`)) {
-                  top =
-                    rowCell.parentElement?.offsetTop + rowHeight * (index - 3);
-                }
-              });
-            } else {
-              top = rowCell.offsetTop - 2 * rowHeight;
-            }
-            if (
-              tableContainerRef.current.scrollTop > top ||
-              tableContainerRef.current.scrollTop +
-                tableContainerRef.current.offsetHeight <
-                top
-            ) {
-              tableContainerRef.current.scrollTo({
-                top,
-              });
-            }
-          }
-        }
-
+        let top = ROW_CELL_SIZE_CONFIG[rowHeight].groupMargin + rowHeight;
         if (groups) {
-          for (let groupKey in dataRef?.current) {
-            if (
-              dataRef?.current[groupKey].data?.groupRowsKeys?.includes(rowKey)
-            ) {
-              if (expandedGroups.current.includes(groupKey)) {
-                scrollToElement();
-              } else {
-                expandedGroups.current.push(groupKey);
+          top = ROW_CELL_SIZE_CONFIG[rowHeight].groupMargin + rowHeight;
+          for (let key in data) {
+            top += ROW_CELL_SIZE_CONFIG[rowHeight].groupMargin + rowHeight;
+            if (expanded[key]) {
+              top += data[key].items.length * rowHeight;
+            }
+            for (let i = 0; i < data[key]?.items.length; i++) {
+              top += rowHeight;
+              if (data[key].items[i].key === rowKey) {
+                expandedGroups.current.push(key);
                 setExpanded(
                   Object.fromEntries(
                     expandedGroups.current.map((key) => [key, true]),
                   ),
                 );
-                // TODO: probably need useEffect for this
                 setTimeout(() => {
                   window.requestAnimationFrame(() => {
                     updateFocusedRow(`rowKey-${rowKey}`);
-                    scrollToElement();
                   });
                 }, 100);
+                break;
               }
             }
           }
         } else {
-          scrollToElement();
+          for (let i = 0; i < data?.length; i++) {
+            if (data[i].key === rowKey) {
+              top = i * rowHeight;
+              break;
+            }
+          }
+        }
+
+        if (
+          tableContainerRef.current.scrollTop > top ||
+          tableContainerRef.current.scrollTop +
+            tableContainerRef.current.offsetHeight <
+            top
+        ) {
+          setTimeout(() => {
+            window.requestAnimationFrame(() => {
+              tableContainerRef.current.scrollTo({
+                top,
+              });
+            });
+          }, 100);
         }
       } else {
         tableRef.current?.scrollToRowByKey(rowKey);
@@ -511,11 +506,14 @@ const Table = React.forwardRef(function Table(
       availableSpace =
         tableContainerRef.current.offsetWidth -
         (leftPane?.offsetWidth ?? 0) -
-        (rightPane?.offsetWidth ?? 0);
+        (rightPane?.offsetWidth ?? 0) -
+        32; // the selection section (checkboxes)
     }
 
     setListWindow({
+      top: tableContainerRef.current?.scrollTop,
       left: tableContainerRef.current?.scrollLeft,
+      height: tableContainerRef.current?.offsetHeight,
       width: tableContainerRef.current?.offsetWidth,
       availableSpace,
     });
@@ -550,7 +548,7 @@ const Table = React.forwardRef(function Table(
 
       virtualizedUpdate();
 
-      tableContainerRef.current.onscroll = debounce(({ target }) => {
+      tableContainerRef.current.onscroll = ({ target }) => {
         const windowEdges = calculateWindow({
           scrollTop: target.scrollTop,
           offsetHeight: target.offsetHeight,
@@ -582,7 +580,7 @@ const Table = React.forwardRef(function Table(
           }
         }
         setListWindowMeasurements();
-      }, 30);
+      };
     }
 
     return () => {

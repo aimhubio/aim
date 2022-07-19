@@ -16,6 +16,7 @@ import {
   TABLE_COLUMN_START_COLOR_SCALE,
   TABLE_COLUMN_END_COLOR_SCALE,
   RowHeightSize,
+  ROW_CELL_SIZE_CONFIG,
 } from 'config/table/tableConfigs';
 
 import useResizeObserver from 'hooks/window/useResizeObserver';
@@ -56,6 +57,7 @@ function Column({
   rowHeightMode,
   setColWidth,
   colLeft,
+  listWindow,
 }) {
   const [maxWidth, setMaxWidth] = React.useState(width);
   const [isResizing, setIsResizing] = React.useState(false);
@@ -165,6 +167,7 @@ function Column({
   React.useEffect(() => {
     if (columnRef.current && col.key !== 'selection') {
       columnRef.current.style.width = widthClone.current ?? 'initial';
+      setMaxWidth(width);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [data, expanded, width]);
@@ -193,6 +196,32 @@ function Column({
 
   useResizeObserver(resizeObserverCallback, columnRef, observerReturnCallback);
 
+  function getColumnHeight() {
+    if (groups) {
+      const groupKeys = Object.keys(data);
+      let expandedGroupKeys = groupKeys.filter((key) => expanded[key]);
+      let expandedGroupsDataCount = expandedGroupKeys.reduce(
+        (acc, currKey) => acc + data[currKey].items.length,
+        0,
+      );
+      return (
+        ((topHeader ? 1 : 0) + 1 + groupKeys.length + expandedGroupsDataCount) *
+          rowHeightMode +
+        (groupKeys.length + 1) * ROW_CELL_SIZE_CONFIG[rowHeightMode].groupMargin
+      );
+    }
+
+    return ((topHeader ? 1 : 0) + 1 + dataLength) * rowHeightMode;
+  }
+
+  let firstVisibleCellTop = null;
+
+  function fixColumnWidth(width) {
+    if (maxWidth === undefined || width > maxWidth) {
+      setMaxWidth(width);
+    }
+  }
+
   return (
     <ErrorBoundary>
       <div
@@ -207,6 +236,7 @@ function Column({
           width: col.key === 'selection' ? 32 : widthClone.current ?? 'initial',
           left: colLeft,
           visibility: colLeft === null ? 'hidden' : null,
+          height: getColumnHeight(),
         }}
         ref={columnRef}
       >
@@ -549,135 +579,186 @@ function Column({
                         expanded: expanded[groupKey],
                       },
                     )}
+                    setColumnWidth={fixColumnWidth}
                   />
                 )}
                 {expanded[groupKey] && (
                   <>
-                    {data[groupKey]?.items?.map((item, i) => (
-                      <React.Fragment key={col.key + i}>
-                        <Cell
-                          key={col.key + i}
-                          index={item.index}
-                          col={col}
-                          multiSelect={multiSelect}
-                          getColumnCelBGColor={getColumnCelBGColor}
-                          columnsColorScales={columnsColorScales}
-                          isNumeric={colorScaleRange}
-                          item={
-                            col.key === '#' ? (
-                              <>
-                                <Checkbox
-                                  color='primary'
-                                  size='small'
-                                  icon={
-                                    <span className='Table__column__defaultSelectIcon'></span>
-                                  }
-                                  checkedIcon={
-                                    <span className='Table__column__selectedSelectIcon'>
-                                      <Icon name='check' fontSize={9} />
-                                    </span>
-                                  }
-                                  className='Table__column__selectCheckbox'
-                                  checked={!!selectedRows[item.selectKey]}
-                                  onClick={(e) => {
-                                    e.stopPropagation();
-                                    onRowSelect({
-                                      actionType: 'single',
-                                      data: item,
-                                    });
-                                  }}
-                                />
-                              </>
-                            ) : (
-                              item[col.key] || data[groupKey].data[col.key]
-                            )
-                          }
-                          groupColumnColored={!!data[groupKey].data.meta.color}
-                          className={classNames(`rowKey-${item.key}`, {
-                            inactive: item.isHidden,
-                            selected: !!selectedRows?.[item.selectKey],
-                          })}
-                          isConfigColumn={col.key === '#'}
-                          metadata={firstColumn ? item.rowMeta : null}
-                          onRowHover={() => onRowHover(item)}
-                          onRowClick={() => onRowClick(item)}
-                        />
-                      </React.Fragment>
-                    ))}
+                    {data[groupKey]?.items?.map((item, i) => {
+                      let top = 0;
+                      for (let key in data) {
+                        if (key === groupKey) {
+                          break;
+                        }
+                        if (expanded[key]) {
+                          top += data[key].items.length * rowHeightMode;
+                        }
+                      }
+                      top += i * rowHeightMode;
+                      const isVisible =
+                        top >= listWindow.top - rowHeightMode * 5 &&
+                        top <=
+                          listWindow.top +
+                            listWindow.height +
+                            rowHeightMode * 5;
+                      if (isVisible && firstVisibleCellTop === null) {
+                        firstVisibleCellTop = top;
+                      }
+                      return (
+                        isVisible && (
+                          <React.Fragment key={col.key + item.index}>
+                            <Cell
+                              index={item.index}
+                              col={col}
+                              multiSelect={multiSelect}
+                              getColumnCelBGColor={getColumnCelBGColor}
+                              columnsColorScales={columnsColorScales}
+                              isNumeric={colorScaleRange}
+                              item={
+                                col.key === '#' ? (
+                                  <>
+                                    <Checkbox
+                                      color='primary'
+                                      size='small'
+                                      icon={
+                                        <span className='Table__column__defaultSelectIcon'></span>
+                                      }
+                                      checkedIcon={
+                                        <span className='Table__column__selectedSelectIcon'>
+                                          <Icon name='check' fontSize={9} />
+                                        </span>
+                                      }
+                                      className='Table__column__selectCheckbox'
+                                      checked={!!selectedRows[item.selectKey]}
+                                      onClick={(e) => {
+                                        e.stopPropagation();
+                                        onRowSelect({
+                                          actionType: 'single',
+                                          data: item,
+                                        });
+                                      }}
+                                    />
+                                  </>
+                                ) : (
+                                  item[col.key] || data[groupKey].data[col.key]
+                                )
+                              }
+                              groupColumnColored={
+                                !!data[groupKey].data.meta.color
+                              }
+                              className={classNames(`rowKey-${item.key}`, {
+                                inactive: item.isHidden,
+                                selected: !!selectedRows?.[item.selectKey],
+                              })}
+                              isConfigColumn={col.key === '#'}
+                              metadata={firstColumn ? item.rowMeta : null}
+                              box={{
+                                top: firstVisibleCellTop === top ? top : null,
+                              }}
+                              onRowHover={() => onRowHover(item)}
+                              onRowClick={() => onRowClick(item)}
+                              setColumnWidth={fixColumnWidth}
+                            />
+                          </React.Fragment>
+                        )
+                      );
+                    })}
                   </>
                 )}
               </div>
             ))
-          : data.map((item, i) => (
-              <React.Fragment key={i}>
-                {col.key === 'selection' ? (
-                  <Cell
-                    key={col.key + i}
-                    index={item.index}
-                    col={col}
-                    item={
-                      <>
-                        <Checkbox
-                          color='primary'
-                          size='small'
-                          icon={
-                            <span className='Table__column__defaultSelectIcon'></span>
-                          }
-                          checkedIcon={
-                            <span className='Table__column__selectedSelectIcon'>
-                              <Icon name='check' fontSize={9} />
-                            </span>
-                          }
-                          className='Table__column__selectCheckbox'
-                          checked={!!selectedRows[item.selectKey]}
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            onRowSelect({
-                              data: item,
-                              actionType: 'single',
-                            });
-                          }}
-                        />
-                      </>
-                    }
-                    className={classNames(`rowKey-${item.key}`, {
-                      inactive: item.isHidden,
-                      selected: !!selectedRows?.[item.selectKey],
-                    })}
-                    metadata={
-                      (multiSelect && col.key === 'selection' && firstColumn) ||
-                      (!multiSelect && firstColumn)
-                        ? item.rowMeta
-                        : null
-                    }
-                    onRowHover={() => onRowHover(item)}
-                    onRowClick={() => onRowClick(item)}
-                  />
-                ) : (
-                  <Cell
-                    key={col.key + i}
-                    index={item.index}
-                    col={col}
-                    item={item[col.key]}
-                    getColumnCelBGColor={getColumnCelBGColor}
-                    isNumeric={colorScaleRange}
-                    columnsColorScales={columnsColorScales}
-                    className={classNames(`rowKey-${item.key}`, {
-                      inactive: item.isHidden,
-                      selected: !!selectedRows?.[item.selectKey],
-                    })}
-                    metadata={
-                      (multiSelect && col.key === 'selection' && firstColumn) ||
-                      (!multiSelect && firstColumn)
-                        ? item.rowMeta
-                        : null
-                    }
-                    onRowHover={() => onRowHover(item)}
-                    onRowClick={() => onRowClick(item)}
-                  />
-                )}
-              </React.Fragment>
-            ))}
+          : data.map((item) => {
+              const top = item.index * rowHeightMode;
+              const isVisible =
+                top >= listWindow.top - rowHeightMode * 3 &&
+                top <= listWindow.top + listWindow.height + rowHeightMode * 3;
+              if (isVisible && firstVisibleCellTop === null) {
+                firstVisibleCellTop = top;
+              }
+
+              return (
+                isVisible && (
+                  <React.Fragment key={col.key + item.index}>
+                    {col.key === 'selection' ? (
+                      <Cell
+                        index={item.index}
+                        col={col}
+                        item={
+                          <>
+                            <Checkbox
+                              color='primary'
+                              size='small'
+                              icon={
+                                <span className='Table__column__defaultSelectIcon'></span>
+                              }
+                              checkedIcon={
+                                <span className='Table__column__selectedSelectIcon'>
+                                  <Icon name='check' fontSize={9} />
+                                </span>
+                              }
+                              className='Table__column__selectCheckbox'
+                              checked={!!selectedRows[item.selectKey]}
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                onRowSelect({
+                                  data: item,
+                                  actionType: 'single',
+                                });
+                              }}
+                            />
+                          </>
+                        }
+                        className={classNames(`rowKey-${item.key}`, {
+                          inactive: item.isHidden,
+                          selected: !!selectedRows?.[item.selectKey],
+                        })}
+                        metadata={
+                          (multiSelect &&
+                            col.key === 'selection' &&
+                            firstColumn) ||
+                          (!multiSelect && firstColumn)
+                            ? item.rowMeta
+                            : null
+                        }
+                        box={{
+                          top: firstVisibleCellTop === top ? top : null,
+                        }}
+                        onRowHover={() => onRowHover(item)}
+                        onRowClick={() => onRowClick(item)}
+                        setColumnWidth={fixColumnWidth}
+                      />
+                    ) : (
+                      <Cell
+                        index={item.index}
+                        col={col}
+                        item={item[col.key]}
+                        getColumnCelBGColor={getColumnCelBGColor}
+                        isNumeric={colorScaleRange}
+                        columnsColorScales={columnsColorScales}
+                        className={classNames(`rowKey-${item.key}`, {
+                          inactive: item.isHidden,
+                          selected: !!selectedRows?.[item.selectKey],
+                        })}
+                        metadata={
+                          (multiSelect &&
+                            col.key === 'selection' &&
+                            firstColumn) ||
+                          (!multiSelect && firstColumn)
+                            ? item.rowMeta
+                            : null
+                        }
+                        box={{
+                          top: firstVisibleCellTop === top ? top : null,
+                        }}
+                        onRowHover={() => onRowHover(item)}
+                        onRowClick={() => onRowClick(item)}
+                        setColumnWidth={fixColumnWidth}
+                      />
+                    )}
+                  </React.Fragment>
+                )
+              );
+            })}
       </div>
     </ErrorBoundary>
   );

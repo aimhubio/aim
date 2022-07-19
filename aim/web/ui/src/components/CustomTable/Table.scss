@@ -291,7 +291,6 @@ $border-radius: 0.2rem;
   white-space: nowrap;
   text-overflow: ellipsis;
   height: var(--cell-height);
-  position: relative;
   color: $pico-100;
   &.isNumeric {
     justify-content: flex-end;

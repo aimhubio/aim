@@ -18,7 +18,6 @@ import {
 } from 'config/table/tableConfigs';
 
 import getClosestValue from 'utils/getClosestValue';
-import { encode } from 'utils/encoder/encoder';
 
 import Column from './TableColumn';
 
@@ -55,9 +54,7 @@ function Table(props) {
     .sort((a, b) => rightCols.indexOf(a.key) - rightCols.indexOf(b.key));
   const sortedColumns = [...leftPane, ...middlePane, ...rightPane];
 
-  let [middlePaneColsKey, setMiddlePaneColsKey] = useState(
-    encode({ cols: middlePane }, true),
-  );
+  const middlePaneColsKey = middlePane.map((col) => col.key).join('');
 
   const groups = !Array.isArray(props.data);
 
@@ -96,11 +93,6 @@ function Table(props) {
       window.cancelAnimationFrame(rAFRef);
     };
   }, [colWidths]);
-
-  useEffect(() => {
-    setMiddlePaneColsKey(encode({ cols: middlePane }, true));
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [columns]);
 
   useEffect(
     () => {
@@ -386,6 +378,7 @@ function Table(props) {
                   }
                   isAlwaysVisible={true}
                   onRowHover={props.onRowHover}
+                  listWindow={props.listWindow}
                 />
               </div>
             </ErrorBoundary>
@@ -454,6 +447,7 @@ function Table(props) {
                     columnOptions={col.columnOptions}
                     selectedRows={props.selectedRows}
                     onRowSelect={props.onRowSelect}
+                    listWindow={props.listWindow}
                   />
                 </ErrorBoundary>
               ))}
@@ -525,6 +519,7 @@ function Table(props) {
                       })
                     }
                     colLeft={colLefts[index] ?? null}
+                    listWindow={props.listWindow}
                   />
                 </ErrorBoundary>
               );
@@ -586,6 +581,7 @@ function Table(props) {
                     onRowClick={props.onRowClick}
                     columnOptions={col.columnOptions}
                     selectedRows={props.selectedRows}
+                    listWindow={props.listWindow}
                   />
                 </ErrorBoundary>
               ))}
