@@ -9,6 +9,7 @@
 - Increase visibility and usability of the Show table diff button (arsengit)
 - Add support for tensorboard audios conversion (mihran113)
 - Mention explicitly run params everywhere params is mentioned (VkoHov)
+- Ability to hide a batch of items in explorers (VkoHov)
 - Preserve active line even if it is dropped out of the filtered area (VkoHov)
 - Add run duration property for SDK and queries (mihran113)
 
@@ -26,7 +27,7 @@
 
 ### Fixes:
 
-- Avoid saving crashed or terminated search requests as the last state on explorers (arsengit) 
+- Avoid saving crashed or terminated search requests as the last state on explorers (arsengit)
 - Remove the progress bar blinking when searching runs in Runs Explorer (KaroMourad)
 - Fix the "matched runs" sentence color style in progress bars (KaroMourad)
 - Fix `SyntaxError` handling for python3.10+ (mihran113)

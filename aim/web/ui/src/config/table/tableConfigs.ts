@@ -11,6 +11,12 @@ export enum RowHeightSize {
   lg = 32,
 }
 
+export enum VisualizationElementEnum {
+  LINE = 'line',
+  POINT = 'point',
+  IMAGE = 'image',
+}
+
 export const ROW_CELL_SIZE_CONFIG = {
   22: {
     groupMargin: 2,

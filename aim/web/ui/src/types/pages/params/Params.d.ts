@@ -121,4 +121,5 @@ export interface IParamsProps extends Partial<RouteChildrenProps> {
   onRowSelect: any;
   archiveRuns: (ids: string[], archived: boolean) => void;
   deleteRuns: (ids: string[]) => void;
+  onRowsVisibilityChange: (metricKeys: string[]) => void;
 }
