@@ -164,3 +164,13 @@
     margin-right: 1rem;
   }
 }
+
+.RunNameColumn {
+  display: flex;
+  align-items: center;
+  &.isHidden {
+    .MuiTypography-root {
+      color: $primary-color-50;
+    }
+  }
+}

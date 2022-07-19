@@ -164,7 +164,7 @@ function getParamsTableColumns(
                   onSort={() =>
                     onSort({
                       sortFields,
-                      sortItemIndex,
+                      index: sortItemIndex,
                       field:
                         sortItemIndex === -1
                           ? sortOptions.find(
@@ -198,7 +198,7 @@ function getParamsTableColumns(
                   onSort={() =>
                     onSort({
                       sortFields,
-                      sortItemIndex,
+                      index: sortItemIndex,
                       field:
                         sortItemIndex === -1
                           ? sortOptions.find(
@@ -256,7 +256,7 @@ function getParamsTableColumns(
                 onSort={() =>
                   onSort({
                     sortFields,
-                    sortItemIndex,
+                    index: sortItemIndex,
                     field:
                       sortItemIndex === -1
                         ? sortOptions.find((value) => value.value === paramKey)
@@ -437,6 +437,7 @@ function paramsTableRowRenderer(
             run={rowData.run}
             runHash={rowData.hash}
             active={rowData.active}
+            hidden={rowData.isHidden}
           />
         ),
       },

@@ -10,6 +10,7 @@
 - Add support for tensorboard audios conversion (mihran113)
 - Mention explicitly run params everywhere params is mentioned (VkoHov)
 - Add ability to sort by the last value of the metric in table (VkoHov)
+- Ability to hide a batch of items in explorers (VkoHov)
 - Preserve active line even if it is dropped out of the filtered area (VkoHov)
 - Add run duration property for SDK and queries (mihran113)
 
