@@ -437,6 +437,7 @@ function paramsTableRowRenderer(
             run={rowData.run}
             runHash={rowData.hash}
             active={rowData.active}
+            hidden={rowData.isHidden}
           />
         ),
       },

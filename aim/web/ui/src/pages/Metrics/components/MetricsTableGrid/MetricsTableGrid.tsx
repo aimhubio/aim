@@ -485,6 +485,7 @@ function metricsTableRowRenderer(
             run={rowData.run}
             runHash={rowData.hash}
             active={rowData.active}
+            hidden={rowData.isHidden}
           />
         ),
       },
@@ -499,6 +500,7 @@ function metricsTableRowRenderer(
             size='xSmall'
             color={COLORS[0][0]}
             label={item || 'Empty Context'}
+            disabled={rowData.isHidden}
           />
         )),
       },
