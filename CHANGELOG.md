@@ -14,12 +14,15 @@
 - Ability to hide a batch of items in explorers (VkoHov)
 - Preserve active line even if it is dropped out of the filtered area (VkoHov)
 - Add run duration property for SDK and queries (mihran113)
+- Add client vs server version check for remote tracking server (mihran113)
+- Add Remote tracking client heartbeat (mihran113)
 
 ### Fixes:
 
 - Fix tensorboard log conversion for images (mihran113)
 - Check if gradient is None when tracking gradient distributions (kage08)
 - Fix displaying non-syntax errors across Aim UI (arsengit) 
+- Fix queries on remote repos (mihran113)
 
 ## 3.11.2 Jul 8, 2022
 
