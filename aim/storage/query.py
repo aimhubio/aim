@@ -1,8 +1,8 @@
-from functools import lru_cache
 import logging
-import datetime
 
 from abc import abstractmethod
+from functools import lru_cache
+from datetime import datetime, timedelta
 
 from RestrictedPython import (
     safe_builtins,
@@ -18,14 +18,22 @@ from RestrictedPython.Guards import (
 )
 
 
+def safe_import(*args, **kwargs):
+    if args and args[0] != 'time':
+        raise ImportError(f'{args[0]} package cannot be imported.')
+    return __import__(*args, **kwargs)
+
+
 extra_builtins = {
     'datetime': datetime,
+    'timedelta': timedelta,
     'sorted': sorted,
     'min': min,
     'max': max,
     'sum': sum,
     'any': any,
     'all': all,
+    '__import__': safe_import,
 }
 
 builtins = safe_builtins.copy()

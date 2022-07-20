@@ -14,6 +14,7 @@ import drawParallelColorIndicator from './drawParallelColorIndicator';
 import getCoordinates from './getCoordinates';
 import drawPoints from './drawPoints';
 import drawScatterTrendline from './drawScatterTrendline';
+import drawUnableToRender from './drawUnableToRender';
 
 const gradientStartColor = '#2980B9';
 const gradientEndColor = '#E74C3C';
@@ -74,6 +75,8 @@ enum TrendlineTypeEnum {
   LOESS = 'loess',
 }
 
+const MIN_LOG_VALUE = 1e-8;
+
 export {
   CircleEnum,
   CurveEnum,
@@ -98,6 +101,8 @@ export {
   drawParallelAxesBrush,
   drawPoints,
   drawScatterTrendline,
+  drawUnableToRender,
   gradientStartColor,
   gradientEndColor,
+  MIN_LOG_VALUE,
 };

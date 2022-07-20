@@ -1,6 +1,6 @@
 from typing import Optional, Dict, List
 
-from fastapi import HTTPException
+from fastapi import HTTPException, Header
 from pydantic import BaseModel
 from starlette.responses import StreamingResponse
 
@@ -55,7 +55,8 @@ class CustomObjectApiConfig:
                              skip_system: Optional[bool] = True,
                              record_range: Optional[str] = '', record_density: Optional[int] = 50,
                              index_range: Optional[str] = '', index_density: Optional[int] = 5,
-                             report_progress: Optional[bool] = True):
+                             report_progress: Optional[bool] = True,
+                             x_timezone_offset: int = Header(default=0),):
             # search Sequence API
             repo = get_project_repo()
             query = checked_query(q)
@@ -69,7 +70,8 @@ class CustomObjectApiConfig:
             query_iterator = QuerySequenceCollection(repo=repo,
                                                      seq_cls=cls.sequence_type,
                                                      query=query,
-                                                     report_mode=QueryReportMode.PROGRESS_TUPLE)
+                                                     report_mode=QueryReportMode.PROGRESS_TUPLE,
+                                                     timezone_offset=x_timezone_offset)
 
             api = CustomObjectApi(seq_name, resolve_blobs=cls.resolve_blobs)
             api.set_dump_data_fn(cls.dump_record_fn)

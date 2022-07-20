@@ -1,5 +1,4 @@
 import React from 'react';
-import * as dot from 'dot-object';
 import _ from 'lodash-es';
 
 import ErrorBoundary from 'components/ErrorBoundary/ErrorBoundary';
@@ -9,6 +8,7 @@ import { Text } from 'components/kit';
 
 import getObjectPaths from 'utils/getObjectPaths';
 import { formatValue } from 'utils/formatValue';
+import { getValue } from 'utils/helper';
 
 function RunOverviewTabParamsCard({ runParams, isRunInfoLoading }: any) {
   const tableData = React.useMemo(() => {
@@ -16,13 +16,11 @@ function RunOverviewTabParamsCard({ runParams, isRunInfoLoading }: any) {
       ? _.omit(runParams, '__system_params')
       : runParams;
     const paths = getObjectPaths(params, params);
-    const dotted = dot.dot(params);
-    const modified = dot.object(dotted);
     const resultTableList = paths.map((path, index) => {
       return {
         key: index,
         name: path,
-        value: formatValue(dot.pick(path, modified)),
+        value: formatValue(getValue(params, path)),
       };
     });
     return resultTableList || [];

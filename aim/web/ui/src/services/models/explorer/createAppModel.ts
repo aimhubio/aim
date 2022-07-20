@@ -4,6 +4,7 @@ import _ from 'lodash-es';
 
 import { HighlightEnum } from 'components/HighlightModesPopover/HighlightModesPopover';
 import { IPoint } from 'components/ScatterPlot';
+import { IAxesScaleRange } from 'components/AxesPropsPopover';
 
 import COLORS from 'config/colors/colors';
 import DASH_ARRAYS from 'config/dash-arrays/dashArrays';
@@ -182,9 +183,11 @@ import {
   alignByStep,
 } from 'utils/app/alignMetricData';
 import setRequestProgress from 'utils/app/setRequestProgress';
+import onAxesScaleRangeChange from 'utils/app/onAxesScaleRangeChange';
 import { minMaxOfArray } from 'utils/minMaxOfArray';
 import getAdvancedSuggestion from 'utils/getAdvancedSuggestions';
 import { processDurationTime } from 'utils/processDurationTime';
+import getSelectOptions from 'utils/app/getSelectOptions';
 import { getMetricsSelectOptions } from 'utils/app/getMetricsSelectOptions';
 import onRowsVisibilityChange from 'utils/app/onRowsVisibilityChange';
 import { getMetricsRowData } from 'utils/app/getMetricsRowData';
@@ -281,6 +284,10 @@ function createAppModel(appConfig: IAppInitialConfig) {
               axesScaleType: {
                 xAxis: CONTROLS_DEFAULT_CONFIG.metrics.axesScaleType.xAxis,
                 yAxis: CONTROLS_DEFAULT_CONFIG.metrics.axesScaleType.yAxis,
+              },
+              axesScaleRange: {
+                yAxis: CONTROLS_DEFAULT_CONFIG.metrics.axesScaleRange.yAxis,
+                xAxis: CONTROLS_DEFAULT_CONFIG.metrics.axesScaleRange.xAxis,
               },
               curveInterpolation:
                 CONTROLS_DEFAULT_CONFIG.metrics.curveInterpolation,
@@ -1178,7 +1185,7 @@ function createAppModel(appConfig: IAppInitialConfig) {
         ...groupingSelectOptions,
         {
           group: 'metric',
-          label: 'metric.last_value',
+          label: 'metric.values.last',
           value: 'lastValue',
         },
       ];
@@ -1268,7 +1275,7 @@ function createAppModel(appConfig: IAppInitialConfig) {
         ...groupingSelectOptions,
         {
           group: 'metric',
-          label: 'metric.last_value',
+          label: 'metric.values.last',
           value: 'lastValue',
         },
       ];
@@ -2049,6 +2056,9 @@ function createAppModel(appConfig: IAppInitialConfig) {
             model,
             appName,
           });
+        },
+        onAxesScaleRangeChange(range: Partial<IAxesScaleRange>): void {
+          onAxesScaleRangeChange({ range, model, appName });
         },
         onDensityTypeChange(type: DensityOptions): Promise<void> {
           return onDensityTypeChange({ type, model, appName, getMetricsData });
@@ -3281,7 +3291,7 @@ function createAppModel(appConfig: IAppInitialConfig) {
           .then((data) => {
             model.setState({
               selectFormData: {
-                options: getParamsOptions(data),
+                options: getSelectOptions(data),
                 suggestions: getSuggestionsByExplorer(appName, data),
               },
             });
@@ -3299,71 +3309,6 @@ function createAppModel(appConfig: IAppInitialConfig) {
             liveUpdateState.delay,
           );
         }
-      }
-
-      function getParamsOptions(projectsData: IProjectParamsMetrics) {
-        const comparator = alphabeticalSortComparator<ISelectOption>({
-          orderBy: 'label',
-        });
-
-        let optionsCount = 0; // to calculate color
-        const systemOptions: ISelectOption[] = [];
-        let params: ISelectOption[] = [];
-        let metrics: ISelectOption[] = [];
-
-        if (projectsData?.metric) {
-          for (let key in projectsData.metric) {
-            let system: boolean = isSystemMetric(key);
-            for (let val of projectsData.metric[key]) {
-              let label = contextToString(val);
-              let index: number = optionsCount;
-              let option: ISelectOption = {
-                label: `${system ? formatSystemMetricName(key) : key} ${label}`,
-                group: system ? 'System' : key,
-                type: 'metrics',
-                color: COLORS[0][index % COLORS[0].length],
-                value: {
-                  option_name: key,
-                  context: val,
-                },
-              };
-              optionsCount++;
-              if (system) {
-                systemOptions.push(option);
-              } else {
-                metrics.push(option);
-              }
-            }
-          }
-        }
-        if (projectsData?.params) {
-          const paramPaths = getObjectPaths(
-            projectsData.params,
-            projectsData.params,
-          );
-          paramPaths.forEach((paramPath, index) => {
-            params.push({
-              label: paramPath.slice(0, paramPath.indexOf('.__example_type__')),
-              group: 'Params',
-              type: 'params',
-              color: COLORS[0][index % COLORS[0].length],
-            });
-          });
-        }
-
-        params = params.sort(comparator);
-        metrics = metrics.sort(comparator);
-        systemOptions.sort(comparator);
-
-        // sort by group
-        const data: ISelectOption[] = [...metrics, ...params];
-
-        data.sort(
-          alphabeticalSortComparator({
-            orderBy: 'type',
-          }),
-        );
-        return data.concat(systemOptions);
       }
 
       function updateData(newData: IRun<IParamTrace>[]): void {
@@ -4921,7 +4866,7 @@ function createAppModel(appConfig: IAppInitialConfig) {
           .then((data: IProjectParamsMetrics) => {
             model.setState({
               selectFormData: {
-                options: getScattersSelectOptions(data),
+                options: getSelectOptions(data),
                 suggestions: getSuggestionsByExplorer(appName, data),
               },
             });
@@ -5774,57 +5719,6 @@ function createAppModel(appConfig: IAppInitialConfig) {
           },
           abort: runsRequestRef.abort,
         };
-      }
-
-      function getScattersSelectOptions(projectsData: IProjectParamsMetrics) {
-        let data: ISelectOption[] = [];
-        const systemOptions: ISelectOption[] = [];
-        if (projectsData?.metric) {
-          for (let key in projectsData.metric) {
-            let system: boolean = isSystemMetric(key);
-            for (let val of projectsData.metric[key]) {
-              let label: string = Object.keys(val)
-                .map((item) => `${item}="${val[item]}"`)
-                .join(', ');
-              let index: number = data.length;
-              let option: ISelectOption = {
-                label: `${system ? formatSystemMetricName(key) : key} ${label}`,
-                group: system ? formatSystemMetricName(key) : key,
-                type: 'metrics',
-                color: COLORS[0][index % COLORS[0].length],
-                value: {
-                  option_name: key,
-                  context: val,
-                },
-              };
-              if (system) {
-                systemOptions.push(option);
-              } else {
-                data.push(option);
-              }
-            }
-          }
-        }
-        if (projectsData?.params) {
-          const paramPaths = getObjectPaths(
-            projectsData.params,
-            projectsData.params,
-          );
-          paramPaths.forEach((paramPath, index) => {
-            data.push({
-              label: paramPath.slice(0, paramPath.indexOf('.__example_type__')),
-              group: 'Params',
-              type: 'params',
-              color: COLORS[0][index % COLORS[0].length],
-            });
-          });
-        }
-        const comparator = alphabeticalSortComparator({
-          orderBy: 'label',
-        });
-
-        systemOptions.sort(comparator);
-        return data.sort(comparator).concat(systemOptions);
       }
 
       function resetModelState(
