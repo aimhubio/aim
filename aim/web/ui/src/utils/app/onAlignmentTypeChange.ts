@@ -1,4 +1,5 @@
 import { ANALYTICS_EVENT_KEYS } from 'config/analytics/analyticsKeysMap';
+import { CONTROLS_DEFAULT_CONFIG } from 'config/controls/controlsDefaultConfig';
 
 import * as analytics from 'services/analytics';
 
@@ -28,8 +29,12 @@ export default function onAlignmentTypeChange<M extends State>({
     if (type !== AlignmentOptionsEnum.CUSTOM_METRIC) {
       alignmentConfig.metric = '';
     }
-    const zoom = { ...configData.chart.zoom, history: [] };
-    configData.chart = { ...configData.chart, alignmentConfig, zoom };
+    configData.chart = {
+      ...configData.chart,
+      alignmentConfig,
+      axesScaleRange: CONTROLS_DEFAULT_CONFIG.metrics.axesScaleRange,
+      zoom: { ...configData.chart.zoom, history: [] },
+    };
     updateModelData(configData, true);
   }
   analytics.trackEvent(

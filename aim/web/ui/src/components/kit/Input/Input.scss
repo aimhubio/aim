@@ -41,43 +41,46 @@
   &_small {
     .InputWrapper_topLabelCnt {
       .Icon__container {
-        font-size: 12px;
+        font-size: $text-sm;
       }
     }
 
     .MuiOutlinedInput-input {
-      padding: 4px 6px;
+      padding: $space-xxxs $space-xxs;
     }
 
     .MuiInputBase-input {
-      font-size: 10px;
+      font-size: $text-xxs;
     }
 
     .InputWrapper_topLabelCnt {
       line-height: 10px;
-      margin-bottom: 4px;
+      margin-bottom: $space-xxxs;
     }
 
     .MuiOutlinedInput-input {
-      padding: 4px 6px;
+      padding: $space-xxxs $space-xxs;
     }
   }
 
   &_medium {
     .MuiOutlinedInput-input {
-      padding: 8px 16px;
+      padding: $space-xs $space-unit;
+    }
+
+
+    .MuiInputLabel-root {
+      font-size: $text-md;
     }
 
     .MuiInputBase-input {
-      font-size: 14px;
-      line-height: 16px;
+      font-size: $text-md;
+      line-height: $space-unit;
       height: unset;
     }
 
-    &.InputWrapper_swap {
-      .MuiInputLabel-outlined:not(.MuiInputLabel-shrink) {
-        transform: translate(14px, 8px) scale(1);
-      }
+    .MuiInputLabel-outlined:not(.MuiInputLabel-shrink) {
+      transform: translate(14px, 8px) scale(1);
     }
   }
 

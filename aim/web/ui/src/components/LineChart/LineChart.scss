@@ -9,13 +9,15 @@
   user-select: none;
   min-width: toRem(150px);
   min-height: toRem(150px);
-  .emptyData {
-    font-size: 1em;
-    fill: #586069;
+  .unableToDrawText {
+    font-size: $text-md;
+    text-align: center;
+    fill: $grey;
     position: absolute;
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
+    width: 80%;
   }
   &.backgroundRect {
     cursor: crosshair;

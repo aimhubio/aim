@@ -4,6 +4,7 @@ import _ from 'lodash-es';
 
 import { HighlightEnum } from 'components/HighlightModesPopover/HighlightModesPopover';
 import { IPoint } from 'components/ScatterPlot';
+import { IAxesScaleRange } from 'components/AxesPropsPopover';
 
 import COLORS from 'config/colors/colors';
 import DASH_ARRAYS from 'config/dash-arrays/dashArrays';
@@ -182,6 +183,7 @@ import {
   alignByStep,
 } from 'utils/app/alignMetricData';
 import setRequestProgress from 'utils/app/setRequestProgress';
+import onAxesScaleRangeChange from 'utils/app/onAxesScaleRangeChange';
 import { minMaxOfArray } from 'utils/minMaxOfArray';
 import getAdvancedSuggestion from 'utils/getAdvancedSuggestions';
 import { processDurationTime } from 'utils/processDurationTime';
@@ -280,6 +282,10 @@ function createAppModel(appConfig: IAppInitialConfig) {
               axesScaleType: {
                 xAxis: CONTROLS_DEFAULT_CONFIG.metrics.axesScaleType.xAxis,
                 yAxis: CONTROLS_DEFAULT_CONFIG.metrics.axesScaleType.yAxis,
+              },
+              axesScaleRange: {
+                yAxis: CONTROLS_DEFAULT_CONFIG.metrics.axesScaleRange.yAxis,
+                xAxis: CONTROLS_DEFAULT_CONFIG.metrics.axesScaleRange.xAxis,
               },
               curveInterpolation:
                 CONTROLS_DEFAULT_CONFIG.metrics.curveInterpolation,
@@ -2048,6 +2054,9 @@ function createAppModel(appConfig: IAppInitialConfig) {
             model,
             appName,
           });
+        },
+        onAxesScaleRangeChange(range: Partial<IAxesScaleRange>): void {
+          onAxesScaleRangeChange({ range, model, appName });
         },
         onDensityTypeChange(type: DensityOptions): Promise<void> {
           return onDensityTypeChange({ type, model, appName, getMetricsData });

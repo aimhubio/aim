@@ -1,5 +1,4 @@
 import React from 'react';
-import * as d3 from 'd3';
 
 import ErrorBoundary from 'components/ErrorBoundary/ErrorBoundary';
 
@@ -16,6 +15,7 @@ import {
   drawHoverAttributes,
   drawScatterTrendline,
   drawPoints,
+  drawUnableToRender,
 } from 'utils/d3';
 
 import { IScatterPlotProps } from './types.d';
@@ -72,7 +72,10 @@ const ScatterPlot = React.forwardRef(function ScatterPlot(
   const attributesRef = React.useRef<IAttributesRef>({});
   const humanizerConfigRef = React.useRef({});
   const rafIDRef = React.useRef<number>();
+
   const [yDimension, xDimension] = Object.values(dimensions);
+
+  const unableToDrawConditions: { condition: boolean; text?: string }[] = [];
 
   function draw() {
     drawArea({
@@ -91,21 +94,6 @@ const ScatterPlot = React.forwardRef(function ScatterPlot(
       chartTitle,
     });
 
-    if (yDimension.domainData[0] === '-' || xDimension.domainData[0] === '-') {
-      if (visAreaRef.current && !readOnly) {
-        d3.select(visAreaRef.current)
-          .append('text')
-          .classed('emptyData', true)
-          .text('No Data');
-
-        if (attributesRef.current?.clearHoverAttributes) {
-          attributesRef.current.clearHoverAttributes();
-        }
-        attributesRef.current = {};
-      }
-      return;
-    }
-
     const { width, height, margin } = visBoxRef.current;
 
     const axesScaleType = {
@@ -122,6 +110,12 @@ const ScatterPlot = React.forwardRef(function ScatterPlot(
       domainData: yDimension.domainData,
       rangeData: [height - margin.top - margin.bottom, 0],
       scaleType: axesScaleType.yAxis,
+    });
+
+    unableToDrawConditions.unshift({
+      condition:
+        yDimension.domainData[0] === '-' || xDimension.domainData[0] === '-',
+      text: 'Unable to draw points with the current data. Please adjust the data.',
     });
 
     attributesRef.current.xScale = xScale;
@@ -183,6 +177,14 @@ const ScatterPlot = React.forwardRef(function ScatterPlot(
         targetRef: linesNodeRef,
       });
     }
+
+    drawUnableToRender({
+      renderArr: unableToDrawConditions,
+      visAreaRef,
+      attributesRef,
+      readOnly,
+      syncHoverState,
+    });
   }
 
   function renderChart() {
