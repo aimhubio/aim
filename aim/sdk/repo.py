@@ -5,7 +5,7 @@ import logging
 from collections import defaultdict
 from contextlib import contextmanager
 from enum import Enum
-from filelock import FileLock
+
 from typing import Dict, Tuple, Iterator, NamedTuple, Optional, List
 from weakref import WeakValueDictionary
 
@@ -23,6 +23,7 @@ from aim.sdk.sequence import Sequence
 from aim.sdk.types import QueryReportMode
 from aim.sdk.data_version import DATA_VERSION
 
+from aim.storage.locking import AutoFileLock
 from aim.storage.container import Container
 from aim.storage.rockscontainer import RocksContainer
 from aim.storage.union import RocksUnionContainer
@@ -106,6 +107,7 @@ class Repo:
             remote_path = path.replace('aim://', '')
             self._client = Client(remote_path)
             self.root_path = remote_path
+            self._check_remote_version_compatibility()
         else:
             self.root_path = path
         self.path = os.path.join(self.root_path, get_aim_repo_name())
@@ -127,7 +129,7 @@ class Repo:
 
         if not self.is_remote_repo:
             self._lock_path = os.path.join(self.path, '.repo_lock')
-            self._lock = FileLock(self._lock_path, timeout=10)
+            self._lock = AutoFileLock(self._lock_path, timeout=10)
 
             with self.lock():
                 status = self.check_repo_status(self.root_path)
@@ -245,6 +247,43 @@ class Repo:
             else:
                 return RepoStatus.PATCH_REQUIRED
         return RepoStatus.UPDATED
+
+    def _check_remote_version_compatibility(self):
+        assert self.is_remote_repo
+        from aim.__version__ import __version__ as client_version
+        import grpc
+
+        error_message_template = 'The Aim Remote tracking server version ({}) '\
+                                 'is not compatible with the Aim client version ({}).'\
+                                 'Please upgrade either the Aim Client or the Aim Remote.'
+
+        warning_message_template = 'The Aim Remote tracking server version ({}) ' \
+                                   'and the Aim client version ({}) do not match.' \
+                                   'Consider upgrading either the client or remote tracking server.'
+
+        try:
+            remote_version = self._client.get_version()
+        except grpc.RpcError as e:
+            if e.code() == grpc.StatusCode.UNIMPLEMENTED:
+                remote_version = '<3.12.0'
+            else:
+                raise
+
+        # server doesn't yet have the `get_version()` method implemented
+        if remote_version == '<3.12.0':
+            RuntimeError(error_message_template.format(remote_version, client_version))
+
+        # compare versions
+        if client_version == remote_version:
+            return
+
+        # if the server has a newer version always force to upgrade the client
+        if client_version < remote_version:
+            raise RuntimeError(error_message_template.format(remote_version, client_version))
+
+        # for other mismatching versions throw a warning for now
+        logger.warning(warning_message_template.format(remote_version, client_version))
+        # further incompatibility list will be added manually
 
     @classmethod
     def get_version(cls, path: str):
@@ -389,7 +428,10 @@ class Repo:
 
     def total_runs_count(self) -> int:
         db = self.structured_db
-        cache = db.caches.get('runs_cache')
+        if db:
+            cache = db.caches.get('runs_cache')
+        else:
+            cache = None
         if cache:
             return len(cache.keys())
         else:
@@ -732,7 +774,7 @@ class Repo:
         # try to acquire a lock on a run container to check if it is still in progress or not
         # in progress runs can't be deleted
         lock_path = os.path.join(self.path, 'meta', 'locks', run_hash)
-        lock = FileLock(str(lock_path), timeout=0)
+        lock = AutoFileLock(lock_path, timeout=0)
         lock.acquire()
 
         with self.structured_db:  # rollback db entity delete if subsequent actions fail.
@@ -761,7 +803,7 @@ class Repo:
         # try to acquire a lock on a run container to check if it is still in progress or not
         # in progress runs can't be copied
         lock_path = os.path.join(self.path, 'meta', 'locks', run_hash)
-        lock = FileLock(str(lock_path), timeout=0)
+        lock = AutoFileLock(lock_path, timeout=0)
         lock.acquire()
         with dest_repo.structured_db:  # rollback destination db entity if subsequent actions fail.
             # copy run structured data

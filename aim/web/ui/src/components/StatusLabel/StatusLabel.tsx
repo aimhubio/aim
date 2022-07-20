@@ -1,4 +1,5 @@
 import React from 'react';
+import classNames from 'classnames';
 
 import { Text } from 'components/kit';
 import ErrorBoundary from 'components/ErrorBoundary/ErrorBoundary';
@@ -18,12 +19,17 @@ function StatusLabel({
   title,
   status = 'success',
   className = '',
+  disabled = false,
 }: IStatusLabelProps): React.FunctionComponentElement<React.ReactNode> {
   return (
     <ErrorBoundary>
       <div
         onClick={stopPropagation}
-        className={`StatusLabel ${status} ${className}`}
+        className={classNames('StatusLabel', {
+          disabled: disabled,
+          [status]: status,
+          [className]: className,
+        })}
       >
         {title && (
           <Text size={10} weight={600} className='StatusLabel__title title'>

@@ -126,6 +126,10 @@ function processRunBatchData(data: IRunBatch[]): {
 
   for (let run of data) {
     const { values, iters } = filterSingleRunMetricsData(run);
+    const contextName =
+      contextToString(run.context) === ''
+        ? ''
+        : `_${contextToString(run.context)}`;
     const metric = {
       ...run,
       values,
@@ -134,7 +138,7 @@ function processRunBatchData(data: IRunBatch[]): {
         name: run.name,
         context: run.context,
       }),
-      sortKey: `${run.name}_${contextToString(run.context)}`,
+      sortKey: `${run.name}${contextName}`,
     };
     if (run.name.startsWith('__system__')) {
       runSystemBatch.push(metric);
