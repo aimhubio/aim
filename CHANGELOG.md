@@ -13,6 +13,7 @@
 - Ability to hide a batch of items in explorers (VkoHov)
 - Preserve active line even if it is dropped out of the filtered area (VkoHov)
 - Add run duration property for SDK and queries (mihran113)
+- Add ability to compare the selected runs from the table (arsengit)
 
 ### Fixes:
 
