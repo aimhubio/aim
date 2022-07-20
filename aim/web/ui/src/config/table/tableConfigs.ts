@@ -126,3 +126,28 @@ export const AVOID_COLUMNS_TO_HIDE_LIST = new Set([
   'name',
   'context',
 ]);
+
+export const EXPLORE_SELECTED_RUNS_CONFIG = {
+  [AppNameEnum.RUNS]: [
+    { label: AppNameEnum.METRICS, value: 'metrics' },
+    { label: AppNameEnum.IMAGES, value: 'images' },
+  ],
+  [AppNameEnum.METRICS]: [
+    { label: AppNameEnum.RUNS, value: 'runs' },
+    { label: AppNameEnum.IMAGES, value: 'images' },
+  ],
+  [AppNameEnum.PARAMS]: [
+    { label: AppNameEnum.RUNS, value: 'runs' },
+    { label: AppNameEnum.IMAGES, value: 'images' },
+    { label: AppNameEnum.METRICS, value: 'metrics' },
+  ],
+  [AppNameEnum.SCATTERS]: [
+    { label: AppNameEnum.RUNS, value: 'runs' },
+    { label: AppNameEnum.IMAGES, value: 'images' },
+    { label: AppNameEnum.METRICS, value: 'metrics' },
+  ],
+  [AppNameEnum.IMAGES]: [
+    { label: AppNameEnum.RUNS, value: 'runs' },
+    { label: AppNameEnum.METRICS, value: 'metrics' },
+  ],
+};
