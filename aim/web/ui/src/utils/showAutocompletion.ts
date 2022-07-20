@@ -1,8 +1,9 @@
-import * as dot from 'dot-object';
+import _ from 'lodash-es';
 
-import last from 'lodash/last';
-import get from 'lodash/get';
 import { Monaco } from '@monaco-editor/react';
+
+import getObjectPaths, { jsValidVariableRegex } from './getObjectPaths';
+import getValue from './helper/getValue/getValue';
 
 function showAutocompletion(monaco: Monaco, options: Record<string, string>) {
   // Register object that will return autocomplete items
@@ -105,11 +106,11 @@ function getSuggestions(monaco: Monaco, options: Record<string, string>) {
         endColumn: position.column,
       });
       const words = lastChars.replace('\t', '').split(' ');
-      let activeTyping: any = last(words); // What the user is currently typing (everything after the last space)
+      let activeTyping: any = _.last(words); // What the user is currently typing (everything after the last space)
 
       specialCharactersForWordSplitting.forEach((char) => {
         if (activeTyping.includes(char)) {
-          activeTyping = last(activeTyping.split(char));
+          activeTyping = _.last(activeTyping.split(char));
         }
       });
 
@@ -123,12 +124,15 @@ function getSuggestions(monaco: Monaco, options: Record<string, string>) {
         // read more about this issue here - https://github.com/microsoft/monaco-editor/issues/2646
         return null;
       }
-
       // flatten strings of array of accessible options paths without example type
-      const filteredOptions = Object.keys(dot.dot(options)).map(
-        (option) => option.split('.__example_type__')[0],
-      );
-
+      const filteredOptions = getObjectPaths(options, options).map((option) => {
+        const indexOf =
+          option.indexOf('.__example_type__') !== -1 ||
+          option[option.length - 1] === '.'
+            ? option.indexOf('.__example_type__')
+            : option.length;
+        return option.slice(0, indexOf);
+      });
       // If the last character typed is a period then we need to look at member objects of the `options` object
       const isMember = activeTyping.charAt(activeTyping.length - 1) === '.';
 
@@ -138,36 +142,22 @@ function getSuggestions(monaco: Monaco, options: Record<string, string>) {
 
       //Checking is the word included in options list
       for (let option of filteredOptions) {
-        if (option.split(activeTyping)[0] === '') {
+        if (
+          option.split(activeTyping)[0] === '' ||
+          (isMember &&
+            option.split(activeTyping.slice(0, activeTyping.length - 2))[0] ===
+              '')
+        ) {
           isIncluded = true;
           break;
         }
       }
-
       // Used for generic handling between member and non-member objects
       let lastToken: any = options;
-      let prefix = '';
-
+      let prefix = activeTyping;
       if (isMember && isIncluded) {
         // Is a member, get a list of all members, and the prefix
-        const parents = activeTyping
-          .substring(0, activeTyping.length - 1)
-          .split('.');
-        lastToken = options[parents[0]];
-        prefix = parents[0];
-
-        // Loop through all the parents the current one will have (to generate prefix)
-        parents.forEach((parent: any) => {
-          if (lastToken?.hasOwnProperty(parent)) {
-            prefix += `.${parent}`;
-            lastToken = lastToken[parent];
-          } else {
-            // Not valid
-            return suggestions;
-          }
-        });
-
-        prefix += '.';
+        lastToken = getValue(options, prefix.substring(0, prefix.length - 1));
       }
 
       const word = model.getWordUntilPosition(position);
@@ -183,15 +173,18 @@ function getSuggestions(monaco: Monaco, options: Record<string, string>) {
         // Do not show properites that begin with "__"
         if (lastToken.hasOwnProperty(prop) && !prop.startsWith('__')) {
           // Create completion object
-          let detailType = getDetailType(get(options, prefix + prop));
+
+          const key = !jsValidVariableRegex.test(prop) ? `["${prop}"]` : prop;
+
+          let detailType = getDetailType(getValue(options, prefix + key));
           const completionItem = {
-            label: prop,
+            label: key,
             kind: getType(
               monaco,
               detailType.hasExampleType ? detailType.type : lastToken[prop],
               isMember,
             ),
-            insertText: prop,
+            insertText: key,
             detail: detailType.type,
             range,
           };
