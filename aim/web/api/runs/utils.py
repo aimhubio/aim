@@ -234,7 +234,7 @@ async def run_search_result_streamer(runs: SequenceCollection,
         progress = None
         progress_reports_sent = 0
         for run_trace_collection, progress in runs.iter_runs():
-            await asyncio.sleep()
+            await asyncio.sleep(ASYNC_SLEEP_INTERVAL)
             # if no progress was reported for a long interval, report progress
             if report_progress and time.time() - last_reported_progress_time > AIM_PROGRESS_REPORT_INTERVAL:
                 yield collect_streamable_data(encode_tree(
