@@ -19,10 +19,35 @@ DESCRIPTOR = _descriptor.FileDescriptor(
   syntax='proto3',
   serialized_options=None,
   create_key=_descriptor._internal_create_key,
-  serialized_pb=b'\n\x15remote_tracking.proto\"J\n\x11\x45xceptionResponse\x12\x13\n\x0bmodule_name\x18\x01 \x01(\t\x12\x12\n\nclass_name\x18\x02 \x01(\t\x12\x0c\n\x04\x61rgs\x18\x03 \x01(\t\"\x10\n\x0eVersionRequest\"\x8f\x01\n\x0fVersionResponse\x12\x0f\n\x07version\x18\x01 \x01(\t\x12\'\n\x06status\x18\x02 \x01(\x0e\x32\x17.VersionResponse.Status\x12%\n\texception\x18\x03 \x01(\x0b\x32\x12.ExceptionResponse\"\x1b\n\x06Status\x12\x06\n\x02OK\x10\x00\x12\t\n\x05\x45RROR\x10\x01\"J\n\x0fResourceRequest\x12\x15\n\rresource_type\x18\x01 \x01(\t\x12\x12\n\nclient_uri\x18\x02 \x01(\t\x12\x0c\n\x04\x61rgs\x18\x03 \x01(\x0c\"\x91\x01\n\x10ResourceResponse\x12\x0f\n\x07handler\x18\x01 \x01(\t\x12(\n\x06status\x18\x02 \x01(\x0e\x32\x18.ResourceResponse.Status\x12%\n\texception\x18\x03 \x01(\x0b\x32\x12.ExceptionResponse\"\x1b\n\x06Status\x12\x06\n\x02OK\x10\x00\x12\t\n\x05\x45RROR\x10\x01\"=\n\x16ReleaseResourceRequest\x12\x0f\n\x07handler\x18\x01 \x01(\t\x12\x12\n\nclient_uri\x18\x02 \x01(\t\"\x8e\x01\n\x17ReleaseResourceResponse\x12/\n\x06status\x18\x02 \x01(\x0e\x32\x1f.ReleaseResourceResponse.Status\x12%\n\texception\x18\x03 \x01(\x0b\x32\x12.ExceptionResponse\"\x1b\n\x06Status\x12\x06\n\x02OK\x10\x00\x12\t\n\x05\x45RROR\x10\x01\"Z\n\rRequestHeader\x12\x0f\n\x07version\x18\x01 \x01(\t\x12\x0f\n\x07handler\x18\x02 \x01(\t\x12\x12\n\nclient_uri\x18\x03 \x01(\t\x12\x13\n\x0bmethod_name\x18\x04 \x01(\t\"X\n\x12InstructionRequest\x12 \n\x06header\x18\x01 \x01(\x0b\x32\x0e.RequestHeaderH\x00\x12\x11\n\x07message\x18\x02 \x01(\x0cH\x00\x42\r\n\x0binstruction\"\x8d\x01\n\x0eResponseHeader\x12\x0f\n\x07version\x18\x01 \x01(\x02\x12&\n\x06status\x18\x02 \x01(\x0e\x32\x16.ResponseHeader.Status\x12%\n\texception\x18\x03 \x01(\x0b\x32\x12.ExceptionResponse\"\x1b\n\x06Status\x12\x06\n\x02OK\x10\x00\x12\t\n\x05\x45RROR\x10\x01\"Z\n\x13InstructionResponse\x12!\n\x06header\x18\x01 \x01(\x0b\x32\x0f.ResponseHeaderH\x00\x12\x11\n\x07message\x18\x02 \x01(\x0cH\x00\x42\r\n\x0binstruction\"P\n\x18WriteInstructionsRequest\x12\x0f\n\x07version\x18\x01 \x01(\t\x12\x12\n\nclient_uri\x18\x02 \x01(\t\x12\x0f\n\x07message\x18\x03 \x01(\x0c\"\xa3\x01\n\x19WriteInstructionsResponse\x12\x0f\n\x07version\x18\x01 \x01(\t\x12\x31\n\x06status\x18\x02 \x01(\x0e\x32!.WriteInstructionsResponse.Status\x12%\n\texception\x18\x03 \x01(\x0b\x32\x12.ExceptionResponse\"\x1b\n\x06Status\x12\x06\n\x02OK\x10\x00\x12\t\n\x05\x45RROR\x10\x01\x32\xe4\x02\n\x15RemoteTrackingService\x12\x32\n\x0bget_version\x12\x0f.VersionRequest\x1a\x10.VersionResponse\"\x00\x12\x35\n\x0cget_resource\x12\x10.ResourceRequest\x1a\x11.ResourceResponse\"\x00\x12G\n\x10release_resource\x12\x17.ReleaseResourceRequest\x1a\x18.ReleaseResourceResponse\"\x00\x12\x42\n\x0frun_instruction\x12\x13.InstructionRequest\x1a\x14.InstructionResponse\"\x00(\x01\x30\x01\x12S\n\x16run_write_instructions\x12\x19.WriteInstructionsRequest\x1a\x1a.WriteInstructionsResponse\"\x00(\x01\x62\x06proto3'
+  serialized_pb=b'\n\x15remote_tracking.proto\"J\n\x11\x45xceptionResponse\x12\x13\n\x0bmodule_name\x18\x01 \x01(\t\x12\x12\n\nclass_name\x18\x02 \x01(\t\x12\x0c\n\x04\x61rgs\x18\x03 \x01(\t\"<\n\x12HealthCheckRequest\x12\x12\n\nclient_uri\x18\x01 \x01(\t\x12\x12\n\ncheck_type\x18\x02 \x01(\t\"\x86\x01\n\x13HealthCheckResponse\x12+\n\x06status\x18\x01 \x01(\x0e\x32\x1b.HealthCheckResponse.Status\x12%\n\texception\x18\x02 \x01(\x0b\x32\x12.ExceptionResponse\"\x1b\n\x06Status\x12\x06\n\x02OK\x10\x00\x12\t\n\x05\x45RROR\x10\x01\"\x10\n\x0eVersionRequest\"\x8f\x01\n\x0fVersionResponse\x12\x0f\n\x07version\x18\x01 \x01(\t\x12\'\n\x06status\x18\x02 \x01(\x0e\x32\x17.VersionResponse.Status\x12%\n\texception\x18\x03 \x01(\x0b\x32\x12.ExceptionResponse\"\x1b\n\x06Status\x12\x06\n\x02OK\x10\x00\x12\t\n\x05\x45RROR\x10\x01\"J\n\x0fResourceRequest\x12\x15\n\rresource_type\x18\x01 \x01(\t\x12\x12\n\nclient_uri\x18\x02 \x01(\t\x12\x0c\n\x04\x61rgs\x18\x03 \x01(\x0c\"\x91\x01\n\x10ResourceResponse\x12\x0f\n\x07handler\x18\x01 \x01(\t\x12(\n\x06status\x18\x02 \x01(\x0e\x32\x18.ResourceResponse.Status\x12%\n\texception\x18\x03 \x01(\x0b\x32\x12.ExceptionResponse\"\x1b\n\x06Status\x12\x06\n\x02OK\x10\x00\x12\t\n\x05\x45RROR\x10\x01\"=\n\x16ReleaseResourceRequest\x12\x0f\n\x07handler\x18\x01 \x01(\t\x12\x12\n\nclient_uri\x18\x02 \x01(\t\"\x8e\x01\n\x17ReleaseResourceResponse\x12/\n\x06status\x18\x02 \x01(\x0e\x32\x1f.ReleaseResourceResponse.Status\x12%\n\texception\x18\x03 \x01(\x0b\x32\x12.ExceptionResponse\"\x1b\n\x06Status\x12\x06\n\x02OK\x10\x00\x12\t\n\x05\x45RROR\x10\x01\"Z\n\rRequestHeader\x12\x0f\n\x07version\x18\x01 \x01(\t\x12\x0f\n\x07handler\x18\x02 \x01(\t\x12\x12\n\nclient_uri\x18\x03 \x01(\t\x12\x13\n\x0bmethod_name\x18\x04 \x01(\t\"X\n\x12InstructionRequest\x12 \n\x06header\x18\x01 \x01(\x0b\x32\x0e.RequestHeaderH\x00\x12\x11\n\x07message\x18\x02 \x01(\x0cH\x00\x42\r\n\x0binstruction\"\x8d\x01\n\x0eResponseHeader\x12\x0f\n\x07version\x18\x01 \x01(\x02\x12&\n\x06status\x18\x02 \x01(\x0e\x32\x16.ResponseHeader.Status\x12%\n\texception\x18\x03 \x01(\x0b\x32\x12.ExceptionResponse\"\x1b\n\x06Status\x12\x06\n\x02OK\x10\x00\x12\t\n\x05\x45RROR\x10\x01\"Z\n\x13InstructionResponse\x12!\n\x06header\x18\x01 \x01(\x0b\x32\x0f.ResponseHeaderH\x00\x12\x11\n\x07message\x18\x02 \x01(\x0cH\x00\x42\r\n\x0binstruction\"P\n\x18WriteInstructionsRequest\x12\x0f\n\x07version\x18\x01 \x01(\t\x12\x12\n\nclient_uri\x18\x02 \x01(\t\x12\x0f\n\x07message\x18\x03 \x01(\x0c\"\xa3\x01\n\x19WriteInstructionsResponse\x12\x0f\n\x07version\x18\x01 \x01(\t\x12\x31\n\x06status\x18\x02 \x01(\x0e\x32!.WriteInstructionsResponse.Status\x12%\n\texception\x18\x03 \x01(\x0b\x32\x12.ExceptionResponse\"\x1b\n\x06Status\x12\x06\n\x02OK\x10\x00\x12\t\n\x05\x45RROR\x10\x01\x32\xa1\x03\n\x15RemoteTrackingService\x12;\n\x0chealth_check\x12\x13.HealthCheckRequest\x1a\x14.HealthCheckResponse\"\x00\x12\x32\n\x0bget_version\x12\x0f.VersionRequest\x1a\x10.VersionResponse\"\x00\x12\x35\n\x0cget_resource\x12\x10.ResourceRequest\x1a\x11.ResourceResponse\"\x00\x12G\n\x10release_resource\x12\x17.ReleaseResourceRequest\x1a\x18.ReleaseResourceResponse\"\x00\x12\x42\n\x0frun_instruction\x12\x13.InstructionRequest\x1a\x14.InstructionResponse\"\x00(\x01\x30\x01\x12S\n\x16run_write_instructions\x12\x19.WriteInstructionsRequest\x1a\x1a.WriteInstructionsResponse\"\x00(\x01\x62\x06proto3'
 )
 
 
+
+_HEALTHCHECKRESPONSE_STATUS = _descriptor.EnumDescriptor(
+  name='Status',
+  full_name='HealthCheckResponse.Status',
+  filename=None,
+  file=DESCRIPTOR,
+  create_key=_descriptor._internal_create_key,
+  values=[
+    _descriptor.EnumValueDescriptor(
+      name='OK', index=0, number=0,
+      serialized_options=None,
+      type=None,
+      create_key=_descriptor._internal_create_key),
+    _descriptor.EnumValueDescriptor(
+      name='ERROR', index=1, number=1,
+      serialized_options=None,
+      type=None,
+      create_key=_descriptor._internal_create_key),
+  ],
+  containing_type=None,
+  serialized_options=None,
+  serialized_start=271,
+  serialized_end=298,
+)
+_sym_db.RegisterEnumDescriptor(_HEALTHCHECKRESPONSE_STATUS)
 
 _VERSIONRESPONSE_STATUS = _descriptor.EnumDescriptor(
   name='Status',
@@ -44,8 +69,8 @@ _VERSIONRESPONSE_STATUS = _descriptor.EnumDescriptor(
   ],
   containing_type=None,
   serialized_options=None,
-  serialized_start=236,
-  serialized_end=263,
+  serialized_start=271,
+  serialized_end=298,
 )
 _sym_db.RegisterEnumDescriptor(_VERSIONRESPONSE_STATUS)
 
@@ -69,8 +94,8 @@ _RESOURCERESPONSE_STATUS = _descriptor.EnumDescriptor(
   ],
   containing_type=None,
   serialized_options=None,
-  serialized_start=236,
-  serialized_end=263,
+  serialized_start=271,
+  serialized_end=298,
 )
 _sym_db.RegisterEnumDescriptor(_RESOURCERESPONSE_STATUS)
 
@@ -94,8 +119,8 @@ _RELEASERESOURCERESPONSE_STATUS = _descriptor.EnumDescriptor(
   ],
   containing_type=None,
   serialized_options=None,
-  serialized_start=236,
-  serialized_end=263,
+  serialized_start=271,
+  serialized_end=298,
 )
 _sym_db.RegisterEnumDescriptor(_RELEASERESOURCERESPONSE_STATUS)
 
@@ -119,8 +144,8 @@ _RESPONSEHEADER_STATUS = _descriptor.EnumDescriptor(
   ],
   containing_type=None,
   serialized_options=None,
-  serialized_start=236,
-  serialized_end=263,
+  serialized_start=271,
+  serialized_end=298,
 )
 _sym_db.RegisterEnumDescriptor(_RESPONSEHEADER_STATUS)
 
@@ -144,8 +169,8 @@ _WRITEINSTRUCTIONSRESPONSE_STATUS = _descriptor.EnumDescriptor(
   ],
   containing_type=None,
   serialized_options=None,
-  serialized_start=236,
-  serialized_end=263,
+  serialized_start=271,
+  serialized_end=298,
 )
 _sym_db.RegisterEnumDescriptor(_WRITEINSTRUCTIONSRESPONSE_STATUS)
 
@@ -196,6 +221,85 @@ _EXCEPTIONRESPONSE = _descriptor.Descriptor(
 )
 
 
+_HEALTHCHECKREQUEST = _descriptor.Descriptor(
+  name='HealthCheckRequest',
+  full_name='HealthCheckRequest',
+  filename=None,
+  file=DESCRIPTOR,
+  containing_type=None,
+  create_key=_descriptor._internal_create_key,
+  fields=[
+    _descriptor.FieldDescriptor(
+      name='client_uri', full_name='HealthCheckRequest.client_uri', index=0,
+      number=1, type=9, cpp_type=9, label=1,
+      has_default_value=False, default_value=b"".decode('utf-8'),
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+    _descriptor.FieldDescriptor(
+      name='check_type', full_name='HealthCheckRequest.check_type', index=1,
+      number=2, type=9, cpp_type=9, label=1,
+      has_default_value=False, default_value=b"".decode('utf-8'),
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+  ],
+  extensions=[
+  ],
+  nested_types=[],
+  enum_types=[
+  ],
+  serialized_options=None,
+  is_extendable=False,
+  syntax='proto3',
+  extension_ranges=[],
+  oneofs=[
+  ],
+  serialized_start=101,
+  serialized_end=161,
+)
+
+
+_HEALTHCHECKRESPONSE = _descriptor.Descriptor(
+  name='HealthCheckResponse',
+  full_name='HealthCheckResponse',
+  filename=None,
+  file=DESCRIPTOR,
+  containing_type=None,
+  create_key=_descriptor._internal_create_key,
+  fields=[
+    _descriptor.FieldDescriptor(
+      name='status', full_name='HealthCheckResponse.status', index=0,
+      number=1, type=14, cpp_type=8, label=1,
+      has_default_value=False, default_value=0,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+    _descriptor.FieldDescriptor(
+      name='exception', full_name='HealthCheckResponse.exception', index=1,
+      number=2, type=11, cpp_type=10, label=1,
+      has_default_value=False, default_value=None,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+  ],
+  extensions=[
+  ],
+  nested_types=[],
+  enum_types=[
+    _HEALTHCHECKRESPONSE_STATUS,
+  ],
+  serialized_options=None,
+  is_extendable=False,
+  syntax='proto3',
+  extension_ranges=[],
+  oneofs=[
+  ],
+  serialized_start=164,
+  serialized_end=298,
+)
+
+
 _VERSIONREQUEST = _descriptor.Descriptor(
   name='VersionRequest',
   full_name='VersionRequest',
@@ -216,8 +320,8 @@ _VERSIONREQUEST = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=101,
-  serialized_end=117,
+  serialized_start=300,
+  serialized_end=316,
 )
 
 
@@ -263,8 +367,8 @@ _VERSIONRESPONSE = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=120,
-  serialized_end=263,
+  serialized_start=319,
+  serialized_end=462,
 )
 
 
@@ -309,8 +413,8 @@ _RESOURCEREQUEST = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=265,
-  serialized_end=339,
+  serialized_start=464,
+  serialized_end=538,
 )
 
 
@@ -356,8 +460,8 @@ _RESOURCERESPONSE = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=342,
-  serialized_end=487,
+  serialized_start=541,
+  serialized_end=686,
 )
 
 
@@ -395,8 +499,8 @@ _RELEASERESOURCEREQUEST = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=489,
-  serialized_end=550,
+  serialized_start=688,
+  serialized_end=749,
 )
 
 
@@ -435,8 +539,8 @@ _RELEASERESOURCERESPONSE = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=553,
-  serialized_end=695,
+  serialized_start=752,
+  serialized_end=894,
 )
 
 
@@ -488,8 +592,8 @@ _REQUESTHEADER = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=697,
-  serialized_end=787,
+  serialized_start=896,
+  serialized_end=986,
 )
 
 
@@ -532,8 +636,8 @@ _INSTRUCTIONREQUEST = _descriptor.Descriptor(
       create_key=_descriptor._internal_create_key,
     fields=[]),
   ],
-  serialized_start=789,
-  serialized_end=877,
+  serialized_start=988,
+  serialized_end=1076,
 )
 
 
@@ -579,8 +683,8 @@ _RESPONSEHEADER = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=880,
-  serialized_end=1021,
+  serialized_start=1079,
+  serialized_end=1220,
 )
 
 
@@ -623,8 +727,8 @@ _INSTRUCTIONRESPONSE = _descriptor.Descriptor(
       create_key=_descriptor._internal_create_key,
     fields=[]),
   ],
-  serialized_start=1023,
-  serialized_end=1113,
+  serialized_start=1222,
+  serialized_end=1312,
 )
 
 
@@ -669,8 +773,8 @@ _WRITEINSTRUCTIONSREQUEST = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=1115,
-  serialized_end=1195,
+  serialized_start=1314,
+  serialized_end=1394,
 )
 
 
@@ -716,10 +820,13 @@ _WRITEINSTRUCTIONSRESPONSE = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=1198,
-  serialized_end=1361,
+  serialized_start=1397,
+  serialized_end=1560,
 )
 
+_HEALTHCHECKRESPONSE.fields_by_name['status'].enum_type = _HEALTHCHECKRESPONSE_STATUS
+_HEALTHCHECKRESPONSE.fields_by_name['exception'].message_type = _EXCEPTIONRESPONSE
+_HEALTHCHECKRESPONSE_STATUS.containing_type = _HEALTHCHECKRESPONSE
 _VERSIONRESPONSE.fields_by_name['status'].enum_type = _VERSIONRESPONSE_STATUS
 _VERSIONRESPONSE.fields_by_name['exception'].message_type = _EXCEPTIONRESPONSE
 _VERSIONRESPONSE_STATUS.containing_type = _VERSIONRESPONSE
@@ -750,6 +857,8 @@ _WRITEINSTRUCTIONSRESPONSE.fields_by_name['status'].enum_type = _WRITEINSTRUCTIO
 _WRITEINSTRUCTIONSRESPONSE.fields_by_name['exception'].message_type = _EXCEPTIONRESPONSE
 _WRITEINSTRUCTIONSRESPONSE_STATUS.containing_type = _WRITEINSTRUCTIONSRESPONSE
 DESCRIPTOR.message_types_by_name['ExceptionResponse'] = _EXCEPTIONRESPONSE
+DESCRIPTOR.message_types_by_name['HealthCheckRequest'] = _HEALTHCHECKREQUEST
+DESCRIPTOR.message_types_by_name['HealthCheckResponse'] = _HEALTHCHECKRESPONSE
 DESCRIPTOR.message_types_by_name['VersionRequest'] = _VERSIONREQUEST
 DESCRIPTOR.message_types_by_name['VersionResponse'] = _VERSIONRESPONSE
 DESCRIPTOR.message_types_by_name['ResourceRequest'] = _RESOURCEREQUEST
@@ -770,6 +879,20 @@ ExceptionResponse = _reflection.GeneratedProtocolMessageType('ExceptionResponse'
   # @@protoc_insertion_point(class_scope:ExceptionResponse)
   })
 _sym_db.RegisterMessage(ExceptionResponse)
+
+HealthCheckRequest = _reflection.GeneratedProtocolMessageType('HealthCheckRequest', (_message.Message,), {
+  'DESCRIPTOR' : _HEALTHCHECKREQUEST,
+  '__module__' : 'remote_tracking_pb2'
+  # @@protoc_insertion_point(class_scope:HealthCheckRequest)
+  })
+_sym_db.RegisterMessage(HealthCheckRequest)
+
+HealthCheckResponse = _reflection.GeneratedProtocolMessageType('HealthCheckResponse', (_message.Message,), {
+  'DESCRIPTOR' : _HEALTHCHECKRESPONSE,
+  '__module__' : 'remote_tracking_pb2'
+  # @@protoc_insertion_point(class_scope:HealthCheckResponse)
+  })
+_sym_db.RegisterMessage(HealthCheckResponse)
 
 VersionRequest = _reflection.GeneratedProtocolMessageType('VersionRequest', (_message.Message,), {
   'DESCRIPTOR' : _VERSIONREQUEST,
@@ -864,13 +987,23 @@ _REMOTETRACKINGSERVICE = _descriptor.ServiceDescriptor(
   index=0,
   serialized_options=None,
   create_key=_descriptor._internal_create_key,
-  serialized_start=1364,
-  serialized_end=1720,
+  serialized_start=1563,
+  serialized_end=1980,
   methods=[
+  _descriptor.MethodDescriptor(
+    name='health_check',
+    full_name='RemoteTrackingService.health_check',
+    index=0,
+    containing_service=None,
+    input_type=_HEALTHCHECKREQUEST,
+    output_type=_HEALTHCHECKRESPONSE,
+    serialized_options=None,
+    create_key=_descriptor._internal_create_key,
+  ),
   _descriptor.MethodDescriptor(
     name='get_version',
     full_name='RemoteTrackingService.get_version',
-    index=0,
+    index=1,
     containing_service=None,
     input_type=_VERSIONREQUEST,
     output_type=_VERSIONRESPONSE,
@@ -880,7 +1013,7 @@ _REMOTETRACKINGSERVICE = _descriptor.ServiceDescriptor(
   _descriptor.MethodDescriptor(
     name='get_resource',
     full_name='RemoteTrackingService.get_resource',
-    index=1,
+    index=2,
     containing_service=None,
     input_type=_RESOURCEREQUEST,
     output_type=_RESOURCERESPONSE,
@@ -890,7 +1023,7 @@ _REMOTETRACKINGSERVICE = _descriptor.ServiceDescriptor(
   _descriptor.MethodDescriptor(
     name='release_resource',
     full_name='RemoteTrackingService.release_resource',
-    index=2,
+    index=3,
     containing_service=None,
     input_type=_RELEASERESOURCEREQUEST,
     output_type=_RELEASERESOURCERESPONSE,
@@ -900,7 +1033,7 @@ _REMOTETRACKINGSERVICE = _descriptor.ServiceDescriptor(
   _descriptor.MethodDescriptor(
     name='run_instruction',
     full_name='RemoteTrackingService.run_instruction',
-    index=3,
+    index=4,
     containing_service=None,
     input_type=_INSTRUCTIONREQUEST,
     output_type=_INSTRUCTIONRESPONSE,
@@ -910,7 +1043,7 @@ _REMOTETRACKINGSERVICE = _descriptor.ServiceDescriptor(
   _descriptor.MethodDescriptor(
     name='run_write_instructions',
     full_name='RemoteTrackingService.run_write_instructions',
-    index=4,
+    index=5,
     containing_service=None,
     input_type=_WRITEINSTRUCTIONSREQUEST,
     output_type=_WRITEINSTRUCTIONSRESPONSE,

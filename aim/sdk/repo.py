@@ -66,10 +66,13 @@ class RepoAutoClean(AutoClean):
         """
         super().__init__(instance)
         self.root_path = instance.root_path
+        self._client = instance._client
         self._mount_root = instance._mount_root
 
     def _close(self) -> None:
         """Close the `Repo` and unmount the remote repository."""
+        if self._client:
+            self._client._heartbeat_sender.stop()
         if self._mount_root:
             logger.debug(f'Unmounting remote repository at {self._mount_root}')
             unmount_remote_repo(self.root_path, self._mount_root)

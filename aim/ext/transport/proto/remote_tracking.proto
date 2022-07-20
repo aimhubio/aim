@@ -6,6 +6,20 @@ message ExceptionResponse {
     string args = 3;
 }
 
+message HealthCheckRequest {
+    string client_uri = 1;
+    string check_type = 2;
+}
+
+message HealthCheckResponse {
+    enum Status {
+        OK = 0;
+        ERROR = 1;
+    }
+    Status status = 1;
+    ExceptionResponse exception = 2;
+}
+
 message VersionRequest {}
 
 message VersionResponse {
@@ -96,6 +110,7 @@ message WriteInstructionsResponse {
 }
 
 service RemoteTrackingService {
+    rpc health_check(HealthCheckRequest) returns (HealthCheckResponse) {}
     rpc get_version(VersionRequest) returns (VersionResponse) {}
     rpc get_resource(ResourceRequest) returns (ResourceResponse) {}
     rpc release_resource(ReleaseResourceRequest) returns (ReleaseResourceResponse) {}

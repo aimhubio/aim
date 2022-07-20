@@ -14,6 +14,7 @@
 - Preserve active line even if it is dropped out of the filtered area (VkoHov)
 - Add run duration property for SDK and queries (mihran113)
 - Add client vs server version check for remote tracking server (mihran113)
+- Add Remote tracking client heartbeat (mihran113)
 
 ### Fixes:
 
