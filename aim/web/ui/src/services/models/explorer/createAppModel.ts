@@ -187,6 +187,7 @@ import getAdvancedSuggestion from 'utils/getAdvancedSuggestions';
 import { processDurationTime } from 'utils/processDurationTime';
 import { getMetricsSelectOptions } from 'utils/app/getMetricsSelectOptions';
 import onRowsVisibilityChange from 'utils/app/onRowsVisibilityChange';
+import { getMetricsRowData } from 'utils/app/getMetricsRowData';
 
 import { AppDataTypeEnum, AppNameEnum } from './index';
 
@@ -2690,22 +2691,7 @@ function createAppModel(appConfig: IAppInitialConfig) {
             sameValueColumns: [],
           };
         }
-        const initialMetricsRowData = Object.keys(metricsColumns).reduce(
-          (acc: any, key: string) => {
-            const groupByMetricName: any = {};
-            Object.keys(metricsColumns[key]).forEach(
-              (metricContext: string) => {
-                const contextName = metricContext ? `_${metricContext}` : '';
-                groupByMetricName[
-                  `${isSystemMetric(key) ? key : `${key}${contextName}`}`
-                ] = '-';
-              },
-            );
-            acc = { ...acc, ...groupByMetricName };
-            return acc;
-          },
-          {},
-        );
+        const initialMetricsRowData = getMetricsRowData(metricsColumns);
         const rows: any = processedData[0]?.config !== null ? {} : [];
         let rowIndex = 0;
         const sameValueColumns: string[] = [];
@@ -3506,22 +3492,7 @@ function createAppModel(appConfig: IAppInitialConfig) {
             sameValueColumns: [],
           };
         }
-        const initialMetricsRowData = Object.keys(metricsColumns).reduce(
-          (acc: any, key: string) => {
-            const groupByMetricName: any = {};
-            Object.keys(metricsColumns[key]).forEach(
-              (metricContext: string) => {
-                const contextName = metricContext ? `_${metricContext}` : '';
-                groupByMetricName[
-                  `${isSystemMetric(key) ? key : `${key}${contextName}`}`
-                ] = '-';
-              },
-            );
-            acc = { ...acc, ...groupByMetricName };
-            return acc;
-          },
-          {},
-        );
+        const initialMetricsRowData = getMetricsRowData(metricsColumns);
         const rows: IMetricTableRowData[] | any =
           processedData[0]?.config !== null ? {} : [];
 
@@ -3582,13 +3553,11 @@ function createAppModel(appConfig: IAppInitialConfig) {
                 const contextName =
                   contextToString(trace.context) === ''
                     ? ''
-                    : `_${contextToString(trace.context)}`;
+                    : ` ${contextToString(trace.context)}`;
                 metricsRowValues[
-                  `${
-                    isSystemMetric(trace.name)
-                      ? trace.name
-                      : `${trace.name}${contextName}`
-                  }`
+                  isSystemMetric(trace.name)
+                    ? trace.name
+                    : encode({ metricName: trace.name, contextName })
                 ] = formatValue(trace.last_value.last);
               });
               const rowValues: any = {
@@ -4156,13 +4125,11 @@ function createAppModel(appConfig: IAppInitialConfig) {
             const contextName =
               contextToString(trace.context) === ''
                 ? ''
-                : `_${contextToString(trace.context)}`;
+                : ` ${contextToString(trace.context)}`;
 
-            const key = `${
-              isSystemMetric(trace.name)
-                ? trace.name
-                : `${trace.name}${contextName}`
-            }`;
+            const key = isSystemMetric(trace.name)
+              ? trace.name
+              : encode({ metricName: trace.name, contextName });
             metricsLastValues[key] = trace.last_value.last;
           });
           const paramKey = encode({ runHash: run.hash });
@@ -5212,22 +5179,7 @@ function createAppModel(appConfig: IAppInitialConfig) {
             sameValueColumns: [],
           };
         }
-        const initialMetricsRowData = Object.keys(metricsColumns).reduce(
-          (acc: any, key: string) => {
-            const groupByMetricName: any = {};
-            Object.keys(metricsColumns[key]).forEach(
-              (metricContext: string) => {
-                const contextName = metricContext ? `_${metricContext}` : '';
-                groupByMetricName[
-                  `${isSystemMetric(key) ? key : `${key}${contextName}`}`
-                ] = '-';
-              },
-            );
-            acc = { ...acc, ...groupByMetricName };
-            return acc;
-          },
-          {},
-        );
+        const initialMetricsRowData = getMetricsRowData(metricsColumns);
         const rows: IMetricTableRowData[] | any =
           processedData[0]?.config !== null ? {} : [];
 
@@ -5288,14 +5240,11 @@ function createAppModel(appConfig: IAppInitialConfig) {
                 const contextName =
                   contextToString(trace.context) === ''
                     ? ''
-                    : `_${contextToString(trace.context)}`;
-
+                    : ` ${contextToString(trace.context)}`;
                 metricsRowValues[
-                  `${
-                    isSystemMetric(trace.name)
-                      ? trace.name
-                      : `${trace.name}${contextName}`
-                  }`
+                  isSystemMetric(trace.name)
+                    ? trace.name
+                    : encode({ metricName: trace.name, contextName })
                 ] = formatValue(trace.last_value.last);
               });
               const rowValues: any = {

@@ -2,6 +2,7 @@ import _ from 'lodash-es';
 
 import { IGroupingSelectOption } from 'types/services/models/metrics/metricsAppModel';
 
+import { encode } from 'utils/encoder/encoder';
 import { formatSystemMetricName } from 'utils/formatSystemMetricName';
 import { isSystemMetric } from 'utils/isSystemMetric';
 
@@ -12,10 +13,12 @@ export function getMetricsSelectOptions(metricsColumns: {
   const systemMetrics: IGroupingSelectOption[] = [];
   Object.keys(metricsColumns).forEach((key: string) => {
     Object.keys(metricsColumns[key]).forEach((metricContext: string) => {
-      const contextName = metricContext ? `_${metricContext}` : '';
+      const contextName = metricContext ? ` ${metricContext}` : '';
       const sortOption = {
         group: 'metrics',
-        value: `metricsLastValues.${key}${contextName}`,
+        value: `metricsLastValues.${
+          isSystemMetric(key) ? key : encode({ metricName: key, contextName })
+        }`,
         label: isSystemMetric(key)
           ? formatSystemMetricName(key)
           : `${key}${contextName}`,

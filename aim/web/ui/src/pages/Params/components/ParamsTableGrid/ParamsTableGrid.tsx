@@ -25,6 +25,7 @@ import contextToString from 'utils/contextToString';
 import { formatValue } from 'utils/formatValue';
 import { SortActionTypes, SortField } from 'utils/getSortedFields';
 import getColumnOptions from 'utils/getColumnOptions';
+import { encode } from 'utils/encoder/encoder';
 
 function getParamsTableColumns(
   sortOptions: IGroupingSelectOption[],
@@ -146,9 +147,20 @@ function getParamsTableColumns(
       const systemMetricsList: ITableColumn[] = [];
       const metricsList: ITableColumn[] = [];
       Object.keys(metricsColumns[key]).forEach((metricContext) => {
-        const contextName = metricContext ? `_${metricContext}` : '';
-        const columnKey = `${systemMetric ? key : `${key}${contextName}`}`;
-        const sortValueKey = `metricsLastValues.${key}${contextName}`;
+        const contextName = metricContext ? ` ${metricContext}` : '';
+        const columnKey = isSystemMetric(key)
+          ? key
+          : encode({
+              metricName: key,
+              contextName,
+            });
+        const columnLabel = `${
+          systemMetric ? formatSystemMetricName(key) : `${key}${contextName}`
+        }`;
+        const sortValueKey = `metricsLastValues.${encode({
+          metricName: key,
+          context: contextName,
+        })}`;
         const sortItemIndex: number =
           sortFields?.findIndex(
             (value: SortField) => value.value === sortValueKey,
@@ -156,6 +168,7 @@ function getParamsTableColumns(
 
         let column = {
           key: columnKey,
+          label: columnLabel,
           content: systemMetric ? (
             <span>
               {formatSystemMetricName(key)}
@@ -248,6 +261,7 @@ function getParamsTableColumns(
 
       return {
         key: param,
+        label: param,
         content: (
           <span>
             {param}
