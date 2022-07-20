@@ -44,7 +44,7 @@ def create_app():
         allow_origins=['*'],
         allow_methods=['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS', 'HEAD'],
         allow_headers=['Origin', 'X-Requested-With',
-                       'Content-Type', 'Accept', 'Authorization'],
+                       'Content-Type', 'Accept', 'Authorization', 'X-Timezone-Offset'],
         allow_credentials=True,
         max_age=86400
     )

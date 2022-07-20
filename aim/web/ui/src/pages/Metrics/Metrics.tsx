@@ -48,6 +48,7 @@ function Metrics(
     return (props.lineChartData || []).map(
       (chartData: ILine[], index: number) => ({
         axesScaleType: props.axesScaleType,
+        axesScaleRange: props.axesScaleRange,
         curveInterpolation: props.curveInterpolation,
         ignoreOutliers: props.ignoreOutliers,
         highlightMode: props.highlightMode,
@@ -73,6 +74,7 @@ function Metrics(
     props.aggregationConfig,
     props.alignmentConfig,
     props.onZoomChange,
+    props.axesScaleRange,
   ]);
 
   return (
@@ -182,6 +184,7 @@ function Metrics(
                             highlightMode={props.highlightMode}
                             aggregationConfig={props.aggregationConfig}
                             axesScaleType={props.axesScaleType}
+                            axesScaleRange={props.axesScaleRange}
                             alignmentConfig={props.alignmentConfig}
                             onChangeTooltip={props.onChangeTooltip}
                             onIgnoreOutliersChange={
@@ -193,6 +196,9 @@ function Metrics(
                             onSmoothingChange={props.onSmoothingChange}
                             onAggregationConfigChange={
                               props.onAggregationConfigChange
+                            }
+                            onAxesScaleRangeChange={
+                              props.onAxesScaleRangeChange
                             }
                             onDensityTypeChange={props.onDensityTypeChange}
                             onAlignmentTypeChange={props.onAlignmentTypeChange}

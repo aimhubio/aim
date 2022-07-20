@@ -50,8 +50,10 @@ export function alignByEpoch(
           ...metric.data.epochs.map((epoch, i) => {
             return (
               epoch +
-              (0.99 / epochs[epoch].length) *
-                (epochs[epoch].indexOf(metric.data.steps[i]) + 1)
+              (epochs[epoch].length > 1
+                ? (0.99 / epochs[epoch].length) *
+                  epochs[epoch].indexOf(metric.data.steps[i])
+                : 0)
             );
           }),
         ],
@@ -85,8 +87,10 @@ export function alignByRelativeTime(
             (timestamp, i) =>
               timestamp -
               firstDate +
-              (0.99 / timestamps[timestamp].length) *
-                (timestamps[timestamp].indexOf(metric.data.steps[i]) + 1),
+              (timestamps[timestamp].length > 1
+                ? (0.99 / timestamps[timestamp].length) *
+                  timestamps[timestamp].indexOf(metric.data.steps[i])
+                : 0),
           ),
         ],
         yValues: [...metric.data.values],

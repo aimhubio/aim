@@ -1,4 +1,6 @@
 import React from 'react';
+import classNames from 'classnames';
+import _ from 'lodash-es';
 
 import { Tooltip } from '@material-ui/core';
 
@@ -9,7 +11,7 @@ import ZoomOutPopup from 'components/ZoomOutPopover/ZoomOutPopover';
 import HighlightModePopup from 'components/HighlightModesPopover/HighlightModesPopover';
 import ControlPopover from 'components/ControlPopover/ControlPopover';
 import AxesScalePopover from 'components/AxesScalePopover/AxesScalePopover';
-import AlignmentPopover from 'components/AlignmentPopover/AlignmentPopover';
+import AlignmentPopover from 'components/AxesPropsPopover/AxesPropsPopover';
 import TooltipContentPopover from 'components/TooltipContentPopover/TooltipContentPopover';
 import { Icon } from 'components/kit';
 import ExportPreview from 'components/ExportPreview';
@@ -51,6 +53,13 @@ function Controls(
       props.densityType !== CONTROLS_DEFAULT_CONFIG.metrics.densityType
     );
   }, [props.alignmentConfig, props.densityType]);
+
+  const axesRangeChanged: boolean = React.useMemo(() => {
+    return !_.isEqual(
+      props.axesScaleRange,
+      CONTROLS_DEFAULT_CONFIG.metrics.axesScaleRange,
+    );
+  }, [props.axesScaleRange]);
 
   const smootheningChanged: boolean = React.useMemo(() => {
     return (
@@ -97,9 +106,11 @@ function Controls(
                   }
                 >
                   <div
-                    className={`Controls__anchor ${
-                      props.aggregationConfig.isApplied ? 'active outlined' : ''
-                    } ${props.aggregationConfig.isEnabled ? '' : 'disabled'}`}
+                    className={classNames('Controls__anchor', {
+                      active: props.aggregationConfig.isApplied,
+                      outlined: props.aggregationConfig.isApplied,
+                      disabled: !props.aggregationConfig.isEnabled,
+                    })}
                     onClick={() => {
                       if (props.aggregationConfig.isEnabled) {
                         props.onAggregationConfigChange({
@@ -110,18 +121,18 @@ function Controls(
                   >
                     {props.aggregationConfig.isEnabled ? (
                       <span
-                        className={`Controls__anchor__arrow ${
-                          opened ? 'Controls__anchor__arrow--opened' : ''
-                        }`}
+                        className={classNames('Controls__anchor__arrow', {
+                          opened,
+                        })}
                         onClick={onAnchorClick}
                       >
                         <Icon name='arrow-left' onClick={onAnchorClick} />
                       </span>
                     ) : null}
                     <Icon
-                      className={`Controls__icon ${
-                        props.aggregationConfig.isApplied ? 'active' : ''
-                      }`}
+                      className={classNames('Controls__icon', {
+                        active: props.aggregationConfig.isApplied,
+                      })}
                       name='aggregation'
                     />
                   </div>
@@ -139,24 +150,22 @@ function Controls(
         <div>
           <ErrorBoundary>
             <ControlPopover
-              title='X-Axis properties'
+              title='Axes properties'
               anchor={({ onAnchorClick, opened }) => (
-                <Tooltip title='X-Axis properties'>
+                <Tooltip title='Axes properties'>
                   <div
                     onClick={onAnchorClick}
-                    className={`Controls__anchor ${
-                      opened
-                        ? 'active'
-                        : alignmentChanged
-                        ? 'active outlined'
-                        : ''
-                    }`}
+                    className={classNames('Controls__anchor', {
+                      active: opened || alignmentChanged || axesRangeChanged,
+                      outlined:
+                        !opened && (alignmentChanged || axesRangeChanged),
+                    })}
                   >
                     <Icon
-                      className={`Controls__icon ${
-                        opened || alignmentChanged ? 'active' : ''
-                      }`}
-                      name='x-axis'
+                      className={classNames('Controls__icon', {
+                        active: opened || alignmentChanged || axesRangeChanged,
+                      })}
+                      name='axes-props'
                     />
                   </div>
                 </Tooltip>
@@ -165,10 +174,10 @@ function Controls(
                 <AlignmentPopover
                   selectFormOptions={props.selectFormOptions}
                   alignmentConfig={props.alignmentConfig}
-                  densityType={props.densityType}
+                  axesScaleRange={props.axesScaleRange}
                   onAlignmentMetricChange={props.onAlignmentMetricChange}
                   onAlignmentTypeChange={props.onAlignmentTypeChange}
-                  onDensityTypeChange={props.onDensityTypeChange}
+                  onAxesScaleRangeChange={props.onAxesScaleRangeChange}
                 />
               }
             />
@@ -182,18 +191,15 @@ function Controls(
                 <Tooltip title='Axes scale'>
                   <div
                     onClick={onAnchorClick}
-                    className={`Controls__anchor ${
-                      opened
-                        ? 'active'
-                        : axesScaleChanged
-                        ? 'active outlined'
-                        : ''
-                    }`}
+                    className={classNames('Controls__anchor', {
+                      active: opened || axesScaleChanged,
+                      outlined: !opened && axesScaleChanged,
+                    })}
                   >
                     <Icon
-                      className={`Controls__icon ${
-                        opened || axesScaleChanged ? 'active' : ''
-                      }`}
+                      className={classNames('Controls__icon', {
+                        active: opened || axesScaleChanged,
+                      })}
                       name='axes-scale'
                     />
                   </div>
@@ -216,18 +222,15 @@ function Controls(
                 <Tooltip title='Chart smoothing options'>
                   <div
                     onClick={onAnchorClick}
-                    className={`Controls__anchor ${
-                      opened
-                        ? 'active'
-                        : smootheningChanged
-                        ? 'active outlined'
-                        : ''
-                    }`}
+                    className={classNames('Controls__anchor', {
+                      active: opened || smootheningChanged,
+                      outlined: !opened && smootheningChanged,
+                    })}
                   >
                     <Icon
-                      className={`Controls__icon ${
-                        opened || smootheningChanged ? 'active' : ''
-                      }`}
+                      className={classNames('Controls__icon', {
+                        active: opened || smootheningChanged,
+                      })}
                       name='smoothing'
                     />
                   </div>
@@ -250,21 +253,18 @@ function Controls(
           }
         >
           <div
-            className={`Controls__anchor ${
-              props.ignoreOutliers ? 'active outlined' : ''
-            }`}
+            className={classNames('Controls__anchor', {
+              active: props.ignoreOutliers,
+              outlined: props.ignoreOutliers,
+            })}
             onClick={props.onIgnoreOutliersChange}
           >
-            {props.ignoreOutliers ? (
-              <Icon
-                className={`Controls__icon ${
-                  props.ignoreOutliers ? 'active' : ''
-                }`}
-                name='ignore-outliers'
-              />
-            ) : (
-              <Icon className='Controls__icon' name='ignore-outliers' />
-            )}
+            <Icon
+              className={classNames('Controls__icon', {
+                active: props.ignoreOutliers,
+              })}
+              name='ignore-outliers'
+            />
           </div>
         </Tooltip>
         <div>
@@ -274,19 +274,16 @@ function Controls(
               anchor={({ onAnchorClick, opened }) => (
                 <Tooltip title='Highlight modes'>
                   <div
-                    className={`Controls__anchor ${
-                      opened
-                        ? 'active'
-                        : highlightModeChanged
-                        ? 'active outlined'
-                        : ''
-                    }`}
+                    className={classNames('Controls__anchor', {
+                      active: opened || highlightModeChanged,
+                      outlined: !opened && highlightModeChanged,
+                    })}
                     onClick={onAnchorClick}
                   >
                     <Icon
-                      className={`Controls__icon ${
-                        opened || highlightModeChanged ? 'active' : ''
-                      }`}
+                      className={classNames('Controls__icon', {
+                        active: opened || highlightModeChanged,
+                      })}
                       name='highlight-mode'
                     />
                   </div>
@@ -309,18 +306,15 @@ function Controls(
                 <Tooltip title='Tooltip fields'>
                   <div
                     onClick={onAnchorClick}
-                    className={`Controls__anchor ${
-                      opened
-                        ? 'active'
-                        : tooltipChanged
-                        ? 'active outlined'
-                        : ''
-                    }`}
+                    className={classNames('Controls__anchor', {
+                      active: opened || tooltipChanged,
+                      outlined: !opened && tooltipChanged,
+                    })}
                   >
                     <Icon
-                      className={`Controls__icon ${
-                        opened || tooltipChanged ? 'active' : ''
-                      }`}
+                      className={classNames('Controls__icon', {
+                        active: opened || tooltipChanged,
+                      })}
                       name='cursor'
                     />
                   </div>
@@ -344,9 +338,9 @@ function Controls(
               anchor={({ onAnchorClick, opened }) => (
                 <Tooltip title='Zoom in'>
                   <div
-                    className={`Controls__anchor ${
-                      props.zoom?.active ? 'active' : ''
-                    }`}
+                    className={classNames('Controls__anchor', {
+                      active: props.zoom?.active,
+                    })}
                     onClick={() => {
                       if (props.zoom) {
                         props.onZoomChange?.({ active: !props.zoom.active });
@@ -354,17 +348,17 @@ function Controls(
                     }}
                   >
                     <span
-                      className={`Controls__anchor__arrow ${
-                        opened ? 'Controls__anchor__arrow--opened' : ''
-                      }`}
+                      className={classNames('Controls__anchor__arrow', {
+                        opened,
+                      })}
                       onClick={onAnchorClick}
                     >
                       <Icon name='arrow-left' />
                     </span>
                     <Icon
-                      className={`Controls__icon ${
-                        props.zoom?.active ? 'active' : ''
-                      }`}
+                      className={classNames('Controls__icon', {
+                        active: props.zoom?.active,
+                      })}
                       name='zoom-in'
                     />
                   </div>
@@ -387,9 +381,9 @@ function Controls(
               anchor={({ onAnchorClick, opened }) => (
                 <Tooltip title='Zoom out'>
                   <div
-                    className={`Controls__anchor ${
-                      props.zoom?.history.length ? '' : 'disabled'
-                    }`}
+                    className={classNames('Controls__anchor', {
+                      disabled: !props.zoom?.history.length,
+                    })}
                     onClick={() => {
                       if (props.zoom?.history.length) {
                         props.onZoomChange?.({
@@ -400,9 +394,9 @@ function Controls(
                   >
                     {props.zoom?.history.length ? (
                       <span
-                        className={`Controls__anchor__arrow ${
-                          opened ? 'Controls__anchor__arrow--opened' : ''
-                        }`}
+                        className={classNames('Controls__anchor__arrow', {
+                          opened,
+                        })}
                         onClick={onAnchorClick}
                       >
                         <Icon name='arrow-left' />

@@ -4,6 +4,8 @@
 
 ### Enhancements:
 
+- Add ability to set axes range manually for line charts on UI (KaroMourad)
+- Add more user-friendly querying for dates (mihran113, arsengit)
 - Filter redundant tooltip data from URL config state (KaroMourad)
 - Improve rendering performance by enhancing table columns virtualization mechanism (roubkar)
 - Increase visibility and usability of the Show table diff button (arsengit)
@@ -15,12 +17,15 @@
 - Add ability to hide a batch of items in explorers (VkoHov)
 - Preserve active line even if it is dropped out of the filtered area (VkoHov)
 - Add run duration property for SDK and queries (mihran113)
+- Add client vs server version check for remote tracking server (mihran113)
+- Add Remote tracking client heartbeat (mihran113)
 
 ### Fixes:
 
 - Fix tensorboard log conversion for images (mihran113)
 - Check if gradient is None when tracking gradient distributions (kage08)
 - Fix displaying non-syntax errors across Aim UI (arsengit) 
+- Fix queries on remote repos (mihran113)
 
 ## 3.11.2 Jul 8, 2022
 
