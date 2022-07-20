@@ -1,3 +1,4 @@
+import asyncio
 import numpy as np
 import random
 import struct
@@ -27,6 +28,11 @@ IndexRange = namedtuple('IndexRange', ['start', 'stop'])
 
 # added to progress keys to escape buffering due to gzipping responses
 PROGRESS_KEY_SUFFIX = ''.join([str(hash(random.random())) for _ in range(2000)])
+
+# Used for async sleep to mimic real async streamer
+# reference here
+# https://github.com/tiangolo/fastapi/issues/4146
+ASYNC_SLEEP_INTERVAL = 0.00001
 
 
 def get_run_or_404(run_id, repo=None):
@@ -121,35 +127,39 @@ def collect_streamable_data(encoded_tree: Iterator[Tuple[bytes, bytes]]) -> byte
     return b''.join(result)
 
 
-def custom_aligned_metrics_streamer(requested_runs: List[AlignedRunIn], x_axis: str, repo: 'Repo') -> bytes:
-    for run_data in requested_runs:
-        run_hash = run_data.run_id
-        requested_traces = run_data.traces
-        run = Run(run_hash, repo=repo, read_only=True)
+async def custom_aligned_metrics_streamer(requested_runs: List[AlignedRunIn], x_axis: str, repo: 'Repo') -> bytes:
+    try:
+        for run_data in requested_runs:
+            await asyncio.sleep(ASYNC_SLEEP_INTERVAL)
+            run_hash = run_data.run_id
+            requested_traces = run_data.traces
+            run = Run(run_hash, repo=repo, read_only=True)
 
-        traces_list = []
-        for trace_data in requested_traces:
-            context = Context(trace_data.context)
-            trace = run.get_metric(name=trace_data.name,
-                                   context=context)
-            x_axis_trace = run.get_metric(name=x_axis,
-                                          context=context)
-            if not (trace and x_axis_trace):
-                continue
+            traces_list = []
+            for trace_data in requested_traces:
+                context = Context(trace_data.context)
+                trace = run.get_metric(name=trace_data.name,
+                                       context=context)
+                x_axis_trace = run.get_metric(name=x_axis,
+                                              context=context)
+                if not (trace and x_axis_trace):
+                    continue
 
-            iters = np.array(trace.data.sample(trace_data.slice[-1]).indices_list())
-            x_axis_iters, x_axis_values = collect_x_axis_data(x_axis_trace, iters)
-            traces_list.append({
-                'name': trace.name,
-                'context': trace.context.to_dict(),
-                'x_axis_values': x_axis_values,
-                'x_axis_iters': x_axis_iters,
-            })
-        run_dict = {
-            run_hash: traces_list
-        }
-        encoded_tree = encode_tree(run_dict)
-        yield collect_streamable_data(encoded_tree)
+                iters = np.array(trace.data.sample(trace_data.slice[-1]).indices_list())
+                x_axis_iters, x_axis_values = collect_x_axis_data(x_axis_trace, iters)
+                traces_list.append({
+                    'name': trace.name,
+                    'context': trace.context.to_dict(),
+                    'x_axis_values': x_axis_values,
+                    'x_axis_iters': x_axis_iters,
+                })
+            run_dict = {
+                run_hash: traces_list
+            }
+            encoded_tree = encode_tree(run_dict)
+            yield collect_streamable_data(encoded_tree)
+    except asyncio.CancelledError:
+        pass
 
 
 async def metric_search_result_streamer(traces: SequenceCollection,
@@ -157,44 +167,88 @@ async def metric_search_result_streamer(traces: SequenceCollection,
                                         steps_num: int,
                                         x_axis: Optional[str] = None,
                                         report_progress: Optional[bool] = True) -> bytes:
-    last_reported_progress_time = time.time()
-    progress = None
-    progress_reports_sent = 0
-    for run_trace_collection, progress in traces.iter_runs():
-        if report_progress and time.time() - last_reported_progress_time > AIM_PROGRESS_REPORT_INTERVAL:
-            yield collect_streamable_data(encode_tree(
-                {f'progress_{progress_reports_sent}_{PROGRESS_KEY_SUFFIX}': progress}
-            ))
-            progress_reports_sent += 1
-            last_reported_progress_time = time.time()
+    try:
+        last_reported_progress_time = time.time()
+        progress = None
+        progress_reports_sent = 0
+        for run_trace_collection, progress in traces.iter_runs():
+            await asyncio.sleep(ASYNC_SLEEP_INTERVAL)
+            if report_progress and time.time() - last_reported_progress_time > AIM_PROGRESS_REPORT_INTERVAL:
+                yield collect_streamable_data(encode_tree(
+                    {f'progress_{progress_reports_sent}_{PROGRESS_KEY_SUFFIX}': progress}
+                ))
+                progress_reports_sent += 1
+                last_reported_progress_time = time.time()
 
-        run = None
-        traces_list = []
-        for trace in run_trace_collection.iter():
-            if not run:
-                run = run_trace_collection.run
-            iters, (values, epochs, timestamps) = trace.data.sample(steps_num).numpy()
+            run = None
+            traces_list = []
+            for trace in run_trace_collection.iter():
+                if not run:
+                    run = run_trace_collection.run
+                iters, (values, epochs, timestamps) = trace.data.sample(steps_num).numpy()
 
-            x_axis_trace = run.get_metric(x_axis, trace.context) if x_axis else None
-            x_axis_iters, x_axis_values = collect_x_axis_data(x_axis_trace, iters)
+                x_axis_trace = run.get_metric(x_axis, trace.context) if x_axis else None
+                x_axis_iters, x_axis_values = collect_x_axis_data(x_axis_trace, iters)
 
-            traces_list.append({
-                'name': trace.name,
-                'context': trace.context.to_dict(),
-                'slice': [0, 0, steps_num],  # TODO [AT] change once UI is ready
-                'values': numpy_to_encodable(values),
-                'iters': numpy_to_encodable(iters),
-                'epochs': numpy_to_encodable(epochs),
-                'timestamps': numpy_to_encodable(timestamps),
-                'x_axis_values': x_axis_values,
-                'x_axis_iters': x_axis_iters,
-            })
+                traces_list.append({
+                    'name': trace.name,
+                    'context': trace.context.to_dict(),
+                    'slice': [0, 0, steps_num],  # TODO [AT] change once UI is ready
+                    'values': numpy_to_encodable(values),
+                    'iters': numpy_to_encodable(iters),
+                    'epochs': numpy_to_encodable(epochs),
+                    'timestamps': numpy_to_encodable(timestamps),
+                    'x_axis_values': x_axis_values,
+                    'x_axis_iters': x_axis_iters,
+                })
 
-        if run:
+            if run:
+                run_dict = {
+                    run.hash: {
+                        'params': get_run_params(run, skip_system=skip_system),
+                        'traces': traces_list,
+                        'props': get_run_props(run)
+                    }
+                }
+
+                encoded_tree = encode_tree(run_dict)
+                yield collect_streamable_data(encoded_tree)
+                if report_progress:
+                    yield collect_streamable_data(encode_tree({f'progress_{progress_reports_sent}': progress}))
+                    progress_reports_sent += 1
+                    last_reported_progress_time = time.time()
+
+        if report_progress and progress:
+            yield collect_streamable_data(encode_tree({f'progress_{progress_reports_sent}': progress}))
+    except asyncio.CancelledError:
+        pass
+
+
+async def run_search_result_streamer(runs: SequenceCollection,
+                                     limit: int,
+                                     skip_system: bool,
+                                     report_progress: Optional[bool] = True) -> bytes:
+    try:
+        run_count = 0
+        last_reported_progress_time = time.time()
+        progress = None
+        progress_reports_sent = 0
+        for run_trace_collection, progress in runs.iter_runs():
+            await asyncio.sleep(ASYNC_SLEEP_INTERVAL)
+            # if no progress was reported for a long interval, report progress
+            if report_progress and time.time() - last_reported_progress_time > AIM_PROGRESS_REPORT_INTERVAL:
+                yield collect_streamable_data(encode_tree(
+                    {f'progress_{progress_reports_sent}_{PROGRESS_KEY_SUFFIX}': progress}
+                ))
+                progress_reports_sent += 1
+                last_reported_progress_time = time.time()
+            if not run_trace_collection:
+                continue
+            run = run_trace_collection.run
             run_dict = {
                 run.hash: {
                     'params': get_run_params(run, skip_system=skip_system),
-                    'traces': traces_list,
+                    'traces': run.collect_sequence_info(sequence_types='metric'),
                     'props': get_run_props(run)
                 }
             }
@@ -205,50 +259,14 @@ async def metric_search_result_streamer(traces: SequenceCollection,
                 yield collect_streamable_data(encode_tree({f'progress_{progress_reports_sent}': progress}))
                 progress_reports_sent += 1
                 last_reported_progress_time = time.time()
+            run_count += 1
+            if limit and run_count >= limit:
+                break
 
-    if report_progress and progress:
-        yield collect_streamable_data(encode_tree({f'progress_{progress_reports_sent}': progress}))
-
-
-def run_search_result_streamer(runs: SequenceCollection,
-                               limit: int,
-                               skip_system: bool,
-                               report_progress: Optional[bool] = True) -> bytes:
-    run_count = 0
-    last_reported_progress_time = time.time()
-    progress = None
-    progress_reports_sent = 0
-    for run_trace_collection, progress in runs.iter_runs():
-        # if no progress was reported for a long interval, report progress
-        if report_progress and time.time() - last_reported_progress_time > AIM_PROGRESS_REPORT_INTERVAL:
-            yield collect_streamable_data(encode_tree(
-                {f'progress_{progress_reports_sent}_{PROGRESS_KEY_SUFFIX}': progress}
-            ))
-            progress_reports_sent += 1
-            last_reported_progress_time = time.time()
-        if not run_trace_collection:
-            continue
-        run = run_trace_collection.run
-        run_dict = {
-            run.hash: {
-                'params': get_run_params(run, skip_system=skip_system),
-                'traces': run.collect_sequence_info(sequence_types='metric'),
-                'props': get_run_props(run)
-            }
-        }
-
-        encoded_tree = encode_tree(run_dict)
-        yield collect_streamable_data(encoded_tree)
-        if report_progress:
+        if report_progress and progress:
             yield collect_streamable_data(encode_tree({f'progress_{progress_reports_sent}': progress}))
-            progress_reports_sent += 1
-            last_reported_progress_time = time.time()
-        run_count += 1
-        if limit and run_count >= limit:
-            break
-
-    if report_progress and progress:
-        yield collect_streamable_data(encode_tree({f'progress_{progress_reports_sent}': progress}))
+    except asyncio.CancelledError:
+        pass
 
 
 def collect_requested_metric_traces(run: Run, requested_traces: List[TraceBase], steps_num: int = 200) -> List[dict]:
