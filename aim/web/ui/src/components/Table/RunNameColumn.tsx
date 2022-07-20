@@ -1,5 +1,6 @@
 import React from 'react';
 import { Link as RouteLink } from 'react-router-dom';
+import classNames from 'classnames';
 
 import { Link, Tooltip } from '@material-ui/core';
 
@@ -11,18 +12,21 @@ function RunNameColumn({
   active,
   runHash,
   run,
+  hidden = false,
 }: {
   active: boolean;
   runHash: string;
   run: string;
+  hidden?: boolean;
 }) {
   return (
-    <div className='fac'>
+    <div className={classNames('RunNameColumn', { isHidden: hidden })}>
       <Tooltip title={active ? 'In Progress' : 'Finished'}>
         <div>
           <StatusLabel
             className='Table__status_indicator'
             status={active ? 'success' : 'alert'}
+            disabled={hidden}
           />
         </div>
       </Tooltip>

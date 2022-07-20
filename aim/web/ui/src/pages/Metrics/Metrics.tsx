@@ -13,7 +13,10 @@ import ProgressBar from 'components/ProgressBar/ProgressBar';
 
 import pageTitlesEnum from 'config/pageTitles/pageTitles';
 import { ResizeModeEnum } from 'config/enums/tableEnums';
-import { RowHeightSize } from 'config/table/tableConfigs';
+import {
+  RowHeightSize,
+  VisualizationElementEnum,
+} from 'config/table/tableConfigs';
 import GroupingPopovers, {
   GroupNameEnum,
 } from 'config/grouping/GroupingPopovers';
@@ -236,7 +239,7 @@ function Metrics(
                               ? 'medium'
                               : 'large'
                           }
-                          sortOptions={props.groupingSelectOptions}
+                          sortOptions={props.sortOptions}
                           sortFields={props.sortFields}
                           hiddenRows={props.hiddenMetrics}
                           hiddenColumns={props.hiddenColumns}
@@ -268,7 +271,11 @@ function Metrics(
                           onRowSelect={props.onRowSelect}
                           archiveRuns={props.archiveRuns}
                           deleteRuns={props.deleteRuns}
+                          onRowsVisibilityChange={props.onRowsVisibilityChange}
                           focusedState={props.focusedState}
+                          visualizationElementType={
+                            VisualizationElementEnum.LINE
+                          }
                         />
                       </ErrorBoundary>
                     )}

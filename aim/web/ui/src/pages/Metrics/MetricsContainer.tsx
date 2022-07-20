@@ -156,6 +156,7 @@ function MetricsContainer(): React.FunctionComponentElement<React.ReactNode> {
         chartPanelOffsetHeight={chartPanelOffsetHeight}
         selectedRows={metricsData?.selectedRows!}
         groupingSelectOptions={metricsData?.groupingSelectOptions!}
+        sortOptions={metricsData?.sortOptions!}
         resizeMode={metricsData?.config?.table?.resizeMode!}
         columnsWidths={metricsData?.config?.table?.columnsWidths!}
         requestStatus={metricsData?.requestStatus!}
@@ -201,6 +202,7 @@ function MetricsContainer(): React.FunctionComponentElement<React.ReactNode> {
         onColumnsVisibilityChange={metricAppModel.onColumnsVisibilityChange}
         onTableDiffShow={metricAppModel.onTableDiffShow}
         onTableResizeModeChange={metricAppModel.onTableResizeModeChange}
+        onRowsVisibilityChange={metricAppModel.onRowsVisibilityChange}
         // live update
         liveUpdateConfig={metricsData?.config?.liveUpdate!}
         onLiveUpdateConfigChange={metricAppModel.changeLiveUpdateConfig}
