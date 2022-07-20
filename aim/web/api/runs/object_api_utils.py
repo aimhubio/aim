@@ -1,10 +1,15 @@
-import struct
 import time
 
 from typing import Iterable, Iterator, List, Tuple, Union, Optional
 from typing import TYPE_CHECKING
 
-from aim.web.api.runs.utils import IndexRange, get_run_props, get_run_params
+from aim.web.api.runs.utils import (
+    PROGRESS_KEY_SUFFIX,
+    IndexRange,
+    collect_streamable_data,
+    get_run_props,
+    get_run_params,
+)
 from aim.web.configs import AIM_PROGRESS_REPORT_INTERVAL
 from aim.sdk.uri_service import URIService, generate_resource_path
 from aim.sdk.sequence_collection import SequenceCollection
@@ -16,11 +21,6 @@ from aim.storage.context import Context
 if TYPE_CHECKING:
     from aim.sdk.repo import Repo
     from aim.sdk.run import Run
-
-
-def collect_streamable_data(encoded_tree: Iterator[Tuple[bytes, bytes]]) -> bytes:
-    result = [struct.pack('I', len(key)) + key + struct.pack('I', len(val)) + val for key, val in encoded_tree]
-    return b''.join(result)
 
 
 def get_blobs_batch(uri_batch: List[str], repo: 'Repo') -> Iterator[bytes]:
@@ -131,6 +131,9 @@ class CustomObjectApi:
         progress_reports_sent = 0
         for run_info in self.trace_cache.values():
             if report_progress and time.time() - last_reported_progress_time > AIM_PROGRESS_REPORT_INTERVAL:
+                yield collect_streamable_data(encode_tree(
+                    {f'progress_{progress_reports_sent}_{PROGRESS_KEY_SUFFIX}': run_info['progress']}
+                ))
                 yield collect_streamable_data(encode_tree({f'progress_{progress_reports_sent}':
                                                            run_info['progress']}))
                 progress_reports_sent += 1
