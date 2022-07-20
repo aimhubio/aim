@@ -54,12 +54,12 @@ NOTE_NOT_FOUND = 'Note with id {id} is not found in this run.'
 
 @runs_router.get('/search/run/', response_model=RunSearchApiOut,
                  responses={400: {'model': QuerySyntaxErrorOut}})
-def run_search_api(q: Optional[str] = '',
-                   limit: Optional[int] = 0,
-                   offset: Optional[str] = None,
-                   skip_system: Optional[bool] = True,
-                   report_progress: Optional[bool] = True,
-                   x_timezone_offset: int = Header(default=0),):
+async def run_search_api(q: Optional[str] = '',
+                         limit: Optional[int] = 0,
+                         offset: Optional[str] = None,
+                         skip_system: Optional[bool] = True,
+                         report_progress: Optional[bool] = True,
+                         x_timezone_offset: int = Header(default=0),):
     from aim.sdk.sequence_collection import QueryRunSequenceCollection
     repo = get_project_repo()
     query = checked_query(q)
@@ -77,7 +77,7 @@ def run_search_api(q: Optional[str] = '',
 
 
 @runs_router.post('/search/metric/align/', response_model=RunMetricCustomAlignApiOut)
-def run_metric_custom_align_api(request_data: MetricAlignApiIn):
+async def run_metric_custom_align_api(request_data: MetricAlignApiIn):
     repo = get_project_repo()
     x_axis_metric_name = request_data.align_by
     requested_runs = request_data.runs

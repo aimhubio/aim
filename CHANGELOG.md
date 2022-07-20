@@ -27,6 +27,7 @@
 - Fix displaying non-syntax errors across Aim UI (arsengit) 
 - Fix queries on remote repos (mihran113)
 - Fix interval progress reports for query apis (mihran113)
+- Fix query request cancellation errors (mihran113)
 
 ## 3.11.2 Jul 8, 2022
 
