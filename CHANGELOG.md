@@ -4,6 +4,7 @@
 
 ### Enhancements:
 
+- Add more user-friendly querying for dates (mihran113, arsengit) 
 - Filter redundant tooltip data from URL config state (KaroMourad)
 - Improve rendering performance by enhancing table columns virtualization mechanism (roubkar)
 - Increase visibility and usability of the Show table diff button (arsengit)
