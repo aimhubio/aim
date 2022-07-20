@@ -95,13 +95,15 @@ class SingleRunSequenceCollection(SequenceCollection):
         run: 'Run',
         seq_cls=Sequence,
         query: str = '',
-        runs_proxy_cache: dict = None
+        runs_proxy_cache: dict = None,
+        timezone_offset: int = 0,
     ):
         self.run: 'Run' = run
         self.seq_cls = seq_cls
         self._item = 'sequence'
         self.query = RestrictedPythonQuery(query)
         self.runs_proxy_cache = runs_proxy_cache
+        self._timezone_offset = timezone_offset
 
     def iter_runs(self) -> Iterator['SequenceCollection']:
         """"""
@@ -115,7 +117,7 @@ class SingleRunSequenceCollection(SequenceCollection):
         allowed_dtypes = self.seq_cls.allowed_dtypes()
         seq_var = self.seq_cls.sequence_name()
         for seq_name, ctx, run in self.run.iter_sequence_info_by_type(allowed_dtypes):
-            run_view = RunView(run, self.runs_proxy_cache)
+            run_view = RunView(run, self.runs_proxy_cache, self._timezone_offset)
             seq_view = SequenceView(seq_name, ctx.to_dict(), run_view)
             match = self.query.check(**{'run': run_view, seq_var: seq_view})
             if not match:
@@ -145,6 +147,7 @@ class QuerySequenceCollection(SequenceCollection):
         seq_cls=Sequence,
         query: str = '',
         report_mode: QueryReportMode = QueryReportMode.PROGRESS_BAR,
+        timezone_offset: int = 0,
     ):
         self.repo: 'Repo' = repo
         self.seq_cls = seq_cls
@@ -152,6 +155,7 @@ class QuerySequenceCollection(SequenceCollection):
         self.query = query
         self.report_mode = report_mode
         self.runs_proxy_cache = dict()
+        self._timezone_offset = timezone_offset
 
     def iter_runs(self) -> Iterator['SequenceCollection']:
         """"""
@@ -167,7 +171,8 @@ class QuerySequenceCollection(SequenceCollection):
 
         for run in runs_iterator:
             seq_collection = SingleRunSequenceCollection(run, self.seq_cls, self.query,
-                                                         runs_proxy_cache=self.runs_proxy_cache)
+                                                         runs_proxy_cache=self.runs_proxy_cache,
+                                                         timezone_offset=self._timezone_offset)
             if self.report_mode == QueryReportMode.PROGRESS_TUPLE:
                 yield seq_collection, (runs_counter, total_runs)
             else:
@@ -208,6 +213,7 @@ class QueryRunSequenceCollection(SequenceCollection):
         paginated: bool = False,
         offset: str = None,
         report_mode: QueryReportMode = QueryReportMode.PROGRESS_BAR,
+        timezone_offset: int = 0,
     ):
         self.repo: 'Repo' = repo
         self.seq_cls = seq_cls
@@ -217,6 +223,7 @@ class QueryRunSequenceCollection(SequenceCollection):
         self.offset = offset
         self.query = RestrictedPythonQuery(query)
         self.report_mode = report_mode
+        self._timezone_offset = timezone_offset
 
     def iter(self) -> Iterator[Sequence]:
         """"""
@@ -238,7 +245,7 @@ class QueryRunSequenceCollection(SequenceCollection):
         if self.report_mode == QueryReportMode.PROGRESS_BAR:
             progress_bar = tqdm(total=total_runs)
         for run in runs_iterator:
-            run_view = RunView(run)
+            run_view = RunView(run, timezone_offset=self._timezone_offset)
             match = self.query.check(run=run_view)
             seq_collection = SingleRunSequenceCollection(run, self.seq_cls) if match else None
             if self.report_mode == QueryReportMode.PROGRESS_TUPLE:
