@@ -1184,7 +1184,7 @@ function createAppModel(appConfig: IAppInitialConfig) {
         ...groupingSelectOptions,
         {
           group: 'metric',
-          label: 'metric.last_value',
+          label: 'metric.values.last',
           value: 'lastValue',
         },
       ];
@@ -1274,7 +1274,7 @@ function createAppModel(appConfig: IAppInitialConfig) {
         ...groupingSelectOptions,
         {
           group: 'metric',
-          label: 'metric.last_value',
+          label: 'metric.values.last',
           value: 'lastValue',
         },
       ];
