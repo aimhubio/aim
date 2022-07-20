@@ -54,6 +54,14 @@ class Client:
 
         self._thread_local.atomic_instructions = None
 
+    def get_version(self,):
+        request = rpc_messages.VersionRequest()
+        response = self.remote.get_version(request)
+
+        if response.status == rpc_messages.ResourceResponse.Status.ERROR:
+            raise_exception(response.exception)
+        return response.version
+
     def get_resource_handler(self, resource_type, args=()):
         request = rpc_messages.ResourceRequest(
             resource_type=resource_type,

@@ -6,6 +6,18 @@ message ExceptionResponse {
     string args = 3;
 }
 
+message VersionRequest {}
+
+message VersionResponse {
+    string version = 1;
+    enum Status {
+        OK = 0;
+        ERROR = 1;
+    }
+    Status status = 2;
+    ExceptionResponse exception = 3;
+}
+
 message ResourceRequest {
     string resource_type = 1;
     string client_uri = 2;
@@ -84,6 +96,7 @@ message WriteInstructionsResponse {
 }
 
 service RemoteTrackingService {
+    rpc get_version(VersionRequest) returns (VersionResponse) {}
     rpc get_resource(ResourceRequest) returns (ResourceResponse) {}
     rpc release_resource(ReleaseResourceRequest) returns (ReleaseResourceResponse) {}
     rpc run_instruction(stream InstructionRequest) returns (stream InstructionResponse) {}
