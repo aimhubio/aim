@@ -90,6 +90,8 @@ const Table = React.forwardRef(function Table(
     disableRowClick = false,
     onToggleColumnsColorScales,
     columnsColorScales,
+    onRowsVisibilityChange,
+    visualizationElementType,
     ...props
   }: ITableProps,
   ref,
@@ -116,7 +118,19 @@ const Table = React.forwardRef(function Table(
   const [isOpenArchiveSelectedPopup, setIsOpenArchiveSelectedPopup] =
     React.useState(false);
   const [tableBulkActionsVisibility, setTableBulkActionsVisibility] =
-    React.useState({ delete: false, archive: false, unarchive: false });
+    React.useState<{
+      delete: boolean;
+      archive: boolean;
+      unarchive: boolean;
+      hideItems: boolean;
+      showItems: boolean;
+    }>({
+      delete: false,
+      archive: false,
+      unarchive: false,
+      hideItems: false,
+      showItems: false,
+    });
   const [listWindow, setListWindow] = React.useState({
     left: 0,
     width: 0,
@@ -533,6 +547,33 @@ const Table = React.forwardRef(function Table(
     setIsOpenUnarchiveSelectedPopup(!isOpenUnarchiveSelectedPopup);
   }
 
+  function onHideSelectedItems() {
+    onBatchRowsVisibilityChange('hide');
+  }
+
+  function onShowSelectedItems() {
+    onBatchRowsVisibilityChange('show');
+  }
+
+  function onBatchRowsVisibilityChange(changeMode: 'hide' | 'show') {
+    let data: any[] = [];
+    const selectedRowsValues = Object.values(selectedRows);
+    selectedRowsValues.forEach((selectedRow: any) => {
+      if (changeMode === 'hide') {
+        if (!selectedRow.isHidden) {
+          data.push(selectedRow.key);
+        }
+      } else {
+        if (selectedRow.isHidden) {
+          data.push(selectedRow.key);
+        }
+      }
+    });
+
+    onRowsVisibilityChange(data);
+    onRowSelect({ actionType: 'removeAll', data: selectedRowsValues });
+  }
+
   React.useEffect(() => {
     if (custom && !!tableContainerRef.current) {
       const windowEdges = calculateWindow({
@@ -621,32 +662,48 @@ const Table = React.forwardRef(function Table(
   }, []);
 
   React.useEffect(() => {
-    const tableBulkActionsVisibility = {
+    const tableBulkActionsVisibility: {
+      delete: boolean;
+      archive: boolean;
+      unarchive: boolean;
+      hideItems: boolean;
+      showItems: boolean;
+    } = {
       delete: false,
       archive: false,
       unarchive: false,
+      hideItems: false,
+      showItems: false,
     };
     const values = Object.values(selectedRows || {});
-    for (let i = 0; i < values.length; i++) {
-      const value: any = values[i];
+    values.forEach((value) => {
       if (
-        tableBulkActionsVisibility.delete &&
-        tableBulkActionsVisibility.archive &&
-        tableBulkActionsVisibility.unarchive
+        !tableBulkActionsVisibility.delete ||
+        !tableBulkActionsVisibility.archive ||
+        !tableBulkActionsVisibility.unarchive ||
+        !tableBulkActionsVisibility.hideItems ||
+        !tableBulkActionsVisibility.showItems
       ) {
-        break;
+        if (value.archived) {
+          tableBulkActionsVisibility.archive = true;
+        } else {
+          tableBulkActionsVisibility.unarchive = true;
+        }
+        if (value.end_time) {
+          tableBulkActionsVisibility.delete = true;
+        }
+        if (onRowsVisibilityChange) {
+          if (value.isHidden) {
+            tableBulkActionsVisibility.showItems = true;
+          } else {
+            tableBulkActionsVisibility.hideItems = true;
+          }
+        }
       }
-      if (value.archived) {
-        tableBulkActionsVisibility.archive = true;
-      } else {
-        tableBulkActionsVisibility.unarchive = true;
-      }
-      if (value.end_time) {
-        tableBulkActionsVisibility.delete = true;
-      }
-    }
+    });
+
     setTableBulkActionsVisibility(tableBulkActionsVisibility);
-  }, [selectedRows]);
+  }, [selectedRows, onRowsVisibilityChange]);
 
   const sortPopoverChanged: boolean = React.useMemo(() => {
     return (
@@ -688,6 +745,7 @@ const Table = React.forwardRef(function Table(
                   onTableResizeModeChange={onTableResizeModeChange}
                 />
               )}
+
               <div className='flex fac Table__header__buttons'>
                 {onManageColumns && (
                   <ManageColumnsPopover
@@ -699,103 +757,87 @@ const Table = React.forwardRef(function Table(
                     hideSystemMetrics={hideSystemMetrics}
                     onManageColumns={onManageColumns}
                     onColumnsVisibilityChange={onColumnsVisibilityChange}
-                    onTableDiffShow={onTableDiffShow}
                     appName={appName}
                   />
                 )}
-                <div className='flex fac Table__header__buttons'>
-                  {onManageColumns && (
-                    <ManageColumnsPopover
-                      columnsData={columnsData.filter(
-                        (item: any) =>
-                          item.key !== '#' && item.key !== 'actions',
-                      )}
-                      columnsOrder={columnsOrder}
-                      hiddenColumns={hiddenColumns}
-                      hideSystemMetrics={hideSystemMetrics}
-                      onManageColumns={onManageColumns}
-                      onColumnsVisibilityChange={onColumnsVisibilityChange}
-                      appName={appName}
-                    />
-                  )}
-                  {onRowsChange && (
-                    <HideRowsPopover
-                      hiddenChartRows={hiddenChartRows}
-                      toggleRowsVisibility={onRowsChange}
-                    />
-                  )}
-                  {onSort && (
-                    <ControlPopover
-                      anchorOrigin={{
-                        vertical: 'top',
-                        horizontal: 'left',
-                      }}
-                      transformOrigin={{
-                        vertical: 'bottom',
-                        horizontal: 'left',
-                      }}
-                      title='Sort table by:'
-                      anchor={({ onAnchorClick, opened }) => (
-                        <Button
-                          type='text'
-                          color='secondary'
-                          size='small'
-                          onClick={onAnchorClick}
-                          className={`Table__header__item ${
-                            opened || sortPopoverChanged ? 'opened' : ''
-                          }`}
-                        >
-                          <Icon name='sort-outside' />
-                          <Text size={14} tint={100}>
-                            Sort
-                          </Text>
-                        </Button>
-                      )}
-                      component={
-                        <SortPopover
-                          sortOptions={sortOptions}
-                          sortFields={sortFields}
-                          onSort={onSort}
-                          onReset={onSortReset}
-                        />
-                      }
-                    />
-                  )}
-                  {onRowHeightChange && (
-                    <RowHeightPopover
-                      rowHeight={rowHeight}
-                      onRowHeightChange={onRowHeightChange}
-                      appName={appName}
-                    />
-                  )}
-                </div>
-                {onTableDiffShow && (
-                  <Button
-                    size='small'
-                    variant='outlined'
-                    className='Table__header__item--diffBtn'
-                    disabled={isDiffButtonDisabled}
-                    onClick={onTableDiffShow}
-                  >
-                    Show Table Diff
-                  </Button>
+                {onRowsChange && (
+                  <HideRowsPopover
+                    toggleRowsVisibility={onRowsChange}
+                    visualizationElementType={visualizationElementType}
+                    data={dataRef.current}
+                  />
                 )}
-                {onExport && (
-                  <div className='fac'>
-                    <Button
-                      fullWidth
-                      variant='outlined'
-                      size='small'
-                      onClick={onExport}
-                      startIcon={<Icon fontSize={14} name='download' />}
-                    >
-                      <Text size={14} color='inherit'>
-                        Export
-                      </Text>
-                    </Button>
-                  </div>
+                {onSort && (
+                  <ControlPopover
+                    anchorOrigin={{
+                      vertical: 'top',
+                      horizontal: 'left',
+                    }}
+                    transformOrigin={{
+                      vertical: 'bottom',
+                      horizontal: 'left',
+                    }}
+                    title='Sort table by:'
+                    anchor={({ onAnchorClick, opened }) => (
+                      <Button
+                        type='text'
+                        color='secondary'
+                        size='small'
+                        onClick={onAnchorClick}
+                        className={`Table__header__item ${
+                          opened || sortPopoverChanged ? 'opened' : ''
+                        }`}
+                      >
+                        <Icon name='sort-outside' />
+                        <Text size={14} tint={100}>
+                          Sort
+                        </Text>
+                      </Button>
+                    )}
+                    component={
+                      <SortPopover
+                        sortOptions={sortOptions}
+                        sortFields={sortFields}
+                        onSort={onSort}
+                        onReset={onSortReset}
+                      />
+                    }
+                  />
+                )}
+                {onRowHeightChange && (
+                  <RowHeightPopover
+                    rowHeight={rowHeight}
+                    onRowHeightChange={onRowHeightChange}
+                    appName={appName}
+                  />
                 )}
               </div>
+              {onTableDiffShow && (
+                <Button
+                  size='small'
+                  variant='outlined'
+                  className='Table__header__item--diffBtn'
+                  disabled={isDiffButtonDisabled}
+                  onClick={onTableDiffShow}
+                >
+                  Show Table Diff
+                </Button>
+              )}
+              {onExport && (
+                <div className='fac'>
+                  <Button
+                    fullWidth
+                    variant='outlined'
+                    size='small'
+                    onClick={onExport}
+                    startIcon={<Icon fontSize={14} name='download' />}
+                  >
+                    <Text size={14} color='inherit'>
+                      Export
+                    </Text>
+                  </Button>
+                </div>
+              )}
             </div>
           ) : !isEmpty(selectedRows) && multiSelect ? (
             <div className='Table__header selectedRowActionsContainer'>
@@ -851,6 +893,36 @@ const Table = React.forwardRef(function Table(
                     <Icon name='unarchive' fontSize={18} />
                     <Text size={14} tint={100}>
                       Unarchive
+                    </Text>
+                  </Button>
+                </div>
+              )}
+              {tableBulkActionsVisibility.hideItems && (
+                <div>
+                  <Button
+                    color='secondary'
+                    type='text'
+                    onClick={onHideSelectedItems}
+                    className='Table__header__item'
+                  >
+                    <Icon name='eye-outline-hide' fontSize={14} />
+                    <Text size={14} tint={100}>
+                      {`Hide ${visualizationElementType}s`}
+                    </Text>
+                  </Button>
+                </div>
+              )}
+              {tableBulkActionsVisibility.showItems && (
+                <div>
+                  <Button
+                    color='secondary'
+                    type='text'
+                    onClick={onShowSelectedItems}
+                    className='Table__header__item'
+                  >
+                    <Icon name='eye-show-outline' fontSize={14} />
+                    <Text size={14} tint={100}>
+                      {`Show ${visualizationElementType}s`}
                     </Text>
                   </Button>
                 </div>

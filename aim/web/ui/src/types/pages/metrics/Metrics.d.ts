@@ -83,6 +83,7 @@ export interface IMetricProps extends Partial<RouteChildrenProps> {
   hideSystemMetrics: boolean;
   sameValueColumns?: string[] | [];
   groupingSelectOptions: IGroupingSelectOption[];
+  sortOptions: IGroupingSelectOption[];
   requestStatus: RequestStatusEnum;
   requestProgress: IRequestProgress;
   resizeMode: ResizeModeEnum;
@@ -125,6 +126,7 @@ export interface IMetricProps extends Partial<RouteChildrenProps> {
   onMetricsSelectChange: (options: ISelectOption[]) => void;
   onSelectRunQueryChange: (query: string) => void;
   onSelectAdvancedQueryChange: (query: string) => void;
+  onRowsVisibilityChange: (metricKeys: string[]) => void;
   toggleSelectAdvancedMode: () => void;
   onExportTableData: (e: React.ChangeEvent<any>) => void;
   onRowHeightChange: (height: RowHeightSize) => void;

@@ -108,7 +108,7 @@
     border: 1px solid $primary-light;
     color: $primary-dark;
     font-size: 10px;
-    font-weight: normal;
+    font-weight: $font-400;
     white-space: nowrap;
   }
   .ChartMouseValueXAxis {
@@ -135,7 +135,6 @@
       stroke-width: 1;
       opacity: 0.2;
     }
-
   }
   .Line {
     stroke-width: 2;

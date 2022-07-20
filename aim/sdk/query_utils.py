@@ -43,7 +43,7 @@ class RunView:
         if item == 'created_at':
             return getattr(self.db.caches['runs_cache'][self.hash], item)\
                 - datetime.timedelta(minutes=self._timezone_offset)
-        if item == 'active':
+        if item in ('active', 'duration'):
             return getattr(self.run, item)
         elif item in self.structured_run_cls.fields():
             if self.db:
