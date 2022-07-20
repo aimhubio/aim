@@ -207,7 +207,7 @@ function Column({
       return (
         ((topHeader ? 1 : 0) + 1 + groupKeys.length + expandedGroupsDataCount) *
           rowHeightMode +
-        (groupKeys.length + 1) * ROW_CELL_SIZE_CONFIG[rowHeightMode].groupMargin
+        (groupKeys.length + 2) * ROW_CELL_SIZE_CONFIG[rowHeightMode].groupMargin
       );
     }
 
@@ -596,11 +596,11 @@ function Column({
                       }
                       top += i * rowHeightMode;
                       const isVisible =
-                        top >= listWindow.top - rowHeightMode * 5 &&
+                        top >= listWindow.top - rowHeightMode * 20 &&
                         top <=
                           listWindow.top +
                             listWindow.height +
-                            rowHeightMode * 5;
+                            rowHeightMode * 20;
                       if (isVisible && firstVisibleCellTop === null) {
                         firstVisibleCellTop = top;
                       }
@@ -670,8 +670,8 @@ function Column({
           : data.map((item) => {
               const top = item.index * rowHeightMode;
               const isVisible =
-                top >= listWindow.top - rowHeightMode * 3 &&
-                top <= listWindow.top + listWindow.height + rowHeightMode * 3;
+                top >= listWindow.top - rowHeightMode * 20 &&
+                top <= listWindow.top + listWindow.height + rowHeightMode * 20;
               if (isVisible && firstVisibleCellTop === null) {
                 firstVisibleCellTop = top;
               }

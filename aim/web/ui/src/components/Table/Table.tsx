@@ -137,6 +137,14 @@ const Table = React.forwardRef(function Table(
     updateFocusedRow(`rowKey-${activeRowKey.current}`);
   }, [selectedRows]);
 
+  React.useEffect(() => {
+    if (activeRowKey.current === null) {
+      updateHoveredRow(`rowKey-${hoveredRowKey.current}`);
+    } else {
+      updateFocusedRow(`rowKey-${activeRowKey.current}`);
+    }
+  }, [listWindow]);
+
   React.useImperativeHandle(ref, () => ({
     updateData: updateData,
     setHoveredRow: setHoveredRow,
@@ -269,31 +277,32 @@ const Table = React.forwardRef(function Table(
   function scrollToRow(rowKey: string) {
     window.requestAnimationFrame(() => {
       if (custom) {
-        let top = ROW_CELL_SIZE_CONFIG[rowHeight].groupMargin + rowHeight;
+        let top = 0;
         if (groups) {
-          top = ROW_CELL_SIZE_CONFIG[rowHeight].groupMargin + rowHeight;
-          for (let key in data) {
-            top += ROW_CELL_SIZE_CONFIG[rowHeight].groupMargin + rowHeight;
+          let groupCount = 0;
+          loop: for (let key in data) {
+            top += ROW_CELL_SIZE_CONFIG[rowHeight].groupMargin;
+            for (let i = 0; i < data[key]?.items?.length; i++) {
+              if (data[key].items[i].key === rowKey) {
+                top += i * rowHeight;
+                if (!expanded[key]) {
+                  expandedGroups.current.push(key);
+                  setExpanded(
+                    Object.fromEntries(
+                      expandedGroups.current.map((key) => [key, true]),
+                    ),
+                  );
+                }
+                break loop;
+              }
+            }
+            top +=
+              rowHeight +
+              (ROW_CELL_SIZE_CONFIG[rowHeight].groupMargin / 2) * groupCount;
             if (expanded[key]) {
               top += data[key].items.length * rowHeight;
             }
-            for (let i = 0; i < data[key]?.items.length; i++) {
-              top += rowHeight;
-              if (data[key].items[i].key === rowKey) {
-                expandedGroups.current.push(key);
-                setExpanded(
-                  Object.fromEntries(
-                    expandedGroups.current.map((key) => [key, true]),
-                  ),
-                );
-                setTimeout(() => {
-                  window.requestAnimationFrame(() => {
-                    updateFocusedRow(`rowKey-${rowKey}`);
-                  });
-                }, 100);
-                break;
-              }
-            }
+            groupCount++;
           }
         } else {
           for (let i = 0; i < data?.length; i++) {
@@ -424,6 +433,7 @@ const Table = React.forwardRef(function Table(
       if (typeof onRowHover === 'function') {
         onRowHover(row.key);
       }
+      hoveredRowKey.current = row.key;
       updateHoveredRow(`rowKey-${row.key}`);
     }
   }
