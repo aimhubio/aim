@@ -390,7 +390,10 @@ class Repo:
 
     def total_runs_count(self) -> int:
         db = self.structured_db
-        cache = db.caches.get('runs_cache')
+        if db:
+            cache = db.caches.get('runs_cache')
+        else:
+            cache = None
         if cache:
             return len(cache.keys())
         else:

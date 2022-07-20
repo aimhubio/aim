@@ -19,6 +19,7 @@
 - Fix tensorboard log conversion for images (mihran113)
 - Check if gradient is None when tracking gradient distributions (kage08)
 - Fix displaying non-syntax errors across Aim UI (arsengit) 
+- Fix queries on remote repos (mihran113)
 
 ## 3.11.2 Jul 8, 2022
 
