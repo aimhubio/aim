@@ -207,7 +207,9 @@ function Column({
       return (
         ((topHeader ? 1 : 0) + 1 + groupKeys.length + expandedGroupsDataCount) *
           rowHeightMode +
-        (groupKeys.length + 2) * ROW_CELL_SIZE_CONFIG[rowHeightMode].groupMargin
+        groupKeys.length *
+          (ROW_CELL_SIZE_CONFIG[rowHeightMode].groupMargin ?? 6) +
+        groupKeys.length
       );
     }
 
@@ -215,6 +217,7 @@ function Column({
   }
 
   let firstVisibleCellTop = null;
+  let firstVisibleGroupTop = null;
 
   function fixColumnWidth(width) {
     if (maxWidth === undefined || width > maxWidth) {
@@ -487,186 +490,233 @@ function Column({
           )}
         </div>
         {groups
-          ? Object.keys(data).map((groupKey) => (
-              <div
-                key={groupKey}
-                className={classNames('Table__group', {
-                  colorIndicator: data[groupKey].data.meta.color,
-                })}
-                style={
-                  col.key === '#' && data[groupKey].data.meta.color
-                    ? {
-                        borderTopLeftRadius: '0.375rem',
-                        borderBottomLeftRadius: '0.375rem',
-                        '--color-indicator': data[groupKey].data.meta.color,
-                        '--extended-group-background-color':
-                          BGColorLighten[data[groupKey].data.meta.color] ??
-                          '#ffffff',
-                      }
-                    : data[groupKey].data.meta.color
-                    ? {
-                        '--extended-group-background-color':
-                          BGColorLighten[data[groupKey].data.meta.color] ??
-                          '#ffffff',
-                      }
-                    : null
+          ? Object.keys(data).map((groupKey) => {
+              let top = ROW_CELL_SIZE_CONFIG[rowHeightMode].groupMargin ?? 6;
+              let height = rowHeightMode;
+              for (let key in data) {
+                if (key === groupKey) {
+                  if (expanded[key]) {
+                    height += data[key].items.length * rowHeightMode;
+                  }
+                  break;
                 }
-              >
-                {col.key === '#' ? (
+                top +=
+                  ROW_CELL_SIZE_CONFIG[rowHeightMode].groupMargin +
+                  rowHeightMode;
+                if (expanded[key]) {
+                  top += data[key].items.length * rowHeightMode;
+                }
+              }
+              const isVisible =
+                (top >= listWindow.top - rowHeightMode * 20 &&
+                  top <=
+                    listWindow.top + listWindow.height + rowHeightMode * 20) ||
+                (top < listWindow.top - rowHeightMode * 20 &&
+                  top + height >= listWindow.top);
+
+              if (isVisible && firstVisibleGroupTop === null) {
+                firstVisibleGroupTop = top;
+              } else {
+                top = null;
+              }
+              return (
+                isVisible && (
                   <div
-                    className={classNames(
-                      'Table__cell Table__group__config__cell Table__group__header__cell expandable',
-                      {
-                        expanded: expanded[groupKey],
-                      },
-                    )}
-                  >
-                    <GroupConfig
-                      config={data[groupKey].data.meta}
-                      expand={expand}
-                      expanded={expanded}
-                      groupKey={groupKey}
-                      multiSelect={multiSelect}
-                      onRowSelect={onRowSelect}
-                      selectedRows={selectedRows}
-                      data={data[groupKey].items}
-                    />
-                  </div>
-                ) : col.key === 'actions' ? (
-                  <div
-                    className={classNames(
-                      'Table__cell Table__group__config__cell Table__group__header__cell expandable',
-                      {
-                        expanded: expanded[groupKey],
-                      },
-                    )}
-                  >
-                    <GroupActions
-                      expand={expand}
-                      expanded={expanded}
-                      groupKeys={Object.keys(data)}
-                      groupKey={groupKey}
-                    />
-                  </div>
-                ) : (
-                  <Cell
-                    index={groupKey}
-                    col={col}
-                    multiSelect={multiSelect}
-                    getColumnCelBGColor={getColumnCelBGColor}
-                    columnsColorScales={columnsColorScales}
-                    isNumeric={colorScaleRange}
-                    item={
-                      typeof data[groupKey].data[col.key] === 'object' &&
-                      data[groupKey].data[col.key]?.hasOwnProperty('content')
-                        ? {
-                            ...data[groupKey].data[col.key],
-                            props: {
-                              ...data[groupKey].data[col.key]?.props,
-                              onClick: (e) => expand(groupKey),
-                            },
-                          }
-                        : {
-                            content: data[groupKey].data[col.key],
-                            props: {
-                              onClick: (e) => expand(groupKey),
-                            },
-                          }
-                    }
-                    className={classNames(
-                      'Table__group__header__cell expandable',
-                      {
-                        expanded: expanded[groupKey],
-                      },
-                    )}
-                    setColumnWidth={fixColumnWidth}
-                  />
-                )}
-                {expanded[groupKey] && (
-                  <>
-                    {data[groupKey]?.items?.map((item, i) => {
-                      let top = 0;
-                      for (let key in data) {
-                        if (key === groupKey) {
-                          break;
-                        }
-                        if (expanded[key]) {
-                          top += data[key].items.length * rowHeightMode;
-                        }
-                      }
-                      top += i * rowHeightMode;
-                      const isVisible =
-                        top >= listWindow.top - rowHeightMode * 20 &&
-                        top <=
-                          listWindow.top +
-                            listWindow.height +
-                            rowHeightMode * 20;
-                      if (isVisible && firstVisibleCellTop === null) {
-                        firstVisibleCellTop = top;
-                      }
-                      return (
-                        isVisible && (
-                          <React.Fragment key={col.key + item.index}>
-                            <Cell
-                              index={item.index}
-                              col={col}
-                              multiSelect={multiSelect}
-                              getColumnCelBGColor={getColumnCelBGColor}
-                              columnsColorScales={columnsColorScales}
-                              isNumeric={colorScaleRange}
-                              item={
-                                col.key === '#' ? (
-                                  <>
-                                    <Checkbox
-                                      color='primary'
-                                      size='small'
-                                      icon={
-                                        <span className='Table__column__defaultSelectIcon'></span>
-                                      }
-                                      checkedIcon={
-                                        <span className='Table__column__selectedSelectIcon'>
-                                          <Icon name='check' fontSize={9} />
-                                        </span>
-                                      }
-                                      className='Table__column__selectCheckbox'
-                                      checked={!!selectedRows[item.selectKey]}
-                                      onClick={(e) => {
-                                        e.stopPropagation();
-                                        onRowSelect({
-                                          actionType: 'single',
-                                          data: item,
-                                        });
-                                      }}
-                                    />
-                                  </>
-                                ) : (
-                                  item[col.key] || data[groupKey].data[col.key]
-                                )
-                              }
-                              groupColumnColored={
-                                !!data[groupKey].data.meta.color
-                              }
-                              className={classNames(`rowKey-${item.key}`, {
-                                inactive: item.isHidden,
-                                selected: !!selectedRows?.[item.selectKey],
-                              })}
-                              isConfigColumn={col.key === '#'}
-                              metadata={firstColumn ? item.rowMeta : null}
-                              box={{
-                                top: firstVisibleCellTop === top ? top : null,
-                              }}
-                              onRowHover={() => onRowHover(item)}
-                              onRowClick={() => onRowClick(item)}
-                              setColumnWidth={fixColumnWidth}
-                            />
-                          </React.Fragment>
-                        )
-                      );
+                    key={groupKey}
+                    className={classNames('Table__group', {
+                      colorIndicator: data[groupKey].data.meta.color,
                     })}
-                  </>
-                )}
-              </div>
-            ))
+                    style={{
+                      ...(col.key === '#' && data[groupKey].data.meta.color
+                        ? {
+                            borderTopLeftRadius: '0.375rem',
+                            borderBottomLeftRadius: '0.375rem',
+                            '--color-indicator': data[groupKey].data.meta.color,
+                            '--extended-group-background-color':
+                              BGColorLighten[data[groupKey].data.meta.color] ??
+                              '#ffffff',
+                          }
+                        : data[groupKey].data.meta.color
+                        ? {
+                            '--extended-group-background-color':
+                              BGColorLighten[data[groupKey].data.meta.color] ??
+                              '#ffffff',
+                          }
+                        : {}),
+                      marginTop: top,
+                    }}
+                  >
+                    {col.key === '#' ? (
+                      <div
+                        className={classNames(
+                          'Table__cell Table__group__config__cell Table__group__header__cell expandable',
+                          {
+                            expanded: expanded[groupKey],
+                          },
+                        )}
+                      >
+                        <GroupConfig
+                          config={data[groupKey].data.meta}
+                          expand={expand}
+                          expanded={expanded}
+                          groupKey={groupKey}
+                          multiSelect={multiSelect}
+                          onRowSelect={onRowSelect}
+                          selectedRows={selectedRows}
+                          data={data[groupKey].items}
+                        />
+                      </div>
+                    ) : col.key === 'actions' ? (
+                      <div
+                        className={classNames(
+                          'Table__cell Table__group__config__cell Table__group__header__cell expandable',
+                          {
+                            expanded: expanded[groupKey],
+                          },
+                        )}
+                      >
+                        <GroupActions
+                          expand={expand}
+                          expanded={expanded}
+                          groupKeys={Object.keys(data)}
+                          groupKey={groupKey}
+                        />
+                      </div>
+                    ) : (
+                      <Cell
+                        index={groupKey}
+                        col={col}
+                        multiSelect={multiSelect}
+                        getColumnCelBGColor={getColumnCelBGColor}
+                        columnsColorScales={columnsColorScales}
+                        isNumeric={colorScaleRange}
+                        item={
+                          typeof data[groupKey].data[col.key] === 'object' &&
+                          data[groupKey].data[col.key]?.hasOwnProperty(
+                            'content',
+                          )
+                            ? {
+                                ...data[groupKey].data[col.key],
+                                props: {
+                                  ...data[groupKey].data[col.key]?.props,
+                                  onClick: (e) => expand(groupKey),
+                                },
+                              }
+                            : {
+                                content: data[groupKey].data[col.key],
+                                props: {
+                                  onClick: (e) => expand(groupKey),
+                                },
+                              }
+                        }
+                        className={classNames(
+                          'Table__group__header__cell expandable',
+                          {
+                            expanded: expanded[groupKey],
+                          },
+                        )}
+                        setColumnWidth={fixColumnWidth}
+                      />
+                    )}
+                    {expanded[groupKey] && (
+                      <>
+                        {data[groupKey]?.items?.map((item, i) => {
+                          let absoluteTop = 0;
+                          let top = 0;
+                          for (let key in data) {
+                            if (key === groupKey) {
+                              break;
+                            }
+
+                            if (expanded[key]) {
+                              absoluteTop +=
+                                data[key].items.length * rowHeightMode;
+                            }
+                          }
+                          absoluteTop += i * rowHeightMode;
+                          top = i * rowHeightMode;
+                          const isVisible =
+                            absoluteTop >=
+                              listWindow.top - rowHeightMode * 20 &&
+                            absoluteTop <=
+                              listWindow.top +
+                                listWindow.height +
+                                rowHeightMode * 20;
+                          if (isVisible && firstVisibleCellTop === null) {
+                            firstVisibleCellTop = absoluteTop;
+                          }
+
+                          return (
+                            isVisible && (
+                              <React.Fragment key={col.key + item.index}>
+                                <Cell
+                                  index={item.index}
+                                  col={col}
+                                  multiSelect={multiSelect}
+                                  getColumnCelBGColor={getColumnCelBGColor}
+                                  columnsColorScales={columnsColorScales}
+                                  isNumeric={colorScaleRange}
+                                  item={
+                                    col.key === '#' ? (
+                                      <>
+                                        <Checkbox
+                                          color='primary'
+                                          size='small'
+                                          icon={
+                                            <span className='Table__column__defaultSelectIcon'></span>
+                                          }
+                                          checkedIcon={
+                                            <span className='Table__column__selectedSelectIcon'>
+                                              <Icon name='check' fontSize={9} />
+                                            </span>
+                                          }
+                                          className='Table__column__selectCheckbox'
+                                          checked={
+                                            !!selectedRows[item.selectKey]
+                                          }
+                                          onClick={(e) => {
+                                            e.stopPropagation();
+                                            onRowSelect({
+                                              actionType: 'single',
+                                              data: item,
+                                            });
+                                          }}
+                                        />
+                                      </>
+                                    ) : (
+                                      item[col.key] ||
+                                      data[groupKey].data[col.key]
+                                    )
+                                  }
+                                  groupColumnColored={
+                                    !!data[groupKey].data.meta.color
+                                  }
+                                  className={classNames(`rowKey-${item.key}`, {
+                                    inactive: item.isHidden,
+                                    selected: !!selectedRows?.[item.selectKey],
+                                  })}
+                                  isConfigColumn={col.key === '#'}
+                                  metadata={firstColumn ? item.rowMeta : null}
+                                  box={{
+                                    top:
+                                      firstVisibleCellTop === absoluteTop
+                                        ? top
+                                        : null,
+                                  }}
+                                  onRowHover={() => onRowHover(item)}
+                                  onRowClick={() => onRowClick(item)}
+                                  setColumnWidth={fixColumnWidth}
+                                />
+                              </React.Fragment>
+                            )
+                          );
+                        })}
+                      </>
+                    )}
+                  </div>
+                )
+              );
+            })
           : data.map((item) => {
               const top = item.index * rowHeightMode;
               const isVisible =
