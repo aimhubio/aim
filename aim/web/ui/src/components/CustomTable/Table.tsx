@@ -114,7 +114,7 @@ function Table(props) {
 
         setMiddlePaneWindow((mPW) =>
           middlePane
-            .slice(left, right + (mPW.length === 0 ? 10 : 0))
+            .slice(left, right + (mPW.length === 0 ? 50 : 0))
             ?.map((col, i) => ({
               ...col,
               colIndex: left + i,
