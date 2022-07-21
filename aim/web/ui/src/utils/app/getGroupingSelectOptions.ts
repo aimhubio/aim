@@ -46,8 +46,8 @@ export default function getGroupingSelectOptions({
   if (params?.length) {
     const paramsOptions: IGroupingSelectOption[] = params.map((param) => ({
       group: 'run',
-      label: `run.${param}`,
-      value: `run.params.${param}`,
+      label: param[0] === '[' ? `run${param}` : `run.${param}`,
+      value: param[0] === '[' ? `run.params${param}` : `run.params.${param}`,
     }));
 
     options = options.concat(paramsOptions);

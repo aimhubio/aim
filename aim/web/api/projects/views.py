@@ -1,9 +1,9 @@
 import os
-import pytz
+from datetime import timedelta
 from typing import Optional, Tuple
 
 from collections import Counter
-from fastapi import Depends, HTTPException, Query
+from fastapi import Depends, HTTPException, Query, Header
 from aim.web.api.utils import APIRouter  # wrapper for fastapi.APIRouter
 
 from aim.web.configs import AIM_UI_TELEMETRY_KEY
@@ -35,7 +35,8 @@ async def project_api():
 
 
 @projects_router.get('/activity/', response_model=ProjectActivityApiOut)
-async def project_activity_api(factory=Depends(object_factory)):
+async def project_activity_api(x_timezone_offset: int = Header(default=0),
+                               factory=Depends(object_factory)):
     project = Project()
 
     if not project.exists():
@@ -44,7 +45,7 @@ async def project_activity_api(factory=Depends(object_factory)):
     num_runs = 0
     activity_counter = Counter()
     for run in factory.runs():
-        creation_time = run.created_at.replace(tzinfo=pytz.utc)
+        creation_time = run.created_at - timedelta(minutes=x_timezone_offset)
         activity_counter[creation_time.strftime('%Y-%m-%dT%H:00:00')] += 1
         num_runs += 1
 

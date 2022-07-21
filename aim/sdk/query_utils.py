@@ -1,4 +1,5 @@
 import datetime
+import pytz
 
 from typing import Any, Union
 from typing import TYPE_CHECKING
@@ -14,8 +15,7 @@ if TYPE_CHECKING:
 
 
 class RunView:
-
-    def __init__(self, run: 'Run', runs_proxy_cache: dict = None):
+    def __init__(self, run: 'Run', runs_proxy_cache: dict = None, timezone_offset: int = 0):
         self.db = run.repo.structured_db
         self.hash = run.hash
         self.structured_run_cls: type(StructuredObject) = ModelMappedRun
@@ -23,6 +23,7 @@ class RunView:
         self.meta_run_attrs_tree: TreeView = run.meta_run_attrs_tree
         self.run = run
         self.proxy_cache = None
+        self._timezone_offset = timezone_offset
         if runs_proxy_cache is not None:
             if runs_proxy_cache.get(run.hash) is None:
                 runs_proxy_cache[run.hash] = {}
@@ -32,9 +33,16 @@ class RunView:
         if item in ['finalized_at', 'end_time']:
             end_time = self.meta_run_tree['end_time']
             if item == 'finalized_at':
-                return datetime.datetime.fromtimestamp(end_time) if end_time else None
+                if not end_time:
+                    return None
+                else:
+                    return datetime.datetime.fromtimestamp(end_time, tz=pytz.utc).replace(tzinfo=None)\
+                        - datetime.timedelta(minutes=self._timezone_offset)
             else:
                 return end_time
+        if item == 'created_at':
+            return getattr(self.db.caches['runs_cache'][self.hash], item)\
+                - datetime.timedelta(minutes=self._timezone_offset)
         if item in ('active', 'duration'):
             return getattr(self.run, item)
         elif item in self.structured_run_cls.fields():

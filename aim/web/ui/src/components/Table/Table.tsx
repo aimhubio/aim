@@ -90,6 +90,8 @@ const Table = React.forwardRef(function Table(
     disableRowClick = false,
     onToggleColumnsColorScales,
     columnsColorScales,
+    onRowsVisibilityChange,
+    visualizationElementType,
     ...props
   }: ITableProps,
   ref,
@@ -116,7 +118,19 @@ const Table = React.forwardRef(function Table(
   const [isOpenArchiveSelectedPopup, setIsOpenArchiveSelectedPopup] =
     React.useState(false);
   const [tableBulkActionsVisibility, setTableBulkActionsVisibility] =
-    React.useState({ delete: false, archive: false, unarchive: false });
+    React.useState<{
+      delete: boolean;
+      archive: boolean;
+      unarchive: boolean;
+      hideItems: boolean;
+      showItems: boolean;
+    }>({
+      delete: false,
+      archive: false,
+      unarchive: false,
+      hideItems: false,
+      showItems: false,
+    });
   const [listWindow, setListWindow] = React.useState({
     top: 0,
     left: 0,
@@ -541,6 +555,33 @@ const Table = React.forwardRef(function Table(
     setIsOpenUnarchiveSelectedPopup(!isOpenUnarchiveSelectedPopup);
   }
 
+  function onHideSelectedItems() {
+    onBatchRowsVisibilityChange('hide');
+  }
+
+  function onShowSelectedItems() {
+    onBatchRowsVisibilityChange('show');
+  }
+
+  function onBatchRowsVisibilityChange(changeMode: 'hide' | 'show') {
+    let data: any[] = [];
+    const selectedRowsValues = Object.values(selectedRows);
+    selectedRowsValues.forEach((selectedRow: any) => {
+      if (changeMode === 'hide') {
+        if (!selectedRow.isHidden) {
+          data.push(selectedRow.key);
+        }
+      } else {
+        if (selectedRow.isHidden) {
+          data.push(selectedRow.key);
+        }
+      }
+    });
+
+    onRowsVisibilityChange(data);
+    onRowSelect({ actionType: 'removeAll', data: selectedRowsValues });
+  }
+
   React.useEffect(() => {
     if (custom && !!tableContainerRef.current) {
       const windowEdges = calculateWindow({
@@ -629,32 +670,48 @@ const Table = React.forwardRef(function Table(
   }, []);
 
   React.useEffect(() => {
-    const tableBulkActionsVisibility = {
+    const tableBulkActionsVisibility: {
+      delete: boolean;
+      archive: boolean;
+      unarchive: boolean;
+      hideItems: boolean;
+      showItems: boolean;
+    } = {
       delete: false,
       archive: false,
       unarchive: false,
+      hideItems: false,
+      showItems: false,
     };
     const values = Object.values(selectedRows || {});
-    for (let i = 0; i < values.length; i++) {
-      const value: any = values[i];
+    values.forEach((value) => {
       if (
-        tableBulkActionsVisibility.delete &&
-        tableBulkActionsVisibility.archive &&
-        tableBulkActionsVisibility.unarchive
+        !tableBulkActionsVisibility.delete ||
+        !tableBulkActionsVisibility.archive ||
+        !tableBulkActionsVisibility.unarchive ||
+        !tableBulkActionsVisibility.hideItems ||
+        !tableBulkActionsVisibility.showItems
       ) {
-        break;
+        if (value.archived) {
+          tableBulkActionsVisibility.archive = true;
+        } else {
+          tableBulkActionsVisibility.unarchive = true;
+        }
+        if (value.end_time) {
+          tableBulkActionsVisibility.delete = true;
+        }
+        if (onRowsVisibilityChange) {
+          if (value.isHidden) {
+            tableBulkActionsVisibility.showItems = true;
+          } else {
+            tableBulkActionsVisibility.hideItems = true;
+          }
+        }
       }
-      if (value.archived) {
-        tableBulkActionsVisibility.archive = true;
-      } else {
-        tableBulkActionsVisibility.unarchive = true;
-      }
-      if (value.end_time) {
-        tableBulkActionsVisibility.delete = true;
-      }
-    }
+    });
+
     setTableBulkActionsVisibility(tableBulkActionsVisibility);
-  }, [selectedRows]);
+  }, [selectedRows, onRowsVisibilityChange]);
 
   const sortPopoverChanged: boolean = React.useMemo(() => {
     return (
@@ -713,8 +770,9 @@ const Table = React.forwardRef(function Table(
                 )}
                 {onRowsChange && (
                   <HideRowsPopover
-                    hiddenChartRows={hiddenChartRows}
                     toggleRowsVisibility={onRowsChange}
+                    visualizationElementType={visualizationElementType}
+                    data={dataRef.current}
                   />
                 )}
                 {onSort && (
@@ -843,6 +901,36 @@ const Table = React.forwardRef(function Table(
                     <Icon name='unarchive' fontSize={18} />
                     <Text size={14} tint={100}>
                       Unarchive
+                    </Text>
+                  </Button>
+                </div>
+              )}
+              {tableBulkActionsVisibility.hideItems && (
+                <div>
+                  <Button
+                    color='secondary'
+                    type='text'
+                    onClick={onHideSelectedItems}
+                    className='Table__header__item'
+                  >
+                    <Icon name='eye-outline-hide' fontSize={14} />
+                    <Text size={14} tint={100}>
+                      {`Hide ${visualizationElementType}s`}
+                    </Text>
+                  </Button>
+                </div>
+              )}
+              {tableBulkActionsVisibility.showItems && (
+                <div>
+                  <Button
+                    color='secondary'
+                    type='text'
+                    onClick={onShowSelectedItems}
+                    className='Table__header__item'
+                  >
+                    <Icon name='eye-show-outline' fontSize={14} />
+                    <Text size={14} tint={100}>
+                      {`Show ${visualizationElementType}s`}
                     </Text>
                   </Button>
                 </div>

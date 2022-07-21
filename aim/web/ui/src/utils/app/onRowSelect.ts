@@ -10,19 +10,24 @@ import { IModel, State } from 'types/services/models/model';
  * @param {IModel<M extends State>} model - instance of create model
  */
 
-export default function onRowSelect<M extends State>({
+export interface IRowSelectProps {
+  actionType: 'single' | 'selectAll' | 'removeAll';
+  data?: any;
+  model: IModel<State>;
+}
+
+export default function onRowSelect({
   actionType,
   data,
   model,
-}: {
-  actionType: 'single' | 'selectAll' | 'removeAll';
-  data?: any;
-  model: IModel<M>;
-}): any {
+}: IRowSelectProps): any {
   let selectedRows = model.getState()?.selectedRows || {};
   let rawData =
     model.getState()?.rawData?.reduce((acc: any, item: any) => {
-      acc[item.hash] = { runHash: item.hash, ...item.props };
+      acc[item.hash] = {
+        runHash: item.hash,
+        ...item.props,
+      };
       return acc;
     }, {}) || {};
   switch (actionType) {
@@ -32,6 +37,8 @@ export default function onRowSelect<M extends State>({
       } else {
         selectedRows[data.selectKey] = {
           selectKey: data.selectKey,
+          isHidden: data.isHidden,
+          key: data.key,
           ...rawData[sliceRunHash(data.selectKey)],
         };
       }
@@ -42,6 +49,8 @@ export default function onRowSelect<M extends State>({
           if (!selectedRows[item.selectKey]) {
             selectedRows[item.selectKey] = {
               selectKey: item.selectKey,
+              isHidden: item.isHidden,
+              key: item.key,
               ...rawData[sliceRunHash(item.selectKey)],
             };
           }
@@ -55,6 +64,8 @@ export default function onRowSelect<M extends State>({
             if (!selectedRows[item.selectKey]) {
               selectedRows[item.selectKey] = {
                 selectKey: item.selectKey,
+                isHidden: item.isHidden,
+                key: item.key,
                 ...rawData[sliceRunHash(item.selectKey)],
               };
             }

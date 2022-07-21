@@ -63,7 +63,6 @@ $border-radius: 0.2rem;
     }
   }
 }
-
 .Table__pane {
   display: flex;
   width: stretch;
@@ -362,6 +361,10 @@ $border-radius: 0.2rem;
   }
   &.inactive {
     background-color: $cuddle-10;
+    color: $pico-50;
+    .Table__cell__value {
+      color: $pico-50;
+    }
   }
 
   &.selected {
