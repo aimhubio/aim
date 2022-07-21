@@ -232,9 +232,7 @@ function Column({
         )}
         <div
           className='Table__cell Table__cell--header'
-          style={{
-            minWidth: col.minWidth,
-          }}
+          style={{ minWidth: col.minWidth }}
         >
           {multiSelect && col.key === '#' && (
             <Checkbox
@@ -288,7 +286,7 @@ function Column({
                     <div>
                       <Button
                         withOnlyIcon
-                        size='xSmall'
+                        size='xxSmall'
                         onClick={onAnchorClick}
                         color='secondary'
                       >
