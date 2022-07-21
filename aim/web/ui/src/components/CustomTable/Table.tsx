@@ -114,7 +114,7 @@ function Table(props) {
 
         setMiddlePaneWindow((mPW) =>
           middlePane
-            .slice(left, right + (mPW.length === 0 ? 50 : 0))
+            .slice(left, right + (mPW.length === 0 ? 50 : 0)) // calculate first 50 columns widths and lefts on initial render
             ?.map((col, i) => ({
               ...col,
               colIndex: left + i,
