@@ -59,7 +59,7 @@ function ScattersContainer(): React.FunctionComponentElement<React.ReactNode> {
 
   React.useEffect(() => {
     if (tableRef.current && chartPanelRef.current) {
-      setComponentRefs<IScatterAppModelState>({
+      setComponentRefs({
         model: scattersAppModel,
         refElement: {
           tableRef,
@@ -136,8 +136,8 @@ function ScattersContainer(): React.FunctionComponentElement<React.ReactNode> {
         panelResizing={panelResizing}
         scatterPlotData={scattersData?.chartData!}
         chartTitleData={scattersData?.chartTitleData!}
+        tooltip={scattersData?.tooltip!}
         focusedState={scattersData?.config?.chart?.focusedState!}
-        tooltip={scattersData?.config?.chart?.tooltip!}
         trendlineOptions={scattersData?.config?.chart?.trendlineOptions!}
         selectedOptionsData={scattersData?.config?.select!}
         notifyData={scattersData?.notifyData!}
@@ -150,6 +150,7 @@ function ScattersContainer(): React.FunctionComponentElement<React.ReactNode> {
         hideSystemMetrics={scattersData?.config?.table?.hideSystemMetrics!}
         hiddenColumns={scattersData?.config?.table?.hiddenColumns!}
         groupingSelectOptions={scattersData?.groupingSelectOptions!}
+        sortOptions={scattersData?.sortOptions!}
         projectsDataMetrics={projectsData?.metrics!}
         requestStatus={scattersData?.requestStatus!}
         requestProgress={scattersData?.requestProgress!}
@@ -157,6 +158,7 @@ function ScattersContainer(): React.FunctionComponentElement<React.ReactNode> {
         columnsWidths={scattersData?.config?.table?.columnsWidths!}
         selectFormData={scattersData?.selectFormData!}
         columnsOrder={scattersData?.config?.table?.columnsOrder!}
+        sameValueColumns={scattersData?.sameValueColumns!}
         chartPanelOffsetHeight={chartPanelOffsetHeight}
         // methods
         onChangeTooltip={scattersAppModel.onChangeTooltip}
@@ -197,6 +199,7 @@ function ScattersContainer(): React.FunctionComponentElement<React.ReactNode> {
         onRowSelect={scattersAppModel.onRowSelect}
         archiveRuns={scattersAppModel.archiveRuns}
         deleteRuns={scattersAppModel.deleteRuns}
+        onRowsVisibilityChange={scattersAppModel.onRowsVisibilityChange}
       />
     </ErrorBoundary>
   );

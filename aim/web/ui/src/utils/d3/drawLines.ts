@@ -87,6 +87,7 @@ function drawLines(args: IDrawLinesArgs): void {
           (d: IProcessedData) =>
             `Line-Sel-${highlightMode}-${d.selectors?.[highlightMode]}`,
         )
+        .attr('clip-path', `url(#${nameKey}-circles-rect-clip-${index})`)
         .attr('class', 'inProgressLineIndicator')
         .style('stroke', (d: IProcessedData) => d.color)
         .style('fill', (d: IProcessedData) => d.color)

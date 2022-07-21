@@ -27,11 +27,11 @@
   }
   &__small {
     &__title {
-      font-weight: 500;
+      font-weight: $font-500;
       font-size: $text-md;
     }
     &__content {
-      font-weight: 500;
+      font-weight: $font-500;
       font-size: $text-md;
     }
     &__img {
@@ -46,11 +46,11 @@
   }
   &__medium {
     &__title {
-      font-weight: 500;
+      font-weight: $font-500;
       font-size: $text-md;
     }
     &__content {
-      font-weight: 500;
+      font-weight: $font-500;
       font-size: $text-md;
     }
     &__img {
@@ -64,11 +64,11 @@
   }
   &__large {
     &__title {
-      font-weight: 500;
+      font-weight: $font-500;
       font-size: $text-lg;
     }
     &__content {
-      font-weight: 500;
+      font-weight: $font-500;
       font-size: $text-lg;
     }
     &__img {
@@ -82,7 +82,7 @@
   }
   &__xLarge {
     &__title {
-      font-weight: 500;
+      font-weight: $font-500;
       margin-bottom: 1rem;
     }
     &__img {

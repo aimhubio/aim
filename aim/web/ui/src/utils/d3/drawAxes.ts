@@ -75,11 +75,12 @@ function drawAxes(args: IDrawAxesArgs): void {
     const distance = Math.ceil((last - first) / (ticksCount - 1));
     const tickValues: number[] = [];
     for (let i = 0; i < ticksCount; i++) {
-      const lastRounded = Math.floor(last);
       const current = Math.floor(first + i * distance);
-      if (i === ticksCount - 1 && tickValues.indexOf(lastRounded) === -1) {
-        tickValues.push(lastRounded);
-      } else if (current < last) {
+      if (
+        current >= first &&
+        current <= last &&
+        tickValues.indexOf(current) === -1
+      ) {
         tickValues.push(current);
       }
     }
@@ -204,7 +205,7 @@ function drawAxes(args: IDrawAxesArgs): void {
     const { xAxis } = formatXAxisByDefault(args);
     return {
       xAxis,
-      xAxisTitle: _.capitalize(getKeyByAlignment(alignmentConfig)),
+      xAxisTitle: getKeyByAlignment(alignmentConfig),
     };
   }
 

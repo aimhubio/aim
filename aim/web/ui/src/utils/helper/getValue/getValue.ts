@@ -1,4 +1,4 @@
-import { getPathSegments } from 'utils/helper';
+import stringToPath from 'utils/stringToPath';
 /**
  * [Get value from nested object by passed path](https://github.com/sindresorhus/dot-prop/blob/master/index.js)
  *
@@ -23,17 +23,11 @@ export function getValue(
   }
 
   let pathArray;
-  if (
-    typeof path === 'string' &&
-    Object.prototype.propertyIsEnumerable.call(object, path)
-  ) {
-    pathArray = [path];
-  } else if (Array.isArray(path)) {
+  if (Array.isArray(path)) {
     pathArray = path;
   } else {
-    pathArray = getPathSegments(path);
+    pathArray = stringToPath(path);
   }
-
   for (let i = 0; i < pathArray.length; i++) {
     if (
       typeof object !== 'object' ||

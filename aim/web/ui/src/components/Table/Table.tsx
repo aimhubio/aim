@@ -40,6 +40,7 @@ const Table = React.forwardRef(function Table(
     onManageColumns,
     onColumnsVisibilityChange,
     onTableDiffShow,
+    sameValueColumns,
     onSort,
     onRowsChange,
     onExport,
@@ -89,6 +90,8 @@ const Table = React.forwardRef(function Table(
     disableRowClick = false,
     onToggleColumnsColorScales,
     columnsColorScales,
+    onRowsVisibilityChange,
+    visualizationElementType,
     ...props
   }: ITableProps,
   ref,
@@ -115,10 +118,23 @@ const Table = React.forwardRef(function Table(
   const [isOpenArchiveSelectedPopup, setIsOpenArchiveSelectedPopup] =
     React.useState(false);
   const [tableBulkActionsVisibility, setTableBulkActionsVisibility] =
-    React.useState({ delete: false, archive: false, unarchive: false });
+    React.useState<{
+      delete: boolean;
+      archive: boolean;
+      unarchive: boolean;
+      hideItems: boolean;
+      showItems: boolean;
+    }>({
+      delete: false,
+      archive: false,
+      unarchive: false,
+      hideItems: false,
+      showItems: false,
+    });
   const [listWindow, setListWindow] = React.useState({
     left: 0,
     width: 0,
+    availableSpace: 0,
   });
 
   let groups = !Array.isArray(rowData);
@@ -498,9 +514,24 @@ const Table = React.forwardRef(function Table(
   }
 
   function setListWindowMeasurements() {
+    const leftPane =
+      tableContainerRef.current?.querySelector('.Table__pane--left');
+    const rightPane = tableContainerRef.current?.querySelector(
+      '.Table__pane--right',
+    );
+    let availableSpace = 0;
+
+    if (leftPane || rightPane) {
+      availableSpace =
+        tableContainerRef.current.offsetWidth -
+        (leftPane?.offsetWidth ?? 0) -
+        (rightPane?.offsetWidth ?? 0);
+    }
+
     setListWindow({
       left: tableContainerRef.current?.scrollLeft,
       width: tableContainerRef.current?.offsetWidth,
+      availableSpace,
     });
   }
 
@@ -514,6 +545,33 @@ const Table = React.forwardRef(function Table(
 
   function onToggleUnarchivePopup() {
     setIsOpenUnarchiveSelectedPopup(!isOpenUnarchiveSelectedPopup);
+  }
+
+  function onHideSelectedItems() {
+    onBatchRowsVisibilityChange('hide');
+  }
+
+  function onShowSelectedItems() {
+    onBatchRowsVisibilityChange('show');
+  }
+
+  function onBatchRowsVisibilityChange(changeMode: 'hide' | 'show') {
+    let data: any[] = [];
+    const selectedRowsValues = Object.values(selectedRows);
+    selectedRowsValues.forEach((selectedRow: any) => {
+      if (changeMode === 'hide') {
+        if (!selectedRow.isHidden) {
+          data.push(selectedRow.key);
+        }
+      } else {
+        if (selectedRow.isHidden) {
+          data.push(selectedRow.key);
+        }
+      }
+    });
+
+    onRowsVisibilityChange(data);
+    onRowSelect({ actionType: 'removeAll', data: selectedRowsValues });
   }
 
   React.useEffect(() => {
@@ -604,32 +662,48 @@ const Table = React.forwardRef(function Table(
   }, []);
 
   React.useEffect(() => {
-    const tableBulkActionsVisibility = {
+    const tableBulkActionsVisibility: {
+      delete: boolean;
+      archive: boolean;
+      unarchive: boolean;
+      hideItems: boolean;
+      showItems: boolean;
+    } = {
       delete: false,
       archive: false,
       unarchive: false,
+      hideItems: false,
+      showItems: false,
     };
     const values = Object.values(selectedRows || {});
-    for (let i = 0; i < values.length; i++) {
-      const value: any = values[i];
+    values.forEach((value) => {
       if (
-        tableBulkActionsVisibility.delete &&
-        tableBulkActionsVisibility.archive &&
-        tableBulkActionsVisibility.unarchive
+        !tableBulkActionsVisibility.delete ||
+        !tableBulkActionsVisibility.archive ||
+        !tableBulkActionsVisibility.unarchive ||
+        !tableBulkActionsVisibility.hideItems ||
+        !tableBulkActionsVisibility.showItems
       ) {
-        break;
+        if (value.archived) {
+          tableBulkActionsVisibility.archive = true;
+        } else {
+          tableBulkActionsVisibility.unarchive = true;
+        }
+        if (value.end_time) {
+          tableBulkActionsVisibility.delete = true;
+        }
+        if (onRowsVisibilityChange) {
+          if (value.isHidden) {
+            tableBulkActionsVisibility.showItems = true;
+          } else {
+            tableBulkActionsVisibility.hideItems = true;
+          }
+        }
       }
-      if (value.archived) {
-        tableBulkActionsVisibility.archive = true;
-      } else {
-        tableBulkActionsVisibility.unarchive = true;
-      }
-      if (value.end_time) {
-        tableBulkActionsVisibility.delete = true;
-      }
-    }
+    });
+
     setTableBulkActionsVisibility(tableBulkActionsVisibility);
-  }, [selectedRows]);
+  }, [selectedRows, onRowsVisibilityChange]);
 
   const sortPopoverChanged: boolean = React.useMemo(() => {
     return (
@@ -645,6 +719,20 @@ const Table = React.forwardRef(function Table(
     sortPopoverChanged,
   );
 
+  const isDiffButtonDisabled: boolean = React.useMemo(() => {
+    if (sameValueColumns) {
+      let filteredColumns: string[] = sameValueColumns?.filter(
+        (value) =>
+          !TABLE_DEFAULT_CONFIG[appName].nonHidableColumns.has(value) &&
+          !hiddenColumns?.includes(value),
+      );
+      return !filteredColumns.length;
+    }
+  }, [appName, sameValueColumns, hiddenColumns]);
+
+  // The right check is !props.isInfiniteLoading && (isLoading || isNil(rowData))
+  // but after setting isInfiniteLoading to true, the rowData becomes null, unnecessary renders happening
+  // @TODO sanitize this point
   return (
     <ErrorBoundary>
       {!isEmpty(rowData) ? (
@@ -657,6 +745,7 @@ const Table = React.forwardRef(function Table(
                   onTableResizeModeChange={onTableResizeModeChange}
                 />
               )}
+
               <div className='flex fac Table__header__buttons'>
                 {onManageColumns && (
                   <ManageColumnsPopover
@@ -668,14 +757,14 @@ const Table = React.forwardRef(function Table(
                     hideSystemMetrics={hideSystemMetrics}
                     onManageColumns={onManageColumns}
                     onColumnsVisibilityChange={onColumnsVisibilityChange}
-                    onTableDiffShow={onTableDiffShow}
                     appName={appName}
                   />
                 )}
                 {onRowsChange && (
                   <HideRowsPopover
-                    hiddenChartRows={hiddenChartRows}
                     toggleRowsVisibility={onRowsChange}
+                    visualizationElementType={visualizationElementType}
+                    data={dataRef.current}
                   />
                 )}
                 {onSort && (
@@ -723,12 +812,22 @@ const Table = React.forwardRef(function Table(
                   />
                 )}
               </div>
+              {onTableDiffShow && (
+                <Button
+                  size='small'
+                  variant='outlined'
+                  className='Table__header__item--diffBtn'
+                  disabled={isDiffButtonDisabled}
+                  onClick={onTableDiffShow}
+                >
+                  Show Table Diff
+                </Button>
+              )}
               {onExport && (
                 <div className='fac'>
                   <Button
                     fullWidth
                     variant='outlined'
-                    color='primary'
                     size='small'
                     onClick={onExport}
                     startIcon={<Icon fontSize={14} name='download' />}
@@ -794,6 +893,36 @@ const Table = React.forwardRef(function Table(
                     <Icon name='unarchive' fontSize={18} />
                     <Text size={14} tint={100}>
                       Unarchive
+                    </Text>
+                  </Button>
+                </div>
+              )}
+              {tableBulkActionsVisibility.hideItems && (
+                <div>
+                  <Button
+                    color='secondary'
+                    type='text'
+                    onClick={onHideSelectedItems}
+                    className='Table__header__item'
+                  >
+                    <Icon name='eye-outline-hide' fontSize={14} />
+                    <Text size={14} tint={100}>
+                      {`Hide ${visualizationElementType}s`}
+                    </Text>
+                  </Button>
+                </div>
+              )}
+              {tableBulkActionsVisibility.showItems && (
+                <div>
+                  <Button
+                    color='secondary'
+                    type='text'
+                    onClick={onShowSelectedItems}
+                    className='Table__header__item'
+                  >
+                    <Icon name='eye-show-outline' fontSize={14} />
+                    <Text size={14} tint={100}>
+                      {`Show ${visualizationElementType}s`}
                     </Text>
                   </Button>
                 </div>

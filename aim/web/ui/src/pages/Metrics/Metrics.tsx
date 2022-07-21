@@ -13,8 +13,13 @@ import ProgressBar from 'components/ProgressBar/ProgressBar';
 
 import pageTitlesEnum from 'config/pageTitles/pageTitles';
 import { ResizeModeEnum } from 'config/enums/tableEnums';
-import { RowHeightSize } from 'config/table/tableConfigs';
-import GroupingPopovers from 'config/grouping/GroupingPopovers';
+import {
+  RowHeightSize,
+  VisualizationElementEnum,
+} from 'config/table/tableConfigs';
+import GroupingPopovers, {
+  GroupNameEnum,
+} from 'config/grouping/GroupingPopovers';
 import { RequestStatusEnum } from 'config/enums/requestStatusEnum';
 import {
   IllustrationsEnum,
@@ -43,6 +48,7 @@ function Metrics(
     return (props.lineChartData || []).map(
       (chartData: ILine[], index: number) => ({
         axesScaleType: props.axesScaleType,
+        axesScaleRange: props.axesScaleRange,
         curveInterpolation: props.curveInterpolation,
         ignoreOutliers: props.ignoreOutliers,
         highlightMode: props.highlightMode,
@@ -68,6 +74,7 @@ function Metrics(
     props.aggregationConfig,
     props.alignmentConfig,
     props.onZoomChange,
+    props.axesScaleRange,
   ]);
 
   return (
@@ -101,9 +108,9 @@ function Metrics(
               <Grouping
                 groupingPopovers={GroupingPopovers.filter(
                   (p) =>
-                    p.groupName === 'color' ||
-                    p.groupName === 'stroke' ||
-                    p.groupName === 'chart',
+                    p.groupName === GroupNameEnum.COLOR ||
+                    p.groupName === GroupNameEnum.STROKE ||
+                    p.groupName === GroupNameEnum.CHART,
                 )}
                 isDisabled={isProgressBarVisible}
                 groupingData={props.groupingData}
@@ -177,6 +184,7 @@ function Metrics(
                             highlightMode={props.highlightMode}
                             aggregationConfig={props.aggregationConfig}
                             axesScaleType={props.axesScaleType}
+                            axesScaleRange={props.axesScaleRange}
                             alignmentConfig={props.alignmentConfig}
                             onChangeTooltip={props.onChangeTooltip}
                             onIgnoreOutliersChange={
@@ -188,6 +196,9 @@ function Metrics(
                             onSmoothingChange={props.onSmoothingChange}
                             onAggregationConfigChange={
                               props.onAggregationConfigChange
+                            }
+                            onAxesScaleRangeChange={
+                              props.onAxesScaleRangeChange
                             }
                             onDensityTypeChange={props.onDensityTypeChange}
                             onAlignmentTypeChange={props.onAlignmentTypeChange}
@@ -234,7 +245,7 @@ function Metrics(
                               ? 'medium'
                               : 'large'
                           }
-                          sortOptions={props.groupingSelectOptions}
+                          sortOptions={props.sortOptions}
                           sortFields={props.sortFields}
                           hiddenRows={props.hiddenMetrics}
                           hiddenColumns={props.hiddenColumns}
@@ -245,6 +256,7 @@ function Metrics(
                           appName={AppNameEnum.METRICS}
                           hiddenChartRows={props.lineChartData?.length === 0}
                           columnsOrder={props.columnsOrder}
+                          sameValueColumns={props?.sameValueColumns!}
                           // Table actions
                           onSort={props.onSortChange}
                           onSortReset={props.onSortReset}
@@ -265,7 +277,11 @@ function Metrics(
                           onRowSelect={props.onRowSelect}
                           archiveRuns={props.archiveRuns}
                           deleteRuns={props.deleteRuns}
+                          onRowsVisibilityChange={props.onRowsVisibilityChange}
                           focusedState={props.focusedState}
+                          visualizationElementType={
+                            VisualizationElementEnum.LINE
+                          }
                         />
                       </ErrorBoundary>
                     )}

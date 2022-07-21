@@ -241,13 +241,9 @@ function getMetricsTableColumns(
   ].concat(
     paramColumns.map((param) => {
       const paramKey = `run.params.${param}`;
-      let index = -1;
-      const sortItem: SortField | undefined = sortFields?.find((value, i) => {
-        if (value.value === paramKey) {
-          index = i;
-        }
-        return value.value === paramKey;
-      });
+      const sortItemIndex: number =
+        sortFields?.findIndex((value: SortField) => value.value === paramKey) ??
+        -1;
       return {
         key: param,
         content: (
@@ -258,25 +254,29 @@ function getMetricsTableColumns(
                 onSort={() =>
                   onSort({
                     sortFields,
-                    index,
+                    index: sortItemIndex,
                     field:
-                      index === -1
+                      sortItemIndex === -1
                         ? groupingSelectOptions.find(
                             (value) => value.value === paramKey,
                           )
-                        : sortItem,
+                        : sortFields?.[sortItemIndex],
                     actionType:
-                      sortItem?.order === 'desc'
+                      sortFields?.[sortItemIndex]?.order === 'desc'
                         ? SortActionTypes.DELETE
                         : SortActionTypes.ORDER_TABLE_TRIGGER,
                   })
                 }
-                sort={!_.isNil(sortItem) ? sortItem.order : null}
+                sort={
+                  !_.isNil(sortFields?.[sortItemIndex])
+                    ? sortFields?.[sortItemIndex]?.order ?? null
+                    : null
+                }
               />
             )}
           </span>
         ),
-        topHeader: 'Params',
+        topHeader: 'Run Params',
         pin: order?.left?.includes(param)
           ? 'left'
           : order?.right?.includes(param)
@@ -485,6 +485,7 @@ function metricsTableRowRenderer(
             run={rowData.run}
             runHash={rowData.hash}
             active={rowData.active}
+            hidden={rowData.isHidden}
           />
         ),
       },
@@ -499,6 +500,7 @@ function metricsTableRowRenderer(
             size='xSmall'
             color={COLORS[0][0]}
             label={item || 'Empty Context'}
+            disabled={rowData.isHidden}
           />
         )),
       },

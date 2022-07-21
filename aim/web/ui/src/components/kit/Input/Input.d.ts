@@ -1,3 +1,5 @@
+import React from 'react';
+
 import { TextFieldProps, TooltipProps } from '@material-ui/core';
 
 import { IconName } from 'components/kit/Icon';
@@ -42,8 +44,11 @@ export type IInputProps = Override<
       value: any,
       metadata: IValidationMetadata,
     ) => void;
-    restInputProps?: object;
     tooltipPlacement?: TooltipProps['placement'];
     wrapperClassName?: string;
+    isRequiredNumberValue?: boolean;
+    isNumberValueFloat?: boolean;
+    isValid?: boolean;
+    debounceDelay?: number;
   }
 >;

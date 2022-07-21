@@ -72,18 +72,18 @@
   align-items: center;
   justify-content: center;
 
+  &.opened {
+    .icon-arrow-left {
+      opacity: 1;
+      transform: rotate(180deg);
+      color: $primary-color;
+    }
+  }
+
   .icon-arrow-left {
     opacity: 0;
     font-size: 0.45rem;
     transition: all 0.18s ease-out;
     color: $pico-30;
-  }
-}
-
-.Controls__anchor__arrow--opened {
-  .icon-arrow-left {
-    opacity: 1;
-    transform: rotate(180deg);
-    color: $primary-color;
   }
 }

@@ -7,7 +7,7 @@ import {
 } from 'types/services/models/imagesExplore/imagesExploreAppModel';
 import {
   IFocusedState,
-  IPanelTooltip,
+  ITooltip,
 } from 'types/services/models/metrics/metricsAppModel';
 
 export interface IMediaListProps {
@@ -18,7 +18,7 @@ export interface IMediaListProps {
   mediaItemHeight: number;
   focusedState: IFocusedState;
   additionalProperties?: IMediaPanelProps['additionalProperties'];
-  tooltip?: IPanelTooltip;
+  tooltip?: ITooltip;
   mediaType: MediaTypeEnum;
   selectOptions: IGroupingSelectOption[];
 }
@@ -29,7 +29,7 @@ export interface IImageBoxProps {
   index: number;
   mediaItemHeight: number;
   focusedState: IFocusedState;
-  tooltip?: IPanelTooltip;
+  tooltip?: ITooltip;
   additionalProperties?: IMediaPanelProps['additionalProperties'];
   style: { [key: string]: any };
   selectOptions: IGroupingSelectOption[];

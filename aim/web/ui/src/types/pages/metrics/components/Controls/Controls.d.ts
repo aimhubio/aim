@@ -8,10 +8,11 @@ import { DensityOptions } from 'config/enums/densityEnum';
 import { ISelectOption } from 'services/models/explorer/createAppModel';
 
 import { IAxesScaleState } from 'types/components/AxesScalePopover/AxesScalePopover';
+import { IAxesScaleRange } from 'types/components/AxesPropsPopover/AxesPropsPopover';
 import {
   IAggregationConfig,
   IAlignmentConfig,
-  IPanelTooltip,
+  ITooltip,
   IChartZoom,
   IGroupingSelectOption,
 } from 'types/services/models/metrics/metricsAppModel';
@@ -25,19 +26,20 @@ export interface IControlProps {
   chartType: ChartTypeEnum;
   data: ILine[][] | any;
   selectOptions: IGroupingSelectOption[];
-  tooltip: IPanelTooltip;
+  tooltip?: ITooltip;
   ignoreOutliers: boolean;
   zoom?: IChartZoom;
   highlightMode: HighlightEnum;
   aggregationConfig: IAggregationConfig;
   axesScaleType: IAxesScaleState;
+  axesScaleRange: IAxesScaleRange;
   smoothingAlgorithm: SmoothingAlgorithmEnum;
   smoothingFactor: number;
   curveInterpolation: CurveEnum;
   alignmentConfig: IAlignmentConfig;
   densityType: DensityOptions;
   selectFormOptions: ISelectOption[];
-  onChangeTooltip: (tooltip: Partial<IPanelTooltip>) => void;
+  onChangeTooltip: (tooltip: Partial<ITooltip>) => void;
   onIgnoreOutliersChange: () => void;
   onHighlightModeChange: (mode: number) => void;
   onDensityTypeChange: (type: DensityOptions) => void;
@@ -49,4 +51,5 @@ export interface IControlProps {
   onZoomChange?: (zoom: Partial<IChartZoom>) => void;
   onAlignmentTypeChange: IMetricProps['onAlignmentTypeChange'];
   onAlignmentMetricChange: IMetricProps['onAlignmentMetricChange'];
+  onAxesScaleRangeChange: IMetricProps['onAxesScaleRangeChange'];
 }
