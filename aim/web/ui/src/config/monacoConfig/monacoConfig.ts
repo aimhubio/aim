@@ -75,8 +75,9 @@ export const getSuggestionsByExplorer = (
       experiment: '',
       tags: '',
       archived: false,
-      creation_time: 0,
-      end_time: 0,
+      created_at: 0,
+      finalized_at: 0,
+      duration: 0,
       ...data.params,
     },
   };

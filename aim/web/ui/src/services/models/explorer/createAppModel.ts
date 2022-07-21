@@ -763,6 +763,7 @@ function createAppModel(appConfig: IAppInitialConfig) {
       let rowIndex = 0;
       const sameValueColumns: string[] = [];
 
+      const columnsFlattenValues: { [key: string]: Set<any> } = {};
       processedData.forEach(
         (metricsCollection: IMetricsCollection<IMetric>) => {
           const groupKey = metricsCollection.key;
@@ -994,9 +995,10 @@ function createAppModel(appConfig: IAppInitialConfig) {
           });
 
           for (let columnKey in columnsValues) {
-            if (columnsValues[columnKey].length === 1) {
-              sameValueColumns.push(columnKey);
-            }
+            columnsFlattenValues[columnKey] = new Set([
+              ...(columnsFlattenValues[columnKey] || []),
+              ...(columnsValues[columnKey] || []),
+            ]);
 
             if (metricsCollection.config !== null) {
               rows[groupKey!].data[columnKey] =
@@ -1017,6 +1019,11 @@ function createAppModel(appConfig: IAppInitialConfig) {
           }
         },
       );
+      for (let columnKey in columnsFlattenValues) {
+        if (columnsFlattenValues[columnKey].size === 1) {
+          sameValueColumns.push(columnKey);
+        }
+      }
       return { rows, sameValueColumns };
     }
 
@@ -2705,7 +2712,7 @@ function createAppModel(appConfig: IAppInitialConfig) {
         const rows: any = processedData[0]?.config !== null ? {} : [];
         let rowIndex = 0;
         const sameValueColumns: string[] = [];
-
+        const columnsFlattenValues: { [key: string]: Set<any> } = {};
         processedData.forEach((metricsCollection: any) => {
           const groupKey = metricsCollection.key;
           const columnsValues: { [key: string]: string[] } = {};
@@ -2812,9 +2819,10 @@ function createAppModel(appConfig: IAppInitialConfig) {
           });
 
           for (let columnKey in columnsValues) {
-            if (columnsValues[columnKey].length === 1) {
-              sameValueColumns.push(columnKey);
-            }
+            columnsFlattenValues[columnKey] = new Set([
+              ...(columnsFlattenValues[columnKey] || []),
+              ...(columnsValues[columnKey] || []),
+            ]);
 
             if (metricsCollection.config !== null) {
               rows[groupKey!].data[columnKey] =
@@ -2832,7 +2840,11 @@ function createAppModel(appConfig: IAppInitialConfig) {
             }
           }
         });
-
+        for (let columnKey in columnsFlattenValues) {
+          if (columnsFlattenValues[columnKey].size === 1) {
+            sameValueColumns.push(columnKey);
+          }
+        }
         return { rows, sameValueColumns };
       }
 
@@ -3443,12 +3455,12 @@ function createAppModel(appConfig: IAppInitialConfig) {
 
         let rowIndex = 0;
         const sameValueColumns: string[] = [];
+        const columnsFlattenValues: { [key: string]: Set<any> } = {};
 
         processedData.forEach(
           (metricsCollection: IMetricsCollection<IParam>) => {
             const groupKey = metricsCollection.key;
             const columnsValues: { [key: string]: string[] } = {};
-
             if (metricsCollection.config !== null) {
               const groupConfigData: { [key: string]: string } = {};
               for (let key in metricsCollection.config) {
@@ -3608,9 +3620,10 @@ function createAppModel(appConfig: IAppInitialConfig) {
             });
 
             for (let columnKey in columnsValues) {
-              if (columnsValues[columnKey].length === 1) {
-                sameValueColumns.push(columnKey);
-              }
+              columnsFlattenValues[columnKey] = new Set([
+                ...(columnsFlattenValues[columnKey] || []),
+                ...(columnsValues[columnKey] || []),
+              ]);
 
               if (metricsCollection.config !== null) {
                 rows[groupKey!].data[columnKey] =
@@ -3632,6 +3645,11 @@ function createAppModel(appConfig: IAppInitialConfig) {
             }
           },
         );
+        for (let columnKey in columnsFlattenValues) {
+          if (columnsFlattenValues[columnKey].size === 1) {
+            sameValueColumns.push(columnKey);
+          }
+        }
         return { rows, sameValueColumns };
       }
 
@@ -5130,6 +5148,7 @@ function createAppModel(appConfig: IAppInitialConfig) {
 
         let rowIndex = 0;
         const sameValueColumns: string[] = [];
+        const columnsFlattenValues: { [key: string]: Set<any> } = {};
 
         processedData.forEach(
           (metricsCollection: IMetricsCollection<IParam>) => {
@@ -5295,9 +5314,10 @@ function createAppModel(appConfig: IAppInitialConfig) {
             });
 
             for (let columnKey in columnsValues) {
-              if (columnsValues[columnKey].length === 1) {
-                sameValueColumns.push(columnKey);
-              }
+              columnsFlattenValues[columnKey] = new Set([
+                ...(columnsFlattenValues[columnKey] || []),
+                ...(columnsValues[columnKey] || []),
+              ]);
 
               if (metricsCollection.config !== null) {
                 rows[groupKey!].data[columnKey] =
@@ -5319,6 +5339,11 @@ function createAppModel(appConfig: IAppInitialConfig) {
             }
           },
         );
+        for (let columnKey in columnsFlattenValues) {
+          if (columnsFlattenValues[columnKey].size === 1) {
+            sameValueColumns.push(columnKey);
+          }
+        }
         return { rows, sameValueColumns };
       }
 

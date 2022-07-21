@@ -1,9 +1,11 @@
+import asyncio
 import time
 
 from typing import Iterable, Iterator, List, Tuple, Union, Optional
 from typing import TYPE_CHECKING
 
 from aim.web.api.runs.utils import (
+    ASYNC_SLEEP_INTERVAL,
     PROGRESS_KEY_SUFFIX,
     IndexRange,
     collect_streamable_data,
@@ -125,44 +127,51 @@ class CustomObjectApi:
                 }
             }
             return collect_streamable_data(encode_tree(run_dict))
-
-        last_reported_progress_time = time.time()
-        run_info = None
-        progress_reports_sent = 0
-        for run_info in self.trace_cache.values():
-            if report_progress and time.time() - last_reported_progress_time > AIM_PROGRESS_REPORT_INTERVAL:
-                yield collect_streamable_data(encode_tree(
-                    {f'progress_{progress_reports_sent}_{PROGRESS_KEY_SUFFIX}': run_info['progress']}
-                ))
-                yield collect_streamable_data(encode_tree({f'progress_{progress_reports_sent}':
-                                                           run_info['progress']}))
-                progress_reports_sent += 1
-                last_reported_progress_time = time.time()
-            if run_info.get('traces') and run_info.get('run'):
-                traces_list = []
-                for trace in run_info['traces']:
-                    traces_list.append(self._get_trace_info(trace, True, True))
-                yield _pack_run_data(run_info['run'], traces_list)
-                if report_progress:
+        try:
+            last_reported_progress_time = time.time()
+            run_info = None
+            progress_reports_sent = 0
+            for run_info in self.trace_cache.values():
+                await asyncio.sleep(ASYNC_SLEEP_INTERVAL)
+                if report_progress and time.time() - last_reported_progress_time > AIM_PROGRESS_REPORT_INTERVAL:
+                    yield collect_streamable_data(encode_tree(
+                        {f'progress_{progress_reports_sent}_{PROGRESS_KEY_SUFFIX}': run_info['progress']}
+                    ))
                     yield collect_streamable_data(encode_tree({f'progress_{progress_reports_sent}':
                                                                run_info['progress']}))
                     progress_reports_sent += 1
                     last_reported_progress_time = time.time()
+                if run_info.get('traces') and run_info.get('run'):
+                    traces_list = []
+                    for trace in run_info['traces']:
+                        traces_list.append(self._get_trace_info(trace, True, True))
+                    yield _pack_run_data(run_info['run'], traces_list)
+                    if report_progress:
+                        yield collect_streamable_data(encode_tree({f'progress_{progress_reports_sent}':
+                                                                   run_info['progress']}))
+                        progress_reports_sent += 1
+                        last_reported_progress_time = time.time()
 
-        if report_progress and run_info:
-            yield collect_streamable_data(encode_tree({f'progress_{progress_reports_sent}':
-                                                       run_info['progress']}))
+            if report_progress and run_info:
+                yield collect_streamable_data(encode_tree({f'progress_{progress_reports_sent}':
+                                                           run_info['progress']}))
+        except asyncio.CancelledError:
+            pass
 
     async def requested_traces_streamer(self) -> List[dict]:
-        for run_info in self.trace_cache.values():
-            for trace in run_info['traces']:
-                trace_dict = self._get_trace_info(trace, False, False)
-                trace_dict['record_range_used'] = self.record_range
-                trace_dict['record_range_total'] = self.total_record_range
-                if self.use_list:
-                    trace_dict['index_range'] = self.index_range
-                    trace_dict['index_range_total'] = self.total_index_range
-                yield collect_streamable_data(encode_tree(trace_dict))
+        try:
+            for run_info in self.trace_cache.values():
+                await asyncio.sleep(ASYNC_SLEEP_INTERVAL)
+                for trace in run_info['traces']:
+                    trace_dict = self._get_trace_info(trace, False, False)
+                    trace_dict['record_range_used'] = self.record_range
+                    trace_dict['record_range_total'] = self.total_record_range
+                    if self.use_list:
+                        trace_dict['index_range'] = self.index_range
+                        trace_dict['index_range_total'] = self.total_index_range
+                    yield collect_streamable_data(encode_tree(trace_dict))
+        except asyncio.CancelledError:
+            pass
 
     def _get_trace_info(self, trace: Sequence, include_epochs: bool, include_timestamps: bool) -> dict:
         steps = []
