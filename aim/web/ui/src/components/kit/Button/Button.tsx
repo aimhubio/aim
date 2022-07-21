@@ -9,6 +9,7 @@ import { IButtonProps } from '.';
 import './Button.scss';
 
 const sizes = {
+  xxSmall: '1.25rem',
   xSmall: '1.5rem',
   small: '1.75rem',
   medium: '2rem',
@@ -16,6 +17,7 @@ const sizes = {
 };
 
 const fontSizes = {
+  xxSmall: '0.625rem',
   xSmall: '0.75rem',
   small: '0.875rem',
   medium: '0.875rem',
@@ -23,6 +25,7 @@ const fontSizes = {
 };
 
 const withOnlyIconSizes = {
+  xxSmall: '1.25rem',
   xSmall: '1.5rem',
   small: '1.75rem',
   medium: '2rem',
@@ -30,6 +33,7 @@ const withOnlyIconSizes = {
 };
 
 const minWidthSizes = {
+  xxSmall: 'auto',
   xSmall: 'auto',
   small: '4.375rem',
   medium: '4.375rem',
@@ -37,10 +41,19 @@ const minWidthSizes = {
 };
 
 const paddingSizes = {
+  xxSmall: '0.125rem 0.5rem',
   xSmall: '0.25rem 0.625rem',
   small: '0.5rem 1.25rem',
   medium: '0.5rem 1.25rem',
   large: '0.5rem 1.25rem',
+};
+
+const borderRadiusSizes = {
+  xxSmall: '0.25rem',
+  xSmall: '0.25rem',
+  small: '0.25rem',
+  medium: '0.375rem',
+  large: '0.5rem',
 };
 
 function Button({
@@ -51,13 +64,13 @@ function Button({
   ...rest
 }: IButtonProps): React.FunctionComponentElement<React.ReactNode> {
   const styleOverrides = {
-    borderRadius: '0.375rem',
+    borderRadius: borderRadiusSizes[size || 'medium'],
     padding: withOnlyIcon ? '0.25rem' : paddingSizes[size || 'medium'],
     fontSize: fontSizes[size || 'medium'],
     height: withOnlyIcon
       ? withOnlyIconSizes[size || 'medium']
       : sizes[size || 'medium'],
-    minWidth: withOnlyIcon ? '1.5rem' : minWidthSizes[size || 'medium'],
+    minWidth: withOnlyIcon ? '1.25rem' : minWidthSizes[size || 'medium'],
     ...(withOnlyIcon && { width: withOnlyIconSizes[size || 'medium'] }),
   };
 
