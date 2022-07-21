@@ -15,18 +15,35 @@ import { processDurationTime } from 'utils/processDurationTime';
 function ArchiveModal({
   opened,
   onClose,
-  selectedRows,
+  selectedRows = {},
   archiveMode,
   onRowSelect,
   archiveRuns,
-}: any): React.FunctionComponentElement<React.ReactNode> {
-  const archivedText = archiveMode ? 'archive' : 'unarchive';
-  let runsArchiveRequest: any = null;
-  const [data, setData] = React.useState<any[]>([]);
-  const [disabledData, setDisabledData] = React.useState<any[]>([]);
+}: {
+  opened: boolean;
+  onClose: () => void;
+  selectedRows: { [key: string]: any };
+  archiveMode: boolean;
+  onRowSelect: ({
+    actionType,
+    data,
+  }: {
+    actionType: 'single' | 'selectAll' | 'removeAll';
+    data?: any;
+  }) => {
+    [key: string]: any;
+  };
+  archiveRuns: (
+    ids: string[],
+    archived: boolean,
+  ) => {
+    call: () => Promise<any>;
+    abort: () => void;
+  };
+}): React.FunctionComponentElement<React.ReactNode> {
   const tableRef = React.useRef<any>({});
   const disabledTableRef = React.useRef<any>({});
-  const [dateNow, setDateNow] = React.useState(Date.now());
+  const archivedText = archiveMode ? 'archive' : 'unarchive';
 
   const tableColumns = [
     {
@@ -125,19 +142,11 @@ function ArchiveModal({
     },
   ];
 
-  React.useEffect(() => {
-    setDateNow(Date.now());
-    return () => {
-      runsArchiveRequest?.abort();
-    };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
-
-  React.useEffect(() => {
+  const { data, disabledData } = React.useMemo(() => {
     let archivedList: any[] = [];
     let unarchivedList: any[] = [];
     const runHashList: string[] = [];
-    Object.values(selectedRows || {}).forEach((selectedRow: any) => {
+    Object.values(selectedRows).forEach((selectedRow: any) => {
       if (!runHashList.includes(selectedRow.runHash)) {
         runHashList.push(selectedRow.runHash);
         const rowData = {
@@ -146,7 +155,7 @@ function ArchiveModal({
             DATE_WITH_SECONDS,
           )} • ${processDurationTime(
             selectedRow?.creation_time * 1000,
-            selectedRow?.end_time ? selectedRow?.end_time * 1000 : dateNow,
+            selectedRow?.end_time ? selectedRow?.end_time * 1000 : Date.now(),
           )}`,
           experiment: selectedRow?.experiment?.name ?? 'default',
           name: selectedRow?.name ?? '-',
@@ -167,98 +176,100 @@ function ArchiveModal({
     });
     archivedList = _.orderBy(archivedList, ['creationTime'], ['desc']);
     unarchivedList = _.orderBy(unarchivedList, ['creationTime'], ['desc']);
-    setData(archiveMode ? archivedList : unarchivedList);
-    setDisabledData(!archiveMode ? archivedList : unarchivedList);
     tableRef.current?.updateData?.({
       newData: archiveMode ? archivedList : unarchivedList,
     });
     disabledTableRef.current?.updateData?.({
       newData: !archiveMode ? archivedList : unarchivedList,
     });
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [selectedRows]);
+    return {
+      data: archiveMode ? archivedList : unarchivedList,
+      disabledData: !archiveMode ? archivedList : unarchivedList,
+    };
+  }, [selectedRows, archiveMode]);
 
   function onArchive() {
     const ids = data.map((item: any) => item.runHash);
-    runsArchiveRequest = archiveRuns(ids, archiveMode);
-    runsArchiveRequest.call().then(() => onClose());
+    archiveRuns(ids, archiveMode)
+      .call()
+      .then(() => onClose());
   }
 
-  return (
-    opened && (
-      <Modal
-        open={opened}
-        onClose={onClose}
-        onOk={onArchive}
-        cancelButtonText='Cancel'
-        okButtonText={archiveMode ? 'Archive' : 'Unarchive'}
-        title={`Are you sure you want to ${archivedText} the selected runs?`}
-        titleIconName={archivedText}
-        maxWidth='lg'
-        className='ActionModal__container'
-        classes={{ paper: 'ActionModalWrapper' }}
-      >
-        <div className='ActionModal'>
+  return opened ? (
+    <Modal
+      open={opened}
+      onClose={onClose}
+      onOk={onArchive}
+      cancelButtonText='Cancel'
+      okButtonText={archiveMode ? 'Archive' : 'Unarchive'}
+      title={`Are you sure you want to ${archivedText} the selected runs?`}
+      titleIconName={archivedText}
+      maxWidth='lg'
+      className='ActionModal__container'
+      classes={{ paper: 'ActionModalWrapper' }}
+    >
+      <div className='ActionModal'>
+        <Text
+          size={14}
+          weight={400}
+          tint={100}
+          className='ActionModal__infoText'
+        >
+          {archiveMode
+            ? 'Archived runs are not visible in search by default. You can always go back and unarchive them.'
+            : 'The runs will become visible in search.'}
+        </Text>
+        <div className='ActionModal__tableTitle'>
           <Text
-            size={14}
-            weight={400}
-            tint={100}
-            className='ActionModal__infoText'
+            size={12}
+            weight={600}
+            className='ActionModal__tableTitle__count'
           >
-            {archiveMode
-              ? 'Archived runs are not visible in search by default. You can always go back and unarchive them.'
-              : 'The runs will become visible in search.'}
+            {Object.values(data).length}
           </Text>
+          <Text size={12} weight={400}>
+            {`runs to ${archivedText}.`}
+          </Text>
+        </div>
+        {!_.isEmpty(data) && (
+          <DataList
+            tableRef={tableRef}
+            tableColumns={tableColumns}
+            tableData={data}
+            withSearchBar={false}
+            rowHeight={24}
+            height='200px'
+          />
+        )}
+        {!_.isEmpty(disabledData) && (
           <div className='ActionModal__tableTitle'>
             <Text
               size={12}
               weight={600}
               className='ActionModal__tableTitle__count'
             >
-              {Object.values(data).length}
+              {Object.values(disabledData).length}
             </Text>
             <Text size={12} weight={400}>
-              {`runs to ${archivedText}.`}
+              {`runs are already ${archivedText}d.`}
             </Text>
           </div>
-          {!_.isEmpty(data) && (
-            <DataList
-              tableRef={tableRef}
-              tableColumns={tableColumns}
-              tableData={data}
-              withSearchBar={false}
-              rowHeight={24}
-              height='200px'
-            />
-          )}
-          {!_.isEmpty(disabledData) && (
-            <div className='ActionModal__tableTitle'>
-              <Text
-                size={12}
-                weight={600}
-                className='ActionModal__tableTitle__count'
-              >
-                {Object.values(disabledData).length}
-              </Text>
-              <Text size={12} weight={400}>
-                {`runs are already ${archivedText}d.`}
-              </Text>
-            </div>
-          )}
-          {!_.isEmpty(disabledData) && (
-            <DataList
-              tableRef={disabledTableRef}
-              tableColumns={tableColumns}
-              tableData={disabledData}
-              withSearchBar={false}
-              rowHeight={24}
-              tableClassName='ActionModal__Table ActionModal__disabledTableWrapper'
-              height='200px'
-            />
-          )}
-        </div>
-      </Modal>
-    )
+        )}
+        {!_.isEmpty(disabledData) && (
+          <DataList
+            tableRef={disabledTableRef}
+            tableColumns={tableColumns}
+            tableData={disabledData}
+            withSearchBar={false}
+            rowHeight={24}
+            tableClassName='ActionModal__Table ActionModal__disabledTableWrapper'
+            height='200px'
+          />
+        )}
+      </div>
+    </Modal>
+  ) : (
+    <></>
   );
 }
 

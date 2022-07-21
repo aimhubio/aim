@@ -1,5 +1,4 @@
 import React from 'react';
-import * as d3 from 'd3';
 import classNames from 'classnames';
 
 import ErrorBoundary from 'components/ErrorBoundary/ErrorBoundary';
@@ -22,6 +21,7 @@ import {
   processLineChartData,
   drawBrush,
   drawHoverAttributes,
+  drawUnableToRender,
 } from 'utils/d3';
 
 import './LineChart.scss';
@@ -38,6 +38,7 @@ const LineChart = React.forwardRef(function LineChart(
     aggregationConfig,
     syncHoverState,
     axesScaleType,
+    axesScaleRange,
     ignoreOutliers,
     alignmentConfig,
     highlightMode,
@@ -87,6 +88,8 @@ const LineChart = React.forwardRef(function LineChart(
   const humanizerConfigRef = React.useRef({});
   const rafIDRef = React.useRef<number>();
 
+  const unableToDrawConditions: { condition: boolean; text?: string }[] = [];
+
   function draw() {
     drawArea({
       index,
@@ -104,49 +107,27 @@ const LineChart = React.forwardRef(function LineChart(
       chartTitle,
     });
 
-    const {
-      processedData,
-      processedAggrData,
-      min,
-      max,
-      xScale,
-      yScale,
-      allXValues,
-      allYValues,
-    } = processLineChartData({
-      data,
-      ignoreOutliers,
-      visBoxRef,
-      axesScaleType,
-      aggregatedData,
-      aggregationConfig,
-    });
-
-    if (!allXValues.length || !allYValues.length) {
-      if (visAreaRef.current && !readOnly) {
-        d3.select(visAreaRef.current)
-          .append('text')
-          .classed('emptyData', true)
-          .text('No Data');
-
-        if (attributesRef.current?.clearHoverAttributes) {
-          attributesRef.current.clearHoverAttributes();
-        }
-        attributesRef.current = {};
-      }
-      return;
-    }
-
-    attributesRef.current.xScale = xScale;
-    attributesRef.current.yScale = yScale;
+    const { processedData, processedAggrData, min, max } = processLineChartData(
+      {
+        data,
+        ignoreOutliers,
+        visBoxRef,
+        axesScaleType,
+        axesScaleRange,
+        aggregatedData,
+        aggregationConfig,
+        unableToDrawConditions,
+        attributesRef,
+      },
+    );
 
     drawAxes({
       svgNodeRef,
       axesNodeRef,
       axesRef,
       plotBoxRef,
-      xScale,
-      yScale,
+      xScale: attributesRef.current.xScale,
+      yScale: attributesRef.current.yScale,
       visBoxRef,
       alignmentConfig,
       axesScaleType,
@@ -161,8 +142,8 @@ const LineChart = React.forwardRef(function LineChart(
       linesNodeRef,
       linesRef,
       curveInterpolation,
-      xScale,
-      yScale,
+      xScale: attributesRef.current.xScale,
+      yScale: attributesRef.current.yScale,
       highlightMode,
       aggregationConfig,
       processedAggrData,
@@ -213,9 +194,19 @@ const LineChart = React.forwardRef(function LineChart(
       axesScaleType,
       min,
       max,
+      axesScaleRange,
       zoom,
       onZoomChange,
       readOnly,
+      unableToDrawConditions,
+    });
+
+    drawUnableToRender({
+      renderArr: unableToDrawConditions,
+      visAreaRef,
+      attributesRef,
+      readOnly,
+      syncHoverState,
     });
   }
 
@@ -237,6 +228,7 @@ const LineChart = React.forwardRef(function LineChart(
       ignoreOutliers,
       highlightMode,
       axesScaleType,
+      axesScaleRange,
       curveInterpolation,
       aggregationConfig,
       readOnly,
@@ -267,6 +259,7 @@ const LineChart = React.forwardRef(function LineChart(
     ignoreOutliers,
     highlightMode,
     axesScaleType,
+    axesScaleRange,
     curveInterpolation,
     aggregationConfig,
     readOnly,

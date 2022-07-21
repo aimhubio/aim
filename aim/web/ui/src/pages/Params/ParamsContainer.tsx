@@ -54,7 +54,7 @@ function ParamsContainer(): React.FunctionComponentElement<React.ReactNode> {
 
   React.useEffect(() => {
     if (tableRef.current && chartPanelRef.current) {
-      setComponentRefs<IParamsAppModelState>({
+      setComponentRefs({
         model: paramsAppModel,
         refElement: {
           tableRef,
@@ -134,18 +134,20 @@ function ParamsContainer(): React.FunctionComponentElement<React.ReactNode> {
       requestStatus={paramsData?.requestStatus!}
       requestProgress={paramsData?.requestProgress!}
       selectedRows={paramsData?.selectedRows!}
+      tooltip={paramsData?.tooltip!}
       brushExtents={paramsData?.config?.chart?.brushExtents}
       isVisibleColorIndicator={
         paramsData?.config?.chart?.isVisibleColorIndicator!
       }
+      sameValueColumns={paramsData?.sameValueColumns!}
       chartPanelOffsetHeight={chartPanelOffsetHeight}
       groupingData={paramsData?.config?.grouping!}
       selectedParamsData={paramsData?.config?.select!}
       sortFields={paramsData?.config?.table?.sortFields!}
       curveInterpolation={paramsData?.config?.chart?.curveInterpolation!}
-      tooltip={paramsData?.config?.chart?.tooltip!}
       chartTitleData={paramsData?.chartTitleData!}
       groupingSelectOptions={paramsData?.groupingSelectOptions!}
+      sortOptions={paramsData?.sortOptions!}
       hiddenColumns={paramsData?.config?.table?.hiddenColumns!}
       hideSystemMetrics={paramsData?.config?.table?.hideSystemMetrics!}
       columnsOrder={paramsData?.config?.table?.columnsOrder!}
@@ -191,6 +193,7 @@ function ParamsContainer(): React.FunctionComponentElement<React.ReactNode> {
       onRowSelect={paramsAppModel.onRowSelect}
       archiveRuns={paramsAppModel.archiveRuns}
       deleteRuns={paramsAppModel.deleteRuns}
+      onRowsVisibilityChange={paramsAppModel.onRowsVisibilityChange}
     />
   );
 }

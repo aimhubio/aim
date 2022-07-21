@@ -7,6 +7,7 @@ import {
   INearestCircle,
   ISyncHoverStateArgs,
 } from 'types/utils/d3/drawHoverAttributes';
+import { IAxesScaleRange } from 'types/components/AxesPropsPopover/AxesPropsPopover';
 import { IAxesScaleState } from 'types/components/AxesScalePopover/AxesScalePopover';
 import { IAxisScale } from 'types/utils/d3/getAxisScale';
 import {
@@ -44,6 +45,7 @@ export interface ILineChartProps {
   alignmentConfig?: IAlignmentConfig;
   ignoreOutliers: boolean;
   axesScaleType: IAxesScaleState;
+  axesScaleRange?: IAxesScaleRange;
   highlightMode: HighlightEnum;
   curveInterpolation: CurveEnum;
   syncHoverState?: (args: ISyncHoverStateArgs) => void;

@@ -1,4 +1,5 @@
 import React from 'react';
+import moment from 'moment';
 import { useHistory } from 'react-router-dom';
 
 import { Tooltip } from '@material-ui/core';
@@ -7,6 +8,7 @@ import { Text } from 'components/kit';
 import ErrorBoundary from 'components/ErrorBoundary/ErrorBoundary';
 
 import { ANALYTICS_EVENT_KEYS } from 'config/analytics/analyticsKeysMap';
+import { DATE_QUERY_FORMAT } from 'config/dates/dates';
 
 import * as analytics from 'services/analytics';
 
@@ -140,19 +142,13 @@ function HeatMap({
       onCellClick();
       if (scale) {
         const startDate = date.getTime();
-        const endDate = new Date(
-          date.getFullYear(),
-          date.getMonth(),
-          date.getDate(),
-          23,
-          59,
-          59,
-        ).getTime();
 
         const search = encode({
-          query: `run.creation_time >= ${
-            startDate / 1000
-          } and run.creation_time <= ${endDate / 1000}`,
+          query: `datetime(${moment(startDate).format(
+            DATE_QUERY_FORMAT,
+          )}) <= run.created_at < datetime(${moment(startDate)
+            .add(1, 'day')
+            .format(DATE_QUERY_FORMAT)})`,
         });
         analytics.trackEvent(ANALYTICS_EVENT_KEYS.home.activityCellClick);
         history.push(`/runs?select=${search}`);

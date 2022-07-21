@@ -1,7 +1,6 @@
 import React from 'react';
 
 import { IAlignmentConfig } from 'types/services/models/metrics/metricsAppModel';
-
 import { IAxesScaleState } from 'types/components/AxesScalePopover/AxesScalePopover';
 
 import { IAxisScale } from './getAxisScale';

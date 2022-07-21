@@ -1,6 +1,7 @@
 import { AlignmentNotificationsEnum } from 'config/notification-messages/notificationMessages';
 import { RequestStatusEnum } from 'config/enums/requestStatusEnum';
 import { ANALYTICS_EVENT_KEYS } from 'config/analytics/analyticsKeysMap';
+import { CONTROLS_DEFAULT_CONFIG } from 'config/controls/controlsDefaultConfig';
 
 import * as analytics from 'services/analytics';
 import metricsService from 'services/api/metrics/metricsService';
@@ -38,6 +39,7 @@ export default async function onAlignmentMetricChange<M extends State>({
     configData.chart = {
       ...configData.chart,
       alignmentConfig: { metric, type: AlignmentOptionsEnum.CUSTOM_METRIC },
+      axesScaleRange: CONTROLS_DEFAULT_CONFIG.metrics.axesScaleRange,
       zoom: { ...configData.chart.zoom, history: [] },
     };
 

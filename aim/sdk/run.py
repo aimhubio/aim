@@ -160,6 +160,20 @@ class StructuredRunMixin:
         return self.props.creation_time
 
     @property
+    def created_at(self):
+        if self.repo.is_remote_repo:
+            return datetime.datetime.fromtimestamp(self.creation_time, tz=pytz.utc).replace(tzinfo=None)
+        else:
+            return self.props.created_at
+
+    @property
+    def finalized_at(self):
+        if self.end_time:
+            return datetime.datetime.fromtimestamp(self.end_time, tz=pytz.utc).replace(tzinfo=None)
+        else:
+            return None
+
+    @property
     def end_time(self):
         """Run finalization time [UTC] as timestamp.
 
@@ -170,6 +184,18 @@ class StructuredRunMixin:
         except KeyError:
             # run saved with old version. fallback to sqlite data
             return self.props.end_time
+
+    @property
+    def duration(self):
+        """Run duration in seconds (end_time - creation_time)
+
+            :getter: Returns run duration.
+        """
+        if self.end_time:
+            return self.end_time - self.creation_time
+        else:
+            from aim.web.api.utils import datetime_now
+            return datetime_now().timestamp() - self.creation_time
 
     @property
     def active(self):

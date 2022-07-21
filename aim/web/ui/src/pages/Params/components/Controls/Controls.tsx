@@ -20,9 +20,9 @@ function Controls(
 ): React.FunctionComponentElement<React.ReactNode> {
   const tooltipChanged: boolean = React.useMemo(() => {
     return (
-      props.tooltip.display !==
+      props.tooltip?.display !==
         CONTROLS_DEFAULT_CONFIG.params.tooltip.display ||
-      props.tooltip.selectedFields.length !==
+      props.tooltip?.selectedFields?.length !==
         CONTROLS_DEFAULT_CONFIG.params.tooltip.selectedFields.length
     );
   }, [props.tooltip]);
@@ -90,8 +90,8 @@ function Controls(
               component={
                 <TooltipContentPopover
                   selectOptions={props.selectOptions}
-                  selectedFields={props.tooltip.selectedFields}
-                  displayTooltip={props.tooltip.display}
+                  selectedFields={props.tooltip?.selectedFields}
+                  displayTooltip={props.tooltip?.display}
                   onChangeTooltip={props.onChangeTooltip}
                 />
               }

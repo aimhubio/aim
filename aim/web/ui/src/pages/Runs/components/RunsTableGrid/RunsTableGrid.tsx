@@ -133,7 +133,7 @@ function getRunsTableColumns(
     runColumns.map((param) => ({
       key: param,
       content: <span>{param}</span>,
-      topHeader: 'Params',
+      topHeader: 'Run Params',
       pin: order?.left?.includes(param)
         ? 'left'
         : order?.right?.includes(param)

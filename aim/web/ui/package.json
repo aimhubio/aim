@@ -1,6 +1,6 @@
 {
   "name": "ui_v2",
-  "version": "3.11.1",
+  "version": "3.11.2",
   "private": true,
   "dependencies": {
     "@aksel/structjs": "^1.0.0",
@@ -23,7 +23,7 @@
     "material-ui-audio-player": "^1.7.1",
     "md5": "^2.3.0",
     "memoize-one": "^5.2.1",
-    "moment": "^2.29.1",
+    "moment": "^2.29.4",
     "monaco-editor": "^0.33.0",
     "plotly.js": "^2.7.0",
     "prop-types": "^15.7.2",
@@ -43,8 +43,7 @@
     "styled-components": "^5.3.3",
     "typeface-roboto": "^1.1.13",
     "web-vitals": "^1.0.1",
-    "yup": "^0.32.9",
-    "zustand": "3.7.2"
+    "yup": "^0.32.9"
   },
   "scripts": {
     "start": "react-app-rewired --max_old_space_size=4096 start",

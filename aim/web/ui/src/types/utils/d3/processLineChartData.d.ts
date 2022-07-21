@@ -9,6 +9,7 @@ import {
 } from 'types/services/models/metrics/metricsAppModel';
 import { ILine } from 'types/components/LineChart/LineChart';
 import { IAxesScaleState } from 'types/components/AxesScalePopover/AxesScalePopover';
+import { IAxesScaleRange } from 'types/components/AxesPropsPopover/AxesPropsPopover';
 
 export interface IProcessedData extends ILine, IPoint {
   color: string;
@@ -31,17 +32,18 @@ export interface IProcessLineChartData {
   processedAggrData?: IProcessedAggrData[];
   allXValues: number[];
   allYValues: number[];
-  xScale: any;
-  yScale: any;
 }
 
 export interface IProcessLineChartDataArgs {
   data: ILine[];
   ignoreOutliers?: boolean;
   visBoxRef: React.MutableRefObject<any>;
+  attributesRef: React.MutableRefObject<any>;
   axesScaleType: IAxesScaleState;
+  axesScaleRange?: IAxesScaleRange;
   aggregatedData?: IAggregatedData[];
   aggregationConfig?: IAggregationConfig;
+  unableToDrawConditions: Array<{ condition: boolean; text?: string }>;
 }
 
 export interface ICalculateLineValues {

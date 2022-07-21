@@ -1,4 +1,5 @@
 import * as d3 from 'd3';
+import _ from 'lodash-es';
 
 import { ZoomEnum } from 'components/ZoomInPopover/ZoomInPopover';
 
@@ -17,11 +18,13 @@ function drawBrush(args: IDrawBrushArgs): void {
     linesRef,
     svgNodeRef,
     axesScaleType,
+    axesScaleRange,
     min,
     max,
     zoom,
     onZoomChange,
     readOnly,
+    unableToDrawConditions,
   } = args;
 
   if (!plotNodeRef.current) {
@@ -41,18 +44,39 @@ function drawBrush(args: IDrawBrushArgs): void {
   }
 
   function handleZoomIn(
-    xValues: [number, number],
-    yValues: [number, number],
+    brushXValuesDomain: [number, number],
+    brushYValuesDomain: [number, number],
   ): void {
     const { width, height, margin } = visBoxRef.current;
 
+    let [xMin, xMax] = brushXValuesDomain;
+    let [yMin, yMax] = brushYValuesDomain;
+
+    if (axesScaleRange?.xAxis && !_.isEmpty(axesScaleRange?.xAxis)) {
+      xMin = xMin < min.x ? min.x : xMin;
+      xMax = xMax < max.x ? xMax : max.x;
+      unableToDrawConditions.unshift({
+        condition: xMin > xMax,
+        text: 'Unable to draw lines with the current x-axis range. Please adjust the x-axis range.',
+      });
+    }
+
+    if (axesScaleRange?.yAxis && !_.isEmpty(axesScaleRange?.yAxis)) {
+      yMin = yMin < min.y ? min.y : yMin;
+      yMax = yMax < max.y ? yMax : max.y;
+      unableToDrawConditions.unshift({
+        condition: yMin > yMax,
+        text: 'Unable to draw lines with the current y-axis range. Please adjust the y-axis range.',
+      });
+    }
+
     // updating Scales domain
     attributesRef.current.xScale
-      .domain(xValues)
+      .domain([xMin, xMax])
       .range([0, width - margin.left - margin.right]);
 
     attributesRef.current.yScale
-      .domain(yValues)
+      .domain([yMin, yMax])
       .range([height - margin.top - margin.bottom, 0]);
 
     // updating axes with new Scales
@@ -168,9 +192,9 @@ function drawBrush(args: IDrawBrushArgs): void {
     const chartZoomHistory = zoom.history.filter(
       (item) => item.index === index,
     );
-    const lastHistoryState = chartZoomHistory[chartZoomHistory.length - 1];
-    if (lastHistoryState) {
-      handleZoomIn(lastHistoryState.xValues, lastHistoryState.yValues);
+    const lastHistoryDomain = chartZoomHistory[chartZoomHistory.length - 1];
+    if (lastHistoryDomain) {
+      handleZoomIn(lastHistoryDomain.xValues, lastHistoryDomain.yValues);
     }
   }
 }
