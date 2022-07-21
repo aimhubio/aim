@@ -13,7 +13,6 @@ function getObjectPaths(
   if (obj === null) {
     return [];
   }
-
   let rootKeys = Object.keys(obj).map((key) => {
     let prefixedKey = '';
     if (prefix) {
