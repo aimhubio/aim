@@ -23,7 +23,7 @@
     "material-ui-audio-player": "^1.7.1",
     "md5": "^2.3.0",
     "memoize-one": "^5.2.1",
-    "moment": "^2.29.1",
+    "moment": "^2.29.4",
     "monaco-editor": "^0.33.0",
     "plotly.js": "^2.7.0",
     "prop-types": "^15.7.2",

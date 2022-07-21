@@ -108,19 +108,15 @@ function drawArea(args: IDrawAreaArgs): void {
     .attr('width', offsetWidth + 2 * CircleEnum.Radius)
     .attr('height', offsetHeight + 2 * CircleEnum.Radius);
 
-  const keys = Object.keys(chartTitle);
-  const titleText = keys
-    ? `${keys
-        .map(
-          (key) =>
-            `${key}=${
-              isSystemMetric(chartTitle[key])
-                ? formatSystemMetricName(chartTitle[key])
-                : chartTitle[key]
-            }`,
-        )
-        .join(', ')}`
-    : '';
+  const titleText = Object.entries(chartTitle || {})
+    .map(
+      ([key, value]) =>
+        `${key}=${
+          isSystemMetric(value) ? formatSystemMetricName(value) : value
+        }`,
+    )
+    .join(', ');
+
   const titleStyle = {
     x: margin.left / 6,
     fontSize: 11,
@@ -147,7 +143,7 @@ function drawArea(args: IDrawAreaArgs): void {
       .attr('x', 0)
       .attr('y', 12)
       .attr('fill', '#484f56')
-      .style('outline', '0.8px solid #dee6f3')
+      .style('outline', '1px solid #dee6f3')
       .style('border-radius', '1px')
       .style('white-space', 'pre')
       .text(`  ${index + 1}  `);

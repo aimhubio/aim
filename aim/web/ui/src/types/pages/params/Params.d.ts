@@ -47,6 +47,7 @@ export interface IParamsProps extends Partial<RouteChildrenProps> {
   highPlotData: any;
   groupingData: IGroupingConfig;
   groupingSelectOptions: IGroupingSelectOption[];
+  sortOptions: IGroupingSelectOption[];
   hiddenMetrics: string[];
   hideSystemMetrics: boolean;
   sortFields: [string, 'asc' | 'desc' | boolean][];

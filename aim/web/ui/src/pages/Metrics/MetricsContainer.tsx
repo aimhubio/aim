@@ -139,6 +139,7 @@ function MetricsContainer(): React.FunctionComponentElement<React.ReactNode> {
         curveInterpolation={metricsData?.config?.chart?.curveInterpolation!}
         highlightMode={metricsData?.config?.chart?.highlightMode!}
         axesScaleType={metricsData?.config?.chart?.axesScaleType!}
+        axesScaleRange={metricsData?.config?.chart?.axesScaleRange!}
         smoothingAlgorithm={metricsData?.config?.chart?.smoothingAlgorithm!}
         smoothingFactor={metricsData?.config?.chart?.smoothingFactor!}
         focusedState={metricsData?.config?.chart?.focusedState!}
@@ -156,6 +157,7 @@ function MetricsContainer(): React.FunctionComponentElement<React.ReactNode> {
         chartPanelOffsetHeight={chartPanelOffsetHeight}
         selectedRows={metricsData?.selectedRows!}
         groupingSelectOptions={metricsData?.groupingSelectOptions!}
+        sortOptions={metricsData?.sortOptions!}
         resizeMode={metricsData?.config?.table?.resizeMode!}
         columnsWidths={metricsData?.config?.table?.columnsWidths!}
         requestStatus={metricsData?.requestStatus!}
@@ -172,6 +174,7 @@ function MetricsContainer(): React.FunctionComponentElement<React.ReactNode> {
         onTableRowClick={metricAppModel.onTableRowClick}
         updateColumnsWidths={metricAppModel.updateColumnsWidths}
         onAxesScaleTypeChange={metricAppModel.onAxesScaleTypeChange}
+        onAxesScaleRangeChange={metricAppModel.onAxesScaleRangeChange}
         onAggregationConfigChange={metricAppModel.onAggregationConfigChange}
         onGroupingSelectChange={metricAppModel.onGroupingSelectChange}
         onGroupingModeChange={metricAppModel.onGroupingModeChange}

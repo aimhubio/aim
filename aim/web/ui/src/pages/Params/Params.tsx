@@ -110,6 +110,7 @@ const Params = ({
   brushExtents,
   chartPanelOffsetHeight,
   requestProgress,
+  sortOptions,
   onRowsVisibilityChange,
 }: IParamsProps): React.FunctionComponentElement<React.ReactNode> => {
   const [isProgressBarVisible, setIsProgressBarVisible] =
@@ -263,7 +264,7 @@ const Params = ({
                             ? 'medium'
                             : 'large'
                         }
-                        sortOptions={groupingSelectOptions}
+                        sortOptions={sortOptions}
                         sortFields={sortFields}
                         hiddenRows={hiddenMetrics}
                         hiddenColumns={hiddenColumns}

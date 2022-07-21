@@ -2,6 +2,7 @@ import React from 'react';
 
 import { IChartZoom } from 'types/services/models/metrics/metricsAppModel';
 import { IAttributesRef } from 'types/components/LineChart/LineChart';
+import { IAxesScaleRange } from 'types/components/AxesPropsPopover/AxesPropsPopover';
 
 import { IGetAxesScaleProps } from './getAxisScale';
 
@@ -17,4 +18,6 @@ export interface IDrawBrushArgs extends IGetAxesScaleProps {
   zoom?: IChartZoom;
   onZoomChange?: (zoom: Partial<IChartZoom>) => void;
   readOnly: boolean;
+  axesScaleRange?: IAxesScaleRange;
+  unableToDrawConditions: Array<{ condition: boolean; text?: string }>;
 }
