@@ -3,6 +3,11 @@
 .ChartPopover {
   pointer-events: none;
   z-index: 5!important;
+  height: 200px; // To not block table scroll
+
+  > *:first-of-type {
+    height: 200px; // To not block table scroll
+  }
 
   &__content {
     transform: none!important;
