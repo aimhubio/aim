@@ -65,6 +65,8 @@ function ChartPopover(props: IChartPopover): JSX.Element {
         disableEnforceFocus={true} // the trap focus will not prevent focus from leaving the trap focus while open
         disableAutoFocus={true} // the trap focus will not automatically shift focus to itself when it opens
         disableRestoreFocus={true} // the trap focus will not restore focus to previously focused element once trap focus is hidden
+        disablePortal={true} // do not freeze app on scroll
+        disableScrollLock={true} // do not freeze app on scroll
         anchorReference='anchorPosition'
         anchorPosition={popoverPos || props.activePointRect || undefined}
         className={`ChartPopover ${className}`}
