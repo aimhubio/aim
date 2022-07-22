@@ -2,10 +2,10 @@
 
 .ChartPopover {
   pointer-events: none;
-  z-index: 0 !important;
+  z-index: 5!important;
 
   &__content {
-    transform: none !important;
+    transform: none!important;
     width: toRem(230px);
     max-height: toRem(250px);
     background: rgba(255, 255, 255, 0.78);
