@@ -499,8 +499,9 @@ function Column({
                   break;
                 }
                 top +=
-                  ROW_CELL_SIZE_CONFIG[rowHeightMode].groupMargin +
-                  rowHeightMode;
+                  (ROW_CELL_SIZE_CONFIG[rowHeightMode].groupMargin ?? 6) +
+                  rowHeightMode +
+                  1;
                 if (expanded[key]) {
                   top += data[key].items.length * rowHeightMode;
                 }
@@ -619,13 +620,17 @@ function Column({
                     {expanded[groupKey] && (
                       <>
                         {data[groupKey]?.items?.map((item, i) => {
-                          let absoluteTop = 0;
+                          let absoluteTop =
+                            (ROW_CELL_SIZE_CONFIG[rowHeightMode].groupMargin ??
+                              6) + rowHeightMode;
                           let top = 0;
                           for (let key in data) {
                             if (key === groupKey) {
                               break;
                             }
-
+                            absoluteTop +=
+                              (ROW_CELL_SIZE_CONFIG[rowHeightMode]
+                                .groupMargin ?? 6) + rowHeightMode;
                             if (expanded[key]) {
                               absoluteTop +=
                                 data[key].items.length * rowHeightMode;
