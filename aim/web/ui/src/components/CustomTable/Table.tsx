@@ -317,7 +317,7 @@ function Table(props) {
             <ErrorBoundary key={'selection'}>
               <div
                 className={classNames('Table__pane Table__pane--selection', {
-                  onlyGroupColumn: leftPane.length === 0,
+                  withShadow: leftPane.length === 0,
                 })}
               >
                 <Column

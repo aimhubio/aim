@@ -252,6 +252,7 @@
         padding: 1rem 1.5rem 1.5rem;
         &__metricName {
           margin: $space-xs 0;
+          word-break: break-all;
         }
         .SelectForm__tags__item {
           margin-top: 0.5rem;
