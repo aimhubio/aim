@@ -501,7 +501,7 @@ function createAppModel(appConfig: IAppInitialConfig) {
       index: number,
       val: object | null = null,
     ): ISelectOption {
-      const { label, key } = getLabelAndValueOfMetric(optionKey, val ?? '');
+      const { label, key } = getLabelAndValueOfMetric(optionKey, val as any);
       return {
         label,
         group: system ? 'System' : key,
