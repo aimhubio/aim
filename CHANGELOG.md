@@ -1,5 +1,9 @@
 # Changelog
 
+## 3.12.1
+
+- Break long metric names into multiple lines in Run Page (roubkar)
+
 ## 3.12.0 Jul 22, 2022
 
 ### Enhancements:
