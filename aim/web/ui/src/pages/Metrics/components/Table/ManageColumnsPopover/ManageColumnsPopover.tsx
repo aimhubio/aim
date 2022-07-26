@@ -296,6 +296,7 @@ function ManageColumnsPopover({
                       <Icon name='search' />
                     </div>
                     <InputBase
+                      fullWidth
                       placeholder='Search'
                       value={searchKey}
                       onChange={onSearchKeyChange}

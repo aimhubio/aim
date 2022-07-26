@@ -16,19 +16,21 @@ export default function exceptionHandler<M extends State>({
     requestStatus: RequestStatusEnum.BadRequest,
   };
   const modelState: any = model.getState();
-  const { advancedMode } = modelState!.config!.select;
-  const OffsetDiff = advancedMode ? 1 : 2;
-
-  detail.detail.offset = detail.detail.offset - OffsetDiff;
-  if (detail.detail.end_offset) {
-    detail.detail.end_offset = detail.detail.end_offset - OffsetDiff;
-  }
-
-  const { offset, end_offset, line } = detail.detail;
-
   if (detail.message === 'SyntaxError' && modelState) {
-    message = `Query syntax error at line (${line}, ${offset}${
-      end_offset && end_offset !== offset ? `-${end_offset}` : ''
+    const advancedMode: boolean = modelState.config?.select.advancedMode;
+    const OffsetDiff: number = advancedMode ? 1 : 2;
+
+    detail.detail.offset = detail.detail.offset - OffsetDiff;
+    if (detail.detail.end_offset) {
+      detail.detail.end_offset = detail.detail.end_offset - OffsetDiff;
+    }
+    message = `Query syntax error at line (${detail.detail.line}, ${
+      detail.detail.offset
+    }${
+      detail.detail?.end_offset &&
+      detail.detail.end_offset !== detail.detail.offset
+        ? `-${detail.detail.end_offset.end_offset}`
+        : ''
     })`;
     state = {
       ...state,

@@ -2,7 +2,7 @@
 /* eslint-disable react/prop-types */
 
 import React from 'react';
-import { debounce, isEmpty, isEqual } from 'lodash-es';
+import { isEmpty, isEqual } from 'lodash-es';
 
 import { Button, Icon, Text } from 'components/kit';
 import ControlPopover from 'components/ControlPopover/ControlPopover';
@@ -90,6 +90,8 @@ const Table = React.forwardRef(function Table(
     disableRowClick = false,
     onToggleColumnsColorScales,
     columnsColorScales,
+    onRowsVisibilityChange,
+    visualizationElementType,
     ...props
   }: ITableProps,
   ref,
@@ -116,9 +118,23 @@ const Table = React.forwardRef(function Table(
   const [isOpenArchiveSelectedPopup, setIsOpenArchiveSelectedPopup] =
     React.useState(false);
   const [tableBulkActionsVisibility, setTableBulkActionsVisibility] =
-    React.useState({ delete: false, archive: false, unarchive: false });
+    React.useState<{
+      delete: boolean;
+      archive: boolean;
+      unarchive: boolean;
+      hideItems: boolean;
+      showItems: boolean;
+    }>({
+      delete: false,
+      archive: false,
+      unarchive: false,
+      hideItems: false,
+      showItems: false,
+    });
   const [listWindow, setListWindow] = React.useState({
+    top: 0,
     left: 0,
+    height: 0,
     width: 0,
     availableSpace: 0,
   });
@@ -134,6 +150,14 @@ const Table = React.forwardRef(function Table(
   React.useEffect(() => {
     updateFocusedRow(`rowKey-${activeRowKey.current}`);
   }, [selectedRows]);
+
+  React.useEffect(() => {
+    if (activeRowKey.current === null) {
+      updateHoveredRow(`rowKey-${hoveredRowKey.current}`);
+    } else {
+      updateFocusedRow(`rowKey-${activeRowKey.current}`);
+    }
+  }, [listWindow]);
 
   React.useImperativeHandle(ref, () => ({
     updateData: updateData,
@@ -267,61 +291,55 @@ const Table = React.forwardRef(function Table(
   function scrollToRow(rowKey: string) {
     window.requestAnimationFrame(() => {
       if (custom) {
-        function scrollToElement() {
-          const rowCell = document.querySelector(
-            `.Table__cell.rowKey-${rowKey}`,
-          );
-          if (!!rowCell) {
-            let top = 0;
-            if (groups) {
-              rowCell.parentElement?.childNodes?.forEach((item, index) => {
-                if ([...item.classList].includes(`rowKey-${rowKey}`)) {
-                  top =
-                    rowCell.parentElement?.offsetTop + rowHeight * (index - 3);
+        let top = 0;
+        if (groups) {
+          let groupCount = 0;
+          loop: for (let key in data) {
+            top += ROW_CELL_SIZE_CONFIG[rowHeight].groupMargin;
+            for (let i = 0; i < data[key]?.items?.length; i++) {
+              if (data[key].items[i].key === rowKey) {
+                top += i * rowHeight;
+                if (!expanded[key]) {
+                  expandedGroups.current.push(key);
+                  setExpanded(
+                    Object.fromEntries(
+                      expandedGroups.current.map((key) => [key, true]),
+                    ),
+                  );
                 }
-              });
-            } else {
-              top = rowCell.offsetTop - 2 * rowHeight;
+                break loop;
+              }
             }
-            if (
-              tableContainerRef.current.scrollTop > top ||
-              tableContainerRef.current.scrollTop +
-                tableContainerRef.current.offsetHeight <
-                top
-            ) {
-              tableContainerRef.current.scrollTo({
-                top,
-              });
+            top +=
+              rowHeight +
+              (ROW_CELL_SIZE_CONFIG[rowHeight].groupMargin / 2) * groupCount;
+            if (expanded[key]) {
+              top += data[key].items.length * rowHeight;
+            }
+            groupCount++;
+          }
+        } else {
+          for (let i = 0; i < data?.length; i++) {
+            if (data[i].key === rowKey) {
+              top = i * rowHeight;
+              break;
             }
           }
         }
 
-        if (groups) {
-          for (let groupKey in dataRef?.current) {
-            if (
-              dataRef?.current[groupKey].data?.groupRowsKeys?.includes(rowKey)
-            ) {
-              if (expandedGroups.current.includes(groupKey)) {
-                scrollToElement();
-              } else {
-                expandedGroups.current.push(groupKey);
-                setExpanded(
-                  Object.fromEntries(
-                    expandedGroups.current.map((key) => [key, true]),
-                  ),
-                );
-                // TODO: probably need useEffect for this
-                setTimeout(() => {
-                  window.requestAnimationFrame(() => {
-                    updateFocusedRow(`rowKey-${rowKey}`);
-                    scrollToElement();
-                  });
-                }, 100);
-              }
-            }
-          }
-        } else {
-          scrollToElement();
+        if (
+          tableContainerRef.current.scrollTop > top ||
+          tableContainerRef.current.scrollTop +
+            tableContainerRef.current.offsetHeight <
+            top
+        ) {
+          setTimeout(() => {
+            window.requestAnimationFrame(() => {
+              tableContainerRef.current.scrollTo({
+                top,
+              });
+            });
+          }, 100);
         }
       } else {
         tableRef.current?.scrollToRowByKey(rowKey);
@@ -429,6 +447,7 @@ const Table = React.forwardRef(function Table(
       if (typeof onRowHover === 'function') {
         onRowHover(row.key);
       }
+      hoveredRowKey.current = row.key;
       updateHoveredRow(`rowKey-${row.key}`);
     }
   }
@@ -511,11 +530,14 @@ const Table = React.forwardRef(function Table(
       availableSpace =
         tableContainerRef.current.offsetWidth -
         (leftPane?.offsetWidth ?? 0) -
-        (rightPane?.offsetWidth ?? 0);
+        (rightPane?.offsetWidth ?? 0) -
+        32; // the selection section (checkboxes)
     }
 
     setListWindow({
+      top: tableContainerRef.current?.scrollTop,
       left: tableContainerRef.current?.scrollLeft,
+      height: tableContainerRef.current?.offsetHeight,
       width: tableContainerRef.current?.offsetWidth,
       availableSpace,
     });
@@ -531,6 +553,33 @@ const Table = React.forwardRef(function Table(
 
   function onToggleUnarchivePopup() {
     setIsOpenUnarchiveSelectedPopup(!isOpenUnarchiveSelectedPopup);
+  }
+
+  function onHideSelectedItems() {
+    onBatchRowsVisibilityChange('hide');
+  }
+
+  function onShowSelectedItems() {
+    onBatchRowsVisibilityChange('show');
+  }
+
+  function onBatchRowsVisibilityChange(changeMode: 'hide' | 'show') {
+    let data: any[] = [];
+    const selectedRowsValues = Object.values(selectedRows);
+    selectedRowsValues.forEach((selectedRow: any) => {
+      if (changeMode === 'hide') {
+        if (!selectedRow.isHidden) {
+          data.push(selectedRow.key);
+        }
+      } else {
+        if (selectedRow.isHidden) {
+          data.push(selectedRow.key);
+        }
+      }
+    });
+
+    onRowsVisibilityChange(data);
+    onRowSelect({ actionType: 'removeAll', data: selectedRowsValues });
   }
 
   React.useEffect(() => {
@@ -550,7 +599,7 @@ const Table = React.forwardRef(function Table(
 
       virtualizedUpdate();
 
-      tableContainerRef.current.onscroll = debounce(({ target }) => {
+      tableContainerRef.current.onscroll = ({ target }) => {
         const windowEdges = calculateWindow({
           scrollTop: target.scrollTop,
           offsetHeight: target.offsetHeight,
@@ -582,7 +631,7 @@ const Table = React.forwardRef(function Table(
           }
         }
         setListWindowMeasurements();
-      }, 30);
+      };
     }
 
     return () => {
@@ -621,32 +670,48 @@ const Table = React.forwardRef(function Table(
   }, []);
 
   React.useEffect(() => {
-    const tableBulkActionsVisibility = {
+    const tableBulkActionsVisibility: {
+      delete: boolean;
+      archive: boolean;
+      unarchive: boolean;
+      hideItems: boolean;
+      showItems: boolean;
+    } = {
       delete: false,
       archive: false,
       unarchive: false,
+      hideItems: false,
+      showItems: false,
     };
     const values = Object.values(selectedRows || {});
-    for (let i = 0; i < values.length; i++) {
-      const value: any = values[i];
+    values.forEach((value) => {
       if (
-        tableBulkActionsVisibility.delete &&
-        tableBulkActionsVisibility.archive &&
-        tableBulkActionsVisibility.unarchive
+        !tableBulkActionsVisibility.delete ||
+        !tableBulkActionsVisibility.archive ||
+        !tableBulkActionsVisibility.unarchive ||
+        !tableBulkActionsVisibility.hideItems ||
+        !tableBulkActionsVisibility.showItems
       ) {
-        break;
+        if (value.archived) {
+          tableBulkActionsVisibility.archive = true;
+        } else {
+          tableBulkActionsVisibility.unarchive = true;
+        }
+        if (value.end_time) {
+          tableBulkActionsVisibility.delete = true;
+        }
+        if (onRowsVisibilityChange) {
+          if (value.isHidden) {
+            tableBulkActionsVisibility.showItems = true;
+          } else {
+            tableBulkActionsVisibility.hideItems = true;
+          }
+        }
       }
-      if (value.archived) {
-        tableBulkActionsVisibility.archive = true;
-      } else {
-        tableBulkActionsVisibility.unarchive = true;
-      }
-      if (value.end_time) {
-        tableBulkActionsVisibility.delete = true;
-      }
-    }
+    });
+
     setTableBulkActionsVisibility(tableBulkActionsVisibility);
-  }, [selectedRows]);
+  }, [selectedRows, onRowsVisibilityChange]);
 
   const sortPopoverChanged: boolean = React.useMemo(() => {
     return (
@@ -688,6 +753,7 @@ const Table = React.forwardRef(function Table(
                   onTableResizeModeChange={onTableResizeModeChange}
                 />
               )}
+
               <div className='flex fac Table__header__buttons'>
                 {onManageColumns && (
                   <ManageColumnsPopover
@@ -699,103 +765,87 @@ const Table = React.forwardRef(function Table(
                     hideSystemMetrics={hideSystemMetrics}
                     onManageColumns={onManageColumns}
                     onColumnsVisibilityChange={onColumnsVisibilityChange}
-                    onTableDiffShow={onTableDiffShow}
                     appName={appName}
                   />
                 )}
-                <div className='flex fac Table__header__buttons'>
-                  {onManageColumns && (
-                    <ManageColumnsPopover
-                      columnsData={columnsData.filter(
-                        (item: any) =>
-                          item.key !== '#' && item.key !== 'actions',
-                      )}
-                      columnsOrder={columnsOrder}
-                      hiddenColumns={hiddenColumns}
-                      hideSystemMetrics={hideSystemMetrics}
-                      onManageColumns={onManageColumns}
-                      onColumnsVisibilityChange={onColumnsVisibilityChange}
-                      appName={appName}
-                    />
-                  )}
-                  {onRowsChange && (
-                    <HideRowsPopover
-                      hiddenChartRows={hiddenChartRows}
-                      toggleRowsVisibility={onRowsChange}
-                    />
-                  )}
-                  {onSort && (
-                    <ControlPopover
-                      anchorOrigin={{
-                        vertical: 'top',
-                        horizontal: 'left',
-                      }}
-                      transformOrigin={{
-                        vertical: 'bottom',
-                        horizontal: 'left',
-                      }}
-                      title='Sort table by:'
-                      anchor={({ onAnchorClick, opened }) => (
-                        <Button
-                          type='text'
-                          color='secondary'
-                          size='small'
-                          onClick={onAnchorClick}
-                          className={`Table__header__item ${
-                            opened || sortPopoverChanged ? 'opened' : ''
-                          }`}
-                        >
-                          <Icon name='sort-outside' />
-                          <Text size={14} tint={100}>
-                            Sort
-                          </Text>
-                        </Button>
-                      )}
-                      component={
-                        <SortPopover
-                          sortOptions={sortOptions}
-                          sortFields={sortFields}
-                          onSort={onSort}
-                          onReset={onSortReset}
-                        />
-                      }
-                    />
-                  )}
-                  {onRowHeightChange && (
-                    <RowHeightPopover
-                      rowHeight={rowHeight}
-                      onRowHeightChange={onRowHeightChange}
-                      appName={appName}
-                    />
-                  )}
-                </div>
-                {onTableDiffShow && (
-                  <Button
-                    size='small'
-                    variant='outlined'
-                    className='Table__header__item--diffBtn'
-                    disabled={isDiffButtonDisabled}
-                    onClick={onTableDiffShow}
-                  >
-                    Show Table Diff
-                  </Button>
+                {onRowsChange && (
+                  <HideRowsPopover
+                    toggleRowsVisibility={onRowsChange}
+                    visualizationElementType={visualizationElementType}
+                    data={dataRef.current}
+                  />
                 )}
-                {onExport && (
-                  <div className='fac'>
-                    <Button
-                      fullWidth
-                      variant='outlined'
-                      size='small'
-                      onClick={onExport}
-                      startIcon={<Icon fontSize={14} name='download' />}
-                    >
-                      <Text size={14} color='inherit'>
-                        Export
-                      </Text>
-                    </Button>
-                  </div>
+                {onSort && (
+                  <ControlPopover
+                    anchorOrigin={{
+                      vertical: 'top',
+                      horizontal: 'left',
+                    }}
+                    transformOrigin={{
+                      vertical: 'bottom',
+                      horizontal: 'left',
+                    }}
+                    title='Sort table by:'
+                    anchor={({ onAnchorClick, opened }) => (
+                      <Button
+                        type='text'
+                        color='secondary'
+                        size='small'
+                        onClick={onAnchorClick}
+                        className={`Table__header__item ${
+                          opened || sortPopoverChanged ? 'opened' : ''
+                        }`}
+                      >
+                        <Icon name='sort-outside' />
+                        <Text size={14} tint={100}>
+                          Sort
+                        </Text>
+                      </Button>
+                    )}
+                    component={
+                      <SortPopover
+                        sortOptions={sortOptions}
+                        sortFields={sortFields}
+                        onSort={onSort}
+                        onReset={onSortReset}
+                      />
+                    }
+                  />
+                )}
+                {onRowHeightChange && (
+                  <RowHeightPopover
+                    rowHeight={rowHeight}
+                    onRowHeightChange={onRowHeightChange}
+                    appName={appName}
+                  />
                 )}
               </div>
+              {onTableDiffShow && (
+                <Button
+                  size='small'
+                  variant='outlined'
+                  className='Table__header__item--diffBtn'
+                  disabled={isDiffButtonDisabled}
+                  onClick={onTableDiffShow}
+                >
+                  Show Table Diff
+                </Button>
+              )}
+              {onExport && (
+                <div className='fac'>
+                  <Button
+                    fullWidth
+                    variant='outlined'
+                    size='small'
+                    onClick={onExport}
+                    startIcon={<Icon fontSize={14} name='download' />}
+                  >
+                    <Text size={14} color='inherit'>
+                      Export
+                    </Text>
+                  </Button>
+                </div>
+              )}
             </div>
           ) : !isEmpty(selectedRows) && multiSelect ? (
             <div className='Table__header selectedRowActionsContainer'>
@@ -851,6 +901,36 @@ const Table = React.forwardRef(function Table(
                     <Icon name='unarchive' fontSize={18} />
                     <Text size={14} tint={100}>
                       Unarchive
+                    </Text>
+                  </Button>
+                </div>
+              )}
+              {tableBulkActionsVisibility.hideItems && (
+                <div>
+                  <Button
+                    color='secondary'
+                    type='text'
+                    onClick={onHideSelectedItems}
+                    className='Table__header__item'
+                  >
+                    <Icon name='eye-outline-hide' fontSize={14} />
+                    <Text size={14} tint={100}>
+                      {`Hide ${visualizationElementType}s`}
+                    </Text>
+                  </Button>
+                </div>
+              )}
+              {tableBulkActionsVisibility.showItems && (
+                <div>
+                  <Button
+                    color='secondary'
+                    type='text'
+                    onClick={onShowSelectedItems}
+                    className='Table__header__item'
+                  >
+                    <Icon name='eye-show-outline' fontSize={14} />
+                    <Text size={14} tint={100}>
+                      {`Show ${visualizationElementType}s`}
                     </Text>
                   </Button>
                 </div>

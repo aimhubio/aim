@@ -1,0 +1,49 @@
+@use 'src/styles/abstracts' as *;
+
+.AxesPropsPopover {
+  width: 24.375rem;
+  padding: $space-xs;
+  &__subtitle {
+    padding-block: $space-xs;
+    text-transform: uppercase;
+  }
+  &__divider {
+    margin: $space-xs 0;
+  }
+  &__range, &__alignment {
+    padding: $space-xs;
+  }
+  &__range {
+    &__container {
+      display: flex;
+      align-items: center;
+      &.yAxis {
+        margin-top: $space-sm;
+      }
+    }
+  }
+
+  .scaleRangeInputs {
+    &__label {
+      margin-right: auto;
+    }
+    &__min, &__max {
+      display: inline-block;
+      width: 6.875rem;
+      margin-right: $space-xs;
+    }
+
+    &__resetButton {
+      color: $pico-80;
+      border: 0.0625rem solid $cuddle;
+      &.Mui-disabled {
+        color: $pico-50;
+        border-color: $cuddle-50;
+      }
+      &.active {
+        border: $border-main-active;
+        background-color: $primary-color-5;
+      }
+    }
+  }
+}

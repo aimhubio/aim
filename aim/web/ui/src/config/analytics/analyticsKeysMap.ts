@@ -31,6 +31,8 @@ export const ANALYTICS_EVENT_KEYS = {
           '[MetricsExplorer][Chart][Controls] Change X-Axis properties', // , Set type to value/, Align X axis by another value
         changeAxesScale:
           '[MetricsExplorer][Chart][Controls] Change Axes Scale type', // to value
+        changeAxesScaleRange:
+          '[MetricsExplorer][Chart][Controls] Change Axes Scale range', // to value
         selectSmoothingOptions:
           '[MetricsExplorer][Chart][Controls] Set smoothing options', // to value
         changeCurveInterpolationMode:

@@ -14,7 +14,7 @@ function isInvalidMetricValue(
     (!v && v !== 0) ||
     !isFinite(v) ||
     isNaN(v) ||
-    (scaleType === ScaleEnum.Log && v <= 0)
+    (scaleType === ScaleEnum.Log && v < 0)
   );
 }
 

@@ -13,7 +13,10 @@ import ProgressBar from 'components/ProgressBar/ProgressBar';
 
 import pageTitlesEnum from 'config/pageTitles/pageTitles';
 import { ResizeModeEnum } from 'config/enums/tableEnums';
-import { RowHeightSize } from 'config/table/tableConfigs';
+import {
+  RowHeightSize,
+  VisualizationElementEnum,
+} from 'config/table/tableConfigs';
 import GroupingPopovers, {
   GroupNameEnum,
 } from 'config/grouping/GroupingPopovers';
@@ -45,6 +48,7 @@ function Metrics(
     return (props.lineChartData || []).map(
       (chartData: ILine[], index: number) => ({
         axesScaleType: props.axesScaleType,
+        axesScaleRange: props.axesScaleRange,
         curveInterpolation: props.curveInterpolation,
         ignoreOutliers: props.ignoreOutliers,
         highlightMode: props.highlightMode,
@@ -70,6 +74,7 @@ function Metrics(
     props.aggregationConfig,
     props.alignmentConfig,
     props.onZoomChange,
+    props.axesScaleRange,
   ]);
 
   return (
@@ -179,6 +184,7 @@ function Metrics(
                             highlightMode={props.highlightMode}
                             aggregationConfig={props.aggregationConfig}
                             axesScaleType={props.axesScaleType}
+                            axesScaleRange={props.axesScaleRange}
                             alignmentConfig={props.alignmentConfig}
                             onChangeTooltip={props.onChangeTooltip}
                             onIgnoreOutliersChange={
@@ -190,6 +196,9 @@ function Metrics(
                             onSmoothingChange={props.onSmoothingChange}
                             onAggregationConfigChange={
                               props.onAggregationConfigChange
+                            }
+                            onAxesScaleRangeChange={
+                              props.onAxesScaleRangeChange
                             }
                             onDensityTypeChange={props.onDensityTypeChange}
                             onAlignmentTypeChange={props.onAlignmentTypeChange}
@@ -236,7 +245,7 @@ function Metrics(
                               ? 'medium'
                               : 'large'
                           }
-                          sortOptions={props.groupingSelectOptions}
+                          sortOptions={props.sortOptions}
                           sortFields={props.sortFields}
                           hiddenRows={props.hiddenMetrics}
                           hiddenColumns={props.hiddenColumns}
@@ -268,7 +277,11 @@ function Metrics(
                           onRowSelect={props.onRowSelect}
                           archiveRuns={props.archiveRuns}
                           deleteRuns={props.deleteRuns}
+                          onRowsVisibilityChange={props.onRowsVisibilityChange}
                           focusedState={props.focusedState}
+                          visualizationElementType={
+                            VisualizationElementEnum.LINE
+                          }
                         />
                       </ErrorBoundary>
                     )}

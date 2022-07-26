@@ -80,7 +80,7 @@
         &.MuiInputLabel-shrink {
           font-size: $text-xs;
           color: $pico-50;
-          font-weight: 500;
+          font-weight: $font-500;
         }
       }
     }
@@ -109,13 +109,13 @@
             transform: translate(14px, -6px) scale(0.75);
             font-size: $text-xs;
             color: $pico-50;
-            font-weight: 500;
+            font-weight: $font-500;
           }
         }
 
         .MuiFormLabel-root {
           color: $pico-50;
-          font-weight: 500;
+          font-weight: $font-500;
           font-size: $text-md;
           &.Mui-error {
             color: #f44336;
@@ -124,7 +124,7 @@
 
         .MuiInputBase-root {
           .MuiInputBase-input {
-            font-weight: 500;
+            font-weight: $font-500;
             font-size: $text-md;
             color: $text-color;
           }

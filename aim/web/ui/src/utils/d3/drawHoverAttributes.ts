@@ -462,7 +462,15 @@ function drawHoverAttributes(args: IDrawHoverAttributesArgs): void {
   function drawCircles(nearestCircles: INearestCircle[]): void {
     attrNodeRef.current
       .selectAll('circle')
-      .data(nearestCircles)
+      .data(
+        nearestCircles.filter(
+          (circle) =>
+            !(
+              (axesScaleType.xAxis === ScaleEnum.Log && circle.x === 0) ||
+              (axesScaleType.yAxis === ScaleEnum.Log && circle.y === 0)
+            ),
+        ),
+      )
       .join('circle')
       .attr('class', 'HoverCircle')
       .attr('id', (d: INearestCircle) => `Circle-${d.key}`)

@@ -152,7 +152,7 @@
   }
 }
 .TableColumn__SortButton {
-  margin: 0 $space-xs;
+  margin: 0 $space-xxxs;
 }
 .selectedRowActionsContainer {
   &__selectedRowsCount {
@@ -162,5 +162,15 @@
     align-items: center;
     border-right: $border-main;
     margin-right: 1rem;
+  }
+}
+
+.RunNameColumn {
+  display: flex;
+  align-items: center;
+  &.isHidden {
+    .MuiTypography-root {
+      color: $primary-color-50;
+    }
   }
 }

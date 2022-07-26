@@ -4,6 +4,7 @@ import _ from 'lodash-es';
 
 import { HighlightEnum } from 'components/HighlightModesPopover/HighlightModesPopover';
 import { IPoint } from 'components/ScatterPlot';
+import { IAxesScaleRange } from 'components/AxesPropsPopover';
 
 import COLORS from 'config/colors/colors';
 import DASH_ARRAYS from 'config/dash-arrays/dashArrays';
@@ -182,9 +183,13 @@ import {
   alignByStep,
 } from 'utils/app/alignMetricData';
 import setRequestProgress from 'utils/app/setRequestProgress';
+import onAxesScaleRangeChange from 'utils/app/onAxesScaleRangeChange';
 import { minMaxOfArray } from 'utils/minMaxOfArray';
 import getAdvancedSuggestion from 'utils/getAdvancedSuggestions';
 import { processDurationTime } from 'utils/processDurationTime';
+import getSelectOptions from 'utils/app/getSelectOptions';
+import { getMetricsSelectOptions } from 'utils/app/getMetricsSelectOptions';
+import onRowsVisibilityChange from 'utils/app/onRowsVisibilityChange';
 
 import { AppDataTypeEnum, AppNameEnum } from './index';
 
@@ -278,6 +283,10 @@ function createAppModel(appConfig: IAppInitialConfig) {
               axesScaleType: {
                 xAxis: CONTROLS_DEFAULT_CONFIG.metrics.axesScaleType.xAxis,
                 yAxis: CONTROLS_DEFAULT_CONFIG.metrics.axesScaleType.yAxis,
+              },
+              axesScaleRange: {
+                yAxis: CONTROLS_DEFAULT_CONFIG.metrics.axesScaleRange.yAxis,
+                xAxis: CONTROLS_DEFAULT_CONFIG.metrics.axesScaleRange.xAxis,
               },
               curveInterpolation:
                 CONTROLS_DEFAULT_CONFIG.metrics.curveInterpolation,
@@ -753,6 +762,7 @@ function createAppModel(appConfig: IAppInitialConfig) {
       let rowIndex = 0;
       const sameValueColumns: string[] = [];
 
+      const columnsFlattenValues: { [key: string]: Set<any> } = {};
       processedData.forEach(
         (metricsCollection: IMetricsCollection<IMetric>) => {
           const groupKey = metricsCollection.key;
@@ -984,9 +994,10 @@ function createAppModel(appConfig: IAppInitialConfig) {
           });
 
           for (let columnKey in columnsValues) {
-            if (columnsValues[columnKey].length === 1) {
-              sameValueColumns.push(columnKey);
-            }
+            columnsFlattenValues[columnKey] = new Set([
+              ...(columnsFlattenValues[columnKey] || []),
+              ...(columnsValues[columnKey] || []),
+            ]);
 
             if (metricsCollection.config !== null) {
               rows[groupKey!].data[columnKey] =
@@ -1007,6 +1018,11 @@ function createAppModel(appConfig: IAppInitialConfig) {
           }
         },
       );
+      for (let columnKey in columnsFlattenValues) {
+        if (columnsFlattenValues[columnKey].size === 1) {
+          sameValueColumns.push(columnKey);
+        }
+      }
       return { rows, sameValueColumns };
     }
 
@@ -1067,6 +1083,7 @@ function createAppModel(appConfig: IAppInitialConfig) {
               metricName: trace.name,
               traceContext: trace.context,
             });
+            const metricValues = new Float64Array(processedValues);
             return createMetricModel({
               ...trace,
               run: createRunModel(_.omit(run, 'traces') as IRun<IMetricTrace>),
@@ -1076,8 +1093,9 @@ function createAppModel(appConfig: IAppInitialConfig) {
               isHidden: configData?.table?.hiddenMetrics!.includes(metricKey),
               x_axis_values,
               x_axis_iters,
+              lastValue: metricValues[metricValues.length - 1],
               data: {
-                values: new Float64Array(processedValues),
+                values: metricValues,
                 steps,
                 epochs,
                 timestamps: timestamps.map((timestamp) =>
@@ -1169,6 +1187,15 @@ function createAppModel(appConfig: IAppInitialConfig) {
           sequenceName: 'metric',
         }),
       ];
+      const sortOptions = [
+        ...groupingSelectOptions,
+        {
+          group: 'metric',
+          label: 'metric.values.last',
+          value: 'lastValue',
+        },
+      ];
+
       const tableData = getDataAsTableRows(
         data,
         configData?.chart?.focusedState.xValue ?? null,
@@ -1218,6 +1245,7 @@ function createAppModel(appConfig: IAppInitialConfig) {
         tableColumns,
         sameValueColumns: tableData.sameValueColumns,
         groupingSelectOptions,
+        sortOptions,
         selectedRows,
       });
     }
@@ -1248,6 +1276,14 @@ function createAppModel(appConfig: IAppInitialConfig) {
           contexts,
           sequenceName: 'metric',
         }),
+      ];
+      const sortOptions = [
+        ...groupingSelectOptions,
+        {
+          group: 'metric',
+          label: 'metric.values.last',
+          value: 'lastValue',
+        },
       ];
 
       const tableData = getDataAsTableRows(
@@ -1304,6 +1340,7 @@ function createAppModel(appConfig: IAppInitialConfig) {
         tableColumns: tableColumns,
         sameValueColumns: tableData.sameValueColumns,
         groupingSelectOptions,
+        sortOptions,
         selectedRows,
       });
     }
@@ -2026,6 +2063,9 @@ function createAppModel(appConfig: IAppInitialConfig) {
             appName,
           });
         },
+        onAxesScaleRangeChange(range: Partial<IAxesScaleRange>): void {
+          onAxesScaleRangeChange({ range, model, appName });
+        },
         onDensityTypeChange(type: DensityOptions): Promise<void> {
           return onDensityTypeChange({ type, model, appName, getMetricsData });
         },
@@ -2100,6 +2140,14 @@ function createAppModel(appConfig: IAppInitialConfig) {
           data?: any;
         }): void {
           return onRowSelect({ actionType, data, model });
+        },
+        onRowsVisibilityChange(metricKeys: string[]): void {
+          return onRowsVisibilityChange({
+            metricKeys,
+            model,
+            appName,
+            updateModelData,
+          });
         },
       });
     }
@@ -2434,11 +2482,23 @@ function createAppModel(appConfig: IAppInitialConfig) {
         data?.forEach((run: IRun<IParamTrace>, index) => {
           params = params.concat(getObjectPaths(run.params, run.params));
           runProps = runProps.concat(getObjectPaths(run.props, run.props));
+          const metricsLastValues: any = {};
           run.traces.metric.forEach((trace) => {
+            const stringFormContext: string =
+              contextToString(trace.context) ?? '';
             metricsColumns[trace.name] = {
               ...metricsColumns[trace.name],
-              [contextToString(trace.context) as string]: '-',
+              [stringFormContext as string]: '-',
             };
+            const contextName =
+              stringFormContext === '' ? '' : `_${stringFormContext}`;
+
+            const key = `${
+              isSystemMetric(trace.name)
+                ? trace.name
+                : `${trace.name}${contextName}`
+            }`;
+            metricsLastValues[key] = trace.last_value.last;
           });
           runHashArray.push(run.hash);
           runs.push({
@@ -2447,6 +2507,7 @@ function createAppModel(appConfig: IAppInitialConfig) {
             color: COLORS[paletteIndex][index % COLORS[paletteIndex].length],
             key: encode({ runHash: run.hash }),
             dasharray: DASH_ARRAYS[0],
+            metricsLastValues,
           });
         });
         const processedData = groupData(runs);
@@ -2651,8 +2712,9 @@ function createAppModel(appConfig: IAppInitialConfig) {
             const groupByMetricName: any = {};
             Object.keys(metricsColumns[key]).forEach(
               (metricContext: string) => {
+                const contextName = metricContext ? `_${metricContext}` : '';
                 groupByMetricName[
-                  `${isSystemMetric(key) ? key : `${key}_${metricContext}`}`
+                  `${isSystemMetric(key) ? key : `${key}${contextName}`}`
                 ] = '-';
               },
             );
@@ -2664,7 +2726,7 @@ function createAppModel(appConfig: IAppInitialConfig) {
         const rows: any = processedData[0]?.config !== null ? {} : [];
         let rowIndex = 0;
         const sameValueColumns: string[] = [];
-
+        const columnsFlattenValues: { [key: string]: Set<any> } = {};
         processedData.forEach((metricsCollection: any) => {
           const groupKey = metricsCollection.key;
           const columnsValues: { [key: string]: string[] } = {};
@@ -2691,11 +2753,15 @@ function createAppModel(appConfig: IAppInitialConfig) {
           metricsCollection.data.forEach((metric: any) => {
             const metricsRowValues = { ...initialMetricsRowData };
             metric.run.traces.metric.forEach((trace: any) => {
+              const contextName =
+                contextToString(trace.context) === ''
+                  ? ''
+                  : `_${contextToString(trace.context)}`;
               metricsRowValues[
                 `${
                   isSystemMetric(trace.name)
                     ? trace.name
-                    : `${trace.name}_${contextToString(trace.context)}`
+                    : `${trace.name}${contextName}`
                 }`
               ] = formatValue(trace.last_value.last);
             });
@@ -2767,9 +2833,10 @@ function createAppModel(appConfig: IAppInitialConfig) {
           });
 
           for (let columnKey in columnsValues) {
-            if (columnsValues[columnKey].length === 1) {
-              sameValueColumns.push(columnKey);
-            }
+            columnsFlattenValues[columnKey] = new Set([
+              ...(columnsFlattenValues[columnKey] || []),
+              ...(columnsValues[columnKey] || []),
+            ]);
 
             if (metricsCollection.config !== null) {
               rows[groupKey!].data[columnKey] =
@@ -2787,7 +2854,11 @@ function createAppModel(appConfig: IAppInitialConfig) {
             }
           }
         });
-
+        for (let columnKey in columnsFlattenValues) {
+          if (columnsFlattenValues[columnKey].size === 1) {
+            sameValueColumns.push(columnKey);
+          }
+        }
         return { rows, sameValueColumns };
       }
 
@@ -3246,7 +3317,7 @@ function createAppModel(appConfig: IAppInitialConfig) {
           .then((data) => {
             model.setState({
               selectFormData: {
-                options: getParamsOptions(data),
+                options: getSelectOptions(data),
                 suggestions: getSuggestionsByExplorer(appName, data),
               },
             });
@@ -3264,71 +3335,6 @@ function createAppModel(appConfig: IAppInitialConfig) {
             liveUpdateState.delay,
           );
         }
-      }
-
-      function getParamsOptions(projectsData: IProjectParamsMetrics) {
-        const comparator = alphabeticalSortComparator<ISelectOption>({
-          orderBy: 'label',
-        });
-
-        let optionsCount = 0; // to calculate color
-        const systemOptions: ISelectOption[] = [];
-        let params: ISelectOption[] = [];
-        let metrics: ISelectOption[] = [];
-
-        if (projectsData?.metric) {
-          for (let key in projectsData.metric) {
-            let system: boolean = isSystemMetric(key);
-            for (let val of projectsData.metric[key]) {
-              let label = contextToString(val);
-              let index: number = optionsCount;
-              let option: ISelectOption = {
-                label: `${system ? formatSystemMetricName(key) : key} ${label}`,
-                group: system ? 'System' : key,
-                type: 'metrics',
-                color: COLORS[0][index % COLORS[0].length],
-                value: {
-                  option_name: key,
-                  context: val,
-                },
-              };
-              optionsCount++;
-              if (system) {
-                systemOptions.push(option);
-              } else {
-                metrics.push(option);
-              }
-            }
-          }
-        }
-        if (projectsData?.params) {
-          const paramPaths = getObjectPaths(
-            projectsData.params,
-            projectsData.params,
-          );
-          paramPaths.forEach((paramPath, index) => {
-            params.push({
-              label: paramPath.slice(0, paramPath.indexOf('.__example_type__')),
-              group: 'Params',
-              type: 'params',
-              color: COLORS[0][index % COLORS[0].length],
-            });
-          });
-        }
-
-        params = params.sort(comparator);
-        metrics = metrics.sort(comparator);
-        systemOptions.sort(comparator);
-
-        // sort by group
-        const data: ISelectOption[] = [...metrics, ...params];
-
-        data.sort(
-          alphabeticalSortComparator({
-            orderBy: 'type',
-          }),
-        );
-        return data.concat(systemOptions);
       }
 
       function updateData(newData: IRun<IParamTrace>[]): void {
@@ -3462,8 +3468,9 @@ function createAppModel(appConfig: IAppInitialConfig) {
             const groupByMetricName: any = {};
             Object.keys(metricsColumns[key]).forEach(
               (metricContext: string) => {
+                const contextName = metricContext ? `_${metricContext}` : '';
                 groupByMetricName[
-                  `${isSystemMetric(key) ? key : `${key}_${metricContext}`}`
+                  `${isSystemMetric(key) ? key : `${key}${contextName}`}`
                 ] = '-';
               },
             );
@@ -3477,12 +3484,12 @@ function createAppModel(appConfig: IAppInitialConfig) {
 
         let rowIndex = 0;
         const sameValueColumns: string[] = [];
+        const columnsFlattenValues: { [key: string]: Set<any> } = {};
 
         processedData.forEach(
           (metricsCollection: IMetricsCollection<IParam>) => {
             const groupKey = metricsCollection.key;
             const columnsValues: { [key: string]: string[] } = {};
-
             if (metricsCollection.config !== null) {
               const groupConfigData: { [key: string]: string } = {};
               for (let key in metricsCollection.config) {
@@ -3529,11 +3536,15 @@ function createAppModel(appConfig: IAppInitialConfig) {
             metricsCollection.data.forEach((metric: any) => {
               const metricsRowValues = { ...initialMetricsRowData };
               metric.run.traces.metric.forEach((trace: any) => {
+                const contextName =
+                  contextToString(trace.context) === ''
+                    ? ''
+                    : `_${contextToString(trace.context)}`;
                 metricsRowValues[
                   `${
                     isSystemMetric(trace.name)
                       ? trace.name
-                      : `${trace.name}_${contextToString(trace.context)}`
+                      : `${trace.name}${contextName}`
                   }`
                 ] = formatValue(trace.last_value.last);
               });
@@ -3640,9 +3651,10 @@ function createAppModel(appConfig: IAppInitialConfig) {
             });
 
             for (let columnKey in columnsValues) {
-              if (columnsValues[columnKey].length === 1) {
-                sameValueColumns.push(columnKey);
-              }
+              columnsFlattenValues[columnKey] = new Set([
+                ...(columnsFlattenValues[columnKey] || []),
+                ...(columnsValues[columnKey] || []),
+              ]);
 
               if (metricsCollection.config !== null) {
                 rows[groupKey!].data[columnKey] =
@@ -3664,6 +3676,11 @@ function createAppModel(appConfig: IAppInitialConfig) {
             }
           },
         );
+        for (let columnKey in columnsFlattenValues) {
+          if (columnsFlattenValues[columnKey].size === 1) {
+            sameValueColumns.push(columnKey);
+          }
+        }
         return { rows, sameValueColumns };
       }
 
@@ -3846,6 +3863,9 @@ function createAppModel(appConfig: IAppInitialConfig) {
             runProps,
           }),
         ];
+        const metricsSelectOptions = getMetricsSelectOptions(metricsColumns);
+        const sortOptions = [...groupingSelectOptions, ...metricsSelectOptions];
+
         const tableData = getDataAsTableRows(
           data,
           metricsColumns,
@@ -3857,7 +3877,7 @@ function createAppModel(appConfig: IAppInitialConfig) {
         const sortFields = modelState?.config?.table.sortFields;
 
         const tableColumns = getParamsTableColumns(
-          groupingSelectOptions,
+          sortOptions,
           metricsColumns,
           params,
           data[0]?.config,
@@ -3926,6 +3946,7 @@ function createAppModel(appConfig: IAppInitialConfig) {
           tableColumns,
           sameValueColumns: tableData.sameValueColumns,
           groupingSelectOptions,
+          sortOptions,
         });
       }
 
@@ -4089,18 +4110,32 @@ function createAppModel(appConfig: IAppInitialConfig) {
           highLevelParams = highLevelParams.concat(
             getObjectPaths(run.params, run.params, '', false, true),
           );
+          let metricsLastValues: any = {};
           run.traces.metric.forEach((trace) => {
             metricsColumns[trace.name] = {
               ...metricsColumns[trace.name],
               [contextToString(trace.context) as string]: '-',
             };
+            const contextName =
+              contextToString(trace.context) === ''
+                ? ''
+                : `_${contextToString(trace.context)}`;
+
+            const key = `${
+              isSystemMetric(trace.name)
+                ? trace.name
+                : `${trace.name}${contextName}`
+            }`;
+            metricsLastValues[key] = trace.last_value.last;
           });
           const paramKey = encode({ runHash: run.hash });
+
           runs.push({
             run,
             isHidden: configData!.table.hiddenMetrics!.includes(paramKey),
             color: COLORS[paletteIndex][index % COLORS[paletteIndex].length],
             key: paramKey,
+            metricsLastValues,
             dasharray: DASH_ARRAYS[0],
           });
         });
@@ -4241,8 +4276,11 @@ function createAppModel(appConfig: IAppInitialConfig) {
           config,
           groupingSelectOptions,
         );
+        const metricsSelectOptions = getMetricsSelectOptions(metricsColumns);
+        const sortOptions = [...groupingSelectOptions, ...metricsSelectOptions];
+
         const tableColumns: ITableColumn[] = getParamsTableColumns(
-          groupingSelectOptions,
+          sortOptions,
           metricsColumns,
           params,
           data[0]?.config,
@@ -4326,6 +4364,9 @@ function createAppModel(appConfig: IAppInitialConfig) {
             runProps,
           }),
         ];
+        const metricsSelectOptions = getMetricsSelectOptions(metricsColumns);
+        const sortOptions = [...groupingSelectOptions, ...metricsSelectOptions];
+
         const tableData = getDataAsTableRows(
           data,
           metricsColumns,
@@ -4335,7 +4376,7 @@ function createAppModel(appConfig: IAppInitialConfig) {
           groupingSelectOptions,
         );
         const tableColumns = getParamsTableColumns(
-          groupingSelectOptions,
+          sortOptions,
           metricsColumns,
           params,
           data[0]?.config,
@@ -4368,6 +4409,7 @@ function createAppModel(appConfig: IAppInitialConfig) {
             model: model as IModel<IParamsAppModelState>,
           }),
           groupingSelectOptions,
+          sortOptions,
           tableData: tableData.rows,
           tableColumns,
           sameValueColumns: tableData.sameValueColumns,
@@ -4812,6 +4854,14 @@ function createAppModel(appConfig: IAppInitialConfig) {
           }): void {
             return onRowSelect({ actionType, data, model });
           },
+          onRowsVisibilityChange(metricKeys: string[]): void {
+            return onRowsVisibilityChange({
+              metricKeys,
+              model,
+              appName,
+              updateModelData,
+            });
+          },
         });
       }
 
@@ -4867,7 +4917,7 @@ function createAppModel(appConfig: IAppInitialConfig) {
           .then((data: IProjectParamsMetrics) => {
             model.setState({
               selectFormData: {
-                options: getScattersSelectOptions(data),
+                options: getSelectOptions(data),
                 suggestions: getSuggestionsByExplorer(appName, data),
               },
             });
@@ -4911,6 +4961,9 @@ function createAppModel(appConfig: IAppInitialConfig) {
             runProps,
           }),
         ];
+        const metricsSelectOptions = getMetricsSelectOptions(metricsColumns);
+        const sortOptions = [...groupingSelectOptions, ...metricsSelectOptions];
+
         const tableData = getDataAsTableRows(
           data,
           metricsColumns,
@@ -4922,7 +4975,7 @@ function createAppModel(appConfig: IAppInitialConfig) {
         const sortFields = modelState?.config?.table.sortFields;
 
         const tableColumns = getParamsTableColumns(
-          groupingSelectOptions,
+          sortOptions,
           metricsColumns,
           params,
           data[0]?.config,
@@ -4958,6 +5011,7 @@ function createAppModel(appConfig: IAppInitialConfig) {
           tableColumns,
           sameValueColumns: tableData.sameValueColumns,
           groupingSelectOptions,
+          sortOptions,
           selectedRows,
         });
       }
@@ -5126,8 +5180,9 @@ function createAppModel(appConfig: IAppInitialConfig) {
             const groupByMetricName: any = {};
             Object.keys(metricsColumns[key]).forEach(
               (metricContext: string) => {
+                const contextName = metricContext ? `_${metricContext}` : '';
                 groupByMetricName[
-                  `${isSystemMetric(key) ? key : `${key}_${metricContext}`}`
+                  `${isSystemMetric(key) ? key : `${key}${contextName}`}`
                 ] = '-';
               },
             );
@@ -5141,6 +5196,7 @@ function createAppModel(appConfig: IAppInitialConfig) {
 
         let rowIndex = 0;
         const sameValueColumns: string[] = [];
+        const columnsFlattenValues: { [key: string]: Set<any> } = {};
 
         processedData.forEach(
           (metricsCollection: IMetricsCollection<IParam>) => {
@@ -5193,11 +5249,16 @@ function createAppModel(appConfig: IAppInitialConfig) {
             metricsCollection.data.forEach((metric: any) => {
               const metricsRowValues = { ...initialMetricsRowData };
               metric.run.traces.metric.forEach((trace: any) => {
+                const contextName =
+                  contextToString(trace.context) === ''
+                    ? ''
+                    : `_${contextToString(trace.context)}`;
+
                 metricsRowValues[
                   `${
                     isSystemMetric(trace.name)
                       ? trace.name
-                      : `${trace.name}_${contextToString(trace.context)}`
+                      : `${trace.name}${contextName}`
                   }`
                 ] = formatValue(trace.last_value.last);
               });
@@ -5304,9 +5365,10 @@ function createAppModel(appConfig: IAppInitialConfig) {
             });
 
             for (let columnKey in columnsValues) {
-              if (columnsValues[columnKey].length === 1) {
-                sameValueColumns.push(columnKey);
-              }
+              columnsFlattenValues[columnKey] = new Set([
+                ...(columnsFlattenValues[columnKey] || []),
+                ...(columnsValues[columnKey] || []),
+              ]);
 
               if (metricsCollection.config !== null) {
                 rows[groupKey!].data[columnKey] =
@@ -5328,6 +5390,11 @@ function createAppModel(appConfig: IAppInitialConfig) {
             }
           },
         );
+        for (let columnKey in columnsFlattenValues) {
+          if (columnsFlattenValues[columnKey].size === 1) {
+            sameValueColumns.push(columnKey);
+          }
+        }
         return { rows, sameValueColumns };
       }
 
@@ -5355,11 +5422,24 @@ function createAppModel(appConfig: IAppInitialConfig) {
           highLevelParams = highLevelParams.concat(
             getObjectPaths(run.params, run.params, '', false, true),
           );
+          let metricsLastValues: { [key: string]: number | string } = {};
+
           run.traces.metric.forEach((trace) => {
             metricsColumns[trace.name] = {
               ...metricsColumns[trace.name],
               [contextToString(trace.context) as string]: '-',
             };
+            const contextName =
+              contextToString(trace.context) === ''
+                ? ''
+                : `_${contextToString(trace.context)}`;
+
+            const key = `${
+              isSystemMetric(trace.name)
+                ? trace.name
+                : `${trace.name}${contextName}`
+            }`;
+            metricsLastValues[key] = trace.last_value.last;
           });
           const paramKey = encode({ runHash: run.hash });
           runs.push({
@@ -5367,6 +5447,7 @@ function createAppModel(appConfig: IAppInitialConfig) {
             isHidden: configData!.table.hiddenMetrics!.includes(paramKey),
             color: COLORS[paletteIndex][index % COLORS[paletteIndex].length],
             key: paramKey,
+            metricsLastValues,
             dasharray: DASH_ARRAYS[0],
           });
         });
@@ -5587,6 +5668,9 @@ function createAppModel(appConfig: IAppInitialConfig) {
             runProps,
           }),
         ];
+        const metricsSelectOptions = getMetricsSelectOptions(metricsColumns);
+        const sortOptions = [...groupingSelectOptions, ...metricsSelectOptions];
+
         const tableData = getDataAsTableRows(
           data,
           metricsColumns,
@@ -5596,7 +5680,7 @@ function createAppModel(appConfig: IAppInitialConfig) {
           groupingSelectOptions,
         );
         const tableColumns = getParamsTableColumns(
-          groupingSelectOptions,
+          sortOptions,
           metricsColumns,
           params,
           data[0]?.config,
@@ -5629,6 +5713,7 @@ function createAppModel(appConfig: IAppInitialConfig) {
             model: model as IModel<IScatterAppModelState>,
           }),
           groupingSelectOptions,
+          sortOptions,
           tableData: tableData.rows,
           tableColumns,
           sameValueColumns: tableData.sameValueColumns,
@@ -5712,57 +5797,6 @@ function createAppModel(appConfig: IAppInitialConfig) {
         };
       }
 
-      function getScattersSelectOptions(projectsData: IProjectParamsMetrics) {
-        let data: ISelectOption[] = [];
-        const systemOptions: ISelectOption[] = [];
-        if (projectsData?.metric) {
-          for (let key in projectsData.metric) {
-            let system: boolean = isSystemMetric(key);
-            for (let val of projectsData.metric[key]) {
-              let label: string = Object.keys(val)
-                .map((item) => `${item}="${val[item]}"`)
-                .join(', ');
-              let index: number = data.length;
-              let option: ISelectOption = {
-                label: `${system ? formatSystemMetricName(key) : key} ${label}`,
-                group: system ? formatSystemMetricName(key) : key,
-                type: 'metrics',
-                color: COLORS[0][index % COLORS[0].length],
-                value: {
-                  option_name: key,
-                  context: val,
-                },
-              };
-              if (system) {
-                systemOptions.push(option);
-              } else {
-                data.push(option);
-              }
-            }
-          }
-        }
-        if (projectsData?.params) {
-          const paramPaths = getObjectPaths(
-            projectsData.params,
-            projectsData.params,
-          );
-          paramPaths.forEach((paramPath, index) => {
-            data.push({
-              label: paramPath.slice(0, paramPath.indexOf('.__example_type__')),
-              group: 'Params',
-              type: 'params',
-              color: COLORS[0][index % COLORS[0].length],
-            });
-          });
-        }
-        const comparator = alphabeticalSortComparator({
-          orderBy: 'label',
-        });
-
-        systemOptions.sort(comparator);
-        return data.sort(comparator).concat(systemOptions);
-      }
-
       function resetModelState(
         configData: any,
         shouldResetSelectedRows: boolean,
@@ -5807,8 +5841,11 @@ function createAppModel(appConfig: IAppInitialConfig) {
           config,
           groupingSelectOptions,
         );
+        const metricsSelectOptions = getMetricsSelectOptions(metricsColumns);
+        const sortOptions = [...groupingSelectOptions, ...metricsSelectOptions];
+
         const tableColumns: ITableColumn[] = getParamsTableColumns(
-          groupingSelectOptions,
+          sortOptions,
           metricsColumns,
           params,
           data[0]?.config,
@@ -6303,6 +6340,14 @@ function createAppModel(appConfig: IAppInitialConfig) {
             data?: any;
           }): void {
             return onRowSelect({ actionType, data, model });
+          },
+          onRowsVisibilityChange(metricKeys: string[]): void {
+            return onRowsVisibilityChange({
+              metricKeys,
+              model,
+              appName,
+              updateModelData,
+            });
           },
         });
       }

@@ -16,7 +16,7 @@ export default function TableSortIcons(
       <Button
         withOnlyIcon
         className='TableColumn__SortButton'
-        size='small'
+        size='xxSmall'
         onClick={props.onSort}
       >
         <Icon

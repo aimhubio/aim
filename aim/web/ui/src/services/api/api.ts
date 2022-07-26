@@ -65,9 +65,9 @@ function getStream<ResponseDataType>(
     {
       method: 'GET',
       ...options,
+      headers: getRequestHeaders(),
       ...(options?.method === 'POST' && {
         body: JSON.stringify(params),
-        headers: { 'Content-Type': 'application/json' },
       }),
     },
     true,
@@ -88,9 +88,9 @@ function getStream1<ResponseDataType>(
     {
       method: 'GET',
       ...options,
+      headers: getRequestHeaders(),
       ...(options?.method === 'POST' && {
         body: JSON.stringify(options.body),
-        headers: { 'Content-Type': 'application/json' },
       }),
     },
     true,
@@ -107,6 +107,7 @@ function get<ResponseDataType>(
     {
       method: 'GET',
       ...options,
+      headers: getRequestHeaders(),
     },
   );
 }
@@ -119,9 +120,7 @@ function post<ResponseDataType>(
   return createAPIRequestWrapper<ResponseDataType>(url, {
     method: 'POST',
     ...options,
-    headers: {
-      'Content-Type': 'application/json',
-    },
+    headers: getRequestHeaders(),
     body: JSON.stringify(data),
   });
 }
@@ -134,9 +133,7 @@ function put<ResponseDataType>(
   return createAPIRequestWrapper<ResponseDataType>(url, {
     method: 'PUT',
     ...options,
-    headers: {
-      'Content-Type': 'application/json',
-    },
+    headers: getRequestHeaders(),
     body: JSON.stringify(data),
   });
 }
@@ -146,6 +143,17 @@ function remove<ResponseDataType>(url: string, options?: RequestInit) {
     method: 'DELETE',
     ...options,
   });
+}
+
+function getTimezoneOffset(): string {
+  return `${new Date().getTimezoneOffset()}`;
+}
+
+function getRequestHeaders() {
+  return {
+    'Content-Type': 'application/json',
+    'X-Timezone-Offset': getTimezoneOffset(),
+  };
 }
 
 const API = {

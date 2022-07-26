@@ -147,6 +147,7 @@ function ParamsContainer(): React.FunctionComponentElement<React.ReactNode> {
       curveInterpolation={paramsData?.config?.chart?.curveInterpolation!}
       chartTitleData={paramsData?.chartTitleData!}
       groupingSelectOptions={paramsData?.groupingSelectOptions!}
+      sortOptions={paramsData?.sortOptions!}
       hiddenColumns={paramsData?.config?.table?.hiddenColumns!}
       hideSystemMetrics={paramsData?.config?.table?.hideSystemMetrics!}
       columnsOrder={paramsData?.config?.table?.columnsOrder!}
@@ -192,6 +193,7 @@ function ParamsContainer(): React.FunctionComponentElement<React.ReactNode> {
       onRowSelect={paramsAppModel.onRowSelect}
       archiveRuns={paramsAppModel.archiveRuns}
       deleteRuns={paramsAppModel.deleteRuns}
+      onRowsVisibilityChange={paramsAppModel.onRowsVisibilityChange}
     />
   );
 }
