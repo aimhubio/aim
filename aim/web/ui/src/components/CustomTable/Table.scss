@@ -109,7 +109,9 @@ $border-radius: 0.2rem;
 
 .Table__pane--selection {
   left: 0;
-  box-shadow: 1px 0 3px 0 $cuddle;
+  &.withShadow {
+    box-shadow: 1px 0 3px 0 $cuddle;
+  }
 }
 
 .Table__pane--right {
