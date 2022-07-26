@@ -163,6 +163,17 @@ function AutocompleteInput({
       if (typeof val === 'string') {
         // formatting value to avoid the new line
         let formattedValue = val.replace(/[\n\r]/g, '');
+        if (
+          ev.changes[0].text.startsWith('[') &&
+          formattedValue[ev.changes[0].rangeOffset - 1] === '.'
+        ) {
+          formattedValue =
+            formattedValue.slice(0, ev.changes[0].rangeOffset - 1) +
+            formattedValue.slice(
+              ev.changes[0].rangeOffset,
+              formattedValue.length,
+            );
+        }
         if (ev.changes[0].text === '\n') {
           formattedValue = hasSelection
             ? editorValue.replace(/[\n\r]/g, '')

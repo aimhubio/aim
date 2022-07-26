@@ -137,4 +137,6 @@ export type IconName =
   | 'circle-info'
   | 'warning-outline'
   | 'warning-contained'
-  | 'info-circle-outline';
+  | 'info-circle-outline'
+  | 'axes-props'
+  | 'compare';

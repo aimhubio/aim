@@ -22,12 +22,22 @@ const inputSizes = {
   },
 };
 
-const inputTypeConversionFns: { [key: string]: (value: any) => any } = {
-  number: (value: any) => {
-    const result = parseInt(value);
-    return !isNaN(result) ? result : 0;
+const inputTypeConversionFns: {
+  [key: string]: ({
+    value,
+    isRequiredNumberValue,
+    isNumberValueFloat,
+  }: {
+    value: any;
+    isRequiredNumberValue?: boolean;
+    isNumberValueFloat?: boolean;
+  }) => string | number | undefined;
+} = {
+  number: ({ value, isRequiredNumberValue, isNumberValueFloat }) => {
+    const result = isNumberValueFloat ? parseFloat(value) : parseInt(value);
+    return !isNaN(result) ? result : isRequiredNumberValue ? 0 : undefined;
   },
-  text: (value: any) => `${value}`,
+  text: ({ value }) => `${value}`,
 };
 
 export { labelAppearances, inputSizes, inputTypeConversionFns };

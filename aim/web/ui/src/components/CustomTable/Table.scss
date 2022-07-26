@@ -17,8 +17,6 @@ $border-radius: 0.2rem;
   min-width: 100%;
   min-height: 100%;
   box-sizing: border-box;
-  content-visibility: auto;
-  contain: content;
   font-weight: $font-500;
   &__container {
     height: 100%;
@@ -73,7 +71,6 @@ $border-radius: 0.2rem;
   min-height: 100%;
   box-sizing: border-box;
   z-index: 0;
-  contain: content;
 }
 .Table__status_indicator {
   width: 8px;
@@ -96,6 +93,7 @@ $border-radius: 0.2rem;
 .Table__pane--left,
 .Table__pane--right,
 .Table__pane--selection {
+  position: -webkit-sticky;
   position: sticky;
   width: auto;
   z-index: 1;
@@ -136,7 +134,6 @@ $border-radius: 0.2rem;
   width: -webkit-fill-available;
   width: -moz-available;
   max-width: 500px;
-  contain: content;
   .Table__column__defaultSelectIcon {
     border: 1.5px solid $pico-80;
     border-radius: $border-radius-xs;
@@ -290,7 +287,6 @@ $border-radius: 0.2rem;
   white-space: nowrap;
   text-overflow: ellipsis;
   height: var(--cell-height);
-  position: relative;
   color: $pico-100;
   &.isNumeric {
     justify-content: flex-end;
@@ -320,6 +316,7 @@ $border-radius: 0.2rem;
     transition: background-color 0.2s ease-out;
 
     &.expanded {
+      position: -webkit-sticky;
       position: sticky;
       background-color: $cuddle-20;
       top: calc(2 * var(--cell-height));
@@ -399,6 +396,7 @@ $border-radius: 0.2rem;
 }
 
 .Table__cell--header {
+  position: -webkit-sticky;
   position: sticky;
   top: var(--cell-height);
   flex: none;
