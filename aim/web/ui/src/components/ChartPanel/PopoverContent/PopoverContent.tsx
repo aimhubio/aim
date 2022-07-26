@@ -22,7 +22,8 @@ import { formatValue } from 'utils/formatValue';
 import { isSystemMetric } from 'utils/isSystemMetric';
 import { formatSystemMetricName } from 'utils/formatSystemMetricName';
 import getValueByField from 'utils/getValueByField';
-import { AIM64_ENCODING_PREFIX, decode } from 'utils/encoder/encoder';
+import { isEncodedMetric } from 'utils/isEncodedMetric';
+import { decode } from 'utils/encoder/encoder';
 
 import './PopoverContent.scss';
 
@@ -91,10 +92,7 @@ const PopoverContent = React.forwardRef(function PopoverContent(
         let context: string = '';
         const xValue = `${focusedState?.xValue}`;
 
-        if (
-          xValue?.startsWith(AIM64_ENCODING_PREFIX) &&
-          JSON.parse(decode(xValue)).hasOwnProperty('metricName')
-        ) {
+        if (isEncodedMetric(xValue)) {
           const metric = JSON.parse(decode(xValue));
           metricName = metric.metricName;
           context = metric.contextName;

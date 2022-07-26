@@ -10,6 +10,7 @@ import { getLabelAndValueOfMetric } from './getLabelAndValueOfMetric';
 
 export default function getSelectOptions(
   projectsData: IProjectParamsMetrics,
+  addHighLevelMetrics: boolean = false,
 ): ISelectOption[] {
   const comparator = alphabeticalSortComparator<ISelectOption>({
     orderBy: 'label',
@@ -20,6 +21,29 @@ export default function getSelectOptions(
 
   if (projectsData?.metric) {
     for (let metricName in projectsData.metric) {
+      if (addHighLevelMetrics) {
+        const { label, key, isSystemMetric } = getLabelAndValueOfMetric(
+          metricName,
+          {},
+        );
+        let index: number = metrics.length;
+        let option: ISelectOption = {
+          label: label,
+          group: isSystemMetric ? 'System' : metricName,
+          type: 'metrics',
+          color: COLORS[0][index % COLORS[0].length],
+          key,
+          value: {
+            option_name: metricName,
+            context: null,
+          },
+        };
+        if (isSystemMetric) {
+          systemOptions.push(option);
+        } else {
+          metrics.push(option);
+        }
+      }
       for (let val of projectsData.metric[metricName]) {
         const { label, key, isSystemMetric } = getLabelAndValueOfMetric(
           metricName,

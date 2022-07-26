@@ -1,3 +1,6 @@
+import { decode } from 'utils/encoder/encoder';
+import { isEncodedMetric } from 'utils/isEncodedMetric';
+
 export default function getFilteredRow<R extends Record<string, any>>({
   columnKeys,
   row,
@@ -6,6 +9,11 @@ export default function getFilteredRow<R extends Record<string, any>>({
   row: R;
 }): { [key: string]: string } {
   return columnKeys.reduce((acc: { [key: string]: string }, column: string) => {
+    let columnKey = column;
+    if (isEncodedMetric(column)) {
+      const { metricName, contextName } = JSON.parse(decode(column));
+      columnKey = `${metricName}${contextName ? `${contextName} ` : ''}`;
+    }
     let value = row[column];
     if (Array.isArray(value)) {
       value = value.join(', ');
@@ -13,10 +21,10 @@ export default function getFilteredRow<R extends Record<string, any>>({
       value = value || value === 0 ? JSON.stringify(value) : '-';
     }
 
-    if (column.startsWith('params.')) {
-      acc[column.replace('params.', '')] = value;
+    if (columnKey.startsWith('params.')) {
+      acc[columnKey.replace('params.', '')] = value;
     } else {
-      acc[column] = value;
+      acc[columnKey] = value;
     }
 
     return acc;

@@ -432,9 +432,6 @@ function Table(props) {
                         (f) => f[0] === col.sortableKey,
                       ) === -1
                     }
-                    sortByColumn={(order) =>
-                      props.onSort(col.sortableKey, order)
-                    }
                     onRowHover={props.onRowHover}
                     onRowClick={props.onRowClick}
                     columnOptions={col.columnOptions}
@@ -495,9 +492,6 @@ function Table(props) {
                       props.sortFields.findIndex(
                         (f) => f[0] === col.sortableKey,
                       ) === -1
-                    }
-                    sortByColumn={(order) =>
-                      props.onSort(col.sortableKey, order)
                     }
                     rowHeightMode={props.rowHeightMode}
                     onRowHover={props.onRowHover}
@@ -566,9 +560,6 @@ function Table(props) {
                       props.sortFields.findIndex(
                         (f) => f[0] === col.sortableKey,
                       ) === -1
-                    }
-                    sortByColumn={(order) =>
-                      props.onSort(col.sortableKey, order)
                     }
                     onRowHover={props.onRowHover}
                     onRowClick={props.onRowClick}

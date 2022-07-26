@@ -1,4 +1,3 @@
-import * as React from 'react';
 import { merge } from 'lodash-es';
 
 import { Badge } from 'components/kit';
@@ -10,9 +9,9 @@ import { TABLE_DEFAULT_CONFIG } from 'config/table/tableConfigs';
 
 import { ITableColumn } from 'types/pages/metrics/components/TableColumns/TableColumns';
 
-import { isSystemMetric } from 'utils/isSystemMetric';
 import { formatSystemMetricName } from 'utils/formatSystemMetricName';
 import alphabeticalSortComparator from 'utils/alphabeticalSortComparator';
+import { getLabelAndValueOfMetric } from 'utils/app/getLabelAndValueOfMetric';
 
 function getRunsTableColumns(
   metricsColumns: any,
@@ -92,16 +91,20 @@ function getRunsTableColumns(
         : null,
     },
   ].concat(
-    Object.keys(metricsColumns).reduce((acc: any, key: string) => {
-      const systemMetric: boolean = isSystemMetric(key);
+    Object.keys(metricsColumns).reduce((acc: any, metricName: string) => {
       const systemMetricsList: ITableColumn[] = [];
       const metricsList: ITableColumn[] = [];
-      Object.keys(metricsColumns[key]).forEach((metricContext) => {
-        const columnKey = `${systemMetric ? key : `${key}_${metricContext}`}`;
+      Object.keys(metricsColumns[metricName]).forEach((metricContext) => {
+        const { label, key, isSystemMetric } = getLabelAndValueOfMetric(
+          metricName,
+          metricContext,
+        );
+
         let column = {
-          key: columnKey,
-          content: systemMetric ? (
-            <span>{formatSystemMetricName(key)}</span>
+          key,
+          label,
+          content: isSystemMetric ? (
+            <span>{formatSystemMetricName(metricName)}</span>
           ) : (
             <Badge
               monospace
@@ -110,14 +113,14 @@ function getRunsTableColumns(
               label={metricContext === '' ? 'Empty context' : metricContext}
             />
           ),
-          topHeader: systemMetric ? 'System Metrics' : key,
-          pin: order?.left?.includes(columnKey)
+          topHeader: isSystemMetric ? 'System Metrics' : metricName,
+          pin: order?.left?.includes(key)
             ? 'left'
-            : order?.right?.includes(columnKey)
+            : order?.right?.includes(key)
             ? 'right'
             : null,
         };
-        systemMetric
+        isSystemMetric
           ? systemMetricsList.push(column)
           : metricsList.push(column);
       });
