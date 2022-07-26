@@ -1,8 +1,10 @@
 from typing import Generic, Union, Tuple, TypeVar, Dict, Iterator, Any, List
 from itertools import islice
 import numpy as np
+import logging
 
 from aim.sdk.tracker import STEP_HASH_FUNCTIONS
+from aim.storage.treeview import TreeView
 from aim.storage.arrayview import ArrayView
 from aim.storage.context import Context
 from aim.storage.hashing import hash_auto
@@ -12,6 +14,9 @@ from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
     from aim.sdk.run import Run
+
+
+logger = logging.getLogger(__name__)
 
 
 T = TypeVar('T')
@@ -157,6 +162,10 @@ class SequenceV2Data(SequenceData):
             n_items: int = -1
     ):
         super().__init__(series_tree, version=2, columns=columns)
+        # `SequenceV2Data` has access to both metadata and series data
+        # trees that are not necessarily based on the same physical storage.
+        # Therefore, we don't have a consistency guarantee between the two.
+        # The implemented methods should tolerate this.
         self.meta_tree = meta_tree
         self.n_items = n_items
         self.steps: ArrayView = self._get_array('step')
@@ -191,9 +200,21 @@ class SequenceV2Data(SequenceData):
         steps = steps[sort_indices]
         if last_step is not None and last_step != steps[-1]:
             step_hash = self.step_hash(last_step)
-            steps[-1] = last_step
-            for i in range(len(columns)):
-                columns[i][-1] = self.arrays[i][step_hash]
+            # The `last_step` is provided by the meta tree which may potentially
+            # be out of sync with the series tree.
+            # If such case occurs, we fall back to the series tree for the last step.
+            last_steps = []
+            try:
+                for i in range(len(columns)):
+                    last_steps.append(self.arrays[i][step_hash])
+            except KeyError:
+                logger.debug('Last step not found in reservoir.')
+            else:
+                # Only if all the last steps are found, we use them.
+                for i in range(len(columns)):
+                    columns[i][-1] = last_steps[i]
+                steps[-1] = last_step
+
         return steps, columns
 
 
@@ -223,18 +244,14 @@ class Sequence(Generic[T]):
     ):
         self._hash: int = None
         self._version: int = None
-        self._meta_tree = run.meta_run_tree.subtree(('traces', context.idx, name))
-        self._series_tree = run.series_run_trees[self.version].subtree((context.idx, name))
+        self._meta_tree: TreeView = run.meta_run_tree.subtree(('traces', context.idx, name))
+        self._series_tree: TreeView = None
+        self._columns = [('val', None), ('epoch', 'float64'), ('time', 'float64')]
+        self._data: SequenceData = None  # use data property
 
         self.name = name
         self.context = context
         self.run = run
-        self.data: SequenceData = None
-        columns = [('val', None), ('epoch', 'float64'), ('time', 'float64')]
-        if self.version == 1:
-            self.data = SequenceV1Data(self._series_tree, columns=columns)
-        else:
-            self.data = SequenceV2Data(self._meta_tree, self._series_tree, columns=columns)
 
     def __repr__(self) -> str:
         return f'<Sequence#{hash(self)} name=`{self.name}` context=`{self.context}` run=`{self.run}`>'
@@ -264,6 +281,21 @@ class Sequence(Generic[T]):
         if self._hash is None:
             self._hash = self._calc_hash()
         return self._hash
+
+    @property
+    def series_tree(self) -> TreeView:
+        if self._series_tree is None:
+            self._series_tree = self.run.series_run_trees[self.version].subtree((self.context.idx, self.name))
+        return self._series_tree
+
+    @property
+    def data(self) -> SequenceData:
+        if self._data is None:
+            if self.version == 1:
+                self._data = SequenceV1Data(self.series_tree, columns=self._columns)
+            else:
+                self._data = SequenceV2Data(self._meta_tree, self.series_tree, columns=self._columns)
+        return self._data
 
     @property
     def version(self):
@@ -305,7 +337,7 @@ class Sequence(Generic[T]):
         return len(self.values)
 
     def preload(self):
-        self._series_tree.preload()
+        self.series_tree.preload()
 
 
 class MediaSequenceBase(Sequence):

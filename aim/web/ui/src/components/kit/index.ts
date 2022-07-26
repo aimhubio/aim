@@ -13,6 +13,7 @@ import Modal from './Modal';
 import ActionCard from './ActionCard';
 import InputWrapper from './Input';
 import Card from './Card';
+import SelectDropdown from './SelectDropdown';
 
 export {
   AutoSuggestions,
@@ -31,6 +32,7 @@ export {
   Icon,
   Menu,
   Card,
+  SelectDropdown,
 };
 
 export type { IButtonProps };

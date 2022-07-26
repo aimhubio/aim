@@ -15,7 +15,7 @@ import {
   CheckBoxOutlineBlank,
 } from '@material-ui/icons';
 
-import { Icon, Badge, Button } from 'components/kit';
+import { Icon, Badge, Button, Text } from 'components/kit';
 import ErrorBoundary from 'components/ErrorBoundary/ErrorBoundary';
 import AutocompleteInput from 'components/AutocompleteInput';
 
@@ -85,17 +85,22 @@ function SelectForm({
     imagesExploreAppModel.abortRequest();
   }
 
-  function onSelect(event: object, value: ISelectOption[]): void {
-    const lookup = value.reduce(
-      (acc: { [key: string]: number }, curr: ISelectOption) => {
-        acc[curr.label] = ++acc[curr.label] || 0;
-        return acc;
-      },
-      {},
-    );
-    onImagesExploreSelectChange(
-      value.filter((option: ISelectOption) => lookup[option.label] === 0),
-    );
+  function onSelect(
+    event: React.ChangeEvent<{}>,
+    value: ISelectOption[],
+  ): void {
+    if (event.type === 'click') {
+      const lookup = value.reduce(
+        (acc: { [key: string]: number }, curr: ISelectOption) => {
+          acc[curr.label] = ++acc[curr.label] || 0;
+          return acc;
+        },
+        {},
+      );
+      onImagesExploreSelectChange(
+        value.filter((option: ISelectOption) => lookup[option.label] === 0),
+      );
+    }
   }
 
   function handleDelete(field: string): void {
@@ -148,8 +153,8 @@ function SelectForm({
 
   return (
     <ErrorBoundary>
-      <div className='SelectForm__container'>
-        <div className='SelectForm__metrics__container'>
+      <div className='SelectForm'>
+        <div className='SelectForm__container__metrics'>
           <Box display='flex'>
             <Box
               width='100%'
@@ -164,6 +169,7 @@ function SelectForm({
                     refObject={advancedAutocompleteRef}
                     context={selectFormData?.advancedSuggestions}
                     value={selectedImagesData?.advancedQuery}
+                    error={selectFormData?.advancedError}
                     onEnter={handleSearch}
                     disabled={isDisabled}
                   />
@@ -251,11 +257,14 @@ function SelectForm({
                       flexItem
                     />
                     {selectedImagesData?.options.length === 0 && (
-                      <span className='SelectForm__tags__empty'>
+                      <Text tint={50} size={14} weight={400}>
                         No images are selected
-                      </span>
+                      </Text>
                     )}
-                    <Box className='SelectForm__tags ScrollBar__hidden'>
+                    <Box
+                      className='SelectForm__tags ScrollBar__hidden'
+                      flex={1}
+                    >
                       {selectedImagesData?.options?.map(
                         (tag: ISelectOption) => {
                           return (
@@ -297,6 +306,7 @@ function SelectForm({
                   refObject={autocompleteRef}
                   context={selectFormData?.suggestions}
                   value={selectedImagesData?.query}
+                  error={selectFormData?.error}
                   onEnter={handleSearch}
                   disabled={isDisabled}
                 />
@@ -305,7 +315,7 @@ function SelectForm({
           )}
         </div>
 
-        <div className='SelectForm__search__container'>
+        <div className='SelectForm__container__search'>
           <Button
             fullWidth
             key={`${requestIsPending}`}

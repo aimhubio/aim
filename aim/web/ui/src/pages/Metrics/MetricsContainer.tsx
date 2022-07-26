@@ -55,7 +55,7 @@ function MetricsContainer(): React.FunctionComponentElement<React.ReactNode> {
 
   React.useEffect(() => {
     if (tableRef.current && chartPanelRef.current) {
-      setComponentRefs<IMetricAppModelState>({
+      setComponentRefs({
         model: metricAppModel,
         refElement: {
           tableRef,
@@ -114,7 +114,6 @@ function MetricsContainer(): React.FunctionComponentElement<React.ReactNode> {
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
-
   return (
     <ErrorBoundary>
       <Metrics
@@ -133,17 +132,19 @@ function MetricsContainer(): React.FunctionComponentElement<React.ReactNode> {
         chartTitleData={metricsData?.chartTitleData!}
         ignoreOutliers={metricsData?.config?.chart?.ignoreOutliers!}
         tableData={metricsData?.tableData!}
+        sameValueColumns={metricsData?.sameValueColumns!}
         tableColumns={metricsData?.tableColumns!}
         aggregatedData={metricsData?.aggregatedData!}
         zoom={metricsData?.config?.chart?.zoom!}
         curveInterpolation={metricsData?.config?.chart?.curveInterpolation!}
         highlightMode={metricsData?.config?.chart?.highlightMode!}
         axesScaleType={metricsData?.config?.chart?.axesScaleType!}
+        axesScaleRange={metricsData?.config?.chart?.axesScaleRange!}
         smoothingAlgorithm={metricsData?.config?.chart?.smoothingAlgorithm!}
         smoothingFactor={metricsData?.config?.chart?.smoothingFactor!}
         focusedState={metricsData?.config?.chart?.focusedState!}
         notifyData={metricsData?.notifyData!}
-        tooltip={metricsData?.config?.chart?.tooltip!}
+        tooltip={metricsData?.tooltip!}
         aggregationConfig={metricsData?.config?.chart?.aggregationConfig!}
         alignmentConfig={metricsData?.config?.chart?.alignmentConfig!}
         densityType={metricsData?.config?.chart?.densityType!}
@@ -156,6 +157,7 @@ function MetricsContainer(): React.FunctionComponentElement<React.ReactNode> {
         chartPanelOffsetHeight={chartPanelOffsetHeight}
         selectedRows={metricsData?.selectedRows!}
         groupingSelectOptions={metricsData?.groupingSelectOptions!}
+        sortOptions={metricsData?.sortOptions!}
         resizeMode={metricsData?.config?.table?.resizeMode!}
         columnsWidths={metricsData?.config?.table?.columnsWidths!}
         requestStatus={metricsData?.requestStatus!}
@@ -172,6 +174,7 @@ function MetricsContainer(): React.FunctionComponentElement<React.ReactNode> {
         onTableRowClick={metricAppModel.onTableRowClick}
         updateColumnsWidths={metricAppModel.updateColumnsWidths}
         onAxesScaleTypeChange={metricAppModel.onAxesScaleTypeChange}
+        onAxesScaleRangeChange={metricAppModel.onAxesScaleRangeChange}
         onAggregationConfigChange={metricAppModel.onAggregationConfigChange}
         onGroupingSelectChange={metricAppModel.onGroupingSelectChange}
         onGroupingModeChange={metricAppModel.onGroupingModeChange}
@@ -201,6 +204,7 @@ function MetricsContainer(): React.FunctionComponentElement<React.ReactNode> {
         onColumnsVisibilityChange={metricAppModel.onColumnsVisibilityChange}
         onTableDiffShow={metricAppModel.onTableDiffShow}
         onTableResizeModeChange={metricAppModel.onTableResizeModeChange}
+        onRowsVisibilityChange={metricAppModel.onRowsVisibilityChange}
         // live update
         liveUpdateConfig={metricsData?.config?.liveUpdate!}
         onLiveUpdateConfigChange={metricAppModel.changeLiveUpdateConfig}

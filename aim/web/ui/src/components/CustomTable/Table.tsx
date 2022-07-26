@@ -17,6 +17,8 @@ import {
   RowHeightSize,
 } from 'config/table/tableConfigs';
 
+import getClosestValue from 'utils/getClosestValue';
+
 import Column from './TableColumn';
 
 import './Table.scss';
@@ -35,6 +37,9 @@ function Table(props) {
     .filter((col) => col.pin === 'right')
     .map((col) => col.key);
   let [expanded, setExpanded] = useState({});
+  let [colWidths, setColWidths] = useState({});
+  let [colLefts, setColLefts] = useState({});
+  let [middlePaneWindow, setMiddlePaneWindow] = useState([]);
 
   let prevExpanded = useRef(props.expanded ?? {});
 
@@ -48,6 +53,8 @@ function Table(props) {
     .filter((col) => rightCols.includes(col.key))
     .sort((a, b) => rightCols.indexOf(a.key) - rightCols.indexOf(b.key));
   const sortedColumns = [...leftPane, ...middlePane, ...rightPane];
+
+  const middlePaneColsKey = middlePane.map((col) => col.key).join('');
 
   const groups = !Array.isArray(props.data);
 
@@ -68,6 +75,65 @@ function Table(props) {
     prevExpanded.current = props.expanded ?? {};
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [props.expanded]);
+
+  useEffect(() => {
+    let rAFRef = window.requestAnimationFrame(() => {
+      let left = 0;
+      let lefts = {};
+      Object.keys(colWidths)
+        .sort((a, b) => +a - +b)
+        .forEach((i) => {
+          lefts[i] = left;
+          left += Math.ceil(colWidths[i]);
+        });
+      setColLefts(lefts);
+    });
+
+    return () => {
+      window.cancelAnimationFrame(rAFRef);
+    };
+  }, [colWidths]);
+
+  useEffect(
+    () => {
+      let rAFRef = window.requestAnimationFrame(() => {
+        const lefts = Object.values(colLefts);
+
+        let leftClosest = getClosestValue(lefts, props.listWindow.left).index;
+        let rightClosest = lefts.length - 1;
+
+        for (let i = leftClosest; i < lefts.length; i++) {
+          if (lefts[i] > props.listWindow.left + props.listWindow.width) {
+            rightClosest = i;
+            break;
+          }
+        }
+
+        let left = leftClosest < 6 ? 0 : leftClosest - 5;
+        let right = rightClosest + 5;
+
+        setMiddlePaneWindow((mPW) =>
+          middlePane
+            .slice(left, right + (mPW.length === 0 ? 50 : 0)) // calculate first 50 columns widths and lefts on initial render
+            ?.map((col, i) => ({
+              ...col,
+              colIndex: left + i,
+            })),
+        );
+      });
+
+      return () => {
+        window.cancelAnimationFrame(rAFRef);
+      };
+    },
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [
+      props.listWindow.left,
+      props.listWindow.width,
+      colLefts,
+      middlePaneColsKey,
+    ],
+  );
 
   const color = React.useMemo(
     () => props.data[0]?.rowMeta?.color,
@@ -210,6 +276,28 @@ function Table(props) {
     );
   }
 
+  let midPaneWidth =
+    colLefts[Object.keys(colLefts).length - 1] +
+    colWidths[Object.keys(colWidths).length - 1];
+
+  if (midPaneWidth < props.listWindow.availableSpace) {
+    midPaneWidth = null;
+  }
+
+  useEffect(
+    () => {
+      if (middlePane.length < Object.keys(colLefts).length) {
+        let widths = {};
+        middlePaneWindow.forEach((col) => {
+          widths[col.colIndex] = colWidths[col.colIndex];
+        });
+        setColWidths(widths);
+      }
+    },
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [middlePaneWindow, colLefts],
+  );
+
   return (
     <ErrorBoundary>
       <div
@@ -290,6 +378,7 @@ function Table(props) {
                   }
                   isAlwaysVisible={true}
                   onRowHover={props.onRowHover}
+                  listWindow={props.listWindow}
                 />
               </div>
             </ErrorBoundary>
@@ -358,63 +447,83 @@ function Table(props) {
                     columnOptions={col.columnOptions}
                     selectedRows={props.selectedRows}
                     onRowSelect={props.onRowSelect}
+                    listWindow={props.listWindow}
                   />
                 </ErrorBoundary>
               ))}
             </div>
           )}
-          <div className='Table__pane Table__pane--middle'>
-            {middlePane.map((col, index) => (
-              <ErrorBoundary key={col.key + index}>
-                <Column
-                  key={col.key + index}
-                  topHeader={props.topHeader}
-                  showTopHeaderContent={showTopHeaderContent(index, col)}
-                  showTopHeaderBorder={showTopHeaderContent(index, col, true)}
-                  col={col}
-                  data={props.data}
-                  expanded={expanded}
-                  expand={expand}
-                  togglePin={togglePin}
-                  pinnedTo={null}
-                  firstColumn={
-                    index === 0 && leftPane.length === 0 && !props.multiSelect
-                  }
-                  width={props.columnsWidths?.[col.key]}
-                  updateColumnWidth={props.updateColumnsWidths}
-                  headerMeta={props.headerMeta}
-                  onToggleColumnsColorScales={props.onToggleColumnsColorScales}
-                  columnsColorScales={props.columnsColorScales}
-                  isAlwaysVisible={props.alwaysVisibleColumns?.includes(
-                    col.key,
-                  )}
-                  hideColumn={() =>
-                    props.setExcludedFields?.([
-                      ...(props.excludedFields || []),
+          <div
+            className='Table__pane Table__pane--middle'
+            style={{
+              width: midPaneWidth,
+            }}
+          >
+            {middlePaneWindow?.map((col, i) => {
+              let index = col.colIndex;
+              return (
+                <ErrorBoundary key={col.key + index}>
+                  <Column
+                    topHeader={props.topHeader}
+                    showTopHeaderContent={showTopHeaderContent(index, col)}
+                    showTopHeaderBorder={showTopHeaderContent(index, col, true)}
+                    col={col}
+                    data={props.data}
+                    expanded={expanded}
+                    expand={expand}
+                    togglePin={togglePin}
+                    pinnedTo={null}
+                    firstColumn={
+                      index === 0 && leftPane.length === 0 && !props.multiSelect
+                    }
+                    width={props.columnsWidths?.[col.key]}
+                    updateColumnWidth={props.updateColumnsWidths}
+                    headerMeta={props.headerMeta}
+                    onToggleColumnsColorScales={
+                      props.onToggleColumnsColorScales
+                    }
+                    columnsColorScales={props.columnsColorScales}
+                    isAlwaysVisible={props.alwaysVisibleColumns?.includes(
                       col.key,
-                    ])
-                  }
-                  paneFirstColumn={index === 0}
-                  paneLastColumn={index === middlePane.length - 1}
-                  moveColumn={(dir) =>
-                    moveColumn(col.key, 'middle', index, dir)
-                  }
-                  sortable={
-                    col.sortableKey &&
-                    props.sortFields.findIndex(
-                      (f) => f[0] === col.sortableKey,
-                    ) === -1
-                  }
-                  sortByColumn={(order) => props.onSort(col.sortableKey, order)}
-                  rowHeightMode={props.rowHeightMode}
-                  onRowHover={props.onRowHover}
-                  onRowClick={props.onRowClick}
-                  columnOptions={col.columnOptions}
-                  listWindow={props.listWindow}
-                  selectedRows={props.selectedRows}
-                />
-              </ErrorBoundary>
-            ))}
+                    )}
+                    hideColumn={() =>
+                      props.setExcludedFields?.([
+                        ...(props.excludedFields || []),
+                        col.key,
+                      ])
+                    }
+                    paneFirstColumn={index === 0}
+                    paneLastColumn={index === middlePane.length - 1}
+                    moveColumn={(dir) =>
+                      moveColumn(col.key, 'middle', index, dir)
+                    }
+                    sortable={
+                      col.sortableKey &&
+                      props.sortFields.findIndex(
+                        (f) => f[0] === col.sortableKey,
+                      ) === -1
+                    }
+                    sortByColumn={(order) =>
+                      props.onSort(col.sortableKey, order)
+                    }
+                    rowHeightMode={props.rowHeightMode}
+                    onRowHover={props.onRowHover}
+                    onRowClick={props.onRowClick}
+                    columnOptions={col.columnOptions}
+                    selectedRows={props.selectedRows}
+                    setColWidth={(width) =>
+                      setColWidths((cW) => {
+                        return cW?.[index] === width
+                          ? cW
+                          : { ...cW, [index]: width };
+                      })
+                    }
+                    colLeft={colLefts[index] ?? null}
+                    listWindow={props.listWindow}
+                  />
+                </ErrorBoundary>
+              );
+            })}
           </div>
           {rightPane.length > 0 && (
             <div className='Table__pane Table__pane--right'>
@@ -472,6 +581,7 @@ function Table(props) {
                     onRowClick={props.onRowClick}
                     columnOptions={col.columnOptions}
                     selectedRows={props.selectedRows}
+                    listWindow={props.listWindow}
                   />
                 </ErrorBoundary>
               ))}

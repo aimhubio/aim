@@ -4,6 +4,7 @@ import _ from 'lodash-es';
 
 import { HighlightEnum } from 'components/HighlightModesPopover/HighlightModesPopover';
 import { IPoint } from 'components/ScatterPlot';
+import { IAxesScaleRange } from 'components/AxesPropsPopover';
 
 import COLORS from 'config/colors/colors';
 import DASH_ARRAYS from 'config/dash-arrays/dashArrays';
@@ -15,6 +16,7 @@ import { CONTROLS_DEFAULT_CONFIG } from 'config/controls/controlsDefaultConfig';
 import { ANALYTICS_EVENT_KEYS } from 'config/analytics/analyticsKeysMap';
 import { DATE_EXPORTING_FORMAT, TABLE_DATE_FORMAT } from 'config/dates/dates';
 import { getSuggestionsByExplorer } from 'config/monacoConfig/monacoConfig';
+import { GroupNameEnum } from 'config/grouping/GroupingPopovers';
 
 import {
   getMetricsTableColumns,
@@ -45,7 +47,6 @@ import { ITableColumn } from 'types/pages/metrics/components/TableColumns/TableC
 import { IOnSmoothingChange } from 'types/pages/metrics/Metrics';
 import { IMetric } from 'types/services/models/metrics/metricModel';
 import {
-  GroupNameType,
   IAggregationConfig,
   IAppData,
   IChartZoom,
@@ -55,8 +56,7 @@ import {
   IMetricTableRowData,
   IOnGroupingModeChangeParams,
   IOnGroupingSelectChangeParams,
-  IPanelTooltip,
-  ITooltipData,
+  ITooltip,
 } from 'types/services/models/metrics/metricsAppModel';
 import {
   IMetricTrace,
@@ -101,7 +101,6 @@ import { getGroupingPersistIndex } from 'utils/app/getGroupingPersistIndex';
 import getGroupingSelectOptions from 'utils/app/getGroupingSelectOptions';
 import getQueryStringFromSelect from 'utils/app/getQueryStringFromSelect';
 import getRunData from 'utils/app/getRunData';
-import getTooltipData from 'utils/app/getTooltipData';
 import onAggregationConfigChange from 'utils/app/onAggregationConfigChange';
 import onAlignmentMetricChange from 'utils/app/onAlignmentMetricChange';
 import onAlignmentTypeChange from 'utils/app/onAlignmentTypeChange';
@@ -147,7 +146,6 @@ import {
   iterFoldTree,
 } from 'utils/encoder/streamEncoding';
 import { filterMetricsData } from 'utils/filterMetricData';
-import filterTooltipContent from 'utils/filterTooltipContent';
 import { formatValue } from 'utils/formatValue';
 import getClosestValue from 'utils/getClosestValue';
 import getObjectPaths from 'utils/getObjectPaths';
@@ -165,6 +163,7 @@ import setComponentRefs from 'utils/app/setComponentRefs';
 import updateURL from 'utils/app/updateURL';
 import onDensityTypeChange from 'utils/app/onDensityTypeChange';
 import getValueByField from 'utils/getValueByField';
+import getTooltipContent from 'utils/getTooltipContent';
 import { isSystemMetric } from 'utils/isSystemMetric';
 import setDefaultAppConfigData from 'utils/app/setDefaultAppConfigData';
 import getAppConfigData from 'utils/app/getAppConfigData';
@@ -184,9 +183,13 @@ import {
   alignByStep,
 } from 'utils/app/alignMetricData';
 import setRequestProgress from 'utils/app/setRequestProgress';
+import onAxesScaleRangeChange from 'utils/app/onAxesScaleRangeChange';
 import { minMaxOfArray } from 'utils/minMaxOfArray';
 import getAdvancedSuggestion from 'utils/getAdvancedSuggestions';
 import { processDurationTime } from 'utils/processDurationTime';
+import getSelectOptions from 'utils/app/getSelectOptions';
+import { getMetricsSelectOptions } from 'utils/app/getMetricsSelectOptions';
+import onRowsVisibilityChange from 'utils/app/onRowsVisibilityChange';
 
 import { AppDataTypeEnum, AppNameEnum } from './index';
 
@@ -200,7 +203,7 @@ import { AppDataTypeEnum, AppNameEnum } from './index';
 function createAppModel(appConfig: IAppInitialConfig) {
   const { appName, dataType, grouping, components, selectForm } = appConfig;
 
-  const model: IModel<IAppModelState> = createModel<IAppModelState>({
+  const model = createModel<IAppModelState>({
     requestStatus: RequestStatusEnum.NotRequested,
     requestProgress: {
       matched: 0,
@@ -281,6 +284,10 @@ function createAppModel(appConfig: IAppInitialConfig) {
                 xAxis: CONTROLS_DEFAULT_CONFIG.metrics.axesScaleType.xAxis,
                 yAxis: CONTROLS_DEFAULT_CONFIG.metrics.axesScaleType.yAxis,
               },
+              axesScaleRange: {
+                yAxis: CONTROLS_DEFAULT_CONFIG.metrics.axesScaleRange.yAxis,
+                xAxis: CONTROLS_DEFAULT_CONFIG.metrics.axesScaleRange.xAxis,
+              },
               curveInterpolation:
                 CONTROLS_DEFAULT_CONFIG.metrics.curveInterpolation,
               smoothingAlgorithm:
@@ -304,7 +311,6 @@ function createAppModel(appConfig: IAppInitialConfig) {
                   CONTROLS_DEFAULT_CONFIG.metrics.aggregationConfig.isEnabled,
               },
               tooltip: {
-                content: {},
                 display: CONTROLS_DEFAULT_CONFIG.metrics.tooltip.display,
                 selectedFields:
                   CONTROLS_DEFAULT_CONFIG.metrics.tooltip.selectedFields,
@@ -403,7 +409,6 @@ function createAppModel(appConfig: IAppInitialConfig) {
                 chartIndex: null,
               },
               tooltip: {
-                content: {},
                 display: CONTROLS_DEFAULT_CONFIG.params.tooltip.display,
                 selectedFields:
                   CONTROLS_DEFAULT_CONFIG.params.tooltip.selectedFields,
@@ -425,7 +430,6 @@ function createAppModel(appConfig: IAppInitialConfig) {
                 chartIndex: null,
               },
               tooltip: {
-                content: {},
                 display: CONTROLS_DEFAULT_CONFIG.scatters.tooltip.display,
                 selectedFields:
                   CONTROLS_DEFAULT_CONFIG.scatters.tooltip.selectedFields,
@@ -471,6 +475,8 @@ function createAppModel(appConfig: IAppInitialConfig) {
     return getAppConfigData({ appId, appRequest, config: getConfig(), model });
   }
 
+  // ************ Metrics App Model Methods
+
   function getMetricsAppModelMethods() {
     let metricsRequestRef: {
       call: (
@@ -486,7 +492,6 @@ function createAppModel(appConfig: IAppInitialConfig) {
       call: (exceptionHandler: (detail: any) => void) => Promise<any>;
       abort: () => void;
     };
-    let tooltipData: ITooltipData = {};
     let liveUpdateInstance: LiveUpdateService | null;
 
     function getOption(
@@ -557,7 +562,6 @@ function createAppModel(appConfig: IAppInitialConfig) {
         };
       }
       if (components?.charts?.[0]) {
-        tooltipData = {};
         state.refs = {
           ...state.refs,
           chartPanelRef: { current: null },
@@ -632,9 +636,7 @@ function createAppModel(appConfig: IAppInitialConfig) {
         metricsRequestRef.abort();
       }
       const configData = model.getState()?.config;
-      if (shouldUrlUpdate) {
-        updateURL({ configData, appName });
-      }
+
       const metric = configData?.chart?.alignmentConfig?.metric;
 
       if (queryString) {
@@ -673,6 +675,9 @@ function createAppModel(appConfig: IAppInitialConfig) {
               const runData = await getRunData(stream, (progress) =>
                 setRequestProgress(model, progress),
               );
+              if (shouldUrlUpdate) {
+                updateURL({ configData, appName });
+              }
               updateData(runData);
             } catch (ex: Error | any) {
               if (ex.name === 'AbortError') {
@@ -720,6 +725,11 @@ function createAppModel(appConfig: IAppInitialConfig) {
         queryIsEmpty: true,
         rawData: [],
         tableColumns: [],
+        selectFormData: {
+          ...model.getState().selectFormData,
+          error: null,
+          advancedError: null,
+        },
         selectedRows: shouldResetSelectedRows
           ? {}
           : model.getState()?.selectedRows,
@@ -752,6 +762,7 @@ function createAppModel(appConfig: IAppInitialConfig) {
       let rowIndex = 0;
       const sameValueColumns: string[] = [];
 
+      const columnsFlattenValues: { [key: string]: Set<any> } = {};
       processedData.forEach(
         (metricsCollection: IMetricsCollection<IMetric>) => {
           const groupKey = metricsCollection.key;
@@ -983,9 +994,10 @@ function createAppModel(appConfig: IAppInitialConfig) {
           });
 
           for (let columnKey in columnsValues) {
-            if (columnsValues[columnKey].length === 1) {
-              sameValueColumns.push(columnKey);
-            }
+            columnsFlattenValues[columnKey] = new Set([
+              ...(columnsFlattenValues[columnKey] || []),
+              ...(columnsValues[columnKey] || []),
+            ]);
 
             if (metricsCollection.config !== null) {
               rows[groupKey!].data[columnKey] =
@@ -1006,6 +1018,11 @@ function createAppModel(appConfig: IAppInitialConfig) {
           }
         },
       );
+      for (let columnKey in columnsFlattenValues) {
+        if (columnsFlattenValues[columnKey].size === 1) {
+          sameValueColumns.push(columnKey);
+        }
+      }
       return { rows, sameValueColumns };
     }
 
@@ -1066,6 +1083,7 @@ function createAppModel(appConfig: IAppInitialConfig) {
               metricName: trace.name,
               traceContext: trace.context,
             });
+            const metricValues = new Float64Array(processedValues);
             return createMetricModel({
               ...trace,
               run: createRunModel(_.omit(run, 'traces') as IRun<IMetricTrace>),
@@ -1075,8 +1093,9 @@ function createAppModel(appConfig: IAppInitialConfig) {
               isHidden: configData?.table?.hiddenMetrics!.includes(metricKey),
               x_axis_values,
               x_axis_iters,
+              lastValue: metricValues[metricValues.length - 1],
               data: {
-                values: new Float64Array(processedValues),
+                values: metricValues,
                 steps,
                 epochs,
                 timestamps: timestamps.map((timestamp) =>
@@ -1168,14 +1187,15 @@ function createAppModel(appConfig: IAppInitialConfig) {
           sequenceName: 'metric',
         }),
       ];
+      const sortOptions = [
+        ...groupingSelectOptions,
+        {
+          group: 'metric',
+          label: 'metric.values.last',
+          value: 'lastValue',
+        },
+      ];
 
-      tooltipData = getTooltipData({
-        processedData: data,
-        paramKeys: sortedParams,
-        groupingSelectOptions,
-        groupingItems: ['color', 'stroke', 'chart'],
-        model,
-      });
       const tableData = getDataAsTableRows(
         data,
         configData?.chart?.focusedState.xValue ?? null,
@@ -1212,22 +1232,20 @@ function createAppModel(appConfig: IAppInitialConfig) {
         config: configData,
         data,
         lineChartData: getDataAsLines(data),
-        chartTitleData: getChartTitleData<
-          IMetric,
-          Partial<IMetricAppModelState>
-        >({
+        chartTitleData: getChartTitleData<IMetric, IAppModelState>({
           processedData: data,
           groupingSelectOptions,
-          model: model as IModel<Partial<IMetricAppModelState>>,
+          model: model as IModel<IMetricAppModelState>,
         }),
         aggregatedData: getAggregatedData<Partial<IMetricAppModelState>>({
           processedData: data,
-          model: model as IModel<Partial<IMetricAppModelState>>,
+          model: model as IModel<IMetricAppModelState>,
         }),
         tableData: tableData.rows,
         tableColumns,
         sameValueColumns: tableData.sameValueColumns,
         groupingSelectOptions,
+        sortOptions,
         selectedRows,
       });
     }
@@ -1236,7 +1254,8 @@ function createAppModel(appConfig: IAppInitialConfig) {
       rawData: ISequence<IMetricTrace>[],
       configData: IAppModelConfig,
     ): void {
-      const sortFields = model.getState()?.config?.table?.sortFields;
+      const modelState: IAppModelState = model.getState();
+      const sortFields = modelState?.config?.table?.sortFields;
       const {
         data,
         runProps,
@@ -1258,13 +1277,15 @@ function createAppModel(appConfig: IAppInitialConfig) {
           sequenceName: 'metric',
         }),
       ];
-      tooltipData = getTooltipData({
-        processedData: data,
-        paramKeys: sortedParams,
-        groupingSelectOptions,
-        groupingItems: ['color', 'stroke', 'chart'],
-        model,
-      });
+      const sortOptions = [
+        ...groupingSelectOptions,
+        {
+          group: 'metric',
+          label: 'metric.values.last',
+          value: 'lastValue',
+        },
+      ];
+
       const tableData = getDataAsTableRows(
         data,
         configData?.chart?.focusedState?.xValue ?? null,
@@ -1287,7 +1308,7 @@ function createAppModel(appConfig: IAppInitialConfig) {
         onModelGroupingSelectChange,
       );
 
-      model.getState()?.refs?.tableRef.current?.updateData({
+      modelState?.refs?.tableRef.current?.updateData({
         newData: tableData.rows,
         newColumns: tableColumns,
       });
@@ -1298,6 +1319,10 @@ function createAppModel(appConfig: IAppInitialConfig) {
         config: configData,
         params,
         data,
+        selectFormData: {
+          ...modelState?.selectFormData,
+          [configData.select?.advancedMode ? 'advancedError' : 'error']: null,
+        },
         lineChartData: getDataAsLines(data),
         chartTitleData: getChartTitleData<
           IMetric,
@@ -1315,6 +1340,7 @@ function createAppModel(appConfig: IAppInitialConfig) {
         tableColumns: tableColumns,
         sameValueColumns: tableData.sameValueColumns,
         groupingSelectOptions,
+        sortOptions,
         selectedRows,
       });
     }
@@ -1343,15 +1369,15 @@ function createAppModel(appConfig: IAppInitialConfig) {
       const grouping = configData!.grouping;
       const { paletteIndex = 0 } = grouping || {};
       const groupByColor = getFilteredGroupingOptions({
-        groupName: 'color',
+        groupName: GroupNameEnum.COLOR,
         model,
       });
       const groupByStroke = getFilteredGroupingOptions({
-        groupName: 'stroke',
+        groupName: GroupNameEnum.STROKE,
         model,
       });
       const groupByChart = getFilteredGroupingOptions({
-        groupName: 'chart',
+        groupName: GroupNameEnum.CHART,
         model,
       });
       if (
@@ -1638,8 +1664,14 @@ function createAppModel(appConfig: IAppInitialConfig) {
               }
             }
           }
-          let configData: IAppModelConfig = config;
+          let configData = config;
           if (configData?.chart) {
+            // TODO remove this later
+            // remove unnecessary content prop from tooltip config
+            if (configData.chart.tooltip?.hasOwnProperty('content')) {
+              delete configData.chart.tooltip.content;
+            }
+
             configData = {
               ...configData,
               chart: {
@@ -1651,15 +1683,9 @@ function createAppModel(appConfig: IAppInitialConfig) {
                   yValue: activePoint.yValue,
                   chartIndex: activePoint.chartIndex,
                 },
-                tooltip: {
-                  ...configData.chart.tooltip,
-                  content: filterTooltipContent(
-                    tooltipData[activePoint.key],
-                    configData.chart.tooltip?.selectedFields,
-                  ),
-                } as IPanelTooltip,
               },
             };
+
             if (
               config.chart?.focusedState.active !== focusedStateActive ||
               (config.chart.focusedState.active &&
@@ -1669,7 +1695,22 @@ function createAppModel(appConfig: IAppInitialConfig) {
             }
           }
 
-          model.setState({ config: configData });
+          const tooltipData = {
+            ...configData?.chart?.tooltip,
+            content: getTooltipContent({
+              groupingItems: [
+                GroupNameEnum.COLOR,
+                GroupNameEnum.STROKE,
+                GroupNameEnum.CHART,
+              ],
+              groupingSelectOptions,
+              data,
+              configData,
+              activePointKey: configData.chart?.focusedState?.key,
+              selectedFields: configData.chart?.tooltip?.selectedFields,
+            }),
+          };
+          model.setState({ config: configData, tooltip: tooltipData });
         }
       },
       50,
@@ -1919,7 +1960,7 @@ function createAppModel(appConfig: IAppInitialConfig) {
             setAggregationEnabled,
           });
         },
-        onGroupingReset(groupName: GroupNameType): void {
+        onGroupingReset(groupName: GroupNameEnum): void {
           onGroupingReset({
             groupName,
             model,
@@ -1928,7 +1969,7 @@ function createAppModel(appConfig: IAppInitialConfig) {
             setAggregationEnabled,
           });
         },
-        onGroupingApplyChange(groupName: GroupNameType): void {
+        onGroupingApplyChange(groupName: GroupNameEnum): void {
           onGroupingApplyChange({
             groupName,
             model,
@@ -1937,7 +1978,7 @@ function createAppModel(appConfig: IAppInitialConfig) {
             setAggregationEnabled,
           });
         },
-        onGroupingPersistenceChange(groupName: GroupNameType): void {
+        onGroupingPersistenceChange(groupName: GroupNameEnum): void {
           onGroupingPersistenceChange({
             groupName,
             model,
@@ -2010,8 +2051,20 @@ function createAppModel(appConfig: IAppInitialConfig) {
         onAlignmentTypeChange(type: AlignmentOptionsEnum): void {
           onAlignmentTypeChange({ type, model, appName, updateModelData });
         },
-        onChangeTooltip(tooltip: Partial<IPanelTooltip>): void {
-          onChangeTooltip({ tooltip, tooltipData, model, appName });
+        onChangeTooltip(tooltip: Partial<ITooltip>): void {
+          onChangeTooltip({
+            tooltip,
+            groupingItems: [
+              GroupNameEnum.COLOR,
+              GroupNameEnum.STROKE,
+              GroupNameEnum.CHART,
+            ],
+            model,
+            appName,
+          });
+        },
+        onAxesScaleRangeChange(range: Partial<IAxesScaleRange>): void {
+          onAxesScaleRangeChange({ range, model, appName });
         },
         onDensityTypeChange(type: DensityOptions): Promise<void> {
           return onDensityTypeChange({ type, model, appName, getMetricsData });
@@ -2088,6 +2141,14 @@ function createAppModel(appConfig: IAppInitialConfig) {
         }): void {
           return onRowSelect({ actionType, data, model });
         },
+        onRowsVisibilityChange(metricKeys: string[]): void {
+          return onRowsVisibilityChange({
+            metricKeys,
+            model,
+            appName,
+            updateModelData,
+          });
+        },
       });
     }
 
@@ -2105,6 +2166,9 @@ function createAppModel(appConfig: IAppInitialConfig) {
       default:
         return {};
     }
+
+    // ************ Runs App Model Methods
+
     function getRunsModelMethods() {
       let runsRequestRef: {
         call: (
@@ -2136,7 +2200,6 @@ function createAppModel(appConfig: IAppInitialConfig) {
           };
         }
         if (components?.charts?.[0]) {
-          // tooltipData = {};
           state.refs = {
             ...state.refs,
             chartPanelRef: { current: null },
@@ -2221,9 +2284,6 @@ function createAppModel(appConfig: IAppInitialConfig) {
 
         runsRequestRef = runsService.getRunsData(query, 45, pagination?.offset);
         let limit = pagination.limit;
-        if (shouldUrlUpdate) {
-          updateURL({ configData, appName });
-        }
         setRequestProgress(model);
         return {
           call: async () => {
@@ -2298,6 +2358,9 @@ function createAppModel(appConfig: IAppInitialConfig) {
                   },
                 },
               });
+              if (shouldUrlUpdate) {
+                updateURL({ configData, appName });
+              }
             } catch (ex: Error | any) {
               if (ex.name === 'AbortError') {
                 onNotificationAdd({
@@ -2419,11 +2482,23 @@ function createAppModel(appConfig: IAppInitialConfig) {
         data?.forEach((run: IRun<IParamTrace>, index) => {
           params = params.concat(getObjectPaths(run.params, run.params));
           runProps = runProps.concat(getObjectPaths(run.props, run.props));
+          const metricsLastValues: any = {};
           run.traces.metric.forEach((trace) => {
+            const stringFormContext: string =
+              contextToString(trace.context) ?? '';
             metricsColumns[trace.name] = {
               ...metricsColumns[trace.name],
-              [contextToString(trace.context) as string]: '-',
+              [stringFormContext as string]: '-',
             };
+            const contextName =
+              stringFormContext === '' ? '' : `_${stringFormContext}`;
+
+            const key = `${
+              isSystemMetric(trace.name)
+                ? trace.name
+                : `${trace.name}${contextName}`
+            }`;
+            metricsLastValues[key] = trace.last_value.last;
           });
           runHashArray.push(run.hash);
           runs.push({
@@ -2432,6 +2507,7 @@ function createAppModel(appConfig: IAppInitialConfig) {
             color: COLORS[paletteIndex][index % COLORS[paletteIndex].length],
             key: encode({ runHash: run.hash }),
             dasharray: DASH_ARRAYS[0],
+            metricsLastValues,
           });
         });
         const processedData = groupData(runs);
@@ -2476,15 +2552,15 @@ function createAppModel(appConfig: IAppInitialConfig) {
         const grouping = configData!.grouping;
 
         const groupByColor = getFilteredGroupingOptions({
-          groupName: 'color',
+          groupName: GroupNameEnum.COLOR,
           model,
         });
         const groupByStroke = getFilteredGroupingOptions({
-          groupName: 'stroke',
+          groupName: GroupNameEnum.STROKE,
           model,
         });
         const groupByChart = getFilteredGroupingOptions({
-          groupName: 'chart',
+          groupName: GroupNameEnum.CHART,
           model,
         });
         if (
@@ -2636,8 +2712,9 @@ function createAppModel(appConfig: IAppInitialConfig) {
             const groupByMetricName: any = {};
             Object.keys(metricsColumns[key]).forEach(
               (metricContext: string) => {
+                const contextName = metricContext ? `_${metricContext}` : '';
                 groupByMetricName[
-                  `${isSystemMetric(key) ? key : `${key}_${metricContext}`}`
+                  `${isSystemMetric(key) ? key : `${key}${contextName}`}`
                 ] = '-';
               },
             );
@@ -2649,7 +2726,7 @@ function createAppModel(appConfig: IAppInitialConfig) {
         const rows: any = processedData[0]?.config !== null ? {} : [];
         let rowIndex = 0;
         const sameValueColumns: string[] = [];
-
+        const columnsFlattenValues: { [key: string]: Set<any> } = {};
         processedData.forEach((metricsCollection: any) => {
           const groupKey = metricsCollection.key;
           const columnsValues: { [key: string]: string[] } = {};
@@ -2676,11 +2753,15 @@ function createAppModel(appConfig: IAppInitialConfig) {
           metricsCollection.data.forEach((metric: any) => {
             const metricsRowValues = { ...initialMetricsRowData };
             metric.run.traces.metric.forEach((trace: any) => {
+              const contextName =
+                contextToString(trace.context) === ''
+                  ? ''
+                  : `_${contextToString(trace.context)}`;
               metricsRowValues[
                 `${
                   isSystemMetric(trace.name)
                     ? trace.name
-                    : `${trace.name}_${contextToString(trace.context)}`
+                    : `${trace.name}${contextName}`
                 }`
               ] = formatValue(trace.last_value.last);
             });
@@ -2752,9 +2833,10 @@ function createAppModel(appConfig: IAppInitialConfig) {
           });
 
           for (let columnKey in columnsValues) {
-            if (columnsValues[columnKey].length === 1) {
-              sameValueColumns.push(columnKey);
-            }
+            columnsFlattenValues[columnKey] = new Set([
+              ...(columnsFlattenValues[columnKey] || []),
+              ...(columnsValues[columnKey] || []),
+            ]);
 
             if (metricsCollection.config !== null) {
               rows[groupKey!].data[columnKey] =
@@ -2772,7 +2854,11 @@ function createAppModel(appConfig: IAppInitialConfig) {
             }
           }
         });
-
+        for (let columnKey in columnsFlattenValues) {
+          if (columnsFlattenValues[columnKey].size === 1) {
+            sameValueColumns.push(columnKey);
+          }
+        }
         return { rows, sameValueColumns };
       }
 
@@ -2942,6 +3028,13 @@ function createAppModel(appConfig: IAppInitialConfig) {
         runsRequestRef.abort();
         liveUpdateInstance?.clear();
         liveUpdateInstance = null; //@TODO check is this need or not
+        model.setState({
+          ...model.getState(),
+          selectFormData: {
+            ...model.getState().selectFormData,
+            error: null,
+          },
+        });
       }
 
       function changeLiveUpdateConfig(config: {
@@ -3181,6 +3274,8 @@ function createAppModel(appConfig: IAppInitialConfig) {
       return methods;
     }
 
+    // ************ Params App Model Methods
+
     function getParamsModelMethods() {
       let runsRequestRef: {
         call: (
@@ -3196,7 +3291,6 @@ function createAppModel(appConfig: IAppInitialConfig) {
         call: (exceptionHandler: (detail: any) => void) => Promise<any>;
         abort: () => void;
       };
-      let tooltipData: ITooltipData = {};
       let liveUpdateInstance: LiveUpdateService | null;
 
       function initialize(appId: string): void {
@@ -3212,7 +3306,6 @@ function createAppModel(appConfig: IAppInitialConfig) {
           };
         }
         if (components?.charts?.[0]) {
-          tooltipData = {};
           state.refs = {
             ...state.refs,
             chartPanelRef: { current: null },
@@ -3224,7 +3317,7 @@ function createAppModel(appConfig: IAppInitialConfig) {
           .then((data) => {
             model.setState({
               selectFormData: {
-                options: getParamsOptions(data),
+                options: getSelectOptions(data),
                 suggestions: getSuggestionsByExplorer(appName, data),
               },
             });
@@ -3242,71 +3335,6 @@ function createAppModel(appConfig: IAppInitialConfig) {
             liveUpdateState.delay,
           );
         }
-      }
-
-      function getParamsOptions(projectsData: IProjectParamsMetrics) {
-        const comparator = alphabeticalSortComparator<ISelectOption>({
-          orderBy: 'label',
-        });
-
-        let optionsCount = 0; // to calculate color
-        const systemOptions: ISelectOption[] = [];
-        let params: ISelectOption[] = [];
-        let metrics: ISelectOption[] = [];
-
-        if (projectsData?.metric) {
-          for (let key in projectsData.metric) {
-            let system: boolean = isSystemMetric(key);
-            for (let val of projectsData.metric[key]) {
-              let label = contextToString(val);
-              let index: number = optionsCount;
-              let option: ISelectOption = {
-                label: `${system ? formatSystemMetricName(key) : key} ${label}`,
-                group: system ? 'System' : key,
-                type: 'metrics',
-                color: COLORS[0][index % COLORS[0].length],
-                value: {
-                  option_name: key,
-                  context: val,
-                },
-              };
-              optionsCount++;
-              if (system) {
-                systemOptions.push(option);
-              } else {
-                metrics.push(option);
-              }
-            }
-          }
-        }
-        if (projectsData?.params) {
-          const paramPaths = getObjectPaths(
-            projectsData.params,
-            projectsData.params,
-          );
-          paramPaths.forEach((paramPath, index) => {
-            params.push({
-              label: paramPath.slice(0, paramPath.indexOf('.__example_type__')),
-              group: 'Params',
-              type: 'params',
-              color: COLORS[0][index % COLORS[0].length],
-            });
-          });
-        }
-
-        params = params.sort(comparator);
-        metrics = metrics.sort(comparator);
-        systemOptions.sort(comparator);
-
-        // sort by group
-        const data: ISelectOption[] = [...metrics, ...params];
-
-        data.sort(
-          alphabeticalSortComparator({
-            orderBy: 'type',
-          }),
-        );
-        return data.concat(systemOptions);
       }
 
       function updateData(newData: IRun<IParamTrace>[]): void {
@@ -3346,9 +3374,6 @@ function createAppModel(appConfig: IAppInitialConfig) {
         if (queryString) {
           configData.select.query = queryString;
         }
-        if (shouldUrlUpdate) {
-          updateURL({ configData, appName });
-        }
         runsRequestRef = runsService.getRunsData(configData?.select?.query);
         setRequestProgress(model);
         return {
@@ -3373,6 +3398,9 @@ function createAppModel(appConfig: IAppInitialConfig) {
                   setRequestProgress(model, progress),
                 );
                 updateData(runData);
+                if (shouldUrlUpdate) {
+                  updateURL({ configData, appName });
+                }
               } catch (ex: Error | any) {
                 if (ex.name === 'AbortError') {
                   // Abort Error
@@ -3413,6 +3441,7 @@ function createAppModel(appConfig: IAppInitialConfig) {
           queryIsEmpty: true,
           rawData: [],
           tableColumns: [],
+          selectFormData: { ...model.getState().selectFormData, error: null },
           selectedRows: shouldResetSelectedRows
             ? {}
             : model.getState()?.selectedRows,
@@ -3439,8 +3468,9 @@ function createAppModel(appConfig: IAppInitialConfig) {
             const groupByMetricName: any = {};
             Object.keys(metricsColumns[key]).forEach(
               (metricContext: string) => {
+                const contextName = metricContext ? `_${metricContext}` : '';
                 groupByMetricName[
-                  `${isSystemMetric(key) ? key : `${key}_${metricContext}`}`
+                  `${isSystemMetric(key) ? key : `${key}${contextName}`}`
                 ] = '-';
               },
             );
@@ -3454,12 +3484,12 @@ function createAppModel(appConfig: IAppInitialConfig) {
 
         let rowIndex = 0;
         const sameValueColumns: string[] = [];
+        const columnsFlattenValues: { [key: string]: Set<any> } = {};
 
         processedData.forEach(
           (metricsCollection: IMetricsCollection<IParam>) => {
             const groupKey = metricsCollection.key;
             const columnsValues: { [key: string]: string[] } = {};
-
             if (metricsCollection.config !== null) {
               const groupConfigData: { [key: string]: string } = {};
               for (let key in metricsCollection.config) {
@@ -3506,11 +3536,15 @@ function createAppModel(appConfig: IAppInitialConfig) {
             metricsCollection.data.forEach((metric: any) => {
               const metricsRowValues = { ...initialMetricsRowData };
               metric.run.traces.metric.forEach((trace: any) => {
+                const contextName =
+                  contextToString(trace.context) === ''
+                    ? ''
+                    : `_${contextToString(trace.context)}`;
                 metricsRowValues[
                   `${
                     isSystemMetric(trace.name)
                       ? trace.name
-                      : `${trace.name}_${contextToString(trace.context)}`
+                      : `${trace.name}${contextName}`
                   }`
                 ] = formatValue(trace.last_value.last);
               });
@@ -3617,9 +3651,10 @@ function createAppModel(appConfig: IAppInitialConfig) {
             });
 
             for (let columnKey in columnsValues) {
-              if (columnsValues[columnKey].length === 1) {
-                sameValueColumns.push(columnKey);
-              }
+              columnsFlattenValues[columnKey] = new Set([
+                ...(columnsFlattenValues[columnKey] || []),
+                ...(columnsValues[columnKey] || []),
+              ]);
 
               if (metricsCollection.config !== null) {
                 rows[groupKey!].data[columnKey] =
@@ -3641,6 +3676,11 @@ function createAppModel(appConfig: IAppInitialConfig) {
             }
           },
         );
+        for (let columnKey in columnsFlattenValues) {
+          if (columnsFlattenValues[columnKey].size === 1) {
+            sameValueColumns.push(columnKey);
+          }
+        }
         return { rows, sameValueColumns };
       }
 
@@ -3813,6 +3853,7 @@ function createAppModel(appConfig: IAppInitialConfig) {
           metricsColumns,
           selectedRows,
         } = processData(rawData);
+        const modelState: IAppModelState = model.getState();
         const sortedParams = [
           ...new Set(params.concat(highLevelParams)),
         ].sort();
@@ -3822,14 +3863,9 @@ function createAppModel(appConfig: IAppInitialConfig) {
             runProps,
           }),
         ];
+        const metricsSelectOptions = getMetricsSelectOptions(metricsColumns);
+        const sortOptions = [...groupingSelectOptions, ...metricsSelectOptions];
 
-        tooltipData = getTooltipData({
-          processedData: data,
-          paramKeys: sortedParams,
-          groupingSelectOptions,
-          groupingItems: ['color', 'stroke', 'chart'],
-          model,
-        });
         const tableData = getDataAsTableRows(
           data,
           metricsColumns,
@@ -3838,10 +3874,10 @@ function createAppModel(appConfig: IAppInitialConfig) {
           configData,
           groupingSelectOptions,
         );
-        const sortFields = model.getState()?.config?.table.sortFields;
+        const sortFields = modelState?.config?.table.sortFields;
 
         const tableColumns = getParamsTableColumns(
-          groupingSelectOptions,
+          sortOptions,
           metricsColumns,
           params,
           data[0]?.config,
@@ -3854,7 +3890,7 @@ function createAppModel(appConfig: IAppInitialConfig) {
           AppNameEnum.PARAMS,
         );
 
-        model.getState()?.refs?.tableRef.current?.updateData({
+        modelState?.refs?.tableRef.current?.updateData({
           newData: tableData.rows,
           newColumns: tableColumns,
         });
@@ -3900,6 +3936,7 @@ function createAppModel(appConfig: IAppInitialConfig) {
             groupingSelectOptions,
             model: model as IModel<IParamsAppModelState>,
           }),
+          selectFormData: { ...modelState.selectFormData, error: null },
           params,
           selectedRows,
           metricsColumns,
@@ -3909,6 +3946,7 @@ function createAppModel(appConfig: IAppInitialConfig) {
           tableColumns,
           sameValueColumns: tableData.sameValueColumns,
           groupingSelectOptions,
+          sortOptions,
         });
       }
 
@@ -3916,15 +3954,15 @@ function createAppModel(appConfig: IAppInitialConfig) {
         const grouping = model.getState()!.config!.grouping;
         const { paletteIndex } = grouping;
         const groupByColor = getFilteredGroupingOptions({
-          groupName: 'color',
+          groupName: GroupNameEnum.COLOR,
           model,
         });
         const groupByStroke = getFilteredGroupingOptions({
-          groupName: 'stroke',
+          groupName: GroupNameEnum.STROKE,
           model,
         });
         const groupByChart = getFilteredGroupingOptions({
-          groupName: 'chart',
+          groupName: GroupNameEnum.CHART,
           model,
         });
         if (
@@ -4072,18 +4110,32 @@ function createAppModel(appConfig: IAppInitialConfig) {
           highLevelParams = highLevelParams.concat(
             getObjectPaths(run.params, run.params, '', false, true),
           );
+          let metricsLastValues: any = {};
           run.traces.metric.forEach((trace) => {
             metricsColumns[trace.name] = {
               ...metricsColumns[trace.name],
               [contextToString(trace.context) as string]: '-',
             };
+            const contextName =
+              contextToString(trace.context) === ''
+                ? ''
+                : `_${contextToString(trace.context)}`;
+
+            const key = `${
+              isSystemMetric(trace.name)
+                ? trace.name
+                : `${trace.name}${contextName}`
+            }`;
+            metricsLastValues[key] = trace.last_value.last;
           });
           const paramKey = encode({ runHash: run.hash });
+
           runs.push({
             run,
             isHidden: configData!.table.hiddenMetrics!.includes(paramKey),
             color: COLORS[paletteIndex][index % COLORS[paletteIndex].length],
             key: paramKey,
+            metricsLastValues,
             dasharray: DASH_ARRAYS[0],
           });
         });
@@ -4149,7 +4201,7 @@ function createAppModel(appConfig: IAppInitialConfig) {
         activePoint: IActivePoint,
         focusedStateActive: boolean = false,
       ): void {
-        const { refs, config } = model.getState();
+        const { refs, config, groupingSelectOptions, data } = model.getState();
         if (config.table.resizeMode !== ResizeModeEnum.Hide) {
           const tableRef: any = refs?.tableRef;
           if (tableRef) {
@@ -4165,6 +4217,12 @@ function createAppModel(appConfig: IAppInitialConfig) {
         }
         let configData = config;
         if (configData?.chart) {
+          // TODO remove this later
+          // remove unnecessary content prop from tooltip config
+          if (configData.chart.tooltip?.hasOwnProperty('content')) {
+            delete configData.chart.tooltip.content;
+          }
+
           configData = {
             ...configData,
             chart: {
@@ -4175,13 +4233,6 @@ function createAppModel(appConfig: IAppInitialConfig) {
                 xValue: activePoint.xValue,
                 yValue: activePoint.yValue,
                 chartIndex: activePoint.chartIndex,
-              },
-              tooltip: {
-                ...configData.chart.tooltip,
-                content: filterTooltipContent(
-                  tooltipData[activePoint.key],
-                  configData?.chart.tooltip.selectedFields,
-                ),
               },
             },
           };
@@ -4196,7 +4247,22 @@ function createAppModel(appConfig: IAppInitialConfig) {
           }
         }
 
-        model.setState({ config: configData });
+        const tooltipData = {
+          ...configData?.chart?.tooltip,
+          content: getTooltipContent({
+            groupingItems: [
+              GroupNameEnum.COLOR,
+              GroupNameEnum.STROKE,
+              GroupNameEnum.CHART,
+            ],
+            groupingSelectOptions,
+            data,
+            configData,
+            activePointKey: configData.chart?.focusedState?.key,
+            selectedFields: configData.chart?.tooltip?.selectedFields,
+          }),
+        };
+        model.setState({ config: configData, tooltip: tooltipData });
       }
 
       function onExportTableData(): void {
@@ -4210,8 +4276,11 @@ function createAppModel(appConfig: IAppInitialConfig) {
           config,
           groupingSelectOptions,
         );
+        const metricsSelectOptions = getMetricsSelectOptions(metricsColumns);
+        const sortOptions = [...groupingSelectOptions, ...metricsSelectOptions];
+
         const tableColumns: ITableColumn[] = getParamsTableColumns(
-          groupingSelectOptions,
+          sortOptions,
           metricsColumns,
           params,
           data[0]?.config,
@@ -4295,13 +4364,9 @@ function createAppModel(appConfig: IAppInitialConfig) {
             runProps,
           }),
         ];
-        tooltipData = getTooltipData({
-          processedData: data,
-          paramKeys: sortedParams,
-          groupingSelectOptions,
-          groupingItems: ['color', 'stroke', 'chart'],
-          model,
-        });
+        const metricsSelectOptions = getMetricsSelectOptions(metricsColumns);
+        const sortOptions = [...groupingSelectOptions, ...metricsSelectOptions];
+
         const tableData = getDataAsTableRows(
           data,
           metricsColumns,
@@ -4311,7 +4376,7 @@ function createAppModel(appConfig: IAppInitialConfig) {
           groupingSelectOptions,
         );
         const tableColumns = getParamsTableColumns(
-          groupingSelectOptions,
+          sortOptions,
           metricsColumns,
           params,
           data[0]?.config,
@@ -4344,6 +4409,7 @@ function createAppModel(appConfig: IAppInitialConfig) {
             model: model as IModel<IParamsAppModelState>,
           }),
           groupingSelectOptions,
+          sortOptions,
           tableData: tableData.rows,
           tableColumns,
           sameValueColumns: tableData.sameValueColumns,
@@ -4615,7 +4681,7 @@ function createAppModel(appConfig: IAppInitialConfig) {
           onGroupingPaletteChange(index: number): void {
             onGroupingPaletteChange({ index, model, appName, updateModelData });
           },
-          onGroupingReset(groupName: GroupNameType): void {
+          onGroupingReset(groupName: GroupNameEnum): void {
             let configData = model.getState().config;
 
             onGroupingReset({ groupName, model, appName, updateModelData });
@@ -4631,7 +4697,7 @@ function createAppModel(appConfig: IAppInitialConfig) {
 
             model.setState({ config: configData });
           },
-          onGroupingApplyChange(groupName: GroupNameType): void {
+          onGroupingApplyChange(groupName: GroupNameEnum): void {
             let configData = model.getState().config;
 
             onGroupingApplyChange({
@@ -4652,7 +4718,7 @@ function createAppModel(appConfig: IAppInitialConfig) {
 
             model.setState({ config: configData });
           },
-          onGroupingPersistenceChange(groupName: GroupNameType): void {
+          onGroupingPersistenceChange(groupName: GroupNameEnum): void {
             onGroupingPersistenceChange({
               groupName,
               model,
@@ -4677,8 +4743,17 @@ function createAppModel(appConfig: IAppInitialConfig) {
       }
       if (components?.charts?.[0]) {
         Object.assign(methods, {
-          onChangeTooltip(tooltip: Partial<IPanelTooltip>): void {
-            onChangeTooltip({ tooltip, tooltipData, model, appName });
+          onChangeTooltip(tooltip: Partial<ITooltip>): void {
+            onChangeTooltip({
+              tooltip,
+              groupingItems: [
+                GroupNameEnum.COLOR,
+                GroupNameEnum.STROKE,
+                GroupNameEnum.CHART,
+              ],
+              model,
+              appName,
+            });
           },
           onColorIndicatorChange(): void {
             onColorIndicatorChange({ model, appName, updateModelData });
@@ -4779,11 +4854,21 @@ function createAppModel(appConfig: IAppInitialConfig) {
           }): void {
             return onRowSelect({ actionType, data, model });
           },
+          onRowsVisibilityChange(metricKeys: string[]): void {
+            return onRowsVisibilityChange({
+              metricKeys,
+              model,
+              appName,
+              updateModelData,
+            });
+          },
         });
       }
 
       return methods;
     }
+
+    // ************ Scatters App Model Methods
 
     function getScattersModelMethods() {
       let runsRequestRef: {
@@ -4800,7 +4885,6 @@ function createAppModel(appConfig: IAppInitialConfig) {
         call: (exceptionHandler: (detail: any) => void) => Promise<any>;
         abort: () => void;
       };
-      let tooltipData: ITooltipData = {};
       let liveUpdateInstance: LiveUpdateService | null;
 
       function initialize(appId: string): void {
@@ -4816,7 +4900,6 @@ function createAppModel(appConfig: IAppInitialConfig) {
           };
         }
         if (components?.charts?.[0]) {
-          tooltipData = {};
           state.refs = {
             ...state.refs,
             chartPanelRef: { current: null },
@@ -4834,7 +4917,7 @@ function createAppModel(appConfig: IAppInitialConfig) {
           .then((data: IProjectParamsMetrics) => {
             model.setState({
               selectFormData: {
-                options: getScattersSelectOptions(data),
+                options: getSelectOptions(data),
                 suggestions: getSuggestionsByExplorer(appName, data),
               },
             });
@@ -4868,6 +4951,7 @@ function createAppModel(appConfig: IAppInitialConfig) {
           metricsColumns,
           selectedRows,
         } = processData(rawData);
+        const modelState: IAppModelState = model.getState();
         const sortedParams = [
           ...new Set(params.concat(highLevelParams)),
         ].sort();
@@ -4877,13 +4961,8 @@ function createAppModel(appConfig: IAppInitialConfig) {
             runProps,
           }),
         ];
-        tooltipData = getTooltipData({
-          processedData: data,
-          paramKeys: sortedParams,
-          groupingSelectOptions,
-          groupingItems: ['color', 'chart'],
-          model,
-        });
+        const metricsSelectOptions = getMetricsSelectOptions(metricsColumns);
+        const sortOptions = [...groupingSelectOptions, ...metricsSelectOptions];
 
         const tableData = getDataAsTableRows(
           data,
@@ -4893,10 +4972,10 @@ function createAppModel(appConfig: IAppInitialConfig) {
           configData,
           groupingSelectOptions,
         );
-        const sortFields = model.getState()?.config?.table.sortFields;
+        const sortFields = modelState?.config?.table.sortFields;
 
         const tableColumns = getParamsTableColumns(
-          groupingSelectOptions,
+          sortOptions,
           metricsColumns,
           params,
           data[0]?.config,
@@ -4909,7 +4988,7 @@ function createAppModel(appConfig: IAppInitialConfig) {
           AppNameEnum.SCATTERS,
         );
 
-        model.getState()?.refs?.tableRef.current?.updateData({
+        modelState?.refs?.tableRef.current?.updateData({
           newData: tableData.rows,
           newColumns: tableColumns,
         });
@@ -4923,6 +5002,7 @@ function createAppModel(appConfig: IAppInitialConfig) {
             groupingSelectOptions,
             model: model as IModel<IParamsAppModelState>,
           }),
+          selectFormData: { ...modelState.selectFormData, error: null },
           params,
           metricsColumns,
           rawData,
@@ -4931,6 +5011,7 @@ function createAppModel(appConfig: IAppInitialConfig) {
           tableColumns,
           sameValueColumns: tableData.sameValueColumns,
           groupingSelectOptions,
+          sortOptions,
           selectedRows,
         });
       }
@@ -5099,8 +5180,9 @@ function createAppModel(appConfig: IAppInitialConfig) {
             const groupByMetricName: any = {};
             Object.keys(metricsColumns[key]).forEach(
               (metricContext: string) => {
+                const contextName = metricContext ? `_${metricContext}` : '';
                 groupByMetricName[
-                  `${isSystemMetric(key) ? key : `${key}_${metricContext}`}`
+                  `${isSystemMetric(key) ? key : `${key}${contextName}`}`
                 ] = '-';
               },
             );
@@ -5114,6 +5196,7 @@ function createAppModel(appConfig: IAppInitialConfig) {
 
         let rowIndex = 0;
         const sameValueColumns: string[] = [];
+        const columnsFlattenValues: { [key: string]: Set<any> } = {};
 
         processedData.forEach(
           (metricsCollection: IMetricsCollection<IParam>) => {
@@ -5166,11 +5249,16 @@ function createAppModel(appConfig: IAppInitialConfig) {
             metricsCollection.data.forEach((metric: any) => {
               const metricsRowValues = { ...initialMetricsRowData };
               metric.run.traces.metric.forEach((trace: any) => {
+                const contextName =
+                  contextToString(trace.context) === ''
+                    ? ''
+                    : `_${contextToString(trace.context)}`;
+
                 metricsRowValues[
                   `${
                     isSystemMetric(trace.name)
                       ? trace.name
-                      : `${trace.name}_${contextToString(trace.context)}`
+                      : `${trace.name}${contextName}`
                   }`
                 ] = formatValue(trace.last_value.last);
               });
@@ -5277,9 +5365,10 @@ function createAppModel(appConfig: IAppInitialConfig) {
             });
 
             for (let columnKey in columnsValues) {
-              if (columnsValues[columnKey].length === 1) {
-                sameValueColumns.push(columnKey);
-              }
+              columnsFlattenValues[columnKey] = new Set([
+                ...(columnsFlattenValues[columnKey] || []),
+                ...(columnsValues[columnKey] || []),
+              ]);
 
               if (metricsCollection.config !== null) {
                 rows[groupKey!].data[columnKey] =
@@ -5301,6 +5390,11 @@ function createAppModel(appConfig: IAppInitialConfig) {
             }
           },
         );
+        for (let columnKey in columnsFlattenValues) {
+          if (columnsFlattenValues[columnKey].size === 1) {
+            sameValueColumns.push(columnKey);
+          }
+        }
         return { rows, sameValueColumns };
       }
 
@@ -5328,11 +5422,24 @@ function createAppModel(appConfig: IAppInitialConfig) {
           highLevelParams = highLevelParams.concat(
             getObjectPaths(run.params, run.params, '', false, true),
           );
+          let metricsLastValues: { [key: string]: number | string } = {};
+
           run.traces.metric.forEach((trace) => {
             metricsColumns[trace.name] = {
               ...metricsColumns[trace.name],
               [contextToString(trace.context) as string]: '-',
             };
+            const contextName =
+              contextToString(trace.context) === ''
+                ? ''
+                : `_${contextToString(trace.context)}`;
+
+            const key = `${
+              isSystemMetric(trace.name)
+                ? trace.name
+                : `${trace.name}${contextName}`
+            }`;
+            metricsLastValues[key] = trace.last_value.last;
           });
           const paramKey = encode({ runHash: run.hash });
           runs.push({
@@ -5340,6 +5447,7 @@ function createAppModel(appConfig: IAppInitialConfig) {
             isHidden: configData!.table.hiddenMetrics!.includes(paramKey),
             color: COLORS[paletteIndex][index % COLORS[paletteIndex].length],
             key: paramKey,
+            metricsLastValues,
             dasharray: DASH_ARRAYS[0],
           });
         });
@@ -5407,15 +5515,15 @@ function createAppModel(appConfig: IAppInitialConfig) {
         const grouping = model.getState()!.config!.grouping;
         const { paletteIndex } = grouping;
         const groupByColor = getFilteredGroupingOptions({
-          groupName: 'color',
+          groupName: GroupNameEnum.COLOR,
           model,
         });
         const groupByStroke = getFilteredGroupingOptions({
-          groupName: 'stroke',
+          groupName: GroupNameEnum.STROKE,
           model,
         });
         const groupByChart = getFilteredGroupingOptions({
-          groupName: 'chart',
+          groupName: GroupNameEnum.CHART,
           model,
         });
         if (
@@ -5560,13 +5668,9 @@ function createAppModel(appConfig: IAppInitialConfig) {
             runProps,
           }),
         ];
-        tooltipData = getTooltipData({
-          processedData: data,
-          paramKeys: sortedParams,
-          groupingSelectOptions,
-          groupingItems: ['color', 'chart'],
-          model,
-        });
+        const metricsSelectOptions = getMetricsSelectOptions(metricsColumns);
+        const sortOptions = [...groupingSelectOptions, ...metricsSelectOptions];
+
         const tableData = getDataAsTableRows(
           data,
           metricsColumns,
@@ -5576,7 +5680,7 @@ function createAppModel(appConfig: IAppInitialConfig) {
           groupingSelectOptions,
         );
         const tableColumns = getParamsTableColumns(
-          groupingSelectOptions,
+          sortOptions,
           metricsColumns,
           params,
           data[0]?.config,
@@ -5609,6 +5713,7 @@ function createAppModel(appConfig: IAppInitialConfig) {
             model: model as IModel<IScatterAppModelState>,
           }),
           groupingSelectOptions,
+          sortOptions,
           tableData: tableData.rows,
           tableColumns,
           sameValueColumns: tableData.sameValueColumns,
@@ -5643,9 +5748,7 @@ function createAppModel(appConfig: IAppInitialConfig) {
           runsRequestRef.abort();
         }
         const configData = { ...model.getState()?.config };
-        if (shouldUrlUpdate) {
-          updateURL({ configData, appName });
-        }
+
         runsRequestRef = runsService.getRunsData(configData?.select?.query);
         setRequestProgress(model);
         return {
@@ -5670,7 +5773,9 @@ function createAppModel(appConfig: IAppInitialConfig) {
                   setRequestProgress(model, progress),
                 );
                 updateData(runData);
-
+                if (shouldUrlUpdate) {
+                  updateURL({ configData, appName });
+                }
                 liveUpdateInstance?.start({
                   q: configData?.select?.query,
                 });
@@ -5690,57 +5795,6 @@ function createAppModel(appConfig: IAppInitialConfig) {
           },
           abort: runsRequestRef.abort,
         };
-      }
-
-      function getScattersSelectOptions(projectsData: IProjectParamsMetrics) {
-        let data: ISelectOption[] = [];
-        const systemOptions: ISelectOption[] = [];
-        if (projectsData?.metric) {
-          for (let key in projectsData.metric) {
-            let system: boolean = isSystemMetric(key);
-            for (let val of projectsData.metric[key]) {
-              let label: string = Object.keys(val)
-                .map((item) => `${item}="${val[item]}"`)
-                .join(', ');
-              let index: number = data.length;
-              let option: ISelectOption = {
-                label: `${system ? formatSystemMetricName(key) : key} ${label}`,
-                group: system ? formatSystemMetricName(key) : key,
-                type: 'metrics',
-                color: COLORS[0][index % COLORS[0].length],
-                value: {
-                  option_name: key,
-                  context: val,
-                },
-              };
-              if (system) {
-                systemOptions.push(option);
-              } else {
-                data.push(option);
-              }
-            }
-          }
-        }
-        if (projectsData?.params) {
-          const paramPaths = getObjectPaths(
-            projectsData.params,
-            projectsData.params,
-          );
-          paramPaths.forEach((paramPath, index) => {
-            data.push({
-              label: paramPath.slice(0, paramPath.indexOf('.__example_type__')),
-              group: 'Params',
-              type: 'params',
-              color: COLORS[0][index % COLORS[0].length],
-            });
-          });
-        }
-        const comparator = alphabeticalSortComparator({
-          orderBy: 'label',
-        });
-
-        systemOptions.sort(comparator);
-        return data.sort(comparator).concat(systemOptions);
       }
 
       function resetModelState(
@@ -5765,6 +5819,10 @@ function createAppModel(appConfig: IAppInitialConfig) {
           queryIsEmpty: true,
           rawData: [],
           tableColumns: [],
+          selectFormData: {
+            ...model.getState().selectFormData,
+            error: null,
+          },
           selectedRows: shouldResetSelectedRows
             ? {}
             : model.getState()?.selectedRows,
@@ -5783,8 +5841,11 @@ function createAppModel(appConfig: IAppInitialConfig) {
           config,
           groupingSelectOptions,
         );
+        const metricsSelectOptions = getMetricsSelectOptions(metricsColumns);
+        const sortOptions = [...groupingSelectOptions, ...metricsSelectOptions];
+
         const tableColumns: ITableColumn[] = getParamsTableColumns(
-          groupingSelectOptions,
+          sortOptions,
           metricsColumns,
           params,
           data[0]?.config,
@@ -5854,7 +5915,7 @@ function createAppModel(appConfig: IAppInitialConfig) {
         activePoint: IActivePoint,
         focusedStateActive: boolean = false,
       ): void {
-        const { refs, config } = model.getState();
+        const { data, refs, config, groupingSelectOptions } = model.getState();
         if (config.table.resizeMode !== ResizeModeEnum.Hide) {
           const tableRef: any = refs?.tableRef;
           if (tableRef) {
@@ -5870,6 +5931,12 @@ function createAppModel(appConfig: IAppInitialConfig) {
         }
         let configData = config;
         if (configData?.chart) {
+          // TODO remove this later
+          // remove unnecessary content prop from tooltip config
+          if (configData.chart.tooltip?.hasOwnProperty('content')) {
+            delete configData.chart.tooltip.content;
+          }
+
           configData = {
             ...configData,
             chart: {
@@ -5880,13 +5947,6 @@ function createAppModel(appConfig: IAppInitialConfig) {
                 xValue: activePoint.xValue,
                 yValue: activePoint.yValue,
                 chartIndex: activePoint.chartIndex,
-              },
-              tooltip: {
-                ...configData.chart.tooltip,
-                content: filterTooltipContent(
-                  tooltipData[activePoint.key],
-                  configData?.chart.tooltip.selectedFields,
-                ),
               },
             },
           };
@@ -5901,7 +5961,18 @@ function createAppModel(appConfig: IAppInitialConfig) {
           }
         }
 
-        model.setState({ config: configData });
+        const tooltipData = {
+          ...configData?.chart?.tooltip,
+          content: getTooltipContent({
+            groupingItems: [GroupNameEnum.COLOR, GroupNameEnum.CHART],
+            groupingSelectOptions,
+            data,
+            configData,
+            activePointKey: configData.chart?.focusedState?.key,
+            selectedFields: configData.chart?.tooltip?.selectedFields,
+          }),
+        };
+        model.setState({ config: configData, tooltip: tooltipData });
       }
 
       function onModelGroupingSelectChange({
@@ -6141,10 +6212,10 @@ function createAppModel(appConfig: IAppInitialConfig) {
           onGroupingPaletteChange(index: number): void {
             onGroupingPaletteChange({ index, model, appName, updateModelData });
           },
-          onGroupingReset(groupName: GroupNameType): void {
+          onGroupingReset(groupName: GroupNameEnum): void {
             onGroupingReset({ groupName, model, appName, updateModelData });
           },
-          onGroupingApplyChange(groupName: GroupNameType): void {
+          onGroupingApplyChange(groupName: GroupNameEnum): void {
             onGroupingApplyChange({
               groupName,
               model,
@@ -6152,7 +6223,7 @@ function createAppModel(appConfig: IAppInitialConfig) {
               updateModelData,
             });
           },
-          onGroupingPersistenceChange(groupName: GroupNameType): void {
+          onGroupingPersistenceChange(groupName: GroupNameEnum): void {
             onGroupingPersistenceChange({
               groupName,
               model,
@@ -6177,8 +6248,13 @@ function createAppModel(appConfig: IAppInitialConfig) {
       }
       if (components?.charts?.[0]) {
         Object.assign(methods, {
-          onChangeTooltip(tooltip: Partial<IPanelTooltip>): void {
-            onChangeTooltip({ tooltip, tooltipData, model, appName });
+          onChangeTooltip(tooltip: Partial<ITooltip>): void {
+            onChangeTooltip({
+              tooltip,
+              groupingItems: [GroupNameEnum.COLOR, GroupNameEnum.CHART],
+              model,
+              appName,
+            });
           },
           onChangeTrendlineOptions(
             trendlineOptions: Partial<ITrendlineOptions>,
@@ -6264,6 +6340,14 @@ function createAppModel(appConfig: IAppInitialConfig) {
             data?: any;
           }): void {
             return onRowSelect({ actionType, data, model });
+          },
+          onRowsVisibilityChange(metricKeys: string[]): void {
+            return onRowsVisibilityChange({
+              metricKeys,
+              model,
+              appName,
+              updateModelData,
+            });
           },
         });
       }

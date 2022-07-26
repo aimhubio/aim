@@ -5,21 +5,21 @@ import { RowHeightSize } from 'config/table/tableConfigs';
 import { ResizeModeEnum } from 'config/enums/tableEnums';
 import { RequestStatusEnum } from 'config/enums/requestStatusEnum';
 
-import { IScatterAppModelState } from 'types/services/models/scatter/scatterAppModel';
 import {
   ISelectConfig,
   ISelectOption,
-} from 'services/models/explorer/createAppModel';
-import { IGroupingConfig } from 'services/models/explorer/createAppModel';
-
+  IGroupingConfig,
+  IColumnsOrder,
+} from 'types/services/models/explorer/createAppModel';
+import { IScatterAppModelState } from 'types/services/models/scatter/scatterAppModel';
 import { ITableRef } from 'types/components/Table/Table';
 import {
-  GroupNameType,
+  GroupNameEnum,
   IMetricTableRowData,
   IOnGroupingModeChangeParams,
   IOnGroupingSelectChangeParams,
   IFocusedState,
-  IPanelTooltip,
+  ITooltip,
   IChartTitleData,
   IGroupingSelectOption,
 } from 'types/services/models/metrics/metricsAppModel';
@@ -27,10 +27,12 @@ import { ITableColumn } from 'types/components/TableColumns/TableColumns';
 import { IChartPanelRef } from 'types/components/ChartPanel/ChartPanel';
 import { IActivePoint } from 'types/utils/d3/drawHoverAttributes';
 import { IBookmarkFormState } from 'types/components/BookmarkForm/BookmarkForm';
-import { INotification } from 'types/components/NotificationContainer/NotificationContainer';
+import {
+  INotification,
+  ISyntaxErrorDetails,
+} from 'types/components/NotificationContainer/NotificationContainer';
 import { IProjectParamsMetrics } from 'types/services/models/projects/projectsModel';
 import { ITrendlineOptions } from 'types/services/models/scatter/scatterAppModel';
-import { IColumnsOrder } from 'types/services/models/explorer/createAppModel';
 
 import { IRequestProgress } from 'utils/app/setRequestProgress';
 
@@ -50,7 +52,7 @@ export interface IScattersProps extends Partial<RouteChildrenProps> {
   focusedState: IFocusedState;
   groupingData: IGroupingConfig;
   notifyData: IScatterAppModelState['notifyData'];
-  tooltip: IPanelTooltip;
+  tooltip: ITooltip;
   selectedOptionsData: ISelectConfig;
   tableRowHeight: RowHeightSize;
   sortFields: [string, 'asc' | 'desc' | boolean][];
@@ -58,15 +60,21 @@ export interface IScattersProps extends Partial<RouteChildrenProps> {
   hiddenColumns: string[];
   hideSystemMetrics: boolean;
   groupingSelectOptions: IGroupingSelectOption[];
+  sortOptions: IGroupingSelectOption[];
   projectsDataMetrics: IProjectParamsMetrics['metrics'];
   resizeMode: ResizeModeEnum;
-  selectFormData: { options: ISelectOption[]; suggestions: string[] };
+  selectFormData: {
+    options: ISelectOption[];
+    suggestions: string[];
+    error: ISyntaxErrorDetails;
+  };
   requestStatus: RequestStatusEnum;
   requestProgress: IRequestProgress;
   trendlineOptions: ITrendlineOptions;
+  sameValueColumns?: string[] | [];
   selectedRows: { [key: string]: any };
   columnsOrder: IColumnsOrder;
-  onChangeTooltip: (tooltip: Partial<IPanelTooltip>) => void;
+  onChangeTooltip: (tooltip: Partial<ITooltip>) => void;
   onChangeTrendlineOptions: (options: Partial<ITrendlineOptions>) => void;
   onActivePointChange?: (
     activePoint: IActivePoint,
@@ -77,8 +85,8 @@ export interface IScattersProps extends Partial<RouteChildrenProps> {
   onGroupingSelectChange: (params: IOnGroupingSelectChangeParams) => void;
   onGroupingModeChange: (params: IOnGroupingModeChangeParams) => void;
   onGroupingPaletteChange: (index: number) => void;
-  onGroupingReset: (groupName: GroupNameType) => void;
-  onGroupingApplyChange: (groupName: GroupNameType) => void;
+  onGroupingReset: (groupName: GroupNameEnum) => void;
+  onGroupingApplyChange: (groupName: GroupNameEnum) => void;
   onGroupingPersistenceChange: (groupName: 'color' | 'stroke') => void;
   onBookmarkCreate: (params: IBookmarkFormState) => void;
   onBookmarkUpdate: (id: string) => void;
@@ -108,4 +116,5 @@ export interface IScattersProps extends Partial<RouteChildrenProps> {
   onRowSelect: any;
   archiveRuns: (ids: string[], archived: boolean) => void;
   deleteRuns: (ids: string[]) => void;
+  onRowsVisibilityChange: (metricKeys: string[]) => void;
 }

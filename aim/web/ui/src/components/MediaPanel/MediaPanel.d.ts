@@ -5,7 +5,7 @@ import { ResizeModeEnum } from 'config/enums/tableEnums';
 import {
   IFocusedState,
   IGroupingSelectOption,
-  IPanelTooltip,
+  ITooltip,
 } from 'types/services/models/metrics/metricsAppModel';
 import { IImagesExploreAppConfig } from 'types/services/models/imagesExplore/imagesExploreAppModel';
 import { IIllustrationConfig } from 'types/components/Table/Table';
@@ -24,7 +24,7 @@ export interface IMediaPanelProps {
   wrapperOffsetWidth: number;
   controls?: React.ReactNode;
   resizeMode?: ResizeModeEnum;
-  tooltip?: IPanelTooltip;
+  tooltip?: ITooltip;
   focusedState: IFocusedState;
   selectOptions?: IGroupingSelectOption[];
   additionalProperties?:

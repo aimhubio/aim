@@ -1,0 +1,11 @@
+@use 'styles/abstracts/index' as *;
+
+.Icon {
+  &__box {
+    min-width: 1.5rem;
+    min-height: 1.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+}
