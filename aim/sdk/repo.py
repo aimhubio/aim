@@ -23,6 +23,7 @@ from aim.sdk.sequence_collection import QuerySequenceCollection, QueryRunSequenc
 from aim.sdk.sequence import Sequence
 from aim.sdk.types import QueryReportMode
 from aim.sdk.data_version import DATA_VERSION
+from aim.sdk.remote_repo_proxy import RemoteRepoProxy
 
 from aim.storage.container import Container
 from aim.storage.rockscontainer import RocksContainer
@@ -393,7 +394,14 @@ class Repo:
 
     @ttl_cache(ttl=0.5)
     def _all_run_hashes(self) -> Set[str]:
-        return set(os.listdir(os.path.join(self.path, 'meta', 'chunks')))
+        if self.is_remote_repo:
+            remote_repo = RemoteRepoProxy(self._client)
+            return set(remote_repo.list_all_runs())
+        else:
+            return set(os.listdir(os.path.join(self.path, 'meta', 'chunks')))
+
+    def list_all_runs(self) -> List[str]:
+        return list(self._all_run_hashes())
 
     def total_runs_count(self) -> int:
         db = self.structured_db
