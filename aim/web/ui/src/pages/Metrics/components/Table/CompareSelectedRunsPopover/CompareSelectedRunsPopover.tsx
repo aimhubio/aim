@@ -23,7 +23,7 @@ function CompareSelectedRunsPopover({
   selectedRows,
   appName,
 }: ICompareSelectedRunsProps): React.FunctionComponentElement<React.ReactNode> {
-  const onCompare = React.useCallback(
+  const onCompare: ({ value }: { value: string }) => void = React.useCallback(
     ({ value }: { value: string }) => {
       if (value) {
         const runHashArray: string[] = _.uniq([
@@ -70,9 +70,9 @@ function CompareSelectedRunsPopover({
                 opened ? 'opened' : ''
               }`}
             >
-              <Icon name='search' />
+              <Icon fontSize={18} name='compare' />
               <Text size={14} tint={100}>
-                Explore
+                Compare
               </Text>
             </Button>
           )}
