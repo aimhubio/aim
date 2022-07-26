@@ -495,63 +495,6 @@ function createAppModel(appConfig: IAppInitialConfig) {
     };
     let liveUpdateInstance: LiveUpdateService | null;
 
-    function getOption(
-      system: boolean,
-      optionKey: string,
-      index: number,
-      val: object | null = null,
-    ): ISelectOption {
-      const { label, key } = getLabelAndValueOfMetric(optionKey, val as any);
-      return {
-        label,
-        group: system ? 'System' : key,
-        color: COLORS[0][index % COLORS[0].length],
-        key,
-        value: {
-          option_name: key,
-          context: val,
-        },
-      };
-    }
-
-    function getMetricOptions(
-      projectsData: IProjectParamsMetrics,
-    ): ISelectOption[] {
-      let data: ISelectOption[] = [];
-      const systemOptions: ISelectOption[] = [];
-      let index: number = 0;
-      if (projectsData?.metric) {
-        for (let key in projectsData?.metric) {
-          let system: boolean = isSystemMetric(key);
-          let option = getOption(system, key, index);
-          if (system) {
-            systemOptions.push(option);
-          } else {
-            data.push(option);
-          }
-          index++;
-          for (let val of projectsData?.metric[key]) {
-            if (!_.isEmpty(val)) {
-              let label = contextToString(val);
-              let option = getOption(system, key, index, val);
-              option.label = `${option.label} ${label}`;
-              if (system) {
-                systemOptions.push(option);
-              } else {
-                data.push(option);
-              }
-              index++;
-            }
-          }
-        }
-      }
-      const comparator = alphabeticalSortComparator<ISelectOption>({
-        orderBy: 'label',
-      });
-      systemOptions.sort(comparator);
-      return data.sort(comparator).concat(systemOptions);
-    }
-
     function initialize(appId: string): void {
       model.init();
       const state: Partial<IAppModelState> = {};
@@ -583,7 +526,7 @@ function createAppModel(appConfig: IAppInitialConfig) {
           );
           model.setState({
             selectFormData: {
-              options: getMetricOptions(data),
+              options: getSelectOptions(data, true),
               suggestions: getSuggestionsByExplorer(appName, data),
               advancedSuggestions: {
                 ...getSuggestionsByExplorer(appName, data),
