@@ -127,27 +127,20 @@ export const AVOID_COLUMNS_TO_HIDE_LIST = new Set([
   'context',
 ]);
 
-export const EXPLORE_SELECTED_RUNS_CONFIG = {
-  [AppNameEnum.RUNS]: [
-    { label: AppNameEnum.METRICS, value: 'metrics' },
-    { label: AppNameEnum.IMAGES, value: 'images' },
-  ],
-  [AppNameEnum.METRICS]: [
-    { label: AppNameEnum.RUNS, value: 'runs' },
-    { label: AppNameEnum.IMAGES, value: 'images' },
-  ],
+export const EXPLORE_SELECTED_RUNS_CONFIG: {
+  [key: string]: AppNameEnum[];
+} = {
+  [AppNameEnum.RUNS]: [AppNameEnum.METRICS, AppNameEnum.IMAGES],
+  [AppNameEnum.METRICS]: [AppNameEnum.RUNS, AppNameEnum.IMAGES],
   [AppNameEnum.PARAMS]: [
-    { label: AppNameEnum.RUNS, value: 'runs' },
-    { label: AppNameEnum.IMAGES, value: 'images' },
-    { label: AppNameEnum.METRICS, value: 'metrics' },
+    AppNameEnum.RUNS,
+    AppNameEnum.IMAGES,
+    AppNameEnum.METRICS,
   ],
   [AppNameEnum.SCATTERS]: [
-    { label: AppNameEnum.RUNS, value: 'runs' },
-    { label: AppNameEnum.IMAGES, value: 'images' },
-    { label: AppNameEnum.METRICS, value: 'metrics' },
+    AppNameEnum.RUNS,
+    AppNameEnum.IMAGES,
+    AppNameEnum.METRICS,
   ],
-  [AppNameEnum.IMAGES]: [
-    { label: AppNameEnum.RUNS, value: 'runs' },
-    { label: AppNameEnum.METRICS, value: 'metrics' },
-  ],
+  [AppNameEnum.IMAGES]: [AppNameEnum.RUNS, AppNameEnum.METRICS],
 };
