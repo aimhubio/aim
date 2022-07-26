@@ -22,6 +22,7 @@ import { formatValue } from 'utils/formatValue';
 import { isSystemMetric } from 'utils/isSystemMetric';
 import { formatSystemMetricName } from 'utils/formatSystemMetricName';
 import getValueByField from 'utils/getValueByField';
+import { AIM64_ENCODING_PREFIX, decode } from 'utils/encoder/encoder';
 
 import './PopoverContent.scss';
 
@@ -86,17 +87,30 @@ const PopoverContent = React.forwardRef(function PopoverContent(
         );
       }
       case ChartTypeEnum.HighPlot: {
-        const [metric, context] = (
-          (focusedState?.xValue as string) || ''
-        )?.split('-');
+        let metricName: string = '';
+        let context: string = '';
+        const xValue = `${focusedState?.xValue}`;
+
+        if (
+          xValue?.startsWith(AIM64_ENCODING_PREFIX) &&
+          JSON.parse(decode(xValue)).hasOwnProperty('metricName')
+        ) {
+          const metric = JSON.parse(decode(xValue));
+          metricName = metric.metricName;
+          context = metric.contextName;
+        } else {
+          metricName = (xValue || '')?.split('-')[0];
+          context = (xValue || '')?.split('-')[1];
+        }
+
         return (
           <ErrorBoundary>
             <div className='PopoverContent__box'>
               <div className='PopoverContent__value'>
                 <strong>
-                  {isSystemMetric(metric)
-                    ? formatSystemMetricName(metric)
-                    : metric ?? '--'}
+                  {isSystemMetric(metricName)
+                    ? formatSystemMetricName(metricName)
+                    : metricName ?? '--'}
                 </strong>{' '}
                 {context || null}
               </div>

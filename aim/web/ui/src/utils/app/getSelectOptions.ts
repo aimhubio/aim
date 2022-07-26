@@ -4,10 +4,9 @@ import { ISelectOption } from 'types/services/models/explorer/createAppModel';
 import { IProjectParamsMetrics } from 'types/services/models/projects/projectsModel';
 
 import alphabeticalSortComparator from 'utils/alphabeticalSortComparator';
-import contextToString from 'utils/contextToString';
-import { formatSystemMetricName } from 'utils/formatSystemMetricName';
 import getObjectPaths from 'utils/getObjectPaths';
-import { isSystemMetric } from 'utils/isSystemMetric';
+
+import { getLabelAndValueOfMetric } from './getLabelAndValueOfMetric';
 
 export default function getSelectOptions(
   projectsData: IProjectParamsMetrics,
@@ -20,22 +19,25 @@ export default function getSelectOptions(
   let metrics: ISelectOption[] = [];
 
   if (projectsData?.metric) {
-    for (let key in projectsData.metric) {
-      let system: boolean = isSystemMetric(key);
-      for (let val of projectsData.metric[key]) {
-        let label = contextToString(val);
+    for (let metricName in projectsData.metric) {
+      for (let val of projectsData.metric[metricName]) {
+        const { label, key, isSystemMetric } = getLabelAndValueOfMetric(
+          metricName,
+          val,
+        );
         let index: number = metrics.length;
         let option: ISelectOption = {
-          label: `${system ? formatSystemMetricName(key) : key} ${label}`,
-          group: system ? 'System' : key,
+          label: label,
+          group: isSystemMetric ? 'System' : metricName,
           type: 'metrics',
           color: COLORS[0][index % COLORS[0].length],
+          key,
           value: {
-            option_name: key,
+            option_name: metricName,
             context: val,
           },
         };
-        if (system) {
+        if (isSystemMetric) {
           systemOptions.push(option);
         } else {
           metrics.push(option);
@@ -53,6 +55,7 @@ export default function getSelectOptions(
           : paramPath.length;
       params.push({
         label: paramPath.slice(0, indexOf),
+        key: paramPath.slice(0, indexOf),
         group: 'Params',
         type: 'params',
         color: COLORS[0][index % COLORS[0].length],

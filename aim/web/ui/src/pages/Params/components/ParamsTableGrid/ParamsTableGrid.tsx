@@ -19,13 +19,12 @@ import { IOnGroupingSelectChangeParams } from 'types/services/models/metrics/met
 import { IGroupingSelectOption } from 'types/services/models/imagesExplore/imagesExploreAppModel';
 
 import alphabeticalSortComparator from 'utils/alphabeticalSortComparator';
-import { isSystemMetric } from 'utils/isSystemMetric';
 import { formatSystemMetricName } from 'utils/formatSystemMetricName';
 import contextToString from 'utils/contextToString';
 import { formatValue } from 'utils/formatValue';
 import { SortActionTypes, SortField } from 'utils/getSortedFields';
 import getColumnOptions from 'utils/getColumnOptions';
-import { encode } from 'utils/encoder/encoder';
+import { getLabelAndValueOfMetric } from 'utils/app/getLabelAndValueOfMetric';
 
 function getParamsTableColumns(
   sortOptions: IGroupingSelectOption[],
@@ -142,36 +141,26 @@ function getParamsTableColumns(
       pin: 'right',
     },
   ].concat(
-    Object.keys(metricsColumns).reduce((acc: any, key: string) => {
-      const systemMetric: boolean = isSystemMetric(key);
+    Object.keys(metricsColumns).reduce((acc: any, metricName: string) => {
       const systemMetricsList: ITableColumn[] = [];
       const metricsList: ITableColumn[] = [];
-      Object.keys(metricsColumns[key]).forEach((metricContext) => {
-        const contextName = metricContext ? ` ${metricContext}` : '';
-        const columnKey = isSystemMetric(key)
-          ? key
-          : encode({
-              metricName: key,
-              contextName,
-            });
-        const columnLabel = `${
-          systemMetric ? formatSystemMetricName(key) : `${key}${contextName}`
-        }`;
-        const sortValueKey = `metricsLastValues.${encode({
-          metricName: key,
-          context: contextName,
-        })}`;
-        const sortItemIndex: number =
-          sortFields?.findIndex(
-            (value: SortField) => value.value === sortValueKey,
-          ) ?? -1;
+      Object.keys(metricsColumns[metricName]).forEach((metricContext) => {
+        const { label, key, isSystemMetric } = getLabelAndValueOfMetric(
+          metricName,
+          metricContext,
+        );
 
+        const sortValueKey = `metricsLastValues.${key}`;
+        const sortItemIndex: number =
+          sortFields?.findIndex((value: SortField) => {
+            return value.value === sortValueKey;
+          }) ?? -1;
         let column = {
-          key: columnKey,
-          label: columnLabel,
-          content: systemMetric ? (
+          key,
+          label,
+          content: isSystemMetric ? (
             <span>
-              {formatSystemMetricName(key)}
+              {formatSystemMetricName(metricName)}
               {onSort && (
                 <TableSortIcons
                   onSort={() =>
@@ -233,14 +222,14 @@ function getParamsTableColumns(
               )}
             </div>
           ),
-          topHeader: systemMetric ? 'System Metrics' : key,
-          pin: order?.left?.includes(columnKey)
+          topHeader: isSystemMetric ? 'System Metrics' : metricName,
+          pin: order?.left?.includes(key)
             ? 'left'
-            : order?.right?.includes(columnKey)
+            : order?.right?.includes(key)
             ? 'right'
             : null,
         };
-        systemMetric
+        isSystemMetric
           ? systemMetricsList.push(column)
           : metricsList.push(column);
       });

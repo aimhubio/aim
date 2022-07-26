@@ -89,6 +89,7 @@ import setRequestProgress from 'utils/app/setRequestProgress';
 import getRunData from 'utils/app/getRunData';
 import getTooltipContent from 'utils/getTooltipContent';
 import decodeWithBase58Checker from 'utils/decodeWithBase58Checker';
+import { getLabelAndValueOfMetric } from 'utils/app/getLabelAndValueOfMetric';
 
 import createModel from '../model';
 import { AppNameEnum } from '../explorer';
@@ -457,27 +458,30 @@ function getSelectFormOptions(projectsData: IProjectParamsMetrics) {
   let data: ISelectOption[] = [];
   let index: number = 0;
   if (projectsData?.images) {
-    for (let key in projectsData.images) {
+    for (let seqName in projectsData.images) {
       data.push({
-        label: key,
-        group: key,
+        label: seqName,
+        group: seqName,
         color: COLORS[0][index % COLORS[0].length],
+        key: getLabelAndValueOfMetric(seqName, {}).key,
+
         value: {
-          option_name: key,
+          option_name: seqName,
           context: null,
         },
       });
       index++;
 
-      for (let val of projectsData.images[key]) {
+      for (let val of projectsData.images[seqName]) {
         if (!_.isEmpty(val)) {
           let label = contextToString(val);
           data.push({
-            label: `${key} ${label}`,
-            group: key,
+            label: `${seqName} ${label}`,
+            group: seqName,
             color: COLORS[0][index % COLORS[0].length],
+            key: getLabelAndValueOfMetric(seqName, val).key,
             value: {
-              option_name: key,
+              option_name: seqName,
               context: val,
             },
           });

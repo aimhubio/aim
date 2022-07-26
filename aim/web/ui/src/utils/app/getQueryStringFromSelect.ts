@@ -27,7 +27,7 @@ export default function getQueryStringFromSelect(
                   .map((item) => {
                     const contextName = !jsValidVariableRegex.test(item)
                       ? `['${item.replaceAll('"', '\\"')}']`
-                      : item;
+                      : `.${item}`;
                     const value = (option.value?.context as any)[item];
                     return `metric.context${contextName} == ${formatValue(
                       value,
