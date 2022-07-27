@@ -439,7 +439,12 @@ class Repo:
             remote_repo = RemoteRepoProxy(self._client)
             return set(remote_repo.list_all_runs())
         else:
-            return set(os.listdir(os.path.join(self.path, 'meta', 'chunks')))
+            chunks_dir = os.path.join(self.path, 'meta', 'chunks')
+            if os.path.exists(chunks_dir):
+                return set(os.listdir(chunks_dir))
+            else:
+                return set()
+
 
     def list_all_runs(self) -> List[str]:
         return list(self._all_run_hashes())
