@@ -1,3 +1,5 @@
+import _ from 'lodash';
+
 import COLORS from 'config/colors/colors';
 
 import { ISelectOption } from 'types/services/models/explorer/createAppModel';
@@ -45,26 +47,28 @@ export default function getSelectOptions(
         }
       }
       for (let val of projectsData.metric[metricName]) {
-        const { label, key, isSystemMetric } = getLabelAndValueOfMetric(
-          metricName,
-          val,
-        );
-        let index: number = metrics.length;
-        let option: ISelectOption = {
-          label: label,
-          group: isSystemMetric ? 'System' : metricName,
-          type: 'metrics',
-          color: COLORS[0][index % COLORS[0].length],
-          key,
-          value: {
-            option_name: metricName,
-            context: val,
-          },
-        };
-        if (isSystemMetric) {
-          systemOptions.push(option);
-        } else {
-          metrics.push(option);
+        if ((addHighLevelMetrics && !_.isEmpty(val)) || !addHighLevelMetrics) {
+          const { label, key, isSystemMetric } = getLabelAndValueOfMetric(
+            metricName,
+            val,
+          );
+          let index: number = metrics.length;
+          let option: ISelectOption = {
+            label: label,
+            group: isSystemMetric ? 'System' : metricName,
+            type: 'metrics',
+            color: COLORS[0][index % COLORS[0].length],
+            key,
+            value: {
+              option_name: metricName,
+              context: val,
+            },
+          };
+          if (isSystemMetric) {
+            systemOptions.push(option);
+          } else {
+            metrics.push(option);
+          }
         }
       }
     }

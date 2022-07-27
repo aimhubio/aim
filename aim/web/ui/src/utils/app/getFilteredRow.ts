@@ -1,5 +1,7 @@
 import { decode } from 'utils/encoder/encoder';
+import { formatSystemMetricName } from 'utils/formatSystemMetricName';
 import { isEncodedMetric } from 'utils/isEncodedMetric';
+import { isSystemMetric } from 'utils/isSystemMetric';
 
 export default function getFilteredRow<R extends Record<string, any>>({
   columnKeys,
@@ -13,6 +15,8 @@ export default function getFilteredRow<R extends Record<string, any>>({
     if (isEncodedMetric(column)) {
       const { metricName, contextName } = JSON.parse(decode(column));
       columnKey = `${metricName}${contextName ? `${contextName} ` : ''}`;
+    } else if (isSystemMetric(column)) {
+      columnKey = formatSystemMetricName(column);
     }
     let value = row[column];
     if (Array.isArray(value)) {

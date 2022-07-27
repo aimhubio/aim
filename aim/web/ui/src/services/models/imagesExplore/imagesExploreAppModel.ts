@@ -90,6 +90,7 @@ import getRunData from 'utils/app/getRunData';
 import getTooltipContent from 'utils/getTooltipContent';
 import decodeWithBase58Checker from 'utils/decodeWithBase58Checker';
 import { getLabelAndValueOfMetric } from 'utils/app/getLabelAndValueOfMetric';
+import getFilteredRow from 'utils/app/getFilteredRow';
 
 import createModel from '../model';
 import { AppNameEnum } from '../explorer';
@@ -1697,7 +1698,10 @@ function onExportTableData(e: React.ChangeEvent<any>): void {
 
   groupedRows?.forEach((groupedRow: any[], groupedRowIndex: number) => {
     groupedRow?.forEach((row: any) => {
-      const filteredRow: any = getFilteredRow(filteredHeader, row);
+      const filteredRow: any = getFilteredRow({
+        columnKeys: filteredHeader,
+        row,
+      });
       dataToExport.push(filteredRow);
     });
     if (groupedRows?.length - 1 !== groupedRowIndex) {
@@ -1736,28 +1740,6 @@ function onRowVisibilityChange(metricKey: string) {
     setItem('imagesTable', encode(table));
     updateModelData(config);
   }
-}
-
-function getFilteredRow(
-  columnKeys: string[],
-  row: any,
-): { [key: string]: string } {
-  return columnKeys.reduce((acc: { [key: string]: string }, column: string) => {
-    let value = row[column];
-    if (Array.isArray(value)) {
-      value = value.join(', ');
-    } else if (typeof value !== 'string') {
-      value = value || value === 0 ? JSON.stringify(value) : '-';
-    }
-
-    if (column.startsWith('params.')) {
-      acc[column.replace('params.', '')] = value;
-    } else {
-      acc[column] = value;
-    }
-
-    return acc;
-  }, {});
 }
 
 function onTableResizeEnd(tableHeight: string) {
