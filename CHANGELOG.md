@@ -1,5 +1,11 @@
 # Changelog
 
+## Unreleased
+
+### Enhancements:
+
+- Restrict Run.hash to auto-generated values only (alberttorosyan)
+
 ## 3.12.0 Jul 22, 2022
 
 ### Enhancements:
