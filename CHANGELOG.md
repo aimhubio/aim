@@ -1,5 +1,10 @@
 # Changelog
 
+### Fixes:
+
+- Fix tensorboard convert while converting tensor (sharathmk99)
+
+
 ## 3.12.0 Jul 22, 2022
 
 ### Enhancements:
