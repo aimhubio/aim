@@ -14,31 +14,28 @@
       display: none;
     }
     .yAxisLabel {
+      cursor: crosshair;
       text-align: right;
       white-space: nowrap;
       overflow: hidden;
       text-overflow: ellipsis;
     }
-
     .xAxisLabel__container {
       display: flex;
       align-items: center;
       justify-content: center;
-
       &.left {
         justify-content: flex-start;
       }
       &.right {
         justify-content: flex-end;
       }
-
       .xAxisLabel {
         overflow: hidden;
         text-overflow: ellipsis;
         white-space: nowrap;
         font-size: $text-sm;
       }
-
       &::before {
         content: '';
         display: inline-block;
@@ -49,7 +46,6 @@
         border-radius: $border-radius-circle;
         margin: 4px 5px 4px 0;
       }
-
       &__metric {
         &::before {
           background-color: #1473e6;
@@ -66,7 +62,7 @@
       }
     }
   }
-  &.backgroundRect {
+  .backgroundRect {
     cursor: crosshair;
   }
   &.zoomMode rect {
@@ -137,6 +133,7 @@
     }
   }
   .Line {
+    cursor: crosshair;
     stroke-width: 2;
     opacity: 0.3;
     &.active {

@@ -46,9 +46,7 @@ function drawLines(args: IDrawLinesArgs): void {
     if (!readOnly) {
       linesNodeRef.current
         ?.selectAll('.inProgressLineIndicator')
-        .attr('cx', (d: IProcessedData) => {
-          return xScale(d.data[d.data.length - 1][0]);
-        })
+        .attr('cx', (d: IProcessedData) => xScale(d.data[d.data.length - 1][0]))
         .attr('cy', (d: IProcessedData) => yScale(d.data[d.data.length - 1][1]))
         .attr('r', 2)
         .raise();

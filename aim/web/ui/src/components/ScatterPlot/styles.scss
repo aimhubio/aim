@@ -19,7 +19,7 @@
     transform: translate(-50%, -50%);
     width: 80%;
   }
-  &.backgroundRect {
+  .backgroundRect {
     cursor: crosshair;
   }
   &.zoomMode rect {
@@ -98,6 +98,7 @@
     }
   }
   .RegressionLine {
+    cursor: crosshair;
     stroke-width: 2.2;
     opacity: 1;
     fill: none;
