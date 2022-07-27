@@ -9,11 +9,12 @@ import { RunsSearchQueryParams } from 'services/api/base-explorer/runsApi';
 import { AimObjectDepths, SequenceTypesEnum } from 'types/core/enums';
 import { ISelectOption } from 'types/services/models/explorer/createAppModel';
 
-import createPipeline, { Pipeline, PipelineOptions } from '../pipeline';
 import { IInstructionsState } from '../store/slices/instructionsSlice';
+import createPipeline, { Pipeline, PipelineOptions } from '../pipeline';
 import { GroupType, Order } from '../pipeline/grouping/types';
 import { instructionsSelector } from '../store';
 import { IEngineConfigFinal } from '../types';
+import { IQueryableData } from '../pipeline/adapter/processor';
 
 import {
   createDefaultBoxStateSlice,
@@ -33,6 +34,7 @@ type ExplorerState = {
   data: any;
   additionalData: any;
   foundGroups: any; // remove this
+  queryableData: IQueryableData;
 };
 
 type ExplorerConfig = {
@@ -51,6 +53,7 @@ const initialState: ExplorerState = {
   data: null,
   additionalData: null,
   foundGroups: null,
+  queryableData: {},
 };
 
 let pipeline: Pipeline;
@@ -234,8 +237,9 @@ function createEngine(config: IEngineConfigFinal) {
       ],
     });
 
-    const { additionalData, data } = res;
-    storeVanilla.setState({ data, additionalData });
+    const { additionalData, data, queryable_data: queryableData } = res;
+
+    storeVanilla.setState({ data, additionalData, queryableData });
   }
 
   async function group(
@@ -321,9 +325,7 @@ function createEngine(config: IEngineConfigFinal) {
     instructionsSelector: (state: any) => state.instructions,
 
     // explorer
-    dataSelector: (state: any) => state.data,
     sequenceNameSelector: (state: any) => state.sequenceName,
-    additionalDataSelector: (state: any) => state.additionalData,
     pipelineStatusSelector: (state: any) => state.pipeline.status,
 
     engineStatusSelector: (state: ExplorerState) => ({
@@ -345,7 +347,10 @@ function createEngine(config: IEngineConfigFinal) {
 
     styleAppliers,
     // pipeline result result
+    dataSelector: (state: any) => state.data,
+    additionalDataSelector: (state: any) => state.additionalData,
     foundGroupsSelector: (state: any) => state.foundGroups,
+    queryableDataSelector: (state: any) => state.queryableData,
   };
 }
 

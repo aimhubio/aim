@@ -96,7 +96,7 @@ export interface IGroupingConfig {
 export interface ISelectOption {
   label: string;
   group: string;
-  color: string;
+  color?: string;
   type?: string;
   value?: {
     option_name: string;
