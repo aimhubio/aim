@@ -36,7 +36,7 @@ An overview of what you can do with queried metrics - the modifiers:
 - [Change scale of the axes (linear or log)](#axes-scale)
 - [Apply smoothing](#chart-smoothing)
 - [Ignore outliers](#ignore-outliers)
-- [Metric highligh modes (metric on hover, run on hover)](#highlight-modes)
+- [Metric highlight modes (metric on hover, run on hover)](#highlight-modes)
 - [Set chart tooltip parameters](#set-tooltip-parameters)
 - [Apply zoom in/out on charts](#apply-zoom-on-charts)
 - [Export chart as image](#export-chart-as-image)
