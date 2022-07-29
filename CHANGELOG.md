@@ -2,6 +2,7 @@
 
 ## 3.12.1
 
+- Add ability to pin metrics to run detail page (mihran113)
 - Break long metric names into multiple lines in Run Page (roubkar)
 
 ## 3.12.0 Jul 22, 2022
