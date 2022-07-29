@@ -178,7 +178,7 @@ class ContainerTreeView(TreeView):
     ) -> TreeArrayView:
         return TreeArrayView(self.subtree(path), dtype=dtype)
 
-    def first(
+    def first_key(
         self,
         path: Union[AimObjectKey, AimObjectPath] = ()
     ) -> Tuple[AimObjectKey, AimObject]:
@@ -188,7 +188,7 @@ class ContainerTreeView(TreeView):
         p = E.decode_path(self.container.view(prefix).next_key())
         return p[0]
 
-    def last(
+    def last_key(
         self,
         path: Union[AimObjectKey, AimObjectPath] = ()
     ) -> Tuple[AimObjectKey, AimObject]:
