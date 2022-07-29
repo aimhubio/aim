@@ -32,7 +32,7 @@ There are two ways you can query metrics and runs
 An overview of what you can do with queried metrics - the modifiers:
 - [Group by tracked parameters](#group-by-any-parameter)
 - [Aggregate grouped metrics](#aggregate-metrics)
-- [Change axes properties (change x-axis alignment, set axes range)](#axes-properties)
+- [Configure axes properties (x-axis alignment, axes range)](#axes-properties)
 - [Change scale of the axes (linear or log)](#axes-scale)
 - [Apply smoothing](#chart-smoothing)
 - [Ignore outliers](#ignore-outliers)
@@ -170,8 +170,9 @@ By setting metrics alignment to Custom Metric, x-axis values will represent sele
 
 ##### Set axes range:
 
-Passing `min` and `max` values for the corresponding axis, will define the axis scale range minimum and maximum bounds (as `[min, max]`) for the chart(s).
-The default axis range is the tracked metrics' minimum and maximum bounds.
+To fix an axis range across all the charts, set the corresponding axis minimum and maximum bounds in the form.
+
+<img src="https://docs-blobs.s3.us-east-2.amazonaws.com/images/ui/pages/metrics-explorer/set-axes-range.png" style="border-radius: 8px; border: 1px solid #E8F1FC" alt="set-axes-range" />
 
 #### Axes Scale
 
