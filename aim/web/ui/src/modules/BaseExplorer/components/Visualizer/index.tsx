@@ -78,7 +78,7 @@ function BaseVisualizer(props: IVisualizationProps) {
           </Box>
         )}
       />
-      <Controls engine={engine} />
+      <props.controlComponent engine={engine} />
     </div>
   );
 }

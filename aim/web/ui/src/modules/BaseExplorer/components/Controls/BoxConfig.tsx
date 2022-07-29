@@ -11,6 +11,7 @@ import { IBaseComponentProps } from '../../types';
 import '../../../../components/ImagePropertiesPopover/ImagePropertiesPopover.scss';
 
 type BoxConfigState = {
+  isInitial: boolean;
   width: number;
   height: number;
   gap: number;
@@ -56,7 +57,7 @@ function BoxConfig(props: IBaseComponentProps) {
           <div
             onClick={onAnchorClick}
             className={`Controls__anchor ${
-              opened ? 'active outlined' : 'active'
+              opened ? 'active outlined' : !boxConfig.isInitial ? 'active' : ''
             }`}
           >
             <Icon

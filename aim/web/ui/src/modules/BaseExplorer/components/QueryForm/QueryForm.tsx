@@ -131,9 +131,6 @@ function QueryForm(props: IQueryFormProps) {
     [query.advancedModeOn],
   );
 
-  useEffect(() => {
-    console.log(query);
-  }, [query]);
   const onSubmit = React.useCallback(() => {
     if (isFetching) {
       //TODO: abort request
