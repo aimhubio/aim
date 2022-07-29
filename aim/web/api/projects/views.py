@@ -1,6 +1,6 @@
 import os
 from datetime import timedelta
-from typing import List, Optional, Tuple
+from typing import Optional, Tuple
 
 from collections import Counter
 from fastapi import Depends, HTTPException, Query, Header
@@ -58,7 +58,7 @@ async def project_activity_api(x_timezone_offset: int = Header(default=0),
     }
 
 
-@projects_router.get('/pinned-metrics/',  response_model=ProjectPinnedMetricsApiOut)
+@projects_router.get('/pinned-metrics/', response_model=ProjectPinnedMetricsApiOut)
 async def get_pinned_metrics_api():
     import json
     project = Project()
