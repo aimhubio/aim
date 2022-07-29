@@ -181,7 +181,7 @@ class ContainerTreeView(TreeView):
     def first_key(
         self,
         path: Union[AimObjectKey, AimObjectPath] = ()
-    ) -> Tuple[AimObjectKey, AimObject]:
+    ) -> AimObjectKey:
         if isinstance(path, (int, str)):
             path = (path,)
         prefix = E.encode_path(path)
@@ -191,7 +191,7 @@ class ContainerTreeView(TreeView):
     def last_key(
         self,
         path: Union[AimObjectKey, AimObjectPath] = ()
-    ) -> Tuple[AimObjectKey, AimObject]:
+    ) -> AimObjectKey:
         if isinstance(path, (int, str)):
             path = (path,)
         prefix = E.encode_path(path)
