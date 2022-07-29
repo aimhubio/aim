@@ -21,6 +21,7 @@ def parse_tb_logs(tb_logs, repo_inst, flat=False, no_cache=False):
         # This import statement takes long to complete
         import tensorflow as tf
         from tensorflow.python.summary.summary_iterator import summary_iterator
+        from tensorboard.util import tensor_util
     except ImportError:
         click.echo(
             'Could not process TensorBoard logs - failed to import tensorflow module.', err=True
@@ -69,6 +70,13 @@ def parse_tb_logs(tb_logs, repo_inst, flat=False, no_cache=False):
             current_path, _ = os.path.split(current_path)
             level += 1
         return level
+
+    def create_ndarray(tensor):
+        res = tensor_util.make_ndarray(tensor)
+        if res.dtype == "object":
+            return None
+        else:
+            return res
 
     run_dir_candidates = sorted(run_dir_candidates, key=get_level, reverse=True)
     run_dir_candidates_filtered = set()
@@ -216,6 +224,8 @@ def parse_tb_logs(tb_logs, repo_inst, flat=False, no_cache=False):
                                     ]
                                     if len(track_val) == 1:
                                         track_val = track_val[0]
+                                elif plugin_name == "scalars" or plugin_name == "":
+                                    track_val = create_ndarray(value.tensor)
                                 else:
                                     track_val = value.tensor.float_val[0]
                             elif value.HasField('simple_value'):
