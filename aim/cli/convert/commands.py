@@ -2,27 +2,41 @@ import os
 
 import click
 from click import ClickException
-
+import grpc
 from aim.sdk.repo import Repo
-from aim.sdk.utils import clean_repo_path
+from aim.ext.transport.client import Client
 from aim.cli.convert.processors import (
     parse_tb_logs,
     parse_mlflow_logs
 )
 
+def validate_repo(ctx, param, value):
+    if not value and not param.required:
+        return value
+    if value.startswith("aim://"):
+        try:
+            _client = Client(value.replace("aim://", ""))
+            _client.get_version()
+            return value
+        except grpc.RpcError as e:
+            raise e
+    else:
+        validate_path = click.Path(exists=True,
+                file_okay=False,
+                dir_okay=True,
+                writable=True)
+        return validate_path.convert(value, param, ctx)
 
 @click.group()
-@click.option('--repo', required=False, type=click.Path(exists=True,
-                                                        file_okay=False,
-                                                        dir_okay=True,
-                                                        writable=True))
+@click.option('--repo', required=False, callback=validate_repo)
 @click.pass_context
 def convert(ctx, repo):
     ctx.ensure_object(dict)
-
-    repo_path = clean_repo_path(repo) or Repo.default_repo_path()
+    if not repo:
+        repo_path = Repo.default_repo_path()
+    else:
+        repo_path = repo
     repo_inst = Repo.from_path(repo_path)
-
     ctx.obj['repo_inst'] = repo_inst
 
 

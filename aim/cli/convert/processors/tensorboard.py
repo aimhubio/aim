@@ -1,5 +1,6 @@
 import json
 import os
+from pathlib import Path
 
 import click
 from tqdm import tqdm
@@ -30,7 +31,11 @@ def parse_tb_logs(tb_logs, repo_inst, flat=False, no_cache=False):
 
     supported_plugins = ('images', 'scalars')
     unsupported_plugin_noticed = False
-    tb_logs_cache_path = os.path.join(repo_inst.path, 'tb_logs_cache')
+    if repo_inst.is_remote_repo:
+        Path(".aim").mkdir(exist_ok=True)
+        tb_logs_cache_path = os.path.join(".aim", 'tb_logs_cache')
+    else:
+        tb_logs_cache_path = os.path.join(repo_inst.path, 'tb_logs_cache')
 
     if no_cache and os.path.exists(tb_logs_cache_path):
         os.remove(tb_logs_cache_path)

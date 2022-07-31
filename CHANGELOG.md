@@ -5,6 +5,7 @@
 ### Enhancements:
 
 - Restrict Run.hash to auto-generated values only (alberttorosyan)
+- CLI option convert tensorboard to accept remote server address (sharathmk99)
 
 ### Fixes:
 
