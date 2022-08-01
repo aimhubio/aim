@@ -4,6 +4,7 @@
 
 - Fix remote heartbeat-watcher resource cleanup (mihran113)
 - Break long metric names into multiple lines in Run Page (roubkar)
+- Fix Cython version to eliminate build errors (mihran113)
 
 ## 3.12.0 Jul 22, 2022
 
