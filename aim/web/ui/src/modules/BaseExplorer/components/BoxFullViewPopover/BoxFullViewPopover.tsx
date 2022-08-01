@@ -9,6 +9,7 @@ import { Badge, Button, Icon, Text } from 'components/kit';
 import ErrorBoundary from 'components/ErrorBoundary/ErrorBoundary';
 
 import { PathEnum } from 'config/enums/routesEnum';
+import { DATE_WITH_SECONDS } from 'config/dates/dates';
 
 import { ITagProps } from 'types/pages/tags/Tags';
 
@@ -40,7 +41,7 @@ function BoxFullViewPopover({ onClose, element, sequence, groupInfo }: any) {
         {
           icon: 'calendar',
           value: `${moment(runData?.creation_time * 1000).format(
-            'DD MMMM YYYY HH:mm:ss',
+            DATE_WITH_SECONDS,
           )}`,
         },
         {

@@ -52,10 +52,6 @@ function BoxVirtualizer(props: BoxVirtualizerProps) {
     });
   }, []);
 
-  console.log({
-    width: container.current.offsetWidth,
-    height: container.current.offsetHeight,
-  });
   const resizeObserverCallback: ResizeObserverCallback = React.useCallback(
     (entries: ResizeObserverEntry[]) => {
       if (entries?.length) {
@@ -80,14 +76,6 @@ function BoxVirtualizer(props: BoxVirtualizerProps) {
 
   useResizeObserver(resizeObserverCallback, container, observerReturnCallback);
 
-  console.log({
-    width:
-      sortedByPosition?.[sortedByPosition?.length - 1]?.style?.left +
-      sortedByPosition?.[sortedByPosition?.length - 1]?.style?.width,
-    height:
-      sortedByPosition?.[sortedByPosition?.length - 1]?.style?.top +
-      sortedByPosition?.[sortedByPosition?.length - 1]?.style?.height,
-  });
   return (
     <div
       ref={container}
