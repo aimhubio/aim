@@ -23,6 +23,7 @@ import {
   PreCreatedStateSlice,
 } from './utils';
 import { createGroupingsStateConfig } from './grouping';
+import { createControlsStateConfig } from './controls';
 
 type ExplorerState = {
   initialized: boolean;
@@ -119,6 +120,8 @@ function createEngine(config: IEngineConfigFinal) {
   );
 
   const groupConfigs = createGroupingsStateConfig(config.grouping);
+  const controlConfigs = createControlsStateConfig(config.controls);
+
   const styleAppliers = Object.keys(config.grouping || {}).map(
     (key: string) => {
       return config.grouping?.[key].styleApplier;
@@ -136,6 +139,10 @@ function createEngine(config: IEngineConfigFinal) {
 
   generatedInitialStates['groupings'] = {
     ...groupConfigs.initialState,
+  };
+
+  generatedInitialStates['controls'] = {
+    ...controlConfigs.initialState,
   };
 
   // store creation
@@ -162,6 +169,7 @@ function createEngine(config: IEngineConfigFinal) {
   );
   /*  Slices Creation */
 
+  // grouping
   const encapsulatedGroupProperties = Object.keys(groupConfigs.slices).reduce(
     (acc: { [key: string]: object }, name: string) => {
       const elem = groupConfigs.slices[name];
@@ -178,6 +186,18 @@ function createEngine(config: IEngineConfigFinal) {
     storeVanilla.setState,
     storeVanilla.getState,
   );
+
+  // grouping
+  const encapsulatedControlProperties = Object.keys(
+    controlConfigs.slices,
+  ).reduce((acc: { [key: string]: object }, name: string) => {
+    const elem = controlConfigs.slices[name];
+    acc[name] = {
+      ...elem,
+      methods: elem.methods(storeVanilla.setState, storeVanilla.getState),
+    };
+    return acc;
+  }, {});
 
   const storeReact = createReact(storeVanilla);
 
@@ -339,6 +359,10 @@ function createEngine(config: IEngineConfigFinal) {
     groupings: {
       ...encapsulatedGroupProperties,
       currentValuesSelector: groupConfigs.currentValuesSelector,
+    },
+    // controls
+    controls: {
+      ...encapsulatedControlProperties,
     },
     // instructions
     instructions: {

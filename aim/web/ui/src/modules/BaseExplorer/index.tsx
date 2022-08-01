@@ -20,7 +20,11 @@ function BaseExplorer(props: IBaseExplorerProps) {
   }, [engineInstance]);
 
   const visualizations = React.useMemo(() => {
-    const p = { engine: engineInstance, box: components.box };
+    const p = {
+      engine: engineInstance,
+      box: components.box,
+      controlComponent: components.controls,
+    };
     const Visualizations: React.ReactNode[] = components.visualizations.map(
       (Viz) => <Viz key={Viz.displayName} {...p} />,
     );
@@ -67,6 +71,7 @@ function createExplorer(config: IExplorerConfig): () => React.ReactElement {
     },
     states: config.states,
     grouping: EC.grouping,
+    controls: EC.controls,
   };
 
   const engine = createEngine(engineConfig);

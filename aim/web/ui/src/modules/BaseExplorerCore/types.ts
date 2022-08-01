@@ -3,6 +3,7 @@ import { GetState, SetState } from 'utils/store/createSlice';
 import { AimObjectDepths, SequenceTypesEnum } from '../../types/core/enums';
 
 import { GroupingConfigs } from './core-store/grouping';
+import { ControlConfig, ControlsConfigs } from './core-store/controls';
 
 export const engineStoreReservedSliceKeys = {
   initialized: 'initialized',
@@ -56,6 +57,7 @@ export interface IEngineConfigFinal {
     objectDepth: AimObjectDepths;
   };
   grouping?: GroupingConfigs;
+  controls?: ControlsConfigs;
   defaultBoxConfig: {
     width: number;
     height: number;

@@ -1,19 +1,20 @@
 import React from 'react';
 
-import { IBaseComponentProps } from '../../types';
-
-import BoxConfig from './BoxConfig';
+import { IControlsProps } from '../../types';
 
 import './styles.scss';
 
-function Controls(props: IBaseComponentProps) {
+function Controls(props: IControlsProps) {
+  const controls = Object.keys(props.engine.controls).map((key: string) => {
+    const Control = props.engine.controls[key].component;
+    return <Control key={key} {...props} />;
+  });
+
   return (
     <div className='Controls__container ScrollBar__hidden'>
-      <div>
-        <BoxConfig engine={props.engine} />
-      </div>
+      <div>{controls}</div>
     </div>
   );
 }
 
-export default React.memo<IBaseComponentProps>(Controls);
+export default React.memo<IControlsProps>(Controls);

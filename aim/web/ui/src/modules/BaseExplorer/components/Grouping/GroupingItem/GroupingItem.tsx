@@ -1,4 +1,4 @@
-import { memo } from 'react';
+import React, { memo } from 'react';
 import _ from 'lodash-es';
 import classNames from 'classnames';
 
@@ -59,4 +59,4 @@ function GroupingItem({
   );
 }
 
-export default memo(GroupingItem);
+export default React.memo<IGroupingItemProps>(GroupingItem);
