@@ -3,7 +3,7 @@ import _ from 'lodash-es';
 import React from 'react';
 import { Link as RouteLink } from 'react-router-dom';
 
-import { Dialog, Link } from '@material-ui/core';
+import { Dialog, Link, Tooltip } from '@material-ui/core';
 
 import { Badge, Button, Icon, Text } from 'components/kit';
 import ErrorBoundary from 'components/ErrorBoundary/ErrorBoundary';
@@ -16,6 +16,7 @@ import { processDurationTime } from 'utils/processDurationTime';
 import { formatValue } from 'utils/formatValue';
 import { formatSystemMetricName } from 'utils/formatSystemMetricName';
 import { isSystemMetric } from 'utils/isSystemMetric';
+import contextToString from 'utils/contextToString';
 
 import './BoxFullViewPopover.scss';
 
@@ -69,22 +70,22 @@ function BoxFullViewPopover({ onClose, element, sequence, groupInfo }: any) {
       ],
       sequence: [
         {
-          label: 'Name',
+          label: 'name',
           value: sequenceData.name,
         },
         {
-          label: 'Context',
+          label: 'context',
           value: (
             <Badge
               className='BoxFullViewPopover__container__detail-item__badge'
               monospace
               size='xSmall'
-              label={formatValue(sequenceData.context) || 'Empty Context'}
+              label={contextToString(sequenceData.context) || 'Empty Context'}
             />
           ),
         },
         {
-          label: 'Step',
+          label: 'step',
           value: element.props.data.step,
         },
       ],
@@ -117,8 +118,14 @@ function BoxFullViewPopover({ onClose, element, sequence, groupInfo }: any) {
                   key={index}
                   className='BoxFullViewPopover__container__detail-item'
                 >
-                  <Icon name={item.icon} />
-                  <Text tint={70}>{item.value}</Text>
+                  <Icon
+                    name={item.icon}
+                    weight={item.icon === 'time' ? 600 : 500}
+                    fontSize={14}
+                  />
+                  <Text className='BoxFullViewPopover__container__detail__truncatedInfo'>
+                    {item.value}
+                  </Text>
                 </div>
               ))}
             </div>
@@ -127,14 +134,18 @@ function BoxFullViewPopover({ onClose, element, sequence, groupInfo }: any) {
                 {sequence}
               </Text>
               {data.sequence.map((item: any, index: number) => (
-                <div key={index}>
-                  <Text
-                    className='BoxFullViewPopover__container__detail-item__withSpace'
-                    tint={100}
-                  >
+                <div className='flex' key={index}>
+                  <Text className='BoxFullViewPopover__container__detail-item__withSpace'>
                     {item.label}:
                   </Text>
-                  <Text tint={70}>{item.value}</Text>
+                  <Tooltip title={item.value}>
+                    <Text
+                      tint={100}
+                      className='BoxFullViewPopover__container__detail__truncatedInfo'
+                    >
+                      {item.value}
+                    </Text>
+                  </Tooltip>
                 </div>
               ))}
             </div>
@@ -148,10 +159,14 @@ function BoxFullViewPopover({ onClose, element, sequence, groupInfo }: any) {
                     _.isEmpty(data.groups[groupConfigKey]) ? null : (
                       <div
                         key={groupConfigKey}
-                        className='BoxFullViewPopover__container__detail-groupItem'
+                        className='BoxFullViewPopover__container__detail-group'
                       >
-                        <Text tint={100} weight={600} size={14}>
+                        <Text component='h4' tint={100} weight={600} size={14}>
                           {groupConfigKey}
+                        </Text>
+                        <Text tint={70}>
+                          ({data.groups[groupConfigKey].items_count_in_group}{' '}
+                          items in this group)
                         </Text>
                         {Object.keys(data.groups[groupConfigKey].config).map(
                           (item) => {
@@ -162,11 +177,19 @@ function BoxFullViewPopover({ onClose, element, sequence, groupInfo }: any) {
                                   data.groups[groupConfigKey].config[item],
                                 )
                               : data.groups[groupConfigKey].config[item];
+                            val = formatValue(val);
                             return (
-                              <div key={item}>
-                                <Text size={12} tint={100}>{`${item}: `}</Text>
-                                <Text size={12}>{formatValue(val)}</Text>
-                              </div>
+                              <Tooltip key={item} title={val}>
+                                <div className='BoxFullViewPopover__container__detail-group__item'>
+                                  <Text
+                                    size={12}
+                                    className='BoxFullViewPopover__container__detail-group__item__key'
+                                  >{`${item}: `}</Text>
+                                  <Text size={12} tint={100}>
+                                    {val}
+                                  </Text>
+                                </div>
+                              </Tooltip>
                             );
                           },
                         )}

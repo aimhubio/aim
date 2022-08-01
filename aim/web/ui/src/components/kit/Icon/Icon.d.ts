@@ -10,6 +10,7 @@ export interface IIconProps
   className?: string;
   style?: CSSProperties;
   fontSize?: number | string;
+  weight?: number | string;
   color?: string;
 }
 
