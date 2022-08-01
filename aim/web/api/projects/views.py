@@ -17,6 +17,7 @@ from aim.web.api.projects.pydantic_models import (
 )
 from aim.web.api.utils import object_factory
 from aim.sdk.index_manager import RepoIndexManager
+from aim.storage.locking import AutoFileLock
 
 projects_router = APIRouter()
 
@@ -68,17 +69,19 @@ async def get_pinned_metrics_api():
 
     response = {'metrics': []}
     settings_filename = os.path.join(project.repo_path, AIM_PROJECT_SETTINGS_FILE)
+    settings_lock_file = f'{settings_filename}.lock'
     if not os.path.exists(settings_filename):
         return response
 
-    with open(settings_filename, 'r') as settings_file:
-        try:
-            settings = json.load(settings_file)
-        except json.decoder.JSONDecodeError:
+    with AutoFileLock(settings_lock_file, timeout=2):
+        with open(settings_filename, 'r') as settings_file:
+            try:
+                settings = json.load(settings_file)
+            except json.decoder.JSONDecodeError:
+                return response
+            metrics_list = settings.get('pinned_metrics', [])
+            response['metrics'] = metrics_list
             return response
-        metrics_list = settings.get('pinned_metrics', [])
-        response['metrics'] = metrics_list
-        return response
 
 
 @projects_router.post('/pinned-metrics/', response_model=ProjectPinnedMetricsApiOut)
@@ -95,19 +98,19 @@ async def update_pinned_metrics_api(request_data: ProjectPinnedMetricsApiIn):
 
     # read current settings
     settings_filename = os.path.join(project.repo_path, AIM_PROJECT_SETTINGS_FILE)
-
+    settings_lock_file = f'{settings_filename}.lock'
     settings = {}
-    if os.path.exists(settings_filename):
-        with open(settings_filename, 'r') as settings_file:
+    with AutoFileLock(settings_lock_file, timeout=2):
+        with open(settings_filename, 'a+') as settings_file:
             try:
                 settings = json.load(settings_file)
             except json.decoder.JSONDecodeError:
                 pass
-
-    settings['pinned_metrics'] = metrics_list
-    # dump new settings
-    with open(settings_filename, 'w') as settings_file:
-        json.dump(settings, settings_file)
+            settings['pinned_metrics'] = metrics_list
+            settings_file.seek(0)
+            # dump new settings
+            json.dump(settings, settings_file)
+            settings_file.truncate()
 
     return {'metrics': metrics_list}
 
