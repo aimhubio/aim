@@ -10,7 +10,7 @@ export function createSliceState(initialState: object, name: string) {
     return getValue(state, name);
   };
 
-  // const initialStateHash = buildObjectHash(initialState);
+  const initialStateHash = buildObjectHash(initialState);
 
   const generateMethods = <TS extends Function, TG extends Function>(
     set: TS,
@@ -21,7 +21,7 @@ export function createSliceState(initialState: object, name: string) {
         // @ts-ignore
         ...get()[name],
         ...newState,
-        //initialState: initialStateHash === buildObjectHash(newState),
+        isInitial: initialStateHash === buildObjectHash(newState),
       };
 
       set({
@@ -31,14 +31,20 @@ export function createSliceState(initialState: object, name: string) {
 
     function reset() {
       set({
-        [name]: initialState,
+        [name]: {
+          ...initialState,
+          isInitial: true,
+        },
       });
     }
     return { update, reset };
   };
 
   return {
-    initialState,
+    initialState: {
+      ...initialState,
+      isInitial: true,
+    },
     stateSelector,
     methods: generateMethods,
   };

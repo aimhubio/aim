@@ -34,7 +34,6 @@ function createControl(config: ControlConfig<unknown & object, any>) {
   const {
     name,
     component,
-
     state = { initialState: {} },
     settings = {},
   } = config;

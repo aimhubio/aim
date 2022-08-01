@@ -1,4 +1,4 @@
-import { memo, useEffect } from 'react';
+import { memo } from 'react';
 
 import createExplorer from 'modules/BaseExplorer';
 import {
@@ -20,10 +20,9 @@ import {
 } from 'modules/BaseExplorerCore/pipeline/grouping/types';
 import Figures from 'modules/BaseExplorer/components/Figures/Figures';
 import Controls from 'modules/BaseExplorer/components/Controls';
+import BoxConfig from 'modules/BaseExplorer/components/Controls/BoxConfig';
 
 import { AimObjectDepths, SequenceTypesEnum } from 'types/core/enums';
-
-import BoxConfig from '../../modules/BaseExplorer/components/Controls/BoxConfig';
 
 const applyStyle: styleApplier = (object: any, boxConfig: any, group: any) => {
   return {

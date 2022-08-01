@@ -134,7 +134,7 @@ export interface IControlsProps extends IBaseComponentProps {}
 
 export interface IVisualizationProps extends IBaseComponentProps {
   box?: React.FunctionComponent<IBoxProps>;
-  controlComponent: React.FunctionComponent<IControlsProps>;
+  controlComponent?: React.FunctionComponent<IControlsProps>;
 }
 
 export interface IBoxProps extends IBaseComponentProps {
