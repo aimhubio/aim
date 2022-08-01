@@ -25,9 +25,14 @@ class ProjectActivityApiOut(BaseModel):
     activity_map: Dict[str, int] = {"2021-01-01": 54}
 
 
-class ProjectPinnedMetricsApiOut(BaseModel):
-    metrics: List[str] = []
+class Sequence(BaseModel):
+    name: str
+    context: dict
 
 
-class ProjectPinnedMetricsApiIn(BaseModel):
-    metrics: List[str]
+class ProjectPinnedSequencesApiOut(BaseModel):
+    sequences: List[Sequence] = []
+
+
+class ProjectPinnedSequencesApiIn(BaseModel):
+    sequences: List[Sequence]

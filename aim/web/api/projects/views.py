@@ -12,8 +12,8 @@ from aim.web.api.projects.pydantic_models import (
     ProjectActivityApiOut,
     ProjectApiOut,
     ProjectParamsOut,
-    ProjectPinnedMetricsApiOut,
-    ProjectPinnedMetricsApiIn,
+    ProjectPinnedSequencesApiIn,
+    ProjectPinnedSequencesApiOut,
 )
 from aim.web.api.utils import object_factory
 from aim.sdk.index_manager import RepoIndexManager
@@ -59,7 +59,7 @@ async def project_activity_api(x_timezone_offset: int = Header(default=0),
     }
 
 
-@projects_router.get('/pinned-metrics/', response_model=ProjectPinnedMetricsApiOut)
+@projects_router.get('/pinned-sequences/', response_model=ProjectPinnedSequencesApiOut)
 async def get_pinned_metrics_api():
     import json
     project = Project()
@@ -67,7 +67,7 @@ async def get_pinned_metrics_api():
     if not project.exists():
         raise HTTPException(status_code=404)
 
-    response = {'metrics': []}
+    response = {'sequences': []}
     settings_filename = os.path.join(project.repo_path, AIM_PROJECT_SETTINGS_FILE)
     settings_lock_file = f'{settings_filename}.lock'
     if not os.path.exists(settings_filename):
@@ -79,22 +79,21 @@ async def get_pinned_metrics_api():
                 settings = json.load(settings_file)
             except json.decoder.JSONDecodeError:
                 return response
-            metrics_list = settings.get('pinned_metrics', [])
-            response['metrics'] = metrics_list
+            sequences_list = settings.get('pinned_sequences', [])
+            response['sequences'] = sequences_list
             return response
 
 
-@projects_router.post('/pinned-metrics/', response_model=ProjectPinnedMetricsApiOut)
-async def update_pinned_metrics_api(request_data: ProjectPinnedMetricsApiIn):
+@projects_router.post('/pinned-sequences/', response_model=ProjectPinnedSequencesApiOut)
+async def update_pinned_metrics_api(request_data: ProjectPinnedSequencesApiIn):
     import json
     project = Project()
 
     if not project.exists():
         raise HTTPException(status_code=404)
 
-    metrics_list = request_data.metrics
-    if not metrics_list:
-        metrics_list = []
+    request_dict = request_data.dict()
+    sequences_list = request_dict.get('sequences', [])
 
     # read current settings
     settings_filename = os.path.join(project.repo_path, AIM_PROJECT_SETTINGS_FILE)
@@ -106,13 +105,13 @@ async def update_pinned_metrics_api(request_data: ProjectPinnedMetricsApiIn):
                 settings = json.load(settings_file)
             except json.decoder.JSONDecodeError:
                 pass
-            settings['pinned_metrics'] = metrics_list
+            settings['pinned_sequences'] = sequences_list
             settings_file.seek(0)
             # dump new settings
             json.dump(settings, settings_file)
             settings_file.truncate()
 
-    return {'metrics': metrics_list}
+    return {'sequences': sequences_list}
 
 
 @projects_router.get('/params/', response_model=ProjectParamsOut, response_model_exclude_defaults=True)
