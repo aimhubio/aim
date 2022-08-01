@@ -6,6 +6,8 @@ import { IEngineConfigFinal } from '../BaseExplorerCore/types';
 import { IExplorerConfig, IBaseExplorerProps } from './types';
 import ExplorerBar from './components/ExplorerBar';
 
+import './styles.scss';
+
 function BaseExplorer(props: IBaseExplorerProps) {
   const {
     ui: { components },
@@ -33,23 +35,17 @@ function BaseExplorer(props: IBaseExplorerProps) {
   }, [engineInstance, components.box, components.visualizations]);
 
   return initialized ? (
-    <div style={{ width: '100%', height: '100vh' }}>
+    <div className='Explorer'>
       <ExplorerBar
         engine={props.engineInstance}
         explorerName={props.explorerName}
       />
       {/* {__DEV__ && <Text>Engine status ::: status</Text>} */}
-      <div
-        className='flex fjb fac'
-        style={{
-          height: '92px',
-          borderBottom: '1px solid #e8f1fc',
-        }}
-      >
+      <div className='ComponentsWrapper'>
         <components.queryForm engine={props.engineInstance} />
         <components.grouping engine={props.engineInstance} />
       </div>
-      <div className='AimVisualizer'>{visualizations}</div>
+      <div className='VisualizerWrapper'>{visualizations}</div>
     </div>
   ) : (
     <>
