@@ -30,6 +30,8 @@ class RunView:
             self.proxy_cache = runs_proxy_cache[run.hash]
 
     def __getattr__(self, item):
+        if item == 'metrics':
+            return MetricsView(self.meta_run_tree, self.proxy_cache)
         if item in ['finalized_at', 'end_time']:
             end_time = self.meta_run_tree['end_time']
             if item == 'finalized_at':
@@ -79,6 +81,52 @@ class RunView:
             return self.__getitem__(key)
         except KeyError:
             return default
+
+
+class MetricsView:
+    def __init__(self, meta_run_tree, proxy_cache):
+        self.meta_run_tree = meta_run_tree
+        self.proxy_cache = proxy_cache
+
+    def __getitem__(self, item):
+        def safe_collect():
+            res = None
+            if self.proxy_cache is not None:
+                res = self.proxy_cache.get(key)
+            if not res:
+                try:
+                    res = self.meta_run_attrs_tree.collect(key)
+                except Exception:
+                    res = SafeNone()
+                if self.proxy_cache is not None:
+                    self.proxy_cache[key] = res
+            return res
+
+        from aim.storage.context import Context
+
+        if isinstance(item, str):
+            metric_name = item
+            context_idx = Context({}).idx
+        elif isinstance(item, tuple):
+            if len(item) > 2:
+                return SafeNone()
+            metric_name, context = item
+            if not isinstance(metric_name, str):
+                return SafeNone()
+            if isinstance(context, int):
+                context_idx = context
+            elif isinstance(context, dict):
+                context_idx = Context(context).idx
+            else:
+                return SafeNone()
+        else:
+            return SafeNone()
+
+        key = ('traces', context_idx, metric_name)
+        return AimObjectProxy(safe_collect, view=self.meta_run_tree.subtree(key), cache=self.proxy_cache)
+
+    def __getattr__(self, item):
+        raise NotImplementedError
 
 
 class ContextView:

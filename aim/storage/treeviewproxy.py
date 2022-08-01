@@ -136,16 +136,16 @@ class ProxyTree(TreeView):
     ) -> TreeArrayView:
         return TreeArrayView(self.subtree(path), dtype=dtype)
 
-    def first(
+    def first_key(
         self,
         path: Union[AimObjectKey, AimObjectPath] = ()
-    ) -> Tuple[AimObjectKey, AimObject]:
-        return self._rpc_client.run_instruction(self._hash, self._handler, 'first', (path,))
+    ) -> AimObjectKey:
+        return self._rpc_client.run_instruction(self._hash, self._handler, 'first_key', (path,))
 
-    def last(
+    def last_key(
         self,
         path: Union[AimObjectKey, AimObjectPath] = ()
-    ) -> Tuple[AimObjectKey, AimObject]:
+    ) -> AimObjectKey:
         return self._rpc_client.run_instruction(self._hash, self._handler, 'last', (path,))
 
     def finalize(
@@ -241,17 +241,17 @@ class SubtreeView(TreeView):
     ) -> TreeArrayView:
         return TreeArrayView(self.subtree(path), dtype=dtype)
 
-    def first(
+    def first_key(
         self,
         path: Union[AimObjectKey, AimObjectPath] = ()
-    ) -> Tuple[AimObjectKey, AimObject]:
-        return self.tree.first(self.absolute_path(path))
+    ) -> AimObjectKey:
+        return self.tree.first_key(self.absolute_path(path))
 
-    def last(
+    def last_key(
         self,
         path: Union[AimObjectKey, AimObjectPath] = ()
-    ) -> Tuple[AimObjectKey, AimObject]:
-        return self.tree.last(self.absolute_path(path))
+    ) -> AimObjectKey:
+        return self.tree.last_key(self.absolute_path(path))
 
     def finalize(
         self,
