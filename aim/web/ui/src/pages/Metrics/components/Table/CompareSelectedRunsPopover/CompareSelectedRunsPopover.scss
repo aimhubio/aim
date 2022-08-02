@@ -5,8 +5,9 @@
   width: 16.5rem;
   &__item {
     text-transform: capitalize;
-    i {
-      margin-right: $space-xs;
+    &-explorerName {
+      margin-left: $space-xs;
+      flex: 1 100%;
     }
   }
 
