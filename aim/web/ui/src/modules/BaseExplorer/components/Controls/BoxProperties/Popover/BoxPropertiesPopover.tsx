@@ -78,82 +78,88 @@ function BoxPropertiesPopover(props: IBoxPropertiesPopoverProps) {
     <ErrorBoundary>
       <div className='BoxPropsPopover'>
         <div className='BoxPropsPopover__section'>
-          <div className='flex'>
-            <Text
-              tint={50}
-              component='h4'
-              className='BoxPropsPopover__subtitle'
-            >
-              Width:
-            </Text>
-            <Text className='BoxPropsPopover__sizePercent'>
-              {boxProps.width}px
-            </Text>
-          </div>
-          <div className='BoxPropsPopover__Slider'>
-            <Text>{settings.minWidth}px</Text>
-            <Slider
-              valueLabelDisplay='auto'
-              getAriaValueText={(val) => `${val}`}
-              value={boxProps.width}
-              onChange={onBoxWidthChange}
-              step={settings.step}
-              min={settings.minWidth}
-              max={settings.maxWidth}
-            />
-            <Text>{settings.maxWidth}px</Text>
-          </div>
-          <Divider className='BoxPropsPopover__Divider' />
-          <div className='flex'>
-            <Text
-              tint={50}
-              component='h4'
-              className='BoxPropsPopover__subtitle'
-            >
-              Height:
-            </Text>
-            <Text className='BoxPropsPopover__sizePercent'>
-              {boxProps.height}px
-            </Text>
-          </div>
-          <div className='BoxPropsPopover__Slider'>
-            <Text>{settings.minHeight}px</Text>
-            <Slider
-              valueLabelDisplay='auto'
-              getAriaValueText={(val) => `${val}`}
-              value={boxProps.height}
-              onChange={onBoxHeightChange}
-              step={settings.step}
-              min={settings.minHeight}
-              max={settings.maxHeight}
-            />
-            <Text>{settings.maxHeight}px</Text>
+          <div className='BoxPropsPopover__item'>
+            <div className='flex'>
+              <Text
+                tint={50}
+                component='h4'
+                className='BoxPropsPopover__subtitle'
+              >
+                Width:
+              </Text>
+              <Text className='BoxPropsPopover__sizePercent' weight={600}>
+                {boxProps.width}px
+              </Text>
+            </div>
+            <div className='BoxPropsPopover__Slider'>
+              <Text>{settings.minWidth}px</Text>
+              <Slider
+                valueLabelDisplay='auto'
+                getAriaValueText={(val) => `${val}`}
+                value={boxProps.width}
+                onChange={onBoxWidthChange}
+                step={settings.step}
+                min={settings.minWidth}
+                max={settings.maxWidth}
+              />
+              <Text>{settings.maxWidth}px</Text>
+            </div>
           </div>
           <Divider className='BoxPropsPopover__Divider' />
-          <div className='flex'>
-            <Text
-              className='BoxPropsPopover__subtitle'
-              tint={50}
-              component='h4'
-            >
-              Gap:
-            </Text>
-            <Text className='BoxPropsPopover__sizePercent'>
-              {boxProps.gap}px
-            </Text>
+          <div className='BoxPropsPopover__item'>
+            <div className='flex'>
+              <Text
+                tint={50}
+                component='h4'
+                className='BoxPropsPopover__subtitle'
+              >
+                Height:
+              </Text>
+              <Text className='BoxPropsPopover__sizePercent' weight={600}>
+                {boxProps.height}px
+              </Text>
+            </div>
+            <div className='BoxPropsPopover__Slider'>
+              <Text>{settings.minHeight}px</Text>
+              <Slider
+                valueLabelDisplay='auto'
+                getAriaValueText={(val) => `${val}`}
+                value={boxProps.height}
+                onChange={onBoxHeightChange}
+                step={settings.step}
+                min={settings.minHeight}
+                max={settings.maxHeight}
+              />
+              <Text>{settings.maxHeight}px</Text>
+            </div>
           </div>
-          <div className='BoxPropsPopover__Slider'>
-            <Text>{settings.minGap}px</Text>
-            <Slider
-              valueLabelDisplay='auto'
-              getAriaValueText={(val) => `${val}`}
-              value={boxProps.gap}
-              onChange={onBoxGapChange}
-              step={settings.step}
-              min={settings.minGap}
-              max={settings.maxGap}
-            />
-            <Text>{settings.maxGap}px</Text>
+          <Divider className='BoxPropsPopover__Divider' />
+          <div className='BoxPropsPopover__item'>
+            <div className='flex'>
+              <Text
+                className='BoxPropsPopover__subtitle'
+                tint={50}
+                component='h4'
+              >
+                Gap:
+              </Text>
+              <Text className='BoxPropsPopover__sizePercent' weight={600}>
+                {boxProps.gap}px
+              </Text>
+            </div>
+            <div className='BoxPropsPopover__Slider'>
+              <Text>{settings.minGap}px</Text>
+              <Slider
+                valueLabelDisplay='auto'
+                getAriaValueText={(val) => `${val}`}
+                value={boxProps.gap}
+                onChange={onBoxGapChange}
+                step={settings.step}
+                min={settings.minGap}
+                max={settings.maxGap}
+              />
+              <Text>{settings.maxGap}px</Text>
+            </div>
           </div>
           <Divider className='BoxPropsPopover__Divider' />
           <Button onClick={onReset} disabled={boxConfig.isInitial}>

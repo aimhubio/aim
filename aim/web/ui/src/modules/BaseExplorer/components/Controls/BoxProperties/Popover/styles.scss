@@ -14,6 +14,9 @@
     flex-direction: column;
     padding: 0 $space-xs;
   }
+  &__item {
+    margin-top: $space-xs;
+  }
   &__sizeSlider {
     margin-top: $space-unit;
     display: flex;
@@ -37,7 +40,7 @@
   }
   &__Divider {
     width: 100%;
-    margin: $space-xs 0;
+    margin-top: $space-xs;
   }
   &__sizePercent {
     margin-left: $space-xs;
