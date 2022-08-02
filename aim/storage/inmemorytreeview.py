@@ -160,14 +160,14 @@ class InMemoryTreeView(TreeView):
     ) -> TreeArrayView:
         return TreeArrayView(self.subtree(path), dtype=dtype)
 
-    def first(
+    def first_key(
         self,
         path: Union[AimObjectKey, AimObjectPath] = ()
-    ) -> Tuple[AimObjectKey, AimObject]:
+    ) -> AimObjectKey:
         ...
 
-    def last(
+    def last_key(
         self,
         path: Union[AimObjectKey, AimObjectPath] = ()
-    ) -> Tuple[AimObjectKey, AimObject]:
+    ) -> AimObjectKey:
         ...

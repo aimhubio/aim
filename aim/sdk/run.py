@@ -324,7 +324,7 @@ class Run(BaseRun, StructuredRunMixin):
                 self.__setitem__("__system_params", system_params)
 
             try:
-                self.meta_run_attrs_tree.first()
+                self.meta_run_attrs_tree.first_key()
             except (KeyError, StopIteration):
                 # no run params are set. use empty dict
                 self[...] = {}
