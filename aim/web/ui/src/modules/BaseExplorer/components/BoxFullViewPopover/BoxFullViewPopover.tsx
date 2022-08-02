@@ -19,9 +19,16 @@ import { formatSystemMetricName } from 'utils/formatSystemMetricName';
 import { isSystemMetric } from 'utils/isSystemMetric';
 import contextToString from 'utils/contextToString';
 
+import { IBoxFullViewPopoverProps } from './BoxFullViewPopover.d';
+
 import './BoxFullViewPopover.scss';
 
-function BoxFullViewPopover({ onClose, element, sequence, groupInfo }: any) {
+function BoxFullViewPopover({
+  onClose,
+  element,
+  sequence,
+  groupInfo,
+}: IBoxFullViewPopoverProps) {
   const data = React.useMemo(() => {
     const runData = element.props.data.run;
     const sequenceData = element.props.data[sequence];
@@ -166,7 +173,7 @@ function BoxFullViewPopover({ onClose, element, sequence, groupInfo }: any) {
                           {groupConfigKey}
                         </Text>
                         <Text tint={70}>
-                          ({data.groups[groupConfigKey].items_count_in_group}{' '}
+                          ({data.groups[groupConfigKey].items_count_in_group}
                           items in this group)
                         </Text>
                         {Object.keys(data.groups[groupConfigKey].config).map(

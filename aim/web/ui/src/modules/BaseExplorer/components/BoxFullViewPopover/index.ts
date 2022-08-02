@@ -1,3 +1,4 @@
-import BoxVirtualizer from './BoxFullViewPopover';
+import BoxFullViewPopover from './BoxFullViewPopover';
+export * from './BoxFullViewPopover.d';
 
-export default BoxVirtualizer;
+export default BoxFullViewPopover;
