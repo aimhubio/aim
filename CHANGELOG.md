@@ -3,8 +3,9 @@
 ## 3.12.2
 - Add ability to pin metrics to run detail page (mihran113)
 
-## 3.12.1
+## 3.12.1 Aug 2, 2022
 
+- Loosen version requirements for grpcio (alberttorosyan)
 - Fix remote heartbeat-watcher resource cleanup (mihran113)
 - Break long metric names into multiple lines in Run Page (roubkar)
 - Enable run filtering by metric values (mihran113)
