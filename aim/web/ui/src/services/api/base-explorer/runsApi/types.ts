@@ -24,14 +24,14 @@ export type RunsSearchQueryParams = {
   report_progress?: boolean;
 
   /**
-   * This parameter is used to indicate the range of records by index form index1 to index2
+   * This parameter is used to indicate the range of records by index form index1 to index2 or "index1:index2"
    */
-  index_range?: Tuple<number>;
+  index_range?: Tuple<number> | string;
 
   /**
-   * This parameter is used to indicate the range of records by step form index1 to index2
+   * This parameter is used to indicate the range of records by step form index1 to index2 or "index1:index2"
    */
-  record_range?: Tuple<number>;
+  record_range?: Tuple<number> | string;
 
   /**
    * This parameter is used to for simple sampling, indicates how many steps want to load including their objects
