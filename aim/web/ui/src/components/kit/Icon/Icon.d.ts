@@ -139,4 +139,7 @@ export type IconName =
   | 'warning-contained'
   | 'info-circle-outline'
   | 'axes-props'
-  | 'compare';
+  | 'compare'
+  | 'box-settings'
+  | 'full-screen'
+  | 'new-tab';

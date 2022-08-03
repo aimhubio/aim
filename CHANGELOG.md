@@ -2,9 +2,22 @@
 
 ## Unreleased
 
-### Enhancements
+### Enhancements:
 
+- Restrict Run.hash to auto-generated values only (alberttorosyan)
 - Add ability to compare the selected runs from the table (arsengit)
+
+### Fixes:
+
+- Fix tensorboard convert while converting tensor (sharathmk99)
+
+## 3.12.1 Aug 2, 2022
+
+- Loosen version requirements for grpcio (alberttorosyan)
+- Fix remote heartbeat-watcher resource cleanup (mihran113)
+- Break long metric names into multiple lines in Run Page (roubkar)
+- Enable run filtering by metric values (mihran113)
+- Fix Cython version to eliminate build errors (mihran113)
 
 ## 3.12.0 Jul 22, 2022
 
