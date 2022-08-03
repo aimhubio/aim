@@ -36,36 +36,31 @@ function Box(props: any) {
     return info;
   }, [foundGroups, props.children]);
 
-  function onClickShowInfo() {
-    console.group('Object info ---> ');
-    console.log('group info ----> ', groupInfo);
-    console.groupEnd();
-  }
-
   return (
-    <div
-      className='BaseBox'
-      style={{
-        ...boxConfig,
-        ...props.style,
-      }}
-    >
-      <div className='fjb BaseBox__actions'>
-        <Button onClick={onClickShowInfo}>Show Info</Button>
-        <Button onClick={() => setFullView(true)} size='small' withOnlyIcon>
-          <Icon name='zoom-in' />
-        </Button>
+    <>
+      <div
+        className='Box'
+        style={{
+          ...boxConfig,
+          ...props.style,
+        }}
+      >
+        <div className='Box__fullScreen'>
+          <Button onClick={() => setFullView(true)} size='xSmall' withOnlyIcon>
+            <Icon name='full-screen' />
+          </Button>
+        </div>
+        <div className='Box__children'>{props.children}</div>
+        {fullView && (
+          <BoxFullViewPopover
+            onClose={() => setFullView(false)}
+            groupInfo={groupInfo}
+            sequence={sequenceName}
+            element={props.children}
+          />
+        )}
       </div>
-      {props.children}
-      {fullView && (
-        <BoxFullViewPopover
-          onClose={() => setFullView(false)}
-          groupInfo={groupInfo}
-          sequence={sequenceName}
-          element={props.children}
-        />
-      )}
-    </div>
+    </>
   );
 }
 

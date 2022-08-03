@@ -1,13 +1,22 @@
 @use 'src/styles/abstracts' as *;
 
-.BaseBox {
+.Box {
   position: absolute;
-  border: 0.0625rem solid $primary-color;
+  box-shadow: 0 0 0 0.0625rem $primary-color;
   overflow: auto;
-  &__actions {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 0.25rem;
+  &__fullScreen {
+    position: sticky;
+    top: 0;
+    z-index: 1;
+    text-align: right;
+    background-color: $white;
+    padding: $space-xxxs;
+    margin-right: 1px;
+  }
+  &__children {
+    overflow: auto;
+    width: 100%;
+    height: 100%;
+    background-color: $white;
   }
 }
