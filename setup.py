@@ -44,7 +44,7 @@ readme_text = open('/'.join((here, readme_file)), encoding="utf-8").read()
 LONG_DESCRIPTION = readme_text.strip()
 
 SETUP_REQUIRED = [
-    'Cython>=3.0.0a9',
+    'Cython==3.0.0a9',
 ]
 
 # What packages are required for this module to be executed?
@@ -70,7 +70,6 @@ REQUIRED = [
     'SQLAlchemy>=1.4.1',
     'uvicorn>=0.12.0',
     'Pillow>=8.0.0',
-    'grpcio==1.42.0',
     'protobuf >= 3.9.2,<4.0.0',
     # fastapi to support python3.6
     'async-exit-stack>=1.0.0; python_version<"3.7"',
@@ -80,7 +79,7 @@ REQUIRED = [
 if platform.machine() != 'arm64':
     # Temporarily avoid `grpcio` until the issue
     # https://github.com/grpc/grpc/issues/29262 is resolved
-    REQUIRED.append('grpcio==1.42.0')
+    REQUIRED.append('grpcio>=1.42.0')
 
 
 class UploadCommand(Command):

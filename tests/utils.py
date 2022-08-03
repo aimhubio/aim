@@ -1,7 +1,6 @@
 import datetime
 import itertools
 import os.path
-import random
 import shutil
 import numpy
 from PIL import Image as pil_image
@@ -92,7 +91,6 @@ def fill_up_test_data():
 
     # put dummy data into test repo with 10 runs, tracking 2 metrics over 3 contexts
     repo = Repo.default_repo()
-    run_hashes = [hex(random.getrandbits(64))[-7:] for _ in range(10)]
 
     contexts = [{'is_training': True, 'subset': 'train'},
                 {'is_training': True, 'subset': 'val'},
@@ -101,8 +99,8 @@ def fill_up_test_data():
 
     with repo.structured_db:
         runs = []
-        for idx, run_hash in enumerate(run_hashes):
-            run = Run(run_hash, repo=repo, system_tracking_interval=None)
+        for idx in range(10):
+            run = Run(repo=repo, system_tracking_interval=None)
             run['hparams'] = create_run_params()
             run['run_index'] = idx
             run['start_time'] = datetime.datetime.utcnow().isoformat()
