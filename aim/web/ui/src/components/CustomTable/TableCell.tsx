@@ -1,6 +1,7 @@
 // @ts-nocheck
 /* eslint-disable react/prop-types */
 
+import * as React from 'react';
 import classNames from 'classnames';
 import _ from 'lodash-es';
 
@@ -21,10 +22,20 @@ function Cell({
   getColumnCelBGColor,
   columnsColorScales,
   isNumeric,
+  box,
+  setColumnWidth,
 }) {
+  let cellRef = React.useRef();
+
+  React.useEffect(() => {
+    setColumnWidth(cellRef.current.offsetWidth);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
   return (
     <ErrorBoundary>
       <div
+        ref={cellRef}
         className={classNames('Table__cell', {
           [`${typeof item === 'object' && item?.className}`]: true,
           [className]: !!className,
@@ -56,6 +67,7 @@ function Cell({
           ...(typeof item === 'object' &&
             item?.hasOwnProperty('style') &&
             item?.style),
+          marginTop: box?.top ? box?.top : null,
         }}
         {...(typeof item === 'object' && item?.props)}
         onMouseMove={
