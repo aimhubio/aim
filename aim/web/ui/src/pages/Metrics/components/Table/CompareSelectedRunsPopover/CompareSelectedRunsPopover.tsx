@@ -16,14 +16,14 @@ import * as analytics from 'services/analytics';
 
 import { encode } from 'utils/encoder/encoder';
 
-import { ICompareSelectedRunsProps } from './CompareSelectedRuns';
+import { ICompareSelectedRunsPopoverProps } from './CompareSelectedRunsPopover.d';
 
 import './CompareSelectedRunsPopover.scss';
 
 function CompareSelectedRunsPopover({
   selectedRows,
   appName,
-}: ICompareSelectedRunsProps): React.FunctionComponentElement<React.ReactNode> {
+}: ICompareSelectedRunsPopoverProps): React.FunctionComponentElement<React.ReactNode> {
   const history = useHistory();
 
   const onCompare: (
@@ -110,16 +110,12 @@ function CompareSelectedRunsPopover({
                   </Text>
                   <Tooltip title='Compare in new tab'>
                     <div>
-                      <Button
-                        color='secondary'
-                        size='small'
-                        withOnlyIcon
+                      <Icon
+                        box
+                        fontSize={12}
                         onClick={(e) => onCompare(e, item, true)}
-                      >
-                        <Text size={8}>
-                          <Icon name='back-up-right' />
-                        </Text>
-                      </Button>
+                        name='new-tab'
+                      />
                     </div>
                   </Tooltip>
                 </MenuItem>
@@ -134,4 +130,6 @@ function CompareSelectedRunsPopover({
 
 CompareSelectedRunsPopover.displayName = 'CompareSelectedRunsPopover';
 
-export default React.memo(CompareSelectedRunsPopover);
+export default React.memo<ICompareSelectedRunsPopoverProps>(
+  CompareSelectedRunsPopover,
+);

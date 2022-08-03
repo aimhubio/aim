@@ -1,6 +1,6 @@
 import { AppNameEnum } from 'services/models/explorer';
 
-export interface ICompareSelectedRunsProps {
+export interface ICompareSelectedRunsPopoverProps {
   appName: AppNameEnum;
   selectedRows: { [key: string]: any };
 }
