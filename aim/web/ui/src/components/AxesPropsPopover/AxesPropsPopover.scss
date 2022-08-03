@@ -36,6 +36,10 @@
     &__resetButton {
       color: $pico-80;
       border: 0.0625rem solid $cuddle;
+      &.Mui-disabled {
+        color: $pico-50;
+        border-color: $cuddle-50;
+      }
       &.active {
         border: $border-main-active;
         background-color: $primary-color-5;

@@ -4,6 +4,24 @@
 
 ### Enhancements:
 
+- Restrict Run.hash to auto-generated values only (alberttorosyan)
+
+### Fixes:
+
+- Fix tensorboard convert while converting tensor (sharathmk99)
+
+## 3.12.1 Aug 2, 2022
+
+- Loosen version requirements for grpcio (alberttorosyan)
+- Fix remote heartbeat-watcher resource cleanup (mihran113)
+- Break long metric names into multiple lines in Run Page (roubkar)
+- Enable run filtering by metric values (mihran113)
+- Fix Cython version to eliminate build errors (mihran113)
+
+## 3.12.0 Jul 22, 2022
+
+### Enhancements:
+
 - Add ability to set axes range manually for line charts on UI (KaroMourad)
 - Add more user-friendly querying for dates (mihran113, arsengit)
 - Filter redundant tooltip data from URL config state (KaroMourad)
@@ -14,7 +32,6 @@
 - Mention explicitly run params everywhere params is mentioned (VkoHov)
 - Add ability to hide a batch of items in explorers (VkoHov)
 - Add ability to sort by the last value of the metric in table (VkoHov)
-- Add ability to hide a batch of items in explorers (VkoHov)
 - Preserve active line even if it is dropped out of the filtered area (VkoHov)
 - Add run duration property for SDK and queries (mihran113)
 - Add client vs server version check for remote tracking server (mihran113)
@@ -22,12 +39,14 @@
 
 ### Fixes:
 
+- Tune table sorting icon box overlapping with column box in compact mode (KaroMourad)
 - Fix tensorboard log conversion for images (mihran113)
 - Check if gradient is None when tracking gradient distributions (kage08)
 - Fix displaying non-syntax errors across Aim UI (arsengit) 
 - Fix queries on remote repos (mihran113)
 - Fix interval progress reports for query apis (mihran113)
 - Fix query request cancellation errors (mihran113)
+- Auto-detect and address inconsistencies in meta and series trees (mahnerak)
 
 ## 3.11.2 Jul 8, 2022
 

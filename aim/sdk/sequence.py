@@ -1,6 +1,7 @@
 from typing import Generic, Union, Tuple, TypeVar, Dict, Iterator, Any, List
 from itertools import islice
 import numpy as np
+import logging
 
 from aim.sdk.tracker import STEP_HASH_FUNCTIONS
 from aim.storage.treeview import TreeView
@@ -13,6 +14,9 @@ from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
     from aim.sdk.run import Run
+
+
+logger = logging.getLogger(__name__)
 
 
 T = TypeVar('T')
@@ -158,6 +162,10 @@ class SequenceV2Data(SequenceData):
             n_items: int = -1
     ):
         super().__init__(series_tree, version=2, columns=columns)
+        # `SequenceV2Data` has access to both metadata and series data
+        # trees that are not necessarily based on the same physical storage.
+        # Therefore, we don't have a consistency guarantee between the two.
+        # The implemented methods should tolerate this.
         self.meta_tree = meta_tree
         self.n_items = n_items
         self.steps: ArrayView = self._get_array('step')
@@ -192,9 +200,21 @@ class SequenceV2Data(SequenceData):
         steps = steps[sort_indices]
         if last_step is not None and last_step != steps[-1]:
             step_hash = self.step_hash(last_step)
-            steps[-1] = last_step
-            for i in range(len(columns)):
-                columns[i][-1] = self.arrays[i][step_hash]
+            # The `last_step` is provided by the meta tree which may potentially
+            # be out of sync with the series tree.
+            # If such case occurs, we fall back to the series tree for the last step.
+            last_steps = []
+            try:
+                for i in range(len(columns)):
+                    last_steps.append(self.arrays[i][step_hash])
+            except KeyError:
+                logger.debug('Last step not found in reservoir.')
+            else:
+                # Only if all the last steps are found, we use them.
+                for i in range(len(columns)):
+                    columns[i][-1] = last_steps[i]
+                steps[-1] = last_step
+
         return steps, columns
 
 

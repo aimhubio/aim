@@ -93,7 +93,9 @@ class RPCHeartbeatWatcher:
         self._th_collector.join()
 
     def _release_client_resources(self, dead_client_uri):
-        for handler, (client_uri, _) in self._resource_pool.items():
+        resource_handlers = list(self._resource_pool.keys())
+        for handler in resource_handlers:
+            (client_uri, _) = self._resource_pool[handler]
             if dead_client_uri == client_uri:
                 del self._resource_pool[handler]
 
