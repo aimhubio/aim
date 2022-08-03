@@ -39,7 +39,7 @@ function BoxProperties(props: IBoxPropertiesProps) {
               className={classNames('Controls__icon', {
                 active: opened || !boxConfig.isInitial,
               })}
-              name='image-properties'
+              name='box-settings'
             />
           </div>
         </Tooltip>

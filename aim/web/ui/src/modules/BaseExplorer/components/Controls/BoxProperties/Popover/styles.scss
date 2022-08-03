@@ -40,7 +40,10 @@
   }
   &__Divider {
     width: 100%;
-    margin-top: $space-xs;
+    margin-bottom: $space-xs;
+    &:last-of-type {
+      margin: $space-xs 0;
+    }
   }
   &__sizePercent {
     margin-left: $space-xs;
