@@ -8,6 +8,10 @@ Here you can see all available options you can use to configure your Run instanc
 - `run_hash`: Run's hash. Can be used to restore/retrieve a particular run form the repo. This is handy if you want to
   update something or add new metrics in your already existing run. If skipped, the hash will be generated
   automatically. Example covered in [Reusing Run in your Repo](#reusing-run-in-your-repo) section.
+  Starting from Aim version `3.13`, run_hash values restricted to the auto-generated values only. This
+  is done to prevent multiple undesired cases, such as, creating a new `Run` instead of re-opening
+  the existing one due to the typo, putting special symbols in `Run.hash`, etc. If the wrong `run_hash` is
+  specified, `MissingRunError` will be raised.
 
 - `repo`: Aim repository path or Repo object to which Run object is bound. If skipped, default Repo is used. More
   covered in [Defining custom location for your Repo](#defining-custom-location-for-your-repo) section.

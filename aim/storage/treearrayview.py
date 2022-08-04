@@ -104,7 +104,7 @@ class TreeArrayView(ArrayView):
         return idx, self[idx]
 
     def first_idx(self) -> int:
-        return self.tree.first()
+        return self.tree.first_key()
 
     def first_value(self) -> Any:
         return self[self.first_idx()]
@@ -114,7 +114,7 @@ class TreeArrayView(ArrayView):
         return idx, self[idx]
 
     def last_idx(self) -> int:
-        return self.tree.last()
+        return self.tree.last_key()
 
     def last_value(self) -> Any:
         return self[self.last_idx()]
