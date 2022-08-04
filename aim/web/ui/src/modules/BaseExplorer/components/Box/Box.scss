@@ -6,17 +6,10 @@
   overflow: auto;
   &__fullScreen {
     position: sticky;
-    top: 0;
+    top: 0.25rem;
+    left: calc(100% - 24px - 0.25rem);
     z-index: 1;
     text-align: right;
-    background-color: $white;
-    padding: $space-xxxs;
-    margin-right: 1px;
-  }
-  &__children {
-    overflow: auto;
-    width: 100%;
-    height: 100%;
     background-color: $white;
   }
 }

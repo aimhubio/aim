@@ -45,12 +45,15 @@ function Box(props: any) {
           ...props.style,
         }}
       >
-        <div className='Box__fullScreen'>
-          <Button onClick={() => setFullView(true)} size='xSmall' withOnlyIcon>
-            <Icon name='full-screen' />
-          </Button>
-        </div>
-        <div className='Box__children'>{props.children}</div>
+        <Button
+          onClick={() => setFullView(true)}
+          size='xSmall'
+          withOnlyIcon
+          className='Box__fullScreen'
+        >
+          <Icon name='full-screen' />
+        </Button>
+        {props.children}
         {fullView && (
           <BoxFullViewPopover
             onClose={() => setFullView(false)}
