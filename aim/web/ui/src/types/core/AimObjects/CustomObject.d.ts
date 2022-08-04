@@ -1,13 +1,13 @@
+import { Tuple } from '../shared';
+
 import { SequenceBaseView } from './Sequence';
 import { Params, RunProps } from './Run';
 
-type NumberTuple = [number, number];
-
 export interface BaseRangeInfo {
-  record_range_used: NumberTuple;
-  record_range_total: NumberTuple;
-  index_range_used: ?NumberTuple;
-  index_range_total: ?NumberTuple;
+  record_range_used: Tuple<number>;
+  record_range_total: Tuple<number>;
+  index_range_used: ?Tuple<number>;
+  index_range_total: ?Tuple<number>;
 }
 
 export interface ObjectSequenceBase<T> extends BaseRangeInfo, SequenceBaseView {

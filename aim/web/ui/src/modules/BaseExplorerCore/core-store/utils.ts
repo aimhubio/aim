@@ -3,11 +3,14 @@ import { get as getValue } from 'lodash-es';
 import { GetState, SetState } from 'utils/store/createSlice';
 
 import { GenerateStoreMethods, IEngineConfigFinal } from '../types';
+import { buildObjectHash } from '../helpers';
 
 export function createSliceState(initialState: object, name: string) {
   const stateSelector = (state: any) => {
     return getValue(state, name);
   };
+
+  const initialStateHash = buildObjectHash(initialState);
 
   const generateMethods = <TS extends Function, TG extends Function>(
     set: TS,
@@ -18,6 +21,7 @@ export function createSliceState(initialState: object, name: string) {
         // @ts-ignore
         ...get()[name],
         ...newState,
+        isInitial: initialStateHash === buildObjectHash(newState),
       };
 
       set({
@@ -27,14 +31,20 @@ export function createSliceState(initialState: object, name: string) {
 
     function reset() {
       set({
-        [name]: initialState,
+        [name]: {
+          ...initialState,
+          isInitial: true,
+        },
       });
     }
     return { update, reset };
   };
 
   return {
-    initialState,
+    initialState: {
+      ...initialState,
+      isInitial: true,
+    },
     stateSelector,
     methods: generateMethods,
   };
@@ -58,6 +68,8 @@ export function createStateSlices(
 
   return createdStates;
 }
+
+//@TODO merge to createSlice
 export function createDefaultBoxStateSlice(config: {
   width: number;
   height: number;
@@ -65,6 +77,7 @@ export function createDefaultBoxStateSlice(config: {
 }) {
   const initialBoxConfig = config;
   const boxConfigSelector = (state: any) => state.boxConfig;
+  const initialStateHash = buildObjectHash(initialBoxConfig);
 
   const generateBoxConfigMethods = <TS extends Function, TG extends Function>(
     set: TS,
@@ -75,10 +88,12 @@ export function createDefaultBoxStateSlice(config: {
       height?: number;
       gap?: number;
     }) {
+      const newStateHash = buildObjectHash(newBoxConfig);
       const updatedConfig = {
         // @ts-ignore
         ...get().boxConfig,
         ...newBoxConfig,
+        isInitial: initialStateHash === newStateHash,
       };
 
       set({
@@ -88,14 +103,20 @@ export function createDefaultBoxStateSlice(config: {
 
     function reset() {
       set({
-        boxConfig: initialBoxConfig,
+        boxConfig: {
+          ...initialBoxConfig,
+          isInitial: true,
+        },
       });
     }
     return { update, reset };
   };
 
   return {
-    initialState: initialBoxConfig,
+    initialState: {
+      ...initialBoxConfig,
+      isInitial: true,
+    },
     stateSelector: boxConfigSelector,
     methods: generateBoxConfigMethods,
   };
@@ -115,9 +136,12 @@ export type PreCreatedStateSlice = {
   methods: GenerateStoreMethods;
 };
 
+//@TODO merge to createSlice
 export function createQueryUISlice(
   initialState: QueryUIStateUnit,
 ): PreCreatedStateSlice {
+  const initialStateHash = buildObjectHash(initialState);
+
   const selector = (state: any) => state.queryUI;
 
   const generateMethods: GenerateStoreMethods = <T>(
@@ -125,22 +149,25 @@ export function createQueryUISlice(
     get: GetState<T>,
   ) => {
     function update(newState: QueryUIStateUnit) {
+      const newStateHash = buildObjectHash(newState);
       const updated = {
         // @ts-ignore
         ...get().queryUI,
         ...newState,
+        isInitial: initialStateHash === newStateHash,
       };
 
       set({
         // @ts-ignore
         queryUI: updated,
+        isInitial: initialStateHash === newStateHash,
       });
     }
 
     function reset() {
       set({
         // @ts-ignore
-        queryUI: { ...initialState },
+        queryUI: { ...initialState, isInitial: true },
       });
     }
 
@@ -149,7 +176,10 @@ export function createQueryUISlice(
 
   return {
     methods: generateMethods,
-    initialState,
+    initialState: {
+      ...initialState,
+      isInitial: true,
+    },
     stateSelector: selector,
   };
 }
