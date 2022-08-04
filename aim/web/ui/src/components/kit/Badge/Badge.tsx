@@ -20,6 +20,7 @@ const BadgeContainer: any = styled.div`
     props.monospace ? '"Inconsolata", monospace' : 'Inter, sans-serif'};
   ${({ color }) => color && getBadgeColor(color)};
   font-variation-settings: ${(props: any) => props.monospace && "'wdth' 82"};
+  ${(props: any) => ({ ...props.styleProps })}
 `;
 
 const BadgeIcon = styled.span`
@@ -62,7 +63,7 @@ function Badge({
       <BadgeContainer
         id={id}
         color={color}
-        style={{
+        styleProps={{
           ...style,
           maxWidth,
         }}

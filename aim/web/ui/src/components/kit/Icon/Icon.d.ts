@@ -10,6 +10,7 @@ export interface IIconProps
   className?: string;
   style?: CSSProperties;
   fontSize?: number | string;
+  weight?: number | string;
   color?: string;
 }
 
@@ -138,4 +139,8 @@ export type IconName =
   | 'warning-outline'
   | 'warning-contained'
   | 'info-circle-outline'
-  | 'axes-props';
+  | 'axes-props'
+  | 'compare'
+  | 'box-settings'
+  | 'full-screen'
+  | 'new-tab';

@@ -1,7 +1,15 @@
 @use 'src/styles/abstracts' as *;
 
-.BaseBox {
+.Box {
   position: absolute;
-  border: 0.0625rem solid $primary-color;
+  box-shadow: 0 0 0 0.0625rem $primary-color;
   overflow: auto;
+  &__fullScreen {
+    position: sticky;
+    top: 0.25rem;
+    left: calc(100% - 24px - 0.25rem);
+    z-index: 1;
+    text-align: right;
+    background-color: $white;
+  }
 }
