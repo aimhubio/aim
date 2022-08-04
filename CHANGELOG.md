@@ -9,6 +9,7 @@
 ### Fixes:
 
 - Fix tensorboard convert while converting tensor (sharathmk99)
+- Provide compatibility between plotly and matplotlib (tmynn)
 
 ## 3.12.1 Aug 2, 2022
 
