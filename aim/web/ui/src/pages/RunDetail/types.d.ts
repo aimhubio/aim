@@ -84,6 +84,7 @@ export interface ITraceVisualizerProps {
 export interface IRunMetricCardProps {
   batch: IRunBatch;
   index: number;
+  observer: IntersectionObserver | undefined;
 }
 
 export interface IImagesVisualizerProps extends ITraceVisualizerProps {}

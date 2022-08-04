@@ -9,9 +9,9 @@ function useRunMetricsBatch({ runBatch, runTraces, runHash }: any) {
       runTraces.metric,
       runHash,
     );
-    if (!runBatch && !_.isNil(runTraces)) {
-      runsBatchRequestRef.call();
-    }
+
+    runsBatchRequestRef.call();
+
     return () => {
       runsBatchRequestRef.abort();
     };

@@ -1,5 +1,9 @@
 # Changelog
 
+## 3.12.2
+
+- Apply lazy loading on metrics in Run Page (roubkar)
+
 ## 3.12.1 Aug 2, 2022
 
 - Loosen version requirements for grpcio (alberttorosyan)
