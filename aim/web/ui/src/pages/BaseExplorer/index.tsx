@@ -65,7 +65,7 @@ const config: IExplorerConfig = {
         },
         defaultApplications: {
           fields: [],
-          orders: [Order.DESC, Order.ASC],
+          orders: [],
         },
         // state: {
         //   // observable state, to listen on base visualizer

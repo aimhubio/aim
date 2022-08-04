@@ -138,6 +138,10 @@ function QueryForm(props: IQueryFormProps) {
     } else {
       engine.search({
         q: getQueryStringFromSelect(query, sequenceName),
+        record_range: '0:10',
+        index_range: '0:10',
+        record_density: 10,
+        index_density: 10,
         report_progress: false,
       });
     }

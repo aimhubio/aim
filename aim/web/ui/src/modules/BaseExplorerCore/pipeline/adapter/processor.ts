@@ -27,11 +27,13 @@ export interface AimFlatObjectBase {
   };
 }
 
+export interface IQueryableData {
+  ranges?: RecordRanges | IndexRanges;
+}
+
 export interface ProcessedData {
   objectList: AimFlatObjectBase[];
-  queryable_data: {
-    ranges?: RecordRanges & IndexRanges;
-  };
+  queryable_data: IQueryableData;
   additionalData: {
     params: string[];
     sequenceInfo: string[];
@@ -39,13 +41,9 @@ export interface ProcessedData {
   };
 }
 
-function collectQueryableData(run: RunSearchRunView):
-  | {
-      ranges: RecordRanges & IndexRanges;
-    }
-  | {} {
+function collectQueryableData(run: RunSearchRunView): IQueryableData {
   let queryable_data: {
-    ranges?: RecordRanges & IndexRanges;
+    ranges?: RecordRanges | IndexRanges;
   } = {};
 
   if (run && run.ranges) {
@@ -60,6 +58,16 @@ function collectQueryableData(run: RunSearchRunView):
           run.ranges.record_range_used?.[0],
           (run.ranges.record_range_used?.[1] || 0) - 1,
         ],
+      },
+    };
+
+    /**
+     * If the run has index ranges, we need to have IndexRanges on queryable_data object
+     *  otherwise the queryable_data object should have only RecordRanges, since this if statement ensures that it has RecordRanges
+     */
+    if (run.ranges.index_range_used && run.ranges.index_range_used.length) {
+      queryable_data.ranges = {
+        ...queryable_data.ranges,
         index_range_total: [
           run.ranges.index_range_total?.[0],
           (run.ranges.index_range_total?.[1] || 0) - 1,
@@ -68,8 +76,8 @@ function collectQueryableData(run: RunSearchRunView):
           run.ranges.index_range_used?.[0],
           (run.ranges.index_range_used?.[1] || 0) - 1,
         ],
-      },
-    };
+      };
+    }
   }
 
   return queryable_data;
@@ -93,8 +101,8 @@ export function storageDataToFlatList(
     'run.active',
     'run.description',
   ];
-  //@ToDO set name for this var
-  let a: string[] = [];
+  //@TODO set a good name for this var
+  let record_info: string[] = [];
 
   const depthInterceptor = depthInterceptors[objectDepth];
 
@@ -190,7 +198,9 @@ export function storageDataToFlatList(
                 index: rec.index,
                 epoch: trace.epochs[stepIndex],
               };
-              a = a.concat(getObjectPaths(record, 'record'));
+              record_info = record_info.concat(
+                getObjectPaths(record, 'record'),
+              );
               collectedDataByDepth = {
                 ...collectedDataByDepth,
                 record,
@@ -208,8 +218,14 @@ export function storageDataToFlatList(
     }
   });
   params = _.uniq(params);
+
   sequenceInfo = _.uniq(sequenceInfo);
-  modifiers = [..._.uniq(modifiers), ...params, ..._.uniq(a), ...sequenceInfo];
+  modifiers = [
+    ..._.uniq(modifiers),
+    ...params,
+    ..._.uniq(record_info),
+    ...sequenceInfo,
+  ];
 
   return {
     objectList,
