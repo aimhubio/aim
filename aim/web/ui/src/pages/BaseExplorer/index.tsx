@@ -159,6 +159,9 @@ const config: IExplorerConfig = {
     custom1: {
       initialState: { rowLength: 1 },
     },
+    ranges: {
+      initialState: {},
+    },
   },
 };
 

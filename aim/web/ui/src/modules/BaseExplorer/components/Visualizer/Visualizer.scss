@@ -1,0 +1,10 @@
+.Visualizer {
+  width: 100%;
+  height: calc(100vh - 132px);
+  display: flex;
+  .VisualizerContainer {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+  }
+}

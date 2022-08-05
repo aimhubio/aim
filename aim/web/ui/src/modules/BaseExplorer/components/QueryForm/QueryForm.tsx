@@ -1,4 +1,4 @@
-import React, { memo, useEffect } from 'react';
+import React, { memo } from 'react';
 import _ from 'lodash-es';
 
 import { IInstructionsState } from 'modules/BaseExplorerCore/store/slices/types';
@@ -16,6 +16,8 @@ import {
   CheckBoxOutlineBlank,
 } from '@material-ui/icons';
 import { IQueryFormProps } from 'modules/BaseExplorer/types';
+import { getQueryFromRanges } from 'modules/BaseExplorerCore/utils/getQueryFromRanges';
+import { IRangesState } from 'modules/BaseExplorer/components/RangePanel/RangePanel.d';
 
 import { Badge, Button, Icon, Text } from 'components/kit';
 import AutocompleteInput from 'components/AutocompleteInput';
@@ -119,6 +121,7 @@ function QueryForm(props: IQueryFormProps) {
     (state: Record<string | number | symbol, unknown>) => state.sequenceName,
   );
   const query: QueryUIStateUnit = engine.useStore(engine.queryUI.stateSelector);
+  const ranges: IRangesState = engine.useStore(engine.ranges.stateSelector);
   const isFetching: boolean =
     engine.useStore(engine.pipelineStatusSelector) === 'fetching';
 
@@ -138,14 +141,11 @@ function QueryForm(props: IQueryFormProps) {
     } else {
       engine.search({
         q: getQueryStringFromSelect(query, sequenceName),
-        record_range: '0:10',
-        index_range: '0:10',
-        record_density: 10,
-        index_density: 10,
         report_progress: false,
+        ...getQueryFromRanges(ranges),
       });
     }
-  }, [engine, isFetching, query, sequenceName]);
+  }, [engine, isFetching, query, sequenceName, ranges]);
 
   const autocompleteContext: {
     suggestions: Record<string | number | symbol, unknown>;
