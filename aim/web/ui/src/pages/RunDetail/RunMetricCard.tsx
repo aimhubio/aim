@@ -1,5 +1,7 @@
 import * as React from 'react';
 
+import { Tooltip } from '@material-ui/core';
+
 import LineChart from 'components/LineChart/LineChart';
 import { Badge, Text, Button, Spinner, Icon } from 'components/kit';
 import ErrorBoundary from 'components/ErrorBoundary/ErrorBoundary';
@@ -94,7 +96,11 @@ function RunMetricCard({
                 )
               }
             >
-              <Icon name='pin' />
+              <Tooltip title={isPinned ? 'Unpin' : 'Pin'}>
+                <div className='RunDetailMetricsTab__container__chartContainer__metricDetailBox__pin'>
+                  <Icon name='pin' />
+                </div>
+              </Tooltip>
             </Button>
           </div>
           {contextToString(batch?.context)

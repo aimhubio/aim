@@ -166,7 +166,7 @@ function RunDetailMetricsAndSystemTab({
     );
   }, [runBatch]);
 
-  function togglePin(metric: IPinnedSequence, isPinned: boolean) {
+  async function togglePin(metric: IPinnedSequence, isPinned: boolean) {
     const newPinnedMetrics = isPinned
       ? pinnedMetrics.filter(
           (m) =>
@@ -176,23 +176,23 @@ function RunDetailMetricsAndSystemTab({
             ),
         )
       : [...pinnedMetrics, metric];
-    const setPinnedSequencesRequestRef = projectsModel.setPinnedSequences({
-      sequences: newPinnedMetrics,
-    });
+    const setPinnedSequencesRequestRef = projectsModel.setPinnedSequences(
+      {
+        sequences: newPinnedMetrics,
+      },
+      (detail: unknown) => {
+        projectsModel.setState({
+          pinnedSequences: pinnedMetrics,
+        });
+        exceptionHandler({ detail, model: runDetailAppModel });
+      },
+    );
 
     projectsModel.setState({
-      pinnedMetrics: newPinnedMetrics,
+      pinnedSequences: newPinnedMetrics,
     });
 
-    try {
-      setPinnedSequencesRequestRef.call();
-    } catch (ex: unknown) {
-      console.log(ex);
-      projectsModel.setState({
-        pinnedMetrics,
-      });
-      exceptionHandler({ detail: ex, model: projectsModel });
-    }
+    setPinnedSequencesRequestRef.call();
   }
 
   function renderMetricCards(
@@ -204,9 +204,6 @@ function RunDetailMetricsAndSystemTab({
         <div className='RunDetailMetricsTab__container'>
           {observerIsReady &&
             metrics
-              .filter((m) =>
-                isSystem ? isSystemMetric(m.name) : !isSystemMetric(m.name),
-              )
               .map((m) => ({
                 ...m,
                 sortKey: `${m.name}_${contextToString(m.context)}`,

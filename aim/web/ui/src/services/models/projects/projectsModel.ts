@@ -2,7 +2,6 @@ import projectsService from 'services/api/projects/projectsService';
 import createModel from 'services/models/model';
 
 import {
-  IPinnedSequence,
   IPinnedSequencesResData,
   IProject,
   IProjectParamsMetrics,
@@ -83,14 +82,15 @@ function getPinnedSequences() {
   };
 }
 
-function setPinnedSequences(pinnedSequences: IPinnedSequencesResData) {
+function setPinnedSequences(
+  pinnedSequences: IPinnedSequencesResData,
+  errorHandler: (detail: unknown) => void,
+) {
   const { call, abort } = projectsService.setPinnedSequences(pinnedSequences);
 
   return {
     call: () =>
-      call((detail: IPinnedSequencesResData | Error) => {
-        exceptionHandler({ detail, model });
-      }).then((data: IPinnedSequencesResData) => {
+      call(errorHandler).then((data: IPinnedSequencesResData) => {
         model.setState({
           pinnedSequences: data.sequences,
         });

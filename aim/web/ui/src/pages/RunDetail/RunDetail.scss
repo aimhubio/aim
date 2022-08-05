@@ -261,6 +261,9 @@
           margin: $space-xs 0;
           word-break: break-all;
         }
+        &__pin {
+          display: flex;
+        }
         .SelectForm__tags__item {
           margin-top: 0.5rem;
         }
