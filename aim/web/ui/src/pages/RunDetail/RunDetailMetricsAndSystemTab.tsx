@@ -27,7 +27,9 @@ function RunDetailMetricsAndSystemTab({
   const containerRef = React.useRef<HTMLDivElement>(null);
   const observerRef = React.useRef<IntersectionObserver>();
   const [observerIsReady, setObserverIsReady] = React.useState(false);
-  const [visibleMetrics, setVisibleMetrics] = React.useState([]);
+  const [visibleMetrics, setVisibleMetrics] = React.useState<
+    IRunDetailMetricsAndSystemTabProps['runTraces']['metric']
+  >([]);
 
   React.useEffect(() => {
     if (!!containerRef.current) {
@@ -38,7 +40,7 @@ function RunDetailMetricsAndSystemTab({
       };
       observerRef.current = new IntersectionObserver(
         (entries: IntersectionObserverEntry[]) => {
-          let metrics: any = [];
+          let metrics: { name: string; context: string }[] = [];
           entries.forEach((entry: IntersectionObserverEntry) => {
             if (entry.isIntersecting) {
               let metricName = entry.target.getAttribute('data-name')!;
@@ -61,12 +63,13 @@ function RunDetailMetricsAndSystemTab({
           if (metrics.length > 0) {
             setVisibleMetrics((vM) =>
               vM.concat(
-                metrics.map((metric: any) =>
-                  runTraces.metric.find(
-                    (m: any) =>
-                      m.name === metric.name &&
-                      contextToString(m.context) === metric.context,
-                  ),
+                metrics.map(
+                  (metric) =>
+                    runTraces.metric.find(
+                      (m) =>
+                        m.name === metric.name &&
+                        contextToString(m.context) === metric.context,
+                    )!,
                 ),
               ),
             );
@@ -116,7 +119,7 @@ function RunDetailMetricsAndSystemTab({
   React.useEffect(() => {
     setVisibleMetrics((vM) =>
       vM.filter(
-        (m: any) =>
+        (m) =>
           runBatch.findIndex(
             (batch: IRunBatch) =>
               batch.name === m.name &&
@@ -138,15 +141,15 @@ function RunDetailMetricsAndSystemTab({
             <div className='RunDetailMetricsTab__container'>
               {observerIsReady &&
                 runTraces.metric
-                  .filter((m: { name: string; context: {} }) =>
+                  .filter((m) =>
                     isSystem ? isSystemMetric(m.name) : !isSystemMetric(m.name),
                   )
-                  .map((m: { name: string; context: {} }) => ({
+                  .map((m) => ({
                     ...m,
                     sortKey: `${m.name}_${contextToString(m.context)}`,
                   }))
                   .sort(alphabeticalSortComparator({ orderBy: 'sortKey' }))
-                  .map((metric: { name: string; context: {} }, i: number) => {
+                  .map((metric, i: number) => {
                     const batch: IRunBatch = {
                       ...metric,
                       ...runBatch?.find(

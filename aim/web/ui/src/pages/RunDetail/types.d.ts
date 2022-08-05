@@ -10,7 +10,14 @@ export interface IRunsProps {
 }
 export interface IRunDetailMetricsAndSystemTabProps {
   runHash: string;
-  runTraces: any;
+  runTraces: {
+    metric: {
+      name: string;
+      context: {
+        [key: string]: unknown;
+      };
+    }[];
+  };
   runBatch: any;
   isSystem?: boolean;
   isRunBatchLoading: boolean;
