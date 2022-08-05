@@ -43,8 +43,8 @@ run_inst['hparams'] = {
 }
 
 # Track metrics
-for step in range(10):
-    run_inst.track(metric_value, name='metric_name', epoch=epoch_number)`}
+for i in range(10):
+    run_inst.track(i, name='metric_name')`}
           />
         </div>
         <div className='SetupGuide__resources__container'>

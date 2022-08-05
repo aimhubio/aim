@@ -54,8 +54,6 @@ function Table(props) {
     .sort((a, b) => rightCols.indexOf(a.key) - rightCols.indexOf(b.key));
   const sortedColumns = [...leftPane, ...middlePane, ...rightPane];
 
-  const middlePaneColsKey = middlePane.map((col) => col.key).join('');
-
   const groups = !Array.isArray(props.data);
 
   useEffect(() => {
@@ -127,12 +125,7 @@ function Table(props) {
       };
     },
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    [
-      props.listWindow.left,
-      props.listWindow.width,
-      colLefts,
-      middlePaneColsKey,
-    ],
+    [props.listWindow.left, props.listWindow.width, colLefts, columns],
   );
 
   const color = React.useMemo(
