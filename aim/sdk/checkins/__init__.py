@@ -1,5 +1,3 @@
-from __future__ import annotations
-
 import math
 import threading
 import time
@@ -301,7 +299,7 @@ class RunCheckIns:
     finished, otherwise the run will be marked as failed.
     """
 
-    Instances: List["RunCheckIns"] = []
+    instances: Set["RunCheckIns"] = set()
 
     def __init__(
         self,
@@ -326,14 +324,37 @@ class RunCheckIns:
             run_hash=self.run_hash,
         )
         logger.info(f"starting from: {self.physical_check_in}")
-        # TODO implement default run
-        self.Instances.append(self)
+
+        self.instances.add(self)
 
         self.thread = threading.Thread(target=self.writer, daemon=True)
         self.flush_condition = threading.Condition()
         self.stop_signal = threading.Event()
         logger.info(f"starting writer thread for {self}")
         self.thread.start()
+
+        # we need to patch certain methods to make them
+        # available both as instance and class methods.
+        self.check_in = self._check_in
+        self.report_successful_finish = self._report_successful_finish
+
+    @classmethod
+    def default(cls) -> "RunCheckIns":
+        try:
+            default_instance, = cls.instances
+        except ValueError:
+            if cls.instances:
+                raise ValueError(
+                    f"{cls.__name__} has {len(cls.instances)} instances, indirect check-in is not supported"
+                )
+            else:
+                logger.warning(f"{cls.__name__} has no instances")
+                return None
+        return default_instance
+
+    def close(self):
+        self.stop()
+        self.instances.remove(self)
 
     def stop(self):
         """
@@ -388,16 +409,16 @@ class RunCheckIns:
         """
         Flush the last check-in.
         """
-        logger.warning(f"notifying {self}")
+        logger.info(f"notifying {self}")
         with self.flush_condition:
             self.flush_condition.notify_all()
         if block:
-            logger.warning(f"blocking until the writer finishes")
+            logger.info(f"blocking until the writer finishes")
             while not self.last_check_in == self.physical_check_in:
                 time.sleep(0.2)  # TODO use notify
                 pass
 
-    def check_in(
+    def _check_in(
         self,
         *,
         expect_next_in: int = 0,
@@ -412,8 +433,9 @@ class RunCheckIns:
         if block:
             self.flush(block=True)
 
-    def report_successful_finish(
+    def _report_successful_finish(
         self,
+        *,
         block: bool = True,
     ) -> None:
         """
@@ -421,4 +443,50 @@ class RunCheckIns:
 
         By default this will block until the check-in is flushed.
         """
-        return self.check_in(block=block)
+        return self._check_in(block=block)
+
+    # The instance method `check_in` and `report_successful_finish` is patched into
+    # the instance in `__post_init__`
+    # so the same name is used for both the instance method and the class method.
+    @classmethod
+    def check_in(
+        cls,
+        *,
+        expect_next_in: int = 0,
+        block: bool = False,
+    ) -> None:
+        """
+        Check-in and optionally mark an expiry date by setting `expect_next_in`.
+
+        If `block` is True, then this will block until the check-in is flushed.
+
+        Note: This is a classmethod and designed to be called like:
+        `RunCheckIns.check_in(expect_next_in=10)`
+        * If no instance is available, this will log a warning and return.
+        * If multiple instances are available, this will raise an error.
+        """
+        default_instance = cls.default()
+        if default_instance is None:
+            return
+        default_instance._check_in(expect_next_in=expect_next_in, block=block)
+
+    @classmethod
+    def report_successful_finish(
+        cls,
+        *,
+        block: bool = True,
+    ) -> None:
+        """
+        Report a successful end of the Run.
+
+        By default this will block until the check-in is flushed.
+
+        Note: This is a classmethod and designed to be called like:
+        `RunCheckIns.report_successful_finish()`
+        * If no instance is available, this will log a warning and return.
+        * If multiple instances are available, this will raise an error.
+        """
+        default_instance = cls.default()
+        if default_instance is None:
+            return
+        default_instance._report_successful_finish(block=block)
