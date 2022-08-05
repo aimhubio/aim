@@ -2,18 +2,23 @@ import * as React from 'react';
 
 import { IVisualizationProps } from '../../types';
 import Box from '../Box';
-import Controls from '../Controls';
 import BoxVirtualizer from '../BoxVirtualizer';
 
 function BaseVisualizer(props: IVisualizationProps) {
-  const engine = props.engine;
-
-  const boxConfig = props.engine.useStore(props.engine.boxConfig.stateSelector);
-  const styleAppliers = props.engine.styleAppliers;
-
-  const foundGroups = props.engine.useStore(props.engine.foundGroupsSelector);
-
-  const dataState = engine.useStore(engine.dataSelector);
+  const {
+    engine,
+    engine: {
+      useStore,
+      boxConfig: { stateSelector: boxConfigSelector },
+      foundGroupsSelector,
+      dataSelector,
+    },
+    box: BoxContent,
+    controlComponent: ControlComponent,
+  } = props;
+  const boxConfig = useStore(boxConfigSelector);
+  const foundGroups = useStore(foundGroupsSelector);
+  const dataState = useStore(dataSelector);
 
   const data = React.useMemo(() => {
     return dataState?.map((d: any, i: number) => {
@@ -35,7 +40,7 @@ function BaseVisualizer(props: IVisualizationProps) {
       // listen to found groups
       function applyStyles(obj: any, group: any, iteration: number) {
         let style = {};
-        styleAppliers.forEach((applier: any) => {
+        engine.styleAppliers.forEach((applier: any) => {
           style = {
             ...style,
             ...applier(obj, group, boxConfig, iteration),
@@ -59,9 +64,7 @@ function BaseVisualizer(props: IVisualizationProps) {
   return (
     <div
       style={{
-        padding: '0 0.625rem',
         width: '100%',
-        height: 'calc(100vh - 160px)',
         display: 'flex',
       }}
     >
@@ -70,15 +73,14 @@ function BaseVisualizer(props: IVisualizationProps) {
         itemRenderer={(item: any, i: number) => (
           <Box
             key={i} // replace with some unique key of box data
-            engine={props.engine}
+            engine={engine}
             style={item.style}
           >
-            {/* @ts-ignore */}
-            <props.box engine={props.engine} data={item} />
+            {BoxContent && <BoxContent engine={engine} data={item} />}
           </Box>
         )}
       />
-      {props.controlComponent && <props.controlComponent engine={engine} />}
+      {ControlComponent && <ControlComponent engine={engine} />}
     </div>
   );
 }

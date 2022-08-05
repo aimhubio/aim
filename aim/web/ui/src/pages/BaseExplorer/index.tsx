@@ -20,7 +20,7 @@ import {
 } from 'modules/BaseExplorerCore/pipeline/grouping/types';
 import Figures from 'modules/BaseExplorer/components/Figures/Figures';
 import Controls from 'modules/BaseExplorer/components/Controls';
-import BoxConfig from 'modules/BaseExplorer/components/Controls/BoxConfig';
+import BoxProperties from 'modules/BaseExplorer/components/Controls/BoxProperties';
 
 import { AimObjectDepths, SequenceTypesEnum } from 'types/core/enums';
 
@@ -113,15 +113,16 @@ const config: IExplorerConfig = {
         // },
       },
     },
-
     controls: {
       boxProperties: {
-        component: BoxConfig,
+        component: BoxProperties,
         settings: {
-          maxWidth: 600,
-          minWidth: 300,
-          maxGap: 100,
-          minGap: 100,
+          minWidth: 150,
+          maxWidth: 800,
+          minHeight: 150,
+          maxHeight: 600,
+          minGap: 0,
+          maxGap: 50,
           step: 10,
         },
         // no need to have state for boxProperties since it works with the state, which is responsible for grouping as well
@@ -130,32 +131,7 @@ const config: IExplorerConfig = {
           initialState: {},
         },
       },
-
-      // @TODO uncomment the code below to see how to see an example more than boxProperties the controls
-      // @TODO delete this example after successfully implementing the controls
-      /*testProperties: {
-        component: (props: IBaseComponentProps) => {
-          const state = props.engine.useStore(
-            props.engine.controls.testProperties.stateSelector,
-          );
-          const settings = props.engine.controls.testProperties;
-
-          function onUpdate() {
-            props.engine.controls.testProperties.methods.update({
-              test: false,
-            });
-          }
-          return <button onClick={onUpdate}>update</button>;
-        },
-        settings: {
-          test: 10,
-        },
-        // no need to have state for boxProperties since it works with the state, which is responsible for grouping as well
-        // this is the reason for empty state, the state property is optional, just kept empty here to have an example for other controls
-        state: {
-          initialState: {},
-        },
-      },*/
+      // add additional controls here like `boxProperties`
     },
   },
   ui: {

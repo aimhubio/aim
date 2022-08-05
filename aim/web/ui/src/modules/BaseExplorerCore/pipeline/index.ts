@@ -6,7 +6,7 @@ import createGrouping, { Grouping } from './grouping';
 import createQuery, { Query } from './query';
 import createAdapter, { Adapter } from './adapter';
 // @ts-ignore
-import { BettaGroupOption, GroupType } from './grouping/types';
+import { BettaGroupOption } from './grouping/types';
 
 export type PipelineOptions = {
   sequenceName: SequenceTypesEnum;
