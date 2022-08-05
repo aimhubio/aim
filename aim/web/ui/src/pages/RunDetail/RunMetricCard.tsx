@@ -1,7 +1,7 @@
 import * as React from 'react';
 
 import LineChart from 'components/LineChart/LineChart';
-import { Badge, Text, Button, Icon } from 'components/kit';
+import { Badge, Text, Button, Spinner, Icon } from 'components/kit';
 import ErrorBoundary from 'components/ErrorBoundary/ErrorBoundary';
 import { HighlightEnum } from 'components/HighlightModesPopover/HighlightModesPopover';
 
@@ -64,9 +64,7 @@ function RunMetricCard({
               />
             </ErrorBoundary>
           ) : (
-            <div className='progress-bar'>
-              <div className='progress-bar-value'></div>
-            </div>
+            <Spinner />
           )}
         </div>
         <div className='RunDetailMetricsTab__container__chartContainer__metricDetailBox'>
