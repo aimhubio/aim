@@ -6,10 +6,12 @@ import time
 from collections import defaultdict
 from dataclasses import dataclass, field
 from pathlib import Path
-from typing import ClassVar, Dict, List, Tuple
+from typing import ClassVar, Dict, Tuple, Set, Union, TYPE_CHECKING
 
-from aim.sdk import Run
 from cachetools import LRUCache
+
+if TYPE_CHECKING:
+    from aim.sdk import Run
 
 import logging
 
@@ -95,7 +97,7 @@ class CheckIn:
         return self.first_seen + self.expect_next_in
 
     @classmethod
-    def parse(cls, path: Path | str) -> Tuple[str, "CheckIn"]:
+    def parse(cls, path: Union[Path, str]) -> Tuple[str, "CheckIn"]:
         """
         Parse a check-in file path and return a tuple of:
           * run hash the check-in belongs to,
@@ -181,11 +183,11 @@ class CheckIn:
     def generate_filename(
         cls,
         *,
-        run_hash: str | AsteriskType,
-        idx: int | AsteriskType = Asterisk,
-        flag_name: str | AsteriskType = "check_in",
-        absolute_time: float | AsteriskType = Asterisk,
-        expect_next_in: int | AsteriskType = Asterisk,
+        run_hash: Union[str, AsteriskType],
+        idx: Union[int, AsteriskType] = Asterisk,
+        flag_name: Union[str, AsteriskType] = "check_in",
+        absolute_time: Union[float, AsteriskType] = Asterisk,
+        expect_next_in: Union[int, AsteriskType] = Asterisk,
     ) -> str:
         """
         Generate a filename for a check-in.
@@ -229,7 +231,7 @@ class CheckIn:
     def touch(
         self,
         *,
-        directory: Path | str,
+        directory: Union[Path, str],
         run_hash: str,
         cleanup: bool = True,
         calibrate: bool = True,
@@ -303,7 +305,7 @@ class RunCheckIns:
 
     def __init__(
         self,
-        run: Run,
+        run: 'Run',
     ) -> None:
         logger.info(f"creating RunCheckIns for {run}")
         self.run_hash = run.hash
