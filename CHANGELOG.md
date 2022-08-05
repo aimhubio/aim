@@ -1,7 +1,9 @@
 # Changelog
 
 ## 3.12.2
+
 - Add ability to pin metrics to run detail page (mihran113)
+- Apply lazy loading on metrics in Run Page (roubkar)
 
 ## 3.12.1 Aug 2, 2022
 
