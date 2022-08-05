@@ -123,7 +123,6 @@ function RangePanel(props: any) {
         record_range_total[1] - record_range_total[0];
       const recordDensity = rangeState.record?.density ?? '50';
       const density =
-        recordDensity ||
         recordDensity < record_range_total[0] ||
         recordDensity > recordRangeTotalCount
           ? `${recordRangeTotalCount === 0 ? 1 : recordRangeTotalCount}`
@@ -151,7 +150,6 @@ function RangePanel(props: any) {
       const indexRangeTotalCount = index_range_total[1] - index_range_total[0];
       const indexDensity = rangeState.index?.density ?? '5';
       const density =
-        indexDensity ||
         indexDensity < index_range_total[0] ||
         indexDensity > indexRangeTotalCount
           ? `${indexRangeTotalCount === 0 ? 1 : indexRangeTotalCount}`
