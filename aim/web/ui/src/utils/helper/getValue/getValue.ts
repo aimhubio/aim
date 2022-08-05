@@ -23,15 +23,18 @@ export function getValue(
   }
 
   let pathArray;
-  if (Array.isArray(path)) {
+  if (typeof path === 'string' && object.propertyIsEnumerable(path)) {
+    pathArray = [path];
+  } else if (Array.isArray(path)) {
     pathArray = path;
   } else {
     pathArray = stringToPath(path);
   }
+
   for (let i = 0; i < pathArray.length; i++) {
     if (
       typeof object !== 'object' ||
-      !Object.prototype.propertyIsEnumerable.call(object, pathArray[i])
+      !object.propertyIsEnumerable(pathArray[i])
     ) {
       return defaultValue;
     }

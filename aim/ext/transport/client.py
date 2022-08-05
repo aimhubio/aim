@@ -102,6 +102,7 @@ class Client:
             return
 
         if is_write_only:
+            assert queue_id != -1
             self.get_queue(queue_id).register_task(
                 self._run_write_instructions, list(encode_tree([(resource, method, args)])))
             return
@@ -124,7 +125,8 @@ class Client:
             for chunk in stream:
                 yield rpc_messages.InstructionRequest(message=chunk)
 
-        self.get_queue(queue_id).wait_for_finish()
+        if queue_id != -1:
+            self.get_queue(queue_id).wait_for_finish()
         resp = self.remote.run_instruction(message_stream_generator())
         status_msg = next(resp)
 

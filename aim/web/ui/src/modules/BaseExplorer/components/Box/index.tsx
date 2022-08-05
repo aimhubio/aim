@@ -1,10 +1,17 @@
 import React from 'react';
 
-import { Button } from 'components/kit';
+import { Button, Icon } from 'components/kit';
+
+import BoxFullViewPopover from '../BoxFullViewPopover/BoxFullViewPopover';
 
 import './Box.scss';
 
 function Box(props: any) {
+  const [fullView, setFullView] = React.useState<boolean>(false);
+  const sequenceName = props.engine.useStore(
+    (state: any) => state.sequenceName,
+  );
+
   const boxConfig = props.engine.useStore(props.engine.boxConfig.stateSelector);
 
   const foundGroups = props.engine.useStore(props.engine.foundGroupsSelector);
@@ -29,25 +36,34 @@ function Box(props: any) {
     return info;
   }, [foundGroups, props.children]);
 
-  function onClickShowInfo() {
-    console.group('Object info ---> ');
-    console.log('group info ----> ', groupInfo);
-    console.groupEnd();
-  }
-
   return (
-    <div
-      className='BaseBox'
-      style={{
-        ...boxConfig,
-        ...props.style,
-      }}
-    >
-      <div>
-        <Button onClick={onClickShowInfo}>Show Info</Button>
+    <>
+      <div
+        className='Box'
+        style={{
+          ...boxConfig,
+          ...props.style,
+        }}
+      >
+        <Button
+          onClick={() => setFullView(true)}
+          size='xSmall'
+          withOnlyIcon
+          className='Box__fullScreen'
+        >
+          <Icon name='full-screen' />
+        </Button>
+        {props.children}
+        {fullView && (
+          <BoxFullViewPopover
+            onClose={() => setFullView(false)}
+            groupInfo={groupInfo}
+            sequence={sequenceName}
+            element={props.children}
+          />
+        )}
       </div>
-      {props.children}
-    </div>
+    </>
   );
 }
 

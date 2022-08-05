@@ -178,6 +178,14 @@ function AxesPropsPopover({
     );
   }, [axesScaleRange]);
 
+  const xResetBtnDisabled = React.useMemo(
+    () => xScaleRange.min === undefined && xScaleRange.max === undefined,
+    [xScaleRange],
+  );
+  const yResetBtnDisabled = React.useMemo(
+    () => yScaleRange.min === undefined && yScaleRange.max === undefined,
+    [yScaleRange],
+  );
   return (
     <ErrorBoundary>
       <div className='AxesPropsPopover'>
@@ -197,7 +205,7 @@ function AxesPropsPopover({
         <Divider className='AxesPropsPopover__divider' />
         <div className='AxesPropsPopover__range'>
           <Text component='p' tint={50} className='AxesPropsPopover__subtitle'>
-            SELECT RANGE:
+            SET AXES RANGE:
           </Text>
           <div className='AxesPropsPopover__range__container xAxis'>
             <Text size={14} className='scaleRangeInputs__label'>
@@ -238,8 +246,9 @@ function AxesPropsPopover({
               isValid={isXScaleRangeValid.max}
             />
             <Button
+              disabled={xResetBtnDisabled}
               className='scaleRangeInputs__resetButton'
-              onClick={() => onResetRange('xAxis')}
+              onClick={() => !xResetBtnDisabled && onResetRange('xAxis')}
               withOnlyIcon={true}
             >
               <Icon name='reset' />
@@ -284,8 +293,9 @@ function AxesPropsPopover({
               isValid={isYScaleRangeValid.max}
             />
             <Button
+              disabled={yResetBtnDisabled}
               className='scaleRangeInputs__resetButton'
-              onClick={() => onResetRange('yAxis')}
+              onClick={() => !yResetBtnDisabled && onResetRange('yAxis')}
               withOnlyIcon={true}
             >
               <Icon name='reset' />

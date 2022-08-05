@@ -1260,6 +1260,8 @@ function getDataAsTableRows(
 
   let rowIndex = 0;
   const sameValueColumns: string[] = [];
+  const columnsFlattenValues: { [key: string]: Set<any> } = {};
+
   const tableData = groupData(
     Object.values(
       _.groupBy(
@@ -1409,9 +1411,10 @@ function getDataAsTableRows(
       });
 
     for (let columnKey in columnsValues) {
-      if (columnsValues[columnKey].length === 1) {
-        sameValueColumns.push(columnKey);
-      }
+      columnsFlattenValues[columnKey] = new Set([
+        ...(columnsFlattenValues[columnKey] || []),
+        ...(columnsValues[columnKey] || []),
+      ]);
 
       if (metricsCollection.config !== null) {
         rows[groupKey!].data[columnKey] =
@@ -1431,6 +1434,11 @@ function getDataAsTableRows(
       );
     }
   });
+  for (let columnKey in columnsFlattenValues) {
+    if (columnsFlattenValues[columnKey].size === 1) {
+      sameValueColumns.push(columnKey);
+    }
+  }
   return { rows, sameValueColumns };
 }
 
