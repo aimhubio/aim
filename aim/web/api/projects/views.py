@@ -79,7 +79,7 @@ async def get_pinned_metrics_api():
                 settings = json.load(settings_file)
             except json.decoder.JSONDecodeError:
                 return response
-            sequences_list = settings.get('pinned_sequences', [])
+            sequences_list = settings.get('pinned_sequences', {}).get('metric', [])
             response['sequences'] = sequences_list
             return response
 
@@ -100,12 +100,15 @@ async def update_pinned_metrics_api(request_data: ProjectPinnedSequencesApiIn):
     settings_lock_file = f'{settings_filename}.lock'
     settings = {}
     with AutoFileLock(settings_lock_file, timeout=2):
-        with open(settings_filename, 'a+') as settings_file:
+        mode = 'r+'
+        if not os.path.exists(settings_filename):
+            mode = 'w+'
+        with open(settings_filename, mode) as settings_file:
             try:
                 settings = json.load(settings_file)
             except json.decoder.JSONDecodeError:
                 pass
-            settings['pinned_sequences'] = sequences_list
+            settings['pinned_sequences'] = {'metric': sequences_list}
             settings_file.seek(0)
             # dump new settings
             json.dump(settings, settings_file)
