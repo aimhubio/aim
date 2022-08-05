@@ -317,7 +317,7 @@ class RunCheckIns:
         if leftover:
             logger.info(f"leftover check-in: {leftover}")
         else:
-            logger.info(f"no leftover check-in found. starting from zero")
+            logger.info("no leftover check-in found. starting from zero")
         self.last_check_in = leftover.increment()
         self.physical_check_in = self.last_check_in.touch(
             directory=self.dir,
@@ -399,7 +399,7 @@ class RunCheckIns:
                 continue
 
             if self.stop_signal.is_set():
-                logger.info(f"writer thread stopping as requested")
+                logger.info("writer thread stopping as requested")
                 return
 
     def flush(
@@ -413,7 +413,7 @@ class RunCheckIns:
         with self.flush_condition:
             self.flush_condition.notify_all()
         if block:
-            logger.info(f"blocking until the writer finishes")
+            logger.info("blocking until the writer finishes")
             while not self.last_check_in == self.physical_check_in:
                 time.sleep(0.2)  # TODO use notify
                 pass

@@ -767,10 +767,10 @@ class Run(BaseRun, StructuredRunMixin):
     ) -> None:
         """
         Check-in the run. Report the expected time for the next check-in.
-        
+
         If no check-ins are received by the expiry date (plus the grace period), the
         run is considered to have failed.
-        
+
         Args:
             expect_next_in: (:obj:`int`, optional): The number of seconds to wait before the next check-in.
             block: (:obj:`bool`, optional): If true, block the thread until the check-in is written to filesystem.
