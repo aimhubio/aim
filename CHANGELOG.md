@@ -2,7 +2,7 @@
 
 ## Unreleased
 
-- Correct metric column key in run table grid (VkoHov)
+- Fix incorrect column keys of metrics in the table grid of the runs dashboard  (VkoHov)
 
 ## 3.12.2
 
