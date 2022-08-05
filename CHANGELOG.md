@@ -1,5 +1,9 @@
 # Changelog
 
+## Unreleased
+
+- Correct metric column key in run table grid (VkoHov)
+
 ## 3.12.2
 
 - Apply lazy loading on metrics in Run Page (roubkar)
