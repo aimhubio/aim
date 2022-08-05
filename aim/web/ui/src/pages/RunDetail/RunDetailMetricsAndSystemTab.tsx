@@ -7,12 +7,21 @@ import ErrorBoundary from 'components/ErrorBoundary/ErrorBoundary';
 
 import { ANALYTICS_EVENT_KEYS } from 'config/analytics/analyticsKeysMap';
 
+import useModel from 'hooks/model/useModel';
+
 import * as analytics from 'services/analytics';
 import runDetailAppModel from 'services/models/runs/runDetailAppModel';
+import projectsModel from 'services/models/projects/projectsModel';
+
+import {
+  IPinnedSequence,
+  IProjectsModelState,
+} from 'types/services/models/projects/projectsModel';
 
 import { isSystemMetric } from 'utils/isSystemMetric';
 import contextToString from 'utils/contextToString';
 import alphabeticalSortComparator from 'utils/alphabeticalSortComparator';
+import exceptionHandler from 'utils/app/exceptionHandler';
 
 import RunMetricCard from './RunMetricCard';
 import { IRunBatch, IRunDetailMetricsAndSystemTabProps } from './types';
@@ -30,6 +39,34 @@ function RunDetailMetricsAndSystemTab({
   const [visibleMetrics, setVisibleMetrics] = React.useState<
     IRunDetailMetricsAndSystemTabProps['runTraces']['metric']
   >([]);
+  const projectsData = useModel<Partial<IProjectsModelState>>(
+    projectsModel,
+    false,
+  );
+
+  const tabMertcis = runTraces.metric.filter((m) =>
+    isSystem ? isSystemMetric(m.name) : !isSystemMetric(m.name),
+  );
+  let pinnedMetrics: IRunDetailMetricsAndSystemTabProps['runTraces']['metric'] =
+    [];
+  let regularMetrics: IRunDetailMetricsAndSystemTabProps['runTraces']['metric'] =
+    [];
+
+  for (let i = 0; i < tabMertcis.length; i++) {
+    let metric = tabMertcis[i];
+    if (
+      projectsData?.pinnedSequences &&
+      projectsData?.pinnedSequences?.findIndex(
+        (seq) =>
+          seq.name === metric.name &&
+          contextToString(seq.context) === contextToString(metric.context),
+      ) > -1
+    ) {
+      pinnedMetrics.push(metric);
+    } else {
+      regularMetrics.push(metric);
+    }
+  }
 
   React.useEffect(() => {
     if (!!containerRef.current) {
@@ -65,7 +102,7 @@ function RunDetailMetricsAndSystemTab({
               vM.concat(
                 metrics.map(
                   (metric) =>
-                    runTraces.metric.find(
+                    tabMertcis.find(
                       (m) =>
                         m.name === metric.name &&
                         contextToString(m.context) === metric.context,
@@ -129,6 +166,78 @@ function RunDetailMetricsAndSystemTab({
     );
   }, [runBatch]);
 
+  function togglePin(metric: IPinnedSequence, isPinned: boolean) {
+    const newPinnedMetrics = isPinned
+      ? pinnedMetrics.filter(
+          (m) =>
+            !(
+              m.name === metric.name &&
+              contextToString(m.context) === contextToString(metric.context)
+            ),
+        )
+      : [...pinnedMetrics, metric];
+    const setPinnedSequencesRequestRef = projectsModel.setPinnedSequences({
+      sequences: newPinnedMetrics,
+    });
+
+    projectsModel.setState({
+      pinnedMetrics: newPinnedMetrics,
+    });
+
+    try {
+      setPinnedSequencesRequestRef.call();
+    } catch (ex: unknown) {
+      console.log(ex);
+      projectsModel.setState({
+        pinnedMetrics,
+      });
+      exceptionHandler({ detail: ex, model: projectsModel });
+    }
+  }
+
+  function renderMetricCards(
+    metrics: IRunDetailMetricsAndSystemTabProps['runTraces']['metric'],
+    pinned: boolean,
+  ) {
+    return (
+      metrics.length > 0 && (
+        <div className='RunDetailMetricsTab__container'>
+          {observerIsReady &&
+            metrics
+              .filter((m) =>
+                isSystem ? isSystemMetric(m.name) : !isSystemMetric(m.name),
+              )
+              .map((m) => ({
+                ...m,
+                sortKey: `${m.name}_${contextToString(m.context)}`,
+              }))
+              .sort(alphabeticalSortComparator({ orderBy: 'sortKey' }))
+              .map((metric, i: number) => {
+                const batch: IRunBatch = {
+                  ...metric,
+                  ...runBatch?.find(
+                    (batch: IRunBatch) =>
+                      batch.name === metric.name &&
+                      contextToString(batch.context) ===
+                        contextToString(metric.context),
+                  ),
+                };
+                return (
+                  <RunMetricCard
+                    key={`${batch.name}_${contextToString(batch.context)}`}
+                    batch={batch}
+                    index={i}
+                    observer={observerRef.current}
+                    isPinned={pinned}
+                    togglePin={togglePin}
+                  />
+                );
+              })}
+        </div>
+      )
+    );
+  }
+
   return (
     <ErrorBoundary>
       <BusyLoaderWrapper
@@ -136,39 +245,11 @@ function RunDetailMetricsAndSystemTab({
         className='runDetailParamsTabLoader'
         height='100%'
       >
-        {!_.isEmpty(runTraces.metric) ? (
+        {!_.isEmpty(tabMertcis) ? (
           <div className='RunDetailMetricsTab' ref={containerRef}>
-            <div className='RunDetailMetricsTab__container'>
-              {observerIsReady &&
-                runTraces.metric
-                  .filter((m) =>
-                    isSystem ? isSystemMetric(m.name) : !isSystemMetric(m.name),
-                  )
-                  .map((m) => ({
-                    ...m,
-                    sortKey: `${m.name}_${contextToString(m.context)}`,
-                  }))
-                  .sort(alphabeticalSortComparator({ orderBy: 'sortKey' }))
-                  .map((metric, i: number) => {
-                    const batch: IRunBatch = {
-                      ...metric,
-                      ...runBatch?.find(
-                        (batch: IRunBatch) =>
-                          batch.name === metric.name &&
-                          contextToString(batch.context) ===
-                            contextToString(metric.context),
-                      ),
-                    };
-                    return (
-                      <RunMetricCard
-                        key={`${batch.name}_${contextToString(batch.context)}`}
-                        batch={batch}
-                        index={i}
-                        observer={observerRef.current}
-                      />
-                    );
-                  })}
-            </div>
+            {renderMetricCards(pinnedMetrics, true)}
+            {pinnedMetrics.length > 0 && regularMetrics.length > 0 && <hr />}
+            {renderMetricCards(regularMetrics, false)}
           </div>
         ) : (
           <IllustrationBlock

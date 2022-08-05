@@ -2,6 +2,8 @@ import projectsService from 'services/api/projects/projectsService';
 import createModel from 'services/models/model';
 
 import {
+  IPinnedSequence,
+  IPinnedSequencesResData,
   IProject,
   IProjectParamsMetrics,
   IProjectsModelState,
@@ -65,10 +67,44 @@ function removeExampleTypes(params: IProjectParamsMetrics['params']) {
   return params;
 }
 
+function getPinnedSequences() {
+  const { call, abort } = projectsService.getPinnedSequences();
+
+  return {
+    call: () =>
+      call((detail: IPinnedSequencesResData | Error) => {
+        exceptionHandler({ detail, model });
+      }).then((data: IPinnedSequencesResData) => {
+        model.setState({
+          pinnedSequences: data.sequences,
+        });
+      }),
+    abort,
+  };
+}
+
+function setPinnedSequences(pinnedSequences: IPinnedSequencesResData) {
+  const { call, abort } = projectsService.setPinnedSequences(pinnedSequences);
+
+  return {
+    call: () =>
+      call((detail: IPinnedSequencesResData | Error) => {
+        exceptionHandler({ detail, model });
+      }).then((data: IPinnedSequencesResData) => {
+        model.setState({
+          pinnedSequences: data.sequences,
+        });
+      }),
+    abort,
+  };
+}
+
 const projectsModel = {
   ...model,
   getProjectsData,
   getProjectParams,
+  getPinnedSequences,
+  setPinnedSequences,
 };
 
 export default projectsModel;

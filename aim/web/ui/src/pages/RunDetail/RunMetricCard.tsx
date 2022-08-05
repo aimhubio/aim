@@ -1,7 +1,7 @@
 import * as React from 'react';
 
 import LineChart from 'components/LineChart/LineChart';
-import { Badge, Text } from 'components/kit';
+import { Badge, Text, Button, Icon } from 'components/kit';
 import ErrorBoundary from 'components/ErrorBoundary/ErrorBoundary';
 import { HighlightEnum } from 'components/HighlightModesPopover/HighlightModesPopover';
 
@@ -18,6 +18,8 @@ function RunMetricCard({
   batch,
   index,
   observer,
+  isPinned,
+  togglePin,
 }: IRunMetricCardProps): React.FunctionComponentElement<React.ReactNode> {
   const containerRef = React.useRef(null);
 
@@ -68,17 +70,35 @@ function RunMetricCard({
           )}
         </div>
         <div className='RunDetailMetricsTab__container__chartContainer__metricDetailBox'>
-          <Text
-            component='h4'
-            tint={100}
-            size={18}
-            weight={600}
-            className='RunDetailMetricsTab__container__chartContainer__metricDetailBox__metricName'
-          >
-            {isSystemMetric(batch?.name)
-              ? formatSystemMetricName(batch?.name)
-              : batch?.name}
-          </Text>
+          <div className='RunDetailMetricsTab__container__chartContainer__metricDetailBox__top'>
+            <Text
+              component='h4'
+              tint={100}
+              size={18}
+              weight={600}
+              className='RunDetailMetricsTab__container__chartContainer__metricDetailBox__metricName'
+            >
+              {isSystemMetric(batch?.name)
+                ? formatSystemMetricName(batch?.name)
+                : batch?.name}
+            </Text>
+            <Button
+              color='default'
+              size='small'
+              withOnlyIcon
+              onClick={() =>
+                togglePin(
+                  {
+                    name: batch.name,
+                    context: batch.context,
+                  },
+                  isPinned,
+                )
+              }
+            >
+              <Icon name='pin' />
+            </Button>
+          </div>
           {contextToString(batch?.context)
             ?.split(',')
             .map((label: string, i: number) => (
