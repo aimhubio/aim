@@ -1,9 +1,9 @@
-import { IBaseComponentProps } from 'modules/BaseExplorer/types';
-
 import { IBoxConfigState } from '../';
 
-export interface IBoxPropertiesPopoverProps extends IBaseComponentProps {
-  boxConfig: IBoxConfigState;
+export interface IBoxPropertiesPopoverProps {
+  update: (boxProps: Partial<IBoxConfigState>) => void;
+  reset: () => void;
+  boxProperties: IBoxConfigState;
   updateDelay?: number;
   settings: {
     maxWidth: number;

@@ -13,66 +13,68 @@ import { IBoxPropertiesPopoverProps } from '.';
 import './styles.scss';
 
 function BoxPropertiesPopover(props: IBoxPropertiesPopoverProps) {
-  const { engine, boxConfig, settings, updateDelay = 150 } = props;
+  const { reset, update, boxProperties, settings, updateDelay = 100 } = props;
   const [boxProps, setBoxProps] = React.useState({
     width: 0,
     height: 0,
     gap: 0,
   });
 
-  const debouncedBoxConfigUpdate = _.debounce(
-    (config: Partial<IBoxConfigState>) => {
-      engine.boxConfig.methods.update(config);
+  const debouncedBoxPropsUpdate = _.debounce(
+    (boxProps: Partial<IBoxConfigState>) => {
+      update?.(boxProps);
     },
     updateDelay,
   );
 
-  const updateBoxConfig = React.useCallback(
+  const updateBoxProps = React.useCallback(
     ({
-      width = boxConfig.width,
-      height = boxConfig.height,
-      gap = boxConfig.gap,
+      width = boxProperties.width,
+      height = boxProperties.height,
+      gap = boxProperties.gap,
     }: Partial<IBoxConfigState>) => {
-      debouncedBoxConfigUpdate({
+      debouncedBoxPropsUpdate({
         width,
         height,
         gap,
       });
     },
-    [boxConfig, engine],
+    [boxProperties, update],
   );
   const onBoxWidthChange = React.useCallback(
     (e: ChangeEvent<{}>, width: number | number[]) => {
       setBoxProps((state) => ({ ...state, width: width as number }));
-      updateBoxConfig({ width: width as number });
+      updateBoxProps({ width: width as number });
     },
-    [setBoxProps, updateBoxConfig],
+    [setBoxProps, updateBoxProps],
   );
   const onBoxHeightChange = React.useCallback(
     (e: ChangeEvent<{}>, height: number | number[]) => {
       setBoxProps((state) => ({ ...state, height: height as number }));
-      updateBoxConfig({ height: height as number });
+      updateBoxProps({ height: height as number });
     },
-    [setBoxProps, updateBoxConfig],
+    [setBoxProps, updateBoxProps],
   );
   const onBoxGapChange = React.useCallback(
     (e: ChangeEvent<{}>, gap: number | number[]) => {
       setBoxProps((state) => ({ ...state, gap: gap as number }));
-      updateBoxConfig({ gap: gap as number });
+      updateBoxProps({ gap: gap as number });
     },
-    [setBoxProps, updateBoxConfig],
+    [setBoxProps, updateBoxProps],
   );
 
   const onReset = React.useCallback(() => {
-    const disabled = boxConfig.isInitial;
-    if (!disabled) {
-      engine.boxConfig.methods.reset();
+    const disabled = boxProperties.isInitial;
+    if (!disabled && reset) {
+      reset();
     }
-  }, [boxConfig.isInitial]);
+  }, [boxProperties.isInitial, reset]);
 
   React.useEffect(() => {
-    setBoxProps((state) => (_.isEqual(boxConfig, state) ? state : boxConfig));
-  }, [boxConfig, setBoxProps]);
+    setBoxProps((state) =>
+      _.isEqual(boxProperties, state) ? state : boxProperties,
+    );
+  }, [boxProperties, setBoxProps]);
 
   return (
     <ErrorBoundary>
@@ -91,7 +93,7 @@ function BoxPropertiesPopover(props: IBoxPropertiesPopoverProps) {
                 {boxProps.width}px
               </Text>
             </div>
-            <div className='BoxPropsPopover__Slider'>
+            <div className='BoxPropsPopover__SliderWrapper'>
               <Text>{settings.minWidth}px</Text>
               <Slider
                 valueLabelDisplay='auto'
@@ -119,7 +121,7 @@ function BoxPropertiesPopover(props: IBoxPropertiesPopoverProps) {
                 {boxProps.height}px
               </Text>
             </div>
-            <div className='BoxPropsPopover__Slider'>
+            <div className='BoxPropsPopover__SliderWrapper'>
               <Text>{settings.minHeight}px</Text>
               <Slider
                 valueLabelDisplay='auto'
@@ -147,7 +149,7 @@ function BoxPropertiesPopover(props: IBoxPropertiesPopoverProps) {
                 {boxProps.gap}px
               </Text>
             </div>
-            <div className='BoxPropsPopover__Slider'>
+            <div className='BoxPropsPopover__SliderWrapper'>
               <Text>{settings.minGap}px</Text>
               <Slider
                 valueLabelDisplay='auto'
@@ -162,7 +164,7 @@ function BoxPropertiesPopover(props: IBoxPropertiesPopoverProps) {
             </div>
           </div>
           <Divider className='BoxPropsPopover__Divider' />
-          <Button onClick={onReset} disabled={boxConfig.isInitial}>
+          <Button onClick={onReset} disabled={boxProperties.isInitial}>
             Reset
           </Button>
         </div>

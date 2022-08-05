@@ -22,7 +22,7 @@ function BoxProperties(props: IBoxPropertiesProps) {
       },
     },
   } = props;
-  const boxConfig: IBoxConfigState = useStore(boxSelector);
+  const boxProperties: IBoxConfigState = useStore(boxSelector);
   return (
     <ControlPopover
       title='Box properties'
@@ -31,13 +31,13 @@ function BoxProperties(props: IBoxPropertiesProps) {
           <div
             onClick={onAnchorClick}
             className={classNames('Controls__anchor', {
-              active: opened || !boxConfig.isInitial,
-              outlined: !opened && !boxConfig.isInitial,
+              active: opened || !boxProperties.isInitial,
+              outlined: !opened && !boxProperties.isInitial,
             })}
           >
             <Icon
               className={classNames('Controls__icon', {
-                active: opened || !boxConfig.isInitial,
+                active: opened || !boxProperties.isInitial,
               })}
               name='box-settings'
             />
@@ -46,8 +46,9 @@ function BoxProperties(props: IBoxPropertiesProps) {
       )}
       component={
         <BoxPropertiesPopover
-          engine={engine}
-          boxConfig={boxConfig}
+          update={engine.boxConfig.methods.update}
+          reset={engine.boxConfig.methods.reset}
+          boxProperties={boxProperties}
           settings={settings}
         />
       }
