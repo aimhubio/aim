@@ -128,8 +128,7 @@
 
     &__tabsContainer {
       background: #ffffff;
-      box-shadow: 0 toRem(4px) toRem(6px) rgba(144, 175, 218, 0.2);
-      border-bottom: $border-grey-lighter;
+      box-shadow: 0 toRem(4px) toRem(6px) rgba(144, 175, 218, 0.2), 0 1px 0 0 $cuddle-20;
       border-top: $border-grey-lighter;
       position: relative;
       z-index: 1;
@@ -241,6 +240,9 @@
       border-radius: 0.5rem;
       background: $white;
       &__chartBox {
+        display: flex;
+        align-items: center;
+        justify-content: center;
         height: 24.5rem;
         padding: 0.625rem;
         .LineChart__container {
