@@ -376,14 +376,14 @@ class RunCheckIns:
         while True:
             time_left = self.physical_check_in.time_left()
             if time_left + GRACE_PERIOD < 0:
-                logger.error(f"Missing check-in. Grace period expired { - GRACE_PERIOD - time_left} seconds ago. "
+                logger.error(f"Missing check-in. Grace period expired { - GRACE_PERIOD - time_left:.2f} seconds ago. "
                              f"Alerts should be sent soon by the monitoring server.")
             elif time_left < 0:
-                logger.warning(f"Missing check-in. Late: {-time_left} seconds. "
-                               f"Remaining grace period: {GRACE_PERIOD + time_left} seconds")
+                logger.warning(f"Missing check-in. Late: {-time_left:.2f} seconds. "
+                               f"Remaining grace period: {GRACE_PERIOD + time_left:.2f} seconds")
             elif time_left < PLAN_ADVANCE_TIME:
-                logger.info(f"Missing check-in. Time left: {time_left}")
-            plan = max(time_left - PLAN_ADVANCE_TIME, 0.05)
+                logger.info(f"Missing check-in. Time left: {time_left}:.2f")
+            plan = max(time_left - PLAN_ADVANCE_TIME, 1.0)
             suspend_time = min(plan, MAX_SUSPEND_TIME)
 
             with self.flush_condition:
