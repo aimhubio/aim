@@ -107,6 +107,7 @@ class RunAutoClean(AutoClean['Run']):
         self.finalize_system_tracker()
         self.finalize_run()
         self.finalize_rpc_queue()
+        if self._checkins is not None:
         self._checkins.close()
 
 
@@ -314,8 +315,10 @@ class Run(BaseRun, StructuredRunMixin):
                         raise
 
         self._props = None
+        self._checkins = None
 
         if not read_only:
+            self._checkins = RunCheckIns(self)
             if log_system_params:
                 system_params = {
                     'packages': get_installed_packages(),
@@ -340,7 +343,6 @@ class Run(BaseRun, StructuredRunMixin):
 
         self._system_resource_tracker: ResourceTracker = None
         self._prepare_resource_tracker(system_tracking_interval, capture_terminal_logs)
-        self._checkins = RunCheckIns(self)
 
         self._resources = RunAutoClean(self)
 
@@ -775,6 +777,8 @@ class Run(BaseRun, StructuredRunMixin):
             expect_next_in: (:obj:`int`, optional): The number of seconds to wait before the next check-in.
             block: (:obj:`bool`, optional): If true, block the thread until the check-in is written to filesystem.
         """
+        if self._checkins is None:
+            raise ValueError('Check-ins are not enabled for this run')
         self._checkins._check_in(expect_next_in=expect_next_in, block=block)
 
     def report_successful_finish(
@@ -786,4 +790,6 @@ class Run(BaseRun, StructuredRunMixin):
         Report successful finish of the run. If the run is not marked as successfully finished,
         it can potentially be considered as failed.
         """
+        if self._checkins is None:
+            raise ValueError('Check-ins are not enabled for this run')
         self._checkins._report_successful_finish(block=block)
