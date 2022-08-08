@@ -147,7 +147,8 @@ run.metrics['accuracy', {'subset': 'train'}].last < 25
 run.duration < 10
 ```
 
-This will yield an empty result on our test runs, but will have a use case on real life experiments to filter the runs that finished under 10 seconds and then archive them as they've probably crashed or were stopped. 
+This will return all the runs on our test set, but will have a use case on real life experiments to filter the runs that finished under 10 seconds. 
+Then those can be archived/deleted as they've probably crashed or were stopped. 
 
 
 5. Search runs based on creation or end times
