@@ -18,6 +18,8 @@ import {
 import { IQueryFormProps } from 'modules/BaseExplorer/types';
 import { getQueryFromRanges } from 'modules/BaseExplorerCore/utils/getQueryFromRanges';
 import { IRangesState } from 'modules/BaseExplorer/components/RangePanel/RangePanel.d';
+import { getQueryStringFromSelect } from 'modules/BaseExplorerCore/utils/getQueryStringFromSelect';
+import { getSelectFormOptions } from 'modules/BaseExplorerCore/utils/getSelectFormOptions';
 
 import { Badge, Button, Icon, Text } from 'components/kit';
 import AutocompleteInput from 'components/AutocompleteInput';
@@ -28,86 +30,11 @@ import { getSuggestionsByExplorer } from 'config/monacoConfig/monacoConfig';
 import { ISelectOption } from 'types/services/models/explorer/createAppModel';
 import { SequenceTypesEnum } from 'types/core/enums';
 
-import contextToString from 'utils/contextToString';
-import alphabeticalSortComparator from 'utils/alphabeticalSortComparator';
-import { formatValue } from 'utils/formatValue';
 import getAdvancedSuggestion from 'utils/getAdvancedSuggestions';
 
 import SearchButton from './SearchButton';
 
 import './QueryForm.scss';
-
-//TODO: move to utils function directory
-
-function getSelectFormOptions(
-  projectsData: Record<string | number | symbol, unknown | any>,
-) {
-  let data: ISelectOption[] = [];
-
-  if (projectsData) {
-    for (let key in projectsData) {
-      data.push({
-        label: key,
-        group: key,
-        value: {
-          option_name: key,
-          context: null,
-        },
-      });
-      for (let val of projectsData[key]) {
-        if (!_.isEmpty(val)) {
-          let label = contextToString(val);
-          data.push({
-            label: `${key} ${label}`,
-            group: key,
-            value: {
-              option_name: key,
-              context: val,
-            },
-          });
-        }
-      }
-    }
-  }
-  return data.sort(
-    alphabeticalSortComparator<ISelectOption>({ orderBy: 'label' }),
-  );
-}
-
-// @TODO: move to utils function directory
-function getQueryStringFromSelect(
-  queryData: QueryUIStateUnit,
-  sequenceName: SequenceTypesEnum,
-): string {
-  let query = '';
-  if (queryData !== undefined) {
-    if (queryData.advancedModeOn) {
-      query = queryData.advancedInput || '';
-    } else {
-      query = `${
-        queryData.simpleInput ? `${queryData.simpleInput} and ` : ''
-      }(${queryData.selections
-        .map(
-          (option) =>
-            `(${sequenceName}.name == "${option.value?.option_name}"${
-              option.value?.context === null
-                ? ''
-                : ' and ' +
-                  Object.keys(option.value?.context)
-                    .map(
-                      (item) =>
-                        `${sequenceName}.context.${item} == ${formatValue(
-                          (option.value?.context)[item],
-                        )}`,
-                    )
-                    .join(' and ')
-            })`,
-        )
-        .join(' or ')})`.trim();
-    }
-  }
-  return query;
-}
 
 function QueryForm(props: IQueryFormProps) {
   const [anchorEl, setAnchorEl] = React.useState<any>(null);
@@ -409,7 +336,11 @@ function QueryForm(props: IQueryFormProps) {
         </div>
         {props.hasAdvancedMode ? (
           <div className='QueryForm__search'>
-            <SearchButton isFetching={isFetching} onSubmit={onSubmit} />
+            <SearchButton
+              isFetching={isFetching}
+              onSubmit={onSubmit}
+              disabled={ranges?.isInputInvalid}
+            />
             <div className='QueryForm__search__actions'>
               <Tooltip title='Reset query'>
                 <div>

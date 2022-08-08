@@ -14,4 +14,6 @@ export interface IRangePanelItemProps {
 export interface IRangesState {
   record?: { slice: [number, number]; density: number };
   index?: { slice: [number, number]; density: number };
+  isInputInvalid?: boolean;
+  isApplyButtonDisabled?: boolean;
 }

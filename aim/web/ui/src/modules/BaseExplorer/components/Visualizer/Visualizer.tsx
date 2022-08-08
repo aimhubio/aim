@@ -82,11 +82,11 @@ function BaseVisualizer(props: IVisualizationProps) {
             </Box>
           )}
         />
-        {!_.isEmpty(rangesData) && (
-          <RangePanel engine={engine} rangesData={rangesData} />
-        )}
+        {ControlComponent && <ControlComponent engine={engine} />}
       </div>
-      {ControlComponent && <ControlComponent engine={engine} />}
+      {!_.isEmpty(rangesData) && (
+        <RangePanel engine={engine} rangesData={rangesData} />
+      )}
     </div>
   );
 }

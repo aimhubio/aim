@@ -4,7 +4,7 @@ import { Button, Icon } from 'components/kit';
 
 import { ISearchButtonProps } from './SearchButton.d';
 
-function SearchButton({ isFetching, onSubmit }: ISearchButtonProps) {
+function SearchButton({ isFetching, onSubmit, ...rest }: ISearchButtonProps) {
   return (
     <Button
       key={`${isFetching}`}
@@ -18,6 +18,7 @@ function SearchButton({ isFetching, onSubmit }: ISearchButtonProps) {
       }
       className='QueryForm__search__button'
       onClick={onSubmit}
+      {...rest}
     >
       {isFetching ? 'Cancel' : 'Search'}
     </Button>

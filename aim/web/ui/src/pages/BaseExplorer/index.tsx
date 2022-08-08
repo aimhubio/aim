@@ -160,7 +160,7 @@ const config: IExplorerConfig = {
       initialState: { rowLength: 1 },
     },
     ranges: {
-      initialState: {},
+      initialState: { isApplyButtonDisabled: true, isValid: true },
     },
   },
 };

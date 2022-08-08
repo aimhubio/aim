@@ -3,61 +3,25 @@ import _ from 'lodash-es';
 
 import { QueryUIStateUnit } from 'modules/BaseExplorerCore/core-store';
 import { getQueryFromRanges } from 'modules/BaseExplorerCore/utils/getQueryFromRanges';
+import { getQueryStringFromSelect } from 'modules/BaseExplorerCore/utils/getQueryStringFromSelect';
 
 import { Button } from 'components/kit';
 
 import { SequenceTypesEnum } from 'types/core/enums';
 
-import { formatValue } from 'utils/formatValue';
-
 import RangePanelItem from './RangePanelItem';
 
 import './RangePanel.scss';
-
-// @TODO: move to utils function directory
-function getQueryStringFromSelect(
-  queryData: QueryUIStateUnit,
-  sequenceName: SequenceTypesEnum,
-): string {
-  let query = '';
-  if (queryData !== undefined) {
-    if (queryData.advancedModeOn) {
-      query = queryData.advancedInput || '';
-    } else {
-      query = `${
-        queryData.simpleInput ? `${queryData.simpleInput} and ` : ''
-      }(${queryData.selections
-        .map(
-          (option) =>
-            `(${sequenceName}.name == "${option.value?.option_name}"${
-              option.value?.context === null
-                ? ''
-                : ' and ' +
-                  Object.keys(option.value?.context)
-                    .map(
-                      (item) =>
-                        `${sequenceName}.context.${item} == ${formatValue(
-                          (option.value?.context)[item],
-                        )}`,
-                    )
-                    .join(' and ')
-            })`,
-        )
-        .join(' or ')})`.trim();
-    }
-  }
-  return query;
-}
 
 function RangePanel(props: any) {
   const engine = props.engine;
   const sequenceName: SequenceTypesEnum = engine.useStore(
     engine.sequenceNameSelector,
   );
-  const isFetching: boolean =
-    engine.useStore(engine.pipelineStatusSelector) === 'fetching';
   const query: QueryUIStateUnit = engine.useStore(engine.queryUI.stateSelector);
   const rangeState = engine.useStore(engine.ranges.stateSelector);
+  const isFetching: boolean =
+    engine.useStore(engine.pipelineStatusSelector) === 'fetching';
 
   const onSubmit = React.useCallback(() => {
     if (isFetching) {
@@ -68,6 +32,10 @@ function RangePanel(props: any) {
         q: getQueryStringFromSelect(query, sequenceName),
         report_progress: false,
         ...getQueryFromRanges(rangeState),
+      });
+      engine.ranges.methods.update({
+        ...rangeState,
+        isApplyButtonDisabled: true,
       });
     }
   }, [engine, isFetching, query, sequenceName, rangeState]);
@@ -156,7 +124,11 @@ function RangePanel(props: any) {
           : indexDensity;
       ranges.index = { density, slice };
     }
-    engine.ranges.methods.update({ ...rangeState, ...ranges });
+    engine.ranges.methods.update({
+      ...rangeState,
+      ...ranges,
+      isApplyButtonDisabled: true,
+    });
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [props.rangesData]);
 
@@ -192,7 +164,7 @@ function RangePanel(props: any) {
             variant='contained'
             type='submit'
             className='ApplyButton'
-            disabled={false}
+            disabled={rangeState?.isApplyButtonDisabled || isFetching}
           >
             Apply
           </Button>

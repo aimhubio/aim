@@ -28,6 +28,7 @@ const RangePanelItem = ({
           ...rangeState,
           slice: value,
         },
+        isApplyButtonDisabled: false,
       };
       engine.ranges.methods.update(updatedRanges);
     },
@@ -36,13 +37,15 @@ const RangePanelItem = ({
   );
 
   const onCountChange = React.useCallback(
-    (value) => {
+    (value, metadata) => {
       const updatedRanges = {
         ...ranges,
         [sliderName]: {
           ...rangeState,
           density: value,
         },
+        isApplyButtonDisabled: !metadata.isValid,
+        isInputInvalid: !metadata.isValid,
       };
       engine.ranges.methods.update(updatedRanges);
     },
@@ -63,7 +66,7 @@ const RangePanelItem = ({
         errorText: `Value should be smaller then ${rangeLength + 1}`,
       },
     ],
-    [],
+    [rangeLength],
   );
 
   return (
