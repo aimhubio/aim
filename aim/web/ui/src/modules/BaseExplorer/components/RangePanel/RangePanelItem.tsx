@@ -4,20 +4,20 @@ import _ from 'lodash-es';
 import SliderWithInput from 'components/SliderWithInput';
 import { Icon, Text } from 'components/kit';
 
-import { IRangePanelItemProps } from './RangePanel.d';
+import { IRangePanelItemProps, IRangeState } from './RangePanel.d';
 
 const RangePanelItem = ({
   sliderName,
   onSubmit,
   engine,
   itemConfig,
+  ranges,
+  rangesData,
 }: IRangePanelItemProps) => {
-  const ranges = engine.useStore(engine.ranges.stateSelector);
-  const rangesData = engine.useStore(engine.queryableDataSelector);
-  const rangeState = ranges?.[sliderName];
+  const rangeState: IRangeState | undefined = ranges[sliderName];
   const rangeLength = _.range(
-    rangeState.slice?.[0] ?? 0,
-    (rangeState.slice?.[1] ?? 0) + 1,
+    rangesData.ranges?.[`${sliderName}_range_total`]?.[0] as number,
+    (rangesData.ranges?.[`${sliderName}_range_total`]?.[1] as number) + 1,
   ).length;
 
   const onRangeChange = React.useCallback(
@@ -80,8 +80,8 @@ const RangePanelItem = ({
           sliderTitleTooltip={itemConfig.sliderTitleTooltip}
           min={rangesData?.ranges?.[`${sliderName}_range_total`]?.[0]}
           max={rangesData?.ranges?.[`${sliderName}_range_total`]?.[1]}
-          selectedRangeValue={rangeState.slice}
-          selectedCountValue={rangeState.density}
+          selectedRangeValue={rangeState?.slice ?? [0, 0]}
+          selectedCountValue={rangeState?.density ?? 0}
           onSearch={onSubmit}
           onRangeChange={onRangeChange}
           onCountChange={onCountChange}

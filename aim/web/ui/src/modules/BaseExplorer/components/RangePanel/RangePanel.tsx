@@ -5,15 +5,16 @@ import { QueryUIStateUnit } from 'modules/BaseExplorerCore/core-store';
 import { getQueryFromRanges } from 'modules/BaseExplorerCore/utils/getQueryFromRanges';
 import { getQueryStringFromSelect } from 'modules/BaseExplorerCore/utils/getQueryStringFromSelect';
 
-import { Button } from 'components/kit';
+import { Button, Icon, Text } from 'components/kit';
 
 import { SequenceTypesEnum } from 'types/core/enums';
 
 import RangePanelItem from './RangePanelItem';
+import { IRangePanelProps } from './RangePanel.d';
 
 import './RangePanel.scss';
 
-function RangePanel(props: any) {
+function RangePanel(props: IRangePanelProps) {
   const engine = props.engine;
   const sequenceName: SequenceTypesEnum = engine.useStore(
     engine.sequenceNameSelector,
@@ -132,6 +133,19 @@ function RangePanel(props: any) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [props.rangesData]);
 
+  const isOnlyOneStepAndIndexTracked = React.useMemo(() => {
+    const ranges = props.rangesData?.ranges;
+    const isOnlyOneStep =
+      (ranges?.record_range_total &&
+        ranges?.record_range_total[0] === ranges?.record_range_total[1]) ||
+      !ranges?.record_range_total;
+    const isOnlyOneIndex =
+      (ranges?.index_range_total &&
+        ranges?.index_range_total[0] === ranges?.index_range_total[1]) ||
+      !ranges?.index_range_total;
+    return isOnlyOneStep && isOnlyOneIndex;
+  }, [props.rangesData]);
+
   return (
     <form
       className='RangePanel'
@@ -141,34 +155,67 @@ function RangePanel(props: any) {
       }}
     >
       <div className='RangePanelContainer'>
-        {rangeState?.record?.slice && (
-          <RangePanelItem
-            sliderName={'record'}
-            itemConfig={stepItemConfig}
-            onSubmit={onSubmit}
-            engine={engine}
-          />
+        {!isOnlyOneStepAndIndexTracked ? (
+          <>
+            {rangeState?.record?.slice && (
+              <RangePanelItem
+                sliderName={'record'}
+                itemConfig={stepItemConfig}
+                onSubmit={onSubmit}
+                engine={engine}
+                ranges={rangeState}
+                rangesData={props.rangesData}
+              />
+            )}
+            {rangeState?.index?.slice && (
+              <RangePanelItem
+                sliderName={'index'}
+                itemConfig={indexItemConfig}
+                onSubmit={onSubmit}
+                engine={engine}
+                ranges={rangeState}
+                rangesData={props.rangesData}
+              />
+            )}
+            <div className='ApplyButtonContainer'>
+              <Button
+                size='small'
+                color='primary'
+                variant='contained'
+                type='submit'
+                className='ApplyButton'
+                disabled={rangeState?.isApplyButtonDisabled || isFetching}
+              >
+                Apply
+              </Button>
+            </div>
+          </>
+        ) : (
+          <div className='InfoMassageBox'>
+            <Icon name='circle-info' color={'#1473E6'} />
+            <Text size={11} tint={80} weight={500}>
+              You have only
+              <Text
+                size={11}
+                tint={80}
+                weight={600}
+                className='InfoMessageBoldText'
+              >
+                {`1 ${
+                  props.rangesData?.ranges?.record_range_total ? 'step' : ''
+                } ${
+                  props.rangesData?.ranges?.record_range_total &&
+                  props.rangesData?.ranges?.index_range_total
+                    ? ' and '
+                    : ''
+                } ${
+                  props.rangesData?.ranges?.index_range_total ? 'index' : ''
+                }`}
+              </Text>
+              logged.
+            </Text>
+          </div>
         )}
-        {rangeState?.index?.slice && (
-          <RangePanelItem
-            sliderName={'index'}
-            itemConfig={indexItemConfig}
-            onSubmit={onSubmit}
-            engine={engine}
-          />
-        )}
-        <div className='ApplyButtonContainer'>
-          <Button
-            size='small'
-            color='primary'
-            variant='contained'
-            type='submit'
-            className='ApplyButton'
-            disabled={rangeState?.isApplyButtonDisabled || isFetching}
-          >
-            Apply
-          </Button>
-        </div>
       </div>
     </form>
   );

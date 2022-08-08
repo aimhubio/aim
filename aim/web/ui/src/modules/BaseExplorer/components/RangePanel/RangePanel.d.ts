@@ -1,6 +1,10 @@
+export interface IRangePanelProps {
+  engine: IBaseComponentProps['engine'];
+  rangesData: any;
+}
 export interface IRangePanelItemProps {
-  engine: any;
-  sliderName: string;
+  engine: IBaseComponentProps['engine'];
+  sliderName: 'record' | 'index';
   onSubmit: () => {};
   itemConfig: {
     sliderTitle: string;
@@ -9,11 +13,18 @@ export interface IRangePanelItemProps {
     sliderTitleTooltip: string;
     type: string;
   };
+  ranges: IRangesState;
+  rangesData: any;
 }
 
 export interface IRangesState {
-  record?: { slice: [number, number]; density: number };
-  index?: { slice: [number, number]; density: number };
+  record?: IRangeState;
+  index?: IRangeState;
   isInputInvalid?: boolean;
   isApplyButtonDisabled?: boolean;
+}
+
+export interface IRangeState {
+  slice: [number, number];
+  density: number;
 }

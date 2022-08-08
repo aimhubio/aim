@@ -1,6 +1,8 @@
 import * as React from 'react';
 import _ from 'lodash-es';
 
+import { IQueryableData } from 'modules/BaseExplorerCore/pipeline/adapter/processor';
+
 import { IVisualizationProps } from '../../types';
 import Box from '../Box';
 import BoxVirtualizer from '../BoxVirtualizer';
@@ -23,7 +25,9 @@ function BaseVisualizer(props: IVisualizationProps) {
   } = props;
   const boxConfig = useStore(boxConfigSelector);
   const foundGroups = useStore(foundGroupsSelector);
-  const rangesData = props.engine.useStore(queryableDataSelector);
+  const rangesData: IQueryableData = props.engine.useStore(
+    queryableDataSelector,
+  );
   const dataState = useStore(dataSelector);
 
   const data = React.useMemo(() => {
