@@ -1,7 +1,20 @@
 # Changelog
 
-## 3.12.2
+
+### Enhancements:
+
+- Restrict Run.hash to auto-generated values only (alberttorosyan)
 - Add ability to pin metrics to run detail page (mihran113)
+
+### Fixes:
+
+- Fix tensorboard convert while converting tensor (sharathmk99)
+- Fix incorrect column keys of metrics in the table grid of the runs dashboard  (VkoHov)
+
+## 3.12.2 Aug 5, 2022
+
+- Fix formatting of empty metric contexts (VkoHov)
+- Apply lazy loading on metrics in Run Page (roubkar)
 
 ## 3.12.1 Aug 2, 2022
 
