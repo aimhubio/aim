@@ -1,3 +1,94 @@
+"""
+This system is designed to let users to check if the run had any progress.
+
+While it may seem an easy task, it's very difficult to have a reliable way to
+check if everything is fine with the process; The main (rank0) process may be
+killed having no chance of notifying about failure. Even if the main process is
+alive, the other moving parts may be stuck (network sync with other nodes,
+filesystem, dataloader) those are not necessarily part of the main execution
+thread. It leaves no other choice other than defining:
+
+> The run is considered to be failed if it
+> had not reported any progress in the promised time.
+
+Thus, we can mark progress (we call these `check-in`s) and the expected time of
+the next check-in. We can report a check-in after each forwarding each batch and
+promising the next check-in to be reported in the next minute. If no check-ins
+are received in the next minute, the run is most certainly failed or stuck (or
+very unexpected things happened thus compromising the performance of the system).
+This can have some exceptions: for instance, checkpointing the model and saving
+the state into the filesystem may take a while. For such cases, aim integration
+should check-in right before triggering checkpointing by promising much larger
+time intervals.
+
+Monitoring of run progress can be easily done by a service that periodically
+polls the check-in instances. If the last check-in was there for longer than it
+promised, the run is considered to  be failed thus triggering a (configurable)
+failure alert.
+
+Check-ins with zero `expect_next_in` values denote an absence of the expiration
+date. In order to mark the run as successful, the last check-in should be
+reported with a zero `expect_next_in` to indicate no further check-ins are
+expected so the monitoring server will not treat stopped process as failed.
+
+# IMPLEMENTATION DETAILS
+
+## FORMAT
+The check-ins are implemented to be stored in the filesystem, in `.aim` repo
+under the `check_ins` directory. Each file has no contents and encodes all the
+information in the name.
+
+The name format is as follows:
+    `{run_hash}-{idx:08d}-{flag_name}-{absolute_time:011.2f}-{expect_next_in:05d}`
+where `idx` is auto-incremented index per run, `flag_name` is the name of the
+flag (usually `check-in`), `absolute_time` is the utc time of the check-in (is
+intended only for debugging purposes), `expect_next_in` is the time in seconds
+until the next check-in is expected.
+
+## TIME
+Note that we don't use last modified time to detect if the file is modified
+because it's not that reliable especially for virtual and remote filesystems.
+The utc time in the filename may vary across machines, and used only for the
+debugging purposes.
+
+## MONITORING SERVICE
+The monitoring service supposed to periodically poll the directory and check for
+the latest (lexicographically highest) check-ins per run.
+If the last check-in was there (starting from the first time the monitoring
+server had seen the file) for longer than it promised, the run is considered to
+be failed thus triggering a (configurable) failure alert. A grace period is
+introduced to avoid false positives.
+
+## NON-BLOCKING INTERFACE
+
+### `RunCheckIn.check_in()`:
+By default, the check-in is non-blocking call in order to avoid any latency
+introduced. This way, the caller can feel free to check-in as soon as possible,
+even after each batch is forwarded or report the progress in vert small steps.
+
+In order to avoid overloading the filesystem, not all the check-ins are stored
+in the filesystem. Instead, if there is still time before the expiration, we can
+wait thus avoiding unnecessary disk I/O. The filesystem writes are done only
+when the time is (nearly) up. A separate thread is used to handle this process
+which also cleans up of the obsolete check-ins having lower lexicographic order
+than the current one.
+
+### `RunCheckIn.report_successful_finish()`:
+Marking the run as successful is blocking call by default to ensure the check-in
+is written to the filesystem before the run process exits. Note, that the
+initialization of `RunCheckIn` also does include blocking call to poll the
+latest state in case of existing runs.
+
+## INDIRECT INTERFACE
+The preferred way of reporting check-ins is to call `.check_in()` method on the
+Run instance. However, in certain cases, the caller may want to check-in from a
+code location that has no access to the Run instance (e.g. in dataloader, or in
+the checkpoint callback). In such cases, the `.check_in()` method can be called
+indirectly by calling `RunCheckIn.check_in()` which will infer the run instance.
+
+This is only possible if there is a single run instance in the process.
+"""
+
 import math
 import threading
 import time
