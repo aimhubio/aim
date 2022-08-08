@@ -227,7 +227,12 @@
 }
 
 .RunDetailMetricsTab {
-  padding: 1.5rem 0;
+  padding: 0 0 1.5rem;
+  &__header {
+    margin: 1.5rem 0;
+    padding-bottom: 0.625rem;
+    border-bottom: $border-grey;
+  }
   &__container {
     height: 100%;
     display: flex;

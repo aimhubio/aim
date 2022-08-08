@@ -4,6 +4,7 @@ import _ from 'lodash-es';
 import IllustrationBlock from 'components/IllustrationBlock/IllustrationBlock';
 import BusyLoaderWrapper from 'components/BusyLoaderWrapper/BusyLoaderWrapper';
 import ErrorBoundary from 'components/ErrorBoundary/ErrorBoundary';
+import { Text } from 'components/kit';
 
 import { ANALYTICS_EVENT_KEYS } from 'config/analytics/analyticsKeysMap';
 
@@ -200,10 +201,16 @@ function RunDetailMetricsAndSystemTab({
     pinned: boolean,
   ) {
     return (
+      observerIsReady &&
       metrics.length > 0 && (
-        <div className='RunDetailMetricsTab__container'>
-          {observerIsReady &&
-            metrics
+        <>
+          <div className='RunDetailMetricsTab__header'>
+            <Text component='h3' size={16} color='primary'>
+              {pinned ? 'Pinned ' : ''}Metrics
+            </Text>
+          </div>
+          <div className='RunDetailMetricsTab__container'>
+            {metrics
               .map((m) => ({
                 ...m,
                 sortKey: `${m.name}_${contextToString(m.context)}`,
@@ -230,7 +237,8 @@ function RunDetailMetricsAndSystemTab({
                   />
                 );
               })}
-        </div>
+          </div>
+        </>
       )
     );
   }
@@ -245,7 +253,6 @@ function RunDetailMetricsAndSystemTab({
         {!_.isEmpty(tabMertcis) ? (
           <div className='RunDetailMetricsTab' ref={containerRef}>
             {renderMetricCards(pinnedMetrics, true)}
-            {pinnedMetrics.length > 0 && regularMetrics.length > 0 && <hr />}
             {renderMetricCards(regularMetrics, false)}
           </div>
         ) : (
