@@ -1,4 +1,5 @@
 import * as React from 'react';
+import { ReactChildren } from 'react';
 
 import { IVisualizationProps } from '../../types';
 import Box from '../Box';
@@ -61,6 +62,27 @@ function BaseVisualizer(props: IVisualizationProps) {
     });
   }, [dataState, foundGroups, boxConfig]);
 
+  // FOR COLUMNS
+  const ColumnAxisComponents = React.useMemo(() => {
+    let components: any[] = [];
+    if (foundGroups) {
+      components = Object.keys(foundGroups).map((key: string) => {
+        const value = foundGroups[key];
+        if (value.fields['run.hash']) {
+          return (
+            <engine.groupings.columns.axisComponent
+              key={key}
+              group={value}
+              boxConfig={boxConfig}
+              order={value.order}
+            />
+          );
+        }
+      });
+    }
+    return components;
+  }, [foundGroups, boxConfig, engine]);
+
   return (
     <div
       style={{
@@ -79,7 +101,9 @@ function BaseVisualizer(props: IVisualizationProps) {
             {BoxContent && <BoxContent engine={engine} data={item} />}
           </Box>
         )}
-      />
+      >
+        {ColumnAxisComponents as unknown as ReactChildren}
+      </BoxVirtualizer>
       {ControlComponent && <ControlComponent engine={engine} />}
     </div>
   );

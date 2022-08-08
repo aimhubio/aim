@@ -63,6 +63,32 @@ const config: IExplorerConfig = {
               : 0,
           };
         },
+        axisComponent: memo(
+          ({
+            group = {},
+            boxConfig,
+            order,
+          }: {
+            group: any;
+            boxConfig: any;
+            order: any;
+          }) => (
+            <div
+              style={{
+                border: '1px solid black',
+                position: 'absolute',
+                zIndex: 1,
+                width: boxConfig.width,
+                left: order * (boxConfig.width + boxConfig.gap),
+                top: 0,
+                height: 20,
+                contentVisibility: 'auto',
+              }}
+            >
+              {JSON.stringify(group.fields)}
+            </div>
+          ),
+        ),
         defaultApplications: {
           fields: [],
           orders: [],
@@ -137,7 +163,7 @@ const config: IExplorerConfig = {
   ui: {
     // visualizationType: 'box', // 'box', 'sequence'
     defaultBoxConfig: {
-      width: 150,
+      width: 400,
       height: 150,
       gap: 10,
     },

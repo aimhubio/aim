@@ -101,6 +101,7 @@ function BoxVirtualizer(props: BoxVirtualizerProps) {
         }}
       >
         {items?.map(props.itemRenderer)}
+        {props.children}
       </div>
     </div>
   );

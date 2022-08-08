@@ -71,7 +71,7 @@ function createExplorer(config: IExplorerConfig): () => React.ReactElement {
   };
 
   const engine = createEngine(engineConfig);
-
+  console.log(engine);
   return (): JSX.Element => (
     <BaseExplorer {...config} engineInstance={engine} />
   );
