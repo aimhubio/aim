@@ -55,19 +55,20 @@ function RunDetailMetricsAndSystemTab({
 
   for (let i = 0; i < tabMertcis.length; i++) {
     let metric = tabMertcis[i];
-    if (
-      projectsData?.pinnedSequences &&
+    let pinnedSequenceIndex =
       projectsData?.pinnedSequences?.findIndex(
         (seq) =>
           seq.name === metric.name &&
           contextToString(seq.context) === contextToString(metric.context),
-      ) > -1
-    ) {
-      pinnedMetrics.push(metric);
+      ) ?? -1;
+    if (pinnedSequenceIndex > -1) {
+      pinnedMetrics[pinnedSequenceIndex] = metric;
     } else {
       regularMetrics.push(metric);
     }
   }
+
+  pinnedMetrics.filter((metric) => !!metric);
 
   React.useEffect(() => {
     if (!!containerRef.current) {
@@ -210,33 +211,35 @@ function RunDetailMetricsAndSystemTab({
             </Text>
           </div>
           <div className='RunDetailMetricsTab__container'>
-            {metrics
-              .map((m) => ({
-                ...m,
-                sortKey: `${m.name}_${contextToString(m.context)}`,
-              }))
-              .sort(alphabeticalSortComparator({ orderBy: 'sortKey' }))
-              .map((metric, i: number) => {
-                const batch: IRunBatch = {
-                  ...metric,
-                  ...runBatch?.find(
-                    (batch: IRunBatch) =>
-                      batch.name === metric.name &&
-                      contextToString(batch.context) ===
-                        contextToString(metric.context),
-                  ),
-                };
-                return (
-                  <RunMetricCard
-                    key={`${batch.name}_${contextToString(batch.context)}`}
-                    batch={batch}
-                    index={i}
-                    observer={observerRef.current}
-                    isPinned={pinned}
-                    togglePin={togglePin}
-                  />
-                );
-              })}
+            {(pinned
+              ? metrics
+              : metrics
+                  .map((m) => ({
+                    ...m,
+                    sortKey: `${m.name}_${contextToString(m.context)}`,
+                  }))
+                  .sort(alphabeticalSortComparator({ orderBy: 'sortKey' }))
+            ).map((metric, i: number) => {
+              const batch: IRunBatch = {
+                ...metric,
+                ...runBatch?.find(
+                  (batch: IRunBatch) =>
+                    batch.name === metric.name &&
+                    contextToString(batch.context) ===
+                      contextToString(metric.context),
+                ),
+              };
+              return (
+                <RunMetricCard
+                  key={`${batch.name}_${contextToString(batch.context)}`}
+                  batch={batch}
+                  index={i}
+                  observer={observerRef.current}
+                  isPinned={pinned}
+                  togglePin={togglePin}
+                />
+              );
+            })}
           </div>
         </>
       )
