@@ -17,8 +17,10 @@ class RPCHeartbeatSender(object):
     HEARTBEAT_INTERVAL_DEFAULT = 10
     NETWORK_CHECK_INTERVAL = 180
 
-    NETWORK_UNSTABLE_WARNING_TEMPLATE = 'Network connection for client `{}` appears to be unstable.'
-    NETWORK_ABSENT_WARNING_TEMPLATE = 'Network connection for client `{}` appears to be absent.'
+    NETWORK_UNSTABLE_WARNING_TEMPLATE = 'Network connection between client `{}` ' \
+                                        'and server `{}` appears to be unstable.'
+    NETWORK_ABSENT_WARNING_TEMPLATE = 'Network connection between client `{}` ' \
+                                      'and server `{}` appears to be absent.'
 
     def __init__(self,
                  client,
@@ -92,11 +94,15 @@ class RPCHeartbeatSender(object):
 
         if self._heartbeat_responses['success'] and not self._network_unstable_warned:
             self._network_unstable_warned = True
-            logger.warning(RPCHeartbeatSender.NETWORK_UNSTABLE_WARNING_TEMPLATE.format(self._remote_client().uri))
+            logger.warning(RPCHeartbeatSender.NETWORK_UNSTABLE_WARNING_TEMPLATE
+                           .format(self._remote_client().uri, self._remote_client().remote_path))
+            reset_responses()
+            return
 
         if not self._network_absent_warned:
             self._network_absent_warned = True
-            logger.warning(RPCHeartbeatSender.NETWORK_ABSENT_WARNING_TEMPLATE.format(self._remote_client().uri))
+            logger.warning(RPCHeartbeatSender.NETWORK_ABSENT_WARNING_TEMPLATE
+                           .format(self._remote_client().uri, self._remote_client().remote_path))
 
         reset_responses()
 
