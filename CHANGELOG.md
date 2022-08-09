@@ -4,6 +4,7 @@
 
 ### Enhancements:
 
+- Add logging for remote resource cleanup and network stability (mihran113)
 - Restrict Run.hash to auto-generated values only (alberttorosyan)
 
 ### Fixes:
