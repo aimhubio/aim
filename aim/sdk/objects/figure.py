@@ -1,6 +1,10 @@
+import logging
+
 from aim.sdk.num_utils import inst_has_typename
 from aim.storage.object import CustomObject
 from aim.storage.types import BLOB
+
+logger = logging.getLogger(__name__)
 
 
 @CustomObject.alias('aim.figure')
@@ -49,6 +53,8 @@ class Figure(CustomObject):
             raise ModuleNotFoundError('Plotly is required to track matplotlib figure.')
 
         try:
+            logger.warning('Tracking a matplotlib object using "Figure" might not behave as expected.'
+                           'In such cases, consider tracking with "Image".')
             plotly_obj = mpl_to_plotly(obj)
         except ValueError as err:
             raise ValueError(f'Failed to convert matplotlib figure to plotly figure: {err}')
