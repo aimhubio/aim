@@ -10,7 +10,14 @@ export interface IRunsProps {
 }
 export interface IRunDetailMetricsAndSystemTabProps {
   runHash: string;
-  runTraces: any;
+  runTraces: {
+    metric: {
+      name: string;
+      context: {
+        [key: string]: unknown;
+      };
+    }[];
+  };
   runBatch: any;
   isSystem?: boolean;
   isRunBatchLoading: boolean;
@@ -84,6 +91,7 @@ export interface ITraceVisualizerProps {
 export interface IRunMetricCardProps {
   batch: IRunBatch;
   index: number;
+  observer: IntersectionObserver | undefined;
 }
 
 export interface IImagesVisualizerProps extends ITraceVisualizerProps {}
