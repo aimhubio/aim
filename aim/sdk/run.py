@@ -108,7 +108,7 @@ class RunAutoClean(AutoClean['Run']):
         self.finalize_run()
         self.finalize_rpc_queue()
         if self._checkins is not None:
-        self._checkins.close()
+            self._checkins.close()
 
 
 # TODO: [AT] generate automatically based on ModelMappedRun
