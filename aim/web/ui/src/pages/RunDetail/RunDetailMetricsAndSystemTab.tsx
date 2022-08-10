@@ -4,15 +4,25 @@ import _ from 'lodash-es';
 import IllustrationBlock from 'components/IllustrationBlock/IllustrationBlock';
 import BusyLoaderWrapper from 'components/BusyLoaderWrapper/BusyLoaderWrapper';
 import ErrorBoundary from 'components/ErrorBoundary/ErrorBoundary';
+import { Text } from 'components/kit';
 
 import { ANALYTICS_EVENT_KEYS } from 'config/analytics/analyticsKeysMap';
 
+import useModel from 'hooks/model/useModel';
+
 import * as analytics from 'services/analytics';
 import runDetailAppModel from 'services/models/runs/runDetailAppModel';
+import projectsModel from 'services/models/projects/projectsModel';
+
+import {
+  IPinnedSequence,
+  IProjectsModelState,
+} from 'types/services/models/projects/projectsModel';
 
 import { isSystemMetric } from 'utils/isSystemMetric';
 import contextToString from 'utils/contextToString';
 import alphabeticalSortComparator from 'utils/alphabeticalSortComparator';
+import exceptionHandler from 'utils/app/exceptionHandler';
 
 import RunMetricCard from './RunMetricCard';
 import { IRunBatch, IRunDetailMetricsAndSystemTabProps } from './types';
@@ -30,6 +40,39 @@ function RunDetailMetricsAndSystemTab({
   const [visibleMetrics, setVisibleMetrics] = React.useState<
     IRunDetailMetricsAndSystemTabProps['runTraces']['metric']
   >([]);
+  const projectsData = useModel<Partial<IProjectsModelState>>(
+    projectsModel,
+    false,
+  );
+
+  const tabMertcis = React.useMemo(
+    () =>
+      runTraces.metric.filter((m) =>
+        isSystem ? isSystemMetric(m.name) : !isSystemMetric(m.name),
+      ),
+    [runTraces.metric, isSystem],
+  );
+  let pinnedMetrics: IRunDetailMetricsAndSystemTabProps['runTraces']['metric'] =
+    [];
+  let regularMetrics: IRunDetailMetricsAndSystemTabProps['runTraces']['metric'] =
+    [];
+
+  for (let i = 0; i < tabMertcis.length; i++) {
+    let metric = tabMertcis[i];
+    let pinnedSequenceIndex =
+      projectsData?.pinnedSequences?.findIndex(
+        (seq) =>
+          seq.name === metric.name &&
+          contextToString(seq.context) === contextToString(metric.context),
+      ) ?? -1;
+    if (pinnedSequenceIndex > -1) {
+      pinnedMetrics[pinnedSequenceIndex] = metric;
+    } else {
+      regularMetrics.push(metric);
+    }
+  }
+
+  pinnedMetrics.filter((metric) => !!metric);
 
   React.useEffect(() => {
     if (!!containerRef.current) {
@@ -65,7 +108,7 @@ function RunDetailMetricsAndSystemTab({
               vM.concat(
                 metrics.map(
                   (metric) =>
-                    runTraces.metric.find(
+                    tabMertcis.find(
                       (m) =>
                         m.name === metric.name &&
                         contextToString(m.context) === metric.context,
@@ -90,7 +133,7 @@ function RunDetailMetricsAndSystemTab({
         observerRef.current.disconnect();
       }
     };
-  }, [isSystem, runBatch, observerIsReady, runTraces.metric]);
+  }, [isSystem, runBatch, observerIsReady, runTraces.metric, tabMertcis]);
 
   React.useEffect(() => {
     let timerID: number;
@@ -129,6 +172,84 @@ function RunDetailMetricsAndSystemTab({
     );
   }, [runBatch]);
 
+  async function togglePin(metric: IPinnedSequence, isPinned: boolean) {
+    const newPinnedMetrics = isPinned
+      ? pinnedMetrics.filter(
+          (m) =>
+            !(
+              m.name === metric.name &&
+              contextToString(m.context) === contextToString(metric.context)
+            ),
+        )
+      : [...pinnedMetrics, metric];
+    const setPinnedSequencesRequestRef = projectsModel.setPinnedSequences(
+      {
+        sequences: newPinnedMetrics,
+      },
+      (detail: unknown) => {
+        projectsModel.setState({
+          pinnedSequences: pinnedMetrics,
+        });
+        exceptionHandler({ detail, model: runDetailAppModel });
+      },
+    );
+
+    projectsModel.setState({
+      pinnedSequences: newPinnedMetrics,
+    });
+
+    setPinnedSequencesRequestRef.call();
+  }
+
+  function renderMetricCards(
+    metrics: IRunDetailMetricsAndSystemTabProps['runTraces']['metric'],
+    pinned: boolean,
+  ) {
+    return (
+      observerIsReady &&
+      metrics.length > 0 && (
+        <>
+          <div className='RunDetailMetricsTab__header'>
+            <Text component='h3' size={16} color='primary'>
+              {pinned ? 'Pinned ' : ''}Metrics
+            </Text>
+          </div>
+          <div className='RunDetailMetricsTab__container'>
+            {(pinned
+              ? metrics
+              : metrics
+                  .map((m) => ({
+                    ...m,
+                    sortKey: `${m.name}_${contextToString(m.context)}`,
+                  }))
+                  .sort(alphabeticalSortComparator({ orderBy: 'sortKey' }))
+            ).map((metric, i: number) => {
+              const batch: IRunBatch = {
+                ...metric,
+                ...runBatch?.find(
+                  (batch: IRunBatch) =>
+                    batch.name === metric.name &&
+                    contextToString(batch.context) ===
+                      contextToString(metric.context),
+                ),
+              };
+              return (
+                <RunMetricCard
+                  key={`${batch.name}_${contextToString(batch.context)}`}
+                  batch={batch}
+                  index={i}
+                  observer={observerRef.current}
+                  isPinned={pinned}
+                  togglePin={togglePin}
+                />
+              );
+            })}
+          </div>
+        </>
+      )
+    );
+  }
+
   return (
     <ErrorBoundary>
       <BusyLoaderWrapper
@@ -136,39 +257,10 @@ function RunDetailMetricsAndSystemTab({
         className='runDetailParamsTabLoader'
         height='100%'
       >
-        {!_.isEmpty(runTraces.metric) ? (
+        {!_.isEmpty(tabMertcis) ? (
           <div className='RunDetailMetricsTab' ref={containerRef}>
-            <div className='RunDetailMetricsTab__container'>
-              {observerIsReady &&
-                runTraces.metric
-                  .filter((m) =>
-                    isSystem ? isSystemMetric(m.name) : !isSystemMetric(m.name),
-                  )
-                  .map((m) => ({
-                    ...m,
-                    sortKey: `${m.name}_${contextToString(m.context)}`,
-                  }))
-                  .sort(alphabeticalSortComparator({ orderBy: 'sortKey' }))
-                  .map((metric, i: number) => {
-                    const batch: IRunBatch = {
-                      ...metric,
-                      ...runBatch?.find(
-                        (batch: IRunBatch) =>
-                          batch.name === metric.name &&
-                          contextToString(batch.context) ===
-                            contextToString(metric.context),
-                      ),
-                    };
-                    return (
-                      <RunMetricCard
-                        key={`${batch.name}_${contextToString(batch.context)}`}
-                        batch={batch}
-                        index={i}
-                        observer={observerRef.current}
-                      />
-                    );
-                  })}
-            </div>
+            {renderMetricCards(pinnedMetrics, true)}
+            {renderMetricCards(regularMetrics, false)}
           </div>
         ) : (
           <IllustrationBlock
