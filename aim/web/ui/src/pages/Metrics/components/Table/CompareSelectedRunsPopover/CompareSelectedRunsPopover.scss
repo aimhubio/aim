@@ -1,0 +1,31 @@
+@use 'src/styles/abstracts' as *;
+
+.CompareSelectedRunsPopover {
+  padding: $space-xs;
+  width: 16.5rem;
+  &__item {
+    text-transform: capitalize;
+    &-explorerName {
+      margin-left: $space-xs;
+      flex: 1 100%;
+    }
+  }
+
+  &__trigger {
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    border: 0.0625rem solid transparent;
+    transition: all 0.18s ease-out;
+    border-radius: $radius-main;
+    padding: 0 $space-xxs !important;
+    margin-right: $space-xxs !important;
+    i {
+      margin-right: $space-sm;
+    }
+    &.opened {
+      border: $border-main-active;
+      background-color: $primary-color-10;
+    }
+  }
+}

@@ -1,5 +1,7 @@
 import { TraceRawDataItem, TraceType } from 'services/models/runs/types';
 
+import { IPinnedSequence } from 'types/services/models/projects/projectsModel';
+
 export interface IRunDetailParamsTabProps {
   runParams: { [key: string]: any };
   isRunInfoLoading: boolean;
@@ -92,6 +94,8 @@ export interface IRunMetricCardProps {
   batch: IRunBatch;
   index: number;
   observer: IntersectionObserver | undefined;
+  isPinned: boolean;
+  togglePin: (metric: IPinnedSequence, isPinned: boolean) => void;
 }
 
 export interface IImagesVisualizerProps extends ITraceVisualizerProps {}

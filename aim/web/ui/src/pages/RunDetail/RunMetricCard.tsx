@@ -1,7 +1,9 @@
 import * as React from 'react';
 
+import { Tooltip } from '@material-ui/core';
+
 import LineChart from 'components/LineChart/LineChart';
-import { Badge, Text, Spinner } from 'components/kit';
+import { Badge, Text, Button, Spinner, Icon } from 'components/kit';
 import ErrorBoundary from 'components/ErrorBoundary/ErrorBoundary';
 import { HighlightEnum } from 'components/HighlightModesPopover/HighlightModesPopover';
 
@@ -18,6 +20,8 @@ function RunMetricCard({
   batch,
   index,
   observer,
+  isPinned,
+  togglePin,
 }: IRunMetricCardProps): React.FunctionComponentElement<React.ReactNode> {
   const containerRef = React.useRef(null);
 
@@ -66,17 +70,40 @@ function RunMetricCard({
           )}
         </div>
         <div className='RunDetailMetricsTab__container__chartContainer__metricDetailBox'>
-          <Text
-            component='h4'
-            tint={100}
-            size={18}
-            weight={600}
-            className='RunDetailMetricsTab__container__chartContainer__metricDetailBox__metricName'
-          >
-            {isSystemMetric(batch?.name)
-              ? formatSystemMetricName(batch?.name)
-              : batch?.name}
-          </Text>
+          <div className='RunDetailMetricsTab__container__chartContainer__metricDetailBox__top'>
+            <Text
+              component='h4'
+              tint={100}
+              size={18}
+              weight={600}
+              className='RunDetailMetricsTab__container__chartContainer__metricDetailBox__metricName'
+            >
+              {isSystemMetric(batch?.name)
+                ? formatSystemMetricName(batch?.name)
+                : batch?.name}
+            </Text>
+            <Button
+              color={isPinned ? 'primary' : 'default'}
+              size='small'
+              variant={isPinned ? 'outlined' : 'text'}
+              withOnlyIcon
+              onClick={() =>
+                togglePin(
+                  {
+                    name: batch.name,
+                    context: batch.context,
+                  },
+                  isPinned,
+                )
+              }
+            >
+              <Tooltip title={isPinned ? 'Unpin' : 'Pin'}>
+                <div className='RunDetailMetricsTab__container__chartContainer__metricDetailBox__pin'>
+                  <Icon name='pin' />
+                </div>
+              </Tooltip>
+            </Button>
+          </div>
           {contextToString(batch?.context)
             ?.split(',')
             .map((label: string, i: number) => (
