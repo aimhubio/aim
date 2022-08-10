@@ -10,7 +10,7 @@ import aim.ext.transport.remote_tracking_pb2 as rpc_messages
 import aim.ext.transport.remote_tracking_pb2_grpc as remote_tracking_pb2_grpc
 
 from aim.ext.transport.message_utils import pack_stream, unpack_bytes, unpack_stream, build_exception, ResourceObject
-from aim.ext.transport.handlers import get_tree, get_structured_run
+from aim.ext.transport.handlers import get_tree, get_structured_run, get_repo
 from aim.ext.transport.config import AIM_RT_MAX_MESSAGE_SIZE, AIM_RT_DEFAULT_MAX_MESSAGE_SIZE
 from aim.ext.transport.heartbeat import RPCHeartbeatWatcher
 
@@ -215,6 +215,7 @@ def run_server(host, port, workers=1, ssl_keyfile=None, ssl_certfile=None):
 
     RemoteTrackingServicer.registry.register('TreeView', get_tree)
     RemoteTrackingServicer.registry.register('StructuredRun', get_structured_run)
+    RemoteTrackingServicer.registry.register('Repo', get_repo)
 
     msg_max_size = int(os.getenv(AIM_RT_MAX_MESSAGE_SIZE, AIM_RT_DEFAULT_MAX_MESSAGE_SIZE))
     options = [

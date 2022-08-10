@@ -37,3 +37,12 @@ def get_structured_run(args: bytes):
     read_only = kwargs['read_only']
 
     return repo.request_props(hash_, read_only)
+
+
+def get_repo(args: bytes):
+    repo_path = os.environ.get(AIM_SERVER_MOUNTED_REPO_PATH)
+    if repo_path:
+        repo = Repo.from_path(repo_path)
+    else:
+        repo = Repo.default_repo()
+    return repo

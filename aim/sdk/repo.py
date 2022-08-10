@@ -5,8 +5,8 @@ import logging
 from collections import defaultdict
 from contextlib import contextmanager
 from enum import Enum
-
-from typing import Dict, Tuple, Iterator, NamedTuple, Optional, List
+from cachetools.func import ttl_cache
+from typing import Dict, Tuple, Iterator, NamedTuple, Optional, List, Set
 from weakref import WeakValueDictionary
 
 from aim.ext.sshfs.utils import mount_remote_repo, unmount_remote_repo
@@ -22,6 +22,7 @@ from aim.sdk.sequence_collection import QuerySequenceCollection, QueryRunSequenc
 from aim.sdk.sequence import Sequence
 from aim.sdk.types import QueryReportMode
 from aim.sdk.data_version import DATA_VERSION
+from aim.sdk.remote_repo_proxy import RemoteRepoProxy
 
 from aim.storage.locking import AutoFileLock
 from aim.storage.container import Container
@@ -428,6 +429,24 @@ class Repo:
                 yield Run(run_name, repo=self, read_only=True)
         else:
             raise StopIteration
+
+    def run_exists(self, run_hash: str) -> bool:
+        return run_hash in self._all_run_hashes()
+
+    @ttl_cache(ttl=0.5)
+    def _all_run_hashes(self) -> Set[str]:
+        if self.is_remote_repo:
+            remote_repo = RemoteRepoProxy(self._client)
+            return set(remote_repo.list_all_runs())
+        else:
+            chunks_dir = os.path.join(self.path, 'meta', 'chunks')
+            if os.path.exists(chunks_dir):
+                return set(os.listdir(chunks_dir))
+            else:
+                return set()
+
+    def list_all_runs(self) -> List[str]:
+        return list(self._all_run_hashes())
 
     def total_runs_count(self) -> int:
         db = self.structured_db
