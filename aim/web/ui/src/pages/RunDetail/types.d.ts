@@ -1,4 +1,5 @@
 import { TraceRawDataItem, TraceType } from 'services/models/runs/types';
+
 import { IPinnedSequence } from 'types/services/models/projects/projectsModel';
 
 export interface IRunDetailParamsTabProps {

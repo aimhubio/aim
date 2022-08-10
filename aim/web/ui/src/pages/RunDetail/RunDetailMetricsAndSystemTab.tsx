@@ -45,8 +45,12 @@ function RunDetailMetricsAndSystemTab({
     false,
   );
 
-  const tabMertcis = runTraces.metric.filter((m) =>
-    isSystem ? isSystemMetric(m.name) : !isSystemMetric(m.name),
+  const tabMertcis = React.useMemo(
+    () =>
+      runTraces.metric.filter((m) =>
+        isSystem ? isSystemMetric(m.name) : !isSystemMetric(m.name),
+      ),
+    [runTraces.metric, isSystem],
   );
   let pinnedMetrics: IRunDetailMetricsAndSystemTabProps['runTraces']['metric'] =
     [];
@@ -129,7 +133,7 @@ function RunDetailMetricsAndSystemTab({
         observerRef.current.disconnect();
       }
     };
-  }, [isSystem, runBatch, observerIsReady, runTraces.metric]);
+  }, [isSystem, runBatch, observerIsReady, runTraces.metric, tabMertcis]);
 
   React.useEffect(() => {
     let timerID: number;

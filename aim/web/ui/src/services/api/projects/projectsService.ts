@@ -1,5 +1,4 @@
 import {
-  IPinnedSequence,
   IPinnedSequencesResData,
   IProject,
   IProjectParamsMetrics,

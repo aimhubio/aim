@@ -83,8 +83,9 @@ function RunMetricCard({
                 : batch?.name}
             </Text>
             <Button
-              color='default'
+              color={isPinned ? 'primary' : 'default'}
               size='small'
+              variant={isPinned ? 'outlined' : 'text'}
               withOnlyIcon
               onClick={() =>
                 togglePin(

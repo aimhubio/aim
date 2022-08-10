@@ -227,9 +227,9 @@
 }
 
 .RunDetailMetricsTab {
-  padding: 0 0 1.5rem;
+  padding: 0 0 $space-lg;
   &__header {
-    margin: 1.5rem 0;
+    margin: $space-lg 0;
     padding-bottom: 0.625rem;
     border-bottom: $border-grey;
   }
@@ -237,7 +237,7 @@
     height: 100%;
     display: flex;
     flex-wrap: wrap;
-    gap: 1.5rem;
+    gap: $space-lg;
     align-items: stretch;
     &__chartContainer {
       width: calc(50% - 0.75rem);
