@@ -10,7 +10,8 @@ from typing import Dict
 
 from aim.sdk.repo import Repo
 from aim.storage.locking import AutoFileLock
-from aim.ext.notifier import get_notifier, default_config_path, Notifier
+from aim.ext.notifier import get_notifier, Notifier
+from aim.ext.notifier.utils import get_working_directory
 from aim.ext.cleanup import AutoClean
 
 
@@ -157,22 +158,6 @@ class RunStatusWatcherAutoClean(AutoClean['RunStatusWatcher']):
 
 
 class RunStatusWatcher:
-    @staticmethod
-    def has_watcher_config(repo: Repo) -> bool:
-        repo_path = Path(repo.path)
-        config_path = repo_path / 'ext' / 'notifications' / 'config.json'
-        return config_path.is_file()
-
-    @staticmethod
-    def set_default_config(repo: Repo):
-        repo_path = Path(repo.path)
-        work_dir = repo_path / 'ext' / 'notifications'
-        work_dir.mkdir(parents=True, exist_ok=True)
-
-        config = work_dir / 'config.json'
-        default_config = default_config_path()
-        shutil.copy(default_config, config)
-
     def __init__(self, repo: Repo, background: bool = False):
         repo_path = Path(repo.path)
         self.background = background
@@ -180,9 +165,7 @@ class RunStatusWatcher:
         self._resources = None
         self.initialized = False
 
-        work_dir = repo_path / 'ext' / 'notifications'
-        work_dir.mkdir(parents=True, exist_ok=True)
-
+        work_dir = get_working_directory(repo_path)
         self.lock = AutoFileLock(work_dir / 'watcher.lock', timeout=0)
         try:
             self.lock.acquire()
@@ -197,7 +180,7 @@ class RunStatusWatcher:
         self._notifications_cache_path.touch(exist_ok=True)
         self._status_events = StatusEventSet()
 
-        self.notifier = get_notifier(work_dir / 'config.json')
+        self.notifier = get_notifier(repo_path)
         self.watcher_thread = WorkerThread(self.check_for_new_events, daemon=True) if not background else None
         self.notifications_queue = NotificationQueue(self.notifier, self._notifications_cache_path)
 

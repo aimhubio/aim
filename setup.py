@@ -210,6 +210,7 @@ setup(
     entry_points={
         'console_scripts': [
             'aim=aim.cli.cli:cli_entry_point',
+            'aim-watcher=aim.cli.watcher_cli:cli_entry_point',
         ],
     },
     cmdclass={
