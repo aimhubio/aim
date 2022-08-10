@@ -551,6 +551,7 @@ function createAppModel(appConfig: IAppInitialConfig) {
 
     function initialize(appId: string): void {
       model.init();
+
       const state: Partial<IAppModelState> = {};
       if (grouping) {
         state.groupingSelectOptions = [];
@@ -571,6 +572,7 @@ function createAppModel(appConfig: IAppInitialConfig) {
       if (!appId) {
         setModelDefaultAppConfigData();
       }
+
       projectsService
         .getProjectParams(['metric'])
         .call()
@@ -2211,6 +2213,16 @@ function createAppModel(appConfig: IAppInitialConfig) {
         }
 
         const liveUpdateState = model.getState()?.config.liveUpdate;
+        runsService
+          .getExperimentsData()
+          .call((detail: any) => {
+            exceptionHandler({ detail, model });
+          })
+          .then((data: any) => {
+            model.setState({
+              experimentsData: data,
+            });
+          });
         projectsService
           .getProjectParams(['metric'])
           .call()
