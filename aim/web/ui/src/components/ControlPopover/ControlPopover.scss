@@ -15,6 +15,21 @@
       background-color: $cuddle-20;
     }
   }
+  &-small {
+    .MuiListItem-button {
+      height: 28px;
+    }
+  }
+  &-medium {
+    .MuiListItem-button {
+      height: 32px;
+    }
+  }
+  &-large {
+    .MuiListItem-button {
+      height: 36px;
+    }
+  }
   .MuiListItem-root.Mui-selected {
     background-color: transparent;
     color: $primary-color;

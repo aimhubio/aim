@@ -5,6 +5,7 @@
 ### Enhancements:
 
 - Restrict Run.hash to auto-generated values only (alberttorosyan)
+- Add ability to compare selected runs from the table (arsengit)
 - Add ability to pin metrics in Run Page (mihran113, roubkar)
 
 ### Fixes:
