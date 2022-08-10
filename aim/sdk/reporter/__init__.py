@@ -24,7 +24,7 @@ time intervals.
 Monitoring of run progress can be easily done by a service that periodically
 polls the check-in instances. If the last check-in was there for longer than it
 promised, the run is considered to  be failed thus triggering a (configurable)
-failure alert.
+failure notification.
 
 Check-ins with zero `expect_next_in` values denote an absence of the expiration
 date. In order to mark the run as successful, the last check-in should be
@@ -56,12 +56,12 @@ The monitoring service supposed to periodically poll the directory and check for
 the latest (lexicographically highest) check-ins per run.
 If the last check-in was there (starting from the first time the monitoring
 server had seen the file) for longer than it promised, the run is considered to
-be failed thus triggering a (configurable) failure alert. A grace period is
+be failed thus triggering a (configurable) failure notification. A grace period is
 introduced to avoid false positives.
 
 ## NON-BLOCKING INTERFACE
 
-### `RunCheckIn.check_in()`:
+### `RunStatusReporter.report_progress()`:
 By default, the check-in is non-blocking call in order to avoid any latency
 introduced. This way, the caller can feel free to check-in as soon as possible,
 even after each batch is forwarded or report the progress in vert small steps.
@@ -73,18 +73,18 @@ when the time is (nearly) up. A separate thread is used to handle this process
 which also cleans up of the obsolete check-ins having lower lexicographic order
 than the current one.
 
-### `RunCheckIn.report_successful_finish()`:
+### `RunStatusReporter.report_successful_finish()`:
 Marking the run as successful is blocking call by default to ensure the check-in
 is written to the filesystem before the run process exits. Note, that the
-initialization of `RunCheckIn` also does include blocking call to poll the
+initialization of `RunStatusReporter` also does include blocking call to poll the
 latest state in case of existing runs.
 
 ## INDIRECT INTERFACE
-The preferred way of reporting check-ins is to call `.check_in()` method on the
+The preferred way of reporting check-ins is to call `.report_progress()` method on the
 Run instance. However, in certain cases, the caller may want to check-in from a
 code location that has no access to the Run instance (e.g. in dataloader, or in
-the checkpoint callback). In such cases, the `.check_in()` method can be called
-indirectly by calling `RunCheckIn.check_in()` which will infer the run instance.
+the checkpoint callback). In such cases, the `.report_progress()` method can be called
+indirectly by calling `RunStatusReporter.report_progress()` which will infer the run instance.
 
 This is only possible if there is a single run instance in the process.
 """
@@ -148,6 +148,7 @@ class CheckIn:
     idx: int = 0
     expect_next_in: int = field(default=0, compare=False)
     first_seen: float = field(default_factory=time.monotonic, compare=False, repr=False)
+    flag_name: str = field(default="check_in", compare=False, repr=True)
 
     # We keep per-run cache to memoize the first time we've seen check-ins
     per_run_cache: ClassVar[Dict[str, LRUCache]] = defaultdict(
@@ -164,12 +165,13 @@ class CheckIn:
         run_hash: str,
         idx: int,
         expect_next_in: int,
+        flag_name: str,
     ) -> float:
         """
         Return the first seen time of the check-in.
         """
         per_run_cache = cls.per_run_cache[run_hash]
-        key = (idx, expect_next_in)
+        key = (idx, expect_next_in, flag_name)
         try:
             return per_run_cache[key]
         except KeyError:
@@ -195,22 +197,25 @@ class CheckIn:
         if isinstance(path, str):
             path = Path(path)
 
-        run_hash, str_idx, sep, utc_time, str_expect_next_in = path.name.rsplit(
+        run_hash, str_idx, flag_name, utc_time, str_expect_next_in = path.name.rsplit(
             "-", maxsplit=4
         )
-        assert sep == "check_in"
 
         idx = int(str_idx)
         expect_next_in = int(str_expect_next_in)
 
         first_seen = cls.first_seen_cached(
-            run_hash=run_hash, idx=idx, expect_next_in=expect_next_in
+            run_hash=run_hash,
+            idx=idx,
+            expect_next_in=expect_next_in,
+            flag_name=flag_name,
         )
 
         return run_hash, cls(
             idx=idx,
             expect_next_in=expect_next_in,
             first_seen=first_seen,
+            flag_name=flag_name,
         )
 
     @classmethod
@@ -235,13 +240,19 @@ class CheckIn:
 
         return check_in
 
-    def increment(self, *, expect_next_in: int = 0) -> "CheckIn":
+    def increment(
+        self,
+        *,
+        expect_next_in: int = 0,
+        flag_name: str = "check-in",
+    ) -> "CheckIn":
         """
         Create a new check-in and auto-increment the index based on the current one.
         """
         new = CheckIn(
             idx=self.idx + 1,
             expect_next_in=max(expect_next_in, self.expect_next_in),
+            flag_name=flag_name,
         )
         logger.info(f"incrementing check-in: {self} -> {new}")
         return new
@@ -264,6 +275,7 @@ class CheckIn:
             idx=self.idx,
             expect_next_in=expect_next_in,
             first_seen=now,
+            flag_name=self.flag_name,
         )
         logger.info(f"calibrated check-in: {self} -> {new}")
         return new
@@ -274,7 +286,7 @@ class CheckIn:
         *,
         run_hash: Union[str, AsteriskType],
         idx: Union[int, AsteriskType] = Asterisk,
-        flag_name: Union[str, AsteriskType] = "check_in",
+        flag_name: Union[str, AsteriskType] = Asterisk,
         absolute_time: Union[float, AsteriskType] = Asterisk,
         expect_next_in: Union[int, AsteriskType] = Asterisk,
     ) -> str:
@@ -298,17 +310,21 @@ class CheckIn:
         """
         Cleanups all the expired check-ins for the given run hash.
 
-        This will remove all check-ins that are older than the current one.
+        This will remove all check-ins that are older than the current one
+        matching the same flag_name.
         Returns the new current check-in.
         """
-        pattern = self.generate_filename(run_hash=run_hash)
+        pattern = self.generate_filename(run_hash=run_hash, flag_name=self.flag_name)
         *paths_to_remove, current_check_in_path = sorted(directory.glob(pattern))
         logger.info(f"found {len(paths_to_remove)} check-ins:")
         logger.info(f"the acting one: {current_check_in_path}")
         for path in paths_to_remove:
             logger.info(f"check-in {path} is being removed")
-            path.unlink(missing_ok=True)
-            time.sleep(0.2)  # TODO remove this artificial delay
+            try:
+                # Ignore errors, as the file may have been removed already.
+                path.unlink()
+            except OSError:
+                pass
             logger.info(f"check-in {path} removed")
 
         parsed_run_hash, check_in = self.parse(current_check_in_path)
@@ -354,11 +370,11 @@ class CheckIn:
             idx=self.idx,
             expect_next_in=self.expect_next_in,
             absolute_time=utc_time,
+            flag_name=self.flag_name,
         )
         new_path = directory / filename
         logger.info(f"touching check-in: {new_path}")
 
-        time.sleep(0.4)  # TODO remove this artificial delay
         new_path.touch(exist_ok=True)
 
         if cleanup:
@@ -378,7 +394,7 @@ class CheckIn:
         return self.expiry_date - now
 
 
-class RunCheckIns:
+class RunStatusReporter:
     """
     A handler for check-ins for a given run.
 
@@ -390,13 +406,13 @@ class RunCheckIns:
     finished, otherwise the run will be marked as failed.
     """
 
-    instances: Set["RunCheckIns"] = set()
+    instances: Set["RunStatusReporter"] = set()
 
     def __init__(
         self,
         run: 'Run',
     ) -> None:
-        logger.info(f"creating RunCheckIns for {run}")
+        logger.info(f"creating RunStatusReporter for {run}")
         self.run_hash = run.hash
         self.repo_dir = Path(run.repo.path)
         self.dir = self.repo_dir / "check_ins"
@@ -409,7 +425,7 @@ class RunCheckIns:
             logger.info(f"leftover check-in: {leftover}")
         else:
             logger.info("no leftover check-in found. starting from zero")
-        self.last_check_in = leftover.increment()
+        self.last_check_in = leftover.increment(flag_name="starting")
         self.physical_check_in = self.last_check_in.touch(
             directory=self.dir,
             run_hash=self.run_hash,
@@ -430,7 +446,7 @@ class RunCheckIns:
         self.report_successful_finish = self._report_successful_finish
 
     @classmethod
-    def default(cls) -> "RunCheckIns":
+    def default(cls) -> "RunStatusReporter":
         try:
             default_instance, = cls.instances
         except ValueError:
@@ -444,15 +460,15 @@ class RunCheckIns:
         return default_instance
 
     def close(self):
-        self.stop()
         self.instances.remove(self)
+        self.stop()
 
     def stop(self):
         """
         Flush the last check-in and stop the thread.
         """
         self.stop_signal.set()
-        self.flush()
+        self.flush(block=False)
         self.thread.join()
 
     def writer(self):
@@ -467,11 +483,11 @@ class RunCheckIns:
         while True:
             time_left = self.physical_check_in.time_left()
             if time_left + GRACE_PERIOD < 0:
-                logger.error(f"Missing check-in. Grace period expired { - GRACE_PERIOD - time_left:.2f} seconds ago. "
-                             f"Alerts should be sent soon by the monitoring server.")
+                logger.info(f"Missing check-in. Grace period expired { - GRACE_PERIOD - time_left:.2f} seconds ago. "
+                            f"Notifications should be sent soon by the monitoring server.")
             elif time_left < 0:
-                logger.warning(f"Missing check-in. Late: {-time_left:.2f} seconds. "
-                               f"Remaining grace period: {GRACE_PERIOD + time_left:.2f} seconds")
+                logger.info(f"Missing check-in. Late: {-time_left:.2f} seconds. "
+                            f"Remaining grace period: {GRACE_PERIOD + time_left:.2f} seconds")
             elif time_left < PLAN_ADVANCE_TIME:
                 logger.info(f"Missing check-in. Time left: {time_left}:.2f")
             plan = max(time_left - PLAN_ADVANCE_TIME, 1.0)
@@ -480,6 +496,10 @@ class RunCheckIns:
             with self.flush_condition:
                 self.flush_condition.wait(timeout=suspend_time)
 
+            # If the stop signal is set, then no new check-ins will be written,
+            # So we can safely exit the thread after finishing what we have now.
+            is_last_check = self.stop_signal.is_set()
+
             check_in = self.last_check_in
             if check_in != self.physical_check_in:
                 logger.info(f"detected newest check-in: {check_in}")
@@ -487,9 +507,8 @@ class RunCheckIns:
                     directory=self.dir, run_hash=self.run_hash
                 )
                 logger.info(f"changing to -> {self.physical_check_in}")
-                continue
 
-            if self.stop_signal.is_set():
+            if is_last_check:
                 logger.info("writer thread stopping as requested")
                 return
 
@@ -513,6 +532,7 @@ class RunCheckIns:
         self,
         *,
         expect_next_in: int = 0,
+        flag_name: str = "check_in",
         block: bool = False,
     ) -> None:
         """
@@ -520,7 +540,13 @@ class RunCheckIns:
 
         If `block` is True, then this will block until the check-in is flushed.
         """
-        self.last_check_in = self.last_check_in.increment(expect_next_in=expect_next_in)
+        if self.stop_signal.is_set():
+            raise RuntimeError("check-in is not allowed after stopping the writer thread")
+
+        self.last_check_in = self.last_check_in.increment(
+            expect_next_in=expect_next_in,
+            flag_name=flag_name,
+        )
         if block:
             self.flush(block=True)
 
@@ -534,13 +560,13 @@ class RunCheckIns:
 
         By default this will block until the check-in is flushed.
         """
-        return self._check_in(block=block)
+        return self._check_in(block=block, flag_name="finished")
 
-    # The instance method `check_in` and `report_successful_finish` is patched into
+    # The instance method `report_progress` and `report_successful_finish` is patched into
     # the instance in `__post_init__`
     # so the same name is used for both the instance method and the class method.
     @classmethod
-    def check_in(
+    def report_progress(
         cls,
         *,
         expect_next_in: int = 0,
@@ -552,7 +578,7 @@ class RunCheckIns:
         If `block` is True, then this will block until the check-in is flushed.
 
         Note: This is a classmethod and designed to be called like:
-        `RunCheckIns.check_in(expect_next_in=10)`
+        `RunStatusReporter.report_progress(expect_next_in=10)`
         * If no instance is available, this will log a warning and return.
         * If multiple instances are available, this will raise an error.
         """
@@ -573,7 +599,7 @@ class RunCheckIns:
         By default this will block until the check-in is flushed.
 
         Note: This is a classmethod and designed to be called like:
-        `RunCheckIns.report_successful_finish()`
+        `RunStatusReporter.report_successful_finish()`
         * If no instance is available, this will log a warning and return.
         * If multiple instances are available, this will raise an error.
         """

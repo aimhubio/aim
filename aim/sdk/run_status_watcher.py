@@ -2,15 +2,14 @@ import json
 import time
 import queue
 import logging
-import shutil
 
 from threading import Thread
 from pathlib import Path
-from typing import Dict
+from typing import Dict, Optional
 
 from aim.sdk.repo import Repo
 from aim.storage.locking import AutoFileLock
-from aim.ext.notifier import get_notifier, Notifier
+from aim.ext.notifier import get_notifier, Notifier, NotificationSendError
 from aim.ext.notifier.utils import get_working_directory
 from aim.ext.cleanup import AutoClean
 
@@ -18,19 +17,27 @@ from aim.ext.cleanup import AutoClean
 logger = logging.getLogger(__name__)
 
 
+class RunVariable:
+    """Representation of Run object with run.hash only. To be replaced with real Run in the future."""
+    def __init__(self, run_hash: str):
+        self.hash = run_hash
+
+
 class StatusEvent:
     def __init__(self, status_event_encoded: str):
-        obj_idx, idx, _, epoch_time, next_event_in = status_event_encoded.split('-')
+        obj_idx, idx, event_type, epoch_time, next_event_in = status_event_encoded.split('-')
         self.idx: int = int(idx)
         self.obj_idx: str = obj_idx
+        self.event_type = event_type
         self.next_event_in: int = int(next_event_in)
         self.epoch_time: float = float(epoch_time)
+        self.detected_epoch_time: float = time.time()
 
 
 class StatusNotification:
-    def __init__(self, event: StatusEvent, message: str = None):
-        self.event_idx = event.idx
-        self.obj_idx = event.obj_idx
+    def __init__(self, event: Optional[StatusEvent] = None, message: Optional[str] = None):
+        self.event_idx = event.idx if event else None
+        self.obj_idx = event.obj_idx if event else None
         self.message = message
 
 
@@ -106,7 +113,7 @@ class NotificationQueue(object):
 
     def is_sent(self, notification: StatusNotification) -> bool:
         last_event_idx = self.notifications_cache.get(notification.obj_idx, -1)
-        if last_event_idx < notification.event_idx:
+        if notification.event_idx is None or last_event_idx < notification.event_idx:
             return False
         elif last_event_idx == notification.event_idx:
             return True
@@ -116,9 +123,10 @@ class NotificationQueue(object):
             return True
 
     def update_last_sent(self, notification: StatusNotification):
-        self.notifications_cache[notification.obj_idx] = notification.event_idx
-        with self._notifications_cache_path.open(mode='w') as notifications_fh:
-            json.dump(self.notifications_cache, notifications_fh)
+        if notification.event_idx is not None:
+            self.notifications_cache[notification.obj_idx] = notification.event_idx
+            with self._notifications_cache_path.open(mode='w') as notifications_fh:
+                json.dump(self.notifications_cache, notifications_fh)
 
     def listen(self):
         while True:
@@ -130,10 +138,12 @@ class NotificationQueue(object):
                     logger.debug(f'Notification for object \'{notification.obj_idx}\' '
                                  f'with event ID {notification.event_idx} has already been sent. Skipping.')
                 else:
-                    details = {'run_hash': notification.obj_idx}
-                    self._notifier.notify(notification.message, **details)
-                    self.update_last_sent(notification)
-
+                    details = {'run': RunVariable(notification.obj_idx)}
+                    try:
+                        self._notifier.notify(notification.message, **details)
+                        self.update_last_sent(notification)
+                    except NotificationSendError as e:
+                        logger.error(f'Failed to send notification. Reason: {e}.')
                 self._queue.task_done()
             except queue.Empty:
                 continue
@@ -158,29 +168,34 @@ class RunStatusWatcherAutoClean(AutoClean['RunStatusWatcher']):
 
 
 class RunStatusWatcher:
+    message_templates = {
+        'finished': 'Run \'{run.hash}\' finished without error.',
+        'starting': 'Run \'{run.hash}\' started.'
+    }
+
     def __init__(self, repo: Repo, background: bool = False):
-        repo_path = Path(repo.path)
+        self.repo_path = Path(repo.path)
         self.background = background
 
         self._resources = None
         self.initialized = False
 
-        work_dir = get_working_directory(repo_path)
+        work_dir = get_working_directory(self.repo_path)
         self.lock = AutoFileLock(work_dir / 'watcher.lock', timeout=0)
         try:
             self.lock.acquire()
         except TimeoutError:
-            logger.error(f'Cannot start Run status watcher for \'{repo_path}\'. Failed to acquire lock.')
+            logger.error(f'Cannot start Run status watcher for \'{self.repo_path}\'. Failed to acquire lock.')
             return
 
-        self._status_watch_dir: Path = repo_path / 'status'
+        self._status_watch_dir: Path = self.repo_path / 'check_ins'
         self._status_watch_dir.mkdir(exist_ok=True)
 
         self._notifications_cache_path: Path = work_dir / 'last_run_notifications'
         self._notifications_cache_path.touch(exist_ok=True)
         self._status_events = StatusEventSet()
 
-        self.notifier = get_notifier(repo_path)
+        self.notifier = get_notifier(self.repo_path)
         self.watcher_thread = WorkerThread(self.check_for_new_events, daemon=True) if not background else None
         self.notifications_queue = NotificationQueue(self.notifier, self._notifications_cache_path)
 
@@ -191,6 +206,8 @@ class RunStatusWatcher:
         if not self.initialized:
             return
         logger.info('Starting watcher...')
+        notification = StatusNotification(message=f'Watcher is running for repo \'{self.repo_path}\'')
+        self.notifications_queue.add_notification(notification)
         if self.background:
             self.watcher_thread.start()
         else:
@@ -206,18 +223,20 @@ class RunStatusWatcher:
         for new_event in new_events.events.values():
             if not self._status_events.add(new_event):
                 event = self._status_events.get(new_event.obj_idx)
+                if event.next_event_in == 0:  # wait for next check-in for infinite time
+                    continue
                 epoch_now = time.time()
-                failed = (event.next_event_in < epoch_now - event.epoch_time)
+                failed = (event.next_event_in < epoch_now - event.detected_epoch_time)
                 if failed:
                     notification = StatusNotification(event)
                     self.notifications_queue.add_notification(notification)
-            else:
-                if new_event.next_event_in == 0:
-                    notification = StatusNotification(new_event, 'Run \'{run_hash}\' finished without error.')
-                    self.notifications_queue.add_notification(notification)
+            elif new_event.event_type in self.message_templates:
+                message_template = self.message_templates[new_event.event_type]
+                notification = StatusNotification(new_event, message_template)
+                self.notifications_queue.add_notification(notification)
 
     def poll_events(self) -> StatusEventSet:
         events = StatusEventSet()
-        for check_in_file_path in sorted(self._status_watch_dir.glob('*check_in*')):
+        for check_in_file_path in sorted(self._status_watch_dir.glob('*-*-*-*-*')):
             events.add(StatusEvent(check_in_file_path.name))
         return events
