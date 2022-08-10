@@ -73,7 +73,7 @@ export default function getSelectOptions(
       }
     }
   }
-  if (projectsData?.params) {
+  if (projectsData?.params && !addHighLevelMetrics) {
     const paramPaths = getObjectPaths(projectsData.params, projectsData.params);
     paramPaths.forEach((paramPath, index) => {
       const indexOf =

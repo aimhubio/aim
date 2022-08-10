@@ -2,6 +2,8 @@ import _ from 'lodash-es';
 
 import { ISelectConfig } from 'types/services/models/explorer/createAppModel';
 
+import { getLabelAndValueOfMetric } from './getLabelAndValueOfMetric';
+
 export function getCompatibleSelectConfig(
   keys: string[] = [],
   select: ISelectConfig,
@@ -33,6 +35,18 @@ export function getCompatibleSelectConfig(
         };
         delete selectConfig[key];
       }
+    });
+    selectConfig.options = selectConfig.options.map((option: any) => {
+      if (!option.key) {
+        if (option.value) {
+          const { option_name, context } = option.value;
+          let { label, key } = getLabelAndValueOfMetric(option_name, context);
+          return { ...option, label, key };
+        } else {
+          return { ...option, key: option.label };
+        }
+      }
+      return option;
     });
     return selectConfig;
   }
