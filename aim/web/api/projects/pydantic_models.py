@@ -1,5 +1,5 @@
 from pydantic import BaseModel
-from typing import Dict, Optional
+from typing import Dict, List, Optional
 
 
 class ProjectApiOut(BaseModel):
@@ -23,3 +23,16 @@ class ProjectActivityApiOut(BaseModel):
     num_experiments: int
     num_runs: int
     activity_map: Dict[str, int] = {"2021-01-01": 54}
+
+
+class Sequence(BaseModel):
+    name: str
+    context: dict
+
+
+class ProjectPinnedSequencesApiOut(BaseModel):
+    sequences: List[Sequence] = []
+
+
+class ProjectPinnedSequencesApiIn(BaseModel):
+    sequences: List[Sequence]
