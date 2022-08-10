@@ -20,10 +20,12 @@ class NotifierBuilder(object):
 
     def build(self) -> Notifier:
         notifier = Notifier()
-        for sub_config in self.config:
+        for sub_config in self.config.values():
             notif_type = sub_config['type']
             notif_id = sub_config['id']
             args = sub_config['arguments']
+            if sub_config['status'] != 'enabled':
+                continue
             try:
                 notif_cls = self._factories[notif_type]
             except KeyError:
