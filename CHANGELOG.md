@@ -5,7 +5,7 @@
 ### Enhancements:
 
 - Restrict Run.hash to auto-generated values only (alberttorosyan)
-- Add ability to pin metrics to run detail page (mihran113)
+- Add ability to pin metrics in Run Page (mihran113, roubkar)
 
 ### Fixes:
 

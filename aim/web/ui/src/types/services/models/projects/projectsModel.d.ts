@@ -17,4 +17,14 @@ export interface IProjectsModelState {
   params?: IProjectParamsMetrics['params'];
   images?: IProjectParamsMetrics['params'];
   metrics?: IProjectParamsMetrics['metric'];
+  pinnedSequences: IPinnedSequence[];
+}
+
+export interface IPinnedSequence {
+  name: string;
+  context: { [key: string]: unknown };
+}
+
+export interface IPinnedSequencesResData {
+  sequences: IPinnedSequence[];
 }
