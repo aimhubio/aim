@@ -102,7 +102,7 @@ def enable_config(ctx, notifier_id):
 @config.command('disable')
 @click.argument('notifier-id', required=True, type=str)
 @click.pass_context
-def enable_config(ctx, notifier_id):
+def disable_config(ctx, notifier_id):
     cfg = ctx.obj['config']
     if notifier_id in cfg.notifiers:
         cfg.disable(notifier_id)

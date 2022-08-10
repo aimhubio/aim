@@ -2,7 +2,6 @@ import json
 import time
 import queue
 import logging
-import shutil
 
 from threading import Thread
 from pathlib import Path
@@ -25,6 +24,7 @@ class StatusEvent:
         self.obj_idx: str = obj_idx
         self.next_event_in: int = int(next_event_in)
         self.epoch_time: float = float(epoch_time)
+        self.detected_epoch_time: float = time.time()
 
 
 class StatusNotification:
@@ -173,7 +173,7 @@ class RunStatusWatcher:
             logger.error(f'Cannot start Run status watcher for \'{repo_path}\'. Failed to acquire lock.')
             return
 
-        self._status_watch_dir: Path = repo_path / 'status'
+        self._status_watch_dir: Path = repo_path / 'check_ins'
         self._status_watch_dir.mkdir(exist_ok=True)
 
         self._notifications_cache_path: Path = work_dir / 'last_run_notifications'
@@ -190,6 +190,7 @@ class RunStatusWatcher:
     def start_watcher(self):
         if not self.initialized:
             return
+        self.notifications_queue.add_notification()
         logger.info('Starting watcher...')
         if self.background:
             self.watcher_thread.start()
@@ -207,12 +208,13 @@ class RunStatusWatcher:
             if not self._status_events.add(new_event):
                 event = self._status_events.get(new_event.obj_idx)
                 epoch_now = time.time()
-                failed = (event.next_event_in < epoch_now - event.epoch_time)
+                failed = (event.next_event_in < epoch_now - event.detected_epoch_time)
                 if failed:
                     notification = StatusNotification(event)
                     self.notifications_queue.add_notification(notification)
             else:
                 if new_event.next_event_in == 0:
+                    print(new_event.idx, new_event.obj_idx, new_event.detected_epoch_time, new_event.next_event_in)
                     notification = StatusNotification(new_event, 'Run \'{run_hash}\' finished without error.')
                     self.notifications_queue.add_notification(notification)
 
