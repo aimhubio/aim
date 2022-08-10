@@ -6,6 +6,7 @@
 
 - Restrict Run.hash to auto-generated values only (alberttorosyan)
 - Add ability to pin metrics in Run Page (mihran113, roubkar)
+- Add step for unit tests for nightly releases workflow (mihran113)
 
 ### Fixes:
 
