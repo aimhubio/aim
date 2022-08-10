@@ -257,7 +257,7 @@ function createEngine(config: IEngineConfigFinal) {
       ],
     });
 
-    const { additionalData, data, queryable_data: queryableData } = res;
+    const { additionalData, data, queryableData } = res;
 
     storeVanilla.setState({ data, additionalData, queryableData });
   }
