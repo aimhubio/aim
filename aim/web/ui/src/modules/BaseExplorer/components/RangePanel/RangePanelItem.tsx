@@ -15,9 +15,13 @@ const RangePanelItem = ({
   rangesData,
 }: IRangePanelItemProps) => {
   const rangeState: IRangeState | undefined = ranges[sliderName];
-  const rangeLength = _.range(
-    rangesData.ranges?.[`${sliderName}_range_total`]?.[0] as number,
-    (rangesData.ranges?.[`${sliderName}_range_total`]?.[1] as number) + 1,
+  const keyOfRangeTotal:
+    | 'record_range_total'
+    | 'index_range_total' = `${sliderName}_range_total`;
+
+  const rangeLength: number = _.range(
+    rangesData.ranges?.[keyOfRangeTotal]?.[0] as number,
+    (rangesData.ranges?.[keyOfRangeTotal]?.[1] as number) + 1,
   ).length;
 
   const onRangeChange = React.useCallback(
@@ -71,15 +75,15 @@ const RangePanelItem = ({
 
   return (
     <React.Fragment>
-      {rangesData.ranges?.[`${sliderName}_range_total`]?.[0] !==
-      rangesData.ranges?.[`${sliderName}_range_total`]?.[1] ? (
+      {rangesData.ranges?.[keyOfRangeTotal]?.[0] !==
+      rangesData.ranges?.[keyOfRangeTotal]?.[1] ? (
         <SliderWithInput
           sliderTitle={itemConfig.sliderTitle}
           countInputTitle={itemConfig.countInputTitle}
           countTitleTooltip={itemConfig.countTitleTooltip}
           sliderTitleTooltip={itemConfig.sliderTitleTooltip}
-          min={rangesData?.ranges?.[`${sliderName}_range_total`]?.[0]}
-          max={rangesData?.ranges?.[`${sliderName}_range_total`]?.[1]}
+          min={rangesData?.ranges?.[keyOfRangeTotal]?.[0] ?? 0}
+          max={rangesData?.ranges?.[keyOfRangeTotal]?.[1] ?? 0}
           selectedRangeValue={rangeState?.slice ?? [0, 0]}
           selectedCountValue={rangeState?.density ?? 0}
           onSearch={onSubmit}

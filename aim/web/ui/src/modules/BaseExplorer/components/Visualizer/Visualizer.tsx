@@ -10,7 +10,7 @@ import RangePanel from '../RangePanel';
 
 import './Visualizer.scss';
 
-function BaseVisualizer(props: IVisualizationProps) {
+function Visualizer(props: IVisualizationProps) {
   const {
     engine,
     engine: {
@@ -95,6 +95,6 @@ function BaseVisualizer(props: IVisualizationProps) {
   );
 }
 
-BaseVisualizer.displayName = 'Visualization';
+Visualizer.displayName = 'Visualization';
 
-export default BaseVisualizer;
+export default Visualizer;

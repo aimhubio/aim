@@ -1,3 +1,5 @@
+import { IQueryableData } from 'modules/BaseExplorerCore/pipeline/adapter/processor';
+
 export interface IRangePanelProps {
   engine: IBaseComponentProps['engine'];
   rangesData: any;
@@ -14,7 +16,7 @@ export interface IRangePanelItemProps {
     type: string;
   };
   ranges: IRangesState;
-  rangesData: any;
+  rangesData: IQueryableData;
 }
 
 export interface IRangesState {

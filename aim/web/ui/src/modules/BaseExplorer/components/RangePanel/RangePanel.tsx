@@ -9,6 +9,7 @@ import { Button, Icon, Text } from 'components/kit';
 
 import { SequenceTypesEnum } from 'types/core/enums';
 
+import { getRangeAndDensityData } from './helpers';
 import RangePanelItem from './RangePanelItem';
 import { IRangePanelProps } from './RangePanel.d';
 
@@ -65,69 +66,41 @@ function RangePanel(props: IRangePanelProps) {
   );
 
   React.useEffect(() => {
-    const ranges: {
+    // creating the empty ranges state
+    const updatedRangesState: {
       record?: { slice: [number, number]; density: number };
       index?: { slice: [number, number]; density: number };
     } = {};
+
+    // checking is record data exist
     if (props.rangesData?.ranges?.record_range_total) {
       const { record_range_used, record_range_total } =
         props.rangesData?.ranges;
-      const slice: [number, number] = [
-        _.inRange(
-          record_range_used[0],
-          record_range_total[0] - 1,
-          record_range_total[1] + 1,
-        )
-          ? record_range_used[0]
-          : record_range_total[0],
-        _.inRange(
-          record_range_used[1],
-          record_range_total[0] - 1,
-          record_range_total[1] + 1,
-        )
-          ? record_range_used[1]
-          : record_range_total[1],
-      ];
-      const recordRangeTotalCount =
-        record_range_total[1] - record_range_total[0];
-      const recordDensity = rangeState.record?.density ?? '50';
-      const density =
-        recordDensity < record_range_total[0] ||
-        recordDensity > recordRangeTotalCount
-          ? `${recordRangeTotalCount === 0 ? 1 : recordRangeTotalCount}`
-          : recordDensity;
-      ranges.record = { density, slice };
+
+      // setting record range slice and density
+      updatedRangesState.record = getRangeAndDensityData(
+        record_range_total,
+        record_range_used,
+        rangeState.record?.density ?? 50,
+      );
     }
+
+    // checking is index data exist
     if (props.rangesData?.ranges?.index_range_total) {
       const { index_range_total, index_range_used } = props.rangesData?.ranges;
-      const slice: [number, number] = [
-        _.inRange(
-          index_range_used[0],
-          index_range_total[0] - 1,
-          index_range_total[1] + 1,
-        )
-          ? index_range_used[0]
-          : index_range_total[0],
-        _.inRange(
-          index_range_used[1],
-          index_range_total[0] - 1,
-          index_range_total[1] + 1,
-        )
-          ? index_range_used[1]
-          : index_range_total[1],
-      ];
-      const indexRangeTotalCount = index_range_total[1] - index_range_total[0];
-      const indexDensity = rangeState.index?.density ?? '5';
-      const density =
-        indexDensity < index_range_total[0] ||
-        indexDensity > indexRangeTotalCount
-          ? `${indexRangeTotalCount === 0 ? 1 : indexRangeTotalCount}`
-          : indexDensity;
-      ranges.index = { density, slice };
+
+      // setting index range slice and density
+      updatedRangesState.index = getRangeAndDensityData(
+        index_range_total,
+        index_range_used,
+        rangeState.index?.density ?? 5,
+      );
     }
+
+    //updating the ranges data and setting the apply button disability
     engine.ranges.methods.update({
       ...rangeState,
-      ...ranges,
+      ...updatedRangesState,
       isApplyButtonDisabled: true,
     });
     // eslint-disable-next-line react-hooks/exhaustive-deps
