@@ -9,6 +9,7 @@
 
 ### Fixes:
 
+- Fix aim ui rendering issue on notebooks (rubenaprikyan)
 - Fix tensorboard convert while converting tensor (sharathmk99)
 - Fix incorrect column keys of metrics in the table grid of the runs dashboard  (VkoHov)
 
