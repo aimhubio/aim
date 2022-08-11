@@ -1,5 +1,10 @@
 import * as React from 'react';
-import { ReactChildren } from 'react';
+
+import { Tooltip } from '@material-ui/core';
+
+import { Text } from 'components/kit';
+
+import contextToString from 'utils/contextToString';
 
 import { IVisualizationProps } from '../../types';
 import Box from '../Box';
@@ -63,21 +68,29 @@ function BaseVisualizer(props: IVisualizationProps) {
   }, [dataState, foundGroups, boxConfig]);
 
   // FOR COLUMNS
-  const ColumnAxisComponents = React.useMemo(() => {
+  const columnsAxisData = React.useMemo(() => {
     let components: any[] = [];
     if (foundGroups) {
       components = Object.keys(foundGroups).map((key: string) => {
-        const value = foundGroups[key];
-        if (value.fields['run.hash']) {
-          return (
-            <engine.groupings.columns.axisComponent
-              key={key}
-              group={value}
-              boxConfig={boxConfig}
-              order={value.order}
-            />
-          );
-        }
+        const item = foundGroups[key];
+        return {
+          key: key,
+          value: contextToString(item.fields),
+          style: {
+            position: 'absolute',
+            top: 5,
+            left: item.order * (boxConfig.width + boxConfig.gap),
+            height: 20,
+            width: boxConfig.width,
+            backgroundColor: '#fff',
+            contentVisibility: 'auto',
+            textAlign: 'center',
+            overflow: 'hidden',
+            whiteSpace: 'nowrap',
+            textOverflow: 'ellipsis',
+            zIndex: 1,
+          },
+        };
       });
     }
     return components;
@@ -101,9 +114,21 @@ function BaseVisualizer(props: IVisualizationProps) {
             {BoxContent && <BoxContent engine={engine} data={item} />}
           </Box>
         )}
-      >
-        {ColumnAxisComponents as unknown as ReactChildren}
-      </BoxVirtualizer>
+        axisData={{
+          column: columnsAxisData,
+        }}
+        axisItemRenderer={{
+          column: (item: any, i: number) => (
+            <div key={item.key} style={item.style}>
+              <Tooltip title={item.value}>
+                <span>
+                  <Text>{item.value}</Text>
+                </span>
+              </Tooltip>
+            </div>
+          ),
+        }}
+      />
       {ControlComponent && <ControlComponent engine={engine} />}
     </div>
   );

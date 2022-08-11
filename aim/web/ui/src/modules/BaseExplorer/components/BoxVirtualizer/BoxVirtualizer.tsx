@@ -43,6 +43,12 @@ function BoxVirtualizer(props: BoxVirtualizerProps) {
     (a, b) => _.isEqual(a.style, b.style),
   );
 
+  let columnsAxisItems = props.axisData?.column?.filter(
+    (item: any) =>
+      item.style.left >= gridWindow.left - item.style.width &&
+      item.style.left <= gridWindow.left + gridWindow.width,
+  );
+
   React.useEffect(() => {
     setGridWindow({
       left: grid.current.scrollLeft,
@@ -87,10 +93,26 @@ function BoxVirtualizer(props: BoxVirtualizerProps) {
       }}
       onScroll={onScroll}
     >
+      {columnsAxisItems && columnsAxisItems.length > 0 && (
+        <div
+          style={{
+            position: 'sticky',
+            top: 0,
+            zIndex: 2,
+            width:
+              sortedByPosition?.[sortedByPosition?.length - 1]?.style?.left +
+              sortedByPosition?.[sortedByPosition?.length - 1]?.style?.width,
+            borderBottom: '1px solid #dceafb',
+            backgroundColor: '#fff',
+            height: 30,
+          }}
+        >
+          {columnsAxisItems?.map(props.axisItemRenderer?.column)}
+        </div>
+      )}
       <div
         ref={grid}
         style={{
-          marginTop: '20px',
           overflow: 'hidden',
           width:
             sortedByPosition?.[sortedByPosition?.length - 1]?.style?.left +
@@ -101,7 +123,6 @@ function BoxVirtualizer(props: BoxVirtualizerProps) {
         }}
       >
         {items?.map(props.itemRenderer)}
-        {props.children}
       </div>
     </div>
   );
