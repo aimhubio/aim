@@ -1,7 +1,9 @@
 import * as React from 'react';
 
+import { Tooltip } from '@material-ui/core';
+
 import LineChart from 'components/LineChart/LineChart';
-import { Badge, Text, Spinner } from 'components/kit';
+import { Badge, Text, Button, Spinner, Icon } from 'components/kit';
 import ErrorBoundary from 'components/ErrorBoundary/ErrorBoundary';
 import { HighlightEnum } from 'components/HighlightModesPopover/HighlightModesPopover';
 
@@ -18,6 +20,8 @@ function RunMetricCard({
   batch,
   index,
   observer,
+  isPinned,
+  togglePin,
 }: IRunMetricCardProps): React.FunctionComponentElement<React.ReactNode> {
   const containerRef = React.useRef(null);
 
@@ -35,6 +39,27 @@ function RunMetricCard({
         data-context={contextToString(batch.context)}
         ref={containerRef}
       >
+        <Tooltip title={isPinned ? 'Unpin' : 'Pin'}>
+          <div className='RunDetailMetricsTab__container__chartContainer__metricDetailBox__pin'>
+            <Button
+              color={isPinned ? 'primary' : 'default'}
+              size='xSmall'
+              variant='outlined'
+              withOnlyIcon
+              onClick={() =>
+                togglePin(
+                  {
+                    name: batch.name,
+                    context: batch.context,
+                  },
+                  isPinned,
+                )
+              }
+            >
+              <Icon name='pin' />
+            </Button>
+          </div>
+        </Tooltip>
         <div className='RunDetailMetricsTab__container__chartContainer__chartBox'>
           {batch.iters ? (
             <ErrorBoundary>
