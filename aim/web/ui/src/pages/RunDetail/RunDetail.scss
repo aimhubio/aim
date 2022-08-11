@@ -240,6 +240,7 @@
     gap: $space-lg;
     align-items: stretch;
     &__chartContainer {
+      position: relative;
       width: calc(50% - 0.75rem);
       border: $border-grey;
       border-radius: 0.5rem;
@@ -257,17 +258,15 @@
       &__metricDetailBox {
         border-top: $border-grey;
         padding: 1rem 1.5rem 1.5rem;
-        &__top {
-          display: flex;
-          align-items: center;
-          justify-content: space-between;
-        }
         &__metricName {
           margin: $space-xs 0;
           word-break: break-all;
         }
         &__pin {
-          display: flex;
+          position: absolute;
+          top: $space-xs;
+          right: $space-xs;
+          z-index: 1;
         }
         .SelectForm__tags__item {
           margin-top: 0.5rem;
