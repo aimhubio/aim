@@ -1,6 +1,6 @@
 import { useEffect } from 'react';
 
-export const useAnimationFrame = (memoizedFnWithDeps: () => void): void => {
+const useAnimationFrame = (memoizedFnWithDeps: () => void): void => {
   useEffect(() => {
     const animationId = window.requestAnimationFrame(memoizedFnWithDeps);
     return () => {
@@ -8,3 +8,5 @@ export const useAnimationFrame = (memoizedFnWithDeps: () => void): void => {
     };
   }, [memoizedFnWithDeps]);
 };
+
+export default useAnimationFrame;

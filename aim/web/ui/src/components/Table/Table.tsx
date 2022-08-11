@@ -3,6 +3,7 @@
 
 import React from 'react';
 import { isEmpty, isEqual } from 'lodash-es';
+import { useResizeObserver } from 'hooks';
 
 import { Button, Icon, Text } from 'components/kit';
 import ControlPopover from 'components/ControlPopover/ControlPopover';
@@ -16,8 +17,6 @@ import {
   TABLE_DEFAULT_CONFIG,
 } from 'config/table/tableConfigs';
 import { IllustrationsEnum } from 'config/illustrationConfig/illustrationConfig';
-
-import useResizeObserver from 'hooks/window/useResizeObserver';
 
 import SortPopover from 'pages/Metrics/components/Table/SortPopover/SortPopover';
 import ManageColumnsPopover from 'pages/Metrics/components/Table/ManageColumnsPopover/ManageColumnsPopover';
