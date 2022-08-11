@@ -25,6 +25,10 @@ def get_default_config_path() -> Path:
     return Path(here) / 'config_default.json'
 
 
+def get_empty_config_path() -> Path:
+    return Path(here) / 'config_empty.json'
+
+
 def has_watcher_config(base_dir: Union[str, Path]) -> bool:
     config_path = get_config_path(base_dir)
     return config_path.is_file()

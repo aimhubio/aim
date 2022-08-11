@@ -11,6 +11,7 @@ def get_config(base_dir) -> Config:
 
 def get_notifier(base_dir) -> Notifier:
     cfg = get_config(base_dir)
+    cfg.load()
     builder = NotifierBuilder(cfg.notifiers)
     return builder.build()
 

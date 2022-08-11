@@ -4,15 +4,26 @@ import uuid
 from typing import Dict
 from pathlib import Path
 
+from aim.ext.notifier.utils import get_empty_config_path
+
 
 class Config:
     def __init__(self, config_file: Path):
         self._cfg_file: Path = config_file
         self._cfg = {}
-        self.load()
+        if self.exists():
+            self._from_file(self._cfg_file)
+        else:
+            self._from_file(get_empty_config_path())
+
+    def exists(self) -> bool:
+        return self._cfg_file.exists()
 
     def load(self):
-        with self._cfg_file.open() as cfg_fh:
+        self._from_file(self._cfg_file)
+
+    def _from_file(self, cfg_file: Path):
+        with cfg_file.open() as cfg_fh:
             self._cfg = json.load(cfg_fh)
 
     def save(self):
