@@ -40,6 +40,24 @@
 }
 
 .Runs {
+  &__tableGrid {
+    width: 100%;
+    max-width: 100%;
+    display: flex;
+    .ExperimentsCard {
+      padding: 1rem 1.5rem;
+      width: 40%;
+      min-width: 550px;
+      height: 40%;
+      border-right: 2px solid $primary-color;
+    }
+  }
+  &__table {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    width: 60%;
+  }
   height: 100vh;
   &__RunList {
     position: relative;

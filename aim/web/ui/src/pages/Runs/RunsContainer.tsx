@@ -84,6 +84,7 @@ function RunsContainer(): React.FunctionComponentElement<React.ReactNode> {
         isInfiniteLoading={runsData?.infiniteIsPending}
         onNotificationDelete={runsAppModel.onNotificationDelete}
         notifyData={runsData?.notifyData}
+        experimentsData={runsData?.experimentsData}
         columnsColorScales={runsData?.config?.table?.columnsColorScales}
         onRowHeightChange={runsAppModel.onRowHeightChange}
         onManageColumns={runsAppModel.onColumnsOrderChange}

@@ -1,4 +1,4 @@
-import { IExperimentData } from 'pages/Runs/ExperimentsTable';
+import { IExperimentData } from 'pages/Runs/ExperimentsCard/ExperimentsCard.d';
 
 import { IApiRequest } from 'types/services/services';
 
