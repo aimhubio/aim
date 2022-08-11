@@ -24,6 +24,15 @@ def check_configuration(ctx: click.Context, repo: Repo) -> bool:
     return True
 
 
+def dump_notifier_config(cfg: dict):
+    lines = ['', '', f'Type: {cfg["type"]}']
+    for arg_name, value in cfg['arguments'].items():
+        printable_name = arg_name.replace('_', ' ').capitalize()
+        lines.append(f'{printable_name}: {value}')
+    lines.append('--------')
+    click.echo('\n'.join(lines))
+
+
 @click.group()
 @click.option('--repo', required=False, type=click.Path(exists=True,
                                                         file_okay=False,
@@ -110,7 +119,7 @@ def remove_config(ctx, notifier_id):
         return
 
     if notifier_id in cfg.notifiers:
-        click.echo(json.dumps(cfg.get(notifier_id), indent=2))
+        dump_notifier_config(cfg.get(notifier_id))
         click.confirm('Remove notifier configuration above?', abort=True)
         cfg.remove(notifier_id)
         cfg.save()
@@ -170,7 +179,7 @@ def workplace_config(ctx, group_id, access_token, message):
             'message': message,
         }
     }
-    click.echo(json.dumps(new_cfg, indent=2))
+    dump_notifier_config(new_cfg)
     click.confirm('Save notifier configuration above?', default=True, abort=True)
     cfg.add(new_cfg)
     cfg.save()
@@ -190,7 +199,7 @@ def slack_config(ctx, webhook_url, message):
             'message': message,
         }
     }
-    click.echo(json.dumps(new_cfg, indent=2))
+    dump_notifier_config(new_cfg)
     click.confirm('Save notifier configuration above?', default=True, abort=True)
     cfg.add(new_cfg)
     cfg.save()
@@ -208,7 +217,7 @@ def logger_config(ctx, message):
             'message': message,
         }
     }
-    click.echo(json.dumps(new_cfg, indent=2))
+    dump_notifier_config(new_cfg)
     click.confirm('Save notifier configuration above?', default=True, abort=True)
     cfg.add(new_cfg)
     cfg.save()
