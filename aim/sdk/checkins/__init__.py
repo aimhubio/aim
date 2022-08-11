@@ -307,7 +307,11 @@ class CheckIn:
         logger.info(f"the acting one: {current_check_in_path}")
         for path in paths_to_remove:
             logger.info(f"check-in {path} is being removed")
-            path.unlink(missing_ok=True)
+            try:
+                # Ignore errors, as the file may have been removed already.
+                path.unlink()
+            except OSError:
+                pass
             time.sleep(0.2)  # TODO remove this artificial delay
             logger.info(f"check-in {path} removed")
 
