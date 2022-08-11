@@ -11,12 +11,14 @@ import getObjectPaths from 'utils/object/getObjectPaths';
 
 import depthInterceptors from './depthInterceptors';
 
+export type Record = {
+  index?: number;
+  step: number;
+  epoch: number;
+};
 export interface AimFlatObjectBase {
   data: any;
-  record?: {
-    index: number;
-    step: number;
-  };
+  record?: Record;
   [key: string]: any;
   run?: {
     // run props
@@ -117,7 +119,6 @@ export function storageDataToFlatList(
     let run = {
       ..._.omit(item.props, ['experiment, creation_time']),
       hash: item.hash,
-      active: !item.props.end_time,
       experiment: item.props.experiment?.name,
       ...item.params,
     };
@@ -175,35 +176,39 @@ export function storageDataToFlatList(
           // for readability
           trace.values.forEach((sequence: any, stepIndex: number) => {
             /** depth 2 */ // STEP
+            let record_data: Record = {
+              step: trace.iters[stepIndex],
+              epoch: trace.epochs[stepIndex],
+            };
             if (objectDepth === 2) {
-              const stepData = {
-                step: trace.iters[stepIndex],
-                epoch: trace.epochs[stepIndex],
-              };
+              record_info = record_info.concat(['record.epoch', 'record.step']);
+
               collectedDataByDepth = {
                 ...collectedDataByDepth,
-                ...stepData,
+                record: record_data,
               };
               const object = {
                 ...collectedDataByDepth,
                 data: depthInterceptor(sequence).data,
               };
+
               objectList.push(object);
               return;
             }
             sequence.forEach((rec: any) => {
               /** depth 3 */ // INDEX
-              const record = {
-                step: trace.iters[stepIndex],
+              record_data = {
+                ...record_data,
                 index: rec.index,
-                epoch: trace.epochs[stepIndex],
               };
-              record_info = record_info.concat(
-                getObjectPaths(record, 'record'),
-              );
+              record_info = record_info.concat([
+                'record.epoch',
+                'record.step',
+                'record.index',
+              ]);
               collectedDataByDepth = {
                 ...collectedDataByDepth,
-                record,
+                record: record_data,
               };
               const object = {
                 ...collectedDataByDepth,
