@@ -1,7 +1,9 @@
 import click
-from click import core
 import uuid
-import json
+
+from click import core
+from collections import OrderedDict
+from typing import Optional, Mapping
 
 from aim.ext.notifier import get_config
 from aim.ext.notifier.utils import has_watcher_config, set_default_config
@@ -10,6 +12,16 @@ from aim.sdk.repo import Repo
 
 core._verify_python3_env = lambda: None
 DEFAULT_MESSAGE_TEMPLATE = "❗️ Something wrong with Run '{run_hash}'. Please check. ❗️"
+
+
+class OrderedGroup(click.Group):
+    def __init__(self, name: Optional[str] = None, commands: Optional[Mapping[str, click.Command]] = None, **kwargs):
+        super(OrderedGroup, self).__init__(name, commands, **kwargs)
+        #: the registered subcommands by their exported names.
+        self.commands = commands or OrderedDict()
+
+    def list_commands(self, ctx: click.Context) -> Mapping[str, click.Command]:
+        return self.commands
 
 
 def check_configuration(ctx: click.Context, repo: Repo) -> bool:
@@ -34,10 +46,13 @@ def dump_notifier_config(cfg: dict):
 
 
 @click.group()
-@click.option('--repo', required=False, type=click.Path(exists=True,
-                                                        file_okay=False,
-                                                        dir_okay=True,
-                                                        writable=True))
+@click.option('--repo',
+              required=False,
+              help='Aim Repo to check Run statuses.',
+              type=click.Path(exists=True,
+                              file_okay=False,
+                              dir_okay=True,
+                              writable=True))
 @click.pass_context
 def cli_entry_point(ctx, repo):
     """Service for detecting and reporting training Run failures."""
@@ -49,10 +64,10 @@ def cli_entry_point(ctx, repo):
     ctx.obj['config'] = get_config(repo.path)
 
 
-@cli_entry_point.command('up')
+@cli_entry_point.command(name='start')
 @click.pass_context
-def up(ctx):
-    """Start Run status watcher."""
+def start_watcher(ctx):
+    """Start watcher service to monitor and report stuck/failed Runs."""
     repo = ctx.obj['repo']
     if check_configuration(ctx, repo):
         watcher = RunStatusWatcher(repo)
@@ -61,7 +76,14 @@ def up(ctx):
         watcher.start_watcher()
 
 
-@cli_entry_point.command('dump')
+@cli_entry_point.group(cls=OrderedGroup, name='notifiers')
+@click.pass_context
+def config_notifiers(ctx):
+    """Configure how notifications should be received."""
+    pass
+
+
+@click.command(name='dump', hidden=True)
 @click.pass_context
 def dump_config(ctx):
     """Dump notifier configuration file."""
@@ -74,7 +96,7 @@ def dump_config(ctx):
     click.echo(cfg.dump())
 
 
-@cli_entry_point.command('list')
+@click.command(name='list')
 @click.pass_context
 def list_config(ctx):
     """List available notifiers."""
@@ -89,10 +111,10 @@ def list_config(ctx):
         click.echo("{:<40} {:<10} {:<10}".format(notifier['id'], notifier['type'], notifier['status']))
 
 
-@cli_entry_point.group('add', invoke_without_command=True)
+@click.group(name='add', invoke_without_command=True)
 @click.pass_context
 def add_config(ctx):
-    """Add new notifier configuration."""
+    """Add a new notifier configuration (slack, workplace, etc.)."""
     if ctx.invoked_subcommand is None:
         add_new = True
         while add_new:
@@ -107,11 +129,11 @@ def add_config(ctx):
             add_new = click.confirm('Would you like to add another notifier?')
 
 
-@cli_entry_point.command('remove')
+@click.command(name='remove')
 @click.argument('notifier-id', required=True, type=str)
 @click.pass_context
 def remove_config(ctx, notifier_id):
-    """Remove notifier configuration."""
+    """Remove notifier configuration from the list."""
     cfg = ctx.obj['config']
     if not cfg.exists():
         repo = ctx.obj['repo']
@@ -127,11 +149,11 @@ def remove_config(ctx, notifier_id):
         click.echo(f'No notifier with id {notifier_id} found.')
 
 
-@cli_entry_point.command('enable')
+@click.command(name='enable')
 @click.argument('notifier-id', required=True, type=str)
 @click.pass_context
 def enable_config(ctx, notifier_id):
-    """Enable notifier configuration."""
+    """Start receiving notifications from given notifier."""
     cfg = ctx.obj['config']
     if not cfg.exists():
         repo = ctx.obj['repo']
@@ -145,11 +167,11 @@ def enable_config(ctx, notifier_id):
         click.echo(f'No notifier with id {notifier_id} found.')
 
 
-@cli_entry_point.command('disable')
+@click.command(name='disable')
 @click.argument('notifier-id', required=True, type=str)
 @click.pass_context
 def disable_config(ctx, notifier_id):
-    """Disable notifier configuration."""
+    """Stop receiving notifications from given notifier."""
     cfg = ctx.obj['config']
     if not cfg.exists():
         repo = ctx.obj['repo']
@@ -163,7 +185,7 @@ def disable_config(ctx, notifier_id):
         click.echo(f'No notifier with id {notifier_id} found.')
 
 
-@add_config.command('workplace')
+@add_config.command(name='workplace')
 @click.option('--group-id', prompt=True, required=True, type=int)
 @click.option('--access-token', prompt=True, required=True, type=str)
 @click.option('--message', prompt=True, required=False, type=str, default=DEFAULT_MESSAGE_TEMPLATE, show_default=True)
@@ -185,7 +207,7 @@ def workplace_config(ctx, group_id, access_token, message):
     cfg.save()
 
 
-@add_config.command('slack')
+@add_config.command(name='slack')
 @click.option('--webhook-url', prompt=True, required=True, type=str)
 @click.option('--message', prompt=True, required=False, type=str, default=DEFAULT_MESSAGE_TEMPLATE, show_default=True)
 @click.pass_context
@@ -205,7 +227,7 @@ def slack_config(ctx, webhook_url, message):
     cfg.save()
 
 
-@add_config.command('logger')
+@add_config.command(name='logger')
 @click.option('--message', prompt=True, required=False, type=str, default=DEFAULT_MESSAGE_TEMPLATE, show_default=True)
 @click.pass_context
 def logger_config(ctx, message):
@@ -221,3 +243,11 @@ def logger_config(ctx, message):
     click.confirm('Save notifier configuration above?', default=True, abort=True)
     cfg.add(new_cfg)
     cfg.save()
+
+
+config_notifiers.add_command(add_config)
+config_notifiers.add_command(list_config)
+config_notifiers.add_command(remove_config)
+config_notifiers.add_command(disable_config)
+config_notifiers.add_command(enable_config)
+config_notifiers.add_command(dump_config)
