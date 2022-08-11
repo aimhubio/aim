@@ -1,42 +1,51 @@
 import React from 'react';
 
-import { Button, Icon, Slider } from 'components/kit';
+import { Button, Icon, Slider, Text } from 'components/kit';
 import ErrorBoundary from 'components/ErrorBoundary/ErrorBoundary';
-
-import { MEDIA_SET_SLIDER_HEIGHT } from 'config/mediaConfigs/mediaConfigs';
 
 import { IDepthSliderProps } from './DepthSlider.d';
 
 import './DepthSlider.scss';
 
 function DepthSlider({
-  index,
-  pathValue,
+  index = 0,
+  items,
   depth,
   onDepthChange,
-}: IDepthSliderProps): React.FunctionComponentElement<React.ReactNode> {
+  style = {},
+  valueLabelDisplay = 'off',
+  label,
+  className = '',
+}: IDepthSliderProps) {
   const sliderMarks = React.useMemo(() => {
-    return (pathValue as string[]).map((l, i) => ({ value: i }));
-  }, [pathValue]);
-  return (
+    return (items as string[]).map((l, i) => ({ value: i }));
+  }, [items]);
+  const onChange = React.useCallback(
+    (value: number) => {
+      if (typeof onDepthChange === 'function') {
+        onDepthChange(value, index);
+      }
+    },
+    [onDepthChange, index],
+  );
+  return items.length === 0 ? null : (
     <ErrorBoundary>
-      <div className='DepthSlider' style={{ height: MEDIA_SET_SLIDER_HEIGHT }}>
+      <div className={`DepthSlider ${className}`} style={style}>
         <Slider
+          label={label}
           aria-labelledby='track-false-slider'
           track={false}
-          valueLabelDisplay='off'
-          getAriaValueText={(value) => `${pathValue[value]}`}
+          valueLabelDisplay={valueLabelDisplay}
+          getAriaValueText={(value) => `${items[value]}`}
           value={depth}
-          onChange={(e, value) => onDepthChange?.(value as number, index)}
+          onChange={(e, value) => onChange(value as number)}
           step={null}
           marks={sliderMarks}
           min={0}
-          max={pathValue.length - 1}
+          max={items.length - 1}
           prevIconNode={
             <Button
-              onClick={() => {
-                if (depth > 0) onDepthChange?.(depth - 1, index);
-              }}
+              onClick={() => depth > 0 && onChange(depth - 1)}
               className='prevIconBtn'
               disabled={depth <= 0}
               size='small'
@@ -47,12 +56,9 @@ function DepthSlider({
           }
           nextIconNode={
             <Button
-              onClick={() => {
-                if (depth < pathValue.length - 1)
-                  onDepthChange?.(depth + 1, index);
-              }}
+              onClick={() => depth < items.length - 1 && onChange(depth + 1)}
               className='nextIconBtn'
-              disabled={depth >= pathValue.length - 1}
+              disabled={depth >= items.length - 1}
               size='small'
               withOnlyIcon
             >

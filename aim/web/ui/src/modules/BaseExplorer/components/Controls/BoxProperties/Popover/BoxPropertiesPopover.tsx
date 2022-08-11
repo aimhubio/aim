@@ -39,6 +39,7 @@ function BoxPropertiesPopover(props: IBoxPropertiesPopoverProps) {
         gap,
       });
     },
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     [boxProperties, update],
   );
   const onBoxWidthChange = React.useCallback(

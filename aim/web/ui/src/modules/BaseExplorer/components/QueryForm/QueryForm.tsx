@@ -1,4 +1,4 @@
-import React, { memo, useEffect } from 'react';
+import React, { memo } from 'react';
 import _ from 'lodash-es';
 
 import { IInstructionsState } from 'modules/BaseExplorerCore/store/slices/types';
