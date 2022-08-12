@@ -5,6 +5,8 @@ import useResizeObserver from 'hooks/window/useResizeObserver';
 
 import { BoxVirtualizerProps } from './types';
 
+import './BoxVirtualizer.scss';
+
 function BoxVirtualizer(props: BoxVirtualizerProps) {
   let container: React.MutableRefObject<HTMLDivElement> =
     React.useRef<HTMLDivElement>(document.createElement('div'));
@@ -89,57 +91,27 @@ function BoxVirtualizer(props: BoxVirtualizerProps) {
   useResizeObserver(resizeObserverCallback, container, observerReturnCallback);
 
   return (
-    <div
-      style={{
-        position: 'relative',
-        width: '100%',
-        height: '100%',
-        overflow: 'hidden',
-      }}
-    >
+    <div className='BoxVirtualizer'>
       {columnsAxisItems &&
         columnsAxisItems.length > 0 &&
         rowsAxisItems &&
         rowsAxisItems.length > 0 && (
-          <div
-            style={{
-              position: 'absolute',
-              top: 0,
-              left: 0,
-              width: 200,
-              height: 30,
-              backgroundColor: '#fff',
-              borderBottom: '1px solid #dceafb',
-              borderRight: '1px solid #dceafb',
-              zIndex: 3,
-            }}
-          />
+          <div className='BoxVirtualizer__placeholder' />
         )}
       <div
         ref={container}
-        style={{
-          width: '100%',
-          height: '100%',
-          position: 'relative',
-          overflow: 'auto',
-        }}
+        className='BoxVirtualizer__container'
         onScroll={onScroll}
       >
         {((columnsAxisItems && columnsAxisItems.length > 0) ||
           (rowsAxisItems && rowsAxisItems.length > 0)) && (
           <div
+            className='BoxVirtualizer__container__horizontalRuler'
             style={{
-              position: 'sticky',
-              top: 0,
               width:
                 sortedByPosition?.[sortedByPosition?.length - 1]?.style?.left +
                 sortedByPosition?.[sortedByPosition?.length - 1]?.style?.width +
                 30,
-              height: 30,
-              minWidth: '100%',
-              borderBottom: '1px solid #dceafb',
-              backgroundColor: '#fff',
-              zIndex: 2,
             }}
           >
             {columnsAxisItems?.map(props.axisItemRenderer?.columns)}
@@ -147,17 +119,11 @@ function BoxVirtualizer(props: BoxVirtualizerProps) {
         )}
         {rowsAxisItems && rowsAxisItems.length > 0 && (
           <div
+            className='BoxVirtualizer__container__verticalRuler'
             style={{
-              position: 'sticky',
-              left: 0,
-              width: 200,
               height:
                 sortedByPosition?.[sortedByPosition?.length - 1]?.style?.top +
                 sortedByPosition?.[sortedByPosition?.length - 1]?.style?.height,
-              minHeight: '100%',
-              borderRight: '1px solid #dceafb',
-              backgroundColor: '#fff',
-              zIndex: 2,
             }}
           >
             {rowsAxisItems?.map(props.axisItemRenderer?.rows)}

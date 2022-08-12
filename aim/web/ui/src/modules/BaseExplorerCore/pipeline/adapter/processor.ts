@@ -186,7 +186,8 @@ export function storageDataToFlatList(
 
               collectedDataByDepth = {
                 ...collectedDataByDepth,
-                ...record_data,
+                'record.step': record_data.step,
+                'record.epoch': record_data.epoch,
               };
               const object = {
                 ...collectedDataByDepth,

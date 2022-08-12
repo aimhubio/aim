@@ -94,7 +94,7 @@ function BoxFullViewPopover({
         },
         {
           label: 'step',
-          value: element.props.data.step,
+          value: element.props.data['record.step'],
         },
       ],
       groups: groupInfo,
