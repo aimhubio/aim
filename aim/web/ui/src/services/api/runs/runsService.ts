@@ -51,23 +51,11 @@ function getExperimentsData() {
 }
 
 function getRunMetricsBatch(body: any, id: string) {
-  return API.post(endpoints.GET_RUN_METRICS_BATCH_BY_TRACES(id), body, {
-    headers: {
-      'Content-Type': 'application/json',
-    },
-  });
+  return API.post(endpoints.GET_RUN_METRICS_BATCH_BY_TRACES(id), body);
 }
 
 function archiveRun(id: string, archived: boolean = false) {
-  return API.put(
-    endpoints.EDIT_RUN(id),
-    { archived },
-    {
-      headers: {
-        'Content-Type': 'application/json',
-      },
-    },
-  );
+  return API.put(endpoints.EDIT_RUN(id), { archived });
 }
 
 function editRunNameAndDescription(
@@ -76,55 +64,27 @@ function editRunNameAndDescription(
   description: string,
   archived: boolean,
 ) {
-  return API.put(
-    endpoints.EDIT_RUN(id),
-    { name, description, archived },
-    {
-      headers: {
-        'Content-Type': 'application/json',
-      },
-    },
-  );
+  return API.put(endpoints.EDIT_RUN(id), { name, description, archived });
 }
 
 function archiveRuns(ids: string[], archived: boolean = false) {
-  return API.post(endpoints.ARCHIVE_RUNS(archived), ids, {
-    headers: {
-      'Content-Type': 'application/json',
-    },
-  });
+  return API.post(endpoints.ARCHIVE_RUNS(archived), ids);
 }
 
 function deleteRun(id: string) {
-  return API.delete(endpoints.DELETE_RUN(id), {
-    headers: {
-      'Content-Type': 'application/json',
-    },
-  });
+  return API.delete(endpoints.DELETE_RUN(id));
 }
 
 function deleteRuns(ids: string[]) {
-  return API.post(endpoints.DELETE_RUNS, ids, {
-    headers: {
-      'Content-Type': 'application/json',
-    },
-  });
+  return API.post(endpoints.DELETE_RUNS, ids);
 }
 
 function createRunsTag(body: object, run_id: string) {
-  return API.post(endpoints.CREATE_RUNS_TAG(run_id), body, {
-    headers: {
-      'Content-Type': 'application/json',
-    },
-  });
+  return API.post(endpoints.CREATE_RUNS_TAG(run_id), body);
 }
 
 function deleteRunsTag(run_id: string, tag_id: string) {
-  return API.delete(endpoints.DELETE_RUNS_TAG(run_id, tag_id), {
-    headers: {
-      'Content-Type': 'application/json',
-    },
-  });
+  return API.delete(endpoints.DELETE_RUNS_TAG(run_id, tag_id));
 }
 
 function getBatch(run_id: string, trace: TraceType, params: any, body: any) {
@@ -133,9 +93,6 @@ function getBatch(run_id: string, trace: TraceType, params: any, body: any) {
     params,
     {
       method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
       body,
     },
   );
@@ -152,9 +109,6 @@ function getBatchByStep(
     params,
     {
       method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
       body,
     },
   );
