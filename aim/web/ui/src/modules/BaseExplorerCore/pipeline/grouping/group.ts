@@ -1,5 +1,5 @@
 // group by [group type] [group_type] [order]
-import { cyrb53 } from '../../helpers';
+import { buildObjectHash, cyrb53 } from '../../helpers';
 
 import { pickValues } from './getGroupValues';
 import { GroupType, Order } from './types';
@@ -40,7 +40,7 @@ function group(
 
   // @ts-ignore
   const result = data.map((item: any) => {
-    const groupKey: string = cyrb53(pickValues(item, config.fields));
+    const groupKey: string = buildObjectHash(pickValues(item, config.fields));
 
     const group = item['groups'] || {};
     return {

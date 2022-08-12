@@ -6,19 +6,20 @@ import {
   RunSearchRunView,
 } from 'types/core/AimObjects';
 import { AimObjectDepths, SequenceTypesEnum } from 'types/core/enums';
+import { Context } from 'types/core/shared';
 
 import getObjectPaths from 'utils/object/getObjectPaths';
 
 import { buildObjectHash } from '../../helpers';
-import { Context } from '../../../../types/core/shared';
 
 import depthInterceptors from './depthInterceptors';
 
 export type Record = {
   index?: number;
   step: number;
-  epoch: number;
+  epoch?: number;
 };
+
 export interface AimFlatObjectBase<T = any> {
   key: string;
   data: T;
@@ -182,7 +183,7 @@ export function storageDataToFlatList(
         // depth 1, add context data
         collectedDataByDepth = {
           ...collectedDataByDepth,
-          ...trace_context[sequenceName],
+          ...trace_context,
           // maybe need to create some key for contexts, to follow the structure
           // depth0 adding run property, depth1 add "sequence" property, not spread contexts
         };
@@ -203,7 +204,7 @@ export function storageDataToFlatList(
             /** depth 2 */ // STEP
             let record_data: Record = {
               step: trace.iters[stepIndex],
-              epoch: trace.epochs[stepIndex],
+              // epoch: trace.epochs[stepIndex],
             };
 
             // Generating unique hash creator obj for the AimObject using sequence name, sequence context, step, epoch
