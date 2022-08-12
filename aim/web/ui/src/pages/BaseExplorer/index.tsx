@@ -22,6 +22,8 @@ import Figures from 'modules/BaseExplorer/components/Figures/Figures';
 import Controls from 'modules/BaseExplorer/components/Controls';
 import BoxProperties from 'modules/BaseExplorer/components/Controls/BoxProperties';
 
+import { DOCUMENTATIONS } from 'config/references';
+
 import { AimObjectDepths, SequenceTypesEnum } from 'types/core/enums';
 
 const applyStyle: styleApplier = (object: any, boxConfig: any, group: any) => {
@@ -34,6 +36,7 @@ const applyStyle: styleApplier = (object: any, boxConfig: any, group: any) => {
 // @ts-ignore
 const config: IExplorerConfig = {
   explorerName: 'Figures Explorer',
+  documentationLink: DOCUMENTATIONS.EXPLORERS.FIGURES.MAIN,
   engine: {
     useCache: true,
     sequenceName: SequenceTypesEnum.Figures,
@@ -137,8 +140,8 @@ const config: IExplorerConfig = {
   ui: {
     // visualizationType: 'box', // 'box', 'sequence'
     defaultBoxConfig: {
-      width: 150,
-      height: 150,
+      width: 800,
+      height: 600,
       gap: 10,
     },
     styleAppliers: {

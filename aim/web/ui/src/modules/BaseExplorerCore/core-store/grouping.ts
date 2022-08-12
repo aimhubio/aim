@@ -192,8 +192,32 @@ function createGroupingsSlice(groupings: { [key: string]: any }) {
         },
       });
     };
+    const reset = (groupValues: {
+      [key: string]: { orders: Order[]; fields: string[] };
+    }) => {
+      const store = get().groupings.currentValues;
+      const newValues = Object.keys(store).reduce(
+        (
+          acc: {
+            [key: string]: { orders: Order[]; fields: string[] };
+          },
+          name: string,
+        ) => {
+          acc[name] = groupings[name].defaultApplications;
+          return acc;
+        },
+        {},
+      );
+      set({
+        groupings: {
+          ...store.groupings,
+          currentValues: newValues,
+        },
+      });
+    };
     return {
       update,
+      reset,
     };
   }
 

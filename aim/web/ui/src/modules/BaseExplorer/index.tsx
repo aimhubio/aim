@@ -39,6 +39,7 @@ function BaseExplorer(props: IBaseExplorerProps) {
       <ExplorerBar
         engine={props.engineInstance}
         explorerName={props.explorerName}
+        documentationLink={props.documentationLink}
       />
       {/* {__DEV__ && <Text>Engine status ::: status</Text>} */}
       <div className='ComponentsWrapper'>
@@ -49,7 +50,6 @@ function BaseExplorer(props: IBaseExplorerProps) {
     </div>
   ) : (
     <>
-      {console.log('initializing')}
       <div>Initializing</div>
     </>
   );

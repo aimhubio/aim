@@ -28,6 +28,11 @@ const DOCUMENTATIONS = {
       SEARCH:
         'https://aimstack.readthedocs.io/en/latest/ui/pages/run_management.html#search-runs',
     },
+    FIGURES: {
+      MAIN: 'https://aimstack.readthedocs.io/en/latest/ui/pages/explorers.html',
+      SEARCH:
+        'https://aimstack.readthedocs.io/en/latest/ui/pages/explorers.html',
+    },
   },
 };
 
