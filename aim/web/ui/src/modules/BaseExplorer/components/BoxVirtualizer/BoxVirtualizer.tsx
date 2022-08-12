@@ -90,68 +90,95 @@ function BoxVirtualizer(props: BoxVirtualizerProps) {
 
   return (
     <div
-      ref={container}
       style={{
+        position: 'relative',
         width: '100%',
         height: '100%',
-        position: 'relative',
-        overflow: 'auto',
+        overflow: 'hidden',
       }}
-      onScroll={onScroll}
     >
-      {((columnsAxisItems && columnsAxisItems.length > 0) ||
-        (rowsAxisItems && rowsAxisItems.length > 0)) && (
+      {columnsAxisItems &&
+        columnsAxisItems.length > 0 &&
+        rowsAxisItems &&
+        rowsAxisItems.length > 0 && (
+          <div
+            style={{
+              position: 'absolute',
+              top: 0,
+              left: 0,
+              width: 200,
+              height: 30,
+              backgroundColor: '#fff',
+              borderBottom: '1px solid #dceafb',
+              borderRight: '1px solid #dceafb',
+              zIndex: 3,
+            }}
+          />
+        )}
+      <div
+        ref={container}
+        style={{
+          width: '100%',
+          height: '100%',
+          position: 'relative',
+          overflow: 'auto',
+        }}
+        onScroll={onScroll}
+      >
+        {((columnsAxisItems && columnsAxisItems.length > 0) ||
+          (rowsAxisItems && rowsAxisItems.length > 0)) && (
+          <div
+            style={{
+              position: 'sticky',
+              top: 0,
+              width:
+                sortedByPosition?.[sortedByPosition?.length - 1]?.style?.left +
+                sortedByPosition?.[sortedByPosition?.length - 1]?.style?.width +
+                30,
+              height: 30,
+              minWidth: '100%',
+              borderBottom: '1px solid #dceafb',
+              backgroundColor: '#fff',
+              zIndex: 2,
+            }}
+          >
+            {columnsAxisItems?.map(props.axisItemRenderer?.columns)}
+          </div>
+        )}
+        {rowsAxisItems && rowsAxisItems.length > 0 && (
+          <div
+            style={{
+              position: 'sticky',
+              left: 0,
+              width: 200,
+              height:
+                sortedByPosition?.[sortedByPosition?.length - 1]?.style?.top +
+                sortedByPosition?.[sortedByPosition?.length - 1]?.style?.height,
+              minHeight: '100%',
+              borderRight: '1px solid #dceafb',
+              backgroundColor: '#fff',
+              zIndex: 2,
+            }}
+          >
+            {rowsAxisItems?.map(props.axisItemRenderer?.rows)}
+          </div>
+        )}
         <div
+          ref={grid}
           style={{
-            position: 'sticky',
-            top: 0,
+            display: 'inline',
             width:
               sortedByPosition?.[sortedByPosition?.length - 1]?.style?.left +
               sortedByPosition?.[sortedByPosition?.length - 1]?.style?.width +
               30,
-            height: 30,
-            minWidth: '100%',
-            borderBottom: '1px solid #dceafb',
-            backgroundColor: '#fff',
-            zIndex: 3,
-          }}
-        >
-          {columnsAxisItems?.map(props.axisItemRenderer?.columns)}
-        </div>
-      )}
-      {rowsAxisItems && rowsAxisItems.length > 0 && (
-        <div
-          style={{
-            position: 'sticky',
-            left: 0,
-            width: 200,
             height:
               sortedByPosition?.[sortedByPosition?.length - 1]?.style?.top +
               sortedByPosition?.[sortedByPosition?.length - 1]?.style?.height,
-            minHeight: '100%',
-            borderRight: '1px solid #dceafb',
-            backgroundColor: '#fff',
-            zIndex: 2,
+            overflow: 'hidden',
           }}
         >
-          {rowsAxisItems?.map(props.axisItemRenderer?.rows)}
+          {items?.map(props.itemRenderer)}
         </div>
-      )}
-      <div
-        ref={grid}
-        style={{
-          display: 'inline',
-          width:
-            sortedByPosition?.[sortedByPosition?.length - 1]?.style?.left +
-            sortedByPosition?.[sortedByPosition?.length - 1]?.style?.width +
-            30,
-          height:
-            sortedByPosition?.[sortedByPosition?.length - 1]?.style?.top +
-            sortedByPosition?.[sortedByPosition?.length - 1]?.style?.height,
-          overflow: 'hidden',
-        }}
-      >
-        {items?.map(props.itemRenderer)}
       </div>
     </div>
   );

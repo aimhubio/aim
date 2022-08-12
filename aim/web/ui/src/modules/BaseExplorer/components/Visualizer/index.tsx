@@ -84,12 +84,11 @@ function BaseVisualizer(props: IVisualizationProps) {
               right: 10,
               height: boxConfig.height,
               width: 180,
+              padding: '0.5rem 0',
               display: 'flex',
               alignItems: 'center',
               backgroundColor: '#fff',
-              contentVisibility: 'auto',
               overflow: 'hidden',
-              wordBreak: 'break-all',
               textOverflow: 'ellipsis',
               zIndex: 1,
             },
@@ -117,8 +116,8 @@ function BaseVisualizer(props: IVisualizationProps) {
                 (rowsAxisData && rowsAxisData.length > 0 ? 200 : 0),
               height: 20,
               width: boxConfig.width,
+              padding: '0 0.5rem',
               backgroundColor: '#fff',
-              contentVisibility: 'auto',
               textAlign: 'center',
               overflow: 'hidden',
               whiteSpace: 'nowrap',
@@ -154,22 +153,18 @@ function BaseVisualizer(props: IVisualizationProps) {
         }}
         axisItemRenderer={{
           columns: (item: any, i: number) => (
-            <div key={item.key} style={item.style}>
-              <Tooltip title={item.value}>
-                <span>
-                  <Text>{item.value}</Text>
-                </span>
-              </Tooltip>
-            </div>
+            <Tooltip title={item.value} key={item.key}>
+              <div style={item.style}>
+                <Text>{item.value}</Text>
+              </div>
+            </Tooltip>
           ),
           rows: (item: any, i: number) => (
-            <div key={item.key} style={item.style}>
-              <Tooltip title={item.value}>
-                <span>
-                  <Text>{item.value}</Text>
-                </span>
-              </Tooltip>
-            </div>
+            <Tooltip title={item.value} key={item.key}>
+              <div style={item.style}>
+                <Text>{item.value}</Text>
+              </div>
+            </Tooltip>
           ),
         }}
       />
