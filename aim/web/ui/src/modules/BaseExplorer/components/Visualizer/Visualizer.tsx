@@ -1,7 +1,13 @@
 import * as React from 'react';
 import _ from 'lodash-es';
 
+import { Tooltip } from '@material-ui/core';
 import { IQueryableData } from 'modules/BaseExplorerCore/pipeline/adapter/processor';
+import { GroupType } from 'modules/BaseExplorerCore/pipeline/grouping/types';
+
+import { Text } from 'components/kit';
+
+import contextToString from 'utils/contextToString';
 
 import { IVisualizationProps } from '../../types';
 import Box from '../Box';
@@ -71,6 +77,73 @@ function Visualizer(props: IVisualizationProps) {
     });
   }, [dataState, foundGroups, boxConfig]);
 
+  // FOR ROWS
+  const rowsAxisData = React.useMemo(() => {
+    if (foundGroups) {
+      return Object.keys(foundGroups)
+        .filter((key: string) => foundGroups[key].type === GroupType.ROW)
+        .map((key: string) => {
+          const item = foundGroups[key];
+          return {
+            key: key,
+            value: contextToString(item.fields),
+            style: {
+              position: 'absolute',
+              top:
+                item.order * (boxConfig.height + boxConfig.gap) +
+                5 -
+                boxConfig.gap / 2,
+              left: -1,
+              height: boxConfig.height + boxConfig.gap,
+              width: 200,
+              padding: `${boxConfig.gap / 2}px 0.5rem`,
+              backgroundColor: '#fff',
+              borderBottom: '0.0625rem solid #dceafb',
+              overflow: 'hidden',
+              textAlign: 'right',
+              textOverflow: 'ellipsis',
+              lineHeight: '0.875rem',
+              zIndex: 1,
+            },
+          };
+        });
+    }
+  }, [foundGroups, boxConfig, engine]);
+
+  // FOR COLUMNS
+  const columnsAxisData = React.useMemo(() => {
+    if (foundGroups) {
+      return Object.keys(foundGroups)
+        .filter((key: string) => foundGroups[key].type === GroupType.COLUMN)
+        .map((key: string) => {
+          const item = foundGroups[key];
+          return {
+            key: key,
+            value: contextToString(item.fields),
+            style: {
+              position: 'absolute',
+              top: -1,
+              left:
+                item.order * (boxConfig.width + boxConfig.gap) +
+                30 +
+                (rowsAxisData && rowsAxisData.length > 0 ? 200 : 0) -
+                boxConfig.gap / 2,
+              height: 30,
+              width: boxConfig.width + boxConfig.gap,
+              padding: '0.25rem 0.5rem',
+              backgroundColor: '#fff',
+              borderRight: '0.0625rem solid #dceafb',
+              textAlign: 'center',
+              overflow: 'hidden',
+              whiteSpace: 'nowrap',
+              textOverflow: 'ellipsis',
+              zIndex: 1,
+            },
+          };
+        });
+    }
+  }, [foundGroups, boxConfig, engine, rowsAxisData]);
+
   return (
     <div className='Visualizer'>
       <div className='VisualizerContainer'>
@@ -85,6 +158,26 @@ function Visualizer(props: IVisualizationProps) {
               {BoxContent && <BoxContent engine={engine} data={item} />}
             </Box>
           )}
+          axisData={{
+            columns: columnsAxisData,
+            rows: rowsAxisData,
+          }}
+          axisItemRenderer={{
+            columns: (item: any, i: number) => (
+              <Tooltip title={item.value} key={item.key}>
+                <div style={item.style}>
+                  <Text>{item.value}</Text>
+                </div>
+              </Tooltip>
+            ),
+            rows: (item: any, i: number) => (
+              <Tooltip title={item.value} key={item.key}>
+                <div style={item.style}>
+                  <Text>{item.value}</Text>
+                </div>
+              </Tooltip>
+            ),
+          }}
         />
         {ControlComponent && <ControlComponent engine={engine} />}
       </div>
