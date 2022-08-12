@@ -250,16 +250,15 @@ function createEngine(config: IEngineConfigFinal) {
         {
           type: GroupType.COLUMN,
           // @ts-ignore
-          fields: defaultApplications?.[GroupType.COLUMN].fields,
+          fields: defaultApplications?.[GroupType.COLUMN].fields || [],
           // @ts-ignore
-          orders: defaultApplications?.[GroupType.COLUMN].orders,
+          orders: defaultApplications?.[GroupType.COLUMN].orders || [],
         },
       ],
     });
+    const { additionalData, data, queryableData, foundGroups } = res;
 
-    const { additionalData, data, queryableData } = res;
-
-    storeVanilla.setState({ data, additionalData, queryableData });
+    storeVanilla.setState({ data, additionalData, queryableData, foundGroups });
   }
 
   async function group(

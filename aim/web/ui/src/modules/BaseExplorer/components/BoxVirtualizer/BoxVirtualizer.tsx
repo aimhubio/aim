@@ -78,7 +78,11 @@ function BoxVirtualizer(props: IBoxVirtualizerProps) {
   }, []);
 
   const groupedByPosition = React.useMemo(
-    () => _.groupBy(data, (item) => `${item.style.top}__${item.style.left}`),
+    () =>
+      _.groupBy(
+        filteredItems,
+        (item) => `${item.style.top}__${item.style.left}`,
+      ),
     [filteredItems],
   );
   // @TODO remove this variable and calculate width and height of the container with optimized way

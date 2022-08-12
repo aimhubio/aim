@@ -65,7 +65,7 @@ const config: IExplorerConfig = {
           };
         },
         defaultApplications: {
-          fields: [],
+          fields: ['run.hash', 'figures.name'],
           orders: [],
         },
         // state: {
@@ -99,7 +99,7 @@ const config: IExplorerConfig = {
           };
         },
         defaultApplications: {
-          fields: [],
+          fields: ['record.step'],
           orders: [Order.DESC, Order.ASC],
         },
         // state: {
