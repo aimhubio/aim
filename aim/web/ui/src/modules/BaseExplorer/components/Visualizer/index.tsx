@@ -80,16 +80,20 @@ function BaseVisualizer(props: IVisualizationProps) {
             value: contextToString(item.fields),
             style: {
               position: 'absolute',
-              top: item.order * (boxConfig.height + boxConfig.gap),
-              right: 10,
-              height: boxConfig.height,
-              width: 180,
-              padding: '0.5rem 0',
-              display: 'flex',
-              alignItems: 'center',
+              top:
+                item.order * (boxConfig.height + boxConfig.gap) +
+                5 -
+                boxConfig.gap / 2,
+              left: -1,
+              height: boxConfig.height + boxConfig.gap,
+              width: 200,
+              padding: '0.5rem',
               backgroundColor: '#fff',
+              borderBottom: '0.0625rem solid #dceafb',
               overflow: 'hidden',
+              textAlign: 'right',
               textOverflow: 'ellipsis',
+              lineHeight: '0.875rem',
               zIndex: 1,
             },
           };
@@ -109,15 +113,17 @@ function BaseVisualizer(props: IVisualizationProps) {
             value: contextToString(item.fields),
             style: {
               position: 'absolute',
-              top: 5,
+              top: -1,
               left:
                 item.order * (boxConfig.width + boxConfig.gap) +
                 30 +
-                (rowsAxisData && rowsAxisData.length > 0 ? 200 : 0),
-              height: 20,
-              width: boxConfig.width,
-              padding: '0 0.5rem',
+                (rowsAxisData && rowsAxisData.length > 0 ? 200 : 0) -
+                boxConfig.gap / 2,
+              height: 30,
+              width: boxConfig.width + boxConfig.gap,
+              padding: '0.25rem 0.5rem',
               backgroundColor: '#fff',
+              borderRight: '0.0625rem solid #dceafb',
               textAlign: 'center',
               overflow: 'hidden',
               whiteSpace: 'nowrap',
