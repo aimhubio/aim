@@ -8,9 +8,7 @@ import './Box.scss';
 
 function Box(props: any) {
   const [fullView, setFullView] = React.useState<boolean>(false);
-  const sequenceName = props.engine.useStore(
-    (state: any) => state.sequenceName,
-  );
+  const sequenceName = props.engine.useStore(props.engine.sequenceNameSelector);
 
   const boxConfig = props.engine.useStore(props.engine.boxConfig.stateSelector);
 

@@ -17,7 +17,6 @@ import depthInterceptors from './depthInterceptors';
 export type Record = {
   index?: number;
   step: number;
-  epoch?: number;
 };
 
 export interface AimFlatObjectBase<T = any> {
@@ -53,7 +52,6 @@ export type AimObjectHashCreator = {
   name?: string;
   context?: Context;
   step?: number;
-  epoch?: number;
   index?: number;
 };
 
@@ -204,16 +202,15 @@ export function storageDataToFlatList(
             /** depth 2 */ // STEP
             let record_data: Record = {
               step: trace.iters[stepIndex],
-              // epoch: trace.epochs[stepIndex],
             };
 
-            // Generating unique hash creator obj for the AimObject using sequence name, sequence context, step, epoch
+            // Generating unique hash creator obj for the AimObject using sequence name, sequence context, step
             objectHashCreator = {
               ...objectHashCreator,
               ...record_data,
             };
             if (objectDepth === 2) {
-              record_info = record_info.concat(['record.epoch', 'record.step']);
+              record_info = record_info.concat(['record.step']);
 
               collectedDataByDepth = {
                 ...collectedDataByDepth,
@@ -238,11 +235,7 @@ export function storageDataToFlatList(
                 ...objectHashCreator,
                 index: record_data.index,
               };
-              record_info = record_info.concat([
-                'record.epoch',
-                'record.step',
-                'record.index',
-              ]);
+              record_info = record_info.concat(['record.step', 'record.index']);
               collectedDataByDepth = {
                 ...collectedDataByDepth,
                 record: record_data,

@@ -76,9 +76,9 @@ function Visualizer(props: IVisualizationProps) {
       <div className='VisualizerContainer'>
         <BoxVirtualizer
           data={data}
-          itemRenderer={(item: any, i: number) => (
+          itemRenderer={(item: any) => (
             <Box
-              key={i} // replace with some unique key of box data
+              key={item.key} // replace with some unique key of box data
               engine={engine}
               style={item.style}
             >
