@@ -238,6 +238,7 @@ function createEngine(config: IEngineConfigFinal) {
     const res = await pipeline.execute({
       query: {
         params,
+        ignoreCache: true,
       },
       group: [
         {

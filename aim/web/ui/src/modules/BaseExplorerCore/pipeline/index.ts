@@ -32,8 +32,8 @@ export type PipelineOptions = {
 
 export type PipelineExecutionOptions = {
   query?: {
-    // forceRun?: boolean;
     params: RunsSearchQueryParams;
+    ignoreCache?: boolean;
   };
   group?: BettaGroupOption[];
 };
