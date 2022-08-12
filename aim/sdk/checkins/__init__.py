@@ -312,7 +312,6 @@ class CheckIn:
                 path.unlink()
             except OSError:
                 pass
-            time.sleep(0.2)  # TODO remove this artificial delay
             logger.info(f"check-in {path} removed")
 
         parsed_run_hash, check_in = self.parse(current_check_in_path)
@@ -362,7 +361,6 @@ class CheckIn:
         new_path = directory / filename
         logger.info(f"touching check-in: {new_path}")
 
-        time.sleep(0.4)  # TODO remove this artificial delay
         new_path.touch(exist_ok=True)
 
         if cleanup:
@@ -448,15 +446,15 @@ class RunCheckIns:
         return default_instance
 
     def close(self):
-        self.stop()
         self.instances.remove(self)
+        self.stop()
 
     def stop(self):
         """
         Flush the last check-in and stop the thread.
         """
         self.stop_signal.set()
-        self.flush()
+        self.flush(block=False)
         self.thread.join()
 
     def writer(self):
@@ -524,6 +522,8 @@ class RunCheckIns:
 
         If `block` is True, then this will block until the check-in is flushed.
         """
+        if self.stop_signal.is_set():
+            raise RuntimeError("check-in is not allowed after stopping the writer thread")
         self.last_check_in = self.last_check_in.increment(expect_next_in=expect_next_in)
         if block:
             self.flush(block=True)
