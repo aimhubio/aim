@@ -5,11 +5,11 @@ export interface BoxVirtualizerProps {
   itemRenderer: (item: any, i: number) => React.ReactNode;
   children?: ReactChildren;
   axisData?: {
-    column?: any;
-    row?: any;
+    columns?: any;
+    rows?: any;
   };
   axisItemRenderer?: {
-    column?: (item: any, i: number) => React.ReactNode;
-    row?: (item: any, i: number) => React.ReactNode;
+    columns?: (item: any, i: number) => React.ReactNode;
+    rows?: (item: any, i: number) => React.ReactNode;
   };
 }

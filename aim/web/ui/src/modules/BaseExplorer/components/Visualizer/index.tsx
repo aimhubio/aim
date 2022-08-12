@@ -1,6 +1,7 @@
 import * as React from 'react';
 
 import { Tooltip } from '@material-ui/core';
+import { GroupType } from 'modules/BaseExplorerCore/pipeline/grouping/types';
 
 import { Text } from 'components/kit';
 
@@ -67,34 +68,67 @@ function BaseVisualizer(props: IVisualizationProps) {
     });
   }, [dataState, foundGroups, boxConfig]);
 
+  // FOR ROWS
+  const rowsAxisData = React.useMemo(() => {
+    if (foundGroups) {
+      return Object.keys(foundGroups)
+        .filter((key: string) => foundGroups[key].type === GroupType.ROW)
+        .map((key: string) => {
+          const item = foundGroups[key];
+          return {
+            key: key,
+            value: contextToString(item.fields),
+            style: {
+              position: 'absolute',
+              top: item.order * (boxConfig.height + boxConfig.gap),
+              right: 10,
+              height: boxConfig.height,
+              width: 180,
+              display: 'flex',
+              alignItems: 'center',
+              backgroundColor: '#fff',
+              contentVisibility: 'auto',
+              overflow: 'hidden',
+              wordBreak: 'break-all',
+              textOverflow: 'ellipsis',
+              zIndex: 1,
+            },
+          };
+        });
+    }
+  }, [foundGroups, boxConfig, engine]);
+
   // FOR COLUMNS
   const columnsAxisData = React.useMemo(() => {
-    let components: any[] = [];
     if (foundGroups) {
-      components = Object.keys(foundGroups).map((key: string) => {
-        const item = foundGroups[key];
-        return {
-          key: key,
-          value: contextToString(item.fields),
-          style: {
-            position: 'absolute',
-            top: 5,
-            left: item.order * (boxConfig.width + boxConfig.gap),
-            height: 20,
-            width: boxConfig.width,
-            backgroundColor: '#fff',
-            contentVisibility: 'auto',
-            textAlign: 'center',
-            overflow: 'hidden',
-            whiteSpace: 'nowrap',
-            textOverflow: 'ellipsis',
-            zIndex: 1,
-          },
-        };
-      });
+      return Object.keys(foundGroups)
+        .filter((key: string) => foundGroups[key].type === GroupType.COLUMN)
+        .map((key: string) => {
+          const item = foundGroups[key];
+          return {
+            key: key,
+            value: contextToString(item.fields),
+            style: {
+              position: 'absolute',
+              top: 5,
+              left:
+                item.order * (boxConfig.width + boxConfig.gap) +
+                30 +
+                (rowsAxisData && rowsAxisData.length > 0 ? 200 : 0),
+              height: 20,
+              width: boxConfig.width,
+              backgroundColor: '#fff',
+              contentVisibility: 'auto',
+              textAlign: 'center',
+              overflow: 'hidden',
+              whiteSpace: 'nowrap',
+              textOverflow: 'ellipsis',
+              zIndex: 1,
+            },
+          };
+        });
     }
-    return components;
-  }, [foundGroups, boxConfig, engine]);
+  }, [foundGroups, boxConfig, engine, rowsAxisData]);
 
   return (
     <div
@@ -115,10 +149,20 @@ function BaseVisualizer(props: IVisualizationProps) {
           </Box>
         )}
         axisData={{
-          column: columnsAxisData,
+          columns: columnsAxisData,
+          rows: rowsAxisData,
         }}
         axisItemRenderer={{
-          column: (item: any, i: number) => (
+          columns: (item: any, i: number) => (
+            <div key={item.key} style={item.style}>
+              <Tooltip title={item.value}>
+                <span>
+                  <Text>{item.value}</Text>
+                </span>
+              </Tooltip>
+            </div>
+          ),
+          rows: (item: any, i: number) => (
             <div key={item.key} style={item.style}>
               <Tooltip title={item.value}>
                 <span>

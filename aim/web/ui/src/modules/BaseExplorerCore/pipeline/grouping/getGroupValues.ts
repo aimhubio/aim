@@ -28,6 +28,7 @@ function getGroups(
   data: any[],
   fields: string[],
   orders: Order[],
+  type: string,
 ): Record<string, Group> {
   // generate possible groups
   const groups: Record<string, Group> = data.reduce(
@@ -40,6 +41,7 @@ function getGroups(
           key: groupKey,
           fields: groupValue,
           items: [],
+          type,
         };
       }
 

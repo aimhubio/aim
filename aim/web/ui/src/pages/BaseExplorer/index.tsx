@@ -57,10 +57,12 @@ const config: IExplorerConfig = {
           iteration: number,
         ) => {
           return {
-            left: group[GroupType.COLUMN]
-              ? group[GroupType.COLUMN].order *
-                (boxConfig.width + boxConfig.gap)
-              : 0,
+            left:
+              (group[GroupType.COLUMN]
+                ? group[GroupType.COLUMN].order *
+                    (boxConfig.width + boxConfig.gap) +
+                  30
+                : 30) + (group[GroupType.ROW] ? 200 : 0),
           };
         },
         axisComponent: memo(

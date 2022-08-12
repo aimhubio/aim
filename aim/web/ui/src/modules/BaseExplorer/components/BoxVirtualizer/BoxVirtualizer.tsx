@@ -43,10 +43,16 @@ function BoxVirtualizer(props: BoxVirtualizerProps) {
     (a, b) => _.isEqual(a.style, b.style),
   );
 
-  let columnsAxisItems = props.axisData?.column?.filter(
+  let columnsAxisItems = props.axisData?.columns?.filter(
     (item: any) =>
       item.style.left >= gridWindow.left - item.style.width &&
       item.style.left <= gridWindow.left + gridWindow.width,
+  );
+
+  let rowsAxisItems = props.axisData?.rows?.filter(
+    (item: any) =>
+      item.style.top >= gridWindow.top - item.style.height &&
+      item.style.top <= gridWindow.top + gridWindow.height,
   );
 
   React.useEffect(() => {
@@ -93,33 +99,56 @@ function BoxVirtualizer(props: BoxVirtualizerProps) {
       }}
       onScroll={onScroll}
     >
-      {columnsAxisItems && columnsAxisItems.length > 0 && (
+      {((columnsAxisItems && columnsAxisItems.length > 0) ||
+        (rowsAxisItems && rowsAxisItems.length > 0)) && (
         <div
           style={{
             position: 'sticky',
             top: 0,
-            zIndex: 2,
             width:
               sortedByPosition?.[sortedByPosition?.length - 1]?.style?.left +
-              sortedByPosition?.[sortedByPosition?.length - 1]?.style?.width,
+              sortedByPosition?.[sortedByPosition?.length - 1]?.style?.width +
+              30,
+            height: 30,
+            minWidth: '100%',
             borderBottom: '1px solid #dceafb',
             backgroundColor: '#fff',
-            height: 30,
+            zIndex: 3,
           }}
         >
-          {columnsAxisItems?.map(props.axisItemRenderer?.column)}
+          {columnsAxisItems?.map(props.axisItemRenderer?.columns)}
+        </div>
+      )}
+      {rowsAxisItems && rowsAxisItems.length > 0 && (
+        <div
+          style={{
+            position: 'sticky',
+            left: 0,
+            width: 200,
+            height:
+              sortedByPosition?.[sortedByPosition?.length - 1]?.style?.top +
+              sortedByPosition?.[sortedByPosition?.length - 1]?.style?.height,
+            minHeight: '100%',
+            borderRight: '1px solid #dceafb',
+            backgroundColor: '#fff',
+            zIndex: 2,
+          }}
+        >
+          {rowsAxisItems?.map(props.axisItemRenderer?.rows)}
         </div>
       )}
       <div
         ref={grid}
         style={{
-          overflow: 'hidden',
+          display: 'inline',
           width:
             sortedByPosition?.[sortedByPosition?.length - 1]?.style?.left +
-            sortedByPosition?.[sortedByPosition?.length - 1]?.style?.width,
+            sortedByPosition?.[sortedByPosition?.length - 1]?.style?.width +
+            30,
           height:
             sortedByPosition?.[sortedByPosition?.length - 1]?.style?.top +
             sortedByPosition?.[sortedByPosition?.length - 1]?.style?.height,
+          overflow: 'hidden',
         }}
       >
         {items?.map(props.itemRenderer)}
