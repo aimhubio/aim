@@ -1,7 +1,9 @@
-import React, { memo } from 'react';
+import * as React from 'react';
+
+import { Tooltip } from '@material-ui/core';
 
 import LineChart from 'components/LineChart/LineChart';
-import { Badge, Text } from 'components/kit';
+import { Badge, Text, Button, Spinner, Icon } from 'components/kit';
 import ErrorBoundary from 'components/ErrorBoundary/ErrorBoundary';
 import { HighlightEnum } from 'components/HighlightModesPopover/HighlightModesPopover';
 
@@ -17,35 +19,76 @@ import { IRunMetricCardProps } from './types';
 function RunMetricCard({
   batch,
   index,
+  observer,
+  isPinned,
+  togglePin,
 }: IRunMetricCardProps): React.FunctionComponentElement<React.ReactNode> {
+  const containerRef = React.useRef(null);
+
+  React.useEffect(() => {
+    if (containerRef.current && observer) {
+      observer.observe(containerRef.current!);
+    }
+  }, [observer]);
+
   return (
     <ErrorBoundary>
-      <div className='RunDetailMetricsTab__container__chartContainer'>
-        <div className='RunDetailMetricsTab__container__chartContainer__chartBox'>
-          <ErrorBoundary>
-            <LineChart
-              data={[
-                {
-                  key: batch.key,
-                  data: {
-                    xValues: [...batch.iters],
-                    yValues: [...batch.values],
+      <div
+        className='RunDetailMetricsTab__container__chartContainer'
+        data-name={batch.name}
+        data-context={contextToString(batch.context)}
+        ref={containerRef}
+      >
+        <Tooltip title={isPinned ? 'Unpin' : 'Pin'}>
+          <div className='RunDetailMetricsTab__container__chartContainer__metricDetailBox__pin'>
+            <Button
+              color={isPinned ? 'primary' : 'default'}
+              size='xSmall'
+              variant='outlined'
+              withOnlyIcon
+              onClick={() =>
+                togglePin(
+                  {
+                    name: batch.name,
+                    context: batch.context,
                   },
-                  color: '#1c2852',
-                  dasharray: 'none',
-                  selectors: [batch.key],
-                },
-              ]}
-              index={index}
-              axesScaleType={{
-                xAxis: ScaleEnum.Linear,
-                yAxis: ScaleEnum.Linear,
-              }}
-              ignoreOutliers={false}
-              highlightMode={HighlightEnum.Off}
-              curveInterpolation={CurveEnum.Linear}
-            />
-          </ErrorBoundary>
+                  isPinned,
+                )
+              }
+            >
+              <Icon name='pin' />
+            </Button>
+          </div>
+        </Tooltip>
+        <div className='RunDetailMetricsTab__container__chartContainer__chartBox'>
+          {batch.iters ? (
+            <ErrorBoundary>
+              <LineChart
+                data={[
+                  {
+                    key: batch.key,
+                    data: {
+                      xValues: [...batch.iters],
+                      yValues: [...batch.values],
+                    },
+                    color: '#1c2852',
+                    dasharray: 'none',
+                    selectors: [batch.key],
+                  },
+                ]}
+                index={index}
+                axesScaleType={{
+                  xAxis: ScaleEnum.Linear,
+                  yAxis: ScaleEnum.Linear,
+                }}
+                ignoreOutliers={false}
+                highlightMode={HighlightEnum.Off}
+                curveInterpolation={CurveEnum.Linear}
+              />
+            </ErrorBoundary>
+          ) : (
+            <Spinner />
+          )}
         </div>
         <div className='RunDetailMetricsTab__container__chartContainer__metricDetailBox'>
           <Text
@@ -76,4 +119,4 @@ function RunMetricCard({
   );
 }
 
-export default memo(RunMetricCard);
+export default React.memo(RunMetricCard);
