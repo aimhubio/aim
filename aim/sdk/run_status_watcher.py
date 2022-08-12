@@ -190,7 +190,6 @@ class RunStatusWatcher:
     def start_watcher(self):
         if not self.initialized:
             return
-        self.notifications_queue.add_notification()
         logger.info('Starting watcher...')
         if self.background:
             self.watcher_thread.start()
