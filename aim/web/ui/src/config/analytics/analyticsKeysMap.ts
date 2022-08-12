@@ -20,6 +20,7 @@ export const ANALYTICS_EVENT_KEYS = {
       changeSorting: '[MetricsExplorer][Table] Change sorting',
       metricVisibilityChange:
         '[MetricsExplorer][Table] Change metric visibility',
+      compareSelectedRuns: '[MetricsExplorer][Table] Compare selected runs',
     },
     chart: {
       controls: {
@@ -86,6 +87,7 @@ export const ANALYTICS_EVENT_KEYS = {
       changeSorting: '[ParamsExplorer][Table] Change sorting',
       metricVisibilityChange:
         '[ParamsExplorer][Table] Change metric visibility',
+      compareSelectedRuns: '[ParamsExplorer][Table] Compare selected runs',
     },
     chart: {
       controls: {
@@ -135,6 +137,7 @@ export const ANALYTICS_EVENT_KEYS = {
       changeTableRowHeight: '[RunsExplorer][Table] Change rows height',
       changeSorting: '[RunsExplorer][Table] Change sorting',
       metricVisibilityChange: '[RunsExplorer][Table] Change metric visibility',
+      compareSelectedRuns: '[RunsExplorer][Table] Compare selected runs',
     },
   },
   scatters: {
@@ -158,6 +161,7 @@ export const ANALYTICS_EVENT_KEYS = {
       changeSorting: '[ScattersExplorer][Table] Change sorting',
       metricVisibilityChange:
         '[ScattersExplorer][Table] Change metric visibility',
+      compareSelectedRuns: '[ScattersExplorer][Table] Compare selected runs',
     },
     chart: {
       controls: {
@@ -204,6 +208,7 @@ export const ANALYTICS_EVENT_KEYS = {
       changeSorting: '[ImagesExplorer][Table] Change sorting',
       metricVisibilityChange:
         '[ImagesExplorer][Table] Change metric visibility',
+      compareSelectedRuns: '[ImagesExplorer][Table] Compare selected runs',
     },
     groupings: {
       row: {
