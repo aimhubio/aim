@@ -28,7 +28,6 @@ function RunOverviewTab({ runData, runHash }: IRunOverviewTabProps) {
   const [containerHeight, setContainerHeight] = React.useState<number>(0);
 
   useRunMetricsBatch({
-    runBatch: runData.runMetricsBatch,
     runTraces: runData.runTraces,
     runHash,
   });
