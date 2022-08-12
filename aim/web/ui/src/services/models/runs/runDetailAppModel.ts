@@ -117,12 +117,16 @@ function getRunsOfExperiment(
   };
 }
 
-function processRunBatchData(data: IRunBatch[]): {
+function processRunBatchData(
+  data: IRunBatch[],
+  metricsBatch: IRunBatch[],
+  systemBatch: IRunBatch[],
+): {
   runMetricsBatch: IRunBatch[];
   runSystemBatch: IRunBatch[];
 } {
-  const runMetricsBatch: IRunBatch[] = [];
-  const runSystemBatch: IRunBatch[] = [];
+  const runMetricsBatch: IRunBatch[] = metricsBatch?.slice() ?? [];
+  const runSystemBatch: IRunBatch[] = systemBatch?.slice() ?? [];
 
   for (let run of data) {
     const { values, iters } = filterSingleRunMetricsData(run);
@@ -151,7 +155,10 @@ function processRunBatchData(data: IRunBatch[]): {
   runMetricsBatch.sort(alphabeticalSortComparator({ orderBy: 'sortKey' }));
   runSystemBatch.sort(alphabeticalSortComparator({ orderBy: 'sortKey' }));
 
-  return { runMetricsBatch, runSystemBatch };
+  return {
+    runMetricsBatch: _.uniqBy(runMetricsBatch, 'sortKey'),
+    runSystemBatch: _.uniqBy(runSystemBatch, 'sortKey'),
+  };
 }
 
 function getRunMetricsBatch(body: any, runHash: string) {
@@ -161,19 +168,25 @@ function getRunMetricsBatch(body: any, runHash: string) {
   getRunsBatchRequestRef = runsService.getRunMetricsBatch(body, runHash);
   return {
     call: async () => {
-      model.setState({ isRunBatchLoading: true });
+      try {
+        const data = await getRunsBatchRequestRef.call();
+        const { runMetricsBatch, runSystemBatch } = processRunBatchData(
+          data,
+          model.getState().runMetricsBatch,
+          model.getState().runSystemBatch,
+        );
 
-      const data = await getRunsBatchRequestRef.call((detail: any) => {
-        exceptionHandler({ detail, model });
-      });
-      const { runMetricsBatch, runSystemBatch } = processRunBatchData(data);
-
-      model.setState({
-        ...model.getState(),
-        runMetricsBatch,
-        runSystemBatch,
-        isRunBatchLoading: false,
-      });
+        model.setState({
+          ...model.getState(),
+          runMetricsBatch,
+          runSystemBatch,
+          isRunBatchLoading: false,
+        });
+      } catch (ex: Error | any) {
+        if (ex.name !== 'AbortError') {
+          exceptionHandler({ detail: ex, model });
+        }
+      }
     },
     abort: getRunsBatchRequestRef.abort,
   };
