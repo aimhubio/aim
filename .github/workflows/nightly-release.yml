@@ -28,6 +28,35 @@ jobs:
           git commit -m "Update VERSION file"
           git push
 
+  run-checks:
+    runs-on: ubuntu-latest
+    name: Run Unit-tests & Code-style checks
+    steps:
+      - name: checkout
+        uses: actions/checkout@v2
+        with:
+          ref: 'nightly'
+
+      - name: setup python
+        uses: actions/setup-python@v2
+        with:
+          python-version: '3.6'
+          architecture: x64
+
+      - name: install deps
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install -r requirements.dev.txt
+          python -m pip install -r tests/requirements.txt
+
+      - name: code style checks
+        run: |
+          flake8 aim
+
+      - name: unit-tests
+        run: |
+          pytest tests || pytest --lf tests
+
   trigger-packaging-workflow:
     needs: version-override
     uses: ./.github/workflows/python-package.yml
