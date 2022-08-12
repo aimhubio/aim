@@ -30,10 +30,12 @@ function BoxVirtualizer(props: BoxVirtualizerProps) {
     });
   }
 
+  // Sort items to find the edges for container size calculation
   let sortedByPosition = props.data
     ?.sort((a: any, b: any) => a.style.left - b.style.left)
     .sort((a: any, b: any) => a.style.top - b.style.top);
 
+  // Filter boxes/items based on their position intersection with the viewport
   let items = _.uniqWith<{ style: React.CSSProperties }>(
     props.data?.filter(
       (item: any) =>
@@ -45,12 +47,14 @@ function BoxVirtualizer(props: BoxVirtualizerProps) {
     (a, b) => _.isEqual(a.style, b.style),
   );
 
+  // Filter column group values based on their position intersection with the viewport
   let columnsAxisItems = props.axisData?.columns?.filter(
     (item: any) =>
       item.style.left >= gridWindow.left - item.style.width &&
       item.style.left <= gridWindow.left + gridWindow.width,
   );
 
+  // Filter row group values based on their position intersection with the viewport
   let rowsAxisItems = props.axisData?.rows?.filter(
     (item: any) =>
       item.style.top >= gridWindow.top - item.style.height &&

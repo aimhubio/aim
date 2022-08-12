@@ -65,32 +65,6 @@ const config: IExplorerConfig = {
                 : 30) + (group[GroupType.ROW] ? 200 : 0),
           };
         },
-        axisComponent: memo(
-          ({
-            group = {},
-            boxConfig,
-            order,
-          }: {
-            group: any;
-            boxConfig: any;
-            order: any;
-          }) => (
-            <div
-              style={{
-                border: '1px solid black',
-                position: 'absolute',
-                zIndex: 1,
-                width: boxConfig.width,
-                left: order * (boxConfig.width + boxConfig.gap),
-                top: 0,
-                height: 20,
-                contentVisibility: 'auto',
-              }}
-            >
-              {JSON.stringify(group.fields)}
-            </div>
-          ),
-        ),
         defaultApplications: {
           fields: ['run.hash', 'figures.name'],
           orders: [],
