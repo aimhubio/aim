@@ -22,6 +22,7 @@ import SortPopover from 'pages/Metrics/components/Table/SortPopover/SortPopover'
 import ManageColumnsPopover from 'pages/Metrics/components/Table/ManageColumnsPopover/ManageColumnsPopover';
 import HideRowsPopover from 'pages/Metrics/components/Table/HideRowsPopover/HideRowsPopover';
 import RowHeightPopover from 'pages/Metrics/components/Table/RowHeightPopover/RowHeightPopover';
+import CompareSelectedRunsPopover from 'pages/Metrics/components/Table/CompareSelectedRunsPopover';
 
 import { ITableProps } from 'types/components/Table/Table';
 
@@ -858,6 +859,7 @@ const Table = React.forwardRef(function Table(
                   <Button
                     color='secondary'
                     type='text'
+                    size='small'
                     onClick={onToggleDeletePopup}
                     className={`Table__header__item ${
                       isOpenDeleteSelectedPopup ? 'opened' : ''
@@ -875,6 +877,7 @@ const Table = React.forwardRef(function Table(
                   <Button
                     color='secondary'
                     type='text'
+                    size='small'
                     onClick={onToggleArchivePopup}
                     className={`Table__header__item ${
                       isOpenArchiveSelectedPopup ? 'opened' : ''
@@ -892,6 +895,7 @@ const Table = React.forwardRef(function Table(
                   <Button
                     color='secondary'
                     type='text'
+                    size='small'
                     onClick={onToggleUnarchivePopup}
                     className={`Table__header__item ${
                       isOpenUnarchiveSelectedPopup ? 'opened' : ''
@@ -909,6 +913,7 @@ const Table = React.forwardRef(function Table(
                   <Button
                     color='secondary'
                     type='text'
+                    size='small'
                     onClick={onHideSelectedItems}
                     className='Table__header__item'
                   >
@@ -934,6 +939,12 @@ const Table = React.forwardRef(function Table(
                   </Button>
                 </div>
               )}
+              <div>
+                <CompareSelectedRunsPopover
+                  appName={appName}
+                  selectedRows={selectedRows}
+                />
+              </div>
             </div>
           ) : (
             ''

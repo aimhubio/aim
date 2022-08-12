@@ -1,4 +1,5 @@
 import {
+  IPinnedSequencesResData,
   IProject,
   IProjectParamsMetrics,
 } from 'types/services/models/projects/projectsModel';
@@ -10,6 +11,7 @@ const endpoints = {
   GET_PROJECTS: 'projects',
   GET_ACTIVITIES: 'projects/activity',
   GET_PROJECTS_PARAMS: 'projects/params',
+  PINNED_SEQUENCES: 'projects/pinned-sequences',
 };
 
 function getProjectsData(): IApiRequest<IProject> {
@@ -33,11 +35,23 @@ function getProjectParams(
   return API.get<IProjectParamsMetrics>(endpoints.GET_PROJECTS_PARAMS + query);
 }
 
+function getPinnedSequences(): IApiRequest<IPinnedSequencesResData> {
+  return API.get(endpoints.PINNED_SEQUENCES);
+}
+
+function setPinnedSequences(
+  body: IPinnedSequencesResData,
+): IApiRequest<IPinnedSequencesResData> {
+  return API.post(endpoints.PINNED_SEQUENCES, body);
+}
+
 const projectsService = {
   endpoints,
   getProjectsData,
   fetchActivityData,
   getProjectParams,
+  getPinnedSequences,
+  setPinnedSequences,
 };
 
 export default projectsService;

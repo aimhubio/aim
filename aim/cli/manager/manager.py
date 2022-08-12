@@ -16,7 +16,7 @@ class ManagerActionStatuses(enum.Enum):
 
 class ManagerActionResult:
     """
-        Object to returned by manager action
+        Object returned by manager action
         If status is ManagerActionStatuses.Failed the info dict should have a message property
         If status is ManagerActionStatuses.Succeed the info dict should have required properties for the specific action
         @TODO add type checking for info fields
@@ -27,7 +27,7 @@ class ManagerActionResult:
 
 
 def run_up(args):
-    args_list = []
+    args_list = ['--log-level=error']
     for p in args.keys():
         if p != '--proxy-url':
             args_list.append(p + '=' + args[p])
@@ -45,6 +45,7 @@ def run_up(args):
         'host': 'http://' + args['--host']
     }
 
+    time.sleep(2)
     for line in child_process.stderr:
         # @TODO improve this solution
         #  The child process `aim cli` has an incompatible things inside
@@ -56,7 +57,6 @@ def run_up(args):
             )
         else:
             if success_msg in line.decode():
-                time.sleep(2)
                 return ManagerActionResult(
                     ManagerActionStatuses.Succeed,
                     info
