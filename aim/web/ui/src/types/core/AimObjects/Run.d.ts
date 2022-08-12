@@ -31,13 +31,13 @@ export interface RunInfo {
 }
 
 export interface IndexRanges {
-  index_range_total: [number, number];
-  index_range_used: [number, number];
+  index_range_total?: [number, number];
+  index_range_used?: [number, number];
 }
 
 export interface RecordRanges {
-  record_range_total: [number, number];
-  record_range_used: [number, number];
+  record_range_total?: [number, number];
+  record_range_used?: [number, number];
 }
 
 export interface RunSearchRunView {

@@ -92,7 +92,7 @@ const config: IExplorerConfig = {
           ),
         ),
         defaultApplications: {
-          fields: [],
+          fields: ['run.hash', 'figures.name'],
           orders: [],
         },
         // state: {
@@ -126,7 +126,7 @@ const config: IExplorerConfig = {
           };
         },
         defaultApplications: {
-          fields: [],
+          fields: ['record.step'],
           orders: [Order.DESC, Order.ASC],
         },
         // state: {
@@ -186,6 +186,9 @@ const config: IExplorerConfig = {
     // change to custom state
     custom1: {
       initialState: { rowLength: 1 },
+    },
+    ranges: {
+      initialState: { isApplyButtonDisabled: true, isValid: true },
     },
   },
 };

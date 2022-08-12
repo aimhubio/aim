@@ -30,7 +30,7 @@ export interface AimFlatObjectBase {
 }
 
 export interface IQueryableData {
-  ranges?: RecordRanges | IndexRanges;
+  ranges?: RecordRanges & IndexRanges;
 }
 
 export interface ProcessedData {
@@ -45,7 +45,7 @@ export interface ProcessedData {
 
 function collectQueryableData(run: RunSearchRunView): IQueryableData {
   let queryable_data: {
-    ranges?: RecordRanges | IndexRanges;
+    ranges?: RecordRanges & IndexRanges;
   } = {};
 
   if (run && run.ranges) {
@@ -53,11 +53,11 @@ function collectQueryableData(run: RunSearchRunView): IQueryableData {
       ranges: {
         // Those changes are made since python has a mathematical interval for ranges [start, end)
         record_range_total: [
-          run.ranges.record_range_total?.[0],
+          run.ranges.record_range_total?.[0] ?? 0,
           (run.ranges.record_range_total?.[1] || 0) - 1,
         ],
         record_range_used: [
-          run.ranges.record_range_used?.[0],
+          run.ranges.record_range_used?.[0] ?? 0,
           (run.ranges.record_range_used?.[1] || 0) - 1,
         ],
       },
@@ -71,7 +71,7 @@ function collectQueryableData(run: RunSearchRunView): IQueryableData {
       queryable_data.ranges = {
         ...queryable_data.ranges,
         index_range_total: [
-          run.ranges.index_range_total?.[0],
+          run.ranges.index_range_total?.[0] ?? 0,
           (run.ranges.index_range_total?.[1] || 0) - 1,
         ],
         index_range_used: [
@@ -186,8 +186,7 @@ export function storageDataToFlatList(
 
               collectedDataByDepth = {
                 ...collectedDataByDepth,
-                'record.step': record_data.step,
-                'record.epoch': record_data.epoch,
+                record: record_data,
               };
               const object = {
                 ...collectedDataByDepth,
@@ -210,7 +209,7 @@ export function storageDataToFlatList(
               ]);
               collectedDataByDepth = {
                 ...collectedDataByDepth,
-                ...record_data,
+                record: record_data,
               };
               const object = {
                 ...collectedDataByDepth,
