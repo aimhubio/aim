@@ -8,7 +8,7 @@
   justify-content: center;
   background: $white;
   border-top: $border-main;
-  border-bottom-right-radius: toRem(6px);
+  border-bottom-right-radius: $border-radius-md;
   .RangePanelContainer {
     display: flex;
     align-items: center;

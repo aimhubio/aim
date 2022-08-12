@@ -10,7 +10,7 @@ import { IBoxConfigState } from '..';
 
 import { IBoxPropertiesPopoverProps } from '.';
 
-import './styles.scss';
+import './BoxPropertiesPopover.scss';
 
 function BoxPropertiesPopover(props: IBoxPropertiesPopoverProps) {
   const { reset, update, boxProperties, settings, updateDelay = 100 } = props;

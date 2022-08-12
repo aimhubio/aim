@@ -6,7 +6,7 @@ import { AimFlatObjectBase } from 'modules/BaseExplorerCore/pipeline/adapter/pro
 
 import { IBoxVirtualizerProps } from './';
 
-import './styles.scss';
+import './BoxVirtualizer.scss';
 
 function BoxVirtualizer(props: IBoxVirtualizerProps) {
   const { data = [] } = props;

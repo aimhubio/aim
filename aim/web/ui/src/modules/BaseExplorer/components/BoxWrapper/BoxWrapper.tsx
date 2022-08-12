@@ -7,7 +7,7 @@ import BoxFullViewPopover from '../BoxFullViewPopover';
 
 import { IBoxWrapperProps } from '.';
 
-import './styles.scss';
+import './BoxWrapper.scss';
 
 function BoxWrapper(props: IBoxWrapperProps) {
   const {
