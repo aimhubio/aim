@@ -2,7 +2,7 @@ import { memoize } from 'modules/BaseExplorerCore/cache';
 
 import { AimFlatObjectBase } from '../adapter/processor';
 
-import { BettaGroupOption, GroupType, Order } from './types';
+import { BettaGroupOption } from './types';
 import group from './group';
 
 export type GroupingConfigOptions = {
@@ -45,8 +45,9 @@ export function grouping({
 }: GroupingExecutionOptions): GroupingResult {
   groupingConfig.statusChangeCallback &&
     groupingConfig.statusChangeCallback('grouping');
-
+  // found groups
   let fg = {};
+  // data
   let d = objectList;
 
   grouping?.forEach((g: BettaGroupOption) => {

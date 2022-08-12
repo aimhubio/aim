@@ -1,36 +1,9 @@
 // group by [group type] [group_type] [order]
-import { encode } from 'utils/encoder/encoder';
+import { cyrb53 } from '../../helpers';
 
 import { pickValues } from './getGroupValues';
-import { GroupOptions, GroupType, Order } from './types';
+import { GroupType, Order } from './types';
 import getGroupValues from './getGroupValues';
-
-const boxStyles = {
-  width: 100,
-  height: 100,
-  gap: 15,
-};
-
-const groupConfig = {
-  [GroupType.ROW]: {
-    property: 'y', // y
-    defaultFields: [],
-    defaultOrder: Order.ASC,
-    defaultApplier: (order: number): number => order * boxStyles.height, // + boxStyles.gap,
-  },
-  [GroupType.COLUMN]: {
-    property: 'x', // x
-    defaultFields: [],
-    defaultOrder: Order.ASC,
-    defaultApplier: (order: number) => order * boxStyles.width, // + boxStyles.gap
-  },
-  [GroupType.COLOR]: {
-    property: 'color',
-    defaultFields: [],
-    defaultOrder: Order.ASC,
-    defaultApplier: () => {},
-  },
-};
 
 /*
  * cache = {
@@ -67,7 +40,7 @@ function group(
 
   // @ts-ignore
   const result = data.map((item: any) => {
-    const groupKey: string = encode(pickValues(item, config.fields), true);
+    const groupKey: string = cyrb53(pickValues(item, config.fields));
 
     const group = item['groups'] || {};
     return {
