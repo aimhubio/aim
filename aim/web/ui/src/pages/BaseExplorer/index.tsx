@@ -156,9 +156,10 @@ const config: IExplorerConfig = {
   },
   states: {
     // change to custom state
-    custom1: {
-      initialState: { rowLength: 1 },
+    depthMap: {
+      initialState: {},
     },
+
     ranges: {
       initialState: { isApplyButtonDisabled: true, isValid: true },
     },

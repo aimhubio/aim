@@ -13,15 +13,17 @@ function BoxWrapper(props: IBoxWrapperProps) {
   const {
     engine,
     items,
-    depth = 0,
-    onDepthChange,
     component: BoxContent,
+    groupKey,
+    depthSelector,
+    onDepthMapChange,
   } = props;
 
   const [fullView, setFullView] = React.useState<boolean>(false);
   const sequenceName = engine.useStore((state: any) => state.sequenceName);
   const boxConfig = engine.useStore(engine.boxConfig.stateSelector);
   const foundGroups = engine.useStore(engine.foundGroupsSelector);
+  const depth = engine.useStore(depthSelector(groupKey));
 
   const currentItem = React.useMemo(() => items[depth], [items, depth]);
   const groupInfo = React.useMemo(() => {
@@ -47,11 +49,11 @@ function BoxWrapper(props: IBoxWrapperProps) {
   }, [foundGroups, currentItem]);
 
   const renderDepthSlider = (props: Partial<IDepthSliderProps> = {}) => {
-    return items.length > 1 && onDepthChange ? (
+    return items.length > 1 ? (
       <DepthSlider
         items={items}
         depth={depth}
-        onDepthChange={onDepthChange}
+        onDepthChange={(value) => onDepthMapChange(value, groupKey)}
         valueLabelDisplay='on'
         {...props}
       />

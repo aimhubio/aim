@@ -7,7 +7,6 @@ import { Dialog, Link, Tooltip } from '@material-ui/core';
 
 import { Badge, Button, Icon, Text } from 'components/kit';
 import ErrorBoundary from 'components/ErrorBoundary/ErrorBoundary';
-import DepthSlider from 'components/DepthSlider';
 
 import { PathEnum } from 'config/enums/routesEnum';
 import { DATE_WITH_SECONDS } from 'config/dates/dates';

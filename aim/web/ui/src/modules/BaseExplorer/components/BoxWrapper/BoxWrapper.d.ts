@@ -7,6 +7,7 @@ import { AimFlatObjectBase } from 'modules/BaseExplorerCore/pipeline/adapter/pro
 export interface IBoxWrapperProps extends IBaseComponentProps {
   items: Array<AimFlatObjectBase<any>>;
   component: IVisualizationProps['box'];
-  depth?: number;
-  onDepthChange?: (value: number) => void;
+  groupKey: string;
+  depthSelector: (groupKey: string) => (state: any) => number;
+  onDepthMapChange: (value: number, groupKey: string) => void;
 }

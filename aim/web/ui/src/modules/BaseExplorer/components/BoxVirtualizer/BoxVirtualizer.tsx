@@ -1,6 +1,6 @@
 import * as React from 'react';
 import * as _ from 'lodash-es';
-import { useResizeObserver, useDepthMap } from 'hooks';
+import { useResizeObserver } from 'hooks';
 
 import { AimFlatObjectBase } from 'modules/BaseExplorerCore/pipeline/adapter/processor';
 
@@ -106,9 +106,7 @@ function BoxVirtualizer(props: IBoxVirtualizerProps) {
         className='BoxVirtualizer__grid'
         style={{ width: gridWidth || 0, height: gridHeight || 0 }}
       >
-        {Object.entries(groupedByPosition).map(([groupKey, items]) =>
-          props.itemsRenderer(items, groupKey),
-        )}
+        {Object.entries(groupedByPosition).map(props.itemsRenderer)}
       </div>
     </div>
   );

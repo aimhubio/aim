@@ -5,7 +5,6 @@ import { AimFlatObjectBase } from 'modules/BaseExplorerCore/pipeline/adapter/pro
 export interface IBoxVirtualizerProps {
   data: Array<AimFlatObjectBase<any>>;
   itemsRenderer: (
-    items: Array<AimFlatObjectBase<any>>,
-    groupKey: string,
+    value: [groupKey: string, items: Array<AimFlatObjectBase<any>>],
   ) => React.ReactNode;
 }

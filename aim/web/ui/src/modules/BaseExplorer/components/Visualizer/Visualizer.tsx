@@ -76,34 +76,31 @@ function Visualizer(props: IVisualizationProps) {
     });
   }, [dataState, foundGroups, boxConfig]);
 
-  const groupByPosition = React.useCallback(
-    (data: Array<AimFlatObjectBase<any>>) =>
-      _.groupBy(data, (item) => `${item.style.top}__${item.style.left}`),
-    [],
+  const [depthSelector, onDepthMapChange] = useDepthMap<AimFlatObjectBase<any>>(
+    {
+      data,
+      groupItemCb: (item) => `${item.style.top}__${item.style.left}`,
+      state: engine.depthMap,
+      deps: [dataState, foundGroups],
+    },
   );
-
-  const [depthMap, onDepthMapChange, groupedItems] = useDepthMap<
-    AimFlatObjectBase<any>
-  >(data, groupByPosition, [dataState, foundGroups]);
 
   return (
     <div className='Visualizer'>
       <div className='VisualizerContainer'>
         <BoxVirtualizer
           data={data}
-          itemsRenderer={(items, groupKey) => {
-            const groupIndex = Object.keys(groupedItems).indexOf(groupKey);
-            return (
-              <BoxWrapper
-                key={groupKey}
-                engine={engine}
-                component={BoxContent}
-                items={items}
-                depth={depthMap[groupIndex]}
-                onDepthChange={(value) => onDepthMapChange(value, groupIndex)}
-              />
-            );
-          }}
+          itemsRenderer={([groupKey, items]) => (
+            <BoxWrapper
+              key={groupKey}
+              groupKey={groupKey}
+              engine={engine}
+              component={BoxContent}
+              items={items}
+              depthSelector={depthSelector}
+              onDepthMapChange={onDepthMapChange}
+            />
+          )}
         />
         {ControlComponent && <ControlComponent engine={engine} />}
       </div>

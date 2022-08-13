@@ -1,5 +1,4 @@
 import React from 'react';
-import _ from 'lodash-es';
 
 import { QueryUIStateUnit } from 'modules/BaseExplorerCore/core-store';
 import { getQueryFromRanges } from 'modules/BaseExplorerCore/utils/getQueryFromRanges';
