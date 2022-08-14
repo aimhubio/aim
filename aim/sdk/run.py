@@ -28,6 +28,7 @@ from aim.storage.context import Context
 from aim.storage import treeutils
 
 from aim.ext.resource import ResourceTracker, DEFAULT_SYSTEM_TRACKING_INT
+from aim.ext.tensorboard_tracker import TensorboardTracker
 from aim.ext.cleanup import AutoClean
 
 from typing import Any, Dict, Iterator, Optional, Tuple, Union
@@ -66,6 +67,7 @@ class RunAutoClean(AutoClean['Run']):
         self.meta_run_tree = instance.meta_run_tree
         self.repo = instance.repo
         self._system_resource_tracker = instance._system_resource_tracker
+        self._tensorboard_tracker = instance._tensorboard_tracker
         # this reference is needed for system resource tracker finalization
         self._tracker = instance._tracker
 
@@ -90,6 +92,11 @@ class RunAutoClean(AutoClean['Run']):
             logger.debug('Stopping resource tracker')
             self._system_resource_tracker.stop()
 
+    def finialize_tensorboard_tracker(self):
+        if self._tensorboard_tracker is not None:
+            logger.debug("Stopped tensorboard tracker")
+            self._tensorboard_tracker.stop()
+
     def finalize_rpc_queue(self):
         if self.repo.is_remote_repo:
             self.repo._client.get_queue(self.hash).stop()
@@ -103,6 +110,7 @@ class RunAutoClean(AutoClean['Run']):
             logger.debug(f'Run {self.hash} is read-only, skipping cleanup')
             return
         self.finalize_system_tracker()
+        self.finialize_tensorboard_tracker()
         self.finalize_run()
         self.finalize_rpc_queue()
 
@@ -278,7 +286,8 @@ class Run(BaseRun, StructuredRunMixin):
                  experiment: Optional[str] = None,
                  system_tracking_interval: Optional[Union[int, float]] = DEFAULT_SYSTEM_TRACKING_INT,
                  log_system_params: Optional[bool] = False,
-                 capture_terminal_logs: Optional[bool] = True):
+                 capture_terminal_logs: Optional[bool] = True,
+                 sync_tensorboard_log_dir: Optional[str] = None):
         self._resources: Optional[RunAutoClean] = None
         super().__init__(run_hash, repo=repo, read_only=read_only)
 
@@ -337,7 +346,8 @@ class Run(BaseRun, StructuredRunMixin):
 
         self._system_resource_tracker: ResourceTracker = None
         self._prepare_resource_tracker(system_tracking_interval, capture_terminal_logs)
-
+        self._tensorboard_tracker: TensorboardTracker = None
+        self._prepare_tensorboard_log_tracker(sync_tensorboard_log_dir)
         self._resources = RunAutoClean(self)
 
     def __hash__(self) -> int:
@@ -405,6 +415,12 @@ class Run(BaseRun, StructuredRunMixin):
                                                             capture_terminal_logs,
                                                             log_offset)
             self._system_resource_tracker.start()
+
+    def _prepare_tensorboard_log_tracker(self, sync_tensorboard_log_dir: Optional[str] = None):
+        if not sync_tensorboard_log_dir:
+            return
+        self._tensorboard_tracker = TensorboardTracker(self._tracker, sync_tensorboard_log_dir)
+        self._tensorboard_tracker.start()
 
     def __delitem__(self, key: str):
         """Remove key from run meta-params.
