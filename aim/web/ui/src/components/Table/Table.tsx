@@ -295,7 +295,9 @@ const Table = React.forwardRef(function Table(
         if (groups) {
           let groupCount = 0;
           loop: for (let key in data) {
-            top += ROW_CELL_SIZE_CONFIG[rowHeight].groupMargin;
+            top +=
+              ROW_CELL_SIZE_CONFIG[rowHeight]?.groupMargin ??
+              ROW_CELL_SIZE_CONFIG[RowHeightSize.md].groupMargins;
             for (let i = 0; i < data[key]?.items?.length; i++) {
               if (data[key].items[i].key === rowKey) {
                 top += i * rowHeight;
@@ -312,7 +314,10 @@ const Table = React.forwardRef(function Table(
             }
             top +=
               rowHeight +
-              (ROW_CELL_SIZE_CONFIG[rowHeight].groupMargin / 2) * groupCount;
+              ((ROW_CELL_SIZE_CONFIG[rowHeight]?.groupMargin ??
+                ROW_CELL_SIZE_CONFIG[RowHeightSize.md].groupMargin) /
+                2) *
+                groupCount;
             if (expanded[key]) {
               top += data[key].items.length * rowHeight;
             }
