@@ -16,7 +16,8 @@ function BaseExplorer(props: IBaseExplorerProps) {
   const { initialized } = engineInstance.useStore(
     engineInstance.engineStatusSelector,
   );
-
+  const state = engineInstance.useStore(engineInstance.stateSelector);
+  console.log(state);
   useEffect(() => {
     engineInstance.initialize();
   }, [engineInstance]);
@@ -32,7 +33,12 @@ function BaseExplorer(props: IBaseExplorerProps) {
     );
 
     return Visualizations;
-  }, [engineInstance, components.box, components.visualizations]);
+  }, [
+    engineInstance,
+    components.box,
+    components.controls,
+    components.visualizations,
+  ]);
 
   return initialized ? (
     <div className='Explorer'>
@@ -49,7 +55,6 @@ function BaseExplorer(props: IBaseExplorerProps) {
     </div>
   ) : (
     <>
-      {console.log('initializing')}
       <div>Initializing</div>
     </>
   );

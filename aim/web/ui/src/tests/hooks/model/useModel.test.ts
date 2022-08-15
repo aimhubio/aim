@@ -1,7 +1,7 @@
 import { renderHook, act } from '@testing-library/react-hooks';
 import { shouldMatchObject } from 'tests/utils';
 
-import useModel from 'hooks/model/useModel';
+import useModel from 'hooks/useModel';
 
 import createModel from 'services/models/model';
 

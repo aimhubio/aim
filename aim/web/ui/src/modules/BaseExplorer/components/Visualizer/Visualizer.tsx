@@ -1,11 +1,15 @@
 import * as React from 'react';
 import _ from 'lodash-es';
+import { useDepthMap } from 'hooks';
 
-import { IQueryableData } from 'modules/BaseExplorerCore/pipeline/adapter/processor';
+import {
+  AimFlatObjectBase,
+  IQueryableData,
+} from 'modules/BaseExplorerCore/pipeline/adapter/processor';
 
 import { IVisualizationProps } from '../../types';
-import Box from '../Box';
 import BoxVirtualizer from '../BoxVirtualizer';
+import BoxWrapper from '../BoxWrapper';
 import RangePanel from '../RangePanel';
 
 import './Visualizer.scss';
@@ -25,10 +29,8 @@ function Visualizer(props: IVisualizationProps) {
   } = props;
   const boxConfig = useStore(boxConfigSelector);
   const foundGroups = useStore(foundGroupsSelector);
-  const rangesData: IQueryableData = props.engine.useStore(
-    queryableDataSelector,
-  );
   const dataState = useStore(dataSelector);
+  const rangesData: IQueryableData = useStore(queryableDataSelector);
 
   const data = React.useMemo(() => {
     return dataState?.map((d: any, i: number) => {
@@ -36,12 +38,15 @@ function Visualizer(props: IVisualizationProps) {
       const info: Record<string, object> = {};
       if (foundGroups) {
         groupTypes.forEach((groupType) => {
-          info[groupType] = {
-            key: foundGroups[d.groups?.[groupType]].key,
-            config: foundGroups[d.groups[groupType]].fields,
-            items_count_in_group: foundGroups[d.groups[groupType]].items.length,
-            order: foundGroups[d.groups[groupType]].order,
-          };
+          const current = foundGroups[d.groups[groupType]];
+          if (current) {
+            info[groupType] = {
+              key: current.key,
+              config: current.fields,
+              items_count_in_group: current.items.length,
+              order: current.order,
+            };
+          }
         });
       }
 
@@ -71,19 +76,30 @@ function Visualizer(props: IVisualizationProps) {
     });
   }, [dataState, foundGroups, boxConfig]);
 
+  const [depthSelector, onDepthMapChange] = useDepthMap<AimFlatObjectBase<any>>(
+    {
+      data,
+      groupItemCb: (item) => `${item.style.top}__${item.style.left}`,
+      state: engine.depthMap,
+      deps: [dataState, foundGroups],
+    },
+  );
+
   return (
     <div className='Visualizer'>
       <div className='VisualizerContainer'>
         <BoxVirtualizer
           data={data}
-          itemRenderer={(item: any) => (
-            <Box
-              key={item.key} // replace with some unique key of box data
+          itemsRenderer={([groupKey, items]) => (
+            <BoxWrapper
+              key={groupKey}
+              groupKey={groupKey}
               engine={engine}
-              style={item.style}
-            >
-              {BoxContent && <BoxContent engine={engine} data={item} />}
-            </Box>
+              component={BoxContent}
+              items={items}
+              depthSelector={depthSelector}
+              onDepthMapChange={onDepthMapChange}
+            />
           )}
         />
         {ControlComponent && <ControlComponent engine={engine} />}

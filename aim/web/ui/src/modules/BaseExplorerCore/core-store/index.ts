@@ -329,8 +329,7 @@ function createEngine(config: IEngineConfigFinal) {
   }
 
   async function getInstructions(sequence: SequenceTypesEnum) {
-    const params = await getParams({ sequence });
-    return params;
+    return getParams({ sequence });
   }
 
   return {

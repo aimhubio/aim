@@ -1,11 +1,10 @@
 import React from 'react';
 import _ from 'lodash-es';
+import { useResizeObserver } from 'hooks';
 
 import ErrorBoundary from 'components/ErrorBoundary/ErrorBoundary';
 
 import { RENDER_LINES_OPTIMIZED_LIMIT } from 'config/charts';
-
-import useResizeObserver from 'hooks/window/useResizeObserver';
 
 import { IFocusedState } from 'types/services/models/metrics/metricsAppModel';
 import { IHighPlotProps } from 'types/components/HighPlot/HighPlot';

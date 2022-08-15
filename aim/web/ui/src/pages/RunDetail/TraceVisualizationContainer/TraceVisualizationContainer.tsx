@@ -1,4 +1,5 @@
 import React from 'react';
+import { useModel } from 'hooks';
 
 import Menu from 'components/kit/Menu/Menu';
 import { IValidationMetadata } from 'components/kit/Input';
@@ -7,8 +8,6 @@ import Spinner from 'components/kit/Spinner';
 import RangePanel from 'components/RangePanel';
 
 import { ANALYTICS_EVENT_KEYS } from 'config/analytics/analyticsKeysMap';
-
-import useModel from 'hooks/model/useModel';
 
 import runTracesModel from 'services/models/runs/runTracesModel';
 import * as analytics from 'services/analytics';

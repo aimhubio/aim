@@ -1,9 +1,11 @@
 import { IQueryableData } from 'modules/BaseExplorerCore/pipeline/adapter/processor';
+import { IBaseComponentProps } from 'modules/BaseExplorer/types';
 
 export interface IRangePanelProps {
   engine: IBaseComponentProps['engine'];
   rangesData: any;
 }
+
 export interface IRangePanelItemProps {
   engine: IBaseComponentProps['engine'];
   sliderName: 'record' | 'index';
