@@ -1,8 +1,7 @@
 import React from 'react';
+import { useResizeObserver } from 'hooks';
 
 import ErrorBoundary from 'components/ErrorBoundary/ErrorBoundary';
-
-import useResizeObserver from 'hooks/window/useResizeObserver';
 
 import { IAttributesRef } from 'types/components/LineChart/LineChart';
 import { IFocusedState } from 'types/services/models/metrics/metricsAppModel';

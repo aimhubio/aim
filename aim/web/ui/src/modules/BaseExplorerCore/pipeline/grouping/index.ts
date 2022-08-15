@@ -11,7 +11,7 @@ export type GroupingConfigOptions = {
 };
 
 export type GroupingExecutionOptions = {
-  objectList: AimFlatObjectBase[];
+  objectList: AimFlatObjectBase<any>[];
   grouping: BettaGroupOption[];
 };
 

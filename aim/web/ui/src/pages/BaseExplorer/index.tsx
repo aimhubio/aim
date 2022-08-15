@@ -19,8 +19,9 @@ import {
   Order,
 } from 'modules/BaseExplorerCore/pipeline/grouping/types';
 import Figures from 'modules/BaseExplorer/components/Figures/Figures';
-import Controls from 'modules/BaseExplorer/components/Controls';
-import BoxProperties from 'modules/BaseExplorer/components/Controls/BoxProperties';
+import Controls, {
+  BoxProperties,
+} from 'modules/BaseExplorer/components/Controls';
 
 import { AimObjectDepths, SequenceTypesEnum } from 'types/core/enums';
 
@@ -51,7 +52,7 @@ const config: IExplorerConfig = {
         )),
         // @ts-ignore
         styleApplier: (
-          object: AimFlatObjectBase,
+          object: AimFlatObjectBase<any>,
           group: any,
           boxConfig: any,
           iteration: number,
@@ -84,7 +85,7 @@ const config: IExplorerConfig = {
         )),
         // @ts-ignore
         styleApplier: (
-          object: AimFlatObjectBase,
+          object: AimFlatObjectBase<any>,
           group: any,
           boxConfig: any,
           iteration: number,
@@ -131,7 +132,6 @@ const config: IExplorerConfig = {
           initialState: {},
         },
       },
-      // add additional controls here like `boxProperties`
     },
   },
   ui: {
@@ -156,9 +156,10 @@ const config: IExplorerConfig = {
   },
   states: {
     // change to custom state
-    custom1: {
-      initialState: { rowLength: 1 },
+    depthMap: {
+      initialState: {},
     },
+
     ranges: {
       initialState: { isApplyButtonDisabled: true, isValid: true },
     },

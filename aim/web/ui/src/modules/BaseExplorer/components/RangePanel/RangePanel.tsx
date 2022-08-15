@@ -1,5 +1,4 @@
 import React from 'react';
-import _ from 'lodash-es';
 
 import { QueryUIStateUnit } from 'modules/BaseExplorerCore/core-store';
 import { getQueryFromRanges } from 'modules/BaseExplorerCore/utils/getQueryFromRanges';
@@ -11,7 +10,8 @@ import { SequenceTypesEnum } from 'types/core/enums';
 
 import { getRangeAndDensityData } from './helpers';
 import RangePanelItem from './RangePanelItem';
-import { IRangePanelProps } from './RangePanel.d';
+
+import { IRangePanelProps } from './';
 
 import './RangePanel.scss';
 

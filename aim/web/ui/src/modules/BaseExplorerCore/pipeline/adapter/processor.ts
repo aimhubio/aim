@@ -16,8 +16,9 @@ export type Record = {
   step: number;
   epoch: number;
 };
-export interface AimFlatObjectBase {
-  data: any;
+
+export interface AimFlatObjectBase<T> {
+  data: T;
   record?: Record;
   [key: string]: any;
   run?: {
@@ -34,7 +35,7 @@ export interface IQueryableData {
 }
 
 export interface ProcessedData {
-  objectList: AimFlatObjectBase[];
+  objectList: AimFlatObjectBase<any>[];
   queryable_data: IQueryableData;
   additionalData: {
     params: string[];
@@ -90,7 +91,7 @@ export function storageDataToFlatList(
   sequenceName: SequenceTypesEnum,
   objectDepth: AimObjectDepths,
 ): ProcessedData {
-  const objectList: AimFlatObjectBase[] = []; // @CHECK make by hash function
+  const objectList: AimFlatObjectBase<any>[] = []; // @CHECK make by hash function
   let params: string[] = [];
   let sequenceInfo: string[] = [];
   let modifiers: string[] = [
@@ -113,7 +114,7 @@ export function storageDataToFlatList(
   runs.forEach((item) => {
     // @ts-ignore
     params = params.concat(getObjectPaths(item.params, 'run', '.'));
-    let collectedDataByDepth: Omit<AimFlatObjectBase, 'data'> = {};
+    let collectedDataByDepth: Omit<AimFlatObjectBase<any>, 'data'> = {};
 
     /** depth 0 */ // RUN
     let run = {
@@ -132,7 +133,7 @@ export function storageDataToFlatList(
       run,
     };
     if (objectDepth === 0) {
-      const object: AimFlatObjectBase = {
+      const object: AimFlatObjectBase<any> = {
         ...collectedDataByDepth,
         data: depthInterceptor(item).data,
       };
@@ -164,7 +165,7 @@ export function storageDataToFlatList(
         };
 
         if (objectDepth === 1) {
-          const object: AimFlatObjectBase = {
+          const object: AimFlatObjectBase<any> = {
             ...collectedDataByDepth,
             data: depthInterceptor(trace).data,
           };

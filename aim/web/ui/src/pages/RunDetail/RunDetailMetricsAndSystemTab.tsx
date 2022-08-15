@@ -1,5 +1,6 @@
 import * as React from 'react';
 import _ from 'lodash-es';
+import { useModel } from 'hooks';
 
 import IllustrationBlock from 'components/IllustrationBlock/IllustrationBlock';
 import BusyLoaderWrapper from 'components/BusyLoaderWrapper/BusyLoaderWrapper';
@@ -7,8 +8,6 @@ import ErrorBoundary from 'components/ErrorBoundary/ErrorBoundary';
 import { Text } from 'components/kit';
 
 import { ANALYTICS_EVENT_KEYS } from 'config/analytics/analyticsKeysMap';
-
-import useModel from 'hooks/model/useModel';
 
 import * as analytics from 'services/analytics';
 import runDetailAppModel from 'services/models/runs/runDetailAppModel';
