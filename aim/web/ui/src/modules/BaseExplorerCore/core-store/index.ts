@@ -32,6 +32,19 @@ type ExplorerState = {
   pipeline: {
     status: string;
   };
+  groupings?: {
+    [key: string]: {
+      orders: Order[];
+      fields: string[];
+    };
+    // @ts-ignore
+    currentValues: {
+      [key: string]: {
+        orders: Order[];
+        fields: string[];
+      };
+    };
+  };
   data: any;
   additionalData: any;
   foundGroups: any; // remove this
@@ -231,31 +244,27 @@ function createEngine(config: IEngineConfigFinal) {
   let lastQuery: any;
 
   async function search(params: RunsSearchQueryParams) {
+    const { groupings } = storeVanilla.getState();
+    const currentValues = groupings?.currentValues || {};
+
+    const groupOptions = Object.keys(currentValues || {}).map(
+      (key: string) => ({
+        type: key as GroupType,
+        fields: currentValues[key].fields,
+        orders: currentValues[key].orders,
+      }),
+    );
     lastQuery = {
       query: { params },
     };
+
     // @ts-ignore
     const res = await pipeline.execute({
       query: {
         params,
         ignoreCache: true,
       },
-      group: [
-        {
-          type: GroupType.ROW,
-          // @ts-ignore
-          fields: defaultApplications?.[GroupType.ROW].fields || [],
-          // @ts-ignore
-          orders: defaultApplications?.[GroupType.ROW].orders || [],
-        },
-        {
-          type: GroupType.COLUMN,
-          // @ts-ignore
-          fields: defaultApplications?.[GroupType.COLUMN].fields || [],
-          // @ts-ignore
-          orders: defaultApplications?.[GroupType.COLUMN].orders || [],
-        },
-      ],
+      group: groupOptions,
     });
     const { additionalData, data, queryableData, foundGroups } = res;
 

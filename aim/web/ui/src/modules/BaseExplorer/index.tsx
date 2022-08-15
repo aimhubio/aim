@@ -16,8 +16,7 @@ function BaseExplorer(props: IBaseExplorerProps) {
   const { initialized } = engineInstance.useStore(
     engineInstance.engineStatusSelector,
   );
-  const state = engineInstance.useStore(engineInstance.stateSelector);
-  console.log(state);
+
   useEffect(() => {
     engineInstance.initialize();
   }, [engineInstance]);
