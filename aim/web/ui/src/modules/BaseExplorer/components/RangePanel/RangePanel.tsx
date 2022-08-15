@@ -10,7 +10,8 @@ import { SequenceTypesEnum } from 'types/core/enums';
 
 import { getRangeAndDensityData } from './helpers';
 import RangePanelItem from './RangePanelItem';
-import { IRangePanelProps } from './RangePanel.d';
+
+import { IRangePanelProps } from './';
 
 import './RangePanel.scss';
 

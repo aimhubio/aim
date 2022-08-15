@@ -1,5 +1,5 @@
 import * as React from 'react';
-import * as _ from 'lodash-es';
+import _ from 'lodash-es';
 import { useResizeObserver } from 'hooks';
 
 import { AimFlatObjectBase } from 'modules/BaseExplorerCore/pipeline/adapter/processor';

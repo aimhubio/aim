@@ -98,7 +98,7 @@ function BoxFullViewPopover({
         },
         {
           label: 'step',
-          value: item.step,
+          value: item.record?.step,
         },
       ];
     }

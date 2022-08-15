@@ -10,7 +10,7 @@
   }
   &__fullScreen {
     position: absolute;
-    top: 0.25rem;
+    top: $space-xxxs;
     left: calc(100% - 24px - 0.25rem);
     z-index: 1;
     text-align: right;

@@ -1,9 +1,10 @@
 import React from 'react';
+import classNames from 'classnames';
 
-import { Button, Icon, Slider, Text } from 'components/kit';
+import { Button, Icon, Slider } from 'components/kit';
 import ErrorBoundary from 'components/ErrorBoundary/ErrorBoundary';
 
-import { IDepthSliderProps } from './DepthSlider.d';
+import { IDepthSliderProps } from '.';
 
 import './DepthSlider.scss';
 
@@ -21,16 +22,20 @@ function DepthSlider({
     return (items as string[]).map((l, i) => ({ value: i }));
   }, [items]);
   const onChange = React.useCallback(
-    (value: number) => {
+    (value: number, i: number) => {
       if (typeof onDepthChange === 'function') {
-        onDepthChange(value, index);
+        onDepthChange(value, i);
       }
     },
-    [onDepthChange, index],
+    [onDepthChange],
   );
+  const maxDepthValue = items.length - 1;
   return items.length === 0 ? null : (
     <ErrorBoundary>
-      <div className={`DepthSlider ${className}`} style={style}>
+      <div
+        className={classNames('DepthSlider', { [className]: !!className })}
+        style={style}
+      >
         <Slider
           label={label}
           aria-labelledby='track-false-slider'
@@ -38,14 +43,14 @@ function DepthSlider({
           valueLabelDisplay={valueLabelDisplay}
           getAriaValueText={(value) => `${items[value]}`}
           value={depth}
-          onChange={(e, value) => onChange(value as number)}
+          onChange={(e, value) => onChange(value as number, index)}
           step={null}
           marks={sliderMarks}
           min={0}
-          max={items.length - 1}
+          max={maxDepthValue}
           prevIconNode={
             <Button
-              onClick={() => depth > 0 && onChange(depth - 1)}
+              onClick={() => depth > 0 && onChange(depth - 1, index)}
               className='prevIconBtn'
               disabled={depth <= 0}
               size='small'
@@ -56,9 +61,11 @@ function DepthSlider({
           }
           nextIconNode={
             <Button
-              onClick={() => depth < items.length - 1 && onChange(depth + 1)}
+              onClick={() =>
+                depth < maxDepthValue && onChange(depth + 1, index)
+              }
               className='nextIconBtn'
-              disabled={depth >= items.length - 1}
+              disabled={depth >= maxDepthValue}
               size='small'
               withOnlyIcon
             >
