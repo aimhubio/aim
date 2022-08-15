@@ -1,13 +1,10 @@
 import React from 'react';
 import { useHistory, useRouteMatch } from 'react-router-dom';
+import { useModel, usePanelResize, useResizeObserver } from 'hooks';
 
 import ErrorBoundary from 'components/ErrorBoundary/ErrorBoundary';
 
 import { ANALYTICS_EVENT_KEYS } from 'config/analytics/analyticsKeysMap';
-
-import usePanelResize from 'hooks/resize/usePanelResize';
-import useModel from 'hooks/model/useModel';
-import useResizeObserver from 'hooks/window/useResizeObserver';
 
 import scattersAppModel from 'services/models/scatters/scattersAppModel';
 import projectsModel from 'services/models/projects/projectsModel';

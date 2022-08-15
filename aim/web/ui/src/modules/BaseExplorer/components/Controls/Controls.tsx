@@ -5,7 +5,7 @@ import { ControlsConfigs } from 'modules/BaseExplorerCore/core-store/controls';
 
 import ErrorBoundary from 'components/ErrorBoundary/ErrorBoundary';
 
-import './styles.scss';
+import './Controls.scss';
 
 function Controls(props: IControlsProps) {
   const { controls = [] } = props.engine as Record<'controls', ControlsConfigs>;

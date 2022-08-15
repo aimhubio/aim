@@ -1,6 +1,6 @@
+import React from 'react';
 import moment from 'moment';
 import _ from 'lodash-es';
-import React from 'react';
 import { Link as RouteLink } from 'react-router-dom';
 
 import { Dialog, Link, Tooltip } from '@material-ui/core';
@@ -19,21 +19,23 @@ import { formatSystemMetricName } from 'utils/formatSystemMetricName';
 import { isSystemMetric } from 'utils/isSystemMetric';
 import contextToString from 'utils/contextToString';
 
-import { IBoxFullViewPopoverProps } from './BoxFullViewPopover.d';
+import { IBoxFullViewPopoverProps } from '.';
 
 import './BoxFullViewPopover.scss';
 
 function BoxFullViewPopover({
   onClose,
-  element,
-  sequence,
+  sequenceName,
   groupInfo,
+  children,
+  item,
 }: IBoxFullViewPopoverProps) {
   const data = React.useMemo(() => {
-    const runData = element.props.data.run;
-    const sequenceData = element.props.data[sequence];
-    return {
-      runInfo: [
+    const { run: runData, [sequenceName]: sequenceData } = item;
+    let runInfo: { icon: string; value: string | React.ReactElement }[] = [];
+    let sequence: { label: string; value: string | React.ReactElement }[] = [];
+    if (runData) {
+      runInfo = [
         {
           icon: 'runs',
           value: (
@@ -47,15 +49,15 @@ function BoxFullViewPopover({
         },
         {
           icon: 'calendar',
-          value: `${moment(runData?.creation_time * 1000).format(
+          value: `${moment(runData.creation_time * 1000).format(
             DATE_WITH_SECONDS,
           )}`,
         },
         {
           icon: 'time',
           value: processDurationTime(
-            runData?.creation_time * 1000,
-            runData?.end_time ? runData?.end_time * 1000 : Date.now(),
+            runData.creation_time * 1000,
+            runData.end_time ? runData.end_time * 1000 : Date.now(),
           ),
         },
         {
@@ -75,8 +77,10 @@ function BoxFullViewPopover({
             'No attached tags'
           ),
         },
-      ],
-      sequence: [
+      ];
+    }
+    if (sequenceData) {
+      sequence = [
         {
           label: 'name',
           value: sequenceData.name,
@@ -94,18 +98,22 @@ function BoxFullViewPopover({
         },
         {
           label: 'step',
-          value: element.props.data.record.step,
+          value: item.record?.step,
         },
-      ],
+      ];
+    }
+    return {
+      runInfo,
+      sequence,
       groups: groupInfo,
     };
-  }, [element, sequence, groupInfo]);
+  }, [item, sequenceName, groupInfo]);
 
   return (
     <ErrorBoundary>
       <Dialog onClose={onClose} className='BoxFullViewPopover' open>
         <div className='BoxFullViewPopover__container'>
-          <div className='BoxFullViewPopover__container__box'>{element}</div>
+          {children}
           <div className='BoxFullViewPopover__container__detail'>
             <div className='BoxFullViewPopover__container__detail-close'>
               <Button
@@ -139,7 +147,7 @@ function BoxFullViewPopover({
             </div>
             <div className='BoxFullViewPopover__container__detail-section'>
               <Text weight={600} size={18} tint={100} component='h3'>
-                {sequence}
+                {sequenceName}
               </Text>
               {data.sequence.map((item: any, index: number) => (
                 <div className='flex' key={index}>

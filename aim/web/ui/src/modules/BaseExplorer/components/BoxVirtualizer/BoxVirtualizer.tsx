@@ -1,13 +1,15 @@
 import * as React from 'react';
-import * as _ from 'lodash-es';
+import _ from 'lodash-es';
+import { useResizeObserver } from 'hooks';
 
-import useResizeObserver from 'hooks/window/useResizeObserver';
+import { AimFlatObjectBase } from 'modules/BaseExplorerCore/pipeline/adapter/processor';
 
-import { BoxVirtualizerProps } from './types';
+import { IBoxVirtualizerProps } from './';
 
 import './BoxVirtualizer.scss';
 
-function BoxVirtualizer(props: BoxVirtualizerProps) {
+function BoxVirtualizer(props: IBoxVirtualizerProps) {
+  const { data = [] } = props;
   let container: React.MutableRefObject<HTMLDivElement> =
     React.useRef<HTMLDivElement>(document.createElement('div'));
   let grid: React.MutableRefObject<HTMLDivElement> =
@@ -21,31 +23,14 @@ function BoxVirtualizer(props: BoxVirtualizerProps) {
     height: 0,
   });
 
-  function onScroll({ target }: any) {
+  const onScroll = React.useCallback(({ target }: any) => {
     setGridWindow({
       left: target.scrollLeft,
       top: target.scrollTop,
       width: container.current.offsetWidth,
       height: container.current.offsetHeight,
     });
-  }
-
-  // Sort items to find the edges for container size calculation
-  let sortedByPosition = props.data
-    ?.sort((a: any, b: any) => a.style.left - b.style.left)
-    .sort((a: any, b: any) => a.style.top - b.style.top);
-
-  // Filter boxes/items based on their position intersection with the viewport
-  let items = _.uniqWith<{ style: React.CSSProperties }>(
-    props.data?.filter(
-      (item: any) =>
-        item.style.left >= gridWindow.left - item.style.width &&
-        item.style.left <= gridWindow.left + gridWindow.width &&
-        item.style.top >= gridWindow.top - item.style.height &&
-        item.style.top <= gridWindow.top + gridWindow.height,
-    ),
-    (a, b) => _.isEqual(a.style, b.style),
-  );
+  }, []);
 
   // Filter column group values based on their position intersection with the viewport
   let columnsAxisItems = props.axisData?.columns?.filter(
@@ -94,6 +79,46 @@ function BoxVirtualizer(props: BoxVirtualizerProps) {
 
   useResizeObserver(resizeObserverCallback, container, observerReturnCallback);
 
+  const filteredItems = React.useMemo(
+    () =>
+      data.filter(
+        (item: AimFlatObjectBase<any>) =>
+          item.style.left >= gridWindow.left - item.style.width &&
+          item.style.left <= gridWindow.left + gridWindow.width &&
+          item.style.top >= gridWindow.top - item.style.height &&
+          item.style.top <= gridWindow.top + gridWindow.height,
+      ),
+    [data, gridWindow],
+  );
+
+  const groupedByPosition = React.useMemo(
+    () =>
+      _.groupBy(
+        filteredItems,
+        (item) => `${item.style.top}__${item.style.left}`,
+      ),
+    [filteredItems],
+  );
+
+  // @TODO remove this variable and calculate width and height of the container with optimized way
+  // Sort items to find the edges for container size calculation
+  const sortedByPosition = React.useMemo(
+    () =>
+      data
+        .sort((a: any, b: any) => a.style.left - b.style.left)
+        .sort((a: any, b: any) => a.style.top - b.style.top),
+    [data],
+  );
+
+  const gridWidth =
+    sortedByPosition?.[sortedByPosition?.length - 1]?.style?.left +
+    sortedByPosition?.[sortedByPosition?.length - 1]?.style?.width +
+    props.offset;
+
+  const gridHeight =
+    sortedByPosition?.[sortedByPosition?.length - 1]?.style?.top +
+    sortedByPosition?.[sortedByPosition?.length - 1]?.style?.height;
+
   return (
     <div className='BoxVirtualizer'>
       {columnsAxisItems &&
@@ -112,10 +137,7 @@ function BoxVirtualizer(props: BoxVirtualizerProps) {
           <div
             className='BoxVirtualizer__container__horizontalRuler'
             style={{
-              width:
-                sortedByPosition?.[sortedByPosition?.length - 1]?.style?.left +
-                sortedByPosition?.[sortedByPosition?.length - 1]?.style?.width +
-                props.offset,
+              width: gridWidth || 0,
             }}
           >
             {columnsAxisItems?.map(props.axisItemRenderer?.columns)}
@@ -125,9 +147,7 @@ function BoxVirtualizer(props: BoxVirtualizerProps) {
           <div
             className='BoxVirtualizer__container__verticalRuler'
             style={{
-              height:
-                sortedByPosition?.[sortedByPosition?.length - 1]?.style?.top +
-                sortedByPosition?.[sortedByPosition?.length - 1]?.style?.height,
+              height: gridHeight || 0,
             }}
           >
             {rowsAxisItems?.map(props.axisItemRenderer?.rows)}
@@ -137,21 +157,16 @@ function BoxVirtualizer(props: BoxVirtualizerProps) {
           ref={grid}
           style={{
             display: 'inline',
-            width:
-              sortedByPosition?.[sortedByPosition?.length - 1]?.style?.left +
-              sortedByPosition?.[sortedByPosition?.length - 1]?.style?.width +
-              props.offset,
-            height:
-              sortedByPosition?.[sortedByPosition?.length - 1]?.style?.top +
-              sortedByPosition?.[sortedByPosition?.length - 1]?.style?.height,
+            width: gridWidth || 0,
+            height: gridHeight || 0,
             overflow: 'hidden',
           }}
         >
-          {items?.map(props.itemRenderer)}
+          {Object.entries(groupedByPosition).map(props.itemsRenderer)}
         </div>
       </div>
     </div>
   );
 }
 
-export default React.memo(BoxVirtualizer);
+export default React.memo<IBoxVirtualizerProps>(BoxVirtualizer);

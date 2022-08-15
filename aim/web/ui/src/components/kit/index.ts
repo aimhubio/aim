@@ -14,6 +14,7 @@ import ActionCard from './ActionCard';
 import InputWrapper from './Input';
 import Card from './Card';
 import SelectDropdown from './SelectDropdown';
+import Spinner from './Spinner';
 
 export {
   AutoSuggestions,
@@ -33,6 +34,7 @@ export {
   Menu,
   Card,
   SelectDropdown,
+  Spinner,
 };
 
 export type { IButtonProps };

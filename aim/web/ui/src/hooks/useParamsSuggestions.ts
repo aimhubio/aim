@@ -1,6 +1,6 @@
 import React from 'react';
 
-import useModel from 'hooks/model/useModel';
+import useModel from 'hooks/useModel';
 
 import projectsModel from 'services/models/projects/projectsModel';
 
@@ -10,7 +10,7 @@ import { IProjectsModelState } from 'types/services/models/projects/projectsMode
  * @returns memoized params suggestions from projectsData
  */
 function useParamsSuggestions() {
-  const projectsData = useModel<IProjectsModelState>(projectsModel);
+  const projectsData = useModel<Partial<IProjectsModelState>>(projectsModel);
 
   const suggestions = React.useMemo(() => {
     let list: string[] = [];

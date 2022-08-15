@@ -1,6 +1,6 @@
 import Visualizer from './Visualizer';
 import QueryForm from './QueryForm';
-import Box from './Box';
+import BoxWrapper from './BoxWrapper';
 
 export * from './Grouping';
-export { Visualizer, QueryForm, Box };
+export { Visualizer, QueryForm, BoxWrapper };
