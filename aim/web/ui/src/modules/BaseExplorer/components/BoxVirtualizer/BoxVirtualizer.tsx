@@ -115,7 +115,7 @@ function BoxVirtualizer(props: BoxVirtualizerProps) {
               width:
                 sortedByPosition?.[sortedByPosition?.length - 1]?.style?.left +
                 sortedByPosition?.[sortedByPosition?.length - 1]?.style?.width +
-                30,
+                props.offset,
             }}
           >
             {columnsAxisItems?.map(props.axisItemRenderer?.columns)}
@@ -140,7 +140,7 @@ function BoxVirtualizer(props: BoxVirtualizerProps) {
             width:
               sortedByPosition?.[sortedByPosition?.length - 1]?.style?.left +
               sortedByPosition?.[sortedByPosition?.length - 1]?.style?.width +
-              30,
+              props.offset,
             height:
               sortedByPosition?.[sortedByPosition?.length - 1]?.style?.top +
               sortedByPosition?.[sortedByPosition?.length - 1]?.style?.height,

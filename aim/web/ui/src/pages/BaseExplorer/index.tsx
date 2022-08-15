@@ -61,8 +61,8 @@ const config: IExplorerConfig = {
               (group[GroupType.COLUMN]
                 ? group[GroupType.COLUMN].order *
                     (boxConfig.width + boxConfig.gap) +
-                  30
-                : 30) + (group[GroupType.ROW] ? 200 : 0),
+                  boxConfig.gap
+                : boxConfig.gap) + (group[GroupType.ROW] ? 200 : 0),
           };
         },
         defaultApplications: {
@@ -95,8 +95,9 @@ const config: IExplorerConfig = {
             top: group[GroupType.ROW]
               ? group[GroupType.ROW].order *
                   (boxConfig.height + boxConfig.gap) +
-                35
-              : 35,
+                30 +
+                boxConfig.gap
+              : 30 + boxConfig.gap,
           };
         },
         defaultApplications: {

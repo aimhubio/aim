@@ -91,7 +91,7 @@ function Visualizer(props: IVisualizationProps) {
               position: 'absolute',
               top:
                 item.order * (boxConfig.height + boxConfig.gap) +
-                5 -
+                boxConfig.gap -
                 boxConfig.gap / 2,
               left: -1,
               height: boxConfig.height + boxConfig.gap,
@@ -125,8 +125,8 @@ function Visualizer(props: IVisualizationProps) {
               top: -1,
               left:
                 item.order * (boxConfig.width + boxConfig.gap) +
-                30 +
-                (rowsAxisData && rowsAxisData.length > 0 ? 200 : 0) -
+                (rowsAxisData && rowsAxisData.length > 0 ? 200 : 0) +
+                boxConfig.gap -
                 boxConfig.gap / 2,
               height: 30,
               width: boxConfig.width + boxConfig.gap,
@@ -158,6 +158,7 @@ function Visualizer(props: IVisualizationProps) {
               {BoxContent && <BoxContent engine={engine} data={item} />}
             </Box>
           )}
+          offset={boxConfig.gap}
           axisData={{
             columns: columnsAxisData,
             rows: rowsAxisData,
@@ -171,11 +172,13 @@ function Visualizer(props: IVisualizationProps) {
               </Tooltip>
             ),
             rows: (item: any, i: number) => (
-              <Tooltip title={item.value} key={item.key}>
-                <div style={item.style}>
-                  <Text>{item.value}</Text>
-                </div>
-              </Tooltip>
+              <div style={item.style}>
+                <Tooltip title={item.value} key={item.key}>
+                  <div>
+                    <Text>{item.value}</Text>
+                  </div>
+                </Tooltip>
+              </div>
             ),
           }}
         />
