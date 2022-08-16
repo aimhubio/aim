@@ -51,6 +51,7 @@ export type GroupingConfig<State extends object, Settings> = {
   styleApplier: StyleApplierCallback<State>;
 
   // variant: 'structured' | 'joined'
+  axisComponent?: Function;
 };
 function getCurrentValues(
   defaultValues: {
@@ -107,7 +108,7 @@ function createGrouping(config: GroupingConfig<unknown & object, any>) {
     name,
     component,
     styleApplier,
-
+    axisComponent,
     state = { initialState: {} },
     settings = {},
     defaultApplications = null,
@@ -122,6 +123,7 @@ function createGrouping(config: GroupingConfig<unknown & object, any>) {
     settings,
     component,
     styleApplier,
+    axisComponent,
     observableState,
     defaultApplications,
   };

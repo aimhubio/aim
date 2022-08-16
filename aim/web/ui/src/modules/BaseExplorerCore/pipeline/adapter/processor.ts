@@ -133,6 +133,7 @@ export function storageDataToFlatList(
     let run = {
       ..._.omit(item.props, ['experiment, creation_time']),
       hash: item.hash,
+      active: !item.props.end_time, // @TODO change to active
       experiment: item.props.experiment?.name,
       ...item.params,
     };
