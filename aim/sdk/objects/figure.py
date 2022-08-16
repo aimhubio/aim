@@ -53,8 +53,8 @@ class Figure(CustomObject):
             raise ModuleNotFoundError('Plotly is required to track matplotlib figure.')
 
         try:
-            logger.warning('Tracking a matplotlib object using "Figure" might not behave as expected.'
-                           'In such cases, consider tracking with "Image".')
+            logger.warning('Tracking a matplotlib object using "aim.Figure" might not behave as expected.'
+                           'In such cases, consider tracking with "aim.Image".')
             plotly_obj = mpl_to_plotly(obj)
         except ValueError as err:
             raise ValueError(f'Failed to convert matplotlib figure to plotly figure: {err}')
