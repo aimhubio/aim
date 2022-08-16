@@ -1,5 +1,7 @@
 import React from 'react';
 
+import { AimFlatObjectBase } from 'modules/BaseExplorerCore/pipeline/adapter/processor';
+
 import DepthSlider, { IDepthSliderProps } from 'components/DepthSlider';
 import { Button, Icon, Text } from 'components/kit';
 
@@ -9,7 +11,7 @@ import { IBoxWrapperProps } from '.';
 
 import './BoxWrapper.scss';
 
-function BoxWrapper(props: IBoxWrapperProps) {
+function BoxWrapper(props: IBoxWrapperProps<AimFlatObjectBase<any>>) {
   const {
     engine,
     items,
@@ -104,4 +106,4 @@ function BoxWrapper(props: IBoxWrapperProps) {
 
 BoxWrapper.displayName = 'BoxWrapper';
 
-export default React.memo<IBoxWrapperProps>(BoxWrapper);
+export default React.memo<IBoxWrapperProps<AimFlatObjectBase<any>>>(BoxWrapper);

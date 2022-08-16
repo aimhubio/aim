@@ -8,7 +8,7 @@ import { IBoxVirtualizerProps } from './';
 
 import './BoxVirtualizer.scss';
 
-function BoxVirtualizer(props: IBoxVirtualizerProps) {
+function BoxVirtualizer(props: IBoxVirtualizerProps<AimFlatObjectBase<any>>) {
   const { data = [] } = props;
   let container: React.MutableRefObject<HTMLDivElement> =
     React.useRef<HTMLDivElement>(document.createElement('div'));
@@ -112,4 +112,6 @@ function BoxVirtualizer(props: IBoxVirtualizerProps) {
   );
 }
 
-export default React.memo<IBoxVirtualizerProps>(BoxVirtualizer);
+export default React.memo<IBoxVirtualizerProps<AimFlatObjectBase<any>>>(
+  BoxVirtualizer,
+);

@@ -81,6 +81,7 @@ function Visualizer(props: IVisualizationProps) {
       data,
       groupItemCb: (item) => `${item.style.top}__${item.style.left}`,
       state: engine.depthMap,
+      synced: true,
       deps: [dataState, foundGroups],
     },
   );
