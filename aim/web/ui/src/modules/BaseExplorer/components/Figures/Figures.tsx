@@ -23,14 +23,12 @@ function Figures(props: any) {
         let width = containerRef.current.offsetWidth;
         let height = containerRef.current.offsetHeight;
 
-        let wK = props.style.width / width;
-        let hK = props.style.height / height;
+        let wK = props.style.width / width; // Calculate width ratio
+        let hK = props.style.height / height; // Calculate height ratio
 
         if (wK < 1 || hK < 1) {
-          let scale = Math.min(wK, hK);
-          setScale(scale);
+          setScale(Math.min(wK, hK)); // Apply scale based on object-fit: 'contain' pattern
         } else {
-          containerRef.current.style.transform = 'unset';
           setScale(null);
         }
       }
