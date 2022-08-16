@@ -1,0 +1,12 @@
+@use 'src/styles/abstracts' as *;
+
+.CaptionBox {
+  padding: $space-xs $space-unit;
+  width: 100%;
+  box-shadow: 0 0 0 0.0625rem $pico-30;
+  overflow: auto;
+  max-height: calc(100% / 100 * 30);
+  &__item {
+    word-break: break-word;
+  }
+}
