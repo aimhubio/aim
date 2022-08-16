@@ -6,7 +6,7 @@ import {
 export interface IBoxWrapperProps<T> extends IBaseComponentProps {
   items: Array<T>;
   component: IVisualizationProps['box'];
-  groupKey: string;
+  groupId: string;
   depthSelector: (groupKey: string) => (state: any) => number;
-  onDepthMapChange: (value: number, groupKey: string) => void;
+  onDepthMapChange: (value: number, groupId: string) => void;
 }

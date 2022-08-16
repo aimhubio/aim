@@ -79,12 +79,15 @@ function BoxVirtualizer(props: IBoxVirtualizerProps<AimFlatObjectBase<any>>) {
 
   const groupedByPosition = React.useMemo(
     () =>
-      _.groupBy(
-        filteredItems,
-        (item) => `${item.style.top}__${item.style.left}`,
-      ),
+      _.groupBy(filteredItems, (item) => {
+        const rowId = item.groups?.rows ? item.groups.rows[0] : '';
+        const columnId = item.groups?.columns ? item.groups.columns[0] : '';
+        const groupId = rowId + '--' + columnId;
+        return groupId;
+      }),
     [filteredItems],
   );
+
   // @TODO remove this variable and calculate width and height of the container with optimized way
   const sortedByPosition = React.useMemo(
     () =>
