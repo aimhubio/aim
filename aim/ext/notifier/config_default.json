@@ -7,7 +7,7 @@
         "type": "logger",
         "status": "enabled",
         "arguments": {
-          "message": "❗️ Something wrong with Run '{run_hash}'. Please check. ❗️"
+          "message": "❗️ Something wrong with Run '{run.hash}'. Please check. ❗️"
         }
       }
     }

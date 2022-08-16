@@ -17,11 +17,18 @@ from aim.ext.cleanup import AutoClean
 logger = logging.getLogger(__name__)
 
 
+class RunVariable:
+    """Representation of Run object with run.hash only. To be replaced with real Run in the future."""
+    def __init__(self, run_hash: str):
+        self.hash = run_hash
+
+
 class StatusEvent:
     def __init__(self, status_event_encoded: str):
-        obj_idx, idx, _, epoch_time, next_event_in = status_event_encoded.split('-')
+        obj_idx, idx, event_type, epoch_time, next_event_in = status_event_encoded.split('-')
         self.idx: int = int(idx)
         self.obj_idx: str = obj_idx
+        self.event_type = event_type
         self.next_event_in: int = int(next_event_in)
         self.epoch_time: float = float(epoch_time)
         self.detected_epoch_time: float = time.time()
@@ -130,7 +137,7 @@ class NotificationQueue(object):
                     logger.debug(f'Notification for object \'{notification.obj_idx}\' '
                                  f'with event ID {notification.event_idx} has already been sent. Skipping.')
                 else:
-                    details = {'run_hash': notification.obj_idx}
+                    details = {'run': RunVariable(notification.obj_idx)}
                     self._notifier.notify(notification.message, **details)
                     self.update_last_sent(notification)
 
@@ -158,6 +165,11 @@ class RunStatusWatcherAutoClean(AutoClean['RunStatusWatcher']):
 
 
 class RunStatusWatcher:
+    message_templates = {
+        'success': 'Run \'{run.hash}\' finished without error.',
+        'init': 'Run \'{run.hash}\' started.'
+    }
+
     def __init__(self, repo: Repo, background: bool = False):
         repo_path = Path(repo.path)
         self.background = background
@@ -206,19 +218,20 @@ class RunStatusWatcher:
         for new_event in new_events.events.values():
             if not self._status_events.add(new_event):
                 event = self._status_events.get(new_event.obj_idx)
+                if event.next_event_in == 0:  # wait for next check-in for infinite time
+                    continue
                 epoch_now = time.time()
                 failed = (event.next_event_in < epoch_now - event.detected_epoch_time)
                 if failed:
                     notification = StatusNotification(event)
                     self.notifications_queue.add_notification(notification)
-            else:
-                if new_event.next_event_in == 0:
-                    print(new_event.idx, new_event.obj_idx, new_event.detected_epoch_time, new_event.next_event_in)
-                    notification = StatusNotification(new_event, 'Run \'{run_hash}\' finished without error.')
-                    self.notifications_queue.add_notification(notification)
+            elif new_event.event_type in self.message_templates:
+                message_template = self.message_templates[new_event.event_type]
+                notification = StatusNotification(new_event, message_template)
+                self.notifications_queue.add_notification(notification)
 
     def poll_events(self) -> StatusEventSet:
         events = StatusEventSet()
-        for check_in_file_path in sorted(self._status_watch_dir.glob('*check_in*')):
+        for check_in_file_path in sorted(self._status_watch_dir.glob('*-*-*-*-*')):
             events.add(StatusEvent(check_in_file_path.name))
         return events
