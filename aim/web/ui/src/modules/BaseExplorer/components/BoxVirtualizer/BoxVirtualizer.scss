@@ -26,6 +26,11 @@
   overflow: auto;
 }
 
+.BoxVirtualizer__grid {
+  display: inline;
+  overflow: hidden;
+}
+
 .BoxVirtualizer__container__horizontalRuler {
   position: sticky;
   top: 0px;

@@ -192,9 +192,9 @@ function Visualizer(props: IVisualizationProps) {
             rows: (item: any) => (
               <div style={item.style}>
                 <Tooltip title={item.value} key={item.key}>
-                  <div>
+                  <span>
                     <Text>{item.value}</Text>
-                  </div>
+                  </span>
                 </Tooltip>
               </div>
             ),

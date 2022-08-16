@@ -79,25 +79,17 @@ function BoxVirtualizer(props: IBoxVirtualizerProps) {
 
   useResizeObserver(resizeObserverCallback, container, observerReturnCallback);
 
-  const filteredItems = React.useMemo(
-    () =>
-      data.filter(
-        (item: AimFlatObjectBase<any>) =>
-          item.style.left >= gridWindow.left - item.style.width &&
-          item.style.left <= gridWindow.left + gridWindow.width &&
-          item.style.top >= gridWindow.top - item.style.height &&
-          item.style.top <= gridWindow.top + gridWindow.height,
-      ),
-    [data, gridWindow],
+  const filteredItems = data.filter(
+    (item: AimFlatObjectBase<any>) =>
+      item.style.left >= gridWindow.left - item.style.width &&
+      item.style.left <= gridWindow.left + gridWindow.width &&
+      item.style.top >= gridWindow.top - item.style.height &&
+      item.style.top <= gridWindow.top + gridWindow.height,
   );
 
-  const groupedByPosition = React.useMemo(
-    () =>
-      _.groupBy(
-        filteredItems,
-        (item) => `${item.style.top}__${item.style.left}`,
-      ),
-    [filteredItems],
+  const groupedByPosition = _.groupBy(
+    filteredItems,
+    (item) => `${item.style.top}__${item.style.left}`,
   );
 
   // Find the edges for container size calculation
@@ -165,11 +157,10 @@ function BoxVirtualizer(props: IBoxVirtualizerProps) {
         )}
         <div
           ref={grid}
+          className='BoxVirtualizer__grid'
           style={{
-            display: 'inline',
             width: gridSize.width,
             height: gridSize.height,
-            overflow: 'hidden',
           }}
         >
           {Object.entries(groupedByPosition).map(props.itemsRenderer)}
