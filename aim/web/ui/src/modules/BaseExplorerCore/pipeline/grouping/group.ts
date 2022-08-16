@@ -36,7 +36,12 @@ function group(
   //
   //   return result;
   // }
-  const groups = getGroupValues(data, config.fields, config.orders);
+  const groups = getGroupValues(
+    data,
+    config.fields,
+    config.orders,
+    config.type,
+  );
 
   // @ts-ignore
   const result = data.map((item: any) => {
