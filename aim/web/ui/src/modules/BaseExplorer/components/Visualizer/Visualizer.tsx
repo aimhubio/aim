@@ -87,7 +87,7 @@ function Visualizer(props: IVisualizationProps) {
     if (foundGroups) {
       return Object.keys(foundGroups)
         .filter((key: string) => foundGroups[key].type === GroupType.ROW)
-        .map((key: string) => {
+        .map((key: string, i: number, source: {}[]) => {
           const item = foundGroups[key];
           return {
             key: key,
@@ -103,7 +103,8 @@ function Visualizer(props: IVisualizationProps) {
               width: 200,
               padding: `${boxConfig.gap / 2}px 0.5rem`,
               backgroundColor: '#fff',
-              borderBottom: '0.0625rem solid #dceafb',
+              borderBottom:
+                source.length - 1 === i ? '' : '0.0625rem solid #dceafb',
               overflow: 'hidden',
               textAlign: 'right',
               textOverflow: 'ellipsis',
@@ -120,7 +121,7 @@ function Visualizer(props: IVisualizationProps) {
     if (foundGroups) {
       return Object.keys(foundGroups)
         .filter((key: string) => foundGroups[key].type === GroupType.COLUMN)
-        .map((key: string) => {
+        .map((key: string, i: number, source: {}[]) => {
           const item = foundGroups[key];
           return {
             key: key,
@@ -137,7 +138,8 @@ function Visualizer(props: IVisualizationProps) {
               width: boxConfig.width + boxConfig.gap,
               padding: '0.25rem 0.5rem',
               backgroundColor: '#fff',
-              borderRight: '0.0625rem solid #dceafb',
+              borderRight:
+                source.length - 1 === i ? '' : '0.0625rem solid #dceafb',
               textAlign: 'center',
               overflow: 'hidden',
               whiteSpace: 'nowrap',
@@ -180,14 +182,14 @@ function Visualizer(props: IVisualizationProps) {
             rows: rowsAxisData,
           }}
           axisItemRenderer={{
-            columns: (item: any, i: number) => (
+            columns: (item: any) => (
               <Tooltip title={item.value} key={item.key}>
                 <div style={item.style}>
                   <Text>{item.value}</Text>
                 </div>
               </Tooltip>
             ),
-            rows: (item: any, i: number) => (
+            rows: (item: any) => (
               <div style={item.style}>
                 <Tooltip title={item.value} key={item.key}>
                   <div>

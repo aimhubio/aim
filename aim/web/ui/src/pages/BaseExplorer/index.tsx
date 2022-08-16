@@ -98,7 +98,7 @@ const config: IExplorerConfig = {
                   (boxConfig.height + boxConfig.gap) +
                 30 +
                 boxConfig.gap
-              : 30 + boxConfig.gap,
+              : (group[GroupType.COLUMN] ? 30 : 0) + boxConfig.gap,
           };
         },
         defaultApplications: {

@@ -100,24 +100,34 @@ function BoxVirtualizer(props: IBoxVirtualizerProps) {
     [filteredItems],
   );
 
-  // @TODO remove this variable and calculate width and height of the container with optimized way
-  // Sort items to find the edges for container size calculation
-  const sortedByPosition = React.useMemo(
-    () =>
-      data
-        .sort((a: any, b: any) => a.style.left - b.style.left)
-        .sort((a: any, b: any) => a.style.top - b.style.top),
-    [data],
-  );
+  // Find the edges for container size calculation
+  const gridSize = React.useMemo(() => {
+    let rightEdge = 0;
+    let bottomEdge = 0;
 
-  const gridWidth =
-    sortedByPosition?.[sortedByPosition?.length - 1]?.style?.left +
-    sortedByPosition?.[sortedByPosition?.length - 1]?.style?.width +
-    props.offset;
+    let itemWidth = 0;
+    let itemHeight = 0;
 
-  const gridHeight =
-    sortedByPosition?.[sortedByPosition?.length - 1]?.style?.top +
-    sortedByPosition?.[sortedByPosition?.length - 1]?.style?.height;
+    for (let i = 0; i < data.length; i++) {
+      let item = data[i];
+      if (item.style.top > rightEdge) {
+        rightEdge = item.style.left;
+        itemWidth = item.style.width;
+      }
+
+      if (item.style.top > bottomEdge) {
+        bottomEdge = item.style.top;
+        itemHeight = item.style.height;
+      }
+    }
+
+    const horizontalRulerHeight = 30;
+
+    return {
+      width: rightEdge + itemWidth + props.offset,
+      height: bottomEdge + itemHeight + props.offset - horizontalRulerHeight,
+    };
+  }, [data, props.offset]);
 
   return (
     <div className='BoxVirtualizer'>
@@ -137,7 +147,7 @@ function BoxVirtualizer(props: IBoxVirtualizerProps) {
           <div
             className='BoxVirtualizer__container__horizontalRuler'
             style={{
-              width: gridWidth || 0,
+              width: gridSize.width,
             }}
           >
             {columnsAxisItems?.map(props.axisItemRenderer?.columns)}
@@ -147,7 +157,7 @@ function BoxVirtualizer(props: IBoxVirtualizerProps) {
           <div
             className='BoxVirtualizer__container__verticalRuler'
             style={{
-              height: gridHeight || 0,
+              height: gridSize.height,
             }}
           >
             {rowsAxisItems?.map(props.axisItemRenderer?.rows)}
@@ -157,8 +167,8 @@ function BoxVirtualizer(props: IBoxVirtualizerProps) {
           ref={grid}
           style={{
             display: 'inline',
-            width: gridWidth || 0,
-            height: gridHeight || 0,
+            width: gridSize.width,
+            height: gridSize.height,
             overflow: 'hidden',
           }}
         >
