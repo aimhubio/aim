@@ -496,6 +496,10 @@ class RunCheckIns:
             with self.flush_condition:
                 self.flush_condition.wait(timeout=suspend_time)
 
+            # If the stop signal is set, then no new check-ins will be written,
+            # So we can safely exit the thread after finishing what we have now.
+            is_last_check = self.stop_signal.is_set()
+
             check_in = self.last_check_in
             if check_in != self.physical_check_in:
                 logger.info(f"detected newest check-in: {check_in}")
@@ -503,9 +507,8 @@ class RunCheckIns:
                     directory=self.dir, run_hash=self.run_hash
                 )
                 logger.info(f"changing to -> {self.physical_check_in}")
-                continue
 
-            if self.stop_signal.is_set():
+            if is_last_check:
                 logger.info("writer thread stopping as requested")
                 return
 
@@ -557,7 +560,7 @@ class RunCheckIns:
 
         By default this will block until the check-in is flushed.
         """
-        return self._check_in(block=block, flag_name="success")
+        return self._check_in(block=block, flag_name="finished")
 
     # The instance method `check_in` and `report_successful_finish` is patched into
     # the instance in `__post_init__`

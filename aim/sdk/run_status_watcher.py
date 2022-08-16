@@ -166,8 +166,8 @@ class RunStatusWatcherAutoClean(AutoClean['RunStatusWatcher']):
 
 class RunStatusWatcher:
     message_templates = {
-        'success': 'Run \'{run.hash}\' finished without error.',
-        'init': 'Run \'{run.hash}\' started.'
+        'finished': 'Run \'{run.hash}\' finished without error.',
+        'starting': 'Run \'{run.hash}\' started.'
     }
 
     def __init__(self, repo: Repo, background: bool = False):

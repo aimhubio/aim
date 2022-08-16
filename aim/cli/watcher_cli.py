@@ -11,7 +11,7 @@ from aim.sdk.run_status_watcher import RunStatusWatcher
 from aim.sdk.repo import Repo
 
 core._verify_python3_env = lambda: None
-DEFAULT_MESSAGE_TEMPLATE = "❗️ Something wrong with Run '{run_hash}'. Please check. ❗️"
+DEFAULT_MESSAGE_TEMPLATE = "❗️ Something wrong with Run '{run.hash}'. Please check. ❗️"
 
 
 class OrderedGroup(click.Group):
