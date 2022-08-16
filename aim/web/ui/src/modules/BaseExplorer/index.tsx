@@ -54,7 +54,6 @@ function BaseExplorer(props: IBaseExplorerProps) {
     </div>
   ) : (
     <>
-      {console.log('initializing')}
       <div>Initializing</div>
     </>
   );

@@ -2,8 +2,6 @@
 // @TODO complete docs, comments
 // @TODO complete typings
 
-import { memoize } from 'modules/BaseExplorerCore/cache';
-
 import {
   createSearchRunsRequest,
   RunsSearchQueryParams,
@@ -15,25 +13,43 @@ import { SequenceTypesEnum } from 'types/core/enums';
 
 import { parseStream } from 'utils/encoder/streamEncoding';
 
+import createInlineCache, { InlineCache } from '../../cache/inlineCache';
+
 export type Query = {
-  execute: (params: RunsSearchQueryParams) => Promise<RunSearchRunView[]>;
+  execute: (
+    query: RunsSearchQueryParams,
+    ignoreCache: boolean,
+  ) => Promise<RunSearchRunView[]>;
   cancel: () => void;
 };
 
 let currentQueryRequest: RequestInstance;
 let currentSequenceType: SequenceTypesEnum;
 let statusChangeCallback: ((status: string) => void) | undefined;
+let cache: InlineCache | null = null;
 
 async function executeBaseQuery(
   query: RunsSearchQueryParams,
+  ignoreCache: boolean = false,
 ): Promise<RunSearchRunView[]> {
+  if (cache && !ignoreCache) {
+    const cachedResult = cache.get(query);
+    if (cachedResult) {
+      return cachedResult;
+    }
+  }
   cancel();
   statusChangeCallback && statusChangeCallback('fetching'); // make invariant with type mapping
   try {
     const data: ReadableStream = await currentQueryRequest.call(query);
     statusChangeCallback && statusChangeCallback('decoding');
 
-    return parseStream<Array<RunSearchRunView>>(data);
+    const result = parseStream<Array<RunSearchRunView>>(data);
+    if (cache) {
+      cache.set(query, result);
+    }
+
+    return result;
   } catch (e) {
     console.log(e);
     return [];
@@ -77,12 +93,16 @@ function createQuery(
   setCurrentSequenceType(sequenceType);
   setStatusChangeCallback(statusChangeCallback);
   createQueryRequest();
-  // @TODO implement advanced cache with max memory usage limit
-  const execute = useCache
-    ? memoize<RunsSearchQueryParams, Promise<RunSearchRunView[]>>(
-        executeBaseQuery,
-      )
-    : executeBaseQuery;
+  cache = useCache ? createInlineCache() : null;
+
+  // do not delete yet, maybe there are some use cases where we need to cancel the request
+  // const execute = useCache
+  //   ? memoize<RunsSearchQueryParams, Promise<RunSearchRunView[]>>(
+  //       executeBaseQuery,
+  //     )
+  //   : executeBaseQuery;
+
+  const execute = executeBaseQuery;
 
   return {
     execute,

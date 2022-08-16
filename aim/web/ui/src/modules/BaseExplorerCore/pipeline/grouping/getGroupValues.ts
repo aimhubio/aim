@@ -1,7 +1,8 @@
 import { orderBy } from 'lodash-es';
 
 import { getValue } from 'utils/helper';
-import { encode } from 'utils/encoder/encoder';
+
+import { buildObjectHash } from '../../helpers';
 
 import { Order } from './types';
 
@@ -28,18 +29,20 @@ function getGroups(
   data: any[],
   fields: string[],
   orders: Order[],
+  type: string,
 ): Record<string, Group> {
   // generate possible groups
   const groups: Record<string, Group> = data.reduce(
     (groups: Group, value: any) => {
       const groupValue: GroupValue = pickValues(value, fields);
-      const groupKey: string = encode(groupValue, true);
+      const groupKey: string = buildObjectHash(groupValue);
 
       if (!groups.hasOwnProperty(groupKey)) {
         groups[groupKey] = {
           key: groupKey,
           fields: groupValue,
           items: [],
+          type,
         };
       }
 

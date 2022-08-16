@@ -1,36 +1,9 @@
 // group by [group type] [group_type] [order]
-import { encode } from 'utils/encoder/encoder';
+import { buildObjectHash, cyrb53 } from '../../helpers';
 
 import { pickValues } from './getGroupValues';
-import { GroupOptions, GroupType, Order } from './types';
+import { GroupType, Order } from './types';
 import getGroupValues from './getGroupValues';
-
-const boxStyles = {
-  width: 100,
-  height: 100,
-  gap: 15,
-};
-
-const groupConfig = {
-  [GroupType.ROW]: {
-    property: 'y', // y
-    defaultFields: [],
-    defaultOrder: Order.ASC,
-    defaultApplier: (order: number): number => order * boxStyles.height, // + boxStyles.gap,
-  },
-  [GroupType.COLUMN]: {
-    property: 'x', // x
-    defaultFields: [],
-    defaultOrder: Order.ASC,
-    defaultApplier: (order: number) => order * boxStyles.width, // + boxStyles.gap
-  },
-  [GroupType.COLOR]: {
-    property: 'color',
-    defaultFields: [],
-    defaultOrder: Order.ASC,
-    defaultApplier: () => {},
-  },
-};
 
 /*
  * cache = {
@@ -63,11 +36,16 @@ function group(
   //
   //   return result;
   // }
-  const groups = getGroupValues(data, config.fields, config.orders);
+  const groups = getGroupValues(
+    data,
+    config.fields,
+    config.orders,
+    config.type,
+  );
 
   // @ts-ignore
   const result = data.map((item: any) => {
-    const groupKey: string = encode(pickValues(item, config.fields), true);
+    const groupKey: string = buildObjectHash(pickValues(item, config.fields));
 
     const group = item['groups'] || {};
     return {

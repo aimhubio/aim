@@ -59,10 +59,12 @@ const config: IExplorerConfig = {
           iteration: number,
         ) => {
           return {
-            left: group[GroupType.COLUMN]
-              ? group[GroupType.COLUMN].order *
-                (boxConfig.width + boxConfig.gap)
-              : 0,
+            left:
+              (group[GroupType.COLUMN]
+                ? group[GroupType.COLUMN].order *
+                    (boxConfig.width + boxConfig.gap) +
+                  boxConfig.gap
+                : boxConfig.gap) + (group[GroupType.ROW] ? 200 : 0),
           };
         },
         defaultApplications: {
@@ -95,8 +97,9 @@ const config: IExplorerConfig = {
             top: group[GroupType.ROW]
               ? group[GroupType.ROW].order *
                   (boxConfig.height + boxConfig.gap) +
-                30
-              : 30,
+                30 +
+                boxConfig.gap
+              : (group[GroupType.COLUMN] ? 30 : 0) + boxConfig.gap,
           };
         },
         defaultApplications: {
@@ -144,7 +147,7 @@ const config: IExplorerConfig = {
   ui: {
     // visualizationType: 'box', // 'box', 'sequence'
     defaultBoxConfig: {
-      width: 150,
+      width: 400,
       height: 150,
       gap: 10,
     },
