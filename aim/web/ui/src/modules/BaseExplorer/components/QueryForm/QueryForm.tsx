@@ -68,7 +68,7 @@ function QueryForm(props: IQueryFormProps) {
     } else {
       engine.search({
         q: getQueryStringFromSelect(query, sequenceName),
-        report_progress: false,
+        report_progress: true,
         ...getQueryFromRanges(ranges),
       });
     }

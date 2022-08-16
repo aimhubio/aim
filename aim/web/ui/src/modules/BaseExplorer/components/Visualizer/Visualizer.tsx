@@ -11,6 +11,7 @@ import { IVisualizationProps } from '../../types';
 import BoxVirtualizer from '../BoxVirtualizer';
 import BoxWrapper from '../BoxWrapper';
 import RangePanel from '../RangePanel';
+import ProgressBar from '../ProgressBar';
 
 import './Visualizer.scss';
 
@@ -84,28 +85,38 @@ function Visualizer(props: IVisualizationProps) {
       deps: [dataState, foundGroups],
     },
   );
+  const status = useStore(engine.pipelineStatusSelector);
 
   return (
     <div className='Visualizer'>
-      <div className='VisualizerContainer'>
-        <BoxVirtualizer
-          data={data}
-          itemsRenderer={([groupKey, items]) => (
-            <BoxWrapper
-              key={groupKey}
-              groupKey={groupKey}
-              engine={engine}
-              component={BoxContent}
-              items={items}
-              depthSelector={depthSelector}
-              onDepthMapChange={onDepthMapChange}
+      {status === 'fetching' ||
+      status === 'decoding' ||
+      status === 'grouping' ||
+      status === 'adopting' ? (
+        <ProgressBar engine={engine} />
+      ) : (
+        <>
+          <div className='VisualizerContainer'>
+            <BoxVirtualizer
+              data={data}
+              itemsRenderer={([groupKey, items]) => (
+                <BoxWrapper
+                  key={groupKey}
+                  groupKey={groupKey}
+                  engine={engine}
+                  component={BoxContent}
+                  items={items}
+                  depthSelector={depthSelector}
+                  onDepthMapChange={onDepthMapChange}
+                />
+              )}
             />
+            {ControlComponent && <ControlComponent engine={engine} />}
+          </div>
+          {!_.isEmpty(rangesData) && (
+            <RangePanel engine={engine} rangesData={rangesData} />
           )}
-        />
-        {ControlComponent && <ControlComponent engine={engine} />}
-      </div>
-      {!_.isEmpty(rangesData) && (
-        <RangePanel engine={engine} rangesData={rangesData} />
+        </>
       )}
     </div>
   );

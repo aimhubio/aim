@@ -95,6 +95,8 @@ export interface IVisualizationProps extends IBaseComponentProps {
   controlComponent?: React.FunctionComponent<IControlsProps>;
 }
 
+export interface IProgressBarProps extends IBaseComponentProps {}
+
 export interface IBoxProps extends IBaseComponentProps {
   data: any;
 }

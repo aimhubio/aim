@@ -155,7 +155,6 @@ const config: IExplorerConfig = {
     },
   },
   states: {
-    // change to custom state
     depthMap: {
       initialState: {},
     },
@@ -166,6 +165,6 @@ const config: IExplorerConfig = {
   },
 };
 
-const SampleExplorer = createExplorer(config);
+const FiguresExplorer = createExplorer(config);
 
-export default SampleExplorer;
+export default FiguresExplorer;

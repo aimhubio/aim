@@ -50,3 +50,13 @@ export type RunsSearchQueryParams = {
  * This data is used by explorer visualizations
  */
 export type RunsSearchResult = ReadableStream;
+
+/**
+ * if report_progress is true, there are some runs describing the progress during the streaming
+ * the request parser should use this type to pass argument as requestProgressCallback
+ */
+export interface IRunProgressObject {
+  matched: number;
+  checked: number;
+  trackedRuns: number;
+}
