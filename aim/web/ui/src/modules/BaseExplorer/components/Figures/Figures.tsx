@@ -1,8 +1,12 @@
-import React from 'react';
+import * as React from 'react';
 import Plot from 'react-plotly.js';
 
 function Figures(props: any) {
   let [data, setData] = React.useState<any>(null);
+  let [scale, setScale] = React.useState<number | null | undefined>(
+    !!props.style ? undefined : null,
+  );
+  let containerRef = React.useRef<HTMLDivElement | null>(null);
 
   React.useEffect(() => {
     let timerID = setTimeout(() => {
@@ -12,14 +16,45 @@ function Figures(props: any) {
     return () => clearTimeout(timerID);
   }, [props.data.data.data]);
 
+  React.useEffect(() => {
+    if (data && containerRef.current && props.style) {
+      let plot = containerRef.current.querySelector('.plot-container');
+      if (plot) {
+        let width = containerRef.current.offsetWidth;
+        let height = containerRef.current.offsetHeight;
+
+        let wK = props.style.width / width;
+        let hK = props.style.height / height;
+
+        if (wK < 1 || hK < 1) {
+          let scale = Math.min(wK, hK);
+          setScale(scale);
+        } else {
+          containerRef.current.style.transform = 'unset';
+          setScale(null);
+        }
+      }
+    }
+  }, [data, props.style?.width, props.style?.height]);
+
   return (
     data && (
-      <Plot
-        data={data.data}
-        layout={data.layout}
-        frames={data.frames}
-        useResizeHandler={true}
-      />
+      <div
+        style={{
+          display: 'inline-block',
+          visibility: scale === undefined ? 'hidden' : 'visible',
+          transform:
+            scale === undefined || scale === null ? '' : `scale(${scale})`,
+        }}
+        ref={containerRef}
+      >
+        <Plot
+          data={data.data}
+          layout={data.layout}
+          frames={data.frames}
+          useResizeHandler={true}
+        />
+      </div>
     )
   );
 }

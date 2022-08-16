@@ -97,6 +97,7 @@ export interface IVisualizationProps extends IBaseComponentProps {
 
 export interface IBoxProps extends IBaseComponentProps {
   data: any;
+  style?: React.CSSProperties;
 }
 
 export interface IOptionalExplorerConfig {}

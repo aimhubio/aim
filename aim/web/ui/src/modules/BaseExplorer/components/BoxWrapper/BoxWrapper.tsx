@@ -77,7 +77,13 @@ function BoxWrapper(props: IBoxWrapperProps) {
         <Icon name='full-screen' />
       </Button>
       <div className='BoxWrapper__box'>
-        {BoxContent && <BoxContent data={currentItem} engine={engine} />}
+        {BoxContent && (
+          <BoxContent
+            data={currentItem}
+            engine={engine}
+            style={currentItem.style}
+          />
+        )}
       </div>
       {renderDepthSlider({ className: 'BoxWrapper__depthSlider' })}
       {fullView && (
