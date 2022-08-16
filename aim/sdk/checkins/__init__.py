@@ -148,6 +148,7 @@ class CheckIn:
     idx: int = 0
     expect_next_in: int = field(default=0, compare=False)
     first_seen: float = field(default_factory=time.monotonic, compare=False, repr=False)
+    flag_name: str = field(default="check_in", compare=False, repr=True)
 
     # We keep per-run cache to memoize the first time we've seen check-ins
     per_run_cache: ClassVar[Dict[str, LRUCache]] = defaultdict(
@@ -164,12 +165,13 @@ class CheckIn:
         run_hash: str,
         idx: int,
         expect_next_in: int,
+        flag_name: str,
     ) -> float:
         """
         Return the first seen time of the check-in.
         """
         per_run_cache = cls.per_run_cache[run_hash]
-        key = (idx, expect_next_in)
+        key = (idx, expect_next_in, flag_name)
         try:
             return per_run_cache[key]
         except KeyError:
@@ -195,22 +197,25 @@ class CheckIn:
         if isinstance(path, str):
             path = Path(path)
 
-        run_hash, str_idx, sep, utc_time, str_expect_next_in = path.name.rsplit(
+        run_hash, str_idx, flag_name, utc_time, str_expect_next_in = path.name.rsplit(
             "-", maxsplit=4
         )
-        assert sep == "check_in"
 
         idx = int(str_idx)
         expect_next_in = int(str_expect_next_in)
 
         first_seen = cls.first_seen_cached(
-            run_hash=run_hash, idx=idx, expect_next_in=expect_next_in
+            run_hash=run_hash,
+            idx=idx,
+            expect_next_in=expect_next_in,
+            flag_name=flag_name,
         )
 
         return run_hash, cls(
             idx=idx,
             expect_next_in=expect_next_in,
             first_seen=first_seen,
+            flag_name=flag_name,
         )
 
     @classmethod
@@ -235,13 +240,19 @@ class CheckIn:
 
         return check_in
 
-    def increment(self, *, expect_next_in: int = 0) -> "CheckIn":
+    def increment(
+        self,
+        *,
+        expect_next_in: int = 0,
+        flag_name: str = "check-in",
+    ) -> "CheckIn":
         """
         Create a new check-in and auto-increment the index based on the current one.
         """
         new = CheckIn(
             idx=self.idx + 1,
             expect_next_in=max(expect_next_in, self.expect_next_in),
+            flag_name=flag_name,
         )
         logger.info(f"incrementing check-in: {self} -> {new}")
         return new
@@ -264,6 +275,7 @@ class CheckIn:
             idx=self.idx,
             expect_next_in=expect_next_in,
             first_seen=now,
+            flag_name=self.flag_name,
         )
         logger.info(f"calibrated check-in: {self} -> {new}")
         return new
@@ -274,7 +286,7 @@ class CheckIn:
         *,
         run_hash: Union[str, AsteriskType],
         idx: Union[int, AsteriskType] = Asterisk,
-        flag_name: Union[str, AsteriskType] = "check_in",
+        flag_name: Union[str, AsteriskType] = Asterisk,
         absolute_time: Union[float, AsteriskType] = Asterisk,
         expect_next_in: Union[int, AsteriskType] = Asterisk,
     ) -> str:
@@ -298,10 +310,11 @@ class CheckIn:
         """
         Cleanups all the expired check-ins for the given run hash.
 
-        This will remove all check-ins that are older than the current one.
+        This will remove all check-ins that are older than the current one
+        matching the same flag_name.
         Returns the new current check-in.
         """
-        pattern = self.generate_filename(run_hash=run_hash)
+        pattern = self.generate_filename(run_hash=run_hash, flag_name=self.flag_name)
         *paths_to_remove, current_check_in_path = sorted(directory.glob(pattern))
         logger.info(f"found {len(paths_to_remove)} check-ins:")
         logger.info(f"the acting one: {current_check_in_path}")
@@ -357,6 +370,7 @@ class CheckIn:
             idx=self.idx,
             expect_next_in=self.expect_next_in,
             absolute_time=utc_time,
+            flag_name=self.flag_name,
         )
         new_path = directory / filename
         logger.info(f"touching check-in: {new_path}")
@@ -411,7 +425,7 @@ class RunCheckIns:
             logger.info(f"leftover check-in: {leftover}")
         else:
             logger.info("no leftover check-in found. starting from zero")
-        self.last_check_in = leftover.increment()
+        self.last_check_in = leftover.increment(flag_name="starting")
         self.physical_check_in = self.last_check_in.touch(
             directory=self.dir,
             run_hash=self.run_hash,
@@ -515,6 +529,7 @@ class RunCheckIns:
         self,
         *,
         expect_next_in: int = 0,
+        flag_name: str = "check_in",
         block: bool = False,
     ) -> None:
         """
@@ -524,7 +539,11 @@ class RunCheckIns:
         """
         if self.stop_signal.is_set():
             raise RuntimeError("check-in is not allowed after stopping the writer thread")
-        self.last_check_in = self.last_check_in.increment(expect_next_in=expect_next_in)
+
+        self.last_check_in = self.last_check_in.increment(
+            expect_next_in=expect_next_in,
+            flag_name=flag_name,
+        )
         if block:
             self.flush(block=True)
 
@@ -538,7 +557,7 @@ class RunCheckIns:
 
         By default this will block until the check-in is flushed.
         """
-        return self._check_in(block=block)
+        return self._check_in(block=block, flag_name="success")
 
     # The instance method `check_in` and `report_successful_finish` is patched into
     # the instance in `__post_init__`
