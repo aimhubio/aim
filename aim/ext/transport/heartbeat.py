@@ -82,6 +82,7 @@ class RPCHeartbeatSender(object):
 
             if stability_check_interval_counter > self._network_stability_check_interval:
                 self._check_network_state()
+                stability_check_interval_counter = 0
 
     def _check_network_state(self):
         def reset_responses():
