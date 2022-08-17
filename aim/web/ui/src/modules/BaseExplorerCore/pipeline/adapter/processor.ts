@@ -1,4 +1,4 @@
-import _ from 'lodash';
+import _ from 'lodash-es';
 
 import {
   IndexRanges,
@@ -254,11 +254,12 @@ export function storageDataToFlatList(
       });
     }
   });
-  params = _.uniq(params);
+  params = _.uniq(params).sort();
 
-  sequenceInfo = _.uniq(sequenceInfo);
+  sequenceInfo = _.uniq(sequenceInfo).sort();
+  modifiers = _.uniq(modifiers).sort();
   modifiers = [
-    ..._.uniq(modifiers),
+    ...modifiers,
     ...params,
     ..._.uniq(record_info),
     ...sequenceInfo,
