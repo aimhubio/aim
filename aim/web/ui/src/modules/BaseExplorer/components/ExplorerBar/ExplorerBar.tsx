@@ -9,6 +9,8 @@ import { Button, Icon } from 'components/kit';
 
 import { IBaseComponentProps } from '../../types';
 
+import './ExplorerBar.scss';
+
 interface IExplorerBarProps extends IBaseComponentProps {
   explorerName: string;
   documentationLink: string;
@@ -21,10 +23,11 @@ function ExplorerBar(props: IExplorerBarProps) {
     // props.engine.groupings.reset();
     // resetControls();
   }
+
   return (
     <div>
       <AppBar title={props.explorerName}>
-        <div className='MetricsBar__menu'>
+        <div className='ExplorerBar__menu'>
           <ErrorBoundary>
             <ControlPopover
               title='Menu'
@@ -38,12 +41,12 @@ function ExplorerBar(props: IExplorerBarProps) {
                   <Icon
                     fontSize={16}
                     name='menu'
-                    className='MetricsBar__item__bookmark__Icon'
+                    className='ExplorerBar__item__bookmark__Icon'
                   />
                 </Button>
               )}
               component={
-                <div className='MetricsBar__popover'>
+                <div className='ExplorerBar__popover'>
                   <MenuItem onClick={resetAll}>
                     Reset Controls to System Defaults
                   </MenuItem>
