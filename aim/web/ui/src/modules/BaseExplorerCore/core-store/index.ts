@@ -65,12 +65,20 @@ type ExplorerConfig = {
   useCache: boolean;
 };
 
+const initialProgressState: ProgressState = {
+  matched: 0,
+  trackedRuns: 0,
+  percent: 0,
+  checked: 0,
+};
+
 const initialState: ExplorerState = {
   initialized: false,
   sequenceName: null,
   instructions: {},
   pipeline: {
     status: 'initial',
+    progress: initialProgressState,
   },
   data: null,
   additionalData: null,
@@ -301,7 +309,12 @@ function createEngine(config: IEngineConfigFinal) {
     });
     const { additionalData, data, queryableData, foundGroups } = res;
 
-    storeVanilla.setState({ data, additionalData, queryableData, foundGroups });
+    storeVanilla.setState({
+      data,
+      additionalData,
+      queryableData,
+      foundGroups,
+    });
   }
 
   async function group(
@@ -390,7 +403,14 @@ function createEngine(config: IEngineConfigFinal) {
     // make separate pipeline key
     pipelineStatusSelector: (state: any) => state.pipeline.status,
     pipelineProgressSelector: (state: any) => state.pipeline.progress,
-
+    resetPipelineProgress: () => {
+      storeVanilla.setState({
+        pipeline: {
+          ...storeVanilla.getState().pipeline,
+          progress: initialProgressState,
+        },
+      });
+    },
     engineStatusSelector: (state: ExplorerState) => ({
       initialized: state.initialized,
     }),

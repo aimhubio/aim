@@ -30,6 +30,7 @@ function Visualizer(props: IVisualizationProps) {
       foundGroupsSelector,
       dataSelector,
       queryableDataSelector,
+      engineStatusSelector,
     },
     box: BoxContent,
     controlComponent: ControlComponent,
@@ -38,6 +39,7 @@ function Visualizer(props: IVisualizationProps) {
   const foundGroups = useStore(foundGroupsSelector);
   const dataState = useStore(dataSelector);
   const rangesData: IQueryableData = useStore(queryableDataSelector);
+  const intialized = useStore(engineStatusSelector);
 
   const data = React.useMemo(() => {
     return dataState?.map((d: any, i: number) => {
@@ -168,15 +170,16 @@ function Visualizer(props: IVisualizationProps) {
   const status = useStore(engine.pipelineStatusSelector);
 
   return (
-    <div className='Visualizer'>
-      {status === 'fetching' ||
-      status === 'decoding' ||
-      status === 'grouping' ||
-      status === 'adopting' ? (
-        <ProgressBar engine={engine} />
-      ) : (
-        <>
-          <div className='VisualizerContainer'>
+    <div
+      className='Visualizer'
+      style={{
+        position: 'relative',
+      }}
+    >
+      <ProgressBar engine={engine} />
+      <div className='VisualizerContainer'>
+        {!_.isEmpty(dataState) && (
+          <>
             <BoxVirtualizer
               data={data}
               itemsRenderer={([groupId, items]) => (
@@ -215,11 +218,11 @@ function Visualizer(props: IVisualizationProps) {
               }}
             />
             {ControlComponent && <ControlComponent engine={engine} />}
-          </div>
-          {!_.isEmpty(rangesData) && (
-            <RangePanel engine={engine} rangesData={rangesData} />
-          )}
-        </>
+          </>
+        )}
+      </div>
+      {!_.isEmpty(rangesData) && (
+        <RangePanel engine={engine} rangesData={rangesData} />
       )}
     </div>
   );
