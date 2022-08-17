@@ -46,8 +46,7 @@ function CopyToClipboard({
         textArea.focus();
         textArea.select();
         try {
-          const successful = document.execCommand('copy');
-          if (successful) {
+          if (document.execCommand('copy')) {
             setShowCopiedIcon(true);
           }
         } catch (err) {}
