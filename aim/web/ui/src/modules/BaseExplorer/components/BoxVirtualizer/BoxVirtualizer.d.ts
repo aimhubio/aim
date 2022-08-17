@@ -1,12 +1,8 @@
 import React from 'react';
 
-import { AimFlatObjectBase } from 'modules/BaseExplorerCore/pipeline/adapter/processor';
-
-export interface IBoxVirtualizerProps {
-  data: Array<AimFlatObjectBase<any>>;
-  itemsRenderer: (
-    value: [groupKey: string, items: Array<AimFlatObjectBase<any>>],
-  ) => React.ReactNode;
+export interface IBoxVirtualizerProps<T> {
+  data: Array<T>;
+  itemsRenderer: (value: [groupId: string, items: Array<T>]) => React.ReactNode;
   offset: number;
   axisData?: {
     columns?: any;
