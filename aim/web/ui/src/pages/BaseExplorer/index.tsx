@@ -21,6 +21,7 @@ import {
 import Figures from 'modules/BaseExplorer/components/Figures/Figures';
 import Controls, {
   BoxProperties,
+  CaptionProperties,
 } from 'modules/BaseExplorer/components/Controls';
 
 import { AimObjectDepths, SequenceTypesEnum } from 'types/core/enums';
@@ -131,6 +132,15 @@ const config: IExplorerConfig = {
         // this is the reason for empty state, the state property is optional, just kept empty here to have an example for other controls
         state: {
           initialState: {},
+        },
+      },
+      captionProperties: {
+        component: CaptionProperties,
+        state: {
+          initialState: {
+            displayBoxCaption: true,
+            selectedFields: ['run.name', 'figures.name', 'figures.context'],
+          },
         },
       },
     },
