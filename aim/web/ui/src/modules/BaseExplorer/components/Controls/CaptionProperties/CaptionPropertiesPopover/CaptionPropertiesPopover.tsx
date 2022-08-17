@@ -10,7 +10,7 @@ import {
 import { Badge, Text, ToggleButton } from 'components/kit';
 import ErrorBoundary from 'components/ErrorBoundary/ErrorBoundary';
 
-import { SelectedField } from '../CaptionProperties.d';
+import { SelectOption } from '../CaptionProperties.d';
 
 import { ICaptionPropertiesPopoverProps } from '.';
 
@@ -35,22 +35,17 @@ function CaptionPropertiesPopover(
   const [searchValue, setSearchValue] = React.useState<string>('');
 
   const handleSelect = React.useCallback(
-    (
-      values: ICaptionPropertiesPopoverProps['captionProperties']['selectedFields'],
-    ): void => {
+    (values: SelectOption[]): void => {
       updateCaptionProperties({
         ...captionProperties,
-        selectedFields: values,
+        selectedFields: values.map((item: SelectOption) => item.value),
       });
     },
     [captionProperties, updateCaptionProperties],
   );
 
   const onSelectedFieldsChange = React.useCallback(
-    (
-      e: any,
-      values: ICaptionPropertiesPopoverProps['captionProperties']['selectedFields'],
-    ): void => {
+    (e: any, values: SelectOption[]): void => {
       if (e?.code !== 'Backspace') {
         handleSelect(values);
       } else {
@@ -74,20 +69,35 @@ function CaptionPropertiesPopover(
 
   const options = React.useMemo(() => {
     const modifiers = availableModifiers?.modifiers ?? [];
-    const optionsData: ICaptionPropertiesPopoverProps['captionProperties']['selectedFields'] =
-      modifiers.map((modifier: string) => {
-        return {
-          label: modifier,
-          value: modifier,
-          group: modifier.slice(0, modifier.indexOf('.')),
-        };
-      });
+    const optionsData: SelectOption[] = modifiers.map((modifier: string) => {
+      return {
+        label: modifier,
+        value: modifier,
+        group: modifier.slice(0, modifier.indexOf('.')),
+      };
+    });
     return (
       optionsData?.filter(
-        (option: SelectedField) => option.label.indexOf(searchValue) !== -1,
+        (option: SelectOption) => option.label.indexOf(searchValue) !== -1,
       ) ?? []
     );
   }, [availableModifiers?.modifiers, searchValue]);
+
+  const values: SelectOption[] = React.useMemo(() => {
+    let data: { value: string; group: string; label: string }[] = [];
+    options.forEach((option: SelectOption) => {
+      if (captionProperties.selectedFields.indexOf(option.value) !== -1) {
+        data.push(option);
+      }
+    });
+
+    // Sort selected values by the order of their application
+    return data.sort(
+      (a, b) =>
+        captionProperties.selectedFields.indexOf(a.value) -
+        captionProperties.selectedFields.indexOf(b.value),
+    );
+  }, [options, captionProperties.selectedFields]);
 
   return (
     <ErrorBoundary>
@@ -107,11 +117,11 @@ function CaptionPropertiesPopover(
             multiple
             disableCloseOnSelect
             options={options}
-            value={captionProperties.selectedFields}
+            value={values}
             onChange={onSelectedFieldsChange}
-            groupBy={(option: SelectedField) => option.group}
-            getOptionLabel={(option: SelectedField) => option.label}
-            getOptionSelected={(option: SelectedField, value: SelectedField) =>
+            groupBy={(option: SelectOption) => option.group}
+            getOptionLabel={(option: SelectOption) => option.label}
+            getOptionSelected={(option: SelectOption, value: SelectOption) =>
               option.value === value.value
             }
             renderInput={(params) => (
@@ -131,16 +141,22 @@ function CaptionPropertiesPopover(
             )}
             renderOption={(option, { selected }) => (
               <React.Fragment>
-                <Checkbox
-                  color='primary'
-                  icon={<CheckBoxOutlineBlank />}
-                  checkedIcon={<CheckBoxIcon />}
-                  style={{ marginRight: 4 }}
-                  checked={selected}
-                />
-                <Typography noWrap={true} title={option.label}>
-                  {option.label}
-                </Typography>
+                <div className='CaptionPropertiesPopover__option'>
+                  <Checkbox
+                    color='primary'
+                    size='small'
+                    icon={<CheckBoxOutlineBlank />}
+                    checkedIcon={<CheckBoxIcon />}
+                    style={{ marginRight: 4 }}
+                    checked={selected}
+                  />
+                  <Text
+                    className='CaptionPropertiesPopover__option__label'
+                    size={14}
+                  >
+                    {option.label}
+                  </Text>
+                </div>
               </React.Fragment>
             )}
             renderTags={(value, getTagProps) => (

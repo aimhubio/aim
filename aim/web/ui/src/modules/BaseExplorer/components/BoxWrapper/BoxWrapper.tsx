@@ -96,6 +96,7 @@ function BoxWrapper(props: IBoxWrapperProps) {
     captionBoxRef.current?.offsetHeight,
     captionProperties.selectedFields,
     captionProperties.displayBoxCaption,
+    boxConfig.height,
   ]);
 
   return currentItem ? (

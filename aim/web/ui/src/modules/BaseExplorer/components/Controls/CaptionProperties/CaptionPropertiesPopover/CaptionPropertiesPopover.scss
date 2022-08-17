@@ -23,4 +23,15 @@
     gap: $space-xxxs;
     width: 100%;
   }
+  &__option {
+    display: flex;
+    width: 100%;
+    overflow: hidden;
+    &__label {
+      margin-left: $space-xs;
+      max-width: 100%;
+      overflow: hidden;
+      word-break: break-all;
+    }
+  }
 }

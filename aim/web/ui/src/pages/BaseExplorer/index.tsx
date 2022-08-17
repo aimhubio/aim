@@ -139,7 +139,10 @@ const config: IExplorerConfig = {
       captionProperties: {
         component: CaptionProperties,
         state: {
-          initialState: { displayBoxCaption: true, selectedFields: [] },
+          initialState: {
+            displayBoxCaption: true,
+            selectedFields: ['run.name', 'figures.name', 'figures.context'],
+          },
         },
       },
     },

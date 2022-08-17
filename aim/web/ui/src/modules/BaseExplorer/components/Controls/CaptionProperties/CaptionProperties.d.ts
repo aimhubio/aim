@@ -4,11 +4,11 @@ export interface ICaptionPropertiesProps {
 
 export interface ICaptionProperties {
   displayBoxCaption: boolean;
-  selectedFields: SelectedField[];
+  selectedFields: string[];
   isInitial: boolean;
 }
 
-export type SelectedField = {
+export type SelectOption = {
   label: string;
   value: string;
   group: string;
