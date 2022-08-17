@@ -47,7 +47,7 @@ const config: IExplorerConfig = {
         component: memo((props: IBaseComponentProps) => (
           <GroupingItem
             groupName='columns'
-            iconName='manage-column'
+            iconName='group-column'
             {...props}
           />
         )),
@@ -84,7 +84,7 @@ const config: IExplorerConfig = {
       },
       [GroupType.ROW]: {
         component: memo((props: IBaseComponentProps) => (
-          <GroupingItem groupName='rows' iconName='row-height' {...props} />
+          <GroupingItem groupName='rows' iconName='image-group' {...props} />
         )),
         // @ts-ignore
         styleApplier: (

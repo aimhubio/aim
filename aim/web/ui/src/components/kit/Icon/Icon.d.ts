@@ -143,4 +143,7 @@ export type IconName =
   | 'compare'
   | 'box-settings'
   | 'full-screen'
-  | 'new-tab';
+  | 'new-tab'
+  | 'figures-explorer'
+  | 'group-column'
+  | 'image-group';
