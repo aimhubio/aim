@@ -9,7 +9,7 @@ import _ from 'lodash-es';
  * @param deps {unknown[]} - the dependency array, after changing the item of the array will reset the depth map. The default value is: []
  * @param sync {boolean} - it enables the depth map synchronization mechanism. The default value is: false
  *
- * return [depthSelector, onDepthMapChange] {IUseDepthMap}
+ * return [depthSelector, onDepthMapChange] {UseDepthMap}
  */
 
 interface IUseDepthMapProps<T> {
@@ -20,7 +20,7 @@ interface IUseDepthMapProps<T> {
   sync?: boolean;
 }
 
-type IUseDepthMap = [
+type UseDepthMap = [
   (groupId: string) => (state: any) => number,
   (value: number, groupId: string) => void,
 ];
@@ -31,10 +31,9 @@ function useDepthMap<T>({
   state,
   deps = [],
   sync = false,
-}: IUseDepthMapProps<T>): IUseDepthMap {
-  const grouped = _.groupBy(data, groupItemCb);
-
+}: IUseDepthMapProps<T>): UseDepthMap {
   const generateMapBy = React.useCallback((value: number = 0) => {
+    const grouped = _.groupBy(data, groupItemCb);
     const newDepthMap: Record<string, number> = {};
     for (let [groupId, items] of Object.entries(grouped)) {
       const maxValue = items.length - 1;
