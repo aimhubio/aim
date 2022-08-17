@@ -1,7 +1,6 @@
-from typing import Optional
+from typing import Optional, List
 
 from aim.sdk.run import Run
-from aim.sdk.adapters.keras_mixins import TrackerKerasCallbackMetricsEpochEndMixin
 from aim.ext.resource.configs import DEFAULT_SYSTEM_TRACKING_INT
 
 try:
@@ -33,7 +32,7 @@ class AimCallback(TunerCallback):
         trial_dict = self.tuner.oracle.ongoing_trials
         tuner_key = next(iter(trial_dict))
         self._current_trial_id = trial_dict[tuner_key].trial_id
-        if not self._current_trial_id in self._started_trials:
+        if self._current_trial_id not in self._started_trials:
             if self._repo_path is None and self._experiment_name is None:
                 self._run = Run(system_tracking_interval=self._system_tracking_interval,
                                 log_system_params=self._log_system_params,)
