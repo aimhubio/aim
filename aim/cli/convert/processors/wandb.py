@@ -32,12 +32,14 @@ def parse_wandb_logs(repo_inst, entity, project, run_id):
                 system_tracking_interval=None,
                 experiment=project
             )
-            aim_run.name = run.id
+            aim_run['wandb_run_id'] = run.id
+            aim_run['wandb_run_name'] = run.name
             aim_run.description = run.notes
 
             # Collect params & tags
             aim_run['params'] = run.config
-            aim_run['tags'] = run.tags
+            for tag in run.tags:
+                aim_run.add_tag(tag)
 
             records = run.history()
             keys = [key for key in run.history().keys()

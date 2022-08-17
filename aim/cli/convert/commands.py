@@ -68,11 +68,9 @@ def convert_mlflow(ctx, tracking_uri=None, **kwargs):
 
 @convert.command(name='wandb')
 @click.pass_context
-@click.option('--entity', required=False, default=None)
-@click.option('--project', required=False, default=None)
+@click.option('--entity', required=True, default=None)
+@click.option('--project', required=True, default=None)
 @click.option('--run-id', required=False, default=None)
 def convert_wandb(ctx, entity=None, project=None, **kwargs):
     repo_inst = ctx.obj['repo_inst']
-    if not entity or not project:
-        raise ClickException("WandB tracking entity and project must be provided.")
     parse_wandb_logs(repo_inst, entity, project, **kwargs)
