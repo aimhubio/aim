@@ -19,8 +19,10 @@ import {
   Order,
 } from 'modules/BaseExplorerCore/pipeline/grouping/types';
 import Figures from 'modules/BaseExplorer/components/Figures/Figures';
-import Controls from 'modules/BaseExplorer/components/Controls';
-import BoxProperties from 'modules/BaseExplorer/components/Controls/BoxProperties';
+import Controls, {
+  BoxProperties,
+  CaptionProperties,
+} from 'modules/BaseExplorer/components/Controls';
 
 import { DOCUMENTATIONS } from 'config/references';
 
@@ -135,6 +137,15 @@ const config: IExplorerConfig = {
         // this is the reason for empty state, the state property is optional, just kept empty here to have an example for other controls
         state: {
           initialState: {},
+        },
+      },
+      captionProperties: {
+        component: CaptionProperties,
+        state: {
+          initialState: {
+            displayBoxCaption: true,
+            selectedFields: ['run.name', 'figures.name', 'figures.context'],
+          },
         },
       },
     },
