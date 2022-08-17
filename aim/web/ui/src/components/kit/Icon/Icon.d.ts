@@ -145,4 +145,5 @@ export type IconName =
   | 'full-screen'
   | 'new-tab'
   | 'figures-explorer'
-  | 'group-column';
+  | 'group-column'
+  | 'image-group';
