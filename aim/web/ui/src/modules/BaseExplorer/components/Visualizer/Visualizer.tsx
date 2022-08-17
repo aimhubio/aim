@@ -155,8 +155,13 @@ function Visualizer(props: IVisualizationProps) {
   const [depthSelector, onDepthMapChange] = useDepthMap<AimFlatObjectBase<any>>(
     {
       data,
-      groupItemCb: (item) => `${item.style.top}__${item.style.left}`,
+      groupItemCb: (item) => {
+        const rowId = item.groups?.rows ? item.groups.rows[0] : '';
+        const columnId = item.groups?.columns ? item.groups.columns[0] : '';
+        return `${rowId}--${columnId}`;
+      },
       state: engine.depthMap,
+      sync: true,
       deps: [dataState, foundGroups],
     },
   );
@@ -174,10 +179,10 @@ function Visualizer(props: IVisualizationProps) {
           <div className='VisualizerContainer'>
             <BoxVirtualizer
               data={data}
-              itemsRenderer={([groupKey, items]) => (
+              itemsRenderer={([groupId, items]) => (
                 <BoxWrapper
-                  key={groupKey}
-                  groupKey={groupKey}
+                  key={groupId}
+                  groupId={groupId}
                   engine={engine}
                   component={BoxContent}
                   items={items}
