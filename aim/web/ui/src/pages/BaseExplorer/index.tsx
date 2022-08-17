@@ -121,12 +121,10 @@ const config: IExplorerConfig = {
       boxProperties: {
         component: BoxProperties,
         settings: {
-          minWidth: 150,
-          maxWidth: 800,
-          minHeight: 150,
+          minWidth: 200,
+          maxWidth: 600,
+          minHeight: 200,
           maxHeight: 600,
-          minGap: 0,
-          maxGap: 50,
           step: 10,
         },
         // no need to have state for boxProperties since it works with the state, which is responsible for grouping as well
@@ -141,8 +139,8 @@ const config: IExplorerConfig = {
     // visualizationType: 'box', // 'box', 'sequence'
     defaultBoxConfig: {
       width: 400,
-      height: 150,
-      gap: 10,
+      height: 400,
+      gap: 0,
     },
     styleAppliers: {
       grid: applyStyle,

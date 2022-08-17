@@ -9,19 +9,19 @@ function Figures(props: any) {
   let containerRef = React.useRef<HTMLDivElement | null>(null);
 
   React.useEffect(() => {
-    let timerID = setTimeout(() => {
+    let rAFRef = window.requestAnimationFrame(() => {
       setData(JSON.parse(props.data.data.data));
-    }, 250);
+    });
 
-    return () => clearTimeout(timerID);
+    return () => window.cancelAnimationFrame(rAFRef);
   }, [props.data.data.data]);
 
   React.useEffect(() => {
     if (data && containerRef.current && props.style) {
-      let plot = containerRef.current.querySelector('.plot-container');
+      let plot = containerRef.current.firstChild;
       if (plot) {
-        let width = containerRef.current.offsetWidth;
-        let height = containerRef.current.offsetHeight;
+        let width = containerRef.current.offsetWidth + 20;
+        let height = containerRef.current.offsetHeight + 20;
 
         let wK = props.style.width / width; // Calculate width ratio
         let hK = props.style.height / height; // Calculate height ratio
