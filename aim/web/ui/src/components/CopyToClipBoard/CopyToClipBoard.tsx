@@ -24,13 +24,34 @@ function CopyToClipboard({
   }, [showCopiedIcon]);
 
   const onCopy = React.useCallback(() => {
-    if (contentRef.current && !showCopiedIcon) {
-      navigator.clipboard
-        .writeText(contentRef.current.innerText.trim(''))
-        .then(function () {
-          setShowCopiedIcon(true);
-        })
-        .catch();
+    const text: string = contentRef.current?.innerText?.trim('');
+    if (text && !showCopiedIcon) {
+      if (navigator.clipboard && window.isSecureContext) {
+        navigator.clipboard
+          ?.writeText(text)
+          ?.then(function () {
+            setShowCopiedIcon(true);
+          })
+          ?.catch();
+      } else {
+        const textArea: HTMLTextAreaElement =
+          document.createElement('textarea');
+        textArea.value = text;
+
+        // make the textarea out of viewport
+        textArea.style.position = 'fixed';
+        textArea.style.left = '-400vw';
+        textArea.style.top = '-400vh';
+        document.body.appendChild(textArea);
+        textArea.focus();
+        textArea.select();
+        try {
+          const successful = document.execCommand('copy');
+          if (successful) {
+            setShowCopiedIcon(true);
+          }
+        } catch (err) {}
+      }
     }
   }, [contentRef, showCopiedIcon]);
 
