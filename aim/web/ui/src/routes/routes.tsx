@@ -3,8 +3,6 @@ import React from 'react';
 import { PathEnum } from 'config/enums/routesEnum';
 import pageTitlesEnum from 'config/pageTitles/pageTitles';
 
-import BaseExplorer from 'pages/BaseExplorer';
-
 const Runs = React.lazy(
   () => import(/* webpackChunkName: "runs" */ 'pages/Runs/RunsContainer'),
 );
@@ -41,6 +39,9 @@ const ImagesExplore = React.lazy(
     import(
       /* webpackChunkName: "images" */ 'pages/ImagesExplore/ImagesExplore'
     ),
+);
+const FiguresExplore = React.lazy(
+  () => import(/* webpackChunkName: "figures" */ 'pages/BaseExplorer'),
 );
 
 export interface IRoute {
@@ -167,13 +168,14 @@ const routes = {
     isExact: false,
     title: pageTitlesEnum.RUN_DETAIL,
   },
-  BASE_EXPLORER: {
-    path: PathEnum.Base_Explorer,
-    component: BaseExplorer,
+  FIGURES_EXPLORER: {
+    path: PathEnum.Figures_Explorer,
+    component: FiguresExplore,
     showInSidebar: true,
-    displayName: 'BaseExplorer',
+    icon: 'figures-explorer',
+    displayName: 'Figures',
     isExact: true,
-    title: pageTitlesEnum.IMAGES_EXPLORER,
+    title: pageTitlesEnum.FIGURES_EXPLORER,
   },
 };
 
