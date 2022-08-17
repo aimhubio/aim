@@ -144,4 +144,5 @@ export type IconName =
   | 'box-settings'
   | 'full-screen'
   | 'new-tab'
-  | 'figures-explorer';
+  | 'figures-explorer'
+  | 'group-column';
