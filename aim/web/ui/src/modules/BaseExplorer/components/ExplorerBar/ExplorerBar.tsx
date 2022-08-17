@@ -17,13 +17,6 @@ interface IExplorerBarProps extends IBaseComponentProps {
 }
 
 function ExplorerBar(props: IExplorerBarProps) {
-  // const resetControls = props.engine.resetConfigs;
-  function resetAll() {
-    // props.engine.boxConfig.methods.reset();
-    // props.engine.groupings.reset();
-    // resetControls();
-  }
-
   return (
     <div>
       <AppBar title={props.explorerName}>
@@ -47,7 +40,7 @@ function ExplorerBar(props: IExplorerBarProps) {
               )}
               component={
                 <div className='ExplorerBar__popover'>
-                  <MenuItem onClick={resetAll}>
+                  <MenuItem onClick={props.engine.resetConfigs}>
                     Reset Controls to System Defaults
                   </MenuItem>
                   <a

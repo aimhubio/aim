@@ -222,15 +222,26 @@ function createEngine(config: IEngineConfigFinal) {
   }, {});
 
   function resetConfigs() {
-    // add useEffect in grouping section to reset the grouping
-    // stateSlicesResetMethods.forEach((a: any) => {
-    Object.values(encapsulatedControlProperties).forEach((a: any) => {
-      a.methods.reset();
-    });
-    Object.values(encapsulatedGroupProperties).forEach((a: any) => {
-      a.methods.reset();
-    });
-    // });
+    Object.values(encapsulatedControlProperties).forEach(
+      (controlProperties: any) => {
+        controlProperties.methods.reset();
+      },
+    );
+    Object.values(encapsulatedGroupProperties).forEach(
+      (controlProperties: any) => {
+        controlProperties.methods.reset();
+      },
+    );
+    groupingMethods.reset();
+    //@TODO: fix types
+    // @ts-ignore
+    encapsulatedEngineProperties.boxConfig.methods.reset();
+    //@TODO: move to right place
+    group(
+      defaultApplications as {
+        [key in GroupType]: { fields: string[]; orders: Order[] };
+      },
+    );
   }
 
   const storeReact = createReact(storeVanilla);
