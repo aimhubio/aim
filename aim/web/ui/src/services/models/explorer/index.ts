@@ -20,6 +20,7 @@ export enum AppNameEnum {
   RUNS = 'runs',
   IMAGES = 'images',
   SCATTERS = 'scatters',
+  FIGURES = 'figures',
 }
 
 /**
