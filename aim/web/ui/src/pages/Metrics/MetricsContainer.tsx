@@ -1,13 +1,10 @@
 import React from 'react';
 import { useHistory, useRouteMatch } from 'react-router-dom';
+import { useResizeObserver, useModel, usePanelResize } from 'hooks';
 
 import ErrorBoundary from 'components/ErrorBoundary/ErrorBoundary';
 
 import { ANALYTICS_EVENT_KEYS } from 'config/analytics/analyticsKeysMap';
-
-import usePanelResize from 'hooks/resize/usePanelResize';
-import useModel from 'hooks/model/useModel';
-import useResizeObserver from 'hooks/window/useResizeObserver';
 
 import metricAppModel from 'services/models/metrics/metricsAppModel';
 import * as analytics from 'services/analytics';

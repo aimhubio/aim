@@ -32,7 +32,12 @@ function BaseExplorer(props: IBaseExplorerProps) {
     );
 
     return Visualizations;
-  }, [engineInstance, components.box, components.visualizations]);
+  }, [
+    engineInstance,
+    components.box,
+    components.controls,
+    components.visualizations,
+  ]);
 
   return initialized ? (
     <div className='Explorer'>
@@ -49,7 +54,6 @@ function BaseExplorer(props: IBaseExplorerProps) {
     </div>
   ) : (
     <>
-      {console.log('initializing')}
       <div>Initializing</div>
     </>
   );

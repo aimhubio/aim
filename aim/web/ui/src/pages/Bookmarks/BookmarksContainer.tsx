@@ -1,10 +1,9 @@
 import React from 'react';
+import { useModel } from 'hooks';
 
 import ErrorBoundary from 'components/ErrorBoundary/ErrorBoundary';
 
 import { ANALYTICS_EVENT_KEYS } from 'config/analytics/analyticsKeysMap';
-
-import useModel from 'hooks/model/useModel';
 
 import bookmarkAppModel from 'services/models/bookmarks/bookmarksAppModel';
 import * as analytics from 'services/analytics';
