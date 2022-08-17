@@ -8,7 +8,7 @@ import { IBoxVirtualizerProps } from './';
 
 import './BoxVirtualizer.scss';
 
-function BoxVirtualizer(props: IBoxVirtualizerProps) {
+function BoxVirtualizer(props: IBoxVirtualizerProps<AimFlatObjectBase<any>>) {
   const { data = [] } = props;
   let container: React.MutableRefObject<HTMLDivElement> =
     React.useRef<HTMLDivElement>(document.createElement('div'));
@@ -87,10 +87,11 @@ function BoxVirtualizer(props: IBoxVirtualizerProps) {
       item.style.top <= gridWindow.top + gridWindow.height,
   );
 
-  const groupedByPosition = _.groupBy(
-    filteredItems,
-    (item) => `${item.style.top}__${item.style.left}`,
-  );
+  const groupedByPosition = _.groupBy(filteredItems, (item) => {
+    const rowId = item.groups?.rows ? item.groups.rows[0] : '';
+    const columnId = item.groups?.columns ? item.groups.columns[0] : '';
+    return `${rowId}--${columnId}`;
+  });
 
   // Find the edges for container size calculation
   const gridSize = React.useMemo(() => {
@@ -170,4 +171,6 @@ function BoxVirtualizer(props: IBoxVirtualizerProps) {
   );
 }
 
-export default React.memo<IBoxVirtualizerProps>(BoxVirtualizer);
+export default React.memo<IBoxVirtualizerProps<AimFlatObjectBase<any>>>(
+  BoxVirtualizer,
+);

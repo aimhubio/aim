@@ -1,5 +1,7 @@
 import React from 'react';
 
+import { AimFlatObjectBase } from 'modules/BaseExplorerCore/pipeline/adapter/processor';
+
 import DepthSlider, { IDepthSliderProps } from 'components/DepthSlider';
 import { Button, Icon, Text } from 'components/kit';
 
@@ -9,12 +11,12 @@ import { IBoxWrapperProps } from '.';
 
 import './BoxWrapper.scss';
 
-function BoxWrapper(props: IBoxWrapperProps) {
+function BoxWrapper(props: IBoxWrapperProps<AimFlatObjectBase<any>>) {
   const {
     engine,
     items,
     component: BoxContent,
-    groupKey,
+    groupId,
     depthSelector,
     onDepthMapChange,
   } = props;
@@ -23,7 +25,7 @@ function BoxWrapper(props: IBoxWrapperProps) {
   const sequenceName = engine.useStore((state: any) => state.sequenceName);
   const boxConfig = engine.useStore(engine.boxConfig.stateSelector);
   const foundGroups = engine.useStore(engine.foundGroupsSelector);
-  const depth = engine.useStore(depthSelector(groupKey));
+  const depth = engine.useStore(depthSelector(groupId));
 
   const currentItem = React.useMemo(() => items[depth], [items, depth]);
   const groupInfo = React.useMemo(() => {
@@ -53,7 +55,7 @@ function BoxWrapper(props: IBoxWrapperProps) {
       <DepthSlider
         items={items}
         depth={depth}
-        onDepthChange={(value) => onDepthMapChange(value, groupKey)}
+        onDepthChange={(value) => onDepthMapChange(value, groupId)}
         valueLabelDisplay='on'
         {...props}
       />
@@ -104,4 +106,4 @@ function BoxWrapper(props: IBoxWrapperProps) {
 
 BoxWrapper.displayName = 'BoxWrapper';
 
-export default React.memo<IBoxWrapperProps>(BoxWrapper);
+export default React.memo<IBoxWrapperProps<AimFlatObjectBase<any>>>(BoxWrapper);
