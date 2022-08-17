@@ -1,5 +1,5 @@
 import click
-from aim import Run, Image, Text, Audio
+from aim import Run
 
 
 def parse_wandb_logs(repo_inst, entity, project, run_id):
@@ -20,8 +20,8 @@ def parse_wandb_logs(repo_inst, entity, project, run_id):
         try:
             # get the run by run_id
             run = client.run(f"{entity}/{project}/{run_id}")
-        except:
-            click.echo(f'Could not find run with id "{run_id}"', err=True)
+        except Exception:
+            click.echo(f'Could not find run "{entity}/{project}/{run_id}"', err=True)
             return
         runs = (run,)
 
@@ -59,9 +59,9 @@ def parse_wandb_logs(repo_inst, entity, project, run_id):
                                 context = {"tag": tag, "subset": "val"}
                             else:
                                 context = {"tag": tag}
-                        except:
+                        except ValueError:
                             name, context = key, {}
                         try:
                             aim_run.track(value, name=name, step=step, context=context)
-                        except:
+                        except ValueError:
                             click.echo(f"Type '{type(value).__name__}':artifacts are not supported yet.", err=True)
