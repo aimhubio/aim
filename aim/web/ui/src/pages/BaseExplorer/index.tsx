@@ -121,9 +121,9 @@ const config: IExplorerConfig = {
       boxProperties: {
         component: BoxProperties,
         settings: {
-          minWidth: 150,
+          minWidth: 400,
           maxWidth: 800,
-          minHeight: 150,
+          minHeight: 400,
           maxHeight: 600,
           minGap: 0,
           maxGap: 50,
@@ -140,8 +140,8 @@ const config: IExplorerConfig = {
   ui: {
     // visualizationType: 'box', // 'box', 'sequence'
     defaultBoxConfig: {
-      width: 400,
-      height: 150,
+      width: 500,
+      height: 500,
       gap: 10,
     },
     styleAppliers: {
