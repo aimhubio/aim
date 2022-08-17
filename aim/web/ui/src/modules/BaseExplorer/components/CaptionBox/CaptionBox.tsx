@@ -7,6 +7,7 @@ import { DATE_WITH_SECONDS } from 'config/dates/dates';
 
 import { formatValue } from 'utils/formatValue';
 import { getValue } from 'utils/helper';
+import contextToString from 'utils/contextToString';
 
 import { SelectOption } from '../Controls/CaptionProperties';
 
@@ -68,6 +69,8 @@ function CaptionBox(props: ICaptionBoxProps) {
           value === 'run.finalized_at'
         ) {
           fieldValue = moment(fieldValue * 1000).format(DATE_WITH_SECONDS);
+        } else if (value.includes('.context') && !value.startsWith('run.')) {
+          fieldValue = contextToString(fieldValue) || null;
         }
         return (
           <div key={index} className='CaptionBox__item'>

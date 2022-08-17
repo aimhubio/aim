@@ -127,7 +127,7 @@ function BoxFullViewPopover({
             </div>
             <div className='BoxFullViewPopover__container__detail-section'>
               <Text weight={600} size={18} tint={100} component='h3'>
-                Run Info
+                Run
               </Text>
               {data.runInfo.map((item: any, index: number) => (
                 <div
