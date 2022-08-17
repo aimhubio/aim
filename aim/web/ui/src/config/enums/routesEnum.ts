@@ -12,7 +12,7 @@ enum PathEnum {
   Scatters_Id = '/scatters/:appId',
   Images_Explore = '/images',
   Images_Explore_Id = '/images/:appId',
-  Base_Explorer = '/base-explorer',
+  Figures_Explorer = '/figures-explorer',
 }
 
 export { PathEnum };

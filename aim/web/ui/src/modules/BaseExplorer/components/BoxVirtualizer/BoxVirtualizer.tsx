@@ -1,11 +1,15 @@
 import * as React from 'react';
-import * as _ from 'lodash-es';
+import _ from 'lodash-es';
+import { useResizeObserver } from 'hooks';
 
-import useResizeObserver from 'hooks/window/useResizeObserver';
+import { AimFlatObjectBase } from 'modules/BaseExplorerCore/pipeline/adapter/processor';
 
-import { BoxVirtualizerProps } from './types';
+import { IBoxVirtualizerProps } from './';
 
-function BoxVirtualizer(props: BoxVirtualizerProps) {
+import './BoxVirtualizer.scss';
+
+function BoxVirtualizer(props: IBoxVirtualizerProps<AimFlatObjectBase<any>>) {
+  const { data = [] } = props;
   let container: React.MutableRefObject<HTMLDivElement> =
     React.useRef<HTMLDivElement>(document.createElement('div'));
   let grid: React.MutableRefObject<HTMLDivElement> =
@@ -19,28 +23,27 @@ function BoxVirtualizer(props: BoxVirtualizerProps) {
     height: 0,
   });
 
-  function onScroll({ target }: any) {
+  const onScroll = React.useCallback(({ target }: any) => {
     setGridWindow({
       left: target.scrollLeft,
       top: target.scrollTop,
       width: container.current.offsetWidth,
       height: container.current.offsetHeight,
     });
-  }
+  }, []);
 
-  let sortedByPosition = props.data
-    ?.sort((a: any, b: any) => a.style.left - b.style.left)
-    .sort((a: any, b: any) => a.style.top - b.style.top);
+  // Filter column group values based on their position intersection with the viewport
+  let columnsAxisItems = props.axisData?.columns?.filter(
+    (item: any) =>
+      item.style.left >= gridWindow.left - item.style.width &&
+      item.style.left <= gridWindow.left + gridWindow.width,
+  );
 
-  let items = _.uniqWith<{ style: React.CSSProperties }>(
-    props.data?.filter(
-      (item: any) =>
-        item.style.left >= gridWindow.left - item.style.width &&
-        item.style.left <= gridWindow.left + gridWindow.width &&
-        item.style.top >= gridWindow.top - item.style.height &&
-        item.style.top <= gridWindow.top + gridWindow.height,
-    ),
-    (a, b) => _.isEqual(a.style, b.style),
+  // Filter row group values based on their position intersection with the viewport
+  let rowsAxisItems = props.axisData?.rows?.filter(
+    (item: any) =>
+      item.style.top >= gridWindow.top - item.style.height &&
+      item.style.top <= gridWindow.top + gridWindow.height,
   );
 
   React.useEffect(() => {
@@ -76,34 +79,98 @@ function BoxVirtualizer(props: BoxVirtualizerProps) {
 
   useResizeObserver(resizeObserverCallback, container, observerReturnCallback);
 
+  const filteredItems = data.filter(
+    (item: AimFlatObjectBase<any>) =>
+      item.style.left >= gridWindow.left - item.style.width &&
+      item.style.left <= gridWindow.left + gridWindow.width &&
+      item.style.top >= gridWindow.top - item.style.height &&
+      item.style.top <= gridWindow.top + gridWindow.height,
+  );
+
+  const groupedByPosition = _.groupBy(filteredItems, (item) => {
+    const rowId = item.groups?.rows ? item.groups.rows[0] : '';
+    const columnId = item.groups?.columns ? item.groups.columns[0] : '';
+    return `${rowId}--${columnId}`;
+  });
+
+  // Find the edges for container size calculation
+  const gridSize = React.useMemo(() => {
+    let rightEdge = 0;
+    let bottomEdge = 0;
+
+    let itemWidth = 0;
+    let itemHeight = 0;
+
+    for (let i = 0; i < data.length; i++) {
+      let item = data[i];
+      if (item.style.top > rightEdge) {
+        rightEdge = item.style.left;
+        itemWidth = item.style.width;
+      }
+
+      if (item.style.top > bottomEdge) {
+        bottomEdge = item.style.top;
+        itemHeight = item.style.height;
+      }
+    }
+
+    const horizontalRulerHeight = 30;
+
+    return {
+      width: rightEdge + itemWidth + props.offset,
+      height: bottomEdge + itemHeight + props.offset - horizontalRulerHeight,
+    };
+  }, [data, props.offset]);
+
   return (
-    <div
-      ref={container}
-      style={{
-        width: '100%',
-        height: '100%',
-        position: 'relative',
-        overflow: 'auto',
-      }}
-      onScroll={onScroll}
-    >
+    <div className='BoxVirtualizer'>
+      {columnsAxisItems &&
+        columnsAxisItems.length > 0 &&
+        rowsAxisItems &&
+        rowsAxisItems.length > 0 && (
+          <div className='BoxVirtualizer__placeholder' />
+        )}
       <div
-        ref={grid}
-        style={{
-          marginTop: '20px',
-          overflow: 'hidden',
-          width:
-            sortedByPosition?.[sortedByPosition?.length - 1]?.style?.left +
-            sortedByPosition?.[sortedByPosition?.length - 1]?.style?.width,
-          height:
-            sortedByPosition?.[sortedByPosition?.length - 1]?.style?.top +
-            sortedByPosition?.[sortedByPosition?.length - 1]?.style?.height,
-        }}
+        ref={container}
+        className='BoxVirtualizer__container'
+        onScroll={onScroll}
       >
-        {items?.map(props.itemRenderer)}
+        {((columnsAxisItems && columnsAxisItems.length > 0) ||
+          (rowsAxisItems && rowsAxisItems.length > 0)) && (
+          <div
+            className='BoxVirtualizer__container__horizontalRuler'
+            style={{
+              width: gridSize.width,
+            }}
+          >
+            {columnsAxisItems?.map(props.axisItemRenderer?.columns)}
+          </div>
+        )}
+        {rowsAxisItems && rowsAxisItems.length > 0 && (
+          <div
+            className='BoxVirtualizer__container__verticalRuler'
+            style={{
+              height: gridSize.height,
+            }}
+          >
+            {rowsAxisItems?.map(props.axisItemRenderer?.rows)}
+          </div>
+        )}
+        <div
+          ref={grid}
+          className='BoxVirtualizer__grid'
+          style={{
+            width: gridSize.width,
+            height: gridSize.height,
+          }}
+        >
+          {Object.entries(groupedByPosition).map(props.itemsRenderer)}
+        </div>
       </div>
     </div>
   );
 }
 
-export default React.memo(BoxVirtualizer);
+export default React.memo<IBoxVirtualizerProps<AimFlatObjectBase<any>>>(
+  BoxVirtualizer,
+);

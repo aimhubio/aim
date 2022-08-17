@@ -6,18 +6,22 @@ import {
   RunSearchRunView,
 } from 'types/core/AimObjects';
 import { AimObjectDepths, SequenceTypesEnum } from 'types/core/enums';
+import { Context } from 'types/core/shared';
 
 import getObjectPaths from 'utils/object/getObjectPaths';
+
+import { buildObjectHash } from '../../helpers';
 
 import depthInterceptors from './depthInterceptors';
 
 export type Record = {
   index?: number;
   step: number;
-  epoch: number;
 };
-export interface AimFlatObjectBase {
-  data: any;
+
+export interface AimFlatObjectBase<T = any> {
+  key: string;
+  data: T;
   record?: Record;
   [key: string]: any;
   run?: {
@@ -42,6 +46,14 @@ export interface ProcessedData {
     modifiers: string[];
   };
 }
+
+export type AimObjectHashCreator = {
+  runHash: string;
+  name?: string;
+  context?: Context;
+  step?: number;
+  index?: number;
+};
 
 function collectQueryableData(run: RunSearchRunView): IQueryableData {
   let queryable_data: {
@@ -114,11 +126,14 @@ export function storageDataToFlatList(
     // @ts-ignore
     params = params.concat(getObjectPaths(item.params, 'run', '.'));
     let collectedDataByDepth: Omit<AimFlatObjectBase, 'data'> = {};
-
-    /** depth 0 */ // RUN
+    let objectHashCreator: AimObjectHashCreator = {
+      runHash: item.hash,
+    };
+    /** depth 0 */ // Container
     let run = {
       ..._.omit(item.props, ['experiment, creation_time']),
       hash: item.hash,
+      active: !item.props.end_time, // @TODO change to active
       experiment: item.props.experiment?.name,
       ...item.params,
     };
@@ -133,10 +148,13 @@ export function storageDataToFlatList(
     };
     if (objectDepth === 0) {
       const object: AimFlatObjectBase = {
+        key: buildObjectHash(objectHashCreator),
         ...collectedDataByDepth,
         data: depthInterceptor(item).data,
       };
 
+      // If the object depth is Container, used run hash as a unique hash for AimObject
+      // since the object is a container, it will be a unique object
       objectList.push(object);
       return;
     }
@@ -144,14 +162,20 @@ export function storageDataToFlatList(
     if (objectDepth > 0) {
       // for readability
       item.traces.forEach((trace: any) => {
-        /** depth 1 */ // SEQUENCE
+        /** depth 1 */ // Sequence
         const trace_context = {
           [sequenceName]: {
             name: trace.name,
             context: trace.context,
-            // epoch: trace.epochs.filter((x: any) => !_.isNil(x)), // @TEST check is this need
           },
         };
+
+        // Generating unique hash creator obj for the AimObject using sequence name, context and container hash
+        objectHashCreator = {
+          ...objectHashCreator,
+          ...trace_context[sequenceName],
+        };
+
         sequenceInfo = sequenceInfo.concat(
           getObjectPaths(trace_context[sequenceName], sequenceName),
         );
@@ -165,10 +189,11 @@ export function storageDataToFlatList(
 
         if (objectDepth === 1) {
           const object: AimFlatObjectBase = {
+            key: buildObjectHash(objectHashCreator),
             ...collectedDataByDepth,
             data: depthInterceptor(trace).data,
           };
-          objectList.push(object); // object creating completed
+          objectList.push(object);
           return;
         }
         /** depth 1 */
@@ -178,16 +203,22 @@ export function storageDataToFlatList(
             /** depth 2 */ // STEP
             let record_data: Record = {
               step: trace.iters[stepIndex],
-              epoch: trace.epochs[stepIndex],
+            };
+
+            // Generating unique hash creator obj for the AimObject using sequence name, sequence context, step
+            objectHashCreator = {
+              ...objectHashCreator,
+              ...record_data,
             };
             if (objectDepth === 2) {
-              record_info = record_info.concat(['record.epoch', 'record.step']);
+              record_info = record_info.concat(['record.step']);
 
               collectedDataByDepth = {
                 ...collectedDataByDepth,
                 record: record_data,
               };
               const object = {
+                key: buildObjectHash(objectHashCreator),
                 ...collectedDataByDepth,
                 data: depthInterceptor(sequence).data,
               };
@@ -201,16 +232,17 @@ export function storageDataToFlatList(
                 ...record_data,
                 index: rec.index,
               };
-              record_info = record_info.concat([
-                'record.epoch',
-                'record.step',
-                'record.index',
-              ]);
+              objectHashCreator = {
+                ...objectHashCreator,
+                index: record_data.index,
+              };
+              record_info = record_info.concat(['record.step', 'record.index']);
               collectedDataByDepth = {
                 ...collectedDataByDepth,
                 record: record_data,
               };
               const object = {
+                key: buildObjectHash(objectHashCreator),
                 ...collectedDataByDepth,
                 data: depthInterceptor(rec).data, // change to just blob_uri similar to Mahnerak' flat list
               };

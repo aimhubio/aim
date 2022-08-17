@@ -2,6 +2,7 @@ import React from 'react';
 import _ from 'lodash-es';
 import { ListOnScrollProps, VariableSizeList as List } from 'react-window';
 import classNames from 'classnames';
+import { useResizeObserver } from 'hooks';
 
 import CircularProgress from '@material-ui/core/CircularProgress';
 
@@ -10,8 +11,6 @@ import ErrorBoundary from 'components/ErrorBoundary/ErrorBoundary';
 import IllustrationBlock from 'components/IllustrationBlock/IllustrationBlock';
 
 import { ANALYTICS_EVENT_KEYS } from 'config/analytics/analyticsKeysMap';
-
-import useResizeObserver from 'hooks/window/useResizeObserver';
 
 import runDetailAppModel from 'services/models/runs/runDetailAppModel';
 import * as analytics from 'services/analytics';

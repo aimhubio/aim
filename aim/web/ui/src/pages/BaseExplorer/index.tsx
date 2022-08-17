@@ -48,22 +48,24 @@ const config: IExplorerConfig = {
         component: memo((props: IBaseComponentProps) => (
           <GroupingItem
             groupName='columns'
-            iconName='manage-column'
+            iconName='group-column'
             {...props}
           />
         )),
         // @ts-ignore
         styleApplier: (
-          object: AimFlatObjectBase,
+          object: AimFlatObjectBase<any>,
           group: any,
           boxConfig: any,
           iteration: number,
         ) => {
           return {
-            left: group[GroupType.COLUMN]
-              ? group[GroupType.COLUMN].order *
-                (boxConfig.width + boxConfig.gap)
-              : 0,
+            left:
+              (group[GroupType.COLUMN]
+                ? group[GroupType.COLUMN].order *
+                    (boxConfig.width + boxConfig.gap) +
+                  boxConfig.gap
+                : boxConfig.gap) + (group[GroupType.ROW] ? 200 : 0),
           };
         },
         defaultApplications: {
@@ -83,11 +85,11 @@ const config: IExplorerConfig = {
       },
       [GroupType.ROW]: {
         component: memo((props: IBaseComponentProps) => (
-          <GroupingItem groupName='rows' iconName='row-height' {...props} />
+          <GroupingItem groupName='rows' iconName='image-group' {...props} />
         )),
         // @ts-ignore
         styleApplier: (
-          object: AimFlatObjectBase,
+          object: AimFlatObjectBase<any>,
           group: any,
           boxConfig: any,
           iteration: number,
@@ -96,8 +98,9 @@ const config: IExplorerConfig = {
             top: group[GroupType.ROW]
               ? group[GroupType.ROW].order *
                   (boxConfig.height + boxConfig.gap) +
-                30
-              : 30,
+                30 +
+                boxConfig.gap
+              : (group[GroupType.COLUMN] ? 30 : 0) + boxConfig.gap,
           };
         },
         defaultApplications: {
@@ -134,14 +137,13 @@ const config: IExplorerConfig = {
           initialState: {},
         },
       },
-      // add additional controls here like `boxProperties`
     },
   },
   ui: {
     // visualizationType: 'box', // 'box', 'sequence'
     defaultBoxConfig: {
-      width: 800,
-      height: 600,
+      width: 400,
+      height: 150,
       gap: 10,
     },
     styleAppliers: {
@@ -159,9 +161,10 @@ const config: IExplorerConfig = {
   },
   states: {
     // change to custom state
-    custom1: {
-      initialState: { rowLength: 1 },
+    depthMap: {
+      initialState: {},
     },
+
     ranges: {
       initialState: { isApplyButtonDisabled: true, isValid: true },
     },

@@ -1,6 +1,6 @@
 import React from 'react';
 
-import useModel from 'hooks/model/useModel';
+import useModel from 'hooks/useModel';
 
 import projectsModel from 'services/models/projects/projectsModel';
 
