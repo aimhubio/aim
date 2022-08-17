@@ -2,25 +2,12 @@
 
 .CaptionBox {
   padding: $space-xs $space-unit;
-  width: 100%;
-  box-shadow: 0 0 0 0.0625rem $pico-30;
+  width: calc(100% - 1px);
+  border-top: 1px solid $pico-10;
   overflow: auto;
-  max-height: calc(100% / 100 * 30);
+  max-height: 30%;
+  background-color: $cuddle-10;
   &__item {
     word-break: break-word;
-  }
-  &::before {
-    content: '';
-    position: absolute;
-    background: linear-gradient(
-      180deg,
-      rgba(248, 250, 253, 0) 0%,
-      $cuddle-10 75.52%
-    );
-    height: 0.5rem;
-    width: 100%;
-    bottom: 0;
-    left: 0;
-    z-index: 1;
   }
 }

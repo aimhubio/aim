@@ -181,34 +181,36 @@ function BoxFullViewPopover({
                           {groupConfigKey}
                         </Text>
                         <Text tint={70}>
-                          ({data.groups[groupConfigKey].items_count_in_group}
+                          ({data.groups[groupConfigKey].items_count_in_group}{' '}
                           items in this group)
                         </Text>
-                        {Object.keys(data.groups[groupConfigKey].config).map(
-                          (item) => {
-                            let val = isSystemMetric(
-                              data.groups[groupConfigKey].config[item],
-                            )
-                              ? formatSystemMetricName(
-                                  data.groups[groupConfigKey].config[item],
-                                )
-                              : data.groups[groupConfigKey].config[item];
-                            val = formatValue(val);
-                            return (
-                              <Tooltip key={item} title={val}>
-                                <div className='BoxFullViewPopover__container__detail-group__item'>
-                                  <Text
-                                    size={12}
-                                    className='BoxFullViewPopover__container__detail-group__item__key'
-                                  >{`${item}: `}</Text>
-                                  <Text size={12} tint={100}>
-                                    {val}
-                                  </Text>
-                                </div>
-                              </Tooltip>
-                            );
-                          },
-                        )}
+                        <div>
+                          {Object.keys(data.groups[groupConfigKey].config).map(
+                            (item) => {
+                              let val = isSystemMetric(
+                                data.groups[groupConfigKey].config[item],
+                              )
+                                ? formatSystemMetricName(
+                                    data.groups[groupConfigKey].config[item],
+                                  )
+                                : data.groups[groupConfigKey].config[item];
+                              val = formatValue(val);
+                              return (
+                                <Tooltip key={item} title={val}>
+                                  <div className='BoxFullViewPopover__container__detail-group__item'>
+                                    <Text
+                                      size={12}
+                                      className='BoxFullViewPopover__container__detail-group__item__key'
+                                    >{`${item}: `}</Text>
+                                    <Text size={12} tint={100}>
+                                      {val}
+                                    </Text>
+                                  </div>
+                                </Tooltip>
+                              );
+                            },
+                          )}
+                        </div>
                       </div>
                     ),
                   )}

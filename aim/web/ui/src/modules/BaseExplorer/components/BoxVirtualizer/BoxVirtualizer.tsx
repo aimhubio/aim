@@ -103,7 +103,7 @@ function BoxVirtualizer(props: IBoxVirtualizerProps<AimFlatObjectBase<any>>) {
 
     for (let i = 0; i < data.length; i++) {
       let item = data[i];
-      if (item.style.top > rightEdge) {
+      if (item.style.left > rightEdge) {
         rightEdge = item.style.left;
         itemWidth = item.style.width;
       }

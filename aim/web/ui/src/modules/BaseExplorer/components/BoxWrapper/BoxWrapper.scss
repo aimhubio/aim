@@ -2,7 +2,8 @@
 
 .BoxWrapper {
   position: absolute;
-  box-shadow: 0 0 0 1px $pico-20;
+  background-color: #fff;
+  box-shadow: 0 0 0 1px $pico-30;
   &__box {
     height: 100%;
     width: 100%;
@@ -25,8 +26,9 @@
     padding: 0;
     z-index: 1;
     background-color: white;
-    width: 100%;
+    width: calc(100% - 2px);
     height: 1.75rem;
+    left: 1px;
     bottom: 0;
     & > .Slider {
       width: 100%;
