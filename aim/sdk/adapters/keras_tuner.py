@@ -28,6 +28,11 @@ class AimCallback(TunerCallback):
         self.trial = None
         self._run = None
 
+    @property
+    def experiment(self) -> Run:
+        if self._run is not None:
+            return self._run
+
     def on_epoch_begin(self, epoch, logs=None):
         trial_dict = self.tuner.oracle.ongoing_trials
         tuner_key = next(iter(trial_dict))
@@ -41,7 +46,6 @@ class AimCallback(TunerCallback):
                                 system_tracking_interval=self._system_tracking_interval,
                                 log_system_params=self._log_system_params,)
 
-            self._run_hash = self._run.hash
             self._started_trials.append(self._current_trial_id)
         trial = self.tuner.oracle.get_trial(self._current_trial_id)
         hparams = trial.hyperparameters.values
