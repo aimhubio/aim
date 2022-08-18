@@ -46,7 +46,7 @@ def get_git_info():
         'commit': ('git', 'log', '--pretty=format:%h/%ad/%an', '--date=iso-strict', '-1'),
     }
     results = {}
-    for key, cmd in cmds:
+    for key, cmd in cmds.items():
         try:
             r = subprocess.run(cmd, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, check=True)
         except subprocess.CalledProcessError:
