@@ -5,6 +5,7 @@ import {
   AccordionDetails,
   AccordionSummary,
   Checkbox,
+  Divider,
   TextField,
 } from '@material-ui/core';
 import {
@@ -14,7 +15,7 @@ import {
 import Autocomplete from '@material-ui/lab/Autocomplete';
 import { Order } from 'modules/BaseExplorerCore/pipeline/grouping/types';
 
-import { Badge, Icon, Text } from 'components/kit';
+import { Badge, Icon, Text, ToggleButton } from 'components/kit';
 import ErrorBoundary from 'components/ErrorBoundary/ErrorBoundary';
 
 import { IGroupingSelectOption } from 'types/services/models/metrics/metricsAppModel';
@@ -47,11 +48,11 @@ function GroupingPopover({
     }
   }
 
-  function handleSelect(values: IGroupingSelectOption[]) {
+  function handleSelect(values: IGroupingSelectOption[], order?: Order[]) {
     const { fields, orders } = values.reduce(
-      (acc: any, item: IGroupingSelectOption) => {
+      (acc: any, item: IGroupingSelectOption, index: number) => {
         acc.fields.push(item.value);
-        acc.orders.push(Order.ASC);
+        acc.orders.push(order?.[index] ?? Order.ASC);
         return acc;
       },
       {
@@ -85,23 +86,28 @@ function GroupingPopover({
     );
   }, [availableModifiers?.modifiers, searchValue]);
 
-  const values: IGroupingSelectOption[] = React.useMemo(() => {
-    let data: IGroupingSelectOption[] = [];
-    options.forEach((option: IGroupingSelectOption) => {
-      if (currentValues[groupName].fields.indexOf(option.value) !== -1) {
-        data.push(option);
-      }
-    });
+  const values: { value: IGroupingSelectOption; order: Order }[] =
+    React.useMemo(() => {
+      let data: { value: IGroupingSelectOption; order: Order }[] = [];
+      options.forEach((option: IGroupingSelectOption) => {
+        const index = currentValues[groupName].fields.indexOf(option.value);
+        if (index > -1) {
+          data.push({
+            value: option,
+            order: currentValues[groupName].orders[index],
+          });
+        }
+      });
 
-    // Sort selected values by the order of their application
-    return currentValues
-      ? data.sort(
-          (a, b) =>
-            currentValues[groupName].fields.indexOf(a.value) -
-            currentValues[groupName].fields.indexOf(b.value),
-        )
-      : data;
-  }, [groupName, currentValues, options]);
+      // Sort selected values by the order of their application
+      return currentValues
+        ? data.sort(
+            (a, b) =>
+              currentValues[groupName].fields.indexOf(a.value.value) -
+              currentValues[groupName].fields.indexOf(b.value.value),
+          )
+        : data;
+    }, [groupName, currentValues, options]);
 
   return (
     <ErrorBoundary>
@@ -122,7 +128,7 @@ function GroupingPopover({
               multiple
               disableCloseOnSelect
               options={options}
-              value={values}
+              value={values.map((v) => v.value)}
               onChange={onChange}
               groupBy={(option) => option.group}
               getOptionLabel={(option) => option.label}
@@ -173,6 +179,42 @@ function GroupingPopover({
               )}
             />
           </div>
+          {values.length > 0 && (
+            <>
+              <Divider />
+              <div className='GroupingPopover__option__chips'>
+                {values.map(
+                  (
+                    field: { value: IGroupingSelectOption; order: Order },
+                    index: number,
+                  ) => (
+                    <div
+                      className='GroupingPopover__option__chip'
+                      key={field.value.label}
+                    >
+                      <ToggleButton
+                        className='GroupingPopover__option__chip__toggle__button'
+                        onChange={(value) => {
+                          handleSelect(
+                            values.map((v) => v.value),
+                            values.map((v, i) =>
+                              i === index ? value : v.order,
+                            ),
+                          );
+                        }}
+                        leftLabel={'Asc'}
+                        rightLabel={'Desc'}
+                        leftValue={'asc'}
+                        rightValue={'desc'}
+                        value={field.order as string}
+                        title={field.value.label}
+                      />
+                    </div>
+                  ),
+                )}
+              </div>
+            </>
+          )}
           {advancedComponent && (
             <ErrorBoundary>
               <div className='GroupingPopover__advanced__component'>

@@ -72,7 +72,7 @@ const config: IExplorerConfig = {
         },
         defaultApplications: {
           fields: ['run.hash', 'figures.name'],
-          orders: [],
+          orders: [Order.ASC, Order.ASC],
         },
         // state: {
         //   // observable state, to listen on base visualizer
@@ -107,7 +107,7 @@ const config: IExplorerConfig = {
         },
         defaultApplications: {
           fields: ['record.step'],
-          orders: [Order.DESC, Order.ASC],
+          orders: [Order.DESC],
         },
         // state: {
         //   // observable state, to listen on base visualizer
