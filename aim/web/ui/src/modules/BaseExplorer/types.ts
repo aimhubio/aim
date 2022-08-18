@@ -15,6 +15,11 @@ export interface IExplorerConfig {
   readonly explorerName: string;
 
   /**
+   * The link to docs
+   */
+  readonly documentationLink: string;
+
+  /**
    * Engine configuration
    * You can customize grouping behaviours, style appliers etc.
    */
@@ -105,6 +110,7 @@ export interface IOptionalExplorerConfig {}
 export interface IBaseExplorerProps extends IExplorerConfig {
   engineInstance: any;
   explorerName: string;
+  documentationLink: string;
 }
 
 export interface IBaseComponentProps {
