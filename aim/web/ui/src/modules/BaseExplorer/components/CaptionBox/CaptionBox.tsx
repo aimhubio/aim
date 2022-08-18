@@ -1,6 +1,8 @@
 import React from 'react';
 import moment from 'moment';
 
+import { Tooltip } from '@material-ui/core';
+
 import { Badge, Text } from 'components/kit';
 
 import { DATE_WITH_SECONDS } from 'config/dates/dates';
