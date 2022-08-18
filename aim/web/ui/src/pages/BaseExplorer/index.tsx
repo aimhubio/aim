@@ -125,7 +125,7 @@ const config: IExplorerConfig = {
           minWidth: 200,
           maxWidth: 800,
           minHeight: 200,
-          maxHeight: 600,
+          maxHeight: 800,
           minGap: 0,
           maxGap: 50,
           step: 10,
@@ -152,7 +152,7 @@ const config: IExplorerConfig = {
     defaultBoxConfig: {
       width: 400,
       height: 400,
-      gap: 10,
+      gap: 0,
     },
     styleAppliers: {
       grid: applyStyle,
