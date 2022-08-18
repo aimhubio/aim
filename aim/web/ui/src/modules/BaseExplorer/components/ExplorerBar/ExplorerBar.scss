@@ -16,9 +16,8 @@
     padding: $space-xs;
     display: flex;
     flex-direction: column;
-    a {
+    &__docsLink {
       text-decoration: none;
-      color: inherit;
     }
   }
 }

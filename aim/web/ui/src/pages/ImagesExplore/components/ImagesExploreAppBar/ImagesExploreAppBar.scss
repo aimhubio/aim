@@ -15,7 +15,7 @@
   }
   &__menu {
     border-left: $border-main;
-    padding: 0 0.25rem;
+    padding: 0 $space-xxxs;
     height: 100%;
     display: flex;
     align-items: center;
@@ -25,7 +25,7 @@
   }
   &__popover {
     width: 16rem;
-    padding: 0.5rem;
+    padding: $space-xs;
     display: flex;
     flex-direction: column;
     a {

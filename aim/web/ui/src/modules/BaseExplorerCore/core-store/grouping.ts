@@ -129,12 +129,13 @@ function createGrouping(config: GroupingConfig<unknown & object, any>) {
   };
 }
 
-export type GroupingConfigs = {
-  [key: string]: Omit<GroupingConfig<unknown & object, any>, 'name'>;
-};
+export type GroupingConfigs = Record<
+  string,
+  Omit<GroupingConfig<unknown & object, any>, 'name'>
+>;
 
 function createGroupingsStateConfig(configs: GroupingConfigs = {}) {
-  const groupings: { [key: string]: any } = {};
+  const groupings: Record<string, any> = {};
 
   Object.keys(configs).forEach((name: string) => {
     groupings[name] = createGrouping({
@@ -146,7 +147,7 @@ function createGroupingsStateConfig(configs: GroupingConfigs = {}) {
   return createGroupingsSlice(groupings);
 }
 
-function createGroupingsSlice(groupings: { [key: string]: any }) {
+function createGroupingsSlice(groupings: Record<string, any>) {
   let initialState: Record<string, any> = {
     currentValues: {},
   };
@@ -171,15 +172,13 @@ function createGroupingsSlice(groupings: { [key: string]: any }) {
   });
 
   function generateMethods(set: Function, get: Function) {
-    const update = (groupValues: {
-      [key: string]: { orders: Order[]; fields: string[] };
-    }) => {
+    const update = (
+      groupValues: Record<string, { orders: Order[]; fields: string[] }>,
+    ) => {
       const store = get().groupings.currentValues;
       const newValues = Object.keys(groupValues).reduce(
         (
-          acc: {
-            [key: string]: { orders: Order[]; fields: string[] };
-          },
+          acc: Record<string, { orders: Order[]; fields: string[] }>,
           name: string,
         ) => {
           acc[name] = getCurrentValues(groupValues[name]);
@@ -198,9 +197,7 @@ function createGroupingsSlice(groupings: { [key: string]: any }) {
       const store = get().groupings.currentValues;
       const newValues = Object.keys(store).reduce(
         (
-          acc: {
-            [key: string]: { orders: Order[]; fields: string[] };
-          },
+          acc: Record<string, { orders: Order[]; fields: string[] }>,
           name: string,
         ) => {
           acc[name] = groupings[name].defaultApplications;

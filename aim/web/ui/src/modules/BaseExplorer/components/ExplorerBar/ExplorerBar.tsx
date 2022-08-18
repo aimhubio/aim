@@ -47,6 +47,7 @@ function ExplorerBar(props: IExplorerBarProps) {
                     href={props.documentationLink}
                     target='_blank'
                     rel='noreferrer'
+                    className='ExplorerBar__popover__docsLink'
                   >
                     <MenuItem>Explorer Documentation</MenuItem>
                   </a>
