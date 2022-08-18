@@ -51,6 +51,35 @@
     }
   }
 
+  &__option__chips {
+    max-height: 50vh;
+    padding: 0.5rem 1rem;
+    overflow: auto;
+  }
+
+  &__option__chip {
+    font-size: $text-md;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 0.5em;
+
+    &:last-of-type {
+      margin-bottom: 0;
+    }
+  }
+  
+  &__option__chip__toggle__button {
+    span {
+      display: inline-block;
+      max-width: calc(200px - 0.5rem);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      flex: 1 1;
+    }
+  }
+
   &__advanced__component {
     padding-bottom: 0.875rem;
   }

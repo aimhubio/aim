@@ -53,18 +53,17 @@ function getGroups(
     {},
   );
 
+  const groupsList = Object.values(groups);
+
   const orderedGroups = orderBy(
-    groups,
-    fields.map((p) => `fields.${p}`),
+    groupsList,
+    fields.map((f) => (group) => getValue(group, ['fields', f])),
     orders,
   );
 
   // set orders to groups
   orderedGroups.forEach((item: GroupValue, index: number) => {
-    groups[item.key] = {
-      ...item,
-      order: index,
-    };
+    groups[item.key].order = index;
   });
 
   return groups;
