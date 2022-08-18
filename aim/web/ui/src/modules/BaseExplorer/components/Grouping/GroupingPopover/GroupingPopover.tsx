@@ -52,7 +52,9 @@ function GroupingPopover({
     const { fields, orders } = values.reduce(
       (acc: any, item: IGroupingSelectOption, index: number) => {
         acc.fields.push(item.value);
-        acc.orders.push(order?.[index] ?? Order.ASC);
+        acc.orders.push(
+          order?.[index] ?? currentValues[groupName].orders[index] ?? Order.ASC,
+        );
         return acc;
       },
       {
