@@ -5,6 +5,10 @@
   flex-direction: column;
   margin-right: $space-xs;
   cursor: pointer;
+  &.disabled {
+    opacity: 0.5;
+    cursor: initial;
+  }
   &:last-child {
     margin-right: 0;
   }

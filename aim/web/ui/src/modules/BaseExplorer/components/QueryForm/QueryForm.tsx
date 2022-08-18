@@ -37,6 +37,11 @@ import SearchButton from './SearchButton';
 
 import './QueryForm.scss';
 
+type StatusCheckResult = {
+  isExecuting: boolean;
+  isInsufficientResources: boolean;
+};
+
 function QueryForm(props: IQueryFormProps) {
   const [anchorEl, setAnchorEl] = React.useState<any>(null);
   const [searchValue, setSearchValue] = React.useState<string>('');
@@ -51,9 +56,22 @@ function QueryForm(props: IQueryFormProps) {
   const query: QueryUIStateUnit = engine.useStore(engine.queryUI.stateSelector);
   const ranges: IRangesState = engine.useStore(engine.ranges.stateSelector);
   const status = engine.useStore(engine.pipelineStatusSelector);
-  const isFetching: boolean =
-    engine.useStore(engine.pipelineStatusSelector) ===
-    PipelineStatusEnum.Executing;
+
+  const { isExecuting, isInsufficientResources } =
+    useMemo((): StatusCheckResult => {
+      let result: StatusCheckResult = {
+        isExecuting: false,
+        isInsufficientResources: false,
+      };
+      if (status === PipelineStatusEnum.Executing) {
+        result.isExecuting = true;
+      }
+      if (status === PipelineStatusEnum.Insufficient_Resources) {
+        result.isInsufficientResources = true;
+      }
+
+      return result;
+    }, [status]);
 
   const onInputChange = React.useCallback(
     (val: string) => {
@@ -65,7 +83,7 @@ function QueryForm(props: IQueryFormProps) {
   );
 
   const onSubmit = React.useCallback(() => {
-    if (isFetching) {
+    if (isExecuting) {
       //TODO: abort request
       return;
     } else {
@@ -75,7 +93,7 @@ function QueryForm(props: IQueryFormProps) {
         ...getQueryFromRanges(ranges),
       });
     }
-  }, [engine, isFetching, query, sequenceName, ranges]);
+  }, [engine, isExecuting, query, sequenceName, ranges]);
 
   const autocompleteContext: {
     suggestions: Record<string | number | symbol, unknown>;
@@ -192,10 +210,6 @@ function QueryForm(props: IQueryFormProps) {
       getQueryStringFromSelect(query, sequenceName),
     );
   }, [query, sequenceName]);
-
-  const isExecuting = useMemo(() => {
-    return status === PipelineStatusEnum.Executing;
-  }, [status]);
 
   return (
     <ErrorBoundary>
@@ -328,7 +342,7 @@ function QueryForm(props: IQueryFormProps) {
                 </div>
                 {props.hasAdvancedMode ? null : (
                   <SearchButton
-                    isFetching={isFetching}
+                    isFetching={isExecuting}
                     onSubmit={onSubmit}
                     disabled={isExecuting}
                   />
@@ -352,12 +366,9 @@ function QueryForm(props: IQueryFormProps) {
         {props.hasAdvancedMode ? (
           <div className='QueryForm__search'>
             <SearchButton
-              isFetching={isFetching}
+              isFetching={isExecuting}
               onSubmit={onSubmit}
-              disabled={
-                ranges?.isInputInvalid ||
-                status === PipelineStatusEnum.Insufficient_Resources
-              }
+              disabled={ranges?.isInputInvalid || isInsufficientResources}
             />
             <div className='QueryForm__search__actions'>
               <Tooltip title='Reset query'>
@@ -365,7 +376,7 @@ function QueryForm(props: IQueryFormProps) {
                   <Button
                     onClick={handleResetQueryForm}
                     withOnlyIcon={true}
-                    disabled={status === PipelineStatusEnum.Executing}
+                    disabled={isExecuting}
                   >
                     <Icon name='reset' />
                   </Button>
