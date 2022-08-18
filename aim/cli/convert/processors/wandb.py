@@ -30,6 +30,7 @@ def parse_wandb_logs(repo_inst, entity, project, run_id):
             aim_run = Run(
                 repo=repo_inst,
                 system_tracking_interval=None,
+                capture_terminal_logs=False,
                 experiment=project
             )
             aim_run['wandb_run_id'] = run.id
