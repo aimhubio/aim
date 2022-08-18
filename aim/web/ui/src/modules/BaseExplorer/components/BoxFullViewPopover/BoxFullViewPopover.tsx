@@ -127,11 +127,13 @@ function BoxFullViewPopover({
                 </div>
               ))}
             </div>
-            <div className='BoxFullViewPopover__container__detail-section'>
-              <ErrorBoundary>
-                <AttachedTagsList runHash={item.run.hash} />
-              </ErrorBoundary>
-            </div>
+            {item.run?.hash && (
+              <div className='BoxFullViewPopover__container__detail-section'>
+                <ErrorBoundary>
+                  <AttachedTagsList runHash={item.run.hash} />
+                </ErrorBoundary>
+              </div>
+            )}
             <div className='BoxFullViewPopover__container__detail-section'>
               <Text weight={600} size={18} tint={100} component='h3'>
                 {sequenceName}
