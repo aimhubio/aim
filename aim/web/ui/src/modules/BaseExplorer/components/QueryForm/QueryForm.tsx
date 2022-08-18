@@ -1,4 +1,4 @@
-import React, { memo } from 'react';
+import React, { memo, useMemo } from 'react';
 import _ from 'lodash-es';
 
 import { IInstructionsState } from 'modules/BaseExplorerCore/store/slices/types';
@@ -20,6 +20,7 @@ import { getQueryFromRanges } from 'modules/BaseExplorerCore/utils/getQueryFromR
 import { IRangesState } from 'modules/BaseExplorer/components/RangePanel/RangePanel.d';
 import { getQueryStringFromSelect } from 'modules/BaseExplorerCore/utils/getQueryStringFromSelect';
 import { getSelectFormOptions } from 'modules/BaseExplorerCore/utils/getSelectFormOptions';
+import { PipelineStatusEnum } from 'modules/BaseExplorerCore';
 
 import { Badge, Button, Icon, Text } from 'components/kit';
 import AutocompleteInput from 'components/AutocompleteInput';
@@ -49,8 +50,10 @@ function QueryForm(props: IQueryFormProps) {
   );
   const query: QueryUIStateUnit = engine.useStore(engine.queryUI.stateSelector);
   const ranges: IRangesState = engine.useStore(engine.ranges.stateSelector);
+  const status = engine.useStore(engine.pipelineStatusSelector);
   const isFetching: boolean =
-    engine.useStore(engine.pipelineStatusSelector) === 'fetching';
+    engine.useStore(engine.pipelineStatusSelector) ===
+    PipelineStatusEnum.Executing;
 
   const onInputChange = React.useCallback(
     (val: string) => {
@@ -190,6 +193,10 @@ function QueryForm(props: IQueryFormProps) {
     );
   }, [query, sequenceName]);
 
+  const isExecuting = useMemo(() => {
+    return status === PipelineStatusEnum.Executing;
+  }, [status]);
+
   return (
     <ErrorBoundary>
       <div className='QueryForm'>
@@ -214,6 +221,7 @@ function QueryForm(props: IQueryFormProps) {
                     variant='contained'
                     color='primary'
                     onClick={handleAutocompleteOpen}
+                    disabled={isExecuting}
                   >
                     <Icon
                       name='plus'
@@ -235,6 +243,7 @@ function QueryForm(props: IQueryFormProps) {
                       disablePortal
                       disableCloseOnSelect
                       options={options}
+                      disabled={isExecuting}
                       value={query?.selections}
                       onChange={onSelect}
                       groupBy={(option) => option.group}
@@ -302,6 +311,7 @@ function QueryForm(props: IQueryFormProps) {
                           size='large'
                           key={tag.label}
                           label={tag.label}
+                          disabled={isExecuting}
                           onDelete={onSelectOptionDelete}
                         />
                       );
@@ -317,7 +327,11 @@ function QueryForm(props: IQueryFormProps) {
                   )}
                 </div>
                 {props.hasAdvancedMode ? null : (
-                  <SearchButton isFetching={isFetching} onSubmit={onSubmit} />
+                  <SearchButton
+                    isFetching={isFetching}
+                    onSubmit={onSubmit}
+                    disabled={isExecuting}
+                  />
                 )}
               </ErrorBoundary>
             )}
@@ -326,6 +340,7 @@ function QueryForm(props: IQueryFormProps) {
           {query.advancedModeOn ? null : (
             <div className='QueryForm__TextField'>
               <AutocompleteInput
+                disabled={isExecuting}
                 onChange={onInputChange}
                 value={query.simpleInput}
                 context={autocompleteContext.suggestions}
@@ -339,12 +354,19 @@ function QueryForm(props: IQueryFormProps) {
             <SearchButton
               isFetching={isFetching}
               onSubmit={onSubmit}
-              disabled={ranges?.isInputInvalid}
+              disabled={
+                ranges?.isInputInvalid ||
+                status === PipelineStatusEnum.Insufficient_Resources
+              }
             />
             <div className='QueryForm__search__actions'>
               <Tooltip title='Reset query'>
                 <div>
-                  <Button onClick={handleResetQueryForm} withOnlyIcon={true}>
+                  <Button
+                    onClick={handleResetQueryForm}
+                    withOnlyIcon={true}
+                    disabled={status === PipelineStatusEnum.Executing}
+                  >
                     <Icon name='reset' />
                   </Button>
                 </div>
@@ -360,6 +382,7 @@ function QueryForm(props: IQueryFormProps) {
                   <Button
                     className={query.advancedModeOn ? 'active' : ''}
                     withOnlyIcon={true}
+                    disabled={isExecuting}
                     onClick={onToggleAdvancedMode}
                   >
                     <Icon name='edit' />

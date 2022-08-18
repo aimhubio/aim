@@ -452,7 +452,7 @@ function createEngine(config: IEngineConfigFinal) {
     // explorer
     sequenceNameSelector: (state: any) => state.sequenceName,
     // make separate pipeline key
-    pipelineStatusSelector: (state: any): PipelineStatusEnum =>
+    pipelineStatusSelector: (state: ExplorerState): PipelineStatusEnum =>
       state.pipeline.status,
     pipelineProgressSelector: (state: any): ProgressState =>
       state.pipeline.progress,

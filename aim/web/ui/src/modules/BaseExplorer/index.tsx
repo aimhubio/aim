@@ -1,7 +1,9 @@
 import React, { useEffect } from 'react';
 
+import { Text } from 'components/kit';
+
 import createEngine from '../BaseExplorerCore/core-store';
-import { IEngineConfigFinal } from '../BaseExplorerCore/types';
+import { IEngineConfigFinal } from '../BaseExplorerCore';
 
 import { IExplorerConfig, IBaseExplorerProps } from './types';
 import ExplorerBar from './components/ExplorerBar';
@@ -54,9 +56,9 @@ function BaseExplorer(props: IBaseExplorerProps) {
       <div className='VisualizerWrapper'>{visualizations}</div>
     </div>
   ) : (
-    <>
-      <div>Initializing</div>
-    </>
+    <div className='flex fjc'>
+      <Text>Initializing</Text>
+    </div>
   );
 }
 
