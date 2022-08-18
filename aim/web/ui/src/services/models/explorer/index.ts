@@ -20,7 +20,7 @@ export enum AppNameEnum {
   RUNS = 'runs',
   IMAGES = 'images',
   SCATTERS = 'scatters',
-  FIGURES = 'figures',
+  // after adding Figures here, will break app, mainly the ANALYTICS_EVENT_KEYS[appName]
 }
 
 /**
