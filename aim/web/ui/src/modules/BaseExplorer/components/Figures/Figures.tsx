@@ -19,12 +19,15 @@ function Figures(props: any) {
   React.useEffect(() => {
     if (data && containerRef.current && props.style) {
       let plot = containerRef.current.firstChild;
-      if (plot) {
+      let container = containerRef.current.parentElement;
+      if (plot && container) {
         let width = containerRef.current.offsetWidth + 20;
         let height = containerRef.current.offsetHeight + 20;
+        let containerWidth = container.offsetWidth;
+        let containerHeight = container.offsetHeight - 30;
 
-        let wK = props.style.width / width; // Calculate width ratio
-        let hK = props.style.height / height; // Calculate height ratio
+        let wK = containerWidth / width; // Calculate width ratio
+        let hK = containerHeight / height; // Calculate height ratio
 
         if (wK < 1 || hK < 1) {
           setScale(Math.min(wK, hK)); // Apply scale based on object-fit: 'contain' pattern
