@@ -57,7 +57,7 @@ function SelectTag({
         <div className='SelectTag__createTag__container'>
           <Link to={PathEnum.Tags} component={RouteLink} underline='none'>
             <Button
-              size='small'
+              size='xSmall'
               variant='contained'
               color='primary'
               className='SelectTag__createTag'
