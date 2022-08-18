@@ -14,8 +14,8 @@
   width: 200px;
   height: 30px;
   background-color: #fff;
-  border-bottom: 1px solid $pico-30;
-  border-right: 1px solid $pico-30;
+  border-bottom: $border-dark;
+  border-right: $border-dark;
   z-index: 3;
 }
 
@@ -36,7 +36,7 @@
   top: 0px;
   height: 30px;
   min-width: 100%;
-  border-bottom: 1px solid $pico-30;
+  border-bottom: $border-dark;
   background-color: #fff;
   z-index: 2;
 }
@@ -46,7 +46,7 @@
   left: 0px;
   width: 200px;
   min-height: 100%;
-  border-right: 1px solid $pico-30;
+  border-right: $border-dark;
   background-color: #fff;
   z-index: 2;
 }
