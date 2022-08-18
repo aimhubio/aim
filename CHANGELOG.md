@@ -13,6 +13,7 @@
 ### Fixes:
 
 - Fix aim ui rendering issue on notebooks (rubenaprikyan)
+- Fix live update retry to show live data after solving connection problems with the server  (rubenaprikyan)
 - Fix tensorboard convert while converting tensor (sharathmk99)
 - Fix incorrect column keys of metrics in the table grid of the runs dashboard  (VkoHov)
 
