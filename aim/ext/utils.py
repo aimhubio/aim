@@ -62,7 +62,7 @@ def get_git_info():
 
     git_info.update({
         'branch': results.get('branch'),
-        'remote_origin_url': results.get('git_remote_url'),
+        'remote_origin_url': results.get('remote_origin_url'),
         'commit': {
             'hash': commit_hash,
             'timestamp': commit_timestamp,
