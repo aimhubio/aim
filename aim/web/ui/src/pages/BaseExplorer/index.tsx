@@ -129,8 +129,6 @@ const config: IExplorerConfig = {
           maxWidth: 800,
           minHeight: 200,
           maxHeight: 800,
-          minGap: 0,
-          maxGap: 50,
           step: 10,
         },
         // no need to have state for boxProperties since it works with the state, which is responsible for grouping as well

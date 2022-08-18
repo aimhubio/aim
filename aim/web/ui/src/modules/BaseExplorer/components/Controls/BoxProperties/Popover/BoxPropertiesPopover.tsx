@@ -137,34 +137,6 @@ function BoxPropertiesPopover(props: IBoxPropertiesPopoverProps) {
             </div>
           </div>
           <Divider className='BoxPropsPopover__Divider' />
-          <div className='BoxPropsPopover__item'>
-            <div className='flex'>
-              <Text
-                className='BoxPropsPopover__subtitle'
-                tint={50}
-                component='h4'
-              >
-                Gap:
-              </Text>
-              <Text className='BoxPropsPopover__sizePercent' weight={600}>
-                {boxProps.gap}px
-              </Text>
-            </div>
-            <div className='BoxPropsPopover__SliderWrapper'>
-              <Text>{settings.minGap}px</Text>
-              <Slider
-                valueLabelDisplay='auto'
-                getAriaValueText={(val) => `${val}`}
-                value={boxProps.gap}
-                onChange={onBoxGapChange}
-                step={settings.step}
-                min={settings.minGap}
-                max={settings.maxGap}
-              />
-              <Text>{settings.maxGap}px</Text>
-            </div>
-          </div>
-          <Divider className='BoxPropsPopover__Divider' />
           <Button onClick={onReset} disabled={boxProperties.isInitial}>
             Reset
           </Button>

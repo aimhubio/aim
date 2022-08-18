@@ -2,12 +2,18 @@
 
 .BoxWrapper {
   position: absolute;
-  box-shadow: 0 0 0 0.0625rem $pico-30;
+  background-color: #fff;
+  display: flex;
+  flex-direction: column;
+  box-shadow: 0 0 0 1px $pico-30;
   &__box {
+    flex: 1;
     height: 100%;
     width: 100%;
-    overflow: auto;
-    box-shadow: 0 0 0 0.0625rem $pico-30;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
     position: relative;
   }
   &__fullScreen {
@@ -23,8 +29,9 @@
     padding: 0;
     z-index: 1;
     background-color: white;
-    width: 100%;
+    width: calc(100% - 2px);
     height: 1.75rem;
+    left: 1px;
     bottom: 0;
     & > .Slider {
       width: 100%;

@@ -101,10 +101,10 @@ function Visualizer(props: IVisualizationProps) {
               left: -1,
               height: boxConfig.height + boxConfig.gap,
               width: 200,
-              padding: `${boxConfig.gap / 2}px 0.5rem`,
+              padding: `${boxConfig.gap / 2 / 16 + 0.5}rem 0.5rem`,
               backgroundColor: '#fff',
               borderBottom:
-                source.length - 1 === i ? '' : '0.0625rem solid #dceafb',
+                source.length - 1 === i ? '' : '0.0625rem solid #b5b9c5',
               overflow: 'hidden',
               textAlign: 'right',
               textOverflow: 'ellipsis',
@@ -139,7 +139,7 @@ function Visualizer(props: IVisualizationProps) {
               padding: '0.25rem 0.5rem',
               backgroundColor: '#fff',
               borderRight:
-                source.length - 1 === i ? '' : '0.0625rem solid #dceafb',
+                source.length - 1 === i ? '' : '0.0625rem solid #b5b9c5',
               textAlign: 'center',
               overflow: 'hidden',
               whiteSpace: 'nowrap',

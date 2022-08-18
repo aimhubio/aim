@@ -81,17 +81,6 @@ function BoxWrapper(props: IBoxWrapperProps<AimFlatObjectBase<any>>) {
     ) : null;
   };
 
-  const boxHeight = React.useMemo(() => {
-    const tmpStyles = { ...boxConfig, ...currentItem.style };
-    let height = 0;
-    if (captionBoxHeight > (tmpStyles.height / 100) * 30) {
-      height = tmpStyles.height - (tmpStyles.height / 100) * 30;
-    } else {
-      height = tmpStyles.height - captionBoxHeight;
-    }
-    return height;
-  }, [boxConfig, currentItem.style, captionBoxHeight]);
-
   React.useEffect(() => {
     setCaptionBoxHeight(captionBoxRef.current?.offsetHeight ?? 0);
   }, [
@@ -117,12 +106,18 @@ function BoxWrapper(props: IBoxWrapperProps<AimFlatObjectBase<any>>) {
       >
         <Icon name='full-screen' />
       </Button>
-      <div className='BoxWrapper__box' style={{ height: boxHeight }}>
-        {BoxContent && <BoxContent data={currentItem} engine={engine} />}
+      <div className='BoxWrapper__box'>
+        {BoxContent && (
+          <BoxContent
+            data={currentItem}
+            engine={engine}
+            style={currentItem.style}
+          />
+        )}
       </div>
       {renderDepthSlider({
         className: 'BoxWrapper__depthSlider',
-        style: { bottom: captionBoxHeight },
+        style: { bottom: captionBoxHeight + 1 },
       })}
       {captionProperties.displayBoxCaption &&
         !_.isEmpty(captionProperties.selectedFields) && (
@@ -137,7 +132,7 @@ function BoxWrapper(props: IBoxWrapperProps<AimFlatObjectBase<any>>) {
           onClose={() => setFullView(false)}
           groupInfo={groupInfo}
           sequenceName={sequenceName}
-          item={items[depth]}
+          item={currentItem}
         >
           <div className='BoxWrapper__fullViewContent'>
             <div className='BoxWrapper__fullViewContent__box'>
