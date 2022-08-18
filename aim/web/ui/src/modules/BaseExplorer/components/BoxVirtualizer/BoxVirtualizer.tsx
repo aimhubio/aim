@@ -103,7 +103,7 @@ function BoxVirtualizer(props: IBoxVirtualizerProps<AimFlatObjectBase<any>>) {
 
     for (let i = 0; i < data.length; i++) {
       let item = data[i];
-      if (item.style.top > rightEdge) {
+      if (item.style.left > rightEdge) {
         rightEdge = item.style.left;
         itemWidth = item.style.width;
       }
@@ -124,12 +124,9 @@ function BoxVirtualizer(props: IBoxVirtualizerProps<AimFlatObjectBase<any>>) {
 
   return (
     <div className='BoxVirtualizer'>
-      {columnsAxisItems &&
-        columnsAxisItems.length > 0 &&
-        rowsAxisItems &&
-        rowsAxisItems.length > 0 && (
-          <div className='BoxVirtualizer__placeholder' />
-        )}
+      {rowsAxisItems && rowsAxisItems.length > 0 && (
+        <div className='BoxVirtualizer__placeholder' />
+      )}
       <div
         ref={container}
         className='BoxVirtualizer__container'

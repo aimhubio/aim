@@ -117,6 +117,7 @@ function GroupingPopover({
               {inputLabel ?? `Select fields for grouping by ${groupName}`}
             </Text>
             <Autocomplete
+              openOnFocus
               size='small'
               multiple
               disableCloseOnSelect

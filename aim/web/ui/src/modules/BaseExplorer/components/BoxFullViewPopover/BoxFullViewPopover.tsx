@@ -7,11 +7,10 @@ import { Dialog, Link, Tooltip } from '@material-ui/core';
 
 import { Badge, Button, Icon, Text } from 'components/kit';
 import ErrorBoundary from 'components/ErrorBoundary/ErrorBoundary';
+import AttachedTagsList from 'components/AttachedTagsList/AttachedTagsList';
 
 import { PathEnum } from 'config/enums/routesEnum';
 import { DATE_WITH_SECONDS } from 'config/dates/dates';
-
-import { ITagProps } from 'types/pages/tags/Tags';
 
 import { processDurationTime } from 'utils/processDurationTime';
 import { formatValue } from 'utils/formatValue';
@@ -58,23 +57,6 @@ function BoxFullViewPopover({
           value: processDurationTime(
             runData.creation_time * 1000,
             runData.end_time ? runData.end_time * 1000 : Date.now(),
-          ),
-        },
-        {
-          icon: 'tags',
-          value: runData.tags.length ? (
-            <div className='BoxFullViewPopover__container__detail-item__tags ScrollBar__hidden'>
-              {runData.tags.map((tag: ITagProps) => (
-                <Badge
-                  size='xSmall'
-                  key={tag.name}
-                  label={tag.name}
-                  color={tag.color || undefined}
-                />
-              ))}
-            </div>
-          ) : (
-            'No attached tags'
           ),
         },
       ];
@@ -127,7 +109,7 @@ function BoxFullViewPopover({
             </div>
             <div className='BoxFullViewPopover__container__detail-section'>
               <Text weight={600} size={18} tint={100} component='h3'>
-                Run Info
+                Run
               </Text>
               {data.runInfo.map((item: any, index: number) => (
                 <div
@@ -144,6 +126,11 @@ function BoxFullViewPopover({
                   </Text>
                 </div>
               ))}
+            </div>
+            <div className='BoxFullViewPopover__container__detail-section'>
+              <ErrorBoundary>
+                <AttachedTagsList runHash={item.run.hash} />
+              </ErrorBoundary>
             </div>
             <div className='BoxFullViewPopover__container__detail-section'>
               <Text weight={600} size={18} tint={100} component='h3'>
@@ -181,34 +168,36 @@ function BoxFullViewPopover({
                           {groupConfigKey}
                         </Text>
                         <Text tint={70}>
-                          ({data.groups[groupConfigKey].items_count_in_group}
+                          ({data.groups[groupConfigKey].items_count_in_group}{' '}
                           items in this group)
                         </Text>
-                        {Object.keys(data.groups[groupConfigKey].config).map(
-                          (item) => {
-                            let val = isSystemMetric(
-                              data.groups[groupConfigKey].config[item],
-                            )
-                              ? formatSystemMetricName(
-                                  data.groups[groupConfigKey].config[item],
-                                )
-                              : data.groups[groupConfigKey].config[item];
-                            val = formatValue(val);
-                            return (
-                              <Tooltip key={item} title={val}>
-                                <div className='BoxFullViewPopover__container__detail-group__item'>
-                                  <Text
-                                    size={12}
-                                    className='BoxFullViewPopover__container__detail-group__item__key'
-                                  >{`${item}: `}</Text>
-                                  <Text size={12} tint={100}>
-                                    {val}
-                                  </Text>
-                                </div>
-                              </Tooltip>
-                            );
-                          },
-                        )}
+                        <div>
+                          {Object.keys(data.groups[groupConfigKey].config).map(
+                            (item) => {
+                              let val = isSystemMetric(
+                                data.groups[groupConfigKey].config[item],
+                              )
+                                ? formatSystemMetricName(
+                                    data.groups[groupConfigKey].config[item],
+                                  )
+                                : data.groups[groupConfigKey].config[item];
+                              val = formatValue(val);
+                              return (
+                                <Tooltip key={item} title={val}>
+                                  <div className='BoxFullViewPopover__container__detail-group__item'>
+                                    <Text
+                                      size={12}
+                                      className='BoxFullViewPopover__container__detail-group__item__key'
+                                    >{`${item}: `}</Text>
+                                    <Text size={12} tint={100}>
+                                      {val}
+                                    </Text>
+                                  </div>
+                                </Tooltip>
+                              );
+                            },
+                          )}
+                        </div>
                       </div>
                     ),
                   )}

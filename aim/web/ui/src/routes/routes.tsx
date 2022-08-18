@@ -125,6 +125,15 @@ const routes = {
     isExact: true,
     title: pageTitlesEnum.IMAGES_EXPLORER,
   },
+  FIGURES_EXPLORER: {
+    path: PathEnum.Figures_Explorer,
+    component: FiguresExplore,
+    showInSidebar: true,
+    icon: 'figures-explorer',
+    displayName: 'Figures',
+    isExact: true,
+    title: pageTitlesEnum.FIGURES_EXPLORER,
+  },
   SCATTERS: {
     path: PathEnum.Scatters,
     component: Scatters,
@@ -167,15 +176,6 @@ const routes = {
     displayName: 'Run Detail',
     isExact: false,
     title: pageTitlesEnum.RUN_DETAIL,
-  },
-  FIGURES_EXPLORER: {
-    path: PathEnum.Figures_Explorer,
-    component: FiguresExplore,
-    showInSidebar: true,
-    icon: 'figures-explorer',
-    displayName: 'Figures',
-    isExact: true,
-    title: pageTitlesEnum.FIGURES_EXPLORER,
   },
 };
 

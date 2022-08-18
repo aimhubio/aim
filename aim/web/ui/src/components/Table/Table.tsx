@@ -2,7 +2,7 @@
 /* eslint-disable react/prop-types */
 
 import React from 'react';
-import { isEmpty, isEqual } from 'lodash-es';
+import { isEmpty, isEqual, isNil } from 'lodash-es';
 import { useResizeObserver } from 'hooks';
 
 import { Button, Icon, Text } from 'components/kit';
@@ -365,11 +365,11 @@ const Table = React.forwardRef(function Table(
                     groupRow.data.aggregation.line;
                   groupHeaderRowCell.children[0].children[0].children[2].textContent =
                     groupRow.data.aggregation.area.max;
-                  if (!_.isNil(groupRow.data.aggregation.area.stdDevValue)) {
+                  if (!isNil(groupRow.data.aggregation.area.stdDevValue)) {
                     groupHeaderRowCell.children[0].children[0].children[3].textContent =
                       groupRow.data.aggregation.area.stdDevValue;
                   }
-                  if (!_.isNil(groupRow.data.aggregation.area.stdErrValue)) {
+                  if (!isNil(groupRow.data.aggregation.area.stdErrValue)) {
                     groupHeaderRowCell.children[0].children[0].children[3].textContent =
                       groupRow.data.aggregation.area.stdErrValue;
                   }
