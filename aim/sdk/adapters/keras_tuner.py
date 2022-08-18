@@ -58,9 +58,6 @@ class AimCallback(TunerCallback):
             for log_name, log_value in logs.items():
                 self._run.track(log_value, name=log_name, context=context)
 
-    def on_epoch_end(self, epoch, logs=None):
-        pass
-
     def __del__(self):
         if self._run is not None and self._run.active:
             self._run.close()
