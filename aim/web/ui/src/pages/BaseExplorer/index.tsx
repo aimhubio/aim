@@ -24,6 +24,8 @@ import Controls, {
   CaptionProperties,
 } from 'modules/BaseExplorer/components/Controls';
 
+import { DOCUMENTATIONS } from 'config/references';
+
 import { AimObjectDepths, SequenceTypesEnum } from 'types/core/enums';
 
 const applyStyle: styleApplier = (object: any, boxConfig: any, group: any) => {
@@ -36,6 +38,7 @@ const applyStyle: styleApplier = (object: any, boxConfig: any, group: any) => {
 // @ts-ignore
 const config: IExplorerConfig = {
   explorerName: 'Figures Explorer',
+  documentationLink: DOCUMENTATIONS.EXPLORERS.FIGURES.MAIN,
   engine: {
     useCache: true,
     sequenceName: SequenceTypesEnum.Figures,
