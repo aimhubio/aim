@@ -89,6 +89,7 @@ import setRequestProgress from 'utils/app/setRequestProgress';
 import getRunData from 'utils/app/getRunData';
 import getTooltipContent from 'utils/getTooltipContent';
 import decodeWithBase58Checker from 'utils/decodeWithBase58Checker';
+import { onCopyToClipBoard } from 'utils/onCopyToClipBoard';
 
 import createModel from '../model';
 import { AppNameEnum } from '../explorer';
@@ -1815,8 +1816,7 @@ function onSearchQueryCopy(): void {
   const selectedMetricsData = model.getState()?.config?.select;
   let query = getQueryStringFromSelect(selectedMetricsData as any);
   if (query) {
-    navigator.clipboard.writeText(query);
-    onNotificationAdd({
+    onCopyToClipBoard(query, false, () => onNotificationAdd, {
       notification: {
         id: Date.now(),
         severity: 'success',

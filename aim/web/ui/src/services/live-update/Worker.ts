@@ -176,6 +176,8 @@ function start(params: Object = {}): void {
  * @internal
  */
 async function startUpdateCall(): Promise<any> {
+  // calculate nec-s;
+  const timerId = setTimeout(startUpdateCall, schedulerDelay);
   try {
     logging && console.time(`${key.toString()} operated`);
     const stream = await apiMethods?.call();
@@ -192,13 +194,14 @@ async function startUpdateCall(): Promise<any> {
 
     logging && console.timeEnd(`${key.toString()} operated`);
     transferApiCallResponse(data);
-    // calculate nec-s;
-    const timerId = setTimeout(startUpdateCall, schedulerDelay);
+
     // @ts-ignore
     updateSchedule(timerId);
   } catch (e) {
+    // @ts-ignore
+    updateSchedule(timerId);
     invariantError(e, logging);
-    throw e;
+    // throw e; remove comment once there will be handle error out of worker
   }
 }
 
