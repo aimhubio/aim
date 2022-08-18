@@ -16,8 +16,9 @@ import { IInstructionsState } from '../store/slices/instructionsSlice';
 import createPipeline, { Pipeline, PipelineOptions } from '../pipeline';
 import { GroupType, Order } from '../pipeline/grouping/types';
 import { instructionsSelector } from '../store';
-import { IEngineConfigFinal } from '../types';
+import { IEngineConfigFinal, PipelineStatusEnum } from '../types';
 import { IQueryableData } from '../pipeline/adapter/processor';
+import { PipelinePhasesEnum } from '../pipeline';
 
 import {
   createDefaultBoxStateSlice,
@@ -37,7 +38,8 @@ type ExplorerState = {
   instructions: IInstructionsState | object;
   sequenceName: SequenceTypesEnum | null;
   pipeline: {
-    status: string;
+    currentPhase: PipelinePhasesEnum;
+    status: PipelineStatusEnum;
     progress?: ProgressState;
   };
   groupings?: {
@@ -77,7 +79,8 @@ const initialState: ExplorerState = {
   sequenceName: null,
   instructions: {},
   pipeline: {
-    status: 'initial',
+    currentPhase: PipelinePhasesEnum.Waiting,
+    status: PipelineStatusEnum.NeverExecuted,
     progress: initialProgressState,
   },
   data: null,
@@ -264,11 +267,27 @@ function createEngine(config: IEngineConfigFinal) {
 
   const storeReact = createReact(storeVanilla);
 
-  function pipelineStatusCallback(status: string) {
+  function pipelineStatusCallback(status: PipelinePhasesEnum): void {
+    // @TODO add exception checking
+    let pipelineStatusOnEngine: PipelineStatusEnum =
+      PipelineStatusEnum.NeverExecuted;
+
+    if (
+      status === PipelinePhasesEnum.Fetching ||
+      status === PipelinePhasesEnum.Adopting
+    ) {
+      pipelineStatusOnEngine = PipelineStatusEnum.Executing;
+    }
+
+    if (status === PipelinePhasesEnum.Waiting) {
+      pipelineStatusOnEngine = PipelineStatusEnum.Succeed;
+    }
+
     storeVanilla.setState({
       pipeline: {
         ...storeVanilla.getState().pipeline,
-        status,
+        currentPhase: status,
+        status: pipelineStatusOnEngine,
       },
     });
   }
@@ -433,9 +452,11 @@ function createEngine(config: IEngineConfigFinal) {
     // explorer
     sequenceNameSelector: (state: any) => state.sequenceName,
     // make separate pipeline key
-    pipelineStatusSelector: (state: any) => state.pipeline.status,
-    pipelineProgressSelector: (state: any) => state.pipeline.progress,
-    resetPipelineProgress: () => {
+    pipelineStatusSelector: (state: any): PipelineStatusEnum =>
+      state.pipeline.status,
+    pipelineProgressSelector: (state: any): ProgressState =>
+      state.pipeline.progress,
+    resetPipelineProgress: (): void => {
       storeVanilla.setState({
         pipeline: {
           ...storeVanilla.getState().pipeline,

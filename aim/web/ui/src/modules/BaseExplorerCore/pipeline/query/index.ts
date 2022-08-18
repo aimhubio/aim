@@ -15,6 +15,7 @@ import { SequenceTypesEnum } from 'types/core/enums';
 import { parseStream } from 'utils/encoder/streamEncoding';
 
 import createInlineCache, { InlineCache } from '../../cache/inlineCache';
+import { PipelinePhasesEnum, StatusChangeCallback } from '../types.d';
 
 export type Query = {
   execute: (
@@ -26,7 +27,6 @@ export type Query = {
 };
 
 export type RequestProgressCallback = (progress: IRunProgressObject) => void;
-export type StatusChangeCallback = (status: string) => void;
 export type ExceptionCallback = (error: Error) => void;
 
 type QueryInternalConfig = {
@@ -52,7 +52,7 @@ async function executeBaseQuery(
   cancel();
 
   if (config.statusChangeCallback) {
-    config.statusChangeCallback('fetching'); // make invariant with type mapping
+    config.statusChangeCallback(PipelinePhasesEnum.Fetching); // make invariant with type mapping
   }
 
   try {
@@ -61,7 +61,7 @@ async function executeBaseQuery(
     )) as ReadableStream; // @TODO write better code to avoid null check
 
     if (config.statusChangeCallback) {
-      config.statusChangeCallback('decoding');
+      config.statusChangeCallback(PipelinePhasesEnum.Decoding);
     }
 
     const progressCallback: RequestProgressCallback | undefined =

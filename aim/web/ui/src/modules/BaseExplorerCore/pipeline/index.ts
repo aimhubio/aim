@@ -7,11 +7,12 @@ import createQuery, { Query, RequestProgressCallback } from './query';
 import createAdapter, { Adapter } from './adapter';
 // @ts-ignore
 import { BettaGroupOption } from './grouping/types';
+import { PipelinePhasesEnum, StatusChangeCallback } from './types.d';
 
 export type PipelineOptions = {
   sequenceName: SequenceTypesEnum;
   callbacks: {
-    statusChangeCallback?: (status: string) => void;
+    statusChangeCallback?: StatusChangeCallback;
     exceptionCallback?: () => void;
     requestProgressCallback?: RequestProgressCallback;
     // warningCallback?: () => void;
@@ -95,7 +96,8 @@ async function execute(options: PipelineExecutionOptions): Promise<any> {
     grouping: options.group,
   });
 
-  callbacks.statusChangeCallback && callbacks.statusChangeCallback('waiting');
+  callbacks.statusChangeCallback &&
+    callbacks.statusChangeCallback(PipelinePhasesEnum.Waiting);
 
   return {
     data: groupingResult.objectList,
@@ -137,4 +139,5 @@ function createPipeline({
   };
 }
 
+export * from './types.d';
 export default createPipeline;

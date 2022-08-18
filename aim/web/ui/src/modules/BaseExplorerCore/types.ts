@@ -3,7 +3,7 @@ import { GetState, SetState } from 'utils/store/createSlice';
 import { AimObjectDepths, SequenceTypesEnum } from '../../types/core/enums';
 
 import { GroupingConfigs } from './core-store/grouping';
-import { ControlConfig, ControlsConfigs } from './core-store/controls';
+import { ControlsConfigs } from './core-store/controls';
 
 export const engineStoreReservedSliceKeys = {
   initialized: 'initialized',
@@ -71,4 +71,31 @@ export interface IEngineConfigFinal {
       initialState: object;
     };
   };
+}
+
+export enum PipelineStatusEnum {
+  /*
+   * There is no tracked data in storage to execute pipeline
+   */
+  Insufficient_Resources = 'Insufficient Resources',
+  /*
+   * Never queried
+   */
+  NeverExecuted = 'Never Executed',
+  /*
+   * Executing
+   */
+  Executing = 'Executing',
+  /**
+   * Successfully executed
+   */
+  Succeed = 'Succeed',
+  /*
+   * Executed with failure
+   */
+  Failed = 'Failed',
+  /*
+   * Executed but there is no data in pipeline
+   */
+  Empty = 'Empty',
 }

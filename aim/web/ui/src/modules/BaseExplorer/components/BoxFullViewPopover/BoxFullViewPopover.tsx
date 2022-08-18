@@ -129,7 +129,7 @@ function BoxFullViewPopover({
             </div>
             <div className='BoxFullViewPopover__container__detail-section'>
               <ErrorBoundary>
-                <AttachedTagsList runHash={item.run.hash} />
+                <AttachedTagsList runHash={item.run?.hash as string} />
               </ErrorBoundary>
             </div>
             <div className='BoxFullViewPopover__container__detail-section'>
