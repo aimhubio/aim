@@ -1,7 +1,7 @@
 import React from 'react';
 import moment from 'moment';
 
-import { Text } from 'components/kit';
+import { Badge, Text } from 'components/kit';
 
 import { DATE_WITH_SECONDS } from 'config/dates/dates';
 
@@ -62,20 +62,26 @@ function CaptionBox(props: ICaptionBoxProps) {
     <div ref={captionBoxRef} className='CaptionBox'>
       {values.map(({ label, value }: any, index: number) => {
         let fieldValue = getValue(props.item, value);
-        if (
-          value === 'run.end_time' ||
-          value === 'run.creation_time' ||
-          value === 'run.created_at' ||
-          value === 'run.finalized_at'
-        ) {
-          fieldValue = moment(fieldValue * 1000).format(DATE_WITH_SECONDS);
+        if (value === 'run.end_time' || value === 'run.creation_time') {
+          fieldValue = formatValue(
+            moment(fieldValue * 1000).format(DATE_WITH_SECONDS),
+          );
         } else if (value.includes('.context') && !value.startsWith('run.')) {
-          fieldValue = contextToString(fieldValue) || null;
+          fieldValue = (
+            <Badge
+              className='BoxFullViewPopover__container__detail-item__badge'
+              monospace
+              size='xSmall'
+              label={contextToString(fieldValue) || 'Empty Context'}
+            />
+          );
+        } else {
+          fieldValue = formatValue(fieldValue);
         }
         return (
           <div key={index} className='CaptionBox__item'>
             <Text size={12} tint={50}>{`${label}: `}</Text>
-            <Text size={12}>{formatValue(fieldValue)}</Text>
+            <Text size={12}>{fieldValue}</Text>
           </div>
         );
       })}
