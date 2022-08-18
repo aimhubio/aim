@@ -71,7 +71,7 @@ def start_watcher(ctx):
     repo = ctx.obj['repo']
     if check_configuration(ctx, repo):
         watcher = RunStatusWatcher(repo)
-        click.secho(f'Running Aim watcher for repo \'{repo.path}\'', fg='yellow')
+        click.secho(f'Starting Aim watcher for repo \'{repo.path}\'...', fg='yellow')
         click.echo('Press Ctrl+C to exit')
         watcher.start_watcher()
 

@@ -61,7 +61,7 @@ introduced to avoid false positives.
 
 ## NON-BLOCKING INTERFACE
 
-### `RunCheckIn.check_in()`:
+### `RunStatusReporter.report_progress()`:
 By default, the check-in is non-blocking call in order to avoid any latency
 introduced. This way, the caller can feel free to check-in as soon as possible,
 even after each batch is forwarded or report the progress in vert small steps.
@@ -73,18 +73,18 @@ when the time is (nearly) up. A separate thread is used to handle this process
 which also cleans up of the obsolete check-ins having lower lexicographic order
 than the current one.
 
-### `RunCheckIn.report_successful_finish()`:
+### `RunStatusReporter.report_successful_finish()`:
 Marking the run as successful is blocking call by default to ensure the check-in
 is written to the filesystem before the run process exits. Note, that the
-initialization of `RunCheckIn` also does include blocking call to poll the
+initialization of `RunStatusReporter` also does include blocking call to poll the
 latest state in case of existing runs.
 
 ## INDIRECT INTERFACE
-The preferred way of reporting check-ins is to call `.check_in()` method on the
+The preferred way of reporting check-ins is to call `.report_progress()` method on the
 Run instance. However, in certain cases, the caller may want to check-in from a
 code location that has no access to the Run instance (e.g. in dataloader, or in
-the checkpoint callback). In such cases, the `.check_in()` method can be called
-indirectly by calling `RunCheckIn.check_in()` which will infer the run instance.
+the checkpoint callback). In such cases, the `.report_progress()` method can be called
+indirectly by calling `RunStatusReporter.report_progress()` which will infer the run instance.
 
 This is only possible if there is a single run instance in the process.
 """
@@ -394,7 +394,7 @@ class CheckIn:
         return self.expiry_date - now
 
 
-class RunCheckIns:
+class RunStatusReporter:
     """
     A handler for check-ins for a given run.
 
@@ -406,13 +406,13 @@ class RunCheckIns:
     finished, otherwise the run will be marked as failed.
     """
 
-    instances: Set["RunCheckIns"] = set()
+    instances: Set["RunStatusReporter"] = set()
 
     def __init__(
         self,
         run: 'Run',
     ) -> None:
-        logger.info(f"creating RunCheckIns for {run}")
+        logger.info(f"creating RunStatusReporter for {run}")
         self.run_hash = run.hash
         self.repo_dir = Path(run.repo.path)
         self.dir = self.repo_dir / "check_ins"
@@ -446,7 +446,7 @@ class RunCheckIns:
         self.report_successful_finish = self._report_successful_finish
 
     @classmethod
-    def default(cls) -> "RunCheckIns":
+    def default(cls) -> "RunStatusReporter":
         try:
             default_instance, = cls.instances
         except ValueError:
@@ -562,11 +562,11 @@ class RunCheckIns:
         """
         return self._check_in(block=block, flag_name="finished")
 
-    # The instance method `check_in` and `report_successful_finish` is patched into
+    # The instance method `report_progress` and `report_successful_finish` is patched into
     # the instance in `__post_init__`
     # so the same name is used for both the instance method and the class method.
     @classmethod
-    def check_in(
+    def report_progress(
         cls,
         *,
         expect_next_in: int = 0,
@@ -578,7 +578,7 @@ class RunCheckIns:
         If `block` is True, then this will block until the check-in is flushed.
 
         Note: This is a classmethod and designed to be called like:
-        `RunCheckIns.check_in(expect_next_in=10)`
+        `RunStatusReporter.report_progress(expect_next_in=10)`
         * If no instance is available, this will log a warning and return.
         * If multiple instances are available, this will raise an error.
         """
@@ -599,7 +599,7 @@ class RunCheckIns:
         By default this will block until the check-in is flushed.
 
         Note: This is a classmethod and designed to be called like:
-        `RunCheckIns.report_successful_finish()`
+        `RunStatusReporter.report_successful_finish()`
         * If no instance is available, this will log a warning and return.
         * If multiple instances are available, this will raise an error.
         """

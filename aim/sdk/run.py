@@ -11,7 +11,7 @@ from collections import defaultdict
 from aim.sdk.base_run import BaseRun
 from aim.sdk.sequence import Sequence
 from aim.sdk.tracker import RunTracker
-from aim.sdk.checkins import RunCheckIns
+from aim.sdk.checkins import RunStatusReporter
 from aim.sdk.sequence_collection import SingleRunSequenceCollection
 from aim.sdk.utils import (
     backup_run,
@@ -318,7 +318,7 @@ class Run(BaseRun, StructuredRunMixin):
         self._checkins = None
 
         if not read_only:
-            self._checkins = RunCheckIns(self)
+            self._checkins = RunStatusReporter(self)
             if log_system_params:
                 system_params = {
                     'packages': get_installed_packages(),
@@ -761,7 +761,7 @@ class Run(BaseRun, StructuredRunMixin):
         df = pd.DataFrame(data, index=[0])
         return df
 
-    def check_in(
+    def report_progress(
         self,
         *,
         expect_next_in: int = 0,
