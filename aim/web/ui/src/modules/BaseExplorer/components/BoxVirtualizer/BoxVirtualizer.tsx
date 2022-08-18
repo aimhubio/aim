@@ -124,12 +124,9 @@ function BoxVirtualizer(props: IBoxVirtualizerProps<AimFlatObjectBase<any>>) {
 
   return (
     <div className='BoxVirtualizer'>
-      {columnsAxisItems &&
-        columnsAxisItems.length > 0 &&
-        rowsAxisItems &&
-        rowsAxisItems.length > 0 && (
-          <div className='BoxVirtualizer__placeholder' />
-        )}
+      {rowsAxisItems && rowsAxisItems.length > 0 && (
+        <div className='BoxVirtualizer__placeholder' />
+      )}
       <div
         ref={container}
         className='BoxVirtualizer__container'

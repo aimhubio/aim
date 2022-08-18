@@ -44,6 +44,7 @@ function BaseExplorer(props: IBaseExplorerProps) {
       <ExplorerBar
         engine={props.engineInstance}
         explorerName={props.explorerName}
+        documentationLink={props.documentationLink}
       />
       {/* {__DEV__ && <Text>Engine status ::: status</Text>} */}
       <div className='ComponentsWrapper'>
@@ -75,7 +76,7 @@ function createExplorer(config: IExplorerConfig): () => React.ReactElement {
   };
 
   const engine = createEngine(engineConfig);
-  console.log(engine);
+
   return (): JSX.Element => (
     <BaseExplorer {...config} engineInstance={engine} />
   );

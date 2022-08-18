@@ -132,6 +132,8 @@ function createEngine(config: IEngineConfigFinal) {
     {},
   );
 
+  const stateSlicesResetMethods: any[] = [];
+
   const groupConfigs = createGroupingsStateConfig(config.grouping);
   const controlConfigs = createControlsStateConfig(config.controls);
 
@@ -168,13 +170,13 @@ function createEngine(config: IEngineConfigFinal) {
   const encapsulatedEngineProperties = states.names.reduce(
     (acc: { [key: string]: object }, name: string) => {
       const elem: PreCreatedStateSlice = states.values[name];
-
+      const methods = elem.methods<any>(
+        storeVanilla.setState,
+        storeVanilla.getState,
+      );
       acc[name] = {
         ...elem,
-        methods: elem.methods<any>(
-          storeVanilla.setState,
-          storeVanilla.getState,
-        ),
+        methods,
       };
       return acc;
     },
@@ -186,6 +188,11 @@ function createEngine(config: IEngineConfigFinal) {
   const encapsulatedGroupProperties = Object.keys(groupConfigs.slices).reduce(
     (acc: { [key: string]: object }, name: string) => {
       const elem = groupConfigs.slices[name];
+      const methods = elem.methods(
+        storeVanilla.setState,
+        storeVanilla.getState,
+      );
+      stateSlicesResetMethods.push(methods);
       acc[name] = {
         ...omit(elem, ['styleApplier']),
         methods: elem.methods(storeVanilla.setState, storeVanilla.getState),
@@ -205,12 +212,37 @@ function createEngine(config: IEngineConfigFinal) {
     controlConfigs.slices,
   ).reduce((acc: { [key: string]: object }, name: string) => {
     const elem = controlConfigs.slices[name];
+    const methods = elem.methods(storeVanilla.setState, storeVanilla.getState);
+    stateSlicesResetMethods.push(methods);
     acc[name] = {
       ...elem,
-      methods: elem.methods(storeVanilla.setState, storeVanilla.getState),
+      methods,
     };
     return acc;
   }, {});
+
+  function resetConfigs() {
+    Object.values(encapsulatedControlProperties).forEach(
+      (controlProperties: any) => {
+        controlProperties.methods.reset();
+      },
+    );
+    Object.values(encapsulatedGroupProperties).forEach(
+      (controlProperties: any) => {
+        controlProperties.methods.reset();
+      },
+    );
+    groupingMethods.reset();
+    //@TODO: fix types
+    // @ts-ignore
+    encapsulatedEngineProperties.boxConfig.methods.reset();
+    //@TODO: move to right place
+    group(
+      defaultApplications as {
+        [key in GroupType]: { fields: string[]; orders: Order[] };
+      },
+    );
+  }
 
   const storeReact = createReact(storeVanilla);
 
@@ -367,6 +399,7 @@ function createEngine(config: IEngineConfigFinal) {
     groupings: {
       ...encapsulatedGroupProperties,
       currentValuesSelector: groupConfigs.currentValuesSelector,
+      reset: groupingMethods.reset,
     },
     // controls
     controls: {
@@ -376,7 +409,7 @@ function createEngine(config: IEngineConfigFinal) {
     instructions: {
       dataSelector: instructionsSelector,
     },
-
+    resetConfigs,
     styleAppliers,
     // pipeline result result
     dataSelector: (state: any) => state.data,
