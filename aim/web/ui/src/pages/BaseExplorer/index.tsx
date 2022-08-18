@@ -21,7 +21,10 @@ import {
 import Figures from 'modules/BaseExplorer/components/Figures/Figures';
 import Controls, {
   BoxProperties,
+  CaptionProperties,
 } from 'modules/BaseExplorer/components/Controls';
+
+import { DOCUMENTATIONS } from 'config/references';
 
 import { AimObjectDepths, SequenceTypesEnum } from 'types/core/enums';
 
@@ -35,6 +38,7 @@ const applyStyle: styleApplier = (object: any, boxConfig: any, group: any) => {
 // @ts-ignore
 const config: IExplorerConfig = {
   explorerName: 'Figures Explorer',
+  documentationLink: DOCUMENTATIONS.EXPLORERS.FIGURES.MAIN,
   engine: {
     useCache: true,
     sequenceName: SequenceTypesEnum.Figures,
@@ -46,7 +50,7 @@ const config: IExplorerConfig = {
         component: memo((props: IBaseComponentProps) => (
           <GroupingItem
             groupName='columns'
-            iconName='manage-column'
+            iconName='group-column'
             {...props}
           />
         )),
@@ -83,7 +87,7 @@ const config: IExplorerConfig = {
       },
       [GroupType.ROW]: {
         component: memo((props: IBaseComponentProps) => (
-          <GroupingItem groupName='rows' iconName='row-height' {...props} />
+          <GroupingItem groupName='rows' iconName='image-group' {...props} />
         )),
         // @ts-ignore
         styleApplier: (
@@ -121,10 +125,10 @@ const config: IExplorerConfig = {
       boxProperties: {
         component: BoxProperties,
         settings: {
-          minWidth: 150,
+          minWidth: 200,
           maxWidth: 800,
-          minHeight: 150,
-          maxHeight: 600,
+          minHeight: 200,
+          maxHeight: 800,
           minGap: 0,
           maxGap: 50,
           step: 10,
@@ -135,14 +139,23 @@ const config: IExplorerConfig = {
           initialState: {},
         },
       },
+      captionProperties: {
+        component: CaptionProperties,
+        state: {
+          initialState: {
+            displayBoxCaption: true,
+            selectedFields: ['run.name', 'figures.name', 'figures.context'],
+          },
+        },
+      },
     },
   },
   ui: {
     // visualizationType: 'box', // 'box', 'sequence'
     defaultBoxConfig: {
       width: 400,
-      height: 150,
-      gap: 10,
+      height: 400,
+      gap: 0,
     },
     styleAppliers: {
       grid: applyStyle,
