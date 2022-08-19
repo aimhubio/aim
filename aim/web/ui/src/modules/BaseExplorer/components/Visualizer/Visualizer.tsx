@@ -190,15 +190,15 @@ function Visualizer(props: IVisualizationProps) {
               }}
               axisItemRenderer={{
                 columns: (item: any) => (
-                  <Tooltip title={item.value} key={item.key}>
+                  <Tooltip key={item.key} title={item.value}>
                     <div style={item.style}>
                       <Text>{item.value}</Text>
                     </div>
                   </Tooltip>
                 ),
                 rows: (item: any) => (
-                  <div style={item.style}>
-                    <Tooltip title={item.value} key={item.key}>
+                  <div key={item.key} style={item.style}>
+                    <Tooltip title={item.value}>
                       <span>
                         <Text>{item.value}</Text>
                       </span>
