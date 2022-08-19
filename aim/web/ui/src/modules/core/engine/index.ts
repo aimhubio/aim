@@ -230,11 +230,13 @@ function createEngine(config: IEngineConfigFinal) {
 
   function pipelineStatusCallback(status: PipelinePhasesEnum): void {
     // @TODO add exception checking
+
     let pipelineStatusOnEngine: PipelineStatusEnum =
-      PipelineStatusEnum.NeverExecuted;
+      storeVanilla.getState().pipeline.status;
 
     if (
       status === PipelinePhasesEnum.Fetching ||
+      PipelinePhasesEnum.Decoding ||
       status === PipelinePhasesEnum.Adopting
     ) {
       pipelineStatusOnEngine = PipelineStatusEnum.Executing;
