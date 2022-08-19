@@ -19,6 +19,7 @@
 - Fix incorrect column keys of metrics in the table grid of the runs dashboard  (VkoHov)
 - Fix git info collection (mihran113) 
 - Fix code block content and query copying functionality (arsengit)
+- Provide compatibility between plotly and matplotlib (tmynn)
 
 ## 3.12.2 Aug 5, 2022
 
