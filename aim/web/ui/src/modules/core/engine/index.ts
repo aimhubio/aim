@@ -1,5 +1,5 @@
 import createReact from 'zustand';
-import { omit } from 'lodash-es';
+import { isEmpty, omit } from 'lodash-es';
 
 import createVanilla from 'zustand/vanilla';
 import { GroupType, Order, PipelinePhasesEnum } from 'modules/core/pipeline';
@@ -68,8 +68,8 @@ function createConfiguration(config: IEngineConfigFinal): {
 
   defaultStates['boxConfig'] = createDefaultBoxStateSlice(defaultBoxConfig);
   defaultStates['queryUI'] = createQueryUISlice({
-    simpleInput: null,
-    advancedInput: null,
+    simpleInput: '',
+    advancedInput: '',
     selections: [],
     advancedModeOn: false,
   });
@@ -329,8 +329,16 @@ function createEngine(config: IEngineConfigFinal) {
       });
       const { additionalData, data, queryableData, foundGroups } = res;
 
+      const pipelineState = storeVanilla.getState().pipeline;
+
       storeVanilla.setState({
         data,
+        pipeline: {
+          ...pipelineState,
+          status: isEmpty(data)
+            ? PipelineStatusEnum.Empty
+            : pipelineState.status,
+        },
         additionalData,
         queryableData,
         foundGroups,
@@ -385,7 +393,7 @@ function createEngine(config: IEngineConfigFinal) {
       useCache: !!config.useCache,
     });
 
-    const { initialized } = storeVanilla.getState();
+    const { initialized, pipeline: pipelineState } = storeVanilla.getState();
 
     // getProjects
     !initialized && // @TODO check is this need,  Cache by sidebar click
@@ -394,6 +402,12 @@ function createEngine(config: IEngineConfigFinal) {
           storeVanilla.setState({
             initialized: true,
             sequenceName: config.sequenceName,
+            pipeline: {
+              ...pipelineState,
+              status: isEmpty(instructions[config.sequenceName])
+                ? PipelineStatusEnum.Insufficient_Resources
+                : pipelineState.status,
+            },
             instructions: {
               queryable_data: instructions,
               // @ts-ignore
