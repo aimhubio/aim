@@ -1,0 +1,52 @@
+@use 'src/styles/abstracts' as *;
+
+.BoxVirtualizer {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+}
+
+.BoxVirtualizer__placeholder {
+  position: absolute;
+  top: 0px;
+  left: 0px;
+  width: 200px;
+  height: 30px;
+  background-color: #fff;
+  border-bottom: $border-dark;
+  border-right: $border-dark;
+  z-index: 3;
+}
+
+.BoxVirtualizer__container {
+  width: 100%;
+  height: 100%;
+  position: relative;
+  overflow: auto;
+}
+
+.BoxVirtualizer__grid {
+  display: inline;
+  overflow: hidden;
+}
+
+.BoxVirtualizer__container__horizontalRuler {
+  position: sticky;
+  top: 0px;
+  height: 30px;
+  min-width: 100%;
+  border-bottom: $border-dark;
+  background-color: #fff;
+  z-index: 2;
+}
+
+.BoxVirtualizer__container__verticalRuler {
+  position: sticky;
+  left: 0px;
+  width: 200px;
+  min-height: calc(100% - 30px);
+  border-right: $border-dark;
+  background-color: #fff;
+  z-index: 2;
+}

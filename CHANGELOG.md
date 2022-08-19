@@ -4,6 +4,8 @@
 
 ### Enhancements:
 
+- Add Figures Explorer to visualize and compare plotly figures (rubenaprikyan, KaroMourad, arsengit, VkoHov, roubkar)
+- Add Base Explorer as core of all explorers (rubenaprikyan, KaroMourad, arsengit, VkoHov, roubkar)
 - Add logging for remote resource cleanup and network stability (mihran113)
 - Restrict Run.hash to auto-generated values only (alberttorosyan)
 - Add ability to compare selected runs from the table (arsengit)

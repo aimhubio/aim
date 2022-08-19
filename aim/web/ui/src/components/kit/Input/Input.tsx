@@ -103,6 +103,7 @@ function InputWrapper({
       let metadata: IValidationMetadata = { isValid: true, messages: [] };
       if (!_.isEmpty(validationPatterns)) {
         metadata = validatePatterns(validationPatterns, newValue);
+        setIsInputValid(metadata.isValid);
       }
       onChange && onChange(e, newValue, metadata);
     },

@@ -4,6 +4,8 @@ import { isEqual } from 'lodash-es';
 
 import struct from '@aksel/structjs';
 
+import { IRunProgress } from 'services/api/base-explorer/runsApi';
+
 const PATH_SENTINEL = 0xfe;
 // const SIZE_T = 'q';
 
@@ -444,4 +446,53 @@ export async function* decodePathsVals(
     }
   }
   yield [];
+}
+
+/**
+ * async function parseStream
+ * This function uses 3 core functions to decode storage data
+ *  decodeBufferPairs
+ *  decodePathsVals
+ *  iterFoldTree
+ * Receives generic T type to indicate the returned data type
+ * @param stream
+ * @param progressCallback - the callback to send streaming progress
+ */
+export async function parseStream<T extends Array>(
+  stream: ReadableStream,
+  progressCallback?: (progress: IRunProgress) => void,
+): Promise<T> {
+  let buffer_pairs = decodeBufferPairs(stream);
+  let decodedPairs = decodePathsVals(buffer_pairs);
+  let objects = iterFoldTree(decodedPairs, 1);
+
+  const data: T = [];
+
+  try {
+    for await (let [keys, val] of objects) {
+      const object: T = { ...(val as any), hash: keys[0] };
+      if (object.hash.startsWith('progress')) {
+        // maybe typeof progressCallback === 'function'
+        if (progressCallback) {
+          progressCallback(object as IRunProgress);
+          const { 0: checked, 1: trackedRuns } = object;
+
+          progressCallback({
+            matched: data.length,
+            checked,
+            trackedRuns,
+          });
+        }
+      } else {
+        data.push(object);
+      }
+    }
+  } catch (e) {
+    // if (__DEV__) {
+    console.error(e);
+    // }
+    throw e;
+  }
+
+  return data;
 }

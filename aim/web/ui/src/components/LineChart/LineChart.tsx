@@ -1,11 +1,10 @@
 import React from 'react';
 import classNames from 'classnames';
+import { useResizeObserver } from 'hooks';
 
 import ErrorBoundary from 'components/ErrorBoundary/ErrorBoundary';
 
 import { RENDER_LINES_OPTIMIZED_LIMIT } from 'config/charts';
-
-import useResizeObserver from 'hooks/window/useResizeObserver';
 
 import {
   IAttributesRef,

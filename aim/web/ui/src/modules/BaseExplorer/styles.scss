@@ -1,0 +1,17 @@
+@use 'src/styles/abstracts' as *;
+
+.Explorer {
+  width: 100%;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  max-height: 100vh;
+  overflow: hidden;
+  .ComponentsWrapper {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    height: toRem(92px);
+    border-bottom: 1px solid $primary-color-10;
+  }
+}
