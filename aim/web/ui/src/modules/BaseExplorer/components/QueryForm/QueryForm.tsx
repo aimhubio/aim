@@ -1,4 +1,4 @@
-import React, { memo } from 'react';
+import React, { memo, useMemo } from 'react';
 import _ from 'lodash-es';
 
 import { IInstructionsState } from 'modules/BaseExplorerCore/store/slices/types';
@@ -20,6 +20,7 @@ import { getQueryFromRanges } from 'modules/BaseExplorerCore/utils/getQueryFromR
 import { IRangesState } from 'modules/BaseExplorer/components/RangePanel/RangePanel.d';
 import { getQueryStringFromSelect } from 'modules/BaseExplorerCore/utils/getQueryStringFromSelect';
 import { getSelectFormOptions } from 'modules/BaseExplorerCore/utils/getSelectFormOptions';
+import { PipelineStatusEnum } from 'modules/BaseExplorerCore';
 
 import { Badge, Button, Icon, Text } from 'components/kit';
 import AutocompleteInput from 'components/AutocompleteInput';
@@ -36,6 +37,11 @@ import SearchButton from './SearchButton';
 
 import './QueryForm.scss';
 
+type StatusCheckResult = {
+  isExecuting: boolean;
+  isInsufficientResources: boolean;
+};
+
 function QueryForm(props: IQueryFormProps) {
   const [anchorEl, setAnchorEl] = React.useState<any>(null);
   const [searchValue, setSearchValue] = React.useState<string>('');
@@ -49,8 +55,23 @@ function QueryForm(props: IQueryFormProps) {
   );
   const query: QueryUIStateUnit = engine.useStore(engine.queryUI.stateSelector);
   const ranges: IRangesState = engine.useStore(engine.ranges.stateSelector);
-  const isFetching: boolean =
-    engine.useStore(engine.pipelineStatusSelector) === 'fetching';
+  const status = engine.useStore(engine.pipelineStatusSelector);
+
+  const { isExecuting, isInsufficientResources } =
+    useMemo((): StatusCheckResult => {
+      let result: StatusCheckResult = {
+        isExecuting: false,
+        isInsufficientResources: false,
+      };
+      if (status === PipelineStatusEnum.Executing) {
+        result.isExecuting = true;
+      }
+      if (status === PipelineStatusEnum.Insufficient_Resources) {
+        result.isInsufficientResources = true;
+      }
+
+      return result;
+    }, [status]);
 
   const onInputChange = React.useCallback(
     (val: string) => {
@@ -62,17 +83,17 @@ function QueryForm(props: IQueryFormProps) {
   );
 
   const onSubmit = React.useCallback(() => {
-    if (isFetching) {
+    if (isExecuting) {
       //TODO: abort request
       return;
     } else {
       engine.search({
         q: getQueryStringFromSelect(query, sequenceName),
-        report_progress: false,
+        report_progress: true,
         ...getQueryFromRanges(ranges),
       });
     }
-  }, [engine, isFetching, query, sequenceName, ranges]);
+  }, [engine, isExecuting, query, sequenceName, ranges]);
 
   const autocompleteContext: {
     suggestions: Record<string | number | symbol, unknown>;
@@ -214,6 +235,7 @@ function QueryForm(props: IQueryFormProps) {
                     variant='contained'
                     color='primary'
                     onClick={handleAutocompleteOpen}
+                    disabled={isExecuting}
                   >
                     <Icon
                       name='plus'
@@ -235,6 +257,7 @@ function QueryForm(props: IQueryFormProps) {
                       disablePortal
                       disableCloseOnSelect
                       options={options}
+                      disabled={isExecuting}
                       value={query?.selections}
                       onChange={onSelect}
                       groupBy={(option) => option.group}
@@ -302,6 +325,7 @@ function QueryForm(props: IQueryFormProps) {
                           size='large'
                           key={tag.label}
                           label={tag.label}
+                          disabled={isExecuting}
                           onDelete={onSelectOptionDelete}
                         />
                       );
@@ -317,7 +341,11 @@ function QueryForm(props: IQueryFormProps) {
                   )}
                 </div>
                 {props.hasAdvancedMode ? null : (
-                  <SearchButton isFetching={isFetching} onSubmit={onSubmit} />
+                  <SearchButton
+                    isFetching={isExecuting}
+                    onSubmit={onSubmit}
+                    disabled={isExecuting}
+                  />
                 )}
               </ErrorBoundary>
             )}
@@ -326,6 +354,7 @@ function QueryForm(props: IQueryFormProps) {
           {query.advancedModeOn ? null : (
             <div className='QueryForm__TextField'>
               <AutocompleteInput
+                disabled={isExecuting}
                 onChange={onInputChange}
                 value={query.simpleInput}
                 context={autocompleteContext.suggestions}
@@ -337,14 +366,18 @@ function QueryForm(props: IQueryFormProps) {
         {props.hasAdvancedMode ? (
           <div className='QueryForm__search'>
             <SearchButton
-              isFetching={isFetching}
+              isFetching={isExecuting}
               onSubmit={onSubmit}
-              disabled={ranges?.isInputInvalid}
+              disabled={ranges?.isInputInvalid || isInsufficientResources}
             />
             <div className='QueryForm__search__actions'>
               <Tooltip title='Reset query'>
                 <div>
-                  <Button onClick={handleResetQueryForm} withOnlyIcon={true}>
+                  <Button
+                    onClick={handleResetQueryForm}
+                    withOnlyIcon={true}
+                    disabled={isExecuting}
+                  >
                     <Icon name='reset' />
                   </Button>
                 </div>
@@ -360,6 +393,7 @@ function QueryForm(props: IQueryFormProps) {
                   <Button
                     className={query.advancedModeOn ? 'active' : ''}
                     withOnlyIcon={true}
+                    disabled={isExecuting}
                     onClick={onToggleAdvancedMode}
                   >
                     <Icon name='edit' />

@@ -32,7 +32,7 @@ function RangePanel(props: IRangePanelProps) {
     } else {
       engine.search({
         q: getQueryStringFromSelect(query, sequenceName),
-        report_progress: false,
+        report_progress: true,
         ...getQueryFromRanges(rangeState),
       });
       engine.ranges.methods.update({

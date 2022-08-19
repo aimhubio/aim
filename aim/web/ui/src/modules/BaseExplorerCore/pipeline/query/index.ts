@@ -4,6 +4,7 @@
 
 import {
   createSearchRunsRequest,
+  IRunProgressObject,
   RunsSearchQueryParams,
 } from 'services/api/base-explorer/runsApi';
 import { RequestInstance } from 'services/NetworkService';
@@ -14,6 +15,7 @@ import { SequenceTypesEnum } from 'types/core/enums';
 import { parseStream } from 'utils/encoder/streamEncoding';
 
 import createInlineCache, { InlineCache } from '../../cache/inlineCache';
+import { PipelinePhasesEnum, StatusChangeCallback } from '../types.d';
 
 export type Query = {
   execute: (
@@ -21,51 +23,80 @@ export type Query = {
     ignoreCache: boolean,
   ) => Promise<RunSearchRunView[]>;
   cancel: () => void;
+  clearCache: () => void;
 };
 
-let currentQueryRequest: RequestInstance;
-let currentSequenceType: SequenceTypesEnum;
-let statusChangeCallback: ((status: string) => void) | undefined;
-let cache: InlineCache | null = null;
+export type RequestProgressCallback = (progress: IRunProgressObject) => void;
+export type ExceptionCallback = (error: Error) => void;
+
+type QueryInternalConfig = {
+  cache?: InlineCache;
+  currentQueryRequest?: RequestInstance;
+  currentSequenceType?: SequenceTypesEnum;
+  statusChangeCallback?: StatusChangeCallback;
+  requestProgressCallback?: RequestProgressCallback;
+};
+
+const config: QueryInternalConfig = {};
 
 async function executeBaseQuery(
   query: RunsSearchQueryParams,
   ignoreCache: boolean = false,
 ): Promise<RunSearchRunView[]> {
-  if (cache && !ignoreCache) {
-    const cachedResult = cache.get(query);
+  if (config.cache && !ignoreCache) {
+    const cachedResult = config.cache.get(query);
     if (cachedResult) {
       return cachedResult;
     }
   }
   cancel();
-  statusChangeCallback && statusChangeCallback('fetching'); // make invariant with type mapping
-  try {
-    const data: ReadableStream = await currentQueryRequest.call(query);
-    statusChangeCallback && statusChangeCallback('decoding');
 
-    const result = parseStream<Array<RunSearchRunView>>(data);
-    if (cache) {
-      cache.set(query, result);
+  if (config.statusChangeCallback) {
+    config.statusChangeCallback(PipelinePhasesEnum.Fetching); // make invariant with type mapping
+  }
+
+  try {
+    const data: ReadableStream = (await config.currentQueryRequest?.call(
+      query,
+    )) as ReadableStream; // @TODO write better code to avoid null check
+
+    if (config.statusChangeCallback) {
+      config.statusChangeCallback(PipelinePhasesEnum.Decoding);
+    }
+
+    const progressCallback: RequestProgressCallback | undefined =
+      query.report_progress ? config.requestProgressCallback : undefined;
+
+    const result = parseStream<Array<RunSearchRunView>>(data, progressCallback);
+    if (config.cache) {
+      config.cache.set(query, result);
     }
 
     return result;
   } catch (e) {
-    console.log(e);
+    // if (__DEV__) {
+    console.error(e);
+    // }
     return [];
   }
 }
 
 function setCurrentSequenceType(sequenceType: SequenceTypesEnum): void {
-  currentSequenceType = sequenceType;
+  config.currentSequenceType = sequenceType;
 }
 
 function setStatusChangeCallback(callback?: (status: string) => void) {
-  statusChangeCallback = callback;
+  config.statusChangeCallback = callback;
 }
 
 function createQueryRequest(): void {
-  currentQueryRequest = createSearchRunsRequest(currentSequenceType);
+  config.currentQueryRequest = createSearchRunsRequest(
+    config?.currentSequenceType || SequenceTypesEnum.Images, // @TODO write better typing to avoid using default values
+  );
+}
+
+function setRequestProgressCallback(callback?: RequestProgressCallback): void {
+  config.requestProgressCallback = callback;
 }
 
 /**
@@ -73,8 +104,8 @@ function createQueryRequest(): void {
  * This function is useful to abort api request
  */
 function cancel(): void {
-  if (currentQueryRequest) {
-    currentQueryRequest.cancel();
+  if (config.currentQueryRequest) {
+    config.currentQueryRequest.cancel();
     createQueryRequest();
   }
 }
@@ -83,28 +114,36 @@ function cancel(): void {
  *
  * @param {SequenceTypesEnum} sequenceType - sequence name
  * @param {Boolean} useCache - boolean value to indicate query need to be  cached or not
- * @param statusChangeCallback
+ * @param statusChangeCallback - sends status change to callee
+ * @param requestProgressCallback
  */
 function createQuery(
   sequenceType: SequenceTypesEnum,
   useCache: boolean = false,
   statusChangeCallback?: (status: string) => void,
+  requestProgressCallback?: RequestProgressCallback,
 ): Query {
   setCurrentSequenceType(sequenceType);
   setStatusChangeCallback(statusChangeCallback);
-  createQueryRequest();
-  cache = useCache ? createInlineCache() : null;
+  setStatusChangeCallback(statusChangeCallback);
+  setRequestProgressCallback(requestProgressCallback);
 
-  // do not delete yet, maybe there are some use cases where we need to cancel the request
-  // const execute = useCache
-  //   ? memoize<RunsSearchQueryParams, Promise<RunSearchRunView[]>>(
-  //       executeBaseQuery,
-  //     )
-  //   : executeBaseQuery;
+  createQueryRequest();
+
+  if (useCache) {
+    config.cache = createInlineCache();
+  }
 
   const execute = executeBaseQuery;
 
+  const clearCache = () => {
+    if (config.cache) {
+      config.cache.clear();
+    }
+  };
+
   return {
+    clearCache,
     execute,
     cancel,
   };

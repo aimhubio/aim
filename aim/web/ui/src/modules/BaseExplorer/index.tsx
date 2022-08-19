@@ -1,7 +1,9 @@
 import React, { useEffect } from 'react';
 
+import { Text } from 'components/kit';
+
 import createEngine from '../BaseExplorerCore/core-store';
-import { IEngineConfigFinal } from '../BaseExplorerCore/types';
+import { IEngineConfigFinal } from '../BaseExplorerCore';
 
 import { IExplorerConfig, IBaseExplorerProps } from './types';
 import ExplorerBar from './components/ExplorerBar';
@@ -39,24 +41,22 @@ function BaseExplorer(props: IBaseExplorerProps) {
     components.visualizations,
   ]);
 
-  return initialized ? (
-    <div className='Explorer'>
-      <ExplorerBar
-        engine={props.engineInstance}
-        explorerName={props.explorerName}
-        documentationLink={props.documentationLink}
-      />
-      {/* {__DEV__ && <Text>Engine status ::: status</Text>} */}
-      <div className='ComponentsWrapper'>
-        <components.queryForm engine={props.engineInstance} />
-        <components.grouping engine={props.engineInstance} />
+  return (
+    initialized && (
+      <div className='Explorer'>
+        <ExplorerBar
+          engine={props.engineInstance}
+          explorerName={props.explorerName}
+          documentationLink={props.documentationLink}
+        />
+        {/* {__DEV__ && <Text>Engine status ::: status</Text>} */}
+        <div className='ComponentsWrapper'>
+          <components.queryForm engine={props.engineInstance} />
+          <components.grouping engine={props.engineInstance} />
+        </div>
+        <div className='VisualizerWrapper'>{visualizations}</div>
       </div>
-      <div className='VisualizerWrapper'>{visualizations}</div>
-    </div>
-  ) : (
-    <>
-      <div>Initializing</div>
-    </>
+    )
   );
 }
 

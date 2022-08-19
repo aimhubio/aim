@@ -3,16 +3,18 @@ import { RunsSearchQueryParams } from 'services/api/base-explorer/runsApi';
 import { AimObjectDepths, SequenceTypesEnum } from 'types/core/enums';
 
 import createGrouping, { Grouping } from './grouping';
-import createQuery, { Query } from './query';
+import createQuery, { Query, RequestProgressCallback } from './query';
 import createAdapter, { Adapter } from './adapter';
 // @ts-ignore
 import { BettaGroupOption } from './grouping/types';
+import { PipelinePhasesEnum, StatusChangeCallback } from './types.d';
 
 export type PipelineOptions = {
   sequenceName: SequenceTypesEnum;
   callbacks: {
-    statusChangeCallback?: (status: string) => void;
+    statusChangeCallback?: StatusChangeCallback;
     exceptionCallback?: () => void;
+    requestProgressCallback?: RequestProgressCallback;
     // warningCallback?: () => void;
     resultCallback?: () => void;
   };
@@ -21,7 +23,6 @@ export type PipelineOptions = {
     useCache?: boolean;
   };
   query: {
-    getLatestResult?: () => void;
     useCache?: boolean;
   };
   grouping: {
@@ -40,6 +41,7 @@ export type PipelineExecutionOptions = {
 
 export type Pipeline = {
   execute: (options: PipelineExecutionOptions) => Promise<any>;
+  clearCache: () => void;
 };
 
 let phases: {
@@ -51,6 +53,7 @@ let phases: {
 let callbacks: {
   statusChangeCallback?: (status: string) => void;
   exceptionCallback?: () => void;
+  requestProgressCallback?: RequestProgressCallback;
 };
 
 function setCallbacks(cbs: any) {
@@ -69,6 +72,7 @@ function createQueryInstance(config: any) {
     config.sequenceName,
     config.query.useCache,
     callbacks.statusChangeCallback,
+    callbacks.requestProgressCallback,
   );
 }
 
@@ -80,6 +84,7 @@ function createGroupingInstance(config: any = {}) {
 }
 
 async function execute(options: PipelineExecutionOptions): Promise<any> {
+  // @TODO make cancelable, use thenable instead of await
   // @ts-ignore
   const queryResult = await phases.query.execute(options.query.params);
   // @ts-ignore
@@ -90,6 +95,9 @@ async function execute(options: PipelineExecutionOptions): Promise<any> {
     // @ts-ignore
     grouping: options.group,
   });
+
+  callbacks.statusChangeCallback &&
+    callbacks.statusChangeCallback(PipelinePhasesEnum.Waiting);
 
   return {
     data: groupingResult.objectList,
@@ -115,6 +123,7 @@ function createPipeline({
   grouping,
   callbacks,
 }: PipelineOptions): Pipeline {
+  // request progress callback is not included since it is not used in the pipeline
   setCallbacks(callbacks);
   createQueryInstance({ query, sequenceName });
   createAdapterInstance({ ...adapter, sequenceName });
@@ -122,7 +131,13 @@ function createPipeline({
 
   return {
     execute,
+    clearCache: () => {
+      phases.query?.clearCache();
+      // Add clear cache for grouping
+      // Add clear cache for adapter
+    },
   };
 }
 
+export * from './types.d';
 export default createPipeline;

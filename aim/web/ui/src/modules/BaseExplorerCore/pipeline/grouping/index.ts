@@ -1,13 +1,14 @@
 import { memoize } from 'modules/BaseExplorerCore/cache';
 
 import { AimFlatObjectBase } from '../adapter/processor';
+import { PipelinePhasesEnum, StatusChangeCallback } from '../types.d';
 
 import { BettaGroupOption } from './types';
 import group from './group';
 
 export type GroupingConfigOptions = {
   useCache?: boolean;
-  statusChangeCallback: (status: string) => void;
+  statusChangeCallback: StatusChangeCallback;
 };
 
 export type GroupingExecutionOptions = {
@@ -28,7 +29,7 @@ export type Grouping = {
 // later usage in modification
 let groupingConfig: {
   useCache: boolean;
-  statusChangeCallback?: (status: string) => void;
+  statusChangeCallback?: StatusChangeCallback;
 };
 
 function setGroupingConfig(options: GroupingConfigOptions): void {
@@ -44,7 +45,7 @@ export function grouping({
   grouping,
 }: GroupingExecutionOptions): GroupingResult {
   groupingConfig.statusChangeCallback &&
-    groupingConfig.statusChangeCallback('grouping');
+    groupingConfig.statusChangeCallback(PipelinePhasesEnum.Grouping);
   // found groups
   let fg = {};
   // data

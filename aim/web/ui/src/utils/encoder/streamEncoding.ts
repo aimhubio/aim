@@ -4,6 +4,8 @@ import { isEqual } from 'lodash-es';
 
 import struct from '@aksel/structjs';
 
+import { IRunProgress } from 'services/api/base-explorer/runsApi';
+
 const PATH_SENTINEL = 0xfe;
 // const SIZE_T = 'q';
 
@@ -454,9 +456,11 @@ export async function* decodePathsVals(
  *  iterFoldTree
  * Receives generic T type to indicate the returned data type
  * @param stream
+ * @param progressCallback - the callback to send streaming progress
  */
 export async function parseStream<T extends Array>(
   stream: ReadableStream,
+  progressCallback?: (progress: IRunProgress) => void,
 ): Promise<T> {
   let buffer_pairs = decodeBufferPairs(stream);
   let decodedPairs = decodePathsVals(buffer_pairs);
@@ -466,11 +470,27 @@ export async function parseStream<T extends Array>(
 
   try {
     for await (let [keys, val] of objects) {
-      const runData: any = val;
-      data.push({ ...runData, hash: keys[0] } as any);
+      const object: T = { ...(val as any), hash: keys[0] };
+      if (object.hash.startsWith('progress')) {
+        // maybe typeof progressCallback === 'function'
+        if (progressCallback) {
+          progressCallback(object as IRunProgress);
+          const { 0: checked, 1: trackedRuns } = object;
+
+          progressCallback({
+            matched: data.length,
+            checked,
+            trackedRuns,
+          });
+        }
+      } else {
+        data.push(object);
+      }
     }
   } catch (e) {
-    console.log(e);
+    // if (__DEV__) {
+    console.error(e);
+    // }
     throw e;
   }
 

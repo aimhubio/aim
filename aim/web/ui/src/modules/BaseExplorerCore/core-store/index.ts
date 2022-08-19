@@ -4,7 +4,10 @@ import { omit } from 'lodash-es';
 import createVanilla from 'zustand/vanilla';
 
 import { getParams } from 'services/api/base-explorer/projectApi';
-import { RunsSearchQueryParams } from 'services/api/base-explorer/runsApi';
+import {
+  IRunProgressObject,
+  RunsSearchQueryParams,
+} from 'services/api/base-explorer/runsApi';
 
 import { AimObjectDepths, SequenceTypesEnum } from 'types/core/enums';
 import { ISelectOption } from 'types/services/models/explorer/createAppModel';
@@ -13,8 +16,9 @@ import { IInstructionsState } from '../store/slices/instructionsSlice';
 import createPipeline, { Pipeline, PipelineOptions } from '../pipeline';
 import { GroupType, Order } from '../pipeline/grouping/types';
 import { instructionsSelector } from '../store';
-import { IEngineConfigFinal } from '../types';
+import { IEngineConfigFinal, PipelineStatusEnum } from '../types';
 import { IQueryableData } from '../pipeline/adapter/processor';
+import { PipelinePhasesEnum } from '../pipeline';
 
 import {
   createDefaultBoxStateSlice,
@@ -25,12 +29,18 @@ import {
 import { createGroupingsStateConfig } from './grouping';
 import { createControlsStateConfig } from './controls';
 
+export interface ProgressState extends IRunProgressObject {
+  percent: number;
+}
+
 type ExplorerState = {
   initialized: boolean;
   instructions: IInstructionsState | object;
   sequenceName: SequenceTypesEnum | null;
   pipeline: {
-    status: string;
+    currentPhase: PipelinePhasesEnum;
+    status: PipelineStatusEnum;
+    progress?: ProgressState;
   };
   groupings?: {
     [key: string]: {
@@ -57,12 +67,21 @@ type ExplorerConfig = {
   useCache: boolean;
 };
 
+const initialProgressState: ProgressState = {
+  matched: 0,
+  trackedRuns: 0,
+  percent: 0,
+  checked: 0,
+};
+
 const initialState: ExplorerState = {
   initialized: false,
   sequenceName: null,
   instructions: {},
   pipeline: {
-    status: 'initial',
+    currentPhase: PipelinePhasesEnum.Waiting,
+    status: PipelineStatusEnum.NeverExecuted,
+    progress: initialProgressState,
   },
   data: null,
   additionalData: null,
@@ -142,6 +161,8 @@ function createEngine(config: IEngineConfigFinal) {
       return config.grouping?.[key].styleApplier;
     },
   );
+
+  // delete this later because has usage on another experiment (control resetting)
   const defaultApplications = Object.keys(config.grouping || {}).reduce(
     // @ts-ignore
     (acc: object, key: string) => {
@@ -246,8 +267,46 @@ function createEngine(config: IEngineConfigFinal) {
 
   const storeReact = createReact(storeVanilla);
 
-  function pipelineStatusCallback(status: string) {
-    storeVanilla.setState({ pipeline: { status } });
+  function pipelineStatusCallback(status: PipelinePhasesEnum): void {
+    // @TODO add exception checking
+    let pipelineStatusOnEngine: PipelineStatusEnum =
+      PipelineStatusEnum.NeverExecuted;
+
+    if (
+      status === PipelinePhasesEnum.Fetching ||
+      status === PipelinePhasesEnum.Adopting
+    ) {
+      pipelineStatusOnEngine = PipelineStatusEnum.Executing;
+    }
+
+    if (status === PipelinePhasesEnum.Waiting) {
+      pipelineStatusOnEngine = PipelineStatusEnum.Succeed;
+    }
+
+    storeVanilla.setState({
+      pipeline: {
+        ...storeVanilla.getState().pipeline,
+        currentPhase: status,
+        status: pipelineStatusOnEngine,
+      },
+    });
+  }
+
+  function pipelineRequestProgressCallback(progress: IRunProgressObject) {
+    // @TODO keep everything with pipeline slice ion store, related to pipeline
+    const progressState: ProgressState = {
+      ...progress,
+      percent: progress.trackedRuns
+        ? Math.ceil((progress.checked / progress.trackedRuns) * 100)
+        : 0,
+    };
+
+    storeVanilla.setState({
+      pipeline: {
+        ...storeVanilla.getState().pipeline,
+        progress: progressState,
+      },
+    });
   }
 
   function createPipelineInstance(config: ExplorerConfig) {
@@ -257,6 +316,7 @@ function createEngine(config: IEngineConfigFinal) {
       sequenceName: config.sequenceName,
       callbacks: {
         statusChangeCallback: pipelineStatusCallback,
+        requestProgressCallback: pipelineRequestProgressCallback,
       },
       adapter: {
         objectDepth: config.objectDepth,
@@ -300,7 +360,12 @@ function createEngine(config: IEngineConfigFinal) {
     });
     const { additionalData, data, queryableData, foundGroups } = res;
 
-    storeVanilla.setState({ data, additionalData, queryableData, foundGroups });
+    storeVanilla.setState({
+      data,
+      additionalData,
+      queryableData,
+      foundGroups,
+    });
   }
 
   async function group(
@@ -386,8 +451,19 @@ function createEngine(config: IEngineConfigFinal) {
 
     // explorer
     sequenceNameSelector: (state: any) => state.sequenceName,
-    pipelineStatusSelector: (state: any) => state.pipeline.status,
-
+    // make separate pipeline key
+    pipelineStatusSelector: (state: ExplorerState): PipelineStatusEnum =>
+      state.pipeline.status,
+    pipelineProgressSelector: (state: any): ProgressState =>
+      state.pipeline.progress,
+    resetPipelineProgress: (): void => {
+      storeVanilla.setState({
+        pipeline: {
+          ...storeVanilla.getState().pipeline,
+          progress: initialProgressState,
+        },
+      });
+    },
     engineStatusSelector: (state: ExplorerState) => ({
       initialized: state.initialized,
     }),

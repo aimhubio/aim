@@ -3,6 +3,7 @@ import _ from 'lodash-es';
 import classNames from 'classnames';
 
 import { Tooltip } from '@material-ui/core';
+import { PipelineStatusEnum } from 'modules/BaseExplorerCore';
 
 import ErrorBoundary from 'components/ErrorBoundary/ErrorBoundary';
 import ControlPopover from 'components/ControlPopover/ControlPopover';
@@ -25,6 +26,9 @@ function GroupingItem({
   const { engine } = props;
   const availableModifiers = engine.useStore(engine.additionalDataSelector);
   const currentValues = engine.useStore(engine.groupings.currentValuesSelector);
+  const isDisabled =
+    engine.useStore(engine.pipelineStatusSelector) ===
+    PipelineStatusEnum.Executing;
 
   return (
     <ErrorBoundary>
@@ -32,7 +36,16 @@ function GroupingItem({
         title={title ?? `Group by ${groupName}`}
         anchor={({ onAnchorClick, opened }) => (
           <Tooltip title={`Group by ${groupName}`}>
-            <div onClick={onAnchorClick} className='GroupingItem'>
+            <div
+              onClick={(e: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
+                if (!isDisabled) {
+                  onAnchorClick(e);
+                }
+              }}
+              className={classNames('GroupingItem', {
+                disabled: isDisabled,
+              })}
+            >
               <div
                 className={classNames('GroupingItem__iconBox', {
                   active: opened,

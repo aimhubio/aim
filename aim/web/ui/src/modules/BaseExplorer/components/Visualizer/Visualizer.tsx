@@ -17,6 +17,7 @@ import { IVisualizationProps } from '../../types';
 import BoxVirtualizer from '../BoxVirtualizer';
 import BoxWrapper from '../BoxWrapper';
 import RangePanel from '../RangePanel';
+import ProgressBar from '../ProgressBar';
 
 import './Visualizer.scss';
 
@@ -29,6 +30,7 @@ function Visualizer(props: IVisualizationProps) {
       foundGroupsSelector,
       dataSelector,
       queryableDataSelector,
+      engineStatusSelector,
     },
     box: BoxContent,
     controlComponent: ControlComponent,
@@ -37,6 +39,7 @@ function Visualizer(props: IVisualizationProps) {
   const foundGroups = useStore(foundGroupsSelector);
   const dataState = useStore(dataSelector);
   const rangesData: IQueryableData = useStore(queryableDataSelector);
+  const intialized = useStore(engineStatusSelector);
 
   const data = React.useMemo(() => {
     return dataState?.map((d: any, i: number) => {
@@ -164,48 +167,59 @@ function Visualizer(props: IVisualizationProps) {
       deps: [dataState, foundGroups],
     },
   );
+  const status = useStore(engine.pipelineStatusSelector);
 
   return (
-    <div className='Visualizer'>
+    <div
+      className='Visualizer'
+      style={{
+        position: 'relative',
+      }}
+    >
+      <ProgressBar engine={engine} />
       <div className='VisualizerContainer'>
-        <BoxVirtualizer
-          data={data}
-          itemsRenderer={([groupId, items]) => (
-            <BoxWrapper
-              key={groupId}
-              groupId={groupId}
-              engine={engine}
-              component={BoxContent}
-              items={items}
-              depthSelector={depthSelector}
-              onDepthMapChange={onDepthMapChange}
+        {!_.isEmpty(dataState) && (
+          <>
+            <BoxVirtualizer
+              data={data}
+              itemsRenderer={([groupId, items]) => (
+                <BoxWrapper
+                  key={groupId}
+                  groupId={groupId}
+                  engine={engine}
+                  component={BoxContent}
+                  items={items}
+                  depthSelector={depthSelector}
+                  onDepthMapChange={onDepthMapChange}
+                />
+              )}
+              offset={boxConfig.gap}
+              axisData={{
+                columns: columnsAxisData,
+                rows: rowsAxisData,
+              }}
+              axisItemRenderer={{
+                columns: (item: any) => (
+                  <Tooltip title={item.value} key={item.key}>
+                    <div style={item.style}>
+                      <Text>{item.value}</Text>
+                    </div>
+                  </Tooltip>
+                ),
+                rows: (item: any) => (
+                  <div style={item.style}>
+                    <Tooltip title={item.value} key={item.key}>
+                      <span>
+                        <Text>{item.value}</Text>
+                      </span>
+                    </Tooltip>
+                  </div>
+                ),
+              }}
             />
-          )}
-          offset={boxConfig.gap}
-          axisData={{
-            columns: columnsAxisData,
-            rows: rowsAxisData,
-          }}
-          axisItemRenderer={{
-            columns: (item: any) => (
-              <Tooltip title={item.value} key={item.key}>
-                <div style={item.style}>
-                  <Text>{item.value}</Text>
-                </div>
-              </Tooltip>
-            ),
-            rows: (item: any) => (
-              <div style={item.style}>
-                <Tooltip title={item.value} key={item.key}>
-                  <span>
-                    <Text>{item.value}</Text>
-                  </span>
-                </Tooltip>
-              </div>
-            ),
-          }}
-        />
-        {ControlComponent && <ControlComponent engine={engine} />}
+            {ControlComponent && <ControlComponent engine={engine} />}
+          </>
+        )}
       </div>
       {!_.isEmpty(rangesData) && (
         <RangePanel engine={engine} rangesData={rangesData} />
