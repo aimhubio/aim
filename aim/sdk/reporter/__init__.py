@@ -24,7 +24,7 @@ time intervals.
 Monitoring of run progress can be easily done by a service that periodically
 polls the check-in instances. If the last check-in was there for longer than it
 promised, the run is considered to  be failed thus triggering a (configurable)
-failure alert.
+failure notification.
 
 Check-ins with zero `expect_next_in` values denote an absence of the expiration
 date. In order to mark the run as successful, the last check-in should be
@@ -56,7 +56,7 @@ The monitoring service supposed to periodically poll the directory and check for
 the latest (lexicographically highest) check-ins per run.
 If the last check-in was there (starting from the first time the monitoring
 server had seen the file) for longer than it promised, the run is considered to
-be failed thus triggering a (configurable) failure alert. A grace period is
+be failed thus triggering a (configurable) failure notification. A grace period is
 introduced to avoid false positives.
 
 ## NON-BLOCKING INTERFACE
@@ -483,11 +483,11 @@ class RunStatusReporter:
         while True:
             time_left = self.physical_check_in.time_left()
             if time_left + GRACE_PERIOD < 0:
-                logger.error(f"Missing check-in. Grace period expired { - GRACE_PERIOD - time_left:.2f} seconds ago. "
-                             f"Alerts should be sent soon by the monitoring server.")
+                logger.info(f"Missing check-in. Grace period expired { - GRACE_PERIOD - time_left:.2f} seconds ago. "
+                            f"Notifications should be sent soon by the monitoring server.")
             elif time_left < 0:
-                logger.warning(f"Missing check-in. Late: {-time_left:.2f} seconds. "
-                               f"Remaining grace period: {GRACE_PERIOD + time_left:.2f} seconds")
+                logger.info(f"Missing check-in. Late: {-time_left:.2f} seconds. "
+                            f"Remaining grace period: {GRACE_PERIOD + time_left:.2f} seconds")
             elif time_left < PLAN_ADVANCE_TIME:
                 logger.info(f"Missing check-in. Time left: {time_left}:.2f")
             plan = max(time_left - PLAN_ADVANCE_TIME, 1.0)
