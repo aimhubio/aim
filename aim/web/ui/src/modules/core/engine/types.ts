@@ -141,4 +141,8 @@ export enum PipelineStatusEnum {
    * Executed but there is no data in pipeline
    */
   Empty = 'Empty',
+  /**
+   * Executed query but processing
+   */
+  Processing = 'Processing',
 }

@@ -2,6 +2,7 @@ import React from 'react';
 
 import { MenuItem } from '@material-ui/core';
 import { IExplorerBarProps } from 'modules/BaseExplorer/types';
+import { PipelineStatusEnum } from 'modules/core/engine';
 
 import AppBar from 'components/AppBar/AppBar';
 import ErrorBoundary from 'components/ErrorBoundary/ErrorBoundary';
@@ -11,9 +12,12 @@ import { Button, Icon } from 'components/kit';
 import './ExplorerBar.scss';
 
 function ExplorerBar(props: IExplorerBarProps) {
+  const isExecuting =
+    props.engine.useStore(props.engine.pipelineStatusSelector) ===
+    PipelineStatusEnum.Executing;
   return (
     <div>
-      <AppBar title={props.explorerName}>
+      <AppBar title={props.explorerName} disabled={isExecuting}>
         <div className='ExplorerBar__menu'>
           <ErrorBoundary>
             <ControlPopover
@@ -23,7 +27,7 @@ function ExplorerBar(props: IExplorerBarProps) {
                   withOnlyIcon
                   color='secondary'
                   size='small'
-                  onClick={onAnchorClick}
+                  onClick={(d: any) => !isExecuting && onAnchorClick(d)}
                 >
                   <Icon
                     fontSize={16}
