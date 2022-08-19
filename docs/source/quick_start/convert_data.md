@@ -163,6 +163,35 @@ While converting the artifacts, the converter will try to determine file content
 warning message will be issued if artifact cannot be categorized, these artifacts will not be transferred to aim!
 Please check the command output logs if you fail to see your artifact in Aim's web.
 
+### Show Weights & Biases logs in Aim
+
+Aim gives you a possibility to convert [Weights & Biases](https://wandb.ai/site) runs into native format and show them directly on
+Aim UI.
+
+Before showing your Weights & Biases runs on Aim, they need to pass conversion process where your metrics, tags, parameters, run
+description/notes and *some* artifacts will be transferred into Aim storage.
+
+Please note that as for now, the artifacts will not be transferred!
+
+To convert Weights & Biases runs, `aim convert wandb` command can be run from any location of your OS:
+
+```commandline
+$ aim init
+$ aim convert wandb --entity 'my_team' --project 'test_project'
+```
+
+The conversion process will iterate over all your Experiments and create a distinct run for each run inside the
+experiment. If you want to process only a single experiment, you can provide the experiment id or name to the conversion
+command:
+
+```commandline
+$ aim convert wandb --entity my_team --project test_project --run-id '<HASH_OF_RUN>'
+```
+
+While converting the artifacts, the converter will try to determine file content type only based on its extension. A
+warning message will be issued if artifact cannot be categorized, these artifacts will not be transferred to aim!
+Please check the command output logs if you fail to see your artifact in Aim's web.
+
 If you think there is problem with this conversion process
 please [open an issue](https://github.com/aimhubio/aim/issues/new/choose).
 
