@@ -190,6 +190,7 @@ import { processDurationTime } from 'utils/processDurationTime';
 import getSelectOptions from 'utils/app/getSelectOptions';
 import { getMetricsSelectOptions } from 'utils/app/getMetricsSelectOptions';
 import onRowsVisibilityChange from 'utils/app/onRowsVisibilityChange';
+import { onCopyToClipBoard } from 'utils/onCopyToClipBoard';
 
 import { AppDataTypeEnum, AppNameEnum } from './index';
 
@@ -1515,11 +1516,13 @@ function createAppModel(appConfig: IAppInitialConfig) {
     function onSearchQueryCopy(): void {
       const selectedMetricsData = model.getState()?.config?.select;
       let query = getQueryStringFromSelect(selectedMetricsData);
-      navigator.clipboard.writeText(query);
-      onModelNotificationAdd({
-        id: Date.now(),
-        severity: 'success',
-        messages: ['Run Expression Copied'],
+      onCopyToClipBoard(query, false, () => onNotificationAdd, {
+        notification: {
+          id: Date.now(),
+          severity: 'success',
+          messages: ['Run Expression Copied'],
+        },
+        model,
       });
     }
 

@@ -46,11 +46,13 @@ function TagSoftDelete({
           archivedRef.current?.archived ? 'bring back' : 'hide'
         } this tag?`}
         icon={
-          archivedRef.current?.archived ? (
-            <Icon name='eye-show-outline' />
-          ) : (
-            <Icon name='eye-outline-hide' />
-          )
+          <Icon
+            name={
+              archivedRef.current?.archived
+                ? 'eye-show-outline'
+                : 'eye-outline-hide'
+            }
+          />
         }
         title='Hide tag'
         confirmBtnText={archivedRef.current?.archived ? 'Bring back' : 'Hide'}
