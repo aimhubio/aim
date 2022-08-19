@@ -4,6 +4,7 @@ import createEngine, { IEngineConfigFinal } from 'modules/core/engine';
 
 import { IExplorerConfig, IBaseExplorerProps } from './types';
 import ExplorerBar from './components/ExplorerBar';
+import Visualizations from './components/Visualizations';
 
 import './styles.scss';
 
@@ -20,24 +21,6 @@ function BaseExplorer(props: IBaseExplorerProps) {
     engineInstance.initialize();
   }, [engineInstance]);
 
-  const visualizations = React.useMemo(() => {
-    const p = {
-      engine: engineInstance,
-      box: components.box,
-      controlComponent: components.controls,
-    };
-    const Visualizations: React.ReactNode[] = components.visualizations.map(
-      (Viz) => <Viz key={Viz.displayName} {...p} />,
-    );
-
-    return Visualizations;
-  }, [
-    engineInstance,
-    components.box,
-    components.controls,
-    components.visualizations,
-  ]);
-
   return (
     initialized && (
       <div className='Explorer'>
@@ -51,7 +34,7 @@ function BaseExplorer(props: IBaseExplorerProps) {
           <components.queryForm engine={props.engineInstance} />
           <components.grouping engine={props.engineInstance} />
         </div>
-        <div className='VisualizerWrapper'>{visualizations}</div>
+        <Visualizations components={components} engine={engineInstance} />
       </div>
     )
   );

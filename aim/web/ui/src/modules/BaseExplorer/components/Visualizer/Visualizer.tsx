@@ -16,7 +16,6 @@ import { IVisualizationProps } from '../../types';
 import BoxVirtualizer from '../BoxVirtualizer';
 import BoxWrapper from '../BoxWrapper';
 import RangePanel from '../RangePanel';
-import ProgressBar from '../ProgressBar';
 
 import './Visualizer.scss';
 
@@ -167,13 +166,7 @@ function Visualizer(props: IVisualizationProps) {
   );
 
   return (
-    <div
-      className='Visualizer'
-      style={{
-        position: 'relative',
-      }}
-    >
-      <ProgressBar engine={engine} />
+    <div className='Visualizer'>
       <div className='VisualizerContainer'>
         {!_.isEmpty(dataState) && (
           <>

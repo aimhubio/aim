@@ -14,9 +14,4 @@
     height: toRem(92px);
     border-bottom: 1px solid $primary-color-10;
   }
-  .VisualizerWrapper {
-    display: flex;
-    flex: 1;
-    max-height: calc(100% - #{toRem(132px)});
-  }
 }

@@ -11,6 +11,7 @@
   &__container {
     height: fit-content;
     overflow: hidden;
+    padding-bottom: 6 * $space-unit;
   }
   &__title {
     font-size: $text-xl;
