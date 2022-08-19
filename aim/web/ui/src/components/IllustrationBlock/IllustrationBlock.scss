@@ -4,8 +4,14 @@
   justify-content: center;
   align-items: center;
   width: 100%;
-  height: calc(100% - 6.875rem);
+  height: 100%;
+  overflow: auto;
   flex-direction: column;
+
+  &__container {
+    height: fit-content;
+    overflow: hidden;
+  }
   &__title {
     font-size: $text-xl;
     text-align: center;

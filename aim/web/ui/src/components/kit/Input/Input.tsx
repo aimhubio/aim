@@ -116,17 +116,16 @@ function InputWrapper({
   }, [onValidateAndChange, isDebounced, debounceDelay]);
 
   const onChangeHandler = (e: React.ChangeEvent<HTMLInputElement>): void => {
-    const newValue = onConvertAndChangeValue(e?.target?.value);
+    const newValue = onParseAndChangeValue(e?.target?.value);
     debouncedValidateAndChange(e, newValue);
   };
 
-  const onConvertAndChangeValue = (value: unknown): typeof inputValue => {
+  const onParseAndChangeValue = (value: unknown): typeof inputValue => {
     const newValue = valueTypeConversionFn({
       value,
       isRequiredNumberValue,
       isNumberValueFloat,
     });
-    setIsInputValid(true);
     setInputValue(newValue);
     return newValue;
   };
@@ -155,7 +154,9 @@ function InputWrapper({
 
   React.useEffect(() => {
     if (value !== inputValue) {
-      onConvertAndChangeValue(value);
+      onChangeHandler({
+        target: { value },
+      } as React.ChangeEvent<HTMLInputElement>);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [value]);
@@ -166,7 +167,9 @@ function InputWrapper({
 
   React.useEffect(() => {
     if (isValidateInitially) {
-      onConvertAndChangeValue(value);
+      onChangeHandler({
+        target: { value },
+      } as React.ChangeEvent<HTMLInputElement>);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);

@@ -36,6 +36,7 @@ class Client:
         import grpc
 
         self._id = str(uuid.uuid4())
+        self._remote_path = remote_path
 
         ssl_certfile = os.getenv(AIM_CLIENT_SSL_CERTIFICATES_FILE)
         msg_max_size = int(os.getenv(AIM_RT_MAX_MESSAGE_SIZE, AIM_RT_DEFAULT_MAX_MESSAGE_SIZE))
@@ -168,6 +169,10 @@ class Client:
     @property
     def uri(self):
         return self._id
+
+    @property
+    def remote_path(self):
+        return self._remote_path
 
     def get_queue(self, queue_id):
         return self._queues[queue_id]

@@ -19,6 +19,7 @@ Currently, AimQL is only used for filtering data, and has no role in sorting or 
 Let's track several Runs via Aim SDK:
 
 ```python
+from aim import Run
 # Initialize run_1
 # Define its params and track loss metric within test and train contexts
 run_1 = Run()
@@ -32,26 +33,28 @@ for i in range(10):
 run_2 = Run()
 run_2['learning_rate'] = 0.0007
 run_2['batch_size'] = 64
-for i in range(10):
+for i in range(20):
    run_2.track(i, name='loss', context={ 'subset':'train' })
    run_2.track(i, name='loss', context={ 'subset':'test' })
+   run_2.track(i/100, name='accuracy')
 
 # Initialize run_3
 run_3 = Run()
 run_3['learning_rate'] = 0.005
 run_3['batch_size'] = 16
-for i in range(10):
-   run_2.track(i, name='loss', context={ 'subset':'train' })
-   run_2.track(i, name='loss', context={ 'subset':'test' })
+for i in range(30):
+   run_3.track(i, name='loss', context={ 'subset':'train' })
+   run_3.track(i, name='loss', context={ 'subset':'test' })
+   run_3.track(i/100, name='accuracy')
 ```
 
 Aim SDK will collect and store the above metadata in `.aim` repo.
 
 | Run | Parameters | Metrics |
 |-----|------------|---------|
-| `run_1 <hash=a32c910>` | <table><thead> <tr> <th>learning_rate</th><th>batch_size</th> </tr> </thead>  <tbody> <tr> <th>0.001</th><th>32</th> </tr> </tbody></table> | <table><tbody> <tr> <th>loss { "subset":"train" }</th> </tr> <tr> <th>loss { "subset":"test" }</th> </tr> </tbody></table> |
-| `run_2 <hash=a32c911>` | <table><thead> <tr> <th>learning_rate</th><th>batch_size</th> </tr> </thead>  <tbody> <tr> <th>0.0007</th><th>64</th> </tr> </tbody></table> | <table><tbody> <tr> <th>loss { "subset":"train" }</th> </tr> <tr> <th>loss { "subset":"test" }</th> </tr> </tbody></table> |
-| `run_3 <hash=a32c912>` | <table><thead> <tr> <th>learning_rate</th><th>batch_size</th> </tr> </thead>  <tbody> <tr> <th>0.005</th><th>16</th> </tr> </tbody></table> | <table><tbody> <tr> <th>loss { "subset":"train" }</th> </tr> <tr> <th>loss { "subset":"test" }</th> </tr> </tbody></table> |
+| `run_1 <hash=a32c910>` | <table><thead> <tr> <th>learning_rate</th><th>batch_size</th> </tr> </thead>  <tbody> <tr> <th>0.001</th><th>32</th> </tr> </tbody></table> | <table><thead> <tr><th>loss { "subset":"train" } </th><th> loss { "subset":"test" } </th></tr></thead> <tbody><tr><th> 10 </th><th> 10 </th></tr></tbody> </table>|
+| `run_2 <hash=a32c911>` | <table><thead> <tr> <th>learning_rate</th><th>batch_size</th> </tr> </thead>  <tbody> <tr> <th>0.0007</th><th>64</th> </tr> </tbody></table> | <table><thead> <tr><th>loss { "subset":"train" } </th><th> loss { "subset":"test" } </th><th> accuracy {} </th></tr></thead> <tbody><tr><th> 20 </th><th> 20 </th><th> 0.2 </th></tr></tbody> </table>|
+| `run_3 <hash=a32c912>` | <table><thead> <tr> <th>learning_rate</th><th>batch_size</th> </tr> </thead>  <tbody> <tr> <th>0.005</th><th>16</th> </tr> </tbody></table> | <table><thead> <tr><th>loss { "subset":"train" } </th><th> loss { "subset":"test" } </th><th> accuracy {} </th></tr></thead> <tbody><tr><th> 30 </th><th> 30 </th><th> 0.3 </th></tr></tbody> </table>|  
 
 When searching runs, use the `run` keyword which represents the `Run` object. It has the following properties:
 
@@ -63,8 +66,10 @@ When searching runs, use the `run` keyword which represents the `Run` object. It
 | `tags` | List of run tags |
 | `archived` | `True` if run is archived, otherwise `False` |
 | `active` | `True` if run is active(in progress), otherwise `False` |
-| `creation_time` | Run creation timestamp |
-| `end_time` | Run end timestamp |
+| `duration` | Run duration in seconds |
+| `created_at` | Run creation datetime |
+| `finalized_at` | Run end datetime |
+| `metrics`| Set of run metrics |
 
 Run parameters could be accessed both via chained properties and attributes.
 
@@ -108,6 +113,60 @@ run.learning_rate in [0.0001, 0.005]
 |-----|------------|
 | `run_1 <hash=a32c910>` | <table><thead> <tr> <th>learning_rate</th><th>batch_size</th> </tr> </thead>  <tbody> <tr> <th>0.001</th><th>32</th> </tr> </tbody></table> |
 | `run_3 <hash=a32c912>` | <table><thead> <tr> <th>learning_rate</th><th>batch_size</th> </tr> </thead>  <tbody> <tr> <th>0.005</th><th>16</th> </tr> </tbody></table> |
+
+3. Search runs based on metrics' last values.
+   
+`metrics` property takes 2 arguments: metric name and context (name is required, context is empty({}) by default).
+
+
+a. Get runs where `accuracy, {}` last value is greater than 0.25
+```python
+run.metrics['accuracy'].last > 0.25
+```
+
+*Result:*
+
+| Run | Parameters | Metrics | 
+|-----|------------|---------|
+| `run_3 <hash=a32c912>` | <table><thead> <tr> <th>learning_rate</th><th>batch_size</th> </tr> </thead>  <tbody> <tr> <th>0.005</th><th>16</th> </tr> </tbody></table> | <table><thead> <tr><th>loss { "subset":"train" } </th><th> loss { "subset":"test" } </th><th> accuracy {} </th></tr></thead> <tbody><tr><th> 30 </th><th> 30 </th><th> 0.3 </th></tr></tbody> </table>|
+
+b. Get runs where `loss, {'subset': 'train'}` last value is smaller than 25
+
+```python
+run.metrics['accuracy', {'subset': 'train'}].last < 25
+```
+*Result:*
+
+| Run | Parameters | Metrics |
+|-----|------------|---------|
+| `run_1 <hash=a32c910>` | <table><thead> <tr> <th>learning_rate</th><th>batch_size</th> </tr> </thead>  <tbody> <tr> <th>0.001</th><th>32</th> </tr> </tbody></table> | <table><thead> <tr><th>loss { "subset":"train" } </th><th> loss { "subset":"test" } </th></tr></thead> <tbody><tr><th> 10 </th><th> 10 </th><th></tbody> </table>|
+| `run_2 <hash=a32c911>` | <table><thead> <tr> <th>learning_rate</th><th>batch_size</th> </tr> </thead>  <tbody> <tr> <th>0.0007</th><th>64</th> </tr> </tbody></table> | <table><thead> <tr><th>loss { "subset":"train" } </th><th> loss { "subset":"test" } </th><th> accuracy {} </th></tr></thead> <tbody><tr><th> 20 </th><th> 20 </th><th> 0.2 </th></tr></tbody> </table>|
+
+4. Search runs where `duration` is smaller than 10s (to filter out failed runs for example)
+```python
+run.duration < 10
+```
+
+This will return all the runs on our test set, but will have a use case on real life experiments to filter the runs that finished under 10 seconds. 
+Then those can be archived/deleted as they've probably crashed or were stopped. 
+
+
+5. Search runs based on creation or end times
+
+`created_at` and `finalized_at` properties are represented as python `datetime` objects. So any of these queries are a competent way to filter runs: 
+
+a. Get runs for a specific date
+```python
+run.created_at.strftime("%d/%m/%Y") == "24/12/2021"
+```
+b. Get runs after a specific date
+```python
+run.finalized_at > datetime(2022, 2, 2)
+```
+c. Get runs of a specific month
+```python
+run.created_at.month == 2 and run.created_at.year == 2022
+```
 
 ### Searching metrics and images
 

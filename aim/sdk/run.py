@@ -11,6 +11,7 @@ from collections import defaultdict
 from aim.sdk.base_run import BaseRun
 from aim.sdk.sequence import Sequence
 from aim.sdk.tracker import RunTracker
+from aim.sdk.reporter import RunStatusReporter
 from aim.sdk.sequence_collection import SingleRunSequenceCollection
 from aim.sdk.utils import (
     backup_run,
@@ -68,6 +69,7 @@ class RunAutoClean(AutoClean['Run']):
         self._system_resource_tracker = instance._system_resource_tracker
         # this reference is needed for system resource tracker finalization
         self._tracker = instance._tracker
+        self._checkins = instance._checkins
 
     def finalize_run(self):
         """
@@ -105,6 +107,8 @@ class RunAutoClean(AutoClean['Run']):
         self.finalize_system_tracker()
         self.finalize_run()
         self.finalize_rpc_queue()
+        if self._checkins is not None:
+            self._checkins.close()
 
 
 # TODO: [AT] generate automatically based on ModelMappedRun
@@ -311,8 +315,10 @@ class Run(BaseRun, StructuredRunMixin):
                         raise
 
         self._props = None
+        self._checkins = None
 
         if not read_only:
+            self._checkins = RunStatusReporter(self)
             if log_system_params:
                 system_params = {
                     'packages': get_installed_packages(),
@@ -754,3 +760,36 @@ class Run(BaseRun, StructuredRunMixin):
         import pandas as pd
         df = pd.DataFrame(data, index=[0])
         return df
+
+    def report_progress(
+        self,
+        *,
+        expect_next_in: int = 0,
+        block: bool = False,
+    ) -> None:
+        """
+        Check-in the run. Report the expected time for the next check-in.
+
+        If no check-ins are received by the expiry date (plus the grace period), the
+        run is considered to have failed.
+
+        Args:
+            expect_next_in: (:obj:`int`, optional): The number of seconds to wait before the next check-in.
+            block: (:obj:`bool`, optional): If true, block the thread until the check-in is written to filesystem.
+        """
+        if self._checkins is None:
+            raise ValueError('Check-ins are not enabled for this run')
+        self._checkins._check_in(expect_next_in=expect_next_in, block=block)
+
+    def report_successful_finish(
+        self,
+        *,
+        block: bool = True,
+    ) -> None:
+        """
+        Report successful finish of the run. If the run is not marked as successfully finished,
+        it can potentially be considered as failed.
+        """
+        if self._checkins is None:
+            raise ValueError('Check-ins are not enabled for this run')
+        self._checkins._report_successful_finish(block=block)
