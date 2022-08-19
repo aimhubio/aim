@@ -36,6 +36,7 @@ class Client:
         import grpc
 
         self._id = str(uuid.uuid4())
+        self._remote_path = remote_path
 
         ssl_certfile = os.getenv(AIM_CLIENT_SSL_CERTIFICATES_FILE)
         msg_max_size = int(os.getenv(AIM_RT_MAX_MESSAGE_SIZE, AIM_RT_DEFAULT_MAX_MESSAGE_SIZE))
@@ -102,6 +103,7 @@ class Client:
             return
 
         if is_write_only:
+            assert queue_id != -1
             self.get_queue(queue_id).register_task(
                 self._run_write_instructions, list(encode_tree([(resource, method, args)])))
             return
@@ -124,7 +126,8 @@ class Client:
             for chunk in stream:
                 yield rpc_messages.InstructionRequest(message=chunk)
 
-        self.get_queue(queue_id).wait_for_finish()
+        if queue_id != -1:
+            self.get_queue(queue_id).wait_for_finish()
         resp = self.remote.run_instruction(message_stream_generator())
         status_msg = next(resp)
 
@@ -166,6 +169,10 @@ class Client:
     @property
     def uri(self):
         return self._id
+
+    @property
+    def remote_path(self):
+        return self._remote_path
 
     def get_queue(self, queue_id):
         return self._queues[queue_id]

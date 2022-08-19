@@ -61,14 +61,17 @@ jobs:
   linux-dist:
     if: ${{ github.event_name == 'schedule' || github.actor == 'gorarakelyan' || github.actor == 'alberttorosyan' || github.actor == 'roubkar' }}
     runs-on: ubuntu-latest
-    name: Linux wheels build (using Docker)
+    strategy:
+      matrix:
+        manylinux-version: ['manylinux2014_x86_64', 'manylinux_2_24_x86_64']
+    name: Linux wheels build (using Docker) ${{ matrix.manylinux-version }}
     needs: aim-ui-dist
     steps:
       - name: Install Docker & pull images
         run: |
           apt update && apt install -y docker.io
           sudo systemctl enable --now docker
-          docker pull quay.io/pypa/manylinux_2_24_x86_64
+          docker pull quay.io/pypa/${{ matrix.manylinux-version }}
 
       - name: Checkout sources
         uses: actions/checkout@v2
@@ -94,7 +97,7 @@ jobs:
 
       - name: Build bdist wheels
         run: |
-          docker run --mount type=bind,source=$PWD,target=/opt/aim quay.io/pypa/manylinux_2_24_x86_64 bash /opt/aim/docker/build-wheels.sh
+          docker run --mount type=bind,source=$PWD,target=/opt/aim quay.io/pypa/${{ matrix.manylinux-version }} bash /opt/aim/docker/build-wheels.sh
 
       - name: Publish wheels
         env:

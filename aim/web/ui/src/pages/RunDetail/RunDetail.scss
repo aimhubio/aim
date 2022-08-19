@@ -128,8 +128,7 @@
 
     &__tabsContainer {
       background: #ffffff;
-      box-shadow: 0 toRem(4px) toRem(6px) rgba(144, 175, 218, 0.2);
-      border-bottom: $border-grey-lighter;
+      box-shadow: 0 toRem(4px) toRem(6px) rgba(144, 175, 218, 0.2), 0 1px 0 0 $cuddle-20;
       border-top: $border-grey-lighter;
       position: relative;
       z-index: 1;
@@ -228,19 +227,28 @@
 }
 
 .RunDetailMetricsTab {
-  padding: 1.5rem 0;
+  padding: 0 0 $space-lg;
+  &__header {
+    margin: $space-lg 0;
+    padding-bottom: 0.625rem;
+    border-bottom: $border-grey;
+  }
   &__container {
     height: 100%;
     display: flex;
     flex-wrap: wrap;
-    gap: 1.5rem;
+    gap: $space-lg;
     align-items: stretch;
     &__chartContainer {
+      position: relative;
       width: calc(50% - 0.75rem);
       border: $border-grey;
       border-radius: 0.5rem;
       background: $white;
       &__chartBox {
+        display: flex;
+        align-items: center;
+        justify-content: center;
         height: 24.5rem;
         padding: 0.625rem;
         .LineChart__container {
@@ -252,6 +260,13 @@
         padding: 1rem 1.5rem 1.5rem;
         &__metricName {
           margin: $space-xs 0;
+          word-break: break-all;
+        }
+        &__pin {
+          position: absolute;
+          top: $space-xs;
+          right: $space-xs;
+          z-index: 1;
         }
         .SelectForm__tags__item {
           margin-top: 0.5rem;

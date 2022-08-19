@@ -1,0 +1,15 @@
+{
+  "notifications": {
+    "version": "1.0",
+    "notifiers": {
+    "b6487000-b521-4a2a-a42b-8fee1b7fa43d": {
+        "id": "b6487000-b521-4a2a-a42b-8fee1b7fa43d",
+        "type": "logger",
+        "status": "enabled",
+        "arguments": {
+          "message": "❗️ Something wrong with Run '{run.hash}'. Please check. ❗️"
+        }
+      }
+    }
+  }
+}
