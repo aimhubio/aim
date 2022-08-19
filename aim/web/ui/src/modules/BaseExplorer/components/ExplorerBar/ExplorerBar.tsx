@@ -1,20 +1,14 @@
 import React from 'react';
 
 import { MenuItem } from '@material-ui/core';
+import { IExplorerBarProps } from 'modules/BaseExplorer/types';
 
 import AppBar from 'components/AppBar/AppBar';
 import ErrorBoundary from 'components/ErrorBoundary/ErrorBoundary';
 import ControlPopover from 'components/ControlPopover/ControlPopover';
 import { Button, Icon } from 'components/kit';
 
-import { IBaseComponentProps } from '../../types';
-
 import './ExplorerBar.scss';
-
-interface IExplorerBarProps extends IBaseComponentProps {
-  explorerName: string;
-  documentationLink: string;
-}
 
 function ExplorerBar(props: IExplorerBarProps) {
   return (

@@ -1,9 +1,6 @@
 import React, { useEffect } from 'react';
 
-import { Text } from 'components/kit';
-
-import createEngine from '../BaseExplorerCore/core-store';
-import { IEngineConfigFinal } from '../BaseExplorerCore';
+import createEngine, { IEngineConfigFinal } from 'modules/core/engine';
 
 import { IExplorerConfig, IBaseExplorerProps } from './types';
 import ExplorerBar from './components/ExplorerBar';

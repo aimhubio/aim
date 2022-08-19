@@ -48,3 +48,5 @@ export interface RunSearchRunView {
   props: RunProps;
   ranges?: IndexRanges & RecordRanges;
 }
+
+export interface Container extends RunSearchRunView {}

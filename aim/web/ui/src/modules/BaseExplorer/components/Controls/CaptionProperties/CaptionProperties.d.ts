@@ -1,6 +1,5 @@
-export interface ICaptionPropertiesProps {
-  engine: IBaseComponentProps['engine'];
-}
+import { IBaseComponentProps } from 'modules/BaseExplorer/types';
+export interface ICaptionPropertiesProps extends IBaseComponentProps {}
 
 export interface ICaptionProperties {
   displayBoxCaption: boolean;

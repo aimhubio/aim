@@ -1,6 +1,6 @@
 import React from 'react';
 
-import { PipelineStatusEnum } from 'modules/BaseExplorerCore';
+import { PipelineStatusEnum } from 'modules/core/engine';
 
 import ProgressBar from 'components/ProgressBar/ProgressBar';
 

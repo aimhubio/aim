@@ -1,6 +1,6 @@
 import React from 'react';
 
-import { Checkbox, Divider, TextField, Typography } from '@material-ui/core';
+import { Checkbox, Divider, TextField } from '@material-ui/core';
 import { Autocomplete } from '@material-ui/lab';
 import {
   CheckBox as CheckBoxIcon,
