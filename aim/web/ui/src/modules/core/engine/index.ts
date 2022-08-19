@@ -304,42 +304,46 @@ function createEngine(config: IEngineConfigFinal) {
   let lastQuery: any;
 
   async function search(params: RunsSearchQueryParams) {
-    const { groupings } = storeVanilla.getState();
-    const currentValues = groupings?.currentValues || {};
+    try {
+      const { groupings } = storeVanilla.getState();
+      const currentValues = groupings?.currentValues || {};
 
-    const groupOptions = Object.keys(currentValues || {}).map(
-      (key: string) => ({
-        type: key as GroupType,
-        fields: currentValues[key].fields,
-        orders: currentValues[key].orders,
-      }),
-    );
-    lastQuery = {
-      query: { params },
-    };
+      const groupOptions = Object.keys(currentValues || {}).map(
+        (key: string) => ({
+          type: key as GroupType,
+          fields: currentValues[key].fields,
+          orders: currentValues[key].orders,
+        }),
+      );
+      lastQuery = {
+        query: { params },
+      };
 
-    // @ts-ignore
-    const res = await pipeline.execute({
-      query: {
-        params,
-        ignoreCache: true,
-      },
-      group: groupOptions,
-    });
-    const { additionalData, data, queryableData, foundGroups } = res;
+      // @ts-ignore
+      const res = await pipeline.execute({
+        query: {
+          params,
+          ignoreCache: true,
+        },
+        group: groupOptions,
+      });
+      const { additionalData, data, queryableData, foundGroups } = res;
 
-    const pipelineState = storeVanilla.getState().pipeline;
+      const pipelineState = storeVanilla.getState().pipeline;
 
-    storeVanilla.setState({
-      data,
-      pipeline: {
-        ...pipelineState,
-        status: isEmpty(data) ? PipelineStatusEnum.Empty : pipelineState.status,
-      },
-      additionalData,
-      queryableData,
-      foundGroups,
-    });
+      storeVanilla.setState({
+        data,
+        pipeline: {
+          ...pipelineState,
+          status: isEmpty(data)
+            ? PipelineStatusEnum.Empty
+            : pipelineState.status,
+        },
+        additionalData,
+        queryableData,
+        foundGroups,
+      });
+    } catch (ex: unknown) {}
   }
 
   async function group(
