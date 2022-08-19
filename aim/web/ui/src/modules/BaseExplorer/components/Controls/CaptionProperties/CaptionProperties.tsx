@@ -26,9 +26,9 @@ function CaptionProperties(props: ICaptionPropertiesProps) {
   return (
     <ErrorBoundary>
       <ControlPopover
-        title='Display in the box caption'
+        title='Configure box caption'
         anchor={({ onAnchorClick, opened }) => (
-          <Tooltip title='Caption fields'>
+          <Tooltip title='Configure box caption'>
             <div
               onClick={onAnchorClick}
               className={classNames('Controls__anchor', {
