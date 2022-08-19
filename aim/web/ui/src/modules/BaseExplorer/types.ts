@@ -75,20 +75,26 @@ export type IUIConfig = {
   };
   // will store them, and will create selector to use data and function to update data
   visualizationConfig?: object;
-  components: {
-    queryForm: React.FunctionComponent<IQueryFormProps>;
-    grouping: React.FunctionComponent<IGroupingProps>;
-    visualizations: React.FunctionComponent<IVisualizationProps>[];
-    box: React.FunctionComponent<IBoxProps>;
-    controls: React.FunctionComponent<IControlsProps>;
-  };
+  components: IUIComponents;
 };
+
+export interface IUIComponents {
+  queryForm: React.FunctionComponent<IQueryFormProps>;
+  grouping: React.FunctionComponent<IGroupingProps>;
+  visualizations: React.FunctionComponent<IVisualizationProps>[];
+  box: React.FunctionComponent<IBoxProps>;
+  controls: React.FunctionComponent<IControlsProps>;
+}
 
 export interface IQueryFormProps extends IBaseComponentProps {
   hasAdvancedMode?: boolean;
 }
 export interface IGroupingProps extends IBaseComponentProps {}
 export interface IControlsProps extends IBaseComponentProps {}
+
+export interface IVisualizationsProps extends IBaseComponentProps {
+  components: IUIComponents;
+}
 
 export interface IVisualizationProps extends IBaseComponentProps {
   box?: React.FunctionComponent<IBoxProps>;

@@ -65,7 +65,8 @@
           white-space: nowrap;
           overflow: hidden;
           text-overflow: ellipsis;
-          display: inline-block;
+          display: block;
+          padding-bottom: $space-xxxxs;
           &__key {
             margin-right: $space-xs;
           }
