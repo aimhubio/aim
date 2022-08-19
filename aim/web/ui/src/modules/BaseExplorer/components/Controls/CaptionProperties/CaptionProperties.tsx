@@ -40,7 +40,7 @@ function CaptionProperties(props: ICaptionPropertiesProps) {
                 className={classNames('Controls__icon', {
                   active: opened || !captionProperties.isInitial,
                 })}
-                name='cursor'
+                name='info-circle-outline'
               />
             </div>
           </Tooltip>
