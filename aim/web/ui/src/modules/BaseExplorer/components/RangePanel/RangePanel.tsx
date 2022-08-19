@@ -1,8 +1,8 @@
 import React from 'react';
 
-import { QueryUIStateUnit } from 'modules/BaseExplorerCore/core-store';
-import { getQueryFromRanges } from 'modules/BaseExplorerCore/utils/getQueryFromRanges';
-import { getQueryStringFromSelect } from 'modules/BaseExplorerCore/utils/getQueryStringFromSelect';
+import { QueryUIStateUnit } from 'modules/core/engine';
+import { getQueryFromRanges } from 'modules/core/utils/getQueryFromRanges';
+import { getQueryStringFromSelect } from 'modules/core/utils/getQueryStringFromSelect';
 
 import { Button, Icon, Text } from 'components/kit';
 

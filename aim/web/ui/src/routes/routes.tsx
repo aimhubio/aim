@@ -41,7 +41,7 @@ const ImagesExplore = React.lazy(
     ),
 );
 const FiguresExplore = React.lazy(
-  () => import(/* webpackChunkName: "figures" */ 'pages/BaseExplorer'),
+  () => import(/* webpackChunkName: "figures" */ 'pages/FiguresExplorer'),
 );
 
 export interface IRoute {

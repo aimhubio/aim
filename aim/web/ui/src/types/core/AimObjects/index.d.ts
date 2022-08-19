@@ -1,3 +1,4 @@
+export * from './AimFlatObjectBase';
 export * from './CustomObject';
 export * from './Distribution';
 export * from './Sequence';

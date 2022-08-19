@@ -10,3 +10,8 @@ export type Context = Record<string, any>;
 export type Union<T, D> = T | D;
 
 export type Tuple<T> = [T, T];
+
+export type Record = {
+  index?: number;
+  step: number;
+};

@@ -1,9 +1,10 @@
 import React from 'react';
 
-import { IControlsProps } from 'modules/BaseExplorer/types';
-import { ControlsConfigs } from 'modules/BaseExplorerCore/core-store/controls';
+import { ControlsConfigs } from 'modules/core/engine/store/controls';
 
 import ErrorBoundary from 'components/ErrorBoundary/ErrorBoundary';
+
+import { IControlsProps } from '../../types';
 
 import './Controls.scss';
 

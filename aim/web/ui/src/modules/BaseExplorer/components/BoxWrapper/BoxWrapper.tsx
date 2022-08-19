@@ -1,11 +1,10 @@
 import React from 'react';
 import _ from 'lodash-es';
 
-import { AimFlatObjectBase } from 'modules/BaseExplorerCore/pipeline/adapter/processor';
-
 import DepthSlider, { IDepthSliderProps } from 'components/DepthSlider';
 import { Button, Icon, Text } from 'components/kit';
 
+import { AimFlatObjectBase } from 'types/core/AimObjects';
 import { SequenceTypesEnum } from 'types/core/enums';
 
 import BoxFullViewPopover from '../BoxFullViewPopover';

@@ -2,7 +2,7 @@ import * as React from 'react';
 import _ from 'lodash-es';
 import { useResizeObserver } from 'hooks';
 
-import { AimFlatObjectBase } from 'modules/BaseExplorerCore/pipeline/adapter/processor';
+import { AimFlatObjectBase } from 'types/core/AimObjects';
 
 import { IBoxVirtualizerProps } from './';
 

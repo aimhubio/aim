@@ -3,13 +3,12 @@ import _ from 'lodash-es';
 import { useDepthMap } from 'hooks';
 
 import { Tooltip } from '@material-ui/core';
-import { GroupType } from 'modules/BaseExplorerCore/pipeline/grouping/types';
-import {
-  AimFlatObjectBase,
-  IQueryableData,
-} from 'modules/BaseExplorerCore/pipeline/adapter/processor';
+import { GroupType } from 'modules/core/pipeline';
+import { IQueryableData } from 'modules/core/pipeline';
 
 import { Text } from 'components/kit';
+
+import { AimFlatObjectBase } from 'types/core/AimObjects';
 
 import contextToString from 'utils/contextToString';
 
@@ -39,7 +38,6 @@ function Visualizer(props: IVisualizationProps) {
   const foundGroups = useStore(foundGroupsSelector);
   const dataState = useStore(dataSelector);
   const rangesData: IQueryableData = useStore(queryableDataSelector);
-  const intialized = useStore(engineStatusSelector);
 
   const data = React.useMemo(() => {
     return dataState?.map((d: any, i: number) => {
@@ -167,7 +165,6 @@ function Visualizer(props: IVisualizationProps) {
       deps: [dataState, foundGroups],
     },
   );
-  const status = useStore(engine.pipelineStatusSelector);
 
   return (
     <div

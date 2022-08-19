@@ -13,7 +13,7 @@ import {
   CheckBoxOutlineBlank,
 } from '@material-ui/icons';
 import Autocomplete from '@material-ui/lab/Autocomplete';
-import { Order } from 'modules/BaseExplorerCore/pipeline/grouping/types';
+import { Order } from 'modules/core/pipeline';
 
 import { Badge, Icon, Text, ToggleButton } from 'components/kit';
 import ErrorBoundary from 'components/ErrorBoundary/ErrorBoundary';

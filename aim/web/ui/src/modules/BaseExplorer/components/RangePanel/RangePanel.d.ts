@@ -1,4 +1,4 @@
-import { IQueryableData } from 'modules/BaseExplorerCore/pipeline/adapter/processor';
+import { IQueryableData } from 'modules/core/engine';
 import { IBaseComponentProps } from 'modules/BaseExplorer/types';
 
 export interface IRangePanelProps {

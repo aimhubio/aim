@@ -1,8 +1,8 @@
-import React, { memo, useMemo } from 'react';
+import React, { memo, useEffect, useMemo } from 'react';
 import _ from 'lodash-es';
 
-import { IInstructionsState } from 'modules/BaseExplorerCore/store/slices/types';
-import { QueryUIStateUnit } from 'modules/BaseExplorerCore/core-store';
+import { IInstructionsState } from 'modules/core/engine/store/instructionsSlice';
+import { QueryUIStateUnit } from 'modules/core/engine';
 import {
   Checkbox,
   Divider,
@@ -16,11 +16,11 @@ import {
   CheckBoxOutlineBlank,
 } from '@material-ui/icons';
 import { IQueryFormProps } from 'modules/BaseExplorer/types';
-import { getQueryFromRanges } from 'modules/BaseExplorerCore/utils/getQueryFromRanges';
+import { getQueryFromRanges } from 'modules/core/utils/getQueryFromRanges';
 import { IRangesState } from 'modules/BaseExplorer/components/RangePanel/RangePanel.d';
-import { getQueryStringFromSelect } from 'modules/BaseExplorerCore/utils/getQueryStringFromSelect';
-import { getSelectFormOptions } from 'modules/BaseExplorerCore/utils/getSelectFormOptions';
-import { PipelineStatusEnum } from 'modules/BaseExplorerCore';
+import { getQueryStringFromSelect } from 'modules/core/utils/getQueryStringFromSelect';
+import { getSelectFormOptions } from 'modules/core/utils/getSelectFormOptions';
+import { PipelineStatusEnum } from 'modules/core/engine';
 
 import { Badge, Button, Icon, Text } from 'components/kit';
 import AutocompleteInput from 'components/AutocompleteInput';
@@ -183,8 +183,8 @@ function QueryForm(props: IQueryFormProps) {
 
   const handleResetQueryForm: () => void = React.useCallback(() => {
     updateQuery.current({
-      simpleInput: '',
-      advancedInput: '',
+      simpleInput: null,
+      advancedInput: null,
       selections: [],
     });
   }, []);

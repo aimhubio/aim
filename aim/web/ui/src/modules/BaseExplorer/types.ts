@@ -1,11 +1,10 @@
 import React from 'react';
 
-import { GroupType } from 'modules/BaseExplorerCore/pipeline/grouping/types';
+import { GroupType } from 'modules/core/pipeline';
+import { GroupingConfigs } from 'modules/core/engine/store/grouping';
+import { ControlsConfigs } from 'modules/core/engine/store/controls';
 
 import { AimObjectDepths, SequenceTypesEnum } from 'types/core/enums';
-
-import { GroupingConfigs } from '../BaseExplorerCore/core-store/grouping';
-import { ControlsConfigs } from '../BaseExplorerCore/core-store/controls';
 
 export interface IExplorerConfig {
   /**
@@ -66,7 +65,7 @@ export type IEngineConfig = {
   controls?: ControlsConfigs;
 };
 
-export type styleApplier = (object: any, currentConfig: any, group: any) => any;
+export type StyleApplier = (object: any, currentConfig: any, group: any) => any;
 
 export type IUIConfig = {
   defaultBoxConfig: {
@@ -76,10 +75,6 @@ export type IUIConfig = {
   };
   // will store them, and will create selector to use data and function to update data
   visualizationConfig?: object;
-  styleAppliers: {
-    // accept generic type and use T in UsedGroupsEnum
-    [key: string]: styleApplier;
-  };
   components: {
     queryForm: React.FunctionComponent<IQueryFormProps>;
     grouping: React.FunctionComponent<IGroupingProps>;
@@ -108,7 +103,10 @@ export interface IBoxProps extends IBaseComponentProps {
 }
 
 export interface IOptionalExplorerConfig {}
-
+export interface IExplorerBarProps extends IBaseComponentProps {
+  explorerName: string;
+  documentationLink: string;
+}
 export interface IBaseExplorerProps extends IExplorerConfig {
   engineInstance: any;
   explorerName: string;

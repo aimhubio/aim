@@ -3,7 +3,7 @@ import _ from 'lodash-es';
 import classNames from 'classnames';
 
 import { Tooltip } from '@material-ui/core';
-import { PipelineStatusEnum } from 'modules/BaseExplorerCore';
+import { PipelineStatusEnum } from 'modules/core/engine';
 
 import ErrorBoundary from 'components/ErrorBoundary/ErrorBoundary';
 import ControlPopover from 'components/ControlPopover/ControlPopover';
