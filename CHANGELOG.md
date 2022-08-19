@@ -12,6 +12,7 @@
 
 ### Fixes:
 
+- Fix unable to export chart (KaroMourad)
 - Fix aim ui rendering issue on notebooks (rubenaprikyan)
 - Fix live update retry to show live data after solving connection problems with the server  (rubenaprikyan)
 - Fix tensorboard convert while converting tensor (sharathmk99)
