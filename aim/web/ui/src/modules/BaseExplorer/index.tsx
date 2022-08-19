@@ -41,24 +41,22 @@ function BaseExplorer(props: IBaseExplorerProps) {
     components.visualizations,
   ]);
 
-  return initialized ? (
-    <div className='Explorer'>
-      <ExplorerBar
-        engine={props.engineInstance}
-        explorerName={props.explorerName}
-        documentationLink={props.documentationLink}
-      />
-      {/* {__DEV__ && <Text>Engine status ::: status</Text>} */}
-      <div className='ComponentsWrapper'>
-        <components.queryForm engine={props.engineInstance} />
-        <components.grouping engine={props.engineInstance} />
+  return (
+    initialized && (
+      <div className='Explorer'>
+        <ExplorerBar
+          engine={props.engineInstance}
+          explorerName={props.explorerName}
+          documentationLink={props.documentationLink}
+        />
+        {/* {__DEV__ && <Text>Engine status ::: status</Text>} */}
+        <div className='ComponentsWrapper'>
+          <components.queryForm engine={props.engineInstance} />
+          <components.grouping engine={props.engineInstance} />
+        </div>
+        <div className='VisualizerWrapper'>{visualizations}</div>
       </div>
-      <div className='VisualizerWrapper'>{visualizations}</div>
-    </div>
-  ) : (
-    <div className='flex fjc'>
-      <Text>Initializing</Text>
-    </div>
+    )
   );
 }
 
