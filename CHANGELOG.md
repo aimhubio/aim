@@ -11,6 +11,7 @@
 - Add ability to pin metrics in Run Page (mihran113, roubkar)
 - Add step for unit tests for nightly releases workflow (mihran113)
 - Add Keras-Tuner integration (tmynn)
+- Add Weights & Biases to Aim log converter (tmynn)
 
 ### Fixes:
 
