@@ -10,6 +10,7 @@
 - Notify users about failed/stalled runs (mahnerak, alberttorosyan)
 - Add ability to pin metrics in Run Page (mihran113, roubkar)
 - Add step for unit tests for nightly releases workflow (mihran113)
+- Add Keras-Tuner integration (tmynn)
 
 ### Fixes:
 
