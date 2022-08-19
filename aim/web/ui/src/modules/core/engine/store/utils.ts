@@ -125,8 +125,8 @@ export function createDefaultBoxStateSlice(config: {
 
 // QUERY SLICE
 type QueryUIStateUnit = {
-  simpleInput: string;
-  advancedInput: string;
+  simpleInput: string | null;
+  advancedInput: string | null;
   selections: Array<any>;
   advancedModeOn: boolean;
 };
