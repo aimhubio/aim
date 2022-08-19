@@ -29,12 +29,20 @@ function Visualizations(props: IVisualizationsProps) {
     ));
   }, [engine, components.box, components.controls, components.visualizations]);
 
+  const renderIllustration = React.useMemo(
+    () =>
+      [
+        PipelineStatusEnum.NeverExecuted,
+        PipelineStatusEnum.Empty,
+        PipelineStatusEnum.Insufficient_Resources,
+      ].indexOf(status) !== -1,
+    [status],
+  );
+
   return (
     <div className='Visualizations'>
       <ProgressBar engine={engine} />
-      {status === PipelineStatusEnum.NeverExecuted ||
-      status === PipelineStatusEnum.Empty ||
-      status === PipelineStatusEnum.Insufficient_Resources ? (
+      {renderIllustration ? (
         <IllustrationBlock size='xLarge' page='figures' type={status} />
       ) : (
         Visualizations
