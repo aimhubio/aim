@@ -5,7 +5,7 @@
   background-color: #fff;
   display: flex;
   flex-direction: column;
-  box-shadow: 0 0 0 1px $pico-30;
+  box-shadow: -1px -1px 0 0px $pico-30, inset -1px -1px 0 0px $pico-30;
   &__box {
     flex: 1;
     height: 100%;

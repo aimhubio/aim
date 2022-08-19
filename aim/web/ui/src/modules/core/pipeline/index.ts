@@ -85,27 +85,31 @@ function createGroupingInstance(config: any = {}) {
 
 async function execute(options: PipelineExecutionOptions): Promise<any> {
   // @TODO make cancelable, use thenable instead of await
-  // @ts-ignore
-  const queryResult = await phases.query.execute(options.query.params);
-  // @ts-ignore
-  const adapterResult = await phases.adapter.execute(queryResult);
-  // @ts-ignore
-  const groupingResult = phases.grouping.execute({
-    objectList: adapterResult.objectList,
+  try {
     // @ts-ignore
-    grouping: options.group,
-  });
-
-  callbacks.statusChangeCallback &&
-    callbacks.statusChangeCallback(PipelinePhasesEnum.Waiting);
-
-  return {
-    data: groupingResult.objectList,
-    foundGroups: groupingResult.foundGroups,
-    appliedGroupsConfig: groupingResult.appliedGroupsConfig,
-    additionalData: adapterResult.additionalData,
-    queryableData: adapterResult.queryable_data,
-  };
+    const queryResult = await phases.query.execute(options.query.params);
+    // @ts-ignore
+    const adapterResult = await phases.adapter.execute(queryResult);
+    // @ts-ignore
+    const groupingResult = phases.grouping.execute({
+      objectList: adapterResult.objectList,
+      // @ts-ignore
+      grouping: options.group,
+    });
+    callbacks.statusChangeCallback &&
+      callbacks.statusChangeCallback(PipelinePhasesEnum.Waiting);
+    return {
+      data: groupingResult.objectList,
+      foundGroups: groupingResult.foundGroups,
+      appliedGroupsConfig: groupingResult.appliedGroupsConfig,
+      additionalData: adapterResult.additionalData,
+      queryableData: adapterResult.queryable_data,
+    };
+  } catch (e) {
+    callbacks.statusChangeCallback &&
+      callbacks.statusChangeCallback(PipelinePhasesEnum.Waiting);
+    throw e;
+  }
 }
 
 /**
