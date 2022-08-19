@@ -27,7 +27,7 @@ class OrderedGroup(click.Group):
 def check_configuration(ctx: click.Context, repo: Repo) -> bool:
     if not has_watcher_config(repo.path):
         click.echo(f'Repo \'{repo.path}\' has no configured notifiers.')
-        if click.confirm(f'Would you like to configure notifiers?', default=True):
+        if click.confirm('Would you like to configure notifiers?', default=True):
             ctx.invoke(add_config)
         elif click.confirm('Would you like to use default configuration?'):
             set_default_config(repo.path)
