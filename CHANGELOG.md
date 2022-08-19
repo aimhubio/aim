@@ -4,12 +4,23 @@
 
 ### Enhancements:
 
+- Add logging for remote resource cleanup and network stability (mihran113)
 - Restrict Run.hash to auto-generated values only (alberttorosyan)
+- Add ability to compare selected runs from the table (arsengit)
+- Notify users about failed/stalled runs (mahnerak, alberttorosyan)  
+- Add ability to pin metrics in Run Page (mihran113, roubkar)
+- Add step for unit tests for nightly releases workflow (mihran113)
 
 ### Fixes:
 
+- Fix aim ui rendering issue on notebooks (rubenaprikyan)
+- Fix live update retry to show live data after solving connection problems with the server  (rubenaprikyan)
 - Fix tensorboard convert while converting tensor (sharathmk99)
 - Fix incorrect column keys of metrics in the table grid of the runs dashboard  (VkoHov)
+- Fix git info collection (mihran113) 
+- Fix code block content and query copying functionality (arsengit)
+- Provide compatibility between plotly and matplotlib (tmynn)
+- Warn to use aim.Image if aim.Figure fails (tmynn)
 
 ## 3.12.2 Aug 5, 2022
 

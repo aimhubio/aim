@@ -19,4 +19,5 @@ export default interface IControlPopoverProps extends Partial<PopoverProps> {
   title?: string;
   titleClassName?: string;
   open?: boolean;
+  size?: 'small' | 'medium' | 'large';
 }
