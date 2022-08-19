@@ -1,4 +1,4 @@
-import React, { memo, useMemo } from 'react';
+import React, { memo, useEffect, useMemo } from 'react';
 import _ from 'lodash-es';
 
 import { IInstructionsState } from 'modules/core/engine/store/instructionsSlice';
@@ -183,8 +183,8 @@ function QueryForm(props: IQueryFormProps) {
 
   const handleResetQueryForm: () => void = React.useCallback(() => {
     updateQuery.current({
-      simpleInput: '',
-      advancedInput: '',
+      simpleInput: null,
+      advancedInput: null,
       selections: [],
     });
   }, []);

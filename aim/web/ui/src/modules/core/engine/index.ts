@@ -234,10 +234,15 @@ function createEngine(config: IEngineConfigFinal) {
     let pipelineStatusOnEngine: PipelineStatusEnum =
       storeVanilla.getState().pipeline.status;
 
+    if (status === PipelinePhasesEnum.Grouping) {
+      pipelineStatusOnEngine = PipelineStatusEnum.Processing;
+    }
     if (
-      status === PipelinePhasesEnum.Fetching ||
-      PipelinePhasesEnum.Decoding ||
-      status === PipelinePhasesEnum.Adopting
+      [
+        PipelinePhasesEnum.Fetching,
+        PipelinePhasesEnum.Decoding,
+        PipelinePhasesEnum.Adopting,
+      ].includes(status)
     ) {
       pipelineStatusOnEngine = PipelineStatusEnum.Executing;
     }
