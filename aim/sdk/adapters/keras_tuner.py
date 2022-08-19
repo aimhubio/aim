@@ -45,7 +45,7 @@ class AimCallback(TunerCallback):
                 self._run = Run(repo=self._repo_path, experiment=self._experiment_name,
                                 system_tracking_interval=self._system_tracking_interval,
                                 log_system_params=self._log_system_params,)
-
+            self._run['trial_id'] = self._current_trial_id
             self._started_trials.append(self._current_trial_id)
         trial = self.tuner.oracle.get_trial(self._current_trial_id)
         hparams = trial.hyperparameters.values
@@ -54,9 +54,8 @@ class AimCallback(TunerCallback):
 
     def on_batch_end(self, batch, logs=None):
         if logs:
-            context = {'trial_id': self._current_trial_id}
             for log_name, log_value in logs.items():
-                self._run.track(log_value, name=log_name, context=context)
+                self._run.track(log_value, name=log_name)
 
     def __del__(self):
         if self._run is not None and self._run.active:
