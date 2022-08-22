@@ -45,6 +45,8 @@
    using/jupyter_notebook_ui.md
    using/sagemaker_notebook_ui.md
    using/integration_guides.md
+   using/run_status_notifications.md
+   using/configuring_notifiers.md
 
 .. toctree::
    :maxdepth: 2
