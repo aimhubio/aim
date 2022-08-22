@@ -446,7 +446,7 @@ function Table(props) {
           <div
             className='Table__pane Table__pane--middle'
             style={{
-              width: midPaneWidth,
+              width: isNaN(midPaneWidth) ? null : midPaneWidth,
             }}
           >
             {middlePaneWindow?.map((col) => {
