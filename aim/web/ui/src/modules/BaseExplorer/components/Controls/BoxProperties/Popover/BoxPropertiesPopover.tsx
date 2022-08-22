@@ -56,13 +56,6 @@ function BoxPropertiesPopover(props: IBoxPropertiesPopoverProps) {
     },
     [setBoxProps, updateBoxProps],
   );
-  const onBoxGapChange = React.useCallback(
-    (e: ChangeEvent<{}>, gap: number | number[]) => {
-      setBoxProps((state) => ({ ...state, gap: gap as number }));
-      updateBoxProps({ gap: gap as number });
-    },
-    [setBoxProps, updateBoxProps],
-  );
 
   const onReset = React.useCallback(() => {
     const disabled = boxProperties.isInitial;

@@ -36,7 +36,7 @@ function Figures(props: any) {
         }
       }
     }
-  }, [data, props.style?.width, props.style?.height]);
+  }, [data, props.style.width, props.style.height, props.style]);
 
   return (
     data && (
