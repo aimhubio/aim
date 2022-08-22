@@ -4,6 +4,7 @@ import pytz
 from typing import Any, Union
 from typing import TYPE_CHECKING
 
+from aim.storage.context import Context
 from aim.storage.proxy import AimObjectProxy
 from aim.storage.structured.entities import StructuredObject
 from aim.storage.treeview import TreeView
@@ -102,8 +103,6 @@ class MetricsView:
                     self.proxy_cache[key] = res
             return res
 
-        from aim.storage.context import Context
-
         if isinstance(item, str):
             metric_name = item
             context_idx = Context({}).idx
@@ -158,7 +157,12 @@ class SequenceView:
         self.name = name
         self.run = run_view
         self._context = context
+        self._values = run_view.meta_run_tree.subtree(('traces', Context(context).idx, name))
 
     @property
     def context(self):
         return AimObjectProxy(lambda: self._context, view=ContextView(self._context))
+
+    @property
+    def values(self):
+        return AimObjectProxy(lambda: self._values, view=self._values)
