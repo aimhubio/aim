@@ -7,8 +7,10 @@ import { IProjectParamsMetrics } from 'types/services/models/projects/projectsMo
 
 import alphabeticalSortComparator from 'utils/alphabeticalSortComparator';
 import getObjectPaths from 'utils/getObjectPaths';
+import { isSystemMetric } from 'utils/isSystemMetric';
 
-import { getLabelAndValueOfMetric } from './getLabelAndValueOfMetric';
+import { getMetricHash } from './getMetricHash';
+import { getMetricLabel } from './getMetricLabel';
 
 export default function getSelectOptions(
   projectsData: IProjectParamsMetrics,
@@ -23,24 +25,23 @@ export default function getSelectOptions(
 
   if (projectsData?.metric) {
     for (let metricName in projectsData.metric) {
+      const isSystem = isSystemMetric(metricName);
       if (addHighLevelMetrics) {
-        const { label, key, isSystemMetric } = getLabelAndValueOfMetric(
-          metricName,
-          {},
-        );
+        const metricHash = getMetricHash(metricName, {});
+        const metricLabel = getMetricLabel(metricName, {});
         let index: number = metrics.length;
         let option: ISelectOption = {
-          label: label,
-          group: isSystemMetric ? 'System' : metricName,
+          label: metricLabel,
+          group: isSystem ? 'System' : metricName,
           type: 'metrics',
           color: COLORS[0][index % COLORS[0].length],
-          key,
+          key: metricHash,
           value: {
             option_name: metricName,
             context: null,
           },
         };
-        if (isSystemMetric) {
+        if (isSystem) {
           systemOptions.push(option);
         } else {
           metrics.push(option);
@@ -48,23 +49,21 @@ export default function getSelectOptions(
       }
       for (let val of projectsData.metric[metricName]) {
         if ((addHighLevelMetrics && !_.isEmpty(val)) || !addHighLevelMetrics) {
-          const { label, key, isSystemMetric } = getLabelAndValueOfMetric(
-            metricName,
-            val,
-          );
+          const metricHash = getMetricHash(metricName, val);
+          const metricLabel = getMetricLabel(metricName, val);
           let index: number = metrics.length;
           let option: ISelectOption = {
-            label: label,
-            group: isSystemMetric ? 'System' : metricName,
+            label: metricLabel,
+            group: isSystem ? 'System' : metricName,
             type: 'metrics',
             color: COLORS[0][index % COLORS[0].length],
-            key,
+            key: metricHash,
             value: {
               option_name: metricName,
               context: val,
             },
           };
-          if (isSystemMetric) {
+          if (isSystem) {
             systemOptions.push(option);
           } else {
             metrics.push(option);

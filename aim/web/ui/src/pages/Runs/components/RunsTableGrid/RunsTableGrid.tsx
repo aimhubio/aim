@@ -11,7 +11,9 @@ import { ITableColumn } from 'types/pages/metrics/components/TableColumns/TableC
 
 import { formatSystemMetricName } from 'utils/formatSystemMetricName';
 import alphabeticalSortComparator from 'utils/alphabeticalSortComparator';
-import { getLabelAndValueOfMetric } from 'utils/app/getLabelAndValueOfMetric';
+import { getMetricHash } from 'utils/app/getMetricHash';
+import { getMetricLabel } from 'utils/app/getMetricLabel';
+import { isSystemMetric } from 'utils/isSystemMetric';
 
 function getRunsTableColumns(
   metricsColumns: any,
@@ -93,17 +95,16 @@ function getRunsTableColumns(
   ].concat(
     Object.keys(metricsColumns).reduce((acc: any, metricName: string) => {
       const systemMetricsList: ITableColumn[] = [];
+      const isSystem = isSystemMetric(metricName);
       const metricsList: ITableColumn[] = [];
       Object.keys(metricsColumns[metricName]).forEach((metricContext) => {
-        const { label, key, isSystemMetric } = getLabelAndValueOfMetric(
-          metricName,
-          metricContext,
-        );
+        const metricHash = getMetricHash(metricName, metricContext);
+        const metricLabel = getMetricLabel(metricName, metricContext);
 
         let column = {
-          key,
-          label,
-          content: isSystemMetric ? (
+          key: metricHash,
+          label: metricLabel,
+          content: isSystem ? (
             <span>{formatSystemMetricName(metricName)}</span>
           ) : (
             <Badge
@@ -113,16 +114,14 @@ function getRunsTableColumns(
               label={metricContext === '' ? 'Empty context' : metricContext}
             />
           ),
-          topHeader: isSystemMetric ? 'System Metrics' : metricName,
-          pin: order?.left?.includes(key)
+          topHeader: isSystem ? 'System Metrics' : metricName,
+          pin: order?.left?.includes(metricHash)
             ? 'left'
-            : order?.right?.includes(key)
+            : order?.right?.includes(metricHash)
             ? 'right'
             : null,
         };
-        isSystemMetric
-          ? systemMetricsList.push(column)
-          : metricsList.push(column);
+        isSystem ? systemMetricsList.push(column) : metricsList.push(column);
       });
       acc = [
         ...acc,

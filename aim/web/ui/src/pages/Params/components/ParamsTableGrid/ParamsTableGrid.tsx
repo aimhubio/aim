@@ -24,7 +24,9 @@ import contextToString from 'utils/contextToString';
 import { formatValue } from 'utils/formatValue';
 import { SortActionTypes, SortField } from 'utils/getSortedFields';
 import getColumnOptions from 'utils/getColumnOptions';
-import { getLabelAndValueOfMetric } from 'utils/app/getLabelAndValueOfMetric';
+import { getMetricHash } from 'utils/app/getMetricHash';
+import { getMetricLabel } from 'utils/app/getMetricLabel';
+import { isSystemMetric } from 'utils/isSystemMetric';
 
 function getParamsTableColumns(
   sortOptions: IGroupingSelectOption[],
@@ -143,22 +145,21 @@ function getParamsTableColumns(
   ].concat(
     Object.keys(metricsColumns).reduce((acc: any, metricName: string) => {
       const systemMetricsList: ITableColumn[] = [];
+      const isSystem = isSystemMetric(metricName);
       const metricsList: ITableColumn[] = [];
       Object.keys(metricsColumns[metricName]).forEach((metricContext) => {
-        const { label, key, isSystemMetric } = getLabelAndValueOfMetric(
-          metricName,
-          metricContext,
-        );
+        const metricHash = getMetricHash(metricName, metricContext);
+        const metricLabel = getMetricLabel(metricName, metricContext);
 
-        const sortValueKey = `metricsLastValues.${key}`;
+        const sortValueKey = `metricsLastValues.${metricHash}`;
         const sortItemIndex: number =
           sortFields?.findIndex((value: SortField) => {
             return value.value === sortValueKey;
           }) ?? -1;
         let column = {
-          key,
-          label,
-          content: isSystemMetric ? (
+          key: metricHash,
+          label: metricLabel,
+          content: isSystem ? (
             <span>
               {formatSystemMetricName(metricName)}
               {onSort && (
@@ -222,16 +223,14 @@ function getParamsTableColumns(
               )}
             </div>
           ),
-          topHeader: isSystemMetric ? 'System Metrics' : metricName,
-          pin: order?.left?.includes(key)
+          topHeader: isSystem ? 'System Metrics' : metricName,
+          pin: order?.left?.includes(metricHash)
             ? 'left'
-            : order?.right?.includes(key)
+            : order?.right?.includes(metricHash)
             ? 'right'
             : null,
         };
-        isSystemMetric
-          ? systemMetricsList.push(column)
-          : metricsList.push(column);
+        isSystem ? systemMetricsList.push(column) : metricsList.push(column);
       });
       acc = [
         ...acc,

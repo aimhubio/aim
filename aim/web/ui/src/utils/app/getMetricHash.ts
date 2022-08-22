@@ -5,21 +5,17 @@ import { encode } from 'utils/encoder/encoder';
 import { formatSystemMetricName } from 'utils/formatSystemMetricName';
 import { isSystemMetric } from 'utils/isSystemMetric';
 
-export function getLabelAndValueOfMetric(
+export function getMetricHash(
   metricKey: string,
   context: { [key: string]: string } | string,
-): { label: string; key: string; isSystemMetric: boolean } {
+): string {
   const contextName = !_.isEmpty(context)
     ? ` ${typeof context === 'string' ? context : contextToString(context)}`
     : '';
   const metricName = isSystemMetric(metricKey)
     ? formatSystemMetricName(metricKey)
     : metricKey;
-  return {
-    label: metricName + contextName,
-    key: isSystemMetric(metricKey)
-      ? metricKey
-      : encode({ metricName, contextName }),
-    isSystemMetric: isSystemMetric(metricKey),
-  };
+  return isSystemMetric(metricKey)
+    ? metricKey
+    : encode({ metricName, contextName });
 }

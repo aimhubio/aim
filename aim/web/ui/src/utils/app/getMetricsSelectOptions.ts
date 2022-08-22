@@ -2,7 +2,10 @@ import _ from 'lodash-es';
 
 import { IGroupingSelectOption } from 'types/services/models/metrics/metricsAppModel';
 
-import { getLabelAndValueOfMetric } from './getLabelAndValueOfMetric';
+import { isSystemMetric } from 'utils/isSystemMetric';
+
+import { getMetricHash } from './getMetricHash';
+import { getMetricLabel } from './getMetricLabel';
 
 export function getMetricsSelectOptions(metricsColumns: {
   [key: string]: any;
@@ -11,16 +14,14 @@ export function getMetricsSelectOptions(metricsColumns: {
   const systemMetrics: IGroupingSelectOption[] = [];
   Object.keys(metricsColumns).forEach((metricName: string) => {
     Object.keys(metricsColumns[metricName]).forEach((metricContext: string) => {
-      const { key, label, isSystemMetric } = getLabelAndValueOfMetric(
-        metricName,
-        metricContext,
-      );
+      const metricHash = getMetricHash(metricName, metricContext);
+      const metricLabel = getMetricLabel(metricName, metricContext);
       const sortOption = {
         group: 'metrics',
-        value: `metricsLastValues.${key}`,
-        label,
+        value: `metricsLastValues.${metricHash}`,
+        label: metricLabel,
       };
-      if (isSystemMetric) {
+      if (isSystemMetric(metricName)) {
         systemMetrics.push(sortOption);
       } else {
         metrics.push(sortOption);

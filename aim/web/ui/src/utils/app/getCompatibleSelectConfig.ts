@@ -2,7 +2,8 @@ import _ from 'lodash-es';
 
 import { ISelectConfig } from 'types/services/models/explorer/createAppModel';
 
-import { getLabelAndValueOfMetric } from './getLabelAndValueOfMetric';
+import { getMetricHash } from './getMetricHash';
+import { getMetricLabel } from './getMetricLabel';
 
 export function getCompatibleSelectConfig(
   keys: string[] = [],
@@ -40,8 +41,9 @@ export function getCompatibleSelectConfig(
       if (!option.key) {
         if (option.value) {
           const { option_name, context } = option.value;
-          let { label, key } = getLabelAndValueOfMetric(option_name, context);
-          return { ...option, label, key };
+          const metricHash = getMetricHash(option_name, context);
+          const metricLabel = getMetricLabel(option_name, context);
+          return { ...option, label: metricLabel, key: metricHash };
         } else {
           return { ...option, key: option.label };
         }

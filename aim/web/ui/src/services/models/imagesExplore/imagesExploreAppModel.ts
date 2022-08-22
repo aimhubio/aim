@@ -90,8 +90,8 @@ import getRunData from 'utils/app/getRunData';
 import getTooltipContent from 'utils/getTooltipContent';
 import decodeWithBase58Checker from 'utils/decodeWithBase58Checker';
 import { onCopyToClipBoard } from 'utils/onCopyToClipBoard';
-import { getLabelAndValueOfMetric } from 'utils/app/getLabelAndValueOfMetric';
 import getFilteredRow from 'utils/app/getFilteredRow';
+import { getMetricHash } from 'utils/app/getMetricHash';
 
 import createModel from '../model';
 import { AppNameEnum } from '../explorer';
@@ -465,7 +465,7 @@ function getSelectFormOptions(projectsData: IProjectParamsMetrics) {
         label: seqName,
         group: seqName,
         color: COLORS[0][index % COLORS[0].length],
-        key: getLabelAndValueOfMetric(seqName, {}).key,
+        key: getMetricHash(seqName, {}),
 
         value: {
           option_name: seqName,
@@ -481,7 +481,7 @@ function getSelectFormOptions(projectsData: IProjectParamsMetrics) {
             label: `${seqName} ${label}`,
             group: seqName,
             color: COLORS[0][index % COLORS[0].length],
-            key: getLabelAndValueOfMetric(seqName, val).key,
+            key: getMetricHash(seqName, val),
             value: {
               option_name: seqName,
               context: val,

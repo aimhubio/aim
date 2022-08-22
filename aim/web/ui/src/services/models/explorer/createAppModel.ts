@@ -189,7 +189,8 @@ import { getMetricsSelectOptions } from 'utils/app/getMetricsSelectOptions';
 import onRowsVisibilityChange from 'utils/app/onRowsVisibilityChange';
 import { onCopyToClipBoard } from 'utils/onCopyToClipBoard';
 import { getMetricsRowData } from 'utils/app/getMetricsRowData';
-import { getLabelAndValueOfMetric } from 'utils/app/getLabelAndValueOfMetric';
+import { getMetricHash } from 'utils/app/getMetricHash';
+import { getMetricLabel } from 'utils/app/getMetricLabel';
 
 import { AppDataTypeEnum, AppNameEnum } from './index';
 
@@ -2435,12 +2436,8 @@ function createAppModel(appConfig: IAppInitialConfig) {
               ...metricsColumns[trace.name],
               [contextToString(trace.context) as string]: '-',
             };
-            const { key } = getLabelAndValueOfMetric(
-              trace.name,
-              trace.context as any,
-            );
-
-            metricsLastValues[key] = trace.last_value.last;
+            const metricHash = getMetricHash(trace.name, trace.context as any);
+            metricsLastValues[metricHash] = trace.last_value.last;
           });
           runHashArray.push(run.hash);
           runs.push({
@@ -2680,11 +2677,8 @@ function createAppModel(appConfig: IAppInitialConfig) {
           metricsCollection.data.forEach((metric: any) => {
             const metricsRowValues = { ...initialMetricsRowData };
             metric.run.traces.metric.forEach((trace: any) => {
-              const { key } = getLabelAndValueOfMetric(
-                trace.name,
-                trace.context,
-              );
-              metricsRowValues[key] = formatValue(trace.last_value.last);
+              const metricHash = getMetricHash(trace.name, trace.context);
+              metricsRowValues[metricHash] = formatValue(trace.last_value.last);
             });
             const rowValues: any = {
               key: metric.key,
@@ -3442,11 +3436,10 @@ function createAppModel(appConfig: IAppInitialConfig) {
             metricsCollection.data.forEach((metric: any) => {
               const metricsRowValues = { ...initialMetricsRowData };
               metric.run.traces.metric.forEach((trace: any) => {
-                const { key } = getLabelAndValueOfMetric(
-                  trace.name,
-                  trace.context,
+                const metricHash = getMetricHash(trace.name, trace.context);
+                metricsRowValues[metricHash] = formatValue(
+                  trace.last_value.last,
                 );
-                metricsRowValues[key] = formatValue(trace.last_value.last);
               });
               const rowValues: any = {
                 rowMeta: {
@@ -3620,7 +3613,11 @@ function createAppModel(appConfig: IAppInitialConfig) {
                     }
                     if (type === 'metrics') {
                       run.run.traces.metric.forEach((trace: IParamTrace) => {
-                        const { label, key } = getLabelAndValueOfMetric(
+                        const metricHash = getMetricHash(
+                          trace.name,
+                          trace.context as any,
+                        );
+                        const metricLabel = getMetricLabel(
                           trace.name,
                           trace.context as any,
                         );
@@ -3628,17 +3625,19 @@ function createAppModel(appConfig: IAppInitialConfig) {
                           trace.name === value?.option_name &&
                           _.isEqual(trace.context, value?.context)
                         ) {
-                          values[key] = trace.last_value.last;
-                          if (dimension[key]) {
-                            dimension[key].values.add(trace.last_value.last);
+                          values[metricHash] = trace.last_value.last;
+                          if (dimension[metricHash]) {
+                            dimension[metricHash].values.add(
+                              trace.last_value.last,
+                            );
                             if (typeof trace.last_value.last === 'string') {
-                              dimension[key].scaleType = ScaleEnum.Point;
+                              dimension[metricHash].scaleType = ScaleEnum.Point;
                             }
                           } else {
-                            dimension[key] = {
+                            dimension[metricHash] = {
                               values: new Set().add(trace.last_value.last),
                               scaleType: ScaleEnum.Linear,
-                              displayName: label,
+                              displayName: metricLabel,
                               dimensionType: 'metric',
                             };
                           }
@@ -4012,11 +4011,8 @@ function createAppModel(appConfig: IAppInitialConfig) {
               ...metricsColumns[trace.name],
               [contextToString(trace.context) as string]: '-',
             };
-            const { key } = getLabelAndValueOfMetric(
-              trace.name,
-              trace.context as any,
-            );
-            metricsLastValues[key] = trace.last_value.last;
+            const metricHash = getMetricHash(trace.name, trace.context as any);
+            metricsLastValues[metricHash] = trace.last_value.last;
           });
           const paramKey = encode({ runHash: run.hash });
 
@@ -4957,14 +4953,14 @@ function createAppModel(appConfig: IAppInitialConfig) {
                               dimension[i].dimensionType = 'metric';
                             }
                           } else {
-                            const { label } = getLabelAndValueOfMetric(
+                            const metricLabel = getMetricLabel(
                               trace.name,
                               trace.context as any,
                             );
                             dimension[i] = {
                               values: [trace.last_value.last],
                               scaleType: ScaleEnum.Linear,
-                              displayName: label,
+                              displayName: metricLabel,
                               dimensionType: 'metric',
                             };
                           }
@@ -5126,11 +5122,13 @@ function createAppModel(appConfig: IAppInitialConfig) {
             metricsCollection.data.forEach((metric: any) => {
               const metricsRowValues = { ...initialMetricsRowData };
               metric.run.traces.metric.forEach((trace: any) => {
-                const { key } = getLabelAndValueOfMetric(
+                const metricHash = getMetricHash(
                   trace.name,
                   trace.context as any,
                 );
-                metricsRowValues[key] = formatValue(trace.last_value.last);
+                metricsRowValues[metricHash] = formatValue(
+                  trace.last_value.last,
+                );
               });
               const rowValues: any = {
                 rowMeta: {
@@ -5299,11 +5297,8 @@ function createAppModel(appConfig: IAppInitialConfig) {
               ...metricsColumns[trace.name],
               [contextToString(trace.context) as string]: '-',
             };
-            const { key } = getLabelAndValueOfMetric(
-              trace.name,
-              trace.context as any,
-            );
-            metricsLastValues[key] = trace.last_value.last;
+            const metricHash = getMetricHash(trace.name, trace.context as any);
+            metricsLastValues[metricHash] = trace.last_value.last;
           });
           const paramKey = encode({ runHash: run.hash });
           runs.push({
