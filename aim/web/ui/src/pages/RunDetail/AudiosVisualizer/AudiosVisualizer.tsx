@@ -1,11 +1,10 @@
 import React from 'react';
+import { useResizeObserver } from 'hooks';
 
 import MediaPanel from 'components/MediaPanel';
 import { MediaTypeEnum } from 'components/MediaPanel/config';
 import BusyLoaderWrapper from 'components/BusyLoaderWrapper/BusyLoaderWrapper';
 import ErrorBoundary from 'components/ErrorBoundary/ErrorBoundary';
-
-import useResizeObserver from 'hooks/window/useResizeObserver';
 
 import blobsURIModel from 'services/models/media/blobsURIModel';
 import audiosExploreService from 'services/api/audiosExplore/audiosExplore';

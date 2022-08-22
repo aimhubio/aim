@@ -3,6 +3,7 @@ import React, { useState } from 'react';
 import { useHistory, useRouteMatch } from 'react-router-dom';
 import _ from 'lodash-es';
 import classNames from 'classnames';
+import { useResizeObserver, useModel, usePanelResize } from 'hooks';
 
 import NotificationContainer from 'components/NotificationContainer/NotificationContainer';
 import Table from 'components/Table/Table';
@@ -27,10 +28,6 @@ import {
   Request_Illustrations,
 } from 'config/illustrationConfig/illustrationConfig';
 import { ANALYTICS_EVENT_KEYS } from 'config/analytics/analyticsKeysMap';
-
-import usePanelResize from 'hooks/resize/usePanelResize';
-import useModel from 'hooks/model/useModel';
-import useResizeObserver from 'hooks/window/useResizeObserver';
 
 import SelectForm from 'pages/ImagesExplore/components/SelectForm/SelectForm';
 import Controls from 'pages/ImagesExplore/components/Controls/Controls';

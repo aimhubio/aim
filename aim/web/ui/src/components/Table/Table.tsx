@@ -2,7 +2,8 @@
 /* eslint-disable react/prop-types */
 
 import React from 'react';
-import { isEmpty, isEqual } from 'lodash-es';
+import { isEmpty, isEqual, isNil } from 'lodash-es';
+import { useResizeObserver } from 'hooks';
 
 import { Button, Icon, Text } from 'components/kit';
 import ControlPopover from 'components/ControlPopover/ControlPopover';
@@ -16,8 +17,6 @@ import {
   TABLE_DEFAULT_CONFIG,
 } from 'config/table/tableConfigs';
 import { IllustrationsEnum } from 'config/illustrationConfig/illustrationConfig';
-
-import useResizeObserver from 'hooks/window/useResizeObserver';
 
 import SortPopover from 'pages/Metrics/components/Table/SortPopover/SortPopover';
 import ManageColumnsPopover from 'pages/Metrics/components/Table/ManageColumnsPopover/ManageColumnsPopover';
@@ -366,11 +365,11 @@ const Table = React.forwardRef(function Table(
                     groupRow.data.aggregation.line;
                   groupHeaderRowCell.children[0].children[0].children[2].textContent =
                     groupRow.data.aggregation.area.max;
-                  if (!_.isNil(groupRow.data.aggregation.area.stdDevValue)) {
+                  if (!isNil(groupRow.data.aggregation.area.stdDevValue)) {
                     groupHeaderRowCell.children[0].children[0].children[3].textContent =
                       groupRow.data.aggregation.area.stdDevValue;
                   }
-                  if (!_.isNil(groupRow.data.aggregation.area.stdErrValue)) {
+                  if (!isNil(groupRow.data.aggregation.area.stdErrValue)) {
                     groupHeaderRowCell.children[0].children[0].children[3].textContent =
                       groupRow.data.aggregation.area.stdErrValue;
                   }

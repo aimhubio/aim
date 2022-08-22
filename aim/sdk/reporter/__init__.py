@@ -299,7 +299,7 @@ class CheckIn:
         >>> CheckIn.generate_filename(run_hash="run_hash", idx=Asterisk, absolute_time=Asterisk, expect_next_in=10)
         >>> "run_hash-*-check_in-*-10"
         """
-        return f"{run_hash}-{idx:08d}-{flag_name}-{absolute_time:011.2f}-{expect_next_in:05d}"
+        return f"{run_hash}-{idx:016d}-{flag_name}-{absolute_time:011.2f}-{expect_next_in:05d}"
 
     def cleanup(
         self,

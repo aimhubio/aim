@@ -28,6 +28,12 @@ const DOCUMENTATIONS = {
       SEARCH:
         'https://aimstack.readthedocs.io/en/latest/ui/pages/run_management.html#search-runs',
     },
+    //@TODO set right docs link after adding Figures docs to the docs
+    FIGURES: {
+      MAIN: 'https://aimstack.readthedocs.io/en/latest/ui/pages/explorers.html',
+      SEARCH:
+        'https://aimstack.readthedocs.io/en/latest/ui/pages/explorers.html',
+    },
   },
 };
 

@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { CSSProperties } from 'react';
 import classNames from 'classnames';
 
 import ErrorBoundary from 'components/ErrorBoundary/ErrorBoundary';
@@ -13,6 +13,7 @@ function Icon({
   style,
   fontSize,
   color,
+  weight,
   box = false,
   ...rest
 }: IIconProps): React.FunctionComponentElement<React.ReactNode> {
@@ -25,6 +26,7 @@ function Icon({
         style={{
           ...(fontSize && { fontSize: fontSize }),
           ...(color && { color }),
+          ...(weight && { fontWeight: weight as CSSProperties['fontWeight'] }),
           ...style,
         }}
         {...rest}

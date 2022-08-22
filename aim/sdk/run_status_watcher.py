@@ -16,6 +16,8 @@ from aim.ext.cleanup import AutoClean
 
 logger = logging.getLogger(__name__)
 
+GRACE_PERIOD = 100  # seconds
+
 
 class RunVariable:
     """Representation of Run object with run.hash only. To be replaced with real Run in the future."""
@@ -226,7 +228,7 @@ class RunStatusWatcher:
                 if event.next_event_in == 0:  # wait for next check-in for infinite time
                     continue
                 epoch_now = time.time()
-                failed = (event.next_event_in < epoch_now - event.detected_epoch_time)
+                failed = (event.next_event_in + GRACE_PERIOD < epoch_now - event.detected_epoch_time)
                 if failed:
                     notification = StatusNotification(event)
                     self.notifications_queue.add_notification(notification)

@@ -1,6 +1,6 @@
 import { useEffect } from 'react';
 
-export const useWindowResize = (memoizedFnWithDeps: () => void): void => {
+const useWindowResize = (memoizedFnWithDeps: () => void): void => {
   useEffect(() => {
     const animationId = () => window.requestAnimationFrame(memoizedFnWithDeps);
     window.addEventListener('resize', animationId);
@@ -9,3 +9,5 @@ export const useWindowResize = (memoizedFnWithDeps: () => void): void => {
     };
   }, [memoizedFnWithDeps]);
 };
+
+export default useWindowResize;

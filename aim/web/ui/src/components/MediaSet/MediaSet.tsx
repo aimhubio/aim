@@ -16,6 +16,7 @@ import DepthSlider from 'components/DepthSlider/DepthSlider';
 import {
   MEDIA_ITEMS_SIZES,
   MEDIA_SET_SIZE,
+  MEDIA_SET_SLIDER_HEIGHT,
   MEDIA_SET_TITLE_HEIGHT,
   MEDIA_SET_WRAPPER_PADDING_HEIGHT,
 } from 'config/mediaConfigs/mediaConfigs';
@@ -356,9 +357,10 @@ const MediaGroupedList = React.memo(function MediaGroupedList({
           {renderStacking && (
             <DepthSlider
               index={index}
-              pathValue={pathValue}
+              items={pathValue as string[]}
               depth={depth}
               onDepthChange={data.onDepthChange}
+              style={{ height: MEDIA_SET_SLIDER_HEIGHT }}
             />
           )}
           {currentItems.length > 0 && (
