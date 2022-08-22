@@ -157,7 +157,7 @@ class SequenceView:
         self.name = name
         self.run = run_view
         self._context = context
-        self._values = run_view.meta_run_tree.subtree(('traces', Context(context).idx, name))
+        self._values = None
 
     @property
     def context(self):
@@ -165,4 +165,6 @@ class SequenceView:
 
     @property
     def values(self):
+        if self._values is None:
+            self._values = self.run.meta_run_tree.subtree(('traces', Context(self._context).idx, self.name))
         return AimObjectProxy(lambda: self._values, view=self._values)
