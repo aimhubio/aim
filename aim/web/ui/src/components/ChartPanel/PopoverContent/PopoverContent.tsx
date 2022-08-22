@@ -22,7 +22,7 @@ import { formatValue } from 'utils/formatValue';
 import { isSystemMetric } from 'utils/isSystemMetric';
 import { formatSystemMetricName } from 'utils/formatSystemMetricName';
 import getValueByField from 'utils/getValueByField';
-import { isEncodedMetric } from 'utils/isEncodedMetric';
+import { isMetricHash } from 'utils/isMetricHash';
 import { decode } from 'utils/encoder/encoder';
 
 import './PopoverContent.scss';
@@ -92,7 +92,7 @@ const PopoverContent = React.forwardRef(function PopoverContent(
         let context: string = '';
         const xValue = `${focusedState?.xValue}`;
 
-        if (isEncodedMetric(xValue)) {
+        if (isMetricHash(xValue)) {
           const metric = JSON.parse(decode(xValue));
           metricName = metric.metricName;
           context = metric.contextName;
