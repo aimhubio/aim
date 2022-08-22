@@ -17,6 +17,8 @@ import {
 import { IDimensionsType } from 'utils/d3/drawParallelAxes';
 import { IRequestProgress } from 'utils/app/setRequestProgress';
 
+import { IRequestProgress } from 'utils/app/setRequestProgress';
+
 import {
   IChartTitleData,
   IMetricsCollection,

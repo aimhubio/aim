@@ -25,6 +25,7 @@ function ControlPopover({
     horizontal: 'right',
   },
   open = true,
+  size = 'small',
 }: IControlPopoverProps): React.FunctionComponentElement<React.ReactNode> {
   const [anchorEl, setAnchorEl] = React.useState<HTMLElement | null>(null);
 
@@ -59,7 +60,10 @@ function ControlPopover({
         transformOrigin={transformOrigin}
         PaperProps={{ className: 'ControlPopover' }}
       >
-        <div onClick={stopPropagation} className='ControlPopover__container'>
+        <div
+          onClick={stopPropagation}
+          className={`ControlPopover__container ControlPopover__container-${size}`}
+        >
           {title && (
             <div
               onClick={stopPropagation}

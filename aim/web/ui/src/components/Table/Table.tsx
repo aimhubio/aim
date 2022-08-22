@@ -2,7 +2,8 @@
 /* eslint-disable react/prop-types */
 
 import React from 'react';
-import { isEmpty, isEqual } from 'lodash-es';
+import { isEmpty, isEqual, isNil } from 'lodash-es';
+import { useResizeObserver } from 'hooks';
 
 import { Button, Icon, Text } from 'components/kit';
 import ControlPopover from 'components/ControlPopover/ControlPopover';
@@ -17,12 +18,11 @@ import {
 } from 'config/table/tableConfigs';
 import { IllustrationsEnum } from 'config/illustrationConfig/illustrationConfig';
 
-import useResizeObserver from 'hooks/window/useResizeObserver';
-
 import SortPopover from 'pages/Metrics/components/Table/SortPopover/SortPopover';
 import ManageColumnsPopover from 'pages/Metrics/components/Table/ManageColumnsPopover/ManageColumnsPopover';
 import HideRowsPopover from 'pages/Metrics/components/Table/HideRowsPopover/HideRowsPopover';
 import RowHeightPopover from 'pages/Metrics/components/Table/RowHeightPopover/RowHeightPopover';
+import CompareSelectedRunsPopover from 'pages/Metrics/components/Table/CompareSelectedRunsPopover';
 
 import { ITableProps } from 'types/components/Table/Table';
 
@@ -365,11 +365,11 @@ const Table = React.forwardRef(function Table(
                     groupRow.data.aggregation.line;
                   groupHeaderRowCell.children[0].children[0].children[2].textContent =
                     groupRow.data.aggregation.area.max;
-                  if (!_.isNil(groupRow.data.aggregation.area.stdDevValue)) {
+                  if (!isNil(groupRow.data.aggregation.area.stdDevValue)) {
                     groupHeaderRowCell.children[0].children[0].children[3].textContent =
                       groupRow.data.aggregation.area.stdDevValue;
                   }
-                  if (!_.isNil(groupRow.data.aggregation.area.stdErrValue)) {
+                  if (!isNil(groupRow.data.aggregation.area.stdErrValue)) {
                     groupHeaderRowCell.children[0].children[0].children[3].textContent =
                       groupRow.data.aggregation.area.stdErrValue;
                   }
@@ -859,6 +859,7 @@ const Table = React.forwardRef(function Table(
                   <Button
                     color='secondary'
                     type='text'
+                    size='small'
                     onClick={onToggleDeletePopup}
                     className={`Table__header__item ${
                       isOpenDeleteSelectedPopup ? 'opened' : ''
@@ -876,6 +877,7 @@ const Table = React.forwardRef(function Table(
                   <Button
                     color='secondary'
                     type='text'
+                    size='small'
                     onClick={onToggleArchivePopup}
                     className={`Table__header__item ${
                       isOpenArchiveSelectedPopup ? 'opened' : ''
@@ -893,6 +895,7 @@ const Table = React.forwardRef(function Table(
                   <Button
                     color='secondary'
                     type='text'
+                    size='small'
                     onClick={onToggleUnarchivePopup}
                     className={`Table__header__item ${
                       isOpenUnarchiveSelectedPopup ? 'opened' : ''
@@ -910,6 +913,7 @@ const Table = React.forwardRef(function Table(
                   <Button
                     color='secondary'
                     type='text'
+                    size='small'
                     onClick={onHideSelectedItems}
                     className='Table__header__item'
                   >
@@ -935,6 +939,12 @@ const Table = React.forwardRef(function Table(
                   </Button>
                 </div>
               )}
+              <div>
+                <CompareSelectedRunsPopover
+                  appName={appName}
+                  selectedRows={selectedRows}
+                />
+              </div>
             </div>
           ) : (
             ''

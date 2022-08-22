@@ -1,11 +1,7 @@
 @use 'src/styles/abstracts' as *;
 
-.MuiPopover-root {
-  z-index: 5!important;
-}
-
 .MuiAutocomplete-popperDisablePortal {
-  position: initial!important;
+  position: initial !important;
 }
 
 .MuiAutocomplete-listbox {
@@ -16,7 +12,9 @@
       padding: 0;
     }
 
-    .SelectForm__option, .Metrics__SelectForm__option {
+    .QueryForm__option,
+    .SelectForm__option,
+    .Metrics__SelectForm__option {
       display: flex;
       width: 100%;
       overflow: hidden;

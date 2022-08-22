@@ -1,11 +1,8 @@
 import React from 'react';
 import { useHistory, useRouteMatch } from 'react-router-dom';
+import { useResizeObserver, usePanelResize, useModel } from 'hooks';
 
 import { ANALYTICS_EVENT_KEYS } from 'config/analytics/analyticsKeysMap';
-
-import useModel from 'hooks/model/useModel';
-import usePanelResize from 'hooks/resize/usePanelResize';
-import useResizeObserver from 'hooks/window/useResizeObserver';
 
 import paramsAppModel from 'services/models/params/paramsAppModel';
 import * as analytics from 'services/analytics';
