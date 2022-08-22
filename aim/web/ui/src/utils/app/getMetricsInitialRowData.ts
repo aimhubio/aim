@@ -1,11 +1,11 @@
 import { getMetricHash } from './getMetricHash';
 
-export function getMetricsRowData(metricsColumns: { [key: string]: any }): {
-  [key: string]: string;
-} {
+export function getMetricsInitialRowData(
+  metricsColumns: Record<string, any>,
+): Record<string, string> {
   return Object.keys(metricsColumns).reduce(
-    (acc: { [key: string]: any }, metricName: string) => {
-      const groupByMetricName: { [key: string]: any } = {};
+    (acc: Record<string, any>, metricName: string) => {
+      const groupByMetricName: Record<string, any> = {};
       Object.keys(metricsColumns[metricName]).forEach(
         (metricContext: string) => {
           const metricHash = getMetricHash(metricName, metricContext);

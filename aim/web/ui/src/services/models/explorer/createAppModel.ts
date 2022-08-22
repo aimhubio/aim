@@ -188,7 +188,7 @@ import getSelectOptions from 'utils/app/getSelectOptions';
 import { getMetricsSelectOptions } from 'utils/app/getMetricsSelectOptions';
 import onRowsVisibilityChange from 'utils/app/onRowsVisibilityChange';
 import { onCopyToClipBoard } from 'utils/onCopyToClipBoard';
-import { getMetricsRowData } from 'utils/app/getMetricsRowData';
+import { getMetricsInitialRowData } from 'utils/app/getMetricsInitialRowData';
 import { getMetricHash } from 'utils/app/getMetricHash';
 import { getMetricLabel } from 'utils/app/getMetricLabel';
 
@@ -2646,7 +2646,7 @@ function createAppModel(appConfig: IAppInitialConfig) {
             sameValueColumns: [],
           };
         }
-        const initialMetricsRowData = getMetricsRowData(metricsColumns);
+
         const rows: any = processedData[0]?.config !== null ? {} : [];
         let rowIndex = 0;
         const sameValueColumns: string[] = [];
@@ -2675,11 +2675,12 @@ function createAppModel(appConfig: IAppInitialConfig) {
             };
           }
           metricsCollection.data.forEach((metric: any) => {
-            const metricsRowValues = { ...initialMetricsRowData };
+            const metricsRowValues = getMetricsInitialRowData(metricsColumns);
             metric.run.traces.metric.forEach((trace: any) => {
               const metricHash = getMetricHash(trace.name, trace.context);
               metricsRowValues[metricHash] = formatValue(trace.last_value.last);
             });
+
             const rowValues: any = {
               key: metric.key,
               selectKey: `${metric.run.hash}/${metric.key}`,
@@ -3378,7 +3379,7 @@ function createAppModel(appConfig: IAppInitialConfig) {
             sameValueColumns: [],
           };
         }
-        const initialMetricsRowData = getMetricsRowData(metricsColumns);
+
         const rows: IMetricTableRowData[] | any =
           processedData[0]?.config !== null ? {} : [];
 
@@ -3434,7 +3435,7 @@ function createAppModel(appConfig: IAppInitialConfig) {
             }
 
             metricsCollection.data.forEach((metric: any) => {
-              const metricsRowValues = { ...initialMetricsRowData };
+              const metricsRowValues = getMetricsInitialRowData(metricsColumns);
               metric.run.traces.metric.forEach((trace: any) => {
                 const metricHash = getMetricHash(trace.name, trace.context);
                 metricsRowValues[metricHash] = formatValue(
@@ -5063,7 +5064,7 @@ function createAppModel(appConfig: IAppInitialConfig) {
             sameValueColumns: [],
           };
         }
-        const initialMetricsRowData = getMetricsRowData(metricsColumns);
+
         const rows: IMetricTableRowData[] | any =
           processedData[0]?.config !== null ? {} : [];
 
@@ -5120,7 +5121,7 @@ function createAppModel(appConfig: IAppInitialConfig) {
             }
 
             metricsCollection.data.forEach((metric: any) => {
-              const metricsRowValues = { ...initialMetricsRowData };
+              const metricsRowValues = getMetricsInitialRowData(metricsColumns);
               metric.run.traces.metric.forEach((trace: any) => {
                 const metricHash = getMetricHash(
                   trace.name,
