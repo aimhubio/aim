@@ -92,7 +92,7 @@ Params tab contains a JSON-like visualization of all the tracked params data rel
 
 Metrics tab contains the visualizations of all the metrics tracked for the given run.
 
-When checking a run results, there are some metrics that are looked at first. Instead of scrolling down to find those metrics each time, you can pin them to the top. In the same way you can unpin those metrics.
+When exploring run results, some metrics are looked at more often. Pin those metrics to the top of the page to find them easier and faster. Undo pinning by clicking on "unpin" button.
 
 <img style="border-radius: 8px; border: 1px solid #E8F1FC" alt="Single Run page metrics tab" src="https://docs-blobs.s3.us-east-2.amazonaws.com/images/ui/pages/run-single-page/metrics_tab_pin.png">
 
