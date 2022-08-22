@@ -326,9 +326,12 @@ The high-level features we are going to work on the next few months
   - [x] Long sequences(up to 5M of steps) support (Start: _Apr 25 2022_, Shipped: _Jun 22 2022_)
   - [x] Figures Explorer (Start: _Mar 1 2022_, Shipped: _Aug 21 2022_)
   - [x] Notify on stuck runs (Start: _Jul 22 2022_, Shipped: _Aug 21 2022_)
+  - [x] Integration with KerasTuner (Start: _Aug 10 2022_, Shipped: _Aug 21 2022_)
+  - [x] Integration with WandB (Start: _Aug 15 2022_, Shipped: _Aug 21 2022_)
 
 ### In Progress
   - [ ] **Stable** remote tracking server
+  - [ ] Integration with fast.ai (Start: _Aug 22 2022_)
 
 ### To Do
 
@@ -357,7 +360,7 @@ The high-level features we are going to work on the next few months
 **Integrations**
 
 - ML Frameworks:
-    - Shortlist: MONAI, SpaCy, AllenNLP, Raytune, fast.ai, KerasTuner
+    - Shortlist: MONAI, SpaCy, Raytune, MXNet, PaddlePaddle
 - Datasets versioning tools
     - Shortlist: HuggingFace Datasets
 - Resource management tools
