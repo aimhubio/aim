@@ -28,11 +28,13 @@ Next sections will describe the setup flow for each of them.
 Here are the steps to configure Aim notifier for Slack.
 
 1. Go to Slack API web [page](https://api.slack.com) and push "Create an app" button.
-   ![](../_static/images/using/notifiers/slack_create_app.png)
+<img alt="Slack create app" style="border-radius: 8px; border: 1px solid #E8F1FC" src="https://docs-blobs.s3.us-east-2.amazonaws.com/images/using/notifiers/slack_create_app.png">
+   
 2. Select "From scratch" and follow the steps.
 3. Make sure Incoming Webhooks are active. This is the Slack API Aim will use to send
 notifications.
-   ![](../_static/images/using/notifiers/slack_activate_webhook.png)
+<img alt="Slack enable webhook" style="border-radius: 8px; border: 1px solid #E8F1FC" src="https://docs-blobs.s3.us-east-2.amazonaws.com/images/using/notifiers/slack_activate_webhook.png">
+   
 4. Create a new Webhook URL and copy to clipboard.
 5. Run `aim-watcher notifiers add slack` and once prompted for Webhook url, paste the one copied 
 in step 4.
@@ -47,10 +49,12 @@ in step 4.
 Here are the steps to configure Aim notifier for Workplace.
 1. Go to "Your workplace" Admin Panel
 2. Select "Integrations" tab and press "Create custom integration"
-   ![](../_static/images/using/notifiers/workplace_create_integration.png)
+<img alt="Workplace create integration" style="border-radius: 8px; border: 1px solid #E8F1FC" src="https://docs-blobs.s3.us-east-2.amazonaws.com/images/using/notifiers/workplace_create_integration.png">
+   
 3. Follow the setup steps.
 4. In the "Permissions" tab make sure "Manage group content" checkbox checked. 
-   ![](../_static/images/using/notifiers/workplace_integration_permissions.png)
+<img alt="Workplace integration permissions" style="border-radius: 8px; border: 1px solid #E8F1FC" src="https://docs-blobs.s3.us-east-2.amazonaws.com/images/using/notifiers/workplace_integration_permissions.png">
+
 5. Select the group(s) where you want to receive notifications.
 6. In the "Details" tab press "Create access token" and copy the generated access token.
 7. Run `aim-watcher notifiers add workplace` and provide group ID and copied access token.
