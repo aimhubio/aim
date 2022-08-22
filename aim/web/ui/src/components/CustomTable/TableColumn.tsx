@@ -4,6 +4,7 @@
 import * as React from 'react';
 import classNames from 'classnames';
 import _ from 'lodash-es';
+import { useResizeObserver } from 'hooks';
 
 import { MenuItem, Tooltip, Divider, Checkbox } from '@material-ui/core';
 
@@ -18,8 +19,6 @@ import {
   RowHeightSize,
   ROW_CELL_SIZE_CONFIG,
 } from 'config/table/tableConfigs';
-
-import useResizeObserver from 'hooks/window/useResizeObserver';
 
 import getColorFromRange from 'utils/d3/getColorFromRange';
 

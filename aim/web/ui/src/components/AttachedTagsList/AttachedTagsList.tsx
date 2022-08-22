@@ -3,7 +3,7 @@ import React from 'react';
 import { Box, Tooltip } from '@material-ui/core';
 
 import ControlPopover from 'components/ControlPopover/ControlPopover';
-import { Button, Icon, Badge } from 'components/kit';
+import { Button, Icon, Badge, Text } from 'components/kit';
 import SelectTag from 'components/SelectTag/SelectTag';
 import ErrorBoundary from 'components/ErrorBoundary/ErrorBoundary';
 
@@ -86,7 +86,7 @@ function AttachedTagsList({ runHash }: IAttachedTagsListProps) {
   return (
     <ErrorBoundary>
       <div>
-        <div className='AttachedTagsList__title'>Tag</div>
+        <Text className='AttachedTagsList__title'>Tags</Text>
         <Box className='AttachedTagsList'>
           {attachedTags?.length > 0 ? (
             <div className='AttachedTagsList__tags'>
@@ -102,7 +102,7 @@ function AttachedTagsList({ runHash }: IAttachedTagsListProps) {
             </div>
           ) : (
             <div className='AttachedTagsList__noAttachedTags'>
-              No attached tag
+              No attached tags
             </div>
           )}
           <ControlPopover
@@ -130,7 +130,7 @@ function AttachedTagsList({ runHash }: IAttachedTagsListProps) {
                     <Icon name='edit' />
                   ) : (
                     <Button
-                      size='small'
+                      size='xSmall'
                       color='primary'
                       variant='outlined'
                       className='AttachedTagsList__ControlPopover__attach'

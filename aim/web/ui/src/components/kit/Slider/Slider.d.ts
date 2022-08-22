@@ -8,4 +8,5 @@ export interface ISliderProps extends SliderProps {
   onChange?: (event: React.ChangeEvent<{}>, value: number | number[]) => void;
   prevIconNode?: React.ReactNode;
   nextIconNode?: React.ReactNode;
+  label?: React.ReactNode;
 }
