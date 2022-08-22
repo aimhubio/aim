@@ -23,7 +23,9 @@ Next sections will describe the setup flow for each of them.
 
 ### Configuring notifier for slack
 
-Here are the steps to configure Aim notifier for slack.
+*In order to execute the steps described below you must have admin permissions for Slack workspace.*
+
+Here are the steps to configure Aim notifier for Slack.
 
 1. Go to Slack API web [page](https://api.slack.com) and push "Create an app" button.
    ![](../_static/images/using/notifiers/slack_create_app.png)
@@ -32,7 +34,7 @@ Here are the steps to configure Aim notifier for slack.
 notifications.
    ![](../_static/images/using/notifiers/slack_activate_webhook.png)
 4. Create a new Webhook URL and copy to clipboard.
-5. Run `aim-watcher add slack` and once prompted for Webhool url, paste the one copied 
+5. Run `aim-watcher notifiers add slack` and once prompted for Webhook url, paste the one copied 
 in step 4.
 6. *Optional* Change the training run failure message template.
 7. Confirm setup.
@@ -40,7 +42,20 @@ in step 4.
 
 ### Configuring notifier for workplace
 
-TODO 
+*In order to execute steps described below, please make sure you have access to Workplace Admin panel*
+
+Here are the steps to configure Aim notifier for Workplace.
+1. Go to "Your workplace" Admin Panel
+2. Select "Integrations" tab and press "Create custom integration"
+   ![](../_static/images/using/notifiers/workplace_create_integration.png)
+3. Follow the setup steps.
+4. In the "Permissions" tab make sure "Manage group content" checkbox checked. 
+   ![](../_static/images/using/notifiers/workplace_integration_permissions.png)
+5. Select the group(s) where you want to receive notifications.
+6. In the "Details" tab press "Create access token" and copy the generated access token.
+7. Run `aim-watcher notifiers add workplace` and provide group ID and copied access token.
+8. *Optional* Change the training run failure message template.
+9. Confirm setup.
 
 ### Enabling/disabling notifier configuration
 
