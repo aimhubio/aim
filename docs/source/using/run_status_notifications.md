@@ -7,9 +7,9 @@ failed or stalled training runs.
 
 **Quick start**
 
-The following steps required to start receiving notifications about training run status:
-1. Configure notifiers. The detailed description of the process is available in 
-   [Configuring Notifiers section](#configuring-notifiers)
+These are the required steps in order to turn on the training run status notifications.
+
+1. Configure notifiers. The notifier configuration is described in detail in [Configuring Notifiers](#configuring-notifiers) section. 
 2. Start notifier service:
     ```shell
     aim-watcher --repo <AIM_REPO_PATH> start
@@ -32,15 +32,21 @@ The following steps required to start receiving notifications about training run
 
 ### How it works
 
-While it may seem a relatively easy task, checking that
-everything is OK with the training run proofed to be difficult to facilitate. There are
-multiple definitions of training run not being OK and many reasons for that. Particularly, 
-the training process may have no chance of notifying about failure, for example due to hardware
-failure, power outage, etc. Moreover, even if the process is still alive, it can be stuck due to
-other factors, such as network, filesystem I/O, etc. Therefore, the following definition of
-failed process is used:
+At first, it may seem a relatively easy task, however checking that everything is OK with the training run is proven
+to be a non-trivial task. There are many ways the training runs can fail:
+- hardware failure
+- power outage
+- programmatic error
 
-> *The Run considered to be failed if it hadn't reported any progress in the promised time.* 
+In some cases the training process may not even have a chance to notify about the failure. The process
+could also be stuck due to
+- network issues
+- filesystem I/O issues
+- etc
+
+With this in mind, the following definition of failed process is used:
+
+> *The Run is considered as failed if it hasn't reported any progress in a predefined time-interval.*
 
 Aim notifications service is comprised of the following components:
 
@@ -129,7 +135,7 @@ Once notifier type is selected, the watcher will ask to fill-in the required inp
 particular notifier.
 
 `aim-watcher` allows configuring multiple notifiers in case you'd like to receive them in 
-multiple channels at the same time. Once notifier configuration added, `aim-watcher` should be restarted, so
+multiple channels at the same time. Once notifier configuration added, `aim-watcher` should be re-run, so
 new configuration can take effect.
 
 Next sections will describe the setup flow for each of them.
