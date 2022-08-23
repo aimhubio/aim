@@ -290,6 +290,7 @@ $border-radius: 0.2rem;
   text-overflow: ellipsis;
   height: var(--cell-height);
   color: $pico-100;
+  position: relative;
   &.isNumeric {
     justify-content: flex-end;
   }

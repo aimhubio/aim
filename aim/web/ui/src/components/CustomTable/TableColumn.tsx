@@ -517,28 +517,30 @@ function Column({
               } else {
                 top = null;
               }
+              const groupColor =
+                data[groupKey].data.meta.color ??
+                data[groupKey].items[0]?.rowMeta?.color;
+
               return (
                 isVisible && (
                   <div
                     key={groupKey}
                     className={classNames('Table__group', {
-                      colorIndicator: data[groupKey].data.meta.color,
+                      colorIndicator: groupColor,
                     })}
                     style={{
-                      ...(col.key === '#' && data[groupKey].data.meta.color
+                      ...(col.key === '#' && groupColor
                         ? {
                             borderTopLeftRadius: '0.375rem',
                             borderBottomLeftRadius: '0.375rem',
-                            '--color-indicator': data[groupKey].data.meta.color,
+                            '--color-indicator': groupColor,
                             '--extended-group-background-color':
-                              BGColorLighten[data[groupKey].data.meta.color] ??
-                              '#ffffff',
+                              BGColorLighten[groupColor] ?? '#ffffff', // default to white if no color is found
                           }
-                        : data[groupKey].data.meta.color
+                        : groupColor
                         ? {
                             '--extended-group-background-color':
-                              BGColorLighten[data[groupKey].data.meta.color] ??
-                              '#ffffff',
+                              BGColorLighten[groupColor] ?? '#ffffff', // default to white if no color is found
                           }
                         : {}),
                       marginTop: top,
