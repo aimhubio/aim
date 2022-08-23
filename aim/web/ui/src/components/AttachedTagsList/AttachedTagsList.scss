@@ -31,20 +31,20 @@
   }
 
   &__ControlPopover__anchor {
+
     .icon-edit {
       width: 24px;
       height: 24px;
       display: flex;
       align-items: center;
       justify-content: center;
-    }
-
-    .icon-edit:hover {
-      color: $primary-color;
+      color: $pico-50;
     }
 
     &.active {
-      color: $primary-color;
+      .icon-edit {
+        color: $pico-70;
+      }
     }
   }
 
