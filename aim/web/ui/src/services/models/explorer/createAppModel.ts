@@ -3796,15 +3796,9 @@ function createAppModel(appConfig: IAppInitialConfig) {
           let brushExtents = { ...chart?.brushExtents };
           const resultBrushExtents: any = {};
           const selectOptionList = configData.select?.options.map(
-            (option: ISelectOption) => {
-              if (option.type === 'metrics' && option.value) {
-                return `${option.value.option_name}-${contextToString(
-                  option.value.context,
-                )}`;
-              }
-              return option.label;
-            },
+            (option: ISelectOption) => option.key,
           );
+
           const brushExtentsKeys = Object.keys(brushExtents);
           brushExtentsKeys.forEach((chartIndex: string) => {
             const chartBrushExtents = { ...brushExtents[chartIndex] };
