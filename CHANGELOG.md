@@ -2,7 +2,7 @@
 
 ## 3.13.1
 
-- Add ability to attach/remove tags from Run Page (roubkar)
+- Add the ability to edit tags from the Run Page (roubkar)
 
 ## 3.13.0 Aug 21, 2022
 
