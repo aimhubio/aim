@@ -1,11 +1,10 @@
 import React, { memo } from 'react';
 import { useHistory } from 'react-router-dom';
+import { useModel } from 'hooks';
 
 import ErrorBoundary from 'components/ErrorBoundary/ErrorBoundary';
 
 import { ANALYTICS_EVENT_KEYS } from 'config/analytics/analyticsKeysMap';
-
-import useModel from 'hooks/model/useModel';
 
 import runsAppModel from 'services/models/runs/runsAppModel';
 import * as analytics from 'services/analytics';

@@ -7,7 +7,8 @@ from aim.sdk.repo import Repo
 from aim.sdk.utils import clean_repo_path
 from aim.cli.convert.processors import (
     parse_tb_logs,
-    parse_mlflow_logs
+    parse_mlflow_logs,
+    parse_wandb_logs,
 )
 
 
@@ -63,3 +64,13 @@ def convert_mlflow(ctx, tracking_uri=None, **kwargs):
     if not tracking_uri:
         raise ClickException("MLFlow tracking URI must be provided either trough ENV or CLI.")
     parse_mlflow_logs(repo_inst, tracking_uri, **kwargs)
+
+
+@convert.command(name='wandb')
+@click.pass_context
+@click.option('--entity', required=True, default=None)
+@click.option('--project', required=True, default=None)
+@click.option('--run-id', required=False, default=None)
+def convert_wandb(ctx, entity=None, project=None, **kwargs):
+    repo_inst = ctx.obj['repo_inst']
+    parse_wandb_logs(repo_inst, entity, project, **kwargs)

@@ -2,6 +2,7 @@ import React from 'react';
 import classNames from 'classnames';
 import Editor from 'rich-markdown-editor';
 import moment from 'moment';
+import { useModel } from 'hooks';
 
 import { Tooltip } from '@material-ui/core';
 
@@ -12,8 +13,6 @@ import RouteLeavingGuard from 'components/RouteLeavingGuard';
 
 import { ANALYTICS_EVENT_KEYS } from 'config/analytics/analyticsKeysMap';
 import { RichEditorThemeColors } from 'config/colors/colors';
-
-import useModel from 'hooks/model/useModel';
 
 import * as analytics from 'services/analytics';
 import notesModel from 'services/models/notes/notesModel';

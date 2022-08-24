@@ -238,6 +238,7 @@ function ExportPreview({
                   }}
                 />
                 <InputWrapper
+                  key='image-width'
                   value={`${previewDimension.width}`}
                   type='number'
                   inputProps={{ step: 2 }}
@@ -272,6 +273,7 @@ function ExportPreview({
                   }}
                 />
                 <InputWrapper
+                  key='single-chart-height'
                   value={`${previewDimension.height}`}
                   type='number'
                   inputProps={{ step: 2 }}

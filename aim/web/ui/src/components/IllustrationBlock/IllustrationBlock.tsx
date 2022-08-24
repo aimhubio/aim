@@ -35,7 +35,7 @@ function IllustrationBlock({
         IllustrationBlock__hidden: !imgLoaded,
       })}
     >
-      <div>
+      <div className='IllustrationBlock__container'>
         <div className={`IllustrationBlock__${size}__img`}>
           {image || (
             <img
