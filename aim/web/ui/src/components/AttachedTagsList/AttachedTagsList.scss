@@ -23,10 +23,12 @@
   &__tags {
     display: flex;
     flex-wrap: wrap;
+    overflow: auto;
 
     .Badge {
       margin-bottom: 0.5rem;
       margin-right: 0.5rem;
+      max-width: unset;
     }
   }
 

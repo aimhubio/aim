@@ -113,7 +113,7 @@ function AttachedTagsList({
         )}
         <Box className='AttachedTagsList'>
           {attachedTags?.length > 0 ? (
-            <div className='AttachedTagsList__tags'>
+            <div className='AttachedTagsList__tags ScrollBar__hidden'>
               {attachedTags.map((tag: ITagInfo) => (
                 <Badge
                   key={tag.id}
