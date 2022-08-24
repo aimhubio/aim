@@ -1,5 +1,11 @@
 # Changelog
 
+## Unreleased
+
+### Enhancements:
+
+- Support dictionary as an argument of `Run.track` (alberttorosyan)
+
 ## 3.13.0 Aug 21, 2022
 
 ### Enhancements:
