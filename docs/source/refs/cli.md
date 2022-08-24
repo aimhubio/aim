@@ -226,3 +226,64 @@ $ aim storage upgrade 3.11+ [HASH] ...
 ```shell
 $ aim storage restore [HASH] ...
 ```
+
+
+## Aim status watcher CLI
+
+Aim status CLI offers an interface to start training runs status monitoring and configure
+how the notifications should be received. The entry point to this CLI is `aim-watcher`:
+
+```shell
+$ aim-watcher [ARGS] SUBCOMMAND
+```
+
+| Args                  | Description                                                                      |
+| --------------------- | -------------------------------------------------------------------------------- |
+| `--repo <repo_path>`  | Path to parent directory of `.aim` repo. _Current working directory by default_. |
+
+
+| Sub-Commands| Description                                                                               |
+| ----------- | ----------------------------------------------------------------------------------------- |
+| `start`     | Start watcher service to monitor and report stuck/failed Runs.                                                          |
+| `notifiers` | Configure how notifications should be received.                                      |
+
+
+### start
+Start watcher service for the given aim `Repo`.
+```shell
+aim-watcher --repo . start
+```
+
+### notifiers
+
+Manipulate notifiers configuration.
+
+__notifiers subcommands__
+
+| Sub-command | Description                                                                      |
+| ----------- | -------------------------------------------------------------------------------- |
+| `add`       | Add a new notifier configuration (slack, workplace, etc.).                       |                           |
+| `list`      | List available notifiers                                                         |
+| `remove`    | Remove notifier configuration from the list.                                     |
+| `disable`   | Stop receiving notifications from given notifier.                                |
+| `enable`    | Start receiving notifications from given notifier.                               |
+
+```shell
+$ aim-watcher notifiers add
+```
+
+```shell
+$ aim-watcher notifiers list
+```
+
+```shell
+$ aim-watcher notifiers remove [NOTIFIER_ID]
+```
+
+```shell
+$ aim-watcher notifiers disable [NOTIFIER_ID]
+```
+
+```shell
+$ aim-watcher notifiers enable [NOTIFIER_ID]
+```
