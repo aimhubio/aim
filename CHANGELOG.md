@@ -4,7 +4,7 @@
 
 ### Enhancements:
 
-- Add the ability to attach/remove tags from the Run Page (roubkar)
+- Add the ability to attach/remove tags on the Run Page (roubkar)
 
 ## 3.13.0 Aug 21, 2022
 
