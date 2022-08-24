@@ -5,9 +5,11 @@
 
   &__tags {
     padding: 0 1rem;
+    overflow: auto;
 
     .Badge {
       margin: 0;
+      max-width: unset;
       cursor: pointer;
     }
 
