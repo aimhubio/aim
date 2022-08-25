@@ -219,7 +219,8 @@ function Column({
         ((topHeader ? 1 : 0) + 1 + groupKeys.length + expandedGroupsDataCount) *
           rowHeightMode +
         groupKeys.length *
-          (ROW_CELL_SIZE_CONFIG[rowHeightMode].groupMargin ?? 6) +
+          (ROW_CELL_SIZE_CONFIG[rowHeightMode]?.groupMargin ??
+            ROW_CELL_SIZE_CONFIG[RowHeightSize.md].groupMargin) +
         groupKeys.length
       );
     }
@@ -500,7 +501,9 @@ function Column({
         </div>
         {groups
           ? Object.keys(data).map((groupKey) => {
-              let top = ROW_CELL_SIZE_CONFIG[rowHeightMode].groupMargin ?? 6;
+              let top =
+                ROW_CELL_SIZE_CONFIG[rowHeightMode]?.groupMargin ??
+                ROW_CELL_SIZE_CONFIG[RowHeightSize.md].groupMargin;
               let height = rowHeightMode;
               for (let key in data) {
                 if (key === groupKey) {
@@ -510,7 +513,8 @@ function Column({
                   break;
                 }
                 top +=
-                  (ROW_CELL_SIZE_CONFIG[rowHeightMode].groupMargin ?? 6) +
+                  (ROW_CELL_SIZE_CONFIG[rowHeightMode]?.groupMargin ??
+                    ROW_CELL_SIZE_CONFIG[RowHeightSize.md].groupMargin) +
                   rowHeightMode +
                   1;
                 if (expanded[key]) {
@@ -632,8 +636,9 @@ function Column({
                       <>
                         {data[groupKey]?.items?.map((item, i) => {
                           let absoluteTop =
-                            (ROW_CELL_SIZE_CONFIG[rowHeightMode].groupMargin ??
-                              6) + rowHeightMode;
+                            (ROW_CELL_SIZE_CONFIG[rowHeightMode]?.groupMargin ??
+                              ROW_CELL_SIZE_CONFIG[RowHeightSize.md]
+                                .groupMargin) + rowHeightMode;
                           let top = 0;
                           for (let key in data) {
                             if (key === groupKey) {
@@ -641,7 +646,9 @@ function Column({
                             }
                             absoluteTop +=
                               (ROW_CELL_SIZE_CONFIG[rowHeightMode]
-                                .groupMargin ?? 6) + rowHeightMode;
+                                ?.groupMargin ??
+                                ROW_CELL_SIZE_CONFIG[RowHeightSize.md]
+                                  .groupMargin) + rowHeightMode;
                             if (expanded[key]) {
                               absoluteTop +=
                                 data[key].items.length * rowHeightMode;

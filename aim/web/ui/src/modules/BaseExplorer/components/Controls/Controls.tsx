@@ -13,11 +13,14 @@ function Controls(props: IControlsProps) {
 
   const Components = React.useMemo(
     () =>
-      Object.entries(controls).map(([key, Control]) => (
-        <div key={key} className='Control'>
-          <Control.component {...props} />
-        </div>
-      )),
+      Object.entries(controls).map(([key, Control]) => {
+        const Component = Control.component;
+        return (
+          <div key={key} className='Control'>
+            <Component {...props} />
+          </div>
+        );
+      }),
     [controls, props],
   );
 
@@ -32,6 +35,6 @@ function Controls(props: IControlsProps) {
   );
 }
 
-Controls.diplayName = 'Controls';
+Controls.displayName = 'Controls';
 
 export default React.memo<IControlsProps>(Controls);

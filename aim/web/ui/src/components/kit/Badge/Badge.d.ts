@@ -5,6 +5,7 @@ import { IconName } from '../Icon/Icon.d';
 export interface IBadgeProps {
   id?: string;
   label: string;
+  value?: string;
   color?: string;
   startIcon?: IconName;
   size?: 'xSmall' | 'small' | 'medium' | 'large' | 'xLarge';
