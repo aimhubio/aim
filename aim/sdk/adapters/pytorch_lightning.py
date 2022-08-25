@@ -3,8 +3,8 @@ from typing import Any, Dict, Optional, Union
 from argparse import Namespace
 
 try:
-    from pytorch_lightning.loggers.base import (
-        LightningLoggerBase,
+    from pytorch_lightning.loggers.logger import (
+        Logger,
         rank_zero_experiment,
     )
     from pytorch_lightning.utilities import rank_zero_only
@@ -20,7 +20,7 @@ from aim.sdk.utils import clean_repo_path, get_aim_repo_name
 from aim.ext.resource.configs import DEFAULT_SYSTEM_TRACKING_INT
 
 
-class AimLogger(LightningLoggerBase):
+class AimLogger(Logger):
     def __init__(self,
                  repo: Optional[str] = None,
                  experiment: Optional[str] = None,
