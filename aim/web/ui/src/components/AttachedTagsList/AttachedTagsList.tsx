@@ -19,6 +19,7 @@ function AttachedTagsList({
   runHash,
   initialTags,
   headerRenderer,
+  onTagsChange,
 }: IAttachedTagsListProps) {
   const [tags, setTags] = React.useState<ITagInfo[]>([]);
   const [attachedTags, setAttachedTags] = React.useState<ITagInfo[]>(
@@ -100,6 +101,12 @@ function AttachedTagsList({
       getTagsRef.current?.abort();
     };
   }, [runHash]);
+
+  React.useEffect(() => {
+    if (onTagsChange) {
+      onTagsChange(attachedTags);
+    }
+  }, [attachedTags, onTagsChange]);
 
   return (
     <ErrorBoundary>

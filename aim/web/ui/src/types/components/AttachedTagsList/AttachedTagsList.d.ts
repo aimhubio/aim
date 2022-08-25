@@ -5,4 +5,5 @@ export interface IAttachedTagsListProps {
   runHash: string;
   initialTags?: ITagInfo[];
   headerRenderer?: (tagsLength: number) => React.ReactNode;
+  onTagsChange?: (tags: ITagInfo[]) => void;
 }

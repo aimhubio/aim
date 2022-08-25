@@ -130,10 +130,7 @@ function BoxFullViewPopover({
             {item.run?.hash && (
               <div className='BoxFullViewPopover__container__detail-section'>
                 <ErrorBoundary>
-                  <AttachedTagsList
-                    runHash={item.run.hash}
-                    initialTags={item.run?.tags}
-                  />
+                  <AttachedTagsList runHash={item.run.hash} />
                 </ErrorBoundary>
               </div>
             )}

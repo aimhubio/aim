@@ -5,8 +5,10 @@ import moment from 'moment';
 
 import { Divider } from '@material-ui/core';
 
-import { Badge, Button, Icon, Text } from 'components/kit';
+import { Button, Icon, Text } from 'components/kit';
 import AttachedTagsList from 'components/AttachedTagsList/AttachedTagsList';
+
+import runDetailAppModel from 'services/models/runs/runDetailAppModel';
 
 import { processDurationTime } from 'utils/processDurationTime';
 
@@ -145,7 +147,11 @@ function RunOverviewSidebar({
           </div>
         </div>
         <div className='RunOverviewSidebar__section RunOverviewSidebar__section__tags'>
-          <AttachedTagsList runHash={runHash} initialTags={info.tags} />
+          <AttachedTagsList
+            runHash={runHash}
+            initialTags={info.tags}
+            onTagsChange={runDetailAppModel.editTags}
+          />
         </div>
         <Divider className='RunOverviewSidebar__section__Divider' />
         <div className='RunOverviewSidebar__section RunOverviewSidebar__section__descriptionBox'>
