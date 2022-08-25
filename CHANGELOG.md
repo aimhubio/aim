@@ -1,5 +1,11 @@
 # Changelog
 
+## Unreleased
+
+### Fixes:
+
+- Adjust the visibility of the run color in tables (VkoHov)
+
 ## 3.13.0 Aug 21, 2022
 
 ### Enhancements:

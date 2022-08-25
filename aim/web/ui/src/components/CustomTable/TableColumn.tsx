@@ -517,9 +517,7 @@ function Column({
               } else {
                 top = null;
               }
-              const groupColor =
-                data[groupKey].data.meta.color ??
-                data[groupKey].items[0]?.rowMeta?.color;
+              const groupColor = data[groupKey].data.meta.color;
 
               return (
                 isVisible && (
