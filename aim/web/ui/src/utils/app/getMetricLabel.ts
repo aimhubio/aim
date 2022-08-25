@@ -1,4 +1,4 @@
-import _ from 'lodash';
+import _ from 'lodash-es';
 
 import contextToString from 'utils/contextToString';
 import { formatSystemMetricName } from 'utils/formatSystemMetricName';

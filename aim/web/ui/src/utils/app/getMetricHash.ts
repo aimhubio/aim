@@ -1,4 +1,4 @@
-import _ from 'lodash';
+import _ from 'lodash-es';
 
 import contextToString from 'utils/contextToString';
 import { encode } from 'utils/encoder/encoder';
