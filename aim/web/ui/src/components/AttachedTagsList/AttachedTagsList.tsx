@@ -8,7 +8,6 @@ import SelectTag from 'components/SelectTag/SelectTag';
 import ErrorBoundary from 'components/ErrorBoundary/ErrorBoundary';
 
 import runsService from 'services/api/runs/runsService';
-import tagsService from 'services/api/tags/tagsService';
 
 import { ITagInfo } from 'types/pages/tags/Tags';
 import { IAttachedTagsListProps } from 'types/components/AttachedTagsList/AttachedTagsList';
@@ -19,88 +18,58 @@ function AttachedTagsList({
   runHash,
   initialTags,
   headerRenderer,
+  tableCellMode = false,
   onTagsChange,
 }: IAttachedTagsListProps) {
-  const [tags, setTags] = React.useState<ITagInfo[]>([]);
   const [attachedTags, setAttachedTags] = React.useState<ITagInfo[]>(
     initialTags ?? [],
   );
   const getRunInfoRef = React.useRef<any>(null);
-  const getTagsRef = React.useRef<any>(null);
-  const createRunsTagRef = React.useRef<any>(null);
   const deleteRunsTagRef = React.useRef<any>(null);
 
-  function getRunInfo(runHash: string): void {
+  const getRunInfo = React.useCallback((runHash: string): void => {
     getRunInfoRef.current = runsService?.getRunInfo(runHash);
     getRunInfoRef.current.call().then((runInfo: any) => {
       setAttachedTags(runInfo?.props?.tags || []);
     });
-  }
+  }, []);
 
-  function getAllTags(): void {
-    getTagsRef.current = tagsService?.getTags();
-    getTagsRef.current.call().then((tags: any) => {
-      setTags(tags || []);
-    });
-  }
+  const deleteRunsTag = React.useCallback(
+    (run_id: string, tag: ITagInfo): void => {
+      deleteRunsTagRef.current = runsService?.deleteRunsTag(run_id, tag.id);
+      deleteRunsTagRef.current
+        .call()
+        .then()
+        .catch((ex: unknown) => {
+          setAttachedTags((prevState) => [...prevState, tag]);
+        });
+    },
+    [],
+  );
 
-  function createRunsTag(tag: ITagInfo, run_id: string) {
-    createRunsTagRef.current = runsService?.createRunsTag(
-      { tag_name: tag.name },
-      run_id,
-    );
-    createRunsTagRef.current
-      .call()
-      .then()
-      .catch((ex: unknown) => {
+  const onAttachedTagDelete = React.useCallback(
+    (label: string): void => {
+      const tag = attachedTags.find((tag) => tag.name === label);
+      if (tag) {
         setAttachedTags((prevState) => [
           ...prevState.filter((t) => tag.id !== t.id),
         ]);
-      });
-  }
-
-  function deleteRunsTag(run_id: string, tag: ITagInfo) {
-    deleteRunsTagRef.current = runsService?.deleteRunsTag(run_id, tag.id);
-    deleteRunsTagRef.current
-      .call()
-      .then()
-      .catch((ex: unknown) => {
-        setAttachedTags((prevState) => [...prevState, tag]);
-      });
-  }
-
-  function onAttachedTagAdd(tag_id: string): void {
-    if (!attachedTags.find((tag) => tag.id === tag_id)) {
-      const tag = tags.find((tag) => tag.id === tag_id);
-      if (tag) {
-        setAttachedTags((prevState) => [...prevState, tag]);
-        createRunsTag(tag, runHash);
+        deleteRunsTag(runHash, tag);
       }
-    }
-  }
-
-  function onAttachedTagDelete(label: string): void {
-    const tag = tags.find((tag) => tag.name === label);
-    if (tag) {
-      setAttachedTags((prevState) => [
-        ...prevState.filter((t) => tag.id !== t.id),
-      ]);
-      deleteRunsTag(runHash, tag);
-    }
-  }
+    },
+    [attachedTags, deleteRunsTag, runHash],
+  );
 
   React.useEffect(() => {
     if (runHash) {
       if (!initialTags) {
         getRunInfo(runHash);
       }
-      getAllTags();
     }
     return () => {
       getRunInfoRef.current?.abort();
-      getTagsRef.current?.abort();
     };
-  }, [runHash]);
+  }, [runHash, initialTags, getRunInfo]);
 
   React.useEffect(() => {
     if (onTagsChange) {
@@ -123,6 +92,7 @@ function AttachedTagsList({
             <div className='AttachedTagsList__tags ScrollBar__hidden'>
               {attachedTags.map((tag: ITagInfo) => (
                 <Badge
+                  size={tableCellMode ? 'xSmall' : 'medium'}
                   key={tag.id}
                   color={tag.color}
                   label={tag.name}
@@ -177,9 +147,9 @@ function AttachedTagsList({
             )}
             component={
               <SelectTag
-                tags={tags}
+                runHash={runHash}
                 attachedTags={attachedTags}
-                onSelectTag={onAttachedTagAdd}
+                setAttachedTags={setAttachedTags}
               />
             }
           />

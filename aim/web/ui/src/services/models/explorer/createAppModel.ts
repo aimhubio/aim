@@ -2789,6 +2789,14 @@ function createAppModel(appConfig: IAppInitialConfig) {
               ),
               active: metric.run.props.active,
               metric: metric.name,
+              tags: metric.run.props.tags.map((tag: any) => ({
+                archived: false,
+                color: tag.color,
+                id: tag.id,
+                comment: tag.description,
+                name: tag.name,
+                run_count: 0,
+              })),
               ...metricsRowValues,
             };
             rowIndex++;

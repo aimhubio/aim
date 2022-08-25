@@ -82,11 +82,19 @@ function Column({
       : _.values(data).reduce((acc, item) => {
           return [...acc, ...item.items];
         }, []);
+
     let range = _.sortBy([
       ...new Set(
         columnData?.map((a) => +a[col.key]).filter((a) => !isNaN(a)) ?? [],
       ),
     ]);
+    if (col.key === 'tags') {
+      console.log(
+        range,
+        columnData?.map((a) => a[col.key]),
+        columnData?.map((a) => +a[col.key]),
+      );
+    }
     if (_.isEmpty(range)) {
       return null;
     } else if (range.length === 1) {
@@ -95,6 +103,10 @@ function Column({
     return range;
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [data]);
+
+  if (col.key === 'tags') {
+    console.log(colorScaleRange);
+  }
 
   // eslint-disable-next-line react-hooks/exhaustive-deps
   const getColumnCelBGColor = React.useCallback(

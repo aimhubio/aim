@@ -1,7 +1,9 @@
+import { Dispatch, SetStateAction } from 'react';
+
 import { ITagInfo } from 'types/pages/tags/Tags';
 
 export interface ISelectTagProps {
-  tags: ITagInfo[];
+  runHash: string;
   attachedTags: ITagInfo[];
-  onSelectTag: (tagId: string) => void;
+  setAttachedTags: Dispatch<SetStateAction<ITagInfo[]>>;
 }

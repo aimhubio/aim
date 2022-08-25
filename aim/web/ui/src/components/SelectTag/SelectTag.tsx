@@ -8,22 +8,66 @@ import ErrorBoundary from 'components/ErrorBoundary/ErrorBoundary';
 
 import { PathEnum } from 'config/enums/routesEnum';
 
+import tagsService from 'services/api/tags/tagsService';
+import runsService from 'services/api/runs/runsService';
+
 import { ISelectTagProps } from 'types/components/SelectTag/SelectTag';
 import { ITagInfo } from 'types/pages/tags/Tags';
 
 import './SelectTag.scss';
 
 function SelectTag({
-  tags,
+  runHash,
   attachedTags,
-  onSelectTag,
+  setAttachedTags,
 }: ISelectTagProps): JSX.Element {
-  const onSelectBadge = React.useCallback(
-    (e: React.MouseEvent): void => {
-      e.currentTarget?.id && onSelectTag?.(e.currentTarget.id);
+  const [tags, setTags] = React.useState<ITagInfo[]>([]);
+  const getTagsRef = React.useRef<any>(null);
+  const createRunsTagRef = React.useRef<any>(null);
+
+  const createRunsTag = React.useCallback(
+    (tag: ITagInfo, run_id: string) => {
+      createRunsTagRef.current = runsService?.createRunsTag(
+        { tag_name: tag.name },
+        run_id,
+      );
+      createRunsTagRef.current
+        .call()
+        .then()
+        .catch((ex: unknown) => {
+          setAttachedTags((prevState: ITagInfo[]) => [
+            ...prevState.filter((t) => tag.id !== t.id),
+          ]);
+        });
     },
-    [onSelectTag],
+    [setAttachedTags],
   );
+
+  const onAttachedTagAdd = React.useCallback(
+    (e: React.MouseEvent): void => {
+      const tag_id = e.currentTarget?.id;
+      if (!attachedTags.find((tag) => tag.id === tag_id)) {
+        const tag = tags.find((tag) => tag.id === tag_id);
+        if (tag) {
+          setAttachedTags((prevState) => [...prevState, tag]);
+          createRunsTag(tag, runHash);
+        }
+      }
+    },
+    [attachedTags, createRunsTag, runHash, setAttachedTags, tags],
+  );
+
+  React.useEffect(() => {
+    if (runHash) {
+      getTagsRef.current = tagsService?.getTags();
+      getTagsRef.current.call().then((tags: any) => {
+        setTags(tags || []);
+      });
+    }
+    return () => {
+      getTagsRef.current?.abort();
+    };
+  }, [runHash]);
 
   return (
     <ErrorBoundary>
@@ -46,7 +90,7 @@ function SelectTag({
                     label={tag.name}
                     id={tag.id}
                     startIcon={tagAttached && 'check'}
-                    onClick={onSelectBadge}
+                    onClick={onAttachedTagAdd}
                   />
                 </div>
               );
