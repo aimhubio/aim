@@ -402,7 +402,7 @@ function Table(props) {
                     expand={expand}
                     togglePin={togglePin}
                     pinnedTo='left'
-                    firstColumn={index === 0 && !props.multiSelect}
+                    firstColumn={index === 0}
                     width={props.columnsWidths?.[col.key]}
                     updateColumnWidth={props.updateColumnsWidths}
                     headerMeta={props.headerMeta}
