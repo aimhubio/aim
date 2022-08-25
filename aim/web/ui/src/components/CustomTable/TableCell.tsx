@@ -44,9 +44,7 @@ function Cell({
           Table__group__config__column__cell: isConfigColumn,
           clickable: typeof item === 'object' && !!item?.props?.onClick,
           placeholder: !!placeholder,
-          colorIndicator:
-            (!isConfigColumn && metadata?.color) ||
-            (!groupColumnColored && metadata?.color),
+          colorIndicator: !groupColumnColored && metadata?.color,
           groupColumnWithoutColor: !groupColumnColored,
           isNumeric: isNumeric,
         })}
