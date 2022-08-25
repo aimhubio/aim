@@ -164,12 +164,9 @@ import updateURL from 'utils/app/updateURL';
 import onDensityTypeChange from 'utils/app/onDensityTypeChange';
 import getValueByField from 'utils/getValueByField';
 import getTooltipContent from 'utils/getTooltipContent';
-import { isSystemMetric } from 'utils/isSystemMetric';
 import setDefaultAppConfigData from 'utils/app/setDefaultAppConfigData';
 import getAppConfigData from 'utils/app/getAppConfigData';
 import { getValue } from 'utils/helper';
-import { formatSystemMetricName } from 'utils/formatSystemMetricName';
-import alphabeticalSortComparator from 'utils/alphabeticalSortComparator';
 import onRowSelect from 'utils/app/onRowSelect';
 import { SortField } from 'utils/getSortedFields';
 import onChangeTrendlineOptions from 'utils/app/onChangeTrendlineOptions';
@@ -191,6 +188,9 @@ import getSelectOptions from 'utils/app/getSelectOptions';
 import { getMetricsSelectOptions } from 'utils/app/getMetricsSelectOptions';
 import onRowsVisibilityChange from 'utils/app/onRowsVisibilityChange';
 import { onCopyToClipBoard } from 'utils/onCopyToClipBoard';
+import { getMetricsInitialRowData } from 'utils/app/getMetricsInitialRowData';
+import { getMetricHash } from 'utils/app/getMetricHash';
+import { getMetricLabel } from 'utils/app/getMetricLabel';
 
 import { AppDataTypeEnum, AppNameEnum } from './index';
 
@@ -495,61 +495,6 @@ function createAppModel(appConfig: IAppInitialConfig) {
     };
     let liveUpdateInstance: LiveUpdateService | null;
 
-    function getOption(
-      system: boolean,
-      key: string,
-      index: number,
-      val: object | null = null,
-    ): ISelectOption {
-      return {
-        label: `${system ? formatSystemMetricName(key) : key}`,
-        group: system ? 'System' : key,
-        color: COLORS[0][index % COLORS[0].length],
-        value: {
-          option_name: key,
-          context: val,
-        },
-      };
-    }
-
-    function getMetricOptions(
-      projectsData: IProjectParamsMetrics,
-    ): ISelectOption[] {
-      let data: ISelectOption[] = [];
-      const systemOptions: ISelectOption[] = [];
-      let index: number = 0;
-      if (projectsData?.metric) {
-        for (let key in projectsData?.metric) {
-          let system: boolean = isSystemMetric(key);
-          let option = getOption(system, key, index);
-          if (system) {
-            systemOptions.push(option);
-          } else {
-            data.push(option);
-          }
-          index++;
-          for (let val of projectsData?.metric[key]) {
-            if (!_.isEmpty(val)) {
-              let label = contextToString(val);
-              let option = getOption(system, key, index, val);
-              option.label = `${option.label} ${label}`;
-              if (system) {
-                systemOptions.push(option);
-              } else {
-                data.push(option);
-              }
-              index++;
-            }
-          }
-        }
-      }
-      const comparator = alphabeticalSortComparator<ISelectOption>({
-        orderBy: 'label',
-      });
-      systemOptions.sort(comparator);
-      return data.sort(comparator).concat(systemOptions);
-    }
-
     function initialize(appId: string): void {
       model.init();
       const state: Partial<IAppModelState> = {};
@@ -581,7 +526,7 @@ function createAppModel(appConfig: IAppInitialConfig) {
           );
           model.setState({
             selectFormData: {
-              options: getMetricOptions(data),
+              options: getSelectOptions(data, true),
               suggestions: getSuggestionsByExplorer(appName, data),
               advancedSuggestions: {
                 ...getSuggestionsByExplorer(appName, data),
@@ -2487,21 +2432,12 @@ function createAppModel(appConfig: IAppInitialConfig) {
           runProps = runProps.concat(getObjectPaths(run.props, run.props));
           const metricsLastValues: any = {};
           run.traces.metric.forEach((trace) => {
-            const stringFormContext: string =
-              contextToString(trace.context) ?? '';
             metricsColumns[trace.name] = {
               ...metricsColumns[trace.name],
-              [stringFormContext as string]: '-',
+              [contextToString(trace.context) as string]: '-',
             };
-            const contextName =
-              stringFormContext === '' ? '' : `_${stringFormContext}`;
-
-            const key = `${
-              isSystemMetric(trace.name)
-                ? trace.name
-                : `${trace.name}${contextName}`
-            }`;
-            metricsLastValues[key] = trace.last_value.last;
+            const metricHash = getMetricHash(trace.name, trace.context as any);
+            metricsLastValues[metricHash] = trace.last_value.last;
           });
           runHashArray.push(run.hash);
           runs.push({
@@ -2710,22 +2646,7 @@ function createAppModel(appConfig: IAppInitialConfig) {
             sameValueColumns: [],
           };
         }
-        const initialMetricsRowData = Object.keys(metricsColumns).reduce(
-          (acc: any, key: string) => {
-            const groupByMetricName: any = {};
-            Object.keys(metricsColumns[key]).forEach(
-              (metricContext: string) => {
-                const contextName = metricContext ? `_${metricContext}` : '';
-                groupByMetricName[
-                  `${isSystemMetric(key) ? key : `${key}${contextName}`}`
-                ] = '-';
-              },
-            );
-            acc = { ...acc, ...groupByMetricName };
-            return acc;
-          },
-          {},
-        );
+
         const rows: any = processedData[0]?.config !== null ? {} : [];
         let rowIndex = 0;
         const sameValueColumns: string[] = [];
@@ -2754,20 +2675,12 @@ function createAppModel(appConfig: IAppInitialConfig) {
             };
           }
           metricsCollection.data.forEach((metric: any) => {
-            const metricsRowValues = { ...initialMetricsRowData };
+            const metricsRowValues = getMetricsInitialRowData(metricsColumns);
             metric.run.traces.metric.forEach((trace: any) => {
-              const contextName =
-                contextToString(trace.context) === ''
-                  ? ''
-                  : `_${contextToString(trace.context)}`;
-              metricsRowValues[
-                `${
-                  isSystemMetric(trace.name)
-                    ? trace.name
-                    : `${trace.name}${contextName}`
-                }`
-              ] = formatValue(trace.last_value.last);
+              const metricHash = getMetricHash(trace.name, trace.context);
+              metricsRowValues[metricHash] = formatValue(trace.last_value.last);
             });
+
             const rowValues: any = {
               key: metric.key,
               selectKey: `${metric.run.hash}/${metric.key}`,
@@ -3466,22 +3379,7 @@ function createAppModel(appConfig: IAppInitialConfig) {
             sameValueColumns: [],
           };
         }
-        const initialMetricsRowData = Object.keys(metricsColumns).reduce(
-          (acc: any, key: string) => {
-            const groupByMetricName: any = {};
-            Object.keys(metricsColumns[key]).forEach(
-              (metricContext: string) => {
-                const contextName = metricContext ? `_${metricContext}` : '';
-                groupByMetricName[
-                  `${isSystemMetric(key) ? key : `${key}${contextName}`}`
-                ] = '-';
-              },
-            );
-            acc = { ...acc, ...groupByMetricName };
-            return acc;
-          },
-          {},
-        );
+
         const rows: IMetricTableRowData[] | any =
           processedData[0]?.config !== null ? {} : [];
 
@@ -3537,19 +3435,12 @@ function createAppModel(appConfig: IAppInitialConfig) {
             }
 
             metricsCollection.data.forEach((metric: any) => {
-              const metricsRowValues = { ...initialMetricsRowData };
+              const metricsRowValues = getMetricsInitialRowData(metricsColumns);
               metric.run.traces.metric.forEach((trace: any) => {
-                const contextName =
-                  contextToString(trace.context) === ''
-                    ? ''
-                    : `_${contextToString(trace.context)}`;
-                metricsRowValues[
-                  `${
-                    isSystemMetric(trace.name)
-                      ? trace.name
-                      : `${trace.name}${contextName}`
-                  }`
-                ] = formatValue(trace.last_value.last);
+                const metricHash = getMetricHash(trace.name, trace.context);
+                metricsRowValues[metricHash] = formatValue(
+                  trace.last_value.last,
+                );
               });
               const rowValues: any = {
                 rowMeta: {
@@ -3723,29 +3614,31 @@ function createAppModel(appConfig: IAppInitialConfig) {
                     }
                     if (type === 'metrics') {
                       run.run.traces.metric.forEach((trace: IParamTrace) => {
-                        const formattedContext = `${
-                          value?.option_name
-                        }-${contextToString(trace.context)}`;
+                        const metricHash = getMetricHash(
+                          trace.name,
+                          trace.context as any,
+                        );
+                        const metricLabel = getMetricLabel(
+                          trace.name,
+                          trace.context as any,
+                        );
                         if (
                           trace.name === value?.option_name &&
                           _.isEqual(trace.context, value?.context)
                         ) {
-                          values[formattedContext] = trace.last_value.last;
-                          if (dimension[formattedContext]) {
-                            dimension[formattedContext].values.add(
+                          values[metricHash] = trace.last_value.last;
+                          if (dimension[metricHash]) {
+                            dimension[metricHash].values.add(
                               trace.last_value.last,
                             );
                             if (typeof trace.last_value.last === 'string') {
-                              dimension[formattedContext].scaleType =
-                                ScaleEnum.Point;
+                              dimension[metricHash].scaleType = ScaleEnum.Point;
                             }
                           } else {
-                            dimension[formattedContext] = {
+                            dimension[metricHash] = {
                               values: new Set().add(trace.last_value.last),
                               scaleType: ScaleEnum.Linear,
-                              displayName: `${
-                                value.option_name
-                              } ${contextToString(trace.context)}`,
+                              displayName: metricLabel,
                               dimensionType: 'metric',
                             };
                           }
@@ -3903,15 +3796,9 @@ function createAppModel(appConfig: IAppInitialConfig) {
           let brushExtents = { ...chart?.brushExtents };
           const resultBrushExtents: any = {};
           const selectOptionList = configData.select?.options.map(
-            (option: ISelectOption) => {
-              if (option.type === 'metrics' && option.value) {
-                return `${option.value.option_name}-${contextToString(
-                  option.value.context,
-                )}`;
-              }
-              return option.label;
-            },
+            (option: ISelectOption) => option.key,
           );
+
           const brushExtentsKeys = Object.keys(brushExtents);
           brushExtentsKeys.forEach((chartIndex: string) => {
             const chartBrushExtents = { ...brushExtents[chartIndex] };
@@ -4119,17 +4006,8 @@ function createAppModel(appConfig: IAppInitialConfig) {
               ...metricsColumns[trace.name],
               [contextToString(trace.context) as string]: '-',
             };
-            const contextName =
-              contextToString(trace.context) === ''
-                ? ''
-                : `_${contextToString(trace.context)}`;
-
-            const key = `${
-              isSystemMetric(trace.name)
-                ? trace.name
-                : `${trace.name}${contextName}`
-            }`;
-            metricsLastValues[key] = trace.last_value.last;
+            const metricHash = getMetricHash(trace.name, trace.context as any);
+            metricsLastValues[metricHash] = trace.last_value.last;
           });
           const paramKey = encode({ runHash: run.hash });
 
@@ -5070,12 +4948,14 @@ function createAppModel(appConfig: IAppInitialConfig) {
                               dimension[i].dimensionType = 'metric';
                             }
                           } else {
+                            const metricLabel = getMetricLabel(
+                              trace.name,
+                              trace.context as any,
+                            );
                             dimension[i] = {
                               values: [trace.last_value.last],
                               scaleType: ScaleEnum.Linear,
-                              displayName: `${
-                                value.option_name
-                              } ${contextToString(trace.context)}`,
+                              displayName: metricLabel,
                               dimensionType: 'metric',
                             };
                           }
@@ -5178,22 +5058,7 @@ function createAppModel(appConfig: IAppInitialConfig) {
             sameValueColumns: [],
           };
         }
-        const initialMetricsRowData = Object.keys(metricsColumns).reduce(
-          (acc: any, key: string) => {
-            const groupByMetricName: any = {};
-            Object.keys(metricsColumns[key]).forEach(
-              (metricContext: string) => {
-                const contextName = metricContext ? `_${metricContext}` : '';
-                groupByMetricName[
-                  `${isSystemMetric(key) ? key : `${key}${contextName}`}`
-                ] = '-';
-              },
-            );
-            acc = { ...acc, ...groupByMetricName };
-            return acc;
-          },
-          {},
-        );
+
         const rows: IMetricTableRowData[] | any =
           processedData[0]?.config !== null ? {} : [];
 
@@ -5250,20 +5115,15 @@ function createAppModel(appConfig: IAppInitialConfig) {
             }
 
             metricsCollection.data.forEach((metric: any) => {
-              const metricsRowValues = { ...initialMetricsRowData };
+              const metricsRowValues = getMetricsInitialRowData(metricsColumns);
               metric.run.traces.metric.forEach((trace: any) => {
-                const contextName =
-                  contextToString(trace.context) === ''
-                    ? ''
-                    : `_${contextToString(trace.context)}`;
-
-                metricsRowValues[
-                  `${
-                    isSystemMetric(trace.name)
-                      ? trace.name
-                      : `${trace.name}${contextName}`
-                  }`
-                ] = formatValue(trace.last_value.last);
+                const metricHash = getMetricHash(
+                  trace.name,
+                  trace.context as any,
+                );
+                metricsRowValues[metricHash] = formatValue(
+                  trace.last_value.last,
+                );
               });
               const rowValues: any = {
                 rowMeta: {
@@ -5432,17 +5292,8 @@ function createAppModel(appConfig: IAppInitialConfig) {
               ...metricsColumns[trace.name],
               [contextToString(trace.context) as string]: '-',
             };
-            const contextName =
-              contextToString(trace.context) === ''
-                ? ''
-                : `_${contextToString(trace.context)}`;
-
-            const key = `${
-              isSystemMetric(trace.name)
-                ? trace.name
-                : `${trace.name}${contextName}`
-            }`;
-            metricsLastValues[key] = trace.last_value.last;
+            const metricHash = getMetricHash(trace.name, trace.context as any);
+            metricsLastValues[metricHash] = trace.last_value.last;
           });
           const paramKey = encode({ runHash: run.hash });
           runs.push({
@@ -5742,7 +5593,6 @@ function createAppModel(appConfig: IAppInitialConfig) {
       function getScattersData(
         shouldUrlUpdate?: boolean,
         shouldResetSelectedRows?: boolean,
-        queryString?: string,
       ): {
         call: () => Promise<void>;
         abort: () => void;

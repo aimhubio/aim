@@ -90,6 +90,8 @@ import getRunData from 'utils/app/getRunData';
 import getTooltipContent from 'utils/getTooltipContent';
 import decodeWithBase58Checker from 'utils/decodeWithBase58Checker';
 import { onCopyToClipBoard } from 'utils/onCopyToClipBoard';
+import getFilteredRow from 'utils/app/getFilteredRow';
+import { getMetricHash } from 'utils/app/getMetricHash';
 
 import createModel from '../model';
 import { AppNameEnum } from '../explorer';
@@ -458,27 +460,30 @@ function getSelectFormOptions(projectsData: IProjectParamsMetrics) {
   let data: ISelectOption[] = [];
   let index: number = 0;
   if (projectsData?.images) {
-    for (let key in projectsData.images) {
+    for (let seqName in projectsData.images) {
       data.push({
-        label: key,
-        group: key,
+        label: seqName,
+        group: seqName,
         color: COLORS[0][index % COLORS[0].length],
+        key: getMetricHash(seqName, {}),
+
         value: {
-          option_name: key,
+          option_name: seqName,
           context: null,
         },
       });
       index++;
 
-      for (let val of projectsData.images[key]) {
+      for (let val of projectsData.images[seqName]) {
         if (!_.isEmpty(val)) {
           let label = contextToString(val);
           data.push({
-            label: `${key} ${label}`,
-            group: key,
+            label: `${seqName} ${label}`,
+            group: seqName,
             color: COLORS[0][index % COLORS[0].length],
+            key: getMetricHash(seqName, val),
             value: {
-              option_name: key,
+              option_name: seqName,
               context: val,
             },
           });
@@ -1694,7 +1699,10 @@ function onExportTableData(e: React.ChangeEvent<any>): void {
 
   groupedRows?.forEach((groupedRow: any[], groupedRowIndex: number) => {
     groupedRow?.forEach((row: any) => {
-      const filteredRow: any = getFilteredRow(filteredHeader, row);
+      const filteredRow: any = getFilteredRow({
+        columnKeys: filteredHeader,
+        row,
+      });
       dataToExport.push(filteredRow);
     });
     if (groupedRows?.length - 1 !== groupedRowIndex) {
@@ -1733,28 +1741,6 @@ function onRowVisibilityChange(metricKey: string) {
     setItem('imagesTable', encode(table));
     updateModelData(config);
   }
-}
-
-function getFilteredRow(
-  columnKeys: string[],
-  row: any,
-): { [key: string]: string } {
-  return columnKeys.reduce((acc: { [key: string]: string }, column: string) => {
-    let value = row[column];
-    if (Array.isArray(value)) {
-      value = value.join(', ');
-    } else if (typeof value !== 'string') {
-      value = value || value === 0 ? JSON.stringify(value) : '-';
-    }
-
-    if (column.startsWith('params.')) {
-      acc[column.replace('params.', '')] = value;
-    } else {
-      acc[column] = value;
-    }
-
-    return acc;
-  }, {});
 }
 
 function onTableResizeEnd(tableHeight: string) {
