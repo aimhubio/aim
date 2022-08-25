@@ -1,4 +1,4 @@
-## Track experiments with aim remote server (experimental feature)
+## Track experiments with aim remote server
 
 ### Overview
 
