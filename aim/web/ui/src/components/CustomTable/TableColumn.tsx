@@ -765,10 +765,9 @@ function Column({
                           selected: !!selectedRows?.[item.selectKey],
                         })}
                         metadata={
-                          (multiSelect &&
-                            col.key === 'selection' &&
-                            firstColumn) ||
-                          (!multiSelect && firstColumn)
+                          firstColumn &&
+                          ((multiSelect && col.key === 'selection') ||
+                            !multiSelect)
                             ? item.rowMeta
                             : null
                         }
@@ -792,10 +791,9 @@ function Column({
                           selected: !!selectedRows?.[item.selectKey],
                         })}
                         metadata={
-                          (multiSelect &&
-                            col.key === 'selection' &&
-                            firstColumn) ||
-                          (!multiSelect && firstColumn)
+                          firstColumn &&
+                          ((multiSelect && col.key === 'selection') ||
+                            !multiSelect)
                             ? item.rowMeta
                             : null
                         }
