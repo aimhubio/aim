@@ -2,7 +2,7 @@
 
 ## Unreleased
 
-### Enhancements:
+### Fixes:
 
 - Fix `AimLogger` deprecation issues related to release of PyTorch Lightning v1.7 (djwessel)
 
