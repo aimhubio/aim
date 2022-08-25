@@ -290,6 +290,7 @@ $border-radius: 0.2rem;
   text-overflow: ellipsis;
   height: var(--cell-height);
   color: $pico-100;
+  position: relative;
   &.isNumeric {
     justify-content: flex-end;
   }
@@ -330,7 +331,6 @@ $border-radius: 0.2rem;
   }
 
   &.Table__group__config__column__cell {
-    border-right: none;
     padding-left: 2.1875rem;
 
     .Table__cell__rowMeta {
@@ -348,16 +348,6 @@ $border-radius: 0.2rem;
         .react-json-view {
           padding: $space-xs !important;
         }
-      }
-    }
-    &::before {
-      content: '';
-      border-radius: toRem(6px) 0 0 toRem(6px);
-    }
-    &.groupColumnWithoutColor {
-      &::before {
-        content: '';
-        border-radius: toRem(6px);
       }
     }
   }
