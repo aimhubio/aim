@@ -6,7 +6,7 @@ import { GetState, SetState } from 'utils/store/createSlice';
 
 import { GenerateStoreMethods, IEngineConfigFinal } from '../types';
 
-export function createSliceState(initialState: object, name: string) {
+export function createSliceState<T>(initialState: T, name: string) {
   const stateSelector = (state: any) => {
     return getValue(state, name);
   };
@@ -51,10 +51,10 @@ export function createSliceState(initialState: object, name: string) {
   };
 }
 
-export function createStateSlices(
+export function createStateSlices<T>(
   states: {
     [name: string]: {
-      initialState: object;
+      initialState: T;
     };
   } = {},
 ) {

@@ -1,4 +1,4 @@
-import createReact from 'zustand';
+import createReact, { GetState, SetState } from 'zustand';
 import { isEmpty, omit } from 'lodash-es';
 
 import createVanilla from 'zustand/vanilla';
@@ -27,6 +27,7 @@ import {
 import { createGroupingsStateConfig } from './store/grouping';
 import { createControlsStateConfig } from './store/controls';
 import { ExplorerConfig, ExplorerState, ProgressState } from './types';
+import createPipelineEngine from './pipeline';
 
 const initialProgressState: ProgressState = {
   matched: 0,
@@ -141,6 +142,15 @@ function createEngine(config: IEngineConfigFinal) {
   generatedInitialStates['controls'] = {
     ...controlConfigs.initialState,
   };
+
+  // // @ts-ignore
+  // const state: StateCreator<ExplorerState> = devtools(
+  //   () => ({
+  //     ...initialState,
+  //     ...generatedInitialStates,
+  //   }),
+  //   { name: config.sequenceName + '-store' },
+  // );
 
   // store creation
   const storeVanilla = createVanilla<ExplorerState>(() => ({
@@ -425,6 +435,33 @@ function createEngine(config: IEngineConfigFinal) {
     return getParams({ sequence });
   }
 
+  // let p: any;
+  // const testStore = createVanilla((set: SetState<any>, get: GetState<any>) => {
+  //   const pipelineOptions: PipelineOptions = {
+  //     sequenceName: config.sequenceName,
+  //     callbacks: {
+  //       statusChangeCallback: pipelineStatusCallback,
+  //       requestProgressCallback: pipelineRequestProgressCallback,
+  //     },
+  //     adapter: {
+  //       objectDepth: config.adapter.objectDepth,
+  //       useCache: config.useCache,
+  //     },
+  //     grouping: {
+  //       useCache: config.useCache,
+  //     },
+  //     query: {
+  //       useCache: config.useCache,
+  //     },
+  //   };
+  //   p = createPipelineEngine({ setState: set, getState: get }, pipelineOptions);
+  //
+  //   return {
+  //     ...p.state,
+  //   };
+  // });
+  // const testStoreReact = createReact(testStore);
+
   return {
     useStore: storeReact,
     destroy: storeVanilla.destroy,
@@ -479,6 +516,8 @@ function createEngine(config: IEngineConfigFinal) {
     additionalDataSelector: (state: any) => state.additionalData,
     foundGroupsSelector: (state: any) => state.foundGroups,
     queryableDataSelector: (state: any) => state.queryableData,
+    // test: p.engine,
+    // useT: testStoreReact,
   };
 }
 

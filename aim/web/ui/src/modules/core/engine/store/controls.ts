@@ -30,6 +30,10 @@ export type ControlsConfigs = {
   [name: string]: Omit<ControlConfig<unknown & object, any>, 'name'>;
 };
 
+export type ControlsConfigsNew = {
+  [name: string]: Omit<ControlConfig<unknown & object, any>, 'name'>;
+};
+
 function createControl(config: ControlConfig<unknown & object, any>) {
   const {
     name,
@@ -84,5 +88,7 @@ function createControlsStateConfig(configs: ControlsConfigs = {}) {
 
   return createControlsSlice(controls);
 }
+
+function createControlsState(configs: ControlsConfigs = {}, store: any) {}
 
 export { createControlsStateConfig };
