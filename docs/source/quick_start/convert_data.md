@@ -10,6 +10,7 @@ As of Aim `v3.6.0` the following converters are supported:
 
 - [TensorBoard logs converter](#show-tensorboard-logs-in-aim)
 - [MLFlow logs converter](#show-mlflow-logs-in-aim)
+- [Weights & Biases logs converter](#explore-weights-&-biases-logs-in-aim)
 
 We are working to constantly improve existing converters and implement new ones.
 
