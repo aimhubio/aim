@@ -262,7 +262,7 @@ function createAppModel(appConfig: IAppInitialConfig) {
             sortFields: [...TABLE_DEFAULT_CONFIG.metrics.sortFields],
             hiddenMetrics: [...TABLE_DEFAULT_CONFIG.metrics.hiddenMetrics],
             hiddenColumns: [...TABLE_DEFAULT_CONFIG.metrics.hiddenColumns],
-            columnsWidths: {},
+            columnsWidths: { tags: 300 },
             columnsOrder: {
               left: [...TABLE_DEFAULT_CONFIG.metrics.columnsOrder.left],
               middle: [...TABLE_DEFAULT_CONFIG.metrics.columnsOrder.middle],
@@ -377,7 +377,7 @@ function createAppModel(appConfig: IAppInitialConfig) {
             hiddenMetrics: TABLE_DEFAULT_CONFIG.runs.hiddenMetrics,
             hiddenColumns: TABLE_DEFAULT_CONFIG.runs.hiddenColumns,
             sortFields: [...TABLE_DEFAULT_CONFIG.runs.sortFields],
-            columnsWidths: {},
+            columnsWidths: { tags: 300 },
             columnsColorScales: {},
             columnsOrder: {
               left: [...TABLE_DEFAULT_CONFIG.runs.columnsOrder.left],

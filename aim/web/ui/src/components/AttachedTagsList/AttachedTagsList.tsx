@@ -1,4 +1,6 @@
 import React from 'react';
+import _ from 'lodash-es';
+import classNames from 'classnames';
 
 import { Box, Tooltip } from '@material-ui/core';
 
@@ -77,35 +79,106 @@ function AttachedTagsList({
     }
   }, [attachedTags, onTagsChange]);
 
+  const renderTagsBadges = React.useCallback(() => {
+    if (tableCellMode && !_.isEmpty(attachedTags)) {
+      return (
+        <div className='AttachedTagsList__tags ScrollBar__hidden'>
+          <ControlPopover
+            title={`Attached Tags (${attachedTags?.length})`}
+            anchorOrigin={{
+              vertical: 'bottom',
+              horizontal: 'left',
+            }}
+            transformOrigin={{
+              vertical: 'top',
+              horizontal: 'left',
+            }}
+            anchor={({ onAnchorClick }) => (
+              <div
+                className='AttachedTagsList__tags ScrollBar__hidden'
+                onClick={onAnchorClick}
+              >
+                {attachedTags.map((tag: ITagInfo) => (
+                  <Badge
+                    size={'xSmall'}
+                    key={tag.id}
+                    color={tag.color}
+                    label={tag.name}
+                    id={tag.id}
+                    onDelete={onAttachedTagDelete}
+                  />
+                ))}
+              </div>
+            )}
+            component={
+              <div className='TableAttachedTagsList__tagsContainer'>
+                {!_.isEmpty(attachedTags) ? (
+                  <div className='TableAttachedTagsList__tagsContainer__tags'>
+                    {attachedTags.map((tag: ITagInfo) => {
+                      return (
+                        <div
+                          key={tag.id}
+                          className='TableAttachedTagsList__tagsContainer__tags__badge'
+                        >
+                          <Badge
+                            size='xSmall'
+                            color={tag.color}
+                            label={tag.name}
+                            id={tag.id}
+                            onDelete={onAttachedTagDelete}
+                          />
+                        </div>
+                      );
+                    })}
+                  </div>
+                ) : (
+                  <></>
+                )}
+              </div>
+            }
+          />
+        </div>
+      );
+    }
+
+    if (!_.isEmpty(attachedTags)) {
+      return (
+        <div className='AttachedTagsList__tags ScrollBar__hidden'>
+          {attachedTags.map((tag: ITagInfo) => (
+            <Badge
+              size={'medium'}
+              key={tag.id}
+              color={tag.color}
+              label={tag.name}
+              id={tag.id}
+              onDelete={onAttachedTagDelete}
+            />
+          ))}
+        </div>
+      );
+    }
+
+    return (
+      <div className='AttachedTagsList__noAttachedTags'>No attached tags</div>
+    );
+  }, [attachedTags, onAttachedTagDelete, tableCellMode]);
+
   return (
     <ErrorBoundary>
-      <div>
+      <>
         {typeof headerRenderer === 'function' ? (
           headerRenderer(attachedTags?.length)
         ) : (
           <Text className='AttachedTagsList__title'>
-            Tags {attachedTags?.length > 0 ? `(${attachedTags.length})` : null}
+            Tags {!_.isEmpty(attachedTags) ? `(${attachedTags.length})` : null}
           </Text>
         )}
-        <Box className='AttachedTagsList'>
-          {attachedTags?.length > 0 ? (
-            <div className='AttachedTagsList__tags ScrollBar__hidden'>
-              {attachedTags.map((tag: ITagInfo) => (
-                <Badge
-                  size={tableCellMode ? 'xSmall' : 'medium'}
-                  key={tag.id}
-                  color={tag.color}
-                  label={tag.name}
-                  id={tag.id}
-                  onDelete={onAttachedTagDelete}
-                />
-              ))}
-            </div>
-          ) : (
-            <div className='AttachedTagsList__noAttachedTags'>
-              No attached tags
-            </div>
-          )}
+        <Box
+          className={classNames('AttachedTagsList', {
+            TableAttachedTagsList: tableCellMode,
+          })}
+        >
+          {renderTagsBadges()}
           <ControlPopover
             title='Select Tag'
             titleClassName='AttachedTagsList__ControlPopover__title'
@@ -119,7 +192,7 @@ function AttachedTagsList({
             }}
             anchor={({ onAnchorClick, opened }) => (
               <Tooltip
-                title={`${attachedTags?.length > 0 ? 'Select' : 'Attach'} Tag`}
+                title={`${!_.isEmpty(attachedTags) ? 'Select' : 'Attach'} Tag`}
               >
                 <div
                   onClick={onAnchorClick}
@@ -127,8 +200,12 @@ function AttachedTagsList({
                     opened ? 'active' : ''
                   }`}
                 >
-                  {attachedTags?.length > 0 ? (
-                    <Button withOnlyIcon size='small' color='secondary'>
+                  {!_.isEmpty(attachedTags) ? (
+                    <Button
+                      withOnlyIcon
+                      size={tableCellMode ? 'xSmall' : 'small'}
+                      color='secondary'
+                    >
                       <Icon name='edit'></Icon>
                     </Button>
                   ) : (
@@ -154,7 +231,7 @@ function AttachedTagsList({
             }
           />
         </Box>
-      </div>
+      </>
     </ErrorBoundary>
   );
 }

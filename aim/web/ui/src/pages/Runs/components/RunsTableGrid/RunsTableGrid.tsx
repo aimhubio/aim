@@ -195,7 +195,6 @@ function runsTableRowRenderer(
 
     return merge({}, rowData, row);
   } else {
-    console.log(rowData);
     const row = {
       experiment: rowData.experiment,
       run: {
