@@ -3,6 +3,7 @@
 ## 3.13.1
 
 - Fix aim reindex command failure (alberttorosyan)
+- Deprecate custom set Run.hash values (alberttorosyan)
 
 ## 3.13.0 Aug 21, 2022
 
