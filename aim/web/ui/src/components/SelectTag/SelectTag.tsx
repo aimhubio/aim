@@ -87,6 +87,7 @@ function SelectTag({
                 >
                   <Badge
                     color={tag.color}
+                    size='xSmall'
                     label={tag.name}
                     id={tag.id}
                     startIcon={tagAttached && 'check'}
@@ -96,7 +97,9 @@ function SelectTag({
               );
             })}
           </div>
-        ) : null}
+        ) : (
+          <></>
+        )}
         <Divider />
         <div className='SelectTag__createTag__container'>
           <Link to={PathEnum.Tags} component={RouteLink} underline='none'>

@@ -55,13 +55,6 @@
       margin-right: $space-xs;
     }
   }
-
-  &__ControlPopover__title {
-    color: $pico-50;
-    background: inherit;
-    font-weight: $font-500;
-    border: unset;
-  }
 }
 
 .TableAttachedTagsList {
@@ -78,12 +71,14 @@
     }
   }
   &__tagsContainer {
-    max-width: 30rem;
+    max-width: 20rem;
+    width: 20rem;
     &__tags {
       padding: $space-xs $space-unit;
       overflow: auto;
       display: flex;
       flex-wrap: wrap;
+      max-height: 50vh;
 
       .Badge {
         margin: 0;

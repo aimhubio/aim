@@ -100,7 +100,7 @@ function AttachedTagsList({
               >
                 {attachedTags.map((tag: ITagInfo) => (
                   <Badge
-                    size={'xSmall'}
+                    size='xSmall'
                     key={tag.id}
                     color={tag.color}
                     label={tag.name}
@@ -146,7 +146,7 @@ function AttachedTagsList({
         <div className='AttachedTagsList__tags ScrollBar__hidden'>
           {attachedTags.map((tag: ITagInfo) => (
             <Badge
-              size={'medium'}
+              size='xSmall'
               key={tag.id}
               color={tag.color}
               label={tag.name}
@@ -184,11 +184,11 @@ function AttachedTagsList({
             titleClassName='AttachedTagsList__ControlPopover__title'
             anchorOrigin={{
               vertical: 'bottom',
-              horizontal: 'right',
+              horizontal: 'left',
             }}
             transformOrigin={{
               vertical: 'top',
-              horizontal: 'left',
+              horizontal: 'center',
             }}
             anchor={({ onAnchorClick, opened }) => (
               <Tooltip
