@@ -28,7 +28,6 @@ function Visualizer(props: IVisualizationProps) {
       foundGroupsSelector,
       dataSelector,
       queryableDataSelector,
-      engineStatusSelector,
     },
     box: BoxContent,
     controlComponent: ControlComponent,
@@ -80,7 +79,7 @@ function Visualizer(props: IVisualizationProps) {
         },
       };
     });
-  }, [dataState, foundGroups, boxConfig]);
+  }, [dataState, foundGroups, boxConfig, engine.styleAppliers]);
 
   // FOR ROWS
   const rowsAxisData = React.useMemo(() => {
@@ -113,7 +112,7 @@ function Visualizer(props: IVisualizationProps) {
           };
         });
     }
-  }, [foundGroups, boxConfig, engine]);
+  }, [foundGroups, boxConfig]);
 
   // FOR COLUMNS
   const columnsAxisData = React.useMemo(() => {
@@ -147,7 +146,7 @@ function Visualizer(props: IVisualizationProps) {
           };
         });
     }
-  }, [foundGroups, boxConfig, engine, rowsAxisData]);
+  }, [foundGroups, boxConfig, rowsAxisData]);
 
   const [depthSelector, onDepthMapChange] = useDepthMap<AimFlatObjectBase<any>>(
     {

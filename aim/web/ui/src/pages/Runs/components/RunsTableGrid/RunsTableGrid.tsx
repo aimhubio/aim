@@ -1,4 +1,3 @@
-import * as React from 'react';
 import { merge } from 'lodash-es';
 
 import { Badge } from 'components/kit';
@@ -10,9 +9,11 @@ import { TABLE_DEFAULT_CONFIG } from 'config/table/tableConfigs';
 
 import { ITableColumn } from 'types/pages/metrics/components/TableColumns/TableColumns';
 
-import { isSystemMetric } from 'utils/isSystemMetric';
 import { formatSystemMetricName } from 'utils/formatSystemMetricName';
 import alphabeticalSortComparator from 'utils/alphabeticalSortComparator';
+import { getMetricHash } from 'utils/app/getMetricHash';
+import { getMetricLabel } from 'utils/app/getMetricLabel';
+import { isSystemMetric } from 'utils/isSystemMetric';
 
 function getRunsTableColumns(
   metricsColumns: any,
@@ -92,17 +93,19 @@ function getRunsTableColumns(
         : null,
     },
   ].concat(
-    Object.keys(metricsColumns).reduce((acc: any, key: string) => {
-      const systemMetric: boolean = isSystemMetric(key);
+    Object.keys(metricsColumns).reduce((acc: any, metricName: string) => {
       const systemMetricsList: ITableColumn[] = [];
+      const isSystem = isSystemMetric(metricName);
       const metricsList: ITableColumn[] = [];
-      Object.keys(metricsColumns[key]).forEach((metricContext) => {
-        const contextName = metricContext ? `_${metricContext}` : '';
-        const columnKey = `${systemMetric ? key : `${key}${contextName}`}`;
+      Object.keys(metricsColumns[metricName]).forEach((metricContext) => {
+        const metricHash = getMetricHash(metricName, metricContext);
+        const metricLabel = getMetricLabel(metricName, metricContext);
+
         let column = {
-          key: columnKey,
-          content: systemMetric ? (
-            <span>{formatSystemMetricName(key)}</span>
+          key: metricHash,
+          label: metricLabel,
+          content: isSystem ? (
+            <span>{formatSystemMetricName(metricName)}</span>
           ) : (
             <Badge
               monospace
@@ -111,16 +114,14 @@ function getRunsTableColumns(
               label={metricContext === '' ? 'Empty context' : metricContext}
             />
           ),
-          topHeader: systemMetric ? 'System Metrics' : key,
-          pin: order?.left?.includes(columnKey)
+          topHeader: isSystem ? 'System Metrics' : metricName,
+          pin: order?.left?.includes(metricHash)
             ? 'left'
-            : order?.right?.includes(columnKey)
+            : order?.right?.includes(metricHash)
             ? 'right'
             : null,
         };
-        systemMetric
-          ? systemMetricsList.push(column)
-          : metricsList.push(column);
+        isSystem ? systemMetricsList.push(column) : metricsList.push(column);
       });
       acc = [
         ...acc,

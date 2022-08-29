@@ -416,6 +416,7 @@ function createEngine(config: IEngineConfigFinal) {
           });
         })
         .catch((e) => {
+          // eslint-disable-next-line no-console
           console.error("Can't get params --> ", e);
           throw e;
         }); // @TODO exception handling

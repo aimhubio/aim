@@ -768,17 +768,17 @@ class Run(BaseRun, StructuredRunMixin):
         block: bool = False,
     ) -> None:
         """
-        Check-in the run. Report the expected time for the next check-in.
+        Report progress for the run. Report the expected time for the next progress report.
 
-        If no check-ins are received by the expiry date (plus the grace period), the
-        run is considered to have failed.
+        If no progress reports are received by the expiry date (plus the grace period), the
+        run is considered as failed.
 
         Args:
-            expect_next_in: (:obj:`int`, optional): The number of seconds to wait before the next check-in.
-            block: (:obj:`bool`, optional): If true, block the thread until the check-in is written to filesystem.
+            expect_next_in: (:obj:`int`, optional): The number of seconds to wait before the next progress report.
+            block: (:obj:`bool`, optional): If true, block the thread until the report is written to filesystem.
         """
         if self._checkins is None:
-            raise ValueError('Check-ins are not enabled for this run')
+            raise ValueError('Progress reports are not enabled for this run')
         self._checkins._check_in(expect_next_in=expect_next_in, block=block)
 
     def report_successful_finish(
@@ -789,7 +789,10 @@ class Run(BaseRun, StructuredRunMixin):
         """
         Report successful finish of the run. If the run is not marked as successfully finished,
         it can potentially be considered as failed.
+
+        Args:
+            block: (:obj:`bool`, optional): If true, block the thread until the report is written to filesystem.
         """
         if self._checkins is None:
-            raise ValueError('Check-ins are not enabled for this run')
+            raise ValueError('Progress reports are not enabled for this run')
         self._checkins._report_successful_finish(block=block)

@@ -2,6 +2,9 @@ import _ from 'lodash-es';
 
 import { ISelectConfig } from 'types/services/models/explorer/createAppModel';
 
+import { getMetricHash } from './getMetricHash';
+import { getMetricLabel } from './getMetricLabel';
+
 export function getCompatibleSelectConfig(
   keys: string[] = [],
   select: ISelectConfig,
@@ -33,6 +36,19 @@ export function getCompatibleSelectConfig(
         };
         delete selectConfig[key];
       }
+    });
+    selectConfig.options = selectConfig.options.map((option: any) => {
+      if (!option.key) {
+        if (option.value) {
+          const { option_name, context } = option.value;
+          const metricHash = getMetricHash(option_name, context);
+          const metricLabel = getMetricLabel(option_name, context);
+          return { ...option, label: metricLabel, key: metricHash };
+        } else {
+          return { ...option, key: option.label };
+        }
+      }
+      return option;
     });
     return selectConfig;
   }
