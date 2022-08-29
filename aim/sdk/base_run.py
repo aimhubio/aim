@@ -6,7 +6,7 @@ from aim.storage.hashing import hash_auto
 from aim.storage.treeview import TreeView
 from aim.sdk.utils import generate_run_hash
 from aim.sdk.repo_utils import get_repo
-from aim.sdk.errors import MissingRunError
+# from aim.sdk.errors import MissingRunError
 from aim.sdk.tracker import STEP_HASH_FUNCTIONS
 
 if TYPE_CHECKING:
