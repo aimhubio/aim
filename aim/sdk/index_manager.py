@@ -67,7 +67,7 @@ class RepoIndexManager:
         stalled_runs = list(self._unindexed_runs())
         in_progress_runs = list(self._in_progress_runs())
         for run_hash in tqdm.tqdm(stalled_runs, desc='Finalizing stalled runs', total=len(stalled_runs)):
-            self._run(run_hash).finalize()
+            self._run(run_hash).set_finalization_time()
 
         # run second pass on newly runs which are killed after reindex started
         click.echo('Checking recent runs...')
@@ -76,7 +76,7 @@ class RepoIndexManager:
         if len(new_stalled_runs) > 0:
             click.echo('Found new stalled runs.')
             for run_hash in tqdm.tqdm(new_stalled_runs, desc='Finalizing stalled runs', total=len(new_stalled_runs)):
-                self._run(run_hash).finalize()
+                self._run(run_hash).set_finalization_time()
         else:
             click.echo('No new stalled runs found.')
 
