@@ -201,6 +201,16 @@ with torch.no_grad():
     print('Test Accuracy: {} %'.format(100 * correct / total))
 ```
 
+### SSL support 
+
+Aim Remote Tracking server can be set up to use SSL certificates to run on secure mode.
+To enable secure mode for server provide `--ssl-keyfile` and `--ssl-certfile` arguments to `aim server `command,
+where `--ssl-keyfile` is the path to the private key file for the certificate and `--ssl-certfile` is the path to the signed certificate.
+
+On client side set `__AIM_CLIENT_SSL_CERTIFICATES_FILE__` environment variable as the path to the PEM encoded root certificates for the secure channel establishment with the server.
+
+
+
 ### Message size limitations
 Aim Remote Tracking server uses gRPC as a transport layer. gRPC imposes message size limits on
 sending/receiving messages from/to server. Aim is configured to use 16MB message size limit by default.
