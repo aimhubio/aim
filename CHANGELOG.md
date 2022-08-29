@@ -1,5 +1,9 @@
 # Changelog
 
+## 3.13.1
+
+- Fix aim reindex command failure (alberttorosyan)
+
 ## 3.13.0 Aug 21, 2022
 
 ### Enhancements:
