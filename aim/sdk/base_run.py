@@ -38,7 +38,11 @@ class BaseRun:
             elif self.repo.run_exists(run_hash):
                 self.hash = run_hash
             else:
-                raise MissingRunError(f'Cannot find Run {run_hash} in aim Repo {self.repo.path}.')
+                from aim.utils.deprecation import deprecation_warning
+                deprecation_warning(remove_version='3.15', msg='Setting custom `Run.hash` value is deprecated!')
+                self.hash = run_hash
+                # TODO [deprecation]
+                # raise MissingRunError(f'Cannot find Run {run_hash} in aim Repo {self.repo.path}.')
 
         self.meta_tree: TreeView = self.repo.request_tree(
             'meta', self.hash, read_only=read_only, from_union=True
