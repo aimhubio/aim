@@ -328,10 +328,11 @@ The high-level features we are going to work on the next few months
   - [x] Notify on stuck runs (Start: _Jul 22 2022_, Shipped: _Aug 21 2022_)
   - [x] Integration with KerasTuner (Start: _Aug 10 2022_, Shipped: _Aug 21 2022_)
   - [x] Integration with WandB (Start: _Aug 15 2022_, Shipped: _Aug 21 2022_)
+  - [x] Stable remote tracking server (Start: _Jun 15 2022_, Shipeed _Aug 21 2022_)
 
 ### In Progress
-  - [ ] **Stable** remote tracking server
   - [ ] Integration with fast.ai (Start: _Aug 22 2022_)
+  - [ ] SDK interfaces (Start: _Aug 22 2022_)
 
 ### To Do
 
@@ -350,9 +351,6 @@ The high-level features we are going to work on the next few months
 - Scalability
     - Smooth UI and SDK experience with over 10.000 runs
 - Runs management
-    - SDK interfaces
-        - Reporting – query and compare runs, explore data with familiar tools such as matlpotlib and pandas
-        - Manipulations – copy, move, delete runs, params and sequences
     - CLI interfaces
         - Reporting - runs summary and run details in a CLI compatible format
         - Manipulations – copy, move, delete runs, params and sequences
