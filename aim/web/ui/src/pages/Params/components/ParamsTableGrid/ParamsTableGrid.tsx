@@ -8,6 +8,7 @@ import ControlPopover from 'components/ControlPopover/ControlPopover';
 import ErrorBoundary from 'components/ErrorBoundary/ErrorBoundary';
 import RunNameColumn from 'components/Table/RunNameColumn';
 import GroupedColumnHeader from 'components/Table/GroupedColumnHeader';
+import AttachedTagsList from 'components/AttachedTagsList/AttachedTagsList';
 
 import COLORS from 'config/colors/colors';
 import { TABLE_DEFAULT_CONFIG } from 'config/table/tableConfigs';
@@ -133,6 +134,16 @@ function getParamsTableColumns(
       pin: order?.left?.includes('duration')
         ? 'left'
         : order?.right?.includes('duration')
+        ? 'right'
+        : null,
+    },
+    {
+      key: 'tags',
+      content: <span>Tags</span>,
+      topHeader: 'Run',
+      pin: order?.left?.includes('tags')
+        ? 'left'
+        : order?.right?.includes('tags')
         ? 'right'
         : null,
     },
@@ -440,6 +451,16 @@ function paramsTableRowRenderer(
             runHash={rowData.hash}
             active={rowData.active}
             hidden={rowData.isHidden}
+          />
+        ),
+      },
+      tags: {
+        content: (
+          <AttachedTagsList
+            runHash={rowData.hash}
+            initialTags={rowData.tags}
+            headerRenderer={() => <></>}
+            tableCellMode
           />
         ),
       },

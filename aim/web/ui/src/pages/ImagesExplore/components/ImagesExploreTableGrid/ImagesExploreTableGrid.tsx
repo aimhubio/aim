@@ -9,6 +9,7 @@ import ControlPopover from 'components/ControlPopover/ControlPopover';
 import ErrorBoundary from 'components/ErrorBoundary/ErrorBoundary';
 import GroupedColumnHeader from 'components/Table/GroupedColumnHeader';
 import RunNameColumn from 'components/Table/RunNameColumn';
+import AttachedTagsList from 'components/AttachedTagsList/AttachedTagsList';
 
 import COLORS from 'config/colors/colors';
 import { TABLE_DATE_FORMAT } from 'config/dates/dates';
@@ -130,6 +131,16 @@ function getImagesExploreTableColumns(
         : order?.middle?.includes('date')
         ? null
         : order?.right?.includes('date')
+        ? 'right'
+        : null,
+    },
+    {
+      key: 'tags',
+      content: <span>Tags</span>,
+      topHeader: 'Run',
+      pin: order?.left?.includes('tags')
+        ? 'left'
+        : order?.right?.includes('tags')
         ? 'right'
         : null,
     },
@@ -407,6 +418,16 @@ function imagesExploreTableRowRenderer(
       value: rowData.value,
       step: rowData.step,
       epoch: rowData.epoch,
+      tags: {
+        content: (
+          <AttachedTagsList
+            runHash={rowData.hash}
+            initialTags={rowData.tags}
+            headerRenderer={() => <></>}
+            tableCellMode
+          />
+        ),
+      },
       time:
         rowData.time === null
           ? '-'

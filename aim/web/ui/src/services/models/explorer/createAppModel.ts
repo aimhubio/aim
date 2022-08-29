@@ -87,6 +87,7 @@ import {
   ITrendlineOptions,
 } from 'types/services/models/scatter/scatterAppModel';
 import { IApiRequest } from 'types/services/services';
+import { ITagProps } from 'types/pages/tags/Tags';
 
 import {
   aggregateGroupData,
@@ -791,6 +792,14 @@ function createAppModel(appConfig: IAppInitialConfig) {
               date: moment(metric.run.props.creation_time * 1000).format(
                 TABLE_DATE_FORMAT,
               ),
+              tags: metric.run.props.tags.map((tag: ITagProps) => ({
+                archived: false,
+                color: tag.color,
+                id: tag.id,
+                comment: tag.description,
+                name: tag.name,
+                run_count: 0,
+              })),
               duration: processDurationTime(
                 metric.run.props.creation_time * 1000,
                 metric.run.props.end_time
@@ -3467,6 +3476,14 @@ function createAppModel(appConfig: IAppInitialConfig) {
                 date: moment(metric.run.props.creation_time * 1000).format(
                   TABLE_DATE_FORMAT,
                 ),
+                tags: metric.run.props.tags.map((tag: ITagProps) => ({
+                  archived: false,
+                  color: tag.color,
+                  id: tag.id,
+                  comment: tag.description,
+                  name: tag.name,
+                  run_count: 0,
+                })),
                 metric: metric.name,
                 duration: processDurationTime(
                   metric.run.props.creation_time * 1000,
@@ -5150,6 +5167,14 @@ function createAppModel(appConfig: IAppInitialConfig) {
                 date: moment(metric.run.props.creation_time * 1000).format(
                   TABLE_DATE_FORMAT,
                 ),
+                tags: metric.run.props.tags.map((tag: ITagProps) => ({
+                  archived: false,
+                  color: tag.color,
+                  id: tag.id,
+                  comment: tag.description,
+                  name: tag.name,
+                  run_count: 0,
+                })),
                 metric: metric.name,
                 duration: processDurationTime(
                   metric.run.props.creation_time * 1000,

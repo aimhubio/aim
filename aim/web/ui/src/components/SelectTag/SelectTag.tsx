@@ -23,25 +23,15 @@ function SelectTag({
 }: ISelectTagProps): JSX.Element {
   const [tags, setTags] = React.useState<ITagInfo[]>([]);
   const getTagsRef = React.useRef<any>(null);
-  const createRunsTagRef = React.useRef<any>(null);
+  const attachTagToRunRef = React.useRef<any>(null);
 
-  const createRunsTag = React.useCallback(
-    (tag: ITagInfo, run_id: string) => {
-      createRunsTagRef.current = runsService?.createRunsTag(
-        { tag_name: tag.name },
-        run_id,
-      );
-      createRunsTagRef.current
-        .call()
-        .then()
-        .catch((ex: unknown) => {
-          setAttachedTags((prevState: ITagInfo[]) => [
-            ...prevState.filter((t) => tag.id !== t.id),
-          ]);
-        });
-    },
-    [setAttachedTags],
-  );
+  const attachTagToRun = React.useCallback((tag: ITagInfo, run_id: string) => {
+    attachTagToRunRef.current = runsService?.attacheRunsTag(
+      { tag_name: tag.name },
+      run_id,
+    );
+    attachTagToRunRef.current.call();
+  }, []);
 
   const onAttachedTagAdd = React.useCallback(
     (e: React.MouseEvent): void => {
@@ -50,11 +40,11 @@ function SelectTag({
         const tag = tags.find((tag) => tag.id === tag_id);
         if (tag) {
           setAttachedTags((prevState) => [...prevState, tag]);
-          createRunsTag(tag, runHash);
+          attachTagToRun(tag, runHash);
         }
       }
     },
-    [attachedTags, createRunsTag, runHash, setAttachedTags, tags],
+    [attachedTags, attachTagToRun, runHash, setAttachedTags, tags],
   );
 
   React.useEffect(() => {
