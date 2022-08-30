@@ -1,4 +1,3 @@
-import time
 from typing import Optional
 from aim.sdk.run import Run
 
@@ -87,8 +86,8 @@ class AimCallback(Callback):
             xb = self.dls.valid.one_batch()[:n_inp]
             args.update({f'input {n+1} dim {i+1}': d for n in range(n_inp)
                         for i, d in enumerate(list(detuplify(xb[n]).shape))})
-        except:
-            print(f'Could not gather input dimensions')
+        except Exception as e:
+            print('Could not gather input dimensions')
         # other args
         with ignore_exceptions():
             args['batch_size'] = self.dls.bs
