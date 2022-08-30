@@ -6,4 +6,5 @@ export interface ISelectTagProps {
   runHash: string;
   attachedTags: ITagInfo[];
   setAttachedTags: Dispatch<SetStateAction<ITagInfo[]>>;
+  onRunsTagsChange?: (runHash: string, tags: ITagInfo[]) => void;
 }

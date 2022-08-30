@@ -20,6 +20,7 @@ function SelectTag({
   runHash,
   attachedTags,
   setAttachedTags,
+  onRunsTagsChange,
 }: ISelectTagProps): JSX.Element {
   const [tags, setTags] = React.useState<ITagInfo[]>([]);
   const getTagsRef = React.useRef<any>(null);
@@ -41,10 +42,18 @@ function SelectTag({
         if (tag) {
           setAttachedTags((prevState) => [...prevState, tag]);
           attachTagToRun(tag, runHash);
+          onRunsTagsChange && onRunsTagsChange(runHash, [...attachedTags, tag]);
         }
       }
     },
-    [attachedTags, attachTagToRun, runHash, setAttachedTags, tags],
+    [
+      attachedTags,
+      attachTagToRun,
+      runHash,
+      setAttachedTags,
+      tags,
+      onRunsTagsChange,
+    ],
   );
 
   React.useEffect(() => {

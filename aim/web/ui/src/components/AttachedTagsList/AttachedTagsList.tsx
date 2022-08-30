@@ -19,12 +19,14 @@ import './AttachedTagsList.scss';
 function AttachedTagsList({
   runHash,
   initialTags,
+  tags,
   headerRenderer,
   tableCellMode = false,
   onTagsChange,
+  onRunsTagsChange,
 }: IAttachedTagsListProps) {
   const [attachedTags, setAttachedTags] = React.useState<ITagInfo[]>(
-    initialTags ?? [],
+    tags ?? initialTags ?? [],
   );
   const getRunInfoRef = React.useRef<any>(null);
   const deleteRunsTagRef = React.useRef<any>(null);
@@ -39,12 +41,7 @@ function AttachedTagsList({
   const deleteRunsTag = React.useCallback(
     (run_id: string, tag: ITagInfo): void => {
       deleteRunsTagRef.current = runsService?.deleteRunsTag(run_id, tag.id);
-      deleteRunsTagRef.current
-        .call()
-        .then()
-        .catch((ex: unknown) => {
-          setAttachedTags((prevState) => [...prevState, tag]);
-        });
+      deleteRunsTagRef.current.call();
     },
     [],
   );
@@ -53,13 +50,15 @@ function AttachedTagsList({
     (label: string): void => {
       const tag = attachedTags.find((tag) => tag.name === label);
       if (tag) {
-        setAttachedTags((prevState) => [
-          ...prevState.filter((t) => tag.id !== t.id),
-        ]);
+        const resultTags: ITagInfo[] = attachedTags.filter(
+          (t) => tag.id !== t.id,
+        );
+        setAttachedTags(resultTags);
         deleteRunsTag(runHash, tag);
+        onRunsTagsChange && onRunsTagsChange(runHash, resultTags);
       }
     },
-    [attachedTags, deleteRunsTag, runHash],
+    [onRunsTagsChange, attachedTags, deleteRunsTag, runHash],
   );
 
   React.useEffect(() => {
@@ -72,6 +71,12 @@ function AttachedTagsList({
       getRunInfoRef.current?.abort();
     };
   }, [runHash, initialTags, getRunInfo]);
+
+  React.useEffect(() => {
+    if (tags) {
+      setAttachedTags(tags);
+    }
+  }, [tags]);
 
   React.useEffect(() => {
     if (onTagsChange) {
@@ -184,11 +189,11 @@ function AttachedTagsList({
             titleClassName='AttachedTagsList__ControlPopover__title'
             anchorOrigin={{
               vertical: 'bottom',
-              horizontal: 'left',
+              horizontal: 'right',
             }}
             transformOrigin={{
               vertical: 'top',
-              horizontal: 'center',
+              horizontal: 'right',
             }}
             anchor={({ onAnchorClick, opened }) => (
               <Tooltip
@@ -227,6 +232,7 @@ function AttachedTagsList({
                 runHash={runHash}
                 attachedTags={attachedTags}
                 setAttachedTags={setAttachedTags}
+                onRunsTagsChange={onRunsTagsChange}
               />
             }
           />

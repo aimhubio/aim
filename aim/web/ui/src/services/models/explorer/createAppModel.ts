@@ -87,7 +87,7 @@ import {
   ITrendlineOptions,
 } from 'types/services/models/scatter/scatterAppModel';
 import { IApiRequest } from 'types/services/services';
-import { ITagProps } from 'types/pages/tags/Tags';
+import { ITagInfo, ITagProps } from 'types/pages/tags/Tags';
 
 import {
   aggregateGroupData,
@@ -173,6 +173,7 @@ import { SortField } from 'utils/getSortedFields';
 import onChangeTrendlineOptions from 'utils/app/onChangeTrendlineOptions';
 import onToggleColumnsColorScales from 'utils/app/onToggleColumnsColorScales';
 import onAxisBrushExtentChange from 'utils/app/onAxisBrushExtentChange';
+import onRunsTagsChange from 'utils/app/onRunsTagsChange';
 import {
   alignByAbsoluteTime,
   alignByCustomMetric,
@@ -917,7 +918,7 @@ function createAppModel(appConfig: IAppInitialConfig) {
               rows[groupKey!].items.push(
                 isRowData
                   ? rowValues
-                  : metricsTableRowRenderer(rowValues, {
+                  : metricsTableRowRenderer(rowValues, onModelRunsTagsChange, {
                       toggleVisibility: (e) => {
                         e.stopPropagation();
                         onRowVisibilityChange({
@@ -933,7 +934,7 @@ function createAppModel(appConfig: IAppInitialConfig) {
               rows.push(
                 isRowData
                   ? rowValues
-                  : metricsTableRowRenderer(rowValues, {
+                  : metricsTableRowRenderer(rowValues, onModelRunsTagsChange, {
                       toggleVisibility: (e) => {
                         e.stopPropagation();
                         onRowVisibilityChange({
@@ -966,6 +967,7 @@ function createAppModel(appConfig: IAppInitialConfig) {
           if (metricsCollection.config !== null && !isRowData) {
             rows[groupKey!].data = metricsTableRowRenderer(
               rows[groupKey!].data,
+              onModelRunsTagsChange,
               {},
               true,
               ['value', 'groups'].concat(Object.keys(columnsValues)),
@@ -1673,6 +1675,10 @@ function createAppModel(appConfig: IAppInitialConfig) {
       50,
     );
 
+    function onModelRunsTagsChange(runHash: string, tags: ITagInfo[]): void {
+      onRunsTagsChange({ runHash, tags, model, updateModelData });
+    }
+
     function onModelGroupingSelectChange({
       groupName,
       list,
@@ -1884,6 +1890,7 @@ function createAppModel(appConfig: IAppInitialConfig) {
       onNotificationAdd: onModelNotificationAdd,
       onNotificationDelete: onModelNotificationDelete,
       onResetConfigData: onModelResetConfigData,
+      onRunsTagsChange: onModelRunsTagsChange,
       onSortChange,
       onSearchQueryCopy,
       changeLiveUpdateConfig,
