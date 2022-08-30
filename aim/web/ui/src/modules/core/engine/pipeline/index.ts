@@ -13,12 +13,27 @@ import createPipeline, {
 
 import { PipelineStatusEnum, ProgressState } from '../types';
 
-import createState, { CurrentGrouping } from './state';
+import createState, {
+  CurrentGrouping,
+  IPipelineState,
+  PipelineStateBridge,
+} from './state';
+
+export interface IPipelineEngine<TObject, TStore> {
+  state: {
+    pipeline: IPipelineState<TObject>;
+  };
+  engine: {
+    search: (params: RunsSearchQueryParams) => void;
+    group: (config: CurrentGrouping) => void;
+    destroy: () => void;
+  } & Omit<PipelineStateBridge<TObject, TStore>, 'initialState'>;
+}
 
 function createPipelineEngine<TStore, TObject>(
   store: any,
   options: Omit<PipelineOptions, 'callbacks'>,
-) {
+): IPipelineEngine<TObject, TStore> {
   const state = createState<TStore, TObject>(store);
 
   function statusChangeCallback(phase: PipelinePhasesEnum) {

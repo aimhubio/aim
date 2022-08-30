@@ -15,17 +15,21 @@ import './styles.scss';
 function TestComponent(props: IBaseComponentProps) {
   const pipeline = props.engine.test;
 
-  const data = props.engine.useStore(pipeline.selectors.currentQuerySelector);
+  const currentQuery = props.engine.useT(
+    pipeline.selectors.currentGroupingSelector,
+  );
+  const currentGrouping = props.engine.useT(
+    pipeline.selectors.currentGroupingSelector,
+  );
 
   useEffect(() => {
-    console.log('this is testttttt -> ', data);
-  }, [data]);
+    console.log('this is testttttt -> ', currentGrouping);
+  }, [currentGrouping]);
 
   return (
     <div>
-      <button onClick={() => pipeline.setCurrentQuery({ test: 'tests' })}>
-        click me
-      </button>{' '}
+      <button onClick={() => pipeline.search()}>search</button>{' '}
+      <button onClick={() => pipeline.group()}>group</button>{' '}
       <button onClick={() => console.log(pipeline.getCurrentQuery())}>
         Click to check
       </button>

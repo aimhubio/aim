@@ -146,3 +146,5 @@ export enum PipelineStatusEnum {
    */
   Processing = 'Processing',
 }
+
+export type SelectorCreator<TState, P> = (state: TState) => P;

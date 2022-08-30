@@ -48,7 +48,7 @@ type Selectors<TState, TObject> = {
   currentGroupingSelector: SelectorCreator<TState, CurrentGrouping>;
 };
 
-export type PipelineStateBridge<TObject> = {
+export type PipelineStateBridge<TObject, TStore> = {
   initialState: IPipelineState<TObject>;
   getCurrentQuery: () => CurrentQuery;
   setCurrentQuery: (query: CurrentQuery) => void;
@@ -67,8 +67,9 @@ export type PipelineStateBridge<TObject> = {
   getCurrentPhase: () => PipelinePhasesEnum;
   getStatus: () => PipelineStatusEnum;
   setProgress: (progress: ProgressState) => void;
+} & {
+  selectors: Selectors<ExtractState<TStore, TObject>, TObject>;
 };
-
 type ExtractState<TStore, TObject> = {
   pipeline: IPipelineState<TObject>;
 } & TStore;
@@ -96,9 +97,7 @@ function createState<TStore, TObject>(
     data: [],
     foundGroups: {},
   },
-): PipelineStateBridge<TObject> & {
-  selectors: Selectors<ExtractState<TStore, TObject>, TObject>;
-} {
+): PipelineStateBridge<TObject, TStore> {
   const selectors: Selectors<ExtractState<TStore, TObject>, TObject> = {
     additionalDataSelector: (
       state: ExtractState<TStore, TObject>,
@@ -120,7 +119,10 @@ function createState<TStore, TObject>(
     ): CurrentGrouping => state.pipeline.currentGrouping,
   };
 
-  const methods: Omit<PipelineStateBridge<TObject>, 'initialState'> = {
+  const methods: Omit<
+    PipelineStateBridge<TObject, TStore>,
+    'initialState' | 'selectors'
+  > = {
     getStatus: () => store.getState().pipeline.status,
     getCurrentPhase: () => store.getState().pipeline.currentPhase,
     changeCurrentPhaseOrStatus: (
