@@ -86,7 +86,7 @@ class AimCallback(Callback):
             xb = self.dls.valid.one_batch()[:n_inp]
             args.update({f'input {n+1} dim {i+1}': d for n in range(n_inp)
                         for i, d in enumerate(list(detuplify(xb[n]).shape))})
-        except Exception as e:
+        except Exception:
             print('Could not gather input dimensions')
         # other args
         with ignore_exceptions():
