@@ -21,9 +21,10 @@ function AttachedTagsList({
   initialTags,
   tags,
   headerRenderer,
-  tableCellMode = false,
+  addTagButtonSize = 'small',
   onTagsChange,
   onRunsTagsChange,
+  hasAttachedTagsPopup = false,
 }: IAttachedTagsListProps) {
   const [attachedTags, setAttachedTags] = React.useState<ITagInfo[]>(
     tags ?? initialTags ?? [],
@@ -85,7 +86,7 @@ function AttachedTagsList({
   }, [attachedTags, onTagsChange]);
 
   const renderTagsBadges = React.useCallback(() => {
-    if (tableCellMode && !_.isEmpty(attachedTags)) {
+    if (hasAttachedTagsPopup && !_.isEmpty(attachedTags)) {
       return (
         <div className='AttachedTagsList__tags ScrollBar__hidden'>
           <ControlPopover
@@ -166,7 +167,7 @@ function AttachedTagsList({
     return (
       <div className='AttachedTagsList__noAttachedTags'>No attached tags</div>
     );
-  }, [attachedTags, onAttachedTagDelete, tableCellMode]);
+  }, [attachedTags, onAttachedTagDelete, hasAttachedTagsPopup]);
 
   return (
     <ErrorBoundary>
@@ -180,7 +181,7 @@ function AttachedTagsList({
         )}
         <Box
           className={classNames('AttachedTagsList', {
-            TableAttachedTagsList: tableCellMode,
+            TableAttachedTagsList: hasAttachedTagsPopup,
           })}
         >
           {renderTagsBadges()}
@@ -208,14 +209,14 @@ function AttachedTagsList({
                   {!_.isEmpty(attachedTags) ? (
                     <Button
                       withOnlyIcon
-                      size={tableCellMode ? 'xSmall' : 'small'}
+                      size={addTagButtonSize}
                       color='secondary'
                     >
                       <Icon name='edit'></Icon>
                     </Button>
                   ) : (
                     <Button
-                      size='xSmall'
+                      size={addTagButtonSize}
                       color='primary'
                       variant='outlined'
                       className='AttachedTagsList__ControlPopover__attach'

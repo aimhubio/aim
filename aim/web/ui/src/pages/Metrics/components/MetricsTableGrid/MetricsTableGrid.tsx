@@ -374,9 +374,9 @@ const TagsColumn = (props: {
   tags: ITagInfo[];
   onRunsTagsChange: (runHash: string, tags: ITagInfo[]) => void;
   headerRenderer: () => React.ReactNode;
-  tableCellMode: true;
+  addTagButtonSize: 'xxSmall' | 'small';
 }) => {
-  return <AttachedTagsList {...props} />;
+  return <AttachedTagsList {...props} hasAttachedTagsPopup />;
 };
 
 function metricsTableRowRenderer(
@@ -534,7 +534,7 @@ function metricsTableRowRenderer(
           tags: rowData.tags,
           onRunsTagsChange,
           headerRenderer: () => <></>,
-          tableCellMode: true,
+          addTagButtonSize: 'xxSmall',
         },
       },
       value: rowData.value,

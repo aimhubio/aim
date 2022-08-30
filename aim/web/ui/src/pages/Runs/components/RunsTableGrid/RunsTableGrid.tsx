@@ -212,7 +212,8 @@ function runsTableRowRenderer(
             runHash={rowData.hash}
             initialTags={rowData.tags}
             headerRenderer={() => <></>}
-            tableCellMode
+            addTagButtonSize='xxSmall'
+            hasAttachedTagsPopup
           />
         ),
       },

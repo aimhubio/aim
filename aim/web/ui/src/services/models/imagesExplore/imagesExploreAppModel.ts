@@ -55,7 +55,7 @@ import {
 import { IProjectParamsMetrics } from 'types/services/models/projects/projectsModel';
 import { IModel } from 'types/services/models/model';
 import { ISyntaxErrorDetails } from 'types/components/NotificationContainer/NotificationContainer';
-import { ITagProps } from 'types/pages/tags/Tags';
+import { ITagInfo, ITagProps } from 'types/pages/tags/Tags';
 
 import getAppConfigDataMethod from 'utils/app/getAppConfigData';
 import onRowSelectAction from 'utils/app/onRowSelect';
@@ -93,6 +93,7 @@ import decodeWithBase58Checker from 'utils/decodeWithBase58Checker';
 import { onCopyToClipBoard } from 'utils/onCopyToClipBoard';
 import getFilteredRow from 'utils/app/getFilteredRow';
 import { getMetricHash } from 'utils/app/getMetricHash';
+import onRunsTagsChange from 'utils/app/onRunsTagsChange';
 
 import createModel from '../model';
 import { AppNameEnum } from '../explorer';
@@ -160,7 +161,7 @@ function getConfig(): IImagesExploreAppConfig {
       hiddenMetrics: [],
       hiddenColumns: [],
       hideSystemMetrics: undefined,
-      columnsWidths: {},
+      columnsWidths: { tags: 300 },
       columnsOrder: {
         left: [],
         middle: [],
@@ -1404,23 +1405,31 @@ function getDataAsTableRows(
           rows[groupKey!].items.push(
             isRawData
               ? rowValues
-              : imagesExploreTableRowRenderer(rowValues, {
-                  toggleVisibility: (e) => {
-                    e.stopPropagation();
-                    onRowVisibilityChange(rowValues.key);
+              : imagesExploreTableRowRenderer(
+                  rowValues,
+                  onModelRunsTagsChange,
+                  {
+                    toggleVisibility: (e) => {
+                      e.stopPropagation();
+                      onRowVisibilityChange(rowValues.key);
+                    },
                   },
-                }),
+                ),
           );
         } else {
           rows.push(
             isRawData
               ? rowValues
-              : imagesExploreTableRowRenderer(rowValues, {
-                  toggleVisibility: (e) => {
-                    e.stopPropagation();
-                    onRowVisibilityChange(rowValues.key);
+              : imagesExploreTableRowRenderer(
+                  rowValues,
+                  onModelRunsTagsChange,
+                  {
+                    toggleVisibility: (e) => {
+                      e.stopPropagation();
+                      onRowVisibilityChange(rowValues.key);
+                    },
                   },
-                }),
+                ),
           );
         }
       });
@@ -1443,6 +1452,7 @@ function getDataAsTableRows(
     if (metricsCollection.config !== null && !isRawData) {
       rows[groupKey!].data = imagesExploreTableRowRenderer(
         rows[groupKey!].data,
+        onModelRunsTagsChange,
         {},
         true,
         ['value', 'name', 'groups'].concat(Object.keys(columnsValues)),
@@ -1455,6 +1465,10 @@ function getDataAsTableRows(
     }
   }
   return { rows, sameValueColumns };
+}
+
+function onModelRunsTagsChange(runHash: string, tags: ITagInfo[]): void {
+  onRunsTagsChange({ runHash, tags, model, updateModelData });
 }
 
 async function onBookmarkCreate({ name, description }: IBookmarkFormState) {
