@@ -210,7 +210,7 @@ function runsTableRowRenderer(
         content: (
           <AttachedTagsList
             runHash={rowData.hash}
-            initialTags={rowData.tags}
+            tags={rowData.tags}
             headerRenderer={() => <></>}
             addTagButtonSize='xxSmall'
             hasAttachedTagsPopup
