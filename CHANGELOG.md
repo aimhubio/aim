@@ -3,6 +3,7 @@
 ## 3.13.1
 
 - Fix aim reindex command failure (alberttorosyan)
+- Fix issue with remote runs re-open (mihran113)
 
 ## 3.13.0 Aug 21, 2022
 
