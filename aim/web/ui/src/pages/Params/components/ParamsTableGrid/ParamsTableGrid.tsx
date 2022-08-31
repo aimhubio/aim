@@ -18,6 +18,7 @@ import { AppNameEnum } from 'services/models/explorer';
 import { ITableColumn } from 'types/pages/metrics/components/TableColumns/TableColumns';
 import { IOnGroupingSelectChangeParams } from 'types/services/models/metrics/metricsAppModel';
 import { IGroupingSelectOption } from 'types/services/models/imagesExplore/imagesExploreAppModel';
+import { ITagInfo } from 'types/pages/tags/Tags';
 
 import alphabeticalSortComparator from 'utils/alphabeticalSortComparator';
 import { formatSystemMetricName } from 'utils/formatSystemMetricName';
@@ -379,8 +380,20 @@ function getParamsTableColumns(
   }
   return columns;
 }
+
+const TagsColumn = (props: {
+  runHash: string;
+  tags: ITagInfo[];
+  onRunsTagsChange: (runHash: string, tags: ITagInfo[]) => void;
+  headerRenderer: () => React.ReactNode;
+  addTagButtonSize: 'xxSmall' | 'xSmall';
+}) => {
+  return <AttachedTagsList {...props} hasAttachedTagsPopup />;
+};
+
 function paramsTableRowRenderer(
   rowData: any,
+  onRunsTagsChange: (runHash: string, tags: ITagInfo[]) => void,
   actions?: { [key: string]: (e: any) => void },
   groupHeaderRow = false,
   columns: string[] = [],
@@ -455,15 +468,14 @@ function paramsTableRowRenderer(
         ),
       },
       tags: {
-        content: (
-          <AttachedTagsList
-            runHash={rowData.hash}
-            initialTags={rowData.tags}
-            headerRenderer={() => <></>}
-            addTagButtonSize='xxSmall'
-            hasAttachedTagsPopup
-          />
-        ),
+        component: TagsColumn,
+        props: {
+          runHash: rowData.hash,
+          tags: rowData.tags,
+          onRunsTagsChange,
+          headerRenderer: () => <></>,
+          addTagButtonSize: 'xxSmall',
+        },
       },
       actions: {
         content: (

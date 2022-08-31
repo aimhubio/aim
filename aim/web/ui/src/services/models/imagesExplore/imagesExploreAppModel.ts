@@ -2358,6 +2358,7 @@ const imagesExploreAppModel = {
   deleteRuns,
   archiveRuns,
   onRowSelect,
+  onRunsTagsChange: onModelRunsTagsChange,
 };
 
 export default imagesExploreAppModel;

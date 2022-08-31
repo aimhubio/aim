@@ -3545,7 +3545,7 @@ function createAppModel(appConfig: IAppInitialConfig) {
                 rows[groupKey!].items.push(
                   isRowData
                     ? rowValues
-                    : paramsTableRowRenderer(rowValues, {
+                    : paramsTableRowRenderer(rowValues, onModelRunsTagsChange, {
                         toggleVisibility: (e) => {
                           e.stopPropagation();
                           onRowVisibilityChange({
@@ -3561,7 +3561,7 @@ function createAppModel(appConfig: IAppInitialConfig) {
                 rows.push(
                   isRowData
                     ? rowValues
-                    : paramsTableRowRenderer(rowValues, {
+                    : paramsTableRowRenderer(rowValues, onModelRunsTagsChange, {
                         toggleVisibility: (e) => {
                           e.stopPropagation();
                           onRowVisibilityChange({
@@ -3595,6 +3595,7 @@ function createAppModel(appConfig: IAppInitialConfig) {
             if (metricsCollection.config !== null && !isRowData) {
               rows[groupKey!].data = paramsTableRowRenderer(
                 rows[groupKey!].data,
+                onModelRunsTagsChange,
                 {},
                 true,
                 ['groups'].concat(Object.keys(columnsValues)),
@@ -4330,6 +4331,10 @@ function createAppModel(appConfig: IAppInitialConfig) {
         });
       }
 
+      function onModelRunsTagsChange(runHash: string, tags: ITagInfo[]): void {
+        onRunsTagsChange({ runHash, tags, model, updateModelData });
+      }
+
       function onModelGroupingSelectChange({
         groupName,
         list,
@@ -4555,6 +4560,7 @@ function createAppModel(appConfig: IAppInitialConfig) {
         onNotificationAdd: onModelNotificationAdd,
         onNotificationDelete: onModelNotificationDelete,
         onResetConfigData: onModelResetConfigData,
+        onRunsTagsChange: onModelRunsTagsChange,
         onSortChange,
         destroy,
         changeLiveUpdateConfig,
@@ -5236,7 +5242,7 @@ function createAppModel(appConfig: IAppInitialConfig) {
                 rows[groupKey!].items.push(
                   isRowData
                     ? rowValues
-                    : paramsTableRowRenderer(rowValues, {
+                    : paramsTableRowRenderer(rowValues, onModelRunsTagsChange, {
                         toggleVisibility: (e) => {
                           e.stopPropagation();
                           onRowVisibilityChange({
@@ -5252,7 +5258,7 @@ function createAppModel(appConfig: IAppInitialConfig) {
                 rows.push(
                   isRowData
                     ? rowValues
-                    : paramsTableRowRenderer(rowValues, {
+                    : paramsTableRowRenderer(rowValues, onModelRunsTagsChange, {
                         toggleVisibility: (e) => {
                           e.stopPropagation();
                           onRowVisibilityChange({
@@ -5286,6 +5292,7 @@ function createAppModel(appConfig: IAppInitialConfig) {
             if (metricsCollection.config !== null && !isRowData) {
               rows[groupKey!].data = paramsTableRowRenderer(
                 rows[groupKey!].data,
+                onModelRunsTagsChange,
                 {},
                 true,
                 ['groups'].concat(Object.keys(columnsValues)),
@@ -5868,6 +5875,10 @@ function createAppModel(appConfig: IAppInitialConfig) {
         model.setState({ config: configData, tooltip: tooltipData });
       }
 
+      function onModelRunsTagsChange(runHash: string, tags: ITagInfo[]): void {
+        onRunsTagsChange({ runHash, tags, model, updateModelData });
+      }
+
       function onModelGroupingSelectChange({
         groupName,
         list,
@@ -6080,6 +6091,7 @@ function createAppModel(appConfig: IAppInitialConfig) {
         onNotificationAdd: onModelNotificationAdd,
         onNotificationDelete: onModelNotificationDelete,
         onResetConfigData: onModelResetConfigData,
+        onRunsTagsChange: onModelRunsTagsChange,
         onSortChange,
         destroy,
         changeLiveUpdateConfig,
