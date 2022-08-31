@@ -374,7 +374,7 @@ const TagsColumn = (props: {
   tags: ITagInfo[];
   onRunsTagsChange: (runHash: string, tags: ITagInfo[]) => void;
   headerRenderer: () => React.ReactNode;
-  addTagButtonSize: 'xxSmall' | 'small';
+  addTagButtonSize: 'xxSmall' | 'xSmall';
 }) => {
   return <AttachedTagsList {...props} hasAttachedTagsPopup />;
 };

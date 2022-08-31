@@ -21,7 +21,7 @@ function AttachedTagsList({
   initialTags,
   tags,
   headerRenderer,
-  addTagButtonSize = 'small',
+  addTagButtonSize = 'xSmall',
   onTagsChange,
   onRunsTagsChange,
   hasAttachedTagsPopup = false,

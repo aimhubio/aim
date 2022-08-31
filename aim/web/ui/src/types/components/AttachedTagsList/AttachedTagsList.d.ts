@@ -6,7 +6,7 @@ export interface IAttachedTagsListProps {
   runHash: string;
   initialTags?: ITagInfo[];
   tags?: ITagInfo[];
-  addTagButtonSize?: 'small' | 'xxSmall';
+  addTagButtonSize?: 'xSmall' | 'xxSmall';
   hasAttachedTagsPopup?: boolean;
   headerRenderer?: (tagsLength: number) => React.ReactNode;
   onTagsChange?: (tags: ITagInfo[]) => void;
