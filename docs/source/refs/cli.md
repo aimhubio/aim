@@ -200,7 +200,7 @@ __storage subcommands__
 | `upgrade 2to3`   | Upgrades legacy Aim repository from `2.x` to `3.0`.                                      |
 | `upgrade 3.11+`  | Update metric sequence data format for given runs. At least one run should be specified. |
 | `restore`        | Rollback `Run` to old metric format if run backup is available.                          |
-| `cleanup`        | Remove orphan params/sequences with no referring runs                                    |
+| `prune`          | Remove orphan params/sequences with no referring runs                                    |
 
 
 **Sub-command: update 2to3**
@@ -229,10 +229,10 @@ $ aim storage restore [HASH] ...
 ```
 
 
-**Sub-command: cleanup**
+**Sub-command: prune**
 
 ```shell
-$ aim storage cleanup 
+$ aim storage prune 
 ```
 
 ## Aim status watcher CLI

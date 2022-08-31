@@ -118,8 +118,8 @@ def restore_runs(ctx, hashes):
 
 @storage.command(name='cleanup')
 @click.pass_context
-def cleanup(ctx):
-    """Clean dangling/orphan params with no referring runs."""
+def prune(ctx):
+    """Remove dangling/orphan params/sequences with no referring runs."""
 
     def flatten(d, parent_path=None):
         if parent_path and not isinstance(parent_path, tuple):
