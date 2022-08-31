@@ -205,11 +205,15 @@ with torch.no_grad():
 
 Aim Remote Tracking server can be set up to use SSL certificates to run on secure mode.
 To enable secure mode for server provide `--ssl-keyfile` and `--ssl-certfile` arguments to `aim server `command,
-where `--ssl-keyfile` is the path to the private key file for the certificate and `--ssl-certfile` is the path to the signed certificate.
+where `--ssl-keyfile` is the path to the private key file for the certificate and `--ssl-certfile` is the path to the signed certificate
+(check out the [Aim CLI](../refs/cli.html#server) here).
 
-On client side set `__AIM_CLIENT_SSL_CERTIFICATES_FILE__` environment variable as the path to the PEM encoded root certificates for the secure channel establishment with the server.
+In order to establish a secure connection with the server, the client has to be configured accordingly.
+Please set `__AIM_CLIENT_SSL_CERTIFICATES_FILE__` environment variable to the file, where PEM encoded root certificates are located, e.g.
 
-
+```shell
+export __AIM_CLIENT_SSL_CERTIFICATES_FILE__=/path/of/the/certs/file
+```
 
 ### Message size limitations
 Aim Remote Tracking server uses gRPC as a transport layer. gRPC imposes message size limits on
