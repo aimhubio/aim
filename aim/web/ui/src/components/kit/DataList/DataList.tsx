@@ -31,6 +31,7 @@ function DataList({
   rowHeight = 28,
   height = '100vh',
   tableClassName = '',
+  toolbarItems = [],
 }: IDataListProps): React.FunctionComponentElement<React.ReactNode> {
   const textSearch = useTextSearch({
     rawData: tableData,
@@ -77,15 +78,20 @@ function DataList({
   return (
     <div className={'DataList'} style={{ height }}>
       {withSearchBar && (
-        <SearchBar
-          isValidInput={textSearch.filterOptions.isValidSearch}
-          searchValue={textSearch.filterOptions.searchValue}
-          matchType={textSearch.filterOptions.matchType}
-          onMatchTypeChange={textSearch.changeMatchType}
-          onInputClear={textSearch.clearSearchInputData}
-          onInputChange={textSearch.changeSearchInput}
-          isDisabled={!!isLoading}
-        />
+        <div className='flex'>
+          <SearchBar
+            isValidInput={textSearch.filterOptions.isValidSearch}
+            searchValue={textSearch.filterOptions.searchValue}
+            matchType={textSearch.filterOptions.matchType}
+            onMatchTypeChange={textSearch.changeMatchType}
+            onInputClear={textSearch.clearSearchInputData}
+            onInputChange={textSearch.changeSearchInput}
+            isDisabled={!!isLoading}
+          />
+          {!!toolbarItems.length && (
+            <div className='DataList__toolbarItems'>{toolbarItems}</div>
+          )}
+        </div>
       )}
       <BusyLoaderWrapper
         className='VisualizationLoader'

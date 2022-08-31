@@ -1,5 +1,5 @@
 export interface IExperimentCardProps {
-  experimentsData: IExperimentData[];
+  experimentsData: IExperimentData[] | [];
 }
 
 export interface IExperimentData {

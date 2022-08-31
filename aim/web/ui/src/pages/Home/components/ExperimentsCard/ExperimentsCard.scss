@@ -1,0 +1,31 @@
+@use 'src/styles/abstracts' as *;
+
+.ExperimentsCard {
+  padding: 1rem 1.5rem;
+  //   width: 40%;
+  min-width: 550px;
+  .defaultSelectIcon {
+    border: 1.5px solid $pico-80;
+    border-radius: $border-radius-xs;
+    width: 1rem;
+    height: 1rem;
+  }
+  .selectedSelectIcon {
+    border-radius: $border-radius-xs;
+    width: 1rem;
+    height: 1rem;
+    background: $primary-color;
+    color: $white;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+  .partiallySelectedSelectIcon {
+    border-radius: $border-radius-xs;
+    width: 1rem;
+    height: 1rem;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+}

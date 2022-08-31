@@ -1,3 +1,5 @@
+import { IExperimentData } from 'pages/Home/components/ExperimentsCard';
+
 import { INotification } from 'types/components/NotificationContainer/NotificationContainer';
 
 export interface IHomeProps {
@@ -6,6 +8,7 @@ export interface IHomeProps {
   askEmailSent: boolean;
   onSendEmail: (data: object) => Promise<any>;
   onNotificationDelete: (id: number) => void;
+  experimentsData?: IExperimentData[] | undefined;
 }
 
 export interface IActivityData {

@@ -3,12 +3,15 @@ import React from 'react';
 import { Checkbox } from '@material-ui/core';
 
 import DataList from 'components/kit/DataList';
-import { Card, Text } from 'components/kit';
+import { Card, Icon, Text } from 'components/kit';
 
-import { isSystemMetric } from 'utils/isSystemMetric';
-import { formatSystemMetricName } from 'utils/formatSystemMetricName';
+import CompareSelectedRunsPopover from 'pages/Metrics/components/Table/CompareSelectedRunsPopover';
+
+import { AppNameEnum } from 'services/models/explorer';
 
 import { IExperimentCardProps } from './ExperimentsCard.d';
+
+import './ExperimentsCard.scss';
 
 function ExperimentsCard(props: IExperimentCardProps) {
   const tableRef = React.useRef<any>(null);
@@ -18,13 +21,13 @@ function ExperimentsCard(props: IExperimentCardProps) {
   const tableData = React.useMemo(() => {
     if (props.experimentsData) {
       return props.experimentsData.map(
-        ({ name, id, archived, run_count }: any, index: number) => {
+        ({ name, archived, run_count }: any, index: number) => {
           return {
             key: index,
-            name: isSystemMetric(name) ? formatSystemMetricName(name) : name,
+            name: name,
             archived,
             run_count,
-            id,
+            id: name,
           };
         },
       );
@@ -34,18 +37,16 @@ function ExperimentsCard(props: IExperimentCardProps) {
 
   // on row selection
   const onRowSelect = React.useCallback(
-    (rowKey: string) => {
-      if (rowKey === 'all') {
-        setSelectedRows(
-          selectedRows.length === tableData.length
-            ? []
-            : tableData.map(({ id }: any) => id),
-        );
-      } else {
+    (rowKey?: string) => {
+      if (rowKey) {
         const newSelectedRows = selectedRows.includes(rowKey)
           ? selectedRows.filter((row: string) => row !== rowKey)
           : [...selectedRows, rowKey];
         setSelectedRows(newSelectedRows);
+      } else if (selectedRows.length) {
+        setSelectedRows([]);
+      } else {
+        setSelectedRows(tableData.map(({ name }: any) => name));
       }
     },
     [selectedRows, tableData],
@@ -61,10 +62,21 @@ function ExperimentsCard(props: IExperimentCardProps) {
           <Checkbox
             color='primary'
             size='small'
-            // icon={<span className='Table__column__defaultSelectIcon'></span>}
-            className='Table__column__selectCheckbox'
-            onClick={() => onRowSelect('all')}
-            checked={selectedRows.length === tableData.length}
+            icon={<span className='defaultSelectIcon'></span>}
+            className='selectCheckbox'
+            checkedIcon={
+              tableData.length === Object.keys(selectedRows)?.length ? (
+                <span className='selectedSelectIcon'>
+                  <Icon name='check' fontSize={9} />
+                </span>
+              ) : (
+                <span className='partiallySelectedSelectIcon'>
+                  <Icon name='partially-selected' fontSize={16} />
+                </span>
+              )
+            }
+            onClick={() => onRowSelect()}
+            checked={!!selectedRows.length}
           />
         ),
         width: '70px',
@@ -73,9 +85,14 @@ function ExperimentsCard(props: IExperimentCardProps) {
             <Checkbox
               color='primary'
               size='small'
-              // icon={<span className='Table__column__defaultSelectIcon'></span>}
-              className='Table__column__selectCheckbox'
+              icon={<span className='defaultSelectIcon'></span>}
+              className='selectCheckbox'
               checked={selectedRows.includes(cellData)}
+              checkedIcon={
+                <span className='selectedSelectIcon'>
+                  <Icon name='check' fontSize={9} />
+                </span>
+              }
               onClick={() => onRowSelect(cellData)}
             />
           );
@@ -140,11 +157,21 @@ function ExperimentsCard(props: IExperimentCardProps) {
           tableColumns={tableColumns}
           tableData={tableData}
           isLoading={false}
+          height='400px'
           searchableKeys={['name', 'run_count']}
           illustrationConfig={{
             size: 'large',
             title: 'No Results',
           }}
+          toolbarItems={[
+            <CompareSelectedRunsPopover
+              key='compareSelectedRunsPopover'
+              appName={'home' as AppNameEnum}
+              selectedRows={selectedRows}
+              keyName='experiment'
+              disabled={!selectedRows.length}
+            />,
+          ]}
         />
       </Card>
     </div>

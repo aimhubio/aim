@@ -2216,16 +2216,6 @@ function createAppModel(appConfig: IAppInitialConfig) {
         }
 
         const liveUpdateState = model.getState()?.config.liveUpdate;
-        runsService
-          .getExperimentsData()
-          .call((detail: any) => {
-            exceptionHandler({ detail, model });
-          })
-          .then((data: any) => {
-            model.setState({
-              experimentsData: data,
-            });
-          });
         projectsService
           .getProjectParams(['metric'])
           .call()
