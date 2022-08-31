@@ -96,10 +96,10 @@ class AimCallback(Callback):
             args['device'] = self.dls.device.type
             args['frozen'] = bool(self.opt.frozen_idx)
             args['frozen_idx'] = self.opt.frozen_idx
-            args['dataset.tfms'] = f'{self.dls.dataset.tfms}'
-            args['dls.after_item'] = f'{self.dls.after_item}'
-            args['dls.before_batch'] = f'{self.dls.before_batch}'
-            args['dls.after_batch'] = f'{self.dls.after_batch}'
+            args['dataset', 'tfms'] = f'{self.dls.dataset.tfms}'
+            args['dls', 'after_item'] = f'{self.dls.after_item}'
+            args['dls', 'before_batch'] = f'{self.dls.before_batch}'
+            args['dls', 'after_batch'] = f'{self.dls.after_batch}'
         return args
 
     @classmethod
