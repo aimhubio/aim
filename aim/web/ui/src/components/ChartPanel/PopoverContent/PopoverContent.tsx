@@ -260,7 +260,10 @@ const PopoverContent = React.forwardRef(function PopoverContent(
                 <Divider />
                 <div className='PopoverContent__box'>
                   <ErrorBoundary>
-                    <AttachedTagsList runHash={run?.hash} />
+                    <AttachedTagsList
+                      runHash={run?.hash}
+                      tags={run?.props?.tags ?? []}
+                    />
                   </ErrorBoundary>
                 </div>
               </div>
