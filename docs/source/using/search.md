@@ -180,6 +180,7 @@ When iterating over metrics, use the `metric` keyword which represents the track
 | -------- | ----------- |
 | `name` | Metric name |
 | `context` | Metric context dictionary |
+| `values.[OPTION]` | Metric aggregated data about metric values such as `last`, `last_step` and etc. |  
 
 **Query examples**
 
@@ -226,6 +227,21 @@ metric.name == "loss" and run.learning_rate >= 0.001
 |--------|-------------|
 | `loss { "subset":"train" }` | `run_1 <hash=a32c910>` |
 | `loss { "subset":"test" }` | `run_1 <hash=a32c910>` |
+| `loss { "subset":"train" }` | `run_3 <hash=a32c912>` |
+| `loss { "subset":"test" }` | `run_3 <hash=a32c912>` |
+
+4. Query metrics by name and last value 
+
+```python
+metric.name == "loss" and metric.values.last >= 15
+```
+
+*Result:*
+
+| Metric | Related run |
+|--------|-------------|
+| `loss { "subset":"train" }` | `run_2 <hash=a32c911>` |
+| `loss { "subset":"test" }` | `run_2 <hash=a32c911>` |
 | `loss { "subset":"train" }` | `run_3 <hash=a32c912>` |
 | `loss { "subset":"test" }` | `run_3 <hash=a32c912>` |
 
