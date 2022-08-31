@@ -10,6 +10,10 @@
 ### Fixes:
 
 - Adjust the visibility of the run color in tables (VkoHov)
+## 3.13.1
+
+- Fix aim reindex command failure (alberttorosyan)
+- Tune mlflow converted run properties (tmynn)
 
 ## 3.13.0 Aug 21, 2022
 
