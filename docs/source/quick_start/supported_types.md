@@ -21,28 +21,37 @@ provided by the package:
 - [Figure](#figure-tracking-with-aim)
 
 ### Tracking multiple values
-Starting from `v3.14.0` Aim provides ability to track multiple values at once. If the context and epoch are the same,
-the dictionary can be passed and the keys will be treated as names for tracked values. For example the code snippet below
+Starting from `v3.14.0` Aim provides ability to track multiple values at once. To track multiple values of different 
+sequences of the same context, just pass a dictionary of `<name: value>` pairs to the track method:
+
+```python
+aim_run.track({'accuracy': 98.2, 'loss': 0.001}, context={'subset': 'train'}, step=10, epoch=1)
+```
+
+>  Note: The `name` argument should be set to `None` in this case.
+
+**More examples**
+
+The following code snippet
 
 ```shell
 from aim import Run
 
 aim_run = Run()
 
-metrics = {"accuracy":0.72, "f1":0.99}
+metrics = {'accuracy': 0.72, 'f1': 0.99}
 for metric, val in metrics.items()
   aim_run.track(val, name=metric, context={'subset': 'train'})
 ```
 
-can be rewritten as:
+can be simplified to:
 
 ```shell
 from aim import Run
 
 aim_run = Run()
 
-metrics = {"accuracy":0.72, "f1":0.99}
-aim_run.track(metrics, context={'subset': 'train'})
+aim_run.track({'accuracy': 0.72, 'f1': 0.99}, context={'subset': 'train'})
 ```
 
 
