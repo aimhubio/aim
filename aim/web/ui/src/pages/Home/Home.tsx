@@ -20,14 +20,18 @@ function Home({
 }: IHomeProps): React.FunctionComponentElement<React.ReactNode> {
   return (
     <ErrorBoundary>
-      <section className='Home__container'>
-        <div className='Home__Activity__container'>
-          <Activity activityData={activityData} />
+      <section className='Home'>
+        <div className='Home__left'></div>
+        <div className='Home__middle'>
+          <div className='Home__Activity__container'>
+            <Activity activityData={activityData} />
+          </div>
+          <div className='Home__Explore__container'>
+            <SetupGuide askEmailSent={askEmailSent} onSendEmail={onSendEmail} />
+            <ExploreAim />
+          </div>
         </div>
-        <div className='Home__Explore__container'>
-          <SetupGuide askEmailSent={askEmailSent} onSendEmail={onSendEmail} />
-          <ExploreAim />
-        </div>
+        <div className='Home__right'></div>
         {notifyData?.length > 0 && (
           <NotificationContainer
             handleClose={onNotificationDelete}

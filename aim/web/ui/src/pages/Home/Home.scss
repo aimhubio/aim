@@ -1,21 +1,21 @@
 @use 'src/styles/abstracts' as *;
 
+$border: 1px solid $primary-color-10;
 .Home {
-  &__container {
-    background-color: #ffffff;
-    overflow: hidden;
-    display: flex;
-    flex-direction: column;
-    h2 {
-      margin: 0 0 1em 0;
-    }
+  background-color: #ffffff;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  h2 {
+    margin: 0 0 1rem 0;
   }
+
   &__Explore__container {
-    border-top: 1px solid #e8f1fc;
-    border-bottom: 1px solid #e8f1fc;
+    border-top: $border;
+    border-bottom: $border;
     display: flex;
   }
   &__Activity__container {
-    padding: 1.5em;
+    padding: $space-lg;
   }
 }
