@@ -1,5 +1,12 @@
 # Changelog
 
+## 3.13.1
+
+- Add support for querying metrics by last value (mihran113)
+- Fix aim reindex command failure (alberttorosyan)
+- Fix issue with remote runs re-open (mihran113)
+- Deprecate custom set Run.hash values (alberttorosyan)
+
 ## 3.13.0 Aug 21, 2022
 
 ### Enhancements:
