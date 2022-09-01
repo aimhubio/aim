@@ -5,7 +5,10 @@ from argparse import Namespace
 try:
     import pytorch_lightning as pl
 
-    if pl.__version__ < "1.7":
+    def versiontuple(v):
+        return tuple(map(int, (v.split("."))))
+
+    if versiontuple(pl.__version__) < (1, 7):
         from pytorch_lightning.loggers.base import (
             LightningLoggerBase as Logger,
             rank_zero_experiment,
