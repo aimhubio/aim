@@ -99,9 +99,6 @@ for epoch in range(num_epochs):
                                         total_step, loss.item()))
 
             # aim - Track model loss function
-            aim_run.track(loss.item(), name='loss', epoch=epoch,
-                          context={'subset':'train'})
-
             correct = 0
             total = 0
             _, predicted = torch.max(outputs.data, 1)
@@ -110,7 +107,8 @@ for epoch in range(num_epochs):
             acc = 100 * correct / total
 
             # aim - Track metrics
-            aim_run.track(acc, name='accuracy', epoch=epoch, context={'subset': 'train'})
+            items = {'accuracy': acc, 'loss': loss}
+            aim_run.track(items, epoch=epoch, context={'subset': 'train'})
 
             # aim - Track weights and gradients distributions
             track_params_dists(model, aim_run)

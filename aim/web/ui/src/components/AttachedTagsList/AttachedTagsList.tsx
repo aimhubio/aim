@@ -15,9 +15,16 @@ import { IAttachedTagsListProps } from 'types/components/AttachedTagsList/Attach
 
 import './AttachedTagsList.scss';
 
-function AttachedTagsList({ runHash }: IAttachedTagsListProps) {
+function AttachedTagsList({
+  runHash,
+  initialTags,
+  headerRenderer,
+  onTagsChange,
+}: IAttachedTagsListProps) {
   const [tags, setTags] = React.useState<ITagInfo[]>([]);
-  const [attachedTags, setAttachedTags] = React.useState<ITagInfo[]>([]);
+  const [attachedTags, setAttachedTags] = React.useState<ITagInfo[]>(
+    initialTags ?? [],
+  );
   const getRunInfoRef = React.useRef<any>(null);
   const getTagsRef = React.useRef<any>(null);
   const createRunsTagRef = React.useRef<any>(null);
@@ -42,24 +49,31 @@ function AttachedTagsList({ runHash }: IAttachedTagsListProps) {
       { tag_name: tag.name },
       run_id,
     );
-    createRunsTagRef.current.call().then(() => {
-      setAttachedTags((prevState) => [...prevState, tag]);
-    });
+    createRunsTagRef.current
+      .call()
+      .then()
+      .catch((ex: unknown) => {
+        setAttachedTags((prevState) => [
+          ...prevState.filter((t) => tag.id !== t.id),
+        ]);
+      });
   }
 
-  function deleteRunsTag(run_id: string, tag_id: string) {
-    deleteRunsTagRef.current = runsService?.deleteRunsTag(run_id, tag_id);
-    deleteRunsTagRef.current.call().then(() => {
-      setAttachedTags((prevState) => [
-        ...prevState.filter((tag) => tag.id !== tag_id),
-      ]);
-    });
+  function deleteRunsTag(run_id: string, tag: ITagInfo) {
+    deleteRunsTagRef.current = runsService?.deleteRunsTag(run_id, tag.id);
+    deleteRunsTagRef.current
+      .call()
+      .then()
+      .catch((ex: unknown) => {
+        setAttachedTags((prevState) => [...prevState, tag]);
+      });
   }
 
   function onAttachedTagAdd(tag_id: string): void {
     if (!attachedTags.find((tag) => tag.id === tag_id)) {
       const tag = tags.find((tag) => tag.id === tag_id);
       if (tag) {
+        setAttachedTags((prevState) => [...prevState, tag]);
         createRunsTag(tag, runHash);
       }
     }
@@ -68,14 +82,19 @@ function AttachedTagsList({ runHash }: IAttachedTagsListProps) {
   function onAttachedTagDelete(label: string): void {
     const tag = tags.find((tag) => tag.name === label);
     if (tag) {
-      deleteRunsTag(runHash, tag.id);
+      setAttachedTags((prevState) => [
+        ...prevState.filter((t) => tag.id !== t.id),
+      ]);
+      deleteRunsTag(runHash, tag);
     }
   }
 
   React.useEffect(() => {
     if (runHash) {
+      if (!initialTags) {
+        getRunInfo(runHash);
+      }
       getAllTags();
-      getRunInfo(runHash);
     }
     return () => {
       getRunInfoRef.current?.abort();
@@ -83,13 +102,25 @@ function AttachedTagsList({ runHash }: IAttachedTagsListProps) {
     };
   }, [runHash]);
 
+  React.useEffect(() => {
+    if (onTagsChange) {
+      onTagsChange(attachedTags);
+    }
+  }, [attachedTags, onTagsChange]);
+
   return (
     <ErrorBoundary>
       <div>
-        <Text className='AttachedTagsList__title'>Tags</Text>
+        {typeof headerRenderer === 'function' ? (
+          headerRenderer(attachedTags?.length)
+        ) : (
+          <Text className='AttachedTagsList__title'>
+            Tags {attachedTags?.length > 0 ? `(${attachedTags.length})` : null}
+          </Text>
+        )}
         <Box className='AttachedTagsList'>
           {attachedTags?.length > 0 ? (
-            <div className='AttachedTagsList__tags'>
+            <div className='AttachedTagsList__tags ScrollBar__hidden'>
               {attachedTags.map((tag: ITagInfo) => (
                 <Badge
                   key={tag.id}
@@ -127,7 +158,9 @@ function AttachedTagsList({ runHash }: IAttachedTagsListProps) {
                   }`}
                 >
                   {attachedTags?.length > 0 ? (
-                    <Icon name='edit' />
+                    <Button withOnlyIcon size='small' color='secondary'>
+                      <Icon name='edit'></Icon>
+                    </Button>
                   ) : (
                     <Button
                       size='xSmall'
