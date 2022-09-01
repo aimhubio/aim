@@ -29,7 +29,7 @@ jobs:
     steps:
       - uses: deepakputhraya/action-pr-title@master
         with:
-          regex: '^\[(?:feat|fix|doc|refactor)\]\s[A-Z].*(?<!\.)$'
+          regex: '^\[(?:feat|fix|doc|refactor|deprecation)\]\s[A-Z].*(?<!\.)$'
           github_token: ${{ github.token }}
   run-checks:
     if: github.event.pull_request.draft == false && github.event.action != 'edited'
