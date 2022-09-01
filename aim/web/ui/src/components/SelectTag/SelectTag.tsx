@@ -27,7 +27,7 @@ function SelectTag({
   const attachTagToRunRef = React.useRef<any>(null);
 
   const attachTagToRun = React.useCallback((tag: ITagInfo, run_id: string) => {
-    attachTagToRunRef.current = runsService?.attacheRunsTag(
+    attachTagToRunRef.current = runsService?.attachRunsTag(
       { tag_name: tag.name },
       run_id,
     );

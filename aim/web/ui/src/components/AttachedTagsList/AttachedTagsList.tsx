@@ -117,14 +117,14 @@ function AttachedTagsList({
               </div>
             )}
             component={
-              <div className='TableAttachedTagsList__tagsContainer'>
+              <div className='InlineAttachedTagsList__tagsContainer'>
                 {!_.isEmpty(attachedTags) ? (
-                  <div className='TableAttachedTagsList__tagsContainer__tags'>
+                  <div className='InlineAttachedTagsList__tagsContainer__tags'>
                     {attachedTags.map((tag: ITagInfo) => {
                       return (
                         <div
                           key={tag.id}
-                          className='TableAttachedTagsList__tagsContainer__tags__badge'
+                          className='InlineAttachedTagsList__tagsContainer__tags__badge'
                         >
                           <Badge
                             size='xSmall'
@@ -181,7 +181,7 @@ function AttachedTagsList({
         )}
         <Box
           className={classNames('AttachedTagsList', {
-            TableAttachedTagsList: hasAttachedTagsPopup,
+            InlineAttachedTagsList: hasAttachedTagsPopup,
           })}
         >
           {renderTagsBadges()}
