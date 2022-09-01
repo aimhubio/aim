@@ -9,7 +9,7 @@ a powerful utility to record, search and compare AI experiments. Here are the se
 | `version` | Displays the version of aim cli currently installed.                                      |
 | `up`      | Runs Aim web UI for the given repo.                                                       |
 | `reindex` | Process runs left in 'in progress' state and optimized finished runs.                     |
-| `server`  | Run `aim` remote tracking server accepting incoming RPC requests. _Experimental feature._ |
+| `server`  | Run `aim` remote tracking server accepting incoming RPC requests.                         |
 | `runs`    | Manage run data for the given repo.                                                       |
 | `convert` | Tool-set for converting 3rd party data into Aim readable format.                          |
 | `storage` | Maintain/update Aim repository internal data formats.                                     |

@@ -423,7 +423,7 @@ class Run(BaseRun, StructuredRunMixin):
     def track(
         self,
         value,
-        name: str,
+        name: str = None,
         step: int = None,
         epoch: int = None,
         *,

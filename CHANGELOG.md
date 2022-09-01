@@ -1,5 +1,16 @@
 # Changelog
 
+## Unreleased
+
+### Enhancements:
+
+- Add the ability to attach/remove tags on the Run Page (roubkar)
+- Support dictionary as an argument of `Run.track` (alberttorosyan)
+
+### Fixes:
+
+- Adjust the visibility of the run color in tables (VkoHov)
+
 ## 3.13.0 Aug 21, 2022
 
 ### Enhancements:
