@@ -2,7 +2,6 @@
 
 ## Unreleased
 
-=======
 ### Enhancements:
 
 - Add the ability to attach/remove tags on the Run Page (roubkar)
