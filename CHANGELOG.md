@@ -10,6 +10,7 @@
 ### Fixes:
 
 - Adjust the visibility of the run color in tables (VkoHov)
+- Fix `AimLogger` deprecation issues related to release of PyTorch Lightning v1.7 (djwessel)
 
 ## 3.13.0 Aug 21, 2022
 
