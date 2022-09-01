@@ -42,7 +42,7 @@ class BaseRun:
                 deprecation_warning(remove_version='3.15', msg='Setting custom `Run.hash` value is deprecated! '
                                                                'Consider setting `Run.name` instead.')
                 self.hash = run_hash
-                # TODO [deprecation]
+                # TODO [deprecation] Uncomment the line below
                 # raise MissingRunError(f'Cannot find Run {run_hash} in aim Repo {self.repo.path}.')
 
         self.meta_tree: TreeView = self.repo.request_tree(
