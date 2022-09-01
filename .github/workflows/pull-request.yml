@@ -31,7 +31,8 @@ jobs:
         with:
           regex: '^\[(?:feat|fix|doc|refactor|deprecation)\]\s[A-Z].*(?<!\.)$'
           github_token: ${{ github.token }}
-  run-checks:
+  run-checks::wq
+
     if: github.event.pull_request.draft == false && github.event.action != 'edited'
     runs-on: ubuntu-latest
     name: Run Unit-tests & Code-style checks
