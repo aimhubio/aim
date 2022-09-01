@@ -61,16 +61,18 @@ def parse_mlflow_logs(repo_inst, tracking_uri, experiment):
             aim_run = Run(
                 repo=repo_inst,
                 system_tracking_interval=None,
-                run_hash=run.info.run_uuid,
+                capture_terminal_logs=False,
                 experiment=ex.experiment_id,
             )
+            aim_run['mlflow_run_id'] = run.info.run_id
+            aim_run['mlflow_run_name'] = run.data.tags.get("mlflow.runName")
+            aim_run.description = run.data.tags.get("mlflow.note.content")
 
             # Collect params & tags
             aim_run['params'] = run.data.params
             aim_run['tags'] = {
                 k: v for k, v in run.data.tags.items() if not k.startswith('mlflow')
             }
-            aim_run['description'] = run.data.tags.get("mlflow.note.content")
 
             # Collect metrics
             for key in run.data.metrics.keys():
@@ -79,7 +81,7 @@ def parse_mlflow_logs(repo_inst, tracking_uri, experiment):
 
             # Collect artifacts
             __html_warning_issued = False
-            with TemporaryDirectory(prefix=f'mlflow_{run.info.run_uuid}_') as temp_path:
+            with TemporaryDirectory(prefix=f'mlflow_{run.info.run_id}_') as temp_path:
                 # click.secho(f'Downloading artifacts to {temp_path}', fg='green')
                 artifact_loc_stack = [None]
                 while artifact_loc_stack:
