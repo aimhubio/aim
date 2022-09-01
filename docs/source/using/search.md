@@ -180,7 +180,9 @@ When iterating over metrics, use the `metric` keyword which represents the track
 | -------- | ----------- |
 | `name` | Metric name |
 | `context` | Metric context dictionary |
-| `values.[OPTION]` | Metric aggregated data about metric values such as `last`, `last_step` and etc. |  
+| `last` | Last tracked value of the metric |
+| `last_step` | Last tracked step number of the metric |
+| `first_step` | First tracked step number of the metric |
 
 **Query examples**
 
@@ -233,7 +235,7 @@ metric.name == "loss" and run.learning_rate >= 0.001
 4. Query metrics by name and last value 
 
 ```python
-metric.name == "loss" and metric.values.last >= 15
+metric.name == "loss" and metric.last >= 15
 ```
 
 *Result:*

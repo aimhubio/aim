@@ -157,14 +157,22 @@ class SequenceView:
         self.name = name
         self.run = run_view
         self._context = context
-        self._values = None
+        self._sequence_meta_tree = None
 
     @property
     def context(self):
         return AimObjectProxy(lambda: self._context, view=ContextView(self._context))
 
-    @property
-    def values(self):
-        if self._values is None:
-            self._values = self.run.meta_run_tree.subtree(('traces', Context(self._context).idx, self.name))
-        return AimObjectProxy(lambda: self._values, view=self._values)
+    def __getattr__(self, item):
+        def safe_collect():
+            try:
+                return self._sequence_meta_tree.collect(item)
+            except Exception:
+                return SafeNone()
+
+        if not self._sequence_meta_tree:
+            self._sequence_meta_tree = self.run.meta_run_tree.subtree(('traces',
+                                                                       Context(self._context).idx,
+                                                                       self.name))
+
+        return AimObjectProxy(safe_collect, view=self._sequence_meta_tree.subtree(item))
