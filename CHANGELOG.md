@@ -1,6 +1,6 @@
 # Changelog
 
-## 3.13.1
+## 3.13.1 Sep 1, 2022
 
 - Add support for querying metrics by last value (mihran113)
 - Fix aim reindex command failure (alberttorosyan)
