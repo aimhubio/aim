@@ -10,6 +10,7 @@ As of Aim `v3.6.0` the following converters are supported:
 
 - [TensorBoard logs converter](#show-tensorboard-logs-in-aim)
 - [MLFlow logs converter](#show-mlflow-logs-in-aim)
+- [Weights & Biases logs converter](#show-weights-and-biases-logs-in-aim)
 
 We are working to constantly improve existing converters and implement new ones.
 
@@ -163,7 +164,7 @@ While converting the artifacts, the converter will try to determine file content
 warning message will be issued if artifact cannot be categorized, these artifacts will not be transferred to aim!
 Please check the command output logs if you fail to see your artifact in Aim's web.
 
-### Explore Weights & Biases logs in Aim
+### Show Weights and Biases logs in Aim
 
 Aim gives you a possibility to convert [Weights & Biases](https://wandb.ai/site) runs into native format and explore them via Aim UI.
 
