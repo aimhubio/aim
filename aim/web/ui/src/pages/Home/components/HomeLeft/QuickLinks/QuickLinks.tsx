@@ -1,9 +1,10 @@
 import React from 'react';
 import { useHistory } from 'react-router-dom';
 
-import { MenuItem, Tooltip } from '@material-ui/core';
+import { Tooltip } from '@material-ui/core';
 
 import { Icon, Text } from 'components/kit';
+import ListItem from 'components/kit/ListItem/ListItem';
 
 import { encode } from 'utils/encoder/encoder';
 
@@ -46,11 +47,11 @@ function QuickLinks(): React.FunctionComponentElement<React.ReactNode> {
       <Text component='h3' size={18}>
         Quick Links
       </Text>
-      <div className='QuickLinks__menu'>
+      <div className='QuickLinks__list'>
         {linkItems.map((item: string) => (
-          <MenuItem className='QuickLinks__menu__MenuItem' key={item}>
+          <ListItem className='QuickLinks__list__ListItem' key={item}>
             <Text
-              className='QuickLinks__menu__MenuItem__Text'
+              className='QuickLinks__list__ListItem__Text'
               onClick={(e) => onClick(e, item)}
               size={14}
               tint={100}
@@ -67,7 +68,7 @@ function QuickLinks(): React.FunctionComponentElement<React.ReactNode> {
                 />
               </div>
             </Tooltip>
-          </MenuItem>
+          </ListItem>
         ))}
       </div>
     </div>

@@ -3,13 +3,9 @@
 .QuickLinks {
   padding: $space-unit;
   border-top: 1px solid $border-color-main;
-  &__menu {
+  &__list {
     margin-top: $space-lg;
-    &__MenuItem {
-      border-radius: $border-radius-sm;
-      &:hover {
-        background-color: $cuddle-20;
-      }
+    &__ListItem {
       margin-bottom: $space-xs;
       &__Text {
         flex: 1;
