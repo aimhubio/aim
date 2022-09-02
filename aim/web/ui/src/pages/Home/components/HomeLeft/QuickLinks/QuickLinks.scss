@@ -1,0 +1,20 @@
+@use 'src/styles/abstracts' as *;
+
+.QuickLinks {
+  padding: $space-unit;
+  border-top: 1px solid $border-color-main;
+  &__menu {
+    margin-top: $space-lg;
+    &__MenuItem {
+      border-radius: $border-radius-sm;
+      &:hover {
+        background-color: $cuddle-20;
+      }
+      margin-bottom: $space-xs;
+      &__Text {
+        flex: 1;
+        text-transform: capitalize;
+      }
+    }
+  }
+}
