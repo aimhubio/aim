@@ -60,6 +60,9 @@
   }
 
   &__color {
+    &_text {
+      color: $txt-color-100;
+    }
     &_primary {
       color: $text-color;
       &_100 {

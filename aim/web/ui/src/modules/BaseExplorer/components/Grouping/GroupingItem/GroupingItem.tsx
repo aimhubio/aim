@@ -7,7 +7,7 @@ import { PipelineStatusEnum } from 'modules/core/engine';
 
 import ErrorBoundary from 'components/ErrorBoundary/ErrorBoundary';
 import ControlPopover from 'components/ControlPopover/ControlPopover';
-import { Icon } from 'components/kit';
+import { Button, Text, Icon } from 'components/kit';
 
 import { GroupingPopover } from '../GroupingPopover';
 
@@ -34,9 +34,11 @@ function GroupingItem({
     <ErrorBoundary>
       <ControlPopover
         title={title ?? `Group by ${groupName}`}
+        anchorOrigin={{ vertical: 'bottom', horizontal: 'left' }}
+        transformOrigin={{ vertical: 'top', horizontal: 'left' }}
         anchor={({ onAnchorClick, opened }) => (
           <Tooltip title={`Group by ${groupName}`}>
-            <div
+            {/* <div
               onClick={(e: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
                 if (!isDisabled) {
                   onAnchorClick(e);
@@ -56,7 +58,26 @@ function GroupingItem({
               >
                 <Icon name={iconName} />
               </div>
-            </div>
+            </div> */}
+            <Button
+              size='xxSmall'
+              disabled={isDisabled}
+              className='GroupingItem'
+              onClick={onAnchorClick}
+              style={{}}
+            >
+              <>
+                <Text
+                  size={10}
+                  weight={500}
+                  color='text'
+                  className='GroupingItem__label'
+                >
+                  {groupName}
+                </Text>
+                <Icon name='arrow-down' fontSize={8} color={'#161717'} />
+              </>
+            </Button>
           </Tooltip>
         )}
         component={

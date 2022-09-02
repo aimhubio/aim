@@ -1,10 +1,11 @@
 @use 'src/styles/abstracts' as *;
 
 .QueryForm {
-  flex: 1;
   padding: 0.625rem $space-lg;
   display: flex;
-  height: 100%;
+  height: toRem(92px);
+  width: 100%;
+  border-bottom: $border-main;
   &__topPanel {
     flex: 1 100%;
     &__plusIcon {
