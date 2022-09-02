@@ -1,5 +1,8 @@
 # Changelog
 
+## 3.13.2 
+- Fix response headers for remote tracking server (mihran113)
+
 ## 3.13.1 Sep 1, 2022
 
 - Add support for querying metrics by last value (mihran113)
