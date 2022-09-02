@@ -27,6 +27,7 @@
   .MediaPanel {
     display: flex;
     flex: 1;
+    height: calc(100% - 3rem);
     &__loader {
       .ChartLoader {
         span {

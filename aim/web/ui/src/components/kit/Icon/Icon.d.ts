@@ -10,6 +10,7 @@ export interface IIconProps
   className?: string;
   style?: CSSProperties;
   fontSize?: number | string;
+  weight?: number | string;
   color?: string;
 }
 
@@ -144,4 +145,5 @@ export type IconName =
   | 'full-screen'
   | 'new-tab'
   | 'figures-explorer'
-  | 'group-column';
+  | 'group-column'
+  | 'image-group';

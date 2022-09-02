@@ -4,17 +4,48 @@
 
 ### Enhancements:
 
-- Add logging for remote resource cleanup and network stability (mihran113)
-- Restrict Run.hash to auto-generated values only (alberttorosyan)
-- Add ability to compare selected runs from the table (arsengit)
-- Add ability to pin metrics in Run Page (mihran113, roubkar)
-- Add step for unit tests for nightly releases workflow (mihran113)
+- Add the ability to attach/remove tags on the Run Page (roubkar)
+- Support dictionary as an argument of `Run.track` (alberttorosyan)
 
 ### Fixes:
 
+- Adjust the visibility of the run color in tables (VkoHov)
+
+## 3.13.1 Sep 1, 2022
+
+- Add support for querying metrics by last value (mihran113)
+- Fix aim reindex command failure (alberttorosyan)
+- Fix issue with remote runs re-open (mihran113)
+- Deprecate custom set Run.hash values (alberttorosyan)
+- Tune mlflow converter run properties (tmynn)
+- Fix `AimLogger` deprecation issues related to release of PyTorch Lightning v1.7 (djwessel)
+
+## 3.13.0 Aug 21, 2022
+
+### Enhancements:
+
+- Add Figures Explorer to visualize and compare plotly figures (rubenaprikyan, KaroMourad, arsengit, VkoHov, roubkar)
+- Add Base Explorer as core of all explorers (rubenaprikyan, KaroMourad, arsengit, VkoHov, roubkar)
+- Add logging for remote resource cleanup and network stability (mihran113)
+- Restrict Run.hash to auto-generated values only (alberttorosyan)
+- Add ability to compare selected runs from the table (arsengit)
+- Notify users about failed/stalled runs (mahnerak, alberttorosyan)
+- Add ability to pin metrics in Run Page (mihran113, roubkar)
+- Add step for unit tests for nightly releases workflow (mihran113)
+- Add Keras-Tuner integration (tmynn)
+- Add Weights & Biases to Aim log converter (tmynn)
+
+### Fixes:
+
+- Fix chart exporting issue (KaroMourad)
 - Fix aim ui rendering issue on notebooks (rubenaprikyan)
+- Fix live update retry to show live data after solving connection problems with the server (rubenaprikyan)
 - Fix tensorboard convert while converting tensor (sharathmk99)
-- Fix incorrect column keys of metrics in the table grid of the runs dashboard  (VkoHov)
+- Fix incorrect column keys of metrics in the table grid of the runs dashboard (VkoHov)
+- Fix git info collection (mihran113)
+- Fix code block content and query copying functionality (arsengit)
+- Provide compatibility between plotly and matplotlib (tmynn)
+- Warn to use aim.Image if aim.Figure fails (tmynn)
 
 ## 3.12.2 Aug 5, 2022
 
@@ -53,7 +84,7 @@
 - Tune table sorting icon box overlapping with column box in compact mode (KaroMourad)
 - Fix tensorboard log conversion for images (mihran113)
 - Check if gradient is None when tracking gradient distributions (kage08)
-- Fix displaying non-syntax errors across Aim UI (arsengit) 
+- Fix displaying non-syntax errors across Aim UI (arsengit)
 - Fix queries on remote repos (mihran113)
 - Fix interval progress reports for query apis (mihran113)
 - Fix query request cancellation errors (mihran113)

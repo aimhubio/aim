@@ -12,6 +12,7 @@ import {
   useParams,
   useRouteMatch,
 } from 'react-router-dom';
+import { useModel } from 'hooks';
 
 import { Paper, Tab, Tabs, Tooltip } from '@material-ui/core';
 import { Skeleton } from '@material-ui/lab';
@@ -26,8 +27,6 @@ import Spinner from 'components/kit/Spinner';
 
 import { ANALYTICS_EVENT_KEYS } from 'config/analytics/analyticsKeysMap';
 import { DATE_WITH_SECONDS } from 'config/dates/dates';
-
-import useModel from 'hooks/model/useModel';
 
 import runDetailAppModel from 'services/models/runs/runDetailAppModel';
 import * as analytics from 'services/analytics';

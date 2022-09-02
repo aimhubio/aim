@@ -65,7 +65,7 @@ function SelectForm({
       let data: { value: string; label: string }[] = [];
       if (selectFormData.options) {
         for (let option of selectFormData.options) {
-          data.push({ value: option.label, label: option.label });
+          data.push({ value: option.key, label: option.label });
         }
       }
       return data;
@@ -79,13 +79,13 @@ function SelectForm({
       const selectedOptions = selectedOptionsData?.options;
       if (type === 'y') {
         onSelectOptionsChange([
-          selectFormData.options.find((o) => o.label === option.value),
+          selectFormData.options.find((o) => o.key === option.value),
           selectedOptions.length === 2 ? selectedOptions[1] : null,
         ]);
       } else if (type === 'x') {
         onSelectOptionsChange([
           selectedOptions[0] || null,
-          selectFormData.options.find((o) => o.label === option.value),
+          selectFormData.options.find((o) => o.key === option.value),
         ]);
       }
     }
@@ -110,7 +110,7 @@ function SelectForm({
                       size='medium'
                       isColored
                       onChange={(option) => onChange('x', option)}
-                      value={selectedOptionsData?.options[1]?.label || null}
+                      value={selectedOptionsData?.options[1]?.key || null}
                       options={dropDownOptions}
                       onMenuOpen={() => setOpen({ y: false, x: true })}
                       onMenuClose={() => setOpen({ y: false, x: false })}
@@ -132,7 +132,7 @@ function SelectForm({
                       size='medium'
                       isColored
                       onChange={(option) => onChange('y', option)}
-                      value={selectedOptionsData?.options[0]?.label || null}
+                      value={selectedOptionsData?.options[0]?.key || null}
                       options={dropDownOptions}
                       onMenuOpen={() => setOpen({ y: true, x: false })}
                       onMenuClose={() => setOpen({ y: false, x: false })}

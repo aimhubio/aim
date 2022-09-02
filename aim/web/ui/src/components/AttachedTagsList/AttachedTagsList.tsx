@@ -3,7 +3,7 @@ import React from 'react';
 import { Box, Tooltip } from '@material-ui/core';
 
 import ControlPopover from 'components/ControlPopover/ControlPopover';
-import { Button, Icon, Badge } from 'components/kit';
+import { Button, Icon, Badge, Text } from 'components/kit';
 import SelectTag from 'components/SelectTag/SelectTag';
 import ErrorBoundary from 'components/ErrorBoundary/ErrorBoundary';
 
@@ -15,9 +15,16 @@ import { IAttachedTagsListProps } from 'types/components/AttachedTagsList/Attach
 
 import './AttachedTagsList.scss';
 
-function AttachedTagsList({ runHash }: IAttachedTagsListProps) {
+function AttachedTagsList({
+  runHash,
+  initialTags,
+  headerRenderer,
+  onTagsChange,
+}: IAttachedTagsListProps) {
   const [tags, setTags] = React.useState<ITagInfo[]>([]);
-  const [attachedTags, setAttachedTags] = React.useState<ITagInfo[]>([]);
+  const [attachedTags, setAttachedTags] = React.useState<ITagInfo[]>(
+    initialTags ?? [],
+  );
   const getRunInfoRef = React.useRef<any>(null);
   const getTagsRef = React.useRef<any>(null);
   const createRunsTagRef = React.useRef<any>(null);
@@ -42,24 +49,31 @@ function AttachedTagsList({ runHash }: IAttachedTagsListProps) {
       { tag_name: tag.name },
       run_id,
     );
-    createRunsTagRef.current.call().then(() => {
-      setAttachedTags((prevState) => [...prevState, tag]);
-    });
+    createRunsTagRef.current
+      .call()
+      .then()
+      .catch((ex: unknown) => {
+        setAttachedTags((prevState) => [
+          ...prevState.filter((t) => tag.id !== t.id),
+        ]);
+      });
   }
 
-  function deleteRunsTag(run_id: string, tag_id: string) {
-    deleteRunsTagRef.current = runsService?.deleteRunsTag(run_id, tag_id);
-    deleteRunsTagRef.current.call().then(() => {
-      setAttachedTags((prevState) => [
-        ...prevState.filter((tag) => tag.id !== tag_id),
-      ]);
-    });
+  function deleteRunsTag(run_id: string, tag: ITagInfo) {
+    deleteRunsTagRef.current = runsService?.deleteRunsTag(run_id, tag.id);
+    deleteRunsTagRef.current
+      .call()
+      .then()
+      .catch((ex: unknown) => {
+        setAttachedTags((prevState) => [...prevState, tag]);
+      });
   }
 
   function onAttachedTagAdd(tag_id: string): void {
     if (!attachedTags.find((tag) => tag.id === tag_id)) {
       const tag = tags.find((tag) => tag.id === tag_id);
       if (tag) {
+        setAttachedTags((prevState) => [...prevState, tag]);
         createRunsTag(tag, runHash);
       }
     }
@@ -68,14 +82,19 @@ function AttachedTagsList({ runHash }: IAttachedTagsListProps) {
   function onAttachedTagDelete(label: string): void {
     const tag = tags.find((tag) => tag.name === label);
     if (tag) {
-      deleteRunsTag(runHash, tag.id);
+      setAttachedTags((prevState) => [
+        ...prevState.filter((t) => tag.id !== t.id),
+      ]);
+      deleteRunsTag(runHash, tag);
     }
   }
 
   React.useEffect(() => {
     if (runHash) {
+      if (!initialTags) {
+        getRunInfo(runHash);
+      }
       getAllTags();
-      getRunInfo(runHash);
     }
     return () => {
       getRunInfoRef.current?.abort();
@@ -83,13 +102,25 @@ function AttachedTagsList({ runHash }: IAttachedTagsListProps) {
     };
   }, [runHash]);
 
+  React.useEffect(() => {
+    if (onTagsChange) {
+      onTagsChange(attachedTags);
+    }
+  }, [attachedTags, onTagsChange]);
+
   return (
     <ErrorBoundary>
       <div>
-        <div className='AttachedTagsList__title'>Tag</div>
+        {typeof headerRenderer === 'function' ? (
+          headerRenderer(attachedTags?.length)
+        ) : (
+          <Text className='AttachedTagsList__title'>
+            Tags {attachedTags?.length > 0 ? `(${attachedTags.length})` : null}
+          </Text>
+        )}
         <Box className='AttachedTagsList'>
           {attachedTags?.length > 0 ? (
-            <div className='AttachedTagsList__tags'>
+            <div className='AttachedTagsList__tags ScrollBar__hidden'>
               {attachedTags.map((tag: ITagInfo) => (
                 <Badge
                   key={tag.id}
@@ -102,7 +133,7 @@ function AttachedTagsList({ runHash }: IAttachedTagsListProps) {
             </div>
           ) : (
             <div className='AttachedTagsList__noAttachedTags'>
-              No attached tag
+              No attached tags
             </div>
           )}
           <ControlPopover
@@ -127,10 +158,12 @@ function AttachedTagsList({ runHash }: IAttachedTagsListProps) {
                   }`}
                 >
                   {attachedTags?.length > 0 ? (
-                    <Icon name='edit' />
+                    <Button withOnlyIcon size='small' color='secondary'>
+                      <Icon name='edit'></Icon>
+                    </Button>
                   ) : (
                     <Button
-                      size='small'
+                      size='xSmall'
                       color='primary'
                       variant='outlined'
                       className='AttachedTagsList__ControlPopover__attach'

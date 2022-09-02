@@ -14,6 +14,7 @@ export interface IIllustrationBlockProps {
     | 'image'
     | 'audio'
     | 'scatters'
+    | 'figures'
     | 'bookmarks'
     | 'tags';
   type?: IllustrationsEnum;
