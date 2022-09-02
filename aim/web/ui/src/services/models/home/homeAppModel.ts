@@ -1,5 +1,4 @@
 import projectsService from 'services/api/projects/projectsService';
-import runsService from 'services/api/runs/runsService';
 
 import { IApiRequestRef } from 'types/services/services';
 
@@ -10,12 +9,9 @@ import { getItem, setItem } from 'utils/storage';
 
 import createModel from '../model';
 
-const model = createModel<any>({
-  experimentsData: [],
-});
+const model = createModel<any>({});
 
 let activityRequestRef: IApiRequestRef<unknown>;
-let experimentsRequestRef: IApiRequestRef<unknown>;
 
 function getActivityData() {
   const { call, abort } = projectsService.fetchActivityData();
@@ -69,20 +65,10 @@ function onSendEmail(data: object): Promise<any> {
 function initialize() {
   model.init();
   activityRequestRef = getActivityData();
-  experimentsRequestRef = runsService.getExperimentsData();
   try {
     activityRequestRef.call((detail) => {
       exceptionHandler({ detail, model });
     });
-    experimentsRequestRef
-      .call((detail) => {
-        exceptionHandler({ detail, model });
-      })
-      .then((data: any) => {
-        model.setState({
-          experimentsData: data,
-        });
-      });
   } catch (err: any) {
     onNotificationAdd({
       notification: {
@@ -107,7 +93,6 @@ function onHomeNotificationDelete(id: number) {
 function destroy() {
   model.destroy();
   activityRequestRef.abort();
-  experimentsRequestRef.abort();
 }
 
 const homeAppModel = {

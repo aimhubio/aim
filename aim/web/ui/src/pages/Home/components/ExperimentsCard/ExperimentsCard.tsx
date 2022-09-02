@@ -9,18 +9,24 @@ import CompareSelectedRunsPopover from 'pages/Metrics/components/Table/CompareSe
 
 import { AppNameEnum } from 'services/models/explorer';
 
-import { IExperimentCardProps } from './ExperimentsCard.d';
+import useExperimentsStore from './ExperimentsStore';
 
 import './ExperimentsCard.scss';
 
-function ExperimentsCard(props: IExperimentCardProps) {
+function ExperimentsCard() {
   const tableRef = React.useRef<any>(null);
+  const experimentsStore: any = useExperimentsStore((store) => store);
+  const experimentsData = experimentsStore.experiments;
   const [selectedRows, setSelectedRows] = React.useState<string[]>([]);
+
+  React.useEffect(() => {
+    experimentsStore.fetchExperiments();
+  }, []);
 
   // memoized table data
   const tableData = React.useMemo(() => {
-    if (props.experimentsData) {
-      return props.experimentsData.map(
+    if (experimentsData) {
+      return experimentsData.map(
         ({ name, archived, run_count }: any, index: number) => {
           return {
             key: index,
@@ -33,7 +39,7 @@ function ExperimentsCard(props: IExperimentCardProps) {
       );
     }
     return [];
-  }, [props.experimentsData]);
+  }, [experimentsData]);
 
   // on row selection
   const onRowSelect = React.useCallback(

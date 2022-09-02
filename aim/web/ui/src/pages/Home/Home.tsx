@@ -30,7 +30,7 @@ function Home({
             <Activity activityData={activityData} />
           </div>
           <div>
-            <ExperimentsCard experimentsData={experimentsData || []} />
+            <ExperimentsCard />
           </div>
           <div className='Home__Explore__container'>
             <SetupGuide askEmailSent={askEmailSent} onSendEmail={onSendEmail} />
