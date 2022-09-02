@@ -1,0 +1,7 @@
+@use 'src/styles/abstracts' as *;
+
+.HomeRight {
+  display: flex;
+  flex-direction: column;
+  width: 25%;
+}

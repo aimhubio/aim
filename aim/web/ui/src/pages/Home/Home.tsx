@@ -8,6 +8,8 @@ import { IHomeProps } from 'types/pages/home/Home';
 import ExploreAim from './components/ExploreAim/ExploreAim';
 import SetupGuide from './components/SetupGuide/SetupGuide';
 import Activity from './components/Activity/Activity';
+import HomeLeft from './components/HomeLeft/HomeLeft';
+import HomeRight from './components/HomeRight/HomeRight';
 
 import './Home.scss';
 
@@ -21,7 +23,7 @@ function Home({
   return (
     <ErrorBoundary>
       <section className='Home'>
-        <div className='Home__left'>left side</div>
+        <HomeLeft />
         <div className='Home__middle'>
           <div className='Home__Activity__container'>
             <Activity activityData={activityData} />
@@ -31,7 +33,7 @@ function Home({
             <ExploreAim />
           </div>
         </div>
-        <div className='Home__right'>right side</div>
+        <HomeRight />
         {notifyData?.length > 0 && (
           <NotificationContainer
             handleClose={onNotificationDelete}

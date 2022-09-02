@@ -5,12 +5,6 @@ $border: 1px solid $primary-color-10;
   background-color: #ffffff;
   overflow: hidden;
   display: flex;
-  &__right {
-    width: 20%;
-  }
-  &__left {
-    width: 20%;
-  }
   &__middle {
     width: 60%;
     padding: 0 $space-unit;
