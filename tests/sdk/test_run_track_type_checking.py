@@ -24,6 +24,29 @@ class TestRunSequenceHomogeneousValues(TestBase):
         exception = cm.exception
         self.assertEqual('Cannot log value \'[1]\' on sequence \'numbers\'. Incompatible data types.', exception.args[0])
 
+    def test_track_metrics_dict(self):
+        run = Run(system_tracking_interval=None)
+        empty_context_idx = Context({}).idx
+        for index in range(10):
+            run.track({'numbers': index, 'squares': index**2})
+        metric_infos = run.meta_run_tree.subtree(('traces', empty_context_idx))
+        self.assertEqual('int', metric_infos['numbers', 'dtype'])
+        self.assertEqual('int', metric_infos['squares', 'dtype'])
+        self.assertEqual(9, metric_infos['numbers', 'last'])
+        self.assertEqual(81, metric_infos['squares', 'last'])
+
+    def test_track_dicts_name_requirements(self):
+        run = Run(system_tracking_interval=None)
+        with self.assertRaises(ValueError) as cm:
+            run.track({'number': 1}, name='number')
+        exception = cm.exception
+        self.assertEqual('\'name\' should be None when tracking values dictionary.', exception.args[0])
+
+        with self.assertRaises(ValueError) as cm:
+            run.track(1)
+        exception = cm.exception
+        self.assertEqual('\'name\' should not be None.', exception.args[0])
+
     def test_incompatible_type_after_tracking_restart(self):
         run = Run(system_tracking_interval=None)
         run_hash = run.hash

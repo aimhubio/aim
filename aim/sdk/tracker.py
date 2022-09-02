@@ -85,7 +85,7 @@ class RunTracker:
     def __call__(
         self,
         value,
-        name: str,
+        name: str = None,
         step: int = None,
         epoch: int = None,
         *,
@@ -107,7 +107,7 @@ class RunTracker:
         self,
         value,
         track_time: float,
-        name: str,
+        name: str = None,
         step: int = None,
         epoch: int = None,
         *,
@@ -116,23 +116,18 @@ class RunTracker:
         if context is None:
             context = {}
 
-        if is_number(value):
-            val = convert_to_py_number(value)
-        elif isinstance(value, (CustomObject, list, tuple)):
-            val = value
-        else:
-            raise ValueError(f'Input metric of type {type(value)} is neither python number nor AimObject')
-
+        values = self._normalized_values(value, name)
         with self.repo.atomic_track(self.hash):
             ctx = Context(context)
-            seq_info = self.sequence_infos[ctx.idx, name]
-            if not seq_info.initialized:
-                self._init_sequence_info(ctx.idx, name, val)
-            step = step if step is not None else seq_info.count
+            for name, val in values.items():
+                seq_info = self.sequence_infos[ctx.idx, name]
+                if not seq_info.initialized:
+                    self._init_sequence_info(ctx.idx, name, val)
+                step = step if step is not None else seq_info.count
 
-            self._update_context_data(ctx)
-            self._update_sequence_info(ctx.idx, name, val, step)
-            self._add_value(seq_info, val, step, epoch, track_time)
+                self._update_context_data(ctx)
+                self._update_sequence_info(ctx.idx, name, val, step)
+                self._add_value(seq_info, val, step, epoch, track_time)
 
     def _preload_sequence_infos(self):
         for ctx_id, traces in self.meta_run_tree.get('traces', {}).items():
@@ -243,3 +238,22 @@ class RunTracker:
         seq_info.val_view[step_hash] = val
         seq_info.epoch_view[step_hash] = epoch
         seq_info.time_view[step_hash] = track_time
+
+    @staticmethod
+    def _normalized_values(value, name):
+        def _normalize_single_value(val):
+            if is_number(val):
+                return convert_to_py_number(val)
+            elif isinstance(val, (CustomObject, list, tuple)):
+                return val
+            else:
+                raise ValueError(f'Input type {type(value)} is neither python number nor AimObject')
+
+        if isinstance(value, dict):
+            if name is not None:
+                raise ValueError('\'name\' should be None when tracking values dictionary.')
+            return {str(k): _normalize_single_value(v) for k, v in value.items()}
+        else:
+            if name is None:
+                raise ValueError('\'name\' should not be None.')
+            return {name: _normalize_single_value(value)}

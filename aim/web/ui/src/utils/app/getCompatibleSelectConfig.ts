@@ -37,7 +37,7 @@ export function getCompatibleSelectConfig(
         delete selectConfig[key];
       }
     });
-    selectConfig.options = selectConfig.options.map((option: any) => {
+    selectConfig.options = selectConfig.options?.map((option: any) => {
       if (!option.key) {
         if (option.value) {
           const { option_name, context } = option.value;
