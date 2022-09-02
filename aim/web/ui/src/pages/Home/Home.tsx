@@ -21,7 +21,7 @@ function Home({
   return (
     <ErrorBoundary>
       <section className='Home'>
-        <div className='Home__left'></div>
+        <div className='Home__left'>left side</div>
         <div className='Home__middle'>
           <div className='Home__Activity__container'>
             <Activity activityData={activityData} />
@@ -31,7 +31,7 @@ function Home({
             <ExploreAim />
           </div>
         </div>
-        <div className='Home__right'></div>
+        <div className='Home__right'>right side</div>
         {notifyData?.length > 0 && (
           <NotificationContainer
             handleClose={onNotificationDelete}

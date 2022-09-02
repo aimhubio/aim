@@ -146,7 +146,7 @@ class ProxyTree(TreeView):
         self,
         path: Union[AimObjectKey, AimObjectPath] = ()
     ) -> AimObjectKey:
-        return self._rpc_client.run_instruction(self._hash, self._handler, 'last', (path,))
+        return self._rpc_client.run_instruction(self._hash, self._handler, 'last_key', (path,))
 
     def finalize(
         self,

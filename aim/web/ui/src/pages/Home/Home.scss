@@ -5,11 +5,19 @@ $border: 1px solid $primary-color-10;
   background-color: #ffffff;
   overflow: hidden;
   display: flex;
-  flex-direction: column;
-  h2 {
-    margin: 0 0 1rem 0;
+  &__right {
+    width: 20%;
   }
-
+  &__left {
+    width: 20%;
+  }
+  &__middle {
+    width: 60%;
+    padding: 0 $space-unit;
+    border: $border;
+    display: flex;
+    flex-direction: column;
+  }
   &__Explore__container {
     border-top: $border;
     border-bottom: $border;
@@ -17,5 +25,8 @@ $border: 1px solid $primary-color-10;
   }
   &__Activity__container {
     padding: $space-lg;
+  }
+  h2 {
+    margin: 0 0 1rem 0;
   }
 }
