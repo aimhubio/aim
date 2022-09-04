@@ -1,18 +1,18 @@
 import React from 'react';
 import styled from 'styled-components';
 
-import { IListItemProps } from './ListItem.d';
+import { IListItemProps, IListITemSize } from './ListItem.d';
 
-const heights: any = {
+const heights: { small: string; medium: string; large: string } = {
   small: '28px',
   medium: '32px',
   large: '36px',
 };
 
-const Container: any = styled.div`
+const Container = styled.div<IListItemProps | any>`
   display: flex;
   align-items: center;
-  height: ${({ size }: any) => heights[size]};
+  height: ${({ size }) => heights[size as IListITemSize]};
   padding: 0 0.5rem;
   border-radius: 0.25rem;
   transition: 0.18s ease-out;
@@ -22,7 +22,12 @@ const Container: any = styled.div`
   }
 `;
 
-function ListItem({ className, size = 'medium', children, ...rest }: any) {
+function ListItem({
+  className = '',
+  size = 'medium',
+  children,
+  ...rest
+}: IListItemProps) {
   return (
     <Container className={`ListItem ${className}`} size={size} {...rest}>
       {children}

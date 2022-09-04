@@ -2,7 +2,7 @@
 
 .QuickLinks {
   padding: $space-unit;
-  border-top: 1px solid $border-color-main;
+  border-top: $border-main;
   &__list {
     margin-top: $space-lg;
     &__ListItem {

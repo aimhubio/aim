@@ -1,7 +1,10 @@
 import React from 'react';
 
-export interface IListItemProps extends React.ReactHTMLElement<HTMLDivElement> {
-  children?: React.ReactNode;
+export interface IListItemProps
+  extends Partial<React.ReactHTMLElement<HTMLDivElement>> {
   className?: string;
-  size?: 'small' | 'medium' | 'large';
+  children?: React.ReactNode;
+  size?: IListITemSize;
 }
+
+export type IListITemSize = 'small' | 'medium' | 'large';

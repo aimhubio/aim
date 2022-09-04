@@ -22,7 +22,6 @@ function QuickLinks(): React.FunctionComponentElement<React.ReactNode> {
   ) => void = React.useCallback(
     (e: React.MouseEvent<HTMLElement>, value: string, newTab = false) => {
       e.stopPropagation();
-      e.preventDefault();
       if (value) {
         const query = `run.${value} == True`;
         const search = encode({
