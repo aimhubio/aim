@@ -26,8 +26,9 @@ class TestRunCreationChecks(TestBase):
         )
         self.assertEqual(run.hash, self.existing_run_hash)
 
-    def test_open_non_existing_run_raises_error(self):
-        from aim.sdk.errors import MissingRunError
-        with self.assertRaises(MissingRunError):
-            non_existing_run_hash = '111111111111000000000000'
-            Run(non_existing_run_hash)
+    # TODO [deprecation] Uncomment the line below
+    # def test_open_non_existing_run_raises_error(self):
+    #     from aim.sdk.errors import MissingRunError
+    #     with self.assertRaises(MissingRunError):
+    #         non_existing_run_hash = '111111111111000000000000'
+    #         Run(non_existing_run_hash)
