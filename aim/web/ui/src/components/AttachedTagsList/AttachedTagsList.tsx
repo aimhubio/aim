@@ -86,39 +86,39 @@ function AttachedTagsList({
   }, [attachedTags, onTagsChange]);
 
   const renderTagsBadges = React.useCallback(() => {
-    if (hasAttachedTagsPopup && !_.isEmpty(attachedTags)) {
-      return (
-        <div className='AttachedTagsList__tags ScrollBar__hidden'>
-          <ControlPopover
-            title={`Attached Tags (${attachedTags?.length})`}
-            anchorOrigin={{
-              vertical: 'bottom',
-              horizontal: 'left',
-            }}
-            transformOrigin={{
-              vertical: 'top',
-              horizontal: 'left',
-            }}
-            anchor={({ onAnchorClick }) => (
-              <div
-                className='AttachedTagsList__tags ScrollBar__hidden'
-                onClick={onAnchorClick}
-              >
-                {attachedTags.map((tag: ITagInfo) => (
-                  <Badge
-                    size='xSmall'
-                    key={tag.id}
-                    color={tag.color}
-                    label={tag.name}
-                    id={tag.id}
-                    onDelete={onAttachedTagDelete}
-                  />
-                ))}
-              </div>
-            )}
-            component={
-              <div className='InlineAttachedTagsList__tagsContainer'>
-                {!_.isEmpty(attachedTags) ? (
+    if (!_.isEmpty(attachedTags)) {
+      if (hasAttachedTagsPopup) {
+        return (
+          <div className='AttachedTagsList__tags ScrollBar__hidden'>
+            <ControlPopover
+              title={`Attached Tags (${attachedTags?.length})`}
+              anchorOrigin={{
+                vertical: 'bottom',
+                horizontal: 'left',
+              }}
+              transformOrigin={{
+                vertical: 'top',
+                horizontal: 'left',
+              }}
+              anchor={({ onAnchorClick }) => (
+                <div
+                  className='AttachedTagsList__tags ScrollBar__hidden'
+                  onClick={onAnchorClick}
+                >
+                  {attachedTags.map((tag: ITagInfo) => (
+                    <Badge
+                      size='xSmall'
+                      key={tag.id}
+                      color={tag.color}
+                      label={tag.name}
+                      id={tag.id}
+                      onDelete={onAttachedTagDelete}
+                    />
+                  ))}
+                </div>
+              )}
+              component={
+                <div className='InlineAttachedTagsList__tagsContainer'>
                   <div className='InlineAttachedTagsList__tagsContainer__tags'>
                     {attachedTags.map((tag: ITagInfo) => {
                       return (
@@ -137,17 +137,13 @@ function AttachedTagsList({
                       );
                     })}
                   </div>
-                ) : (
-                  <></>
-                )}
-              </div>
-            }
-          />
-        </div>
-      );
-    }
-
-    if (!_.isEmpty(attachedTags)) {
+                  )
+                </div>
+              }
+            />
+          </div>
+        );
+      }
       return (
         <div className='AttachedTagsList__tags ScrollBar__hidden'>
           {attachedTags.map((tag: ITagInfo) => (
