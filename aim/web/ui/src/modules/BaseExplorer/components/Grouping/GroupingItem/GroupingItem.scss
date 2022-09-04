@@ -2,11 +2,21 @@
 
 .GroupingItem {
   margin-right: $space-xxxxs;
+  border: $border-transparent;
+
   &__label {
     margin-right: $space-xxxxs;
+    margin-top: toRem(1px);
   }
   &:last-child {
     margin-right: 0;
   }
- 
+
+  &.active {
+    border: $border-main-active;
+    background-color: $primary-color-10;
+  }
+  .Icon__container {
+    color: $pico-80;
+  }
 }

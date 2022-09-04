@@ -22,7 +22,7 @@ function Grouping(props: IBaseComponentProps) {
   return (
     <ErrorBoundary>
       <div className='Grouping'>
-        <Text size={10} weight={500} color='text' className='Grouping__title'>
+        <Text size={12} weight={500} className='Grouping__title'>
           Group by:
         </Text>
         <div className='Grouping__content'>{groupingItems}</div>

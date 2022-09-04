@@ -28,7 +28,6 @@ type componentType =
   | 'strong'
   | 'small';
 type componentColorType =
-  | 'text'
   | 'primary'
   | 'secondary'
   | 'success'

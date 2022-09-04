@@ -38,45 +38,21 @@ function GroupingItem({
         transformOrigin={{ vertical: 'top', horizontal: 'left' }}
         anchor={({ onAnchorClick, opened }) => (
           <Tooltip title={`Group by ${groupName}`}>
-            {/* <div
-              onClick={(e: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
-                if (!isDisabled) {
-                  onAnchorClick(e);
-                }
-              }}
+            <Button
+              size='small'
+              disabled={isDisabled}
+              onClick={onAnchorClick}
               className={classNames('GroupingItem', {
-                disabled: isDisabled,
+                active:
+                  opened ||
+                  (!_.isNil(availableModifiers) &&
+                    !_.isEmpty(currentValues[groupName].fields)),
               })}
             >
-              <div
-                className={classNames('GroupingItem__iconBox', {
-                  active: opened,
-                  outlined:
-                    !_.isNil(availableModifiers) &&
-                    !_.isEmpty(currentValues[groupName].fields),
-                })}
-              >
-                <Icon name={iconName} />
-              </div>
-            </div> */}
-            <Button
-              size='xxSmall'
-              disabled={isDisabled}
-              className='GroupingItem'
-              onClick={onAnchorClick}
-              style={{}}
-            >
-              <>
-                <Text
-                  size={10}
-                  weight={500}
-                  color='text'
-                  className='GroupingItem__label'
-                >
-                  {groupName}
-                </Text>
-                <Icon name='arrow-down' fontSize={8} color={'#161717'} />
-              </>
+              <Text size={12} weight={500} className='GroupingItem__label'>
+                {groupName}
+              </Text>
+              <Icon name='arrow-down-contained' fontSize={6} />
             </Button>
           </Tooltip>
         )}
