@@ -1,6 +1,7 @@
 import React from 'react';
 
 import { Checkbox } from '@material-ui/core';
+import { IResourceState } from 'modules/core/utils/createResource';
 
 import DataList from 'components/kit/DataList';
 import { Card, Icon, Text } from 'components/kit';
@@ -9,24 +10,30 @@ import CompareSelectedRunsPopover from 'pages/Metrics/components/Table/CompareSe
 
 import { AppNameEnum } from 'services/models/explorer';
 
-import useExperimentsStore from './ExperimentsStore';
+import createExperimentEngine from './ExperimentsStore';
+import { IExperimentData } from './ExperimentsCard.d';
 
 import './ExperimentsCard.scss';
 
 function ExperimentsCard() {
   const tableRef = React.useRef<any>(null);
-  const experimentsStore: any = useExperimentsStore((store) => store);
-  const experimentsData = experimentsStore.experiments;
   const [selectedRows, setSelectedRows] = React.useState<string[]>([]);
+  const { current: experimentsEngine } = React.useRef(createExperimentEngine);
+  const experimentsStore: IResourceState<IExperimentData> =
+    experimentsEngine.experimentsState((state) => state);
 
   React.useEffect(() => {
-    experimentsStore.fetchExperiments();
+    experimentsEngine.fetchExperiments();
+    return () => {
+      experimentsEngine.experimentsState.destroy();
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   // memoized table data
   const tableData = React.useMemo(() => {
-    if (experimentsData) {
-      return experimentsData.map(
+    if (experimentsStore.data) {
+      return experimentsStore.data.map(
         ({ name, archived, run_count }: any, index: number) => {
           return {
             key: index,
@@ -39,7 +46,7 @@ function ExperimentsCard() {
       );
     }
     return [];
-  }, [experimentsData]);
+  }, [experimentsStore.data]);
 
   // on row selection
   const onRowSelect = React.useCallback(
@@ -162,7 +169,7 @@ function ExperimentsCard() {
           tableRef={tableRef}
           tableColumns={tableColumns}
           tableData={tableData}
-          isLoading={false}
+          isLoading={experimentsStore.loading}
           height='400px'
           searchableKeys={['name', 'run_count']}
           illustrationConfig={{

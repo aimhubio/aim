@@ -1,18 +1,20 @@
-import create from 'zustand';
+import createResource from 'modules/core/utils/createResource';
 
 import experimentsService from 'services/api/experiments/experimentsService';
 
-const useExperimentsStore = create((set) => ({
-  experiments: [],
-  error: {},
-  fetchExperiments: async () => {
-    const experiments = await experimentsService
-      .getExperimentsData()
-      .call((detail: any) => {
-        set({ error: detail });
-      });
-    set({ experiments });
-  },
-}));
+import { IExperimentData } from './ExperimentsCard.d';
 
-export default useExperimentsStore;
+export interface State<T> {
+  data: T[];
+  loading: boolean;
+  error: any;
+}
+
+function createExperimentsEngine() {
+  const { fetchData, state } = createResource<IExperimentData>(
+    experimentsService.getExperimentsData,
+  );
+  return { fetchExperiments: fetchData, experimentsState: state };
+}
+
+export default createExperimentsEngine();
