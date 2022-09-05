@@ -188,6 +188,7 @@ function ScattersContainer(): React.FunctionComponentElement<React.ReactNode> {
         onColumnsVisibilityChange={scattersAppModel.onColumnsVisibilityChange}
         onTableDiffShow={scattersAppModel.onTableDiffShow}
         onTableResizeModeChange={scattersAppModel.onTableResizeModeChange}
+        onRunsTagsChange={scattersAppModel.onRunsTagsChange}
         // live update
         liveUpdateConfig={scattersData?.config?.liveUpdate!}
         onLiveUpdateConfigChange={scattersAppModel.changeLiveUpdateConfig}

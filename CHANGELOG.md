@@ -6,6 +6,7 @@
 
 - Add the ability to attach/remove tags on the Run Page (roubkar)
 - Support dictionary as an argument of `Run.track` (alberttorosyan)
+- Display the tags of the run in the tables of the explorers (VkoHov)
 
 ### Fixes:
 
