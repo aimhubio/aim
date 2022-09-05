@@ -29,7 +29,7 @@ jobs:
     steps:
       - uses: deepakputhraya/action-pr-title@master
         with:
-          regex: '^\[(?:feat|fix|doc|refactor)\]\s[A-Z].*(?<!\.)$'
+          regex: '^\[(?:feat|fix|doc|refactor|deprecation)\]\s[A-Z].*(?<!\.)$'
           github_token: ${{ github.token }}
   run-checks:
     if: github.event.pull_request.draft == false && github.event.action != 'edited'
@@ -63,7 +63,6 @@ jobs:
           pytest --cov-report term --cov-branch --cov-fail-under=50 --cov=aim/web --cov=aim/storage --cov=aim/sdk tests
 
   storage-performance-checks:
-    needs: run-checks
     concurrency: perf-tests
     runs-on: [self-hosted, performance-tests]
     name: Performance tests

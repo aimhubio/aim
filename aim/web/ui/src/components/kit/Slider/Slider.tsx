@@ -4,8 +4,6 @@ import { Slider as MaterialSlider } from '@material-ui/core';
 
 import ErrorBoundary from 'components/ErrorBoundary/ErrorBoundary';
 
-import { Text } from '../index';
-
 import { ISliderProps } from '.';
 
 import './Slider.scss';

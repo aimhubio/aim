@@ -92,20 +92,20 @@ function SelectForm({
     if (event.type === 'click') {
       const lookup = value.reduce(
         (acc: { [key: string]: number }, curr: ISelectOption) => {
-          acc[curr.label] = ++acc[curr.label] || 0;
+          acc[curr.key] = ++acc[curr.key] || 0;
           return acc;
         },
         {},
       );
       onImagesExploreSelectChange(
-        value.filter((option: ISelectOption) => lookup[option.label] === 0),
+        value.filter((option: ISelectOption) => lookup[option.key] === 0),
       );
     }
   }
 
   function handleDelete(field: string): void {
     let fieldData = [...selectedImagesData?.options].filter(
-      (opt: ISelectOption) => opt.label !== field,
+      (opt: ISelectOption) => opt.key !== field,
     );
     onImagesExploreSelectChange(fieldData);
   }
@@ -231,9 +231,8 @@ function SelectForm({
                         renderOption={(option) => {
                           let selected: boolean =
                             !!selectedImagesData?.options.find(
-                              (item: ISelectOption) =>
-                                item.label === option.label,
-                            )?.label;
+                              (item: ISelectOption) => item.key === option.key,
+                            )?.key;
                           return (
                             <div className='SelectForm__option'>
                               <Checkbox
@@ -272,6 +271,7 @@ function SelectForm({
                               size='large'
                               key={tag.label}
                               label={tag.label}
+                              value={tag.key}
                               onDelete={handleDelete}
                               disabled={isDisabled}
                             />

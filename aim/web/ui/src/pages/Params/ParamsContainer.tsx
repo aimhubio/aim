@@ -177,6 +177,7 @@ function ParamsContainer(): React.FunctionComponentElement<React.ReactNode> {
       onExportTableData={paramsAppModel.onExportTableData}
       onRowHeightChange={paramsAppModel.onRowHeightChange}
       onParamVisibilityChange={paramsAppModel.onParamVisibilityChange}
+      onRunsTagsChange={paramsAppModel.onRunsTagsChange}
       onColumnsOrderChange={paramsAppModel.onColumnsOrderChange}
       onColumnsVisibilityChange={paramsAppModel.onColumnsVisibilityChange}
       onTableResizeModeChange={paramsAppModel.onTableResizeModeChange}

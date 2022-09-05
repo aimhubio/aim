@@ -7,4 +7,5 @@ export interface IImageFullViewPopoverProps {
   handleClose: () => void;
   selectOptions: IGroupingSelectOption[];
   imageRendering: string;
+  onRunsTagsChange: (runHash: string, tags: ITagInfo[]) => void;
 }

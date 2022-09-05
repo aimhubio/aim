@@ -7,7 +7,7 @@ try:
     from kerastuner.engine.tuner_utils import TunerCallback
 except ImportError:
     raise RuntimeError(
-        'This contrib module requires KerasTuner Lightning to be installed. '
+        'This contrib module requires KerasTuner to be installed. '
         'Please install it with command: \n pip install keras-tuner'
     )
 

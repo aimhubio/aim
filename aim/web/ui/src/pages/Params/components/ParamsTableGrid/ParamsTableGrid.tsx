@@ -8,6 +8,7 @@ import ControlPopover from 'components/ControlPopover/ControlPopover';
 import ErrorBoundary from 'components/ErrorBoundary/ErrorBoundary';
 import RunNameColumn from 'components/Table/RunNameColumn';
 import GroupedColumnHeader from 'components/Table/GroupedColumnHeader';
+import AttachedTagsList from 'components/AttachedTagsList/AttachedTagsList';
 
 import COLORS from 'config/colors/colors';
 import { TABLE_DEFAULT_CONFIG } from 'config/table/tableConfigs';
@@ -17,14 +18,17 @@ import { AppNameEnum } from 'services/models/explorer';
 import { ITableColumn } from 'types/pages/metrics/components/TableColumns/TableColumns';
 import { IOnGroupingSelectChangeParams } from 'types/services/models/metrics/metricsAppModel';
 import { IGroupingSelectOption } from 'types/services/models/imagesExplore/imagesExploreAppModel';
+import { ITagInfo } from 'types/pages/tags/Tags';
 
 import alphabeticalSortComparator from 'utils/alphabeticalSortComparator';
-import { isSystemMetric } from 'utils/isSystemMetric';
 import { formatSystemMetricName } from 'utils/formatSystemMetricName';
 import contextToString from 'utils/contextToString';
 import { formatValue } from 'utils/formatValue';
 import { SortActionTypes, SortField } from 'utils/getSortedFields';
 import getColumnOptions from 'utils/getColumnOptions';
+import { getMetricHash } from 'utils/app/getMetricHash';
+import { getMetricLabel } from 'utils/app/getMetricLabel';
+import { isSystemMetric } from 'utils/isSystemMetric';
 
 function getParamsTableColumns(
   sortOptions: IGroupingSelectOption[],
@@ -135,30 +139,41 @@ function getParamsTableColumns(
         : null,
     },
     {
+      key: 'tags',
+      content: <span>Tags</span>,
+      topHeader: 'Run',
+      pin: order?.left?.includes('tags')
+        ? 'left'
+        : order?.right?.includes('tags')
+        ? 'right'
+        : null,
+    },
+    {
       key: 'actions',
       content: '',
       topHeader: '',
       pin: 'right',
     },
   ].concat(
-    Object.keys(metricsColumns).reduce((acc: any, key: string) => {
-      const systemMetric: boolean = isSystemMetric(key);
+    Object.keys(metricsColumns).reduce((acc: any, metricName: string) => {
       const systemMetricsList: ITableColumn[] = [];
+      const isSystem = isSystemMetric(metricName);
       const metricsList: ITableColumn[] = [];
-      Object.keys(metricsColumns[key]).forEach((metricContext) => {
-        const contextName = metricContext ? `_${metricContext}` : '';
-        const columnKey = `${systemMetric ? key : `${key}${contextName}`}`;
-        const sortValueKey = `metricsLastValues.${key}${contextName}`;
-        const sortItemIndex: number =
-          sortFields?.findIndex(
-            (value: SortField) => value.value === sortValueKey,
-          ) ?? -1;
+      Object.keys(metricsColumns[metricName]).forEach((metricContext) => {
+        const metricHash = getMetricHash(metricName, metricContext);
+        const metricLabel = getMetricLabel(metricName, metricContext);
 
+        const sortValueKey = `metricsLastValues.${metricHash}`;
+        const sortItemIndex: number =
+          sortFields?.findIndex((value: SortField) => {
+            return value.value === sortValueKey;
+          }) ?? -1;
         let column = {
-          key: columnKey,
-          content: systemMetric ? (
+          key: metricHash,
+          label: metricLabel,
+          content: isSystem ? (
             <span>
-              {formatSystemMetricName(key)}
+              {formatSystemMetricName(metricName)}
               {onSort && (
                 <TableSortIcons
                   onSort={() =>
@@ -220,16 +235,14 @@ function getParamsTableColumns(
               )}
             </div>
           ),
-          topHeader: systemMetric ? 'System Metrics' : key,
-          pin: order?.left?.includes(columnKey)
+          topHeader: isSystem ? 'System Metrics' : metricName,
+          pin: order?.left?.includes(metricHash)
             ? 'left'
-            : order?.right?.includes(columnKey)
+            : order?.right?.includes(metricHash)
             ? 'right'
             : null,
         };
-        systemMetric
-          ? systemMetricsList.push(column)
-          : metricsList.push(column);
+        isSystem ? systemMetricsList.push(column) : metricsList.push(column);
       });
       acc = [
         ...acc,
@@ -248,6 +261,7 @@ function getParamsTableColumns(
 
       return {
         key: param,
+        label: param,
         content: (
           <span>
             {param}
@@ -366,8 +380,20 @@ function getParamsTableColumns(
   }
   return columns;
 }
+
+const TagsColumn = (props: {
+  runHash: string;
+  tags: ITagInfo[];
+  onRunsTagsChange: (runHash: string, tags: ITagInfo[]) => void;
+  headerRenderer: () => React.ReactNode;
+  addTagButtonSize: 'xxSmall' | 'xSmall';
+}) => {
+  return <AttachedTagsList {...props} hasAttachedTagsPopup />;
+};
+
 function paramsTableRowRenderer(
   rowData: any,
+  onRunsTagsChange: (runHash: string, tags: ITagInfo[]) => void,
   actions?: { [key: string]: (e: any) => void },
   groupHeaderRow = false,
   columns: string[] = [],
@@ -440,6 +466,16 @@ function paramsTableRowRenderer(
             hidden={rowData.isHidden}
           />
         ),
+      },
+      tags: {
+        component: TagsColumn,
+        props: {
+          runHash: rowData.hash,
+          tags: rowData.tags,
+          onRunsTagsChange,
+          headerRenderer: () => <></>,
+          addTagButtonSize: 'xxSmall',
+        },
       },
       actions: {
         content: (

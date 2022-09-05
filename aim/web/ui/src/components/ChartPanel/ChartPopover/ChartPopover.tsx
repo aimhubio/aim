@@ -93,6 +93,7 @@ function ChartPopover(props: IChartPopover): JSX.Element {
             focusedState={props.focusedState}
             alignmentConfig={props.alignmentConfig}
             selectOptions={selectOptions}
+            onRunsTagsChange={props.onRunsTagsChange}
           />
         </ErrorBoundary>
       </Popover>
