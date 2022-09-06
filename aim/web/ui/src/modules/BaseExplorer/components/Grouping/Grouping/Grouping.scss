@@ -1,6 +1,6 @@
 @use 'src/styles/abstracts' as *;
 
-.Grouping {
+.BaseGrouping {
   display: flex;
   align-items: center;
   border-left: $border-main;

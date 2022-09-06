@@ -21,11 +21,11 @@ function Grouping(props: IBaseComponentProps) {
 
   return (
     <ErrorBoundary>
-      <div className='Grouping'>
-        <Text size={12} weight={500} className='Grouping__title'>
+      <div className='BaseGrouping'>
+        <Text size={12} weight={500} className='BaseGrouping__title'>
           Group by:
         </Text>
-        <div className='Grouping__content'>{groupingItems}</div>
+        <div className='BaseGrouping__content'>{groupingItems}</div>
       </div>
     </ErrorBoundary>
   );

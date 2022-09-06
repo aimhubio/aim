@@ -42,14 +42,14 @@ function GroupingItem({
               size='small'
               disabled={isDisabled}
               onClick={onAnchorClick}
-              className={classNames('GroupingItem', {
+              className={classNames('BaseGroupingItem', {
                 active:
                   opened ||
                   (!_.isNil(availableModifiers) &&
                     !_.isEmpty(currentValues[groupName].fields)),
               })}
             >
-              <Text size={12} weight={500} className='GroupingItem__label'>
+              <Text size={12} weight={500} className='BaseGroupingItem__label'>
                 {groupName}
               </Text>
               <Icon name='arrow-down-contained' fontSize={6} />
