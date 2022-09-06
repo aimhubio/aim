@@ -1,6 +1,6 @@
 @use 'src/styles/abstracts' as *;
 
-.GroupingItem {
+.BaseGroupingItem {
   margin-right: $space-xxxs;
   border: $border-transparent;
 
@@ -13,8 +13,14 @@
   }
 
   &.active {
-    border: $border-main-active;
     background-color: $primary-color-10;
+  }
+  &.outlined {
+    background-color: $primary-color-10;
+    border: $border-main-active;
+  }
+  &:hover {
+    background-color: $pico-5;
   }
   .Icon__container {
     color: $pico-80;

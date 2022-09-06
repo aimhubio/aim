@@ -87,6 +87,7 @@ import {
   ITrendlineOptions,
 } from 'types/services/models/scatter/scatterAppModel';
 import { IApiRequest } from 'types/services/services';
+import { ITagInfo, ITagProps } from 'types/pages/tags/Tags';
 
 import {
   aggregateGroupData,
@@ -172,6 +173,7 @@ import { SortField } from 'utils/getSortedFields';
 import onChangeTrendlineOptions from 'utils/app/onChangeTrendlineOptions';
 import onToggleColumnsColorScales from 'utils/app/onToggleColumnsColorScales';
 import onAxisBrushExtentChange from 'utils/app/onAxisBrushExtentChange';
+import onRunsTagsChange from 'utils/app/onRunsTagsChange';
 import {
   alignByAbsoluteTime,
   alignByCustomMetric,
@@ -262,7 +264,7 @@ function createAppModel(appConfig: IAppInitialConfig) {
             sortFields: [...TABLE_DEFAULT_CONFIG.metrics.sortFields],
             hiddenMetrics: [...TABLE_DEFAULT_CONFIG.metrics.hiddenMetrics],
             hiddenColumns: [...TABLE_DEFAULT_CONFIG.metrics.hiddenColumns],
-            columnsWidths: {},
+            columnsWidths: { tags: 300 },
             columnsOrder: {
               left: [...TABLE_DEFAULT_CONFIG.metrics.columnsOrder.left],
               middle: [...TABLE_DEFAULT_CONFIG.metrics.columnsOrder.middle],
@@ -377,7 +379,7 @@ function createAppModel(appConfig: IAppInitialConfig) {
             hiddenMetrics: TABLE_DEFAULT_CONFIG.runs.hiddenMetrics,
             hiddenColumns: TABLE_DEFAULT_CONFIG.runs.hiddenColumns,
             sortFields: [...TABLE_DEFAULT_CONFIG.runs.sortFields],
-            columnsWidths: {},
+            columnsWidths: { tags: 300 },
             columnsColorScales: {},
             columnsOrder: {
               left: [...TABLE_DEFAULT_CONFIG.runs.columnsOrder.left],
@@ -791,6 +793,14 @@ function createAppModel(appConfig: IAppInitialConfig) {
               date: moment(metric.run.props.creation_time * 1000).format(
                 TABLE_DATE_FORMAT,
               ),
+              tags: metric.run.props.tags.map((tag: ITagProps) => ({
+                archived: false,
+                color: tag.color,
+                id: tag.id,
+                comment: tag.description,
+                name: tag.name,
+                run_count: 0,
+              })),
               duration: processDurationTime(
                 metric.run.props.creation_time * 1000,
                 metric.run.props.end_time
@@ -908,7 +918,7 @@ function createAppModel(appConfig: IAppInitialConfig) {
               rows[groupKey!].items.push(
                 isRowData
                   ? rowValues
-                  : metricsTableRowRenderer(rowValues, {
+                  : metricsTableRowRenderer(rowValues, onModelRunsTagsChange, {
                       toggleVisibility: (e) => {
                         e.stopPropagation();
                         onRowVisibilityChange({
@@ -924,7 +934,7 @@ function createAppModel(appConfig: IAppInitialConfig) {
               rows.push(
                 isRowData
                   ? rowValues
-                  : metricsTableRowRenderer(rowValues, {
+                  : metricsTableRowRenderer(rowValues, onModelRunsTagsChange, {
                       toggleVisibility: (e) => {
                         e.stopPropagation();
                         onRowVisibilityChange({
@@ -957,6 +967,7 @@ function createAppModel(appConfig: IAppInitialConfig) {
           if (metricsCollection.config !== null && !isRowData) {
             rows[groupKey!].data = metricsTableRowRenderer(
               rows[groupKey!].data,
+              onModelRunsTagsChange,
               {},
               true,
               ['value', 'groups'].concat(Object.keys(columnsValues)),
@@ -1664,6 +1675,10 @@ function createAppModel(appConfig: IAppInitialConfig) {
       50,
     );
 
+    function onModelRunsTagsChange(runHash: string, tags: ITagInfo[]): void {
+      onRunsTagsChange({ runHash, tags, model, updateModelData });
+    }
+
     function onModelGroupingSelectChange({
       groupName,
       list,
@@ -1875,6 +1890,7 @@ function createAppModel(appConfig: IAppInitialConfig) {
       onNotificationAdd: onModelNotificationAdd,
       onNotificationDelete: onModelNotificationDelete,
       onResetConfigData: onModelResetConfigData,
+      onRunsTagsChange: onModelRunsTagsChange,
       onSortChange,
       onSearchQueryCopy,
       changeLiveUpdateConfig,
@@ -2702,6 +2718,14 @@ function createAppModel(appConfig: IAppInitialConfig) {
               ),
               active: metric.run.props.active,
               metric: metric.name,
+              tags: metric.run.props.tags.map((tag: any) => ({
+                archived: false,
+                color: tag.color,
+                id: tag.id,
+                comment: tag.description,
+                name: tag.name,
+                run_count: 0,
+              })),
               ...metricsRowValues,
             };
             rowIndex++;
@@ -3459,6 +3483,14 @@ function createAppModel(appConfig: IAppInitialConfig) {
                 date: moment(metric.run.props.creation_time * 1000).format(
                   TABLE_DATE_FORMAT,
                 ),
+                tags: metric.run.props.tags.map((tag: ITagProps) => ({
+                  archived: false,
+                  color: tag.color,
+                  id: tag.id,
+                  comment: tag.description,
+                  name: tag.name,
+                  run_count: 0,
+                })),
                 metric: metric.name,
                 duration: processDurationTime(
                   metric.run.props.creation_time * 1000,
@@ -3513,7 +3545,7 @@ function createAppModel(appConfig: IAppInitialConfig) {
                 rows[groupKey!].items.push(
                   isRowData
                     ? rowValues
-                    : paramsTableRowRenderer(rowValues, {
+                    : paramsTableRowRenderer(rowValues, onModelRunsTagsChange, {
                         toggleVisibility: (e) => {
                           e.stopPropagation();
                           onRowVisibilityChange({
@@ -3529,7 +3561,7 @@ function createAppModel(appConfig: IAppInitialConfig) {
                 rows.push(
                   isRowData
                     ? rowValues
-                    : paramsTableRowRenderer(rowValues, {
+                    : paramsTableRowRenderer(rowValues, onModelRunsTagsChange, {
                         toggleVisibility: (e) => {
                           e.stopPropagation();
                           onRowVisibilityChange({
@@ -3563,6 +3595,7 @@ function createAppModel(appConfig: IAppInitialConfig) {
             if (metricsCollection.config !== null && !isRowData) {
               rows[groupKey!].data = paramsTableRowRenderer(
                 rows[groupKey!].data,
+                onModelRunsTagsChange,
                 {},
                 true,
                 ['groups'].concat(Object.keys(columnsValues)),
@@ -4298,6 +4331,10 @@ function createAppModel(appConfig: IAppInitialConfig) {
         });
       }
 
+      function onModelRunsTagsChange(runHash: string, tags: ITagInfo[]): void {
+        onRunsTagsChange({ runHash, tags, model, updateModelData });
+      }
+
       function onModelGroupingSelectChange({
         groupName,
         list,
@@ -4523,6 +4560,7 @@ function createAppModel(appConfig: IAppInitialConfig) {
         onNotificationAdd: onModelNotificationAdd,
         onNotificationDelete: onModelNotificationDelete,
         onResetConfigData: onModelResetConfigData,
+        onRunsTagsChange: onModelRunsTagsChange,
         onSortChange,
         destroy,
         changeLiveUpdateConfig,
@@ -5142,6 +5180,14 @@ function createAppModel(appConfig: IAppInitialConfig) {
                 date: moment(metric.run.props.creation_time * 1000).format(
                   TABLE_DATE_FORMAT,
                 ),
+                tags: metric.run.props.tags.map((tag: ITagProps) => ({
+                  archived: false,
+                  color: tag.color,
+                  id: tag.id,
+                  comment: tag.description,
+                  name: tag.name,
+                  run_count: 0,
+                })),
                 metric: metric.name,
                 duration: processDurationTime(
                   metric.run.props.creation_time * 1000,
@@ -5196,7 +5242,7 @@ function createAppModel(appConfig: IAppInitialConfig) {
                 rows[groupKey!].items.push(
                   isRowData
                     ? rowValues
-                    : paramsTableRowRenderer(rowValues, {
+                    : paramsTableRowRenderer(rowValues, onModelRunsTagsChange, {
                         toggleVisibility: (e) => {
                           e.stopPropagation();
                           onRowVisibilityChange({
@@ -5212,7 +5258,7 @@ function createAppModel(appConfig: IAppInitialConfig) {
                 rows.push(
                   isRowData
                     ? rowValues
-                    : paramsTableRowRenderer(rowValues, {
+                    : paramsTableRowRenderer(rowValues, onModelRunsTagsChange, {
                         toggleVisibility: (e) => {
                           e.stopPropagation();
                           onRowVisibilityChange({
@@ -5246,6 +5292,7 @@ function createAppModel(appConfig: IAppInitialConfig) {
             if (metricsCollection.config !== null && !isRowData) {
               rows[groupKey!].data = paramsTableRowRenderer(
                 rows[groupKey!].data,
+                onModelRunsTagsChange,
                 {},
                 true,
                 ['groups'].concat(Object.keys(columnsValues)),
@@ -5828,6 +5875,10 @@ function createAppModel(appConfig: IAppInitialConfig) {
         model.setState({ config: configData, tooltip: tooltipData });
       }
 
+      function onModelRunsTagsChange(runHash: string, tags: ITagInfo[]): void {
+        onRunsTagsChange({ runHash, tags, model, updateModelData });
+      }
+
       function onModelGroupingSelectChange({
         groupName,
         list,
@@ -6040,6 +6091,7 @@ function createAppModel(appConfig: IAppInitialConfig) {
         onNotificationAdd: onModelNotificationAdd,
         onNotificationDelete: onModelNotificationDelete,
         onResetConfigData: onModelResetConfigData,
+        onRunsTagsChange: onModelRunsTagsChange,
         onSortChange,
         destroy,
         changeLiveUpdateConfig,

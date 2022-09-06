@@ -21,6 +21,7 @@ export interface IMediaListProps {
   tooltip?: ITooltip;
   mediaType: MediaTypeEnum;
   selectOptions: IGroupingSelectOption[];
+  onRunsTagsChange: (runHash: string, tags: ITagInfo[]) => void;
 }
 
 export interface IImageBoxProps {
@@ -33,4 +34,5 @@ export interface IImageBoxProps {
   additionalProperties?: IMediaPanelProps['additionalProperties'];
   style: { [key: string]: any };
   selectOptions: IGroupingSelectOption[];
+  onRunsTagsChange: (runHash: string, tags: ITagInfo[]) => void;
 }
