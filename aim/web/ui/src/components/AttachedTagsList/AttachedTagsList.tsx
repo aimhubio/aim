@@ -100,7 +100,7 @@ function AttachedTagsList({
       getRunInfoRef.current?.abort();
       getTagsRef.current?.abort();
     };
-  }, [runHash]);
+  }, [runHash, initialTags]);
 
   React.useEffect(() => {
     if (onTagsChange) {

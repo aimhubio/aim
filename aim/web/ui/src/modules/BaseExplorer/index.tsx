@@ -21,6 +21,16 @@ function BaseExplorer(props: IBaseExplorerProps) {
     engineInstance.initialize();
   }, [engineInstance]);
 
+  const panelRenderer = React.useCallback(
+    (Controls, index) => (
+      <div className='VisualizerPanel'>
+        {index === 0 && <components.grouping engine={props.engineInstance} />}
+        <Controls engine={props.engineInstance} />
+      </div>
+    ),
+    [components, props.engineInstance],
+  );
+
   return (
     initialized && (
       <div className='Explorer'>
@@ -31,8 +41,11 @@ function BaseExplorer(props: IBaseExplorerProps) {
         />
         {/* {__DEV__ && <Text>Engine status ::: status</Text>} */}
         <components.queryForm engine={props.engineInstance} />
-        <components.grouping engine={props.engineInstance} />
-        <Visualizations components={components} engine={engineInstance} />
+        <Visualizations
+          panelRenderer={panelRenderer}
+          components={components}
+          engine={engineInstance}
+        />
       </div>
     )
   );

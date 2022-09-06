@@ -14,20 +14,29 @@ function Visualizations(props: IVisualizationsProps) {
     engine,
     engine: { pipelineStatusSelector, useStore },
     components,
+    panelRenderer,
   } = props;
 
   const status = useStore(pipelineStatusSelector);
 
-  const Visualizations = React.useMemo(() => {
-    return components.visualizations.map((Viz) => (
-      <Viz
-        key={Viz.displayName}
-        engine={engine}
-        box={components.box}
-        controlComponent={components.controls}
-      />
-    ));
-  }, [engine, components.box, components.controls, components.visualizations]);
+  const Visualizations = React.useMemo(
+    () =>
+      components.visualizations.map((Viz, index) => (
+        <Viz
+          key={Viz.displayName}
+          engine={engine}
+          box={components.box}
+          panelRenderer={() => panelRenderer(components.controls, index)} // @TODO need to set "visualization.controls" instead of "components.controls"
+        />
+      )),
+    [
+      engine,
+      components.box,
+      components.controls,
+      components.visualizations,
+      panelRenderer,
+    ],
+  );
 
   const renderIllustration = React.useMemo(
     () =>

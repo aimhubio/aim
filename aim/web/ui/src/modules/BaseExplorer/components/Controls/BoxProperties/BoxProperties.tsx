@@ -1,11 +1,10 @@
 import React from 'react';
 import classNames from 'classnames';
 
-import { Tooltip } from '@material-ui/core';
 import { IBaseComponentProps } from 'modules/BaseExplorer/types';
 
 import ControlPopover from 'components/ControlPopover/ControlPopover';
-import { Icon } from 'components/kit';
+import { Button, Icon, Text } from 'components/kit';
 
 import BoxPropertiesPopover from './Popover';
 
@@ -23,26 +22,34 @@ function BoxProperties(props: IBoxPropertiesProps) {
     },
   } = props;
   const boxProperties: IBoxConfigState = useStore(boxSelector);
+  const title = 'Box properties';
   return (
     <ControlPopover
-      title='Box properties'
+      title={title}
+      anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
       anchor={({ onAnchorClick, opened }) => (
-        <Tooltip title='Box properties'>
-          <div
-            onClick={onAnchorClick}
-            className={classNames('Controls__anchor', {
+        <Button
+          title={title}
+          size='xSmall'
+          onClick={onAnchorClick}
+          className={classNames('Control__anchor', {
+            active: opened || !boxProperties.isInitial,
+            outlined: !opened && !boxProperties.isInitial,
+          })}
+        >
+          <Icon
+            className={classNames('Control__icon', {
               active: opened || !boxProperties.isInitial,
-              outlined: !opened && !boxProperties.isInitial,
             })}
-          >
-            <Icon
-              className={classNames('Controls__icon', {
-                active: opened || !boxProperties.isInitial,
-              })}
-              name='box-settings'
-            />
-          </div>
-        </Tooltip>
+            name='box-settings'
+          />
+          <Text className='Control__text'>{title}</Text>
+          <Icon
+            name='arrow-down-contained'
+            className={classNames('Control__anchor__arrow', { opened })}
+            fontSize={6}
+          />
+        </Button>
       )}
       component={
         <BoxPropertiesPopover

@@ -39,7 +39,7 @@ function GroupingItem({
         anchor={({ onAnchorClick, opened }) => (
           <Tooltip title={`Group by ${groupName}`}>
             <Button
-              size='small'
+              size='xSmall'
               disabled={isDisabled}
               onClick={onAnchorClick}
               className={classNames('GroupingItem', {
