@@ -1,17 +1,9 @@
-import create from 'zustand';
+import { fetchDashboardsList } from 'modules/core/api/dashboardsApi';
+import createResource from 'modules/core/utils/createResource';
 
-import dashboardService from 'services/api/dashboard/dashboardService';
+function createBookmarksEngine() {
+  const { fetchData, state } = createResource<any>(fetchDashboardsList);
+  return { fetchBookmarks: fetchData, bookmarksState: state };
+}
 
-const useHomeBookmarksStore = create((set) => ({
-  bookmarks: [],
-  fetchBookmarks: async () => {
-    console.log('fetchBookmarks');
-    const bookmarks = await dashboardService
-      .fetchDashboardsList()
-      .call((detail: any) => console.log(detail));
-    console.log(bookmarks);
-    set({ bookmarks });
-  },
-}));
-
-export default useHomeBookmarksStore;
+export default createBookmarksEngine();

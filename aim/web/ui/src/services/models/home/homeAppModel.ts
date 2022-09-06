@@ -1,5 +1,7 @@
 import projectsService from 'services/api/projects/projectsService';
 
+import { IApiRequestRef } from 'types/services/services';
+
 import exceptionHandler from 'utils/app/exceptionHandler';
 import onNotificationAdd from 'utils/app/onNotificationAdd';
 import onNotificationDelete from 'utils/app/onNotificationDelete';
@@ -9,10 +11,7 @@ import createModel from '../model';
 
 const model = createModel<any>({});
 
-let activityRequestRef: {
-  call: (exceptionHandler: (detail: any) => void) => Promise<unknown>;
-  abort: () => void;
-};
+let activityRequestRef: IApiRequestRef<unknown>;
 
 function getActivityData() {
   const { call, abort } = projectsService.fetchActivityData();

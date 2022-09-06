@@ -1,23 +1,26 @@
 import React from 'react';
 
+import { IResourceState } from 'modules/core/utils/createResource';
+
 import { Text } from 'components/kit';
 
-import useHomeBookmarksStore from './HomeBookmarksStore';
+import createBookmarksEngine from './HomeBookmarksStore';
 
 function HomeBookmarks() {
-  const bookmarksStore = useHomeBookmarksStore((store: any) => store);
-  const bookmarks = bookmarksStore.bookmarks;
+  const { current: bookmarksEngine } = React.useRef(createBookmarksEngine);
+  const bookmarksStore: IResourceState<any> = bookmarksEngine.bookmarksState(
+    (state) => state,
+  );
+
   React.useEffect(() => {
-    bookmarksStore.fetchBookmarks();
+    bookmarksEngine.fetchBookmarks();
   }, []);
 
-  console.log('experiments', bookmarks);
   return (
     <div className='HomeBookmarks'>
       <Text size={18}>Bookmarks</Text>
-      {}
       <div className='HomeBookmarks__list'>
-        {bookmarks?.map((experiment: any) => (
+        {bookmarksStore.data?.map((experiment: any) => (
           <div key={experiment.id} className='HomeBookmarks__item'>
             <Text size={14}>{experiment.name}</Text>
           </div>
