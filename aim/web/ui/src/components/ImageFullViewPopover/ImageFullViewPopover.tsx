@@ -18,6 +18,7 @@ function ImageFullViewPopover({
   tooltipContent,
   handleClose,
   selectOptions,
+  onRunsTagsChange,
 }: IImageFullViewPopoverProps): React.FunctionComponentElement<React.ReactNode> {
   const blobData = blobsURIModel.getState()[imageData?.blob_uri];
 
@@ -56,6 +57,7 @@ function ImageFullViewPopover({
                 tooltipContent={tooltipContent}
                 focusedState={{ active: true, key: null }}
                 selectOptions={selectOptions}
+                onRunsTagsChange={onRunsTagsChange}
               />
             </ErrorBoundary>
           </div>

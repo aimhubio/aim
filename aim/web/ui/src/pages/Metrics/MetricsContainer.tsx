@@ -163,6 +163,7 @@ function MetricsContainer(): React.FunctionComponentElement<React.ReactNode> {
         columnsOrder={metricsData?.config?.table?.columnsOrder!}
         // methods
         onChangeTooltip={metricAppModel.onChangeTooltip}
+        onRunsTagsChange={metricAppModel.onRunsTagsChange}
         onIgnoreOutliersChange={metricAppModel.onIgnoreOutliersChange}
         onZoomChange={metricAppModel.onZoomChange}
         onHighlightModeChange={metricAppModel.onHighlightModeChange}
