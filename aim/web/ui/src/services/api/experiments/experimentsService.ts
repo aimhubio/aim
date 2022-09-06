@@ -1,4 +1,4 @@
-import { IExperimentData } from 'pages/Home/components/ExperimentsCard';
+import { IExperimentData } from 'modules/core/api/experimentsApi';
 
 import { IApiRequest } from 'types/services/services';
 

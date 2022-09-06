@@ -2,6 +2,7 @@ import React from 'react';
 
 import { Checkbox } from '@material-ui/core';
 import { IResourceState } from 'modules/core/utils/createResource';
+import { IExperimentData } from 'modules/core/api/experimentsApi';
 
 import DataList from 'components/kit/DataList';
 import { Card, Icon, Text } from 'components/kit';
@@ -11,7 +12,6 @@ import CompareSelectedRunsPopover from 'pages/Metrics/components/Table/CompareSe
 import { AppNameEnum } from 'services/models/explorer';
 
 import createExperimentEngine from './ExperimentsStore';
-import { IExperimentData } from './ExperimentsCard.d';
 
 import './ExperimentsCard.scss';
 

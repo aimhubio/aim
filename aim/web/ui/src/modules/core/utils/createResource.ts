@@ -1,3 +1,4 @@
+import { RequestOptions } from 'https';
 import create from 'zustand';
 
 export interface IResourceState<T> {
@@ -6,7 +7,7 @@ export interface IResourceState<T> {
   error: any;
 }
 
-function createResource<T, GetterArgs = unknown>(getter: any) {
+function createResource<T, GetterArgs = RequestOptions>(getter: any) {
   const state = create<IResourceState<T>>(() => ({
     data: [],
     loading: true,
@@ -14,7 +15,7 @@ function createResource<T, GetterArgs = unknown>(getter: any) {
   }));
 
   async function fetchData(args?: GetterArgs) {
-    const data = await getter(args).call((detail: any) => {});
+    const data = await getter(args);
     state.setState({ data, loading: false });
   }
   return { fetchData, state };

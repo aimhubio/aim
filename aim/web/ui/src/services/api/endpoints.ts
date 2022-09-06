@@ -11,6 +11,12 @@ const ENDPOINTS = {
     GET: '',
     SEARCH: 'search',
   },
+
+  EXPERIMENTS: {
+    BASE: '/experiments',
+    GET: '',
+    SEARCH: 'search',
+  },
 };
 
 export default ENDPOINTS;
