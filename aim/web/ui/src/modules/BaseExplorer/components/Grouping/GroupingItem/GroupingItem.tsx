@@ -43,16 +43,19 @@ function GroupingItem({
               disabled={isDisabled}
               onClick={onAnchorClick}
               className={classNames('BaseGroupingItem', {
-                active:
-                  opened ||
-                  (!_.isNil(availableModifiers) &&
-                    !_.isEmpty(currentValues[groupName].fields)),
+                active: opened,
+                outlined:
+                  !_.isNil(availableModifiers) &&
+                  !_.isEmpty(currentValues[groupName].fields),
               })}
             >
               <Text size={12} weight={500} className='BaseGroupingItem__label'>
                 {groupName}
               </Text>
-              <Icon name='arrow-down-contained' fontSize={6} />
+              <Icon
+                name={opened ? 'arrow-up-contained' : 'arrow-down-contained'}
+                fontSize={6}
+              />
             </Button>
           </Tooltip>
         )}
