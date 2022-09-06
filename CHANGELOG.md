@@ -8,6 +8,7 @@
 - Support dictionary as an argument of `Run.track` (alberttorosyan)
 - Display the tags of the run in the tables of the explorers (VkoHov)
 - Change the grouping section layout in the figures explorer (VkoHov)
+- Adjust the controls section layout of the Figures explorer (KaroMourad)
 
 ### Fixes:
 
