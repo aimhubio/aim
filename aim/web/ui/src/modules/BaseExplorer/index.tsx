@@ -18,6 +18,7 @@ function TestComponent(props: IBaseComponentProps) {
   const currentQuery = props.engine.useT(
     pipeline.selectors.currentGroupingSelector,
   );
+
   const currentGrouping = props.engine.useT(
     pipeline.selectors.currentGroupingSelector,
   );
@@ -30,7 +31,9 @@ function TestComponent(props: IBaseComponentProps) {
     <div>
       <button onClick={() => pipeline.search()}>search</button>{' '}
       <button onClick={() => pipeline.group()}>group</button>{' '}
-      <button onClick={() => console.log(pipeline.getCurrentQuery())}>
+      <button
+        onClick={() => console.log(pipeline.setCurrentQuery({ q: '10' }))}
+      >
         Click to check
       </button>
     </div>

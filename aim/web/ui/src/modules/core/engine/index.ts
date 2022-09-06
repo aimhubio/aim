@@ -17,6 +17,7 @@ import {
 import { ISelectOption } from 'types/services/models/explorer/createAppModel';
 import { SequenceTypesEnum } from 'types/core/enums';
 
+import buildEngine from './engine';
 import { IEngineConfigFinal, PipelineStatusEnum } from './types';
 import {
   createDefaultBoxStateSlice,
@@ -456,6 +457,9 @@ function createEngine(config: IEngineConfigFinal) {
       ...p.state,
     };
   });
+
+  buildEngine(config);
+
   const testStoreReact = createReact(testStore);
 
   return {

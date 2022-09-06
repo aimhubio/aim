@@ -11,9 +11,18 @@ type Status = {
   error: string | null;
 };
 
+/**
+ * the state type useful for initial data for explorer
+ */
 export interface IInstructionsState<SequenceName extends SequenceTypesEnum> {
   status: Status;
+  /**
+   * queryable data
+   */
   project_params_info: GetParamsResult | null;
+  /**
+   * select_form data
+   */
   project_sequence_info: GetParamsResult[SequenceName] | null;
 }
 
@@ -40,6 +49,8 @@ export type InstructionsStateBridge<
     sequence_info: GetParamsResult[SequenceName],
   ) => void;
   setError: (error: string | null) => void;
+  getStatus: () => Status;
+  getParamsInfo: () => GetParamsResult | null;
 } & {
   selectors: Selectors<ExtractState<TStore, SequenceName>, SequenceName>;
 };
@@ -97,6 +108,8 @@ function createState<TStore, SequenceName extends SequenceTypesEnum>(
         }),
       );
     },
+    getStatus: () => store.getState().instructions.status,
+    getParamsInfo: () => store.getState().instructions.project_params_info,
   };
 
   return {
