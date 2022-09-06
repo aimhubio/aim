@@ -22,7 +22,6 @@ async function getExperiments(): Promise<IExperimentData[]> {
  * @param query - query string
  * @returns {Promise<IExperimentData>}
  */
-
 async function searchExperiment(query: string): Promise<IExperimentData> {
   return (
     await api.makeAPIGetRequest(`${ENDPOINTS.EXPERIMENTS.SEARCH}=${query}`)
@@ -35,7 +34,6 @@ async function searchExperiment(query: string): Promise<IExperimentData> {
  * @param id - experiment id
  * @returns {Promise<IExperimentData>}
  */
-
 async function getExperimentById(id: string): Promise<IExperimentData> {
   return (await api.makeAPIGetRequest(`${ENDPOINTS.EXPERIMENTS.GET}/${id}`))
     .body;
@@ -47,7 +45,6 @@ async function getExperimentById(id: string): Promise<IExperimentData> {
  * @param reqBody - query body params
  * @returns {Promise<status: string, id: string>}
  */
-
 async function updateExperimentById(
   reqBody: { name?: string; archived?: boolean },
   id: string,
@@ -65,12 +62,13 @@ async function updateExperimentById(
  * @param  reqBody -  query body params
  * @returns {Promise<status: string, id: string>}
  */
-
 async function createExperiment(reqBody: {
   name: string;
 }): Promise<{ id: string; status: string }> {
   return (
-    await api.makeAPIPostRequest(ENDPOINTS.EXPERIMENTS.GET, { body: reqBody })
+    await api.makeAPIPostRequest(ENDPOINTS.EXPERIMENTS.CREATE, {
+      body: reqBody,
+    })
   ).body;
 }
 
@@ -80,7 +78,6 @@ async function createExperiment(reqBody: {
  * @param { id, params } - query params
  * @returns {Promise<status: string, id: string>}
  */
-
 async function getRunsOfExperiment(
   id: string,
   params: { limit: number; offset?: string } = { limit: 10 },

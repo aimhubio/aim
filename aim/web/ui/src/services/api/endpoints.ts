@@ -15,6 +15,7 @@ const ENDPOINTS = {
   EXPERIMENTS: {
     BASE: '/experiments',
     GET: '',
+    CREATE: '',
     SEARCH: 'search',
   },
 };
