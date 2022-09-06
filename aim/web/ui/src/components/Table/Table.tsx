@@ -947,7 +947,9 @@ const Table = React.forwardRef(function Table(
               <div>
                 <CompareSelectedRunsPopover
                   appName={appName}
-                  selectedRows={selectedRows}
+                  selectedRows={Object.values(selectedRows).map(
+                    (row: any) => row.runHash,
+                  )}
                 />
               </div>
             </div>

@@ -1,3 +1,5 @@
+import React from 'react';
+
 export interface IDataListProps {
   tableRef: React.RefObject<any>;
   tableData: any;
@@ -9,4 +11,5 @@ export interface IDataListProps {
   rowHeight?: number;
   height?: string;
   tableClassName?: string;
+  toolbarItems?: React.FunctionComponentElement<React.ReactNode>[];
 }

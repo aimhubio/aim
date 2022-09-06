@@ -309,6 +309,9 @@ export const ANALYTICS_EVENT_KEYS = {
     docs: '[HomePage] Click on documentation icon',
     colab: '[HomePage] Click on colab notebook icon',
     liveDemo: '[HomePage] Click on Live demo icon',
+    table: {
+      compareSelectedRuns: '[MetricsExplorer][Table] Compare selected runs',
+    },
   },
   sidebar: {
     slack: '[SideBar] Click on slack community link',

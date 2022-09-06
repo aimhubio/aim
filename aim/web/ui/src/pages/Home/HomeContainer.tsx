@@ -28,6 +28,7 @@ function HomeContainer(): React.FunctionComponentElement<React.ReactNode> {
         activityData={homeData.activityData}
         notifyData={homeData.notifyData}
         askEmailSent={homeData.askEmailSent}
+        experimentsData={homeData.experimentsData}
         onNotificationDelete={homeAppModel.onHomeNotificationDelete}
       />
     </ErrorBoundary>

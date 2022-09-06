@@ -7,6 +7,7 @@ import { MenuItem, Tooltip } from '@material-ui/core';
 import ErrorBoundary from 'components/ErrorBoundary/ErrorBoundary';
 import ControlPopover from 'components/ControlPopover/ControlPopover';
 import { Button, Icon, Text } from 'components/kit';
+import { IconName } from 'components/kit/Icon';
 
 import { EXPLORE_SELECTED_RUNS_CONFIG } from 'config/table/tableConfigs';
 import { ANALYTICS_EVENT_KEYS } from 'config/analytics/analyticsKeysMap';
@@ -23,6 +24,8 @@ import './CompareSelectedRunsPopover.scss';
 function CompareSelectedRunsPopover({
   selectedRows,
   appName,
+  keyName = 'hash',
+  disabled = false,
 }: ICompareSelectedRunsPopoverProps): React.FunctionComponentElement<React.ReactNode> {
   const history = useHistory();
 
@@ -35,12 +38,8 @@ function CompareSelectedRunsPopover({
       e.stopPropagation();
       e.preventDefault();
       if (value) {
-        const runHashArray: string[] = _.uniq([
-          ...Object.values(selectedRows).map((row: any) => row.runHash),
-        ]);
-
-        const query = `run.hash in [${runHashArray
-          .map((hash) => `"${hash}"`)
+        const query = `run.${keyName} in [${_.uniq(selectedRows)
+          .map((val: string) => `"${val}"`)
           .join(',')}]`;
 
         const search = encode({
@@ -61,7 +60,7 @@ function CompareSelectedRunsPopover({
         history.push(path);
       }
     },
-    [appName, history, selectedRows],
+    [appName, history, keyName, selectedRows],
   );
 
   return (
@@ -80,13 +79,14 @@ function CompareSelectedRunsPopover({
             variant='text'
             color='secondary'
             size='small'
+            disabled={disabled}
             onClick={onAnchorClick}
             className={`CompareSelectedRunsPopover__trigger ${
               opened ? 'opened' : ''
             }`}
           >
             <Icon fontSize={18} name='compare' />
-            <Text size={14} tint={100}>
+            <Text size={14} tint={disabled ? 50 : 100}>
               Compare
             </Text>
           </Button>
@@ -99,7 +99,7 @@ function CompareSelectedRunsPopover({
                   className='CompareSelectedRunsPopover__item'
                   key={item}
                 >
-                  <Icon box name={item as any} />
+                  <Icon box name={item as IconName} />
                   <Text
                     size={14}
                     tint={100}
