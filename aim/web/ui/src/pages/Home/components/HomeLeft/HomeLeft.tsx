@@ -2,6 +2,8 @@ import React from 'react';
 
 import { Text } from 'components/kit';
 
+import ExperimentsCard from '../ExperimentsCard';
+
 import HomeBookmarks from './HomeBookmarks/HomeBookmarks';
 import QuickLinks from './QuickLinks/QuickLinks';
 
@@ -14,6 +16,7 @@ function HomeLeft(): React.FunctionComponentElement<React.ReactNode> {
         Explore
       </Text>
       <QuickLinks />
+      <ExperimentsCard />
       <HomeBookmarks />
     </aside>
   );

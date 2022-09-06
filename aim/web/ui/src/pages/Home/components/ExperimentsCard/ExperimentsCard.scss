@@ -1,13 +1,24 @@
 @use 'src/styles/abstracts' as *;
 
 .ExperimentsCard {
-  padding: 1rem 1.5rem;
-  min-width: 550px;
+  border-top: $border-main;
+  padding: 1rem;
+  &__title {
+    margin-bottom: $space-unit;
+  }
   .defaultSelectIcon {
     border: 1.5px solid $pico-80;
     border-radius: $border-radius-xs;
     width: 1rem;
     height: 1rem;
+  }
+  .SearchBar {
+    width: auto;
+    min-width: 250px;
+    flex-wrap: wrap;
+    .SearchInput {
+      margin-bottom: $space-xs;
+    }
   }
   .selectedSelectIcon {
     border-radius: $border-radius-xs;

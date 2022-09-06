@@ -5,7 +5,7 @@ import { IResourceState } from 'modules/core/utils/createResource';
 import { IExperimentData } from 'modules/core/api/experimentsApi';
 
 import DataList from 'components/kit/DataList';
-import { Card, Icon, Text } from 'components/kit';
+import { Icon, Text } from 'components/kit';
 
 import CompareSelectedRunsPopover from 'pages/Metrics/components/Table/CompareSelectedRunsPopover';
 
@@ -138,16 +138,16 @@ function ExperimentsCard() {
         width: '15%',
         cellRenderer: ({ cellData }: any) => <p title={cellData}>{cellData}</p>,
       },
-      {
-        dataKey: 'archived',
-        key: 'archived',
-        title: 'Archived',
-        width: '15%',
-        flexGrow: 1,
-        cellRenderer: ({ cellData }: any) => (
-          <p title={cellData}>{`${cellData}`}</p>
-        ),
-      },
+      // {
+      //   dataKey: 'archived',
+      //   key: 'archived',
+      //   title: 'Archived',
+      //   width: '15%',
+      //   flexGrow: 1,
+      //   cellRenderer: ({ cellData }: any) => (
+      //     <p title={cellData}>{`${cellData}`}</p>
+      //   ),
+      // },
     ],
     [tableData?.length, onRowSelect, selectedRows],
   );
@@ -164,29 +164,30 @@ function ExperimentsCard() {
 
   return (
     <div className='ExperimentsCard'>
-      <Card title='Experiments'>
-        <DataList
-          tableRef={tableRef}
-          tableColumns={tableColumns}
-          tableData={tableData}
-          isLoading={experimentsStore.loading}
-          height='400px'
-          searchableKeys={['name', 'run_count']}
-          illustrationConfig={{
-            size: 'large',
-            title: 'No Results',
-          }}
-          toolbarItems={[
-            <CompareSelectedRunsPopover
-              key='compareSelectedRunsPopover'
-              appName={'home' as AppNameEnum}
-              selectedRows={selectedRows}
-              keyName='experiment'
-              disabled={!selectedRows.length}
-            />,
-          ]}
-        />
-      </Card>
+      <Text className='ExperimentsCard__title' component='h3' size={18}>
+        Experiments
+      </Text>
+      <DataList
+        tableRef={tableRef}
+        tableColumns={tableColumns}
+        tableData={tableData}
+        isLoading={experimentsStore.loading}
+        height='400px'
+        searchableKeys={['name', 'run_count']}
+        illustrationConfig={{
+          size: 'large',
+          title: 'No Results',
+        }}
+        toolbarItems={[
+          <CompareSelectedRunsPopover
+            key='compareSelectedRunsPopover'
+            appName={'home' as AppNameEnum}
+            selectedRows={selectedRows}
+            keyName='experiment'
+            disabled={!selectedRows.length}
+          />,
+        ]}
+      />
     </div>
   );
 }

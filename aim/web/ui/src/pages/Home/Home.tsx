@@ -30,7 +30,6 @@ function Home({
           <div className='Home__Activity__container'>
             <Activity activityData={activityData} />
           </div>
-          <ExperimentsCard />
           <div className='Home__Explore__container'>
             <SetupGuide askEmailSent={askEmailSent} onSendEmail={onSendEmail} />
             <ExploreAim />

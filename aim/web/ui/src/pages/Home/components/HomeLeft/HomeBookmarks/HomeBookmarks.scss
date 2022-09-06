@@ -1,0 +1,17 @@
+@use 'src/styles/abstracts' as *;
+
+.HomeBookmarks {
+  padding: $space-unit;
+  border-top: $border-main;
+  &__list {
+    margin-top: $space-lg;
+    &__ListItem {
+      margin-bottom: $space-xs;
+      &__Text {
+        flex: 1;
+        margin-left: $space-xs;
+        text-transform: capitalize;
+      }
+    }
+  }
+}
