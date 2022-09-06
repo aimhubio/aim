@@ -146,4 +146,5 @@ export type IconName =
   | 'new-tab'
   | 'figures-explorer'
   | 'group-column'
-  | 'image-group';
+  | 'image-group'
+  | 'partially-selected';

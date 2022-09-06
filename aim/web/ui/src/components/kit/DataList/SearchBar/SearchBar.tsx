@@ -45,7 +45,7 @@ function SearchBar({
               <Button
                 withOnlyIcon
                 color={matchType === MatchTypes.Case ? 'primary' : 'secondary'}
-                size='small'
+                size='xSmall'
                 disabled={isDisabled}
                 onClick={() => {
                   onMatchTypeChange(
@@ -53,7 +53,11 @@ function SearchBar({
                   );
                 }}
               >
-                <Icon className='IconButton' name='case-sensitive' />
+                <Icon
+                  fontSize={14}
+                  className='IconButton'
+                  name='case-sensitive'
+                />
               </Button>
             </div>
           </Tooltip>
@@ -67,7 +71,7 @@ function SearchBar({
               <Button
                 withOnlyIcon
                 color={matchType === MatchTypes.Word ? 'primary' : 'secondary'}
-                size='small'
+                size='xSmall'
                 disabled={isDisabled}
                 onClick={() => {
                   onMatchTypeChange(
@@ -75,7 +79,7 @@ function SearchBar({
                   );
                 }}
               >
-                <Icon className='IconButton' name='word-match' />
+                <Icon fontSize={14} className='IconButton' name='word-match' />
               </Button>
             </div>
           </Tooltip>
@@ -86,7 +90,7 @@ function SearchBar({
                 color={
                   matchType === MatchTypes.RegExp ? 'primary' : 'secondary'
                 }
-                size='small'
+                size='xSmall'
                 disabled={isDisabled}
                 className={classNames({
                   MatchButton: true,
@@ -98,7 +102,7 @@ function SearchBar({
                   );
                 }}
               >
-                <Icon className='IconButton' name='regex' />
+                <Icon fontSize={14} className='IconButton' name='regex' />
               </Button>
             </div>
           </Tooltip>
