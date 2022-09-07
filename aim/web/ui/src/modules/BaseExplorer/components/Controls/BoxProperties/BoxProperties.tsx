@@ -22,7 +22,7 @@ function BoxProperties(props: IBoxPropertiesProps) {
     },
   } = props;
   const boxProperties: IBoxConfigState = useStore(boxSelector);
-  const title = 'Box properties';
+  const title = 'Box size';
   return (
     <ControlPopover
       title={title}
