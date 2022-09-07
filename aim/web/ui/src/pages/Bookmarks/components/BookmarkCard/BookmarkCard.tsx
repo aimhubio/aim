@@ -17,7 +17,7 @@ import { IBookmarkCardProps } from 'types/pages/bookmarks/components/BookmarkCar
 
 import './BookmarkCard.scss';
 
-const BookmarkIconType: {
+export const BookmarkIconType: {
   [key: string]: { name: IconName; tooltipTitle: string };
 } = {
   images: { name: 'images', tooltipTitle: 'Images Explorer' },
