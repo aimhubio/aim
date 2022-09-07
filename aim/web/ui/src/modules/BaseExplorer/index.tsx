@@ -30,10 +30,8 @@ function BaseExplorer(props: IBaseExplorerProps) {
           documentationLink={props.documentationLink}
         />
         {/* {__DEV__ && <Text>Engine status ::: status</Text>} */}
-        <div className='ComponentsWrapper'>
-          <components.queryForm engine={props.engineInstance} />
-          <components.grouping engine={props.engineInstance} />
-        </div>
+        <components.queryForm engine={props.engineInstance} />
+        <components.grouping engine={props.engineInstance} />
         <Visualizations components={components} engine={engineInstance} />
       </div>
     )

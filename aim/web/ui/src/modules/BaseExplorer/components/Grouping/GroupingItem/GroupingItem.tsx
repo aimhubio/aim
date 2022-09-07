@@ -7,7 +7,7 @@ import { PipelineStatusEnum } from 'modules/core/engine';
 
 import ErrorBoundary from 'components/ErrorBoundary/ErrorBoundary';
 import ControlPopover from 'components/ControlPopover/ControlPopover';
-import { Icon } from 'components/kit';
+import { Button, Text, Icon } from 'components/kit';
 
 import { GroupingPopover } from '../GroupingPopover';
 
@@ -34,29 +34,29 @@ function GroupingItem({
     <ErrorBoundary>
       <ControlPopover
         title={title ?? `Group by ${groupName}`}
+        anchorOrigin={{ vertical: 'bottom', horizontal: 'left' }}
+        transformOrigin={{ vertical: 'top', horizontal: 'left' }}
         anchor={({ onAnchorClick, opened }) => (
           <Tooltip title={`Group by ${groupName}`}>
-            <div
-              onClick={(e: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
-                if (!isDisabled) {
-                  onAnchorClick(e);
-                }
-              }}
-              className={classNames('GroupingItem', {
-                disabled: isDisabled,
+            <Button
+              size='small'
+              disabled={isDisabled}
+              onClick={onAnchorClick}
+              className={classNames('BaseGroupingItem', {
+                active: opened,
+                outlined:
+                  !_.isNil(availableModifiers) &&
+                  !_.isEmpty(currentValues[groupName].fields),
               })}
             >
-              <div
-                className={classNames('GroupingItem__iconBox', {
-                  active: opened,
-                  outlined:
-                    !_.isNil(availableModifiers) &&
-                    !_.isEmpty(currentValues[groupName].fields),
-                })}
-              >
-                <Icon name={iconName} />
-              </div>
-            </div>
+              <Text size={12} weight={500} className='BaseGroupingItem__label'>
+                {groupName}
+              </Text>
+              <Icon
+                name={opened ? 'arrow-up-contained' : 'arrow-down-contained'}
+                fontSize={6}
+              />
+            </Button>
           </Tooltip>
         )}
         component={
