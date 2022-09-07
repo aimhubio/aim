@@ -24,7 +24,6 @@ export function createSliceState<T>(initialState: T, name: string) {
         ...newState,
         isInitial: initialStateHash === buildObjectHash(newState),
       };
-
       set({
         [name]: updatedState,
       });

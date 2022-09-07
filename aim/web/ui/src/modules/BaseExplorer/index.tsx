@@ -13,28 +13,49 @@ import Visualizations from './components/Visualizations';
 import './styles.scss';
 
 function TestComponent(props: IBaseComponentProps) {
-  const pipeline = props.engine.test;
+  const visualizations = props.engine.test.visualizations;
 
-  const currentQuery = props.engine.useT(
-    pipeline.selectors.currentGroupingSelector,
+  const control1 = props.engine.useT(
+    visualizations['viz1'].controls.boxProperties.stateSelector,
   );
-
-  const currentGrouping = props.engine.useT(
-    pipeline.selectors.currentGroupingSelector,
+  const control2 = props.engine.useT(
+    visualizations['viz2'].controls.boxProperties.stateSelector,
   );
 
   useEffect(() => {
-    console.log('this is testttttt -> ', currentGrouping);
-  }, [currentGrouping]);
+    console.log('box1 ---> ', control1);
+  }, [control1]);
+
+  useEffect(() => {
+    console.log('box2 ---> ', control2);
+  }, [control2]);
 
   return (
     <div>
-      <button onClick={() => pipeline.search()}>search</button>{' '}
-      <button onClick={() => pipeline.group()}>group</button>{' '}
       <button
-        onClick={() => console.log(pipeline.setCurrentQuery({ q: '10' }))}
+        onClick={() =>
+          visualizations.viz1.controls.boxProperties.methods.update({
+            width: 'box1',
+          })
+        }
       >
-        Click to check
+        update box1
+      </button>{' '}
+      <button
+        onClick={() => {
+          visualizations.viz2.controls.boxProperties.methods.update({
+            width: 'box2',
+          });
+        }}
+      >
+        update box2
+      </button>
+      <button
+        onClick={() => {
+          visualizations.viz2.reset();
+        }}
+      >
+        reset
       </button>
     </div>
   );

@@ -36,7 +36,6 @@ export function createState<TStore>(
   store: any,
   visualizationName: string,
   controlsConfig: ControlsConfigs,
-  // boxConfigInitialState: BoxConfig['initialState'],
 ) {
   if (!controlsConfig) return {};
   const controlsStateConfig = createControlsStateConfig(
@@ -44,18 +43,13 @@ export function createState<TStore>(
     createVisualizationStatePrefix(visualizationName),
   );
 
-  // const boxConfigState = createSliceState<BoxConfig['initialState']>(
-  //   boxConfigInitialState,
-  //   `${createVisualizationStatePrefix(visualizationName)}.boxConfig`,
-  // );
-
   const resetMethods: (() => void)[] = [];
 
   const controlsProperties = Object.keys(controlsStateConfig.slices).reduce(
     (acc: { [key: string]: object }, name: string) => {
       const elem = controlsStateConfig.slices[name];
       const methods = elem.methods(store.setState, store.getState);
-      resetMethods.push(methods);
+      resetMethods.push(methods.reset);
       acc[name] = {
         ...elem,
         methods,
@@ -100,17 +94,26 @@ function createVisualizationEngine<TStore>(
       box: boxConfigState.initialState,
     },
   };
-  console.log('boxConfigState', boxConfigState);
+  const boxMethods = boxConfigState.methods(store.setState, store.getState);
+
   const engine = {
-    controls: {
-      ...controlsState.properties,
-      reset: controlsState.reset,
-    },
-    box: {
-      ...omit(boxConfigState, ['methods']),
-      methods: boxConfigState.methods(store.setState, store.getState),
+    [visualizationName]: {
+      controls: {
+        ...controlsState.properties,
+        reset: controlsState.reset,
+      },
+      box: {
+        ...omit(boxConfigState, ['methods']),
+        methods: boxMethods,
+      },
+      reset: () => {
+        boxMethods.reset();
+        // @ts-ignore
+        controlsState.reset();
+      },
     },
   };
+
   return {
     state: visualizationState,
     engine,
@@ -128,6 +131,7 @@ function createVisualizationsEngine<TStore>(
     state: {},
     engine: {},
   };
+
   const obj = Object.keys(omit(config, 'component')).reduce(
     (acc: any, name: string) => {
       // @ts-ignore
@@ -159,7 +163,7 @@ function createVisualizationsEngine<TStore>(
     state: {
       [VISUALIZATIONS_STATE_PREFIX]: obj.state,
     },
-    engine: obj.state,
+    engine: obj.engine,
   };
 }
 

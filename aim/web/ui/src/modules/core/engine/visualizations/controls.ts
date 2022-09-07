@@ -98,6 +98,4 @@ function createControlsStateConfig(
   return createControlsSlice(controls);
 }
 
-function createControlsState(configs: ControlsConfigs = {}, store: any) {}
-
 export { createControlsStateConfig };

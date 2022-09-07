@@ -436,31 +436,7 @@ function createEngine(config: IEngineConfigFinal) {
     return getParams({ sequence });
   }
 
-  let p: any;
-  const testStore = createVanilla((set: SetState<any>, get: GetState<any>) => {
-    const pipelineOptions: Omit<PipelineOptions, 'callbacks'> = {
-      sequenceName: config.sequenceName,
-      adapter: {
-        objectDepth: config.adapter.objectDepth,
-        useCache: config.useCache,
-      },
-      grouping: {
-        useCache: config.useCache,
-      },
-      query: {
-        useCache: config.useCache,
-      },
-    };
-    p = createPipelineEngine({ setState: set, getState: get }, pipelineOptions);
-
-    return {
-      ...p.state,
-    };
-  });
-
-  buildEngine(config);
-
-  const testStoreReact = createReact(testStore);
+  const e = buildEngine(config);
 
   return {
     useStore: storeReact,
@@ -516,8 +492,8 @@ function createEngine(config: IEngineConfigFinal) {
     additionalDataSelector: (state: any) => state.additionalData,
     foundGroupsSelector: (state: any) => state.foundGroups,
     queryableDataSelector: (state: any) => state.queryableData,
-    test: p.engine,
-    useT: testStoreReact,
+    test: e,
+    useT: e.useStore,
   };
 }
 

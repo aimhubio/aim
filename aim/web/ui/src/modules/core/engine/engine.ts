@@ -18,12 +18,14 @@ type State = {
   pipeline?: any;
   instructions?: any;
   explorer?: any;
+  visualizations?: any;
 };
 
 type Engine<TStore, TObject, SequenceName extends SequenceTypesEnum> = {
   // sub engines
   pipeline: IPipelineEngine<TObject, TStore>['engine'];
   instructions: IInstructionsEngine<TStore, SequenceName>['engine'];
+  visualizations: any;
 
   // methods
   initialize: () => void;
@@ -94,6 +96,42 @@ function getExplorerEngine(
   // return explorer.engine;
 }
 
+function getVisualizationsEngine(
+  config: IEngineConfigFinal,
+  set: any,
+  get: any,
+  state: State,
+) {
+  const conf: VisualizationsConfig = {
+    viz1: {
+      component: () => null,
+      controls: config.controls || {},
+      box: {
+        initialState: config.defaultBoxConfig,
+        component: () => null,
+      },
+    },
+    viz2: {
+      component: () => null,
+      controls: config.controls || {},
+      box: {
+        initialState: config.defaultBoxConfig,
+        component: () => null,
+      },
+    },
+  };
+  const visualizations = createVisualizationsEngine<State>(conf, {
+    setState: set,
+    getState: get,
+  });
+
+  state['visualizations'] = visualizations.state.visualizations;
+
+  console.log('entier state ----> ');
+
+  return visualizations.engine;
+}
+
 function createEngine<TObject = any>(
   config: IEngineConfigFinal,
   name: string = 'baseEngine',
@@ -103,6 +141,8 @@ function createEngine<TObject = any>(
     object,
     typeof config.sequenceName
   >['engine'];
+
+  let visualizations: any;
 
   // @ts-ignore
   const store = createVanilla<StoreApi<object>>((set, get) => {
@@ -125,36 +165,15 @@ function createEngine<TObject = any>(
     /**
      * Visualizations
      */
-    const c: VisualizationsConfig = {
-      viz1: {
-        component: () => null,
-        controls: config.controls || {},
-        box: {
-          initialState: config.defaultBoxConfig,
-          component: () => null,
-        },
-      },
-      viz2: {
-        component: () => null,
-        controls: config.controls || {},
-        box: {
-          initialState: config.defaultBoxConfig,
-          component: () => null,
-        },
-      },
-    };
-    const s = createVisualizationsEngine<State>(c, {
-      setState: set,
-      getState: get,
-    });
+    visualizations = getVisualizationsEngine(config, set, get, state);
 
-    console.log(s);
     /**
      * Custom states
      */
     return state;
   });
 
+  // @ts-ignore
   function initialize() {
     // subscribe to history
     instructions
@@ -192,6 +211,7 @@ function createEngine<TObject = any>(
 
     // @ts-ignore
     instructions,
+    visualizations,
     // @ts-ignore
     pipeline,
 
@@ -203,6 +223,8 @@ function createEngine<TObject = any>(
     // @ts-ignore
     window[name] = engine;
   }
+
+  console.log('whoke store --->', useReactStore.getState());
 
   return engine;
 }

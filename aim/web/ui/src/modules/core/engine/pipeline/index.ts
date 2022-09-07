@@ -36,6 +36,10 @@ function createPipelineEngine<TStore, TObject>(
 ): IPipelineEngine<TObject, TStore> {
   const state = createState<TStore, TObject>(store);
 
+  /**
+   * Function to get notified by pipeline which phase is executing
+   * @param {PipelinePhasesEnum} phase
+   */
   function statusChangeCallback(phase: PipelinePhasesEnum) {
     // @TODO add exception checking
     let currentStatus: PipelineStatusEnum = state.getStatus();
@@ -60,8 +64,12 @@ function createPipelineEngine<TStore, TObject>(
     state.changeCurrentPhaseOrStatus(currentStatus, phase);
   }
 
+  /**
+   * Function to get the progress of query
+   * @param {IRunProgressObject} progress
+   */
   function requestProgressCallback(progress: IRunProgressObject) {
-    // @TODO keep everything with pipeline slice ion store, related to pipeline
+    // @TODO keep everything with pipeline slice in store, related to pipeline
     const progressState: ProgressState = {
       ...progress,
       percent: progress.trackedRuns
@@ -82,6 +90,12 @@ function createPipelineEngine<TStore, TObject>(
 
   const pipeline = createPipeline(pipelineOptions);
 
+  /**
+   * Function search, used to execute pipeline started from search
+   * @example
+   *    pipeline.engine.search({ q: "run.hparams.batch_size>32"})
+   * @param {RunsSearchQueryParams} params
+   */
   function search(params: RunsSearchQueryParams): void {
     const currentGroupings = state.getCurrentGroupings();
 
@@ -112,6 +126,14 @@ function createPipelineEngine<TStore, TObject>(
       })
       .catch((ex: unknown) => {});
   }
+
+  /**
+   * Function group, used to execute pipeline started from group
+   *      using cache for query and adapter phases, and run only grouping
+   * @example
+   *     pipeline.engine.group(config)
+   * @param {CurrentGrouping} config
+   */
   function group(config: CurrentGrouping): void {
     state.setCurrentGroupings(config);
 
