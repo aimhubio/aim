@@ -5,13 +5,11 @@
   border: $border-transparent;
 
   &__label {
-    margin-right: $space-xs;
     margin-top: toRem(1px);
   }
   &:last-child {
     margin-right: 0;
   }
-
   &.active {
     background-color: $primary-color-10;
   }
@@ -22,7 +20,13 @@
   &:hover {
     background-color: $pico-5;
   }
-  .Icon__container {
+  &__arrowIcon {
+    margin-left: $space-xxs;
+    transition: transform $popover-opening-duration ease-out;
     color: $pico-80;
+    &.opened {
+      transform: rotateX(180deg);
+      color: $primary-color;
+    }
   }
 }

@@ -43,7 +43,7 @@ function BoxProperties(props: IBoxPropertiesProps) {
             })}
             name='box-settings'
           />
-          <Text className='Control__text'>{title}</Text>
+          <Text className='Control__label'>{title}</Text>
           <Icon
             name='arrow-down-contained'
             className={classNames('Control__anchor__arrow', { opened })}
