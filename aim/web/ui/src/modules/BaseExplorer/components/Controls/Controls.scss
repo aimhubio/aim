@@ -13,18 +13,6 @@
       &:last-child {
         margin-right: 0;
       }
-      &__label {
-        user-select: none;
-        white-space: nowrap;
-      }
-      &__icon {
-        color: $pico-70;
-        font-size: 1rem;
-        margin-right: $space-xxxs;
-        &.active {
-          color: $primary-color;
-        }
-      }
       &__anchor {
         white-space: nowrap;
         padding: $space-xxxxs $space-xxs;
@@ -61,6 +49,18 @@
           color: $pico-80;
           &.opened {
             transform: rotateX(180deg);
+            color: $primary-color;
+          }
+        }
+        &__label {
+          user-select: none;
+          white-space: nowrap;
+        }
+        &__icon {
+          color: $pico-70;
+          font-size: 1rem;
+          margin-right: $space-xxxs;
+          &.active {
             color: $primary-color;
           }
         }

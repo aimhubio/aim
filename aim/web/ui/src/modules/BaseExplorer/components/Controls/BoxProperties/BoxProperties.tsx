@@ -29,7 +29,6 @@ function BoxProperties(props: IBoxPropertiesProps) {
       anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
       anchor={({ onAnchorClick, opened }) => (
         <Button
-          title={title}
           size='xSmall'
           onClick={onAnchorClick}
           className={classNames('Control__anchor', {
@@ -38,12 +37,12 @@ function BoxProperties(props: IBoxPropertiesProps) {
           })}
         >
           <Icon
-            className={classNames('Control__icon', {
+            name='box-settings'
+            className={classNames('Control__anchor__icon', {
               active: opened || !boxProperties.isInitial,
             })}
-            name='box-settings'
           />
-          <Text className='Control__label'>{title}</Text>
+          <Text className='Control__anchor__label'>{title}</Text>
           <Icon
             name='arrow-down-contained'
             className={classNames('Control__anchor__arrow', { opened })}

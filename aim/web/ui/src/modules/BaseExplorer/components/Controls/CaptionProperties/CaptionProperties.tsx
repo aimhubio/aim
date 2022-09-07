@@ -30,7 +30,6 @@ function CaptionProperties(props: ICaptionPropertiesProps) {
         anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
         anchor={({ onAnchorClick, opened }) => (
           <Button
-            title={title}
             size='xSmall'
             onClick={onAnchorClick}
             className={classNames('Control__anchor', {
@@ -39,12 +38,12 @@ function CaptionProperties(props: ICaptionPropertiesProps) {
             })}
           >
             <Icon
-              className={classNames('Control__icon', {
+              name='info-circle-outline'
+              className={classNames('Control__anchor__icon', {
                 active: opened || !captionProperties.isInitial,
               })}
-              name='info-circle-outline'
             />
-            <Text className='Control__label'>{title}</Text>
+            <Text className='Control__anchor__label'>{title}</Text>
             <Icon
               name='arrow-down-contained'
               className={classNames('Control__anchor__arrow', { opened })}
