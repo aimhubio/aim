@@ -18,6 +18,13 @@ const ENDPOINTS = {
     CREATE: '',
     SEARCH: 'search',
   },
+
+  DASHBOARDS: {
+    BASE: '/dashboards',
+    GET: '',
+    CREATE: '',
+    SEARCH: 'search',
+  },
 };
 
 export default ENDPOINTS;

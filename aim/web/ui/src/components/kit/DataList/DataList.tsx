@@ -87,10 +87,8 @@ function DataList({
             onInputClear={textSearch.clearSearchInputData}
             onInputChange={textSearch.changeSearchInput}
             isDisabled={!!isLoading}
+            toolbarItems={toolbarItems}
           />
-          {!!toolbarItems.length && (
-            <div className='DataList__toolbarItems'>{toolbarItems}</div>
-          )}
         </div>
       )}
       <BusyLoaderWrapper

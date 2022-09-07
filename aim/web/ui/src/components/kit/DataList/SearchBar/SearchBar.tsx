@@ -23,6 +23,7 @@ function SearchBar({
   onInputChange,
   onMatchTypeChange,
   isDisabled,
+  toolbarItems,
 }: ISearchBarProps) {
   return (
     <ErrorBoundary>
@@ -107,6 +108,9 @@ function SearchBar({
             </div>
           </Tooltip>
         </div>
+        {!!toolbarItems?.length && (
+          <div className='DataList__toolbarItems'>{toolbarItems}</div>
+        )}
       </div>
     </ErrorBoundary>
   );

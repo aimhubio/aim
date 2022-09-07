@@ -42,6 +42,7 @@ async function getExperimentById(id: string): Promise<IExperimentData> {
 /**
  * function getExperimentById
  * this call is used for updating experiment data by id.
+ * @param id - experiment id
  * @param reqBody - query body params
  * @returns {Promise<status: string, id: string>}
  */
