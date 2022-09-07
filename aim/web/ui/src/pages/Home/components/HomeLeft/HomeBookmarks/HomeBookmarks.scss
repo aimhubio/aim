@@ -1,9 +1,14 @@
 @use 'src/styles/abstracts' as *;
 
+$bookmark-height: 2rem;
+$bookmark-space: $space-xs;
+
 .HomeBookmarks {
   padding: $space-unit;
   border-top: $border-main;
   &__list {
+    max-height: calc(5 * #{$bookmark-height} + 4 * #{$bookmark-space});
+    overflow: auto;
     margin-top: $space-lg;
     &__ListItem {
       margin-bottom: $space-xs;
@@ -11,6 +16,9 @@
         flex: 1;
         margin-left: $space-xs;
         text-transform: capitalize;
+        max-width: 100%;
+        text-overflow: ellipsis;
+        overflow: hidden;
       }
     }
   }

@@ -17,7 +17,7 @@ async function fetchDashboardsList(): Promise<IDashboardData[]> {
 }
 
 /**
- * function fetchDashboardsList
+ * function fetchDashboard
  * this call is used for fetching a dashboard by id.
  * @param id - id of dashboard
  * @returns {Promise<IDashboardData>}
@@ -28,7 +28,7 @@ async function fetchDashboard(id: string): Promise<IDashboardData[]> {
 }
 
 /**
- * function fetchDashboardsList
+ * function createDashboard
  * this call is used for creating new dashboard.
  * @param reqBody - query body params
  * @returns {Promise<IDashboardData>}
@@ -45,7 +45,7 @@ async function createDashboard(
 }
 
 /**
- * function fetchDashboardsList
+ * function updateDashboard
  * this call is used for updating a dashboard by id.
  * @param id - id of dashboard
  * @param reqBody - query body params
@@ -59,7 +59,7 @@ async function updateDashboard(
 }
 
 /**
- * function fetchDashboardsList
+ * function deleteDashboard
  * this call is used for deleting a dashboard by id.
  * @param id - id of dashboard
  * @returns {Promise<IDashboardData>}

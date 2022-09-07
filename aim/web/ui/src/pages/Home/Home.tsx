@@ -10,7 +10,6 @@ import SetupGuide from './components/SetupGuide/SetupGuide';
 import Activity from './components/Activity/Activity';
 import HomeLeft from './components/HomeLeft/HomeLeft';
 import HomeRight from './components/HomeRight/HomeRight';
-import ExperimentsCard from './components/ExperimentsCard';
 
 import './Home.scss';
 
@@ -20,7 +19,6 @@ function Home({
   notifyData,
   onNotificationDelete,
   askEmailSent,
-  experimentsData,
 }: IHomeProps): React.FunctionComponentElement<React.ReactNode> {
   return (
     <ErrorBoundary>

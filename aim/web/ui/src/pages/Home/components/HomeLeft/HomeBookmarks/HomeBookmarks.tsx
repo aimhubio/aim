@@ -1,64 +1,33 @@
 import React from 'react';
-import { useHistory } from 'react-router-dom';
 
-import { IResourceState } from 'modules/core/utils/createResource';
 import { IDashboardData } from 'modules/core/api/dashboardsApi';
 import { Tooltip } from '@material-ui/core';
 
 import { Icon, Text } from 'components/kit';
 import ListItem from 'components/kit/ListItem/ListItem';
 
-import createBookmarksEngine from './HomeBookmarksStore';
+import { BookmarkIconType } from 'pages/Bookmarks/components/BookmarkCard/BookmarkCard';
+
+import useHomeBookmarks from './useHomeBookmarks';
 
 import './HomeBookmarks.scss';
 
 function HomeBookmarks() {
-  const history = useHistory();
-  const { current: bookmarksEngine } = React.useRef(createBookmarksEngine);
-  const bookmarksStore: IResourceState<IDashboardData> =
-    bookmarksEngine.bookmarksState((state) => state);
-
-  React.useEffect(() => {
-    bookmarksEngine.fetchBookmarks();
-    return () => {
-      bookmarksEngine.bookmarksState.destroy();
-    };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
-
-  const handleClick: (
-    e: React.MouseEvent<HTMLElement>,
-    dashboard: IDashboardData,
-    newTab?: boolean,
-  ) => void = React.useCallback(
-    (
-      e: React.MouseEvent<HTMLElement>,
-      dashboard: IDashboardData,
-      newTab = false,
-    ) => {
-      e.stopPropagation();
-      if (dashboard) {
-        const path = `/${dashboard.app_id}`;
-        if (newTab) {
-          window.open(path, '_blank');
-          window.focus();
-          return;
-        }
-        history.push(path);
-      }
-    },
-    [history],
-  );
+  const { bookmarksStore, handleClick } = useHomeBookmarks();
 
   return (
     <div className='HomeBookmarks'>
       <Text size={18}>Bookmarks</Text>
       <div className='HomeBookmarks__list'>
         {bookmarksStore.data?.map((dashboard: IDashboardData) => (
-          <Tooltip title={dashboard.description} key={dashboard.id}>
+          <Tooltip
+            placement='bottom-start'
+            title={dashboard.description}
+            key={dashboard.id}
+          >
             <div>
-              <ListItem className='HomeBookmarks__item'>
-                <Icon name='metrics' box />
+              <ListItem className='HomeBookmarks__list__ListItem'>
+                <Icon name={BookmarkIconType[dashboard.app_type].name} box />
                 <Text
                   className='HomeBookmarks__list__ListItem__Text'
                   onClick={(e) => handleClick(e, dashboard)}
