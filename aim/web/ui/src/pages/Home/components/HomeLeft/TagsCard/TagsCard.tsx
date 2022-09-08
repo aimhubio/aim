@@ -7,23 +7,29 @@ import CompareSelectedRunsPopover from 'pages/Metrics/components/Table/CompareSe
 
 import { AppNameEnum } from 'services/models/explorer';
 
-import useExperimentsCard from './useExperimentsCard';
+import useTagsCard from './useTagsCard';
 
-import './ExperimentsCard.scss';
+import './TagsCard.scss';
 
-function ExperimentsCard() {
-  const { tableRef, tableColumns, tableData, experimentsStore, selectedRows } =
-    useExperimentsCard();
+function TagsCard() {
+  const {
+    tableRef,
+    tableColumns,
+    tableData,
+    tagsStore,
+    selectedRows,
+    tagsQuery,
+  } = useTagsCard();
   return (
-    <div className='ExperimentsCard'>
-      <Text className='ExperimentsCard__title' component='h3' size={18}>
-        Experiments
+    <div className='TagsCard'>
+      <Text className='TagsCard__title' component='h3' size={18}>
+        Tags
       </Text>
       <DataList
         tableRef={tableRef}
         tableColumns={tableColumns}
         tableData={tableData}
-        isLoading={experimentsStore.loading}
+        isLoading={tagsStore.loading}
         height='350px'
         searchableKeys={['name', 'run_count']}
         illustrationConfig={{
@@ -34,8 +40,7 @@ function ExperimentsCard() {
           <CompareSelectedRunsPopover
             key='compareSelectedRunsPopover'
             appName={'home' as AppNameEnum}
-            selectedRows={selectedRows}
-            keyName='experiment'
+            query={tagsQuery}
             disabled={!selectedRows.length}
           />,
         ]}
@@ -44,6 +49,6 @@ function ExperimentsCard() {
   );
 }
 
-ExperimentsCard.displayName = 'ExperimentsCard';
+TagsCard.displayName = 'TagsCard';
 
-export default React.memo(ExperimentsCard);
+export default React.memo(TagsCard);

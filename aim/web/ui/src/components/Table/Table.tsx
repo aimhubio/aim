@@ -4,6 +4,7 @@
 import React from 'react';
 import { isEmpty, isEqual, isNil } from 'lodash-es';
 import { useResizeObserver } from 'hooks';
+import _ from 'lodash-es';
 
 import { Button, Icon, Text } from 'components/kit';
 import ControlPopover from 'components/ControlPopover/ControlPopover';
@@ -743,6 +744,14 @@ const Table = React.forwardRef(function Table(
     }
   }, [appName, sameValueColumns, hiddenColumns]);
 
+  const selectedRunsQuery: string = React.useMemo(() => {
+    if (!_.isEmpty(selectedRows)) {
+      return `run.hash in [${_.uniq(
+        Object.values(selectedRows)?.map((row: any) => `"${row.runHash}"`),
+      ).join(',')}]`;
+    }
+  }, [selectedRows]);
+
   // The right check is !props.isInfiniteLoading && (isLoading || isNil(rowData))
   // but after setting isInfiniteLoading to true, the rowData becomes null, unnecessary renders happening
   // @TODO sanitize this point
@@ -947,9 +956,7 @@ const Table = React.forwardRef(function Table(
               <div>
                 <CompareSelectedRunsPopover
                   appName={appName}
-                  selectedRows={Object.values(selectedRows).map(
-                    (row: any) => row.runHash,
-                  )}
+                  query={selectedRunsQuery}
                 />
               </div>
             </div>

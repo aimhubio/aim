@@ -22,9 +22,8 @@ import { ICompareSelectedRunsPopoverProps } from './CompareSelectedRunsPopover.d
 import './CompareSelectedRunsPopover.scss';
 
 function CompareSelectedRunsPopover({
-  selectedRows,
   appName,
-  keyName = 'hash',
+  query,
   disabled = false,
 }: ICompareSelectedRunsPopoverProps): React.FunctionComponentElement<React.ReactNode> {
   const history = useHistory();
@@ -38,10 +37,6 @@ function CompareSelectedRunsPopover({
       e.stopPropagation();
       e.preventDefault();
       if (value) {
-        const query = `run.${keyName} in [${_.uniq(selectedRows)
-          .map((val: string) => `"${val}"`)
-          .join(',')}]`;
-
         const search = encode({
           query,
           advancedMode: true,
@@ -60,7 +55,7 @@ function CompareSelectedRunsPopover({
         history.push(path);
       }
     },
-    [appName, history, keyName, selectedRows],
+    [appName, history, query],
   );
 
   return (

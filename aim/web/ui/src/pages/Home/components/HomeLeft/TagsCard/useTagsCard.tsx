@@ -1,4 +1,5 @@
 import React from 'react';
+import _ from 'lodash-es';
 
 import { IExperimentData } from 'modules/core/api/experimentsApi';
 import { IResourceState } from 'modules/core/utils/createResource';
@@ -6,36 +7,31 @@ import { Checkbox } from '@material-ui/core';
 
 import { Icon, Text } from 'components/kit';
 
-import createExperimentEngine from './ExperimentsStore';
+import createTagsEngine from './TagsStore';
 
-function useExperimentsCard() {
+function useTagsCard() {
   const tableRef = React.useRef<any>(null);
   const [selectedRows, setSelectedRows] = React.useState<string[]>([]);
-  const { current: experimentsEngine } = React.useRef(createExperimentEngine);
-  const experimentsStore: IResourceState<IExperimentData> =
-    experimentsEngine.experimentsState((state) => state);
+  const { current: tagsEngine } = React.useRef(createTagsEngine);
+  const tagsStore: IResourceState<IExperimentData> = tagsEngine.tagsState(
+    (state) => state,
+  );
 
   React.useEffect(() => {
-    experimentsEngine.fetchExperiments();
+    tagsEngine.fetchTags();
     return () => {
-      experimentsEngine.experimentsState.destroy();
+      tagsEngine.tagsState.destroy();
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   // memoized table data
-  const tableData: {
-    key: number;
-    name: string;
-    archived: boolean;
-    run_count: number;
-    id: string;
-  }[] = React.useMemo(() => {
-    if (experimentsStore.data) {
-      return experimentsStore.data.map(
+  const tableData = React.useMemo(() => {
+    if (tagsStore.data) {
+      return tagsStore.data.map(
         ({ name, archived, run_count }: any, index: number) => {
           return {
-            key: index,
+            key: name,
             name: name,
             archived,
             run_count,
@@ -45,7 +41,7 @@ function useExperimentsCard() {
       );
     }
     return [];
-  }, [experimentsStore.data]);
+  }, [tagsStore.data]);
 
   // on row selection
   const onRowSelect = React.useCallback(
@@ -115,7 +111,7 @@ function useExperimentsCard() {
         key: 'name',
         title: (
           <Text weight={600} size={14} tint={100}>
-            Experiment
+            Name
             <Text
               weight={600}
               size={14}
@@ -141,7 +137,7 @@ function useExperimentsCard() {
     [tableData?.length, onRowSelect, selectedRows],
   );
 
-  // Update the table data and columns when the experiments data changes
+  // Update the table data and columns when the tags data changes
   React.useEffect(() => {
     if (tableRef.current?.updateData) {
       tableRef.current.updateData({
@@ -150,6 +146,20 @@ function useExperimentsCard() {
       });
     }
   }, [tableData, tableColumns]);
-  return { tableRef, tableColumns, tableData, experimentsStore, selectedRows };
+
+  const tagsQuery = React.useMemo(() => {
+    return `any([t in [${_.uniq(selectedRows)
+      .map((val: string) => `"${val}"`)
+      .join(',')}] for t in run.tags])`;
+  }, [selectedRows]);
+
+  return {
+    tableRef,
+    tableColumns,
+    tableData,
+    tagsStore,
+    selectedRows,
+    tagsQuery,
+  };
 }
-export default useExperimentsCard;
+export default useTagsCard;
