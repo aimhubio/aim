@@ -1,3 +1,4 @@
+from logging import getLogger
 from typing import Optional
 from aim.sdk.run import Run
 
@@ -13,6 +14,8 @@ except ImportError:
         'Please install it with command: \n pip install fastai'
     )
 
+logger = getLogger(__name__)
+
 
 class AimCallback(Callback):
     def __init__(self,
@@ -23,32 +26,47 @@ class AimCallback(Callback):
                  ):
         store_attr()
         self._run = None
+        self._run_hash = None
 
     @property
     def experiment(self) -> Run:
-        if self._run is not None:
-            return self._run
+        if not self._run:
+            self.setup()
+        return self._run
 
-    def before_fit(self):
-        if self.repo is None and self.experiment_name is None:
-            self._run = Run(system_tracking_interval=self.system_tracking_interval,
-                            log_system_params=self.log_system_params,)
-        else:
-            self._run = Run(repo=self.repo, experiment=self.experiment_name,
-                            system_tracking_interval=self.system_tracking_interval,
-                            log_system_params=self.log_system_params,)
+    def setup(self):
+        if not self._run:
+            if self._run_hash:
+                self._run = Run(
+                    self._run_hash,
+                    repo=self.repo,
+                    system_tracking_interval=self.system_tracking_interval,
+                )
+            else:
+                self._run = Run(
+                    repo=self.repo,
+                    experiment=self.experiment_name,
+                    system_tracking_interval=self.system_tracking_interval,
+                    log_system_params=self.log_system_params,
+                )
+                self._run_hash = self._run.hash
 
         # Log config parameters
         configs_log = self.gather_args()
-        AimCallback.format_config(configs_log)
+        formatted_config = AimCallback.format_config(configs_log)
         try:
-            for key in configs_log:
-                self._run.set(key, configs_log[key], strict=False)
+            for key in formatted_config:
+                self._run.set(key, formatted_config[key], strict=False)
         except Exception as e:
-            print(f'Aim could not log config parameters -> {e}')
+            logger.warning(f'Aim could not log config parameters -> {e}')
+
+    def before_fit(self):
+        if not self._run:
+            self.setup()
 
     def after_batch(self):
-        context = self._get_context()
+        context = {'subset': 'train'} if self.training else {'subset': 'val'}
+
         self._run.track(self.loss.item(), name='train_loss', step=self.train_iter, context=context)
         for i, h in enumerate(self.opt.hypers):
             for k, v in h.items():
@@ -67,13 +85,6 @@ class AimCallback(Callback):
         if self._run and self._run.active:
             self._run.close()
 
-    def _get_context(self):
-        if self.training:
-            subset = 'train'
-        else:
-            subset = 'val'
-        return {'subset': subset}
-
     def gather_args(self):
         "Gather config parameters accessible to the learner"
         # args stored by 'store_attr'
@@ -87,7 +98,7 @@ class AimCallback(Callback):
             args.update({f'input {n+1} dim {i+1}': d for n in range(n_inp)
                         for i, d in enumerate(list(detuplify(xb[n]).shape))})
         except Exception:
-            print('Could not gather input dimensions')
+            logger.warning('Failed to gather input dimensions')
         # other args
         with ignore_exceptions():
             args['batch_size'] = self.dls.bs
