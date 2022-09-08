@@ -168,6 +168,7 @@ function Metrics(
                         onActivePointChange={props.onActivePointChange}
                         chartProps={chartProps}
                         resizeMode={props.resizeMode}
+                        onRunsTagsChange={props.onRunsTagsChange}
                         controls={
                           <Controls
                             data={props.lineChartData}

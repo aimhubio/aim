@@ -6,11 +6,22 @@
 
 - Add the ability to attach/remove tags on the Run Page (roubkar)
 - Support dictionary as an argument of `Run.track` (alberttorosyan)
+- Display the tags of the run in the tables of the explorers (VkoHov)
+- Adjust the grouping section layout of the Figures explorer (VkoHov)
 - Add fast.ai integration (tmynn)
 
 ### Fixes:
 
 - Adjust the visibility of the run color in tables (VkoHov)
+
+## 3.13.1 Sep 1, 2022
+
+- Add support for querying metrics by last value (mihran113)
+- Fix aim reindex command failure (alberttorosyan)
+- Fix issue with remote runs re-open (mihran113)
+- Deprecate custom set Run.hash values (alberttorosyan)
+- Tune mlflow converter run properties (tmynn)
+- Fix `AimLogger` deprecation issues related to release of PyTorch Lightning v1.7 (djwessel)
 
 ## 3.13.0 Aug 21, 2022
 

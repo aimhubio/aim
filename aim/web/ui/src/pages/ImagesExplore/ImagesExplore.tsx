@@ -334,6 +334,9 @@ function ImagesExplore(): React.FunctionComponentElement<React.ReactNode> {
                         tooltip={imagesExploreData?.tooltip!}
                         sortFieldsDict={memoizedImagesSortFields.sortFieldsDict}
                         sortFields={memoizedImagesSortFields.sortFields}
+                        onRunsTagsChange={
+                          imagesExploreAppModel.onRunsTagsChange
+                        }
                         additionalProperties={
                           imagesExploreData?.config?.images
                             ?.additionalProperties

@@ -1,12 +1,15 @@
 @use 'src/styles/abstracts/index' as *;
 
 .SelectTag {
-  width: 237px;
+  max-width: 20rem;
+  width: 20rem;
 
   &__tags {
-    padding: 0 1rem;
+    padding: $space-xs $space-unit;
     overflow: auto;
-
+    display: flex;
+    flex-wrap: wrap;
+    max-height: 50vh;
     .Badge {
       margin: 0;
       max-width: unset;
@@ -18,20 +21,14 @@
     }
 
     &__badge {
-      display: inline-block;
-      margin-bottom: 0.5rem;
-      margin-right: 0.5rem;
-
-      &.outlined {
-        border: 1px solid #1473e6;
-        padding: 3px;
-        border-radius: 9px;
-      }
+      display: flex;
+      margin-bottom: $space-xs;
+      margin-right: $space-xs;
     }
   }
 
   &__createTag__container {
-    padding: 0.625rem 1rem;
+    padding: $space-xs $space-unit;
     text-align: center;
   }
 }

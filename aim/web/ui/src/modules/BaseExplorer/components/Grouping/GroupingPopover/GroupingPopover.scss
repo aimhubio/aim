@@ -1,6 +1,6 @@
 @use 'src/styles/abstracts' as *;
 
-.GroupingPopover {
+.BaseGroupingPopover {
   width: 25rem;
 
   h3 {
@@ -32,7 +32,7 @@
     box-shadow: unset;
     margin: 0 !important;
 
-    .GroupingPopover__subtitle {
+    .BaseGroupingPopover__subtitle {
       margin-bottom: unset;
     }
 
@@ -68,7 +68,7 @@
       margin-bottom: 0;
     }
   }
-  
+
   &__option__chip__toggle__button {
     span {
       display: inline-block;
@@ -117,7 +117,7 @@
   overflow: hidden;
 }
 
-.AdvancedPopover__paletteColors_colorItem {
+.AdvancedPopover__paletteColors__colorItem {
   display: inline-block;
   flex: 1;
   height: 100%;

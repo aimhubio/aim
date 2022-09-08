@@ -1,18 +1,14 @@
 @use 'src/styles/abstracts' as *;
 
-.Grouping {
+.BaseGrouping {
   display: flex;
-  flex-direction: column;
-  justify-content: space-between;
+  align-items: center;
   border-left: $border-main;
-  height: 100%;
-  padding: 0.625rem $space-lg;
+  height: 2.5rem;
+  padding: $space-xxxs $space-lg;
+  border-bottom: $border-main;
   &__title {
-    display: flex;
-    .Text {
-      text-transform: uppercase;
-      letter-spacing: 0.3px;
-    }
+    margin-right: $space-xxxs;
   }
   &__content {
     display: flex;
