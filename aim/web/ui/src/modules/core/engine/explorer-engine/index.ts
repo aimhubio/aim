@@ -2,17 +2,18 @@ import createReact, { StoreApi, UseBoundStore } from 'zustand';
 
 import createVanilla from 'zustand/vanilla';
 import { PipelineOptions } from 'modules/core/pipeline';
+import { ExplorerEngineConfiguration } from 'modules/BaseExplorerNew/types';
 
 import { AimFlatObjectBase } from 'types/core/AimObjects';
 import { SequenceTypesEnum } from 'types/core/enums';
 
-import createPipelineEngine, { IPipelineEngine } from './pipeline';
-import createInstructionsEngine, { IInstructionsEngine } from './instructions';
-import { IEngineConfigFinal, PipelineStatusEnum } from './types';
-import createExplorerEngine from './explorer';
+import createPipelineEngine, { IPipelineEngine } from '../pipeline';
+import createInstructionsEngine, { IInstructionsEngine } from '../instructions';
+import { IEngineConfigFinal, PipelineStatusEnum } from '../types';
+import createExplorerEngine from '../explorer';
 import createVisualizationsEngine, {
   VisualizationsConfig,
-} from './visualizations';
+} from '../visualizations';
 
 type State = {
   pipeline?: any;
@@ -21,7 +22,7 @@ type State = {
   visualizations?: any;
 };
 
-type Engine<TStore, TObject, SequenceName extends SequenceTypesEnum> = {
+type EngineNew<TStore, TObject, SequenceName extends SequenceTypesEnum> = {
   // sub engines
   pipeline: IPipelineEngine<TObject, TStore>['engine'];
   instructions: IInstructionsEngine<TStore, SequenceName>['engine'];
@@ -37,22 +38,24 @@ type Engine<TStore, TObject, SequenceName extends SequenceTypesEnum> = {
 };
 
 function getPipelineEngine(
-  config: IEngineConfigFinal,
+  config: ExplorerEngineConfiguration,
   set: any,
   get: any,
   state: State, // mutable
 ) {
+  const useCache = config.enablePipelineCache;
+
   const pipelineOptions: Omit<PipelineOptions, 'callbacks'> = {
     sequenceName: config.sequenceName,
     adapter: {
       objectDepth: config.adapter.objectDepth,
-      useCache: config.useCache,
+      useCache,
     },
     grouping: {
-      useCache: config.useCache,
+      useCache,
     },
     query: {
-      useCache: config.useCache,
+      useCache,
     },
   };
   const pipeline = createPipelineEngine<object, AimFlatObjectBase<any>>(
@@ -65,7 +68,7 @@ function getPipelineEngine(
 }
 
 function getInstructionsEngine(
-  config: IEngineConfigFinal,
+  config: ExplorerEngineConfiguration,
   set: any,
   get: any,
   state: State, // mutable,
@@ -81,49 +84,32 @@ function getInstructionsEngine(
 }
 
 function getExplorerEngine(
-  config: IEngineConfigFinal,
+  config: ExplorerEngineConfiguration,
   set: any,
   get: any,
   state: State, // mutable
 ) {
-  const explorer = createExplorerEngine<object>(config, {
-    setState: set,
-    getState: set,
-  });
-
+  // const explorer = createExplorerEngine<object>(config, {
+  //   setState: set,
+  //   getState: set,
+  // });
   // state['explorer'] = explorer.state.explorer;
-
   // return explorer.engine;
 }
 
 function getVisualizationsEngine(
-  config: IEngineConfigFinal,
+  config: ExplorerEngineConfiguration,
   set: any,
   get: any,
   state: State,
 ) {
-  const conf: VisualizationsConfig = {
-    viz1: {
-      component: () => null,
-      controls: config.controls || {},
-      box: {
-        initialState: config.defaultBoxConfig,
-        component: () => null,
-      },
+  const visualizations = createVisualizationsEngine<State>(
+    config.visualizations,
+    {
+      setState: set,
+      getState: get,
     },
-    viz2: {
-      component: () => null,
-      controls: config.controls || {},
-      box: {
-        initialState: config.defaultBoxConfig,
-        component: () => null,
-      },
-    },
-  };
-  const visualizations = createVisualizationsEngine<State>(conf, {
-    setState: set,
-    getState: get,
-  });
+  );
 
   state['visualizations'] = visualizations.state.visualizations;
 
@@ -133,9 +119,9 @@ function getVisualizationsEngine(
 }
 
 function createEngine<TObject = any>(
-  config: IEngineConfigFinal,
+  config: ExplorerEngineConfiguration,
   name: string = 'baseEngine',
-): Engine<object, AimFlatObjectBase<TObject>, typeof config.sequenceName> {
+): EngineNew<object, AimFlatObjectBase<TObject>, typeof config.sequenceName> {
   let pipeline: IPipelineEngine<AimFlatObjectBase<TObject>, object>['engine'];
   let instructions: IInstructionsEngine<
     object,
@@ -201,9 +187,9 @@ function createEngine<TObject = any>(
 
   const useReactStore = createReact<StoreApi<object>>(store);
 
-  const engine: Engine<
+  const engine: EngineNew<
     object,
-    AimFlatObjectBase<any>,
+    AimFlatObjectBase<TObject>,
     typeof config.sequenceName
   > = {
     useStore: useReactStore,
@@ -224,7 +210,7 @@ function createEngine<TObject = any>(
     window[name] = engine;
   }
 
-  console.log('whoke store --->', useReactStore.getState());
+  console.log('engine store --->', useReactStore.getState());
 
   return engine;
 }

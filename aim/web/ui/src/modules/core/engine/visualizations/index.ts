@@ -4,6 +4,7 @@ import { omit } from 'lodash-es';
 
 import { ControlsConfigs } from '../explorer/state/controls';
 import { createSliceState } from '../store/utils';
+import { IEngineStates } from '../../../BaseExplorerNew/types';
 
 import { createControlsStateConfig } from './controls';
 
@@ -20,6 +21,7 @@ export type VisualizationConfig = {
   controls: ControlsConfigs;
   component: FunctionComponent;
   box: BoxConfig;
+  states?: IEngineStates;
 };
 
 export type VisualizationsConfig = {
@@ -132,6 +134,8 @@ function createVisualizationsEngine<TStore>(
     engine: {},
   };
 
+  const resetFunctions: (() => void)[] = [];
+
   const obj = Object.keys(omit(config, 'component')).reduce(
     (acc: any, name: string) => {
       // @ts-ignore
@@ -154,16 +158,25 @@ function createVisualizationsEngine<TStore>(
         ...acc.engine,
         ...engine,
       };
+      resetFunctions.push(engine[name].reset);
       return acc;
     },
     defaultACC,
   );
 
+  function resetVisualizationsState() {
+    resetFunctions.forEach((func) => {
+      func();
+    });
+  }
   return {
     state: {
       [VISUALIZATIONS_STATE_PREFIX]: obj.state,
     },
-    engine: obj.engine,
+    engine: {
+      ...obj.engine,
+      reset: resetVisualizationsState,
+    },
   };
 }
 

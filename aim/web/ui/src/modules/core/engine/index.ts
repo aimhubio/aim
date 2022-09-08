@@ -1,4 +1,4 @@
-import createReact, { GetState, SetState } from 'zustand';
+import createReact from 'zustand';
 import { isEmpty, omit } from 'lodash-es';
 
 import createVanilla from 'zustand/vanilla';
@@ -17,7 +17,6 @@ import {
 import { ISelectOption } from 'types/services/models/explorer/createAppModel';
 import { SequenceTypesEnum } from 'types/core/enums';
 
-import buildEngine from './engine';
 import { IEngineConfigFinal, PipelineStatusEnum } from './types';
 import {
   createDefaultBoxStateSlice,
@@ -28,7 +27,6 @@ import {
 import { createGroupingsStateConfig } from './store/grouping';
 import { createControlsStateConfig } from './store/controls';
 import { ExplorerConfig, ExplorerState, ProgressState } from './types';
-import createPipelineEngine from './pipeline';
 
 const initialProgressState: ProgressState = {
   matched: 0,
@@ -436,8 +434,6 @@ function createEngine(config: IEngineConfigFinal) {
     return getParams({ sequence });
   }
 
-  const e = buildEngine(config);
-
   return {
     useStore: storeReact,
     destroy: storeVanilla.destroy,
@@ -492,8 +488,6 @@ function createEngine(config: IEngineConfigFinal) {
     additionalDataSelector: (state: any) => state.additionalData,
     foundGroupsSelector: (state: any) => state.foundGroups,
     queryableDataSelector: (state: any) => state.queryableData,
-    test: e,
-    useT: e.useStore,
   };
 }
 

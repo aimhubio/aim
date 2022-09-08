@@ -8,6 +8,7 @@ import {
   createStateSlices,
   PreCreatedStateSlice,
 } from '../../store/utils';
+import { ExplorerEngineConfiguration } from '../../../../BaseExplorerNew/types';
 
 import { createControlsStateConfig } from './controls';
 import { createGroupingsStateConfig } from './grouping';
@@ -54,10 +55,7 @@ function createConfiguration(config: IEngineConfigFinal): {
   };
 }
 
-function createState<TStore>(
-  config: IEngineConfigFinal,
-  store: StoreApi<TStore>,
-) {
+function createState<TStore>(config: any, store: StoreApi<TStore>) {
   // const { states } = createConfiguration(config);
   /*states.names.reduce(
     (acc: { [key: string]: object }, name: string) => {

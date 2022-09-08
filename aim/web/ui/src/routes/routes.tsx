@@ -44,6 +44,10 @@ const FiguresExplore = React.lazy(
   () => import(/* webpackChunkName: "figures" */ 'pages/FiguresExplorer'),
 );
 
+const BaseExplorerNew = React.lazy(
+  () => import(/* webpackChunkName: "figures" */ 'pages/NewFiguresExplorer'),
+);
+
 export interface IRoute {
   path: PathEnum;
   component:
@@ -133,6 +137,15 @@ const routes = {
     displayName: 'Figures',
     isExact: true,
     title: pageTitlesEnum.FIGURES_EXPLORER,
+  },
+  NEW_FIGURES_EXPLORER: {
+    path: PathEnum.New_Figures_Explorer,
+    component: BaseExplorerNew,
+    showInSidebar: true,
+    icon: 'figures-explorer',
+    displayName: 'New Figures',
+    isExact: true,
+    title: pageTitlesEnum.FIGURES_EXPLORER_NEW,
   },
   SCATTERS: {
     path: PathEnum.Scatters,
