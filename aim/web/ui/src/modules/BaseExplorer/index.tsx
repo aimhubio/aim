@@ -12,6 +12,8 @@ function BaseExplorer(props: IBaseExplorerProps) {
   const {
     ui: { components },
     engineInstance,
+    explorerName,
+    documentationLink,
   } = props;
   const { initialized } = engineInstance.useStore(
     engineInstance.engineStatusSelector,
@@ -21,31 +23,17 @@ function BaseExplorer(props: IBaseExplorerProps) {
     engineInstance.initialize();
   }, [engineInstance]);
 
-  const panelRenderer = React.useCallback(
-    (Controls, index) => (
-      <div className='VisualizerPanel'>
-        {index === 0 && <components.grouping engine={props.engineInstance} />}
-        <Controls engine={props.engineInstance} />
-      </div>
-    ),
-    [components, props.engineInstance],
-  );
-
   return (
     initialized && (
       <div className='Explorer'>
         <ExplorerBar
-          engine={props.engineInstance}
-          explorerName={props.explorerName}
-          documentationLink={props.documentationLink}
+          engine={engineInstance}
+          explorerName={explorerName}
+          documentationLink={documentationLink}
         />
         {/* {__DEV__ && <Text>Engine status ::: status</Text>} */}
-        <components.queryForm engine={props.engineInstance} />
-        <Visualizations
-          panelRenderer={panelRenderer}
-          components={components}
-          engine={engineInstance}
-        />
+        <components.queryForm engine={engineInstance} />
+        <Visualizations components={components} engine={engineInstance} />
       </div>
     )
   );

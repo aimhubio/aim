@@ -1,10 +1,11 @@
 @use 'src/styles/abstracts' as *;
 
 .BaseControls {
-  width: 70%;
   display: flex;
   align-items: center;
   justify-content: flex-end;
+  margin-left: $space-sm;
+  overflow: hidden;
   &__container {
     display: flex;
     overflow-x: auto;

@@ -94,10 +94,6 @@ export interface IControlsProps extends IBaseComponentProps {}
 
 export interface IVisualizationsProps extends IBaseComponentProps {
   components: IUIComponents;
-  panelRenderer: (
-    controls: React.FunctionComponent<IControlsProps>,
-    index: number,
-  ) => React.ReactNode;
 }
 
 export interface IVisualizationProps extends IBaseComponentProps {

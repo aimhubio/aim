@@ -6,6 +6,7 @@ import { IVisualizationsProps } from 'modules/BaseExplorer/types';
 import IllustrationBlock from 'components/IllustrationBlock/IllustrationBlock';
 
 import ProgressBar from '../ProgressBar';
+import VisualizerPanel from '../VisualizerPanel';
 
 import './Visualizations.scss';
 
@@ -14,7 +15,6 @@ function Visualizations(props: IVisualizationsProps) {
     engine,
     engine: { pipelineStatusSelector, useStore },
     components,
-    panelRenderer,
   } = props;
 
   const status = useStore(pipelineStatusSelector);
@@ -26,7 +26,13 @@ function Visualizations(props: IVisualizationsProps) {
           key={Viz.displayName}
           engine={engine}
           box={components.box}
-          panelRenderer={() => panelRenderer(components.controls, index)} // @TODO need to set "visualization.controls" instead of "components.controls"
+          panelRenderer={() => (
+            <VisualizerPanel
+              engine={engine}
+              controls={components.controls} // @TODO need to set "visualization.controls" instead of "components.controls"
+              grouping={index === 0 ? components.grouping : null}
+            />
+          )}
         />
       )),
     [
@@ -34,7 +40,7 @@ function Visualizations(props: IVisualizationsProps) {
       components.box,
       components.controls,
       components.visualizations,
-      panelRenderer,
+      components.grouping,
     ],
   );
 
