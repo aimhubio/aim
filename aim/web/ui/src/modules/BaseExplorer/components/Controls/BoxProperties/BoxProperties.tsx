@@ -22,10 +22,9 @@ function BoxProperties(props: IBoxPropertiesProps) {
     },
   } = props;
   const boxProperties: IBoxConfigState = useStore(boxSelector);
-  const title = 'Box size';
   return (
     <ControlPopover
-      title={title}
+      title='Configure box size'
       anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
       anchor={({ onAnchorClick, opened }) => (
         <Button
@@ -42,7 +41,7 @@ function BoxProperties(props: IBoxPropertiesProps) {
               active: opened || !boxProperties.isInitial,
             })}
           />
-          <Text className='Control__anchor__label'>{title}</Text>
+          <Text className='Control__anchor__label'>Box size</Text>
           <Icon
             name='arrow-down-contained'
             className={classNames('Control__anchor__arrow', { opened })}

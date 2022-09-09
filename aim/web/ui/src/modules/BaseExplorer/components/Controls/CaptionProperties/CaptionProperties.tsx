@@ -22,11 +22,10 @@ function CaptionProperties(props: ICaptionPropertiesProps) {
     },
   } = props;
   const captionProperties: ICaptionProperties = useStore(stateSelector);
-  const title = 'Box caption';
   return (
     <ErrorBoundary>
       <ControlPopover
-        title={title}
+        title='Configure box caption'
         anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
         anchor={({ onAnchorClick, opened }) => (
           <Button
@@ -43,7 +42,7 @@ function CaptionProperties(props: ICaptionPropertiesProps) {
                 active: opened || !captionProperties.isInitial,
               })}
             />
-            <Text className='Control__anchor__label'>{title}</Text>
+            <Text className='Control__anchor__label'>Box caption</Text>
             <Icon
               name='arrow-down-contained'
               className={classNames('Control__anchor__arrow', { opened })}
