@@ -10,6 +10,7 @@ import SetupGuide from './components/SetupGuide/SetupGuide';
 import Activity from './components/Activity/Activity';
 import HomeLeft from './components/HomeLeft/HomeLeft';
 import HomeRight from './components/HomeRight/HomeRight';
+import HomeMiddle from './components/HomeMiddle/HomeMiddle';
 
 import './Home.scss';
 
@@ -33,6 +34,7 @@ function Home({
             <ExploreAim />
           </div>
         </div>
+        <HomeMiddle />
         <HomeRight />
         {notifyData?.length > 0 && (
           <NotificationContainer
