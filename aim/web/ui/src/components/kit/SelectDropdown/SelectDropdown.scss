@@ -3,7 +3,6 @@
 .SelectDropdown {
   position: relative;
   &__popper {
-    z-index: 5;
     .MuiAutocomplete-groupLabel {
       color: $text-color-50;
       font-size: $text-sm;

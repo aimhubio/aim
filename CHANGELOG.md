@@ -1,5 +1,11 @@
 # Changelog
 
+## Unreleased
+
+### Fixes:
+
+- Fix the regression line rendering issue on Scatter plot exported image (KaroMourad)
+
 ## 3.13.1 Sep 1, 2022
 
 - Add support for querying metrics by last value (mihran113)
