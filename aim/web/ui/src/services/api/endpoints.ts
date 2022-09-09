@@ -25,6 +25,14 @@ const ENDPOINTS = {
     CREATE: '',
     SEARCH: 'search',
   },
+
+  TAGS: {
+    BASE: '/tags',
+    GET: '',
+    CREATE: '',
+    UPDATE: '',
+    DELETE: '',
+  },
 };
 
 export default ENDPOINTS;

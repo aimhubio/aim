@@ -39,7 +39,6 @@ async function createDashboard(
   return (
     await api.makeAPIPostRequest(ENDPOINTS.DASHBOARDS.CREATE, {
       body: reqBody,
-      headers: { 'Content-Type': 'application/json' },
     })
   ).body;
 }

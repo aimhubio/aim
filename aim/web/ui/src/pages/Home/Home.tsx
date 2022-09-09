@@ -29,10 +29,10 @@ function Home({
           <div className='Home__Activity__container'>
             <Activity activityData={activityData} />
           </div>
-          <div className='Home__Explore__container'>
+          {/* <div className='Home__Explore__container'>
             <SetupGuide askEmailSent={askEmailSent} onSendEmail={onSendEmail} />
             <ExploreAim />
-          </div>
+          </div> */}
         </div>
         <HomeMiddle />
         <HomeRight />
