@@ -39,7 +39,7 @@ function GroupingItem({
         anchor={({ onAnchorClick, opened }) => (
           <Tooltip title={`Group by ${groupName}`}>
             <Button
-              size='small'
+              size='xSmall'
               disabled={isDisabled}
               onClick={onAnchorClick}
               className={classNames('BaseGroupingItem', {
@@ -49,11 +49,14 @@ function GroupingItem({
                   !_.isEmpty(currentValues[groupName].fields),
               })}
             >
-              <Text size={12} weight={500} className='BaseGroupingItem__label'>
+              <Text size={12} weight={600} className='BaseGroupingItem__label'>
                 {groupName}
               </Text>
               <Icon
-                name={opened ? 'arrow-up-contained' : 'arrow-down-contained'}
+                name='arrow-down-contained'
+                className={classNames('BaseGroupingItem__arrowIcon', {
+                  opened,
+                })}
                 fontSize={6}
               />
             </Button>

@@ -6,6 +6,7 @@ import { IVisualizationsProps } from 'modules/BaseExplorer/types';
 import IllustrationBlock from 'components/IllustrationBlock/IllustrationBlock';
 
 import ProgressBar from '../ProgressBar';
+import VisualizerPanel from '../VisualizerPanel';
 
 import './Visualizations.scss';
 
@@ -18,16 +19,30 @@ function Visualizations(props: IVisualizationsProps) {
 
   const status = useStore(pipelineStatusSelector);
 
-  const Visualizations = React.useMemo(() => {
-    return components.visualizations.map((Viz) => (
-      <Viz
-        key={Viz.displayName}
-        engine={engine}
-        box={components.box}
-        controlComponent={components.controls}
-      />
-    ));
-  }, [engine, components.box, components.controls, components.visualizations]);
+  const Visualizations = React.useMemo(
+    () =>
+      components.visualizations.map((Viz, index) => (
+        <Viz
+          key={Viz.displayName}
+          engine={engine}
+          box={components.box}
+          panelRenderer={() => (
+            <VisualizerPanel
+              engine={engine}
+              controls={components.controls} // @TODO need to set "visualization.controls" instead of "components.controls"
+              grouping={index === 0 ? components.grouping : null}
+            />
+          )}
+        />
+      )),
+    [
+      engine,
+      components.box,
+      components.controls,
+      components.visualizations,
+      components.grouping,
+    ],
+  );
 
   const renderIllustration = React.useMemo(
     () =>

@@ -7,7 +7,7 @@
 - Add the ability to attach/remove tags on the Run Page (roubkar)
 - Support dictionary as an argument of `Run.track` (alberttorosyan)
 - Display the tags of the run in the tables of the explorers (VkoHov)
-- Adjust the grouping section layout of the Figures explorer (VkoHov)
+- Revamp Figures explorer controls and grouping sections for better onboarding and usability (VkoHov, KaroMourad)
 
 ### Fixes:
 
