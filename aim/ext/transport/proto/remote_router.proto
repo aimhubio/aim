@@ -1,0 +1,45 @@
+syntax = "proto3";
+
+message VersionRequest {}
+
+message VersionResponse {
+    string version = 1;
+    enum Status {
+        OK = 0;
+        ERROR = 1;
+    }
+    Status status = 2;
+}
+
+message WorkerAddressRequest {
+    string client_uri = 1;
+}
+
+message WorkerAddressResponse {
+    string address = 1;
+    enum Status {
+        OK = 0;
+        ERROR = 1;
+    }
+    Status status = 2;
+}
+
+message ClientDisconnectRequest {
+    string client_uri = 1;
+}
+
+message ClientDisconnectResponse {
+    enum Status {
+        OK = 0;
+        ERROR = 1;
+    }
+    Status status = 1;
+}
+
+
+
+service RemoteRouterService {
+    rpc get_version(VersionRequest) returns (VersionResponse) {}
+    rpc get_worker_address(WorkerAddressRequest) returns (WorkerAddressResponse) {}
+    rpc client_disconnect(ClientDisconnectRequest) returns (ClientDisconnectResponse) {}
+}

@@ -154,7 +154,7 @@ class RPCHeartbeatWatcher:
             if self._shutdown:
                 break
 
-            time.sleep(60)
+            time.sleep(1)
 
             for client_uri, last_heartbeat_time in self._heartbeat_pool.items():
                 if datetime.datetime.now().timestamp() - last_heartbeat_time > self._client_keep_alive_time:

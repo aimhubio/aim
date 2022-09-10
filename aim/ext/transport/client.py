@@ -5,7 +5,9 @@ import threading
 from typing import Tuple
 from collections import defaultdict
 import aim.ext.transport.remote_tracking_pb2 as rpc_messages
+import aim.ext.transport.remote_router_pb2 as router_messages
 import aim.ext.transport.remote_tracking_pb2_grpc as remote_tracking_pb2_grpc
+import aim.ext.transport.remote_router_pb2_grpc as remote_router_pb2_grpc
 
 from aim.ext.transport.message_utils import pack_stream, unpack_stream, raise_exception
 from aim.ext.transport.rpc_queue import RpcQueueWithRetry
@@ -45,17 +47,41 @@ class Client:
             ('grpc.max_receive_message_length', msg_max_size)
         ]
 
+        # open a channel with router
         if ssl_certfile:
             with open(ssl_certfile, 'rb') as f:
                 root_certificates = grpc.ssl_channel_credentials(f.read())
-            self._remote_channel = grpc.secure_channel(remote_path, root_certificates, options=options)
+            self._remote_router_channel = grpc.secure_channel(remote_path, root_certificates, options=options)
         else:
-            self._remote_channel = grpc.insecure_channel(remote_path, options=options)
+            self._remote_router_channel = grpc.insecure_channel(remote_path, options=options)
+        self._remote_router_stub = remote_router_pb2_grpc.RemoteRouterServiceStub(self._remote_router_channel)
+
+        # get the available worker address
+        self._remote_worker_address = self._get_worker_address()
+
+        # open a channel with worker for further communication
+        if ssl_certfile:
+            self._remote_channel = grpc.secure_channel(self._remote_worker_address,
+                                                       root_certificates,
+                                                       options=options)
+        else:
+            self._remote_channel = grpc.insecure_channel(self._remote_worker_address, options=options)
 
         self._remote_stub = remote_tracking_pb2_grpc.RemoteTrackingServiceStub(self._remote_channel)
+
         self._heartbeat_sender = RPCHeartbeatSender(self)
         self._heartbeat_sender.start()
         self._thread_local.atomic_instructions = None
+
+    def _get_worker_address(self):
+        request = router_messages.WorkerAddressRequest(
+            client_uri=self.uri
+        )
+        response = self._remote_router_stub.get_worker_address(request)
+        if response.status == router_messages.WorkerAddressResponse.Status.ERROR:
+            # TODO: handle exceptions
+            raise RuntimeError
+        return response.address
 
     def health_check(self, health_check_type='heartbeat'):
         request = rpc_messages.HealthCheckRequest(
@@ -65,12 +91,21 @@ class Client:
         response = self.remote.health_check(request)
         return response
 
-    def get_version(self,):
-        request = rpc_messages.VersionRequest()
-        response = self.remote.get_version(request)
+    def client_disconnect(self,):
+        request = router_messages.ClientDisconnectRequest(
+            client_uri=self.uri
+        )
+        response = self._remote_router_stub.client_disconnect(request)
 
-        if response.status == rpc_messages.ResourceResponse.Status.ERROR:
-            raise_exception(response.exception)
+        if response.status == router_messages.ClientDisconnectResponse.Status.ERROR:
+            raise RuntimeError
+
+    def get_version(self,):
+        request = router_messages.VersionRequest()
+        response = self._remote_router_stub.get_version(request)
+
+        if response.status == router_messages.VersionResponse.Status.ERROR:
+            raise RuntimeError
         return response.version
 
     def get_resource_handler(self, resource_type, args=()):

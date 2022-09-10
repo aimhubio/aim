@@ -67,12 +67,6 @@ class RemoteTrackingServicer(remote_tracking_pb2_grpc.RemoteTrackingServiceServi
                 exception=build_exception(e),
             )
 
-    def get_version(self, request: rpc_messages.VersionRequest, _context):
-        from aim.__version__ import __version__ as aim_version
-
-        return rpc_messages.VersionResponse(version=aim_version,
-                                            status=rpc_messages.VersionResponse.Status.OK)
-
     def get_resource(self, request: rpc_messages.ResourceRequest, _context):
         resource_handler = _get_handler()
         try:
@@ -209,7 +203,7 @@ class RemoteTrackingServicer(remote_tracking_pb2_grpc.RemoteTrackingServiceServi
             raise UnauthorizedRequestError()
 
 
-def run_server(host, port, workers=1, ssl_keyfile=None, ssl_certfile=None):
+def run_server(host, port, router_address, ssl_keyfile=None, ssl_certfile=None):
     # temporary workaround for M1 build
     import grpc
 
@@ -222,7 +216,7 @@ def run_server(host, port, workers=1, ssl_keyfile=None, ssl_certfile=None):
         ('grpc.max_send_message_length', msg_max_size),
         ('grpc.max_receive_message_length', msg_max_size)
     ]
-    server = grpc.server(futures.ThreadPoolExecutor(max_workers=workers), options=options)
+    server = grpc.server(futures.ThreadPoolExecutor(), options=options)
     remote_tracking_pb2_grpc.add_RemoteTrackingServiceServicer_to_server(RemoteTrackingServicer(), server)
 
     if ssl_keyfile and ssl_certfile:
