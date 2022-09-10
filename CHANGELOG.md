@@ -1,9 +1,8 @@
 # Changelog
 
-## Unreleased
+## 3.13.2 Sep 10, 2022
 
-### Fixes:
-
+- Fix content overlapping issue of x-axis alignment dropdown (KaroMourad)
 - Fix the regression line rendering issue on Scatter plot exported image (KaroMourad)
 
 ## 3.13.1 Sep 1, 2022
