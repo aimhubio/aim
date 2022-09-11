@@ -39,15 +39,20 @@ $logs-box-background: #ffffff;
   }
 }
 
-.LogRow {
+.LogCell {
   &__line {
     color: #333;
     font-size: $text-md;
-    padding: 0 $space-sm;
     @include monospaceFontFamily();
     width: 100%;
     line-height: 1.08;
     display: block;
-    height: 15px;
+    height: toRem(15px);
+    &.firstColumn {
+      padding-left: $space-sm;
+    }
+    &.lastColumn {
+      padding-right: $space-sm;
+    }
   }
 }
