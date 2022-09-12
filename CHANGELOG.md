@@ -11,6 +11,7 @@
 
 ### Fixes:
 
+- Change unit-tests data isolation mechanism (alberttorosyan)
 - Adjust the visibility of the run color in tables (VkoHov)
 
 ## 3.13.2 Sep 10, 2022
@@ -25,7 +26,8 @@
 - Fix issue with remote runs re-open (mihran113)
 - Deprecate custom set Run.hash values (alberttorosyan)
 - Tune mlflow converter run properties (tmynn)
-- Fix `AimLogger` deprecation issues related to release of PyTorch Lightning v1.7 (djwessel)
+- Fix `AimLogger` deprecation issu
+  es related to release of PyTorch Lightning v1.7 (djwessel)
 
 ## 3.13.0 Aug 21, 2022
 
