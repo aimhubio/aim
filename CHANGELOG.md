@@ -7,12 +7,18 @@
 - Add the ability to attach/remove tags on the Run Page (roubkar)
 - Support dictionary as an argument of `Run.track` (alberttorosyan)
 - Display the tags of the run in the tables of the explorers (VkoHov)
+- Revamp Figures explorer controls and grouping sections for better onboarding and usability (VkoHov, KaroMourad)
 - Adjust the grouping section layout of the Figures explorer (VkoHov)
 - Add fast.ai integration (tmynn)
 
 ### Fixes:
 
 - Adjust the visibility of the run color in tables (VkoHov)
+
+## 3.13.2 Sep 10, 2022
+
+- Fix content overlapping issue of x-axis alignment dropdown (KaroMourad)
+- Fix the regression line rendering issue on Scatter plot exported image (KaroMourad)
 
 ## 3.13.1 Sep 1, 2022
 
