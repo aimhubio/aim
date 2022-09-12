@@ -1,5 +1,9 @@
 # Changelog
 
+## 3.13.3 
+
+- Fix request cancellation on `Logs` tab (mihran113)
+
 ## 3.13.2 Sep 10, 2022
 
 - Fix content overlapping issue of x-axis alignment dropdown (KaroMourad)
