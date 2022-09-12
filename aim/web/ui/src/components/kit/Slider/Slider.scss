@@ -40,6 +40,10 @@
           font-weight: $font-600;
           color: $primary-color;
           transform: unset;
+          text-overflow: ellipsis;
+          max-width: 100%;
+          overflow: hidden;
+          padding: $space-xxxxs $space-xxxs;
         }
       }
       &.Mui-focusVisible {

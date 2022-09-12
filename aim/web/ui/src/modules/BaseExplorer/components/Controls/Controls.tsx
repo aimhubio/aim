@@ -26,8 +26,8 @@ function Controls(props: IControlsProps) {
 
   return (
     <ErrorBoundary>
-      <div className='Controls'>
-        <div className='Controls__container ScrollBar__hidden'>
+      <div className='BaseControls'>
+        <div className='BaseControls__container ScrollBar__hidden'>
           {Components}
         </div>
       </div>
