@@ -35,5 +35,5 @@ dls = arab_mnist.dataloaders('.')
 learn = cnn_learner(dls, resnet18, pretrained=True,
                     loss_func=CrossEntropyLossFlat(),
                     metrics=accuracy, model_dir="/tmp/model/",
-                    cbs=AimCallback(repo='.', experiment='fastai_example'))
+                    cbs=AimCallback(repo='.', experiment='fastai_test'))
 learn.fit_one_cycle(1, lr_max=slice(10e-6, 1e-4))

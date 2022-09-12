@@ -34,13 +34,14 @@ class AimCallback(Callback):
             self.setup()
         return self._run
 
-    def setup(self):
+    def setup(self, args=None):
         if not self._run:
             if self._run_hash:
                 self._run = Run(
                     self._run_hash,
                     repo=self.repo,
                     system_tracking_interval=self.system_tracking_interval,
+                    log_system_params=self.log_system_params,
                 )
             else:
                 self._run = Run(
@@ -52,17 +53,18 @@ class AimCallback(Callback):
                 self._run_hash = self._run.hash
 
         # Log config parameters
-        configs_log = self.gather_args()
-        formatted_config = AimCallback.format_config(configs_log)
-        try:
-            for key in formatted_config:
-                self._run.set(key, formatted_config[key], strict=False)
-        except Exception as e:
-            logger.warning(f'Aim could not log config parameters -> {e}')
+        if args:
+            try:
+                for key in args:
+                    self._run.set(key, args[key], strict=False)
+            except Exception as e:
+                logger.warning(f'Aim could not log config parameters -> {e}')
 
     def before_fit(self):
         if not self._run:
-            self.setup()
+            configs_log = self.gather_args()
+            formatted_config = AimCallback.format_config(configs_log)
+            self.setup(formatted_config)
 
     def after_batch(self):
         context = {'subset': 'train'} if self.training else {'subset': 'val'}
