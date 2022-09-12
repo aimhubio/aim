@@ -18,6 +18,7 @@ class TestRunMetricNumpyTypes(TestBase):
         run.track(np.array([[[1.0]]]), name='single_item_3d_array')
         run.track(np.float64(1.0), name='numpy_float64')
         run.track(np.float32(1.0), name='numpy_float32')
+        run.close()
 
         repo = Repo.default_repo()
         q = self.isolated_query_patch()
