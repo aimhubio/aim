@@ -12,11 +12,14 @@ import { trackEvent } from 'services/analytics';
 
 import { IActivityProps } from 'types/pages/home/components/Activity/Activity';
 
+import useActivity from './useActivity';
+
 import './Activity.scss';
 
 function Activity({
   activityData,
 }: IActivityProps): React.FunctionComponentElement<React.ReactNode> {
+  const { activityStore } = useActivity();
   function shiftDate(date: any, numDays: any) {
     const newDate = new Date(date);
     newDate.setDate(newDate.getDate() + numDays);
@@ -45,7 +48,7 @@ function Activity({
               Runs
             </Text>
             <Text component='strong' size={36} weight={600} color='secondary'>
-              {activityData?.num_runs ?? (
+              {activityStore.data?.num_runs ?? (
                 <CircularProgress className='Activity__loader' />
               )}
             </Text>
