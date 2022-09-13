@@ -1,19 +1,19 @@
-import React from 'react';
+import React, { memo } from 'react';
 
 import FullVewPopover from './components/BoxFullViewPopover';
 import Visualizer from './components/Visualizer';
 import BoxWrapper from './components/BoxWrapper';
-import QueryForm from './components/QueryForm';
+import { AdvancedQueryForm } from './components/QueryForm';
 import Controls from './components/Controls';
-import Groupings from './components/Grouping';
+import Grouping from './components/Grouping';
 
 const defaultHydration = {
   ObjectFullView: FullVewPopover,
   BoxWrapper: BoxWrapper,
   Visualizer: Visualizer,
-  QueryForm: QueryForm,
+  QueryForm: AdvancedQueryForm,
   Controls: Controls,
-  Groupings: Groupings,
+  Groupings: Grouping,
   documentationLink:
     'https://aimstack.readthedocs.io/en/latest/ui/pages/explorers.html',
 };

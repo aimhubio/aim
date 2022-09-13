@@ -1,16 +1,29 @@
 import { ExplorerEngineConfiguration } from 'modules/BaseExplorerNew/types';
 
-import { IEngineConfigFinal } from '../types';
+import createQueryState from './query';
+import createGroupingsEngine from './groupings';
 
-import createState from './state';
-
-function createExplorerEngine<T>(
+function createExplorerAdditionalEngine<T>(
   config: ExplorerEngineConfiguration,
   store: any,
 ) {
-  const state = createState(config, store);
+  const query = createQueryState<T>(store);
+  const groupings = createGroupingsEngine(config.groupings || {}, store);
 
-  return state;
+  const initialState = {
+    query: {
+      ...query.initialState,
+    },
+    ...groupings.state,
+  };
+
+  return {
+    initialState,
+    engine: {
+      query,
+      groupings: groupings.engine,
+    },
+  };
 }
 
-export default createExplorerEngine;
+export default createExplorerAdditionalEngine;

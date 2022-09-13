@@ -1,7 +1,10 @@
 import { StoreApi } from 'zustand';
 import produce, { Draft } from 'immer';
 
-import { GetParamsResult } from 'modules/core/api/projectApi';
+import {
+  GetParamsResult,
+  GetProjectsResult,
+} from 'modules/core/api/projectApi';
 import { SelectorCreator } from 'modules/core/engine/types';
 
 import { SequenceTypesEnum } from 'types/core/enums';
@@ -37,6 +40,7 @@ type Selectors<T, SequenceName extends SequenceTypesEnum> = {
     GetParamsResult[SequenceName] | null
   >;
   statusSelector: SelectorCreator<T, Status>;
+  stateSelector: SelectorCreator<T, QueryableInfo<SequenceName>>;
 };
 
 export type InstructionsStateBridge<
@@ -55,11 +59,16 @@ export type InstructionsStateBridge<
   selectors: Selectors<ExtractState<TStore, SequenceName>, SequenceName>;
 };
 
+type QueryableInfo<SequenceName extends SequenceTypesEnum> = {
+  queryable_data: GetParamsResult | null;
+  project_sequence_info: GetParamsResult[SequenceName] | null;
+};
+
 function createState<TStore, SequenceName extends SequenceTypesEnum>(
   store: StoreApi<ExtractState<TStore, SequenceName>>,
   initialState: IInstructionsState<SequenceName> = {
     status: {
-      isLoading: false,
+      isLoading: true,
       error: null,
     },
     project_params_info: null,
@@ -81,6 +90,12 @@ function createState<TStore, SequenceName extends SequenceTypesEnum>(
       state.instructions.project_sequence_info,
     statusSelector: (state: ExtractState<TStore, SequenceName>): Status =>
       state.instructions.status,
+    stateSelector: (
+      state: ExtractState<TStore, SequenceName>,
+    ): QueryableInfo<SequenceName> => ({
+      queryable_data: state.instructions.project_params_info,
+      project_sequence_info: state.instructions.project_sequence_info,
+    }),
   };
 
   const methods: Omit<
@@ -98,6 +113,9 @@ function createState<TStore, SequenceName extends SequenceTypesEnum>(
           draft_state.instructions.project_params_info = params_info;
           draft_state.instructions.status.isLoading = false;
         }),
+        false,
+        // @ts-ignore
+        '@PROJECTS/setInfo',
       );
     },
     setError: (error: string | null = null): void => {

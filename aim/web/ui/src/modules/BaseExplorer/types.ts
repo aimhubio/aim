@@ -111,7 +111,7 @@ export interface IBoxProps extends IBaseComponentProps {
 export interface IOptionalExplorerConfig {}
 export interface IExplorerBarProps extends IBaseComponentProps {
   explorerName: string;
-  documentationLink: string;
+  documentationLink?: string;
 }
 export interface IBaseExplorerProps extends IExplorerConfig {
   engineInstance: any;

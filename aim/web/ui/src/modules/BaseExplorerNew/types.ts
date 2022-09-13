@@ -8,6 +8,7 @@ import { AimObjectDepths, SequenceTypesEnum } from 'types/core/enums';
 
 import { VisualizationsConfig } from '../core/engine/visualizations';
 import { EngineNew } from '../core/engine/engine.new';
+import { CustomStates } from '../core/engine/store/utils';
 
 export interface IExplorerConfig {
   /**
@@ -163,6 +164,11 @@ export declare interface ExplorerEngineConfiguration {
    * Visualizations
    */
   visualizations: ExplorerVisualizationsConfiguration;
+
+  /**
+   * Custom States
+   */
+  states?: CustomStates;
 }
 
 export declare interface ExplorerVisualizationsConfiguration
@@ -187,7 +193,7 @@ export declare interface ExplorerUIComponents {
    * @optional
    * @default value is BaseExplorers default BaseQueryForm component
    */
-  groupings?: React.FunctionComponent<IGroupingProps>;
+  groupingContainer?: React.FunctionComponent<IGroupingProps>;
 }
 
 export declare interface ExplorerConfiguration
@@ -227,7 +233,7 @@ export declare interface ExplorerConfiguration
    * The usage of the state defined on state slice documentation
    * @default value is {}
    */
-  readonly states?: IEngineStates;
+  readonly states?: CustomStates;
 }
 
 export declare interface BaseExplorerPropsNew<

@@ -1,13 +1,27 @@
-import { get as getValue } from 'lodash-es';
+import { get as getValue, set as setValue } from 'lodash-es';
+import produce, { Draft } from 'immer';
 
 import { buildObjectHash } from 'modules/core/utils/hashing';
 
-import { GetState, SetState } from 'utils/store/createSlice';
+import {
+  GetState,
+  SetState,
+  SliceMethods,
+  StateSelector,
+} from 'utils/store/createSlice';
 
 import { GenerateStoreMethods, IEngineConfigFinal } from '../types';
 
-export function createSliceState<T>(initialState: T, name: string) {
-  const stateSelector = (state: any) => {
+export interface StateSlice<T, TStore> extends SliceMethods<T> {
+  initialState: T;
+  stateSelector: StateSelector<T, TStore>;
+}
+
+export function createSliceState<T, Store = any>(
+  initialState: T,
+  name: string,
+) {
+  const stateSelector: StateSelector<T, Store> = (state: Store): T => {
     return getValue(state, name);
   };
 
@@ -16,17 +30,22 @@ export function createSliceState<T>(initialState: T, name: string) {
   const generateMethods = <TS extends Function, TG extends Function>(
     set: TS,
     get: TG,
-  ) => {
-    function update(newState: object) {
+  ): SliceMethods<T> => {
+    function update(newState: Partial<T>) {
+      const prevState = getValue(get(), name);
       const updatedState = {
-        // @ts-ignore
-        ...get()[name],
+        ...prevState,
         ...newState,
         isInitial: initialStateHash === buildObjectHash(newState),
       };
-      set({
-        [name]: updatedState,
-      });
+      set(
+        produce<T>((draft_state: Draft<T>) => {
+          // @ts-ignore
+          setValue(draft_state, name, updatedState);
+        }),
+        false,
+        '@UPDATE/' + name,
+      );
     }
 
     function reset() {
@@ -50,14 +69,8 @@ export function createSliceState<T>(initialState: T, name: string) {
   };
 }
 
-export function createStateSlices<T>(
-  states: {
-    [name: string]: {
-      initialState: T;
-    };
-  } = {},
-) {
-  const createdStates: { [key: string]: object } = {};
+export function createStateSlices<T>(states: CustomStates<T> = {}) {
+  const createdStates: { [key: string]: PreCreatedStateSlice } = {};
 
   Object.keys(states).forEach((name: string) => {
     // @TODO check reserved keys, is properties are valid and throw exception
@@ -134,6 +147,12 @@ export type PreCreatedStateSlice = {
   initialState: object;
   stateSelector: Function;
   methods: GenerateStoreMethods;
+};
+
+export type CustomStates<T = any> = {
+  [key: string]: {
+    initialState: Record<string, T>;
+  };
 };
 
 //@TODO merge to createSlice

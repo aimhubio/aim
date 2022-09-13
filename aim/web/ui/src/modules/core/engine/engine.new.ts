@@ -34,7 +34,7 @@ export type EngineNew<
   visualizations: any;
 
   // methods
-  initialize: () => void;
+  initialize: () => Promise<boolean>;
   finalize: () => void;
 
   // store helpers
@@ -165,7 +165,7 @@ function createEngine<TObject = any>(
   });
 
   // @ts-ignore
-  function initialize() {
+  function initialize(): Promis<boolean> {
     // subscribe to history
     instructions
       .getInstructions()

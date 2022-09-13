@@ -10,7 +10,7 @@ import './Grouping.scss';
 function Grouping(props: IBaseComponentProps) {
   const engine = props.engine;
   const currentValues = engine.useStore(engine.groupings.currentValuesSelector);
-
+  console.log(engine);
   const groupingItems = React.useMemo(() => {
     return Object.keys(currentValues).map((key: string) => {
       const Component = engine.groupings[key].component;

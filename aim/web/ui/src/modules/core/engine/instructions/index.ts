@@ -1,4 +1,4 @@
-import { isEmpty, omit, reject } from 'lodash-es';
+import { isEmpty, omit } from 'lodash-es';
 
 import { getParams, GetParamsResult } from 'modules/core/api/projectApi';
 
@@ -21,7 +21,8 @@ export interface IInstructionsEngine<
   } & Omit<
     InstructionsStateBridge<TStore, SequenceName>,
     'initialState' | 'selectors'
-  >;
+  > &
+    InstructionsStateBridge<TStore, SequenceName>['selectors'];
 }
 function createInstructionsEngine<TStore>(
   store: any,
@@ -49,7 +50,8 @@ function createInstructionsEngine<TStore>(
       instructions: state.initialState,
     },
     engine: {
-      ...omit(state, 'initialState'),
+      ...omit(state, ['selectors']),
+      ...state.selectors,
       getInstructions,
     },
   };

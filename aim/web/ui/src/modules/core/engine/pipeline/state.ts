@@ -27,7 +27,7 @@ export type FoundGroups = {};
 
 export interface IPipelineState<TObject> {
   currentPhase: PipelinePhasesEnum;
-  currentGrouping: CurrentGrouping;
+  currentGroupings: CurrentGrouping;
   additionalData: AdditionalData;
   queryableData: QueryableData;
   currentQuery: CurrentQuery;
@@ -46,6 +46,7 @@ type Selectors<TState, TObject> = {
   dataSelector: SelectorCreator<TState, FlatList<TObject>>;
   currentQuerySelector: SelectorCreator<TState, CurrentQuery>;
   currentGroupingSelector: SelectorCreator<TState, CurrentGrouping>;
+  statusSelector: SelectorCreator<TState, PipelineStatusEnum>;
 };
 
 export type PipelineStateBridge<TObject, TStore> = {
@@ -93,7 +94,7 @@ function createState<TStore, TObject>(
     },
     queryableData: {},
     currentQuery: {},
-    currentGrouping: {},
+    currentGroupings: {},
     data: [],
     foundGroups: {},
   },
@@ -116,7 +117,10 @@ function createState<TStore, TObject>(
     ): CurrentQuery => state.pipeline.currentQuery,
     currentGroupingSelector: (
       state: ExtractState<TStore, TObject>,
-    ): CurrentGrouping => state.pipeline.currentGrouping,
+    ): CurrentGrouping => state.pipeline.currentGroupings,
+    statusSelector: (
+      state: ExtractState<TStore, TObject>,
+    ): PipelineStatusEnum => state.pipeline.status,
   };
 
   const methods: Omit<
@@ -152,13 +156,13 @@ function createState<TStore, TObject>(
       store.setState(
         produce<ExtractState<TStore, TObject>>(
           (draft_state: Draft<ExtractState<TStore, TObject>>) => {
-            draft_state.pipeline.currentGrouping = grouping;
+            draft_state.pipeline.currentGroupings = grouping;
           },
         ),
       ),
     getCurrentQuery: (): CurrentQuery => store.getState().pipeline.currentQuery,
     getCurrentGroupings: (): CurrentGrouping =>
-      store.getState().pipeline.currentGrouping,
+      store.getState().pipeline.currentGroupings,
     setProgress: (progress: ProgressState) => {
       store.setState(
         produce<ExtractState<TStore, TObject>>(

@@ -12,6 +12,7 @@ import createPipeline, {
 } from 'modules/core/pipeline';
 
 import { PipelineStatusEnum, ProgressState } from '../types';
+import { SequenceTypesEnum } from '../../../../types/core/enums';
 
 import createState, {
   CurrentGrouping,
@@ -26,8 +27,10 @@ export interface IPipelineEngine<TObject, TStore> {
   engine: {
     search: (params: RunsSearchQueryParams) => void;
     group: (config: CurrentGrouping) => void;
+    getSequenceName: () => SequenceTypesEnum;
     destroy: () => void;
-  } & Omit<PipelineStateBridge<TObject, TStore>, 'initialState'>;
+  } & Omit<PipelineStateBridge<TObject, TStore>, 'selectors'> &
+    PipelineStateBridge<TObject, TStore>['selectors'];
 }
 
 function createPipelineEngine<TStore, TObject>(
@@ -175,7 +178,9 @@ function createPipelineEngine<TStore, TObject>(
       pipeline: state.initialState,
     },
     engine: {
-      ...omit(state, 'initialState'),
+      ...omit(state, ['selectors']),
+      ...state.selectors,
+      getSequenceName: () => options.sequenceName,
       search,
       group,
       destroy: () => {

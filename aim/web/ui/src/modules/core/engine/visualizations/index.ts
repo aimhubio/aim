@@ -24,6 +24,8 @@ export type VisualizationConfig = {
   states?: IEngineStates;
 };
 
+export type BoxState = BoxConfig['initialState'];
+
 export type VisualizationsConfig = {
   [key: string]: VisualizationConfig;
 };
@@ -127,8 +129,6 @@ function createVisualizationsEngine<TStore>(
   config: VisualizationsConfig,
   store: any,
 ) {
-  // @ts-ignore
-
   const defaultACC = {
     state: {},
     engine: {},

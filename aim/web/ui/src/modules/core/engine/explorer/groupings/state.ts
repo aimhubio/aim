@@ -1,8 +1,7 @@
 import { omit } from 'lodash-es';
 
 import { Order } from 'modules/core/pipeline';
-
-import { createSliceState } from './utils';
+import { createSliceState } from 'modules/core/engine/store/utils';
 
 type StyleApplierCallback<S> = (
   object: any,
@@ -104,50 +103,6 @@ function getCurrentValues(
   };
 }
 
-function createGrouping(config: GroupingConfig<unknown & object, any>) {
-  const {
-    name,
-    component,
-    styleApplier,
-    axisComponent,
-    state = { initialState: {} },
-    settings = {},
-    defaultApplications = null,
-  } = config;
-
-  const observableState = createSliceState(
-    state.initialState,
-    `groupings.${name}`,
-  );
-
-  return {
-    settings,
-    component,
-    styleApplier,
-    axisComponent,
-    observableState,
-    defaultApplications,
-  };
-}
-
-export type GroupingConfigs = Record<
-  string,
-  Omit<GroupingConfig<unknown & object, any>, 'name'>
->;
-
-function createGroupingsStateConfig(configs: GroupingConfigs = {}) {
-  const groupings: Record<string, any> = {};
-
-  Object.keys(configs).forEach((name: string) => {
-    groupings[name] = createGrouping({
-      name,
-      ...configs[name],
-    });
-  });
-
-  return createGroupingsSlice(groupings);
-}
-
 function createGroupingsSlice(groupings: Record<string, any>) {
   let initialState: Record<string, any> = {
     currentValues: {},
@@ -228,4 +183,4 @@ function createGroupingsSlice(groupings: Record<string, any>) {
   };
 }
 
-export { createGroupingsStateConfig };
+export default createGroupingsSlice;

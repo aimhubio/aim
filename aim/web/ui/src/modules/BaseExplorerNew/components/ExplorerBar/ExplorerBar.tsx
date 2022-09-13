@@ -13,8 +13,9 @@ import './ExplorerBar.scss';
 
 function ExplorerBar(props: IExplorerBarProps) {
   const isExecuting =
-    props.engine.useStore(props.engine.pipelineStatusSelector) ===
+    props.engine.useStore(props.engine.pipeline.statusSelector) ===
     PipelineStatusEnum.Executing;
+
   return (
     <div>
       <AppBar title={props.explorerName} disabled={isExecuting}>
@@ -38,7 +39,11 @@ function ExplorerBar(props: IExplorerBarProps) {
               )}
               component={
                 <div className='ExplorerBar__popover'>
-                  <MenuItem onClick={props.engine.resetConfigs}>
+                  <MenuItem
+                    onClick={
+                      () => console.log('Reset') /*props.engine.resetConfigs */
+                    }
+                  >
                     Reset Controls to System Defaults
                   </MenuItem>
                   <a

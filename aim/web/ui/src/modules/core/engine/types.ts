@@ -9,6 +9,7 @@ import { IQueryableData, Order, PipelinePhasesEnum } from '../pipeline';
 import { GroupingConfigs } from './store/grouping';
 import { ControlsConfigs } from './store/controls';
 import { IInstructionsState } from './store/instructionsSlice';
+import { CustomStates } from './store/utils';
 
 export interface ProgressState extends IRunProgressObject {
   percent: number;
@@ -24,12 +25,13 @@ export const engineStoreReservedSliceKeys = {
 };*/
 
 export type EngineStoreReservedSliceKeys =
-  | 'initialized'
   | 'instructions'
   | 'groupings'
   | 'pipeline'
   | 'query'
-  | 'box';
+  | 'visualizations'
+  | 'controls'
+  | 'states';
 
 export type SliceCreationConfig<TSliceState> = {
   initialState: TSliceState;
@@ -39,7 +41,7 @@ export type StoreSliceCreator<TSliceState> = {
   [key: string]: SliceCreationConfig<TSliceState>;
 };
 
-interface StoreSliceMethods {
+export interface StoreSliceMethods {
   update: Function;
   reset(): void;
 }
@@ -75,11 +77,7 @@ export interface IEngineConfigFinal {
   styleAppliers?: {
     [key: string]: Function;
   };
-  states?: {
-    [name: string]: {
-      initialState: object;
-    };
-  };
+  states?: CustomStates;
 }
 
 export type ExplorerState = {

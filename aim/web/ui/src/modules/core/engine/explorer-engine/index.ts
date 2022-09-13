@@ -1,6 +1,7 @@
 import createReact, { StoreApi, UseBoundStore } from 'zustand';
 
 import createVanilla from 'zustand/vanilla';
+import { devtools } from 'zustand/middleware';
 import { PipelineOptions } from 'modules/core/pipeline';
 import { ExplorerEngineConfiguration } from 'modules/BaseExplorerNew/types';
 
@@ -9,11 +10,10 @@ import { SequenceTypesEnum } from 'types/core/enums';
 
 import createPipelineEngine, { IPipelineEngine } from '../pipeline';
 import createInstructionsEngine, { IInstructionsEngine } from '../instructions';
-import { IEngineConfigFinal, PipelineStatusEnum } from '../types';
-import createExplorerEngine from '../explorer';
-import createVisualizationsEngine, {
-  VisualizationsConfig,
-} from '../visualizations';
+import { PipelineStatusEnum } from '../types';
+import createVisualizationsEngine from '../visualizations';
+import createExplorerAdditionalEngine from '../explorer';
+import createCustomStatesEngine, { CustomStatesEngine } from '../custom-states';
 
 type State = {
   pipeline?: any;
@@ -29,13 +29,13 @@ type EngineNew<TStore, TObject, SequenceName extends SequenceTypesEnum> = {
   visualizations: any;
 
   // methods
-  initialize: () => void;
+  initialize: () => Promise<boolean>;
   finalize: () => void;
 
   // store helpers
   useStore: UseBoundStore<StoreApi<TStore>>;
   subscribeToStore: (listener: (state: TStore) => void) => void;
-};
+} & CustomStatesEngine;
 
 function getPipelineEngine(
   config: ExplorerEngineConfiguration,
@@ -83,18 +83,16 @@ function getInstructionsEngine(
   return instructions.engine;
 }
 
-function getExplorerEngine(
+function getExplorerAdditionalEngines(
   config: ExplorerEngineConfiguration,
   set: any,
   get: any,
-  state: State, // mutable
+  // state: State, // mutable
 ) {
-  // const explorer = createExplorerEngine<object>(config, {
-  //   setState: set,
-  //   getState: set,
-  // });
-  // state['explorer'] = explorer.state.explorer;
-  // return explorer.engine;
+  return createExplorerAdditionalEngine<State>(config, {
+    setState: set,
+    getState: get,
+  });
 }
 
 function getVisualizationsEngine(
@@ -113,14 +111,12 @@ function getVisualizationsEngine(
 
   state['visualizations'] = visualizations.state.visualizations;
 
-  console.log('entier state ----> ');
-
   return visualizations.engine;
 }
 
 function createEngine<TObject = any>(
   config: ExplorerEngineConfiguration,
-  name: string = 'baseEngine',
+  name: string = 'ExplorerEngine',
 ): EngineNew<object, AimFlatObjectBase<TObject>, typeof config.sequenceName> {
   let pipeline: IPipelineEngine<AimFlatObjectBase<TObject>, object>['engine'];
   let instructions: IInstructionsEngine<
@@ -130,50 +126,101 @@ function createEngine<TObject = any>(
 
   let visualizations: any;
 
-  // @ts-ignore
-  const store = createVanilla<StoreApi<object>>((set, get) => {
-    const state = {};
-
-    /**
-     * Instructions
-     */
-    instructions = getInstructionsEngine(config, set, get, state);
-
-    /**
-     * Pipeline
-     */
-    pipeline = getPipelineEngine(config, set, get, state);
-
-    /**
-     * Explorer
-     */
-
-    /**
-     * Visualizations
-     */
-    visualizations = getVisualizationsEngine(config, set, get, state);
-
-    /**
-     * Custom states
-     */
-    return state;
-  });
+  let customStatesEngine: CustomStatesEngine;
+  let query: any;
+  let groupings: any;
 
   // @ts-ignore
-  function initialize() {
+  const store = createVanilla<StoreApi<object>>(
+    // @ts-ignore
+    devtools(
+      // @ts-ignore
+      (set, get) => {
+        let state = {};
+
+        /**
+         * Custom states
+         */
+        const customStates = createCustomStatesEngine(
+          {
+            setState: set,
+            getState: get,
+          },
+          config.states,
+        );
+
+        state = {
+          ...state,
+          ...customStates.state.initialState,
+        };
+        customStatesEngine = customStates.engine;
+
+        /**
+         * Explorer Additional, includes query and groupings
+         */
+        const explorer = getExplorerAdditionalEngines(config, set, get);
+        state = {
+          ...state,
+          ...explorer.initialState,
+        };
+
+        query = explorer.engine.query;
+        groupings = explorer.engine.groupings;
+
+        /**
+         * Instructions
+         */
+        instructions = getInstructionsEngine(config, set, get, state);
+
+        /**
+         * Pipeline
+         */
+        pipeline = getPipelineEngine(config, set, get, state);
+
+        /*
+         * Visualizations
+         */
+        visualizations = getVisualizationsEngine(config, set, get, state);
+
+        /** Additional **/
+
+        /**
+         * @TODO add notification engine here
+         */
+        /**
+         * @TODO add blobs_uri engine here
+         */
+        /**
+         * @TODO add events service engine here
+         */
+
+        return state;
+      },
+      { name },
+    ),
+  );
+
+  // @ts-ignore
+  const useReactStore = createReact<StoreApi<object>>(store);
+  /*
+   * An initializer to use for url sync and bookmarks data get
+   */
+  function initialize(): Promise<boolean> {
     // subscribe to history
-    instructions
-      .getInstructions()
-      .then((isEmpty) => {
-        if (isEmpty) {
-          pipeline.changeCurrentPhaseOrStatus(
-            PipelineStatusEnum.Insufficient_Resources,
-          );
-        }
-      })
-      .catch((err) => console.error(err));
+    return new Promise((resolve, reject) => {
+      instructions
+        .getInstructions()
+        .then((isEmpty) => {
+          if (isEmpty) {
+            pipeline.changeCurrentPhaseOrStatus(
+              PipelineStatusEnum.Insufficient_Resources,
+            );
+          }
+          console.log(useReactStore.getState());
+        })
+        .catch((err) => console.error(err));
+    });
   }
-
   /**
    * Clean ups
    *    destroy states
@@ -182,11 +229,11 @@ function createEngine<TObject = any>(
    */
   function finalize() {
     // @ts-ignore
-    store.destroy();
+    useReactStore.destroy(); // or engine.release/commit
+    pipeline.destroy(); // or pipeline release/commit
   }
 
-  const useReactStore = createReact<StoreApi<object>>(store);
-
+  // @ts-ignore
   const engine: EngineNew<
     object,
     AimFlatObjectBase<TObject>,
@@ -194,10 +241,13 @@ function createEngine<TObject = any>(
   > = {
     useStore: useReactStore,
     subscribeToStore: useReactStore.subscribe,
-
     // @ts-ignore
     instructions,
     visualizations,
+    // @ts-ignore
+    ...customStatesEngine,
+    query,
+    groupings,
     // @ts-ignore
     pipeline,
 
@@ -209,8 +259,6 @@ function createEngine<TObject = any>(
     // @ts-ignore
     window[name] = engine;
   }
-
-  console.log('engine store --->', useReactStore.getState());
 
   return engine;
 }

@@ -2,95 +2,42 @@ import React, { useEffect } from 'react';
 
 import createEngine from 'modules/core/engine/explorer-engine';
 
+import ExplorerBar from './components/ExplorerBar';
 import getDefaultHydration from './getDefaultHydration';
-import {
-  IBaseComponentProps,
-  BaseExplorerPropsNew,
-  ExplorerConfiguration,
-  IBaseExplorerProps,
-} from './types';
+import { BaseExplorerPropsNew, ExplorerConfiguration } from './types';
 
 import './styles.scss';
 
-function TestComponent(props: IBaseComponentProps) {
-  const visualizations = props.engine.visualizations;
-
-  const control1 = props.engine.useStore(
-    visualizations['viz1'].controls.boxProperties.stateSelector,
-  );
-  const control2 = props.engine.useStore(
-    visualizations['viz2'].controls.boxProperties.stateSelector,
+function BaseExplorerNew({
+  configuration,
+  engineInstance,
+}: BaseExplorerPropsNew) {
+  const { isLoading } = engineInstance.useStore(
+    engineInstance.instructions.statusSelector,
   );
 
   useEffect(() => {
-    console.log('box1 ---> ', control1);
-  }, [control1]);
+    engineInstance.initialize().then().catch();
+  }, [engineInstance]);
 
-  useEffect(() => {
-    console.log('box2 ---> ', control2);
-  }, [control2]);
-
-  return (
-    <div>
-      <button
-        onClick={() =>
-          visualizations.viz1.controls.boxProperties.methods.update({
-            width: 'box1',
-          })
-        }
-      >
-        update box1
-      </button>{' '}
-      <button
-        onClick={() => {
-          visualizations.viz2.controls.boxProperties.methods.update({
-            width: 'box2',
-          });
-        }}
-      >
-        update box2
-      </button>
-      <button
-        onClick={() => {
-          visualizations.reset();
-        }}
-      >
-        reset
-      </button>
-    </div>
-  );
-}
-
-function BaseExplorerNew(props: BaseExplorerPropsNew) {
-  // const { initialized } = engineInstance.useStore(
-  //   engineInstance.engineStatusSelector,
-  // );
-
-  // useEffect(() => {
-  //   engineInstance.initialize();
-  // }, [engineInstance]);
-  // const state = engineInstance.useStore((state: any) => state);
-  // useEffect(() => {
-  //   console.log(state);
-  // }, []);
-  return (
-    // initialized && (
+  // @TODO handle error for networks
+  return !isLoading ? (
     <div className='Explorer'>
-      {/*<TestComponent engine={{}} />*/}
-      {/*<ExplorerBar*/}
-      {/*  engine={props.engineInstance}*/}
-      {/*  explorerName={props.explorerName}*/}
-      {/*  documentationLink={props.documentationLink}*/}
-      {/*/>*/}
+      <ExplorerBar
+        engine={engineInstance}
+        explorerName={configuration.name}
+        documentationLink={configuration.documentationLink}
+      />
       {/* {__DEV__ && <Text>Engine status ::: status</Text>} */}
       <div className='ComponentsWrapper'>
-        {/*<components.queryForm engine={props.engineInstance} />*/}
-        {/*<components.grouping engine={props.engineInstance} />*/}
+        {/* @ts-ignore*/}
+        <configuration.components.queryForm engine={engineInstance} />
+        {/* @ts-ignore*/}
+        <configuration.components.groupingContainer engine={engineInstance} />
       </div>
       {/*<Visualizations components={components} engine={engineInstance} />*/}
     </div>
-    // )
-  );
+  ) : null;
 }
 
 function createBasePathFromName(name: string) {
@@ -98,7 +45,7 @@ function createBasePathFromName(name: string) {
 }
 
 type ExplorerRenderer = (
-  options: ExplorerConfiguration,
+  configuration: ExplorerConfiguration,
 ) => () => React.ReactElement;
 
 /**
@@ -112,26 +59,27 @@ type ExplorerRenderer = (
 function createExplorer(
   rootContainer: React.FunctionComponent<BaseExplorerPropsNew>,
 ): ExplorerRenderer {
-  function _rendererImpl<TObject>(configuration: ExplorerConfiguration) {
+  function _rendererImpl<TObject = unknown>(
+    configuration: ExplorerConfiguration,
+  ): () => React.ReactElement {
     const defaultHydration = getDefaultHydration();
 
     const { components } = configuration;
 
-    const beforeEngineHydration: ExplorerConfiguration = {
+    const hydration: ExplorerConfiguration = {
       ...configuration,
-      documentationLink: configuration.documentationLink,
+      documentationLink:
+        configuration.documentationLink || defaultHydration.documentationLink,
       basePath:
         configuration.basePath || createBasePathFromName(configuration.name),
       components: {
-        groupings: components?.groupings || defaultHydration.Groupings,
+        groupingContainer:
+          components?.groupingContainer || defaultHydration.Groupings,
         queryForm: components?.queryForm || defaultHydration.QueryForm,
       },
     };
 
-    const engine = createEngine<TObject>(
-      beforeEngineHydration,
-      configuration.name,
-    );
+    const engine = createEngine<TObject>(hydration, configuration.basePath);
 
     const Container: React.FunctionComponent<
       BaseExplorerPropsNew<typeof engine>
@@ -140,10 +88,7 @@ function createExplorer(
     >;
 
     return () => (
-      <Container
-        configuration={beforeEngineHydration}
-        engineInstance={engine}
-      />
+      <Container configuration={hydration} engineInstance={engine} />
     );
   }
 
