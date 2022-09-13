@@ -3,6 +3,8 @@ import React from 'react';
 import DataList from 'components/kit/DataList';
 import { Text } from 'components/kit';
 
+import { RowHeightSize } from 'config/table/tableConfigs';
+
 import CompareSelectedRunsPopover from 'pages/Metrics/components/Table/CompareSelectedRunsPopover';
 
 import { AppNameEnum } from 'services/models/explorer';
@@ -31,6 +33,7 @@ function ExperimentsCard() {
         tableData={tableData}
         isLoading={experimentsStore.loading}
         height='350px'
+        rowHeight={RowHeightSize.sm}
         searchableKeys={['name', 'run_count']}
         illustrationConfig={{
           size: 'large',

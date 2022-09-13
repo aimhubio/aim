@@ -1,30 +1,28 @@
 import React from 'react';
-import { useHistory } from 'react-router-dom';
 
-import { IResourceState } from 'modules/core/utils/createResource';
+import { Text } from 'components/kit';
+import DataList from 'components/kit/DataList';
 
-import { IRun } from 'types/services/models/metrics/runModel';
-
-import createActiveRunsEngine from './ActiveRunsStore';
+import useActiveRunsTable from './useActiveRunsTable';
 
 function ActiveRunsTable() {
-  const history = useHistory();
-  const { current: activeRunsEngine } = React.useRef(createActiveRunsEngine);
-  const activeRunsStore: IResourceState<IRun<unknown>> =
-    activeRunsEngine.activeRunsState((state) => state);
-
-  React.useEffect(() => {
-    activeRunsEngine.fetchActiveRuns();
-    return () => {
-      activeRunsEngine.activeRunsState.destroy();
-    };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
-
-  console.log(activeRunsStore.data[0]?.props?.active);
+  const { data, tableRef, tableColumns, tableData, loading } =
+    useActiveRunsTable();
   return (
     <div>
-      <h1>ActiveRunsTable</h1>
+      <Text component='h1'>In Progress Runs</Text>
+      <DataList
+        withSearchBar={false}
+        tableRef={tableRef}
+        tableColumns={tableColumns}
+        tableData={tableData}
+        isLoading={loading}
+        height='350px'
+        illustrationConfig={{
+          size: 'large',
+          title: 'No Results',
+        }}
+      />
     </div>
   );
 }

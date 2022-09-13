@@ -5,7 +5,7 @@ import { IExperimentData } from 'modules/core/api/experimentsApi';
 import { IResourceState } from 'modules/core/utils/createResource';
 import { Checkbox } from '@material-ui/core';
 
-import { Icon, Text } from 'components/kit';
+import { Badge, Icon, Text } from 'components/kit';
 
 import createTagsEngine from './TagsStore';
 
@@ -29,10 +29,10 @@ function useTagsCard() {
   const tableData = React.useMemo(() => {
     if (tagsStore.data) {
       return tagsStore.data.map(
-        ({ name, archived, run_count }: any, index: number) => {
+        ({ name, archived, run_count, color }: any, index: number) => {
           return {
             key: name,
-            name: name,
+            name: { name, color },
             archived,
             run_count,
             id: name,
@@ -123,7 +123,14 @@ function useTagsCard() {
           </Text>
         ),
         width: 'calc(100% - 135px)',
-        cellRenderer: ({ cellData }: any) => <p title={cellData}>{cellData}</p>,
+        cellRenderer: ({ cellData }: any) => (
+          <Badge
+            size='xSmall'
+            title={cellData.name}
+            label={cellData.name}
+            color={cellData.color}
+          />
+        ),
       },
       {
         dataKey: 'run_count',

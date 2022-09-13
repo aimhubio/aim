@@ -14,6 +14,7 @@ import './styles.scss';
 
 function JsonViewPopover({
   json,
+  ...rest
 }: IJsonViewPopoverProps): React.FunctionComponentElement<React.ReactNode> {
   return (
     <ErrorBoundary>
@@ -23,6 +24,7 @@ function JsonViewPopover({
           name={false}
           theme='bright:inverted'
           src={json}
+          {...rest}
         />
       </div>
     </ErrorBoundary>
