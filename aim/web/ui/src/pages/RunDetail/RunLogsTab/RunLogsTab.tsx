@@ -30,7 +30,7 @@ function RunLogsTab({
   inProgress,
   updatedLogsCount,
 }: IRunLogsTabProps) {
-  const liveUpdate = React.useRef<any>(null);
+  const liveUpdate = React.useRef<{ intervalId: number } | null>(null);
   const logsContainerRef = React.useRef<any>(null);
   const listRef = React.useRef<any>({});
   const runsBatchRequestRef = React.useRef<any>({});
@@ -45,41 +45,58 @@ function RunLogsTab({
   const visibleItemsRange = React.useRef<any>(null);
 
   React.useEffect(() => {
-    runsBatchRequestRef.current = runDetailAppModel.getRunLogs({ runHash });
-    runsBatchRequestRef.current.call();
-
+    getRunLogs({ runHash });
     analytics.pageView(ANALYTICS_EVENT_KEYS.runDetails.tabs.logs.tabView);
-    startLiveUpdate();
-
     return () => {
-      runsBatchRequestRef.current.abort();
-      if (liveUpdate.current?.intervalId) {
-        clearInterval(liveUpdate.current.intervalId);
-      }
+      stopLiveUpdate(true);
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
+  function getRunLogs(params: {
+    runHash: string;
+    record_range?: string;
+    isLiveUpdate?: boolean;
+    isLoadMore?: boolean;
+  }) {
+    runsBatchRequestRef.current = runDetailAppModel.getRunLogs(params);
+    runsBatchRequestRef.current.call().then(() => {
+      stopLiveUpdate();
+      startLiveUpdate();
+    });
+  }
+
   function liveUpdateCallBack() {
     return function () {
       setLastRequestType(LogsLastRequestEnum.LIVE_UPDATE);
-      runsBatchRequestRef.current = runDetailAppModel.getRunLogs({
+      getRunLogs({
         runHash,
         record_range: dataRef.current
           ? `${+rangeRef.current?.[1] > 5 ? +rangeRef.current?.[1] - 5 : 0}:`
           : '',
         isLiveUpdate: true,
       });
-      runsBatchRequestRef.current.call();
     };
   }
 
   function startLiveUpdate() {
     if (inProgress) {
-      const intervalId = setInterval(liveUpdateCallBack(), 3000);
+      const intervalId: number = window.setTimeout(liveUpdateCallBack(), 3000);
       liveUpdate.current = {
         intervalId,
       };
+    }
+  }
+
+  function stopLiveUpdate(forceRequestAbort: boolean = false) {
+    if (
+      forceRequestAbort ||
+      lastRequestType === LogsLastRequestEnum.LIVE_UPDATE
+    ) {
+      runsBatchRequestRef.current?.abort();
+    }
+    if (liveUpdate.current?.intervalId) {
+      clearInterval(liveUpdate.current.intervalId);
     }
   }
 
@@ -90,12 +107,9 @@ function RunLogsTab({
       +keysList?.[0] !== 0 &&
       props.scrollDirection === 'backward'
     ) {
-      if (liveUpdate.current?.intervalId) {
-        clearInterval(liveUpdate.current.intervalId);
-        runsBatchRequestRef.current.abort();
-      }
+      stopLiveUpdate();
       setLastRequestType(LogsLastRequestEnum.LOAD_MORE);
-      runsBatchRequestRef.current = runDetailAppModel.getRunLogs({
+      getRunLogs({
         runHash,
         record_range: `${
           +rangeRef.current?.[0] > LOAD_MORE_LOGS_COUNT
@@ -104,16 +118,14 @@ function RunLogsTab({
         }:${rangeRef.current?.[0]}`,
         isLoadMore: true,
       });
-      runsBatchRequestRef.current.call();
-      startLiveUpdate();
     }
   }
 
   React.useEffect(() => {
-    if (!inProgress && liveUpdate.current?.intervalId) {
-      clearInterval(liveUpdate.current.intervalId);
-      runsBatchRequestRef.current.abort();
+    if (!inProgress) {
+      stopLiveUpdate();
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [inProgress]);
 
   React.useEffect(() => {
