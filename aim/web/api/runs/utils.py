@@ -316,6 +316,7 @@ async def run_logs_streamer(run: Run, record_range: str) -> bytes:
     try:
         steps_vals = logs.data.view('val').range(start, stop)
         for step, (val,) in steps_vals:
+            await asyncio.sleep(ASYNC_SLEEP_INTERVAL)
             encoded_tree = encode_tree({step: val.data})
             yield collect_streamable_data(encoded_tree)
     except asyncio.CancelledError:
