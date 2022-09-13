@@ -25,7 +25,7 @@ import { IRunLogsTabProps, LogsLastRequestEnum } from './RunLogsTab.d';
 import './RunLogsTab.scss';
 
 const SINGLE_LINE_HEIGHT = 15;
-const LOAD_MORE_LOGS_COUNT = 500;
+const LOAD_MORE_LOGS_COUNT = 200;
 
 function RunLogsTab({
   isRunLogsLoading,
@@ -234,7 +234,7 @@ function RunLogsTab({
                     itemCount={logsRowsData?.length + 1}
                     itemSize={() => SINGLE_LINE_HEIGHT}
                     width={'100%'}
-                    overscanCount={200}
+                    overscanCount={10}
                     initialScrollOffset={
                       scrollOffset ?? logsRowsData?.length * SINGLE_LINE_HEIGHT
                     }
