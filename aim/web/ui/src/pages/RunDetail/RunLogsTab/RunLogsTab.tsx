@@ -234,7 +234,7 @@ function RunLogsTab({
                     itemCount={logsRowsData?.length + 1}
                     itemSize={() => SINGLE_LINE_HEIGHT}
                     width={'100%'}
-                    overscanCount={1000}
+                    overscanCount={200}
                     initialScrollOffset={
                       scrollOffset ?? logsRowsData?.length * SINGLE_LINE_HEIGHT
                     }
