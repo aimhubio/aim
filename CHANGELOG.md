@@ -1,5 +1,9 @@
 # Changelog
 
+## 3.13.3
+
+- Optimize rendering performance of the logs tab in the run page (VkoHov)
+
 ## 3.13.2 Sep 10, 2022
 
 - Fix content overlapping issue of x-axis alignment dropdown (KaroMourad)
