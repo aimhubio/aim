@@ -1,8 +1,6 @@
 import type { FunctionComponent } from 'react';
 
 import renderer, { getDefaultHydration } from 'modules/BaseExplorerNew';
-import { QueryForm } from 'modules/BaseExplorerNew/components';
-import { Grouping } from 'modules/BaseExplorerNew/components/Grouping/Grouping';
 
 import { AimObjectDepths, SequenceTypesEnum } from 'types/core/enums';
 

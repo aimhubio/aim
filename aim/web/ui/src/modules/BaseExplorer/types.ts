@@ -6,6 +6,8 @@ import { ControlsConfigs } from 'modules/core/engine/store/controls';
 
 import { AimObjectDepths, SequenceTypesEnum } from 'types/core/enums';
 
+import { VisualizationConfig } from '../core/engine/visualizations';
+
 export interface IExplorerConfig {
   /**
    * The name of explorer, used to identify user configuration for the explorer
@@ -93,7 +95,10 @@ export interface IGroupingProps extends IBaseComponentProps {}
 export interface IControlsProps extends IBaseComponentProps {}
 
 export interface IVisualizationsProps extends IBaseComponentProps {
-  components: IUIComponents;
+  visualizers: {
+    [key: string]: VisualizationConfig;
+  };
+  components?: IUIComponents;
 }
 
 export interface IVisualizationProps extends IBaseComponentProps {

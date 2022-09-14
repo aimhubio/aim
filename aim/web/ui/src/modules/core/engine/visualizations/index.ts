@@ -4,7 +4,12 @@ import { omit } from 'lodash-es';
 
 import { ControlsConfigs } from '../explorer/state/controls';
 import { createSliceState } from '../store/utils';
-import { IEngineStates } from '../../../BaseExplorerNew/types';
+import {
+  IBoxProps,
+  IControlsProps,
+  IEngineStates,
+  IVisualizationProps,
+} from '../../../BaseExplorerNew/types';
 
 import { createControlsStateConfig } from './controls';
 
@@ -14,12 +19,14 @@ type BoxConfig = {
     height: number;
     gap: number;
   };
-  component: FunctionComponent;
+  component: FunctionComponent<IBoxProps>;
 };
 
 export type VisualizationConfig = {
   controls: ControlsConfigs;
-  component: FunctionComponent;
+  extendDefaultControls?: boolean;
+  component?: FunctionComponent<IVisualizationProps>;
+  controlsContainer?: FunctionComponent<IControlsProps>;
   box: BoxConfig;
   states?: IEngineStates;
 };

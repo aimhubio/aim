@@ -34,6 +34,7 @@ function BaseExplorer(props: IBaseExplorerProps) {
           <components.queryForm engine={props.engineInstance} />
           <components.grouping engine={props.engineInstance} />
         </div>
+        {/*@ts-ignore */}
         <Visualizations components={components} engine={engineInstance} />
       </div>
     )

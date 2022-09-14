@@ -1,4 +1,3 @@
-// @ts-nocheck
 import * as React from 'react';
 
 import { PipelineStatusEnum } from 'modules/core/engine';
@@ -13,22 +12,29 @@ import './Visualizations.scss';
 function Visualizations(props: IVisualizationsProps) {
   const {
     engine,
-    engine: { pipelineStatusSelector, useStore },
-    components,
+    engine: { pipeline, useStore },
+    visualizers,
   } = props;
 
-  const status = useStore(pipelineStatusSelector);
+  const status = useStore(pipeline.statusSelector);
 
   const Visualizations = React.useMemo(() => {
-    return components.visualizations.map((Viz) => (
-      <Viz
-        key={Viz.displayName}
-        engine={engine}
-        box={components.box}
-        controlComponent={components.controls}
-      />
-    ));
-  }, [engine, components.box, components.controls, components.visualizations]);
+    return Object.keys(visualizers).map((name: string) => {
+      const visualizer = visualizers[name];
+      const Viz = visualizer.component;
+
+      return (
+        /* @ts-ignore*/
+        <Viz
+          /* @ts-ignore*/
+          key={Viz.displayName || name}
+          engine={engine}
+          box={visualizer.box.component}
+          controlComponent={visualizer.controlsContainer}
+        />
+      );
+    });
+  }, [engine, visualizers]);
 
   const renderIllustration = React.useMemo(
     () =>

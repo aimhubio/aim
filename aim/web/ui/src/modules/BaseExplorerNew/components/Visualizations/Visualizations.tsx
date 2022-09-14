@@ -1,3 +1,4 @@
+// @ts-nocheck
 import * as React from 'react';
 
 import { PipelineStatusEnum } from 'modules/core/engine';

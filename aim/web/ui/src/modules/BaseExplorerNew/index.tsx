@@ -1,10 +1,12 @@
 import React, { useEffect } from 'react';
 
 import createEngine from 'modules/core/engine/explorer-engine';
+import { VisualizationConfig } from 'modules/core/engine/visualizations';
 
 import ExplorerBar from './components/ExplorerBar';
 import getDefaultHydration from './getDefaultHydration';
 import { BaseExplorerPropsNew, ExplorerConfiguration } from './types';
+import Visualizations from './components/Visualizations.new/Visualizations';
 
 import './styles.scss';
 
@@ -35,7 +37,10 @@ function BaseExplorerNew({
         {/* @ts-ignore*/}
         <configuration.components.groupingContainer engine={engineInstance} />
       </div>
-      {/*<Visualizations components={components} engine={engineInstance} />*/}
+      <Visualizations
+        visualizers={configuration.visualizations}
+        engine={engineInstance}
+      />
     </div>
   ) : null;
 }
@@ -64,7 +69,29 @@ function createExplorer(
   ): () => React.ReactElement {
     const defaultHydration = getDefaultHydration();
 
-    const { components } = configuration;
+    const { components, visualizations } = configuration;
+
+    const visualizationsHydration = Object.keys(visualizations).reduce(
+      (
+        acc: {
+          [key: string]: VisualizationConfig;
+        },
+        name: string,
+      ) => {
+        const viz = visualizations[name];
+        acc[name] = {
+          ...viz,
+          controlsContainer: viz.controlsContainer || defaultHydration.Controls,
+          box: {
+            initialState:
+              viz.box.initialState || defaultHydration.box.initialState,
+            component: viz.box.component || defaultHydration.BoxWrapper,
+          },
+        };
+        return acc;
+      },
+      {},
+    );
 
     const hydration: ExplorerConfiguration = {
       ...configuration,
@@ -77,6 +104,7 @@ function createExplorer(
           components?.groupingContainer || defaultHydration.Groupings,
         queryForm: components?.queryForm || defaultHydration.QueryForm,
       },
+      visualizations: visualizationsHydration,
     };
 
     const engine = createEngine<TObject>(hydration, configuration.basePath);
