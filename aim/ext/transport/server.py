@@ -142,7 +142,7 @@ class RemoteTrackingServicer(remote_tracking_pb2_grpc.RemoteTrackingServiceServi
                     result = attr
 
             yield rpc_messages.InstructionResponse(header=rpc_messages.ResponseHeader(
-                version=0.1,
+                version='0.1',
                 status=rpc_messages.ResponseHeader.Status.OK
             ))
             for chunk in pack_stream(encode_tree(result)):
@@ -150,7 +150,7 @@ class RemoteTrackingServicer(remote_tracking_pb2_grpc.RemoteTrackingServiceServi
 
         except Exception as e:
             yield rpc_messages.InstructionResponse(header=rpc_messages.ResponseHeader(
-                version=0.1,
+                version='0.1',
                 status=rpc_messages.ResponseHeader.Status.ERROR,
                 exception=build_exception(e),
             ))
@@ -192,7 +192,7 @@ class RemoteTrackingServicer(remote_tracking_pb2_grpc.RemoteTrackingServiceServi
             return rpc_messages.WriteInstructionsResponse(status=rpc_messages.WriteInstructionsResponse.Status.OK)
         except Exception as e:
             return rpc_messages.WriteInstructionsResponse(
-                version=0.1,
+                version='0.1',
                 status=rpc_messages.WriteInstructionsResponse.Status.ERROR,
                 exception=build_exception(e),
             )

@@ -12,6 +12,8 @@ function BaseExplorer(props: IBaseExplorerProps) {
   const {
     ui: { components },
     engineInstance,
+    explorerName,
+    documentationLink,
   } = props;
   const { initialized } = engineInstance.useStore(
     engineInstance.engineStatusSelector,
@@ -25,13 +27,12 @@ function BaseExplorer(props: IBaseExplorerProps) {
     initialized && (
       <div className='Explorer'>
         <ExplorerBar
-          engine={props.engineInstance}
-          explorerName={props.explorerName}
-          documentationLink={props.documentationLink}
+          engine={engineInstance}
+          explorerName={explorerName}
+          documentationLink={documentationLink}
         />
         {/* {__DEV__ && <Text>Engine status ::: status</Text>} */}
-        <components.queryForm engine={props.engineInstance} />
-        <components.grouping engine={props.engineInstance} />
+        <components.queryForm engine={engineInstance} />
         <Visualizations components={components} engine={engineInstance} />
       </div>
     )

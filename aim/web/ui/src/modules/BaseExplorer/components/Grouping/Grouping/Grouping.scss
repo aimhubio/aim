@@ -3,10 +3,6 @@
 .BaseGrouping {
   display: flex;
   align-items: center;
-  border-left: $border-main;
-  height: 2.5rem;
-  padding: $space-xxxs $space-lg;
-  border-bottom: $border-main;
   &__title {
     margin-right: $space-xxxs;
   }
