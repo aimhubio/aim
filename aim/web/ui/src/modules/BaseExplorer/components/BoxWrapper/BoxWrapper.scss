@@ -25,14 +25,10 @@
     background-color: $white;
   }
   &__depthSlider {
-    position: absolute;
     padding: 0;
-    z-index: 1;
     background-color: white;
     width: calc(100% - 2px);
     height: 1.75rem;
-    left: 1px;
-    bottom: 0;
     & > .Slider {
       width: 100%;
       max-width: 46rem;
