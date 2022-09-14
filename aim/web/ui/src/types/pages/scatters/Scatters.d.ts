@@ -109,6 +109,7 @@ export interface IScattersProps extends Partial<RouteChildrenProps> {
   onShuffleChange: (name: 'stroke' | 'color') => void;
   onSearchQueryCopy: () => void;
   liveUpdateConfig: { delay: number; enabled: boolean };
+  onRunsTagsChange: (runHash: string, tags: ITagInfo[]) => void;
   onLiveUpdateConfigChange: (config: {
     delay?: number;
     enabled?: boolean;

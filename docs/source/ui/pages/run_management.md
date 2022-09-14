@@ -76,11 +76,11 @@ Overview tab shows overall info about the run.
 
 - Sidebar contains information about `Run Date`, `Run Duration`, `Run Hash`, attached `Tags` and gives the ability to navigate through tabs.
 
-<img style="border-radius: 8px; border: 1px solid #E8F1FC" alt="Single Run page params tab" src="https://docs-blobs.s3.us-east-2.amazonaws.com/images/ui/pages/run-single-page/overview_tab.png">
+<img style="border-radius: 8px; border: 1px solid #E8F1FC" alt="Single Run page overview tab" src="https://docs-blobs.s3.us-east-2.amazonaws.com/images/ui/pages/run-single-page/overview_tab.png">
 
 Also, you can apply advanced `searching/filtering` to those card tables.
 
-<img style="border-radius: 8px; border: 1px solid #E8F1FC" alt="Single Run page params tab" src="https://docs-blobs.s3.us-east-2.amazonaws.com/images/ui/pages/run-single-page/overview_tab_table.png">
+<img style="border-radius: 8px; border: 1px solid #E8F1FC" alt="Single Run page overview tab table" src="https://docs-blobs.s3.us-east-2.amazonaws.com/images/ui/pages/run-single-page/overview_tab_table.png">
 
 ### Params
 
@@ -92,9 +92,11 @@ Params tab contains a JSON-like visualization of all the tracked params data rel
 
 Metrics tab contains the visualizations of all the metrics tracked for the given run.
 
-**Note:** you can track arbitrary number of runs with lots of steps with Aim!
+When exploring run results, some metrics are looked at more often. Pin those metrics to the top of the page to find them easier and faster. Undo pinning by clicking on "unpin" button.
 
-<img style="border-radius: 8px; border: 1px solid #E8F1FC" alt="Single Run page params metrics" src="https://docs-blobs.s3.us-east-2.amazonaws.com/images/ui/pages/run-single-page/metrics_tab.png">
+<img style="border-radius: 8px; border: 1px solid #E8F1FC" alt="Single Run page metrics tab" src="https://docs-blobs.s3.us-east-2.amazonaws.com/images/ui/pages/run-single-page/metrics_tab_pin.png">
+
+**Note:** you can track arbitrary number of runs with lots of steps with Aim!
 
 ### System
 

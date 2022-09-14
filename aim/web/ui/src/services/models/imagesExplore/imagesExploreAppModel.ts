@@ -55,6 +55,7 @@ import {
 import { IProjectParamsMetrics } from 'types/services/models/projects/projectsModel';
 import { IModel } from 'types/services/models/model';
 import { ISyntaxErrorDetails } from 'types/components/NotificationContainer/NotificationContainer';
+import { ITagInfo, ITagProps } from 'types/pages/tags/Tags';
 
 import getAppConfigDataMethod from 'utils/app/getAppConfigData';
 import onRowSelectAction from 'utils/app/onRowSelect';
@@ -90,6 +91,9 @@ import getRunData from 'utils/app/getRunData';
 import getTooltipContent from 'utils/getTooltipContent';
 import decodeWithBase58Checker from 'utils/decodeWithBase58Checker';
 import { onCopyToClipBoard } from 'utils/onCopyToClipBoard';
+import getFilteredRow from 'utils/app/getFilteredRow';
+import { getMetricHash } from 'utils/app/getMetricHash';
+import onRunsTagsChange from 'utils/app/onRunsTagsChange';
 
 import createModel from '../model';
 import { AppNameEnum } from '../explorer';
@@ -157,7 +161,7 @@ function getConfig(): IImagesExploreAppConfig {
       hiddenMetrics: [],
       hiddenColumns: [],
       hideSystemMetrics: undefined,
-      columnsWidths: {},
+      columnsWidths: { tags: 300 },
       columnsOrder: {
         left: [],
         middle: [],
@@ -458,27 +462,30 @@ function getSelectFormOptions(projectsData: IProjectParamsMetrics) {
   let data: ISelectOption[] = [];
   let index: number = 0;
   if (projectsData?.images) {
-    for (let key in projectsData.images) {
+    for (let seqName in projectsData.images) {
       data.push({
-        label: key,
-        group: key,
+        label: seqName,
+        group: seqName,
         color: COLORS[0][index % COLORS[0].length],
+        key: getMetricHash(seqName, {}),
+
         value: {
-          option_name: key,
+          option_name: seqName,
           context: null,
         },
       });
       index++;
 
-      for (let val of projectsData.images[key]) {
+      for (let val of projectsData.images[seqName]) {
         if (!_.isEmpty(val)) {
           let label = contextToString(val);
           data.push({
-            label: `${key} ${label}`,
-            group: key,
+            label: `${seqName} ${label}`,
+            group: seqName,
             color: COLORS[0][index % COLORS[0].length],
+            key: getMetricHash(seqName, val),
             value: {
-              option_name: key,
+              option_name: seqName,
               context: val,
             },
           });
@@ -1329,6 +1336,14 @@ function getDataAsTableRows(
           date: moment(metric.run.props.creation_time * 1000).format(
             TABLE_DATE_FORMAT,
           ),
+          tags: metric.run.props.tags.map((tag: ITagProps) => ({
+            archived: false,
+            color: tag.color,
+            id: tag.id,
+            comment: tag.description,
+            name: tag.name,
+            run_count: 0,
+          })),
           duration: processDurationTime(
             metric.run.props.creation_time * 1000,
             metric.run.props.end_time
@@ -1390,23 +1405,31 @@ function getDataAsTableRows(
           rows[groupKey!].items.push(
             isRawData
               ? rowValues
-              : imagesExploreTableRowRenderer(rowValues, {
-                  toggleVisibility: (e) => {
-                    e.stopPropagation();
-                    onRowVisibilityChange(rowValues.key);
+              : imagesExploreTableRowRenderer(
+                  rowValues,
+                  onModelRunsTagsChange,
+                  {
+                    toggleVisibility: (e) => {
+                      e.stopPropagation();
+                      onRowVisibilityChange(rowValues.key);
+                    },
                   },
-                }),
+                ),
           );
         } else {
           rows.push(
             isRawData
               ? rowValues
-              : imagesExploreTableRowRenderer(rowValues, {
-                  toggleVisibility: (e) => {
-                    e.stopPropagation();
-                    onRowVisibilityChange(rowValues.key);
+              : imagesExploreTableRowRenderer(
+                  rowValues,
+                  onModelRunsTagsChange,
+                  {
+                    toggleVisibility: (e) => {
+                      e.stopPropagation();
+                      onRowVisibilityChange(rowValues.key);
+                    },
                   },
-                }),
+                ),
           );
         }
       });
@@ -1429,6 +1452,7 @@ function getDataAsTableRows(
     if (metricsCollection.config !== null && !isRawData) {
       rows[groupKey!].data = imagesExploreTableRowRenderer(
         rows[groupKey!].data,
+        onModelRunsTagsChange,
         {},
         true,
         ['value', 'name', 'groups'].concat(Object.keys(columnsValues)),
@@ -1441,6 +1465,10 @@ function getDataAsTableRows(
     }
   }
   return { rows, sameValueColumns };
+}
+
+function onModelRunsTagsChange(runHash: string, tags: ITagInfo[]): void {
+  onRunsTagsChange({ runHash, tags, model, updateModelData });
 }
 
 async function onBookmarkCreate({ name, description }: IBookmarkFormState) {
@@ -1694,7 +1722,10 @@ function onExportTableData(e: React.ChangeEvent<any>): void {
 
   groupedRows?.forEach((groupedRow: any[], groupedRowIndex: number) => {
     groupedRow?.forEach((row: any) => {
-      const filteredRow: any = getFilteredRow(filteredHeader, row);
+      const filteredRow: any = getFilteredRow({
+        columnKeys: filteredHeader,
+        row,
+      });
       dataToExport.push(filteredRow);
     });
     if (groupedRows?.length - 1 !== groupedRowIndex) {
@@ -1733,28 +1764,6 @@ function onRowVisibilityChange(metricKey: string) {
     setItem('imagesTable', encode(table));
     updateModelData(config);
   }
-}
-
-function getFilteredRow(
-  columnKeys: string[],
-  row: any,
-): { [key: string]: string } {
-  return columnKeys.reduce((acc: { [key: string]: string }, column: string) => {
-    let value = row[column];
-    if (Array.isArray(value)) {
-      value = value.join(', ');
-    } else if (typeof value !== 'string') {
-      value = value || value === 0 ? JSON.stringify(value) : '-';
-    }
-
-    if (column.startsWith('params.')) {
-      acc[column.replace('params.', '')] = value;
-    } else {
-      acc[column] = value;
-    }
-
-    return acc;
-  }, {});
 }
 
 function onTableResizeEnd(tableHeight: string) {
@@ -2349,6 +2358,7 @@ const imagesExploreAppModel = {
   deleteRuns,
   archiveRuns,
   onRowSelect,
+  onRunsTagsChange: onModelRunsTagsChange,
 };
 
 export default imagesExploreAppModel;

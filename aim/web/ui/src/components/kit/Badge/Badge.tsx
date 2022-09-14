@@ -46,6 +46,7 @@ const BadgeIcon = styled.span`
 function Badge({
   id,
   label,
+  value,
   color = '',
   size = 'medium',
   style,
@@ -88,7 +89,10 @@ function Badge({
         {onDelete && (
           <BadgeIcon
             color={color}
-            onClick={() => onDelete(label)}
+            onClick={(e) => {
+              e.stopPropagation();
+              onDelete(value ?? label);
+            }}
             className='Badge__deleteIcon'
           >
             <Icon color={color} name='close' />

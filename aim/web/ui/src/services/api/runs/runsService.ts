@@ -14,7 +14,7 @@ const endpoints = {
   ARCHIVE_RUNS: (archived: boolean) => `runs/archive-batch?archive=${archived}`,
   DELETE_RUN: (id: string) => `runs/${id}`,
   DELETE_RUNS: 'runs/delete-batch',
-  CREATE_RUNS_TAG: (id: string) => `runs/${id}/tags/new`,
+  ATTACH_RUNS_TAG: (id: string) => `runs/${id}/tags/new`,
   DELETE_RUNS_TAG: (id: string, tag_id: string) => `runs/${id}/tags/${tag_id}`,
   GET_BATCH: (id: string, trace: string) => `runs/${id}/${trace}/get-batch`,
   GET_BATCH_BY_STEP: (id: string, trace: string) =>
@@ -79,8 +79,8 @@ function deleteRuns(ids: string[]) {
   return API.post(endpoints.DELETE_RUNS, ids);
 }
 
-function createRunsTag(body: object, run_id: string) {
-  return API.post(endpoints.CREATE_RUNS_TAG(run_id), body);
+function attachRunsTag(body: object, run_id: string) {
+  return API.post(endpoints.ATTACH_RUNS_TAG(run_id), body);
 }
 
 function deleteRunsTag(run_id: string, tag_id: string) {
@@ -126,7 +126,7 @@ const runsService = {
   getRunsOfExperiment,
   archiveRun,
   deleteRun,
-  createRunsTag,
+  attachRunsTag,
   deleteRunsTag,
   archiveRuns,
   deleteRuns,
