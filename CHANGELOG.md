@@ -12,6 +12,7 @@
 ### Fixes:
 
 - Adjust the visibility of the run color in tables (VkoHov)
+- Fix response headers for remote tracking server (mihran113)
 
 ## 3.13.2 Sep 10, 2022
 
