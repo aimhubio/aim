@@ -38,9 +38,10 @@ function RunLogsTab({
   const logsContainerRef = React.useRef<any>(null);
   const listRef = React.useRef<any>({});
   const runsBatchRequestRef = React.useRef<any>({});
+  const logsRowsData = React.useRef<string[] | null>(null);
   const [lastRequestType, setLastRequestType] =
     React.useState<LogsLastRequestEnum>(LogsLastRequestEnum.DEFAULT);
-  const [logsRange, setLogsRange] = React.useState<[number, number]>([0, 0]);
+  const logsRange = React.useRef<[number, number]>([0, 0]);
   const [scrollOffset, setScrollOffset] = React.useState<number | null>(null);
   const [visibleRowsRange, setVisibleRowsRange] = React.useState<{
     visibleStartIndex: number;
@@ -48,7 +49,6 @@ function RunLogsTab({
   } | null>(null);
   const [parentHeight, setParentHeight] = React.useState<number>(0);
   const [parentWidth, setParentWidth] = React.useState<number>(0);
-  const [logsRowsData, setLogsRowsData] = React.useState<string[] | null>(null);
   const [keysList, setKeyList] = React.useState<number[] | null>(null);
 
   React.useEffect(() => {
@@ -59,6 +59,26 @@ function RunLogsTab({
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
+  function liveUpdateCallBack() {
+    setLastRequestType(LogsLastRequestEnum.LIVE_UPDATE);
+    getRunLogs({
+      runHash,
+      record_range: logsRowsData.current
+        ? `${logsRange.current?.[1] > 5 ? logsRange.current?.[1] - 5 : 0}:`
+        : '',
+      isLiveUpdate: true,
+    });
+  }
+
+  function startLiveUpdate() {
+    if (inProgress) {
+      const intervalId: number = window.setTimeout(liveUpdateCallBack, 3000);
+      liveUpdate.current = {
+        intervalId,
+      };
+    }
+  }
 
   function getRunLogs(params: {
     runHash: string;
@@ -71,28 +91,6 @@ function RunLogsTab({
       stopLiveUpdate();
       startLiveUpdate();
     });
-  }
-
-  function liveUpdateCallBack() {
-    return function () {
-      setLastRequestType(LogsLastRequestEnum.LIVE_UPDATE);
-      getRunLogs({
-        runHash,
-        record_range: logsRowsData
-          ? `${logsRange[1] > 5 ? logsRange[1] - 5 : 0}:`
-          : '',
-        isLiveUpdate: true,
-      });
-    };
-  }
-
-  function startLiveUpdate() {
-    if (inProgress) {
-      const intervalId: number = window.setTimeout(liveUpdateCallBack(), 3000);
-      liveUpdate.current = {
-        intervalId,
-      };
-    }
   }
 
   function stopLiveUpdate(forceRequestAbort: boolean = false) {
@@ -120,10 +118,10 @@ function RunLogsTab({
       getRunLogs({
         runHash,
         record_range: `${
-          logsRange[0] > LOAD_MORE_LOGS_COUNT
-            ? logsRange[0] - LOAD_MORE_LOGS_COUNT
+          logsRange.current?.[0] > LOAD_MORE_LOGS_COUNT
+            ? logsRange.current?.[0] - LOAD_MORE_LOGS_COUNT
             : 0
-        }:${logsRange[0]}`,
+        }:${logsRange.current?.[0]}`,
         isLoadMore: true,
       });
     }
@@ -152,17 +150,15 @@ function RunLogsTab({
       values.map((value: { index: string; value: string }) => +value.index),
     );
     const arrayWithEmptyStrings: string[] = Array(3).fill('');
-    setLogsRange([keys[0], keys[keys.length - 1]]);
+    logsRange.current = [keys[0], keys[keys.length - 1]];
     setKeyList(keys);
-    setLogsRowsData(
-      values
-        .map((value: { index: string; value: string }) => value.value)
-        .concat(arrayWithEmptyStrings),
-    );
+    logsRowsData.current = values
+      .map((value: { index: string; value: string }) => value.value)
+      .concat(arrayWithEmptyStrings);
   }, [runLogs]);
 
   React.useEffect(() => {
-    const logsRowsCount = logsRowsData?.length ?? 0;
+    const logsRowsCount = logsRowsData.current?.length ?? 0;
     if (lastRequestType === LogsLastRequestEnum.LOAD_MORE && visibleRowsRange) {
       listRef.current?.scrollToItem?.(
         visibleRowsRange.visibleStartIndex + updatedLogsCount,
@@ -186,7 +182,7 @@ function RunLogsTab({
       );
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [logsRowsData, keysList]);
+  }, [logsRowsData.current, keysList]);
 
   React.useEffect(() => {
     if (
@@ -222,7 +218,7 @@ function RunLogsTab({
       >
         {!_.isEmpty(runLogs) &&
         !_.isEmpty(keysList) &&
-        !_.isNil(logsRowsData) ? (
+        !_.isNil(logsRowsData.current) ? (
           <div className='RunDetailLogsTabWrapper'>
             <div className='RunDetailLogsTab'>
               <div className='Logs' ref={logsContainerRef}>
@@ -231,16 +227,17 @@ function RunLogsTab({
                     ref={listRef}
                     key={`${parentHeight}${parentWidth}`}
                     height={parentHeight || 100}
-                    itemCount={logsRowsData?.length + 1}
+                    itemCount={logsRowsData.current?.length + 1}
                     itemSize={() => SINGLE_LINE_HEIGHT}
                     width={'100%'}
-                    overscanCount={10}
+                    overscanCount={100}
                     initialScrollOffset={
-                      scrollOffset ?? logsRowsData?.length * SINGLE_LINE_HEIGHT
+                      scrollOffset ??
+                      logsRowsData.current?.length * SINGLE_LINE_HEIGHT
                     }
                     onItemsRendered={onItemsRendered}
                     itemData={{
-                      logsList: logsRowsData,
+                      logsList: logsRowsData.current,
                     }}
                     onScroll={onScroll}
                   >
