@@ -8,6 +8,7 @@ import createAdapter, { Adapter } from './adapter';
 // @ts-ignore
 import { BettaGroupOption } from './grouping/types';
 import { PipelinePhasesEnum, StatusChangeCallback } from './types';
+import PipelineError from './PipelineError';
 
 export type PipelineOptions = {
   sequenceName: SequenceTypesEnum;
@@ -108,7 +109,7 @@ async function execute(options: PipelineExecutionOptions): Promise<any> {
   } catch (e) {
     callbacks.statusChangeCallback &&
       callbacks.statusChangeCallback(PipelinePhasesEnum.Waiting);
-    throw e;
+    throw new PipelineError(e.message || e, e.detail, e.source);
   }
 }
 

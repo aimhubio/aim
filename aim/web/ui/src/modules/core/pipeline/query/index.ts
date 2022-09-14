@@ -18,6 +18,7 @@ import { parseStream } from 'utils/encoder/streamEncoding';
 import { PipelinePhasesEnum, StatusChangeCallback } from '../types';
 
 import { Query, RequestProgressCallback } from './types';
+import { DecodingError, FetchingError } from './QueryError';
 
 type QueryInternalConfig = {
   cache?: InlineCache;
@@ -44,32 +45,27 @@ async function executeBaseQuery(
   if (config.statusChangeCallback) {
     config.statusChangeCallback(PipelinePhasesEnum.Fetching); // make invariant with type mapping
   }
-
+  let data: ReadableStream;
   try {
-    const data: ReadableStream = (await config.currentQueryRequest?.call(
-      query,
-    )) as ReadableStream; // @TODO write better code to avoid null check
+    data = (await config.currentQueryRequest?.call(query)) as ReadableStream; // @TODO write better code to avoid null check
+  } catch (e) {
+    throw new FetchingError(e.message || e, e.detail);
+  }
 
-    if (config.statusChangeCallback) {
-      config.statusChangeCallback(PipelinePhasesEnum.Decoding);
-    }
+  if (config.statusChangeCallback) {
+    config.statusChangeCallback(PipelinePhasesEnum.Decoding);
+  }
 
-    const progressCallback: RequestProgressCallback | undefined =
-      query.report_progress ? config.requestProgressCallback : undefined;
-
+  const progressCallback: RequestProgressCallback | undefined =
+    query.report_progress ? config.requestProgressCallback : undefined;
+  try {
     const result = parseStream<Array<RunSearchRunView>>(data, progressCallback);
     if (config.cache) {
       config.cache.set(query, result);
     }
-
     return result;
   } catch (e) {
-    // if (__DEV__) {
-    // eslint-disable-next-line no-console
-    console.error("Can't query runs ---> ", e);
-    throw e;
-    // }
-    // return [];
+    throw new DecodingError(e.message || e, e.detail);
   }
 }
 

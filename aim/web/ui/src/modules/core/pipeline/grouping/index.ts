@@ -9,6 +9,7 @@ import {
 } from '../types';
 
 import group from './group';
+import GroupingError from './GroupingError';
 
 export type GroupingConfigOptions = {
   useCache?: boolean;
@@ -55,14 +56,18 @@ export function grouping({
   // data
   let d = objectList;
 
-  grouping?.forEach((g: BettaGroupOption) => {
-    const { foundGroups, data } = group(d, g);
-    d = data;
-    fg = {
-      ...fg,
-      ...foundGroups,
-    };
-  });
+  try {
+    grouping?.forEach((g: BettaGroupOption) => {
+      const { foundGroups, data } = group(d, g);
+      d = data;
+      fg = {
+        ...fg,
+        ...foundGroups,
+      };
+    });
+  } catch (e) {
+    throw new GroupingError(e.message || e, e.detail);
+  }
 
   return {
     appliedGroupsConfig: grouping,
