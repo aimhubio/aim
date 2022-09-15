@@ -15,6 +15,7 @@ import ErrorBoundary from 'components/ErrorBoundary/ErrorBoundary';
 import IllustrationBlock from 'components/IllustrationBlock/IllustrationBlock';
 
 import { ANALYTICS_EVENT_KEYS } from 'config/analytics/analyticsKeysMap';
+import { RequestStatusEnum } from 'config/enums/requestStatusEnum';
 
 import runDetailAppModel from 'services/models/runs/runDetailAppModel';
 import * as analytics from 'services/analytics';
@@ -41,6 +42,9 @@ function RunLogsTab({
   const logsRowsData = React.useRef<string[] | null>(null);
   const [lastRequestType, setLastRequestType] =
     React.useState<LogsLastRequestEnum>(LogsLastRequestEnum.DEFAULT);
+  const [requestStatus, setRequestStatus] = React.useState<RequestStatusEnum>(
+    RequestStatusEnum.Ok,
+  );
   const logsRange = React.useRef<[number, number]>([0, 0]);
   const [scrollOffset, setScrollOffset] = React.useState<number | null>(null);
   const [visibleRowsRange, setVisibleRowsRange] = React.useState<{
@@ -86,8 +90,10 @@ function RunLogsTab({
     isLiveUpdate?: boolean;
     isLoadMore?: boolean;
   }) {
+    setRequestStatus(RequestStatusEnum.Pending);
     runsBatchRequestRef.current = runDetailAppModel.getRunLogs(params);
     runsBatchRequestRef.current.call().then(() => {
+      setRequestStatus(RequestStatusEnum.Ok);
       stopLiveUpdate();
       startLiveUpdate();
     });
@@ -111,7 +117,10 @@ function RunLogsTab({
       scrollOffset <= SINGLE_LINE_HEIGHT &&
       keysList &&
       keysList[0] !== 0 &&
-      scrollDirection === 'backward'
+      scrollDirection === 'backward' &&
+      (requestStatus === RequestStatusEnum.Ok ||
+        (requestStatus === RequestStatusEnum.Pending &&
+          lastRequestType === LogsLastRequestEnum.LIVE_UPDATE))
     ) {
       stopLiveUpdate();
       setLastRequestType(LogsLastRequestEnum.LOAD_MORE);
