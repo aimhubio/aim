@@ -1,8 +1,9 @@
 # Changelog
 
-## 3.13.3
+## 3.13.3 
 
-- Optimize rendering performance of the logs tab in the run page (VkoHov)
+- Fix request cancellation on `Logs` tab (mihran113)
+- Fix the data live update handling in the Logs tab (VkoHov)
 
 ## 3.13.2 Sep 10, 2022
 
