@@ -3,6 +3,7 @@
 ## 3.13.3 
 
 - Fix request cancellation on `Logs` tab (mihran113)
+- Fix the data live update handling in the Logs tab (VkoHov)
 
 ## 3.13.2 Sep 10, 2022
 

@@ -311,7 +311,7 @@ async def run_logs_streamer(run: Run, record_range: str) -> bytes:
 
     # range is missing completely
     if record_range.start is None and record_range.stop is None:
-        start = max(logs.last_step() - 500, 0)
+        start = max(logs.last_step() - 200, 0)
 
     try:
         steps_vals = logs.data.view('val').range(start, stop)
