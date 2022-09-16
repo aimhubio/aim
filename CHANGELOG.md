@@ -14,6 +14,11 @@
 - Adjust the visibility of the run color in tables (VkoHov)
 - Fix response headers for remote tracking server (mihran113)
 
+## 3.13.3 Sep 16, 2022
+
+- Fix request cancellation on `Logs` tab (mihran113)
+- Fix the data live update handling in the Logs tab (VkoHov)
+
 ## 3.13.2 Sep 10, 2022
 
 - Fix content overlapping issue of x-axis alignment dropdown (KaroMourad)
