@@ -8,6 +8,8 @@
 - Support dictionary as an argument of `Run.track` (alberttorosyan)
 - Display the tags of the run in the tables of the explorers (VkoHov)
 - Revamp Figures explorer controls and grouping sections for better onboarding and usability (VkoHov, KaroMourad)
+- Adjust the grouping section layout of the Figures explorer (VkoHov)
+- Add fast.ai integration (tmynn)
 
 ### Fixes:
 
