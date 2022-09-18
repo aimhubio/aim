@@ -1,5 +1,6 @@
 import datetime
 from multiprocessing import Process
+import aim.ext.transport.remote_tracking_pb2_grpc as remote_tracking_pb2_grpc
 
 
 class RemoteWorker:
@@ -43,6 +44,16 @@ class RemoteWorker:
     def client_count(self):
         return len(self._clients)
 
-    def cleanup_client_resources(self):
-        # TODO: create stub for the worker and send the resource cleanup request
-        pass
+    def cleanup_client_resources(self, client_uri):
+        import grpc
+
+        if self._ssl_certfile:
+            with open(self._ssl_certfile, 'rb') as f:
+                root_certificates = grpc.ssl_channel_credentials(f.read())
+            _remote_worker_channel = grpc.secure_channel(self.address, root_certificates)
+        else:
+            _remote_worker_channel = grpc.insecure_channel(self.address)
+
+        _remote_worker_stub = remote_tracking_pb2_grpc.RemoteTrackingServiceStub(_remote_worker_channel)
+
+        _remote_worker_stub.cleanup_client_resources(client_uri)
