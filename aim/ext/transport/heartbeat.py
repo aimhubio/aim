@@ -7,7 +7,7 @@ from collections import Counter
 from threading import Thread
 from typing import Union
 
-import aim.ext.transport.remote_tracking_pb2 as rpc_messages
+import aim.ext.transport.remote_router_pb2 as rpc_messages
 
 logger = logging.getLogger(__name__)
 
@@ -69,8 +69,8 @@ class RPCHeartbeatSender(object):
             if heartbeat_interval_counter > self._heartbeat_send_interval:
                 if self._remote_client():
                     try:
-                        response = self._remote_client().health_check(health_check_type='heartbeat')
-                        if response.status == rpc_messages.HealthCheckResponse.Status.OK:
+                        response = self._remote_client().client_heartbeat()
+                        if response.status == rpc_messages.HeartbeatResponse.Status.OK:
                             self._heartbeat_responses['success'] += 1
                         else:
                             self._heartbeat_responses['fail'] += 1
@@ -113,11 +113,11 @@ class RPCHeartbeatWatcher:
 
     def __init__(self,
                  heartbeat_pool,
-                 resource_pool,
+                 worker_pool,
                  keep_alive_time: Union[int, float] = CLIENT_KEEP_ALIVE_TIME_DEFAULT):
 
         self._heartbeat_pool = heartbeat_pool
-        self._resource_pool = resource_pool
+        self._worker_pool = worker_pool
 
         self._client_keep_alive_time = keep_alive_time
 
@@ -142,11 +142,10 @@ class RPCHeartbeatWatcher:
 
     def _release_client_resources(self, dead_client_uri):
         logger.warning(f'Cleaning up resources for client `{dead_client_uri}`.')
-        resource_handlers = list(self._resource_pool.keys())
-        for handler in resource_handlers:
-            (client_uri, _) = self._resource_pool[handler]
-            if dead_client_uri == client_uri:
-                del self._resource_pool[handler]
+        for worker in self._worker_pool:
+            if dead_client_uri in worker.clients:
+                worker.cleanup_client_resources(dead_client_uri)
+                worker.remove_client(dead_client_uri)
 
     def _interval_check(self):
         while True:

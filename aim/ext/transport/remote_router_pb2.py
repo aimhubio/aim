@@ -10,7 +10,7 @@ from google.protobuf import symbol_database as _symbol_database
 
 _sym_db = _symbol_database.Default()
 
-
+import aim.ext.transport.remote_tracking_pb2 as remote__tracking__pb2
 
 
 DESCRIPTOR = _descriptor.FileDescriptor(
@@ -19,8 +19,9 @@ DESCRIPTOR = _descriptor.FileDescriptor(
   syntax='proto3',
   serialized_options=None,
   create_key=_descriptor._internal_create_key,
-  serialized_pb=b'\n\x13remote_router.proto\"P\n\x17RouterExceptionResponse\x12\x13\n\x0bmodule_name\x18\x01 \x01(\t\x12\x12\n\nclass_name\x18\x02 \x01(\t\x12\x0c\n\x04\x61rgs\x18\x03 \x01(\t\"\x10\n\x0eVersionRequest\"h\n\x0fVersionResponse\x12\x0f\n\x07version\x18\x01 \x01(\t\x12\'\n\x06status\x18\x02 \x01(\x0e\x32\x17.VersionResponse.Status\"\x1b\n\x06Status\x12\x06\n\x02OK\x10\x00\x12\t\n\x05\x45RROR\x10\x01\"&\n\x10HeartbeatRequest\x12\x12\n\nclient_uri\x18\x01 \x01(\t\"\x88\x01\n\x11HeartbeatResponse\x12)\n\x06status\x18\x01 \x01(\x0e\x32\x19.HeartbeatResponse.Status\x12+\n\texception\x18\x02 \x01(\x0b\x32\x18.RouterExceptionResponse\"\x1b\n\x06Status\x12\x06\n\x02OK\x10\x00\x12\t\n\x05\x45RROR\x10\x01\"*\n\x14\x43lientConnectRequest\x12\x12\n\nclient_uri\x18\x01 \x01(\t\"\xa1\x01\n\x15\x43lientConnectResponse\x12\x0f\n\x07\x61\x64\x64ress\x18\x01 \x01(\t\x12-\n\x06status\x18\x02 \x01(\x0e\x32\x1d.ClientConnectResponse.Status\x12+\n\texception\x18\x03 \x01(\x0b\x32\x18.RouterExceptionResponse\"\x1b\n\x06Status\x12\x06\n\x02OK\x10\x00\x12\t\n\x05\x45RROR\x10\x01\",\n\x16\x43lientReConnectRequest\x12\x12\n\nclient_uri\x18\x01 \x01(\t\"\xa5\x01\n\x17\x43lientReConnectResponse\x12\x0f\n\x07\x61\x64\x64ress\x18\x01 \x01(\t\x12/\n\x06status\x18\x02 \x01(\x0e\x32\x1f.ClientReConnectResponse.Status\x12+\n\texception\x18\x03 \x01(\x0b\x32\x18.RouterExceptionResponse\"\x1b\n\x06Status\x12\x06\n\x02OK\x10\x00\x12\t\n\x05\x45RROR\x10\x01\"-\n\x17\x43lientDisconnectRequest\x12\x12\n\nclient_uri\x18\x01 \x01(\t\"\x96\x01\n\x18\x43lientDisconnectResponse\x12\x30\n\x06status\x18\x01 \x01(\x0e\x32 .ClientDisconnectResponse.Status\x12+\n\texception\x18\x03 \x01(\x0b\x32\x18.RouterExceptionResponse\"\x1b\n\x06Status\x12\x06\n\x02OK\x10\x00\x12\t\n\x05\x45RROR\x10\x01\x32\xa2\x02\n\x13RemoteRouterService\x12\x32\n\x0bget_version\x12\x0f.VersionRequest\x1a\x10.VersionResponse\"\x00\x12\x41\n\x0e\x63lient_connect\x12\x15.ClientConnectRequest\x1a\x16.ClientConnectResponse\"\x00\x12H\n\x11\x63lient_re_connect\x12\x17.ClientReConnectRequest\x1a\x18.ClientReConnectResponse\"\x00\x12J\n\x11\x63lient_disconnect\x12\x18.ClientDisconnectRequest\x1a\x19.ClientDisconnectResponse\"\x00\x62\x06proto3'
-)
+  serialized_pb=b'\n\x13remote_router.proto\x1a\x15remote_tracking.proto\"\x10\n\x0eVersionRequest\"\x8f\x01\n\x0fVersionResponse\x12\x0f\n\x07version\x18\x01 \x01(\t\x12\'\n\x06status\x18\x02 \x01(\x0e\x32\x17.VersionResponse.Status\x12%\n\texception\x18\x03 \x01(\x0b\x32\x12.ExceptionResponse\"\x1b\n\x06Status\x12\x06\n\x02OK\x10\x00\x12\t\n\x05\x45RROR\x10\x01\"&\n\x10HeartbeatRequest\x12\x12\n\nclient_uri\x18\x01 \x01(\t\"\x82\x01\n\x11HeartbeatResponse\x12)\n\x06status\x18\x01 \x01(\x0e\x32\x19.HeartbeatResponse.Status\x12%\n\texception\x18\x02 \x01(\x0b\x32\x12.ExceptionResponse\"\x1b\n\x06Status\x12\x06\n\x02OK\x10\x00\x12\t\n\x05\x45RROR\x10\x01\"*\n\x14\x43lientConnectRequest\x12\x12\n\nclient_uri\x18\x01 \x01(\t\"\x9b\x01\n\x15\x43lientConnectResponse\x12\x0f\n\x07\x61\x64\x64ress\x18\x01 \x01(\t\x12-\n\x06status\x18\x02 \x01(\x0e\x32\x1d.ClientConnectResponse.Status\x12%\n\texception\x18\x03 \x01(\x0b\x32\x12.ExceptionResponse\"\x1b\n\x06Status\x12\x06\n\x02OK\x10\x00\x12\t\n\x05\x45RROR\x10\x01\",\n\x16\x43lientReConnectRequest\x12\x12\n\nclient_uri\x18\x01 \x01(\t\"\x9f\x01\n\x17\x43lientReConnectResponse\x12\x0f\n\x07\x61\x64\x64ress\x18\x01 \x01(\t\x12/\n\x06status\x18\x02 \x01(\x0e\x32\x1f.ClientReConnectResponse.Status\x12%\n\texception\x18\x03 \x01(\x0b\x32\x12.ExceptionResponse\"\x1b\n\x06Status\x12\x06\n\x02OK\x10\x00\x12\t\n\x05\x45RROR\x10\x01\"-\n\x17\x43lientDisconnectRequest\x12\x12\n\nclient_uri\x18\x01 \x01(\t\"\x90\x01\n\x18\x43lientDisconnectResponse\x12\x30\n\x06status\x18\x01 \x01(\x0e\x32 .ClientDisconnectResponse.Status\x12%\n\texception\x18\x03 \x01(\x0b\x32\x12.ExceptionResponse\"\x1b\n\x06Status\x12\x06\n\x02OK\x10\x00\x12\t\n\x05\x45RROR\x10\x01\x32\xdf\x02\n\x13RemoteRouterService\x12;\n\x10\x63lient_heartbeat\x12\x11.HeartbeatRequest\x1a\x12.HeartbeatResponse\"\x00\x12\x32\n\x0bget_version\x12\x0f.VersionRequest\x1a\x10.VersionResponse\"\x00\x12\x41\n\x0e\x63lient_connect\x12\x15.ClientConnectRequest\x1a\x16.ClientConnectResponse\"\x00\x12H\n\x11\x63lient_re_connect\x12\x17.ClientReConnectRequest\x1a\x18.ClientReConnectResponse\"\x00\x12J\n\x11\x63lient_disconnect\x12\x18.ClientDisconnectRequest\x1a\x19.ClientDisconnectResponse\"\x00\x62\x06proto3'
+  ,
+  dependencies=[remote__tracking__pb2.DESCRIPTOR,])
 
 
 
@@ -44,8 +45,8 @@ _VERSIONRESPONSE_STATUS = _descriptor.EnumDescriptor(
   ],
   containing_type=None,
   serialized_options=None,
-  serialized_start=200,
-  serialized_end=227,
+  serialized_start=181,
+  serialized_end=208,
 )
 _sym_db.RegisterEnumDescriptor(_VERSIONRESPONSE_STATUS)
 
@@ -69,8 +70,8 @@ _HEARTBEATRESPONSE_STATUS = _descriptor.EnumDescriptor(
   ],
   containing_type=None,
   serialized_options=None,
-  serialized_start=200,
-  serialized_end=227,
+  serialized_start=181,
+  serialized_end=208,
 )
 _sym_db.RegisterEnumDescriptor(_HEARTBEATRESPONSE_STATUS)
 
@@ -94,8 +95,8 @@ _CLIENTCONNECTRESPONSE_STATUS = _descriptor.EnumDescriptor(
   ],
   containing_type=None,
   serialized_options=None,
-  serialized_start=200,
-  serialized_end=227,
+  serialized_start=181,
+  serialized_end=208,
 )
 _sym_db.RegisterEnumDescriptor(_CLIENTCONNECTRESPONSE_STATUS)
 
@@ -119,8 +120,8 @@ _CLIENTRECONNECTRESPONSE_STATUS = _descriptor.EnumDescriptor(
   ],
   containing_type=None,
   serialized_options=None,
-  serialized_start=200,
-  serialized_end=227,
+  serialized_start=181,
+  serialized_end=208,
 )
 _sym_db.RegisterEnumDescriptor(_CLIENTRECONNECTRESPONSE_STATUS)
 
@@ -144,56 +145,10 @@ _CLIENTDISCONNECTRESPONSE_STATUS = _descriptor.EnumDescriptor(
   ],
   containing_type=None,
   serialized_options=None,
-  serialized_start=200,
-  serialized_end=227,
+  serialized_start=181,
+  serialized_end=208,
 )
 _sym_db.RegisterEnumDescriptor(_CLIENTDISCONNECTRESPONSE_STATUS)
-
-
-_ROUTEREXCEPTIONRESPONSE = _descriptor.Descriptor(
-  name='RouterExceptionResponse',
-  full_name='RouterExceptionResponse',
-  filename=None,
-  file=DESCRIPTOR,
-  containing_type=None,
-  create_key=_descriptor._internal_create_key,
-  fields=[
-    _descriptor.FieldDescriptor(
-      name='module_name', full_name='RouterExceptionResponse.module_name', index=0,
-      number=1, type=9, cpp_type=9, label=1,
-      has_default_value=False, default_value=b"".decode('utf-8'),
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
-    _descriptor.FieldDescriptor(
-      name='class_name', full_name='RouterExceptionResponse.class_name', index=1,
-      number=2, type=9, cpp_type=9, label=1,
-      has_default_value=False, default_value=b"".decode('utf-8'),
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
-    _descriptor.FieldDescriptor(
-      name='args', full_name='RouterExceptionResponse.args', index=2,
-      number=3, type=9, cpp_type=9, label=1,
-      has_default_value=False, default_value=b"".decode('utf-8'),
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
-  ],
-  extensions=[
-  ],
-  nested_types=[],
-  enum_types=[
-  ],
-  serialized_options=None,
-  is_extendable=False,
-  syntax='proto3',
-  extension_ranges=[],
-  oneofs=[
-  ],
-  serialized_start=23,
-  serialized_end=103,
-)
 
 
 _VERSIONREQUEST = _descriptor.Descriptor(
@@ -216,8 +171,8 @@ _VERSIONREQUEST = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=105,
-  serialized_end=121,
+  serialized_start=46,
+  serialized_end=62,
 )
 
 
@@ -243,6 +198,13 @@ _VERSIONRESPONSE = _descriptor.Descriptor(
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+    _descriptor.FieldDescriptor(
+      name='exception', full_name='VersionResponse.exception', index=2,
+      number=3, type=11, cpp_type=10, label=1,
+      has_default_value=False, default_value=None,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
   ],
   extensions=[
   ],
@@ -256,8 +218,8 @@ _VERSIONRESPONSE = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=123,
-  serialized_end=227,
+  serialized_start=65,
+  serialized_end=208,
 )
 
 
@@ -288,8 +250,8 @@ _HEARTBEATREQUEST = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=229,
-  serialized_end=267,
+  serialized_start=210,
+  serialized_end=248,
 )
 
 
@@ -328,8 +290,8 @@ _HEARTBEATRESPONSE = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=270,
-  serialized_end=406,
+  serialized_start=251,
+  serialized_end=381,
 )
 
 
@@ -360,8 +322,8 @@ _CLIENTCONNECTREQUEST = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=408,
-  serialized_end=450,
+  serialized_start=383,
+  serialized_end=425,
 )
 
 
@@ -407,8 +369,8 @@ _CLIENTCONNECTRESPONSE = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=453,
-  serialized_end=614,
+  serialized_start=428,
+  serialized_end=583,
 )
 
 
@@ -439,8 +401,8 @@ _CLIENTRECONNECTREQUEST = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=616,
-  serialized_end=660,
+  serialized_start=585,
+  serialized_end=629,
 )
 
 
@@ -486,8 +448,8 @@ _CLIENTRECONNECTRESPONSE = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=663,
-  serialized_end=828,
+  serialized_start=632,
+  serialized_end=791,
 )
 
 
@@ -518,8 +480,8 @@ _CLIENTDISCONNECTREQUEST = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=830,
-  serialized_end=875,
+  serialized_start=793,
+  serialized_end=838,
 )
 
 
@@ -558,25 +520,25 @@ _CLIENTDISCONNECTRESPONSE = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=878,
-  serialized_end=1028,
+  serialized_start=841,
+  serialized_end=985,
 )
 
 _VERSIONRESPONSE.fields_by_name['status'].enum_type = _VERSIONRESPONSE_STATUS
+_VERSIONRESPONSE.fields_by_name['exception'].message_type = remote__tracking__pb2._EXCEPTIONRESPONSE
 _VERSIONRESPONSE_STATUS.containing_type = _VERSIONRESPONSE
 _HEARTBEATRESPONSE.fields_by_name['status'].enum_type = _HEARTBEATRESPONSE_STATUS
-_HEARTBEATRESPONSE.fields_by_name['exception'].message_type = _ROUTEREXCEPTIONRESPONSE
+_HEARTBEATRESPONSE.fields_by_name['exception'].message_type = remote__tracking__pb2._EXCEPTIONRESPONSE
 _HEARTBEATRESPONSE_STATUS.containing_type = _HEARTBEATRESPONSE
 _CLIENTCONNECTRESPONSE.fields_by_name['status'].enum_type = _CLIENTCONNECTRESPONSE_STATUS
-_CLIENTCONNECTRESPONSE.fields_by_name['exception'].message_type = _ROUTEREXCEPTIONRESPONSE
+_CLIENTCONNECTRESPONSE.fields_by_name['exception'].message_type = remote__tracking__pb2._EXCEPTIONRESPONSE
 _CLIENTCONNECTRESPONSE_STATUS.containing_type = _CLIENTCONNECTRESPONSE
 _CLIENTRECONNECTRESPONSE.fields_by_name['status'].enum_type = _CLIENTRECONNECTRESPONSE_STATUS
-_CLIENTRECONNECTRESPONSE.fields_by_name['exception'].message_type = _ROUTEREXCEPTIONRESPONSE
+_CLIENTRECONNECTRESPONSE.fields_by_name['exception'].message_type = remote__tracking__pb2._EXCEPTIONRESPONSE
 _CLIENTRECONNECTRESPONSE_STATUS.containing_type = _CLIENTRECONNECTRESPONSE
 _CLIENTDISCONNECTRESPONSE.fields_by_name['status'].enum_type = _CLIENTDISCONNECTRESPONSE_STATUS
-_CLIENTDISCONNECTRESPONSE.fields_by_name['exception'].message_type = _ROUTEREXCEPTIONRESPONSE
+_CLIENTDISCONNECTRESPONSE.fields_by_name['exception'].message_type = remote__tracking__pb2._EXCEPTIONRESPONSE
 _CLIENTDISCONNECTRESPONSE_STATUS.containing_type = _CLIENTDISCONNECTRESPONSE
-DESCRIPTOR.message_types_by_name['RouterExceptionResponse'] = _ROUTEREXCEPTIONRESPONSE
 DESCRIPTOR.message_types_by_name['VersionRequest'] = _VERSIONREQUEST
 DESCRIPTOR.message_types_by_name['VersionResponse'] = _VERSIONRESPONSE
 DESCRIPTOR.message_types_by_name['HeartbeatRequest'] = _HEARTBEATREQUEST
@@ -588,13 +550,6 @@ DESCRIPTOR.message_types_by_name['ClientReConnectResponse'] = _CLIENTRECONNECTRE
 DESCRIPTOR.message_types_by_name['ClientDisconnectRequest'] = _CLIENTDISCONNECTREQUEST
 DESCRIPTOR.message_types_by_name['ClientDisconnectResponse'] = _CLIENTDISCONNECTRESPONSE
 _sym_db.RegisterFileDescriptor(DESCRIPTOR)
-
-RouterExceptionResponse = _reflection.GeneratedProtocolMessageType('RouterExceptionResponse', (_message.Message,), {
-  'DESCRIPTOR' : _ROUTEREXCEPTIONRESPONSE,
-  '__module__' : 'remote_router_pb2'
-  # @@protoc_insertion_point(class_scope:RouterExceptionResponse)
-  })
-_sym_db.RegisterMessage(RouterExceptionResponse)
 
 VersionRequest = _reflection.GeneratedProtocolMessageType('VersionRequest', (_message.Message,), {
   'DESCRIPTOR' : _VERSIONREQUEST,
@@ -675,13 +630,23 @@ _REMOTEROUTERSERVICE = _descriptor.ServiceDescriptor(
   index=0,
   serialized_options=None,
   create_key=_descriptor._internal_create_key,
-  serialized_start=1031,
-  serialized_end=1321,
+  serialized_start=988,
+  serialized_end=1339,
   methods=[
+  _descriptor.MethodDescriptor(
+    name='client_heartbeat',
+    full_name='RemoteRouterService.client_heartbeat',
+    index=0,
+    containing_service=None,
+    input_type=_HEARTBEATREQUEST,
+    output_type=_HEARTBEATRESPONSE,
+    serialized_options=None,
+    create_key=_descriptor._internal_create_key,
+  ),
   _descriptor.MethodDescriptor(
     name='get_version',
     full_name='RemoteRouterService.get_version',
-    index=0,
+    index=1,
     containing_service=None,
     input_type=_VERSIONREQUEST,
     output_type=_VERSIONRESPONSE,
@@ -691,7 +656,7 @@ _REMOTEROUTERSERVICE = _descriptor.ServiceDescriptor(
   _descriptor.MethodDescriptor(
     name='client_connect',
     full_name='RemoteRouterService.client_connect',
-    index=1,
+    index=2,
     containing_service=None,
     input_type=_CLIENTCONNECTREQUEST,
     output_type=_CLIENTCONNECTRESPONSE,
@@ -701,7 +666,7 @@ _REMOTEROUTERSERVICE = _descriptor.ServiceDescriptor(
   _descriptor.MethodDescriptor(
     name='client_re_connect',
     full_name='RemoteRouterService.client_re_connect',
-    index=2,
+    index=3,
     containing_service=None,
     input_type=_CLIENTRECONNECTREQUEST,
     output_type=_CLIENTRECONNECTRESPONSE,
@@ -711,7 +676,7 @@ _REMOTEROUTERSERVICE = _descriptor.ServiceDescriptor(
   _descriptor.MethodDescriptor(
     name='client_disconnect',
     full_name='RemoteRouterService.client_disconnect',
-    index=3,
+    index=4,
     containing_service=None,
     input_type=_CLIENTDISCONNECTREQUEST,
     output_type=_CLIENTDISCONNECTRESPONSE,

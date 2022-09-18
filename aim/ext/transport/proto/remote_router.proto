@@ -1,11 +1,6 @@
 syntax = "proto3";
 
-
-message RouterExceptionResponse {
-    string module_name = 1;
-    string class_name = 2;
-    string args = 3;
-}
+import "remote_tracking.proto";
 
 message VersionRequest {}
 
@@ -16,6 +11,7 @@ message VersionResponse {
         ERROR = 1;
     }
     Status status = 2;
+    ExceptionResponse exception = 3;
 }
 
 message HeartbeatRequest {
@@ -28,7 +24,7 @@ message HeartbeatResponse {
         ERROR = 1;
     }
     Status status = 1;
-    RouterExceptionResponse exception = 2;
+    ExceptionResponse exception = 2;
 }
 
 message ClientConnectRequest {
@@ -42,7 +38,7 @@ message ClientConnectResponse {
         ERROR = 1;
     }
     Status status = 2;
-    RouterExceptionResponse exception = 3;
+    ExceptionResponse exception = 3;
 }
 
 message ClientReConnectRequest {
@@ -56,7 +52,7 @@ message ClientReConnectResponse {
         ERROR = 1;
     }
     Status status = 2;
-    RouterExceptionResponse exception = 3;
+    ExceptionResponse exception = 3;
 }
 
 message ClientDisconnectRequest {
@@ -69,12 +65,13 @@ message ClientDisconnectResponse {
         ERROR = 1;
     }
     Status status = 1;
-    RouterExceptionResponse exception = 3;
+    ExceptionResponse exception = 3;
 }
 
 
 
 service RemoteRouterService {
+    rpc client_heartbeat(HeartbeatRequest) returns (HeartbeatResponse) {}
     rpc get_version(VersionRequest) returns (VersionResponse) {}
     rpc client_connect(ClientConnectRequest) returns (ClientConnectResponse) {}
     rpc client_re_connect(ClientReConnectRequest) returns (ClientReConnectResponse) {}

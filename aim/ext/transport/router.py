@@ -1,49 +1,43 @@
 import os
 import time
-import uuid
+import datetime
 
-from typing import Dict, Union
 from concurrent import futures
-from multiprocessing import Process
 
 import aim.ext.transport.remote_router_pb2 as rpc_messages
 import aim.ext.transport.remote_router_pb2_grpc as remote_router_pb2_grpc
 
+from aim.ext.transport.message_utils import build_exception
 from aim.ext.transport.config import AIM_RT_MAX_MESSAGE_SIZE, AIM_RT_DEFAULT_MAX_MESSAGE_SIZE
+from aim.ext.transport.heartbeat import RPCHeartbeatWatcher
+from aim.ext.transport.worker import RemoteWorker
 
 
-def _wait_forever(router, worker_pool):
+def _wait_forever(router, worker_pool, watchers=None):
     try:
         while True:
             time.sleep(24 * 60 * 60)  # sleep for a day
     except KeyboardInterrupt:
         # stop workers
-        for worker_config in worker_pool.values():
-            worker_config['process'].join()
+        for worker in worker_pool:
+            worker.stop()
+        if watchers:
+            for watcher in watchers:
+                watcher.stop()
         router.stop(None)
 
 
-def _get_handler():
-    return str(uuid.uuid4())
-
-
-class ResourceTypeRegistry:
-    def __init__(self):
-        self._registry: Dict[str, type] = {}
-
-    def register(self, type_name: str, resource_getter: Union[type, callable]):
-        self._registry[type_name] = resource_getter
-
-    def __getitem__(self, type_name: str):
-        return self._registry[type_name]
-
-
-class UnauthorizedRequestError(RuntimeError):
-    pass
-
-
 class RemoteRouterServicer(remote_router_pb2_grpc.RemoteRouterServiceServicer):
-    worker_state_pool = dict()
+    worker_pool = []
+    client_heartbeat_pool = dict()
+    WORKER_RESTART_DELTA = 5 * 60
+
+    def connect_client(self, client_uri):
+        sorted_workers_pool = sorted(self.worker_pool, key=lambda w: w.client_count)
+
+        worker = sorted_workers_pool[0]
+        worker.add_client(client_uri)
+        return worker
 
     def get_version(self, request: rpc_messages.VersionRequest, _context):
         from aim.__version__ import __version__ as aim_version
@@ -51,28 +45,58 @@ class RemoteRouterServicer(remote_router_pb2_grpc.RemoteRouterServiceServicer):
         return rpc_messages.VersionResponse(version=aim_version,
                                             status=rpc_messages.VersionResponse.Status.OK)
 
-    def get_worker_address(self, request: rpc_messages.WorkerAddressRequest, _context):
-        sorted_workers_pool = {k: v for k, v in sorted(RemoteRouterServicer.worker_state_pool.items(),
-                                                       key=lambda item: len(item[1]['client_uris']))}
-        worker_address = next(iter(sorted_workers_pool))
-        RemoteRouterServicer.worker_state_pool[worker_address]['client_uris'].append(request.client_uri)
+    def client_heartbeat(self, request: rpc_messages.HeartbeatRequest, _context):
+        try:
+            client_uri = request.client_uri
+            self.client_heartbeat_pool[client_uri] = datetime.datetime.now().timestamp()
+            return rpc_messages.HeartbeatResponse(status=rpc_messages.HeartbeatResponse.Status.OK)
+        except Exception as e:
+            return rpc_messages.HeartbeatResponse(
+                status=rpc_messages.HeartbeatRequest.Status.ERROR,
+                exception=build_exception(e),
+            )
 
-        return rpc_messages.WorkerAddressResponse(address=worker_address,
-                                                  status=rpc_messages.WorkerAddressResponse.Status.OK)
+    def client_connect(self, request: rpc_messages.ClientConnectRequest, _context):
+        try:
+            worker = self.connect_client(request.client_uri)
+            return rpc_messages.ClientConnectResponse(address=worker.address,
+                                                  status=rpc_messages.ClientConnectResponse.Status.OK)
+        except Exception as e:
+            return rpc_messages.ClientConnectRequest(status=rpc_messages.ClientConnectResponse.Status.ERROR,
+                                                     exception=build_exception(e))
+
+    def client_re_connect(self, request: rpc_messages.ClientReConnectRequest, _context):
+        try:
+            client_uri = request.client_uri
+            for worker in self.worker_pool:
+                if client_uri in worker.clients:
+                    if datetime.datetime.now() - worker.start_time > self.WORKER_RESTART_DELTA:
+                        worker.resart()
+                    return rpc_messages.ClientReConnectResponse(address=worker.address,
+                                                                status=rpc_messages.ClientConnectResponse.Status.OK)
+            # if client wasn't found in the list of clients of any worker fallback to connection logic
+            worker = self.connect_client(client_uri)
+            return rpc_messages.ClientReConnectResponse(address=worker.address,
+                                                        status=rpc_messages.ClientReConnectRequest.Status.OK)
+        except Exception as e:
+            return rpc_messages.ClientReConnectResponse(status=rpc_messages.ClientReConnectResponse.Status.ERROR,
+                                                        exception=build_exception(e))
 
     def client_disconnect(self, request: rpc_messages.ClientDisconnectRequest, _context):
-        client_uri = request.client_uri
-        for worker_state in RemoteRouterServicer.worker_state_pool.values():
-            if client_uri in worker_state:
-                worker_state.remove(client_uri)
+        try:
+            client_uri = request.client_uri
+            for worker in RemoteRouterServicer.worker_pool:
+                worker.remove_client(client_uri)
 
-        return rpc_messages.ClientDisconnectResponse(status=rpc_messages.ClientDisconnectResponse.Status.OK)
+            return rpc_messages.ClientDisconnectResponse(status=rpc_messages.ClientDisconnectResponse.Status.OK)
+        except Exception as e:
+            return rpc_messages.ClientDisconnectRequest(status=rpc_messages.ClientDisconnectResponse.Status.ERROR,
+                                                        exception=build_exception(e))
 
 
 def run_router(host, port, workers=1, ssl_keyfile=None, ssl_certfile=None):
     # temporary workaround for M1 build
     import grpc
-
 
     msg_max_size = int(os.getenv(AIM_RT_MAX_MESSAGE_SIZE, AIM_RT_DEFAULT_MAX_MESSAGE_SIZE))
     options = [
@@ -93,17 +117,18 @@ def run_router(host, port, workers=1, ssl_keyfile=None, ssl_certfile=None):
         router.add_insecure_port(f'{host}:{port}')
 
     # start workers
-    from aim.ext.transport.server import run_server
     for i in range(1, workers+1):
         worker_port = port + i
-        worker_address = f'{host}:{worker_port}'
-        worker_process = Process(target=run_server, args=(host, worker_port, ssl_keyfile, ssl_certfile))
-        worker_process.start()
-        RemoteRouterServicer.worker_state_pool[worker_address] = {
-            'process': worker_process,
-            'client_uris': []
-        }
+        worker = RemoteWorker(host, worker_port, ssl_keyfile, ssl_certfile)
+        worker.start()
+        RemoteRouterServicer.worker_pool.append(worker)
 
     router.start()
 
-    _wait_forever(router, RemoteRouterServicer.worker_state_pool)
+    heartbeat_watcher = RPCHeartbeatWatcher(
+        RemoteRouterServicer.client_heartbeat_pool,
+        RemoteRouterServicer.worker_pool,
+    )
+    heartbeat_watcher.start()
+
+    _wait_forever(router, RemoteRouterServicer.worker_pool, watchers=[heartbeat_watcher])

@@ -1,5 +1,4 @@
 import os
-import datetime
 import time
 import uuid
 
@@ -12,19 +11,15 @@ import aim.ext.transport.remote_tracking_pb2_grpc as remote_tracking_pb2_grpc
 from aim.ext.transport.message_utils import pack_stream, unpack_bytes, unpack_stream, build_exception, ResourceObject
 from aim.ext.transport.handlers import get_tree, get_structured_run, get_repo
 from aim.ext.transport.config import AIM_RT_MAX_MESSAGE_SIZE, AIM_RT_DEFAULT_MAX_MESSAGE_SIZE
-from aim.ext.transport.heartbeat import RPCHeartbeatWatcher
 
 from aim.storage.treeutils import encode_tree, decode_tree
 
 
-def _wait_forever(server, watchers=None):
+def _wait_forever(server,):
     try:
         while True:
             time.sleep(24 * 60 * 60)  # sleep for a day
     except KeyboardInterrupt:
-        if watchers:
-            for watcher in watchers:
-                watcher.stop()
         server.stop(None)
 
 
@@ -49,23 +44,19 @@ class UnauthorizedRequestError(RuntimeError):
 
 class RemoteTrackingServicer(remote_tracking_pb2_grpc.RemoteTrackingServiceServicer):
     resource_pool = dict()
-    client_heartbeat_pool = dict()
     registry = ResourceTypeRegistry()
     count = 0
 
-    def health_check(self, request: rpc_messages.HealthCheckRequest, _context):
-        try:
-            if request.check_type == 'heartbeat':
-                client_uri = request.client_uri
-                self.client_heartbeat_pool[client_uri] = datetime.datetime.now().timestamp()
-                return rpc_messages.ResourceResponse(status=rpc_messages.HealthCheckResponse.Status.OK)
-            else:
-                raise ValueError('Incorrect `check_type` specified for `health_check` request.')
-        except Exception as e:
-            return rpc_messages.ResourceResponse(
-                status=rpc_messages.HealthCheckResponse.Status.ERROR,
-                exception=build_exception(e),
-            )
+    def cleanup_client_resources(self, request: rpc_messages.ClientResourceCleanupRequest, _context):
+        dead_client_uri = request.client_uri
+
+        resource_handlers = list(self.resource_pool.keys())
+        for handler in resource_handlers:
+            (client_uri, _) = self.resource_pool[handler]
+            if dead_client_uri == client_uri:
+                del self.resource_pool[handler]
+
+        return rpc_messages.ResourceResponse(status=rpc_messages.ResourceResponse.Status.OK)
 
     def get_resource(self, request: rpc_messages.ResourceRequest, _context):
         resource_handler = _get_handler()
@@ -231,10 +222,4 @@ def run_server(host, port, router_address, ssl_keyfile=None, ssl_certfile=None):
 
     server.start()
 
-    heartbeat_watcher = RPCHeartbeatWatcher(
-        RemoteTrackingServicer.client_heartbeat_pool,
-        RemoteTrackingServicer.resource_pool,
-    )
-    heartbeat_watcher.start()
-
-    _wait_forever(server, watchers=[heartbeat_watcher])
+    _wait_forever(server)

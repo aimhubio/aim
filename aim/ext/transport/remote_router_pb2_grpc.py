@@ -17,6 +17,11 @@ class RemoteRouterServiceStub(object):
         Args:
             channel: A grpc.Channel.
         """
+        self.client_heartbeat = channel.unary_unary(
+                '/RemoteRouterService/client_heartbeat',
+                request_serializer=remote__router__pb2.HeartbeatRequest.SerializeToString,
+                response_deserializer=remote__router__pb2.HeartbeatResponse.FromString,
+                )
         self.get_version = channel.unary_unary(
                 '/RemoteRouterService/get_version',
                 request_serializer=remote__router__pb2.VersionRequest.SerializeToString,
@@ -41,6 +46,12 @@ class RemoteRouterServiceStub(object):
 
 class RemoteRouterServiceServicer(object):
     """Missing associated documentation comment in .proto file."""
+
+    def client_heartbeat(self, request, context):
+        """Missing associated documentation comment in .proto file."""
+        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
+        context.set_details('Method not implemented!')
+        raise NotImplementedError('Method not implemented!')
 
     def get_version(self, request, context):
         """Missing associated documentation comment in .proto file."""
@@ -69,6 +80,11 @@ class RemoteRouterServiceServicer(object):
 
 def add_RemoteRouterServiceServicer_to_server(servicer, server):
     rpc_method_handlers = {
+            'client_heartbeat': grpc.unary_unary_rpc_method_handler(
+                    servicer.client_heartbeat,
+                    request_deserializer=remote__router__pb2.HeartbeatRequest.FromString,
+                    response_serializer=remote__router__pb2.HeartbeatResponse.SerializeToString,
+            ),
             'get_version': grpc.unary_unary_rpc_method_handler(
                     servicer.get_version,
                     request_deserializer=remote__router__pb2.VersionRequest.FromString,
@@ -98,6 +114,23 @@ def add_RemoteRouterServiceServicer_to_server(servicer, server):
  # This class is part of an EXPERIMENTAL API.
 class RemoteRouterService(object):
     """Missing associated documentation comment in .proto file."""
+
+    @staticmethod
+    def client_heartbeat(request,
+            target,
+            options=(),
+            channel_credentials=None,
+            call_credentials=None,
+            insecure=False,
+            compression=None,
+            wait_for_ready=None,
+            timeout=None,
+            metadata=None):
+        return grpc.experimental.unary_unary(request, target, '/RemoteRouterService/client_heartbeat',
+            remote__router__pb2.HeartbeatRequest.SerializeToString,
+            remote__router__pb2.HeartbeatResponse.FromString,
+            options, channel_credentials,
+            insecure, call_credentials, compression, wait_for_ready, timeout, metadata)
 
     @staticmethod
     def get_version(request,

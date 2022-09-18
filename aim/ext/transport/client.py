@@ -74,21 +74,19 @@ class Client:
         self._thread_local.atomic_instructions = None
 
     def _get_worker_address(self):
-        request = router_messages.WorkerAddressRequest(
+        request = router_messages.ClientConnectRequest(
             client_uri=self.uri
         )
-        response = self._remote_router_stub.get_worker_address(request)
-        if response.status == router_messages.WorkerAddressResponse.Status.ERROR:
-            # TODO: handle exceptions
-            raise RuntimeError
+        response = self._remote_router_stub.client_connect(request)
+        if response.status == router_messages.ClientConnectRequest.Status.ERROR:
+            raise_exception(response.exception)
         return response.address
 
-    def health_check(self, health_check_type='heartbeat'):
-        request = rpc_messages.HealthCheckRequest(
+    def client_heartbeat(self):
+        request = router_messages.HeartbeatRequest(
             client_uri=self.uri,
-            check_type=health_check_type,
         )
-        response = self.remote.health_check(request)
+        response = self._remote_router_stub.client_heartbeat(request)
         return response
 
     def client_disconnect(self,):
@@ -98,14 +96,14 @@ class Client:
         response = self._remote_router_stub.client_disconnect(request)
 
         if response.status == router_messages.ClientDisconnectResponse.Status.ERROR:
-            raise RuntimeError
+            raise_exception(response.exception)
 
     def get_version(self,):
         request = router_messages.VersionRequest()
         response = self._remote_router_stub.get_version(request)
 
         if response.status == router_messages.VersionResponse.Status.ERROR:
-            raise RuntimeError
+            raise_exception(response.exception)
         return response.version
 
     def get_resource_handler(self, resource_type, args=()):
