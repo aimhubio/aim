@@ -19,7 +19,7 @@ DESCRIPTOR = _descriptor.FileDescriptor(
   syntax='proto3',
   serialized_options=None,
   create_key=_descriptor._internal_create_key,
-  serialized_pb=b'\n\x13remote_router.proto\"\x10\n\x0eVersionRequest\"h\n\x0fVersionResponse\x12\x0f\n\x07version\x18\x01 \x01(\t\x12\'\n\x06status\x18\x02 \x01(\x0e\x32\x17.VersionResponse.Status\"\x1b\n\x06Status\x12\x06\n\x02OK\x10\x00\x12\t\n\x05\x45RROR\x10\x01\"*\n\x14WorkerAddressRequest\x12\x12\n\nclient_uri\x18\x01 \x01(\t\"t\n\x15WorkerAddressResponse\x12\x0f\n\x07\x61\x64\x64ress\x18\x01 \x01(\t\x12-\n\x06status\x18\x02 \x01(\x0e\x32\x1d.WorkerAddressResponse.Status\"\x1b\n\x06Status\x12\x06\n\x02OK\x10\x00\x12\t\n\x05\x45RROR\x10\x01\"-\n\x17\x43lientDisconnectRequest\x12\x12\n\nclient_uri\x18\x01 \x01(\t\"i\n\x18\x43lientDisconnectResponse\x12\x30\n\x06status\x18\x01 \x01(\x0e\x32 .ClientDisconnectResponse.Status\"\x1b\n\x06Status\x12\x06\n\x02OK\x10\x00\x12\t\n\x05\x45RROR\x10\x01\x32\xdc\x01\n\x13RemoteRouterService\x12\x32\n\x0bget_version\x12\x0f.VersionRequest\x1a\x10.VersionResponse\"\x00\x12\x45\n\x12get_worker_address\x12\x15.WorkerAddressRequest\x1a\x16.WorkerAddressResponse\"\x00\x12J\n\x11\x63lient_disconnect\x12\x18.ClientDisconnectRequest\x1a\x19.ClientDisconnectResponse\"\x00\x62\x06proto3'
+  serialized_pb=b'\n\x13remote_router.proto\"P\n\x17RouterExceptionResponse\x12\x13\n\x0bmodule_name\x18\x01 \x01(\t\x12\x12\n\nclass_name\x18\x02 \x01(\t\x12\x0c\n\x04\x61rgs\x18\x03 \x01(\t\"\x10\n\x0eVersionRequest\"h\n\x0fVersionResponse\x12\x0f\n\x07version\x18\x01 \x01(\t\x12\'\n\x06status\x18\x02 \x01(\x0e\x32\x17.VersionResponse.Status\"\x1b\n\x06Status\x12\x06\n\x02OK\x10\x00\x12\t\n\x05\x45RROR\x10\x01\"&\n\x10HeartbeatRequest\x12\x12\n\nclient_uri\x18\x01 \x01(\t\"\x88\x01\n\x11HeartbeatResponse\x12)\n\x06status\x18\x01 \x01(\x0e\x32\x19.HeartbeatResponse.Status\x12+\n\texception\x18\x02 \x01(\x0b\x32\x18.RouterExceptionResponse\"\x1b\n\x06Status\x12\x06\n\x02OK\x10\x00\x12\t\n\x05\x45RROR\x10\x01\"*\n\x14\x43lientConnectRequest\x12\x12\n\nclient_uri\x18\x01 \x01(\t\"\xa1\x01\n\x15\x43lientConnectResponse\x12\x0f\n\x07\x61\x64\x64ress\x18\x01 \x01(\t\x12-\n\x06status\x18\x02 \x01(\x0e\x32\x1d.ClientConnectResponse.Status\x12+\n\texception\x18\x03 \x01(\x0b\x32\x18.RouterExceptionResponse\"\x1b\n\x06Status\x12\x06\n\x02OK\x10\x00\x12\t\n\x05\x45RROR\x10\x01\",\n\x16\x43lientReConnectRequest\x12\x12\n\nclient_uri\x18\x01 \x01(\t\"\xa5\x01\n\x17\x43lientReConnectResponse\x12\x0f\n\x07\x61\x64\x64ress\x18\x01 \x01(\t\x12/\n\x06status\x18\x02 \x01(\x0e\x32\x1f.ClientReConnectResponse.Status\x12+\n\texception\x18\x03 \x01(\x0b\x32\x18.RouterExceptionResponse\"\x1b\n\x06Status\x12\x06\n\x02OK\x10\x00\x12\t\n\x05\x45RROR\x10\x01\"-\n\x17\x43lientDisconnectRequest\x12\x12\n\nclient_uri\x18\x01 \x01(\t\"\x96\x01\n\x18\x43lientDisconnectResponse\x12\x30\n\x06status\x18\x01 \x01(\x0e\x32 .ClientDisconnectResponse.Status\x12+\n\texception\x18\x03 \x01(\x0b\x32\x18.RouterExceptionResponse\"\x1b\n\x06Status\x12\x06\n\x02OK\x10\x00\x12\t\n\x05\x45RROR\x10\x01\x32\xa2\x02\n\x13RemoteRouterService\x12\x32\n\x0bget_version\x12\x0f.VersionRequest\x1a\x10.VersionResponse\"\x00\x12\x41\n\x0e\x63lient_connect\x12\x15.ClientConnectRequest\x1a\x16.ClientConnectResponse\"\x00\x12H\n\x11\x63lient_re_connect\x12\x17.ClientReConnectRequest\x1a\x18.ClientReConnectResponse\"\x00\x12J\n\x11\x63lient_disconnect\x12\x18.ClientDisconnectRequest\x1a\x19.ClientDisconnectResponse\"\x00\x62\x06proto3'
 )
 
 
@@ -44,14 +44,14 @@ _VERSIONRESPONSE_STATUS = _descriptor.EnumDescriptor(
   ],
   containing_type=None,
   serialized_options=None,
-  serialized_start=118,
-  serialized_end=145,
+  serialized_start=200,
+  serialized_end=227,
 )
 _sym_db.RegisterEnumDescriptor(_VERSIONRESPONSE_STATUS)
 
-_WORKERADDRESSRESPONSE_STATUS = _descriptor.EnumDescriptor(
+_HEARTBEATRESPONSE_STATUS = _descriptor.EnumDescriptor(
   name='Status',
-  full_name='WorkerAddressResponse.Status',
+  full_name='HeartbeatResponse.Status',
   filename=None,
   file=DESCRIPTOR,
   create_key=_descriptor._internal_create_key,
@@ -69,10 +69,60 @@ _WORKERADDRESSRESPONSE_STATUS = _descriptor.EnumDescriptor(
   ],
   containing_type=None,
   serialized_options=None,
-  serialized_start=118,
-  serialized_end=145,
+  serialized_start=200,
+  serialized_end=227,
 )
-_sym_db.RegisterEnumDescriptor(_WORKERADDRESSRESPONSE_STATUS)
+_sym_db.RegisterEnumDescriptor(_HEARTBEATRESPONSE_STATUS)
+
+_CLIENTCONNECTRESPONSE_STATUS = _descriptor.EnumDescriptor(
+  name='Status',
+  full_name='ClientConnectResponse.Status',
+  filename=None,
+  file=DESCRIPTOR,
+  create_key=_descriptor._internal_create_key,
+  values=[
+    _descriptor.EnumValueDescriptor(
+      name='OK', index=0, number=0,
+      serialized_options=None,
+      type=None,
+      create_key=_descriptor._internal_create_key),
+    _descriptor.EnumValueDescriptor(
+      name='ERROR', index=1, number=1,
+      serialized_options=None,
+      type=None,
+      create_key=_descriptor._internal_create_key),
+  ],
+  containing_type=None,
+  serialized_options=None,
+  serialized_start=200,
+  serialized_end=227,
+)
+_sym_db.RegisterEnumDescriptor(_CLIENTCONNECTRESPONSE_STATUS)
+
+_CLIENTRECONNECTRESPONSE_STATUS = _descriptor.EnumDescriptor(
+  name='Status',
+  full_name='ClientReConnectResponse.Status',
+  filename=None,
+  file=DESCRIPTOR,
+  create_key=_descriptor._internal_create_key,
+  values=[
+    _descriptor.EnumValueDescriptor(
+      name='OK', index=0, number=0,
+      serialized_options=None,
+      type=None,
+      create_key=_descriptor._internal_create_key),
+    _descriptor.EnumValueDescriptor(
+      name='ERROR', index=1, number=1,
+      serialized_options=None,
+      type=None,
+      create_key=_descriptor._internal_create_key),
+  ],
+  containing_type=None,
+  serialized_options=None,
+  serialized_start=200,
+  serialized_end=227,
+)
+_sym_db.RegisterEnumDescriptor(_CLIENTRECONNECTRESPONSE_STATUS)
 
 _CLIENTDISCONNECTRESPONSE_STATUS = _descriptor.EnumDescriptor(
   name='Status',
@@ -94,10 +144,56 @@ _CLIENTDISCONNECTRESPONSE_STATUS = _descriptor.EnumDescriptor(
   ],
   containing_type=None,
   serialized_options=None,
-  serialized_start=118,
-  serialized_end=145,
+  serialized_start=200,
+  serialized_end=227,
 )
 _sym_db.RegisterEnumDescriptor(_CLIENTDISCONNECTRESPONSE_STATUS)
+
+
+_ROUTEREXCEPTIONRESPONSE = _descriptor.Descriptor(
+  name='RouterExceptionResponse',
+  full_name='RouterExceptionResponse',
+  filename=None,
+  file=DESCRIPTOR,
+  containing_type=None,
+  create_key=_descriptor._internal_create_key,
+  fields=[
+    _descriptor.FieldDescriptor(
+      name='module_name', full_name='RouterExceptionResponse.module_name', index=0,
+      number=1, type=9, cpp_type=9, label=1,
+      has_default_value=False, default_value=b"".decode('utf-8'),
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+    _descriptor.FieldDescriptor(
+      name='class_name', full_name='RouterExceptionResponse.class_name', index=1,
+      number=2, type=9, cpp_type=9, label=1,
+      has_default_value=False, default_value=b"".decode('utf-8'),
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+    _descriptor.FieldDescriptor(
+      name='args', full_name='RouterExceptionResponse.args', index=2,
+      number=3, type=9, cpp_type=9, label=1,
+      has_default_value=False, default_value=b"".decode('utf-8'),
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+  ],
+  extensions=[
+  ],
+  nested_types=[],
+  enum_types=[
+  ],
+  serialized_options=None,
+  is_extendable=False,
+  syntax='proto3',
+  extension_ranges=[],
+  oneofs=[
+  ],
+  serialized_start=23,
+  serialized_end=103,
+)
 
 
 _VERSIONREQUEST = _descriptor.Descriptor(
@@ -120,8 +216,8 @@ _VERSIONREQUEST = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=23,
-  serialized_end=39,
+  serialized_start=105,
+  serialized_end=121,
 )
 
 
@@ -160,21 +256,21 @@ _VERSIONRESPONSE = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=41,
-  serialized_end=145,
+  serialized_start=123,
+  serialized_end=227,
 )
 
 
-_WORKERADDRESSREQUEST = _descriptor.Descriptor(
-  name='WorkerAddressRequest',
-  full_name='WorkerAddressRequest',
+_HEARTBEATREQUEST = _descriptor.Descriptor(
+  name='HeartbeatRequest',
+  full_name='HeartbeatRequest',
   filename=None,
   file=DESCRIPTOR,
   containing_type=None,
   create_key=_descriptor._internal_create_key,
   fields=[
     _descriptor.FieldDescriptor(
-      name='client_uri', full_name='WorkerAddressRequest.client_uri', index=0,
+      name='client_uri', full_name='HeartbeatRequest.client_uri', index=0,
       number=1, type=9, cpp_type=9, label=1,
       has_default_value=False, default_value=b"".decode('utf-8'),
       message_type=None, enum_type=None, containing_type=None,
@@ -192,39 +288,118 @@ _WORKERADDRESSREQUEST = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=147,
-  serialized_end=189,
+  serialized_start=229,
+  serialized_end=267,
 )
 
 
-_WORKERADDRESSRESPONSE = _descriptor.Descriptor(
-  name='WorkerAddressResponse',
-  full_name='WorkerAddressResponse',
+_HEARTBEATRESPONSE = _descriptor.Descriptor(
+  name='HeartbeatResponse',
+  full_name='HeartbeatResponse',
   filename=None,
   file=DESCRIPTOR,
   containing_type=None,
   create_key=_descriptor._internal_create_key,
   fields=[
     _descriptor.FieldDescriptor(
-      name='address', full_name='WorkerAddressResponse.address', index=0,
+      name='status', full_name='HeartbeatResponse.status', index=0,
+      number=1, type=14, cpp_type=8, label=1,
+      has_default_value=False, default_value=0,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+    _descriptor.FieldDescriptor(
+      name='exception', full_name='HeartbeatResponse.exception', index=1,
+      number=2, type=11, cpp_type=10, label=1,
+      has_default_value=False, default_value=None,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+  ],
+  extensions=[
+  ],
+  nested_types=[],
+  enum_types=[
+    _HEARTBEATRESPONSE_STATUS,
+  ],
+  serialized_options=None,
+  is_extendable=False,
+  syntax='proto3',
+  extension_ranges=[],
+  oneofs=[
+  ],
+  serialized_start=270,
+  serialized_end=406,
+)
+
+
+_CLIENTCONNECTREQUEST = _descriptor.Descriptor(
+  name='ClientConnectRequest',
+  full_name='ClientConnectRequest',
+  filename=None,
+  file=DESCRIPTOR,
+  containing_type=None,
+  create_key=_descriptor._internal_create_key,
+  fields=[
+    _descriptor.FieldDescriptor(
+      name='client_uri', full_name='ClientConnectRequest.client_uri', index=0,
+      number=1, type=9, cpp_type=9, label=1,
+      has_default_value=False, default_value=b"".decode('utf-8'),
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+  ],
+  extensions=[
+  ],
+  nested_types=[],
+  enum_types=[
+  ],
+  serialized_options=None,
+  is_extendable=False,
+  syntax='proto3',
+  extension_ranges=[],
+  oneofs=[
+  ],
+  serialized_start=408,
+  serialized_end=450,
+)
+
+
+_CLIENTCONNECTRESPONSE = _descriptor.Descriptor(
+  name='ClientConnectResponse',
+  full_name='ClientConnectResponse',
+  filename=None,
+  file=DESCRIPTOR,
+  containing_type=None,
+  create_key=_descriptor._internal_create_key,
+  fields=[
+    _descriptor.FieldDescriptor(
+      name='address', full_name='ClientConnectResponse.address', index=0,
       number=1, type=9, cpp_type=9, label=1,
       has_default_value=False, default_value=b"".decode('utf-8'),
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
     _descriptor.FieldDescriptor(
-      name='status', full_name='WorkerAddressResponse.status', index=1,
+      name='status', full_name='ClientConnectResponse.status', index=1,
       number=2, type=14, cpp_type=8, label=1,
       has_default_value=False, default_value=0,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+    _descriptor.FieldDescriptor(
+      name='exception', full_name='ClientConnectResponse.exception', index=2,
+      number=3, type=11, cpp_type=10, label=1,
+      has_default_value=False, default_value=None,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
   ],
   extensions=[
   ],
   nested_types=[],
   enum_types=[
-    _WORKERADDRESSRESPONSE_STATUS,
+    _CLIENTCONNECTRESPONSE_STATUS,
   ],
   serialized_options=None,
   is_extendable=False,
@@ -232,8 +407,87 @@ _WORKERADDRESSRESPONSE = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=191,
-  serialized_end=307,
+  serialized_start=453,
+  serialized_end=614,
+)
+
+
+_CLIENTRECONNECTREQUEST = _descriptor.Descriptor(
+  name='ClientReConnectRequest',
+  full_name='ClientReConnectRequest',
+  filename=None,
+  file=DESCRIPTOR,
+  containing_type=None,
+  create_key=_descriptor._internal_create_key,
+  fields=[
+    _descriptor.FieldDescriptor(
+      name='client_uri', full_name='ClientReConnectRequest.client_uri', index=0,
+      number=1, type=9, cpp_type=9, label=1,
+      has_default_value=False, default_value=b"".decode('utf-8'),
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+  ],
+  extensions=[
+  ],
+  nested_types=[],
+  enum_types=[
+  ],
+  serialized_options=None,
+  is_extendable=False,
+  syntax='proto3',
+  extension_ranges=[],
+  oneofs=[
+  ],
+  serialized_start=616,
+  serialized_end=660,
+)
+
+
+_CLIENTRECONNECTRESPONSE = _descriptor.Descriptor(
+  name='ClientReConnectResponse',
+  full_name='ClientReConnectResponse',
+  filename=None,
+  file=DESCRIPTOR,
+  containing_type=None,
+  create_key=_descriptor._internal_create_key,
+  fields=[
+    _descriptor.FieldDescriptor(
+      name='address', full_name='ClientReConnectResponse.address', index=0,
+      number=1, type=9, cpp_type=9, label=1,
+      has_default_value=False, default_value=b"".decode('utf-8'),
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+    _descriptor.FieldDescriptor(
+      name='status', full_name='ClientReConnectResponse.status', index=1,
+      number=2, type=14, cpp_type=8, label=1,
+      has_default_value=False, default_value=0,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+    _descriptor.FieldDescriptor(
+      name='exception', full_name='ClientReConnectResponse.exception', index=2,
+      number=3, type=11, cpp_type=10, label=1,
+      has_default_value=False, default_value=None,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+  ],
+  extensions=[
+  ],
+  nested_types=[],
+  enum_types=[
+    _CLIENTRECONNECTRESPONSE_STATUS,
+  ],
+  serialized_options=None,
+  is_extendable=False,
+  syntax='proto3',
+  extension_ranges=[],
+  oneofs=[
+  ],
+  serialized_start=663,
+  serialized_end=828,
 )
 
 
@@ -264,8 +518,8 @@ _CLIENTDISCONNECTREQUEST = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=309,
-  serialized_end=354,
+  serialized_start=830,
+  serialized_end=875,
 )
 
 
@@ -284,6 +538,13 @@ _CLIENTDISCONNECTRESPONSE = _descriptor.Descriptor(
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+    _descriptor.FieldDescriptor(
+      name='exception', full_name='ClientDisconnectResponse.exception', index=1,
+      number=3, type=11, cpp_type=10, label=1,
+      has_default_value=False, default_value=None,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
   ],
   extensions=[
   ],
@@ -297,23 +558,43 @@ _CLIENTDISCONNECTRESPONSE = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=356,
-  serialized_end=461,
+  serialized_start=878,
+  serialized_end=1028,
 )
 
 _VERSIONRESPONSE.fields_by_name['status'].enum_type = _VERSIONRESPONSE_STATUS
 _VERSIONRESPONSE_STATUS.containing_type = _VERSIONRESPONSE
-_WORKERADDRESSRESPONSE.fields_by_name['status'].enum_type = _WORKERADDRESSRESPONSE_STATUS
-_WORKERADDRESSRESPONSE_STATUS.containing_type = _WORKERADDRESSRESPONSE
+_HEARTBEATRESPONSE.fields_by_name['status'].enum_type = _HEARTBEATRESPONSE_STATUS
+_HEARTBEATRESPONSE.fields_by_name['exception'].message_type = _ROUTEREXCEPTIONRESPONSE
+_HEARTBEATRESPONSE_STATUS.containing_type = _HEARTBEATRESPONSE
+_CLIENTCONNECTRESPONSE.fields_by_name['status'].enum_type = _CLIENTCONNECTRESPONSE_STATUS
+_CLIENTCONNECTRESPONSE.fields_by_name['exception'].message_type = _ROUTEREXCEPTIONRESPONSE
+_CLIENTCONNECTRESPONSE_STATUS.containing_type = _CLIENTCONNECTRESPONSE
+_CLIENTRECONNECTRESPONSE.fields_by_name['status'].enum_type = _CLIENTRECONNECTRESPONSE_STATUS
+_CLIENTRECONNECTRESPONSE.fields_by_name['exception'].message_type = _ROUTEREXCEPTIONRESPONSE
+_CLIENTRECONNECTRESPONSE_STATUS.containing_type = _CLIENTRECONNECTRESPONSE
 _CLIENTDISCONNECTRESPONSE.fields_by_name['status'].enum_type = _CLIENTDISCONNECTRESPONSE_STATUS
+_CLIENTDISCONNECTRESPONSE.fields_by_name['exception'].message_type = _ROUTEREXCEPTIONRESPONSE
 _CLIENTDISCONNECTRESPONSE_STATUS.containing_type = _CLIENTDISCONNECTRESPONSE
+DESCRIPTOR.message_types_by_name['RouterExceptionResponse'] = _ROUTEREXCEPTIONRESPONSE
 DESCRIPTOR.message_types_by_name['VersionRequest'] = _VERSIONREQUEST
 DESCRIPTOR.message_types_by_name['VersionResponse'] = _VERSIONRESPONSE
-DESCRIPTOR.message_types_by_name['WorkerAddressRequest'] = _WORKERADDRESSREQUEST
-DESCRIPTOR.message_types_by_name['WorkerAddressResponse'] = _WORKERADDRESSRESPONSE
+DESCRIPTOR.message_types_by_name['HeartbeatRequest'] = _HEARTBEATREQUEST
+DESCRIPTOR.message_types_by_name['HeartbeatResponse'] = _HEARTBEATRESPONSE
+DESCRIPTOR.message_types_by_name['ClientConnectRequest'] = _CLIENTCONNECTREQUEST
+DESCRIPTOR.message_types_by_name['ClientConnectResponse'] = _CLIENTCONNECTRESPONSE
+DESCRIPTOR.message_types_by_name['ClientReConnectRequest'] = _CLIENTRECONNECTREQUEST
+DESCRIPTOR.message_types_by_name['ClientReConnectResponse'] = _CLIENTRECONNECTRESPONSE
 DESCRIPTOR.message_types_by_name['ClientDisconnectRequest'] = _CLIENTDISCONNECTREQUEST
 DESCRIPTOR.message_types_by_name['ClientDisconnectResponse'] = _CLIENTDISCONNECTRESPONSE
 _sym_db.RegisterFileDescriptor(DESCRIPTOR)
+
+RouterExceptionResponse = _reflection.GeneratedProtocolMessageType('RouterExceptionResponse', (_message.Message,), {
+  'DESCRIPTOR' : _ROUTEREXCEPTIONRESPONSE,
+  '__module__' : 'remote_router_pb2'
+  # @@protoc_insertion_point(class_scope:RouterExceptionResponse)
+  })
+_sym_db.RegisterMessage(RouterExceptionResponse)
 
 VersionRequest = _reflection.GeneratedProtocolMessageType('VersionRequest', (_message.Message,), {
   'DESCRIPTOR' : _VERSIONREQUEST,
@@ -329,19 +610,47 @@ VersionResponse = _reflection.GeneratedProtocolMessageType('VersionResponse', (_
   })
 _sym_db.RegisterMessage(VersionResponse)
 
-WorkerAddressRequest = _reflection.GeneratedProtocolMessageType('WorkerAddressRequest', (_message.Message,), {
-  'DESCRIPTOR' : _WORKERADDRESSREQUEST,
+HeartbeatRequest = _reflection.GeneratedProtocolMessageType('HeartbeatRequest', (_message.Message,), {
+  'DESCRIPTOR' : _HEARTBEATREQUEST,
   '__module__' : 'remote_router_pb2'
-  # @@protoc_insertion_point(class_scope:WorkerAddressRequest)
+  # @@protoc_insertion_point(class_scope:HeartbeatRequest)
   })
-_sym_db.RegisterMessage(WorkerAddressRequest)
+_sym_db.RegisterMessage(HeartbeatRequest)
 
-WorkerAddressResponse = _reflection.GeneratedProtocolMessageType('WorkerAddressResponse', (_message.Message,), {
-  'DESCRIPTOR' : _WORKERADDRESSRESPONSE,
+HeartbeatResponse = _reflection.GeneratedProtocolMessageType('HeartbeatResponse', (_message.Message,), {
+  'DESCRIPTOR' : _HEARTBEATRESPONSE,
   '__module__' : 'remote_router_pb2'
-  # @@protoc_insertion_point(class_scope:WorkerAddressResponse)
+  # @@protoc_insertion_point(class_scope:HeartbeatResponse)
   })
-_sym_db.RegisterMessage(WorkerAddressResponse)
+_sym_db.RegisterMessage(HeartbeatResponse)
+
+ClientConnectRequest = _reflection.GeneratedProtocolMessageType('ClientConnectRequest', (_message.Message,), {
+  'DESCRIPTOR' : _CLIENTCONNECTREQUEST,
+  '__module__' : 'remote_router_pb2'
+  # @@protoc_insertion_point(class_scope:ClientConnectRequest)
+  })
+_sym_db.RegisterMessage(ClientConnectRequest)
+
+ClientConnectResponse = _reflection.GeneratedProtocolMessageType('ClientConnectResponse', (_message.Message,), {
+  'DESCRIPTOR' : _CLIENTCONNECTRESPONSE,
+  '__module__' : 'remote_router_pb2'
+  # @@protoc_insertion_point(class_scope:ClientConnectResponse)
+  })
+_sym_db.RegisterMessage(ClientConnectResponse)
+
+ClientReConnectRequest = _reflection.GeneratedProtocolMessageType('ClientReConnectRequest', (_message.Message,), {
+  'DESCRIPTOR' : _CLIENTRECONNECTREQUEST,
+  '__module__' : 'remote_router_pb2'
+  # @@protoc_insertion_point(class_scope:ClientReConnectRequest)
+  })
+_sym_db.RegisterMessage(ClientReConnectRequest)
+
+ClientReConnectResponse = _reflection.GeneratedProtocolMessageType('ClientReConnectResponse', (_message.Message,), {
+  'DESCRIPTOR' : _CLIENTRECONNECTRESPONSE,
+  '__module__' : 'remote_router_pb2'
+  # @@protoc_insertion_point(class_scope:ClientReConnectResponse)
+  })
+_sym_db.RegisterMessage(ClientReConnectResponse)
 
 ClientDisconnectRequest = _reflection.GeneratedProtocolMessageType('ClientDisconnectRequest', (_message.Message,), {
   'DESCRIPTOR' : _CLIENTDISCONNECTREQUEST,
@@ -366,8 +675,8 @@ _REMOTEROUTERSERVICE = _descriptor.ServiceDescriptor(
   index=0,
   serialized_options=None,
   create_key=_descriptor._internal_create_key,
-  serialized_start=464,
-  serialized_end=684,
+  serialized_start=1031,
+  serialized_end=1321,
   methods=[
   _descriptor.MethodDescriptor(
     name='get_version',
@@ -380,19 +689,29 @@ _REMOTEROUTERSERVICE = _descriptor.ServiceDescriptor(
     create_key=_descriptor._internal_create_key,
   ),
   _descriptor.MethodDescriptor(
-    name='get_worker_address',
-    full_name='RemoteRouterService.get_worker_address',
+    name='client_connect',
+    full_name='RemoteRouterService.client_connect',
     index=1,
     containing_service=None,
-    input_type=_WORKERADDRESSREQUEST,
-    output_type=_WORKERADDRESSRESPONSE,
+    input_type=_CLIENTCONNECTREQUEST,
+    output_type=_CLIENTCONNECTRESPONSE,
+    serialized_options=None,
+    create_key=_descriptor._internal_create_key,
+  ),
+  _descriptor.MethodDescriptor(
+    name='client_re_connect',
+    full_name='RemoteRouterService.client_re_connect',
+    index=2,
+    containing_service=None,
+    input_type=_CLIENTRECONNECTREQUEST,
+    output_type=_CLIENTRECONNECTRESPONSE,
     serialized_options=None,
     create_key=_descriptor._internal_create_key,
   ),
   _descriptor.MethodDescriptor(
     name='client_disconnect',
     full_name='RemoteRouterService.client_disconnect',
-    index=2,
+    index=3,
     containing_service=None,
     input_type=_CLIENTDISCONNECTREQUEST,
     output_type=_CLIENTDISCONNECTRESPONSE,

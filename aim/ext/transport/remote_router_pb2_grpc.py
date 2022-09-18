@@ -22,10 +22,15 @@ class RemoteRouterServiceStub(object):
                 request_serializer=remote__router__pb2.VersionRequest.SerializeToString,
                 response_deserializer=remote__router__pb2.VersionResponse.FromString,
                 )
-        self.get_worker_address = channel.unary_unary(
-                '/RemoteRouterService/get_worker_address',
-                request_serializer=remote__router__pb2.WorkerAddressRequest.SerializeToString,
-                response_deserializer=remote__router__pb2.WorkerAddressResponse.FromString,
+        self.client_connect = channel.unary_unary(
+                '/RemoteRouterService/client_connect',
+                request_serializer=remote__router__pb2.ClientConnectRequest.SerializeToString,
+                response_deserializer=remote__router__pb2.ClientConnectResponse.FromString,
+                )
+        self.client_re_connect = channel.unary_unary(
+                '/RemoteRouterService/client_re_connect',
+                request_serializer=remote__router__pb2.ClientReConnectRequest.SerializeToString,
+                response_deserializer=remote__router__pb2.ClientReConnectResponse.FromString,
                 )
         self.client_disconnect = channel.unary_unary(
                 '/RemoteRouterService/client_disconnect',
@@ -43,7 +48,13 @@ class RemoteRouterServiceServicer(object):
         context.set_details('Method not implemented!')
         raise NotImplementedError('Method not implemented!')
 
-    def get_worker_address(self, request, context):
+    def client_connect(self, request, context):
+        """Missing associated documentation comment in .proto file."""
+        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
+        context.set_details('Method not implemented!')
+        raise NotImplementedError('Method not implemented!')
+
+    def client_re_connect(self, request, context):
         """Missing associated documentation comment in .proto file."""
         context.set_code(grpc.StatusCode.UNIMPLEMENTED)
         context.set_details('Method not implemented!')
@@ -63,10 +74,15 @@ def add_RemoteRouterServiceServicer_to_server(servicer, server):
                     request_deserializer=remote__router__pb2.VersionRequest.FromString,
                     response_serializer=remote__router__pb2.VersionResponse.SerializeToString,
             ),
-            'get_worker_address': grpc.unary_unary_rpc_method_handler(
-                    servicer.get_worker_address,
-                    request_deserializer=remote__router__pb2.WorkerAddressRequest.FromString,
-                    response_serializer=remote__router__pb2.WorkerAddressResponse.SerializeToString,
+            'client_connect': grpc.unary_unary_rpc_method_handler(
+                    servicer.client_connect,
+                    request_deserializer=remote__router__pb2.ClientConnectRequest.FromString,
+                    response_serializer=remote__router__pb2.ClientConnectResponse.SerializeToString,
+            ),
+            'client_re_connect': grpc.unary_unary_rpc_method_handler(
+                    servicer.client_re_connect,
+                    request_deserializer=remote__router__pb2.ClientReConnectRequest.FromString,
+                    response_serializer=remote__router__pb2.ClientReConnectResponse.SerializeToString,
             ),
             'client_disconnect': grpc.unary_unary_rpc_method_handler(
                     servicer.client_disconnect,
@@ -101,7 +117,7 @@ class RemoteRouterService(object):
             insecure, call_credentials, compression, wait_for_ready, timeout, metadata)
 
     @staticmethod
-    def get_worker_address(request,
+    def client_connect(request,
             target,
             options=(),
             channel_credentials=None,
@@ -111,9 +127,26 @@ class RemoteRouterService(object):
             wait_for_ready=None,
             timeout=None,
             metadata=None):
-        return grpc.experimental.unary_unary(request, target, '/RemoteRouterService/get_worker_address',
-            remote__router__pb2.WorkerAddressRequest.SerializeToString,
-            remote__router__pb2.WorkerAddressResponse.FromString,
+        return grpc.experimental.unary_unary(request, target, '/RemoteRouterService/client_connect',
+            remote__router__pb2.ClientConnectRequest.SerializeToString,
+            remote__router__pb2.ClientConnectResponse.FromString,
+            options, channel_credentials,
+            insecure, call_credentials, compression, wait_for_ready, timeout, metadata)
+
+    @staticmethod
+    def client_re_connect(request,
+            target,
+            options=(),
+            channel_credentials=None,
+            call_credentials=None,
+            insecure=False,
+            compression=None,
+            wait_for_ready=None,
+            timeout=None,
+            metadata=None):
+        return grpc.experimental.unary_unary(request, target, '/RemoteRouterService/client_re_connect',
+            remote__router__pb2.ClientReConnectRequest.SerializeToString,
+            remote__router__pb2.ClientReConnectResponse.FromString,
             options, channel_credentials,
             insecure, call_credentials, compression, wait_for_ready, timeout, metadata)
 

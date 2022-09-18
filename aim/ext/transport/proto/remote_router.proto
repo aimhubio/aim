@@ -1,5 +1,12 @@
 syntax = "proto3";
 
+
+message RouterExceptionResponse {
+    string module_name = 1;
+    string class_name = 2;
+    string args = 3;
+}
+
 message VersionRequest {}
 
 message VersionResponse {
@@ -11,17 +18,45 @@ message VersionResponse {
     Status status = 2;
 }
 
-message WorkerAddressRequest {
+message HeartbeatRequest {
     string client_uri = 1;
 }
 
-message WorkerAddressResponse {
+message HeartbeatResponse {
+    enum Status {
+        OK = 0;
+        ERROR = 1;
+    }
+    Status status = 1;
+    RouterExceptionResponse exception = 2;
+}
+
+message ClientConnectRequest {
+    string client_uri = 1;
+}
+
+message ClientConnectResponse {
     string address = 1;
     enum Status {
         OK = 0;
         ERROR = 1;
     }
     Status status = 2;
+    RouterExceptionResponse exception = 3;
+}
+
+message ClientReConnectRequest {
+    string client_uri = 1;
+}
+
+message ClientReConnectResponse {
+    string address = 1;
+    enum Status {
+        OK = 0;
+        ERROR = 1;
+    }
+    Status status = 2;
+    RouterExceptionResponse exception = 3;
 }
 
 message ClientDisconnectRequest {
@@ -34,12 +69,14 @@ message ClientDisconnectResponse {
         ERROR = 1;
     }
     Status status = 1;
+    RouterExceptionResponse exception = 3;
 }
 
 
 
 service RemoteRouterService {
     rpc get_version(VersionRequest) returns (VersionResponse) {}
-    rpc get_worker_address(WorkerAddressRequest) returns (WorkerAddressResponse) {}
+    rpc client_connect(ClientConnectRequest) returns (ClientConnectResponse) {}
+    rpc client_re_connect(ClientReConnectRequest) returns (ClientReConnectResponse) {}
     rpc client_disconnect(ClientDisconnectRequest) returns (ClientDisconnectResponse) {}
 }

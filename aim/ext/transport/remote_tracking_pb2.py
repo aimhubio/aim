@@ -19,14 +19,14 @@ DESCRIPTOR = _descriptor.FileDescriptor(
   syntax='proto3',
   serialized_options=None,
   create_key=_descriptor._internal_create_key,
-  serialized_pb=b'\n\x15remote_tracking.proto\"J\n\x11\x45xceptionResponse\x12\x13\n\x0bmodule_name\x18\x01 \x01(\t\x12\x12\n\nclass_name\x18\x02 \x01(\t\x12\x0c\n\x04\x61rgs\x18\x03 \x01(\t\"<\n\x12HealthCheckRequest\x12\x12\n\nclient_uri\x18\x01 \x01(\t\x12\x12\n\ncheck_type\x18\x02 \x01(\t\"\x86\x01\n\x13HealthCheckResponse\x12+\n\x06status\x18\x01 \x01(\x0e\x32\x1b.HealthCheckResponse.Status\x12%\n\texception\x18\x02 \x01(\x0b\x32\x12.ExceptionResponse\"\x1b\n\x06Status\x12\x06\n\x02OK\x10\x00\x12\t\n\x05\x45RROR\x10\x01\"J\n\x0fResourceRequest\x12\x15\n\rresource_type\x18\x01 \x01(\t\x12\x12\n\nclient_uri\x18\x02 \x01(\t\x12\x0c\n\x04\x61rgs\x18\x03 \x01(\x0c\"\x91\x01\n\x10ResourceResponse\x12\x0f\n\x07handler\x18\x01 \x01(\t\x12(\n\x06status\x18\x02 \x01(\x0e\x32\x18.ResourceResponse.Status\x12%\n\texception\x18\x03 \x01(\x0b\x32\x12.ExceptionResponse\"\x1b\n\x06Status\x12\x06\n\x02OK\x10\x00\x12\t\n\x05\x45RROR\x10\x01\"=\n\x16ReleaseResourceRequest\x12\x0f\n\x07handler\x18\x01 \x01(\t\x12\x12\n\nclient_uri\x18\x02 \x01(\t\"\x8e\x01\n\x17ReleaseResourceResponse\x12/\n\x06status\x18\x02 \x01(\x0e\x32\x1f.ReleaseResourceResponse.Status\x12%\n\texception\x18\x03 \x01(\x0b\x32\x12.ExceptionResponse\"\x1b\n\x06Status\x12\x06\n\x02OK\x10\x00\x12\t\n\x05\x45RROR\x10\x01\"Z\n\rRequestHeader\x12\x0f\n\x07version\x18\x01 \x01(\t\x12\x0f\n\x07handler\x18\x02 \x01(\t\x12\x12\n\nclient_uri\x18\x03 \x01(\t\x12\x13\n\x0bmethod_name\x18\x04 \x01(\t\"X\n\x12InstructionRequest\x12 \n\x06header\x18\x01 \x01(\x0b\x32\x0e.RequestHeaderH\x00\x12\x11\n\x07message\x18\x02 \x01(\x0cH\x00\x42\r\n\x0binstruction\"\x8d\x01\n\x0eResponseHeader\x12\x0f\n\x07version\x18\x01 \x01(\t\x12&\n\x06status\x18\x02 \x01(\x0e\x32\x16.ResponseHeader.Status\x12%\n\texception\x18\x03 \x01(\x0b\x32\x12.ExceptionResponse\"\x1b\n\x06Status\x12\x06\n\x02OK\x10\x00\x12\t\n\x05\x45RROR\x10\x01\"Z\n\x13InstructionResponse\x12!\n\x06header\x18\x01 \x01(\x0b\x32\x0f.ResponseHeaderH\x00\x12\x11\n\x07message\x18\x02 \x01(\x0cH\x00\x42\r\n\x0binstruction\"P\n\x18WriteInstructionsRequest\x12\x0f\n\x07version\x18\x01 \x01(\t\x12\x12\n\nclient_uri\x18\x02 \x01(\t\x12\x0f\n\x07message\x18\x03 \x01(\x0c\"\xa3\x01\n\x19WriteInstructionsResponse\x12\x0f\n\x07version\x18\x01 \x01(\t\x12\x31\n\x06status\x18\x02 \x01(\x0e\x32!.WriteInstructionsResponse.Status\x12%\n\texception\x18\x03 \x01(\x0b\x32\x12.ExceptionResponse\"\x1b\n\x06Status\x12\x06\n\x02OK\x10\x00\x12\t\n\x05\x45RROR\x10\x01\x32\xed\x02\n\x15RemoteTrackingService\x12;\n\x0chealth_check\x12\x13.HealthCheckRequest\x1a\x14.HealthCheckResponse\"\x00\x12\x35\n\x0cget_resource\x12\x10.ResourceRequest\x1a\x11.ResourceResponse\"\x00\x12G\n\x10release_resource\x12\x17.ReleaseResourceRequest\x1a\x18.ReleaseResourceResponse\"\x00\x12\x42\n\x0frun_instruction\x12\x13.InstructionRequest\x1a\x14.InstructionResponse\"\x00(\x01\x30\x01\x12S\n\x16run_write_instructions\x12\x19.WriteInstructionsRequest\x1a\x1a.WriteInstructionsResponse\"\x00(\x01\x62\x06proto3'
+  serialized_pb=b'\n\x15remote_tracking.proto\"J\n\x11\x45xceptionResponse\x12\x13\n\x0bmodule_name\x18\x01 \x01(\t\x12\x12\n\nclass_name\x18\x02 \x01(\t\x12\x0c\n\x04\x61rgs\x18\x03 \x01(\t\"2\n\x1c\x43lientResourceCleanupRequest\x12\x12\n\nclient_uri\x18\x01 \x01(\t\"\x9a\x01\n\x1d\x43lientResourceCleanupResponse\x12\x35\n\x06status\x18\x01 \x01(\x0e\x32%.ClientResourceCleanupResponse.Status\x12%\n\texception\x18\x02 \x01(\x0b\x32\x12.ExceptionResponse\"\x1b\n\x06Status\x12\x06\n\x02OK\x10\x00\x12\t\n\x05\x45RROR\x10\x01\"J\n\x0fResourceRequest\x12\x15\n\rresource_type\x18\x01 \x01(\t\x12\x12\n\nclient_uri\x18\x02 \x01(\t\x12\x0c\n\x04\x61rgs\x18\x03 \x01(\x0c\"\x91\x01\n\x10ResourceResponse\x12\x0f\n\x07handler\x18\x01 \x01(\t\x12(\n\x06status\x18\x02 \x01(\x0e\x32\x18.ResourceResponse.Status\x12%\n\texception\x18\x03 \x01(\x0b\x32\x12.ExceptionResponse\"\x1b\n\x06Status\x12\x06\n\x02OK\x10\x00\x12\t\n\x05\x45RROR\x10\x01\"=\n\x16ReleaseResourceRequest\x12\x0f\n\x07handler\x18\x01 \x01(\t\x12\x12\n\nclient_uri\x18\x02 \x01(\t\"\x8e\x01\n\x17ReleaseResourceResponse\x12/\n\x06status\x18\x02 \x01(\x0e\x32\x1f.ReleaseResourceResponse.Status\x12%\n\texception\x18\x03 \x01(\x0b\x32\x12.ExceptionResponse\"\x1b\n\x06Status\x12\x06\n\x02OK\x10\x00\x12\t\n\x05\x45RROR\x10\x01\"Z\n\rRequestHeader\x12\x0f\n\x07version\x18\x01 \x01(\t\x12\x0f\n\x07handler\x18\x02 \x01(\t\x12\x12\n\nclient_uri\x18\x03 \x01(\t\x12\x13\n\x0bmethod_name\x18\x04 \x01(\t\"X\n\x12InstructionRequest\x12 \n\x06header\x18\x01 \x01(\x0b\x32\x0e.RequestHeaderH\x00\x12\x11\n\x07message\x18\x02 \x01(\x0cH\x00\x42\r\n\x0binstruction\"\x8d\x01\n\x0eResponseHeader\x12\x0f\n\x07version\x18\x01 \x01(\t\x12&\n\x06status\x18\x02 \x01(\x0e\x32\x16.ResponseHeader.Status\x12%\n\texception\x18\x03 \x01(\x0b\x32\x12.ExceptionResponse\"\x1b\n\x06Status\x12\x06\n\x02OK\x10\x00\x12\t\n\x05\x45RROR\x10\x01\"Z\n\x13InstructionResponse\x12!\n\x06header\x18\x01 \x01(\x0b\x32\x0f.ResponseHeaderH\x00\x12\x11\n\x07message\x18\x02 \x01(\x0cH\x00\x42\r\n\x0binstruction\"P\n\x18WriteInstructionsRequest\x12\x0f\n\x07version\x18\x01 \x01(\t\x12\x12\n\nclient_uri\x18\x02 \x01(\t\x12\x0f\n\x07message\x18\x03 \x01(\x0c\"\xa3\x01\n\x19WriteInstructionsResponse\x12\x0f\n\x07version\x18\x01 \x01(\t\x12\x31\n\x06status\x18\x02 \x01(\x0e\x32!.WriteInstructionsResponse.Status\x12%\n\texception\x18\x03 \x01(\x0b\x32\x12.ExceptionResponse\"\x1b\n\x06Status\x12\x06\n\x02OK\x10\x00\x12\t\n\x05\x45RROR\x10\x01\x32\x8d\x03\n\x15RemoteTrackingService\x12[\n\x18\x63leanup_client_resources\x12\x1d.ClientResourceCleanupRequest\x1a\x1e.ClientResourceCleanupResponse\"\x00\x12\x35\n\x0cget_resource\x12\x10.ResourceRequest\x1a\x11.ResourceResponse\"\x00\x12G\n\x10release_resource\x12\x17.ReleaseResourceRequest\x1a\x18.ReleaseResourceResponse\"\x00\x12\x42\n\x0frun_instruction\x12\x13.InstructionRequest\x1a\x14.InstructionResponse\"\x00(\x01\x30\x01\x12S\n\x16run_write_instructions\x12\x19.WriteInstructionsRequest\x1a\x1a.WriteInstructionsResponse\"\x00(\x01\x62\x06proto3'
 )
 
 
 
-_HEALTHCHECKRESPONSE_STATUS = _descriptor.EnumDescriptor(
+_CLIENTRESOURCECLEANUPRESPONSE_STATUS = _descriptor.EnumDescriptor(
   name='Status',
-  full_name='HealthCheckResponse.Status',
+  full_name='ClientResourceCleanupResponse.Status',
   filename=None,
   file=DESCRIPTOR,
   create_key=_descriptor._internal_create_key,
@@ -44,10 +44,10 @@ _HEALTHCHECKRESPONSE_STATUS = _descriptor.EnumDescriptor(
   ],
   containing_type=None,
   serialized_options=None,
-  serialized_start=271,
-  serialized_end=298,
+  serialized_start=281,
+  serialized_end=308,
 )
-_sym_db.RegisterEnumDescriptor(_HEALTHCHECKRESPONSE_STATUS)
+_sym_db.RegisterEnumDescriptor(_CLIENTRESOURCECLEANUPRESPONSE_STATUS)
 
 _RESOURCERESPONSE_STATUS = _descriptor.EnumDescriptor(
   name='Status',
@@ -69,8 +69,8 @@ _RESOURCERESPONSE_STATUS = _descriptor.EnumDescriptor(
   ],
   containing_type=None,
   serialized_options=None,
-  serialized_start=271,
-  serialized_end=298,
+  serialized_start=281,
+  serialized_end=308,
 )
 _sym_db.RegisterEnumDescriptor(_RESOURCERESPONSE_STATUS)
 
@@ -94,8 +94,8 @@ _RELEASERESOURCERESPONSE_STATUS = _descriptor.EnumDescriptor(
   ],
   containing_type=None,
   serialized_options=None,
-  serialized_start=271,
-  serialized_end=298,
+  serialized_start=281,
+  serialized_end=308,
 )
 _sym_db.RegisterEnumDescriptor(_RELEASERESOURCERESPONSE_STATUS)
 
@@ -119,8 +119,8 @@ _RESPONSEHEADER_STATUS = _descriptor.EnumDescriptor(
   ],
   containing_type=None,
   serialized_options=None,
-  serialized_start=271,
-  serialized_end=298,
+  serialized_start=281,
+  serialized_end=308,
 )
 _sym_db.RegisterEnumDescriptor(_RESPONSEHEADER_STATUS)
 
@@ -144,8 +144,8 @@ _WRITEINSTRUCTIONSRESPONSE_STATUS = _descriptor.EnumDescriptor(
   ],
   containing_type=None,
   serialized_options=None,
-  serialized_start=271,
-  serialized_end=298,
+  serialized_start=281,
+  serialized_end=308,
 )
 _sym_db.RegisterEnumDescriptor(_WRITEINSTRUCTIONSRESPONSE_STATUS)
 
@@ -196,24 +196,17 @@ _EXCEPTIONRESPONSE = _descriptor.Descriptor(
 )
 
 
-_HEALTHCHECKREQUEST = _descriptor.Descriptor(
-  name='HealthCheckRequest',
-  full_name='HealthCheckRequest',
+_CLIENTRESOURCECLEANUPREQUEST = _descriptor.Descriptor(
+  name='ClientResourceCleanupRequest',
+  full_name='ClientResourceCleanupRequest',
   filename=None,
   file=DESCRIPTOR,
   containing_type=None,
   create_key=_descriptor._internal_create_key,
   fields=[
     _descriptor.FieldDescriptor(
-      name='client_uri', full_name='HealthCheckRequest.client_uri', index=0,
+      name='client_uri', full_name='ClientResourceCleanupRequest.client_uri', index=0,
       number=1, type=9, cpp_type=9, label=1,
-      has_default_value=False, default_value=b"".decode('utf-8'),
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
-    _descriptor.FieldDescriptor(
-      name='check_type', full_name='HealthCheckRequest.check_type', index=1,
-      number=2, type=9, cpp_type=9, label=1,
       has_default_value=False, default_value=b"".decode('utf-8'),
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
@@ -231,27 +224,27 @@ _HEALTHCHECKREQUEST = _descriptor.Descriptor(
   oneofs=[
   ],
   serialized_start=101,
-  serialized_end=161,
+  serialized_end=151,
 )
 
 
-_HEALTHCHECKRESPONSE = _descriptor.Descriptor(
-  name='HealthCheckResponse',
-  full_name='HealthCheckResponse',
+_CLIENTRESOURCECLEANUPRESPONSE = _descriptor.Descriptor(
+  name='ClientResourceCleanupResponse',
+  full_name='ClientResourceCleanupResponse',
   filename=None,
   file=DESCRIPTOR,
   containing_type=None,
   create_key=_descriptor._internal_create_key,
   fields=[
     _descriptor.FieldDescriptor(
-      name='status', full_name='HealthCheckResponse.status', index=0,
+      name='status', full_name='ClientResourceCleanupResponse.status', index=0,
       number=1, type=14, cpp_type=8, label=1,
       has_default_value=False, default_value=0,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
     _descriptor.FieldDescriptor(
-      name='exception', full_name='HealthCheckResponse.exception', index=1,
+      name='exception', full_name='ClientResourceCleanupResponse.exception', index=1,
       number=2, type=11, cpp_type=10, label=1,
       has_default_value=False, default_value=None,
       message_type=None, enum_type=None, containing_type=None,
@@ -262,7 +255,7 @@ _HEALTHCHECKRESPONSE = _descriptor.Descriptor(
   ],
   nested_types=[],
   enum_types=[
-    _HEALTHCHECKRESPONSE_STATUS,
+    _CLIENTRESOURCECLEANUPRESPONSE_STATUS,
   ],
   serialized_options=None,
   is_extendable=False,
@@ -270,8 +263,8 @@ _HEALTHCHECKRESPONSE = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=164,
-  serialized_end=298,
+  serialized_start=154,
+  serialized_end=308,
 )
 
 
@@ -316,8 +309,8 @@ _RESOURCEREQUEST = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=300,
-  serialized_end=374,
+  serialized_start=310,
+  serialized_end=384,
 )
 
 
@@ -363,8 +356,8 @@ _RESOURCERESPONSE = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=377,
-  serialized_end=522,
+  serialized_start=387,
+  serialized_end=532,
 )
 
 
@@ -402,8 +395,8 @@ _RELEASERESOURCEREQUEST = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=524,
-  serialized_end=585,
+  serialized_start=534,
+  serialized_end=595,
 )
 
 
@@ -442,8 +435,8 @@ _RELEASERESOURCERESPONSE = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=588,
-  serialized_end=730,
+  serialized_start=598,
+  serialized_end=740,
 )
 
 
@@ -495,8 +488,8 @@ _REQUESTHEADER = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=732,
-  serialized_end=822,
+  serialized_start=742,
+  serialized_end=832,
 )
 
 
@@ -539,8 +532,8 @@ _INSTRUCTIONREQUEST = _descriptor.Descriptor(
       create_key=_descriptor._internal_create_key,
     fields=[]),
   ],
-  serialized_start=824,
-  serialized_end=912,
+  serialized_start=834,
+  serialized_end=922,
 )
 
 
@@ -586,8 +579,8 @@ _RESPONSEHEADER = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=915,
-  serialized_end=1056,
+  serialized_start=925,
+  serialized_end=1066,
 )
 
 
@@ -630,8 +623,8 @@ _INSTRUCTIONRESPONSE = _descriptor.Descriptor(
       create_key=_descriptor._internal_create_key,
     fields=[]),
   ],
-  serialized_start=1058,
-  serialized_end=1148,
+  serialized_start=1068,
+  serialized_end=1158,
 )
 
 
@@ -676,8 +669,8 @@ _WRITEINSTRUCTIONSREQUEST = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=1150,
-  serialized_end=1230,
+  serialized_start=1160,
+  serialized_end=1240,
 )
 
 
@@ -723,13 +716,13 @@ _WRITEINSTRUCTIONSRESPONSE = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=1233,
-  serialized_end=1396,
+  serialized_start=1243,
+  serialized_end=1406,
 )
 
-_HEALTHCHECKRESPONSE.fields_by_name['status'].enum_type = _HEALTHCHECKRESPONSE_STATUS
-_HEALTHCHECKRESPONSE.fields_by_name['exception'].message_type = _EXCEPTIONRESPONSE
-_HEALTHCHECKRESPONSE_STATUS.containing_type = _HEALTHCHECKRESPONSE
+_CLIENTRESOURCECLEANUPRESPONSE.fields_by_name['status'].enum_type = _CLIENTRESOURCECLEANUPRESPONSE_STATUS
+_CLIENTRESOURCECLEANUPRESPONSE.fields_by_name['exception'].message_type = _EXCEPTIONRESPONSE
+_CLIENTRESOURCECLEANUPRESPONSE_STATUS.containing_type = _CLIENTRESOURCECLEANUPRESPONSE
 _RESOURCERESPONSE.fields_by_name['status'].enum_type = _RESOURCERESPONSE_STATUS
 _RESOURCERESPONSE.fields_by_name['exception'].message_type = _EXCEPTIONRESPONSE
 _RESOURCERESPONSE_STATUS.containing_type = _RESOURCERESPONSE
@@ -757,8 +750,8 @@ _WRITEINSTRUCTIONSRESPONSE.fields_by_name['status'].enum_type = _WRITEINSTRUCTIO
 _WRITEINSTRUCTIONSRESPONSE.fields_by_name['exception'].message_type = _EXCEPTIONRESPONSE
 _WRITEINSTRUCTIONSRESPONSE_STATUS.containing_type = _WRITEINSTRUCTIONSRESPONSE
 DESCRIPTOR.message_types_by_name['ExceptionResponse'] = _EXCEPTIONRESPONSE
-DESCRIPTOR.message_types_by_name['HealthCheckRequest'] = _HEALTHCHECKREQUEST
-DESCRIPTOR.message_types_by_name['HealthCheckResponse'] = _HEALTHCHECKRESPONSE
+DESCRIPTOR.message_types_by_name['ClientResourceCleanupRequest'] = _CLIENTRESOURCECLEANUPREQUEST
+DESCRIPTOR.message_types_by_name['ClientResourceCleanupResponse'] = _CLIENTRESOURCECLEANUPRESPONSE
 DESCRIPTOR.message_types_by_name['ResourceRequest'] = _RESOURCEREQUEST
 DESCRIPTOR.message_types_by_name['ResourceResponse'] = _RESOURCERESPONSE
 DESCRIPTOR.message_types_by_name['ReleaseResourceRequest'] = _RELEASERESOURCEREQUEST
@@ -778,19 +771,19 @@ ExceptionResponse = _reflection.GeneratedProtocolMessageType('ExceptionResponse'
   })
 _sym_db.RegisterMessage(ExceptionResponse)
 
-HealthCheckRequest = _reflection.GeneratedProtocolMessageType('HealthCheckRequest', (_message.Message,), {
-  'DESCRIPTOR' : _HEALTHCHECKREQUEST,
+ClientResourceCleanupRequest = _reflection.GeneratedProtocolMessageType('ClientResourceCleanupRequest', (_message.Message,), {
+  'DESCRIPTOR' : _CLIENTRESOURCECLEANUPREQUEST,
   '__module__' : 'remote_tracking_pb2'
-  # @@protoc_insertion_point(class_scope:HealthCheckRequest)
+  # @@protoc_insertion_point(class_scope:ClientResourceCleanupRequest)
   })
-_sym_db.RegisterMessage(HealthCheckRequest)
+_sym_db.RegisterMessage(ClientResourceCleanupRequest)
 
-HealthCheckResponse = _reflection.GeneratedProtocolMessageType('HealthCheckResponse', (_message.Message,), {
-  'DESCRIPTOR' : _HEALTHCHECKRESPONSE,
+ClientResourceCleanupResponse = _reflection.GeneratedProtocolMessageType('ClientResourceCleanupResponse', (_message.Message,), {
+  'DESCRIPTOR' : _CLIENTRESOURCECLEANUPRESPONSE,
   '__module__' : 'remote_tracking_pb2'
-  # @@protoc_insertion_point(class_scope:HealthCheckResponse)
+  # @@protoc_insertion_point(class_scope:ClientResourceCleanupResponse)
   })
-_sym_db.RegisterMessage(HealthCheckResponse)
+_sym_db.RegisterMessage(ClientResourceCleanupResponse)
 
 ResourceRequest = _reflection.GeneratedProtocolMessageType('ResourceRequest', (_message.Message,), {
   'DESCRIPTOR' : _RESOURCEREQUEST,
@@ -871,16 +864,16 @@ _REMOTETRACKINGSERVICE = _descriptor.ServiceDescriptor(
   index=0,
   serialized_options=None,
   create_key=_descriptor._internal_create_key,
-  serialized_start=1399,
-  serialized_end=1764,
+  serialized_start=1409,
+  serialized_end=1806,
   methods=[
   _descriptor.MethodDescriptor(
-    name='health_check',
-    full_name='RemoteTrackingService.health_check',
+    name='cleanup_client_resources',
+    full_name='RemoteTrackingService.cleanup_client_resources',
     index=0,
     containing_service=None,
-    input_type=_HEALTHCHECKREQUEST,
-    output_type=_HEALTHCHECKRESPONSE,
+    input_type=_CLIENTRESOURCECLEANUPREQUEST,
+    output_type=_CLIENTRESOURCECLEANUPRESPONSE,
     serialized_options=None,
     create_key=_descriptor._internal_create_key,
   ),
