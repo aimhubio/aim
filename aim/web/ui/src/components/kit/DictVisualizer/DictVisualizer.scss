@@ -1,0 +1,46 @@
+@use 'src/styles/abstracts' as *;
+
+.DictVisualizer {
+  font-family: "Inconsolata", monospace;
+  font-variation-settings: "wdth" 82;
+  width: 100%;
+  height: 100%;
+}
+.DictVisualizer__row {
+  display: flex;
+  align-items: center;
+}
+
+.DictVisualizer__row__indent {
+  display: inline-block;
+  height: 100%;
+  margin-left: 4px; // based on icon size
+  margin-right: $space-md;
+  border-left: $border-dark;
+}
+
+.DictVisualizer__row__collapseToggler {
+  display: flex;
+  align-items: center;
+  margin-right: $space-xxxs;
+  cursor: pointer;
+}
+
+.DictVisualizer__row__content {
+  display: flex;
+  align-items: baseline;
+}
+
+.DictVisualizer__row__content__key {
+  margin-right: $space-xs;
+}
+
+.DictVisualizer__row__content__sub {
+  margin-right: $space-xxs;
+  font-style: italic;
+  white-space: nowrap;
+}
+
+.DictVisualizer__row__content__value {
+  white-space: nowrap;
+}
