@@ -154,7 +154,7 @@ function MediaPanel({
     if (_.isArray(data)) {
       return data.map((item: any) => _.omit(item, 'run'));
     } else {
-      return Object.keys(data).reduce((acc: any, key: any) => {
+      return Object.keys(data ?? []).reduce((acc: any, key: any) => {
         acc[key] = omitRunPropertyFromData(data[key]);
         return acc;
       }, {});

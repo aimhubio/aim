@@ -4,11 +4,10 @@ import { ListOnScrollProps, VariableSizeList as List } from 'react-window';
 import classNames from 'classnames';
 import { useResizeObserver } from 'hooks';
 
-import CircularProgress from '@material-ui/core/CircularProgress';
-
 import BusyLoaderWrapper from 'components/BusyLoaderWrapper/BusyLoaderWrapper';
 import ErrorBoundary from 'components/ErrorBoundary/ErrorBoundary';
 import IllustrationBlock from 'components/IllustrationBlock/IllustrationBlock';
+import { Spinner } from 'components/kit';
 
 import { ANALYTICS_EVENT_KEYS } from 'config/analytics/analyticsKeysMap';
 
@@ -221,12 +220,7 @@ function RunLogsTab({
                         lastRequestType === LogsLastRequestEnum.LOAD_MORE,
                     })}
                   >
-                    <CircularProgress
-                      size={24}
-                      value={75}
-                      thickness={4}
-                      color='primary'
-                    />
+                    <Spinner size={24} thickness={4} color='primary' />
                   </div>
                 </div>
               </div>
