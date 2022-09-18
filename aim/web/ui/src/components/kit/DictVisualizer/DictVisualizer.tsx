@@ -3,6 +3,7 @@ import { FixedSizeList as List, ListChildComponentProps } from 'react-window';
 import AutoSizer from 'react-virtualized-auto-sizer';
 
 import ErrorBoundary from 'components/ErrorBoundary/ErrorBoundary';
+import CopyToClipBoard from 'components/CopyToClipBoard/CopyToClipBoard';
 
 import { formatValue } from 'utils/formatValue';
 import { encode } from 'utils/encoder/encoder';
@@ -10,7 +11,11 @@ import { encode } from 'utils/encoder/encoder';
 import Text from '../Text';
 import Icon from '../Icon';
 
-import { IDictVisualizerProps, DictVisualizerRow } from './DictVisualizer.d';
+import {
+  IDictVisualizerProps,
+  DictVisualizerRowType,
+  IDictVisualizerRowProps,
+} from './DictVisualizer.d';
 
 import './DictVisualizer.scss';
 
@@ -75,7 +80,7 @@ function DictVisualizer(props: IDictVisualizerProps) {
       level: number = 0,
       parentKey: string = 'root',
     ) => {
-      let rows: DictVisualizerRow[] = [];
+      let rows: DictVisualizerRowType[] = [];
       if (level === 0) {
         if (Array.isArray(dict)) {
           let nestedItemsLength = dict.length;
@@ -95,6 +100,7 @@ function DictVisualizer(props: IDictVisualizerProps) {
               nestedItemsLength === 1 ? '' : 's'
             }`,
             color: typeToColor('array'),
+            copyContent: formatValue(dict),
           });
         } else {
           let nestedItemsLength = Object.keys(dict).length;
@@ -114,6 +120,7 @@ function DictVisualizer(props: IDictVisualizerProps) {
               nestedItemsLength === 1 ? '' : 's'
             }`,
             color: typeToColor('object'),
+            copyContent: formatValue(dict),
           });
         }
       }
@@ -126,6 +133,7 @@ function DictVisualizer(props: IDictVisualizerProps) {
             parent: parentKey,
             key,
           });
+          const value = formatValue(item);
           if (Array.isArray(item)) {
             rows.push({
               id,
@@ -137,6 +145,7 @@ function DictVisualizer(props: IDictVisualizerProps) {
               }`,
               sub: `${item.length} item${item.length === 1 ? '' : 's'}`,
               color: typeToColor('array'),
+              copyContent: value,
             });
             if (!collapsedItems[id] && item.length > 0) {
               rows.push(...flattenDict(item as unknown[], level + 1, id));
@@ -163,6 +172,7 @@ function DictVisualizer(props: IDictVisualizerProps) {
                 nestedItemsLength === 1 ? '' : 's'
               }`,
               color: typeToColor('object'),
+              copyContent: value,
             });
             if (!collapsedItems[id] && nestedItemsLength > 0) {
               rows.push(
@@ -186,9 +196,10 @@ function DictVisualizer(props: IDictVisualizerProps) {
               id,
               level,
               key: Array.isArray(dict) ? +key : formatValue(key),
-              value: formatValue(item),
+              value,
               sub: type === '' ? null : type,
               color,
+              copyContent: value,
             });
           }
         }
@@ -246,71 +257,14 @@ function DictVisualizer(props: IDictVisualizerProps) {
               {({ index, style }: ListChildComponentProps) => {
                 const row = rows[index];
                 return (
-                  <div
-                    key={row.key}
-                    className='DictVisualizer__row'
+                  <DictVisualizerRow
+                    row={row}
+                    index={index}
                     style={style}
-                  >
-                    {index !== 0 &&
-                      index !== rows.length - 1 &&
-                      Array(row.level + 1)
-                        .fill('_')
-                        .map((_, i) => (
-                          <div
-                            key={i}
-                            className='DictVisualizer__row__indent'
-                          />
-                        ))}
-                    {row.root && (
-                      <div
-                        className='DictVisualizer__row__collapseToggler'
-                        onClick={() => collapseToggler(row.id)}
-                      >
-                        <Icon
-                          name={
-                            collapsedItems[row.id]
-                              ? 'arrow-right'
-                              : 'arrow-down'
-                          }
-                          fontSize={9}
-                        />
-                      </div>
-                    )}
-                    <div className='DictVisualizer__row__content'>
-                      {row.key !== null && (
-                        <Text
-                          size={16}
-                          className='DictVisualizer__row__content__key'
-                        >
-                          {row.key}:
-                        </Text>
-                      )}
-                      {row.sub !== null && (
-                        <Text
-                          size={12}
-                          className='DictVisualizer__row__content__sub'
-                          style={{ color: row.color }}
-                        >
-                          {row.sub}
-                        </Text>
-                      )}
-                      <Text
-                        size={16}
-                        className='DictVisualizer__row__content__value'
-                        style={{
-                          color: row.color,
-                          cursor: collapsedItems[row.id] ? 'pointer' : '',
-                        }}
-                        onClick={
-                          collapsedItems[row.id]
-                            ? () => collapseToggler(row.id)
-                            : undefined
-                        }
-                      >
-                        {row.value as string}
-                      </Text>
-                    </div>
-                  </div>
+                    collapseToggler={collapseToggler}
+                    isCollapsed={collapsedItems[row.id]}
+                    rowsCount={rows.length}
+                  />
                 );
               }}
             </List>
@@ -318,6 +272,67 @@ function DictVisualizer(props: IDictVisualizerProps) {
         </AutoSizer>
       </div>
     </ErrorBoundary>
+  );
+}
+
+function DictVisualizerRow(props: IDictVisualizerRowProps) {
+  const { row, style, index, collapseToggler, isCollapsed, rowsCount } = props;
+
+  return (
+    <div key={row.key} className='DictVisualizer__row' style={style}>
+      {index !== 0 &&
+        index !== rowsCount - 1 &&
+        Array(row.level + 1)
+          .fill('_')
+          .map((_, i) => (
+            <div key={i} className='DictVisualizer__row__indent' />
+          ))}
+      {row.root && (
+        <div
+          className='DictVisualizer__row__collapseToggler'
+          onClick={() => collapseToggler(row.id)}
+        >
+          <Icon
+            name={isCollapsed ? 'arrow-right' : 'arrow-down'}
+            fontSize={9}
+          />
+        </div>
+      )}
+      <div className='DictVisualizer__row__content'>
+        {row.key !== null && (
+          <Text size={16} className='DictVisualizer__row__content__key'>
+            {row.key}:
+          </Text>
+        )}
+        {row.sub !== null && (
+          <Text
+            size={12}
+            className='DictVisualizer__row__content__sub'
+            style={{ color: row.color }}
+          >
+            {row.sub}
+          </Text>
+        )}
+        <Text
+          size={16}
+          className='DictVisualizer__row__content__value'
+          style={{
+            color: row.color,
+            cursor: isCollapsed ? 'pointer' : '',
+          }}
+          onClick={isCollapsed ? () => collapseToggler(row.id) : undefined}
+        >
+          {row.value as string}
+        </Text>
+      </div>
+      {row.copyContent && (
+        <CopyToClipBoard
+          className='DictVisualizer__row__copy'
+          iconSize='xSmall'
+          copyContent={row.copyContent}
+        />
+      )}
+    </div>
   );
 }
 

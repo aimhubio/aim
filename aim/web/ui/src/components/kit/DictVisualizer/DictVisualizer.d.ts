@@ -5,7 +5,7 @@ export interface IDictVisualizerProps {
   style?: CSSProperties;
 }
 
-export type DictVisualizerRow = {
+export type DictVisualizerRowType = {
   id: string;
   root?: boolean;
   level: number;
@@ -13,4 +13,14 @@ export type DictVisualizerRow = {
   value: unknown;
   sub: string | null;
   color: string;
+  copyContent?: string;
 };
+
+export interface IDictVisualizerRowProps {
+  row: DictVisualizerRowType;
+  collapseToggler: (rowID: string) => void;
+  style?: CSSProperties;
+  index: number;
+  isCollapsed: boolean;
+  rowsCount: number;
+}

@@ -9,6 +9,12 @@
 .DictVisualizer__row {
   display: flex;
   align-items: center;
+
+  &:hover {
+    .DictVisualizer__row__copy {
+      display: inline-block;
+    }
+  }
 }
 
 .DictVisualizer__row__indent {
@@ -43,4 +49,9 @@
 
 .DictVisualizer__row__content__value {
   white-space: nowrap;
+}
+
+.DictVisualizer__row__copy {
+  margin-left: $space-xxxs;
+  display: none;
 }
