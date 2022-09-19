@@ -36,6 +36,7 @@ function Figures(props: any) {
         }
       }
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [data, props.style?.width, props.style?.height]);
 
   return (

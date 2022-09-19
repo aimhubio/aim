@@ -82,11 +82,15 @@ function Column({
       : _.values(data).reduce((acc, item) => {
           return [...acc, ...item.items];
         }, []);
+
     let range = _.sortBy([
       ...new Set(
-        columnData?.map((a) => +a[col.key]).filter((a) => !isNaN(a)) ?? [],
+        columnData
+          ?.filter((a) => !_.isArray(a[col.key]) && !_.isNaN(+a[col.key]))
+          .map((a) => +a[col.key]) ?? [],
       ),
     ]);
+
     if (_.isEmpty(range)) {
       return null;
     } else if (range.length === 1) {
@@ -207,7 +211,8 @@ function Column({
         ((topHeader ? 1 : 0) + 1 + groupKeys.length + expandedGroupsDataCount) *
           rowHeightMode +
         groupKeys.length *
-          (ROW_CELL_SIZE_CONFIG[rowHeightMode].groupMargin ?? 6) +
+          (ROW_CELL_SIZE_CONFIG[rowHeightMode]?.groupMargin ??
+            ROW_CELL_SIZE_CONFIG[RowHeightSize.md].groupMargin) +
         groupKeys.length
       );
     }
@@ -488,7 +493,9 @@ function Column({
         </div>
         {groups
           ? Object.keys(data).map((groupKey) => {
-              let top = ROW_CELL_SIZE_CONFIG[rowHeightMode].groupMargin ?? 6;
+              let top =
+                ROW_CELL_SIZE_CONFIG[rowHeightMode]?.groupMargin ??
+                ROW_CELL_SIZE_CONFIG[RowHeightSize.md].groupMargin;
               let height = rowHeightMode;
               for (let key in data) {
                 if (key === groupKey) {
@@ -498,7 +505,8 @@ function Column({
                   break;
                 }
                 top +=
-                  (ROW_CELL_SIZE_CONFIG[rowHeightMode].groupMargin ?? 6) +
+                  (ROW_CELL_SIZE_CONFIG[rowHeightMode]?.groupMargin ??
+                    ROW_CELL_SIZE_CONFIG[RowHeightSize.md].groupMargin) +
                   rowHeightMode +
                   1;
                 if (expanded[key]) {
@@ -517,28 +525,28 @@ function Column({
               } else {
                 top = null;
               }
+              const groupColor = data[groupKey].data.meta.color;
+
               return (
                 isVisible && (
                   <div
                     key={groupKey}
                     className={classNames('Table__group', {
-                      colorIndicator: data[groupKey].data.meta.color,
+                      colorIndicator: groupColor,
                     })}
                     style={{
-                      ...(col.key === '#' && data[groupKey].data.meta.color
+                      ...(col.key === '#' && groupColor
                         ? {
                             borderTopLeftRadius: '0.375rem',
                             borderBottomLeftRadius: '0.375rem',
-                            '--color-indicator': data[groupKey].data.meta.color,
+                            '--color-indicator': groupColor,
                             '--extended-group-background-color':
-                              BGColorLighten[data[groupKey].data.meta.color] ??
-                              '#ffffff',
+                              BGColorLighten[groupColor] ?? '#ffffff', // default to white if no color is found
                           }
-                        : data[groupKey].data.meta.color
+                        : groupColor
                         ? {
                             '--extended-group-background-color':
-                              BGColorLighten[data[groupKey].data.meta.color] ??
-                              '#ffffff',
+                              BGColorLighten[groupColor] ?? '#ffffff', // default to white if no color is found
                           }
                         : {}),
                       marginTop: top,
@@ -620,8 +628,9 @@ function Column({
                       <>
                         {data[groupKey]?.items?.map((item, i) => {
                           let absoluteTop =
-                            (ROW_CELL_SIZE_CONFIG[rowHeightMode].groupMargin ??
-                              6) + rowHeightMode;
+                            (ROW_CELL_SIZE_CONFIG[rowHeightMode]?.groupMargin ??
+                              ROW_CELL_SIZE_CONFIG[RowHeightSize.md]
+                                .groupMargin) + rowHeightMode;
                           let top = 0;
                           for (let key in data) {
                             if (key === groupKey) {
@@ -629,7 +638,9 @@ function Column({
                             }
                             absoluteTop +=
                               (ROW_CELL_SIZE_CONFIG[rowHeightMode]
-                                .groupMargin ?? 6) + rowHeightMode;
+                                ?.groupMargin ??
+                                ROW_CELL_SIZE_CONFIG[RowHeightSize.md]
+                                  .groupMargin) + rowHeightMode;
                             if (expanded[key]) {
                               absoluteTop +=
                                 data[key].items.length * rowHeightMode;
@@ -765,10 +776,9 @@ function Column({
                           selected: !!selectedRows?.[item.selectKey],
                         })}
                         metadata={
-                          (multiSelect &&
-                            col.key === 'selection' &&
-                            firstColumn) ||
-                          (!multiSelect && firstColumn)
+                          firstColumn &&
+                          ((multiSelect && col.key === 'selection') ||
+                            !multiSelect)
                             ? item.rowMeta
                             : null
                         }
@@ -792,10 +802,9 @@ function Column({
                           selected: !!selectedRows?.[item.selectKey],
                         })}
                         metadata={
-                          (multiSelect &&
-                            col.key === 'selection' &&
-                            firstColumn) ||
-                          (!multiSelect && firstColumn)
+                          firstColumn &&
+                          ((multiSelect && col.key === 'selection') ||
+                            !multiSelect)
                             ? item.rowMeta
                             : null
                         }

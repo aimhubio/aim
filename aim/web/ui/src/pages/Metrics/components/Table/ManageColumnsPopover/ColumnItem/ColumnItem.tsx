@@ -1,6 +1,7 @@
 import React from 'react';
 import { Draggable } from 'react-beautiful-dnd';
 import classNames from 'classnames';
+import _ from 'lodash-es';
 
 import { Tooltip } from '@material-ui/core';
 
@@ -11,23 +12,33 @@ import { TABLE_DEFAULT_CONFIG } from 'config/table/tableConfigs';
 
 import { AppNameEnum } from 'services/models/explorer';
 
-import { isSystemMetric } from 'utils/isSystemMetric';
-import { formatSystemMetricName } from 'utils/formatSystemMetricName';
+import { IColumnItemProps } from './ColumnItem.d';
 
 import './ColumnItem.scss';
+
 const CharSize = 6;
-function ColumnItem(props: any) {
+
+function ColumnItem({
+  searchKey,
+  label,
+  hasSearchableItems = false,
+  draggingItemId,
+  isHidden,
+  popoverWidth,
+  data,
+  appName,
+  index,
+  onClick,
+}: IColumnItemProps) {
   const [mounted, setMounted] = React.useState(false);
   const nameRef = React.useRef<HTMLParagraphElement | null>(null);
   function isHighlighted() {
-    const data = isSystemMetric(props.data)
-      ? formatSystemMetricName(props.data)
-      : props.data;
     if (
-      props.hasSearchableItems &&
-      !!props.searchKey &&
-      props.searchKey.trim() !== '' &&
-      data.toLowerCase().includes(props.searchKey.toLowerCase())
+      hasSearchableItems &&
+      !!searchKey &&
+      searchKey.trim() !== '' &&
+      (label.toLowerCase().includes(searchKey.toLowerCase()) ||
+        data.toLowerCase().includes(searchKey.toLowerCase()))
     ) {
       return true;
     }
@@ -46,36 +57,32 @@ function ColumnItem(props: any) {
     if (nameRef.current) {
       maxChars = nameRef.current.clientWidth / CharSize;
     }
-    let value: string = isSystemMetric(props.data)
-      ? formatSystemMetricName(props.data)
-      : props.data;
-    let splitVal = value.split('.');
+    let splitVal = label.split('.');
 
     if (splitVal.length > 2) {
-      let isFits = maxChars >= value.length;
+      let isFits = maxChars >= label.length;
       return {
         formattedValue: isFits
-          ? value
+          ? label
           : `${splitVal[0]}.~.${splitVal[splitVal.length - 1]}`,
-        value,
+        value: label,
         disableTooltip: isFits,
       };
     }
     return {
-      formattedValue: value,
-      value,
+      formattedValue: label,
+      value: label,
       disableTooltip,
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [props.data, props.popoverWidth, nameRef.current, mounted]);
+  }, [data, popoverWidth, nameRef.current, mounted]);
 
-  const isNonHidable: boolean = TABLE_DEFAULT_CONFIG[
-    props.appName as AppNameEnum
-  ]?.nonHidableColumns.has(props.data);
+  const isNonHidable: boolean =
+    TABLE_DEFAULT_CONFIG[appName as AppNameEnum]?.nonHidableColumns.has(data);
 
   return (
     <ErrorBoundary>
-      <Draggable draggableId={props.data} index={props.index}>
+      <Draggable draggableId={data} index={index}>
         {(provided) => (
           <Tooltip
             disableHoverListener={itemDetails.disableTooltip}
@@ -86,21 +93,20 @@ function ColumnItem(props: any) {
             <div
               className={classNames('ColumnItem', {
                 highlighted: isHighlighted(),
-                dragging: props.draggingItemId === props.data,
+                dragging: draggingItemId === data,
               })}
               {...provided.draggableProps}
+              {...provided.dragHandleProps}
               ref={provided.innerRef}
             >
               <span
-                onClick={isNonHidable ? null : props.onClick}
+                onClick={isNonHidable ? _.noop : onClick}
                 className={classNames('ColumnItem__toggle', {
                   disabled: isNonHidable,
                 })}
               >
                 <Icon
-                  name={
-                    props.isHidden ? 'eye-outline-hide' : 'eye-show-outline'
-                  }
+                  name={isHidden ? 'eye-outline-hide' : 'eye-show-outline'}
                 />
               </span>
               <div>

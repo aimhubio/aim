@@ -1,4 +1,4 @@
-import React, { memo, useEffect, useMemo } from 'react';
+import React, { memo, useMemo } from 'react';
 import _ from 'lodash-es';
 
 import { IInstructionsState } from 'modules/core/engine/store/instructionsSlice';

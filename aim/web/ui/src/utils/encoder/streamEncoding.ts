@@ -489,6 +489,7 @@ export async function parseStream<T extends Array>(
     }
   } catch (e) {
     // if (__DEV__) {
+    // eslint-disable-next-line no-console
     console.error(e);
     // }
     throw e;

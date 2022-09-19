@@ -26,4 +26,5 @@ export interface IMediaSetProps {
   sortFieldsDict?: { [key: string]: SortField };
   sortFields?: SortFields;
   selectOptions: IGroupingSelectOption[];
+  onRunsTagsChange: (runHash: string, tags: ITagInfo[]) => void;
 }

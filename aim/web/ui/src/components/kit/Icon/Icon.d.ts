@@ -146,4 +146,8 @@ export type IconName =
   | 'new-tab'
   | 'figures-explorer'
   | 'group-column'
-  | 'image-group';
+  | 'image-group'
+  | 'arrow-left-contained'
+  | 'arrow-up-contained'
+  | 'arrow-right-contained'
+  | 'arrow-down-contained';

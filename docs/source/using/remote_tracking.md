@@ -1,4 +1,4 @@
-## Track experiments with aim remote server (experimental feature)
+## Track experiments with aim remote server
 
 ### Overview
 
@@ -199,6 +199,20 @@ with torch.no_grad():
         correct += (predicted == labels).sum().item()
 
     print('Test Accuracy: {} %'.format(100 * correct / total))
+```
+
+### SSL support 
+
+Aim Remote Tracking server can be set up to use SSL certificates to run on secure mode.
+To enable secure mode for server provide `--ssl-keyfile` and `--ssl-certfile` arguments to `aim server `command,
+where `--ssl-keyfile` is the path to the private key file for the certificate and `--ssl-certfile` is the path to the signed certificate
+(check out the [Aim CLI](../refs/cli.html#server) here).
+
+In order to establish a secure connection with the server, the client has to be configured accordingly.
+Please set `__AIM_CLIENT_SSL_CERTIFICATES_FILE__` environment variable to the file, where PEM encoded root certificates are located, e.g.
+
+```shell
+export __AIM_CLIENT_SSL_CERTIFICATES_FILE__=/path/of/the/certs/file
 ```
 
 ### Message size limitations

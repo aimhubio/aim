@@ -1,5 +1,26 @@
 # Changelog
 
+## Unreleased
+
+### Enhancements:
+
+- Add the ability to attach/remove tags on the Run Page (roubkar)
+- Support dictionary as an argument of `Run.track` (alberttorosyan)
+- Display the tags of the run in the tables of the explorers (VkoHov)
+- Revamp Figures explorer controls and grouping sections for better onboarding and usability (VkoHov, KaroMourad)
+- Adjust the grouping section layout of the Figures explorer (VkoHov)
+- Add fast.ai integration (tmynn)
+
+### Fixes:
+
+- Adjust the visibility of the run color in tables (VkoHov)
+- Fix response headers for remote tracking server (mihran113)
+
+## 3.13.3 Sep 16, 2022
+
+- Fix request cancellation on `Logs` tab (mihran113)
+- Fix the data live update handling in the Logs tab (VkoHov)
+
 ## 3.13.2 Sep 10, 2022
 
 - Fix content overlapping issue of x-axis alignment dropdown (KaroMourad)

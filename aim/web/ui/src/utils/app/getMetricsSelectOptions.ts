@@ -2,25 +2,26 @@ import _ from 'lodash-es';
 
 import { IGroupingSelectOption } from 'types/services/models/metrics/metricsAppModel';
 
-import { formatSystemMetricName } from 'utils/formatSystemMetricName';
 import { isSystemMetric } from 'utils/isSystemMetric';
+
+import { getMetricHash } from './getMetricHash';
+import { getMetricLabel } from './getMetricLabel';
 
 export function getMetricsSelectOptions(metricsColumns: {
   [key: string]: any;
 }): IGroupingSelectOption[] {
   const metrics: IGroupingSelectOption[] = [];
   const systemMetrics: IGroupingSelectOption[] = [];
-  Object.keys(metricsColumns).forEach((key: string) => {
-    Object.keys(metricsColumns[key]).forEach((metricContext: string) => {
-      const contextName = metricContext ? `_${metricContext}` : '';
+  Object.keys(metricsColumns).forEach((metricName: string) => {
+    Object.keys(metricsColumns[metricName]).forEach((metricContext: string) => {
+      const metricHash = getMetricHash(metricName, metricContext);
+      const metricLabel = getMetricLabel(metricName, metricContext);
       const sortOption = {
         group: 'metrics',
-        value: `metricsLastValues.${key}${contextName}`,
-        label: isSystemMetric(key)
-          ? formatSystemMetricName(key)
-          : `${key}${contextName}`,
+        value: `metricsLastValues.${metricHash}`,
+        label: metricLabel,
       };
-      if (isSystemMetric(key)) {
+      if (isSystemMetric(metricName)) {
         systemMetrics.push(sortOption);
       } else {
         metrics.push(sortOption);

@@ -5,7 +5,10 @@ import moment from 'moment';
 
 import { Divider } from '@material-ui/core';
 
-import { Badge, Button, Icon, Text } from 'components/kit';
+import { Button, Icon, Text } from 'components/kit';
+import AttachedTagsList from 'components/AttachedTagsList/AttachedTagsList';
+
+import runDetailAppModel from 'services/models/runs/runDetailAppModel';
 
 import { processDurationTime } from 'utils/processDurationTime';
 
@@ -143,6 +146,13 @@ function RunOverviewSidebar({
             <Text tint={70}>{runHash}</Text>
           </div>
         </div>
+        <div className='RunOverviewSidebar__section RunOverviewSidebar__section__tags'>
+          <AttachedTagsList
+            runHash={runHash}
+            initialTags={info.tags}
+            onTagsChange={runDetailAppModel.editTags}
+          />
+        </div>
         <Divider className='RunOverviewSidebar__section__Divider' />
         <div className='RunOverviewSidebar__section RunOverviewSidebar__section__descriptionBox'>
           <div className='RunOverviewSidebar__section__descriptionBox__header'>
@@ -181,21 +191,6 @@ function RunOverviewSidebar({
             </div>
           )}
         </div>
-        {info.tags.length ? (
-          <div className='RunOverviewSidebar__section RunOverviewSidebar__section__tags'>
-            <Text weight={600} size={18} tint={100} component='h3'>
-              Tags{' '}
-              <Text component='span' tint={70} weight={400} size={18}>
-                ({info.tags.length})
-              </Text>
-            </Text>
-            <div className='RunOverviewSidebar__section__tags-list ScrollBar__hidden'>
-              {info.tags.map((tag) => (
-                <Badge color={tag.color} label={tag.name} key={tag.name} />
-              ))}
-            </div>
-          </div>
-        ) : null}
         <Divider className='RunOverviewSidebar__section__Divider' />
         <div className='RunOverviewSidebar__section RunOverviewSidebar__section__insights'>
           <Text weight={600} size={18} tint={100} component='h3'>
