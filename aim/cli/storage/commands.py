@@ -7,7 +7,7 @@ from aim.cli.runs.utils import list_repo_runs, match_runs
 from aim.cli.upgrade.utils import convert_2to3
 
 from aim.sdk.maintenance_run import MaintenanceRun
-from aim.sdk.utils import backup_run, restore_run_backup
+from aim.sdk.utils import backup_run, restore_run_backup, clean_repo_path
 from aim.sdk.repo import Repo
 
 
@@ -116,7 +116,7 @@ def restore_runs(ctx, hashes):
         click.secho('\t'.join(remaining_runs), fg='yellow')
 
 
-@storage.command(name='cleanup')
+@storage.command(name='prune')
 @click.pass_context
 def prune(ctx):
     """Remove dangling/orphan params/sequences with no referring runs."""
@@ -140,7 +140,7 @@ def prune(ctx):
     repo_path = ctx.obj['repo']
     repo = Repo.from_path(repo_path)
 
-    subtrees_to_lookup = ('attrs', 'traces_types', 'contexts')
+    subtrees_to_lookup = ('attrs', 'traces_types', 'contexts', 'traces')
     repo_meta_tree = repo._get_meta_tree()
 
     # set of all repo paths that can be left dangling after run deletion
@@ -151,7 +151,7 @@ def prune(ctx):
         except KeyError:
             pass
 
-    run_hashes = list_repo_runs(repo.path)
+    run_hashes = list_repo_runs(clean_repo_path(repo.path))
     for run_hash in tqdm(run_hashes):
         # construct unique paths set for each run
         run_paths = set()
@@ -166,7 +166,7 @@ def prune(ctx):
         repo_paths.difference_update(run_paths)
 
         # if no paths are left in repo_paths set, means that we have no orphan paths
-        if repo_paths:
+        if not repo_paths:
             break
 
     # everything left in the `repo_paths` set is subject to be deleted
