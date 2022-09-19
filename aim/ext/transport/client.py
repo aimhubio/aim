@@ -1,9 +1,11 @@
+import logging
 import os
-import uuid
-from copy import deepcopy
 import threading
-from typing import Tuple
+import uuid
 from collections import defaultdict
+from copy import deepcopy
+from typing import Tuple
+
 import aim.ext.transport.remote_tracking_pb2 as rpc_messages
 import aim.ext.transport.remote_router_pb2 as router_messages
 import aim.ext.transport.remote_tracking_pb2_grpc as remote_tracking_pb2_grpc
@@ -23,6 +25,8 @@ from aim.storage.treeutils import encode_tree, decode_tree
 
 DEFAULT_RETRY_INTERVAL = 0.1  # 100 ms
 DEFAULT_RETRY_COUNT = 1
+
+logger = logging.getLogger(__name__)
 
 
 class Client:
@@ -56,6 +60,9 @@ class Client:
             self._remote_router_channel = grpc.insecure_channel(remote_path, options=options)
         self._remote_router_stub = remote_router_pb2_grpc.RemoteRouterServiceStub(self._remote_router_channel)
 
+        # check client/server version compatibility
+        self._check_remote_version_compatibility()
+
         # get the available worker address
         self._remote_worker_address = self._get_worker_address()
 
@@ -73,12 +80,48 @@ class Client:
         self._heartbeat_sender.start()
         self._thread_local.atomic_instructions = None
 
+    def _check_remote_version_compatibility(self):
+        from aim.__version__ import __version__ as client_version
+        import grpc
+
+        error_message_template = 'The Aim Remote tracking server version ({}) '\
+                                 'is not compatible with the Aim client version ({}).'\
+                                 'Please upgrade either the Aim Client or the Aim Remote.'
+
+        warning_message_template = 'The Aim Remote tracking server version ({}) ' \
+                                   'and the Aim client version ({}) do not match.' \
+                                   'Consider upgrading either the client or remote tracking server.'
+
+        try:
+            remote_version = self.get_version()
+        except grpc.RpcError as e:
+            if e.code() == grpc.StatusCode.UNIMPLEMENTED:
+                remote_version = '<3.14.0'
+            else:
+                raise
+
+        # server doesn't yet have the `get_version()` method implemented
+        if remote_version == '<3.14.0':
+            RuntimeError(error_message_template.format(remote_version, client_version))
+
+        # compare versions
+        if client_version == remote_version:
+            return
+
+        # if the server has a newer version always force to upgrade the client
+        if client_version < remote_version:
+            raise RuntimeError(error_message_template.format(remote_version, client_version))
+
+        # for other mismatching versions throw a warning for now
+        logger.warning(warning_message_template.format(remote_version, client_version))
+        # further incompatibility list will be added manually
+
     def _get_worker_address(self):
         request = router_messages.ClientConnectRequest(
             client_uri=self.uri
         )
         response = self._remote_router_stub.client_connect(request)
-        if response.status == router_messages.ClientConnectRequest.Status.ERROR:
+        if response.status == router_messages.ClientConnectResponse.Status.ERROR:
             raise_exception(response.exception)
         return response.address
 
